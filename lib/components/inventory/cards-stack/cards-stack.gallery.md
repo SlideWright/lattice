@@ -128,7 +128,7 @@ Parallel items stacked vertically, full-width cards.
 ## When NOT to reach for cards-stack.
 
 - **Five or more items.** A fourth card fits with the `compact` modifier; past four the stack overflows. For five or more parallel items reach for cards-grid four, or split across slides.
-- **One-line cards.** If each card is a single short phrase, the stack reads as a padded list. Drop to `list` or `tldr` and reclaim the vertical space.
+- **One-line cards.** If each card is a single short phrase, the stack reads as a padded list. Drop to `list` (or its `takeaway` variant) and reclaim the vertical space.
 - **Forced sequence.** Cards-stack is parallel content read in vertical order, not a numbered sequence. For explicit steps, use list-steps or list-criteria.
 
 ---
@@ -140,5 +140,5 @@ Parallel items stacked vertically, full-width cards.
 `Related components`
 
 - `cards-grid` — three or four parallel items in a scannable grid
-- `cards-side` — exactly two items in left-right balance
+- `compare-prose` — exactly two items, side by side
 - `list-steps` — items carry an explicit, ordered sequence

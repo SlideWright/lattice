@@ -319,7 +319,7 @@ describe('marp-plugins', () => {
   test('slotLabelLift: idempotent — pre-bolded `**Label**` is left alone', () => {
     const m = makeMarp(plugins.slotLabelLift);
     const md = [
-      '<!-- _class: before-after -->',
+      '<!-- _class: compare-prose transition -->',
       '- **Before**',
       '  - body',
     ].join('\n');
@@ -331,8 +331,8 @@ describe('marp-plugins', () => {
     assert.doesNotMatch(html, /<strong><strong>/);
   });
 
-  test('slotLabelLift: fires on compare-prose, before-after, and decision', () => {
-    for (const cls of ['compare-prose', 'before-after', 'decision']) {
+  test('slotLabelLift: fires on compare-prose, compare-prose transition, and decision', () => {
+    for (const cls of ['compare-prose', 'compare-prose transition', 'decision']) {
       const m = makeMarp(plugins.slotLabelLift);
       const md = `<!-- _class: ${cls} -->\n- Lead\n  - body`;
       const { html } = m.render(md);

@@ -55,20 +55,6 @@
     ],
     "description": "Provenance chain — statute to regulation to guidance to case, walked in order."
   },
-  "lattice: before-after": {
-    "prefix": "lattice-before-after",
-    "body": [
-      "<!-- _class: before-after -->",
-      "",
-      "## What the change did.",
-      "",
-      "- Before",
-      "  - How the system or process worked before the change, in one or two sentences.",
-      "- After",
-      "  - How the system or process works now, in one or two sentences."
-    ],
-    "description": "Explicit state-change comparison — what was, what is."
-  },
   "lattice: big-number": {
     "prefix": "lattice-big-number",
     "body": [
@@ -98,20 +84,6 @@
       "  - Body text for the fourth card, one sentence."
     ],
     "description": "2–4 parallel items, similar weight, scannable in a grid."
-  },
-  "lattice: cards-side": {
-    "prefix": "lattice-cards-side",
-    "body": [
-      "<!-- _class: cards-side -->",
-      "",
-      "## Slide heading.",
-      "",
-      "- Left card title",
-      "  - Body text for the left card, two short sentences.",
-      "- Right card title",
-      "  - Body text for the right card, two short sentences."
-    ],
-    "description": "Two cards side-by-side, co-equal."
   },
   "lattice: cards-stack": {
     "prefix": "lattice-cards-stack",
@@ -350,7 +322,7 @@
       "- Adjacency",
       "  - The relationship between two slides that share an audience or context.",
       "- Anchor",
-      "  - A title, divider, subtopic, or closing slide that orients the audience.",
+      "  - A title, divider, or closing slide that orients the audience.",
       "- Cadence",
       "  - The deck's pacing — how much new information per slide."
     ],
@@ -444,7 +416,7 @@
       "- Fourth short bullet point.",
       "- Fifth short bullet point."
     ],
-    "description": "Plain bullet list under a heading."
+    "description": "Bulleted list under a heading — plain pills, hairline takeaways, or display-weight principles."
   },
   "lattice: list-criteria": {
     "prefix": "lattice-list-criteria",
@@ -560,19 +532,6 @@
       "- Fourth slice `10%`"
     ],
     "description": "Pie or donut chart with legend — proportional wedges."
-  },
-  "lattice: principles": {
-    "prefix": "lattice-principles",
-    "body": [
-      "<!-- _class: principles -->",
-      "",
-      "## How we make calls when the spec is silent.",
-      "",
-      "1. Default to the choice that is cheaper to reverse.",
-      "2. Document the decision, not the menu of options.",
-      "3. Reversible calls don't need a meeting."
-    ],
-    "description": "Declared statements — guiding rules or tenets, each as one terse sentence."
   },
   "lattice: progress": {
     "prefix": "lattice-progress",
@@ -905,35 +864,6 @@
     ],
     "description": "Citation hierarchy — federal / state / local rows with citation, headline obligation, and status."
   },
-  "lattice: subtopic": {
-    "prefix": "lattice-subtopic",
-    "body": [
-      "<!-- _class: subtopic -->",
-      "",
-      "`Topic family`",
-      "",
-      "## Sub-topic name."
-    ],
-    "description": "Sub-section boundary — lighter than divider, no canvas reskin."
-  },
-  "lattice: timeline": {
-    "prefix": "lattice-timeline",
-    "body": [
-      "<!-- _class: timeline -->",
-      "",
-      "## How the process flows.",
-      "",
-      "1. First stage",
-      "   - *Short description of what happens here.*",
-      "2. Second stage",
-      "   - *Short description.*",
-      "3. Third stage",
-      "   - *Short description.*",
-      "4. Fourth stage",
-      "   - *Short description.*"
-    ],
-    "description": "Horizontal ordered steps along a single axis, each a labeled dot."
-  },
   "lattice: timeline-list": {
     "prefix": "lattice-timeline-list",
     "body": [
@@ -967,20 +897,6 @@
       "One-line subtitle that frames the deck."
     ],
     "description": "Opening slide. Dark canvas, centered, no chrome."
-  },
-  "lattice: tldr": {
-    "prefix": "lattice-tldr",
-    "body": [
-      "<!-- _class: tldr -->",
-      "",
-      "## What this section showed.",
-      "",
-      "- The first takeaway as a complete one-line claim.",
-      "- The second takeaway as a complete one-line claim.",
-      "- The third takeaway as a complete one-line claim.",
-      "- The fourth takeaway as a complete one-line claim."
-    ],
-    "description": "Single-line takeaways — the deck or section's headline points."
   },
   "lattice: verdict-grid": {
     "prefix": "lattice-verdict-grid",

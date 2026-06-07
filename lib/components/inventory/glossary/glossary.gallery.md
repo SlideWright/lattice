@@ -96,7 +96,7 @@ Two-column term/definition table with auto-derived alphabetic range pill.
 
 ## When NOT to reach for glossary.
 
-- **Multi-sentence definitions.** Each entry is one short line. If a definition needs context or examples, the term deserves its own slide — use subtopic with the term as the heading.
+- **Multi-sentence definitions.** Each entry is one short line. If a definition needs context or examples, the term deserves its own slide — use a divider (light variant) with the term as the heading.
 - **Mixed term lengths.** If some terms are single words and others are full phrases, the left column gets ragged. Trim long terms to their canonical short form.
 - **Hand-written range pill.** The runtime derives the range pill (e.g. "A – G") from the entries. Authoring it into the heading double-stamps it.
 
@@ -109,6 +109,6 @@ Two-column term/definition table with auto-derived alphabetic range pill.
 `Related components`
 
 - `list-tabular` — rows are key/value reference, not term/definition
-- `subtopic` — one term needs a full slide of explanation
+- `divider` — lighter mid-section orientation — the bright-canvas `light` variant
 - `actors` — the left column is a named person, not a term
-- `principles` — the entries are stated rules, not defined terms
+- `list` — declared statements — the `principles` variant

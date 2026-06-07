@@ -66,10 +66,7 @@
       "name": "list-criteria",
       "when": "flat enumeration of requirements without tier hierarchy"
     },
-    {
-      "name": "timeline",
-      "when": "the sequence is chronological events, not legal tiers"
-    },
+    
     {
       "name": "list-steps",
       "when": "the rows are procedural steps rather than authority tiers"

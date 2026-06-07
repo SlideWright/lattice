@@ -145,7 +145,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 - [`stats`](../../evidence/stats/stats.docs.md) — the headline metrics are independent numbers, not a corpus
 - [`piechart`](../../chart/piechart/piechart.docs.md) — the items are parts of a whole, not free-form themes
 - [`quote`](../../statement/quote/quote.docs.md) — the verbatim language matters more than the frequency
-- [`tldr`](../../inventory/tldr/tldr.docs.md) — the qualitative summary is prose, not a packed cloud
+- [`list`](../../inventory/list/list.docs.md) — single-line takeaways — the `takeaway` variant
 
 ## Demo deck
 

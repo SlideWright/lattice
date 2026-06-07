@@ -28,6 +28,19 @@ Two prose options side-by-side with a labeled corner tag on each.
 
 ---
 
+<!-- _class: compare-prose transition -->
+<!-- _footer: "Transition — before/after state change · compare-prose transition" -->
+
+## What writing decisions down actually changed.
+
+- Before
+  - Decisions lived in the room they were made in. Six months on, nobody could say why we killed the project — only that someone senior had felt strongly.
+- After
+  - Every decision is logged with its signals, its options, and the bet it made. We still relitigate, but now there is a record showing we already decided this in March.
+
+
+---
+
 <!-- _class: compare-prose mirror -->
 <!-- _footer: "Mirror — swap left and right · compare-prose mirror" -->
 
@@ -164,7 +177,6 @@ Two prose options side-by-side with a labeled corner tag on each.
 
 `Related components`
 
-- `before-after` — two states of one system, not two alternatives
 - `compare-code` — the columns are code, not prose
 - `split-compare` — the verdict needs a bottom recommendation bar
 - `verdict-grid` — three or more options scored against shared criteria

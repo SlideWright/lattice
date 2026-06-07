@@ -201,7 +201,6 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 - [`glossary`](../../inventory/glossary/glossary.docs.md) — term/definition pairs with auto-derived range pill
 - [`cards-stack`](../../inventory/cards-stack/cards-stack.docs.md) — two or three richer items, not a ledger
 - [`actors`](../../inventory/actors/actors.docs.md) — the left column is a named person, not a key
-- [`principles`](../../inventory/principles/principles.docs.md) — rows are stated rules, not reference entries
 - [`list`](../../inventory/list/list.docs.md) — rows are bullets without a label-plus-description shape
 
 ## Demo deck

@@ -17,7 +17,7 @@ Numbered list, inline-code transitions, palette-blind SVG. No Mermaid, no charti
 
 ---
 
-<!-- _class: subtopic -->
+<!-- _class: divider light -->
 
 ## What this deck shows.
 
@@ -120,7 +120,7 @@ How a draft moves from author to archive.
 
 ---
 
-<!-- _class: subtopic -->
+<!-- _class: divider light -->
 
 ## Why a native state chart.
 

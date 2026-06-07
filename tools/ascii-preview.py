@@ -229,7 +229,7 @@ def wide_card_row(text: str) -> str:
     return '│ ' + text + ' ' * (body - 1 - len(text)) + '│'
 
 
-# ----- three-column primitives (T8 cards-side three-col, T6 stats, kanban) --
+# ----- three-column primitives (T6 stats, kanban) --
 
 THREECOL_W = (CONTENT - 2 * 2) // 3  # 11 wide cells, two 2-space gaps -> 33+4=37
 
@@ -459,17 +459,6 @@ def demo_blocks() -> dict[str, str]:
         ('blank',),
     ])
 
-    blocks['subtopic-bookend'] = frame([
-        ('blank',),
-        ('blank',),
-        ('center', 'MODULE 03'),
-        ('blank',),
-        ('center', 'Sub-topic heading'),
-        ('center', 'One-line orientation'),
-        ('blank',),
-        ('blank',),
-    ])
-
     blocks['closing-bookend'] = frame([
         ('center', '[dark background]'),
         ('blank',),
@@ -539,18 +528,6 @@ def demo_blocks() -> dict[str, str]:
     ])
 
     # ----- INVENTORY family -------------------------------------------------
-
-    blocks['cards-side'] = frame([
-        ('left', 'header'),
-        ('center', 'Two-card heading'),
-        ('blank',),
-        two_cards(card_top(), card_top()),
-        two_cards(card_row('Option A'), card_row('Option B')),
-        two_cards(card_row('body text'), card_row('body text')),
-        two_cards(card_bot(), card_bot()),
-        ('blank',),
-        ('split', 'footer', '1/19'),
-    ])
 
     blocks['cards-stack'] = frame([
         ('left', 'header'),
@@ -651,18 +628,6 @@ def demo_blocks() -> dict[str, str]:
         ('split', 'footer', '1/19'),
     ])
 
-    blocks['tldr'] = frame([
-        ('left', 'header'),
-        ('left', 'TL;DR heading.'),
-        ('blank',),
-        ('left', 'First takeaway, single line.'),
-        ('left', 'Second takeaway, single line.'),
-        ('left', 'Third takeaway, single line.'),
-        ('left', 'Fourth takeaway, single line.'),
-        ('blank',),
-        ('split', 'footer', '1/19'),
-    ])
-
     blocks['statute-stack'] = frame([
         ('left', 'header'),
         ('left', 'Statute stack heading.'),
@@ -687,18 +652,6 @@ def demo_blocks() -> dict[str, str]:
         two_cards(card_row('// before'), card_row('// after')),
         two_cards(card_row('foo();'), card_row('bar();')),
         two_cards(card_row('baz();'), card_row('qux();')),
-        two_cards(card_bot(), card_bot()),
-        ('split', 'footer', '1/19'),
-    ])
-
-    blocks['before-after'] = frame([
-        ('left', 'header'),
-        ('center', 'State change heading'),
-        ('blank',),
-        two_cards(card_top(), card_top()),
-        two_cards_arrow(card_row('Before /'), card_row('After /')),
-        two_cards(card_row('the prior'), card_row('the new')),
-        two_cards(card_row('state'), card_row('state')),
         two_cards(card_bot(), card_bot()),
         ('split', 'footer', '1/19'),
     ])

@@ -68,10 +68,7 @@
       "name": "quote",
       "when": "the verbatim language matters more than the frequency"
     },
-    {
-      "name": "tldr",
-      "when": "the qualitative summary is prose, not a packed cloud"
-    }
+    { "name": "list", "when": "single-line takeaways — the `takeaway` variant" }
   ],
   "variants": [
     "constellation",

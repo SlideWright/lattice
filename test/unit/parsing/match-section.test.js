@@ -14,7 +14,7 @@ describe('match-section', () => {
   const SECTIONS = [
     { cls: 'title',                   h2: '',                                    footer: 'Title slide · title' },
     { cls: 'cards-grid',              h2: 'Three cards for selector tests.',     footer: 'fixture · cards-grid' },
-    { cls: 'before-after banner-tag', h2: 'Same comparison, banner-tag variant.',footer: 'Variant — before-after · banner-tag' },
+    { cls: 'compare-prose transition', h2: 'Same comparison, transition variant.',footer: 'Variant — compare-prose · transition' },
     { cls: 'closing',                 h2: 'Final slide of the fixture deck.',    footer: 'fixture · closing' },
   ];
 
@@ -58,7 +58,7 @@ describe('match-section', () => {
   // ── matchSection ──────────────────────────────────────────────────────
 
   test('matchSection: h2 substring matches case-insensitively', () => {
-    const parsed = { kind: 'h2', value: 'banner-tag' };
+    const parsed = { kind: 'h2', value: 'transition' };
     assert.equal(matchSection(SECTIONS[2], parsed), true);
     assert.equal(matchSection(SECTIONS[0], parsed), false);
   });
@@ -74,8 +74,8 @@ describe('match-section', () => {
   });
 
   test('matchSection: match: kind matches against any of h2/class/footer', () => {
-    // Slide 2's class is "before-after banner-tag" — match: should hit on class.
-    assert.equal(matchSection(SECTIONS[2], { kind: 'match', value: 'before-after' }), true);
+    // Slide 2's class is "compare-prose transition" — match: should hit on class.
+    assert.equal(matchSection(SECTIONS[2], { kind: 'match', value: 'compare-prose' }), true);
     // Slide 3's footer is "fixture · closing" — match: should hit on footer.
     assert.equal(matchSection(SECTIONS[3], { kind: 'match', value: 'fixture' }), true);
     // Slide 1's h2 is "Three cards…" — match: should hit on h2.
@@ -113,7 +113,7 @@ describe('match-section', () => {
   test('resolveSelector: substring forms return first hit only', () => {
     // Both slide 2 and "fixture" footer on slide 3 match — h2 only matches one.
     assert.deepEqual(resolveSelector('h2:Three cards', SECTIONS).indices, [1]);
-    assert.deepEqual(resolveSelector('class:before-after', SECTIONS).indices, [2]);
+    assert.deepEqual(resolveSelector('class:compare-prose', SECTIONS).indices, [2]);
     assert.deepEqual(resolveSelector('footer:closing', SECTIONS).indices, [3]);
   });
 

@@ -47,7 +47,7 @@
   "antiPatterns": [
     {
       "title": "Sub-bullets per section",
-      "body": "The agenda is a wayfinder, not a treatment. If a section needs decomposition, that belongs on a subtopic divider when the section opens — not here."
+      "body": "The agenda is a wayfinder, not a treatment. If a section needs decomposition, that belongs on a section divider when the section opens — not here."
     },
     {
       "title": "Unnumbered list",
@@ -63,18 +63,12 @@
     }
   ],
   "related": [
-    {
-      "name": "subtopic",
-      "when": "opening a single section mid-deck"
-    },
+    
     {
       "name": "divider",
       "when": "marking a section boundary without restating the menu"
     },
-    {
-      "name": "tldr",
-      "when": "closing the deck with the takeaways the agenda promised"
-    },
+    { "name": "list", "when": "single-line takeaways — the `takeaway` variant" },
     {
       "name": "title",
       "when": "the slide immediately preceding the agenda"

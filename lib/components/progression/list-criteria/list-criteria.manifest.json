@@ -63,10 +63,7 @@
       "name": "verdict-grid",
       "when": "options scored against shared criteria"
     },
-    {
-      "name": "principles",
-      "when": "tenets or values rather than gates a decision must clear"
-    },
+    { "name": "list", "when": "declared statements — the `principles` variant" },
     {
       "name": "list-tabular",
       "when": "rows carry structured metadata alongside the name and description"

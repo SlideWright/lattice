@@ -48,7 +48,7 @@
     },
     {
       "title": "One-line cards",
-      "body": "If each card is a single short phrase, the stack reads as a padded list. Drop to `list` or `tldr` and reclaim the vertical space."
+      "body": "If each card is a single short phrase, the stack reads as a padded list. Drop to `list` (or its `takeaway` variant) and reclaim the vertical space."
     },
     {
       "title": "Forced sequence",
@@ -61,8 +61,8 @@
       "when": "three or four parallel items in a scannable grid"
     },
     {
-      "name": "cards-side",
-      "when": "exactly two items in left-right balance"
+      "name": "compare-prose",
+      "when": "exactly two items, side by side"
     },
     {
       "name": "list-steps",

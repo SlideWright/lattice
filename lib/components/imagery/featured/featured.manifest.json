@@ -50,7 +50,7 @@
     },
     {
       "title": "Sub-grid that argues against the hero",
-      "body": "If the supporting cards undermine the recommendation, the slide is a debate, not a verdict. Use `verdict-grid` for criteria-based scoring or `cards-side` for explicit two-option comparison."
+      "body": "If the supporting cards undermine the recommendation, the slide is a debate, not a verdict. Use `verdict-grid` for criteria-based scoring or `compare-prose` for explicit two-option comparison."
     }
   ],
   "related": [
@@ -61,10 +61,6 @@
     {
       "name": "verdict-grid",
       "when": "options scored against shared criteria, not picked"
-    },
-    {
-      "name": "cards-side",
-      "when": "two options side by side, no hierarchy between them"
     },
     {
       "name": "decision",

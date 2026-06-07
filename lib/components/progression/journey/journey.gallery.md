@@ -180,7 +180,6 @@ Native user-journey chart — sections of tasks, each tagged with actor(s) and a
 
 `Related components`
 
-- `timeline` — linear sequence without per-step mood or actors
 - `list-steps` — process needs descriptive body per step, no chart
 - `gantt` — schedule of overlapping tasks across lanes
 - `kanban` — current status by stage rather than sequence over time

@@ -72,7 +72,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 - [`split-list`](../../statement/split-list/split-list.docs.md) — the right side is a list of supporting points, not findings
 - [`split-statement`](../../statement/split-statement/split-statement.docs.md) — the left side carries a quote, not a thesis
 - [`cards-stack`](../../inventory/cards-stack/cards-stack.docs.md) — the slide is mostly the list of findings; no executive framing needed
-- [`tldr`](../../inventory/tldr/tldr.docs.md) — 5+ one-line takeaways without supporting detail
+- [`list`](../../inventory/list/list.docs.md) — single-line takeaways — the `takeaway` variant
 
 ## Demo deck
 

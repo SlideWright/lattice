@@ -43,7 +43,7 @@ EXAMPLES
   node tools/screenshot-slides.js .scratch/peek/deck.html
   node tools/screenshot-slides.js .scratch/peek/deck.html .scratch/peek 47
   node tools/screenshot-slides.js .scratch/peek/deck.html .scratch/peek h2:banner-tag 3
-  node tools/screenshot-slides.js --html=.scratch/peek/deck.html --selector=class:before-after
+  node tools/screenshot-slides.js --html=.scratch/peek/deck.html --selector=class:compare-prose
 `);
 }
 

@@ -17,7 +17,7 @@ Use when the items want vertical reading order — sequential exploration rather
 ## When NOT to use
 
 - **Five or more items.** A fourth card fits with the `compact` modifier; past four the stack overflows. For five or more parallel items reach for cards-grid four, or split across slides.
-- **One-line cards.** If each card is a single short phrase, the stack reads as a padded list. Drop to `list` or `tldr` and reclaim the vertical space.
+- **One-line cards.** If each card is a single short phrase, the stack reads as a padded list. Drop to `list` (or its `takeaway` variant) and reclaim the vertical space.
 - **Forced sequence.** Cards-stack is parallel content read in vertical order, not a numbered sequence. For explicit steps, use list-steps or list-criteria.
 
 ## Authoring
@@ -103,7 +103,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 ## Related components
 
 - [`cards-grid`](../../inventory/cards-grid/cards-grid.docs.md) — three or four parallel items in a scannable grid
-- [`cards-side`](../../inventory/cards-side/cards-side.docs.md) — exactly two items in left-right balance
+- [`compare-prose`](../../comparison/compare-prose/compare-prose.docs.md) — exactly two items, side by side
 - [`list-steps`](../../progression/list-steps/list-steps.docs.md) — items carry an explicit, ordered sequence
 
 ## Demo deck

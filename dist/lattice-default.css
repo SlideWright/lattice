@@ -992,208 +992,6 @@ section.authority-chain.trail > :is(ol, ul) > li::before {
   margin-bottom:var(--sp-xs);
 }
 
-/* === lib/components/comparison/before-after/before-after.styles.css === */
-/* before-after — extracted from lib/_legacy.css (batch 4).
- * See lib/components/before-after/before-after.manifest.json for the component contract.
- */
-
-/* ── BEFORE-AFTER ──────────────────────────────────────────────────────
- * ## heading
- * - **Before** body explaining the prior state
- * - **After**  body explaining the new state
- *
- * Two cards with a large arrow between them. The right (After) card
- * carries an accent ring to signal "this is the new state". The arrow
- * is rendered as a section-level glyph between the two cards.
- *
- * Composes with `.vertical` (cross-cutting modifier slot — wave 7+) by
- * stacking the cards and rotating the arrow. Implemented here as a base
- * layout; the vertical variant is added in a later wave if needed.
- * ──────────────────────────────────────────────────────────────────────── */
-section.before-after { display:flex; flex-direction:column; }
-section.before-after h2 { margin-bottom:var(--sp-sm); }
-section.before-after > ul,
-section.before-after > ol {
-  display:grid;
-  grid-template-columns:1fr auto 1fr;
-  align-items:stretch;
-  gap:var(--sp-md);
-  flex:1;
-  list-style:none; padding:0; margin:0;
-  position:relative;
-}
-section.before-after > ul > li,
-section.before-after > ol > li {
-  background:var(--bg-alt);
-  border:1px solid var(--border);
-  border-radius:var(--radius-md);
-  padding:var(--sp-md);
-  display:flex; flex-direction:column; gap:var(--sp-xs);
-  color:var(--text-body);
-  font-size:var(--fs-body);
-  font-weight:400;
-}
-section.before-after > ul > li:first-child,
-section.before-after > ol > li:first-child {
-  grid-column:1;
-}
-section.before-after > ul > li:last-child,
-section.before-after > ol > li:last-child {
-  grid-column:3;
-  border-color:var(--on-accent-soft);
-  background:var(--accent-soft);
-}
-section.before-after > ul > li > strong,
-section.before-after > ol > li > strong {
-  display:block;
-  font-family:var(--font-mono);
-  font-size:var(--fs-meta);
-  font-weight:700;
-  letter-spacing:0.18em;
-  text-transform:uppercase;
-  color:var(--text-label);
-}
-section.before-after > ul > li:last-child > strong,
-section.before-after > ol > li:last-child > strong {
-  color:var(--accent);
-}
-/* Arrow injected as a grid cell between the two list items via ::before
- * on the ul/ol. Position: column 2, vertically centred. */
-section.before-after > ul::before,
-section.before-after > ol::before {
-  content:'→';
-  grid-column:2;
-  grid-row:1;
-  align-self:center;
-  font-size:var(--fs-h1);
-  color:var(--accent);
-  font-weight:400;
-  line-height:1;
-}
-/* Optional trailing paragraph — handled by universal below-note / annotation. */
-
-/* ── corner tag, labeled variant ──────────────────────────────────────────
- * before-after, decision, and compare-prose lift the leading text of
- * each top-level <li> into a flush top-left corner tag — same recipe
- * and accent fill as the numbered corner tag (cards-grid / cards-stack),
- * but the content is editorial label text instead of a counter. Frees
- * the title line so the body fills the card from the top.
- *
- * The leading <strong> wrapper is produced automatically by the build
- * pipeline (slotLabelLift in marp.config.js, mirrored in
- * lattice-emulator.js) — authors write plain `- Label` and the structural
- * lift happens in the Marpit token layer. Wrapping `**Label**` in source
- * still works (idempotent) for authors who prefer to be explicit. */
-section.before-after > :is(ul, ol) > li:has(> strong:first-child),
-section.decision > :is(ul, ol) > li:has(> strong:first-child),
-section.compare-prose:not(:has(.compare-prose-inner)) > :is(ul, ol) > li:has(> strong:first-child),
-section.compare-prose .compare-prose-inner .card:has(> strong:first-child) {
-  position: relative;
-  padding-top: calc(var(--sp-sm) + 2.34375cqi);
-}
-section.before-after > :is(ul, ol) > li:has(> strong:first-child) > strong:first-child,
-section.decision > :is(ul, ol) > li:has(> strong:first-child) > strong:first-child,
-section.compare-prose:not(:has(.compare-prose-inner)) > :is(ul, ol) > li:has(> strong:first-child) > strong:first-child,
-section.compare-prose .compare-prose-inner .card:has(> strong:first-child) > strong:first-child {
-  position: absolute;
-  top: 0; left: 0;
-  margin: 0;
-  padding: 0.46875cqi 1.09375cqi;
-  border-radius: var(--radius-md) 0 var(--radius-sm) 0;
-  background: var(--accent);
-  color: var(--on-accent, var(--on-dark-primary));
-  font-family: var(--font-mono);
-  font-size: 1.171875cqi;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  line-height: 1;
-}
-/* Decision corner tag uses the per-card deep variant + on-cat ink —
- * the universal text-on-categorical recipe defined in :root. The full
- * saturation hue still anchors the card via the bottom border. */
-section.decision > :is(ul, ol) > li:has(> strong:first-child) > strong:first-child {
-  background: var(--decision-accent-deep, var(--accent));
-  /* --decision-accent-deep resolves to --cN-dark (categorical fill); text on
-   * a --cN-dark fill uses --c-ink-dark (white on light, near-black on dark). */
-  color: var(--c-ink-dark);
-}
-
-/* ── corner tag, banner variant (.banner-tag modifier) ────────────────────
- * Opt-in modifier on before-after / decision / compare-prose. Converts the
- * flush-corner labeled tag into a full-width header strip — the card becomes
- * a vertical column-flex: tag is `flex: 0 0 auto` (fits content height,
- * spans full width), body is `flex: 1 1 0` and stretches to fill the
- * remaining card box on both axes (justify-content centres the body).
- *
- * Use when the slot label is the architectural signal of the card (the
- * categorical case, e.g. `BUILD` / `WHY NOT BUY` / `WHY NOT DELAY`) rather
- * than a quiet marker. The flush-corner default stays for the editorial
- * register where the body owns the card.
- *
- * Composes with the same lift infrastructure — author writes plain
- * `- Label`, lift produces the `<strong>`, this block restyles the card. */
-section.banner-tag.before-after > :is(ul, ol) > li:has(> strong:first-child),
-section.banner-tag.decision > :is(ul, ol) > li:has(> strong:first-child),
-section.banner-tag.compare-prose:not(:has(.compare-prose-inner)) > :is(ul, ol) > li:has(> strong:first-child),
-section.banner-tag.compare-prose .compare-prose-inner .card:has(> strong:first-child) {
-  position: static;
-  display: flex;
-  flex-direction: column;
-  flex-wrap: nowrap;
-  padding: 0;
-  overflow: hidden;
-  gap: 0;
-}
-section.banner-tag.before-after > :is(ul, ol) > li:has(> strong:first-child) > strong:first-child,
-section.banner-tag.decision > :is(ul, ol) > li:has(> strong:first-child) > strong:first-child,
-section.banner-tag.compare-prose:not(:has(.compare-prose-inner)) > :is(ul, ol) > li:has(> strong:first-child) > strong:first-child,
-section.banner-tag.compare-prose .compare-prose-inner .card:has(> strong:first-child) > strong:first-child {
-  position: static;
-  flex: 0 0 auto;
-  display: block;
-  width: 100%;
-  margin: 0;
-  padding: 0.78125cqi var(--sp-md);
-  border-radius: 0;
-  background: var(--accent);
-  color: var(--on-accent, var(--on-dark-primary));
-  font-family: var(--font-mono);
-  font-size: 1.09375cqi;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  line-height: 1.2;
-  box-sizing: border-box;
-}
-section.banner-tag.before-after > :is(ul, ol) > li:has(> strong:first-child) > :is(ul, ol),
-section.banner-tag.decision > :is(ul, ol) > li:has(> strong:first-child) > :is(ul, ol),
-section.banner-tag.compare-prose:not(:has(.compare-prose-inner)) > :is(ul, ol) > li:has(> strong:first-child) > :is(ul, ol),
-section.banner-tag.compare-prose .compare-prose-inner .card:has(> strong:first-child) > :is(ul, ol) {
-  flex: 1 1 0;
-  min-height: 0;
-  width: auto;
-  margin: 0;
-  padding: var(--sp-md);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  box-sizing: border-box;
-}
-section.banner-tag.decision > :is(ul, ol) > li:has(> strong:first-child) > strong:first-child {
-  background: var(--decision-accent-deep, var(--accent));
-  /* --decision-accent-deep resolves to --cN-dark; see flush-corner rule above. */
-  color: var(--c-ink-dark);
-}
-
-
-/* Hardening: element siblings of <strong> in a card li don't inherit
- * the parent's font-weight:700. Covers cases like `<strong>Title.</strong>
- * <em>italic body</em>`. Text-node siblings still inherit (CSS can't
- * target text nodes); the manifest validator catches that case at
- * lint time. See CARD_STYLE_LAYOUTS in lib/components/index.js. */
-section.before-after :is(ul,ol) > li > strong ~ * { font-weight: 400; }
-
 /* === lib/components/statement/big-number/big-number.styles.css === */
 /* big-number — statement.canvas.bignumber
  *
@@ -1216,7 +1014,6 @@ section.big-number > ul > li > ul > li { font-family:var(--font-body); font-size
 /* === lib/components/inventory/cards-grid/cards-grid.styles.css === */
 /* cards-grid — extracted from lib/_legacy.css (batch 6).
  * See lib/components/cards-grid/cards-grid.manifest.json for the component contract.
- * Sibling cards-side rules live in lib/components/cards-side/styles.css.
  */
 
 /* ── CARDS-GRID ──
@@ -1395,153 +1192,6 @@ section.cards-grid.four .cards-grid-inner > .card:last-child:nth-child(odd) {
  * target text nodes); the manifest validator catches that case at
  * lint time. See CARD_STYLE_LAYOUTS in lib/components/index.js. */
 section.cards-grid :is(ul,ol) > li > strong ~ * { font-weight: 400; }
-
-/* === lib/components/inventory/cards-side/cards-side.styles.css === */
-/* cards-side — inventory.split.cards
- *
- * Two-column card grid where the second column is a peer, not a wrap.
- * Shares the post-processed DOM (.cards-grid-inner > .card) with
- * cards-grid, so the rules look near-identical — historically they were
- * authored together in cards-grid/styles.css. Split per the
- * design-system §9 "components own their rules" contract.
- *
- * Differences from cards-grid:
- *   - cards-side does NOT set grid-auto-rows:1fr on the wrapper ul/ol,
- *     so card heights follow content (cards-grid forces uniform rows).
- *   - cards-side does NOT have the "last child of odd count spans both
- *     columns" rule (it's always a 2-card slide; never odd).
- */
-
-section.cards-side { display:flex; flex-direction:column; }
-
-/* — Marp CLI native path — */
-section.cards-side > ul, section.cards-side > ol {
-  display:grid; grid-template-columns:1fr 1fr;
-  gap:var(--sp-md); flex:1;
-  list-style:none; padding:0; margin:0;
-}
-section.cards-side > ul > li, section.cards-side > ol > li {
-  background:var(--bg-alt); border:1px solid var(--border);
-  border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
-  display:grid; grid-template-columns:1fr auto; align-content:start;
-  font-size:var(--fs-body); line-height:var(--lh-snug); font-weight:700; color:var(--text-heading);
-}
-/* — strong: backwards-compat shim (**Title** in existing slides renders identically) — */
-section.cards-side > ul > li > strong { display:block; grid-column:1 / -1; }
-/* — inline code badge pinned to title row.
- *   This rule must carry full chrome because the markdown emits
- *   `<li>Title <code>pill</code><ul>nested body</ul></li>` — the
- *   `<code>` is neither :last-child nor preceded by `<ul>`, so the
- *   universal pill rule's :last-child guard does not fire here. — */
-section.cards-side > ul > li > code,
-section.cards-side > ol > li > code { grid-column:2; grid-row:1; align-self:baseline; margin-left:var(--sp-xs);
-  display:inline-flex; align-items:center; justify-content:center; text-align:center; line-height:1;
-  font-family:var(--pill-font); font-size:var(--pill-fs); font-weight:var(--pill-weight); letter-spacing:var(--pill-tracking); border-radius:var(--pill-radius); padding:var(--pill-pad-y) var(--pill-pad-x); white-space:nowrap;
-  background:var(--bg); border-color:var(--text-muted); color:var(--text-body); }
-/* — card body (nested list) — */
-section.cards-side > ul > li > ul, section.cards-side > ul > li > ol,
-section.cards-side > ol > li > ul, section.cards-side > ol > li > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; grid-column:1 / -1; }
-section.cards-side > ul > li > ul > li, section.cards-side > ul > li > ol > li,
-section.cards-side > ol > li > ul > li, section.cards-side > ol > li > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
-
-/* — lattice.js post-processed path — */
-section.cards-side .cards-grid-inner,
-section.cards-side .cards-grid-inner--ordered {
-  display:grid; grid-template-columns:1fr 1fr;
-  grid-auto-rows:1fr; gap:var(--sp-md); flex:1;
-}
-section.cards-side .card {
-  background:var(--bg-alt); border:1px solid var(--border);
-  border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
-  display:grid; grid-template-columns:1fr auto; align-content:start;
-  font-size:var(--fs-body); line-height:var(--lh-snug); font-weight:700; color:var(--text-heading);
-}
-section.cards-side .card > strong { display:block; grid-column:1 / -1; }
-section.cards-side .card > code { grid-column:2; grid-row:1; align-self:baseline; margin-left:var(--sp-xs);
-  display:inline-flex; align-items:center; justify-content:center; text-align:center; line-height:1;
-  font-family:var(--pill-font); font-size:var(--pill-fs); font-weight:var(--pill-weight); letter-spacing:var(--pill-tracking); border-radius:var(--pill-radius); padding:var(--pill-pad-y) var(--pill-pad-x); white-space:nowrap;
-  background:var(--bg); border-color:var(--text-muted); color:var(--text-body); }
-section.cards-side .card > ul, section.cards-side .card > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; grid-column:1 / -1; }
-section.cards-side .card > ul > li, section.cards-side .card > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
-
-/* — numbered cards (ol): flush corner tag via absolute ::before — */
-section.cards-side > ol { counter-reset:card; }
-section.cards-side > ol > li {
-  counter-increment:card;
-  position:relative; padding-top:calc(var(--sp-sm) + 2.34375cqi);
-}
-section.cards-side > ol > li::before {
-  content:counter(card);
-  position:absolute; top:0; left:0;
-  padding:0.46875cqi 1.09375cqi; border-radius:var(--radius-md) 0 var(--radius-sm) 0;
-  font-family:var(--font-mono); font-size:1.25cqi; font-weight:700; line-height:1;
-  color:var(--on-accent, var(--on-dark-primary)); background:var(--accent);
-}
-section.cards-side .cards-grid-inner--ordered { counter-reset:card; }
-section.cards-side .cards-grid-inner--ordered > .card {
-  counter-increment:card;
-  position:relative; padding-top:calc(var(--sp-sm) + 2.34375cqi);
-}
-section.cards-side .cards-grid-inner--ordered > .card::before {
-  content:counter(card);
-  position:absolute; top:0; left:0;
-  padding:0.46875cqi 1.09375cqi; border-radius:var(--radius-md) 0 var(--radius-sm) 0;
-  font-family:var(--font-mono); font-size:1.25cqi; font-weight:700; line-height:1;
-  color:var(--on-accent, var(--on-dark-primary)); background:var(--accent);
-}
-
-/* ── nested-list fallback (no .cards-grid-inner) ─────────────────────────────
- * Mirrors the Marp CLI native path for environments where the
- * post-processor didn't run (e.g. vanilla marp-vscode preview).
- */
-section.cards-side:not(:has(.cards-grid-inner)) > ul,
-section.cards-side:not(:has(.cards-grid-inner)) > ol {
-  display:grid; grid-template-columns:1fr 1fr; grid-auto-rows:1fr;
-  gap:var(--sp-md); flex:1; list-style:none; padding:0; margin:0;
-}
-section.cards-side:not(:has(.cards-grid-inner)) > ul > li,
-section.cards-side:not(:has(.cards-grid-inner)) > ol > li {
-  background:var(--bg-alt); border:1px solid var(--border);
-  border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
-  display:grid; grid-template-columns:1fr auto; align-content:start;
-  font-weight:700; color:var(--text-heading);
-}
-section.cards-side:not(:has(.cards-grid-inner)) > ul > li:last-child:nth-child(odd),
-section.cards-side:not(:has(.cards-grid-inner)) > ol > li:last-child:nth-child(odd) { grid-column:1 / -1; }
-section.cards-side:not(:has(.cards-grid-inner)) > ul > li > strong { display:block; grid-column:1 / -1; }
-section.cards-side:not(:has(.cards-grid-inner)) > ul > li > code,
-section.cards-side:not(:has(.cards-grid-inner)) > ol > li > code { grid-column:2; grid-row:1; align-self:baseline; margin-left:var(--sp-xs);
-  display:inline-flex; align-items:center; justify-content:center; text-align:center; line-height:1;
-  font-family:var(--pill-font); font-size:var(--pill-fs); font-weight:var(--pill-weight); letter-spacing:var(--pill-tracking); border-radius:var(--pill-radius); padding:var(--pill-pad-y) var(--pill-pad-x); white-space:nowrap;
-  background:var(--bg); border-color:var(--text-muted); color:var(--text-body); }
-section.cards-side:not(:has(.cards-grid-inner)) > ul > li > ul,
-section.cards-side:not(:has(.cards-grid-inner)) > ul > li > ol,
-section.cards-side:not(:has(.cards-grid-inner)) > ol > li > ul,
-section.cards-side:not(:has(.cards-grid-inner)) > ol > li > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; grid-column:1 / -1; }
-section.cards-side:not(:has(.cards-grid-inner)) > ul > li > ul > li,
-section.cards-side:not(:has(.cards-grid-inner)) > ul > li > ol > li,
-section.cards-side:not(:has(.cards-grid-inner)) > ol > li > ul > li,
-section.cards-side:not(:has(.cards-grid-inner)) > ol > li > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
-/* — numbered cards (ol source, VS Code fallback) — */
-section.cards-side:not(:has(.cards-grid-inner)) > ol { counter-reset:card; }
-section.cards-side:not(:has(.cards-grid-inner)) > ol > li {
-  counter-increment:card;
-  position:relative; padding-top:calc(var(--sp-sm) + 2.34375cqi);
-}
-section.cards-side:not(:has(.cards-grid-inner)) > ol > li::before {
-  content:counter(card);
-  position:absolute; top:0; left:0;
-  padding:0.46875cqi 1.09375cqi; border-radius:var(--radius-md) 0 var(--radius-sm) 0;
-  font-family:var(--font-mono); font-size:1.25cqi; font-weight:700; line-height:1;
-  color:var(--on-accent, var(--on-dark-primary)); background:var(--accent);
-}
-
-/* Hardening: element siblings of <strong> in a card li don't inherit
- * the parent's font-weight:700. Covers cases like `<strong>Title.</strong>
- * <em>italic body</em>`. Text-node siblings still inherit (CSS can't
- * target text nodes); the manifest validator catches that case at
- * lint time. See CARD_STYLE_LAYOUTS in lib/components/index.js. */
-section.cards-side :is(ul,ol) > li > strong ~ * { font-weight: 400; }
 
 /* === lib/components/inventory/cards-stack/cards-stack.styles.css === */
 /* cards-stack — vertical (or horizontal) stack of full-width cards.
@@ -2330,6 +1980,136 @@ section.compare-prose.vertical .compare-prose-inner .connector {
  * lint time. See CARD_STYLE_LAYOUTS in lib/components/index.js. */
 section.compare-prose :is(ul,ol) > li > strong ~ * { font-weight: 400; }
 
+/* ── corner tag + banner tag — relocated from the retired before-after
+ * component on 2026-06-07. Shared by compare-prose (incl. its `transition`
+ * variant) and decision: lifts each top-level card label into a flush
+ * corner tag; `.banner-tag` converts it to a full-width header strip. */
+/* ── corner tag, labeled variant ──────────────────────────────────────────
+ * decision and compare-prose lift the leading text of
+ * each top-level <li> into a flush top-left corner tag — same recipe
+ * and accent fill as the numbered corner tag (cards-grid / cards-stack),
+ * but the content is editorial label text instead of a counter. Frees
+ * the title line so the body fills the card from the top.
+ *
+ * The leading <strong> wrapper is produced automatically by the build
+ * pipeline (slotLabelLift in marp.config.js, mirrored in
+ * lattice-emulator.js) — authors write plain `- Label` and the structural
+ * lift happens in the Marpit token layer. Wrapping `**Label**` in source
+ * still works (idempotent) for authors who prefer to be explicit. */
+section.decision > :is(ul, ol) > li:has(> strong:first-child),
+section.compare-prose:not(:has(.compare-prose-inner)) > :is(ul, ol) > li:has(> strong:first-child),
+section.compare-prose .compare-prose-inner .card:has(> strong:first-child) {
+  position: relative;
+  padding-top: calc(var(--sp-sm) + 2.34375cqi);
+}
+section.decision > :is(ul, ol) > li:has(> strong:first-child) > strong:first-child,
+section.compare-prose:not(:has(.compare-prose-inner)) > :is(ul, ol) > li:has(> strong:first-child) > strong:first-child,
+section.compare-prose .compare-prose-inner .card:has(> strong:first-child) > strong:first-child {
+  position: absolute;
+  top: 0; left: 0;
+  margin: 0;
+  padding: 0.46875cqi 1.09375cqi;
+  border-radius: var(--radius-md) 0 var(--radius-sm) 0;
+  background: var(--accent);
+  color: var(--on-accent, var(--on-dark-primary));
+  font-family: var(--font-mono);
+  font-size: 1.171875cqi;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+/* Decision corner tag uses the per-card deep variant + on-cat ink —
+ * the universal text-on-categorical recipe defined in :root. The full
+ * saturation hue still anchors the card via the bottom border. */
+section.decision > :is(ul, ol) > li:has(> strong:first-child) > strong:first-child {
+  background: var(--decision-accent-deep, var(--accent));
+  /* --decision-accent-deep resolves to --cN-dark (categorical fill); text on
+   * a --cN-dark fill uses --c-ink-dark (white on light, near-black on dark). */
+  color: var(--c-ink-dark);
+}
+
+/* ── corner tag, banner variant (.banner-tag modifier) ────────────────────
+ * Opt-in modifier on decision / compare-prose (incl. transition). Converts the
+ * flush-corner labeled tag into a full-width header strip — the card becomes
+ * a vertical column-flex: tag is `flex: 0 0 auto` (fits content height,
+ * spans full width), body is `flex: 1 1 0` and stretches to fill the
+ * remaining card box on both axes (justify-content centres the body).
+ *
+ * Use when the slot label is the architectural signal of the card (the
+ * categorical case, e.g. `BUILD` / `WHY NOT BUY` / `WHY NOT DELAY`) rather
+ * than a quiet marker. The flush-corner default stays for the editorial
+ * register where the body owns the card.
+ *
+ * Composes with the same lift infrastructure — author writes plain
+ * `- Label`, lift produces the `<strong>`, this block restyles the card. */
+section.banner-tag.decision > :is(ul, ol) > li:has(> strong:first-child),
+section.banner-tag.compare-prose:not(:has(.compare-prose-inner)) > :is(ul, ol) > li:has(> strong:first-child),
+section.banner-tag.compare-prose .compare-prose-inner .card:has(> strong:first-child) {
+  position: static;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  padding: 0;
+  overflow: hidden;
+  gap: 0;
+}
+section.banner-tag.decision > :is(ul, ol) > li:has(> strong:first-child) > strong:first-child,
+section.banner-tag.compare-prose:not(:has(.compare-prose-inner)) > :is(ul, ol) > li:has(> strong:first-child) > strong:first-child,
+section.banner-tag.compare-prose .compare-prose-inner .card:has(> strong:first-child) > strong:first-child {
+  position: static;
+  flex: 0 0 auto;
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0.78125cqi var(--sp-md);
+  border-radius: 0;
+  background: var(--accent);
+  color: var(--on-accent, var(--on-dark-primary));
+  font-family: var(--font-mono);
+  font-size: 1.09375cqi;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  line-height: 1.2;
+  box-sizing: border-box;
+}
+section.banner-tag.decision > :is(ul, ol) > li:has(> strong:first-child) > :is(ul, ol),
+section.banner-tag.compare-prose:not(:has(.compare-prose-inner)) > :is(ul, ol) > li:has(> strong:first-child) > :is(ul, ol),
+section.banner-tag.compare-prose .compare-prose-inner .card:has(> strong:first-child) > :is(ul, ol) {
+  flex: 1 1 0;
+  min-height: 0;
+  width: auto;
+  margin: 0;
+  padding: var(--sp-md);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  box-sizing: border-box;
+}
+section.banner-tag.decision > :is(ul, ol) > li:has(> strong:first-child) > strong:first-child {
+  background: var(--decision-accent-deep, var(--accent));
+  /* --decision-accent-deep resolves to --cN-dark; see flush-corner rule above. */
+  color: var(--c-ink-dark);
+}
+
+
+/* ── transition variant — former `before-after` component (comparison.compare-prose.transition) ──
+ * The state-change reading: an arrow connector and an accent ring on the
+ * second ("after") card. Author writes Before / After as the two labels.
+ * Merged from the standalone before-after on 2026-06-07. */
+section.compare-prose.transition .compare-prose-inner .connector { font-size: 0; }
+section.compare-prose.transition .compare-prose-inner .connector::after {
+  content: "\2192"; font-size: var(--fs-h2); color: var(--accent); line-height: 1;
+}
+section.compare-prose.transition:not(:has(.compare-prose-inner)) > :is(ul, ol)::before {
+  content: "\2192"; color: var(--accent);
+}
+section.compare-prose.transition .compare-prose-inner .card:nth-child(3),
+section.compare-prose.transition:not(:has(.compare-prose-inner)) > :is(ul, ol) > li:last-child {
+  border-color: var(--on-accent-soft); background: var(--accent-soft);
+}
+
 /* === lib/components/comparison/compare-table/compare-table.styles.css === */
 /* compare-table — extracted from lib/_legacy.css (batch 4).
  * See lib/components/compare-table/compare-table.manifest.json for the component contract.
@@ -2516,6 +2296,17 @@ section.divider::before { content:''; position:absolute; left:0; top:0; bottom:0
  * its document title; the lone h1 belongs to `title`. Rendered at --fs-h1
  * so the section headline keeps its full dark-canvas weight. */
 section.divider h2 { font-size:var(--fs-h1); color:var(--text-display); max-width:62.5cqi; line-height:var(--lh-tight); }
+
+/* light variant — former `subtopic` component (anchor.divider.light)
+ *
+ * A bright-canvas sub-section break: drops the dark reskin and the
+ * left-edge spectrum rail, re-centers, and shrinks the heading to h2.
+ * Sits between a dark divider and a run of content slides for finer
+ * orientation. Merged from the standalone subtopic on 2026-06-07. */
+section.divider.light { background:var(--bg); padding-left:0; justify-content:center; align-items:center; }
+section.divider.light::before { content:none; }
+section.divider.light h2 { font-size:var(--fs-h2); color:var(--text-body); max-width:none; margin-bottom:var(--sp-sm); text-align:center; line-height:var(--lh-tight); }
+section.divider.light p  { font-size:var(--fs-message); max-width:46.875cqi; line-height:var(--lh-relaxed); margin:0 auto; text-align:center; }
 
 /* === lib/components/imagery/featured/featured.styles.css === */
 /* featured — extracted from lib/_legacy.css (batch 5).
@@ -4443,20 +4234,107 @@ section.kpi.spotlight > ol > li:not(:first-child) code {
 /* === lib/components/inventory/list/list.styles.css === */
 /* list — inventory.stack.bullets
  *
- * Plain bullet list under a heading. Pill-style cards per item with
- * an accent left border. Both ul (plain) and ol (numbered) variants.
+ * An equal-fill ledger: the list fills the working area and every item takes
+ * an equal share of the height with its content vertically centred, so the
+ * slide reads edge-to-edge whether it carries three items or the layout's
+ * max. Three registers share the spine:
+ *   default        — accent-edged pills (a flat set of points)
+ *   .takeaway      — hairline-ruled single lines (former tldr)
+ *   .principles    — display-weight declarations + large counter (former principles)
  *
- * See lib/components/list/list.manifest.json for the component contract.
+ * Type steps up to the message scale (principles to the emphasis/display
+ * register); counters and text share a centreline so numbered rows read clean.
+ *
+ * See lib/components/inventory/list/list.manifest.json for the contract.
  */
 
+section.list { display:flex; flex-direction:column; }
 section.list h2 { margin-bottom:var(--sp-md); }
-section.list ul { list-style:none; display:flex; flex-direction:column; gap:var(--sp-xs); padding:0; margin:0; flex:1; justify-content:center; }
-section.list ul li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); background:var(--bg-alt); border:1px solid var(--border); border-left:3px solid var(--accent); border-radius:var(--radius-md); padding:var(--sp-xs) var(--sp-md); }
-section.list ul li ul { list-style:none; margin:4px 0 0 0; padding:0; background:none; border:none; }
-section.list ul li ul li { font-size:var(--fs-meta); color:var(--text-label); line-height:var(--lh-snug); background:none; border:none; padding:0; border-radius:0; }
-section.list ol { list-style:none; counter-reset:list-counter; display:flex; flex-direction:column; gap:var(--sp-xs); padding:0; margin:0; flex:1; justify-content:center; }
-section.list ol li { counter-increment:list-counter; font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:var(--sp-xs) var(--sp-md); display:grid; grid-template-columns:var(--sp-xl) 1fr; align-items:center; gap:var(--sp-sm); }
-section.list ol li::before { content:counter(list-counter, decimal-leading-zero); font-family:var(--font-mono); font-size:var(--fs-body); font-weight:700; color:var(--accent); }
+
+/* ── Spine: the list fills the canvas; each row an equal, centred band. ── */
+section.list > :is(ul,ol) {
+  list-style:none; padding:0; margin:0;
+  display:flex; flex-direction:column;
+  flex:1; gap:var(--sp-sm);
+}
+section.list > :is(ul,ol) > li {
+  flex:1 1 0; min-height:0;
+  display:flex; align-items:center;
+  font-size:var(--fs-message);
+  color:var(--text-body); line-height:var(--lh-snug);
+}
+
+/* ── Default register: accent-edged pills. ── */
+section.list > ul > li {
+  background:var(--bg-alt);
+  border:1px solid var(--border); border-left:3px solid var(--accent);
+  border-radius:var(--radius-md);
+  padding:var(--sp-sm) var(--sp-md);
+}
+/* Optional second-line detail under a point. */
+section.list > ul > li > ul { list-style:none; margin:0; padding:0; }
+section.list > ul > li > ul > li {
+  font-size:var(--fs-body-compact); color:var(--text-label);
+  line-height:var(--lh-snug); background:none; border:none; padding:0;
+}
+/* Default ordered: leading accent counter, content centred. */
+section.list > ol { counter-reset:list-counter; }
+section.list > ol > li {
+  counter-increment:list-counter;
+  background:var(--bg-alt); border:1px solid var(--border);
+  border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
+  display:grid; grid-template-columns:var(--sp-xl) 1fr; align-items:center; gap:var(--sp-md);
+}
+section.list > ol > li::before {
+  content:counter(list-counter, decimal-leading-zero);
+  font-family:var(--font-mono); font-size:var(--fs-h4); font-weight:700; color:var(--accent);
+}
+
+/* ── takeaway register — former `tldr` component (inventory.list.takeaway) ──
+ * Hairline-ruled single lines, no pill chrome. `numbered` adds a large
+ * accent counter on the same centreline. Merged 2026-06-07. */
+section.list.takeaway > :is(ul,ol) { gap:0; }
+section.list.takeaway > :is(ul,ol) > li {
+  background:none; border:none; border-radius:0;
+  border-bottom:1px solid var(--border);
+  padding:0 var(--sp-xs);
+  font-size:var(--fs-message); font-weight:500; color:var(--text-heading);
+}
+section.list.takeaway > :is(ul,ol) > li::before { content:none; }
+section.list.takeaway > :is(ul,ol) > li::marker { content:''; }
+section.list.takeaway > :is(ul,ol) > li:last-child { border-bottom:none; }
+/* numbered — accent counter as a fixed leading column, centred with the text. */
+section.list.takeaway.numbered > :is(ul,ol) > li { counter-increment:list-take-counter; gap:var(--sp-md); }
+section.list.takeaway.numbered > :is(ul,ol) { counter-reset:list-take-counter; }
+section.list.takeaway.numbered > :is(ul,ol) > li::before {
+  content:counter(list-take-counter, decimal-leading-zero);
+  font-family:var(--font-mono); font-size:var(--fs-emphasis); font-weight:700;
+  letter-spacing:0.02em; color:var(--accent); line-height:1;
+  flex:0 0 auto; min-width:2.4em;
+}
+
+/* ── principles register — former `principles` component (inventory.list.principles) ──
+ * Display-weight declarations with a large accent counter. ol only;
+ * lettered/roman/bullet switch the counter format. Merged 2026-06-07. */
+section.list.principles > ol { counter-reset:list-principle-counter; gap:0; }
+section.list.principles > ol > li {
+  counter-increment:list-principle-counter;
+  display:grid; grid-template-columns:auto 1fr; column-gap:var(--sp-lg); align-items:center;
+  background:none; border:none; border-radius:0;
+  border-bottom:1px solid var(--border); padding:0;
+  font-family:var(--font-display, var(--font-body));
+  font-size:var(--fs-emphasis); font-weight:500; letter-spacing:-0.01em;
+  line-height:var(--lh-tight); color:var(--text-heading);
+}
+section.list.principles > ol > li:last-child { border-bottom:none; }
+section.list.principles > ol > li::before {
+  content:counter(list-principle-counter, decimal-leading-zero);
+  font-family:var(--font-mono); font-size:var(--fs-h1); font-weight:700;
+  letter-spacing:0.02em; color:var(--accent); line-height:1; align-self:center;
+}
+section.list.principles.lettered > ol > li::before { content:counter(list-principle-counter, upper-alpha); }
+section.list.principles.roman > ol > li::before { content:counter(list-principle-counter, upper-roman); }
+section.list.principles.bullet > ol > li::before { content:'·'; }
 
 /* === lib/components/progression/list-criteria/list-criteria.styles.css === */
 /* list-criteria — extracted from lib/_legacy.css (batch 4).
@@ -4615,6 +4493,52 @@ section.list-steps.vertical ol > li:not(:last-child)::after {
   border-left: 10px solid transparent;
   border-right: 10px solid transparent;
 }
+
+
+/* ── timeline variant — former `timeline` component (progression.list-steps.timeline) ──
+ * Dots-on-a-spine: ordered stages as labelled nodes along one horizontal axis.
+ * ol → numbered discs; ul → plain dots. Resets the list-steps card + STEP-badge
+ * + arrow-connector chrome. Merged from the standalone timeline on 2026-06-07.
+ * Lifted to <strong> by the timeline token in the shared slot-label-lift paths. */
+section.list-steps.timeline { justify-content:center; align-items:center; }
+section.list-steps.timeline h2 { margin-bottom:var(--sp-xl); text-align:center; }
+section.list-steps.timeline > :is(ol,ul) {
+  display:flex; justify-content:space-between; align-items:flex-start;
+  width:100%; position:relative; flex:0 1 auto;
+  padding:0 var(--sp-xl); gap:0; box-sizing:border-box; margin:0;
+}
+section.list-steps.timeline > :is(ol,ul)::before {
+  content:''; position:absolute; top:1.015625cqi;
+  left:calc(var(--sp-xl) + 7.03125cqi); right:calc(var(--sp-xl) + 7.03125cqi);
+  height:3px; background:var(--spectrum); border-radius:2px;
+}
+section.list-steps.timeline > :is(ol,ul) > li {
+  flex:0 0 auto;
+  display:flex; flex-direction:column; align-items:center;
+  width:14.0625cqi; text-align:center; position:relative; z-index:1;
+  background:none; border:none; border-radius:0; padding:0;
+  font-size:var(--fs-meta); line-height:var(--lh-snug); font-weight:700; color:var(--text-heading);
+}
+section.list-steps.timeline > ol { counter-reset:ls-timeline-counter; }
+section.list-steps.timeline > ol > li::before {
+  counter-increment:ls-timeline-counter;
+  content:counter(ls-timeline-counter);
+  display:flex; align-items:center; justify-content:center;
+  width:2.03125cqi; height:2.03125cqi; border-radius:50%;
+  background:var(--accent); color:var(--on-accent, var(--on-dark-primary));
+  font-family:var(--font-mono); font-size:var(--fs-meta); font-weight:700; line-height:1;
+  margin-bottom:1.09375cqi; flex-shrink:0;
+}
+section.list-steps.timeline > ul > li::before {
+  content:''; display:block; width:2.03125cqi; height:2.03125cqi; border-radius:50%;
+  background:var(--accent); border:3px solid var(--bg);
+  box-shadow:0 0 0 1px var(--border); margin-bottom:1.09375cqi; flex-shrink:0;
+}
+section.list-steps.timeline > :is(ol,ul) > li:not(:last-child)::after { content:none; }
+section.list-steps.timeline > :is(ol,ul) > li > strong { display:block; margin-bottom:0.3125cqi; }
+section.list-steps.timeline > :is(ol,ul) > li > :is(ul,ol) { list-style:none; padding:0; margin:0; }
+section.list-steps.timeline > :is(ol,ul) > li > :is(ul,ol) > li { font-weight:400; }
+section.list-steps.timeline > :is(ol,ul) > li > :is(ul,ol) > li em { font-size:var(--fs-meta); color:var(--text-body); line-height:var(--lh-snug); font-style:normal; }
 
 /* === lib/components/inventory/list-tabular/list-tabular.styles.css === */
 /* list-tabular — extracted from lib/_legacy.css (batch 6).
@@ -5921,74 +5845,6 @@ section.piechart .piechart-legend li:nth-child(6n+3) .legend-swatch { background
 section.piechart .piechart-legend li:nth-child(6n+4) .legend-swatch { background: var(--cat4-fill); border: 1px solid var(--cat4-ink); }
 section.piechart .piechart-legend li:nth-child(6n+5) .legend-swatch { background: var(--cat5-fill); border: 1px solid var(--cat5-ink); }
 section.piechart .piechart-legend li:nth-child(6n)   .legend-swatch { background: var(--cat6-fill); border: 1px solid var(--cat6-ink); }
-
-/* === lib/components/inventory/principles/principles.styles.css === */
-/* principles — extracted from lib/_legacy.css (batch 3).
- * See lib/components/principles/principles.manifest.json for the component contract.
- */
-
-/* ── PRINCIPLES ────────────────────────────────────────────────────────
- * ## heading
- * 1. We default to the choice that is cheaper to reverse.
- * 2. We name the actor, never the system.
- * 3. We write down the bet on the same slide as the choice.
- *
- * Numbered list of declarative statements in display weight. Each item
- * is one paragraph (no nested body). Generous line-height; leading
- * counter rendered in accent mono.
- *
- * Counter format defaults to decimal-leading-zero (01, 02, 03). Compose
- * with .lettered or .roman to switch counter style.
- * ──────────────────────────────────────────────────────────────────────── */
-section.principles { display:flex; flex-direction:column; }
-section.principles h2 { margin-bottom:var(--sp-lg); }
-section.principles ol {
-  list-style:none;
-  counter-reset:principle-counter;
-  padding:0; margin:0;
-  display:flex; flex-direction:column;
-  gap:var(--sp-md);
-  flex:1;
-  justify-content:center;
-}
-section.principles ol > li {
-  counter-increment:principle-counter;
-  flex:1;
-  container-type:size;
-  display:grid;
-  grid-template-columns:auto 1fr;
-  column-gap:var(--sp-lg);
-  align-items:center;
-  font-family:var(--font-display, var(--font-body));
-  font-size:clamp(var(--fs-body), 11cqh, var(--fs-h2));
-  font-weight:500;
-  line-height:var(--lh-snug);
-  letter-spacing:-0.01em;
-  color:var(--text-heading);
-  padding:var(--sp-sm) 0;
-  border-bottom:1px solid var(--border);
-  overflow:hidden;
-}
-section.principles ol > li:last-child { border-bottom:none; }
-section.principles ol > li::before {
-  content:counter(principle-counter, decimal-leading-zero);
-  font-family:var(--font-mono);
-  font-size:clamp(var(--fs-emphasis), 28cqh, var(--fs-h1));
-  font-weight:700;
-  letter-spacing:0.04em;
-  color:var(--accent);
-  line-height:1;
-  align-self:center;
-}
-/* Counter format modifiers — same family as list-steps. */
-section.principles.lettered ol > li::before {
-  content:counter(principle-counter, upper-alpha);
-}
-section.principles.roman ol > li::before {
-  content:counter(principle-counter, upper-roman);
-}
-/* Plain bullets — no numeric counter. */
-section.principles.bullet ol > li::before { content:'·'; }
 
 /* === lib/components/chart/progress/progress.styles.css === */
 /* progress — extracted from lib/_legacy.css (batch 9).
@@ -8600,7 +8456,7 @@ section.stats > ol > li > ul > li {
  * `- Federal`, not `- **Federal**`). The nested ul holds the body — the
  * first item is the citation chip (only-child <code>), middle items are
  * prose obligations, and the last item is the status pill (only-child
- * <code>). Matches before-after / decision shape so slot-labelled
+ * <code>). Matches the decision / compare-prose slot-card shape so slot-labelled
  * layouts share one authoring convention.
  *
  * Default = three equal vertical rails. Modifiers reshape the same DOM:
@@ -8842,135 +8698,6 @@ section.statute-stack.lane td:last-child {
   white-space:nowrap;
 }
 
-/* === lib/components/anchor/subtopic/subtopic.styles.css === */
-/* subtopic — anchor.divider.subtopic
- *
- * Light divider — centered, no canvas reskin. Sits between a divider
- * slide and a sequence of content slides for finer orientation.
- *
- * See lib/components/subtopic/subtopic.manifest.json for the component contract.
- */
-
-section.subtopic { justify-content:center; align-items:center; }
-section.subtopic h2 { font-size:var(--fs-h2); margin-bottom:var(--sp-sm); text-align:center; }
-section.subtopic p  { font-size:var(--fs-message); max-width:46.875cqi; line-height:var(--lh-relaxed); margin:0 auto; text-align:center; }
-
-/* === lib/components/progression/timeline/timeline.styles.css === */
-/* timeline — extracted from lib/_legacy.css (batch 7).
- * See lib/components/timeline/timeline.manifest.json for the component contract.
- */
-
-/* ── TIMELINE ──
- * ol = numbered circles (sequential steps)
- * ul = plain dot circles (non-sequential)
- * Each li: a label on its own line (lifted to <strong> automatically by
- * slotLabelLift — authors need not type `**…**`), then - *description* as nested ul
- */
-section.timeline { justify-content:center; align-items:center; }
-section.timeline h2 { margin-bottom:var(--sp-xl); text-align:center; }
-section.timeline > :is(ol,ul) {
-  list-style:none;
-  display:flex; justify-content:space-between;
-  width:100%; position:relative;
-  padding:0 var(--sp-xl); box-sizing:border-box; margin:0;
-}
-section.timeline > :is(ol,ul)::before {
-  content:''; position:absolute; top:1.015625cqi;
-  left:calc(var(--sp-xl) + 7.03125cqi); right:calc(var(--sp-xl) + 7.03125cqi);
-  height:3px; background:var(--spectrum); border-radius:2px;
-}
-section.timeline > :is(ol,ul) > li {
-  display:flex; flex-direction:column; align-items:center;
-  width:14.0625cqi; text-align:center; position:relative; z-index:1;
-  font-size:var(--fs-meta); line-height:var(--lh-snug); font-weight:700; color:var(--text-heading);
-}
-section.timeline > ol { counter-reset:timeline-counter; }
-section.timeline > ol > li::before {
-  counter-increment:timeline-counter;
-  content:counter(timeline-counter);
-  display:flex; align-items:center; justify-content:center;
-  width:2.03125cqi; height:2.03125cqi; border-radius:50%;
-  background:var(--accent); color:var(--on-accent, var(--on-dark-primary));
-  font-family:var(--font-mono); font-size:var(--fs-meta); font-weight:700; line-height:1;
-  margin-bottom:1.09375cqi; flex-shrink:0;
-}
-section.timeline > ul > li::before {
-  content:''; display:block; width:2.03125cqi; height:2.03125cqi; border-radius:50%;
-  background:var(--accent); border:3px solid var(--bg);
-  box-shadow:0 0 0 1px var(--border); margin-bottom:1.09375cqi; flex-shrink:0;
-}
-section.timeline > :is(ol,ul) > li > strong { display:block; margin-bottom:0.3125cqi; }
-section.timeline > :is(ol,ul) > li > ul { list-style:none; padding:0; margin:0; }
-section.timeline > :is(ol,ul) > li > ul > li { font-weight:400; }
-section.timeline > :is(ol,ul) > li > ul > li em { font-size:var(--fs-meta); color:var(--text-body); line-height:var(--lh-snug); font-style:normal; }
-
-
-
-
-
-
-
-
-
-
-
-/* ── TIMELINE BAND CYCLE (shifted) ──
- * Mermaid's timeline renderer uses `f = r % h - 1` for its section index,
- * so the FIRST timeline section gets `section--1`, the second gets
- * `section-0`, and so on. The general band-cycle rules above pin BOTH
- * `section--1` AND `section-0` to band-1 (because that's the correct map
- * for mindmap and other diagrams where `section-0` is the first), which
- * means every timeline renders its first two sections in the same band.
- * Visible on the gallery's Phase 01 / Phase 02 (both blue) and on
- * diagram-tokens' Discover / Frame (both blue) where the deck's footer
- * literally claims "8 sections cycling --c1..8-light".
- *
- * Timeline groups wrap each section in <g class="timeline-node section-N">.
- * Re-pin the cycle one band up for `.timeline-node` only so timeline
- * sections cycle c1-light (section--1), c2-light (section-0), c3-light
- * (section-1), …, c12-light (section-10). Higher specificity than the
- * generic `.section-N` rules above wins automatically. Other diagram
- * types that use bare `.section-N` (mindmap, kanban via .cluster) keep
- * their existing mappings.
- */
-section .timeline-node.section--1 rect, section .timeline-node.section--1 path, section .timeline-node.section--1 circle { fill: var(--c1-light) !important; stroke: var(--c-stroke) !important; }
-section .timeline-node.section--1 text, section .timeline-node.section--1 tspan, section .timeline-node.section--1 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .timeline-node.section-0 rect, section .timeline-node.section-0 path, section .timeline-node.section-0 circle { fill: var(--c2-light) !important; stroke: var(--c-stroke) !important; }
-section .timeline-node.section-0 text, section .timeline-node.section-0 tspan, section .timeline-node.section-0 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .timeline-node.section-1 rect, section .timeline-node.section-1 path, section .timeline-node.section-1 circle { fill: var(--c3-light) !important; stroke: var(--c-stroke) !important; }
-section .timeline-node.section-1 text, section .timeline-node.section-1 tspan, section .timeline-node.section-1 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .timeline-node.section-2 rect, section .timeline-node.section-2 path, section .timeline-node.section-2 circle { fill: var(--c4-light) !important; stroke: var(--c-stroke) !important; }
-section .timeline-node.section-2 text, section .timeline-node.section-2 tspan, section .timeline-node.section-2 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .timeline-node.section-3 rect, section .timeline-node.section-3 path, section .timeline-node.section-3 circle { fill: var(--c5-light) !important; stroke: var(--c-stroke) !important; }
-section .timeline-node.section-3 text, section .timeline-node.section-3 tspan, section .timeline-node.section-3 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .timeline-node.section-4 rect, section .timeline-node.section-4 path, section .timeline-node.section-4 circle { fill: var(--c6-light) !important; stroke: var(--c-stroke) !important; }
-section .timeline-node.section-4 text, section .timeline-node.section-4 tspan, section .timeline-node.section-4 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .timeline-node.section-5 rect, section .timeline-node.section-5 path, section .timeline-node.section-5 circle { fill: var(--c7-light) !important; stroke: var(--c-stroke) !important; }
-section .timeline-node.section-5 text, section .timeline-node.section-5 tspan, section .timeline-node.section-5 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .timeline-node.section-6 rect, section .timeline-node.section-6 path, section .timeline-node.section-6 circle { fill: var(--c8-light) !important; stroke: var(--c-stroke) !important; }
-section .timeline-node.section-6 text, section .timeline-node.section-6 tspan, section .timeline-node.section-6 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .timeline-node.section-7 rect, section .timeline-node.section-7 path, section .timeline-node.section-7 circle { fill: var(--c9-light) !important; stroke: var(--c-stroke) !important; }
-section .timeline-node.section-7 text, section .timeline-node.section-7 tspan, section .timeline-node.section-7 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .timeline-node.section-8 rect, section .timeline-node.section-8 path, section .timeline-node.section-8 circle { fill: var(--c10-light) !important; stroke: var(--c-stroke) !important; }
-section .timeline-node.section-8 text, section .timeline-node.section-8 tspan, section .timeline-node.section-8 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .timeline-node.section-9 rect, section .timeline-node.section-9 path, section .timeline-node.section-9 circle { fill: var(--c11-light) !important; stroke: var(--c-stroke) !important; }
-section .timeline-node.section-9 text, section .timeline-node.section-9 tspan, section .timeline-node.section-9 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .timeline-node.section-10 rect, section .timeline-node.section-10 path, section .timeline-node.section-10 circle { fill: var(--c12-light) !important; stroke: var(--c-stroke) !important; }
-section .timeline-node.section-10 text, section .timeline-node.section-10 tspan, section .timeline-node.section-10 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-
-/* ── TIMELINE EVENT WRAPPER ──
- * Mermaid wraps every timeline event in <g class="eventWrapper"> and pins
- * `filter: brightness(120%)` on the class. Their intent is to lighten the
- * event tile so it reads as "inside" the period header above it, but the
- * band cycle already sits at L≈83 — pushing it +20% lightness clamps the
- * G/B channels to 255 and collapses every band into a near-cyan wash
- * (band-1 #BCD5EC → ~#E1FEFE, band-2 #C1E4D5 → ~#E7FEFE — indistinguishable
- * from band-1). Drop the filter so event tiles match their section's band
- * exactly. The size difference (event tile is narrower than the period
- * header above it) is enough to keep the visual hierarchy.
- */
-section .eventWrapper { filter: none !important; }
-
 /* === lib/components/chart/timeline-list/timeline-list.styles.css === */
 /* timeline-list — extracted from lib/_legacy.css (batch 9).
  * See lib/components/timeline-list/timeline-list.manifest.json for the component contract.
@@ -9115,74 +8842,6 @@ section.title h1 + p:has(> code:only-child) > code {
   border: none;
   padding: 0;
   border-radius: 0;
-}
-
-/* === lib/components/inventory/tldr/tldr.styles.css === */
-/* tldr — extracted from lib/_legacy.css (batch 3).
- * See lib/components/tldr/tldr.manifest.json for the component contract.
- */
-
-/* ── TLDR ──────────────────────────────────────────────────────────────
- * ## heading
- * - One-line takeaway. → slide 8
- * - Another takeaway.  → slide 12
- *
- * Executive summary slide. Each item is one short line; an optional
- * `→` reference at the end is rendered in muted mono.
- *
- * Modifier `numbered` adds a 01., 02. counter prefix.
- * ──────────────────────────────────────────────────────────────────────── */
-section.tldr { display:flex; flex-direction:column; }
-section.tldr h2 { font-size:var(--fs-h2); margin-bottom:var(--sp-md); }
-section.tldr > ul,
-section.tldr > ol {
-  list-style:none; padding:0; margin:0;
-  display:flex; flex-direction:column;
-  gap:var(--sp-sm);
-  flex:1;
-  justify-content:center;
-}
-section.tldr > ul > li,
-section.tldr > ol > li {
-  display:flex; align-items:center;
-  font-size:var(--fs-body);
-  font-weight:500;
-  line-height:var(--lh-snug);
-  color:var(--text-heading);
-  padding:var(--sp-sm) 0;
-  border-bottom:1px solid var(--border);
-}
-section.tldr > ul > li::marker,
-section.tldr > ol > li::marker { content:''; }
-section.tldr > ul > li:last-child,
-section.tldr > ol > li:last-child { border-bottom:none; }
-/* numbered modifier — adds counter prefix */
-section.tldr.numbered > ul,
-section.tldr.numbered > ol {
-  counter-reset:tldr-counter;
-}
-/* Hanging indent — NOT display:grid. A grid li blockifies inline <code> into
- * its own grid item, fragmenting any takeaway that contains an inline code
- * span across multiple rows. Positioning the counter absolutely keeps the
- * takeaway (text + inline code) as one normal inline flow. */
-section.tldr.numbered > ul > li,
-section.tldr.numbered > ol > li {
-  counter-increment:tldr-counter;
-  position:relative;
-  padding-left:6cqi;
-}
-section.tldr.numbered > ul > li::before,
-section.tldr.numbered > ol > li::before {
-  content:counter(tldr-counter, decimal-leading-zero);
-  position:absolute;
-  left:0;
-  top:0;
-  font-family:var(--font-mono);
-  font-size:var(--fs-h2);
-  font-weight:700;
-  letter-spacing:0.04em;
-  color:var(--accent);
-  line-height:1;
 }
 
 /* === lib/components/comparison/verdict-grid/verdict-grid.styles.css === */
@@ -9524,13 +9183,16 @@ section h5 + p:has(> code:only-child) > code {
 section.title   h1 + p:has(> code:only-child),
 section.divider h2 + p:has(> code:only-child),
 section.closing h2 + p:has(> code:only-child) { color: var(--on-dark-secondary); }
+/* divider.light is the bright-canvas variant (former subtopic) — the dark-canvas
+ * eyebrow colour above would render near-invisible on it, so reset to the
+ * standard muted ink and centre it. */
+section.divider.light h1 + p:has(> code:only-child),
+section.divider.light h2 + p:has(> code:only-child) { color: var(--text-secondary); text-align: center; }
 /* .dark modifier: the subtitle uses --text-secondary, a light-dark() pair, and
  * section.dark flips color-scheme:dark — so it resolves to its dark-canvas value
  * automatically. No extra rule needed. (The bookends above hardcode
  * --on-dark-secondary because they paint a dark bg WITHOUT flipping
  * color-scheme; see engineering/decisions/2026-06-05-token-structure-audit.md.) */
-/* Centered subtitle for subtopic */
-section.subtopic h2 + p:has(> code:only-child) { text-align: center; }
 
 
 /* ── EYEBROW (inline-code paragraph) ─────────────────────────────────────────
@@ -9590,6 +9252,9 @@ section.title   p:has(> code:only-child):has(+ h1) > code,
 section.title   p:has(> code:only-child):has(+ h2) > code,
 section.divider p:has(> code:only-child):has(+ h1) > code,
 section.divider p:has(> code:only-child):has(+ h2) > code { color: var(--on-dark-secondary); }
+/* divider.light bright-canvas variant — reset eyebrow ink off the dark-canvas colour. */
+section.divider.light p:has(> code:only-child):has(+ h1) > code,
+section.divider.light p:has(> code:only-child):has(+ h2) > code { color: var(--text-secondary); }
 section.closing p:has(> code:only-child):has(+ h1) > code,
 section.closing p:has(> code:only-child):has(+ h2) > code { color: var(--on-dark-ghost); }
 /* Dark modifier (any layout + dark class) */
@@ -9601,8 +9266,6 @@ section.dark p:has(> code:only-child):has(+ h5) > code,
 section.dark p:has(> code:only-child):has(+ ul) > code,
 section.dark p:has(> code:only-child):has(+ ol) > code,
 section.dark p:has(> code:only-child):has(+ pre) > code { color: var(--on-dark-secondary); }
-/* Centered eyebrow for subtopic */
-section.subtopic p:has(> code:only-child):has(+ h2) { text-align: center; }
 
 
 /* ── KEY INSIGHT ──────────────────────────────────────────────
@@ -9712,11 +9375,11 @@ section footer {
  * Deny list = layouts where a metadata pill does not earn its place,
  * OR where the row container is grid/scaffold and the pill needs a
  * per-layout placement override before it can join the allow list:
- *   bookends/openers     title, divider, subtopic, closing, split-list
+ *   bookends/openers     title, divider, closing, split-list
  *   single-message       featured, big-number, kpi, stats, quote
  *   own metadata channel glossary (range-pill), agenda (page pointer),
- *                        timeline/list-steps (counter), principles/tldr (own line),
- *                        verdict-grid/decision/before-after/matrix-2x2 (chrome),
+ *                        list-steps (counter), list (own line),
+ *                        verdict-grid/decision/matrix-2x2 (chrome),
  *                        compare-prose (connector), compare-table/roadmap (table)
  *   non-list             content, code, compare-code, image, diagram
  *   needs placement      list, list-criteria, list-tabular
@@ -9724,12 +9387,12 @@ section footer {
  *                        right-anchor; opt in by adding a per-layout rule
  *                        modeled on the actors override)
  *
- * Allow list (renders correctly today): cards-grid, cards-side, cards-stack,
- * actors, checklist. cards-grid/cards-side/cards-stack carry their own
+ * Allow list (renders correctly today): cards-grid, cards-stack,
+ * actors, checklist. cards-grid/cards-stack carry their own
  * full-chrome pill rule (the emulator `.card` path is not inside a ul/ol,
  * so the universal selector can't reach it); the rest rely on this rule.
  * Plus any future layout whose `> li` is `display:flex`. */
-section:where(:not(.title):not(.divider):not(.subtopic):not(.closing):not(.split-list):not(.featured):not(.big-number):not(.kpi):not(.stats):not(.quote):not(.glossary):not(.compare-table):not(.roadmap):not(.agenda):not(.matrix-2x2):not(.decision):not(.before-after):not(.verdict-grid):not(.compare-prose):not(.code):not(.compare-code):not(.image):not(.diagram):not(.content):not(.timeline):not(.list-steps):not(.tldr):not(.principles):not(.list):not(.list-criteria):not(.list-tabular):not(.math))
+section:where(:not(.title):not(.divider):not(.closing):not(.split-list):not(.featured):not(.big-number):not(.kpi):not(.stats):not(.quote):not(.glossary):not(.compare-table):not(.roadmap):not(.agenda):not(.matrix-2x2):not(.decision):not(.verdict-grid):not(.compare-prose):not(.code):not(.compare-code):not(.image):not(.diagram):not(.content):not(.timeline):not(.list-steps):not(.principles):not(.list):not(.list-criteria):not(.list-tabular):not(.math))
   > :where(ul, ol) > li > code:where(:last-child, :has(+ :is(ul, ol))) {
   margin-left:auto;
   align-self:center;
@@ -9811,10 +9474,8 @@ section.list-steps:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
 section.list-tabular:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
 section.timeline:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
 section.principles:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
-section.tldr:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
 section.matrix-2x2:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
 section.decision:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
-section.before-after:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
 section.actors:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
 section.kpi:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
 section.agenda:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p {
@@ -9833,10 +9494,8 @@ section.list-steps:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::
 section.list-tabular:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
 section.timeline:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
 section.principles:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
-section.tldr:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
 section.matrix-2x2:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
 section.decision:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
-section.before-after:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
 section.actors:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
 section.kpi:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
 section.agenda:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before {
@@ -9871,10 +9530,8 @@ section.list-steps .below-note:has(> p > em:only-child)::before,
 section.list-tabular .below-note:has(> p > em:only-child)::before,
 section.timeline .below-note:has(> p > em:only-child)::before,
 section.principles .below-note:has(> p > em:only-child)::before,
-section.tldr .below-note:has(> p > em:only-child)::before,
 section.matrix-2x2 .below-note:has(> p > em:only-child)::before,
 section.decision .below-note:has(> p > em:only-child)::before,
-section.before-after .below-note:has(> p > em:only-child)::before,
 section.actors .below-note:has(> p > em:only-child)::before,
 section.kpi .below-note:has(> p > em:only-child)::before,
 section.agenda .below-note:has(> p > em:only-child)::before,
@@ -9896,10 +9553,8 @@ section.list-steps .below-note > p:has(> em:only-child),
 section.list-tabular .below-note > p:has(> em:only-child),
 section.timeline .below-note > p:has(> em:only-child),
 section.principles .below-note > p:has(> em:only-child),
-section.tldr .below-note > p:has(> em:only-child),
 section.matrix-2x2 .below-note > p:has(> em:only-child),
 section.decision .below-note > p:has(> em:only-child),
-section.before-after .below-note > p:has(> em:only-child),
 section.actors .below-note > p:has(> em:only-child),
 section.kpi .below-note > p:has(> em:only-child),
 section.agenda .below-note > p:has(> em:only-child),
@@ -9915,10 +9570,8 @@ section.list-steps > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.list-tabular > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.timeline > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.principles > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
-section.tldr > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.matrix-2x2 > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.decision > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
-section.before-after > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.actors > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.kpi > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.agenda > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
@@ -9939,10 +9592,8 @@ section.list-steps > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.list-tabular > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.timeline > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.principles > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
-section.tldr > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.matrix-2x2 > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.decision > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
-section.before-after > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.actors > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.kpi > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.agenda > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
@@ -9963,10 +9614,8 @@ section.list-steps .below-note > p:has(> em:only-child)::before,
 section.list-tabular .below-note > p:has(> em:only-child)::before,
 section.timeline .below-note > p:has(> em:only-child)::before,
 section.principles .below-note > p:has(> em:only-child)::before,
-section.tldr .below-note > p:has(> em:only-child)::before,
 section.matrix-2x2 .below-note > p:has(> em:only-child)::before,
 section.decision .below-note > p:has(> em:only-child)::before,
-section.before-after .below-note > p:has(> em:only-child)::before,
 section.actors .below-note > p:has(> em:only-child)::before,
 section.kpi .below-note > p:has(> em:only-child)::before,
 section.agenda .below-note > p:has(> em:only-child)::before,
@@ -9982,10 +9631,8 @@ section.list-steps > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::be
 section.list-tabular > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
 section.timeline > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
 section.principles > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
-section.tldr > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
 section.matrix-2x2 > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
 section.decision > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
-section.before-after > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
 section.actors > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
 section.kpi > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
 section.agenda > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
@@ -10004,15 +9651,13 @@ section.compare-table > :is(ul, ol, blockquote, table) + p:has(> em:only-child):
 /* ════════════════════════════════════════════════════════════════════════
  * NEW LAYOUTS (Wave 7) — proposals.md §3.1–3.6
  * ────────────────────────────────────────────────────────────────────────
- * Four authoring components introduced to replace the most common
+ * Authoring components introduced to replace the most common
  * cards-grid / compare-prose hand-rolls in real decks.
  *
  *   matrix-2x2    — quadrant grid (SWOT, Eisenhower, risk/impact, …)
  *   decision      — verdict slide; one heading + 2-3 short justifications
- *   before-after  — explicit state-change with arrow connector
- *   principles    — declared statements; sparser than list, larger type
  *
- * All four are CSS-only: they style the bare <ul>/<ol> Marp emits. No
+ * Both are CSS-only: they style the bare <ul>/<ol> Marp emits. No
  * lattice.js post-processing is required because the markdown contract
  * is simple enough that direct selectors do the job.
  * ════════════════════════════════════════════════════════════════════════ */
@@ -10232,9 +9877,6 @@ section.obligation-matrix.asymmetric td:first-child {
  *   split-list    — accent panel moves from left to right
  *   compare-prose  — left and right cards swap (also reverses chosen/decision)
  *
- * `cards-side` is symmetric (2-col grid with no left/right asymmetry) and
- * is therefore not a mirror target despite being listed in proposals §2.1.
- *
  * Migration: `image.left` is preserved as an alias; new authoring should
  * prefer `image.mirror` for consistency with the cross-cutting vocabulary.
  * ──────────────────────────────────────────────────────────────────────── */
@@ -10275,11 +9917,11 @@ section.compare-prose.mirror .compare-prose-inner {
 
 /* ────────────────────────────────────────────────────────────────────────
  * Bookend modifier — numbered
- * Reference: proposals.md §2.2 divider/subtopic/closing; appendix matrix
+ * Reference: proposals.md §2.2 divider/closing; appendix matrix
  *
  * Stamps an auto-incrementing index in the top-right corner of any
- * divider/subtopic/closing slide that opts in via .numbered. Each layout
- * carries its own counter so authors can mix the three without collisions
+ * divider (incl. the `light` variant) or closing slide that opts in via
+ * .numbered. Each carries its own counter so authors can mix them without collisions
  * (e.g. "01 / divider" and "01 / closing" both read as 01 within their
  * own series).
  *
@@ -10291,15 +9933,16 @@ section.compare-prose.mirror .compare-prose-inner {
  * ──────────────────────────────────────────────────────────────────────── */
 
 body {
-  counter-reset: lat-divider lat-subtopic lat-closing;
+  counter-reset: lat-divider lat-divider-light lat-closing;
 }
 
-section.divider.numbered  { counter-increment: lat-divider; }
-section.subtopic.numbered { counter-increment: lat-subtopic; }
-section.closing.numbered  { counter-increment: lat-closing; }
+section.divider.numbered        { counter-increment: lat-divider; }
+/* divider.light (former subtopic) keeps its own counter, independent of the
+ * dark dividers — higher specificity wins over the rule above. */
+section.divider.light.numbered  { counter-increment: lat-divider-light; }
+section.closing.numbered        { counter-increment: lat-closing; }
 
 section.divider.numbered::after,
-section.subtopic.numbered::after,
 section.closing.numbered::after {
   position: absolute;
   top: var(--sp-xl);
@@ -10315,17 +9958,22 @@ section.closing.numbered::after {
   z-index: 1;
 }
 
-/* On dark canvases the accent is muted; lift the numeral with the
- * dark watermark colour so it reads against the dark bg. */
+/* On dark canvases the accent is muted; lift the numeral with the dark
+ * watermark colour so it reads against the dark bg. divider.light is a bright
+ * canvas, so it keeps the accent colour set above (overrides the dark rule). */
 section.divider.numbered::after,
 section.closing.numbered::after {
   color: var(--on-dark-watermark, var(--accent));
   opacity: 0.85;
 }
+section.divider.light.numbered::after {
+  color: var(--accent);
+  opacity: 0.55;
+}
 
-section.divider.numbered::after  { content: counter(lat-divider,  decimal-leading-zero); }
-section.subtopic.numbered::after { content: counter(lat-subtopic, decimal-leading-zero); }
-section.closing.numbered::after  { content: counter(lat-closing,  decimal-leading-zero); }
+section.divider.numbered::after        { content: counter(lat-divider,  decimal-leading-zero); }
+section.divider.light.numbered::after  { content: counter(lat-divider-light, decimal-leading-zero); }
+section.closing.numbered::after        { content: counter(lat-closing,  decimal-leading-zero); }
 
 /* ════════════════════════════════════════════════════════════════════════
  * OVERFLOW WARNING — visual signal when content exceeds the 1280×720 frame
@@ -12702,6 +12350,68 @@ section svg.mindmapDiagram .section-edge-4 { stroke: color-mix(in srgb, var(--c5
 section svg.mindmapDiagram .section-edge-5 { stroke: color-mix(in srgb, var(--c6-dark) 78%, var(--c-ink-light)) !important; }
 section svg.mindmapDiagram .section-edge-6 { stroke: color-mix(in srgb, var(--c1-dark) 78%, var(--c-ink-light)) !important; }
 section svg.mindmapDiagram .section-edge-7 { stroke: color-mix(in srgb, var(--c2-dark) 78%, var(--c-ink-light)) !important; }
+
+
+/* ── TIMELINE diagram overrides (Mermaid) — relocated from the retired
+ * timeline component on 2026-06-07 when timeline merged into list-steps.
+ * These target Mermaid-emitted SVG (.timeline-node, .eventWrapper), not the
+ * list-steps.timeline layout variant. */
+/* ── TIMELINE BAND CYCLE (shifted) ──
+ * Mermaid's timeline renderer uses `f = r % h - 1` for its section index,
+ * so the FIRST timeline section gets `section--1`, the second gets
+ * `section-0`, and so on. The general band-cycle rules above pin BOTH
+ * `section--1` AND `section-0` to band-1 (because that's the correct map
+ * for mindmap and other diagrams where `section-0` is the first), which
+ * means every timeline renders its first two sections in the same band.
+ * Visible on the gallery's Phase 01 / Phase 02 (both blue) and on
+ * diagram-tokens' Discover / Frame (both blue) where the deck's footer
+ * literally claims "8 sections cycling --c1..8-light".
+ *
+ * Timeline groups wrap each section in <g class="timeline-node section-N">.
+ * Re-pin the cycle one band up for `.timeline-node` only so timeline
+ * sections cycle c1-light (section--1), c2-light (section-0), c3-light
+ * (section-1), …, c12-light (section-10). Higher specificity than the
+ * generic `.section-N` rules above wins automatically. Other diagram
+ * types that use bare `.section-N` (mindmap, kanban via .cluster) keep
+ * their existing mappings.
+ */
+section .timeline-node.section--1 rect, section .timeline-node.section--1 path, section .timeline-node.section--1 circle { fill: var(--c1-light) !important; stroke: var(--c-stroke) !important; }
+section .timeline-node.section--1 text, section .timeline-node.section--1 tspan, section .timeline-node.section--1 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
+section .timeline-node.section-0 rect, section .timeline-node.section-0 path, section .timeline-node.section-0 circle { fill: var(--c2-light) !important; stroke: var(--c-stroke) !important; }
+section .timeline-node.section-0 text, section .timeline-node.section-0 tspan, section .timeline-node.section-0 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
+section .timeline-node.section-1 rect, section .timeline-node.section-1 path, section .timeline-node.section-1 circle { fill: var(--c3-light) !important; stroke: var(--c-stroke) !important; }
+section .timeline-node.section-1 text, section .timeline-node.section-1 tspan, section .timeline-node.section-1 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
+section .timeline-node.section-2 rect, section .timeline-node.section-2 path, section .timeline-node.section-2 circle { fill: var(--c4-light) !important; stroke: var(--c-stroke) !important; }
+section .timeline-node.section-2 text, section .timeline-node.section-2 tspan, section .timeline-node.section-2 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
+section .timeline-node.section-3 rect, section .timeline-node.section-3 path, section .timeline-node.section-3 circle { fill: var(--c5-light) !important; stroke: var(--c-stroke) !important; }
+section .timeline-node.section-3 text, section .timeline-node.section-3 tspan, section .timeline-node.section-3 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
+section .timeline-node.section-4 rect, section .timeline-node.section-4 path, section .timeline-node.section-4 circle { fill: var(--c6-light) !important; stroke: var(--c-stroke) !important; }
+section .timeline-node.section-4 text, section .timeline-node.section-4 tspan, section .timeline-node.section-4 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
+section .timeline-node.section-5 rect, section .timeline-node.section-5 path, section .timeline-node.section-5 circle { fill: var(--c7-light) !important; stroke: var(--c-stroke) !important; }
+section .timeline-node.section-5 text, section .timeline-node.section-5 tspan, section .timeline-node.section-5 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
+section .timeline-node.section-6 rect, section .timeline-node.section-6 path, section .timeline-node.section-6 circle { fill: var(--c8-light) !important; stroke: var(--c-stroke) !important; }
+section .timeline-node.section-6 text, section .timeline-node.section-6 tspan, section .timeline-node.section-6 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
+section .timeline-node.section-7 rect, section .timeline-node.section-7 path, section .timeline-node.section-7 circle { fill: var(--c9-light) !important; stroke: var(--c-stroke) !important; }
+section .timeline-node.section-7 text, section .timeline-node.section-7 tspan, section .timeline-node.section-7 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
+section .timeline-node.section-8 rect, section .timeline-node.section-8 path, section .timeline-node.section-8 circle { fill: var(--c10-light) !important; stroke: var(--c-stroke) !important; }
+section .timeline-node.section-8 text, section .timeline-node.section-8 tspan, section .timeline-node.section-8 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
+section .timeline-node.section-9 rect, section .timeline-node.section-9 path, section .timeline-node.section-9 circle { fill: var(--c11-light) !important; stroke: var(--c-stroke) !important; }
+section .timeline-node.section-9 text, section .timeline-node.section-9 tspan, section .timeline-node.section-9 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
+section .timeline-node.section-10 rect, section .timeline-node.section-10 path, section .timeline-node.section-10 circle { fill: var(--c12-light) !important; stroke: var(--c-stroke) !important; }
+section .timeline-node.section-10 text, section .timeline-node.section-10 tspan, section .timeline-node.section-10 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
+
+/* ── TIMELINE EVENT WRAPPER ──
+ * Mermaid wraps every timeline event in <g class="eventWrapper"> and pins
+ * `filter: brightness(120%)` on the class. Their intent is to lighten the
+ * event tile so it reads as "inside" the period header above it, but the
+ * band cycle already sits at L≈83 — pushing it +20% lightness clamps the
+ * G/B channels to 255 and collapses every band into a near-cyan wash
+ * (band-1 #BCD5EC → ~#E1FEFE, band-2 #C1E4D5 → ~#E7FEFE — indistinguishable
+ * from band-1). Drop the filter so event tiles match their section's band
+ * exactly. The size difference (event tile is narrower than the period
+ * header above it) is enough to keep the visual hierarchy.
+ */
+section .eventWrapper { filter: none !important; }
 
 /* === default palette: themes/cuoio.css (engine import resolved) === */
 /* Zero-specificity light default — see the long comment in the next

@@ -27,6 +27,45 @@ in patch versions.
 
 ### Removed
 
+- **Breaking: the `before-after` layout is removed.** It was `compare-prose`
+  with an arrow connector and an accent ring on the second ("after") card — the
+  same two-card data shape — so it is now the `transition` variant of
+  `compare-prose`: migrate `<!-- _class: before-after -->` to
+  `<!-- _class: compare-prose transition -->` (write Before / After as the two
+  labels; `banner-tag` still composes). The shared corner-tag / banner-tag CSS
+  that had been hosted in `before-after.styles.css` moved to
+  `compare-prose.styles.css`; `decision` (which also uses it) is unaffected.
+  Part of the layout-redundancy consolidation.
+- **Breaking: the `timeline` layout is removed.** It was `list-steps` with
+  lighter, shorter rows — the same ordered-steps data shape, dots-on-a-spine
+  instead of step cards — so it is now the `timeline` variant of `list-steps`:
+  migrate `<!-- _class: timeline -->` to `<!-- _class: list-steps timeline -->`
+  (`ol` → numbered discs, `ul` → plain dots, same as before). The Mermaid
+  `timeline` *diagram* type and the `regulatory-update timeline` variant are
+  unaffected. Part of the layout-redundancy consolidation (see
+  `engineering/decisions/2026-06-07-layout-redundancy-analysis.md`).
+- **Breaking: the `cards-side` layout is removed.** It was `compare-prose`
+  minus the comparison chrome — the same two-co-equal-card data shape (title +
+  nested body) — so it is dropped with no alias. Migrate
+  `<!-- _class: cards-side -->` to `<!-- _class: compare-prose -->` (identical
+  authoring shape: a top-level bullet is the card title, a nested bullet carries
+  the body). Part of the layout-redundancy consolidation (see
+  `engineering/decisions/2026-06-07-layout-redundancy-analysis.md`).
+- **Breaking: the `tldr` and `principles` layouts are removed.** Both were flat
+  one-line-item stacks that differed from `list` only in finish, so they are now
+  `list` variants: migrate `<!-- _class: tldr -->` to `<!-- _class: list takeaway -->`
+  (and `tldr numbered` to `list takeaway numbered`), and `<!-- _class: principles -->`
+  to `<!-- _class: list principles -->` (with `lettered` / `roman` / `bullet` still
+  composing: `list principles lettered`). The authoring shape is identical (a flat
+  `ul`/`ol` of single-line items). Part of the layout-redundancy consolidation
+  (see `engineering/decisions/2026-06-07-layout-redundancy-analysis.md`).
+- **Breaking: the `subtopic` layout is removed.** Its bright-canvas, centered
+  sub-section break is now the `light` variant of `divider` — migrate
+  `<!-- _class: subtopic -->` to `<!-- _class: divider light -->` (and
+  `subtopic numbered` to `divider light numbered`). The slots are identical
+  (optional inline-code eyebrow + `h2` heading); only the dark-vs-light canvas
+  differed, which is what the variant now carries. Part of the layout-redundancy
+  consolidation (see `engineering/decisions/2026-06-07-layout-redundancy-analysis.md`).
 - **Breaking: the `cards-wide` layout is removed.** `cards-stack` now covers
   its territory — three or four full-width rows with substantial per-card
   body — so the two no longer overlap. Migrate any `<!-- _class: cards-wide -->`
@@ -36,6 +75,14 @@ in patch versions.
 
 ### Changed
 
+- **The `list` component is now an equal-fill ledger.** All three registers
+  (default pills, `takeaway`, `principles`) now fill the working area — each row
+  takes an equal share of the slide height with its content vertically centred —
+  so a slide reads edge-to-edge whether it carries three items or the layout's
+  max, instead of a small block floating in the centre. Type steps up to the
+  message scale (21pt; `principles` to the 30pt display register) and numbered
+  counters share a centreline with their text. Existing `list` decks re-flow
+  larger and fuller; no source changes needed.
 - **Breaking: the `closing` and `divider` heading slot is now `h2`, not
   `h1`.** A deck has exactly one document `h1` — the `title` slide — so a
   `closing` or `divider` slide emitting a second `#` heading made every deck

@@ -70,4 +70,3 @@ A decision framework for product leaders navigating market uncertainty.
 
 - `divider` — mid-deck section breaks — same dark-bookend chrome
 - `closing` — the final slide — closes the bookend pair
-- `subtopic` — lighter mid-deck orientation slide on the bright canvas

@@ -156,5 +156,5 @@ Clause-by-clause comparison — verbatim language with inline <ins>/<del> tracki
 
 - `compare-code` — the diff is source code, not natural language
 - `compare-prose` — two narrative alternatives, not verbatim amendments
-- `before-after` — the change is structural state, not text
+- `compare-prose` — the change is structural state, not text
 - `obligation-matrix` — comparing many regimes against shared obligations

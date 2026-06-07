@@ -19,7 +19,7 @@
       "description": "Nested bullets: outer li is the term, inner li is its one-line definition. A runtime transform converts the list into a two-column table and derives the alphabetic range pill from the first and last terms, so terms should be authored in alphabetical order; without the Lattice runtime the raw nested list renders unstyled."
     }
   },
-  "skeleton": "<!-- _class: glossary -->\n\n## Glossary\n\n- Adjacency\n  - The relationship between two slides that share an audience or context.\n- Anchor\n  - A title, divider, subtopic, or closing slide that orients the audience.\n- Cadence\n  - The deck's pacing — how much new information per slide.\n",
+  "skeleton": "<!-- _class: glossary -->\n\n## Glossary\n\n- Adjacency\n  - The relationship between two slides that share an audience or context.\n- Anchor\n  - A title, divider, or closing slide that orients the audience.\n- Cadence\n  - The deck's pacing — how much new information per slide.\n",
   "anatomyBlock": "glossary",
   "sample": "<!-- _class: glossary -->\n\n## Glossary\n\n- Consent\n  - A freely given, specific, informed agreement to processing — pre-ticked boxes don't count.\n- Controller\n  - The party that decides why and how personal data is processed, and carries the legal accountability for it.\n- DSAR\n  - Data Subject Access Request — a person's demand to see, correct, or delete the data held on them, on a 45-day clock under CCPA.\n- PII\n  - Personal information that identifies a person, now read broadly enough to cover device IDs, cookies, and IP addresses.\n- Processor\n  - A party that processes data on the controller's instructions — a vendor, not the decision-maker.\n",
   "whenToUse": [
@@ -33,13 +33,13 @@
     },
     {
       "title": "Short definitions",
-      "body": "Each definition is one sentence — a working gloss, not an essay. Long definitions belong on their own subtopic slide where the term is the heading."
+      "body": "Each definition is one sentence — a working gloss, not an essay. Long definitions belong on their own divider (light variant) slide where the term is the heading."
     }
   ],
   "antiPatterns": [
     {
       "title": "Multi-sentence definitions",
-      "body": "Each entry is one short line. If a definition needs context or examples, the term deserves its own slide — use subtopic with the term as the heading."
+      "body": "Each entry is one short line. If a definition needs context or examples, the term deserves its own slide — use a divider (light variant) with the term as the heading."
     },
     {
       "title": "Mixed term lengths",
@@ -55,17 +55,11 @@
       "name": "list-tabular",
       "when": "rows are key/value reference, not term/definition"
     },
-    {
-      "name": "subtopic",
-      "when": "one term needs a full slide of explanation"
-    },
+    { "name": "divider", "when": "lighter mid-section orientation — the bright-canvas `light` variant" },
     {
       "name": "actors",
       "when": "the left column is a named person, not a term"
     },
-    {
-      "name": "principles",
-      "when": "the entries are stated rules, not defined terms"
-    }
+    { "name": "list", "when": "declared statements — the `principles` variant" }
   ]
 }

@@ -79,8 +79,8 @@
       "when": "items stack vertically as full-width rows"
     },
     {
-      "name": "cards-side",
-      "when": "two-card horizontal comparison"
+      "name": "compare-prose",
+      "when": "two-option comparison, side by side"
     },
     {
       "name": "verdict-grid",

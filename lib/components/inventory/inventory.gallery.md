@@ -2,7 +2,7 @@
 
 # inventory
 
-`11 components`
+`8 components`
 
 Inventory — parallel sets of related items.
 
@@ -50,17 +50,6 @@ Inventory — parallel sets of related items.
   - Every decision recorded with the signals that informed it, the options considered, and the criteria applied. Feeds the calibration loop.
 - Calibration Loop.
   - Monthly retrospective that compares predicted outcomes to actual outcomes and adjusts scoring weights accordingly.
-
----
-
-<!-- _class: cards-side -->
-
-## Two ways into the European market.
-
-- Direct sales motion.
-  - Stand up a Dublin team and sell into enterprise accounts ourselves. Higher margin and full control of the relationship, against a 9-to-12-month ramp before the first rep carries quota.
-- Channel partnership.
-  - Resell through an established regional integrator. Revenue inside two quarters and local compliance handled for us, at the cost of a 30% margin share and a thinner line to the customer.
 
 ---
 
@@ -139,27 +128,3 @@ Inventory — parallel sets of related items.
 5. Change
    - Comms, exec sponsorship, and the people who preferred the old way.
    - _One comms partner · ships Q4_
-
----
-
-<!-- _class: principles -->
-
-## How we make calls when the spec is silent.
-
-1. Default to the choice that is cheaper to reverse.
-2. Name the actor, never the system.
-3. Write the bet on the same slide as the choice.
-4. Disagree in the room, then commit outside it.
-5. Optimise for the reader who wasn't there.
-
----
-
-<!-- _class: tldr -->
-
-## What this review showed, in five lines.
-
-- Q2 revenue missed plan by 9%, and three structural factors explain almost all of it.
-- The shortfall is in enterprise renewals, not new logos.
-- Every one of the three causes is fixable before the Q4 close.
-- The Q3 plan moves two engineers and one rep onto the gaps.
-- We are not asking for more headcount — only to move what we have.

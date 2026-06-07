@@ -91,8 +91,8 @@ Three converging forces — commoditized infrastructure, compressed release cycl
 
 ---
 
-<!-- _class: subtopic -->
-<!-- _footer: "Centered orientation · subtopic" -->
+<!-- _class: divider light -->
+<!-- _footer: "Centered orientation · divider light" -->
 
 `Signal Definition · Workshop 04`
 
@@ -252,7 +252,7 @@ The shift from equal weights to calibrated weights takes two retrospective cycle
 
 ---
 
-<!-- _class: timeline -->
+<!-- _class: list-steps timeline -->
 <!-- _footer: "Horizontal timeline · timeline" -->
 
 ## How a decision moves through the framework
@@ -445,7 +445,7 @@ The left card is struck through. The DECISION connector is bold. The conclusion 
 
 ---
 
-<!-- _class: principles -->
+<!-- _class: list principles -->
 <!-- _footer: "Declarative principles · principles" -->
 
 ## How we make calls when the spec is silent
@@ -553,8 +553,8 @@ Phase 3 is where org-wide enablement lives. Phase 3 has been in the roadmap sinc
 
 ---
 
-<!-- _class: before-after -->
-<!-- _footer: "State change over time · before-after" -->
+<!-- _class: compare-prose transition -->
+<!-- _footer: "State change over time · compare-prose transition" -->
 
 ## Decisions used to require a quarterly re-litigation
 
@@ -569,10 +569,10 @@ The architecture change is the calibration loop. The culture change is still in 
 
 ---
 
-<!-- _class: before-after banner-tag -->
-<!-- _footer: "Same comparison, banner-tag chrome · before-after banner-tag" -->
+<!-- _class: compare-prose transition banner-tag -->
+<!-- _footer: "Same comparison, banner-tag chrome · compare-prose transition banner-tag" -->
 
-## The same before-after for the board deck
+## The same transition for the board deck
 
 `Before and after · banner-tag modifier`
 
@@ -739,8 +739,8 @@ The pilot team measured what the pilot team built.
 
 ---
 
-<!-- _class: tldr numbered -->
-<!-- _footer: "Section recap before the data · tldr numbered" -->
+<!-- _class: list takeaway numbered -->
+<!-- _footer: "Section recap before the data · list takeaway numbered" -->
 
 `Recap · Sections 01 through 03`
 
@@ -912,14 +912,14 @@ Cross-functional sign-off · 2026-04-29 · "cross-functional" means two teams in
 
 ---
 
-<!-- _class: subtopic numbered -->
-<!-- _footer: "Section opener, independent counter · subtopic numbered" -->
+<!-- _class: divider light numbered -->
+<!-- _footer: "Section opener, independent counter · divider light numbered" -->
 
 `Section 05 · The Pattern Library`
 
 ## The story closed on slide 57. These slides demonstrate authoring patterns
 
-The narrative arc ended at the working-session ask. Section 05 is the reference appendix — layout variants and modifiers used throughout the deck, demonstrated for authors who want to replicate them. The subtopic counter is independent of the divider counter, which is why this slide stamps 01 rather than 05.
+The narrative arc ended at the working-session ask. Section 05 is the reference appendix — layout variants and modifiers used throughout the deck, demonstrated for authors who want to replicate them. The divider light counter is independent of the dark-divider counter, which is why this slide stamps 01 rather than 05.
 
 ---
 

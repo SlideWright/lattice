@@ -2,21 +2,10 @@
 
 # comparison
 
-`8 components`
+`7 components`
 
 Comparison — how two or more options differ.
 
-
----
-
-<!-- _class: before-after -->
-
-## What writing decisions down actually changed.
-
-- Before.
-  - Decisions lived in the room they were made in. Six months on, nobody could say why we killed the project — only that someone senior had felt strongly. Every quarter relitigated the same three debates from memory.
-- After.
-  - Every decision is logged with its signals, its options, and the bet it made. We still relitigate, but now there is a record showing we already decided this in March. We ignore it, but faster.
 
 ---
 

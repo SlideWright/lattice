@@ -60,7 +60,7 @@
     }
   ],
   "related": [
-    { "name": "before-after", "when": "the change is state, not code" },
+    { "name": "compare-prose", "when": "the change is state, not code" },
     { "name": "compare-prose", "when": "the comparison is prose-versus-prose" },
     { "name": "redline", "when": "the change is in verbatim text or legal language" },
     { "name": "compare-table", "when": "three or more variants on shared dimensions" }

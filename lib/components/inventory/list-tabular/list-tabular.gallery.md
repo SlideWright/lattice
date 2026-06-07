@@ -249,5 +249,4 @@ Hairline-ruled ledger of items — name on the left, body on the right.
 - `glossary` — term/definition pairs with auto-derived range pill
 - `cards-stack` — two or three richer items, not a ledger
 - `actors` — the left column is a named person, not a key
-- `principles` — rows are stated rules, not reference entries
 - `list` — rows are bullets without a label-plus-description shape

@@ -149,7 +149,7 @@
       "accent"
     ]
   },
-  "count": 58,
+  "count": 52,
   "components": [
     {
       "name": "actors",
@@ -249,8 +249,8 @@
           "when": "each item needs two sentences of body text"
         },
         {
-          "name": "principles",
-          "when": "stating shared rules rather than per-actor responsibilities"
+          "name": "list",
+          "when": "declared statements — the `principles` variant"
         },
         {
           "name": "glossary",
@@ -350,7 +350,7 @@
       "antiPatterns": [
         {
           "title": "Sub-bullets per section",
-          "body": "The agenda is a wayfinder, not a treatment. If a section needs decomposition, that belongs on a subtopic divider when the section opens — not here."
+          "body": "The agenda is a wayfinder, not a treatment. If a section needs decomposition, that belongs on a section divider when the section opens — not here."
         },
         {
           "title": "Unnumbered list",
@@ -367,16 +367,12 @@
       ],
       "related": [
         {
-          "name": "subtopic",
-          "when": "opening a single section mid-deck"
-        },
-        {
           "name": "divider",
           "when": "marking a section boundary without restating the menu"
         },
         {
-          "name": "tldr",
-          "when": "closing the deck with the takeaways the agenda promised"
+          "name": "list",
+          "when": "single-line takeaways — the `takeaway` variant"
         },
         {
           "name": "title",
@@ -492,126 +488,11 @@
           "when": "flat enumeration of requirements without tier hierarchy"
         },
         {
-          "name": "timeline",
-          "when": "the sequence is chronological events, not legal tiers"
-        },
-        {
           "name": "list-steps",
           "when": "the rows are procedural steps rather than authority tiers"
         }
       ],
       "galleryHref": "../../lib/components/legal/authority-chain/authority-chain.gallery.light.pdf"
-    },
-    {
-      "name": "before-after",
-      "bucket": "comparison",
-      "function": "comparison",
-      "form": "split",
-      "substance": "structure",
-      "tags": [
-        "transformation",
-        "contrast",
-        "retrospective"
-      ],
-      "description": "Explicit state-change comparison — what was, what is.",
-      "purpose": "Use to show the transformation produced by a change. Left = the prior state; right = the new state. Reads as a story, not a debate.",
-      "variants": [
-        "banner-tag"
-      ],
-      "effectiveVariants": [
-        "accent",
-        "archived",
-        "banner-tag",
-        "compact",
-        "confidential",
-        "dark",
-        "draft",
-        "loose",
-        "mark-orbit",
-        "mark-threads",
-        "no-footer",
-        "no-header",
-        "no-paginate",
-        "no-period",
-        "pinned",
-        "redacted",
-        "revised",
-        "scale-2xl",
-        "scale-l",
-        "scale-xl",
-        "silent",
-        "tbd",
-        "tint-corner at-tl",
-        "tint-edge at-right",
-        "tint-vignette",
-        "tone-fail",
-        "tone-pass",
-        "tone-skip",
-        "tone-warn",
-        "treatment-none",
-        "wip",
-        "with-period"
-      ],
-      "slots": {
-        "title": {
-          "selector": "h2",
-          "required": true,
-          "description": "Slide heading naming the change."
-        },
-        "states": {
-          "selector": "ul > li",
-          "required": true,
-          "description": "Exactly two list items. Authoring contract: a top-level bullet is the state label (Before / After); an indented bullet underneath carries the 1-2 sentence description."
-        }
-      },
-      "skeleton": "<!-- _class: before-after -->\n\n## What the change did.\n\n- Before\n  - How the system or process worked before the change, in one or two sentences.\n- After\n  - How the system or process works now, in one or two sentences.\n",
-      "whenToUse": [
-        {
-          "title": "Story of a change",
-          "body": "Two states, one transformation — the audience reads left-to-right as a narrative, not a debate. Use after a decision has been made and shipped."
-        },
-        {
-          "title": "Concrete prior and new state",
-          "body": "Both sides are factual descriptions of the system. The arrow between them is the change itself; the cards substantiate it."
-        },
-        {
-          "title": "Equal-density prose",
-          "body": "Each card carries roughly the same length of body text. Lopsided density makes the After look heavier than the Before and the comparison breaks."
-        }
-      ],
-      "antiPatterns": [
-        {
-          "title": "Two competing options",
-          "body": "Use `compare-prose` or `split-compare` when both sides are alternatives under consideration. before-after is for a change that already happened."
-        },
-        {
-          "title": "More than two states",
-          "body": "If there is a middle state or a sequence of changes, use `list-steps` to show the progression. before-after is binary by construction."
-        },
-        {
-          "title": "Editorial labels on the cards",
-          "body": "The card label is always Before or After. Renaming them to Old way / New way defeats the universal grammar and breaks reader expectations."
-        }
-      ],
-      "related": [
-        {
-          "name": "compare-prose",
-          "when": "two alternatives being weighed, not a transformation"
-        },
-        {
-          "name": "split-compare",
-          "when": "binary decision with a verdict bar"
-        },
-        {
-          "name": "redline",
-          "when": "the change is in verbatim text, not structural state"
-        },
-        {
-          "name": "list-steps",
-          "when": "the change has more than two phases"
-        }
-      ],
-      "galleryHref": "../../lib/components/comparison/before-after/before-after.gallery.light.pdf"
     },
     {
       "name": "big-number",
@@ -846,8 +727,8 @@
           "when": "items stack vertically as full-width rows"
         },
         {
-          "name": "cards-side",
-          "when": "two-card horizontal comparison"
+          "name": "compare-prose",
+          "when": "two-option comparison, side by side"
         },
         {
           "name": "verdict-grid",
@@ -855,117 +736,6 @@
         }
       ],
       "galleryHref": "../../lib/components/inventory/cards-grid/cards-grid.gallery.light.pdf"
-    },
-    {
-      "name": "cards-side",
-      "bucket": "inventory",
-      "function": "inventory",
-      "form": "split",
-      "substance": "structure",
-      "tags": [
-        "overview",
-        "contrast",
-        "tradeoff"
-      ],
-      "description": "Two cards side-by-side, co-equal.",
-      "purpose": "Use for an explicit pair — two options, two phases, two artifacts presented with equal weight.",
-      "variants": [
-        "numbered"
-      ],
-      "effectiveVariants": [
-        "accent",
-        "archived",
-        "compact",
-        "confidential",
-        "dark",
-        "draft",
-        "loose",
-        "mark-orbit",
-        "mark-threads",
-        "no-footer",
-        "no-header",
-        "no-paginate",
-        "no-period",
-        "numbered",
-        "pinned",
-        "redacted",
-        "revised",
-        "scale-2xl",
-        "scale-l",
-        "scale-xl",
-        "silent",
-        "tbd",
-        "tint-corner at-tl",
-        "tint-edge at-right",
-        "tint-vignette",
-        "tone-fail",
-        "tone-pass",
-        "tone-skip",
-        "tone-warn",
-        "treatment-none",
-        "wip",
-        "with-period"
-      ],
-      "slots": {
-        "title": {
-          "selector": "h2",
-          "required": true,
-          "description": "Slide heading."
-        },
-        "cards": {
-          "selector": "ul > li",
-          "required": true,
-          "description": "Exactly two list items, each one card. Authoring contract: a top-level bullet is the card title (renders bold by default); an indented bullet underneath carries the body text."
-        }
-      },
-      "skeleton": "<!-- _class: cards-side -->\n\n## Slide heading.\n\n- Left card title\n  - Body text for the left card, two short sentences.\n- Right card title\n  - Body text for the right card, two short sentences.\n",
-      "whenToUse": [
-        {
-          "title": "An explicit pair",
-          "body": "Exactly two items that deserve equal visual weight. Two options under consideration, two phases of a rollout, two halves of a contract."
-        },
-        {
-          "title": "Neutral comparison",
-          "body": "When the slide should not take sides. cards-side stays balanced; compare-prose declares a winner via connector chrome."
-        },
-        {
-          "title": "Short, parallel body",
-          "body": "Each card carries one to two sentences of similar length. Lopsided density breaks the layout's symmetry and the audience reads it as preference."
-        }
-      ],
-      "antiPatterns": [
-        {
-          "title": "Three or more cards",
-          "body": "cards-side is built for exactly two slots. For three parallel items use cards-grid three; for four use cards-grid four."
-        },
-        {
-          "title": "One side is the answer",
-          "body": "If the deck has already chosen, use compare-prose with the winner highlighted. cards-side reads as undecided — that's the wrong signal when you've decided."
-        },
-        {
-          "title": "Long-form body per card",
-          "body": "More than two sentences per card crowds the split. For richer side-by-side bodies, move to split-list or stacked rows of cards-stack."
-        }
-      ],
-      "related": [
-        {
-          "name": "cards-grid",
-          "when": "three or four parallel items, not two"
-        },
-        {
-          "name": "cards-stack",
-          "when": "two items that read top-to-bottom, not left-right"
-        },
-        {
-          "name": "compare-prose",
-          "when": "the comparison has a winner you want to declare"
-        },
-        {
-          "name": "split-list",
-          "when": "one side is framing, the other is supporting evidence"
-        }
-      ],
-      "galleryHref": "../../lib/components/inventory/cards-side/cards-side.gallery.light.pdf"
     },
     {
       "name": "cards-stack",
@@ -1053,7 +823,7 @@
         },
         {
           "title": "One-line cards",
-          "body": "If each card is a single short phrase, the stack reads as a padded list. Drop to `list` or `tldr` and reclaim the vertical space."
+          "body": "If each card is a single short phrase, the stack reads as a padded list. Drop to `list` (or its `takeaway` variant) and reclaim the vertical space."
         },
         {
           "title": "Forced sequence",
@@ -1066,8 +836,8 @@
           "when": "three or four parallel items in a scannable grid"
         },
         {
-          "name": "cards-side",
-          "when": "exactly two items in left-right balance"
+          "name": "compare-prose",
+          "when": "exactly two items, side by side"
         },
         {
           "name": "list-steps",
@@ -1154,7 +924,7 @@
       "antiPatterns": [
         {
           "title": "All-done lists",
-          "body": "If every item is `[x]` the state markers are decoration. Use `list` or `tldr` for celebratory recaps; checklist earns its weight when the mix matters."
+          "body": "If every item is `[x]` the state markers are decoration. Use `list` (or its `takeaway` variant) for celebratory recaps; checklist earns its weight when the mix matters."
         },
         {
           "title": "Long per-item prose",
@@ -1169,10 +939,6 @@
         {
           "name": "list",
           "when": "items have no state — just bullets"
-        },
-        {
-          "name": "tldr",
-          "when": "summary lines without per-item completion tracking"
         },
         {
           "name": "list-tabular",
@@ -1634,7 +1400,7 @@
       ],
       "related": [
         {
-          "name": "before-after",
+          "name": "compare-prose",
           "when": "the change is state, not code"
         },
         {
@@ -1661,11 +1427,14 @@
       "tags": [
         "tradeoff",
         "contrast",
-        "recommendation"
+        "recommendation",
+        "transformation",
+        "retrospective"
       ],
       "description": "Two prose options side-by-side with a labeled corner tag on each.",
       "purpose": "Use to weigh two approaches against each other in body text. Add the `chosen` or `decision` modifier to mark the verdict; add `vertical` to stack top/bottom instead of side-by-side.",
       "variants": [
+        "transition",
         "mirror",
         "chosen",
         "decision",
@@ -1707,6 +1476,7 @@
         "tone-pass",
         "tone-skip",
         "tone-warn",
+        "transition",
         "treatment-none",
         "vertical",
         "wip",
@@ -1754,10 +1524,6 @@
         }
       ],
       "related": [
-        {
-          "name": "before-after",
-          "when": "two states of one system, not two alternatives"
-        },
         {
           "name": "compare-code",
           "when": "the columns are code, not prose"
@@ -2240,7 +2006,8 @@
       "description": "Section boundary slide. Dark canvas with a single heading.",
       "purpose": "Marks the start of a major section. Use sparingly — every divider is a context switch for the audience. A 30-slide deck typically has 3-5 dividers; more becomes navigation noise.",
       "variants": [
-        "numbered"
+        "numbered",
+        "light"
       ],
       "effectiveVariants": [
         "accent",
@@ -2249,6 +2016,7 @@
         "confidential",
         "dark",
         "draft",
+        "light",
         "loose",
         "mark-orbit",
         "mark-threads",
@@ -2301,6 +2069,10 @@
         {
           "title": "With an eyebrow",
           "body": "An inline-code paragraph above the heading stamps a section number or category label. Useful for serialized decks where the audience needs to remember which section they're in."
+        },
+        {
+          "title": "Light variant for sub-section orientation",
+          "body": "The `light` variant keeps the bright body-slide canvas and centers the heading at h2 weight — a lighter context switch for narrowing focus within a section, between a dark divider and the content slides. (Absorbed the standalone `subtopic` component on 2026-06-07.)"
         }
       ],
       "antiPatterns": [
@@ -2310,7 +2082,7 @@
         },
         {
           "title": "Section title that doesn't earn a section",
-          "body": "If the next 3-4 slides aren't a coherent unit, a subtopic (lighter, on the bright canvas) is the right tool. Reserve dividers for genuine section starts."
+          "body": "If the next 3-4 slides aren't a coherent unit, the `light` variant (bright canvas, centered) is the right tool. Reserve the dark divider for genuine section starts."
         },
         {
           "title": "Header or footer overrides",
@@ -2321,10 +2093,6 @@
         {
           "name": "title",
           "when": "opens the deck — same dark-bookend chrome"
-        },
-        {
-          "name": "subtopic",
-          "when": "lighter mid-section orientation on the bright canvas"
         },
         {
           "name": "closing",
@@ -2422,7 +2190,7 @@
         },
         {
           "title": "Sub-grid that argues against the hero",
-          "body": "If the supporting cards undermine the recommendation, the slide is a debate, not a verdict. Use `verdict-grid` for criteria-based scoring or `cards-side` for explicit two-option comparison."
+          "body": "If the supporting cards undermine the recommendation, the slide is a debate, not a verdict. Use `verdict-grid` for criteria-based scoring or `compare-prose` for explicit two-option comparison."
         }
       ],
       "related": [
@@ -2433,10 +2201,6 @@
         {
           "name": "verdict-grid",
           "when": "options scored against shared criteria, not picked"
-        },
-        {
-          "name": "cards-side",
-          "when": "two options side by side, no hierarchy between them"
         },
         {
           "name": "decision",
@@ -2544,10 +2308,6 @@
           "when": "phased grid of deliverables across workstreams without continuous spans"
         },
         {
-          "name": "timeline",
-          "when": "single-lane sequence of milestones"
-        },
-        {
           "name": "kanban",
           "when": "current state by stage rather than schedule by lane"
         },
@@ -2617,7 +2377,7 @@
           "description": "Nested bullets: outer li is the term, inner li is its one-line definition. A runtime transform converts the list into a two-column table and derives the alphabetic range pill from the first and last terms, so terms should be authored in alphabetical order; without the Lattice runtime the raw nested list renders unstyled."
         }
       },
-      "skeleton": "<!-- _class: glossary -->\n\n## Glossary\n\n- Adjacency\n  - The relationship between two slides that share an audience or context.\n- Anchor\n  - A title, divider, subtopic, or closing slide that orients the audience.\n- Cadence\n  - The deck's pacing — how much new information per slide.\n",
+      "skeleton": "<!-- _class: glossary -->\n\n## Glossary\n\n- Adjacency\n  - The relationship between two slides that share an audience or context.\n- Anchor\n  - A title, divider, or closing slide that orients the audience.\n- Cadence\n  - The deck's pacing — how much new information per slide.\n",
       "whenToUse": [
         {
           "title": "Jargon-heavy decks",
@@ -2629,13 +2389,13 @@
         },
         {
           "title": "Short definitions",
-          "body": "Each definition is one sentence — a working gloss, not an essay. Long definitions belong on their own subtopic slide where the term is the heading."
+          "body": "Each definition is one sentence — a working gloss, not an essay. Long definitions belong on their own divider (light variant) slide where the term is the heading."
         }
       ],
       "antiPatterns": [
         {
           "title": "Multi-sentence definitions",
-          "body": "Each entry is one short line. If a definition needs context or examples, the term deserves its own slide — use subtopic with the term as the heading."
+          "body": "Each entry is one short line. If a definition needs context or examples, the term deserves its own slide — use a divider (light variant) with the term as the heading."
         },
         {
           "title": "Mixed term lengths",
@@ -2652,16 +2412,16 @@
           "when": "rows are key/value reference, not term/definition"
         },
         {
-          "name": "subtopic",
-          "when": "one term needs a full slide of explanation"
+          "name": "divider",
+          "when": "lighter mid-section orientation — the bright-canvas `light` variant"
         },
         {
           "name": "actors",
           "when": "the left column is a named person, not a term"
         },
         {
-          "name": "principles",
-          "when": "the entries are stated rules, not defined terms"
+          "name": "list",
+          "when": "declared statements — the `principles` variant"
         }
       ],
       "galleryHref": "../../lib/components/inventory/glossary/glossary.gallery.light.pdf"
@@ -2890,10 +2650,6 @@
         }
       ],
       "related": [
-        {
-          "name": "timeline",
-          "when": "linear sequence without per-step mood or actors"
-        },
         {
           "name": "list-steps",
           "when": "process needs descriptive body per step, no chart"
@@ -3159,18 +2915,28 @@
       "tags": [
         "overview",
         "summary",
+        "takeaway",
         "walkthrough"
       ],
-      "description": "Plain bullet list under a heading.",
-      "purpose": "Use only when the items are genuinely a list (5–6 short points). For anything richer, prefer cards-grid, cards-stack, or list-tabular.",
-      "variants": [],
+      "description": "Bulleted list under a heading — plain pills, hairline takeaways, or display-weight principles.",
+      "purpose": "Use when the items are genuinely a flat list of one-line points. The default renders accent-bordered pills; the `takeaway` variant renders hairline-ruled single-line takeaways (former tldr); the `principles` variant renders display-weight numbered statements with a large counter (former principles). For richer per-item structure, prefer cards-grid, cards-stack, or list-tabular.",
+      "variants": [
+        "takeaway",
+        "principles",
+        "numbered",
+        "lettered",
+        "roman",
+        "bullet"
+      ],
       "effectiveVariants": [
         "accent",
         "archived",
+        "bullet",
         "compact",
         "confidential",
         "dark",
         "draft",
+        "lettered",
         "loose",
         "mark-orbit",
         "mark-threads",
@@ -3178,13 +2944,17 @@
         "no-header",
         "no-paginate",
         "no-period",
+        "numbered",
         "pinned",
+        "principles",
         "redacted",
         "revised",
+        "roman",
         "scale-2xl",
         "scale-l",
         "scale-xl",
         "silent",
+        "takeaway",
         "tbd",
         "tint-corner at-tl",
         "tint-edge at-right",
@@ -3222,6 +2992,14 @@
         {
           "title": "Pills via inline code",
           "body": "Inline code at the end of a row becomes a pill (status tag, metric, owner). Lets the list double as a lightweight ledger without changing layout."
+        },
+        {
+          "title": "Takeaways at a section close",
+          "body": "The `takeaway` variant renders each item as a hairline-ruled single line at message weight — the deck or section's headline points. Add `numbered` for a large accent counter. (Absorbed the standalone `tldr` component on 2026-06-07.)"
+        },
+        {
+          "title": "Declared principles or tenets",
+          "body": "The `principles` variant renders an ordered list of single-sentence declarations at display weight with a large accent counter. Compose `lettered`, `roman`, or `bullet` to switch the counter format. (Absorbed the standalone `principles` component on 2026-06-07.)"
         }
       ],
       "antiPatterns": [
@@ -3235,14 +3013,10 @@
         },
         {
           "title": "Two-item lists",
-          "body": "Two bullets read as a thin slide. For pairs, reach for cards-side or compare-prose — both give the pair the weight it deserves."
+          "body": "Two bullets read as a thin slide. For pairs, reach for compare-prose — it gives the pair the weight it deserves."
         }
       ],
       "related": [
-        {
-          "name": "tldr",
-          "when": "single-line takeaways at the end of a section"
-        },
         {
           "name": "cards-stack",
           "when": "each item has a title plus body sentence"
@@ -3360,8 +3134,8 @@
           "when": "options scored against shared criteria"
         },
         {
-          "name": "principles",
-          "when": "tenets or values rather than gates a decision must clear"
+          "name": "list",
+          "when": "declared statements — the `principles` variant"
         },
         {
           "name": "list-tabular",
@@ -3385,6 +3159,7 @@
       "purpose": "Use for richer sequential processes where each step needs a paragraph rather than a label. More verbose than timeline; more structured than a plain ordered list.",
       "variants": [
         "vertical",
+        "timeline",
         "phase",
         "milestone",
         "lettered",
@@ -3422,6 +3197,7 @@
         "stage",
         "tbd",
         "tier",
+        "timeline",
         "tint-corner at-tl",
         "tint-edge at-right",
         "tint-vignette",
@@ -3450,7 +3226,7 @@
       "whenToUse": [
         {
           "title": "Steps need a sentence each",
-          "body": "When each step carries a label plus a sentence of description. Lighter rosters of steps with short labels live in `timeline`; richer descriptions belong here."
+          "body": "When each step carries a label plus a sentence of description. Lighter rosters of steps with short labels use the `timeline` variant; richer descriptions belong on the default cards."
         },
         {
           "title": "Three to five steps",
@@ -3464,7 +3240,7 @@
       "antiPatterns": [
         {
           "title": "Light labels, no body",
-          "body": "If each step is a single label with no description, use `timeline`. list-steps earns its chrome only when the body adds substance."
+          "body": "If each step is a single label with no description, use the `timeline` variant (dots on a spine). The default step cards earn their chrome only when the body adds substance."
         },
         {
           "title": "Parallel options",
@@ -3476,10 +3252,6 @@
         }
       ],
       "related": [
-        {
-          "name": "timeline",
-          "when": "shorter labels per step, horizontal axis instead of vertical cards"
-        },
         {
           "name": "list-criteria",
           "when": "gating requirements rather than a sequence of actions"
@@ -3493,8 +3265,8 @@
           "when": "phased grid across multiple workstreams"
         },
         {
-          "name": "principles",
-          "when": "tenets or values rather than a procedural sequence"
+          "name": "list",
+          "when": "tenets or values (the `principles` variant) rather than a sequence"
         }
       ],
       "galleryHref": "../../lib/components/progression/list-steps/list-steps.gallery.light.pdf"
@@ -3616,10 +3388,6 @@
         {
           "name": "actors",
           "when": "the left column is a named person, not a key"
-        },
-        {
-          "name": "principles",
-          "when": "rows are stated rules, not reference entries"
         },
         {
           "name": "list",
@@ -4106,123 +3874,6 @@
         }
       ],
       "galleryHref": "../../lib/components/chart/piechart/piechart.gallery.light.pdf"
-    },
-    {
-      "name": "principles",
-      "bucket": "inventory",
-      "function": "inventory",
-      "form": "stack",
-      "substance": "structure",
-      "tags": [
-        "strategy",
-        "okr",
-        "onboarding"
-      ],
-      "description": "Declared statements — guiding rules or tenets, each as one terse sentence.",
-      "purpose": "Use for design tenets, working agreements, or decision rules. Each principle is a single declarative statement; the layout renders it at display weight with a large counter as the visual anchor.",
-      "variants": [
-        "numbered",
-        "lettered",
-        "roman",
-        "bullet"
-      ],
-      "effectiveVariants": [
-        "accent",
-        "archived",
-        "bullet",
-        "compact",
-        "confidential",
-        "dark",
-        "draft",
-        "lettered",
-        "loose",
-        "mark-orbit",
-        "mark-threads",
-        "no-footer",
-        "no-header",
-        "no-paginate",
-        "no-period",
-        "numbered",
-        "pinned",
-        "redacted",
-        "revised",
-        "roman",
-        "scale-2xl",
-        "scale-l",
-        "scale-xl",
-        "silent",
-        "tbd",
-        "tint-corner at-tl",
-        "tint-edge at-right",
-        "tint-vignette",
-        "tone-fail",
-        "tone-pass",
-        "tone-skip",
-        "tone-warn",
-        "treatment-none",
-        "wip",
-        "with-period"
-      ],
-      "slots": {
-        "title": {
-          "selector": "h2",
-          "required": true,
-          "description": "Slide heading."
-        },
-        "principles": {
-          "selector": "ol > li",
-          "required": true,
-          "description": "One li per principle: a short declarative statement, authored as an ordered list (the counter renders as a large display numeral). No bold and no separate justification — keep each principle to one terse line."
-        }
-      },
-      "skeleton": "<!-- _class: principles -->\n\n## How we make calls when the spec is silent.\n\n1. Default to the choice that is cheaper to reverse.\n2. Document the decision, not the menu of options.\n3. Reversible calls don't need a meeting.\n",
-      "whenToUse": [
-        {
-          "title": "Working agreements",
-          "body": "Team tenets, design principles, decision rules. Use when the slide's job is to declare how the room makes calls, not to show data."
-        },
-        {
-          "title": "Stated as commands",
-          "body": "Each principle is a short imperative sentence — \"Default to X\", \"Name the actor\". Statements with hedging language lose the principle's bite."
-        },
-        {
-          "title": "Three to six items",
-          "body": "More than six principles and the audience stops remembering them. If you have more, prioritize: the principles slide carries the load-bearing few."
-        }
-      ],
-      "antiPatterns": [
-        {
-          "title": "Aspirations, not principles",
-          "body": "\"Be empathetic\" is a value, not a principle. Principles are decision rules — they say what to do when two options conflict. Reach for content if it's a values statement."
-        },
-        {
-          "title": "Long per-principle prose",
-          "body": "Each principle is one terse sentence — there is no separate justification slot. If a principle needs a paragraph of context, give it its own slide and let principles act as the index."
-        },
-        {
-          "title": "Hedged statements",
-          "body": "\"We try to default to X\" reads as a wish. Drop the hedge — principles are declared, not negotiated. \"Default to X\" lands harder."
-        }
-      ],
-      "related": [
-        {
-          "name": "actors",
-          "when": "rules attach to named owners, not shared tenets"
-        },
-        {
-          "name": "tldr",
-          "when": "single-line takeaways without justification body"
-        },
-        {
-          "name": "list",
-          "when": "items are short bullets without title + body shape"
-        },
-        {
-          "name": "cards-stack",
-          "when": "each principle needs two sentences of body"
-        }
-      ],
-      "galleryHref": "../../lib/components/inventory/principles/principles.gallery.light.pdf"
     },
     {
       "name": "progress",
@@ -4831,7 +4482,7 @@
           "when": "two narrative alternatives, not verbatim amendments"
         },
         {
-          "name": "before-after",
+          "name": "compare-prose",
           "when": "the change is structural state, not text"
         },
         {
@@ -4953,8 +4604,8 @@
           "when": "flat enumeration of requirements without dates or citations"
         },
         {
-          "name": "timeline",
-          "when": "chronological sequence of events on a single axis"
+          "name": "list-steps",
+          "when": "lighter dots-on-a-spine sequence — the `timeline` variant"
         },
         {
           "name": "list-tabular",
@@ -5197,8 +4848,8 @@
           "when": "the slide is mostly the list of findings; no executive framing needed"
         },
         {
-          "name": "tldr",
-          "when": "5+ one-line takeaways without supporting detail"
+          "name": "list",
+          "when": "single-line takeaways — the `takeaway` variant"
         }
       ],
       "galleryHref": "../../lib/components/statement/split-brief/split-brief.gallery.light.pdf"
@@ -5782,10 +5433,6 @@
           "when": "standalone ordered process without a phase anchor"
         },
         {
-          "name": "timeline",
-          "when": "horizontal sequence of short-labelled steps"
-        },
-        {
           "name": "roadmap",
           "when": "phased grid across multiple workstreams"
         },
@@ -6164,225 +5811,6 @@
       "galleryHref": "../../lib/components/legal/statute-stack/statute-stack.gallery.light.pdf"
     },
     {
-      "name": "subtopic",
-      "bucket": "anchor",
-      "function": "anchor",
-      "form": "divider",
-      "substance": "prose",
-      "tags": [
-        "section-break",
-        "walkthrough",
-        "overview"
-      ],
-      "description": "Sub-section boundary — lighter than divider, no canvas reskin.",
-      "purpose": "Introduces a specific topic within a section. Use between divider and content slides for finer orientation. Same light canvas as content slides, centered heading, no special background — a lighter cousin to the dark divider.",
-      "variants": [
-        "numbered"
-      ],
-      "effectiveVariants": [
-        "accent",
-        "archived",
-        "compact",
-        "confidential",
-        "dark",
-        "draft",
-        "loose",
-        "mark-orbit",
-        "mark-threads",
-        "no-footer",
-        "no-header",
-        "no-paginate",
-        "no-period",
-        "numbered",
-        "pinned",
-        "redacted",
-        "revised",
-        "scale-2xl",
-        "scale-l",
-        "scale-xl",
-        "silent",
-        "tbd",
-        "tint-corner at-tl",
-        "tint-edge at-right",
-        "tint-vignette",
-        "tone-fail",
-        "tone-pass",
-        "tone-skip",
-        "tone-warn",
-        "treatment-none",
-        "wip",
-        "with-period"
-      ],
-      "slots": {
-        "heading": {
-          "selector": "h2",
-          "required": true,
-          "description": "Sub-topic name."
-        },
-        "eyebrow": {
-          "selector": "p > code",
-          "required": false,
-          "description": "Optional eyebrow label above h2."
-        }
-      },
-      "skeleton": "<!-- _class: subtopic -->\n\n`Topic family`\n\n## Sub-topic name.\n",
-      "whenToUse": [
-        {
-          "title": "Between divider and content",
-          "body": "After the dark divider opens a section, a subtopic narrows the focus to one specific topic before the audience hits the first content slide. Finer-grained orientation."
-        },
-        {
-          "title": "Lighter than divider",
-          "body": "Same bright canvas as body slides — keeps the visual rhythm intact while still signaling a topic shift. Lighter context-switch cost than a divider."
-        },
-        {
-          "title": "Eyebrow names the topic family",
-          "body": "The inline-code paragraph above the heading is the breadcrumb. \"Section 02 · Module 03\" tells the audience exactly where they are in the deck's hierarchy."
-        }
-      ],
-      "antiPatterns": [
-        {
-          "title": "Used as a divider replacement",
-          "body": "If the next slides are an entirely new section, reach for divider (dark canvas, h1). Subtopic is for sub-section orientation, not section starts."
-        },
-        {
-          "title": "Stacked subtopics",
-          "body": "Two subtopic slides back-to-back means the first didn't introduce anything. Merge them or move directly to content."
-        },
-        {
-          "title": "h1 instead of h2",
-          "body": "The layout expects h2 (subtopic name is one level below the section title). Promoting to h1 makes the slide compete visually with the divider."
-        }
-      ],
-      "related": [
-        {
-          "name": "divider",
-          "when": "major section starts — darker, h1, dedicated canvas"
-        },
-        {
-          "name": "title",
-          "when": "opens the deck — same dark-bookend chrome as divider"
-        },
-        {
-          "name": "content",
-          "when": "the body slides that follow a subtopic"
-        }
-      ],
-      "galleryHref": "../../lib/components/anchor/subtopic/subtopic.gallery.light.pdf"
-    },
-    {
-      "name": "timeline",
-      "bucket": "progression",
-      "function": "progression",
-      "form": "timeline",
-      "substance": "structure",
-      "tags": [
-        "milestones",
-        "planning",
-        "changelog"
-      ],
-      "description": "Horizontal ordered steps along a single axis, each a labeled dot.",
-      "purpose": "Use for sequential processes with 3–6 stages. Ordered list (ol) renders numbered circles; unordered (ul) renders plain dots.",
-      "variants": [],
-      "effectiveVariants": [
-        "accent",
-        "archived",
-        "compact",
-        "confidential",
-        "dark",
-        "draft",
-        "loose",
-        "mark-orbit",
-        "mark-threads",
-        "no-footer",
-        "no-header",
-        "no-paginate",
-        "no-period",
-        "pinned",
-        "redacted",
-        "revised",
-        "scale-2xl",
-        "scale-l",
-        "scale-xl",
-        "silent",
-        "tbd",
-        "tint-corner at-tl",
-        "tint-edge at-right",
-        "tint-vignette",
-        "tone-fail",
-        "tone-pass",
-        "tone-skip",
-        "tone-warn",
-        "treatment-none",
-        "wip",
-        "with-period"
-      ],
-      "slots": {
-        "title": {
-          "selector": "h2",
-          "required": true,
-          "description": "Slide heading naming the process."
-        },
-        "steps": {
-          "selector": "ol > li, ul > li",
-          "required": true,
-          "description": "One li per step. The lead text is the step label — it renders bold automatically (no `**…**` needed); follow it with a nested bullet for the description."
-        }
-      },
-      "skeleton": "<!-- _class: timeline -->\n\n## How the process flows.\n\n1. First stage\n   - *Short description of what happens here.*\n2. Second stage\n   - *Short description.*\n3. Third stage\n   - *Short description.*\n4. Fourth stage\n   - *Short description.*\n",
-      "whenToUse": [
-        {
-          "title": "Short labels on a horizontal axis",
-          "body": "When each stage is a short label plus a sentence — the audience reads the whole sequence as a single arc. Richer per-step bodies belong in `list-steps`."
-        },
-        {
-          "title": "Three to six stages",
-          "body": "Below three the axis feels under-furnished; above six the dots crowd and the labels collide. Group adjacent stages or split into two slides."
-        },
-        {
-          "title": "Ordered or unordered",
-          "body": "Use `ol` for numbered circles (sequence is the point); use `ul` for plain dots (the stages are a journey rather than a ranked sequence)."
-        }
-      ],
-      "antiPatterns": [
-        {
-          "title": "Long body per step",
-          "body": "If each stage needs a paragraph, lift to `list-steps` where the cards have body room. Prose crammed into a timeline label crowds the axis."
-        },
-        {
-          "title": "Parallel options, not sequence",
-          "body": "If the items are alternatives rather than ordered stages, use `cards-grid`. The horizontal axis here reads as time."
-        },
-        {
-          "title": "Past six stages",
-          "body": "More than six dots compresses the axis and the labels collide. Split into two slides or roll up adjacent stages."
-        }
-      ],
-      "related": [
-        {
-          "name": "list-steps",
-          "when": "each step needs body-paragraph room, not just a label"
-        },
-        {
-          "name": "split-steps",
-          "when": "a phase anchor + heading reads on the left, steps on the right"
-        },
-        {
-          "name": "journey",
-          "when": "each step carries actors and mood, not just a label"
-        },
-        {
-          "name": "gantt",
-          "when": "tasks have duration and overlap across multiple workstreams"
-        },
-        {
-          "name": "roadmap",
-          "when": "phased grid across multiple workstreams rather than a single axis"
-        }
-      ],
-      "galleryHref": "../../lib/components/progression/timeline/timeline.gallery.light.pdf"
-    },
-    {
       "name": "timeline-list",
       "bucket": "chart",
       "function": "evidence",
@@ -6597,124 +6025,9 @@
         {
           "name": "closing",
           "when": "the final slide — closes the bookend pair"
-        },
-        {
-          "name": "subtopic",
-          "when": "lighter mid-deck orientation slide on the bright canvas"
         }
       ],
       "galleryHref": "../../lib/components/anchor/title/title.gallery.light.pdf"
-    },
-    {
-      "name": "tldr",
-      "bucket": "inventory",
-      "function": "inventory",
-      "form": "stack",
-      "substance": "structure",
-      "tags": [
-        "summary",
-        "takeaway",
-        "overview"
-      ],
-      "description": "Single-line takeaways — the deck or section's headline points.",
-      "purpose": "Use at the end of a section or deck to restate the takeaways in one line each. Each line should be a complete claim, not a category label.",
-      "variants": [
-        "numbered"
-      ],
-      "effectiveVariants": [
-        "accent",
-        "archived",
-        "compact",
-        "confidential",
-        "dark",
-        "draft",
-        "loose",
-        "mark-orbit",
-        "mark-threads",
-        "no-footer",
-        "no-header",
-        "no-paginate",
-        "no-period",
-        "numbered",
-        "pinned",
-        "redacted",
-        "revised",
-        "scale-2xl",
-        "scale-l",
-        "scale-xl",
-        "silent",
-        "tbd",
-        "tint-corner at-tl",
-        "tint-edge at-right",
-        "tint-vignette",
-        "tone-fail",
-        "tone-pass",
-        "tone-skip",
-        "tone-warn",
-        "treatment-none",
-        "wip",
-        "with-period"
-      ],
-      "slots": {
-        "title": {
-          "selector": "h2",
-          "required": true,
-          "description": "Slide heading — typically 'In summary' or 'What this means'."
-        },
-        "lines": {
-          "selector": "ul > li",
-          "required": true,
-          "description": "One line per takeaway. Keep each under ~15 words."
-        }
-      },
-      "skeleton": "<!-- _class: tldr -->\n\n## What this section showed.\n\n- The first takeaway as a complete one-line claim.\n- The second takeaway as a complete one-line claim.\n- The third takeaway as a complete one-line claim.\n- The fourth takeaway as a complete one-line claim.\n",
-      "whenToUse": [
-        {
-          "title": "Section or deck recap",
-          "body": "Use at the close of a section or the end of the deck to restate what the room should walk out remembering. The audience reads it as 'if you forget everything else, remember this.'"
-        },
-        {
-          "title": "Complete one-line claims",
-          "body": "Each line is a full claim the audience could quote back — not a category label or a bullet of jargon. If a line needs context, split it into two slides or pick a richer layout."
-        },
-        {
-          "title": "Four to six lines",
-          "body": "Sweet spot is five. Past six the recap stops feeling like a tldr and starts feeling like a list. Trim or split across two tldr slides."
-        }
-      ],
-      "antiPatterns": [
-        {
-          "title": "Category labels, not claims",
-          "body": "\"Pricing\" or \"Architecture\" wastes the slot — the audience can't act on a label. Each line is the claim itself: \"Pricing simplifies to three tiers,\" not \"Pricing.\""
-        },
-        {
-          "title": "Wall of long lines",
-          "body": "Past about fifteen words the line stops scanning and the recap reads as paragraph soup. Trim ruthlessly or move the longer item to its own subtopic slide."
-        },
-        {
-          "title": "Mid-deck use",
-          "body": "tldr earns its weight at the end. In the middle of a deck it pre-empts the section it's recapping. Use subtopic to open a section and tldr to close it."
-        }
-      ],
-      "related": [
-        {
-          "name": "list",
-          "when": "lines are general bullets, not section takeaways"
-        },
-        {
-          "name": "principles",
-          "when": "each line is a stated rule with a justification body"
-        },
-        {
-          "name": "closing",
-          "when": "the slide is the deck's final word, not a section recap"
-        },
-        {
-          "name": "agenda",
-          "when": "previewing what's coming at the top of the deck"
-        }
-      ],
-      "galleryHref": "../../lib/components/inventory/tldr/tldr.gallery.light.pdf"
     },
     {
       "name": "verdict-grid",
@@ -6957,8 +6270,8 @@
           "when": "the verbatim language matters more than the frequency"
         },
         {
-          "name": "tldr",
-          "when": "the qualitative summary is prose, not a packed cloud"
+          "name": "list",
+          "when": "single-line takeaways — the `takeaway` variant"
         }
       ],
       "galleryHref": "../../lib/components/chart/word-cloud/word-cloud.gallery.light.pdf"

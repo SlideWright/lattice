@@ -22,8 +22,8 @@ Six anchors. Five variants per anchor. Pick the strongest of each row.
 
 ---
 
-<!-- _class: subtopic -->
-<!-- _footer: "Orientation · subtopic" -->
+<!-- _class: divider light -->
+<!-- _footer: "Orientation · divider light" -->
 
 `How to read this deck`
 
@@ -641,8 +641,8 @@ Pick when each cell carries a sentence, not a glyph.
 
 ---
 
-<!-- _class: tldr numbered -->
-<!-- _footer: "Closing · tldr numbered" -->
+<!-- _class: list takeaway numbered -->
+<!-- _footer: "Closing · list takeaway numbered" -->
 
 ## What this deck delivers.
 

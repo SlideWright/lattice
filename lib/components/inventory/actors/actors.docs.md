@@ -66,7 +66,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 - [`list-tabular`](../../inventory/list-tabular/list-tabular.docs.md) — rows are reference entries, not owners
 - [`cards-stack`](../../inventory/cards-stack/cards-stack.docs.md) — each item needs two sentences of body text
-- [`principles`](../../inventory/principles/principles.docs.md) — stating shared rules rather than per-actor responsibilities
+- [`list`](../../inventory/list/list.docs.md) — declared statements — the `principles` variant
 - [`glossary`](../../inventory/glossary/glossary.docs.md) — the left column is a term, not an actor
 
 ## Demo deck

@@ -16,7 +16,7 @@ Use for completion reports, readiness audits, or pre-flight checks. State marker
 
 ## When NOT to use
 
-- **All-done lists.** If every item is `[x]` the state markers are decoration. Use `list` or `tldr` for celebratory recaps; checklist earns its weight when the mix matters.
+- **All-done lists.** If every item is `[x]` the state markers are decoration. Use `list` (or its `takeaway` variant) for celebratory recaps; checklist earns its weight when the mix matters.
 - **Long per-item prose.** Each item is one short line. If a row needs a sentence of explanation, the right home is cards-stack or list-tabular.
 - **Custom state markers.** Only `[x]`, `[-]`, `[ ]`, and `[/]` (out-of-scope, struck through) map to the mark palette. Authoring `[?]` or `[!]` renders as literal text and breaks the visual contract.
 
@@ -63,7 +63,6 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 ## Related components
 
 - [`list`](../../inventory/list/list.docs.md) — items have no state — just bullets
-- [`tldr`](../../inventory/tldr/tldr.docs.md) — summary lines without per-item completion tracking
 - [`list-tabular`](../../inventory/list-tabular/list-tabular.docs.md) — rows need a label-plus-description structure, not state
 - [`cards-stack`](../../inventory/cards-stack/cards-stack.docs.md) — each item needs two sentences of body
 

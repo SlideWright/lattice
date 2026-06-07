@@ -70,7 +70,6 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 ## Related components
 
 - [`list-steps`](../../progression/list-steps/list-steps.docs.md) — standalone ordered process without a phase anchor
-- [`timeline`](../../progression/timeline/timeline.docs.md) — horizontal sequence of short-labelled steps
 - [`roadmap`](../../progression/roadmap/roadmap.docs.md) — phased grid across multiple workstreams
 - [`split-list`](../../statement/split-list/split-list.docs.md) — left-anchor + right-list shape without a step sequence
 - [`split-brief`](../../statement/split-brief/split-brief.docs.md) — executive framing with substantiating findings rather than steps
