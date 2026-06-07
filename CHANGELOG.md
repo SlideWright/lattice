@@ -36,6 +36,17 @@ in patch versions.
 
 ### Changed
 
+- **Breaking: the `closing` and `divider` heading slot is now `h2`, not
+  `h1`.** A deck has exactly one document `h1` — the `title` slide — so a
+  `closing` or `divider` slide emitting a second `#` heading made every deck
+  fail markdownlint's single-`h1` rule (MD025) and read as structurally
+  invalid Markdown. Both layouts now style `h2` (rendered at the same
+  `--fs-h1` size, so the slides look identical), and the dead `h1` rules are
+  dropped. Migrate `closing`/`divider` slides from `# Heading` to
+  `## Heading`; an unconverted `#` heading now renders unstyled. `title`
+  keeps `h1` — it is the deck's one legitimate document heading. All shipped
+  galleries, examples, and the baseline deck are converted.
+
 - **`kpi` and `stats` no longer require `**bold**` for their numbers.** Both
   now auto-lift the parent list item's lead (the figure) into the display-type
   `<strong>` via `slotLabelLift`, so authors write `1. $2.4B` / `1. 73%`

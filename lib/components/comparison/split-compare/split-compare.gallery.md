@@ -120,7 +120,7 @@ Both paths are viable. The difference is where we spend the next 18 months.
 
 <!-- _class: closing silent -->
 
-# See also.
+## See also.
 
 `Related components`
 

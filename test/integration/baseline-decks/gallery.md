@@ -676,7 +676,7 @@ Full-bleed museum centres the asset on a generous `--bg-alt` matte with uniform 
 
 `Dark Variant · Any Layout Class`
 
-# The dark modifier works on any layout.
+## The dark modifier works on any layout.
 
 Add `dark` alongside any class — palette remaps automatically
 
@@ -1181,7 +1181,7 @@ Only a literal trailing `.` is removed — `!`, `?`, `:`, and `…` pass through
 
 `Treatment Library · Any Layout Class`
 
-# `tint-*` and `mark-*` classes add peripheral accents from the active palette
+## `tint-*` and `mark-*` classes add peripheral accents from the active palette
 
 Add a tint or mark class alongside any layout class — gradient wash or SVG mark, light canvas or dark, single pattern or layered pair.
 

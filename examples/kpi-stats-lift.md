@@ -73,7 +73,7 @@ header: "Lattice · kpi + stats auto-lift"
 
 <!-- _class: closing silent -->
 
-# Same numbers, less markup.
+## Same numbers, less markup.
 
 `Related`
 

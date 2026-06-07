@@ -39,7 +39,7 @@ Function · Form · Substance · Finish. Authored in short names, organized in f
 
 `Section 01`
 
-# The four layers
+## The four layers
 
 ---
 
@@ -65,7 +65,7 @@ Function · Form · Substance · Finish. Authored in short names, organized in f
 
 `Section 02`
 
-# The seven functions
+## The seven functions
 
 ---
 
@@ -90,7 +90,7 @@ Function · Form · Substance · Finish. Authored in short names, organized in f
 
 `Section 03`
 
-# Components stay short
+## Components stay short
 
 ---
 
@@ -112,7 +112,7 @@ Function · Form · Substance · Finish. Authored in short names, organized in f
 
 `Section 04`
 
-# Manifests
+## Manifests
 
 ---
 
@@ -136,7 +136,7 @@ Function · Form · Substance · Finish. Authored in short names, organized in f
 
 `Section 05`
 
-# Discovery
+## Discovery
 
 ---
 
@@ -158,7 +158,7 @@ Function · Form · Substance · Finish. Authored in short names, organized in f
 
 `Section 06`
 
-# Status
+## Status
 
 ---
 
@@ -181,6 +181,6 @@ Function · Form · Substance · Finish. Authored in short names, organized in f
 <!-- _header: '' -->
 <!-- _footer: '' -->
 
-# Authors keep their short names. Everyone else gets a map.
+## Authors keep their short names. Everyone else gets a map.
 
 `design/design-system.md`

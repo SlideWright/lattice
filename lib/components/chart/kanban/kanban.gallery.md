@@ -205,7 +205,7 @@ Eight items across four stages; the scoring-model rewrite is the only card flagg
 
 <!-- _class: closing silent -->
 
-# See also.
+## See also.
 
 `Related components`
 

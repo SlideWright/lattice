@@ -125,7 +125,7 @@ Options scored against criteria as a verdict matrix.
 
 <!-- _class: closing silent -->
 
-# See also.
+## See also.
 
 `Related components`
 

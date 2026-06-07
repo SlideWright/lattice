@@ -139,7 +139,7 @@ Declared statements — guiding rules or tenets, each as one terse sentence.
 
 <!-- _class: closing silent -->
 
-# See also.
+## See also.
 
 `Related components`
 

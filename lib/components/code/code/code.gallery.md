@@ -112,7 +112,7 @@ function scoreSignal({ confidence, relevance, observedAt }, weights) {
 
 <!-- _class: closing silent -->
 
-# See also.
+## See also.
 
 `Related components`
 

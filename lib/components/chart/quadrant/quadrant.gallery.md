@@ -280,7 +280,7 @@ Effort in analyst-weeks; reach as the percent of teams that would adopt it, opti
 
 <!-- _class: closing silent -->
 
-# See also.
+## See also.
 
 `Related components`
 

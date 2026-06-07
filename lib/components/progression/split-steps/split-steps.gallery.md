@@ -112,7 +112,7 @@ Four weeks. Shared definition of the problem before any solution work begins.
 
 <!-- _class: closing silent -->
 
-# See also.
+## See also.
 
 `Related components`
 

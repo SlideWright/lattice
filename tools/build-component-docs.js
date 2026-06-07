@@ -370,7 +370,7 @@ function renderClosingSlide(m) {
   const items = m.related.map((r) => `- \`${r.name}\` — ${r.when}`).join('\n');
   return `<!-- _class: closing silent -->
 
-# See also.
+## See also.
 
 \`Related components\`
 

@@ -78,7 +78,7 @@ Sub-section boundary — lighter than divider, no canvas reskin.
 
 <!-- _class: closing silent -->
 
-# See also.
+## See also.
 
 `Related components`
 

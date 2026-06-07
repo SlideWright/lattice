@@ -18,7 +18,7 @@ Final slide. Dark canvas mirror of title.
 <!-- _class: closing silent -->
 <!-- _footer: "Default · closing" -->
 
-# The signal was always there. Now we have a system that looks.
+## The signal was always there. Now we have a system that looks.
 
 `Product Strategy · Q3 2025`
 
@@ -28,7 +28,7 @@ Final slide. Dark canvas mirror of title.
 <!-- _class: closing silent numbered -->
 <!-- _footer: "Numbered — independent closing counter · closing numbered" -->
 
-# Take this away.
+## Take this away.
 
 `Closing 04`
 
@@ -38,7 +38,7 @@ Final slide. Dark canvas mirror of title.
 <!-- _class: closing silent compact -->
 <!-- _footer: "Composition: compact · closing compact" -->
 
-# The signal was always there. Now we have a system that looks.
+## The signal was always there. Now we have a system that looks.
 
 `Product Strategy · Q3 2025`
 
@@ -48,7 +48,7 @@ Final slide. Dark canvas mirror of title.
 <!-- _class: closing silent accent -->
 <!-- _footer: "Composition: accent · closing accent" -->
 
-# The signal was always there. Now we have a system that looks.
+## The signal was always there. Now we have a system that looks.
 
 `Product Strategy · Q3 2025`
 
@@ -60,7 +60,7 @@ Final slide. Dark canvas mirror of title.
 
 ## When NOT to reach for closing.
 
-- **Multi-line h1.** Keep the closing line to one editorial sentence. The layout is centered and large — two-line closings get cramped and lose impact.
+- **Multi-line heading.** Keep the closing line to one editorial sentence. The layout is centered and large — two-line closings get cramped and lose impact.
 - **Header or footer overrides.** Don't reinstate `_header:` or `_footer:` on the closing. The dark canvas is the "we're done" signal; chrome breaks it. Use the `silent` modifier to suppress all three in one token.
 - **Mid-deck closing.** If the audience needs a strong statement mid-deck, use `big-number` or `content` with the `dark` modifier. Reserving closing for the final slide preserves its bookend role.
 
@@ -68,7 +68,7 @@ Final slide. Dark canvas mirror of title.
 
 <!-- _class: closing silent -->
 
-# See also.
+## See also.
 
 `Related components`
 

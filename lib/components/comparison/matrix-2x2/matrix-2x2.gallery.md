@@ -112,7 +112,7 @@ Static 2×2 quadrant grid with author-placed items per cell.
 
 <!-- _class: closing silent -->
 
-# See also.
+## See also.
 
 `Related components`
 

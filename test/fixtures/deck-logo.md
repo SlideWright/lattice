@@ -21,6 +21,6 @@ Body slide — also tagged because the default is `logo-on: all`.
 
 <!-- _class: divider -->
 
-# Slide Three
+## Slide Three
 
 Divider slide — also tagged for the same reason.

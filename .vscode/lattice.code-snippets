@@ -168,7 +168,7 @@
       "<!-- _header: '' -->",
       "<!-- _footer: '' -->",
       "",
-      "# Closing takeaway or call to action",
+      "## Closing takeaway or call to action",
       "",
       "`Optional eyebrow`"
     ],
@@ -299,7 +299,7 @@
       "",
       "`Section 01`",
       "",
-      "# Section name"
+      "## Section name"
     ],
     "description": "Section boundary slide. Dark canvas with a single heading."
   },

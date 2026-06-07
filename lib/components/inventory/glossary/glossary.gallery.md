@@ -104,7 +104,7 @@ Two-column term/definition table with auto-derived alphabetic range pill.
 
 <!-- _class: closing silent -->
 
-# See also.
+## See also.
 
 `Related components`
 

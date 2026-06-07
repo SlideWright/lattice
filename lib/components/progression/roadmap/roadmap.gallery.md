@@ -167,7 +167,7 @@ State markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, ◐ in flight, ○ p
 
 <!-- _class: closing silent -->
 
-# See also.
+## See also.
 
 `Related components`
 

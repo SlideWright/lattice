@@ -96,7 +96,7 @@ Pull quote — half the slide committed to one quoted idea on a dark left panel,
 
 <!-- _class: closing silent -->
 
-# See also.
+## See also.
 
 `Related components`
 

@@ -170,7 +170,7 @@ Auto-numbered table of contents for the deck.
 
 <!-- _class: closing silent -->
 
-# See also.
+## See also.
 
 `Related components`
 

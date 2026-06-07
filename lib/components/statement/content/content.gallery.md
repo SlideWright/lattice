@@ -76,7 +76,7 @@ Three converging forces — commoditized infrastructure, compressed release cycl
 
 <!-- _class: closing silent -->
 
-# See also.
+## See also.
 
 `Related components`
 

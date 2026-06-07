@@ -176,7 +176,7 @@ Native user-journey chart — sections of tasks, each tagged with actor(s) and a
 
 <!-- _class: closing silent -->
 
-# See also.
+## See also.
 
 `Related components`
 

@@ -158,7 +158,7 @@ Nearly half went to producing decks; the deciding itself was the smallest slice.
 
 <!-- _class: closing silent -->
 
-# See also.
+## See also.
 
 `Related components`
 

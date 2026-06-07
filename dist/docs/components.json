@@ -1368,7 +1368,7 @@
       ],
       "slots": {
         "heading": {
-          "selector": "h1",
+          "selector": "h2",
           "required": true,
           "description": "Closing line — takeaway, thank-you, or call to action."
         },
@@ -1383,7 +1383,7 @@
           "description": "Optional supporting line."
         }
       },
-      "skeleton": "<!-- _class: closing -->\n<!-- _paginate: false -->\n<!-- _header: '' -->\n<!-- _footer: '' -->\n\n# Closing takeaway or call to action\n\n`Optional eyebrow`\n",
+      "skeleton": "<!-- _class: closing -->\n<!-- _paginate: false -->\n<!-- _header: '' -->\n<!-- _footer: '' -->\n\n## Closing takeaway or call to action\n\n`Optional eyebrow`\n",
       "whenToUse": [
         {
           "title": "Last slide of every deck",
@@ -1391,7 +1391,7 @@
         },
         {
           "title": "Single takeaway line",
-          "body": "The h1 is the slide. Keep it to one editorial line that summarizes the whole deck or names the action the audience should take. The eyebrow can carry a sub-line or link."
+          "body": "The h2 is the slide. Keep it to one editorial line that summarizes the whole deck or names the action the audience should take. The eyebrow can carry a sub-line or link."
         },
         {
           "title": "Accent modifier for emphasis",
@@ -1400,7 +1400,7 @@
       ],
       "antiPatterns": [
         {
-          "title": "Multi-line h1",
+          "title": "Multi-line heading",
           "body": "Keep the closing line to one editorial sentence. The layout is centered and large — two-line closings get cramped and lose impact."
         },
         {
@@ -2278,17 +2278,17 @@
       ],
       "slots": {
         "heading": {
-          "selector": "h1",
+          "selector": "h2",
           "required": true,
           "description": "Section name."
         },
         "eyebrow": {
           "selector": "p > code",
           "required": false,
-          "description": "Optional section number or category label above h1."
+          "description": "Optional section number or category label above the heading."
         }
       },
-      "skeleton": "<!-- _class: divider -->\n<!-- _paginate: false -->\n<!-- _header: '' -->\n<!-- _footer: '' -->\n\n`Section 01`\n\n# Section name\n",
+      "skeleton": "<!-- _class: divider -->\n<!-- _paginate: false -->\n<!-- _header: '' -->\n<!-- _footer: '' -->\n\n`Section 01`\n\n## Section name\n",
       "whenToUse": [
         {
           "title": "Major section starts",
@@ -2300,7 +2300,7 @@
         },
         {
           "title": "With an eyebrow",
-          "body": "An inline-code paragraph above the h1 stamps a section number or category label. Useful for serialized decks where the audience needs to remember which section they're in."
+          "body": "An inline-code paragraph above the heading stamps a section number or category label. Useful for serialized decks where the audience needs to remember which section they're in."
         }
       ],
       "antiPatterns": [

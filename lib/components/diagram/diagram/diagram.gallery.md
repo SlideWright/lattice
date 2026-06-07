@@ -475,7 +475,7 @@ zenuml
 
 `Group 02 · Experimental diagrams`
 
-# The eleven new types marked 🔥.
+## The eleven new types marked 🔥.
 
 ---
 

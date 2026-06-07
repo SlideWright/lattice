@@ -104,7 +104,7 @@ Numbered criteria list — each requirement is a row with rationale.
 
 <!-- _class: closing silent -->
 
-# See also.
+## See also.
 
 `Related components`
 

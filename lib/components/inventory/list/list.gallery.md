@@ -84,7 +84,7 @@ Plain bullet list under a heading.
 
 <!-- _class: closing silent -->
 
-# See also.
+## See also.
 
 `Related components`
 
