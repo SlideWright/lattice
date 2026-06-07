@@ -151,6 +151,49 @@ Pipeline:
 Consequence: across *all* model backends, **what the Architect knows and can do
 is identical**; only the phrasing/latency vary (see §5).
 
+### Persona & conversational variation
+
+The Architect must feel like *one recognizable human* across every session, not a
+different bot each time — but the fix is not a tone randomizer (that reads as
+*unstable*, which is worse). The rule:
+
+> **Consistent character. Varied expression. Invariant judgment.**
+
+Three layers, mapping onto the tooling-first split:
+
+- **Character** (who it is) — *never varies.* A fixed persona prompt: a senior
+  presentation architect, opinionated about structure, economical, warm but not
+  soft; structural metaphors ("through-line," "load-bearing," "the spine"); never
+  hype / emoji / filler / "Great question!"; always references what you already
+  said. This is what makes it feel like *one* person you build rapport with.
+- **Judgment** (the onboarding questions, the structure logic, the component
+  picks) — *deterministic*, per the tooling-first pipeline above. Trustworthy and
+  offline-capable.
+- **Expression** (wording, framing, what it reacts to) — *fresh every turn.* This
+  is the SLM's only job, so variation is **free** wherever a model is present.
+
+The humanizing signal is **reaction, not rewording.** "A board update asking for
+$4M — those live or die on momentum before the ask" feels human because it
+*listened*; synonym-shuffling feels robotic. So variation is driven by the user's
+specifics + session memory, never by a tone generator.
+
+**Beats, not lines.** Each conversational step is a *beat* —
+`{goal, must-extract, deterministic-facts, escape, exemplars[]}` — that the model
+realizes fresh from `persona + goal + facts + session memory`. The orchestrator
+fixes *what* is asked and *what* is built; only the wording samples (bounded
+temperature). So variation can never drift into asking the wrong thing or
+inventing a component — character and judgment stay pinned while expression
+varies. The onboarding flow in **Appendix A is one *performance* of the beats**,
+not the canonical lines.
+
+**Per-tier variation:**
+- *Model present:* generated, conditioned on specifics + session memory, bounded.
+- *Zero-model floor:* phrasing pools + slot-filling the user's real answers
+  (rotated openers, several frames per beat). Repetition risk is highest here —
+  the documented cost of running with no model — mitigated by pool variety and by
+  the specifics doing the heavy lifting (retrieval still runs, so even templated
+  lines reference *their* deck).
+
 ## 5. On-device model stack — tiered, with a hard consistency split
 
 **Confirmed strategy**: built-in browser Prompt API as default where present,
@@ -254,7 +297,60 @@ weight is downloaded.
   **Frame** reserved as fallback; formal *The Architect* available for a heavier
   register). The **Studio** product name is still a placeholder.
 - **Route + nav**: `/studio`? How prominently surfaced vs. the playground/docs.
-- **Onboarding depth**: how much does the Architect ask before generating a
-  starter deck?
+- **Onboarding depth** — *resolved (Appendix A):* three questions max
+  (*what · who · the one outcome*), each skippable, scaffold only on approval.
+- **Conversational voice** — *resolved (§4 "Persona & conversational
+  variation"):* fixed persona, beat-driven generation; consistent character,
+  varied expression, invariant judgment.
 - **Storage-eviction stance**: prompt for `persist()`, or rely on explicit
   export as the durability guarantee?
+
+## Appendix A — Onboarding flow (one performance of the beats)
+
+This is an *exemplar*, not the canonical script — the Architect improvises each
+take from the persona + beats (§4 "Persona & conversational variation"). What is
+fixed: **three questions max** (*what · who · the one outcome*), each escapable
+via "I'll just start writing →", and the deck is **scaffolded only on explicit
+approval**.
+
+**Beat 1 — what (cold open / empty state).** Goal: deck type + topic.
+> "I'm the Architect. Before we open the editor, tell me what you're building and
+> I'll lay out the structure — the through-line, the load-bearing slides, the
+> order. Two minutes, then we author. *What are you presenting?*"
+>
+> chips: `Board update` · `Investor pitch` · `Strategy / proposal` ·
+> `Product / project review` · `Something else…` — or **I'll just start writing →**
+
+**Beat 2 — who (the audience).** Goal: audience + decision-maker. Realized fresh,
+reacting to Beat 1 — e.g. for a $4M board ask: *"Who's deciding — the full board
+or a committee? If it's the board, we lead with the ask early; their time is
+short and they've read the pre-read."* Escape: **assume a senior audience →**.
+
+**Beat 3 — the one outcome (the keystone).** Goal: the single result the deck must
+earn. *"Last one, and it's the important one. What's the single outcome you need
+when you close? One sentence — the thing every slide has to earn."* Offers
+`Help me find it` (one clarifying question, then a candidate outcome) and
+**Skip — I'll set the spine later →**.
+
+**Beat 4 — synthesis (the payoff).** Retrieval over `components.json` has resolved;
+the Architect maps the brief to a *real* component outline and explains the logic,
+e.g. for the board/$4M case:
+> Title (ask in the subtitle) → `kpi` (where we are) → `roadmap` (the trajectory)
+> → `decision` (the ask) → `matrix-2x2` (risks vs. mitigations) → `key-insight`
+> (the close). "Set in cuoio — switch anytime."
+>
+> **`Build this outline →`** · `Tweak it first` · `Start blank instead`
+
+On **Build**, the editor populates with the scaffolded skeletons, the filmstrip
+renders, the chat docks to the side, and the Architect hands off to the first
+recommendation (*"slide 4 is your ask — let's make it the strongest in the deck"*).
+
+**Branches:** "just start writing" → blank deck, docked one-line offer; pasted
+markdown → skip to "restructure into components, or keep your structure and just
+advise?"; returning user → "pick up [deck] or start new?" (onboarding runs for
+*new* only); vague input → sensible general outline, stated as such.
+
+**Zero-model floor:** same three questions as fixed prompts (Beat 3 stored
+verbatim), retrieval still runs, Beat 4 becomes a templated outline keyed to the
+deck type. Loses the tailored framing + the "draft the ask" offer; keeps the
+questions, a real component outline, and the scaffold. Never a dead end.
