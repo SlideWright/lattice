@@ -9,6 +9,20 @@ import { defineConfig } from 'astro/config';
 export default defineConfig({
 	site: 'https://slidewright.github.io',
 	base: '/lattice',
+	// The Drawing Board's Architect panel imports the repo's pure CommonJS
+	// lint-core (lib/authoring/lint-core.js) so the browser runs the SAME checks
+	// as the Node CLI. Two Vite nudges make that work: allow resolving the file
+	// above the docs root, and apply the CJS→ESM transform to it (Rollup treats
+	// project .js as ESM by default, so its module.exports would read as undefined).
+	vite: {
+		server: { fs: { allow: ['..'] } },
+		build: {
+			commonjsOptions: {
+				include: [/lib[/\\]authoring[/\\]lint-core\.js$/, /node_modules/],
+				transformMixedEsModules: true,
+			},
+		},
+	},
 	integrations: [
 		starlight({
 			title: 'Lattice',

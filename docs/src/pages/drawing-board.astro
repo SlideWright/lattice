@@ -26,6 +26,13 @@ const require = createRequire(import.meta.url);
 const { loadAll } = require(join(repoRoot, 'lib/components', 'index.js'));
 const manifests = loadAll();
 
+// The Architect's deterministic linter runs in the browser against the same
+// pure lint-core the Node CLI uses; only the name/modifier VOCABULARY is data,
+// computed here at build time from the live manifests and shipped in the page.
+const { buildVocab } = require(join(repoRoot, 'lib/authoring', 'lint.js'));
+const _vocab = buildVocab(manifests);
+const lintVocab = { names: [..._vocab.names], modifiers: [..._vocab.modifiers] };
+
 const base = import.meta.env.BASE_URL;
 const url = (p) => `${base}/${p}`.replace(/([^:])\/{2,}/g, '$1/');
 
@@ -46,6 +53,7 @@ const dbData = JSON.stringify({
 	defaultPalette: 'indaco',
 	slideBox: SLIDE_BOX,
 	starter,
+	lintVocab,
 });
 ---
 
@@ -143,10 +151,10 @@ const dbData = JSON.stringify({
 							<li class="db-arch-beat"><b>Who</b><span>Who's in the room?</span></li>
 							<li class="db-arch-beat"><b>The one outcome</b><span>What's the single thing you need when you close?</span></li>
 						</ul>
+						<div class="db-arch-review" id="db-arch-review" aria-live="polite"></div>
 						<p class="db-arch-soon">
-							I come fully online in <strong>Slice 5</strong> — live linting, structure
-							recommendations, and one-click fixes, all on-device. For now the editor and live
-							preview are ready: <code>start sketching →</code>
+							<strong>Live review is on</strong> — I check every edit against the authoring
+							contract, on-device, no model needed. Guided onboarding &amp; chat come next.
 						</p>
 					</div>
 					<div class="db-arch-composer">
@@ -250,6 +258,20 @@ const dbData = JSON.stringify({
 			});
 			window.__dbStore = store;
 			store.init();
+		</script>
+
+		<!-- The Architect — deterministic live review (Slice 5). Runs the shared,
+		     browser-safe lint-core against every edit; renders findings with reveal +
+		     fix guidance. Zero model. -->
+		<script>
+			import { createArchitect } from '../playground/drawing-board-architect.js';
+			const data = JSON.parse(document.getElementById('db-data').textContent);
+			const architect = createArchitect({
+				vocab: data.lintVocab,
+				mount: document.getElementById('db-arch-review'),
+				reveal: (line) => { if (window.__dbEditor) window.__dbEditor.goToLine(line); },
+			});
+			window.__dbArchitect = architect;
 		</script>
 
 		<!-- Export — MD / PDF / PPTX (Slice 4). PptxGenJS is lazy-imported inside
@@ -488,6 +510,7 @@ const dbData = JSON.stringify({
 					recomputeStarts();
 					scheduleRender();
 					if (window.__dbStore) window.__dbStore.saveActive(getSource());
+					if (window.__dbArchitect) window.__dbArchitect.update(getSource());
 				}
 				// The store loads a deck (switch / restore / initial) -> swap the editor
 				// source and re-render. setSource fires onChange, but the store guards its
@@ -498,6 +521,7 @@ const dbData = JSON.stringify({
 					setSource(src);
 					recomputeStarts();
 					render();
+					if (window.__dbArchitect) window.__dbArchitect.update(src);
 				});
 				// Cursor moved in the editor -> if it crossed into a different slide,
 				// scroll the filmstrip to it (smooth). Same-slide moves don't scroll, so
@@ -531,6 +555,7 @@ const dbData = JSON.stringify({
 					window.__dbEditor.onCursor(onCursorMove);
 					recomputeStarts();
 					render();
+					if (window.__dbArchitect) window.__dbArchitect.update(getSource());
 				}
 				if (window.__dbEditor) wireEditor();
 				else window.addEventListener('db-editor-ready', wireEditor);

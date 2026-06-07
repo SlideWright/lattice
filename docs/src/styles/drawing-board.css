@@ -386,12 +386,118 @@ body.db-page .topbar {
 	color: var(--text-muted);
 	border-top: 1px dashed var(--border);
 	padding-top: 0.7rem;
+	margin-top: 0.9rem;
 	line-height: 1.5;
 }
 .db-arch-soon code {
 	font-family: var(--font-mono);
 	font-size: 0.72rem;
 	color: var(--accent);
+}
+
+/* Live review (the Architect's deterministic findings) */
+.db-review-clean {
+	font-size: 0.84rem;
+	color: var(--text-muted);
+	background: color-mix(in srgb, #2e7d32 9%, var(--bg));
+	border: 1px solid color-mix(in srgb, #2e7d32 28%, var(--border));
+	border-radius: var(--radius-md);
+	padding: 0.6rem 0.7rem;
+}
+.db-review-head {
+	font-family: var(--font-display);
+	font-size: 0.74rem;
+	font-weight: 650;
+	letter-spacing: 0.03em;
+	color: var(--text-heading);
+	margin: 0.2rem 0 0.55rem;
+}
+.db-finding {
+	border: 1px solid var(--border);
+	border-left-width: 3px;
+	border-radius: var(--radius-md);
+	background: var(--bg);
+	padding: 0.55rem 0.65rem;
+	margin-bottom: 0.5rem;
+}
+.db-finding.sev-error {
+	border-left-color: #c0392b;
+}
+.db-finding.sev-warning {
+	border-left-color: #b8860b;
+}
+.db-finding-head {
+	display: flex;
+	gap: 0.45rem;
+	align-items: baseline;
+}
+.db-finding-dot {
+	flex: 0 0 auto;
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	transform: translateY(1px);
+	background: #b8860b;
+}
+.sev-error .db-finding-dot {
+	background: #c0392b;
+}
+.db-finding-msg {
+	font-size: 0.84rem;
+	line-height: 1.4;
+	color: var(--text-body);
+}
+.db-finding-line {
+	display: block;
+	font-family: var(--font-mono);
+	font-size: 0.72rem;
+	color: var(--text-muted);
+	background: var(--bg-alt);
+	border-radius: var(--radius-sm);
+	padding: 0.3rem 0.45rem;
+	margin: 0.4rem 0 0.3rem;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+.db-finding-meta {
+	margin-top: 0.25rem;
+}
+.db-finding-rule {
+	font-size: 0.68rem;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	color: var(--text-muted);
+}
+.db-finding-actions {
+	display: flex;
+	gap: 0.4rem;
+	margin-top: 0.5rem;
+}
+.db-finding-btn {
+	font: inherit;
+	font-size: 0.74rem;
+	color: var(--text-body);
+	background: var(--bg-alt);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-sm);
+	padding: 0.25rem 0.55rem;
+	cursor: pointer;
+}
+.db-finding-btn:hover {
+	border-color: var(--accent);
+	color: var(--text-heading);
+}
+.db-finding-fix {
+	margin: 0.45rem 0 0;
+	font-family: var(--font-mono);
+	font-size: 0.72rem;
+	line-height: 1.5;
+	color: var(--text-body);
+	background: var(--bg-alt);
+	border-radius: var(--radius-sm);
+	padding: 0.45rem 0.55rem;
+	white-space: pre-wrap;
 }
 
 /* The composer — present + framed, disabled until Slice 5 wakes the Architect. */
