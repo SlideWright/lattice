@@ -222,11 +222,17 @@ const autoHeightTheme = EditorView.theme({
 
 // Create the editor in `parent`. `onChange(value)` fires (debounced by caller)
 // on every doc change. `autoHeight` grows the editor to its content (no inner
-// scroll) rather than filling the parent. Returns
-// { getValue, setValue, focus, destroy }.
-export function createEditor({ parent, doc = '', onChange, autoHeight = false }) {
+// scroll) rather than filling the parent. `onCursor` (optional) fires with the
+// 1-based line number of the primary selection head whenever the selection or
+// doc changes — the Drawing Board uses it to sync the preview filmstrip to the
+// slide under the cursor. Returns
+// { getValue, setValue, focus, destroy, goToLine }.
+export function createEditor({ parent, doc = '', onChange, onCursor, autoHeight = false }) {
 	const listener = EditorView.updateListener.of((u) => {
 		if (u.docChanged && onChange) onChange(u.state.doc.toString());
+		if (onCursor && (u.docChanged || u.selectionSet)) {
+			onCursor(u.state.doc.lineAt(u.state.selection.main.head).number);
+		}
 	});
 	const view = new EditorView({
 		parent,
@@ -260,5 +266,13 @@ export function createEditor({ parent, doc = '', onChange, autoHeight = false })
 		setValue: (text) => view.dispatch({ changes: { from: 0, to: view.state.doc.length, insert: text } }),
 		focus: () => view.focus(),
 		destroy: () => view.destroy(),
+		// Move the cursor to (1-based) line `n` and scroll it into view. Clamped
+		// to the document. Used by the Drawing Board's preview->editor sync.
+		goToLine: (n) => {
+			const total = view.state.doc.lines;
+			const line = view.state.doc.line(Math.max(1, Math.min(total, n)));
+			view.dispatch({ selection: { anchor: line.from }, scrollIntoView: true });
+			view.focus();
+		},
 	};
 }

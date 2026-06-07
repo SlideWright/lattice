@@ -208,13 +208,21 @@ const dbData = JSON.stringify({
 			const ta = document.getElementById('db-editor-ta');
 			const initial = ta ? ta.value : '';
 			let notify = null;
-			const ed = createEditor({ parent: host, doc: initial, onChange: (v) => { if (notify) notify(v); } });
+			let notifyCursor = null;
+			const ed = createEditor({
+				parent: host,
+				doc: initial,
+				onChange: (v) => { if (notify) notify(v); },
+				onCursor: (line) => { if (notifyCursor) notifyCursor(line); },
+			});
 			if (ta) ta.remove();
 			window.__dbEditor = {
 				getValue: () => ed.getValue(),
 				setValue: (t) => ed.setValue(t),
 				focus: () => ed.focus(),
+				goToLine: (n) => ed.goToLine(n),
 				onChange: (fn) => { notify = fn; },
+				onCursor: (fn) => { notifyCursor = fn; },
 			};
 			window.dispatchEvent(new Event('db-editor-ready'));
 		</script>
@@ -231,6 +239,45 @@ const dbData = JSON.stringify({
 				var statusEl = document.getElementById('db-status');
 				var paletteSel = document.getElementById('palette');
 				var modeBtn = document.getElementById('mode-toggle');
+
+				// ── Slide <-> source mapping (Slice 2: cursor <-> slide sync) ─────────
+				var slideStartsCache = [1]; // 1-based source line where each slide begins
+				var activeIdx = 0;
+				var totalSlides = 0;
+				// Slides split on standalone `---` rules, skipping the front-matter block
+				// and fenced code (where `---` is literal). Matches Marp's page-break
+				// semantics closely enough for index<->line mapping.
+				function computeSlideStarts(src) {
+					var lines = src.split('\n');
+					var starts = [1]; // slide 0 also covers any front matter
+					var i = 0, n = lines.length;
+					if (lines[0] !== undefined && lines[0].trim() === '---') {
+						i = 1;
+						while (i < n && lines[i].trim() !== '---') i++;
+						i++; // step past the closing front-matter delimiter
+					}
+					var fence = false;
+					for (; i < n; i++) {
+						var ts = lines[i].trim();
+						if (/^(```|~~~)/.test(ts)) { fence = !fence; continue; }
+						if (!fence && /^---\s*$/.test(ts)) starts.push(i + 2);
+					}
+					return starts;
+				}
+				function recomputeStarts() { slideStartsCache = computeSlideStarts(getSource()); }
+				function idxForLine(line) {
+					var idx = 0;
+					for (var k = 0; k < slideStartsCache.length; k++) {
+						if (line >= slideStartsCache[k]) idx = k; else break;
+					}
+					return idx;
+				}
+				function postToFrame(msg) { if (frame.contentWindow) frame.contentWindow.postMessage(msg, '*'); }
+				function setSlideStatus() {
+					if (totalSlides <= 0) { setStatus('Ready.'); return; }
+					statusEl.classList.remove('err');
+					statusEl.textContent = 'Slide ' + Math.min(activeIdx + 1, totalSlides) + ' of ' + totalSlides;
+				}
 
 				// ── Source accessors (CodeMirror adapter, textarea fallback) ──────────
 				function getSource() {
@@ -309,8 +356,25 @@ const dbData = JSON.stringify({
 					'})();',
 				].join('\n');
 
+				// In-iframe sync agent: tags each section with its index, reports clicks
+				// to the parent, and listens for scroll/active messages. Lives in the
+				// srcdoc so it re-installs on every render (fresh browsing context).
+				var SYNC = [
+					'(function(){',
+					'  function secs(){var m=document.querySelector(".marpit");return m?m.querySelectorAll(":scope>section"):[];}',
+					'  function tag(){var s=secs();for(var i=0;i<s.length;i++)s[i].setAttribute("data-idx",i);}',
+					'  tag();',
+					'  function setActive(i){var s=secs();for(var k=0;k<s.length;k++)s[k].classList.toggle("db-active",k===i);}',
+					'  function scrollTo(i,smooth){var s=secs();if(!s[i])return;window.scrollTo({top:Math.max(0,s[i].offsetTop-22),behavior:smooth?"smooth":"auto"});setActive(i);}',
+					'  document.addEventListener("click",function(e){var n=e.target;while(n&&!(n.parentNode&&n.parentNode.classList&&n.parentNode.classList.contains("marpit")))n=n.parentNode;if(n)parent.postMessage({type:"db-slide-click",idx:+n.getAttribute("data-idx")},"*");});',
+					'  window.addEventListener("message",function(e){var d=e.data||{};if(d.type==="db-scroll-to")scrollTo(d.idx,d.smooth);else if(d.type==="db-set-active")setActive(d.idx);});',
+					'  parent.postMessage({type:"db-frame-ready"},"*");',
+					'})();',
+				].join('\n');
+
 				function writeFrame(html, css, mode) {
 					var bg = mode === 'dark' ? '#0c0c0c' : '#e7e7ea';
+					var ACCENT = (getComputedStyle(root).getPropertyValue('--accent') || '').trim() || '#b0492e';
 					// srcdoc (fresh browsing context per render) so lattice-runtime.js's
 					// one-shot Mermaid guard resets each render — see playground.astro +
 					// engineering/gotchas.md "Playground: Mermaid stops rendering".
@@ -319,12 +383,14 @@ const dbData = JSON.stringify({
 						'<link rel="stylesheet" href="' + KATEX + '">' +
 						'<style>html,body{margin:0;padding:22px;background:' + bg + ';}' +
 						SLIDE_BOX +
-						'.marpit>section{display:block;transform-origin:top left;' +
+						'.marpit>section{display:block;transform-origin:top left;cursor:pointer;' +
 						'box-shadow:0 8px 30px rgba(0,0,0,.22);border-radius:6px;}' +
+						'.marpit>section.db-active{outline:3px solid ' + ACCENT + ';outline-offset:4px;}' +
 						css + '</style></head><body>' + html +
 						'<scr' + 'ipt src="' + MERMAID + '"></scr' + 'ipt>' +
 						'<scr' + 'ipt src="' + RUNTIME_URL + '"></scr' + 'ipt>' +
 						'<scr' + 'ipt>' + FIT + '</scr' + 'ipt>' +
+						'<scr' + 'ipt>' + SYNC + '</scr' + 'ipt>' +
 						'</body></html>';
 				}
 
@@ -341,19 +407,48 @@ const dbData = JSON.stringify({
 						try {
 							var out = PG.render(getSource(), theme);
 							writeFrame(out.html, out.css, mode);
-							var n = (out.html.match(/<\/section>/g) || []).length;
-							setStatus(n + ' slide' + (n === 1 ? '' : 's') + '.');
+							totalSlides = (out.html.match(/<\/section>/g) || []).length;
+							recomputeStarts();
+							setSlideStatus();
 						} catch (e) {
 							setStatus(String(e.message || e), true);
 						}
 					}).catch(function (e) { setStatus(String(e.message || e), true); });
 				}
 
-				function onEdit() { saveSource(); scheduleRender(); }
+				function onEdit() { saveSource(); recomputeStarts(); scheduleRender(); }
+				// Cursor moved in the editor -> if it crossed into a different slide,
+				// scroll the filmstrip to it (smooth). Same-slide moves don't scroll, so
+				// typing within a slide stays put.
+				function onCursorMove(line) {
+					var idx = idxForLine(line);
+					if (idx === activeIdx) return;
+					activeIdx = idx;
+					setSlideStatus();
+					postToFrame({ type: 'db-scroll-to', idx: idx, smooth: true });
+				}
+				// Messages from the in-iframe sync agent: a slide click -> move the
+				// cursor to that slide's first line; frame-ready -> restore the preview to
+				// the active slide after a re-render (so editing slide 7 doesn't snap to
+				// the top on every keystroke).
+				window.addEventListener('message', function (e) {
+					var d = e.data || {};
+					if (d.type === 'db-slide-click') {
+						var i = d.idx | 0;
+						activeIdx = i;
+						setSlideStatus();
+						if (window.__dbEditor && slideStartsCache[i] != null) window.__dbEditor.goToLine(slideStartsCache[i]);
+						postToFrame({ type: 'db-set-active', idx: i });
+					} else if (d.type === 'db-frame-ready') {
+						postToFrame({ type: 'db-scroll-to', idx: activeIdx, smooth: false });
+					}
+				});
 				function wireEditor() {
 					if (!window.__dbEditor) return;
 					window.__dbEditor.onChange(onEdit);
+					window.__dbEditor.onCursor(onCursorMove);
 					try { var saved = localStorage.getItem(SOURCE_KEY); if (saved != null) setSource(saved); } catch (e) {}
+					recomputeStarts();
 					render();
 				}
 				if (window.__dbEditor) wireEditor();
