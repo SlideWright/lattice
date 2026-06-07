@@ -261,7 +261,7 @@ instead of a counter. The card body fills from the top; no first line
 is consumed by a label.
 
 ```markdown
-<!-- _class: before-after -->
+<!-- _class: compare-prose transition -->
 
 ## Decisions used to require a quarterly re-litigation.
 

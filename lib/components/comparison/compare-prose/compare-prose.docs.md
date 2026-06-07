@@ -4,7 +4,7 @@
 
 **Function** comparison · **Form** split · **Substance** structure
 
-**Tags** `tradeoff` · `contrast` · `recommendation`
+**Tags** `tradeoff` · `contrast` · `recommendation` · `transformation` · `retrospective`
 
 Use to weigh two approaches against each other in body text. Add the `chosen` or `decision` modifier to mark the verdict; add `vertical` to stack top/bottom instead of side-by-side.
 
@@ -59,6 +59,21 @@ Use to weigh two approaches against each other in body text. Add the `chosen` or
 ```
 
 ## Variants (layout-specific)
+
+### `transition` — Transition — before/after state change
+
+The state-change reading: an arrow connector and an accent ring on the second ("after") card. Write Before / After (or any prior → new pair) as the two labels. Reads as a story, not a debate. Absorbed the standalone `before-after` component on 2026-06-07.
+
+```markdown
+<!-- _class: compare-prose transition -->
+
+## What writing decisions down actually changed.
+
+- Before
+  - Decisions lived in the room they were made in. Six months on, nobody could say why we killed the project — only that someone senior had felt strongly.
+- After
+  - Every decision is logged with its signals, its options, and the bet it made. We still relitigate, but now there is a record showing we already decided this in March.
+```
 
 ### `mirror` — Mirror — swap left and right
 
@@ -158,7 +173,6 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 ## Related components
 
-- [`before-after`](../../comparison/before-after/before-after.docs.md) — two states of one system, not two alternatives
 - [`compare-code`](../../code/compare-code/compare-code.docs.md) — the columns are code, not prose
 - [`split-compare`](../../comparison/split-compare/split-compare.docs.md) — the verdict needs a bottom recommendation bar
 - [`verdict-grid`](../../comparison/verdict-grid/verdict-grid.docs.md) — three or more options scored against shared criteria

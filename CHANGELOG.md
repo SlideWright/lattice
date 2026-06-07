@@ -27,6 +27,15 @@ in patch versions.
 
 ### Removed
 
+- **Breaking: the `before-after` layout is removed.** It was `compare-prose`
+  with an arrow connector and an accent ring on the second ("after") card — the
+  same two-card data shape — so it is now the `transition` variant of
+  `compare-prose`: migrate `<!-- _class: before-after -->` to
+  `<!-- _class: compare-prose transition -->` (write Before / After as the two
+  labels; `banner-tag` still composes). The shared corner-tag / banner-tag CSS
+  that had been hosted in `before-after.styles.css` moved to
+  `compare-prose.styles.css`; `decision` (which also uses it) is unaffected.
+  Part of the layout-redundancy consolidation.
 - **Breaking: the `timeline` layout is removed.** It was `list-steps` with
   lighter, shorter rows — the same ordered-steps data shape, dots-on-a-spine
   instead of step cards — so it is now the `timeline` variant of `list-steps`:

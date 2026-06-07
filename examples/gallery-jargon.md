@@ -553,7 +553,7 @@ Phase 3 is where org-wide enablement lives. Phase 3 has been in the roadmap sinc
 
 ---
 
-<!-- _class: before-after -->
+<!-- _class: compare-prose transition -->
 <!-- _footer: "State change over time · before-after" -->
 
 ## Decisions used to require a quarterly re-litigation
@@ -569,7 +569,7 @@ The architecture change is the calibration loop. The culture change is still in 
 
 ---
 
-<!-- _class: before-after banner-tag -->
+<!-- _class: compare-prose transition banner-tag -->
 <!-- _footer: "Same comparison, banner-tag chrome · before-after banner-tag" -->
 
 ## The same before-after for the board deck

@@ -55,20 +55,6 @@
     ],
     "description": "Provenance chain — statute to regulation to guidance to case, walked in order."
   },
-  "lattice: before-after": {
-    "prefix": "lattice-before-after",
-    "body": [
-      "<!-- _class: before-after -->",
-      "",
-      "## What the change did.",
-      "",
-      "- Before",
-      "  - How the system or process worked before the change, in one or two sentences.",
-      "- After",
-      "  - How the system or process works now, in one or two sentences."
-    ],
-    "description": "Explicit state-change comparison — what was, what is."
-  },
   "lattice: big-number": {
     "prefix": "lattice-big-number",
     "body": [

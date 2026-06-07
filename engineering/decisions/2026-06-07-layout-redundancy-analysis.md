@@ -219,7 +219,26 @@ Catalog: **58 → 54 components.** Each merge: source CSS variant + manifest +
 deck migration + regenerated artifacts, gated by `check:ownership` + `npm test`
 (green) and visually spot-checked.
 
-**Deferred — blocked on shared/leaked-CSS untangling (not in this pass):**
+**Shipped in the follow-up pass (2026-06-07):**
+
+| Cluster | Change | Components removed |
+|---|---|---|
+| 4 | `timeline` → `list-steps timeline` variant | `timeline` |
+| 1b | `before-after` → `compare-prose transition` variant | `before-after` |
+
+Catalog: **58 → 52 components.** Both required untangling shared/leaked CSS,
+done and verified:
+- Cluster 4: the Mermaid timeline-*diagram* overrides (`.timeline-node`,
+  `.eventWrapper`) that had been mis-filed in the layout's stylesheet moved to
+  `lib/integrations/mermaid/mermaid.css` — their correct home, alongside the
+  general `.section-N` Mermaid band rules that already lived there. The
+  `regulatory-update timeline` legal variant is pixel-unchanged (its pills come
+  from its own counter). A Mermaid timeline diagram still cycles its bands.
+- Cluster 1b: the corner-tag / banner-tag CSS shared by `compare-prose` +
+  `decision` moved out of `before-after.styles.css` into
+  `compare-prose.styles.css`; both verified intact.
+
+**(Originally deferred — now resolved above.) The entanglements were:**
 
 - **Cluster 1b — `before-after` → `compare-prose` variant.** `before-after.styles.css`
   is the *home* of the corner-tag + banner-tag CSS shared by `compare-prose`

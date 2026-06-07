@@ -1007,7 +1007,7 @@ The subtopic counter is independent of the divider counter, so a mid-deck subtop
 
 ---
 
-<!-- _class: before-after -->
+<!-- _class: compare-prose transition -->
 <!-- _footer: "New layout — before-after · before-after" -->
 
 ## Decisions used to require a quarterly re-litigation.

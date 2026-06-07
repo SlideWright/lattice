@@ -149,7 +149,7 @@
       "accent"
     ]
   },
-  "count": 53,
+  "count": 52,
   "components": [
     {
       "name": "actors",
@@ -501,117 +501,6 @@
         }
       ],
       "galleryHref": "../../lib/components/legal/authority-chain/authority-chain.gallery.light.pdf"
-    },
-    {
-      "name": "before-after",
-      "bucket": "comparison",
-      "function": "comparison",
-      "form": "split",
-      "substance": "structure",
-      "tags": [
-        "transformation",
-        "contrast",
-        "retrospective"
-      ],
-      "description": "Explicit state-change comparison — what was, what is.",
-      "purpose": "Use to show the transformation produced by a change. Left = the prior state; right = the new state. Reads as a story, not a debate.",
-      "variants": [
-        "banner-tag"
-      ],
-      "effectiveVariants": [
-        "accent",
-        "archived",
-        "banner-tag",
-        "compact",
-        "confidential",
-        "dark",
-        "draft",
-        "loose",
-        "mark-orbit",
-        "mark-threads",
-        "no-footer",
-        "no-header",
-        "no-paginate",
-        "no-period",
-        "pinned",
-        "redacted",
-        "revised",
-        "scale-2xl",
-        "scale-l",
-        "scale-xl",
-        "silent",
-        "tbd",
-        "tint-corner at-tl",
-        "tint-edge at-right",
-        "tint-vignette",
-        "tone-fail",
-        "tone-pass",
-        "tone-skip",
-        "tone-warn",
-        "treatment-none",
-        "wip",
-        "with-period"
-      ],
-      "slots": {
-        "title": {
-          "selector": "h2",
-          "required": true,
-          "description": "Slide heading naming the change."
-        },
-        "states": {
-          "selector": "ul > li",
-          "required": true,
-          "description": "Exactly two list items. Authoring contract: a top-level bullet is the state label (Before / After); an indented bullet underneath carries the 1-2 sentence description."
-        }
-      },
-      "skeleton": "<!-- _class: before-after -->\n\n## What the change did.\n\n- Before\n  - How the system or process worked before the change, in one or two sentences.\n- After\n  - How the system or process works now, in one or two sentences.\n",
-      "whenToUse": [
-        {
-          "title": "Story of a change",
-          "body": "Two states, one transformation — the audience reads left-to-right as a narrative, not a debate. Use after a decision has been made and shipped."
-        },
-        {
-          "title": "Concrete prior and new state",
-          "body": "Both sides are factual descriptions of the system. The arrow between them is the change itself; the cards substantiate it."
-        },
-        {
-          "title": "Equal-density prose",
-          "body": "Each card carries roughly the same length of body text. Lopsided density makes the After look heavier than the Before and the comparison breaks."
-        }
-      ],
-      "antiPatterns": [
-        {
-          "title": "Two competing options",
-          "body": "Use `compare-prose` or `split-compare` when both sides are alternatives under consideration. before-after is for a change that already happened."
-        },
-        {
-          "title": "More than two states",
-          "body": "If there is a middle state or a sequence of changes, use `list-steps` to show the progression. before-after is binary by construction."
-        },
-        {
-          "title": "Editorial labels on the cards",
-          "body": "The card label is always Before or After. Renaming them to Old way / New way defeats the universal grammar and breaks reader expectations."
-        }
-      ],
-      "related": [
-        {
-          "name": "compare-prose",
-          "when": "two alternatives being weighed, not a transformation"
-        },
-        {
-          "name": "split-compare",
-          "when": "binary decision with a verdict bar"
-        },
-        {
-          "name": "redline",
-          "when": "the change is in verbatim text, not structural state"
-        },
-        {
-          "name": "list-steps",
-          "when": "the change has more than two phases"
-        }
-      ],
-      "galleryHref": "../../lib/components/comparison/before-after/before-after.gallery.light.pdf"
     },
     {
       "name": "big-number",
@@ -1523,7 +1412,7 @@
       ],
       "related": [
         {
-          "name": "before-after",
+          "name": "compare-prose",
           "when": "the change is state, not code"
         },
         {
@@ -1550,11 +1439,14 @@
       "tags": [
         "tradeoff",
         "contrast",
-        "recommendation"
+        "recommendation",
+        "transformation",
+        "retrospective"
       ],
       "description": "Two prose options side-by-side with a labeled corner tag on each.",
       "purpose": "Use to weigh two approaches against each other in body text. Add the `chosen` or `decision` modifier to mark the verdict; add `vertical` to stack top/bottom instead of side-by-side.",
       "variants": [
+        "transition",
         "mirror",
         "chosen",
         "decision",
@@ -1596,6 +1488,7 @@
         "tone-pass",
         "tone-skip",
         "tone-warn",
+        "transition",
         "treatment-none",
         "vertical",
         "wip",
@@ -1643,10 +1536,6 @@
         }
       ],
       "related": [
-        {
-          "name": "before-after",
-          "when": "two states of one system, not two alternatives"
-        },
         {
           "name": "compare-code",
           "when": "the columns are code, not prose"
@@ -4617,7 +4506,7 @@
           "when": "two narrative alternatives, not verbatim amendments"
         },
         {
-          "name": "before-after",
+          "name": "compare-prose",
           "when": "the change is structural state, not text"
         },
         {

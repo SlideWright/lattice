@@ -979,208 +979,6 @@ section.authority-chain.trail > :is(ol, ul) > li::before {
   margin-bottom:var(--sp-xs);
 }
 
-/* === lib/components/comparison/before-after/before-after.styles.css === */
-/* before-after — extracted from lib/_legacy.css (batch 4).
- * See lib/components/before-after/before-after.manifest.json for the component contract.
- */
-
-/* ── BEFORE-AFTER ──────────────────────────────────────────────────────
- * ## heading
- * - **Before** body explaining the prior state
- * - **After**  body explaining the new state
- *
- * Two cards with a large arrow between them. The right (After) card
- * carries an accent ring to signal "this is the new state". The arrow
- * is rendered as a section-level glyph between the two cards.
- *
- * Composes with `.vertical` (cross-cutting modifier slot — wave 7+) by
- * stacking the cards and rotating the arrow. Implemented here as a base
- * layout; the vertical variant is added in a later wave if needed.
- * ──────────────────────────────────────────────────────────────────────── */
-section.before-after { display:flex; flex-direction:column; }
-section.before-after h2 { margin-bottom:var(--sp-sm); }
-section.before-after > ul,
-section.before-after > ol {
-  display:grid;
-  grid-template-columns:1fr auto 1fr;
-  align-items:stretch;
-  gap:var(--sp-md);
-  flex:1;
-  list-style:none; padding:0; margin:0;
-  position:relative;
-}
-section.before-after > ul > li,
-section.before-after > ol > li {
-  background:var(--bg-alt);
-  border:1px solid var(--border);
-  border-radius:var(--radius-md);
-  padding:var(--sp-md);
-  display:flex; flex-direction:column; gap:var(--sp-xs);
-  color:var(--text-body);
-  font-size:var(--fs-body);
-  font-weight:400;
-}
-section.before-after > ul > li:first-child,
-section.before-after > ol > li:first-child {
-  grid-column:1;
-}
-section.before-after > ul > li:last-child,
-section.before-after > ol > li:last-child {
-  grid-column:3;
-  border-color:var(--on-accent-soft);
-  background:var(--accent-soft);
-}
-section.before-after > ul > li > strong,
-section.before-after > ol > li > strong {
-  display:block;
-  font-family:var(--font-mono);
-  font-size:var(--fs-meta);
-  font-weight:700;
-  letter-spacing:0.18em;
-  text-transform:uppercase;
-  color:var(--text-label);
-}
-section.before-after > ul > li:last-child > strong,
-section.before-after > ol > li:last-child > strong {
-  color:var(--accent);
-}
-/* Arrow injected as a grid cell between the two list items via ::before
- * on the ul/ol. Position: column 2, vertically centred. */
-section.before-after > ul::before,
-section.before-after > ol::before {
-  content:'→';
-  grid-column:2;
-  grid-row:1;
-  align-self:center;
-  font-size:var(--fs-h1);
-  color:var(--accent);
-  font-weight:400;
-  line-height:1;
-}
-/* Optional trailing paragraph — handled by universal below-note / annotation. */
-
-/* ── corner tag, labeled variant ──────────────────────────────────────────
- * before-after, decision, and compare-prose lift the leading text of
- * each top-level <li> into a flush top-left corner tag — same recipe
- * and accent fill as the numbered corner tag (cards-grid / cards-stack),
- * but the content is editorial label text instead of a counter. Frees
- * the title line so the body fills the card from the top.
- *
- * The leading <strong> wrapper is produced automatically by the build
- * pipeline (slotLabelLift in marp.config.js, mirrored in
- * lattice-emulator.js) — authors write plain `- Label` and the structural
- * lift happens in the Marpit token layer. Wrapping `**Label**` in source
- * still works (idempotent) for authors who prefer to be explicit. */
-section.before-after > :is(ul, ol) > li:has(> strong:first-child),
-section.decision > :is(ul, ol) > li:has(> strong:first-child),
-section.compare-prose:not(:has(.compare-prose-inner)) > :is(ul, ol) > li:has(> strong:first-child),
-section.compare-prose .compare-prose-inner .card:has(> strong:first-child) {
-  position: relative;
-  padding-top: calc(var(--sp-sm) + 2.34375cqi);
-}
-section.before-after > :is(ul, ol) > li:has(> strong:first-child) > strong:first-child,
-section.decision > :is(ul, ol) > li:has(> strong:first-child) > strong:first-child,
-section.compare-prose:not(:has(.compare-prose-inner)) > :is(ul, ol) > li:has(> strong:first-child) > strong:first-child,
-section.compare-prose .compare-prose-inner .card:has(> strong:first-child) > strong:first-child {
-  position: absolute;
-  top: 0; left: 0;
-  margin: 0;
-  padding: 0.46875cqi 1.09375cqi;
-  border-radius: var(--radius-md) 0 var(--radius-sm) 0;
-  background: var(--accent);
-  color: var(--on-accent, var(--on-dark-primary));
-  font-family: var(--font-mono);
-  font-size: 1.171875cqi;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  line-height: 1;
-}
-/* Decision corner tag uses the per-card deep variant + on-cat ink —
- * the universal text-on-categorical recipe defined in :root. The full
- * saturation hue still anchors the card via the bottom border. */
-section.decision > :is(ul, ol) > li:has(> strong:first-child) > strong:first-child {
-  background: var(--decision-accent-deep, var(--accent));
-  /* --decision-accent-deep resolves to --cN-dark (categorical fill); text on
-   * a --cN-dark fill uses --c-ink-dark (white on light, near-black on dark). */
-  color: var(--c-ink-dark);
-}
-
-/* ── corner tag, banner variant (.banner-tag modifier) ────────────────────
- * Opt-in modifier on before-after / decision / compare-prose. Converts the
- * flush-corner labeled tag into a full-width header strip — the card becomes
- * a vertical column-flex: tag is `flex: 0 0 auto` (fits content height,
- * spans full width), body is `flex: 1 1 0` and stretches to fill the
- * remaining card box on both axes (justify-content centres the body).
- *
- * Use when the slot label is the architectural signal of the card (the
- * categorical case, e.g. `BUILD` / `WHY NOT BUY` / `WHY NOT DELAY`) rather
- * than a quiet marker. The flush-corner default stays for the editorial
- * register where the body owns the card.
- *
- * Composes with the same lift infrastructure — author writes plain
- * `- Label`, lift produces the `<strong>`, this block restyles the card. */
-section.banner-tag.before-after > :is(ul, ol) > li:has(> strong:first-child),
-section.banner-tag.decision > :is(ul, ol) > li:has(> strong:first-child),
-section.banner-tag.compare-prose:not(:has(.compare-prose-inner)) > :is(ul, ol) > li:has(> strong:first-child),
-section.banner-tag.compare-prose .compare-prose-inner .card:has(> strong:first-child) {
-  position: static;
-  display: flex;
-  flex-direction: column;
-  flex-wrap: nowrap;
-  padding: 0;
-  overflow: hidden;
-  gap: 0;
-}
-section.banner-tag.before-after > :is(ul, ol) > li:has(> strong:first-child) > strong:first-child,
-section.banner-tag.decision > :is(ul, ol) > li:has(> strong:first-child) > strong:first-child,
-section.banner-tag.compare-prose:not(:has(.compare-prose-inner)) > :is(ul, ol) > li:has(> strong:first-child) > strong:first-child,
-section.banner-tag.compare-prose .compare-prose-inner .card:has(> strong:first-child) > strong:first-child {
-  position: static;
-  flex: 0 0 auto;
-  display: block;
-  width: 100%;
-  margin: 0;
-  padding: 0.78125cqi var(--sp-md);
-  border-radius: 0;
-  background: var(--accent);
-  color: var(--on-accent, var(--on-dark-primary));
-  font-family: var(--font-mono);
-  font-size: 1.09375cqi;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  line-height: 1.2;
-  box-sizing: border-box;
-}
-section.banner-tag.before-after > :is(ul, ol) > li:has(> strong:first-child) > :is(ul, ol),
-section.banner-tag.decision > :is(ul, ol) > li:has(> strong:first-child) > :is(ul, ol),
-section.banner-tag.compare-prose:not(:has(.compare-prose-inner)) > :is(ul, ol) > li:has(> strong:first-child) > :is(ul, ol),
-section.banner-tag.compare-prose .compare-prose-inner .card:has(> strong:first-child) > :is(ul, ol) {
-  flex: 1 1 0;
-  min-height: 0;
-  width: auto;
-  margin: 0;
-  padding: var(--sp-md);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  box-sizing: border-box;
-}
-section.banner-tag.decision > :is(ul, ol) > li:has(> strong:first-child) > strong:first-child {
-  background: var(--decision-accent-deep, var(--accent));
-  /* --decision-accent-deep resolves to --cN-dark; see flush-corner rule above. */
-  color: var(--c-ink-dark);
-}
-
-
-/* Hardening: element siblings of <strong> in a card li don't inherit
- * the parent's font-weight:700. Covers cases like `<strong>Title.</strong>
- * <em>italic body</em>`. Text-node siblings still inherit (CSS can't
- * target text nodes); the manifest validator catches that case at
- * lint time. See CARD_STYLE_LAYOUTS in lib/components/index.js. */
-section.before-after :is(ul,ol) > li > strong ~ * { font-weight: 400; }
-
 /* === lib/components/statement/big-number/big-number.styles.css === */
 /* big-number — statement.canvas.bignumber
  *
@@ -2169,6 +1967,136 @@ section.compare-prose.vertical .compare-prose-inner .connector {
  * target text nodes); the manifest validator catches that case at
  * lint time. See CARD_STYLE_LAYOUTS in lib/components/index.js. */
 section.compare-prose :is(ul,ol) > li > strong ~ * { font-weight: 400; }
+
+/* ── corner tag + banner tag — relocated from the retired before-after
+ * component on 2026-06-07. Shared by compare-prose (incl. its `transition`
+ * variant) and decision: lifts each top-level card label into a flush
+ * corner tag; `.banner-tag` converts it to a full-width header strip. */
+/* ── corner tag, labeled variant ──────────────────────────────────────────
+ * before-after, decision, and compare-prose lift the leading text of
+ * each top-level <li> into a flush top-left corner tag — same recipe
+ * and accent fill as the numbered corner tag (cards-grid / cards-stack),
+ * but the content is editorial label text instead of a counter. Frees
+ * the title line so the body fills the card from the top.
+ *
+ * The leading <strong> wrapper is produced automatically by the build
+ * pipeline (slotLabelLift in marp.config.js, mirrored in
+ * lattice-emulator.js) — authors write plain `- Label` and the structural
+ * lift happens in the Marpit token layer. Wrapping `**Label**` in source
+ * still works (idempotent) for authors who prefer to be explicit. */
+section.decision > :is(ul, ol) > li:has(> strong:first-child),
+section.compare-prose:not(:has(.compare-prose-inner)) > :is(ul, ol) > li:has(> strong:first-child),
+section.compare-prose .compare-prose-inner .card:has(> strong:first-child) {
+  position: relative;
+  padding-top: calc(var(--sp-sm) + 2.34375cqi);
+}
+section.decision > :is(ul, ol) > li:has(> strong:first-child) > strong:first-child,
+section.compare-prose:not(:has(.compare-prose-inner)) > :is(ul, ol) > li:has(> strong:first-child) > strong:first-child,
+section.compare-prose .compare-prose-inner .card:has(> strong:first-child) > strong:first-child {
+  position: absolute;
+  top: 0; left: 0;
+  margin: 0;
+  padding: 0.46875cqi 1.09375cqi;
+  border-radius: var(--radius-md) 0 var(--radius-sm) 0;
+  background: var(--accent);
+  color: var(--on-accent, var(--on-dark-primary));
+  font-family: var(--font-mono);
+  font-size: 1.171875cqi;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+/* Decision corner tag uses the per-card deep variant + on-cat ink —
+ * the universal text-on-categorical recipe defined in :root. The full
+ * saturation hue still anchors the card via the bottom border. */
+section.decision > :is(ul, ol) > li:has(> strong:first-child) > strong:first-child {
+  background: var(--decision-accent-deep, var(--accent));
+  /* --decision-accent-deep resolves to --cN-dark (categorical fill); text on
+   * a --cN-dark fill uses --c-ink-dark (white on light, near-black on dark). */
+  color: var(--c-ink-dark);
+}
+
+/* ── corner tag, banner variant (.banner-tag modifier) ────────────────────
+ * Opt-in modifier on before-after / decision / compare-prose. Converts the
+ * flush-corner labeled tag into a full-width header strip — the card becomes
+ * a vertical column-flex: tag is `flex: 0 0 auto` (fits content height,
+ * spans full width), body is `flex: 1 1 0` and stretches to fill the
+ * remaining card box on both axes (justify-content centres the body).
+ *
+ * Use when the slot label is the architectural signal of the card (the
+ * categorical case, e.g. `BUILD` / `WHY NOT BUY` / `WHY NOT DELAY`) rather
+ * than a quiet marker. The flush-corner default stays for the editorial
+ * register where the body owns the card.
+ *
+ * Composes with the same lift infrastructure — author writes plain
+ * `- Label`, lift produces the `<strong>`, this block restyles the card. */
+section.banner-tag.decision > :is(ul, ol) > li:has(> strong:first-child),
+section.banner-tag.compare-prose:not(:has(.compare-prose-inner)) > :is(ul, ol) > li:has(> strong:first-child),
+section.banner-tag.compare-prose .compare-prose-inner .card:has(> strong:first-child) {
+  position: static;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  padding: 0;
+  overflow: hidden;
+  gap: 0;
+}
+section.banner-tag.decision > :is(ul, ol) > li:has(> strong:first-child) > strong:first-child,
+section.banner-tag.compare-prose:not(:has(.compare-prose-inner)) > :is(ul, ol) > li:has(> strong:first-child) > strong:first-child,
+section.banner-tag.compare-prose .compare-prose-inner .card:has(> strong:first-child) > strong:first-child {
+  position: static;
+  flex: 0 0 auto;
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0.78125cqi var(--sp-md);
+  border-radius: 0;
+  background: var(--accent);
+  color: var(--on-accent, var(--on-dark-primary));
+  font-family: var(--font-mono);
+  font-size: 1.09375cqi;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  line-height: 1.2;
+  box-sizing: border-box;
+}
+section.banner-tag.decision > :is(ul, ol) > li:has(> strong:first-child) > :is(ul, ol),
+section.banner-tag.compare-prose:not(:has(.compare-prose-inner)) > :is(ul, ol) > li:has(> strong:first-child) > :is(ul, ol),
+section.banner-tag.compare-prose .compare-prose-inner .card:has(> strong:first-child) > :is(ul, ol) {
+  flex: 1 1 0;
+  min-height: 0;
+  width: auto;
+  margin: 0;
+  padding: var(--sp-md);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  box-sizing: border-box;
+}
+section.banner-tag.decision > :is(ul, ol) > li:has(> strong:first-child) > strong:first-child {
+  background: var(--decision-accent-deep, var(--accent));
+  /* --decision-accent-deep resolves to --cN-dark; see flush-corner rule above. */
+  color: var(--c-ink-dark);
+}
+
+
+/* ── transition variant — former `before-after` component (comparison.compare-prose.transition) ──
+ * The state-change reading: an arrow connector and an accent ring on the
+ * second ("after") card. Author writes Before / After as the two labels.
+ * Merged from the standalone before-after on 2026-06-07. */
+section.compare-prose.transition .compare-prose-inner .connector { font-size: 0; }
+section.compare-prose.transition .compare-prose-inner .connector::after {
+  content: "\2192"; font-size: var(--fs-h2); color: var(--accent); line-height: 1;
+}
+section.compare-prose.transition:not(:has(.compare-prose-inner)) > :is(ul, ol)::before {
+  content: "\2192"; color: var(--accent);
+}
+section.compare-prose.transition .compare-prose-inner .card:nth-child(3),
+section.compare-prose.transition:not(:has(.compare-prose-inner)) > :is(ul, ol) > li:last-child {
+  border-color: var(--on-accent-soft); background: var(--accent-soft);
+}
 
 /* === lib/components/comparison/compare-table/compare-table.styles.css === */
 /* compare-table — extracted from lib/_legacy.css (batch 4).

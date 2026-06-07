@@ -112,7 +112,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 ## Related components
 
-- [`before-after`](../../comparison/before-after/before-after.docs.md) — the change is state, not code
+- [`compare-prose`](../../comparison/compare-prose/compare-prose.docs.md) — the change is state, not code
 - [`compare-prose`](../../comparison/compare-prose/compare-prose.docs.md) — the comparison is prose-versus-prose
 - [`redline`](../../comparison/redline/redline.docs.md) — the change is in verbatim text or legal language
 - [`compare-table`](../../comparison/compare-table/compare-table.docs.md) — three or more variants on shared dimensions

@@ -182,7 +182,7 @@ return signals;
 
 `Related components`
 
-- `before-after` — the change is state, not code
+- `compare-prose` — the change is state, not code
 - `compare-prose` — the comparison is prose-versus-prose
 - `redline` — the change is in verbatim text or legal language
 - `compare-table` — three or more variants on shared dimensions
