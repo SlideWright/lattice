@@ -8,7 +8,8 @@
   "description": "Section boundary slide. Dark canvas with a single heading.",
   "purpose": "Marks the start of a major section. Use sparingly — every divider is a context switch for the audience. A 30-slide deck typically has 3-5 dividers; more becomes navigation noise.",
   "variants": [
-    "numbered"
+    "numbered",
+    "light"
   ],
   "slots": {
     "heading": {
@@ -37,6 +38,10 @@
     {
       "title": "With an eyebrow",
       "body": "An inline-code paragraph above the heading stamps a section number or category label. Useful for serialized decks where the audience needs to remember which section they're in."
+    },
+    {
+      "title": "Light variant for sub-section orientation",
+      "body": "The `light` variant keeps the bright body-slide canvas and centers the heading at h2 weight — a lighter context switch for narrowing focus within a section, between a dark divider and the content slides. (Absorbed the standalone `subtopic` component on 2026-06-07.)"
     }
   ],
   "antiPatterns": [
@@ -46,7 +51,7 @@
     },
     {
       "title": "Section title that doesn't earn a section",
-      "body": "If the next 3-4 slides aren't a coherent unit, a subtopic (lighter, on the bright canvas) is the right tool. Reserve dividers for genuine section starts."
+      "body": "If the next 3-4 slides aren't a coherent unit, the `light` variant (bright canvas, centered) is the right tool. Reserve the dark divider for genuine section starts."
     },
     {
       "title": "Header or footer overrides",
@@ -59,10 +64,6 @@
       "when": "opens the deck — same dark-bookend chrome"
     },
     {
-      "name": "subtopic",
-      "when": "lighter mid-section orientation on the bright canvas"
-    },
-    {
       "name": "closing",
       "when": "closes the deck — completes the bookend trio"
     }
@@ -72,6 +73,11 @@
       "label": "Numbered — auto-incrementing section index",
       "caption": "Stamps an auto-incrementing section number in the corner. Each divider in the deck increments the counter; closing slides carry an independent counter.",
       "sample": "<!-- _class: divider silent numbered -->\n\n`Section 03`\n\n## Inventory\n"
+    },
+    "light": {
+      "label": "Light — bright-canvas sub-section break",
+      "caption": "Drops the dark canvas for the standard bright body-slide background, centers the heading, and shrinks it to h2 weight. Use for mid-section orientation that shouldn't carry the full context-switch weight of a dark divider. Absorbed the standalone `subtopic` component on 2026-06-07.",
+      "sample": "<!-- _class: divider light -->\n\n`The Framework · Component 02`\n\n## Before we can score a signal, we have to agree on what one is.\n"
     }
   },
   "showcase": { "featured": true }

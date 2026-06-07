@@ -27,6 +27,13 @@ in patch versions.
 
 ### Removed
 
+- **Breaking: the `subtopic` layout is removed.** Its bright-canvas, centered
+  sub-section break is now the `light` variant of `divider` — migrate
+  `<!-- _class: subtopic -->` to `<!-- _class: divider light -->` (and
+  `subtopic numbered` to `divider light numbered`). The slots are identical
+  (optional inline-code eyebrow + `h2` heading); only the dark-vs-light canvas
+  differed, which is what the variant now carries. Part of the layout-redundancy
+  consolidation (see `engineering/decisions/2026-06-07-layout-redundancy-analysis.md`).
 - **Breaking: the `cards-wide` layout is removed.** `cards-stack` now covers
   its territory — three or four full-width rows with substantial per-card
   body — so the two no longer overlap. Migrate any `<!-- _class: cards-wide -->`

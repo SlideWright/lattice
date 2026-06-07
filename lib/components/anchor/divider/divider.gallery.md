@@ -35,6 +35,16 @@ Section boundary slide. Dark canvas with a single heading.
 
 ---
 
+<!-- _class: divider light -->
+<!-- _footer: "Light — bright-canvas sub-section break · divider light" -->
+
+`The Framework · Component 02`
+
+## Before we can score a signal, we have to agree on what one is.
+
+
+---
+
 <!-- _class: divider silent compact -->
 <!-- _footer: "Composition: compact · divider compact" -->
 
@@ -61,7 +71,7 @@ Section boundary slide. Dark canvas with a single heading.
 ## When NOT to reach for divider.
 
 - **More than five per deck.** Each divider is a hard context switch. Too many dilutes the signal and slows the audience. Group related content under fewer sections instead.
-- **Section title that doesn't earn a section.** If the next 3-4 slides aren't a coherent unit, a subtopic (lighter, on the bright canvas) is the right tool. Reserve dividers for genuine section starts.
+- **Section title that doesn't earn a section.** If the next 3-4 slides aren't a coherent unit, the `light` variant (bright canvas, centered) is the right tool. Reserve the dark divider for genuine section starts.
 - **Header or footer overrides.** Don't reinstate `_header:` or `_footer:` on a divider. The dark canvas is meant to be uninterrupted; chrome belongs on body slides.
 
 ---
@@ -73,5 +83,4 @@ Section boundary slide. Dark canvas with a single heading.
 `Related components`
 
 - `title` — opens the deck — same dark-bookend chrome
-- `subtopic` — lighter mid-section orientation on the bright canvas
 - `closing` — closes the deck — completes the bookend trio

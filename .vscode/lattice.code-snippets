@@ -905,17 +905,6 @@
     ],
     "description": "Citation hierarchy — federal / state / local rows with citation, headline obligation, and status."
   },
-  "lattice: subtopic": {
-    "prefix": "lattice-subtopic",
-    "body": [
-      "<!-- _class: subtopic -->",
-      "",
-      "`Topic family`",
-      "",
-      "## Sub-topic name."
-    ],
-    "description": "Sub-section boundary — lighter than divider, no canvas reskin."
-  },
   "lattice: timeline": {
     "prefix": "lattice-timeline",
     "body": [

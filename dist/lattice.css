@@ -2504,6 +2504,17 @@ section.divider::before { content:''; position:absolute; left:0; top:0; bottom:0
  * so the section headline keeps its full dark-canvas weight. */
 section.divider h2 { font-size:var(--fs-h1); color:var(--text-display); max-width:62.5cqi; line-height:var(--lh-tight); }
 
+/* light variant — former `subtopic` component (anchor.divider.light)
+ *
+ * A bright-canvas sub-section break: drops the dark reskin and the
+ * left-edge spectrum rail, re-centers, and shrinks the heading to h2.
+ * Sits between a dark divider and a run of content slides for finer
+ * orientation. Merged from the standalone subtopic on 2026-06-07. */
+section.divider.light { background:var(--bg); padding-left:0; justify-content:center; align-items:center; }
+section.divider.light::before { content:none; }
+section.divider.light h2 { font-size:var(--fs-h2); color:var(--text-body); max-width:none; margin-bottom:var(--sp-sm); text-align:center; line-height:var(--lh-tight); }
+section.divider.light p  { font-size:var(--fs-message); max-width:46.875cqi; line-height:var(--lh-relaxed); margin:0 auto; text-align:center; }
+
 /* === lib/components/imagery/featured/featured.styles.css === */
 /* featured — extracted from lib/_legacy.css (batch 5).
  * See lib/components/featured/featured.manifest.json for the component contract.
@@ -8828,19 +8839,6 @@ section.statute-stack.lane td:last-child {
   color:var(--text-secondary);
   white-space:nowrap;
 }
-
-/* === lib/components/anchor/subtopic/subtopic.styles.css === */
-/* subtopic — anchor.divider.subtopic
- *
- * Light divider — centered, no canvas reskin. Sits between a divider
- * slide and a sequence of content slides for finer orientation.
- *
- * See lib/components/subtopic/subtopic.manifest.json for the component contract.
- */
-
-section.subtopic { justify-content:center; align-items:center; }
-section.subtopic h2 { font-size:var(--fs-h2); margin-bottom:var(--sp-sm); text-align:center; }
-section.subtopic p  { font-size:var(--fs-message); max-width:46.875cqi; line-height:var(--lh-relaxed); margin:0 auto; text-align:center; }
 
 /* === lib/components/progression/timeline/timeline.styles.css === */
 /* timeline — extracted from lib/_legacy.css (batch 7).

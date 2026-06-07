@@ -149,7 +149,7 @@
       "accent"
     ]
   },
-  "count": 58,
+  "count": 57,
   "components": [
     {
       "name": "actors",
@@ -2240,7 +2240,8 @@
       "description": "Section boundary slide. Dark canvas with a single heading.",
       "purpose": "Marks the start of a major section. Use sparingly — every divider is a context switch for the audience. A 30-slide deck typically has 3-5 dividers; more becomes navigation noise.",
       "variants": [
-        "numbered"
+        "numbered",
+        "light"
       ],
       "effectiveVariants": [
         "accent",
@@ -2249,6 +2250,7 @@
         "confidential",
         "dark",
         "draft",
+        "light",
         "loose",
         "mark-orbit",
         "mark-threads",
@@ -2301,6 +2303,10 @@
         {
           "title": "With an eyebrow",
           "body": "An inline-code paragraph above the heading stamps a section number or category label. Useful for serialized decks where the audience needs to remember which section they're in."
+        },
+        {
+          "title": "Light variant for sub-section orientation",
+          "body": "The `light` variant keeps the bright body-slide canvas and centers the heading at h2 weight — a lighter context switch for narrowing focus within a section, between a dark divider and the content slides. (Absorbed the standalone `subtopic` component on 2026-06-07.)"
         }
       ],
       "antiPatterns": [
@@ -2310,7 +2316,7 @@
         },
         {
           "title": "Section title that doesn't earn a section",
-          "body": "If the next 3-4 slides aren't a coherent unit, a subtopic (lighter, on the bright canvas) is the right tool. Reserve dividers for genuine section starts."
+          "body": "If the next 3-4 slides aren't a coherent unit, the `light` variant (bright canvas, centered) is the right tool. Reserve the dark divider for genuine section starts."
         },
         {
           "title": "Header or footer overrides",
@@ -2321,10 +2327,6 @@
         {
           "name": "title",
           "when": "opens the deck — same dark-bookend chrome"
-        },
-        {
-          "name": "subtopic",
-          "when": "lighter mid-section orientation on the bright canvas"
         },
         {
           "name": "closing",
@@ -6162,113 +6164,6 @@
         }
       ],
       "galleryHref": "../../lib/components/legal/statute-stack/statute-stack.gallery.light.pdf"
-    },
-    {
-      "name": "subtopic",
-      "bucket": "anchor",
-      "function": "anchor",
-      "form": "divider",
-      "substance": "prose",
-      "tags": [
-        "section-break",
-        "walkthrough",
-        "overview"
-      ],
-      "description": "Sub-section boundary — lighter than divider, no canvas reskin.",
-      "purpose": "Introduces a specific topic within a section. Use between divider and content slides for finer orientation. Same light canvas as content slides, centered heading, no special background — a lighter cousin to the dark divider.",
-      "variants": [
-        "numbered"
-      ],
-      "effectiveVariants": [
-        "accent",
-        "archived",
-        "compact",
-        "confidential",
-        "dark",
-        "draft",
-        "loose",
-        "mark-orbit",
-        "mark-threads",
-        "no-footer",
-        "no-header",
-        "no-paginate",
-        "no-period",
-        "numbered",
-        "pinned",
-        "redacted",
-        "revised",
-        "scale-2xl",
-        "scale-l",
-        "scale-xl",
-        "silent",
-        "tbd",
-        "tint-corner at-tl",
-        "tint-edge at-right",
-        "tint-vignette",
-        "tone-fail",
-        "tone-pass",
-        "tone-skip",
-        "tone-warn",
-        "treatment-none",
-        "wip",
-        "with-period"
-      ],
-      "slots": {
-        "heading": {
-          "selector": "h2",
-          "required": true,
-          "description": "Sub-topic name."
-        },
-        "eyebrow": {
-          "selector": "p > code",
-          "required": false,
-          "description": "Optional eyebrow label above h2."
-        }
-      },
-      "skeleton": "<!-- _class: subtopic -->\n\n`Topic family`\n\n## Sub-topic name.\n",
-      "whenToUse": [
-        {
-          "title": "Between divider and content",
-          "body": "After the dark divider opens a section, a subtopic narrows the focus to one specific topic before the audience hits the first content slide. Finer-grained orientation."
-        },
-        {
-          "title": "Lighter than divider",
-          "body": "Same bright canvas as body slides — keeps the visual rhythm intact while still signaling a topic shift. Lighter context-switch cost than a divider."
-        },
-        {
-          "title": "Eyebrow names the topic family",
-          "body": "The inline-code paragraph above the heading is the breadcrumb. \"Section 02 · Module 03\" tells the audience exactly where they are in the deck's hierarchy."
-        }
-      ],
-      "antiPatterns": [
-        {
-          "title": "Used as a divider replacement",
-          "body": "If the next slides are an entirely new section, reach for divider (dark canvas, h1). Subtopic is for sub-section orientation, not section starts."
-        },
-        {
-          "title": "Stacked subtopics",
-          "body": "Two subtopic slides back-to-back means the first didn't introduce anything. Merge them or move directly to content."
-        },
-        {
-          "title": "h1 instead of h2",
-          "body": "The layout expects h2 (subtopic name is one level below the section title). Promoting to h1 makes the slide compete visually with the divider."
-        }
-      ],
-      "related": [
-        {
-          "name": "divider",
-          "when": "major section starts — darker, h1, dedicated canvas"
-        },
-        {
-          "name": "title",
-          "when": "opens the deck — same dark-bookend chrome as divider"
-        },
-        {
-          "name": "content",
-          "when": "the body slides that follow a subtopic"
-        }
-      ],
-      "galleryHref": "../../lib/components/anchor/subtopic/subtopic.gallery.light.pdf"
     },
     {
       "name": "timeline",

@@ -2,7 +2,7 @@
 
 # anchor
 
-`4 components`
+`3 components`
 
 Anchor — where you are in the deck.
 
@@ -22,14 +22,6 @@ Anchor — where you are in the deck.
 `Section 03`
 
 ## Inventory
-
----
-
-<!-- _class: subtopic -->
-
-`The Framework · Component 02`
-
-## Before we can score a signal, we have to agree on what one is.
 
 ---
 

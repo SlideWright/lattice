@@ -13,11 +13,12 @@ Marks the start of a major section. Use sparingly — every divider is a context
 - **Major section starts.** Marks the boundary between two themed sections of the deck. The dark canvas is a strong context-switch signal — use it when the audience needs to re-orient.
 - **Sparingly.** A 30-slide deck typically has 3-5 dividers. More becomes navigation noise; the signal weakens if every third slide is a divider.
 - **With an eyebrow.** An inline-code paragraph above the heading stamps a section number or category label. Useful for serialized decks where the audience needs to remember which section they're in.
+- **Light variant for sub-section orientation.** The `light` variant keeps the bright body-slide canvas and centers the heading at h2 weight — a lighter context switch for narrowing focus within a section, between a dark divider and the content slides. (Absorbed the standalone `subtopic` component on 2026-06-07.)
 
 ## When NOT to use
 
 - **More than five per deck.** Each divider is a hard context switch. Too many dilutes the signal and slows the audience. Group related content under fewer sections instead.
-- **Section title that doesn't earn a section.** If the next 3-4 slides aren't a coherent unit, a subtopic (lighter, on the bright canvas) is the right tool. Reserve dividers for genuine section starts.
+- **Section title that doesn't earn a section.** If the next 3-4 slides aren't a coherent unit, the `light` variant (bright canvas, centered) is the right tool. Reserve the dark divider for genuine section starts.
 - **Header or footer overrides.** Don't reinstate `_header:` or `_footer:` on a divider. The dark canvas is meant to be uninterrupted; chrome belongs on body slides.
 
 ## Authoring
@@ -69,6 +70,18 @@ Stamps an auto-incrementing section number in the corner. Each divider in the de
 ## Inventory
 ```
 
+### `light` — Light — bright-canvas sub-section break
+
+Drops the dark canvas for the standard bright body-slide background, centers the heading, and shrinks it to h2 weight. Use for mid-section orientation that shouldn't carry the full context-switch weight of a dark divider. Absorbed the standalone `subtopic` component on 2026-06-07.
+
+```markdown
+<!-- _class: divider light -->
+
+`The Framework · Component 02`
+
+## Before we can score a signal, we have to agree on what one is.
+```
+
 ## Universal modifiers
 
 This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
@@ -76,7 +89,6 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 ## Related components
 
 - [`title`](../../anchor/title/title.docs.md) — opens the deck — same dark-bookend chrome
-- [`subtopic`](../../anchor/subtopic/subtopic.docs.md) — lighter mid-section orientation on the bright canvas
 - [`closing`](../../anchor/closing/closing.docs.md) — closes the deck — completes the bookend trio
 
 ## Demo deck

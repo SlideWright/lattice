@@ -91,7 +91,7 @@ Three converging forces — commoditized infrastructure, compressed release cycl
 
 ---
 
-<!-- _class: subtopic -->
+<!-- _class: divider light -->
 <!-- _footer: "Centered orientation · subtopic" -->
 
 `Signal Definition · Workshop 04`
@@ -912,7 +912,7 @@ Cross-functional sign-off · 2026-04-29 · "cross-functional" means two teams in
 
 ---
 
-<!-- _class: subtopic numbered -->
+<!-- _class: divider light numbered -->
 <!-- _footer: "Section opener, independent counter · subtopic numbered" -->
 
 `Section 05 · The Pattern Library`

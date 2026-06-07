@@ -124,6 +124,7 @@ const SINGLETON_TAGS = new Set([
   'themes',     // word-cloud — recurring themes/terms
   'definition', // glossary — term definitions
   'states',     // state-chart — state machine states
+  'section-break', // divider — section-boundary idiom (was shared with subtopic, merged into divider.light 2026-06-07)
 ]);
 
 // Core token contract every base palette must define directly. These are

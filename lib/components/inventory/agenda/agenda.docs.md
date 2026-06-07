@@ -162,7 +162,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 ## Related components
 
-- [`subtopic`](../../anchor/subtopic/subtopic.docs.md) — opening a single section mid-deck
+- [`subtopic`](../subtopic/subtopic.docs.md) — opening a single section mid-deck
 - [`divider`](../../anchor/divider/divider.docs.md) — marking a section boundary without restating the menu
 - [`tldr`](../../inventory/tldr/tldr.docs.md) — closing the deck with the takeaways the agenda promised
 - [`title`](../../anchor/title/title.docs.md) — the slide immediately preceding the agenda

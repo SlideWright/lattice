@@ -30,7 +30,7 @@ A decision framework for product leaders navigating market uncertainty
 
 ---
 
-<!-- _class: subtopic -->
+<!-- _class: divider light -->
 <!-- _header: '' -->
 <!-- _footer: "Centered orientation · subtopic" -->
 
@@ -947,7 +947,7 @@ The CSS counter walks the whole deck once and increments on every `divider.numbe
 
 ---
 
-<!-- _class: subtopic numbered -->
+<!-- _class: divider light numbered -->
 <!-- _header: '' -->
 <!-- _footer: "Modifier — subtopic numbered · subtopic numbered" -->
 
