@@ -254,14 +254,20 @@ caught by the hook instead of by reviewer eyeballs.
   `- Label\n  - body`, or with prose describing an abandoned
   implementation, or with `tint-<em>` leaking into rendered output.
 - **Lint drafts with `npm run lint:deck -- <file>`.** The author-facing
-  linter (`tools/lint-deck.js` → `lib/authoring/lint.js`) flags the
-  card-style inline-title, ordered-list-bold, and class-typo footguns with
-  no render — run it before rendering. `dist/docs/components.json` is the
-  machine catalog (axes, tags, slots, skeletons, when/anti/related) an
-  agent loads to pick a component; `AGENTS.md` is the vendor-neutral
-  entrypoint. See `design/design-system.md` §7.
+  linter (`tools/lint-deck.js` → `lib/authoring/lint.js` → the pure
+  `lib/authoring/lint-core.js`) flags the card-style inline-title,
+  ordered-list-bold, and class-typo footguns with no render — run it before
+  rendering. **`lint-core.js` is the single source of those checks** — pure,
+  `fs`-free, dependency-free — shared by this CLI, `lib/components`'s
+  `validate()`, and the browser (the Drawing Board's Architect panel runs the
+  *same* engine client-side, vocab injected). Edit lint rules THERE, never
+  duplicate them. `dist/docs/components.json` is the machine catalog (axes,
+  tags, slots, skeletons, when/anti/related) an agent loads to pick a
+  component; `AGENTS.md` is the vendor-neutral entrypoint. See
+  `design/design-system.md` §7.
 - **Card-style layouts forbid inline `- **Title.** body`.** The
-  CARD_STYLE_LAYOUTS set in `lib/components/index.js` lists 11
+  CARD_STYLE_LAYOUTS set (defined in `lib/authoring/lint-core.js`,
+  re-exported by `lib/components/index.js`) lists 11
   layouts (cards-grid, cards-side, cards-stack, featured,
   split-list, compare-prose, matrix-2x2, verdict-grid, before-after,
   decision, citation-card) whose autobold li rule makes body text

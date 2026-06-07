@@ -250,6 +250,24 @@ gotchas.md → "Editing a manifest `sample` staled the bucket survey."
    `marp.config.js` + `lattice-runtime.js` (per the three-renderer rule
    in `workflow.md`).
 
+### Editing deck-lint rules
+The footgun checks (card-style inline-title, ordered-list bold, split/number
+bodyless items, unknown `_class`, …) live in **one place**:
+`lib/authoring/lint-core.js` — a pure, `fs`-free, dependency-free module. Three
+consumers share it, so edit the rule THERE, never duplicate it:
+1. `lib/authoring/lint.js` — the Node binding (`npm run lint:deck`); builds the
+   name/modifier vocab from the live manifests and delegates.
+2. `lib/components/index.js`'s `validate()` — re-imports the detectors + layout
+   sets from lint-core.
+3. The **Drawing Board** docs-site editor (`docs/src/pages/drawing-board.astro`
+   + `docs/src/playground/drawing-board-architect.js`) — runs the *same*
+   lint-core client-side, with the vocab precomputed at docs-build time. Astro's
+   `vite.build.commonjsOptions` applies the CJS→ESM transform so the browser
+   imports the CommonJS core.
+
+Tests: `test/unit/components/lint-core.test.js` (the pure API) +
+`lint-deck.test.js` (the Node binding). Both routed via `SCRIPT_FOR_LIB`.
+
 ### Adding a new theme (`themes/<name>.css`)
 No script change needed — `affected-tests.js` routes `themes/*.css` to
 `test:palette` automatically. Just:
