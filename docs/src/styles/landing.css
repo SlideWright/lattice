@@ -498,64 +498,55 @@ html[data-mode='dark'] .mode-toggle::before {
 	margin-bottom: 18px;
 }
 
-/* ── Showcase strip ──────────────────────────────────────────────────── */
-.showcase {
-	display: grid;
-	grid-template-columns: repeat(4, 1fr);
-	gap: 16px;
+/* ── Restyle demo: one slide, every palette ──────────────────────────── */
+.restyle {
+	max-width: 860px;
+	margin: 0 auto;
 }
-/* Carousel chrome (arrows + dots) is mobile-only — on desktop the strip is a
- * static grid, so the controls stay hidden. The mobile breakpoint reveals
- * them; the script (scrollBy + active-dot tracking) is a no-op until then. */
-.showcase-viewport {
-	position: relative;
-}
-.carousel-arrow,
-.carousel-dots {
-	display: none;
-}
-.shot {
-	border: 1px solid var(--border);
-	border-radius: var(--radius-md);
-	overflow: hidden;
-	background: var(--bg);
-	box-shadow: var(--shadow-sm);
-	transition: transform 0.14s ease, box-shadow 0.14s ease;
-}
-.shot:hover {
-	transform: translateY(-2px);
-	box-shadow: var(--shadow-lg);
-}
-.shot .shot-img {
+.restyle-stage {
 	position: relative;
 	aspect-ratio: 16 / 9;
 	overflow: hidden;
+	border-radius: var(--radius-md);
+	border: 1px solid var(--border);
+	background: var(--bg-alt);
+	box-shadow: var(--shadow-md);
 }
-.shot .shot-img img {
-	position: absolute;
-	inset: 0;
-	width: 100%;
-	height: 100%;
-	object-fit: cover;
-}
-.shot figcaption {
+.restyle-controls {
 	display: flex;
+	align-items: center;
 	justify-content: space-between;
-	align-items: baseline;
-	gap: 8px;
-	padding: 12px 14px;
-	border-top: 1px solid var(--border);
+	gap: 16px;
+	margin-top: 18px;
 }
-.shot .fn {
-	font-family: var(--font-mono);
-	font-size: 10.5px;
-	letter-spacing: 0.1em;
-	text-transform: uppercase;
-	color: var(--accent);
+.restyle-swatches {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 9px;
 }
-.shot .nm {
-	font-size: 12.5px;
-	color: var(--text-muted);
+.restyle-swatches .swatch {
+	width: 22px;
+	height: 22px;
+	padding: 0;
+	border-radius: 50%;
+	border: 2px solid var(--border);
+	cursor: pointer;
+	transition: transform 0.12s ease, border-color 0.12s ease;
+}
+.restyle-swatches .swatch:hover {
+	transform: scale(1.12);
+}
+.restyle-swatches .swatch.active {
+	border-color: var(--text-heading);
+	transform: scale(1.2);
+}
+.restyle-name {
+	margin: 0;
+	font-weight: 600;
+	font-size: 15px;
+	color: var(--text-heading);
+	min-width: 7ch;
+	text-align: right;
 }
 
 /* ── Next-step cards ─────────────────────────────────────────────────── */
@@ -629,7 +620,7 @@ html[data-mode='dark'] .mode-toggle::before {
 	color: var(--text-muted);
 }
 
-/* Light/dark slide-image swap (each showcase has a .light + .dark render). */
+/* Light/dark slide-image swap for the hero fallback image (.light + .dark). */
 .for-dark {
 	display: none;
 }
@@ -650,9 +641,6 @@ html[data-mode='dark'] .for-dark {
 	}
 	.feature-grid,
 	.next-grid {
-		grid-template-columns: repeat(2, 1fr);
-	}
-	.showcase {
 		grid-template-columns: repeat(2, 1fr);
 	}
 }
@@ -693,83 +681,6 @@ html[data-mode='dark'] .for-dark {
 	.feature-grid,
 	.next-grid {
 		grid-template-columns: 1fr;
-	}
-	/* Showcase becomes a horizontal swipe carousel on phones. */
-	.showcase {
-		display: flex;
-		gap: 14px;
-		overflow-x: auto;
-		scroll-snap-type: x mandatory;
-		-webkit-overflow-scrolling: touch;
-		padding-bottom: 6px;
-		scrollbar-width: none; /* hide native bar; arrows + dots are the cue */
-	}
-	.showcase::-webkit-scrollbar {
-		display: none;
-	}
-	.shot {
-		flex: 0 0 78%;
-		min-width: 0; /* enforce the 78% basis so every card is the same width */
-		margin: 0; /* drop the <figure> UA margin so card advance == width + gap */
-		scroll-snap-align: start;
-	}
-	/* Prev/next chevrons overlaid on the strip edges. */
-	.carousel-arrow {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		position: absolute;
-		top: 42%;
-		transform: translateY(-50%);
-		width: 38px;
-		height: 38px;
-		padding: 0;
-		border-radius: 50%;
-		border: 1px solid var(--border);
-		background: color-mix(in srgb, var(--bg) 88%, transparent);
-		backdrop-filter: saturate(180%) blur(8px);
-		color: var(--text-heading);
-		font-size: 22px;
-		line-height: 1;
-		box-shadow: var(--shadow-sm);
-		cursor: pointer;
-		z-index: 3;
-		transition: opacity 0.15s ease, border-color 0.15s ease;
-	}
-	.carousel-arrow.prev {
-		left: 6px;
-	}
-	.carousel-arrow.next {
-		right: 6px;
-	}
-	.carousel-arrow:hover {
-		border-color: var(--accent);
-		color: var(--accent);
-	}
-	.carousel-arrow:disabled {
-		opacity: 0;
-		pointer-events: none;
-	}
-	/* Position dots under the strip. */
-	.carousel-dots {
-		display: flex;
-		justify-content: center;
-		gap: 7px;
-		margin-top: 14px;
-	}
-	.carousel-dots .dot {
-		width: 7px;
-		height: 7px;
-		padding: 0;
-		border: 0;
-		border-radius: 50%;
-		background: var(--border);
-		cursor: pointer;
-		transition: background 0.15s ease, transform 0.15s ease;
-	}
-	.carousel-dots .dot.active {
-		background: var(--accent);
-		transform: scale(1.4);
 	}
 	.foot .legal {
 		margin-left: 0;

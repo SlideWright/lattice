@@ -43,18 +43,20 @@ const heroCodeHtml = heroSource
 	})
 	.join('\n');
 
-// Showcase strip = every component flagged `showcase.featured`, ordered by
-// Function family. Each tile expects /showcase/<name>.<mode>.webp (minted by
-// docs/scripts/rasterize-showcase.mjs and existence-gated by showcase:check).
-const FUNCTION_ORDER = ['anchor', 'statement', 'inventory', 'comparison', 'progression', 'evidence', 'imagery'];
-const showcase = manifests
-	.filter((m) => m.showcase && m.showcase.featured)
-	.sort((a, b) => FUNCTION_ORDER.indexOf(a.function) - FUNCTION_ORDER.indexOf(b.function))
-	.map((m) => ({ fn: titleCase(m.function), nm: m.name }));
+// "One source, every palette" demo = ONE slide re-rendered live through every
+// palette. Swatch colours are each palette's light `--accent`, read from the
+// generated tokens CSS (the same source the topbar selector lists).
+const restyleComp = manifests.find((m) => m.name === 'kpi');
+const paletteAccents = palettes.map((name) => {
+	const hit = tokensCss.match(
+		new RegExp(`\\[data-palette="${name}"\\]\\[data-mode="light"\\]\\{[^}]*?--accent:(#[0-9A-Fa-f]{3,8})`),
+	);
+	return { name, label: titleCase(name), accent: hit ? hit[1] : '#888888' };
+});
 
-// Live-render data: client-side renders the hero (and, below, the showcase
-// tiles) through the playground runtime so they follow the selected palette
-// and light/dark, instead of being baked-in-indaco static images.
+// Live-render data: the client renders the hero, the field cards, and the
+// restyle demo through the playground runtime so they follow the selected
+// palette + light/dark, instead of being baked-in-indaco static images.
 const needsMermaid = (s) => /```mermaid/.test(s || '');
 
 // The "speaks your field" cards each render a REAL slide live (no static
@@ -73,12 +75,12 @@ const cardData = CARD_COMPONENTS.reduce((acc, n) => {
 
 const liveData = JSON.stringify({
 	hero: { name: heroComp.name, sample: heroComp.sample, mermaid: needsMermaid(heroComp.sample) },
-	tiles: showcase.reduce((acc, s) => {
-		const m = manifests.find((x) => x.name === s.nm);
-		acc[s.nm] = { sample: m.sample || m.skeleton, mermaid: needsMermaid(m.sample || m.skeleton) };
-		return acc;
-	}, {}),
 	cards: cardData,
+	restyle: {
+		sample: restyleComp.sample || restyleComp.skeleton,
+		mermaid: needsMermaid(restyleComp.sample || restyleComp.skeleton),
+		palettes: paletteAccents,
+	},
 	themeBase: url('playground/themes/'),
 	runtimeUrl: url('playground/lattice-runtime.js'),
 	frameCss: SINGLE_SLIDE_FRAME,
@@ -265,38 +267,19 @@ const liveData = JSON.stringify({
 			<section class="section">
 				<div class="wrap">
 					<div class="section-head">
-						<p class="eyebrow">See it in your palette</p>
-						<h2>From the opening title to the closing ask.</h2>
+						<p class="eyebrow">One source, every palette</p>
+						<h2>Change one line. Restyle the whole deck.</h2>
 						<p>
-							Switch the palette or light/dark at the top — every tile below
-							re-renders live. They're grouped by the seven jobs a slide does for
-							the audience: anchor, statement, inventory, comparison, progression,
-							evidence, imagery.
+							Watch a single slide move through all thirteen palettes — in light
+							or dark. Brand colours live in one file and the layouts never name a
+							colour, so a whole deck restyles by editing one <code>theme:</code> line.
 						</p>
 					</div>
-					<div class="showcase-carousel">
-						<div class="showcase-viewport">
-							<div class="showcase" id="showcase">
-								{showcase.map((s) => (
-									<figure class="shot">
-										<div class="shot-img" data-live={s.nm}>
-											<img class="for-light" src={url(`showcase/${s.nm}.light.webp`)} alt={`${s.nm} slide`} width="1600" height="900" loading="lazy" />
-											<img class="for-dark" src={url(`showcase/${s.nm}.dark.webp`)} alt={`${s.nm} slide (dark)`} width="1600" height="900" loading="lazy" />
-										</div>
-										<figcaption>
-											<span class="fn">{s.fn}</span>
-											<span class="nm">{s.nm}</span>
-										</figcaption>
-									</figure>
-								))}
-							</div>
-							<button class="carousel-arrow prev" id="sc-prev" type="button" aria-label="Previous slides" aria-controls="showcase">‹</button>
-							<button class="carousel-arrow next" id="sc-next" type="button" aria-label="Next slides" aria-controls="showcase">›</button>
-						</div>
-						<div class="carousel-dots" id="sc-dots" aria-label="Showcase position">
-							{showcase.map((_, i) => (
-								<button class="dot" type="button" data-i={i} aria-label={`Go to slide ${i + 1}`}></button>
-							))}
+					<div class="restyle">
+						<figure class="restyle-stage shot-img" id="restyle-stage"></figure>
+						<div class="restyle-controls">
+							<div class="restyle-swatches" id="restyle-swatches" role="tablist" aria-label="Choose a palette"></div>
+							<p class="restyle-name"><span id="restyle-name"></span></p>
 						</div>
 					</div>
 				</div>
@@ -388,45 +371,6 @@ const liveData = JSON.stringify({
 						navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
 					});
 				}
-
-				// Showcase carousel (mobile). Arrows + dots are display:none above
-				// the breakpoint, so this is inert on desktop (the strip is a grid
-				// there and scrollLeft stays 0). Index-based: snap to exact card
-				// boundaries and derive the active dot / arrow-disabled state from
-				// the rounded index, so it can't drift between cards.
-				var strip = document.getElementById('showcase');
-				if (strip) {
-					var prevBtn = document.getElementById('sc-prev');
-					var nextBtn = document.getElementById('sc-next');
-					var dots = [].slice.call(document.querySelectorAll('#sc-dots .dot'));
-					var n = dots.length;
-					var clamp = function (i) { return Math.max(0, Math.min(n - 1, i)); };
-					var step = function () {
-						var card = strip.querySelector('.shot');
-						if (!card) return strip.clientWidth;
-						var gap = parseFloat(getComputedStyle(strip).columnGap) || 14;
-						return card.getBoundingClientRect().width + gap;
-					};
-					var indexNow = function () { return clamp(Math.round(strip.scrollLeft / step())); };
-					// `current` is the source of truth for arrow clicks so rapid taps
-					// accumulate even mid-animation; manual swipes resync it (debounced
-					// so a programmatic smooth-scroll's own events don't fight it).
-					var current = 0;
-					var render = function () {
-						dots.forEach(function (d, i) { d.classList.toggle('active', i === current); });
-						if (prevBtn) prevBtn.disabled = current <= 0;
-						if (nextBtn) nextBtn.disabled = current >= n - 1;
-					};
-					var goTo = function (i) { current = clamp(i); strip.scrollTo({ left: current * step(), behavior: 'smooth' }); render(); };
-					if (prevBtn) prevBtn.addEventListener('click', function () { goTo(current - 1); });
-					if (nextBtn) nextBtn.addEventListener('click', function () { goTo(current + 1); });
-					dots.forEach(function (d, i) { d.addEventListener('click', function () { goTo(i); }); });
-					var t;
-					strip.addEventListener('scroll', function () { clearTimeout(t); t = setTimeout(function () { current = indexNow(); render(); }, 120); }, { passive: true });
-					window.addEventListener('resize', function () { strip.scrollLeft = current * step(); render(); });
-					strip.scrollLeft = 0; // start on the first card, not a partial snap
-					render();
-				}
 			})();
 		</script>
 
@@ -488,10 +432,10 @@ const liveData = JSON.stringify({
 				}
 
 				// ── Render one slide into a container (creates/updates iframe) ─
-				function renderInto(host, sample, mermaid) {
+				function renderInto(host, sample, mermaid, paletteOverride) {
 					var PG = window.LatticePlayground;
 					if (!PG) return Promise.resolve(false);
-					var p = root.getAttribute('data-palette') || 'indaco';
+					var p = paletteOverride || root.getAttribute('data-palette') || 'indaco';
 					var m = root.getAttribute('data-mode') === 'dark' ? 'dark' : 'light';
 					return ensureThemes(p, m).then(function () {
 						var theme = (m === 'dark' && PG.hasTheme(p + '-dark')) ? p + '-dark' : p;
@@ -543,32 +487,6 @@ const liveData = JSON.stringify({
 					if (tabSource) tabSource.addEventListener('click', function () { setHeroView('source'); });
 					renderHero();
 
-					// ── Showcase tiles: live render with static fallback ─
-					// Render the WHOLE strip once it nears the viewport (not per-tile
-					// on intersection). On the mobile carousel the off-screen tiles
-					// never intersect until swiped, so per-tile lazy left them showing
-					// the indaco static fallback — the carousel read as "not live".
-					// One render pass when the strip approaches keeps it light (below
-					// the fold) while making every tile palette-correct up front.
-					var tiles = [].slice.call(document.querySelectorAll('.shot-img[data-live]'));
-					var rendered = [];
-					function renderTile(host) {
-						var name = host.getAttribute('data-live');
-						var t = D.tiles[name];
-						if (!t) return;
-						renderInto(host, t.sample, t.mermaid).then(function (ok) { if (ok && rendered.indexOf(host) < 0) rendered.push(host); });
-					}
-					function renderAllTiles() { tiles.forEach(renderTile); }
-					var strip = document.querySelector('.showcase-carousel') || document.querySelector('.showcase');
-					if ('IntersectionObserver' in window && strip) {
-						var io = new IntersectionObserver(function (entries) {
-							if (entries.some(function (e) { return e.isIntersecting; })) { io.disconnect(); renderAllTiles(); }
-						}, { rootMargin: '300px' });
-						io.observe(strip);
-					} else {
-						renderAllTiles();
-					}
-
 					// ── "Speaks your field" cards: live render, no static fallback ─
 					// Same machinery as the tiles, keyed by data-live-card. Each card
 					// shows a real slide for its field; they sit just under the hero, so
@@ -592,14 +510,66 @@ const liveData = JSON.stringify({
 						renderAllCards();
 					}
 
+					// ── "One source, every palette": one slide, every palette ─
+					var restyleStage = document.getElementById('restyle-stage');
+					var swatchWrap = document.getElementById('restyle-swatches');
+					var nameEl = document.getElementById('restyle-name');
+					var restylePalettes = (D.restyle && D.restyle.palettes) || [];
+					var swatchBtns = [];
+					var restyleIdx = 0, restyleTimer = null, restylePaused = false;
+					var reduceMotion = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+					function renderRestyle(i) {
+						if (!restylePalettes.length) return;
+						restyleIdx = (i + restylePalettes.length) % restylePalettes.length;
+						var pal = restylePalettes[restyleIdx];
+						if (nameEl) nameEl.textContent = pal.label;
+						swatchBtns.forEach(function (b, k) {
+							var on = k === restyleIdx;
+							b.classList.toggle('active', on);
+							b.setAttribute('aria-selected', on ? 'true' : 'false');
+						});
+						if (restyleStage) renderInto(restyleStage, D.restyle.sample, D.restyle.mermaid, pal.name);
+					}
+					function startRestyle() { if (!reduceMotion && !restyleTimer && restylePalettes.length > 1) restyleTimer = setInterval(function () { if (!restylePaused) renderRestyle(restyleIdx + 1); }, 2600); }
+					function stopRestyle() { if (restyleTimer) { clearInterval(restyleTimer); restyleTimer = null; } }
+					restylePalettes.forEach(function (pal, k) {
+						var b = document.createElement('button');
+						b.type = 'button';
+						b.className = 'swatch';
+						b.style.background = pal.accent;
+						b.title = pal.label;
+						b.setAttribute('role', 'tab');
+						b.setAttribute('aria-label', pal.label);
+						b.addEventListener('click', function () { stopRestyle(); renderRestyle(k); });
+						if (swatchWrap) swatchWrap.appendChild(b);
+						swatchBtns.push(b);
+					});
+					var restyleWidget = restyleStage ? restyleStage.closest('.restyle') : null;
+					if (restyleWidget) {
+						restyleWidget.addEventListener('mouseenter', function () { restylePaused = true; });
+						restyleWidget.addEventListener('mouseleave', function () { restylePaused = false; });
+						restyleWidget.addEventListener('focusin', stopRestyle);
+					}
+					if (restyleStage) {
+						if ('IntersectionObserver' in window) {
+							var rio = new IntersectionObserver(function (entries) {
+								if (entries.some(function (e) { return e.isIntersecting; })) { rio.disconnect(); renderRestyle(0); startRestyle(); }
+							}, { rootMargin: '200px' });
+							rio.observe(restyleStage);
+						} else {
+							renderRestyle(0); startRestyle();
+						}
+					}
+
+
 					// ── Re-render on palette / mode change (hero + visible tiles + cards) ─
 					var reflow;
 					new MutationObserver(function () {
 						clearTimeout(reflow);
 						reflow = setTimeout(function () {
 							renderHero();
-							rendered.forEach(renderTile);
 							renderedCards.forEach(renderCard);
+							if (restyleStage && restyleStage.classList.contains('is-live')) renderInto(restyleStage, D.restyle.sample, D.restyle.mermaid, restylePalettes[restyleIdx].name);
 						}, 80);
 					}).observe(root, { attributes: true, attributeFilter: ['data-palette', 'data-mode'] });
 				});
