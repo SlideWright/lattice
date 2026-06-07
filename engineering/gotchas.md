@@ -383,6 +383,36 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
 - **Removable when:** WebKit gains reliable layout for HTML in a scaled SVG
   `<foreignObject>`. No timeline; don't count on it.
 
+### Playground math (and any cqi/cqh layout) renders tiny + "jumps/rescales"
+
+- **Symptom:** In the docs playground, `math` variants — especially
+  `matrix` and `compare` — render shrunk to an unreadable size and visibly
+  jump/rescale a few times after the slide first appears. `math stats`
+  looks fine. Same source renders correctly in the PDF gallery and on the
+  component-page specimens.
+- **Cause:** The playground engine renders `inlineSVG:false` (no
+  `<svg><foreignObject>` wrapper — see the WebKit entry above), so the
+  bare `<section>` must get its box from the host page. But
+  `dist/lattice.css` sets `section{container-type:size}`, and **size
+  containment refuses to size the box from its contents** — without an
+  explicit width/height the section collapses (height→0) and every
+  `cqi`/`cqh` the layouts rely on resolves against a broken box. KaTeX-heavy
+  variants overflow, and because the KaTeX stylesheet streams in from the
+  CDN async, each pass of the `FIT` routine (60/300/1200/2500 ms + every
+  ResizeObserver tick) measures a *different* `section.offsetWidth` and
+  recomputes `scale(w/sw)` — hence the jumping + tiny render. `stats`
+  survives because it's content-light and mostly `em`-driven. This is NOT a
+  math-layout bug; the CSS contract and the PDFs are correct.
+- **Mitigation:** `writeFrame` in `docs/src/pages/playground.astro` pins
+  `.marpit>section{width:1280px;height:720px}` so `container-type:size` has
+  a definite box and `FIT` is deterministic at `scale(w/1280)` — matching
+  the specimen renderer `docs/src/playground/live-render.js` (which already
+  pins it). Any standalone host that injects engine-rendered sections with
+  `inlineSVG:false` must pin the 1280×720 box itself; don't rely on the
+  section sizing from content.
+- **Triggered by:** A new playground/specimen host that forgets the
+  explicit section box, or any layout leaning on `cqi`/`cqh` for sizing.
+
 ### Mermaid's color parser rejects `light-dark()`
 
 - **Symptom:** `[pageerror] Unsupported color format:
