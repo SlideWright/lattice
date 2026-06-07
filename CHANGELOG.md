@@ -36,6 +36,19 @@ in patch versions.
 
 ### Changed
 
+- **`timeline`, `list-criteria`, and `actors` no longer require `**bold**`
+  markdown for their slot headers.** These layouts now auto-lift each
+  top-level list item's lead text into the heading via `slotLabelLift` (the
+  same mechanism `before-after`, `decision`, `statute-stack`, etc. already
+  used), so authors write `1. Pilot` / `- Owns the model \`Owner\`` instead
+  of `1. **Pilot**` / `- **Owns the model** \`Owner\``. Existing decks that
+  still use the bold markdown render identically — the lift is idempotent,
+  so `**…**` is now optional, never wrong. For `actors`, a trailing inline
+  `code` actor-name pill is kept a sibling of the lifted heading so its
+  right-aligned pill placement is preserved. The shipped samples, galleries,
+  and per-component docs drop the bold; stale `compare-prose` / `split-list`
+  doc text that told authors to write `**Label.**` is corrected to describe
+  the automatic behavior.
 - **The browsable component reference is now built into the docs site as
   per-component pages.** Each component gets its own focused page
   (`/components/<bucket>/<name>/`) with a live preview that flips to an

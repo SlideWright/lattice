@@ -4463,7 +4463,8 @@ section.list ol li::before { content:counter(list-counter, decimal-leading-zero)
  */
 
 /* ── CRITERIA ──
- * ## heading  ol or ul — li **title** [optional nested ul > li description]
+ * ## heading  ol or ul — li title (lifted to <strong> automatically by
+ * slotLabelLift — authors need not type `**…**`) [optional nested ul > li description]
  * CSS counter provides leading-zero number (01 02…) regardless of list type.
  * Use ul when order is semantic-free; ol when order carries meaning.
  */
@@ -8853,7 +8854,8 @@ section.subtopic p  { font-size:var(--fs-message); max-width:46.875cqi; line-hei
 /* ── TIMELINE ──
  * ol = numbered circles (sequential steps)
  * ul = plain dot circles (non-sequential)
- * Each li: **Label** on its own line, then - *description* as nested ul
+ * Each li: a label on its own line (lifted to <strong> automatically by
+ * slotLabelLift — authors need not type `**…**`), then - *description* as nested ul
  */
 section.timeline { justify-content:center; align-items:center; }
 section.timeline h2 { margin-bottom:var(--sp-xl); text-align:center; }

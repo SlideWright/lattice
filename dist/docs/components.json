@@ -207,10 +207,10 @@
         "rows": {
           "selector": "ul > li",
           "required": true,
-          "description": "One row per responsibility. Each li leads with a **bold responsibility**, then a trailing inline-code actor name (rendered as a right-aligned categorical pill), then an optional nested bullet carrying a one-line body."
+          "description": "One row per responsibility. Each li leads with the responsibility label — rendered bold automatically (no `**…**` needed) — then a trailing inline-code actor name (rendered as a right-aligned categorical pill), then an optional nested bullet carrying a one-line body."
         }
       },
-      "skeleton": "<!-- _class: actors -->\n\n## Who owns each part of the process.\n\n- **Owns the first part** `First actor`\n  - One-line note on what that ownership covers.\n- **Owns the second part** `Second actor`\n  - One-line note.\n- **Owns the third part** `Third actor`\n  - One-line note.\n",
+      "skeleton": "<!-- _class: actors -->\n\n## Who owns each part of the process.\n\n- Owns the first part `First actor`\n  - One-line note on what that ownership covers.\n- Owns the second part `Second actor`\n  - One-line note.\n- Owns the third part `Third actor`\n  - One-line note.\n",
       "whenToUse": [
         {
           "title": "Who owns what",
@@ -1721,7 +1721,7 @@
         "options": {
           "selector": "ul > li",
           "required": true,
-          "description": "Exactly two list items, each one option. Lead each with **Option label.** then 1–3 sentences."
+          "description": "Exactly two list items, each one option. The lead text is the option label — it renders bold automatically (no `**…**` needed); follow it with a nested bullet carrying 1–3 sentences."
         }
       },
       "skeleton": "<!-- _class: compare-prose -->\n\n## Heading framing the comparison.\n\n- First option\n  - Two-sentence description of the first option, including the strongest argument for it.\n- Second option\n  - Two-sentence description of the second option, including the strongest argument for it.\n",
@@ -3314,10 +3314,10 @@
         "criteria": {
           "selector": "ol > li",
           "required": true,
-          "description": "One li per criterion. Author as `**Criterion name**` then a nested `- rationale` bullet (card-style nested format, not the forbidden inline `**Title.** body`)."
+          "description": "One li per criterion. The lead text is the criterion title — it renders bold automatically (no `**…**` needed); follow it with a nested `- rationale` bullet."
         }
       },
-      "skeleton": "<!-- _class: list-criteria -->\n\n## What every decision must satisfy.\n\n1. **First criterion**\n   - Short rationale for why this matters.\n2. **Second criterion**\n   - Short rationale.\n3. **Third criterion**\n   - Short rationale.\n4. **Fourth criterion**\n   - Short rationale.\n",
+      "skeleton": "<!-- _class: list-criteria -->\n\n## What every decision must satisfy.\n\n1. First criterion\n   - Short rationale for why this matters.\n2. Second criterion\n   - Short rationale.\n3. Third criterion\n   - Short rationale.\n4. Fourth criterion\n   - Short rationale.\n",
       "whenToUse": [
         {
           "title": "Criteria that must all be satisfied",
@@ -3343,7 +3343,7 @@
         },
         {
           "title": "Missing criterion title",
-          "body": "The bold lead on each li is what makes the ledger scannable. A naked sentence per row reads as paragraph soup; the bold title is the structure."
+          "body": "The lead line on each li — rendered bold automatically — is what makes the ledger scannable. A naked sentence per row reads as paragraph soup; the title is the structure."
         }
       ],
       "related": [
@@ -5390,7 +5390,7 @@
         "points": {
           "selector": "ul > li",
           "required": true,
-          "description": "Right-side supporting points. Lead each with **Label.** then body text."
+          "description": "Right-side supporting points. The lead text of each li is the point label — it renders bold automatically (no `**…**` needed); follow it with a nested bullet for the body text."
         },
         "meta": {
           "selector": "section :is(ul,ol) + ul",
@@ -6326,10 +6326,10 @@
         "steps": {
           "selector": "ol > li, ul > li",
           "required": true,
-          "description": "One li per step. Lead each with **Step label** then a nested bullet for the description."
+          "description": "One li per step. The lead text is the step label — it renders bold automatically (no `**…**` needed); follow it with a nested bullet for the description."
         }
       },
-      "skeleton": "<!-- _class: timeline -->\n\n## How the process flows.\n\n1. **First stage**\n   - *Short description of what happens here.*\n2. **Second stage**\n   - *Short description.*\n3. **Third stage**\n   - *Short description.*\n4. **Fourth stage**\n   - *Short description.*\n",
+      "skeleton": "<!-- _class: timeline -->\n\n## How the process flows.\n\n1. First stage\n   - *Short description of what happens here.*\n2. Second stage\n   - *Short description.*\n3. Third stage\n   - *Short description.*\n4. Fourth stage\n   - *Short description.*\n",
       "whenToUse": [
         {
           "title": "Short labels on a horizontal axis",

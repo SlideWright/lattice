@@ -27,13 +27,13 @@ Use for sequential processes with 3–6 stages. Ordered list (ol) renders number
 
 ## How the process flows.
 
-1. **First stage**
+1. First stage
    - *Short description of what happens here.*
-2. **Second stage**
+2. Second stage
    - *Short description.*
-3. **Third stage**
+3. Third stage
    - *Short description.*
-4. **Fourth stage**
+4. Fourth stage
    - *Short description.*
 ```
 
@@ -42,7 +42,7 @@ Use for sequential processes with 3–6 stages. Ordered list (ol) renders number
 | Slot | Selector | Required | Description |
 |---|---|---|---|
 | `title` | `h2` | yes | Slide heading naming the process. |
-| `steps` | `ol > li, ul > li` | yes | One li per step. Lead each with **Step label** then a nested bullet for the description. |
+| `steps` | `ol > li, ul > li` | yes | One li per step. The lead text is the step label — it renders bold automatically (no `**…**` needed); follow it with a nested bullet for the description. |
 
 ## Anatomy
 

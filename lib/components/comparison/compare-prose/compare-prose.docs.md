@@ -38,7 +38,7 @@ Use to weigh two approaches against each other in body text. Add the `chosen` or
 | Slot | Selector | Required | Description |
 |---|---|---|---|
 | `title` | `h2` | yes | Slide heading framing the comparison. |
-| `options` | `ul > li` | yes | Exactly two list items, each one option. Lead each with **Option label.** then 1–3 sentences. |
+| `options` | `ul > li` | yes | Exactly two list items, each one option. The lead text is the option label — it renders bold automatically (no `**…**` needed); follow it with a nested bullet carrying 1–3 sentences. |
 
 ## Anatomy
 

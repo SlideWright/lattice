@@ -1251,6 +1251,10 @@ function parseSlide(raw, index) {
   // This is the only place structural HTML is generated — never in the .md source.
 
   const cls = classAttr;
+  // Whole-class-token test — treats hyphenated names as atomic so `timeline`
+  // does NOT match the unrelated `timeline-list` chart class (`.includes`
+  // would). Mirrors the SLOT_LAYOUTS boundary regex in the marp plugin.
+  const hasClass = (name) => new RegExp(`(?<![\\w-])${name}(?![\\w-])`).test(cls);
   // Slot-label lift — extracted to lib/slot-label-lift.js for unit testing.
   // See that file for behavior; same closure binding (used by cards-stack
   // and decision/before-after handlers below).
@@ -1351,15 +1355,22 @@ function parseSlide(raw, index) {
   }
 
   // decision / before-after / statute-stack / regulatory-update /
-  // authority-chain / redline: named-slot layouts where each top-level li
-  // is a card with a slot label (Build / Before / Federal / Statute /
-  // Why this matters). The CSS keeps these as native ul/ol > li (no card
+  // authority-chain / redline / timeline / list-criteria / actors:
+  // named-slot layouts where each top-level li is a card with a slot
+  // label (Build / Before / Federal / Statute / Pilot / a criterion /
+  // a responsibility). The CSS keeps these as native ul/ol > li (no card
   // div wrapper); the only post-process needed is lifting the leading
   // text into <strong> so the labeled-corner-tag and slot-card CSS
-  // triggers without authors typing `**…**`.
+  // triggers without authors typing `**…**`. (list-criteria is also
+  // wrapped in .crit-body below — this lift runs first so the <strong>
+  // lands inside the wrapper; actors keeps its trailing `code` pill a
+  // sibling of the <strong> via liftSlotLabel's trailing-code rule.)
   if (cls.includes('decision') || cls.includes('before-after') ||
       cls.includes('statute-stack') || cls.includes('regulatory-update') ||
-      cls.includes('authority-chain') || cls.includes('redline')) {
+      cls.includes('authority-chain') || cls.includes('redline') ||
+      hasClass('timeline') || hasClass('list-criteria') ||
+      hasClass('actors')) {
+    const liftOpts = { chipTail: hasClass('actors') };
     html = html.replace(/<(ul|ol)>([\s\S]*)<\/\1>/, (_full, tag, inner) => {
       // Walk top-level <li>…</li> with depth tracking.
       const out = [];
@@ -1372,7 +1383,7 @@ function parseSlide(raw, index) {
           liDepth--;
           if (liDepth === 0 && liStart !== -1) {
             out.push(inner.slice(lastEmitted, liStart));
-            out.push(liftSlotLabel(inner.slice(liStart, i)));
+            out.push(liftSlotLabel(inner.slice(liStart, i), liftOpts));
             lastEmitted = i;
             liStart = -1;
           }

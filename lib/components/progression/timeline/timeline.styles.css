@@ -5,7 +5,8 @@
 /* ── TIMELINE ──
  * ol = numbered circles (sequential steps)
  * ul = plain dot circles (non-sequential)
- * Each li: **Label** on its own line, then - *description* as nested ul
+ * Each li: a label on its own line (lifted to <strong> automatically by
+ * slotLabelLift — authors need not type `**…**`), then - *description* as nested ul
  */
 section.timeline { justify-content:center; align-items:center; }
 section.timeline h2 { margin-bottom:var(--sp-xl); text-align:center; }
