@@ -1,10 +1,11 @@
-# Browser authoring studio + the Architect assistant (2026-06-07)
+# The Drawing Board — browser deck studio + the Architect (2026-06-07)
 
 > Status: **proposal / design model.** No code yet. This doc fixes direction
 > before implementation, per the "design before code on rethink requests" rule
-> in `CLAUDE.md`. Working product name **Lattice Studio** (placeholder, see §10).
-> Assistant name **decided: Architect**, used in prose and its own voice as
-> *the Architect* — see §4 "Name & voice." **Frame** is the reserved fallback.
+> in `CLAUDE.md`. Product name **decided: Drawing Board** — bare mark for the
+> route/nav/labels, voiced *the Drawing Board* in prose (the same article pattern
+> as the Architect). Assistant name **decided: Architect**, voiced *the Architect*
+> (§4 "Name & voice"; **Frame** is the reserved fallback).
 
 ## Problem / intent
 
@@ -30,15 +31,15 @@ Requested capabilities:
 
 ## Why this is unusually feasible here
 
-The hard infrastructure already exists in this repo — Studio is largely an
-*assembly + persistence + assistant* layer over parts that already run:
+The hard infrastructure already exists in this repo — the Drawing Board is
+largely an *assembly + persistence + assistant* layer over parts that already run:
 
 - **The engine already renders client-side.** `tools/build-playground.js`
   bundles marp-core + the shared Marp plugins (`lib/integrations/marp/plugins.js`)
   + the transformer registry into one browser IIFE
   (`docs/public/playground/lattice-playground.js`) that runs **render path #2
-  entirely in the browser**. Studio reuses this; it does **not** introduce a
-  4th render path (the three-paths rule in `CLAUDE.md` stays intact).
+  entirely in the browser**. The Drawing Board reuses this; it does **not**
+  introduce a 4th render path (the three-paths rule in `CLAUDE.md` stays intact).
 - **CodeMirror 6 is already a dependency** (`docs/package.json`) with markdown
   support and a hand-ported Mermaid `StreamLanguage` grammar, themed through the
   palette CSS variables. `docs/src/playground/editor.js` is a 264-line
@@ -50,10 +51,17 @@ The hard infrastructure already exists in this repo — Studio is largely an
   Architect trustworthy (see §4).
 - **GitHub Pages deploy already runs** (`.github/workflows/docs.yml`, Astro).
 
-Positioning: the **playground** answers "let me try one component fast." **Studio**
-answers "let me author and keep a whole deck, with help." Different jobs; Studio
-is a new top-level Astro route (e.g. `/studio`), not an evolution of the
-playground page.
+Positioning: the **playground** answers "let me try one component fast." The
+**Drawing Board** answers "let me author and keep a whole deck, with help."
+Different jobs; the Drawing Board is a new top-level Astro route (e.g.
+`/drawing-board`), not an evolution of the playground page.
+
+**Name & voice.** The mark is **Drawing Board** (route, nav, labels); prose uses
+*the Drawing Board* with the article. This closes the brand trinity into one
+story — **Lattice** (the engine) · **the Architect** (your master) · **the Drawing
+Board** (where you build together) — and rides the idiom: "Open the Drawing
+Board," "back to the Drawing Board." *The Drawing Board* (capitalised article) is
+acceptable at the start of a sentence; the route/logo stay article-free.
 
 ## 1. Layout & responsiveness
 
@@ -104,8 +112,9 @@ Three resizable panels plus a left rail:
 - **Editor↔preview sync**: slides are `---`-separated, so map cursor line →
   slide index → scroll preview to that slide and highlight it; reverse on
   preview click. **One real change from today:** the playground preview is a
-  single fixed 1280×720 specimen iframe; Studio needs a **scrollable filmstrip**
-  of all slides with the active one tracked. Moderate work, still render path #2.
+  single fixed 1280×720 specimen iframe; the Drawing Board needs a **scrollable
+  filmstrip** of all slides with the active one tracked. Moderate work, still
+  render path #2.
 
 ## 4. The Architect — *tooling-first, SLM as the conversational coat*
 
@@ -257,8 +266,8 @@ tradeoff at the export action.
 
 - A **`docs/`-site app**, new top-level Astro route, reusing the playground
   bundle + runtime. **It does not enter the npm tarball** (`@slidewright/lattice`
-  `files` allowlist stays as-is; Studio is a documentation-site asset like the
-  playground). No bloat to the published engine.
+  `files` allowlist stays as-is; the Drawing Board is a documentation-site asset
+  like the playground). No bloat to the published engine.
 - Reuses, does not fork: `components.json`, `lib/authoring/lint.js`, the
   playground engine IIFE, the runtime bundle, the theme CSS files.
 
@@ -277,7 +286,7 @@ tradeoff at the export action.
 
 ## 9. Phased plan (proposed)
 
-- **Phase 1 — Walking skeleton (no LLM):** Studio route, 3-panel shell + rail,
+- **Phase 1 — Walking skeleton (no LLM):** the Drawing Board route, 3-panel shell + rail,
   CodeMirror editor wired to the playground engine, **filmstrip preview with
   synced scroll**, IndexedDB decks + checkpoint history, MD/PDF/PPTX export, and
   a **deterministic Architect panel** (linter findings + catalog retrieval +
@@ -293,10 +302,11 @@ weight is downloaded.
 
 ## 10. Open questions
 
-- **Naming**: assistant name **decided — Architect** (voiced *the Architect*;
-  **Frame** reserved as fallback; formal *The Architect* available for a heavier
-  register). The **Studio** product name is still a placeholder.
-- **Route + nav**: `/studio`? How prominently surfaced vs. the playground/docs.
+- **Naming** — *resolved.* Product **Drawing Board** (mark; *the Drawing Board* in
+  prose); assistant **Architect** (voiced *the Architect*; **Frame** reserved as
+  fallback; formal *The Architect* available for a heavier register).
+- **Route + nav**: `/drawing-board` (or a shorter `/draw`)? Still open is *how
+  prominently* it's surfaced vs. the playground/docs, not the slug.
 - **Onboarding depth** — *resolved (Appendix A):* three questions max
   (*what · who · the one outcome*), each skippable, scaffold only on approval.
 - **Conversational voice** — *resolved (§4 "Persona & conversational
