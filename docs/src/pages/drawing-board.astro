@@ -1,0 +1,463 @@
+---
+// The Drawing Board — a first-class, browser-only deck-authoring workspace.
+//
+// A sibling to the playground, NOT an evolution of it (proposal:
+// engineering/decisions/2026-06-07-drawing-board-architect.md). Three resizable
+// panels — the Architect · the editor · the live filmstrip — over a deck rail.
+// Reuses render path #2 client-side: window.LatticePlayground (from
+// docs/public/playground/lattice-playground.js) + the runtime bundle, exactly
+// like the playground, so no 4th render path is introduced.
+//
+// Phase 1 / Slice 0-1 here: the shell, resizers, and the editor->engine
+// heartbeat, with the Architect as a crafted empty-state. Persistence (Slice 3),
+// export (Slice 4), and the deterministic Architect (Slice 5) fill the framed
+// panels in later slices. Build plan:
+// engineering/decisions/2026-06-07-drawing-board-phase-1-plan.md.
+import { createRequire } from 'node:module';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import '../styles/landing.css';
+import '../styles/drawing-board.css';
+import { SLIDE_BOX } from '../playground/frame-css.js';
+
+const docsRoot = process.cwd();
+const repoRoot = join(docsRoot, '..');
+const require = createRequire(import.meta.url);
+const { loadAll } = require(join(repoRoot, 'lib/components', 'index.js'));
+const manifests = loadAll();
+
+const base = import.meta.env.BASE_URL;
+const url = (p) => `${base}/${p}`.replace(/([^:])\/{2,}/g, '$1/');
+
+const tokensCss = readFileSync(join(docsRoot, 'src/styles/lattice-tokens.generated.css'), 'utf8');
+const palettes = [...new Set([...tokensCss.matchAll(/data-palette="([^"]+)"/g)].map((m) => m[1]))];
+const titleCase = (s) => s.replace(/(^|-)(\w)/g, (_, sep, c) => (sep ? ' ' : '') + c.toUpperCase());
+
+// Starter deck = a known-good sample (the hero component's), so the heartbeat
+// renders something real on first load without risking an authoring footgun.
+const heroComp = manifests.find((m) => m.showcase && m.showcase.hero);
+const starter =
+	(heroComp && heroComp.sample) ||
+	'<!-- _class: title silent -->\n\n`the drawing board`\n\n# A new deck\n\nStart sketching — the preview tracks every edit.\n';
+
+const dbData = JSON.stringify({
+	themeBase: url('playground/themes/'),
+	runtimeUrl: url('playground/lattice-runtime.js'),
+	defaultPalette: 'indaco',
+	slideBox: SLIDE_BOX,
+});
+---
+
+<!doctype html>
+<html lang="en" data-palette="indaco" data-mode="light">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>The Drawing Board — author Lattice decks in your browser</title>
+		<meta
+			name="description"
+			content="A browser-only authoring workspace for Lattice decks: write Markdown, watch it render live, with the Architect at your side."
+		/>
+		<link rel="icon" type="image/png" href={url('lattice-logo.png')} />
+		<script is:inline>
+			(function () {
+				var r = document.documentElement;
+				try {
+					var p = localStorage.getItem('lattice-docs-palette');
+					if (p) r.setAttribute('data-palette', p);
+					var m = localStorage.getItem('lattice-docs-mode');
+					if (m === 'light' || m === 'dark') r.setAttribute('data-mode', m);
+					else if (window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches) r.setAttribute('data-mode', 'dark');
+				} catch (e) {}
+			})();
+		</script>
+	</head>
+	<body class="db-page" data-pane="editor">
+		<header class="topbar">
+			<div class="wrap topbar-inner" style="max-width:none">
+				<a class="brand" href={url('')}>
+					<img class="brand-logo" src={url('lattice-logo.png')} alt="" width="30" height="30" />
+					<span class="brand-mark">Drawing Board</span>
+				</a>
+				<nav class="topnav" id="topnav">
+					<a class="navlink" href={url('getting-started/')}>Get started</a>
+					<a class="navlink" href={url('playground/')}>Playground</a>
+					<a class="navlink" href={url('drawing-board/')} aria-current="page">Drawing Board</a>
+					<a class="navlink" href={url('components/')}>Components</a>
+					<a class="navlink" href="https://github.com/slidewright/lattice">GitHub</a>
+				</nav>
+				<div class="topbar-actions">
+					<div class="controls">
+						<select class="palette-select" id="palette" aria-label="Palette">
+							{palettes.map((p) => <option value={p}>{titleCase(p)}</option>)}
+						</select>
+						<button class="mode-toggle" id="mode-toggle" aria-label="Toggle light / dark" title="Toggle light / dark"></button>
+					</div>
+					<button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-controls="topnav" aria-expanded="false">☰</button>
+				</div>
+			</div>
+		</header>
+
+		<div class="db-workspace" id="db-workspace" data-rail="open">
+			<!-- Rail: decks + history. Persistence + checkpoints arrive in Slice 3;
+			     framed here with the active deck + a what's-coming note. -->
+			<aside class="db-rail" id="db-rail">
+				<div class="db-rail-head">
+					<button class="db-rail-collapse" id="db-rail-collapse" aria-label="Collapse rail" title="Collapse rail">⟨</button>
+					<span class="db-panel-title">Decks</span>
+					<button class="db-btn db-btn-icon" id="db-new-deck" aria-label="New deck" title="New deck (Slice 3)" disabled>+</button>
+				</div>
+				<div class="db-rail-body">
+					<button class="db-deck" type="button" aria-current="true">
+						<span class="db-deck-name">Untitled deck</span>
+						<span class="db-deck-meta">draft · just now</span>
+					</button>
+					<p class="db-rail-note">
+						Saved decks &amp; checkpoint history land in <strong>Slice 3</strong> — your work will
+						persist in this browser and restore from any point.
+					</p>
+				</div>
+			</aside>
+
+			<!-- The Architect — empty-state onboarding shell (Slice 5 brings it to life). -->
+			<section class="db-panel db-architect" id="db-architect">
+				<div class="db-panel-head">
+					<span class="db-panel-title">The Architect</span>
+				</div>
+				<div class="db-panel-body db-arch-body">
+					<div class="db-arch-scroll">
+						<div class="db-arch-mark">
+							<span class="db-arch-glyph" aria-hidden="true">A</span>
+							<span class="db-arch-name">the Architect<small>your deck partner</small></span>
+						</div>
+						<p class="db-arch-say">
+							I'm the Architect. Before we fill slides, I lay out the <strong>structure</strong> —
+							the through-line, the load-bearing slides, the order. Two minutes of questions, then
+							we author.
+						</p>
+						<ul class="db-arch-beats">
+							<li class="db-arch-beat"><b>What</b><span>What are you presenting?</span></li>
+							<li class="db-arch-beat"><b>Who</b><span>Who's in the room?</span></li>
+							<li class="db-arch-beat"><b>The one outcome</b><span>What's the single thing you need when you close?</span></li>
+						</ul>
+						<p class="db-arch-soon">
+							I come fully online in <strong>Slice 5</strong> — live linting, structure
+							recommendations, and one-click fixes, all on-device. For now the editor and live
+							preview are ready: <code>start sketching →</code>
+						</p>
+					</div>
+					<div class="db-arch-composer">
+						<textarea
+							class="db-arch-input"
+							rows="1"
+							placeholder="The Architect wakes up in Slice 5…"
+							aria-label="Message the Architect"
+							disabled></textarea>
+						<button class="db-btn db-btn-primary" disabled aria-label="Send">→</button>
+					</div>
+				</div>
+			</section>
+
+			<div class="db-resizer" id="db-resize-left" data-target="arch" role="separator" aria-orientation="vertical" aria-label="Resize the Architect panel"></div>
+
+			<!-- Editor -->
+			<section class="db-panel db-editor" id="db-editor">
+				<div class="db-panel-head">
+					<span class="db-panel-title">Markdown</span>
+					<span class="db-spacer"></span>
+					<button class="db-btn" id="db-export" title="Export — MD / PDF / PPTX (Slice 4)" disabled>Export ▾</button>
+				</div>
+				<div class="db-panel-body">
+					<!-- CodeMirror mounts into #db-editor-host; the textarea is the no-JS /
+					     pre-hydration fallback and the source of the starter text. -->
+					<div class="db-editor-host" id="db-editor-host">
+						<textarea id="db-editor-ta" spellcheck="false" aria-label="Lattice markdown editor">{starter}</textarea>
+					</div>
+				</div>
+			</section>
+
+			<div class="db-resizer" id="db-resize-right" data-target="preview" role="separator" aria-orientation="vertical" aria-label="Resize the preview panel"></div>
+
+			<!-- Preview filmstrip -->
+			<section class="db-panel db-preview" id="db-preview">
+				<div class="db-panel-head">
+					<span class="db-panel-title">Slides</span>
+					<span class="db-spacer"></span>
+					<span class="db-status" id="db-status">Ready.</span>
+				</div>
+				<div class="db-panel-body">
+					<iframe id="db-frame" class="db-filmstrip" title="Rendered slides"></iframe>
+				</div>
+			</section>
+
+			<!-- Mobile pane switcher (shown <=1024px) -->
+			<nav class="db-mobile-tabs" role="tablist" aria-label="Workspace panes">
+				<button class="db-mobile-tab" data-pane="architect" role="tab" aria-selected="false">Architect</button>
+				<button class="db-mobile-tab" data-pane="editor" role="tab" aria-selected="true">Edit</button>
+				<button class="db-mobile-tab" data-pane="preview" role="tab" aria-selected="false">Preview</button>
+			</nav>
+		</div>
+
+		<script type="application/json" id="db-data" is:inline set:html={dbData}></script>
+
+		<!-- CodeMirror editor (bundled by Astro/Vite). Mounts into #db-editor-host,
+		     seeded from the textarea, exposes a tiny adapter on window. -->
+		<script>
+			import { createEditor } from '../playground/editor.js';
+			const host = document.getElementById('db-editor-host');
+			const ta = document.getElementById('db-editor-ta');
+			const initial = ta ? ta.value : '';
+			let notify = null;
+			const ed = createEditor({ parent: host, doc: initial, onChange: (v) => { if (notify) notify(v); } });
+			if (ta) ta.remove();
+			window.__dbEditor = {
+				getValue: () => ed.getValue(),
+				setValue: (t) => ed.setValue(t),
+				focus: () => ed.focus(),
+				onChange: (fn) => { notify = fn; },
+			};
+			window.dispatchEvent(new Event('db-editor-ready'));
+		</script>
+
+		<script is:inline defer src={url('playground/lattice-playground.js')}></script>
+		<script is:inline>
+			(function () {
+				var data = JSON.parse(document.getElementById('db-data').textContent);
+				var THEME_BASE = data.themeBase;
+				var RUNTIME_URL = data.runtimeUrl;
+				var SLIDE_BOX = data.slideBox;
+				var root = document.documentElement;
+				var frame = document.getElementById('db-frame');
+				var statusEl = document.getElementById('db-status');
+				var paletteSel = document.getElementById('palette');
+				var modeBtn = document.getElementById('mode-toggle');
+
+				// ── Source accessors (CodeMirror adapter, textarea fallback) ──────────
+				function getSource() {
+					if (window.__dbEditor) return window.__dbEditor.getValue();
+					var ta = document.getElementById('db-editor-ta');
+					return ta ? ta.value : '';
+				}
+				function setSource(text) {
+					if (window.__dbEditor) { window.__dbEditor.setValue(text); return; }
+					var ta = document.getElementById('db-editor-ta');
+					if (ta) ta.value = text;
+				}
+				// Courtesy persistence so a refresh doesn't lose typing. Full IndexedDB
+				// decks + checkpoint history is Slice 3; this is the single-deck stopgap.
+				var SOURCE_KEY = 'lattice-db-source';
+				function saveSource() { try { localStorage.setItem(SOURCE_KEY, getSource()); } catch (e) {} }
+
+				paletteSel.value = root.getAttribute('data-palette');
+				var fetched = {};
+				var latticeReady = null;
+
+				function setStatus(msg, isErr) {
+					statusEl.textContent = msg;
+					statusEl.classList.toggle('err', !!isErr);
+				}
+				function fetchTheme(name) {
+					if (!fetched[name]) {
+						fetched[name] = fetch(THEME_BASE + name + '.css').then(function (r) {
+							if (!r.ok) throw new Error('theme ' + name + ' (' + r.status + ')');
+							return r.text();
+						});
+					}
+					return fetched[name];
+				}
+				function ensureThemes(palette, mode) {
+					var PG = window.LatticePlayground;
+					if (!latticeReady) latticeReady = fetchTheme('lattice').then(function (css) { PG.addThemes([css]); });
+					var jobs = [latticeReady];
+					if (!PG.hasTheme(palette)) jobs.push(fetchTheme(palette).then(function (css) { PG.addThemes([css]); }));
+					if (mode === 'dark') {
+						jobs.push(fetchTheme(palette + '-dark').then(function (css) { PG.addThemes([css]); }).catch(function () {}));
+					}
+					return Promise.all(jobs);
+				}
+
+				var KATEX = 'https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css';
+				var MERMAID = 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js';
+
+				// Scale every section to the iframe width + stack them as a filmstrip.
+				// (Same proven kernel as the playground; Slice 2 adds cursor<->slide sync
+				// and per-slide numbering on top of this.) The engine renders with
+				// inlineSVG:false, so each slide is a plain fixed 1280x720 <section>.
+				var FIT = [
+					'(function(){',
+					'  function fit(){',
+					'    var marpit=document.querySelector(".marpit"); if(!marpit) return;',
+					'    var w=marpit.clientWidth; if(!w) return;',
+					'    var secs=marpit.querySelectorAll(":scope>section");',
+					'    var sc=w/1280;',
+					'    for(var i=0;i<secs.length;i++){var s=secs[i];',
+					'      s.style.transformOrigin="top left";',
+					'      s.style.transform="scale("+sc+")";',
+					'      s.style.marginBottom=(720*sc-720+22)+"px";',
+					'    }',
+					'  }',
+					'  window.addEventListener("resize",fit);',
+					'  if(typeof ResizeObserver!=="undefined"){',
+					'    var ro=new ResizeObserver(function(){fit();});',
+					'    var m=document.querySelector(".marpit");',
+					'    if(m){ro.observe(document.documentElement);',
+					'      var ss=m.querySelectorAll(":scope>section");',
+					'      for(var i=0;i<ss.length;i++) ro.observe(ss[i]);}',
+					'  }',
+					'  fit();',
+					'  [60,300,1200,2500].forEach(function(t){setTimeout(fit,t);});',
+					'})();',
+				].join('\n');
+
+				function writeFrame(html, css, mode) {
+					var bg = mode === 'dark' ? '#0c0c0c' : '#e7e7ea';
+					// srcdoc (fresh browsing context per render) so lattice-runtime.js's
+					// one-shot Mermaid guard resets each render — see playground.astro +
+					// engineering/gotchas.md "Playground: Mermaid stops rendering".
+					frame.srcdoc =
+						'<!doctype html><html><head><meta charset="utf-8">' +
+						'<link rel="stylesheet" href="' + KATEX + '">' +
+						'<style>html,body{margin:0;padding:22px;background:' + bg + ';}' +
+						SLIDE_BOX +
+						'.marpit>section{display:block;transform-origin:top left;' +
+						'box-shadow:0 8px 30px rgba(0,0,0,.22);border-radius:6px;}' +
+						css + '</style></head><body>' + html +
+						'<scr' + 'ipt src="' + MERMAID + '"></scr' + 'ipt>' +
+						'<scr' + 'ipt src="' + RUNTIME_URL + '"></scr' + 'ipt>' +
+						'<scr' + 'ipt>' + FIT + '</scr' + 'ipt>' +
+						'</body></html>';
+				}
+
+				var timer = null;
+				function scheduleRender() { clearTimeout(timer); timer = setTimeout(render, 220); }
+				function render() {
+					var PG = window.LatticePlayground;
+					if (!PG) { setStatus('Loading engine…'); return setTimeout(render, 60); }
+					var palette = root.getAttribute('data-palette') || 'indaco';
+					var mode = root.getAttribute('data-mode') === 'dark' ? 'dark' : 'light';
+					setStatus('Rendering…');
+					ensureThemes(palette, mode).then(function () {
+						var theme = mode === 'dark' && PG.hasTheme(palette + '-dark') ? palette + '-dark' : palette;
+						try {
+							var out = PG.render(getSource(), theme);
+							writeFrame(out.html, out.css, mode);
+							var n = (out.html.match(/<\/section>/g) || []).length;
+							setStatus(n + ' slide' + (n === 1 ? '' : 's') + '.');
+						} catch (e) {
+							setStatus(String(e.message || e), true);
+						}
+					}).catch(function (e) { setStatus(String(e.message || e), true); });
+				}
+
+				function onEdit() { saveSource(); scheduleRender(); }
+				function wireEditor() {
+					if (!window.__dbEditor) return;
+					window.__dbEditor.onChange(onEdit);
+					try { var saved = localStorage.getItem(SOURCE_KEY); if (saved != null) setSource(saved); } catch (e) {}
+					render();
+				}
+				if (window.__dbEditor) wireEditor();
+				else window.addEventListener('db-editor-ready', wireEditor);
+				var taEl = document.getElementById('db-editor-ta');
+				if (taEl) taEl.addEventListener('input', onEdit);
+
+				// ── Palette / mode ────────────────────────────────────────────────────
+				paletteSel.addEventListener('change', function () {
+					root.setAttribute('data-palette', paletteSel.value);
+					try { localStorage.setItem('lattice-docs-palette', paletteSel.value); } catch (e) {}
+					render();
+				});
+				modeBtn.addEventListener('click', function () {
+					var next = root.getAttribute('data-mode') === 'dark' ? 'light' : 'dark';
+					root.setAttribute('data-mode', next);
+					try { localStorage.setItem('lattice-docs-mode', next); } catch (e) {}
+					render();
+				});
+				window.addEventListener('pageshow', function () {
+					try {
+						var p = localStorage.getItem('lattice-docs-palette');
+						var m = localStorage.getItem('lattice-docs-mode');
+						var changed = false;
+						if (p && p !== root.getAttribute('data-palette')) { root.setAttribute('data-palette', p); changed = true; }
+						if ((m === 'light' || m === 'dark') && m !== root.getAttribute('data-mode')) { root.setAttribute('data-mode', m); changed = true; }
+						paletteSel.value = root.getAttribute('data-palette');
+						if (changed) render();
+					} catch (e) {}
+				});
+
+				// ── Top-nav mobile toggle ─────────────────────────────────────────────
+				var navToggle = document.getElementById('nav-toggle');
+				var topbar = document.querySelector('.topbar');
+				if (navToggle && topbar) {
+					navToggle.addEventListener('click', function () {
+						var open = topbar.classList.toggle('nav-open');
+						navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+					});
+				}
+
+				// ── Resizers: drag to set the Architect + preview column widths ───────
+				var workspace = document.getElementById('db-workspace');
+				function loadWidth(key, prop) {
+					try { var v = localStorage.getItem(key); if (v) workspace.style.setProperty(prop, v + 'px'); } catch (e) {}
+				}
+				loadWidth('lattice-db-arch', '--db-arch');
+				loadWidth('lattice-db-preview', '--db-preview');
+				function makeResizer(el, target) {
+					var prop = target === 'arch' ? '--db-arch' : '--db-preview';
+					var key = target === 'arch' ? 'lattice-db-arch' : 'lattice-db-preview';
+					el.addEventListener('pointerdown', function (e) {
+						e.preventDefault();
+						el.setPointerCapture(e.pointerId);
+						el.setAttribute('data-dragging', 'true');
+						var startX = e.clientX;
+						var box = workspace.getBoundingClientRect();
+						var startW = target === 'arch'
+							? document.getElementById('db-architect').getBoundingClientRect().width
+							: document.getElementById('db-preview').getBoundingClientRect().width;
+						function move(ev) {
+							// arch grows when dragging right; preview grows when dragging left.
+							var dx = ev.clientX - startX;
+							var w = target === 'arch' ? startW + dx : startW - dx;
+							w = Math.max(240, Math.min(box.width - 420, w));
+							workspace.style.setProperty(prop, w + 'px');
+						}
+						function up(ev) {
+							el.releasePointerCapture(e.pointerId);
+							el.removeAttribute('data-dragging');
+							document.removeEventListener('pointermove', move);
+							document.removeEventListener('pointerup', up);
+							try { localStorage.setItem(key, String(Math.round(parseFloat(getComputedStyle(workspace).getPropertyValue(prop)) || 0))); } catch (x) {}
+						}
+						document.addEventListener('pointermove', move);
+						document.addEventListener('pointerup', up);
+					});
+				}
+				makeResizer(document.getElementById('db-resize-left'), 'arch');
+				makeResizer(document.getElementById('db-resize-right'), 'preview');
+
+				// ── Rail collapse ─────────────────────────────────────────────────────
+				var railBtn = document.getElementById('db-rail-collapse');
+				if (railBtn) {
+					railBtn.addEventListener('click', function () {
+						var collapsed = workspace.getAttribute('data-rail') === 'collapsed';
+						workspace.setAttribute('data-rail', collapsed ? 'open' : 'collapsed');
+						railBtn.textContent = collapsed ? '⟨' : '⟩';
+					});
+				}
+
+				// ── Mobile pane tabs ──────────────────────────────────────────────────
+				var tabs = document.querySelectorAll('.db-mobile-tab');
+				function setPane(which) {
+					document.body.setAttribute('data-pane', which);
+					tabs.forEach(function (t) { t.setAttribute('aria-selected', t.getAttribute('data-pane') === which ? 'true' : 'false'); });
+					if (which === 'preview') render();
+				}
+				tabs.forEach(function (t) {
+					t.addEventListener('click', function () { setPane(t.getAttribute('data-pane')); });
+				});
+
+				render();
+			})();
+		</script>
+	</body>
+</html>
