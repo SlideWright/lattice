@@ -140,5 +140,5 @@ Parallel items stacked vertically, full-width cards.
 `Related components`
 
 - `cards-grid` — three or four parallel items in a scannable grid
-- `cards-side` — exactly two items in left-right balance
+- `compare-prose` — exactly two items, side by side
 - `list-steps` — items carry an explicit, ordered sequence

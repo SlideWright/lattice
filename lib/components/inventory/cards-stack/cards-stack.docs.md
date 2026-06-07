@@ -103,7 +103,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 ## Related components
 
 - [`cards-grid`](../../inventory/cards-grid/cards-grid.docs.md) — three or four parallel items in a scannable grid
-- [`cards-side`](../../inventory/cards-side/cards-side.docs.md) — exactly two items in left-right balance
+- [`compare-prose`](../../comparison/compare-prose/compare-prose.docs.md) — exactly two items, side by side
 - [`list-steps`](../../progression/list-steps/list-steps.docs.md) — items carry an explicit, ordered sequence
 
 ## Demo deck

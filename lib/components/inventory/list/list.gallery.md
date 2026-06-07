@@ -154,7 +154,7 @@ Bulleted list under a heading — plain pills, hairline takeaways, or display-we
 
 - **Title plus body per item.** If each bullet is `**Title.** body`, the layout under-serves it. Move to cards-stack (2-3 items) or list-tabular (5+ rows) instead.
 - **Wall of long bullets.** Past twelve words per line the slide becomes paragraph soup. Either trim or move to content for prose, cards-stack for structured items.
-- **Two-item lists.** Two bullets read as a thin slide. For pairs, reach for cards-side or compare-prose — both give the pair the weight it deserves.
+- **Two-item lists.** Two bullets read as a thin slide. For pairs, reach for compare-prose — it gives the pair the weight it deserves.
 
 ---
 

@@ -18,7 +18,7 @@ Use after a comparison or evaluation to land the recommendation: the featured ca
 
 - **Equal-weight options.** If all four items deserve the same weight, use `cards-grid`. featured demands a winner; without one the layout overstates the lead and the audience feels manipulated.
 - **Hero card with one-line body.** A one-sentence featured card defeats the asymmetry — the sub-grid bullets out-mass it. Either give the hero the paragraph it needs or move to `cards-grid` where every card holds equal weight.
-- **Sub-grid that argues against the hero.** If the supporting cards undermine the recommendation, the slide is a debate, not a verdict. Use `verdict-grid` for criteria-based scoring or `cards-side` for explicit two-option comparison.
+- **Sub-grid that argues against the hero.** If the supporting cards undermine the recommendation, the slide is a debate, not a verdict. Use `verdict-grid` for criteria-based scoring or `compare-prose` for explicit two-option comparison.
 
 ## Authoring
 
@@ -90,7 +90,6 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 - [`cards-grid`](../../inventory/cards-grid/cards-grid.docs.md) — all options carry equal weight; no winner declared
 - [`verdict-grid`](../../comparison/verdict-grid/verdict-grid.docs.md) — options scored against shared criteria, not picked
-- [`cards-side`](../../inventory/cards-side/cards-side.docs.md) — two options side by side, no hierarchy between them
 - [`decision`](../../comparison/decision/decision.docs.md) — the recommendation needs an explicit pro/con frame
 - [`split-brief`](../../statement/split-brief/split-brief.docs.md) — the recommendation is a thesis sentence + supporting findings
 

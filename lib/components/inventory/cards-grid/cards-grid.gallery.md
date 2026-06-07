@@ -167,5 +167,5 @@ header: "Lattice · cards-grid"
 
 - `list-steps` — items carry an explicit sequence
 - `cards-stack` — items stack vertically as full-width rows
-- `cards-side` — two-card horizontal comparison
+- `compare-prose` — two-option comparison, side by side
 - `verdict-grid` — comparing options against shared criteria

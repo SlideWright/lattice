@@ -107,7 +107,7 @@ Featured card + sub-grid — one prominent item with supporting cards.
 
 - **Equal-weight options.** If all four items deserve the same weight, use `cards-grid`. featured demands a winner; without one the layout overstates the lead and the audience feels manipulated.
 - **Hero card with one-line body.** A one-sentence featured card defeats the asymmetry — the sub-grid bullets out-mass it. Either give the hero the paragraph it needs or move to `cards-grid` where every card holds equal weight.
-- **Sub-grid that argues against the hero.** If the supporting cards undermine the recommendation, the slide is a debate, not a verdict. Use `verdict-grid` for criteria-based scoring or `cards-side` for explicit two-option comparison.
+- **Sub-grid that argues against the hero.** If the supporting cards undermine the recommendation, the slide is a debate, not a verdict. Use `verdict-grid` for criteria-based scoring or `compare-prose` for explicit two-option comparison.
 
 ---
 
@@ -119,6 +119,5 @@ Featured card + sub-grid — one prominent item with supporting cards.
 
 - `cards-grid` — all options carry equal weight; no winner declared
 - `verdict-grid` — options scored against shared criteria, not picked
-- `cards-side` — two options side by side, no hierarchy between them
 - `decision` — the recommendation needs an explicit pro/con frame
 - `split-brief` — the recommendation is a thesis sentence + supporting findings

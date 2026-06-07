@@ -27,6 +27,13 @@ in patch versions.
 
 ### Removed
 
+- **Breaking: the `cards-side` layout is removed.** It was `compare-prose`
+  minus the comparison chrome — the same two-co-equal-card data shape (title +
+  nested body) — so it is dropped with no alias. Migrate
+  `<!-- _class: cards-side -->` to `<!-- _class: compare-prose -->` (identical
+  authoring shape: a top-level bullet is the card title, a nested bullet carries
+  the body). Part of the layout-redundancy consolidation (see
+  `engineering/decisions/2026-06-07-layout-redundancy-analysis.md`).
 - **Breaking: the `tldr` and `principles` layouts are removed.** Both were flat
   one-line-item stacks that differed from `list` only in finish, so they are now
   `list` variants: migrate `<!-- _class: tldr -->` to `<!-- _class: list takeaway -->`

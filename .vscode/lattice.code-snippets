@@ -99,20 +99,6 @@
     ],
     "description": "2–4 parallel items, similar weight, scannable in a grid."
   },
-  "lattice: cards-side": {
-    "prefix": "lattice-cards-side",
-    "body": [
-      "<!-- _class: cards-side -->",
-      "",
-      "## Slide heading.",
-      "",
-      "- Left card title",
-      "  - Body text for the left card, two short sentences.",
-      "- Right card title",
-      "  - Body text for the right card, two short sentences."
-    ],
-    "description": "Two cards side-by-side, co-equal."
-  },
   "lattice: cards-stack": {
     "prefix": "lattice-cards-stack",
     "body": [

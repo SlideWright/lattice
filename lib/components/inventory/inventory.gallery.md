@@ -2,7 +2,7 @@
 
 # inventory
 
-`9 components`
+`8 components`
 
 Inventory — parallel sets of related items.
 
@@ -50,17 +50,6 @@ Inventory — parallel sets of related items.
   - Every decision recorded with the signals that informed it, the options considered, and the criteria applied. Feeds the calibration loop.
 - Calibration Loop.
   - Monthly retrospective that compares predicted outcomes to actual outcomes and adjusts scoring weights accordingly.
-
----
-
-<!-- _class: cards-side -->
-
-## Two ways into the European market.
-
-- Direct sales motion.
-  - Stand up a Dublin team and sell into enterprise accounts ourselves. Higher margin and full control of the relationship, against a 9-to-12-month ramp before the first rep carries quota.
-- Channel partnership.
-  - Resell through an established regional integrator. Revenue inside two quarters and local compliance handled for us, at the cost of a 30% margin share and a thinner line to the customer.
 
 ---
 

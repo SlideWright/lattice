@@ -149,7 +149,7 @@
       "accent"
     ]
   },
-  "count": 55,
+  "count": 54,
   "components": [
     {
       "name": "actors",
@@ -846,8 +846,8 @@
           "when": "items stack vertically as full-width rows"
         },
         {
-          "name": "cards-side",
-          "when": "two-card horizontal comparison"
+          "name": "compare-prose",
+          "when": "two-option comparison, side by side"
         },
         {
           "name": "verdict-grid",
@@ -855,117 +855,6 @@
         }
       ],
       "galleryHref": "../../lib/components/inventory/cards-grid/cards-grid.gallery.light.pdf"
-    },
-    {
-      "name": "cards-side",
-      "bucket": "inventory",
-      "function": "inventory",
-      "form": "split",
-      "substance": "structure",
-      "tags": [
-        "overview",
-        "contrast",
-        "tradeoff"
-      ],
-      "description": "Two cards side-by-side, co-equal.",
-      "purpose": "Use for an explicit pair — two options, two phases, two artifacts presented with equal weight.",
-      "variants": [
-        "numbered"
-      ],
-      "effectiveVariants": [
-        "accent",
-        "archived",
-        "compact",
-        "confidential",
-        "dark",
-        "draft",
-        "loose",
-        "mark-orbit",
-        "mark-threads",
-        "no-footer",
-        "no-header",
-        "no-paginate",
-        "no-period",
-        "numbered",
-        "pinned",
-        "redacted",
-        "revised",
-        "scale-2xl",
-        "scale-l",
-        "scale-xl",
-        "silent",
-        "tbd",
-        "tint-corner at-tl",
-        "tint-edge at-right",
-        "tint-vignette",
-        "tone-fail",
-        "tone-pass",
-        "tone-skip",
-        "tone-warn",
-        "treatment-none",
-        "wip",
-        "with-period"
-      ],
-      "slots": {
-        "title": {
-          "selector": "h2",
-          "required": true,
-          "description": "Slide heading."
-        },
-        "cards": {
-          "selector": "ul > li",
-          "required": true,
-          "description": "Exactly two list items, each one card. Authoring contract: a top-level bullet is the card title (renders bold by default); an indented bullet underneath carries the body text."
-        }
-      },
-      "skeleton": "<!-- _class: cards-side -->\n\n## Slide heading.\n\n- Left card title\n  - Body text for the left card, two short sentences.\n- Right card title\n  - Body text for the right card, two short sentences.\n",
-      "whenToUse": [
-        {
-          "title": "An explicit pair",
-          "body": "Exactly two items that deserve equal visual weight. Two options under consideration, two phases of a rollout, two halves of a contract."
-        },
-        {
-          "title": "Neutral comparison",
-          "body": "When the slide should not take sides. cards-side stays balanced; compare-prose declares a winner via connector chrome."
-        },
-        {
-          "title": "Short, parallel body",
-          "body": "Each card carries one to two sentences of similar length. Lopsided density breaks the layout's symmetry and the audience reads it as preference."
-        }
-      ],
-      "antiPatterns": [
-        {
-          "title": "Three or more cards",
-          "body": "cards-side is built for exactly two slots. For three parallel items use cards-grid three; for four use cards-grid four."
-        },
-        {
-          "title": "One side is the answer",
-          "body": "If the deck has already chosen, use compare-prose with the winner highlighted. cards-side reads as undecided — that's the wrong signal when you've decided."
-        },
-        {
-          "title": "Long-form body per card",
-          "body": "More than two sentences per card crowds the split. For richer side-by-side bodies, move to split-list or stacked rows of cards-stack."
-        }
-      ],
-      "related": [
-        {
-          "name": "cards-grid",
-          "when": "three or four parallel items, not two"
-        },
-        {
-          "name": "cards-stack",
-          "when": "two items that read top-to-bottom, not left-right"
-        },
-        {
-          "name": "compare-prose",
-          "when": "the comparison has a winner you want to declare"
-        },
-        {
-          "name": "split-list",
-          "when": "one side is framing, the other is supporting evidence"
-        }
-      ],
-      "galleryHref": "../../lib/components/inventory/cards-side/cards-side.gallery.light.pdf"
     },
     {
       "name": "cards-stack",
@@ -1066,8 +955,8 @@
           "when": "three or four parallel items in a scannable grid"
         },
         {
-          "name": "cards-side",
-          "when": "exactly two items in left-right balance"
+          "name": "compare-prose",
+          "when": "exactly two items, side by side"
         },
         {
           "name": "list-steps",
@@ -2424,7 +2313,7 @@
         },
         {
           "title": "Sub-grid that argues against the hero",
-          "body": "If the supporting cards undermine the recommendation, the slide is a debate, not a verdict. Use `verdict-grid` for criteria-based scoring or `cards-side` for explicit two-option comparison."
+          "body": "If the supporting cards undermine the recommendation, the slide is a debate, not a verdict. Use `verdict-grid` for criteria-based scoring or `compare-prose` for explicit two-option comparison."
         }
       ],
       "related": [
@@ -2435,10 +2324,6 @@
         {
           "name": "verdict-grid",
           "when": "options scored against shared criteria, not picked"
-        },
-        {
-          "name": "cards-side",
-          "when": "two options side by side, no hierarchy between them"
         },
         {
           "name": "decision",
@@ -3259,7 +3144,7 @@
         },
         {
           "title": "Two-item lists",
-          "body": "Two bullets read as a thin slide. For pairs, reach for cards-side or compare-prose — both give the pair the weight it deserves."
+          "body": "Two bullets read as a thin slide. For pairs, reach for compare-prose — it gives the pair the weight it deserves."
         }
       ],
       "related": [
