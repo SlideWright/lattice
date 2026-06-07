@@ -69,7 +69,12 @@ in patch versions.
   buttons move into a ⚙ menu (selecting a component inserts its example; the
   menu holds *Reset to example* and *Insert blank skeleton*), and the Component
   trigger + Variant select now have a fixed footprint so a long label truncates
-  instead of reflowing the bar to a new row.
+  instead of reflowing the bar to a new row. The toolbar is fully responsive:
+  on a phone it splits into two rows — Component + Variant (labels stacked on
+  top) above, Edit/Preview grouped at the left with the ⚙ at the right below —
+  and the page is an app-shell flex column so the editor/preview split fills
+  whatever height the bar takes. Both popovers (picker and ⚙) clamp themselves
+  into the viewport so they're never clipped at a screen edge.
 - **The browsable component reference is now built into the docs site as
   per-component pages.** Each component gets its own focused page
   (`/components/<bucket>/<name>/`) with a live preview that flips to an
@@ -305,6 +310,11 @@ in patch versions.
 
 ### Fixed
 
+- **Docs site search boxes no longer trigger iOS Safari's focus-zoom.** The
+  playground component search, the component-reference search, and the Group-by
+  selects were below the 16px threshold that makes iOS zoom the page on focus;
+  they now bump to 16px on coarse pointers (matching the editor textarea), so
+  tapping search keeps the layout put.
 - **Docs playground no longer renders `math` slides tiny + jittering.** The
   playground renders `inlineSVG:false` (bare `<section>`, no
   `<svg><foreignObject>` wrapper), and `section{container-type:size}` collapses

@@ -25,6 +25,24 @@ const esc = (s) =>
 		.replace(/>/g, '&gt;')
 		.replace(/"/g, '&quot;');
 
+// Nudge an open, absolutely-positioned popover horizontally so it stays within
+// the viewport — the bar flex-wraps on mobile, which can move a trigger to the
+// opposite edge from where its popover is CSS-anchored (e.g. the right-anchored
+// ⚙ menu when the ⚙ wraps to the left). Keeps the popover attached to its
+// trigger, just shifted on-screen. Re-run on resize while open. Exported +
+// exposed on window so the inline ⚙ controller can reuse it.
+export function clampPopover(pop) {
+	if (!pop || pop.hidden) return;
+	pop.style.transform = '';
+	const margin = 8;
+	const rect = pop.getBoundingClientRect();
+	const vw = document.documentElement.clientWidth;
+	let shift = 0;
+	if (rect.right > vw - margin) shift = vw - margin - rect.right; // pull left off the right edge
+	if (rect.left + shift < margin) shift = margin - rect.left; // but never clip the left edge
+	if (shift) pop.style.transform = `translateX(${Math.round(shift)}px)`;
+}
+
 export function initTemplatePicker() {
 	const dataEl = document.getElementById('pg-data');
 	const wrap = document.getElementById('pg-template-picker');
@@ -164,15 +182,20 @@ export function initTemplatePicker() {
 		render();
 		pop.hidden = false;
 		trigger.setAttribute('aria-expanded', 'true');
+		clampPopover(pop); // keep on-screen if the trigger wrapped near an edge
 		searchEl.focus();
 	}
 	function closePop(refocus) {
 		if (!open) return;
 		open = false;
 		pop.hidden = true;
+		pop.style.transform = '';
 		trigger.setAttribute('aria-expanded', 'false');
 		if (refocus) trigger.focus();
 	}
+	window.addEventListener('resize', () => {
+		if (open) clampPopover(pop);
+	});
 
 	function pick(name) {
 		if (!name) return;
@@ -255,5 +278,6 @@ export function initTemplatePicker() {
 			}
 		},
 	};
+	window.__pgClampPopover = clampPopover; // shared with the inline ⚙ controller
 	window.dispatchEvent(new Event('pg-picker-ready'));
 }

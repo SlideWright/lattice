@@ -81,7 +81,7 @@ const pgData = JSON.stringify({
 			})();
 		</script>
 	</head>
-	<body>
+	<body class="pg-page">
 		<header class="topbar">
 			<div class="wrap topbar-inner" style="max-width:none">
 				<a class="brand" href={url('')}>
@@ -108,10 +108,11 @@ const pgData = JSON.stringify({
 		</header>
 
 		<div class="pg-bar">
-			<!-- Searchable, groupable component picker. The trigger shows the
-			     current component; clicking opens a popover with a search box +
-			     Group-by + the grouped list (template-picker.js). The grouped
+			<!-- Pickers cluster (row 1 on mobile): Component + Variant, labels on
+			     top so the controls keep the width. The Component picker is a
+			     searchable, groupable popover (template-picker.js); its grouped
 			     <ul> is the no-JS / pre-hydration fallback. -->
+			<div class="pg-bar-pickers">
 			<div class="pg-picker pg-template-picker" id="pg-template-picker">
 				<label id="pg-template-label">Component</label>
 				<button
@@ -160,34 +161,38 @@ const pgData = JSON.stringify({
 					</div>
 				</div>
 			</div>
-			<div class="pg-picker">
+			<div class="pg-picker pg-variant-picker">
 				<label for="pg-variant">Variant</label>
 				<select id="pg-variant" class="pg-variant-select" aria-label="Component variant" disabled>
 					<option value="">—</option>
 				</select>
 			</div>
-			<span class="spacer"></span>
-			<span class="pg-status" id="pg-status">Ready.</span>
-			<!-- Insert options demoted off the bar: selecting a component inserts
-			     its example; this ⚙ menu holds the rarer skeleton + reset paths. -->
-			<div class="pg-picker pg-settings" id="pg-settings">
-				<button
-					type="button"
-					class="pg-icon-btn"
-					id="pg-settings-trigger"
-					aria-haspopup="menu"
-					aria-expanded="false"
-					aria-label="Insert options"
-					title="Insert options"
-				>⚙</button>
-				<div class="pg-settings-pop" id="pg-settings-pop" hidden role="menu" aria-label="Insert options">
-					<button type="button" class="pg-menu-item" id="pg-insert-sample" role="menuitem">Reset to example</button>
-					<button type="button" class="pg-menu-item" id="pg-insert-skeleton" role="menuitem">Insert blank skeleton</button>
-				</div>
 			</div>
-			<div class="pg-tabs" role="tablist">
-				<button class="pg-tab" id="tab-edit" role="tab" aria-selected="true">Edit</button>
-				<button class="pg-tab" id="tab-preview" role="tab" aria-selected="false">Preview</button>
+			<!-- Actions cluster (row 2 on mobile): Edit/Preview grouped at the left,
+			     ⚙ pushed to the right edge. ⚙ holds the demoted insert options —
+			     selecting a component inserts its example; this menu holds the
+			     rarer skeleton + reset paths. -->
+			<div class="pg-bar-actions">
+				<div class="pg-tabs" role="tablist">
+					<button class="pg-tab" id="tab-edit" role="tab" aria-selected="true">Edit</button>
+					<button class="pg-tab" id="tab-preview" role="tab" aria-selected="false">Preview</button>
+				</div>
+				<span class="pg-status" id="pg-status">Ready.</span>
+				<div class="pg-settings" id="pg-settings">
+					<button
+						type="button"
+						class="pg-icon-btn"
+						id="pg-settings-trigger"
+						aria-haspopup="menu"
+						aria-expanded="false"
+						aria-label="Insert options"
+						title="Insert options"
+					>⚙</button>
+					<div class="pg-settings-pop" id="pg-settings-pop" hidden role="menu" aria-label="Insert options">
+						<button type="button" class="pg-menu-item" id="pg-insert-sample" role="menuitem">Reset to example</button>
+						<button type="button" class="pg-menu-item" id="pg-insert-skeleton" role="menuitem">Insert blank skeleton</button>
+					</div>
+				</div>
 			</div>
 		</div>
 
@@ -518,8 +523,11 @@ const pgData = JSON.stringify({
 				var settingsWrap = document.getElementById('pg-settings');
 				var settingsTrigger = document.getElementById('pg-settings-trigger');
 				var settingsPop = document.getElementById('pg-settings-pop');
+				function clampSettings() {
+					if (window.__pgClampPopover) window.__pgClampPopover(settingsPop);
+				}
 				function closeSettings() {
-					if (settingsPop) settingsPop.hidden = true;
+					if (settingsPop) { settingsPop.hidden = true; settingsPop.style.transform = ''; }
 					if (settingsTrigger) settingsTrigger.setAttribute('aria-expanded', 'false');
 				}
 				if (settingsTrigger && settingsPop) {
@@ -528,12 +536,16 @@ const pgData = JSON.stringify({
 						var willOpen = settingsPop.hidden;
 						settingsPop.hidden = !willOpen;
 						settingsTrigger.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+						if (willOpen) clampSettings(); // keep on-screen if the ⚙ wrapped near an edge
 					});
 					document.addEventListener('click', function (e) {
 						if (settingsWrap && !settingsWrap.contains(e.target)) closeSettings();
 					});
 					document.addEventListener('keydown', function (e) {
 						if (e.key === 'Escape') closeSettings();
+					});
+					window.addEventListener('resize', function () {
+						if (settingsPop && !settingsPop.hidden) clampSettings();
 					});
 				}
 				document.getElementById('pg-insert-sample').addEventListener('click', function () {
