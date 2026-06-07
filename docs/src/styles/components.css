@@ -114,6 +114,17 @@
 	outline: none;
 	border-color: var(--accent);
 }
+/* iOS Safari auto-zooms when a form control with font-size < 16px gains focus.
+   Bump the search boxes + Group-by selects (nav and index) on coarse pointers
+   so tapping search doesn't zoom the page. */
+@media (pointer: coarse) {
+	.cnav-search-input,
+	.cnav-groupby select,
+	.cindex-search-input,
+	.cindex-groupby select {
+		font-size: 16px;
+	}
+}
 .cnav-list {
 	list-style: none;
 	margin: 0;
