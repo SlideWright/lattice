@@ -4456,6 +4456,65 @@ section.list ol { list-style:none; counter-reset:list-counter; display:flex; fle
 section.list ol li { counter-increment:list-counter; font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:var(--sp-xs) var(--sp-md); display:grid; grid-template-columns:var(--sp-xl) 1fr; align-items:center; gap:var(--sp-sm); }
 section.list ol li::before { content:counter(list-counter, decimal-leading-zero); font-family:var(--font-mono); font-size:var(--fs-body); font-weight:700; color:var(--accent); }
 
+/* ── takeaway variant — former `tldr` component (inventory.list.takeaway) ──
+ * Single-line takeaways as hairline-ruled rows. Resets the default pill
+ * card chrome to a bottom rule; `numbered` adds a large accent counter.
+ * Merged from the standalone tldr on 2026-06-07. */
+section.list.takeaway { display:flex; flex-direction:column; }
+section.list.takeaway > :is(ul,ol) { gap:var(--sp-sm); }
+section.list.takeaway > :is(ul,ol) > li {
+  display:flex; align-items:center;
+  background:none; border:none; border-radius:0;
+  border-bottom:1px solid var(--border);
+  padding:var(--sp-sm) 0;
+  font-size:var(--fs-body); font-weight:500; line-height:var(--lh-snug);
+  color:var(--text-heading);
+}
+section.list.takeaway > :is(ul,ol) > li::before { content:none; }
+section.list.takeaway > :is(ul,ol) > li::marker { content:''; }
+section.list.takeaway > :is(ul,ol) > li:last-child { border-bottom:none; }
+/* numbered — hanging-indent counter (not grid: keeps inline code in one flow) */
+section.list.takeaway.numbered > :is(ul,ol) { counter-reset:list-take-counter; }
+section.list.takeaway.numbered > :is(ul,ol) > li {
+  counter-increment:list-take-counter; position:relative; padding-left:6cqi;
+}
+section.list.takeaway.numbered > :is(ul,ol) > li::before {
+  content:counter(list-take-counter, decimal-leading-zero);
+  position:absolute; left:0; top:0;
+  font-family:var(--font-mono); font-size:var(--fs-h2); font-weight:700;
+  letter-spacing:0.04em; color:var(--accent); line-height:1;
+}
+
+/* ── principles variant — former `principles` component (inventory.list.principles) ──
+ * Ordered list of single-sentence declarations at display weight with a
+ * large accent counter. ol only; lettered/roman/bullet switch the counter
+ * format. Merged from the standalone principles on 2026-06-07. */
+section.list.principles { display:flex; flex-direction:column; }
+section.list.principles ol { counter-reset:list-principle-counter; gap:var(--sp-md); }
+section.list.principles ol > li {
+  counter-increment:list-principle-counter;
+  flex:1; container-type:size;
+  display:grid; grid-template-columns:auto 1fr; column-gap:var(--sp-lg);
+  align-items:center;
+  background:none; border:none; border-radius:0;
+  border-bottom:1px solid var(--border);
+  font-family:var(--font-display, var(--font-body));
+  font-size:clamp(var(--fs-body), 11cqh, var(--fs-h2));
+  font-weight:500; line-height:var(--lh-snug); letter-spacing:-0.01em;
+  color:var(--text-heading); padding:var(--sp-sm) 0; overflow:hidden;
+}
+section.list.principles ol > li:last-child { border-bottom:none; }
+section.list.principles ol > li::before {
+  content:counter(list-principle-counter, decimal-leading-zero);
+  font-family:var(--font-mono);
+  font-size:clamp(var(--fs-emphasis), 28cqh, var(--fs-h1));
+  font-weight:700; letter-spacing:0.04em; color:var(--accent);
+  line-height:1; align-self:center;
+}
+section.list.principles.lettered ol > li::before { content:counter(list-principle-counter, upper-alpha); }
+section.list.principles.roman ol > li::before { content:counter(list-principle-counter, upper-roman); }
+section.list.principles.bullet ol > li::before { content:'·'; }
+
 /* === lib/components/progression/list-criteria/list-criteria.styles.css === */
 /* list-criteria — extracted from lib/_legacy.css (batch 4).
  * See lib/components/list-criteria/list-criteria.manifest.json for the component contract.
@@ -5919,74 +5978,6 @@ section.piechart .piechart-legend li:nth-child(6n+3) .legend-swatch { background
 section.piechart .piechart-legend li:nth-child(6n+4) .legend-swatch { background: var(--cat4-fill); border: 1px solid var(--cat4-ink); }
 section.piechart .piechart-legend li:nth-child(6n+5) .legend-swatch { background: var(--cat5-fill); border: 1px solid var(--cat5-ink); }
 section.piechart .piechart-legend li:nth-child(6n)   .legend-swatch { background: var(--cat6-fill); border: 1px solid var(--cat6-ink); }
-
-/* === lib/components/inventory/principles/principles.styles.css === */
-/* principles — extracted from lib/_legacy.css (batch 3).
- * See lib/components/principles/principles.manifest.json for the component contract.
- */
-
-/* ── PRINCIPLES ────────────────────────────────────────────────────────
- * ## heading
- * 1. We default to the choice that is cheaper to reverse.
- * 2. We name the actor, never the system.
- * 3. We write down the bet on the same slide as the choice.
- *
- * Numbered list of declarative statements in display weight. Each item
- * is one paragraph (no nested body). Generous line-height; leading
- * counter rendered in accent mono.
- *
- * Counter format defaults to decimal-leading-zero (01, 02, 03). Compose
- * with .lettered or .roman to switch counter style.
- * ──────────────────────────────────────────────────────────────────────── */
-section.principles { display:flex; flex-direction:column; }
-section.principles h2 { margin-bottom:var(--sp-lg); }
-section.principles ol {
-  list-style:none;
-  counter-reset:principle-counter;
-  padding:0; margin:0;
-  display:flex; flex-direction:column;
-  gap:var(--sp-md);
-  flex:1;
-  justify-content:center;
-}
-section.principles ol > li {
-  counter-increment:principle-counter;
-  flex:1;
-  container-type:size;
-  display:grid;
-  grid-template-columns:auto 1fr;
-  column-gap:var(--sp-lg);
-  align-items:center;
-  font-family:var(--font-display, var(--font-body));
-  font-size:clamp(var(--fs-body), 11cqh, var(--fs-h2));
-  font-weight:500;
-  line-height:var(--lh-snug);
-  letter-spacing:-0.01em;
-  color:var(--text-heading);
-  padding:var(--sp-sm) 0;
-  border-bottom:1px solid var(--border);
-  overflow:hidden;
-}
-section.principles ol > li:last-child { border-bottom:none; }
-section.principles ol > li::before {
-  content:counter(principle-counter, decimal-leading-zero);
-  font-family:var(--font-mono);
-  font-size:clamp(var(--fs-emphasis), 28cqh, var(--fs-h1));
-  font-weight:700;
-  letter-spacing:0.04em;
-  color:var(--accent);
-  line-height:1;
-  align-self:center;
-}
-/* Counter format modifiers — same family as list-steps. */
-section.principles.lettered ol > li::before {
-  content:counter(principle-counter, upper-alpha);
-}
-section.principles.roman ol > li::before {
-  content:counter(principle-counter, upper-roman);
-}
-/* Plain bullets — no numeric counter. */
-section.principles.bullet ol > li::before { content:'·'; }
 
 /* === lib/components/chart/progress/progress.styles.css === */
 /* progress — extracted from lib/_legacy.css (batch 9).
@@ -9100,74 +9091,6 @@ section.title h1 + p:has(> code:only-child) > code {
   border: none;
   padding: 0;
   border-radius: 0;
-}
-
-/* === lib/components/inventory/tldr/tldr.styles.css === */
-/* tldr — extracted from lib/_legacy.css (batch 3).
- * See lib/components/tldr/tldr.manifest.json for the component contract.
- */
-
-/* ── TLDR ──────────────────────────────────────────────────────────────
- * ## heading
- * - One-line takeaway. → slide 8
- * - Another takeaway.  → slide 12
- *
- * Executive summary slide. Each item is one short line; an optional
- * `→` reference at the end is rendered in muted mono.
- *
- * Modifier `numbered` adds a 01., 02. counter prefix.
- * ──────────────────────────────────────────────────────────────────────── */
-section.tldr { display:flex; flex-direction:column; }
-section.tldr h2 { font-size:var(--fs-h2); margin-bottom:var(--sp-md); }
-section.tldr > ul,
-section.tldr > ol {
-  list-style:none; padding:0; margin:0;
-  display:flex; flex-direction:column;
-  gap:var(--sp-sm);
-  flex:1;
-  justify-content:center;
-}
-section.tldr > ul > li,
-section.tldr > ol > li {
-  display:flex; align-items:center;
-  font-size:var(--fs-body);
-  font-weight:500;
-  line-height:var(--lh-snug);
-  color:var(--text-heading);
-  padding:var(--sp-sm) 0;
-  border-bottom:1px solid var(--border);
-}
-section.tldr > ul > li::marker,
-section.tldr > ol > li::marker { content:''; }
-section.tldr > ul > li:last-child,
-section.tldr > ol > li:last-child { border-bottom:none; }
-/* numbered modifier — adds counter prefix */
-section.tldr.numbered > ul,
-section.tldr.numbered > ol {
-  counter-reset:tldr-counter;
-}
-/* Hanging indent — NOT display:grid. A grid li blockifies inline <code> into
- * its own grid item, fragmenting any takeaway that contains an inline code
- * span across multiple rows. Positioning the counter absolutely keeps the
- * takeaway (text + inline code) as one normal inline flow. */
-section.tldr.numbered > ul > li,
-section.tldr.numbered > ol > li {
-  counter-increment:tldr-counter;
-  position:relative;
-  padding-left:6cqi;
-}
-section.tldr.numbered > ul > li::before,
-section.tldr.numbered > ol > li::before {
-  content:counter(tldr-counter, decimal-leading-zero);
-  position:absolute;
-  left:0;
-  top:0;
-  font-family:var(--font-mono);
-  font-size:var(--fs-h2);
-  font-weight:700;
-  letter-spacing:0.04em;
-  color:var(--accent);
-  line-height:1;
 }
 
 /* === lib/components/comparison/verdict-grid/verdict-grid.styles.css === */

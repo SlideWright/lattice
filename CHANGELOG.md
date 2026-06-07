@@ -27,6 +27,14 @@ in patch versions.
 
 ### Removed
 
+- **Breaking: the `tldr` and `principles` layouts are removed.** Both were flat
+  one-line-item stacks that differed from `list` only in finish, so they are now
+  `list` variants: migrate `<!-- _class: tldr -->` to `<!-- _class: list takeaway -->`
+  (and `tldr numbered` to `list takeaway numbered`), and `<!-- _class: principles -->`
+  to `<!-- _class: list principles -->` (with `lettered` / `roman` / `bullet` still
+  composing: `list principles lettered`). The authoring shape is identical (a flat
+  `ul`/`ol` of single-line items). Part of the layout-redundancy consolidation
+  (see `engineering/decisions/2026-06-07-layout-redundancy-analysis.md`).
 - **Breaking: the `subtopic` layout is removed.** Its bright-canvas, centered
   sub-section break is now the `light` variant of `divider` — migrate
   `<!-- _class: subtopic -->` to `<!-- _class: divider light -->` (and

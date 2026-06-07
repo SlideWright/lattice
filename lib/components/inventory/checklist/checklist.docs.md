@@ -63,7 +63,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 ## Related components
 
 - [`list`](../../inventory/list/list.docs.md) — items have no state — just bullets
-- [`tldr`](../../inventory/tldr/tldr.docs.md) — summary lines without per-item completion tracking
+- [`tldr`](../tldr/tldr.docs.md) — summary lines without per-item completion tracking
 - [`list-tabular`](../../inventory/list-tabular/list-tabular.docs.md) — rows need a label-plus-description structure, not state
 - [`cards-stack`](../../inventory/cards-stack/cards-stack.docs.md) — each item needs two sentences of body
 

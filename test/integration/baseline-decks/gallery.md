@@ -1023,7 +1023,7 @@ The architecture change is the calibration loop — logged, weighted, time-bound
 
 ---
 
-<!-- _class: principles -->
+<!-- _class: list principles -->
 <!-- _footer: "New layout — principles · principles" -->
 
 ## How we make calls when the spec is silent.
@@ -1099,7 +1099,7 @@ The first column is sticky workstream label; phase columns carry numbered chrome
 
 ---
 
-<!-- _class: tldr numbered -->
+<!-- _class: list takeaway numbered -->
 <!-- _footer: "New layout — tldr · tldr numbered" -->
 
 `Section 03 · Recap`

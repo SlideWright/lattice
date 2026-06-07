@@ -444,7 +444,7 @@
       "- Fourth short bullet point.",
       "- Fifth short bullet point."
     ],
-    "description": "Plain bullet list under a heading."
+    "description": "Bulleted list under a heading — plain pills, hairline takeaways, or display-weight principles."
   },
   "lattice: list-criteria": {
     "prefix": "lattice-list-criteria",
@@ -560,19 +560,6 @@
       "- Fourth slice `10%`"
     ],
     "description": "Pie or donut chart with legend — proportional wedges."
-  },
-  "lattice: principles": {
-    "prefix": "lattice-principles",
-    "body": [
-      "<!-- _class: principles -->",
-      "",
-      "## How we make calls when the spec is silent.",
-      "",
-      "1. Default to the choice that is cheaper to reverse.",
-      "2. Document the decision, not the menu of options.",
-      "3. Reversible calls don't need a meeting."
-    ],
-    "description": "Declared statements — guiding rules or tenets, each as one terse sentence."
   },
   "lattice: progress": {
     "prefix": "lattice-progress",
@@ -956,20 +943,6 @@
       "One-line subtitle that frames the deck."
     ],
     "description": "Opening slide. Dark canvas, centered, no chrome."
-  },
-  "lattice: tldr": {
-    "prefix": "lattice-tldr",
-    "body": [
-      "<!-- _class: tldr -->",
-      "",
-      "## What this section showed.",
-      "",
-      "- The first takeaway as a complete one-line claim.",
-      "- The second takeaway as a complete one-line claim.",
-      "- The third takeaway as a complete one-line claim.",
-      "- The fourth takeaway as a complete one-line claim."
-    ],
-    "description": "Single-line takeaways — the deck or section's headline points."
   },
   "lattice: verdict-grid": {
     "prefix": "lattice-verdict-grid",

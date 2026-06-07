@@ -69,7 +69,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 - [`list-steps`](../../progression/list-steps/list-steps.docs.md) — rows are procedural steps with longer body, not gating criteria
 - [`checklist`](../../inventory/checklist/checklist.docs.md) — rows carry done/in-flight/planned state markers
 - [`verdict-grid`](../../comparison/verdict-grid/verdict-grid.docs.md) — options scored against shared criteria
-- [`principles`](../../inventory/principles/principles.docs.md) — tenets or values rather than gates a decision must clear
+- [`principles`](../principles/principles.docs.md) — tenets or values rather than gates a decision must clear
 - [`list-tabular`](../../inventory/list-tabular/list-tabular.docs.md) — rows carry structured metadata alongside the name and description
 
 ## Demo deck

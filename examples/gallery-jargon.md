@@ -445,7 +445,7 @@ The left card is struck through. The DECISION connector is bold. The conclusion 
 
 ---
 
-<!-- _class: principles -->
+<!-- _class: list principles -->
 <!-- _footer: "Declarative principles · principles" -->
 
 ## How we make calls when the spec is silent
@@ -739,7 +739,7 @@ The pilot team measured what the pilot team built.
 
 ---
 
-<!-- _class: tldr numbered -->
+<!-- _class: list takeaway numbered -->
 <!-- _footer: "Section recap before the data · tldr numbered" -->
 
 `Recap · Sections 01 through 03`

@@ -2,7 +2,7 @@
 
 # inventory
 
-`11 components`
+`9 components`
 
 Inventory — parallel sets of related items.
 
@@ -139,27 +139,3 @@ Inventory — parallel sets of related items.
 5. Change
    - Comms, exec sponsorship, and the people who preferred the old way.
    - _One comms partner · ships Q4_
-
----
-
-<!-- _class: principles -->
-
-## How we make calls when the spec is silent.
-
-1. Default to the choice that is cheaper to reverse.
-2. Name the actor, never the system.
-3. Write the bet on the same slide as the choice.
-4. Disagree in the room, then commit outside it.
-5. Optimise for the reader who wasn't there.
-
----
-
-<!-- _class: tldr -->
-
-## What this review showed, in five lines.
-
-- Q2 revenue missed plan by 9%, and three structural factors explain almost all of it.
-- The shortfall is in enterprise renewals, not new logos.
-- Every one of the three causes is fixable before the Q4 close.
-- The Q3 plan moves two engineers and one rep onto the gaps.
-- We are not asking for more headcount — only to move what we have.

@@ -68,7 +68,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 - [`list-tabular`](../../inventory/list-tabular/list-tabular.docs.md) — rows are key/value reference, not term/definition
 - [`subtopic`](../subtopic/subtopic.docs.md) — one term needs a full slide of explanation
 - [`actors`](../../inventory/actors/actors.docs.md) — the left column is a named person, not a term
-- [`principles`](../../inventory/principles/principles.docs.md) — the entries are stated rules, not defined terms
+- [`principles`](../principles/principles.docs.md) — the entries are stated rules, not defined terms
 
 ## Demo deck
 

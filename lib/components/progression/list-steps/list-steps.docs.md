@@ -206,7 +206,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 - [`list-criteria`](../../progression/list-criteria/list-criteria.docs.md) — gating requirements rather than a sequence of actions
 - [`split-steps`](../../progression/split-steps/split-steps.docs.md) — phase label + heading on the left, steps on the right
 - [`roadmap`](../../progression/roadmap/roadmap.docs.md) — phased grid across multiple workstreams
-- [`principles`](../../inventory/principles/principles.docs.md) — tenets or values rather than a procedural sequence
+- [`principles`](../principles/principles.docs.md) — tenets or values rather than a procedural sequence
 
 ## Demo deck
 

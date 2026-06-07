@@ -641,7 +641,7 @@ Pick when each cell carries a sentence, not a glyph.
 
 ---
 
-<!-- _class: tldr numbered -->
+<!-- _class: list takeaway numbered -->
 <!-- _footer: "Closing · tldr numbered" -->
 
 ## What this deck delivers.
