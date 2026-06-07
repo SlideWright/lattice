@@ -724,9 +724,12 @@
       "",
       "One-sentence framing paragraph explaining what the findings cover.",
       "",
-      "- **First finding.** Supporting detail explaining the first finding.",
-      "- **Second finding.** Supporting detail explaining the second finding.",
-      "- **Third finding.** Supporting detail explaining the third finding."
+      "- First finding",
+      "  - Supporting detail explaining the first finding.",
+      "- Second finding",
+      "  - Supporting detail explaining the second finding.",
+      "- Third finding",
+      "  - Supporting detail explaining the third finding."
     ],
     "description": "Executive brief — dark left anchor, findings list on the right with left-rule chrome."
   },
@@ -781,11 +784,11 @@
       "",
       "Measurement window and qualifying detail in one short sentence.",
       "",
-      "- **First supporting point.**",
+      "- First supporting point.",
       "  - Why this metric matters and what's driving it.",
-      "- **Second supporting point.**",
+      "- Second supporting point.",
       "  - What concentration or trend explains it.",
-      "- **Third supporting point.**",
+      "- Third supporting point.",
       "  - What this number unlocks or threatens."
     ],
     "description": "One number owns the room — light left with the hero metric, dark right with supporting findings."
@@ -799,9 +802,12 @@
       "",
       "`Speaker · Role, Organisation, Year`",
       "",
-      "- **First implication.** What this quote means for the work in front of us.",
-      "- **Second implication.** A second-order consequence worth naming.",
-      "- **Third implication.** The action this quote argues for."
+      "- First implication",
+      "  - What this quote means for the work in front of us.",
+      "- Second implication",
+      "  - A second-order consequence worth naming.",
+      "- Third implication",
+      "  - The action this quote argues for."
     ],
     "description": "Pull quote — half the slide committed to one quoted idea on a dark left panel, supporting list on the right."
   },

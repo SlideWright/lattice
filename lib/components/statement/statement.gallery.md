@@ -44,11 +44,11 @@ Three converging forces — commoditized infrastructure, compressed release cycl
 
 Three structural factors explain 90% of the shortfall — all addressable before Q4 close.
 
-- **Renewal pricing complexity is driving churn at the segment ceiling.**
+- Renewal pricing complexity is driving churn at the segment ceiling.
   - Four accounts totaling $2.1M ARR declined renewal. Win/loss interviews point to a quote-to-contract gap, not value perception.
-- **Pipeline conversion dropped 11 pp below Q1 — legal review is the chokepoint.**
+- Pipeline conversion dropped 11 pp below Q1 — legal review is the chokepoint.
   - Contract length increased 18 days on average. Root cause is a security addendum introduced in March.
-- **Competitive displacement accelerated in the $80-200K ACV tier.**
+- Competitive displacement accelerated in the $80-200K ACV tier.
   - Seven losses to a single competitor. Time-to-value gap is the exposure.
 
 ---
@@ -79,9 +79,9 @@ Three structural factors explain 90% of the shortfall — all addressable before
 
 `Morgan Chase · Head of Product, Vercel, 2024`
 
-- **Clarity is a product decision, not a marketing one.**
+- Clarity is a product decision, not a marketing one.
   - If a prospect cannot articulate our value in one sentence, the product has a communication architecture problem.
-- **Onboarding is the product's first argument for itself.**
+- Onboarding is the product's first argument for itself.
   - The moment a user first succeeds defines their frame for everything that follows.
-- **Understanding, not delight, is the retention driver at scale.**
+- Understanding, not delight, is the retention driver at scale.
   - Users who understand the system's logic stay through friction. Build for comprehension.

@@ -37,6 +37,26 @@ describe('deck linter', () => {
     assert.equal(f.severity, 'error');
   });
 
+  test('flags a bodyless inline item on a split slide (error)', () => {
+    const src = `${FM}<!-- _class: split-metric -->\n\n\`Unit\`\n\n## 114%\n\nContext.\n\n- Title sentence. Body crammed on the same line.\n`;
+    const f = lintText(src, { vocab }).find((x) => x.rule === 'split-bodyless-item');
+    assert.ok(f, JSON.stringify(lintText(src, { vocab })));
+    assert.equal(f.severity, 'error');
+    assert.equal(f.classToken, 'split-metric');
+  });
+
+  test('flags a bare title-only item on a split slide (error — also unlifted)', () => {
+    const src = `${FM}<!-- _class: split-brief -->\n\n\`Eyebrow\`\n\n## Head.\n\nFraming.\n\n- A finding with no nested body\n`;
+    const f = lintText(src, { vocab }).find((x) => x.rule === 'split-bodyless-item');
+    assert.ok(f);
+    assert.equal(f.severity, 'error');
+  });
+
+  test('accepts the nested shape on a split slide', () => {
+    const src = `${FM}<!-- _class: split-statement -->\n\n> Quote.\n\n\`Speaker\`\n\n- First implication\n  - What it means.\n- Second implication\n  - A consequence.\n`;
+    assert.equal(lintText(src, { vocab }).filter((x) => x.rule === 'split-bodyless-item').length, 0);
+  });
+
   test('flags an unknown class token (warning)', () => {
     const src = `${FM}<!-- _class: card-grid -->\n\n## Typo.\n`;
     const f = lintText(src, { vocab }).find((x) => x.rule === 'unknown-class');

@@ -645,7 +645,7 @@ Use when one paragraph of executive context needs to read alongside three or fou
 
 - **More than 5 findings.** Past 5 findings, the right panel becomes a wall of bullets and the layout's balance breaks. Split into two slides or use `cards-stack` for a fuller list.
 - **Lede that's not a sentence.** The lede is the framing. A fragment or eyebrow-style phrase wastes the role. Write one declarative sentence that sets up why the findings matter.
-- **Findings without titles.** The **Title.** at the start of each li is what makes the right panel scannable. A naked sentence per bullet reads as paragraph soup; the bold lead is the structure.
+- **Findings without titles.** The title at the start of each li — rendered bold automatically — is what makes the right panel scannable. A naked sentence per bullet reads as paragraph soup; the bold lead is the structure.
 
 #### Authoring
 
@@ -658,9 +658,12 @@ Use when one paragraph of executive context needs to read alongside three or fou
 
 One-sentence framing paragraph explaining what the findings cover.
 
-- **First finding.** Supporting detail explaining the first finding.
-- **Second finding.** Supporting detail explaining the second finding.
-- **Third finding.** Supporting detail explaining the third finding.
+- First finding
+  - Supporting detail explaining the first finding.
+- Second finding
+  - Supporting detail explaining the second finding.
+- Third finding
+  - Supporting detail explaining the third finding.
 ```
 
 #### Slots
@@ -670,7 +673,7 @@ One-sentence framing paragraph explaining what the findings cover.
 | `eyebrow` | `p:first-of-type > code` | no | Optional inline-code eyebrow above the heading. |
 | `heading` | `h2` | yes | Heading shown in the dark left anchor. |
 | `lede` | `p` | yes | One-sentence framing paragraph under the heading. |
-| `findings` | `ul > li` | yes | Right-side findings. Lead each with **Title.** then nested body lines. |
+| `findings` | `ul > li` | yes | Right-side findings. Each li's lead is the finding title — it renders bold automatically (no `**…**` needed); follow it with a nested `- body` line. A bare single-line bullet won't render bold. |
 
 #### Anatomy
 
@@ -833,9 +836,12 @@ Use when one quotation deserves the full attention of a slide and the implicatio
 
 `Speaker · Role, Organisation, Year`
 
-- **First implication.** What this quote means for the work in front of us.
-- **Second implication.** A second-order consequence worth naming.
-- **Third implication.** The action this quote argues for.
+- First implication
+  - What this quote means for the work in front of us.
+- Second implication
+  - A second-order consequence worth naming.
+- Third implication
+  - The action this quote argues for.
 ```
 
 #### Slots
@@ -844,7 +850,7 @@ Use when one quotation deserves the full attention of a slide and the implicatio
 |---|---|---|---|
 | `quotation` | `blockquote` | yes | The pull quote — one or two sentences, italic display font in the dark left panel. |
 | `cite` | `p:first-of-type > code` | no | Optional attribution in an inline-code paragraph after the blockquote. |
-| `implications` | `ul > li` | yes | Right-side supporting points. Lead each with **Title.** then nested body. |
+| `implications` | `ul > li` | yes | Right-side supporting points. Each li's lead is the implication title — it renders bold automatically (no `**…**` needed); follow it with a nested `- body` line. A bare single-line bullet won't render bold. |
 
 #### Anatomy
 
@@ -4024,11 +4030,11 @@ Use when a single KPI is the argument. The hero number is the headline; the righ
 
 Measurement window and qualifying detail in one short sentence.
 
-- **First supporting point.**
+- First supporting point.
   - Why this metric matters and what's driving it.
-- **Second supporting point.**
+- Second supporting point.
   - What concentration or trend explains it.
-- **Third supporting point.**
+- Third supporting point.
   - What this number unlocks or threatens.
 ```
 
@@ -4039,7 +4045,7 @@ Measurement window and qualifying detail in one short sentence.
 | `unit` | `p:first-of-type > code` | no | Optional inline-code unit label above the metric (e.g. 'Net Revenue Retention'). |
 | `metric` | `h2` | yes | The hero number. Wrap a unit in *italics* (e.g. '114*%*') to render at smaller weight. |
 | `context` | `p` | yes | One-sentence context line below the metric — measurement window, cohort, comparison. |
-| `findings` | `ul > li` | yes | Right-side supporting findings. Lead each with **Title.** then nested body. |
+| `findings` | `ul > li` | yes | Right-side supporting findings. Each li's lead is the finding title — it renders bold automatically (no `**…**` needed); follow it with a nested `- body` line. A bare single-line bullet won't render bold. |
 
 #### Anatomy
 
