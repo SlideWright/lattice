@@ -16,6 +16,10 @@ import Fuse from 'fuse.js';
 import { groupCatalog } from '../lib/families.mjs';
 
 const LENS_KEY = 'lattice-components-lens';
+// Search term persists per-tab (sessionStorage) so a click-through to a
+// component page — or closing the mobile drawer — keeps the active query
+// instead of throwing it away, but a fresh visit starts clean.
+const QUERY_KEY = 'lattice-components-q';
 const tc = (s) => (s ? s[0].toUpperCase() + s.slice(1) : s);
 const esc = (s) =>
 	String(s)
@@ -85,7 +89,7 @@ export function initComponentBrowser() {
 	const groupSelects = [...document.querySelectorAll('[data-browser-groupby]')];
 	const countEls = [...document.querySelectorAll('[data-browser-count]')];
 
-	let query = '';
+	let query = readQuery();
 	let lens = readLens();
 
 	function readLens() {
@@ -98,6 +102,21 @@ export function initComponentBrowser() {
 	function saveLens(v) {
 		try {
 			localStorage.setItem(LENS_KEY, v);
+		} catch {
+			/* non-fatal */
+		}
+	}
+	function readQuery() {
+		try {
+			return sessionStorage.getItem(QUERY_KEY) || '';
+		} catch {
+			return '';
+		}
+	}
+	function saveQuery(v) {
+		try {
+			if (v) sessionStorage.setItem(QUERY_KEY, v);
+			else sessionStorage.removeItem(QUERY_KEY);
 		} catch {
 			/* non-fatal */
 		}
@@ -190,8 +209,10 @@ export function initComponentBrowser() {
 		});
 	}
 	for (const i of searchInputs) {
+		i.value = query; // restore the persisted term into every search box
 		i.addEventListener('input', () => {
 			query = i.value;
+			saveQuery(query);
 			for (const o of searchInputs) if (o !== i) o.value = query;
 			renderAll();
 		});

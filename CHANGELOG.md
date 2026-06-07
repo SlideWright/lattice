@@ -58,6 +58,18 @@ in patch versions.
   `- Title`), which renders as flat unhierarchied text because the lift needs
   a nested body to know where the title ends. `npm run lint:deck` now reports
   it as an error with the nested-shape fix.
+- **Docs site — component search now persists, and the playground gained the
+  reference's search + Group-by.** The component reference remembers your
+  search term across a click-through to a component page (and the mobile
+  drawer close), restoring and re-running it instead of discarding it
+  (per-tab, via `sessionStorage`). The playground's component picker is now a
+  searchable, groupable popover (fuzzy search + Family/Function/Substance/A–Z
+  Group-by, reusing the reference's engine) in place of the long native
+  `<select>`. The toolbar is slimmer: the `Insert example` / `Insert skeleton`
+  buttons move into a ⚙ menu (selecting a component inserts its example; the
+  menu holds *Reset to example* and *Insert blank skeleton*), and the Component
+  trigger + Variant select now have a fixed footprint so a long label truncates
+  instead of reflowing the bar to a new row.
 - **The browsable component reference is now built into the docs site as
   per-component pages.** Each component gets its own focused page
   (`/components/<bucket>/<name>/`) with a live preview that flips to an
