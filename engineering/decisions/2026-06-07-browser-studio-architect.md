@@ -1,9 +1,10 @@
-# Browser authoring studio + the Coach assistant (2026-06-07)
+# Browser authoring studio + the Architect assistant (2026-06-07)
 
 > Status: **proposal / design model.** No code yet. This doc fixes direction
 > before implementation, per the "design before code on rethink requests" rule
-> in `CLAUDE.md`. Working product name **Lattice Studio**; assistant name
-> **Coach**. Both names are placeholders open for revision (see §10).
+> in `CLAUDE.md`. Working product name **Lattice Studio** (placeholder, see §10).
+> Assistant name **decided: Architect**, used in prose and its own voice as
+> *the Architect* — see §4 "Name & voice." **Frame** is the reserved fallback.
 
 ## Problem / intent
 
@@ -11,18 +12,18 @@ We want a genuinely functional, browser-only slide editor on GitHub Pages — a
 **first-class top-level capability**, a sibling to (not a replacement for) the
 existing component playground. It should let someone author a full Lattice deck
 in the browser with no install, persist their work locally, and get
-conversational authoring help from an on-device AI assistant ("Coach").
+conversational authoring help from an on-device AI assistant, **the Architect**.
 
 Requested capabilities:
 
 1. **CodeMirror-based editor**, browser-only, backed by IndexedDB.
 2. **History** like Claude Code's — navigable, restorable revisions.
-3. **Coach**: an integral AI chat with its own conversational history, deck/slide
-   recommendations, and **quick actions** to adopt those recommendations. Powered
-   by a JavaScript small language model — explicitly *not* "yet another corny
-   copilot."
-4. **Three-panel UX** (Coach · editor · preview), desktop-primary but responsive.
-5. **Conversation-first onboarding** — talk to Coach before authoring.
+3. **The Architect**: an integral AI chat with its own conversational history,
+   deck/slide recommendations, and **quick actions** to adopt those
+   recommendations. Powered by a JavaScript small language model — explicitly
+   *not* "yet another corny copilot."
+4. **Three-panel UX** (Architect · editor · preview), desktop-primary but responsive.
+5. **Conversation-first onboarding** — talk to the Architect before authoring.
 6. **Focus edit modes** for Mermaid, math, etc.
 7. **Editor↔preview sync** with auto-scroll keeping the edited section visible.
 8. **Export** to Markdown, PDF, and PowerPoint.
@@ -45,8 +46,8 @@ The hard infrastructure already exists in this repo — Studio is largely an
 - **Deterministic deck intelligence already exists**: the author linter
   (`lib/authoring/lint.js` → `npm run lint:deck`), the machine catalog
   (`dist/docs/components.json` — when/anti-pattern/slots/skeletons per
-  component), the parser, and the enriched manifests. This is what makes Coach
-  trustworthy (see §4).
+  component), the parser, and the enriched manifests. This is what makes the
+  Architect trustworthy (see §4).
 - **GitHub Pages deploy already runs** (`.github/workflows/docs.yml`, Astro).
 
 Positioning: the **playground** answers "let me try one component fast." **Studio**
@@ -60,7 +61,7 @@ Three resizable panels plus a left rail:
 
 ```
 ┌──────┬───────────────┬───────────────┬───────────────┐
-│ rail │   Coach chat  │  CodeMirror   │  live preview │
+│ rail │ Architect chat│  CodeMirror   │  live preview │
 │ decks│  (own history)│   (focus modes)│  (filmstrip) │
 │ +hist│               │               │  synced scroll│
 └──────┴───────────────┴───────────────┴───────────────┘
@@ -68,10 +69,10 @@ Three resizable panels plus a left rail:
 
 - **Desktop-primary**, panels drag-resizable, widths persisted.
 - **Responsive collapse** under ~1024px: panels become a segmented
-  control / tabbed view (Coach · Edit · Preview); the rail becomes a drawer.
+  control / tabbed view (Architect · Edit · Preview); the rail becomes a drawer.
 - **Empty state = conversation-first onboarding.** With no deck open, the
-  center/right are a welcome and Coach asks "What are you presenting, and to
-  whom?" Onboarding retrieval (§4) turns the answer into a starter deck +
+  center/right are a welcome and the Architect asks "What are you presenting, and
+  to whom?" Onboarding retrieval (§4) turns the answer into a starter deck +
   component suggestions, then the editor populates.
 
 ## 2. Persistence & history (IndexedDB)
@@ -84,8 +85,8 @@ Three resizable panels plus a left rail:
   - **Deck revisions** — checkpoint snapshots + restore, Claude-Code-style:
     time-ordered, labeled, restorable; a restore forks rather than destroys.
     Append-only event log with periodic full snapshots keeps storage bounded.
-  - **Chat thread** — Coach conversations persist with their own history and
-    can be resumed/branched, separate from deck revisions.
+  - **Chat thread** — the Architect's conversations persist with their own
+    history and can be resumed/branched, separate from deck revisions.
 - **Not** full git-in-the-browser (isomorphic-git). A checkpoint/restore model
   meets the "like Claude Code history" bar without the weight; revisit only if
   real branching/merging is needed later.
@@ -106,7 +107,23 @@ Three resizable panels plus a left rail:
   single fixed 1280×720 specimen iframe; Studio needs a **scrollable filmstrip**
   of all slides with the active one tracked. Moderate work, still render path #2.
 
-## 4. Coach architecture — *tooling-first, SLM as the conversational coat*
+## 4. The Architect — *tooling-first, SLM as the conversational coat*
+
+### Name & voice
+
+The assistant is **Architect** as a brand mark (the chip, the menu item) and
+*the Architect* in prose and its own voice — "Ask the Architect," "the Architect
+suggests," "I'm the Architect." The definite article makes it read as a senior
+colleague rather than a feature, while the bare mark stays crisp as a label. The
+metaphor is self-explaining and needs no gloss: **Lattice is the structural
+framework; the Architect designs what goes in it** — narrative structure,
+load-bearing slides, flow. Recommendations surface as "the Architect suggests:"
+/ "the Architect flags:". **Frame** is the reserved fallback (the tightest pun on
+the lattice metaphor — *framing an argument* = *the structural frame*); the
+formal *The Architect* (capitalised, *Economist*-style) is available if a heavier
+register is ever wanted, at the cost of a faint *Matrix* echo.
+
+### Tooling-first architecture
 
 **Decision (confirmed): the model never owns knowledge or correctness.**
 Recommendations and quick-actions are produced by the existing deterministic
@@ -131,8 +148,8 @@ Pipeline:
    "Adopt recommendation" applies a real, validated edit, never model-typed
    markdown.
 
-Consequence: across *all* model backends, **what Coach knows and can do is
-identical**; only the phrasing/latency vary (see §5).
+Consequence: across *all* model backends, **what the Architect knows and can do
+is identical**; only the phrasing/latency vary (see §5).
 
 ## 5. On-device model stack — tiered, with a hard consistency split
 
@@ -143,8 +160,8 @@ Refined into a ladder behind one adapter:
 - **Embeddings — *always* Transformers.js `bge-small-en-v1.5`** (~50MB, WASM,
   universal). This **pins the consistency-critical surface** (onboarding
   retrieval, "which component fits") to one model for 100% of users. *Which
-  components Coach surfaces is identical for everyone.* Generation tiers; retrieval
-  does not.
+  components the Architect surfaces is identical for everyone.* Generation tiers;
+  retrieval does not.
 - **Generation — feature-detected ladder:**
   1. **Built-in Prompt API** (Chrome → Gemini Nano, Edge → Phi). Zero site bytes
      (browser owns the weights), fast. **Must be runtime-detected
@@ -156,12 +173,12 @@ Refined into a ladder behind one adapter:
   3. **WebLLM** (Qwen2.5-1.5B q4f16, ~1GB; Llama-3.2-3B quality tier) — explicit
      **power-user opt-in download**, WebGPU-only.
   4. **Deterministic templated floor** — if every model tier is unavailable or
-     declined, Coach still works as a linter/recommendation panel with templated
-     phrasing. **Never a dead Coach.**
+     declined, the Architect still works as a linter/recommendation panel with
+     templated phrasing. **Never a dead Architect.**
 
 Design rules that keep the tiers coherent:
 
-- **One internal `CoachModel` adapter** — `complete(messages, {json})` +
+- **One internal `ArchitectModel` adapter** — `complete(messages, {json})` +
   `embed(text)`. App code never branches on backend; the ladder lives behind it.
 - **Prompts target the weakest tier** — short, single-intent, structured JSON —
   so they run on Gemini Nano/Phi; stronger models just execute them better.
@@ -175,7 +192,7 @@ Design rules that keep the tiers coherent:
 |---|---|---|
 | Phrasing / tone | Yes (Nano ≠ Phi ≠ Qwen) | Acceptable — wording only |
 | Latency | Yes (Prompt API fast, WASM slow) | Tier-gated streaming UX |
-| **What Coach knows & can do** | **No — identical** | Guaranteed by §4 tooling-first |
+| **What the Architect knows & can do** | **No — identical** | Guaranteed by §4 tooling-first |
 
 ## 6. Export — all three from phase 1 (confirmed), with honest fidelity
 
@@ -207,7 +224,7 @@ tradeoff at the export action.
 - **Built-in Prompt API availability is flaky** even on Chrome/Edge → mandatory
   runtime detection + graceful fall-through (handled by the ladder).
 - **WebLLM first-load is ~1GB** → strictly opt-in, with a deliberate
-  "downloading your Coach" experience; never blocks core authoring.
+  "summoning the Architect" download experience; never blocks core authoring.
 - **Filmstrip preview** is the one genuinely new render-surface piece vs. the
   single-specimen playground; needs slide-index ↔ source-line mapping.
 - **PDF/PPTX fidelity** is bounded by what a browser can do without headless
@@ -220,9 +237,9 @@ tradeoff at the export action.
 - **Phase 1 — Walking skeleton (no LLM):** Studio route, 3-panel shell + rail,
   CodeMirror editor wired to the playground engine, **filmstrip preview with
   synced scroll**, IndexedDB decks + checkpoint history, MD/PDF/PPTX export, and
-  a **deterministic Coach panel** (linter findings + catalog retrieval + quick
-  actions) with the templated floor — *fully useful with zero model*.
-- **Phase 2 — Coach gets a voice:** `CoachModel` adapter + embeddings
+  a **deterministic Architect panel** (linter findings + catalog retrieval +
+  quick actions) with the templated floor — *fully useful with zero model*.
+- **Phase 2 — the Architect gets a voice:** `ArchitectModel` adapter + embeddings
   (Transformers.js) + built-in Prompt API tier; conversation-first onboarding;
   chat history.
 - **Phase 3 — Heavier tiers & polish:** WebLLM power-user tier, focus edit modes
@@ -233,9 +250,11 @@ weight is downloaded.
 
 ## 10. Open questions
 
-- **Naming**: "Lattice Studio" / "Coach" are placeholders. (User has ruled out
-  "copilot"-style names.)
+- **Naming**: assistant name **decided — Architect** (voiced *the Architect*;
+  **Frame** reserved as fallback; formal *The Architect* available for a heavier
+  register). The **Studio** product name is still a placeholder.
 - **Route + nav**: `/studio`? How prominently surfaced vs. the playground/docs.
-- **Onboarding depth**: how much does Coach ask before generating a starter deck?
+- **Onboarding depth**: how much does the Architect ask before generating a
+  starter deck?
 - **Storage-eviction stance**: prompt for `persist()`, or rely on explicit
   export as the durability guarantee?
