@@ -184,6 +184,12 @@ const latticeTheme = EditorView.theme({
 		color: 'var(--text-body)',
 		backgroundColor: 'var(--bg)',
 	},
+	// On touch devices, iOS Safari auto-zooms the page when you focus an input
+	// whose font is under 16px. Bump the editable surface to 16px on coarse
+	// pointers so tapping in doesn't zoom; desktop keeps the denser 13.5px.
+	'@media (pointer: coarse)': {
+		'.cm-content': { fontSize: '16px' },
+	},
 	'.cm-scroller': {
 		fontFamily: 'var(--font-mono)',
 		lineHeight: '1.6',
