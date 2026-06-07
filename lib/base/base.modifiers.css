@@ -73,13 +73,16 @@ section h5 + p:has(> code:only-child) > code {
 section.title   h1 + p:has(> code:only-child),
 section.divider h2 + p:has(> code:only-child),
 section.closing h2 + p:has(> code:only-child) { color: var(--on-dark-secondary); }
+/* divider.light is the bright-canvas variant (former subtopic) — the dark-canvas
+ * eyebrow colour above would render near-invisible on it, so reset to the
+ * standard muted ink and centre it. */
+section.divider.light h1 + p:has(> code:only-child),
+section.divider.light h2 + p:has(> code:only-child) { color: var(--text-secondary); text-align: center; }
 /* .dark modifier: the subtitle uses --text-secondary, a light-dark() pair, and
  * section.dark flips color-scheme:dark — so it resolves to its dark-canvas value
  * automatically. No extra rule needed. (The bookends above hardcode
  * --on-dark-secondary because they paint a dark bg WITHOUT flipping
  * color-scheme; see engineering/decisions/2026-06-05-token-structure-audit.md.) */
-/* Centered subtitle for subtopic */
-section.subtopic h2 + p:has(> code:only-child) { text-align: center; }
 
 
 /* ── EYEBROW (inline-code paragraph) ─────────────────────────────────────────
@@ -139,6 +142,9 @@ section.title   p:has(> code:only-child):has(+ h1) > code,
 section.title   p:has(> code:only-child):has(+ h2) > code,
 section.divider p:has(> code:only-child):has(+ h1) > code,
 section.divider p:has(> code:only-child):has(+ h2) > code { color: var(--on-dark-secondary); }
+/* divider.light bright-canvas variant — reset eyebrow ink off the dark-canvas colour. */
+section.divider.light p:has(> code:only-child):has(+ h1) > code,
+section.divider.light p:has(> code:only-child):has(+ h2) > code { color: var(--text-secondary); }
 section.closing p:has(> code:only-child):has(+ h1) > code,
 section.closing p:has(> code:only-child):has(+ h2) > code { color: var(--on-dark-ghost); }
 /* Dark modifier (any layout + dark class) */

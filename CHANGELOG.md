@@ -58,6 +58,14 @@ in patch versions.
 
 ### Changed
 
+- **The `list` component is now an equal-fill ledger.** All three registers
+  (default pills, `takeaway`, `principles`) now fill the working area — each row
+  takes an equal share of the slide height with its content vertically centred —
+  so a slide reads edge-to-edge whether it carries three items or the layout's
+  max, instead of a small block floating in the centre. Type steps up to the
+  message scale (21pt; `principles` to the 30pt display register) and numbered
+  counters share a centreline with their text. Existing `list` decks re-flow
+  larger and fuller; no source changes needed.
 - **Breaking: the `closing` and `divider` heading slot is now `h2`, not
   `h1`.** A deck has exactly one document `h1` — the `title` slide — so a
   `closing` or `divider` slide emitting a second `#` heading made every deck

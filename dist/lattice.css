@@ -4294,79 +4294,107 @@ section.kpi.spotlight > ol > li:not(:first-child) code {
 /* === lib/components/inventory/list/list.styles.css === */
 /* list — inventory.stack.bullets
  *
- * Plain bullet list under a heading. Pill-style cards per item with
- * an accent left border. Both ul (plain) and ol (numbered) variants.
+ * An equal-fill ledger: the list fills the working area and every item takes
+ * an equal share of the height with its content vertically centred, so the
+ * slide reads edge-to-edge whether it carries three items or the layout's
+ * max. Three registers share the spine:
+ *   default        — accent-edged pills (a flat set of points)
+ *   .takeaway      — hairline-ruled single lines (former tldr)
+ *   .principles    — display-weight declarations + large counter (former principles)
  *
- * See lib/components/list/list.manifest.json for the component contract.
+ * Type steps up to the message scale (principles to the emphasis/display
+ * register); counters and text share a centreline so numbered rows read clean.
+ *
+ * See lib/components/inventory/list/list.manifest.json for the contract.
  */
 
+section.list { display:flex; flex-direction:column; }
 section.list h2 { margin-bottom:var(--sp-md); }
-section.list ul { list-style:none; display:flex; flex-direction:column; gap:var(--sp-xs); padding:0; margin:0; flex:1; justify-content:center; }
-section.list ul li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); background:var(--bg-alt); border:1px solid var(--border); border-left:3px solid var(--accent); border-radius:var(--radius-md); padding:var(--sp-xs) var(--sp-md); }
-section.list ul li ul { list-style:none; margin:4px 0 0 0; padding:0; background:none; border:none; }
-section.list ul li ul li { font-size:var(--fs-meta); color:var(--text-label); line-height:var(--lh-snug); background:none; border:none; padding:0; border-radius:0; }
-section.list ol { list-style:none; counter-reset:list-counter; display:flex; flex-direction:column; gap:var(--sp-xs); padding:0; margin:0; flex:1; justify-content:center; }
-section.list ol li { counter-increment:list-counter; font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:var(--sp-xs) var(--sp-md); display:grid; grid-template-columns:var(--sp-xl) 1fr; align-items:center; gap:var(--sp-sm); }
-section.list ol li::before { content:counter(list-counter, decimal-leading-zero); font-family:var(--font-mono); font-size:var(--fs-body); font-weight:700; color:var(--accent); }
 
-/* ── takeaway variant — former `tldr` component (inventory.list.takeaway) ──
- * Single-line takeaways as hairline-ruled rows. Resets the default pill
- * card chrome to a bottom rule; `numbered` adds a large accent counter.
- * Merged from the standalone tldr on 2026-06-07. */
-section.list.takeaway { display:flex; flex-direction:column; }
-section.list.takeaway > :is(ul,ol) { gap:var(--sp-sm); }
-section.list.takeaway > :is(ul,ol) > li {
+/* ── Spine: the list fills the canvas; each row an equal, centred band. ── */
+section.list > :is(ul,ol) {
+  list-style:none; padding:0; margin:0;
+  display:flex; flex-direction:column;
+  flex:1; gap:var(--sp-sm);
+}
+section.list > :is(ul,ol) > li {
+  flex:1 1 0; min-height:0;
   display:flex; align-items:center;
+  font-size:var(--fs-message);
+  color:var(--text-body); line-height:var(--lh-snug);
+}
+
+/* ── Default register: accent-edged pills. ── */
+section.list > ul > li {
+  background:var(--bg-alt);
+  border:1px solid var(--border); border-left:3px solid var(--accent);
+  border-radius:var(--radius-md);
+  padding:var(--sp-sm) var(--sp-md);
+}
+/* Optional second-line detail under a point. */
+section.list > ul > li > ul { list-style:none; margin:0; padding:0; }
+section.list > ul > li > ul > li {
+  font-size:var(--fs-body-compact); color:var(--text-label);
+  line-height:var(--lh-snug); background:none; border:none; padding:0;
+}
+/* Default ordered: leading accent counter, content centred. */
+section.list > ol { counter-reset:list-counter; }
+section.list > ol > li {
+  counter-increment:list-counter;
+  background:var(--bg-alt); border:1px solid var(--border);
+  border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
+  display:grid; grid-template-columns:var(--sp-xl) 1fr; align-items:center; gap:var(--sp-md);
+}
+section.list > ol > li::before {
+  content:counter(list-counter, decimal-leading-zero);
+  font-family:var(--font-mono); font-size:var(--fs-h4); font-weight:700; color:var(--accent);
+}
+
+/* ── takeaway register — former `tldr` component (inventory.list.takeaway) ──
+ * Hairline-ruled single lines, no pill chrome. `numbered` adds a large
+ * accent counter on the same centreline. Merged 2026-06-07. */
+section.list.takeaway > :is(ul,ol) { gap:0; }
+section.list.takeaway > :is(ul,ol) > li {
   background:none; border:none; border-radius:0;
   border-bottom:1px solid var(--border);
-  padding:var(--sp-sm) 0;
-  font-size:var(--fs-body); font-weight:500; line-height:var(--lh-snug);
-  color:var(--text-heading);
+  padding:0 var(--sp-xs);
+  font-size:var(--fs-message); font-weight:500; color:var(--text-heading);
 }
 section.list.takeaway > :is(ul,ol) > li::before { content:none; }
 section.list.takeaway > :is(ul,ol) > li::marker { content:''; }
 section.list.takeaway > :is(ul,ol) > li:last-child { border-bottom:none; }
-/* numbered — hanging-indent counter (not grid: keeps inline code in one flow) */
+/* numbered — accent counter as a fixed leading column, centred with the text. */
+section.list.takeaway.numbered > :is(ul,ol) > li { counter-increment:list-take-counter; gap:var(--sp-md); }
 section.list.takeaway.numbered > :is(ul,ol) { counter-reset:list-take-counter; }
-section.list.takeaway.numbered > :is(ul,ol) > li {
-  counter-increment:list-take-counter; position:relative; padding-left:6cqi;
-}
 section.list.takeaway.numbered > :is(ul,ol) > li::before {
   content:counter(list-take-counter, decimal-leading-zero);
-  position:absolute; left:0; top:0;
-  font-family:var(--font-mono); font-size:var(--fs-h2); font-weight:700;
-  letter-spacing:0.04em; color:var(--accent); line-height:1;
+  font-family:var(--font-mono); font-size:var(--fs-emphasis); font-weight:700;
+  letter-spacing:0.02em; color:var(--accent); line-height:1;
+  flex:0 0 auto; min-width:2.4em;
 }
 
-/* ── principles variant — former `principles` component (inventory.list.principles) ──
- * Ordered list of single-sentence declarations at display weight with a
- * large accent counter. ol only; lettered/roman/bullet switch the counter
- * format. Merged from the standalone principles on 2026-06-07. */
-section.list.principles { display:flex; flex-direction:column; }
-section.list.principles ol { counter-reset:list-principle-counter; gap:var(--sp-md); }
-section.list.principles ol > li {
+/* ── principles register — former `principles` component (inventory.list.principles) ──
+ * Display-weight declarations with a large accent counter. ol only;
+ * lettered/roman/bullet switch the counter format. Merged 2026-06-07. */
+section.list.principles > ol { counter-reset:list-principle-counter; gap:0; }
+section.list.principles > ol > li {
   counter-increment:list-principle-counter;
-  flex:1; container-type:size;
-  display:grid; grid-template-columns:auto 1fr; column-gap:var(--sp-lg);
-  align-items:center;
+  display:grid; grid-template-columns:auto 1fr; column-gap:var(--sp-lg); align-items:center;
   background:none; border:none; border-radius:0;
-  border-bottom:1px solid var(--border);
+  border-bottom:1px solid var(--border); padding:0;
   font-family:var(--font-display, var(--font-body));
-  font-size:clamp(var(--fs-body), 11cqh, var(--fs-h2));
-  font-weight:500; line-height:var(--lh-snug); letter-spacing:-0.01em;
-  color:var(--text-heading); padding:var(--sp-sm) 0; overflow:hidden;
+  font-size:var(--fs-emphasis); font-weight:500; letter-spacing:-0.01em;
+  line-height:var(--lh-tight); color:var(--text-heading);
 }
-section.list.principles ol > li:last-child { border-bottom:none; }
-section.list.principles ol > li::before {
+section.list.principles > ol > li:last-child { border-bottom:none; }
+section.list.principles > ol > li::before {
   content:counter(list-principle-counter, decimal-leading-zero);
-  font-family:var(--font-mono);
-  font-size:clamp(var(--fs-emphasis), 28cqh, var(--fs-h1));
-  font-weight:700; letter-spacing:0.04em; color:var(--accent);
-  line-height:1; align-self:center;
+  font-family:var(--font-mono); font-size:var(--fs-h1); font-weight:700;
+  letter-spacing:0.02em; color:var(--accent); line-height:1; align-self:center;
 }
-section.list.principles.lettered ol > li::before { content:counter(list-principle-counter, upper-alpha); }
-section.list.principles.roman ol > li::before { content:counter(list-principle-counter, upper-roman); }
-section.list.principles.bullet ol > li::before { content:'·'; }
+section.list.principles.lettered > ol > li::before { content:counter(list-principle-counter, upper-alpha); }
+section.list.principles.roman > ol > li::before { content:counter(list-principle-counter, upper-roman); }
+section.list.principles.bullet > ol > li::before { content:'·'; }
 
 /* === lib/components/progression/list-criteria/list-criteria.styles.css === */
 /* list-criteria — extracted from lib/_legacy.css (batch 4).
@@ -9285,13 +9313,16 @@ section h5 + p:has(> code:only-child) > code {
 section.title   h1 + p:has(> code:only-child),
 section.divider h2 + p:has(> code:only-child),
 section.closing h2 + p:has(> code:only-child) { color: var(--on-dark-secondary); }
+/* divider.light is the bright-canvas variant (former subtopic) — the dark-canvas
+ * eyebrow colour above would render near-invisible on it, so reset to the
+ * standard muted ink and centre it. */
+section.divider.light h1 + p:has(> code:only-child),
+section.divider.light h2 + p:has(> code:only-child) { color: var(--text-secondary); text-align: center; }
 /* .dark modifier: the subtitle uses --text-secondary, a light-dark() pair, and
  * section.dark flips color-scheme:dark — so it resolves to its dark-canvas value
  * automatically. No extra rule needed. (The bookends above hardcode
  * --on-dark-secondary because they paint a dark bg WITHOUT flipping
  * color-scheme; see engineering/decisions/2026-06-05-token-structure-audit.md.) */
-/* Centered subtitle for subtopic */
-section.subtopic h2 + p:has(> code:only-child) { text-align: center; }
 
 
 /* ── EYEBROW (inline-code paragraph) ─────────────────────────────────────────
@@ -9351,6 +9382,9 @@ section.title   p:has(> code:only-child):has(+ h1) > code,
 section.title   p:has(> code:only-child):has(+ h2) > code,
 section.divider p:has(> code:only-child):has(+ h1) > code,
 section.divider p:has(> code:only-child):has(+ h2) > code { color: var(--on-dark-secondary); }
+/* divider.light bright-canvas variant — reset eyebrow ink off the dark-canvas colour. */
+section.divider.light p:has(> code:only-child):has(+ h1) > code,
+section.divider.light p:has(> code:only-child):has(+ h2) > code { color: var(--text-secondary); }
 section.closing p:has(> code:only-child):has(+ h1) > code,
 section.closing p:has(> code:only-child):has(+ h2) > code { color: var(--on-dark-ghost); }
 /* Dark modifier (any layout + dark class) */
