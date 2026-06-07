@@ -12,8 +12,19 @@ A Marp-based slide deck system for boardroom-quality decks — PDF, HTML, PPTX, 
 Lattice produces decks where every slide is a deliberate layout — title,
 diagram, compare-prose, split-list, verdict-grid, and 20+ more —
 themed through a single CSS palette and rendered to your delivery format
-with no manual formatting work. Mermaid diagrams render with the same
-theme. Decks read as ink-on-paper and pass WCAG AA throughout.
+with no manual formatting work. Decks read as ink-on-paper and pass
+WCAG AA throughout.
+
+You author every slide as plain Markdown — bullet lists, tables, fenced
+code, `$…$` math — and Lattice renders it in the visual vocabulary your
+field expects. Mathematicians and quants get KaTeX with
+Definition/Theorem/Proof cards, derivation chains, and matrix
+decompositions; project leads get gantt charts, kanban boards, and
+roadmaps; engineers and architects get all 25 Mermaid diagram types and
+side-by-side code diffs; lawyers and compliance get statute stacks,
+authority chains, and obligation matrices; analysts get radar, quadrant,
+and KPI layouts. Fifty-eight layouts, one syntax you already know — no
+drawing tools, no boxes, no pasted screenshots.
 
 Lattice is the engine layer of [SlideWright](https://github.com/slidewright) —
 a project for building deck-quality documents with discipline. The same

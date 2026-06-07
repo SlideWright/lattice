@@ -46,6 +46,28 @@ interactive tour of every layout — themable in any palette — see the
 - **No service, no account, no telemetry.** Lattice runs on your
   laptop or in your build system. Fully offline-capable.
 
+## A native vocabulary for every field
+
+The layouts aren't generic boxes. You write plain Markdown — a list, a
+table, a fenced code block, an inline `$x$` — and Lattice renders it in
+the notation your discipline already uses:
+
+- **Mathematicians, quants, and ML researchers** — KaTeX equations with
+  Definition / Theorem / Proof cards, derivation chains that justify
+  every step, matrix decompositions, and an equation set beside its plot.
+- **Project leads** — gantt charts, kanban boards, roadmaps, journeys,
+  and step ladders, rendered as native SVG from a list. No Visio, no
+  pasted screenshots.
+- **Engineers and architects** — all 25 Mermaid diagram types, themed to
+  the deck, plus state charts and side-by-side code diffs.
+- **Lawyers and compliance teams** — statute stacks, authority chains,
+  obligation matrices, citation cards, and regulatory-update layouts.
+- **Analysts** — radar, quadrant, KPI, stats, progress, pie, and
+  word-cloud layouts that turn numbers into an argument.
+
+Fifty-eight layouts in all — and you reach every one of them with the
+same Markdown, never a new tool to learn.
+
 ## What changes for…
 
 **Boards and executives** receive decks that look like one team made
