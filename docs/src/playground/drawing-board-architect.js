@@ -310,7 +310,7 @@ for (const [group, items] of Object.entries(ARCHETYPES)) {
 	for (const name of Object.keys(items)) ARCHETYPE_LIST.push({ name, group, spine: items[name] });
 }
 
-export function createOnboarding({ catalog, mount, onBuild, model }) {
+export function createOnboarding({ catalog, mount, onBuild, model, say }) {
 	if (!mount) return { reset() {} };
 	const byName = new Map((catalog || []).map((c) => [c.name, c]));
 
@@ -405,11 +405,16 @@ export function createOnboarding({ catalog, mount, onBuild, model }) {
 	}
 
 	// ── Freehand — blank canvas ───────────────────────────────────────────────
-	function startFreehand() {
+	async function startFreehand() {
 		everChose = true;
 		inFlow = false;
 		rememberMode('Freehand');
-		if (onBuild) onBuild('<!-- _class: title silent -->\n\n# New deck\n\nStart writing — I’ll review as you go.\n');
+		// Await the deck creation so the greeting lands in the NEW deck's thread.
+		if (onBuild) await onBuild('<!-- _class: title silent -->\n\n# New deck\n\nStart writing — I’ll review as you go.\n');
+		if (say) await say(
+			'Blank canvas — go. I’ll score every edit and flag anything off up here as you write. ' +
+			'Ask me what to fix, about a specific slide, or select text and hit Refine. ' +
+			'(Load on-device AI from the ⚙ chip for a real back-and-forth.)');
 		compactView();
 	}
 
@@ -473,11 +478,15 @@ export function createOnboarding({ catalog, mount, onBuild, model }) {
 		const row = el('div', 'db-ob-chips');
 		const build = el('button', 'db-btn db-btn-primary', 'Build this →');
 		build.type = 'button';
-		build.addEventListener('click', () => {
+		build.addEventListener('click', async () => {
 			everChose = true;
 			inFlow = false;
 			rememberMode('Drafting');
-			if (onBuild) onBuild(assemble(name, spine), name);
+			if (onBuild) await onBuild(assemble(name, spine), name);
+			if (say) await say(
+				`Built the ${name} structure — ${spine.length} slides scaffolded, ` +
+				'starting from the title. Fill them in and I’ll review as you type; ' +
+				'ask me about any slide or what to tighten.');
 			compactView();
 		});
 		const other = el('button', 'db-ob-chip', 'Pick another');

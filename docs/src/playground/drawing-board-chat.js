@@ -198,9 +198,23 @@ export function createChat({ mount, composer, model, store, getAssessment }) {
   }
   input.addEventListener('input', autosize);
 
+  // Post an Architect message into the thread without a user turn — used by the
+  // onboarding so the Architect actually "talks back" when it starts a deck
+  // (Freehand / Drafting), instead of silently dropping you into the editor.
+  // Re-derives the active deck so it lands in the right thread after a create.
+  async function say(text) {
+    if (!text) return;
+    deckId = store?.getActiveId ? store.getActiveId() : deckId;
+    const note = mount.querySelector('.db-chat-empty');
+    if (note) note.remove();
+    bubble('architect', text);
+    scrollDown();
+    if (deckId && store?.addChatMessage) await store.addChatMessage(deckId, 'architect', text);
+  }
+
   // Reload the thread whenever the active deck changes.
   window.addEventListener('db-active-deck', reload);
 
   reload();
-  return { reload, focus: () => input.focus(), send };
+  return { reload, focus: () => input.focus(), send, say };
 }
