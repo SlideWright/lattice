@@ -45,7 +45,7 @@ export function createArchitect({ vocab, catalog, mount, reveal, applyFix }) {
 	function cleanState() {
 		const d = document.createElement('div');
 		d.className = 'db-review-clean';
-		d.textContent = '✓ Clean — every slide follows the authoring contract.';
+		d.innerHTML = '<span class="ico ico-check" aria-hidden="true"></span> Clean — every slide follows the authoring contract.';
 		return d;
 	}
 
@@ -372,7 +372,7 @@ export function createOnboarding({ catalog, mount, onBuild, model, say }) {
 	// "✦ New deck" affordance so the scorecard is the focus; expand on an empty deck.
 	function compactView() {
 		mount.innerHTML = '';
-		const b = el('button', 'db-onboard-compact', '✦ New deck');
+		const b = el('button', 'db-onboard-compact'); b.innerHTML = '<span class="ico ico-plus" aria-hidden="true"></span> New deck';
 		b.type = 'button';
 		b.addEventListener('click', () => { inFlow = true; doors(); });
 		mount.appendChild(b);
@@ -422,7 +422,7 @@ export function createOnboarding({ catalog, mount, onBuild, model, say }) {
 	function startDrafting() {
 		mount.innerHTML = '';
 		const head = el('div', 'db-draft-head');
-		const back = el('button', 'db-ob-cancel', '← Modes');
+		const back = el('button', 'db-ob-cancel'); back.innerHTML = '<span class="ico ico-arrow-left" aria-hidden="true"></span> Modes';
 		back.type = 'button';
 		back.addEventListener('click', doors);
 		head.append(back, el('p', 'db-draft-say', 'What are you presenting? I’ll lay out the structure.'));
@@ -463,7 +463,7 @@ export function createOnboarding({ catalog, mount, onBuild, model, say }) {
 
 	function proposeArchetype(name, spine) {
 		mount.innerHTML = '';
-		const back = el('button', 'db-ob-cancel', '← Types');
+		const back = el('button', 'db-ob-cancel'); back.innerHTML = '<span class="ico ico-arrow-left" aria-hidden="true"></span> Types';
 		back.type = 'button';
 		back.addEventListener('click', startDrafting);
 		mount.appendChild(back);
@@ -476,7 +476,7 @@ export function createOnboarding({ catalog, mount, onBuild, model, say }) {
 		}
 		mount.appendChild(ol);
 		const row = el('div', 'db-ob-chips');
-		const build = el('button', 'db-btn db-btn-primary', 'Build this →');
+		const build = el('button', 'db-btn db-btn-primary'); build.innerHTML = 'Build this <span class="ico ico-arrow-right" aria-hidden="true"></span>';
 		build.type = 'button';
 		build.addEventListener('click', async () => {
 			everChose = true;

@@ -101,13 +101,13 @@ const mermaid = variants.some((v) => /```mermaid/.test(v.sample));
 		<nav class="cpage-pager" aria-label="Previous and next component">
 			{prev ? (
 				<a class="cpage-pager-link prev" href={url(`components/${prev.bucket}/${prev.name}/`)}>
-					<span class="cpage-pager-dir">← Previous</span>
+					<span class="cpage-pager-dir"><span class="ico ico-arrow-left" aria-hidden="true"></span> Previous</span>
 					<span class="cpage-pager-name">{prev.name}</span>
 				</a>
 			) : <span />}
 			{next ? (
 				<a class="cpage-pager-link next" href={url(`components/${next.bucket}/${next.name}/`)}>
-					<span class="cpage-pager-dir">Next →</span>
+					<span class="cpage-pager-dir">Next <span class="ico ico-arrow-right" aria-hidden="true"></span></span>
 					<span class="cpage-pager-name">{next.name}</span>
 				</a>
 			) : <span />}
