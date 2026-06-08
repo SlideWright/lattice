@@ -96,8 +96,12 @@ in patch versions.
   `--code-bg` / `--code-text`) lets a surface or theme retune it by rebinding
   one value. The non-flipping dark islands (`title` / `divider` / `closing`
   bookends, split-panel dark rail) rebind the ink to the on-dark tier.
-  mustard's inline-code ink is darkened to clear WCAG AA on the chip wash
-  (was 3.89:1). See `engineering/decisions/2026-06-08-inline-code-contrast.md`.
+  **Every theme now curates `--code-inline-fg`** — an explicit, AA-audited chip
+  ink per palette (light + dark), deepened toward the brand hue where the raw
+  accent fell below 4.5:1 on the card wash (brina, cuoio, indaco, laguna,
+  magnolia, mustard) or lifted on the dark card (burgundy); the high-contrast
+  achromatic palettes keep the accent. See
+  `engineering/decisions/2026-06-08-inline-code-contrast.md`.
 
 - **The `list` component is now an equal-fill ledger.** All three registers
   (default pills, `takeaway`, `principles`) now fill the working area — each row

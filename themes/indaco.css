@@ -112,6 +112,9 @@
    * inside AA on the inline-code chip surface. */
   --accent:      light-dark(var(--brand-accent), #82C8E5);
   --accent-soft: light-dark(#EFF6FC, #002847);
+  /* Inline-code chip ink — curated + AA-audited on the chip wash; bg/border
+   * derive from it (base.tokens.css). See 2026-06-08-inline-code-contrast.md. */
+  --code-inline-fg: light-dark(#006599, var(--accent)); /* light ink deepened for AA on card (L:5.46/5.02 · D:7.59/6.59) */
   /* Text on top of --accent. Light: white on brand mid-blue (5.83:1).
    * Dark: deep navy on sky blue (~9:1) — fixes corner-tag contrast
    * which would otherwise be white on sky blue (~1.7:1, fails AA). */

@@ -70,6 +70,9 @@
   /* ── Brand accent ──────────────────────────────────────────────────── */
   --accent:      light-dark(var(--brand-accent), #9CC0D2); /* L:5.10:1 / D:7.20:1 on bg */
   --accent-soft: light-dark(#DAE6EE, var(--bg-warm-mid));
+  /* Inline-code chip ink — curated + AA-audited on the chip wash; bg/border
+   * derive from it (base.tokens.css). See 2026-06-08-inline-code-contrast.md. */
+  --code-inline-fg: light-dark(#386076, var(--accent)); /* light ink deepened for AA on card (L:5.36/5.01 · D:8.07/6.12) */
   --on-accent:   light-dark(#FFFFFF, var(--bg-dark));    /* L:5.40:1 / D:7.20:1 */
 
   /* ── Semantic signals — derived backgrounds only ───────────────────

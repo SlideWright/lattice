@@ -12370,6 +12370,9 @@ section .eventWrapper { filter: none !important; }
    * inline-code surface, 5.38:1 on accent-soft (mid-leather panel). */
   --accent:      light-dark(var(--brand-accent), #C8A040);
   --accent-soft: light-dark(#F5EFE0, var(--bg-warm-mid));
+  /* Inline-code chip ink — curated + AA-audited on the chip wash; bg/border
+   * derive from it (base.tokens.css). See 2026-06-08-inline-code-contrast.md. */
+  --code-inline-fg: light-dark(#765710, var(--accent)); /* light ink deepened for margin (L:5.43/5.01 · D:6.63/6.01) */
   /* Text on top of --accent. Light: white on saddle gold (5.96:1).
    * Dark: espresso on bright gold (~9:1) — fixes corner-tag contrast
    * which would otherwise be white on bright gold (~2.3:1, fails AA). */

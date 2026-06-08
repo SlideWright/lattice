@@ -74,6 +74,9 @@
   /* ── Brand accent — pure black on gray, bone on dark ──────────────── */
   --accent:      light-dark(var(--brand-canvas), #ECECE8); /* L:9.27:1 / D:14.96:1 on bg AAA */
   --accent-soft: light-dark(#D5D5D2, #28282A);
+  /* Inline-code chip ink — curated + AA-audited on the chip wash; bg/border
+   * derive from it (base.tokens.css). See 2026-06-08-inline-code-contrast.md. */
+  --code-inline-fg: var(--accent); /* canvas-toned accent — chip AAA (L:7.95/10.63 · D:11.33/7.47) */
   --on-accent:   light-dark(#ECECE8, var(--bg-dark));    /* L:8.96:1 / D:14.96:1 */
 
   /* ── Semantic signals — derived backgrounds only ───────────────────

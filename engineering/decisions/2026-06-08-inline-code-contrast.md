@@ -81,8 +81,23 @@ section.split-panel.metric .panel-right code { --code-inline-fg: var(--on-dark-p
 section.divider.light code { --code-inline-fg: var(--accent); }   /* bright-canvas variant */
 ```
 
-**4. AA tune for mustard** — nudge `--brand-accent` darker so chip ink clears
-4.5:1 on the canvas, keeping "AA throughout" literally true.
+**4. Curate `--code-inline-fg` per theme — do not settle for the accent
+default.** Every palette declares an explicit, AA-audited chip ink (light +
+dark), like `--accent` and the state trio. The chip ink is "ink, not fill": a
+deeper rendition of the brand hue. Where the raw accent cleared ≥5:1 on the
+*worst* surface (the card wash) in both modes it is kept (`var(--accent)`:
+ardesia, atelier, carbone, concrete, crepuscolo, onyx); where it fell short the
+light ink is deepened toward the brand hue (brina `#386076`, cuoio `#765710`,
+indaco `#006599`, laguna `#00636C`, magnolia `#8B404A`, mustard `#6A5112`) or
+the dark ink is lifted (burgundy `#CD838E`). Target: ≥5.0:1 on the card wash —
+margin over the 4.5:1 AA floor — in both light and dark mode. Ratios are
+documented inline in each theme. The wash percentages (10% fill / 22% border)
+stay structural and shared; only the ink is a per-theme palette decision.
+
+The audit method (chip ink on a 10% currentColor wash over the surface) and the
+full per-theme table are reproducible from the surface tokens; the card surface
+(`--bg-alt`) is the conservative worst case (it is darker than `--bg` in light
+mode and lighter in dark mode, and `--accent-soft` sits between them).
 
 ## Rejected / deferred
 

@@ -74,6 +74,9 @@
   /* ── Brand accent — pure achromatic ─────────────────────────────── */
   --accent:      light-dark(#000000, #FFFFFF);            /* L:21.0:1 / D:21.0:1 on bg AAA */
   --accent-soft: light-dark(#F0F0F0, #1F1F1F);            /* accent reads AAA on this */
+  /* Inline-code chip ink — curated + AA-audited on the chip wash; bg/border
+   * derive from it (base.tokens.css). See 2026-06-08-inline-code-contrast.md. */
+  --code-inline-fg: var(--accent); /* pure black/white accent — chip AAA (L:16.83/15.31 · D:17.40/13.01) */
   --on-accent:   light-dark(#FFFFFF, #000000);            /* L:21.0:1 / D:21.0:1 */
 
   /* ── Semantic signals — derived backgrounds only ───────────────────

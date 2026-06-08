@@ -69,6 +69,9 @@
   /* ── Brand accent ──────────────────────────────────────────────────── */
   --accent:      light-dark(var(--brand-accent), #E0E0DE); /* L:15.78:1 / D:14.50:1 on bg AAA */
   --accent-soft: light-dark(#E8E8E7, var(--bg-warm-mid)); /* accent reads L:13.44:1 / D:14.50:1 */
+  /* Inline-code chip ink — curated + AA-audited on the chip wash; bg/border
+   * derive from it (base.tokens.css). See 2026-06-08-inline-code-contrast.md. */
+  --code-inline-fg: var(--accent); /* deep slate accent — chip AAA (L:12.96/11.56 · D:11.74/8.34 on chip) */
   --on-accent:   light-dark(#FFFFFF, var(--bg-dark));    /* L:16.48:1 / D:14.50:1 */
 
   /* ── Semantic signals — derived backgrounds only ───────────────────
