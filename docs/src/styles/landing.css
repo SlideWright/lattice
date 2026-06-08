@@ -33,6 +33,16 @@
 	--radius-sm: 8px;
 	--radius-md: 14px;
 	--radius-lg: 22px;
+
+	/* UI-chrome icons — Lucide (https://lucide.dev, ISC). Delivered as
+	 * data-URI SVG masks (mirrors the engine's --mark-* technique): painted
+	 * with `background: currentColor` + `mask`, so they inherit the button's
+	 * colour / --accent hover and the per-mode palette for free. Stroke pixels
+	 * are opaque, so a fill:none outline masks correctly. To add an icon, drop
+	 * its Lucide <path>/<circle> children into a new --icon-<name> here. */
+	--icon-menu: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='M4 6h16'/%3e%3cpath d='M4 12h16'/%3e%3cpath d='M4 18h16'/%3e%3c/svg%3e");
+	--icon-moon: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z'/%3e%3c/svg%3e");
+	--icon-sun: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3ccircle cx='12' cy='12' r='4'/%3e%3cpath d='M12 2v2'/%3e%3cpath d='M12 20v2'/%3e%3cpath d='m4.93 4.93 1.41 1.41'/%3e%3cpath d='m17.66 17.66 1.41 1.41'/%3e%3cpath d='M2 12h2'/%3e%3cpath d='M20 12h2'/%3e%3cpath d='m6.34 17.66-1.41 1.41'/%3e%3cpath d='m19.07 4.93-1.41 1.41'/%3e%3c/svg%3e");
 }
 
 /* Derived, mode-level tokens (palette-agnostic), mirroring the portal. */
@@ -183,8 +193,14 @@ code {
 	background: var(--bg);
 	color: var(--text-body);
 	cursor: pointer;
-	font-size: 17px;
-	line-height: 1;
+}
+.nav-toggle::before {
+	content: '';
+	width: 18px;
+	height: 18px;
+	background: currentColor;
+	-webkit-mask: var(--icon-menu) center / contain no-repeat;
+	mask: var(--icon-menu) center / contain no-repeat;
 }
 .nav-toggle:hover {
 	border-color: var(--accent);
@@ -206,6 +222,8 @@ code {
 }
 .mode-toggle {
 	flex: 0 0 auto;
+	display: inline-grid;
+	place-items: center;
 	width: 34px;
 	height: 34px;
 	border-radius: var(--radius-sm);
@@ -213,18 +231,22 @@ code {
 	background: var(--bg);
 	color: var(--text-body);
 	cursor: pointer;
-	font-size: 15px;
-	line-height: 1;
 }
 .mode-toggle:hover {
 	border-color: var(--accent);
 	color: var(--accent);
 }
 .mode-toggle::before {
-	content: '☾';
+	content: '';
+	width: 16px;
+	height: 16px;
+	background: currentColor;
+	-webkit-mask: var(--icon-moon) center / contain no-repeat;
+	mask: var(--icon-moon) center / contain no-repeat;
 }
 html[data-mode='dark'] .mode-toggle::before {
-	content: '☀';
+	-webkit-mask-image: var(--icon-sun);
+	mask-image: var(--icon-sun);
 }
 
 /* ── Buttons ─────────────────────────────────────────────────────────── */
