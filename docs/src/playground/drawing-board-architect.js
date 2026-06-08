@@ -10,7 +10,10 @@
 //
 // Voiced as "the Architect" per the naming decision.
 
+import Fuse from 'fuse.js';
 import lintCore from '../../../lib/authoring/lint-core.js';
+import reviewCore from '../../../lib/authoring/review-core.js';
+import scorecard from '../../../lib/authoring/scorecard.js';
 
 // 1-based source line where each `---`-split chunk begins — matches lint-core's
 // `source.split(/^---$/m)` so a finding's `slide` (chunk) index maps to a line.
@@ -22,12 +25,19 @@ function chunkStartLines(src) {
 	}
 	return starts;
 }
+const SEV_RANK = { error: 0, warning: 1, suggestion: 2 };
+function hasContent(src) {
+	// At least one classed slide (after front matter) or some real prose.
+	return /<!--\s*_class:/.test(src) && src.split(/^---$/m).filter((s) => s.trim()).length > 1;
+}
 
-export function createArchitect({ vocab, mount, reveal, applyFix }) {
+export function createArchitect({ vocab, catalog, mount, reveal, applyFix }) {
 	const vocabSets = {
 		names: new Set((vocab?.names) || []),
 		modifiers: new Set((vocab?.modifiers) || []),
 	};
+	const bucketByName = new Map((catalog || []).map((c) => [c.name, c.bucket]));
+	const bucketOf = (n) => bucketByName.get(n) || null;
 	let lastSource = '';
 	let timer = null;
 
@@ -113,31 +123,102 @@ export function createArchitect({ vocab, mount, reveal, applyFix }) {
 		return wrap;
 	}
 
-	function render(findings) {
+	// Read the scorecard aloud via the browser's built-in TTS (no model, no dep).
+	function speakCard(sc) {
+		if (!('speechSynthesis' in window)) return;
+		const synth = window.speechSynthesis;
+		if (synth.speaking) { synth.cancel(); return; } // toggle off
+		let text = `Your deck scores ${sc.band}, ${sc.overall} out of 100. `;
+		const issues = sc.categories.filter((c) => c.notes.length);
+		if (!issues.length) text += 'Every category is strong — nicely done.';
+		else for (const c of issues) text += `${c.label}, ${c.score}: ${c.notes.join(', ')}. `;
+		const u = new SpeechSynthesisUtterance(text);
+		u.rate = 1.02;
+		synth.speak(u);
+	}
+
+	function scorecardEl(sc) {
+		const wrap = document.createElement('div');
+		wrap.className = 'db-scorecard';
+		const head = document.createElement('div');
+		head.className = 'db-sc-head';
+		const grade = document.createElement('span');
+		grade.className = 'db-sc-grade q-' + (sc.overall >= 80 ? 'good' : sc.overall >= 60 ? 'ok' : 'bad');
+		grade.textContent = sc.band;
+		const overall = document.createElement('span');
+		overall.className = 'db-sc-overall';
+		overall.append(String(sc.overall), Object.assign(document.createElement('small'), { textContent: '/100' }));
+		const label = document.createElement('span');
+		label.className = 'db-sc-label';
+		label.textContent = 'the Architect’s scorecard';
+		const speak = document.createElement('button');
+		speak.type = 'button';
+		speak.className = 'db-sc-speak';
+		speak.setAttribute('aria-label', 'Read the assessment aloud');
+		speak.title = 'Read aloud';
+		speak.textContent = '🔊';
+		if (!('speechSynthesis' in window)) speak.hidden = true;
+		speak.addEventListener('click', () => speakCard(sc));
+		head.append(grade, overall, label, speak);
+		wrap.appendChild(head);
+		const cats = document.createElement('div');
+		cats.className = 'db-sc-cats';
+		for (const c of sc.categories) {
+			const row = document.createElement('div');
+			row.className = 'db-sc-cat';
+			if (c.notes.length) row.title = c.notes.join(' · ');
+			const lbl = Object.assign(document.createElement('span'), { className: 'db-sc-cat-label', textContent: c.label });
+			const bar = document.createElement('span');
+			bar.className = 'db-sc-bar';
+			const fill = document.createElement('i');
+			fill.className = 'q-' + (c.score >= 80 ? 'good' : c.score >= 60 ? 'ok' : 'bad');
+			fill.style.width = c.score + '%';
+			bar.appendChild(fill);
+			const score = Object.assign(document.createElement('span'), { className: 'db-sc-cat-score', textContent: String(c.score) });
+			row.append(lbl, bar, score);
+			cats.appendChild(row);
+		}
+		wrap.appendChild(cats);
+		return wrap;
+	}
+
+	function render(sc, findings) {
 		if (!mount) return;
 		mount.innerHTML = '';
+		if (!sc) {
+			const d = document.createElement('div');
+			d.className = 'db-review-clean';
+			d.textContent = 'Start a deck and I’ll score it and flag anything off.';
+			mount.appendChild(d);
+			return;
+		}
+		mount.appendChild(scorecardEl(sc));
 		if (!findings.length) {
 			mount.appendChild(cleanState());
 			return;
 		}
-		const sevRank = (f) => (f.severity === 'error' ? 0 : 1);
-		findings.sort((a, b) => sevRank(a) - sevRank(b) || a.slide - b.slide);
+		findings.sort((a, b) => SEV_RANK[a.severity] - SEV_RANK[b.severity] || a.slide - b.slide);
 		const errs = findings.filter((f) => f.severity === 'error').length;
-
 		const head = document.createElement('div');
 		head.className = 'db-review-head';
 		const n = findings.length;
 		head.textContent =
-			'the Architect flags ' + n + ' issue' + (n === 1 ? '' : 's') + (errs ? ' · ' + errs + ' to fix' : '');
+			'the Architect flags ' + n + ' item' + (n === 1 ? '' : 's') + (errs ? ' · ' + errs + ' to fix' : '');
 		mount.appendChild(head);
-
 		const starts = chunkStartLines(lastSource);
 		for (const f of findings) mount.appendChild(card(f, starts));
 	}
 
 	function run() {
 		try {
-			render(lintCore.lintTextWith(lastSource, vocabSets));
+			const has = hasContent(lastSource);
+			// Let the onboarding collapse its doors when a real deck is being worked on.
+			window.dispatchEvent(new CustomEvent('db-deck-content', { detail: has }));
+			if (!has) { render(null, []); return; }
+			const lint = lintCore.lintTextWith(lastSource, vocabSets);
+			const review = reviewCore.reviewText(lastSource, { bucketOf });
+			const sc = scorecard.scoreDeck({ source: lastSource, lintFindings: lint, reviewFindings: review });
+			render(sc, [...lint, ...review]);
 		} catch (_e) {
 			// Never let a review error break the editor.
 			if (mount) mount.innerHTML = '';
@@ -217,6 +298,12 @@ const ARCHETYPES = {
 	},
 };
 
+// Flat list for fuzzy search (fuse.js) — preserves group order for grouping.
+const ARCHETYPE_LIST = [];
+for (const [group, items] of Object.entries(ARCHETYPES)) {
+	for (const name of Object.keys(items)) ARCHETYPE_LIST.push({ name, group, spine: items[name] });
+}
+
 export function createOnboarding({ catalog, mount, onBuild }) {
 	if (!mount) return { reset() {} };
 	const byName = new Map((catalog || []).map((c) => [c.name, c]));
@@ -228,28 +315,59 @@ export function createOnboarding({ catalog, mount, onBuild }) {
 		return e;
 	};
 
+	const fuse = new Fuse(ARCHETYPE_LIST, { keys: ['name'], threshold: 0.4, ignoreLocation: true });
+	let inFlow = false; // user is actively choosing a new deck (doors / picker)
+	let everChose = false; // a mode has been chosen this session
+
+	// Remember the last door the author walked through (persists across reloads)
+	// so a returning user's eye lands on it — without hijacking the choice.
+	const MODE_KEY = 'lattice-db-last-mode';
+	const readMode = () => { try { return localStorage.getItem(MODE_KEY); } catch { return null; } };
+	const rememberMode = (m) => { try { localStorage.setItem(MODE_KEY, m); } catch {} };
+
+	// Once a real deck is being worked on, collapse the doors to a compact
+	// "✦ New deck" affordance so the scorecard is the focus; expand on an empty deck.
+	function compactView() {
+		mount.innerHTML = '';
+		const b = el('button', 'db-onboard-compact', '✦ New deck');
+		b.type = 'button';
+		b.addEventListener('click', () => { inFlow = true; doors(); });
+		mount.appendChild(b);
+	}
+	window.addEventListener('db-deck-content', (e) => {
+		if (inFlow) return;
+		if (e.detail || everChose) compactView();
+		else doors();
+	});
+
 	// ── The two doors ─────────────────────────────────────────────────────────
 	function doors() {
 		mount.innerHTML = '';
+		const last = readMode();
 		const wrap = el('div', 'db-modes');
 		wrap.append(
-			modeCard('Drafting', 'I lay out the structure; you fill it in.', startDrafting),
-			modeCard('Freehand', 'Your blank canvas; I review and help on request.', startFreehand),
+			modeCard('Drafting', 'I lay out the structure; you fill it in.', startDrafting, last === 'Drafting'),
+			modeCard('Freehand', 'Your blank canvas; I review and help on request.', startFreehand, last === 'Freehand'),
 		);
 		mount.appendChild(wrap);
 	}
-	function modeCard(title, sub, onClick) {
-		const b = el('button', 'db-mode-card');
+	function modeCard(title, sub, onClick, isLast) {
+		const b = el('button', isLast ? 'db-mode-card is-last' : 'db-mode-card');
 		b.type = 'button';
-		b.append(el('span', 'db-mode-title', title), el('span', 'db-mode-sub', sub));
+		const head = el('span', 'db-mode-title', title);
+		if (isLast) head.appendChild(el('span', 'db-mode-last', 'last used'));
+		b.append(head, el('span', 'db-mode-sub', sub));
 		b.addEventListener('click', onClick);
 		return b;
 	}
 
 	// ── Freehand — blank canvas ───────────────────────────────────────────────
 	function startFreehand() {
+		everChose = true;
+		inFlow = false;
+		rememberMode('Freehand');
 		if (onBuild) onBuild('<!-- _class: title silent -->\n\n# New deck\n\nStart writing — I’ll review as you go.\n');
-		doors();
+		compactView();
 	}
 
 	// ── Drafting — archetype picker → framework-grounded spine ────────────────
@@ -268,16 +386,17 @@ export function createOnboarding({ catalog, mount, onBuild }) {
 		const list = el('div', 'db-draft-list');
 		mount.appendChild(list);
 		const renderList = () => {
-			const q = search.value.trim().toLowerCase();
+			const q = search.value.trim();
 			list.innerHTML = '';
-			for (const [group, items] of Object.entries(ARCHETYPES)) {
-				const names = Object.keys(items).filter((n) => !q || n.toLowerCase().includes(q));
-				if (!names.length) continue;
+			const items = q ? fuse.search(q).map((r) => r.item) : ARCHETYPE_LIST;
+			const groups = {};
+			for (const it of items) (groups[it.group] ||= []).push(it);
+			for (const [group, arr] of Object.entries(groups)) {
 				list.appendChild(el('div', 'db-draft-group', group));
-				for (const name of names) {
-					const item = el('button', 'db-draft-item', name);
+				for (const it of arr) {
+					const item = el('button', 'db-draft-item', it.name);
 					item.type = 'button';
-					item.addEventListener('click', () => proposeArchetype(name, items[name]));
+					item.addEventListener('click', () => proposeArchetype(it.name, it.spine));
 					list.appendChild(item);
 				}
 			}
@@ -307,7 +426,13 @@ export function createOnboarding({ catalog, mount, onBuild }) {
 		const row = el('div', 'db-ob-chips');
 		const build = el('button', 'db-btn db-btn-primary', 'Build this →');
 		build.type = 'button';
-		build.addEventListener('click', () => { if (onBuild) onBuild(assemble(name, spine)); doors(); });
+		build.addEventListener('click', () => {
+			everChose = true;
+			inFlow = false;
+			rememberMode('Drafting');
+			if (onBuild) onBuild(assemble(name, spine), name);
+			compactView();
+		});
 		const other = el('button', 'db-ob-chip', 'Pick another');
 		other.type = 'button';
 		other.addEventListener('click', startDrafting);

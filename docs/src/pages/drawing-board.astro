@@ -198,6 +198,7 @@ const dbData = JSON.stringify({
 			<section class="db-panel db-preview" id="db-preview">
 				<div class="db-panel-head">
 					<span class="db-panel-title">Slides</span>
+					<button class="db-btn db-practice-open" id="db-practice-open" title="Rehearse full-screen with pacing">▶ Practice</button>
 					<span class="db-spacer"></span>
 					<span class="db-status" id="db-status">Ready.</span>
 				</div>
@@ -214,6 +215,11 @@ const dbData = JSON.stringify({
 				<button class="db-mobile-tab" data-pane="preview" role="tab" aria-selected="false">Preview</button>
 			</nav>
 		</div>
+
+		<!-- Practice mode — full-screen rehearsal overlay (deterministic pacing +
+		     pause cues). Renders the deck one slide at a time in its own engine
+		     iframe; created lazily on first open. -->
+		<div class="db-practice" id="db-practice" hidden></div>
 
 		<script type="application/json" id="db-data" is:inline set:html={dbData}></script>
 
@@ -267,6 +273,7 @@ const dbData = JSON.stringify({
 			const data = JSON.parse(document.getElementById('db-data').textContent);
 			const architect = createArchitect({
 				vocab: data.lintVocab,
+				catalog: data.catalog,
 				mount: document.getElementById('db-arch-review'),
 				reveal: (line) => { if (window.__dbEditor) window.__dbEditor.goToLine(line); },
 				// setValue dispatches a doc change -> onEdit -> render + save + re-lint.
@@ -279,8 +286,10 @@ const dbData = JSON.stringify({
 			createOnboarding({
 				catalog: data.catalog,
 				mount: document.getElementById('db-arch-onboard'),
-				onBuild: (src) => {
-					if (window.__dbStore && window.__dbStore.create) window.__dbStore.create(src, 'Planned deck');
+				onBuild: (src, name) => {
+					// name = the archetype (Drafting) or undefined (Freehand → auto-titled
+					// from the deck's H1). The store derives the title + description.
+					if (window.__dbStore && window.__dbStore.create) window.__dbStore.create(src, name);
 					else if (window.__dbEditor) window.__dbEditor.setValue(src);
 				},
 			});
@@ -322,6 +331,26 @@ const dbData = JSON.stringify({
 					else if (kind === 'print') { exportPrint(frame); status('Opening print dialog…'); }
 				} catch (err) { status(String(err.message || err), true); }
 			});
+		</script>
+
+		<!-- Practice mode (full-screen rehearsal). Lazily renders the deck one slide
+		     at a time through render path #2 (window.LatticePlayground) + the runtime
+		     in its own iframe, and paces against a density-weighted talk length. -->
+		<script>
+			import { createPractice } from '../playground/drawing-board-practice.js';
+			const data = JSON.parse(document.getElementById('db-data').textContent);
+			// name -> bucket lookup from the compact catalog, for slide pause cues.
+			const buckets = new Map((data.catalog || []).map((c) => [c.name, c.bucket]));
+			const practice = createPractice({
+				host: document.getElementById('db-practice'),
+				getSource: () => (window.__dbEditor ? window.__dbEditor.getValue() : ''),
+				slideBox: data.slideBox,
+				runtimeUrl: data.runtimeUrl,
+				themeBase: data.themeBase,
+				bucketOf: (name) => buckets.get(name) || null,
+			});
+			const openBtn = document.getElementById('db-practice-open');
+			if (openBtn) openBtn.addEventListener('click', () => practice.open());
 		</script>
 
 		<script is:inline defer src={url('playground/lattice-playground.js')}></script>
