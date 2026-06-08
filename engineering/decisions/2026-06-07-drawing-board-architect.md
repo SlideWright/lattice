@@ -284,12 +284,17 @@ tradeoff at the export action.
 - **IndexedDB durability** — browsers can evict; offer explicit "export deck"
   and consider `navigator.storage.persist()`.
 
-## 9. Phased plan (proposed)
+## 9. Phased plan
 
-> **Phase 1 is specced in full** in the companion build plan
-> `engineering/decisions/2026-06-07-drawing-board-phase-1-plan.md` —
-> slice-by-slice, with the two spikes (full-deck filmstrip, export fidelity), the
-> linter-browserization pre-work, acceptance bars, and the deps/gates analysis.
+> **Phase 1 — ✅ COMPLETE** (branch `claude/github-pages-slide-editor-6zJe3`,
+> PR #79). All six slices shipped and gate-green. Spec + final state:
+> `engineering/decisions/2026-06-07-drawing-board-phase-1-plan.md`.
+>
+> **Phase 2 is specced in full** in
+> `engineering/decisions/2026-06-08-drawing-board-phase-2-plan.md` — the
+> `ArchitectModel` adapter, the embeddings + Prompt-API + WebLLM tiers, chat
+> history, and the model-fed onboarding/findings, slice-by-slice. **Start there
+> to resume.**
 
 - **Phase 1 — Walking skeleton (no LLM):** the Drawing Board route, 3-panel shell + rail,
   CodeMirror editor wired to the playground engine, **filmstrip preview with

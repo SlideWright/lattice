@@ -1,9 +1,16 @@
 # The Drawing Board — Phase 1 walking-skeleton build plan (2026-06-07)
 
-> Status: **build plan.** Companion to the proposal
+> Status: **✅ COMPLETE & gate-green** on branch
+> `claude/github-pages-slide-editor-6zJe3` (PR #79). All six slices shipped:
+> 0 route+shell · 1 editor↔engine · 2 filmstrip+sync · 3 IndexedDB persistence ·
+> 4 export MD/PDF/PPTX · 5 deterministic Architect (live review + auto-fix +
+> onboarding). Phase 2 continues in
+> `engineering/decisions/2026-06-08-drawing-board-phase-2-plan.md`.
+>
+> Companion to the proposal
 > `engineering/decisions/2026-06-07-drawing-board-architect.md` (read that first
-> for the architecture, naming, and Architect/voice decisions). This doc turns
-> that proposal's §9 **Phase 1** into a concrete, slice-by-slice plan. No code yet.
+> for the architecture, naming, and Architect/voice decisions). This doc turned
+> that proposal's §9 **Phase 1** into a concrete, slice-by-slice plan.
 
 ## Goal & definition of done
 
