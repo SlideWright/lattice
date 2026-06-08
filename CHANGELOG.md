@@ -85,6 +85,24 @@ in patch versions.
 
 ### Changed
 
+- **Inline code chips are now surface-aware.** The `section code` chip was a
+  single context-blind rule (`--bg-alt` fill + `--accent` ink) tuned only for
+  the default canvas, so it read as a glaring near-white box on dark bookends
+  and the split-panel rail, vanished into `--bg-alt` cards, and went muddy on
+  the key-insight panel. The chip now derives its fill and border from its own
+  ink via `color-mix(currentColor)`, so it is always a subtle delta from
+  whatever surface it sits on, and a new `--code-inline-fg` / `--code-inline-bg`
+  / `--code-inline-border` token seam (distinct from the block-code
+  `--code-bg` / `--code-text`) lets a surface or theme retune it by rebinding
+  one value. The non-flipping dark islands (`title` / `divider` / `closing`
+  bookends, split-panel dark rail) rebind the ink to the on-dark tier.
+  **Every theme now curates `--code-inline-fg`** — an explicit, AA-audited chip
+  ink per palette (light + dark), deepened toward the brand hue where the raw
+  accent fell below 4.5:1 on the card wash (brina, cuoio, indaco, laguna,
+  magnolia, mustard) or lifted on the dark card (burgundy); the high-contrast
+  achromatic palettes keep the accent. See
+  `engineering/decisions/2026-06-08-inline-code-contrast.md`.
+
 - **The `list` component is now an equal-fill ledger.** All three registers
   (default pills, `takeaway`, `principles`) now fill the working area — each row
   takes an equal share of the slide height with its content vertically centred —
@@ -398,6 +416,16 @@ in patch versions.
   documented **future variant** (see `chart-family.style.md` › "Fill finish").
 
 ### Fixed
+
+- **Mid-sentence inline code is no longer mis-promoted to a metadata pill.**
+  The universal pill rule matched `code:has(+ :is(ul, ol))`, but the `+`
+  combinator skips text nodes, so a mid-sentence reference on a row that merely
+  had a nested list (`- The \`--accent\` token does X\n  - detail`) was styled
+  as a pill. A new `pill-tag` transformer (shared across marp-cli, emulator,
+  and runtime) tags only the genuine trailing-`code`-before-a-nested-list case
+  with `.lat-pill`, and the CSS arm now matches that class; the `:last-child`
+  pill (a truly trailing `code`) is unchanged. See
+  `engineering/decisions/2026-06-08-inline-code-contrast.md`.
 
 - **Docs site search boxes no longer trigger iOS Safari's focus-zoom.** The
   playground component search, the component-reference search, and the Group-by

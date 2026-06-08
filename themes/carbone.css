@@ -82,6 +82,9 @@
   /* ── Brand accent — electric lime ──────────────────────────────────── */
   --accent:      var(--brand-accent);          /* L:10.95:1 on bg AAA */
   --accent-soft: #2C3D2F;                    /* lifted card with green tint */
+  /* Inline-code chip ink — curated + AA-audited on the chip wash; bg/border
+   * derive from it (base.tokens.css). See 2026-06-08-inline-code-contrast.md. */
+  --code-inline-fg: var(--accent); /* electric green accent — chip reads AAA (8.85/7.53 on chip) */
   /* Accent is always bright; corner-tag text needs dark bg-tinted ink. */
   --on-accent:   var(--bg-dark);             /* D:10.95:1 on accent AAA */
 

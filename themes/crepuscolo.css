@@ -77,6 +77,9 @@
   /* ── Brand accent ──────────────────────────────────────────────────── */
   --accent:      light-dark(var(--brand-accent), #B59ADC); /* L:7.99:1 / D:7.50:1 on bg AAA */
   --accent-soft: light-dark(#ECE5F5, var(--bg-warm-mid)); /* accent reads L:6.86:1 / D:7.50:1 on this */
+  /* Inline-code chip ink — curated + AA-audited on the chip wash; bg/border
+   * derive from it (base.tokens.css). See 2026-06-08-inline-code-contrast.md. */
+  --code-inline-fg: var(--accent); /* violet accent — chip AA+ (L:6.82/6.18 · D:6.42/5.39) */
   /* Text on top of --accent — light: white on mid-violet; dark: deep
    * plum on bright lavender. */
   --on-accent:   light-dark(#FFFFFF, var(--bg-dark));    /* L:8.43:1 / D:7.50:1 */

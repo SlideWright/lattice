@@ -223,6 +223,21 @@
   --code-bg:   var(--bg-dark, #001D33);
   --code-text: #CBD9E8;
 
+  /* ── Inline code chip ─────────────────────────────────────────────────────
+   * DISTINCT from the block panel above (--code-bg / --code-text). The inline
+   * `<code>` chip (base.elements.css `section code`) is surface-aware: its
+   * fill and border derive from its own ink via color-mix(currentColor), so
+   * they are always a subtle delta from WHATEVER surface the chip sits on —
+   * canvas, card (--bg-alt), key-insight panel (--accent-soft), or a dark
+   * island. That means a surface only ever needs to rebind ONE value, the ink:
+   *   section.title code { --code-inline-fg: var(--on-dark-primary); }
+   * and the wash/border follow automatically. The bg/border tokens exist as
+   * optional seams for a theme that wants an opaque chip instead of the wash.
+   * See engineering/decisions/2026-06-08-inline-code-contrast.md. */
+  --code-inline-fg:     var(--accent);
+  --code-inline-bg:     color-mix(in srgb, currentColor 10%, transparent);
+  --code-inline-border: color-mix(in srgb, currentColor 22%, transparent);
+
 
   /* ── Sequential scale (--scale-50 … --scale-900) ───────────────────────
    * Tailwind/Carbon-style 10-stop ramp anchored on --scale-500. Used for
