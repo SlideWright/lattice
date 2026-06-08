@@ -170,6 +170,9 @@ is Phase 2.
 - Proposal: `2026-06-07-drawing-board-architect.md` (§4 the Architect, Appendix A
   onboarding — this supersedes Appendix A's single-flow onboarding).
 - Phase 2 plan: `2026-06-08-drawing-board-phase-2-plan.md` (Freehand's model assist).
+- Coach features: `2026-06-08-architect-coach-features.md` (scorecard, read-aloud,
+  reader/presenter notes, refine actions, practice mode + timing — the Architect
+  beyond build/review). Appendix B's review heuristics feed the scorecard.
 
 ## Appendix A — Archetype spines (framework-grounded)
 
