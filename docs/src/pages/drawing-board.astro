@@ -684,6 +684,7 @@ const dbData = JSON.stringify({
 				// The store loads a deck (switch / restore / initial) -> swap the editor
 				// source and re-render. setSource fires onChange, but the store guards its
 				// own autosave during a load, so this doesn't echo back.
+				var paneBooted = false; // the FIRST deck load is the initial (re)load, not a user switch
 				window.addEventListener('db-deck-loaded', function (e) {
 					var src = e.detail && e.detail.source;
 					if (src == null) return;
@@ -691,11 +692,13 @@ const dbData = JSON.stringify({
 					recomputeStarts();
 					render();
 					if (window.__dbArchitect) window.__dbArchitect.update(src);
-					// On narrow layouts (tabbed single-pane), picking/restoring a deck
-					// from another tab lands you in the editor — EXCEPT an onboarding start
-					// (Freehand / Drafting build), which keeps you on the Architect so its
-					// greeting is seen (the onboarding's `say` switches the pane itself).
-					if (!window.__dbOnboardingStart && window.matchMedia('(max-width: 1024px)').matches) setPane('editor');
+					// A user-initiated switch (rail pick / restore) lands you in the editor
+					// on narrow layouts. The INITIAL load after a (re)load does NOT — it
+					// restores your last pane (see below), so a refresh or an iOS tab discard
+					// during a long model download doesn't dump you into Edit. An onboarding
+					// start stays on the Architect (its `say` sets the pane).
+					if (paneBooted && !window.__dbOnboardingStart && window.matchMedia('(max-width: 1024px)').matches) setPane('editor');
+					paneBooted = true;
 				});
 				// Cursor moved in the editor -> if it crossed into a different slide,
 				// scroll the filmstrip to it (smooth). Same-slide moves don't scroll, so
@@ -824,6 +827,7 @@ const dbData = JSON.stringify({
 				var tabs = document.querySelectorAll('.db-mobile-tab');
 				function setPane(which) {
 					document.body.setAttribute('data-pane', which);
+					try { localStorage.setItem('lattice-db-pane', which); } catch (e) {}
 					tabs.forEach(function (t) { t.setAttribute('aria-selected', t.getAttribute('data-pane') === which ? 'true' : 'false'); });
 					if (which === 'preview') render();
 				}
@@ -832,6 +836,11 @@ const dbData = JSON.stringify({
 				tabs.forEach(function (t) {
 					t.addEventListener('click', function () { setPane(t.getAttribute('data-pane')); });
 				});
+				// Restore the last pane on (re)load so a refresh — or an iOS tab discard
+				// during a long model download — returns you where you were, not to Edit.
+				if (window.matchMedia('(max-width: 1024px)').matches) {
+					try { var savedPane = localStorage.getItem('lattice-db-pane'); if (savedPane) setPane(savedPane); } catch (e) {}
+				}
 
 				render();
 			})();
