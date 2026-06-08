@@ -10,7 +10,7 @@
 // live phrasing path needs a capable Chrome/Edge — the panel says so when it's
 // running model-free.
 
-const MAX_DECK_CHARS = 4000; // keep the deck context small for the weakest tier
+const MAX_DECK_CHARS = 1200; // a short excerpt — a small model drowns in a full deck
 
 function el(tag, cls, text) {
   const e = document.createElement(tag);
@@ -19,26 +19,31 @@ function el(tag, cls, text) {
   return e;
 }
 
-// Build the model messages: a tight system brief, the deck + deterministic
-// findings as grounding, the recent history, then the new turn. Pure string
-// assembly so the model only rephrases grounded facts.
+// Build the model messages: a SHORT system brief (the on-device model is small —
+// a long prompt + the full deck makes it ramble), the score + top findings as
+// grounding, the recent REAL conversation, then the new turn. Deterministic
+// messages (floor replies, the greeting — marked `det`) are dropped from history
+// so the small model doesn't parrot our own boilerplate (the cause of the
+// degenerate "load on-device AI…" loop seen on-device). Pure string assembly.
 export function buildChatMessages({ source, assessment, history, userText }) {
-  const deck = (source || '').slice(0, MAX_DECK_CHARS);
+  const deck = (source || '').slice(0, MAX_DECK_CHARS).trim();
   const findings = (assessment?.findings || [])
-    .slice(0, 8)
-    .map((f) => `- [${f.severity}] ${f.message}${f.slide ? ` (slide ${f.slide})` : ''}`)
+    .slice(0, 5)
+    .map((f) => `- ${f.message}${f.slide ? ` (slide ${f.slide})` : ''}`)
     .join('\n');
   const score = assessment?.scorecard
-    ? `Score: ${assessment.scorecard.band} (${assessment.scorecard.overall}/100).`
+    ? `The deck scores ${assessment.scorecard.band} (${assessment.scorecard.overall}/100).`
     : '';
   const system =
-    'You are the Architect, a senior presentation coach inside Lattice. Help the ' +
-    'author improve THIS deck: be concise, concrete, and kind. Refer to slides by ' +
-    'number. Do NOT invent Lattice components, classes, or fixes — the engine owns ' +
-    'edits; you advise. Ground every claim in the deck and the findings below.\n\n' +
-    `${score}\nFindings:\n${findings || '(none — the deck is clean)'}\n\n` +
-    `Deck source:\n${deck}`;
-  const turns = (history || []).slice(-8).map((m) => ({ role: m.role === 'architect' ? 'assistant' : 'user', content: m.content }));
+    'You are the Architect, a sharp, friendly presentation coach. Answer in 1–3 short, ' +
+    'concrete sentences. Do not repeat yourself or restate the question. Refer to slides ' +
+    'by number. You advise; the app makes the edits. Base advice on the deck and issues below.\n\n' +
+    `${score}\n${findings ? `Issues found:\n${findings}\n` : 'No mechanical issues found.\n'}` +
+    (deck ? `\nDeck:\n${deck}` : '');
+  const turns = (history || [])
+    .filter((m) => !m.det) // drop deterministic floor/greeting — model would parrot it
+    .slice(-6)
+    .map((m) => ({ role: m.role === 'architect' ? 'assistant' : 'user', content: m.content }));
   return [{ role: 'system', content: system }, ...turns, { role: 'user', content: userText }];
 }
 
@@ -61,11 +66,11 @@ function listFindings(findings) {
 export function floorReply(assessment, userText = '') {
   const sc = assessment?.scorecard;
   const q = String(userText).toLowerCase();
-  const enable = 'Want a real back-and-forth? Tap the ⚙ chip up top and load on-device AI — there’s a compact universal option (~100 MB) that runs right here in your browser, no special browser or GPU needed. It stays on your device.';
+  const enable = 'Want a real back-and-forth? Tap the ⚙ chip up top and load on-device AI — there’s a compact universal option (~350 MB) that runs right here in your browser, no special browser or GPU needed. It stays on your device.';
 
   // "why are you model-free / how do I enable it" — answer the actual question.
   if (/\b(why|model[\s-]?free|no model|offline|enable|turn on|switch on|activate|on-device|gpu|download|nano|webllm|transformers)\b/.test(q)) {
-    return "I'm running deterministically because no on-device model is loaded in this browser yet. There are three tiers: the built-in AI (instant, but only recent Chrome/Edge expose it), a compact universal model that runs anywhere via WebAssembly (a one-time ~100 MB download — this is the one for Safari and phones), and an advanced WebLLM tier for WebGPU desktops. " +
+    return "I'm running deterministically because no on-device model is loaded in this browser yet. There are three tiers: the built-in AI (instant, but only recent Chrome/Edge expose it), a compact universal model that runs anywhere via WebAssembly (a one-time ~350 MB download — this is the one for Safari and phones), and an advanced WebLLM tier for WebGPU desktops. " +
       'None of that changes the review — scores, findings and fixes are computed the same way regardless. ' + enable;
   }
 
@@ -181,7 +186,10 @@ export function createChat({ mount, composer, model, store, getAssessment }) {
     begin(); // ensure the thinking state clears even if nothing streamed
     target.textContent = full;
     target.classList.remove('is-streaming');
-    if (deckId && store?.addChatMessage) await store.addChatMessage(deckId, 'architect', full);
+    // Mark deterministic replies (floor / model-fell-to-floor) so they're NOT fed
+    // back to the model as history — that's what made the small model parrot itself.
+    const det = !(a.generation !== 'floor' && full && full.trim() && full !== floor);
+    if (deckId && store?.addChatMessage) await store.addChatMessage(deckId, 'architect', full, det);
     busy = false;
     if (sendBtn) sendBtn.disabled = false;
     scrollDown();
@@ -223,7 +231,7 @@ export function createChat({ mount, composer, model, store, getAssessment }) {
     if (note) note.remove();
     bubble('architect', text);
     scrollDown();
-    if (deckId && store?.addChatMessage) await store.addChatMessage(deckId, 'architect', text);
+    if (deckId && store?.addChatMessage) await store.addChatMessage(deckId, 'architect', text, true);
   }
 
   // Reload the thread whenever the active deck changes.

@@ -1620,3 +1620,31 @@ body.db-page .topbar {
 .db-settings-error strong {
 	color: #c0392b;
 }
+
+/* Downloaded-models breakdown in settings. */
+.db-settings-subhead {
+	margin-top: 0.9rem;
+	font-size: 0.82rem;
+}
+.db-settings-models {
+	list-style: none;
+	margin: 0.3rem 0 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 0.15rem;
+}
+.db-settings-models li {
+	font-family: var(--font-mono, monospace);
+	font-size: 0.74rem;
+	color: var(--text-body);
+	padding-left: 0.9rem;
+	position: relative;
+	overflow-wrap: anywhere;
+}
+.db-settings-models li::before {
+	content: "▪";
+	position: absolute;
+	left: 0;
+	color: var(--accent);
+}
