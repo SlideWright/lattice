@@ -2,19 +2,25 @@
 //
 // Fidelity, honestly (the proposal's §6):
 //   - Markdown : perfect — it is the source.
-//   - PDF      : one-click image PDF. Each rendered slide is rasterized to a
-//                2x PNG with web fonts EMBEDDED (html-to-image follows the
-//                engine CSS's @import of Google Fonts and inlines them), then
-//                placed one-per-page via jsPDF. No print dialog. Trade-off:
+//   - PDF      : one-click image PDF — each rendered slide rasterized to a 2x PNG
+//                and placed one-per-page via jsPDF. No print dialog. Trade-off:
 //                text is an image, not selectable/searchable. For vector +
 //                selectable text use "Print" (the browser's own PDF engine).
-//   - PPTX     : image-slides — the same 2x font-embedded PNGs, full-bleed via
-//                PptxGenJS. Editable container, non-editable content.
-//   - Print    : the browser print path over the already-rendered preview —
-//                true vector, selectable, highest fidelity, but a dialog.
+//   - PPTX     : image-slides — the same 2x PNGs, full-bleed via PptxGenJS.
+//   - Print    : the browser print path — true vector, selectable, but a dialog.
 //
-// html-to-image / jspdf / pptxgenjs are all lazy-imported, so none loads unless
-// the matching export is invoked.
+// Rasterization uses html-to-image (toPng): it clones the slide, inlines the
+// computed styles AND embeds the web fonts (follows the engine CSS's @import of
+// Google Fonts, fetching + inlining the files), then renders to a 2x canvas.
+//
+// IMPORTANT: do NOT pass a `backgroundColor` — a forced white overrides the
+// solid dark canvas of the title/closing/divider slides
+// (section.title { background: var(--bg-dark) }), turning them white. Each slide
+// paints its own background, so we let it. (Gradient-backed dark slides happened
+// to survive the white because a background-image paints over background-color;
+// solid-colour ones did not — hence title/closing went white on Cuoio.)
+//
+// jspdf / pptxgenjs / html-to-image are lazy-imported (own chunks).
 
 function safeName(name) {
 	return (name || 'deck').trim().replace(/[^\w.-]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60) || 'deck';
@@ -36,31 +42,42 @@ export function exportMarkdown(source, name) {
 	download(new Blob([source], { type: 'text/markdown;charset=utf-8' }), safeName(name) + '.md');
 }
 
-// ── Rasterize one rendered slide to a 2x PNG (web fonts embedded) ─────────────
-// html-to-image clones the node, walks the document's stylesheets (incl. the
-// engine CSS's `@import` of Google Fonts), fetches + inlines the font files, and
-// renders to a canvas — so text uses the real fonts instead of falling back.
-// `transform:none` undoes the live FIT scale; pixelRatio 2 keeps it crisp.
-async function rasterizeSection(section) {
-	const { toPng } = await import('html-to-image');
-	return toPng(section, {
-		width: 1280,
-		height: 720,
-		pixelRatio: 2,
-		backgroundColor: '#ffffff',
-		cacheBust: true,
-		style: { transform: 'none', margin: '0', boxShadow: 'none', outline: 'none', borderRadius: '0' },
-		filter: (n) => !(n.classList && n.classList.contains('db-active')),
-	});
-}
-
 async function sectionsOf(frame) {
-	const doc = frame && frame.contentDocument;
+	const doc = frame?.contentDocument;
 	if (!doc) throw new Error('Preview not ready yet.');
 	const sections = doc.querySelectorAll('.marpit>section');
 	if (!sections.length) throw new Error('Nothing to export yet.');
-	try { await doc.fonts.ready; } catch (e) { /* fonts best-effort */ }
+	try { await doc.fonts.ready; } catch (_e) { /* fonts best-effort */ }
 	return sections;
+}
+
+// Rasterize one rendered slide to a 2x PNG data URL (fonts embedded).
+async function rasterizeSection(section) {
+	const { toPng } = await import('html-to-image');
+	// Bookend slides (title/closing/divider) carry an inert `border-image-source`
+	// (the spectrum) with `border-top:none` — invisible in the browser, but
+	// html-to-image inlines the computed border-image and fills it across the
+	// whole slide, burying the dark canvas. Neutralize it on the LIVE node (so the
+	// computed value html-to-image copies is `none`) ONLY where the border is
+	// effectively absent — content slides keep their real spectrum ribbon — then
+	// restore. The change is invisible in the preview (the border was already 0).
+	const cs = getComputedStyle(section);
+	const borderless = parseFloat(cs.borderTopWidth) === 0 || cs.borderTopStyle === 'none';
+	const prevBorderImage = section.style.borderImageSource;
+	if (borderless && cs.borderImageSource !== 'none') section.style.borderImageSource = 'none';
+	try {
+		return await toPng(section, {
+			width: 1280,
+			height: 720,
+			pixelRatio: 2,
+			cacheBust: true,
+			// transform:none undoes the live FIT scale; no backgroundColor (see header).
+			style: { transform: 'none', margin: '0', boxShadow: 'none', outline: 'none', borderRadius: '0' },
+			filter: (n) => !(n.classList?.contains('db-active')),
+		});
+	} finally {
+		section.style.borderImageSource = prevBorderImage;
+	}
 }
 
 // ── PDF (one-click image PDF) ─────────────────────────────────────────────────
@@ -81,7 +98,7 @@ export async function exportPdf(frame, name, onStatus) {
 // ── PPTX (image-slides) ───────────────────────────────────────────────────────
 export async function exportPptx(frame, name, onStatus) {
 	const sections = await sectionsOf(frame);
-	if (onStatus) onStatus('Loading PowerPoint export…');
+	if (onStatus) onStatus('Preparing PowerPoint…');
 	const { default: PptxGenJS } = await import('pptxgenjs');
 	const pptx = new PptxGenJS();
 	pptx.layout = 'LAYOUT_WIDE'; // 13.333 x 7.5in, 16:9 — matches the 1280x720 box
@@ -95,11 +112,8 @@ export async function exportPptx(frame, name, onStatus) {
 }
 
 // ── Print (vector, selectable — the browser's own PDF engine) ─────────────────
-// The preview iframe carries an `@media print` block (see writeFrame in
-// drawing-board.astro) that un-scales each section to a full 1280x720 page and
-// page-breaks between them; the user chooses "Save as PDF".
 export function exportPrint(frame) {
-	const win = frame && frame.contentWindow;
+	const win = frame?.contentWindow;
 	if (!win) throw new Error('Preview not ready yet.');
 	win.focus();
 	win.print();
