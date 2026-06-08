@@ -1,13 +1,14 @@
 ---
 status: decisions-locked, not-yet-implemented
-version: 2
+version: 3
 supersedes: none
 related:
   - ../references/templates.md (current inline-code semantics)
   - ../references/gotchas.md ("Marp Core wraps emoji in <img class='emoji'>")
+  - lib/base/base.tokens.css (--mark-* inline-SVG token technique the icon directive mirrors)
 ---
 
-# Lattice — namespaced inline-code directives (Font Awesome, vars, …)
+# Lattice — namespaced inline-code directives (icons, vars, …)
 
 > **Status.** Design landed in conversation on 2026-05-11; all five
 > open questions resolved on 2026-05-15 (see **Resolved decisions**
@@ -15,6 +16,24 @@ related:
 > future session to pick up and ship. When implementation lands, fold
 > the canonical rules into `engineering/templates.md` and delete
 > this note.
+>
+> **Revision 2026-06-08 — icon source.** The icon directive's delivery
+> was changed from a hard-locked **Font Awesome webfont** to a
+> **pluggable icon source defaulting to Lucide inline SVG** (single
+> `icon:` namespace). See **Icons — pluggable source (Lucide default)**
+> below; it supersedes the former "Font Awesome — prefix per style"
+> section and resolved-decision #3. Rationale: the docs site adopted
+> Lucide the same day, so a Lucide-backed `icon:` gives ONE icon
+> vocabulary across the docs site and the decks; inline SVG matches the
+> engine's existing palette-blind `--mark-*` model (recolour via
+> `currentColor` / `--cat-*`) where a webfont sits outside it; and
+> Lucide's ISC licence needs no attribution (FA Free is CC BY 4.0) and
+> no vendored font dir / Pro-tier probe. FA is not dropped as an idea —
+> it becomes one selectable backend behind the resolver, not the lock.
+> The $-var and bracket-pill grammar below is **unchanged**. (Note: the
+> "pill" work in #88 / `lib/transformers/pill-tag.js` is the unrelated
+> trailing-`code` metadata-pill fix, NOT this bracket-shape grammar —
+> that grammar is still unbuilt.)
 
 ## What's already done
 
@@ -47,7 +66,7 @@ by the leading character of the code text:
 | Form | Meaning | Example | Renders to |
 |---|---|---|---|
 | `` `$name` `` | Variable interpolation from front-matter `vars:` | `` `$client` `` | text "Acme Corp" |
-| `` `prefix:value` `` | Namespaced directive | `` `fa:rocket` `` | `<i class="fa-solid fa-rocket">` |
+| `` `prefix:value` `` | Namespaced directive | `` `icon:rocket` `` | inline `<svg class="lat-icon">` (Lucide artwork) |
 | `` `(X)` / `[X]` / `[X>` / `((X))` … `` | Bracket-shape pill (Mermaid-inspired) — see below | `` `(LIVE)` `` | `<span class="pill" data-shape="…">LIVE</span>` |
 | `` `literal` `` (anything else) | Plain inline code, unchanged | `` `getUserId()` `` | `<code>getUserId()</code>` |
 
@@ -84,55 +103,55 @@ clean handoff point.
   syntax-highlighted code blocks. Repurposing them would break the
   gallery.
 
-### Font Awesome — prefix per style
+### Icons — pluggable source (Lucide default)
 
-The `fa:` namespace is pure pass-through to Font Awesome's own class
-names. No Lattice token layer; no rename; no wrapper. One prefix per
-FA style, mapping 1:1 onto FA's official class dialect so an author
-who Googles an icon lands on the FA page and the name they see is the
-name they type.
+> Supersedes the former "Font Awesome — prefix per style" section
+> (revision 2026-06-08). Single `icon:` namespace; the icon **set** is a
+> resolver detail, not part of the author-facing syntax.
 
-| Directive          | Emits                                | Tier         |
-| ------------------ | ------------------------------------ | ------------ |
-| `` `fa:rocket` ``  | `<i class="fa-solid fa-rocket">`     | Free + Pro   |
-| `` `fab:github` `` | `<i class="fa-brands fa-github">`    | Free + Pro   |
-| `` `far:rocket` `` | `<i class="fa-regular fa-rocket">`   | Free subset; Pro full |
-| `` `fal:rocket` `` | `<i class="fa-light fa-rocket">`     | **Pro**      |
-| `` `fat:rocket` `` | `<i class="fa-thin fa-rocket">`      | **Pro**      |
-| `` `fad:rocket` `` | `<i class="fa-duotone fa-rocket">`   | **Pro**      |
-| `` `fass:rocket` ``| `<i class="fa-sharp fa-solid fa-rocket">` | **Pro** |
+One namespace — `` `icon:<name>` `` — emits an inline `<svg>`, not a
+font glyph. The name is resolved through a pluggable **icon source**
+(`lib/icons.js`); the default source is **Lucide** (https://lucide.dev,
+ISC). So an author who Googles a Lucide icon types the name they see.
 
-Each prefix is its own `PREFIX_HANDLERS` entry; the greedy-first-colon
-rule is fine because every style is its own namespace (no
-`fa:light:rocket` two-segment form).
+| Directive          | Emits                                                  |
+| ------------------ | ------------------------------------------------------ |
+| `` `icon:rocket` ``| `<svg class="lat-icon" data-icon="rocket">…</svg>`     |
+| `` `icon:github` ``| `<svg class="lat-icon" data-icon="github">…</svg>`     |
+| `` `icon:check:c2` `` | same + slot-2 colour (mods reuse the pill `:c1`–`:c8`) |
 
-**Free out of the box.** Vendor FA Free 6.x into
-`assets/fontawesome/free/` (gitignore the zip, commit the unpacked
-dist). `lattice.css` `@import`s `assets/fontawesome/free/css/all.min.css`.
-Webfont, not SVG — print/PDF-safe, no runtime JS, offline-capable.
-Icons inherit `font-size` and `color` from the surrounding text via
-`currentColor`; no per-icon styling needed.
+**Inline SVG, not a webfont.** This mirrors the engine's existing
+`--mark-*` technique (`lib/base/base.tokens.css`): the SVG inherits
+text colour via `stroke="currentColor"` and can opt into a categorical
+slot with the same `:c1`–`:c8` modifiers the pills use (mapping to
+`--cat-*`). Vector, PDF-safe, no runtime JS, no network — and unlike a
+webfont it lives *inside* the palette-blind model instead of beside it.
+`:sm`/`:md`/`:lg` set the box via an `--icon-size-*` token (or the icon
+just inherits `1em`).
 
-**Pro auto-detected.** Pro license-holders unpack their kit into
-`assets/fontawesome/pro/` (gitignored — never committed). At build,
-`lib/font-awesome.js` probes for
-`assets/fontawesome/pro/css/all.min.css`:
+**Pluggable source — the resolver.** `lib/icons.js` exposes
+`resolve(name) → svgBody | null` behind a small source interface, so
+the icon set is swappable without touching the parser, the three render
+paths, or any deck:
 
-- **Present** → emit the Pro `@import` instead of Free; expose all 7
-  style prefixes.
-- **Absent** → Free path; expose `fa:`, `fab:`, and the Free subset of
-  `far:`.
+- **Lucide (default).** Read raw SVGs from the `lucide-static` package
+  at build (or vendor the subset actually referenced — keeps the
+  tarball lean). Bundled into the emitted output so there is no runtime
+  fetch.
+- **Other sets are additive.** A future source (Heroicons, Tabler, or
+  even **Font Awesome** as an SVG/webfont backend) registers under the
+  same interface. FA is therefore not abandoned — it is one selectable
+  backend, not the lock-in. Selection is build-level config
+  (`lattice.config` / env), never per-deck front-matter, so a deck
+  authored against `icon:rocket` renders under whatever source the
+  build blesses.
 
-No env var, no config flag, no per-deck front-matter — folder
-existence IS the signal. Override knob `LATTICE_FA_PRO=/abs/path` for
-edge cases (CI builds mounting Pro at a non-default path); documented
-but not the happy path.
-
-**Linter behaviour.** `lattice-lint` reads the active-tier descriptor
-from `lib/font-awesome.js`. Pro-only prefixes on a Free build emit a
-loud build-time warning naming the offending slides; the render still
-emits the FA class so once Pro is installed the deck works without
-edits. No silent failure, no class-name guessing.
+**Unknown icon name → warn + leave literal.** `` `icon:zzz` `` (name not
+in the active source) emits a build-time stderr warning naming the
+offending slides and falls through to literal `<code>icon:zzz</code>`
+(same policy as an unknown prefix, resolved-decision #5). No silent
+empty, no guessing. The linter reads the active source's name set from
+`lib/icons.js` to flag typos before render.
 
 ### Pill shapes — Mermaid-inspired bracket grammar
 
@@ -267,14 +286,19 @@ the argument, and the rejected alternatives.
    Authors documenting CSS or shell syntax that contains a colon get
    a clean escape per-occurrence.
 
-3. **Font Awesome: Free out of the box, Pro auto-detected, webfont.**
-   See **Font Awesome — prefix per style** above for the full
-   resolution. Free vendored at `assets/fontawesome/free/` ships by
-   default. Pro detected by probing `assets/fontawesome/pro/css/all.min.css`
-   at build (folder existence is the signal — no config flag, no env
-   var on the happy path). Pure pass-through to FA class names; no
-   Lattice token layer. Webfont delivery, not SVG — PDF-safe, no
-   runtime JS, deterministic offline builds.
+3. **Icons: pluggable source, Lucide default, inline SVG.**
+   *(Revised 2026-06-08 — supersedes the original "Font Awesome,
+   webfont" call.)* A single `icon:<name>` namespace resolves through
+   `lib/icons.js` to an inline `<svg>`. The default source is Lucide
+   (ISC); other sets — including Font Awesome as a backend — register
+   behind the same `resolve(name)` interface, selected at build level,
+   never per-deck. Inline SVG (not a webfont) so icons recolour via
+   `currentColor` / the `:c1`–`:c8` slots like pills, matching the
+   engine's `--mark-*` model. See **Icons — pluggable source (Lucide
+   default)** above. Rejected the FA-webfont lock because it sat outside
+   the palette-blind model, split the icon vocabulary from the docs
+   site (which adopted Lucide), and carried CC BY 4.0 attribution + a
+   vendored-font / Pro-probe apparatus Lucide doesn't need.
 
 4. **Missing-var behaviour: loud `??name??` + stderr warning.**
    `` `$undefined` `` renders as `??undefined??` in the slide body
@@ -308,8 +332,8 @@ Ship with:
 
 - `$name` → front-matter variable interpolation (bare, dotted paths
   allowed, missing → loud `??name??` + stderr warning).
-- `fa:` / `fab:` / `far:` / `fal:` / `fat:` / `fad:` / `fass:` → Font
-  Awesome, one prefix per style, Free vendored + Pro auto-detected.
+- `icon:<name>` → inline SVG via the pluggable source in `lib/icons.js`
+  (default: Lucide, ISC). Unknown name → warn + leave literal.
 - Bracket-shape pills with `:c1`–`:c8` colour slots and
   `:sm`/`:md`/`:lg` sizes (full grammar above).
 
@@ -342,25 +366,26 @@ paths or they drift. For inline-code directives:
 ### Suggested file layout
 
 - **`lib/inline-directives.js`** — single source of truth: regex,
-  registry of handlers (`{ fa: renderFa, var: renderVar, ... }`),
+  registry of handlers (`{ icon: renderIcon, var: renderVar, ... }`),
   pure functions taking `(text, ctx)` and returning HTML strings.
   No DOM, no markdown-it dependency — same shape as
   `lib/chart-family.js`. Unit-testable in isolation.
-- **`lib/font-awesome.js`** — active-tier descriptor. Probes
-  `assets/fontawesome/pro/css/all.min.css` at module load (or honours
-  `LATTICE_FA_PRO=/abs/path`); exports the `@import` target, the set
-  of available style prefixes, and the prefix→class map. Consumed by
-  `lib/inline-directives.js` (handler dispatch), the marp/emulator
-  CSS-emit step (which `@import` URL to inline), and `lattice-lint`
-  (Pro-only prefix warnings on Free builds).
+- **`lib/icons.js`** — the pluggable icon source. Exposes
+  `resolve(name) → svgBody | null` and the active source's name set,
+  behind a small source interface so the set is swappable without
+  touching the parser or render paths. Default source reads Lucide
+  artwork from `lucide-static` (or a vendored subset). Consumed by
+  `lib/inline-directives.js` (the `icon:` handler) and `lattice-lint`
+  (unknown-name warnings). A future source (Heroicons / Tabler / FA)
+  registers here; selection is build-level config, not per-deck.
 - **`marp.config.js`** plugin → calls `lib/inline-directives.js` from
   inside a markdown-it rule.
 - **`lattice-emulator.js`** → calls the same lib from its inline
   transform pass.
-- **Font Awesome assets** vendored under `assets/fontawesome/`
-  (`free/` committed, `pro/` gitignored). `lattice.css` `@import`s
-  whichever path `lib/font-awesome.js` resolves. Webfont, not SVG.
-  Matches how Google Fonts is loaded today.
+- **Icon artwork** comes from `lucide-static` (committed dep) or a
+  vendored subset under `assets/icons/`; the referenced SVGs are
+  inlined into the emitted output at build — no runtime fetch, no
+  webfont, no font `@import`.
 
 ### Reference parser (drop-in starting point)
 
@@ -449,7 +474,7 @@ Handler dispatch (separate from parsing) is a plain object keyed by
 
 ```js
 const PREFIX_HANDLERS = {
-  fa: (value, mods) => `<i class="fa-solid fa-${escapeAttr(value)}"></i>`,
+  icon: (value, mods) => renderIcon(value, mods),   // resolves via lib/icons.js → inline <svg>
   kbd: (value, mods) => renderKbdChord(value),
   // …
 };
@@ -500,11 +525,10 @@ shape.
 
 - Start fresh from `main` (not from `claude/fix-emoji-rendering-WO4vI`,
   which is scoped to the emoji bugfix).
-- Suggested branch: `feat/inline-directives` or
-  `feat/fontawesome-vars`.
-- First PR: scaffold `lib/inline-directives.js` + `lib/font-awesome.js`
-  + the markdown-it ruler in `marp.config.js` + `$` (vars), the seven
-  `fa*:` prefixes (Free vendored, Pro folder-probe), and bracket-shape
+- Suggested branch: `feat/inline-directives` or `feat/icon-vars`.
+- First PR: scaffold `lib/inline-directives.js` + `lib/icons.js` (Lucide
+  source) + the markdown-it ruler in `marp.config.js` + `$` (vars), the
+  `icon:` namespace (inline SVG via the resolver), and bracket-shape
   pills with `:c1`–`:c8` + `:sm`/`:lg`. Unit tests + one gallery slide
   demonstrating each. Hold `kbd:` for a follow-up PR to keep the diff
   small.

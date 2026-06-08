@@ -153,7 +153,7 @@ export function createStore({ getSource, onLoadDeck, starter = '' }) {
 			x.className = 'db-deck-x';
 			x.title = 'Delete deck';
 			x.setAttribute('aria-label', 'Delete deck');
-			x.textContent = '✕';
+			// glyph drawn by CSS: .db-deck-x::before (Lucide x mask)
 			x.addEventListener('click', (e) => { e.stopPropagation(); deleteDeck(d.id); });
 			row.append(pick, x);
 			list.appendChild(row);
@@ -166,7 +166,7 @@ export function createStore({ getSource, onLoadDeck, starter = '' }) {
 		const revs = (await revisionsFor(activeId)).sort((a, b) => b.createdAt - a.createdAt);
 		list.innerHTML = '';
 		if (!revs.length) {
-			list.innerHTML = '<p class="db-rail-note">No checkpoints yet. Save one with ⚑ to mark a state you can return to.</p>';
+			list.innerHTML = '<p class="db-rail-note">No checkpoints yet. Save one with the checkpoint button to mark a state you can return to.</p>';
 			return;
 		}
 		for (const r of revs) {

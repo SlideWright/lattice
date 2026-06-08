@@ -178,17 +178,18 @@ export function createPractice({ host, getSource, slideBox, runtimeUrl, themeBas
     elClock = el('span', 'db-pv-clock', '0:00');
     elPace = el('span', 'db-pv-pace ok', 'on track');
     elCue = el('span', 'db-pv-cue');
-    const closeBtn = el('button', 'db-pv-x', '✕');
+    const closeBtn = el('button', 'db-pv-x'); // glyph drawn by CSS: .db-pv-x::before
     closeBtn.type = 'button';
     closeBtn.title = 'Exit practice (Esc)';
+    closeBtn.setAttribute('aria-label', 'Exit practice');
     closeBtn.addEventListener('click', close);
     bar.append(elSlide, elClock, elPace, elCue, closeBtn);
     frame = el('iframe', 'db-pv-frame');
     frame.setAttribute('title', 'Practice slide');
     const nav = el('div', 'db-pv-nav');
-    const prev = el('button', 'db-pv-btn', '‹ Prev'); prev.type = 'button'; prev.addEventListener('click', () => go(idx - 1));
+    const prev = el('button', 'db-pv-btn'); prev.type = 'button'; prev.innerHTML = '<span class="ico ico-chevron-left" aria-hidden="true"></span> Prev'; prev.addEventListener('click', () => go(idx - 1));
     elTarget = el('span', 'db-pv-target');
-    const next = el('button', 'db-pv-btn db-pv-next', 'Next ›'); next.type = 'button'; next.addEventListener('click', () => go(idx + 1));
+    const next = el('button', 'db-pv-btn db-pv-next'); next.type = 'button'; next.innerHTML = 'Next <span class="ico ico-chevron-right" aria-hidden="true"></span>'; next.addEventListener('click', () => go(idx + 1));
     nav.append(prev, elTarget, next);
     run.append(bar, frame, nav);
     host.appendChild(run);
@@ -214,7 +215,7 @@ export function createPractice({ host, getSource, slideBox, runtimeUrl, themeBas
     const form = el('form', 'db-pv-len');
     const input = el('input');
     input.type = 'number'; input.min = '1'; input.max = '180'; input.value = '10'; input.setAttribute('aria-label', 'Talk length in minutes');
-    const go2 = el('button', 'db-btn db-btn-primary', 'Start →'); go2.type = 'submit';
+    const go2 = el('button', 'db-btn db-btn-primary'); go2.type = 'submit'; go2.innerHTML = 'Start <span class="ico ico-arrow-right" aria-hidden="true"></span>';
     form.append(input, el('span', 'db-pv-min', 'min'), go2);
     form.addEventListener('submit', (e) => { e.preventDefault(); start(Math.max(1, Number(input.value) || 10)); });
     const cancel = el('button', 'db-pv-cancel', 'Cancel'); cancel.type = 'button'; cancel.addEventListener('click', close);

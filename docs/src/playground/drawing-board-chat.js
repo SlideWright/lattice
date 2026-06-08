@@ -94,7 +94,7 @@ function listFindings(findings) {
 export function floorReply(assessment, userText = '') {
   const sc = assessment?.scorecard;
   const q = String(userText).toLowerCase();
-  const enable = 'Want a real back-and-forth? Tap the ⚙ chip up top and load on-device AI — there’s a compact universal option (~350 MB) that runs right here in your browser, no special browser or GPU needed. It stays on your device.';
+  const enable = 'Want a real back-and-forth? Tap the settings chip up top and load on-device AI — there’s a compact universal option (~350 MB) that runs right here in your browser, no special browser or GPU needed. It stays on your device.';
 
   // "why are you model-free / how do I enable it" — answer the actual question.
   if (/\b(why|model[\s-]?free|no model|offline|enable|turn on|switch on|activate|on-device|gpu|download|nano|webllm|transformers)\b/.test(q)) {
@@ -193,7 +193,7 @@ export function createChat({ mount, composer, model, store, getAssessment, catal
     toggle.type = 'button';
     const icon = el('span', 'db-edit-icon');
     toggle.append(icon, el('span', 'db-edit-title', editLabel(edit)));
-    const undoBtn = el('button', 'db-edit-undo', '↩ Undo');
+    const undoBtn = el('button', 'db-edit-undo'); undoBtn.innerHTML = '<span class="ico ico-undo" aria-hidden="true"></span> Undo';
     undoBtn.type = 'button';
     undoBtn.hidden = true;
     head.append(toggle, undoBtn);
@@ -229,19 +229,19 @@ export function createChat({ mount, composer, model, store, getAssessment, catal
       open() {
         card.dataset.state = 'open';
         card.classList.remove('is-collapsed');
-        icon.textContent = '';
+        icon.className = 'db-edit-icon';
         actions.hidden = false;
         undoBtn.hidden = true;
       },
       applied() {
         card.dataset.state = 'applied';
-        icon.textContent = '✓ ';
+        icon.className = 'db-edit-icon ico ico-check';
         actions.hidden = true;
         card.classList.add('is-collapsed');
       },
       dismissed() {
         card.dataset.state = 'dismissed';
-        icon.textContent = '✕ ';
+        icon.className = 'db-edit-icon ico ico-x';
         actions.hidden = true;
         undoBtn.hidden = true;
         card.classList.add('is-collapsed');
@@ -279,7 +279,7 @@ export function createChat({ mount, composer, model, store, getAssessment, catal
       applyAll.type = 'button';
       const dismissAll = el('button', 'db-btn', 'Dismiss all');
       dismissAll.type = 'button';
-      const undoAll = el('button', 'db-edit-undo', '↩ Undo');
+      const undoAll = el('button', 'db-edit-undo'); undoAll.innerHTML = '<span class="ico ico-undo" aria-hidden="true"></span> Undo';
       undoAll.type = 'button';
       undoAll.hidden = true;
       bar.append(label, applyAll, dismissAll, undoAll);
@@ -296,7 +296,7 @@ export function createChat({ mount, composer, model, store, getAssessment, catal
         for (const c of [...open].sort((a, b) => b.edit.slide - a.edit.slide)) src = applyEdit(src, c.edit);
         applyFix(src);
         for (const c of open) c.applied();
-        label.textContent = `✓ Applied ${open.length} edit${open.length > 1 ? 's' : ''}`;
+        label.innerHTML = `<span class="ico ico-check" aria-hidden="true"></span> Applied ${open.length} edit${open.length > 1 ? 's' : ''}`;
         applyAll.hidden = true;
         dismissAll.hidden = true;
         undoAll.hidden = false;

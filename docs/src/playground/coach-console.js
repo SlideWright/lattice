@@ -52,7 +52,19 @@ export function createCoachConsole({ chipsHost, cardHost, introHost, getAssessme
     cardHost.innerHTML = '';
     const wrap = el('div', 'db-coach-result');
     wrap.appendChild(el('div', 'db-coach-result-title', card.title));
-    for (const line of card.body) wrap.appendChild(el('div', 'db-coach-result-line', line));
+    for (const line of card.body) {
+      const lineEl = el('div', 'db-coach-result-line');
+      const m = /^([✓✗~])\s+/.exec(line);
+      if (m) {
+        const cls = m[1] === '✓' ? 'ico-check' : m[1] === '✗' ? 'ico-x' : 'ico-minus';
+        const mark = el('span', `ico ${cls} db-coach-mark`);
+        mark.setAttribute('aria-hidden', 'true');
+        lineEl.append(mark, ' ' + line.slice(m[0].length));
+      } else {
+        lineEl.textContent = line;
+      }
+      wrap.appendChild(lineEl);
+    }
 
     if (card.needMinutes) {
       const form = el('form', 'db-coach-minutes');
@@ -65,7 +77,7 @@ export function createCoachConsole({ chipsHost, cardHost, introHost, getAssessme
       setTimeout(() => input.focus(), 0);
     }
     if (card.jump) {
-      const j = el('button', 'db-coach-jump', `Go to slide ${card.jump} →`);
+      const j = el('button', 'db-coach-jump'); j.innerHTML = `Go to slide ${card.jump} <span class="ico ico-arrow-right" aria-hidden="true"></span>`;
       j.type = 'button';
       j.addEventListener('click', () => reveal?.(chunkStartLines(ctx().source)[card.jump] || 1));
       wrap.appendChild(j);

@@ -33,7 +33,62 @@
 	--radius-sm: 8px;
 	--radius-md: 14px;
 	--radius-lg: 22px;
+
+	/* UI-chrome icons — Lucide (https://lucide.dev, ISC). Delivered as
+	 * data-URI SVG masks (mirrors the engine's --mark-* technique): painted
+	 * with `background: currentColor` + `mask`, so they inherit the button's
+	 * colour / --accent hover and the per-mode palette for free. Stroke pixels
+	 * are opaque, so a fill:none outline masks correctly. To add an icon, drop
+	 * its Lucide <path>/<circle> children into a new --icon-<name> here. */
+	--icon-menu: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='M4 6h16'/%3e%3cpath d='M4 12h16'/%3e%3cpath d='M4 18h16'/%3e%3c/svg%3e");
+	--icon-moon: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z'/%3e%3c/svg%3e");
+	--icon-sun: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3ccircle cx='12' cy='12' r='4'/%3e%3cpath d='M12 2v2'/%3e%3cpath d='M12 20v2'/%3e%3cpath d='m4.93 4.93 1.41 1.41'/%3e%3cpath d='m17.66 17.66 1.41 1.41'/%3e%3cpath d='M2 12h2'/%3e%3cpath d='M20 12h2'/%3e%3cpath d='m6.34 17.66-1.41 1.41'/%3e%3cpath d='m19.07 4.93-1.41 1.41'/%3e%3c/svg%3e");
+
+	/* Drawing Board glyphs — Lucide (ISC), same mask technique as above. */
+	--icon-volume-2: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolygon points='11 5 6 9 2 9 2 15 6 15 11 19 11 5'/%3e%3cpath d='M15.54 8.46a5 5 0 0 1 0 7.07'/%3e%3cpath d='M19.07 4.93a10 10 0 0 1 0 14.14'/%3e%3c/svg%3e");
+	--icon-settings: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z'/%3e%3ccircle cx='12' cy='12' r='3'/%3e%3c/svg%3e");
+	--icon-flag: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z'/%3e%3cline x1='4' x2='4' y1='22' y2='15'/%3e%3c/svg%3e");
+	--icon-chevron-left: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='m15 18-6-6 6-6'/%3e%3c/svg%3e");
+	--icon-chevron-right: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='m9 18 6-6-6-6'/%3e%3c/svg%3e");
+	--icon-chevron-down: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='m6 9 6 6 6-6'/%3e%3c/svg%3e");
+	--icon-chevron-up: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='m18 15-6-6-6 6'/%3e%3c/svg%3e");
+	--icon-arrow-up: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='m5 12 7-7 7 7'/%3e%3cpath d='M12 19V5'/%3e%3c/svg%3e");
+	--icon-scan: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='M3 7V5a2 2 0 0 1 2-2h2'/%3e%3cpath d='M17 3h2a2 2 0 0 1 2 2v2'/%3e%3cpath d='M21 17v2a2 2 0 0 1-2 2h-2'/%3e%3cpath d='M7 21H5a2 2 0 0 1-2-2v-2'/%3e%3c/svg%3e");
+	--icon-pencil: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z'/%3e%3cpath d='m15 5 4 4'/%3e%3c/svg%3e");
+	--icon-play: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolygon points='6 3 20 12 6 21 6 3'/%3e%3c/svg%3e");
+	--icon-x: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='M18 6 6 18'/%3e%3cpath d='m6 6 12 12'/%3e%3c/svg%3e");
+	--icon-arrow-right: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='M5 12h14'/%3e%3cpath d='m12 5 7 7-7 7'/%3e%3c/svg%3e");
+	--icon-arrow-left: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='m12 19-7-7 7-7'/%3e%3cpath d='M19 12H5'/%3e%3c/svg%3e");
+	--icon-check: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='M20 6 9 17l-5-5'/%3e%3c/svg%3e");
+	--icon-plus: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='M5 12h14'/%3e%3cpath d='M12 5v14'/%3e%3c/svg%3e");
+	--icon-undo: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='M9 14 4 9l5-5'/%3e%3cpath d='M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5 5.5 5.5 0 0 1-5.5 5.5H11'/%3e%3c/svg%3e");
+	--icon-minus: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='M5 12h14'/%3e%3c/svg%3e");
 }
+
+/* .ico — site-wide inline icon. Drop <span class="ico ico-NAME"> anywhere and it
+ * paints a Lucide glyph in the current text colour via a mask, so it tracks the
+ * palette + light/dark like the toggles. Mark it aria-hidden when decorative. */
+.ico {
+	display: inline-block;
+	width: 1em;
+	height: 1em;
+	vertical-align: -0.125em;
+	background: currentColor;
+	-webkit-mask: var(--ico) center / contain no-repeat;
+	mask: var(--ico) center / contain no-repeat;
+}
+.ico-arrow-right { --ico: var(--icon-arrow-right); }
+.ico-arrow-left { --ico: var(--icon-arrow-left); }
+.ico-arrow-up { --ico: var(--icon-arrow-up); }
+.ico-chevron-down { --ico: var(--icon-chevron-down); }
+.ico-chevron-left { --ico: var(--icon-chevron-left); }
+.ico-chevron-right { --ico: var(--icon-chevron-right); }
+.ico-check { --ico: var(--icon-check); }
+.ico-x { --ico: var(--icon-x); }
+.ico-settings { --ico: var(--icon-settings); }
+.ico-plus { --ico: var(--icon-plus); }
+.ico-undo { --ico: var(--icon-undo); }
+.ico-minus { --ico: var(--icon-minus); }
 
 /* Derived, mode-level tokens (palette-agnostic), mirroring the portal. */
 :root,
@@ -183,8 +238,14 @@ code {
 	background: var(--bg);
 	color: var(--text-body);
 	cursor: pointer;
-	font-size: 17px;
-	line-height: 1;
+}
+.nav-toggle::before {
+	content: '';
+	width: 18px;
+	height: 18px;
+	background: currentColor;
+	-webkit-mask: var(--icon-menu) center / contain no-repeat;
+	mask: var(--icon-menu) center / contain no-repeat;
 }
 .nav-toggle:hover {
 	border-color: var(--accent);
@@ -206,6 +267,8 @@ code {
 }
 .mode-toggle {
 	flex: 0 0 auto;
+	display: inline-grid;
+	place-items: center;
 	width: 34px;
 	height: 34px;
 	border-radius: var(--radius-sm);
@@ -213,18 +276,22 @@ code {
 	background: var(--bg);
 	color: var(--text-body);
 	cursor: pointer;
-	font-size: 15px;
-	line-height: 1;
 }
 .mode-toggle:hover {
 	border-color: var(--accent);
 	color: var(--accent);
 }
 .mode-toggle::before {
-	content: '☾';
+	content: '';
+	width: 16px;
+	height: 16px;
+	background: currentColor;
+	-webkit-mask: var(--icon-moon) center / contain no-repeat;
+	mask: var(--icon-moon) center / contain no-repeat;
 }
 html[data-mode='dark'] .mode-toggle::before {
-	content: '☀';
+	-webkit-mask-image: var(--icon-sun);
+	mask-image: var(--icon-sun);
 }
 
 /* ── Buttons ─────────────────────────────────────────────────────────── */

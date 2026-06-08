@@ -103,7 +103,7 @@ const pgData = JSON.stringify({
 						</select>
 						<button class="mode-toggle" id="mode-toggle" aria-label="Toggle light / dark" title="Toggle light / dark"></button>
 					</div>
-					<button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-controls="topnav" aria-expanded="false">☰</button>
+					<button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-controls="topnav" aria-expanded="false"></button>
 				</div>
 			</div>
 		</header>
@@ -125,7 +125,7 @@ const pgData = JSON.stringify({
 					aria-labelledby="pg-template-label pg-template-current"
 				>
 					<span class="pg-picker-current" id="pg-template-current">Pick a component…</span>
-					<span class="pg-picker-caret" aria-hidden="true">▾</span>
+					<span class="pg-picker-caret ico ico-chevron-down" aria-hidden="true"></span>
 				</button>
 				<div class="pg-picker-pop" id="pg-template-pop" hidden>
 					<div class="pg-picker-pop-head">
@@ -188,7 +188,7 @@ const pgData = JSON.stringify({
 						aria-expanded="false"
 						aria-label="Insert options"
 						title="Insert options"
-					>⚙</button>
+					><span class="ico ico-settings" aria-hidden="true"></span></button>
 					<div class="pg-settings-pop" id="pg-settings-pop" hidden role="menu" aria-label="Insert options">
 						<button type="button" class="pg-menu-item" id="pg-insert-sample" role="menuitem">Reset to example</button>
 						<button type="button" class="pg-menu-item" id="pg-insert-skeleton" role="menuitem">Insert blank skeleton</button>

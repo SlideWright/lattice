@@ -31,6 +31,15 @@
 	border-color: var(--accent);
 	color: var(--accent);
 }
+/* Lucide "menu" glyph, masked so it inherits the button colour / hover.
+ * Token defined in landing.css :root (loaded alongside this file). */
+.cnav-toggle-bars {
+	width: 1.05em;
+	height: 1.05em;
+	background: currentColor;
+	-webkit-mask: var(--icon-menu) center / contain no-repeat;
+	mask: var(--icon-menu) center / contain no-repeat;
+}
 
 /* ── Layout: left nav | main ────────────────────────────────────────────── */
 .clayout {

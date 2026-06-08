@@ -77,7 +77,7 @@ export function createModelSettings({ host, trigger, model, onChange }) {
   function refresh() {
     if (trigger) {
       const a = model.availability();
-      trigger.textContent = '⚙ ' + chipLabel(a);
+      trigger.textContent = chipLabel(a); // gear drawn by CSS: .db-model-chip::before
       const active = reconnecting || (a.modelOn && a.generation !== 'floor');
       trigger.classList.toggle('is-floor', !active);
     }
