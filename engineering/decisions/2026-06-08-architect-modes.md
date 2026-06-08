@@ -28,8 +28,8 @@ Architect offers two doors:
 
 - **Drafting** — *I lay out the structure; you fill it in.* The Architect leads:
   pick a presentation archetype, it scaffolds the spine and coaches. For common,
-  well-understood deck shapes — the everyday corporate / academic / governmental
-  presentation.
+  well-understood deck shapes — the everyday team, corporate, academic,
+  governmental, or nonprofit presentation.
 - **Freehand** — *Your blank canvas; I review and help on request.* The Architect
   assists, never imposes: a blank deck (or paste your own), your structure, your
   domain. Live review still runs (the authoring-contract linting works on *any*
@@ -53,18 +53,28 @@ playground's fuse.js grouped-popover picker** (`docs/src/playground/
 template-picker.js` + `docs/src/lib/families.mjs`) so search + group-by are
 consistent with the component picker and there's no second taxonomy.
 
-Taxonomy (grouped by setting):
+Taxonomy (grouped by setting). The cross-cutting everyday archetypes live in
+**General / Team** so they aren't duplicated across every sector:
 
+- **General / Team** — status update, project kickoff, project status,
+  retrospective / post-mortem, all-hands, team meeting, training / onboarding,
+  workshop, decision memo, proposal, roadmap review.
 - **Corporate** — board update, investor pitch, sales deck, quarterly business
-  review, strategy proposal, product launch, project kickoff, project status,
-  post-mortem / retro, all-hands, OKR / goals review, budget request, roadmap
-  review, customer case study, training / onboarding.
+  review, strategy proposal, product launch, customer case study, budget request,
+  OKR / goals review.
 - **Academic** — lecture, conference talk, thesis / dissertation defense,
   research findings, journal club, grant proposal, seminar, poster walkthrough,
   literature review, course overview.
 - **Government / Public** — policy briefing, budget proposal, public hearing /
   testimony, agency / program update, inter-agency briefing, RFP / proposal
   response, town hall, compliance / audit report.
+- **Nonprofit / Mission-driven** — donor pitch, fundraising / capital campaign,
+  impact / annual report, grant report (to funders), nonprofit board meeting,
+  program overview, volunteer onboarding.
+
+(Specialized/convention-rich sectors — Healthcare/Clinical, Legal, Consulting —
+were considered but held back: their common decks overlap the groups above and
+the rest lean specialized → Freehand. Add later if there's demand.)
 
 Each archetype carries a **recommended spine** (an ordered component sequence) and
 the *who / one-outcome* questions for tailoring. The spine reuses the existing
