@@ -61,11 +61,11 @@ function listFindings(findings) {
 export function floorReply(assessment, userText = '') {
   const sc = assessment?.scorecard;
   const q = String(userText).toLowerCase();
-  const enable = 'Want a real back-and-forth? Tap the ⚙ chip up top and load on-device AI — there’s a universal option (~350 MB) that runs right here in your browser, no special browser or GPU needed. It stays on your device.';
+  const enable = 'Want a real back-and-forth? Tap the ⚙ chip up top and load on-device AI — there’s a compact universal option (~100 MB) that runs right here in your browser, no special browser or GPU needed. It stays on your device.';
 
   // "why are you model-free / how do I enable it" — answer the actual question.
   if (/\b(why|model[\s-]?free|no model|offline|enable|turn on|switch on|activate|on-device|gpu|download|nano|webllm|transformers)\b/.test(q)) {
-    return "I'm running deterministically because no on-device model is loaded in this browser yet. There are three tiers: the built-in AI (instant, but only recent Chrome/Edge expose it), a universal model that runs anywhere via WebAssembly (a one-time ~350 MB download — this is the one for Safari and phones), and an advanced WebLLM tier for WebGPU desktops. " +
+    return "I'm running deterministically because no on-device model is loaded in this browser yet. There are three tiers: the built-in AI (instant, but only recent Chrome/Edge expose it), a compact universal model that runs anywhere via WebAssembly (a one-time ~100 MB download — this is the one for Safari and phones), and an advanced WebLLM tier for WebGPU desktops. " +
       'None of that changes the review — scores, findings and fixes are computed the same way regardless. ' + enable;
   }
 
