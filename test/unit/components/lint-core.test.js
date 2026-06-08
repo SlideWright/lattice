@@ -111,3 +111,39 @@ describe('lint-core: lintTextWith rules', () => {
     assert.equal(core.lintTextWith(`${FM}<!-- _class: cards-grid -->\n\n## H\n\n- First\n  - body\n- Second\n  - body\n`, vocab).length, 0);
   });
 });
+
+describe('lint-core: auto-fix', () => {
+  test('autofixNestedTitle converts the bold inline shape; null otherwise', () => {
+    assert.equal(core.autofixNestedTitle('- **Title.** body here'), '- Title\n  - body here');
+    assert.equal(core.autofixNestedTitle('* **A** b'), '* A\n  * b');
+    assert.equal(core.autofixNestedTitle('- bare title'), null); // nothing to split
+    assert.equal(core.autofixNestedTitle('- Title. body'), null); // non-bold = ambiguous, not auto-fixed
+  });
+
+  test('card-style inline-title findings are flagged autofixable', () => {
+    const f = ruleFor(`${FM}<!-- _class: cards-grid -->\n\n## H\n\n- **First.** inline body\n`, 'card-style-inline-title');
+    assert.equal(f.autofixable, true);
+  });
+
+  test('applyFix rewrites the offending line in place, and the result re-lints clean', () => {
+    const src = `${FM}<!-- _class: cards-grid -->\n\n## H\n\n- **First.** inline body\n`;
+    const f = ruleFor(src, 'card-style-inline-title');
+    const fixed = core.applyFix(src, f);
+    assert.ok(fixed.includes('- First\n  - inline body'));
+    assert.equal(core.lintTextWith(fixed, vocab).some((x) => x.rule === 'card-style-inline-title'), false);
+  });
+
+  test('applyFix targets the finding\'s own slide, not an identical line elsewhere', () => {
+    const bad = '<!-- _class: cards-grid -->\n\n- **Dup.** body\n';
+    const src = `${FM}${bad}---\n${bad}`;
+    const findings = core.lintTextWith(src, vocab).filter((x) => x.rule === 'card-style-inline-title');
+    assert.equal(findings.length, 2);
+    const fixed = core.applyFix(src, findings[1]); // fix the SECOND slide only
+    assert.equal(core.lintTextWith(fixed, vocab).filter((x) => x.rule === 'card-style-inline-title').length, 1);
+  });
+
+  test('applyFix returns null for a non-autofixable finding', () => {
+    const f = ruleFor(`${FM}<!-- _class: split-statement -->\n\n## Head\n\n- Title\n  - body\n`, 'split-statement-missing-quote');
+    assert.equal(core.applyFix('x', f), null);
+  });
+});

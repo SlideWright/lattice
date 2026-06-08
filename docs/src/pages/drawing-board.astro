@@ -23,8 +23,17 @@ import { SLIDE_BOX } from '../playground/frame-css.js';
 const docsRoot = process.cwd();
 const repoRoot = join(docsRoot, '..');
 const require = createRequire(import.meta.url);
-const { loadAll } = require(join(repoRoot, 'lib/components', 'index.js'));
+const { loadAll, manifestBucket } = require(join(repoRoot, 'lib/components', 'index.js'));
 const manifests = loadAll();
+
+// Compact catalog for the Architect's onboarding retrieval + scaffolding:
+// name + bucket + tags (for keyword matching) + skeleton (to insert).
+const obCatalog = manifests.map((m) => ({
+	name: m.name,
+	bucket: manifestBucket(m),
+	tags: m.tags || [],
+	skeleton: m.skeleton || m.sample || `<!-- _class: ${m.name} -->\n`,
+}));
 
 // The Architect's deterministic linter runs in the browser against the same
 // pure lint-core the Node CLI uses; only the name/modifier VOCABULARY is data,
@@ -54,6 +63,7 @@ const dbData = JSON.stringify({
 	slideBox: SLIDE_BOX,
 	starter,
 	lintVocab,
+	catalog: obCatalog,
 });
 ---
 
@@ -130,7 +140,7 @@ const dbData = JSON.stringify({
 				</div>
 			</aside>
 
-			<!-- The Architect — empty-state onboarding shell (Slice 5 brings it to life). -->
+			<!-- The Architect — deterministic onboarding + live review (Slice 5). -->
 			<section class="db-panel db-architect" id="db-architect">
 				<div class="db-panel-head">
 					<span class="db-panel-title">The Architect</span>
@@ -142,29 +152,15 @@ const dbData = JSON.stringify({
 							<span class="db-arch-name">the Architect<small>your deck partner</small></span>
 						</div>
 						<p class="db-arch-say">
-							I'm the Architect. Before we fill slides, I lay out the <strong>structure</strong> —
-							the through-line, the load-bearing slides, the order. Two minutes of questions, then
-							we author.
+							I lay out the <strong>structure</strong> before you fill slides — and I check
+							every edit against the authoring contract as you go.
 						</p>
-						<ul class="db-arch-beats">
-							<li class="db-arch-beat"><b>What</b><span>What are you presenting?</span></li>
-							<li class="db-arch-beat"><b>Who</b><span>Who's in the room?</span></li>
-							<li class="db-arch-beat"><b>The one outcome</b><span>What's the single thing you need when you close?</span></li>
-						</ul>
+						<div class="db-arch-onboard" id="db-arch-onboard"></div>
 						<div class="db-arch-review" id="db-arch-review" aria-live="polite"></div>
 						<p class="db-arch-soon">
-							<strong>Live review is on</strong> — I check every edit against the authoring
-							contract, on-device, no model needed. Guided onboarding &amp; chat come next.
+							Onboarding &amp; live review run on-device, no model. Free-form chat arrives
+							with the on-device model (Phase 2).
 						</p>
-					</div>
-					<div class="db-arch-composer">
-						<textarea
-							class="db-arch-input"
-							rows="1"
-							placeholder="The Architect wakes up in Slice 5…"
-							aria-label="Message the Architect"
-							disabled></textarea>
-						<button class="db-btn db-btn-primary" disabled aria-label="Send">→</button>
 					</div>
 				</div>
 			</section>
@@ -264,14 +260,27 @@ const dbData = JSON.stringify({
 		     browser-safe lint-core against every edit; renders findings with reveal +
 		     fix guidance. Zero model. -->
 		<script>
-			import { createArchitect } from '../playground/drawing-board-architect.js';
+			import { createArchitect, createOnboarding } from '../playground/drawing-board-architect.js';
 			const data = JSON.parse(document.getElementById('db-data').textContent);
 			const architect = createArchitect({
 				vocab: data.lintVocab,
 				mount: document.getElementById('db-arch-review'),
 				reveal: (line) => { if (window.__dbEditor) window.__dbEditor.goToLine(line); },
+				// setValue dispatches a doc change -> onEdit -> render + save + re-lint.
+				applyFix: (newSource) => { if (window.__dbEditor) window.__dbEditor.setValue(newSource); },
 			});
 			window.__dbArchitect = architect;
+
+			// Conversation-first onboarding: 3 questions -> retrieval -> scaffold a
+			// new deck (via the store when present, else just load it into the editor).
+			createOnboarding({
+				catalog: data.catalog,
+				mount: document.getElementById('db-arch-onboard'),
+				onBuild: (src) => {
+					if (window.__dbStore && window.__dbStore.create) window.__dbStore.create(src, 'Planned deck');
+					else if (window.__dbEditor) window.__dbEditor.setValue(src);
+				},
+			});
 		</script>
 
 		<!-- Export — MD / PDF / PPTX (Slice 4). PptxGenJS is lazy-imported inside

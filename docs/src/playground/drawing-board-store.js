@@ -245,5 +245,13 @@ export function createStore({ getSource, onLoadDeck, starter = '' }) {
 		el('db-checkpoint')?.addEventListener('click', () => checkpoint());
 	}
 
-	return { init, saveActive, checkpoint };
+	// Create a brand-new deck from given source (the Architect's onboarding
+	// scaffold) and switch to it.
+	async function create(source, name) {
+		if (!db) return;
+		await createDeck(source, name || 'Untitled deck');
+		await loadActiveIntoEditor();
+	}
+
+	return { init, saveActive, checkpoint, create };
 }

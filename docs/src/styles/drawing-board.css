@@ -395,6 +395,100 @@ body.db-page .topbar {
 	color: var(--accent);
 }
 
+/* Onboarding (conversation-first deck planning) */
+.db-arch-onboard {
+	margin-bottom: 0.9rem;
+}
+.db-onboard-launch {
+	width: 100%;
+	font-size: 0.86rem;
+	padding: 0.6rem;
+}
+.db-ob-thread {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+.db-ob-msg p {
+	margin: 0;
+	font-size: 0.86rem;
+	line-height: 1.45;
+	padding: 0.5rem 0.65rem;
+	border-radius: var(--radius-md);
+}
+.db-ob-arch p {
+	background: var(--bg);
+	border: 1px solid var(--border);
+	color: var(--text-body);
+}
+.db-ob-user p {
+	background: var(--accent);
+	color: var(--on-accent);
+	margin-left: 1.6rem;
+}
+.db-ob-chips {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.35rem;
+}
+.db-ob-chip {
+	font: inherit;
+	font-size: 0.8rem;
+	color: var(--text-body);
+	background: var(--bg);
+	border: 1px solid var(--border);
+	border-radius: 999px;
+	padding: 0.32rem 0.7rem;
+	cursor: pointer;
+}
+.db-ob-chip:hover {
+	border-color: var(--accent);
+	color: var(--text-heading);
+}
+.db-ob-form {
+	display: flex;
+	gap: 0.4rem;
+}
+.db-ob-input {
+	flex: 1 1 auto;
+	min-width: 0;
+	font: inherit;
+	font-size: 0.86rem;
+	color: var(--text-body);
+	background: var(--bg);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-sm);
+	padding: 0.45rem 0.55rem;
+}
+.db-ob-input:focus {
+	outline: none;
+	border-color: var(--accent);
+}
+.db-ob-cancel {
+	align-self: flex-start;
+	font: inherit;
+	font-size: 0.74rem;
+	color: var(--text-muted);
+	background: none;
+	border: 0;
+	padding: 0.2rem 0;
+	cursor: pointer;
+	text-decoration: underline;
+}
+.db-ob-outline {
+	margin: 0.2rem 0;
+	padding-left: 1.3rem;
+	font-size: 0.84rem;
+	line-height: 1.7;
+	color: var(--text-body);
+}
+.db-ob-outline strong {
+	color: var(--text-heading);
+}
+.db-ob-note {
+	color: var(--text-muted);
+}
+
 /* Live review (the Architect's deterministic findings) */
 .db-review-clean {
 	font-size: 0.84rem;
@@ -487,6 +581,15 @@ body.db-page .topbar {
 .db-finding-btn:hover {
 	border-color: var(--accent);
 	color: var(--text-heading);
+}
+.db-finding-apply {
+	background: var(--accent);
+	color: var(--on-accent);
+	border-color: var(--accent);
+}
+.db-finding-apply:hover {
+	filter: brightness(1.06);
+	color: var(--on-accent);
 }
 .db-finding-fix {
 	margin: 0.45rem 0 0;
