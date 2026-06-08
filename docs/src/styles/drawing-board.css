@@ -437,6 +437,56 @@ body.db-page .topbar {
 }
 @keyframes db-pulse { 0%, 100% { opacity: 0.55; } 50% { opacity: 1; } }
 
+/* ── Proposed-edit cards (Slice B) ─────────────────────────────────────────────
+ * Converse proposes a deck change; the author reviews the diff and clicks Apply.
+ * One card per edit, rendered under the Architect's message. */
+.db-edit-cards {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	margin-top: 0.5rem;
+}
+.db-edit-card {
+	border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--border));
+	border-radius: var(--radius-md);
+	background: var(--bg);
+	overflow: hidden;
+}
+.db-edit-card.is-applied {
+	border-color: color-mix(in srgb, var(--q-good, var(--accent)) 45%, var(--border));
+	opacity: 0.85;
+}
+.db-edit-head {
+	font-size: 0.74rem;
+	font-weight: 650;
+	letter-spacing: 0.02em;
+	color: var(--text-heading);
+	padding: 0.4rem 0.6rem;
+	background: color-mix(in srgb, var(--accent) 8%, var(--bg-alt));
+	border-bottom: 1px solid var(--border);
+}
+.db-edit-diff {
+	font-family: var(--font-mono, ui-monospace, monospace);
+	font-size: 0.72rem;
+	line-height: 1.45;
+	max-height: 260px;
+	overflow: auto;
+	padding: 0.4rem 0.2rem;
+	white-space: pre-wrap;
+	overflow-wrap: anywhere;
+}
+.db-edit-diff > div { padding: 0 0.45rem; }
+.db-diff-add { background: color-mix(in srgb, #2e7d32 16%, transparent); color: var(--text-heading); }
+.db-diff-del { background: color-mix(in srgb, #c0392b 14%, transparent); color: var(--text-muted); }
+.db-diff-same { color: var(--text-muted); }
+.db-edit-actions {
+	display: flex;
+	gap: 0.4rem;
+	padding: 0.45rem 0.6rem;
+	border-top: 1px solid var(--border);
+	background: var(--bg-alt);
+}
+
 /* The composer — pinned at the panel foot; the thread scrolls above it. */
 .db-arch-composer {
 	flex: 0 0 auto;

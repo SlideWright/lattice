@@ -442,6 +442,10 @@ const dbData = JSON.stringify({
 					store: window.__dbStore,
 					getAssessment: () => architect.getAssessment(),
 					catalog: data.catalog, // the Lattice primer for the cloud (Puter) prompt
+					// Slice B: Converse proposes edits → reviewable diff → Apply splices into
+					// the live editor (which re-renders + re-scores via onEdit).
+					getSource: () => (window.__dbEditor ? window.__dbEditor.getValue() : ''),
+					applyFix: (next) => { if (window.__dbEditor) window.__dbEditor.setValue(next); },
 				});
 				window.__dbChat = chat;
 			}

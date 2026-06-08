@@ -10,6 +10,7 @@
 // live phrasing path needs a capable Chrome/Edge — the panel says so when it's
 // running model-free.
 
+import { applyEdit, diffLines, EDIT_PROTOCOL, numberSlides, parseEdits, sliceSlide } from './architect-edits.js';
 import { buildLatticePrimer } from './architect-knowledge.js';
 
 const MAX_DECK_CHARS = 1200; // a short excerpt — a small model drowns in a full deck
@@ -46,6 +47,7 @@ export function buildChatMessages({ source, assessment, history, userText, catal
 
   let system;
   if (rich) {
+    const numbered = numberSlides(deck);
     system =
       'You are the Architect, a sharp presentation partner inside the Lattice Drawing Board. ' +
       'Help the author improve THIS deck — structure, the ask, pacing, wording, and the right ' +
@@ -53,8 +55,9 @@ export function buildChatMessages({ source, assessment, history, userText, catal
       'by their exact `_class` name. Ground every point in the deck and the findings below — ' +
       'never invent facts about the author’s content.\n\n' +
       `${buildLatticePrimer(catalog)}\n\n` +
+      `${EDIT_PROTOCOL}\n\n` +
       `${score}\n${findings ? `Mechanical issues the deterministic review found:\n${findings}\n` : 'No mechanical issues found.\n'}` +
-      (deck ? `\nThe current deck:\n${deck}` : '');
+      (numbered ? `\nThe current deck (each slide tagged [slide N] — address slides by that number; never copy the marker into an edit body):\n${numbered}` : '');
   } else {
     system =
       'You are the Architect, a sharp, friendly presentation coach. Answer in 1–3 short, ' +
@@ -131,7 +134,7 @@ export function floorReply(assessment, userText = '') {
     `Ask me about a specific slide or "what should I fix" for more. ${enable}`;
 }
 
-export function createChat({ mount, composer, model, store, getAssessment, catalog }) {
+export function createChat({ mount, composer, model, store, getAssessment, catalog, applyFix, getSource }) {
   if (!mount || !composer) return { reload() {}, focus() {} };
   let deckId = store?.getActiveId ? store.getActiveId() : null;
   let busy = false;
@@ -147,6 +150,57 @@ export function createChat({ mount, composer, model, store, getAssessment, catal
     return b.querySelector('.db-msg-body');
   }
   function scrollDown() { mount.scrollTop = mount.scrollHeight; }
+
+  // ── proposed-edit cards (Slice B): a reviewable diff + one-click Apply ────────
+  // The model proposes; nothing changes until the author clicks Apply. The edit
+  // splices into the LIVE editor source, which re-renders and re-scores via the
+  // existing onEdit path — so a bad edit shows up in Coach immediately. Pure core
+  // (parse/splice/diff) is architect-edits.js; this is just the DOM.
+  function editLabel(edit) {
+    if (edit.action === 'replace') return `Replace slide ${edit.slide}`;
+    if (edit.action === 'delete') return `Delete slide ${edit.slide}`;
+    if (edit.slide <= 0) return 'Insert a slide at the top';
+    if (edit.slide >= Number.MAX_SAFE_INTEGER) return 'Insert a slide at the end';
+    return `Insert a slide after ${edit.slide}`;
+  }
+  function editCard(edit) {
+    const card = el('div', 'db-edit-card');
+    card.append(el('div', 'db-edit-head', editLabel(edit)));
+
+    const before = edit.action === 'insert' ? '' : sliceSlide(getSource ? getSource() : '', edit.slide);
+    const after = edit.action === 'delete' ? '' : (edit.body || '').trim();
+    const diff = el('div', 'db-edit-diff');
+    for (const row of diffLines(before, after)) {
+      const sign = row.type === 'add' ? '+ ' : row.type === 'del' ? '− ' : '  ';
+      diff.append(el('div', `db-diff-${row.type}`, sign + row.text));
+    }
+    card.append(diff);
+
+    const actions = el('div', 'db-edit-actions');
+    const apply = el('button', 'db-btn db-btn-primary', 'Apply');
+    apply.type = 'button';
+    const dismiss = el('button', 'db-btn', 'Discard');
+    dismiss.type = 'button';
+    apply.addEventListener('click', () => {
+      if (!getSource || !applyFix) return;
+      applyFix(applyEdit(getSource(), edit));
+      card.classList.add('is-applied');
+      apply.disabled = true;
+      apply.textContent = '✓ Applied';
+      dismiss.textContent = 'Dismiss';
+    });
+    dismiss.addEventListener('click', () => card.remove());
+    actions.append(apply, dismiss);
+    card.append(actions);
+    return card;
+  }
+  function renderEditCards(bodyEl, edits) {
+    const msg = bodyEl.closest('.db-msg') || bodyEl.parentElement;
+    const host = el('div', 'db-edit-cards');
+    for (const edit of edits) host.append(editCard(edit));
+    msg.append(host);
+    scrollDown();
+  }
 
   function emptyState() {
     mount.innerHTML = '';
@@ -213,10 +267,24 @@ export function createChat({ mount, composer, model, store, getAssessment, catal
     begin(); // ensure the thinking state clears even if nothing streamed
     target.textContent = full;
     target.classList.remove('is-streaming');
+
+    // On the cloud tier, the reply may carry proposed EDIT BLOCKS — lift them into
+    // reviewable diff cards and show only the prose in the bubble. Stored history
+    // keeps the prose (the change lives in the deck once applied), so reloading the
+    // thread never re-offers a stale apply.
+    let stored = full;
+    if (a.generation === 'puter' && full && full !== floor) {
+      const { text, edits } = parseEdits(full);
+      if (edits.length) {
+        stored = text || '(proposed a deck edit)';
+        target.textContent = stored;
+        renderEditCards(target, edits);
+      }
+    }
     // Mark deterministic replies (floor / model-fell-to-floor) so they're NOT fed
     // back to the model as history — that's what made the small model parrot itself.
     const det = !(a.generation !== 'floor' && full && full.trim() && full !== floor);
-    if (deckId && store?.addChatMessage) await store.addChatMessage(deckId, 'architect', full, det);
+    if (deckId && store?.addChatMessage) await store.addChatMessage(deckId, 'architect', stored, det);
     busy = false;
     if (sendBtn) sendBtn.disabled = false;
     scrollDown();
