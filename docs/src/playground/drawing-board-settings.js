@@ -61,12 +61,14 @@ export function createModelSettings({ host, trigger, model, onChange }) {
   let abort = null;
   let reconnecting = false;
   let renderToken = 0;
+  let lastError = null; // last on-device load error, surfaced in the popover
 
   // ── the trigger chip ────────────────────────────────────────────────────────
   function chipLabel(a) {
     if (reconnecting) return 'Reconnecting…';
     if (!a.modelOn) return 'Deterministic (AI off)';
     if (a.generation !== 'floor' && a.generation !== 'mock') return tierLabel(a);
+    if (lastError) return 'AI load failed — tap'; // surfaced so it isn't silent
     if (readTier()) return 'Reconnect on-device AI'; // cached but not live this session
     return 'Deterministic floor';
   }
@@ -88,21 +90,29 @@ export function createModelSettings({ host, trigger, model, onChange }) {
     // Ask for persistent storage right before a big download — the browser is far
     // likelier to grant it on a deliberate action, so the weights survive longer.
     try { await navigator.storage?.persist?.(); } catch {}
+    lastError = null;
     try {
       await loader((p) => {
         const frac = Math.max(0, Math.min(1, p?.progress || 0)); // backends normalize to 0..1
         const pct = Math.round(frac * 100);
         bar.style.width = pct + '%';
-        btn.textContent = `Downloading… ${pct}%`;
+        // After the files hit 100% there's a silent instantiate phase (compiling
+        // the model) — say so, so a slow finish doesn't look like a hang.
+        btn.textContent = pct >= 100 ? 'Preparing model…' : `Downloading… ${pct}%`;
       }, abort.signal);
       writeTier(kind);
       try { sessionStorage.setItem(RESTORE_GUARD, '1'); } catch {} // it's live now
       refresh();
       onChange?.();
-    } catch {
+    } catch (e) {
+      // Don't swallow it — the user reported "downloads but never activates", which
+      // is a silently-caught load failure. Surface the reason on-screen + console.
+      lastError = (e && (e.message || String(e))) || 'unknown error';
+      try { console.error('[Architect] on-device model failed to load:', e); } catch {}
       btn.disabled = false;
-      btn.textContent = 'Download failed — retry';
+      btn.textContent = 'Load failed — retry';
       prog.hidden = true;
+      refresh(); // re-render shows the error note
     }
   }
 
@@ -193,6 +203,14 @@ export function createModelSettings({ host, trigger, model, onChange }) {
       } else if (coarsePointer() && !a.webllmReady) {
         panel.append(el('p', 'db-settings-note', 'WebLLM (the ~1 GB tier) is desktop-only — it’s too heavy for a phone browser. The universal model above runs great here.'));
       }
+    }
+
+    // Surface the last load failure (was previously swallowed) so it's diagnosable.
+    if (lastError) {
+      const err = el('div', 'db-settings-error');
+      err.append(el('strong', null, 'On-device AI couldn’t load. '));
+      err.append(el('span', null, lastError));
+      panel.append(err);
     }
 
     // Cached-model controls: storage used + remove.
