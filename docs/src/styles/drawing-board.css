@@ -1428,3 +1428,110 @@ body.db-page .topbar {
 		border-bottom: 1px solid var(--border);
 	}
 }
+
+/* ── Model settings chip + popover (Slice 8) ────────────────────────────────── */
+.db-architect .db-panel-head {
+	position: relative;
+}
+.db-model-chip {
+	font: inherit;
+	font-size: 0.68rem;
+	line-height: 1;
+	color: var(--text-muted);
+	background: var(--bg);
+	border: 1px solid var(--border);
+	border-radius: 999px;
+	padding: 0.28rem 0.55rem;
+	cursor: pointer;
+	white-space: nowrap;
+	max-width: 13rem;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.db-model-chip:hover {
+	border-color: var(--accent);
+	color: var(--text-heading);
+}
+.db-model-chip:not(.is-floor) {
+	color: var(--accent);
+	border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+}
+.db-settings-pop {
+	position: absolute;
+	top: calc(100% + 4px);
+	right: 6px;
+	z-index: 50;
+	width: min(320px, calc(100vw - 2rem));
+	background: var(--bg);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-md);
+	box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
+	padding: 0.9rem;
+}
+.db-settings-pop[hidden] {
+	display: none;
+}
+.db-settings-head {
+	margin: 0 0 0.6rem;
+	font-size: 0.9rem;
+	color: var(--text-heading);
+}
+.db-settings-row {
+	display: flex;
+	align-items: flex-start;
+	gap: 0.5rem;
+	font-size: 0.84rem;
+	color: var(--text-body);
+	cursor: pointer;
+}
+.db-settings-row input {
+	margin-top: 0.15rem;
+	accent-color: var(--accent);
+}
+.db-settings-note {
+	font-size: 0.74rem;
+	line-height: 1.5;
+	color: var(--text-muted);
+	margin: 0.5rem 0 0;
+}
+.db-settings-tiers {
+	margin: 0.8rem 0;
+	border-top: 1px solid var(--border);
+	border-bottom: 1px solid var(--border);
+	padding: 0.5rem 0;
+	display: flex;
+	flex-direction: column;
+	gap: 0.35rem;
+}
+.db-settings-tier {
+	display: flex;
+	justify-content: space-between;
+	gap: 0.5rem;
+	font-size: 0.78rem;
+}
+.db-settings-tier-name {
+	color: var(--text-body);
+}
+.db-settings-tier-state {
+	color: var(--text-muted);
+	font-variant-numeric: tabular-nums;
+}
+.db-settings-summon {
+	width: 100%;
+	margin-top: 0.3rem;
+	font-size: 0.8rem;
+}
+.db-settings-progress {
+	margin-top: 0.5rem;
+	height: 6px;
+	border-radius: 999px;
+	background: var(--border);
+	overflow: hidden;
+}
+.db-settings-progress i {
+	display: block;
+	height: 100%;
+	width: 0;
+	background: var(--accent);
+	transition: width 0.2s;
+}

@@ -142,3 +142,10 @@ describe('retrieval (cosine ranking)', () => {
     assert.equal(ranked[0].index, 0);
   });
 });
+
+describe('model settings (Slice 8)', () => {
+  test('probeWebGPU is Node-safe and returns false without an adapter', async () => {
+    const s = await import('../../../docs/src/playground/drawing-board-settings.js');
+    assert.equal(await s.probeWebGPU(), false);
+  });
+});

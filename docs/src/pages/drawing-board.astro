@@ -145,6 +145,9 @@ const dbData = JSON.stringify({
 			<section class="db-panel db-architect" id="db-architect">
 				<div class="db-panel-head">
 					<span class="db-panel-title">The Architect</span>
+					<span class="db-spacer"></span>
+					<button class="db-model-chip is-floor" id="db-model-chip" aria-haspopup="dialog" title="On-device AI settings">⚙ Deterministic floor</button>
+					<div class="db-settings-pop" id="db-settings-pop" role="dialog" aria-label="On-device AI settings" hidden></div>
 				</div>
 				<div class="db-panel-body db-arch-body">
 					<div class="db-arch-scroll">
@@ -283,6 +286,7 @@ const dbData = JSON.stringify({
 			import { createArchitect, createOnboarding } from '../playground/drawing-board-architect.js';
 			import { createArchitectModel } from '../playground/architect-model.js';
 			import { createChat } from '../playground/drawing-board-chat.js';
+			import { createModelSettings } from '../playground/drawing-board-settings.js';
 			const data = JSON.parse(document.getElementById('db-data').textContent);
 
 			// The on-device model ladder (Phase 2). Defaults on; degrades to the
@@ -296,7 +300,17 @@ const dbData = JSON.stringify({
 				},
 			});
 			window.__dbModel = model;
-			model.refreshAvailability();
+			model.refreshAvailability().then(() => settings.refresh());
+
+			// Model settings + WebLLM opt-in (Slice 8): the ⚙ chip shows the live tier
+			// and opens a popover to toggle on-device AI / summon WebLLM.
+			const settings = createModelSettings({
+				host: document.getElementById('db-settings-pop'),
+				trigger: document.getElementById('db-model-chip'),
+				model,
+				onChange: () => { if (window.__dbChat) window.__dbChat.reload(); },
+			});
+			window.__dbSettings = settings;
 
 			const architect = createArchitect({
 				vocab: data.lintVocab,
