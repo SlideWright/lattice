@@ -319,6 +319,12 @@ export function createOnboarding({ catalog, mount, onBuild }) {
 	let inFlow = false; // user is actively choosing a new deck (doors / picker)
 	let everChose = false; // a mode has been chosen this session
 
+	// Remember the last door the author walked through (persists across reloads)
+	// so a returning user's eye lands on it — without hijacking the choice.
+	const MODE_KEY = 'lattice-db-last-mode';
+	const readMode = () => { try { return localStorage.getItem(MODE_KEY); } catch { return null; } };
+	const rememberMode = (m) => { try { localStorage.setItem(MODE_KEY, m); } catch {} };
+
 	// Once a real deck is being worked on, collapse the doors to a compact
 	// "✦ New deck" affordance so the scorecard is the focus; expand on an empty deck.
 	function compactView() {
@@ -337,17 +343,20 @@ export function createOnboarding({ catalog, mount, onBuild }) {
 	// ── The two doors ─────────────────────────────────────────────────────────
 	function doors() {
 		mount.innerHTML = '';
+		const last = readMode();
 		const wrap = el('div', 'db-modes');
 		wrap.append(
-			modeCard('Drafting', 'I lay out the structure; you fill it in.', startDrafting),
-			modeCard('Freehand', 'Your blank canvas; I review and help on request.', startFreehand),
+			modeCard('Drafting', 'I lay out the structure; you fill it in.', startDrafting, last === 'Drafting'),
+			modeCard('Freehand', 'Your blank canvas; I review and help on request.', startFreehand, last === 'Freehand'),
 		);
 		mount.appendChild(wrap);
 	}
-	function modeCard(title, sub, onClick) {
-		const b = el('button', 'db-mode-card');
+	function modeCard(title, sub, onClick, isLast) {
+		const b = el('button', isLast ? 'db-mode-card is-last' : 'db-mode-card');
 		b.type = 'button';
-		b.append(el('span', 'db-mode-title', title), el('span', 'db-mode-sub', sub));
+		const head = el('span', 'db-mode-title', title);
+		if (isLast) head.appendChild(el('span', 'db-mode-last', 'last used'));
+		b.append(head, el('span', 'db-mode-sub', sub));
 		b.addEventListener('click', onClick);
 		return b;
 	}
@@ -356,6 +365,7 @@ export function createOnboarding({ catalog, mount, onBuild }) {
 	function startFreehand() {
 		everChose = true;
 		inFlow = false;
+		rememberMode('Freehand');
 		if (onBuild) onBuild('<!-- _class: title silent -->\n\n# New deck\n\nStart writing — I’ll review as you go.\n');
 		compactView();
 	}
@@ -419,6 +429,7 @@ export function createOnboarding({ catalog, mount, onBuild }) {
 		build.addEventListener('click', () => {
 			everChose = true;
 			inFlow = false;
+			rememberMode('Drafting');
 			if (onBuild) onBuild(assemble(name, spine), name);
 			compactView();
 		});

@@ -453,11 +453,30 @@ body.db-page .topbar {
 	border-color: var(--accent);
 	background: var(--bg-alt);
 }
+/* The door the author last walked through — a hairline accent + a quiet badge
+   so a returning user's eye lands there, without preselecting or hijacking. */
+.db-mode-card.is-last {
+	border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+}
 .db-mode-title {
+	display: flex;
+	align-items: baseline;
+	gap: 0.4rem;
 	font-family: var(--font-display);
 	font-weight: 650;
 	font-size: 0.95rem;
 	color: var(--text-heading);
+}
+.db-mode-last {
+	font-family: var(--font-body, inherit);
+	font-weight: 500;
+	font-size: 0.62rem;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	color: var(--accent);
+	border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+	border-radius: 999px;
+	padding: 0.05rem 0.4rem;
 }
 .db-mode-sub {
 	font-size: 0.8rem;
