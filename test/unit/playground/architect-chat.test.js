@@ -106,6 +106,17 @@ describe('buildChatMessages', () => {
       assert.match(sys, /`_class`/);
     });
 
+    test('injects the editing protocol and [slide N] markers (Slice B)', async () => {
+      const { buildChatMessages } = await load();
+      const sys = buildChatMessages({
+        source: '# One\n\n---\n\n# Two', assessment: { scorecard: { band: 'A', overall: 95 }, findings: [] },
+        history: [], userText: 'add a closing', catalog, rich: true,
+      })[0].content;
+      assert.match(sys, /lattice-edit slide=/); // the protocol example
+      assert.match(sys, /\[slide 1\]/); // the deck is shown with addressable markers
+      assert.match(sys, /\[slide 2\]/);
+    });
+
     test('includes the WHOLE deck, not the 1200-char peek', async () => {
       const { buildChatMessages } = await load();
       const big = 'slide '.repeat(2000); // ~12k chars, over the lean cap, under the rich one
