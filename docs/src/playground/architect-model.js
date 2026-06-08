@@ -24,10 +24,13 @@ const WEBLLM_URL = 'https://esm.run/@mlc-ai/web-llm';
 const TRANSFORMERS_URL = 'https://esm.run/@huggingface/transformers';
 const EMBED_MODEL = 'Xenova/bge-small-en-v1.5';
 const WEBLLM_MODEL = 'Qwen2.5-1.5B-Instruct-q4f16_1-MLC';
-// The universal generation tier: a small instruct model that runs in WASM via
+// The universal generation tier: a tiny instruct model that runs in WASM via
 // Transformers.js — no WebGPU, works on Safari / mobile (where the built-in
-// Prompt API and WebLLM don't). ~350 MB q4 download, cached by the browser.
-const UNIVERSAL_MODEL = 'onnx-community/Qwen2.5-0.5B-Instruct';
+// Prompt API and WebLLM don't). SmolLM2-135M at q4 is ~100 MB and stays well
+// inside a phone browser tab's memory budget; quality is modest (it's a 135M
+// model — the coaching floor of the tiers, not the ceiling). Desktops reach for
+// the built-in Prompt API or the WebLLM tier for stronger answers.
+const UNIVERSAL_MODEL = 'HuggingFaceTB/SmolLM2-135M-Instruct';
 
 const hasWindow = typeof window !== 'undefined';
 const G = typeof globalThis !== 'undefined' ? globalThis : {};

@@ -191,8 +191,8 @@ export function createModelSettings({ host, trigger, model, onChange }) {
     if (a.modelOn) {
       // Universal Transformers.js — the path that works on Safari / phones.
       if (a.promptApi !== 'available' && !a.universalReady && !a.webllmReady) {
-        loadFlow('universal', 'Load on-device AI (~350 MB · works on any browser)',
-          'A one-time download so the Architect can converse on THIS device — no special browser or GPU needed. Runs in your browser; stays on your device.',
+        loadFlow('universal', 'Load on-device AI (~100 MB · works on any browser)',
+          'A small one-time download so the Architect can converse on THIS device — no special browser or GPU needed. It’s a compact model (modest answers), runs in your browser, and stays on your device.',
           (p, s) => model.loadUniversal(p, s));
       }
       // WebLLM — desktop GPUs only (it crashes phone tabs).
