@@ -149,22 +149,39 @@ const dbData = JSON.stringify({
 					<button class="db-model-chip is-floor" id="db-model-chip" aria-haspopup="dialog" title="On-device AI settings">⚙ Deterministic floor</button>
 					<div class="db-settings-pop" id="db-settings-pop" role="dialog" aria-label="On-device AI settings" hidden></div>
 				</div>
-				<div class="db-panel-body db-arch-body">
+				<div class="db-panel-body db-arch-body" id="db-arch-body" data-arch-mode="coach" data-converse-ready="false">
 					<div class="db-arch-scroll">
 						<div class="db-arch-mark">
 							<span class="db-arch-glyph" aria-hidden="true">A</span>
 							<span class="db-arch-name">the Architect<small>your deck partner</small></span>
 						</div>
-						<p class="db-arch-say">
-							I lay out the <strong>structure</strong> before you fill slides — and I check
-							every edit against the authoring contract as you go.
-						</p>
 						<div class="db-arch-onboard" id="db-arch-onboard"></div>
-						<div class="db-arch-review" id="db-arch-review" aria-live="polite"></div>
-						<div class="db-arch-chat" id="db-arch-chat" aria-live="polite"></div>
+
+						<!-- Coach (deterministic) vs Converse (generative) — the help mode for
+						     this deck. Coach is buttons + result cards (no fake chat); Converse
+						     is a real conversation, shown only when a real model is available. -->
+						<div class="db-arch-modes" id="db-arch-modes" role="tablist" aria-label="Architect mode">
+							<button class="db-arch-mode" data-mode="coach" role="tab" aria-selected="true">Coach</button>
+							<button class="db-arch-mode" data-mode="converse" role="tab" aria-selected="false">Converse</button>
+						</div>
+
+						<!-- Coach view: the deterministic assessment + action chips. -->
+						<div class="db-coach" data-view="coach">
+							<div class="db-arch-review" id="db-arch-review" aria-live="polite"></div>
+							<div class="db-coach-chips" id="db-coach-chips"></div>
+							<div class="db-coach-card" id="db-coach-card" aria-live="polite"></div>
+						</div>
+
+						<!-- Converse view: the real conversation (thread). -->
+						<div class="db-converse" data-view="converse">
+							<div class="db-arch-chat" id="db-arch-chat" aria-live="polite"></div>
+							<p class="db-converse-empty" id="db-converse-empty">
+								Converse is a real AI conversation about your deck. Turn on on-device AI
+								from the&nbsp;⚙&nbsp;chip to start (a stronger cloud option is coming).
+							</p>
+						</div>
 					</div>
-					<!-- The composer — a real chat with the Architect (Phase 2). Pinned at
-					     the panel foot so it's always reachable; the thread scrolls above. -->
+					<!-- The composer — only in Converse, only when a real model backs it. -->
 					<form class="db-arch-composer" id="db-arch-composer">
 						<textarea id="db-arch-input" rows="1" placeholder="Ask the Architect about your deck…" aria-label="Message the Architect"></textarea>
 						<button type="submit" class="db-arch-send" aria-label="Send">↑</button>
@@ -293,6 +310,7 @@ const dbData = JSON.stringify({
 			import { createArchitectModel } from '../playground/architect-model.js';
 			import { createChat } from '../playground/drawing-board-chat.js';
 			import { createModelSettings } from '../playground/drawing-board-settings.js';
+			import { createCoachConsole } from '../playground/coach-console.js';
 			const data = JSON.parse(document.getElementById('db-data').textContent);
 
 			// The on-device model ladder (Phase 2). Defaults on; degrades to the
@@ -313,7 +331,7 @@ const dbData = JSON.stringify({
 				host: document.getElementById('db-settings-pop'),
 				trigger: document.getElementById('db-model-chip'),
 				model,
-				onChange: () => { if (window.__dbChat) window.__dbChat.reload(); },
+				onChange: () => { if (window.__dbChat) window.__dbChat.reload(); if (window.__dbSyncConverse) window.__dbSyncConverse(); },
 			});
 			window.__dbSettings = settings;
 
@@ -332,6 +350,39 @@ const dbData = JSON.stringify({
 				applyFix: (newSource) => { if (window.__dbEditor) window.__dbEditor.setValue(newSource); },
 			});
 			window.__dbArchitect = architect;
+
+			// Coach console (deterministic): action chips -> result cards. The Coach
+			// view's structured answers replace a fake chat composer.
+			const coach = createCoachConsole({
+				chipsHost: document.getElementById('db-coach-chips'),
+				cardHost: document.getElementById('db-coach-card'),
+				getAssessment: () => architect.getAssessment(),
+				getSource: () => (window.__dbEditor ? window.__dbEditor.getValue() : ''),
+				reveal: (line) => {
+					if (window.__dbEditor) window.__dbEditor.goToLine(line);
+					if (window.matchMedia('(max-width: 1024px)').matches && window.__dbSetPane) window.__dbSetPane('editor');
+				},
+			});
+			window.__dbCoach = coach;
+
+			// Coach <-> Converse toggle: Coach is the deterministic console; Converse is
+			// the real conversation (composer shown only when a real model backs it).
+			const archBody = document.getElementById('db-arch-body');
+			function setArchMode(mode) {
+				archBody.setAttribute('data-arch-mode', mode);
+				for (const t of document.querySelectorAll('.db-arch-mode')) t.setAttribute('aria-selected', t.getAttribute('data-mode') === mode ? 'true' : 'false');
+				try { localStorage.setItem('lattice-db-arch-mode', mode); } catch (e) {}
+			}
+			for (const t of document.querySelectorAll('.db-arch-mode')) t.addEventListener('click', () => setArchMode(t.getAttribute('data-mode')));
+			try { const m = localStorage.getItem('lattice-db-arch-mode'); if (m === 'converse') setArchMode('converse'); } catch (e) {}
+
+			// Converse is "ready" (composer shown) only with a real generative model.
+			window.__dbSyncConverse = function () {
+				var a = model.availability ? model.availability() : { generation: 'floor' };
+				var ready = a.modelOn && a.generation !== 'floor';
+				archBody.setAttribute('data-converse-ready', ready ? 'true' : 'false');
+			};
+			window.__dbSyncConverse();
 
 			// The chat surface — grounded in the architect's live deterministic
 			// assessment, persisted per deck via the store, model phrases the reply.

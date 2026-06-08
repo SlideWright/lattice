@@ -1648,3 +1648,130 @@ body.db-page .topbar {
 	left: 0;
 	color: var(--accent);
 }
+
+/* ── Coach ⇄ Converse (Phase 3) ─────────────────────────────────────────────
+   Coach is the deterministic console (chips + result cards). Converse is the
+   real conversation. The composer exists ONLY in Converse, and ONLY when a real
+   model backs it — a chat box is never a lie. */
+.db-arch-modes {
+	display: flex;
+	gap: 0.2rem;
+	margin: 0.6rem 0 0.2rem;
+	background: var(--bg-alt);
+	border: 1px solid var(--border);
+	border-radius: 999px;
+	padding: 0.2rem;
+}
+.db-arch-mode {
+	flex: 1 1 0;
+	font: inherit;
+	font-size: 0.8rem;
+	font-weight: 600;
+	padding: 0.4rem 0.5rem;
+	border: 0;
+	border-radius: 999px;
+	background: none;
+	color: var(--text-muted);
+	cursor: pointer;
+}
+.db-arch-mode[aria-selected="true"] {
+	background: var(--bg);
+	color: var(--text-heading);
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* View gating by mode. */
+[data-arch-mode="coach"] .db-converse { display: none; }
+[data-arch-mode="converse"] .db-coach { display: none; }
+
+/* Composer: Converse only, and only with a real model. */
+.db-arch-composer { display: none; }
+[data-arch-mode="converse"][data-converse-ready="true"] .db-arch-composer { display: flex; }
+
+/* Converse empty-state vs the live thread. */
+.db-converse-empty {
+	display: none;
+	font-size: 0.82rem;
+	line-height: 1.55;
+	color: var(--text-muted);
+	padding: 0.6rem 0.2rem;
+}
+[data-converse-ready="false"] .db-converse-empty { display: block; }
+[data-converse-ready="false"] .db-arch-chat { display: none; }
+
+/* Coach action chips → result cards. */
+.db-coach-chips {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.35rem;
+	margin: 0.9rem 0 0.2rem;
+}
+.db-coach-chip {
+	font: inherit;
+	font-size: 0.78rem;
+	color: var(--text-body);
+	background: var(--bg);
+	border: 1px solid var(--border);
+	border-radius: 999px;
+	padding: 0.32rem 0.7rem;
+	cursor: pointer;
+}
+.db-coach-chip:hover {
+	border-color: var(--accent);
+	color: var(--text-heading);
+}
+.db-coach-chip.is-active {
+	background: color-mix(in srgb, var(--accent) 12%, var(--bg));
+	border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+	color: var(--text-heading);
+}
+.db-coach-card:empty { display: none; }
+.db-coach-result {
+	margin-top: 0.6rem;
+	border: 1px solid var(--border);
+	border-radius: var(--radius-md);
+	background: var(--bg);
+	padding: 0.7rem 0.8rem;
+}
+.db-coach-result-title {
+	font-weight: 650;
+	font-size: 0.84rem;
+	color: var(--text-heading);
+	margin-bottom: 0.35rem;
+}
+.db-coach-result-line {
+	font-size: 0.82rem;
+	line-height: 1.5;
+	color: var(--text-body);
+	white-space: pre-wrap;
+	overflow-wrap: anywhere;
+}
+.db-coach-jump {
+	margin-top: 0.55rem;
+	font: inherit;
+	font-size: 0.78rem;
+	font-weight: 600;
+	color: var(--accent);
+	background: none;
+	border: 0;
+	padding: 0;
+	cursor: pointer;
+}
+.db-coach-jump:hover { text-decoration: underline; }
+.db-coach-minutes {
+	display: flex;
+	align-items: center;
+	gap: 0.4rem;
+	margin-top: 0.55rem;
+}
+.db-coach-minutes input {
+	width: 4.5rem;
+	font: inherit;
+	font-size: 0.85rem;
+	padding: 0.35rem 0.5rem;
+	border: 1px solid var(--border);
+	border-radius: var(--radius-sm);
+	background: var(--bg);
+	color: var(--text-body);
+}
+.db-coach-min { font-size: 0.78rem; color: var(--text-muted); }
