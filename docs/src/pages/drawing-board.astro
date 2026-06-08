@@ -96,7 +96,7 @@ const dbData = JSON.stringify({
 			<div class="wrap topbar-inner" style="max-width:none">
 				<a class="brand" href={url('')}>
 					<img class="brand-logo" src={url('lattice-logo.png')} alt="" width="30" height="30" />
-					<span class="brand-mark">Drawing Board</span>
+					<span class="brand-mark">Lattice</span>
 				</a>
 				<nav class="topnav" id="topnav">
 					<a class="navlink" href={url('getting-started/')}>Get started</a>
@@ -207,6 +207,7 @@ const dbData = JSON.stringify({
 
 			<!-- Mobile pane switcher (shown <=1024px) -->
 			<nav class="db-mobile-tabs" role="tablist" aria-label="Workspace panes">
+				<button class="db-mobile-tab" data-pane="decks" role="tab" aria-selected="false">Decks</button>
 				<button class="db-mobile-tab" data-pane="architect" role="tab" aria-selected="false">Architect</button>
 				<button class="db-mobile-tab" data-pane="editor" role="tab" aria-selected="true">Edit</button>
 				<button class="db-mobile-tab" data-pane="preview" role="tab" aria-selected="false">Preview</button>
@@ -532,6 +533,9 @@ const dbData = JSON.stringify({
 					recomputeStarts();
 					render();
 					if (window.__dbArchitect) window.__dbArchitect.update(src);
+					// On narrow layouts (tabbed single-pane), picking/building a deck
+					// from another tab should land you in the editor.
+					if (window.matchMedia('(max-width: 1024px)').matches) setPane('editor');
 				});
 				// Cursor moved in the editor -> if it crossed into a different slide,
 				// scroll the filmstrip to it (smooth). Same-slide moves don't scroll, so
