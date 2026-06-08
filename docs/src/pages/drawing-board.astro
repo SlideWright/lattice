@@ -179,6 +179,10 @@ const dbData = JSON.stringify({
 				<div class="db-panel-head">
 					<span class="db-panel-title">Markdown</span>
 					<button class="db-btn db-focus-open" id="db-focus-open" hidden title="Edit the diagram/math block under the cursor in isolation">⊡ Focus</button>
+					<div class="db-refine" id="db-refine-wrap">
+						<button class="db-btn db-refine-open" id="db-refine-open" hidden aria-haspopup="menu">✎ Refine ▾</button>
+						<div class="db-refine-pop" id="db-refine-menu" role="menu" hidden></div>
+					</div>
 					<span class="db-spacer"></span>
 					<div class="db-export" id="db-export-wrap">
 						<button class="db-btn" id="db-export" aria-haspopup="menu" aria-expanded="false" title="Export this deck">Export ▾</button>
@@ -257,6 +261,8 @@ const dbData = JSON.stringify({
 				goToLine: (n) => ed.goToLine(n),
 				getCursorLine: () => ed.getCursorLine(),
 				replaceLines: (a, b, t) => ed.replaceLines(a, b, t),
+				getSelection: () => ed.getSelection(),
+				replaceSelection: (t) => ed.replaceSelection(t),
 				onChange: (fn) => { notify = fn; },
 				onCursor: (fn) => { cursorFns.push(fn); },
 			};
@@ -398,6 +404,7 @@ const dbData = JSON.stringify({
 		     isolated sub-editor + live fragment preview. Deterministic, no model. -->
 		<script>
 			import { createFocus } from '../playground/drawing-board-focus.js';
+			import { createRefine } from '../playground/drawing-board-refine.js';
 			const data = JSON.parse(document.getElementById('db-data').textContent);
 			const openBtn = document.getElementById('db-focus-open');
 			function wireFocus() {
@@ -410,12 +417,27 @@ const dbData = JSON.stringify({
 				});
 				window.__dbFocus = focus;
 				if (openBtn) openBtn.addEventListener('click', () => focus.open());
-				// Enable the toolbar button only when a focusable block is under the caret.
+
+				// Refine actions — gated on a real generation tier (model.complete);
+				// disabled with a hint when running deterministically.
+				const statusEl = document.getElementById('db-status');
+				const refine = createRefine({
+					trigger: document.getElementById('db-refine-open'),
+					menuHost: document.getElementById('db-refine-menu'),
+					editor: window.__dbEditor,
+					model: window.__dbModel,
+					onStatus: (msg, err) => { if (statusEl) { statusEl.textContent = msg; statusEl.classList.toggle('err', !!err); } },
+				});
+				window.__dbRefine = refine;
+
+				// Toolbar state tracks the caret: focusable-block detection + selection.
 				const sync = () => {
-					if (!openBtn) return;
-					const b = focus.focusable();
-					openBtn.hidden = !b;
-					if (b) openBtn.textContent = '⊡ Focus ' + b.kind;
+					if (openBtn) {
+						const b = focus.focusable();
+						openBtn.hidden = !b;
+						if (b) openBtn.textContent = '⊡ Focus ' + b.kind;
+					}
+					refine.sync();
 				};
 				window.__dbEditor.onCursor(sync);
 				sync();

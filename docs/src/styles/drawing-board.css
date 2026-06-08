@@ -1535,3 +1535,53 @@ body.db-page .topbar {
 	background: var(--accent);
 	transition: width 0.2s;
 }
+
+/* ── Refine actions menu (Slice 9b) ─────────────────────────────────────────── */
+.db-refine {
+	position: relative;
+	display: inline-flex;
+}
+.db-refine-pop {
+	position: absolute;
+	top: calc(100% + 4px);
+	left: 0;
+	z-index: 50;
+	min-width: 190px;
+	background: var(--bg);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-md);
+	box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
+	padding: 0.3rem;
+}
+.db-refine-pop[hidden] {
+	display: none;
+}
+.db-refine-menu {
+	display: flex;
+	flex-direction: column;
+}
+.db-refine-item {
+	display: flex;
+	flex-direction: column;
+	gap: 0.05rem;
+	text-align: left;
+	font: inherit;
+	font-size: 0.82rem;
+	color: var(--text-body);
+	background: none;
+	border: 0;
+	border-radius: var(--radius-sm);
+	padding: 0.4rem 0.55rem;
+	cursor: pointer;
+}
+.db-refine-item:hover {
+	background: color-mix(in srgb, var(--accent) 8%, var(--bg));
+}
+.db-refine-label {
+	font-weight: 600;
+	color: var(--text-heading);
+}
+.db-refine-item small {
+	font-size: 0.72rem;
+	color: var(--text-muted);
+}
