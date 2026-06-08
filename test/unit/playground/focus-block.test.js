@@ -10,7 +10,9 @@ const { test, describe } = require('node:test');
 const assert = require('node:assert/strict');
 
 async function load() {
-  return import('../../../docs/src/playground/drawing-board-focus.js');
+  // Import the pure, import-free module — NOT drawing-board-focus.js, which pulls
+  // in editor.js → CodeMirror (a docs-only dep not present in CI's root install).
+  return import('../../../docs/src/playground/focus-block.js');
 }
 
 const L = (s) => s.split('\n');
