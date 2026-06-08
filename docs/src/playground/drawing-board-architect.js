@@ -153,33 +153,73 @@ export function createArchitect({ vocab, mount, reveal, applyFix }) {
 	return { update };
 }
 
-// ── Conversation-first onboarding (the deterministic / zero-model floor) ──────
-// Three escapable questions (what · who · the one outcome) → keyword retrieval
-// over the catalog → a proposed outline → Build scaffolds a starter deck. This
-// is one performance of the beats (proposal Appendix A); generation tiers layer
-// on in Phase 2. No model: phrasing is templated, retrieval is keyword overlap.
+// ── Onboarding: two modes — Drafting & Freehand (deterministic, zero-model) ───
+// Drafting: pick a presentation archetype (searchable, grouped by setting) → the
+// Architect scaffolds a framework-grounded spine. Freehand: a blank canvas; the
+// live review runs and (Phase 2) conversational help arrives on request. Spec +
+// the spine table: engineering/decisions/2026-06-08-architect-modes.md (App. A).
 
-const ONBOARD_STEPS = [
-	{ key: 'what', q: 'What are you presenting?', chips: ['Board update', 'Investor pitch', 'Strategy / proposal', 'Product / project review'] },
-	{ key: 'who', q: "Who's in the room?", chips: ['The board', 'Exec team', 'Investors', 'Clients', 'Internal'] },
-	{ key: 'outcome', q: 'Last one, and it’s the important one — what single outcome do you need when you close? One sentence.', input: true },
-];
-
-// Sensible component spine per deck type, so the outline is strong even when the
-// free-text retrieval is thin. Filtered to what the catalog actually ships.
-const TYPE_HINTS = {
-	'board update': ['kpi', 'roadmap', 'decision', 'matrix-2x2'],
-	'investor pitch': ['kpi', 'stats', 'roadmap', 'verdict-grid'],
-	'strategy / proposal': ['verdict-grid', 'matrix-2x2', 'roadmap', 'decision'],
-	'product / project review': ['kpi', 'roadmap', 'before-after', 'decision'],
+const ARCHETYPES = {
+	'General / Team': {
+		'Status update': ['title', 'kpi', 'roadmap', 'decision', 'closing'],
+		'Project kickoff': ['title', 'content', 'roadmap', 'actors', 'decision', 'closing'],
+		'Project status': ['title', 'kpi', 'roadmap', 'matrix-2x2', 'closing'],
+		'Retrospective / post-mortem': ['title', 'timeline-list', 'matrix-2x2', 'list-steps', 'closing'],
+		'All-hands': ['title', 'big-number', 'kpi', 'roadmap', 'quote', 'closing'],
+		'Team meeting': ['title', 'agenda', 'content', 'decision', 'closing'],
+		'Training / onboarding': ['title', 'agenda', 'list-steps', 'checklist', 'closing'],
+		'Workshop': ['title', 'agenda', 'content', 'cards-grid', 'list-steps', 'closing'],
+		'Decision memo': ['title', 'content', 'compare-table', 'matrix-2x2', 'decision', 'closing'],
+		'Proposal': ['title', 'content', 'list-criteria', 'kpi', 'decision', 'closing'],
+		'Roadmap review': ['title', 'roadmap', 'kpi', 'matrix-2x2', 'closing'],
+	},
+	Corporate: {
+		'Board update': ['title', 'kpi', 'roadmap', 'decision', 'matrix-2x2', 'closing'],
+		'Investor pitch': ['title', 'content', 'content', 'big-number', 'kpi', 'roadmap', 'actors', 'decision', 'closing'],
+		'Sales deck': ['title', 'content', 'content', 'verdict-grid', 'kpi', 'decision', 'closing'],
+		'Quarterly business review': ['title', 'kpi', 'roadmap', 'matrix-2x2', 'decision', 'closing'],
+		'Strategy proposal': ['title', 'content', 'verdict-grid', 'matrix-2x2', 'decision', 'roadmap', 'closing'],
+		'Product launch': ['title', 'content', 'featured', 'cards-grid', 'kpi', 'roadmap', 'closing'],
+		'Customer case study': ['title', 'content', 'split-compare', 'kpi', 'quote', 'closing'],
+		'Budget request': ['title', 'big-number', 'content', 'list-tabular', 'kpi', 'decision', 'closing'],
+		'OKR / goals review': ['title', 'kpi', 'progress', 'roadmap', 'closing'],
+	},
+	Academic: {
+		Lecture: ['title', 'agenda', 'content', 'diagram', 'list-criteria', 'closing'],
+		'Conference talk': ['title', 'content', 'content', 'radar', 'content', 'closing'],
+		'Thesis / dissertation defense': ['title', 'content', 'content', 'stats', 'content', 'roadmap', 'closing'],
+		'Research findings': ['title', 'content', 'content', 'stats', 'content', 'closing'],
+		'Journal club': ['title', 'citation-card', 'content', 'stats', 'matrix-2x2', 'closing'],
+		'Grant proposal': ['title', 'content', 'list-criteria', 'roadmap', 'kpi', 'closing'],
+		Seminar: ['title', 'agenda', 'content', 'diagram', 'list-steps', 'closing'],
+		'Poster walkthrough': ['title', 'content', 'diagram', 'stats', 'content', 'closing'],
+		'Literature review': ['title', 'content', 'timeline-list', 'compare-table', 'content', 'closing'],
+		'Course overview': ['title', 'agenda', 'roadmap', 'list-criteria', 'checklist', 'closing'],
+	},
+	'Government / Public': {
+		'Policy briefing': ['title', 'content', 'content', 'verdict-grid', 'matrix-2x2', 'decision', 'closing'],
+		'Budget proposal': ['title', 'big-number', 'list-tabular', 'kpi', 'matrix-2x2', 'decision', 'closing'],
+		'Public hearing / testimony': ['title', 'content', 'list-criteria', 'stats', 'quote', 'closing'],
+		'Agency / program update': ['title', 'kpi', 'roadmap', 'matrix-2x2', 'closing'],
+		'Inter-agency briefing': ['title', 'content', 'actors', 'roadmap', 'decision', 'closing'],
+		'RFP / proposal response': ['title', 'content', 'list-criteria', 'gantt', 'actors', 'kpi', 'closing'],
+		'Town hall': ['title', 'big-number', 'content', 'kpi', 'content', 'closing'],
+		'Compliance / audit report': ['title', 'content', 'obligation-matrix', 'matrix-2x2', 'list-steps', 'closing'],
+	},
+	'Nonprofit / Mission-driven': {
+		'Donor pitch': ['title', 'content', 'quote', 'big-number', 'roadmap', 'decision', 'closing'],
+		'Fundraising / capital campaign': ['title', 'content', 'big-number', 'progress', 'cards-grid', 'decision', 'closing'],
+		'Impact / annual report': ['title', 'kpi', 'journey', 'quote', 'stats', 'roadmap', 'closing'],
+		'Grant report': ['title', 'content', 'kpi', 'list-criteria', 'stats', 'closing'],
+		'Nonprofit board meeting': ['title', 'kpi', 'stats', 'roadmap', 'decision', 'closing'],
+		'Program overview': ['title', 'content', 'diagram', 'kpi', 'actors', 'closing'],
+		'Volunteer onboarding': ['title', 'agenda', 'content', 'list-steps', 'checklist', 'closing'],
+	},
 };
-const ANCHORS = ['title', 'closing', 'divider', 'subtopic'];
 
 export function createOnboarding({ catalog, mount, onBuild }) {
 	if (!mount) return { reset() {} };
 	const byName = new Map((catalog || []).map((c) => [c.name, c]));
-	let answers = {};
-	let step = 0;
 
 	const el = (tag, cls, text) => {
 		const e = document.createElement(tag);
@@ -187,128 +227,106 @@ export function createOnboarding({ catalog, mount, onBuild }) {
 		if (text != null) e.textContent = text;
 		return e;
 	};
-	const bubble = (role, text) => {
-		const d = el('div', 'db-ob-msg db-ob-' + role);
-		d.appendChild(el('p', null, text));
-		return d;
-	};
 
-	function launcher() {
+	// ── The two doors ─────────────────────────────────────────────────────────
+	function doors() {
 		mount.innerHTML = '';
-		const b = el('button', 'db-btn db-btn-primary db-onboard-launch', 'Plan a new deck with me →');
+		const wrap = el('div', 'db-modes');
+		wrap.append(
+			modeCard('Drafting', 'I lay out the structure; you fill it in.', startDrafting),
+			modeCard('Freehand', 'Your blank canvas; I review and help on request.', startFreehand),
+		);
+		mount.appendChild(wrap);
+	}
+	function modeCard(title, sub, onClick) {
+		const b = el('button', 'db-mode-card');
 		b.type = 'button';
-		b.addEventListener('click', start);
-		mount.appendChild(b);
+		b.append(el('span', 'db-mode-title', title), el('span', 'db-mode-sub', sub));
+		b.addEventListener('click', onClick);
+		return b;
 	}
-	function start() { answers = {}; step = 0; render(); }
-	function answer(v) { answers[ONBOARD_STEPS[step].key] = v; step++; render(); }
 
-	function render() {
+	// ── Freehand — blank canvas ───────────────────────────────────────────────
+	function startFreehand() {
+		if (onBuild) onBuild('<!-- _class: title silent -->\n\n# New deck\n\nStart writing — I’ll review as you go.\n');
+		doors();
+	}
+
+	// ── Drafting — archetype picker → framework-grounded spine ────────────────
+	function startDrafting() {
 		mount.innerHTML = '';
-		const thread = el('div', 'db-ob-thread');
-		for (let i = 0; i < step; i++) {
-			thread.appendChild(bubble('arch', ONBOARD_STEPS[i].q));
-			thread.appendChild(bubble('user', answers[ONBOARD_STEPS[i].key]));
-		}
-		if (step < ONBOARD_STEPS.length) {
-			const s = ONBOARD_STEPS[step];
-			thread.appendChild(bubble('arch', s.q));
-			if (s.chips) {
-				const row = el('div', 'db-ob-chips');
-				for (const c of s.chips) {
-					const chip = el('button', 'db-ob-chip', c);
-					chip.type = 'button';
-					chip.addEventListener('click', () => answer(c));
-					row.appendChild(chip);
+		const head = el('div', 'db-draft-head');
+		const back = el('button', 'db-ob-cancel', '← Modes');
+		back.type = 'button';
+		back.addEventListener('click', doors);
+		head.append(back, el('p', 'db-draft-say', 'What are you presenting? I’ll lay out the structure.'));
+		const search = el('input', 'db-draft-search');
+		search.type = 'search';
+		search.placeholder = 'Search presentation types…';
+		head.appendChild(search);
+		mount.appendChild(head);
+		const list = el('div', 'db-draft-list');
+		mount.appendChild(list);
+		const renderList = () => {
+			const q = search.value.trim().toLowerCase();
+			list.innerHTML = '';
+			for (const [group, items] of Object.entries(ARCHETYPES)) {
+				const names = Object.keys(items).filter((n) => !q || n.toLowerCase().includes(q));
+				if (!names.length) continue;
+				list.appendChild(el('div', 'db-draft-group', group));
+				for (const name of names) {
+					const item = el('button', 'db-draft-item', name);
+					item.type = 'button';
+					item.addEventListener('click', () => proposeArchetype(name, items[name]));
+					list.appendChild(item);
 				}
-				thread.appendChild(row);
 			}
-			if (s.input) {
-				const form = el('form', 'db-ob-form');
-				const inp = el('input', 'db-ob-input');
-				inp.type = 'text';
-				inp.placeholder = 'e.g. The board approves the next phase';
-				const go = el('button', 'db-btn db-btn-primary', '→');
-				go.type = 'submit';
-				form.append(inp, go);
-				form.addEventListener('submit', (e) => {
-					e.preventDefault();
-					const v = inp.value.trim();
-					if (v) answer(v);
-				});
-				thread.appendChild(form);
-				setTimeout(() => inp.focus(), 0);
+			if (!list.children.length) {
+				list.appendChild(el('p', 'db-rail-note', 'Not in the list? Go Freehand — I don’t template specialized or long-form work.'));
 			}
-			const cancel = el('button', 'db-ob-cancel', 'Cancel');
-			cancel.type = 'button';
-			cancel.addEventListener('click', launcher);
-			thread.appendChild(cancel);
-		} else {
-			propose(thread);
-		}
-		mount.appendChild(thread);
-	}
-
-	function pickComponents() {
-		const what = (answers.what || '').toLowerCase();
-		const tokens = `${answers.what || ''} ${answers.outcome || ''}`.toLowerCase().split(/\W+/).filter((t) => t.length >= 3);
-		const seed = (TYPE_HINTS[what] || []).filter((n) => byName.has(n));
-		const scored = (catalog || [])
-			.filter((c) => !ANCHORS.includes(c.name))
-			.map((c) => {
-				const hay = `${c.name} ${(c.tags || []).join(' ')} ${c.bucket}`.toLowerCase();
-				let s = 0;
-				for (const t of tokens) if (hay.includes(t)) s++;
-				return { name: c.name, s };
-			})
-			.filter((x) => x.s > 0)
-			.sort((a, b) => b.s - a.s)
-			.map((x) => x.name);
-		const picks = [];
-		for (const n of [...seed, ...scored]) {
-			if (!picks.includes(n) && byName.has(n)) picks.push(n);
-			if (picks.length >= 4) break;
-		}
-		if (!picks.length) for (const n of ['kpi', 'cards-grid', 'roadmap', 'decision']) if (byName.has(n) && picks.length < 4) picks.push(n);
-		return picks;
-	}
-
-	function propose(thread) {
-		const picks = pickComponents();
-		thread.appendChild(bubble('arch', `Here’s the structure I’d build — Title → ${picks.join(' → ')} → close on your outcome.`));
-		const list = el('ol', 'db-ob-outline');
-		const li = (name, note) => {
-			const e = el('li');
-			e.appendChild(el('strong', null, name));
-			if (note) e.appendChild(el('span', 'db-ob-note', ` — ${note}`));
-			return e;
 		};
-		list.appendChild(li('Title', 'opening — your ask in the subtitle'));
-		for (const n of picks) list.appendChild(li(n, ''));
-		list.appendChild(li('Closing', 'restate the one outcome'));
-		thread.appendChild(list);
-		const row = el('div', 'db-ob-chips');
-		const build = el('button', 'db-btn db-btn-primary', 'Build this outline →');
-		build.type = 'button';
-		build.addEventListener('click', () => { if (onBuild) onBuild(assemble(picks)); launcher(); });
-		const restart = el('button', 'db-ob-chip', 'Start over');
-		restart.type = 'button';
-		restart.addEventListener('click', start);
-		row.append(build, restart);
-		thread.appendChild(row);
+		search.addEventListener('input', renderList);
+		renderList();
+		setTimeout(() => search.focus(), 0);
 	}
 
-	function assemble(picks) {
-		const slides = [];
-		slides.push(`<!-- _class: title silent -->\n\n\`${answers.what || 'deck'}\`\n\n# New deck\n\n${answers.outcome || ''}`.trim());
-		for (const n of picks) {
-			const c = byName.get(n);
-			slides.push((c?.skeleton) || `<!-- _class: ${n} -->\n`);
+	function proposeArchetype(name, spine) {
+		mount.innerHTML = '';
+		const back = el('button', 'db-ob-cancel', '← Types');
+		back.type = 'button';
+		back.addEventListener('click', startDrafting);
+		mount.appendChild(back);
+		mount.appendChild(el('p', 'db-draft-say', `${name} — here’s the structure I’d build.`));
+		const ol = el('ol', 'db-ob-outline');
+		for (const comp of spine) {
+			const item = el('li');
+			item.appendChild(el('strong', null, comp));
+			ol.appendChild(item);
 		}
-		slides.push(`<!-- _class: closing -->\n\n## ${answers.outcome || 'The one thing to remember'}`);
+		mount.appendChild(ol);
+		const row = el('div', 'db-ob-chips');
+		const build = el('button', 'db-btn db-btn-primary', 'Build this →');
+		build.type = 'button';
+		build.addEventListener('click', () => { if (onBuild) onBuild(assemble(name, spine)); doors(); });
+		const other = el('button', 'db-ob-chip', 'Pick another');
+		other.type = 'button';
+		other.addEventListener('click', startDrafting);
+		row.append(build, other);
+		mount.appendChild(row);
+	}
+
+	// Scaffold the deck from the spine, using each component's catalog skeleton.
+	function assemble(label, spine) {
+		const slides = spine.map((name, i) => {
+			if (i === 0 && name === 'title') {
+				return `<!-- _class: title silent -->\n\n\`${label}\`\n\n# New deck\n\nYour subtitle`;
+			}
+			const c = byName.get(name);
+			return c?.skeleton || `<!-- _class: ${name} -->\n`;
+		});
 		return `${slides.join('\n\n---\n\n')}\n`;
 	}
 
-	launcher();
-	return { reset: launcher };
+	doors();
+	return { reset: doors };
 }

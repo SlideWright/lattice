@@ -404,6 +404,95 @@ body.db-page .topbar {
 	font-size: 0.86rem;
 	padding: 0.6rem;
 }
+
+/* Two-door empty state (Drafting / Freehand) */
+.db-modes {
+	display: grid;
+	gap: 0.5rem;
+}
+.db-mode-card {
+	display: flex;
+	flex-direction: column;
+	gap: 0.2rem;
+	text-align: left;
+	font: inherit;
+	background: var(--bg);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-md);
+	padding: 0.7rem 0.8rem;
+	cursor: pointer;
+	transition: border-color 0.12s, background 0.12s;
+}
+.db-mode-card:hover {
+	border-color: var(--accent);
+	background: var(--bg-alt);
+}
+.db-mode-title {
+	font-family: var(--font-display);
+	font-weight: 650;
+	font-size: 0.95rem;
+	color: var(--text-heading);
+}
+.db-mode-sub {
+	font-size: 0.8rem;
+	color: var(--text-muted);
+	line-height: 1.4;
+}
+
+/* Drafting — archetype picker */
+.db-draft-head {
+	display: flex;
+	flex-direction: column;
+	gap: 0.4rem;
+	margin-bottom: 0.6rem;
+}
+.db-draft-say {
+	margin: 0;
+	font-size: 0.86rem;
+	color: var(--text-body);
+}
+.db-draft-search {
+	font: inherit;
+	font-size: 0.84rem;
+	color: var(--text-body);
+	background: var(--bg);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-sm);
+	padding: 0.45rem 0.55rem;
+}
+.db-draft-search:focus {
+	outline: none;
+	border-color: var(--accent);
+}
+.db-draft-list {
+	display: flex;
+	flex-direction: column;
+	gap: 0.1rem;
+	max-height: 42vh;
+	overflow-y: auto;
+}
+.db-draft-group {
+	font-size: 0.68rem;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	color: var(--text-muted);
+	margin: 0.6rem 0 0.2rem;
+}
+.db-draft-item {
+	text-align: left;
+	font: inherit;
+	font-size: 0.86rem;
+	color: var(--text-body);
+	background: none;
+	border: 0;
+	border-radius: var(--radius-sm);
+	padding: 0.4rem 0.5rem;
+	cursor: pointer;
+}
+.db-draft-item:hover {
+	background: var(--bg-alt);
+	color: var(--text-heading);
+}
 .db-ob-thread {
 	display: flex;
 	flex-direction: column;
