@@ -423,6 +423,19 @@ body.db-page .topbar {
 	animation: db-blink 1s steps(2) infinite;
 }
 @keyframes db-blink { 50% { opacity: 0; } }
+/* "Working" feedback shown the instant you send, until the first token streams —
+   so a slow on-device model never reads as a dead hang. */
+.db-msg-body.db-msg-thinking {
+	color: var(--text-muted);
+	font-style: italic;
+	animation: db-pulse 1.3s ease-in-out infinite;
+}
+.db-msg-body.db-msg-thinking::before {
+	content: "● ";
+	color: var(--accent);
+	font-style: normal;
+}
+@keyframes db-pulse { 0%, 100% { opacity: 0.55; } 50% { opacity: 1; } }
 
 /* The composer — pinned at the panel foot; the thread scrolls above it. */
 .db-arch-composer {

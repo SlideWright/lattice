@@ -149,9 +149,22 @@ export function createChat({ mount, composer, model, store, getAssessment }) {
 
     const assessment = getAssessment ? getAssessment() : null;
     const floor = floorReply(assessment, text);
-    const target = bubble('architect', '');
-    target.classList.add('is-streaming');
+    // Immediate "working" feedback, so you're never left wondering. On-device
+    // tiers are slow, so the label sets expectations; the first streamed token
+    // swaps it for the reply (the worker keeps the UI live so this animates).
+    const a = model?.availability ? model.availability() : { generation: 'floor' };
+    const slow = a.generation === 'transformers' || a.generation === 'webllm';
+    const target = bubble('architect', slow ? 'Thinking on-device — this can take a few seconds…' : 'Thinking…');
+    target.classList.add('db-msg-thinking');
     let full = '';
+    let started = false;
+    const begin = () => {
+      if (started) return;
+      started = true;
+      target.classList.remove('db-msg-thinking');
+      target.classList.add('is-streaming');
+      target.textContent = '';
+    };
     try {
       const messages = buildChatMessages({
         source: assessment?.source, assessment, history: await thread(), userText: text,
@@ -159,12 +172,13 @@ export function createChat({ mount, composer, model, store, getAssessment }) {
       const out = await model.complete({
         messages,
         fallback: floor,
-        onToken: (tok) => { full += tok; target.textContent = full; scrollDown(); },
+        onToken: (tok) => { begin(); full += tok; target.textContent = full; scrollDown(); },
       });
       full = (out && String(out)) || full || floor;
     } catch {
       full = floor;
     }
+    begin(); // ensure the thinking state clears even if nothing streamed
     target.textContent = full;
     target.classList.remove('is-streaming');
     if (deckId && store?.addChatMessage) await store.addChatMessage(deckId, 'architect', full);
