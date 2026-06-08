@@ -306,10 +306,9 @@ const dbData = JSON.stringify({
 				},
 			});
 			window.__dbModel = model;
-			model.refreshAvailability().then(() => settings.refresh());
 
-			// Model settings + WebLLM opt-in (Slice 8): the ⚙ chip shows the live tier
-			// and opens a popover to toggle on-device AI / summon WebLLM.
+			// Model settings (Slice 8): the ⚙ chip shows the live tier; the popover
+			// toggles on-device AI, downloads a tier, and removes the cached weights.
 			const settings = createModelSettings({
 				host: document.getElementById('db-settings-pop'),
 				trigger: document.getElementById('db-model-chip'),
@@ -317,6 +316,11 @@ const dbData = JSON.stringify({
 				onChange: () => { if (window.__dbChat) window.__dbChat.reload(); },
 			});
 			window.__dbSettings = settings;
+
+			// After detection, refresh the chip and reconnect a previously-loaded model
+			// (weights are cached, but the running engine is lost on reload — re-init it,
+			// which is what makes the model "stick" across refreshes).
+			model.refreshAvailability().then(() => { settings.refresh(); settings.restore(); });
 
 			const architect = createArchitect({
 				vocab: data.lintVocab,
