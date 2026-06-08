@@ -1350,3 +1350,81 @@ body.db-page .topbar {
 		flex: 0 0 auto;
 	}
 }
+
+/* ── Focus edit mode ────────────────────────────────────────────────────────
+   A full-screen split: an isolated sub-editor (left) + a live fragment preview
+   (right), over a top action bar. Themed off the page tokens. On narrow screens
+   the two panes stack. */
+.db-focus {
+	position: fixed;
+	inset: 0;
+	z-index: 2100;
+	background: var(--bg);
+	display: grid;
+}
+.db-focus[hidden] {
+	display: none;
+}
+.db-focus-wrap {
+	display: grid;
+	grid-template-rows: auto 1fr;
+	height: 100%;
+	min-height: 0;
+}
+.db-focus-bar {
+	display: flex;
+	align-items: center;
+	gap: 0.6rem;
+	padding: calc(0.55rem + env(safe-area-inset-top)) 1rem 0.55rem;
+	border-bottom: 1px solid var(--border);
+	background: var(--bg-alt);
+}
+.db-focus-title {
+	font-weight: 650;
+	font-size: 0.9rem;
+	color: var(--text-heading);
+	text-transform: capitalize;
+}
+.db-focus-status {
+	font-size: 0.78rem;
+	color: var(--text-muted);
+}
+.db-focus-spacer {
+	flex: 1 1 auto;
+}
+.db-focus-body {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+	min-height: 0;
+}
+.db-focus-edit {
+	min-width: 0;
+	min-height: 0;
+	overflow: hidden;
+	border-right: 1px solid var(--border);
+}
+.db-focus-edit .cm-editor {
+	height: 100%;
+}
+.db-focus-preview {
+	min-width: 0;
+	min-height: 0;
+	background: var(--bg-alt);
+}
+.db-focus-frame {
+	width: 100%;
+	height: 100%;
+	border: 0;
+	background: transparent;
+}
+
+@media (max-width: 800px) {
+	.db-focus-body {
+		grid-template-columns: 1fr;
+		grid-template-rows: 1fr 1fr;
+	}
+	.db-focus-edit {
+		border-right: 0;
+		border-bottom: 1px solid var(--border);
+	}
+}

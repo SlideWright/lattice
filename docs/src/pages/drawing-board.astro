@@ -175,6 +175,7 @@ const dbData = JSON.stringify({
 			<section class="db-panel db-editor" id="db-editor">
 				<div class="db-panel-head">
 					<span class="db-panel-title">Markdown</span>
+					<button class="db-btn db-focus-open" id="db-focus-open" hidden title="Edit the diagram/math block under the cursor in isolation">⊡ Focus</button>
 					<span class="db-spacer"></span>
 					<div class="db-export" id="db-export-wrap">
 						<button class="db-btn" id="db-export" aria-haspopup="menu" aria-expanded="false" title="Export this deck">Export ▾</button>
@@ -224,6 +225,10 @@ const dbData = JSON.stringify({
 		     iframe; created lazily on first open. -->
 		<div class="db-practice" id="db-practice" hidden></div>
 
+		<!-- Focus edit mode — isolated sub-editor + live fragment preview for the
+		     ```mermaid / ```chart / $$…$$ block under the cursor (deterministic). -->
+		<div class="db-focus" id="db-focus" hidden></div>
+
 		<script type="application/json" id="db-data" is:inline set:html={dbData}></script>
 
 		<!-- CodeMirror editor (bundled by Astro/Vite). Mounts into #db-editor-host,
@@ -234,12 +239,12 @@ const dbData = JSON.stringify({
 			const ta = document.getElementById('db-editor-ta');
 			const initial = ta ? ta.value : '';
 			let notify = null;
-			let notifyCursor = null;
+			const cursorFns = []; // multiple consumers (filmstrip sync + focus toolbar)
 			const ed = createEditor({
 				parent: host,
 				doc: initial,
 				onChange: (v) => { if (notify) notify(v); },
-				onCursor: (line) => { if (notifyCursor) notifyCursor(line); },
+				onCursor: (line) => { for (const f of cursorFns) f(line); },
 			});
 			if (ta) ta.remove();
 			window.__dbEditor = {
@@ -247,8 +252,10 @@ const dbData = JSON.stringify({
 				setValue: (t) => ed.setValue(t),
 				focus: () => ed.focus(),
 				goToLine: (n) => ed.goToLine(n),
+				getCursorLine: () => ed.getCursorLine(),
+				replaceLines: (a, b, t) => ed.replaceLines(a, b, t),
 				onChange: (fn) => { notify = fn; },
-				onCursor: (fn) => { notifyCursor = fn; },
+				onCursor: (fn) => { cursorFns.push(fn); },
 			};
 			window.dispatchEvent(new Event('db-editor-ready'));
 		</script>
@@ -370,6 +377,37 @@ const dbData = JSON.stringify({
 					else if (kind === 'print') { exportPrint(frame); status('Opening print dialog…'); }
 				} catch (err) { status(String(err.message || err), true); }
 			});
+		</script>
+
+		<!-- Focus edit modes (Slice 9). The toolbar button enables when the cursor
+		     sits in a ```mermaid / ```chart / $$…$$ block; opening swaps in an
+		     isolated sub-editor + live fragment preview. Deterministic, no model. -->
+		<script>
+			import { createFocus } from '../playground/drawing-board-focus.js';
+			const data = JSON.parse(document.getElementById('db-data').textContent);
+			const openBtn = document.getElementById('db-focus-open');
+			function wireFocus() {
+				const focus = createFocus({
+					host: document.getElementById('db-focus'),
+					editor: window.__dbEditor,
+					themeBase: data.themeBase,
+					runtimeUrl: data.runtimeUrl,
+					slideBox: data.slideBox,
+				});
+				window.__dbFocus = focus;
+				if (openBtn) openBtn.addEventListener('click', () => focus.open());
+				// Enable the toolbar button only when a focusable block is under the caret.
+				const sync = () => {
+					if (!openBtn) return;
+					const b = focus.focusable();
+					openBtn.hidden = !b;
+					if (b) openBtn.textContent = '⊡ Focus ' + b.kind;
+				};
+				window.__dbEditor.onCursor(sync);
+				sync();
+			}
+			if (window.__dbEditor) wireFocus();
+			else window.addEventListener('db-editor-ready', wireFocus, { once: true });
 		</script>
 
 		<!-- Practice mode (full-screen rehearsal). Lazily renders the deck one slide

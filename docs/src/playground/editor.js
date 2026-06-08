@@ -51,7 +51,7 @@ const ARROWS = [
 	/^(?:--?(?:>>|[x>)])|(?:<<|[x<(])--?(?!-))/, // sequence
 	/^(?:[*o]--|--[*o]|<\|?(?:--|\.\.)|(?:--|\.\.)\|?>|--|\.\.)/, // class
 ];
-const ARROW_PREV = [/[{}|o.\-]/, /[<>ox.=\-]/, /[<>()x\-]/, /[<>|*o.\-]/];
+const ARROW_PREV = [/[{}|o.-]/, /[<>ox.=-]/, /[<>()x-]/, /[<>|*o.-]/];
 
 const mermaidParser = {
 	startState: () => ({ lineStart: true }),
@@ -272,6 +272,19 @@ export function createEditor({ parent, doc = '', onChange, onCursor, autoHeight 
 			const total = view.state.doc.lines;
 			const line = view.state.doc.line(Math.max(1, Math.min(total, n)));
 			view.dispatch({ selection: { anchor: line.from }, scrollIntoView: true });
+			view.focus();
+		},
+		// 1-based line of the primary cursor — used by focus edit modes to find the
+		// fenced/math block under the caret.
+		getCursorLine: () => view.state.doc.lineAt(view.state.selection.main.head).number,
+		// Replace an inclusive 1-based line range with `text`, as one undoable
+		// transaction (fires onChange → re-render + re-lint). Focus modes write the
+		// edited fragment back through this so it stays in the editor's history.
+		replaceLines: (fromLine, toLine, text) => {
+			const total = view.state.doc.lines;
+			const a = view.state.doc.line(Math.max(1, Math.min(total, fromLine)));
+			const b = view.state.doc.line(Math.max(1, Math.min(total, toLine)));
+			view.dispatch({ changes: { from: a.from, to: b.to, insert: text }, selection: { anchor: a.from } });
 			view.focus();
 		},
 	};
