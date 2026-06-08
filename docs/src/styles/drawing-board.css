@@ -414,6 +414,23 @@ body.db-page .topbar {
 	padding: 0.6rem;
 }
 
+/* Compact "New deck" affordance (shown once a deck is being worked on) */
+.db-onboard-compact {
+	font: inherit;
+	font-size: 0.8rem;
+	color: var(--text-muted);
+	background: none;
+	border: 1px dashed var(--border);
+	border-radius: var(--radius-sm);
+	padding: 0.4rem 0.6rem;
+	cursor: pointer;
+	width: 100%;
+}
+.db-onboard-compact:hover {
+	border-color: var(--accent);
+	color: var(--text-heading);
+}
+
 /* Two-door empty state (Drafting / Freehand) */
 .db-modes {
 	display: grid;

@@ -10,6 +10,7 @@
 //
 // Voiced as "the Architect" per the naming decision.
 
+import Fuse from 'fuse.js';
 import lintCore from '../../../lib/authoring/lint-core.js';
 import reviewCore from '../../../lib/authoring/review-core.js';
 import scorecard from '../../../lib/authoring/scorecard.js';
@@ -210,7 +211,10 @@ export function createArchitect({ vocab, catalog, mount, reveal, applyFix }) {
 
 	function run() {
 		try {
-			if (!hasContent(lastSource)) { render(null, []); return; }
+			const has = hasContent(lastSource);
+			// Let the onboarding collapse its doors when a real deck is being worked on.
+			window.dispatchEvent(new CustomEvent('db-deck-content', { detail: has }));
+			if (!has) { render(null, []); return; }
 			const lint = lintCore.lintTextWith(lastSource, vocabSets);
 			const review = reviewCore.reviewText(lastSource, { bucketOf });
 			const sc = scorecard.scoreDeck({ source: lastSource, lintFindings: lint, reviewFindings: review });
@@ -294,6 +298,12 @@ const ARCHETYPES = {
 	},
 };
 
+// Flat list for fuzzy search (fuse.js) — preserves group order for grouping.
+const ARCHETYPE_LIST = [];
+for (const [group, items] of Object.entries(ARCHETYPES)) {
+	for (const name of Object.keys(items)) ARCHETYPE_LIST.push({ name, group, spine: items[name] });
+}
+
 export function createOnboarding({ catalog, mount, onBuild }) {
 	if (!mount) return { reset() {} };
 	const byName = new Map((catalog || []).map((c) => [c.name, c]));
@@ -304,6 +314,25 @@ export function createOnboarding({ catalog, mount, onBuild }) {
 		if (text != null) e.textContent = text;
 		return e;
 	};
+
+	const fuse = new Fuse(ARCHETYPE_LIST, { keys: ['name'], threshold: 0.4, ignoreLocation: true });
+	let inFlow = false; // user is actively choosing a new deck (doors / picker)
+	let everChose = false; // a mode has been chosen this session
+
+	// Once a real deck is being worked on, collapse the doors to a compact
+	// "✦ New deck" affordance so the scorecard is the focus; expand on an empty deck.
+	function compactView() {
+		mount.innerHTML = '';
+		const b = el('button', 'db-onboard-compact', '✦ New deck');
+		b.type = 'button';
+		b.addEventListener('click', () => { inFlow = true; doors(); });
+		mount.appendChild(b);
+	}
+	window.addEventListener('db-deck-content', (e) => {
+		if (inFlow) return;
+		if (e.detail || everChose) compactView();
+		else doors();
+	});
 
 	// ── The two doors ─────────────────────────────────────────────────────────
 	function doors() {
@@ -325,8 +354,10 @@ export function createOnboarding({ catalog, mount, onBuild }) {
 
 	// ── Freehand — blank canvas ───────────────────────────────────────────────
 	function startFreehand() {
+		everChose = true;
+		inFlow = false;
 		if (onBuild) onBuild('<!-- _class: title silent -->\n\n# New deck\n\nStart writing — I’ll review as you go.\n');
-		doors();
+		compactView();
 	}
 
 	// ── Drafting — archetype picker → framework-grounded spine ────────────────
@@ -345,16 +376,17 @@ export function createOnboarding({ catalog, mount, onBuild }) {
 		const list = el('div', 'db-draft-list');
 		mount.appendChild(list);
 		const renderList = () => {
-			const q = search.value.trim().toLowerCase();
+			const q = search.value.trim();
 			list.innerHTML = '';
-			for (const [group, items] of Object.entries(ARCHETYPES)) {
-				const names = Object.keys(items).filter((n) => !q || n.toLowerCase().includes(q));
-				if (!names.length) continue;
+			const items = q ? fuse.search(q).map((r) => r.item) : ARCHETYPE_LIST;
+			const groups = {};
+			for (const it of items) (groups[it.group] ||= []).push(it);
+			for (const [group, arr] of Object.entries(groups)) {
 				list.appendChild(el('div', 'db-draft-group', group));
-				for (const name of names) {
-					const item = el('button', 'db-draft-item', name);
+				for (const it of arr) {
+					const item = el('button', 'db-draft-item', it.name);
 					item.type = 'button';
-					item.addEventListener('click', () => proposeArchetype(name, items[name]));
+					item.addEventListener('click', () => proposeArchetype(it.name, it.spine));
 					list.appendChild(item);
 				}
 			}
@@ -384,7 +416,12 @@ export function createOnboarding({ catalog, mount, onBuild }) {
 		const row = el('div', 'db-ob-chips');
 		const build = el('button', 'db-btn db-btn-primary', 'Build this →');
 		build.type = 'button';
-		build.addEventListener('click', () => { if (onBuild) onBuild(assemble(name, spine), name); doors(); });
+		build.addEventListener('click', () => {
+			everChose = true;
+			inFlow = false;
+			if (onBuild) onBuild(assemble(name, spine), name);
+			compactView();
+		});
 		const other = el('button', 'db-ob-chip', 'Pick another');
 		other.type = 'button';
 		other.addEventListener('click', startDrafting);
