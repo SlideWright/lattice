@@ -22,6 +22,12 @@
 // interface is unchanged.
 const WEBLLM_URL = 'https://esm.run/@mlc-ai/web-llm';
 const TRANSFORMERS_URL = 'https://esm.run/@huggingface/transformers';
+// Puter — the "user pays" cloud tier (Converse). A <script> SDK (not an ESM
+// module); the user's Puter account covers the cost, so it's free to us, no key,
+// no backend. PUTER_MODEL is the only thing to tune if the id drifts — Puter
+// exposes Claude/GPT under string ids; live-verify on real hardware.
+const PUTER_URL = 'https://js.puter.com/v2/';
+const PUTER_MODEL = 'claude-sonnet-4';
 const EMBED_MODEL = 'Xenova/bge-small-en-v1.5';
 const WEBLLM_MODEL = 'Qwen2.5-1.5B-Instruct-q4f16_1-MLC';
 // The universal generation tier: a small instruct model that runs in WASM via
@@ -134,6 +140,53 @@ function webllmBackend() {
       }
       const r = await engine.chat.completions.create(req);
       return r.choices?.[0]?.message?.content ?? '';
+    },
+  };
+}
+
+// Puter — the cloud "user pays" tier (Converse). Loads the Puter <script> SDK on
+// demand; puter.ai.chat() bills the user's Puter account (free to us, no key, no
+// backend). Streams. The deck text leaves the device → gated behind explicit
+// consent in the UI before connect() is ever called.
+function puterBackend() {
+  let loaded = false;
+  function puter() { return typeof window !== 'undefined' ? window.puter : undefined; }
+  return {
+    name: 'puter',
+    async load() {
+      if (puter()) { loaded = true; return true; }
+      if (typeof document === 'undefined') throw new Error('no document');
+      await new Promise((resolve, reject) => {
+        let s = document.querySelector('script[data-puter]');
+        if (s) { s.addEventListener('load', resolve, { once: true }); s.addEventListener('error', reject, { once: true }); return; }
+        s = document.createElement('script');
+        s.src = PUTER_URL; s.async = true; s.setAttribute('data-puter', '1');
+        s.onload = () => resolve();
+        s.onerror = () => reject(new Error('Puter SDK failed to load'));
+        document.head.appendChild(s);
+      });
+      for (let i = 0; i < 60 && !puter(); i++) await new Promise((r) => setTimeout(r, 100));
+      if (!puter()) throw new Error('Puter SDK loaded but the puter global is missing');
+      loaded = true;
+      return true;
+    },
+    ready() { return loaded && !!puter(); },
+    async complete({ messages, onToken, signal }) {
+      const p = puter();
+      if (!p?.ai?.chat) throw new Error('Puter not connected');
+      const text = (x) => (x && (x.text || x?.message?.content)) || '';
+      if (onToken) {
+        const resp = await p.ai.chat(messages, { model: PUTER_MODEL, stream: true });
+        let full = '';
+        for await (const part of resp) {
+          if (signal?.aborted) break;
+          const t = text(part);
+          full += t; if (t) onToken(t);
+        }
+        return full;
+      }
+      const r = await p.ai.chat(messages, { model: PUTER_MODEL });
+      return text(r) || (typeof r === 'string' ? r : '');
     },
   };
 }
@@ -292,6 +345,7 @@ export function createArchitectModel({ getSettings } = {}) {
   let injected = null; // test hook — a MockBackend
   const prompt = promptApiBackend();
   const webllm = webllmBackend();
+  let puter = puterBackend();
   let universal = transformersGenBackend();
   let promptAvail = 'unknown';
   let embedder = null; // lazy Transformers.js pipeline
@@ -309,6 +363,9 @@ export function createArchitectModel({ getSettings } = {}) {
   function pickBackend() {
     if (!modelOn() || tierPref === 'floor') return floorBackend;
     if (injected) return injected;
+    // Puter (the connected cloud tier) is the best generation backend — it wins
+    // whenever the user has connected it (Converse), for chat + refine.
+    if (puter.ready()) return puter;
     // Explicit preference wins when that tier is ready.
     if (tierPref === 'webllm' && webllm.ready()) return webllm;
     if (tierPref === 'universal' && universal.ready()) return universal;
@@ -369,11 +426,19 @@ export function createArchitectModel({ getSettings } = {}) {
         webgpu: detectWebGPU(),
         webllmReady: webllm.ready(),
         universalReady: universal.ready(),
+        puterReady: puter.ready(),
         embeddings: modelOn() && hasWindow,
         modelOn: modelOn(),
       };
     },
     setTier(name) { tierPref = name; },
+    // Puter cloud tier (Converse) — load the SDK on demand AFTER UI consent. Once
+    // connected it's the preferred generation backend. Throws on failure so the
+    // caller can surface why (like the universal loader).
+    async connectPuter(onProgress, signal) {
+      await puter.load(onProgress, signal);
+      return true;
+    },
     // WebLLM opt-in — the deliberate "summon the Architect" (~1GB, WebGPU) download.
     async summon(onProgress, signal) {
       await webllm.load(onProgress, signal);
@@ -392,6 +457,7 @@ export function createArchitectModel({ getSettings } = {}) {
     __setBackend(b) { injected = b; },
     __setPromptAvailability(a) { promptAvail = a; },
     __setUniversal(b) { universal = b; },
+    __setPuter(b) { puter = b; },
   };
 }
 

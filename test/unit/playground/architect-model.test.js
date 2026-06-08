@@ -166,6 +166,25 @@ describe('generation ladder — universal Transformers.js tier', () => {
     assert.equal(m.availability().generation, 'prompt-api');
   });
 
+  test('connected Puter (cloud) outranks every local tier', async () => {
+    const { model } = await load();
+    const m = model.createArchitectModel({ getSettings: () => ({}) });
+    m.__setUniversal(readyBackend('transformers', 'U'));
+    m.__setPromptAvailability('available');
+    m.__setPuter({ name: 'puter', ready: () => true, async complete() { return 'FROM PUTER'; } });
+    assert.equal(m.availability().generation, 'puter');
+    assert.equal(m.availability().puterReady, true);
+    assert.equal(await m.complete({ messages: [], fallback: 'DET' }), 'FROM PUTER');
+  });
+
+  test('the model-off switch still forces the floor over connected Puter', async () => {
+    const { model } = await load();
+    const m = model.createArchitectModel({ getSettings: () => ({ modelEnabled: false }) });
+    m.__setPuter({ name: 'puter', ready: () => true, async complete() { return 'P'; } });
+    assert.equal(m.availability().generation, 'floor');
+    assert.equal(await m.complete({ messages: [], fallback: 'DET' }), 'DET');
+  });
+
   test('the model-off switch still forces the floor over a ready universal tier', async () => {
     const { model } = await load();
     const m = model.createArchitectModel({ getSettings: () => ({ modelEnabled: false }) });

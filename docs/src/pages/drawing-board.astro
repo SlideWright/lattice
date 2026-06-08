@@ -175,10 +175,13 @@ const dbData = JSON.stringify({
 						<!-- Converse view: the real conversation (thread). -->
 						<div class="db-converse" data-view="converse">
 							<div class="db-arch-chat" id="db-arch-chat" aria-live="polite"></div>
-							<p class="db-converse-empty" id="db-converse-empty">
-								Converse is a real AI conversation about your deck. Turn on on-device AI
-								from the&nbsp;⚙&nbsp;chip to start (a stronger cloud option is coming).
-							</p>
+							<div class="db-converse-empty" id="db-converse-empty">
+								<p>Converse is a real AI conversation about your deck — the ask, a specific slide, tightening a line. (Coach handles the scores and fixes.)</p>
+								<div class="db-converse-connect-wrap" id="db-converse-connect-wrap">
+									<button class="db-btn db-btn-primary db-converse-connect" id="db-converse-connect" type="button">Connect AI conversation — free</button>
+									<p class="db-converse-fine">Powered by Puter — free to you, no key. Your deck’s text is sent to Puter’s AI to generate replies. Prefer on-device? Turn it on from the&nbsp;⚙&nbsp;chip.</p>
+								</div>
+							</div>
 						</div>
 					</div>
 					<!-- The composer — only in Converse, only when a real model backs it. -->
@@ -383,6 +386,41 @@ const dbData = JSON.stringify({
 				archBody.setAttribute('data-converse-ready', ready ? 'true' : 'false');
 			};
 			window.__dbSyncConverse();
+
+			// Converse "Connect AI" — one-time consent, then load Puter (the cloud tier).
+			// Puter then becomes the active generation backend; the composer appears.
+			(function () {
+				var wrap = document.getElementById('db-converse-connect-wrap');
+				var btn = document.getElementById('db-converse-connect');
+				if (!wrap || !btn) return;
+				var el = function (t, c, x) { var e = document.createElement(t); if (c) e.className = c; if (x != null) e.textContent = x; return e; };
+				function reset() { wrap.innerHTML = ''; wrap.appendChild(btn); wrap.appendChild(fine); }
+				var fine = wrap.querySelector('.db-converse-fine');
+				btn.addEventListener('click', function () {
+					wrap.innerHTML = '';
+					wrap.appendChild(el('p', 'db-converse-fine', 'This sends your deck’s text to Puter’s AI to generate replies. It stays free to you. Continue?'));
+					var row = el('div', 'db-converse-consent-row');
+					var go = el('button', 'db-btn db-btn-primary', 'Continue'); go.type = 'button';
+					var no = el('button', 'db-btn', 'Cancel'); no.type = 'button';
+					no.addEventListener('click', reset);
+					go.addEventListener('click', async function () {
+						go.disabled = true; go.textContent = 'Connecting…';
+						try {
+							await window.__dbModel.connectPuter();
+							window.__dbSyncConverse();
+							if (window.__dbSettings) window.__dbSettings.refresh();
+							if (window.__dbChat) window.__dbChat.reload();
+						} catch (e) {
+							wrap.innerHTML = '';
+							wrap.appendChild(el('p', 'db-settings-error', 'Couldn’t connect: ' + (e && e.message || e)));
+							var retry = el('button', 'db-btn', 'Retry'); retry.type = 'button'; retry.addEventListener('click', reset);
+							wrap.appendChild(retry);
+						}
+					});
+					row.append(go, no);
+					wrap.appendChild(row);
+				});
+			})();
 
 			// The chat surface — grounded in the architect's live deterministic
 			// assessment, persisted per deck via the store, model phrases the reply.
