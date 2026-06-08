@@ -66,6 +66,7 @@ export default defineConfig({
 					label: 'Tools',
 					items: [
 						{ label: 'Playground', link: '/playground/' },
+						{ label: 'Drawing Board', link: '/drawing-board/' },
 						{ label: 'Components', link: '/components/' },
 					],
 				},

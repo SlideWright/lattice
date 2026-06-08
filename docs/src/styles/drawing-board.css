@@ -705,42 +705,57 @@ body.db-page .topbar {
 	display: none;
 }
 
+/* ── Tablet portrait + mobile (≤1024px): tabbed single-pane ────────────────
+ * Phones and iPad portrait get one full pane at a time (Decks · Architect ·
+ * Edit · Preview) with a bottom tab bar in its own row — no covering drawers,
+ * no overlap with the topbar. iPad landscape + laptops (>1024px) keep the full
+ * desktop 4-up above. */
 @media (max-width: 1024px) {
 	.db-workspace {
 		grid-template-columns: 1fr;
-		grid-template-rows: 1fr;
+		grid-template-rows: 1fr auto; /* active pane | tab bar */
 	}
 	.db-resizer {
 		display: none;
 	}
-	.db-rail {
-		position: absolute;
-		z-index: 30;
-		inset: 0 auto 0 0;
-		width: min(82vw, 320px);
-		transform: translateX(-101%);
-		transition: transform 0.18s ease;
-		box-shadow: var(--shadow-lg);
-	}
-	.db-workspace[data-rail="open"] .db-rail {
-		transform: none;
-	}
-	/* One pane at a time, driven by body[data-pane]. */
+
+	/* Every surface (incl. the rail) is a full pane stacked in row 1; only the
+	   active one shows. The rail is a normal pane here, not a drawer. */
+	.db-rail,
 	.db-panel {
 		grid-row: 1;
 		grid-column: 1;
 		border-left: 0;
 	}
+	.db-rail {
+		position: static;
+		width: auto;
+		transform: none;
+		box-shadow: none;
+	}
+	.db-rail-collapse {
+		display: none; /* the rail is a pane, nothing to collapse */
+	}
+
+	body[data-pane="decks"] .db-architect,
+	body[data-pane="decks"] .db-editor,
+	body[data-pane="decks"] .db-preview,
+	body[data-pane="architect"] .db-rail,
 	body[data-pane="architect"] .db-editor,
 	body[data-pane="architect"] .db-preview,
+	body[data-pane="editor"] .db-rail,
 	body[data-pane="editor"] .db-architect,
 	body[data-pane="editor"] .db-preview,
+	body[data-pane="preview"] .db-rail,
 	body[data-pane="preview"] .db-architect,
 	body[data-pane="preview"] .db-editor {
 		display: none;
 	}
+
 	.db-mobile-tabs {
 		display: flex;
+		grid-row: 2;
+		grid-column: 1;
 		flex: 0 0 auto;
 		border-top: 1px solid var(--border);
 		background: var(--bg-alt);
@@ -748,8 +763,8 @@ body.db-page .topbar {
 	.db-mobile-tab {
 		flex: 1 1 0;
 		font: inherit;
-		font-size: 0.8rem;
-		padding: 0.7rem 0.4rem;
+		font-size: 0.78rem;
+		padding: 0.6rem 0.3rem;
 		background: none;
 		border: 0;
 		border-top: 2px solid transparent;

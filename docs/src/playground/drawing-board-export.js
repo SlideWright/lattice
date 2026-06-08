@@ -1,17 +1,20 @@
-// The Drawing Board — export (Phase 1, Slice 4). Markdown, PDF, PowerPoint.
+// The Drawing Board — export (Phase 1, Slice 4 + the Phase-1-fixes rasterizer).
 //
 // Fidelity, honestly (the proposal's §6):
 //   - Markdown : perfect — it is the source.
-//   - PDF      : high — the browser print path over the ALREADY-rendered preview
-//                iframe (Mermaid/charts/KaTeX already laid out), one 1280x720
-//                slide per page. Not byte-identical to the puppeteer/marp-cli
-//                pipeline (no headless Chrome in the browser), but true vector.
-//   - PPTX     : image-slides — each rendered slide rasterized to PNG (SVG
-//                foreignObject -> canvas) and placed full-bleed via PptxGenJS.
-//                Editable container, NON-editable content. Best-effort: web-font
-//                text (incl. KaTeX math) and remote raster images are the known
-//                soft spots; self-contained decks with Mermaid/native type fare
-//                best. PptxGenJS is lazy-imported so it never loads unless used.
+//   - PDF      : one-click image PDF. Each rendered slide is rasterized to a
+//                2x PNG with web fonts EMBEDDED (html-to-image follows the
+//                engine CSS's @import of Google Fonts and inlines them), then
+//                placed one-per-page via jsPDF. No print dialog. Trade-off:
+//                text is an image, not selectable/searchable. For vector +
+//                selectable text use "Print" (the browser's own PDF engine).
+//   - PPTX     : image-slides — the same 2x font-embedded PNGs, full-bleed via
+//                PptxGenJS. Editable container, non-editable content.
+//   - Print    : the browser print path over the already-rendered preview —
+//                true vector, selectable, highest fidelity, but a dialog.
+//
+// html-to-image / jspdf / pptxgenjs are all lazy-imported, so none loads unless
+// the matching export is invoked.
 
 function safeName(name) {
 	return (name || 'deck').trim().replace(/[^\w.-]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60) || 'deck';
@@ -33,73 +36,71 @@ export function exportMarkdown(source, name) {
 	download(new Blob([source], { type: 'text/markdown;charset=utf-8' }), safeName(name) + '.md');
 }
 
-// ── PDF (browser print path) ─────────────────────────────────────────────────
-// The preview iframe already carries an `@media print` block (see writeFrame in
-// drawing-board.astro) that un-scales each section to a full 1280x720 page and
-// page-breaks between them, so we just invoke the iframe's own print dialog —
-// the user chooses "Save as PDF".
-export function exportPdf(frame) {
-	const win = frame?.contentWindow;
-	if (!win) throw new Error('Preview not ready yet.');
-	win.focus();
-	win.print();
-}
-
-// ── PPTX (image-slides) ───────────────────────────────────────────────────────
-async function rasterizeSection(section, css) {
-	const W = 1280;
-	const H = 720;
-	const clone = section.cloneNode(true);
-	clone.classList.remove('db-active');
-	clone.removeAttribute('style'); // drop the live FIT transform / margins
-	const xhtml = new XMLSerializer().serializeToString(clone);
-	// An SVG whose foreignObject hosts the slide HTML + the engine stylesheet.
-	// Rendering it through an <img> lets the browser lay it out, then we draw it
-	// to a canvas and read PNG bytes.
-	const body =
-		'<div xmlns="http://www.w3.org/1999/xhtml" style="width:' + W + 'px;height:' + H + 'px;background:#fff;">' +
-		'<style>' + css + '</style>' +
-		'<div class="marpit">' + xhtml + '</div></div>';
-	const svg =
-		'<svg xmlns="http://www.w3.org/2000/svg" width="' + W + '" height="' + H + '">' +
-		'<foreignObject x="0" y="0" width="' + W + '" height="' + H + '">' + body + '</foreignObject></svg>';
-	const url = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
-	const img = new Image();
-	await new Promise((resolve, reject) => {
-		img.onload = () => resolve();
-		img.onerror = () => reject(new Error('A slide could not be rasterized (remote image or blocked font).'));
-		img.src = url;
+// ── Rasterize one rendered slide to a 2x PNG (web fonts embedded) ─────────────
+// html-to-image clones the node, walks the document's stylesheets (incl. the
+// engine CSS's `@import` of Google Fonts), fetches + inlines the font files, and
+// renders to a canvas — so text uses the real fonts instead of falling back.
+// `transform:none` undoes the live FIT scale; pixelRatio 2 keeps it crisp.
+async function rasterizeSection(section) {
+	const { toPng } = await import('html-to-image');
+	return toPng(section, {
+		width: 1280,
+		height: 720,
+		pixelRatio: 2,
+		backgroundColor: '#ffffff',
+		cacheBust: true,
+		style: { transform: 'none', margin: '0', boxShadow: 'none', outline: 'none', borderRadius: '0' },
+		filter: (n) => !(n.classList && n.classList.contains('db-active')),
 	});
-	const canvas = document.createElement('canvas');
-	canvas.width = W;
-	canvas.height = H;
-	const ctx = canvas.getContext('2d');
-	ctx.fillStyle = '#ffffff';
-	ctx.fillRect(0, 0, W, H);
-	ctx.drawImage(img, 0, 0, W, H);
-	return canvas.toDataURL('image/png'); // throws SecurityError if tainted (remote img)
 }
 
-export async function exportPptx(frame, name, onStatus) {
-	const doc = frame?.contentDocument;
+async function sectionsOf(frame) {
+	const doc = frame && frame.contentDocument;
 	if (!doc) throw new Error('Preview not ready yet.');
 	const sections = doc.querySelectorAll('.marpit>section');
 	if (!sections.length) throw new Error('Nothing to export yet.');
-	// The frame's own <style> already carries SLIDE_BOX + the engine CSS, so the
-	// foreignObject sizes + themes each section correctly.
-	const css = Array.from(doc.querySelectorAll('style')).map((s) => s.textContent).join('\n');
+	try { await doc.fonts.ready; } catch (e) { /* fonts best-effort */ }
+	return sections;
+}
 
+// ── PDF (one-click image PDF) ─────────────────────────────────────────────────
+export async function exportPdf(frame, name, onStatus) {
+	const sections = await sectionsOf(frame);
+	if (onStatus) onStatus('Preparing PDF…');
+	const { jsPDF } = await import('jspdf');
+	const pdf = new jsPDF({ orientation: 'landscape', unit: 'px', format: [1280, 720], compress: true });
+	for (let i = 0; i < sections.length; i++) {
+		if (onStatus) onStatus('Rendering slide ' + (i + 1) + ' of ' + sections.length + '…');
+		const png = await rasterizeSection(sections[i]);
+		if (i > 0) pdf.addPage([1280, 720], 'landscape');
+		pdf.addImage(png, 'PNG', 0, 0, 1280, 720);
+	}
+	pdf.save(safeName(name) + '.pdf');
+}
+
+// ── PPTX (image-slides) ───────────────────────────────────────────────────────
+export async function exportPptx(frame, name, onStatus) {
+	const sections = await sectionsOf(frame);
 	if (onStatus) onStatus('Loading PowerPoint export…');
 	const { default: PptxGenJS } = await import('pptxgenjs');
 	const pptx = new PptxGenJS();
 	pptx.layout = 'LAYOUT_WIDE'; // 13.333 x 7.5in, 16:9 — matches the 1280x720 box
-
 	for (let i = 0; i < sections.length; i++) {
-		if (onStatus) onStatus('Rasterizing slide ' + (i + 1) + ' of ' + sections.length + '…');
-		const png = await rasterizeSection(sections[i], css);
-		const slide = pptx.addSlide();
-		slide.addImage({ data: png, x: 0, y: 0, w: '100%', h: '100%' });
+		if (onStatus) onStatus('Rendering slide ' + (i + 1) + ' of ' + sections.length + '…');
+		const png = await rasterizeSection(sections[i]);
+		pptx.addSlide().addImage({ data: png, x: 0, y: 0, w: '100%', h: '100%' });
 	}
 	if (onStatus) onStatus('Building .pptx…');
 	await pptx.writeFile({ fileName: safeName(name) + '.pptx' });
+}
+
+// ── Print (vector, selectable — the browser's own PDF engine) ─────────────────
+// The preview iframe carries an `@media print` block (see writeFrame in
+// drawing-board.astro) that un-scales each section to a full 1280x720 page and
+// page-breaks between them; the user chooses "Save as PDF".
+export function exportPrint(frame) {
+	const win = frame && frame.contentWindow;
+	if (!win) throw new Error('Preview not ready yet.');
+	win.focus();
+	win.print();
 }
