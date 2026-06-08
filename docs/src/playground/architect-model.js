@@ -98,7 +98,9 @@ function webllmBackend() {
     async load(onProgress, signal) {
       const webllm = await import(/* @vite-ignore */ WEBLLM_URL);
       engine = await webllm.CreateMLCEngine(WEBLLM_MODEL, {
-        initProgressCallback: (p) => onProgress?.(p),
+        // WebLLM's progress is already a 0–1 fraction — pass it through in the
+        // same {progress, text} shape the universal backend uses.
+        initProgressCallback: (p) => onProgress?.({ progress: p?.progress || 0, text: p?.text }),
       });
       if (signal?.aborted) throw new Error('aborted');
       return true;
@@ -140,7 +142,9 @@ function transformersGenBackend() {
       lib = await import(/* @vite-ignore */ TRANSFORMERS_URL);
       generator = await lib.pipeline('text-generation', UNIVERSAL_MODEL, {
         dtype: 'q4',
-        progress_callback: (p) => onProgress?.(p),
+        // Transformers.js reports `progress` as a 0–100 percentage, per file. The
+        // adapter normalizes ALL backends to a 0–1 fraction so the UI is uniform.
+        progress_callback: (p) => onProgress?.({ progress: (p?.progress || 0) / 100, text: p?.file || p?.status, status: p?.status }),
       });
       if (signal?.aborted) throw new Error('aborted');
       return true;

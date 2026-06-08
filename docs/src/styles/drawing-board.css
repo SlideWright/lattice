@@ -1496,6 +1496,51 @@ body.db-page .topbar {
 	background: var(--accent);
 	transition: width 0.2s;
 }
+/* "In use" indicator — which tier is actually answering right now. */
+.db-settings-active {
+	display: flex;
+	align-items: center;
+	gap: 0.45rem;
+	margin: 0.5rem 0;
+	font-size: 0.82rem;
+	color: var(--text-muted);
+}
+.db-settings-active.on {
+	color: var(--accent);
+	font-weight: 600;
+}
+.db-settings-dot {
+	flex: 0 0 auto;
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	background: var(--text-muted);
+}
+.db-settings-active.on .db-settings-dot {
+	background: var(--accent);
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+/* Cached-weights controls. */
+.db-settings-cache {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.5rem;
+	margin-top: 0.7rem;
+	padding-top: 0.7rem;
+	border-top: 1px solid var(--border);
+	font-size: 0.78rem;
+	color: var(--text-body);
+}
+.db-settings-remove {
+	flex: 0 0 auto;
+	font-size: 0.74rem;
+	padding: 0.25rem 0.6rem;
+}
+.db-settings-remove:hover {
+	border-color: #c0392b;
+	color: #c0392b;
+}
 
 /* ── Refine actions menu (Slice 9b) ─────────────────────────────────────────── */
 .db-refine {
