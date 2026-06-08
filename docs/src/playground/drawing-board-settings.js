@@ -70,7 +70,8 @@ export function createModelSettings({ host, trigger, model, onChange }) {
     if (!a.modelOn) return 'Deterministic (AI off)';
     if (a.generation !== 'floor' && a.generation !== 'mock') return tierLabel(a);
     if (lastError) return 'AI load failed — tap'; // surfaced so it isn't silent
-    if (readTier()) return 'Reconnect on-device AI'; // cached but not live this session
+    // Reconnect is a desktop affordance — on-device tiers don't run on a phone.
+    if (readTier() && !coarsePointer()) return 'Reconnect on-device AI'; // cached but not live this session
     return 'Deterministic floor';
   }
   function refresh() {
@@ -196,7 +197,7 @@ export function createModelSettings({ host, trigger, model, onChange }) {
       tiers.append(r);
     };
     tier('Built-in AI (Chrome/Edge)', a.promptApi === 'available' ? 'ready' : a.promptApi === 'downloadable' ? 'downloadable' : 'not here');
-    tier('Universal (runs anywhere)', a.universalReady ? 'in use' : 'loadable');
+    tier('Universal (on-device)', a.universalReady ? 'in use' : coarsePointer() ? 'desktop only' : 'loadable');
     tier('Advanced · WebLLM', a.webllmReady ? 'in use' : heavyOk ? 'available' : coarsePointer() ? 'desktop only' : 'needs WebGPU');
     panel.append(tiers);
 
@@ -212,19 +213,28 @@ export function createModelSettings({ host, trigger, model, onChange }) {
     };
 
     if (a.modelOn) {
-      // Universal Transformers.js — the path that works on Safari / phones.
-      if (a.promptApi !== 'available' && !a.universalReady && !a.webllmReady) {
-        loadFlow('universal', 'Load on-device AI (~350 MB · works on any browser)',
-          'A small one-time download so the Architect can converse on THIS device — no special browser or GPU needed. It’s a compact model (modest answers), runs in your browser, and stays on your device.',
-          (p, s) => model.loadUniversal(p, s));
-      }
-      // WebLLM — desktop GPUs only (it crashes phone tabs).
-      if (heavyOk && !a.webllmReady) {
-        loadFlow('webllm', 'Advanced: WebLLM (~1 GB · desktop GPU)',
-          'The highest-quality on-device tier, for capable desktops. Optional — the lighter tiers stay available.',
-          (p, s) => model.summon(p, s));
-      } else if (coarsePointer() && !a.webllmReady) {
-        panel.append(el('p', 'db-settings-note', 'WebLLM (the ~1 GB tier) is desktop-only — it’s too heavy for a phone browser. The universal model above runs great here.'));
+      // On-device models are a DESKTOP capability. A phone tab can't hold the
+      // weights (~350 MB–1 GB) without the OOM-reload we chased for weeks, and the
+      // tiny models that do fit aren't worth it — so mobile gets no local tier at
+      // all. Real conversation on a phone comes from Converse (cloud, free to you).
+      if (coarsePointer()) {
+        panel.append(el('p', 'db-settings-note',
+          'On-device AI runs on desktop only — phone tabs can’t hold the model. ' +
+          'On this device, Coach gives you the deterministic review, and Converse ' +
+          'gives you a real conversation (cloud-powered, free to you).'));
+      } else {
+        // Universal Transformers.js — the no-GPU desktop path (works in any browser).
+        if (a.promptApi !== 'available' && !a.universalReady && !a.webllmReady) {
+          loadFlow('universal', 'Load on-device AI (~350 MB · any desktop browser)',
+            'A one-time download so the Architect can converse privately on THIS computer — no GPU needed. It’s a compact model (modest answers), runs in your browser, and stays on your device. Prefer the highest quality? Use Converse (cloud) instead.',
+            (p, s) => model.loadUniversal(p, s));
+        }
+        // WebLLM — desktop GPUs only (it crashes phone tabs).
+        if (heavyOk && !a.webllmReady) {
+          loadFlow('webllm', 'Advanced: WebLLM (~1 GB · desktop GPU)',
+            'The highest-quality on-device tier, for capable desktops. Optional — the lighter tiers stay available.',
+            (p, s) => model.summon(p, s));
+        }
       }
     }
 
@@ -269,7 +279,10 @@ export function createModelSettings({ host, trigger, model, onChange }) {
   async function restore() {
     const tier = readTier();
     if (!tier || !model.availability().modelOn) return;
-    if (tier === 'webllm' && (coarsePointer() || !(await probeWebGPU()))) return;
+    // On-device tiers are desktop-only now — never re-init a local model on a
+    // phone (the weights can't survive the tab; Converse covers chat there).
+    if (coarsePointer()) return;
+    if (tier === 'webllm' && !(await probeWebGPU())) return;
     try {
       if (sessionStorage.getItem(RESTORE_GUARD) === '1') return;
       sessionStorage.setItem(RESTORE_GUARD, '1');
