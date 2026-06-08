@@ -29,6 +29,7 @@ async function setup({ reply, generation = 'puter' }) {
 
   let source = DECK;
   const applied = [];
+  const applies = []; // onApply (auto-checkpoint) events
   const model = {
     availability: () => ({ generation, modelOn: true }),
     async complete() { return reply; },
@@ -38,8 +39,9 @@ async function setup({ reply, generation = 'puter' }) {
     getAssessment: () => ({ source, scorecard: { band: 'A', overall: 92 }, findings: [] }),
     getSource: () => source,
     applyFix: (next) => { applied.push(next); source = next; },
+    onApply: (e) => applies.push(e),
   });
-  return { chat, mount, applied, getSource: () => source };
+  return { chat, mount, applied, applies, getSource: () => source };
 }
 
 describe('Converse editing loop (DOM)', () => {
@@ -84,6 +86,16 @@ describe('Converse editing loop (DOM)', () => {
     assert.doesNotMatch(getSource(), /new body/);
   });
 
+  test('Apply fires onApply with the PRE-edit deck + a label (auto-checkpoint hook)', async () => {
+    const reply = '````lattice-edit slide=2\n# Plan\n\nnew body\n````';
+    const { chat, mount, applies } = await setup({ reply });
+    await chat.send('go');
+    mount.querySelector('.db-edit-card .db-edit-actions .db-btn-primary').click();
+    assert.equal(applies.length, 1);
+    assert.equal(applies[0].before, DECK, 'snapshots the deck before the edit');
+    assert.match(applies[0].label, /Replace slide 2/);
+  });
+
   test('Discard collapses to a dismissed line without touching the deck', async () => {
     const reply = '````lattice-edit slide=2\n# Plan\n\nx\n````';
     const { chat, mount, applied } = await setup({ reply });
@@ -111,6 +123,15 @@ describe('batch controls (multi-edit reply)', () => {
     assert.equal([...mount.querySelectorAll('.db-edit-card')].every((c) => c.dataset.state === 'applied'), true);
     assert.match(batch.querySelector('.db-edit-batch-label').textContent, /Applied 2 edits/);
     assert.ok(!batch.querySelector('.db-edit-undo').hidden, 'batch Undo offered');
+  });
+
+  test('Apply all fires a single onApply for the batch (one checkpoint)', async () => {
+    const { chat, mount, applies } = await setup({ reply: TWO });
+    await chat.send('go');
+    mount.querySelector('.db-edit-batch .db-btn-primary').click(); // Apply all
+    assert.equal(applies.length, 1, 'one checkpoint for the whole batch');
+    assert.equal(applies[0].before, DECK);
+    assert.match(applies[0].label, /Apply all · 2 edits/);
   });
 
   test('batch Undo reverts the whole batch in one step', async () => {

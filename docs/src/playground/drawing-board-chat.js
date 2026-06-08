@@ -135,7 +135,7 @@ export function floorReply(assessment, userText = '') {
     `Ask me about a specific slide or "what should I fix" for more. ${enable}`;
 }
 
-export function createChat({ mount, composer, model, store, getAssessment, catalog, applyFix, getSource }) {
+export function createChat({ mount, composer, model, store, getAssessment, catalog, applyFix, getSource, onApply }) {
   if (!mount || !composer) return { reload() {}, focus() {} };
   let deckId = store?.getActiveId ? store.getActiveId() : null;
   let busy = false;
@@ -251,6 +251,7 @@ export function createChat({ mount, composer, model, store, getAssessment, catal
     applyBtn.addEventListener('click', () => {
       if (!getSource || !applyFix) return;
       const snapshot = getSource();
+      onApply?.({ before: snapshot, label: editLabel(edit) }); // auto-checkpoint the pre-edit state
       applyFix(applyEdit(snapshot, edit));
       api.applied();
       undoBtn.hidden = false;
@@ -290,6 +291,7 @@ export function createChat({ mount, composer, model, store, getAssessment, catal
         const open = cards.filter((c) => c.isOpen());
         if (!open.length) return;
         const snapshot = getSource();
+        onApply?.({ before: snapshot, label: `Apply all · ${open.length} edits` }); // one checkpoint for the batch
         // Apply in slide-descending order so insert/delete don't shift the targets
         // of the edits not yet applied in this batch.
         let src = snapshot;

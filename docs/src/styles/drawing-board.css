@@ -318,6 +318,19 @@ body.db-page .topbar {
 .db-hist-label {
 	font-weight: 550;
 }
+/* Marks a checkpoint the Architect created on apply (vs a manual one). */
+.db-hist-ai {
+	display: inline-block;
+	margin-right: 0.4rem;
+	padding: 0.02rem 0.32rem;
+	font-size: 0.62rem;
+	font-weight: 700;
+	letter-spacing: 0.04em;
+	border-radius: 999px;
+	color: var(--on-accent);
+	background: var(--accent);
+	vertical-align: middle;
+}
 .db-hist-time {
 	flex: 0 0 auto;
 	font-size: 0.7rem;
