@@ -352,11 +352,21 @@ const dbData = JSON.stringify({
 				catalog: data.catalog,
 				mount: document.getElementById('db-arch-onboard'),
 				model,
-				onBuild: (src, name) => {
+				onBuild: async (src, name) => {
 					// name = the archetype (Drafting) or undefined (Freehand → auto-titled
 					// from the deck's H1). The store derives the title + description.
-					if (window.__dbStore && window.__dbStore.create) window.__dbStore.create(src, name);
+					// Flag onboarding-start so the controller doesn't yank narrow layouts to
+					// the editor — keep you on the Architect to see its greeting (say, below).
+					window.__dbOnboardingStart = true;
+					if (window.__dbStore && window.__dbStore.create) await window.__dbStore.create(src, name);
 					else if (window.__dbEditor) window.__dbEditor.setValue(src);
+				},
+				// The Architect "talks back" when it starts a deck: post a greeting into the
+				// thread and (on narrow layouts) stay on the Architect so it's seen.
+				say: async (text) => {
+					if (window.__dbChat && window.__dbChat.say) await window.__dbChat.say(text);
+					if (window.matchMedia('(max-width: 1024px)').matches && window.__dbSetPane) window.__dbSetPane('architect');
+					window.__dbOnboardingStart = false;
 				},
 			});
 		</script>
@@ -677,9 +687,11 @@ const dbData = JSON.stringify({
 					recomputeStarts();
 					render();
 					if (window.__dbArchitect) window.__dbArchitect.update(src);
-					// On narrow layouts (tabbed single-pane), picking/building a deck
-					// from another tab should land you in the editor.
-					if (window.matchMedia('(max-width: 1024px)').matches) setPane('editor');
+					// On narrow layouts (tabbed single-pane), picking/restoring a deck
+					// from another tab lands you in the editor — EXCEPT an onboarding start
+					// (Freehand / Drafting build), which keeps you on the Architect so its
+					// greeting is seen (the onboarding's `say` switches the pane itself).
+					if (!window.__dbOnboardingStart && window.matchMedia('(max-width: 1024px)').matches) setPane('editor');
 				});
 				// Cursor moved in the editor -> if it crossed into a different slide,
 				// scroll the filmstrip to it (smooth). Same-slide moves don't scroll, so
@@ -811,6 +823,8 @@ const dbData = JSON.stringify({
 					tabs.forEach(function (t) { t.setAttribute('aria-selected', t.getAttribute('data-pane') === which ? 'true' : 'false'); });
 					if (which === 'preview') render();
 				}
+				// Let the onboarding (a separate module script) drive the pane on a deck start.
+				window.__dbSetPane = setPane;
 				tabs.forEach(function (t) {
 					t.addEventListener('click', function () { setPane(t.getAttribute('data-pane')); });
 				});

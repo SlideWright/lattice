@@ -143,6 +143,38 @@ describe('retrieval (cosine ranking)', () => {
   });
 });
 
+describe('generation ladder — universal Transformers.js tier', () => {
+  const readyBackend = (name, reply) => ({ name, ready: () => true, async complete() { return reply; } });
+
+  test('falls back to the universal tier when no Prompt API and it is loaded', async () => {
+    const { model } = await load();
+    const m = model.createArchitectModel({ getSettings: () => ({}) });
+    m.__setUniversal(readyBackend('transformers', 'FROM UNIVERSAL'));
+    m.__setPromptAvailability('unavailable');
+    const out = await m.complete({ messages: [], fallback: 'DET' });
+    assert.equal(out, 'FROM UNIVERSAL');
+    assert.equal(m.availability().generation, 'transformers');
+    assert.equal(m.availability().universalReady, true);
+  });
+
+  test('prefers the built-in Prompt API over the universal tier when both are ready', async () => {
+    const { model } = await load();
+    const m = model.createArchitectModel({ getSettings: () => ({}) });
+    m.__setUniversal(readyBackend('transformers', 'U'));
+    m.__setPromptAvailability('available');
+    // Prompt API is free + instant (no download), so it wins in auto mode.
+    assert.equal(m.availability().generation, 'prompt-api');
+  });
+
+  test('the model-off switch still forces the floor over a ready universal tier', async () => {
+    const { model } = await load();
+    const m = model.createArchitectModel({ getSettings: () => ({ modelEnabled: false }) });
+    m.__setUniversal(readyBackend('transformers', 'U'));
+    assert.equal(m.availability().generation, 'floor');
+    assert.equal(await m.complete({ messages: [], fallback: 'DET' }), 'DET');
+  });
+});
+
 describe('model settings (Slice 8)', () => {
   test('probeWebGPU is Node-safe and returns false without an adapter', async () => {
     const s = await import('../../../docs/src/playground/drawing-board-settings.js');
