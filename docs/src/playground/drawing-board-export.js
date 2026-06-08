@@ -43,11 +43,11 @@ export function exportMarkdown(source, name) {
 }
 
 async function sectionsOf(frame) {
-	const doc = frame && frame.contentDocument;
+	const doc = frame?.contentDocument;
 	if (!doc) throw new Error('Preview not ready yet.');
 	const sections = doc.querySelectorAll('.marpit>section');
 	if (!sections.length) throw new Error('Nothing to export yet.');
-	try { await doc.fonts.ready; } catch (e) { /* fonts best-effort */ }
+	try { await doc.fonts.ready; } catch (_e) { /* fonts best-effort */ }
 	return sections;
 }
 
@@ -61,7 +61,7 @@ async function rasterizeSection(section) {
 		cacheBust: true,
 		// transform:none undoes the live FIT scale; no backgroundColor (see header).
 		style: { transform: 'none', margin: '0', boxShadow: 'none', outline: 'none', borderRadius: '0' },
-		filter: (n) => !(n.classList && n.classList.contains('db-active')),
+		filter: (n) => !(n.classList?.contains('db-active')),
 	});
 }
 
@@ -98,7 +98,7 @@ export async function exportPptx(frame, name, onStatus) {
 
 // ── Print (vector, selectable — the browser's own PDF engine) ─────────────────
 export function exportPrint(frame) {
-	const win = frame && frame.contentWindow;
+	const win = frame?.contentWindow;
 	if (!win) throw new Error('Preview not ready yet.');
 	win.focus();
 	win.print();
