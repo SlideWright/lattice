@@ -9225,11 +9225,16 @@ section footer {
  * overrides — cards-grid grid placement, actors categorical hue —
  * win the cascade without needing !important.
  *
- * :last-child is the metadata test: only the trailing `code` becomes
- * a pill. Mid-sentence `code` references stay normal inline code.
- * The :has(+ ul/ol) extension also matches a trailing `code` on the
- * row's title line when a nested list (description) follows it \u2014
- * authoring shape: `- Label \`pill\`\n  - description`.
+ * Two shapes are pills: a trailing `code` that is the literal :last-child
+ * of the row, and a trailing `code` on the row's TITLE line immediately
+ * before a nested description list \u2014 authoring shape:
+ * `- Label \`pill\`\n  - description`. The second can't be matched in CSS
+ * (`code:has(+ :is(ul,ol))` would also catch a MID-sentence `code` on a row
+ * that happens to have a nested list, because `+` skips the intervening text
+ * node), so the `pill-tag` transformer adds `.lat-pill` to the genuine case
+ * across all three render paths and the arm matches that class. Mid-sentence
+ * `code` references stay normal inline code.
+ * See lib/transformers/pill-tag.js + 2026-06-08-inline-code-contrast.md.
  *
  * Per-layout custom-property hooks (defaults in parens):
  *   --pill-border  (var(--text-muted))   border colour
@@ -9257,7 +9262,7 @@ section footer {
  * so the universal selector can't reach it); the rest rely on this rule.
  * Plus any future layout whose `> li` is `display:flex`. */
 section:where(:not(.title):not(.divider):not(.closing):not(.split-panel):not(.featured):not(.big-number):not(.kpi):not(.stats):not(.quote):not(.glossary):not(.compare-table):not(.roadmap):not(.agenda):not(.matrix-2x2):not(.decision):not(.verdict-grid):not(.compare-prose):not(.code):not(.compare-code):not(.image):not(.diagram):not(.content):not(.timeline):not(.list-steps):not(.principles):not(.list):not(.list-criteria):not(.list-tabular):not(.math))
-  > :where(ul, ol) > li > code:where(:last-child, :has(+ :is(ul, ol))) {
+  > :where(ul, ol) > li > code:where(:last-child, .lat-pill) {
   margin-left:auto;
   align-self:center;
   display:inline-flex;

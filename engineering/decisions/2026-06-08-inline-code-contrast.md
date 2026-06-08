@@ -4,9 +4,11 @@
 **Status:** implemented (branch `claude/inline-code-styling-aGPEA`)
 **Scope:** `lib/base/base.elements.css` (the `section code` chip rule),
 `lib/base/base.tokens.css` (new `--code-inline-*` token seam),
-`lib/base/base.modifiers.css` (per-surface ink rebinds), `themes/mustard.css`
-(AA tune). CSS-only — no transform/runtime/emulator change, so all three
-render paths inherit the fix through `dist/lattice.css`.
+`lib/base/base.modifiers.css` (per-surface ink rebinds + the pill arm),
+all 13 `themes/*.css` (curated chip ink), and
+`lib/transformers/pill-tag.js` + registry (the pill over-match fix — the one
+non-CSS part). The chip/contrast work is CSS-only; the pill fix adds a shared
+transformer across all three render paths.
 
 ## Symptom
 
@@ -104,11 +106,21 @@ mode and lighter in dark mode, and `--accent-soft` sits between them).
 - **Keep opaque `--bg-alt` fill, rebind only broken surfaces.** Rejected: the
   currentColor wash is strictly more robust and removes the per-surface fill
   enumeration entirely; the canvas look is preserved (verified visually).
-- **Pill heuristic over-match (separate bug).** The universal-pill selector
-  `code:has(+ :is(ul,ol))` promotes *mid-sentence* code to a pill whenever the
-  row has a nested list, because the `+` combinator skips the intervening text
-  node (confirmed in rendered HTML). CSS cannot distinguish "code immediately
-  before a nested list" from "code, text, nested list," so the real fix is in
-  the transform/runtime layer across all three paths. **Deferred** to a
-  follow-up; tracked here so the "make inline code interpreted" proposal
-  resolves it before relying on the heuristic.
+- (none)
+
+## Pill heuristic over-match — fixed (transform layer)
+
+The universal-pill selector `code:has(+ :is(ul,ol))` promoted *mid-sentence*
+code to a pill whenever the row had a nested list, because the `+` combinator
+skips the intervening text node (confirmed in rendered HTML). CSS cannot
+distinguish "code immediately before a nested list" from "code, text, nested
+list," so the fix lives in the transform layer: **`lib/transformers/pill-tag.js`**
+adds `class="lat-pill"` to a `<code>` whose close tag is immediately followed by
+only whitespace then a nested `<ul>/<ol>`, and the CSS arm became
+`code:where(:last-child, .lat-pill)`. The kernel runs in all three paths via the
+shared registry (`applyToHtml` for marp-cli, `applyToSection` for the emulator,
+`applyToDom` for the runtime). The `:last-child` arm is unchanged (it was always
+precise). Tagging is generous — it does not check the parent is an `<li>` —
+because the universal selector still gates on `… > li > code`, so a stray tagged
+node is inert. This is the conflation the "interpreted inline code" proposal can
+now build on safely.

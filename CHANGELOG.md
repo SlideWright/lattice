@@ -417,6 +417,16 @@ in patch versions.
 
 ### Fixed
 
+- **Mid-sentence inline code is no longer mis-promoted to a metadata pill.**
+  The universal pill rule matched `code:has(+ :is(ul, ol))`, but the `+`
+  combinator skips text nodes, so a mid-sentence reference on a row that merely
+  had a nested list (`- The \`--accent\` token does X\n  - detail`) was styled
+  as a pill. A new `pill-tag` transformer (shared across marp-cli, emulator,
+  and runtime) tags only the genuine trailing-`code`-before-a-nested-list case
+  with `.lat-pill`, and the CSS arm now matches that class; the `:last-child`
+  pill (a truly trailing `code`) is unchanged. See
+  `engineering/decisions/2026-06-08-inline-code-contrast.md`.
+
 - **Docs site search boxes no longer trigger iOS Safari's focus-zoom.** The
   playground component search, the component-reference search, and the Group-by
   selects were below the 16px threshold that makes iOS zoom the page on focus;
