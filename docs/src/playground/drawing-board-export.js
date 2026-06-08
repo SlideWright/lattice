@@ -39,7 +39,7 @@ export function exportMarkdown(source, name) {
 // page-breaks between them, so we just invoke the iframe's own print dialog —
 // the user chooses "Save as PDF".
 export function exportPdf(frame) {
-	const win = frame && frame.contentWindow;
+	const win = frame?.contentWindow;
 	if (!win) throw new Error('Preview not ready yet.');
 	win.focus();
 	win.print();
@@ -81,7 +81,7 @@ async function rasterizeSection(section, css) {
 }
 
 export async function exportPptx(frame, name, onStatus) {
-	const doc = frame && frame.contentDocument;
+	const doc = frame?.contentDocument;
 	if (!doc) throw new Error('Preview not ready yet.');
 	const sections = doc.querySelectorAll('.marpit>section');
 	if (!sections.length) throw new Error('Nothing to export yet.');

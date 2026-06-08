@@ -25,8 +25,8 @@ function chunkStartLines(src) {
 
 export function createArchitect({ vocab, mount, reveal, applyFix }) {
 	const vocabSets = {
-		names: new Set((vocab && vocab.names) || []),
-		modifiers: new Set((vocab && vocab.modifiers) || []),
+		names: new Set((vocab?.names) || []),
+		modifiers: new Set((vocab?.modifiers) || []),
 	};
 	let lastSource = '';
 	let timer = null;
@@ -138,7 +138,7 @@ export function createArchitect({ vocab, mount, reveal, applyFix }) {
 	function run() {
 		try {
 			render(lintCore.lintTextWith(lastSource, vocabSets));
-		} catch (e) {
+		} catch (_e) {
 			// Never let a review error break the editor.
 			if (mount) mount.innerHTML = '';
 		}
@@ -303,7 +303,7 @@ export function createOnboarding({ catalog, mount, onBuild }) {
 		slides.push(`<!-- _class: title silent -->\n\n\`${answers.what || 'deck'}\`\n\n# New deck\n\n${answers.outcome || ''}`.trim());
 		for (const n of picks) {
 			const c = byName.get(n);
-			slides.push((c && c.skeleton) || `<!-- _class: ${n} -->\n`);
+			slides.push((c?.skeleton) || `<!-- _class: ${n} -->\n`);
 		}
 		slides.push(`<!-- _class: closing -->\n\n## ${answers.outcome || 'The one thing to remember'}`);
 		return `${slides.join('\n\n---\n\n')}\n`;

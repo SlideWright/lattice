@@ -164,7 +164,7 @@ export function createStore({ getSource, onLoadDeck, starter = '' }) {
 	}
 
 	async function deleteDeck(id) {
-		const decks = await getAll('decks');
+		const _decks = await getAll('decks');
 		if (!window.confirm('Delete this deck and its checkpoints? This cannot be undone.')) return;
 		await del('decks', id);
 		for (const r of await revisionsFor(id)) await del('revisions', r.id);
@@ -225,9 +225,9 @@ export function createStore({ getSource, onLoadDeck, starter = '' }) {
 	// ── init ──────────────────────────────────────────────────────────────────
 	async function init() {
 		try {
-			if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
+			if (navigator.storage?.persist) navigator.storage.persist().catch(() => {});
 			db = await openDB();
-		} catch (e) {
+		} catch (_e) {
 			// IndexedDB unavailable (private mode, etc.) — the editor still works,
 			// just without persistence. Leave the rail note in place.
 			return;
