@@ -73,6 +73,11 @@
 
   /* ── Brand accent ──────────────────────────────────────────────────── */
   --accent:      light-dark(var(--brand-accent), #D4A848); /* L:5.36:1 / D:8.45:1 on bg */
+  /* Chip ink: --brand-accent (#8C6A18) drops below AA on the inline-code wash
+   * (3.86:1). Darken the chip ink alone (not --accent, which the rest of the
+   * palette is tuned around) to clear 4.5:1 — 5.46:1 washed-canvas / 4.91:1
+   * washed-card. Dark mode keeps the brighter --accent. */
+  --code-inline-fg: light-dark(#6F520E, #D4A848);
   --accent-soft: light-dark(#E8D580, var(--bg-warm-mid));
   --on-accent:   light-dark(#FFFFFF, var(--bg-dark));    /* L:5.61:1 / D:8.45:1 */
 

@@ -275,6 +275,21 @@
   --code-bg:   var(--bg-dark, #001D33);
   --code-text: #CBD9E8;
 
+  /* ── Inline code chip ─────────────────────────────────────────────────────
+   * DISTINCT from the block panel above (--code-bg / --code-text). The inline
+   * `<code>` chip (base.elements.css `section code`) is surface-aware: its
+   * fill and border derive from its own ink via color-mix(currentColor), so
+   * they are always a subtle delta from WHATEVER surface the chip sits on —
+   * canvas, card (--bg-alt), key-insight panel (--accent-soft), or a dark
+   * island. That means a surface only ever needs to rebind ONE value, the ink:
+   *   section.title code { --code-inline-fg: var(--on-dark-primary); }
+   * and the wash/border follow automatically. The bg/border tokens exist as
+   * optional seams for a theme that wants an opaque chip instead of the wash.
+   * See engineering/decisions/2026-06-08-inline-code-contrast.md. */
+  --code-inline-fg:     var(--accent);
+  --code-inline-bg:     color-mix(in srgb, currentColor 10%, transparent);
+  --code-inline-border: color-mix(in srgb, currentColor 22%, transparent);
+
 
   /* ── Sequential scale (--scale-50 … --scale-900) ───────────────────────
    * Tailwind/Carbon-style 10-stop ramp anchored on --scale-500. Used for
@@ -547,7 +562,13 @@ section h6 { font-family:var(--font-display); font-size:var(--fs-h6); font-weigh
 section p { margin:0 0 var(--sp-xs) 0; }
 section strong { color:var(--text-heading); font-weight:600; }
 section em { font-style:italic; }
-section code { font-family:var(--font-mono); font-size:0.85em; background:var(--bg-alt); padding:0.15625cqi 0.46875cqi; border-radius:0.3125cqi; color:var(--accent); border:1px solid var(--border); }
+/* Inline code chip. Surface-aware: the ink is --code-inline-fg (default
+ * --accent), and the fill/border derive from that ink via color-mix(currentColor)
+ * so the chip is always a subtle delta from whatever surface it sits on. A
+ * surface rebinds only --code-inline-fg (see base.modifiers.css dark-island
+ * block + base.tokens.css). NOTE: color is declared before background so
+ * currentColor in the wash resolves to this element's ink. */
+section code { font-family:var(--font-mono); font-size:0.85em; color:var(--code-inline-fg, var(--accent)); background:var(--code-inline-bg, color-mix(in srgb, currentColor 10%, transparent)); padding:0.15625cqi 0.46875cqi; border-radius:0.3125cqi; border:1px solid var(--code-inline-border, color-mix(in srgb, currentColor 22%, transparent)); }
 /* Reset inline-code chip styling for code that's inside a fenced block.
  * Covers both `<pre>` (lattice-emulator output, where mermaid is pre-rendered
  * to SVG) and `<marp-pre>` (Marp Preview's custom element, where mermaid
@@ -9286,6 +9307,29 @@ section.dark {
   color-scheme: dark;
   background: var(--spectrum) top / 100% 1px no-repeat, var(--bg);
   border-top: none;
+}
+
+
+/* ── INLINE-CODE INK on non-flipping dark islands ──
+ * title/divider/closing bookends and the split-panel dark rail paint a dark
+ * surface via --bg-dark WITHOUT flipping color-scheme, so --accent (the chip's
+ * default ink) stays on its light-mode value and the chip reads as a bright box
+ * on a dark field. Rebind the ink to the on-dark tier; the chip's wash + border
+ * track currentColor, so this one value re-tunes the whole chip. Mirrors the
+ * eyebrow/subtitle dark-bookend overrides above. The `.dark` modifier and
+ * fully-dark themes are NOT listed — they flip color-scheme, so --accent (and
+ * thus the chip) already resolves to its dark-canvas value.
+ * See engineering/decisions/2026-06-08-inline-code-contrast.md. */
+section.title code,
+section.divider code,
+section.closing code,
+section.split-panel:not(.metric) .panel-left code,
+section.split-panel.metric .panel-right code {
+  --code-inline-fg: var(--on-dark-primary);
+}
+/* divider.light is the bright-canvas variant — keep the brand-accent ink. */
+section.divider.light code {
+  --code-inline-fg: var(--accent);
 }
 
 

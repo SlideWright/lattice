@@ -323,6 +323,29 @@ section.dark {
 }
 
 
+/* ── INLINE-CODE INK on non-flipping dark islands ──
+ * title/divider/closing bookends and the split-panel dark rail paint a dark
+ * surface via --bg-dark WITHOUT flipping color-scheme, so --accent (the chip's
+ * default ink) stays on its light-mode value and the chip reads as a bright box
+ * on a dark field. Rebind the ink to the on-dark tier; the chip's wash + border
+ * track currentColor, so this one value re-tunes the whole chip. Mirrors the
+ * eyebrow/subtitle dark-bookend overrides above. The `.dark` modifier and
+ * fully-dark themes are NOT listed — they flip color-scheme, so --accent (and
+ * thus the chip) already resolves to its dark-canvas value.
+ * See engineering/decisions/2026-06-08-inline-code-contrast.md. */
+section.title code,
+section.divider code,
+section.closing code,
+section.split-panel:not(.metric) .panel-left code,
+section.split-panel.metric .panel-right code {
+  --code-inline-fg: var(--on-dark-primary);
+}
+/* divider.light is the bright-canvas variant — keep the brand-accent ink. */
+section.divider.light code {
+  --code-inline-fg: var(--accent);
+}
+
+
 /* ── FONT SCALE ──
  * Global "bump every font up" knob. Each step raises --fs-scale, which
  * the 12 typography tokens multiply into (base.tokens.css). EVERYTHING

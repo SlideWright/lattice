@@ -85,6 +85,20 @@ in patch versions.
 
 ### Changed
 
+- **Inline code chips are now surface-aware.** The `section code` chip was a
+  single context-blind rule (`--bg-alt` fill + `--accent` ink) tuned only for
+  the default canvas, so it read as a glaring near-white box on dark bookends
+  and the split-panel rail, vanished into `--bg-alt` cards, and went muddy on
+  the key-insight panel. The chip now derives its fill and border from its own
+  ink via `color-mix(currentColor)`, so it is always a subtle delta from
+  whatever surface it sits on, and a new `--code-inline-fg` / `--code-inline-bg`
+  / `--code-inline-border` token seam (distinct from the block-code
+  `--code-bg` / `--code-text`) lets a surface or theme retune it by rebinding
+  one value. The non-flipping dark islands (`title` / `divider` / `closing`
+  bookends, split-panel dark rail) rebind the ink to the on-dark tier.
+  mustard's inline-code ink is darkened to clear WCAG AA on the chip wash
+  (was 3.89:1). See `engineering/decisions/2026-06-08-inline-code-contrast.md`.
+
 - **The `list` component is now an equal-fill ledger.** All three registers
   (default pills, `takeaway`, `principles`) now fill the working area — each row
   takes an equal share of the slide height with its content vertically centred —
