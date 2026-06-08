@@ -26,12 +26,14 @@ const require = createRequire(import.meta.url);
 const { loadAll, manifestBucket } = require(join(repoRoot, 'lib/components', 'index.js'));
 const manifests = loadAll();
 
-// Compact catalog for the Architect's onboarding retrieval + scaffolding:
-// name + bucket + tags (for keyword matching) + skeleton (to insert).
+// Compact catalog for the Architect's onboarding retrieval + scaffolding, and
+// (the `summary`) the Lattice primer fed to Converse so the cloud model knows the
+// real layouts: name + bucket + tags + a one-line description + skeleton.
 const obCatalog = manifests.map((m) => ({
 	name: m.name,
 	bucket: manifestBucket(m),
 	tags: m.tags || [],
+	summary: m.description || '',
 	skeleton: m.skeleton || m.sample || `<!-- _class: ${m.name} -->\n`,
 }));
 
@@ -432,6 +434,7 @@ const dbData = JSON.stringify({
 					model,
 					store: window.__dbStore,
 					getAssessment: () => architect.getAssessment(),
+					catalog: data.catalog, // the Lattice primer for the cloud (Puter) prompt
 				});
 				window.__dbChat = chat;
 			}

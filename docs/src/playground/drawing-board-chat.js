@@ -10,7 +10,10 @@
 // live phrasing path needs a capable Chrome/Edge — the panel says so when it's
 // running model-free.
 
+import { buildLatticePrimer } from './architect-knowledge.js';
+
 const MAX_DECK_CHARS = 1200; // a short excerpt — a small model drowns in a full deck
+const RICH_DECK_CHARS = 16000; // the cloud tier (Claude) reads the whole deck, not a peek
 
 function el(tag, cls, text) {
   const e = document.createElement(tag);
@@ -19,27 +22,48 @@ function el(tag, cls, text) {
   return e;
 }
 
-// Build the model messages: a SHORT system brief (the on-device model is small —
-// a long prompt + the full deck makes it ramble), the score + top findings as
-// grounding, the recent REAL conversation, then the new turn. Deterministic
-// messages (floor replies, the greeting — marked `det`) are dropped from history
-// so the small model doesn't parrot our own boilerplate (the cause of the
-// degenerate "load on-device AI…" loop seen on-device). Pure string assembly.
-export function buildChatMessages({ source, assessment, history, userText }) {
-  const deck = (source || '').slice(0, MAX_DECK_CHARS).trim();
+// Build the model messages: a system brief, the score + findings as grounding,
+// the recent REAL conversation, then the new turn. Two shapes by tier:
+//
+//   - LEAN (local/small models): a short brief + a deck PEEK (~1200 chars). A
+//     long prompt + the full deck makes a small model ramble.
+//   - RICH (`rich:true`, the Puter/Claude cloud tier): a Lattice primer (so it
+//     stops giving generic advice and knows the real `_class` layouts) + the
+//     WHOLE deck. A capable model wants the full picture, not a peek.
+//
+// Deterministic messages (floor replies, the greeting — marked `det`) are dropped
+// from history so a small model doesn't parrot our own boilerplate (the cause of
+// the degenerate "load on-device AI…" loop seen on-device). Pure string assembly.
+export function buildChatMessages({ source, assessment, history, userText, catalog, rich }) {
+  const deck = (source || '').slice(0, rich ? RICH_DECK_CHARS : MAX_DECK_CHARS).trim();
   const findings = (assessment?.findings || [])
-    .slice(0, 5)
+    .slice(0, rich ? 12 : 5)
     .map((f) => `- ${f.message}${f.slide ? ` (slide ${f.slide})` : ''}`)
     .join('\n');
   const score = assessment?.scorecard
     ? `The deck scores ${assessment.scorecard.band} (${assessment.scorecard.overall}/100).`
     : '';
-  const system =
-    'You are the Architect, a sharp, friendly presentation coach. Answer in 1–3 short, ' +
-    'concrete sentences. Do not repeat yourself or restate the question. Refer to slides ' +
-    'by number. You advise; the app makes the edits. Base advice on the deck and issues below.\n\n' +
-    `${score}\n${findings ? `Issues found:\n${findings}\n` : 'No mechanical issues found.\n'}` +
-    (deck ? `\nDeck:\n${deck}` : '');
+
+  let system;
+  if (rich) {
+    system =
+      'You are the Architect, a sharp presentation partner inside the Lattice Drawing Board. ' +
+      'Help the author improve THIS deck — structure, the ask, pacing, wording, and the right ' +
+      'layout for each slide. Be specific and concrete: refer to slides by number and to layouts ' +
+      'by their exact `_class` name. Ground every point in the deck and the findings below — ' +
+      'never invent facts about the author’s content.\n\n' +
+      `${buildLatticePrimer(catalog)}\n\n` +
+      `${score}\n${findings ? `Mechanical issues the deterministic review found:\n${findings}\n` : 'No mechanical issues found.\n'}` +
+      (deck ? `\nThe current deck:\n${deck}` : '');
+  } else {
+    system =
+      'You are the Architect, a sharp, friendly presentation coach. Answer in 1–3 short, ' +
+      'concrete sentences. Do not repeat yourself or restate the question. Refer to slides ' +
+      'by number. You advise; the app makes the edits. Base advice on the deck and issues below.\n\n' +
+      `${score}\n${findings ? `Issues found:\n${findings}\n` : 'No mechanical issues found.\n'}` +
+      (deck ? `\nDeck:\n${deck}` : '');
+  }
+
   const turns = (history || [])
     .filter((m) => !m.det) // drop deterministic floor/greeting — model would parrot it
     .slice(-6)
@@ -107,7 +131,7 @@ export function floorReply(assessment, userText = '') {
     `Ask me about a specific slide or "what should I fix" for more. ${enable}`;
 }
 
-export function createChat({ mount, composer, model, store, getAssessment }) {
+export function createChat({ mount, composer, model, store, getAssessment, catalog }) {
   if (!mount || !composer) return { reload() {}, focus() {} };
   let deckId = store?.getActiveId ? store.getActiveId() : null;
   let busy = false;
@@ -171,8 +195,11 @@ export function createChat({ mount, composer, model, store, getAssessment }) {
       target.textContent = '';
     };
     try {
+      // The cloud tier (Puter/Claude) gets the rich, Lattice-aware prompt + the
+      // whole deck; the small local model keeps the lean peek so it doesn't ramble.
       const messages = buildChatMessages({
         source: assessment?.source, assessment, history: await thread(), userText: text,
+        catalog, rich: a.generation === 'puter',
       });
       const out = await model.complete({
         messages,

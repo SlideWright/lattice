@@ -85,6 +85,47 @@ describe('buildChatMessages', () => {
     const sys = buildChatMessages({ source: 'x'.repeat(9000), assessment: { scorecard: { band: 'C', overall: 50 }, findings: [] }, history: [], userText: 'q' })[0].content;
     assert.ok(sys.length < 2200, 'deck context capped (~1200) so the small model copes');
   });
+
+  // The cloud tier (Puter/Claude) gets a richer, Lattice-aware prompt: the
+  // component primer + the WHOLE deck. The lean path above is unchanged.
+  describe('rich (cloud) prompt', () => {
+    const catalog = [
+      { name: 'title', bucket: 'anchor', summary: 'Opening slide.' },
+      { name: 'cards-grid', bucket: 'inventory', summary: '2–4 parallel items.' },
+    ];
+
+    test('injects the Lattice primer and the real layout names', async () => {
+      const { buildChatMessages } = await load();
+      const sys = buildChatMessages({
+        source: '# Deck', assessment: { scorecard: { band: 'A', overall: 95 }, findings: [] },
+        history: [], userText: 'help', catalog, rich: true,
+      })[0].content;
+      assert.match(sys, /You know Lattice/);
+      assert.match(sys, /cards-grid — 2–4 parallel items\./);
+      assert.match(sys, /NESTED bullets/); // the card-style footgun rule rides along
+      assert.match(sys, /`_class`/);
+    });
+
+    test('includes the WHOLE deck, not the 1200-char peek', async () => {
+      const { buildChatMessages } = await load();
+      const big = 'slide '.repeat(2000); // ~12k chars, over the lean cap, under the rich one
+      const sys = buildChatMessages({
+        source: big, assessment: { scorecard: { band: 'B', overall: 80 }, findings: [] },
+        history: [], userText: 'q', catalog, rich: true,
+      })[0].content;
+      assert.ok(sys.length > 9000, 'rich prompt carries the full deck');
+    });
+
+    test('without rich it stays lean even if a catalog is passed', async () => {
+      const { buildChatMessages } = await load();
+      const sys = buildChatMessages({
+        source: '# D', assessment: { scorecard: { band: 'A', overall: 95 }, findings: [] },
+        history: [], userText: 'q', catalog, // no rich flag
+      })[0].content;
+      assert.doesNotMatch(sys, /You know Lattice/);
+      assert.ok(sys.length < 2200);
+    });
+  });
 });
 
 describe('floorReply (intent-aware, deterministic)', () => {
