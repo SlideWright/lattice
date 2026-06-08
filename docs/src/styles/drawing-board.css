@@ -125,6 +125,47 @@ body.db-page .topbar {
 	cursor: not-allowed;
 }
 
+/* ── Lucide glyph icons (masks; inherit currentColor + theme/mode) ────────────
+ * --icon-* tokens come from landing.css :root. Each button paints its glyph
+ * with `background: currentColor` masked by the icon — exactly like the nav /
+ * mode toggles — so it follows the active palette and light/dark for free. */
+.db-rail-collapse::before,
+#db-checkpoint::before,
+.db-arch-send::before,
+.db-sc-speak::before,
+.db-deck-x::before,
+.db-pv-x::before,
+.db-model-chip::before,
+.db-focus-open::before,
+.db-refine-open::before,
+.db-refine-open::after,
+#db-export::after,
+.db-arch-jump-btn::before,
+.db-practice-open::before {
+	content: '';
+	display: inline-block;
+	width: 1em;
+	height: 1em;
+	vertical-align: middle;
+	background: currentColor;
+	-webkit-mask: var(--db-glyph) center / contain no-repeat;
+	mask: var(--db-glyph) center / contain no-repeat;
+}
+.db-rail-collapse::before { --db-glyph: var(--icon-chevron-left); }
+#db-workspace[data-rail='collapsed'] .db-rail-collapse::before { --db-glyph: var(--icon-chevron-right); }
+#db-checkpoint::before { --db-glyph: var(--icon-flag); }
+.db-arch-send::before { --db-glyph: var(--icon-arrow-up); }
+.db-sc-speak::before { --db-glyph: var(--icon-volume-2); }
+.db-deck-x::before, .db-pv-x::before { --db-glyph: var(--icon-x); }
+.db-model-chip::before { --db-glyph: var(--icon-settings); margin-right: 0.34em; }
+.db-focus-open::before { --db-glyph: var(--icon-scan); margin-right: 0.34em; }
+.db-refine-open::before { --db-glyph: var(--icon-pencil); margin-right: 0.34em; }
+.db-refine-open::after { --db-glyph: var(--icon-chevron-down); margin-left: 0.3em; }
+#db-export::after { --db-glyph: var(--icon-chevron-down); margin-left: 0.3em; }
+.db-practice-open::before { --db-glyph: var(--icon-play); margin-right: 0.34em; }
+.db-arch-jump-btn[data-dir='top']::before { --db-glyph: var(--icon-chevron-up); }
+.db-arch-jump-btn[data-dir='bottom']::before { --db-glyph: var(--icon-chevron-down); }
+
 /* ── The rail: decks + history ────────────────────────────────────────────── */
 .db-rail {
 	min-width: 0;

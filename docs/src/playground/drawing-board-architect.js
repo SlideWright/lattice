@@ -157,7 +157,7 @@ export function createArchitect({ vocab, catalog, mount, reveal, applyFix }) {
 		speak.className = 'db-sc-speak';
 		speak.setAttribute('aria-label', 'Read the assessment aloud');
 		speak.title = 'Read aloud';
-		speak.textContent = '🔊';
+		// glyph drawn by CSS: .db-sc-speak::before (Lucide volume-2 mask)
 		if (!('speechSynthesis' in window)) speak.hidden = true;
 		speak.addEventListener('click', () => speakCard(sc));
 		head.append(grade, overall, label, speak);

@@ -178,9 +178,10 @@ export function createPractice({ host, getSource, slideBox, runtimeUrl, themeBas
     elClock = el('span', 'db-pv-clock', '0:00');
     elPace = el('span', 'db-pv-pace ok', 'on track');
     elCue = el('span', 'db-pv-cue');
-    const closeBtn = el('button', 'db-pv-x', '✕');
+    const closeBtn = el('button', 'db-pv-x'); // glyph drawn by CSS: .db-pv-x::before
     closeBtn.type = 'button';
     closeBtn.title = 'Exit practice (Esc)';
+    closeBtn.setAttribute('aria-label', 'Exit practice');
     closeBtn.addEventListener('click', close);
     bar.append(elSlide, elClock, elPace, elCue, closeBtn);
     frame = el('iframe', 'db-pv-frame');

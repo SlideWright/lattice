@@ -69,7 +69,7 @@ export function createRefine({ trigger, menuHost, editor, model, onStatus }) {
     if (!show) { close(); return; }
     const ready = modelReady();
     trigger.disabled = !ready;
-    trigger.title = ready ? 'Rewrite the selection with on-device AI' : 'Refine needs on-device AI — enable it in the Architect ⚙';
+    trigger.title = ready ? 'Rewrite the selection with on-device AI' : 'Refine needs on-device AI — enable it in the Architect settings';
   }
 
   function render() {

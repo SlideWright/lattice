@@ -94,7 +94,7 @@ function listFindings(findings) {
 export function floorReply(assessment, userText = '') {
   const sc = assessment?.scorecard;
   const q = String(userText).toLowerCase();
-  const enable = 'Want a real back-and-forth? Tap the ⚙ chip up top and load on-device AI — there’s a compact universal option (~350 MB) that runs right here in your browser, no special browser or GPU needed. It stays on your device.';
+  const enable = 'Want a real back-and-forth? Tap the settings chip up top and load on-device AI — there’s a compact universal option (~350 MB) that runs right here in your browser, no special browser or GPU needed. It stays on your device.';
 
   // "why are you model-free / how do I enable it" — answer the actual question.
   if (/\b(why|model[\s-]?free|no model|offline|enable|turn on|switch on|activate|on-device|gpu|download|nano|webllm|transformers)\b/.test(q)) {
