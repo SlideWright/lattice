@@ -316,6 +316,7 @@ body.db-page .topbar {
 	display: flex;
 	flex-direction: column;
 	overflow: hidden;
+	position: relative; /* anchor for the absolutely-positioned jump control */
 }
 .db-arch-scroll {
 	flex: 1 1 auto;
@@ -437,34 +438,99 @@ body.db-page .topbar {
 }
 @keyframes db-pulse { 0%, 100% { opacity: 0.55; } 50% { opacity: 1; } }
 
-/* ── Proposed-edit cards (Slice B) ─────────────────────────────────────────────
- * Converse proposes a deck change; the author reviews the diff and clicks Apply.
- * One card per edit, rendered under the Architect's message. */
+/* ── Markdown in chat bubbles ──────────────────────────────────────────────────
+ * The Architect replies in Markdown; chat-markdown.js renders a safe subset. */
+.db-msg-body p { margin: 0 0 0.5rem; }
+.db-msg-body p:last-child { margin-bottom: 0; }
+.db-msg-body .db-md-h { font-weight: 700; color: var(--text-heading); margin: 0.3rem 0 0.2rem; }
+.db-msg-body .db-md-list { margin: 0.2rem 0 0.5rem; padding-left: 1.2rem; }
+.db-msg-body .db-md-list li { margin: 0.1rem 0; }
+.db-msg-body code {
+	font-family: var(--font-mono, ui-monospace, monospace);
+	font-size: 0.86em;
+	padding: 0.05em 0.3em;
+	border-radius: var(--radius-sm);
+	background: color-mix(in srgb, var(--accent) 10%, var(--bg-alt));
+}
+.db-msg-body .db-md-pre {
+	margin: 0.4rem 0;
+	padding: 0.5rem 0.6rem;
+	border-radius: var(--radius-sm);
+	border: 1px solid var(--border);
+	background: var(--bg-alt);
+	overflow-x: auto;
+	white-space: pre;
+}
+.db-msg-body .db-md-pre code { background: none; padding: 0; font-size: 0.78rem; }
+.db-msg-body a { color: var(--accent); text-decoration: underline; }
+
+/* ── Proposed-edit cards (Slice B + polish) ────────────────────────────────────
+ * Converse proposes a change; the author reviews the diff and clicks Apply. A
+ * multi-edit reply gets a batch header; acting collapses a card to a status line
+ * (click the head to re-expand); a single Undo sits on the most recent Apply. */
 .db-edit-cards {
 	display: flex;
 	flex-direction: column;
 	gap: 0.5rem;
 	margin-top: 0.5rem;
 }
+.db-edit-batch {
+	display: flex;
+	align-items: center;
+	gap: 0.4rem;
+	padding: 0.35rem 0.5rem;
+	border: 1px dashed color-mix(in srgb, var(--accent) 35%, var(--border));
+	border-radius: var(--radius-sm);
+	background: color-mix(in srgb, var(--accent) 6%, var(--bg));
+}
+.db-edit-batch-label { flex: 1 1 auto; font-size: 0.76rem; font-weight: 650; color: var(--text-heading); }
 .db-edit-card {
 	border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--border));
 	border-radius: var(--radius-md);
 	background: var(--bg);
 	overflow: hidden;
 }
-.db-edit-card.is-applied {
-	border-color: color-mix(in srgb, var(--q-good, var(--accent)) 45%, var(--border));
-	opacity: 0.85;
-}
+.db-edit-card[data-state="applied"] { border-color: color-mix(in srgb, #2e7d32 45%, var(--border)); }
+.db-edit-card[data-state="dismissed"] { opacity: 0.6; }
 .db-edit-head {
-	font-size: 0.74rem;
-	font-weight: 650;
-	letter-spacing: 0.02em;
-	color: var(--text-heading);
-	padding: 0.4rem 0.6rem;
+	display: flex;
+	align-items: center;
+	gap: 0.4rem;
 	background: color-mix(in srgb, var(--accent) 8%, var(--bg-alt));
 	border-bottom: 1px solid var(--border);
 }
+.db-edit-card.is-collapsed .db-edit-head { border-bottom: 0; }
+.db-edit-toggle {
+	flex: 1 1 auto;
+	display: flex;
+	align-items: center;
+	gap: 0.25rem;
+	font: inherit;
+	font-size: 0.74rem;
+	font-weight: 650;
+	letter-spacing: 0.02em;
+	text-align: left;
+	color: var(--text-heading);
+	background: none;
+	border: 0;
+	padding: 0.4rem 0.6rem;
+	cursor: pointer;
+}
+.db-edit-card[data-state="open"] .db-edit-toggle { cursor: default; }
+.db-edit-icon { color: #2e7d32; }
+.db-edit-card[data-state="dismissed"] .db-edit-icon { color: var(--text-muted); }
+.db-edit-undo {
+	font: inherit;
+	font-size: 0.72rem;
+	color: var(--accent);
+	background: none;
+	border: 0;
+	padding: 0.3rem 0.55rem;
+	cursor: pointer;
+	white-space: nowrap;
+}
+.db-edit-undo:hover { text-decoration: underline; }
+.db-edit-card.is-collapsed .db-edit-body { display: none; }
 .db-edit-diff {
 	font-family: var(--font-mono, ui-monospace, monospace);
 	font-size: 0.72rem;
@@ -486,6 +552,37 @@ body.db-page .topbar {
 	border-top: 1px solid var(--border);
 	background: var(--bg-alt);
 }
+.db-edit-actions[hidden] { display: none; }
+
+/* ── Jump to top / latest ──────────────────────────────────────────────────────
+ * Floats at the panel's bottom-right, above the composer; each arrow appears only
+ * when the thread overflows and you're away from that end. */
+.db-arch-jump {
+	position: absolute;
+	right: 0.7rem;
+	bottom: 4.2rem;
+	display: flex;
+	flex-direction: column;
+	gap: 0.35rem;
+	z-index: 3;
+	pointer-events: none;
+}
+.db-arch-jump-btn {
+	pointer-events: auto;
+	width: 30px;
+	height: 30px;
+	display: grid;
+	place-items: center;
+	font-size: 0.9rem;
+	color: var(--text-body);
+	background: var(--bg);
+	border: 1px solid var(--border);
+	border-radius: 50%;
+	box-shadow: 0 1px 4px rgb(0 0 0 / 0.12);
+	cursor: pointer;
+}
+.db-arch-jump-btn:hover { border-color: var(--accent); color: var(--text-heading); }
+.db-arch-jump-btn[hidden] { display: none; }
 
 /* The composer — pinned at the panel foot; the thread scrolls above it. */
 .db-arch-composer {
