@@ -365,43 +365,113 @@ body.db-page .topbar {
 .db-arch-say strong {
 	color: var(--text-heading);
 }
-.db-arch-beats {
-	list-style: none;
-	margin: 0 0 1rem;
-	padding: 0;
-	display: grid;
-	gap: 0.5rem;
+/* ── The chat — the Architect's conversation (Phase 2) ──────────────────────── */
+.db-arch-chat {
+	display: flex;
+	flex-direction: column;
+	gap: 0.7rem;
+	margin-top: 0.9rem;
+	padding-top: 0.9rem;
+	border-top: 1px dashed var(--border);
 }
-.db-arch-beat {
+.db-arch-chat:empty {
+	display: none;
+}
+.db-chat-empty {
+	font-size: 0.8rem;
+	line-height: 1.5;
+	color: var(--text-muted);
+	margin: 0;
+}
+.db-msg {
+	display: flex;
+	flex-direction: column;
+	gap: 0.2rem;
+	max-width: 92%;
+}
+.db-msg-user {
+	align-self: flex-end;
+	align-items: flex-end;
+}
+.db-msg-architect {
+	align-self: flex-start;
+}
+.db-msg-who {
+	font-size: 0.66rem;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	color: var(--text-muted);
+}
+.db-msg-body {
+	font-size: 0.84rem;
+	line-height: 1.5;
+	white-space: pre-wrap;
+	overflow-wrap: anywhere;
+	padding: 0.5rem 0.7rem;
+	border-radius: var(--radius-md);
+	border: 1px solid var(--border);
+	color: var(--text-body);
+	background: var(--bg);
+}
+.db-msg-user .db-msg-body {
+	background: color-mix(in srgb, var(--accent) 12%, var(--bg));
+	border-color: color-mix(in srgb, var(--accent) 30%, var(--border));
+}
+.db-msg-body.is-streaming::after {
+	content: "▍";
+	color: var(--accent);
+	animation: db-blink 1s steps(2) infinite;
+}
+@keyframes db-blink { 50% { opacity: 0; } }
+
+/* The composer — pinned at the panel foot; the thread scrolls above it. */
+.db-arch-composer {
+	flex: 0 0 auto;
+	display: flex;
+	align-items: flex-end;
+	gap: 0.5rem;
+	padding: 0.6rem 0.8rem calc(0.6rem + env(safe-area-inset-bottom));
+	border-top: 1px solid var(--border);
+	background: var(--bg-alt);
+}
+.db-arch-composer textarea {
+	flex: 1 1 auto;
+	resize: none;
+	min-height: 2.2rem;
+	max-height: 120px;
+	font: inherit;
+	font-size: 0.86rem;
+	line-height: 1.4;
+	color: var(--text-body);
+	background: var(--bg);
 	border: 1px solid var(--border);
 	border-radius: var(--radius-md);
-	background: var(--bg);
-	padding: 0.6rem 0.7rem;
+	padding: 0.5rem 0.6rem;
 }
-.db-arch-beat b {
-	display: block;
-	font-size: 0.72rem;
-	letter-spacing: 0.05em;
-	text-transform: uppercase;
-	color: var(--accent);
-	margin-bottom: 0.2rem;
+.db-arch-composer textarea:focus {
+	outline: none;
+	border-color: var(--accent);
 }
-.db-arch-beat span {
-	font-size: 0.86rem;
-	color: var(--text-body);
+.db-arch-send {
+	flex: 0 0 auto;
+	width: 34px;
+	height: 34px;
+	display: grid;
+	place-items: center;
+	font-size: 1rem;
+	color: var(--on-accent);
+	background: var(--accent);
+	border: 1px solid var(--accent);
+	border-radius: 50%;
+	cursor: pointer;
 }
-.db-arch-soon {
-	font-size: 0.74rem;
-	color: var(--text-muted);
-	border-top: 1px dashed var(--border);
-	padding-top: 0.7rem;
-	margin-top: 0.9rem;
-	line-height: 1.5;
+.db-arch-send:hover {
+	filter: brightness(1.06);
 }
-.db-arch-soon code {
-	font-family: var(--font-mono);
-	font-size: 0.72rem;
-	color: var(--accent);
+.db-arch-send:disabled {
+	opacity: 0.5;
+	cursor: default;
+	filter: none;
 }
 
 /* Onboarding (conversation-first deck planning) */
@@ -1240,4 +1310,239 @@ body.db-page .topbar {
 	.db-pv-target {
 		flex: 0 0 auto;
 	}
+}
+
+/* ── Focus edit mode ────────────────────────────────────────────────────────
+   A full-screen split: an isolated sub-editor (left) + a live fragment preview
+   (right), over a top action bar. Themed off the page tokens. On narrow screens
+   the two panes stack. */
+.db-focus {
+	position: fixed;
+	inset: 0;
+	z-index: 2100;
+	background: var(--bg);
+	display: grid;
+}
+.db-focus[hidden] {
+	display: none;
+}
+.db-focus-wrap {
+	display: grid;
+	grid-template-rows: auto 1fr;
+	height: 100%;
+	min-height: 0;
+}
+.db-focus-bar {
+	display: flex;
+	align-items: center;
+	gap: 0.6rem;
+	padding: calc(0.55rem + env(safe-area-inset-top)) 1rem 0.55rem;
+	border-bottom: 1px solid var(--border);
+	background: var(--bg-alt);
+}
+.db-focus-title {
+	font-weight: 650;
+	font-size: 0.9rem;
+	color: var(--text-heading);
+	text-transform: capitalize;
+}
+.db-focus-status {
+	font-size: 0.78rem;
+	color: var(--text-muted);
+}
+.db-focus-spacer {
+	flex: 1 1 auto;
+}
+.db-focus-body {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+	min-height: 0;
+}
+.db-focus-edit {
+	min-width: 0;
+	min-height: 0;
+	overflow: hidden;
+	border-right: 1px solid var(--border);
+}
+.db-focus-edit .cm-editor {
+	height: 100%;
+}
+.db-focus-preview {
+	min-width: 0;
+	min-height: 0;
+	background: var(--bg-alt);
+}
+.db-focus-frame {
+	width: 100%;
+	height: 100%;
+	border: 0;
+	background: transparent;
+}
+
+@media (max-width: 800px) {
+	.db-focus-body {
+		grid-template-columns: 1fr;
+		grid-template-rows: 1fr 1fr;
+	}
+	.db-focus-edit {
+		border-right: 0;
+		border-bottom: 1px solid var(--border);
+	}
+}
+
+/* ── Model settings chip + popover (Slice 8) ────────────────────────────────── */
+.db-architect .db-panel-head {
+	position: relative;
+}
+.db-model-chip {
+	font: inherit;
+	font-size: 0.68rem;
+	line-height: 1;
+	color: var(--text-muted);
+	background: var(--bg);
+	border: 1px solid var(--border);
+	border-radius: 999px;
+	padding: 0.28rem 0.55rem;
+	cursor: pointer;
+	white-space: nowrap;
+	max-width: 13rem;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.db-model-chip:hover {
+	border-color: var(--accent);
+	color: var(--text-heading);
+}
+.db-model-chip:not(.is-floor) {
+	color: var(--accent);
+	border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+}
+.db-settings-pop {
+	position: absolute;
+	top: calc(100% + 4px);
+	right: 6px;
+	z-index: 50;
+	width: min(320px, calc(100vw - 2rem));
+	background: var(--bg);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-md);
+	box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
+	padding: 0.9rem;
+}
+.db-settings-pop[hidden] {
+	display: none;
+}
+.db-settings-head {
+	margin: 0 0 0.6rem;
+	font-size: 0.9rem;
+	color: var(--text-heading);
+}
+.db-settings-row {
+	display: flex;
+	align-items: flex-start;
+	gap: 0.5rem;
+	font-size: 0.84rem;
+	color: var(--text-body);
+	cursor: pointer;
+}
+.db-settings-row input {
+	margin-top: 0.15rem;
+	accent-color: var(--accent);
+}
+.db-settings-note {
+	font-size: 0.74rem;
+	line-height: 1.5;
+	color: var(--text-muted);
+	margin: 0.5rem 0 0;
+}
+.db-settings-tiers {
+	margin: 0.8rem 0;
+	border-top: 1px solid var(--border);
+	border-bottom: 1px solid var(--border);
+	padding: 0.5rem 0;
+	display: flex;
+	flex-direction: column;
+	gap: 0.35rem;
+}
+.db-settings-tier {
+	display: flex;
+	justify-content: space-between;
+	gap: 0.5rem;
+	font-size: 0.78rem;
+}
+.db-settings-tier-name {
+	color: var(--text-body);
+}
+.db-settings-tier-state {
+	color: var(--text-muted);
+	font-variant-numeric: tabular-nums;
+}
+.db-settings-summon {
+	width: 100%;
+	margin-top: 0.3rem;
+	font-size: 0.8rem;
+}
+.db-settings-progress {
+	margin-top: 0.5rem;
+	height: 6px;
+	border-radius: 999px;
+	background: var(--border);
+	overflow: hidden;
+}
+.db-settings-progress i {
+	display: block;
+	height: 100%;
+	width: 0;
+	background: var(--accent);
+	transition: width 0.2s;
+}
+
+/* ── Refine actions menu (Slice 9b) ─────────────────────────────────────────── */
+.db-refine {
+	position: relative;
+	display: inline-flex;
+}
+.db-refine-pop {
+	position: absolute;
+	top: calc(100% + 4px);
+	left: 0;
+	z-index: 50;
+	min-width: 190px;
+	background: var(--bg);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-md);
+	box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
+	padding: 0.3rem;
+}
+.db-refine-pop[hidden] {
+	display: none;
+}
+.db-refine-menu {
+	display: flex;
+	flex-direction: column;
+}
+.db-refine-item {
+	display: flex;
+	flex-direction: column;
+	gap: 0.05rem;
+	text-align: left;
+	font: inherit;
+	font-size: 0.82rem;
+	color: var(--text-body);
+	background: none;
+	border: 0;
+	border-radius: var(--radius-sm);
+	padding: 0.4rem 0.55rem;
+	cursor: pointer;
+}
+.db-refine-item:hover {
+	background: color-mix(in srgb, var(--accent) 8%, var(--bg));
+}
+.db-refine-label {
+	font-weight: 600;
+	color: var(--text-heading);
+}
+.db-refine-item small {
+	font-size: 0.72rem;
+	color: var(--text-muted);
 }

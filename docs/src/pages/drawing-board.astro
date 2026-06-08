@@ -145,6 +145,9 @@ const dbData = JSON.stringify({
 			<section class="db-panel db-architect" id="db-architect">
 				<div class="db-panel-head">
 					<span class="db-panel-title">The Architect</span>
+					<span class="db-spacer"></span>
+					<button class="db-model-chip is-floor" id="db-model-chip" aria-haspopup="dialog" title="On-device AI settings">⚙ Deterministic floor</button>
+					<div class="db-settings-pop" id="db-settings-pop" role="dialog" aria-label="On-device AI settings" hidden></div>
 				</div>
 				<div class="db-panel-body db-arch-body">
 					<div class="db-arch-scroll">
@@ -158,11 +161,14 @@ const dbData = JSON.stringify({
 						</p>
 						<div class="db-arch-onboard" id="db-arch-onboard"></div>
 						<div class="db-arch-review" id="db-arch-review" aria-live="polite"></div>
-						<p class="db-arch-soon">
-							Onboarding &amp; live review run on-device, no model. Free-form chat arrives
-							with the on-device model (Phase 2).
-						</p>
+						<div class="db-arch-chat" id="db-arch-chat" aria-live="polite"></div>
 					</div>
+					<!-- The composer — a real chat with the Architect (Phase 2). Pinned at
+					     the panel foot so it's always reachable; the thread scrolls above. -->
+					<form class="db-arch-composer" id="db-arch-composer">
+						<textarea id="db-arch-input" rows="1" placeholder="Ask the Architect about your deck…" aria-label="Message the Architect"></textarea>
+						<button type="submit" class="db-arch-send" aria-label="Send">↑</button>
+					</form>
 				</div>
 			</section>
 
@@ -172,6 +178,11 @@ const dbData = JSON.stringify({
 			<section class="db-panel db-editor" id="db-editor">
 				<div class="db-panel-head">
 					<span class="db-panel-title">Markdown</span>
+					<button class="db-btn db-focus-open" id="db-focus-open" hidden title="Edit the diagram/math block under the cursor in isolation">⊡ Focus</button>
+					<div class="db-refine" id="db-refine-wrap">
+						<button class="db-btn db-refine-open" id="db-refine-open" hidden aria-haspopup="menu">✎ Refine ▾</button>
+						<div class="db-refine-pop" id="db-refine-menu" role="menu" hidden></div>
+					</div>
 					<span class="db-spacer"></span>
 					<div class="db-export" id="db-export-wrap">
 						<button class="db-btn" id="db-export" aria-haspopup="menu" aria-expanded="false" title="Export this deck">Export ▾</button>
@@ -221,6 +232,10 @@ const dbData = JSON.stringify({
 		     iframe; created lazily on first open. -->
 		<div class="db-practice" id="db-practice" hidden></div>
 
+		<!-- Focus edit mode — isolated sub-editor + live fragment preview for the
+		     ```mermaid / ```chart / $$…$$ block under the cursor (deterministic). -->
+		<div class="db-focus" id="db-focus" hidden></div>
+
 		<script type="application/json" id="db-data" is:inline set:html={dbData}></script>
 
 		<!-- CodeMirror editor (bundled by Astro/Vite). Mounts into #db-editor-host,
@@ -231,12 +246,12 @@ const dbData = JSON.stringify({
 			const ta = document.getElementById('db-editor-ta');
 			const initial = ta ? ta.value : '';
 			let notify = null;
-			let notifyCursor = null;
+			const cursorFns = []; // multiple consumers (filmstrip sync + focus toolbar)
 			const ed = createEditor({
 				parent: host,
 				doc: initial,
 				onChange: (v) => { if (notify) notify(v); },
-				onCursor: (line) => { if (notifyCursor) notifyCursor(line); },
+				onCursor: (line) => { for (const f of cursorFns) f(line); },
 			});
 			if (ta) ta.remove();
 			window.__dbEditor = {
@@ -244,8 +259,12 @@ const dbData = JSON.stringify({
 				setValue: (t) => ed.setValue(t),
 				focus: () => ed.focus(),
 				goToLine: (n) => ed.goToLine(n),
+				getCursorLine: () => ed.getCursorLine(),
+				replaceLines: (a, b, t) => ed.replaceLines(a, b, t),
+				getSelection: () => ed.getSelection(),
+				replaceSelection: (t) => ed.replaceSelection(t),
 				onChange: (fn) => { notify = fn; },
-				onCursor: (fn) => { notifyCursor = fn; },
+				onCursor: (fn) => { cursorFns.push(fn); },
 			};
 			window.dispatchEvent(new Event('db-editor-ready'));
 		</script>
@@ -262,6 +281,7 @@ const dbData = JSON.stringify({
 				starter: data.starter || '',
 			});
 			window.__dbStore = store;
+			window.dispatchEvent(new Event('db-store-ready'));
 			store.init();
 		</script>
 
@@ -270,10 +290,38 @@ const dbData = JSON.stringify({
 		     fix guidance. Zero model. -->
 		<script>
 			import { createArchitect, createOnboarding } from '../playground/drawing-board-architect.js';
+			import { createArchitectModel } from '../playground/architect-model.js';
+			import { createChat } from '../playground/drawing-board-chat.js';
+			import { createModelSettings } from '../playground/drawing-board-settings.js';
 			const data = JSON.parse(document.getElementById('db-data').textContent);
+
+			// The on-device model ladder (Phase 2). Defaults on; degrades to the
+			// deterministic floor when no model is present (which is every browser
+			// until a tier loads). One switch (lattice-db-model=off) forces the floor.
+			const model = createArchitectModel({
+				getSettings: () => {
+					let on = true;
+					try { on = localStorage.getItem('lattice-db-model') !== 'off'; } catch (e) {}
+					return { modelEnabled: on };
+				},
+			});
+			window.__dbModel = model;
+			model.refreshAvailability().then(() => settings.refresh());
+
+			// Model settings + WebLLM opt-in (Slice 8): the ⚙ chip shows the live tier
+			// and opens a popover to toggle on-device AI / summon WebLLM.
+			const settings = createModelSettings({
+				host: document.getElementById('db-settings-pop'),
+				trigger: document.getElementById('db-model-chip'),
+				model,
+				onChange: () => { if (window.__dbChat) window.__dbChat.reload(); },
+			});
+			window.__dbSettings = settings;
+
 			const architect = createArchitect({
 				vocab: data.lintVocab,
 				catalog: data.catalog,
+				model,
 				mount: document.getElementById('db-arch-review'),
 				reveal: (line) => { if (window.__dbEditor) window.__dbEditor.goToLine(line); },
 				// setValue dispatches a doc change -> onEdit -> render + save + re-lint.
@@ -281,11 +329,29 @@ const dbData = JSON.stringify({
 			});
 			window.__dbArchitect = architect;
 
+			// The chat surface — grounded in the architect's live deterministic
+			// assessment, persisted per deck via the store, model phrases the reply.
+			// Waits for the store so the thread can load/resume per deck.
+			function wireChat() {
+				const chat = createChat({
+					mount: document.getElementById('db-arch-chat'),
+					composer: document.getElementById('db-arch-composer'),
+					model,
+					store: window.__dbStore,
+					getAssessment: () => architect.getAssessment(),
+				});
+				window.__dbChat = chat;
+			}
+			if (window.__dbStore) wireChat();
+			else window.addEventListener('db-store-ready', wireChat, { once: true });
+
 			// Conversation-first onboarding: 3 questions -> retrieval -> scaffold a
 			// new deck (via the store when present, else just load it into the editor).
+			// The model upgrades archetype retrieval to semantic when embeddings load.
 			createOnboarding({
 				catalog: data.catalog,
 				mount: document.getElementById('db-arch-onboard'),
+				model,
 				onBuild: (src, name) => {
 					// name = the archetype (Drafting) or undefined (Freehand → auto-titled
 					// from the deck's H1). The store derives the title + description.
@@ -331,6 +397,53 @@ const dbData = JSON.stringify({
 					else if (kind === 'print') { exportPrint(frame); status('Opening print dialog…'); }
 				} catch (err) { status(String(err.message || err), true); }
 			});
+		</script>
+
+		<!-- Focus edit modes (Slice 9). The toolbar button enables when the cursor
+		     sits in a ```mermaid / ```chart / $$…$$ block; opening swaps in an
+		     isolated sub-editor + live fragment preview. Deterministic, no model. -->
+		<script>
+			import { createFocus } from '../playground/drawing-board-focus.js';
+			import { createRefine } from '../playground/drawing-board-refine.js';
+			const data = JSON.parse(document.getElementById('db-data').textContent);
+			const openBtn = document.getElementById('db-focus-open');
+			function wireFocus() {
+				const focus = createFocus({
+					host: document.getElementById('db-focus'),
+					editor: window.__dbEditor,
+					themeBase: data.themeBase,
+					runtimeUrl: data.runtimeUrl,
+					slideBox: data.slideBox,
+				});
+				window.__dbFocus = focus;
+				if (openBtn) openBtn.addEventListener('click', () => focus.open());
+
+				// Refine actions — gated on a real generation tier (model.complete);
+				// disabled with a hint when running deterministically.
+				const statusEl = document.getElementById('db-status');
+				const refine = createRefine({
+					trigger: document.getElementById('db-refine-open'),
+					menuHost: document.getElementById('db-refine-menu'),
+					editor: window.__dbEditor,
+					model: window.__dbModel,
+					onStatus: (msg, err) => { if (statusEl) { statusEl.textContent = msg; statusEl.classList.toggle('err', !!err); } },
+				});
+				window.__dbRefine = refine;
+
+				// Toolbar state tracks the caret: focusable-block detection + selection.
+				const sync = () => {
+					if (openBtn) {
+						const b = focus.focusable();
+						openBtn.hidden = !b;
+						if (b) openBtn.textContent = '⊡ Focus ' + b.kind;
+					}
+					refine.sync();
+				};
+				window.__dbEditor.onCursor(sync);
+				sync();
+			}
+			if (window.__dbEditor) wireFocus();
+			else window.addEventListener('db-editor-ready', wireFocus, { once: true });
 		</script>
 
 		<!-- Practice mode (full-screen rehearsal). Lazily renders the deck one slide

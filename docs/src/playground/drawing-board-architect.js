@@ -14,6 +14,7 @@ import Fuse from 'fuse.js';
 import lintCore from '../../../lib/authoring/lint-core.js';
 import reviewCore from '../../../lib/authoring/review-core.js';
 import scorecard from '../../../lib/authoring/scorecard.js';
+import { cosineRank } from './architect-retrieval.js';
 
 // 1-based source line where each `---`-split chunk begins — matches lint-core's
 // `source.split(/^---$/m)` so a finding's `slide` (chunk) index maps to a line.
@@ -209,15 +210,20 @@ export function createArchitect({ vocab, catalog, mount, reveal, applyFix }) {
 		for (const f of findings) mount.appendChild(card(f, starts));
 	}
 
+	// The latest deterministic assessment, exposed so the chat can ground the model
+	// in the SAME findings the panel shows (the model phrases; it never re-derives).
+	let assessment = { source: '', findings: [], scorecard: null };
+
 	function run() {
 		try {
 			const has = hasContent(lastSource);
 			// Let the onboarding collapse its doors when a real deck is being worked on.
 			window.dispatchEvent(new CustomEvent('db-deck-content', { detail: has }));
-			if (!has) { render(null, []); return; }
+			if (!has) { assessment = { source: lastSource, findings: [], scorecard: null }; render(null, []); return; }
 			const lint = lintCore.lintTextWith(lastSource, vocabSets);
 			const review = reviewCore.reviewText(lastSource, { bucketOf });
 			const sc = scorecard.scoreDeck({ source: lastSource, lintFindings: lint, reviewFindings: review });
+			assessment = { source: lastSource, findings: [...lint, ...review], scorecard: sc };
 			render(sc, [...lint, ...review]);
 		} catch (_e) {
 			// Never let a review error break the editor.
@@ -231,7 +237,7 @@ export function createArchitect({ vocab, catalog, mount, reveal, applyFix }) {
 		timer = setTimeout(run, 250);
 	}
 
-	return { update };
+	return { update, getAssessment: () => assessment };
 }
 
 // ── Onboarding: two modes — Drafting & Freehand (deterministic, zero-model) ───
@@ -304,7 +310,7 @@ for (const [group, items] of Object.entries(ARCHETYPES)) {
 	for (const name of Object.keys(items)) ARCHETYPE_LIST.push({ name, group, spine: items[name] });
 }
 
-export function createOnboarding({ catalog, mount, onBuild }) {
+export function createOnboarding({ catalog, mount, onBuild, model }) {
 	if (!mount) return { reset() {} };
 	const byName = new Map((catalog || []).map((c) => [c.name, c]));
 
@@ -318,6 +324,43 @@ export function createOnboarding({ catalog, mount, onBuild }) {
 	const fuse = new Fuse(ARCHETYPE_LIST, { keys: ['name'], threshold: 0.4, ignoreLocation: true });
 	let inFlow = false; // user is actively choosing a new deck (doors / picker)
 	let everChose = false; // a mode has been chosen this session
+
+	// Semantic archetype retrieval (Slice 6): when on-device embeddings are ready,
+	// rank archetypes by cosine similarity to the free-text query so "pitch our
+	// Series B" finds the investor-pitch spine without lexical overlap. Falls back
+	// to fuse.js (lexical, typo-tolerant) whenever embeddings aren't available —
+	// which is every browser until Transformers.js loads, and CI. The cosine math
+	// is unit-tested (architect-model.test.js); this is the thin glue.
+	const corpusText = (it) => `${it.name}. ${it.group}.`;
+	let corpusVecs = null; // archetype embeddings, computed once
+	let corpusPending = false;
+	let searchToken = 0; // drops stale async re-ranks when keystrokes outrun embeds
+	let rerank = null; // set by startDrafting so a late corpus load re-runs the query
+	async function ensureCorpus() {
+		if (corpusVecs || corpusPending || !model?.embed) return;
+		corpusPending = true;
+		const vecs = await model.embed(ARCHETYPE_LIST.map(corpusText));
+		corpusPending = false;
+		if (vecs && vecs.length === ARCHETYPE_LIST.length) { corpusVecs = vecs; rerank?.(); }
+	}
+	// Returns ranked ARCHETYPE_LIST entries for a query, or null if a newer query
+	// superseded this one. Empty query → the full curated, grouped list.
+	async function rankItems(q) {
+		if (!q) return ARCHETYPE_LIST;
+		if (corpusVecs && model?.embed) {
+			const mine = ++searchToken;
+			const out = await model.embed([q]);
+			if (mine !== searchToken) return null; // a newer keystroke won
+			const qv = out?.[0];
+			if (qv) {
+				const ranked = cosineRank(qv, corpusVecs, { limit: 12 })
+					.filter((r) => r.score > 0.2)
+					.map((r) => ARCHETYPE_LIST[r.index]);
+				if (ranked.length) return ranked;
+			}
+		}
+		return fuse.search(q).map((r) => r.item); // lexical fallback
+	}
 
 	// Remember the last door the author walked through (persists across reloads)
 	// so a returning user's eye lands on it — without hijacking the choice.
@@ -385,10 +428,8 @@ export function createOnboarding({ catalog, mount, onBuild }) {
 		mount.appendChild(head);
 		const list = el('div', 'db-draft-list');
 		mount.appendChild(list);
-		const renderList = () => {
-			const q = search.value.trim();
+		const paint = (items) => {
 			list.innerHTML = '';
-			const items = q ? fuse.search(q).map((r) => r.item) : ARCHETYPE_LIST;
 			const groups = {};
 			for (const it of items) (groups[it.group] ||= []).push(it);
 			for (const [group, arr] of Object.entries(groups)) {
@@ -404,7 +445,13 @@ export function createOnboarding({ catalog, mount, onBuild }) {
 				list.appendChild(el('p', 'db-rail-note', 'Not in the list? Go Freehand — I don’t template specialized or long-form work.'));
 			}
 		};
+		const renderList = async () => {
+			const items = await rankItems(search.value.trim());
+			if (items) paint(items); // null = superseded by a newer keystroke
+		};
+		rerank = renderList; // a late corpus-embed load re-runs the current query
 		search.addEventListener('input', renderList);
+		ensureCorpus(); // warm the embeddings in the background (no-op without a model)
 		renderList();
 		setTimeout(() => search.focus(), 0);
 	}
