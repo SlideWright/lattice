@@ -598,6 +598,99 @@ body.db-page .topbar {
 	color: var(--text-muted);
 }
 
+/* Scorecard (Structure · Clarity · Data · Pacing · Contract) */
+.db-scorecard {
+	border: 1px solid var(--border);
+	border-radius: var(--radius-md);
+	background: var(--bg);
+	padding: 0.7rem 0.75rem;
+	margin-bottom: 0.7rem;
+}
+.db-sc-head {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	margin-bottom: 0.6rem;
+}
+.db-sc-grade {
+	display: inline-grid;
+	place-items: center;
+	min-width: 2.1rem;
+	height: 2.1rem;
+	padding: 0 0.35rem;
+	border-radius: var(--radius-sm);
+	font-family: var(--font-display);
+	font-weight: 700;
+	font-size: 1rem;
+	color: #fff;
+}
+.db-sc-overall {
+	font-family: var(--font-display);
+	font-weight: 650;
+	font-size: 1.15rem;
+	color: var(--text-heading);
+}
+.db-sc-overall small {
+	font-size: 0.7rem;
+	font-weight: 400;
+	color: var(--text-muted);
+}
+.db-sc-label {
+	flex: 1 1 auto;
+	font-size: 0.72rem;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	color: var(--text-muted);
+}
+.db-sc-speak {
+	flex: 0 0 auto;
+	font-size: 0.95rem;
+	line-height: 1;
+	background: none;
+	border: 1px solid var(--border);
+	border-radius: var(--radius-sm);
+	padding: 0.25rem 0.4rem;
+	cursor: pointer;
+}
+.db-sc-speak:hover {
+	border-color: var(--accent);
+}
+.db-sc-cats {
+	display: grid;
+	gap: 0.3rem;
+}
+.db-sc-cat {
+	display: grid;
+	grid-template-columns: 4.2rem 1fr 1.6rem;
+	align-items: center;
+	gap: 0.4rem;
+}
+.db-sc-cat-label {
+	font-size: 0.76rem;
+	color: var(--text-body);
+}
+.db-sc-bar {
+	height: 6px;
+	border-radius: 3px;
+	background: var(--bg-alt);
+	overflow: hidden;
+}
+.db-sc-bar i {
+	display: block;
+	height: 100%;
+	border-radius: 3px;
+}
+.db-sc-cat-score {
+	font-size: 0.74rem;
+	color: var(--text-muted);
+	text-align: right;
+	font-variant-numeric: tabular-nums;
+}
+/* Quality colours — shared by the grade chip + bars */
+.q-good { background: #2e7d32; }
+.q-ok { background: #b8860b; }
+.q-bad { background: #c0392b; }
+
 /* Live review (the Architect's deterministic findings) */
 .db-review-clean {
 	font-size: 0.84rem;
@@ -629,6 +722,9 @@ body.db-page .topbar {
 .db-finding.sev-warning {
 	border-left-color: #b8860b;
 }
+.db-finding.sev-suggestion {
+	border-left-color: var(--accent);
+}
 .db-finding-head {
 	display: flex;
 	gap: 0.45rem;
@@ -644,6 +740,9 @@ body.db-page .topbar {
 }
 .sev-error .db-finding-dot {
 	background: #c0392b;
+}
+.sev-suggestion .db-finding-dot {
+	background: var(--accent);
 }
 .db-finding-msg {
 	font-size: 0.84rem;

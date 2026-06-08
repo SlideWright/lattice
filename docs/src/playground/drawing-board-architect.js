@@ -11,6 +11,8 @@
 // Voiced as "the Architect" per the naming decision.
 
 import lintCore from '../../../lib/authoring/lint-core.js';
+import reviewCore from '../../../lib/authoring/review-core.js';
+import scorecard from '../../../lib/authoring/scorecard.js';
 
 // 1-based source line where each `---`-split chunk begins — matches lint-core's
 // `source.split(/^---$/m)` so a finding's `slide` (chunk) index maps to a line.
@@ -22,12 +24,19 @@ function chunkStartLines(src) {
 	}
 	return starts;
 }
+const SEV_RANK = { error: 0, warning: 1, suggestion: 2 };
+function hasContent(src) {
+	// At least one classed slide (after front matter) or some real prose.
+	return /<!--\s*_class:/.test(src) && src.split(/^---$/m).filter((s) => s.trim()).length > 1;
+}
 
-export function createArchitect({ vocab, mount, reveal, applyFix }) {
+export function createArchitect({ vocab, catalog, mount, reveal, applyFix }) {
 	const vocabSets = {
 		names: new Set((vocab?.names) || []),
 		modifiers: new Set((vocab?.modifiers) || []),
 	};
+	const bucketByName = new Map((catalog || []).map((c) => [c.name, c.bucket]));
+	const bucketOf = (n) => bucketByName.get(n) || null;
 	let lastSource = '';
 	let timer = null;
 
@@ -113,31 +122,99 @@ export function createArchitect({ vocab, mount, reveal, applyFix }) {
 		return wrap;
 	}
 
-	function render(findings) {
+	// Read the scorecard aloud via the browser's built-in TTS (no model, no dep).
+	function speakCard(sc) {
+		if (!('speechSynthesis' in window)) return;
+		const synth = window.speechSynthesis;
+		if (synth.speaking) { synth.cancel(); return; } // toggle off
+		let text = `Your deck scores ${sc.band}, ${sc.overall} out of 100. `;
+		const issues = sc.categories.filter((c) => c.notes.length);
+		if (!issues.length) text += 'Every category is strong — nicely done.';
+		else for (const c of issues) text += `${c.label}, ${c.score}: ${c.notes.join(', ')}. `;
+		const u = new SpeechSynthesisUtterance(text);
+		u.rate = 1.02;
+		synth.speak(u);
+	}
+
+	function scorecardEl(sc) {
+		const wrap = document.createElement('div');
+		wrap.className = 'db-scorecard';
+		const head = document.createElement('div');
+		head.className = 'db-sc-head';
+		const grade = document.createElement('span');
+		grade.className = 'db-sc-grade q-' + (sc.overall >= 80 ? 'good' : sc.overall >= 60 ? 'ok' : 'bad');
+		grade.textContent = sc.band;
+		const overall = document.createElement('span');
+		overall.className = 'db-sc-overall';
+		overall.append(String(sc.overall), Object.assign(document.createElement('small'), { textContent: '/100' }));
+		const label = document.createElement('span');
+		label.className = 'db-sc-label';
+		label.textContent = 'the Architect’s scorecard';
+		const speak = document.createElement('button');
+		speak.type = 'button';
+		speak.className = 'db-sc-speak';
+		speak.setAttribute('aria-label', 'Read the assessment aloud');
+		speak.title = 'Read aloud';
+		speak.textContent = '🔊';
+		if (!('speechSynthesis' in window)) speak.hidden = true;
+		speak.addEventListener('click', () => speakCard(sc));
+		head.append(grade, overall, label, speak);
+		wrap.appendChild(head);
+		const cats = document.createElement('div');
+		cats.className = 'db-sc-cats';
+		for (const c of sc.categories) {
+			const row = document.createElement('div');
+			row.className = 'db-sc-cat';
+			if (c.notes.length) row.title = c.notes.join(' · ');
+			const lbl = Object.assign(document.createElement('span'), { className: 'db-sc-cat-label', textContent: c.label });
+			const bar = document.createElement('span');
+			bar.className = 'db-sc-bar';
+			const fill = document.createElement('i');
+			fill.className = 'q-' + (c.score >= 80 ? 'good' : c.score >= 60 ? 'ok' : 'bad');
+			fill.style.width = c.score + '%';
+			bar.appendChild(fill);
+			const score = Object.assign(document.createElement('span'), { className: 'db-sc-cat-score', textContent: String(c.score) });
+			row.append(lbl, bar, score);
+			cats.appendChild(row);
+		}
+		wrap.appendChild(cats);
+		return wrap;
+	}
+
+	function render(sc, findings) {
 		if (!mount) return;
 		mount.innerHTML = '';
+		if (!sc) {
+			const d = document.createElement('div');
+			d.className = 'db-review-clean';
+			d.textContent = 'Start a deck and I’ll score it and flag anything off.';
+			mount.appendChild(d);
+			return;
+		}
+		mount.appendChild(scorecardEl(sc));
 		if (!findings.length) {
 			mount.appendChild(cleanState());
 			return;
 		}
-		const sevRank = (f) => (f.severity === 'error' ? 0 : 1);
-		findings.sort((a, b) => sevRank(a) - sevRank(b) || a.slide - b.slide);
+		findings.sort((a, b) => SEV_RANK[a.severity] - SEV_RANK[b.severity] || a.slide - b.slide);
 		const errs = findings.filter((f) => f.severity === 'error').length;
-
 		const head = document.createElement('div');
 		head.className = 'db-review-head';
 		const n = findings.length;
 		head.textContent =
-			'the Architect flags ' + n + ' issue' + (n === 1 ? '' : 's') + (errs ? ' · ' + errs + ' to fix' : '');
+			'the Architect flags ' + n + ' item' + (n === 1 ? '' : 's') + (errs ? ' · ' + errs + ' to fix' : '');
 		mount.appendChild(head);
-
 		const starts = chunkStartLines(lastSource);
 		for (const f of findings) mount.appendChild(card(f, starts));
 	}
 
 	function run() {
 		try {
-			render(lintCore.lintTextWith(lastSource, vocabSets));
+			if (!hasContent(lastSource)) { render(null, []); return; }
+			const lint = lintCore.lintTextWith(lastSource, vocabSets);
+			const review = reviewCore.reviewText(lastSource, { bucketOf });
+			const sc = scorecard.scoreDeck({ source: lastSource, lintFindings: lint, reviewFindings: review });
+			render(sc, [...lint, ...review]);
 		} catch (_e) {
 			// Never let a review error break the editor.
 			if (mount) mount.innerHTML = '';

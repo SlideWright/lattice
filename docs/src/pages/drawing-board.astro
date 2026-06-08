@@ -267,6 +267,7 @@ const dbData = JSON.stringify({
 			const data = JSON.parse(document.getElementById('db-data').textContent);
 			const architect = createArchitect({
 				vocab: data.lintVocab,
+				catalog: data.catalog,
 				mount: document.getElementById('db-arch-review'),
 				reveal: (line) => { if (window.__dbEditor) window.__dbEditor.goToLine(line); },
 				// setValue dispatches a doc change -> onEdit -> render + save + re-lint.

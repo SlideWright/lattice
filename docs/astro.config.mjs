@@ -18,7 +18,10 @@ export default defineConfig({
 		server: { fs: { allow: ['..'] } },
 		build: {
 			commonjsOptions: {
-				include: [/lib[/\\]authoring[/\\]lint-core\.js$/, /node_modules/],
+				// The Architect imports the repo's pure CommonJS authoring engines
+				// (lint-core, review-core, scorecard) so the browser runs the SAME
+				// checks as Node. Apply the CJS→ESM transform to all of lib/authoring/.
+				include: [/lib[/\\]authoring[/\\][\w-]+\.js$/, /node_modules/],
 				transformMixedEsModules: true,
 			},
 		},
