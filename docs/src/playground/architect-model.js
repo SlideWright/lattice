@@ -136,40 +136,129 @@ function webllmBackend() {
 // loaded from CDN on demand; runs everywhere (no WebGPU), so it's the fallback
 // for Safari / mobile where the built-in Prompt API and WebLLM aren't available.
 // Slower than the others, so keep prompts short (the chat already truncates).
+const MAX_NEW_TOKENS = 128; // a tiny model on a phone is slow per token — keep replies short
+
+// The worker body (module worker, runs the model OFF the main thread so the UI
+// never freezes and tokens can paint as they stream). It dynamic-imports
+// Transformers.js from the CDN, loads the pipeline on WASM, and streams. If the
+// page is cross-origin isolated (SharedArrayBuffer available), onnxruntime-web
+// uses multiple threads automatically — no code change here.
+const WORKER_SRC = `
+let lib = null, gen = null;
+self.onmessage = async (e) => {
+  const d = e.data || {};
+  try {
+    if (d.type === 'load') {
+      lib = await import(d.url);
+      gen = await lib.pipeline('text-generation', d.model, {
+        device: 'wasm', dtype: 'q4',
+        progress_callback: (p) => self.postMessage({ type: 'progress', progress: (p && p.progress) || 0, file: p && p.file, status: p && p.status }),
+      });
+      self.postMessage({ type: 'loaded' });
+    } else if (d.type === 'generate') {
+      const streamer = new lib.TextStreamer(gen.tokenizer, { skip_prompt: true, skip_special_tokens: true, callback_function: (t) => self.postMessage({ type: 'token', id: d.id, t }) });
+      const out = await gen(d.messages, { max_new_tokens: d.max || 128, do_sample: false, streamer });
+      const g = out && out[0] && out[0].generated_text;
+      const text = Array.isArray(g) ? ((g[g.length - 1] && g[g.length - 1].content) || '') : (typeof g === 'string' ? g : '');
+      self.postMessage({ type: 'done', id: d.id, text });
+    }
+  } catch (err) {
+    self.postMessage({ type: d.type === 'load' ? 'load-error' : 'gen-error', id: d.id, error: String((err && err.message) || err) });
+  }
+};
+`;
+
+// The universal generation backend. Prefers a Web Worker (non-blocking, streams);
+// falls back to main-thread inference where module workers aren't available.
 function transformersGenBackend() {
-  let generator = null;
-  let lib = null;
+  let worker = null;
+  let isReady = false;
+  let mainGen = null; // main-thread fallback pipeline
+  let mainLib = null;
+  let nextId = 1;
+  const pending = new Map(); // generate id -> { onToken, resolve, reject }
+  let onLoaded = null;
+  let onLoadErr = null;
+  let onProg = null;
+
+  function makeWorker() {
+    if (worker) return worker;
+    const url = URL.createObjectURL(new Blob([WORKER_SRC], { type: 'text/javascript' }));
+    worker = new Worker(url, { type: 'module' });
+    worker.onmessage = (e) => {
+      const d = e.data || {};
+      if (d.type === 'progress') onProg?.({ progress: (d.progress || 0) / 100, text: d.file, status: d.status });
+      else if (d.type === 'loaded') { isReady = true; onLoaded?.(true); }
+      else if (d.type === 'load-error') onLoadErr?.(new Error(d.error || 'load failed'));
+      else if (d.type === 'token') pending.get(d.id)?.onToken?.(d.t);
+      else if (d.type === 'done') { const p = pending.get(d.id); pending.delete(d.id); p?.resolve?.(d.text || ''); }
+      else if (d.type === 'gen-error') { const p = pending.get(d.id); pending.delete(d.id); p?.reject?.(new Error(d.error || 'generation failed')); }
+    };
+    worker.onerror = (ev) => onLoadErr?.(new Error(ev.message || 'worker error'));
+    return worker;
+  }
+
+  // Main-thread fallback (no module-worker support): the previous in-page path.
+  async function loadMain(onProgress) {
+    mainLib = await import(/* @vite-ignore */ TRANSFORMERS_URL);
+    mainGen = await mainLib.pipeline('text-generation', UNIVERSAL_MODEL, {
+      device: 'wasm',
+      dtype: 'q4',
+      progress_callback: (p) => onProgress?.({ progress: (p?.progress || 0) / 100, text: p?.file || p?.status, status: p?.status }),
+    });
+    isReady = true;
+  }
+
   return {
     name: 'transformers',
     async load(onProgress, signal) {
-      lib = await import(/* @vite-ignore */ TRANSFORMERS_URL);
-      generator = await lib.pipeline('text-generation', UNIVERSAL_MODEL, {
-        // Force the WASM backend. This is the UNIVERSAL tier — it must not touch
-        // WebGPU: Transformers.js otherwise auto-selects WebGPU when present, and
-        // iOS Safari (which exposes navigator.gpu since iOS 18) has an immature
-        // ONNX/WebGPU path that fails. WASM runs everywhere.
-        device: 'wasm',
-        dtype: 'q4',
-        // Transformers.js reports `progress` as a 0–100 percentage, per file. The
-        // adapter normalizes ALL backends to a 0–1 fraction so the UI is uniform.
-        progress_callback: (p) => onProgress?.({ progress: (p?.progress || 0) / 100, text: p?.file || p?.status, status: p?.status }),
-      });
-      if (signal?.aborted) throw new Error('aborted');
-      return true;
+      // Try the worker first; fall back to main-thread if it can't even be created.
+      try {
+        makeWorker();
+      } catch {
+        await loadMain(onProgress);
+        return true;
+      }
+      onProg = onProgress;
+      try {
+        await new Promise((resolve, reject) => {
+          onLoaded = resolve;
+          onLoadErr = reject;
+          worker.postMessage({ type: 'load', url: TRANSFORMERS_URL, model: UNIVERSAL_MODEL });
+          if (signal) signal.addEventListener('abort', () => reject(new Error('aborted')), { once: true });
+        });
+        return true;
+      } catch (e) {
+        // The worker loaded but couldn't bring up the model (e.g. an iOS
+        // module-worker cross-origin-import restriction). Tear it down and fall
+        // back to main-thread inference so the model still works (just blocking).
+        if (String(e?.message) === 'aborted') throw e;
+        try { worker.terminate(); } catch {}
+        worker = null;
+        await loadMain(onProgress);
+        return true;
+      }
     },
-    ready() { return !!generator; },
+    ready() { return isReady; },
     async complete({ messages, onToken, signal }) {
-      if (!generator) throw new Error('universal model not loaded');
-      // Chat models accept the messages array and apply their own template.
+      if (!isReady) throw new Error('universal model not loaded');
+      // Worker path — stream tokens back without blocking the UI.
+      if (worker) {
+        const id = nextId++;
+        return new Promise((resolve, reject) => {
+          pending.set(id, { onToken, resolve, reject });
+          worker.postMessage({ type: 'generate', id, messages, max: MAX_NEW_TOKENS });
+          if (signal) signal.addEventListener('abort', () => { pending.delete(id); reject(new Error('aborted')); }, { once: true });
+        });
+      }
+      // Main-thread fallback.
       const streamer = onToken
-        ? new lib.TextStreamer(generator.tokenizer, { skip_prompt: true, skip_special_tokens: true, callback_function: (t) => onToken(t) })
+        ? new mainLib.TextStreamer(mainGen.tokenizer, { skip_prompt: true, skip_special_tokens: true, callback_function: (t) => onToken(t) })
         : undefined;
-      const out = await generator(messages, { max_new_tokens: 384, do_sample: false, streamer });
-      if (signal?.aborted) return '';
-      // For chat input, generated_text is the message array with the reply appended.
-      const gen = out?.[0]?.generated_text;
-      if (Array.isArray(gen)) return gen.at(-1)?.content ?? '';
-      return typeof gen === 'string' ? gen : '';
+      const out = await mainGen(messages, { max_new_tokens: MAX_NEW_TOKENS, do_sample: false, streamer });
+      const g = out?.[0]?.generated_text;
+      if (Array.isArray(g)) return g.at(-1)?.content ?? '';
+      return typeof g === 'string' ? g : '';
     },
   };
 }
