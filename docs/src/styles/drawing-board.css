@@ -1699,6 +1699,19 @@ body.db-page .topbar {
 [data-converse-ready="false"] .db-converse-empty { display: block; }
 [data-converse-ready="false"] .db-arch-chat { display: none; }
 
+/* The Architect's post-onboarding greeting, shown in Coach. Empty = collapsed. */
+.db-coach-intro {
+	margin: 0.2rem 0 0;
+	padding: 0.6rem 0.75rem;
+	font-size: 0.85rem;
+	line-height: 1.5;
+	color: var(--text-body);
+	background: color-mix(in srgb, var(--accent) 7%, var(--bg));
+	border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--border));
+	border-radius: var(--radius-md);
+}
+.db-coach-intro:empty { display: none; }
+
 /* Coach action chips → result cards. */
 .db-coach-chips {
 	display: flex;
