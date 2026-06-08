@@ -141,6 +141,11 @@ function transformersGenBackend() {
     async load(onProgress, signal) {
       lib = await import(/* @vite-ignore */ TRANSFORMERS_URL);
       generator = await lib.pipeline('text-generation', UNIVERSAL_MODEL, {
+        // Force the WASM backend. This is the UNIVERSAL tier — it must not touch
+        // WebGPU: Transformers.js otherwise auto-selects WebGPU when present, and
+        // iOS Safari (which exposes navigator.gpu since iOS 18) has an immature
+        // ONNX/WebGPU path that fails. WASM runs everywhere.
+        device: 'wasm',
         dtype: 'q4',
         // Transformers.js reports `progress` as a 0–100 percentage, per file. The
         // adapter normalizes ALL backends to a 0–1 fraction so the UI is uniform.

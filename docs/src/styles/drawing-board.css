@@ -1591,3 +1591,19 @@ body.db-page .topbar {
 	font-size: 0.72rem;
 	color: var(--text-muted);
 }
+
+/* On-device AI load error — surfaced, not swallowed. */
+.db-settings-error {
+	margin-top: 0.7rem;
+	padding: 0.5rem 0.6rem;
+	border: 1px solid color-mix(in srgb, #c0392b 45%, var(--border));
+	border-radius: var(--radius-sm);
+	background: color-mix(in srgb, #c0392b 8%, var(--bg));
+	font-size: 0.76rem;
+	line-height: 1.45;
+	color: var(--text-body);
+	overflow-wrap: anywhere;
+}
+.db-settings-error strong {
+	color: #c0392b;
+}
