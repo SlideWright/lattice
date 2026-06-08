@@ -412,9 +412,9 @@ export function createOnboarding({ catalog, mount, onBuild, model, say }) {
 		// Await the deck creation so the greeting lands in the NEW deck's thread.
 		if (onBuild) await onBuild('<!-- _class: title silent -->\n\n# New deck\n\nStart writing — I’ll review as you go.\n');
 		if (say) await say(
-			'Blank canvas — go. I’ll score every edit and flag anything off up here as you write. ' +
-			'Ask me what to fix, about a specific slide, or select text and hit Refine. ' +
-			'(Load on-device AI from the ⚙ chip for a real back-and-forth.)');
+			'Blank canvas — go. I score every edit and flag anything off up here as you write. ' +
+			'Tap the chips for your top fixes, the weakest slide, or the ask; select text and hit Refine to tighten a line. ' +
+			'Want to talk it through? Switch to Converse.');
 		compactView();
 	}
 
@@ -485,8 +485,8 @@ export function createOnboarding({ catalog, mount, onBuild, model, say }) {
 			if (onBuild) await onBuild(assemble(name, spine), name);
 			if (say) await say(
 				`Built the ${name} structure — ${spine.length} slides scaffolded, ` +
-				'starting from the title. Fill them in and I’ll review as you type; ' +
-				'ask me about any slide or what to tighten.');
+				'starting from the title. Fill them in and I review as you type. ' +
+				'Tap the chips for top fixes or pacing; switch to Converse to talk it through.');
 			compactView();
 		});
 		const other = el('button', 'db-ob-chip', 'Pick another');

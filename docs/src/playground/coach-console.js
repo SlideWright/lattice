@@ -32,10 +32,17 @@ function el(tag, cls, text) {
   return e;
 }
 
-export function createCoachConsole({ chipsHost, cardHost, getAssessment, getSource, reveal }) {
-  if (!chipsHost || !cardHost) return { render() {} };
+export function createCoachConsole({ chipsHost, cardHost, introHost, getAssessment, getSource, reveal }) {
+  if (!chipsHost || !cardHost) return { render() {}, intro() {}, clearIntro() {} };
   let minutes = null;
   let active = null;
+
+  // The Architect's onboarding "talk back" lands HERE — in Coach, the default
+  // mode — not in the Converse thread (hidden under Coach, so a greeting posted
+  // there is never seen). It's a one-shot: cleared once the user engages a chip
+  // or moves to another deck.
+  function intro(text) { if (introHost) introHost.textContent = text || ''; }
+  function clearIntro() { if (introHost) introHost.textContent = ''; }
 
   const ctx = () => ({ assessment: (getAssessment?.()) || {}, source: (getSource?.()) || '', minutes });
 
@@ -72,7 +79,7 @@ export function createCoachConsole({ chipsHost, cardHost, getAssessment, getSour
       const b = el('button', 'db-coach-chip', chip.label);
       b.type = 'button';
       if (active && active.id === chip.id) b.classList.add('is-active');
-      b.addEventListener('click', () => { renderChips(); renderCard(chip); paintActive(chip); });
+      b.addEventListener('click', () => { clearIntro(); renderChips(); renderCard(chip); paintActive(chip); });
       chipsHost.appendChild(b);
     }
   }
@@ -81,5 +88,5 @@ export function createCoachConsole({ chipsHost, cardHost, getAssessment, getSour
   }
 
   renderChips();
-  return { render: renderChips };
+  return { render: renderChips, intro, clearIntro };
 }

@@ -167,6 +167,9 @@ const dbData = JSON.stringify({
 
 						<!-- Coach view: the deterministic assessment + action chips. -->
 						<div class="db-coach" data-view="coach">
+							<!-- The Architect's post-onboarding greeting (Drafting/Freehand) lands
+							     here — visible in the default Coach mode. -->
+							<p class="db-coach-intro" id="db-coach-intro" aria-live="polite"></p>
 							<div class="db-arch-review" id="db-arch-review" aria-live="polite"></div>
 							<div class="db-coach-chips" id="db-coach-chips"></div>
 							<div class="db-coach-card" id="db-coach-card" aria-live="polite"></div>
@@ -359,6 +362,7 @@ const dbData = JSON.stringify({
 			const coach = createCoachConsole({
 				chipsHost: document.getElementById('db-coach-chips'),
 				cardHost: document.getElementById('db-coach-card'),
+				introHost: document.getElementById('db-coach-intro'),
 				getAssessment: () => architect.getAssessment(),
 				getSource: () => (window.__dbEditor ? window.__dbEditor.getValue() : ''),
 				reveal: (line) => {
@@ -376,8 +380,11 @@ const dbData = JSON.stringify({
 				for (const t of document.querySelectorAll('.db-arch-mode')) t.setAttribute('aria-selected', t.getAttribute('data-mode') === mode ? 'true' : 'false');
 				try { localStorage.setItem('lattice-db-arch-mode', mode); } catch (e) {}
 			}
+			window.__dbSetArchMode = setArchMode; // the onboarding lands the user in Coach
 			for (const t of document.querySelectorAll('.db-arch-mode')) t.addEventListener('click', () => setArchMode(t.getAttribute('data-mode')));
 			try { const m = localStorage.getItem('lattice-db-arch-mode'); if (m === 'converse') setArchMode('converse'); } catch (e) {}
+			// A stale onboarding greeting shouldn't follow you to another deck.
+			window.addEventListener('db-active-deck', () => { if (window.__dbCoach && window.__dbCoach.clearIntro) window.__dbCoach.clearIntro(); });
 
 			// Converse is "ready" (composer shown) only with a real generative model.
 			window.__dbSyncConverse = function () {
@@ -454,10 +461,13 @@ const dbData = JSON.stringify({
 					if (window.__dbStore && window.__dbStore.create) await window.__dbStore.create(src, name);
 					else if (window.__dbEditor) window.__dbEditor.setValue(src);
 				},
-				// The Architect "talks back" when it starts a deck: post a greeting into the
-				// thread and (on narrow layouts) stay on the Architect so it's seen.
+				// The Architect "talks back" when it starts a deck — in COACH, the default
+				// mode, where the review + chips live. (The Converse thread is hidden under
+				// Coach, so a greeting posted there would never be seen.) On narrow layouts
+				// stay on the Architect so the greeting + first review are seen.
 				say: async (text) => {
-					if (window.__dbChat && window.__dbChat.say) await window.__dbChat.say(text);
+					if (window.__dbSetArchMode) window.__dbSetArchMode('coach');
+					if (window.__dbCoach && window.__dbCoach.intro) window.__dbCoach.intro(text);
 					if (window.matchMedia('(max-width: 1024px)').matches && window.__dbSetPane) window.__dbSetPane('architect');
 					window.__dbOnboardingStart = false;
 				},
