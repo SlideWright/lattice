@@ -35,6 +35,10 @@ const SCRIPT_FOR_LIB = {
   // lint-core.test.js, both under test/unit/components/.
   'lint.js':              'test:components',
   'lint-core.js':         'test:components',
+  // Presentation review heuristics + scorecard (Architect coach) — covered by
+  // review-scorecard.test.js under test/unit/components/.
+  'review-core.js':       'test:components',
+  'scorecard.js':         'test:components',
 };
 
 // Cross-cutting files: changing any of these can affect every test.

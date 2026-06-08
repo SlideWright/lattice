@@ -51,6 +51,34 @@ function relTime(ts) {
 }
 const uid = (p) => p + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
 
+// Derive a human title + one-line description from the deck source: the first
+// `# H1` (skipping the scaffold placeholder) and the first real line after it
+// (the title-slide subtitle). Powers auto-naming so decks aren't all "Untitled".
+function deriveMeta(source) {
+	const lines = (source || '').split('\n');
+	let title = null;
+	let desc = null;
+	for (let i = 0; i < lines.length; i++) {
+		const h1 = lines[i].match(/^#\s+(.+)/);
+		if (!h1) continue;
+		const t = h1[1].replace(/[*`_]/g, '').trim();
+		if (!t || /^(new deck|untitled deck|deck)$/i.test(t)) break; // placeholder → no title yet
+		title = t.slice(0, 70);
+		for (let j = i + 1; j < lines.length; j++) {
+			const l = lines[j].trim();
+			if (!l) continue;
+			if (l === '---') break;
+			if (l.startsWith('<!--')) continue; // class directive
+			if (/^`[^`]*`$/.test(l)) continue; // eyebrow
+			if (/^#{1,6}\s/.test(l)) continue; // heading
+			desc = l.replace(/[*`_>#]/g, '').replace(/^[-\s]+/, '').trim().slice(0, 90);
+			break;
+		}
+		break;
+	}
+	return { title, desc };
+}
+
 export function createStore({ getSource, onLoadDeck, starter = '' }) {
 	let db = null;
 	let activeId = null;
@@ -85,8 +113,10 @@ export function createStore({ getSource, onLoadDeck, starter = '' }) {
 			pick.className = 'db-deck';
 			if (d.id === activeId) pick.setAttribute('aria-current', 'true');
 			pick.innerHTML =
-				'<span class="db-deck-name"></span><span class="db-deck-meta"></span>';
+				'<span class="db-deck-name"></span><span class="db-deck-desc"></span><span class="db-deck-meta"></span>';
 			pick.querySelector('.db-deck-name').textContent = d.name;
+			const descEl = pick.querySelector('.db-deck-desc');
+			if (d.desc) descEl.textContent = d.desc; else descEl.remove();
 			pick.querySelector('.db-deck-meta').textContent = 'edited ' + relTime(d.updatedAt);
 			pick.addEventListener('click', () => switchDeck(d.id));
 			pick.addEventListener('dblclick', () => renameDeck(d.id));
@@ -134,7 +164,18 @@ export function createStore({ getSource, onLoadDeck, starter = '' }) {
 
 	async function createDeck(source, name) {
 		const now = Date.now();
-		const deck = { id: uid('d'), name: name || 'Untitled deck', source: source || '', createdAt: now, updatedAt: now };
+		const meta = deriveMeta(source);
+		// `name` (e.g. the Drafting archetype) seeds the title but stays auto — it
+		// re-derives from the deck's H1 once the author writes a real one.
+		const deck = {
+			id: uid('d'),
+			name: name || meta.title || 'Untitled deck',
+			desc: meta.desc || '',
+			nameManual: false,
+			source: source || '',
+			createdAt: now,
+			updatedAt: now,
+		};
 		await put('decks', deck);
 		activeId = deck.id;
 		await setSetting('activeDeckId', activeId);
@@ -158,6 +199,7 @@ export function createStore({ getSource, onLoadDeck, starter = '' }) {
 		const name = window.prompt('Rename deck', d.name);
 		if (name == null) return;
 		d.name = name.trim() || d.name;
+		d.nameManual = true; // pin it — stop auto-deriving from the H1
 		d.updatedAt = Date.now();
 		await put('decks', d);
 		await renderDecks();
@@ -186,8 +228,11 @@ export function createStore({ getSource, onLoadDeck, starter = '' }) {
 			if (!d) return;
 			d.source = source;
 			d.updatedAt = Date.now();
+			const meta = deriveMeta(source);
+			if (!d.nameManual && meta.title) d.name = meta.title; // auto-title from the H1
+			d.desc = meta.desc || '';
 			await put('decks', d);
-			renderDecks(); // refresh the "edited …" stamp + ordering
+			renderDecks(); // refresh name/desc + the "edited …" stamp + ordering
 		}, 600);
 	}
 

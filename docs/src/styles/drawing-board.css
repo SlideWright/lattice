@@ -200,6 +200,15 @@ body.db-page .topbar {
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
+.db-deck-desc {
+	display: block;
+	font-size: 0.76rem;
+	color: var(--text-body);
+	margin-top: 0.1rem;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
 .db-deck-meta {
 	display: block;
 	font-size: 0.72rem;
@@ -459,6 +468,17 @@ body.db-page .topbar {
 	border: 1px solid var(--border);
 	border-radius: var(--radius-sm);
 	padding: 0.45rem 0.55rem;
+}
+
+/* iOS Safari auto-zooms (and pans) when a focused input's font-size is < 16px.
+   Bump every editable field to 16px on touch/narrow so the viewport never jumps.
+   Desktop keeps the compact sizing. Applies to all current + future DB inputs. */
+@media (max-width: 1024px) {
+	.db-workspace input,
+	.db-workspace textarea,
+	.db-practice input {
+		font-size: 16px;
+	}
 }
 .db-draft-search:focus {
 	outline: none;

@@ -279,8 +279,10 @@ const dbData = JSON.stringify({
 			createOnboarding({
 				catalog: data.catalog,
 				mount: document.getElementById('db-arch-onboard'),
-				onBuild: (src) => {
-					if (window.__dbStore && window.__dbStore.create) window.__dbStore.create(src, 'Planned deck');
+				onBuild: (src, name) => {
+					// name = the archetype (Drafting) or undefined (Freehand → auto-titled
+					// from the deck's H1). The store derives the title + description.
+					if (window.__dbStore && window.__dbStore.create) window.__dbStore.create(src, name);
 					else if (window.__dbEditor) window.__dbEditor.setValue(src);
 				},
 			});

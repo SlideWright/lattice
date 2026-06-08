@@ -307,7 +307,7 @@ export function createOnboarding({ catalog, mount, onBuild }) {
 		const row = el('div', 'db-ob-chips');
 		const build = el('button', 'db-btn db-btn-primary', 'Build this →');
 		build.type = 'button';
-		build.addEventListener('click', () => { if (onBuild) onBuild(assemble(name, spine)); doors(); });
+		build.addEventListener('click', () => { if (onBuild) onBuild(assemble(name, spine), name); doors(); });
 		const other = el('button', 'db-ob-chip', 'Pick another');
 		other.type = 'button';
 		other.addEventListener('click', startDrafting);
