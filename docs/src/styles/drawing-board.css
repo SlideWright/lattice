@@ -404,6 +404,115 @@ body.db-page .topbar {
 	color: var(--accent);
 }
 
+/* ── The chat — the Architect's conversation (Phase 2) ──────────────────────── */
+.db-arch-chat {
+	display: flex;
+	flex-direction: column;
+	gap: 0.7rem;
+	margin-top: 0.9rem;
+	padding-top: 0.9rem;
+	border-top: 1px dashed var(--border);
+}
+.db-arch-chat:empty {
+	display: none;
+}
+.db-chat-empty {
+	font-size: 0.8rem;
+	line-height: 1.5;
+	color: var(--text-muted);
+	margin: 0;
+}
+.db-msg {
+	display: flex;
+	flex-direction: column;
+	gap: 0.2rem;
+	max-width: 92%;
+}
+.db-msg-user {
+	align-self: flex-end;
+	align-items: flex-end;
+}
+.db-msg-architect {
+	align-self: flex-start;
+}
+.db-msg-who {
+	font-size: 0.66rem;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	color: var(--text-muted);
+}
+.db-msg-body {
+	font-size: 0.84rem;
+	line-height: 1.5;
+	white-space: pre-wrap;
+	overflow-wrap: anywhere;
+	padding: 0.5rem 0.7rem;
+	border-radius: var(--radius-md);
+	border: 1px solid var(--border);
+	color: var(--text-body);
+	background: var(--bg);
+}
+.db-msg-user .db-msg-body {
+	background: color-mix(in srgb, var(--accent) 12%, var(--bg));
+	border-color: color-mix(in srgb, var(--accent) 30%, var(--border));
+}
+.db-msg-body.is-streaming::after {
+	content: "▍";
+	color: var(--accent);
+	animation: db-blink 1s steps(2) infinite;
+}
+@keyframes db-blink { 50% { opacity: 0; } }
+
+/* The composer — pinned at the panel foot; the thread scrolls above it. */
+.db-arch-composer {
+	flex: 0 0 auto;
+	display: flex;
+	align-items: flex-end;
+	gap: 0.5rem;
+	padding: 0.6rem 0.8rem calc(0.6rem + env(safe-area-inset-bottom));
+	border-top: 1px solid var(--border);
+	background: var(--bg-alt);
+}
+.db-arch-composer textarea {
+	flex: 1 1 auto;
+	resize: none;
+	min-height: 2.2rem;
+	max-height: 120px;
+	font: inherit;
+	font-size: 0.86rem;
+	line-height: 1.4;
+	color: var(--text-body);
+	background: var(--bg);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-md);
+	padding: 0.5rem 0.6rem;
+}
+.db-arch-composer textarea:focus {
+	outline: none;
+	border-color: var(--accent);
+}
+.db-arch-send {
+	flex: 0 0 auto;
+	width: 34px;
+	height: 34px;
+	display: grid;
+	place-items: center;
+	font-size: 1rem;
+	color: var(--on-accent);
+	background: var(--accent);
+	border: 1px solid var(--accent);
+	border-radius: 50%;
+	cursor: pointer;
+}
+.db-arch-send:hover {
+	filter: brightness(1.06);
+}
+.db-arch-send:disabled {
+	opacity: 0.5;
+	cursor: default;
+	filter: none;
+}
+
 /* Onboarding (conversation-first deck planning) */
 .db-arch-onboard {
 	margin-bottom: 0.9rem;

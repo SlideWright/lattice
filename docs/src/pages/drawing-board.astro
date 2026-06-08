@@ -158,11 +158,14 @@ const dbData = JSON.stringify({
 						</p>
 						<div class="db-arch-onboard" id="db-arch-onboard"></div>
 						<div class="db-arch-review" id="db-arch-review" aria-live="polite"></div>
-						<p class="db-arch-soon">
-							Onboarding &amp; live review run on-device, no model. Free-form chat arrives
-							with the on-device model (Phase 2).
-						</p>
+						<div class="db-arch-chat" id="db-arch-chat" aria-live="polite"></div>
 					</div>
+					<!-- The composer — a real chat with the Architect (Phase 2). Pinned at
+					     the panel foot so it's always reachable; the thread scrolls above. -->
+					<form class="db-arch-composer" id="db-arch-composer">
+						<textarea id="db-arch-input" rows="1" placeholder="Ask the Architect about your deck…" aria-label="Message the Architect"></textarea>
+						<button type="submit" class="db-arch-send" aria-label="Send">↑</button>
+					</form>
 				</div>
 			</section>
 
@@ -262,6 +265,7 @@ const dbData = JSON.stringify({
 				starter: data.starter || '',
 			});
 			window.__dbStore = store;
+			window.dispatchEvent(new Event('db-store-ready'));
 			store.init();
 		</script>
 
@@ -270,10 +274,27 @@ const dbData = JSON.stringify({
 		     fix guidance. Zero model. -->
 		<script>
 			import { createArchitect, createOnboarding } from '../playground/drawing-board-architect.js';
+			import { createArchitectModel } from '../playground/architect-model.js';
+			import { createChat } from '../playground/drawing-board-chat.js';
 			const data = JSON.parse(document.getElementById('db-data').textContent);
+
+			// The on-device model ladder (Phase 2). Defaults on; degrades to the
+			// deterministic floor when no model is present (which is every browser
+			// until a tier loads). One switch (lattice-db-model=off) forces the floor.
+			const model = createArchitectModel({
+				getSettings: () => {
+					let on = true;
+					try { on = localStorage.getItem('lattice-db-model') !== 'off'; } catch (e) {}
+					return { modelEnabled: on };
+				},
+			});
+			window.__dbModel = model;
+			model.refreshAvailability();
+
 			const architect = createArchitect({
 				vocab: data.lintVocab,
 				catalog: data.catalog,
+				model,
 				mount: document.getElementById('db-arch-review'),
 				reveal: (line) => { if (window.__dbEditor) window.__dbEditor.goToLine(line); },
 				// setValue dispatches a doc change -> onEdit -> render + save + re-lint.
@@ -281,11 +302,29 @@ const dbData = JSON.stringify({
 			});
 			window.__dbArchitect = architect;
 
+			// The chat surface — grounded in the architect's live deterministic
+			// assessment, persisted per deck via the store, model phrases the reply.
+			// Waits for the store so the thread can load/resume per deck.
+			function wireChat() {
+				const chat = createChat({
+					mount: document.getElementById('db-arch-chat'),
+					composer: document.getElementById('db-arch-composer'),
+					model,
+					store: window.__dbStore,
+					getAssessment: () => architect.getAssessment(),
+				});
+				window.__dbChat = chat;
+			}
+			if (window.__dbStore) wireChat();
+			else window.addEventListener('db-store-ready', wireChat, { once: true });
+
 			// Conversation-first onboarding: 3 questions -> retrieval -> scaffold a
 			// new deck (via the store when present, else just load it into the editor).
+			// The model upgrades archetype retrieval to semantic when embeddings load.
 			createOnboarding({
 				catalog: data.catalog,
 				mount: document.getElementById('db-arch-onboard'),
+				model,
 				onBuild: (src, name) => {
 					// name = the archetype (Drafting) or undefined (Freehand → auto-titled
 					// from the deck's H1). The store derives the title + description.

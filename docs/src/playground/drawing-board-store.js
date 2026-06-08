@@ -99,6 +99,32 @@ export function createStore({ getSource, onLoadDeck, starter = '' }) {
 	const setSetting = (key, value) => put('settings', { key, value });
 	const getSetting = async (key) => (await get('settings', key))?.value;
 
+	// ── chat thread (Phase 2) ───────────────────────────────────────────────────
+	// One thread per deck (chat.id === deckId), so switching decks resumes its
+	// conversation. Messages are append-only with a chatId index.
+	async function chatMessages(deckId) {
+		if (!db || !deckId) return [];
+		const idx = store(db, 'messages', 'readonly').index('chatId');
+		const rows = await P(idx.getAll(IDBKeyRange.only(deckId)));
+		return rows.sort((a, b) => a.at - b.at);
+	}
+	async function addChatMessage(deckId, role, content) {
+		if (!db || !deckId) return null;
+		const existing = await get('chats', deckId);
+		if (!existing) await put('chats', { id: deckId, createdAt: Date.now() });
+		const msg = { chatId: deckId, role, content, at: Date.now() };
+		const id = await put('messages', msg);
+		return { ...msg, id };
+	}
+	async function clearChat(deckId) {
+		if (!db || !deckId) return;
+		for (const m of await chatMessages(deckId)) await del('messages', m.id);
+	}
+	// Fired whenever the active deck changes, so the chat reloads its thread.
+	function notifyActive() {
+		try { window.dispatchEvent(new CustomEvent('db-active-deck', { detail: { deckId: activeId } })); } catch (_e) {}
+	}
+
 	// ── rail rendering ────────────────────────────────────────────────────────
 	async function renderDecks() {
 		const list = el('db-deck-list');
@@ -179,6 +205,7 @@ export function createStore({ getSource, onLoadDeck, starter = '' }) {
 		await put('decks', deck);
 		activeId = deck.id;
 		await setSetting('activeDeckId', activeId);
+		notifyActive();
 		await renderDecks();
 		await renderHistory();
 		return deck;
@@ -188,6 +215,7 @@ export function createStore({ getSource, onLoadDeck, starter = '' }) {
 		if (id === activeId) return;
 		activeId = id;
 		await setSetting('activeDeckId', id);
+		notifyActive();
 		await loadActiveIntoEditor();
 		await renderDecks();
 		await renderHistory();
@@ -210,9 +238,10 @@ export function createStore({ getSource, onLoadDeck, starter = '' }) {
 		if (!window.confirm('Delete this deck and its checkpoints? This cannot be undone.')) return;
 		await del('decks', id);
 		for (const r of await revisionsFor(id)) await del('revisions', r.id);
+		await clearChat(id); // drop the deleted deck's conversation too
 		if (id === activeId) {
 			const rest = (await getAll('decks')).sort((a, b) => b.updatedAt - a.updatedAt);
-			if (rest.length) { activeId = rest[0].id; await setSetting('activeDeckId', activeId); await loadActiveIntoEditor(); }
+			if (rest.length) { activeId = rest[0].id; await setSetting('activeDeckId', activeId); notifyActive(); await loadActiveIntoEditor(); }
 			else { await createDeck(starter, 'Untitled deck'); await loadActiveIntoEditor(); }
 		}
 		await renderDecks();
@@ -282,6 +311,7 @@ export function createStore({ getSource, onLoadDeck, starter = '' }) {
 			await createDeck(getSource() || starter, 'Untitled deck');
 		} else {
 			activeId = (await getSetting('activeDeckId')) || decks.sort((a, b) => b.updatedAt - a.updatedAt)[0].id;
+			notifyActive();
 			await loadActiveIntoEditor();
 			await renderDecks();
 			await renderHistory();
@@ -298,5 +328,10 @@ export function createStore({ getSource, onLoadDeck, starter = '' }) {
 		await loadActiveIntoEditor();
 	}
 
-	return { init, saveActive, checkpoint, create };
+	return {
+		init, saveActive, checkpoint, create,
+		// Chat (Phase 2): the Architect's per-deck conversation thread.
+		getActiveId: () => activeId,
+		chatMessages, addChatMessage, clearChat,
+	};
 }
