@@ -1,9 +1,9 @@
 /**
- * Headless integration: the Converse editing loop end-to-end (Slice B). A mock
- * Puter backend returns a reply carrying an EDIT BLOCK; this proves the chat lifts
- * it into a diff card, shows only the prose in the bubble, and that clicking Apply
- * splices the right slide into the editor via applyFix. The pure splice/parse/diff
- * is covered in architect-edits.test.js — here we nail the DOM wiring + gating.
+ * Headless integration: the Converse editing loop + its polish (Slice B + polish).
+ * A mock Puter backend returns replies carrying EDIT BLOCKS; this proves the chat
+ * lifts them into diff cards, renders the prose as Markdown, and that the lifecycle
+ * (Apply → collapse, Discard, batch Apply all / Dismiss all, single-level Undo)
+ * behaves. The pure splice/parse/diff is covered in architect-edits.test.js.
  */
 
 const { test, describe, before, after } = require('node:test');
@@ -43,53 +43,116 @@ async function setup({ reply, generation = 'puter' }) {
 }
 
 describe('Converse editing loop (DOM)', () => {
-  test('a replace block becomes a diff card; the bubble shows only prose', async () => {
-    const reply = 'Tightened the plan slide.\n\n````lattice-edit slide=2\n# Plan\n\nnew sharper body\n````';
+  test('a replace block becomes a diff card; the bubble renders Markdown prose', async () => {
+    const reply = 'Tightened the **plan** slide.\n\n````lattice-edit slide=2\n# Plan\n\nnew sharper body\n````';
     const { chat, mount } = await setup({ reply });
     await chat.send('tighten slide 2');
 
-    assert.doesNotMatch(mount.textContent, /lattice-edit/, 'fence stripped from the bubble');
-    assert.match(mount.querySelector('.db-msg-architect .db-msg-body').textContent, /Tightened the plan slide\./);
+    const body = mount.querySelector('.db-msg-architect .db-msg-body');
+    assert.doesNotMatch(body.textContent, /lattice-edit/, 'fence stripped from the bubble');
+    assert.match(body.innerHTML, /<strong>plan<\/strong>/, 'Markdown rendered, not raw');
     const card = mount.querySelector('.db-edit-card');
     assert.ok(card, 'an edit card rendered');
-    assert.match(card.querySelector('.db-edit-head').textContent, /Replace slide 2/);
-    // the diff shows the added + removed lines
-    assert.ok(card.querySelector('.db-diff-add'), 'an added line is shown');
-    assert.ok(card.querySelector('.db-diff-del'), 'a removed line is shown');
+    assert.match(card.querySelector('.db-edit-title').textContent, /Replace slide 2/);
+    assert.ok(card.querySelector('.db-diff-add') && card.querySelector('.db-diff-del'), 'diff shown');
   });
 
-  test('Apply splices the slide into the editor; slide 1 is preserved', async () => {
+  test('Apply collapses the card to a status line and reveals Undo', async () => {
     const reply = '````lattice-edit slide=2\n# Plan\n\nnew sharper body\n````';
-    const { chat, mount, applied, getSource } = await setup({ reply });
+    const { chat, mount, getSource } = await setup({ reply });
     await chat.send('go');
 
-    const apply = mount.querySelector('.db-edit-card .db-btn-primary');
-    apply.click();
-    assert.equal(applied.length, 1);
+    const card = mount.querySelector('.db-edit-card');
+    card.querySelector('.db-edit-actions .db-btn-primary').click();
+    assert.equal(card.dataset.state, 'applied');
+    assert.ok(card.classList.contains('is-collapsed'), 'collapses to a status line');
+    assert.match(card.querySelector('.db-edit-icon').textContent, /✓/);
+    assert.ok(!card.querySelector('.db-edit-undo').hidden, 'Undo is offered');
     assert.match(getSource(), /new sharper body/);
-    assert.doesNotMatch(getSource(), /old body/);
     assert.match(getSource(), /# Intro\n\nopening/, 'slide 1 untouched');
-    assert.match(apply.textContent, /Applied/);
-    assert.ok(apply.disabled, 'Apply is disabled after applying');
   });
 
-  test('Discard removes the card without touching the deck', async () => {
+  test('Undo restores the deck and re-opens the card', async () => {
+    const reply = '````lattice-edit slide=2\n# Plan\n\nnew body\n````';
+    const { chat, mount, getSource } = await setup({ reply });
+    await chat.send('go');
+    const card = mount.querySelector('.db-edit-card');
+    card.querySelector('.db-edit-actions .db-btn-primary').click();
+    card.querySelector('.db-edit-undo').click();
+    assert.equal(card.dataset.state, 'open', 're-opened');
+    assert.match(getSource(), /old body/, 'deck restored');
+    assert.doesNotMatch(getSource(), /new body/);
+  });
+
+  test('Discard collapses to a dismissed line without touching the deck', async () => {
     const reply = '````lattice-edit slide=2\n# Plan\n\nx\n````';
     const { chat, mount, applied } = await setup({ reply });
     await chat.send('go');
-    mount.querySelector('.db-edit-card .db-btn:not(.db-btn-primary)').click();
-    assert.equal(mount.querySelector('.db-edit-card'), null, 'card removed');
+    const card = mount.querySelector('.db-edit-card');
+    card.querySelector('.db-edit-actions .db-btn:not(.db-btn-primary)').click();
+    assert.equal(card.dataset.state, 'dismissed');
     assert.equal(applied.length, 0, 'nothing applied');
   });
+});
 
+describe('batch controls (multi-edit reply)', () => {
+  const TWO = 'Two tweaks.\n\n````lattice-edit slide=1\n# Intro!\n````\n\n````lattice-edit slide=2\n# Plan!\n````';
+
+  test('a 2+ edit reply gets a batch header; Apply all applies every card', async () => {
+    const { chat, mount, getSource } = await setup({ reply: TWO });
+    await chat.send('improve both');
+    const batch = mount.querySelector('.db-edit-batch');
+    assert.ok(batch, 'batch header present');
+    assert.match(batch.querySelector('.db-edit-batch-label').textContent, /2 proposed edits/);
+
+    batch.querySelector('.db-btn-primary').click(); // Apply all
+    assert.match(getSource(), /# Intro!/);
+    assert.match(getSource(), /# Plan!/);
+    assert.equal([...mount.querySelectorAll('.db-edit-card')].every((c) => c.dataset.state === 'applied'), true);
+    assert.match(batch.querySelector('.db-edit-batch-label').textContent, /Applied 2 edits/);
+    assert.ok(!batch.querySelector('.db-edit-undo').hidden, 'batch Undo offered');
+  });
+
+  test('batch Undo reverts the whole batch in one step', async () => {
+    const { chat, mount, getSource } = await setup({ reply: TWO });
+    await chat.send('go');
+    const batch = mount.querySelector('.db-edit-batch');
+    batch.querySelector('.db-btn-primary').click(); // Apply all
+    batch.querySelector('.db-edit-undo').click(); // Undo
+    assert.equal(getSource(), DECK, 'deck fully restored');
+    assert.equal([...mount.querySelectorAll('.db-edit-card')].every((c) => c.dataset.state === 'open'), true);
+  });
+
+  test('Dismiss all dismisses every open card, applying nothing', async () => {
+    const { chat, mount, applied } = await setup({ reply: TWO });
+    await chat.send('go');
+    const batch = mount.querySelector('.db-edit-batch');
+    batch.querySelector('.db-btn:not(.db-btn-primary)').click(); // Dismiss all
+    assert.equal([...mount.querySelectorAll('.db-edit-card')].every((c) => c.dataset.state === 'dismissed'), true);
+    assert.equal(applied.length, 0);
+  });
+
+  test('single-level undo: applying a second edit locks the first card’s Undo', async () => {
+    const { chat, mount } = await setup({ reply: TWO });
+    await chat.send('go');
+    const [c1, c2] = mount.querySelectorAll('.db-edit-card');
+    c1.querySelector('.db-edit-actions .db-btn-primary').click(); // apply card 1 → its Undo shows
+    assert.ok(!c1.querySelector('.db-edit-undo').hidden);
+    c2.querySelector('.db-edit-actions .db-btn-primary').click(); // apply card 2 → card 1 Undo locks
+    assert.ok(c1.querySelector('.db-edit-undo').hidden, 'older Undo locked');
+    assert.ok(!c2.querySelector('.db-edit-undo').hidden, 'newest Apply owns Undo');
+  });
+});
+
+describe('gating + plain replies', () => {
   test('a non-Puter tier never parses edits (no cards)', async () => {
     const reply = '````lattice-edit slide=2\n# Plan\n\nx\n````';
     const { chat, mount } = await setup({ reply, generation: 'transformers' });
     await chat.send('go');
-    assert.equal(mount.querySelector('.db-edit-card'), null, 'edits gated to the cloud tier');
+    assert.equal(mount.querySelector('.db-edit-card'), null);
   });
 
-  test('a plain reply (no block) renders as an ordinary message', async () => {
+  test('a plain reply renders as an ordinary Markdown message', async () => {
     const { chat, mount } = await setup({ reply: 'Looks solid — strong open, clear ask.' });
     await chat.send('thoughts?');
     assert.equal(mount.querySelector('.db-edit-card'), null);

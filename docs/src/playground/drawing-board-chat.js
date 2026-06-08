@@ -12,6 +12,7 @@
 
 import { applyEdit, diffLines, EDIT_PROTOCOL, numberSlides, parseEdits, sliceSlide } from './architect-edits.js';
 import { buildLatticePrimer } from './architect-knowledge.js';
+import { renderMarkdown } from './chat-markdown.js';
 
 const MAX_DECK_CHARS = 1200; // a short excerpt — a small model drowns in a full deck
 const RICH_DECK_CHARS = 16000; // the cloud tier (Claude) reads the whole deck, not a peek
@@ -142,14 +143,25 @@ export function createChat({ mount, composer, model, store, getAssessment, catal
   const input = composer.querySelector('textarea');
   const sendBtn = composer.querySelector('button[type="submit"]');
 
+  // The actual scroll container is .db-arch-scroll (the panel body), not the chat
+  // list — so scroll-to-bottom + the jump control target it, not the inner list.
+  const scroller = mount.closest('.db-arch-scroll') || mount;
+
+  // Architect replies are Markdown → render to safe HTML; user text stays literal.
+  function setBody(bodyEl, role, text) {
+    if (role === 'architect') bodyEl.innerHTML = renderMarkdown(text || '');
+    else bodyEl.textContent = text || '';
+  }
   function bubble(role, text) {
     const b = el('div', `db-msg db-msg-${role === 'architect' ? 'architect' : 'user'}`);
     b.append(el('span', 'db-msg-who', role === 'architect' ? 'the Architect' : 'You'));
-    b.append(el('div', 'db-msg-body', text));
+    const body = el('div', 'db-msg-body');
+    setBody(body, role, text);
+    b.append(body);
     mount.appendChild(b);
-    return b.querySelector('.db-msg-body');
+    return body;
   }
-  function scrollDown() { mount.scrollTop = mount.scrollHeight; }
+  function scrollDown() { scroller.scrollTop = scroller.scrollHeight; }
 
   // ── proposed-edit cards (Slice B): a reviewable diff + one-click Apply ────────
   // The model proposes; nothing changes until the author clicks Apply. The edit
@@ -163,42 +175,156 @@ export function createChat({ mount, composer, model, store, getAssessment, catal
     if (edit.slide >= Number.MAX_SAFE_INTEGER) return 'Insert a slide at the end';
     return `Insert a slide after ${edit.slide}`;
   }
+
+  // The one undoable step in the thread (single-level undo). A newer Apply locks
+  // the previous one — so there's never an ambiguous "which undo?" question.
+  let pendingUndo = null;
+  function setPendingUndo(undo) {
+    if (pendingUndo && pendingUndo !== undo) pendingUndo.lock();
+    pendingUndo = undo;
+  }
+
   function editCard(edit) {
     const card = el('div', 'db-edit-card');
-    card.append(el('div', 'db-edit-head', editLabel(edit)));
+    card.dataset.state = 'open';
 
+    const head = el('div', 'db-edit-head');
+    const toggle = el('button', 'db-edit-toggle');
+    toggle.type = 'button';
+    const icon = el('span', 'db-edit-icon');
+    toggle.append(icon, el('span', 'db-edit-title', editLabel(edit)));
+    const undoBtn = el('button', 'db-edit-undo', '↩ Undo');
+    undoBtn.type = 'button';
+    undoBtn.hidden = true;
+    head.append(toggle, undoBtn);
+    card.append(head);
+
+    const body = el('div', 'db-edit-body');
     const before = edit.action === 'insert' ? '' : sliceSlide(getSource ? getSource() : '', edit.slide);
     const after = edit.action === 'delete' ? '' : (edit.body || '').trim();
     const diff = el('div', 'db-edit-diff');
     for (const row of diffLines(before, after)) {
-      const sign = row.type === 'add' ? '+ ' : row.type === 'del' ? '− ' : '  ';
+      const sign = row.type === 'add' ? '+ ' : row.type === 'del' ? '− ' : '  ';
       diff.append(el('div', `db-diff-${row.type}`, sign + row.text));
     }
-    card.append(diff);
-
+    body.append(diff);
     const actions = el('div', 'db-edit-actions');
-    const apply = el('button', 'db-btn db-btn-primary', 'Apply');
-    apply.type = 'button';
-    const dismiss = el('button', 'db-btn', 'Discard');
-    dismiss.type = 'button';
-    apply.addEventListener('click', () => {
-      if (!getSource || !applyFix) return;
-      applyFix(applyEdit(getSource(), edit));
-      card.classList.add('is-applied');
-      apply.disabled = true;
-      apply.textContent = '✓ Applied';
-      dismiss.textContent = 'Dismiss';
+    const applyBtn = el('button', 'db-btn db-btn-primary', 'Apply');
+    applyBtn.type = 'button';
+    const dismissBtn = el('button', 'db-btn', 'Discard');
+    dismissBtn.type = 'button';
+    actions.append(applyBtn, dismissBtn);
+    body.append(actions);
+    card.append(body);
+
+    // Once acted, the head toggles the diff open/closed; while open it stays open.
+    toggle.addEventListener('click', () => {
+      if (card.dataset.state !== 'open') card.classList.toggle('is-collapsed');
     });
-    dismiss.addEventListener('click', () => card.remove());
-    actions.append(apply, dismiss);
-    card.append(actions);
-    return card;
+
+    const api = {
+      el: card,
+      edit,
+      isOpen: () => card.dataset.state === 'open',
+      open() {
+        card.dataset.state = 'open';
+        card.classList.remove('is-collapsed');
+        icon.textContent = '';
+        actions.hidden = false;
+        undoBtn.hidden = true;
+      },
+      applied() {
+        card.dataset.state = 'applied';
+        icon.textContent = '✓ ';
+        actions.hidden = true;
+        card.classList.add('is-collapsed');
+      },
+      dismissed() {
+        card.dataset.state = 'dismissed';
+        icon.textContent = '✕ ';
+        actions.hidden = true;
+        undoBtn.hidden = true;
+        card.classList.add('is-collapsed');
+      },
+    };
+
+    applyBtn.addEventListener('click', () => {
+      if (!getSource || !applyFix) return;
+      const snapshot = getSource();
+      applyFix(applyEdit(snapshot, edit));
+      api.applied();
+      undoBtn.hidden = false;
+      const undo = {
+        lock() { undoBtn.hidden = true; },
+        run() { applyFix(snapshot); api.open(); if (pendingUndo === undo) pendingUndo = null; },
+      };
+      undoBtn.onclick = () => undo.run();
+      setPendingUndo(undo);
+      scrollDown();
+    });
+    dismissBtn.addEventListener('click', () => api.dismissed());
+    return api;
   }
+
   function renderEditCards(bodyEl, edits) {
     const msg = bodyEl.closest('.db-msg') || bodyEl.parentElement;
-    const host = el('div', 'db-edit-cards');
-    for (const edit of edits) host.append(editCard(edit));
-    msg.append(host);
+    const group = el('div', 'db-edit-cards');
+    const cards = edits.map(editCard);
+
+    // Batch header for multi-edit replies — Apply all / Dismiss all, then Undo.
+    if (cards.length >= 2) {
+      const bar = el('div', 'db-edit-batch');
+      const label = el('span', 'db-edit-batch-label', `${cards.length} proposed edits`);
+      const applyAll = el('button', 'db-btn db-btn-primary', 'Apply all');
+      applyAll.type = 'button';
+      const dismissAll = el('button', 'db-btn', 'Dismiss all');
+      dismissAll.type = 'button';
+      const undoAll = el('button', 'db-edit-undo', '↩ Undo');
+      undoAll.type = 'button';
+      undoAll.hidden = true;
+      bar.append(label, applyAll, dismissAll, undoAll);
+      group.append(bar);
+
+      applyAll.addEventListener('click', () => {
+        if (!getSource || !applyFix) return;
+        const open = cards.filter((c) => c.isOpen());
+        if (!open.length) return;
+        const snapshot = getSource();
+        // Apply in slide-descending order so insert/delete don't shift the targets
+        // of the edits not yet applied in this batch.
+        let src = snapshot;
+        for (const c of [...open].sort((a, b) => b.edit.slide - a.edit.slide)) src = applyEdit(src, c.edit);
+        applyFix(src);
+        for (const c of open) c.applied();
+        label.textContent = `✓ Applied ${open.length} edit${open.length > 1 ? 's' : ''}`;
+        applyAll.hidden = true;
+        dismissAll.hidden = true;
+        undoAll.hidden = false;
+        const undo = {
+          lock() { undoAll.hidden = true; },
+          run() {
+            applyFix(snapshot);
+            for (const c of open) c.open();
+            label.textContent = `${cards.length} proposed edits`;
+            applyAll.hidden = false;
+            dismissAll.hidden = false;
+            if (pendingUndo === undo) pendingUndo = null;
+          },
+        };
+        undoAll.onclick = () => undo.run();
+        setPendingUndo(undo);
+        scrollDown();
+      });
+      dismissAll.addEventListener('click', () => {
+        for (const c of cards) if (c.isOpen()) c.dismissed();
+        applyAll.hidden = true;
+        dismissAll.hidden = true;
+        label.textContent = 'Dismissed';
+      });
+    }
+
+    for (const c of cards) group.append(c.el);
+    msg.append(group);
     scrollDown();
   }
 
@@ -265,7 +391,6 @@ export function createChat({ mount, composer, model, store, getAssessment, catal
       full = floor;
     }
     begin(); // ensure the thinking state clears even if nothing streamed
-    target.textContent = full;
     target.classList.remove('is-streaming');
 
     // On the cloud tier, the reply may carry proposed EDIT BLOCKS — lift them into
@@ -273,14 +398,18 @@ export function createChat({ mount, composer, model, store, getAssessment, catal
     // keeps the prose (the change lives in the deck once applied), so reloading the
     // thread never re-offers a stale apply.
     let stored = full;
+    let edits = [];
     if (a.generation === 'puter' && full && full !== floor) {
-      const { text, edits } = parseEdits(full);
-      if (edits.length) {
-        stored = text || '(proposed a deck edit)';
-        target.textContent = stored;
-        renderEditCards(target, edits);
+      const parsed = parseEdits(full);
+      if (parsed.edits.length) {
+        stored = parsed.text || '(proposed a deck edit)';
+        edits = parsed.edits;
       }
     }
+    // Render the finalized reply as Markdown (the streamed text was plain), then
+    // attach any edit cards beneath it.
+    setBody(target, 'architect', stored);
+    if (edits.length) renderEditCards(target, edits);
     // Mark deterministic replies (floor / model-fell-to-floor) so they're NOT fed
     // back to the model as history — that's what made the small model parrot itself.
     const det = !(a.generation !== 'floor' && full && full.trim() && full !== floor);

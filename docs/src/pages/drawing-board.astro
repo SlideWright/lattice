@@ -189,6 +189,12 @@ const dbData = JSON.stringify({
 							</div>
 						</div>
 					</div>
+					<!-- Jump to top / latest — shown only when the panel overflows and you're
+					     away from that end, so long threads + edit cards aren't a scroll slog. -->
+					<div class="db-arch-jump" id="db-arch-jump">
+						<button class="db-arch-jump-btn" data-dir="top" type="button" aria-label="Scroll to top" title="Top" hidden>↑</button>
+						<button class="db-arch-jump-btn" data-dir="bottom" type="button" aria-label="Scroll to latest" title="Latest" hidden>↓</button>
+					</div>
 					<!-- The composer — only in Converse, only when a real model backs it. -->
 					<form class="db-arch-composer" id="db-arch-composer">
 						<textarea id="db-arch-input" rows="1" placeholder="Ask the Architect about your deck…" aria-label="Message the Architect"></textarea>
@@ -317,6 +323,7 @@ const dbData = JSON.stringify({
 			import { createArchitect, createOnboarding } from '../playground/drawing-board-architect.js';
 			import { createArchitectModel } from '../playground/architect-model.js';
 			import { createChat } from '../playground/drawing-board-chat.js';
+			import { scrollJumpState } from '../playground/chat-markdown.js';
 			import { createModelSettings } from '../playground/drawing-board-settings.js';
 			import { createCoachConsole } from '../playground/coach-console.js';
 			const data = JSON.parse(document.getElementById('db-data').textContent);
@@ -451,6 +458,31 @@ const dbData = JSON.stringify({
 			}
 			if (window.__dbStore) wireChat();
 			else window.addEventListener('db-store-ready', wireChat, { once: true });
+
+			// Jump to top / latest: the Architect panel body (.db-arch-scroll) scrolls;
+			// show each arrow only when overflowing AND away from that end (pure logic in
+			// scrollJumpState). Saves a manual scroll through a long thread + edit cards.
+			(function () {
+				const scroller = document.querySelector('#db-architect .db-arch-scroll');
+				const jump = document.getElementById('db-arch-jump');
+				if (!scroller || !jump) return;
+				const upBtn = jump.querySelector('[data-dir="top"]');
+				const downBtn = jump.querySelector('[data-dir="bottom"]');
+				const sync = () => {
+					const s = scrollJumpState({ scrollTop: scroller.scrollTop, scrollHeight: scroller.scrollHeight, clientHeight: scroller.clientHeight });
+					upBtn.hidden = !s.top;
+					downBtn.hidden = !s.bottom;
+					jump.classList.toggle('is-idle', !s.top && !s.bottom);
+				};
+				upBtn.addEventListener('click', () => scroller.scrollTo({ top: 0, behavior: 'smooth' }));
+				downBtn.addEventListener('click', () => scroller.scrollTo({ top: scroller.scrollHeight, behavior: 'smooth' }));
+				scroller.addEventListener('scroll', sync, { passive: true });
+				// Re-evaluate when content changes (new messages, expanded edit cards).
+				if (window.ResizeObserver) new ResizeObserver(sync).observe(scroller.firstElementChild || scroller);
+				const mo = new MutationObserver(sync);
+				mo.observe(scroller, { childList: true, subtree: true });
+				sync();
+			})();
 
 			// Conversation-first onboarding: 3 questions -> retrieval -> scaffold a
 			// new deck (via the store when present, else just load it into the editor).
