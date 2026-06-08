@@ -26,15 +26,22 @@ const require = createRequire(import.meta.url);
 const { loadAll, manifestBucket } = require(join(repoRoot, 'lib/components', 'index.js'));
 const manifests = loadAll();
 
-// Compact catalog for the Architect's onboarding retrieval + scaffolding, and
-// (the `summary`) the Lattice primer fed to Converse so the cloud model knows the
-// real layouts: name + bucket + tags + a one-line description + skeleton.
+// Compact catalog for the Architect's onboarding retrieval + scaffolding, and the
+// Lattice primer fed to Converse so the cloud model knows how to AUTHOR each layout
+// (not just that it exists): name + bucket + tags + one-line description + the
+// authoring skeleton + variants + slot contracts.
 const obCatalog = manifests.map((m) => ({
 	name: m.name,
 	bucket: manifestBucket(m),
 	tags: m.tags || [],
 	summary: m.description || '',
 	skeleton: m.skeleton || m.sample || `<!-- _class: ${m.name} -->\n`,
+	variants: m.variants || [],
+	slots: Object.entries(m.slots || {}).map(([name, v]) => ({
+		name,
+		required: !!v.required,
+		description: (v.description || '').slice(0, 240),
+	})),
 }));
 
 // The Architect's deterministic linter runs in the browser against the same

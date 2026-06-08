@@ -66,7 +66,7 @@ describe('Converse editing loop (DOM)', () => {
     card.querySelector('.db-edit-actions .db-btn-primary').click();
     assert.equal(card.dataset.state, 'applied');
     assert.ok(card.classList.contains('is-collapsed'), 'collapses to a status line');
-    assert.match(card.querySelector('.db-edit-icon').textContent, /✓/);
+    assert.ok(card.querySelector('.db-edit-icon').classList.contains('ico-check'), 'applied glyph (Lucide check)');
     assert.ok(!card.querySelector('.db-edit-undo').hidden, 'Undo is offered');
     assert.match(getSource(), /new sharper body/);
     assert.match(getSource(), /# Intro\n\nopening/, 'slide 1 untouched');
