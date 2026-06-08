@@ -17,8 +17,8 @@ const FM = '---\nmarp: true\ntheme: indaco\n---\n\n';
 // A fixed, manifest-independent vocab — every component name used below so the
 // unknown-class rule (rule 1) doesn't add noise to the targeted assertions.
 const vocab = {
-  names: new Set(['cards-grid', 'principles', 'split-brief', 'split-statement', 'split-compare', 'kpi']),
-  modifiers: new Set(['dark', 'compact']),
+  names: new Set(['cards-grid', 'principles', 'split-panel', 'split-compare', 'kpi']),
+  modifiers: new Set(['dark', 'compact', 'pullquote', 'metric']),
 };
 const ruleFor = (src, rule) => core.lintTextWith(src, vocab).find((f) => f.rule === rule);
 
@@ -78,19 +78,19 @@ describe('lint-core: lintTextWith rules', () => {
   });
 
   test('rule 4 — split right-panel item with no nested body is an error', () => {
-    const f = ruleFor(`${FM}<!-- _class: split-brief -->\n\n## Head\n\n- Title. body\n`, 'split-bodyless-item');
+    const f = ruleFor(`${FM}<!-- _class: split-panel -->\n\n## Head\n\n- Title. body\n`, 'split-bodyless-item');
     assert.ok(f);
     assert.equal(f.severity, 'error');
   });
 
   test('rule 5 — h2-anchored split slide with no "## " headline is a warning', () => {
-    const f = ruleFor(`${FM}<!-- _class: split-brief -->\n\n- Title\n  - body\n`, 'split-missing-headline');
+    const f = ruleFor(`${FM}<!-- _class: split-panel -->\n\n- Title\n  - body\n`, 'split-missing-headline');
     assert.ok(f);
     assert.equal(f.severity, 'warning');
   });
 
   test('rule 6 — split-statement with no blockquote is a warning', () => {
-    const f = ruleFor(`${FM}<!-- _class: split-statement -->\n\n## Head\n\n- Title\n  - body\n`, 'split-statement-missing-quote');
+    const f = ruleFor(`${FM}<!-- _class: split-panel pullquote -->\n\n## Head\n\n- Title\n  - body\n`, 'split-statement-missing-quote');
     assert.ok(f);
     assert.equal(f.severity, 'warning');
   });
@@ -143,7 +143,7 @@ describe('lint-core: auto-fix', () => {
   });
 
   test('applyFix returns null for a non-autofixable finding', () => {
-    const f = ruleFor(`${FM}<!-- _class: split-statement -->\n\n## Head\n\n- Title\n  - body\n`, 'split-statement-missing-quote');
+    const f = ruleFor(`${FM}<!-- _class: split-panel pullquote -->\n\n## Head\n\n- Title\n  - body\n`, 'split-statement-missing-quote');
     assert.equal(core.applyFix('x', f), null);
   });
 });

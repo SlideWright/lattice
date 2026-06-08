@@ -267,11 +267,10 @@ caught by the hook instead of by reviewer eyeballs.
   `design/design-system.md` §7.
 - **Card-style layouts forbid inline `- **Title.** body`.** The
   CARD_STYLE_LAYOUTS set (defined in `lib/authoring/lint-core.js`,
-  re-exported by `lib/components/index.js`) lists 11
-  layouts (cards-grid, cards-side, cards-stack, featured,
-  split-list, compare-prose, matrix-2x2, verdict-grid, before-after,
-  decision, citation-card) whose autobold li rule makes body text
-  after `<strong>` inherit `font-weight:700`. The contract on every
+  re-exported by `lib/components/index.js`) lists 8
+  layouts (cards-grid, cards-stack, featured, compare-prose,
+  matrix-2x2, verdict-grid, decision, citation-card) whose autobold li
+  rule makes body text after `<strong>` inherit `font-weight:700`. The contract on every
   card-style slide is the nested format:
   ```
   - Title
