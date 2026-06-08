@@ -119,11 +119,32 @@ export function createModelSettings({ host, trigger, model, onChange }) {
   async function removeModel() {
     try {
       const keys = await caches.keys();
-      for (const k of keys) if (/transformers|webllm|mlc|onnx|model|hugging/i.test(k)) await caches.delete(k);
+      for (const k of keys) if (/transformers|webllm|mlc|onnx|model|hugging|xet/i.test(k)) await caches.delete(k);
     } catch {}
     writeTier(null);
     try { sessionStorage.removeItem(RESTORE_GUARD); } catch {}
     refresh();
+  }
+
+  // Inspect Cache Storage so the popover can say WHAT is downloaded (model names),
+  // instead of an opaque origin-total number. Sizes aren't always on the cached
+  // responses, so the readable list of names is the honest signal.
+  async function cachedModels() {
+    try {
+      if (typeof caches === 'undefined') return [];
+      const names = new Set();
+      for (const cn of await caches.keys()) {
+        if (!/transformers|webllm|mlc|onnx|hugging|xet|model/i.test(cn)) continue;
+        const cache = await caches.open(cn);
+        for (const req of await cache.keys()) {
+          const m = req.url.match(/huggingface\.co\/[^/]+\/([^/?#]+)/i)
+            || req.url.match(/(SmolLM2-\d+M-Instruct|Qwen[\d.]+-[\d.]+B-Instruct|bge-small-en-v1\.5)/i);
+          if (m) names.add(m[1] || m[0]);
+          else if (/mlc|web-llm/i.test(cn)) names.add('WebLLM');
+        }
+      }
+      return [...names];
+    } catch { return []; }
   }
 
   // ── the popover ──────────────────────────────────────────────────────────────
@@ -131,9 +152,10 @@ export function createModelSettings({ host, trigger, model, onChange }) {
     const my = ++renderToken;
     // Probe WebGPU + storage in parallel; bail if a newer render started (this is
     // what stops the duplicate-panel race — only the latest render paints).
-    const [webgpu, est] = await Promise.all([
+    const [webgpu, est, models] = await Promise.all([
       probeWebGPU(),
       (navigator.storage?.estimate ? navigator.storage.estimate().catch(() => null) : Promise.resolve(null)),
+      cachedModels(),
     ]);
     if (my !== renderToken) return;
 
@@ -191,7 +213,7 @@ export function createModelSettings({ host, trigger, model, onChange }) {
     if (a.modelOn) {
       // Universal Transformers.js — the path that works on Safari / phones.
       if (a.promptApi !== 'available' && !a.universalReady && !a.webllmReady) {
-        loadFlow('universal', 'Load on-device AI (~100 MB · works on any browser)',
+        loadFlow('universal', 'Load on-device AI (~350 MB · works on any browser)',
           'A small one-time download so the Architect can converse on THIS device — no special browser or GPU needed. It’s a compact model (modest answers), runs in your browser, and stays on your device.',
           (p, s) => model.loadUniversal(p, s));
       }
@@ -213,18 +235,26 @@ export function createModelSettings({ host, trigger, model, onChange }) {
       panel.append(err);
     }
 
-    // Cached-model controls: storage used + remove.
-    if (readTier() || a.universalReady || a.webllmReady) {
+    // Downloaded-model controls — show WHAT's cached (by name) so it's not a
+    // mystery number, plus the on-device total, plus a clear Remove.
+    if (models?.length || readTier() || a.universalReady || a.webllmReady) {
+      panel.append(el('h3', 'db-settings-head db-settings-subhead', 'Downloaded on this device'));
+      if (models?.length) {
+        const list = el('ul', 'db-settings-models');
+        for (const name of models) list.append(el('li', null, name));
+        panel.append(list);
+      } else {
+        panel.append(el('p', 'db-settings-note', 'Nothing downloaded yet.'));
+      }
       const cache = el('div', 'db-settings-cache');
-      const usage = est?.usage ? `~${fmtBytes(est.usage)} on this device` : 'Stored on this device';
-      cache.append(el('span', 'db-settings-cache-label', usage));
-      const rm = el('button', 'db-btn db-settings-remove', 'Remove');
+      cache.append(el('span', 'db-settings-cache-label', est?.usage ? `~${fmtBytes(est.usage)} total (models + your decks)` : 'Cached on this device'));
+      const rm = el('button', 'db-btn db-settings-remove', 'Remove models');
       rm.type = 'button';
       rm.title = 'Delete the cached model weights';
       rm.addEventListener('click', removeModel);
       cache.append(rm);
       panel.append(cache);
-      panel.append(el('p', 'db-settings-note', 'The model is cached so it loads instantly next time. Remove frees the space (re-downloads if you load it again).'));
+      panel.append(el('p', 'db-settings-note', 'Remove deletes the downloaded model weights to free space (they re-download if you load a model again). Your decks are kept.'));
     }
 
     host.append(panel);

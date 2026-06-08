@@ -59,8 +59,31 @@ describe('buildChatMessages', () => {
   test('handles a clean deck and empty history', async () => {
     const { buildChatMessages } = await load();
     const msgs = buildChatMessages({ source: '# D', assessment: { scorecard: { band: 'A', overall: 95 }, findings: [] }, history: null, userText: 'q' });
-    assert.match(msgs[0].content, /none — the deck is clean/);
+    assert.match(msgs[0].content, /No mechanical issues found/);
     assert.equal(msgs.length, 2); // system + the user turn
+  });
+
+  test('drops deterministic (floor/greeting) messages from model history', async () => {
+    const { buildChatMessages } = await load();
+    const msgs = buildChatMessages({
+      source: '# D',
+      assessment: { scorecard: { band: 'B', overall: 80 }, findings: [] },
+      history: [
+        { role: 'architect', content: 'GREETING boilerplate', det: true }, // dropped
+        { role: 'user', content: 'real question' }, // kept
+        { role: 'architect', content: 'real model reply' }, // kept (no det)
+      ],
+      userText: 'next',
+    });
+    const contents = msgs.map((m) => m.content);
+    assert.ok(!contents.includes('GREETING boilerplate'), 'deterministic message is not fed to the model');
+    assert.ok(contents.includes('real question') && contents.includes('real model reply'), 'real turns are kept');
+  });
+
+  test('keeps the system prompt short (small models drown in a full deck)', async () => {
+    const { buildChatMessages } = await load();
+    const sys = buildChatMessages({ source: 'x'.repeat(9000), assessment: { scorecard: { band: 'C', overall: 50 }, findings: [] }, history: [], userText: 'q' })[0].content;
+    assert.ok(sys.length < 2200, 'deck context capped (~1200) so the small model copes');
   });
 });
 

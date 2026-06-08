@@ -108,11 +108,13 @@ export function createStore({ getSource, onLoadDeck, starter = '' }) {
 		const rows = await P(idx.getAll(IDBKeyRange.only(deckId)));
 		return rows.sort((a, b) => a.at - b.at);
 	}
-	async function addChatMessage(deckId, role, content) {
+	// `det` marks a deterministic message (floor reply / greeting) so the chat can
+	// keep it out of the model's history (a small model parrots its own boilerplate).
+	async function addChatMessage(deckId, role, content, det = false) {
 		if (!db || !deckId) return null;
 		const existing = await get('chats', deckId);
 		if (!existing) await put('chats', { id: deckId, createdAt: Date.now() });
-		const msg = { chatId: deckId, role, content, at: Date.now() };
+		const msg = { chatId: deckId, role, content, at: Date.now(), det: !!det };
 		const id = await put('messages', msg);
 		return { ...msg, id };
 	}

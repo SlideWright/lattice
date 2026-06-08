@@ -24,13 +24,19 @@ const WEBLLM_URL = 'https://esm.run/@mlc-ai/web-llm';
 const TRANSFORMERS_URL = 'https://esm.run/@huggingface/transformers';
 const EMBED_MODEL = 'Xenova/bge-small-en-v1.5';
 const WEBLLM_MODEL = 'Qwen2.5-1.5B-Instruct-q4f16_1-MLC';
-// The universal generation tier: a tiny instruct model that runs in WASM via
-// Transformers.js — no WebGPU, works on Safari / mobile (where the built-in
-// Prompt API and WebLLM don't). SmolLM2-135M at q4 is ~100 MB and stays well
-// inside a phone browser tab's memory budget; quality is modest (it's a 135M
-// model — the coaching floor of the tiers, not the ceiling). Desktops reach for
-// the built-in Prompt API or the WebLLM tier for stronger answers.
-const UNIVERSAL_MODEL = 'HuggingFaceTB/SmolLM2-135M-Instruct';
+// The universal generation tier: a small instruct model that runs in WASM via
+// Transformers.js — no WebGPU, works on Safari / mobile. Qwen2.5-0.5B at q4 is
+// ~350 MB; benchmarked in Node against SmolLM2-135M, it's the smallest model
+// that gives genuinely useful, non-rambling answers for the narrow tasks here
+// (short coaching + rewrites). 135M was coherent at the sentence level but
+// invented numbers and ignored instructions. Desktops reach for the built-in
+// Prompt API or the WebLLM tier for stronger answers.
+const UNIVERSAL_MODEL = 'onnx-community/Qwen2.5-0.5B-Instruct';
+// Decoding for the small model: greedy loops on a tiny model, so penalize
+// repetition and forbid repeating any 3-gram. Verified in Node to stop the
+// degenerate loops the phone showed. Short generations (it's slow per token).
+// The SAME numbers are inlined into WORKER_SRC below — keep them in sync.
+const GEN_OPTS = { max_new_tokens: 128, do_sample: false, repetition_penalty: 1.3, no_repeat_ngram_size: 3 };
 
 const hasWindow = typeof window !== 'undefined';
 const G = typeof globalThis !== 'undefined' ? globalThis : {};
@@ -157,7 +163,7 @@ self.onmessage = async (e) => {
       self.postMessage({ type: 'loaded' });
     } else if (d.type === 'generate') {
       const streamer = new lib.TextStreamer(gen.tokenizer, { skip_prompt: true, skip_special_tokens: true, callback_function: (t) => self.postMessage({ type: 'token', id: d.id, t }) });
-      const out = await gen(d.messages, { max_new_tokens: d.max || 128, do_sample: false, streamer });
+      const out = await gen(d.messages, { max_new_tokens: d.max || 128, do_sample: false, repetition_penalty: 1.3, no_repeat_ngram_size: 3, streamer });
       const g = out && out[0] && out[0].generated_text;
       const text = Array.isArray(g) ? ((g[g.length - 1] && g[g.length - 1].content) || '') : (typeof g === 'string' ? g : '');
       self.postMessage({ type: 'done', id: d.id, text });
@@ -255,7 +261,7 @@ function transformersGenBackend() {
       const streamer = onToken
         ? new mainLib.TextStreamer(mainGen.tokenizer, { skip_prompt: true, skip_special_tokens: true, callback_function: (t) => onToken(t) })
         : undefined;
-      const out = await mainGen(messages, { max_new_tokens: MAX_NEW_TOKENS, do_sample: false, streamer });
+      const out = await mainGen(messages, { ...GEN_OPTS, streamer });
       const g = out?.[0]?.generated_text;
       if (Array.isArray(g)) return g.at(-1)?.content ?? '';
       return typeof g === 'string' ? g : '';
