@@ -1775,3 +1775,23 @@ body.db-page .topbar {
 	color: var(--text-body);
 }
 .db-coach-min { font-size: 0.78rem; color: var(--text-muted); }
+
+/* Converse connect (Puter) + consent. */
+.db-converse-empty p { margin: 0 0 0.7rem; }
+.db-converse-connect {
+	width: 100%;
+}
+.db-converse-fine {
+	font-size: 0.74rem !important;
+	line-height: 1.5;
+	color: var(--text-muted);
+	margin: 0.55rem 0 0 !important;
+}
+.db-converse-consent-row {
+	display: flex;
+	gap: 0.5rem;
+	margin-top: 0.6rem;
+}
+.db-converse-consent-row .db-btn {
+	flex: 1 1 0;
+}

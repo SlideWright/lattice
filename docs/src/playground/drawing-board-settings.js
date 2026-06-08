@@ -48,6 +48,7 @@ export async function probeWebGPU() {
 // Human label for the active generation tier.
 export function tierLabel(a) {
   if (!a.modelOn) return 'Deterministic (AI off)';
+  if (a.generation === 'puter') return 'Cloud AI (Puter)';
   if (a.generation === 'webllm') return 'WebLLM (on-device)';
   if (a.generation === 'prompt-api') return 'Built-in AI (on-device)';
   if (a.generation === 'transformers') return 'On-device AI (universal)';
