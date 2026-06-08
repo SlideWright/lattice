@@ -177,8 +177,9 @@ const dbData = JSON.stringify({
 						<button class="db-btn" id="db-export" aria-haspopup="menu" aria-expanded="false" title="Export this deck">Export ▾</button>
 						<div class="db-export-menu" id="db-export-menu" role="menu" hidden>
 							<button class="db-menu-item" type="button" data-export="md" role="menuitem">Markdown<small>.md — the source</small></button>
-							<button class="db-menu-item" type="button" data-export="pdf" role="menuitem">PDF<small>print → save as PDF</small></button>
+							<button class="db-menu-item" type="button" data-export="pdf" role="menuitem">PDF<small>.pdf — one click</small></button>
 							<button class="db-menu-item" type="button" data-export="pptx" role="menuitem">PowerPoint<small>.pptx — image slides</small></button>
+							<button class="db-menu-item" type="button" data-export="print" role="menuitem">Print<small>vector + selectable text</small></button>
 						</div>
 					</div>
 				</div>
@@ -288,7 +289,7 @@ const dbData = JSON.stringify({
 		<!-- Export — MD / PDF / PPTX (Slice 4). PptxGenJS is lazy-imported inside
 		     the module on first PPTX use, so it never loads unless invoked. -->
 		<script>
-			import { exportMarkdown, exportPdf, exportPptx } from '../playground/drawing-board-export.js';
+			import { exportMarkdown, exportPdf, exportPptx, exportPrint } from '../playground/drawing-board-export.js';
 			const wrap = document.getElementById('db-export-wrap');
 			const trigger = document.getElementById('db-export');
 			const menu = document.getElementById('db-export-menu');
@@ -316,8 +317,9 @@ const dbData = JSON.stringify({
 				const source = window.__dbEditor ? window.__dbEditor.getValue() : '';
 				try {
 					if (kind === 'md') { exportMarkdown(source, deckName()); status('Markdown exported.'); }
-					else if (kind === 'pdf') { exportPdf(frame); status('Opening print dialog…'); }
+					else if (kind === 'pdf') { status('Exporting PDF…'); await exportPdf(frame, deckName(), (m) => status(m)); status('PDF exported.'); }
 					else if (kind === 'pptx') { await exportPptx(frame, deckName(), (m) => status(m)); status('PowerPoint exported.'); }
+					else if (kind === 'print') { exportPrint(frame); status('Opening print dialog…'); }
 				} catch (err) { status(String(err.message || err), true); }
 			});
 		</script>
