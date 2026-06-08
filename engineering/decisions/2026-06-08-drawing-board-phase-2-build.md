@@ -89,14 +89,33 @@ unit-tested with synthetic vectors so the ranking math is proven without a real
 embedder. `createOnboarding` uses cosine when `embed()` is ready, keyword
 otherwise — identical UI either way.
 
-## Verification log (updated as slices land)
+## Verification log (as built)
 
-- Slice 6 — adapter + floor + retrieval: unit tests (ladder selection, floor
-  output, cosine + keyword ranking, JSON extract/validate); onboarding keyword
-  floor screenshotted headless.
-- Slice 7 — chat + Prompt API tier: mock-backend e2e (stream render, persist,
-  resume); real unsupported-state screenshot; mobile/tablet chat pass.
-- Slice 9 — focus edit modes (deterministic, fully verified) + refine plumbing
-  (mock-tested apply path; unsupported state verified).
-- Slice 8 — WebLLM opt-in card + WebGPU detection + degraded state (headless).
-- Slice 10 — error/empty states per tier; storage-persist stance; responsive.
+- **Slice 6 — adapter + floor + retrieval (done).** 13 unit tests: ladder floors,
+  json validate-or-floor, throwing-backend safety, mock streaming, cosine
+  ranking + mock-embedding pipeline. Headless: adapter reports generation=floor /
+  promptApi=unavailable; onboarding fuse fallback returns results.
+- **Slice 7 — chat + Prompt API tier (done).** 5 unit tests (buildChatMessages /
+  floorReply). Headless with a MockBackend: streamed reply renders, both turns
+  persist, the thread RESUMES after reload; the floor reply reports the
+  deterministic score honestly; mobile (390) composer + thread verified.
+- **Slice 9 — focus edit modes (done).** 8 unit tests for findFocusBlock
+  (boundaries, unterminated fences, non-focusable fences, multi-block, math).
+  Headless: button enables in a mermaid block, overlay opens, Apply writes the
+  fragment back with fences intact, Esc/Cancel discards; mobile stacks.
+- **Slice 9b — refine actions (done).** 6 unit tests (buildRefinePrompt /
+  cleanRewrite). Headless: disabled at the floor (gated — no deterministic floor
+  for prose rewrite), enabled with a MockBackend, all four actions apply via an
+  undoable selection replace.
+- **Slice 8 — model settings + WebLLM opt-in (done).** probeWebGPU unit test
+  (Node-safe). Headless: chip reads the live tier, popover shows tiers with
+  correct degraded states ("not here" / "needs WebGPU"), no summon without a real
+  WebGPU adapter, the AI toggle flips + persists; mobile popover fits.
+- **Slice 10 — polish (done).** Empty/floor states for chat + settings; the store
+  already requests `navigator.storage.persist()`; mobile/tablet pass on chat,
+  settings, focus, refine at 390/768/1440; dead onboarding CSS removed.
+
+**Live-only (needs real hardware, not claimed verified here):** built-in Prompt
+API phrasing on Gemini Nano/Phi, WebLLM inference + the ~1GB download, real
+Transformers.js embeddings from the HF CDN. All are wired, mock-tested, and
+degrade-verified.

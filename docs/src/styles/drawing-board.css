@@ -365,45 +365,6 @@ body.db-page .topbar {
 .db-arch-say strong {
 	color: var(--text-heading);
 }
-.db-arch-beats {
-	list-style: none;
-	margin: 0 0 1rem;
-	padding: 0;
-	display: grid;
-	gap: 0.5rem;
-}
-.db-arch-beat {
-	border: 1px solid var(--border);
-	border-radius: var(--radius-md);
-	background: var(--bg);
-	padding: 0.6rem 0.7rem;
-}
-.db-arch-beat b {
-	display: block;
-	font-size: 0.72rem;
-	letter-spacing: 0.05em;
-	text-transform: uppercase;
-	color: var(--accent);
-	margin-bottom: 0.2rem;
-}
-.db-arch-beat span {
-	font-size: 0.86rem;
-	color: var(--text-body);
-}
-.db-arch-soon {
-	font-size: 0.74rem;
-	color: var(--text-muted);
-	border-top: 1px dashed var(--border);
-	padding-top: 0.7rem;
-	margin-top: 0.9rem;
-	line-height: 1.5;
-}
-.db-arch-soon code {
-	font-family: var(--font-mono);
-	font-size: 0.72rem;
-	color: var(--accent);
-}
-
 /* ── The chat — the Architect's conversation (Phase 2) ──────────────────────── */
 .db-arch-chat {
 	display: flex;
