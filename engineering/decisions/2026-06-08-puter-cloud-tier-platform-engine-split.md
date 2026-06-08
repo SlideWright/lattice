@@ -1,11 +1,12 @@
-# The Architect — Puter cloud tier + mobile/desktop engine split (2026-06-08)
+# The Architect — Puter cloud default + desktop local opt-in (2026-06-08)
 
 > Status: **spec / design model. No code yet.** Extends the on-device model
 > stack (`2026-06-07-drawing-board-architect.md` §5) and the Phase 2 build plan
 > (`2026-06-08-drawing-board-phase-2-plan.md`) with a **cloud generation tier
-> (Puter.js)** and a **platform-conditioned engine ladder** (mobile vs.
-> desktop). Resolves the mobile question the existing corpus deferred to "Slice
-> 10 — polish." Companion to the modes spec (`2026-06-08-architect-modes.md`).
+> (Puter.js)** as the **uniform default on every platform**, with the on-device
+> ladder offered as a **desktop opt-in** for capable machines. Resolves the
+> mobile question the existing corpus deferred to "Slice 10 — polish."
+> Companion to the modes spec (`2026-06-08-architect-modes.md`).
 
 ## What's already decided (this doc does NOT relitigate)
 
@@ -50,37 +51,51 @@ reason for decision #3 (disclosure). Retrieval/`embed()` stays local
 (Transformers.js) wherever the device allows, so the **consistency-critical
 surface is unaffected**; only *generation* phrasing moves to the cloud.
 
-### 2. The ladder is platform-conditioned
+### 2. Puter is the uniform default; local is a desktop opt-in
 
-The existing ladder assumed one device class. Split it:
+The existing ladder assumed one device class and led with on-device tiers. Invert
+it: **Puter is the default generation backend on every platform.** This is the
+deliberate call for a *uniform* experience — every user, mobile or desktop, gets
+the same capable Architect out of the box, with no device-capability lottery and
+no first-run model download. The on-device ladder becomes an **opt-in
+enhancement**, not the default path.
 
-| | Generation order | Why |
+| | Generation | Why |
 |---|---|---|
-| **Mobile** | **Puter → deterministic floor** | Local generation doesn't work on phones — Prompt API is desktop-Chrome/Edge, WebLLM needs WebGPU + ~1GB. Puter is the *only* real generation path; the templated floor is the offline fallback. |
-| **Desktop** | **Local-first → Puter (toggle) → floor** | The on-device ladder (Prompt API → Transformers.js → WebLLM) leads. Puter is an **explicit user toggle**, not auto. |
+| **Mobile** | **Puter → deterministic floor** | No local option exists — Prompt API is desktop-Chrome/Edge, WebLLM needs WebGPU + ~1GB. Puter is the only real generation path; the templated floor is the offline fallback. |
+| **Desktop** | **Puter (default) → local (opt-in) → floor** | Same uniform default as mobile. Capable machines can **opt into the on-device ladder** (Prompt API → Transformers.js → WebLLM) for private, offline refinement; if a selected local tier fails at call time, it falls back to Puter. |
 
-**Desktop toggle persists.** Default to local; the user can switch to Puter; the
-choice is a **sticky setting** (the existing `settings` store), not per-session.
-Auto-fall back to Puter only if the selected local tier fails at call time.
+**Why default-cloud, not default-local:** uniformity and zero setup beat
+maximal privacy-by-default *as the baseline*. The on-device tiers are real
+value — privacy, offline, no per-call cloud round-trip — but they are
+**hardware-gated** (Prompt API availability is flaky even on Chrome/Edge; WebLLM
+is a ~1GB WebGPU download). Making them the default means the *baseline*
+experience varies wildly by machine. Defaulting to Puter makes the floor
+uniform; offering local makes the ceiling higher for those who can reach it.
 
-Mobile shows no toggle — there is no real local option to choose between, so
-offering one would be a false choice.
+**The local opt-in persists.** Default is Puter; a desktop user can switch to
+local; that choice is a **sticky setting** (the existing `settings` store), not
+per-session. Mobile shows no toggle — there is no real local option to choose
+between, so offering one would be a false choice.
 
 ### 3. Disclose the active engine (capability + privacy, one badge)
 
-The user "should be made aware a local model is available on desktop," and —
-because Puter is cloud — must also know when deck content is leaving the device.
-One **active-engine badge** in the Architect panel does both jobs:
+Because the default is cloud, the user must know that deck content is leaving the
+device — *and* desktop users should be made aware that a private, offline local
+option is available to opt into. One **active-engine badge** in the Architect
+panel does both jobs:
 
-- *"Running locally · private · offline"* — a local tier is live (desktop).
-- *"Powered by Puter · cloud"* — the cloud tier is live (mobile always; desktop
-  when toggled or fallen back).
+- *"Powered by Puter · cloud"* — the default; the cloud tier is live (mobile
+  always; desktop unless local is opted into).
+- *"Running locally · private · offline"* — a local tier is live (desktop, after
+  opt-in).
 
-Plus a **one-time desktop first-run nudge**: "A local AI model is available —
-refine decks privately, offline." The badge sets expectations (local = private/
-offline, maybe smaller/slower; cloud = needs network, more capable) *and* is the
-honest privacy signal. Disclosure is a UX requirement, like the export-fidelity
-framing in proposal §6 — not a footnote.
+Plus a **one-time desktop nudge** once the user has a working baseline: "Prefer
+to keep decks on-device? A local AI model is available — private, offline."
+Surface the opt-in without making it a setup gate. The badge sets expectations
+(cloud default = needs network, capable, uniform; local = private/offline, maybe
+smaller/slower) *and* is the honest privacy signal. Disclosure is a UX
+requirement, like the export-fidelity framing in proposal §6 — not a footnote.
 
 ### 4. Deterministic ≠ chat — the affordance-honesty rule
 
@@ -136,29 +151,37 @@ unified-canvas evolution, not v1.
 | | Drafting (deterministic) | Freehand (conversational) |
 |---|---|---|
 | **Mobile** | Guided builder: archetype picker → bounded controls → filmstrip preview | Chat via **Puter** → deterministic floor |
-| **Desktop** | Same guided builder | Chat via **local-first** (Prompt API → Transformers.js → WebLLM) → **Puter (persisted toggle)** → floor, with active-engine badge |
+| **Desktop** | Same guided builder | Chat via **Puter (default)**; **local opt-in** (Prompt API → Transformers.js → WebLLM, persisted) → falls back to Puter → floor, with active-engine badge |
 
-Same Drafting builder both platforms. Same chat *UI* both platforms — only the
-generation backend differs, absorbed by the `ArchitectModel` adapter.
+Same Drafting builder both platforms. Same chat *UI* and **same default
+backend (Puter)** both platforms — the only divergence is the desktop local
+opt-in, absorbed by the `ArchitectModel` adapter.
 
 ## Open questions
 
-- **Mobile embeddings & the consistency split.** §5 guarantees *retrieval is
-  identical for every user* by always running `bge-small` (Transformers.js, ~50MB
-  WASM). Can a phone run it? If not, mobile retrieval degrades to the Phase-1
-  **keyword floor** (always works) — which *breaks* the "identical retrieval"
-  guarantee for mobile. Decide: ship WASM embeddings on mobile where feasible,
-  accept keyword-retrieval degradation otherwise, or explore a Puter-side
-  retrieval path. Lean: WASM-if-feasible, keyword floor otherwise, badge it.
-- **Puter consent & privacy.** Confirm Puter's current auth/user-pays/consent
+- **Embeddings & the consistency split.** Default-cloud *improves* uniformity —
+  generation is now identical for everyone by default, so the only residual
+  device-dependence is **retrieval**. §5 pins it by always running `bge-small`
+  (Transformers.js, ~50MB WASM). Desktop runs it fine; can a phone? If not,
+  mobile retrieval degrades to the Phase-1 **keyword floor** (always works).
+  Decide: ship WASM embeddings on mobile where feasible, accept keyword
+  degradation otherwise, or explore a Puter-side retrieval path. Lean:
+  WASM-if-feasible, keyword floor otherwise, badge it.
+- **Puter consent & privacy.** Because cloud is the *default* (not an opt-in),
+  the consent moment matters more: confirm Puter's current auth/user-pays/consent
   flow and surface a clear "this sends your deck to the cloud" consent the first
-  time the cloud tier engages (mandatory on mobile, on toggle for desktop).
+  time the Architect generates — without turning it into a setup wall that
+  undercuts the zero-setup win. The desktop **local opt-in** is the privacy
+  escape for users who decline the cloud.
 - **Puter as a third-party dependency.** Availability, rate limits, and model
-  choice are outside our control — the deterministic floor must remain a true
-  fallback when Puter is unreachable or throttled (it already is, by design).
-- **Where Puter sits in the desktop ladder when local is present but weak** — is
-  it strictly user-toggled, or may it auto-engage for a task the local tier
-  declines? Lean: user-toggled only; no silent cloud egress on desktop.
+  choice are outside our control, and it is now the *default* path — so the
+  deterministic floor must remain a true fallback when Puter is unreachable or
+  throttled (it already is, by design), and desktop's local opt-in is a second
+  line of defense.
+- **Default model behind Puter.** Puter exposes several hosted models; pin a
+  sensible default (and confirm it satisfies the "prompts target the weakest
+  tier" discipline so a later swap can't regress findings) — surface a model
+  choice only as an advanced setting, not in the default path.
 - **Naming in UI** — keep "deterministic/freehand" internal; surface
   *Drafting / Freehand* (already decided) and *Local / Cloud (Puter)* for the
   engine.
