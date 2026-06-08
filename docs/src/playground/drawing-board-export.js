@@ -54,15 +54,30 @@ async function sectionsOf(frame) {
 // Rasterize one rendered slide to a 2x PNG data URL (fonts embedded).
 async function rasterizeSection(section) {
 	const { toPng } = await import('html-to-image');
-	return toPng(section, {
-		width: 1280,
-		height: 720,
-		pixelRatio: 2,
-		cacheBust: true,
-		// transform:none undoes the live FIT scale; no backgroundColor (see header).
-		style: { transform: 'none', margin: '0', boxShadow: 'none', outline: 'none', borderRadius: '0' },
-		filter: (n) => !(n.classList?.contains('db-active')),
-	});
+	// Bookend slides (title/closing/divider) carry an inert `border-image-source`
+	// (the spectrum) with `border-top:none` — invisible in the browser, but
+	// html-to-image inlines the computed border-image and fills it across the
+	// whole slide, burying the dark canvas. Neutralize it on the LIVE node (so the
+	// computed value html-to-image copies is `none`) ONLY where the border is
+	// effectively absent — content slides keep their real spectrum ribbon — then
+	// restore. The change is invisible in the preview (the border was already 0).
+	const cs = getComputedStyle(section);
+	const borderless = parseFloat(cs.borderTopWidth) === 0 || cs.borderTopStyle === 'none';
+	const prevBorderImage = section.style.borderImageSource;
+	if (borderless && cs.borderImageSource !== 'none') section.style.borderImageSource = 'none';
+	try {
+		return await toPng(section, {
+			width: 1280,
+			height: 720,
+			pixelRatio: 2,
+			cacheBust: true,
+			// transform:none undoes the live FIT scale; no backgroundColor (see header).
+			style: { transform: 'none', margin: '0', boxShadow: 'none', outline: 'none', borderRadius: '0' },
+			filter: (n) => !(n.classList?.contains('db-active')),
+		});
+	} finally {
+		section.style.borderImageSource = prevBorderImage;
+	}
 }
 
 // ── PDF (one-click image PDF) ─────────────────────────────────────────────────
