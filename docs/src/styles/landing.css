@@ -497,6 +497,20 @@ html[data-mode='dark'] .mode-toggle::before {
 	border: 1px solid var(--border);
 	margin-bottom: 18px;
 }
+/* Intentional, dedicated handoff to the playground — a real link (cmd/middle-
+ * click opens a new tab), not a click target on the card or its preview. */
+.card-open {
+	display: inline-block;
+	margin-top: 14px;
+	font-size: 13.5px;
+	font-weight: 600;
+	color: var(--accent);
+	text-decoration: none;
+}
+.card-open:hover,
+.card-open:focus-visible {
+	text-decoration: underline;
+}
 
 /* ── Restyle demo: one slide, every palette ──────────────────────────── */
 .restyle {

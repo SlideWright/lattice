@@ -192,31 +192,37 @@ const liveData = JSON.stringify({
 							<div class="feature-shot shot-img" data-live-card="math"></div>
 							<h3>Mathematicians, quants &amp; ML</h3>
 							<p>Real KaTeX equations — Definition / Theorem / Proof cards, derivation chains with a justification column, matrix decompositions, an equation beside its plot.</p>
+							<a class="card-open" href={url('playground/')} data-open-deck="math">Edit this deck →</a>
 						</div>
 						<div class="feature">
 							<div class="feature-shot shot-img" data-live-card="gantt"></div>
 							<h3>Project leads</h3>
 							<p>Gantt charts, kanban boards, roadmaps, journeys, and step ladders — native SVG rendered straight from a list, not pasted in from Visio.</p>
+							<a class="card-open" href={url('playground/')} data-open-deck="gantt">Edit this deck →</a>
 						</div>
 						<div class="feature">
 							<div class="feature-shot shot-img" data-live-card="diagram"></div>
 							<h3>Engineers &amp; architects</h3>
 							<p>All 25 Mermaid diagram types, auto-themed to the deck. State charts. Side-by-side code diffs, syntax-highlighted, from two fenced blocks.</p>
+							<a class="card-open" href={url('playground/')} data-open-deck="diagram">Edit this deck →</a>
 						</div>
 						<div class="feature">
 							<div class="feature-shot shot-img" data-live-card="obligation-matrix"></div>
 							<h3>Lawyers &amp; compliance</h3>
 							<p>Statute stacks, authority chains, obligation matrices, citation cards, and regulatory-update layouts — an actual legal vocabulary.</p>
+							<a class="card-open" href={url('playground/')} data-open-deck="obligation-matrix">Edit this deck →</a>
 						</div>
 						<div class="feature">
 							<div class="feature-shot shot-img" data-live-card="radar"></div>
 							<h3>Analysts</h3>
 							<p>Radar, quadrant, KPI, stats, progress, pie, and word-cloud — the evidence layouts that turn numbers into an argument.</p>
+							<a class="card-open" href={url('playground/')} data-open-deck="radar">Edit this deck →</a>
 						</div>
 						<div class="feature">
 							<div class="feature-shot shot-img" data-live-card="cards-grid"></div>
 							<h3>And the basics, for everyone</h3>
 							<p>A bullet list becomes a card grid; a table becomes a comparison matrix. Fifty-eight layouts, one Markdown syntax.</p>
+							<a class="card-open" href={url('playground/')} data-open-deck="cards-grid">Edit this deck →</a>
 						</div>
 					</div>
 				</div>
@@ -385,6 +391,16 @@ const liveData = JSON.stringify({
 				var D = JSON.parse(dataEl.textContent);
 				var root = document.documentElement;
 				var THEME_BASE = D.themeBase, RUNTIME_URL = D.runtimeUrl, FRAME_CSS = D.frameCss;
+
+				// "Edit this deck" → seed the field card's sample into the playground's
+				// handoff key (the same key specimen.js uses), then let the <a href>
+				// navigate. Registered eagerly so it works before the runtime loads.
+				document.addEventListener('click', function (e) {
+					var a = e.target.closest('[data-open-deck]');
+					if (!a) return;
+					var c = D.cards[a.getAttribute('data-open-deck')];
+					if (c) { try { localStorage.setItem('lattice-docs-pg-source', c.sample); } catch (err) {} }
+				});
 				var MERMAID = 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js';
 
 				// ── Theme fetching (shared with the playground) ──────────────
