@@ -64,26 +64,56 @@ describe('buildChatMessages', () => {
   });
 });
 
-describe('floorReply', () => {
-  test('reports the deterministic score and top issues, honestly model-free', async () => {
+describe('floorReply (intent-aware, deterministic)', () => {
+  const assessment = {
+    scorecard: { band: 'B', overall: 78 },
+    findings: [
+      { severity: 'error', message: 'bad class', slide: 2 },
+      { severity: 'warning', message: 'label title', slide: 3 },
+      { severity: 'suggestion', message: 'minor nit', slide: 5 },
+    ],
+  };
+
+  test('a general "thoughts?" reports the score and top (non-suggestion) issues', async () => {
     const { floorReply } = await load();
-    const out = floorReply({
-      scorecard: { band: 'B', overall: 78 },
-      findings: [
-        { severity: 'error', message: 'bad class', slide: 2 },
-        { severity: 'suggestion', message: 'minor', slide: 5 },
-      ],
-    });
-    assert.match(out, /model-free/i);
+    const out = floorReply(assessment, 'thoughts on my presentation?');
     assert.match(out, /B \(78\/100\)/);
     assert.match(out, /bad class \(slide 2\)/);
-    assert.doesNotMatch(out, /minor/); // suggestions are not surfaced as must-fix
+    assert.doesNotMatch(out, /minor nit/); // suggestions aren't surfaced as must-fix
+  });
+
+  test('"why model free?" explains the model situation — not the scorecard', async () => {
+    const { floorReply } = await load();
+    const out = floorReply(assessment, 'model free? why?');
+    assert.match(out, /Chrome or Edge|WebGPU|on-device/i);
+    assert.doesNotMatch(out, /78\/100/); // answers the question asked, not boilerplate
+  });
+
+  test('different questions produce different replies (not one canned string)', async () => {
+    const { floorReply } = await load();
+    const why = floorReply(assessment, 'why are you model free?');
+    const thoughts = floorReply(assessment, 'thoughts on my presentation?');
+    assert.notEqual(why, thoughts);
+  });
+
+  test('a named slide surfaces that slide’s findings', async () => {
+    const { floorReply } = await load();
+    const out = floorReply(assessment, 'whats wrong with slide 3?');
+    assert.match(out, /slide 3/i);
+    assert.match(out, /label title/);
+    assert.doesNotMatch(out, /bad class/); // only slide 3's finding
+  });
+
+  test('"what should I fix" leads with the actionable findings', async () => {
+    const { floorReply } = await load();
+    const out = floorReply(assessment, 'what should I fix first?');
+    assert.match(out, /bad class/);
+    assert.match(out, /label title/);
   });
 
   test('degrades gracefully with no assessment', async () => {
     const { floorReply } = await load();
-    const out = floorReply(null);
-    assert.match(out, /model-free/i);
-    assert.match(out, /enable on-device AI/i);
+    const out = floorReply(null, 'hi');
+    assert.match(out, /start writing|no deck/i);
   });
 });

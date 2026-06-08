@@ -36,6 +36,7 @@ function tierLabel(a) {
   if (!a.modelOn) return 'Deterministic (AI off)';
   if (a.generation === 'webllm') return 'WebLLM (on-device)';
   if (a.generation === 'prompt-api') return 'Built-in AI (on-device)';
+  if (a.generation === 'transformers') return 'On-device AI (universal)';
   if (a.generation === 'mock') return 'Mock (testing)';
   return 'Deterministic floor';
 }
@@ -43,7 +44,6 @@ function tierLabel(a) {
 export function createModelSettings({ host, trigger, model, onChange }) {
   if (!host || !model) return { refresh() {}, toggle() {} };
   let open = false;
-  let summoning = false;
   let abort = null;
 
   function statusText() {
@@ -82,56 +82,64 @@ export function createModelSettings({ host, trigger, model, onChange }) {
       'Off = the Architect runs fully deterministically (no model, nothing downloaded). ' +
       'Findings, scores and fixes are identical either way — the model only adds phrasing and conversation.'));
 
-    // Tier readout.
-    const tiers = el('div', 'db-settings-tiers');
-    const promptRow = el('div', 'db-settings-tier');
-    promptRow.append(el('span', 'db-settings-tier-name', 'Built-in AI (Chrome/Edge)'));
-    promptRow.append(el('span', 'db-settings-tier-state', a.promptApi === 'available' ? 'ready' : a.promptApi === 'downloadable' ? 'downloadable' : 'not here'));
-    tiers.append(promptRow);
-
+    // Tier readout — the generation ladder, in preference order.
     const webgpu = await probeWebGPU();
-    const llmRow = el('div', 'db-settings-tier');
-    llmRow.append(el('span', 'db-settings-tier-name', 'WebLLM (higher quality)'));
-    llmRow.append(el('span', 'db-settings-tier-state', a.webllmReady ? 'loaded' : webgpu ? 'available' : 'needs WebGPU'));
-    tiers.append(llmRow);
+    const tiers = el('div', 'db-settings-tiers');
+    const tier = (name, state) => {
+      const r = el('div', 'db-settings-tier');
+      r.append(el('span', 'db-settings-tier-name', name), el('span', 'db-settings-tier-state', state));
+      tiers.append(r);
+    };
+    tier('Built-in AI (Chrome/Edge)', a.promptApi === 'available' ? 'ready' : a.promptApi === 'downloadable' ? 'downloadable' : 'not here');
+    tier('Universal (runs anywhere)', a.universalReady ? 'loaded' : 'loadable');
+    tier('Advanced · WebLLM', a.webllmReady ? 'loaded' : webgpu ? 'available' : 'needs WebGPU');
     panel.append(tiers);
 
-    // The opt-in summon — only when WebGPU is real and not already loaded.
-    if (a.modelOn && webgpu && !a.webllmReady) {
-      const summon = el('button', 'db-btn db-btn-primary db-settings-summon', summoning ? 'Summoning…' : 'Summon the Architect (WebLLM · ~1GB)');
-      summon.type = 'button';
-      summon.disabled = summoning;
+    // A shared download flow (progress + retry) for the on-demand model tiers.
+    const loadFlow = (label, note, loader) => {
+      const btn = el('button', 'db-btn db-btn-primary db-settings-summon', label);
+      btn.type = 'button';
       const prog = el('div', 'db-settings-progress');
       const bar = el('i');
       prog.append(bar);
-      prog.hidden = !summoning;
-      summon.addEventListener('click', async () => {
-        summoning = true;
+      prog.hidden = true;
+      btn.addEventListener('click', async () => {
         abort = new AbortController();
-        summon.disabled = true;
-        summon.textContent = 'Summoning…';
+        btn.disabled = true;
         prog.hidden = false;
         try {
-          await model.summon((p) => {
+          await loader((p) => {
             const pct = Math.round((p?.progress || 0) * 100);
             bar.style.width = pct + '%';
-            summon.textContent = p?.text ? `Summoning… ${pct}%` : `Summoning… ${pct}%`;
+            btn.textContent = `Loading… ${pct}%`;
           }, abort.signal);
-          summoning = false;
           refresh();
           render();
           onChange?.();
         } catch {
-          summoning = false;
-          summon.disabled = false;
-          summon.textContent = 'Summon failed — retry';
+          btn.disabled = false;
+          btn.textContent = 'Load failed — retry';
           prog.hidden = true;
         }
       });
-      panel.append(summon, prog);
-      panel.append(el('p', 'db-settings-note', 'A one-time download for the highest-quality on-device coaching. Stays on your device; cancelable; declining keeps the lighter tiers.'));
-    } else if (a.modelOn && !webgpu) {
-      panel.append(el('p', 'db-settings-note', 'This browser can’t run the WebLLM tier (no WebGPU). The built-in AI tier is used when present; otherwise the Architect runs deterministically.'));
+      panel.append(btn, prog, el('p', 'db-settings-note', note));
+    };
+
+    if (a.modelOn) {
+      // The universal Transformers.js fallback — the path that matters on Safari /
+      // mobile (no Prompt API, no WebGPU). Offered whenever the built-in tier
+      // isn't here and it isn't already loaded.
+      if (a.promptApi !== 'available' && !a.universalReady && !a.webllmReady) {
+        loadFlow('Load on-device AI (~350 MB · works on any browser)',
+          'A one-time download so the Architect can converse on THIS device — no special browser or GPU needed. Runs in your browser; stays on your device.',
+          (p, s) => model.loadUniversal(p, s));
+      }
+      // The advanced power-user tier — WebGPU only.
+      if (webgpu && !a.webllmReady) {
+        loadFlow('Advanced: summon WebLLM (~1 GB · WebGPU)',
+          'The highest-quality on-device tier, for capable desktops. Optional — the lighter tiers stay available.',
+          (p, s) => model.summon(p, s));
+      }
     }
 
     host.append(panel);

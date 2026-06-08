@@ -42,21 +42,64 @@ export function buildChatMessages({ source, assessment, history, userText }) {
   return [{ role: 'system', content: system }, ...turns, { role: 'user', content: userText }];
 }
 
-// The deterministic floor reply — honest about running model-free, but still
-// useful: it hands back the assessment the engines already computed.
-export function floorReply(assessment) {
+// The deterministic floor reply — no model, but NOT a single canned string. It
+// reads the author's question and routes to the relevant deterministic answer
+// (why it's model-free, the scorecard, a named slide, the top fixes), so a real
+// back-and-forth still feels responsive on a browser without on-device AI (most
+// phones). Honest about being model-free where that's the actual question; it
+// doesn't pretend to converse about things the engines can't see. Pure + tested.
+function scoreLine(sc) {
+  return `your deck scores ${sc.band} (${sc.overall}/100)`;
+}
+function mustFix(assessment, n = 3) {
+  return (assessment?.findings || []).filter((f) => f.severity !== 'suggestion').slice(0, n);
+}
+function listFindings(findings) {
+  return findings.map((f) => `• ${f.message}${f.slide ? ` (slide ${f.slide})` : ''}`).join('\n');
+}
+
+export function floorReply(assessment, userText = '') {
   const sc = assessment?.scorecard;
-  if (!sc) {
-    return "I'm running model-free right now (no on-device AI loaded), so I can't " +
-      'chat freely yet — but I review every edit live above. Start a deck and I’ll ' +
-      'flag anything off. Enable on-device AI for a back-and-forth.';
+  const q = String(userText).toLowerCase();
+  const enable = 'Want a real back-and-forth? Tap the ⚙ chip up top and load on-device AI — there’s a universal option (~350 MB) that runs right here in your browser, no special browser or GPU needed. It stays on your device.';
+
+  // "why are you model-free / how do I enable it" — answer the actual question.
+  if (/\b(why|model[\s-]?free|no model|offline|enable|turn on|switch on|activate|on-device|gpu|download|nano|webllm|transformers)\b/.test(q)) {
+    return "I'm running deterministically because no on-device model is loaded in this browser yet. There are three tiers: the built-in AI (instant, but only recent Chrome/Edge expose it), a universal model that runs anywhere via WebAssembly (a one-time ~350 MB download — this is the one for Safari and phones), and an advanced WebLLM tier for WebGPU desktops. " +
+      'None of that changes the review — scores, findings and fixes are computed the same way regardless. ' + enable;
   }
-  const issues = (assessment.findings || []).filter((f) => f.severity !== 'suggestion').slice(0, 3);
-  const lines = issues.map((f) => `• ${f.message}${f.slide ? ` (slide ${f.slide})` : ''}`).join('\n');
-  return `Running model-free, but here’s what I can tell you for sure: your deck scores ` +
-    `${sc.band} (${sc.overall}/100). ` +
-    (lines ? `The things I’d fix first:\n${lines}\n\n` : 'Nothing mechanical is broken. ') +
-    'Enable on-device AI (a capable Chrome/Edge) and I can talk it through with you.';
+
+  if (!sc) {
+    return "There’s no deck to look at yet — start writing and I’ll score it and flag anything off as you go. " +
+      "(I’m running model-free in this browser, so I answer from that live review rather than free-form chat. " + enable + ')';
+  }
+
+  // A specific slide — surface that slide's findings.
+  const slideM = q.match(/slide\s*(\d+)/);
+  if (slideM) {
+    const n = Number(slideM[1]);
+    const on = (assessment.findings || []).filter((f) => f.slide === n);
+    if (on.length) return `On slide ${n}:\n${listFindings(on)}\n\nThat’s what the deterministic review sees. ${enable}`;
+    return `Slide ${n} looks clean to the review — no contract or clarity flags on it. ${enable}`;
+  }
+
+  // Fixes / improvement — lead with the actionable findings.
+  if (/\b(fix|improve|better|tighten|sharpen|stronger|strengthen|weak|wrong|issue|problem)\b/.test(q)) {
+    const fixes = mustFix(assessment, 4);
+    if (fixes.length) return `Here’s what I’d fix first (${scoreLine(sc)}):\n${listFindings(fixes)}\n\nEach is also flagged in the review above with a Reveal / How-to-fix. ${enable}`;
+    return `Nothing mechanical is flagged — ${scoreLine(sc)} and every slide follows the authoring contract. For wording and flow, ${enable.charAt(0).toLowerCase() + enable.slice(1)}`;
+  }
+
+  // Greeting.
+  if (/^\s*(hi|hey|hello|yo|sup|good (morning|afternoon|evening))\b/.test(q)) {
+    return `Hey. I’ve got your deck up — ${scoreLine(sc)}. Ask me what to fix, or about a specific slide, and I’ll tell you what the review sees. ${enable}`;
+  }
+
+  // Default: thoughts / review / score / anything else — the assessment.
+  const issues = mustFix(assessment, 3);
+  return `Here’s my read, ${scoreLine(sc)}: ` +
+    (issues.length ? `the things I’d fix first —\n${listFindings(issues)}\n\n` : 'nothing mechanical is broken, every slide follows the contract. ') +
+    `Ask me about a specific slide or "what should I fix" for more. ${enable}`;
 }
 
 export function createChat({ mount, composer, model, store, getAssessment }) {
@@ -105,6 +148,7 @@ export function createChat({ mount, composer, model, store, getAssessment }) {
     if (deckId && store?.addChatMessage) await store.addChatMessage(deckId, 'user', text);
 
     const assessment = getAssessment ? getAssessment() : null;
+    const floor = floorReply(assessment, text);
     const target = bubble('architect', '');
     target.classList.add('is-streaming');
     let full = '';
@@ -114,12 +158,12 @@ export function createChat({ mount, composer, model, store, getAssessment }) {
       });
       const out = await model.complete({
         messages,
-        fallback: floorReply(assessment),
+        fallback: floor,
         onToken: (tok) => { full += tok; target.textContent = full; scrollDown(); },
       });
-      full = (out && String(out)) || full || floorReply(assessment);
+      full = (out && String(out)) || full || floor;
     } catch {
-      full = floorReply(assessment);
+      full = floor;
     }
     target.textContent = full;
     target.classList.remove('is-streaming');

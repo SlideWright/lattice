@@ -38,6 +38,20 @@ This is the tooling-first contract paying off: **the model never owns
 correctness**, so a missing model degrades to the proven Phase-1 floor rather
 than breaking. The deterministic floor stays the product; the model is a coat.
 
+## Correction (post-#89): the Transformers.js generation tier IS in the ladder
+
+The first cut shipped the generation ladder as Prompt API → WebLLM → floor and
+deferred the Transformers.js (WASM) generation tier. That was wrong: it's the
+*universal* tier — no WebGPU, runs on Safari/phones — so without it those devices
+fall straight to the static floor. It's now implemented (`transformersGenBackend`,
+`onnx-community/Qwen2.5-0.5B-Instruct`, ~350 MB q4, CDN-loaded on demand) and
+slotted into the ladder per the plan: **built-in Prompt API → Transformers.js
+universal → WebLLM (advanced opt-in) → floor**. The settings popover offers a
+"Load on-device AI (~350 MB · works on any browser)" button whenever the built-in
+tier isn't present — verified headless (that's the sandbox's own state). Live WASM
+inference still needs a real browser to confirm; the tier *selection* + load UI
+are unit-tested and headless-verified.
+
 ## Decision: no new npm deps — heavy backends load from CDN on demand
 
 The plan (§ "Dependencies to add") suggested adding `@huggingface/transformers`

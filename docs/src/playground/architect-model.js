@@ -24,6 +24,10 @@ const WEBLLM_URL = 'https://esm.run/@mlc-ai/web-llm';
 const TRANSFORMERS_URL = 'https://esm.run/@huggingface/transformers';
 const EMBED_MODEL = 'Xenova/bge-small-en-v1.5';
 const WEBLLM_MODEL = 'Qwen2.5-1.5B-Instruct-q4f16_1-MLC';
+// The universal generation tier: a small instruct model that runs in WASM via
+// Transformers.js — no WebGPU, works on Safari / mobile (where the built-in
+// Prompt API and WebLLM don't). ~350 MB q4 download, cached by the browser.
+const UNIVERSAL_MODEL = 'onnx-community/Qwen2.5-0.5B-Instruct';
 
 const hasWindow = typeof window !== 'undefined';
 const G = typeof globalThis !== 'undefined' ? globalThis : {};
@@ -123,6 +127,41 @@ function webllmBackend() {
   };
 }
 
+// Transformers.js (WASM) generation — the UNIVERSAL tier. A small instruct model
+// loaded from CDN on demand; runs everywhere (no WebGPU), so it's the fallback
+// for Safari / mobile where the built-in Prompt API and WebLLM aren't available.
+// Slower than the others, so keep prompts short (the chat already truncates).
+function transformersGenBackend() {
+  let generator = null;
+  let lib = null;
+  return {
+    name: 'transformers',
+    async load(onProgress, signal) {
+      lib = await import(/* @vite-ignore */ TRANSFORMERS_URL);
+      generator = await lib.pipeline('text-generation', UNIVERSAL_MODEL, {
+        dtype: 'q4',
+        progress_callback: (p) => onProgress?.(p),
+      });
+      if (signal?.aborted) throw new Error('aborted');
+      return true;
+    },
+    ready() { return !!generator; },
+    async complete({ messages, onToken, signal }) {
+      if (!generator) throw new Error('universal model not loaded');
+      // Chat models accept the messages array and apply their own template.
+      const streamer = onToken
+        ? new lib.TextStreamer(generator.tokenizer, { skip_prompt: true, skip_special_tokens: true, callback_function: (t) => onToken(t) })
+        : undefined;
+      const out = await generator(messages, { max_new_tokens: 384, do_sample: false, streamer });
+      if (signal?.aborted) return '';
+      // For chat input, generated_text is the message array with the reply appended.
+      const gen = out?.[0]?.generated_text;
+      if (Array.isArray(gen)) return gen.at(-1)?.content ?? '';
+      return typeof gen === 'string' ? gen : '';
+    },
+  };
+}
+
 // ── JSON discipline — force structure, validate before returning ──────────────
 
 export function extractJson(text) {
@@ -146,10 +185,11 @@ export function createArchitectModel({ getSettings } = {}) {
   let injected = null; // test hook — a MockBackend
   const prompt = promptApiBackend();
   const webllm = webllmBackend();
+  let universal = transformersGenBackend();
   let promptAvail = 'unknown';
   let embedder = null; // lazy Transformers.js pipeline
   let embedTried = false;
-  let tierPref = 'auto'; // 'auto' | 'prompt-api' | 'webllm' | 'floor'
+  let tierPref = 'auto'; // 'auto' | 'prompt-api' | 'webllm' | 'universal' | 'floor'
 
   async function refreshAvailability() {
     promptAvail = await detectPromptApi();
@@ -162,11 +202,16 @@ export function createArchitectModel({ getSettings } = {}) {
   function pickBackend() {
     if (!modelOn() || tierPref === 'floor') return floorBackend;
     if (injected) return injected;
+    // Explicit preference wins when that tier is ready.
     if (tierPref === 'webllm' && webllm.ready()) return webllm;
+    if (tierPref === 'universal' && universal.ready()) return universal;
     if (tierPref === 'prompt-api' && promptAvail === 'available') return prompt;
-    // auto: prefer a summoned WebLLM (higher quality), else a ready Prompt API.
+    // auto ladder: WebLLM (advanced, explicitly summoned) → built-in Prompt API
+    // (free, instant, no download) → Transformers.js universal (loaded WASM) →
+    // floor. Matches the plan's Prompt-API-first, Transformers.js-fallback intent.
     if (webllm.ready()) return webllm;
     if (promptAvail === 'available') return prompt;
+    if (universal.ready()) return universal;
     return floorBackend;
   }
 
@@ -216,21 +261,30 @@ export function createArchitectModel({ getSettings } = {}) {
         promptApi: promptAvail,
         webgpu: detectWebGPU(),
         webllmReady: webllm.ready(),
+        universalReady: universal.ready(),
         embeddings: modelOn() && hasWindow,
         modelOn: modelOn(),
       };
     },
     setTier(name) { tierPref = name; },
-    // WebLLM opt-in — the deliberate "summon the Architect" download.
+    // WebLLM opt-in — the deliberate "summon the Architect" (~1GB, WebGPU) download.
     async summon(onProgress, signal) {
       await webllm.load(onProgress, signal);
       tierPref = 'webllm';
       return true;
     },
+    // The universal Transformers.js tier — the no-WebGPU fallback (Safari/mobile).
+    // ~350MB WASM model loaded on demand; once loaded it's used when there's no
+    // Prompt API. Never throws to the caller's flow — caller surfaces progress.
+    async loadUniversal(onProgress, signal) {
+      await universal.load(onProgress, signal);
+      return true;
+    },
     webgpu: detectWebGPU(),
-    // Test hooks (used by the Node suite to exercise the model-on path).
+    // Test hooks (used by the Node suite to exercise the model-on path + ladder).
     __setBackend(b) { injected = b; },
     __setPromptAvailability(a) { promptAvail = a; },
+    __setUniversal(b) { universal = b; },
   };
 }
 
