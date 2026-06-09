@@ -82,12 +82,12 @@ that resolve to the right size, spacing that holds, alignment that
 falls where it should. You never spend judgment on any of it, because
 none of it is a matter of judgment.
 
-What's left is the part that is. Whether the claim is true. Whether the
-slide earns its place. Whether the argument lands with this audience,
-this quarter. No system checks those, and Lattice doesn't pretend to.
-It clears the mechanical work off your desk so the only thing left in
-front of you is the thinking. The machine owns what's correct; you own
-what's good.
+The rest is judgment. Whether the claim is true. Whether the slide
+earns its place. Whether the argument lands with this audience, this
+quarter. No system checks those, and Lattice doesn't pretend to. It
+clears the mechanical work off your desk so the only thing in front of
+you is the thinking. The machine owns what's correct; you own what's
+good.
 
 ## Predictability is worth more than it looks
 
