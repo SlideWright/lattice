@@ -279,11 +279,17 @@ in patch versions.
     North to the developed economies — carrying the same `source` + `asOf`
     provenance as the blocs, plus per-continent slices of the South
     (`global-south-africa`, `global-south-asia`, `global-south-south-america`, …).
-    Shipping one sourced, dated roster is the transparent call: the definition
-    travels with the data and an author can cite it, instead of every deck
-    hand-rolling an undocumented ~130-country list. States in neither list
-    (Russia, the post-Soviet / Balkan economies, disputed territories) belong to
-    no `global-*` group. The `grouped` modifier clusters the legend by continent.
+    "Global South" is contested, so rather than pick one definition the engine
+    ships the **two most-recognized views** as distinct, sourced groups and lets
+    the author choose: `global-south` (G77 + China, the default) and
+    `global-south-brandt` (the 1980 Brandt-Report North–South line, built as the
+    geographic complement — sweeps in Mexico / Turkey / the Koreas / Taiwan,
+    files the former-Soviet Central-Asian states under the North). Shipping
+    sourced, dated rosters is the transparent call: the definition travels with
+    the data and an author can cite it, instead of every deck hand-rolling an
+    undocumented ~130-country list. States in neither list (Russia, the
+    post-Soviet / Balkan economies, disputed territories) belong to no `global-*`
+    group. The `grouped` modifier clusters the legend by continent.
   - **Name binding without an LLM.** Country names vary wildly (Côte d'Ivoire,
     Myanmar, Czechia) and a typo is a silent gap, so the static basemap
     vocabulary drives two deterministic, zero-token defences: a **CodeMirror

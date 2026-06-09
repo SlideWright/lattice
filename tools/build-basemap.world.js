@@ -199,6 +199,24 @@ const GLOBAL_NORTH = [
   'JP','KR','IL','AU','NZ',
 ];
 
+// ── Brandt Line (the second Global South view) ───────────────────────────────
+// The 1980 Brandt Report drew a single North–South line. Its "North" is the
+// wealthy/industrial world of that moment: North America, ALL of Europe, the
+// former USSR (Russia + the Caucasus + Central Asia), Japan, Israel, and the
+// line's famous southern-hemisphere exception — Australia + New Zealand. The
+// Brandt "Global South" is then everything BELOW the line, which we build as the
+// complement (faithful to its draw-a-line logic, unlike the G77 membership
+// roster). This is why the two views differ: Brandt sweeps in Mexico, Turkey,
+// the Koreas, Taiwan, and assorted territories on geography, while moving the
+// former-Soviet Central-Asian G77 members (Tajikistan, Turkmenistan) into the
+// North. Dated to the report (1980) — a frozen snapshot, by design.
+const BRANDT_NORTH = new Set([
+  'US','CA','GL',
+  'AL','AT','BA','BE','BG','BY','CH','CZ','DE','DK','EE','ES','FI','FR','GB','GR','HR','HU','IE','IS','IT','LT','LV','MD','ME','MK','NL','NO','PL','PT','RO','RS','RU','SE','SI','SK','UA','XK','AD','MC','SM','VA',
+  'AM','AZ','GE','KZ','KG','TJ','TM','UZ',
+  'JP','IL','AU','NZ',
+]);
+
 module.exports = { buildWorld, SOURCE_LABEL };
 
 // ── Geometry helpers ────────────────────────────────────────────────────────
@@ -365,6 +383,20 @@ async function buildWorld() {
     aliases: ['the global north', 'developed economies', 'developed countries'],
     source: 'Developed economies (Europe, Northern America, Japan, South Korea, Australia, New Zealand, Israel)', asOf: '2025',
     members: northMembers.sort(),
+  });
+
+  // Global South, Brandt-Line view — the second, geographic operationalization:
+  // everything below the 1980 Brandt line (the complement of the Brandt North).
+  // Shipped alongside `global-south` (G77 + China) so authors pick the framing;
+  // neither is hidden, both carry their source + date.
+  const brandtSouth = Object.keys(regions)
+    .filter((k) => !BRANDT_NORTH.has(k) && regions[k].continent !== 'Seven seas (open ocean)')
+    .sort();
+  if (brandtSouth.length) addGroup('global-south-brandt', {
+    label: 'Global South — Brandt Line', kind: 'category',
+    aliases: ['brandt line', 'brandt south', 'brandt line south', 'global south brandt'],
+    source: 'Brandt Line North–South divide (Brandt Report, 1980)', asOf: '1980',
+    members: brandtSouth,
   });
 
   // Compute the viewBox from the actual projected extent (padded).

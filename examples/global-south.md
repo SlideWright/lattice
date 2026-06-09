@@ -47,6 +47,24 @@ Leaving "Global South" out doesn't keep the engine impartial — it just makes e
 
 ---
 
+<!-- _class: map world highlight -->
+<!-- _footer: "View 1 · global-south · G77 + China (2025)" -->
+
+## Contested term, two sourced views — #1: G77 + China.
+
+- Global South `G77 + China`
+
+---
+
+<!-- _class: map world highlight -->
+<!-- _footer: "View 2 · global-south-brandt · Brandt Line (1980)" -->
+
+## #2: the Brandt Line — Mexico, Turkey, the Koreas shift in.
+
+- Global South — Brandt Line `1980 North–South line`
+
+---
+
 <!-- _class: map world -->
 <!-- _footer: "Per-region authoring · world choropleth" -->
 
