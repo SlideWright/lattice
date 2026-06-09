@@ -176,7 +176,7 @@ body.db-page .topbar {
 .db-decks-pop {
 	position: absolute;
 	top: calc(100% + 4px);
-	right: 0;
+	left: 0; /* the Decks button sits at the left of the leftmost panel — open rightward */
 	z-index: 50;
 	width: min(300px, calc(100vw - 2rem));
 	max-height: min(70vh, 520px);
