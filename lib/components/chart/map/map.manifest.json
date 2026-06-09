@@ -20,7 +20,7 @@
       "description": "One li per region (or group). Lead with the name — US: full (`California`), postal (`CA`), or abbreviation (`Calif.`); world: full (`Brazil`), ISO (`BR`), alias (`Burma`), or a group (`European Union`, `Sub-Saharan Africa`, `Global South`) that expands to its members — then a trailing inline-code value: `Brazil \\`4.2\\``. In choropleth the value drives the ramp; in highlight it's an optional legend label. Names the basemap can't resolve surface as muted ‘?’ legend rows."
     }
   },
-  "variants": ["highlight", "world", "grouped"],
+  "variants": ["highlight", "world", "grouped", "robinson"],
   "variantDocs": {
     "highlight": {
       "label": "highlight",
@@ -29,13 +29,18 @@
     },
     "world": {
       "label": "world",
-      "caption": "The world-countries basemap (Robinson projection). Same authoring — one country per li — with ISO codes and common aliases resolving alongside full names.",
+      "caption": "The world-countries basemap, Equal Earth projection (area-preserving, the default — the Global South reads at its true size). Same authoring — one country per li — with ISO codes and common aliases resolving alongside full names.",
       "sample": "<!-- _class: map world -->\n\n## Where our field offices operate.\n\n- United States `42`\n- Brazil `31`\n- Nigeria `27`\n- Kenya `24`\n- India `38`\n- Indonesia `19`\n- Germany `22`\n- Australia `12`\n"
     },
     "grouped": {
       "label": "grouped",
       "caption": "On the world map, naming a continent or bloc fills every member; `grouped` clusters the legend by continent. For coverage told at bloc scale.",
       "sample": "<!-- _class: map world highlight grouped -->\n\n## Coverage by economic bloc.\n\n- European Union `Tier 1`\n- ASEAN `Tier 1`\n- Sub-Saharan Africa `Tier 2`\n- Latin America `Tier 2`\n"
+    },
+    "robinson": {
+      "label": "robinson",
+      "caption": "Swaps the default Equal Earth projection for Robinson — the familiar boardroom compromise. Same authoring; only the world basemap's shape changes. Equal Earth (default) preserves relative area; Robinson trades a little area fidelity for the silhouette many audiences expect.",
+      "sample": "<!-- _class: map world robinson -->\n\n## Where our field offices operate.\n\n- United States `42`\n- Brazil `31`\n- Nigeria `27`\n- Kenya `24`\n- India `38`\n- Indonesia `19`\n- Germany `22`\n- Australia `12`\n"
     }
   },
   "skeleton": "<!-- _class: map -->\n\n## Where the program runs.\n\n- California `4.2`\n- Texas `3.1`\n- New York `2.8`\n- Florida `2.2`\n",

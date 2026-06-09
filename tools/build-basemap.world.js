@@ -11,13 +11,16 @@
  * SUBREGION). Antarctica is dropped for a tight boardroom frame.
  *
  * ── Projection ──────────────────────────────────────────────────────────────
- * Robinson — the boardroom-standard world projection — baked into the path
- * data at generation time. The raw projection (the 19-point interpolation
- * table + quadratic scheme) is INLINED below, adapted from d3-geo-projection
- * (ISC), so the engine declares no d3 / projection dependency. The only
- * generation-time use of d3-geo is its geoProjection/geoPath path machinery
- * (already present in the tree via Mermaid, never shipped); the output is
- * static baked paths, so nothing d3 reaches any bundle or the npm tarball.
+ * Two projections ship, both baked into the path data at generation time:
+ * Equal Earth (the area-preserving DEFAULT — the Global South reads at its true
+ * size, not the Mercator/Robinson shrink) and Robinson (the familiar boardroom
+ * compromise, opt-in via the `robinson` class token → a sibling
+ * `map.basemap.world-robinson.json`). Both raw projections are INLINED below,
+ * adapted from d3-geo-projection (ISC), so the engine declares no d3 /
+ * projection dependency. The only generation-time use of d3-geo is its
+ * geoProjection/geoPath path machinery (already present in the tree via
+ * Mermaid, never shipped); the output is static baked paths, so nothing d3
+ * reaches any bundle or the npm tarball.
  *
  * ── Region ids + name binding ───────────────────────────────────────────────
  * Regions are keyed by ISO 3166-1 alpha-2 (the natural short id, like the US
@@ -54,8 +57,8 @@
 
 const SOURCE_URL =
   'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_110m_admin_0_countries.geojson';
-const SOURCE_LABEL =
-  'Natural Earth 1:110m admin-0 countries (public domain), Robinson projection';
+const SOURCE_BASE = 'Natural Earth 1:110m admin-0 countries (public domain)';
+const SOURCE_LABEL = `${SOURCE_BASE}, Equal Earth projection`;
 
 const VIEW_W = 1000, VIEW_H = 520;
 const SIMPLIFY_EPS = 0.7; // px in projected screen space — invisible at slide scale
@@ -83,6 +86,29 @@ function robinsonRaw(lambda, phi) {
   const y = (phi > 0 ? HALF_PI : -HALF_PI) * (by + di * (cy - ay) / 2 + di * di * (cy - 2 * by + ay) / 2);
   return [x, y];
 }
+
+// ── Equal Earth raw projection (inlined; adapted from d3-geo-projection, ISC) ─
+// Equal-area pseudocylindrical (Šavrič, Patterson & Jenny, 2018). The Lattice
+// default: relative area is preserved, so the Global South reads at its true
+// size instead of the high-latitude inflation Robinson/Mercator introduce.
+const EE_A1 = 1.340264, EE_A2 = -0.081106, EE_A3 = 0.000893, EE_A4 = 0.003796;
+const EE_M = Math.sqrt(3) / 2;
+function equalEarthRaw(lambda, phi) {
+  const l = Math.asin(EE_M * Math.sin(phi));
+  const l2 = l * l, l6 = l2 * l2 * l2;
+  return [
+    (lambda * Math.cos(l)) / (EE_M * (EE_A1 + 3 * EE_A2 * l2 + l6 * (7 * EE_A3 + 9 * EE_A4 * l2))),
+    l * (EE_A1 + EE_A2 * l2 + l6 * (EE_A3 + EE_A4 * l2)),
+  ];
+}
+
+// Projection registry — `buildWorld(projId)` bakes one of these. Equal Earth is
+// the default (`map world`); Robinson is the opt-in variant (`map world
+// robinson`), written to a sibling JSON.
+const PROJECTIONS = {
+  'equal-earth': { projection: 'equal-earth', raw: equalEarthRaw, label: `${SOURCE_BASE}, Equal Earth projection` },
+  robinson: { projection: 'robinson', raw: robinsonRaw, label: `${SOURCE_BASE}, Robinson projection` },
+};
 
 // Curated exonyms / common alternates the bare ISO + Natural Earth names miss.
 // Keyed by region id (alpha-2), value is the list of normalized alternates the
@@ -279,14 +305,15 @@ function cleanName(p) {
   return /\./.test(p.NAME) && p.NAME_LONG ? p.NAME_LONG : p.NAME;
 }
 
-async function buildWorld() {
+async function buildWorld(projId = 'equal-earth') {
+  const proj = PROJECTIONS[projId] || PROJECTIONS['equal-earth'];
   const { geoProjection, geoPath } = await import('d3-geo');
   const res = await fetch(SOURCE_URL);
   if (!res.ok) throw new Error(`fetch ${SOURCE_URL} → ${res.status}`);
   const fc = await res.json();
   fc.features = fc.features.filter((f) => f.properties.NAME !== 'Antarctica');
 
-  const projection = geoProjection(robinsonRaw).fitSize([VIEW_W, VIEW_H], fc);
+  const projection = geoProjection(proj.raw).fitSize([VIEW_W, VIEW_H], fc);
 
   const regions = {};
   const aliases = {};
@@ -420,8 +447,8 @@ async function buildWorld() {
   return {
     id: 'world',
     label: 'World — countries',
-    projection: 'robinson',
-    source: SOURCE_LABEL,
+    projection: proj.projection,
+    source: proj.label,
     sourceUrl: SOURCE_URL,
     generator: 'tools/build-basemap.js',
     viewBox: `${vbX} ${vbY} ${vbW} ${vbH}`,

@@ -259,11 +259,11 @@ in patch versions.
   The basemaps are baked, pre-projected SVG path data generated from
   public-domain geodata via `tools/build-basemap.js` (no geo library ships):
   **US states** (d3.geoAlbersUsa, AK/HI insets, US Census boundaries) and
-  **world countries** (`map world` — Robinson projection, Natural Earth 110m).
-  They inline into the emulator/runtime JS bundles, never into
-  `dist/lattice.css`, preserving the zero-fetch contract (the world basemap is
-  the catalog's one large asset — it lifts the minified runtime/emulator
-  bundles by ~70 KB, well-compressed path data). New chart-family kernel module
+  **world countries** (`map world`, Natural Earth 110m). They inline into the
+  emulator/runtime JS bundles, never into `dist/lattice.css`, preserving the
+  zero-fetch contract (the world basemaps are the catalog's largest asset — each
+  projection lifts the minified runtime/emulator bundles by ~70 KB of
+  well-compressed path data). New chart-family kernel module
   (`map.transform.js`) wired through the single dispatcher, so it reaches all
   three render paths via the registry. Adds the 12th `form` (`spatial`) to the
   taxonomy (`design-system.md` §4, the schema + `index.js` enums).
@@ -290,6 +290,14 @@ in patch versions.
     undocumented ~130-country list. States in neither list (Russia, the
     post-Soviet / Balkan economies, disputed territories) belong to no `global-*`
     group. The `grouped` modifier clusters the legend by continent.
+  - **Two world projections** (world). The default is **Equal Earth** — the
+    area-preserving pseudocylindrical (Šavrič et al., 2018), so the Global South
+    reads at its true size instead of the high-latitude inflation Robinson and
+    Mercator introduce. **Robinson** ships as the `robinson` variant
+    (`map world robinson`) for audiences who expect the familiar boardroom
+    silhouette. Both are baked offline into sibling JSONs
+    (`map.basemap.world.json` + `map.basemap.world-robinson.json`) — still no geo
+    library in any bundle.
   - **Name binding without an LLM.** Country names vary wildly (Côte d'Ivoire,
     Myanmar, Czechia) and a typo is a silent gap, so the static basemap
     vocabulary drives two deterministic, zero-token defences: a **CodeMirror

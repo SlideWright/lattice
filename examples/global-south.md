@@ -79,6 +79,15 @@ Leaving "Global South" out doesn't keep the engine impartial — it just makes e
 
 ---
 
+<!-- _class: map world highlight robinson -->
+<!-- _footer: "robinson variant · the default is Equal Earth" -->
+
+## The default projection is Equal Earth — and that's the point.
+
+- Global South `Robinson, for comparison`
+
+---
+
 <!-- _class: closing silent -->
 
 ## The boundary stays provable.

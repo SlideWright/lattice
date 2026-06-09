@@ -75,6 +75,23 @@ A US-states or world-countries basemap that fills regions by value (choropleth) 
 
 ---
 
+<!-- _class: map world robinson -->
+<!-- _footer: "robinson · map robinson" -->
+
+## Where our field offices operate.
+
+- United States `42`
+- Brazil `31`
+- Nigeria `27`
+- Kenya `24`
+- India `38`
+- Indonesia `19`
+- Germany `22`
+- Australia `12`
+
+
+---
+
 <!-- _class: map -->
 <!-- _footer: "Stress test · map" -->
 

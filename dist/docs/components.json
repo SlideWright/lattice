@@ -3647,7 +3647,8 @@
       "variants": [
         "highlight",
         "world",
-        "grouped"
+        "grouped",
+        "robinson"
       ],
       "effectiveVariants": [
         "accent",
@@ -3668,6 +3669,7 @@
         "pinned",
         "redacted",
         "revised",
+        "robinson",
         "scale-2xl",
         "scale-l",
         "scale-xl",

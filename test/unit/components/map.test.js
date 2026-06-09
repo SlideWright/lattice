@@ -25,6 +25,7 @@ const {
   normName,
   BASEMAP,
   WORLD_BASEMAP,
+  WORLD_ROBINSON_BASEMAP,
   MIX_FLOOR,
   MIX_CEIL,
 } = require('../../../lib/components/chart/map/map.transform');
@@ -162,7 +163,7 @@ describe('map kernel', () => {
 
     test('world ships ~175 countries with continents + dated blocs', () => {
       assert.equal(WORLD_BASEMAP.id, 'world');
-      assert.equal(WORLD_BASEMAP.projection, 'robinson');
+      assert.equal(WORLD_BASEMAP.projection, 'equal-earth');
       assert.ok(Object.keys(WORLD_BASEMAP.regions).length > 150);
       // Six inhabited continents present as groups.
       const continents = Object.values(WORLD_BASEMAP.groups).filter((g) => g.kind === 'continent').map((g) => g.label).sort();
@@ -173,6 +174,21 @@ describe('map kernel', () => {
       assert.ok(eu.asOf, 'a bloc records the year its membership is asserted');
       assert.ok(eu.members.length >= 24);
     });
+
+    test('robinson variant mirrors the default world but reprojects', () => {
+      assert.equal(WORLD_ROBINSON_BASEMAP.projection, 'robinson');
+      // Same logical basemap — identical region + group sets…
+      assert.deepEqual(
+        Object.keys(WORLD_ROBINSON_BASEMAP.regions).sort(),
+        Object.keys(WORLD_BASEMAP.regions).sort(),
+      );
+      assert.deepEqual(
+        Object.keys(WORLD_ROBINSON_BASEMAP.groups).sort(),
+        Object.keys(WORLD_BASEMAP.groups).sort(),
+      );
+      // …but reprojected path data (and viewBox) differ.
+      assert.notEqual(WORLD_ROBINSON_BASEMAP.regions.US.d, WORLD_BASEMAP.regions.US.d);
+    });
   });
 
   // ── world basemap + grouping ──────────────────────────────────────────────
@@ -180,6 +196,13 @@ describe('map kernel', () => {
     test('world token selects the world basemap, else US', () => {
       assert.equal(pickBasemap(['map']).id, 'us-states');
       assert.equal(pickBasemap(['map', 'world']).id, 'world');
+    });
+
+    test('robinson token swaps in the Robinson world; default world is Equal Earth', () => {
+      assert.equal(pickBasemap(['map', 'world']).projection, 'equal-earth');
+      assert.equal(pickBasemap(['map', 'world', 'robinson']).projection, 'robinson');
+      // robinson without world stays on the US basemap (no-op token there).
+      assert.equal(pickBasemap(['map', 'robinson']).id, 'us-states');
     });
   });
 

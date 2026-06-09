@@ -43,10 +43,13 @@ const SOURCE_LABEL =
   'us-atlas@3 states-albers-10m (US Census cartographic boundaries, d3.geoAlbersUsa, public domain)';
 const OUT = path.join(__dirname, '..', 'lib', 'components', 'chart', 'map', 'map.basemap.json');
 const WORLD_OUT = path.join(__dirname, '..', 'lib', 'components', 'chart', 'map', 'map.basemap.world.json');
-// The world basemap (Robinson-projected Natural Earth countries + grouping) is
-// built by a sibling module — its curated metadata (ISO fallbacks, exonyms,
-// dated blocs) and inlined Robinson projection are substantial enough to keep
-// out of this file. `node tools/build-basemap.js` writes BOTH assets.
+const WORLD_ROBINSON_OUT = path.join(__dirname, '..', 'lib', 'components', 'chart', 'map', 'map.basemap.world-robinson.json');
+// The world basemap (Natural Earth countries + grouping) is built by a sibling
+// module — its curated metadata (ISO fallbacks, exonyms, dated blocs) and
+// inlined projections are substantial enough to keep out of this file. It bakes
+// TWO projections: Equal Earth (the default `map.basemap.world.json`) and
+// Robinson (the `robinson`-variant `map.basemap.world-robinson.json`).
+// `node tools/build-basemap.js` writes ALL THREE assets (US + the two worlds).
 const { buildWorld } = require('./build-basemap.world');
 
 // FIPS state code → { postal, name }. The atlas keys geometries by FIPS id
@@ -266,7 +269,8 @@ async function main() {
 
   const assets = [
     { out: OUT, data: await build() },
-    { out: WORLD_OUT, data: await buildWorld() },
+    { out: WORLD_OUT, data: await buildWorld('equal-earth') },
+    { out: WORLD_ROBINSON_OUT, data: await buildWorld('robinson') },
   ];
 
   let stale = false;

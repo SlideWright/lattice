@@ -59,7 +59,7 @@ Categorical mode — each named region takes its own --catN colour and unnamed r
 
 ### `world` — world
 
-The world-countries basemap (Robinson projection). Same authoring — one country per li — with ISO codes and common aliases resolving alongside full names.
+The world-countries basemap, Equal Earth projection (area-preserving, the default — the Global South reads at its true size). Same authoring — one country per li — with ISO codes and common aliases resolving alongside full names.
 
 ```markdown
 <!-- _class: map world -->
@@ -89,6 +89,25 @@ On the world map, naming a continent or bloc fills every member; `grouped` clust
 - ASEAN `Tier 1`
 - Sub-Saharan Africa `Tier 2`
 - Latin America `Tier 2`
+```
+
+### `robinson` — robinson
+
+Swaps the default Equal Earth projection for Robinson — the familiar boardroom compromise. Same authoring; only the world basemap's shape changes. Equal Earth (default) preserves relative area; Robinson trades a little area fidelity for the silhouette many audiences expect.
+
+```markdown
+<!-- _class: map world robinson -->
+
+## Where our field offices operate.
+
+- United States `42`
+- Brazil `31`
+- Nigeria `27`
+- Kenya `24`
+- India `38`
+- Indonesia `19`
+- Germany `22`
+- Australia `12`
 ```
 
 ## Universal modifiers
