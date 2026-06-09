@@ -8,6 +8,8 @@
       "**/*.cjs",
       "**/*.json",
       "!node_modules",
+      "!dist",
+      "!docs/public/playground/lattice-playground.js",
       "!**/*.min.js",
       "!mermaid-v11.min.js",
       "!examples/**/*.json",

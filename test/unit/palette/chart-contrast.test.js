@@ -168,7 +168,7 @@ describe('chart palette — curated theme assessment', () => {
   for (const theme of CURATED) {
     const vars = loadTheme(theme);
     for (const mode of ['light', 'dark']) {
-      const bg = resolve(vars['bg'], vars, mode);
+      const bg = resolve(vars.bg, vars, mode);
       const textHeading = resolve(vars['text-heading'], vars, mode);
       assert.ok(bg, `${theme}/${mode}: --bg must resolve`);
       assert.ok(textHeading, `${theme}/${mode}: --text-heading must resolve`);

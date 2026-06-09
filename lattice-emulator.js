@@ -932,7 +932,7 @@ function preprocessMermaid(source) {
   const globalDark =
     /^\s*class:\s*["']?[^"'\n]*\bdark\b/m.test(fm) ||
     /color-scheme\s*:\s*dark/.test(fm);
-  return source.replace(/```mermaid\n([\s\S]*?)```/g, (match, def, offset) => {
+  return source.replace(/```mermaid\n([\s\S]*?)```/g, (_match, def, offset) => {
     const before = source.slice(0, offset);
     const classDirectives = [...before.matchAll(/<!--\s*_class:\s*([^>]*?)\s*-->/g)];
     const slideDark = classDirectives.length
@@ -1004,11 +1004,11 @@ const sharedTransformerRegistry = require('./lib/transformers/registry');
 // dispatch lives in the inline chart-family block below; this kernel is
 // shared with lib/components/chart/_chart-family/chart-family.js (marp.config.js path) and mirrored in
 // lattice-runtime.js.
-const radar = require('./lib/components/chart/radar/radar.transform');
+const _radar = require('./lib/components/chart/radar/radar.transform');
 // Quadrant chart kernel — 2×2 scatter / matrix layout (one default + five
 // modifier variants: bubble, trail, cohort, threshold, magic). Same
 // kernel-as-module pattern as radar.
-const quadrant = require('./lib/components/chart/quadrant/quadrant.transform');
+const _quadrant = require('./lib/components/chart/quadrant/quadrant.transform');
 
 const rawSlides = splitSlides(content, headingDivider);
 const _total     = rawSlides.length;
