@@ -241,6 +241,16 @@ in patch versions.
 
 ### Added
 
+- **`funnel` component — a tapering stage chart showing where a flow drops
+  off** (`evidence · canvas · series`, `chart` bucket). For any narrowing
+  pipeline — sales / conversion funnel, hiring pipeline, grant / donor
+  pipeline. Author one li per stage in flow order with a trailing inline-code
+  value (`- Signups \`4,800\``); the kernel draws centred trapezoid bands
+  (width ∝ value), flanks each with its label and value, and prints the
+  stage-to-stage conversion % in the gaps. New chart-family kernel module
+  (`funnel.transform.js`) wired through the single dispatcher, so it reaches
+  all three render paths via the registry with no per-renderer code. Demo
+  deck: `examples/funnel.md`.
 - **`pricing` component — plan tiers with prices, feature checklists, and one
   recommended column** (`comparison · grid · structure`). The plans / packages
   slide for commercial (sales, product launch), membership / fundraising

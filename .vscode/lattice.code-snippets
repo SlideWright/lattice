@@ -293,6 +293,20 @@
     ],
     "description": "Featured card + sub-grid — one prominent item with supporting cards."
   },
+  "lattice: funnel": {
+    "prefix": "lattice-funnel",
+    "body": [
+      "<!-- _class: funnel -->",
+      "",
+      "## Where the flow drops off.",
+      "",
+      "- First stage `1000`",
+      "- Second stage `600`",
+      "- Third stage `320`",
+      "- Fourth stage `140`"
+    ],
+    "description": "Tapering stages that show where a flow drops off, with the conversion rate between each."
+  },
   "lattice: gantt": {
     "prefix": "lattice-gantt",
     "body": [

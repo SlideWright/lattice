@@ -1,0 +1,63 @@
+{
+  "$schema": "../../manifest.schema.json",
+  "name": "funnel",
+  "function": "evidence",
+  "form": "canvas",
+  "substance": "series",
+  "bucket": "chart",
+  "tags": ["percentage", "sequence", "pitch"],
+  "description": "Tapering stages that show where a flow drops off, with the conversion rate between each.",
+  "purpose": "Use for a pipeline that narrows — a sales / conversion funnel, a hiring or grant pipeline, an onboarding flow. Each stage's band width is proportional to its value; the stage-to-stage conversion % is printed in the gaps so the leak is the read.",
+  "slots": {
+    "title": {
+      "selector": "h2",
+      "required": true,
+      "description": "Slide heading — name the flow and, ideally, the takeaway (‘Where the pipeline leaks’)."
+    },
+    "stages": {
+      "selector": "ul > li",
+      "required": true,
+      "description": "One li per stage, in flow order (widest first). Lead with the stage label, then a trailing inline-code value — `Signups \\`4,800\\``. Commas and units are tolerated; the largest value sets full width. Three to seven stages read best."
+    }
+  },
+  "skeleton": "<!-- _class: funnel -->\n\n## Where the flow drops off.\n\n- First stage `1000`\n- Second stage `600`\n- Third stage `320`\n- Fourth stage `140`\n",
+  "anatomyBlock": "funnel",
+  "sample": "<!-- _class: funnel -->\n\n## Where the signup pipeline leaks.\n\n- Visitors `12,000`\n- Signups `4,800`\n- Activated `2,160`\n- Paid `864`\n- Renewed `670`\n",
+  "stressSample": "<!-- _class: funnel -->\n\n## Seven stages, a steep early drop.\n\n- Impressions `240,000`\n- Clicks `38,400`\n- Visits `21,600`\n- Signups `5,400`\n- Activated `2,160`\n- Paid `648`\n- Renewed `512`\n",
+  "whenToUse": [
+    {
+      "title": "The story is the drop-off",
+      "body": "A funnel earns its shape when each stage is a strict subset of the one above and the audience needs to see WHERE the flow narrows — the leaky step, not just the totals. If the stages aren't a shrinking pipeline, use `progress` or `stats`."
+    },
+    {
+      "title": "Three to seven stages",
+      "body": "Two stages is just a ratio (use `big-number` or `stats`); past seven the bands thin out and the conversion labels crowd. Most pipelines fit in four to six."
+    },
+    {
+      "title": "Values in flow order, widest first",
+      "body": "Author the stages top-to-bottom as the flow runs, largest count first. The widest value sets full width and every band scales to it; the conversion % is computed from each value to the next."
+    }
+  ],
+  "antiPatterns": [
+    {
+      "title": "Stages that aren't a subset",
+      "body": "If a later stage can exceed an earlier one (it's a category breakdown, not a pipeline), the taper lies. Use `piechart` for parts of a whole or `progress` for independent metrics."
+    },
+    {
+      "title": "A funnel of two stages",
+      "body": "Two bands is a single conversion rate dressed up as a chart. State it as a `big-number` (‘18% convert’) or a two-tile `stats` instead."
+    },
+    {
+      "title": "Non-monotonic values",
+      "body": "Values that rise and fall make the trapezoids bulge and the conversion %s read oddly. A funnel assumes a monotonic narrowing; for an up-and-down series use a `progress` or a chart with an axis."
+    }
+  ],
+  "related": [
+    { "name": "progress", "when": "independent metrics as labelled bars, not a narrowing pipeline" },
+    { "name": "stats", "when": "a row of headline figures with no drop-off relationship" },
+    { "name": "piechart", "when": "parts of a single whole rather than sequential stages" },
+    { "name": "list-steps", "when": "the stages are a process to walk through, not values to compare" },
+    { "name": "big-number", "when": "a single conversion rate is the whole story" }
+  ],
+  "showcase": { "featured": true }
+}
