@@ -260,7 +260,7 @@ function buildDeck(deck) {
   return { deck, ok: true, pdf: out, took_ms: took };
 }
 
-function pageCount(pdf) {
+function _pageCount(pdf) {
   try {
     const r = execSync(`pdfinfo "${pdf}" | awk '/^Pages:/ {print $2}'`, { encoding: 'utf8' });
     return parseInt(r.trim(), 10);
@@ -301,7 +301,7 @@ function diffPages(committedPdf, freshPdf, deck) {
   return { ok: true, diffs, totalPixels: diffs.reduce((s, d) => s + (d.pixels > 0 ? d.pixels : 0), 0) };
 }
 
-function preview({ override, json } = {}) {
+function preview({ override } = {}) {
   const changes = gitChangedFiles();
   const scope = detectScope(changes, override);
   const result = {

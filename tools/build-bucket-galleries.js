@@ -114,7 +114,7 @@ function composeBucketGallery(bucket, manifests) {
   // component's actual asset.
   function prefixAssetPaths(sample, componentName) {
     return sample.replace(
-      /(!\[[^\]]*\]\()([^)\/:]+\.(?:svg|png|jpg|jpeg|gif|webp))(\))/gi,
+      /(!\[[^\]]*\]\()([^)/:]+\.(?:svg|png|jpg|jpeg|gif|webp))(\))/gi,
       `$1${componentName}/$2$3`,
     );
   }

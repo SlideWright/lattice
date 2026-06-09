@@ -32,7 +32,6 @@ const {
   TAGS,
   TAGS_MIN,
   TAGS_MAX,
-  CARD_STYLE_LAYOUTS,
   STATEMENT_OL_LAYOUTS,
   validate,
   effectiveVariants,
