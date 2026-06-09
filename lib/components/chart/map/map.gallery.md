@@ -11,7 +11,7 @@ header: "Lattice · map"
 
 `Evidence · Spatial · Series`
 
-A US-states basemap that fills regions by value (choropleth) or category (highlight) so the audience leaves knowing where.
+A US-states or world-countries basemap that fills regions by value (choropleth) or category (highlight) so the audience leaves knowing where.
 
 ---
 
@@ -41,6 +41,36 @@ A US-states basemap that fills regions by value (choropleth) or category (highli
 - Texas `South`
 - Illinois `Midwest`
 - New York `Northeast`
+
+
+---
+
+<!-- _class: map world -->
+<!-- _footer: "world · map world" -->
+
+## Where our field offices operate.
+
+- United States `42`
+- Brazil `31`
+- Nigeria `27`
+- Kenya `24`
+- India `38`
+- Indonesia `19`
+- Germany `22`
+- Australia `12`
+
+
+---
+
+<!-- _class: map world highlight grouped -->
+<!-- _footer: "grouped · map grouped" -->
+
+## Coverage by economic bloc.
+
+- European Union `Tier 1`
+- ASEAN `Tier 1`
+- Sub-Saharan Africa `Tier 2`
+- Latin America `Tier 2`
 
 
 ---
@@ -127,7 +157,7 @@ A US-states basemap that fills regions by value (choropleth) or category (highli
 
 - **A map as decoration.** If the regions aren't the comparison — you just want a US-shaped graphic behind some numbers — drop the basemap. An `image` scrim or a `stats` row carries headline figures without implying the geography is the message.
 - **Too many shades to read.** A choropleth past a dozen distinct values asks the eye to rank colours it can't separate. Bucket the values, switch to `highlight` for a categorical read, or lead with a `progress` ranking and keep the map as support.
-- **Sub-state precision the basemap doesn't have.** v1 draws states only — counties, districts, and city pins are out of scope. If the story lives below the state line, a labelled `image` of the real map serves better than forcing it onto a states basemap.
+- **Sub-region precision the basemap doesn't have.** The basemaps draw US states and world countries — not counties, districts, sub-national regions, or city pins, and the world cut (110m) omits the smallest city-states. If the story lives below that line, a labelled `image` of the real map serves better than forcing it onto the basemap.
 
 ---
 

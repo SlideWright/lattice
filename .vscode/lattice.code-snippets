@@ -508,7 +508,7 @@
       "- New York `2.8`",
       "- Florida `2.2`"
     ],
-    "description": "A US-states basemap that fills regions by value (choropleth) or category (highlight) so the audience leaves knowing where."
+    "description": "A US-states or world-countries basemap that fills regions by value (choropleth) or category (highlight) so the audience leaves knowing where."
   },
   "lattice: math": {
     "prefix": "lattice-math",

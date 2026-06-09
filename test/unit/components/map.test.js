@@ -21,11 +21,19 @@ const {
   parseMap,
   buildMap,
   pickVariant,
+  pickBasemap,
   normName,
   BASEMAP,
+  WORLD_BASEMAP,
   MIX_FLOOR,
   MIX_CEIL,
 } = require('../../../lib/components/chart/map/map.transform');
+const {
+  findUnknownMapRegions,
+  nearestRegion,
+  editDistance,
+} = require('../../../lib/authoring/lint-core');
+const { buildMapVocab } = require('../../../lib/authoring/lint');
 
 // Build the rendered-<li> inner HTML the dispatcher hands the kernel. Each row
 // is `<li>Name <code>value</code></li>`, matching Marp Core / emulator output.
@@ -39,15 +47,15 @@ describe('map kernel', () => {
     test('resolves full names, postal codes, and curated aliases', () => {
       const m = parseMap(ul([['California', '4'], ['TX', '3'], ['Calif.', '9'], ['N.Y.', '2']]));
       // California + Calif. collapse to one CA row (last value wins); TX + NY resolve.
-      const postals = m.matched.map((r) => r.postal);
+      const postals = m.matched.map((r) => r.ids[0]);
       assert.deepEqual(postals, ['CA', 'TX', 'NY']);
-      assert.equal(m.matched.find((r) => r.postal === 'CA').num, 9, 'duplicate region: last value wins');
+      assert.equal(m.matched.find((r) => r.ids[0] === 'CA').num, 9, 'duplicate region: last value wins');
       assert.equal(m.unmatched.length, 0);
     });
 
     test('is case- and whitespace-insensitive', () => {
       const m = parseMap(ul([['  new YORK ', '1'], ['washington', '2']]));
-      assert.deepEqual(m.matched.map((r) => r.postal), ['NY', 'WA']);
+      assert.deepEqual(m.matched.map((r) => r.ids[0]), ['NY', 'WA']);
     });
 
     test('parses commas and units in the value', () => {
@@ -66,7 +74,7 @@ describe('map kernel', () => {
   describe('parseMap — unmatched reporting', () => {
     test('collects names the basemap cannot place, never drops them', () => {
       const m = parseMap(ul([['California', '4'], ['Atlantis', '9'], ['Westeros', '1']]));
-      assert.deepEqual(m.matched.map((r) => r.postal), ['CA']);
+      assert.deepEqual(m.matched.map((r) => r.ids[0]), ['CA']);
       assert.deepEqual(m.unmatched.map((r) => r.name), ['Atlantis', 'Westeros']);
     });
 
@@ -141,7 +149,7 @@ describe('map kernel', () => {
   });
 
   describe('basemap asset integrity', () => {
-    test('ships 51 regions (50 states + DC), each with a path', () => {
+    test('US ships 51 regions (50 states + DC), each with a path', () => {
       const ids = Object.keys(BASEMAP.regions);
       assert.equal(ids.length, 51);
       for (const id of ids) {
@@ -150,6 +158,106 @@ describe('map kernel', () => {
       }
       assert.match(BASEMAP.viewBox, /^-?\d+ -?\d+ \d+ \d+$/);
       assert.equal(BASEMAP.id, 'us-states');
+    });
+
+    test('world ships ~175 countries with continents + dated blocs', () => {
+      assert.equal(WORLD_BASEMAP.id, 'world');
+      assert.equal(WORLD_BASEMAP.projection, 'robinson');
+      assert.ok(Object.keys(WORLD_BASEMAP.regions).length > 150);
+      // Six inhabited continents present as groups.
+      const continents = Object.values(WORLD_BASEMAP.groups).filter((g) => g.kind === 'continent').map((g) => g.label).sort();
+      assert.deepEqual(continents, ['Africa', 'Asia', 'Europe', 'North America', 'Oceania', 'South America']);
+      // Dated blocs carry provenance.
+      const eu = WORLD_BASEMAP.groups['european-union'];
+      assert.equal(eu.kind, 'bloc');
+      assert.ok(eu.asOf, 'a bloc records the year its membership is asserted');
+      assert.ok(eu.members.length >= 24);
+    });
+  });
+
+  // ── world basemap + grouping ──────────────────────────────────────────────
+  describe('pickBasemap', () => {
+    test('world token selects the world basemap, else US', () => {
+      assert.equal(pickBasemap(['map']).id, 'us-states');
+      assert.equal(pickBasemap(['map', 'world']).id, 'world');
+    });
+  });
+
+  describe('world — country + alias + group resolution', () => {
+    const wul = (rows) => rows.map(([n, v]) => `<li>${n}${v != null ? ` <code>${v}</code>` : ''}</li>`).join('');
+
+    test('resolves country names, ISO codes, exonyms, and group names', () => {
+      const m = parseMap(wul([['Brazil', '5'], ['BR', '4'], ['Burma', '3'], ['European Union', '9'], ['Atlantis', '1']]), WORLD_BASEMAP);
+      // Brazil + BR collapse to one region row; Burma→Myanmar; EU is a group.
+      const region = m.matched.filter((r) => r.kind === 'region');
+      const group = m.matched.filter((r) => r.kind === 'group');
+      assert.deepEqual(region.map((r) => r.ids[0]), ['BR', 'MM']);
+      assert.equal(group.length, 1);
+      assert.ok(group[0].ids.length >= 24, 'EU expands to its member set');
+      assert.deepEqual(m.unmatched.map((r) => r.name), ['Atlantis']);
+    });
+
+    test('a group fills every member region', () => {
+      const m = parseMap(wul([['Sub-Saharan Africa', '7']]), WORLD_BASEMAP);
+      const html = buildMap(m, 'choropleth', ['map', 'world']);
+      const filled = (html.match(/map-region--on/g) || []).length;
+      assert.equal(filled, m.matched[0].ids.length, 'all SSA members shaded');
+      assert.ok(filled > 30, 'Sub-Saharan Africa is dozens of countries');
+    });
+
+    test('grouped modifier clusters the legend by continent', () => {
+      const m = parseMap(wul([['Brazil', '1'], ['Japan', '2'], ['European Union', '3']]), WORLD_BASEMAP);
+      const html = buildMap(m, 'highlight', ['map', 'world', 'grouped']);
+      const heads = [...html.matchAll(/map-legend-head">([^<]+)</g)].map((x) => x[1]);
+      assert.ok(heads.includes('South America') && heads.includes('Asia') && heads.includes('Groups'));
+    });
+  });
+
+  // ── the deterministic "did you mean" (no LLM) ─────────────────────────────
+  describe('findUnknownMapRegions — did you mean', () => {
+    const vocab = buildMapVocab();
+
+    test('flags an unresolved country with the nearest suggestion', () => {
+      const deck = '<!-- _class: map world -->\n\n## x\n\n- Brasil `3`\n- United States `4`\n';
+      const f = findUnknownMapRegions(deck, vocab);
+      assert.equal(f.length, 1);
+      assert.equal(f[0].rule, 'unknown-map-region');
+      assert.match(f[0].message, /Brasil.*did you mean 'Brazil'/);
+    });
+
+    test('resolves valid names, codes, aliases, and groups silently', () => {
+      const deck = '<!-- _class: map world -->\n\n## x\n\n- Brazil `1`\n- BR `2`\n- Burma `3`\n- European Union `4`\n';
+      assert.equal(findUnknownMapRegions(deck, vocab).length, 0);
+    });
+
+    test('uses the basemap the slide selects (US vs world)', () => {
+      const us = '<!-- _class: map -->\n\n## x\n\n- Califrnia `1`\n';
+      const f = findUnknownMapRegions(us, vocab);
+      assert.equal(f.length, 1);
+      assert.match(f[0].message, /state the us basemap/);
+      assert.match(f[0].message, /California/);
+    });
+
+    test('an unrecognizable name gets flagged without a bogus suggestion', () => {
+      const deck = '<!-- _class: map world -->\n\n## x\n\n- Wakanda `9`\n';
+      const f = findUnknownMapRegions(deck, vocab);
+      assert.equal(f.length, 1);
+      assert.doesNotMatch(f[0].message, /did you mean/);
+    });
+
+    test('non-map slides are never touched', () => {
+      assert.equal(findUnknownMapRegions('<!-- _class: list -->\n\n- Brasil\n', vocab).length, 0);
+    });
+  });
+
+  describe('editDistance + nearestRegion', () => {
+    test('bounded edit distance', () => {
+      assert.equal(editDistance('kitten', 'sitting', 5), 3);
+      assert.equal(editDistance('abc', 'xyz', 1), 2, 'bails past max');
+    });
+    test('nearest only suggests a genuinely close name', () => {
+      assert.equal(nearestRegion('Brazil', ['Brazil', 'Bolivia']), 'Brazil');
+      assert.equal(nearestRegion('Zorptania', ['Brazil', 'Japan', 'Kenya']), null);
     });
   });
 });

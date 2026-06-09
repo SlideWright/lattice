@@ -12,19 +12,19 @@ header: "Lattice · map"
 
 `New component · evidence · spatial · series`
 
-The first layout on the new **spatial** form — regions placed by real-world geography, not by a grid or an axis. Author a value per named state; the basemap fills it. For program reach, service territories, jurisdictions, and where the money landed.
+The first layout on the new **spatial** form — regions placed by real-world geography, not a grid or an axis. Author a value per named place; the basemap fills it. US states or world countries, for program reach, service territories, jurisdictions, and where the money landed.
 
 ---
 
 <!-- _class: content -->
 
-## One basemap, two reads.
+## One grammar, two basemaps, two reads.
 
-A US-states map answers a geographic question two ways, and the variant picks which.
+Name a place, give it a value. The tokens pick the rest.
 
-- **Choropleth** (default) shades each named state on a single-hue ramp — *how much, where*. Author the value as trailing inline-code: `- California \`48.2\``.
-- **Highlight** (`map highlight`) gives each named state its own colour and leaves the rest neutral — *which ones*. For a set, not a ranking.
-- Name a state any usual way — `California`, `CA`, or `Calif.` all resolve. A name the map can't place is reported in the legend, never dropped silently.
+- **`map`** is US states; **`map world`** is world countries (Robinson projection). Same authoring — one place per li with a trailing inline-code value: `- Brazil \`31\``.
+- **Choropleth** (default) shades a single-hue ramp — *how much, where*. **`highlight`** gives each named place its own colour — *which ones*.
+- Names resolve loosely — `California` / `CA` / `Calif.`, or `Brazil` / `BR` / `Brasil` — and anything the basemap can't place is reported, never dropped.
 
 ---
 
@@ -39,39 +39,44 @@ A US-states map answers a geographic question two ways, and the variant picks wh
 - Illinois `19.3`
 - Pennsylvania `17.6`
 - Ohio `14.1`
-- Georgia `11.8`
 - Washington `9.6`
 
 ---
 
-<!-- _class: map highlight -->
+<!-- _class: map world -->
 
-## The eight states in the pilot.
+## Where our field offices operate.
 
-- Washington `Cohort A`
-- Minnesota `Cohort A`
-- Michigan `Cohort A`
-- New York `Cohort A`
-- Colorado `Cohort B`
-- Texas `Cohort B`
-- Georgia `Cohort B`
-- North Carolina `Cohort B`
+- United States `42`
+- India `38`
+- Brazil `31`
+- Nigeria `27`
+- Kenya `24`
+- Germany `22`
+- Indonesia `19`
+- Australia `12`
 
 ---
 
-<!-- _class: map -->
+<!-- _class: map world highlight grouped -->
 
-## Active volunteers by chapter — postal codes work too.
+## Coverage, told at bloc scale.
 
-- CA `1,240`
-- TX `980`
-- FL `760`
-- NY `715`
-- IL `540`
-- AZ `410`
-- CO `355`
-- OR `290`
-- ME `120`
+- European Union `Tier 1`
+- ASEAN `Tier 1`
+- Sub-Saharan Africa `Tier 2`
+- Latin America `Tier 2`
+
+---
+
+<!-- _class: content -->
+
+## Naming a region is the hard part — so we made it cheap.
+
+World names vary wildly (Côte d'Ivoire, Myanmar, Czechia), and a mistyped name is a silent gap. Two defences, both off the same baked vocabulary — no model call, no token cost.
+
+- **Group as a fat alias.** Name a continent or a dated bloc — `European Union`, `Sub-Saharan Africa`, `G20` — and the kernel fills every member. Blocs carry the year their membership is asserted.
+- **Autocomplete + did-you-mean.** In the editor, region names complete as you type; a name that still slips through is flagged at lint time with the nearest match (`Brasil` → `Brazil`) — the Drawing Board and the CLI run the same check.
 
 ---
 
@@ -79,11 +84,11 @@ A US-states map answers a geographic question two ways, and the variant picks wh
 
 ## What it doesn't do — yet.
 
-The spatial form is built to grow; v1 keeps a tight, provable boundary.
+The spatial form is built to grow; the boundary stays provable.
 
-- **States only.** Counties, districts, and city pins are out of scope for v1 — the form supports them later behind another basemap.
-- **One country.** US states ship first (the strongest gov / public-sector fit); a `world` basemap is the next swap once the asset boundary is proven.
-- **No magnitude in highlight.** If you need both *which* and *how much*, lead with choropleth and name the set in the prose.
+- **No sub-national detail.** Counties, districts, and city pins are out of scope; the world cut (110m) also omits the smallest city-states.
+- **Continents + curated blocs, not contested ones.** EU / ASEAN / G20 / BRICS / OECD ship with dated provenance; catch-alls with no authoritative membership (e.g. "Global South") are deliberately left out of a neutral engine.
+- **No magnitude in highlight.** If you need *which* and *how much*, lead with choropleth and name the set in the prose.
 
 ---
 
@@ -93,4 +98,4 @@ The spatial form is built to grow; v1 keeps a tight, provable boundary.
 
 `map`
 
-When *where* is the point — coverage, reach, jurisdiction — a basemap says it in one glance that a table of state names never will. When it isn't, reach for `progress` or `stats` instead.
+When *where* is the point — coverage, reach, jurisdiction — a basemap says it in one glance a table of names never will. When it isn't, reach for `progress` or `stats` instead.
