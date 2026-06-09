@@ -95,6 +95,25 @@ describe('ArchitectModel adapter', () => {
   });
 });
 
+describe('orPricePerM (OpenRouter pricing parse)', () => {
+  test('converts per-token USD strings to per-million, guarding sentinels', async () => {
+    const { model } = await load();
+    const { orPricePerM } = model;
+    // normal per-token price → per-million
+    assert.equal(orPricePerM('0.000003'), 3); // $3 / M
+    assert.equal(orPricePerM('0.000015'), 15);
+    // genuine free model
+    assert.equal(orPricePerM('0'), 0);
+    // the bug: variable/router models report a "-1" sentinel → null, never -1000000
+    assert.equal(orPricePerM('-1'), null);
+    assert.equal(orPricePerM('-0.5'), null);
+    // missing / non-numeric → null (no fixed price)
+    assert.equal(orPricePerM(undefined), null);
+    assert.equal(orPricePerM(''), null);
+    assert.equal(orPricePerM('n/a'), null);
+  });
+});
+
 describe('retrieval (cosine ranking)', () => {
   test('cosine of identical vectors is 1, orthogonal is 0', async () => {
     const { retrieval } = await load();

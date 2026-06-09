@@ -218,7 +218,7 @@ export function createModelSettings({ host, trigger, model, onChange, isOpen = (
         o.value = m.id;
         const price = m.promptPerM != null
           ? `  ·  ${fmtPrice(m.promptPerM)}/M in · ${fmtPrice(m.completionPerM)}/M out`
-          : '';
+          : '  ·  pricing varies'; // variable/router models (sentinel -1) — never "$-1000000"
         o.textContent = (m.name || m.id) + price;
         if (m.id === current) o.selected = true;
         sel.append(o);

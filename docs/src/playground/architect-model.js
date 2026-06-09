@@ -232,6 +232,17 @@ async function pkceChallenge(verifier) {
   return base64url(new Uint8Array(digest));
 }
 
+// OpenRouter pricing strings are per-token USD; convert to per-MILLION. Variable/
+// router models (Auto Router, Body Builder, …) report a negative sentinel ("-1")
+// and unpriced rows can be missing/non-numeric — return null for "no fixed price"
+// so the UI can label it ("pricing varies") instead of printing "$-1000000". A
+// genuine free model reports "0" → 0 (kept; the UI shows "free").
+export function orPricePerM(raw) {
+  if (raw == null || (typeof raw === 'string' && raw.trim() === '')) return null;
+  const n = Number(raw) * 1e6;
+  return Number.isFinite(n) && n >= 0 ? n : null;
+}
+
 // OpenRouter cloud backend. Sibling of puterBackend(): same { ready, complete }
 // shape, plus the OAuth methods (beginAuth → redirect → completeAuth) and the
 // catalog (listModels, with per-million pricing) the settings dropdown reads.
@@ -283,8 +294,8 @@ function openRouterBackend() {
       return (j.data || []).map((m) => ({
         id: m.id,
         name: m.name || m.id,
-        promptPerM: m.pricing ? +m.pricing.prompt * 1e6 : null,
-        completionPerM: m.pricing ? +m.pricing.completion * 1e6 : null,
+        promptPerM: m.pricing ? orPricePerM(m.pricing.prompt) : null,
+        completionPerM: m.pricing ? orPricePerM(m.pricing.completion) : null,
       }));
     },
     async complete({ messages, json, onToken, signal }) {
