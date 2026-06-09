@@ -5126,6 +5126,25 @@ section.map .map-legend-name {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+/* A group entry (a "fat alias" — a continent / bloc that filled a SET of
+ * regions) reads a touch heavier than a single country, so a legend mixing
+ * blocs and countries stays legible. */
+section.map .map-legend-row--group .map-legend-name {
+  font-weight: 600;
+}
+
+/* Continent / cluster header in the `grouped` legend modifier — a quiet
+ * full-width label above each cluster of entries. */
+section.map .map-legend-head {
+  margin-top: 0.4cqi;
+  color: var(--text-muted);
+  font-family: var(--font-meta, var(--font-body));
+  font-size: var(--fs-meta);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+section.map .map-legend-head:first-child { margin-top: 0; }
 section.map .map-legend-value {
   color: var(--text-heading);
   font-family: var(--font-display);

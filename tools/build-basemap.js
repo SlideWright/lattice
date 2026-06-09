@@ -42,6 +42,15 @@ const SOURCE_URL = 'https://cdn.jsdelivr.net/npm/us-atlas@3/states-albers-10m.js
 const SOURCE_LABEL =
   'us-atlas@3 states-albers-10m (US Census cartographic boundaries, d3.geoAlbersUsa, public domain)';
 const OUT = path.join(__dirname, '..', 'lib', 'components', 'chart', 'map', 'map.basemap.json');
+const WORLD_OUT = path.join(__dirname, '..', 'lib', 'components', 'chart', 'map', 'map.basemap.world.json');
+const WORLD_ROBINSON_OUT = path.join(__dirname, '..', 'lib', 'components', 'chart', 'map', 'map.basemap.world-robinson.json');
+// The world basemap (Natural Earth countries + grouping) is built by a sibling
+// module — its curated metadata (ISO fallbacks, exonyms, dated blocs) and
+// inlined projections are substantial enough to keep out of this file. It bakes
+// TWO projections: Equal Earth (the default `map.basemap.world.json`) and
+// Robinson (the `robinson`-variant `map.basemap.world-robinson.json`).
+// `node tools/build-basemap.js` writes ALL THREE assets (US + the two worlds).
+const { buildWorld } = require('./build-basemap.world');
 
 // FIPS state code → { postal, name }. The atlas keys geometries by FIPS id
 // and carries properties.name; postal codes are the natural canonical region
@@ -232,41 +241,59 @@ async function build() {
   };
 }
 
-async function main() {
-  const argv = process.argv.slice(2);
-  const data = await build();
-  // Stable, compact serialization: regions sorted by postal so diffs are
-  // legible and the output is deterministic.
+function serialize(data) {
+  // Stable, compact serialization: regions sorted by id so diffs are legible
+  // and the output is deterministic.
   const sorted = {};
   for (const k of Object.keys(data.regions).sort()) sorted[k] = data.regions[k];
   data.regions = sorted;
-  const json = JSON.stringify(data, null, 0) + '\n';
+  return JSON.stringify(data, null, 0) + '\n';
+}
 
-  if (argv.includes('--check')) {
-    const current = fs.existsSync(OUT) ? fs.readFileSync(OUT, 'utf8') : '';
-    // Geometry is fetched from a live CDN, so byte-equality isn't a fair
-    // gate; assert only that the region set + viewBox match (structural
-    // freshness). A re-quantized atlas would change paths but that's a
-    // deliberate regeneration, not drift.
-    let stale = true;
-    try {
-      const cur = JSON.parse(current);
-      stale = cur.viewBox !== data.viewBox ||
-        Object.keys(cur.regions).sort().join() !== Object.keys(data.regions).sort().join();
-    } catch { stale = true; }
-    if (stale) {
-      process.stderr.write('map.basemap.json is stale relative to the source atlas. Run: node tools/build-basemap.js\n');
-      process.exit(1);
+// Geometry is fetched from a live CDN, so byte-equality isn't a fair gate;
+// assert only that the region set + viewBox match (structural freshness). A
+// re-simplified source would change paths, but that's a deliberate
+// regeneration, not drift.
+function isStale(outPath, data) {
+  try {
+    const cur = JSON.parse(fs.readFileSync(outPath, 'utf8'));
+    return cur.viewBox !== data.viewBox ||
+      Object.keys(cur.regions).sort().join() !== Object.keys(data.regions).sort().join();
+  } catch { return true; }
+}
+
+async function main() {
+  const argv = process.argv.slice(2);
+  const check = argv.includes('--check');
+  const rel = (p) => path.relative(path.join(__dirname, '..'), p);
+
+  const assets = [
+    { out: OUT, data: await build() },
+    { out: WORLD_OUT, data: await buildWorld('equal-earth') },
+    { out: WORLD_ROBINSON_OUT, data: await buildWorld('robinson') },
+  ];
+
+  let stale = false;
+  for (const a of assets) {
+    a.json = serialize(a.data);
+    if (check) {
+      if (isStale(a.out, a.data)) {
+        process.stderr.write(`${rel(a.out)} is stale relative to its source. Run: node tools/build-basemap.js\n`);
+        stale = true;
+      }
+    } else {
+      fs.writeFileSync(a.out, a.json);
+      const groups = a.data.groups ? `, ${Object.keys(a.data.groups).length} groups` : '';
+      process.stdout.write(
+        `wrote ${rel(a.out)} (${Object.keys(a.data.regions).length} regions${groups}, ` +
+        `${(a.json.length / 1024).toFixed(1)} KB, viewBox "${a.data.viewBox}")\n`,
+      );
     }
-    process.stdout.write('map.basemap.json is up to date.\n');
-    return;
   }
-
-  fs.writeFileSync(OUT, json);
-  process.stdout.write(
-    `wrote ${path.relative(path.join(__dirname, '..'), OUT)} ` +
-    `(${Object.keys(data.regions).length} regions, ${(json.length / 1024).toFixed(1)} KB, viewBox "${data.viewBox}")\n`,
-  );
+  if (check) {
+    if (stale) process.exit(1);
+    process.stdout.write('map basemaps are up to date.\n');
+  }
 }
 
 main().catch((err) => { console.error(err); process.exit(1); });

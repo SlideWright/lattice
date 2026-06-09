@@ -37,6 +37,15 @@ export function createArchitect({ vocab, catalog, mount, reveal, applyFix }) {
 		names: new Set((vocab?.names) || []),
 		modifiers: new Set((vocab?.modifiers) || []),
 	};
+	// Map region/group vocabulary — serialized as arrays for the build-time
+	// handoff, rehydrated into the Sets lint-core's "did you mean" rule expects.
+	// Pure static data; no model call validates a country name.
+	if (vocab?.mapRegions) {
+		vocabSets.mapRegions = {};
+		for (const [which, v] of Object.entries(vocab.mapRegions)) {
+			vocabSets.mapRegions[which] = { valid: new Set(v.valid || []), names: v.names || [] };
+		}
+	}
 	const bucketByName = new Map((catalog || []).map((c) => [c.name, c.bucket]));
 	const bucketOf = (n) => bucketByName.get(n) || null;
 	let lastSource = '';

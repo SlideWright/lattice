@@ -22,6 +22,7 @@ import { languages } from '@codemirror/language-data';
 import { EditorState } from '@codemirror/state';
 import { drawSelection, EditorView, highlightActiveLine, highlightActiveLineGutter, keymap, lineNumbers } from '@codemirror/view';
 import { tags as t } from '@lezer/highlight';
+import { mapAutocomplete } from './map-complete.js';
 
 // ── Mermaid: StreamLanguage ported from PrismJS's prism-mermaid grammar ──────
 // (prismjs/components/prism-mermaid.js). Prism's regexes are whole-document with
@@ -254,6 +255,9 @@ export function createEditor({ parent, doc = '', onChange, onCursor, autoHeight 
 					codeLanguages: [...EAGER_LANGUAGES, ...languages],
 				}),
 				EditorView.lineWrapping,
+				// Region-name autocomplete for `map` slides — static vocab from the
+				// baked basemaps, no model call. Inert outside a map list item.
+				mapAutocomplete(),
 				latticeTheme,
 				...(autoHeight ? [autoHeightTheme] : []),
 				keymap.of([indentWithTab, ...defaultKeymap, ...historyKeymap]),

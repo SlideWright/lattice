@@ -266,16 +266,59 @@ in patch versions.
   own `--catN` slot and leaves the rest neutral, for membership rather than
   magnitude. Names the basemap can't place are reported — a muted legend row
   plus a `data-unmatched` attribute on the figure — never silently dropped.
-  The basemap is baked, pre-projected (d3.geoAlbersUsa with AK/HI insets) SVG
-  path data generated from public-domain US Census boundaries via
-  `tools/build-basemap.js` (no geo library ships); it inlines into the
-  emulator/runtime JS bundles (~22 KB minified each), never into
-  `dist/lattice.css`, preserving the zero-fetch contract. New chart-family
-  kernel module (`map.transform.js`) wired through the single dispatcher, so it
-  reaches all three render paths via the registry. v1 is US states only;
-  counties / districts / city pins and a `world` basemap are deferred. Adds the
-  12th `form` (`spatial`) to the taxonomy (`design-system.md` §4, the schema +
-  `index.js` enums). Demo deck: `examples/map.md`.
+  The basemaps are baked, pre-projected SVG path data generated from
+  public-domain geodata via `tools/build-basemap.js` (no geo library ships):
+  **US states** (d3.geoAlbersUsa, AK/HI insets, US Census boundaries) and
+  **world countries** (`map world`, Natural Earth 110m). They inline into the
+  emulator/runtime JS bundles, never into `dist/lattice.css`, preserving the
+  zero-fetch contract (the world basemaps are the catalog's largest asset — each
+  projection lifts the minified runtime/emulator bundles by ~70 KB of
+  well-compressed path data). New chart-family kernel module
+  (`map.transform.js`) wired through the single dispatcher, so it reaches all
+  three render paths via the registry. Adds the 12th `form` (`spatial`) to the
+  taxonomy (`design-system.md` §4, the schema + `index.js` enums).
+  - **Regional / continental grouping** (world). A group name is a "fat alias"
+    that expands to a set of member countries: name a continent
+    (`North America`), a UN subregion (`Sub-Saharan Africa`), a curated
+    composite (`Latin America`, `Middle East`), or a dated economic bloc
+    (`European Union`, `ASEAN`, `G20`, `BRICS`, `OECD`) and the kernel fills
+    every member — in choropleth (one value across the bloc) or highlight (one
+    colour per bloc). Blocs carry an `asOf` year; **Global South / Global North**
+    ship as first-class categories pinned to a stated, dated definition — South
+    to the UN Group of 77 + China (the standard UN / UNCTAD operationalization),
+    North to the developed economies — carrying the same `source` + `asOf`
+    provenance as the blocs, plus per-continent slices of the South
+    (`global-south-africa`, `global-south-asia`, `global-south-south-america`, …).
+    "Global South" is contested, so rather than pick one definition the engine
+    ships the **two most-recognized views** as distinct, sourced groups and lets
+    the author choose: `global-south` (G77 + China, the default) and
+    `global-south-brandt` (the 1980 Brandt-Report North–South line, built as the
+    geographic complement — sweeps in Mexico / Turkey / the Koreas / Taiwan,
+    files the former-Soviet Central-Asian states under the North). Shipping
+    sourced, dated rosters is the transparent call: the definition travels with
+    the data and an author can cite it, instead of every deck hand-rolling an
+    undocumented ~130-country list. States in neither list (Russia, the
+    post-Soviet / Balkan economies, disputed territories) belong to no `global-*`
+    group. The `grouped` modifier clusters the legend by continent.
+  - **Two world projections** (world). The default is **Equal Earth** — the
+    area-preserving pseudocylindrical (Šavrič et al., 2018), so the Global South
+    reads at its true size instead of the high-latitude inflation Robinson and
+    Mercator introduce. **Robinson** ships as the `robinson` variant
+    (`map world robinson`) for audiences who expect the familiar boardroom
+    silhouette. Both are baked offline into sibling JSONs
+    (`map.basemap.world.json` + `map.basemap.world-robinson.json`) — still no geo
+    library in any bundle.
+  - **Name binding without an LLM.** Country names vary wildly (Côte d'Ivoire,
+    Myanmar, Czechia) and a typo is a silent gap, so the static basemap
+    vocabulary drives two deterministic, zero-token defences: a **CodeMirror
+    autocomplete** that completes region + group names as you type a `map` list
+    item (Drawing Board / playground editor), and a **"did you mean" lint rule**
+    (`unknown-map-region`, in the shared `lint-core.js`) that flags an
+    unresolved name with the nearest match (`Brasil` → `Brazil`) in both the
+    CLI and the in-browser Architect.
+  - v1 draws US states + world countries — not counties, districts, or city
+    pins (and the world 110m cut omits the smallest city-states). Demo deck:
+    `examples/map.md`.
 - **`funnel` component — a tapering stage chart showing where a flow drops
   off** (`evidence · canvas · series`, `chart` bucket). For any narrowing
   pipeline — sales / conversion funnel, hiring pipeline, grant / donor
