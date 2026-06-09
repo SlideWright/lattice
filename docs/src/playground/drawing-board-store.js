@@ -12,6 +12,8 @@
 // checkpoint first snapshots the current state, then loads the older source, so
 // nothing is lost.
 
+import { getPref, historyCap } from './drawing-board-prefs.js';
+
 const DB_NAME = 'lattice-drawing-board';
 const DB_VERSION = 1;
 
@@ -94,8 +96,14 @@ export function createStore({ getSource, onLoadDeck, starter = '' }) {
 	let activeId = null;
 	let saveTimer = null;
 	let loading = false; // suppress autosave while we programmatically load a deck
+	let confirmingId = null; // deck row showing the inline "Delete?" confirm
+	let renamingId = null; // deck row showing the inline rename input
 
 	const el = (id) => document.getElementById(id);
+
+	// The source a brand-new deck starts from — the starter scaffold, or a blank
+	// canvas — per the workspace preference.
+	const newDeckSource = () => (getPref('newDeck') === 'blank' ? '' : starter);
 
 	// ── low-level CRUD ────────────────────────────────────────────────────────
 	const getAll = (name) => P(store(db, name, 'readonly').getAll());
@@ -146,15 +154,24 @@ export function createStore({ getSource, onLoadDeck, starter = '' }) {
 		try { window.dispatchEvent(new CustomEvent('db-active-deck', { detail: { deckId: activeId } })); } catch (_e) {}
 	}
 
-	// ── rail rendering ────────────────────────────────────────────────────────
+	// ── deck-manager rendering (decks + history popover) ────────────────────────
 	async function renderDecks() {
 		const list = el('db-deck-list');
 		if (!list) return;
-		const decks = (await getAll('decks')).sort((a, b) => b.updatedAt - a.updatedAt);
+		const decks = (await getAll('decks'))
+			.filter((d) => !pendingDelete || d.id !== pendingDelete.id) // hide a soft-deleted deck
+			.sort((a, b) => b.updatedAt - a.updatedAt);
 		list.innerHTML = '';
+		if (!decks.length) {
+			list.innerHTML = '<p class="db-rail-note">No decks yet. The “+” above starts one.</p>';
+			return;
+		}
 		for (const d of decks) {
 			const row = document.createElement('div');
 			row.className = 'db-deck-row';
+			if (d.id === renamingId) { renderRenameRow(row, d); list.appendChild(row); continue; }
+			if (d.id === confirmingId) { renderConfirmRow(row, d); list.appendChild(row); continue; }
+
 			const pick = document.createElement('button');
 			pick.type = 'button';
 			pick.className = 'db-deck';
@@ -166,17 +183,78 @@ export function createStore({ getSource, onLoadDeck, starter = '' }) {
 			if (d.desc) descEl.textContent = d.desc; else descEl.remove();
 			pick.querySelector('.db-deck-meta').textContent = 'edited ' + relTime(d.updatedAt);
 			pick.addEventListener('click', () => switchDeck(d.id));
-			pick.addEventListener('dblclick', () => renameDeck(d.id));
+			pick.addEventListener('dblclick', () => beginRename(d.id));
+
+			const acts = document.createElement('div');
+			acts.className = 'db-deck-acts';
+			const ren = document.createElement('button');
+			ren.type = 'button';
+			ren.className = 'db-deck-rename';
+			ren.title = 'Rename deck';
+			ren.setAttribute('aria-label', 'Rename deck');
+			ren.addEventListener('click', (e) => { e.stopPropagation(); beginRename(d.id); });
 			const x = document.createElement('button');
 			x.type = 'button';
 			x.className = 'db-deck-x';
 			x.title = 'Delete deck';
 			x.setAttribute('aria-label', 'Delete deck');
-			// glyph drawn by CSS: .db-deck-x::before (Lucide x mask)
+			// glyphs drawn by CSS: .db-deck-rename::before / .db-deck-x::before
 			x.addEventListener('click', (e) => { e.stopPropagation(); deleteDeck(d.id); });
-			row.append(pick, x);
+			acts.append(ren, x);
+			row.append(pick, acts);
 			list.appendChild(row);
 		}
+	}
+
+	// Inline rename — an editable field in place of the deck button, so nothing
+	// pops a native prompt. Enter / blur commits, Escape cancels.
+	function renderRenameRow(row, d) {
+		row.classList.add('is-editing');
+		const input = document.createElement('input');
+		input.type = 'text';
+		input.className = 'db-deck-rename-input';
+		input.value = d.name;
+		input.setAttribute('aria-label', 'Deck name');
+		let done = false;
+		const commit = async (save) => {
+			if (done) return; done = true;
+			renamingId = null;
+			if (save) await commitRename(d.id, input.value);
+			else await renderDecks();
+		};
+		input.addEventListener('keydown', (e) => {
+			if (e.key === 'Enter') { e.preventDefault(); commit(true); }
+			else if (e.key === 'Escape') { e.preventDefault(); commit(false); }
+		});
+		input.addEventListener('blur', () => commit(true));
+		row.appendChild(input);
+		// Focus after it lands in the DOM.
+		setTimeout(() => { input.focus(); input.select(); }, 0);
+	}
+
+	// Inline delete confirm — the row morphs into a "Delete? · Keep / Delete" bar,
+	// on-brand and non-blocking (no window.confirm).
+	function renderConfirmRow(row, d) {
+		row.classList.add('is-confirming');
+		const msg = document.createElement('span');
+		msg.className = 'db-deck-confirm-msg';
+		msg.textContent = 'Delete this deck?';
+		const keep = document.createElement('button');
+		keep.type = 'button';
+		keep.className = 'db-btn db-confirm-keep';
+		keep.textContent = 'Keep';
+		keep.addEventListener('click', (e) => { e.stopPropagation(); confirmingId = null; renderDecks(); });
+		const del = document.createElement('button');
+		del.type = 'button';
+		del.className = 'db-btn db-btn-danger db-confirm-del';
+		del.textContent = 'Delete';
+		del.addEventListener('click', async (e) => {
+			e.stopPropagation();
+			confirmingId = null;
+			await performDelete(d.id);
+		});
+		row.append(msg, keep, del);
+		setTimeout(() => del.focus(), 0);
 	}
 
 	async function renderHistory() {
@@ -249,31 +327,106 @@ export function createStore({ getSource, onLoadDeck, starter = '' }) {
 		await renderHistory();
 	}
 
-	async function renameDeck(id) {
+	const byUpdated = (a, b) => b.updatedAt - a.updatedAt;
+
+	function beginRename(id) {
+		renamingId = id;
+		confirmingId = null;
+		renderDecks();
+	}
+	async function commitRename(id, value) {
 		const d = await get('decks', id);
-		if (!d) return;
-		const name = window.prompt('Rename deck', d.name);
-		if (name == null) return;
-		d.name = name.trim() || d.name;
-		d.nameManual = true; // pin it — stop auto-deriving from the H1
-		d.updatedAt = Date.now();
-		await put('decks', d);
+		if (!d) { await renderDecks(); return; }
+		const name = (value || '').trim();
+		if (name && name !== d.name) {
+			d.name = name;
+			d.nameManual = true; // pin it — stop auto-deriving from the H1
+			d.updatedAt = Date.now();
+			await put('decks', d);
+		}
 		await renderDecks();
 	}
 
-	async function deleteDeck(id) {
-		const _decks = await getAll('decks');
-		if (!window.confirm('Delete this deck and its checkpoints? This cannot be undone.')) return;
+	// ── delete ──────────────────────────────────────────────────────────────────
+	// Two on-brand interactions, chosen by the deleteStyle preference:
+	//   'confirm' → the row morphs into an inline "Delete?" bar (default).
+	//   'undo'    → optimistic removal + a reversible "Deck deleted · Undo" toast.
+	// Neither uses window.confirm; both keep the thread responsive.
+	let pendingDelete = null;
+
+	function deleteDeck(id) {
+		if (getPref('deleteStyle') === 'undo') return softDelete(id);
+		renamingId = null;
+		confirmingId = id;
+		return renderDecks();
+	}
+
+	// Hard, immediate purge of a deck and everything attached to it.
+	async function purgeDeck(id) {
 		await del('decks', id);
 		for (const r of await revisionsFor(id)) await del('revisions', r.id);
 		await clearChat(id); // drop the deleted deck's conversation too
+	}
+
+	// Immediate delete (the 'confirm' path, after the user confirms): purge, then
+	// hand the editor to the next deck — or a fresh one if that was the last.
+	async function performDelete(id) {
+		await purgeDeck(id);
 		if (id === activeId) {
-			const rest = (await getAll('decks')).sort((a, b) => b.updatedAt - a.updatedAt);
+			const rest = (await getAll('decks')).sort(byUpdated);
 			if (rest.length) { activeId = rest[0].id; await setSetting('activeDeckId', activeId); notifyActive(); await loadActiveIntoEditor(); }
-			else { await createDeck(starter, 'Untitled deck'); await loadActiveIntoEditor(); }
+			else { await createDeck(newDeckSource(), 'Untitled deck'); await loadActiveIntoEditor(); }
 		}
 		await renderDecks();
 		await renderHistory();
+	}
+
+	// Optimistic delete (the 'undo' path): hide the row + move the editor off it
+	// NOW, but defer the real purge until the toast expires — so Undo is just
+	// "cancel the pending purge", with nothing to reconstruct.
+	async function softDelete(id) {
+		await flushPendingDelete(); // commit any prior pending delete first
+		const prevActiveId = activeId;
+		pendingDelete = { id, prevActiveId, replacementId: null, timer: null };
+		if (id === activeId) {
+			const rest = (await getAll('decks')).sort(byUpdated).filter((d) => d.id !== id);
+			if (rest.length) {
+				activeId = rest[0].id;
+			} else {
+				const nd = await createDeck(newDeckSource(), 'Untitled deck'); // never strand the editor empty
+				pendingDelete.replacementId = nd.id;
+				activeId = nd.id;
+			}
+			await setSetting('activeDeckId', activeId);
+			notifyActive();
+			await loadActiveIntoEditor();
+		}
+		await renderDecks(); // the pending row is filtered out
+		await renderHistory();
+		toast('Deck deleted.', 'Undo', async () => {
+			const pd = pendingDelete;
+			if (!pd) return;
+			pendingDelete = null;
+			clearTimeout(pd.timer);
+			if (pd.replacementId) { await purgeDeck(pd.replacementId); } // drop the placeholder
+			activeId = pd.prevActiveId;
+			await setSetting('activeDeckId', activeId);
+			notifyActive();
+			await loadActiveIntoEditor();
+			await renderDecks();
+			await renderHistory();
+		});
+		pendingDelete.timer = setTimeout(() => { flushPendingDelete(); }, 6000);
+	}
+
+	// Commit a pending soft-delete (timer fired, or another delete superseded it).
+	async function flushPendingDelete() {
+		const pd = pendingDelete;
+		if (!pd) return;
+		pendingDelete = null;
+		clearTimeout(pd.timer);
+		await purgeDeck(pd.id);
+		await renderDecks();
 	}
 
 	// Debounced autosave of the live editor into the active deck.
@@ -311,7 +464,15 @@ export function createStore({ getSource, onLoadDeck, starter = '' }) {
 		const revs = (await revisionsFor(activeId)).sort((a, b) => b.createdAt - a.createdAt);
 		if (revs[0] && revs[0].source === src) return; // unchanged since the last point
 		await put('revisions', { deckId: activeId, source: src, label: label || 'AI edit', createdAt: Date.now(), auto: true });
-		for (const id of autoToPrune(await revisionsFor(activeId))) await del('revisions', id);
+		for (const id of autoToPrune(await revisionsFor(activeId), historyCap())) await del('revisions', id);
+		await renderHistory();
+	}
+
+	// Re-apply the history-retention preference to the active deck — prune surplus
+	// auto checkpoints down to the new cap. Called when the setting changes.
+	async function applyHistoryCap() {
+		if (!db || !activeId) return;
+		for (const id of autoToPrune(await revisionsFor(activeId), historyCap())) await del('revisions', id);
 		await renderHistory();
 	}
 
@@ -338,6 +499,35 @@ export function createStore({ getSource, onLoadDeck, starter = '' }) {
 		setTimeout(() => { if (s.textContent === msg) s.textContent = prev; }, 2400);
 	}
 
+	// On-brand transient toast with one action (used by the Undo-delete flow). A
+	// single toast at a time; auto-dismisses after ~6s. Token-styled, palette-blind.
+	let toastTimer = null;
+	function toast(message, actionLabel, onAction) {
+		const existing = document.getElementById('db-toast');
+		if (existing) existing.remove();
+		clearTimeout(toastTimer);
+		const wrap = document.createElement('div');
+		wrap.id = 'db-toast';
+		wrap.className = 'db-toast';
+		wrap.setAttribute('role', 'status');
+		const msg = document.createElement('span');
+		msg.className = 'db-toast-msg';
+		msg.textContent = message;
+		wrap.appendChild(msg);
+		const dismiss = () => { clearTimeout(toastTimer); wrap.classList.remove('is-in'); setTimeout(() => wrap.remove(), 180); };
+		if (actionLabel && onAction) {
+			const btn = document.createElement('button');
+			btn.type = 'button';
+			btn.className = 'db-toast-undo';
+			btn.textContent = actionLabel;
+			btn.addEventListener('click', async () => { dismiss(); await onAction(); });
+			wrap.appendChild(btn);
+		}
+		document.body.appendChild(wrap);
+		requestAnimationFrame(() => wrap.classList.add('is-in'));
+		toastTimer = setTimeout(dismiss, 6000);
+	}
+
 	// ── init ──────────────────────────────────────────────────────────────────
 	async function init() {
 		try {
@@ -351,14 +541,32 @@ export function createStore({ getSource, onLoadDeck, starter = '' }) {
 		const decks = await getAll('decks');
 		if (!decks.length) {
 			await createDeck(getSource() || starter, 'Untitled deck');
+		} else if (getPref('restoreDeck') === 'fresh') {
+			// "Start fresh" — land on a new blank deck instead of the last one. Reuse a
+			// trailing untitled-and-empty deck if one's already there, so reload after
+			// reload doesn't pile up throwaways. The deck list keeps every prior deck.
+			const sorted = decks.sort(byUpdated);
+			const top = sorted[0];
+			const blank = newDeckSource();
+			if (top && !top.nameManual && (top.source || '').trim() === (blank || '').trim()) {
+				activeId = top.id;
+				await setSetting('activeDeckId', activeId);
+				notifyActive();
+				await loadActiveIntoEditor();
+				await renderDecks();
+				await renderHistory();
+			} else {
+				await createDeck(blank, 'Untitled deck');
+				await loadActiveIntoEditor();
+			}
 		} else {
-			activeId = (await getSetting('activeDeckId')) || decks.sort((a, b) => b.updatedAt - a.updatedAt)[0].id;
+			activeId = (await getSetting('activeDeckId')) || decks.sort(byUpdated)[0].id;
 			notifyActive();
 			await loadActiveIntoEditor();
 			await renderDecks();
 			await renderHistory();
 		}
-		el('db-new-deck')?.addEventListener('click', async () => { await createDeck(starter, 'Untitled deck'); await loadActiveIntoEditor(); });
+		el('db-new-deck')?.addEventListener('click', async () => { await createDeck(newDeckSource(), 'Untitled deck'); await loadActiveIntoEditor(); });
 		el('db-checkpoint')?.addEventListener('click', () => checkpoint());
 	}
 
@@ -372,6 +580,7 @@ export function createStore({ getSource, onLoadDeck, starter = '' }) {
 
 	return {
 		init, saveActive, checkpoint, autoCheckpoint, create,
+		applyHistoryCap, // re-prune when the retention preference changes
 		// Chat (Phase 2): the Architect's per-deck conversation thread.
 		getActiveId: () => activeId,
 		chatMessages, addChatMessage, updateChatMessage, clearChat,
