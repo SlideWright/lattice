@@ -1,0 +1,77 @@
+---
+marp: true
+size: 4K
+theme: indaco
+paginate: true
+header: "Lattice · q-and-a"
+---
+
+<!-- _class: title silent -->
+
+# The questions we know are coming.
+
+`New component · inventory · stack · structure`
+
+The end-of-pitch slide that pre-empts the room — the three or four hardest questions the audience will raise, each met with a prepared answer. The question reads as a prompt; the answer carries the substance.
+
+---
+
+<!-- _class: content -->
+
+## A few defended answers, not a help page.
+
+Q&A is a *function*, not a flat list: you anticipate the objection and close it on your own terms, which lands harder than waiting to be asked. Author it as a nested list — the top-level item is the question, the answer nests one level under it.
+
+- A `ul` leaves the questions unnumbered (a `Q` marker); an `ol` numbers them.
+- Distinct from a reference `faq` (many terse look-ups) and from `list-criteria` (criteria you score against). q-and-a *defends* a recommendation.
+
+---
+
+<!-- _class: q-and-a -->
+
+## What the board will press on.
+
+- Why not extend the current vendor one more year?
+  - The renewal lands in Q3 and locks us in through 2028. Switching now costs a single quarter of migration; switching after renewal costs three.
+- What happens to the team mid-migration?
+  - No headcount change. The same four engineers run both stacks through the eight-week overlap, then the legacy stack is decommissioned.
+- How confident are we in the savings?
+  - The $1.2M is contracted, not projected — the signed rate differential, before any usage growth.
+
+---
+
+<!-- _class: q-and-a solo -->
+
+## The one question we know is coming.
+
+- If the pilot fails, what have we actually lost?
+  - One quarter and $180K, fully recoverable. The contract caps exposure at the pilot scope, with no auto-renewal and a thirty-day exit. The downside is bounded; the upside is the whole thesis.
+
+---
+
+<!-- _class: q-and-a compact -->
+
+`Anticipated questions`
+
+## Five we expect, numbered and tightened.
+
+1. Why now rather than next fiscal year?
+   1. The incentive credits expire in December; waiting forfeits $400K.
+2. What is the rollback plan?
+   1. A one-command revert to the pinned release, rehearsed weekly in staging.
+3. Who signs off on go-live?
+   1. The change-advisory board, the Thursday before each wave.
+4. How does this affect the SLA?
+   1. The 99.9% target holds — the migration runs behind a feature flag.
+5. What if adoption stalls?
+   1. Usage is opt-in for thirty days with a fallback, so a stall costs time, not money.
+
+---
+
+<!-- _class: closing silent -->
+
+## Pre-empt the room.
+
+`q-and-a`
+
+When the hard questions are predictable, answer them before they are asked.

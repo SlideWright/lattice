@@ -260,6 +260,17 @@ in patch versions.
   single shared walker (`slide-context.js`), retiring the per-feature
   backward-walkers that had drifted from the grammar. Drawing Board (docs-site)
   only.
+- **`q-and-a` — a layout for anticipated questions paired with prepared
+  answers** (inventory bucket, `stack` form). The end-of-pitch "what we expect
+  to be asked" slide: a vertical stack of Q/A pairs where the question reads as
+  a prompt (Q marker, heading weight) and the nested answer carries the
+  substance (A marker, body weight). Author it as a nested list — `- Question?`
+  with the answer nested one level under — using a `ul` for unnumbered
+  questions or an `ol` to number them. The `solo` variant gives one
+  question/answer the whole slide; the universal `compact` tightens the rhythm
+  for five-plus pairs. Pure CSS, no transform. Distinct from a reference FAQ
+  (many terse look-ups) and from `list-criteria` (evaluation criteria +
+  rationale) — q-and-a defends a recommendation.
 - **Drawing Board: each cloud Architect reply is labelled with the model that
   produced it** — the bubble heading reads "The Architect (DeepSeek V4 Pro)", using
   *our* record of the model we sent the turn to, not the model's self-report (which

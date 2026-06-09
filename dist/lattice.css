@@ -6409,6 +6409,162 @@ section.progress .progress-note {
   font-style: italic;
 }
 
+/* === lib/components/inventory/q-and-a/q-and-a.styles.css === */
+/* q-and-a — anticipated questions paired with prepared answers. A vertical
+ * stack of Q/A pairs where the question reads as a prompt and the answer
+ * carries the substance: the end-of-pitch "what we expect to be asked"
+ * slide. Distinct from a reference `faq` (many terse look-ups) and from
+ * `list-criteria` (evaluation criteria + rationale).
+ *
+ * Substance: structure. Pure CSS over the native nested list — no
+ * post-processor, so no three-render-path wiring. The author writes:
+ *
+ *   - Question text?
+ *     - The prepared answer.
+ *
+ * A `ul` leaves questions unnumbered (Q marker); an `ol` numbers them
+ * (an indexed list, not a dependent sequence). The top-level li is the
+ * question; the nested li is the answer (A marker).
+ *
+ * Modifier model:
+ *   q-and-a          stacked Q/A pairs (default)
+ *   q-and-a solo     one question, one answer, given the whole slide
+ *   q-and-a compact  (universal) denser rhythm for five-plus pairs
+ *   q-and-a dark     (universal) dark canvas
+ *
+ * Rules are UNLAYERED (no `@layer components` wrapper) to match every other
+ * component file — broad @layer activation is blocked (see engineering/
+ * cascade.md), so a wrapped file would lose to unlayered rules regardless
+ * of specificity. */
+
+section.q-and-a {
+  --qa-marker: var(--sp-xl); /* width of the Q/A marker gutter */
+  --qa-gap: var(--sp-lg); /* vertical gap between pairs */
+}
+
+/* The pair stack fills the canvas below the headline and centres its rows. */
+section.q-and-a > :is(ul, ol) {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--qa-gap);
+  counter-reset: qa;
+}
+
+/* One Q/A pair. The li's own text is the question; the nested list is the
+ * answer. The left padding opens a gutter for the Q/A markers; a hairline
+ * rule separates pairs (dropped on the last). */
+section.q-and-a > :is(ul, ol) > li {
+  counter-increment: qa;
+  position: relative;
+  padding: 0 0 var(--qa-gap) calc(var(--qa-marker) + var(--sp-md));
+  border-bottom: 1px solid var(--border);
+  font-size: var(--fs-message);
+  font-weight: 600;
+  color: var(--text-heading);
+  line-height: var(--lh-snug);
+}
+section.q-and-a > :is(ul, ol) > li:last-child {
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+/* Q marker — a mono accent tag in the gutter. An ordered list numbers the
+ * questions instead. */
+section.q-and-a > :is(ul, ol) > li::before {
+  content: "Q";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: var(--qa-marker);
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: var(--fs-body);
+  font-weight: 700;
+  color: var(--accent);
+  line-height: inherit;
+}
+section.q-and-a > ol > li::before {
+  content: counter(qa);
+}
+
+/* Answer — the nested list, reset off the question's weight/size/colour. */
+section.q-and-a > :is(ul, ol) > li > :is(ul, ol) {
+  list-style: none;
+  margin: var(--sp-sm) 0 0 0;
+  padding: 0;
+}
+section.q-and-a > :is(ul, ol) > li > :is(ul, ol) > li {
+  position: relative;
+  font-size: var(--fs-body);
+  font-weight: 400;
+  color: var(--text-body);
+  line-height: var(--lh-base);
+}
+/* A marker — sits in the same gutter, aligned under Q (the nested li starts
+ * past the parent's left padding, so pull the marker back by that amount). */
+section.q-and-a > :is(ul, ol) > li > :is(ul, ol) > li::before {
+  content: "A";
+  position: absolute;
+  left: calc(-1 * (var(--qa-marker) + var(--sp-md)));
+  width: var(--qa-marker);
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: var(--fs-body);
+  font-weight: 700;
+  color: var(--text-muted);
+  line-height: inherit;
+}
+/* A rare second answer line carries no extra marker. */
+section.q-and-a > :is(ul, ol) > li > :is(ul, ol) > li + li::before {
+  content: "";
+}
+
+/* ── compact — the density escape hatch for five-plus pairs ───────────── */
+/* `compact` is a pure opt-in class (no base behaviour), so the layout owns
+ * the tightening: the question drops from message to body type, the answer to
+ * compact-body, and the gaps close, so a longer FAQ-style set still fits. */
+section.q-and-a.compact {
+  --qa-gap: var(--sp-md);
+}
+section.q-and-a.compact > :is(ul, ol) > li {
+  font-size: var(--fs-body);
+}
+section.q-and-a.compact > :is(ul, ol) > li > :is(ul, ol) {
+  margin-top: var(--sp-2xs);
+}
+section.q-and-a.compact > :is(ul, ol) > li > :is(ul, ol) > li {
+  font-size: var(--fs-body-compact);
+}
+
+/* ── solo — one question, one answer, the whole slide ─────────────────── */
+section.q-and-a.solo > :is(ul, ol) {
+  gap: 0;
+}
+section.q-and-a.solo > :is(ul, ol) > li {
+  border-bottom: none;
+  padding-bottom: 0;
+  font-size: var(--fs-emphasis);
+  line-height: var(--lh-tight);
+}
+section.q-and-a.solo > :is(ul, ol) > li::before {
+  font-size: var(--fs-message);
+  top: 0.18em;
+}
+section.q-and-a.solo > :is(ul, ol) > li > :is(ul, ol) > li {
+  font-size: var(--fs-message);
+  margin-top: var(--sp-md);
+  line-height: var(--lh-snug);
+}
+section.q-and-a.solo > :is(ul, ol) > li > :is(ul, ol) > li::before {
+  font-size: var(--fs-message);
+}
+
 /* === lib/components/chart/quadrant/quadrant.styles.css === */
 /* quadrant — extracted from lib/_legacy.css (batch 8).
  * See lib/components/quadrant/quadrant.manifest.json for the component contract.

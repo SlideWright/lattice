@@ -620,6 +620,22 @@
     ],
     "description": "Horizontal progress bars — one row per item, percentage filled."
   },
+  "lattice: q-and-a": {
+    "prefix": "lattice-q-and-a",
+    "body": [
+      "<!-- _class: q-and-a -->",
+      "",
+      "## What we expect to be asked.",
+      "",
+      "- First question the audience will raise?",
+      "  - The prepared answer — two or three sentences that close it down.",
+      "- Second question?",
+      "  - The prepared answer.",
+      "- Third question?",
+      "  - The prepared answer."
+    ],
+    "description": "Anticipated questions paired with prepared answers — the end-of-pitch 'what we expect to be asked' slide."
+  },
   "lattice: quadrant": {
     "prefix": "lattice-quadrant",
     "body": [
