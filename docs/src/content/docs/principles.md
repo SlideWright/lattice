@@ -4,10 +4,9 @@ description: The convictions behind Lattice — why a slide is four decisions, w
 ---
 
 Every design decision in Lattice traces back to a few convictions.
-They're worth stating plainly, because they explain the things that
-surprise people — why you can't drag a box, why every deck on a theme
-looks related, why the engine has opinions about your prose. None of it
-is arbitrary. Here is what Lattice believes.
+They're worth stating plainly, because they explain what surprises
+people about it — why you can't drag a box, why every deck on a theme
+looks related. None of it is arbitrary. Here is what Lattice believes.
 
 ## A slide is four decisions, not one
 
@@ -31,8 +30,8 @@ Separating them means you can change one without disturbing the rest.
 Swap the palette and the deck keeps its structure. Move a grid to a
 stack and the data comes along unchanged. Re-class a slide and it says
 something new in the same skin. Most of what feels like design in other
-tools is really these four decisions fighting each other on one
-surface. Lattice gives each its own.
+tools is these four decisions fighting on one surface. Lattice gives
+each its own.
 
 ## The colors live in one file
 
@@ -41,14 +40,13 @@ list of named roles. *Accent. Ink. Surface.* The layouts never name a
 color directly; they ask the palette for the role and render whatever
 it hands back.
 
-That sounds like a small implementation detail. It isn't. You can
-change a brand's entire visual identity in one place and watch it flow
-through every layout, every chart, every diagram, on the next build.
-Two companies can run the same engine and produce decks that look
-nothing alike — the way two sites share HTML and look nothing alike
-under different CSS. And a chart's text is never stranded in a color
-the new palette didn't plan for: the fill and its ink travel together,
-so both adapt when the palette flips.
+Change a brand's entire visual identity in that one file, and it flows
+through every layout, every chart, every diagram on the next build. Two
+companies can run the same engine and produce decks that look nothing
+alike — the way two sites share HTML and look nothing alike under
+different CSS. And a chart's text is never stranded in a color the new
+palette didn't plan for. The fill and its ink travel together, so both
+adapt when the palette flips.
 
 One palette, every deck. Change it once.
 
@@ -70,19 +68,19 @@ read at speed, and a claim lands faster than a noun.
 Because the source is plain text, it has properties a binary slide file
 never will. You can diff it, review it in a pull request, grep a whole
 archive for a stale figure. If you ever leave Lattice, every deck it
-made is still a PDF that opens anywhere, alongside the Markdown that
-built it — nothing locks shut behind you. And when the vocabulary runs
-out, when you need something the layouts don't offer, it's still CSS
-and Markdown underneath, and you can always drop down to it.
+made is still a plain PDF, sitting next to the Markdown that built it.
+Nothing locks shut behind you. And when the vocabulary runs out — when
+you need something the layouts don't offer — it's plain Markdown and
+CSS underneath, and you can edit that directly.
 
 ## The system carries the consistency. You carry the judgment.
 
 Most of what goes wrong in a slide deck is mechanical, and Lattice
 handles all of it. Contrast that meets WCAG AA, on every layout, in
 light and dark — checked automatically, not left to chance. Headings
-that resolve to the right size, spacing that holds, alignment that's
-simply correct. You never spend judgment on any of it, because none of
-it is a matter of judgment.
+that resolve to the right size, spacing that holds, alignment that
+falls where it should. You never spend judgment on any of it, because
+none of it is a matter of judgment.
 
 What's left is the part that is. Whether the claim is true. Whether the
 slide earns its place. Whether the argument lands with this audience,
@@ -94,9 +92,9 @@ what's good.
 ## Predictability is worth more than it looks
 
 The same Markdown produces the same PDF — on your laptop, on a
-colleague's, in a build server, this year and next. That sounds modest.
-It's the property people miss most, because you only notice it when
-it's gone: the deck that reflows the night before the meeting, the font
+colleague's, in a build server, this year and next. People notice this
+property only when it's missing: the deck that reflows the night before
+the meeting, the font
 that renders one way on screen and another on the projector, the
 "final-v7" that looks subtly different from "final-v6" and nobody can
 say why.
@@ -105,24 +103,23 @@ Determinism is what lets you trust the artifact. The deck you reviewed
 and approved is exactly the deck that opens in the room — you can put
 your name on it without re-reading every slide. It's also what makes
 the rest possible: you can't review a moving target, can't diff one,
-can't hand it to a colleague or an assistant to maintain if its output
-won't hold still. The real cost of an unpredictable tool isn't the
+can't safely hand one off to a colleague or an assistant. The real cost
+of an unpredictable tool isn't the
 occasional surprise. It's the vigilance you pay, forever, guarding
 against one.
 
 ## You don't memorize it; it shows you
 
-A new vocabulary sounds like work — layout names, slot rules, a
-four-layer model to hold in your head. The honest answer is that you're
-not meant to hold it in your head at all.
+A new vocabulary reads as overhead: layout names, slot rules, a
+four-layer model to memorize. You're not meant to memorize any of it.
 
 The floor is Markdown, which you already know. A plain text file with
 no Lattice vocabulary still renders as a clean deck; you add a layout
 name when you want one, one at a time, with no cliff to fall off. From
 there the system surfaces itself. Your editor autocompletes the
 layouts. The gallery shows you each one rendered before you pick it. A
-linter flags the handful of real footguns as you type — in the editor
-and in the browser — using the very same checks the engine runs.
+linter flags the handful of real footguns as you type, in the editor
+and in the browser, with the very same checks the engine runs.
 
 And then there's the assistant. Because a Lattice deck is structured
 text under a named system, an AI can read the catalog and map plain
@@ -133,27 +130,27 @@ lets a machine carry the learning for you. The vocabulary isn't a tax
 you pay. It's the language the tools — and the assistant — already
 speak.
 
-## A deck is something you keep, not just something you send
+## A deck outlives the meeting
 
 Most tools treat a deck as finished the moment it's sent. But a board
-deck comes back: next quarter with new numbers, forked for a different
-room, restyled when the company rebrands, questioned when a figure is
-challenged. The first draft is a small part of its life. The longer
+deck comes back: next quarter with new numbers, restyled when the brand
+changes, reopened when someone questions a figure. The first draft is a
+small part of its life. The longer
 part belongs to editors and maintainers, and Lattice is built for them
 as much as for the author.
 
 Because the deck is plain text under a stable structure, every later
 change stays small and legible. An editor updates the numbers without
-touching the argument. A maintainer reskins a hundred decks from one
+touching the claim. A maintainer reskins a hundred decks from one
 palette file and trusts the regression tests to catch anything that
 moved. The same assistant that helped write the deck can read it back —
 summarize it, check its claims, find the slide that's gone stale —
 because the structure that made it writable makes it readable.
 
-The rule from before holds across all of it. The machine keeps the deck
-well-formed; a person keeps it true. An AI can hold a deck to its own
-standard forever and never notice the quarter's story changed. That
-part stays with you.
+The rule from before holds across all of it. Automation keeps a deck
+well-formed. Whether it stays true is a person's call. An AI can hold a
+deck to its own standard forever and never notice the quarter's story
+changed. That part stays with you.
 
 ## Constraint is what frees you
 
@@ -166,8 +163,8 @@ is a real risk that everything starts to look the same. Neither is in
 dispute.
 
 But look at where the craft lives. Most of what feels artful in a slide
-tool is fighting the tool — aligning a box, re-matching a color the
-eyedropper got wrong, redoing all of it when the brand changes. That's
+tool is fighting the tool — nudging a box into line, hunting down the
+right hex code, redoing all of it when the brand changes. That's
 not art. It's labor that feels like art because it's slow and fiddly.
 Lattice takes that away and touches none of the decisions that actually
 are creative: what the slide should say, what to cut, how the argument
@@ -186,26 +183,26 @@ the default theme, the way the early web all ran on the same template.
 The answer is to make your own theme cheap to build and deep to change.
 Whether you take that up is a choice the engine can't make for you.
 
-Consistency and creativity aren't opposites. One is a property of the
-foundation; the other is a property of what you build on it. A sonnet's
-fourteen lines never cost a poet anything. A strong grid has freed
+Consistency and creativity work on different layers. One is the
+foundation; the other is what you build on it. A sonnet's fourteen
+lines never cost a poet anything. A strong grid has freed
 designers for a century. Lattice is that grid, for decks.
 
 ## You practice board-ready before you're in the room
 
 "Boardroom-quality" sounds like a standard reserved for boards. It
 isn't. The higher you go, the more polish and professionalism are
-simply assumed — and you don't reach that level by waiting until you're
-there. You practice it on the way up. You don't have to be presenting
-to the board to present like you are.
+expected as a matter of course — and you don't reach that level by
+waiting until you're there. You practice it on the way up. You don't
+have to be presenting to the board to present like you are.
 
-What's usually missing isn't the standard; it's the gap between what
+What's usually missing is time, not the standard — the gap between what
 the standard asks and what someone early in their career can produce in
-the time they have. Lattice closes that gap. An analyst's first
+the hours they have. Lattice closes that gap. An analyst's first
 proposal can carry the same finish as the partner's board deck, so
 finish stops standing in for seniority and the argument does the
 talking instead. And the habit gets cheap enough to keep: you hold the
-line on every memo, not only the once-a-quarter high-stakes one. That
+line on every memo, not only the high-stakes one once a quarter. That
 practice, repeated, is how you become the person who's ready before
 anyone hands you the room.
 
