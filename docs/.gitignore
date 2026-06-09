@@ -5,9 +5,9 @@ dist/
 # portal copies staged from ../docs by scripts/sync-portal.mjs
 public/components.html
 public/components.md
-# engine + palette stylesheets + runtime staged for the playground at build time
-public/playground/themes/
-public/playground/lattice-runtime.js
+# engine + palette stylesheets + runtime, staged for the playground at build
+# time into a content-hashed dir (scripts/sync-playground-assets.mjs)
+public/playground/v/
 # scratch dir used by scripts/rasterize-showcase.mjs (cleaned up on success)
 .showcase-tmp/
 

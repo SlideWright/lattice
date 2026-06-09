@@ -21,14 +21,30 @@ section.funnel .funnel-svg {
   display: block;
 }
 
-/* Bands — one accent hue narrowing top-to-bottom; the ramp steps lighter per
- * stage so the stack reads as one flow, not unrelated categories. A hairline
- * canvas-coloured stroke keeps adjacent bands crisp. */
+/* Bands — one distinct hue per stage, rotating the categorical chart palette
+ * exactly like the piechart wedges, so a stage reads as its own colour. This
+ * is the "on-brand" palette: themes curate --chart-catN (cuoio's earth
+ * pigments, etc.), so the rotation greens/browns/etc. per theme rather than
+ * sitting on a fixed blue. Vivid solid (mix toward --bg for body, the same
+ * 82% richness the pie legend swatch uses), six-hue cap (Wong 2011) matching
+ * PIE_PALETTE. Labels + values sit on the canvas, never on a band, so the fill
+ * never affects text contrast. A hairline canvas-coloured stroke keeps adjacent
+ * bands crisp.
+ *
+ * :nth-of-type counts <polygon> siblings — every band is a polygon and the only
+ * polygons in the figure, so the count tracks stage order. (Same rotation idiom
+ * as piechart.styles.css; see the gotchas note on nth-of-type vs nth-child.) */
 section.funnel .funnel-band {
-  fill: color-mix(in oklab, var(--cat1-hue) calc(82% - var(--i, 0) * 9%), var(--bg));
+  fill: color-mix(in oklab, var(--cat1-hue) 82%, var(--bg));
   stroke: var(--bg);
   stroke-width: 0.75;
 }
+section.funnel .funnel-band:nth-of-type(6n + 1) { fill: color-mix(in oklab, var(--cat1-hue) 82%, var(--bg)); }
+section.funnel .funnel-band:nth-of-type(6n + 2) { fill: color-mix(in oklab, var(--cat2-hue) 82%, var(--bg)); }
+section.funnel .funnel-band:nth-of-type(6n + 3) { fill: color-mix(in oklab, var(--cat3-hue) 82%, var(--bg)); }
+section.funnel .funnel-band:nth-of-type(6n + 4) { fill: color-mix(in oklab, var(--cat4-hue) 82%, var(--bg)); }
+section.funnel .funnel-band:nth-of-type(6n + 5) { fill: color-mix(in oklab, var(--cat5-hue) 82%, var(--bg)); }
+section.funnel .funnel-band:nth-of-type(6n + 6) { fill: color-mix(in oklab, var(--cat6-hue) 82%, var(--bg)); }
 
 /* Stage label — left column, right-aligned to the band. */
 section.funnel .funnel-label {
