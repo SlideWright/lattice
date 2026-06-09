@@ -12,23 +12,28 @@ last-status-update: 2026-06-09
 > the shipped surface wins. Purpose: fix the *shape* of the capability in
 > the **browser-side Drawing Board** before any code lands.
 
-Companion to **`2026-06-09-asset-import.md`**, which fixes the *engine /
-CLI / git* end of the same capability (vendor-don't-reference, deck-local
-sidecars, three-renderer parity, hermetic baselines). That note explicitly
-scopes the desktop/library out as "a SlideWright concern, not an engine
-concern" — **this note is that other end**: importing, persisting, and
-*using* assets inside the website's in-browser Drawing Board, where there
-is no filesystem and no git. The two meet at **export** (last section).
+The prompt (2026-06-09): authors should be able to **import assets** —
+images (a third-party picture for a slide), themes (a third-party style),
+small datasets (for data viz), and reference docs — from the local machine
+*or* the web, **use them** in decks, and have them **persist**. Open
+question alongside it: per-deck or global?
 
-It also widens the capability the way the prompt asked: assets don't only
-render *into* decks and layouts — they also **augment the Architect**. So
-this is one import subsystem with **two consumer families**.
+This note fixes the shape for the surface that actually hosts the feature:
+the **browser-side Drawing Board**, where there is no filesystem and no
+git. Assets don't only render *into* decks and layouts — they also
+**augment the Architect**. So this is one import subsystem with **two
+consumer families**. The capability has a second, engine-side face too —
+when a deck leaves the browser for the git/PDF world, assets must
+materialize so all three render paths resolve them; that bridge is the last
+section.
 
 ## The governing constraint here: the Drawing Board renders client-side into a `srcdoc` iframe
 
-The engine note's governing constraint was hermetic, hash-gated PDF
-baselines. The Drawing Board's constraint is different and just as
-decisive. It renders entirely in the browser:
+The engine end of Lattice is governed by hermetic, hash-gated PDF baselines
+(58 component galleries × 2 themes, the CI baseline decks) — which is why,
+*there*, an import must mean fetch-once-and-vendor, never live-reference.
+The Drawing Board's constraint is different and just as decisive. It
+renders entirely in the browser:
 
 - `window.LatticePlayground.render(markdown, theme) → { html, css }`
   (`lib/playground/index.js` — marp-core + the lattice plugins + the
@@ -47,8 +52,8 @@ Two facts fall straight out of this and decide most of the design:
    **Imported images must resolve to `data:` URIs** baked into the rendered
    HTML/CSS. `data:` always works in `srcdoc`.
 2. **"Import" means store-the-bytes-in-IndexedDB**, the browser analogue of
-   the engine note's "fetch-once-and-vendor." The web is a *source*, never
-   a live *binding* — same rule, different substrate (an IndexedDB `Blob`
+   the engine end's fetch-once-and-vendor. The web is a *source*, never a
+   live *binding* — same rule, different substrate (an IndexedDB `Blob`
    instead of a vendored file in git).
 
 ## One subsystem, two consumer families
@@ -125,19 +130,21 @@ the encoded URI per asset and only re-encode on change.
 imported theme is just CSS text registered the same way; the deck's
 `theme:` front-matter names it. **Validate against the token contract**
 (`design/theming.md`) on import — a theme missing tokens renders
-half-styled, the browser mirror of the engine note's "themeSet requirement"
-gotcha.
+half-styled, the browser mirror of the `marp.config.js` "themeSet
+requirement" gotcha (`engineering/gotchas.md`).
 
 ### Dataset — a new data-binding (the heaviest, scope separately)
 
-As the engine note says, charts are authored *inline* today (markdown →
-SVG via `chart-family`). A dataset import implies a binding that doesn't
-exist yet: a chart block references a dataset asset, and a transform
-expands it into the chart's markdown **before** render. Same determinism
-rule (snapshot at import). In the Drawing Board this is a pre-render
-markdown transform; for export it must also exist in the three engine
-paths — which is exactly why the engine note defers it to its own proposal.
-This note inherits that deferral.
+Charts are authored *inline* today (markdown → SVG via `chart-family`). A
+dataset import implies a binding that doesn't exist yet: a chart block
+references a dataset asset, and a transform expands it into the chart's
+markdown **before** render. Same determinism rule (snapshot at import,
+never fetch at render). In the Drawing Board this is a pre-render markdown
+transform; for export it must *also* land in all three engine render paths
+(emulator, marp-cli config, runtime bundle) or they drift. That is a new
+architectural bet, not an asset-resolution tweak — so it deserves its own
+design note covering the `![chart](data.csv)`-style syntax and the
+data → chart transform; this note defers it.
 
 ### Doc — augment the Architect (chunk → embed → retrieve → inject)
 
@@ -175,35 +182,41 @@ written. "Use another of my decks as a style exemplar" is therefore a
 exemplar, available with zero ingestion. Only *external* material needs the
 upload/URL path.
 
-## Scope — per-deck binding, library for reuse (same single rule)
+## Scope — per-deck binding, library for reuse (one rule)
 
-Mirrors the engine note's rule, re-expressed for IndexedDB:
+One rule answers per-deck-vs-global:
 
 > **The library is discovery/reuse; the binding is always per-deck.**
 
 `deckId` scopes an asset to one deck (default). `deckId: null` is the
 library — *available* to other decks, but it only enters a render (or a
-prompt) when that deck actually references it (or retrieval surfaces it).
-No live global reference, exactly as the engine note forbids one.
+prompt) when that deck actually references it (or retrieval surfaces it). A
+live global reference can't survive a fresh render elsewhere (the export
+bridge below), so it's forbidden: global for discovery, per-deck for the
+binding.
 
-## The export bridge — where the two ends meet
+## The export bridge — the engine-side face
 
 A Drawing Board deck is browser-resident (markdown + IndexedDB assets). The
 moment it leaves for the engine/CLI/git world — **`drawing-board-export.js`
 (PDF), or "download as a real `.md` deck"** — the IndexedDB assets must be
-**materialized**, or the exported deck renders asset-less elsewhere. Two
-options, both already on the table:
+**materialized**, or the exported deck renders asset-less elsewhere. The
+engine world is governed by the hermetic-baseline constraint above (vendor,
+never live-reference), so two options:
 
 - **Bake** `data:` URIs into the exported `.md`/HTML — self-contained, no
   sidecar, but a heavier file.
-- **Vendor to a `<deck>.assets/` sidecar** + relative paths — exactly the
-  engine note's deck-local model, so the same deck then renders hermetically
-  through all three engine paths and the PDF baselines.
+- **Vendor to a `<deck>.assets/` sidecar** + relative paths — the
+  deck-local model that keeps the deck self-contained, so the same deck
+  then renders hermetically through all three engine paths and the PDF
+  baselines. (Marp already resolves relative image paths under
+  `allowLocalFiles`, so image resolution there is mostly free.)
 
-So: **Drawing Board import (IndexedDB + `data:` resolution) and engine
-import (vendored sidecar + relative paths) are one capability with two
-representations, and export is the converter.** Themes export by writing
-the CSS to `themes/` + registering it (engine note); images/datasets export
+So: **the in-browser representation (IndexedDB + `data:` resolution) and the
+engine representation (vendored sidecar + relative paths) are one capability
+with two faces, and export is the converter.** Themes export by writing the
+CSS to `themes/` and registering it in `marp.config.js` `themeSet` (the
+gotcha: an unregistered theme renders palette-less); images/datasets export
 by baking or vendoring per above.
 
 ## Parity caveat
@@ -241,17 +254,16 @@ the same handles the Drawing Board did.
    CDN); keyword retrieval first, then `embed()` semantic; role-aware
    injection; the cloud-egress `sensitive` gate; the "use one of your own
    decks as an exemplar" picker.
-4. **Export bridge.** Bake-or-vendor on PDF export / `.md` download, meeting
-   the engine note's deck-local model.
+4. **Export bridge.** Bake-or-vendor on PDF export / `.md` download, so an
+   exported deck stays self-contained and hermetic for the engine paths.
 5. **Dataset binding.** Its own design note (new data-binding across all
-   render paths), per the engine note's deferral.
+   three render paths), deferred per the dataset section above.
 
 ## Open questions
 
 - **Export default** — bake `data:` URIs (self-contained, heavy) or vendor
-  a `<deck>.assets/` sidecar (engine-note-aligned, hermetic)? Leaning
-  sidecar for anything destined for git/CI; bake for a quick one-off
-  download.
+  a `<deck>.assets/` sidecar (hermetic, git/CI-friendly)? Leaning sidecar
+  for anything destined for git/CI; bake for a quick one-off download.
 - **CORS fallback ergonomics** — is "paste text / pick file" the primary URL
   affordance with fetch as the optimization, given how often CORS blocks?
 - **IndexedDB budget** — large images as `data:` strings inflate every
