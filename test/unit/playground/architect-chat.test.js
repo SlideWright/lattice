@@ -71,8 +71,9 @@ describe('buildChatMessages', () => {
     assert.equal(sys.role, 'system');
     assert.ok(Array.isArray(sys.content), 'cached system content is content blocks');
     assert.equal(sys.content.length, 2);
-    // Block 0 — the STATIC prefix carries the ephemeral breakpoint; block 1 doesn't.
-    assert.deepEqual(sys.content[0].cache_control, { type: 'ephemeral' });
+    // Block 0 — the STATIC prefix carries the ephemeral breakpoint (1-hour TTL so
+    // the prefix survives think-gaps across a session); block 1 doesn't.
+    assert.deepEqual(sys.content[0].cache_control, { type: 'ephemeral', ttl: '1h' });
     assert.equal(sys.content[1].cache_control, undefined);
     // The static block holds the persona + primer + edit protocol; the dynamic
     // block holds the per-deck score/findings/deck (so the cache key never moves).

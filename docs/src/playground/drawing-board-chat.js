@@ -16,6 +16,12 @@ import { renderMarkdown } from './chat-markdown.js';
 
 const MAX_DECK_CHARS = 1200; // a short excerpt — a small model drowns in a full deck
 const RICH_DECK_CHARS = 16000; // the cloud tier (Claude) reads the whole deck, not a peek
+// Prompt-cache TTL for the static prefix (OpenRouter/Anthropic). Converse is a
+// multi-turn conversation with think-gaps, so the 1-hour TTL keeps the ~9.7K-token
+// prefix warm across a whole authoring session instead of re-writing it after every
+// 5-minute lull. The 1h write costs 2× base input (vs 1.25× for 5m), but a single
+// avoided re-write more than pays for the premium — it wins after one >5-min gap.
+const CACHE_TTL = '1h';
 
 // Tiers capable enough for the FULL Lattice authoring dossier + the editing
 // protocol: the cloud tiers (Puter/Claude and OpenRouter — the user's chosen
@@ -101,7 +107,7 @@ export function buildChatMessages({ source, assessment, history, userText, catal
   // tail follows it in the same message, sent fresh each turn (correctly uncached).
   const systemMessage = cache && rich && systemStatic
     ? { role: 'system', content: [
-        { type: 'text', text: systemStatic, cache_control: { type: 'ephemeral' } },
+        { type: 'text', text: systemStatic, cache_control: { type: 'ephemeral', ttl: CACHE_TTL } },
         { type: 'text', text: systemDynamic },
       ] }
     : { role: 'system', content: system };

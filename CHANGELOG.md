@@ -291,7 +291,9 @@ in patch versions.
   as a capable tier (full Lattice dossier + edit protocol), same as Puter/WebLLM.
   On the OpenRouter (Anthropic) path the static prompt prefix — persona + the
   Lattice primer + the edit protocol, ~10K tokens identical every turn — carries
-  an `ephemeral` prompt-cache breakpoint, so repeat turns bill that slice at ~10%
+  an `ephemeral` prompt-cache breakpoint (1-hour TTL, so it survives think-gaps
+  across an authoring session rather than expiring after the default 5 minutes),
+  so repeat turns bill that slice at ~10%
   instead of in full; only the per-deck score/findings/deck tail is re-read. The
   flattened (uncached) prompt other backends receive is byte-identical, so their
   behaviour is unchanged. Docs-site only — no engine render-path change.
