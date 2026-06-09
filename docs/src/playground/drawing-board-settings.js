@@ -7,11 +7,21 @@
 // tier is unavailable — that degraded state is what's verified headless; the live
 // download + inference need real hardware.
 
+import { orSupportsCache } from './architect-model.js';
 import { getPref, PREFS, setPref } from './drawing-board-prefs.js';
 
 const MODEL_KEY = 'lattice-db-model'; // master on/off
 const TIER_KEY = 'lattice-db-loaded-tier'; // which tier the user loaded (persisted)
 const RESTORE_GUARD = 'lattice-db-restored'; // one auto-reconnect attempt per tab session
+
+// OpenRouter Converse controls (set in the Cloud AI section, READ by the chat).
+// Module-scope so drawing-board-chat.js can import the readers and feed them into
+// buildChatMessages — the controls are useless until the chat actually consumes them.
+const OR_CACHE_KEY = 'lattice-db-or-cache'; // prompt-caching opt-out (default on)
+const OR_INSTR_KEY = 'lattice-db-architect-instructions'; // standing instructions
+const INSTR_MAX = 500; // word cap on standing instructions
+export const readCachingEnabled = () => { try { return localStorage.getItem(OR_CACHE_KEY) !== 'off'; } catch { return true; } };
+export const readStandingInstructions = () => { try { return localStorage.getItem(OR_INSTR_KEY) || ''; } catch { return ''; } };
 
 function el(tag, cls, text) {
   const e = document.createElement(tag);
@@ -206,27 +216,149 @@ export function createModelSettings({ host, trigger, model, onChange, isOpen = (
     return n < 1 ? '$' + n.toFixed(3) : '$' + n.toFixed(2);
   }
 
-  // Fill the OpenRouter model <select> from the catalog (lazy, cached). Each
-  // option shows the name + per-million in/out pricing so the choice is informed.
-  async function loadOrModels(sel, current) {
-    try {
-      if (!orModelsCache) orModelsCache = await model.listOpenRouterModels();
-      const list = orModelsCache.slice().sort((x, y) => (x.name || x.id).localeCompare(y.name || y.id));
-      sel.innerHTML = '';
-      for (const m of list) {
-        const o = document.createElement('option');
-        o.value = m.id;
-        const price = m.promptPerM != null
-          ? `  ·  ${fmtPrice(m.promptPerM)}/M in · ${fmtPrice(m.completionPerM)}/M out`
-          : '';
-        o.textContent = (m.name || m.id) + price;
-        if (m.id === current) o.selected = true;
-        sel.append(o);
+  // ── the OpenRouter model picker (accordion) + its sibling controls ────────────
+  // OpenRouter ships 300+ models — a native <select> made that an unscannable wall
+  // and printed nonsense pricing. The picker is now an in-place ACCORDION (no nested
+  // drawer): collapsed it shows the current model + price with a chevron and a
+  // "Tap to change model" hint; expanded it reveals search + a Featured/All toggle +
+  // the vendor-grouped, priced list. Every control announces itself (cue + tip) —
+  // nothing is "click and hope".
+  const OR_FEATURED = [ // the short list worth defaulting to (matched by id prefix)
+    'anthropic/claude-sonnet-4', 'anthropic/claude-opus-4', 'anthropic/claude-3.5-sonnet',
+    'openai/gpt-5', 'openai/gpt-5-mini', 'openai/gpt-4o',
+    'google/gemini-2.5-pro', 'google/gemini-2.5-flash',
+  ];
+  const vendorOf = (id) => (id.split('/')[0] || 'other').replace(/[-_]/g, ' ');
+  const shortName = (m) => (m.name || m.id).replace(/^[^:]+:\s*/, ''); // drop "Vendor: " — we group by vendor
+  const priceLabel = (m) => (m.promptPerM != null
+    ? `${fmtPrice(m.promptPerM)}/M in · ${fmtPrice(m.completionPerM)}/M out`
+    : 'pricing varies'); // variable/router models (sentinel -1) — never "$-1000000"
+  const wordCount = (s) => { const t = s.trim(); return t ? t.split(/\s+/).length : 0; };
+
+  function orPicker() {
+    const wrap = el('div', 'db-or-picker');
+    const summary = el('button', 'db-or-summary');
+    summary.type = 'button';
+    summary.setAttribute('aria-expanded', 'false');
+    const sName = el('span', 'db-or-summary-name', model.openRouterModel());
+    const sHint = el('span', 'db-or-summary-hint', 'Tap to change model');
+    const sText = el('span', 'db-or-summary-text');
+    sText.append(sName, sHint);
+    summary.append(sText, el('span', 'db-or-chevron'));
+
+    const body = el('div', 'db-or-body');
+    body.hidden = true;
+    const search = el('input', 'db-or-search');
+    search.type = 'search';
+    search.placeholder = 'Search 300+ models…';
+    search.setAttribute('aria-label', 'Search OpenRouter models');
+    const seg = el('div', 'db-or-seg');
+    const segFeat = el('button', 'db-or-seg-btn is-on', 'Featured');
+    const segAll = el('button', 'db-or-seg-btn', 'All models');
+    segFeat.type = segAll.type = 'button';
+    seg.append(segFeat, segAll);
+    const list = el('div', 'db-or-list');
+    body.append(search, seg, list);
+    wrap.append(summary, body);
+
+    let view = 'featured';
+    let q = '';
+    const setSummary = () => {
+      const cur = (orModelsCache || []).find((m) => m.id === model.openRouterModel());
+      sName.textContent = cur ? `${shortName(cur)} · ${priceLabel(cur)}` : model.openRouterModel();
+    };
+    const renderList = () => {
+      list.innerHTML = '';
+      if (!orModelsCache) { list.append(el('p', 'db-or-empty', 'Loading models…')); return; }
+      let items = orModelsCache.filter((m) => `${m.name || ''} ${m.id}`.toLowerCase().includes(q));
+      if (view === 'featured') items = items.filter((m) => OR_FEATURED.some((f) => m.id === f || m.id.startsWith(f)));
+      if (!items.length) { list.append(el('p', 'db-or-empty', view === 'featured' ? 'No featured models match — try All.' : 'No models match.')); return; }
+      const groups = {};
+      for (const m of items) (groups[vendorOf(m.id)] ||= []).push(m);
+      for (const v of Object.keys(groups).sort()) {
+        list.append(el('div', 'db-or-group', v));
+        for (const m of groups[v].sort((x, y) => shortName(x).localeCompare(shortName(y)))) {
+          const row = el('label', 'db-or-row');
+          const sel = m.id === model.openRouterModel();
+          if (sel) row.classList.add('is-sel');
+          const r = document.createElement('input');
+          r.type = 'radio'; r.name = 'db-or-model'; r.value = m.id; r.checked = sel;
+          r.className = 'db-or-row-radio';
+          r.addEventListener('change', () => {
+            model.setOpenRouterModel(m.id);
+            setSummary();
+            body.hidden = true; summary.setAttribute('aria-expanded', 'false'); wrap.classList.remove('is-open');
+            onChange?.();
+            refresh(); // rebuild so the caching switch re-gates on the new model's support
+          });
+          const meta = el('span', 'db-or-row-meta');
+          meta.append(el('span', 'db-or-row-name', shortName(m)), el('span', 'db-or-row-price', priceLabel(m)));
+          row.append(r, meta);
+          list.append(row);
+        }
       }
-    } catch {
-      const o = sel.querySelector('option');
-      if (o) o.textContent = current + ' (prices unavailable)';
-    }
+    };
+    summary.addEventListener('click', async () => {
+      const open = body.hidden;
+      body.hidden = !open;
+      summary.setAttribute('aria-expanded', String(open));
+      wrap.classList.toggle('is-open', open);
+      if (open) {
+        if (!orModelsCache) { try { orModelsCache = await model.listOpenRouterModels(); } catch {} }
+        setSummary(); renderList(); search.focus();
+      }
+    });
+    search.addEventListener('input', () => { q = search.value.trim().toLowerCase(); renderList(); });
+    segFeat.addEventListener('click', () => { view = 'featured'; segFeat.classList.add('is-on'); segAll.classList.remove('is-on'); renderList(); });
+    segAll.addEventListener('click', () => { view = 'all'; segAll.classList.add('is-on'); segFeat.classList.remove('is-on'); renderList(); });
+    // Preload the catalog so the COLLAPSED summary reads "Claude Sonnet 4 · $3/M…"
+    // (friendly name + price) immediately, not the raw "vendor/model-id".
+    if (orModelsCache) setSummary();
+    else model.listOpenRouterModels().then((l) => { orModelsCache = l; setSummary(); }).catch(() => {});
+    return wrap;
+  }
+
+  // Prompt caching — a labelled switch (cue + tip). Default on; the user can opt out.
+  // Gated per-model: disabled with an honest "Not supported by this model" line when
+  // the selected model's vendor doesn't support OpenRouter prompt caching, so the
+  // toggle never lies. Re-gated on model change (the select handler calls refresh()).
+  function cacheToggle() {
+    const supported = orSupportsCache(model.openRouterModel());
+    const row = el('label', 'db-or-switch' + (supported ? '' : ' is-disabled'));
+    const text = el('span', 'db-pref-text');
+    text.append(el('span', 'db-pref-label', 'Prompt caching'),
+      el('span', 'db-pref-hint', supported
+        ? 'Cheaper repeat turns — reuses the static prompt'
+        : 'Not supported by this model'));
+    const sw = el('span', 'db-switch');
+    const cb = document.createElement('input');
+    cb.type = 'checkbox';
+    cb.className = 'db-switch-input';
+    cb.setAttribute('aria-label', 'Prompt caching');
+    cb.disabled = !supported;
+    cb.checked = supported && readCachingEnabled();
+    cb.addEventListener('change', () => { try { localStorage.setItem(OR_CACHE_KEY, cb.checked ? 'on' : 'off'); } catch {} });
+    sw.append(cb, el('span', 'db-switch-knob'));
+    row.append(text, sw);
+    return row;
+  }
+
+  // Standing instructions — a labelled textarea with a live word counter (cue + tip).
+  function standingInstructions() {
+    const box = el('div', 'db-or-instr');
+    box.append(el('span', 'db-pref-label', 'Standing instructions'));
+    box.append(el('span', 'db-pref-hint', 'Always tell the Architect this — applies to every chat (audience, tone, house style…)'));
+    const ta = document.createElement('textarea');
+    ta.className = 'db-or-instr-input';
+    ta.rows = 3;
+    ta.placeholder = 'e.g. We’re a fintech pitching Series B. Prefer dense tables. UK English.';
+    try { ta.value = localStorage.getItem(OR_INSTR_KEY) || ''; } catch {}
+    const counter = el('span', 'db-or-instr-count');
+    const update = () => { const n = wordCount(ta.value); counter.textContent = `${n} / ${INSTR_MAX} words`; counter.classList.toggle('over', n > INSTR_MAX); };
+    update();
+    ta.addEventListener('input', () => { update(); try { localStorage.setItem(OR_INSTR_KEY, ta.value); } catch {} });
+    box.append(ta, counter);
+    return box;
   }
 
   function cloudSection(a) {
@@ -266,16 +398,9 @@ export function createModelSettings({ host, trigger, model, onChange, isOpen = (
 
     if (orOn) {
       sec.append(el('p', 'db-pref-label', 'OpenRouter model'));
-      const sel = el('select', 'db-pref-select');
-      sel.setAttribute('aria-label', 'OpenRouter model');
-      const current = model.openRouterModel();
-      const o0 = document.createElement('option');
-      o0.value = current;
-      o0.textContent = current + ' (loading prices…)';
-      sel.append(o0);
-      sel.addEventListener('change', () => model.setOpenRouterModel(sel.value));
-      sec.append(sel);
-      loadOrModels(sel, current); // async fill with the priced catalog
+      sec.append(orPicker());
+      sec.append(cacheToggle());
+      sec.append(standingInstructions());
       const dc = el('button', 'db-btn db-settings-remove', 'Disconnect OpenRouter');
       dc.type = 'button';
       dc.addEventListener('click', () => {

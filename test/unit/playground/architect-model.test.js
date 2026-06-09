@@ -95,6 +95,44 @@ describe('ArchitectModel adapter', () => {
   });
 });
 
+describe('orPricePerM (OpenRouter pricing parse)', () => {
+  test('converts per-token USD strings to per-million, guarding sentinels', async () => {
+    const { model } = await load();
+    const { orPricePerM } = model;
+    // normal per-token price → per-million
+    assert.equal(orPricePerM('0.000003'), 3); // $3 / M
+    assert.equal(orPricePerM('0.000015'), 15);
+    // genuine free model
+    assert.equal(orPricePerM('0'), 0);
+    // the bug: variable/router models report a "-1" sentinel → null, never -1000000
+    assert.equal(orPricePerM('-1'), null);
+    assert.equal(orPricePerM('-0.5'), null);
+    // missing / non-numeric → null (no fixed price)
+    assert.equal(orPricePerM(undefined), null);
+    assert.equal(orPricePerM(''), null);
+    assert.equal(orPricePerM('n/a'), null);
+  });
+});
+
+describe('orSupportsCache (per-model caching gate)', () => {
+  test('caching-supported vendors return true; others false', async () => {
+    const { model } = await load();
+    const { orSupportsCache } = model;
+    // documented prompt-caching providers
+    assert.equal(orSupportsCache('anthropic/claude-sonnet-4'), true);
+    assert.equal(orSupportsCache('openai/gpt-5'), true);
+    assert.equal(orSupportsCache('google/gemini-2.5-pro'), true);
+    assert.equal(orSupportsCache('deepseek/deepseek-r1'), true);
+    assert.equal(orSupportsCache('x-ai/grok-4'), true);
+    // not on the caching list, or junk input
+    assert.equal(orSupportsCache('meta-llama/llama-3.3-70b-instruct'), false);
+    assert.equal(orSupportsCache('mistralai/mistral-large'), false);
+    assert.equal(orSupportsCache('openrouter/auto'), false);
+    assert.equal(orSupportsCache(''), false);
+    assert.equal(orSupportsCache(undefined), false);
+  });
+});
+
 describe('retrieval (cosine ranking)', () => {
   test('cosine of identical vectors is 1, orthogonal is 0', async () => {
     const { retrieval } = await load();

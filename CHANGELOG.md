@@ -241,6 +241,16 @@ in patch versions.
 
 ### Added
 
+- **Drawing Board: an OpenRouter model picker accordion, prompt-caching control,
+  and standing instructions.** The cramped native model `<select>` (300+ rows) is
+  replaced by an in-place accordion in the Cloud AI settings section: collapsed it
+  shows the current model + price with a "Tap to change model" hint; expanded it
+  offers search, a Featured/All toggle, and a vendor-grouped, priced list. A
+  **Prompt caching** switch lets the user opt out of the cached-prefix billing and
+  is gated per-model (disabled with "Not supported by this model" for vendors that
+  don't support it). A **Standing instructions** box (≤500 words) is appended to the
+  Architect's cached prompt prefix and honored on every turn. Drawing Board
+  (docs-site) only.
 - **`map` component — a US-states basemap that fills regions by value or
   category** (`evidence · spatial · series`, `chart` bucket), the first layout
   on the new **`spatial`** form. For geographic stories — program reach,
@@ -357,7 +367,14 @@ in patch versions.
   cloud — when both are connected an active-cloud preference decides, defaulting
   to the proven tier. OpenRouter is OpenAI-compatible and streams; it's treated
   as a capable tier (full Lattice dossier + edit protocol), same as Puter/WebLLM.
-  Docs-site only — no engine render-path change.
+  On the OpenRouter (Anthropic) path the static prompt prefix — persona + the
+  Lattice primer + the edit protocol, ~10K tokens identical every turn — carries
+  an `ephemeral` prompt-cache breakpoint (1-hour TTL, so it survives think-gaps
+  across an authoring session rather than expiring after the default 5 minutes),
+  so repeat turns bill that slice at ~10%
+  instead of in full; only the per-deck score/findings/deck tail is re-read. The
+  flattened (uncached) prompt other backends receive is byte-identical, so their
+  behaviour is unchanged. Docs-site only — no engine render-path change.
 - **`--accent-soft-body` token completes the soft accent-container vocabulary.**
   Soft accent surfaces (`--accent-soft` fill) now have a named body-text token
   alongside `--on-accent-soft` (emphasis/border) — it derives from `--text-body`
@@ -534,6 +551,18 @@ in patch versions.
 
 ### Fixed
 
+- **Drawing Board drawer close buttons are right-aligned again.** The flex
+  spacer that pushes the `×` to the end of a drawer head was scoped to
+  `.db-panel-head` only, so inside the Settings and Decks drawers
+  (`.db-drawer-head`) it collapsed and the close button jammed against the
+  title. The `.db-spacer` grow rule is now unscoped (a spacer grows in any
+  flex row). Drawing Board (docs-site) only.
+- **OpenRouter model picker no longer shows `$-1000000.000/M` for
+  variable-priced models.** OpenRouter reports a `-1` sentinel for router/auto
+  and other variable-priced rows; the picker multiplied it into a nonsense
+  per-million figure. Pricing now parses through `orPricePerM`, which maps any
+  negative/missing/non-numeric value to “no fixed price” (the option reads
+  “pricing varies”) while keeping `0` as a genuine free model. Drawing Board only.
 - **Mid-sentence inline code is no longer mis-promoted to a metadata pill.**
   The universal pill rule matched `code:has(+ :is(ul, ol))`, but the `+`
   combinator skips text nodes, so a mid-sentence reference on a row that merely
