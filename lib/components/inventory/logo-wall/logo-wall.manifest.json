@@ -1,0 +1,79 @@
+{
+  "$schema": "../../manifest.schema.json",
+  "name": "logo-wall",
+  "function": "inventory",
+  "form": "grid",
+  "substance": "prose",
+  "tags": ["visual", "showcase", "pitch"],
+  "description": "A grid of customer, partner, or funder logos as social proof.",
+  "purpose": "Use for the credibility slide — the 'trusted by' / 'our funders' / 'participating agencies' wall. Marks render desaturated and uniform so mismatched brand colours don't fight each other; the `color` variant keeps them branded when the hues carry meaning.",
+  "variants": ["color", "dense"],
+  "excludes": ["accent"],
+  "slots": {
+    "eyebrow": {
+      "selector": "p > code:only-child",
+      "required": false,
+      "description": "Optional kicker above the headline — wrap a short label in backticks, e.g. `Trusted by`."
+    },
+    "title": {
+      "selector": "h2",
+      "required": false,
+      "description": "Optional headline above the wall. A claim earns its place (‘400+ teams run board prep on Lattice’); a bare label (‘Customers’) does not."
+    },
+    "logos": {
+      "selector": "ul > li",
+      "required": true,
+      "description": "One list item per mark, authored as `- ![Brand name](brand.svg)`. The alt text is the accessible label, not a rendered caption. SVG is preferred so marks stay crisp at projector scale."
+    }
+  },
+  "skeleton": "<!-- _class: logo-wall -->\n\n`Trusted by`\n\n## The headline claim the logos back up.\n\n- ![First brand](logo-1.svg)\n- ![Second brand](logo-2.svg)\n- ![Third brand](logo-3.svg)\n- ![Fourth brand](logo-4.svg)\n- ![Fifth brand](logo-5.svg)\n- ![Sixth brand](logo-6.svg)\n",
+  "anatomyBlock": "logo-wall",
+  "sample": "<!-- _class: logo-wall -->\n\n`Trusted by`\n\n## 400+ teams run board prep on Lattice.\n\n- ![Acme](acme.svg)\n- ![Globex](globex.svg)\n- ![Initech](initech.svg)\n- ![Umbra](umbra.svg)\n- ![Vantage](vantage.svg)\n- ![Meridian](meridian.svg)\n- ![Helios](helios.svg)\n- ![Northwind](northwind.svg)\n",
+  "whenToUse": [
+    {
+      "title": "The proof is the logos",
+      "body": "Customers, partners, funders, accreditations, participating agencies — anywhere a set of recognisable marks carries more weight than a sentence. The audience scans the wall and concludes 'serious company keeps this company.'"
+    },
+    {
+      "title": "Marks read as one texture",
+      "body": "The default desaturates every mark to the same restrained grey so a loud red logo doesn't outshout a quiet one. The wall reads as a single credential, not a ransom note of competing brand colours."
+    },
+    {
+      "title": "Eight to eighteen marks",
+      "body": "Enough to signal breadth, few enough that each is legible. Fewer than six looks thin; past eighteen the marks shrink below recognition — curate to the most recognisable names or split across two slides."
+    }
+  ],
+  "antiPatterns": [
+    {
+      "title": "Names that need a sentence",
+      "body": "If each entity needs a role, a quote, or a metric beside it, this is the wrong layout. Use `actors` (who owns what), `cards-grid` (a short body per item), or `quote` (a single testimonial)."
+    },
+    {
+      "title": "Logos nobody recognises",
+      "body": "A wall of unknown marks proves nothing and asks the audience to squint. If the names don't carry on sight, state the count as a `big-number` ('400+ teams') instead."
+    },
+    {
+      "title": "Mismatched raster art",
+      "body": "Low-resolution PNG logos pulled from web pages look ragged at projector scale and break the uniform grey treatment. Source vector (SVG) marks; the desaturation assumes clean edges."
+    }
+  ],
+  "related": [
+    { "name": "actors", "when": "each named entity owns a responsibility, not just lends its logo" },
+    { "name": "cards-grid", "when": "each item needs a line of body text, not just a mark" },
+    { "name": "big-number", "when": "the proof is a count ('400+ teams'), not the individual marks" },
+    { "name": "quote", "when": "one customer's testimonial carries the slide" },
+    { "name": "image", "when": "a single visual, not a grid of marks, is the evidence" }
+  ],
+  "variantDocs": {
+    "color": {
+      "label": "Color — keep brand colours",
+      "caption": "Drops the desaturation so each mark renders in its own brand colour. Reserve for cases where the hues carry meaning — government insignia, university crests, certification badges — or where brand guidelines forbid recolouring. The grey default is the boardroom-restrained pick.",
+      "sample": "<!-- _class: logo-wall color -->\n\n`Our partners`\n\n## The brands behind the programme.\n\n- ![Acme](acme.svg)\n- ![Globex](globex.svg)\n- ![Initech](initech.svg)\n- ![Umbra](umbra.svg)\n- ![Vantage](vantage.svg)\n- ![Meridian](meridian.svg)\n- ![Helios](helios.svg)\n- ![Northwind](northwind.svg)\n"
+    },
+    "dense": {
+      "label": "Dense — more marks, smaller cells",
+      "caption": "Tightens to six columns with shorter cells for a longer roster — a member directory, a full funder list, every participating agency. Past about eighteen marks the recognition threshold gives out; split across two slides instead.",
+      "sample": "<!-- _class: logo-wall dense -->\n\n`Our funders`\n\n## Eighteen organisations backed this year's work.\n\n- ![Acme](acme.svg)\n- ![Globex](globex.svg)\n- ![Initech](initech.svg)\n- ![Umbra](umbra.svg)\n- ![Vantage](vantage.svg)\n- ![Meridian](meridian.svg)\n- ![Helios](helios.svg)\n- ![Northwind](northwind.svg)\n- ![Cobalt](cobalt.svg)\n- ![Sable](sable.svg)\n- ![Quanta](quanta.svg)\n- ![Lumen](lumen.svg)\n"
+    }
+  }
+}

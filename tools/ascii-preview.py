@@ -387,6 +387,42 @@ def demo_blocks() -> dict[str, str]:
         ('blank',),
     ])
 
+    blocks['funnel'] = frame([
+        ('left', 'header'),
+        ('center', 'Where the pipeline leaks.'),
+        ('blank',),
+        ('center', 'Visitors    [============]   12,000'),
+        ('center', '  62%        [========]      4,800'),
+        ('center', 'Activated    [=====]         2,160'),
+        ('center', '  40%        [==]              864'),
+        ('center', 'Paid         [=]               670'),
+        ('blank',),
+        ('split', 'footer', '1/19'),
+    ])
+
+    blocks['pricing'] = frame([
+        ('left', 'header'),
+        ('center', 'Pick the plan that fits.'),
+        ('blank',),
+        ('center', 'Starter    Growth*    Enterprise'),
+        ('center', '$0         $49         Custom'),
+        ('center', '[x x /]    [x x x]     [x x x]'),
+        ('center', 'one team   scaling     procurement'),
+        ('blank',),
+        ('split', 'footer', '1/19'),
+    ])
+
+    blocks['logo-wall'] = frame([
+        ('left', 'header'),
+        ('center', 'TRUSTED BY'),
+        ('center', 'The teams that run on us.'),
+        ('blank',),
+        ('center', '[Acme]  [Globex]  [Initech]'),
+        ('center', '[Umbra] [Vantage] [Helios]'),
+        ('blank',),
+        ('split', 'footer', '1/19'),
+    ])
+
     blocks['T7-card-grid-2x2'] = frame([
         ('left', 'header'),
         ('center', 'LABEL'),

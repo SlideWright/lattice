@@ -2,10 +2,22 @@
 
 # chart
 
-`9 components`
+`10 components`
 
 Chart — series-substance data visualizations (SVG kernel).
 
+
+---
+
+<!-- _class: funnel -->
+
+## Where the signup pipeline leaks.
+
+- Visitors `12,000`
+- Signups `4,800`
+- Activated `2,160`
+- Paid `864`
+- Renewed `670`
 
 ---
 

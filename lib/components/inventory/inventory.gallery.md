@@ -2,7 +2,7 @@
 
 # inventory
 
-`8 components`
+`9 components`
 
 Inventory — parallel sets of related items.
 
@@ -128,3 +128,20 @@ Inventory — parallel sets of related items.
 5. Change
    - Comms, exec sponsorship, and the people who preferred the old way.
    - _One comms partner · ships Q4_
+
+---
+
+<!-- _class: logo-wall -->
+
+`Trusted by`
+
+## 400+ teams run board prep on Lattice.
+
+- ![Acme](logo-wall/acme.svg)
+- ![Globex](logo-wall/globex.svg)
+- ![Initech](logo-wall/initech.svg)
+- ![Umbra](logo-wall/umbra.svg)
+- ![Vantage](logo-wall/vantage.svg)
+- ![Meridian](logo-wall/meridian.svg)
+- ![Helios](logo-wall/helios.svg)
+- ![Northwind](logo-wall/northwind.svg)

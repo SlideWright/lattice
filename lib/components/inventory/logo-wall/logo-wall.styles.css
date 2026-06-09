@@ -1,0 +1,90 @@
+/* logo-wall — a grid of brand / partner / funder marks as social proof.
+ * See lib/components/inventory/logo-wall/logo-wall.manifest.json for the contract.
+ *
+ * Substance: prose. The author writes a bulleted list of inline images
+ * (`- ![Brand](brand.svg)`); marpit renders `<ul><li><img></li></ul>` and
+ * CSS does the rest — no post-processor, so no three-render-path wiring.
+ *
+ * Modifier model:
+ *   logo-wall          4-column grey wall (default)
+ *   logo-wall dense    6-column, smaller cells — a longer roster
+ *   logo-wall color    keep brand colours (insignia, crests, badges)
+ *   logo-wall dark     dark canvas — marks flip to a light watermark
+ *
+ * The marks are desaturated + brightness-normalised with the SAME filter
+ * chain as the corner deck logo (img.deck-logo in lib/base/base.modifiers.css)
+ * so mismatched brand colours read as one uniform texture. `.color` opts
+ * back into full colour; `.dark` flips the brightness, mirroring how the
+ * deck logo behaves on dark-canvas layouts.
+ *
+ * Rules are UNLAYERED (no `@layer components` wrapper) to match every other
+ * component file — broad @layer activation is blocked (see engineering/
+ * cascade.md), so a wrapped file would lose to unlayered rules regardless
+ * of specificity. */
+
+section.logo-wall {
+  --logo-cols: 4;
+  --logo-cell-h: 9cqi;
+  --logo-gap: var(--sp-2xl);
+}
+
+/* The headline block (eyebrow + h2) keeps its natural height at the top;
+ * the wall grows to fill the remaining canvas and centres its rows. */
+section.logo-wall > ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  flex: 1 1 auto;
+  display: grid;
+  grid-template-columns: repeat(var(--logo-cols), 1fr);
+  gap: var(--logo-gap);
+  align-content: center;
+  justify-items: center;
+  align-items: center;
+}
+
+section.logo-wall > ul > li {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: var(--logo-cell-h);
+}
+
+section.logo-wall > ul > li img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  /* Desaturate to the same restrained grey as the corner deck logo — a
+   * touch more present than the watermark (this IS the content), but
+   * still muted so the wall reads as one credential, not a circus. */
+  filter: grayscale(1) brightness(0.45) contrast(1.05);
+  opacity: 0.72;
+}
+
+/* Dense — more marks, smaller cells, tighter gaps. */
+section.logo-wall.dense {
+  --logo-cols: 6;
+  --logo-cell-h: 6.5cqi;
+  --logo-gap: var(--sp-xl);
+}
+
+/* Color — keep brand colours when the hues carry meaning. */
+section.logo-wall.color > ul > li img {
+  filter: none;
+  opacity: 1;
+}
+
+/* Dark canvas — flip the brightness so the marks read as a faint light
+ * watermark on the dark ground, mirroring img.deck-logo on `.dark`. */
+section.logo-wall.dark > ul > li img {
+  filter: grayscale(1) brightness(2.4) contrast(1.05);
+  opacity: 0.8;
+}
+section.logo-wall.dark.color > ul > li img {
+  filter: none;
+  opacity: 1;
+}

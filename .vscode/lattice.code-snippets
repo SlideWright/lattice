@@ -293,6 +293,20 @@
     ],
     "description": "Featured card + sub-grid — one prominent item with supporting cards."
   },
+  "lattice: funnel": {
+    "prefix": "lattice-funnel",
+    "body": [
+      "<!-- _class: funnel -->",
+      "",
+      "## Where the flow drops off.",
+      "",
+      "- First stage `1000`",
+      "- Second stage `600`",
+      "- Third stage `320`",
+      "- Fourth stage `140`"
+    ],
+    "description": "Tapering stages that show where a flow drops off, with the conversion rate between each."
+  },
   "lattice: gantt": {
     "prefix": "lattice-gantt",
     "body": [
@@ -464,6 +478,24 @@
     ],
     "description": "Hairline-ruled ledger of items — name on the left, body on the right."
   },
+  "lattice: logo-wall": {
+    "prefix": "lattice-logo-wall",
+    "body": [
+      "<!-- _class: logo-wall -->",
+      "",
+      "`Trusted by`",
+      "",
+      "## The headline claim the logos back up.",
+      "",
+      "- ![First brand](logo-1.svg)",
+      "- ![Second brand](logo-2.svg)",
+      "- ![Third brand](logo-3.svg)",
+      "- ![Fourth brand](logo-4.svg)",
+      "- ![Fifth brand](logo-5.svg)",
+      "- ![Sixth brand](logo-6.svg)"
+    ],
+    "description": "A grid of customer, partner, or funder logos as social proof."
+  },
   "lattice: math": {
     "prefix": "lattice-math",
     "body": [
@@ -532,6 +564,28 @@
       "- Fourth slice `10%`"
     ],
     "description": "Pie or donut chart with legend — proportional wedges."
+  },
+  "lattice: pricing": {
+    "prefix": "lattice-pricing",
+    "body": [
+      "<!-- _class: pricing -->",
+      "",
+      "## Pick the plan that fits the team.",
+      "",
+      "- Starter `$0`",
+      "  - [x] First feature",
+      "  - [/] Second feature",
+      "  - For evaluating, one team.",
+      "- Growth `$49 / mo` *Most popular*",
+      "  - [x] First feature",
+      "  - [x] Second feature",
+      "  - For scaling teams.",
+      "- Enterprise `Custom`",
+      "  - [x] First feature",
+      "  - [x] Second feature",
+      "  - For procurement and compliance."
+    ],
+    "description": "Side-by-side plan tiers with prices, feature checklists, and one recommended column."
   },
   "lattice: progress": {
     "prefix": "lattice-progress",

@@ -1,0 +1,113 @@
+/* pricing — plan tiers with prices, feature checklists, and one recommended
+ * column. See lib/components/comparison/pricing/pricing.manifest.json.
+ *
+ * Substance: structure. Authoring shape mirrors verdict-grid (nested cards
+ * with [x]/[/]/[-] state markers), so the SAME badge transform fires on it —
+ * `verdictGridBadges` (marp), the emulator's verdict-grid pass, and the
+ * runtime's transformVerdictGridBadges all match `.pricing` too. Everything
+ * else is CSS:
+ *   ul > li             one tier card (auto-bold name, like cards-grid)
+ *   li > code           the price (trailing inline code, promoted to display)
+ *   li > em             the *Most popular* marker → a corner ribbon; its
+ *                       presence (`:has(> em)`, a standalone :has — safe per
+ *                       gotchas.md) elevates the card
+ *   li > ul > li .badge feature rows (disc + label; pill chrome stripped)
+ *   li > ul > li:last   the marker-less "who it's for" line, pinned to bottom
+ *
+ * Rules are UNLAYERED (no `@layer components` wrapper) to match every other
+ * component file — broad @layer activation is blocked (see engineering/
+ * cascade.md), so a wrapped file would lose to unlayered rules like the
+ * shared `.badge` chrome regardless of specificity.
+ */
+
+section.pricing { display: flex; flex-direction: column; }
+section.pricing h2 { margin-bottom: var(--sp-sm); }
+
+/* ── Tier grid ── three columns by default; `two` / `four` adjust. */
+section.pricing > ul {
+  display: grid;
+  grid-template-columns: repeat(var(--pricing-cols, 3), 1fr);
+  grid-auto-rows: 1fr;
+  gap: var(--sp-md);
+  flex: 1; list-style: none; padding: 0; margin: 0;
+}
+section.pricing.two  > ul { --pricing-cols: 2; }
+section.pricing.four > ul { --pricing-cols: 4; }
+
+/* ── Tier card ── auto-bold name via the card's own weight (cards-grid
+ * pattern); children revert below. */
+section.pricing > ul > li {
+  position: relative;
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--sp-md);
+  display: flex; flex-direction: column; align-items: flex-start;
+  font-size: var(--fs-message);
+  font-weight: 700; color: var(--text-heading);
+  line-height: var(--lh-tight);
+  overflow: hidden;
+}
+/* Back-compat: if an author wraps the name in **…**, render it identically. */
+section.pricing > ul > li > strong { font-weight: inherit; color: inherit; }
+
+/* ── Price ── trailing inline code, promoted to a display figure. */
+section.pricing > ul > li > code {
+  display: block;
+  margin: var(--sp-2xs) 0 var(--sp-sm) 0;
+  font-family: var(--font-display);
+  font-size: var(--fs-emphasis);
+  font-weight: 700; letter-spacing: 0;
+  color: var(--text-heading);
+  background: none; border: none; padding: 0;
+}
+
+/* ── Recommendation ribbon ── the author's *marker* renders top-right. */
+section.pricing > ul > li > em {
+  position: absolute; top: 0; right: 0;
+  font-style: normal; font-weight: 700;
+  font-family: var(--pill-font);
+  font-size: var(--pill-fs); letter-spacing: var(--pill-tracking);
+  text-transform: uppercase;
+  color: var(--on-accent); background: var(--accent);
+  padding: var(--pill-pad-y) var(--sp-sm);
+  border-bottom-left-radius: var(--radius-md);
+}
+
+/* ── Elevated tier ── any card carrying a marker (standalone :has). */
+section.pricing > ul > li:has(> em) {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--accent);
+  color: var(--on-accent-soft);
+}
+section.pricing > ul > li:has(> em) > code { color: var(--on-accent-soft); }
+
+/* ── Feature list ── fills the card so the caption can pin to the bottom;
+ * weight reverts from the card's 700. */
+section.pricing > ul > li > ul {
+  list-style: none; padding: 0; margin: var(--sp-sm) 0 0 0;
+  width: 100%; flex: 1 1 auto;
+  display: flex; flex-direction: column; gap: var(--sp-2xs);
+  font-weight: 400;
+}
+section.pricing > ul > li > ul > li {
+  font-size: var(--fs-body-compact);
+  font-weight: 400; color: var(--text-body);
+  line-height: var(--lh-snug);
+}
+/* Badge feature rows — strip verdict-grid's pill chrome, keep the disc +
+ * mark (::before/::after) and left-align. Padding is preserved so the
+ * absolute ::after mark stays registered over the ::before disc. */
+section.pricing > ul > li > ul > li > .badge {
+  background: none; border: none;
+  justify-content: flex-start;
+  font-family: inherit; font-size: inherit; font-weight: 400;
+  letter-spacing: 0; color: var(--text-body);
+}
+/* ── "Who it's for" line ── the marker-less last nested li, pinned bottom. */
+section.pricing > ul > li > ul > li:last-child {
+  margin-top: auto; padding-top: var(--sp-sm);
+  font-size: var(--fs-meta); color: var(--text-muted);
+}
+section.pricing > ul > li:has(> em) > ul > li:last-child { color: var(--on-accent-soft); }

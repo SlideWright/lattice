@@ -149,7 +149,7 @@
       "accent"
     ]
   },
-  "count": 48,
+  "count": 51,
   "components": [
     {
       "name": "actors",
@@ -2214,6 +2214,118 @@
       "galleryHref": "../../lib/components/imagery/featured/featured.gallery.light.pdf"
     },
     {
+      "name": "funnel",
+      "bucket": "chart",
+      "function": "evidence",
+      "form": "canvas",
+      "substance": "series",
+      "tags": [
+        "percentage",
+        "sequence",
+        "pitch"
+      ],
+      "description": "Tapering stages that show where a flow drops off, with the conversion rate between each.",
+      "purpose": "Use for a pipeline that narrows — a sales / conversion funnel, a hiring or grant pipeline, an onboarding flow. Each stage's band width is proportional to its value; the stage-to-stage conversion % is printed in the gaps so the leak is the read.",
+      "variants": [],
+      "effectiveVariants": [
+        "accent",
+        "archived",
+        "compact",
+        "confidential",
+        "dark",
+        "draft",
+        "loose",
+        "mark-orbit",
+        "mark-threads",
+        "no-footer",
+        "no-header",
+        "no-paginate",
+        "no-period",
+        "pinned",
+        "redacted",
+        "revised",
+        "scale-2xl",
+        "scale-l",
+        "scale-xl",
+        "silent",
+        "tbd",
+        "tint-corner at-tl",
+        "tint-edge at-right",
+        "tint-vignette",
+        "tone-fail",
+        "tone-pass",
+        "tone-skip",
+        "tone-warn",
+        "treatment-none",
+        "wip",
+        "with-period"
+      ],
+      "slots": {
+        "title": {
+          "selector": "h2",
+          "required": true,
+          "description": "Slide heading — name the flow and, ideally, the takeaway (‘Where the pipeline leaks’)."
+        },
+        "stages": {
+          "selector": "ul > li",
+          "required": true,
+          "description": "One li per stage, in flow order (widest first). Lead with the stage label, then a trailing inline-code value — `Signups \\`4,800\\``. Commas and units are tolerated; the largest value sets full width. Three to seven stages read best."
+        }
+      },
+      "skeleton": "<!-- _class: funnel -->\n\n## Where the flow drops off.\n\n- First stage `1000`\n- Second stage `600`\n- Third stage `320`\n- Fourth stage `140`\n",
+      "whenToUse": [
+        {
+          "title": "The story is the drop-off",
+          "body": "A funnel earns its shape when each stage is a strict subset of the one above and the audience needs to see WHERE the flow narrows — the leaky step, not just the totals. If the stages aren't a shrinking pipeline, use `progress` or `stats`."
+        },
+        {
+          "title": "Three to seven stages",
+          "body": "Two stages is just a ratio (use `big-number` or `stats`); past seven the bands thin out and the conversion labels crowd. Most pipelines fit in four to six."
+        },
+        {
+          "title": "Values in flow order, widest first",
+          "body": "Author the stages top-to-bottom as the flow runs, largest count first. The widest value sets full width and every band scales to it; the conversion % is computed from each value to the next."
+        }
+      ],
+      "antiPatterns": [
+        {
+          "title": "Stages that aren't a subset",
+          "body": "If a later stage can exceed an earlier one (it's a category breakdown, not a pipeline), the taper lies. Use `piechart` for parts of a whole or `progress` for independent metrics."
+        },
+        {
+          "title": "A funnel of two stages",
+          "body": "Two bands is a single conversion rate dressed up as a chart. State it as a `big-number` (‘18% convert’) or a two-tile `stats` instead."
+        },
+        {
+          "title": "Non-monotonic values",
+          "body": "Values that rise and fall make the trapezoids bulge and the conversion %s read oddly. A funnel assumes a monotonic narrowing; for an up-and-down series use a `progress` or a chart with an axis."
+        }
+      ],
+      "related": [
+        {
+          "name": "progress",
+          "when": "independent metrics as labelled bars, not a narrowing pipeline"
+        },
+        {
+          "name": "stats",
+          "when": "a row of headline figures with no drop-off relationship"
+        },
+        {
+          "name": "piechart",
+          "when": "parts of a single whole rather than sequential stages"
+        },
+        {
+          "name": "list-steps",
+          "when": "the stages are a process to walk through, not values to compare"
+        },
+        {
+          "name": "big-number",
+          "when": "a single conversion rate is the whole story"
+        }
+      ],
+      "galleryHref": "../../lib/components/chart/funnel/funnel.gallery.light.pdf"
+    },
+    {
       "name": "gantt",
       "bucket": "chart",
       "function": "progression",
@@ -3397,6 +3509,127 @@
       "galleryHref": "../../lib/components/inventory/list-tabular/list-tabular.gallery.light.pdf"
     },
     {
+      "name": "logo-wall",
+      "bucket": "inventory",
+      "function": "inventory",
+      "form": "grid",
+      "substance": "prose",
+      "tags": [
+        "visual",
+        "showcase",
+        "pitch"
+      ],
+      "description": "A grid of customer, partner, or funder logos as social proof.",
+      "purpose": "Use for the credibility slide — the 'trusted by' / 'our funders' / 'participating agencies' wall. Marks render desaturated and uniform so mismatched brand colours don't fight each other; the `color` variant keeps them branded when the hues carry meaning.",
+      "variants": [
+        "color",
+        "dense"
+      ],
+      "effectiveVariants": [
+        "archived",
+        "color",
+        "compact",
+        "confidential",
+        "dark",
+        "dense",
+        "draft",
+        "loose",
+        "mark-orbit",
+        "mark-threads",
+        "no-footer",
+        "no-header",
+        "no-paginate",
+        "no-period",
+        "pinned",
+        "redacted",
+        "revised",
+        "scale-2xl",
+        "scale-l",
+        "scale-xl",
+        "silent",
+        "tbd",
+        "tint-corner at-tl",
+        "tint-edge at-right",
+        "tint-vignette",
+        "tone-fail",
+        "tone-pass",
+        "tone-skip",
+        "tone-warn",
+        "treatment-none",
+        "wip",
+        "with-period"
+      ],
+      "slots": {
+        "eyebrow": {
+          "selector": "p > code:only-child",
+          "required": false,
+          "description": "Optional kicker above the headline — wrap a short label in backticks, e.g. `Trusted by`."
+        },
+        "title": {
+          "selector": "h2",
+          "required": false,
+          "description": "Optional headline above the wall. A claim earns its place (‘400+ teams run board prep on Lattice’); a bare label (‘Customers’) does not."
+        },
+        "logos": {
+          "selector": "ul > li",
+          "required": true,
+          "description": "One list item per mark, authored as `- ![Brand name](brand.svg)`. The alt text is the accessible label, not a rendered caption. SVG is preferred so marks stay crisp at projector scale."
+        }
+      },
+      "skeleton": "<!-- _class: logo-wall -->\n\n`Trusted by`\n\n## The headline claim the logos back up.\n\n- ![First brand](logo-1.svg)\n- ![Second brand](logo-2.svg)\n- ![Third brand](logo-3.svg)\n- ![Fourth brand](logo-4.svg)\n- ![Fifth brand](logo-5.svg)\n- ![Sixth brand](logo-6.svg)\n",
+      "whenToUse": [
+        {
+          "title": "The proof is the logos",
+          "body": "Customers, partners, funders, accreditations, participating agencies — anywhere a set of recognisable marks carries more weight than a sentence. The audience scans the wall and concludes 'serious company keeps this company.'"
+        },
+        {
+          "title": "Marks read as one texture",
+          "body": "The default desaturates every mark to the same restrained grey so a loud red logo doesn't outshout a quiet one. The wall reads as a single credential, not a ransom note of competing brand colours."
+        },
+        {
+          "title": "Eight to eighteen marks",
+          "body": "Enough to signal breadth, few enough that each is legible. Fewer than six looks thin; past eighteen the marks shrink below recognition — curate to the most recognisable names or split across two slides."
+        }
+      ],
+      "antiPatterns": [
+        {
+          "title": "Names that need a sentence",
+          "body": "If each entity needs a role, a quote, or a metric beside it, this is the wrong layout. Use `actors` (who owns what), `cards-grid` (a short body per item), or `quote` (a single testimonial)."
+        },
+        {
+          "title": "Logos nobody recognises",
+          "body": "A wall of unknown marks proves nothing and asks the audience to squint. If the names don't carry on sight, state the count as a `big-number` ('400+ teams') instead."
+        },
+        {
+          "title": "Mismatched raster art",
+          "body": "Low-resolution PNG logos pulled from web pages look ragged at projector scale and break the uniform grey treatment. Source vector (SVG) marks; the desaturation assumes clean edges."
+        }
+      ],
+      "related": [
+        {
+          "name": "actors",
+          "when": "each named entity owns a responsibility, not just lends its logo"
+        },
+        {
+          "name": "cards-grid",
+          "when": "each item needs a line of body text, not just a mark"
+        },
+        {
+          "name": "big-number",
+          "when": "the proof is a count ('400+ teams'), not the individual marks"
+        },
+        {
+          "name": "quote",
+          "when": "one customer's testimonial carries the slide"
+        },
+        {
+          "name": "image",
+          "when": "a single visual, not a grid of marks, is the evidence"
+        }
+      ],
+      "galleryHref": "../../lib/components/inventory/logo-wall/logo-wall.gallery.light.pdf"
+    },
+    {
       "name": "math",
       "bucket": "math",
       "function": "evidence",
@@ -3874,6 +4107,135 @@
         }
       ],
       "galleryHref": "../../lib/components/chart/piechart/piechart.gallery.light.pdf"
+    },
+    {
+      "name": "pricing",
+      "bucket": "comparison",
+      "function": "comparison",
+      "form": "grid",
+      "substance": "structure",
+      "tags": [
+        "pitch",
+        "tradeoff",
+        "recommendation"
+      ],
+      "description": "Side-by-side plan tiers with prices, feature checklists, and one recommended column.",
+      "purpose": "Use for the plans / packages slide — two to four tiers compared on price and features, with one tier elevated as the recommendation. The recommended tier is marked explicitly (it is usually the middle one, not the last), so the eye lands where you want it.",
+      "variants": [
+        "two",
+        "four"
+      ],
+      "effectiveVariants": [
+        "archived",
+        "compact",
+        "confidential",
+        "dark",
+        "draft",
+        "four",
+        "loose",
+        "mark-orbit",
+        "mark-threads",
+        "no-footer",
+        "no-header",
+        "no-paginate",
+        "no-period",
+        "pinned",
+        "redacted",
+        "revised",
+        "scale-2xl",
+        "scale-l",
+        "scale-xl",
+        "silent",
+        "tbd",
+        "tint-corner at-tl",
+        "tint-edge at-right",
+        "tint-vignette",
+        "tone-fail",
+        "tone-pass",
+        "tone-skip",
+        "tone-warn",
+        "treatment-none",
+        "two",
+        "wip",
+        "with-period"
+      ],
+      "slots": {
+        "title": {
+          "selector": "h2",
+          "required": true,
+          "description": "Slide heading — the choice the tiers resolve (‘Pick the plan that fits the team.’)."
+        },
+        "tiers": {
+          "selector": "ul > li",
+          "required": true,
+          "description": "One top-level li per tier. Lead with the plain tier name (auto-bold), then a trailing inline-code price (`$49 / mo`, `Custom`). Add a single-asterisk marker (`*Most popular*`) to elevate one tier — it renders as a ribbon. Then a nested list: one feature per line led by a state marker, and a final marker-less ‘who it's for’ line."
+        },
+        "features": {
+          "selector": "ul > li > ul > li",
+          "required": true,
+          "description": "Feature rows, each led by a state marker: `[x]` included (green check), `[/]` not included (muted, struck through), `[-]` limited (half). The LAST nested li carries NO marker — a short ‘who it's for’ line that anchors the bottom of the card. Keep the feature set and its order identical across every tier so the columns scan."
+        }
+      },
+      "skeleton": "<!-- _class: pricing -->\n\n## Pick the plan that fits the team.\n\n- Starter `$0`\n  - [x] First feature\n  - [/] Second feature\n  - For evaluating, one team.\n- Growth `$49 / mo` *Most popular*\n  - [x] First feature\n  - [x] Second feature\n  - For scaling teams.\n- Enterprise `Custom`\n  - [x] First feature\n  - [x] Second feature\n  - For procurement and compliance.\n",
+      "whenToUse": [
+        {
+          "title": "Two to four tiers",
+          "body": "Each tier is one column; the grid holds three across by default (`two` / `four` adjust the count). Past four the columns crowd and the prices stop scanning — move secondary options to a follow-up slide."
+        },
+        {
+          "title": "Same features, same order, every tier",
+          "body": "The columns only compare if each tier lists the identical feature set in the identical order — `[x]` where it's included, `[/]` where it isn't. Drifting features between tiers defeats the at-a-glance read."
+        },
+        {
+          "title": "Mark the recommendation",
+          "body": "Add `*Most popular*` (or `*Best value*`, `*Recommended*`) to the tier you want chosen — it renders as a ribbon and elevates the card. Usually the middle tier, which is why the marker is explicit rather than positional."
+        },
+        {
+          "title": "A 'who it's for' line per tier",
+          "body": "Each tier ends with one marker-less line naming its audience (‘For scaling teams.’). It anchors the bottom of the card and turns a price into a decision."
+        }
+      ],
+      "antiPatterns": [
+        {
+          "title": "More than four tiers",
+          "body": "Five-plus columns shrink below readability and the price comparison collapses. Curate to the tiers that matter, or use `compare-table` for a dense feature-by-plan matrix."
+        },
+        {
+          "title": "Every tier marked popular",
+          "body": "Elevate exactly one tier. Two ribbons cancel out and the eye has nowhere to land — the whole point of the marker is a single recommendation."
+        },
+        {
+          "title": "Features that drift between tiers",
+          "body": "If each tier lists a different set of features, the columns can't be compared row-for-row. Keep the feature list and order identical; toggle inclusion with `[x]` / `[/]`."
+        },
+        {
+          "title": "A wall of red 'not included'",
+          "body": "Use `[/]` (muted, struck through) for an absent feature, not `[ ]` (alarming empty/fail). A pricing table sells what's included; it shouldn't read as a list of denials."
+        }
+      ],
+      "related": [
+        {
+          "name": "compare-table",
+          "when": "a dense feature-by-plan matrix with many rows, not a few highlighted features"
+        },
+        {
+          "name": "verdict-grid",
+          "when": "options scored on shared criteria, not priced tiers"
+        },
+        {
+          "name": "cards-grid",
+          "when": "parallel items with no price and no shared feature checklist"
+        },
+        {
+          "name": "decision",
+          "when": "the slide recommends one option outright rather than presenting a price ladder"
+        },
+        {
+          "name": "big-number",
+          "when": "a single headline price, not a tiered comparison"
+        }
+      ],
+      "galleryHref": "../../lib/components/comparison/pricing/pricing.gallery.light.pdf"
     },
     {
       "name": "progress",

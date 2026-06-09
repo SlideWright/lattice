@@ -241,6 +241,41 @@ in patch versions.
 
 ### Added
 
+- **`funnel` component — a tapering stage chart showing where a flow drops
+  off** (`evidence · canvas · series`, `chart` bucket). For any narrowing
+  pipeline — sales / conversion funnel, hiring pipeline, grant / donor
+  pipeline. Author one li per stage in flow order with a trailing inline-code
+  value (`- Signups \`4,800\``); the kernel draws centred trapezoid bands
+  (width ∝ value), flanks each with its label and value, and prints the
+  stage-to-stage conversion % in the gaps. New chart-family kernel module
+  (`funnel.transform.js`) wired through the single dispatcher, so it reaches
+  all three render paths via the registry with no per-renderer code. Demo
+  deck: `examples/funnel.md`.
+- **`pricing` component — plan tiers with prices, feature checklists, and one
+  recommended column** (`comparison · grid · structure`). The plans / packages
+  slide for commercial (sales, product launch), membership / fundraising
+  (giving tiers), and procurement (RFP cost options) decks. Author one li per
+  tier: a plain name (auto-bold), a trailing inline-code price (`$49 / mo`,
+  `Custom`), an optional `*Most popular*` marker that renders as a ribbon and
+  elevates the card, then nested `[x]` (included) / `[/]` (not, struck through)
+  / `[-]` (limited) feature rows and a marker-less "who it's for" line.
+  Variants `two` / `four` adjust the column count. Shares verdict-grid's badge
+  machinery (the `[x]`/`[-]`/`[ ]`/`[/]` → badge transform now also fires on
+  `.pricing` in all three render paths). Demo deck: `examples/pricing.md`.
+- **`logo-wall` component — a grid of customer / partner / funder marks as
+  social proof** (`inventory · grid · prose`). The credibility slide every
+  go-to-market and mission-driven deck reaches for — *trusted by* (corporate),
+  *our funders* (nonprofit), *participating agencies* (government). Author a
+  bulleted list of inline images (`- ![Brand](brand.svg)`); marks render
+  desaturated and uniform (the same grayscale treatment as the corner deck
+  logo) so mismatched brand colours don't fight. Variants: `color` (keep brand
+  hues for insignia / crests), `dense` (six columns for a longer roster).
+  Pure CSS — no transform. Demo deck: `examples/logo-wall.md`.
+- **The emulator now renders inline content images (`![alt](url)`).** Previously
+  `lattice-emulator.js` only handled block-level `![bg …]` backgrounds, so an
+  in-flow image rendered as literal markdown text; it now parses inline images
+  to `<img>`, matching marp-core (the marp-cli and runtime paths already did
+  this natively). Unblocks image-in-prose components such as `logo-wall`.
 - **`--accent-soft-body` token completes the soft accent-container vocabulary.**
   Soft accent surfaces (`--accent-soft` fill) now have a named body-text token
   alongside `--on-accent-soft` (emphasis/border) — it derives from `--text-body`
