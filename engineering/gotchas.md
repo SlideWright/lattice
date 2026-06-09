@@ -1404,3 +1404,37 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
   automated merge is needed again.
 - **Commits:** Fixed alongside the G-gen promotion commit in the
   `refactor(themes)` session on 2026-05-15.
+
+## Docs site (Astro + GitHub Pages)
+
+### Playground/specimen previews 404 on the engine CSS + runtime
+
+- **Symptom:** On the *deployed* docs site (slidewright.github.io/lattice),
+  every live preview — the Playground page and every component-page
+  specimen — fails with a red status like `theme lattice (404)`. The
+  rendered page references `…/playground/themes/lattice.css` and
+  `…/playground/lattice-runtime.js` (UNVERSIONED), and both 404. Yet the
+  deploy succeeded and the build artifact *does* contain the assets, under
+  `playground/v/<hash>/themes/…`. Works fine in `astro dev` locally.
+- **Cause:** `docs/src/playground/asset-version.mjs` discovers the staged
+  `v/<hash>/` dir to build cache-busted URLs. It derived the lookup path
+  from `import.meta.url`. Astro/Vite **bundles** that module for the
+  production SSR build and relocates it, so the `import.meta.url`-relative
+  path no longer points at `docs/src/playground/`. `readdirSync` throws,
+  the `catch` swallows it, `assetVersion()` returns `''`, and `assetBase()`
+  falls back to the bare `playground/` prefix. But sync only ever writes
+  the *versioned* tree (`sync-playground-assets.mjs`), so the unversioned
+  fallback URLs point at files that don't exist → 404. `astro dev` doesn't
+  bundle frontmatter modules, so `import.meta.url` stays correct there —
+  the failure is build-only, which is why it never showed up locally.
+- **Fix:** Anchor the lookup to the **project root** via `process.cwd()`
+  (the `docs/` dir under both `astro build` and `astro dev`, and any
+  `docs/`-scoped npm script), which survives bundling. The
+  `import.meta.url` path is kept as a belt-and-braces fallback. Verify by
+  inspecting built HTML: `grep themeBase dist/components/<bucket>/<name>/index.html`
+  must show `playground/v/<hash>/themes/`, not the bare `playground/themes/`.
+- **Removable when:** Never silently — if the cache-bust scheme is replaced
+  by a generated importable version constant (Vite would inline it, no fs
+  read), this whole class of path-resolution failure goes away.
+- **Commit:** `fix(docs): resolve the playground asset-version dir from the
+  project root, not import.meta.url`.
