@@ -127,36 +127,36 @@ const dbData = JSON.stringify({
 			</div>
 		</header>
 
-		<div class="db-workspace" id="db-workspace" data-rail="open">
-			<!-- Rail: decks + history. Persistence + checkpoints arrive in Slice 3;
-			     framed here with the active deck + a what's-coming note. -->
-			<aside class="db-rail" id="db-rail">
-				<div class="db-rail-head">
-					<button class="db-rail-collapse" id="db-rail-collapse" aria-label="Collapse rail" title="Collapse rail"></button>
-					<span class="db-panel-title">Decks</span>
-					<button class="db-btn db-btn-icon" id="db-new-deck" aria-label="New deck" title="New deck">+</button>
-				</div>
-				<div class="db-rail-body">
-					<div class="db-deck-list" id="db-deck-list">
-						<p class="db-rail-note">Loading your decks…</p>
-					</div>
-					<div class="db-rail-section">
-						<div class="db-rail-section-head">
-							<span class="db-panel-title">History</span>
-							<button class="db-btn db-btn-icon" id="db-checkpoint" aria-label="Save checkpoint" title="Save a checkpoint"></button>
-						</div>
-						<div class="db-history-list" id="db-history-list"></div>
-					</div>
-				</div>
-			</aside>
-
-			<!-- The Architect — deterministic onboarding + live review (Slice 5). -->
+		<div class="db-workspace" id="db-workspace">
+			<!-- The Architect — deterministic onboarding + live review (Slice 5). The
+			     deck library + checkpoint history fold into the "Decks" popover in this
+			     panel's head; workspace + on-device-AI preferences into the settings
+			     chip beside it. (The old standalone rail is retired.) -->
 			<section class="db-panel db-architect" id="db-architect">
 				<div class="db-panel-head">
 					<span class="db-panel-title">The Architect</span>
 					<span class="db-spacer"></span>
-					<button class="db-model-chip is-floor" id="db-model-chip" aria-haspopup="dialog" title="On-device AI settings">Deterministic floor</button>
-					<div class="db-settings-pop" id="db-settings-pop" role="dialog" aria-label="On-device AI settings" hidden></div>
+					<div class="db-decks" id="db-decks-wrap">
+						<button class="db-btn db-decks-open" id="db-decks-open" aria-haspopup="dialog" aria-expanded="false" title="Decks & history">Decks</button>
+						<div class="db-decks-pop" id="db-decks-pop" role="dialog" aria-label="Decks and history" hidden>
+							<div class="db-rail-section-head db-decks-head">
+								<span class="db-panel-title">Decks</span>
+								<button class="db-btn db-btn-icon" id="db-new-deck" aria-label="New deck" title="New deck">+</button>
+							</div>
+							<div class="db-deck-list" id="db-deck-list">
+								<p class="db-rail-note">Loading your decks…</p>
+							</div>
+							<div class="db-rail-section">
+								<div class="db-rail-section-head">
+									<span class="db-panel-title">History</span>
+									<button class="db-btn db-btn-icon" id="db-checkpoint" aria-label="Save checkpoint" title="Save a checkpoint"></button>
+								</div>
+								<div class="db-history-list" id="db-history-list"></div>
+							</div>
+						</div>
+					</div>
+					<button class="db-model-chip is-floor" id="db-model-chip" aria-haspopup="dialog" title="Settings — workspace &amp; on-device AI">Deterministic floor</button>
+					<div class="db-settings-pop" id="db-settings-pop" role="dialog" aria-label="Settings" hidden></div>
 				</div>
 				<div class="db-panel-body db-arch-body" id="db-arch-body" data-arch-mode="coach" data-converse-ready="false">
 					<div class="db-arch-scroll">
@@ -258,7 +258,6 @@ const dbData = JSON.stringify({
 
 			<!-- Mobile pane switcher (shown <=1024px) -->
 			<nav class="db-mobile-tabs" role="tablist" aria-label="Workspace panes">
-				<button class="db-mobile-tab" data-pane="decks" role="tab" aria-selected="false">Decks</button>
 				<button class="db-mobile-tab" data-pane="architect" role="tab" aria-selected="false">Architect</button>
 				<button class="db-mobile-tab" data-pane="editor" role="tab" aria-selected="true">Edit</button>
 				<button class="db-mobile-tab" data-pane="preview" role="tab" aria-selected="false">Preview</button>
@@ -333,6 +332,7 @@ const dbData = JSON.stringify({
 			import { scrollJumpState } from '../playground/chat-markdown.js';
 			import { createModelSettings } from '../playground/drawing-board-settings.js';
 			import { createCoachConsole } from '../playground/coach-console.js';
+			import { getPref } from '../playground/drawing-board-prefs.js';
 			const data = JSON.parse(document.getElementById('db-data').textContent);
 
 			// The on-device model ladder (Phase 2). Defaults on; degrades to the
@@ -356,6 +356,20 @@ const dbData = JSON.stringify({
 				onChange: () => { if (window.__dbChat) window.__dbChat.reload(); if (window.__dbSyncConverse) window.__dbSyncConverse(); },
 			});
 			window.__dbSettings = settings;
+
+			// Decks & history popover — folded out of the old standalone rail into the
+			// Architect head. Click toggles; outside-click / Escape closes.
+			(function () {
+				var btn = document.getElementById('db-decks-open');
+				var pop = document.getElementById('db-decks-pop');
+				if (!btn || !pop) return;
+				function open() { pop.hidden = false; btn.setAttribute('aria-expanded', 'true'); }
+				function close() { pop.hidden = true; btn.setAttribute('aria-expanded', 'false'); }
+				window.__dbToggleDecks = function () { pop.hidden ? open() : close(); };
+				btn.addEventListener('click', function (e) { e.stopPropagation(); window.__dbToggleDecks(); });
+				document.addEventListener('click', function (e) { if (!pop.hidden && !pop.contains(e.target) && e.target !== btn) close(); });
+				document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !pop.hidden) close(); });
+			})();
 
 			// After detection, refresh the chip and reconnect a previously-loaded model
 			// (weights are cached, but the running engine is lost on reload — re-init it,
@@ -398,7 +412,13 @@ const dbData = JSON.stringify({
 			}
 			window.__dbSetArchMode = setArchMode; // the onboarding lands the user in Coach
 			for (const t of document.querySelectorAll('.db-arch-mode')) t.addEventListener('click', () => setArchMode(t.getAttribute('data-mode')));
-			try { const m = localStorage.getItem('lattice-db-arch-mode'); if (m === 'converse') setArchMode('converse'); } catch (e) {}
+			// Landing mode on reload: the preference pins Coach/Converse, or 'remember'
+			// falls back to whichever mode you last used (the legacy behaviour).
+			try {
+				const landing = getPref('landingMode');
+				if (landing === 'coach' || landing === 'converse') setArchMode(landing);
+				else { const m = localStorage.getItem('lattice-db-arch-mode'); if (m === 'converse') setArchMode('converse'); }
+			} catch (e) {}
 			// A stale onboarding greeting shouldn't follow you to another deck.
 			window.addEventListener('db-active-deck', () => { if (window.__dbCoach && window.__dbCoach.clearIntro) window.__dbCoach.clearIntro(); });
 
@@ -961,19 +981,11 @@ const dbData = JSON.stringify({
 				makeResizer(document.getElementById('db-resize-left'), 'arch');
 				makeResizer(document.getElementById('db-resize-right'), 'preview');
 
-				// ── Rail collapse ─────────────────────────────────────────────────────
-				var railBtn = document.getElementById('db-rail-collapse');
-				if (railBtn) {
-					railBtn.addEventListener('click', function () {
-						var collapsed = workspace.getAttribute('data-rail') === 'collapsed';
-						workspace.setAttribute('data-rail', collapsed ? 'open' : 'collapsed');
-						// chevron direction driven by CSS: #db-workspace[data-rail] .db-rail-collapse::before
-					});
-				}
-
 				// ── Mobile pane tabs ──────────────────────────────────────────────────
 				var tabs = document.querySelectorAll('.db-mobile-tab');
+				var PANES = { architect: 1, editor: 1, preview: 1 };
 				function setPane(which) {
+					if (!PANES[which]) which = 'editor'; // 'decks' pane retired → land on Edit
 					document.body.setAttribute('data-pane', which);
 					try { localStorage.setItem('lattice-db-pane', which); } catch (e) {}
 					tabs.forEach(function (t) { t.setAttribute('aria-selected', t.getAttribute('data-pane') === which ? 'true' : 'false'); });

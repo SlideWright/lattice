@@ -38,16 +38,12 @@ body.db-page .topbar {
 	min-height: 0;
 	display: grid;
 	grid-template-columns:
-		var(--db-rail, 244px)
 		var(--db-arch, 360px)
 		7px
 		minmax(320px, 1fr)
 		7px
 		var(--db-preview, 600px);
 	background: var(--bg);
-}
-.db-workspace[data-rail="collapsed"] {
-	--db-rail: 56px;
 }
 
 /* ── Shared panel chrome ──────────────────────────────────────────────────── */
@@ -129,12 +125,13 @@ body.db-page .topbar {
  * --icon-* tokens come from landing.css :root. Each button paints its glyph
  * with `background: currentColor` masked by the icon — exactly like the nav /
  * mode toggles — so it follows the active palette and light/dark for free. */
-.db-rail-collapse::before,
 #db-checkpoint::before,
 .db-arch-send::before,
 .db-sc-speak::before,
 .db-deck-x::before,
+.db-deck-rename::before,
 .db-pv-x::before,
+.db-decks-open::after,
 .db-model-chip::before,
 .db-focus-open::before,
 .db-refine-open::before,
@@ -151,12 +148,12 @@ body.db-page .topbar {
 	-webkit-mask: var(--db-glyph) center / contain no-repeat;
 	mask: var(--db-glyph) center / contain no-repeat;
 }
-.db-rail-collapse::before { --db-glyph: var(--icon-chevron-left); }
-#db-workspace[data-rail='collapsed'] .db-rail-collapse::before { --db-glyph: var(--icon-chevron-right); }
 #db-checkpoint::before { --db-glyph: var(--icon-flag); }
 .db-arch-send::before { --db-glyph: var(--icon-arrow-up); }
 .db-sc-speak::before { --db-glyph: var(--icon-volume-2); }
 .db-deck-x::before, .db-pv-x::before { --db-glyph: var(--icon-x); }
+.db-deck-rename::before { --db-glyph: var(--icon-pencil); }
+.db-decks-open::after { --db-glyph: var(--icon-chevron-down); margin-left: 0.3em; }
 .db-model-chip::before { --db-glyph: var(--icon-settings); margin-right: 0.34em; }
 .db-focus-open::before { --db-glyph: var(--icon-scan); margin-right: 0.34em; }
 .db-refine-open::before { --db-glyph: var(--icon-pencil); margin-right: 0.34em; }
@@ -166,48 +163,35 @@ body.db-page .topbar {
 .db-arch-jump-btn[data-dir='top']::before { --db-glyph: var(--icon-chevron-up); }
 .db-arch-jump-btn[data-dir='bottom']::before { --db-glyph: var(--icon-chevron-down); }
 
-/* ── The rail: decks + history ────────────────────────────────────────────── */
-.db-rail {
-	min-width: 0;
-	display: flex;
-	flex-direction: column;
-	background: var(--bg-alt);
-	overflow: hidden;
+/* ── Decks & history popover (folded out of the old rail, anchored in the
+ *    Architect head — same menu family as the export / settings popovers) ──── */
+.db-decks {
+	position: relative;
+	display: inline-flex;
 }
-.db-rail-head {
-	display: flex;
+.db-decks-open {
+	display: inline-flex;
 	align-items: center;
-	gap: 0.4rem;
-	height: 38px;
-	padding: 0 0.5rem 0 0.85rem;
-	border-bottom: 1px solid var(--border);
 }
-.db-rail-head .db-panel-title {
-	flex: 1 1 auto;
-}
-.db-rail-collapse {
-	font: inherit;
-	color: var(--text-muted);
-	background: none;
-	border: 0;
-	cursor: pointer;
-	padding: 0.2rem;
-	line-height: 1;
-	border-radius: var(--radius-sm);
-}
-.db-rail-collapse:hover {
-	color: var(--text-heading);
-	background: var(--bg);
-}
-.db-rail-body {
-	flex: 1 1 auto;
-	min-height: 0;
+.db-decks-pop {
+	position: absolute;
+	top: calc(100% + 4px);
+	right: 0;
+	z-index: 50;
+	width: min(300px, calc(100vw - 2rem));
+	max-height: min(70vh, 520px);
 	overflow-y: auto;
+	background: var(--bg);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-md);
+	box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
 	padding: 0.6rem;
 }
-.db-workspace[data-rail="collapsed"] .db-rail-body,
-.db-workspace[data-rail="collapsed"] .db-rail-head .db-panel-title {
+.db-decks-pop[hidden] {
 	display: none;
+}
+.db-decks-head {
+	margin-bottom: 0.5rem;
 }
 .db-deck-row {
 	display: flex;
@@ -256,24 +240,93 @@ body.db-page .topbar {
 	color: var(--text-muted);
 	margin-top: 0.15rem;
 }
+.db-deck-acts {
+	flex: 0 0 auto;
+	display: flex;
+	gap: 0.25rem;
+}
+.db-deck-rename,
 .db-deck-x {
 	flex: 0 0 auto;
+	display: inline-grid;
+	place-items: center;
 	width: 26px;
 	font: inherit;
-	font-size: 0.78rem;
+	font-size: 0.82rem;
 	color: var(--text-muted);
 	background: var(--bg);
 	border: 1px solid var(--border);
 	border-radius: var(--radius-sm);
 	cursor: pointer;
-	opacity: 0;
+	opacity: 0.5; /* legible on touch (no hover); full on row hover/focus */
 	transition: opacity 0.12s, color 0.12s, border-color 0.12s;
 }
-.db-deck-row:hover .db-deck-x {
+.db-deck-row:hover .db-deck-rename,
+.db-deck-row:hover .db-deck-x,
+.db-deck-rename:focus-visible,
+.db-deck-x:focus-visible {
 	opacity: 1;
+}
+.db-deck-rename:hover {
+	color: var(--accent);
+	border-color: var(--accent);
 }
 .db-deck-x:hover {
 	color: #c0392b;
+	border-color: #c0392b;
+}
+
+/* Inline rename — an input swapped in for the deck button. */
+.db-deck-row.is-editing {
+	margin-bottom: 0.4rem;
+}
+.db-deck-rename-input {
+	flex: 1 1 auto;
+	min-width: 0;
+	font: inherit;
+	font-size: 0.84rem;
+	font-weight: 600;
+	color: var(--text-heading);
+	background: var(--bg);
+	border: 1px solid var(--accent);
+	border-radius: var(--radius-sm);
+	padding: 0.5rem 0.6rem;
+}
+.db-deck-rename-input:focus {
+	outline: none;
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+
+/* Inline delete confirm — the row morphs into a "Delete? · Keep / Delete" bar. */
+.db-deck-row.is-confirming {
+	align-items: center;
+	gap: 0.35rem;
+	padding: 0.4rem 0.5rem;
+	border: 1px solid color-mix(in srgb, #c0392b 45%, var(--border));
+	border-radius: var(--radius-sm);
+	background: color-mix(in srgb, #c0392b 7%, var(--bg));
+}
+.db-deck-confirm-msg {
+	flex: 1 1 auto;
+	min-width: 0;
+	font-size: 0.8rem;
+	font-weight: 550;
+	color: var(--text-heading);
+}
+.db-confirm-keep,
+.db-confirm-del {
+	flex: 0 0 auto;
+	font-size: 0.74rem;
+	padding: 0.28rem 0.55rem;
+}
+.db-btn-danger {
+	background: #c0392b;
+	border-color: #c0392b;
+	color: #fff;
+}
+.db-btn-danger:hover {
+	filter: brightness(1.06);
+	color: #fff;
 	border-color: #c0392b;
 }
 
@@ -1256,37 +1309,37 @@ body.db-page .topbar {
 		display: none;
 	}
 
-	/* Every surface (incl. the rail) is a full pane stacked in row 1; only the
-	   active one shows. The rail is a normal pane here, not a drawer. */
-	.db-rail,
+	/* Each panel is a full pane stacked in row 1; only the active one shows. */
 	.db-panel {
 		grid-row: 1;
 		grid-column: 1;
 		border-left: 0;
 	}
-	.db-rail {
-		position: static;
-		width: auto;
-		transform: none;
-		box-shadow: none;
-	}
-	.db-rail-collapse {
-		display: none; /* the rail is a pane, nothing to collapse */
-	}
 
-	body[data-pane="decks"] .db-architect,
-	body[data-pane="decks"] .db-editor,
-	body[data-pane="decks"] .db-preview,
-	body[data-pane="architect"] .db-rail,
 	body[data-pane="architect"] .db-editor,
 	body[data-pane="architect"] .db-preview,
-	body[data-pane="editor"] .db-rail,
 	body[data-pane="editor"] .db-architect,
 	body[data-pane="editor"] .db-preview,
-	body[data-pane="preview"] .db-rail,
 	body[data-pane="preview"] .db-architect,
 	body[data-pane="preview"] .db-editor {
 		display: none;
+	}
+
+	/* Decks + Settings live in the Architect head; on a phone they open as
+	   full-width sheets pinned to the bottom of the active pane, above the tab
+	   bar, instead of a tiny anchored dropdown. */
+	.db-decks {
+		position: static;
+	}
+	.db-decks-pop,
+	.db-settings-pop {
+		position: fixed;
+		left: 0.5rem;
+		right: 0.5rem;
+		top: auto;
+		bottom: calc(env(safe-area-inset-bottom, 0px) + 3.4rem);
+		width: auto;
+		max-height: 60vh;
 	}
 
 	.db-mobile-tabs {
@@ -1763,6 +1816,100 @@ body.db-page .topbar {
 .db-settings-remove:hover {
 	border-color: #c0392b;
 	color: #c0392b;
+}
+
+/* Workspace preferences (the "make it yours" section, above On-device AI). */
+.db-settings-section-top {
+	margin-top: 1rem;
+	padding-top: 0.85rem;
+	border-top: 1px solid var(--border);
+}
+.db-settings-workspace {
+	display: flex;
+	flex-direction: column;
+	gap: 0.55rem;
+}
+.db-pref-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.6rem;
+}
+.db-pref-text {
+	display: flex;
+	flex-direction: column;
+	gap: 0.1rem;
+	min-width: 0;
+}
+.db-pref-label {
+	font-size: 0.82rem;
+	color: var(--text-body);
+}
+.db-pref-hint {
+	font-size: 0.7rem;
+	color: var(--text-muted);
+}
+.db-pref-select {
+	flex: 0 0 auto;
+	font: inherit;
+	font-size: 0.78rem;
+	color: var(--text-body);
+	background: var(--bg);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-sm);
+	padding: 0.28rem 0.45rem;
+	cursor: pointer;
+}
+.db-pref-select:hover {
+	border-color: var(--accent);
+}
+.db-pref-select:focus-visible {
+	outline: none;
+	border-color: var(--accent);
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+
+/* ── Toast (the reversible delete: "Deck deleted · Undo") ──────────────────── */
+.db-toast {
+	position: fixed;
+	left: 50%;
+	bottom: 1.4rem;
+	transform: translate(-50%, 1rem);
+	z-index: 3000;
+	display: flex;
+	align-items: center;
+	gap: 0.85rem;
+	max-width: calc(100vw - 2rem);
+	padding: 0.6rem 0.7rem 0.6rem 0.95rem;
+	background: var(--text-heading);
+	color: var(--bg);
+	border-radius: var(--radius-md);
+	box-shadow: 0 12px 40px rgba(0, 0, 0, 0.28);
+	font-size: 0.84rem;
+	opacity: 0;
+	transition: opacity 0.18s, transform 0.18s;
+}
+.db-toast.is-in {
+	opacity: 1;
+	transform: translate(-50%, 0);
+}
+.db-toast-msg {
+	white-space: nowrap;
+}
+.db-toast-undo {
+	flex: 0 0 auto;
+	font: inherit;
+	font-size: 0.8rem;
+	font-weight: 650;
+	color: var(--bg);
+	background: color-mix(in srgb, var(--bg) 22%, transparent);
+	border: 1px solid color-mix(in srgb, var(--bg) 45%, transparent);
+	border-radius: var(--radius-sm);
+	padding: 0.3rem 0.7rem;
+	cursor: pointer;
+}
+.db-toast-undo:hover {
+	background: color-mix(in srgb, var(--bg) 34%, transparent);
 }
 
 /* ── Refine actions menu (Slice 9b) ─────────────────────────────────────────── */

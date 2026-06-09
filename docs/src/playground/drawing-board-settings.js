@@ -7,6 +7,8 @@
 // tier is unavailable — that degraded state is what's verified headless; the live
 // download + inference need real hardware.
 
+import { PREFS, getPref, setPref } from './drawing-board-prefs.js';
+
 const MODEL_KEY = 'lattice-db-model'; // master on/off
 const TIER_KEY = 'lattice-db-loaded-tier'; // which tier the user loaded (persisted)
 const RESTORE_GUARD = 'lattice-db-restored'; // one auto-reconnect attempt per tab session
@@ -16,6 +18,45 @@ function el(tag, cls, text) {
   if (cls) e.className = cls;
   if (text != null) e.textContent = text;
   return e;
+}
+
+// A labelled <select> for one workspace preference. Keeps the option vocabulary
+// next to its key, reads the current value, persists on change, and runs an
+// optional side effect (e.g. re-pruning history when the cap drops).
+function prefRow(name, label, hint, optionLabels, onChange) {
+  const p = PREFS[name];
+  const row = el('div', 'db-pref-row');
+  const text = el('div', 'db-pref-text');
+  text.append(el('span', 'db-pref-label', label));
+  if (hint) text.append(el('span', 'db-pref-hint', hint));
+  const sel = el('select', 'db-pref-select');
+  sel.setAttribute('aria-label', label);
+  const current = getPref(name);
+  p.values.forEach((v, i) => {
+    const o = document.createElement('option');
+    o.value = v;
+    o.textContent = optionLabels[i] || v;
+    if (v === current) o.selected = true;
+    sel.append(o);
+  });
+  sel.addEventListener('change', () => { setPref(name, sel.value); if (onChange) onChange(sel.value); });
+  row.append(text, sel);
+  return row;
+}
+
+// The Workspace section of the unified Settings popover — the "make it yours"
+// preferences. Reads/writes via drawing-board-prefs; the store reads the same
+// keys in its hot paths. AI-tier controls render below this (createModelSettings).
+function workspaceSection() {
+  const ws = el('section', 'db-settings-workspace');
+  ws.append(el('h3', 'db-settings-head', 'Workspace'));
+  ws.append(prefRow('newDeck', 'New deck starts from', null, ['Starter scaffold', 'Blank canvas']));
+  ws.append(prefRow('landingMode', 'On reload, Architect opens in', null, ['Remember last', 'Coach', 'Converse']));
+  ws.append(prefRow('restoreDeck', 'On reload, show', null, ['Last deck edited', 'A fresh deck']));
+  ws.append(prefRow('historyCap', 'Auto checkpoints kept per deck', null, ['10', '30', '100', 'All'],
+    () => { try { window.__dbStore?.applyHistoryCap?.(); } catch {} }));
+  ws.append(prefRow('deleteStyle', 'Deleting a deck', null, ['Asks to confirm', 'Undo toast']));
+  return ws;
 }
 
 const readEnabled = () => { try { return localStorage.getItem(MODEL_KEY) !== 'off'; } catch { return true; } };
@@ -165,7 +206,10 @@ export function createModelSettings({ host, trigger, model, onChange }) {
     const a = model.availability();
     const heavyOk = webgpu && !coarsePointer(); // WebLLM only on a desktop GPU
     const panel = el('div', 'db-settings-panel');
-    panel.append(el('h3', 'db-settings-head', 'On-device AI'));
+    // Workspace preferences first (always available, no model needed), then the
+    // on-device AI tier controls beneath a divider.
+    panel.append(workspaceSection());
+    panel.append(el('h3', 'db-settings-head db-settings-section-top', 'On-device AI'));
 
     // Master switch.
     const row = el('label', 'db-settings-row');
