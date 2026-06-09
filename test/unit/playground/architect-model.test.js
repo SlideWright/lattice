@@ -114,6 +114,25 @@ describe('orPricePerM (OpenRouter pricing parse)', () => {
   });
 });
 
+describe('orSupportsCache (per-model caching gate)', () => {
+  test('caching-supported vendors return true; others false', async () => {
+    const { model } = await load();
+    const { orSupportsCache } = model;
+    // documented prompt-caching providers
+    assert.equal(orSupportsCache('anthropic/claude-sonnet-4'), true);
+    assert.equal(orSupportsCache('openai/gpt-5'), true);
+    assert.equal(orSupportsCache('google/gemini-2.5-pro'), true);
+    assert.equal(orSupportsCache('deepseek/deepseek-r1'), true);
+    assert.equal(orSupportsCache('x-ai/grok-4'), true);
+    // not on the caching list, or junk input
+    assert.equal(orSupportsCache('meta-llama/llama-3.3-70b-instruct'), false);
+    assert.equal(orSupportsCache('mistralai/mistral-large'), false);
+    assert.equal(orSupportsCache('openrouter/auto'), false);
+    assert.equal(orSupportsCache(''), false);
+    assert.equal(orSupportsCache(undefined), false);
+  });
+});
+
 describe('retrieval (cosine ranking)', () => {
   test('cosine of identical vectors is 1, orthogonal is 0', async () => {
     const { retrieval } = await load();

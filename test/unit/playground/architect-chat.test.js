@@ -98,6 +98,28 @@ describe('buildChatMessages', () => {
     assert.equal(typeof msgs[0].content, 'string');
   });
 
+  test('standing instructions ride in the cached static prefix (rich), not the dynamic tail', async () => {
+    const { buildChatMessages } = await load();
+    const args = {
+      source: '# Deck', assessment: { scorecard: { band: 'A', overall: 90 }, findings: [] },
+      history: [], userText: 'help', catalog: [], rich: true,
+      standingInstructions: 'We are a fintech. UK English. Prefer dense tables.',
+    };
+    const sys = buildChatMessages({ ...args, cache: true })[0];
+    assert.match(sys.content[0].text, /STANDING INSTRUCTIONS/); // cached block — applies every turn
+    assert.match(sys.content[0].text, /We are a fintech\. UK English\./);
+    assert.ok(!/STANDING INSTRUCTIONS/.test(sys.content[1].text), 'not duplicated in the dynamic tail');
+  });
+
+  test('no standing instructions → no standing block', async () => {
+    const { buildChatMessages } = await load();
+    const sys = buildChatMessages({
+      source: '# D', assessment: { scorecard: { band: 'A', overall: 90 }, findings: [] },
+      history: [], userText: 'q', catalog: [], rich: true, cache: true,
+    })[0];
+    assert.ok(!/STANDING INSTRUCTIONS/.test(sys.content[0].text));
+  });
+
   test('handles a clean deck and empty history', async () => {
     const { buildChatMessages } = await load();
     const msgs = buildChatMessages({ source: '# D', assessment: { scorecard: { band: 'A', overall: 95 }, findings: [] }, history: null, userText: 'q' });
