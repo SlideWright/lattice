@@ -39,7 +39,7 @@ export function getPref(name) {
 
 export function setPref(name, value) {
   const p = PREFS[name];
-  if (!p || !p.values.includes(value)) return;
+  if (!p?.values.includes(value)) return;
   try {
     if (value === p.def) localStorage.removeItem(p.key);
     else localStorage.setItem(p.key, value);

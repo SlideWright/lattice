@@ -7,7 +7,7 @@
 // tier is unavailable — that degraded state is what's verified headless; the live
 // download + inference need real hardware.
 
-import { PREFS, getPref, setPref } from './drawing-board-prefs.js';
+import { getPref, PREFS, setPref } from './drawing-board-prefs.js';
 
 const MODEL_KEY = 'lattice-db-model'; // master on/off
 const TIER_KEY = 'lattice-db-loaded-tier'; // which tier the user loaded (persisted)
