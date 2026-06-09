@@ -13,7 +13,7 @@
 import { applyEdit, diffLines, EDIT_PROTOCOL, numberSlides, parseEdits, sliceSlide } from './architect-edits.js';
 import { buildLatticePrimer } from './architect-knowledge.js';
 import { orSupportsCache } from './architect-model.js';
-import { renderMarkdown } from './chat-markdown.js';
+import { renderMarkdown, renderMarkdownStream } from './chat-markdown.js';
 import { readCachingEnabled, readStandingInstructions } from './drawing-board-settings.js';
 
 const MAX_DECK_CHARS = 1200; // a short excerpt — a small model drowns in a full deck
@@ -480,6 +480,17 @@ export function createChat({ mount, composer, model, store, getAssessment, catal
       target.classList.add('is-streaming');
       target.textContent = '';
     };
+    // Render Markdown live as tokens arrive, not just once at the end — but coalesce
+    // to one paint per animation frame so a fast cloud stream doesn't thrash innerHTML
+    // (which would also fight text selection). renderMarkdownStream holds back the
+    // trailing incomplete construct so partial syntax doesn't flicker. The final
+    // setBody() below re-renders the complete, edits-stripped text, so this live
+    // paint is purely cosmetic and the end state is always exact.
+    const schedule = typeof requestAnimationFrame === 'function' ? requestAnimationFrame : (fn) => setTimeout(fn, 16);
+    const unschedule = typeof cancelAnimationFrame === 'function' ? cancelAnimationFrame : clearTimeout;
+    let painting = 0;
+    const paint = () => { painting = 0; target.innerHTML = renderMarkdownStream(full); scrollDown(); };
+    const schedulePaint = () => { if (!painting) painting = schedule(paint); };
     try {
       // Capable tiers (Puter cloud + WebLLM desktop) get the rich, Lattice-aware
       // prompt + the whole deck; the tiny local tiers keep the lean peek so they
@@ -497,12 +508,14 @@ export function createChat({ mount, composer, model, store, getAssessment, catal
       const out = await model.complete({
         messages,
         fallback: floor,
-        onToken: (tok) => { begin(); full += tok; target.textContent = full; scrollDown(); },
+        onToken: (tok) => { begin(); full += tok; schedulePaint(); },
       });
       full = (out && String(out)) || full || floor;
     } catch {
       full = floor;
     }
+    // Cancel any frame still queued so a late paint can't clobber the final render.
+    if (painting) { unschedule(painting); painting = 0; }
     begin(); // ensure the thinking state clears even if nothing streamed
     target.classList.remove('is-streaming');
 
