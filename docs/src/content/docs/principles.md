@@ -54,6 +54,35 @@ Get that right and the deck stops needing to be presented at all. You
 can email it and forget it, and it still makes the case. Lattice is
 built for that deck.
 
+## You're competing with what's for lunch
+
+Attention is the scarcest thing in the room, and it's conditional.
+Fifteen minutes is a long time to hold someone; every minute has to
+earn the next. A dry speaker can survive that — a flat delivery is
+forgivable. Material that isn't put together is not. The moment a deck
+reads like a chore instead of a story, people check out, and they don't
+feel guilty about it. The topic doesn't save you. Your title doesn't
+either. You can be the CEO at the front of the room; if the deck is a
+mess, the person in the third row is deciding between the chicken and
+the fish.
+
+So the deck has one job while you're talking: never be the reason you
+lose them. That's the whole argument for restraint — four points to a
+slide at the most, or an image with a title, nothing on the screen
+fighting the voice that's carrying the story. The best presenters look
+less like they're presenting and more like theater, and their slides
+are nearly empty. The slide serves the act; it never tries to be it.
+
+Lattice gives you the universal half: the part every good presentation
+shares, the reason the best of them land even with people who disagree.
+It strips the clutter, holds you to a few points, and keeps the slide
+from being what loses the room. The other half is yours alone — your
+personality, your expertise, the way you tell it, the humor when the
+moment has room for one. That partition is the point. The template
+carries what's common to good presentations so the uncommon part — you
+— has room to land. It doesn't sand you into a house style; it clears
+the stage.
+
 ## The colors live in one file
 
 Every color in a Lattice deck comes from a palette — one file, a short
