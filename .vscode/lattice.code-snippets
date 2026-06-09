@@ -551,6 +551,28 @@
     ],
     "description": "Pie or donut chart with legend — proportional wedges."
   },
+  "lattice: pricing": {
+    "prefix": "lattice-pricing",
+    "body": [
+      "<!-- _class: pricing -->",
+      "",
+      "## Pick the plan that fits the team.",
+      "",
+      "- Starter `$0`",
+      "  - [x] First feature",
+      "  - [/] Second feature",
+      "  - For evaluating, one team.",
+      "- Growth `$49 / mo` *Most popular*",
+      "  - [x] First feature",
+      "  - [x] Second feature",
+      "  - For scaling teams.",
+      "- Enterprise `Custom`",
+      "  - [x] First feature",
+      "  - [x] Second feature",
+      "  - For procurement and compliance."
+    ],
+    "description": "Side-by-side plan tiers with prices, feature checklists, and one recommended column."
+  },
   "lattice: progress": {
     "prefix": "lattice-progress",
     "body": [

@@ -387,6 +387,18 @@ def demo_blocks() -> dict[str, str]:
         ('blank',),
     ])
 
+    blocks['pricing'] = frame([
+        ('left', 'header'),
+        ('center', 'Pick the plan that fits.'),
+        ('blank',),
+        ('center', 'Starter    Growth*    Enterprise'),
+        ('center', '$0         $49         Custom'),
+        ('center', '[x x /]    [x x x]     [x x x]'),
+        ('center', 'one team   scaling     procurement'),
+        ('blank',),
+        ('split', 'footer', '1/19'),
+    ])
+
     blocks['logo-wall'] = frame([
         ('left', 'header'),
         ('center', 'TRUSTED BY'),

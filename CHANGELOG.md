@@ -241,6 +241,17 @@ in patch versions.
 
 ### Added
 
+- **`pricing` component — plan tiers with prices, feature checklists, and one
+  recommended column** (`comparison · grid · structure`). The plans / packages
+  slide for commercial (sales, product launch), membership / fundraising
+  (giving tiers), and procurement (RFP cost options) decks. Author one li per
+  tier: a plain name (auto-bold), a trailing inline-code price (`$49 / mo`,
+  `Custom`), an optional `*Most popular*` marker that renders as a ribbon and
+  elevates the card, then nested `[x]` (included) / `[/]` (not, struck through)
+  / `[-]` (limited) feature rows and a marker-less "who it's for" line.
+  Variants `two` / `four` adjust the column count. Shares verdict-grid's badge
+  machinery (the `[x]`/`[-]`/`[ ]`/`[/]` → badge transform now also fires on
+  `.pricing` in all three render paths). Demo deck: `examples/pricing.md`.
 - **`logo-wall` component — a grid of customer / partner / funder marks as
   social proof** (`inventory · grid · prose`). The credibility slide every
   go-to-market and mission-driven deck reaches for — *trusted by* (corporate),

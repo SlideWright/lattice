@@ -2,7 +2,7 @@
 
 # comparison
 
-`7 components`
+`8 components`
 
 Comparison — how two or more options differ.
 
@@ -59,6 +59,28 @@ Comparison — how two or more options differ.
 - **Low impact · High effort.**
   - Dashboards nobody opens
   - The maturity-model self-assessment
+
+---
+
+<!-- _class: pricing -->
+
+## Pick the plan that fits the team.
+
+- Starter `$0`
+  - [x] Up to 3 seats
+  - [/] SSO
+  - [/] Dedicated support
+  - For evaluating, one team.
+- Growth `$49 / mo` *Most popular*
+  - [x] Up to 25 seats
+  - [x] SSO
+  - [/] Dedicated support
+  - For scaling teams.
+- Enterprise `Custom`
+  - [x] Unlimited seats
+  - [x] SSO + SCIM
+  - [x] Dedicated support
+  - For procurement and compliance.
 
 ---
 

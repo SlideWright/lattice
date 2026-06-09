@@ -1429,9 +1429,11 @@ function parseSlide(raw, index) {
     return { sem: 'fail', shape: 'state-empty' };
   };
 
-  // verdict-grid: transform [x]/[-]/[ ]/[/] prefixed inner li items into badge spans.
-  // The ul > li card structure and last-inner-li body text are left intact for CSS.
-  if (cls.includes('verdict-grid')) {
+  // verdict-grid (and pricing, which shares the nested-card-with-badges shape —
+  // per-tier feature rows): transform [x]/[-]/[ ]/[/] prefixed inner li items
+  // into badge spans. The ul > li card structure and last-inner-li body text
+  // (verdict rationale / pricing "who it's for" line) are left intact for CSS.
+  if (cls.includes('verdict-grid') || cls.includes('pricing')) {
     html = html.replace(/<li>\s*\[([x\-/ ])\]\s*([\s\S]*?)<\/li>/g, (_, marker, label) => {
       const { sem, shape } = stateClassesFor(marker);
       return `<li><span class="badge ${sem} ${shape}">${label.trim()}</span></li>`;

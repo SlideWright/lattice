@@ -149,7 +149,7 @@
       "accent"
     ]
   },
-  "count": 49,
+  "count": 50,
   "components": [
     {
       "name": "actors",
@@ -3995,6 +3995,135 @@
         }
       ],
       "galleryHref": "../../lib/components/chart/piechart/piechart.gallery.light.pdf"
+    },
+    {
+      "name": "pricing",
+      "bucket": "comparison",
+      "function": "comparison",
+      "form": "grid",
+      "substance": "structure",
+      "tags": [
+        "pitch",
+        "tradeoff",
+        "recommendation"
+      ],
+      "description": "Side-by-side plan tiers with prices, feature checklists, and one recommended column.",
+      "purpose": "Use for the plans / packages slide — two to four tiers compared on price and features, with one tier elevated as the recommendation. The recommended tier is marked explicitly (it is usually the middle one, not the last), so the eye lands where you want it.",
+      "variants": [
+        "two",
+        "four"
+      ],
+      "effectiveVariants": [
+        "archived",
+        "compact",
+        "confidential",
+        "dark",
+        "draft",
+        "four",
+        "loose",
+        "mark-orbit",
+        "mark-threads",
+        "no-footer",
+        "no-header",
+        "no-paginate",
+        "no-period",
+        "pinned",
+        "redacted",
+        "revised",
+        "scale-2xl",
+        "scale-l",
+        "scale-xl",
+        "silent",
+        "tbd",
+        "tint-corner at-tl",
+        "tint-edge at-right",
+        "tint-vignette",
+        "tone-fail",
+        "tone-pass",
+        "tone-skip",
+        "tone-warn",
+        "treatment-none",
+        "two",
+        "wip",
+        "with-period"
+      ],
+      "slots": {
+        "title": {
+          "selector": "h2",
+          "required": true,
+          "description": "Slide heading — the choice the tiers resolve (‘Pick the plan that fits the team.’)."
+        },
+        "tiers": {
+          "selector": "ul > li",
+          "required": true,
+          "description": "One top-level li per tier. Lead with the plain tier name (auto-bold), then a trailing inline-code price (`$49 / mo`, `Custom`). Add a single-asterisk marker (`*Most popular*`) to elevate one tier — it renders as a ribbon. Then a nested list: one feature per line led by a state marker, and a final marker-less ‘who it's for’ line."
+        },
+        "features": {
+          "selector": "ul > li > ul > li",
+          "required": true,
+          "description": "Feature rows, each led by a state marker: `[x]` included (green check), `[/]` not included (muted, struck through), `[-]` limited (half). The LAST nested li carries NO marker — a short ‘who it's for’ line that anchors the bottom of the card. Keep the feature set and its order identical across every tier so the columns scan."
+        }
+      },
+      "skeleton": "<!-- _class: pricing -->\n\n## Pick the plan that fits the team.\n\n- Starter `$0`\n  - [x] First feature\n  - [/] Second feature\n  - For evaluating, one team.\n- Growth `$49 / mo` *Most popular*\n  - [x] First feature\n  - [x] Second feature\n  - For scaling teams.\n- Enterprise `Custom`\n  - [x] First feature\n  - [x] Second feature\n  - For procurement and compliance.\n",
+      "whenToUse": [
+        {
+          "title": "Two to four tiers",
+          "body": "Each tier is one column; the grid holds three across by default (`two` / `four` adjust the count). Past four the columns crowd and the prices stop scanning — move secondary options to a follow-up slide."
+        },
+        {
+          "title": "Same features, same order, every tier",
+          "body": "The columns only compare if each tier lists the identical feature set in the identical order — `[x]` where it's included, `[/]` where it isn't. Drifting features between tiers defeats the at-a-glance read."
+        },
+        {
+          "title": "Mark the recommendation",
+          "body": "Add `*Most popular*` (or `*Best value*`, `*Recommended*`) to the tier you want chosen — it renders as a ribbon and elevates the card. Usually the middle tier, which is why the marker is explicit rather than positional."
+        },
+        {
+          "title": "A 'who it's for' line per tier",
+          "body": "Each tier ends with one marker-less line naming its audience (‘For scaling teams.’). It anchors the bottom of the card and turns a price into a decision."
+        }
+      ],
+      "antiPatterns": [
+        {
+          "title": "More than four tiers",
+          "body": "Five-plus columns shrink below readability and the price comparison collapses. Curate to the tiers that matter, or use `compare-table` for a dense feature-by-plan matrix."
+        },
+        {
+          "title": "Every tier marked popular",
+          "body": "Elevate exactly one tier. Two ribbons cancel out and the eye has nowhere to land — the whole point of the marker is a single recommendation."
+        },
+        {
+          "title": "Features that drift between tiers",
+          "body": "If each tier lists a different set of features, the columns can't be compared row-for-row. Keep the feature list and order identical; toggle inclusion with `[x]` / `[/]`."
+        },
+        {
+          "title": "A wall of red 'not included'",
+          "body": "Use `[/]` (muted, struck through) for an absent feature, not `[ ]` (alarming empty/fail). A pricing table sells what's included; it shouldn't read as a list of denials."
+        }
+      ],
+      "related": [
+        {
+          "name": "compare-table",
+          "when": "a dense feature-by-plan matrix with many rows, not a few highlighted features"
+        },
+        {
+          "name": "verdict-grid",
+          "when": "options scored on shared criteria, not priced tiers"
+        },
+        {
+          "name": "cards-grid",
+          "when": "parallel items with no price and no shared feature checklist"
+        },
+        {
+          "name": "decision",
+          "when": "the slide recommends one option outright rather than presenting a price ladder"
+        },
+        {
+          "name": "big-number",
+          "when": "a single headline price, not a tiered comparison"
+        }
+      ],
+      "galleryHref": "../../lib/components/comparison/pricing/pricing.gallery.light.pdf"
     },
     {
       "name": "progress",
