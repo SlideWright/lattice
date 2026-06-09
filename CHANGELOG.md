@@ -241,6 +241,20 @@ in patch versions.
 
 ### Added
 
+- **`logo-wall` component — a grid of customer / partner / funder marks as
+  social proof** (`inventory · grid · prose`). The credibility slide every
+  go-to-market and mission-driven deck reaches for — *trusted by* (corporate),
+  *our funders* (nonprofit), *participating agencies* (government). Author a
+  bulleted list of inline images (`- ![Brand](brand.svg)`); marks render
+  desaturated and uniform (the same grayscale treatment as the corner deck
+  logo) so mismatched brand colours don't fight. Variants: `color` (keep brand
+  hues for insignia / crests), `dense` (six columns for a longer roster).
+  Pure CSS — no transform. Demo deck: `examples/logo-wall.md`.
+- **The emulator now renders inline content images (`![alt](url)`).** Previously
+  `lattice-emulator.js` only handled block-level `![bg …]` backgrounds, so an
+  in-flow image rendered as literal markdown text; it now parses inline images
+  to `<img>`, matching marp-core (the marp-cli and runtime paths already did
+  this natively). Unblocks image-in-prose components such as `logo-wall`.
 - **`--accent-soft-body` token completes the soft accent-container vocabulary.**
   Soft accent surfaces (`--accent-soft` fill) now have a named body-text token
   alongside `--on-accent-soft` (emphasis/border) — it derives from `--text-body`

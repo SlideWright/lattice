@@ -1025,6 +1025,13 @@ function parseInline(t) {
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;');
   return t
+    // Inline content images: `![alt](url)`. Block-level background images
+    // (`![bg …]`) are consumed earlier (see the `^!\[bg` pass), so by here
+    // only in-flow marks remain — e.g. a `logo-wall` list of brand SVGs.
+    // marp-core renders these natively in the marp-cli and runtime paths;
+    // this brings the emulator to parity. Runs first so the `[]()` delimiters
+    // aren't disturbed by the emphasis passes.
+    .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (_, alt, url) => `<img src="${url}" alt="${alt}">`)
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
     .replace(/\*(.+?)\*/g,     '<em>$1</em>')
     .replace(/(?<!\w)_([^_]+?)_(?!\w)/g, '<em>$1</em>')

@@ -464,6 +464,24 @@
     ],
     "description": "Hairline-ruled ledger of items — name on the left, body on the right."
   },
+  "lattice: logo-wall": {
+    "prefix": "lattice-logo-wall",
+    "body": [
+      "<!-- _class: logo-wall -->",
+      "",
+      "`Trusted by`",
+      "",
+      "## The headline claim the logos back up.",
+      "",
+      "- ![First brand](logo-1.svg)",
+      "- ![Second brand](logo-2.svg)",
+      "- ![Third brand](logo-3.svg)",
+      "- ![Fourth brand](logo-4.svg)",
+      "- ![Fifth brand](logo-5.svg)",
+      "- ![Sixth brand](logo-6.svg)"
+    ],
+    "description": "A grid of customer, partner, or funder logos as social proof."
+  },
   "lattice: math": {
     "prefix": "lattice-math",
     "body": [

@@ -387,6 +387,17 @@ def demo_blocks() -> dict[str, str]:
         ('blank',),
     ])
 
+    blocks['logo-wall'] = frame([
+        ('left', 'header'),
+        ('center', 'TRUSTED BY'),
+        ('center', 'The teams that run on us.'),
+        ('blank',),
+        ('center', '[Acme]  [Globex]  [Initech]'),
+        ('center', '[Umbra] [Vantage] [Helios]'),
+        ('blank',),
+        ('split', 'footer', '1/19'),
+    ])
+
     blocks['T7-card-grid-2x2'] = frame([
         ('left', 'header'),
         ('center', 'LABEL'),
