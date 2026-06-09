@@ -210,6 +210,61 @@ const latticeTheme = EditorView.theme({
 		backgroundColor: 'color-mix(in srgb, var(--accent) 22%, transparent)',
 	},
 	'.cm-matchingBracket': { backgroundColor: 'color-mix(in srgb, var(--accent) 18%, transparent)', outline: 'none' },
+	// Autocomplete popup (region/group-name + class completion). CodeMirror's
+	// default is a white panel with a bright-blue selected row and a white info
+	// card — jarring on the dark editor and off-brand in light mode. Re-theme it
+	// off the page tokens so it matches the editor and recolours with
+	// palette/mode. (Same vehicle CodeMirror's own default theme uses, so these
+	// override it; the tooltip renders inside .cm-editor, so the theme reaches it.)
+	'.cm-tooltip.cm-tooltip-autocomplete': {
+		border: '1px solid var(--border)',
+		borderRadius: '8px',
+		backgroundColor: 'var(--bg)',
+		boxShadow: '0 10px 28px color-mix(in srgb, var(--text-heading) 22%, transparent)',
+		overflow: 'hidden',
+	},
+	'.cm-tooltip-autocomplete > ul': {
+		fontFamily: 'var(--font-mono)',
+		fontSize: '13px',
+		maxHeight: '15em',
+	},
+	'.cm-tooltip-autocomplete > ul > li': {
+		padding: '3px 10px',
+		color: 'var(--text-body)',
+	},
+	'.cm-tooltip-autocomplete > ul > li[aria-selected]': {
+		backgroundColor: 'var(--accent)',
+		color: 'var(--on-accent)',
+	},
+	'.cm-completionMatchedText': {
+		textDecoration: 'none',
+		fontWeight: '700',
+		color: 'var(--accent)',
+	},
+	'.cm-tooltip-autocomplete > ul > li[aria-selected] .cm-completionMatchedText': {
+		color: 'var(--on-accent)',
+	},
+	'.cm-completionDetail': {
+		color: 'var(--text-muted)',
+		fontStyle: 'italic',
+	},
+	'.cm-tooltip-autocomplete > ul > li[aria-selected] .cm-completionDetail': {
+		color: 'var(--on-accent)',
+		opacity: '0.8',
+	},
+	// The side info card (the white box in the report).
+	'.cm-tooltip.cm-completionInfo': {
+		border: '1px solid var(--border)',
+		borderRadius: '8px',
+		backgroundColor: 'var(--bg-alt)',
+		color: 'var(--text-body)',
+		padding: '8px 10px',
+		fontFamily: 'var(--font-body, inherit)',
+		fontSize: '12.5px',
+		lineHeight: '1.45',
+		maxWidth: '22em',
+		boxShadow: '0 10px 28px color-mix(in srgb, var(--text-heading) 22%, transparent)',
+	},
 });
 
 // Editor chrome variant that grows to fit its content instead of filling a
