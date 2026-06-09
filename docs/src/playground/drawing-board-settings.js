@@ -7,11 +7,21 @@
 // tier is unavailable — that degraded state is what's verified headless; the live
 // download + inference need real hardware.
 
+import { orSupportsCache } from './architect-model.js';
 import { getPref, PREFS, setPref } from './drawing-board-prefs.js';
 
 const MODEL_KEY = 'lattice-db-model'; // master on/off
 const TIER_KEY = 'lattice-db-loaded-tier'; // which tier the user loaded (persisted)
 const RESTORE_GUARD = 'lattice-db-restored'; // one auto-reconnect attempt per tab session
+
+// OpenRouter Converse controls (set in the Cloud AI section, READ by the chat).
+// Module-scope so drawing-board-chat.js can import the readers and feed them into
+// buildChatMessages — the controls are useless until the chat actually consumes them.
+const OR_CACHE_KEY = 'lattice-db-or-cache'; // prompt-caching opt-out (default on)
+const OR_INSTR_KEY = 'lattice-db-architect-instructions'; // standing instructions
+const INSTR_MAX = 500; // word cap on standing instructions
+export const readCachingEnabled = () => { try { return localStorage.getItem(OR_CACHE_KEY) !== 'off'; } catch { return true; } };
+export const readStandingInstructions = () => { try { return localStorage.getItem(OR_INSTR_KEY) || ''; } catch { return ''; } };
 
 function el(tag, cls, text) {
   const e = document.createElement(tag);
@@ -218,9 +228,6 @@ export function createModelSettings({ host, trigger, model, onChange, isOpen = (
     'openai/gpt-5', 'openai/gpt-5-mini', 'openai/gpt-4o',
     'google/gemini-2.5-pro', 'google/gemini-2.5-flash',
   ];
-  const OR_CACHE_KEY = 'lattice-db-or-cache'; // prompt-caching opt-out (default on)
-  const OR_INSTR_KEY = 'lattice-db-architect-instructions'; // standing instructions
-  const INSTR_MAX = 500; // word cap
   const vendorOf = (id) => (id.split('/')[0] || 'other').replace(/[-_]/g, ' ');
   const shortName = (m) => (m.name || m.id).replace(/^[^:]+:\s*/, ''); // drop "Vendor: " — we group by vendor
   const priceLabel = (m) => (m.promptPerM != null
@@ -282,6 +289,7 @@ export function createModelSettings({ host, trigger, model, onChange, isOpen = (
             setSummary();
             body.hidden = true; summary.setAttribute('aria-expanded', 'false'); wrap.classList.remove('is-open');
             onChange?.();
+            refresh(); // rebuild so the caching switch re-gates on the new model's support
           });
           const meta = el('span', 'db-or-row-meta');
           meta.append(el('span', 'db-or-row-name', shortName(m)), el('span', 'db-or-row-price', priceLabel(m)));
@@ -311,17 +319,24 @@ export function createModelSettings({ host, trigger, model, onChange, isOpen = (
   }
 
   // Prompt caching — a labelled switch (cue + tip). Default on; the user can opt out.
+  // Gated per-model: disabled with an honest "Not supported by this model" line when
+  // the selected model's vendor doesn't support OpenRouter prompt caching, so the
+  // toggle never lies. Re-gated on model change (the select handler calls refresh()).
   function cacheToggle() {
-    const row = el('label', 'db-or-switch');
+    const supported = orSupportsCache(model.openRouterModel());
+    const row = el('label', 'db-or-switch' + (supported ? '' : ' is-disabled'));
     const text = el('span', 'db-pref-text');
     text.append(el('span', 'db-pref-label', 'Prompt caching'),
-      el('span', 'db-pref-hint', 'Cheaper repeat turns — reuses the static prompt'));
+      el('span', 'db-pref-hint', supported
+        ? 'Cheaper repeat turns — reuses the static prompt'
+        : 'Not supported by this model'));
     const sw = el('span', 'db-switch');
     const cb = document.createElement('input');
     cb.type = 'checkbox';
     cb.className = 'db-switch-input';
     cb.setAttribute('aria-label', 'Prompt caching');
-    try { cb.checked = localStorage.getItem(OR_CACHE_KEY) !== 'off'; } catch { cb.checked = true; }
+    cb.disabled = !supported;
+    cb.checked = supported && readCachingEnabled();
     cb.addEventListener('change', () => { try { localStorage.setItem(OR_CACHE_KEY, cb.checked ? 'on' : 'off'); } catch {} });
     sw.append(cb, el('span', 'db-switch-knob'));
     row.append(text, sw);

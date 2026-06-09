@@ -243,6 +243,16 @@ export function orPricePerM(raw) {
   return Number.isFinite(n) && n >= 0 ? n : null;
 }
 
+// Does this OpenRouter model support prompt caching (the `cache_control` breakpoint)?
+// OpenRouter applies caching automatically and silently ignores the breakpoint on
+// models that don't support it, so this is a UI-honesty gate (don't offer a toggle
+// that does nothing) rather than a correctness one. Keyed on the vendor prefix —
+// the providers OpenRouter documents as supporting prompt caching.
+const OR_CACHE_VENDORS = new Set(['anthropic', 'openai', 'deepseek', 'google', 'x-ai']);
+export function orSupportsCache(id) {
+  return OR_CACHE_VENDORS.has(String(id || '').split('/')[0]);
+}
+
 // OpenRouter cloud backend. Sibling of puterBackend(): same { ready, complete }
 // shape, plus the OAuth methods (beginAuth → redirect → completeAuth) and the
 // catalog (listModels, with per-million pricing) the settings dropdown reads.

@@ -2395,6 +2395,12 @@ body.db-page .topbar {
 .db-or-switch .db-pref-text {
 	flex: 1 1 auto;
 }
+.db-or-switch.is-disabled {
+	cursor: default;
+}
+.db-or-switch.is-disabled .db-pref-label {
+	color: var(--text-muted);
+}
 .db-switch {
 	position: relative;
 	flex: 0 0 auto;

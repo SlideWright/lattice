@@ -12,7 +12,9 @@
 
 import { applyEdit, diffLines, EDIT_PROTOCOL, numberSlides, parseEdits, sliceSlide } from './architect-edits.js';
 import { buildLatticePrimer } from './architect-knowledge.js';
+import { orSupportsCache } from './architect-model.js';
 import { renderMarkdown } from './chat-markdown.js';
+import { readCachingEnabled, readStandingInstructions } from './drawing-board-settings.js';
 
 const MAX_DECK_CHARS = 1200; // a short excerpt — a small model drowns in a full deck
 const RICH_DECK_CHARS = 16000; // the cloud tier (Claude) reads the whole deck, not a peek
@@ -61,8 +63,15 @@ function el(tag, cls, text) {
 // Deterministic messages (floor replies, the greeting — marked `det`) are dropped
 // from history so a small model doesn't parrot our own boilerplate (the cause of
 // the degenerate "load on-device AI…" loop seen on-device). Pure string assembly.
-export function buildChatMessages({ source, assessment, history, userText, catalog, rich, cache }) {
+export function buildChatMessages({ source, assessment, history, userText, catalog, rich, cache, standingInstructions }) {
   const deck = (source || '').slice(0, rich ? RICH_DECK_CHARS : MAX_DECK_CHARS).trim();
+  // The author's standing instructions ride in the STATIC (cached) prefix — they
+  // apply to every turn and change rarely, so caching them is correct. Editing them
+  // invalidates the cache once, then steady-state hits resume.
+  const standing = (standingInstructions || '').trim();
+  const standingBlock = standing
+    ? `\n\nThe author has given you STANDING INSTRUCTIONS — always honor these:\n${standing}`
+    : '';
   const findings = (assessment?.findings || [])
     .slice(0, rich ? 12 : 5)
     .map((f) => `- ${f.message}${f.slide ? ` (slide ${f.slide})` : ''}`)
@@ -83,7 +92,8 @@ export function buildChatMessages({ source, assessment, history, userText, catal
       'by their exact `_class` name. Ground every point in the deck and the findings below — ' +
       'never invent facts about the author’s content.\n\n' +
       `${buildLatticePrimer(catalog)}\n\n` +
-      `${EDIT_PROTOCOL}`;
+      `${EDIT_PROTOCOL}` +
+      standingBlock;
     systemDynamic =
       `\n\n${score}\n${findings ? `Mechanical issues the deterministic review found:\n${findings}\n` : 'No mechanical issues found.\n'}` +
       (numbered ? `\nThe current deck (each slide tagged [slide N] — address slides by that number; never copy the marker into an edit body):\n${numbered}` : '');
@@ -94,7 +104,8 @@ export function buildChatMessages({ source, assessment, history, userText, catal
       'concrete sentences. Do not repeat yourself or restate the question. Refer to slides ' +
       'by number. You advise; the app makes the edits. Base advice on the deck and issues below.\n\n' +
       `${score}\n${findings ? `Issues found:\n${findings}\n` : 'No mechanical issues found.\n'}` +
-      (deck ? `\nDeck:\n${deck}` : '');
+      (deck ? `\nDeck:\n${deck}` : '') +
+      standingBlock;
   }
 
   const turns = (history || [])
@@ -456,9 +467,14 @@ export function createChat({ mount, composer, model, store, getAssessment, catal
       // prompt + the whole deck; the tiny local tiers keep the lean peek so they
       // don't ramble. On OpenRouter (Anthropic), cache the static prefix so the
       // ~10K-token primer is billed at ~10% on repeat turns instead of in full.
+      const orModel = model.openRouterModel?.() || '';
       const messages = buildChatMessages({
         source: assessment?.source, assessment, history: await thread(), userText: text,
-        catalog, rich: isCapableTier(a.generation), cache: a.generation === 'openrouter',
+        catalog, rich: isCapableTier(a.generation),
+        // Cache only when on OpenRouter, the user hasn't opted out, AND the model
+        // supports it — matches what the settings switch offers (never a dead flag).
+        cache: a.generation === 'openrouter' && readCachingEnabled() && orSupportsCache(orModel),
+        standingInstructions: readStandingInstructions(),
       });
       const out = await model.complete({
         messages,
