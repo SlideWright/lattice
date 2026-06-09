@@ -466,6 +466,12 @@ in patch versions.
 
 ### Fixed
 
+- **OpenRouter model picker no longer shows `$-1000000.000/M` for
+  variable-priced models.** OpenRouter reports a `-1` sentinel for router/auto
+  and other variable-priced rows; the picker multiplied it into a nonsense
+  per-million figure. Pricing now parses through `orPricePerM`, which maps any
+  negative/missing/non-numeric value to “no fixed price” (the option reads
+  “pricing varies”) while keeping `0` as a genuine free model. Drawing Board only.
 - **Mid-sentence inline code is no longer mis-promoted to a metadata pill.**
   The universal pill rule matched `code:has(+ :is(ul, ol))`, but the `+`
   combinator skips text nodes, so a mid-sentence reference on a row that merely
