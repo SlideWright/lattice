@@ -79,11 +79,10 @@ and Markdown underneath, and you can always drop down to it.
 
 Most of what goes wrong in a slide deck is mechanical, and Lattice
 handles all of it. Contrast that meets WCAG AA, on every layout, in
-light and dark — checked automatically, not left to chance. The same
-Markdown rendering to the same PDF on your laptop and in a build
-server, every time. Headings that resolve to the right size, spacing
-that holds, alignment that's simply correct. You never spend judgment
-on any of it, because none of it is a matter of judgment.
+light and dark — checked automatically, not left to chance. Headings
+that resolve to the right size, spacing that holds, alignment that's
+simply correct. You never spend judgment on any of it, because none of
+it is a matter of judgment.
 
 What's left is the part that is. Whether the claim is true. Whether the
 slide earns its place. Whether the argument lands with this audience,
@@ -91,6 +90,25 @@ this quarter. No system checks those, and Lattice doesn't pretend to.
 It clears the mechanical work off your desk so the only thing left in
 front of you is the thinking. The machine owns what's correct; you own
 what's good.
+
+## Predictability is worth more than it looks
+
+The same Markdown produces the same PDF — on your laptop, on a
+colleague's, in a build server, this year and next. That sounds modest.
+It's the property people miss most, because you only notice it when
+it's gone: the deck that reflows the night before the meeting, the font
+that renders one way on screen and another on the projector, the
+"final-v7" that looks subtly different from "final-v6" and nobody can
+say why.
+
+Determinism is what lets you trust the artifact. The deck you reviewed
+and approved is exactly the deck that opens in the room — you can put
+your name on it without re-reading every slide. It's also what makes
+the rest possible: you can't review a moving target, can't diff one,
+can't hand it to a colleague or an assistant to maintain if its output
+won't hold still. The real cost of an unpredictable tool isn't the
+occasional surprise. It's the vigilance you pay, forever, guarding
+against one.
 
 ## You don't memorize it; it shows you
 
@@ -172,6 +190,24 @@ Consistency and creativity aren't opposites. One is a property of the
 foundation; the other is a property of what you build on it. A sonnet's
 fourteen lines never cost a poet anything. A strong grid has freed
 designers for a century. Lattice is that grid, for decks.
+
+## You practice board-ready before you're in the room
+
+"Boardroom-quality" sounds like a standard reserved for boards. It
+isn't. The higher you go, the more polish and professionalism are
+simply assumed — and you don't reach that level by waiting until you're
+there. You practice it on the way up. You don't have to be presenting
+to the board to present like you are.
+
+What's usually missing isn't the standard; it's the gap between what
+the standard asks and what someone early in their career can produce in
+the time they have. Lattice closes that gap. An analyst's first
+proposal can carry the same finish as the partner's board deck, so
+finish stops standing in for seniority and the argument does the
+talking instead. And the habit gets cheap enough to keep: you hold the
+line on every memo, not only the once-a-quarter high-stakes one. That
+practice, repeated, is how you become the person who's ready before
+anyone hands you the room.
 
 ## Where to go next
 
