@@ -4,7 +4,7 @@ version: 1
 companion:
   - 2026-05-04-authoring-proposals.md
   - 2026-05-07-chart-family-proposals.md
-last-updated: 2026-05-15
+last-updated: 2026-06-09
 ---
 
 # Layouts shipped without a prior proposal note
@@ -109,6 +109,48 @@ flow from the catalogues — the catalogues had no prior entry for it.
   - `authority-chain` (provenance chain)
   - `regulatory-update` (change log against a baseline)
   - `redline` (clause-by-clause comparison)
+
+### `map` — choropleth / highlight basemap (the `spatial` form)
+
+- **Canonical reference.**
+  [`lib/components/chart/map/map.docs.md`](../../lib/components/chart/map/map.docs.md)
+  (component docs — `templates.md` is retired).
+- **Companion deck.** `examples/map.md` (+ `.pdf`).
+- **Design note.** [2026-06-09-map-spatial-form-spec.md](2026-06-09-map-spatial-form-spec.md)
+  — the spatial-form rationale, basemap-asset gating question, and projection
+  decisions. Spec/design-only at first; built 2026-06-09 (#119). Not from the
+  May 7 catalogue.
+- **Brief.** A flat `Region \`value\`` list fills a baked SVG basemap. The
+  world map is the default (Equal Earth; `robinson` reprojects, `us` swaps in
+  the 50-states + DC map). `choropleth` (default) shades a single-hue ramp by
+  value; `highlight` colours named regions categorically; `grouped` clusters
+  the legend by continent. Names resolve case-/punctuation-insensitively via
+  ISO codes, exonyms, and curated aliases; unmatched names are surfaced, never
+  dropped. The only component on the `spatial` form. Kernel:
+  `map.transform.js`; unit test: `test/unit/components/map.test.js`.
+
+### `logo-wall` — grid of customer / partner / funder logos
+
+- **Canonical reference.**
+  [`lib/components/inventory/logo-wall/logo-wall.docs.md`](../../lib/components/inventory/logo-wall/logo-wall.docs.md).
+- **Companion deck.** `examples/logo-wall.md` (+ `.pdf`).
+- **Design note.** None. Shipped 2026-06-09 (#111) in the industry-coverage
+  pass alongside `pricing` and `funnel`.
+- **Brief.** A social-proof wall of logos as a CSS-only grid (no kernel).
+  Default greyscale for a uniform wall; `color` keeps brand colour, `dense`
+  tightens the grid for more logos. Sample SVG logos ship in the component
+  directory.
+
+### `pricing` — side-by-side plan tiers
+
+- **Canonical reference.**
+  [`lib/components/comparison/pricing/pricing.docs.md`](../../lib/components/comparison/pricing/pricing.docs.md).
+- **Companion deck.** `examples/pricing.md` (+ `.pdf`).
+- **Design note.** None. Shipped 2026-06-09 (#111) in the industry-coverage
+  pass alongside `logo-wall` and `funnel`.
+- **Brief.** Plan tiers with prices, feature checklists, and one recommended
+  column, as a CSS-only grid (no kernel). `two` / `four` set the column count
+  (three is the default).
 
 ## What this register is not
 
