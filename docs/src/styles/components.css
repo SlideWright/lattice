@@ -416,6 +416,22 @@
 	color: var(--text-muted);
 	margin-right: 4px;
 }
+/* Axis-grouped switcher (manifest.variantAxes): each axis is a labelled cluster
+   of chips, separated by a hairline. Falls back to the flat row above when a
+   component declares no axes. */
+.specimen-variants--grouped {
+	gap: 6px 14px;
+}
+.specimen-variant-axis {
+	display: inline-flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 6px;
+}
+.specimen-variant-axis + .specimen-variant-axis {
+	padding-left: 14px;
+	border-left: 1px solid var(--border);
+}
 .specimen-variant {
 	padding: 4px 11px;
 	border: 1px solid var(--border);

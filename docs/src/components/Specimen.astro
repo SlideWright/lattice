@@ -12,7 +12,7 @@
 //   mermaid  boolean  — whether any sample contains a ```mermaid fence
 //   variants [{key,label,caption,sample}] — base ('default') + each modifier;
 //            powers the variant switcher and per-variant playground handoff
-const { name, sample, mermaid = false, variants = [] } = Astro.props;
+const { name, sample, mermaid = false, variants = [], variantGroups = null } = Astro.props;
 
 import { assetBase } from '../playground/asset-version.mjs';
 
@@ -48,7 +48,28 @@ const dataJson = JSON.stringify({
 		<button class="specimen-reset" type="button" hidden>Reset</button>
 		<a class="specimen-open" href={url('playground/')}>Open in Playground <span class="ico ico-arrow-right" aria-hidden="true"></span></a>
 	</div>
-	{hasVariants && (
+	{hasVariants && (Array.isArray(variantGroups) && variantGroups.length ? (
+		<div class="specimen-variants specimen-variants--grouped">
+			{variantGroups.map((g) => (
+				<span class="specimen-variant-axis">
+					<span class="specimen-variants-label">{g.label}</span>
+					{g.chips.map((c) => {
+						const v = variants.find((x) => x.key === c.key);
+						return v ? (
+							<button
+								class:list={['specimen-variant', { 'is-active': v.key === 'default' }]}
+								type="button"
+								data-variant-select={v.key}
+								title={v.caption || undefined}
+							>
+								{c.label}
+							</button>
+						) : null;
+					})}
+				</span>
+			))}
+		</div>
+	) : (
 		<div class="specimen-variants">
 			<span class="specimen-variants-label">Variant</span>
 			{variants.map((v, i) => (
@@ -62,7 +83,7 @@ const dataJson = JSON.stringify({
 				</button>
 			))}
 		</div>
-	)}
+	))}
 	{hasVariants && <p class="specimen-variant-caption" hidden></p>}
 	<div class="specimen-stage">
 		<div class="specimen-face preview">

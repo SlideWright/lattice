@@ -11,14 +11,31 @@ header: "Lattice · map"
 
 `Evidence · Spatial · Series`
 
-A US-states or world-countries basemap that fills regions by value (choropleth) or category (highlight) so the audience leaves knowing where.
+A world-countries (or US-states) basemap that fills regions by value (choropleth) or category (highlight) so the audience leaves knowing where.
 
 ---
 
 <!-- _class: map -->
 <!-- _footer: "Default · map" -->
 
-## Grant dollars reached every region — unevenly.
+## Where our programs reached — unevenly.
+
+- India `48.2`
+- Nigeria `36.4`
+- Kenya `31.0`
+- Brazil `27.5`
+- Indonesia `19.3`
+- Ethiopia `14.1`
+- Bangladesh `11.8`
+- Peru `9.6`
+
+
+---
+
+<!-- _class: map us -->
+<!-- _footer: "us · map us" -->
+
+## Grant dollars by state — unevenly.
 
 - California `48.2`
 - Texas `36.4`
@@ -35,47 +52,17 @@ A US-states or world-countries basemap that fills regions by value (choropleth) 
 <!-- _class: map highlight -->
 <!-- _footer: "highlight · map highlight" -->
 
-## The four regions we serve.
+## The regions we serve.
 
-- California `West`
-- Texas `South`
-- Illinois `Midwest`
-- New York `Northeast`
-
-
----
-
-<!-- _class: map world -->
-<!-- _footer: "world · map world" -->
-
-## Where our field offices operate.
-
-- United States `42`
-- Brazil `31`
-- Nigeria `27`
-- Kenya `24`
-- India `38`
-- Indonesia `19`
-- Germany `22`
-- Australia `12`
+- Kenya `East Africa`
+- Nigeria `West Africa`
+- India `South Asia`
+- Brazil `Latin America`
 
 
 ---
 
-<!-- _class: map world highlight grouped -->
-<!-- _footer: "grouped · map grouped" -->
-
-## Coverage by economic bloc.
-
-- European Union `Tier 1`
-- ASEAN `Tier 1`
-- Sub-Saharan Africa `Tier 2`
-- Latin America `Tier 2`
-
-
----
-
-<!-- _class: map world robinson -->
+<!-- _class: map robinson -->
 <!-- _footer: "robinson · map robinson" -->
 
 ## Where our field offices operate.
@@ -92,7 +79,20 @@ A US-states or world-countries basemap that fills regions by value (choropleth) 
 
 ---
 
-<!-- _class: map -->
+<!-- _class: map highlight grouped -->
+<!-- _footer: "grouped · map grouped" -->
+
+## Coverage by economic bloc.
+
+- European Union `Tier 1`
+- ASEAN `Tier 1`
+- Sub-Saharan Africa `Tier 2`
+- Latin America `Tier 2`
+
+
+---
+
+<!-- _class: map us -->
 <!-- _footer: "Stress test · map" -->
 
 ## A wide spread across fifteen states.
@@ -119,16 +119,16 @@ A US-states or world-countries basemap that fills regions by value (choropleth) 
 <!-- _class: map dark -->
 <!-- _footer: "Composition: dark · map dark" -->
 
-## Grant dollars reached every region — unevenly.
+## Where our programs reached — unevenly.
 
-- California `48.2`
-- Texas `36.4`
-- New York `31.0`
-- Florida `27.5`
-- Illinois `19.3`
-- Ohio `14.1`
-- Georgia `11.8`
-- Washington `9.6`
+- India `48.2`
+- Nigeria `36.4`
+- Kenya `31.0`
+- Brazil `27.5`
+- Indonesia `19.3`
+- Ethiopia `14.1`
+- Bangladesh `11.8`
+- Peru `9.6`
 
 
 ---
@@ -136,16 +136,16 @@ A US-states or world-countries basemap that fills regions by value (choropleth) 
 <!-- _class: map compact -->
 <!-- _footer: "Composition: compact · map compact" -->
 
-## Grant dollars reached every region — unevenly.
+## Where our programs reached — unevenly.
 
-- California `48.2`
-- Texas `36.4`
-- New York `31.0`
-- Florida `27.5`
-- Illinois `19.3`
-- Ohio `14.1`
-- Georgia `11.8`
-- Washington `9.6`
+- India `48.2`
+- Nigeria `36.4`
+- Kenya `31.0`
+- Brazil `27.5`
+- Indonesia `19.3`
+- Ethiopia `14.1`
+- Bangladesh `11.8`
+- Peru `9.6`
 
 
 ---
@@ -153,16 +153,16 @@ A US-states or world-countries basemap that fills regions by value (choropleth) 
 <!-- _class: map accent -->
 <!-- _footer: "Composition: accent · map accent" -->
 
-## Grant dollars reached every region — unevenly.
+## Where our programs reached — unevenly.
 
-- California `48.2`
-- Texas `36.4`
-- New York `31.0`
-- Florida `27.5`
-- Illinois `19.3`
-- Ohio `14.1`
-- Georgia `11.8`
-- Washington `9.6`
+- India `48.2`
+- Nigeria `36.4`
+- Kenya `31.0`
+- Brazil `27.5`
+- Indonesia `19.3`
+- Ethiopia `14.1`
+- Bangladesh `11.8`
+- Peru `9.6`
 
 
 ---
@@ -187,4 +187,4 @@ A US-states or world-countries basemap that fills regions by value (choropleth) 
 - `progress` — the regions are really a ranking — labelled bars compare magnitudes faster than shades
 - `stats` — a few headline figures with no geography to place them on
 - `piechart` — regional shares of a single whole rather than a value per place
-- `image` — the geography needs detail (counties, cities, routes) the states basemap can't draw
+- `image` — the geography needs detail (counties, cities, routes) the basemap can't draw

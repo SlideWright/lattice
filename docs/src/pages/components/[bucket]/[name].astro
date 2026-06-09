@@ -65,6 +65,26 @@ const variants = [
 	...variantKeys.map((v) => ({ key: v, label: v, caption: variantDocs[v].caption || '', sample: variantDocs[v].sample })),
 ];
 const mermaid = variants.some((v) => /```mermaid/.test(v.sample));
+
+// Optional: group the variant chips by axis (manifest.variantAxes) so the
+// switcher reads as e.g. "Basemap: world · us" + "Modifier: highlight · …"
+// instead of a flat peer list. The exclusive axis's `default` member maps to
+// the 'default' chip (the bare sample). Falls back to the flat list when a
+// component declares no axes.
+const chipKeys = new Set(variants.map((c) => c.key));
+const variantGroups = Array.isArray(m.variantAxes) && m.variantAxes.length
+	? m.variantAxes
+			.map((ax) => ({
+				label: ax.label,
+				chips: ax.members
+					.map((mem) => {
+						const key = mem === ax.default ? 'default' : mem;
+						return chipKeys.has(key) ? { key, label: mem } : null;
+					})
+					.filter(Boolean),
+			}))
+			.filter((g) => g.chips.length)
+	: null;
 ---
 
 <ComponentsLayout
@@ -94,7 +114,7 @@ const mermaid = variants.some((v) => /```mermaid/.test(v.sample));
 			<p class="cpage-lead">{m.description}</p>
 		</header>
 
-		<Specimen name={m.name} sample={sample} mermaid={mermaid} variants={variants} />
+		<Specimen name={m.name} sample={sample} mermaid={mermaid} variants={variants} variantGroups={variantGroups} />
 
 		<ComponentDocs m={m} anatomy={anatomy} nameToBucket={nameToBucket} />
 
