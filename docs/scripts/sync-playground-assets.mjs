@@ -1,16 +1,32 @@
-// Stage the runtime assets the playground fetches/loads at runtime:
-//   - dist/lattice-runtime.js  → public/playground/lattice-runtime.js
+// Stage the runtime assets the playground fetches/loads at runtime into a
+// CONTENT-HASHED directory, so a redeploy can never serve them stale:
+//   - dist/lattice-runtime.js  → public/playground/v/<hash>/lattice-runtime.js
 //       (the DOM-transform + Mermaid bundle, loaded inside the preview iframe;
 //        renders charts/split-panels and orchestrates Mermaid — the same
 //        bundle marp-vscode preview uses)
-//   - dist/lattice.css          → public/playground/themes/lattice.css
-//   - themes/<name>.css         → public/playground/themes/<name>.css
+//   - dist/lattice.css          → public/playground/v/<hash>/themes/lattice.css
+//   - themes/<name>.css         → public/playground/v/<hash>/themes/<name>.css
 //       (the @theme lattice engine + every palette, fetched + registered by
 //        the playground engine to render in the chosen palette)
+//   - public/playground/lattice-playground.js (committed engine bundle)
+//                               → public/playground/v/<hash>/lattice-playground.js
+//
+// WHY HASHED. These three asset kinds are served from fixed public/ URLs. Astro
+// content-hashes its own page JS, so a redeploy refreshes the page, but the
+// fixed-URL assets are cached by the browser/CDN and served STALE — the page's
+// new component list renders against the old CSS (a blank funnel, a collapsed
+// pricing grid; see the 2026-06 funnel/pricing incident). Staging under
+// `v/<hash>/` and having the pages build `playground/v/<hash>/…` URLs (via
+// asset-version.mjs) makes any content change a new URL → a guaranteed cache
+// miss. The fetch sites are unchanged: they only append a filename to the
+// hash-versioned `themeBase`.
 //
 // Staged at docs-build time (like sync-portal). NOT committed — regenerated
-// each build from repo source so they can't drift.
-import { copyFileSync, existsSync, mkdirSync, readdirSync } from 'node:fs';
+// each build from repo source so they can't drift. The whole `v/` tree is
+// rewritten each run, so only the current hash survives.
+
+import { createHash } from 'node:crypto';
+import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -20,25 +36,43 @@ const themesDir = join(repoRoot, 'themes');
 const latticeCss = join(repoRoot, 'dist', 'lattice.css');
 const runtimeJs = join(repoRoot, 'dist', 'lattice-runtime.js');
 const pgDir = join(here, '..', 'public', 'playground');
-const themesOut = join(pgDir, 'themes');
+const engineJs = join(pgDir, 'lattice-playground.js'); // committed engine bundle
 
-mkdirSync(themesOut, { recursive: true });
-
-for (const [, src] of [['dist/lattice.css', latticeCss], ['dist/lattice-runtime.js', runtimeJs]]) {
-	if (!existsSync(src)) {
-		console.error(`sync-playground-assets: missing ${src} — run \`npm run build\` in the repo root.`);
-		process.exit(1);
-	}
-}
-
-let copied = 0;
-copyFileSync(runtimeJs, join(pgDir, 'lattice-runtime.js'));
-copied++;
-copyFileSync(latticeCss, join(themesOut, 'lattice.css'));
-copied++;
+// The full asset set, as [destRelativePath, absoluteSource]. destRelativePath
+// is the path under the hashed dir (and exactly what the pages request).
+const assets = [
+  ['lattice-runtime.js', runtimeJs],
+  ['lattice-playground.js', engineJs],
+  ['themes/lattice.css', latticeCss],
+];
 for (const file of readdirSync(themesDir)) {
-	if (!file.endsWith('.css')) continue;
-	copyFileSync(join(themesDir, file), join(themesOut, file));
-	copied++;
+  if (file.endsWith('.css')) assets.push([`themes/${file}`, join(themesDir, file)]);
 }
-console.log(`sync-playground-assets: staged ${copied} asset(s) into public/playground/.`);
+
+for (const [, src] of assets) {
+  if (!existsSync(src)) {
+    console.error(`sync-playground-assets: missing ${src} — run \`npm run build\` in the repo root.`);
+    process.exit(1);
+  }
+}
+
+// Content hash over (relPath + bytes) for every asset, in a stable order, so
+// the directory name changes iff any asset's content (or set) changes.
+const hash = createHash('sha256');
+for (const [rel, src] of [...assets].sort((a, b) => a[0].localeCompare(b[0]))) {
+  hash.update(rel);
+  hash.update(readFileSync(src));
+}
+const version = hash.digest('hex').slice(0, 12);
+
+// Rewrite the whole versioned tree so stale hash dirs don't accumulate.
+const versionedRoot = join(pgDir, 'v');
+rmSync(versionedRoot, { recursive: true, force: true });
+
+for (const [rel, src] of assets) {
+  const dest = join(versionedRoot, version, rel);
+  mkdirSync(dirname(dest), { recursive: true });
+  copyFileSync(src, dest);
+}
+
+console.log(`sync-playground-assets: staged ${assets.length} asset(s) into public/playground/v/${version}/.`);

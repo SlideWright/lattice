@@ -14,19 +14,25 @@
 //            powers the variant switcher and per-variant playground handoff
 const { name, sample, mermaid = false, variants = [] } = Astro.props;
 
+import { assetBase } from '../playground/asset-version.mjs';
+
 const base = import.meta.env.BASE_URL;
 const url = (p) => `${base}/${p}`.replace(/([^:])\/{2,}/g, '$1/');
 
 const hasVariants = Array.isArray(variants) && variants.length > 1;
 
-const engineUrl = url('playground/lattice-playground.js');
+// Cache-busted prefix for the runtime-fetched assets (engine, runtime, theme
+// CSS) — see asset-version.mjs. The bare `playground/` route still serves the
+// human-facing Playground page.
+const pg = assetBase();
+const engineUrl = url(pg + 'lattice-playground.js');
 const dataJson = JSON.stringify({
 	name,
 	sample,
 	mermaid,
 	variants,
-	themeBase: url('playground/themes/'),
-	runtimeUrl: url('playground/lattice-runtime.js'),
+	themeBase: url(pg + 'themes/'),
+	runtimeUrl: url(pg + 'lattice-runtime.js'),
 	playgroundUrl: url('playground/'),
 });
 ---
