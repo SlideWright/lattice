@@ -193,16 +193,19 @@ describe('map kernel', () => {
 
   // ── world basemap + grouping ──────────────────────────────────────────────
   describe('pickBasemap', () => {
-    test('world token selects the world basemap, else US', () => {
-      assert.equal(pickBasemap(['map']).id, 'us-states');
-      assert.equal(pickBasemap(['map', 'world']).id, 'world');
+    test('the world map is the default; us/usa selects US states', () => {
+      assert.equal(pickBasemap(['map']).id, 'world');           // bare map → world
+      assert.equal(pickBasemap(['map', 'world']).id, 'world');  // explicit, same
+      assert.equal(pickBasemap(['map', 'us']).id, 'us-states');
+      assert.equal(pickBasemap(['map', 'usa']).id, 'us-states');
     });
 
-    test('robinson token swaps in the Robinson world; default world is Equal Earth', () => {
-      assert.equal(pickBasemap(['map', 'world']).projection, 'equal-earth');
+    test('robinson swaps in the Robinson world; default world is Equal Earth; us wins', () => {
+      assert.equal(pickBasemap(['map']).projection, 'equal-earth');
+      assert.equal(pickBasemap(['map', 'robinson']).projection, 'robinson');         // bare robinson → world robinson
       assert.equal(pickBasemap(['map', 'world', 'robinson']).projection, 'robinson');
-      // robinson without world stays on the US basemap (no-op token there).
-      assert.equal(pickBasemap(['map', 'robinson']).id, 'us-states');
+      // us wins over a (world-only) robinson token, which is a no-op on US.
+      assert.equal(pickBasemap(['map', 'us', 'robinson']).id, 'us-states');
     });
   });
 
@@ -253,12 +256,19 @@ describe('map kernel', () => {
       assert.equal(findUnknownMapRegions(deck, vocab).length, 0);
     });
 
-    test('uses the basemap the slide selects (US vs world)', () => {
-      const us = '<!-- _class: map -->\n\n## x\n\n- Califrnia `1`\n';
-      const f = findUnknownMapRegions(us, vocab);
-      assert.equal(f.length, 1);
-      assert.match(f[0].message, /state the us basemap/);
-      assert.match(f[0].message, /California/);
+    test('uses the basemap the slide selects (world default, us opt-in)', () => {
+      // Bare `map` is a world map: a misspelled country resolves against world.
+      const world = '<!-- _class: map -->\n\n## x\n\n- Brazl `1`\n';
+      const fw = findUnknownMapRegions(world, vocab);
+      assert.equal(fw.length, 1);
+      assert.match(fw[0].message, /country the world basemap/);
+      assert.match(fw[0].message, /Brazil/);
+      // `map us` selects the US states: a misspelled state resolves against US.
+      const us = '<!-- _class: map us -->\n\n## x\n\n- Califrnia `1`\n';
+      const fu = findUnknownMapRegions(us, vocab);
+      assert.equal(fu.length, 1);
+      assert.match(fu[0].message, /state the us basemap/);
+      assert.match(fu[0].message, /California/);
     });
 
     test('an unrecognizable name gets flagged without a bogus suggestion', () => {

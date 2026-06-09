@@ -4215,19 +4215,19 @@ See [kanban.gallery.light.pdf](../../lib/components/chart/kanban/kanban.gallery.
 
 ### map
 
-> A US-states or world-countries basemap that fills regions by value (choropleth) or category (highlight) so the audience leaves knowing where.
+> A world-countries (or US-states) basemap that fills regions by value (choropleth) or category (highlight) so the audience leaves knowing where.
 
 **Function** evidence · **Form** spatial · **Substance** series
 
 **Tags** `metric` · `proportion` · `overview` · `visual`
 
-Use when the story is geographic — program reach, service territories, where the grants landed, the pilot states, the regions you operate in. Author a value per named region (full name, postal/ISO code, or a common alias); choropleth shades each region on a single-hue ramp (low→high), while `highlight` gives each named region its own categorical colour. Add `world` for the country basemap, where you can also name a continent, a bloc (`European Union`, `ASEAN`), or a stated category (`Global South`, `Global North`, `Global South — Africa`) and the kernel fills every member. Because the term is contested, two sourced views of the Global South ship: `Global South` (G77 + China) and `Global South — Brandt Line` (the 1980 North–South divide) — pick the framing your deck argues. Regions the basemap can't match are reported in the legend, never silently dropped.
+Use when the story is geographic — program reach, service territories, where the grants landed, the regions you operate in. Author a value per named region (full name, postal/ISO code, or a common alias); choropleth shades each region on a single-hue ramp (low→high), while `highlight` gives each named region its own categorical colour. The default basemap is the **world** (Equal Earth projection); add `us` (or `usa`) for the US-states map. On the world map you can also name a continent, a bloc (`European Union`, `ASEAN`), or a stated category (`Global South`, `Global North`, `Global South — Africa`) and the kernel fills every member. Because the term is contested, two sourced views of the Global South ship: `Global South` (G77 + China) and `Global South — Brandt Line` (the 1980 North–South divide) — pick the framing your deck argues. Regions the basemap can't match are reported in the legend, never silently dropped.
 
 #### When to use
 
 - **The story is geographic.** Reach for a map only when WHERE is the point — coverage areas, jurisdictions, service territories, where the grants or pilots landed. If the geography is incidental and the comparison is really between named things, a `progress` or `stats` row reads faster than a basemap.
 - **Choropleth for magnitude, highlight for membership.** Use the default choropleth when each region carries a number and the audience needs the gradient — how much, where. Use `highlight` when the named regions are a set (the eight pilot states, the four regions we serve) and there is no magnitude to rank.
-- **Name regions any common way.** Full name, postal code, or a usual abbreviation all resolve case-insensitively (`California` / `CA` / `Calif.`). A name the basemap can't bind is reported as a muted ‘?’ row in the legend and stamped on the figure — fix the spelling, don't ignore the gap.
+- **Name regions any common way.** Country names resolve by full name, ISO code, or common alias (`Brazil` / `BR` / `Burma`→Myanmar); on `map us`, by full name, postal code, or abbreviation (`California` / `CA` / `Calif.`). A name the basemap can't bind is reported as a muted ‘?’ row in the legend and stamped on the figure — fix the spelling, don't ignore the gap.
 
 #### When NOT to use
 
@@ -4242,10 +4242,10 @@ Use when the story is geographic — program reach, service territories, where t
 
 ## Where the program runs.
 
-- California `4.2`
-- Texas `3.1`
-- New York `2.8`
-- Florida `2.2`
+- Kenya `4.2`
+- Nigeria `3.1`
+- India `2.8`
+- Brazil `2.2`
 ```
 
 #### Slots
@@ -4253,31 +4253,50 @@ Use when the story is geographic — program reach, service territories, where t
 | Slot | Selector | Required | Description |
 |---|---|---|---|
 | `title` | `h2` | yes | Slide heading — name the geography and the takeaway (‘Where the program runs’). |
-| `regions` | `ul > li` | yes | One li per region (or group). Lead with the name — US: full (`California`), postal (`CA`), or abbreviation (`Calif.`); world: full (`Brazil`), ISO (`BR`), alias (`Burma`), or a group (`European Union`, `Sub-Saharan Africa`, `Global South`) that expands to its members — then a trailing inline-code value: `Brazil \`4.2\``. In choropleth the value drives the ramp; in highlight it's an optional legend label. Names the basemap can't resolve surface as muted ‘?’ legend rows. |
+| `regions` | `ul > li` | yes | One li per region (or group). Lead with the name — world (default): full (`Brazil`), ISO (`BR`), alias (`Burma`), or a group (`European Union`, `Sub-Saharan Africa`, `Global South`) that expands to its members; US (`map us`): full (`California`), postal (`CA`), or abbreviation (`Calif.`) — then a trailing inline-code value: `Brazil \`4.2\``. In choropleth the value drives the ramp; in highlight it's an optional legend label. Names the basemap can't resolve surface as muted ‘?’ legend rows. |
 
 #### Variants (layout-specific)
 
+##### `us` — us
+
+Swaps the default world map for the US-states basemap (d3.geoAlbersUsa, AK/HI insets) — `map us` (alias `map usa`). Same authoring and read modes; names resolve by full name, postal code, or abbreviation (`California` / `CA` / `Calif.`).
+
+```markdown
+<!-- _class: map us -->
+
+## Grant dollars by state — unevenly.
+
+- California `48.2`
+- Texas `36.4`
+- New York `31.0`
+- Florida `27.5`
+- Illinois `19.3`
+- Ohio `14.1`
+- Georgia `11.8`
+- Washington `9.6`
+```
+
 ##### `highlight` — highlight
 
-Categorical mode — each named region takes its own --catN colour and unnamed regions stay neutral. For ‘which ones’, not ‘how much’.
+Categorical mode — each named region takes its own --catN colour and unnamed regions stay neutral. For ‘which ones’, not ‘how much’. Works on either basemap.
 
 ```markdown
 <!-- _class: map highlight -->
 
-## The four regions we serve.
+## The regions we serve.
 
-- California `West`
-- Texas `South`
-- Illinois `Midwest`
-- New York `Northeast`
+- Kenya `East Africa`
+- Nigeria `West Africa`
+- India `South Asia`
+- Brazil `Latin America`
 ```
 
-##### `world` — world
+##### `robinson` — robinson
 
-The world-countries basemap, Equal Earth projection (area-preserving, the default — the Global South reads at its true size). Same authoring — one country per li — with ISO codes and common aliases resolving alongside full names.
+Swaps the default Equal Earth projection for Robinson — the familiar boardroom compromise. Same authoring; only the world map's shape changes. Equal Earth (default) preserves relative area; Robinson trades a little area fidelity for the silhouette many audiences expect.
 
 ```markdown
-<!-- _class: map world -->
+<!-- _class: map robinson -->
 
 ## Where our field offices operate.
 
@@ -4293,10 +4312,10 @@ The world-countries basemap, Equal Earth projection (area-preserving, the defaul
 
 ##### `grouped` — grouped
 
-On the world map, naming a continent or bloc fills every member; `grouped` clusters the legend by continent. For coverage told at bloc scale.
+Naming a continent or bloc fills every member; `grouped` clusters the legend by continent. For coverage told at bloc scale.
 
 ```markdown
-<!-- _class: map world highlight grouped -->
+<!-- _class: map highlight grouped -->
 
 ## Coverage by economic bloc.
 
@@ -4304,25 +4323,6 @@ On the world map, naming a continent or bloc fills every member; `grouped` clust
 - ASEAN `Tier 1`
 - Sub-Saharan Africa `Tier 2`
 - Latin America `Tier 2`
-```
-
-##### `robinson` — robinson
-
-Swaps the default Equal Earth projection for Robinson — the familiar boardroom compromise. Same authoring; only the world basemap's shape changes. Equal Earth (default) preserves relative area; Robinson trades a little area fidelity for the silhouette many audiences expect.
-
-```markdown
-<!-- _class: map world robinson -->
-
-## Where our field offices operate.
-
-- United States `42`
-- Brazil `31`
-- Nigeria `27`
-- Kenya `24`
-- India `38`
-- Indonesia `19`
-- Germany `22`
-- Australia `12`
 ```
 
 #### Universal modifiers
@@ -4334,7 +4334,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 - [`progress`](#progress) — the regions are really a ranking — labelled bars compare magnitudes faster than shades
 - [`stats`](#stats) — a few headline figures with no geography to place them on
 - [`piechart`](#piechart) — regional shares of a single whole rather than a value per place
-- [`image`](#image) — the geography needs detail (counties, cities, routes) the states basemap can't draw
+- [`image`](#image) — the geography needs detail (counties, cities, routes) the basemap can't draw
 
 #### Demo deck
 

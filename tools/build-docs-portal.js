@@ -323,6 +323,7 @@ function renderPortalJson(manifests) {
     description: m.description,
     purpose: m.purpose || null,
     variants: Array.isArray(m.variants) ? m.variants : [],
+    ...(Array.isArray(m.variantAxes) && m.variantAxes.length ? { variantAxes: m.variantAxes } : {}),
     effectiveVariants: effectiveVariants(m),
     slots: m.slots || {},
     skeleton: m.skeleton,

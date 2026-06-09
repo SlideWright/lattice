@@ -77,16 +77,16 @@ Eight items across four stages; the scoring-model rewrite is the only card flagg
 
 <!-- _class: map -->
 
-## Grant dollars reached every region — unevenly.
+## Where our programs reached — unevenly.
 
-- California `48.2`
-- Texas `36.4`
-- New York `31.0`
-- Florida `27.5`
-- Illinois `19.3`
-- Ohio `14.1`
-- Georgia `11.8`
-- Washington `9.6`
+- India `48.2`
+- Nigeria `36.4`
+- Kenya `31.0`
+- Brazil `27.5`
+- Indonesia `19.3`
+- Ethiopia `14.1`
+- Bangladesh `11.8`
+- Peru `9.6`
 
 ---
 

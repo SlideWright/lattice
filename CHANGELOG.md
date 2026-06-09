@@ -317,7 +317,13 @@ in patch versions.
     silhouette. Both are baked offline into sibling JSONs
     (`map.basemap.world.json` + `map.basemap.world-robinson.json`) — still no geo
     library in any bundle.
-  - **Name binding without an LLM.** Country names vary wildly (Côte d'Ivoire,
+  - **The world is the default basemap.** Bare `map` is a world map (Equal
+    Earth); `map us` (alias `map usa`) selects the US-states basemap. The tokens
+    sit on orthogonal axes the manifest now models explicitly (a new
+    `variantAxes` field): a **Basemap** axis (`us` · `world`) and a **Modifier**
+    axis (`highlight` · `robinson` · `grouped`), so the docs / gallery / variant
+    chips present them as composing axes, not a flat peer list. They already
+    compose in any order (`map us highlight`, `map world robinson highlight`).
     Myanmar, Czechia) and a typo is a silent gap, so the static basemap
     vocabulary drives two deterministic, zero-token defences: a **CodeMirror
     autocomplete** that completes region + group names as you type a `map` list

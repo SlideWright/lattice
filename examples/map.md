@@ -28,7 +28,7 @@ Name a place, give it a value. The tokens pick the rest.
 
 ---
 
-<!-- _class: map -->
+<!-- _class: map us -->
 
 ## Where the recovery grants landed.
 

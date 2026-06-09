@@ -69,6 +69,21 @@
       },
       "description": "Semi-universal variants this layout opts out of (must be a subset of compact / loose / accent)."
     },
+    "variantAxes": {
+      "type": "array",
+      "description": "Optional. Groups this layout's variants into orthogonal axes for docs / gallery / variant-chip presentation (e.g. a 'Basemap' axis us/world vs a 'Modifier' axis highlight/robinson/grouped). Members MUST be a subset of variants[]. Purely presentational — the engine routes tokens independently regardless of this grouping.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["label", "members"],
+        "properties": {
+          "label": { "type": "string", "minLength": 1 },
+          "exclusive": { "type": "boolean", "description": "True when the members are mutually exclusive — pick exactly one (e.g. the basemap us/world)." },
+          "default": { "type": "string", "description": "The member that applies when no token in this axis is named (meaningful for exclusive axes)." },
+          "members": { "type": "array", "items": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" }, "minItems": 1 }
+        }
+      }
+    },
     "slots": {
       "type": "object",
       "additionalProperties": {
