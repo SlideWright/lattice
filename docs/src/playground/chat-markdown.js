@@ -91,6 +91,54 @@ export function renderMarkdown(md) {
   return out.join('');
 }
 
+// Streaming-safe wrapper. While a reply streams in token-by-token, the buffer
+// always ends mid-construct — an open ``` fence, a half-typed `code` span, a
+// `[label](partial` link. Rendering the raw buffer would flash a block that then
+// "unwraps" when the construct closes (the worst offender: an open fence greedily
+// wrapping the whole tail in <pre>). This holds back ONLY the trailing incomplete
+// construct, so everything already complete renders styled and the cursor sits at
+// a clean boundary. Inline emphasis (* / **) is left to degrade naturally
+// (literal until the closer arrives) — balancing it safely isn't worth the risk,
+// and the flip is a single character. The FINAL render uses renderMarkdown on the
+// complete text, so the end state is always exact regardless of what we held here.
+export function renderMarkdownStream(md) {
+  return renderMarkdown(clampStreaming(String(md || '')));
+}
+
+function clampStreaming(md) {
+  const lines = md.split('\n');
+
+  // 1. Unclosed code fence: an odd number of fence lines means the last one is an
+  //    opener with no closer yet. Hold everything from that opener onward.
+  let fences = 0;
+  let lastFence = -1;
+  for (let i = 0; i < lines.length; i++) {
+    if (isFence(lines[i])) { fences++; lastFence = i; }
+  }
+  if (fences % 2 === 1) {
+    return lines.slice(0, lastFence).join('\n').replace(/[ \t]+$/, '');
+  }
+
+  // 2. A trailing incomplete inline construct on the last line (inline spans don't
+  //    cross newlines in this renderer). Skip fence lines — step 1 already balanced
+  //    them, and a closing ``` would look like an "unmatched" backtick run here.
+  const last = lines.length - 1;
+  let tail = lines[last];
+  if (!isFence(tail)) {
+    // Unclosed inline code: an odd number of backticks → hold from the last one.
+    if ((tail.match(/`/g) || []).length % 2 === 1) {
+      tail = tail.slice(0, tail.lastIndexOf('`'));
+    }
+    // Unclosed link: a trailing '[' whose `](url)` hasn't fully arrived → hold it.
+    const open = tail.lastIndexOf('[');
+    if (open > -1 && !/^\[[^\]]*\]\([^)\s]+\)/.test(tail.slice(open))) {
+      tail = tail.slice(0, open);
+    }
+    lines[last] = tail;
+  }
+  return lines.join('\n');
+}
+
 // The pure visibility logic for the scroll-to-top/bottom control — separated from
 // the DOM so it's testable (jsdom doesn't compute scroll metrics). Returns which
 // jump affordances should show given the scroller's metrics.

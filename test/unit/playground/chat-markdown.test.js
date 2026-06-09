@@ -87,6 +87,46 @@ describe('renderMarkdown', () => {
   });
 });
 
+describe('renderMarkdownStream (live, partial-syntax safe)', () => {
+  test('a closed construct renders styled even while more streams behind it', async () => {
+    const { renderMarkdownStream } = await load();
+    // "**done** and then *par" — the bold is closed, the italic is still open.
+    const h = renderMarkdownStream('**done** and then *par');
+    assert.match(h, /<strong>done<\/strong>/);
+  });
+
+  test('an open code fence is held back, not flashed as a <pre> tail', async () => {
+    const { renderMarkdownStream } = await load();
+    const h = renderMarkdownStream('Here is code:\n```js\nconst x = 1');
+    assert.doesNotMatch(h, /<pre/); // the open fence + its body are withheld
+    assert.match(h, /Here is code:/); // everything before the fence still renders
+  });
+
+  test('a closed fence renders as a code block (closing fence not mistaken for partial)', async () => {
+    const { renderMarkdownStream } = await load();
+    const h = renderMarkdownStream('```\nconst x = 1\n```');
+    assert.match(h, /<pre class="db-md-pre"><code>const x = 1<\/code><\/pre>/);
+  });
+
+  test('an unclosed inline-code span is withheld until its backtick closes', async () => {
+    const { renderMarkdownStream } = await load();
+    assert.doesNotMatch(renderMarkdownStream('use the `slot'), /`/); // dangling backtick hidden
+    assert.match(renderMarkdownStream('use the `slot`'), /<code>slot<\/code>/);
+  });
+
+  test('a half-typed link is withheld until ](url) completes', async () => {
+    const { renderMarkdownStream } = await load();
+    assert.doesNotMatch(renderMarkdownStream('see [the docs](http'), /\[the docs\]/);
+    assert.match(renderMarkdownStream('see [the docs](https://x.com)'), /<a href="https:\/\/x\.com"/);
+  });
+
+  test('empty / null input → empty string (no throw)', async () => {
+    const { renderMarkdownStream } = await load();
+    assert.equal(renderMarkdownStream(''), '');
+    assert.equal(renderMarkdownStream(null), '');
+  });
+});
+
 describe('scrollJumpState', () => {
   test('hidden when content does not overflow', async () => {
     const { scrollJumpState } = await load();

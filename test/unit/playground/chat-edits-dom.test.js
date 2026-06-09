@@ -20,7 +20,7 @@ after(() => { delete global.document; delete global.window; });
 
 const DECK = '# Intro\n\nopening\n\n---\n\n# Plan\n\nold body';
 
-async function setup({ reply, generation = 'puter', store }) {
+async function setup({ reply, generation = 'puter', store, stream = false }) {
   const { createChat } = await import('../../../docs/src/playground/drawing-board-chat.js');
   const mount = document.createElement('div');
   const composer = document.createElement('form');
@@ -32,7 +32,12 @@ async function setup({ reply, generation = 'puter', store }) {
   const applies = []; // onApply (auto-checkpoint) events
   const model = {
     availability: () => ({ generation, modelOn: true }),
-    async complete() { return reply; },
+    // When `stream`, push the reply through onToken in small chunks (as a real
+    // backend does) so the live-render path is exercised, not just the final render.
+    async complete({ onToken } = {}) {
+      if (stream && onToken) for (const chunk of reply.match(/.{1,4}/gs) || []) onToken(chunk);
+      return reply;
+    },
   };
   const chat = createChat({
     mount, composer, model, store,
@@ -115,6 +120,19 @@ describe('Converse editing loop (DOM)', () => {
     assert.equal(applies.length, 1);
     assert.equal(applies[0].before, DECK, 'snapshots the deck before the edit');
     assert.match(applies[0].label, /Replace slide 2/);
+  });
+
+  test('a streamed reply still renders Markdown prose and lifts its edit card', async () => {
+    const reply = 'Tightened the **plan** slide.\n\n````lattice-edit slide=2\n# Plan\n\nstreamed body\n````';
+    const { chat, mount, getSource } = await setup({ reply, stream: true });
+    await chat.send('tighten slide 2');
+
+    const body = mount.querySelector('.db-msg-architect .db-msg-body');
+    assert.match(body.innerHTML, /<strong>plan<\/strong>/, 'final render is styled Markdown, not raw');
+    assert.doesNotMatch(body.textContent, /lattice-edit/, 'edit fence lifted out of the prose');
+    const card = mount.querySelector('.db-edit-card');
+    assert.ok(card, 'edit card rendered from the streamed reply');
+    assert.match(getSource(), /old body/, 'deck untouched until Apply');
   });
 
   test('Discard collapses to a dismissed line without touching the deck', async () => {

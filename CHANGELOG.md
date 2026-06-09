@@ -85,6 +85,14 @@ in patch versions.
 
 ### Changed
 
+- **The Drawing Board chat now styles Architect replies as they stream**, not
+  only once the stream completes. Each token re-renders the accumulated reply
+  through the existing zero-dependency `renderMarkdown` (no `unified`/`remark`
+  added), coalesced to one paint per animation frame. A new `renderMarkdownStream`
+  wrapper holds back the trailing *incomplete* construct (an open ```` ``` ````
+  fence, a half-typed `` `code` `` span, a `[label](partial` link) so partial
+  syntax never flashes a block that then unwraps; inline emphasis still degrades
+  to literal until its closer arrives. The final render is unchanged and exact.
 - **Inline code chips are now surface-aware.** The `section code` chip was a
   single context-blind rule (`--bg-alt` fill + `--accent` ink) tuned only for
   the default canvas, so it read as a glaring near-white box on dark bookends
