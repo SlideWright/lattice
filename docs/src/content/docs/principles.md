@@ -71,6 +71,22 @@ adapt when the palette flips.
 
 One palette, every deck. Change it once.
 
+## One source, every format
+
+A Lattice deck has no native binary. The source is Markdown, and the
+output is whatever the moment needs: a PDF for the board, a PPTX for
+the colleague who lives in PowerPoint, HTML for the web, an image when
+a doc needs a single slide. Same deck, same layouts — you pick the
+format at the end, you don't rewrite the deck to get it.
+
+The formats aren't all equal, and that's deliberate. PDF and HTML carry
+the deck live. The image exports are flat snapshots, and so is the
+PPTX — just a deck of those images. Pixel-faithful, but a
+picture of the slide rather than an editable one. That suits handing a
+slide to someone to drop into their own deck or present from
+PowerPoint. Anything you want to change, you change in the source — the
+one place editing ever happens.
+
 ## Write what you mean, not where it goes
 
 You write a Lattice deck the way you'd write a memo — in Markdown, the
@@ -89,7 +105,8 @@ read at speed, and a claim lands faster than a noun.
 Because the source is plain text, it has properties a binary slide file
 never will. You can diff it, review it in a pull request, grep a whole
 archive for a stale figure. If you ever leave Lattice, every deck it
-made is still a plain PDF, sitting next to the Markdown that built it.
+made is still a plain PDF or HTML, sitting next to the Markdown that
+built it.
 Nothing locks shut behind you. And when the vocabulary runs out — when
 you need something the layouts don't offer — it's plain Markdown and
 CSS underneath, and you can edit it directly.
@@ -112,7 +129,7 @@ good.
 
 ## Predictability is worth more than it looks
 
-The same Markdown produces the same PDF — on your laptop, on a
+The same Markdown produces the same output — on your laptop, on a
 colleague's, in a build server, this year and next. You notice it only
 when it's gone: the deck that reflows the night before the meeting, the
 font that renders one way on screen and another on the projector, the
