@@ -22,7 +22,7 @@ import { languages } from '@codemirror/language-data';
 import { EditorState } from '@codemirror/state';
 import { drawSelection, EditorView, highlightActiveLine, highlightActiveLineGutter, keymap, lineNumbers } from '@codemirror/view';
 import { tags as t } from '@lezer/highlight';
-import { mapAutocomplete } from './map-complete.js';
+import { latticeAutocomplete } from './complete.js';
 
 // ── Mermaid: StreamLanguage ported from PrismJS's prism-mermaid grammar ──────
 // (prismjs/components/prism-mermaid.js). Prism's regexes are whole-document with
@@ -228,7 +228,13 @@ const autoHeightTheme = EditorView.theme({
 // doc changes — the Drawing Board uses it to sync the preview filmstrip to the
 // slide under the cursor. Returns
 // { getValue, setValue, focus, destroy, goToLine }.
-export function createEditor({ parent, doc = '', onChange, onCursor, autoHeight = false }) {
+//
+// `vocab` (the Drawing Board's lintVocab) and `catalog` (the compact component
+// catalog) power slide-context autocompletion — component names + modifiers
+// inside `<!-- _class: … -->`. Both optional; without them only the map
+// region completer (self-sufficient from the baked basemaps) is live, so the
+// playground / Specimen editors keep working unchanged.
+export function createEditor({ parent, doc = '', onChange, onCursor, autoHeight = false, vocab, catalog }) {
 	const listener = EditorView.updateListener.of((u) => {
 		if (u.docChanged && onChange) onChange(u.state.doc.toString());
 		if (onCursor && (u.docChanged || u.selectionSet)) {
@@ -255,9 +261,11 @@ export function createEditor({ parent, doc = '', onChange, onCursor, autoHeight 
 					codeLanguages: [...EAGER_LANGUAGES, ...languages],
 				}),
 				EditorView.lineWrapping,
-				// Region-name autocomplete for `map` slides — static vocab from the
-				// baked basemaps, no model call. Inert outside a map list item.
-				mapAutocomplete(),
+				// Slide-context autocomplete — component names + modifiers inside
+				// `_class:` directives (from the page's catalog/vocab) and region
+				// names inside map slides (static vocab from the baked basemaps). All
+				// deterministic, no model call; inert outside its context.
+				latticeAutocomplete({ vocab, catalog }),
 				latticeTheme,
 				...(autoHeight ? [autoHeightTheme] : []),
 				keymap.of([indentWithTab, ...defaultKeymap, ...historyKeymap]),
