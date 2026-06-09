@@ -2218,3 +2218,254 @@ body.db-page .topbar {
 	color: var(--text-body);
 	cursor: pointer;
 }
+
+/* ── OpenRouter model picker — the in-place accordion ──────────────────────────
+   Collapsed: a button showing the current model + price + chevron + "Tap to
+   change model". Expanded: search + Featured/All toggle + vendor-grouped list.
+   Every control carries its own affordance (cue + tip); no nested drawer. */
+.db-or-picker {
+	margin: 0.3rem 0 0.6rem;
+}
+.db-or-summary {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	width: 100%;
+	text-align: left;
+	font: inherit;
+	background: var(--bg);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-sm);
+	padding: 0.45rem 0.6rem;
+	cursor: pointer;
+}
+.db-or-summary:hover {
+	border-color: var(--accent);
+}
+.db-or-summary:focus-visible {
+	outline: none;
+	border-color: var(--accent);
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+.db-or-summary-text {
+	display: flex;
+	flex-direction: column;
+	gap: 0.05rem;
+	min-width: 0;
+	flex: 1 1 auto;
+}
+.db-or-summary-name {
+	font-size: 0.82rem;
+	color: var(--text-heading);
+	font-weight: 600;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+.db-or-summary-hint {
+	font-size: 0.68rem;
+	color: var(--text-muted);
+}
+.db-or-chevron {
+	flex: 0 0 auto;
+	width: 0;
+	height: 0;
+	border-left: 5px solid transparent;
+	border-right: 5px solid transparent;
+	border-top: 6px solid var(--text-muted);
+	transition: transform 0.18s ease;
+}
+.db-or-picker.is-open .db-or-chevron {
+	transform: rotate(180deg);
+}
+.db-or-body {
+	border: 1px solid var(--border);
+	border-top: none;
+	border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+	padding: 0.5rem;
+	background: var(--bg-alt);
+}
+.db-or-search {
+	width: 100%;
+	box-sizing: border-box;
+	font: inherit;
+	font-size: 0.8rem;
+	color: var(--text-body);
+	background: var(--bg);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-sm);
+	padding: 0.35rem 0.5rem;
+	margin-bottom: 0.45rem;
+}
+.db-or-search:focus-visible {
+	outline: none;
+	border-color: var(--accent);
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+.db-or-seg {
+	display: inline-flex;
+	gap: 0;
+	border: 1px solid var(--border);
+	border-radius: var(--radius-sm);
+	overflow: hidden;
+	margin-bottom: 0.5rem;
+}
+.db-or-seg-btn {
+	font: inherit;
+	font-size: 0.74rem;
+	font-weight: 600;
+	color: var(--text-muted);
+	background: var(--bg);
+	border: none;
+	padding: 0.3rem 0.7rem;
+	cursor: pointer;
+}
+.db-or-seg-btn + .db-or-seg-btn {
+	border-left: 1px solid var(--border);
+}
+.db-or-seg-btn.is-on {
+	color: var(--on-accent);
+	background: var(--accent);
+}
+.db-or-list {
+	max-height: 230px;
+	overflow-y: auto;
+	display: flex;
+	flex-direction: column;
+	gap: 0.1rem;
+}
+.db-or-group {
+	font-size: 0.66rem;
+	font-weight: 700;
+	letter-spacing: 0.05em;
+	text-transform: uppercase;
+	color: var(--text-muted);
+	padding: 0.4rem 0.3rem 0.2rem;
+}
+.db-or-row {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.35rem 0.4rem;
+	border-radius: var(--radius-sm);
+	cursor: pointer;
+}
+.db-or-row:hover {
+	background: var(--bg);
+}
+.db-or-row.is-sel {
+	background: var(--accent-soft);
+}
+.db-or-row-radio {
+	flex: 0 0 auto;
+	accent-color: var(--accent);
+}
+.db-or-row-meta {
+	display: flex;
+	flex-direction: column;
+	gap: 0.02rem;
+	min-width: 0;
+}
+.db-or-row-name {
+	font-size: 0.8rem;
+	color: var(--text-body);
+}
+.db-or-row.is-sel .db-or-row-name {
+	color: var(--text-heading);
+	font-weight: 600;
+}
+.db-or-row-price {
+	font-size: 0.68rem;
+	color: var(--text-muted);
+}
+.db-or-empty {
+	font-size: 0.76rem;
+	color: var(--text-muted);
+	padding: 0.6rem 0.3rem;
+}
+
+/* Prompt-caching switch (a labelled toggle, cue + tip). */
+.db-or-switch {
+	display: flex;
+	align-items: center;
+	gap: 0.6rem;
+	margin: 0.55rem 0;
+	cursor: pointer;
+}
+.db-or-switch .db-pref-text {
+	flex: 1 1 auto;
+}
+.db-switch {
+	position: relative;
+	flex: 0 0 auto;
+	width: 38px;
+	height: 22px;
+}
+.db-switch-input {
+	position: absolute;
+	inset: 0;
+	margin: 0;
+	opacity: 0;
+	cursor: pointer;
+}
+.db-switch-knob {
+	position: absolute;
+	inset: 0;
+	background: color-mix(in srgb, var(--text-muted) 45%, transparent);
+	border-radius: 999px;
+	transition: background 0.16s ease;
+}
+.db-switch-knob::after {
+	content: '';
+	position: absolute;
+	top: 2px;
+	left: 2px;
+	width: 18px;
+	height: 18px;
+	background: var(--bg);
+	border-radius: 50%;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+	transition: transform 0.16s ease;
+}
+.db-switch-input:checked + .db-switch-knob {
+	background: var(--accent);
+}
+.db-switch-input:checked + .db-switch-knob::after {
+	transform: translateX(16px);
+}
+.db-switch-input:focus-visible + .db-switch-knob {
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 30%, transparent);
+}
+
+/* Standing instructions — labelled textarea + live word counter. */
+.db-or-instr {
+	display: flex;
+	flex-direction: column;
+	gap: 0.15rem;
+	margin: 0.55rem 0 0.2rem;
+}
+.db-or-instr-input {
+	font: inherit;
+	font-size: 0.8rem;
+	color: var(--text-body);
+	background: var(--bg);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-sm);
+	padding: 0.4rem 0.5rem;
+	resize: vertical;
+	margin-top: 0.15rem;
+}
+.db-or-instr-input:focus-visible {
+	outline: none;
+	border-color: var(--accent);
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+.db-or-instr-count {
+	align-self: flex-end;
+	font-size: 0.66rem;
+	color: var(--text-muted);
+}
+.db-or-instr-count.over {
+	color: var(--accent);
+	font-weight: 700;
+}
