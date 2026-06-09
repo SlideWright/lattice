@@ -17,6 +17,14 @@ import { renderMarkdown } from './chat-markdown.js';
 const MAX_DECK_CHARS = 1200; // a short excerpt — a small model drowns in a full deck
 const RICH_DECK_CHARS = 16000; // the cloud tier (Claude) reads the whole deck, not a peek
 
+// Tiers capable enough for the FULL Lattice authoring dossier + the editing
+// protocol: the cloud (Puter/Claude) and WebLLM (a desktop 7–8B model). The tiny
+// universal (0.5B) and built-in tiers drown in the big prompt, so they stay lean
+// and advice-only. Keys on capability, not "is it the cloud".
+export function isCapableTier(generation) {
+  return generation === 'puter' || generation === 'webllm';
+}
+
 function el(tag, cls, text) {
   const e = document.createElement(tag);
   if (cls) e.className = cls;
@@ -413,11 +421,12 @@ export function createChat({ mount, composer, model, store, getAssessment, catal
       target.textContent = '';
     };
     try {
-      // The cloud tier (Puter/Claude) gets the rich, Lattice-aware prompt + the
-      // whole deck; the small local model keeps the lean peek so it doesn't ramble.
+      // Capable tiers (Puter cloud + WebLLM desktop) get the rich, Lattice-aware
+      // prompt + the whole deck; the tiny local tiers keep the lean peek so they
+      // don't ramble.
       const messages = buildChatMessages({
         source: assessment?.source, assessment, history: await thread(), userText: text,
-        catalog, rich: a.generation === 'puter',
+        catalog, rich: isCapableTier(a.generation),
       });
       const out = await model.complete({
         messages,
@@ -431,13 +440,13 @@ export function createChat({ mount, composer, model, store, getAssessment, catal
     begin(); // ensure the thinking state clears even if nothing streamed
     target.classList.remove('is-streaming');
 
-    // On the cloud tier, the reply may carry proposed EDIT BLOCKS — lift them into
-    // reviewable diff cards and show only the prose in the bubble. Stored history
-    // keeps the prose (the change lives in the deck once applied), so reloading the
-    // thread never re-offers a stale apply.
+    // On a capable tier (Puter / WebLLM), the reply may carry proposed EDIT BLOCKS —
+    // lift them into reviewable diff cards and show only the prose in the bubble.
+    // Stored history keeps the prose (the change lives in the deck once applied), so
+    // reloading the thread never re-offers a stale apply.
     let stored = full;
     let edits = [];
-    if (a.generation === 'puter' && full && full !== floor) {
+    if (isCapableTier(a.generation) && full && full !== floor) {
       const parsed = parseEdits(full);
       if (parsed.edits.length) {
         stored = parsed.text || '(proposed a deck edit)';

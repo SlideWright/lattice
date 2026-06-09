@@ -187,7 +187,14 @@ describe('batch controls (multi-edit reply)', () => {
 });
 
 describe('gating + plain replies', () => {
-  test('a non-Puter tier never parses edits (no cards)', async () => {
+  test('WebLLM (a capable tier) also proposes editable cards', async () => {
+    const reply = '````lattice-edit slide=2\n# Plan\n\nx\n````';
+    const { chat, mount } = await setup({ reply, generation: 'webllm' });
+    await chat.send('go');
+    assert.ok(mount.querySelector('.db-edit-card'), 'WebLLM gets the editing protocol too');
+  });
+
+  test('the tiny universal tier never parses edits (no cards)', async () => {
     const reply = '````lattice-edit slide=2\n# Plan\n\nx\n````';
     const { chat, mount } = await setup({ reply, generation: 'transformers' });
     await chat.send('go');
