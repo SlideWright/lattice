@@ -1433,6 +1433,10 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
   `import.meta.url` path is kept as a belt-and-braces fallback. Verify by
   inspecting built HTML: `grep themeBase dist/components/<bucket>/<name>/index.html`
   must show `playground/v/<hash>/themes/`, not the bare `playground/themes/`.
+  `assetBase()` now also **throws during a production build** (`import.meta.env.PROD`)
+  when no hash resolves — so a future regression fails the deploy loudly instead
+  of silently emitting the unversioned 404 URLs. `astro dev` and bare Node
+  imports still degrade to the unversioned base.
 - **Removable when:** Never silently — if the cache-bust scheme is replaced
   by a generated importable version constant (Vite would inline it, no fs
   read), this whole class of path-resolution failure goes away.

@@ -64,9 +64,28 @@ export function assetVersion() {
  * The path prefix the playground assets live under, hash-versioned when sync
  * has run. Always ends in a slash, so `prefix + 'themes/'` /
  * `prefix + 'lattice-runtime.js'` compose directly.
+ *
+ * FAILS LOUD in a production build. `sync:playground` runs before
+ * `astro build` in the docs `build` script, so a resolved hash is an
+ * invariant there — a miss means the staged `v/<hash>/` tree is missing or
+ * unreadable, and emitting the bare `playground/` fallback would ship URLs
+ * that 404 (sync only ever writes the *versioned* tree). Throwing fails the
+ * deploy instead of silently serving a dead playground — the failure mode of
+ * the 2026-06 `import.meta.url` regression, which a silent catch + fallback
+ * turned into a green deploy + a site-wide 404. Outside a Vite production
+ * build (astro dev, or a bare Node import) it degrades to the legacy
+ * unversioned base so tooling and the dev server can't hard-fail.
  * @returns {string}
  */
 export function assetBase() {
   const v = assetVersion();
-  return v ? `playground/v/${v}/` : 'playground/';
+  if (v) return `playground/v/${v}/`;
+  if (import.meta.env?.PROD) {
+    throw new Error(
+      'asset-version: no playground/v/<hash> dir resolved during a production build. ' +
+        'Run `npm run sync:playground` before `astro build` — emitting unversioned ' +
+        'playground URLs would 404 the engine CSS + runtime.',
+    );
+  }
+  return 'playground/';
 }
