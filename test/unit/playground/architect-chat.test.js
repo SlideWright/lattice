@@ -140,9 +140,10 @@ describe('buildChatMessages', () => {
 });
 
 describe('isCapableTier (which tiers get the dossier + editing)', () => {
-  test('the cloud (Puter) and WebLLM are capable; the tiny tiers are not', async () => {
+  test('the cloud tiers (Puter, OpenRouter) and WebLLM are capable; the tiny tiers are not', async () => {
     const { isCapableTier } = await load();
     assert.equal(isCapableTier('puter'), true);
+    assert.equal(isCapableTier('openrouter'), true);
     assert.equal(isCapableTier('webllm'), true);
     assert.equal(isCapableTier('transformers'), false); // universal 0.5B — lean
     assert.equal(isCapableTier('prompt-api'), false); // built-in — lean
