@@ -112,7 +112,7 @@ the bucket diverges to keep maintenance localized. See §9.
 
 ---
 
-## 4. The 10 forms
+## 4. The 12 forms
 
 | Form         | Description                                                 | Used by |
 |--------------|-------------------------------------------------------------|---------|
@@ -125,11 +125,15 @@ the bucket diverges to keep maintenance localized. See §9.
 | **panel**    | Two zones: featured content + supporting context            | Statement, Imagery |
 | **matrix**   | Cells indexed by two axes (categorical × categorical)       | Comparison, Progression, Evidence |
 | **scatter**  | Points in a 2-D plane (continuous × continuous)             | Evidence |
+| **spatial**  | Points or regions placed by real-world geography (a basemap)| Evidence (map) |
 | **timeline** | Items along a single ordered axis                           | Progression |
 | **split**    | Two co-equal zones, side-by-side or top-bottom              | Comparison |
 
-(Eleven entries: `split` is the eleventh because comparison's split is
-co-equal halves where `panel` has a featured side.)
+(Twelve entries. `split` is comparison's co-equal halves where `panel`
+has a featured side; `spatial` is the newest — positions fixed by an
+external geographic coordinate system, not chosen by a grid or axis,
+which is what `scatter` and `matrix` can't express. See the `map`
+component.)
 
 ---
 

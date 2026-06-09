@@ -241,6 +241,31 @@ in patch versions.
 
 ### Added
 
+- **`map` component — a US-states basemap that fills regions by value or
+  category** (`evidence · spatial · series`, `chart` bucket), the first layout
+  on the new **`spatial`** form. For geographic stories — program reach,
+  service territories, jurisdictions, where the grants landed (the gov /
+  public-sector and nonprofit archetypes a flat `image` couldn't serve).
+  Author one li per region with a trailing inline-code value
+  (`- California \`48.2\``); region names resolve case- and
+  punctuation-insensitively by full name, postal code, or common abbreviation
+  (`California` / `CA` / `Calif.`). Two read modes: **choropleth** (default)
+  shades each named region on a single-hue ramp off `--cat1-hue` (low→high),
+  anchored on the neutral base so a low value never sinks below an empty region
+  on a dark canvas; **highlight** (`map highlight`) gives each named region its
+  own `--catN` slot and leaves the rest neutral, for membership rather than
+  magnitude. Names the basemap can't place are reported — a muted legend row
+  plus a `data-unmatched` attribute on the figure — never silently dropped.
+  The basemap is baked, pre-projected (d3.geoAlbersUsa with AK/HI insets) SVG
+  path data generated from public-domain US Census boundaries via
+  `tools/build-basemap.js` (no geo library ships); it inlines into the
+  emulator/runtime JS bundles (~22 KB minified each), never into
+  `dist/lattice.css`, preserving the zero-fetch contract. New chart-family
+  kernel module (`map.transform.js`) wired through the single dispatcher, so it
+  reaches all three render paths via the registry. v1 is US states only;
+  counties / districts / city pins and a `world` basemap are deferred. Adds the
+  12th `form` (`spatial`) to the taxonomy (`design-system.md` §4, the schema +
+  `index.js` enums). Demo deck: `examples/map.md`.
 - **`funnel` component — a tapering stage chart showing where a flow drops
   off** (`evidence · canvas · series`, `chart` bucket). For any narrowing
   pipeline — sales / conversion funnel, hiring pipeline, grant / donor

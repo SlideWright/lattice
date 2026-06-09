@@ -2,7 +2,7 @@
 
 # chart
 
-`10 components`
+`11 components`
 
 Chart — series-substance data visualizations (SVG kernel).
 
@@ -72,6 +72,21 @@ Eight items across four stages; the scoring-model rewrite is the only card flagg
     - framework
   - Pilot onboarding `S`
     - adoption
+
+---
+
+<!-- _class: map -->
+
+## Grant dollars reached every region — unevenly.
+
+- California `48.2`
+- Texas `36.4`
+- New York `31.0`
+- Florida `27.5`
+- Illinois `19.3`
+- Ohio `14.1`
+- Georgia `11.8`
+- Washington `9.6`
 
 ---
 
