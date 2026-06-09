@@ -117,13 +117,38 @@ pre-push-disabled:
   # if the team wants the gate on push.
 
 pre-push:
+  # The "nothing unverified reaches the remote" boundary. Everything that
+  # can be checked deterministically runs here, fail-fast cheap-first, so a
+  # push is impossible until the work is green. Sequential (not parallel):
+  # build:check and the integration rebuild both touch dist/ and tmp output,
+  # so overlapping them risks file contention. Per-component / bucket-gallery
+  # PDF freshness (58 + 18 rebuilds, ~30 min) still lives in CI only — see
+  # pre-push-disabled above.
   jobs:
     - name: lint
       run: npm run lint
+    - name: lint-deck
+      # Repo-wide strict author-facing footgun check (pre-commit only sees
+      # staged decks; this is the full sweep).
+      run: npm run lint:deck:all
+    - name: build-check
+      # The CI build / stale-artifact gate. Deterministic (no rendering),
+      # fast. Catches "edited a generator source, forgot to rebuild dist/".
+      run: npm run build:check
     - name: unit-tests
       # Safety net: full unit suite runs before push regardless of what
-      # pre-commit's affected-tests ran. Integration suite stays in CI.
+      # pre-commit's affected-tests ran.
       run: npm test
+    - name: integration-tests
+      # Full integration tier (cross-renderer parity + PDF page counts) must
+      # pass before push, not just in CI. Needs pdfinfo (poppler-utils) and a
+      # Chromium for marp-cli; the web SessionStart hook installs both and
+      # exports CHROME_PATH. The inline locate is a fallback so the gate is
+      # self-contained even if the session env didn't propagate. Warm cache
+      # makes repeat runs near-instant; a real source change is ~30s.
+      run: |
+        export CHROME_PATH="${CHROME_PATH:-$(ls /root/.cache/puppeteer/chrome/linux-*/chrome-linux64/chrome 2>/dev/null | head -1)}"
+        npm run test:integration
 
 commit-msg:
   jobs:

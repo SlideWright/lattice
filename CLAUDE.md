@@ -330,6 +330,37 @@ caught by the hook instead of by reviewer eyeballs.
 - **`.scratch/` has a 14-day lifecycle** (`npm run clean:scratch`). Use
   it for throwaway experiments.
 
+## Definition of Done — the gates run for you; don't re-police them
+
+The quality checklist is **enforced by git hooks, not by memory**. Once
+`node_modules` is installed (the web SessionStart hook at
+`.claude/hooks/session-start.sh` guarantees this, along with
+`poppler-utils` and `CHROME_PATH`), lefthook makes these blocking — a
+commit or push simply fails until they pass. Don't manually re-run them
+"to be sure," and never reach for `npx biome` (wrong package on the
+registry — use `npm run lint` or `node_modules/.bin/biome`):
+
+- **At commit (`pre-commit`)** — biome lint (staged), affected unit
+  tests, deck-footgun lint (staged decks), auto-rebuild of staged deck
+  PDFs, and freshness gates for the runtime/emulator bundles, dist
+  README, and component docs/portal.
+- **At push (`pre-push`)** — full biome lint, repo-wide deck lint,
+  `build:check` (the CI build / stale-artifact gate), the full unit
+  suite, and the **full integration tier** (cross-renderer parity + PDF
+  page counts). Nothing unverified reaches the remote.
+- **commit-msg** — the `area(scope):` format check.
+
+A hook failure is a **root cause to fix, not a `--no-verify` to skip**.
+
+**What the hooks cannot do is the one thing left to you: visual
+judgment.** Tests verify code correctness, not that the slide *looks*
+right. So on any visual change (CSS, layout, theme, gallery) the standing
+rule is: rebuild, **`SendUserFile` the rendered PDF**, and run
+`tools/pixel-check.js` to catch unintended drift. If you cannot rebuild
+and inspect, **say so explicitly** rather than claim success (see below).
+Everything else on the old "did you lint / test / build / update the
+generated docs?" checklist is now the machine's job.
+
 ## When you can't see the result
 
 For visual changes (CSS, layouts, themes, gallery), tests verify code

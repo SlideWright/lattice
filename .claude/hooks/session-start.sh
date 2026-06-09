@@ -1,20 +1,40 @@
 #!/bin/bash
 set -euo pipefail
 
-# SessionStart hook — installs JS dependencies so the toolchain works in
-# fresh Claude Code on the web containers, which clone the repo without
-# node_modules. Without this, `npm run lint` (biome), `npm test`
-# (node --test), and `npm run build` all fail with "command not found".
+# SessionStart hook — makes a fresh Claude Code on the web container able to
+# run the full quality pipeline (lint, unit + integration tests, build, and
+# PDF rasterization for visual review). Fresh containers clone the repo with
+# NONE of the following, so every one of those commands fails until set up:
 #
-# Web-only: local checkouts already have node_modules, and we don't want
-# to mutate a developer's working tree on session start.
+#   1. node_modules        → biome (lint), node --test, the build toolchain
+#   2. poppler-utils        → pdfinfo / pdftoppm: PDF page counts (integration
+#                            tests) AND rasterize-for-review.sh / pixel-check
+#   3. CHROME_PATH         → marp-cli's headless Chromium (integration tests,
+#                            any deck render). puppeteer caches the binary but
+#                            it isn't on PATH.
+#
+# Web-only: local checkouts already have all three and we don't want to mutate
+# a developer's machine on session start.
 if [ "${CLAUDE_CODE_REMOTE:-}" != "true" ]; then
   exit 0
 fi
 
 cd "$CLAUDE_PROJECT_DIR"
 
-# npm install (not ci) is idempotent and benefits from container-state
-# caching after the first run. The lockfile pins versions either way.
-# Skips audit/fund network chatter for a faster, quieter install.
+# 1. JS deps. npm install (not ci) is idempotent and benefits from
+#    container-state caching after the first run; the lockfile pins versions.
+#    Its `prepare` step also runs `lefthook install`, wiring the git hooks so
+#    the pre-commit / pre-push gates are actually active in this session.
 npm install --no-audit --no-fund
+
+# 2. System deps for the PDF pipeline. Idempotent: skip if already present.
+if ! command -v pdfinfo >/dev/null 2>&1; then
+  apt-get install -y poppler-utils || sudo apt-get install -y poppler-utils
+fi
+
+# 3. Point marp-cli at the puppeteer-cached Chromium for the whole session
+#    (and thus for the pre-push integration gate, which inherits this env).
+CHROME_BIN="$(ls /root/.cache/puppeteer/chrome/linux-*/chrome-linux64/chrome 2>/dev/null | head -1 || true)"
+if [ -n "$CHROME_BIN" ] && [ -n "${CLAUDE_ENV_FILE:-}" ]; then
+  echo "export CHROME_PATH=\"$CHROME_BIN\"" >> "$CLAUDE_ENV_FILE"
+fi
