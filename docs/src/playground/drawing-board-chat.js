@@ -16,6 +16,12 @@ import { renderMarkdown } from './chat-markdown.js';
 
 const MAX_DECK_CHARS = 1200; // a short excerpt — a small model drowns in a full deck
 const RICH_DECK_CHARS = 16000; // the cloud tier (Claude) reads the whole deck, not a peek
+// Prompt-cache TTL for the static prefix (OpenRouter/Anthropic). Converse is a
+// multi-turn conversation with think-gaps, so the 1-hour TTL keeps the ~9.7K-token
+// prefix warm across a whole authoring session instead of re-writing it after every
+// 5-minute lull. The 1h write costs 2× base input (vs 1.25× for 5m), but a single
+// avoided re-write more than pays for the premium — it wins after one >5-min gap.
+const CACHE_TTL = '1h';
 
 // Tiers capable enough for the FULL Lattice authoring dossier + the editing
 // protocol: the cloud tiers (Puter/Claude and OpenRouter — the user's chosen
@@ -42,10 +48,20 @@ function el(tag, cls, text) {
 //     stops giving generic advice and knows the real `_class` layouts) + the
 //     WHOLE deck. A capable model wants the full picture, not a peek.
 //
+// PROMPT CACHING (`cache:true`, the OpenRouter/Anthropic path): the rich system
+// message is split into a STATIC prefix (persona + the Lattice primer + the edit
+// protocol — byte-identical across every turn AND every deck) and a DYNAMIC
+// suffix (score + findings + this deck). The static prefix carries an `ephemeral`
+// cache_control breakpoint, so Anthropic bills it at ~10% on a hit instead of
+// re-reading ~10K tokens each turn. Only the OpenRouter backend sends structured
+// content blocks; every other backend gets the flattened string (Puter/WebLLM/the
+// Prompt API read `.content` as a plain string). The flattened form is
+// byte-identical to the pre-caching prompt, so behaviour is unchanged.
+//
 // Deterministic messages (floor replies, the greeting — marked `det`) are dropped
 // from history so a small model doesn't parrot our own boilerplate (the cause of
 // the degenerate "load on-device AI…" loop seen on-device). Pure string assembly.
-export function buildChatMessages({ source, assessment, history, userText, catalog, rich }) {
+export function buildChatMessages({ source, assessment, history, userText, catalog, rich, cache }) {
   const deck = (source || '').slice(0, rich ? RICH_DECK_CHARS : MAX_DECK_CHARS).trim();
   const findings = (assessment?.findings || [])
     .slice(0, rich ? 12 : 5)
@@ -56,18 +72,22 @@ export function buildChatMessages({ source, assessment, history, userText, catal
     : '';
 
   let system;
+  let systemStatic = null; // the cacheable prefix (rich only) — see PROMPT CACHING above
+  let systemDynamic = null; // the per-deck/per-turn tail (never cached)
   if (rich) {
     const numbered = numberSlides(deck);
-    system =
+    systemStatic =
       'You are the Architect, a sharp presentation partner inside the Lattice Drawing Board. ' +
       'Help the author improve THIS deck — structure, the ask, pacing, wording, and the right ' +
       'layout for each slide. Be specific and concrete: refer to slides by number and to layouts ' +
       'by their exact `_class` name. Ground every point in the deck and the findings below — ' +
       'never invent facts about the author’s content.\n\n' +
       `${buildLatticePrimer(catalog)}\n\n` +
-      `${EDIT_PROTOCOL}\n\n` +
-      `${score}\n${findings ? `Mechanical issues the deterministic review found:\n${findings}\n` : 'No mechanical issues found.\n'}` +
+      `${EDIT_PROTOCOL}`;
+    systemDynamic =
+      `\n\n${score}\n${findings ? `Mechanical issues the deterministic review found:\n${findings}\n` : 'No mechanical issues found.\n'}` +
       (numbered ? `\nThe current deck (each slide tagged [slide N] — address slides by that number; never copy the marker into an edit body):\n${numbered}` : '');
+    system = systemStatic + systemDynamic;
   } else {
     system =
       'You are the Architect, a sharp, friendly presentation coach. Answer in 1–3 short, ' +
@@ -81,7 +101,17 @@ export function buildChatMessages({ source, assessment, history, userText, catal
     .filter((m) => !m.det) // drop deterministic floor/greeting — model would parrot it
     .slice(-6)
     .map((m) => ({ role: m.role === 'architect' ? 'assistant' : 'user', content: m.content }));
-  return [{ role: 'system', content: system }, ...turns, { role: 'user', content: userText }];
+
+  // Cache only the rich path (the small one is under the cacheable-token floor and
+  // not worth a breakpoint). The static block carries the breakpoint; the dynamic
+  // tail follows it in the same message, sent fresh each turn (correctly uncached).
+  const systemMessage = cache && rich && systemStatic
+    ? { role: 'system', content: [
+        { type: 'text', text: systemStatic, cache_control: { type: 'ephemeral', ttl: CACHE_TTL } },
+        { type: 'text', text: systemDynamic },
+      ] }
+    : { role: 'system', content: system };
+  return [systemMessage, ...turns, { role: 'user', content: userText }];
 }
 
 // The deterministic floor reply — no model, but NOT a single canned string. It
@@ -424,10 +454,11 @@ export function createChat({ mount, composer, model, store, getAssessment, catal
     try {
       // Capable tiers (Puter cloud + WebLLM desktop) get the rich, Lattice-aware
       // prompt + the whole deck; the tiny local tiers keep the lean peek so they
-      // don't ramble.
+      // don't ramble. On OpenRouter (Anthropic), cache the static prefix so the
+      // ~10K-token primer is billed at ~10% on repeat turns instead of in full.
       const messages = buildChatMessages({
         source: assessment?.source, assessment, history: await thread(), userText: text,
-        catalog, rich: isCapableTier(a.generation),
+        catalog, rich: isCapableTier(a.generation), cache: a.generation === 'openrouter',
       });
       const out = await model.complete({
         messages,

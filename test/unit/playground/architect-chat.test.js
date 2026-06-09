@@ -56,6 +56,48 @@ describe('buildChatMessages', () => {
     assert.ok(sys.length < 6000, 'system prompt bounded by deck truncation');
   });
 
+  test('rich + cache: the static prefix is a cache_control block, the dynamic tail is not', async () => {
+    const { buildChatMessages } = await load();
+    const args = {
+      source: '# Deck\n\nbody',
+      assessment: { scorecard: { band: 'B+', overall: 82 }, findings: [{ severity: 'warning', message: 'thin slide', slide: 2 }] },
+      history: [],
+      userText: 'help',
+      catalog: [{ name: 'title', bucket: 'anchor', tags: [], summary: 'title slide', skeleton: '<!-- _class: title -->', variants: [], slots: [] }],
+      rich: true,
+    };
+    const cached = buildChatMessages({ ...args, cache: true });
+    const sys = cached[0];
+    assert.equal(sys.role, 'system');
+    assert.ok(Array.isArray(sys.content), 'cached system content is content blocks');
+    assert.equal(sys.content.length, 2);
+    // Block 0 — the STATIC prefix carries the ephemeral breakpoint (1-hour TTL so
+    // the prefix survives think-gaps across a session); block 1 doesn't.
+    assert.deepEqual(sys.content[0].cache_control, { type: 'ephemeral', ttl: '1h' });
+    assert.equal(sys.content[1].cache_control, undefined);
+    // The static block holds the persona + primer + edit protocol; the dynamic
+    // block holds the per-deck score/findings/deck (so the cache key never moves).
+    assert.match(sys.content[0].text, /You are the Architect/);
+    assert.ok(!/B\+ \(82\/100\)/.test(sys.content[0].text), 'score is NOT in the cached prefix');
+    assert.match(sys.content[1].text, /B\+ \(82\/100\)/);
+    assert.match(sys.content[1].text, /thin slide \(slide 2\)/);
+
+    // Without cache, the same rich prompt is a flat string, byte-identical to the
+    // joined blocks — so non-OpenRouter backends are unaffected.
+    const plain = buildChatMessages({ ...args, cache: false });
+    assert.equal(typeof plain[0].content, 'string');
+    assert.equal(plain[0].content, sys.content[0].text + sys.content[1].text);
+  });
+
+  test('cache is ignored on the lean (non-rich) path — stays a plain string', async () => {
+    const { buildChatMessages } = await load();
+    const msgs = buildChatMessages({
+      source: '# D', assessment: { scorecard: { band: 'A', overall: 95 }, findings: [] },
+      history: [], userText: 'q', rich: false, cache: true,
+    });
+    assert.equal(typeof msgs[0].content, 'string');
+  });
+
   test('handles a clean deck and empty history', async () => {
     const { buildChatMessages } = await load();
     const msgs = buildChatMessages({ source: '# D', assessment: { scorecard: { band: 'A', overall: 95 }, findings: [] }, history: null, userText: 'q' });
