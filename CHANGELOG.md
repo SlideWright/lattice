@@ -245,7 +245,9 @@ in patch versions.
   and standing instructions.** The cramped native model `<select>` (300+ rows) is
   replaced by an in-place accordion in the Cloud AI settings section: collapsed it
   shows the current model + price with a "Tap to change model" hint; expanded it
-  offers search, a Featured/All toggle, and a vendor-grouped, priced list. A
+  offers search, **Featured / Value / Free / All** filter tabs, and a
+  vendor-grouped, priced list. (Value = a curated set of strong cost-effective
+  models; Free = the catalog's $0 rows.) A
   **Prompt caching** switch lets the user opt out of the cached-prefix billing and
   is gated per-model (disabled with "Not supported by this model" for vendors that
   don't support it). A **Standing instructions** box (≤500 words) is appended to the

@@ -228,6 +228,15 @@ export function createModelSettings({ host, trigger, model, onChange, isOpen = (
     'openai/gpt-5', 'openai/gpt-5-mini', 'openai/gpt-4o',
     'google/gemini-2.5-pro', 'google/gemini-2.5-flash',
   ];
+  const OR_VALUE = [ // strong performers that punch above their price (the "Value" lens)
+    'deepseek/deepseek-r1', 'deepseek/deepseek-chat',
+    'meta-llama/llama-3.3-70b-instruct',
+    'qwen/qwen-2.5-72b-instruct', 'qwen/qwq',
+    'google/gemini-2.5-flash', 'openai/gpt-5-mini', 'openai/gpt-4o-mini',
+    'anthropic/claude-3.5-haiku',
+  ];
+  const inSet = (set, id) => set.some((f) => id === f || id.startsWith(f));
+  const isFree = (m) => m.promptPerM === 0 && m.completionPerM === 0; // OpenRouter ":free" rows
   const vendorOf = (id) => (id.split('/')[0] || 'other').replace(/[-_]/g, ' ');
   const shortName = (m) => (m.name || m.id).replace(/^[^:]+:\s*/, ''); // drop "Vendor: " — we group by vendor
   const priceLabel = (m) => (m.promptPerM != null
@@ -253,10 +262,19 @@ export function createModelSettings({ host, trigger, model, onChange, isOpen = (
     search.placeholder = 'Search 300+ models…';
     search.setAttribute('aria-label', 'Search OpenRouter models');
     const seg = el('div', 'db-or-seg');
-    const segFeat = el('button', 'db-or-seg-btn is-on', 'Featured');
-    const segAll = el('button', 'db-or-seg-btn', 'All models');
-    segFeat.type = segAll.type = 'button';
-    seg.append(segFeat, segAll);
+    const TABS = [['featured', 'Featured'], ['value', 'Value'], ['free', 'Free'], ['all', 'All']];
+    const segBtns = {};
+    for (const [key, label] of TABS) {
+      const btn = el('button', 'db-or-seg-btn' + (key === 'featured' ? ' is-on' : ''), label);
+      btn.type = 'button';
+      btn.addEventListener('click', () => {
+        view = key;
+        for (const k in segBtns) segBtns[k].classList.toggle('is-on', k === key);
+        renderList();
+      });
+      segBtns[key] = btn;
+      seg.append(btn);
+    }
     const list = el('div', 'db-or-list');
     body.append(search, seg, list);
     wrap.append(summary, body);
@@ -271,8 +289,16 @@ export function createModelSettings({ host, trigger, model, onChange, isOpen = (
       list.innerHTML = '';
       if (!orModelsCache) { list.append(el('p', 'db-or-empty', 'Loading models…')); return; }
       let items = orModelsCache.filter((m) => `${m.name || ''} ${m.id}`.toLowerCase().includes(q));
-      if (view === 'featured') items = items.filter((m) => OR_FEATURED.some((f) => m.id === f || m.id.startsWith(f)));
-      if (!items.length) { list.append(el('p', 'db-or-empty', view === 'featured' ? 'No featured models match — try All.' : 'No models match.')); return; }
+      if (view === 'featured') items = items.filter((m) => inSet(OR_FEATURED, m.id));
+      else if (view === 'value') items = items.filter((m) => inSet(OR_VALUE, m.id));
+      else if (view === 'free') items = items.filter(isFree);
+      if (!items.length) {
+        const msg = view === 'all' ? 'No models match.'
+          : view === 'free' ? 'No free models in the catalog right now.'
+            : `No ${view} models match — try All.`;
+        list.append(el('p', 'db-or-empty', msg));
+        return;
+      }
       const groups = {};
       for (const m of items) (groups[vendorOf(m.id)] ||= []).push(m);
       for (const v of Object.keys(groups).sort()) {
@@ -309,8 +335,6 @@ export function createModelSettings({ host, trigger, model, onChange, isOpen = (
       }
     });
     search.addEventListener('input', () => { q = search.value.trim().toLowerCase(); renderList(); });
-    segFeat.addEventListener('click', () => { view = 'featured'; segFeat.classList.add('is-on'); segAll.classList.remove('is-on'); renderList(); });
-    segAll.addEventListener('click', () => { view = 'all'; segAll.classList.add('is-on'); segFeat.classList.remove('is-on'); renderList(); });
     // Preload the catalog so the COLLAPSED summary reads "Claude Sonnet 4 · $3/M…"
     // (friendly name + price) immediately, not the raw "vendor/model-id".
     if (orModelsCache) setSummary();
