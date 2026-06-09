@@ -33,6 +33,27 @@ something new in the same skin. Most of what feels like design in other
 tools is these four decisions fighting on one surface. Lattice gives
 each its own.
 
+## A good deck doesn't need you in the room
+
+A lot of people dislike presentations, and they're usually right to.
+The medium isn't the problem. Most decks are badly written and hard to
+look at, every slide crammed with as much as it can fit.
+
+The cramming comes from a mistake about what a slide is. A slide is a
+frame in a storyboard, not a page of prose. While you talk, the
+audience is shown the slide rather than left to read it — it sets the
+one beat you're on, and your voice does the rest.
+
+And the standard is higher than it sounds, because the slide gets
+read without you. It's forwarded, attached, opened in a room you were
+never in. So it has to carry its point alone, with almost no context —
+which means less on the slide, written better: one clear claim, a
+heading that says something, a shape that fits the thought.
+
+Get that right and the deck stops needing to be presented at all. You
+can email it and forget it, and it still makes the case. Lattice is
+built for that deck.
+
 ## The colors live in one file
 
 Every color in a Lattice deck comes from a palette — one file, a short
@@ -61,7 +82,7 @@ engine decides where it all goes.
 That trade has a second half, and it's about words. A heading in
 Lattice is meant to be a sentence, not a label. "Revenue" tells the
 reader nothing; "Revenue grew 40% on flat headcount" tells them the
-whole slide before they read the rest of it. The engine can't write
+whole slide before they read another word. The engine can't write
 that line for you, but the system is built to reward it — a deck is
 read at speed, and a claim lands faster than a noun.
 
@@ -71,7 +92,7 @@ archive for a stale figure. If you ever leave Lattice, every deck it
 made is still a plain PDF, sitting next to the Markdown that built it.
 Nothing locks shut behind you. And when the vocabulary runs out — when
 you need something the layouts don't offer — it's plain Markdown and
-CSS underneath, and you can edit that directly.
+CSS underneath, and you can edit it directly.
 
 ## The system carries the consistency. You carry the judgment.
 
@@ -92,10 +113,9 @@ good.
 ## Predictability is worth more than it looks
 
 The same Markdown produces the same PDF — on your laptop, on a
-colleague's, in a build server, this year and next. People notice this
-property only when it's missing: the deck that reflows the night before
-the meeting, the font
-that renders one way on screen and another on the projector, the
+colleague's, in a build server, this year and next. You notice it only
+when it's gone: the deck that reflows the night before the meeting, the
+font that renders one way on screen and another on the projector, the
 "final-v7" that looks subtly different from "final-v6" and nobody can
 say why.
 
@@ -104,9 +124,8 @@ and approved is exactly the deck that opens in the room — you can put
 your name on it without re-reading every slide. It's also what makes
 the rest possible: you can't review a moving target, can't diff one,
 can't safely hand one off to a colleague or an assistant. The real cost
-of an unpredictable tool isn't the
-occasional surprise. It's the vigilance you pay, forever, guarding
-against one.
+of an unpredictable tool isn't the occasional surprise. It's the
+vigilance you pay, forever, guarding against one.
 
 ## You don't memorize it; it shows you
 
@@ -116,7 +135,7 @@ four-layer model to memorize. You're not meant to memorize any of it.
 The floor is Markdown, which you already know. A plain text file with
 no Lattice vocabulary still renders as a clean deck; you add a layout
 name when you want one, one at a time, with no cliff to fall off. From
-there the system surfaces itself. Your editor autocompletes the
+there, the tooling does the teaching. Your editor autocompletes the
 layouts. The gallery shows you each one rendered before you pick it. A
 linter flags the handful of real footguns as you type, in the editor
 and in the browser, with the very same checks the engine runs.
@@ -155,8 +174,8 @@ changed. That part stays with you.
 ## Constraint is what frees you
 
 Some people hear all this and worry that a system flattens the craft —
-that making slides is an art, and an engine that picks the layout takes
-the art away. It's a fair worry, and worth answering directly.
+that making slides is an art, and an engine that picks the layout
+strips it out. It's a fair worry, and worth answering directly.
 
 Start with what's true. There is real craft in a good deck, and there
 is a real risk that everything starts to look the same. Neither is in
@@ -166,8 +185,8 @@ But look at where the craft lives. Most of what feels artful in a slide
 tool is fighting the tool — nudging a box into line, hunting down the
 right hex code, redoing all of it when the brand changes. That's
 not art. It's labor that feels like art because it's slow and fiddly.
-Lattice takes that away and touches none of the decisions that actually
-are creative: what the slide should say, what to cut, how the argument
+Lattice takes that away and touches none of the decisions that are
+actually creative: what the slide should say, what to cut, how the argument
 is paced, which of the seven jobs this moment needs. The craft doesn't
 disappear. It moves — out of nudging boxes and into the words and the
 visual system, where one good decision pays off across a thousand
