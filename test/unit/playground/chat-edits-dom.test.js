@@ -20,7 +20,7 @@ after(() => { delete global.document; delete global.window; });
 
 const DECK = '# Intro\n\nopening\n\n---\n\n# Plan\n\nold body';
 
-async function setup({ reply, generation = 'puter' }) {
+async function setup({ reply, generation = 'puter', store }) {
   const { createChat } = await import('../../../docs/src/playground/drawing-board-chat.js');
   const mount = document.createElement('div');
   const composer = document.createElement('form');
@@ -35,13 +35,34 @@ async function setup({ reply, generation = 'puter' }) {
     async complete() { return reply; },
   };
   const chat = createChat({
-    mount, composer, model,
+    mount, composer, model, store,
     getAssessment: () => ({ source, scorecard: { band: 'A', overall: 92 }, findings: [] }),
     getSource: () => source,
     applyFix: (next) => { applied.push(next); source = next; },
     onApply: (e) => applies.push(e),
   });
   return { chat, mount, applied, applies, getSource: () => source };
+}
+
+// A minimal in-memory store with the message persistence the chat uses.
+function memStore(messages = []) {
+  const updates = [];
+  return {
+    getActiveId: () => 'd1',
+    chatMessages: async () => messages,
+    addChatMessage: async (_id, role, content, det, extra) => {
+      const m = { id: messages.length + 1, role, content, det, ...(extra || {}) };
+      messages.push(m);
+      return m;
+    },
+    updateChatMessage: async (id, patch) => {
+      updates.push({ id, patch });
+      const m = messages.find((x) => x.id === id);
+      if (m) Object.assign(m, patch);
+    },
+    _messages: messages,
+    _updates: updates,
+  };
 }
 
 describe('Converse editing loop (DOM)', () => {
@@ -178,5 +199,57 @@ describe('gating + plain replies', () => {
     await chat.send('thoughts?');
     assert.equal(mount.querySelector('.db-edit-card'), null);
     assert.match(mount.querySelector('.db-msg-architect').textContent, /strong open/);
+  });
+});
+
+describe('frozen proposal cards (persistence + reload)', () => {
+  test('a reply persists its edits + initial open states on the stored message', async () => {
+    const store = memStore();
+    const { chat } = await setup({ reply: '````lattice-edit slide=2\n# Plan\n\nx\n````', store });
+    await chat.send('go');
+    const archMsg = store._messages.find((m) => m.role === 'architect');
+    assert.ok(archMsg.edits?.length === 1, 'edits stored on the message');
+    assert.deepEqual(archMsg.editStates, ['open']);
+  });
+
+  test('applying a live card persists its state (applied) for next reload', async () => {
+    const store = memStore();
+    const { chat, mount } = await setup({ reply: '````lattice-edit slide=2\n# Plan\n\nx\n````', store });
+    await chat.send('go');
+    mount.querySelector('.db-edit-card .db-edit-actions .db-btn-primary').click();
+    const archMsg = store._messages.find((m) => m.role === 'architect');
+    assert.deepEqual(archMsg.editStates, ['applied'], 'state persisted to the message');
+    assert.ok(store._updates.length >= 1, 'updateChatMessage was called');
+  });
+
+  test('reload restores an applied proposal as a read-only frozen card', async () => {
+    const store = memStore([
+      { id: 1, role: 'user', content: 'tighten slide 2' },
+      { id: 2, role: 'architect', content: 'Tightened.', edits: [{ action: 'replace', slide: 2, body: '# Plan!' }], editStates: ['applied'], editBefores: ['# Plan\n\nold body'] },
+    ]);
+    const { chat, mount } = await setup({ reply: '', store });
+    await chat.reload();
+    const card = mount.querySelector('.db-edit-card');
+    assert.ok(card, 'frozen card restored');
+    assert.ok(card.classList.contains('is-frozen'));
+    assert.equal(card.dataset.state, 'applied');
+    assert.ok(card.querySelector('.db-edit-icon').classList.contains('ico-check'));
+    assert.ok(card.querySelector('.db-edit-actions').hidden, 'no live Apply/Discard after reload');
+    assert.equal(card.querySelector('.db-edit-undo').hidden, true, 'no Undo on a frozen card');
+    assert.match(mount.querySelector('.db-msg-architect .db-msg-body').textContent, /Tightened\./);
+    // the diff uses the STORED before (proposal time), not the live deck
+    assert.ok([...card.querySelectorAll('.db-diff-del')].some((d) => /old body/.test(d.textContent)), 'diff shows the proposal-time before');
+  });
+
+  test('a never-acted proposal reloads as a frozen "open" card with no buttons', async () => {
+    const store = memStore([
+      { id: 1, role: 'architect', content: 'Suggestion:', edits: [{ action: 'replace', slide: 1, body: '# X' }], editStates: ['open'] },
+    ]);
+    const { chat, mount } = await setup({ reply: '', store });
+    await chat.reload();
+    const card = mount.querySelector('.db-edit-card');
+    assert.equal(card.dataset.state, 'open');
+    assert.ok(card.classList.contains('is-frozen'));
+    assert.ok(card.querySelector('.db-edit-actions').hidden, 'frozen open is read-only too');
   });
 });

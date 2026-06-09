@@ -120,13 +120,22 @@ export function createStore({ getSource, onLoadDeck, starter = '' }) {
 	}
 	// `det` marks a deterministic message (floor reply / greeting) so the chat can
 	// keep it out of the model's history (a small model parrots its own boilerplate).
-	async function addChatMessage(deckId, role, content, det = false) {
+	// `extra` carries optional fields — e.g. the proposed `edits` + their `editStates`
+	// — so a reply's edit cards survive a reload (frozen, read-only).
+	async function addChatMessage(deckId, role, content, det = false, extra = null) {
 		if (!db || !deckId) return null;
 		const existing = await get('chats', deckId);
 		if (!existing) await put('chats', { id: deckId, createdAt: Date.now() });
-		const msg = { chatId: deckId, role, content, at: Date.now(), det: !!det };
+		const msg = { chatId: deckId, role, content, at: Date.now(), det: !!det, ...(extra || {}) };
 		const id = await put('messages', msg);
 		return { ...msg, id };
+	}
+	// Patch a stored message in place — used to persist edit-card state (applied /
+	// dismissed) as the author acts, so a reload restores the same picture.
+	async function updateChatMessage(id, patch) {
+		if (!db || id == null) return;
+		const m = await get('messages', id);
+		if (m) await put('messages', { ...m, ...patch });
 	}
 	async function clearChat(deckId) {
 		if (!db || !deckId) return;
@@ -365,6 +374,6 @@ export function createStore({ getSource, onLoadDeck, starter = '' }) {
 		init, saveActive, checkpoint, autoCheckpoint, create,
 		// Chat (Phase 2): the Architect's per-deck conversation thread.
 		getActiveId: () => activeId,
-		chatMessages, addChatMessage, clearChat,
+		chatMessages, addChatMessage, updateChatMessage, clearChat,
 	};
 }
