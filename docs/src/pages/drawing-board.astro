@@ -56,7 +56,12 @@ const _vocab = buildVocab(manifests);
 const mapRegions = Object.fromEntries(
 	Object.entries(_vocab.mapRegions || {}).map(([k, v]) => [k, { valid: [...v.valid], names: v.names }]),
 );
-const lintVocab = { names: [..._vocab.names], modifiers: [..._vocab.modifiers], mapRegions };
+const lintVocab = {
+	names: [..._vocab.names],
+	modifiers: [..._vocab.modifiers],
+	universalModifiers: [..._vocab.universalModifiers],
+	mapRegions,
+};
 
 const base = import.meta.env.BASE_URL;
 const url = (p) => `${base}/${p}`.replace(/([^:])\/{2,}/g, '$1/');
@@ -311,11 +316,16 @@ const dbData = JSON.stringify({
 			const host = document.getElementById('db-editor-host');
 			const ta = document.getElementById('db-editor-ta');
 			const initial = ta ? ta.value : '';
+			// Catalog + vocab feed slide-context autocomplete (component names +
+			// modifiers inside `_class:`), the same handoff the Architect lints from.
+			const data = JSON.parse(document.getElementById('db-data').textContent);
 			let notify = null;
 			const cursorFns = []; // multiple consumers (filmstrip sync + focus toolbar)
 			const ed = createEditor({
 				parent: host,
 				doc: initial,
+				vocab: data.lintVocab,
+				catalog: data.catalog,
 				onChange: (v) => { if (notify) notify(v); },
 				onCursor: (line) => { for (const f of cursorFns) f(line); },
 			});

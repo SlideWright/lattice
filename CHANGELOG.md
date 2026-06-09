@@ -249,6 +249,17 @@ in patch versions.
 
 ### Added
 
+- **Drawing Board: slide-context autocomplete in the editor.** Inside a
+  `<!-- _class: … -->` directive the CodeMirror editor now completes component
+  names (chip-tagged by bucket) and then the modifiers legal for that component
+  — its own declared variants first, the universal modifiers (`dark`, `scale-l`,
+  `silent`, treatments, state markers, …) after, with already-applied tokens
+  filtered out. Deterministic, offline, zero model calls: the vocabulary is the
+  same compact catalog + lint vocab the Architect already lints against, so
+  completion and lint agree by construction. The slide-detection logic is now a
+  single shared walker (`slide-context.js`), retiring the per-feature
+  backward-walkers that had drifted from the grammar. Drawing Board (docs-site)
+  only.
 - **Drawing Board: each cloud Architect reply is labelled with the model that
   produced it** — the bubble heading reads "The Architect (DeepSeek V4 Pro)", using
   *our* record of the model we sent the turn to, not the model's self-report (which
@@ -574,6 +585,13 @@ in patch versions.
 
 ### Fixed
 
+- **Map region autocomplete now defaults to the world basemap.** The editor's
+  `map` region completer inverted the component's default — a bare
+  `<!-- _class: map -->` (a world map) offered US states, so every country and
+  group (Global South, blocs, continents) was unreachable unless the author
+  typed a redundant `world` token `map.docs.md` tells them to omit. It now
+  matches the grammar: world by default, US states only on `map us` / `map usa`.
+  Drawing Board (docs-site) only.
 - **Drawing Board drawer close buttons are right-aligned again.** The flex
   spacer that pushes the `×` to the end of a drawer head was scoped to
   `.db-panel-head` only, so inside the Settings and Decks drawers
