@@ -73,7 +73,11 @@ body.db-page .topbar {
 	text-transform: uppercase;
 	color: var(--text-muted);
 }
-.db-panel-head .db-spacer {
+/* A spacer pushes its flex siblings apart in ANY flex row — panel heads AND
+   drawer heads (.db-drawer-head). Scoping it to .db-panel-head left the drawer
+   close buttons (decks + settings) jammed left against the title instead of
+   right-aligned. See engineering/gotchas.md. */
+.db-spacer {
 	flex: 1 1 auto;
 }
 .db-panel-body {

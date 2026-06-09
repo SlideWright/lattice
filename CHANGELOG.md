@@ -498,6 +498,12 @@ in patch versions.
 
 ### Fixed
 
+- **Drawing Board drawer close buttons are right-aligned again.** The flex
+  spacer that pushes the `×` to the end of a drawer head was scoped to
+  `.db-panel-head` only, so inside the Settings and Decks drawers
+  (`.db-drawer-head`) it collapsed and the close button jammed against the
+  title. The `.db-spacer` grow rule is now unscoped (a spacer grows in any
+  flex row). Drawing Board (docs-site) only.
 - **OpenRouter model picker no longer shows `$-1000000.000/M` for
   variable-priced models.** OpenRouter reports a `-1` sentinel for router/auto
   and other variable-priced rows; the picker multiplied it into a nonsense
