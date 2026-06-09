@@ -247,10 +247,14 @@ in patch versions.
   pipeline. Author one li per stage in flow order with a trailing inline-code
   value (`- Signups \`4,800\``); the kernel draws centred trapezoid bands
   (width ∝ value), flanks each with its label and value, and prints the
-  stage-to-stage conversion % in the gaps. New chart-family kernel module
-  (`funnel.transform.js`) wired through the single dispatcher, so it reaches
-  all three render paths via the registry with no per-renderer code. Demo
-  deck: `examples/funnel.md`.
+  stage-to-stage conversion % in the gaps. Each stage takes a distinct hue
+  from the categorical chart palette, rotating `--catN` exactly like the
+  piechart wedges — so the colours are on-brand per theme (cuoio's curated
+  earth pigments, etc.) and a funnel reads like the rest of the chart family.
+  Labels and values sit on the canvas, so the fills never affect text contrast.
+  New chart-family kernel module (`funnel.transform.js`) wired through the
+  single dispatcher, so it reaches all three render paths via the registry with
+  no per-renderer code. Demo deck: `examples/funnel.md`.
 - **`pricing` component — plan tiers with prices, feature checklists, and one
   recommended column** (`comparison · grid · structure`). The plans / packages
   slide for commercial (sales, product launch), membership / fundraising
