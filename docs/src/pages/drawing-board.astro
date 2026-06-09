@@ -136,27 +136,8 @@ const dbData = JSON.stringify({
 				<div class="db-panel-head">
 					<span class="db-panel-title">The Architect</span>
 					<span class="db-spacer"></span>
-					<div class="db-decks" id="db-decks-wrap">
-						<button class="db-btn db-decks-open" id="db-decks-open" aria-haspopup="dialog" aria-expanded="false" title="Decks & history">Decks</button>
-						<div class="db-decks-pop" id="db-decks-pop" role="dialog" aria-label="Decks and history" hidden>
-							<div class="db-rail-section-head db-decks-head">
-								<span class="db-panel-title">Decks</span>
-								<button class="db-btn db-btn-icon" id="db-new-deck" aria-label="New deck" title="New deck">+</button>
-							</div>
-							<div class="db-deck-list" id="db-deck-list">
-								<p class="db-rail-note">Loading your decks…</p>
-							</div>
-							<div class="db-rail-section">
-								<div class="db-rail-section-head">
-									<span class="db-panel-title">History</span>
-									<button class="db-btn db-btn-icon" id="db-checkpoint" aria-label="Save checkpoint" title="Save a checkpoint"></button>
-								</div>
-								<div class="db-history-list" id="db-history-list"></div>
-							</div>
-						</div>
-					</div>
-					<button class="db-model-chip is-floor" id="db-model-chip" aria-haspopup="dialog" title="Settings — workspace &amp; on-device AI">Deterministic floor</button>
-					<div class="db-settings-pop" id="db-settings-pop" role="dialog" aria-label="Settings" hidden></div>
+					<button class="db-btn db-decks-open" id="db-decks-open" aria-haspopup="dialog" aria-expanded="false" aria-controls="db-decks-pop" title="Decks &amp; history">Decks</button>
+					<button class="db-model-chip is-floor" id="db-model-chip" aria-haspopup="dialog" aria-expanded="false" aria-controls="db-settings-drawer" title="Settings — workspace &amp; on-device AI">Deterministic floor</button>
 				</div>
 				<div class="db-panel-body db-arch-body" id="db-arch-body" data-arch-mode="coach" data-converse-ready="false">
 					<div class="db-arch-scroll">
@@ -262,6 +243,41 @@ const dbData = JSON.stringify({
 				<button class="db-mobile-tab" data-pane="editor" role="tab" aria-selected="true">Edit</button>
 				<button class="db-mobile-tab" data-pane="preview" role="tab" aria-selected="false">Preview</button>
 			</nav>
+
+			<!-- Slide-in drawers — decks + settings. Modal panels that slide from the
+			     left over a shared scrim, mirroring the component-reference nav drawer
+			     (transform + scrim + body.db-drawer-open), with a scrollable body. -->
+			<button class="db-drawer-scrim" id="db-drawer-scrim" type="button" aria-label="Close" hidden></button>
+
+			<aside class="db-drawer db-drawer-decks" id="db-decks-pop" role="dialog" aria-modal="true" aria-label="Decks and history" aria-hidden="true">
+				<div class="db-drawer-head">
+					<span class="db-panel-title">Decks</span>
+					<button class="db-btn db-btn-icon" id="db-new-deck" aria-label="New deck" title="New deck">+</button>
+					<span class="db-spacer"></span>
+					<button class="db-drawer-close" data-drawer-close aria-label="Close decks" title="Close"></button>
+				</div>
+				<div class="db-drawer-body">
+					<div class="db-deck-list" id="db-deck-list">
+						<p class="db-rail-note">Loading your decks…</p>
+					</div>
+					<div class="db-rail-section">
+						<div class="db-rail-section-head">
+							<span class="db-panel-title">History</span>
+							<button class="db-btn db-btn-icon" id="db-checkpoint" aria-label="Save checkpoint" title="Save a checkpoint"></button>
+						</div>
+						<div class="db-history-list" id="db-history-list"></div>
+					</div>
+				</div>
+			</aside>
+
+			<aside class="db-drawer db-drawer-settings" id="db-settings-drawer" role="dialog" aria-modal="true" aria-label="Settings" aria-hidden="true">
+				<div class="db-drawer-head">
+					<span class="db-panel-title">Settings</span>
+					<span class="db-spacer"></span>
+					<button class="db-drawer-close" data-drawer-close aria-label="Close settings" title="Close"></button>
+				</div>
+				<div class="db-drawer-body" id="db-settings-pop"></div>
+			</aside>
 		</div>
 
 		<!-- Practice mode — full-screen rehearsal overlay (deterministic pacing +
@@ -353,22 +369,57 @@ const dbData = JSON.stringify({
 				host: document.getElementById('db-settings-pop'),
 				trigger: document.getElementById('db-model-chip'),
 				model,
+				isOpen: () => { const d = document.getElementById('db-settings-drawer'); return !!d && d.classList.contains('is-open'); },
 				onChange: () => { if (window.__dbChat) window.__dbChat.reload(); if (window.__dbSyncConverse) window.__dbSyncConverse(); },
 			});
 			window.__dbSettings = settings;
 
-			// Decks & history popover — folded out of the old standalone rail into the
-			// Architect head. Click toggles; outside-click / Escape closes.
+			// Slide-in drawers (decks + settings) — modal panels over a shared scrim,
+			// mirroring the component-reference nav drawer. A trigger opens its drawer;
+			// the scrim, the close button, or Escape closes it. Settings re-renders its
+			// body on open (the deck drawer's body is kept live by the store).
 			(function () {
-				var btn = document.getElementById('db-decks-open');
-				var pop = document.getElementById('db-decks-pop');
-				if (!btn || !pop) return;
-				function open() { pop.hidden = false; btn.setAttribute('aria-expanded', 'true'); }
-				function close() { pop.hidden = true; btn.setAttribute('aria-expanded', 'false'); }
-				window.__dbToggleDecks = function () { pop.hidden ? open() : close(); };
-				btn.addEventListener('click', function (e) { e.stopPropagation(); window.__dbToggleDecks(); });
-				document.addEventListener('click', function (e) { if (!pop.hidden && !pop.contains(e.target) && e.target !== btn) close(); });
-				document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !pop.hidden) close(); });
+				var scrim = document.getElementById('db-drawer-scrim');
+				var defs = {
+					'db-decks-pop': { trigger: '#db-decks-open' },
+					'db-settings-drawer': { trigger: '#db-model-chip', onOpen: function () { if (window.__dbSettings && window.__dbSettings.render) window.__dbSettings.render(); } },
+				};
+				var current = null;
+				function openDrawer(id) {
+					if (current && current !== id) shut(current);
+					var d = defs[id]; if (!d || !d.el) return;
+					d.el.classList.add('is-open');
+					d.el.setAttribute('aria-hidden', 'false');
+					if (d.trigEl) d.trigEl.setAttribute('aria-expanded', 'true');
+					if (scrim) scrim.hidden = false;
+					document.body.classList.add('db-drawer-open');
+					current = id;
+					if (d.onOpen) d.onOpen();
+					var c = d.el.querySelector('[data-drawer-close]'); if (c) c.focus();
+				}
+				function shut(id) {
+					var d = defs[id]; if (!d || !d.el) return;
+					d.el.classList.remove('is-open');
+					d.el.setAttribute('aria-hidden', 'true');
+					if (d.trigEl) d.trigEl.setAttribute('aria-expanded', 'false');
+					if (current === id) {
+						current = null;
+						if (scrim) scrim.hidden = true;
+						document.body.classList.remove('db-drawer-open');
+						if (d.trigEl) d.trigEl.focus();
+					}
+				}
+				function close() { if (current) shut(current); }
+				Object.keys(defs).forEach(function (id) {
+					var d = defs[id];
+					d.el = document.getElementById(id);
+					d.trigEl = document.querySelector(d.trigger);
+					if (d.trigEl) d.trigEl.addEventListener('click', function (e) { e.stopPropagation(); current === id ? close() : openDrawer(id); });
+				});
+				Array.prototype.forEach.call(document.querySelectorAll('[data-drawer-close]'), function (b) { b.addEventListener('click', close); });
+				if (scrim) scrim.addEventListener('click', close);
+				document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && current) close(); });
+				window.__dbToggleDecks = function () { current === 'db-decks-pop' ? close() : openDrawer('db-decks-pop'); };
 			})();
 
 			// After detection, refresh the chip and reconnect a previously-loaded model

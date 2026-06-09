@@ -97,9 +97,12 @@ export function tierLabel(a) {
   return 'Deterministic floor';
 }
 
-export function createModelSettings({ host, trigger, model, onChange }) {
-  if (!host || !model) return { refresh() {}, toggle() {}, restore: async () => {} };
-  let open = false;
+// Visibility is owned by the drawer controller now (the settings panel lives in a
+// slide-in drawer body): `isOpen()` tells us whether to bother re-rendering on a
+// refresh, and `render()` is called when the drawer opens. The chip label is still
+// driven here via `trigger`.
+export function createModelSettings({ host, trigger, model, onChange, isOpen = () => false }) {
+  if (!host || !model) return { refresh() {}, render() {}, restore: async () => {} };
   let abort = null;
   let reconnecting = false;
   let renderToken = 0;
@@ -122,7 +125,7 @@ export function createModelSettings({ host, trigger, model, onChange }) {
       const active = reconnecting || (a.modelOn && a.generation !== 'floor');
       trigger.classList.toggle('is-floor', !active);
     }
-    if (open) render();
+    if (isOpen()) render();
   }
 
   // ── a shared download flow ───────────────────────────────────────────────────
@@ -344,20 +347,6 @@ export function createModelSettings({ host, trigger, model, onChange }) {
     refresh();
   }
 
-  function toggle() {
-    open = !open;
-    host.hidden = !open;
-    if (open) render();
-  }
-  function close() { open = false; host.hidden = true; }
-
-  if (trigger) trigger.addEventListener('click', toggle);
-  document.addEventListener('click', (e) => {
-    if (open && !host.contains(e.target) && e.target !== trigger) close();
-  });
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && open) close(); });
-
-  host.hidden = true;
   refresh();
-  return { refresh, toggle, close, restore, isEnabled: readEnabled };
+  return { refresh, render, restore, isEnabled: readEnabled };
 }
