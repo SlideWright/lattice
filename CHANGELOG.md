@@ -273,9 +273,17 @@ in patch versions.
     composite (`Latin America`, `Middle East`), or a dated economic bloc
     (`European Union`, `ASEAN`, `G20`, `BRICS`, `OECD`) and the kernel fills
     every member — in choropleth (one value across the bloc) or highlight (one
-    colour per bloc). Blocs carry an `asOf` year; contested catch-alls with no
-    authoritative membership (e.g. "Global South") are deliberately not shipped.
-    The `grouped` modifier clusters the legend by continent.
+    colour per bloc). Blocs carry an `asOf` year; **Global South / Global North**
+    ship as first-class categories pinned to a stated, dated definition — South
+    to the UN Group of 77 + China (the standard UN / UNCTAD operationalization),
+    North to the developed economies — carrying the same `source` + `asOf`
+    provenance as the blocs, plus per-continent slices of the South
+    (`global-south-africa`, `global-south-asia`, `global-south-south-america`, …).
+    Shipping one sourced, dated roster is the transparent call: the definition
+    travels with the data and an author can cite it, instead of every deck
+    hand-rolling an undocumented ~130-country list. States in neither list
+    (Russia, the post-Soviet / Balkan economies, disputed territories) belong to
+    no `global-*` group. The `grouped` modifier clusters the legend by continent.
   - **Name binding without an LLM.** Country names vary wildly (Côte d'Ivoire,
     Myanmar, Czechia) and a typo is a silent gap, so the static basemap
     vocabulary drives two deterministic, zero-token defences: a **CodeMirror

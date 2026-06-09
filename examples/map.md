@@ -87,7 +87,7 @@ World names vary wildly (Côte d'Ivoire, Myanmar, Czechia), and a mistyped name 
 The spatial form is built to grow; the boundary stays provable.
 
 - **No sub-national detail.** Counties, districts, and city pins are out of scope; the world cut (110m) also omits the smallest city-states.
-- **Continents + curated blocs, not contested ones.** EU / ASEAN / G20 / BRICS / OECD ship with dated provenance; catch-alls with no authoritative membership (e.g. "Global South") are deliberately left out of a neutral engine.
+- **Continents, blocs, and stated categories.** EU / ASEAN / G20 / BRICS / OECD ship with dated provenance; Global South / Global North ship too, pinned to a stated, dated definition (the UN G77 + China) with the same provenance — so the definition travels with the data and an author can cite it, rather than every deck hand-rolling its own roster.
 - **No magnitude in highlight.** If you need *which* and *how much*, lead with choropleth and name the set in the prose.
 
 ---

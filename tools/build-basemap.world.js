@@ -36,9 +36,20 @@
  *                  the Nordics).
  *   - bloc       : dated political/economic blocs (EU, ASEAN, G20, BRICS,
  *                  OECD), each with an `asOf` year because membership changes.
- * Contested catch-alls with no authoritative membership (e.g. "Global South")
- * are deliberately NOT shipped — a neutral engine doesn't bake a political
- * claim. See the spec / the map.docs.md grouping section.
+ *   - category   : analytical categories — Global South / Global North, plus
+ *                  per-continent slices of the South (global-south-africa, …) —
+ *                  each pinned to a stated, dated definition.
+ * Global South / North ship pinned to a stated, dated definition: South to the
+ * UN Group of 77 + China membership (the standard operationalization in UN /
+ * UNCTAD / development practice), North to the developed economies — carrying
+ * the same `source` + `asOf` provenance as the blocs. Omitting them is not the
+ * neutral choice it looks like: it just forces every author to hand-roll an
+ * undocumented ~130-country roster, so the political call lands on each deck
+ * inconsistently and invisibly. Shipping ONE sourced, dated roster is the
+ * transparent call — the definition travels with the data and an author can
+ * cite it. States in neither list (Russia, the post-Soviet / Balkan
+ * "in-transition" economies, disputed territories) belong to no global-* group
+ * rather than being forced into one. See the map.docs.md grouping section.
  */
 
 const SOURCE_URL =
@@ -156,6 +167,37 @@ const CURATED_REGIONS = {
     members: ['DK','FI','IS','NO','SE'],
   },
 };
+
+// ── Global South / North ────────────────────────────────────────────────────
+// SOUTH is the UN Group of 77 + China membership — the standard operational
+// definition of the Global South in UN / UNCTAD / development practice. NORTH is
+// the developed economies (Europe, Northern America, Japan, South Korea,
+// Australia, New Zealand, Israel). Each ships as a dated, sourced group, like
+// the blocs; ids absent from the 1:110m basemap (most microstates) are filtered
+// out at assembly. States in NEITHER list (Russia, the post-Soviet / Balkan
+// "in-transition" economies, disputed territories) belong to no global-* group.
+// Keyed by region id (alpha-2). The roster is auditable on purpose — the margins
+// (e.g. which Central-Asian states are G77 members) are exactly where a reviewer
+// should check it against the official G77 list.
+const GLOBAL_SOUTH = [
+  // Africa — every African UN member state is a G77 member.
+  'DZ','AO','BJ','BW','BF','BI','CV','CM','CF','TD','KM','CG','CD','CI','DJ','EG','GQ','ER','SZ','ET','GA','GM','GH','GN','GW','KE','LS','LR','LY','MG','MW','ML','MR','MU','MA','MZ','NA','NE','NG','RW','ST','SN','SC','SL','SO','ZA','SS','SD','TZ','TG','TN','UG','ZM','ZW',
+  // Asia + Middle East (China is the "+ China"). Excludes Japan, South Korea,
+  // Israel, Turkey, and the non-member Central-Asian / Caucasus states.
+  'AF','BH','BD','BT','BN','KH','CN','IN','ID','IR','IQ','JO','KW','LA','LB','MY','MV','MN','MM','NP','KP','OM','PK','PS','PH','QA','SA','SG','LK','SY','TH','TL','TJ','TM','AE','VN','YE',
+  // Latin America + Caribbean (GRULAC). Excludes Mexico — not a G77 member.
+  'AG','AR','BS','BB','BZ','BO','BR','CL','CO','CR','CU','DM','DO','EC','SV','GD','GT','GY','HT','HN','JM','NI','PA','PY','PE','KN','LC','VC','SR','TT','UY','VE',
+  // Pacific.
+  'FJ','KI','MH','FM','NR','PG','WS','SB','TO','TV','VU',
+];
+const GLOBAL_NORTH = [
+  // Northern America.
+  'US','CA',
+  // Europe (EU + EFTA + UK + microstates).
+  'GB','IE','FR','DE','NL','BE','LU','AT','CH','LI','IS','NO','SE','FI','DK','IT','ES','PT','GR','MT','CY','PL','CZ','SK','HU','SI','HR','EE','LV','LT','RO','BG','AD','MC','SM','VA',
+  // Developed Asia-Pacific.
+  'JP','KR','IL','AU','NZ',
+];
 
 module.exports = { buildWorld, SOURCE_LABEL };
 
@@ -287,6 +329,43 @@ async function buildWorld() {
   for (const [key, g] of Object.entries(BLOCS)) {
     addGroup(key, { label: g.label, kind: 'bloc', aliases: g.aliases, source: g.source, asOf: g.asOf, members: g.members.filter((k) => regions[k]).sort() });
   }
+
+  // Global South — pinned to the UN G77 + China membership (see header note).
+  const southMembers = GLOBAL_SOUTH.filter((k) => regions[k]);
+  const southSet = new Set(southMembers);
+  if (southMembers.length) {
+    addGroup('global-south', {
+      label: 'Global South', kind: 'category',
+      aliases: ['the global south', 'g77', 'g-77', 'g77 plus china', 'group of 77'],
+      source: 'UN Group of 77 + China membership', asOf: '2025',
+      members: [...southMembers].sort(),
+    });
+    // Continental slices of the same membership — mirrors how the G77 itself
+    // organizes into regional chapters (African / Asia-Pacific / GRULAC). So an
+    // author can colour just one region of it, e.g. `global-south-africa`.
+    const southByContinent = {};
+    for (const k of southMembers) {
+      const cont = regions[k] && regions[k].continent;
+      if (cont && cont !== 'Seven seas (open ocean)') (southByContinent[cont] ||= []).push(k);
+    }
+    for (const [cont, members] of Object.entries(southByContinent)) {
+      addGroup('global-south-' + slug(cont), {
+        label: 'Global South — ' + cont, kind: 'category',
+        aliases: [`global south ${cont}`],
+        source: `UN Group of 77 + China membership, ${cont} members`, asOf: '2025',
+        members: members.sort(),
+      });
+    }
+  }
+  // Global North — the developed economies; states in neither list belong to no
+  // global-* group (see header note). Defined disjoint from the South.
+  const northMembers = GLOBAL_NORTH.filter((k) => regions[k] && !southSet.has(k));
+  if (northMembers.length) addGroup('global-north', {
+    label: 'Global North', kind: 'category',
+    aliases: ['the global north', 'developed economies', 'developed countries'],
+    source: 'Developed economies (Europe, Northern America, Japan, South Korea, Australia, New Zealand, Israel)', asOf: '2025',
+    members: northMembers.sort(),
+  });
 
   // Compute the viewBox from the actual projected extent (padded).
   let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;

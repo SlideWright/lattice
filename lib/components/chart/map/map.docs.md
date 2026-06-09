@@ -6,7 +6,7 @@
 
 **Tags** `metric` · `proportion` · `overview` · `visual`
 
-Use when the story is geographic — program reach, service territories, where the grants landed, the pilot states, the regions you operate in. Author a value per named region (full name, postal/ISO code, or a common alias); choropleth shades each region on a single-hue ramp (low→high), while `highlight` gives each named region its own categorical colour. Add `world` for the country basemap, where you can also name a continent or a bloc (`European Union`, `ASEAN`) and the kernel fills every member. Regions the basemap can't match are reported in the legend, never silently dropped.
+Use when the story is geographic — program reach, service territories, where the grants landed, the pilot states, the regions you operate in. Author a value per named region (full name, postal/ISO code, or a common alias); choropleth shades each region on a single-hue ramp (low→high), while `highlight` gives each named region its own categorical colour. Add `world` for the country basemap, where you can also name a continent, a bloc (`European Union`, `ASEAN`), or a stated category (`Global South`, `Global North`, `Global South — Africa`) and the kernel fills every member. Regions the basemap can't match are reported in the legend, never silently dropped.
 
 ## When to use
 
@@ -38,7 +38,7 @@ Use when the story is geographic — program reach, service territories, where t
 | Slot | Selector | Required | Description |
 |---|---|---|---|
 | `title` | `h2` | yes | Slide heading — name the geography and the takeaway (‘Where the program runs’). |
-| `regions` | `ul > li` | yes | One li per region (or group). Lead with the name — US: full (`California`), postal (`CA`), or abbreviation (`Calif.`); world: full (`Brazil`), ISO (`BR`), alias (`Burma`), or a group (`European Union`, `Sub-Saharan Africa`) that expands to its members — then a trailing inline-code value: `Brazil \`4.2\``. In choropleth the value drives the ramp; in highlight it's an optional legend label. Names the basemap can't resolve surface as muted ‘?’ legend rows. |
+| `regions` | `ul > li` | yes | One li per region (or group). Lead with the name — US: full (`California`), postal (`CA`), or abbreviation (`Calif.`); world: full (`Brazil`), ISO (`BR`), alias (`Burma`), or a group (`European Union`, `Sub-Saharan Africa`, `Global South`) that expands to its members — then a trailing inline-code value: `Brazil \`4.2\``. In choropleth the value drives the ramp; in highlight it's an optional legend label. Names the basemap can't resolve surface as muted ‘?’ legend rows. |
 
 ## Variants (layout-specific)
 
