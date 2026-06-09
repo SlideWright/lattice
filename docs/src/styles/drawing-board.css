@@ -2303,7 +2303,8 @@ body.db-page .topbar {
 	box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent);
 }
 .db-or-seg {
-	display: inline-flex;
+	display: flex;
+	width: 100%;
 	gap: 0;
 	border: 1px solid var(--border);
 	border-radius: var(--radius-sm);
@@ -2311,13 +2312,16 @@ body.db-page .topbar {
 	margin-bottom: 0.5rem;
 }
 .db-or-seg-btn {
+	flex: 1 1 0; /* four tabs share the width evenly so they fit a narrow mobile drawer */
 	font: inherit;
 	font-size: 0.74rem;
 	font-weight: 600;
 	color: var(--text-muted);
 	background: var(--bg);
 	border: none;
-	padding: 0.3rem 0.7rem;
+	padding: 0.3rem 0.4rem;
+	text-align: center;
+	white-space: nowrap;
 	cursor: pointer;
 }
 .db-or-seg-btn + .db-or-seg-btn {
