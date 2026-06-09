@@ -20,31 +20,72 @@
 // Build-time only — it reads the filesystem, so it runs in Astro frontmatter
 // (SSG, Node), never in a client bundle. Falls back to '' (the legacy
 // unversioned base) if sync hasn't run, so an editor/import can't hard-fail.
+//
+// ANCHOR THE LOOKUP TO THE PROJECT ROOT, NOT `import.meta.url`. Astro/Vite
+// BUNDLES this module for the production SSR build and relocates it, so an
+// `import.meta.url`-relative path no longer points at `docs/src/playground/` —
+// `readdirSync` then throws, the catch swallows it, `assetVersion()` returns
+// '', and every page emits the UNVERSIONED fallback URLs
+// (`playground/themes/<name>.css`, `playground/lattice-runtime.js`). Those
+// files don't exist (sync only writes the *versioned* tree), so the live
+// playground + every component specimen 404'd on the engine CSS and the
+// runtime. `process.cwd()` is the docs project root under both `astro build`
+// and `astro dev` (and any `docs/`-scoped npm script), which survives
+// bundling; the `import.meta.url` path stays as a belt-and-braces fallback for
+// a plain-Node importer run from elsewhere. See engineering/gotchas.md
+// "Playground/specimen previews 404 on the engine CSS + runtime".
 
 import { readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const here = dirname(fileURLToPath(import.meta.url));
-const versionedRoot = join(here, '..', '..', 'public', 'playground', 'v');
+// Candidate `v/` roots, most-reliable first: the cwd-anchored project root
+// (correct even after Vite relocates this module), then the legacy
+// module-relative path.
+const versionedRoots = [
+  join(process.cwd(), 'public', 'playground', 'v'),
+  join(dirname(fileURLToPath(import.meta.url)), '..', '..', 'public', 'playground', 'v'),
+];
 
 /** @returns {string} the content-hash dir name sync created, or '' if none. */
 export function assetVersion() {
-  try {
-    const dirs = readdirSync(versionedRoot).filter((d) => /^[0-9a-f]{8,}$/.test(d));
-    return dirs[0] || '';
-  } catch {
-    return '';
+  for (const root of versionedRoots) {
+    try {
+      const dirs = readdirSync(root).filter((d) => /^[0-9a-f]{8,}$/.test(d));
+      if (dirs[0]) return dirs[0];
+    } catch {
+      // Not at this candidate root — try the next.
+    }
   }
+  return '';
 }
 
 /**
  * The path prefix the playground assets live under, hash-versioned when sync
  * has run. Always ends in a slash, so `prefix + 'themes/'` /
  * `prefix + 'lattice-runtime.js'` compose directly.
+ *
+ * FAILS LOUD in a production build. `sync:playground` runs before
+ * `astro build` in the docs `build` script, so a resolved hash is an
+ * invariant there — a miss means the staged `v/<hash>/` tree is missing or
+ * unreadable, and emitting the bare `playground/` fallback would ship URLs
+ * that 404 (sync only ever writes the *versioned* tree). Throwing fails the
+ * deploy instead of silently serving a dead playground — the failure mode of
+ * the 2026-06 `import.meta.url` regression, which a silent catch + fallback
+ * turned into a green deploy + a site-wide 404. Outside a Vite production
+ * build (astro dev, or a bare Node import) it degrades to the legacy
+ * unversioned base so tooling and the dev server can't hard-fail.
  * @returns {string}
  */
 export function assetBase() {
   const v = assetVersion();
-  return v ? `playground/v/${v}/` : 'playground/';
+  if (v) return `playground/v/${v}/`;
+  if (import.meta.env?.PROD) {
+    throw new Error(
+      'asset-version: no playground/v/<hash> dir resolved during a production build. ' +
+        'Run `npm run sync:playground` before `astro build` — emitting unversioned ' +
+        'playground URLs would 404 the engine CSS + runtime.',
+    );
+  }
+  return 'playground/';
 }
