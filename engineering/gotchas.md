@@ -878,6 +878,28 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
 
 ## CSS
 
+### Drawer close buttons jammed left — a `.db-spacer` flex rule scoped to the wrong parent
+
+- **Symptom:** In the Drawing Board's slide-in drawers (Settings, Decks),
+  the close button (`×`) sat immediately to the right of the panel title
+  instead of being pushed to the far right edge of the drawer head — most
+  obvious on mobile, where the title and `×` huddle on the left and a wide
+  gap yawns to the right.
+- **Cause:** Each drawer head (`.db-drawer-head`) is a flex row that uses a
+  `<span class="db-spacer">` to shove the close button to the end. But the
+  only rule giving the spacer flex-grow was scoped **`.db-panel-head
+  .db-spacer { flex: 1 1 auto }`** — i.e. only when the spacer's parent was
+  `.db-panel-head` (the editor/Architect/Slides panel headers). Inside a
+  `.db-drawer-head` the same `.db-spacer` had zero growth, collapsed to 0px,
+  and the close button fell back against the title.
+- **Mitigation:** Generalize the rule to plain **`.db-spacer { flex: 1 1
+  auto }`** (`docs/src/styles/drawing-board.css`). A "spacer" should grow in
+  *any* flex row; in a non-flex parent `flex` is simply inert, so the
+  un-scoping is safe. Both drawer heads now right-align their close buttons.
+- **Triggered by:** Opening the Settings or Decks drawer in the Drawing
+  Board (`docs/src/pages/drawing-board.astro`).
+- **Removable when:** Never — this is the correct rule, not a workaround.
+
 ### `var(--fg)` is undefined — SVG `fill`/`stroke` silently falls back to black/none
 
 - **Symptom:** An SVG element styled with `fill: var(--fg)` renders solid
