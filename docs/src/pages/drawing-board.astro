@@ -460,6 +460,9 @@ const dbData = JSON.stringify({
 					// the live editor (which re-renders + re-scores via onEdit).
 					getSource: () => (window.__dbEditor ? window.__dbEditor.getValue() : ''),
 					applyFix: (next) => { if (window.__dbEditor) window.__dbEditor.setValue(next); },
+					// Git-like time travel: snapshot the pre-edit deck as a labelled,
+					// restorable checkpoint (History rail) the instant an AI edit applies.
+					onApply: ({ before, label }) => { if (window.__dbStore?.autoCheckpoint) window.__dbStore.autoCheckpoint(before, label); },
 				});
 				window.__dbChat = chat;
 			}

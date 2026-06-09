@@ -51,6 +51,16 @@ function relTime(ts) {
 }
 const uid = (p) => p + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
 
+// Auto checkpoints (created when the Architect applies an edit) are bounded so the
+// History list stays scannable and storage stays tiny; MANUAL checkpoints are kept
+// forever (the author marked them on purpose). Returns the ids of the auto
+// checkpoints to delete — the ones older than the most recent `cap`. Pure + tested.
+const AUTO_CAP = 30;
+export function autoToPrune(revisions, cap = AUTO_CAP) {
+	const autos = (revisions || []).filter((r) => r?.auto).sort((a, b) => b.createdAt - a.createdAt);
+	return autos.slice(cap).map((r) => r.id);
+}
+
 // Derive a human title + one-line description from the deck source: the first
 // `# H1` (skipping the scaffold placeholder) and the first real line after it
 // (the title-slide subtitle). Powers auto-naming so decks aren't all "Untitled".
@@ -174,7 +184,14 @@ export function createStore({ getSource, onLoadDeck, starter = '' }) {
 			item.type = 'button';
 			item.className = 'db-history-item';
 			item.innerHTML = '<span class="db-hist-label"></span><span class="db-hist-time"></span>';
-			item.querySelector('.db-hist-label').textContent = r.label || 'Checkpoint';
+			const lbl = item.querySelector('.db-hist-label');
+			lbl.textContent = r.label || 'Checkpoint';
+			if (r.auto) { // mark AI-created points so manual vs auto is legible
+				const badge = document.createElement('span');
+				badge.className = 'db-hist-ai';
+				badge.textContent = 'AI';
+				lbl.prepend(badge);
+			}
 			item.querySelector('.db-hist-time').textContent = relTime(r.createdAt);
 			item.addEventListener('click', () => restore(r.id));
 			list.appendChild(item);
@@ -275,12 +292,26 @@ export function createStore({ getSource, onLoadDeck, starter = '' }) {
 		flash('Checkpoint saved.');
 	}
 
+	// Automatic checkpoint — created when the Architect APPLIES an edit, so every AI
+	// change becomes a labelled, restorable point with zero effort (git-style time
+	// travel via the existing reversible restore). Snapshots the PRE-edit `source`,
+	// dedupes against the latest revision, prunes old auto checkpoints, stays quiet.
+	async function autoCheckpoint(source, label) {
+		if (!db || !activeId) return;
+		const src = source != null ? source : getSource();
+		const revs = (await revisionsFor(activeId)).sort((a, b) => b.createdAt - a.createdAt);
+		if (revs[0] && revs[0].source === src) return; // unchanged since the last point
+		await put('revisions', { deckId: activeId, source: src, label: label || 'AI edit', createdAt: Date.now(), auto: true });
+		for (const id of autoToPrune(await revisionsFor(activeId))) await del('revisions', id);
+		await renderHistory();
+	}
+
 	async function restore(revId) {
 		const r = await get('revisions', revId);
 		if (!r) return;
 		// Fork, don't destroy: snapshot the current state before loading the older
 		// one, so the restore is itself reversible.
-		await put('revisions', { deckId: activeId, source: getSource(), label: 'Before restore', createdAt: Date.now() });
+		await put('revisions', { deckId: activeId, source: getSource(), label: 'Before restore', createdAt: Date.now(), auto: true });
 		const d = await get('decks', activeId);
 		if (d) { d.source = r.source; d.updatedAt = Date.now(); await put('decks', d); }
 		loading = true;
@@ -331,7 +362,7 @@ export function createStore({ getSource, onLoadDeck, starter = '' }) {
 	}
 
 	return {
-		init, saveActive, checkpoint, create,
+		init, saveActive, checkpoint, autoCheckpoint, create,
 		// Chat (Phase 2): the Architect's per-deck conversation thread.
 		getActiveId: () => activeId,
 		chatMessages, addChatMessage, clearChat,
