@@ -289,7 +289,12 @@ in patch versions.
   cloud — when both are connected an active-cloud preference decides, defaulting
   to the proven tier. OpenRouter is OpenAI-compatible and streams; it's treated
   as a capable tier (full Lattice dossier + edit protocol), same as Puter/WebLLM.
-  Docs-site only — no engine render-path change.
+  On the OpenRouter (Anthropic) path the static prompt prefix — persona + the
+  Lattice primer + the edit protocol, ~10K tokens identical every turn — carries
+  an `ephemeral` prompt-cache breakpoint, so repeat turns bill that slice at ~10%
+  instead of in full; only the per-deck score/findings/deck tail is re-read. The
+  flattened (uncached) prompt other backends receive is byte-identical, so their
+  behaviour is unchanged. Docs-site only — no engine render-path change.
 - **`--accent-soft-body` token completes the soft accent-container vocabulary.**
   Soft accent surfaces (`--accent-soft` fill) now have a named body-text token
   alongside `--on-accent-soft` (emphasis/border) — it derives from `--text-body`
