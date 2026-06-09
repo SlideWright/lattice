@@ -280,6 +280,16 @@ in patch versions.
   in-flow image rendered as literal markdown text; it now parses inline images
   to `<img>`, matching marp-core (the marp-cli and runtime paths already did
   this natively). Unblocks image-in-prose components such as `logo-wall`.
+- **Drawing Board Converse adds OpenRouter as a second cloud AI tier.**
+  Alongside Puter (free, user-pays, no key), the Architect can now Converse
+  through the user's own OpenRouter account via one-click OAuth (PKCE — no key
+  to paste, no backend). Side-by-side "Connect" buttons in Converse let the user
+  pick either; the settings popover adds a Cloud AI section with a model picker
+  (500+ models, live per-million pricing) and Disconnect. Puter stays the default
+  cloud — when both are connected an active-cloud preference decides, defaulting
+  to the proven tier. OpenRouter is OpenAI-compatible and streams; it's treated
+  as a capable tier (full Lattice dossier + edit protocol), same as Puter/WebLLM.
+  Docs-site only — no engine render-path change.
 - **`--accent-soft-body` token completes the soft accent-container vocabulary.**
   Soft accent surfaces (`--accent-soft` fill) now have a named body-text token
   alongside `--on-accent-soft` (emphasis/border) — it derives from `--text-body`

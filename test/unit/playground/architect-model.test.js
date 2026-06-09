@@ -185,6 +185,49 @@ describe('generation ladder — universal Transformers.js tier', () => {
     assert.equal(await m.complete({ messages: [], fallback: 'DET' }), 'DET');
   });
 
+  test('connected OpenRouter outranks every local tier', async () => {
+    const { model } = await load();
+    const m = model.createArchitectModel({ getSettings: () => ({}) });
+    m.__setUniversal(readyBackend('transformers', 'U'));
+    m.__setPromptAvailability('available');
+    m.__setOpenRouter(readyBackend('openrouter', 'FROM OR'));
+    assert.equal(m.availability().generation, 'openrouter');
+    assert.equal(m.availability().openRouterReady, true);
+    assert.equal(await m.complete({ messages: [], fallback: 'DET' }), 'FROM OR');
+  });
+
+  test('with no preference, Puter is the default cloud over OpenRouter (proven-first)', async () => {
+    const { model } = await load();
+    const m = model.createArchitectModel({ getSettings: () => ({}) });
+    m.__setPuter(readyBackend('puter', 'FROM PUTER'));
+    m.__setOpenRouter(readyBackend('openrouter', 'FROM OR'));
+    // Both clouds connected, no explicit choice → Puter leads (it's the proven tier).
+    assert.equal(m.availability().generation, 'puter');
+    assert.equal(await m.complete({ messages: [], fallback: 'DET' }), 'FROM PUTER');
+  });
+
+  test('the active-cloud preference selects OpenRouter when both are connected', async () => {
+    const { model } = await load();
+    const m = model.createArchitectModel({ getSettings: () => ({}) });
+    m.__setPuter(readyBackend('puter', 'FROM PUTER'));
+    m.__setOpenRouter(readyBackend('openrouter', 'FROM OR'));
+    m.setCloud('openrouter');
+    assert.equal(m.availability().generation, 'openrouter');
+    assert.equal(m.availability().cloud, 'openrouter');
+    assert.equal(await m.complete({ messages: [], fallback: 'DET' }), 'FROM OR');
+    // Switching back honours the preference too.
+    m.setCloud('puter');
+    assert.equal(m.availability().generation, 'puter');
+  });
+
+  test('the model-off switch still forces the floor over connected OpenRouter', async () => {
+    const { model } = await load();
+    const m = model.createArchitectModel({ getSettings: () => ({ modelEnabled: false }) });
+    m.__setOpenRouter(readyBackend('openrouter', 'OR'));
+    assert.equal(m.availability().generation, 'floor');
+    assert.equal(await m.complete({ messages: [], fallback: 'DET' }), 'DET');
+  });
+
   test('the model-off switch still forces the floor over a ready universal tier', async () => {
     const { model } = await load();
     const m = model.createArchitectModel({ getSettings: () => ({ modelEnabled: false }) });

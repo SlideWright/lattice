@@ -2162,8 +2162,16 @@ body.db-page .topbar {
 }
 .db-coach-min { font-size: 0.78rem; color: var(--text-muted); }
 
-/* Converse connect (Puter) + consent. */
+/* Converse connect (Puter + OpenRouter, side by side) + consent. */
 .db-converse-empty p { margin: 0 0 0.7rem; }
+.db-converse-connect-row {
+	display: flex;
+	gap: 0.5rem;
+	flex-wrap: wrap;
+}
+.db-converse-connect-row .db-btn {
+	flex: 1 1 12rem;
+}
 .db-converse-connect {
 	width: 100%;
 }
@@ -2180,4 +2188,29 @@ body.db-page .topbar {
 }
 .db-converse-consent-row .db-btn {
 	flex: 1 1 0;
+}
+
+/* Cloud AI section in the settings popover — active-cloud chooser + the
+   OpenRouter model picker (with pricing) + disconnect. */
+.db-settings-cloud .db-pref-select {
+	width: 100%;
+	margin: 0.3rem 0 0.55rem;
+}
+.db-settings-cloud .db-settings-remove {
+	margin-top: 0.1rem;
+}
+.db-settings-cloud-active {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.5rem 0.9rem;
+	margin: 0.35rem 0 0.6rem;
+}
+.db-settings-cloud-opt {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.3rem;
+	font-size: 0.82rem;
+	color: var(--text-body);
+	cursor: pointer;
 }

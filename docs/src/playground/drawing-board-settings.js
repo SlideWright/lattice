@@ -90,6 +90,7 @@ export async function probeWebGPU() {
 export function tierLabel(a) {
   if (!a.modelOn) return 'Deterministic (AI off)';
   if (a.generation === 'puter') return 'Cloud AI (Puter)';
+  if (a.generation === 'openrouter') return 'Cloud AI (OpenRouter)';
   if (a.generation === 'webllm') return 'WebLLM (on-device)';
   if (a.generation === 'prompt-api') return 'Built-in AI (on-device)';
   if (a.generation === 'transformers') return 'On-device AI (universal)';
@@ -107,6 +108,7 @@ export function createModelSettings({ host, trigger, model, onChange, isOpen = (
   let reconnecting = false;
   let renderToken = 0;
   let lastError = null; // last on-device load error, surfaced in the popover
+  let orModelsCache = null; // OpenRouter catalog (id/name/pricing), fetched once per session
 
   // ── the trigger chip ────────────────────────────────────────────────────────
   function chipLabel(a) {
@@ -193,6 +195,100 @@ export function createModelSettings({ host, trigger, model, onChange, isOpen = (
     } catch { return []; }
   }
 
+  // ── Cloud AI (Converse) — the connected cloud tiers ───────────────────────────
+  // Both clouds can be connected at once (Puter + the user's OpenRouter account).
+  // The connect buttons live in the Converse panel; this section is the ongoing
+  // control: which cloud is active, the OpenRouter model picker (with pricing),
+  // and Disconnect. Hidden affordances appear only for whatever is connected.
+  function fmtPrice(n) {
+    if (n == null || Number.isNaN(n)) return '';
+    if (n === 0) return 'free';
+    return n < 1 ? '$' + n.toFixed(3) : '$' + n.toFixed(2);
+  }
+
+  // Fill the OpenRouter model <select> from the catalog (lazy, cached). Each
+  // option shows the name + per-million in/out pricing so the choice is informed.
+  async function loadOrModels(sel, current) {
+    try {
+      if (!orModelsCache) orModelsCache = await model.listOpenRouterModels();
+      const list = orModelsCache.slice().sort((x, y) => (x.name || x.id).localeCompare(y.name || y.id));
+      sel.innerHTML = '';
+      for (const m of list) {
+        const o = document.createElement('option');
+        o.value = m.id;
+        const price = m.promptPerM != null
+          ? `  ·  ${fmtPrice(m.promptPerM)}/M in · ${fmtPrice(m.completionPerM)}/M out`
+          : '';
+        o.textContent = (m.name || m.id) + price;
+        if (m.id === current) o.selected = true;
+        sel.append(o);
+      }
+    } catch {
+      const o = sel.querySelector('option');
+      if (o) o.textContent = current + ' (prices unavailable)';
+    }
+  }
+
+  function cloudSection(a) {
+    const sec = el('section', 'db-settings-cloud');
+    sec.append(el('h3', 'db-settings-head db-settings-section-top', 'Cloud AI (Converse)'));
+    const puterOn = a.puterReady;
+    const orOn = a.openRouterReady;
+    if (!puterOn && !orOn) {
+      sec.append(el('p', 'db-settings-note',
+        'Not connected. Open Converse to connect Puter (free, no key) or OpenRouter ' +
+        '(your own account — one-click sign-in, your credits).'));
+      return sec;
+    }
+
+    // Active-cloud chooser — only meaningful when BOTH are connected.
+    if (puterOn && orOn) {
+      const row = el('div', 'db-settings-cloud-active');
+      row.append(el('span', 'db-pref-label', 'Use for Converse'));
+      const opt = (val, label) => {
+        const lab = el('label', 'db-settings-cloud-opt');
+        const r = document.createElement('input');
+        r.type = 'radio';
+        r.name = 'db-cloud-active';
+        r.value = val;
+        r.checked = (a.cloud || 'puter') === val;
+        r.addEventListener('change', () => {
+          if (!r.checked) return;
+          model.setCloud(val);
+          model.refreshAvailability().then(() => { refresh(); onChange?.(); });
+        });
+        lab.append(r, el('span', null, label));
+        return lab;
+      };
+      row.append(opt('puter', 'Puter (free)'), opt('openrouter', 'OpenRouter'));
+      sec.append(row);
+    }
+
+    if (orOn) {
+      sec.append(el('p', 'db-pref-label', 'OpenRouter model'));
+      const sel = el('select', 'db-pref-select');
+      sel.setAttribute('aria-label', 'OpenRouter model');
+      const current = model.openRouterModel();
+      const o0 = document.createElement('option');
+      o0.value = current;
+      o0.textContent = current + ' (loading prices…)';
+      sel.append(o0);
+      sel.addEventListener('change', () => model.setOpenRouterModel(sel.value));
+      sec.append(sel);
+      loadOrModels(sel, current); // async fill with the priced catalog
+      const dc = el('button', 'db-btn db-settings-remove', 'Disconnect OpenRouter');
+      dc.type = 'button';
+      dc.addEventListener('click', () => {
+        model.disconnectOpenRouter();
+        model.refreshAvailability().then(() => { refresh(); onChange?.(); });
+      });
+      sec.append(dc);
+    }
+
+    if (puterOn) sec.append(el('p', 'db-settings-note', 'Puter connected — free to you, no key.'));
+    return sec;
+  }
+
   // ── the popover ──────────────────────────────────────────────────────────────
   async function render() {
     const my = ++renderToken;
@@ -212,6 +308,9 @@ export function createModelSettings({ host, trigger, model, onChange, isOpen = (
     // Workspace preferences first (always available, no model needed), then the
     // on-device AI tier controls beneath a divider.
     panel.append(workspaceSection());
+    // Cloud AI (Converse) first — it's the primary conversation path; on-device
+    // AI follows beneath. Both sections degrade to a note when nothing's connected.
+    panel.append(cloudSection(a));
     panel.append(el('h3', 'db-settings-head db-settings-section-top', 'On-device AI'));
 
     // Master switch.

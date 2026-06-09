@@ -175,8 +175,11 @@ const dbData = JSON.stringify({
 							<div class="db-converse-empty" id="db-converse-empty">
 								<p>Converse is a real AI conversation about your deck — the ask, a specific slide, tightening a line. (Coach handles the scores and fixes.)</p>
 								<div class="db-converse-connect-wrap" id="db-converse-connect-wrap">
-									<button class="db-btn db-btn-primary db-converse-connect" id="db-converse-connect" type="button">Connect AI conversation — free</button>
-									<p class="db-converse-fine">Powered by Puter — free to you, no key. Your deck’s text is sent to Puter’s AI to generate replies. Prefer on-device? Turn it on from the settings chip.</p>
+									<div class="db-converse-connect-row" id="db-converse-connect-row">
+										<button class="db-btn db-btn-primary db-converse-connect" id="db-converse-connect" type="button">Connect Puter — free</button>
+										<button class="db-btn db-converse-connect-or" id="db-converse-connect-or" type="button">Connect OpenRouter — your account</button>
+									</div>
+									<p class="db-converse-fine">Puter is free to you (no key). OpenRouter uses your own account credits via one-click sign-in — pick any of 500+ models. Either way your deck’s text is sent to the chosen AI to generate replies. Prefer on-device? Turn it on from the settings chip.</p>
 								</div>
 							</div>
 						</div>
@@ -485,19 +488,31 @@ const dbData = JSON.stringify({
 			};
 			window.__dbSyncConverse();
 
-			// Converse "Connect AI" — one-time consent, then load Puter (the cloud tier).
-			// Puter then becomes the active generation backend; the composer appears.
+			// Converse "Connect AI" — two side-by-side cloud tiers. Puter (free,
+			// user-pays, no key) keeps its one-time consent then loads in place.
+			// OpenRouter (your own account) uses one-click OAuth — a redirect to
+			// openrouter.ai and back (the ?code= return is handled on load, below).
+			// Whichever connects becomes the active generation backend → composer.
 			(function () {
 				var wrap = document.getElementById('db-converse-connect-wrap');
+				var row = document.getElementById('db-converse-connect-row');
 				var btn = document.getElementById('db-converse-connect');
-				if (!wrap || !btn) return;
+				var orBtn = document.getElementById('db-converse-connect-or');
+				var fine = wrap && wrap.querySelector('.db-converse-fine');
+				if (!wrap || !row || !btn || !orBtn) return;
 				var el = function (t, c, x) { var e = document.createElement(t); if (c) e.className = c; if (x != null) e.textContent = x; return e; };
-				function reset() { wrap.innerHTML = ''; wrap.appendChild(btn); wrap.appendChild(fine); }
-				var fine = wrap.querySelector('.db-converse-fine');
+				function reset() { wrap.innerHTML = ''; wrap.appendChild(row); if (fine) wrap.appendChild(fine); }
+				function showError(msg) {
+					wrap.innerHTML = '';
+					wrap.appendChild(el('p', 'db-settings-error', msg));
+					var retry = el('button', 'db-btn', 'Back'); retry.type = 'button'; retry.addEventListener('click', reset);
+					wrap.appendChild(retry);
+				}
+				// Puter — consent, then load in place.
 				btn.addEventListener('click', function () {
 					wrap.innerHTML = '';
 					wrap.appendChild(el('p', 'db-converse-fine', 'This sends your deck’s text to Puter’s AI to generate replies. It stays free to you. Continue?'));
-					var row = el('div', 'db-converse-consent-row');
+					var consent = el('div', 'db-converse-consent-row');
 					var go = el('button', 'db-btn db-btn-primary', 'Continue'); go.type = 'button';
 					var no = el('button', 'db-btn', 'Cancel'); no.type = 'button';
 					no.addEventListener('click', reset);
@@ -509,15 +524,48 @@ const dbData = JSON.stringify({
 							if (window.__dbSettings) window.__dbSettings.refresh();
 							if (window.__dbChat) window.__dbChat.reload();
 						} catch (e) {
-							wrap.innerHTML = '';
-							wrap.appendChild(el('p', 'db-settings-error', 'Couldn’t connect: ' + (e && e.message || e)));
-							var retry = el('button', 'db-btn', 'Retry'); retry.type = 'button'; retry.addEventListener('click', reset);
-							wrap.appendChild(retry);
+							showError('Couldn’t connect: ' + (e && e.message || e));
 						}
 					});
-					row.append(go, no);
-					wrap.appendChild(row);
+					consent.append(go, no);
+					wrap.appendChild(consent);
 				});
+				// OpenRouter — one-click OAuth (PKCE). We redirect to openrouter.ai;
+				// the callback returns here with ?code=, handled on the next load.
+				orBtn.addEventListener('click', async function () {
+					orBtn.disabled = true; orBtn.textContent = 'Redirecting…';
+					try {
+						var cb = location.origin + location.pathname; // return cleanly to this page
+						var url = await window.__dbModel.beginOpenRouterAuth(cb);
+						location.href = url;
+					} catch (e) {
+						orBtn.disabled = false; orBtn.textContent = 'Connect OpenRouter — your account';
+						showError('Couldn’t start OpenRouter sign-in: ' + (e && e.message || e));
+					}
+				});
+			})();
+
+			// OpenRouter OAuth return: openrouter.ai redirects back with ?code=. Only
+			// act on it when WE started the flow (a PKCE verifier is pending), then
+			// exchange the code for a key, strip ?code from the URL, and drop the user
+			// straight into Converse with OpenRouter as the active cloud.
+			(function () {
+				try {
+					var params = new URLSearchParams(location.search);
+					var code = params.get('code');
+					if (!code || !window.__dbModel || !window.__dbModel.hasPendingOpenRouterAuth || !window.__dbModel.hasPendingOpenRouterAuth()) return;
+					window.__dbModel.resumeOpenRouterAuth(code).then(function () {
+						params.delete('code');
+						var clean = location.pathname + (params.toString() ? '?' + params.toString() : '') + location.hash;
+						try { history.replaceState({}, '', clean); } catch (e) {}
+						if (window.__dbSetArchMode) window.__dbSetArchMode('converse');
+						if (window.__dbSyncConverse) window.__dbSyncConverse();
+						if (window.__dbSettings) window.__dbSettings.refresh();
+						if (window.__dbChat) window.__dbChat.reload();
+					}).catch(function (e) {
+						try { console.error('[Architect] OpenRouter connect failed:', e); } catch (x) {}
+					});
+				} catch (e) {}
 			})();
 
 			// The chat surface — grounded in the architect's live deterministic

@@ -18,11 +18,12 @@ const MAX_DECK_CHARS = 1200; // a short excerpt — a small model drowns in a fu
 const RICH_DECK_CHARS = 16000; // the cloud tier (Claude) reads the whole deck, not a peek
 
 // Tiers capable enough for the FULL Lattice authoring dossier + the editing
-// protocol: the cloud (Puter/Claude) and WebLLM (a desktop 7–8B model). The tiny
-// universal (0.5B) and built-in tiers drown in the big prompt, so they stay lean
-// and advice-only. Keys on capability, not "is it the cloud".
+// protocol: the cloud tiers (Puter/Claude and OpenRouter — the user's chosen
+// frontier model) and WebLLM (a desktop 7–8B model). The tiny universal (0.5B)
+// and built-in tiers drown in the big prompt, so they stay lean and advice-only.
+// Keys on capability, not "is it the cloud".
 export function isCapableTier(generation) {
-  return generation === 'puter' || generation === 'webllm';
+  return generation === 'puter' || generation === 'openrouter' || generation === 'webllm';
 }
 
 function el(tag, cls, text) {
