@@ -546,6 +546,14 @@ body.db-page .topbar {
 }
 .db-edit-card[data-state="applied"] { border-color: color-mix(in srgb, #2e7d32 45%, var(--border)); }
 .db-edit-card[data-state="dismissed"] { opacity: 0.6; }
+/* Frozen cards (restored read-only from history) — a muted border, and an open one
+ * (proposed but never acted on) is labelled so it doesn't read as actionable. */
+.db-edit-card.is-frozen { border-style: dashed; }
+.db-edit-card.is-frozen[data-state="open"] .db-edit-title::after {
+	content: " · proposed";
+	color: var(--text-muted);
+	font-weight: 400;
+}
 .db-edit-head {
 	display: flex;
 	align-items: center;

@@ -184,9 +184,12 @@ export function createChat({ mount, composer, model, store, getAssessment, catal
     pendingUndo = undo;
   }
 
-  function editCard(edit) {
+  // `frozen` cards are restored from history read-only (a reload can't honestly
+  // re-offer Apply — the deck has moved on), so they show the diff + final status
+  // but no buttons. `onState` persists a live card's state change for next reload.
+  function editCard(edit, { frozen = false, initialState = 'open', onState, before } = {}) {
     const card = el('div', 'db-edit-card');
-    card.dataset.state = 'open';
+    if (frozen) card.classList.add('is-frozen');
 
     const head = el('div', 'db-edit-head');
     const toggle = el('button', 'db-edit-toggle');
@@ -200,10 +203,15 @@ export function createChat({ mount, composer, model, store, getAssessment, catal
     card.append(head);
 
     const body = el('div', 'db-edit-body');
-    const before = edit.action === 'insert' ? '' : sliceSlide(getSource ? getSource() : '', edit.slide);
+    // The "before" side: the slide at PROPOSAL time. Live cards compute it from the
+    // current deck (= proposal time); frozen cards get the stored snapshot, since the
+    // live deck has moved on (a recompute would show a misleading no-op diff).
+    const beforeText = before !== undefined
+      ? (before || '')
+      : (edit.action === 'insert' ? '' : sliceSlide(getSource ? getSource() : '', edit.slide));
     const after = edit.action === 'delete' ? '' : (edit.body || '').trim();
     const diff = el('div', 'db-edit-diff');
-    for (const row of diffLines(before, after)) {
+    for (const row of diffLines(beforeText, after)) {
       const sign = row.type === 'add' ? '+ ' : row.type === 'del' ? '− ' : '  ';
       diff.append(el('div', `db-diff-${row.type}`, sign + row.text));
     }
@@ -222,58 +230,79 @@ export function createChat({ mount, composer, model, store, getAssessment, catal
       if (card.dataset.state !== 'open') card.classList.toggle('is-collapsed');
     });
 
+    // Paint a state. `silent` skips the persist callback (used for the initial
+    // paint of a frozen/restored card, which is already saved).
+    function setState(state, silent) {
+      card.dataset.state = state;
+      if (state === 'applied') {
+        icon.className = 'db-edit-icon ico ico-check';
+        card.classList.add('is-collapsed');
+      } else if (state === 'dismissed') {
+        icon.className = 'db-edit-icon ico ico-x';
+        card.classList.add('is-collapsed');
+        undoBtn.hidden = true;
+      } else { // open
+        icon.className = 'db-edit-icon';
+        // A live open card stays expanded (it has Apply/Discard); a frozen open one
+        // (proposed, never acted on at reload) collapses to a tidy "proposed" line.
+        card.classList.toggle('is-collapsed', frozen);
+        undoBtn.hidden = true;
+      }
+      actions.hidden = frozen || state !== 'open'; // read-only when frozen
+      if (!silent) onState?.(state);
+    }
+
     const api = {
       el: card,
       edit,
       isOpen: () => card.dataset.state === 'open',
-      open() {
-        card.dataset.state = 'open';
-        card.classList.remove('is-collapsed');
-        icon.className = 'db-edit-icon';
-        actions.hidden = false;
-        undoBtn.hidden = true;
-      },
-      applied() {
-        card.dataset.state = 'applied';
-        icon.className = 'db-edit-icon ico ico-check';
-        actions.hidden = true;
-        card.classList.add('is-collapsed');
-      },
-      dismissed() {
-        card.dataset.state = 'dismissed';
-        icon.className = 'db-edit-icon ico ico-x';
-        actions.hidden = true;
-        undoBtn.hidden = true;
-        card.classList.add('is-collapsed');
-      },
+      open: () => setState('open'),
+      applied: () => setState('applied'),
+      dismissed: () => setState('dismissed'),
     };
 
-    applyBtn.addEventListener('click', () => {
-      if (!getSource || !applyFix) return;
-      const snapshot = getSource();
-      onApply?.({ before: snapshot, label: editLabel(edit) }); // auto-checkpoint the pre-edit state
-      applyFix(applyEdit(snapshot, edit));
-      api.applied();
-      undoBtn.hidden = false;
-      const undo = {
-        lock() { undoBtn.hidden = true; },
-        run() { applyFix(snapshot); api.open(); if (pendingUndo === undo) pendingUndo = null; },
-      };
-      undoBtn.onclick = () => undo.run();
-      setPendingUndo(undo);
-      scrollDown();
-    });
-    dismissBtn.addEventListener('click', () => api.dismissed());
+    if (!frozen) {
+      applyBtn.addEventListener('click', () => {
+        if (!getSource || !applyFix) return;
+        const snapshot = getSource();
+        onApply?.({ before: snapshot, label: editLabel(edit) }); // auto-checkpoint the pre-edit state
+        applyFix(applyEdit(snapshot, edit));
+        api.applied();
+        undoBtn.hidden = false;
+        const undo = {
+          lock() { undoBtn.hidden = true; },
+          run() { applyFix(snapshot); api.open(); if (pendingUndo === undo) pendingUndo = null; },
+        };
+        undoBtn.onclick = () => undo.run();
+        setPendingUndo(undo);
+        scrollDown();
+      });
+      dismissBtn.addEventListener('click', () => api.dismissed());
+    }
+
+    setState(initialState, true); // initial paint — already persisted, don't echo back
     return api;
   }
 
-  function renderEditCards(bodyEl, edits) {
+  function renderEditCards(bodyEl, edits, opts = {}) {
+    const { frozen = false, states, msgId, befores } = opts;
     const msg = bodyEl.closest('.db-msg') || bodyEl.parentElement;
     const group = el('div', 'db-edit-cards');
-    const cards = edits.map(editCard);
+    // The per-card states, persisted to the stored message so a reload restores them.
+    const stateArr = states && states.length === edits.length ? states.slice() : edits.map(() => 'open');
+    const persist = () => {
+      if (frozen || msgId == null || !store?.updateChatMessage) return;
+      store.updateChatMessage(msgId, { editStates: stateArr.slice() });
+    };
+    const cards = edits.map((edit, i) => editCard(edit, {
+      frozen,
+      initialState: stateArr[i],
+      before: befores ? befores[i] : undefined,
+      onState: (s) => { stateArr[i] = s; persist(); },
+    }));
 
-    // Batch header for multi-edit replies — Apply all / Dismiss all, then Undo.
-    if (cards.length >= 2) {
+    // Batch header — live multi-edit replies only (frozen reloads are read-only).
+    if (!frozen && cards.length >= 2) {
       const bar = el('div', 'db-edit-batch');
       const label = el('span', 'db-edit-batch-label', `${cards.length} proposed edits`);
       const applyAll = el('button', 'db-btn db-btn-primary', 'Apply all');
@@ -327,7 +356,7 @@ export function createChat({ mount, composer, model, store, getAssessment, catal
 
     for (const c of cards) group.append(c.el);
     msg.append(group);
-    scrollDown();
+    if (!frozen) scrollDown();
   }
 
   function emptyState() {
@@ -345,7 +374,14 @@ export function createChat({ mount, composer, model, store, getAssessment, catal
     mount.innerHTML = '';
     const msgs = deckId && store?.chatMessages ? await store.chatMessages(deckId) : [];
     if (!msgs.length) { emptyState(); return; }
-    for (const m of msgs) bubble(m.role, m.content);
+    for (const m of msgs) {
+      const body = bubble(m.role, m.content);
+      // Restore a reply's proposed edits as FROZEN cards (the diff + final status,
+      // read-only) so the thread is a faithful log of what was proposed and decided.
+      if (m.role === 'architect' && Array.isArray(m.edits) && m.edits.length) {
+        renderEditCards(body, m.edits, { frozen: true, states: m.editStates, befores: m.editBefores });
+      }
+    }
     scrollDown();
   }
 
@@ -408,14 +444,23 @@ export function createChat({ mount, composer, model, store, getAssessment, catal
         edits = parsed.edits;
       }
     }
-    // Render the finalized reply as Markdown (the streamed text was plain), then
-    // attach any edit cards beneath it.
+    // Render the finalized reply as Markdown (the streamed text was plain).
     setBody(target, 'architect', stored);
-    if (edits.length) renderEditCards(target, edits);
     // Mark deterministic replies (floor / model-fell-to-floor) so they're NOT fed
     // back to the model as history — that's what made the small model parrot itself.
     const det = !(a.generation !== 'floor' && full && full.trim() && full !== floor);
-    if (deckId && store?.addChatMessage) await store.addChatMessage(deckId, 'architect', stored, det);
+    // Persist FIRST (with the proposed edits + their initial 'open' states), then
+    // render live cards wired to that record — so as the author applies/dismisses,
+    // the message updates and a reload restores the cards frozen in their final state.
+    // Snapshot the pre-edit slide for each proposal NOW (proposal time), so a frozen
+    // reload shows the true diff even after the deck has changed.
+    const befores = edits.map((e) => (e.action === 'insert' ? '' : sliceSlide(getSource ? getSource() : '', e.slide)));
+    let saved = null;
+    if (deckId && store?.addChatMessage) {
+      saved = await store.addChatMessage(deckId, 'architect', stored, det,
+        edits.length ? { edits, editStates: edits.map(() => 'open'), editBefores: befores } : null);
+    }
+    if (edits.length) renderEditCards(target, edits, { msgId: saved?.id, befores });
     busy = false;
     if (sendBtn) sendBtn.disabled = false;
     scrollDown();
