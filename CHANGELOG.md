@@ -241,6 +241,13 @@ in patch versions.
 
 ### Added
 
+- **Drawing Board: each cloud Architect reply is labelled with the model that
+  produced it** — the bubble heading reads "The Architect (DeepSeek V4 Pro)", using
+  *our* record of the model we sent the turn to, not the model's self-report (which
+  is unreliable — models routinely misname themselves, and a prior identity claim in
+  the history gets parroted forward). The label is captured per-message and
+  persisted, so older replies keep the model that made them and a mid-conversation
+  model switch is visibly applied on the next reply. Drawing Board (docs-site) only.
 - **Drawing Board: an OpenRouter model picker accordion, prompt-caching control,
   and standing instructions.** The cramped native model `<select>` (300+ rows) is
   replaced by an in-place accordion in the Cloud AI settings section: collapsed it

@@ -565,6 +565,16 @@ body.db-page .topbar {
 	text-transform: uppercase;
 	color: var(--text-muted);
 }
+/* The model that produced a reply, in the heading: "THE ARCHITECT (DeepSeek V4 Pro)".
+   A QUIET annotation — the Architect is the protagonist, not the model. Normal-case
+   (readable), normal weight, lighter than the Architect label so it clearly recedes. */
+.db-msg-model {
+	text-transform: none;
+	letter-spacing: normal;
+	font-weight: 400;
+	color: var(--text-muted);
+	opacity: 0.75;
+}
 .db-msg-body {
 	font-size: 0.84rem;
 	line-height: 1.5;

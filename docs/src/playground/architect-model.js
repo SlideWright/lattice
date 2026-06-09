@@ -260,12 +260,19 @@ export function orSupportsCache(id) {
 // explicit consent in the UI before connect() is ever offered.
 function openRouterBackend() {
   const referer = () => (typeof location !== 'undefined' ? location.origin : 'https://lattice.dev');
+  let catalogCache = null; // id→{name,…} catalog from listModels, for friendly-name lookup
   return {
     name: 'openrouter',
     ready() { return !!readLS(OR_KEY_LS); },
     hasPendingAuth() { return !!readLS(OR_VERIFIER_LS); },
     getModel() { return readLS(OR_MODEL_LS) || DEFAULT_OR_MODEL; },
     setModel(id) { writeLS(OR_MODEL_LS, id || null); },
+    // The current model's display name (catalog `name`, e.g. "DeepSeek: R1"), for the
+    // reply attribution heading. Falls back to the raw id before the catalog loads.
+    modelName() {
+      const id = readLS(OR_MODEL_LS) || DEFAULT_OR_MODEL;
+      return catalogCache?.find((m) => m.id === id)?.name || id;
+    },
     disconnect() { writeLS(OR_KEY_LS, null); writeLS(OR_VERIFIER_LS, null); },
     // OAuth step 1: stash a PKCE verifier and return the URL to redirect to. The
     // caller navigates there; OpenRouter returns to callbackUrl with ?code=.
@@ -301,12 +308,13 @@ function openRouterBackend() {
       const res = await fetch(OPENROUTER_MODELS_URL);
       if (!res.ok) throw new Error('OpenRouter models failed (' + res.status + ')');
       const j = await res.json();
-      return (j.data || []).map((m) => ({
+      catalogCache = (j.data || []).map((m) => ({
         id: m.id,
         name: m.name || m.id,
         promptPerM: m.pricing ? orPricePerM(m.pricing.prompt) : null,
         completionPerM: m.pricing ? orPricePerM(m.pricing.completion) : null,
       }));
+      return catalogCache;
     },
     async complete({ messages, json, onToken, signal }) {
       const key = readLS(OR_KEY_LS);
@@ -635,6 +643,7 @@ export function createArchitectModel({ getSettings } = {}) {
     listOpenRouterModels() { return openrouter.listModels(); },
     openRouterModel() { return openrouter.getModel(); },
     setOpenRouterModel(id) { openrouter.setModel(id); },
+    openRouterModelName() { return openrouter.modelName(); },
     disconnectOpenRouter() {
       openrouter.disconnect();
       if (cloudPref === 'openrouter') setCloud(puter.ready() ? 'puter' : null);

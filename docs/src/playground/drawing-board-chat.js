@@ -202,14 +202,32 @@ export function createChat({ mount, composer, model, store, getAssessment, catal
     if (role === 'architect') bodyEl.innerHTML = renderMarkdown(text || '');
     else bodyEl.textContent = text || '';
   }
-  function bubble(role, text) {
+  function bubble(role, text, modelLabel) {
     const b = el('div', `db-msg db-msg-${role === 'architect' ? 'architect' : 'user'}`);
-    b.append(el('span', 'db-msg-who', role === 'architect' ? 'the Architect' : 'You'));
+    const who = el('span', 'db-msg-who', role === 'architect' ? 'the Architect' : 'You');
+    if (role === 'architect' && modelLabel) who.append(el('span', 'db-msg-model', ` (${modelLabel})`));
+    b.append(who);
     const body = el('div', 'db-msg-body');
     setBody(body, role, text);
     b.append(body);
     mount.appendChild(b);
     return body;
+  }
+
+  // The model that produced a reply — OUR record of what we sent, NOT the model's
+  // self-report (unreliable: DeepSeek & others routinely claim to be Claude/GPT, and
+  // a prior identity claim in the history gets parroted forward). Stamped on the
+  // Architect bubble heading so a mid-conversation model switch is visibly applied.
+  function flattenModel(s) { return String(s || '').replace(/:\s*/, ' ').trim(); } // "DeepSeek: R1" → "DeepSeek R1"
+  function replyAttribution(a) {
+    if (!a || !a.modelOn) return null; // deterministic floor — no model
+    if (a.generation === 'openrouter') return flattenModel(model.openRouterModelName?.() || model.openRouterModel?.() || '') || null;
+    if (a.generation === 'puter') return 'Puter';
+    return null; // on-device tiers — not attributed for now
+  }
+  function setWho(bodyEl, modelLabel) {
+    const who = bodyEl.closest?.('.db-msg')?.querySelector('.db-msg-who');
+    if (who && modelLabel && !who.querySelector('.db-msg-model')) who.append(el('span', 'db-msg-model', ` (${modelLabel})`));
   }
   function scrollDown() { scroller.scrollTop = scroller.scrollHeight; }
 
@@ -425,7 +443,7 @@ export function createChat({ mount, composer, model, store, getAssessment, catal
     const msgs = deckId && store?.chatMessages ? await store.chatMessages(deckId) : [];
     if (!msgs.length) { emptyState(); return; }
     for (const m of msgs) {
-      const body = bubble(m.role, m.content);
+      const body = bubble(m.role, m.content, m.via); // m.via = the model that produced this reply
       // Restore a reply's proposed edits as FROZEN cards (the diff + final status,
       // read-only) so the thread is a faithful log of what was proposed and decided.
       if (m.role === 'architect' && Array.isArray(m.edits) && m.edits.length) {
@@ -506,6 +524,10 @@ export function createChat({ mount, composer, model, store, getAssessment, catal
     // Mark deterministic replies (floor / model-fell-to-floor) so they're NOT fed
     // back to the model as history — that's what made the small model parrot itself.
     const det = !(a.generation !== 'floor' && full && full.trim() && full !== floor);
+    // Attribute the reply to the model WE used (only for a real model reply, not a
+    // fall-to-floor), and stamp it on the heading so the active model is verifiable.
+    const via = det ? null : replyAttribution(a);
+    if (via) setWho(target, via);
     // Persist FIRST (with the proposed edits + their initial 'open' states), then
     // render live cards wired to that record — so as the author applies/dismisses,
     // the message updates and a reload restores the cards frozen in their final state.
@@ -514,8 +536,10 @@ export function createChat({ mount, composer, model, store, getAssessment, catal
     const befores = edits.map((e) => (e.action === 'insert' ? '' : sliceSlide(getSource ? getSource() : '', e.slide)));
     let saved = null;
     if (deckId && store?.addChatMessage) {
-      saved = await store.addChatMessage(deckId, 'architect', stored, det,
-        edits.length ? { edits, editStates: edits.map(() => 'open'), editBefores: befores } : null);
+      const extra = {};
+      if (edits.length) Object.assign(extra, { edits, editStates: edits.map(() => 'open'), editBefores: befores });
+      if (via) extra.via = via;
+      saved = await store.addChatMessage(deckId, 'architect', stored, det, Object.keys(extra).length ? extra : null);
     }
     if (edits.length) renderEditCards(target, edits, { msgId: saved?.id, befores });
     busy = false;
