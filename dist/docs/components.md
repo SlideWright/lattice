@@ -1588,10 +1588,14 @@ Use for compact reference tables: glossary-style entries, key/value pairs, specs
 
 ## Slide heading.
 
-- **First entry.** Description or value for the first entry.
-- **Second entry.** Description or value for the second entry.
-- **Third entry.** Description or value for the third entry.
-- **Fourth entry.** Description or value for the fourth entry.
+1. First entry
+   - Description or value for the first entry.
+2. Second entry
+   - Description or value for the second entry.
+3. Third entry
+   - Description or value for the third entry.
+4. Fourth entry
+   - Description or value for the fourth entry.
 ```
 
 #### Slots
@@ -1599,7 +1603,7 @@ Use for compact reference tables: glossary-style entries, key/value pairs, specs
 | Slot | Selector | Required | Description |
 |---|---|---|---|
 | `title` | `h2` | yes | Slide heading. |
-| `rows` | `ul > li` | yes | Each list item is one row. Lead each with **Name.** then the description/value. |
+| `rows` | `ol > li` | yes | Each numbered item (`1.`) is one row — the name on the line, with an optional nested bullet for its description or value. The leading column is the auto counter. |
 
 #### Anatomy
 

@@ -3455,12 +3455,12 @@
           "description": "Slide heading."
         },
         "rows": {
-          "selector": "ul > li",
+          "selector": "ol > li",
           "required": true,
-          "description": "Each list item is one row. Lead each with **Name.** then the description/value."
+          "description": "Each numbered item (`1.`) is one row — the name on the line, with an optional nested bullet for its description or value. The leading column is the auto counter."
         }
       },
-      "skeleton": "<!-- _class: list-tabular -->\n\n## Slide heading.\n\n- **First entry.** Description or value for the first entry.\n- **Second entry.** Description or value for the second entry.\n- **Third entry.** Description or value for the third entry.\n- **Fourth entry.** Description or value for the fourth entry.\n",
+      "skeleton": "<!-- _class: list-tabular -->\n\n## Slide heading.\n\n1. First entry\n   - Description or value for the first entry.\n2. Second entry\n   - Description or value for the second entry.\n3. Third entry\n   - Description or value for the third entry.\n4. Fourth entry\n   - Description or value for the fourth entry.\n",
       "whenToUse": [
         {
           "title": "Compact reference rows",

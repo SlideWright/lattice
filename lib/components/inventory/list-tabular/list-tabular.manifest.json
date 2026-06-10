@@ -24,12 +24,12 @@
       "description": "Slide heading."
     },
     "rows": {
-      "selector": "ul > li",
+      "selector": "ol > li",
       "required": true,
-      "description": "Each list item is one row. Lead each with **Name.** then the description/value."
+      "description": "Each numbered item (`1.`) is one row — the name on the line, with an optional nested bullet for its description or value. The leading column is the auto counter."
     }
   },
-  "skeleton": "<!-- _class: list-tabular -->\n\n## Slide heading.\n\n- **First entry.** Description or value for the first entry.\n- **Second entry.** Description or value for the second entry.\n- **Third entry.** Description or value for the third entry.\n- **Fourth entry.** Description or value for the fourth entry.\n",
+  "skeleton": "<!-- _class: list-tabular -->\n\n## Slide heading.\n\n1. First entry\n   - Description or value for the first entry.\n2. Second entry\n   - Description or value for the second entry.\n3. Third entry\n   - Description or value for the third entry.\n4. Fourth entry\n   - Description or value for the fourth entry.\n",
   "anatomyBlock": "list-tabular",
   "sample": "<!-- _class: list-tabular -->\n\n## The five workstreams carrying the transformation.\n\n1. Framework\n   - The scoring model, the signal taxonomy, and the weights nobody quite agrees on.\n   - _Two analysts · ships Q3_\n2. Adoption\n   - Onboarding every team to the weekly ritual and the decision log.\n   - _One enablement lead · ships Q3_\n3. Governance\n   - The operating rhythm, the review cadence, and the escalation path.\n   - _One chief of staff · ships Q4_\n4. Tooling\n   - The intake form, the dashboards, and the exports for the board.\n   - _One PM · ships Q4_\n5. Change\n   - Comms, exec sponsorship, and the people who preferred the old way.\n   - _One comms partner · ships Q4_\n",
   "whenToUse": [
