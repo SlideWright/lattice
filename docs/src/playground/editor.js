@@ -284,12 +284,13 @@ const autoHeightTheme = EditorView.theme({
 // slide under the cursor. Returns
 // { getValue, setValue, focus, destroy, goToLine }.
 //
-// `vocab` (the Drawing Board's lintVocab) and `catalog` (the compact component
-// catalog) power slide-context autocompletion — component names + modifiers
-// inside `<!-- _class: … -->`. Both optional; without them only the map
-// region completer (self-sufficient from the baked basemaps) is live, so the
-// playground / Specimen editors keep working unchanged.
-export function createEditor({ parent, doc = '', onChange, onCursor, autoHeight = false, vocab, catalog }) {
+// `vocab` (the Drawing Board's lintVocab), `catalog` (the compact component
+// catalog), and `themes` (the registered theme-name list) power deck-grammar
+// autocompletion — component names + modifiers inside `<!-- _class: … -->`,
+// theme names in front matter, and more. All optional; without them only the
+// map region completer (self-sufficient from the baked basemaps) is live, so
+// the playground / Specimen editors keep working unchanged.
+export function createEditor({ parent, doc = '', onChange, onCursor, autoHeight = false, vocab, catalog, themes }) {
 	const listener = EditorView.updateListener.of((u) => {
 		if (u.docChanged && onChange) onChange(u.state.doc.toString());
 		if (onCursor && (u.docChanged || u.selectionSet)) {
@@ -316,11 +317,12 @@ export function createEditor({ parent, doc = '', onChange, onCursor, autoHeight 
 					codeLanguages: [...EAGER_LANGUAGES, ...languages],
 				}),
 				EditorView.lineWrapping,
-				// Slide-context autocomplete — component names + modifiers inside
-				// `_class:` directives (from the page's catalog/vocab) and region
-				// names inside map slides (static vocab from the baked basemaps). All
-				// deterministic, no model call; inert outside its context.
-				latticeAutocomplete({ vocab, catalog }),
+				// Deck-grammar autocomplete — component names + modifiers inside
+				// `_class:` directives, theme names in front matter, slot skeletons,
+				// and region names inside map slides (static vocab, from the page's
+				// catalog/vocab/themes or the baked basemaps). All deterministic, no
+				// model call; inert outside its context.
+				latticeAutocomplete({ vocab, catalog, themes }),
 				latticeTheme,
 				...(autoHeight ? [autoHeightTheme] : []),
 				keymap.of([indentWithTab, ...defaultKeymap, ...historyKeymap]),

@@ -162,3 +162,29 @@ export function makeDataSource(components, fn) {
 		return fn(context, info, line);
 	};
 }
+
+// ── Front matter: the deck's opening YAML block ──────────────────────────────
+
+// True when 1-based `lineNo` sits inside the deck's front matter — the YAML
+// block fenced by `---` at the very top of the file. Line 1 must be the opening
+// fence; the cursor is in the block until a closing `---` appears above it (an
+// unterminated block mid-typing still counts, so completion works as you write
+// the header). `getLine(n)` is 1-based.
+export function inFrontMatter(getLine, lineNo) {
+	if (lineNo < 2) return false; // line 1 is the opening fence itself
+	if ((getLine(1) ?? '').trim() !== '---') return false;
+	for (let n = 2; n < lineNo; n++) {
+		if ((getLine(n) ?? '').trim() === '---') return false; // a closing fence sits above the cursor
+	}
+	return true;
+}
+
+// The cursor's position on a `theme:` front-matter line, for theme-name
+// completion: the text before the cursor must be `theme:` then an optional
+// partial value (no trailing content). Returns `{ from, typed }` (from = the
+// column where the value starts) or null.
+export function themeValuePosition(before) {
+	const m = before.match(/^(\s*theme:\s*)(\S*)$/);
+	if (!m) return null;
+	return { from: m[1].length, typed: m[2] };
+}

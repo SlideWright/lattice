@@ -262,6 +262,42 @@ describe('makeDataSource — per-component gate (surface D)', () => {
 	});
 });
 
+describe('inFrontMatter — front-matter detection (Tier 1)', () => {
+	test('true inside the opening YAML block, false past the closing fence', async () => {
+		const { inFrontMatter } = await load();
+		const lines = ['---', 'marp: true', 'theme: indaco', '---', '', '<!-- _class: title -->'];
+		assert.equal(inFrontMatter(getter(lines), 1), false); // the opening fence line itself
+		assert.equal(inFrontMatter(getter(lines), 3), true); // the theme: line
+		assert.equal(inFrontMatter(getter(lines), 6), false); // body, past the close
+	});
+
+	test('false when the document does not open with a fence', async () => {
+		const { inFrontMatter } = await load();
+		const lines = ['# just a heading', 'theme: not-front-matter'];
+		assert.equal(inFrontMatter(getter(lines), 2), false);
+	});
+
+	test('an unterminated block (mid-typing) still counts', async () => {
+		const { inFrontMatter } = await load();
+		const lines = ['---', 'theme: ind'];
+		assert.equal(inFrontMatter(getter(lines), 2), true);
+	});
+});
+
+describe('themeValuePosition — the theme: value slot (Tier 1)', () => {
+	test('captures the partial after `theme:`', async () => {
+		const { themeValuePosition } = await load();
+		assert.deepEqual(themeValuePosition('theme: ind'), { from: 'theme: '.length, typed: 'ind' });
+		assert.deepEqual(themeValuePosition('theme: '), { from: 'theme: '.length, typed: '' });
+	});
+
+	test('null on non-theme lines or once a value + trailing content exists', async () => {
+		const { themeValuePosition } = await load();
+		assert.equal(themeValuePosition('paginate: true'), null);
+		assert.equal(themeValuePosition('  header: "Q4 review"'), null);
+	});
+});
+
 describe('mapBasemapFor — world is the default basemap (regression)', () => {
 	test('a bare `map` slide resolves to the WORLD basemap, not US', async () => {
 		const { mapBasemapFor } = await load();

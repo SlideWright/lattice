@@ -23,13 +23,33 @@ import {
 	blankBodyPartial,
 	classDirectiveCompletion,
 	classOptions,
+	inFrontMatter,
 	modifierOptions,
 	skeletonBody,
 	slideBodyEmpty,
 	slideClassAt,
+	themeValuePosition,
 } from './slide-context.js';
 
 const TOKEN = /^[\w-]*$/;
+
+// Completes the registered theme names after `theme:` in the deck's front
+// matter. A theme not in marp.config.js's themeSet renders unstyled (white,
+// no tokens) — a documented gotcha this prevents at the keystroke.
+function themeSource(themes) {
+	if (!themes?.length) return () => null;
+	const options = themes.map((t) => ({ label: t, type: 'constant', detail: 'theme' }));
+	return (context) => {
+		const doc = context.state.doc;
+		const line = doc.lineAt(context.pos);
+		if (!inFrontMatter((n) => doc.line(n).text, line.number)) return null;
+		const before = context.state.sliceDoc(line.from, context.pos);
+		const spot = themeValuePosition(before);
+		if (!spot) return null;
+		if (!spot.typed && !context.explicit) return null;
+		return { from: line.from + spot.from, options, validFor: TOKEN };
+	};
+}
 
 // Completes the component name and modifiers inside a `_class:` directive.
 export function classDirectiveSource(catalog, universalModifiers) {
@@ -90,12 +110,18 @@ export function skeletonSource(catalog) {
 
 // Build the editor's autocomplete extension. `vocab` is the Drawing Board's
 // lintVocab ({ names, modifiers, universalModifiers, mapRegions }); `catalog` is
-// the compact component catalog ({ name, bucket, variants, skeleton, … }). Both
-// optional — without them only the (self-sufficient) data sources are live.
-export function latticeAutocomplete({ vocab, catalog } = {}) {
+// the compact component catalog ({ name, bucket, variants, skeleton, … });
+// `themes` is the registered theme-name list. All optional — without them only
+// the (self-sufficient) data sources are live.
+export function latticeAutocomplete({ vocab, catalog, themes } = {}) {
 	const universalModifiers = (vocab && (vocab.universalModifiers || vocab.modifiers)) || [];
 	return autocompletion({
-		override: [classDirectiveSource(catalog, universalModifiers), skeletonSource(catalog), ...dataSources],
+		override: [
+			themeSource(themes),
+			classDirectiveSource(catalog, universalModifiers),
+			skeletonSource(catalog),
+			...dataSources,
+		],
 		activateOnTyping: true,
 		icons: false,
 	});
