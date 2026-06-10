@@ -330,6 +330,16 @@ in patch versions.
 
 ### Added
 
+- **Drawing Board autocomplete reaches beyond `_class:` into the rest of the
+  deck grammar.** Four new deterministic, offline completion contexts: the
+  registered `theme:` names in front matter (a theme the engine doesn't know
+  renders an unstyled deck — caught at the keystroke); the slide directive
+  names inside an HTML comment (`_paginate`, `_header`, `_footer`, …) plus
+  `_paginate`'s `true`/`false`/`skip` values; the fence language id after
+  ` ``` ` (the `mermaid`/`chart` blocks plus the eagerly-highlighted
+  languages); and Mermaid diagram/flow keywords inside a ```mermaid fence. The
+  Mermaid keyword list is now one source of truth shared with the editor's
+  highlighter. Drawing Board (docs-site) only.
 - **Family (scoped) modifiers are now discoverable in autocomplete.** The
   `checks-*` icon-style modifiers (and `heat`) on the state-bearing layouts,
   and `canvas` on charts, are cross-cutting section modifiers that apply to a
