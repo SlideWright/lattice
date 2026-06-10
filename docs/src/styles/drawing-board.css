@@ -136,6 +136,7 @@ body.db-page .topbar {
 .db-deck-rename::before,
 .db-pv-x::before,
 .db-drawer-close::before,
+.db-decks-open::before,
 .db-model-chip::before,
 .db-focus-open::before,
 .db-refine-open::before,
@@ -158,6 +159,7 @@ body.db-page .topbar {
 .db-deck-x::before, .db-pv-x::before { --db-glyph: var(--icon-x); }
 .db-deck-rename::before { --db-glyph: var(--icon-pencil); }
 .db-drawer-close::before { --db-glyph: var(--icon-x); }
+.db-decks-open::before { --db-glyph: var(--icon-message-circle-plus); margin-right: 0.34em; }
 .db-model-chip::before { --db-glyph: var(--icon-settings); margin-right: 0.34em; }
 .db-focus-open::before { --db-glyph: var(--icon-scan); margin-right: 0.34em; }
 .db-refine-open::before { --db-glyph: var(--icon-pencil); margin-right: 0.34em; }

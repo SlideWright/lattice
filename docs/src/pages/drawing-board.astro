@@ -905,6 +905,13 @@ const dbData = JSON.stringify({
 					'  tag();',
 					'  function setActive(i){var s=secs();for(var k=0;k<s.length;k++)s[k].classList.toggle("db-active",k===i);}',
 					'  function scrollTo(i,smooth){var s=secs();if(!s[i])return;window.scrollTo({top:Math.max(0,s[i].offsetTop-22),behavior:smooth?"smooth":"auto"});setActive(i);}',
+					// Which slide owns the centre of the viewport? getBoundingClientRect is
+					// post-transform, so this is robust to the FIT scale + collapsed margins.
+					'  function centered(){var s=secs();if(!s.length)return -1;var mid=window.innerHeight/2,best=0,bd=Infinity;for(var i=0;i<s.length;i++){var r=s[i].getBoundingClientRect();var d=Math.abs(r.top+r.height/2-mid);if(d<bd){bd=d;best=i;}}return best;}',
+					// As you scroll the filmstrip, report the centred slide (rAF-throttled)
+					// so the parent moves the "Slide X of Y" status + active outline to it.
+					'  var raf=0,lastC=-1;',
+					'  window.addEventListener("scroll",function(){if(raf)return;raf=requestAnimationFrame(function(){raf=0;var i=centered();if(i>=0&&i!==lastC){lastC=i;setActive(i);parent.postMessage({type:"db-slide-scrolled",idx:i},"*");}});},{passive:true});',
 					'  document.addEventListener("click",function(e){var n=e.target;while(n&&!(n.parentNode&&n.parentNode.classList&&n.parentNode.classList.contains("marpit")))n=n.parentNode;if(n)parent.postMessage({type:"db-slide-click",idx:+n.getAttribute("data-idx")},"*");});',
 					'  window.addEventListener("message",function(e){var d=e.data||{};if(d.type==="db-scroll-to")scrollTo(d.idx,d.smooth);else if(d.type==="db-set-active")setActive(d.idx);});',
 					'  parent.postMessage({type:"db-frame-ready"},"*");',
@@ -1009,6 +1016,14 @@ const dbData = JSON.stringify({
 						setSlideStatus();
 						if (window.__dbEditor && slideStartsCache[i] != null) window.__dbEditor.goToLine(slideStartsCache[i]);
 						postToFrame({ type: 'db-set-active', idx: i });
+					} else if (d.type === 'db-slide-scrolled') {
+						// Pure scroll in the filmstrip — track the centred slide in the
+						// status (and keep activeIdx so a re-render restores here), but
+						// don't move the editor cursor; scrolling to read isn't editing.
+						var j = d.idx | 0;
+						if (j === activeIdx) return;
+						activeIdx = j;
+						setSlideStatus();
 					} else if (d.type === 'db-frame-ready') {
 						postToFrame({ type: 'db-scroll-to', idx: activeIdx, smooth: false });
 					}
