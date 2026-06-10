@@ -8154,21 +8154,25 @@ section.roadmap td:empty::before {
 section.roadmap td.cell-state.state-shipped,
 section.roadmap.horizons .horizon-rows > li.cell-state.state-shipped {
   --state-color:var(--pass);
+  --state-mark:var(--mark-check);
   --cell-state-bg:color-mix(in srgb, var(--pass) 8%, transparent);
 }
 section.roadmap td.cell-state.state-wip,
 section.roadmap.horizons .horizon-rows > li.cell-state.state-wip {
   --state-color:var(--warn);
+  --state-mark:var(--mark-dash);
   --cell-state-bg:color-mix(in srgb, var(--warn) 9%, transparent);
 }
 section.roadmap td.cell-state.state-planned,
 section.roadmap.horizons .horizon-rows > li.cell-state.state-planned {
   --state-color:var(--text-label);
+  --state-mark:var(--mark-todo);
   --cell-state-bg:var(--bg-alt);
 }
 section.roadmap td.cell-state.state-skipped,
 section.roadmap.horizons .horizon-rows > li.cell-state.state-skipped {
   --state-color:var(--text-muted);
+  --state-mark:var(--mark-slash);
   --cell-state-bg:transparent;
 }
 
@@ -8189,48 +8193,42 @@ section.roadmap.horizons .horizon-rows > li.cell-state.state-skipped {
      skipped  → ╱ diagonal slash (out of scope; plus strike-through on text)
    The eyebrow label is rendered for the heavy treatment but hidden here. */
 section.roadmap td.cell-state .cell-state-label { display:none; }
-section.roadmap td.cell-state .cell-state-text {
-  display:inline;
-  color:var(--text-body);
+/* Leading state token = a solid --state-color disc (::before) carrying the
+ * shared --state-mark symbol (::after), knocked out in the canvas colour via
+ * a CSS mask — the SAME recipe checklist / verdict-grid / obligation-matrix
+ * use, so a theme tuning --mark-* / --state-color updates roadmap in lockstep.
+ * Both pseudo-elements are absolutely positioned in the text's leading pad so
+ * they overlap exactly; the marks are vector masks, pixel-crisp in PDF / HTML
+ * / raster. Mark vocabulary: shipped → check, wip → dash, planned → open ring
+ * (neutral todo), skipped → slash. */
+section.roadmap td.cell-state .cell-state-text,
+section.roadmap.horizons .horizon-rows > li.cell-state .row-text {
+  position:relative;
+  padding-left:1.4em;
+}
+section.roadmap td.cell-state .cell-state-text { color:var(--text-body); }
+section.roadmap td.cell-state .cell-state-text::before,
+section.roadmap td.cell-state .cell-state-text::after,
+section.roadmap.horizons .horizon-rows > li.cell-state .row-text::before,
+section.roadmap.horizons .horizon-rows > li.cell-state .row-text::after {
+  content:'';
+  position:absolute;
+  left:0;
+  top:0.16em;
+  width:0.95em;
+  height:0.95em;
+  box-sizing:border-box;
 }
 section.roadmap td.cell-state .cell-state-text::before,
 section.roadmap.horizons .horizon-rows > li.cell-state .row-text::before {
-  content:'';
-  display:inline-block;
-  width:0.95em;
-  height:0.95em;
-  margin-right:0.45em;
   border-radius:50%;
   background-color:var(--state-color, var(--text-muted));
-  background-repeat:no-repeat;
-  background-position:center;
-  background-size:72% 72%;
-  vertical-align:-0.08em;
-  box-sizing:border-box;
 }
-section.roadmap td.cell-state.state-shipped .cell-state-text::before,
-section.roadmap.horizons .horizon-rows > li.cell-state.state-shipped .row-text::before {
-  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='none' stroke='white' stroke-width='2.75' stroke-linecap='round' stroke-linejoin='round' d='M3.25 8.5 L6.75 12 L12.75 5'/></svg>");
-}
-section.roadmap td.cell-state.state-wip .cell-state-text::before,
-section.roadmap.horizons .horizon-rows > li.cell-state.state-wip .row-text::before {
-  /* Dash on the state-coloured disc — a SHAPE-distinct "in progress" mark
-     (not a fill level), so it survives greyscale and colour-blindness.
-     Replaces the retired half-filled disc; mirrors the white-stroke idiom
-     of the check (shipped) and slash (skipped) marks. */
-  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='none' stroke='white' stroke-width='2.75' stroke-linecap='round' d='M3.75 8 L12.25 8'/></svg>");
-}
-section.roadmap td.cell-state.state-planned .cell-state-text::before,
-section.roadmap.horizons .horizon-rows > li.cell-state.state-planned .row-text::before {
-  /* Open ring — shape-distinct "planned / on the slate" mark on a NEUTRAL
-     disc (--text-label). The colour-blind-safe neutral [ ], matching the
-     shared --mark-todo; not ✕, which reads "no" — that's verdict-grid's
-     "not met". Same ring proportion as --mark-todo (r/viewBox ≈ 0.21). */
-  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><circle cx='8' cy='8' r='3.4' fill='none' stroke='white' stroke-width='2.1'/></svg>");
-}
-section.roadmap td.cell-state.state-skipped .cell-state-text::before,
-section.roadmap.horizons .horizon-rows > li.cell-state.state-skipped .row-text::before {
-  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='none' stroke='white' stroke-width='2.75' stroke-linecap='round' d='M12 4 L4 12'/></svg>");
+section.roadmap td.cell-state .cell-state-text::after,
+section.roadmap.horizons .horizon-rows > li.cell-state .row-text::after {
+  background-color:var(--bg);
+  -webkit-mask:var(--state-mark) center / 72% 72% no-repeat;
+          mask:var(--state-mark) center / 72% 72% no-repeat;
 }
 section.roadmap td.cell-state.state-skipped .cell-state-text,
 section.roadmap.horizons .horizon-rows > li.cell-state.state-skipped .row-text {
@@ -8286,37 +8284,31 @@ section.roadmap.status td.cell-state .cell-state-text::before {
  * Shape via CSS, no font dependency; the cell's text label is the third,
  * redundant channel. */
 section.roadmap.status td.cell-state { padding-right:calc(1.4em + var(--sp-md)); }
-section.roadmap.status td.cell-state::after {
+/* Corner state token — the SAME disc + masked --state-mark recipe as the light
+ * treatment, in the cell's top-right: ::after is the --state-color disc,
+ * ::before is the canvas-knockout mark masked by the shared --state-mark (set
+ * per state above). Token-uniform with checklist / verdict-grid / obligation-
+ * matrix; vector masks, pixel-crisp in every export. */
+section.roadmap.status td.cell-state::after,
+section.roadmap.status td.cell-state::before {
   content:'';
   position:absolute;
   top:var(--sp-sm);
   right:var(--sp-sm);
   width:1em;
   height:1em;
-  border-radius:50%;
-  background-color:var(--state-color, var(--text-muted));
-  background-repeat:no-repeat;
-  background-position:center;
-  background-size:100% 100%;
   box-sizing:border-box;
   pointer-events:none;
 }
-section.roadmap.status td.cell-state.state-shipped::after {
-  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='none' stroke='white' stroke-width='2.75' stroke-linecap='round' stroke-linejoin='round' d='M3.25 8.5 L6.75 12 L12.75 5'/></svg>");
-  background-size:72% 72%;
+section.roadmap.status td.cell-state::after {
+  border-radius:50%;
+  background-color:var(--state-color, var(--text-muted));
 }
-section.roadmap.status td.cell-state.state-wip::after {
-  /* Dash — shape-distinct "in progress" mark; replaces the half-disc split. */
-  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='none' stroke='white' stroke-width='2.75' stroke-linecap='round' d='M3.75 8 L12.25 8'/></svg>");
-  background-size:72% 72%;
-}
-section.roadmap.status td.cell-state.state-planned::after {
-  /* Cross — see the light-treatment planned rule; replaces the outline ring. */
-  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><circle cx='8' cy='8' r='3.4' fill='none' stroke='white' stroke-width='2.1'/></svg>");
-  background-size:72% 72%;
-}
-section.roadmap.status td.cell-state.state-skipped::after {
-  background-image:var(--state-slash);
+section.roadmap.status td.cell-state::before {
+  background-color:var(--bg);
+  -webkit-mask:var(--state-mark) center / 72% 72% no-repeat;
+          mask:var(--state-mark) center / 72% 72% no-repeat;
+  z-index:1;
 }
 
 /* ── ROADMAP HORIZONS — Now / Next / Later vertical phase cards ──────

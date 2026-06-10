@@ -109,7 +109,10 @@ in patch versions.
   with `[ ]` items now render those rows **neutral instead of red** — the
   correct reading of "to-do", not "failed". The stable marks (✓ done · – partial
   · ╱ out-of-scope) are unchanged. Marks are vector CSS masks, so they stay
-  pixel-crisp across PDF / HTML / raster exports.
+  pixel-crisp across PDF / HTML / raster exports. **`roadmap` now draws its
+  state markers from the same shared `--state-mark` mask recipe** (its discs +
+  masked symbols, default / horizons / status), so one theme-token set drives
+  every chart *and* checkbox in lockstep — no more bespoke per-component glyphs.
 - **`roadmap` folded into the chart family.** It is now a chart-frame member
   dispatched by the chart engine
   (`lib/components/chart/_chart-family/chart-family.js`) instead of a standalone
