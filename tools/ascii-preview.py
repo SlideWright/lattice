@@ -423,6 +423,19 @@ def demo_blocks() -> dict[str, str]:
         ('split', 'footer', '1/19'),
     ])
 
+    blocks['q-and-a'] = frame([
+        ('left', 'header'),
+        ('center', 'What we expect to be asked.'),
+        ('blank',),
+        ('left', 'Q  Why not wait two quarters?'),
+        ('left', 'A  The window closes in Q3.'),
+        ('blank',),
+        ('left', 'Q  What if pricing shifts?'),
+        ('left', 'A  Contracts lock 2026 rates.'),
+        ('blank',),
+        ('split', 'footer', '1/19'),
+    ])
+
     blocks['T7-card-grid-2x2'] = frame([
         ('left', 'header'),
         ('center', 'LABEL'),

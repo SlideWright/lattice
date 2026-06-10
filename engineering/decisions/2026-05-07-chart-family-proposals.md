@@ -318,7 +318,15 @@ The discipline test for adding a layout is the one named in §1: _"only promote 
 
 ### 4.1 `funnel` — narrowing magnitude stages
 
-> **Open.** Not yet shipped. No real-deck request yet.
+> **Shipped** (2026-06-09, #111). Canonical reference:
+> [`lib/components/chart/funnel/funnel.docs.md`](../../lib/components/chart/funnel/funnel.docs.md)
+> (component docs are ground truth now that `templates.md` is retired). The
+> shipped authoring shape is simpler than the sketch below: each `<li>` is
+> `Label \`value\``; the stage-to-stage conversion % is **always** computed and
+> printed in the gaps (no optional drop-off pill), and the `inverted` /
+> `compact` / `loose` modifiers were not built. Landed alongside `map`,
+> `logo-wall`, and `pricing` — see
+> [2026-05-15-shipped-without-proposal.md](2026-05-15-shipped-without-proposal.md).
 
 Sales pipelines, conversion funnels, recruiting funnels, attention-to-action sequences. Same shape as `piechart` (flat list + magnitude pill) but the geometry is a stack of trapezoids whose width is proportional to the pill value, with a drop-off pill rendered between adjacent stages.
 

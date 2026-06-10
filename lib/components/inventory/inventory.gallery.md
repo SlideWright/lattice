@@ -2,7 +2,7 @@
 
 # inventory
 
-`9 components`
+`10 components`
 
 Inventory — parallel sets of related items.
 
@@ -145,3 +145,16 @@ Inventory — parallel sets of related items.
 - ![Meridian](logo-wall/meridian.svg)
 - ![Helios](logo-wall/helios.svg)
 - ![Northwind](logo-wall/northwind.svg)
+
+---
+
+<!-- _class: q-and-a -->
+
+## What the board will press on.
+
+- Why not extend the current vendor one more year?
+  - The renewal lands in Q3 and locks us in through 2028. Switching now costs a single quarter of migration; switching after renewal costs three.
+- What happens to the team mid-migration?
+  - No headcount change. The same four engineers run both stacks through the eight-week overlap, then the legacy stack is decommissioned.
+- How confident are we in the savings?
+  - The $1.2M is contracted, not projected — the signed rate differential, before any usage growth.
