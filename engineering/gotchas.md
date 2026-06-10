@@ -105,6 +105,39 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
   and on by default. The `:not(.emoji)` carve-out is the correct shape.
 - **Commits:** `claude/fix-emoji-rendering-WO4vI`.
 
+### Color emoji needs an installed font on the owned render paths
+
+- **Symptom:** Emoji render as monochrome glyphs or tofu boxes (▯) in
+  PDFs produced by `lattice-engine` or `lattice-emulator` on a bare
+  host (CI runner, server, a freshly-provisioned desktop WebView) — even
+  though they look fine on a Mac/Windows dev machine.
+- **Cause:** Unlike the marp-cli / marp-vscode paths (which rewrite
+  emoji to twemoji `<img>` — see the entry above), the **owned paths
+  emit emoji as plain unicode text**. Headless Chromium then needs a
+  *color* emoji font to be available to render them. The `--font-*`
+  stacks name `'Noto Color Emoji'` and `lattice.css` now also loads it
+  as a webfont via the Google Fonts `@import`, **but Chromium is
+  unreliable about honoring `@font-face` for emoji presentation
+  sequences** — it frequently bypasses the webfont and uses the
+  platform emoji font. So the webfont is a portable bonus, not a
+  guarantee; an *installed* color emoji font is the reliable mechanism.
+- **Mitigation:** Install `fonts-noto-color-emoji` (Debian/Ubuntu) in
+  every environment that renders Lattice PDFs:
+  - **CI** — `.github/workflows/ci.yml`, the integration job's apt step.
+  - **Cloud sessions** — `.claude/hooks/session-start.sh` (step 2b).
+  - **The SlideWright desktop app** — its WebView/packaging must ship or
+    install a color emoji font; the engine alone can't guarantee it.
+- **Triggered by:** Any unicode emoji in a deck rendered through
+  `lattice-engine` / `lattice-emulator` on a host without a color
+  emoji font.
+- **Removable when:** Never fully — it's inherent to emitting emoji as
+  text. The webfont `@import` and the font installs together are the
+  correct shape. (Note: this sandbox's headless Chromium loads **no**
+  webfonts at all, so verify emoji rendering relies on the *installed*
+  font here, not the `@import`.)
+- **See:** `engineering/decisions/2026-06-10-marp-replacement-proposal.md`
+  (the twemoji-drop decision).
+
 ### Marpit "spot replaces global" for the `class:` directive
 
 - **Symptom:** Adding `class: dark` to front matter does nothing on a

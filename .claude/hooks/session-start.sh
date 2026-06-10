@@ -32,6 +32,15 @@ if ! command -v pdfinfo >/dev/null 2>&1; then
   apt-get install -y poppler-utils || sudo apt-get install -y poppler-utils
 fi
 
+# 2b. Color emoji font. The owned render paths (lattice-engine, lattice-emulator)
+#     emit raw unicode emoji as plain text (no twemoji <img>), so a color emoji
+#     font must be present for them to render in color in headless Chromium. The
+#     webfont @import in lattice.css is a portable bonus, but an installed font
+#     is the reliable guarantee. Idempotent: skip if already present.
+if ! fc-list 2>/dev/null | grep -qi "noto color emoji"; then
+  apt-get install -y fonts-noto-color-emoji || sudo apt-get install -y fonts-noto-color-emoji || true
+fi
+
 # 3. Point marp-cli at the puppeteer-cached Chromium for the whole session
 #    (and thus for the pre-push integration gate, which inherits this env).
 CHROME_BIN="$(ls /root/.cache/puppeteer/chrome/linux-*/chrome-linux64/chrome 2>/dev/null | head -1 || true)"

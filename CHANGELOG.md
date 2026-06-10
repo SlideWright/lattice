@@ -39,6 +39,19 @@ in patch versions.
   `css` output is a stub pending the scaffold/`@import`/`@size` work (P1.1). New
   direct dependency: `markdown-it`.
 
+### Changed
+
+- **Color emoji now load as a webfont.** `lattice.css` adds `Noto Color Emoji`
+  to its Google Fonts `@import` so raw unicode emoji can render in color on the
+  owned render paths (`lattice-engine`, `lattice-emulator`), which emit emoji as
+  plain text rather than twemoji `<img>`. Because Chromium honors an *installed*
+  emoji font far more reliably than an `@font-face` one, CI and the cloud session
+  hook now also install `fonts-noto-color-emoji`; the SlideWright desktop app
+  must ensure a color emoji font is present in its WebView. The marp-cli /
+  marp-vscode paths still use twemoji and keep the `:not(.emoji)` carve-outs. See
+  `engineering/gotchas.md` "Color emoji needs an installed font on the owned
+  render paths".
+
 ### Removed
 
 - **Breaking: the Puter cloud tier is removed from the Drawing Board.** OpenRouter
