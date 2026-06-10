@@ -17,9 +17,10 @@ export const DIRECTIVE_NAMES = ['_class', '_paginate', '_header', '_footer', '_b
 export const PAGINATE_VALUES = ['true', 'false', 'skip', 'hold'];
 
 // Fence info-strings worth completing: the Lattice-special focusable fences
-// (`mermaid`, `chart`) plus the languages editor.js highlights eagerly. Common
-// short aliases are included so `js`/`ts`/`py` resolve too. Mirrors
-// editor.js's EAGER_LANGUAGES (kept in sync by hand — both are stable).
+// (`mermaid`, `chart`) plus the languages editor.js highlights, with the common
+// short aliases (`js`/`ts`/`py`) so they resolve too. A practical completion
+// set, not a strict mirror of editor.js's EAGER_LANGUAGES — a language missing
+// here just isn't suggested, never broken.
 export const FENCE_LANGS = [
 	'mermaid',
 	'chart',

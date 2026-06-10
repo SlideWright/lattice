@@ -13,8 +13,8 @@
 
 // The class directive, matched anywhere on a line. Mirrors the class-token
 // notion in lib/authoring/lint-core.js so completion and lint agree by
-// construction.
-export const CLASS_RE = /<!--\s*_class:\s*([^>]+?)\s*-->/;
+// construction. Module-private — used by slideClassAt below.
+const CLASS_RE = /<!--\s*_class:\s*([^>]+?)\s*-->/;
 
 const SLIDE_BREAK = /^---\s*$/;
 

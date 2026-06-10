@@ -101,7 +101,7 @@ function themeSource(themes) {
 }
 
 // Completes the component name and modifiers inside a `_class:` directive.
-export function classDirectiveSource(catalog, universalModifiers) {
+function classDirectiveSource(catalog, universalModifiers) {
 	return (context) => {
 		const line = context.state.doc.lineAt(context.pos);
 		const before = context.state.sliceDoc(line.from, context.pos);
@@ -125,7 +125,7 @@ export function classDirectiveSource(catalog, universalModifiers) {
 // correct nesting/slot shape, plain text (no snippet fields: skeletons contain
 // literal `$`/`{` that snippet templates would mis-parse). Inert once the slide
 // has any content, so it never clobbers authored body.
-export function skeletonSource(catalog) {
+function skeletonSource(catalog) {
 	if (!catalog?.length) return () => null;
 	const byName = new Map(catalog.map((c) => [c.name, c]));
 	return (context) => {
