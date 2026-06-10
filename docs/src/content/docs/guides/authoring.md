@@ -85,10 +85,34 @@ For example `<!-- _class: cards-grid dark -->` renders the grid on the
 dark canvas. The catalog of modifiers lives in the design system
 reference in the repository.
 
+## Autocomplete in the Drawing Board
+
+The **[Drawing Board](/lattice/drawing-board/)** is the in-browser editor.
+It completes the deck vocabulary as you type, from the same catalog the
+component reference uses — so a suggestion is always something the engine
+accepts:
+
+- **Inside `<!-- _class: … -->`** — type to complete layout names (tagged
+  by bucket); after the name, the modifiers that layout accepts, its own
+  variants first and the universal ones after.
+- **On an empty slide** — a `skeleton` completion drops the layout's slot
+  scaffold already in the correct nesting, so a card-style slide starts
+  from the `- Title` / `  - body` shape rather than the inline-bold trap
+  above.
+- **Inside a `map` slide's list** — the country, state, and group names the
+  basemap resolves, including blocs and categories like `European Union`
+  or `Global South`, so the spelling matches on the first try.
+
+Press `Ctrl-Space` to summon any of these on demand. Suggestions are drawn
+from the catalog, not a language model, and match what the Architect lints
+against.
+
 ## Where to go next
 
 - [Themes & palettes](/lattice/guides/themes/) — choose or author a palette.
 - [Component reference](/lattice/components/) — every layout's
   authoring contract.
+- [Drawing Board](/lattice/drawing-board/) — author a full deck in the
+  browser, with autocomplete and live linting.
 - [`reference/skill.md`](https://github.com/slidewright/lattice/blob/main/reference/skill.md)
   in the repo — the full deck-authoring contract.
