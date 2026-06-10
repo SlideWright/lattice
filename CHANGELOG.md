@@ -320,6 +320,19 @@ in patch versions.
 
 ### Added
 
+- **Family (scoped) modifiers are now discoverable in autocomplete.** The
+  `checks-*` icon-style modifiers (and `heat`) on the state-bearing layouts,
+  and `canvas` on charts, are cross-cutting section modifiers that apply to a
+  *subset* of layouts — so they fit neither the universal nor the per-component
+  variant tier and were therefore never **suggested** by the Drawing Board /
+  playground class-name autocomplete (they rendered and linted fine). A new
+  `FAMILY_MODIFIERS` registry (`lib/components/index.js`, + `familyModifiersFor`
+  / `FAMILY_MODIFIER_TOKENS`) scopes them by component name / bucket; the
+  docs-portal threads a per-component `familyModifiers` list into the catalog so
+  autocomplete offers them **only on the layouts they apply to**, right after
+  the component's own variants. `heat` and `canvas` move out of the faux-universal
+  `BASE_MODIFIERS` into this tier (still accepted everywhere by the linter). See
+  `design/design-system.md` §6.5 (now four tiers).
 - **Drawing Board: spend budgeting & alerting for Converse.** An optional guardrail
   in the Cloud AI settings: set a **dollar cap** on this session's app spend and
   choose **Alert** (a toast) or **Stop** (block new sends) when it's reached, with a

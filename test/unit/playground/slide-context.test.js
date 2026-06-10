@@ -137,6 +137,15 @@ describe('classOptions / modifierOptions', () => {
 		assert.ok(labels.includes('world'));
 	});
 
+	test('modifierOptions inserts a component familyModifiers after variants, before universals', async () => {
+		const { modifierOptions } = await load();
+		const cat = [{ name: 'checklist', bucket: 'inventory', variants: [], familyModifiers: ['checks-bold', 'heat'] }];
+		const opts = modifierOptions('checklist', cat, universals);
+		assert.deepEqual(opts.map((o) => o.label), ['checks-bold', 'heat', 'dark', 'scale-l', 'silent']);
+		assert.equal(opts[0].detail, 'modifier');
+		assert.equal(opts[2].detail, 'universal');
+	});
+
 	test('modifierOptions on an unknown component still offers universals', async () => {
 		const { modifierOptions } = await load();
 		const opts = modifierOptions('nope', catalog, universals);

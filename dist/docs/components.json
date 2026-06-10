@@ -148,7 +148,20 @@
       "compact",
       "loose",
       "accent"
-    ]
+    ],
+    "familyModifiers": {
+      "state-markers": [
+        "checks-ringed",
+        "checks-knockout",
+        "checks-bold",
+        "checks-outline",
+        "checks-tonal",
+        "heat"
+      ],
+      "chart": [
+        "canvas"
+      ]
+    }
   },
   "count": 53,
   "components": [
@@ -199,6 +212,7 @@
         "wip",
         "with-period"
       ],
+      "familyModifiers": [],
       "slots": {
         "title": {
           "selector": "h2",
@@ -321,6 +335,7 @@
         "wip",
         "with-period"
       ],
+      "familyModifiers": [],
       "slots": {
         "title": {
           "selector": "h2",
@@ -438,6 +453,7 @@
         "wip",
         "with-period"
       ],
+      "familyModifiers": [],
       "slots": {
         "heading": {
           "selector": "h2",
@@ -542,6 +558,7 @@
         "wip",
         "with-period"
       ],
+      "familyModifiers": [],
       "slots": {
         "eyebrow": {
           "selector": "p > code",
@@ -664,6 +681,7 @@
         "wip",
         "with-period"
       ],
+      "familyModifiers": [],
       "slots": {
         "title": {
           "selector": "h2",
@@ -790,6 +808,7 @@
         "wip",
         "with-period"
       ],
+      "familyModifiers": [],
       "slots": {
         "title": {
           "selector": "h2",
@@ -894,6 +913,14 @@
         "treatment-none",
         "wip",
         "with-period"
+      ],
+      "familyModifiers": [
+        "checks-ringed",
+        "checks-knockout",
+        "checks-bold",
+        "checks-outline",
+        "checks-tonal",
+        "heat"
       ],
       "slots": {
         "title": {
@@ -1008,6 +1035,7 @@
         "wip",
         "with-period"
       ],
+      "familyModifiers": [],
       "slots": {
         "heading": {
           "selector": "h2",
@@ -1133,6 +1161,7 @@
         "wip",
         "with-period"
       ],
+      "familyModifiers": [],
       "slots": {
         "heading": {
           "selector": "h2",
@@ -1242,6 +1271,7 @@
         "wip",
         "with-period"
       ],
+      "familyModifiers": [],
       "slots": {
         "title": {
           "selector": "h2",
@@ -1353,6 +1383,7 @@
         "wip",
         "with-period"
       ],
+      "familyModifiers": [],
       "slots": {
         "title": {
           "selector": "h2",
@@ -1483,6 +1514,7 @@
         "wip",
         "with-period"
       ],
+      "familyModifiers": [],
       "slots": {
         "title": {
           "selector": "h2",
@@ -1591,6 +1623,7 @@
         "wip",
         "with-period"
       ],
+      "familyModifiers": [],
       "slots": {
         "title": {
           "selector": "h2",
@@ -1699,6 +1732,7 @@
         "wip",
         "with-period"
       ],
+      "familyModifiers": [],
       "slots": {
         "heading": {
           "selector": "h2",
@@ -1814,6 +1848,7 @@
         "wip",
         "with-period"
       ],
+      "familyModifiers": [],
       "slots": {
         "title": {
           "selector": "h2",
@@ -1923,6 +1958,7 @@
         "wip",
         "with-period"
       ],
+      "familyModifiers": [],
       "slots": {
         "title": {
           "selector": "h2",
@@ -2045,6 +2081,7 @@
         "wip",
         "with-period"
       ],
+      "familyModifiers": [],
       "slots": {
         "heading": {
           "selector": "h2",
@@ -2153,6 +2190,7 @@
         "wip",
         "with-period"
       ],
+      "familyModifiers": [],
       "slots": {
         "title": {
           "selector": "h2",
@@ -2260,6 +2298,9 @@
         "treatment-none",
         "wip",
         "with-period"
+      ],
+      "familyModifiers": [
+        "canvas"
       ],
       "slots": {
         "title": {
@@ -2374,6 +2415,9 @@
         "wip",
         "with-period"
       ],
+      "familyModifiers": [
+        "canvas"
+      ],
       "slots": {
         "title": {
           "selector": "h2",
@@ -2478,6 +2522,7 @@
         "wip",
         "with-period"
       ],
+      "familyModifiers": [],
       "slots": {
         "title": {
           "selector": "h2",
@@ -2595,6 +2640,7 @@
         "wip",
         "with-period"
       ],
+      "familyModifiers": [],
       "slots": {
         "image": {
           "selector": "img",
@@ -2721,6 +2767,9 @@
         "wip",
         "with-period"
       ],
+      "familyModifiers": [
+        "canvas"
+      ],
       "slots": {
         "heading": {
           "selector": "h1, h2",
@@ -2826,6 +2875,9 @@
         "treatment-none",
         "wip",
         "with-period"
+      ],
+      "familyModifiers": [
+        "canvas"
       ],
       "slots": {
         "title": {
@@ -2949,6 +3001,7 @@
         "wip",
         "with-period"
       ],
+      "familyModifiers": [],
       "slots": {
         "title": {
           "selector": "h2",
@@ -3080,6 +3133,7 @@
         "wip",
         "with-period"
       ],
+      "familyModifiers": [],
       "slots": {
         "title": {
           "selector": "h2",
@@ -3192,6 +3246,7 @@
         "wip",
         "with-period"
       ],
+      "familyModifiers": [],
       "slots": {
         "title": {
           "selector": "h2",
@@ -3323,6 +3378,7 @@
         "wip",
         "with-period"
       ],
+      "familyModifiers": [],
       "slots": {
         "title": {
           "selector": "h2",
@@ -3448,6 +3504,7 @@
         "wip",
         "with-period"
       ],
+      "familyModifiers": [],
       "slots": {
         "title": {
           "selector": "h2",
@@ -3560,6 +3617,7 @@
         "wip",
         "with-period"
       ],
+      "familyModifiers": [],
       "slots": {
         "eyebrow": {
           "selector": "p > code:only-child",
@@ -3708,6 +3766,9 @@
         "with-period",
         "world"
       ],
+      "familyModifiers": [
+        "canvas"
+      ],
       "slots": {
         "title": {
           "selector": "h2",
@@ -3833,6 +3894,7 @@
         "wip",
         "with-period"
       ],
+      "familyModifiers": [],
       "slots": {
         "eyebrow": {
           "selector": "h3:first-child",
@@ -3952,6 +4014,7 @@
         "wip",
         "with-period"
       ],
+      "familyModifiers": [],
       "slots": {
         "title": {
           "selector": "h2",
@@ -4068,6 +4131,14 @@
         "treatment-none",
         "wip",
         "with-period"
+      ],
+      "familyModifiers": [
+        "checks-ringed",
+        "checks-knockout",
+        "checks-bold",
+        "checks-outline",
+        "checks-tonal",
+        "heat"
       ],
       "slots": {
         "heading": {
@@ -4187,6 +4258,9 @@
         "wip",
         "with-period"
       ],
+      "familyModifiers": [
+        "canvas"
+      ],
       "slots": {
         "title": {
           "selector": "h2",
@@ -4299,6 +4373,7 @@
         "wip",
         "with-period"
       ],
+      "familyModifiers": [],
       "slots": {
         "title": {
           "selector": "h2",
@@ -4423,6 +4498,9 @@
         "treatment-none",
         "wip",
         "with-period"
+      ],
+      "familyModifiers": [
+        "canvas"
       ],
       "slots": {
         "title": {
@@ -4556,6 +4634,7 @@
         "wip",
         "with-period"
       ],
+      "familyModifiers": [],
       "slots": {
         "eyebrow": {
           "selector": "p > code:only-child",
@@ -4692,6 +4771,9 @@
         "wip",
         "with-period"
       ],
+      "familyModifiers": [
+        "canvas"
+      ],
       "slots": {
         "title": {
           "selector": "h2",
@@ -4809,6 +4891,7 @@
         "wip",
         "with-period"
       ],
+      "familyModifiers": [],
       "slots": {
         "quotation": {
           "selector": "blockquote > p",
@@ -4927,6 +5010,9 @@
         "treatment-none",
         "wip",
         "with-period"
+      ],
+      "familyModifiers": [
+        "canvas"
       ],
       "slots": {
         "title": {
@@ -5055,6 +5141,7 @@
         "wip",
         "with-period"
       ],
+      "familyModifiers": [],
       "slots": {
         "heading": {
           "selector": "h2",
@@ -5182,6 +5269,7 @@
         "wip",
         "with-period"
       ],
+      "familyModifiers": [],
       "slots": {
         "heading": {
           "selector": "h2",
@@ -5305,6 +5393,15 @@
         "wip",
         "with-period"
       ],
+      "familyModifiers": [
+        "checks-ringed",
+        "checks-knockout",
+        "checks-bold",
+        "checks-outline",
+        "checks-tonal",
+        "heat",
+        "canvas"
+      ],
       "slots": {
         "title": {
           "selector": "h2",
@@ -5417,6 +5514,7 @@
         "wip",
         "with-period"
       ],
+      "familyModifiers": [],
       "slots": {
         "frame": {
           "selector": "p:first-of-type > code",
@@ -5553,6 +5651,7 @@
         "wip",
         "with-period"
       ],
+      "familyModifiers": [],
       "slots": {
         "eyebrow": {
           "selector": "p:first-of-type > code",
@@ -5678,6 +5777,9 @@
         "wip",
         "with-period"
       ],
+      "familyModifiers": [
+        "canvas"
+      ],
       "slots": {
         "title": {
           "selector": "h2",
@@ -5800,6 +5902,7 @@
         "wip",
         "with-period"
       ],
+      "familyModifiers": [],
       "slots": {
         "title": {
           "selector": "h2",
@@ -5926,6 +6029,7 @@
         "wip",
         "with-period"
       ],
+      "familyModifiers": [],
       "slots": {
         "heading": {
           "selector": "h2",
@@ -6034,6 +6138,9 @@
         "treatment-none",
         "wip",
         "with-period"
+      ],
+      "familyModifiers": [
+        "canvas"
       ],
       "slots": {
         "title": {
@@ -6148,6 +6255,7 @@
         "wip",
         "with-period"
       ],
+      "familyModifiers": [],
       "slots": {
         "heading": {
           "selector": "h1",
@@ -6253,6 +6361,14 @@
         "treatment-none",
         "wip",
         "with-period"
+      ],
+      "familyModifiers": [
+        "checks-ringed",
+        "checks-knockout",
+        "checks-bold",
+        "checks-outline",
+        "checks-tonal",
+        "heat"
       ],
       "slots": {
         "title": {
@@ -6387,6 +6503,9 @@
         "treatment-none",
         "wip",
         "with-period"
+      ],
+      "familyModifiers": [
+        "canvas"
       ],
       "slots": {
         "title": {

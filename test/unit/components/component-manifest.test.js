@@ -28,6 +28,9 @@ const {
   UNIVERSAL_GROUPS,
   UNIVERSAL_VARIANTS,
   SEMI_UNIVERSAL_VARIANTS,
+  FAMILY_MODIFIERS,
+  FAMILY_MODIFIER_TOKENS,
+  familyModifiersFor,
   TAG_GROUPS,
   TAGS,
   TAGS_MIN,
@@ -767,6 +770,39 @@ describe('component-manifest', () => {
       const uni = new Set(UNIVERSAL_VARIANTS);
       const overlap = SEMI_UNIVERSAL_VARIANTS.filter((v) => uni.has(v));
       assert.deepEqual(overlap, []);
+    });
+
+    test('FAMILY_MODIFIERS are scoped, not universal, and tokens are their flat union', () => {
+      const expectedTokens = [...new Set(
+        Object.values(FAMILY_MODIFIERS).flatMap((g) => [...g.modifiers]),
+      )];
+      assert.deepEqual([...FAMILY_MODIFIER_TOKENS], expectedTokens);
+      // Family modifiers must NOT leak into the universal tier (they're scoped).
+      const uni = new Set(UNIVERSAL_VARIANTS);
+      const semi = new Set(SEMI_UNIVERSAL_VARIANTS);
+      for (const t of FAMILY_MODIFIER_TOKENS) {
+        assert.ok(!uni.has(t) && !semi.has(t), `family modifier '${t}' must not be universal/semi-universal`);
+      }
+    });
+
+    test('familyModifiersFor scopes modifiers by component name + bucket', () => {
+      const checks = ['checks-ringed', 'checks-knockout', 'checks-bold', 'checks-outline', 'checks-tonal', 'heat'];
+      // state-bearing layouts get the checkbox style variants + heat
+      assert.deepEqual(familyModifiersFor({ name: 'checklist', function: 'inventory' }), checks);
+      assert.deepEqual(familyModifiersFor({ name: 'verdict-grid', function: 'comparison' }), checks);
+      // chart components get `canvas`; roadmap is BOTH state-bearing and chart
+      assert.deepEqual(familyModifiersFor({ name: 'piechart', function: 'evidence', bucket: 'chart' }), ['canvas']);
+      assert.deepEqual(familyModifiersFor({ name: 'roadmap', function: 'progression', bucket: 'chart' }), [...checks, 'canvas']);
+      // unrelated layouts get nothing
+      assert.deepEqual(familyModifiersFor({ name: 'title', function: 'anchor' }), []);
+    });
+
+    test('every shipped manifest with family modifiers is in scope (no orphans)', () => {
+      // Each component the build tags with familyModifiers must resolve cleanly.
+      for (const m of loadAll()) {
+        const fams = familyModifiersFor(m);
+        for (const f of fams) assert.ok(FAMILY_MODIFIER_TOKENS.includes(f), `${m.name}: ${f} not a family token`);
+      }
     });
 
     test('the state group has all 8 documented variants', () => {

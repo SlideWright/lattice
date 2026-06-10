@@ -26,7 +26,7 @@ import { pickGrammarVariants } from '../playground/architect-knowledge.js';
 const docsRoot = process.cwd();
 const repoRoot = join(docsRoot, '..');
 const require = createRequire(import.meta.url);
-const { loadAll, manifestBucket } = require(join(repoRoot, 'lib/components', 'index.js'));
+const { loadAll, manifestBucket, familyModifiersFor } = require(join(repoRoot, 'lib/components', 'index.js'));
 const manifests = loadAll();
 
 // Compact catalog for the Architect's onboarding retrieval + scaffolding, and the
@@ -40,6 +40,10 @@ const obCatalog = manifests.map((m) => ({
 	summary: m.description || '',
 	skeleton: m.skeleton || m.sample || `<!-- _class: ${m.name} -->\n`,
 	variants: m.variants || [],
+	// Family (scoped) modifiers in scope for this component — e.g. `checks-*` +
+	// `heat` on the state-bearing layouts, `canvas` on charts. The class-directive
+	// autocomplete offers these alongside the component's own variants.
+	familyModifiers: familyModifiersFor(m),
 	// Variants whose AUTHORING grammar differs from the base skeleton (e.g.
 	// `list-tabular metric` → `1. Name `value``) ship their own skeleton so the
 	// cloud model authors/validates them correctly instead of against the base.
