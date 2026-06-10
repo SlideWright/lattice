@@ -2340,9 +2340,22 @@ button.db-tl-body:hover {
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
-.db-or-summary-hint {
+.db-or-summary-detail {
+	font-size: 0.7rem;
+	color: var(--text-muted);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+/* "Tap to change model" — a caption BELOW the control (like a field hint), not
+   crammed inside the button; hidden once the picker is open (search is the cue). */
+.db-or-hint {
+	margin: 0.25rem 0 0;
 	font-size: 0.68rem;
 	color: var(--text-muted);
+}
+.db-or-picker.is-open .db-or-hint {
+	display: none;
 }
 .db-or-chevron {
 	flex: 0 0 auto;
@@ -2464,6 +2477,38 @@ button.db-tl-body:hover {
 	font-size: 0.76rem;
 	color: var(--text-muted);
 	padding: 0.6rem 0.3rem;
+}
+.db-or-row-badge {
+	margin-left: 0.4rem;
+	padding: 0 0.3rem;
+	font-size: 0.6rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	color: var(--accent);
+	background: var(--accent-soft);
+	border-radius: 4px;
+	vertical-align: middle;
+}
+
+/* Account readout — OpenRouter balance/usage + the running per-Lattice spend. */
+.db-or-account {
+	margin: 0.3rem 0 0.7rem;
+	padding: 0.5rem 0.6rem;
+	border: 1px solid var(--border);
+	border-radius: var(--radius-sm);
+	background: var(--bg-alt);
+}
+.db-or-account-line {
+	margin: 0;
+	font-size: 0.74rem;
+	color: var(--text-body);
+}
+.db-or-account-line + .db-or-account-line {
+	margin-top: 0.15rem;
+}
+.db-or-account-spend {
+	color: var(--text-muted);
 }
 
 /* Prompt-caching switch (a labelled toggle, cue + tip). */
