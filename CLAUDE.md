@@ -193,10 +193,13 @@ Scope detection — what `npm run preview` does for each kind of change:
 - L1 (single deck or example.md) — rebuild + diff that deck only.
 - L2 (component CSS / transform) — rebuild every deck using the
   component class; diff per-page across them.
-- L3 (shared CSS / engine / theme) — full rebuild of all 23 decks;
-  send the top 5 diffs by pixel count.
+- L3 (shared CSS / engine / theme) — rebuild every deck in the
+  preview set (`ALL_DECKS` in `tools/preview.js`, currently just
+  `examples/gallery-jargon.md`; the baseline, mermaid, design-system,
+  and palette-audit decks live with their owners and are covered by
+  the integration tier instead); send the top 5 diffs by pixel count.
 
-`--full` overrides to L3 explicitly. `npm run preview:watch <deck>`
+`--full` overrides to L3 explicitly. `npm run preview:watch -- <deck>`
 runs a file watcher and auto-rebuilds on the desktop (opens the PDF
 in your default viewer; viewer reloads when the file changes).
 
