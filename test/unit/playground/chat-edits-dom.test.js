@@ -1,6 +1,6 @@
 /**
  * Headless integration: the Converse editing loop + its polish (Slice B + polish).
- * A mock Puter backend returns replies carrying EDIT BLOCKS; this proves the chat
+ * A mock cloud (OpenRouter) backend returns replies carrying EDIT BLOCKS; this proves the chat
  * lifts them into diff cards, renders the prose as Markdown, and that the lifecycle
  * (Apply → collapse, Discard, batch Apply all / Dismiss all, single-level Undo)
  * behaves. The pure splice/parse/diff is covered in architect-edits.test.js.
@@ -20,7 +20,7 @@ after(() => { delete global.document; delete global.window; });
 
 const DECK = '# Intro\n\nopening\n\n---\n\n# Plan\n\nold body';
 
-async function setup({ reply, generation = 'puter', store, stream = false }) {
+async function setup({ reply, generation = 'openrouter', store, stream = false }) {
   const { createChat } = await import('../../../docs/src/playground/drawing-board-chat.js');
   const mount = document.createElement('div');
   const composer = document.createElement('form');

@@ -2285,47 +2285,16 @@ button.db-tl-body:hover {
 .db-converse-connect-row .db-btn {
 	flex: 1 1 12rem;
 }
-.db-converse-connect {
-	width: 100%;
-}
 .db-converse-fine {
 	font-size: 0.74rem !important;
 	line-height: 1.5;
 	color: var(--text-muted);
 	margin: 0.55rem 0 0 !important;
 }
-.db-converse-consent-row {
-	display: flex;
-	gap: 0.5rem;
-	margin-top: 0.6rem;
-}
-.db-converse-consent-row .db-btn {
-	flex: 1 1 0;
-}
-
-/* Cloud AI section in the settings popover — active-cloud chooser + the
-   OpenRouter model picker (with pricing) + disconnect. */
-.db-settings-cloud .db-pref-select {
-	width: 100%;
-	margin: 0.3rem 0 0.55rem;
-}
+/* Cloud AI section in the settings drawer — the OpenRouter model picker
+   (accordion), caching, standing instructions, and disconnect. */
 .db-settings-cloud .db-settings-remove {
 	margin-top: 0.1rem;
-}
-.db-settings-cloud-active {
-	display: flex;
-	flex-wrap: wrap;
-	align-items: center;
-	gap: 0.5rem 0.9rem;
-	margin: 0.35rem 0 0.6rem;
-}
-.db-settings-cloud-opt {
-	display: inline-flex;
-	align-items: center;
-	gap: 0.3rem;
-	font-size: 0.82rem;
-	color: var(--text-body);
-	cursor: pointer;
 }
 
 /* ── OpenRouter model picker — the in-place accordion ──────────────────────────
@@ -2587,4 +2556,25 @@ button.db-tl-body:hover {
 .db-or-instr-count.over {
 	color: var(--accent);
 	font-weight: 700;
+}
+
+/* Disconnect guardrail — the inline "Disconnect?" confirm bar (the 'confirm'
+   deleteStyle; the 'undo' style uses the shared toast instead). */
+.db-or-disconnect {
+	margin-top: 0.2rem;
+}
+.db-confirm-bar {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.5rem 0.6rem;
+	border: 1px solid var(--border);
+	border-radius: var(--radius-sm);
+	background: var(--bg-alt);
+}
+.db-confirm-msg {
+	flex: 1 1 100%;
+	font-size: 0.8rem;
+	color: var(--text-body);
 }

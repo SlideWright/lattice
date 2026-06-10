@@ -99,7 +99,6 @@ export async function probeWebGPU() {
 // Human label for the active generation tier.
 export function tierLabel(a) {
   if (!a.modelOn) return 'Deterministic (AI off)';
-  if (a.generation === 'puter') return 'Cloud AI (Puter)';
   if (a.generation === 'openrouter') return 'Cloud AI (OpenRouter)';
   if (a.generation === 'webllm') return 'WebLLM (on-device)';
   if (a.generation === 'prompt-api') return 'Built-in AI (on-device)';
@@ -205,11 +204,10 @@ export function createModelSettings({ host, trigger, model, onChange, isOpen = (
     } catch { return []; }
   }
 
-  // ── Cloud AI (Converse) — the connected cloud tiers ───────────────────────────
-  // Both clouds can be connected at once (Puter + the user's OpenRouter account).
-  // The connect buttons live in the Converse panel; this section is the ongoing
-  // control: which cloud is active, the OpenRouter model picker (with pricing),
-  // and Disconnect. Hidden affordances appear only for whatever is connected.
+  // ── Cloud AI (Converse) — the connected OpenRouter account ────────────────────
+  // The connect button lives in the Converse panel; this section is the ongoing
+  // control: the OpenRouter model picker (with pricing), caching, standing
+  // instructions, and Disconnect. Shown only once OpenRouter is connected.
   function fmtPrice(n) {
     if (n == null || Number.isNaN(n)) return '';
     if (n === 0) return 'free';
@@ -385,56 +383,65 @@ export function createModelSettings({ host, trigger, model, onChange, isOpen = (
     return box;
   }
 
-  function cloudSection(a) {
-    const sec = el('section', 'db-settings-cloud');
-    sec.append(el('h3', 'db-settings-head db-settings-section-top', 'Cloud AI (Converse)'));
-    const puterOn = a.puterReady;
-    const orOn = a.openRouterReady;
-    if (!puterOn && !orOn) {
-      sec.append(el('p', 'db-settings-note',
-        'Not connected. Open Converse to connect Puter (free, no key) or OpenRouter ' +
-        '(your own account — one-click sign-in, your credits).'));
-      return sec;
-    }
-
-    // Active-cloud chooser — only meaningful when BOTH are connected.
-    if (puterOn && orOn) {
-      const row = el('div', 'db-settings-cloud-active');
-      row.append(el('span', 'db-pref-label', 'Use for Converse'));
-      const opt = (val, label) => {
-        const lab = el('label', 'db-settings-cloud-opt');
-        const r = document.createElement('input');
-        r.type = 'radio';
-        r.name = 'db-cloud-active';
-        r.value = val;
-        r.checked = (a.cloud || 'puter') === val;
-        r.addEventListener('change', () => {
-          if (!r.checked) return;
-          model.setCloud(val);
-          model.refreshAvailability().then(() => { refresh(); onChange?.(); });
-        });
-        lab.append(r, el('span', null, label));
-        return lab;
-      };
-      row.append(opt('puter', 'Puter (free)'), opt('openrouter', 'OpenRouter'));
-      sec.append(row);
-    }
-
-    if (orOn) {
-      sec.append(el('p', 'db-pref-label', 'OpenRouter model'));
-      sec.append(orPicker());
-      sec.append(cacheToggle());
-      sec.append(standingInstructions());
+  // Disconnect forgets the stored key (reconnecting means re-doing OAuth), so it
+  // carries the same guardrail as deck deletion — chosen by the `deleteStyle`
+  // preference: 'confirm' morphs into an inline "Disconnect?" bar; 'undo' does it
+  // optimistically + a reversible toast (key snapshot restored on Undo).
+  function doDisconnect() {
+    model.disconnectOpenRouter();
+    model.refreshAvailability().then(() => { refresh(); onChange?.(); });
+  }
+  function disconnectControl() {
+    const wrap = el('div', 'db-or-disconnect');
+    const showButton = () => {
+      wrap.innerHTML = '';
       const dc = el('button', 'db-btn db-settings-remove', 'Disconnect OpenRouter');
       dc.type = 'button';
       dc.addEventListener('click', () => {
-        model.disconnectOpenRouter();
-        model.refreshAvailability().then(() => { refresh(); onChange?.(); });
+        if (getPref('deleteStyle') === 'undo') {
+          const snap = model.openRouterKeySnapshot();
+          doDisconnect();
+          window.__dbStore?.toast?.('Disconnected OpenRouter.', 'Undo', () => {
+            model.restoreOpenRouter(snap);
+            model.refreshAvailability().then(() => { refresh(); onChange?.(); });
+          });
+        } else {
+          showConfirm();
+        }
       });
-      sec.append(dc);
-    }
+      wrap.append(dc);
+    };
+    const showConfirm = () => {
+      wrap.innerHTML = '';
+      const bar = el('div', 'db-confirm-bar');
+      bar.append(el('span', 'db-confirm-msg', 'Disconnect OpenRouter? You’ll sign in again.'));
+      const yes = el('button', 'db-btn db-settings-remove', 'Disconnect');
+      yes.type = 'button';
+      yes.addEventListener('click', doDisconnect);
+      const no = el('button', 'db-btn', 'Cancel');
+      no.type = 'button';
+      no.addEventListener('click', showButton);
+      bar.append(yes, no);
+      wrap.append(bar);
+    };
+    showButton();
+    return wrap;
+  }
 
-    if (puterOn) sec.append(el('p', 'db-settings-note', 'Puter connected — free to you, no key.'));
+  function cloudSection(a) {
+    const sec = el('section', 'db-settings-cloud');
+    sec.append(el('h3', 'db-settings-head db-settings-section-top', 'Cloud AI (Converse)'));
+    if (!a.openRouterReady) {
+      sec.append(el('p', 'db-settings-note',
+        'Not connected. Open Converse to connect OpenRouter — your own account, ' +
+        'one-click sign-in, your credits, any of 500+ models.'));
+      return sec;
+    }
+    sec.append(el('p', 'db-pref-label', 'OpenRouter model'));
+    sec.append(orPicker());
+    sec.append(cacheToggle());
+    sec.append(standingInstructions());
+    sec.append(disconnectControl());
     return sec;
   }
 
@@ -511,12 +518,12 @@ export function createModelSettings({ host, trigger, model, onChange, isOpen = (
       // On-device models are a DESKTOP capability. A phone tab can't hold the
       // weights (~350 MB–1 GB) without the OOM-reload we chased for weeks, and the
       // tiny models that do fit aren't worth it — so mobile gets no local tier at
-      // all. Real conversation on a phone comes from Converse (cloud, free to you).
+      // all. Real conversation on a phone comes from Converse (cloud, OpenRouter).
       if (coarsePointer()) {
         panel.append(el('p', 'db-settings-note',
           'On-device AI runs on desktop only — phone tabs can’t hold the model. ' +
           'On this device, Coach gives you the deterministic review, and Converse ' +
-          'gives you a real conversation (cloud-powered, free to you).'));
+          'gives you a real conversation (cloud-powered via OpenRouter).'));
       } else {
         // Universal Transformers.js — the no-GPU desktop path (works in any browser).
         if (a.promptApi !== 'available' && !a.universalReady && !a.webllmReady) {

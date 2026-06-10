@@ -150,7 +150,7 @@ describe('buildChatMessages', () => {
     assert.ok(sys.length < 2200, 'deck context capped (~1200) so the small model copes');
   });
 
-  // The cloud tier (Puter/Claude) gets a richer, Lattice-aware prompt: the
+  // The cloud tier (OpenRouter) gets a richer, Lattice-aware prompt: the
   // component primer + the WHOLE deck. The lean path above is unchanged.
   describe('rich (cloud) prompt', () => {
     const catalog = [
@@ -204,11 +204,11 @@ describe('buildChatMessages', () => {
 });
 
 describe('isCapableTier (which tiers get the dossier + editing)', () => {
-  test('the cloud tiers (Puter, OpenRouter) and WebLLM are capable; the tiny tiers are not', async () => {
+  test('the OpenRouter cloud tier and WebLLM are capable; the tiny tiers (and the removed Puter) are not', async () => {
     const { isCapableTier } = await load();
-    assert.equal(isCapableTier('puter'), true);
     assert.equal(isCapableTier('openrouter'), true);
     assert.equal(isCapableTier('webllm'), true);
+    assert.equal(isCapableTier('puter'), false); // Puter removed — no longer a tier
     assert.equal(isCapableTier('transformers'), false); // universal 0.5B — lean
     assert.equal(isCapableTier('prompt-api'), false); // built-in — lean
     assert.equal(isCapableTier('floor'), false);

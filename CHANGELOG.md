@@ -27,6 +27,13 @@ in patch versions.
 
 ### Removed
 
+- **Breaking: the Puter cloud tier is removed from the Drawing Board.** OpenRouter
+  is now the only Converse cloud (the user's own account, any of 500+ models). The
+  Puter backend, its SDK `<script>`, the "Connect Puter" button, and the dual-cloud
+  "which cloud is active" chooser are all gone — along with the adapter surface
+  (`connectPuter`, `setCloud`, `availability.puterReady`/`.cloud`). Anyone who was
+  on Puter falls back to on-device AI or the deterministic floor until they connect
+  OpenRouter. Drawing Board (docs-site) only — no engine change.
 - **Breaking: `split-brief`, `split-metric`, `split-statement`, `split-steps`,
   and `split-list` are removed** — consolidated into a single **`split-panel`**
   component (the featured-left-panel + supporting-right-zone family; they
@@ -107,6 +114,11 @@ in patch versions.
   fence, a half-typed `` `code` `` span, a `[label](partial` link) so partial
   syntax never flashes a block that then unwraps; inline emphasis still degrades
   to literal until its closer arrives. The final render is unchanged and exact.
+- **Disconnect OpenRouter now has a guardrail.** Forgetting the key (and re-doing
+  OAuth) was a one-click action; it now mirrors deck deletion via the `deleteStyle`
+  preference — an inline "Disconnect?" confirm bar, or an optimistic disconnect with
+  a reversible "Undo" toast (the key is snapshotted and restored on Undo, no
+  re-auth). Drawing Board (docs-site) only.
 - **Inline code chips are now surface-aware.** The `section code` chip was a
   single context-blind rule (`--bg-alt` fill + `--accent` ink) tuned only for
   the default canvas, so it read as a glaring near-white box on dark bookends
