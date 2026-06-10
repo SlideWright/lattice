@@ -2997,7 +2997,7 @@ section.image.museum p:last-of-type {
   z-index: 2;
 }
 
-/* === lib/components/progression/journey/journey.styles.css === */
+/* === lib/components/chart/journey/journey.styles.css === */
 /* journey — progression.timeline.structure
  *
  * Extracted from lib/_legacy.css in Phase 4 of the destination map.
@@ -9548,71 +9548,22 @@ section.verdict-grid :is(ul,ol) > li > strong ~ * { font-weight: 400; }
  *   - lattice-runtime.js    DOM transform for marp-vscode preview
  */
 
-section.word-cloud {
-  display: flex;
-  flex-direction: column;
-}
+/* word-cloud is a chart-frame member (folded into the chart family): the
+ * dispatcher lifts the h2 into .chart-header and wraps the canvas in
+ * .chart-body, so the section layout, h2 chrome, and the opt-in `.canvas`
+ * surface panel all come from chart-family.css — there is no bespoke mirror
+ * here any more. Only the canvas geometry and per-word positioning below are
+ * word-cloud's own. */
 
-section.word-cloud > h2 {
-  font-size: var(--fs-emphasis);
-  margin-bottom: var(--sp-sm);
-}
-
-/* Canvas is a fixed-pixel rectangle (1200×540) — the packer works in
- * the same coordinate space. The slide is fixed at 1280×720 by Marp,
- * so this fits with 40px horizontal breathing room and ~180px for
- * h2 + below-note + header chrome. Centered horizontally. */
+/* Canvas is a fixed-pixel rectangle (CANVAS_W × CANVAS_H = 1100×320 — see
+ * word-cloud.transform.js); the packer works in the same coordinate space.
+ * Centered inside .chart-body's centered flex column. */
 section.word-cloud .word-cloud-canvas {
   position: relative;
   width: var(--wc-canvas-w);
   height: var(--wc-canvas-h);
   margin: 0 auto;
   flex: 0 0 auto;
-}
-
-/* Surface panel — word-cloud isn't a chart-frame member (its words are
- * free-positioned, not a .chart-body figure), so the family panel rule never
- * reaches it. Mirror that treatment here instead: a ::before painted BEHIND
- * the words (generated content sits first in the canvas's stacking context,
- * the absolutely-positioned spans paint on top) with the same three-stop
- * radial + hairline as section.chart-frame .chart-body. The negative inset
- * pushes the panel OUT past the word extent so the cloud sits ON the surface
- * with breathing room, and — because the packer fully bounds every word
- * inside the 1100×320 canvas — there is no clip risk. */
-/* OPT-IN: gated on `.canvas`, matching the chart-family default — bare unless
- * the slide opts into the surface. */
-section.word-cloud.canvas .word-cloud-canvas::before {
-  content: "";
-  position: absolute;
-  /* Keep the top inset shallow so the panel starts BELOW the h2 (the header
-   * sits above the surface, mirroring chart-frame where the header is outside
-   * .chart-body). Wider horizontal inset for side breathing; the cloud's own
-   * internal whitespace supplies the vertical margin. */
-  inset: -0.5cqi -3cqi;
-  z-index: 0;
-  /* Real glass — mirrors section.chart-frame .chart-body exactly: clear on a
-   * light slide (no gray tinted box), white-frost veil on dark, form carried
-   * by the dark float shadow + crisp edge + white top rim. See
-   * chart-family.css for the full root-cause rationale. */
-  background: light-dark(
-    transparent,
-    linear-gradient(180deg,
-      color-mix(in oklab, white 13%, transparent) 0%,
-      color-mix(in oklab, white 5%, transparent) 100%));
-  border: 1px solid light-dark(
-    color-mix(in oklab, var(--text-heading) 10%, transparent),
-    color-mix(in oklab, white 14%, transparent));
-  border-radius: 2.25cqi;
-  box-shadow:
-    0 1.2cqi 2.6cqi -1.4cqi color-mix(in oklab, black 24%, transparent),
-    0 0.3cqi 0.8cqi -0.6cqi color-mix(in oklab, black 14%, transparent),
-    inset 0 1px 0 color-mix(in oklab, white 30%, transparent);
-  pointer-events: none;
-}
-
-/* Keep the words above the panel ::before. */
-section.word-cloud .wc-word {
-  z-index: 1;
 }
 
 section.word-cloud .wc-word {
@@ -10892,7 +10843,7 @@ section.chart-frame {
  * palette-blind. Eight slots — past ~6 categories perceptual distinction
  * collapses (Wong 2011), so charts should consolidate rather than cycle on. */
 section.chart-frame,
-section.word-cloud { /* word-cloud rides the same catN spectrum but isn't a chart-frame member */
+section.word-cloud { /* word-cloud is a chart-frame member; the bare selector also covers the rare un-transformed fallback (no h2/list) */
   /* Apple-inspired categorical spectrum — the chart-family's OWN palette,
    * decoupled from the engine-wide cN accents (which still drive roadmap /
    * journey / legal / decision). Each slot is `light-dark(lightCanvasVivid,
@@ -11137,8 +11088,9 @@ section.chart-frame .chart-body {
  *
  * Excluded: state-chart, whose vertical state flow already fills the full
  * chart-body height — the panel inset would push its top/bottom nodes past the
- * clipped edge. (word-cloud is free-floating and not a chart-frame member at
- * all, so it never matches this rule.)
+ * clipped edge. (word-cloud, now a chart-frame member, gets this shared panel
+ * like the rest — it replaced the bespoke ::before panel word-cloud carried
+ * before the fold.)
  *
  * OPT-IN: the canvas is now off by default — a chart sits directly on the
  * slide unless the slide adds the `canvas` modifier. So this rule is gated on

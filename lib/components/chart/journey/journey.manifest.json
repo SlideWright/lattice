@@ -2,6 +2,7 @@
   "$schema": "../../manifest.schema.json",
   "name": "journey",
   "function": "progression",
+  "bucket": "chart",
   "form": "timeline",
   "substance": "structure",
   "tags": ["process", "assessment", "walkthrough"],

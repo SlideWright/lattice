@@ -1,24 +1,26 @@
 /**
- * Unit tests for the journey transformer's applyToDom (DOM-walk path).
+ * Unit tests for journey's applyToDom (DOM-walk path), via the chart-family
+ * transformer it was folded into.
  *
- * applyToDom delegates to engine.transformJourneySection — same kernel
- * marp.config.js and lattice-emulator.js use. These tests verify the
- * delegation produces a journey-board DOM with the expected structure
- * (section header, swimlanes, etc.) and is idempotent.
+ * journey is a chart-frame member: the chart-family transformer's applyToDom
+ * dispatches to journey.transformJourneySection (the same kernel marp.config.js
+ * and lattice-emulator.js use), rewrites the nested <ul> into a .journey-board,
+ * and wraps the section in the chart-frame skeleton. These tests verify the
+ * delegation produces the framed DOM and is idempotent.
  */
 
 const { test, describe } = require('node:test');
 const assert = require('node:assert/strict');
 const { JSDOM } = require('jsdom');
-const journey = require('../../../lib/transformers/journey');
+const chartFamily = require('../../../lib/transformers/chart-family');
 
 function makeDoc(bodyHtml) {
   const dom = new JSDOM(`<!doctype html><html><body>${bodyHtml}</body></html>`);
   return dom.window.document;
 }
 
-describe('journey.applyToDom', () => {
-  test('rewrites a journey section\'s outer <ul> into .journey-board', () => {
+describe('journey.applyToDom (via chart-family)', () => {
+  test('rewrites a journey section\'s outer <ul> into a framed .journey-board', () => {
     const doc = makeDoc(`
       <section class="journey">
         <h2>Customer onboarding</h2>
@@ -36,9 +38,11 @@ describe('journey.applyToDom', () => {
         </ul>
       </section>
     `);
-    journey.applyToDom(doc);
-    const board = doc.querySelector('section.journey > .journey-board');
-    assert.ok(board, 'journey-board wrapper present');
+    chartFamily.applyToDom(doc);
+    const section = doc.querySelector('section.journey');
+    assert.ok(section.classList.contains('chart-frame'), 'section tagged chart-frame');
+    const board = section.querySelector('.chart-body > .journey-board');
+    assert.ok(board, 'journey-board nested in chart-body');
     // The board carries a journey-sections row (one entry per top-level li).
     const sections = board.querySelectorAll('.journey-sections > li');
     assert.ok(sections.length >= 1, 'at least one section ribbon');
@@ -49,7 +53,7 @@ describe('journey.applyToDom', () => {
       <section class="content"><h2>plain</h2><p>nothing.</p></section>
     `);
     const before = doc.querySelector('section.content').outerHTML;
-    journey.applyToDom(doc);
+    chartFamily.applyToDom(doc);
     const after = doc.querySelector('section.content').outerHTML;
     assert.equal(after, before);
   });
@@ -65,9 +69,9 @@ describe('journey.applyToDom', () => {
         </ul>
       </section>
     `);
-    journey.applyToDom(doc);
+    chartFamily.applyToDom(doc);
     const once = doc.querySelector('section.journey').innerHTML;
-    journey.applyToDom(doc);
+    chartFamily.applyToDom(doc);
     const twice = doc.querySelector('section.journey').innerHTML;
     assert.equal(twice, once);
   });
@@ -75,14 +79,14 @@ describe('journey.applyToDom', () => {
   test('skips sections whose <ul> is missing', () => {
     const doc = makeDoc(`<section class="journey"><h2>Empty</h2></section>`);
     const before = doc.querySelector('section.journey').innerHTML;
-    journey.applyToDom(doc);
+    chartFamily.applyToDom(doc);
     const after = doc.querySelector('section.journey').innerHTML;
     assert.equal(after, before, 'no-ul section unchanged');
   });
 
   test('safely returns on null / non-DOM root', () => {
-    assert.doesNotThrow(() => journey.applyToDom(null));
-    assert.doesNotThrow(() => journey.applyToDom(undefined));
-    assert.doesNotThrow(() => journey.applyToDom({}));
+    assert.doesNotThrow(() => chartFamily.applyToDom(null));
+    assert.doesNotThrow(() => chartFamily.applyToDom(undefined));
+    assert.doesNotThrow(() => chartFamily.applyToDom({}));
   });
 });

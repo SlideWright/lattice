@@ -1,24 +1,26 @@
 /**
- * Unit tests for the word-cloud transformer's applyToDom (DOM-walk path).
+ * Unit tests for word-cloud's applyToDom (DOM-walk path), via the chart-family
+ * transformer it was folded into.
  *
- * applyToDom delegates to engine.transformWordCloudSection — same
- * kernel marp.config.js and lattice-emulator.js use. These tests
- * verify the delegation produces a .word-cloud-canvas with the
- * expected weighted wc-word spans and is idempotent.
+ * word-cloud is a chart-frame member: the chart-family transformer's applyToDom
+ * dispatches to word-cloud.transformWordCloudSection (the same kernel
+ * marp.config.js and lattice-emulator.js use), rewrites the first <ul> into a
+ * .word-cloud-canvas, and wraps the section in the chart-frame skeleton. These
+ * tests verify the delegation produces the framed canvas and is idempotent.
  */
 
 const { test, describe } = require('node:test');
 const assert = require('node:assert/strict');
 const { JSDOM } = require('jsdom');
-const wordCloud = require('../../../lib/transformers/word-cloud');
+const chartFamily = require('../../../lib/transformers/chart-family');
 
 function makeDoc(bodyHtml) {
   const dom = new JSDOM(`<!doctype html><html><body>${bodyHtml}</body></html>`);
   return dom.window.document;
 }
 
-describe('word-cloud.applyToDom', () => {
-  test('rewrites a word-cloud section\'s <ul> into .word-cloud-canvas', () => {
+describe('word-cloud.applyToDom (via chart-family)', () => {
+  test('rewrites a word-cloud section\'s <ul> into a framed .word-cloud-canvas', () => {
     const doc = makeDoc(`
       <section class="word-cloud">
         <h2>Words by weight</h2>
@@ -29,9 +31,11 @@ describe('word-cloud.applyToDom', () => {
         </ul>
       </section>
     `);
-    wordCloud.applyToDom(doc);
-    const canvas = doc.querySelector('section.word-cloud > .word-cloud-canvas');
-    assert.ok(canvas, 'word-cloud-canvas wrapper present');
+    chartFamily.applyToDom(doc);
+    const section = doc.querySelector('section.word-cloud');
+    assert.ok(section.classList.contains('chart-frame'), 'section tagged chart-frame');
+    const canvas = section.querySelector('.chart-body > .word-cloud-canvas');
+    assert.ok(canvas, 'word-cloud-canvas nested in chart-body');
     const words = canvas.querySelectorAll('.wc-word');
     assert.equal(words.length, 3, 'three wc-word spans');
     for (const w of words) {
@@ -46,7 +50,7 @@ describe('word-cloud.applyToDom', () => {
       <section class="content"><h2>plain</h2><p>nothing.</p></section>
     `);
     const before = doc.querySelector('section.content').outerHTML;
-    wordCloud.applyToDom(doc);
+    chartFamily.applyToDom(doc);
     const after = doc.querySelector('section.content').outerHTML;
     assert.equal(after, before);
   });
@@ -61,28 +65,28 @@ describe('word-cloud.applyToDom', () => {
         </ul>
       </section>
     `);
-    wordCloud.applyToDom(doc);
+    chartFamily.applyToDom(doc);
     const once = doc.querySelector('section.word-cloud').innerHTML;
-    wordCloud.applyToDom(doc);
+    chartFamily.applyToDom(doc);
     const twice = doc.querySelector('section.word-cloud').innerHTML;
     assert.equal(twice, once);
   });
 
-  test('respects variant modifier classes (compact / accent)', () => {
+  test('respects variant modifier classes (accent)', () => {
     const doc = makeDoc(`
       <section class="word-cloud accent">
         <h2>Accent</h2>
         <ul><li>focus <code>5</code></li><li>tier2 <code>3</code></li></ul>
       </section>
     `);
-    wordCloud.applyToDom(doc);
-    assert.ok(doc.querySelector('section.word-cloud.accent > .word-cloud-canvas'),
+    chartFamily.applyToDom(doc);
+    assert.ok(doc.querySelector('section.word-cloud.accent .word-cloud-canvas'),
       'accent variant still produces canvas wrapper');
   });
 
   test('safely returns on null / non-DOM root', () => {
-    assert.doesNotThrow(() => wordCloud.applyToDom(null));
-    assert.doesNotThrow(() => wordCloud.applyToDom(undefined));
-    assert.doesNotThrow(() => wordCloud.applyToDom({}));
+    assert.doesNotThrow(() => chartFamily.applyToDom(null));
+    assert.doesNotThrow(() => chartFamily.applyToDom(undefined));
+    assert.doesNotThrow(() => chartFamily.applyToDom({}));
   });
 });

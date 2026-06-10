@@ -143,10 +143,11 @@ describe('split-panels transformer (via registry)', () => {
 describe('chart-family transformer (via registry)', () => {
   const chartFamily = registry.getByName('chart-family');
 
-  test('declares the seven chart layouts', () => {
+  test('declares the chart-family layouts', () => {
     const expected = [
       'progress', 'timeline-list', 'piechart',
       'gantt', 'kanban', 'radar', 'quadrant',
+      'state-chart', 'journey', 'word-cloud',
     ];
     for (const layout of expected) {
       assert.ok(chartFamily.layouts.includes(layout), `missing layout: ${layout}`);

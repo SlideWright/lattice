@@ -2,7 +2,7 @@
 
 # chart
 
-`11 components`
+`12 components`
 
 Chart — series-substance data visualizations (SVG kernel).
 
@@ -41,6 +41,23 @@ Three workstreams across four quarters; the one at-risk bar quietly gates the en
   - Decision log `Q1 → Q2` `done`
   - Calibration cadence `Q2 → Q3`
   - Board reporting `Q3 → Q4`
+
+---
+
+<!-- _class: journey -->
+
+## Customer onboarding · trial to activation.
+
+- Evaluate
+  - Read case study `@prospect` `:5`
+  - Book demo `@prospect` `:4`
+  - Live demo `@prospect` `@sales` `:4`
+- Trial
+  - Trial signup `@prospect` `:3`
+  - Workspace setup `@user` `@onboarding` `:1`
+- Activate
+  - First report `@user` `:3`
+  - Daily use `@user` `:5`
 
 ---
 

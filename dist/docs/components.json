@@ -2667,7 +2667,7 @@
     },
     {
       "name": "journey",
-      "bucket": "progression",
+      "bucket": "chart",
       "function": "progression",
       "form": "timeline",
       "substance": "structure",
@@ -2776,7 +2776,7 @@
           "when": "current status by stage rather than sequence over time"
         }
       ],
-      "galleryHref": "../../lib/components/progression/journey/journey.gallery.light.pdf"
+      "galleryHref": "../../lib/components/chart/journey/journey.gallery.light.pdf"
     },
     {
       "name": "kanban",
