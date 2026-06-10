@@ -990,7 +990,18 @@ const dbData = JSON.stringify({
 				}
 
 				var timer = null;
-				function scheduleRender() { clearTimeout(timer); timer = setTimeout(render, 220); }
+				function scheduleRender(len) {
+					clearTimeout(timer);
+					// The preview re-renders the WHOLE deck synchronously (PG.render) on the
+					// main thread. On a large deck that single pass costs hundreds of ms, so a
+					// fixed 220ms debounce freezes the editor on nearly every keystroke. Scale
+					// the debounce with deck size: big decks coalesce to one render once you
+					// pause typing, keeping keystrokes (and the Architect) responsive. Small
+					// decks keep the snappy default.
+					var n = typeof len === 'number' ? len : (getSource().length || 0);
+					var delay = n > 200000 ? 1200 : n > 100000 ? 700 : n > 40000 ? 400 : 220;
+					timer = setTimeout(render, delay);
+				}
 				function render() {
 					var PG = window.LatticePlayground;
 					if (!PG) { setStatus('Loading engine…'); return setTimeout(render, 60); }
@@ -1012,10 +1023,14 @@ const dbData = JSON.stringify({
 				}
 
 				function onEdit() {
+					// Read the editor once per keystroke (getValue stringifies the whole doc —
+					// costly on a large deck) and reuse it for the preview debounce, autosave,
+					// and the Architect.
+					var src = getSource();
 					recomputeStarts();
-					scheduleRender();
-					if (window.__dbStore) window.__dbStore.saveActive(getSource());
-					if (window.__dbArchitect) window.__dbArchitect.update(getSource());
+					scheduleRender(src.length);
+					if (window.__dbStore) window.__dbStore.saveActive(src);
+					if (window.__dbArchitect) window.__dbArchitect.update(src);
 				}
 				// The store loads a deck (switch / restore / initial) -> swap the editor
 				// source and re-render. setSource fires onChange, but the store guards its

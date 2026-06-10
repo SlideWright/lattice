@@ -92,6 +92,14 @@ in patch versions.
 
 ### Changed
 
+- **Drawing Board: the live preview debounce now scales with deck size**, so
+  large decks stay responsive while typing. The preview re-renders the whole
+  deck synchronously on each edit; on a big deck that single pass costs hundreds
+  of ms, and a fixed 220ms debounce froze the editor (and stalled the Architect
+  behind it) on nearly every keystroke. The debounce now grows with the source
+  length (up to 1.2s for very large decks) so the heavy render fires once you
+  pause, not on every keystroke; each edit also reads the editor once instead of
+  three times. Small decks keep the snappy 220ms. Drawing Board (docs-site) only.
 - **Drawing Board: the Architect's name no longer appears twice, and the deck
   gateway grows to fill the panel head.** The redundant "The Architect" panel
   title is gone — the name lives once, in the avatar mark below — so the head
