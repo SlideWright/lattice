@@ -339,7 +339,8 @@
    *   [-] partial      → dash   on --warn        (amber)
    *   [ ] is OVERLOADED, so the decoder picks per layout:
    *       · neutral "todo / pending" (checklist todo, obligation exempt,
-   *         roadmap planned) → todo  → ring (--mark-todo) on a NEUTRAL disc
+   *         roadmap planned) → a hollow --state-color RING on a NEUTRAL disc
+   *         (empty centre; no mask — see `.state.todo` in base.modifiers.css)
    *       · "not met" (verdict-grid)                     → x    on --fail (red)
    *   [/] out of scope → slash  on --text-muted  (grey, row struck through)
    *
@@ -362,21 +363,17 @@
   --mark-dash:  url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M7 12h10' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round'/></svg>");
   --mark-x:     url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M8 8l8 8M16 8l-8 8' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round'/></svg>");
   --mark-slash: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M8 16L16 8' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round'/></svg>");
-  /* todo / pending — an OPEN ring, the neutral "not started, on the slate"
-   * mark. The colour-blind-safe replacement for the retired hollow disc:
-   * here the disc is a filled NEUTRAL colour and the ring is the in-disc
-   * mark (mask), so it reads "open / upcoming", never "no" (that's --mark-x).
-   * Used by the neutral `[ ]` states — roadmap `planned`, obligation-matrix
-   * `exempt`, checklist `todo`; verdict-grid's not-met keeps --mark-x. Same
-   * viewBox-24, central-inset, ~2.5 stroke language as the rest of the set. */
-  --mark-todo:  url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><circle cx='12' cy='12' r='5' fill='none' stroke='black' stroke-width='2.5'/></svg>");
+  /* No --mark-todo: the neutral `[ ]` (todo / pending) does NOT use a masked
+   * mark — it renders as a TRUE hollow ring (empty disc + an edge ring) so the
+   * centre stays empty and reads "not started", instead of the "selected"
+   * bullseye a ring-stroke mask on a filled disc produces. See `.state.todo`
+   * in base.modifiers.css and roadmap's `state-planned`. */
   /* Heavier-stroked set for the `checks-bold` variant (a mask's stroke
    * can't be tuned by CSS var, so bold swaps the token). */
   --mark-check-bold: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M6 12.6l4 4 8-9' fill='none' stroke='black' stroke-width='3.6' stroke-linecap='round' stroke-linejoin='round'/></svg>");
   --mark-dash-bold:  url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M7 12h10' fill='none' stroke='black' stroke-width='3.8' stroke-linecap='round'/></svg>");
   --mark-x-bold:     url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M8 8l8 8M16 8l-8 8' fill='none' stroke='black' stroke-width='3.6' stroke-linecap='round'/></svg>");
   --mark-slash-bold: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M8 16L16 8' fill='none' stroke='black' stroke-width='3.8' stroke-linecap='round'/></svg>");
-  --mark-todo-bold:  url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><circle cx='12' cy='12' r='5' fill='none' stroke='black' stroke-width='3.6'/></svg>");
 
   /* ── State-disc recipe — SCALAR KNOBS (default = "Ringed Solid") ──────
    * The disc is painted by each consumer from --state-color + these
