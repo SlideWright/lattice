@@ -342,6 +342,17 @@ describe('inFencedLang / identifierBefore (Tier 3 — mermaid keywords)', () => 
 		assert.equal(inFencedLang(getter(after), 4, ['mermaid']), null); // past the close
 	});
 
+	test('a fence line is itself a boundary — even after an unclosed mermaid block', async () => {
+		const { inFencedLang } = await load();
+		// malformed: ```mermaid never closed, then a ```js opener. The ```js line
+		// must NOT count as "inside mermaid" (so only fence-lang completes there).
+		const malformed = ['```mermaid', 'graph TD', '```js'];
+		assert.equal(inFencedLang(getter(malformed), 3, ['mermaid']), null);
+		// and the cursor on a mermaid block's own closing fence is a boundary too
+		const onClose = ['```mermaid', 'graph TD', '```'];
+		assert.equal(inFencedLang(getter(onClose), 3, ['mermaid']), null);
+	});
+
 	test('identifierBefore captures a letter-led token incl. hyphen/digits', async () => {
 		const { identifierBefore } = await load();
 		assert.deepEqual(identifierBefore('  gr'), { from: 2, typed: 'gr' });

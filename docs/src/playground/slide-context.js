@@ -230,6 +230,7 @@ const FENCE_LINE = /^\s*(?:```|~~~)\s*([\w-]*)/;
 // is 1-based; the cursor's own line is not examined (the fence-info-string
 // source owns the opening line).
 export function inFencedLang(getLine, lineNo, langs) {
+	if (FENCE_LINE.test(getLine(lineNo) ?? '')) return null; // the cursor's own line is a fence boundary
 	for (let n = lineNo - 1; n >= 1; n--) {
 		const m = (getLine(n) ?? '').match(FENCE_LINE);
 		if (m) {
