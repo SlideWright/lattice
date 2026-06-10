@@ -927,10 +927,16 @@ const dbData = JSON.stringify({
 					// Which slide owns the centre of the viewport? getBoundingClientRect is
 					// post-transform, so this is robust to the FIT scale + collapsed margins.
 					'  function centered(){var s=secs();if(!s.length)return -1;var mid=window.innerHeight/2,best=0,bd=Infinity;for(var i=0;i<s.length;i++){var r=s[i].getBoundingClientRect();var d=Math.abs(r.top+r.height/2-mid);if(d<bd){bd=d;best=i;}}return best;}',
-					// As you scroll the filmstrip, report the centred slide (rAF-throttled)
-					// so the parent moves the "Slide X of Y" status + active outline to it.
+					// Report the centred slide as you scroll. The window "scroll" event is
+					// unreliable for same-origin iframes on iOS Safari (touch / momentum
+					// scroll often doesn't fire it), so an IntersectionObserver — which
+					// updates during scroll regardless — drives the same recompute. Both
+					// paths funnel through report(), deduped via lastC.
 					'  var raf=0,lastC=-1;',
-					'  window.addEventListener("scroll",function(){if(raf)return;raf=requestAnimationFrame(function(){raf=0;var i=centered();if(i>=0&&i!==lastC){lastC=i;setActive(i);parent.postMessage({type:"db-slide-scrolled",idx:i},"*");}});},{passive:true});',
+					'  function report(){var i=centered();if(i>=0&&i!==lastC){lastC=i;setActive(i);parent.postMessage({type:"db-slide-scrolled",idx:i},"*");}}',
+					'  function onScroll(){if(raf)return;raf=requestAnimationFrame(function(){raf=0;report();});}',
+					'  window.addEventListener("scroll",onScroll,{passive:true});',
+					'  if(typeof IntersectionObserver!=="undefined"){var io=new IntersectionObserver(onScroll,{rootMargin:"-45% 0px -45% 0px"});var _ss=secs();for(var _si=0;_si<_ss.length;_si++)io.observe(_ss[_si]);}',
 					'  document.addEventListener("click",function(e){var n=e.target;while(n&&!(n.parentNode&&n.parentNode.classList&&n.parentNode.classList.contains("marpit")))n=n.parentNode;if(n)parent.postMessage({type:"db-slide-click",idx:+n.getAttribute("data-idx")},"*");});',
 					'  window.addEventListener("message",function(e){var d=e.data||{};if(d.type==="db-scroll-to")scrollTo(d.idx,d.smooth);else if(d.type==="db-set-active")setActive(d.idx);});',
 					'  parent.postMessage({type:"db-frame-ready"},"*");',
