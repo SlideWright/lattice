@@ -161,8 +161,17 @@ const dbData = JSON.stringify({
 				<div class="db-panel-head">
 					<span class="db-panel-title">The Architect</span>
 					<span class="db-spacer"></span>
-					<button class="db-btn db-decks-open" id="db-decks-open" aria-haspopup="dialog" aria-expanded="false" aria-controls="db-decks-pop" title="Decks &amp; history">Decks</button>
-					<button class="db-model-chip is-floor" id="db-model-chip" aria-haspopup="dialog" aria-expanded="false" aria-controls="db-settings-drawer" title="Settings — workspace &amp; on-device AI">Deterministic floor</button>
+					<!-- The deck-name gateway: the control names the deck you're on, and
+					     opening it reveals everything you can do with decks (switch / new /
+					     versions). Replaces the old ambiguous "Decks" + "New" labels. -->
+					<button class="db-deck-gw" id="db-decks-open" aria-haspopup="dialog" aria-expanded="false" aria-controls="db-decks-pop" title="Decks &amp; versions">
+						<span class="db-deck-gw-dot" aria-hidden="true"></span>
+						<span class="db-deck-gw-name" id="db-deck-gw-name">Deck</span>
+					</button>
+					<!-- Settings entry that also signals the live AI tier: gear (tap to
+					     configure) + short tier word + a status dot (filled = AI active,
+					     hollow = deterministic floor). Label text driven by settings JS. -->
+					<button class="db-model-chip is-floor" id="db-model-chip" aria-haspopup="dialog" aria-expanded="false" aria-controls="db-settings-drawer" title="Settings — workspace &amp; on-device AI"><span class="db-model-chip-label">Floor</span></button>
 				</div>
 				<div class="db-panel-body db-arch-body" id="db-arch-body" data-arch-mode="coach" data-converse-ready="false">
 					<div class="db-arch-scroll">
@@ -276,23 +285,34 @@ const dbData = JSON.stringify({
 			     (transform + scrim + body.db-drawer-open), with a scrollable body. -->
 			<button class="db-drawer-scrim" id="db-drawer-scrim" type="button" aria-label="Close" hidden></button>
 
-			<aside class="db-drawer db-drawer-decks" id="db-decks-pop" role="dialog" aria-modal="true" aria-label="Decks and history" aria-hidden="true">
+			<!-- The deck drawer — the deck-name gateway's destination. Two axes, two
+			     tabs: Decks (space — which deck: switch / new) and Versions (time —
+			     which state of this deck: view / restore, read-only until you act). -->
+			<aside class="db-drawer db-drawer-decks" id="db-decks-pop" role="dialog" aria-modal="true" aria-label="Decks and versions" aria-hidden="true">
 				<div class="db-drawer-head">
 					<span class="db-panel-title">Decks</span>
-					<button class="db-btn db-new-deck" id="db-new-deck" aria-label="New deck" title="New deck"><span class="db-new-deck-label">New</span></button>
 					<span class="db-spacer"></span>
-					<button class="db-drawer-close" data-drawer-close aria-label="Close decks" title="Close"></button>
+					<button class="db-drawer-close" data-drawer-close aria-label="Close" title="Close"></button>
+				</div>
+				<div class="db-drawer-tabs" role="tablist" aria-label="Decks and versions">
+					<button class="db-drawer-tab is-on" id="db-tab-decks" type="button" role="tab" aria-selected="true" aria-controls="db-pane-decks" data-pane="decks">Decks</button>
+					<button class="db-drawer-tab" id="db-tab-versions" type="button" role="tab" aria-selected="false" aria-controls="db-pane-versions" data-pane="versions">Versions</button>
 				</div>
 				<div class="db-drawer-body">
-					<div class="db-deck-list" id="db-deck-list">
-						<p class="db-rail-note">Loading your decks…</p>
+					<!-- Space axis: the deck library. New deck lives here, in context — a
+					     new entry joins the list right below it. -->
+					<div class="db-drawer-pane" id="db-pane-decks" role="tabpanel" aria-labelledby="db-tab-decks">
+						<button class="db-new-deck" id="db-new-deck" type="button" aria-label="New deck" title="New deck"><span class="db-new-deck-label">New deck</span></button>
+						<div class="db-deck-list" id="db-deck-list">
+							<p class="db-rail-note">Loading your decks…</p>
+						</div>
 					</div>
-					<div class="db-rail-section">
-						<div class="db-rail-section-head">
-							<span class="db-panel-title">History</span>
-							<span class="db-hist-scope" id="db-hist-scope" title="History applies to the active deck"></span>
-							<span class="db-spacer"></span>
-							<button class="db-btn db-btn-icon" id="db-checkpoint" aria-label="Save checkpoint" title="Save a checkpoint"></button>
+					<!-- Time axis: this deck's versions. Opening changes nothing; Restore is
+					     the one deliberate action. AI edits land here automatically. -->
+					<div class="db-drawer-pane" id="db-pane-versions" role="tabpanel" aria-labelledby="db-tab-versions" hidden>
+						<p class="db-versions-note">Every state of <span class="db-hist-scope" id="db-hist-scope" title="Versions apply to the active deck"></span>. Opening this changes nothing — <strong>Restore</strong> is the only action.</p>
+						<div class="db-versions-actions">
+							<button class="db-btn db-checkpoint-btn" id="db-checkpoint" type="button" aria-label="Save a version" title="Mark a state you can return to">Save a version</button>
 						</div>
 						<ul class="db-history-list db-timeline" id="db-history-list"></ul>
 					</div>
@@ -415,7 +435,7 @@ const dbData = JSON.stringify({
 			(function () {
 				var scrim = document.getElementById('db-drawer-scrim');
 				var defs = {
-					'db-decks-pop': { trigger: '#db-decks-open' },
+					'db-decks-pop': { trigger: '#db-decks-open', onOpen: function () { if (window.__dbDrawerTab) window.__dbDrawerTab('decks'); } },
 					'db-settings-drawer': { trigger: '#db-model-chip', onOpen: function () { if (window.__dbSettings && window.__dbSettings.openTab) window.__dbSettings.openTab('cloud'); else if (window.__dbSettings && window.__dbSettings.render) window.__dbSettings.render(); } },
 				};
 				var current = null;
@@ -454,6 +474,24 @@ const dbData = JSON.stringify({
 				if (scrim) scrim.addEventListener('click', close);
 				document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && current) close(); });
 				window.__dbToggleDecks = function () { current === 'db-decks-pop' ? close() : openDrawer('db-decks-pop'); };
+			})();
+
+			// The deck drawer's two axes — Decks (space) | Versions (time). Tabs swap
+			// the two panes; nothing here mutates a deck, so switching tabs is free.
+			(function () {
+				var tabs = Array.prototype.slice.call(document.querySelectorAll('.db-drawer-tab'));
+				var panes = { decks: document.getElementById('db-pane-decks'), versions: document.getElementById('db-pane-versions') };
+				function show(which) {
+					if (!panes[which]) return;
+					tabs.forEach(function (t) {
+						var on = t.getAttribute('data-pane') === which;
+						t.classList.toggle('is-on', on);
+						t.setAttribute('aria-selected', on ? 'true' : 'false');
+					});
+					Object.keys(panes).forEach(function (k) { if (panes[k]) panes[k].hidden = k !== which; });
+				}
+				tabs.forEach(function (t) { t.addEventListener('click', function () { show(t.getAttribute('data-pane')); }); });
+				window.__dbDrawerTab = show;
 			})();
 
 			// After detection, refresh the chip and reconnect a previously-loaded model

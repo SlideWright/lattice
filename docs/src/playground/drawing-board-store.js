@@ -162,8 +162,12 @@ export function createStore({ getSource, onLoadDeck, starter = '' }) {
 			.filter((d) => !pendingDelete || d.id !== pendingDelete.id) // hide a soft-deleted deck
 			.sort((a, b) => b.updatedAt - a.updatedAt);
 		list.innerHTML = '';
+		// The header gateway names the deck you're on; keep it in sync with whatever
+		// renders here (switch / rename / create / delete all flow through renderDecks).
+		const gw = el('db-deck-gw-name');
 		if (!decks.length) {
-			list.innerHTML = '<p class="db-rail-note">No decks yet. The “+” above starts one.</p>';
+			list.innerHTML = '<p class="db-rail-note">No decks yet. Use “New deck” above to start one.</p>';
+			if (gw) gw.textContent = 'Deck';
 			return;
 		}
 		for (const d of decks) {
@@ -175,7 +179,10 @@ export function createStore({ getSource, onLoadDeck, starter = '' }) {
 			const pick = document.createElement('button');
 			pick.type = 'button';
 			pick.className = 'db-deck';
-			if (d.id === activeId) pick.setAttribute('aria-current', 'true');
+			if (d.id === activeId) {
+				pick.setAttribute('aria-current', 'true');
+				if (gw) gw.textContent = d.name;
+			}
 			pick.innerHTML =
 				'<span class="db-deck-name"></span><span class="db-deck-desc"></span><span class="db-deck-meta"></span>';
 			pick.querySelector('.db-deck-name').textContent = d.name;
@@ -293,13 +300,13 @@ export function createStore({ getSource, onLoadDeck, starter = '' }) {
 		cur.className = 'db-tl-item db-tl-current';
 		cur.innerHTML =
 			'<span class="db-tl-icon" aria-hidden="true"></span>' +
-			'<div class="db-tl-body"><span class="db-tl-label">Current state</span><span class="db-tl-now">now</span></div>';
+			'<div class="db-tl-body"><span class="db-tl-label">Working copy</span><span class="db-tl-now">live now</span></div>';
 		list.appendChild(cur);
 
 		if (!revs.length) {
 			const note = document.createElement('li');
 			note.className = 'db-tl-empty';
-			note.innerHTML = '<p class="db-rail-note">No checkpoints yet. Use the flag button to mark a state you can return to — every AI edit also lands one automatically.</p>';
+			note.innerHTML = '<p class="db-rail-note">No saved versions yet. Use “Save a version” to mark a state you can return to — every AI edit also lands one automatically.</p>';
 			list.appendChild(note);
 			return;
 		}
