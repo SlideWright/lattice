@@ -376,7 +376,10 @@
    *
    *   [x] done         → check  on --pass        (green)
    *   [-] partial      → dash   on --warn        (amber)
-   *   [ ] not done     → x      on --fail        (red)
+   *   [ ] is OVERLOADED, so the decoder picks per layout:
+   *       · neutral "todo / pending" (checklist todo, obligation exempt,
+   *         roadmap planned) → todo  → ring (--mark-todo) on a NEUTRAL disc
+   *       · "not met" (verdict-grid)                     → x    on --fail (red)
    *   [/] out of scope → slash  on --text-muted  (grey, row struck through)
    *
    * Each mark is a CSS mask (opaque path on transparent ground); the
@@ -398,12 +401,21 @@
   --mark-dash:  url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M7 12h10' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round'/></svg>");
   --mark-x:     url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M8 8l8 8M16 8l-8 8' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round'/></svg>");
   --mark-slash: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M8 16L16 8' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round'/></svg>");
+  /* todo / pending — an OPEN ring, the neutral "not started, on the slate"
+   * mark. The colour-blind-safe replacement for the retired hollow disc:
+   * here the disc is a filled NEUTRAL colour and the ring is the in-disc
+   * mark (mask), so it reads "open / upcoming", never "no" (that's --mark-x).
+   * Used by the neutral `[ ]` states — roadmap `planned`, obligation-matrix
+   * `exempt`, checklist `todo`; verdict-grid's not-met keeps --mark-x. Same
+   * viewBox-24, central-inset, ~2.5 stroke language as the rest of the set. */
+  --mark-todo:  url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><circle cx='12' cy='12' r='5' fill='none' stroke='black' stroke-width='2.5'/></svg>");
   /* Heavier-stroked set for the `checks-bold` variant (a mask's stroke
    * can't be tuned by CSS var, so bold swaps the token). */
   --mark-check-bold: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M6 12.6l4 4 8-9' fill='none' stroke='black' stroke-width='3.6' stroke-linecap='round' stroke-linejoin='round'/></svg>");
   --mark-dash-bold:  url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M7 12h10' fill='none' stroke='black' stroke-width='3.8' stroke-linecap='round'/></svg>");
   --mark-x-bold:     url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M8 8l8 8M16 8l-8 8' fill='none' stroke='black' stroke-width='3.6' stroke-linecap='round'/></svg>");
   --mark-slash-bold: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M8 16L16 8' fill='none' stroke='black' stroke-width='3.8' stroke-linecap='round'/></svg>");
+  --mark-todo-bold:  url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><circle cx='12' cy='12' r='5' fill='none' stroke='black' stroke-width='3.6'/></svg>");
 
   /* ── State-disc recipe — SCALAR KNOBS (default = "Ringed Solid") ──────
    * The disc is painted by each consumer from --state-color + these
@@ -1361,9 +1373,11 @@ section.cards-stack :is(ul,ol) > li > strong ~ * { font-weight: 400; }
  * - [/] Org-wide adoption — _deferred to Phase 3_
  *
  * Each top-level list item carries a state marker (universal grammar):
- *   [x] → pass + state-full     (check  on --pass  green)
- *   [-] → warn + state-half     (dash   on --warn  amber)
- *   [ ] → fail + state-empty    (x      on --fail  red)
+ *   [x] → pass + state-full     (check  on --pass        green)
+ *   [-] → warn + state-half     (dash   on --warn        amber)
+ *   [ ] → todo + state-todo     (ring   on --text-label  neutral) — "not yet
+ *                                started" is a neutral todo, NOT a red gap;
+ *                                verdict-grid's "not met" keeps the red x
  *   [/] → skip + state-slashed  (slash  on --text-muted; row strikethrough)
  *
  * Every state is the SAME disc treatment carrying a DISTINCT mark, so the
@@ -1424,6 +1438,16 @@ section.checklist > ol > li.state.fail {
   --state-color:var(--fail);
   border-left-color:var(--state-color);
   background:var(--fail-bg, var(--bg-alt));
+}
+/* todo — `[ ]` is "not yet started", a NEUTRAL state, not a failure: a neutral
+ * disc carrying the open ring (--mark-todo, via the shared state-todo shape).
+ * No red, no strike — it reads "on the list, not done", distinct from the
+ * red ✕ that verdict-grid keeps for a genuinely "not met" criterion. */
+section.checklist > ul > li.state.todo,
+section.checklist > ol > li.state.todo {
+  --state-color:var(--text-label);
+  border-left-color:var(--state-color);
+  background:var(--bg-alt);
 }
 section.checklist > ul > li.state.skip,
 section.checklist > ol > li.state.skip {
@@ -6015,6 +6039,9 @@ section.obligation-matrix td .state.pass { --state-color:var(--pass); }
 section.obligation-matrix td .state.warn { --state-color:var(--warn); }
 section.obligation-matrix td .state.fail { --state-color:var(--fail); }
 section.obligation-matrix td .state.skip { --state-color:var(--text-muted); }
+/* exempt — `[ ]` is "not subject to this obligation", a NEUTRAL state (not a
+ * gap): a neutral disc carrying the open ring (state-todo → --mark-todo). */
+section.obligation-matrix td .state.todo { --state-color:var(--text-label); }
 /* Mark overlay — masked symbol (check / dash / x / slash) on the disc.
  * Mark colour from --state-mark-pct (0% = knockout to --bg). */
 section.obligation-matrix td .state::after {
@@ -8142,8 +8169,10 @@ section.roadmap.horizons .horizon-rows > li.cell-state.state-skipped {
                                   equivalent of the retired half-fill disc,
                                   matching the checklist/verdict-grid mark
                                   vocabulary (half → dash)
-     planned  → ✕ cross         (committed / not started) — replaces the old
-                                  hollow ring; universal [ ] → ✕ mark
+     planned  → ○ open ring     (committed / not started) — the neutral "on
+                                  the slate" mark on a neutral disc, matching
+                                  the shared --mark-todo; ✕ ("no") is reserved
+                                  for verdict-grid's genuine "not met"
      skipped  → ╱ diagonal slash (out of scope; plus strike-through on text)
    The eyebrow label is rendered for the heavy treatment but hidden here. */
 section.roadmap td.cell-state .cell-state-label { display:none; }
@@ -8180,11 +8209,11 @@ section.roadmap.horizons .horizon-rows > li.cell-state.state-wip .row-text::befo
 }
 section.roadmap td.cell-state.state-planned .cell-state-text::before,
 section.roadmap.horizons .horizon-rows > li.cell-state.state-planned .row-text::before {
-  /* Cross — shape-distinct "planned / not started" mark on the filled disc,
-     replacing the old hollow outline ring; matches the universal [ ] → ✕ mark
-     mapping (state-empty → --mark-x). Colour + the cell's context carry the
-     "planned" reading. */
-  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='none' stroke='white' stroke-width='2.6' stroke-linecap='round' d='M4.75 4.75 L11.25 11.25 M11.25 4.75 L4.75 11.25'/></svg>");
+  /* Open ring — shape-distinct "planned / on the slate" mark on a NEUTRAL
+     disc (--text-label). The colour-blind-safe neutral [ ], matching the
+     shared --mark-todo; not ✕, which reads "no" — that's verdict-grid's
+     "not met". Same ring proportion as --mark-todo (r/viewBox ≈ 0.21). */
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><circle cx='8' cy='8' r='3.4' fill='none' stroke='white' stroke-width='2.1'/></svg>");
 }
 section.roadmap td.cell-state.state-skipped .cell-state-text::before,
 section.roadmap.horizons .horizon-rows > li.cell-state.state-skipped .row-text::before {
@@ -8239,7 +8268,7 @@ section.roadmap.status td.cell-state .cell-state-text::before {
  * still encoding state by shape (not just colour / fill level):
  *   shipped → check
  *   wip     → dash   (replaces the retired half-disc tonal split)
- *   planned → cross  (replaces the outline ring)
+ *   planned → open ring (neutral "on the slate"; not ✕)
  *   skipped → diagonal slash
  * Shape via CSS, no font dependency; the cell's text label is the third,
  * redundant channel. */
@@ -8270,7 +8299,7 @@ section.roadmap.status td.cell-state.state-wip::after {
 }
 section.roadmap.status td.cell-state.state-planned::after {
   /* Cross — see the light-treatment planned rule; replaces the outline ring. */
-  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='none' stroke='white' stroke-width='2.6' stroke-linecap='round' d='M4.75 4.75 L11.25 11.25 M11.25 4.75 L4.75 11.25'/></svg>");
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><circle cx='8' cy='8' r='3.4' fill='none' stroke='white' stroke-width='2.1'/></svg>");
   background-size:72% 72%;
 }
 section.roadmap.status td.cell-state.state-skipped::after {
@@ -10313,6 +10342,11 @@ section .state-full    { --state-mark: var(--mark-check); }
 section .state-half    { --state-mark: var(--mark-dash);  }
 section .state-empty   { --state-mark: var(--mark-x);     }
 section .state-slashed { --state-mark: var(--mark-slash); }
+/* Neutral "todo / pending" — the open ring. The colour-blind-safe reading of
+ * a [ ] that means "not started, on the slate" (roadmap planned, obligation
+ * exempt, checklist todo) rather than "not met" (verdict-grid keeps
+ * state-empty → ✕). The decoder emits `state-todo` for those neutral cases. */
+section .state-todo    { --state-mark: var(--mark-todo);  }
 
 /* Style variants — author opts in per slide (`_class: checklist checks-bold`)
  * or per deck (`class: checks-outline`). Each sets ONLY scalar knobs (plus,

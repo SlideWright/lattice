@@ -34,7 +34,7 @@ Use to show what ships in each phase across multiple parallel workstreams. Cells
 | First workstream | [x] Shipped item | [-] In-flight item | [ ] Planned item |
 | Second workstream | [x] Shipped item | [/] Out-of-scope item | [ ] Planned item |
 
-State markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, – in flight, ✕ planned, ╱ out of scope.
+State markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, – in flight, ○ planned, ╱ out of scope.
 ```
 
 ## Slots
@@ -102,7 +102,7 @@ Promotes the state markers ([x]/[-]/[ ]/[/]) to the dominant read: tinted cell g
 | Decision Log  | [x] Append schema    | [x] Outcome pairing      | [ ] Auditor export        |
 | Adoption      | [x] One pilot team   | [/] Second team          | [ ] Org-wide enablement   |
 
-State markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, – in flight, ✕ planned, ╱ out of scope.
+State markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, – in flight, ○ planned, ╱ out of scope.
 ```
 
 ### `swimlane` — Swimlane — horizontal tracks

@@ -253,7 +253,8 @@ describe('marp-plugins', () => {
     const { html } = m.render(md);
     assert.match(html, /<span class="state pass state-full">/);
     assert.match(html, /<span class="state warn state-half">/);
-    assert.match(html, /<span class="state fail state-empty">/);
+    // obligation-matrix [ ] = exempt → neutral todo/ring (not "not met")
+    assert.match(html, /<span class="state todo state-todo">/);
     assert.match(html, /<span class="state skip state-slashed">/);
   });
 
@@ -271,7 +272,8 @@ describe('marp-plugins', () => {
     const { html } = m.render(md);
     assert.match(html, /<li class="state pass state-full">\s*Done/);
     assert.match(html, /<li class="state warn state-half">\s*Partial/);
-    assert.match(html, /<li class="state fail state-empty">\s*Todo/);
+    // checklist [ ] = todo → neutral todo/ring (not a red "not done")
+    assert.match(html, /<li class="state todo state-todo">\s*Todo/);
     assert.match(html, /<li class="state skip state-slashed">\s*Skipped/);
     // The marker (`[x]` etc.) is stripped from the rendered text.
     assert.doesNotMatch(html, /\[x\]/);

@@ -97,6 +97,19 @@ in patch versions.
   grown dense). Each tab is a short pane; the model chip deep-links to the **Cloud
   AI** tab. Arrow-key tab nav + `tablist`/`tab`/`tabpanel` roles. Purely
   organizational — no control changed. Docs-site only.
+- **State markers: `[ ]` reconciled to a neutral "todo / pending" across every
+  layout, with a new colour-blind-safe `--mark-todo` open ring.** `[ ]` was
+  decoded uniformly as `fail` + `✕` (red) everywhere, but it means a *neutral*
+  "not yet" in most layouts — checklist `todo`, obligation-matrix `exempt`,
+  roadmap `planned` — and only "not met" in verdict-grid. The decoder is now
+  layout-aware: those neutral cases emit `state todo state-todo` and render as
+  an **open ring on a neutral disc** (the shared `--mark-todo` mask, + a
+  `--mark-todo-bold` for `checks-bold`); verdict-grid keeps `fail` + the red
+  `✕`. **Breaking (visual):** existing `checklist` / `obligation-matrix` decks
+  with `[ ]` items now render those rows **neutral instead of red** — the
+  correct reading of "to-do", not "failed". The stable marks (✓ done · – partial
+  · ╱ out-of-scope) are unchanged. Marks are vector CSS masks, so they stay
+  pixel-crisp across PDF / HTML / raster exports.
 - **`roadmap` folded into the chart family.** It is now a chart-frame member
   dispatched by the chart engine
   (`lib/components/chart/_chart-family/chart-family.js`) instead of a standalone

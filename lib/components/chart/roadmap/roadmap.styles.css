@@ -190,8 +190,10 @@ section.roadmap.horizons .horizon-rows > li.cell-state.state-skipped {
                                   equivalent of the retired half-fill disc,
                                   matching the checklist/verdict-grid mark
                                   vocabulary (half → dash)
-     planned  → ✕ cross         (committed / not started) — replaces the old
-                                  hollow ring; universal [ ] → ✕ mark
+     planned  → ○ open ring     (committed / not started) — the neutral "on
+                                  the slate" mark on a neutral disc, matching
+                                  the shared --mark-todo; ✕ ("no") is reserved
+                                  for verdict-grid's genuine "not met"
      skipped  → ╱ diagonal slash (out of scope; plus strike-through on text)
    The eyebrow label is rendered for the heavy treatment but hidden here. */
 section.roadmap td.cell-state .cell-state-label { display:none; }
@@ -228,11 +230,11 @@ section.roadmap.horizons .horizon-rows > li.cell-state.state-wip .row-text::befo
 }
 section.roadmap td.cell-state.state-planned .cell-state-text::before,
 section.roadmap.horizons .horizon-rows > li.cell-state.state-planned .row-text::before {
-  /* Cross — shape-distinct "planned / not started" mark on the filled disc,
-     replacing the old hollow outline ring; matches the universal [ ] → ✕ mark
-     mapping (state-empty → --mark-x). Colour + the cell's context carry the
-     "planned" reading. */
-  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='none' stroke='white' stroke-width='2.6' stroke-linecap='round' d='M4.75 4.75 L11.25 11.25 M11.25 4.75 L4.75 11.25'/></svg>");
+  /* Open ring — shape-distinct "planned / on the slate" mark on a NEUTRAL
+     disc (--text-label). The colour-blind-safe neutral [ ], matching the
+     shared --mark-todo; not ✕, which reads "no" — that's verdict-grid's
+     "not met". Same ring proportion as --mark-todo (r/viewBox ≈ 0.21). */
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><circle cx='8' cy='8' r='3.4' fill='none' stroke='white' stroke-width='2.1'/></svg>");
 }
 section.roadmap td.cell-state.state-skipped .cell-state-text::before,
 section.roadmap.horizons .horizon-rows > li.cell-state.state-skipped .row-text::before {
@@ -287,7 +289,7 @@ section.roadmap.status td.cell-state .cell-state-text::before {
  * still encoding state by shape (not just colour / fill level):
  *   shipped → check
  *   wip     → dash   (replaces the retired half-disc tonal split)
- *   planned → cross  (replaces the outline ring)
+ *   planned → open ring (neutral "on the slate"; not ✕)
  *   skipped → diagonal slash
  * Shape via CSS, no font dependency; the cell's text label is the third,
  * redundant channel. */
@@ -318,7 +320,7 @@ section.roadmap.status td.cell-state.state-wip::after {
 }
 section.roadmap.status td.cell-state.state-planned::after {
   /* Cross — see the light-treatment planned rule; replaces the outline ring. */
-  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='none' stroke='white' stroke-width='2.6' stroke-linecap='round' d='M4.75 4.75 L11.25 11.25 M11.25 4.75 L4.75 11.25'/></svg>");
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><circle cx='8' cy='8' r='3.4' fill='none' stroke='white' stroke-width='2.1'/></svg>");
   background-size:72% 72%;
 }
 section.roadmap.status td.cell-state.state-skipped::after {
