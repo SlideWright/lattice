@@ -275,6 +275,14 @@ in patch versions.
 
 ### Added
 
+- **Drawing Board: spend budgeting & alerting for Converse.** An optional guardrail
+  in the Cloud AI settings: set a **dollar cap** on this session's app spend and
+  choose **Alert** (a toast) or **Stop** (block new sends) when it's reached, with a
+  heads-up toast at **80%**. The budget is anchored to the user's real OpenRouter
+  credit — the account strip flags a **low balance** (≤20% of a known key limit, or
+  below a user-set floor for pay-as-you-go keys) — with the cap as an optional tighter
+  self-limit. Checked per turn from each reply's `usage.cost` (no background polling);
+  pure `budgetStatus` evaluation is unit-tested. Drawing Board (docs-site) only.
 - **Drawing Board: model context windows + an account/spend readout in the picker.**
   Each OpenRouter model row (and the collapsed summary) now shows its **context
   window** (e.g. "200K ctx") alongside price, a **VISION** badge for image-capable
