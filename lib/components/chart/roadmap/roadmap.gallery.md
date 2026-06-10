@@ -65,7 +65,7 @@ Horizons frame the read: H1 is core business, H2 is emerging, H3 is the option s
 | Decision Log  | [x] Append schema    | [x] Outcome pairing      | [ ] Auditor export        |
 | Adoption      | [x] One pilot team   | [/] Second team          | [ ] Org-wide enablement   |
 
-State markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, ◐ in flight, ○ planned, ╱ out of scope.
+State markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, – in flight, ✕ planned, ╱ out of scope.
 
 
 ---

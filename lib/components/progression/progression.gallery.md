@@ -2,7 +2,7 @@
 
 # progression
 
-`3 components`
+`2 components`
 
 Progression — ordered movement through stages or time.
 
@@ -38,18 +38,3 @@ Progression — ordered movement through stages or time.
    - Mitigate before diagnosing. Roll back, fail over, or shed load first; find the root cause once customers are safe and the board has logged off.
 4. Communicate on a clock
    - A status update every 30 minutes, even when it is "still investigating." Silence is what the retrospective remembers.
-
----
-
-<!-- _class: roadmap -->
-
-`H2 2026 · Rollout plan`
-
-## What ships in each phase, assuming the phases survive the next planning offsite.
-
-| Workstream | Foundation `Q2 2026`   | Hardening `Q3 2026`      | Scale `Q4 2026`         |
-| ---------- | ---------------------- | ------------------------ | ----------------------- |
-| Framework  | [x] Signal taxonomy    | [-] Scoring model v2     | [ ] Per-team weighting  |
-| Adoption   | [x] Pilot onboarding   | [-] Weekly signal review | [ ] Org-wide rollout    |
-| Governance | [x] Decision log       | [x] Calibration cadence  | [ ] Board reporting     |
-| Tooling    | [x] Intake form        | [/] Dashboards           | [ ] Self-serve exports  |

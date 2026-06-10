@@ -1,17 +1,20 @@
 /**
- * Unit tests for the roadmap transformer's applyToDom (DOM-walk path).
+ * Unit tests for roadmap's applyToDom (DOM-walk path), via the chart-family
+ * transformer it was folded into.
  *
- * applyToDom runs in the browser (lattice-runtime.js bundle), invoked
- * from lib/runtime/index.js's content-transform loop via
- * registry.applyAllToDom(document). These tests use jsdom to exercise
- * the same code path without a real browser. The HTML-string kernel is
- * covered separately in registry.test.js.
+ * roadmap is a chart-frame member: the chart-family transformer's applyToDom
+ * dispatches to roadmap.transformRoadmapSection (the same HTML-string kernel
+ * marp.config.js and lattice-emulator.js use) — tagging the table's cells and,
+ * under the `horizons` variant, transposing the table into phase cards — then
+ * wraps the figure in .roadmap-figure inside the chart-frame skeleton. These
+ * tests run in jsdom (the lattice-runtime.js path) and assert the framed DOM.
+ * Each fixture carries an <h2> because the chart-frame wrap keys off it.
  */
 
 const { test, describe } = require('node:test');
 const assert = require('node:assert/strict');
 const { JSDOM } = require('jsdom');
-const roadmap = require('../../../lib/transformers/roadmap');
+const chartFamily = require('../../../lib/transformers/chart-family');
 
 function makeDoc(bodyHtml) {
   const dom = new JSDOM(`<!doctype html><html><body>${bodyHtml}</body></html>`);
@@ -19,13 +22,26 @@ function makeDoc(bodyHtml) {
 }
 
 describe('roadmap.applyToDom — Status (cell state markers)', () => {
-  test('tags [x] cell with state-shipped + Shipped label', () => {
-    const doc = makeDoc(`
-      <section class="roadmap"><table><tbody>
-        <tr><td>API</td><td>[x] auth module</td></tr>
+  function statusDoc(cell) {
+    return makeDoc(`
+      <section class="roadmap"><h2>Plan</h2><table><tbody>
+        <tr><td>API</td><td>${cell}</td></tr>
       </tbody></table></section>
     `);
-    roadmap.applyToDom(doc);
+  }
+
+  test('frames the section and wraps the table in .roadmap-figure', () => {
+    const doc = statusDoc('[x] auth module');
+    chartFamily.applyToDom(doc);
+    const section = doc.querySelector('section.roadmap');
+    assert.ok(section.classList.contains('chart-frame'), 'section tagged chart-frame');
+    assert.ok(section.querySelector('.chart-body > .roadmap-figure > table'),
+      'table wrapped in .roadmap-figure inside .chart-body');
+  });
+
+  test('tags [x] cell with state-shipped + Shipped label', () => {
+    const doc = statusDoc('[x] auth module');
+    chartFamily.applyToDom(doc);
     const td = doc.querySelectorAll('section.roadmap td')[1];
     assert.ok(td.classList.contains('cell-state'),    'cell-state class added');
     assert.ok(td.classList.contains('state-shipped'), 'state-shipped class added');
@@ -34,36 +50,24 @@ describe('roadmap.applyToDom — Status (cell state markers)', () => {
   });
 
   test('tags [-] → state-wip / In flight', () => {
-    const doc = makeDoc(`
-      <section class="roadmap"><table><tbody>
-        <tr><td>API</td><td>[-] migration</td></tr>
-      </tbody></table></section>
-    `);
-    roadmap.applyToDom(doc);
+    const doc = statusDoc('[-] migration');
+    chartFamily.applyToDom(doc);
     const td = doc.querySelectorAll('section.roadmap td')[1];
     assert.ok(td.classList.contains('state-wip'));
     assert.equal(td.querySelector('.cell-state-label').textContent, 'In flight');
   });
 
   test('tags [ ] → state-planned / Planned', () => {
-    const doc = makeDoc(`
-      <section class="roadmap"><table><tbody>
-        <tr><td>API</td><td>[ ] discovery</td></tr>
-      </tbody></table></section>
-    `);
-    roadmap.applyToDom(doc);
+    const doc = statusDoc('[ ] discovery');
+    chartFamily.applyToDom(doc);
     const td = doc.querySelectorAll('section.roadmap td')[1];
     assert.ok(td.classList.contains('state-planned'));
     assert.equal(td.querySelector('.cell-state-label').textContent, 'Planned');
   });
 
   test('tags [/] → state-skipped / Out of scope', () => {
-    const doc = makeDoc(`
-      <section class="roadmap"><table><tbody>
-        <tr><td>API</td><td>[/] dropped feature</td></tr>
-      </tbody></table></section>
-    `);
-    roadmap.applyToDom(doc);
+    const doc = statusDoc('[/] dropped feature');
+    chartFamily.applyToDom(doc);
     const td = doc.querySelectorAll('section.roadmap td')[1];
     assert.ok(td.classList.contains('state-skipped'));
     assert.equal(td.querySelector('.cell-state-label').textContent, 'Out of scope');
@@ -71,11 +75,11 @@ describe('roadmap.applyToDom — Status (cell state markers)', () => {
 
   test('leaves the workstream label column (first td) alone', () => {
     const doc = makeDoc(`
-      <section class="roadmap"><table><tbody>
+      <section class="roadmap"><h2>Plan</h2><table><tbody>
         <tr><td>[x] looks like a marker</td><td>real cell</td></tr>
       </tbody></table></section>
     `);
-    roadmap.applyToDom(doc);
+    chartFamily.applyToDom(doc);
     const firstTd = doc.querySelector('section.roadmap td');
     assert.ok(!firstTd.classList.contains('cell-state'),
       'first td (workstream label) must not be tagged');
@@ -83,12 +87,8 @@ describe('roadmap.applyToDom — Status (cell state markers)', () => {
   });
 
   test('skips cells without a marker', () => {
-    const doc = makeDoc(`
-      <section class="roadmap"><table><tbody>
-        <tr><td>API</td><td>plain text</td></tr>
-      </tbody></table></section>
-    `);
-    roadmap.applyToDom(doc);
+    const doc = statusDoc('plain text');
+    chartFamily.applyToDom(doc);
     const td = doc.querySelectorAll('section.roadmap td')[1];
     assert.ok(!td.classList.contains('cell-state'));
   });
@@ -97,7 +97,7 @@ describe('roadmap.applyToDom — Status (cell state markers)', () => {
 describe('roadmap.applyToDom — Horizons (table → three-card grid)', () => {
   test('transposes a 3-phase × 2-workstream table into three horizon cards', () => {
     const doc = makeDoc(`
-      <section class="roadmap horizons">
+      <section class="roadmap horizons"><h2>Plan</h2>
         <table>
           <thead><tr><th>Workstream</th><th>Now</th><th>Next</th><th>Later</th></tr></thead>
           <tbody>
@@ -107,7 +107,9 @@ describe('roadmap.applyToDom — Horizons (table → three-card grid)', () => {
         </table>
       </section>
     `);
-    roadmap.applyToDom(doc);
+    chartFamily.applyToDom(doc);
+    assert.ok(doc.querySelector('section.roadmap .chart-body > .roadmap-figure > .horizons'),
+      '.horizons grid wrapped in .roadmap-figure inside .chart-body');
     const cards = doc.querySelectorAll('.horizons .horizon-card');
     assert.equal(cards.length, 3, 'three horizon cards (one per phase)');
     assert.equal(cards[0].querySelector('.horizon-title').textContent, 'Now');
@@ -119,14 +121,14 @@ describe('roadmap.applyToDom — Horizons (table → three-card grid)', () => {
 
   test('lifts a trailing <code> in a phase header into .horizon-meta', () => {
     const doc = makeDoc(`
-      <section class="roadmap horizons">
+      <section class="roadmap horizons"><h2>Plan</h2>
         <table>
           <thead><tr><th>WS</th><th>Now <code>Q3</code></th></tr></thead>
           <tbody><tr><td>API</td><td>cell</td></tr></tbody>
         </table>
       </section>
     `);
-    roadmap.applyToDom(doc);
+    chartFamily.applyToDom(doc);
     const card = doc.querySelector('.horizon-card');
     assert.equal(card.querySelector('.horizon-title').textContent.trim(), 'Now');
     assert.equal(card.querySelector('.horizon-meta').textContent, 'Q3');
@@ -134,7 +136,7 @@ describe('roadmap.applyToDom — Horizons (table → three-card grid)', () => {
 
   test('renders em-dash and "-" placeholder cells with .row-empty', () => {
     const doc = makeDoc(`
-      <section class="roadmap horizons">
+      <section class="roadmap horizons"><h2>Plan</h2>
         <table>
           <thead><tr><th>WS</th><th>P1</th></tr></thead>
           <tbody>
@@ -145,7 +147,7 @@ describe('roadmap.applyToDom — Horizons (table → three-card grid)', () => {
         </table>
       </section>
     `);
-    roadmap.applyToDom(doc);
+    chartFamily.applyToDom(doc);
     const items = doc.querySelectorAll('.horizon-card li .row-text');
     assert.ok(items[0].classList.contains('row-empty'));
     assert.ok(items[1].classList.contains('row-empty'));
@@ -156,37 +158,37 @@ describe('roadmap.applyToDom — Horizons (table → three-card grid)', () => {
 describe('roadmap.applyToDom — guards', () => {
   test('idempotent: a second pass is a no-op (Status)', () => {
     const doc = makeDoc(`
-      <section class="roadmap"><table><tbody>
+      <section class="roadmap"><h2>Plan</h2><table><tbody>
         <tr><td>WS</td><td>[x] ship</td></tr>
       </tbody></table></section>
     `);
-    roadmap.applyToDom(doc);
+    chartFamily.applyToDom(doc);
     const before = doc.querySelector('section.roadmap').innerHTML;
-    roadmap.applyToDom(doc);
+    chartFamily.applyToDom(doc);
     const after = doc.querySelector('section.roadmap').innerHTML;
     assert.equal(after, before, 'second pass should not mutate');
   });
 
   test('idempotent: a second pass is a no-op (Horizons)', () => {
     const doc = makeDoc(`
-      <section class="roadmap horizons">
+      <section class="roadmap horizons"><h2>Plan</h2>
         <table>
           <thead><tr><th>WS</th><th>P</th></tr></thead>
           <tbody><tr><td>A</td><td>cell</td></tr></tbody>
         </table>
       </section>
     `);
-    roadmap.applyToDom(doc);
+    chartFamily.applyToDom(doc);
     const before = doc.querySelector('section.roadmap').innerHTML;
-    roadmap.applyToDom(doc);
+    chartFamily.applyToDom(doc);
     const after = doc.querySelector('section.roadmap').innerHTML;
     assert.equal(after, before);
   });
 
   test('safely returns on null / non-DOM root', () => {
-    assert.doesNotThrow(() => roadmap.applyToDom(null));
-    assert.doesNotThrow(() => roadmap.applyToDom(undefined));
-    assert.doesNotThrow(() => roadmap.applyToDom({}));
+    assert.doesNotThrow(() => chartFamily.applyToDom(null));
+    assert.doesNotThrow(() => chartFamily.applyToDom(undefined));
+    assert.doesNotThrow(() => chartFamily.applyToDom({}));
   });
 
   test('non-roadmap sections are left untouched', () => {
@@ -194,7 +196,7 @@ describe('roadmap.applyToDom — guards', () => {
       <section class="content"><h2>plain</h2><p>nothing.</p></section>
     `);
     const before = doc.querySelector('section.content').outerHTML;
-    roadmap.applyToDom(doc);
+    chartFamily.applyToDom(doc);
     const after = doc.querySelector('section.content').outerHTML;
     assert.equal(after, before);
   });

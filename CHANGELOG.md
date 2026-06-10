@@ -97,6 +97,25 @@ in patch versions.
   grown dense). Each tab is a short pane; the model chip deep-links to the **Cloud
   AI** tab. Arrow-key tab nav + `tablist`/`tab`/`tabpanel` roles. Purely
   organizational — no control changed. Docs-site only.
+- **`roadmap` folded into the chart family.** It is now a chart-frame member
+  dispatched by the chart engine
+  (`lib/components/chart/_chart-family/chart-family.js`) instead of a standalone
+  transformer, and moves from the `progression` disk bucket to `chart` (its
+  `function` stays `progression`). The workstream × phase grid now renders in
+  the shared `.chart-frame` skeleton — eyebrow → centered `h2` → body →
+  caption — with the table (or transposed `horizons` cards) wrapped in a
+  `.roadmap-figure`; the grid opts down to the compact content step so a full
+  set of rows clears the centered header. Authoring (the Markdown table, the
+  `[x]/[-]/[ ]/[/]` markers, every variant) is unchanged.
+- **`roadmap` state markers are now colour-blind-safe.** The retired
+  fill-level glyphs — the half-filled disc (`in flight`) and the hollow
+  outline ring (`planned`) — are replaced by shape-distinct white marks on the
+  state-coloured disc: **check / dash / cross / slash** for
+  shipped / in-flight / planned / out-of-scope, across the default, `horizons`,
+  and `status` treatments. Each state now reads in greyscale and for
+  colour-vision-deficient viewers (colour is the redundant channel, not the
+  only one), matching the mark vocabulary `checklist` / `verdict-grid` /
+  `obligation-matrix` already use.
 - **`journey` and `word-cloud` folded into the chart family.** Both are now
   chart-frame members dispatched by the chart engine
   (`lib/components/chart/_chart-family/chart-family.js`) like every other

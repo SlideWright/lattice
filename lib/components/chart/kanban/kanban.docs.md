@@ -72,7 +72,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 ## Related components
 
 - [`gantt`](../../chart/gantt/gantt.docs.md) — schedule of overlapping tasks across lanes, not current state
-- [`roadmap`](../../progression/roadmap/roadmap.docs.md) — phased grid of deliverables across workstreams
+- [`roadmap`](../../chart/roadmap/roadmap.docs.md) — phased grid of deliverables across workstreams
 - [`checklist`](../../inventory/checklist/checklist.docs.md) — single list of items with done/in-flight/planned states
 - [`verdict-grid`](../../comparison/verdict-grid/verdict-grid.docs.md) — options scored against shared criteria, not stage-tracked
 
