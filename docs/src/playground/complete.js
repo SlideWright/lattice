@@ -19,12 +19,16 @@
 
 import { autocompletion } from '@codemirror/autocomplete';
 import { dataSources } from './data-sources.js';
+import { DIRECTIVE_NAMES, FENCE_LANGS, PAGINATE_VALUES } from './grammar-vocab.js';
 import {
 	blankBodyPartial,
 	classDirectiveCompletion,
 	classOptions,
+	directiveNameAt,
+	fenceLangAt,
 	inFrontMatter,
 	modifierOptions,
+	paginateValuePosition,
 	skeletonBody,
 	slideBodyEmpty,
 	slideClassAt,
@@ -32,6 +36,27 @@ import {
 } from './slide-context.js';
 
 const TOKEN = /^[\w-]*$/;
+const DIRECTIVE_TOKEN = /^_?[\w-]*$/;
+
+// Static option lists (built once) for the line-local Tier-2 sources.
+const DIRECTIVE_OPTIONS = DIRECTIVE_NAMES.map((d) => ({ label: d, type: 'keyword', detail: 'directive' }));
+const PAGINATE_OPTIONS = PAGINATE_VALUES.map((v) => ({ label: v, type: 'constant' }));
+const FENCE_OPTIONS = FENCE_LANGS.map((l) => ({ label: l, type: 'constant', detail: 'language' }));
+
+// A line-local source: `detect(before)` returns `{ from, typed } | null`,
+// `options` is the static list. Shapes the result with the shared restraint
+// (quiet on an empty position unless Ctrl-Space) and offset mapping.
+function lineLocalSource(detect, options, validFor = TOKEN) {
+	const opts = options;
+	return (context) => {
+		const line = context.state.doc.lineAt(context.pos);
+		const before = context.state.sliceDoc(line.from, context.pos);
+		const spot = detect(before);
+		if (!spot) return null;
+		if (!spot.typed && !context.explicit) return null;
+		return { from: line.from + spot.from, options: opts, validFor };
+	};
+}
 
 // Completes the registered theme names after `theme:` in the deck's front
 // matter. A theme not in marp.config.js's themeSet renders unstyled (white,
@@ -118,6 +143,9 @@ export function latticeAutocomplete({ vocab, catalog, themes } = {}) {
 	return autocompletion({
 		override: [
 			themeSource(themes),
+			lineLocalSource(directiveNameAt, DIRECTIVE_OPTIONS, DIRECTIVE_TOKEN),
+			lineLocalSource(paginateValuePosition, PAGINATE_OPTIONS),
+			lineLocalSource(fenceLangAt, FENCE_OPTIONS),
 			classDirectiveSource(catalog, universalModifiers),
 			skeletonSource(catalog),
 			...dataSources,

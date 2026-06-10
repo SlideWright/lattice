@@ -188,3 +188,33 @@ export function themeValuePosition(before) {
 	if (!m) return null;
 	return { from: m[1].length, typed: m[2] };
 }
+
+// ── Slide directives + fences (Tier 2) ───────────────────────────────────────
+
+// The cursor's position on a directive NAME being typed inside an HTML comment,
+// before any colon — `<!-- _pag|`. Returns `{ from, typed }` (typed keeps the
+// leading `_`) or null. Once the colon is typed this stops matching, so the
+// per-directive value/grammar sources take over (e.g. `_class:` → component
+// names).
+export function directiveNameAt(before) {
+	const m = before.match(/^(\s*<!--\s*)(_?[\w-]*)$/);
+	if (!m) return null;
+	return { from: m[1].length, typed: m[2] };
+}
+
+// The cursor's position on a `_paginate:` value inside an HTML comment —
+// `<!-- _paginate: fa|`. Returns `{ from, typed }` or null.
+export function paginateValuePosition(before) {
+	const m = before.match(/^(\s*<!--\s*_paginate:\s*)([\w-]*)$/);
+	if (!m) return null;
+	return { from: m[1].length, typed: m[2] };
+}
+
+// The cursor's position on a fenced-code info string — the language id right
+// after the opening ``` / ~~~ on a fence line. Returns `{ from, typed }` or
+// null.
+export function fenceLangAt(before) {
+	const m = before.match(/^(\s*(?:```|~~~))([\w-]*)$/);
+	if (!m) return null;
+	return { from: m[1].length, typed: m[2] };
+}

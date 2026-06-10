@@ -298,6 +298,34 @@ describe('themeValuePosition — the theme: value slot (Tier 1)', () => {
 	});
 });
 
+describe('directiveNameAt / paginateValuePosition / fenceLangAt (Tier 2)', () => {
+	test('directiveNameAt captures a directive name before the colon', async () => {
+		const { directiveNameAt } = await load();
+		assert.deepEqual(directiveNameAt('<!-- _pag'), { from: '<!-- '.length, typed: '_pag' });
+		assert.deepEqual(directiveNameAt('<!-- '), { from: '<!-- '.length, typed: '' });
+	});
+
+	test('directiveNameAt stops once a colon is typed (value sources take over)', async () => {
+		const { directiveNameAt } = await load();
+		assert.equal(directiveNameAt('<!-- _class: cards'), null);
+		assert.equal(directiveNameAt('## a heading'), null);
+	});
+
+	test('paginateValuePosition captures the value after _paginate:', async () => {
+		const { paginateValuePosition } = await load();
+		assert.deepEqual(paginateValuePosition('<!-- _paginate: fa'), { from: '<!-- _paginate: '.length, typed: 'fa' });
+		assert.equal(paginateValuePosition('<!-- _header: x'), null);
+	});
+
+	test('fenceLangAt captures the info string on a fence line', async () => {
+		const { fenceLangAt } = await load();
+		assert.deepEqual(fenceLangAt('```mer'), { from: 3, typed: 'mer' });
+		assert.deepEqual(fenceLangAt('  ~~~'), { from: 5, typed: '' });
+		assert.equal(fenceLangAt('not a fence'), null);
+		assert.equal(fenceLangAt('```js extra'), null); // trailing content → not a bare info string
+	});
+});
+
 describe('mapBasemapFor — world is the default basemap (regression)', () => {
 	test('a bare `map` slide resolves to the WORLD basemap, not US', async () => {
 		const { mapBasemapFor } = await load();
