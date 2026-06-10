@@ -39,6 +39,7 @@
     "./default/min": "./dist/lattice-default.min.css",
     "./config": "./marp.config.js",
     "./marp.config.js": "./marp.config.js",
+    "./engine": "./lib/engine/index.js",
     "./themes/*": "./themes/*",
     "./lib/*": "./lib/*",
     "./dist/*": "./dist/*",
@@ -129,6 +130,7 @@
     "@mermaid-js/mermaid-cli": "^11.0.0",
     "function-plot": "^1.25.4",
     "katex": "^0.16.46",
+    "markdown-it": "^14.1.1",
     "puppeteer": "^23.0.0"
   },
   "engines": {

@@ -25,6 +25,20 @@ in patch versions.
 
 ## Unreleased
 
+### Added
+
+- **`@slidewright/lattice/engine`** — an experimental, owned markdown→slide
+  engine (`lib/engine/`), the P1 core of the Marp-replacement effort
+  (`engineering/decisions/2026-06-10-marp-replacement-proposal.md`). Built on
+  `markdown-it` 14, it reproduces Marpit's slide/directive token contract so the
+  existing Lattice plugins and the transformer registry run on it unchanged, and
+  matches marp-core's per-section HTML structure across the full gallery corpus
+  (55/55 decks; twemoji is the one intentional divergence — emoji render via
+  font, not `<img class="emoji">`). It does **not** yet replace any shipping
+  render path (marp-cli, the playground, and the emulator are untouched); the
+  `css` output is a stub pending the scaffold/`@import`/`@size` work (P1.1). New
+  direct dependency: `markdown-it`.
+
 ### Removed
 
 - **Breaking: the Puter cloud tier is removed from the Drawing Board.** OpenRouter

@@ -9,6 +9,19 @@ Lattice *today*, what an owned engine has to absorb, and a sequenced plan to
 get there without regressing the gallery baselines, the VS Code loop, or the
 docs site.
 
+> **P1 status (2026-06-10): landed (experimental).** `lib/engine/` ships the
+> markdown-it-based core behind the `@slidewright/lattice/engine` export. It
+> reproduces Marpit's slide/directive token contract, runs the existing plugins
+> + transformer registry unchanged, and matches marp-core's per-section HTML
+> across **55/55** gallery decks (twemoji intentionally dropped). Decisions
+> locked: **Scope 1** (keep marp-vscode as the external VS Code preview host);
+> engine home **`lib/engine/` + `/engine` export**; **drop twemoji +
+> auto-scaling** (both unused). Verified by `test/unit/engine/engine.test.js`
+> (contract + in-process differential parity vs marp-core). Not yet done: the
+> emitted scaffold/theme `css` (P1.1), Marpit advanced-background split
+> containers for the PDF path, and the P2–P5 path migrations. The sections
+> below are the original proposal, kept as the rationale of record.
+
 **Recommendation in one line:** build `lattice-engine` on `markdown-it`
 directly — keep the markdown-it/GFM core Marp already wraps, drop the
 Marpit/marp-core *slide layer* (splitting, directives, theme registration,
