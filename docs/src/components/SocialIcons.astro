@@ -10,7 +10,7 @@
 import Default from '@astrojs/starlight/components/SocialIcons.astro';
 
 const base = import.meta.env.BASE_URL;
-const url = (p) => `${base}/${p}`.replace(/([^:])\/{2,}/g, '$1/');
+const url = (p) => `${base.replace(/\/$/, '')}/${p}`.replace(/([^:])\/{2,}/g, '$1/');
 
 const here = Astro.url.pathname;
 const links = [
