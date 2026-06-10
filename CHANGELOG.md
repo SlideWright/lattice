@@ -92,6 +92,14 @@ in patch versions.
 
 ### Changed
 
+- **Drawing Board: the Architect's name no longer appears twice, and the deck
+  gateway grows to fill the panel head.** The redundant "The Architect" panel
+  title is gone — the name lives once, in the avatar mark below — so the head
+  leads with the deck you're on. The deck-name gateway now flex-grows to fill
+  the freed width (left-aligned label, caret pinned to the right edge like a
+  real dropdown) instead of truncating at an 11rem cap, with the model chip
+  staying compact on the right. Most visible on mobile, where the deck name had
+  the least room. Drawing Board (docs-site) only.
 - **Drawing Board: the session spend figure now shows tokens too** — e.g. "This
   session: $0.081 (25K tokens)". Tokens accumulate locally from each reply's `usage`
   (recorded independently of cost, so a free model's tokens still count). The

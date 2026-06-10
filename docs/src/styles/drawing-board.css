@@ -251,7 +251,15 @@ body.db-page .topbar {
 	display: inline-flex;
 	align-items: center;
 	gap: 0.4rem;
-	max-width: 11rem;
+	/* Grow to fill the head — the panel title that used to sit left of it is
+	   gone (the Architect's name lives in the avatar mark below), so the deck
+	   name is the head's primary content and takes the slack. min-width:0 lets
+	   it shrink-with-ellipsis instead of overflowing on narrow panels. */
+	flex: 1 1 auto;
+	min-width: 0;
+	/* Override the <button> UA default (text-align:center): now that the name
+	   fills the width, the deck label reads left-aligned against the caret. */
+	text-align: left;
 	font: inherit;
 	font-family: var(--font-display);
 	font-size: 0.8rem;
@@ -273,6 +281,9 @@ body.db-page .topbar {
 	background: var(--accent);
 }
 .db-deck-gw-name {
+	/* Take the slack inside the button so the caret pins to the right edge
+	   (a true dropdown look) instead of hugging the end of the deck name. */
+	flex: 1 1 auto;
 	min-width: 0;
 	overflow: hidden;
 	text-overflow: ellipsis;
