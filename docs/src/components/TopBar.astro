@@ -13,7 +13,7 @@
 const { palettes = [], current = null, wide = false } = Astro.props;
 
 const base = import.meta.env.BASE_URL;
-const url = (p) => `${base}/${p}`.replace(/([^:])\/{2,}/g, '$1/');
+const url = (p) => `${base.replace(/\/$/, '')}/${p}`.replace(/([^:])\/{2,}/g, '$1/');
 const titleCase = (s) => s.replace(/(^|-)(\w)/g, (_, sep, c) => (sep ? ' ' : '') + c.toUpperCase());
 
 const links = [

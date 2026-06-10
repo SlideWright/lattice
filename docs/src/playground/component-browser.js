@@ -38,7 +38,7 @@ export function initComponentBrowser() {
 	const base = cfg.base;
 	const current = cfg.current; // active component name, or null on the index
 
-	const url = (p) => `${base}/${p}`.replace(/([^:])\/{2,}/g, '$1/');
+	const url = (p) => `${base.replace(/\/$/, '')}/${p}`.replace(/([^:])\/{2,}/g, '$1/');
 
 	// Typo-tolerant fallback only — see search() below. The primary pass is a
 	// precise substring match so real terms (a name, a tag, "legal", "charts")

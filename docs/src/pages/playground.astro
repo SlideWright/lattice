@@ -19,7 +19,7 @@ const { loadAll, manifestBucket } = require(join(repoRoot, 'lib/components', 'in
 const manifests = loadAll();
 
 const base = import.meta.env.BASE_URL;
-const url = (p) => `${base}/${p}`.replace(/([^:])\/{2,}/g, '$1/');
+const url = (p) => `${base.replace(/\/$/, '')}/${p}`.replace(/([^:])\/{2,}/g, '$1/');
 // Cache-busted prefix for the playground's runtime-fetched assets (see
 // asset-version.mjs); the bare `playground/` route is unchanged.
 const pg = assetBase();
