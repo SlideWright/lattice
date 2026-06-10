@@ -457,12 +457,27 @@ const dbData = JSON.stringify({
 			// which is what makes the model "stick" across refreshes).
 			model.refreshAvailability().then(() => { settings.refresh(); settings.restore(); });
 
+			// Reveal a source line in the editor. On the ≤1024px single-pane layout the
+			// inactive panes are display:none, and CodeMirror can't scroll a hidden
+			// view — so switch to the editor pane FIRST, then goToLine on the next
+			// frame once it's laid out and measurable. (Both the Architect findings and
+			// the Coach cards route their "Reveal" / "Go to slide" here.)
+			function revealLine(line) {
+				const go = () => { if (window.__dbEditor) window.__dbEditor.goToLine(line); };
+				if (window.matchMedia('(max-width: 1024px)').matches && window.__dbSetPane) {
+					window.__dbSetPane('editor');
+					requestAnimationFrame(() => requestAnimationFrame(go));
+				} else {
+					go();
+				}
+			}
+
 			const architect = createArchitect({
 				vocab: data.lintVocab,
 				catalog: data.catalog,
 				model,
 				mount: document.getElementById('db-arch-review'),
-				reveal: (line) => { if (window.__dbEditor) window.__dbEditor.goToLine(line); },
+				reveal: revealLine,
 				// setValue dispatches a doc change -> onEdit -> render + save + re-lint.
 				applyFix: (newSource) => { if (window.__dbEditor) window.__dbEditor.setValue(newSource); },
 			});
@@ -476,10 +491,7 @@ const dbData = JSON.stringify({
 				introHost: document.getElementById('db-coach-intro'),
 				getAssessment: () => architect.getAssessment(),
 				getSource: () => (window.__dbEditor ? window.__dbEditor.getValue() : ''),
-				reveal: (line) => {
-					if (window.__dbEditor) window.__dbEditor.goToLine(line);
-					if (window.matchMedia('(max-width: 1024px)').matches && window.__dbSetPane) window.__dbSetPane('editor');
-				},
+				reveal: revealLine,
 			});
 			window.__dbCoach = coach;
 
