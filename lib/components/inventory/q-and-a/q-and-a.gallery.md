@@ -30,6 +30,68 @@ Anticipated questions paired with prepared answers — the end-of-pitch 'what we
 
 ---
 
+<!-- _class: q-and-a spine -->
+<!-- _footer: "Spine — sequential walkthrough · q-and-a spine" -->
+
+## What the board will press on.
+
+- Why not extend the current vendor one more year?
+  - The renewal lands in Q3 and locks us in through 2028. Switching now costs a single quarter of migration; switching after renewal costs three.
+- What happens to the team mid-migration?
+  - No headcount change. The same four engineers run both stacks through the eight-week overlap, then the legacy stack is decommissioned.
+- How confident are we in the savings?
+  - The $1.2M is contracted, not projected — the signed rate differential, before any usage growth.
+
+
+---
+
+<!-- _class: q-and-a rail -->
+<!-- _footer: "Rail — question / answer columns · q-and-a rail" -->
+
+## What the board will press on.
+
+- Why not extend the current vendor one more year?
+  - The renewal lands in Q3 and locks us in through 2028. Switching now costs a single quarter of migration; switching after renewal costs three.
+- What happens to the team mid-migration?
+  - No headcount change. The same four engineers run both stacks through the eight-week overlap, then the legacy stack is decommissioned.
+- How confident are we in the savings?
+  - The $1.2M is contracted, not projected — the signed rate differential, before any usage growth.
+
+
+---
+
+<!-- _class: q-and-a tab -->
+<!-- _footer: "Tab — underlined prompts · q-and-a tab" -->
+
+## What the board will press on.
+
+- Why not extend the current vendor one more year?
+  - The renewal lands in Q3 and locks us in through 2028. Switching now costs a single quarter of migration; switching after renewal costs three.
+- What happens to the team mid-migration?
+  - No headcount change. The same four engineers run both stacks through the eight-week overlap, then the legacy stack is decommissioned.
+- How confident are we in the savings?
+  - The $1.2M is contracted, not projected — the signed rate differential, before any usage growth.
+
+
+---
+
+<!-- _class: q-and-a grid -->
+<!-- _footer: "Grid — two-up density · q-and-a grid" -->
+
+## What the board will press on.
+
+- Why not extend the current vendor one more year?
+  - The renewal lands in Q3 and locks us in through 2028; after renewal it costs three quarters.
+- What happens to the team mid-migration?
+  - No headcount change. Four engineers run both stacks through the eight-week overlap.
+- How confident are we in the savings?
+  - The $1.2M is contracted, not projected — the signed rate differential.
+- What is the rollback plan?
+  - A one-command revert to the pinned release, rehearsed weekly in staging.
+
+
+---
+
 <!-- _class: q-and-a solo -->
 <!-- _footer: "Solo — one question, one answer · q-and-a solo" -->
 

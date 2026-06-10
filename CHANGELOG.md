@@ -262,15 +262,20 @@ in patch versions.
   only.
 - **`q-and-a` — a layout for anticipated questions paired with prepared
   answers** (inventory bucket, `stack` form). The end-of-pitch "what we expect
-  to be asked" slide: a vertical stack of Q/A pairs where the question reads as
-  a prompt (Q marker, heading weight) and the nested answer carries the
-  substance (A marker, body weight). Author it as a nested list — `- Question?`
-  with the answer nested one level under — using a `ul` for unnumbered
-  questions or an `ol` to number them. The `solo` variant gives one
-  question/answer the whole slide; the universal `compact` tightens the rhythm
-  for five-plus pairs. Pure CSS, no transform. Distinct from a reference FAQ
-  (many terse look-ups) and from `list-criteria` (evaluation criteria +
-  rationale) — q-and-a defends a recommendation.
+  to be asked" slide: a few weighty defenses of a recommendation, authored as a
+  nested list (`- Question?` with the answer nested one level under). Questions
+  are indexed automatically (01, 02, …), so a `ul` and an `ol` render the same.
+  Ships with five mutually-exclusive looks: the **editorial ledger** default
+  (numbered index + accent rule), `spine` (accent nodes on a vertical spine for
+  a sequential walkthrough), `rail` (numbered question/answer columns), `tab`
+  (a true accent underline beneath each question), and `grid` (a two-up density
+  grid split by a gradient hairline cross, each header reserving two lines so
+  rows align). The universal `solo` gives one question/answer the whole slide
+  and `compact` tightens the ledger for five-plus pairs; every colour is a
+  light-dark() token, so all five looks invert under `dark`. Pure CSS, no
+  transform. Distinct from a reference FAQ (many terse look-ups) and from
+  `list-criteria` (evaluation criteria + rationale) — q-and-a defends a
+  recommendation.
 - **Drawing Board: each cloud Architect reply is labelled with the model that
   produced it** — the bubble heading reads "The Architect (DeepSeek V4 Pro)", using
   *our* record of the model we sent the turn to, not the model's self-report (which

@@ -4513,6 +4513,10 @@
       "description": "Anticipated questions paired with prepared answers — the end-of-pitch 'what we expect to be asked' slide.",
       "purpose": "Use to pre-empt the room: line up the three or four hardest questions the audience will raise and answer each one before it is asked. The question reads as a prompt; the prepared answer carries the substance. Distinct from a reference FAQ (many terse look-up pairs) — this is a few weighty defenses of a recommendation.",
       "variants": [
+        "spine",
+        "rail",
+        "tab",
+        "grid",
         "solo"
       ],
       "effectiveVariants": [
@@ -4521,6 +4525,7 @@
         "confidential",
         "dark",
         "draft",
+        "grid",
         "loose",
         "mark-orbit",
         "mark-threads",
@@ -4529,6 +4534,7 @@
         "no-paginate",
         "no-period",
         "pinned",
+        "rail",
         "redacted",
         "revised",
         "scale-2xl",
@@ -4536,6 +4542,8 @@
         "scale-xl",
         "silent",
         "solo",
+        "spine",
+        "tab",
         "tbd",
         "tint-corner at-tl",
         "tint-edge at-right",
@@ -4562,7 +4570,7 @@
         "question": {
           "selector": "ul > li, ol > li",
           "required": true,
-          "description": "One top-level list item per question, in the order you want to take them (lead with the toughest). Author it as plain interrogative text — no bold. Use a `ul` for unnumbered questions or an `ol` to number them."
+          "description": "One top-level list item per question, in the order you want to take them (lead with the toughest). Author it as plain interrogative text — no bold. Questions are indexed automatically (01, 02, …), so a `ul` and an `ol` render the same."
         },
         "answer": {
           "selector": "ul > li > ul > li, ol > li > ol > li",

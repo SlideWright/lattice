@@ -22,12 +22,15 @@ The end-of-pitch slide that pre-empts the room — the three or four hardest que
 
 Q&A is a *function*, not a flat list: you anticipate the objection and close it on your own terms, which lands harder than waiting to be asked. Author it as a nested list — the top-level item is the question, the answer nests one level under it.
 
-- A `ul` leaves the questions unnumbered (a `Q` marker); an `ol` numbers them.
+- Questions are indexed automatically, so a `ul` and an `ol` render the same — pick the look that fits the room, not the list marker.
+- Five looks ship: the editorial **ledger** (default), `spine`, `rail`, `tab`, and `grid`. Plus the universal `solo`, `compact`, and `dark`.
 - Distinct from a reference `faq` (many terse look-ups) and from `list-criteria` (criteria you score against). q-and-a *defends* a recommendation.
 
 ---
 
 <!-- _class: q-and-a -->
+
+`The ledger — default`
 
 ## What the board will press on.
 
@@ -40,9 +43,73 @@ Q&A is a *function*, not a flat list: you anticipate the objection and close it 
 
 ---
 
+<!-- _class: q-and-a spine -->
+
+`Spine — a sequential walkthrough`
+
+## Take the objections in order.
+
+- Why not extend the current vendor one more year?
+  - The renewal lands in Q3 and locks us in through 2028. Switching now costs a single quarter; switching after renewal costs three.
+- What happens to the team mid-migration?
+  - No headcount change. The same four engineers run both stacks through the eight-week overlap, then the legacy stack is decommissioned.
+- How confident are we in the savings?
+  - The $1.2M is contracted, not projected — the signed rate differential, before any usage growth.
+
+---
+
+<!-- _class: q-and-a rail -->
+
+`Rail — question / answer columns`
+
+## The exhibit version.
+
+- Why not extend the current vendor one more year?
+  - The renewal locks us in through 2028. Switching now costs one quarter; after renewal, three.
+- What happens to the team mid-migration?
+  - No headcount change — four engineers run both stacks through the eight-week overlap.
+- How confident are we in the savings?
+  - The $1.2M is contracted, not projected — the signed rate differential.
+
+---
+
+<!-- _class: q-and-a tab -->
+
+`Tab — underlined prompts`
+
+## The most editorial read.
+
+- Why not extend the current vendor one more year?
+  - The renewal lands in Q3 and locks us in through 2028. Switching now costs a single quarter; switching after renewal costs three.
+- What happens to the team mid-migration?
+  - No headcount change. The same four engineers run both stacks through the eight-week overlap.
+- How confident are we in the savings?
+  - The $1.2M is contracted, not projected — the signed rate differential.
+
+---
+
+<!-- _class: q-and-a grid -->
+
+`Grid — two-up density`
+
+## When you have a fourth.
+
+- Why not extend the current vendor one more year?
+  - The renewal locks us in through 2028; after renewal it costs three quarters.
+- What happens to the team mid-migration?
+  - No headcount change. Four engineers run both stacks through the eight-week overlap.
+- How confident are we in the savings?
+  - The $1.2M is contracted, not projected — the signed rate differential.
+- What is the rollback plan?
+  - A one-command revert to the pinned release, rehearsed weekly in staging.
+
+---
+
 <!-- _class: q-and-a solo -->
 
-## The one question we know is coming.
+`Solo — one question, the whole slide`
+
+## The one we know is coming.
 
 - If the pilot fails, what have we actually lost?
   - One quarter and $180K, fully recoverable. The contract caps exposure at the pilot scope, with no auto-renewal and a thirty-day exit. The downside is bounded; the upside is the whole thesis.
@@ -51,7 +118,7 @@ Q&A is a *function*, not a flat list: you anticipate the objection and close it 
 
 <!-- _class: q-and-a compact -->
 
-`Anticipated questions`
+`Compact — five-plus pairs`
 
 ## Five we expect, numbered and tightened.
 

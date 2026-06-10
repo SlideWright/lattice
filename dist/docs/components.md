@@ -1942,7 +1942,7 @@ Use to pre-empt the room: line up the three or four hardest questions the audien
 |---|---|---|---|
 | `eyebrow` | `p > code:only-child` | no | Optional kicker above the headline — wrap a short label in backticks, e.g. `Anticipated questions`. |
 | `title` | `h2` | no | Optional headline framing the set — name the pressure ('What the board will press on'), not a bare label ('Q&A'). |
-| `question` | `ul > li, ol > li` | yes | One top-level list item per question, in the order you want to take them (lead with the toughest). Author it as plain interrogative text — no bold. Use a `ul` for unnumbered questions or an `ol` to number them. |
+| `question` | `ul > li, ol > li` | yes | One top-level list item per question, in the order you want to take them (lead with the toughest). Author it as plain interrogative text — no bold. Questions are indexed automatically (01, 02, …), so a `ul` and an `ol` render the same. |
 | `answer` | `ul > li > ul > li, ol > li > ol > li` | yes | The prepared answer, nested one level under its question. Two or three sentences that actually close the question down — a reasoned response, not a restatement. Every question needs one. |
 
 #### Anatomy
@@ -1963,6 +1963,76 @@ Use to pre-empt the room: line up the three or four hardest questions the audien
 ```
 
 #### Variants (layout-specific)
+
+##### `spine` — Spine — sequential walkthrough
+
+Threads the questions down a vertical spine with accent nodes, for when you want to walk the room through the objections in order. Drops the index for a narrative, one-after-another read.
+
+```markdown
+<!-- _class: q-and-a spine -->
+
+## What the board will press on.
+
+- Why not extend the current vendor one more year?
+  - The renewal lands in Q3 and locks us in through 2028. Switching now costs a single quarter of migration; switching after renewal costs three.
+- What happens to the team mid-migration?
+  - No headcount change. The same four engineers run both stacks through the eight-week overlap, then the legacy stack is decommissioned.
+- How confident are we in the savings?
+  - The $1.2M is contracted, not projected — the signed rate differential, before any usage growth.
+```
+
+##### `rail` — Rail — question / answer columns
+
+Sets each pair as a numbered exhibit row — question and answer in parallel columns, separated by a hairline. Scannable when the answers are short and you want them lined up for comparison.
+
+```markdown
+<!-- _class: q-and-a rail -->
+
+## What the board will press on.
+
+- Why not extend the current vendor one more year?
+  - The renewal lands in Q3 and locks us in through 2028. Switching now costs a single quarter of migration; switching after renewal costs three.
+- What happens to the team mid-migration?
+  - No headcount change. The same four engineers run both stacks through the eight-week overlap, then the legacy stack is decommissioned.
+- How confident are we in the savings?
+  - The $1.2M is contracted, not projected — the signed rate differential, before any usage growth.
+```
+
+##### `tab` — Tab — underlined prompts
+
+The most editorial, minimal look: a short accent underline sits tight beneath each question, then the answer drops below it. Generous whitespace, no enumeration — best for three or four pairs.
+
+```markdown
+<!-- _class: q-and-a tab -->
+
+## What the board will press on.
+
+- Why not extend the current vendor one more year?
+  - The renewal lands in Q3 and locks us in through 2028. Switching now costs a single quarter of migration; switching after renewal costs three.
+- What happens to the team mid-migration?
+  - No headcount change. The same four engineers run both stacks through the eight-week overlap, then the legacy stack is decommissioned.
+- How confident are we in the savings?
+  - The $1.2M is contracted, not projected — the signed rate differential, before any usage growth.
+```
+
+##### `grid` — Grid — two-up density
+
+Packs four pairs into a 2×2 grid split by a gradient hairline cross — the density treatment for when you have more pairs than the stack holds comfortably. Each header reserves two lines so questions and answers align across a row.
+
+```markdown
+<!-- _class: q-and-a grid -->
+
+## What the board will press on.
+
+- Why not extend the current vendor one more year?
+  - The renewal lands in Q3 and locks us in through 2028; after renewal it costs three quarters.
+- What happens to the team mid-migration?
+  - No headcount change. Four engineers run both stacks through the eight-week overlap.
+- How confident are we in the savings?
+  - The $1.2M is contracted, not projected — the signed rate differential.
+- What is the rollback plan?
+  - A one-command revert to the pinned release, rehearsed weekly in staging.
+```
 
 ##### `solo` — Solo — one question, one answer
 

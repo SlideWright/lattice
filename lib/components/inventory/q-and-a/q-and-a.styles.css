@@ -1,8 +1,7 @@
-/* q-and-a — anticipated questions paired with prepared answers. A vertical
- * stack of Q/A pairs where the question reads as a prompt and the answer
- * carries the substance: the end-of-pitch "what we expect to be asked"
- * slide. Distinct from a reference `faq` (many terse look-ups) and from
- * `list-criteria` (evaluation criteria + rationale).
+/* q-and-a — anticipated questions paired with prepared answers. The
+ * end-of-pitch "what we expect to be asked" slide: a few weighty defenses of
+ * a recommendation. Distinct from a reference `faq` (many terse look-ups) and
+ * from `list-criteria` (evaluation criteria + rationale).
  *
  * Substance: structure. Pure CSS over the native nested list — no
  * post-processor, so no three-render-path wiring. The author writes:
@@ -10,15 +9,21 @@
  *   - Question text?
  *     - The prepared answer.
  *
- * A `ul` leaves questions unnumbered (Q marker); an `ol` numbers them
- * (an indexed list, not a dependent sequence). The top-level li is the
- * question; the nested li is the answer (A marker).
+ * The top-level li is the question; the nested li is the answer. Questions are
+ * indexed (01, 02, …) by a CSS counter, so `ul` and `ol` render identically.
  *
- * Modifier model:
- *   q-and-a          stacked Q/A pairs (default)
+ * Looks — mutually exclusive, pick at most one:
+ *   q-and-a          editorial ledger — numbered index + accent rule (default)
+ *   q-and-a spine    sequential walkthrough — accent nodes on a vertical spine
+ *   q-and-a rail     question / answer columns, numbered (exhibit table)
+ *   q-and-a tab      underlined prompts — a true header underline per question
+ *   q-and-a grid     two-up quadrant grid for density, with a gradient cross
+ *
+ * Universal modifiers (compose with the default ledger):
  *   q-and-a solo     one question, one answer, given the whole slide
- *   q-and-a compact  (universal) denser rhythm for five-plus pairs
- *   q-and-a dark     (universal) dark canvas
+ *   q-and-a compact  denser rhythm for five-plus pairs
+ *   q-and-a dark     dark canvas (every colour is a light-dark() token, so the
+ *                    five looks invert without per-look overrides)
  *
  * Rules are UNLAYERED (no `@layer components` wrapper) to match every other
  * component file — broad @layer activation is blocked (see engineering/
@@ -26,8 +31,8 @@
  * of specificity. */
 
 section.q-and-a {
-  --qa-marker: var(--sp-xl); /* width of the Q/A marker gutter */
-  --qa-gap: var(--sp-lg); /* vertical gap between pairs */
+  --qa-gutter: var(--sp-2xl); /* left padding that opens the index gutter */
+  --qa-gap: var(--sp-md); /* vertical gap between pairs */
 }
 
 /* The pair stack fills the canvas below the headline and centres its rows. */
@@ -44,83 +49,188 @@ section.q-and-a > :is(ul, ol) {
   counter-reset: qa;
 }
 
+/* ── default · editorial ledger ───────────────────────────────────────── */
 /* One Q/A pair. The li's own text is the question; the nested list is the
- * answer. The left padding opens a gutter for the Q/A markers; a hairline
- * rule separates pairs (dropped on the last). */
+ * answer. A 2px accent rule runs down the left of each pair and the numbered
+ * index hangs in the gutter, baseline-aligned with the question. */
 section.q-and-a > :is(ul, ol) > li {
   counter-increment: qa;
   position: relative;
-  padding: 0 0 var(--qa-gap) calc(var(--qa-marker) + var(--sp-md));
-  border-bottom: 1px solid var(--border);
+  padding-left: var(--qa-gutter);
+  border-left: 2px solid var(--accent);
+  font-family: var(--font-display);
   font-size: var(--fs-message);
   font-weight: 600;
   color: var(--text-heading);
   line-height: var(--lh-snug);
 }
-section.q-and-a > :is(ul, ol) > li:last-child {
-  padding-bottom: 0;
-  border-bottom: none;
-}
-
-/* Q marker — a mono accent tag in the gutter. An ordered list numbers the
- * questions instead. */
 section.q-and-a > :is(ul, ol) > li::before {
-  content: "Q";
+  content: "0" counter(qa);
   position: absolute;
-  left: 0;
+  left: var(--sp-md);
   top: 0;
-  width: var(--qa-marker);
-  text-align: center;
   font-family: var(--font-mono);
-  font-size: var(--fs-body);
-  font-weight: 700;
+  font-size: var(--fs-message);
+  font-weight: 600;
+  line-height: var(--lh-snug);
   color: var(--accent);
-  line-height: inherit;
-}
-section.q-and-a > ol > li::before {
-  content: counter(qa);
 }
 
 /* Answer — the nested list, reset off the question's weight/size/colour. */
 section.q-and-a > :is(ul, ol) > li > :is(ul, ol) {
   list-style: none;
-  margin: var(--sp-sm) 0 0 0;
+  margin: var(--sp-xs) 0 0;
   padding: 0;
 }
 section.q-and-a > :is(ul, ol) > li > :is(ul, ol) > li {
-  position: relative;
+  font-family: var(--font-body);
   font-size: var(--fs-body);
   font-weight: 400;
   color: var(--text-body);
   line-height: var(--lh-base);
 }
-/* A marker — sits in the same gutter, aligned under Q (the nested li starts
- * past the parent's left padding, so pull the marker back by that amount). */
-section.q-and-a > :is(ul, ol) > li > :is(ul, ol) > li::before {
-  content: "A";
-  position: absolute;
-  left: calc(-1 * (var(--qa-marker) + var(--sp-md)));
-  width: var(--qa-marker);
-  text-align: center;
-  font-family: var(--font-mono);
-  font-size: var(--fs-body);
-  font-weight: 700;
-  color: var(--text-muted);
-  line-height: inherit;
+
+/* ── spine — sequential walkthrough ───────────────────────────────────── */
+/* Drops the ledger rule and index for a vertical spine with accent nodes; the
+ * node halo is the canvas colour so it punches cleanly through the line. */
+section.q-and-a.spine > :is(ul, ol) {
+  position: relative;
+  padding-left: var(--sp-xl);
+  gap: var(--sp-lg);
 }
-/* A rare second answer line carries no extra marker. */
-section.q-and-a > :is(ul, ol) > li > :is(ul, ol) > li + li::before {
+section.q-and-a.spine > :is(ul, ol)::before {
   content: "";
+  position: absolute;
+  left: 0.4cqi;
+  top: 0.5em;
+  bottom: 0.5em;
+  width: 0.16cqi;
+  background: var(--border);
+}
+section.q-and-a.spine > :is(ul, ol) > li {
+  padding-left: 0;
+  border-left: none;
+}
+section.q-and-a.spine > :is(ul, ol) > li::before {
+  content: "";
+  left: calc(-1 * var(--sp-xl));
+  top: 0.42em;
+  width: 0.95cqi;
+  height: 0.95cqi;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 0.3cqi var(--bg);
+}
+
+/* ── rail — question / answer columns ─────────────────────────────────── */
+/* The pair becomes a three-column exhibit row: number | question | answer,
+ * separated by a hairline. The index drops into the flow as the first cell. */
+section.q-and-a.rail > :is(ul, ol) {
+  gap: var(--sp-lg);
+}
+section.q-and-a.rail > :is(ul, ol) > li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 0.46fr) minmax(0, 0.54fr);
+  column-gap: var(--sp-2xl);
+  align-items: start;
+  padding-left: 0;
+  padding-bottom: var(--sp-lg);
+  border-left: none;
+  border-bottom: 1px solid var(--border);
+}
+section.q-and-a.rail > :is(ul, ol) > li:last-child {
+  padding-bottom: 0;
+  border-bottom: none;
+}
+section.q-and-a.rail > :is(ul, ol) > li::before {
+  content: counter(qa);
+  position: static;
+  font-weight: 700;
+}
+section.q-and-a.rail > :is(ul, ol) > li > :is(ul, ol) {
+  margin: 0;
+}
+
+/* ── tab — underlined prompts ─────────────────────────────────────────── */
+/* No index; a short accent underline sits tight beneath each question, then
+ * the answer drops below it with its own breathing room. */
+section.q-and-a.tab > :is(ul, ol) {
+  gap: var(--sp-lg);
+}
+section.q-and-a.tab > :is(ul, ol) > li {
+  padding-left: 0;
+  border-left: none;
+}
+section.q-and-a.tab > :is(ul, ol) > li::before {
+  display: none;
+}
+section.q-and-a.tab > :is(ul, ol) > li > :is(ul, ol) {
+  position: relative;
+  margin-top: var(--sp-2xs);
+  padding-top: var(--sp-md);
+}
+section.q-and-a.tab > :is(ul, ol) > li > :is(ul, ol)::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 2.4em;
+  height: 0.25cqi;
+  background: var(--accent);
+}
+
+/* ── grid — two-up quadrant density ───────────────────────────────────── */
+/* Four pairs in a 2×2 grid divided by a gradient hairline cross. Each cell's
+ * header reserves two lines so question tops and answer baselines align across
+ * a row whether or not a question wraps. */
+section.q-and-a.grid > :is(ul, ol) {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: var(--sp-xl) var(--sp-2xl);
+  align-items: center;
+  position: relative;
+}
+section.q-and-a.grid > :is(ul, ol)::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  transform: translateX(-50%);
+  background: linear-gradient(to bottom, transparent, var(--border) 18%, var(--border) 82%, transparent);
+}
+section.q-and-a.grid > :is(ul, ol)::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  transform: translateY(-50%);
+  background: linear-gradient(to right, transparent, var(--border) 18%, var(--border) 82%, transparent);
+}
+section.q-and-a.grid > :is(ul, ol) > li {
+  display: grid;
+  grid-template-rows: minmax(3em, auto) auto;
+  row-gap: var(--sp-xs);
+  border-left: none;
+}
+section.q-and-a.grid > :is(ul, ol) > li > :is(ul, ol) {
+  margin: 0;
 }
 
 /* ── compact — the density escape hatch for five-plus pairs ───────────── */
-/* `compact` is a pure opt-in class (no base behaviour), so the layout owns
- * the tightening: the question drops from message to body type, the answer to
- * compact-body, and the gaps close, so a longer FAQ-style set still fits. */
+/* A pure opt-in on the ledger: the question and its index drop from message to
+ * body type, the answer to compact-body, and the gaps close. */
 section.q-and-a.compact {
-  --qa-gap: var(--sp-md);
+  --qa-gap: var(--sp-sm);
 }
 section.q-and-a.compact > :is(ul, ol) > li {
+  font-size: var(--fs-body);
+}
+section.q-and-a.compact > :is(ul, ol) > li::before {
   font-size: var(--fs-body);
 }
 section.q-and-a.compact > :is(ul, ol) > li > :is(ul, ol) {
@@ -135,20 +245,17 @@ section.q-and-a.solo > :is(ul, ol) {
   gap: 0;
 }
 section.q-and-a.solo > :is(ul, ol) > li {
-  border-bottom: none;
-  padding-bottom: 0;
   font-size: var(--fs-emphasis);
   line-height: var(--lh-tight);
 }
 section.q-and-a.solo > :is(ul, ol) > li::before {
-  font-size: var(--fs-message);
-  top: 0.18em;
+  font-size: var(--fs-emphasis);
+  line-height: var(--lh-tight);
+}
+section.q-and-a.solo > :is(ul, ol) > li > :is(ul, ol) {
+  margin-top: var(--sp-md);
 }
 section.q-and-a.solo > :is(ul, ol) > li > :is(ul, ol) > li {
   font-size: var(--fs-message);
-  margin-top: var(--sp-md);
   line-height: var(--lh-snug);
-}
-section.q-and-a.solo > :is(ul, ol) > li > :is(ul, ol) > li::before {
-  font-size: var(--fs-message);
 }
