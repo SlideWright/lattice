@@ -13,6 +13,7 @@
 // loads, so search/regroup are instant.
 
 import Fuse from 'fuse.js';
+import { joinBase } from '../lib/base-url.mjs';
 import { groupCatalog } from '../lib/families.mjs';
 
 const LENS_KEY = 'lattice-components-lens';
@@ -38,7 +39,7 @@ export function initComponentBrowser() {
 	const base = cfg.base;
 	const current = cfg.current; // active component name, or null on the index
 
-	const url = (p) => `${base.replace(/\/$/, '')}/${p}`.replace(/([^:])\/{2,}/g, '$1/');
+	const url = (p) => joinBase(base, p);
 
 	// Typo-tolerant fallback only — see search() below. The primary pass is a
 	// precise substring match so real terms (a name, a tag, "legal", "charts")
