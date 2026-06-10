@@ -27,7 +27,7 @@ const SAMPLE = [
     ] },
   // A layout whose variant changes the authoring GRAMMAR — the case the user hit.
   { name: 'list-tabular', bucket: 'inventory', summary: 'A ruled ledger.',
-    skeleton: '<!-- _class: list-tabular -->\n\n## Heading\n\n- **First entry.** Description.',
+    skeleton: '<!-- _class: list-tabular -->\n\n## Heading\n\n1. First entry\n   - Description.',
     variants: ['metric'],
     variantSkeletons: [
       { name: 'metric', caption: 'Values in tiles.', sample: '<!-- _class: list-tabular metric -->\n\n## Scoreboard.\n\n1. Build path `334 / 334`' },
@@ -101,8 +101,8 @@ describe('buildLatticePrimer — the authoring dossier', () => {
   test('ships a grammar-changing variant its OWN skeleton (not just the base)', async () => {
     const { buildLatticePrimer } = await load();
     const p = buildLatticePrimer(SAMPLE);
-    // base list-tabular skeleton (inline-bold) still present …
-    assert.match(p, /````\n<!-- _class: list-tabular -->[\s\S]*- \*\*First entry\.\*\* Description\./);
+    // base list-tabular skeleton (numbered/nested) still present …
+    assert.match(p, /````\n<!-- _class: list-tabular -->[\s\S]*1\. First entry\n {3}- Description\./);
     // … plus the metric variant's distinct grammar (numbered + `value` pill).
     assert.match(p, /`list-tabular metric` is authored differently — Values in tiles\.:/);
     assert.match(p, /````\n<!-- _class: list-tabular metric -->[\s\S]*1\. Build path `334 \/ 334`/);

@@ -21,7 +21,7 @@ const BUCKET_ORDER = [
 export const AUTHORING_RULES = [
   'Author every slide as plain Markdown. Choose a layout with `<!-- _class: NAME -->` at the top of the slide; separate slides with a line containing only `---`.',
   'Use each layout’s skeleton below VERBATIM as the structure — match its heading levels and bullet nesting exactly. Do not invent a structure.',
-  'A variant can change a layout’s authoring STRUCTURE, not just its look. When a variant below shows its OWN skeleton, match THAT skeleton for that variant — not the base one (e.g. `list-tabular` is `- **Name.** body`, but `list-tabular metric` is `1. Name \\`value\\``).',
+  'A variant can change a layout’s authoring STRUCTURE, not just its look. When a variant below shows its OWN skeleton, match THAT skeleton for that variant — not the base one (e.g. `list-tabular` rows are `1. Name` + a nested description, but `list-tabular metric` is `1. Name \\`value\\`` with no description row).',
   'Card-style layouts (cards-grid, cards-stack, featured, compare-prose, matrix-2x2, verdict-grid, decision, citation-card) take NESTED bullets — a top-level bullet is the card title, a nested bullet is its body. NEVER write inline `- **Title.** body` on these; the body would inherit the title’s bold.',
   'Title slides: `<!-- _class: title silent -->`, then a backtick-wrapped `eyebrow`, then an `# H1`, then a single plain subtitle paragraph — nothing more.',
   'Compose tokens on the class, space-separated: a layout’s own VARIANTS (listed with each layout, e.g. `list-steps timeline`) plus the cross-cutting BASE MODIFIERS — `dark`, `numbered`, `mirror`, `silent`, the `tint-*` / `mark-*` / `with-*` families, and the `tone-pass` / `tone-fail` / `tone-warn` / `tone-skip` state markers. Colours come from theme tokens — never author raw hex.',
@@ -35,10 +35,10 @@ const isGenericSlot = (d) => /^slide (heading|title)\.?$/i.test(String(d || '').
 // ── Grammar-changing variant detection ───────────────────────────────────────
 // A variant can change the bullet GRAMMAR (ordered vs unordered, a nested
 // description row, a trailing `value` pill), or it can be pure finish (a colour,
-// a flip). `list-tabular` is the sharp case the user hit: the base is
-// `- **Name.** body`, but `metric` is `1. Name `value`` and `def`/`spec` are
-// numbered with a nested row. The base skeleton ALONE made the model author
-// every variant in the base's shape (and "validate" a value-ledger as correct).
+// a flip). `list-tabular` is the sharp case: the base is `1. Name` + a nested
+// description, `metric` is `1. Name `value`` (no description), and `spec` keys
+// the name in `code`. The base skeleton ALONE made the model author every
+// variant in the base's shape (and "validate" a value-ledger as correct).
 // So the dossier ships the skeleton of each variant whose authoring grammar
 // DIFFERS from the base (and from an already-picked sibling); finish-only
 // variants (`solid`, `outline`, `mirror`, `rule`, …) collapse onto a sibling

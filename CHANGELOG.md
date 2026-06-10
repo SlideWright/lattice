@@ -585,6 +585,15 @@ in patch versions.
 
 ### Fixed
 
+- **`list-tabular`'s authoring skeleton no longer teaches a removed inline format.**
+  Its `skeleton` (the scaffolder template, the docs "Authoring" block, and the
+  Converse dossier's base) still showed the retired `- **Name.** description`
+  ledger form — dead authoring that survived only because `list-tabular` isn't a
+  card-style layout, so the inline-bold lint gate never fired on it. The skeleton
+  and the `rows` slot contract now match the numbered/nested form the layout
+  actually renders (and that its own `sample` and variants already use):
+  `1. Name` + an optional nested `- description` row. Regenerates
+  `dist/docs/components.{md,json}`.
 - **Map region autocomplete now defaults to the world basemap.** The editor's
   `map` region completer inverted the component's default — a bare
   `<!-- _class: map -->` (a world map) offered US states, so every country and
