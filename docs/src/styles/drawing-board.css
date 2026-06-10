@@ -111,6 +111,24 @@ body.db-page .topbar {
 	padding: 0;
 	font-size: 0.95rem;
 }
+/* New-deck — the drawer's create CTA. Accent-soft (tinted, not filled) so it
+ * reads as "make one" without shouting like a filled primary or the danger
+ * delete, and doesn't compete with the active-deck accent rail. */
+.db-new-deck {
+	display: inline-flex;
+	align-items: center;
+	padding: 0.28rem 0.62rem;
+	font-size: 0.78rem;
+	font-weight: 600;
+	color: var(--accent);
+	background: var(--accent-soft);
+	border-color: color-mix(in srgb, var(--accent) 30%, var(--border));
+}
+.db-new-deck:hover {
+	color: var(--accent);
+	background: color-mix(in srgb, var(--accent) 12%, var(--accent-soft));
+	border-color: var(--accent);
+}
 .db-btn-primary {
 	background: var(--accent);
 	color: var(--on-accent);
@@ -137,6 +155,7 @@ body.db-page .topbar {
 .db-pv-x::before,
 .db-drawer-close::before,
 .db-decks-open::before,
+.db-new-deck::before,
 .db-model-chip::before,
 .db-focus-open::before,
 .db-refine-open::before,
@@ -160,6 +179,7 @@ body.db-page .topbar {
 .db-deck-rename::before { --db-glyph: var(--icon-pencil); }
 .db-drawer-close::before { --db-glyph: var(--icon-x); }
 .db-decks-open::before { --db-glyph: var(--icon-message-circle-plus); margin-right: 0.34em; }
+.db-new-deck::before { --db-glyph: var(--icon-plus); margin-right: 0.3em; }
 .db-model-chip::before { --db-glyph: var(--icon-settings); margin-right: 0.34em; }
 .db-focus-open::before { --db-glyph: var(--icon-scan); margin-right: 0.34em; }
 .db-refine-open::before { --db-glyph: var(--icon-pencil); margin-right: 0.34em; }
@@ -354,27 +374,30 @@ body.db-page .topbar {
 	box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent);
 }
 
-/* Inline delete confirm — the row morphs into a "Delete? · Keep / Delete" bar. */
-.db-deck-row.is-confirming {
-	align-items: center;
-	gap: 0.35rem;
-	padding: 0.4rem 0.5rem;
-	border: 1px solid color-mix(in srgb, #c0392b 45%, var(--border));
-	border-radius: var(--radius-sm);
+/* Inline delete confirm — the deck card STAYS in place (dimmed + danger-tinted)
+ * so you still see which deck, and Keep/Delete take over the action column at
+ * the same height. No row collapse, no layout jump. */
+.db-deck.is-pending-delete {
+	pointer-events: none;
+	border-color: color-mix(in srgb, #c0392b 45%, var(--border));
 	background: color-mix(in srgb, #c0392b 7%, var(--bg));
+	opacity: 0.9;
 }
-.db-deck-confirm-msg {
-	flex: 1 1 auto;
-	min-width: 0;
-	font-size: 0.8rem;
-	font-weight: 550;
-	color: var(--text-heading);
+.db-deck-confirm-q {
+	display: block;
+	margin-top: 0.15rem;
+	font-size: 0.72rem;
+	font-weight: 600;
+	color: #c0392b;
 }
-.db-confirm-keep,
-.db-confirm-del {
-	flex: 0 0 auto;
-	font-size: 0.74rem;
-	padding: 0.28rem 0.55rem;
+.db-confirm-acts {
+	flex-direction: column;
+	justify-content: center;
+	gap: 0.3rem;
+}
+.db-confirm-acts .db-btn {
+	font-size: 0.72rem;
+	padding: 0.26rem 0.6rem;
 }
 .db-btn-danger {
 	background: #c0392b;
@@ -397,56 +420,130 @@ body.db-page .topbar {
 	display: flex;
 	align-items: center;
 	gap: 0.4rem;
-	margin-bottom: 0.5rem;
+	margin-bottom: 0.6rem;
 }
 .db-rail-section-head .db-panel-title {
-	flex: 1 1 auto;
+	flex: 0 0 auto;
 }
-.db-history-item {
+/* "History · <active deck>" — names what the timeline is scoped to. */
+.db-hist-scope {
+	min-width: 0;
+	flex: 0 1 auto;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font-size: 0.72rem;
+	color: var(--text-muted);
+}
+.db-hist-scope:not(:empty)::before { content: '· '; }
+
+/* ── History as a timeline (VS Code-style) ────────────────────────────────────
+ * A continuous spine runs through the node column; each entry carries a type
+ * icon (AI edit / checkpoint / restore), a label, and a relative time. A pinned
+ * "Current" node marks where you are. Tap an entry to restore — the prior state
+ * is snapshotted and an Undo toast appears, so the move is reversible. */
+.db-timeline {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+.db-tl-item {
+	position: relative;
+	display: grid;
+	grid-template-columns: 22px 1fr;
+	align-items: start;
+	column-gap: 0.5rem;
+	min-height: 32px;
+}
+.db-tl-item::before { /* the spine */
+	content: '';
+	position: absolute;
+	left: 10px;
+	top: 0;
+	bottom: 0;
+	width: 2px;
+	background: var(--border);
+}
+.db-tl-item:first-child::before { top: 11px; }
+.db-tl-item:last-child::before { bottom: auto; height: 11px; }
+.db-tl-icon {
+	position: relative;
+	z-index: 1;
+	grid-row: 1;
+	width: 22px;
+	height: 22px;
+	display: grid;
+	place-items: center;
+	border-radius: 999px;
+	background: var(--bg);
+	border: 1px solid var(--border);
+	color: var(--text-muted);
+}
+.db-tl-icon::before {
+	content: '';
+	width: 11px;
+	height: 11px;
+	background: currentColor;
+	-webkit-mask: var(--db-glyph) center / contain no-repeat;
+	mask: var(--db-glyph) center / contain no-repeat;
+}
+.db-tl-ai .db-tl-icon {
+	color: var(--accent);
+	border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+}
+.db-tl-ai .db-tl-icon::before { --db-glyph: var(--icon-sparkles); }
+.db-tl-checkpoint .db-tl-icon {
+	color: var(--text-heading);
+	border-color: color-mix(in srgb, var(--text-heading) 28%, var(--border));
+}
+.db-tl-checkpoint .db-tl-icon::before { --db-glyph: var(--icon-flag); }
+.db-tl-restore .db-tl-icon::before { --db-glyph: var(--icon-undo); }
+/* Current "you are here" — a filled accent dot, no glyph. */
+.db-tl-current .db-tl-icon {
+	background: var(--accent);
+	border-color: var(--accent);
+}
+.db-tl-current .db-tl-icon::before { display: none; }
+.db-tl-body {
+	grid-column: 2;
 	display: flex;
 	align-items: baseline;
 	justify-content: space-between;
 	gap: 0.5rem;
 	width: 100%;
+	min-width: 0;
 	text-align: left;
 	font: inherit;
-	font-size: 0.8rem;
-	color: var(--text-body);
 	background: none;
 	border: 0;
-	border-left: 2px solid var(--border);
-	padding: 0.35rem 0.5rem;
-	margin-bottom: 0.1rem;
+	padding: 0.16rem 0.4rem 0.5rem;
 	cursor: pointer;
-	border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+	border-radius: var(--radius-sm);
+	color: var(--text-body);
 }
-.db-history-item:hover {
+button.db-tl-body:hover {
 	background: var(--bg);
-	border-left-color: var(--accent);
 	color: var(--text-heading);
 }
-.db-hist-label {
+.db-tl-current .db-tl-body { cursor: default; }
+.db-tl-label {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font-size: 0.8rem;
 	font-weight: 550;
 }
-/* Marks a checkpoint the Architect created on apply (vs a manual one). */
-.db-hist-ai {
-	display: inline-block;
-	margin-right: 0.4rem;
-	padding: 0.02rem 0.32rem;
-	font-size: 0.62rem;
-	font-weight: 700;
-	letter-spacing: 0.04em;
-	border-radius: 999px;
-	color: var(--on-accent);
-	background: var(--accent);
-	vertical-align: middle;
-}
-.db-hist-time {
+.db-tl-restore .db-tl-label { color: var(--text-muted); font-weight: 500; }
+.db-tl-current .db-tl-label { color: var(--accent); font-weight: 600; }
+.db-tl-time,
+.db-tl-now {
 	flex: 0 0 auto;
 	font-size: 0.7rem;
 	color: var(--text-muted);
 	font-variant-numeric: tabular-nums;
 }
+.db-tl-empty { padding: 0; }
 .db-rail-note {
 	font-size: 0.72rem;
 	color: var(--text-muted);
