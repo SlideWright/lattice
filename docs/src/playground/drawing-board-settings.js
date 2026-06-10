@@ -28,18 +28,31 @@ export const readStandingInstructions = () => { try { return localStorage.getIte
 // (sessionStorage). recordSpend is called by the chat; the settings strip reads it.
 const SPEND_TOTAL_KEY = 'lattice-db-spend-total';
 const SPEND_SESSION_KEY = 'lattice-db-spend-session';
-export function recordSpend(cost) {
+const SPEND_TOTAL_TOK_KEY = 'lattice-db-spend-total-tok';
+const SPEND_SESSION_TOK_KEY = 'lattice-db-spend-session-tok';
+// `globalThis.localStorage` is `undefined` (not a ReferenceError) when absent (Node),
+// and the guards keep these fs-free + crash-free off the browser.
+const addTo = (store, key, n) => { try { if (store) store.setItem(key, String((Number(store.getItem(key)) || 0) + n)); } catch {} };
+const readN = (store, key) => { try { return store ? Number(store.getItem(key)) || 0 : 0; } catch { return 0; } };
+export function recordSpend(cost, tokens = 0) {
+  // Cost and tokens are recorded independently — a free model bills $0 but still
+  // burns tokens, so the token tally must not be gated on a positive cost.
+  const ls = globalThis.localStorage;
+  const ss = globalThis.sessionStorage;
   const c = Number(cost);
-  if (!Number.isFinite(c) || c <= 0) return;
-  try { localStorage.setItem(SPEND_TOTAL_KEY, String((Number(localStorage.getItem(SPEND_TOTAL_KEY)) || 0) + c)); } catch {}
-  try { sessionStorage.setItem(SPEND_SESSION_KEY, String((Number(sessionStorage.getItem(SPEND_SESSION_KEY)) || 0) + c)); } catch {}
+  if (Number.isFinite(c) && c > 0) { addTo(ls, SPEND_TOTAL_KEY, c); addTo(ss, SPEND_SESSION_KEY, c); }
+  const t = Number(tokens);
+  if (Number.isFinite(t) && t > 0) { addTo(ls, SPEND_TOTAL_TOK_KEY, t); addTo(ss, SPEND_SESSION_TOK_KEY, t); }
 }
 export function readSpend() {
-  let total = 0;
-  let session = 0;
-  try { total = Number(localStorage.getItem(SPEND_TOTAL_KEY)) || 0; } catch {}
-  try { session = Number(sessionStorage.getItem(SPEND_SESSION_KEY)) || 0; } catch {}
-  return { total, session };
+  const ls = globalThis.localStorage;
+  const ss = globalThis.sessionStorage;
+  return {
+    total: readN(ls, SPEND_TOTAL_KEY),
+    session: readN(ss, SPEND_SESSION_KEY),
+    totalTokens: readN(ls, SPEND_TOTAL_TOK_KEY),
+    sessionTokens: readN(ss, SPEND_SESSION_TOK_KEY),
+  };
 }
 
 // Budgeting & alerting. The budget is anchored to the user's real OpenRouter credit
@@ -537,6 +550,12 @@ export function createModelSettings({ host, trigger, model, onChange, isOpen = (
   }
 
   const fmtUSD = (n) => '$' + (Number(n) || 0).toFixed(Number(n) > 0 && Number(n) < 1 ? 3 : 2);
+  const fmtTokens = (n) => {
+    n = Number(n) || 0;
+    if (n >= 1e6) return `${(n / 1e6).toFixed(1)}M`;
+    if (n >= 1000) return `${(n / 1000).toFixed(n < 10000 ? 1 : 0)}K`;
+    return String(Math.round(n));
+  };
 
   // The account readout. The OpenRouter account `used`/`left` is AUTHORITATIVE
   // (fetched with the user's key) — that's the real spend. The local figure is only
@@ -547,7 +566,8 @@ export function createModelSettings({ host, trigger, model, onChange, isOpen = (
     const box = el('div', 'db-or-account');
     const acct = el('p', 'db-or-account-line', 'Checking account…');
     const s = readSpend();
-    const spend = el('p', 'db-or-account-line db-or-account-spend', `This session: ${fmtUSD(s.session)}`);
+    const spend = el('p', 'db-or-account-line db-or-account-spend',
+      `This session: ${fmtUSD(s.session)}${s.sessionTokens ? ` (${fmtTokens(s.sessionTokens)} tokens)` : ''}`);
     box.append(acct, spend);
     Promise.resolve(model.openRouterAccount?.()).then((info) => {
       if (!info) { acct.remove(); return; } // unavailable (e.g. no per-key limit on a management-only endpoint) → hide

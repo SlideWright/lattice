@@ -25,16 +25,22 @@ describe('per-Lattice spend tally (recordSpend / readSpend)', () => {
     global.sessionStorage = memStore();
     const { recordSpend, readSpend } = await import('../../../docs/src/playground/drawing-board-settings.js');
 
-    assert.deepEqual(readSpend(), { total: 0, session: 0 });
+    assert.deepEqual(readSpend(), { total: 0, session: 0, totalTokens: 0, sessionTokens: 0 });
 
-    recordSpend(0.0375); // a real reply cost
-    recordSpend(0.02);
+    recordSpend(0.0375, 1200); // a real reply: cost + tokens
+    recordSpend(0.02, 800);
     let s = readSpend();
-    assert.ok(Math.abs(s.total - 0.0575) < 1e-9, 'all-time sums');
-    assert.ok(Math.abs(s.session - 0.0575) < 1e-9, 'session sums');
+    assert.ok(Math.abs(s.total - 0.0575) < 1e-9, 'all-time cost sums');
+    assert.ok(Math.abs(s.session - 0.0575) < 1e-9, 'session cost sums');
+    assert.equal(s.sessionTokens, 2000, 'session tokens sum');
+    assert.equal(s.totalTokens, 2000, 'all-time tokens sum');
+
+    // a free reply ($0) still burns tokens — tokens are recorded independently of cost
+    recordSpend(0, 500);
+    assert.ok(Math.abs(readSpend().total - 0.0575) < 1e-9, 'free reply adds no cost');
+    assert.equal(readSpend().sessionTokens, 2500, 'free reply still adds tokens');
 
     // non-positive / non-numeric costs are ignored (never corrupt the tally)
-    recordSpend(0);
     recordSpend(-1);
     recordSpend('nope');
     recordSpend(null);

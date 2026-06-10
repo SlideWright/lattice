@@ -523,7 +523,7 @@ export function createChat({ mount, composer, model, store, getAssessment, catal
         messages,
         fallback: floor,
         onToken: (tok) => { begin(); full += tok; schedulePaint(); },
-        onUsage: (u) => recordSpend(u?.cost), // accumulate the per-Lattice spend tally
+        onUsage: (u) => recordSpend(u?.cost, u?.total_tokens ?? ((u?.prompt_tokens || 0) + (u?.completion_tokens || 0))), // cost + tokens for the session tally
       });
       full = (out && String(out)) || full || floor;
     } catch {
