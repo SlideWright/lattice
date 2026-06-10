@@ -16,12 +16,20 @@ import reviewCore from '../../../lib/authoring/review-core.js';
 import scorecard from '../../../lib/authoring/scorecard.js';
 import { cosineRank } from './architect-retrieval.js';
 
-// 1-based source line where each `---`-split chunk begins — matches lint-core's
-// `source.split(/^---$/m)` so a finding's `slide` (chunk) index maps to a line.
+// 1-based source line where each REAL slide begins, indexed by the HUMAN slide
+// number (front matter skipped) — so `starts[finding.slide]` maps a finding to
+// its line, matching lint-core / review-core's numbering. `starts[0]` = 1 (deck
+// top) for deck-level findings (slide 0).
 function chunkStartLines(src) {
-	const lines = src.split('\n');
-	const starts = [1];
-	for (let i = 0; i < lines.length; i++) {
+	const lines = String(src || '').split('\n');
+	let i = 0;
+	if (/^---\r?\n/.test(src || '') && lines[0].trim() === '---') {
+		i = 1;
+		while (i < lines.length && lines[i].trim() !== '---') i++;
+		i++; // step past the closing front-matter delimiter
+	}
+	const starts = [1, i + 1]; // [deck top, slide 1]
+	for (; i < lines.length; i++) {
 		if (lines[i] === '---') starts.push(i + 2);
 	}
 	return starts;

@@ -16,12 +16,19 @@ const CHIPS = [
   { id: 'pacing', label: 'Pacing', run: (c) => pacing(c.source, c.minutes) },
 ];
 
-// 1-based source line where each `---`-split chunk begins — mirrors the
-// architect's mapping so "Go to slide N" lands where a finding's Reveal does.
+// 1-based source line where each REAL slide begins, indexed by the HUMAN slide
+// number (front matter skipped) — mirrors the architect's mapping so "Go to
+// slide N" lands where a finding's Reveal does. `starts[0]` = 1 (deck top).
 function chunkStartLines(src) {
   const lines = (src || '').split('\n');
-  const starts = [1];
-  for (let i = 0; i < lines.length; i++) if (lines[i] === '---') starts.push(i + 2);
+  let i = 0;
+  if (/^---\r?\n/.test(src || '') && lines[0].trim() === '---') {
+    i = 1;
+    while (i < lines.length && lines[i].trim() !== '---') i++;
+    i++; // step past the closing front-matter delimiter
+  }
+  const starts = [1, i + 1]; // [deck top, slide 1]
+  for (; i < lines.length; i++) if (lines[i] === '---') starts.push(i + 2);
   return starts;
 }
 
