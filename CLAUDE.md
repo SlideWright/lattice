@@ -132,8 +132,8 @@ flow locally. See `RELEASE.md` for the full contract and `tools/release.js`.
 
 ## Tests and the regression baseline
 
-- `npm test` — full unit suite (~4s, 334 tests). Inner loop.
-- `npm run test:<scope>` — one slice (palette/mermaid/parsing/layouts/cli).
+- `npm test` — full unit suite (~4s, 1151 tests). Inner loop.
+- `npm run test:<scope>` — one slice (palette/mermaid/parsing/components/cli).
 - `npm run test:watch` — re-run on file change.
 - `npm run test:integration` — ~30s cold, ~0.2s warm (hash-keyed cache).
   Rebuilds the page-counted decks through both renderers. CI runs this
@@ -145,7 +145,7 @@ live in `engineering/development.md`.
 
 **Two regression tiers:**
 
-- **Per-component galleries** (58 components × 2 themes = 116 PDFs,
+- **Per-component galleries** (52 components × 2 themes = 104 PDFs,
   one pair per `lib/components/<bucket>/<name>/`). Every enriched
   manifest's `expectedGallerySlideCount()` is asserted against the
   light PDF page count, and the dark PDF must match the light count
@@ -154,7 +154,7 @@ live in `engineering/development.md`.
   regression signal lives in
   `lib/components/evidence/kpi/kpi.gallery.light.pdf` (was the
   standalone `kpi-gallery.md` deck).
-- **Per-bucket survey galleries** (9 buckets × 2 themes = 18 PDFs at
+- **Per-bucket survey galleries** (12 buckets × 2 themes = 24 PDFs at
   `lib/components/<bucket>/<bucket>.gallery.{light,dark}.pdf`).
   Generated from `manifest.sample` via `npm run build:bucket-galleries`;
   see `test/integration/components/bucket-galleries.test.js`.
@@ -193,10 +193,13 @@ Scope detection — what `npm run preview` does for each kind of change:
 - L1 (single deck or example.md) — rebuild + diff that deck only.
 - L2 (component CSS / transform) — rebuild every deck using the
   component class; diff per-page across them.
-- L3 (shared CSS / engine / theme) — full rebuild of all 23 decks;
-  send the top 5 diffs by pixel count.
+- L3 (shared CSS / engine / theme) — rebuild every deck in the
+  preview set (`ALL_DECKS` in `tools/preview.js`, currently just
+  `examples/gallery-jargon.md`; the baseline, mermaid, design-system,
+  and palette-audit decks live with their owners and are covered by
+  the integration tier instead); send the top 5 diffs by pixel count.
 
-`--full` overrides to L3 explicitly. `npm run preview:watch <deck>`
+`--full` overrides to L3 explicitly. `npm run preview:watch -- <deck>`
 runs a file watcher and auto-rebuilds on the desktop (opens the PDF
 in your default viewer; viewer reloads when the file changes).
 

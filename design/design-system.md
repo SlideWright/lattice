@@ -459,26 +459,26 @@ lib/components/inventory/cards-grid/
 
 ### Buckets — the disk grouping
 
-Components live under one of nine buckets. Seven match the audience-
-function families from §3; two are substance-defined exceptions
-introduced for maintenance colocation:
+Components live under one of twelve buckets. Seven match the audience-
+function families from §3; five are substance- or domain-defined
+exceptions introduced for maintenance colocation:
 
 | Bucket       | Count | Origin |
 |--------------|-------|--------|
-| `anchor`     | 4     | function = anchor |
-| `statement`  | 6     | function = statement |
-| `inventory`  | 12    | function = inventory (statute-stack moved to legal) |
+| `anchor`     | 3     | function = anchor |
+| `statement`  | 4     | function = statement |
+| `inventory`  | 9     | function = inventory (statute-stack moved to legal) |
 | `comparison` | 8     | function = comparison (obligation-matrix → legal, compare-code → code) |
-| `progression`| 6     | function = progression (authority-chain, regulatory-update moved to legal) |
-| `evidence`   | 3     | function = evidence (citation-card → legal, math → math, code → code) |
+| `progression`| 4     | function = progression (authority-chain, regulatory-update moved to legal) |
+| `evidence`   | 2     | function = evidence (citation-card → legal, math → math, code → code) |
 | `imagery`    | 2     | function = imagery |
-| `chart`      | 8     | substance = data visualizations (function stays evidence/progression) |
+| `chart`      | 11    | substance = data visualizations (function stays evidence/progression) |
 | `diagram`    | 1     | substance = topological visuals (function stays evidence) |
 | `math`       | 1     | substance = typeset equations (function stays evidence) |
 | `code`       | 2     | substance = syntax-highlighted source (function stays evidence for code, comparison for compare-code) |
 | `legal`      | 5     | domain = legal (function spans 4 families) |
 
-For 41 of the 58 components `bucket === function`. The 17 divergent
+For 32 of the 52 components `bucket === function`. The 20 divergent
 components declare their `bucket` explicitly in the manifest; their
 `function` field is unchanged in every case. Three reasons for
 divergence:
