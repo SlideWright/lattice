@@ -23,6 +23,7 @@ import { EditorState } from '@codemirror/state';
 import { drawSelection, EditorView, highlightActiveLine, highlightActiveLineGutter, keymap, lineNumbers } from '@codemirror/view';
 import { tags as t } from '@lezer/highlight';
 import { latticeAutocomplete } from './complete.js';
+import { MERMAID_KEYWORDS } from './grammar-vocab.js';
 
 // ── Mermaid: StreamLanguage ported from PrismJS's prism-mermaid grammar ──────
 // (prismjs/components/prism-mermaid.js). Prism's regexes are whole-document with
@@ -39,8 +40,12 @@ import { latticeAutocomplete } from './complete.js';
 // (node)/[text]/{shapes}; "strings"; <<interface>>/[[fork]] annotations; both
 // case-sensitive and case-insensitive keyword sets; #entity; & : ::: operators;
 // (){};  punctuation.
-const KW_DECLARE =
-	/^(?:action|callback|class|classDef|classDiagram|click|direction|erDiagram|flowchart|gantt|gitGraph|graph|journey|link|linkStyle|pie|requirementDiagram|sequenceDiagram|stateDiagram-v2|stateDiagram|style|subgraph)(?![\w$-])/;
+// KW_DECLARE is built from the shared MERMAID_KEYWORDS.declare list (one source
+// of truth with the in-fence keyword completion in complete.js) — the generated
+// source is byte-identical to the prior literal. KW_FLOW stays hand-written: its
+// `end note` / `note over|left of|right of` multi-word forms don't reduce to a
+// flat list (its single-word members mirror MERMAID_KEYWORDS.flow minus those).
+const KW_DECLARE = new RegExp(`^(?:${MERMAID_KEYWORDS.declare.join('|')})(?![\\w$-])`);
 const KW_FLOW =
 	/^(?:activate|alt|and|as|autonumber|deactivate|else|end(?:[ \t]+note)?|loop|opt|par|participant|rect|state|note[ \t]+(?:over|(?:left|right)[ \t]+of))(?![\w$-])/i;
 const ANNOTATION = /^(?:<<(?:abstract|choice|enumeration|fork|interface|join|service)>>|\[\[(?:choice|fork|join)\]\])/i;

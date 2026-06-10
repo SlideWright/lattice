@@ -19,13 +19,15 @@
 
 import { autocompletion } from '@codemirror/autocomplete';
 import { dataSources } from './data-sources.js';
-import { DIRECTIVE_NAMES, FENCE_LANGS, PAGINATE_VALUES } from './grammar-vocab.js';
+import { DIRECTIVE_NAMES, FENCE_LANGS, MERMAID_KEYWORDS, PAGINATE_VALUES } from './grammar-vocab.js';
 import {
 	blankBodyPartial,
 	classDirectiveCompletion,
 	classOptions,
 	directiveNameAt,
 	fenceLangAt,
+	identifierBefore,
+	inFencedLang,
 	inFrontMatter,
 	modifierOptions,
 	paginateValuePosition,
@@ -42,6 +44,28 @@ const DIRECTIVE_TOKEN = /^_?[\w-]*$/;
 const DIRECTIVE_OPTIONS = DIRECTIVE_NAMES.map((d) => ({ label: d, type: 'keyword', detail: 'directive' }));
 const PAGINATE_OPTIONS = PAGINATE_VALUES.map((v) => ({ label: v, type: 'constant' }));
 const FENCE_OPTIONS = FENCE_LANGS.map((l) => ({ label: l, type: 'constant', detail: 'language' }));
+
+// Mermaid keyword options (declaration openers + flow/block keywords), the
+// in-fence completion vocabulary. CodeMirror prefix-filters against the typed
+// word, so a node id that matches no keyword shows nothing — low noise.
+const MERMAID_OPTIONS = [...MERMAID_KEYWORDS.declare, ...MERMAID_KEYWORDS.flow].map((k) => ({
+	label: k,
+	type: 'keyword',
+	detail: 'mermaid',
+}));
+
+// Completes Mermaid keywords inside a ```mermaid fence — the diagram component's
+// authoring surface. Walks up to confirm the enclosing fence is mermaid.
+function mermaidSource(context) {
+	const doc = context.state.doc;
+	const line = doc.lineAt(context.pos);
+	if (inFencedLang((n) => doc.line(n).text, line.number, ['mermaid']) !== 'mermaid') return null;
+	const before = context.state.sliceDoc(line.from, context.pos);
+	const spot = identifierBefore(before);
+	if (!spot) return null;
+	if (!spot.typed && !context.explicit) return null;
+	return { from: line.from + spot.from, options: MERMAID_OPTIONS, validFor: /^[\w-]*$/ };
+}
 
 // A line-local source: `detect(before)` returns `{ from, typed } | null`,
 // `options` is the static list. Shapes the result with the shared restraint
@@ -146,6 +170,7 @@ export function latticeAutocomplete({ vocab, catalog, themes } = {}) {
 			lineLocalSource(directiveNameAt, DIRECTIVE_OPTIONS, DIRECTIVE_TOKEN),
 			lineLocalSource(paginateValuePosition, PAGINATE_OPTIONS),
 			lineLocalSource(fenceLangAt, FENCE_OPTIONS),
+			mermaidSource,
 			classDirectiveSource(catalog, universalModifiers),
 			skeletonSource(catalog),
 			...dataSources,

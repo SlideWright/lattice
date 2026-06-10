@@ -326,6 +326,41 @@ describe('directiveNameAt / paginateValuePosition / fenceLangAt (Tier 2)', () =>
 	});
 });
 
+describe('inFencedLang / identifierBefore (Tier 3 — mermaid keywords)', () => {
+	test('detects the cursor is inside a ```mermaid block', async () => {
+		const { inFencedLang } = await load();
+		const lines = ['```mermaid', 'graph TD', 'A --> B', '```'];
+		assert.equal(inFencedLang(getter(lines), 2, ['mermaid']), 'mermaid');
+		assert.equal(inFencedLang(getter(lines), 3, ['mermaid']), 'mermaid');
+	});
+
+	test('null inside a non-mermaid fence, and past a closing fence', async () => {
+		const { inFencedLang } = await load();
+		const js = ['```js', 'const x = 1', '```'];
+		assert.equal(inFencedLang(getter(js), 2, ['mermaid']), null);
+		const after = ['```mermaid', 'graph TD', '```', 'plain prose'];
+		assert.equal(inFencedLang(getter(after), 4, ['mermaid']), null); // past the close
+	});
+
+	test('identifierBefore captures a letter-led token incl. hyphen/digits', async () => {
+		const { identifierBefore } = await load();
+		assert.deepEqual(identifierBefore('  gr'), { from: 2, typed: 'gr' });
+		assert.deepEqual(identifierBefore('stateDiagram-v'), { from: 0, typed: 'stateDiagram-v' });
+		assert.equal(identifierBefore('123'), null); // not letter-led
+		assert.equal(identifierBefore('A --> '), null); // no trailing word
+	});
+});
+
+describe('MERMAID_KEYWORDS — shared with the highlighter (Tier 3)', () => {
+	test('KW_DECLARE rebuilt from the shared list is byte-identical to the prior literal', async () => {
+		const { MERMAID_KEYWORDS } = await import('../../../docs/src/playground/grammar-vocab.js');
+		const built = `^(?:${MERMAID_KEYWORDS.declare.join('|')})(?![\\w$-])`;
+		const prior =
+			'^(?:action|callback|class|classDef|classDiagram|click|direction|erDiagram|flowchart|gantt|gitGraph|graph|journey|link|linkStyle|pie|requirementDiagram|sequenceDiagram|stateDiagram-v2|stateDiagram|style|subgraph)(?![\\w$-])';
+		assert.equal(built, prior);
+	});
+});
+
 describe('mapBasemapFor — world is the default basemap (regression)', () => {
 	test('a bare `map` slide resolves to the WORLD basemap, not US', async () => {
 		const { mapBasemapFor } = await load();

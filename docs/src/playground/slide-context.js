@@ -218,3 +218,33 @@ export function fenceLangAt(before) {
 	if (!m) return null;
 	return { from: m[1].length, typed: m[2] };
 }
+
+// ── Inside a fenced block (Tier 3) ───────────────────────────────────────────
+
+const FENCE_LINE = /^\s*(?:```|~~~)\s*([\w-]*)/;
+
+// Which fenced language the cursor's line sits INSIDE, walking up to the nearest
+// fence line: an opening fence carries a language (` ```mermaid `), a closing
+// fence is bare (` ``` `). Returns the language if it's one of `langs`, else
+// null (bare/closing fence, a different language, or no fence above). `getLine`
+// is 1-based; the cursor's own line is not examined (the fence-info-string
+// source owns the opening line).
+export function inFencedLang(getLine, lineNo, langs) {
+	for (let n = lineNo - 1; n >= 1; n--) {
+		const m = (getLine(n) ?? '').match(FENCE_LINE);
+		if (m) {
+			const lang = m[1];
+			return lang && langs.includes(lang) ? lang : null; // bare fence (closing) or other lang → not inside
+		}
+	}
+	return null;
+}
+
+// The identifier being typed immediately before the cursor (letter-led, may
+// carry digits/hyphens, e.g. `stateDiagram-v2`). Returns `{ from, typed }` or
+// null — used to anchor keyword completion inside a fenced sub-language.
+export function identifierBefore(before) {
+	const m = before.match(/([A-Za-z][\w-]*)$/);
+	if (!m) return null;
+	return { from: before.length - m[1].length, typed: m[1] };
+}
