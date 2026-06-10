@@ -21,7 +21,7 @@
 
 import usBasemap from '../../../lib/components/chart/map/map.basemap.json';
 import worldBasemap from '../../../lib/components/chart/map/map.basemap.world.json';
-import { mapBasemapFor, slideClassAt } from './slide-context.js';
+import { mapBasemapFor } from './slide-context.js';
 
 // Build the completion option list for one basemap: every region name + every
 // group label, de-duplicated, with a `detail` chip naming what it is.
@@ -46,13 +46,14 @@ const OPTIONS = {
 	world: optionsFor(worldBasemap, 'country'),
 };
 
-// Completion source: active only on a list-item NAME position inside a map
-// slide (after `- `, before the trailing inline-code value). The basemap is the
-// world by default; `map us` / `map usa` switches to US states (mapBasemapFor).
-export function mapCompletionSource(context) {
-	const doc = context.state.doc;
-	const line = doc.lineAt(context.pos);
-	const which = mapBasemapFor(slideClassAt((n) => doc.line(n).text, line.number));
+// Body-data completer for map slides — active only on a list-item NAME position
+// (after `- `, before the trailing inline-code value). Registered in
+// data-sources.js, which supplies the resolved slide `info` and `line` through
+// the shared makeDataSource gate, so this no longer walks for the directive
+// itself. The basemap is the world by default; `map us` / `map usa` switches to
+// US states (mapBasemapFor).
+export function mapBodyCompletion(context, info, line) {
+	const which = mapBasemapFor(info);
 	if (!which) return null;
 
 	const beforeCursor = context.state.sliceDoc(line.from, context.pos);

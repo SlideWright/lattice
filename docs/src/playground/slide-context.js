@@ -100,3 +100,61 @@ export function mapBasemapFor(info) {
 	const mods = info.modifiers || [];
 	return mods.includes('us') || mods.includes('usa') ? 'us' : 'world';
 }
+
+// ── Surface C: skeleton drop-in ──────────────────────────────────────────────
+
+// True when the slide owning `directiveLine` has an EMPTY body: every line from
+// the directive down to the next slide break (`---`) or EOF is blank or itself
+// an HTML-comment directive line. Gates skeleton insertion so it never clobbers
+// a slide that already has content. `getLine(n)` is 1-based; `total` is the
+// document's line count. `skipLine` (the cursor's line) is excluded so the
+// partial word an author types to TRIGGER the skeleton doesn't count as content.
+export function slideBodyEmpty(getLine, total, directiveLine, skipLine = 0) {
+	for (let n = directiveLine + 1; n <= total; n++) {
+		if (n === skipLine) continue; // the line being typed to trigger insertion
+		const text = getLine(n) ?? '';
+		if (SLIDE_BREAK.test(text)) break; // reached the next slide
+		if (text.trim() === '') continue; // blank
+		if (/^\s*<!--.*-->\s*$/.test(text)) continue; // another directive line
+		return false; // real content present
+	}
+	return true;
+}
+
+// The body of a component skeleton — its slot scaffold with the leading
+// directive comment line(s) and surrounding blank lines stripped, since the
+// `_class:` directive already exists when we drop a skeleton in. Returns a
+// trimmed multi-line string (no trailing whitespace).
+export function skeletonBody(skeleton) {
+	const lines = String(skeleton || '').split('\n');
+	let i = 0;
+	while (i < lines.length && (lines[i].trim() === '' || /^\s*<!--.*-->\s*$/.test(lines[i]))) i++;
+	return lines.slice(i).join('\n').replace(/\s+$/, '');
+}
+
+// The cursor's position on a blank slide-body line, for skeleton insertion: the
+// text before the cursor must be only leading whitespace + an optional partial
+// word (no other content). Returns `{ from, typed }` (from = the column where
+// the word starts) or null when the line already holds content.
+export function blankBodyPartial(before) {
+	const m = before.match(/^(\s*)([\w-]*)$/);
+	if (!m) return null;
+	return { from: m[1].length, typed: m[2] };
+}
+
+// ── Surface D: per-component data-source registry ────────────────────────────
+
+// Wrap a body-data completer with the shared slide detection. `fn(context,
+// info, line)` runs only when the cursor's slide is one of `components`. CM-free
+// (operates on the duck-typed completion context), so it's unit testable and
+// lets a data component register declaratively (see data-sources.js).
+export function makeDataSource(components, fn) {
+	const set = new Set(components);
+	return (context) => {
+		const doc = context.state.doc;
+		const line = doc.lineAt(context.pos);
+		const info = slideClassAt((n) => doc.line(n).text, line.number);
+		if (!info || !set.has(info.name)) return null;
+		return fn(context, info, line);
+	};
+}
