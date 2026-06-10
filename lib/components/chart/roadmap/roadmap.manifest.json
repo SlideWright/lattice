@@ -2,6 +2,7 @@
   "$schema": "../../manifest.schema.json",
   "name": "roadmap",
   "function": "progression",
+  "bucket": "chart",
   "form": "matrix",
   "substance": "structure",
   "tags": ["planning", "swimlane", "milestones", "agile"],
@@ -25,7 +26,7 @@
       "description": "A markdown table. The header row lists the phases (each may carry an inline-code date pill, e.g. `Q2 2026`); the first column is the workstream name; each cell leads with a state marker [x]/[-]/[ ]/[/] then the deliverable."
     }
   },
-  "skeleton": "<!-- _class: roadmap -->\n\n`H2 2026 · Plan`\n\n## What ships in each phase, by workstream.\n\n| Workstream | Foundation `Q2 2026` | Hardening `Q3 2026` | Scale `Q4 2026` |\n| --- | --- | --- | --- |\n| First workstream | [x] Shipped item | [-] In-flight item | [ ] Planned item |\n| Second workstream | [x] Shipped item | [/] Out-of-scope item | [ ] Planned item |\n\nState markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, ◐ in flight, ○ planned, ╱ out of scope.\n",
+  "skeleton": "<!-- _class: roadmap -->\n\n`H2 2026 · Plan`\n\n## What ships in each phase, by workstream.\n\n| Workstream | Foundation `Q2 2026` | Hardening `Q3 2026` | Scale `Q4 2026` |\n| --- | --- | --- | --- |\n| First workstream | [x] Shipped item | [-] In-flight item | [ ] Planned item |\n| Second workstream | [x] Shipped item | [/] Out-of-scope item | [ ] Planned item |\n\nState markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, – in flight, ○ planned, ╱ out of scope.\n",
   "anatomyBlock": "roadmap",
   "sample": "<!-- _class: roadmap -->\n\n`H2 2026 · Rollout plan`\n\n## What ships in each phase, assuming the phases survive the next planning offsite.\n\n| Workstream | Foundation `Q2 2026`   | Hardening `Q3 2026`      | Scale `Q4 2026`         |\n| ---------- | ---------------------- | ------------------------ | ----------------------- |\n| Framework  | [x] Signal taxonomy    | [-] Scoring model v2     | [ ] Per-team weighting  |\n| Adoption   | [x] Pilot onboarding   | [-] Weekly signal review | [ ] Org-wide rollout    |\n| Governance | [x] Decision log       | [x] Calibration cadence  | [ ] Board reporting     |\n| Tooling    | [x] Intake form        | [/] Dashboards           | [ ] Self-serve exports  |\n",
   "whenToUse": [
@@ -87,7 +88,7 @@
     "status": {
       "label": "Status — heavy state treatment",
       "caption": "Promotes the state markers ([x]/[-]/[ ]/[/]) to the dominant read: tinted cell grounds, an uppercase state eyebrow, and a corner state disc. Use for the standing delivery-status review.",
-      "sample": "<!-- _class: roadmap status -->\n\n`Layout · roadmap status`\n\n## Delivery status by workstream, as of the most flattering snapshot.\n\n| Workstream    | Foundation `Q2 2026` | Hardening `Q3 2026`      | Scale `Q4 2026`           |\n| ------------- | -------------------- | ------------------------ | ------------------------- |\n| Signal Intake | [x] Connector v1 | [-] Multi-source dedupe    | [ ] Anomaly auto-routing |\n| Scoring       | [x] Equal weights    | [-] Per-team calibration | [ ] Per-decision profiles |\n| Decision Log  | [x] Append schema    | [x] Outcome pairing      | [ ] Auditor export        |\n| Adoption      | [x] One pilot team   | [/] Second team          | [ ] Org-wide enablement   |\n\nState markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, ◐ in flight, ○ planned, ╱ out of scope.\n"
+      "sample": "<!-- _class: roadmap status -->\n\n`Layout · roadmap status`\n\n## Delivery status by workstream, as of the most flattering snapshot.\n\n| Workstream    | Foundation `Q2 2026` | Hardening `Q3 2026`      | Scale `Q4 2026`           |\n| ------------- | -------------------- | ------------------------ | ------------------------- |\n| Signal Intake | [x] Connector v1 | [-] Multi-source dedupe    | [ ] Anomaly auto-routing |\n| Scoring       | [x] Equal weights    | [-] Per-team calibration | [ ] Per-decision profiles |\n| Decision Log  | [x] Append schema    | [x] Outcome pairing      | [ ] Auditor export        |\n| Adoption      | [x] One pilot team   | [/] Second team          | [ ] Org-wide enablement   |\n\nState markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, – in flight, ○ planned, ╱ out of scope.\n"
     },
     "swimlane": {
       "label": "Swimlane — horizontal tracks",

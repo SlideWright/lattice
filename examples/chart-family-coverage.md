@@ -11,11 +11,11 @@ header: "Lattice · Chart family coverage"
 <!-- _header: '' -->
 <!-- _footer: '' -->
 
-# Two more charts join the family
+# More charts join the family
 
 `Chart family · Coverage`
 
-`journey` and `word-cloud` now render in the shared chart-frame skeleton — the same header, caption, and surface every other chart already wears.
+`journey`, `word-cloud`, and `roadmap` now render in the shared chart-frame skeleton — the same header, caption, and surface every other chart already wears — and roadmap's state markers go colour-blind-safe.
 
 ---
 
@@ -93,6 +93,24 @@ A chart-family member is any layout the engine wraps in `.chart-frame`. That net
 - testing `2`
 - cadence `2`
 - docs `1`
+
+---
+
+<!-- _class: roadmap -->
+<!-- _footer: "roadmap — now framed, colour-blind-safe markers · chart family" -->
+
+`H2 2026 · Rollout plan`
+
+## What ships in each phase, by workstream.
+
+| Workstream | Foundation `Q2` | Hardening `Q3` | Scale `Q4` |
+| --- | --- | --- | --- |
+| Framework | [x] Signal taxonomy | [-] Scoring model v2 | [ ] Per-team weighting |
+| Adoption | [x] Pilot onboarding | [-] Weekly review | [ ] Org-wide rollout |
+| Governance | [x] Decision log | [x] Calibration cadence | [ ] Board reporting |
+| Tooling | [x] Intake form | [/] Dashboards | [ ] Self-serve exports |
+
+State markers are shape-distinct: ✓ shipped, – in flight, ✕ planned, ╱ out of scope.
 
 ---
 

@@ -97,6 +97,41 @@ in patch versions.
   grown dense). Each tab is a short pane; the model chip deep-links to the **Cloud
   AI** tab. Arrow-key tab nav + `tablist`/`tab`/`tabpanel` roles. Purely
   organizational — no control changed. Docs-site only.
+- **State markers: `[ ]` reconciled to a neutral "todo / pending" across every
+  layout, with a new colour-blind-safe `--mark-todo` open ring.** `[ ]` was
+  decoded uniformly as `fail` + `✕` (red) everywhere, but it means a *neutral*
+  "not yet" in most layouts — checklist `todo`, obligation-matrix `exempt`,
+  roadmap `planned` — and only "not met" in verdict-grid. The decoder is now
+  layout-aware: those neutral cases emit `state todo state-todo` and render as
+  an **open ring on a neutral disc** (the shared `--mark-todo` mask, + a
+  `--mark-todo-bold` for `checks-bold`); verdict-grid keeps `fail` + the red
+  `✕`. **Breaking (visual):** existing `checklist` / `obligation-matrix` decks
+  with `[ ]` items now render those rows **neutral instead of red** — the
+  correct reading of "to-do", not "failed". The stable marks (✓ done · – partial
+  · ╱ out-of-scope) are unchanged. Marks are vector CSS masks, so they stay
+  pixel-crisp across PDF / HTML / raster exports. **`roadmap` now draws its
+  state markers from the same shared `--state-mark` mask recipe** (its discs +
+  masked symbols, default / horizons / status), so one theme-token set drives
+  every chart *and* checkbox in lockstep — no more bespoke per-component glyphs.
+- **`roadmap` folded into the chart family.** It is now a chart-frame member
+  dispatched by the chart engine
+  (`lib/components/chart/_chart-family/chart-family.js`) instead of a standalone
+  transformer, and moves from the `progression` disk bucket to `chart` (its
+  `function` stays `progression`). The workstream × phase grid now renders in
+  the shared `.chart-frame` skeleton — eyebrow → centered `h2` → body →
+  caption — with the table (or transposed `horizons` cards) wrapped in a
+  `.roadmap-figure`; the grid opts down to the compact content step so a full
+  set of rows clears the centered header. Authoring (the Markdown table, the
+  `[x]/[-]/[ ]/[/]` markers, every variant) is unchanged.
+- **`roadmap` state markers are now colour-blind-safe.** The retired
+  fill-level glyphs — the half-filled disc (`in flight`) and the hollow
+  outline ring (`planned`) — are replaced by shape-distinct white marks on the
+  state-coloured disc: **check / dash / cross / slash** for
+  shipped / in-flight / planned / out-of-scope, across the default, `horizons`,
+  and `status` treatments. Each state now reads in greyscale and for
+  colour-vision-deficient viewers (colour is the redundant channel, not the
+  only one), matching the mark vocabulary `checklist` / `verdict-grid` /
+  `obligation-matrix` already use.
 - **`journey` and `word-cloud` folded into the chart family.** Both are now
   chart-frame members dispatched by the chart engine
   (`lib/components/chart/_chart-family/chart-family.js`) like every other

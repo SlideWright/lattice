@@ -68,7 +68,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 - [`gantt`](../../chart/gantt/gantt.docs.md) — milestones occupy date ranges, not single moments
 - [`list-steps`](../../progression/list-steps/list-steps.docs.md) — the sequence has no dates, just an order
 - [`journey`](../../chart/journey/journey.docs.md) — stage-by-stage progress without calendar dates
-- [`roadmap`](../../progression/roadmap/roadmap.docs.md) — the timeline is forward-looking and bucketed by horizon
+- [`roadmap`](../../chart/roadmap/roadmap.docs.md) — the timeline is forward-looking and bucketed by horizon
 - [`progress`](../../chart/progress/progress.docs.md) — the events are parallel workstreams with completion percentages
 
 ## Demo deck

@@ -145,7 +145,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 - [`journey`](../../chart/journey/journey.docs.md) — the sequence is a user's path through tasks with mood / affect, not a system's discrete states
 - [`timeline-list`](../../chart/timeline-list/timeline-list.docs.md) — events are points in time rather than transitions between named states
 - [`list-steps`](../../progression/list-steps/list-steps.docs.md) — a linear procedure with no branching — state-chart is overkill if there are no choices to make
-- [`roadmap`](../../progression/roadmap/roadmap.docs.md) — parallel workstreams across phases, not a single machine's transitions
+- [`roadmap`](../../chart/roadmap/roadmap.docs.md) — parallel workstreams across phases, not a single machine's transitions
 
 ## Demo deck
 

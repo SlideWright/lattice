@@ -2,7 +2,7 @@
 
 # chart
 
-`12 components`
+`13 components`
 
 Chart — series-substance data visualizations (SVG kernel).
 
@@ -186,6 +186,21 @@ Effort in analyst-weeks; reach as the percent of teams that would adopt it, opti
   - Support `7`
   - Ecosystem `8`
   - Security `8`
+
+---
+
+<!-- _class: roadmap -->
+
+`H2 2026 · Rollout plan`
+
+## What ships in each phase, assuming the phases survive the next planning offsite.
+
+| Workstream | Foundation `Q2 2026`   | Hardening `Q3 2026`      | Scale `Q4 2026`         |
+| ---------- | ---------------------- | ------------------------ | ----------------------- |
+| Framework  | [x] Signal taxonomy    | [-] Scoring model v2     | [ ] Per-team weighting  |
+| Adoption   | [x] Pilot onboarding   | [-] Weekly signal review | [ ] Org-wide rollout    |
+| Governance | [x] Decision log       | [x] Calibration cadence  | [ ] Board reporting     |
+| Tooling    | [x] Intake form        | [/] Dashboards           | [ ] Self-serve exports  |
 
 ---
 

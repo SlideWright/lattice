@@ -1,9 +1,9 @@
 # chart-family
 
-Lattice's chart engine. A shared rendering subsystem used by twelve
+Lattice's chart engine. A shared rendering subsystem used by thirteen
 chart-class components: `progress`, `timeline-list`, `piechart`,
 `gantt`, `kanban`, `radar`, `quadrant`, `state-chart`, `funnel`, `map`,
-`journey`, and `word-cloud`.
+`journey`, `word-cloud`, and `roadmap`.
 
 Membership is defined by the engine, not the disk bucket: a chart-family
 member is any layout the dispatcher wraps in the `.chart-frame` skeleton.
@@ -68,7 +68,7 @@ The closed set of layouts wrapped by chart-family is hard-coded in
 const CHART_LAYOUTS = ['progress', 'timeline-list', 'piechart',
                        'gantt', 'kanban', 'radar', 'quadrant',
                        'state-chart', 'funnel', 'map',
-                       'journey', 'word-cloud'];
+                       'journey', 'word-cloud', 'roadmap'];
 ```
 
 Adding a new chart member requires updating that array AND either:
@@ -76,7 +76,11 @@ Adding a new chart member requires updating that array AND either:
   `progress` / `timeline-list` / `piechart` / `gantt` / `kanban`), OR
 - writing a per-component `<name>.transform.js` kernel and importing
   it from `chart-family.js` (current pattern for `radar`, `quadrant`,
-  `state-chart`, `funnel`, `map`, `journey`, and `word-cloud`).
+  `state-chart`, `funnel`, `map`, `journey`, `word-cloud`, and `roadmap`).
+
+`roadmap` is the one member whose body is a `<table>` (or a transposed
+`.horizons` grid) rather than a list/SVG figure; the dispatch wraps it in a
+`.roadmap-figure` div so the div-based chart-frame body matcher catches it.
 
 For a delegated kernel the dispatch branch calls the kernel's section
 transform to rewrite the list in place (e.g.
@@ -152,7 +156,7 @@ A planned cleanup distributes all kernels to their components, leaving
 
 ## See also
 
-- `lib/components/chart/{progress,timeline-list,piechart,gantt,kanban,radar,quadrant,state-chart,funnel,map,journey,word-cloud}/<name>.docs.md` — per-component contracts and variant catalogs.
+- `lib/components/chart/{progress,timeline-list,piechart,gantt,kanban,radar,quadrant,state-chart,funnel,map,journey,word-cloud,roadmap}/<name>.docs.md` — per-component contracts and variant catalogs.
 - `lib/shared/shared.docs.md` — the contrast: small composable
   modifiers (`compact`, `loose`, `accent`) that compose with all
   layouts, not just chart components.

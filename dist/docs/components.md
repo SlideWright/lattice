@@ -38,7 +38,6 @@
 - [Progression](#progression) — ordered movement through stages or time.
   - [`list-criteria`](#list-criteria)
   - [`list-steps`](#list-steps)
-  - [`roadmap`](#roadmap)
 - [Evidence](#evidence) — data that supports the argument.
   - [`kpi`](#kpi)
   - [`stats`](#stats)
@@ -55,6 +54,7 @@
   - [`progress`](#progress)
   - [`quadrant`](#quadrant)
   - [`radar`](#radar)
+  - [`roadmap`](#roadmap)
   - [`state-chart`](#state-chart)
   - [`timeline-list`](#timeline-list)
   - [`word-cloud`](#word-cloud)
@@ -3278,166 +3278,6 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 See [list-steps.gallery.light.pdf](../../lib/components/progression/list-steps/list-steps.gallery.light.pdf) for rendered examples of every variant.
 
-### roadmap
-
-> Phased multi-workstream grid — phases across the top, workstreams down the side.
-
-**Function** progression · **Form** matrix · **Substance** structure
-
-**Tags** `planning` · `swimlane` · `milestones` · `agile`
-
-Use to show what ships in each phase across multiple parallel workstreams. Cells render as state-token discs (pass/warn/fail/skip).
-
-#### When to use
-
-- **Phased delivery across workstreams.** When the question is what each team ships in each phase. Workstreams down the side, phases across the top, deliverables in the cells — the whole plan reads in one glance.
-- **State markers are the second channel.** Every cell can lead with `[x]` shipped, `[-]` in flight, `[ ]` planned, or `[/]` out of scope. The audience sees both 'what' and 'how it's going' without a separate status slide.
-- **Phase headers carry meta pills.** Append `` `Q2 2026` `` to a phase header and the renderer anchors a meta pill on the right of the column. Use it for date, owner, or status tags that frame the phase.
-
-#### When NOT to use
-
-- **One workstream.** A single row of phases is a `timeline` or `list-steps`, not a roadmap. Roadmap earns its grid only when at least two workstreams move in parallel.
-- **No state markers.** A grid of bare deliverables loses half its value. Add `[x]`/`[-]`/`[ ]`/`[/]` so the audience reads progress alongside scope.
-- **Past five workstreams.** More than five rows compresses cell text and the lane stripes lose their categorical read. Group adjacent workstreams or split by phase.
-
-#### Authoring
-
-```markdown
-<!-- _class: roadmap -->
-
-`H2 2026 · Plan`
-
-## What ships in each phase, by workstream.
-
-| Workstream | Foundation `Q2 2026` | Hardening `Q3 2026` | Scale `Q4 2026` |
-| --- | --- | --- | --- |
-| First workstream | [x] Shipped item | [-] In-flight item | [ ] Planned item |
-| Second workstream | [x] Shipped item | [/] Out-of-scope item | [ ] Planned item |
-
-State markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, ◐ in flight, ○ planned, ╱ out of scope.
-```
-
-#### Slots
-
-| Slot | Selector | Required | Description |
-|---|---|---|---|
-| `title` | `h2` | yes | Slide heading naming the plan. |
-| `rows` | `table` | yes | A markdown table. The header row lists the phases (each may carry an inline-code date pill, e.g. `Q2 2026`); the first column is the workstream name; each cell leads with a state marker [x]/[-]/[ ]/[/] then the deliverable. |
-
-#### Anatomy
-
-```text
-┌─────────────────────────────────────────┐
-│  header                                 │
-│  Phased roadmap heading.                │
-│                                         │
-│  ┌───────────┬───────────┬───────────┐  │
-│  │           │ Q1        │ Q2        │  │
-│  ├───────────┼───────────┼───────────┤  │
-│  │ Track A   │ [x] done  │ [-] wip   │  │
-│  │ Track B   │ [ ] plan  │ [/] skip  │  │
-│  └───────────┴───────────┴───────────┘  │
-│  footer                           1/19  │
-└─────────────────────────────────────────┘
-```
-
-#### Variants (layout-specific)
-
-##### `horizons` — Horizons — three-horizon planning framing
-
-Tints the phase columns as Horizon 1 / 2 / 3 (now / next / later) per the McKinsey three-horizons framing. Use when the planning frame is strategic-horizon-aware rather than fiscal-quarter-aware.
-
-```markdown
-<!-- _class: roadmap horizons -->
-
-`Three-horizon planning`
-
-## Where the framework invests across horizons — Horizon 3 has lived there since 2024.
-
-| Workstream    | Horizon 1 `Now`          | Horizon 2 `Next`         | Horizon 3 `Later`         |
-| ------------- | ------------------------ | ------------------------ | ------------------------- |
-| Signal Intake | [x] Connector v1     | [-] Multi-source dedupe    | [ ] Anomaly auto-routing |
-| Scoring       | [x] Equal weights      | [-] Per-team calibration   | [ ] Per-decision profiles |
-| Decision Log  | [x] Append-only schema   | [x] Outcome auto-pairing | [ ] Auditor export        |
-| Adoption      | [x] One pilot team       | [/] Second team          | [ ] Org-wide enablement   |
-
-Horizons frame the read: H1 is core business, H2 is emerging, H3 is the option set.
-```
-
-##### `status` — Status — heavy state treatment
-
-Promotes the state markers ([x]/[-]/[ ]/[/]) to the dominant read: tinted cell grounds, an uppercase state eyebrow, and a corner state disc. Use for the standing delivery-status review.
-
-```markdown
-<!-- _class: roadmap status -->
-
-`Layout · roadmap status`
-
-## Delivery status by workstream, as of the most flattering snapshot.
-
-| Workstream    | Foundation `Q2 2026` | Hardening `Q3 2026`      | Scale `Q4 2026`           |
-| ------------- | -------------------- | ------------------------ | ------------------------- |
-| Signal Intake | [x] Connector v1 | [-] Multi-source dedupe    | [ ] Anomaly auto-routing |
-| Scoring       | [x] Equal weights    | [-] Per-team calibration | [ ] Per-decision profiles |
-| Decision Log  | [x] Append schema    | [x] Outcome pairing      | [ ] Auditor export        |
-| Adoption      | [x] One pilot team   | [/] Second team          | [ ] Org-wide enablement   |
-
-State markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, ◐ in flight, ○ planned, ╱ out of scope.
-```
-
-##### `swimlane` — Swimlane — horizontal tracks
-
-Renders each workstream as a horizontal track across the phase columns, so a reader scans one team's whole journey left-to-right before moving to the next.
-
-```markdown
-<!-- _class: roadmap swimlane -->
-
-`Layout · roadmap swimlane`
-
-## Each team's track across the year, momentum implied by the arrows.
-
-| Workstream    | Foundation `Q2 2026` | Hardening `Q3 2026`    | Scale `Q4 2026`           |
-| ------------- | -------------------- | ---------------------- | ------------------------- |
-| Signal Intake | Connector v1     | Multi-source dedupe        | Anomaly auto-routing  |
-| Scoring       | Equal weights        | Per-team calibration   | Per-decision profiles    |
-| Decision Log  | Append schema        | Outcome pairing        | Auditor export            |
-| Adoption      | One pilot team       | Second team            | Org-wide enablement       |
-```
-
-##### `milestones` — Milestones — calendar-aware
-
-Treats the phase headers as dated milestones, carrying their date pill as a subtitle. Use when the cadence of the dates is part of the story, not just the sequence.
-
-```markdown
-<!-- _class: roadmap milestones -->
-
-`Layout · roadmap milestones`
-
-## The dated path to GA, dates subject to the usual revision.
-
-| Workstream    | Beta `Q2 2026`       | RC `Q3 2026`           | GA `Q4 2026`              |
-| ------------- | -------------------- | ---------------------- | ------------------------- |
-| Signal Intake | Connector v1     | Multi-source dedupe        | Anomaly auto-routing  |
-| Scoring       | Equal weights        | Per-team calibration   | Per-decision profiles    |
-| Decision Log  | Append schema        | Outcome pairing        | Auditor export            |
-```
-
-#### Universal modifiers
-
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
-
-#### Related components
-
-- [`gantt`](#gantt) — continuous task bars across a date axis rather than discrete phase cells
-- [`kanban`](#kanban) — current state by stage rather than phased schedule
-- [`list-steps`](#list-steps) — single workstream sequence without parallel lanes
-- [`verdict-grid`](#verdict-grid) — options scored against shared criteria, not phased delivery
-- [`checklist`](#checklist) — single list with state markers, no workstream dimension
-
-#### Demo deck
-
-See [roadmap.gallery.light.pdf](../../lib/components/progression/roadmap/roadmap.gallery.light.pdf) for rendered examples of every variant.
-
 ## Evidence
 
 *data that supports the argument.*
@@ -5235,6 +5075,166 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 #### Demo deck
 
 See [radar.gallery.light.pdf](../../lib/components/chart/radar/radar.gallery.light.pdf) for rendered examples of every variant.
+
+### roadmap
+
+> Phased multi-workstream grid — phases across the top, workstreams down the side.
+
+**Function** progression · **Form** matrix · **Substance** structure
+
+**Tags** `planning` · `swimlane` · `milestones` · `agile`
+
+Use to show what ships in each phase across multiple parallel workstreams. Cells render as state-token discs (pass/warn/fail/skip).
+
+#### When to use
+
+- **Phased delivery across workstreams.** When the question is what each team ships in each phase. Workstreams down the side, phases across the top, deliverables in the cells — the whole plan reads in one glance.
+- **State markers are the second channel.** Every cell can lead with `[x]` shipped, `[-]` in flight, `[ ]` planned, or `[/]` out of scope. The audience sees both 'what' and 'how it's going' without a separate status slide.
+- **Phase headers carry meta pills.** Append `` `Q2 2026` `` to a phase header and the renderer anchors a meta pill on the right of the column. Use it for date, owner, or status tags that frame the phase.
+
+#### When NOT to use
+
+- **One workstream.** A single row of phases is a `timeline` or `list-steps`, not a roadmap. Roadmap earns its grid only when at least two workstreams move in parallel.
+- **No state markers.** A grid of bare deliverables loses half its value. Add `[x]`/`[-]`/`[ ]`/`[/]` so the audience reads progress alongside scope.
+- **Past five workstreams.** More than five rows compresses cell text and the lane stripes lose their categorical read. Group adjacent workstreams or split by phase.
+
+#### Authoring
+
+```markdown
+<!-- _class: roadmap -->
+
+`H2 2026 · Plan`
+
+## What ships in each phase, by workstream.
+
+| Workstream | Foundation `Q2 2026` | Hardening `Q3 2026` | Scale `Q4 2026` |
+| --- | --- | --- | --- |
+| First workstream | [x] Shipped item | [-] In-flight item | [ ] Planned item |
+| Second workstream | [x] Shipped item | [/] Out-of-scope item | [ ] Planned item |
+
+State markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, – in flight, ○ planned, ╱ out of scope.
+```
+
+#### Slots
+
+| Slot | Selector | Required | Description |
+|---|---|---|---|
+| `title` | `h2` | yes | Slide heading naming the plan. |
+| `rows` | `table` | yes | A markdown table. The header row lists the phases (each may carry an inline-code date pill, e.g. `Q2 2026`); the first column is the workstream name; each cell leads with a state marker [x]/[-]/[ ]/[/] then the deliverable. |
+
+#### Anatomy
+
+```text
+┌─────────────────────────────────────────┐
+│  header                                 │
+│  Phased roadmap heading.                │
+│                                         │
+│  ┌───────────┬───────────┬───────────┐  │
+│  │           │ Q1        │ Q2        │  │
+│  ├───────────┼───────────┼───────────┤  │
+│  │ Track A   │ [x] done  │ [-] wip   │  │
+│  │ Track B   │ [ ] plan  │ [/] skip  │  │
+│  └───────────┴───────────┴───────────┘  │
+│  footer                           1/19  │
+└─────────────────────────────────────────┘
+```
+
+#### Variants (layout-specific)
+
+##### `horizons` — Horizons — three-horizon planning framing
+
+Tints the phase columns as Horizon 1 / 2 / 3 (now / next / later) per the McKinsey three-horizons framing. Use when the planning frame is strategic-horizon-aware rather than fiscal-quarter-aware.
+
+```markdown
+<!-- _class: roadmap horizons -->
+
+`Three-horizon planning`
+
+## Where the framework invests across horizons — Horizon 3 has lived there since 2024.
+
+| Workstream    | Horizon 1 `Now`          | Horizon 2 `Next`         | Horizon 3 `Later`         |
+| ------------- | ------------------------ | ------------------------ | ------------------------- |
+| Signal Intake | [x] Connector v1     | [-] Multi-source dedupe    | [ ] Anomaly auto-routing |
+| Scoring       | [x] Equal weights      | [-] Per-team calibration   | [ ] Per-decision profiles |
+| Decision Log  | [x] Append-only schema   | [x] Outcome auto-pairing | [ ] Auditor export        |
+| Adoption      | [x] One pilot team       | [/] Second team          | [ ] Org-wide enablement   |
+
+Horizons frame the read: H1 is core business, H2 is emerging, H3 is the option set.
+```
+
+##### `status` — Status — heavy state treatment
+
+Promotes the state markers ([x]/[-]/[ ]/[/]) to the dominant read: tinted cell grounds, an uppercase state eyebrow, and a corner state disc. Use for the standing delivery-status review.
+
+```markdown
+<!-- _class: roadmap status -->
+
+`Layout · roadmap status`
+
+## Delivery status by workstream, as of the most flattering snapshot.
+
+| Workstream    | Foundation `Q2 2026` | Hardening `Q3 2026`      | Scale `Q4 2026`           |
+| ------------- | -------------------- | ------------------------ | ------------------------- |
+| Signal Intake | [x] Connector v1 | [-] Multi-source dedupe    | [ ] Anomaly auto-routing |
+| Scoring       | [x] Equal weights    | [-] Per-team calibration | [ ] Per-decision profiles |
+| Decision Log  | [x] Append schema    | [x] Outcome pairing      | [ ] Auditor export        |
+| Adoption      | [x] One pilot team   | [/] Second team          | [ ] Org-wide enablement   |
+
+State markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, – in flight, ○ planned, ╱ out of scope.
+```
+
+##### `swimlane` — Swimlane — horizontal tracks
+
+Renders each workstream as a horizontal track across the phase columns, so a reader scans one team's whole journey left-to-right before moving to the next.
+
+```markdown
+<!-- _class: roadmap swimlane -->
+
+`Layout · roadmap swimlane`
+
+## Each team's track across the year, momentum implied by the arrows.
+
+| Workstream    | Foundation `Q2 2026` | Hardening `Q3 2026`    | Scale `Q4 2026`           |
+| ------------- | -------------------- | ---------------------- | ------------------------- |
+| Signal Intake | Connector v1     | Multi-source dedupe        | Anomaly auto-routing  |
+| Scoring       | Equal weights        | Per-team calibration   | Per-decision profiles    |
+| Decision Log  | Append schema        | Outcome pairing        | Auditor export            |
+| Adoption      | One pilot team       | Second team            | Org-wide enablement       |
+```
+
+##### `milestones` — Milestones — calendar-aware
+
+Treats the phase headers as dated milestones, carrying their date pill as a subtitle. Use when the cadence of the dates is part of the story, not just the sequence.
+
+```markdown
+<!-- _class: roadmap milestones -->
+
+`Layout · roadmap milestones`
+
+## The dated path to GA, dates subject to the usual revision.
+
+| Workstream    | Beta `Q2 2026`       | RC `Q3 2026`           | GA `Q4 2026`              |
+| ------------- | -------------------- | ---------------------- | ------------------------- |
+| Signal Intake | Connector v1     | Multi-source dedupe        | Anomaly auto-routing  |
+| Scoring       | Equal weights        | Per-team calibration   | Per-decision profiles    |
+| Decision Log  | Append schema        | Outcome pairing        | Auditor export            |
+```
+
+#### Universal modifiers
+
+This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+
+#### Related components
+
+- [`gantt`](#gantt) — continuous task bars across a date axis rather than discrete phase cells
+- [`kanban`](#kanban) — current state by stage rather than phased schedule
+- [`list-steps`](#list-steps) — single workstream sequence without parallel lanes
+- [`verdict-grid`](#verdict-grid) — options scored against shared criteria, not phased delivery
+- [`checklist`](#checklist) — single list with state markers, no workstream dimension
+
+#### Demo deck
+
+See [roadmap.gallery.light.pdf](../../lib/components/chart/roadmap/roadmap.gallery.light.pdf) for rendered examples of every variant.
 
 ### state-chart
 

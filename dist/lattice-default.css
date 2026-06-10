@@ -389,7 +389,10 @@
    *
    *   [x] done         → check  on --pass        (green)
    *   [-] partial      → dash   on --warn        (amber)
-   *   [ ] not done     → x      on --fail        (red)
+   *   [ ] is OVERLOADED, so the decoder picks per layout:
+   *       · neutral "todo / pending" (checklist todo, obligation exempt,
+   *         roadmap planned) → todo  → ring (--mark-todo) on a NEUTRAL disc
+   *       · "not met" (verdict-grid)                     → x    on --fail (red)
    *   [/] out of scope → slash  on --text-muted  (grey, row struck through)
    *
    * Each mark is a CSS mask (opaque path on transparent ground); the
@@ -411,12 +414,21 @@
   --mark-dash:  url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M7 12h10' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round'/></svg>");
   --mark-x:     url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M8 8l8 8M16 8l-8 8' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round'/></svg>");
   --mark-slash: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M8 16L16 8' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round'/></svg>");
+  /* todo / pending — an OPEN ring, the neutral "not started, on the slate"
+   * mark. The colour-blind-safe replacement for the retired hollow disc:
+   * here the disc is a filled NEUTRAL colour and the ring is the in-disc
+   * mark (mask), so it reads "open / upcoming", never "no" (that's --mark-x).
+   * Used by the neutral `[ ]` states — roadmap `planned`, obligation-matrix
+   * `exempt`, checklist `todo`; verdict-grid's not-met keeps --mark-x. Same
+   * viewBox-24, central-inset, ~2.5 stroke language as the rest of the set. */
+  --mark-todo:  url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><circle cx='12' cy='12' r='5' fill='none' stroke='black' stroke-width='2.5'/></svg>");
   /* Heavier-stroked set for the `checks-bold` variant (a mask's stroke
    * can't be tuned by CSS var, so bold swaps the token). */
   --mark-check-bold: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M6 12.6l4 4 8-9' fill='none' stroke='black' stroke-width='3.6' stroke-linecap='round' stroke-linejoin='round'/></svg>");
   --mark-dash-bold:  url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M7 12h10' fill='none' stroke='black' stroke-width='3.8' stroke-linecap='round'/></svg>");
   --mark-x-bold:     url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M8 8l8 8M16 8l-8 8' fill='none' stroke='black' stroke-width='3.6' stroke-linecap='round'/></svg>");
   --mark-slash-bold: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M8 16L16 8' fill='none' stroke='black' stroke-width='3.8' stroke-linecap='round'/></svg>");
+  --mark-todo-bold:  url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><circle cx='12' cy='12' r='5' fill='none' stroke='black' stroke-width='3.6'/></svg>");
 
   /* ── State-disc recipe — SCALAR KNOBS (default = "Ringed Solid") ──────
    * The disc is painted by each consumer from --state-color + these
@@ -1374,9 +1386,11 @@ section.cards-stack :is(ul,ol) > li > strong ~ * { font-weight: 400; }
  * - [/] Org-wide adoption — _deferred to Phase 3_
  *
  * Each top-level list item carries a state marker (universal grammar):
- *   [x] → pass + state-full     (check  on --pass  green)
- *   [-] → warn + state-half     (dash   on --warn  amber)
- *   [ ] → fail + state-empty    (x      on --fail  red)
+ *   [x] → pass + state-full     (check  on --pass        green)
+ *   [-] → warn + state-half     (dash   on --warn        amber)
+ *   [ ] → todo + state-todo     (ring   on --text-label  neutral) — "not yet
+ *                                started" is a neutral todo, NOT a red gap;
+ *                                verdict-grid's "not met" keeps the red x
  *   [/] → skip + state-slashed  (slash  on --text-muted; row strikethrough)
  *
  * Every state is the SAME disc treatment carrying a DISTINCT mark, so the
@@ -1437,6 +1451,16 @@ section.checklist > ol > li.state.fail {
   --state-color:var(--fail);
   border-left-color:var(--state-color);
   background:var(--fail-bg, var(--bg-alt));
+}
+/* todo — `[ ]` is "not yet started", a NEUTRAL state, not a failure: a neutral
+ * disc carrying the open ring (--mark-todo, via the shared state-todo shape).
+ * No red, no strike — it reads "on the list, not done", distinct from the
+ * red ✕ that verdict-grid keeps for a genuinely "not met" criterion. */
+section.checklist > ul > li.state.todo,
+section.checklist > ol > li.state.todo {
+  --state-color:var(--text-label);
+  border-left-color:var(--state-color);
+  background:var(--bg-alt);
 }
 section.checklist > ul > li.state.skip,
 section.checklist > ol > li.state.skip {
@@ -6028,6 +6052,9 @@ section.obligation-matrix td .state.pass { --state-color:var(--pass); }
 section.obligation-matrix td .state.warn { --state-color:var(--warn); }
 section.obligation-matrix td .state.fail { --state-color:var(--fail); }
 section.obligation-matrix td .state.skip { --state-color:var(--text-muted); }
+/* exempt — `[ ]` is "not subject to this obligation", a NEUTRAL state (not a
+ * gap): a neutral disc carrying the open ring (state-todo → --mark-todo). */
+section.obligation-matrix td .state.todo { --state-color:var(--text-label); }
 /* Mark overlay — masked symbol (check / dash / x / slash) on the disc.
  * Mark colour from --state-mark-pct (0% = knockout to --bg). */
 section.obligation-matrix td .state::after {
@@ -7962,7 +7989,7 @@ section.regulatory-update.regulatory-update.priority > :is(ol, ul) > li:nth-chil
 section.regulatory-update.regulatory-update.priority > :is(ol, ul) > li:nth-child(3) { border-left-color:var(--pass); }
 section.regulatory-update.regulatory-update.priority > :is(ol, ul) > li:nth-child(3)::before { background:var(--pass); }
 
-/* === lib/components/progression/roadmap/roadmap.styles.css === */
+/* === lib/components/chart/roadmap/roadmap.styles.css === */
 /* roadmap — extracted from lib/_legacy.css (batch 7).
  * See lib/components/roadmap/roadmap.manifest.json for the component contract.
  */
@@ -7997,11 +8024,21 @@ section.regulatory-update.regulatory-update.priority > :is(ol, ul) > li:nth-chil
  *                  (write `Phase 01<br>Q1 2026`), and a tick scale
  *                  runs under the phase columns.
  * ──────────────────────────────────────────────────────────────────────── */
-section.roadmap { display:flex; flex-direction:column; }
-section.roadmap h2 { font-size:var(--fs-emphasis); margin-bottom:var(--sp-md); }
+/* roadmap is a chart-frame member (folded into the chart family): the
+ * dispatcher lifts the h2 into .chart-header, the intro paragraph into the
+ * .chart-subtitle, and wraps the table (or transposed .horizons grid) in
+ * .roadmap-figure inside .chart-body — so the section layout, h2 chrome, and
+ * the opt-in `.canvas` surface panel all come from chart-family.css. The
+ * figure fills the body height; the table/grid fills the figure. */
+section.roadmap .roadmap-figure {
+  display:flex; flex-direction:column; width:100%; flex:1; min-height:0;
+}
 section.roadmap table {
   width:100%; table-layout:fixed; border-collapse:separate; border-spacing:0;
-  font-size:var(--fs-body); flex:1;
+  /* Dense grid inside the frame: opt down to the compact content step so
+   * four–five workstream rows clear the centered chart-header without the
+   * chart-body's overflow:hidden clipping the last row. */
+  font-size:var(--fs-body-compact); flex:1;
 }
 section.roadmap thead tr { background:var(--spectrum) bottom / 100% 2px no-repeat; }
 section.roadmap thead th {
@@ -8070,7 +8107,7 @@ section.roadmap thead th:nth-child(8n+1),
 section.roadmap tbody tr:nth-child(8n)   > td:first-child { --phase-accent:var(--c8-dark); }
 
 section.roadmap td {
-  padding:var(--sp-sm) var(--sp-md);
+  padding:var(--sp-xs) var(--sp-md);
   border-bottom:1px solid var(--border);
   border-left:1px solid var(--border);
   color:var(--text-body);
@@ -8089,12 +8126,9 @@ section.roadmap td:empty::before {
   color:var(--text-muted);
   font-family:var(--font-mono);
 }
-section.roadmap > p {
-  font-size:var(--fs-meta);
-  font-style:italic;
-  color:var(--text-secondary);
-  margin-top:var(--sp-md);
-}
+/* The intro paragraph and any trailing caption are lifted by the chart-frame
+ * wrap into .chart-subtitle / .chart-caption (styled in chart-family.css), so
+ * roadmap no longer styles a bare `section.roadmap > p`. */
 
 /* ── ROADMAP STATE MARKERS — universal `[x]/[-]/[ ]/[/]` per cell ─────
  * Cells in ANY roadmap variant can carry a state marker as the leading
@@ -8120,77 +8154,81 @@ section.roadmap > p {
 section.roadmap td.cell-state.state-shipped,
 section.roadmap.horizons .horizon-rows > li.cell-state.state-shipped {
   --state-color:var(--pass);
+  --state-mark:var(--mark-check);
   --cell-state-bg:color-mix(in srgb, var(--pass) 8%, transparent);
 }
 section.roadmap td.cell-state.state-wip,
 section.roadmap.horizons .horizon-rows > li.cell-state.state-wip {
   --state-color:var(--warn);
+  --state-mark:var(--mark-dash);
   --cell-state-bg:color-mix(in srgb, var(--warn) 9%, transparent);
 }
 section.roadmap td.cell-state.state-planned,
 section.roadmap.horizons .horizon-rows > li.cell-state.state-planned {
   --state-color:var(--text-label);
+  --state-mark:var(--mark-todo);
   --cell-state-bg:var(--bg-alt);
 }
 section.roadmap td.cell-state.state-skipped,
 section.roadmap.horizons .horizon-rows > li.cell-state.state-skipped {
   --state-color:var(--text-muted);
+  --state-mark:var(--mark-slash);
   --cell-state-bg:transparent;
 }
 
 /* Light treatment (default, any variant): a small state-coloured
    indicator with an inset white glyph sits before the cell text.
-   Glyph vocabulary:
-     shipped  → ✓ check                (filled / complete)
-     wip      → ◐ half-filled disc     (in progress / halfway done)
-     planned  → ○ outlined disc, empty (committed / not started)
-     skipped  → ╱ diagonal slash       (out of scope; plus strike-through
-                                        on the cell text)
-   Shipped / wip / planned share a fullness gradient (filled → half →
-   empty); skipped sits outside that axis as the "not in this phase"
-   mark. The eyebrow label is rendered for the heavy treatment but
-   hidden here. */
+   Glyph vocabulary — each state carries a SHAPE-distinct mark so it reads
+   in greyscale and for colour-vision-deficient viewers (colour is the
+   redundant, not the primary, encoding):
+     shipped  → ✓ check          (filled / complete)
+     wip      → – dash           (in progress) — the colour-blind-safe
+                                  equivalent of the retired half-fill disc,
+                                  matching the checklist/verdict-grid mark
+                                  vocabulary (half → dash)
+     planned  → ○ open ring     (committed / not started) — the neutral "on
+                                  the slate" mark on a neutral disc, matching
+                                  the shared --mark-todo; ✕ ("no") is reserved
+                                  for verdict-grid's genuine "not met"
+     skipped  → ╱ diagonal slash (out of scope; plus strike-through on text)
+   The eyebrow label is rendered for the heavy treatment but hidden here. */
 section.roadmap td.cell-state .cell-state-label { display:none; }
-section.roadmap td.cell-state .cell-state-text {
-  display:inline;
-  color:var(--text-body);
+/* Leading state token = a solid --state-color disc (::before) carrying the
+ * shared --state-mark symbol (::after), knocked out in the canvas colour via
+ * a CSS mask — the SAME recipe checklist / verdict-grid / obligation-matrix
+ * use, so a theme tuning --mark-* / --state-color updates roadmap in lockstep.
+ * Both pseudo-elements are absolutely positioned in the text's leading pad so
+ * they overlap exactly; the marks are vector masks, pixel-crisp in PDF / HTML
+ * / raster. Mark vocabulary: shipped → check, wip → dash, planned → open ring
+ * (neutral todo), skipped → slash. */
+section.roadmap td.cell-state .cell-state-text,
+section.roadmap.horizons .horizon-rows > li.cell-state .row-text {
+  position:relative;
+  padding-left:1.4em;
+}
+section.roadmap td.cell-state .cell-state-text { color:var(--text-body); }
+section.roadmap td.cell-state .cell-state-text::before,
+section.roadmap td.cell-state .cell-state-text::after,
+section.roadmap.horizons .horizon-rows > li.cell-state .row-text::before,
+section.roadmap.horizons .horizon-rows > li.cell-state .row-text::after {
+  content:'';
+  position:absolute;
+  left:0;
+  top:0.16em;
+  width:0.95em;
+  height:0.95em;
+  box-sizing:border-box;
 }
 section.roadmap td.cell-state .cell-state-text::before,
 section.roadmap.horizons .horizon-rows > li.cell-state .row-text::before {
-  content:'';
-  display:inline-block;
-  width:0.95em;
-  height:0.95em;
-  margin-right:0.45em;
   border-radius:50%;
   background-color:var(--state-color, var(--text-muted));
-  background-repeat:no-repeat;
-  background-position:center;
-  background-size:72% 72%;
-  vertical-align:-0.08em;
-  box-sizing:border-box;
 }
-section.roadmap td.cell-state.state-shipped .cell-state-text::before,
-section.roadmap.horizons .horizon-rows > li.cell-state.state-shipped .row-text::before {
-  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='none' stroke='white' stroke-width='2.75' stroke-linecap='round' stroke-linejoin='round' d='M3.25 8.5 L6.75 12 L12.75 5'/></svg>");
-}
-section.roadmap td.cell-state.state-wip .cell-state-text::before,
-section.roadmap.horizons .horizon-rows > li.cell-state.state-wip .row-text::before {
-  /* Half-filled disc: state colour fills the left half (the "done"
-     portion); white covers the right half (the "remaining" portion).
-     Sits on the fullness gradient between full (shipped) and empty
-     (planned), reading instantly as "in progress / halfway done". */
-  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect x='8' y='0' width='8' height='16' fill='white'/></svg>");
-  background-size:100% 100%;
-}
-section.roadmap td.cell-state.state-planned .cell-state-text::before,
-section.roadmap.horizons .horizon-rows > li.cell-state.state-planned .row-text::before {
-  background-color:transparent;
-  border:1.5px solid var(--state-color, var(--text-muted));
-}
-section.roadmap td.cell-state.state-skipped .cell-state-text::before,
-section.roadmap.horizons .horizon-rows > li.cell-state.state-skipped .row-text::before {
-  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='none' stroke='white' stroke-width='2.75' stroke-linecap='round' d='M12 4 L4 12'/></svg>");
+section.roadmap td.cell-state .cell-state-text::after,
+section.roadmap.horizons .horizon-rows > li.cell-state .row-text::after {
+  background-color:var(--bg);
+  -webkit-mask:var(--state-mark) center / 72% 72% no-repeat;
+          mask:var(--state-mark) center / 72% 72% no-repeat;
 }
 section.roadmap td.cell-state.state-skipped .cell-state-text,
 section.roadmap.horizons .horizon-rows > li.cell-state.state-skipped .row-text {
@@ -8236,42 +8274,41 @@ section.roadmap.status td.cell-state .cell-state-text::before {
   display:none;
 }
 
-/* Top-right state token — the universal disc + shape, positioned in
- * the corner so the cell body stays clean while still carrying the
- * colour AND shape channels of the state grammar:
- *   shipped → filled disc
- *   wip     → half-disc (tonal split)
- *   planned → outline disc
- *   skipped → filled disc with diagonal slash
- * Same recipe as checklist / verdict-grid / obligation-matrix — shape
- * via CSS, no font dependency. */
+/* Top-right state token — a state-coloured disc carrying a SHAPE-distinct
+ * white mark, positioned in the corner so the cell body stays clean while
+ * still encoding state by shape (not just colour / fill level):
+ *   shipped → check
+ *   wip     → dash   (replaces the retired half-disc tonal split)
+ *   planned → open ring (neutral "on the slate"; not ✕)
+ *   skipped → diagonal slash
+ * Shape via CSS, no font dependency; the cell's text label is the third,
+ * redundant channel. */
 section.roadmap.status td.cell-state { padding-right:calc(1.4em + var(--sp-md)); }
-section.roadmap.status td.cell-state::after {
+/* Corner state token — the SAME disc + masked --state-mark recipe as the light
+ * treatment, in the cell's top-right: ::after is the --state-color disc,
+ * ::before is the canvas-knockout mark masked by the shared --state-mark (set
+ * per state above). Token-uniform with checklist / verdict-grid / obligation-
+ * matrix; vector masks, pixel-crisp in every export. */
+section.roadmap.status td.cell-state::after,
+section.roadmap.status td.cell-state::before {
   content:'';
   position:absolute;
   top:var(--sp-sm);
   right:var(--sp-sm);
   width:1em;
   height:1em;
-  border-radius:50%;
-  background-color:var(--state-color, var(--text-muted));
-  background-repeat:no-repeat;
-  background-position:center;
-  background-size:100% 100%;
   box-sizing:border-box;
   pointer-events:none;
 }
-section.roadmap.status td.cell-state.state-wip::after {
-  background:linear-gradient(to right,
-    var(--state-color, var(--text-muted)) 50%,
-    color-mix(in srgb, var(--state-color, var(--text-muted)) 55%, var(--bg)) 50%);
+section.roadmap.status td.cell-state::after {
+  border-radius:50%;
+  background-color:var(--state-color, var(--text-muted));
 }
-section.roadmap.status td.cell-state.state-planned::after {
-  background-color:transparent;
-  border:2px solid var(--state-color, var(--text-muted));
-}
-section.roadmap.status td.cell-state.state-skipped::after {
-  background-image:var(--state-slash);
+section.roadmap.status td.cell-state::before {
+  background-color:var(--bg);
+  -webkit-mask:var(--state-mark) center / 72% 72% no-repeat;
+          mask:var(--state-mark) center / 72% 72% no-repeat;
+  z-index:1;
 }
 
 /* ── ROADMAP HORIZONS — Now / Next / Later vertical phase cards ──────
@@ -8347,7 +8384,9 @@ section.roadmap.horizons .horizon-rows {
   padding:0;
   display:flex;
   flex-direction:column;
-  gap:var(--sp-sm);
+  /* Compact inside the frame so all workstream rows clear the centered
+   * chart-header without chart-body's overflow:hidden clipping the card. */
+  gap:var(--sp-xs);
 }
 section.roadmap.horizons .horizon-rows > li {
   display:flex;
@@ -8365,7 +8404,7 @@ section.roadmap.horizons .row-label {
   color:var(--text-label);
 }
 section.roadmap.horizons .row-text {
-  font-size:var(--fs-body);
+  font-size:var(--fs-body-compact);
   color:var(--text-body);
   line-height:var(--lh-snug);
 }
@@ -10308,6 +10347,11 @@ section .state-full    { --state-mark: var(--mark-check); }
 section .state-half    { --state-mark: var(--mark-dash);  }
 section .state-empty   { --state-mark: var(--mark-x);     }
 section .state-slashed { --state-mark: var(--mark-slash); }
+/* Neutral "todo / pending" — the open ring. The colour-blind-safe reading of
+ * a [ ] that means "not started, on the slate" (roadmap planned, obligation
+ * exempt, checklist todo) rather than "not met" (verdict-grid keeps
+ * state-empty → ✕). The decoder emits `state-todo` for those neutral cases. */
+section .state-todo    { --state-mark: var(--mark-todo);  }
 
 /* Style variants — author opts in per slide (`_class: checklist checks-bold`)
  * or per deck (`class: checks-outline`). Each sets ONLY scalar knobs (plus,

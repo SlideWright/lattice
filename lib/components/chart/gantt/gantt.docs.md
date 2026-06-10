@@ -67,7 +67,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 ## Related components
 
-- [`roadmap`](../../progression/roadmap/roadmap.docs.md) — phased grid of deliverables across workstreams without continuous spans
+- [`roadmap`](../../chart/roadmap/roadmap.docs.md) — phased grid of deliverables across workstreams without continuous spans
 - [`kanban`](../../chart/kanban/kanban.docs.md) — current state by stage rather than schedule by lane
 - [`list-steps`](../../progression/list-steps/list-steps.docs.md) — sequential process with descriptive steps, no parallel lanes
 

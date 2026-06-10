@@ -1422,11 +1422,15 @@ function parseSlide(raw, index) {
   //   [-] → warn + state-half     (half-filled disc)
   //   [ ] → fail + state-empty    (outline disc)
   //   [/] → skip + state-slashed  (filled disc + diagonal slash)
-  const stateClassesFor = (marker) => {
+  const stateClassesFor = (marker, neutralEmpty = false) => {
     if (marker === 'x') return { sem: 'pass', shape: 'state-full' };
     if (marker === '-') return { sem: 'warn', shape: 'state-half' };
     if (marker === '/') return { sem: 'skip', shape: 'state-slashed' };
-    return { sem: 'fail', shape: 'state-empty' };
+    // `[ ]` is neutral "todo / pending" in checklist/obligation/roadmap, but
+    // "not met" in verdict-grid — neutralEmpty picks the open-ring treatment.
+    return neutralEmpty
+      ? { sem: 'todo', shape: 'state-todo' }
+      : { sem: 'fail', shape: 'state-empty' };
   };
 
   // verdict-grid (and pricing, which shares the nested-card-with-badges shape —
@@ -1447,7 +1451,7 @@ function parseSlide(raw, index) {
   // label preserved as the span's text content.
   if (cls.includes('obligation-matrix')) {
     html = html.replace(/<td>\s*\[([x\-/ ])\]\s*([\s\S]*?)<\/td>/g, (_, marker, label) => {
-      const { sem, shape } = stateClassesFor(marker);
+      const { sem, shape } = stateClassesFor(marker, true); // obligation [ ] = exempt (neutral)
       return `<td><span class="state ${sem} ${shape}">${label.trim()}</span></td>`;
     });
   }
@@ -1461,7 +1465,7 @@ function parseSlide(raw, index) {
     html = html.replace(/<li>([\s\S]*?)<\/li>/g, (full, inner) => {
       const m = /^\s*\[([x\-/ ])\]\s*/.exec(inner);
       if (!m) return full;
-      const { sem, shape } = stateClassesFor(m[1]);
+      const { sem, shape } = stateClassesFor(m[1], true); // checklist [ ] = todo (neutral)
       return `<li class="state ${sem} ${shape}">${inner.slice(m[0].length)}</li>`;
     });
   }

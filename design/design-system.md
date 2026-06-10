@@ -469,16 +469,16 @@ exceptions introduced for maintenance colocation:
 | `statement`  | 4     | function = statement |
 | `inventory`  | 10    | function = inventory (statute-stack moved to legal) |
 | `comparison` | 8     | function = comparison (obligation-matrix → legal, compare-code → code) |
-| `progression`| 4     | function = progression (authority-chain, regulatory-update moved to legal) |
+| `progression`| 2     | function = progression (authority-chain, regulatory-update → legal; journey, roadmap → chart) |
 | `evidence`   | 2     | function = evidence (citation-card → legal, math → math, code → code) |
 | `imagery`    | 2     | function = imagery |
-| `chart`      | 12    | substance = data visualizations (function stays evidence/progression); journey + word-cloud folded into the chart family |
+| `chart`      | 13    | substance = data visualizations (function stays evidence/progression); journey, word-cloud + roadmap folded into the chart family |
 | `diagram`    | 1     | substance = topological visuals (function stays evidence) |
 | `math`       | 1     | substance = typeset equations (function stays evidence) |
 | `code`       | 2     | substance = syntax-highlighted source (function stays evidence for code, comparison for compare-code) |
 | `legal`      | 5     | domain = legal (function spans 4 families) |
 
-For 32 of the 53 components `bucket === function`. The 21 divergent
+For 31 of the 53 components `bucket === function`. The 22 divergent
 components declare their `bucket` explicitly in the manifest; their
 `function` field is unchanged in every case. Three reasons for
 divergence:

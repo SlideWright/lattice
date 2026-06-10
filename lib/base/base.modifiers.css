@@ -678,6 +678,11 @@ section .state-full    { --state-mark: var(--mark-check); }
 section .state-half    { --state-mark: var(--mark-dash);  }
 section .state-empty   { --state-mark: var(--mark-x);     }
 section .state-slashed { --state-mark: var(--mark-slash); }
+/* Neutral "todo / pending" — the open ring. The colour-blind-safe reading of
+ * a [ ] that means "not started, on the slate" (roadmap planned, obligation
+ * exempt, checklist todo) rather than "not met" (verdict-grid keeps
+ * state-empty → ✕). The decoder emits `state-todo` for those neutral cases. */
+section .state-todo    { --state-mark: var(--mark-todo);  }
 
 /* Style variants — author opts in per slide (`_class: checklist checks-bold`)
  * or per deck (`class: checks-outline`). Each sets ONLY scalar knobs (plus,
