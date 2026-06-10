@@ -145,7 +145,7 @@ live in `engineering/development.md`.
 
 **Two regression tiers:**
 
-- **Per-component galleries** (52 components × 2 themes = 104 PDFs,
+- **Per-component galleries** (53 components × 2 themes = 106 PDFs,
   one pair per `lib/components/<bucket>/<name>/`). Every enriched
   manifest's `expectedGallerySlideCount()` is asserted against the
   light PDF page count, and the dark PDF must match the light count
