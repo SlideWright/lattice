@@ -85,6 +85,10 @@ export function modifierOptions(name, catalog, universalModifiers, present = [])
 	};
 	const comp = (catalog || []).find((c) => c.name === name);
 	if (comp) for (const v of comp.variants || []) for (const tok of String(v).split(/\s+/)) push(tok, 'variant');
+	// Family (scoped) modifiers in scope for this component (e.g. `checks-*` /
+	// `heat` on state-bearing layouts, `canvas` on charts) — offered after the
+	// component's own variants, before the universals.
+	if (comp) for (const f of comp.familyModifiers || []) for (const tok of String(f).split(/\s+/)) push(tok, 'modifier');
 	for (const u of universalModifiers || []) for (const tok of String(u).split(/\s+/)) push(tok, 'universal');
 	return out;
 }

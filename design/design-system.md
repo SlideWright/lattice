@@ -246,12 +246,14 @@ the rendering pipeline:
 The rendering pipeline (CSS rules, JS post-processors, Mermaid
 integration) is unchanged. The manifest is metadata, not behavior.
 
-### 6.5 Universal variants — three tiers
+### 6.5 Universal variants — four tiers
 
 Variants don't all belong to one component. Some apply to every layout
 ("dark", "with-period"); some apply to most ("compact", "loose",
-"accent"); some are strictly per-layout ("mirror" for split-list,
-"four" for cards-grid). The manifest model recognises three tiers:
+"accent"); some apply to a family of layouts ("checks-*" for the
+state-bearing layouts, "canvas" for charts); some are strictly per-layout
+("mirror" for split-list, "four" for cards-grid). The manifest model
+recognises four tiers:
 
 **Tier 1 — Universal (25 variants).** Apply to every component. Added
 automatically by `effectiveVariants()`; manifests must NOT list them.
@@ -281,7 +283,23 @@ not all. Manifests opt OUT via `excludes`; default is accepted.
 | `loose` | same |
 | `accent` | dense ledger layouts where the focal is ambiguous |
 
-**Tier 3 — Layout-specific.** The manifest's `variants` field. Things
+**Tier 3 — Family (scoped).** Cross-cutting section modifiers that apply
+to a SUBSET of layouts — neither universal nor a single component's
+variant. Registered in `FAMILY_MODIFIERS` (`lib/components/index.js`),
+keyed by component name and/or bucket:
+
+| Family | Modifiers | Scope |
+|---|---|---|
+| State-markers | `checks-ringed`, `checks-knockout`, `checks-bold`, `checks-outline`, `checks-tonal`, `heat` | `checklist`, `verdict-grid`, `obligation-matrix`, `roadmap` |
+| Chart | `canvas` | the `chart` bucket |
+
+`familyModifiersFor(manifest)` resolves the in-scope set, which the
+docs-portal hands to the catalog so the Drawing Board / playground
+autocomplete offers them **only on the layouts they apply to** (right
+after the component's own variants). The linter accepts the flat union
+(`FAMILY_MODIFIER_TOKENS`) everywhere.
+
+**Tier 4 — Layout-specific.** The manifest's `variants` field. Things
 like `mirror`, `numbered`, `four`, `chosen`, `donut`, etc. Specific to
 one or a few layouts.
 
