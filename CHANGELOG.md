@@ -92,6 +92,11 @@ in patch versions.
 
 ### Changed
 
+- **Drawing Board: the session spend figure now shows tokens too** — e.g. "This
+  session: $0.081 (25K tokens)". Tokens accumulate locally from each reply's `usage`
+  (recorded independently of cost, so a free model's tokens still count). The
+  OpenRouter account line stays dollars-only — `/auth/key` returns no per-key token
+  total. Drawing Board (docs-site) only.
 - **Drawing Board: the Settings drawer is organized into tabs** — `Workspace ·
   Cloud AI · On-device` — instead of one long scroll (the Cloud AI section had
   grown dense). Each tab is a short pane; the model chip deep-links to the **Cloud
