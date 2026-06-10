@@ -193,19 +193,26 @@ export function createModelSettings({ host, trigger, model, onChange, isOpen = (
   function openTab(tab) { activeTab = tab; if (isOpen()) render(); }
 
   // ── the trigger chip ────────────────────────────────────────────────────────
+  // The chip is a settings button that also signals the live tier: gear (::before)
+  // + a SHORT word + a status dot (::after, filled when AI is active). The full
+  // tier name rides in the title attribute so the detail is a hover away.
   function chipLabel(a) {
     if (reconnecting) return 'Reconnecting…';
-    if (!a.modelOn) return 'Deterministic (AI off)';
-    if (a.generation !== 'floor' && a.generation !== 'mock') return tierLabel(a);
-    if (lastError) return 'AI load failed — tap'; // surfaced so it isn't silent
+    if (!a.modelOn) return 'AI off';
+    if (a.generation === 'openrouter') return 'Cloud';
+    if (a.generation !== 'floor' && a.generation !== 'mock') return 'On-device';
+    if (lastError) return 'Tap to retry'; // surfaced so it isn't silent
     // Reconnect is a desktop affordance — on-device tiers don't run on a phone.
-    if (readTier() && !coarsePointer()) return 'Reconnect on-device AI'; // cached but not live this session
-    return 'Deterministic floor';
+    if (readTier() && !coarsePointer()) return 'Reconnect'; // cached but not live this session
+    return 'Floor';
   }
   function refresh() {
     if (trigger) {
       const a = model.availability();
-      trigger.textContent = chipLabel(a); // gear drawn by CSS: .db-model-chip::before
+      const label = trigger.querySelector('.db-model-chip-label');
+      if (label) label.textContent = chipLabel(a); // gear ::before + dot ::after stay put
+      else trigger.textContent = chipLabel(a);
+      trigger.title = 'AI: ' + tierLabel(a) + ' — tap for settings';
       const active = reconnecting || (a.modelOn && a.generation !== 'floor');
       trigger.classList.toggle('is-floor', !active);
     }

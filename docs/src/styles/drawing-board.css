@@ -114,15 +114,72 @@ body.db-page .topbar {
 /* New-deck — the drawer's create CTA. Accent-soft (tinted, not filled) so it
  * reads as "make one" without shouting like a filled primary or the danger
  * delete, and doesn't compete with the active-deck accent rail. */
+/* New deck — the Decks pane's primary action, full-width at the top of the
+ * library so a new entry visibly joins the list below it ("new what?" answers
+ * itself from context). */
 .db-new-deck {
-	display: inline-flex;
+	display: flex;
+	width: 100%;
 	align-items: center;
-	padding: 0.28rem 0.62rem;
-	font-size: 0.78rem;
+	justify-content: center;
+	gap: 0.1rem;
+	margin-bottom: 0.85rem;
+	padding: 0.55rem 0.62rem;
+	font: inherit;
+	font-size: 0.8rem;
 	font-weight: 600;
 	color: var(--accent);
 	background: var(--accent-soft);
-	border-color: color-mix(in srgb, var(--accent) 30%, var(--border));
+	border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--border));
+	border-radius: var(--radius-sm);
+	cursor: pointer;
+	transition: background 0.12s, border-color 0.12s;
+}
+.db-new-deck:hover { background: color-mix(in srgb, var(--accent) 14%, var(--bg)); }
+
+/* ── Deck drawer tabs — the two axes: Decks (space) | Versions (time) ───────── */
+.db-drawer-tabs {
+	flex: 0 0 auto;
+	display: flex;
+	gap: 0.15rem;
+	padding: 0.5rem 0.7rem 0;
+	border-bottom: 1px solid var(--border);
+	background: var(--bg-alt);
+}
+.db-drawer-tab {
+	font: inherit;
+	font-size: 0.78rem;
+	font-weight: 600;
+	color: var(--text-muted);
+	background: transparent;
+	border: 0;
+	border-bottom: 2px solid transparent;
+	padding: 0.45rem 0.7rem 0.5rem;
+	cursor: pointer;
+	transition: color 0.12s, border-color 0.12s;
+}
+.db-drawer-tab:hover { color: var(--text-body); }
+.db-drawer-tab.is-on {
+	color: var(--text-heading);
+	border-bottom-color: var(--accent);
+}
+.db-drawer-pane[hidden] { display: none; }
+
+/* ── Versions pane — the time axis ────────────────────────────────────────── */
+.db-versions-note {
+	margin: 0 0 0.7rem;
+	font-size: 0.74rem;
+	line-height: 1.45;
+	color: var(--text-muted);
+}
+.db-versions-note .db-hist-scope {
+	font-weight: 650;
+	color: var(--text-heading);
+}
+.db-versions-note strong { color: var(--text-body); font-weight: 650; }
+.db-versions-actions {
+	display: flex;
+	margin-bottom: 0.9rem;
 }
 .db-new-deck:hover {
 	color: var(--accent);
@@ -154,7 +211,6 @@ body.db-page .topbar {
 .db-deck-rename::before,
 .db-pv-x::before,
 .db-drawer-close::before,
-.db-decks-open::before,
 .db-new-deck::before,
 .db-model-chip::before,
 .db-focus-open::before,
@@ -172,13 +228,12 @@ body.db-page .topbar {
 	-webkit-mask: var(--db-glyph) center / contain no-repeat;
 	mask: var(--db-glyph) center / contain no-repeat;
 }
-#db-checkpoint::before { --db-glyph: var(--icon-flag); }
+#db-checkpoint::before { --db-glyph: var(--icon-flag); margin-right: 0.34em; }
 .db-arch-send::before { --db-glyph: var(--icon-arrow-up); }
 .db-sc-speak::before { --db-glyph: var(--icon-volume-2); }
 .db-deck-x::before, .db-pv-x::before { --db-glyph: var(--icon-x); }
 .db-deck-rename::before { --db-glyph: var(--icon-pencil); }
 .db-drawer-close::before { --db-glyph: var(--icon-x); }
-.db-decks-open::before { --db-glyph: var(--icon-message-circle-plus); margin-right: 0.34em; }
 .db-new-deck::before { --db-glyph: var(--icon-plus); margin-right: 0.3em; }
 .db-model-chip::before { --db-glyph: var(--icon-settings); margin-right: 0.34em; }
 .db-focus-open::before { --db-glyph: var(--icon-scan); margin-right: 0.34em; }
@@ -188,6 +243,72 @@ body.db-page .topbar {
 .db-practice-open::before { --db-glyph: var(--icon-play); margin-right: 0.34em; }
 .db-arch-jump-btn[data-dir='top']::before { --db-glyph: var(--icon-chevron-up); }
 .db-arch-jump-btn[data-dir='bottom']::before { --db-glyph: var(--icon-chevron-down); }
+
+/* ── The deck-name gateway (Architect head) ───────────────────────────────────
+ * Names the deck you're on; opening it reveals switch / new / versions. The
+ * caret telegraphs "there's more here"; the dot is a quiet deck marker. */
+.db-deck-gw {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.4rem;
+	max-width: 11rem;
+	font: inherit;
+	font-family: var(--font-display);
+	font-size: 0.8rem;
+	font-weight: 600;
+	color: var(--text-heading);
+	background: var(--bg);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-sm);
+	padding: 0.3rem 0.5rem 0.3rem 0.55rem;
+	cursor: pointer;
+	transition: border-color 0.12s, background 0.12s;
+}
+.db-deck-gw:hover { border-color: color-mix(in srgb, var(--accent) 40%, var(--border)); }
+.db-deck-gw-dot {
+	flex: 0 0 auto;
+	width: 7px;
+	height: 7px;
+	border-radius: 2px;
+	background: var(--accent);
+}
+.db-deck-gw-name {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+.db-deck-gw::after {
+	content: '';
+	flex: 0 0 auto;
+	width: 0.82em;
+	height: 0.82em;
+	background: var(--text-muted);
+	-webkit-mask: var(--icon-chevron-down) center / contain no-repeat;
+	mask: var(--icon-chevron-down) center / contain no-repeat;
+}
+
+/* ── The model chip — settings entry + live-tier status dot ───────────────────
+ * Gear (::before) keeps the "tap to configure" affordance; the dot (::after)
+ * reads connectivity/AI-active at a glance: filled accent = active, hollow
+ * outline = the deterministic floor. */
+.db-model-chip {
+	display: inline-flex;
+	align-items: center;
+}
+.db-model-chip::after {
+	content: '';
+	flex: 0 0 auto;
+	width: 7px;
+	height: 7px;
+	margin-left: 0.4em;
+	border-radius: 50%;
+	background: var(--accent);
+}
+.db-model-chip.is-floor::after {
+	background: transparent;
+	border: 1.5px solid currentColor;
+}
 
 /* ── Decks & history popover (folded out of the old rail, anchored in the
  *    Architect head — same menu family as the export / settings popovers) ──── */
@@ -425,17 +546,11 @@ body.db-page .topbar {
 .db-rail-section-head .db-panel-title {
 	flex: 0 0 auto;
 }
-/* "History · <active deck>" — names what the timeline is scoped to. */
+/* The active deck's name, inlined into the Versions pane's intro sentence
+ * ("Every state of <deck>…"). Styling comes from `.db-versions-note .db-hist-scope`. */
 .db-hist-scope {
 	min-width: 0;
-	flex: 0 1 auto;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-	font-size: 0.72rem;
-	color: var(--text-muted);
 }
-.db-hist-scope:not(:empty)::before { content: '· '; }
 
 /* ── History as a timeline (VS Code-style) ────────────────────────────────────
  * A continuous spine runs through the node column; each entry carries a type
