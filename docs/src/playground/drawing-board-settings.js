@@ -116,7 +116,7 @@ function prefRow(name, label, hint, optionLabels, onChange) {
 // keys in its hot paths. AI-tier controls render below this (createModelSettings).
 function workspaceSection() {
   const ws = el('section', 'db-settings-workspace');
-  ws.append(el('h3', 'db-settings-head', 'Workspace'));
+  // (the 'Workspace' tab labels this section — no redundant heading)
   ws.append(prefRow('newDeck', 'New deck starts from', null, ['Starter scaffold', 'Blank canvas']));
   ws.append(prefRow('landingMode', 'On reload, Architect opens in', null, ['Remember last', 'Coach', 'Converse']));
   ws.append(prefRow('restoreDeck', 'On reload, show', null, ['Last deck edited', 'A fresh deck']));
@@ -169,12 +169,15 @@ export function tierLabel(a) {
 // refresh, and `render()` is called when the drawer opens. The chip label is still
 // driven here via `trigger`.
 export function createModelSettings({ host, trigger, model, onChange, isOpen = () => false }) {
-  if (!host || !model) return { refresh() {}, render() {}, restore: async () => {} };
+  if (!host || !model) return { refresh() {}, render() {}, restore: async () => {}, openTab() {} };
   let abort = null;
   let reconnecting = false;
   let renderToken = 0;
   let lastError = null; // last on-device load error, surfaced in the popover
   let orModelsCache = null; // OpenRouter catalog (id/name/pricing), fetched once per session
+  let activeTab = 'workspace'; // settings tab: 'workspace' | 'cloud' | 'ondevice'
+  // Open Settings to a specific tab — the model chip deep-links to 'cloud'.
+  function openTab(tab) { activeTab = tab; if (isOpen()) render(); }
 
   // ── the trigger chip ────────────────────────────────────────────────────────
   function chipLabel(a) {
@@ -461,6 +464,33 @@ export function createModelSettings({ host, trigger, model, onChange, isOpen = (
     return box;
   }
 
+  // Connect from Settings (symmetric with Disconnect — you no longer have to go
+  // hunt the Converse panel). One-click OAuth (PKCE): redirect to openrouter.ai;
+  // the ?code= return is handled on load by the page, which re-renders connected.
+  function connectControl() {
+    const btn = el('button', 'db-btn db-btn-primary', 'Connect OpenRouter');
+    btn.type = 'button';
+    const err = el('p', 'db-settings-error');
+    err.hidden = true;
+    btn.addEventListener('click', async () => {
+      btn.disabled = true;
+      btn.textContent = 'Redirecting…';
+      err.hidden = true;
+      try {
+        const url = await model.beginOpenRouterAuth(location.origin + location.pathname);
+        location.href = url;
+      } catch (e) {
+        btn.disabled = false;
+        btn.textContent = 'Connect OpenRouter';
+        err.textContent = 'Couldn’t start sign-in: ' + ((e && e.message) || e);
+        err.hidden = false;
+      }
+    });
+    const wrap = el('div', 'db-or-connect');
+    wrap.append(btn, err);
+    return wrap;
+  }
+
   // Disconnect forgets the stored key (reconnecting means re-doing OAuth), so it
   // carries the same guardrail as deck deletion — chosen by the `deleteStyle`
   // preference: 'confirm' morphs into an inline "Disconnect?" bar; 'undo' does it
@@ -508,15 +538,16 @@ export function createModelSettings({ host, trigger, model, onChange, isOpen = (
 
   const fmtUSD = (n) => '$' + (Number(n) || 0).toFixed(Number(n) > 0 && Number(n) < 1 ? 3 : 2);
 
-  // The account readout — keeps cost in mind: OpenRouter balance/usage (fetched
-  // with the user's key; hidden if unavailable) + the running per-Lattice spend
-  // (accumulated locally from each reply's usage.cost). Cost should be visible.
+  // The account readout. The OpenRouter account `used`/`left` is AUTHORITATIVE
+  // (fetched with the user's key) — that's the real spend. The local figure is only
+  // an honest "this session" live tally (accumulated from each reply's usage.cost);
+  // we deliberately DON'T show a local "all-time" — it would start at 0 on this
+  // device and contradict the real account total (the bug you spotted: "$0.00").
   function accountStrip() {
     const box = el('div', 'db-or-account');
     const acct = el('p', 'db-or-account-line', 'Checking account…');
     const s = readSpend();
-    const spend = el('p', 'db-or-account-line db-or-account-spend',
-      `Spent via Lattice: ${fmtUSD(s.session)} this session · ${fmtUSD(s.total)} all-time`);
+    const spend = el('p', 'db-or-account-line db-or-account-spend', `This session: ${fmtUSD(s.session)}`);
     box.append(acct, spend);
     Promise.resolve(model.openRouterAccount?.()).then((info) => {
       if (!info) { acct.remove(); return; } // unavailable (e.g. no per-key limit on a management-only endpoint) → hide
@@ -576,11 +607,11 @@ export function createModelSettings({ host, trigger, model, onChange, isOpen = (
 
   function cloudSection(a) {
     const sec = el('section', 'db-settings-cloud');
-    sec.append(el('h3', 'db-settings-head db-settings-section-top', 'Cloud AI (Converse)'));
+    // (the 'Cloud AI' tab labels this section — no redundant heading)
     if (!a.openRouterReady) {
       sec.append(el('p', 'db-settings-note',
-        'Not connected. Open Converse to connect OpenRouter — your own account, ' +
-        'one-click sign-in, your credits, any of 500+ models.'));
+        'Connect OpenRouter — your own account, one-click sign-in, your credits, any of 500+ models.'));
+      sec.append(connectControl());
       return sec;
     }
     sec.append(accountStrip());
@@ -594,28 +625,12 @@ export function createModelSettings({ host, trigger, model, onChange, isOpen = (
   }
 
   // ── the popover ──────────────────────────────────────────────────────────────
-  async function render() {
-    const my = ++renderToken;
-    // Probe WebGPU + storage in parallel; bail if a newer render started (this is
-    // what stops the duplicate-panel race — only the latest render paints).
-    const [webgpu, est, models] = await Promise.all([
-      probeWebGPU(),
-      (navigator.storage?.estimate ? navigator.storage.estimate().catch(() => null) : Promise.resolve(null)),
-      cachedModels(),
-    ]);
-    if (my !== renderToken) return;
-
-    host.innerHTML = '';
-    const a = model.availability();
+  // The On-device AI tab — master switch, in-use indicator, tier readout, on-demand
+  // loaders (universal / WebLLM), load errors, and the downloaded-model cache
+  // controls. Built from the async probes (WebGPU / storage / cache list).
+  function onDeviceSection(a, { webgpu, est, models }) {
     const heavyOk = webgpu && !coarsePointer(); // WebLLM only on a desktop GPU
-    const panel = el('div', 'db-settings-panel');
-    // Workspace preferences first (always available, no model needed), then the
-    // on-device AI tier controls beneath a divider.
-    panel.append(workspaceSection());
-    // Cloud AI (Converse) first — it's the primary conversation path; on-device
-    // AI follows beneath. Both sections degrade to a note when nothing's connected.
-    panel.append(cloudSection(a));
-    panel.append(el('h3', 'db-settings-head db-settings-section-top', 'On-device AI'));
+    const panel = el('section', 'db-settings-ondevice');
 
     // Master switch.
     const row = el('label', 'db-settings-row');
@@ -717,8 +732,56 @@ export function createModelSettings({ host, trigger, model, onChange, isOpen = (
       panel.append(cache);
       panel.append(el('p', 'db-settings-note', 'Remove deletes the downloaded model weights to free space (they re-download if you load a model again). Your decks are kept.'));
     }
+    return panel;
+  }
 
+  // The tab strip — Workspace · Cloud AI · On-device. Splits the once-long scroll
+  // into three short panes; the model chip deep-links to the Cloud AI tab.
+  function tabStrip() {
+    const tabs = el('div', 'db-settings-tabs');
+    tabs.setAttribute('role', 'tablist');
+    tabs.setAttribute('aria-label', 'Settings sections');
+    const TABS = [['workspace', 'Workspace'], ['cloud', 'Cloud AI'], ['ondevice', 'On-device']];
+    TABS.forEach(([key, label], i) => {
+      const b = el('button', 'db-settings-tab' + (activeTab === key ? ' is-on' : ''), label);
+      b.type = 'button';
+      b.setAttribute('role', 'tab');
+      b.setAttribute('aria-selected', String(activeTab === key));
+      b.tabIndex = activeTab === key ? 0 : -1;
+      b.addEventListener('click', () => { if (activeTab !== key) { activeTab = key; render(); } });
+      b.addEventListener('keydown', (e) => {
+        const d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+        if (!d) return;
+        e.preventDefault();
+        activeTab = TABS[(i + d + TABS.length) % TABS.length][0];
+        render();
+        host.querySelector('.db-settings-tab.is-on')?.focus();
+      });
+      tabs.append(b);
+    });
+    return tabs;
+  }
+
+  async function render() {
+    const my = ++renderToken;
+    host.innerHTML = '';
+    host.append(tabStrip());
+    const panel = el('div', 'db-settings-panel');
+    panel.setAttribute('role', 'tabpanel');
     host.append(panel);
+    const a = model.availability();
+    // Workspace + Cloud AI are synchronous — paint immediately. On-device needs the
+    // async probes (WebGPU / storage / cache), so only that tab awaits them; the
+    // renderToken guard drops a stale paint if a newer render/tab-switch superseded.
+    if (activeTab === 'workspace') { panel.append(workspaceSection()); return; }
+    if (activeTab === 'cloud') { panel.append(cloudSection(a)); return; }
+    const [webgpu, est, models] = await Promise.all([
+      probeWebGPU(),
+      (navigator.storage?.estimate ? navigator.storage.estimate().catch(() => null) : Promise.resolve(null)),
+      cachedModels(),
+    ]);
+    if (my !== renderToken) return;
+    panel.append(onDeviceSection(a, { webgpu, est, models }));
   }
 
   // ── reconnect a previously-loaded model after a page reload ───────────────────
@@ -751,5 +814,5 @@ export function createModelSettings({ host, trigger, model, onChange, isOpen = (
   }
 
   refresh();
-  return { refresh, render, restore, isEnabled: readEnabled };
+  return { refresh, render, restore, openTab, isEnabled: readEnabled };
 }

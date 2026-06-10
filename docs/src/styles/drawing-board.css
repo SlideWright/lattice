@@ -1953,7 +1953,43 @@ button.db-tl-body:hover {
 	padding-top: 0.85rem;
 	border-top: 1px solid var(--border);
 }
-.db-settings-workspace {
+/* Settings tab strip — Workspace · Cloud AI · On-device. Splits the drawer into
+   three short panes; full-width, evenly shared, like the picker's segmented tabs. */
+.db-settings-tabs {
+	display: flex;
+	gap: 0.25rem;
+	margin-bottom: 0.9rem;
+	border-bottom: 1px solid var(--border);
+}
+.db-settings-tab {
+	flex: 1 1 0;
+	font: inherit;
+	font-size: 0.78rem;
+	font-weight: 600;
+	color: var(--text-muted);
+	background: none;
+	border: none;
+	border-bottom: 2px solid transparent;
+	margin-bottom: -1px;
+	padding: 0.45rem 0.3rem;
+	cursor: pointer;
+	white-space: nowrap;
+}
+.db-settings-tab:hover {
+	color: var(--text-body);
+}
+.db-settings-tab.is-on {
+	color: var(--accent);
+	border-bottom-color: var(--accent);
+}
+.db-settings-tab:focus-visible {
+	outline: none;
+	color: var(--accent);
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent);
+	border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+}
+.db-settings-workspace,
+.db-settings-ondevice {
 	display: flex;
 	flex-direction: column;
 	gap: 0.55rem;
@@ -2513,6 +2549,12 @@ button.db-tl-body:hover {
 .db-or-account-line.is-low {
 	color: var(--accent);
 	font-weight: 600;
+}
+.db-or-connect {
+	margin-top: 0.3rem;
+}
+.db-or-connect .db-btn {
+	width: 100%;
 }
 
 /* Budget guardrail controls — self-cap, alert/stop mode, low-balance floor. */

@@ -412,7 +412,7 @@ const dbData = JSON.stringify({
 				var scrim = document.getElementById('db-drawer-scrim');
 				var defs = {
 					'db-decks-pop': { trigger: '#db-decks-open' },
-					'db-settings-drawer': { trigger: '#db-model-chip', onOpen: function () { if (window.__dbSettings && window.__dbSettings.render) window.__dbSettings.render(); } },
+					'db-settings-drawer': { trigger: '#db-model-chip', onOpen: function () { if (window.__dbSettings && window.__dbSettings.openTab) window.__dbSettings.openTab('cloud'); else if (window.__dbSettings && window.__dbSettings.render) window.__dbSettings.render(); } },
 				};
 				var current = null;
 				function openDrawer(id) {
