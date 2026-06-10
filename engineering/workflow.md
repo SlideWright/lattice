@@ -182,6 +182,39 @@ Use `raw.githubusercontent.com`, never `github.com/.../blob/...`
 (lower-fidelity web preview) or `github.com/.../raw/...`
 (302-redirects).
 
+### Link the Cloudflare preview in the PR body
+
+When a PR changes what the docs site renders, **end the PR body** with the
+Cloudflare Pages preview link (last content line, before any footer) so
+reviewers can open the live build:
+
+```
+🔍 Live preview: https://<alias>.lattice-docs-5ji.pages.dev/
+```
+
+**Only include it when the diff actually changes the site.** Cloudflare
+rebuilds a preview for every PR, but it only differs from production when
+the PR touches a path the docs deploy rebuilds from — `docs/`, `dist/`,
+`themes/`, `lib/`, or `marp.config.js` (the same trigger set as
+`.github/workflows/docs.yml`). A PR that touches none of those (tests,
+`engineering/` docs, CI config) doesn't change the rendered site, so the
+link is noise — omit it.
+
+`<alias>` is the **deterministic branch alias**: the head branch name
+lowercased, with every non-alphanumeric character replaced by `-` (e.g.
+`claude/live-preview-l2eb0c` → `claude-live-preview-l2eb0c`). It always
+points at the branch's latest preview and refreshes on every push.
+`lattice-docs-5ji` is the project's fixed preview host.
+
+- The URL **404s until the first preview build finishes** (~1–2 min).
+  That is expected timing, not a broken link — it resolves once
+  Cloudflare deploys.
+- Only construct the link when the sanitized alias is **≤ 63 characters**
+  (the DNS-label limit). Cloudflare truncates longer names unpredictably,
+  so for those, link the PR's **Cloudflare Pages** check instead.
+- The per-deployment URL (`<random-hash>.lattice-docs-5ji.pages.dev`) is
+  **not** predictable — always use the branch alias, never the hash.
+
 ### When the deck retires
 
 Feature decks live on the branch. They are not deleted when the branch
