@@ -22,21 +22,12 @@
 // interface is unchanged.
 const WEBLLM_URL = 'https://esm.run/@mlc-ai/web-llm';
 const TRANSFORMERS_URL = 'https://esm.run/@huggingface/transformers';
-// Puter — the "user pays" cloud tier (Converse). A <script> SDK (not an ESM
-// module); the user's Puter account covers the cost, so it's free to us, no key,
-// no backend. PUTER_MODEL is the only thing to tune if the id drifts — Puter
-// exposes Claude/GPT under string ids; live-verify on real hardware.
-const PUTER_URL = 'https://js.puter.com/v2/';
-const PUTER_MODEL = 'claude-sonnet-4';
-// OpenRouter — the SECOND cloud tier (Converse), parallel to Puter. Unlike Puter
-// (user-pays, no key), the user connects their own OpenRouter account once via
-// one-click OAuth (PKCE — no key to copy-paste) and their credits cover usage;
-// still free to us, still no backend. OpenAI-compatible, so complete() mirrors
-// the WebLLM path. 500+ models — the UI offers a dropdown with live pricing.
-// DEFAULT_OR_MODEL is only the first-connect default; the user can switch any
-// time. Puter stays the default cloud until OpenRouter is proven (see the
-// active-cloud preference in pickBackend). All endpoints are CORS-enabled for
-// browser use, so no server is involved.
+// OpenRouter — the cloud tier (Converse). The user connects their own OpenRouter
+// account once via one-click OAuth (PKCE — no key to copy-paste) and their credits
+// cover usage; free to us, no backend. OpenAI-compatible, so complete() mirrors the
+// WebLLM path. 500+ models — the UI offers a picker with live pricing.
+// DEFAULT_OR_MODEL is only the first-connect default; the user can switch any time.
+// All endpoints are CORS-enabled for browser use, so no server is involved.
 const OPENROUTER_AUTH_URL = 'https://openrouter.ai/auth';
 const OPENROUTER_KEYS_URL = 'https://openrouter.ai/api/v1/auth/keys';
 const OPENROUTER_MODELS_URL = 'https://openrouter.ai/api/v1/models';
@@ -45,7 +36,6 @@ const DEFAULT_OR_MODEL = 'anthropic/claude-sonnet-4';
 const OR_KEY_LS = 'lattice-db-or-key'; // the user's OpenRouter API key (persists)
 const OR_MODEL_LS = 'lattice-db-or-model'; // chosen model id
 const OR_VERIFIER_LS = 'lattice-db-or-verifier'; // transient PKCE verifier (deleted after exchange)
-const CLOUD_LS = 'lattice-db-cloud'; // active cloud when both connected: 'puter' | 'openrouter'
 const EMBED_MODEL = 'Xenova/bge-small-en-v1.5';
 const WEBLLM_MODEL = 'Qwen2.5-1.5B-Instruct-q4f16_1-MLC';
 // The universal generation tier: a small instruct model that runs in WASM via
@@ -162,54 +152,7 @@ function webllmBackend() {
   };
 }
 
-// Puter — the cloud "user pays" tier (Converse). Loads the Puter <script> SDK on
-// demand; puter.ai.chat() bills the user's Puter account (free to us, no key, no
-// backend). Streams. The deck text leaves the device → gated behind explicit
-// consent in the UI before connect() is ever called.
-function puterBackend() {
-  let loaded = false;
-  function puter() { return typeof window !== 'undefined' ? window.puter : undefined; }
-  return {
-    name: 'puter',
-    async load() {
-      if (puter()) { loaded = true; return true; }
-      if (typeof document === 'undefined') throw new Error('no document');
-      await new Promise((resolve, reject) => {
-        let s = document.querySelector('script[data-puter]');
-        if (s) { s.addEventListener('load', resolve, { once: true }); s.addEventListener('error', reject, { once: true }); return; }
-        s = document.createElement('script');
-        s.src = PUTER_URL; s.async = true; s.setAttribute('data-puter', '1');
-        s.onload = () => resolve();
-        s.onerror = () => reject(new Error('Puter SDK failed to load'));
-        document.head.appendChild(s);
-      });
-      for (let i = 0; i < 60 && !puter(); i++) await new Promise((r) => setTimeout(r, 100));
-      if (!puter()) throw new Error('Puter SDK loaded but the puter global is missing');
-      loaded = true;
-      return true;
-    },
-    ready() { return loaded && !!puter(); },
-    async complete({ messages, onToken, signal }) {
-      const p = puter();
-      if (!p?.ai?.chat) throw new Error('Puter not connected');
-      const text = (x) => (x && (x.text || x?.message?.content)) || '';
-      if (onToken) {
-        const resp = await p.ai.chat(messages, { model: PUTER_MODEL, stream: true });
-        let full = '';
-        for await (const part of resp) {
-          if (signal?.aborted) break;
-          const t = text(part);
-          full += t; if (t) onToken(t);
-        }
-        return full;
-      }
-      const r = await p.ai.chat(messages, { model: PUTER_MODEL });
-      return text(r) || (typeof r === 'string' ? r : '');
-    },
-  };
-}
-
-// ── OpenRouter (the second cloud tier) ────────────────────────────────────────
+// ── OpenRouter (the cloud tier) ───────────────────────────────────────────────
 //
 // A localStorage helper pair + PKCE primitives shared by the OAuth flow. The key
 // lives in localStorage so the connection survives reloads (ready() is simply
@@ -253,11 +196,11 @@ export function orSupportsCache(id) {
   return OR_CACHE_VENDORS.has(String(id || '').split('/')[0]);
 }
 
-// OpenRouter cloud backend. Sibling of puterBackend(): same { ready, complete }
-// shape, plus the OAuth methods (beginAuth → redirect → completeAuth) and the
-// catalog (listModels, with per-million pricing) the settings dropdown reads.
-// OpenAI-compatible streaming. The deck text leaves the device → gated behind
-// explicit consent in the UI before connect() is ever offered.
+// OpenRouter cloud backend — the { ready, complete } shape plus the OAuth methods
+// (beginAuth → redirect → completeAuth) and the catalog (listModels, with
+// per-million pricing) the settings picker reads. OpenAI-compatible streaming. The
+// deck text leaves the device → gated behind explicit consent in the UI before
+// connect() is ever offered.
 function openRouterBackend() {
   const referer = () => (typeof location !== 'undefined' ? location.origin : 'https://lattice.dev');
   let catalogCache = null; // id→{name,…} catalog from listModels, for friendly-name lookup
@@ -267,6 +210,8 @@ function openRouterBackend() {
     hasPendingAuth() { return !!readLS(OR_VERIFIER_LS); },
     getModel() { return readLS(OR_MODEL_LS) || DEFAULT_OR_MODEL; },
     setModel(id) { writeLS(OR_MODEL_LS, id || null); },
+    keySnapshot() { return readLS(OR_KEY_LS); }, // for the Disconnect Undo (restore without re-OAuth)
+    restore(key) { writeLS(OR_KEY_LS, key || null); },
     // The current model's display name (catalog `name`, e.g. "DeepSeek: R1"), for the
     // reply attribution heading. Falls back to the raw id before the catalog loads.
     modelName() {
@@ -519,10 +464,8 @@ export function createArchitectModel({ getSettings } = {}) {
   let injected = null; // test hook — a MockBackend
   const prompt = promptApiBackend();
   const webllm = webllmBackend();
-  let puter = puterBackend();
   let openrouter = openRouterBackend();
   let universal = transformersGenBackend();
-  let cloudPref = readLS(CLOUD_LS); // 'puter' | 'openrouter' | null — which cloud wins when both are connected
   let promptAvail = 'unknown';
   let embedder = null; // lazy Transformers.js pipeline
   let embedTried = false;
@@ -533,24 +476,14 @@ export function createArchitectModel({ getSettings } = {}) {
     return promptAvail;
   }
 
-  // The active-cloud preference — set when the user explicitly connects a cloud
-  // (so a side-by-side "Connect" picks that tier), persisted across reloads.
-  function setCloud(name) { cloudPref = name || null; writeLS(CLOUD_LS, cloudPref); }
-
   // Pick the active generation backend by readiness + preference. The model-off
   // switch wins over everything (incl. an injected test backend) — that's the
   // offline guarantee and the test hook for forcing the floor.
   function pickBackend() {
     if (!modelOn() || tierPref === 'floor') return floorBackend;
     if (injected) return injected;
-    // Connected cloud tiers (Converse) are the best generation backends and win
-    // over every local tier. Two clouds can be connected at once (Puter + the
-    // user's OpenRouter account); the active-cloud preference decides which wins.
-    // With no explicit preference Puter leads — the proven tier — and OpenRouter
-    // is the opt-in alternative until it has earned the default.
-    if (cloudPref === 'openrouter' && openrouter.ready()) return openrouter;
-    if (cloudPref === 'puter' && puter.ready()) return puter;
-    if (puter.ready()) return puter;
+    // The connected OpenRouter cloud (Converse) is the best generation backend and
+    // wins over every local tier.
     if (openrouter.ready()) return openrouter;
     // Explicit preference wins when that tier is ready.
     if (tierPref === 'webllm' && webllm.ready()) return webllm;
@@ -612,42 +545,31 @@ export function createArchitectModel({ getSettings } = {}) {
         webgpu: detectWebGPU(),
         webllmReady: webllm.ready(),
         universalReady: universal.ready(),
-        puterReady: puter.ready(),
         openRouterReady: openrouter.ready(),
-        cloud: cloudPref,
         embeddings: modelOn() && hasWindow,
         modelOn: modelOn(),
       };
     },
     setTier(name) { tierPref = name; },
-    setCloud,
-    // Puter cloud tier (Converse) — load the SDK on demand AFTER UI consent. Once
-    // connected it's the preferred generation backend. Throws on failure so the
-    // caller can surface why (like the universal loader).
-    async connectPuter(onProgress, signal) {
-      await puter.load(onProgress, signal);
-      setCloud('puter'); // an explicit connect picks this cloud as active
-      return true;
-    },
     // OpenRouter cloud tier — one-click OAuth (PKCE), the user's own account.
     // beginOpenRouterAuth() returns the URL to redirect to; the page navigates
     // there. On return (?code=) the page calls resumeOpenRouterAuth(code), which
-    // exchanges the code for a key and makes OpenRouter the active cloud.
+    // exchanges the code for a key — OpenRouter is then the active cloud backend.
     hasPendingOpenRouterAuth() { return openrouter.hasPendingAuth(); },
     async beginOpenRouterAuth(callbackUrl) { return openrouter.beginAuth(callbackUrl); },
     async resumeOpenRouterAuth(code) {
       await openrouter.completeAuth(code);
-      setCloud('openrouter');
       return true;
     },
     listOpenRouterModels() { return openrouter.listModels(); },
     openRouterModel() { return openrouter.getModel(); },
     setOpenRouterModel(id) { openrouter.setModel(id); },
     openRouterModelName() { return openrouter.modelName(); },
-    disconnectOpenRouter() {
-      openrouter.disconnect();
-      if (cloudPref === 'openrouter') setCloud(puter.ready() ? 'puter' : null);
-    },
+    // Snapshot/restore the stored key so the settings UI can offer an Undo on
+    // Disconnect (mirroring the deck-deletion guardrail) without re-running OAuth.
+    openRouterKeySnapshot() { return openrouter.keySnapshot(); },
+    restoreOpenRouter(key) { openrouter.restore(key); },
+    disconnectOpenRouter() { openrouter.disconnect(); },
     // WebLLM opt-in — the deliberate "summon the Architect" (~1GB, WebGPU) download.
     async summon(onProgress, signal) {
       await webllm.load(onProgress, signal);
@@ -666,7 +588,6 @@ export function createArchitectModel({ getSettings } = {}) {
     __setBackend(b) { injected = b; },
     __setPromptAvailability(a) { promptAvail = a; },
     __setUniversal(b) { universal = b; },
-    __setPuter(b) { puter = b; },
     __setOpenRouter(b) { openrouter = b; },
   };
 }

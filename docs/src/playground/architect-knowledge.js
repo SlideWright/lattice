@@ -8,7 +8,7 @@
 // of guessing. Plus the cross-cutting authoring rules / base modifiers.
 //
 // Pure + bounded (~30 KB against the live 48-layout catalog). Injected ONLY into
-// the rich (Puter/Claude) prompt — the small local model would drown in it, so its
+// the rich (OpenRouter/cloud) prompt — the small local model would drown in it, so its
 // prompt stays lean (see buildChatMessages).
 
 const BUCKET_ORDER = [

@@ -192,10 +192,9 @@ const dbData = JSON.stringify({
 								<p>Converse is a real AI conversation about your deck — the ask, a specific slide, tightening a line. (Coach handles the scores and fixes.)</p>
 								<div class="db-converse-connect-wrap" id="db-converse-connect-wrap">
 									<div class="db-converse-connect-row" id="db-converse-connect-row">
-										<button class="db-btn db-btn-primary db-converse-connect" id="db-converse-connect" type="button">Connect Puter — free</button>
-										<button class="db-btn db-converse-connect-or" id="db-converse-connect-or" type="button">Connect OpenRouter — your account</button>
+										<button class="db-btn db-btn-primary db-converse-connect-or" id="db-converse-connect-or" type="button">Connect OpenRouter — your account</button>
 									</div>
-									<p class="db-converse-fine">Puter is free to you (no key). OpenRouter uses your own account credits via one-click sign-in — pick any of 500+ models. Either way your deck’s text is sent to the chosen AI to generate replies. Prefer on-device? Turn it on from the settings chip.</p>
+									<p class="db-converse-fine">OpenRouter uses your own account credits via one-click sign-in — pick any of 500+ models. Your deck’s text is sent to the chosen model to generate replies. Prefer on-device? Turn it on from the settings chip.</p>
 								</div>
 							</div>
 						</div>
@@ -523,18 +522,15 @@ const dbData = JSON.stringify({
 			};
 			window.__dbSyncConverse();
 
-			// Converse "Connect AI" — two side-by-side cloud tiers. Puter (free,
-			// user-pays, no key) keeps its one-time consent then loads in place.
-			// OpenRouter (your own account) uses one-click OAuth — a redirect to
-			// openrouter.ai and back (the ?code= return is handled on load, below).
-			// Whichever connects becomes the active generation backend → composer.
+			// Converse "Connect AI" — OpenRouter (your own account) via one-click
+			// OAuth: a redirect to openrouter.ai and back (the ?code= return is handled
+			// on load, below). On connect it becomes the active generation backend.
 			(function () {
 				var wrap = document.getElementById('db-converse-connect-wrap');
 				var row = document.getElementById('db-converse-connect-row');
-				var btn = document.getElementById('db-converse-connect');
 				var orBtn = document.getElementById('db-converse-connect-or');
 				var fine = wrap && wrap.querySelector('.db-converse-fine');
-				if (!wrap || !row || !btn || !orBtn) return;
+				if (!wrap || !row || !orBtn) return;
 				var el = function (t, c, x) { var e = document.createElement(t); if (c) e.className = c; if (x != null) e.textContent = x; return e; };
 				function reset() { wrap.innerHTML = ''; wrap.appendChild(row); if (fine) wrap.appendChild(fine); }
 				function showError(msg) {
@@ -543,28 +539,6 @@ const dbData = JSON.stringify({
 					var retry = el('button', 'db-btn', 'Back'); retry.type = 'button'; retry.addEventListener('click', reset);
 					wrap.appendChild(retry);
 				}
-				// Puter — consent, then load in place.
-				btn.addEventListener('click', function () {
-					wrap.innerHTML = '';
-					wrap.appendChild(el('p', 'db-converse-fine', 'This sends your deck’s text to Puter’s AI to generate replies. It stays free to you. Continue?'));
-					var consent = el('div', 'db-converse-consent-row');
-					var go = el('button', 'db-btn db-btn-primary', 'Continue'); go.type = 'button';
-					var no = el('button', 'db-btn', 'Cancel'); no.type = 'button';
-					no.addEventListener('click', reset);
-					go.addEventListener('click', async function () {
-						go.disabled = true; go.textContent = 'Connecting…';
-						try {
-							await window.__dbModel.connectPuter();
-							window.__dbSyncConverse();
-							if (window.__dbSettings) window.__dbSettings.refresh();
-							if (window.__dbChat) window.__dbChat.reload();
-						} catch (e) {
-							showError('Couldn’t connect: ' + (e && e.message || e));
-						}
-					});
-					consent.append(go, no);
-					wrap.appendChild(consent);
-				});
 				// OpenRouter — one-click OAuth (PKCE). We redirect to openrouter.ai;
 				// the callback returns here with ?code=, handled on the next load.
 				orBtn.addEventListener('click', async function () {
@@ -613,7 +587,7 @@ const dbData = JSON.stringify({
 					model,
 					store: window.__dbStore,
 					getAssessment: () => architect.getAssessment(),
-					catalog: data.catalog, // the Lattice primer for the cloud (Puter) prompt
+					catalog: data.catalog, // the Lattice primer for the cloud prompt
 					// Slice B: Converse proposes edits → reviewable diff → Apply splices into
 					// the live editor (which re-renders + re-scores via onEdit).
 					getSource: () => (window.__dbEditor ? window.__dbEditor.getValue() : ''),

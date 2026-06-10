@@ -649,5 +649,6 @@ export function createStore({ getSource, onLoadDeck, starter = '' }) {
 		// Chat (Phase 2): the Architect's per-deck conversation thread.
 		getActiveId: () => activeId,
 		chatMessages, addChatMessage, updateChatMessage, clearChat,
+		toast, // reused by the settings Disconnect "Undo" flow
 	};
 }

@@ -26,12 +26,11 @@ const RICH_DECK_CHARS = 16000; // the cloud tier (Claude) reads the whole deck, 
 const CACHE_TTL = '1h';
 
 // Tiers capable enough for the FULL Lattice authoring dossier + the editing
-// protocol: the cloud tiers (Puter/Claude and OpenRouter — the user's chosen
-// frontier model) and WebLLM (a desktop 7–8B model). The tiny universal (0.5B)
+// protocol: the OpenRouter cloud tier (the user's chosen frontier model) and WebLLM (a desktop 7–8B model). The tiny universal (0.5B)
 // and built-in tiers drown in the big prompt, so they stay lean and advice-only.
 // Keys on capability, not "is it the cloud".
 export function isCapableTier(generation) {
-  return generation === 'puter' || generation === 'openrouter' || generation === 'webllm';
+  return generation === 'openrouter' || generation === 'webllm';
 }
 
 function el(tag, cls, text) {
@@ -46,7 +45,7 @@ function el(tag, cls, text) {
 //
 //   - LEAN (local/small models): a short brief + a deck PEEK (~1200 chars). A
 //     long prompt + the full deck makes a small model ramble.
-//   - RICH (`rich:true`, the Puter/Claude cloud tier): a Lattice primer (so it
+//   - RICH (`rich:true`, the OpenRouter cloud tier): a Lattice primer (so it
 //     stops giving generic advice and knows the real `_class` layouts) + the
 //     WHOLE deck. A capable model wants the full picture, not a peek.
 //
@@ -56,7 +55,7 @@ function el(tag, cls, text) {
 // suffix (score + findings + this deck). The static prefix carries an `ephemeral`
 // cache_control breakpoint, so Anthropic bills it at ~10% on a hit instead of
 // re-reading ~10K tokens each turn. Only the OpenRouter backend sends structured
-// content blocks; every other backend gets the flattened string (Puter/WebLLM/the
+// content blocks; every other backend gets the flattened string (WebLLM / the
 // Prompt API read `.content` as a plain string). The flattened form is
 // byte-identical to the pre-caching prompt, so behaviour is unchanged.
 //
@@ -222,7 +221,6 @@ export function createChat({ mount, composer, model, store, getAssessment, catal
   function replyAttribution(a) {
     if (!a || !a.modelOn) return null; // deterministic floor — no model
     if (a.generation === 'openrouter') return flattenModel(model.openRouterModelName?.() || model.openRouterModel?.() || '') || null;
-    if (a.generation === 'puter') return 'Puter';
     return null; // on-device tiers — not attributed for now
   }
   function setWho(bodyEl, modelLabel) {
@@ -492,7 +490,7 @@ export function createChat({ mount, composer, model, store, getAssessment, catal
     const paint = () => { painting = 0; target.innerHTML = renderMarkdownStream(full); scrollDown(); };
     const schedulePaint = () => { if (!painting) painting = schedule(paint); };
     try {
-      // Capable tiers (Puter cloud + WebLLM desktop) get the rich, Lattice-aware
+      // Capable tiers (OpenRouter cloud + WebLLM desktop) get the rich, Lattice-aware
       // prompt + the whole deck; the tiny local tiers keep the lean peek so they
       // don't ramble. On OpenRouter (Anthropic), cache the static prefix so the
       // ~10K-token primer is billed at ~10% on repeat turns instead of in full.
@@ -519,7 +517,7 @@ export function createChat({ mount, composer, model, store, getAssessment, catal
     begin(); // ensure the thinking state clears even if nothing streamed
     target.classList.remove('is-streaming');
 
-    // On a capable tier (Puter / WebLLM), the reply may carry proposed EDIT BLOCKS —
+    // On a capable tier (OpenRouter / WebLLM), the reply may carry proposed EDIT BLOCKS —
     // lift them into reviewable diff cards and show only the prose in the bubble.
     // Stored history keeps the prose (the change lives in the deck once applied), so
     // reloading the thread never re-offers a stale apply.
