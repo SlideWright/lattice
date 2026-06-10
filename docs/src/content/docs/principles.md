@@ -3,12 +3,12 @@ title: Principles
 description: The convictions behind Lattice — why a slide is four decisions, why the colors live in one file, why the system carries the consistency and you carry the judgment.
 ---
 
-Every design decision in Lattice traces back to a few convictions.
+Every design decision in Lattice traces back to a dozen convictions.
 They're worth stating plainly, because they explain what surprises
 people about it — why you can't drag a box, why every deck on a theme
 looks related. None of it is arbitrary. Here is what Lattice believes.
 
-## A slide is four decisions, not one
+## 1. A slide is four decisions, not one
 
 In most tools you make every choice at once and by hand — the words,
 the layout, the colors, the spacing, all tangled together on a blank
@@ -33,7 +33,7 @@ something new in the same skin. Most of what feels like design in other
 tools is these four decisions fighting on one surface. Lattice gives
 each its own.
 
-## A good deck doesn't need you in the room
+## 2. A good deck doesn't need you in the room
 
 A lot of people dislike presentations, and they're usually right to.
 The medium isn't the problem. Most decks are badly written and hard to
@@ -54,7 +54,7 @@ Get that right and the deck stops needing to be presented at all. You
 can email it and forget it, and it still makes the case. Lattice is
 built for that deck.
 
-## You're competing with what's for lunch
+## 3. You're competing with what's for lunch
 
 Attention is the scarcest thing in the room, and it's conditional.
 Fifteen minutes is a long time to hold someone; every minute has to
@@ -83,7 +83,7 @@ carries what's common to good presentations so the uncommon part — you
 — has room to land. It doesn't sand you into a house style; it clears
 the stage.
 
-## The colors live in one file
+## 4. The colors live in one file
 
 Every color in a Lattice deck comes from a palette — one file, a short
 list of named roles. *Accent. Ink. Surface.* The layouts never name a
@@ -100,7 +100,7 @@ adapt when the palette flips.
 
 One palette, every deck. Change it once.
 
-## One source, every format
+## 5. One source, every format
 
 A Lattice deck has no native binary. The source is Markdown, and the
 output is whatever the moment needs: a PDF for the board, a PPTX for
@@ -116,7 +116,7 @@ slide to someone to drop into their own deck or present from
 PowerPoint. Anything you want to change, you change in the source — the
 one place editing ever happens.
 
-## Write what you mean, not where it goes
+## 6. Write what you mean, not where it goes
 
 You write a Lattice deck the way you'd write a memo — in Markdown, the
 plain text format behind a million READMEs. A list is a list. A table
@@ -140,7 +140,7 @@ Nothing locks shut behind you. And when the vocabulary runs out — when
 you need something the layouts don't offer — it's plain Markdown and
 CSS underneath, and you can edit it directly.
 
-## The system carries the consistency. You carry the judgment.
+## 7. The system carries the consistency. You carry the judgment.
 
 Most of what goes wrong in a slide deck is mechanical, and Lattice
 handles all of it. Contrast that meets WCAG AA, on every layout, in
@@ -156,7 +156,7 @@ clears the mechanical work off your desk so the only thing in front of
 you is the thinking. The machine owns what's correct; you own what's
 good.
 
-## Predictability is worth more than it looks
+## 8. Predictability is worth more than it looks
 
 The same Markdown produces the same output — on your laptop, on a
 colleague's, in a build server, this year and next. You notice it only
@@ -173,7 +173,7 @@ can't safely hand one off to a colleague or an assistant. The real cost
 of an unpredictable tool isn't the occasional surprise. It's the
 vigilance you pay, forever, guarding against one.
 
-## You don't memorize it; it shows you
+## 9. You don't memorize it; it shows you
 
 A new vocabulary reads as overhead: layout names, slot rules, a
 four-layer model to memorize. You're not meant to memorize any of it.
@@ -195,7 +195,7 @@ lets a machine carry the learning for you. The vocabulary isn't a tax
 you pay. It's the language the tools — and the assistant — already
 speak.
 
-## A deck outlives the meeting
+## 10. A deck outlives the meeting
 
 Most tools treat a deck as finished the moment it's sent. But a board
 deck comes back: next quarter with new numbers, restyled when the brand
@@ -217,7 +217,7 @@ well-formed. Whether it stays true is a person's call. An AI can hold a
 deck to its own standard forever and never notice the quarter's story
 changed. That part stays with you.
 
-## Constraint is what frees you
+## 11. Constraint is what frees you
 
 Some people hear all this and worry that a system flattens the craft —
 that making slides is an art, and an engine that picks the layout
@@ -253,7 +253,7 @@ foundation; the other is what you build on it. A sonnet's fourteen
 lines never cost a poet anything. A strong grid has freed
 designers for a century. Lattice is that grid, for decks.
 
-## You practice board-ready before you're in the room
+## 12. You practice board-ready before you're in the room
 
 "Boardroom-quality" sounds like a standard reserved for boards. It
 isn't. The higher you go, the more polish and professionalism are
