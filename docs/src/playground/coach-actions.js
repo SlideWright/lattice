@@ -7,6 +7,10 @@
 // engineering/decisions/2026-06-08-drawing-board-coach-vs-converse.md.
 //
 // A card is { title, body: string[], jump?: slideNumber, needMinutes?: bool }.
+//
+// Ask-detection and pacing are imported from review-core so the chips and the
+// scorecard share ONE definition each — they can't drift apart.
+import reviewCore from '../../../lib/authoring/review-core.js';
 
 const SEV_WEIGHT = { error: 3, warning: 2, suggestion: 1 };
 const SEV_ORDER = { error: 0, warning: 1, suggestion: 2 };
@@ -55,7 +59,7 @@ export function theAsk(source) {
   if (/<!--\s*_class:\s*decision\b/.test(src)) {
     return { title: 'The ask', body: ['✓ You have a decision slide. Make sure it states exactly what you want the audience to approve or do.'] };
   }
-  if (/\b(we recommend|recommendation|the ask|approval|next steps|call to action)\b/i.test(src)) {
+  if (reviewCore.ASK_RE.test(src)) {
     return { title: 'The ask', body: ['There’s ask-like language, but no dedicated decision slide — the recommendation may be buried. A `decision` slide makes it unmissable.'] };
   }
   return { title: 'The ask', body: ['No clear ask. End with what you want the audience to decide or do — a `decision` slide states it plainly.'] };
@@ -65,12 +69,8 @@ export function theAsk(source) {
 export function pacing(source, minutes) {
   const slides = countSlides(source);
   if (!minutes) return { title: 'Pacing', body: [`${slides} slide${slides === 1 ? '' : 's'}. Tell me your talk length and I’ll check the pace.`], needMinutes: true };
-  const perSlide = (minutes * 60) / Math.max(1, slides);
-  let verdict;
-  if (perSlide < 30) verdict = `~${Math.round(perSlide)}s per slide — very fast. Cut slides or ask for more time.`;
-  else if (perSlide > 120) verdict = `~${Math.round(perSlide)}s per slide — leisurely. You have room, or trim filler.`;
-  else verdict = `~${Math.round(perSlide)}s per slide — a comfortable boardroom pace.`;
-  return { title: 'Pacing', body: [`${slides} slides for a ${minutes}-minute talk.`, verdict] };
+  const v = reviewCore.pacingVerdict(slides, minutes);
+  return { title: 'Pacing', body: [`${slides} slides for a ${minutes}-minute talk.`, v.text] };
 }
 
 // Structure check — opening · ask · close presence.
@@ -81,7 +81,7 @@ export function structureCheck(source) {
   const hasOpen = /<!--\s*_class:\s*title\b/.test(first) || /^\s*#\s/.test(first.trim());
   const ask = theAsk(source).body[0];
   const askState = ask.startsWith('✓') ? '✓' : ask.startsWith('There') ? '~' : '✗';
-  const hasClose = /<!--\s*_class:\s*(closing|close)\b/.test(source || '') || /\b(thank you|questions|q&a|appendix|in summary)\b/i.test(last);
+  const hasClose = /<!--\s*_class:\s*closing\b/.test(source || '') || /\b(thank you|questions|q&a|appendix|in summary)\b/i.test(last);
   return {
     title: 'Structure check',
     body: [
