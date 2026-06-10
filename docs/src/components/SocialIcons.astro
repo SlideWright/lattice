@@ -8,9 +8,10 @@
 // section gets aria-current="page" so "you are here" is true in the header
 // too. See docs/src/styles/lattice.css.
 import Default from '@astrojs/starlight/components/SocialIcons.astro';
+import { joinBase } from '../lib/base-url.mjs';
 
 const base = import.meta.env.BASE_URL;
-const url = (p) => `${base.replace(/\/$/, '')}/${p}`.replace(/([^:])\/{2,}/g, '$1/');
+const url = (p) => joinBase(base, p);
 
 const here = Astro.url.pathname;
 const links = [
