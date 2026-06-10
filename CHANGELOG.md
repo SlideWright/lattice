@@ -92,6 +92,11 @@ in patch versions.
 
 ### Changed
 
+- **Drawing Board: the Settings drawer is organized into tabs** — `Workspace ·
+  Cloud AI · On-device` — instead of one long scroll (the Cloud AI section had
+  grown dense). Each tab is a short pane; the model chip deep-links to the **Cloud
+  AI** tab. Arrow-key tab nav + `tablist`/`tab`/`tabpanel` roles. Purely
+  organizational — no control changed. Docs-site only.
 - **`journey` and `word-cloud` folded into the chart family.** Both are now
   chart-frame members dispatched by the chart engine
   (`lib/components/chart/_chart-family/chart-family.js`) like every other
@@ -654,6 +659,15 @@ in patch versions.
 
 ### Fixed
 
+- **You can reconnect OpenRouter from Settings.** After disconnecting, the Cloud AI
+  section said "Open Converse to connect" but offered no control — leaving no obvious
+  way back. It now has a **Connect OpenRouter** button (one-click OAuth), symmetric
+  with Disconnect. Drawing Board (docs-site) only.
+- **The spend readout no longer shows a misleading "$0.00 all-time".** The local
+  tally can only count since the feature shipped on this device, so an all-time
+  figure contradicted the real OpenRouter account total. The strip now shows the
+  **authoritative account `used`/`left`** plus an honest **"This session: $X"** live
+  tally — no phantom all-time. Drawing Board (docs-site) only.
 - **`list-tabular`'s authoring skeleton no longer teaches a removed inline format.**
   Its `skeleton` (the scaffolder template, the docs "Authoring" block, and the
   Converse dossier's base) still showed the retired `- **Name.** description`
