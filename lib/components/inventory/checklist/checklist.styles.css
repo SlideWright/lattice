@@ -80,10 +80,10 @@ section.checklist > ol > li.state.fail {
   border-left-color:var(--state-color);
   background:var(--fail-bg, var(--bg-alt));
 }
-/* todo — `[ ]` is "not yet started", a NEUTRAL state, not a failure: a neutral
- * disc carrying the open ring (--mark-todo, via the shared state-todo shape).
- * No red, no strike — it reads "on the list, not done", distinct from the
- * red ✕ that verdict-grid keeps for a genuinely "not met" criterion. */
+/* todo — `[ ]` is "not yet started", a NEUTRAL state, not a failure: a true
+ * hollow ring (empty centre, --state-color edge ring; see `.state.todo` in
+ * base.modifiers.css). No red, no strike — it reads "on the list, not done",
+ * distinct from the red ✕ that verdict-grid keeps for a "not met" criterion. */
 section.checklist > ul > li.state.todo,
 section.checklist > ol > li.state.todo {
   --state-color:var(--text-label);

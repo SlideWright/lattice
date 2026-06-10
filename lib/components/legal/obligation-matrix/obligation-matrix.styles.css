@@ -110,7 +110,7 @@ section.obligation-matrix td .state.warn { --state-color:var(--warn); }
 section.obligation-matrix td .state.fail { --state-color:var(--fail); }
 section.obligation-matrix td .state.skip { --state-color:var(--text-muted); }
 /* exempt — `[ ]` is "not subject to this obligation", a NEUTRAL state (not a
- * gap): a neutral disc carrying the open ring (state-todo → --mark-todo). */
+ * gap): a true hollow ring (empty centre; see `.state.todo` in base.modifiers). */
 section.obligation-matrix td .state.todo { --state-color:var(--text-label); }
 /* Mark overlay — masked symbol (check / dash / x / slash) on the disc.
  * Mark colour from --state-mark-pct (0% = knockout to --bg). */

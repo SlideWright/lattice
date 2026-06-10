@@ -511,9 +511,10 @@ discs, distinguished only by how full they were, did not).
 
 **Why `[ ]` flexes — clarity over uniformity.** In `checklist` (todo),
 `obligation-matrix` (exempt), and `roadmap` (planned), `[ ]` is a
-**neutral "not yet / on the slate"** — not a failure — so it renders as an
-**open ring on a neutral disc** (`--text-label`, the `--mark-todo` mask).
-In `verdict-grid`, `[ ]` is a criterion **not met**, which *is* a negative,
+**neutral "not yet / on the slate"** — not a failure — so it renders as a
+**true hollow ring** (`--text-label` edge ring, empty centre — no inner mark,
+so it reads "open", not a "selected" centre-dot bullseye). In `verdict-grid`,
+`[ ]` is a criterion **not met**, which *is* a negative,
 so it keeps the **red ✕** (`--fail`, `--mark-x`). The decoder is
 layout-aware; the stable marks (check / dash / slash) are identical across
 all four. One vocabulary, but the one genuinely-ambiguous marker reads
@@ -538,11 +539,12 @@ scope; the leaf disc mixes the actual colours from `--state-color` +
 `--bg`, so variants stay theme-aware. See `base.modifiers.css`.
 
 **Theme tokens:** `--pass`, `--warn`, `--fail` (disc fill + ring + left
-bar), `--text-label` (the neutral `[ ]` todo disc) and `--text-muted`
+bar), `--text-label` (the neutral `[ ]` todo ring) and `--text-muted`
 (`[/]`); plus `--pass-bg` / `--warn-bg` / `--fail-bg` (10% color-mix row
 tints). The mark *shapes* are the shared masks `--mark-check` /
-`--mark-dash` / `--mark-todo` / `--mark-x` / `--mark-slash` (each with a
-`-bold` sibling for `checks-bold`). The knockout mark uses `--bg` (the
+`--mark-dash` / `--mark-x` / `--mark-slash` (each with a `-bold` sibling for
+`checks-bold`); the neutral `[ ]` todo uses no mask — it's a hollow ring.
+The knockout mark uses `--bg` (the
 canvas), so it adapts to light/dark and to each theme. All foreground
 tokens meet WCAG AA on body backgrounds. The `.heat` modifier remaps
 `--state-color` to the load/risk axis and the discs follow.

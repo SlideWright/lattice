@@ -678,11 +678,23 @@ section .state-full    { --state-mark: var(--mark-check); }
 section .state-half    { --state-mark: var(--mark-dash);  }
 section .state-empty   { --state-mark: var(--mark-x);     }
 section .state-slashed { --state-mark: var(--mark-slash); }
-/* Neutral "todo / pending" — the open ring. The colour-blind-safe reading of
- * a [ ] that means "not started, on the slate" (roadmap planned, obligation
- * exempt, checklist todo) rather than "not met" (verdict-grid keeps
- * state-empty → ✕). The decoder emits `state-todo` for those neutral cases. */
-section .state-todo    { --state-mark: var(--mark-todo);  }
+/* Neutral "todo / pending" — `[ ]` that means "not started, on the slate"
+ * (checklist todo, obligation exempt, roadmap planned), NOT "not met"
+ * (verdict-grid keeps state-empty → ✕). The decoder emits `state todo
+ * state-todo` for those cases.
+ *
+ * It renders as a TRUE hollow ring — no fill, a full-colour --state-color
+ * ring, and NO inner mark, so the centre is EMPTY ("not started"). A filled
+ * disc + a ring-stroke mask would leave the disc colour in the centre and
+ * read as a "selected" bullseye; an empty disc + an edge ring reads as
+ * "open". (The ring is a vector box-shadow — pixel-crisp in every export —
+ * and inherits the variant's disc-scale, so it tracks checks-bold etc.) */
+section .state.todo {
+  --state-fill-pct: 0%;
+  --state-ring-outer-w: 2.2px;
+  --state-ring-mix: 100%;
+}
+section .state.todo::after { display: none; }
 
 /* Style variants — author opts in per slide (`_class: checklist checks-bold`)
  * or per deck (`class: checks-outline`). Each sets ONLY scalar knobs (plus,
