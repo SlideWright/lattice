@@ -974,6 +974,13 @@ const dbData = JSON.stringify({
 						'<style>html,body{margin:0;padding:22px;background:' + bg + ';}' +
 						SLIDE_BOX +
 						'.marpit>section{display:block;transform-origin:top left;cursor:pointer;' +
+						// Browser-native virtualization: fixed 1280x720 slides, so the
+						// browser can skip laying out / painting off-screen ones (smooth
+						// scroll + fast initial render on huge decks) while every node stays
+						// in the DOM — export / cursor-sync / incremental patch are untouched.
+						// Overridden to `visible` for print + html-to-image export (below /
+						// drawing-board-export.js) so off-screen slides aren't dropped.
+						'content-visibility:auto;contain-intrinsic-size:1280px 720px;' +
 						'box-shadow:0 8px 30px rgba(0,0,0,.22);border-radius:6px;}' +
 						'.marpit>section.db-active{outline:3px solid ' + ACCENT + ';outline-offset:4px;}' +
 						// Print path (Slice 4 PDF export): un-scale each section to a full
@@ -981,7 +988,7 @@ const dbData = JSON.stringify({
 						// this iframe's print dialog over the already-rendered slides.
 						'@page{size:1280px 720px;margin:0;}' +
 						'@media print{html,body{padding:0;margin:0;background:#fff;}' +
-						'.marpit>section{transform:none!important;margin:0!important;box-shadow:none!important;border-radius:0!important;outline:none!important;break-after:page;}' +
+						'.marpit>section{content-visibility:visible!important;transform:none!important;margin:0!important;box-shadow:none!important;border-radius:0!important;outline:none!important;break-after:page;}' +
 						'.marpit>section:last-child{break-after:auto;}}' +
 						css + '</style></head><body>' + html +
 						'<scr' + 'ipt src="' + MERMAID + '"></scr' + 'ipt>' +

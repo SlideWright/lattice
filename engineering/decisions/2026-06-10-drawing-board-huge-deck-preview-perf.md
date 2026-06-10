@@ -72,12 +72,24 @@ changed (`replaceChild`), and re-applies FIT + sync via exposed
 replaced sections; export/cursor-sync/pagination are untouched because all
 sections stay mounted. Edit cost → O(changed slides).
 
-**Remaining — viewport virtualization (kernel-ready, needs browser):** mount
-only the slides near the viewport (`windowRange`/`spacers`), materializing
-off-screen slides on scroll, to cap *initial* + memory cost on huge decks too.
-Invariant: the export path reads all sections from `contentDocument`
-(`drawing-board-export.js:48`), so export must temporarily materialize the full
-deck. Layered after the incremental path is verified.
+**Landed — virtualization via `content-visibility:auto` (needs browser verify):**
+slides are fixed 1280×720, so `content-visibility:auto` +
+`contain-intrinsic-size:1280px 720px` on `.marpit>section` is the right
+virtualization primitive — the browser skips layout/paint of off-screen slides
+(fast initial render + smooth scroll on huge decks) while **every node stays in
+the DOM**, so export / cursor-sync / incremental patch are untouched. Two
+overrides keep it correct: `content-visibility:visible!important` in the print
+CSS, and forcing it visible per-section in `drawing-board-export.js`
+`rasterizeSection` (off-screen `content-visibility` content is otherwise dropped
+from print + html-to-image).
+
+This is the right tool for *fixed-size* items: a JS virtual list (Virtuoso-style)
+earns its complexity on *variable-height* lists and when DOM-node count must
+shrink. Here layout/paint was the cost, not node count, and the kernel’s
+`windowRange`/`spacers` remain available if desktop profiling shows a chart-heavy
+mega-deck still needs JS windowing (to also defer off-screen transform work) —
+at which point export must materialize the full deck (it reads all sections from
+`contentDocument`, `drawing-board-export.js:48`).
 
 ## Verification boundary
 

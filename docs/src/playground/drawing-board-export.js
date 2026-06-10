@@ -65,6 +65,11 @@ async function rasterizeSection(section) {
 	const borderless = parseFloat(cs.borderTopWidth) === 0 || cs.borderTopStyle === 'none';
 	const prevBorderImage = section.style.borderImageSource;
 	if (borderless && cs.borderImageSource !== 'none') section.style.borderImageSource = 'none';
+	// The preview sets content-visibility:auto on slides (virtualization), which
+	// leaves off-screen sections unrendered. Force this one visible so
+	// html-to-image rasterizes a laid-out slide, then restore.
+	const prevCV = section.style.contentVisibility;
+	section.style.contentVisibility = 'visible';
 	try {
 		return await toPng(section, {
 			width: 1280,
@@ -77,6 +82,7 @@ async function rasterizeSection(section) {
 		});
 	} finally {
 		section.style.borderImageSource = prevBorderImage;
+		section.style.contentVisibility = prevCV;
 	}
 }
 
