@@ -144,6 +144,115 @@ describe('classOptions / modifierOptions', () => {
 	});
 });
 
+describe('slideBodyEmpty — gate for skeleton insertion (surface C)', () => {
+	test('true when only blank + directive lines follow the class directive', async () => {
+		const { slideBodyEmpty } = await load();
+		const lines = ['<!-- _class: cards-grid -->', '<!-- _paginate: false -->', '', '   '];
+		assert.equal(slideBodyEmpty(getter(lines), lines.length, 1), true);
+	});
+
+	test('false once real content is present', async () => {
+		const { slideBodyEmpty } = await load();
+		const lines = ['<!-- _class: cards-grid -->', '', '## A heading', ''];
+		assert.equal(slideBodyEmpty(getter(lines), lines.length, 1), false);
+	});
+
+	test('stops at the next slide break (content on the following slide does not count)', async () => {
+		const { slideBodyEmpty } = await load();
+		const lines = ['<!-- _class: title -->', '', '---', '## next slide body'];
+		assert.equal(slideBodyEmpty(getter(lines), lines.length, 1), true);
+	});
+
+	test('skipLine excludes the cursor line so a typed trigger word still counts as empty', async () => {
+		const { slideBodyEmpty } = await load();
+		const lines = ['<!-- _class: cards-grid -->', '', 'ske'];
+		assert.equal(slideBodyEmpty(getter(lines), lines.length, 1), false); // without skip: "ske" is content
+		assert.equal(slideBodyEmpty(getter(lines), lines.length, 1, 3), true); // skipping line 3: empty
+	});
+});
+
+describe('skeletonBody — strips the directive block (surface C)', () => {
+	test('drops leading comment + blank lines, keeps the slot scaffold', async () => {
+		const { skeletonBody } = await load();
+		const skel = '<!-- _class: cards-grid -->\n\n## Slide heading.\n\n- First\n  - Body.\n';
+		assert.equal(skeletonBody(skel), '## Slide heading.\n\n- First\n  - Body.');
+	});
+
+	test('strips a multi-directive header (title) down to the first content line', async () => {
+		const { skeletonBody } = await load();
+		const skel = "<!-- _class: title -->\n<!-- _paginate: false -->\n\n# Deck title\n\n`Eyebrow`\n";
+		assert.equal(skeletonBody(skel), '# Deck title\n\n`Eyebrow`');
+	});
+
+	test('empty / missing skeleton yields empty string', async () => {
+		const { skeletonBody } = await load();
+		assert.equal(skeletonBody(''), '');
+		assert.equal(skeletonBody(undefined), '');
+	});
+});
+
+describe('blankBodyPartial — body-line cursor position (surface C)', () => {
+	test('a blank line yields from=0, empty partial', async () => {
+		const { blankBodyPartial } = await load();
+		assert.deepEqual(blankBodyPartial(''), { from: 0, typed: '' });
+		assert.deepEqual(blankBodyPartial('  '), { from: 2, typed: '' });
+	});
+
+	test('a leading partial word is captured', async () => {
+		const { blankBodyPartial } = await load();
+		assert.deepEqual(blankBodyPartial('ske'), { from: 0, typed: 'ske' });
+	});
+
+	test('null when the line already holds other content', async () => {
+		const { blankBodyPartial } = await load();
+		assert.equal(blankBodyPartial('## heading'), null);
+		assert.equal(blankBodyPartial('- bullet '), null);
+	});
+});
+
+describe('makeDataSource — per-component gate (surface D)', () => {
+	// Minimal duck-typed completion context over a lines array.
+	const ctx = (lines, cursorLine) => ({
+		pos: cursorLine,
+		explicit: true,
+		state: {
+			doc: {
+				lineAt: () => ({ text: lines[cursorLine - 1], from: 0, number: cursorLine }),
+				line: (n) => ({ text: lines[n - 1], from: 0, number: n }),
+			},
+		},
+	});
+
+	test('calls the completer only inside a matching component slide', async () => {
+		const { makeDataSource } = await load();
+		const calls = [];
+		const src = makeDataSource(['map'], (_c, info) => {
+			calls.push(info.name);
+			return { from: 0, options: [{ label: 'Brazil' }] };
+		});
+		const onMap = src(ctx(['<!-- _class: map -->', '- Braz'], 2));
+		assert.deepEqual(onMap.options.map((o) => o.label), ['Brazil']);
+		assert.deepEqual(calls, ['map']);
+	});
+
+	test('returns null (and never calls the completer) on a non-matching slide', async () => {
+		const { makeDataSource } = await load();
+		let called = false;
+		const src = makeDataSource(['map'], () => {
+			called = true;
+			return { from: 0, options: [] };
+		});
+		assert.equal(src(ctx(['<!-- _class: kpi -->', '1. $2'], 2)), null);
+		assert.equal(called, false);
+	});
+
+	test('returns null between slides (no governing directive)', async () => {
+		const { makeDataSource } = await load();
+		const src = makeDataSource(['map'], () => ({ from: 0, options: [] }));
+		assert.equal(src(ctx(['# loose prose', 'more prose'], 2)), null);
+	});
+});
+
 describe('mapBasemapFor — world is the default basemap (regression)', () => {
 	test('a bare `map` slide resolves to the WORLD basemap, not US', async () => {
 		const { mapBasemapFor } = await load();

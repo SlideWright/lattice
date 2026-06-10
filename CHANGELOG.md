@@ -260,6 +260,17 @@ in patch versions.
   single shared walker (`slide-context.js`), retiring the per-feature
   backward-walkers that had drifted from the grammar. Drawing Board (docs-site)
   only.
+- **Drawing Board: slot-skeleton drop-in and a per-component data-source
+  registry for the editor's autocomplete.** On the empty body of a classed
+  slide, completion now offers a one-shot `skeleton` that inserts the
+  component's slot scaffold (its manifest skeleton with the directive line
+  stripped) in the correct nesting — the anti-footgun for card-style layouts —
+  as plain text, and stays inert once the slide has any content so it never
+  clobbers authored body. The map region completer is now one entry in a small
+  data-source registry (`data-sources.js`): each completer is gated to its
+  component(s) through the shared slide detection, so adding the next
+  static-vocabulary data component is a one-line registration. Deterministic,
+  offline, zero model calls. Drawing Board (docs-site) only.
 - **`q-and-a` — a layout for anticipated questions paired with prepared
   answers** (inventory bucket, `stack` form). The end-of-pitch "what we expect
   to be asked" slide: a few weighty defenses of a recommendation, authored as a
