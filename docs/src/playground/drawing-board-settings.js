@@ -200,11 +200,11 @@ export function createModelSettings({ host, trigger, model, onChange, isOpen = (
     if (reconnecting) return 'Reconnecting…';
     if (!a.modelOn) return 'AI off';
     if (a.generation === 'openrouter') return 'Cloud';
-    if (a.generation !== 'floor' && a.generation !== 'mock') return 'On-device';
+    if (a.generation !== 'floor' && a.generation !== 'mock') return 'Local';
     if (lastError) return 'Tap to retry'; // surfaced so it isn't silent
     // Reconnect is a desktop affordance — on-device tiers don't run on a phone.
     if (readTier() && !coarsePointer()) return 'Reconnect'; // cached but not live this session
-    return 'Floor';
+    return 'No AI';
   }
   function refresh() {
     if (trigger) {
