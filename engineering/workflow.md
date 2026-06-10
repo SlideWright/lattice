@@ -184,15 +184,21 @@ Use `raw.githubusercontent.com`, never `github.com/.../blob/...`
 
 ### Link the Cloudflare preview in the PR body
 
-Every PR triggers a Cloudflare Pages **preview deployment** of the docs
-site (`docs/`) — the landing page, playground, Drawing Board, and
-component pages, built from the branch. Put the link near the top of the
-PR body so reviewers reach the live site in one click instead of digging
-through the checks:
+When a PR changes what the docs site renders, **end the PR body** with the
+Cloudflare Pages preview link (last content line, before any footer) so
+reviewers can open the live build:
 
 ```
 🔍 Live preview: https://<alias>.lattice-docs-5ji.pages.dev/
 ```
+
+**Only include it when the diff actually changes the site.** Cloudflare
+rebuilds a preview for every PR, but it only differs from production when
+the PR touches a path the docs deploy rebuilds from — `docs/`, `dist/`,
+`themes/`, `lib/`, or `marp.config.js` (the same trigger set as
+`.github/workflows/docs.yml`). A PR that touches none of those (tests,
+`engineering/` docs, CI config) doesn't change the rendered site, so the
+link is noise — omit it.
 
 `<alias>` is the **deterministic branch alias**: the head branch name
 lowercased, with every non-alphanumeric character replaced by `-` (e.g.
