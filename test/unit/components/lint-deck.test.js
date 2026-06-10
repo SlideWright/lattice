@@ -136,11 +136,11 @@ describe('deck linter', () => {
     assert.ok(!isKnownModifier('totally-made-up', vocab));
   });
 
-  test('reports findings across multiple slides (slide index counts the front-matter chunk)', () => {
+  test('reports findings by human 1-based slide number (front matter excluded)', () => {
     const src = `${FM}<!-- _class: content -->\n\n## ok.\n\n---\n\n<!-- _class: cards-grid -->\n\n- **X.** y.\n`;
     const f = lintText(src, { vocab }).find((x) => x.rule === 'card-style-inline-title');
-    // chunk 0 = pre-front-matter, 1 = front matter, 2 = first slide, 3 = second.
-    assert.equal(f.slide, 3);
+    // content = slide 1, cards-grid = slide 2 — matching the preview's "Slide N".
+    assert.equal(f.slide, 2);
   });
 
   test('every committed deck is completely lint-clean (no errors, no warnings)', () => {

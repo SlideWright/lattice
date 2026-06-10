@@ -7,19 +7,30 @@
 // slide splice, and the line diff — all `fs`-free and dependency-free so it's
 // fully verifiable headless. The DOM cards + wiring live in drawing-board-chat.js.
 //
-// Slides are 1-based and separated by lines that are exactly `---` — the SAME
-// split lint-core / the architect / the coach use, so a `slide=N` here lines up
-// with the finding's `slide`, the Reveal jump, and the [slide N] prompt markers.
+// Slides are addressed 1-based among the REAL slides — front matter excluded —
+// so a `slide=N` here lines up with the preview's "Slide N", the finding's
+// `slide`, the Reveal jump, and the [slide N] prompt markers. Front matter
+// occupies the first two `---`-split chunks (the empty pre-fence text + the YAML
+// body); fmChunks() translates a human slide number to the raw chunk index the
+// splice machinery below works in, so that machinery stays untouched.
+
+const FRONT_MATTER = /^---\r?\n[\s\S]*?\r?\n---[ \t]*(\r?\n|$)/;
+function fmChunks(source) {
+  return FRONT_MATTER.test(String(source || '')) ? 2 : 0;
+}
 
 // ── The prompt half ──────────────────────────────────────────────────────────
 
 // Show the deck with unambiguous [slide N] markers so the model can address a
-// slide reliably (counting `---` by hand on a long deck is error-prone). The
-// markers are stripped from any edit body it sends back (see EDIT_PROTOCOL).
+// slide reliably (counting `---` by hand on a long deck is error-prone). Front
+// matter is dropped from the view — the model edits real slides, numbered from 1.
+// The markers are stripped from any edit body it sends back (see EDIT_PROTOCOL).
 export function numberSlides(source) {
   const slides = String(source || '').split(/^---$/m);
   if (slides.length === 1 && !slides[0].trim()) return '';
-  return slides.map((s, i) => `[slide ${i + 1}]\n${s.trim()}`).join('\n\n---\n\n');
+  const real = slides.slice(fmChunks(source));
+  if (!real.length) return '';
+  return real.map((s, i) => `[slide ${i + 1}]\n${s.trim()}`).join('\n\n---\n\n');
 }
 
 // The contract handed to the cloud model (rich tier only). Four-backtick fences
@@ -90,17 +101,20 @@ function slideRanges(lines) {
   return ranges;
 }
 
-// How many slides the deck has (1-based addressing tops out here).
+// How many real slides the deck has (front matter excluded; 1-based addressing
+// tops out here).
 export function slideCount(source) {
-  return String(source || '').split(/^---$/m).length;
+  return Math.max(0, String(source || '').split(/^---$/m).length - fmChunks(source));
 }
 
-// Read one slide's content (trimmed) — the "before" side of a diff.
+// Read one slide's content (trimmed) — the "before" side of a diff. `n` is the
+// human 1-based slide number; `+ fm` maps it to the raw chunk range.
 export function sliceSlide(source, n) {
   const lines = String(source || '').split('\n');
   const ranges = slideRanges(lines);
-  if (n < 1 || n > ranges.length) return '';
-  const [a, b] = ranges[n - 1];
+  const raw = n + fmChunks(source);
+  if (n < 1 || raw > ranges.length) return '';
+  const [a, b] = ranges[raw - 1];
   return lines.slice(a, b + 1).join('\n').trim();
 }
 
@@ -109,13 +123,14 @@ export function sliceSlide(source, n) {
 // out-of-range target returns the source unchanged.
 export function applyEdit(source, edit) {
   if (!edit) return source;
+  const fm = fmChunks(source);
   const lines = String(source || '').split('\n');
   const ranges = slideRanges(lines);
-  const count = ranges.length;
+  const count = ranges.length; // raw chunk count (front matter included)
 
   if (edit.action === 'replace') {
-    const n = edit.slide;
-    if (n < 1 || n > count) return source;
+    const n = edit.slide + fm; // human slide number → raw chunk index
+    if (edit.slide < 1 || n > count) return source;
     const [a, b] = ranges[n - 1];
     const seg = lines.slice(a, b + 1);
     // Keep the original leading/trailing blank lines; swap only the content.
@@ -130,8 +145,8 @@ export function applyEdit(source, edit) {
   }
 
   if (edit.action === 'delete') {
-    const n = edit.slide;
-    if (n < 1 || n > count) return source;
+    const n = edit.slide + fm; // human slide number → raw chunk index
+    if (edit.slide < 1 || n > count) return source;
     // Drop the slide's lines AND one bordering separator so we don't leave `---\n---`.
     const [a, b] = ranges[n - 1];
     if (n < count) lines.splice(a, b - a + 2); // include the `---` that follows
@@ -141,11 +156,19 @@ export function applyEdit(source, edit) {
   }
 
   if (edit.action === 'insert') {
-    const at = Math.max(0, Math.min(count, edit.slide)); // after slide N (clamped)
+    // Insert among the REAL slides, keeping the front matter verbatim. after=N
+    // lands after real slide N (after=0 prepends a new slide 1, after=end
+    // appends). The old split/rejoin reformatted the `---…---` fence and broke
+    // Marp's front-matter parsing, so the front matter is reattached untouched.
     const block = edit.body.trim();
-    const slides = String(source || '').split(/^---$/m).map((s) => s.replace(/^\n+|\n+$/g, ''));
-    slides.splice(at, 0, block);
-    return slides.join('\n\n---\n\n') + '\n';
+    const all = String(source || '').split(/^---$/m);
+    const real = all.slice(fm).map((s) => s.replace(/^\n+|\n+$/g, ''));
+    const at = edit.slide === Number.MAX_SAFE_INTEGER ? real.length : Math.max(0, Math.min(real.length, edit.slide));
+    real.splice(at, 0, block);
+    const body = real.join('\n\n---\n\n');
+    if (!fm) return `${body}\n`;
+    const yaml = (all[1] || '').replace(/^\n+|\n+$/g, '');
+    return `---\n${yaml}\n---\n\n${body}\n`;
   }
 
   return source;

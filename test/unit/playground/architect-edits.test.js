@@ -155,6 +155,51 @@ describe('numberSlides (prompt view)', () => {
   });
 });
 
+describe('front matter is excluded from slide numbering (human 1-based)', () => {
+  const FM_DECK = ['---', 'marp: true', '---', '', '<!-- _class: title -->', '# One', '---', '## Two', '', 'body two'].join('\n');
+
+  test('numberSlides drops front matter and numbers real slides from 1', async () => {
+    const { numberSlides } = await load();
+    const out = numberSlides(FM_DECK);
+    assert.match(out, /\[slide 1\]\n<!-- _class: title -->/);
+    assert.match(out, /\[slide 2\]\n## Two/);
+    assert.doesNotMatch(out, /marp: true/); // front matter isn't shown as a slide
+  });
+
+  test('slideCount + sliceSlide address real slides, not the YAML', async () => {
+    const { slideCount, sliceSlide } = await load();
+    assert.equal(slideCount(FM_DECK), 2);
+    assert.match(sliceSlide(FM_DECK, 1), /# One/);
+    assert.match(sliceSlide(FM_DECK, 2), /## Two/);
+    assert.equal(sliceSlide(FM_DECK, 3), ''); // out of range
+  });
+
+  test('applyEdit replace targets the right real slide and keeps the front matter', async () => {
+    const { applyEdit } = await load();
+    const out = applyEdit(FM_DECK, { action: 'replace', slide: 1, body: '<!-- _class: title -->\n# One!' });
+    assert.match(out, /^---\nmarp: true\n---/); // front matter intact
+    assert.match(out, /# One!/);
+    assert.match(out, /## Two\n\nbody two/); // slide 2 untouched
+  });
+
+  test('applyEdit delete removes the addressed real slide, not the YAML', async () => {
+    const { applyEdit } = await load();
+    const out = applyEdit(FM_DECK, { action: 'delete', slide: 1 });
+    assert.match(out, /marp: true/); // front matter survives
+    assert.doesNotMatch(out, /# One/); // real slide 1 gone
+    assert.match(out, /## Two/);
+  });
+
+  test('applyEdit insert keeps the front-matter fence valid (no reformatting)', async () => {
+    const { applyEdit } = await load();
+    const pre = applyEdit(FM_DECK, { action: 'insert', slide: 0, body: '## NEW FIRST' });
+    assert.match(pre, /^---\nmarp: true\n---\n\n/); // fence intact at the very top
+    const slides = pre.replace(/^---\nmarp: true\n---\n\n/, '').split(/^---$/m).map((s) => s.trim());
+    assert.equal(slides[0], '## NEW FIRST'); // new real slide 1
+    assert.match(slides[1], /# One/);
+  });
+});
+
 describe('diffLines', () => {
   test('marks added, removed, and unchanged lines', async () => {
     const { diffLines } = await load();
