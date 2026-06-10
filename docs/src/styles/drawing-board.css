@@ -2510,6 +2510,63 @@ button.db-tl-body:hover {
 .db-or-account-spend {
 	color: var(--text-muted);
 }
+.db-or-account-line.is-low {
+	color: var(--accent);
+	font-weight: 600;
+}
+
+/* Budget guardrail controls — self-cap, alert/stop mode, low-balance floor. */
+.db-or-budget {
+	display: flex;
+	flex-direction: column;
+	gap: 0.15rem;
+	margin: 0.6rem 0;
+}
+.db-or-budget-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.6rem;
+	margin-top: 0.35rem;
+	font-size: 0.8rem;
+	color: var(--text-body);
+}
+.db-or-budget-input {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.15rem;
+	flex: 0 0 auto;
+	padding: 0.2rem 0.4rem;
+	background: var(--bg);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-sm);
+}
+.db-or-budget-input:focus-within {
+	border-color: var(--accent);
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+.db-or-budget-dollar {
+	font-size: 0.8rem;
+	color: var(--text-muted);
+}
+.db-or-budget-num {
+	width: 4.5rem;
+	font: inherit;
+	font-size: 0.8rem;
+	color: var(--text-body);
+	background: transparent;
+	border: none;
+	outline: none;
+	text-align: right;
+}
+.db-or-budget-mode {
+	flex: 0 0 auto;
+	width: auto;
+}
+.db-or-budget-mode .db-or-seg-btn {
+	flex: 0 0 auto;
+	padding: 0.25rem 0.7rem;
+}
 
 /* Prompt-caching switch (a labelled toggle, cue + tip). */
 .db-or-switch {

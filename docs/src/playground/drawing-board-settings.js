@@ -42,6 +42,44 @@ export function readSpend() {
   return { total, session };
 }
 
+// Budgeting & alerting. The budget is anchored to the user's real OpenRouter credit
+// (the ceiling), with an OPTIONAL tighter self-cap on this app's session spend. The
+// unit is dollars; the warning fires at 80%; enforcement is the user's choice —
+// 'alert' (toast only) or 'stop' (block new sends at 100%). Settings WRITE these;
+// the chat READS them per turn.
+const BUDGET_CAP_KEY = 'lattice-db-budget-cap'; // optional self-cap on session app spend ($); 0/empty = off
+const BUDGET_MODE_KEY = 'lattice-db-budget-mode'; // 'alert' | 'stop'
+const BUDGET_FLOOR_KEY = 'lattice-db-budget-floor'; // warn when OpenRouter balance < $X (for no-limit keys)
+const BUDGET_WARN_FRAC = 0.8; // the agreed buffer — warn at 80% of the cap/limit
+const numPref = (k) => { try { const n = Number(localStorage.getItem(k)); return Number.isFinite(n) && n > 0 ? n : 0; } catch { return 0; } };
+export const readBudgetCap = () => numPref(BUDGET_CAP_KEY);
+export const readBudgetFloor = () => numPref(BUDGET_FLOOR_KEY);
+export const readBudgetMode = () => { try { return localStorage.getItem(BUDGET_MODE_KEY) === 'stop' ? 'stop' : 'alert'; } catch { return 'alert'; } };
+
+// PURE budget evaluation — no DOM, no storage. Combines two independent gauges and
+// returns the worst severity: the optional self-cap (this session's app spend) and
+// the OpenRouter credit ceiling (low when ≤20% of a known limit, or ≤ the floor).
+// `level`: 'ok' | 'warn' | 'over'; `blocked` is true only when over AND mode==='stop'.
+export function budgetStatus({ sessionSpend = 0, cap = 0, mode = 'alert', account = null, floor = 0 } = {}) {
+  let level = 'ok';
+  const reasons = [];
+  const bump = (l) => { if (l === 'over' || (l === 'warn' && level === 'ok')) level = l; };
+  if (cap > 0) {
+    if (sessionSpend >= cap) { bump('over'); reasons.push(`session spend $${sessionSpend.toFixed(2)} reached your $${cap.toFixed(2)} cap`); }
+    else if (sessionSpend >= BUDGET_WARN_FRAC * cap) { bump('warn'); reasons.push(`${Math.round((sessionSpend / cap) * 100)}% of your $${cap.toFixed(2)} session cap used`); }
+  }
+  if (account && account.remaining != null) {
+    const r = account.remaining;
+    if (r <= 0) { bump('over'); reasons.push('OpenRouter credit is exhausted'); }
+    else {
+      const lowByLimit = account.limit != null && account.limit > 0 && r <= (1 - BUDGET_WARN_FRAC) * account.limit;
+      const lowByFloor = floor > 0 && r <= floor;
+      if (lowByLimit || lowByFloor) { bump('warn'); reasons.push(`OpenRouter credit low ($${r.toFixed(2)} left)`); }
+    }
+  }
+  return { level, blocked: level === 'over' && mode === 'stop', message: reasons.join('; ') || null };
+}
+
 function el(tag, cls, text) {
   const e = document.createElement(tag);
   if (cls) e.className = cls;
@@ -486,8 +524,53 @@ export function createModelSettings({ host, trigger, model, onChange, isOpen = (
       const used = info.usage != null ? `${fmtUSD(info.usage)} used` : null;
       const parts = [left, used].filter(Boolean).join(' · ');
       if (parts) acct.textContent = `OpenRouter: ${parts}`;
-      else acct.remove();
+      else { acct.remove(); return; }
+      // flag a low balance (≤20% of a known limit, or ≤ the user's floor) so the
+      // figure reads as a warning, not just info.
+      const st = budgetStatus({ account: info, floor: readBudgetFloor() });
+      if (st.level !== 'ok') acct.classList.add('is-low');
     }).catch(() => acct.remove());
+    return box;
+  }
+
+  // The budget guardrail controls: an optional self-cap on this session's app spend,
+  // the alert/stop choice, and a low-balance floor (for no-limit keys). Plain
+  // localStorage writes — the chat reads them per turn via the exported readers.
+  function budgetBlock() {
+    const box = el('div', 'db-or-budget');
+    box.append(el('span', 'db-pref-label', 'Budget'));
+    box.append(el('span', 'db-pref-hint', 'Optional guardrail — warns at 80%, then alerts or stops at your cap.'));
+    const dollarInput = (key, placeholder, aria, read) => {
+      const wrap = el('span', 'db-or-budget-input');
+      wrap.append(el('span', 'db-or-budget-dollar', '$'));
+      const inp = document.createElement('input');
+      inp.type = 'number'; inp.min = '0'; inp.step = '0.5'; inp.className = 'db-or-budget-num';
+      inp.placeholder = placeholder; inp.setAttribute('aria-label', aria);
+      const v = read(); if (v > 0) inp.value = String(v);
+      inp.addEventListener('change', () => { try { localStorage.setItem(key, inp.value || ''); } catch {} });
+      wrap.append(inp);
+      return wrap;
+    };
+    const capRow = el('label', 'db-or-budget-row');
+    capRow.append(el('span', null, 'Cap spend this session'), dollarInput(BUDGET_CAP_KEY, 'off', 'Session spend cap in dollars', readBudgetCap));
+    box.append(capRow);
+
+    const modeRow = el('div', 'db-or-budget-row');
+    modeRow.append(el('span', null, 'When reached'));
+    const seg = el('div', 'db-or-seg db-or-budget-mode');
+    const alertBtn = el('button', 'db-or-seg-btn' + (readBudgetMode() === 'alert' ? ' is-on' : ''), 'Alert');
+    const stopBtn = el('button', 'db-or-seg-btn' + (readBudgetMode() === 'stop' ? ' is-on' : ''), 'Stop');
+    alertBtn.type = stopBtn.type = 'button';
+    const pick = (val) => { try { localStorage.setItem(BUDGET_MODE_KEY, val); } catch {} alertBtn.classList.toggle('is-on', val === 'alert'); stopBtn.classList.toggle('is-on', val === 'stop'); };
+    alertBtn.addEventListener('click', () => pick('alert'));
+    stopBtn.addEventListener('click', () => pick('stop'));
+    seg.append(alertBtn, stopBtn);
+    modeRow.append(seg);
+    box.append(modeRow);
+
+    const floorRow = el('label', 'db-or-budget-row');
+    floorRow.append(el('span', null, 'Warn when balance below'), dollarInput(BUDGET_FLOOR_KEY, 'off', 'Low-balance warning threshold in dollars', readBudgetFloor));
+    box.append(floorRow);
     return box;
   }
 
@@ -505,6 +588,7 @@ export function createModelSettings({ host, trigger, model, onChange, isOpen = (
     sec.append(orPicker());
     sec.append(cacheToggle());
     sec.append(standingInstructions());
+    sec.append(budgetBlock());
     sec.append(disconnectControl());
     return sec;
   }

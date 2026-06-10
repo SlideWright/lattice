@@ -14,7 +14,9 @@ import { applyEdit, diffLines, EDIT_PROTOCOL, numberSlides, parseEdits, sliceSli
 import { buildLatticePrimer } from './architect-knowledge.js';
 import { orSupportsCache } from './architect-model.js';
 import { renderMarkdown, renderMarkdownStream } from './chat-markdown.js';
-import { readCachingEnabled, readStandingInstructions, recordSpend } from './drawing-board-settings.js';
+import { budgetStatus, readBudgetCap, readBudgetMode, readCachingEnabled, readSpend, readStandingInstructions, recordSpend } from './drawing-board-settings.js';
+
+const BUDGET_WARNED_KEY = 'lattice-db-budget-warned'; // session flag so we toast each threshold once
 
 const MAX_DECK_CHARS = 1200; // a short excerpt — a small model drowns in a full deck
 const RICH_DECK_CHARS = 16000; // the cloud tier (Claude) reads the whole deck, not a peek
@@ -460,6 +462,20 @@ export function createChat({ mount, composer, model, store, getAssessment, catal
     scrollDown();
     if (deckId && store?.addChatMessage) await store.addChatMessage(deckId, 'user', text);
 
+    // Budget guardrail (OpenRouter + 'stop' mode): if this session's spend has hit
+    // the user's cap, refuse the send with a deterministic explainer — never bill past it.
+    const avail = model?.availability ? model.availability() : { generation: 'floor' };
+    if (avail.generation === 'openrouter' && budgetStatus({ sessionSpend: readSpend().session, cap: readBudgetCap(), mode: readBudgetMode() }).blocked) {
+      const cap = readBudgetCap();
+      const msg = `You've hit your $${cap.toFixed(2)} session budget (spent $${readSpend().session.toFixed(2)}). Raise or clear the cap in Settings to keep going.`;
+      bubble('architect', msg);
+      if (deckId && store?.addChatMessage) await store.addChatMessage(deckId, 'architect', msg, true);
+      busy = false;
+      if (sendBtn) sendBtn.disabled = false;
+      scrollDown();
+      return;
+    }
+
     const assessment = getAssessment ? getAssessment() : null;
     const floor = floorReply(assessment, text);
     // Immediate "working" feedback, so you're never left wondering. On-device
@@ -554,9 +570,29 @@ export function createChat({ mount, composer, model, store, getAssessment, catal
       saved = await store.addChatMessage(deckId, 'architect', stored, det, Object.keys(extra).length ? extra : null);
     }
     if (edits.length) renderEditCards(target, edits, { msgId: saved?.id, befores });
+    maybeBudgetAlert(avail); // this reply's cost is now recorded — warn at 80%, alert at 100%
     busy = false;
     if (sendBtn) sendBtn.disabled = false;
     scrollDown();
+  }
+
+  // After a reply's cost lands, toast each budget threshold once per session.
+  function maybeBudgetAlert(a) {
+    if (a?.generation !== 'openrouter') return;
+    const cap = readBudgetCap();
+    if (!(cap > 0)) return;
+    const st = budgetStatus({ sessionSpend: readSpend().session, cap, mode: readBudgetMode() });
+    if (st.level === 'ok') return;
+    let warned = '';
+    try { warned = sessionStorage.getItem(BUDGET_WARNED_KEY) || ''; } catch {}
+    const toast = window.__dbStore?.toast;
+    if (st.level === 'over' && warned !== 'over') {
+      toast?.(`Budget reached — ${st.message}.${readBudgetMode() === 'stop' ? ' New messages are paused; raise the cap in Settings.' : ''}`);
+      try { sessionStorage.setItem(BUDGET_WARNED_KEY, 'over'); } catch {}
+    } else if (st.level === 'warn' && !warned) {
+      toast?.(`Heads up — ${st.message}.`);
+      try { sessionStorage.setItem(BUDGET_WARNED_KEY, 'warn'); } catch {}
+    }
   }
 
   async function thread() {
