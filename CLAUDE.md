@@ -294,6 +294,13 @@ caught by the hook instead of by reviewer eyeballs.
   for the bucket-survey reference and any per-component gallery for
   the component-doc reference.
 - **Commit messages are `area(scope): short summary`.** Match `git log`.
+- **Pull requests follow `.github/pull_request_template.md`.** The title is the
+  same `area(scope): short summary` as the commit — never a vague "Updates" or a
+  bare branch name. The body leads with a plain-language sentence, then
+  **Problem/Why → What changed → Tests → Caveats**, and names what was NOT
+  verified. This is the house style for both the typed `create pr` and the
+  Create-PR button — keep them in parity. (The harness appends the session
+  link; don't add the model id anywhere in the PR.)
 - **Record every user-visible change in `CHANGELOG.md` `## Unreleased`
   as it lands** — not at release time. The changelog is the source of
   truth the release reads: `tools/changelog.js` derives the semver bump
