@@ -6,7 +6,7 @@ extends: 2026-06-09-drawing-board-asset-import.md
 last-status-update: 2026-06-10
 ---
 
-# The Design Studio — crafting themes (live) and AI-authored layouts, as local assets
+# The Workbench — crafting themes (live) and AI-authored layouts, as local assets
 
 > **Not canonical.** Design-speculation, written ahead of implementation,
 > per the "design before code on rethink requests" rule in `CLAUDE.md`. No
@@ -14,13 +14,28 @@ last-status-update: 2026-06-10
 > shipped surface wins. Purpose: fix the *shape* of the capability before
 > any code lands.
 
-The prompt (2026-06-10): a **Design Studio** inside the Drawing Board where
-an author can (1) **craft a theme** — a *style* — and see it in action with
-a real, live preview, and (2) **create a new layout from scratch with AI
-assistance**, using the model connection we already established for the
+The prompt (2026-06-10): a single top-level studio — **the Workbench** —
+where an author can (1) **craft a theme** — a *style* — and see it in action
+with a real, live preview, and (2) **create a new layout from scratch with
+AI assistance**, using the model connection we already established for the
 Architect. Both outputs become **local assets for that user**, flowing into
 the asset system already specced in
 `2026-06-09-drawing-board-asset-import.md`.
+
+**Name & voice (decided 2026-06-10).** The mark is **Workbench** (route,
+nav, labels); prose uses *the Workbench* with the article — the same pattern
+as *the Architect* and *the Drawing Board*. It pairs with the Drawing Board
+as a sibling work surface (**board + bench**) and gives the studio a one-line
+division of labour: **you compose the deck on the Drawing Board; you
+fabricate the parts at the Workbench** (forge a theme, build a layout). This
+extends the brand cast — **Lattice** (the structure) · **the Architect**
+(who designs it) · **the Drawing Board** (where you author) · **the
+Workbench** (where you make the parts) — without a tonal seam. (Names
+weighed and discarded: *Design Studio* — describes, doesn't evoke;
+*Foundry*/*Forge* — a design→manufacture pipeline sibling but a heavier,
+industrial register; *Compass* — the Architect's instrument and the prettiest
+story, but Atlassian/Microsoft already ship a "Compass" and it leans toward
+*direction* over *make themes & layouts*.)
 
 This note does not invent a new subsystem. It is the **authoring
 front-end** for two asset kinds: the existing `theme` kind, and a new
@@ -68,6 +83,8 @@ Confirmed with the user before this note was written:
 3. **Sequencing — theme studio first.** Prove the originate → asset →
    render → export loop end-to-end on the tractable faculty, then put the
    layout studio on the same rails.
+4. **Name & placement — *the Workbench*, a single top-level entry**, sibling
+   to the Drawing Board (not a tab inside it). See "Name & voice" above.
 
 ## Faculty 1 — the Theme Studio (Finish layer)
 
@@ -327,11 +344,13 @@ deferred transform story.)
   references a local asset the author later deletes? (Mirror the asset
   note's per-deck-binding rule: a missing local asset degrades visibly, not
   silently.)
-- **Naming the studio** — is "Design Studio" the mark, or a mode *inside*
-  the Drawing Board? Leaning a mode/tab of the Drawing Board (it shares the
-  engine, the model, the store, the export bridge) rather than a fourth
-  top-level route, to keep the brand trinity (Lattice · the Architect · the
-  Drawing Board) intact.
+- **Naming the studio** — *resolved (see "Name & voice"):* the mark is
+  **Workbench**, voiced *the Workbench*, a **single top-level entry** sibling
+  to the Drawing Board (board + bench; compose vs. fabricate). Still open is
+  only *how prominently* it sits in the nav relative to the Drawing Board,
+  not the name or the placement. It shares the engine, the model, the store,
+  and the export bridge with the Drawing Board, so "sibling route" is a
+  surfacing choice, not a duplicated stack.
 - **Transform-bearing local components** — deferred to its own note, as the
   dataset binding was. The in-browser JS-execution safety model and the
   parity story are non-trivial and must not be hand-waved into this one.
