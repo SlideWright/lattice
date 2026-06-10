@@ -54,7 +54,7 @@ context renders identically.
   red is reserved for alarm states. WCAG AA verified across every
   text-bearing surface. Preview them all in the
   [component reference](https://slidewright.github.io/lattice/components/).
-- **52 layouts.** Title, divider, content, diagram, cards-grid, compare-prose,
+- **53 layouts.** Title, divider, content, diagram, cards-grid, compare-prose,
   quote, timeline, big-number, split-list, verdict-grid, more.
   Each layout has an authoring contract documented in [design/skill.md](design/skill.md).
 - **Mermaid integration.** All 25 renderable Mermaid diagram types are
