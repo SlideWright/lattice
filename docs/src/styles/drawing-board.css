@@ -1956,7 +1956,14 @@ button.db-tl-body:hover {
 	padding: 0.28rem 0.55rem;
 	cursor: pointer;
 	white-space: nowrap;
-	max-width: 13rem;
+	/* Reserve a constant width and centre the contents. The tier word settles
+	   async (connecting → Cloud / Local / No AI …) at different lengths; without
+	   a fixed footprint the chip resizes and the flex-grow deck gateway slides
+	   into the freed space — a visible horizontal jump in the head. A steady
+	   6rem fits every tier label (widest ≈ 80px) and ellipsizes any longer
+	   transient, so the bar never reflows. */
+	flex: 0 0 6rem;
+	justify-content: center;
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
