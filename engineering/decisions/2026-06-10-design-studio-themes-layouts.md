@@ -285,13 +285,113 @@ paths must agree"). The asset note already owns this seam:
 State the browser-scoped reality in the UI, the same honesty requirement
 the Drawing Board export already carries (architect note §6).
 
+## Asset interchange — the Lattice Pack (the standalone-portable leg)
+
+A Workbench asset can leave the browser **three** ways, and the first two are
+already specced above; this section adds the third:
+
+1. **Deck-bound** — materializes *into a deck* on export (the export bridge
+   above; asset note §"export bridge"). Travels with a deck.
+2. **Repo-bound** — *graduates* to `themes/` or `lib/components/<bucket>/
+   <name>/` via PR (above). Becomes first-class, every render path.
+3. **Standalone-portable** — leaves *on its own* as a shareable / backup-able
+   artifact, to re-enter another user's Workbench library (or yours on
+   another machine). **This is the leg this section defines.**
+
+(*Importing* a raw third-party theme/image is already in the asset note;
+what is new here is **exporting what the Workbench made as a portable
+package**, the **layout** kind's bundle, and the **trust boundary on
+importing a peer's asset**.)
+
+### The standard: `.latticepack` — a zip, README-first, repo-shaped
+
+Decided (2026-06-10): the interchange unit is a **standard Lattice Pack** —
+a `.zip` (friendly extension `.latticepack`) that **always** carries a
+human-readable `README.md` and a machine-readable `pack.json`, with assets
+in kind-folders that **mirror the repo's own paths**. Figma's library model
+is the north star: Figma publishes **styles** (= our themes) and
+**components** (= our layouts), each with a description and previews — a
+resource you *read*, then install.
+
+```
+dusk-and-friends.latticepack        # a .zip
+├── README.md          # ALWAYS present — what's inside, author, license,
+│                       #   latticeVersion, previews, usage
+├── pack.json          # machine index: schema, latticeVersion,
+│                       #   assets[] { kind, name, path, hash, provenance }
+├── themes/
+│   └── dusk.css       # bare palette CSS — also drops into any Marp/Lattice
+├── layouts/
+│   └── split-ledger/  # mirrors lib/components/<bucket>/<name>/
+│       ├── split-ledger.manifest.json
+│       ├── split-ledger.styles.css
+│       └── split-ledger.skeleton.md
+└── previews/          # optional, cheap: rendered PNGs of each asset
+    ├── dusk.png        #   in action (the Workbench already renders live)
+    └── split-ledger.png
+```
+
+Why this exact shape:
+
+- **README-first** — opening the zip explains itself to a human before any
+  tool touches it. The Figma-community feel: a readable resource, not just an
+  installable blob.
+- **Repo-mirrored folders** — `themes/<name>.css` and `layouts/<name>/…` are
+  the *same* paths the engine uses, so the **standalone-portable and
+  repo-bound legs share one structure**: graduating a pack asset into a PR is
+  a *copy*, not a re-author. One byte-layout serves both export
+  destinations.
+- **Bare CSS survives inside the pack** — a theme stays a plain `.css`, so the
+  "drops into any setup" interop win isn't lost to the container.
+- **One format, any granularity** — a one-asset pack is "share this layout";
+  a whole-library pack is "back up / move my Workbench." Same envelope, same
+  import path.
+- **Previews are cheap here** — the Workbench renders live anyway, so a
+  thumbnail makes a pack browsable *before* import (Figma shows you the thing
+  first).
+
+### Export / import flow
+
+- **Export** (Workbench → disk): pick assets (or "everything") → zip
+  README + `pack.json` + kind-folders + previews. Provenance/license
+  prompt-filled, author-editable.
+- **Import** (disk/URL → Workbench): unzip → read `pack.json` →
+  **re-validate every asset through the *authoring* gates** (theme
+  token-contract; layout `.<name>`-scoping, no-hex, slot coherence —
+  `lint-core.js`, shared not duplicated) → **content-hash dedup** (re-import
+  updates, never duplicates) → land in the library marked *imported* with
+  provenance. URL import uses the asset note's CORS fallback (try fetch, else
+  file-pick). Warn on `latticeVersion` skew (the half-styled-theme gotcha,
+  browser-side).
+
+### Trust & safety — the same boundary, restated for peer packs
+
+A peer's pack is **untrusted**; the gates, not the README, are the authority:
+
+- **CSS-only assets import directly** (themes, CSS-only layouts) — declarative
+  and `.<name>`-scoped, re-validated on the way in. A failed asset renders
+  nothing until fixed.
+- **Transform-bearing layouts are NOT peer-importable** — untrusted JS is the
+  deferred sandboxing problem. A pack *may carry* such a layout's CSS +
+  manifest **for graduation** (the PR path, human-reviewed), but the
+  Workbench will not execute its transform on import. No new hole opened.
+
+### Not in scope (its own future note)
+
+A hosted **registry/marketplace** (browse-and-install others' assets). The
+Pack is exactly the unit a marketplace would distribute, so **defining it now
+is the foundation that keeps that door open** — while sharing stays **file +
+URL** for today, consistent with the Drawing Board's no-backend design.
+
 ## Verification stance (matches the asset note / Phase-2 MockBackend culture)
 
 - **Pure + unit-tested:** essential-set → full-contract derivation; the
   contrast predicate (reuse `contrast.test` logic); the hex-literal and
   selector-scoping gates; manifest/slot coherence (reuse `lint-core.js`);
   the model-output → essential-set parser (theme) and → CSS+manifest parser
-  (layout); graduation scaffold emission.
+  (layout); graduation scaffold emission; **Lattice Pack write/read
+  (zip + `pack.json` round-trip), the import re-validation gate, and the
+  hash-dedup/version-skew predicates.**
 - **Mock-tested:** seed → derive → validate → render with a `MockBackend`
   and a fake store; the conversational-diff refine loop; the local-layout
   → component-scaffold export.
@@ -319,6 +419,13 @@ the Drawing Board export already carries (architect note §6).
    `themes/` + `themeSet`; layout → `lib/components/<bucket>/<name>/`
    scaffold. This is also the **only** path to transform-bearing components
    until their own design note lands.
+6. **Lattice Pack interchange (standalone-portable).** The `.latticepack`
+   zip (README + `pack.json` + repo-shaped kind-folders + previews); export
+   one-asset or whole-library; import = unzip → re-validate through the
+   authoring gates → hash-dedup → library, marked *imported*. File + URL,
+   no backend. Foundation a future marketplace would distribute. (Can land
+   alongside/after the theme studio, since a theme pack is the simplest
+   first round-trip.)
 
 (Faculty 1 = phases 1–2, ships first per the decision above. Faculty 2 =
 phases 3–4. Phase 5 connects both back to the engine and is the seam to the
@@ -351,6 +458,18 @@ deferred transform story.)
   not the name or the placement. It shares the engine, the model, the store,
   and the export bridge with the Drawing Board, so "sibling route" is a
   surfacing choice, not a duplicated stack.
+- **Lattice Pack details** — (a) the precise `pack.json` schema + a
+  `schema` version line for forward-compat; (b) are previews **required** or
+  optional (lean optional, auto-generated when the Workbench can render);
+  (c) license field — free-text or an SPDX picker; (d) zip library choice in
+  the browser (a small dependency-free zip writer/reader vs. a CDN import,
+  mirroring the pdf.js-on-demand pattern); (e) does a `.latticepack` ever
+  carry a *deck* too, or strictly assets (lean assets-only — decks already
+  have their own export). A short spike, not a blocker.
+- **Marketplace (deferred, own note)** — a hosted browse-and-install registry.
+  The Pack is its distribution unit, so this note's job is only to not
+  foreclose it; the backend, moderation, and trust/signing model are out of
+  scope here.
 - **Transform-bearing local components** — deferred to its own note, as the
   dataset binding was. The in-browser JS-execution safety model and the
   parity story are non-trivial and must not be hand-waved into this one.
