@@ -275,7 +275,7 @@ const dbData = JSON.stringify({
 			<aside class="db-drawer db-drawer-decks" id="db-decks-pop" role="dialog" aria-modal="true" aria-label="Decks and history" aria-hidden="true">
 				<div class="db-drawer-head">
 					<span class="db-panel-title">Decks</span>
-					<button class="db-btn db-btn-icon" id="db-new-deck" aria-label="New deck" title="New deck">+</button>
+					<button class="db-btn db-new-deck" id="db-new-deck" aria-label="New deck" title="New deck"><span class="db-new-deck-label">New</span></button>
 					<span class="db-spacer"></span>
 					<button class="db-drawer-close" data-drawer-close aria-label="Close decks" title="Close"></button>
 				</div>
@@ -286,9 +286,11 @@ const dbData = JSON.stringify({
 					<div class="db-rail-section">
 						<div class="db-rail-section-head">
 							<span class="db-panel-title">History</span>
+							<span class="db-hist-scope" id="db-hist-scope" title="History applies to the active deck"></span>
+							<span class="db-spacer"></span>
 							<button class="db-btn db-btn-icon" id="db-checkpoint" aria-label="Save checkpoint" title="Save a checkpoint"></button>
 						</div>
-						<div class="db-history-list" id="db-history-list"></div>
+						<ul class="db-history-list db-timeline" id="db-history-list"></ul>
 					</div>
 				</div>
 			</aside>

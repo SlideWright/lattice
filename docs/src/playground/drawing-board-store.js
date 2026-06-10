@@ -232,13 +232,21 @@ export function createStore({ getSource, onLoadDeck, starter = '' }) {
 		setTimeout(() => { input.focus(); input.select(); }, 0);
 	}
 
-	// Inline delete confirm — the row morphs into a "Delete? · Keep / Delete" bar,
-	// on-brand and non-blocking (no window.confirm).
+	// Inline delete confirm — non-blocking (no window.confirm). The deck card
+	// STAYS in place (inert + dimmed) so you still see which deck, and the row
+	// keeps its height; Keep/Delete take over the action column. No layout jump.
 	function renderConfirmRow(row, d) {
 		row.classList.add('is-confirming');
-		const msg = document.createElement('span');
-		msg.className = 'db-deck-confirm-msg';
-		msg.textContent = 'Delete this deck?';
+		const card = document.createElement('div');
+		card.className = 'db-deck is-pending-delete';
+		card.innerHTML =
+			'<span class="db-deck-name"></span><span class="db-deck-desc"></span><span class="db-deck-confirm-q">Delete this deck?</span>';
+		card.querySelector('.db-deck-name').textContent = d.name;
+		const descEl = card.querySelector('.db-deck-desc');
+		if (d.desc) descEl.textContent = d.desc; else descEl.remove();
+
+		const acts = document.createElement('div');
+		acts.className = 'db-deck-acts db-confirm-acts';
 		const keep = document.createElement('button');
 		keep.type = 'button';
 		keep.className = 'db-btn db-confirm-keep';
@@ -253,34 +261,75 @@ export function createStore({ getSource, onLoadDeck, starter = '' }) {
 			confirmingId = null;
 			await performDelete(d.id);
 		});
-		row.append(msg, keep, del);
+		acts.append(keep, del);
+		row.append(card, acts);
 		setTimeout(() => del.focus(), 0);
 	}
 
+	// A revision's kind drives its timeline icon + styling: a MANUAL checkpoint,
+	// an AI-applied edit (auto), or the snapshot taken just before a restore.
+	function histKind(r) {
+		if (!r.auto) return 'checkpoint';
+		if (/before restore/i.test(r.label || '')) return 'restore';
+		return 'ai';
+	}
+	function histLabel(r, kind) {
+		if (kind === 'restore') return 'Snapshot before restore';
+		return r.label || 'Checkpoint';
+	}
+
+	// History as a timeline (VS Code-style): a pinned "Current" node, then each
+	// revision as a spine entry with a type icon, label, and relative time. Tap
+	// an entry to restore (reversible — see restore()).
 	async function renderHistory() {
 		const list = el('db-history-list');
 		if (!list || !activeId) return;
+		const scope = el('db-hist-scope');
+		if (scope) { const ad = await get('decks', activeId); scope.textContent = ad ? ad.name : ''; }
 		const revs = (await revisionsFor(activeId)).sort((a, b) => b.createdAt - a.createdAt);
 		list.innerHTML = '';
+
+		const cur = document.createElement('li');
+		cur.className = 'db-tl-item db-tl-current';
+		cur.innerHTML =
+			'<span class="db-tl-icon" aria-hidden="true"></span>' +
+			'<div class="db-tl-body"><span class="db-tl-label">Current state</span><span class="db-tl-now">now</span></div>';
+		list.appendChild(cur);
+
 		if (!revs.length) {
-			list.innerHTML = '<p class="db-rail-note">No checkpoints yet. Save one with the checkpoint button to mark a state you can return to.</p>';
+			const note = document.createElement('li');
+			note.className = 'db-tl-empty';
+			note.innerHTML = '<p class="db-rail-note">No checkpoints yet. Use the flag button to mark a state you can return to — every AI edit also lands one automatically.</p>';
+			list.appendChild(note);
 			return;
 		}
+
+		let lastKind = null;
 		for (const r of revs) {
-			const item = document.createElement('button');
-			item.type = 'button';
-			item.className = 'db-history-item';
-			item.innerHTML = '<span class="db-hist-label"></span><span class="db-hist-time"></span>';
-			const lbl = item.querySelector('.db-hist-label');
-			lbl.textContent = r.label || 'Checkpoint';
-			if (r.auto) { // mark AI-created points so manual vs auto is legible
-				const badge = document.createElement('span');
-				badge.className = 'db-hist-ai';
-				badge.textContent = 'AI';
-				lbl.prepend(badge);
-			}
-			item.querySelector('.db-hist-time').textContent = relTime(r.createdAt);
-			item.addEventListener('click', () => restore(r.id));
+			const kind = histKind(r);
+			// Tame the 'Before restore' clutter: collapse a consecutive run to the
+			// most recent one (the only pre-restore state worth keeping in view).
+			if (kind === 'restore' && lastKind === 'restore') continue;
+			lastKind = kind;
+			const item = document.createElement('li');
+			item.className = 'db-tl-item db-tl-' + kind;
+			const icon = document.createElement('span');
+			icon.className = 'db-tl-icon';
+			icon.setAttribute('aria-hidden', 'true');
+			const body = document.createElement('button');
+			body.type = 'button';
+			body.className = 'db-tl-body';
+			body.title = 'Restore this state';
+			const label = document.createElement('span');
+			label.className = 'db-tl-label';
+			label.textContent = histLabel(r, kind);
+			const time = document.createElement('span');
+			time.className = 'db-tl-time';
+			time.textContent = relTime(r.createdAt);
+			time.title = new Date(r.createdAt).toLocaleString();
+			body.append(label, time);
+			body.addEventListener('click', () => restore(r.id));
+			item.append(icon, body);
 			list.appendChild(item);
 		}
 	}
@@ -479,16 +528,32 @@ export function createStore({ getSource, onLoadDeck, starter = '' }) {
 	async function restore(revId) {
 		const r = await get('revisions', revId);
 		if (!r) return;
+		const prev = getSource();
+		if (r.source === prev) { flash('Already at that state.'); return; }
 		// Fork, don't destroy: snapshot the current state before loading the older
-		// one, so the restore is itself reversible.
-		await put('revisions', { deckId: activeId, source: getSource(), label: 'Before restore', createdAt: Date.now(), auto: true });
+		// one, so the restore is itself reversible — but dedupe so repeated
+		// restores don't pile identical 'Before restore' points.
+		const revs = (await revisionsFor(activeId)).sort((a, b) => b.createdAt - a.createdAt);
+		if (!revs[0] || revs[0].source !== prev) {
+			await put('revisions', { deckId: activeId, source: prev, label: 'Before restore', createdAt: Date.now(), auto: true });
+		}
 		const d = await get('decks', activeId);
 		if (d) { d.source = r.source; d.updatedAt = Date.now(); await put('decks', d); }
 		loading = true;
 		onLoadDeck(r.source);
 		setTimeout(() => { loading = false; }, 0);
 		await renderHistory();
-		flash('Restored. (A snapshot of the prior state was kept.)');
+		// Reversible feedback (VS Code-style): an Undo toast loads the pre-restore
+		// state back without spawning more snapshots.
+		toast('Restored “' + (r.label || 'Checkpoint') + '”.', 'Undo', async () => {
+			const dd = await get('decks', activeId);
+			if (dd) { dd.source = prev; dd.updatedAt = Date.now(); await put('decks', dd); }
+			loading = true;
+			onLoadDeck(prev);
+			setTimeout(() => { loading = false; }, 0);
+			await renderHistory();
+			flash('Undone.');
+		});
 	}
 
 	function flash(msg) {
