@@ -25,6 +25,13 @@ const SAMPLE = [
       { name: 'title', required: true, description: 'Slide heading.' }, // generic → skipped
       { name: 'options', required: true, description: 'Top-level bullet is the option name; an indented bullet carries the rationale.' },
     ] },
+  // A layout whose variant changes the authoring GRAMMAR — the case the user hit.
+  { name: 'list-tabular', bucket: 'inventory', summary: 'A ruled ledger.',
+    skeleton: '<!-- _class: list-tabular -->\n\n## Heading\n\n- **First entry.** Description.',
+    variants: ['metric'],
+    variantSkeletons: [
+      { name: 'metric', caption: 'Values in tiles.', sample: '<!-- _class: list-tabular metric -->\n\n## Scoreboard.\n\n1. Build path `334 / 334`' },
+    ] },
 ];
 
 describe('buildLatticePrimer — the authoring dossier', () => {
@@ -89,5 +96,55 @@ describe('buildLatticePrimer — the authoring dossier', () => {
     const { buildLatticePrimer } = await load();
     assert.match(buildLatticePrimer([]), /Authoring rules:/);
     assert.match(buildLatticePrimer(null), /Authoring rules:/);
+  });
+
+  test('ships a grammar-changing variant its OWN skeleton (not just the base)', async () => {
+    const { buildLatticePrimer } = await load();
+    const p = buildLatticePrimer(SAMPLE);
+    // base list-tabular skeleton (inline-bold) still present …
+    assert.match(p, /````\n<!-- _class: list-tabular -->[\s\S]*- \*\*First entry\.\*\* Description\./);
+    // … plus the metric variant's distinct grammar (numbered + `value` pill).
+    assert.match(p, /`list-tabular metric` is authored differently — Values in tiles\.:/);
+    assert.match(p, /````\n<!-- _class: list-tabular metric -->[\s\S]*1\. Build path `334 \/ 334`/);
+    // the rule that primes the model to expect per-variant structure.
+    assert.match(p, /variant can change a layout’s authoring STRUCTURE/);
+  });
+});
+
+describe('pickGrammarVariants — variants whose authoring grammar differs from base', () => {
+  const M = {
+    skeleton: '<!-- _class: list-tabular -->\n\n## H\n\n- **First.** body.\n- **Second.** body.',
+    variantDocs: {
+      // numbered + trailing `value` pill — a real grammar change → kept.
+      metric: { label: 'Tile', caption: 'Values in tiles.', sample: '## H\n\n1. ARR `$4.2M`\n2. Retention `94%`' },
+      // numbered + nested description row — a different grammar → kept.
+      def: { label: 'Editorial', caption: 'Eyebrow above name.', sample: '## H\n\n1. Function `Purpose`\n   - Why it exists.' },
+      // same grammar as `metric` (numbered + pill) → finish-only → dropped.
+      register: { label: 'Pill', caption: 'Accent pill.', sample: '## H\n\n1. cards-grid `stable`\n2. radar `beta`' },
+      // incidental mid-prose code span must NOT read as a value grammar → dropped.
+      mirror: { label: 'Flip', caption: 'Columns swapped.', sample: '## H\n\n- **First.** Pair with `chosen` to mark it.\n- **Second.** body.' },
+      // no sample → skipped without throwing.
+      empty: { label: 'Empty' },
+    },
+  };
+
+  test('keeps metric + def (distinct grammars), drops register/mirror (finish-only)', async () => {
+    const { pickGrammarVariants } = await load();
+    const picked = pickGrammarVariants(M).map((v) => v.name);
+    assert.deepEqual(picked, ['metric', 'def']);
+  });
+
+  test('carries the variant caption + trimmed sample for the dossier', async () => {
+    const { pickGrammarVariants } = await load();
+    const metric = pickGrammarVariants(M).find((v) => v.name === 'metric');
+    assert.equal(metric.caption, 'Values in tiles.');
+    assert.match(metric.sample, /1\. ARR `\$4\.2M`/);
+  });
+
+  test('no variantDocs / non-object degrades to [] (no throw)', async () => {
+    const { pickGrammarVariants } = await load();
+    assert.deepEqual(pickGrammarVariants({ skeleton: '- x' }), []);
+    assert.deepEqual(pickGrammarVariants({}), []);
+    assert.deepEqual(pickGrammarVariants(null), []);
   });
 });

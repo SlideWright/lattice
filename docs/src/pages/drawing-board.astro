@@ -20,6 +20,7 @@ import '../styles/landing.css';
 import '../styles/drawing-board.css';
 import { SLIDE_BOX } from '../playground/frame-css.js';
 import { assetBase } from '../playground/asset-version.mjs';
+import { pickGrammarVariants } from '../playground/architect-knowledge.js';
 
 const docsRoot = process.cwd();
 const repoRoot = join(docsRoot, '..');
@@ -38,6 +39,10 @@ const obCatalog = manifests.map((m) => ({
 	summary: m.description || '',
 	skeleton: m.skeleton || m.sample || `<!-- _class: ${m.name} -->\n`,
 	variants: m.variants || [],
+	// Variants whose AUTHORING grammar differs from the base skeleton (e.g.
+	// `list-tabular metric` → `1. Name `value``) ship their own skeleton so the
+	// cloud model authors/validates them correctly instead of against the base.
+	variantSkeletons: pickGrammarVariants(m),
 	slots: Object.entries(m.slots || {}).map(([name, v]) => ({
 		name,
 		required: !!v.required,
