@@ -918,6 +918,7 @@ const dbData = JSON.stringify({
 					'      s.style.marginBottom=(720*sc-720+22)+"px";',
 					'    }',
 					'  }',
+					'  window.__latticeFit=fit;',
 					'  window.addEventListener("resize",fit);',
 					'  if(typeof ResizeObserver!=="undefined"){',
 					'    var ro=new ResizeObserver(function(){fit();});',
@@ -938,6 +939,7 @@ const dbData = JSON.stringify({
 					'(function(){',
 					'  function secs(){var m=document.querySelector(".marpit");return m?m.querySelectorAll(":scope>section"):[];}',
 					'  function tag(){var s=secs();for(var i=0;i<s.length;i++)s[i].setAttribute("data-idx",i);}',
+					'  window.__latticeTag=tag;',
 					'  tag();',
 					'  function setActive(i){var s=secs();for(var k=0;k<s.length;k++)s[k].classList.toggle("db-active",k===i);}',
 					'  function scrollTo(i,smooth){var s=secs();if(!s[i])return;window.scrollTo({top:Math.max(0,s[i].offsetTop-22),behavior:smooth?"smooth":"auto"});setActive(i);}',
@@ -989,6 +991,56 @@ const dbData = JSON.stringify({
 						'</body></html>';
 				}
 
+				// ── Incremental preview: persistent iframe, patch only changed slides ─
+				// The freeze on big decks came from rebuilding the WHOLE iframe on every
+				// edit (writeFrame → srcdoc → re-parse + re-transform + re-lay-out all N
+				// slides). marp-core's render is cheap (~285ms @ 800 slides); the cost was
+				// mounting every slide. So we keep ONE persistent iframe and on edit
+				// replace only the <section> nodes whose HTML changed — the runtime's
+				// document.body observer re-runs every transform (global + component-
+				// scoped) on the replaced sections for free, and FIT/sync re-apply via the
+				// agents' __latticeFit / __latticeTag hooks. A full writeFrame still runs on
+				// first render and on palette/mode change (theme CSS + Mermaid theming bake
+				// into the document, so those need a fresh srcdoc). splitSections mirrors
+				// docs/src/playground/preview-virtual.js (unit-tested there).
+				var lastSections = null; // section HTML strings in the live document
+				var frameSig = '';       // theme|mode the current srcdoc was built for
+				function splitSections(html) {
+					var out = [], open = /<section\b[^>]*>/gi, CLOSE = '</section>', m;
+					while ((m = open.exec(html))) {
+						var c = html.indexOf(CLOSE, m.index);
+						if (c === -1) break;
+						out.push(html.slice(m.index, c + CLOSE.length));
+						open.lastIndex = c + CLOSE.length;
+					}
+					return out;
+				}
+				function patchFrame(next) {
+					var doc = frame.contentDocument;
+					var marpit = doc && doc.querySelector('.marpit');
+					if (!marpit) return false;
+					var cur = marpit.querySelectorAll(':scope>section');
+					if (next.length !== cur.length) {
+						// Slide added/removed: rebuild the filmstrip body only — no script
+						// re-eval; the runtime/Mermaid/FIT/sync agents persist and re-process.
+						marpit.innerHTML = next.join('\n');
+					} else {
+						var prev = lastSections || [];
+						for (var i = 0; i < next.length; i++) {
+							if (prev[i] === next[i]) continue;
+							var holder = doc.createElement('div');
+							holder.innerHTML = next[i];
+							var fresh = holder.firstElementChild;
+							if (fresh && cur[i]) marpit.replaceChild(fresh, cur[i]);
+						}
+					}
+					lastSections = next;
+					var w = frame.contentWindow;
+					if (w && w.__latticeTag) w.__latticeTag();
+					if (w && w.__latticeFit) w.__latticeFit();
+					return true;
+				}
+
 				var timer = null;
 				function scheduleRender() { clearTimeout(timer); timer = setTimeout(render, 220); }
 				function render() {
@@ -1001,8 +1053,14 @@ const dbData = JSON.stringify({
 						var theme = mode === 'dark' && PG.hasTheme(palette + '-dark') ? palette + '-dark' : palette;
 						try {
 							var out = PG.render(getSource(), theme);
-							writeFrame(out.html, out.css, mode);
-							totalSlides = (out.html.match(/<\/section>/g) || []).length;
+							var sig = theme + '|' + mode;
+							var sections = splitSections(out.html);
+							// Patch when the document already exists for this theme/mode;
+							// otherwise (first render, palette/mode switch) do a full rebuild.
+							var patched = sig === frameSig && frame.contentDocument && frame.contentDocument.querySelector('.marpit')
+								? patchFrame(sections) : false;
+							if (!patched) { writeFrame(out.html, out.css, mode); frameSig = sig; lastSections = sections; }
+							totalSlides = sections.length;
 							recomputeStarts();
 							setSlideStatus();
 						} catch (e) {
@@ -1026,6 +1084,7 @@ const dbData = JSON.stringify({
 					if (src == null) return;
 					setSource(src);
 					recomputeStarts();
+					frameSig = ''; // a new deck → fresh srcdoc (resets runtime/Mermaid state)
 					render();
 					if (window.__dbArchitect) window.__dbArchitect.update(src);
 					// A user-initiated switch (rail pick / restore) lands you in the editor

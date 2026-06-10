@@ -1,86 +1,88 @@
 ---
 status: in-progress
-version: 2
+version: 3
 supersedes: none
 last-status-update: 2026-06-10
 ---
 
-# Drawing Board — scalable live preview (virtualized + incremental)
+# Drawing Board — scalable live preview (incremental, then virtualized)
 
-> **Design-of-record + build log.** The diagnosis and architecture are settled
-> (measured). Build is in progress: the pure kernel has landed with unit tests;
-> the iframe/DOM controller is the remaining piece and needs interactive
-> verification in a real browser. When this note and a shipped surface disagree,
-> the shipped surface wins.
+> **Design-of-record + build log.** Diagnosis and architecture are settled
+> (measured). Build is in progress: the pure kernel + the incremental-patch path
+> have landed; viewport virtualization is the remaining layer. The DOM changes
+> need a real browser to verify (the cloud sandbox can't run the Astro app).
+> When this note and a shipped surface disagree, the shipped surface wins.
 
-## Symptom
+## The problem (one sentence)
 
-On a very large deck (150+ slides) the Drawing Board froze for a second or two
-while typing, and Coach showed its empty "Start a deck…" state on load. It works
-fine on normal decks. (First read as "Coach is broken" — it isn't; see below.)
+Typing in a large deck (150+ slides) freezes the Drawing Board for 1–2s because
+the preview **rebuilds every slide on every keystroke**. We want it to redo only
+what changed.
 
 ## Diagnosis — measured
 
-**It is not the Architect.** The deterministic Coach engine (`lib/authoring/`
-`lint-core` + `review-core` + `scorecard`) runs in **<20ms even at 800 slides /
-282 KB**, linear. Cross-slide checks are Map-based O(n).
+- **Not the Architect:** `lint-core` + `review-core` + `scorecard` run <20ms at
+  800 slides / 282 KB.
+- **Not the markdown render:** marp-core does 200 slides in ~58ms, 800 in ~286ms.
+- **It's the browser-side rebuild.** `drawing-board.astro` did
+  `frame.srcdoc = PG.render(getSource())` on every edit — a fresh browsing
+  context that re-parses the doc, re-runs the runtime DOM transforms over *every*
+  section, FIT-scales and lays out *all N* fixed 1280×720 slides. O(N) per
+  keystroke.
 
-**It is not the markdown render.** marp-core (`@marp-team/marp-core`,
-`new Marp().render`) does **200 slides in ~58ms, 800 in ~286ms** — cheap.
+## Architecture decision — persistent iframe, not shadow DOM
 
-**It is the browser-side mount.** `docs/src/pages/drawing-board.astro` did
-`frame.srcdoc = PG.render(getSource())` on every edit — rewriting the whole
-iframe in a fresh browsing context, which forces the browser to re-parse the
-doc, re-run the runtime DOM transforms (`lib/runtime/`) over **every** section,
-FIT-scale them, and lay out **all N** fixed 1280×720 slides. O(N) per keystroke;
-seconds on a big deck. The render is cheap; mounting every slide is not.
+The preview lives in an **iframe** for CSS/JS isolation (the deck theme CSS uses
+global selectors that would collide with the Starlight docs page). The question
+was whether to virtualize *inside* the iframe or move slides into **shadow DOM**.
 
-## Architecture — virtualized + incremental
+**Keystone finding (`lib/runtime/index.js:978`):** the runtime registers
+`new MutationObserver(scheduleRun).observe(document.body, {subtree,childList})`
+and re-applies *every* transform — global (badges, slot-labels) and
+component-scoped (charts, split-panels, state-chart) alike — to any `<section>`
+inserted into its document, **idempotently** (each skips slides it already did).
+Patch-on-insert is the runtime's native model.
 
-Slides are fixed-size, so the filmstrip geometry is deterministic. Keep **one
-persistent iframe** and:
+That decides it:
+- **Iframe:** the runtime's transforms fire on inserted/replaced slides for
+  free. Zero runtime changes.
+- **Shadow DOM:** `document.querySelectorAll` can't see into a shadow root and
+  the `document.body` observer doesn't watch it → would force a pervasive
+  root-aware refactor of a file shared by all three render paths.
 
-1. **Virtualize the mount.** Insert into the live iframe only the slides in (or
-   near) the viewport; off-screen slides are known-height spacers that
-   materialize on scroll. Layout/transform cost → O(viewport), independent of
-   deck length.
-2. **Incremental patch on edit.** Re-render the whole deck's HTML (cheap ~100ms),
-   diff it against the previous render, and patch only the slides whose HTML
-   changed **and** are currently mounted. No whole-iframe rewrite.
-
-Edit and scroll both become O(viewport). marp render stays whole-deck (cheap);
-per-slide markdown rendering is **not** needed.
-
-### Invariants to preserve
-- **PDF export** (Slice 4) must materialize **all** slides on demand (the export
-  path can't virtualize).
-- **Cursor↔slide sync**, **click-to-jump**, and the **"Slide X of Y"** indicator
-  must keep working against the virtualized section set (absolute indices, not
-  mounted indices).
-- **Pagination** is baked per-section by marp (`data-marpit-pagination`); after
-  assembly, re-number mounted sections by absolute index.
+So: **keep the iframe, make it persistent, patch only changed slides.** (An
+earlier draft of this note recommended shadow DOM, before the observer finding;
+that recommendation is withdrawn.)
 
 ## Build status
 
-**Landed (this PR), unit-tested in Node:**
-`docs/src/playground/preview-virtual.js` — the pure, DOM-free kernel:
-`splitSections` (marp flat-`<section>` output → per-slide HTML), `diffSections`
-(changed indices + count change), `windowRange` (which indices to mount for a
-scroll position), `spacers` (heights that keep the scrollbar honest),
-`rangeChanged` (skip work when the window didn't move). Tests in
-`test/unit/playground/preview-virtual.test.js`.
+**Landed — kernel (unit-tested in Node):**
+`docs/src/playground/preview-virtual.js` + `test/.../preview-virtual.test.js`
+(14 tests): `splitSections`, `diffSections`, `windowRange`, `spacers`,
+`rangeChanged`.
 
-**Remaining (needs a real browser to verify):** the in-iframe controller +
-`drawing-board.astro` integration that consumes the kernel — a persistent iframe
-document that mounts a windowed set of sections, runs the runtime transforms on
-newly-mounted sections only, patches changed mounted sections on edit, re-numbers
-pagination, and bridges scroll/click/sync + the export path. This is the part the
-cloud sandbox can't exercise (no `docs/node_modules`; the deployed site is behind
-a cert proxy), so it must be verified interactively — typing stays smooth on a
-200-slide deck, scrolling materializes slides, export still emits all slides.
+**Landed — incremental patch (`drawing-board.astro`, needs browser verify):**
+the persistent-iframe path. `render()` now full-writes the srcdoc only on first
+render and on palette/mode change (theme CSS + Mermaid theming bake into the
+document); on every other edit it `patchFrame()`s — splits the freshly-rendered
+HTML into per-slide strings, replaces only the `<section>` nodes whose HTML
+changed (`replaceChild`), and re-applies FIT + sync via exposed
+`window.__latticeFit` / `__latticeTag` hooks. A slide insert/delete rebuilds the
+`.marpit` body only (no script re-eval). The runtime observer transforms the
+replaced sections; export/cursor-sync/pagination are untouched because all
+sections stay mounted. Edit cost → O(changed slides).
 
-## Why kernel-first, not all-at-once
-The kernel is the scalable logic and is fully verifiable here, so it lands
-proven. The DOM wiring is mechanical but only meaningful when seen running; it
-gets built against this tested kernel and verified on a desktop session rather
-than claimed-working blind.
+**Remaining — viewport virtualization (kernel-ready, needs browser):** mount
+only the slides near the viewport (`windowRange`/`spacers`), materializing
+off-screen slides on scroll, to cap *initial* + memory cost on huge decks too.
+Invariant: the export path reads all sections from `contentDocument`
+(`drawing-board-export.js:48`), so export must temporarily materialize the full
+deck. Layered after the incremental path is verified.
+
+## Verification boundary
+
+The DOM changes can't be exercised here (no `docs/node_modules`; the deployed
+site is behind a cert proxy). The controller passes `node --check` (no syntax
+errors), but "typing stays smooth on a 200-slide deck; charts/Mermaid still
+draw on edited slides; export still emits every slide" must be confirmed
+interactively on a desktop session.
