@@ -299,15 +299,20 @@ body.db-page .topbar {
 .db-model-chip::after {
 	content: '';
 	flex: 0 0 auto;
-	width: 7px;
-	height: 7px;
+	width: 14px;
+	height: 14px;
 	margin-left: 0.4em;
-	border-radius: 50%;
-	background: var(--accent);
+	-webkit-mask: var(--db-glyph, var(--icon-circle-slash)) center / contain no-repeat;
+	mask: var(--db-glyph, var(--icon-circle-slash)) center / contain no-repeat;
+	background: currentColor; /* chip is accent when active, default when floor */
 }
-.db-model-chip.is-floor::after {
-	background: transparent;
-	border: 1.5px solid currentColor;
+.db-model-chip[data-tier='cloud']::after { --db-glyph: var(--icon-cloud); }
+.db-model-chip[data-tier='cpu']::after { --db-glyph: var(--icon-cpu); }
+.db-model-chip[data-tier='circle-slash']::after { --db-glyph: var(--icon-circle-slash); }
+.db-model-chip[data-tier='triangle-alert']::after { --db-glyph: var(--icon-triangle-alert); }
+.db-model-chip[data-tier='loader-circle']::after { --db-glyph: var(--icon-loader-circle); animation: db-tier-spin 0.8s linear infinite; }
+@media (prefers-reduced-motion: reduce) {
+	.db-model-chip[data-tier='loader-circle']::after { animation: none; }
 }
 
 /* ── Decks & history popover (folded out of the old rail, anchored in the
@@ -2029,16 +2034,24 @@ button.db-tl-body:hover {
 	color: var(--accent);
 	font-weight: 600;
 }
-.db-settings-dot {
+/* Per-state tier glyph — Lucide mask painted in the row's colour (accent when live,
+   muted when off). The SHAPE carries the state so it reads without colour. */
+.db-tier-ico {
 	flex: 0 0 auto;
-	width: 8px;
-	height: 8px;
-	border-radius: 50%;
-	background: var(--text-muted);
+	width: 15px;
+	height: 15px;
+	-webkit-mask: var(--db-glyph) center / contain no-repeat;
+	mask: var(--db-glyph) center / contain no-repeat;
+	background: currentColor;
 }
-.db-settings-active.on .db-settings-dot {
-	background: var(--accent);
-	box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent);
+.db-tier-ico.is-spin {
+	animation: db-tier-spin 0.8s linear infinite;
+}
+@keyframes db-tier-spin {
+	to { transform: rotate(360deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+	.db-tier-ico.is-spin { animation: none; }
 }
 /* Cached-weights controls. */
 .db-settings-cache {

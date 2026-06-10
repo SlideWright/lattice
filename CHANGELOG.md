@@ -712,6 +712,13 @@ in patch versions.
 
 ### Fixed
 
+- **The AI-tier status indicator no longer relies on colour alone (WCAG 1.4.1).** The
+  green/grey connectivity dot — on the model chip and the settings "In use" row — is
+  replaced by a per-state **Lucide glyph**: `cloud` (cloud tier) · `cpu` (on-device) ·
+  `circle-slash` (off/floor) · `loader-circle` (reconnecting, spins, honors
+  `prefers-reduced-motion`) · `triangle-alert` (load failed). The shape conveys the
+  state, so it reads for colour-blind users; colour (accent/muted) is now a secondary
+  cue. Bonus: the glyph names *which* tier is live at a glance. Drawing Board (docs-site) only.
 - **You can reconnect OpenRouter from Settings.** After disconnecting, the Cloud AI
   section said "Open Converse to connect" but offered no control — leaving no obvious
   way back. It now has a **Connect OpenRouter** button (one-click OAuth), symmetric

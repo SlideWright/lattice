@@ -206,6 +206,17 @@ export function createModelSettings({ host, trigger, model, onChange, isOpen = (
     if (readTier() && !coarsePointer()) return 'Reconnect'; // cached but not live this session
     return 'No AI';
   }
+  // The status GLYPH (Lucide), mirroring chipLabel's branches — conveys the tier by
+  // SHAPE so it's legible without colour (WCAG 1.4.1). cloud=cloud · cpu=on-device ·
+  // circle-slash=off/floor · loader-circle=reconnecting · triangle-alert=failed.
+  function tierIcon(a) {
+    if (reconnecting) return 'loader-circle';
+    if (!a.modelOn) return 'circle-slash';
+    if (a.generation === 'openrouter') return 'cloud';
+    if (a.generation !== 'floor' && a.generation !== 'mock') return 'cpu';
+    if (lastError) return 'triangle-alert';
+    return 'circle-slash';
+  }
   function refresh() {
     if (trigger) {
       const a = model.availability();
@@ -215,6 +226,7 @@ export function createModelSettings({ host, trigger, model, onChange, isOpen = (
       trigger.title = 'AI: ' + tierLabel(a) + ' — tap for settings';
       const active = reconnecting || (a.modelOn && a.generation !== 'floor');
       trigger.classList.toggle('is-floor', !active);
+      trigger.dataset.tier = tierIcon(a); // CSS maps it to the per-state ::after glyph
     }
     if (isOpen()) render();
   }
@@ -674,7 +686,10 @@ export function createModelSettings({ host, trigger, model, onChange, isOpen = (
     // What's actually in use right now — front and centre (the "which model" ask).
     const active = reconnecting || (a.modelOn && a.generation !== 'floor');
     const inUse = el('div', active ? 'db-settings-active on' : 'db-settings-active');
-    inUse.append(el('span', 'db-settings-dot'), el('span', null, 'In use: ' + chipLabel(a)));
+    const tIco = tierIcon(a);
+    const ico = el('span', 'db-tier-ico' + (tIco === 'loader-circle' ? ' is-spin' : ''));
+    ico.style.setProperty('--db-glyph', `var(--icon-${tIco})`);
+    inUse.append(ico, el('span', null, 'In use: ' + tierLabel(a)));
     panel.append(inUse);
 
     panel.append(el('p', 'db-settings-note',
