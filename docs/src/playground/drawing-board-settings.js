@@ -23,6 +23,25 @@ const INSTR_MAX = 500; // word cap on standing instructions
 export const readCachingEnabled = () => { try { return localStorage.getItem(OR_CACHE_KEY) !== 'off'; } catch { return true; } };
 export const readStandingInstructions = () => { try { return localStorage.getItem(OR_INSTR_KEY) || ''; } catch { return ''; } };
 
+// Per-Lattice spend tally — accumulated locally from each reply's authoritative
+// `usage.cost` (USD). All-time persists (localStorage); session resets per tab
+// (sessionStorage). recordSpend is called by the chat; the settings strip reads it.
+const SPEND_TOTAL_KEY = 'lattice-db-spend-total';
+const SPEND_SESSION_KEY = 'lattice-db-spend-session';
+export function recordSpend(cost) {
+  const c = Number(cost);
+  if (!Number.isFinite(c) || c <= 0) return;
+  try { localStorage.setItem(SPEND_TOTAL_KEY, String((Number(localStorage.getItem(SPEND_TOTAL_KEY)) || 0) + c)); } catch {}
+  try { sessionStorage.setItem(SPEND_SESSION_KEY, String((Number(sessionStorage.getItem(SPEND_SESSION_KEY)) || 0) + c)); } catch {}
+}
+export function readSpend() {
+  let total = 0;
+  let session = 0;
+  try { total = Number(localStorage.getItem(SPEND_TOTAL_KEY)) || 0; } catch {}
+  try { session = Number(sessionStorage.getItem(SPEND_SESSION_KEY)) || 0; } catch {}
+  return { total, session };
+}
+
 function el(tag, cls, text) {
   const e = document.createElement(tag);
   if (cls) e.className = cls;
@@ -240,6 +259,19 @@ export function createModelSettings({ host, trigger, model, onChange, isOpen = (
   const priceLabel = (m) => (m.promptPerM != null
     ? `${fmtPrice(m.promptPerM)}/M in · ${fmtPrice(m.completionPerM)}/M out`
     : 'pricing varies'); // variable/router models (sentinel -1) — never "$-1000000"
+  const fmtCtx = (n) => {
+    if (!n) return '';
+    if (n >= 1e6) return `${(n / 1e6).toFixed(n % 1e6 ? 1 : 0)}M`;
+    if (n >= 1000) return `${Math.round(n / 1000)}K`;
+    return String(n);
+  };
+  // The model's meta line: context window (when known) + pricing.
+  const metaLabel = (m) => `${m.contextLength ? `${fmtCtx(m.contextLength)} ctx · ` : ''}${priceLabel(m)}`;
+  const rowTitle = (m) => [
+    m.contextLength ? `Context ${m.contextLength.toLocaleString()} tokens` : null,
+    m.maxOutput ? `Max output ${m.maxOutput.toLocaleString()}` : null,
+    m.vision ? 'Accepts images' : null,
+  ].filter(Boolean).join(' · ');
   const wordCount = (s) => { const t = s.trim(); return t ? t.split(/\s+/).length : 0; };
 
   function orPicker() {
@@ -247,10 +279,12 @@ export function createModelSettings({ host, trigger, model, onChange, isOpen = (
     const summary = el('button', 'db-or-summary');
     summary.type = 'button';
     summary.setAttribute('aria-expanded', 'false');
+    // Line 1: the model NAME. Line 2: its DETAILS (ctx · price). The "tap to change"
+    // affordance is a caption BELOW the control (db-or-hint), like other fields.
     const sName = el('span', 'db-or-summary-name', model.openRouterModel());
-    const sHint = el('span', 'db-or-summary-hint', 'Tap to change model');
+    const sDetail = el('span', 'db-or-summary-detail', '');
     const sText = el('span', 'db-or-summary-text');
-    sText.append(sName, sHint);
+    sText.append(sName, sDetail);
     summary.append(sText, el('span', 'db-or-chevron'));
 
     const body = el('div', 'db-or-body');
@@ -275,13 +309,15 @@ export function createModelSettings({ host, trigger, model, onChange, isOpen = (
     }
     const list = el('div', 'db-or-list');
     body.append(search, seg, list);
-    wrap.append(summary, body);
+    const hint = el('p', 'db-or-hint', 'Tap to change model'); // caption below the control
+    wrap.append(summary, body, hint);
 
     let view = 'featured';
     let q = '';
     const setSummary = () => {
       const cur = (orModelsCache || []).find((m) => m.id === model.openRouterModel());
-      sName.textContent = cur ? `${shortName(cur)} · ${priceLabel(cur)}` : model.openRouterModel();
+      sName.textContent = cur ? shortName(cur) : model.openRouterModel();
+      sDetail.textContent = cur ? metaLabel(cur) : '';
     };
     const renderList = () => {
       list.innerHTML = '';
@@ -316,7 +352,11 @@ export function createModelSettings({ host, trigger, model, onChange, isOpen = (
             refresh(); // rebuild so the caching switch re-gates on the new model's support
           });
           const meta = el('span', 'db-or-row-meta');
-          meta.append(el('span', 'db-or-row-name', shortName(m)), el('span', 'db-or-row-price', priceLabel(m)));
+          const nameEl = el('span', 'db-or-row-name', shortName(m));
+          if (m.vision) nameEl.append(el('span', 'db-or-row-badge', 'vision'));
+          meta.append(nameEl, el('span', 'db-or-row-price', metaLabel(m)));
+          const t = rowTitle(m);
+          if (t) row.title = t;
           row.append(r, meta);
           list.append(row);
         }
@@ -428,6 +468,29 @@ export function createModelSettings({ host, trigger, model, onChange, isOpen = (
     return wrap;
   }
 
+  const fmtUSD = (n) => '$' + (Number(n) || 0).toFixed(Number(n) > 0 && Number(n) < 1 ? 3 : 2);
+
+  // The account readout — keeps cost in mind: OpenRouter balance/usage (fetched
+  // with the user's key; hidden if unavailable) + the running per-Lattice spend
+  // (accumulated locally from each reply's usage.cost). Cost should be visible.
+  function accountStrip() {
+    const box = el('div', 'db-or-account');
+    const acct = el('p', 'db-or-account-line', 'Checking account…');
+    const s = readSpend();
+    const spend = el('p', 'db-or-account-line db-or-account-spend',
+      `Spent via Lattice: ${fmtUSD(s.session)} this session · ${fmtUSD(s.total)} all-time`);
+    box.append(acct, spend);
+    Promise.resolve(model.openRouterAccount?.()).then((info) => {
+      if (!info) { acct.remove(); return; } // unavailable (e.g. no per-key limit on a management-only endpoint) → hide
+      const left = info.remaining != null ? `${fmtUSD(info.remaining)} left` : null;
+      const used = info.usage != null ? `${fmtUSD(info.usage)} used` : null;
+      const parts = [left, used].filter(Boolean).join(' · ');
+      if (parts) acct.textContent = `OpenRouter: ${parts}`;
+      else acct.remove();
+    }).catch(() => acct.remove());
+    return box;
+  }
+
   function cloudSection(a) {
     const sec = el('section', 'db-settings-cloud');
     sec.append(el('h3', 'db-settings-head db-settings-section-top', 'Cloud AI (Converse)'));
@@ -437,6 +500,7 @@ export function createModelSettings({ host, trigger, model, onChange, isOpen = (
         'one-click sign-in, your credits, any of 500+ models.'));
       return sec;
     }
+    sec.append(accountStrip());
     sec.append(el('p', 'db-pref-label', 'OpenRouter model'));
     sec.append(orPicker());
     sec.append(cacheToggle());

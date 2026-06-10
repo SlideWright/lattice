@@ -275,6 +275,14 @@ in patch versions.
 
 ### Added
 
+- **Drawing Board: model context windows + an account/spend readout in the picker.**
+  Each OpenRouter model row (and the collapsed summary) now shows its **context
+  window** (e.g. "200K ctx") alongside price, a **VISION** badge for image-capable
+  models, and max-output/modality in the row tooltip. The Cloud AI section gains an
+  **account strip**: the OpenRouter balance/usage for the connected key (`$X left ·
+  $Y used`, hidden when unavailable) plus a **per-Lattice spend tally** ("Spent via
+  Lattice: $A this session · $B all-time") accumulated locally from each reply's
+  authoritative `usage.cost`. Drawing Board (docs-site) only.
 - **Drawing Board: slide-context autocomplete in the editor.** Inside a
   `<!-- _class: … -->` directive the CodeMirror editor now completes component
   names (chip-tagged by bucket) and then the modifiers legal for that component

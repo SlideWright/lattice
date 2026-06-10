@@ -14,7 +14,7 @@ import { applyEdit, diffLines, EDIT_PROTOCOL, numberSlides, parseEdits, sliceSli
 import { buildLatticePrimer } from './architect-knowledge.js';
 import { orSupportsCache } from './architect-model.js';
 import { renderMarkdown, renderMarkdownStream } from './chat-markdown.js';
-import { readCachingEnabled, readStandingInstructions } from './drawing-board-settings.js';
+import { readCachingEnabled, readStandingInstructions, recordSpend } from './drawing-board-settings.js';
 
 const MAX_DECK_CHARS = 1200; // a short excerpt — a small model drowns in a full deck
 const RICH_DECK_CHARS = 16000; // the cloud tier (Claude) reads the whole deck, not a peek
@@ -507,6 +507,7 @@ export function createChat({ mount, composer, model, store, getAssessment, catal
         messages,
         fallback: floor,
         onToken: (tok) => { begin(); full += tok; schedulePaint(); },
+        onUsage: (u) => recordSpend(u?.cost), // accumulate the per-Lattice spend tally
       });
       full = (out && String(out)) || full || floor;
     } catch {

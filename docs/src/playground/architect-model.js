@@ -30,6 +30,7 @@ const TRANSFORMERS_URL = 'https://esm.run/@huggingface/transformers';
 // All endpoints are CORS-enabled for browser use, so no server is involved.
 const OPENROUTER_AUTH_URL = 'https://openrouter.ai/auth';
 const OPENROUTER_KEYS_URL = 'https://openrouter.ai/api/v1/auth/keys';
+const OPENROUTER_KEY_URL = 'https://openrouter.ai/api/v1/auth/key'; // GET: this key's usage + limit
 const OPENROUTER_MODELS_URL = 'https://openrouter.ai/api/v1/models';
 const OPENROUTER_CHAT_URL = 'https://openrouter.ai/api/v1/chat/completions';
 const DEFAULT_OR_MODEL = 'anthropic/claude-sonnet-4';
@@ -212,6 +213,19 @@ function openRouterBackend() {
     setModel(id) { writeLS(OR_MODEL_LS, id || null); },
     keySnapshot() { return readLS(OR_KEY_LS); }, // for the Disconnect Undo (restore without re-OAuth)
     restore(key) { writeLS(OR_KEY_LS, key || null); },
+    // This key's account readout: usage (always) + limit/remaining (when a per-key
+    // limit is set). Best-effort, client-side, the user's own key — null on failure
+    // so the UI just hides the strip. Pay-as-you-go keys report a null limit.
+    async accountInfo() {
+      const key = readLS(OR_KEY_LS);
+      if (!key) return null;
+      try {
+        const res = await fetch(OPENROUTER_KEY_URL, { headers: { Authorization: 'Bearer ' + key } });
+        if (!res.ok) return null;
+        const d = (await res.json()).data || {};
+        return { usage: d.usage ?? null, limit: d.limit ?? null, remaining: d.limit_remaining ?? null };
+      } catch { return null; }
+    },
     // The current model's display name (catalog `name`, e.g. "DeepSeek: R1"), for the
     // reply attribution heading. Falls back to the raw id before the catalog loads.
     modelName() {
@@ -258,13 +272,18 @@ function openRouterBackend() {
         name: m.name || m.id,
         promptPerM: m.pricing ? orPricePerM(m.pricing.prompt) : null,
         completionPerM: m.pricing ? orPricePerM(m.pricing.completion) : null,
+        contextLength: m.context_length || m.top_provider?.context_length || null,
+        maxOutput: m.top_provider?.max_completion_tokens || null,
+        vision: Array.isArray(m.architecture?.input_modalities) && m.architecture.input_modalities.includes('image'),
       }));
       return catalogCache;
     },
-    async complete({ messages, json, onToken, signal }) {
+    async complete({ messages, json, onToken, signal, onUsage }) {
       const key = readLS(OR_KEY_LS);
       if (!key) throw new Error('OpenRouter not connected');
-      const body = { model: this.getModel(), messages, stream: !!onToken };
+      // usage:{include:true} guarantees the authoritative per-request `usage.cost`
+      // (USD) rides back in the response — the source of the per-Lattice spend tally.
+      const body = { model: this.getModel(), messages, stream: !!onToken, usage: { include: true } };
       if (json) body.response_format = { type: 'json_object' };
       const res = await fetch(OPENROUTER_CHAT_URL, {
         method: 'POST',
@@ -280,6 +299,7 @@ function openRouterBackend() {
       if (!res.ok) throw new Error('OpenRouter error ' + res.status);
       if (!onToken || !res.body) {
         const data = await res.json();
+        if (onUsage && data.usage) { try { onUsage(data.usage); } catch {} }
         return data.choices?.[0]?.message?.content ?? '';
       }
       // SSE stream: lines of `data: {json}`; `: OPENROUTER PROCESSING` keep-alives
@@ -288,6 +308,8 @@ function openRouterBackend() {
       const dec = new TextDecoder();
       let buf = '';
       let full = '';
+      let usage = null; // the final stream chunk carries usage (cost) when usage:include is set
+      const reportUsage = () => { if (onUsage && usage) { try { onUsage(usage); } catch {} } };
       while (true) {
         const { value, done } = await reader.read();
         if (done || signal?.aborted) break;
@@ -298,13 +320,16 @@ function openRouterBackend() {
           buf = buf.slice(nl + 1);
           if (!line.startsWith('data:')) continue;
           const payload = line.slice(5).trim();
-          if (payload === '[DONE]') return full;
+          if (payload === '[DONE]') { reportUsage(); return full; }
           try {
-            const t = JSON.parse(payload).choices?.[0]?.delta?.content || '';
+            const obj = JSON.parse(payload);
+            const t = obj.choices?.[0]?.delta?.content || '';
             if (t) { full += t; onToken(t); }
+            if (obj.usage) usage = obj.usage;
           } catch {}
         }
       }
+      reportUsage();
       return full;
     },
   };
@@ -565,6 +590,7 @@ export function createArchitectModel({ getSettings } = {}) {
     openRouterModel() { return openrouter.getModel(); },
     setOpenRouterModel(id) { openrouter.setModel(id); },
     openRouterModelName() { return openrouter.modelName(); },
+    openRouterAccount() { return openrouter.accountInfo(); },
     // Snapshot/restore the stored key so the settings UI can offer an Undo on
     // Disconnect (mirroring the deck-deletion guardrail) without re-running OAuth.
     openRouterKeySnapshot() { return openrouter.keySnapshot(); },
