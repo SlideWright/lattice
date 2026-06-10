@@ -6,9 +6,17 @@ import { defineConfig } from 'astro/config';
 // Project Pages site: https://slidewright.github.io/lattice/
 // `site` + `base` must match the GitHub Pages URL so generated links and
 // assets resolve under the /lattice/ path.
+//
+// Cloudflare Pages preview deployments serve at the ROOT of a *.pages.dev host,
+// not under /lattice/, so the base must differ per environment. Cloudflare sets
+// CF_PAGES=1 (and CF_PAGES_URL) in its build environment, so we auto-detect:
+// root base for Cloudflare previews, /lattice for the GitHub Pages production
+// build. The GitHub Pages workflow runs WITHOUT CF_PAGES, so its base is
+// unchanged — this is backward-compatible with the existing production deploy.
+const onCloudflare = Boolean(process.env.CF_PAGES);
 export default defineConfig({
-	site: 'https://slidewright.github.io',
-	base: '/lattice',
+	site: onCloudflare ? process.env.CF_PAGES_URL : 'https://slidewright.github.io',
+	base: onCloudflare ? '/' : '/lattice',
 	// The Drawing Board's Architect panel imports the repo's pure CommonJS
 	// lint-core (lib/authoring/lint-core.js) so the browser runs the SAME checks
 	// as the Node CLI. Two Vite nudges make that work: allow resolving the file
