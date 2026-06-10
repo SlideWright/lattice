@@ -157,13 +157,13 @@ const dbData = JSON.stringify({
 			     deck library + checkpoint history fold into the "Decks" popover in this
 			     panel's head; workspace + on-device-AI preferences into the settings
 			     chip beside it. (The old standalone rail is retired.) -->
-			<section class="db-panel db-architect" id="db-architect">
+			<section class="db-panel db-architect" id="db-architect" aria-label="The Architect">
 				<div class="db-panel-head">
-					<span class="db-panel-title">The Architect</span>
-					<span class="db-spacer"></span>
-					<!-- The deck-name gateway: the control names the deck you're on, and
-					     opening it reveals everything you can do with decks (switch / new /
-					     versions). Replaces the old ambiguous "Decks" + "New" labels. -->
+					<!-- The deck-name gateway leads the head and grows to fill it: the
+					     Architect's identity now lives once, in the avatar mark below, so
+					     the head's job is to name the deck you're on. Opening it reveals
+					     everything you can do with decks (switch / new / versions).
+					     Replaces the old ambiguous "Decks" + "New" labels. -->
 					<button class="db-deck-gw" id="db-decks-open" aria-haspopup="dialog" aria-expanded="false" aria-controls="db-decks-pop" title="Decks &amp; versions">
 						<span class="db-deck-gw-dot" aria-hidden="true"></span>
 						<span class="db-deck-gw-name" id="db-deck-gw-name">Deck</span>
