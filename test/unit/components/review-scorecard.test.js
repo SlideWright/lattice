@@ -153,4 +153,21 @@ describe('review-core: editorial + structural heuristics', () => {
     const long = `${FM}` + Array.from({ length: 11 }, (_, i) => `<!-- _class: content -->\n\n## Point ${i} stands alone\n\nbody\n`).join('\n---\n\n');
     assert.ok(ruleOf(reviewText(long, { bucketOf }), 'agenda-missing'));
   });
+
+  test('flags a placeholder or subtitle-less title, spares a complete one', () => {
+    assert.ok(ruleOf(reviewText(`${FM}<!-- _class: title -->\n\n# Title\n`, { bucketOf }), 'title-incomplete')); // placeholder
+    assert.ok(ruleOf(reviewText(`${FM}<!-- _class: title -->\n\n# Our real title\n`, { bucketOf }), 'title-incomplete')); // no subtitle
+    assert.equal(ruleOf(reviewText(`${FM}<!-- _class: title -->\n\n\`eyebrow\`\n\n# Our real title\n\nA framing subtitle line.\n`, { bucketOf }), 'title-incomplete'), undefined);
+  });
+});
+
+describe('review-core: shared ask + pacing (one definition for Coach + scorecard)', () => {
+  test('exports ASK_RE and pacingVerdict so coach-actions reuses them', async () => {
+    const { ASK_RE, pacingVerdict } = require('../../../lib/authoring/review-core');
+    assert.ok(ASK_RE instanceof RegExp);
+    assert.match('we recommend funding APAC', ASK_RE);
+    assert.equal(pacingVerdict(10, 20).level, 'comfortable'); // 120s/slide
+    assert.equal(pacingVerdict(40, 10).level, 'fast'); // 15s/slide
+    assert.equal(pacingVerdict(3, 30).level, 'leisurely'); // 600s/slide
+  });
 });
