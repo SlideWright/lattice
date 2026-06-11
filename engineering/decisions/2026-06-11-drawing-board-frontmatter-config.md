@@ -106,6 +106,11 @@ work.
 - The drawer reuses the existing slide-in drawer infra in
   `drawing-board.astro` (a third entry in the `defs` map, beside decks +
   settings) and the settings panel's row/switch/select styling.
+- The trigger button lives in the **editor toolbar** (beside Export), not the
+  Architect head where the prompt first put it "next to the settings button":
+  front matter is a document-level setting, so it belongs with the document
+  controls. The drawer itself, its id (`db-config-open`), and all wiring are
+  unchanged by the move.
 - `writeFrontMatter` canonicalizes managed keys (re-quoting only when a
   value would break a flat YAML read) and **preserves unmanaged keys
   verbatim** (`style`, `backgroundColor`, a hand-typed `theme`, …), so the

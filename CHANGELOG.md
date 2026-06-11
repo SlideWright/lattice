@@ -27,8 +27,9 @@ in patch versions.
 
 ### Added
 
-- **Drawing Board — Deck setup drawer.** A new config button beside the settings
-  chip opens a slide-in drawer for the deck's Marp front matter: theme, slide size
+- **Drawing Board — Deck setup drawer.** A new config button in the editor toolbar
+  (beside Export — front matter is a document-level setting) opens a slide-in
+  drawer for the deck's Marp front matter: theme, slide size
   (16:9 / 4K / 4:3), page numbers, running header & footer, plus a default slide
   class, math renderer (KaTeX / MathJax), and document language. The controls are
   pre-filled from the deck's current front matter and write a managed `---` block

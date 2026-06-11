@@ -212,11 +212,6 @@ const dbData = JSON.stringify({
 						<span class="db-deck-gw-dot" aria-hidden="true"></span>
 						<span class="db-deck-gw-name" id="db-deck-gw-name">Deck</span>
 					</button>
-					<!-- Deck setup — the front-matter config drawer (size, pagination,
-					     header/footer, …). Keeps the YAML managed + out of the editor so
-					     the Markdown stays content-only; the `is-set` cue lights when the
-					     deck carries any front matter. -->
-					<button class="db-config-chip" id="db-config-open" aria-haspopup="dialog" aria-expanded="false" aria-controls="db-config-drawer" aria-label="Deck setup" title="Deck setup — size, pagination, header &amp; footer"></button>
 					<!-- Settings entry that also signals the live AI tier: gear (tap to
 					     configure) + short tier word + a status dot (filled = AI active,
 					     hollow = deterministic floor). Label text driven by settings JS. -->
@@ -309,6 +304,11 @@ const dbData = JSON.stringify({
 							<button class="db-menu-item" type="button" data-export="print" role="menuitem">Print<small>vector + selectable text</small></button>
 						</div>
 					</div>
+					<!-- Deck setup — front-matter config (theme, size, pagination,
+					     header/footer, …). A document-level action, parked at the right
+					     end of the editor toolbar, after Export; the `is-set` cue lights
+					     when the deck carries front matter. -->
+					<button class="db-config-chip" id="db-config-open" aria-haspopup="dialog" aria-expanded="false" aria-controls="db-config-drawer" aria-label="Deck setup" title="Deck setup — theme, size, pagination, header &amp; footer"></button>
 				</div>
 				<div class="db-panel-body">
 					<!-- CodeMirror mounts into #db-editor-host; the textarea is the no-JS /
