@@ -41,14 +41,19 @@ in patch versions.
   no longer a stub: it composes an engine-owned scaffold with the selected
   theme, resolving `@import 'lattice'` against the registered base palette and
   honouring the `size:` directive's `@size` geometry (`lib/engine/css.js`). The
-  scaffold is reverse-engineered from Marpit's — load-bearing rules only
+  scaffold is modeled on Marpit's — load-bearing rules only
   (slide box + `container-type`, pagination pseudo-element, `@page`/print
   fidelity), emitted *correctly* (no `padding:inherit` on the pagination
   number), so themes compose without the `!important` override layer marp-core's
-  defaults force. The marp-only baggage (twemoji img sizing, `marp-h1`
-  auto-scaling, `div.marpit > section` prefixing, the `video` webkit hack,
-  `scroll-snap-align`) is deliberately absent. A deck now renders to a styled
-  PDF through the engine alone, with no marp-core in the loop.
+  defaults force. It also reproduces Marpit's one load-bearing CSS-pack step —
+  relocating each theme `:root { … }` token block onto the slide `:where(section)`
+  so cqi-valued tokens (`--sp-*`, …) resolve against the slide's
+  `container-type:size` container rather than the viewport; left on `:root` they
+  render fine on desktop Chromium but collapse on mobile WebKit (gaps → 0,
+  counters vanish). The marp-only baggage (twemoji img sizing, `marp-h1`
+  auto-scaling, full `div.marpit > section` selector prefixing, the `video`
+  webkit hack, `scroll-snap-align`) is deliberately absent. A deck now renders to
+  a styled PDF through the engine alone, with no marp-core in the loop.
 - **The docs playground can render through `lattice-engine` (P3, opt-in).** The
   playground bundle now carries both engines; `window.LatticePlayground` gains
   `setEngine('marp'|'lattice')` and an `engine` getter, and a `?engine=lattice`

@@ -416,6 +416,37 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
 - **Removable when:** WebKit gains reliable layout for HTML in a scaled SVG
   `<foreignObject>`. No timeline; don't count on it.
 
+### lattice-engine: deck looks fine on desktop but collapses on mobile WebKit (no `:root` token relocation)
+
+- **Symptom:** A deck rendered through the OWNED engine (`?engine=lattice` / the
+  Drawing Board's Render-engine toggle) on mobile Safari/iOS: spacing collapses
+  (cards/list rows overlap with ~0 gap), `list-criteria`/`principles` counters
+  vanish, title/KPI slides don't centre with breathing room. The SAME deck
+  through marp-core (the default engine), and the SAME engine output in headless
+  Chromium (`tools/engine-diff.js`), render perfectly. Looks like the
+  foreignObject WebKit class above, but the engine already renders
+  `inlineSVG:false` plain sections — so that's not it.
+- **Cause:** Lattice declares its cqi spacing/radius scale on `:root`
+  (`dist/lattice.css` `:root { --sp-md:1.875cqi; … }`). A `cqi` unit resolves
+  against the element's nearest `container-type` ancestor; `:root` has none, so
+  it falls back to the viewport. Marpit's theme `pack()` quietly rewrites every
+  theme `:root` selector onto the slide `section` (the `container-type:size`
+  query container) — so on the marp path the tokens resolve against the SLIDE.
+  The engine's first clean CSS emitter (P1.1) inlined `@import 'lattice'` with no
+  selector rewrite, leaving the tokens trapped on `:root`. Desktop Chromium
+  re-resolves cqi at the use-site so it looks fine; mobile WebKit does not, and
+  every `--sp-*` collapses toward 0 (counters sized in `cqh` of a now-zero-height
+  row disappear). **Headless-Chromium gates can't see this** — same blind spot as
+  the entry above.
+- **Fix:** `composeCss` (`lib/engine/css.js`) mirrors Marpit's `rootReplace`,
+  rewriting `:root` → `:where(section)` (`rootToSection`), so the token blocks
+  land on the slide container exactly as marp emits them. `:where()` keeps 0
+  specificity so component `section.x` rules still override. Locked by
+  `test/unit/engine/engine.test.js` ("relocates :root token blocks…"). Rebuild:
+  `npm run playground:build`.
+- **Triggered by:** Any theme that declares cqi-valued custom properties on
+  `:root` — i.e. all of them.
+
 ### Playground math (and any cqi/cqh layout) renders tiny + "jumps/rescales"
 
 - **Symptom:** In the docs playground, `math` variants — especially

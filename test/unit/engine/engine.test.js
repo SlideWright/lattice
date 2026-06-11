@@ -191,6 +191,26 @@ describe('lattice-engine: css emission (P1.1)', () => {
     assert.match(css, /--accent:\s*#840/); // resolved palette
     assert.equal(eng.render('# A\n', 'ghost').css, '');
   });
+
+  // Regression: a `:root` token block must be relocated onto the slide section
+  // (as Marpit's pack does), or cqi-valued tokens declared there resolve against
+  // the viewport — fine on desktop Chromium, collapsed on mobile WebKit. See the
+  // rootToSection note in lib/engine/css.js.
+  test('relocates :root token blocks onto :where(section) (mobile-cqi fix)', () => {
+    const ROOTY = "/* @theme cuoio */\n@import 'lattice';\n:root { --sp-md: 1.875cqi; }\n:root, section { --fs-body: 2cqi; }";
+    const out = composeCss({ themeCss: ROOTY, baseLatticeCss: BASE });
+    // the cqi token is now owned by a section selector, not bare :root
+    assert.match(out, /:where\(section\)[^{]*\{[^}]*--sp-md:\s*1\.875cqi/);
+    assert.doesNotMatch(out, /(^|[\s,}]):root\s*\{[^}]*--sp-md/m); // no bare :root carrying it
+  });
+
+  test('inlines the base exactly once (a prose @import in a comment is ignored)', () => {
+    // The palette mentions `@import 'lattice'` inside a comment; only the real
+    // rule should inline the base — otherwise the sheet doubles in size.
+    const PROSE = "/* @theme cuoio — pulls the base via @import 'lattice'; */\n@import 'lattice';\nsection { --x: 1; }";
+    const out = composeCss({ themeCss: PROSE, baseLatticeCss: BASE });
+    assert.equal((out.match(/color:\s*#111/g) || []).length, 1); // base body inlined once
+  });
 });
 
 describe('lattice-engine: structural parity vs marp-core', () => {
