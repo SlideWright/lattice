@@ -968,14 +968,30 @@ const dbData = JSON.stringify({
 					'  window.__latticeTag=tag;',
 					'  tag();',
 					'  function setActive(i){var s=secs();for(var k=0;k<s.length;k++)s[k].classList.toggle("db-active",k===i);}',
-					'  function scrollTo(i,smooth){var s=secs();if(!s[i])return;window.scrollTo({top:Math.max(0,s[i].offsetTop-22),behavior:smooth?"smooth":"auto"});setActive(i);}',
-					// Which slide have we scrolled to? Slides are a fixed-pitch filmstrip
-					// (each slot = FIT-scaled 720*sc + 22px gap), so the slide aligned to the
-					// viewport top is pure arithmetic: round(scrollY / slotH). This anchors to
-					// the TOP — so a fresh load at scrollY 0 reports slide 0 (not whatever sits
-					// at the viewport centre), and it agrees with scrollTo() below, which puts
-					// slide i's top at the viewport top. (Also avoids a getBoundingClientRect
-					// over every slide each scroll — which would defeat content-visibility.)
+					// A select (click / cursor) centres its slide and locks the highlight to
+					// it. While that programmatic scroll animates, suppress the free-scroll
+					// detector (report() below) so the counter doesn't tick through the slides
+					// we pass — the parent already set the active slide explicitly. Cleared
+					// when the scroll settles (scrollend), with a timeout fallback.
+					'  var prog=0,progT=0;',
+					'  function startProg(){prog=1;clearTimeout(progT);progT=setTimeout(function(){prog=0;},1200);}',
+					// Keep suppressing for a short grace AFTER the scroll settles: an instant
+					// jump fires scrollend immediately, but the trailing IntersectionObserver
+					// callback lands a tick later and would otherwise re-report the top-anchored
+					// slide, clobbering the centred selection. 1200ms is the hard fallback for
+					// browsers without scrollend.
+					'  window.addEventListener("scrollend",function(){clearTimeout(progT);progT=setTimeout(function(){prog=0;},120);});',
+					// Select -> centre slide i in the viewport (clamped to the scroll range),
+					// not top-aligned, so the focused slide is presented with breathing room.
+					'  function scrollTo(i,smooth){var s=secs();if(!s[i])return;var m=document.querySelector(".marpit");var vh=720*(m?m.clientWidth/1280:1);var doc=document.scrollingElement||document.documentElement;var max=Math.max(0,doc.scrollHeight-window.innerHeight);var top=Math.max(0,Math.min(s[i].offsetTop+vh/2-window.innerHeight/2,max));startProg();window.scrollTo({top:top,behavior:smooth?"smooth":"auto"});setActive(i);}',
+					// Which slide are we on while *free-scrolling*? Slides are a fixed-pitch
+					// filmstrip (each slot = FIT-scaled 720*sc + 22px gap), so the slide at the
+					// viewport top is pure arithmetic: round(scrollY / slotH). Top-anchored, so
+					// a fresh load at scrollY 0 reports slide 0 and the counter moves
+					// monotonically. (Also avoids a getBoundingClientRect over every slide each
+					// scroll — which would defeat content-visibility.) A *select* instead
+					// centres its slide (scrollTo above) with this detector suppressed during
+					// the jump, so the two reference lines needn't agree mid-select.
 					'  function centered(){var m=document.querySelector(".marpit");var s=secs();if(!s.length)return -1;var w=m?m.clientWidth:0;if(!w)return 0;var slotH=720*(w/1280)+22;if(slotH<=0)return 0;var i=Math.round(window.scrollY/slotH);if(i<0)i=0;if(i>=s.length)i=s.length-1;return i;}',
 					// Report the centred slide as you scroll. The window "scroll" event is
 					// unreliable for same-origin iframes on iOS Safari (touch / momentum
@@ -983,7 +999,7 @@ const dbData = JSON.stringify({
 					// updates during scroll regardless — drives the same recompute. Both
 					// paths funnel through report(), deduped via lastC.
 					'  var raf=0,lastC=-1;',
-					'  function report(){var i=centered();if(i>=0&&i!==lastC){lastC=i;setActive(i);parent.postMessage({type:"db-slide-scrolled",idx:i},"*");}}',
+					'  function report(){if(prog)return;var i=centered();if(i>=0&&i!==lastC){lastC=i;setActive(i);parent.postMessage({type:"db-slide-scrolled",idx:i},"*");}}',
 					'  function onScroll(){if(raf)return;raf=requestAnimationFrame(function(){raf=0;report();});}',
 					'  window.addEventListener("scroll",onScroll,{passive:true});',
 					'  if(typeof IntersectionObserver!=="undefined"){var io=new IntersectionObserver(onScroll,{rootMargin:"-45% 0px -45% 0px"});var _ss=secs();for(var _si=0;_si<_ss.length;_si++)io.observe(_ss[_si]);}',
