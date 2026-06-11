@@ -209,6 +209,11 @@ const dbData = JSON.stringify({
 						<span class="db-deck-gw-dot" aria-hidden="true"></span>
 						<span class="db-deck-gw-name" id="db-deck-gw-name">Deck</span>
 					</button>
+					<!-- Deck setup — the front-matter config drawer (size, pagination,
+					     header/footer, …). Keeps the YAML managed + out of the editor so
+					     the Markdown stays content-only; the `is-set` cue lights when the
+					     deck carries any front matter. -->
+					<button class="db-config-chip" id="db-config-open" aria-haspopup="dialog" aria-expanded="false" aria-controls="db-config-drawer" aria-label="Deck setup" title="Deck setup — size, pagination, header &amp; footer"></button>
 					<!-- Settings entry that also signals the live AI tier: gear (tap to
 					     configure) + short tier word + a status dot (filled = AI active,
 					     hollow = deterministic floor). Label text driven by settings JS. -->
@@ -380,6 +385,19 @@ const dbData = JSON.stringify({
 				</div>
 				<div class="db-drawer-body" id="db-settings-pop"></div>
 			</aside>
+
+			<!-- The deck-setup drawer — front-matter config. Friendly controls write a
+			     managed `---` block at the top of the deck source (the channel that
+			     already persists + exports), so the Markdown body stays content-only.
+			     Pre-filled from the deck's current front matter when opened. -->
+			<aside class="db-drawer db-drawer-config" id="db-config-drawer" role="dialog" aria-modal="true" aria-label="Deck setup" aria-hidden="true">
+				<div class="db-drawer-head">
+					<span class="db-panel-title">Deck setup</span>
+					<span class="db-spacer"></span>
+					<button class="db-drawer-close" data-drawer-close aria-label="Close deck setup" title="Close"></button>
+				</div>
+				<div class="db-drawer-body" id="db-config-pop"></div>
+			</aside>
 		</div>
 
 		<!-- Practice mode — full-screen rehearsal overlay (deterministic pacing +
@@ -458,6 +476,7 @@ const dbData = JSON.stringify({
 			import { createChat } from '../playground/drawing-board-chat.js';
 			import { scrollJumpState } from '../playground/chat-markdown.js';
 			import { createModelSettings } from '../playground/drawing-board-settings.js';
+			import { createConfigPanel } from '../playground/drawing-board-config.js';
 			import { createCoachConsole } from '../playground/coach-console.js';
 			import { getPref } from '../playground/drawing-board-prefs.js';
 			const data = JSON.parse(document.getElementById('db-data').textContent);
@@ -485,6 +504,19 @@ const dbData = JSON.stringify({
 			});
 			window.__dbSettings = settings;
 
+			// Deck setup (front-matter config): the config chip opens a drawer whose
+			// controls write a managed `---` block into the editor source. Reads the
+			// live editor, writes back through it (so the change re-renders + autosaves
+			// via onEdit). syncTrigger lights the chip when the deck carries front matter.
+			const config = createConfigPanel({
+				host: document.getElementById('db-config-pop'),
+				trigger: document.getElementById('db-config-open'),
+				getSource: () => (window.__dbEditor ? window.__dbEditor.getValue() : ''),
+				setSource: (next) => { if (window.__dbEditor) window.__dbEditor.setValue(next); },
+			});
+			window.__dbConfig = config;
+			config.syncTrigger();
+
 			// Slide-in drawers (decks + settings) — modal panels over a shared scrim,
 			// mirroring the component-reference nav drawer. A trigger opens its drawer;
 			// the scrim, the close button, or Escape closes it. Settings re-renders its
@@ -494,6 +526,7 @@ const dbData = JSON.stringify({
 				var defs = {
 					'db-decks-pop': { trigger: '#db-decks-open', onOpen: function () { if (window.__dbDrawerTab) window.__dbDrawerTab('decks'); } },
 					'db-settings-drawer': { trigger: '#db-model-chip', onOpen: function () { if (window.__dbSettings && window.__dbSettings.openTab) window.__dbSettings.openTab('cloud'); else if (window.__dbSettings && window.__dbSettings.render) window.__dbSettings.render(); } },
+					'db-config-drawer': { trigger: '#db-config-open', onOpen: function () { if (window.__dbConfig && window.__dbConfig.render) window.__dbConfig.render(); } },
 				};
 				var current = null;
 				function openDrawer(id) {
@@ -1165,6 +1198,7 @@ const dbData = JSON.stringify({
 					scheduleRender();
 					if (window.__dbStore) window.__dbStore.saveActive(getSource());
 					if (window.__dbArchitect) window.__dbArchitect.update(getSource());
+					if (window.__dbConfig) window.__dbConfig.syncTrigger(); // light the chip when front matter is present
 				}
 				// The store loads a deck (switch / restore / initial) -> swap the editor
 				// source and re-render. setSource fires onChange, but the store guards its
@@ -1178,6 +1212,7 @@ const dbData = JSON.stringify({
 					frameSig = ''; // a new deck → fresh srcdoc (resets runtime/Mermaid state)
 					render();
 					if (window.__dbArchitect) window.__dbArchitect.update(src);
+					if (window.__dbConfig) window.__dbConfig.syncTrigger(); // refresh the config cue for the loaded deck
 					// A user-initiated switch (rail pick / restore) lands you in the editor
 					// on narrow layouts. The INITIAL load after a (re)load does NOT — it
 					// restores your last pane (see below), so a refresh or an iOS tab discard

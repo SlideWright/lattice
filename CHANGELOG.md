@@ -25,6 +25,19 @@ in patch versions.
 
 ## Unreleased
 
+### Added
+
+- **Drawing Board — Deck setup drawer.** A new config button beside the settings
+  chip opens a slide-in drawer for the deck's Marp front matter: slide size
+  (16:9 / 4K / 4:3), page numbers, running header & footer, plus a default slide
+  class, math renderer (KaTeX / MathJax), and document language. The controls are
+  pre-filled from the deck's current front matter and write a managed `---` block
+  at the top of the source — so the Markdown body stays content-only, the values
+  persist across refreshes (they ride the deck source into IndexedDB), and an
+  exported `.md` finally carries `marp: true` + its directives instead of shipping
+  naked. Theme/colour stay with the top-bar palette picker, which owns them. The
+  config chip lights when the deck carries front matter.
+
 ### Fixed
 
 - **`lattice-engine` pagination now counts like marp-core.** A `paginate: false`
