@@ -25,6 +25,30 @@ in patch versions.
 
 ## Unreleased
 
+### Fixed
+
+- **`lattice-engine` now matches marp-core on fenced code, soft breaks, and
+  inline-math delimiters.** A full-corpus visual-parity sweep (the new
+  `tools/engine-parity.mjs`, which rasterises every gallery slide through both
+  engines and pixel-diffs them) caught three real divergences: (1) fenced code
+  rendered as flat monochrome (no `hljs-*` token spans); (2) soft line breaks
+  dropped their `<br>`, collapsing multi-line blockquotes (e.g. a math `stats`
+  slide's CI/p-value lines) onto one line; (3) inline-math `$…$` had no delimiter
+  guards, so currency prose ("$400M … up 28% … $18M") was swallowed as one math
+  span and garbled. The engine now wires highlight.js into markdown-it
+  (byte-identical spans to marp, Mermaid grammar included), sets `breaks: true`,
+  and guards the math delimiters (opening `$` not followed by whitespace, closing
+  `$` not preceded by whitespace nor followed by a digit). New direct dependency:
+  `highlight.js` (pinned to `^11.11.1` to match the copy marp-core bundles).
+- **Drawing Board / playground: decks with YAML front matter no longer render a
+  spurious blank leading slide on the marp engine.** `lib/playground/index.js`
+  forced the selected palette by prepending a `<!-- theme: … -->` comment, which
+  pushed a `---` front-matter fence off line 0 — Marpit then stopped parsing it as
+  front matter, emitting an empty leading slide and painting the directives as
+  body text. The theme directive is now injected *inside* the front matter when
+  present (a leading comment only when there is none). Caught by the parity sweep;
+  Drawing Board (docs-site) only.
+
 ### Added
 
 - **`@slidewright/lattice/engine`** — an experimental, owned markdown→slide
