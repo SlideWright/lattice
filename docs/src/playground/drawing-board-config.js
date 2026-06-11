@@ -278,7 +278,7 @@ export function createConfigPanel({ host, trigger, getSource, setSource, palette
       const valid = !!raw && palettes.includes(raw);
       const current = valid ? raw : (getDefaultTheme() || palettes[0] || '');
       host.append(selectRow('theme', 'Theme',
-        'Palette for the whole deck — synced with the top-bar picker', // transparent, not magic
+        'Palette — synced with the top-bar picker', // transparent, not magic
         palettes.map((p) => [p, titleCase(p)]), current, true));
       if (raw && !valid) {
         // Don't propagate a nonexistent theme — say so, and keep rendering the
@@ -288,10 +288,10 @@ export function createConfigPanel({ host, trigger, getSource, setSource, palette
       }
     }
 
-    host.append(selectRow('size', 'Slide size', 'The page aspect ratio + resolution', [
-      ['16:9', 'Widescreen 16:9 · 1280×720 (default)'],
+    host.append(selectRow('size', 'Slide size', 'Aspect ratio (16:9 is the default)', [
+      ['16:9', '16:9 · 1280×720'],
       ['4K', '4K · 3840×2160'],
-      ['standard', 'Standard 4:3 · 960×720'],
+      ['standard', '4:3 · 960×720'],
     ], fm.size));
 
     host.append(switchRow('paginate', 'Page numbers', 'Show pagination on every slide', fm.paginate));

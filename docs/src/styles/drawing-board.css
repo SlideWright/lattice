@@ -2285,6 +2285,19 @@ html.db-js #db-editor-ta {
 .db-config-input::placeholder {
 	color: var(--text-muted);
 }
+/* Keep the inline select rows (theme / size / math) from collapsing the
+ * label+hint column when an option's text runs long — cap the select and hold a
+ * floor under the text so a label never wraps one word per line. */
+.db-drawer-config .db-pref-row {
+	align-items: baseline;
+}
+.db-drawer-config .db-pref-text {
+	flex: 1 1 auto;
+	min-width: 7rem;
+}
+.db-drawer-config .db-pref-select {
+	max-width: 11rem;
+}
 /* Unknown-theme note — the deck declares a `theme:` that isn't a registered
  * palette, so it isn't propagated. Tinted to read as a caution, not an error. */
 .db-config-warn {
