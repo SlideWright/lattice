@@ -136,6 +136,7 @@ const dbData = JSON.stringify({
 		<script is:inline>
 			(function () {
 				var r = document.documentElement;
+				r.classList.add('db-js'); // JS is available → hide the pre-hydration seed textarea (no white flash / no swap jump)
 				try {
 					var p = localStorage.getItem('lattice-docs-palette');
 					if (p) r.setAttribute('data-palette', p);

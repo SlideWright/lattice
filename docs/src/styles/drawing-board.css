@@ -1565,12 +1565,16 @@ button.db-tl-body:hover {
 .db-editor-host .cm-editor {
 	height: 100%;
 }
-/* The pre-hydration seed textarea (#db-editor-ta) is what's on screen until the
- * CodeMirror bundle loads and replaces it — on a phone that can be a beat. Left
- * unstyled it renders as iOS Safari's default white inset box (a white "flash of
- * unstyled content" over the dark editor, and a stuck white box if hydration is
- * slow/fails). Style it to match the editor so the seed → CodeMirror handoff is
- * seamless: dark surface, mono text, no native chrome, 16px to dodge iOS zoom. */
+/* The pre-hydration seed textarea (#db-editor-ta) carries the starter markdown
+ * to the mount script and is the no-JS fallback. With JS (the head script adds
+ * html.db-js before first paint) it's HIDDEN: CodeMirror fills #db-editor-host,
+ * and the content appears once in its final position — no white flash, and no
+ * "jump" from the textarea's metrics (no gutter, different padding) to CM's.
+ * Without JS it stays visible, styled to match the editor (dark surface, mono,
+ * no native chrome, 16px to dodge iOS zoom) so it's never the default white box. */
+html.db-js #db-editor-ta {
+	display: none;
+}
 #db-editor-ta {
 	box-sizing: border-box;
 	width: 100%;
