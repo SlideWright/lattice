@@ -596,18 +596,18 @@ section em { font-style:italic; }
  * surface rebinds only --code-inline-fg (see base.modifiers.css dark-island
  * block + base.tokens.css). NOTE: color is declared before background so
  * currentColor in the wash resolves to this element's ink. */
-/* white-space:nowrap keeps hyphenated identifier chips (`--bg-alt`, `var()`)
- * intact — without it the browser breaks at every `-`, fragmenting a token
- * across 2–3 lines inside the chip (worst under the wider hand font). Matches
- * the state-pill, which already nowraps. */
-section code { font-family:var(--font-mono); font-size:0.85em; white-space:nowrap; color:var(--code-inline-fg, var(--accent)); background:var(--code-inline-bg, color-mix(in srgb, currentColor 10%, transparent)); padding:0.15625cqi 0.46875cqi; border-radius:0.3125cqi; border:1px solid var(--code-inline-border, color-mix(in srgb, currentColor 22%, transparent)); }
+/* Inline `code` chips MUST wrap — do not add white-space:nowrap here. Eyebrows
+ * and long labels are authored as backtick inline-code, so a blanket nowrap on
+ * `section code` runs them off the slide (and collapses `pre code` blocks). The
+ * cascade wraps inline code; block code keeps its newlines via the reset below. */
+section code { font-family:var(--font-mono); font-size:0.85em; color:var(--code-inline-fg, var(--accent)); background:var(--code-inline-bg, color-mix(in srgb, currentColor 10%, transparent)); padding:0.15625cqi 0.46875cqi; border-radius:0.3125cqi; border:1px solid var(--code-inline-border, color-mix(in srgb, currentColor 22%, transparent)); }
 /* Reset inline-code chip styling for code that's inside a fenced block.
  * Covers both `<pre>` (lattice-emulator output, where mermaid is pre-rendered
  * to SVG) and `<marp-pre>` (Marp Preview's custom element, where mermaid
  * source remains in the DOM until lattice-runtime.js upgrades it). Without
  * the marp-pre branch, mermaid source blocks render briefly as inline-code
  * chips in VS Code preview before the upgrade lands. */
-section :is(pre, marp-pre) code { background:none; border:none; padding:0; border-radius:0; color:inherit; font-size:inherit; }
+section :is(pre, marp-pre) code { background:none; border:none; padding:0; border-radius:0; color:inherit; font-size:inherit; white-space:pre; }
 section hr { border:none; height:0.15625cqi; background:var(--spectrum); border-radius:0.15625cqi; width:5.625cqi; margin:var(--sp-sm) auto; }
 section ul { list-style:none; padding:0; margin:0; }
 section ol { padding:0; margin:0; }

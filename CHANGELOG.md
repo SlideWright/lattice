@@ -47,6 +47,15 @@ in patch versions.
 
 ### Fixed
 
+- **Inline-code chips no longer flatten code blocks or run eyebrows off the
+  slide.** A `white-space:nowrap` on `section code` (added to keep hyphenated
+  identifier chips like `--bg-alt` from wrapping at the hyphen) also matched
+  `<code>` inside `<pre>` — collapsing every fenced code block onto one
+  clipped line — and long backtick eyebrows/labels, which then overflowed the
+  slide and tripped the overflow ring. Reverted the blanket nowrap: inline
+  code wraps normally again and block code keeps its newlines (the `pre code`
+  reset now pins `white-space:pre`). Affected every deck with a `code` /
+  `compare-code` slide or a long eyebrow. See `engineering/gotchas.md`.
 - **`radar` and `quadrant` now scale with the slide at any resolution.** Their
   SVGs were ceilinged with a fixed `max-height: 360px`, so on a larger render
   (e.g. `size: 4K`) the chart stayed pinned small while the cqi-driven type and

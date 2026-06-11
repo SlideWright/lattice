@@ -979,6 +979,31 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
 
 ## CSS
 
+### `white-space:nowrap` on `section code` collapsed code blocks + overflowed eyebrows
+
+- **Symptom:** Every fenced code block (`code`, `compare-code`) rendered as a
+  single clipped line instead of its authored multi-line source, and slides
+  whose eyebrow was a long backtick label (e.g. `` `SECTION 02 EVALUATES …` ``)
+  ran the eyebrow off the right edge and tripped the overflow ring.
+- **Cause:** A `white-space:nowrap` was added to `section code` in
+  base.elements.css to stop hyphenated identifier chips (`--bg-alt`, `var()`)
+  from breaking at the hyphen under the wider hand font. But `section code`
+  also matches `<code>` inside `<pre>` (block code) and the `<code>` of a
+  backtick eyebrow/label — and `nowrap` collapses newline runs to spaces and
+  forbids wrapping. So block code flattened and long inline code overflowed.
+- **Mitigation:** The blanket nowrap is removed — inline code wraps normally;
+  the `section :is(pre, marp-pre) code` reset pins `white-space:pre` so block
+  code keeps newlines (`lib/base/base.elements.css`). Accept that a hyphenated
+  chip may wrap at the hyphen under sketch — far cheaper than the two bugs the
+  nowrap caused. The page-count gates never caught it (collapsed code is still
+  one slide); only a visual spot-check does.
+- **Triggered by:** Any deck with a `code`/`compare-code` slide, or a long
+  eyebrow/label authored as inline code.
+- **Removable when:** Never — do not re-add `white-space:nowrap` to
+  `section code`; scope any chip-specific treatment so it cannot reach
+  `pre code` or eyebrow code.
+- **Commits:** introduced c5512e04, reverted in this change.
+
 ### Drawer close buttons jammed left — a `.db-spacer` flex rule scoped to the wrong parent
 
 - **Symptom:** In the Drawing Board's slide-in drawers (Settings, Decks),
