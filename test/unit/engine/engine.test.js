@@ -196,12 +196,16 @@ describe('lattice-engine: css emission (P1.1)', () => {
   // (as Marpit's pack does), or cqi-valued tokens declared there resolve against
   // the viewport — fine on desktop Chromium, collapsed on mobile WebKit. See the
   // rootToSection note in lib/engine/css.js.
-  test('relocates :root token blocks onto :where(section) (mobile-cqi fix)', () => {
+  test('relocates :root token blocks onto :where(section):not([\\20 root]) — mobile-cqi fix, preserving (0,1,0) specificity', () => {
     const ROOTY = "/* @theme cuoio */\n@import 'lattice';\n:root { --sp-md: 1.875cqi; }\n:root, section { --fs-body: 2cqi; }";
     const out = composeCss({ themeCss: ROOTY, baseLatticeCss: BASE });
-    // the cqi token is now owned by a section selector, not bare :root
+    // the cqi token is owned by a section selector, not bare :root …
     assert.match(out, /:where\(section\)[^{]*\{[^}]*--sp-md:\s*1\.875cqi/);
     assert.doesNotMatch(out, /(^|[\s,}]):root\s*\{[^}]*--sp-md/m); // no bare :root carrying it
+    // … AND it carries Marpit's `:not([\20 root])` specificity guard, so the real
+    // tokens (0,1,0) still beat lattice.css's `:where(:root)` fallbacks (0,0,0).
+    // Bare `:where(section)` (0,0,0) was the cascade slip behind the mobile bug.
+    assert.match(out, /:where\(section\):not\(\[\\20 root\]\)\s*\{[^}]*--sp-md:\s*1\.875cqi/);
   });
 
   test('inlines the base exactly once (a prose @import in a comment is ignored)', () => {
