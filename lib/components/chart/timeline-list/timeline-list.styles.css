@@ -80,7 +80,7 @@ section.timeline-list .timeline-pill {
   margin-bottom: var(--sp-sm);
   border-radius: 0.9375cqi;
   background: var(--bg);
-  border: 1px solid color-mix(in oklab, var(--accent) 40%, var(--border));
+  border: var(--chart-hairline) solid color-mix(in oklab, var(--accent) 40%, var(--border));
   color: var(--accent);
   font-family: var(--font-mono);
   font-size: var(--fs-meta);

@@ -77,7 +77,7 @@ section.progress .progress-fill {
                color-mix(in oklab, var(--fill-hue) 30%, black)) 0%,
     light-dark(color-mix(in oklab, var(--fill-hue) calc(20% + var(--pct) * 0.52%), var(--bg)),
                color-mix(in oklab, var(--fill-hue) calc(38% + var(--pct) * 0.58%), black)) 100%);
-  border: 1px solid color-mix(in oklab, var(--fill-hue) var(--chart-fill-edge), var(--border));
+  border: var(--chart-hairline) solid color-mix(in oklab, var(--fill-hue) var(--chart-fill-edge), var(--border));
   border-left: var(--chart-fill-accent) solid var(--fill-ink);
   border-radius: 0.46875cqi;
   transition: none;

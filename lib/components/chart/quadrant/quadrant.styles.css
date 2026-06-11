@@ -93,7 +93,7 @@ section.quadrant.chart-frame .chart-header {
 }
 section.quadrant.chart-frame .chart-header::after {
   width: 7.5cqi;
-  height: 1px;
+  height: var(--chart-hairline);
   background: color-mix(in oklab, var(--accent) 50%, transparent);
 }
 
@@ -308,7 +308,7 @@ section.quadrant .quadrant-legend .quadrant-swatch {
   height: 0.85em;
   border-radius: 3px;
   background: var(--cell-fill);
-  border: 1px solid var(--cell-ink);
+  border: var(--chart-hairline) solid var(--cell-ink);
 }
 section.quadrant .quadrant-legend .quadrant-legend-count {
   font-family: var(--font-mono, var(--font-body));

@@ -88,6 +88,19 @@ in patch versions.
   wired into the integration tier) renders a fixture at HD and 4K and asserts
   each chart SVG scales, catching any future fixed-px cap. First step of the
   chart responsiveness epic (#180).
+- **Chart borders, rules, and accent stripes now hold their weight at any
+  resolution.** Every chart hairline was a fixed `1px` (and the spine `2px`,
+  fill/phase accents `4px`/`6px`) — pinned px that visually thin toward nothing
+  as the native render resolution climbs (a `1px` rule at 4K is a third the
+  relative weight it has at HD). They now route through resolution-stable line
+  tokens — `--chart-hairline`, `--chart-spine-w`, `--chart-fill-accent`,
+  `--chart-accent-lg` — each a `clamp(<legacy px>, <cqi>, <cap>)` that floors at
+  the legacy px (so HD output is byte-identical, no gallery churn) and grows to a
+  tight ~2× cap above HD (a hairline never thickens into a bar at 4K/10K). Applies
+  family-wide across gantt, kanban, progress, roadmap, map, piechart, quadrant,
+  timeline-list, and the shared chart frame. Second step of #180; journey's
+  decorative band/curve strokes (a proportional, not hairline, treatment) and the
+  state-chart / word-cloud rebuilds remain tracked there.
 - **`lattice-engine` pagination now counts like marp-core.** A `paginate: false`
   slide is still counted toward the page numbering, so the next slide reads its
   true absolute position and the total reflects the whole deck (the engine had
