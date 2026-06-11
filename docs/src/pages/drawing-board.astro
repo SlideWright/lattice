@@ -98,6 +98,12 @@ const url = (p) => joinBase(base, p);
 // Cache-busted prefix for the playground's runtime-fetched assets (see
 // asset-version.mjs); the bare `playground/` route is unchanged.
 const pg = assetBase();
+// Short per-deploy build id (the asset-version hash). Surfaced as a visible tag
+// in the topbar so a tester on a device — where the browser truncates the
+// branch subdomain and can't tell a stale deploy from a fresh one — can read
+// off exactly which build they loaded. Correlates with the deployed
+// `/playground/v/<hash>/` path.
+const buildId = (pg.match(/v\/([0-9a-f]{6,})/)?.[1] || 'dev').slice(0, 8);
 
 const tokensCss = readFileSync(join(docsRoot, 'src/styles/lattice-tokens.generated.css'), 'utf8');
 const palettes = [...new Set([...tokensCss.matchAll(/data-palette="([^"]+)"/g)].map((m) => m[1]))];
@@ -154,6 +160,11 @@ const dbData = JSON.stringify({
 					<img class="brand-logo" src={url('lattice-logo.png')} alt="" width="30" height="30" />
 					<span class="brand-mark">Lattice</span>
 				</a>
+				<span
+					class="db-build-tag"
+					title="Build / asset version of this deploy — tell Claude this value to confirm which build you're testing"
+					style="font:600 10px/1 var(--font-mono, ui-monospace, monospace);color:var(--text-muted, #888);letter-spacing:.05em;padding:3px 6px;border:1px solid color-mix(in srgb, currentColor 30%, transparent);border-radius:6px;margin-left:6px;white-space:nowrap"
+				>build {buildId}</span>
 				<nav class="topnav" id="topnav">
 					<a class="navlink" href={url('getting-started/')}>Get started</a>
 					<a class="navlink" href={url('guides/authoring/')}>Guides</a>
