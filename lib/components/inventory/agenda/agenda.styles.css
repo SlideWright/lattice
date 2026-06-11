@@ -41,7 +41,7 @@ section.agenda ol > li {
 }
 section.agenda ol > li::before {
   content:counter(agenda-counter, decimal-leading-zero);
-  font-family:var(--font-mono);
+  font-family:var(--font-label);
   font-size:var(--fs-body);
   font-weight:700;
   letter-spacing:0.12em;

@@ -53,7 +53,7 @@ section.list > ol > li {
 }
 section.list > ol > li::before {
   content:counter(list-counter, decimal-leading-zero);
-  font-family:var(--font-mono); font-size:var(--fs-h4); font-weight:700; color:var(--accent);
+  font-family:var(--font-label); font-size:var(--fs-h4); font-weight:700; color:var(--accent);
 }
 
 /* ── takeaway register — former `tldr` component (inventory.list.takeaway) ──
@@ -74,7 +74,7 @@ section.list.takeaway.numbered > :is(ul,ol) > li { counter-increment:list-take-c
 section.list.takeaway.numbered > :is(ul,ol) { counter-reset:list-take-counter; }
 section.list.takeaway.numbered > :is(ul,ol) > li::before {
   content:counter(list-take-counter, decimal-leading-zero);
-  font-family:var(--font-mono); font-size:var(--fs-emphasis); font-weight:700;
+  font-family:var(--font-label); font-size:var(--fs-emphasis); font-weight:700;
   letter-spacing:0.02em; color:var(--accent); line-height:1;
   flex:0 0 auto; min-width:2.4em;
 }
@@ -95,7 +95,7 @@ section.list.principles > ol > li {
 section.list.principles > ol > li:last-child { border-bottom:none; }
 section.list.principles > ol > li::before {
   content:counter(list-principle-counter, decimal-leading-zero);
-  font-family:var(--font-mono); font-size:var(--fs-h1); font-weight:700;
+  font-family:var(--font-label); font-size:var(--fs-h1); font-weight:700;
   letter-spacing:0.02em; color:var(--accent); line-height:1; align-self:center;
 }
 section.list.principles.lettered > ol > li::before { content:counter(list-principle-counter, upper-alpha); }

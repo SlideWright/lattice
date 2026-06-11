@@ -817,7 +817,7 @@ section.agenda ol > li {
 }
 section.agenda ol > li::before {
   content:counter(agenda-counter, decimal-leading-zero);
-  font-family:var(--font-mono);
+  font-family:var(--font-label);
   font-size:var(--fs-body);
   font-weight:700;
   letter-spacing:0.12em;
@@ -4435,7 +4435,7 @@ section.list > ol > li {
 }
 section.list > ol > li::before {
   content:counter(list-counter, decimal-leading-zero);
-  font-family:var(--font-mono); font-size:var(--fs-h4); font-weight:700; color:var(--accent);
+  font-family:var(--font-label); font-size:var(--fs-h4); font-weight:700; color:var(--accent);
 }
 
 /* ── takeaway register — former `tldr` component (inventory.list.takeaway) ──
@@ -4456,7 +4456,7 @@ section.list.takeaway.numbered > :is(ul,ol) > li { counter-increment:list-take-c
 section.list.takeaway.numbered > :is(ul,ol) { counter-reset:list-take-counter; }
 section.list.takeaway.numbered > :is(ul,ol) > li::before {
   content:counter(list-take-counter, decimal-leading-zero);
-  font-family:var(--font-mono); font-size:var(--fs-emphasis); font-weight:700;
+  font-family:var(--font-label); font-size:var(--fs-emphasis); font-weight:700;
   letter-spacing:0.02em; color:var(--accent); line-height:1;
   flex:0 0 auto; min-width:2.4em;
 }
@@ -4477,7 +4477,7 @@ section.list.principles > ol > li {
 section.list.principles > ol > li:last-child { border-bottom:none; }
 section.list.principles > ol > li::before {
   content:counter(list-principle-counter, decimal-leading-zero);
-  font-family:var(--font-mono); font-size:var(--fs-h1); font-weight:700;
+  font-family:var(--font-label); font-size:var(--fs-h1); font-weight:700;
   letter-spacing:0.02em; color:var(--accent); line-height:1; align-self:center;
 }
 section.list.principles.lettered > ol > li::before { content:counter(list-principle-counter, upper-alpha); }
@@ -4510,7 +4510,7 @@ section.list-criteria > :is(ol, ul) > li::before {
   content:counter(crit-counter, decimal-leading-zero);
   flex-shrink:0; align-self:stretch;
   display:flex; align-items:center; justify-content:center;
-  font-family:var(--font-mono); font-size:55cqh; font-weight:700;
+  font-family:var(--font-label); font-size:55cqh; font-weight:700;
   color:var(--accent); line-height:1;
 }
 section.list-criteria .crit-body {
@@ -4572,7 +4572,7 @@ section.list-steps ol > li:not(:last-child)::after {
   border-left:10px solid var(--border);
   z-index:1;
 }
-section.list-steps ol > li::before { content:'STEP ' counter(step-counter, decimal-leading-zero); font-family:var(--font-mono); font-size:var(--fs-meta); font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-label); }
+section.list-steps ol > li::before { content:'STEP ' counter(step-counter, decimal-leading-zero); font-family:var(--font-label); font-size:var(--fs-meta); font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-label); }
 section.list-steps ol > li strong { display:block; }
 section.list-steps ol > li p { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); margin:0; }
 section.list-steps ol > li:not(:has(> ul)) > p { flex:1; }
@@ -4674,7 +4674,7 @@ section.list-steps.timeline > ol > li::before {
   display:flex; align-items:center; justify-content:center;
   width:2.03125cqi; height:2.03125cqi; border-radius:50%;
   background:var(--accent); color:var(--on-accent, var(--on-dark-primary));
-  font-family:var(--font-mono); font-size:var(--fs-meta); font-weight:700; line-height:1;
+  font-family:var(--font-label); font-size:var(--fs-meta); font-weight:700; line-height:1;
   margin-bottom:1.09375cqi; flex-shrink:0;
 }
 section.list-steps.timeline > ul > li::before {
@@ -12076,7 +12076,7 @@ section.sketch {
    * rides in the mask; the colour is `background-color: var(--sketch-ink)`, so
    * it stays palette-blind (no baked hex). PDF-safe: a static image, not the
    * feTurbulence filter that collapses Marp's print scaling. */
-  --sketch-wave: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 140 7'%3E%3Cpath d='M0 3.5 Q12 3 23 3.7 Q34 4 46 3.3 Q58 3 70 3.6 Q82 4 94 3.3 Q106 3 117 3.7 Q128 4 140 3.5' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E");
+  --sketch-wave: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 140 7'%3E%3Cpath d='M0 3.5 Q12 1.5 23 3.7 Q35 5.5 47 3.2 Q58 1.6 70 3.6 Q82 5.4 94 3.3 Q105 1.5 117 3.7 Q128 5.3 140 3.5' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
   /* The section's own default font tracks --font-body (re-pointed just
    * below), so EVERY text node a component doesn't explicitly font — prose,
    * emphasis, links, stray spans — reads hand. Using the token (not a literal
@@ -12358,6 +12358,36 @@ section.sketch.chart-frame .chart-header::after {
 section.sketch.image.full p:last-of-type,
 section.sketch.image.contain p:last-of-type {
   max-height: 5.6cqi;
+}
+
+/* ── RESPONSIVE GUARDS ────────────────────────────────────────────────────
+ * The hand sans sets a wider/taller footprint than the engine body face, so
+ * layouts that pack content into a fixed- or equal-height box can tip
+ * CONTAINED content past the edge under sketch. Keep them responsive:
+ * content that fit the engine face still fits; only a genuinely overstuffed
+ * slide overflows the whole frame (and trips the overflow ring). */
+
+/* list: rows are equal-height bands (flex:1 1 0) sized for the engine face at
+ * --fs-message (21pt). The wider hand font makes a multi-line item overrun
+ * its 1/N band and collide with the next. Step the rows down to --fs-body so
+ * the same content fits the same bands (short-item lists still read fine, a
+ * touch quieter). */
+section.sketch.list > :is(ul, ol) > li {
+  font-size: var(--fs-body);
+}
+
+/* split-panel: the right-zone supporting cards are sized for the engine face
+ * in a fixed-width panel; the wider hand font pushed the last card past the
+ * panel (and the section clips it). Drop them to the compact step so the set
+ * fits. */
+section.sketch.split-panel .panel-right :is(p, li, strong) {
+  font-size: var(--fs-body-compact);
+}
+
+/* checklist: a full 7-row list plus the per-row offset-ink shadow runs the
+ * last row into the footer. Tighten the inter-row gap so the set clears it. */
+section.sketch.checklist > :is(ul, ol) {
+  gap: var(--sp-xs);
 }
 
 /* === lib/shared/shared.styles.css === */

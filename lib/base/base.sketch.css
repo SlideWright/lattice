@@ -57,7 +57,7 @@ section.sketch {
    * rides in the mask; the colour is `background-color: var(--sketch-ink)`, so
    * it stays palette-blind (no baked hex). PDF-safe: a static image, not the
    * feTurbulence filter that collapses Marp's print scaling. */
-  --sketch-wave: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 140 7'%3E%3Cpath d='M0 3.5 Q12 3 23 3.7 Q34 4 46 3.3 Q58 3 70 3.6 Q82 4 94 3.3 Q106 3 117 3.7 Q128 4 140 3.5' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E");
+  --sketch-wave: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 140 7'%3E%3Cpath d='M0 3.5 Q12 1.5 23 3.7 Q35 5.5 47 3.2 Q58 1.6 70 3.6 Q82 5.4 94 3.3 Q105 1.5 117 3.7 Q128 5.3 140 3.5' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
   /* The section's own default font tracks --font-body (re-pointed just
    * below), so EVERY text node a component doesn't explicitly font — prose,
    * emphasis, links, stray spans — reads hand. Using the token (not a literal
@@ -339,4 +339,34 @@ section.sketch.chart-frame .chart-header::after {
 section.sketch.image.full p:last-of-type,
 section.sketch.image.contain p:last-of-type {
   max-height: 5.6cqi;
+}
+
+/* ── RESPONSIVE GUARDS ────────────────────────────────────────────────────
+ * The hand sans sets a wider/taller footprint than the engine body face, so
+ * layouts that pack content into a fixed- or equal-height box can tip
+ * CONTAINED content past the edge under sketch. Keep them responsive:
+ * content that fit the engine face still fits; only a genuinely overstuffed
+ * slide overflows the whole frame (and trips the overflow ring). */
+
+/* list: rows are equal-height bands (flex:1 1 0) sized for the engine face at
+ * --fs-message (21pt). The wider hand font makes a multi-line item overrun
+ * its 1/N band and collide with the next. Step the rows down to --fs-body so
+ * the same content fits the same bands (short-item lists still read fine, a
+ * touch quieter). */
+section.sketch.list > :is(ul, ol) > li {
+  font-size: var(--fs-body);
+}
+
+/* split-panel: the right-zone supporting cards are sized for the engine face
+ * in a fixed-width panel; the wider hand font pushed the last card past the
+ * panel (and the section clips it). Drop them to the compact step so the set
+ * fits. */
+section.sketch.split-panel .panel-right :is(p, li, strong) {
+  font-size: var(--fs-body-compact);
+}
+
+/* checklist: a full 7-row list plus the per-row offset-ink shadow runs the
+ * last row into the footer. Tighten the inter-row gap so the set clears it. */
+section.sketch.checklist > :is(ul, ol) {
+  gap: var(--sp-xs);
 }

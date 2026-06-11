@@ -797,6 +797,20 @@ in patch versions.
 
 ### Fixed
 
+- **`sketch` finish — second audit pass (visible-defect fixes).** (1) **Wavy
+  rules now read as hand-drawn** — the `--sketch-wave` amplitude was too low to
+  perceive at slide scale, so table/ledger/agenda rules looked machine-straight;
+  raised it so the wobble registers. (2) **Counters take the hand** — the
+  numeral/step counters (`agenda`, `list`, `list-criteria`, `list-steps`) pinned
+  `--font-mono`, so they stayed mono beside hand content; re-pointed them at
+  `--font-label` (hand under `sketch`, identical mono everywhere else). (3)
+  **Responsive guards so contained content stops overflowing under the wider
+  hand font:** `list` rows step down to `--fs-body` to fit their equal-height
+  bands (was overlapping); `split-panel` right-zone cards step to the compact
+  size to fit the fixed panel (was clipping the last card); the `checklist`
+  inter-row gap tightens so a 7-row set clears the footer. The principle: content
+  that fit the engine face still fits; only a genuinely overstuffed slide
+  overflows.
 - **`sketch` finish robustness — a slide-by-slide audit of the finish on a
   full editorial deck fixed a batch of defects.** (1) **Dropped the `1.08em`
   body bump** — it enlarged every body element AND discarded the compact sizes
