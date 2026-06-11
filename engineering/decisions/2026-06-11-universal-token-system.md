@@ -194,6 +194,10 @@ Mirrors the typography template, with the maker–checker corrections folded in:
    zero tokens by design, checker F8).
 5. **Dark wrappers & palette-audit** are first-class migration citizens, not
    afterthoughts.
+6. **A demo deck per phase.** Every phase ships an `examples/<slug>.md`
+   (+ committed PDF) the reviewer can open in one click to inspect and verify
+   that phase's vocabulary end-to-end, light **and** dark. Phase 1 is
+   `examples/universal-tokens.md` (§9).
 
 ## 9 — Phase 1 prototype — what shipped and how it was verified
 
@@ -219,9 +223,14 @@ Mirrors the typography template, with the maker–checker corrections folded in:
 - Full unit suite **1480/1480 green** — incl. the contrast gate (AA intact)
   and `mermaid-var-map` (every repointed name resolves in indaco **and**
   cuoio, the one theme that overrides the universal semantic palette).
-- Integration tier (cross-renderer parity + page counts) — *(results appended
-  on completion).* Diagrams render in colour through the upgraded bridge;
-  byte-identical values mean no page-count drift.
+- Integration tier (cross-renderer parity + page counts) — **167 pass / 0
+  fail.** Diagrams render in colour through the upgraded bridge; byte-identical
+  values mean no page-count drift.
+- Demo deck `examples/universal-tokens.md` (8 slides, light + a `dark` diagram
+  slide) rendered through the emulator and spot-checked: categorical fills,
+  marks, and on-fill ink paint correctly on both canvases — the dark slide
+  confirms the `light-dark()` inside each `--cat-*` value resolves to its dark
+  branch through the new names.
 
 ## 10 — Open decisions (future phases)
 
