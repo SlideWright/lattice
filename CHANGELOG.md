@@ -55,6 +55,27 @@ in patch versions.
   palette propagates — an unknown/typo theme is left in the source but never
   applied (the deck can't render unstyled), with a caution note in the drawer. The
   deck's theme now travels with an exported `.md`.
+- **`lattice-engine` owned CSS emitter, opt-in via `?css=engine`.** The owned
+  engine can now emit its own theme-packed stylesheet instead of borrowing
+  marp-core's packer — the last marp dependency on the playground/Drawing Board
+  path. The emitter (`lib/engine/css.js`) faithfully mirrors Marpit's pack
+  pipeline (root-replace + the `:not([\20 root])` specificity guard, slide-scoping
+  prepend, `::after` pagination-content masking) so the cascade is byte-equivalent
+  on the load-bearing rules — closing the mobile-WebKit regressions (collapsed cqi
+  spacing, dropped CSS counters) that shelved the earlier P1.1 emitter. Gated by a
+  new browser-independent CSS-pack parity test vs marp-core and by full desktop
+  pixel parity across the 89pp baseline gallery + the full 65-gallery component
+  corpus (`tools/engine-parity.mjs --own-css`). The owned sheet is ~43% smaller
+  than marp's pack (drops twemoji / `marp-h1` auto-scaling / scroll-snap baggage)
+  and the owned `composeCss` is ~7× faster than marp's packer, cutting the full
+  playground render path to ~2.6× faster than marp. Default stays on marp's packer
+  pending a real-device check; `?css=engine` (implies `?engine=lattice`) opts in.
+- **`dist/lattice.css` now bundles the KaTeX base stylesheet.** `tools/build-css.js`
+  vendors KaTeX's layout sheet from the installed `katex` package (font URLs
+  rewritten to the pinned jsDelivr CDN, as marp-core does) into the engine bundle,
+  so math glyphs are styled by `dist/lattice.css` alone — no marp-core injection
+  required. This is what lets the owned CSS emitter reach math parity; it also
+  means any drop-in `dist/lattice.css` consumer now renders `$…$` math correctly.
 
 ### Fixed
 

@@ -183,8 +183,10 @@ async function runDeck(browser, diffPage, deckPath, cliPalette, dark) {
   const themeName = dark && api.hasTheme(palette + '-dark') ? palette + '-dark' : palette;
 
   api.setEngine('marp');
+  api.setCssSource('marp');
   const m = api.render(md, themeName);
   api.setEngine('lattice');
+  api.setCssSource(OWN_CSS ? 'engine' : 'marp');
   const e = api.render(md, themeName);
 
   const marpShots = await shoot(browser, m.html, m.css, dark);
@@ -241,8 +243,15 @@ function galleryDecks() {
   return out.sort();
 }
 
+// When set (via --own-css), the lattice path renders with the engine's OWN CSS
+// emitter instead of marp's delegated packer — the desktop pixel gate for the P5
+// owned-emitter revival. Default off: the harness keeps verifying owned-HTML +
+// marp-CSS parity.
+let OWN_CSS = false;
+
 async function main() {
   const args = process.argv.slice(2);
+  OWN_CSS = args.includes('--own-css');
   const dark = args.includes('--dark');
   const pi = args.indexOf('--palette');
   const cliPalette = pi >= 0 ? args[pi + 1] : null;
