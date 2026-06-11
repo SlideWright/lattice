@@ -756,6 +756,15 @@ in patch versions.
   (`--cm-active-line`, `--cm-active-gutter`, `--cm-selection`, `--cm-selection-edge`,
   `--cm-match`) so a downstream theme can tune them. Playground / Drawing Board /
   Specimen editors (docs-site CodeMirror) only — no engine change.
+- **Editor autocomplete popup is now legible on every palette and mode.** The
+  dropdown reused `--bg` (identical to the editor) with a plain `--border` edge,
+  so in light mode it floated with almost no visible boundary (border-vs-bg ~1.21
+  on indaco-light); and the completion detail/type hint reused `--text-muted`,
+  which drops to WCAG ~2.5 on the warm light palettes (magnolia, cuoio). Two new
+  editor tokens fix both: `--cm-pop-border` (a muted-blended panel edge, lifted to
+  ~1.87) and `--cm-detail` (a body-blended hint colour, lifted to ~3.85 while
+  staying secondary to the label); the popup shadow is also deepened for
+  elevation. Docs-site CodeMirror only — no engine change.
 - **The AI-tier status indicator no longer relies on colour alone (WCAG 1.4.1).** The
   green/grey connectivity dot — on the model chip and the settings "In use" row — is
   replaced by a per-state **Lucide glyph**: `cloud` (cloud tier) · `cpu` (on-device) ·

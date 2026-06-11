@@ -205,6 +205,14 @@ const latticeTheme = EditorView.theme({
 		'--cm-selection': 'color-mix(in srgb, var(--accent) 22%, transparent)',
 		'--cm-selection-edge': 'color-mix(in srgb, var(--accent) 45%, transparent)',
 		'--cm-match': 'color-mix(in srgb, var(--accent) 26%, transparent)',
+		// Autocomplete popup. The panel reused --bg (identical to the editor) with a
+		// plain --border edge, so in light mode it floated with no visible boundary
+		// (border-vs-bg ~1.21 on indaco-light), and the detail/type hint reused
+		// --text-muted, which drops to WCAG ~2.5 on the warm light palettes. A
+		// muted-blended border lifts the panel edge to ~1.87; a body-blended detail
+		// colour lifts the hint to ~3.85 while staying secondary to the label.
+		'--cm-pop-border': 'color-mix(in srgb, var(--border) 45%, var(--text-muted))',
+		'--cm-detail': 'color-mix(in srgb, var(--text-muted) 50%, var(--text-body))',
 	},
 	// On touch devices, iOS Safari auto-zooms the page when you focus an input
 	// whose font is under 16px. Bump the editable surface to 16px on coarse
@@ -243,10 +251,10 @@ const latticeTheme = EditorView.theme({
 	// palette/mode. (Same vehicle CodeMirror's own default theme uses, so these
 	// override it; the tooltip renders inside .cm-editor, so the theme reaches it.)
 	'.cm-tooltip.cm-tooltip-autocomplete': {
-		border: '1px solid var(--border)',
+		border: '1px solid var(--cm-pop-border)',
 		borderRadius: '8px',
 		backgroundColor: 'var(--bg)',
-		boxShadow: '0 10px 28px color-mix(in srgb, var(--text-heading) 22%, transparent)',
+		boxShadow: '0 12px 30px color-mix(in srgb, var(--text-heading) 30%, transparent)',
 		overflow: 'hidden',
 	},
 	'.cm-tooltip-autocomplete > ul': {
@@ -271,7 +279,7 @@ const latticeTheme = EditorView.theme({
 		color: 'var(--on-accent)',
 	},
 	'.cm-completionDetail': {
-		color: 'var(--text-muted)',
+		color: 'var(--cm-detail)',
 		fontStyle: 'italic',
 	},
 	'.cm-tooltip-autocomplete > ul > li[aria-selected] .cm-completionDetail': {
@@ -280,7 +288,7 @@ const latticeTheme = EditorView.theme({
 	},
 	// The side info card (the white box in the report).
 	'.cm-tooltip.cm-completionInfo': {
-		border: '1px solid var(--border)',
+		border: '1px solid var(--cm-pop-border)',
 		borderRadius: '8px',
 		backgroundColor: 'var(--bg-alt)',
 		color: 'var(--text-body)',
