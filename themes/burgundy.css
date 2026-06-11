@@ -208,3 +208,44 @@ section pre.hljs {
   --c-container:     light-dark(#EADFE1, #241C1D);
   --c-subcontainer:  light-dark(#DBD0D2, #352C2E);
 }
+
+/* ── Chart-family palette ───────────────────────────────────────────────
+ * Burgundy's curation of the chart-family's two colour spectrums (defined in
+ * lib/components/chart/_chart-family/chart-family.css). The engine ships a
+ * canvas-aware Apple-hue default; untuned themes inherit it. Burgundy overrides
+ * both spectrums with its wine-cellar pigments so charts read native to the
+ * "ink on cream" brand instead of borrowing the cool system palette.
+ *
+ * Each hook is the `light-dark(lightCanvasVivid, darkCanvasVivid)` shape the
+ * chart-family expects: on cream the value is a saturated burgundy pigment (it
+ * drives the wedge/bar border at full strength and a 24% tint for the fill);
+ * on deep-wine canvas it lifts to a brighter same-hue sibling. See
+ * design/theming.md (chart palette) and chart-family.css for the contract. */
+:root {
+  /* Categorical spectrum — burgundy's audited "Brand triad" pigments
+   * (themes/palette-audit.md). Eight hues covering wine, forest, teal,
+   * sienna, plum, jade, gold, and olive — the full warm-plus-cool complement
+   * that keeps the wine brand from collapsing into a monoromatic read.
+   * Light side = the audited pigment (drives the border at full strength + a
+   * 24% tint for the fill); dark side = the same hue lifted toward white so
+   * it stays vivid on the deep-wine canvas. */
+  --chart-cat1: light-dark(#8E293E, color-mix(in oklab, #8E293E, white 30%));  /* wine      */
+  --chart-cat2: light-dark(#2C8647, color-mix(in oklab, #2C8647, white 30%));  /* forest    */
+  --chart-cat3: light-dark(#2D6E8A, color-mix(in oklab, #2D6E8A, white 30%));  /* teal      */
+  --chart-cat4: light-dark(#8A492D, color-mix(in oklab, #8A492D, white 30%));  /* sienna    */
+  --chart-cat5: light-dark(#8A2D6E, color-mix(in oklab, #8A2D6E, white 30%));  /* plum      */
+  --chart-cat6: light-dark(#2B8371, color-mix(in oklab, #2B8371, white 30%));  /* jade      */
+  --chart-cat7: light-dark(#837334, color-mix(in oklab, #837334, white 30%));  /* gold      */
+  --chart-cat8: light-dark(#448334, color-mix(in oklab, #448334, white 30%));  /* olive     */
+
+  /* Semantic spectrum — charts that encode meaning (gantt bars, progress,
+   * status pills, state-chart, timeline). pass/warn/fail reuse burgundy's
+   * own status trio so a gantt at-risk bar matches a --warn chip; info takes
+   * a dusty slate blue (clearly separated from the wine family), mute a
+   * desaturated wine-adjacent taupe (derived from --text-muted's family). */
+  --chart-state-pass: var(--pass);                  /* forest green  */
+  --chart-state-warn: var(--warn);                  /* amber         */
+  --chart-state-fail: var(--fail);                  /* wine alarm    */
+  --chart-state-info: light-dark(#3E6A9E, #79A6D6); /* dusty slate   */
+  --chart-state-mute: light-dark(#6F6354, #A69882); /* warm taupe    */
+}

@@ -197,3 +197,44 @@ section pre.hljs {
   --c-container:     light-dark(#E0DDD3, #232019);
   --c-subcontainer:  light-dark(#D1CEC5, #34312A);
 }
+
+/* ── Chart-family palette ───────────────────────────────────────────────
+ * Atelier's curation of the chart-family's two colour spectrums (defined in
+ * lib/components/chart/_chart-family/chart-family.css). The engine ships a
+ * canvas-aware Apple-hue default; untuned themes inherit it. Atelier overrides
+ * both spectrums with its muted artist's-studio pigments so charts read native
+ * to the "hand-finished oat & amber" brand instead of borrowing the cool system
+ * palette.
+ *
+ * Each hook is the `light-dark(lightCanvasVivid, darkCanvasVivid)` shape the
+ * chart-family expects: on oat the value is a low-chroma pigment (it drives the
+ * wedge/bar border at full strength and a 24% tint for the fill); on deep-brown
+ * canvas it lifts toward white via color-mix(in oklab, …, white 30%) so the
+ * same hue stays readable without boosting chroma. See design/theming.md
+ * (chart palette) and the chart-family.css token block for the contract. */
+:root {
+  /* Categorical spectrum — atelier's audited Brand-triad pigments.
+   * Low-chroma earth/studio hues ported from the theme's own pigment set,
+   * most-distinct-first. Light side = the audited pigment (drives the border
+   * at full strength + a 24% tint for the fill); dark side = the same hue
+   * lifted toward white so it stays vivid on the deep-brown canvas. */
+  --chart-cat1: light-dark(#775E40, color-mix(in oklab, #775E40, white 30%));  /* umber      */
+  --chart-cat2: light-dark(#427375, color-mix(in oklab, #427375, white 30%));  /* teal       */
+  --chart-cat3: light-dark(#444275, color-mix(in oklab, #444275, white 30%));  /* indigo     */
+  --chart-cat4: light-dark(#737542, color-mix(in oklab, #737542, white 30%));  /* olive      */
+  --chart-cat5: light-dark(#754442, color-mix(in oklab, #754442, white 30%));  /* terracotta */
+  --chart-cat6: light-dark(#425A75, color-mix(in oklab, #425A75, white 30%));  /* slate      */
+  --chart-cat7: light-dark(#5A7146, color-mix(in oklab, #5A7146, white 30%));  /* sage       */
+  --chart-cat8: light-dark(#46715D, color-mix(in oklab, #46715D, white 30%));  /* verdigris  */
+
+  /* Semantic spectrum — charts that encode meaning (gantt bars, progress,
+   * status pills, state-chart, timeline). pass/warn/fail reuse atelier's own
+   * status trio so a gantt at-risk bar matches a --warn chip; info takes a
+   * dusty slate blue tuned to atelier's warm-achromatic canvas; mute a warm
+   * taupe derived from --text-muted. */
+  --chart-state-pass: var(--pass);                  /* studio green  */
+  --chart-state-warn: var(--warn);                  /* amber caution */
+  --chart-state-fail: var(--fail);                  /* terracotta alarm */
+  --chart-state-info: light-dark(#3E6A9E, #79A6D6); /* dusty slate   */
+  --chart-state-mute: light-dark(#6F6354, #A69882); /* warm taupe    */
+}

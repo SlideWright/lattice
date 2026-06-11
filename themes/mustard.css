@@ -201,3 +201,42 @@ section pre.hljs {
   --c-container:     light-dark(#E0DED5, #1E1D16);
   --c-subcontainer:  light-dark(#D2D0C6, #2F2E26);
 }
+
+/* ── Chart-family palette ───────────────────────────────────────────────
+ * Mustard's curation of the chart-family's two colour spectrums (defined in
+ * lib/components/chart/_chart-family/chart-family.css). The engine ships a
+ * canvas-aware Apple-hue default; untuned themes inherit it. Mustard overrides
+ * both spectrums with its audited Brand-triad pigments so charts read native to
+ * the "apothecary archive" brand instead of borrowing the cool system palette.
+ *
+ * Each hook is the `light-dark(lightCanvasVivid, darkCanvasVivid)` shape the
+ * chart-family expects: on parchment the value is a saturated pigment (it
+ * drives the wedge/bar border at full strength and a 24% tint for the fill);
+ * on deep sepia it lifts toward white via color-mix so the mark stays vivid.
+ * See design/theming.md (chart palette) and chart-family.css for the contract. */
+:root {
+  /* Categorical spectrum — mustard's audited "Brand triad" pigments, ordered
+   * most-distinct-first. Light side = audited pigment; dark side = same hue
+   * lifted toward white 30% in OKLab so it pops on the deep-sepia canvas
+   * (#0F0A03). Adjacent cats clear ≥0.15 OKLab; all 8 clear ≥3:1 on both
+   * canvases. */
+  --chart-cat1: light-dark(#8B7123, color-mix(in oklab, #8B7123, white 30%));  /* mustard-gold  */
+  --chart-cat2: light-dark(#29758E, color-mix(in oklab, #29758E, white 30%));  /* teal          */
+  --chart-cat3: light-dark(#42298E, color-mix(in oklab, #42298E, white 30%));  /* violet        */
+  --chart-cat4: light-dark(#687F25, color-mix(in oklab, #687F25, white 30%));  /* olive         */
+  --chart-cat5: light-dark(#8E4229, color-mix(in oklab, #8E4229, white 30%));  /* oxblood       */
+  --chart-cat6: light-dark(#29428E, color-mix(in oklab, #29428E, white 30%));  /* cobalt        */
+  --chart-cat7: light-dark(#44832F, color-mix(in oklab, #44832F, white 30%));  /* green         */
+  --chart-cat8: light-dark(#2F836E, color-mix(in oklab, #2F836E, white 30%));  /* teal-green    */
+
+  /* Semantic spectrum — charts that encode meaning (gantt bars, progress,
+   * status pills, state-chart, timeline). pass/warn/fail reuse mustard's
+   * inherited status trio so a gantt at-risk bar matches a --warn chip;
+   * info takes a dusty slate blue (kept clearly blue, lightly tuned toward
+   * the warm canvas); mute a warm taupe derived from --text-muted. */
+  --chart-state-pass: var(--pass);                  /* forest green  */
+  --chart-state-warn: var(--warn);                  /* amber         */
+  --chart-state-fail: var(--fail);                  /* crimson alarm */
+  --chart-state-info: light-dark(#3E6A9E, #79A6D6); /* dusty slate   */
+  --chart-state-mute: light-dark(#6F6354, #A69882); /* warm taupe    */
+}

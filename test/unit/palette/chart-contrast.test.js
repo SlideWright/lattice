@@ -27,7 +27,11 @@ const fs   = require('fs');
 const path = require('path');
 
 const THEMES_DIR = path.join(__dirname, '..', '..', '..', 'themes');
-const CURATED = ['cuoio', 'onyx', 'indaco'];
+const CURATED = [
+  'cuoio', 'onyx', 'indaco',
+  'ardesia', 'atelier', 'brina', 'burgundy', 'carbone', 'concrete',
+  'crepuscolo', 'laguna', 'magnolia', 'mustard',
+];
 
 // Collect every `--name: value` custom-property declaration in the file,
 // regardless of selector — the palette tokens live in `:root` (theme) but the

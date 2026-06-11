@@ -198,3 +198,47 @@ section pre.hljs {
   --c-container:     light-dark(#A8A8A8, #2D2D2D);
   --c-subcontainer:  light-dark(#9A9A9A, #3F3F3F);
 }
+
+/* ── Chart-family palette ───────────────────────────────────────────────
+ * Concrete's curation of the chart-family's two colour spectrums (defined in
+ * lib/components/chart/_chart-family/chart-family.css). The engine ships a
+ * canvas-aware Apple-hue default; untuned themes inherit it. Concrete overrides
+ * both spectrums with its own low-chroma greige pigments so charts read native
+ * to the "poured concrete" brand instead of borrowing the cool system palette.
+ *
+ * Each hook is the `light-dark(lightCanvasVivid, darkCanvasVivid)` shape the
+ * chart-family expects: on the gray canvas the value is a low-chroma earth
+ * pigment (it drives the wedge/bar border at full strength and a 24% tint for
+ * the fill); on the dark canvas it lifts to a brighter same-hue sibling via
+ * color-mix(in oklab, …, white 30%). See design/theming.md (chart palette) and
+ * the chart-family.css token block for the contract. */
+:root {
+  /* Categorical spectrum — concrete's audited Brand-triad pigments.
+   * Eight low-chroma greige hues, separated by hue + value so categories
+   * stay distinguishable on both the mid-gray light canvas and the near-
+   * black dark canvas. Light side = the audited pigment (drives the border
+   * at full strength + a 24% tint for the fill); dark side = the same hue
+   * lifted toward white so it stays vivid on the dark canvas. */
+  --chart-cat1: light-dark(#6A4E4E, color-mix(in oklab, #6A4E4E, white 30%));  /* dusty rose    */
+  --chart-cat2: light-dark(#3E6A58, color-mix(in oklab, #3E6A58, white 30%));  /* sage green    */
+  --chart-cat3: light-dark(#47526E, color-mix(in oklab, #47526E, white 30%));  /* steel blue    */
+  --chart-cat4: light-dark(#6B5D49, color-mix(in oklab, #6B5D49, white 30%));  /* warm taupe    */
+  --chart-cat5: light-dark(#6D3E53, color-mix(in oklab, #6D3E53, white 30%));  /* mauve         */
+  --chart-cat6: light-dark(#4F6667, color-mix(in oklab, #4F6667, white 30%));  /* slate teal    */
+  --chart-cat7: light-dark(#63634F, color-mix(in oklab, #63634F, white 30%));  /* khaki olive   */
+  --chart-cat8: light-dark(#516751, color-mix(in oklab, #516751, white 30%));  /* muted green   */
+
+  /* Semantic spectrum — charts that encode meaning (gantt bars, progress,
+   * status pills, state-chart, timeline). pass/fail reuse concrete's
+   * inherited status trio; warn and info are DEEPENED on the light side
+   * because concrete's canvas is an unusually dark greige (#B8B8B5) — the
+   * universal amber/slate only reach ~2.5–2.8:1 there, so a richer burnt
+   * ochre + deep slate clear the 3:1 mark with authority while keeping the
+   * same blue-info / amber-warn role language as the curated trio. Dark
+   * sides lift to clear the espresso-gray canvas. mute is the system greige. */
+  --chart-state-pass: var(--pass);                  /* status green   */
+  --chart-state-warn: light-dark(#854608, #E89030); /* burnt ochre    */
+  --chart-state-fail: var(--fail);                  /* status red     */
+  --chart-state-info: light-dark(#2F567F, #79A6D6); /* deep slate     */
+  --chart-state-mute: light-dark(#6F6354, #A69882); /* warm greige    */
+}

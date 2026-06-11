@@ -196,3 +196,46 @@ section pre.hljs {
   --c-container:     light-dark(#DCE6EC, #20272B);
   --c-subcontainer:  light-dark(#CED7DD, #31383D);
 }
+
+/* ── Chart-family palette ───────────────────────────────────────────────
+ * Brina's curation of the chart-family's two colour spectrums (defined in
+ * lib/components/chart/_chart-family/chart-family.css). The engine ships a
+ * canvas-aware Apple-hue default; untuned themes inherit it. Brina overrides
+ * both spectrums with its cool frost pigments so charts read native to the
+ * "Nordic restraint, brushed steel" brand instead of borrowing the warm
+ * system palette.
+ *
+ * Each hook is the `light-dark(lightCanvasVivid, darkCanvasVivid)` shape the
+ * chart-family expects: on pale gray-blue the value is a saturated cool
+ * pigment (it drives the wedge/bar border at full strength and a 24% tint for
+ * the fill); on deep graphite it lifts toward white so it stays vivid. See
+ * design/theming.md (chart palette) and the chart-family.css token block for
+ * the contract. */
+:root {
+  /* Categorical spectrum — brina's audited Brand-triad pigments, most-
+   * distinct-first. Ported from the theme's own cool-frost hue band so
+   * charts and Mermaid diagrams speak one colour language.
+   * Light side = the audited pigment (drives border + 24%-tint fill);
+   * dark side = same hue lifted toward white (color-mix in oklab, white 30%)
+   * so it stays vivid on the deep-graphite canvas. */
+  --chart-cat1: light-dark(#3C697C, color-mix(in oklab, #3C697C, white 30%));  /* slate-blue  */
+  --chart-cat2: light-dark(#793E4A, color-mix(in oklab, #793E4A, white 30%));  /* rose        */
+  --chart-cat3: light-dark(#796E3E, color-mix(in oklab, #796E3E, white 30%));  /* moss        */
+  --chart-cat4: light-dark(#3E4A79, color-mix(in oklab, #3E4A79, white 30%));  /* indigo      */
+  --chart-cat5: light-dark(#3E796E, color-mix(in oklab, #3E796E, white 30%));  /* teal        */
+  --chart-cat6: light-dark(#79503E, color-mix(in oklab, #79503E, white 30%));  /* sienna      */
+  --chart-cat7: light-dark(#524375, color-mix(in oklab, #524375, white 30%));  /* violet      */
+  --chart-cat8: light-dark(#754366, color-mix(in oklab, #754366, white 30%));  /* plum        */
+
+  /* Semantic spectrum — charts that encode meaning (gantt bars, progress,
+   * status pills, state-chart, timeline). pass/warn/fail reuse brina's own
+   * status trio so a gantt at-risk bar matches a --warn chip; info takes a
+   * deeper steel-blue (nudged darker/more-saturated than cat1 #3C697C so it
+   * stays clearly distinct on both canvases); mute uses a cool-steel taupe
+   * derived from --text-muted. */
+  --chart-state-pass: var(--pass);                  /* frost green   */
+  --chart-state-warn: var(--warn);                  /* amber signal  */
+  --chart-state-fail: var(--fail);                  /* alarm red     */
+  --chart-state-info: light-dark(#1E5280, #6AA8D8); /* deep steel    */
+  --chart-state-mute: light-dark(#6F7E8F, #A0AFBE); /* cool-steel taupe */
+}

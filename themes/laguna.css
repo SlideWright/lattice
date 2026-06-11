@@ -198,3 +198,43 @@ section pre.hljs {
   --c-container:     light-dark(#D9E5E6, #20292A);
   --c-subcontainer:  light-dark(#CAD6D7, #313B3C);
 }
+
+/* ── Chart-family palette ───────────────────────────────────────────────
+ * Laguna's curation of the chart-family's two colour spectrums (defined in
+ * lib/components/chart/_chart-family/chart-family.css). The engine ships a
+ * canvas-aware Apple-hue default; untuned themes inherit it. Laguna overrides
+ * both spectrums with its coastal-teal pigments so charts read native to the
+ * "teal on warm sand" brand instead of borrowing the cool system palette.
+ *
+ * Each hook is the `light-dark(lightCanvasVivid, darkCanvasVivid)` shape the
+ * chart-family expects: on warm sand the value is a saturated coastal pigment
+ * (it drives the wedge/bar border at full strength and a 24% tint for the
+ * fill); on deep-sea canvas it lifts to a brighter same-hue sibling via
+ * color-mix(in oklab, <pigment>, white 30%). See design/theming.md
+ * (chart palette) and chart-family.css for the full contract. */
+:root {
+  /* Categorical spectrum — laguna's audited Brand-triad pigments, ordered
+   * most-distinct-first so adjacent bars/wedges stay legible.
+   * Light side = the audited pigment (drives border at full strength + a
+   * 24% tint for the fill); dark side = same hue lifted toward white 30%
+   * in OKLab so it stays vivid on the deep-sea (#04181B) canvas. */
+  --chart-cat1: light-dark(#2E7F8A, color-mix(in oklab, #2E7F8A, white 30%));  /* teal        */
+  --chart-cat2: light-dark(#863252, color-mix(in oklab, #863252, white 30%));  /* berry       */
+  --chart-cat3: light-dark(#866632, color-mix(in oklab, #866632, white 30%));  /* bronze      */
+  --chart-cat4: light-dark(#325286, color-mix(in oklab, #325286, white 30%));  /* slate-blue  */
+  --chart-cat5: light-dark(#308263, color-mix(in oklab, #308263, white 30%));  /* seafoam     */
+  --chart-cat6: light-dark(#863B32, color-mix(in oklab, #863B32, white 30%));  /* rust        */
+  --chart-cat7: light-dark(#403880, color-mix(in oklab, #403880, white 30%));  /* indigo      */
+  --chart-cat8: light-dark(#803877, color-mix(in oklab, #803877, white 30%));  /* plum        */
+
+  /* Semantic spectrum — charts that encode meaning (gantt bars, progress,
+   * status pills, state-chart, timeline). pass/warn/fail reuse laguna's own
+   * status trio so a gantt at-risk bar matches a --warn chip; info is a
+   * deeper indigo-blue (nudged away from the coastal teal of cat1 so the
+   * two remain distinct); mute derives from --text-muted's warm-sand gray. */
+  --chart-state-pass: var(--pass);                  /* coastal green  */
+  --chart-state-warn: var(--warn);                  /* sand amber     */
+  --chart-state-fail: var(--fail);                  /* coral alarm    */
+  --chart-state-info: light-dark(#3E6A9E, #79A6D6); /* indigo-blue    */
+  --chart-state-mute: light-dark(#6F7C7F, #A0AFB1); /* sand gray      */
+}

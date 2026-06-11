@@ -207,3 +207,41 @@ section pre.hljs {
   --c-container:     light-dark(#EBE6EF, #2B282E);
   --c-subcontainer:  light-dark(#DCD7E0, #3D3940);
 }
+
+/* ── Chart-family palette ───────────────────────────────────────────────
+ * Crepuscolo's curation of the chart-family's two colour spectrums (defined
+ * in lib/components/chart/_chart-family/chart-family.css). The engine ships a
+ * canvas-aware Apple-hue default; untuned themes inherit it. Crepuscolo
+ * overrides both spectrums with its cool dusk-violet pigments so charts read
+ * native to the "twilight on vellum" brand instead of borrowing the Apple
+ * system palette.
+ *
+ * Each hook is the `light-dark(lightCanvasVivid, darkCanvasVivid)` shape the
+ * chart-family expects: on off-white the value is a saturated dusk pigment (it
+ * drives the wedge/bar border at full strength and a 24% tint for the fill);
+ * on deep plum it lifts to a brighter same-hue sibling. See design/theming.md
+ * (chart palette) and the chart-family.css token block for the contract. */
+:root {
+  /* Categorical spectrum — crepuscolo's audited Brand-triad pigments. Light
+   * side = the audited pigment (drives the border at full strength + a 24%
+   * tint for the fill); dark side = the same hue lifted toward white so it
+   * stays vivid on deep-plum canvas. */
+  --chart-cat1: light-dark(#5C3285, color-mix(in oklab, #5C3285, white 30%));  /* violet      */
+  --chart-cat2: light-dark(#7E742B, color-mix(in oklab, #7E742B, white 30%));  /* olive        */
+  --chart-cat3: light-dark(#308235, color-mix(in oklab, #308235, white 30%));  /* forest       */
+  --chart-cat4: light-dark(#823682, color-mix(in oklab, #823682, white 30%));  /* magenta      */
+  --chart-cat5: light-dark(#363682, color-mix(in oklab, #363682, white 30%));  /* indigo       */
+  --chart-cat6: light-dark(#597E34, color-mix(in oklab, #597E34, white 30%));  /* sage         */
+  --chart-cat7: light-dark(#7C3C5C, color-mix(in oklab, #7C3C5C, white 30%));  /* mauve        */
+  --chart-cat8: light-dark(#7C5C3C, color-mix(in oklab, #7C5C3C, white 30%));  /* umber        */
+
+  /* Semantic spectrum — charts that encode meaning (gantt bars, progress,
+   * status pills, state-chart, timeline). pass/warn/fail reuse crepuscolo's
+   * inherited status trio so a gantt at-risk bar matches a --warn chip; info
+   * takes the dusty slate blue, mute a desaturated violet-taupe. */
+  --chart-state-pass: var(--pass);                  /* signal green  */
+  --chart-state-warn: var(--warn);                  /* signal amber  */
+  --chart-state-fail: var(--fail);                  /* alarm crimson */
+  --chart-state-info: light-dark(#3E6A9E, #79A6D6); /* dusty slate   */
+  --chart-state-mute: light-dark(#6F6354, #A69882); /* violet taupe  */
+}

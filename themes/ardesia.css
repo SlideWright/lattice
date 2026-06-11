@@ -197,3 +197,45 @@ section pre.hljs {
   --c-container:     light-dark(#E9E9E9, #212121);
   --c-subcontainer:  light-dark(#DADADA, #323232);
 }
+
+/* ── Chart-family palette ───────────────────────────────────────────────
+ * Ardesia's curation of the chart-family's two colour spectrums (defined in
+ * lib/components/chart/_chart-family/chart-family.css). The engine ships a
+ * canvas-aware Apple-hue default; untuned themes inherit it. Ardesia overrides
+ * both spectrums with its audited Brand-triad pigments — slate, terracotta,
+ * olive, blue, teal, brown, violet, and rose — each low-chroma, so charts read
+ * native to the "ink-on-paper" identity rather than borrowing the cool system
+ * palette.
+ *
+ * Each hook is the `light-dark(lightCanvasVivid, darkCanvasVivid)` shape the
+ * chart-family expects: on the light canvas the value is the audited pigment
+ * (drives the wedge/bar border at full strength and a 24% tint for the fill);
+ * on the dark canvas it lifts via color-mix(in oklab, pigment, white 30%) so
+ * the hue stays true and vivid on graphite. See design/theming.md (chart
+ * palette) and chart-family.css for the full token contract. */
+:root {
+  /* Categorical spectrum — ardesia's audited Brand-triad pigments, low-chroma
+   * slate/muted hues ordered most-distinct-first by hue and value. These are
+   * ardesia's own --cN pigment cousins so charts share the theme's visual
+   * language. Light side = audited pigment; dark side = same hue lifted 30%
+   * toward white in OKLab so it stays legible on graphite canvas. */
+  --chart-cat1: light-dark(#406175, color-mix(in oklab, #406175, white 30%));  /* slate-blue    */
+  --chart-cat2: light-dark(#6B4A4A, color-mix(in oklab, #6B4A4A, white 30%));  /* terracotta    */
+  --chart-cat3: light-dark(#6B6B4D, color-mix(in oklab, #6B6B4D, white 30%));  /* olive         */
+  --chart-cat4: light-dark(#4D4C6A, color-mix(in oklab, #4D4C6A, white 30%));  /* periwinkle    */
+  --chart-cat5: light-dark(#436D70, color-mix(in oklab, #436D70, white 30%));  /* slate-teal    */
+  --chart-cat6: light-dark(#775748, color-mix(in oklab, #775748, white 30%));  /* warm-brown    */
+  --chart-cat7: light-dark(#5C4F69, color-mix(in oklab, #5C4F69, white 30%));  /* muted-violet  */
+  --chart-cat8: light-dark(#694F5C, color-mix(in oklab, #694F5C, white 30%));  /* dusty-rose    */
+
+  /* Semantic spectrum — charts that encode meaning (gantt bars, progress,
+   * status pills, state-chart, timeline). pass/warn/fail reuse ardesia's own
+   * inherited status trio so a gantt at-risk bar matches a --warn chip; info
+   * takes a deeper, more saturated slate-blue clearly distinct from cat1
+   * (#4B5C6C); mute derives from --text-muted's warm neutral. */
+  --chart-state-pass: var(--pass);                  /* inherited green  */
+  --chart-state-warn: var(--warn);                  /* inherited amber  */
+  --chart-state-fail: var(--fail);                  /* inherited red    */
+  --chart-state-info: light-dark(#3E6A9E, #79A6D6); /* deep slate-blue  */
+  --chart-state-mute: light-dark(#6F6354, #A69882); /* warm taupe       */
+}
