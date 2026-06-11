@@ -170,6 +170,20 @@
   --radius-sm:0.625cqi; --radius-md:0.9375cqi; --radius-lg:1.09375cqi;
   --lh-tight:1.2; --lh-snug:1.5; --lh-base:1.6; --lh-relaxed:1.7;
 
+  /* ── Island berth coordinate frame ─────────────────────────────────────
+   * The named inset contract for the slide's peripheral chrome berths
+   * (header, footer, pagination, logo). Before this, every chrome rule
+   * re-derived the same two magic insets independently; naming them makes
+   * the berths one coordinate system instead of four coincidences. Values
+   * are the historical literals verbatim — this is a pixel-identical rename
+   * (Phase 0 of the islands model; see engineering/decisions/2026-06-11-islands.md).
+   *   --isl-inset-x     horizontal inset of every edge berth
+   *   --isl-inset-y     vertical inset of the top/bottom berths
+   *   --isl-page-reserve footer-right gap that reserves the pagination berth */
+  --isl-inset-x:      2.34375cqi;
+  --isl-inset-y:      1.875cqi;
+  --isl-page-reserve: 6.25cqi;
+
   /* ── Marp chrome mappings ── */
   --marp-slide-pagination-color:     var(--text-muted);
   --marp-slide-pagination-font-size: var(--fs-meta);
@@ -649,8 +663,8 @@ section footer > p {
    defaults that don't match our footer. */
 section::after {
   position: absolute !important;
-  bottom: 1.875cqi !important;
-  right: 2.34375cqi !important;
+  bottom: var(--isl-inset-y) !important;
+  right: var(--isl-inset-x) !important;
   padding: 0 !important;
   margin: 0 !important;
   font-family: var(--font-mono) !important;
@@ -10340,13 +10354,13 @@ section img.emoji {
   margin:0 0.05em;
 }
 section header {
-  position:absolute; top:1.875cqi; left:2.34375cqi; right:2.34375cqi;
+  position:absolute; top:var(--isl-inset-y); left:var(--isl-inset-x); right:var(--isl-inset-x);
   font-family:var(--font-label); font-size:var(--fs-meta); font-weight:500;
   letter-spacing:0.10em; text-transform:uppercase; text-align:left;
   color:var(--marp-slide-header-color, var(--text-muted));
 }
 section footer {
-  position:absolute; bottom:1.875cqi; left:2.34375cqi; right:6.25cqi;
+  position:absolute; bottom:var(--isl-inset-y); left:var(--isl-inset-x); right:var(--isl-page-reserve);
   font-family:var(--font-label); font-size:var(--fs-meta); font-weight:500;
   line-height:1; letter-spacing:0.06em; text-align:left;
   color:var(--marp-slide-footer-color, var(--text-muted));
@@ -11047,8 +11061,8 @@ section.overflow {
  * ──────────────────────────────────────────────────────────────────── */
 img.deck-logo {
   position: absolute;
-  top: 1.875cqi;
-  right: 2.34375cqi;
+  top: var(--isl-inset-y);
+  right: var(--isl-inset-x);
   width: 6.25cqi;
   height: 4cqi;
   object-fit: contain;

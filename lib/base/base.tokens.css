@@ -131,6 +131,20 @@
   --radius-sm:0.625cqi; --radius-md:0.9375cqi; --radius-lg:1.09375cqi;
   --lh-tight:1.2; --lh-snug:1.5; --lh-base:1.6; --lh-relaxed:1.7;
 
+  /* ── Island berth coordinate frame ─────────────────────────────────────
+   * The named inset contract for the slide's peripheral chrome berths
+   * (header, footer, pagination, logo). Before this, every chrome rule
+   * re-derived the same two magic insets independently; naming them makes
+   * the berths one coordinate system instead of four coincidences. Values
+   * are the historical literals verbatim — this is a pixel-identical rename
+   * (Phase 0 of the islands model; see engineering/decisions/2026-06-11-islands.md).
+   *   --isl-inset-x     horizontal inset of every edge berth
+   *   --isl-inset-y     vertical inset of the top/bottom berths
+   *   --isl-page-reserve footer-right gap that reserves the pagination berth */
+  --isl-inset-x:      2.34375cqi;
+  --isl-inset-y:      1.875cqi;
+  --isl-page-reserve: 6.25cqi;
+
   /* ── Marp chrome mappings ── */
   --marp-slide-pagination-color:     var(--text-muted);
   --marp-slide-pagination-font-size: var(--fs-meta);
