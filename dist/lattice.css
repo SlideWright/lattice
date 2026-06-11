@@ -2519,6 +2519,58 @@ section.gantt.chart-frame .chart-body {
   width: 100%;
 }
 
+/* Status key — gantt encodes status by BAR COLOUR with no text on the bar, so
+ * an emailed reader needs a key. A centred row of swatch + label chips (the
+ * piechart-legend idiom) sits just below the chart; each swatch reuses the
+ * bar's exact fill, so a chip and a bar of the same status read identically.
+ * The builder emits only the statuses actually present. */
+.gantt-chart .gantt-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: var(--sp-sm) var(--sp-lg);
+  margin-top: var(--sp-xl);
+  align-self: center;
+}
+.gantt-chart .gantt-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-sm);
+  font-size: var(--fs-body-compact);
+  color: var(--text-body);
+}
+.gantt-chart .gantt-legend-swatch {
+  width: 1.35cqi;
+  height: 1.35cqi;
+  min-width: 12px;
+  min-height: 12px;
+  border-radius: 0.34cqi;
+  flex: 0 0 auto;
+  /* The bar's canonical fill recipe, in miniature — same --fill-hue/--fill-ink
+   * (set per status below), so the chip matches its bar exactly. */
+  --fill-hue: var(--state-info-hue);
+  --fill-ink: var(--state-info-ink);
+  background: linear-gradient(180deg,
+    light-dark(color-mix(in oklab, var(--fill-hue) var(--chart-fill-top-l),    var(--bg)),
+               color-mix(in oklab, var(--fill-hue) var(--chart-fill-top-d),    black)) 0%,
+    light-dark(color-mix(in oklab, var(--fill-hue) var(--chart-fill-bottom-l), var(--bg)),
+               color-mix(in oklab, var(--fill-hue) var(--chart-fill-bottom-d), black)) 100%);
+  border: 1px solid var(--fill-ink);
+}
+/* Per-status fill — the SAME pairs the bars use, shared so a chip can never
+ * drift from its bar. */
+.gantt-legend-item[data-s="on-track"] .gantt-legend-swatch,
+.gantt-legend-item[data-s="done"] .gantt-legend-swatch,
+.gantt-legend-item[data-s="live"] .gantt-legend-swatch     { --fill-hue: var(--state-pass-hue); --fill-ink: var(--state-pass-ink); }
+.gantt-legend-item[data-s="at-risk"] .gantt-legend-swatch,
+.gantt-legend-item[data-s="warn"] .gantt-legend-swatch     { --fill-hue: var(--state-warn-hue); --fill-ink: var(--state-warn-ink); }
+.gantt-legend-item[data-s="blocked"] .gantt-legend-swatch,
+.gantt-legend-item[data-s="fail"] .gantt-legend-swatch     { --fill-hue: var(--state-fail-hue); --fill-ink: var(--state-fail-ink); }
+.gantt-legend-item[data-s="pilot"] .gantt-legend-swatch,
+.gantt-legend-item[data-s="decision"] .gantt-legend-swatch { --fill-hue: var(--state-info-hue); --fill-ink: var(--state-info-ink); }
+.gantt-legend-item[data-s="deferred"] .gantt-legend-swatch { --fill-hue: var(--state-mute-hue); --fill-ink: var(--state-mute-ink); }
+
 /* ── GANTT ──
  * Mermaid bug: taskTextOutsideLeft/Right ignore taskTextOutsideColor for
  * some bar widths. Force dark text in the outside-the-bar margin.
@@ -3112,12 +3164,14 @@ section.journey .journey-board {
 section.journey .journey-legend {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--sp-sm) var(--sp-md);
+  /* Generous horizontal rhythm — the key sits in a full-width band with room to
+   * spare, so the actors spread out instead of bunching. */
+  gap: var(--sp-md) var(--sp-2xl);
   list-style: none;
   margin: 0;
   padding: 0;
-  font-size: var(--fs-meta);
-  color: var(--text-muted, var(--text-body));
+  font-size: var(--fs-body-compact);
+  color: var(--text-secondary, var(--text-body));
 }
 section.journey .journey-actor {
   display: inline-flex;
@@ -3134,19 +3188,19 @@ section.journey .journey-actor-dot {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 1.09375cqi;
-  height: 1.09375cqi;
+  width: 1.45cqi;
+  height: 1.45cqi;
   border-radius: 50%;
   background: var(--actor-color);
   color: var(--on-accent, var(--on-dark-primary));
-  font-size: 0.664cqi;
+  font-size: 0.85cqi;
   font-weight: 700;
   line-height: 1;
   letter-spacing: 0.02em;
   flex-shrink: 0;
 }
 section.journey .journey-actor-dot[data-label-len="2"] {
-  font-size: 0.546875cqi;
+  font-size: 0.7cqi;
   letter-spacing: 0;
 }
 section.journey .journey-actor-name {
@@ -3158,12 +3212,12 @@ section.journey .journey-mood-legend {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 0.46875cqi;
+  gap: 0.85cqi;
   list-style: none;
   margin: 0;
   padding: 0;
-  font-size: var(--fs-meta);
-  color: var(--text-muted, var(--text-body));
+  font-size: var(--fs-body-compact);
+  color: var(--text-secondary, var(--text-body));
   letter-spacing: 0.02em;
 }
 section.journey .journey-mood-key {
@@ -3182,16 +3236,13 @@ section.journey .journey-mood-key-high {
   opacity: 0.75;
 }
 section.journey .journey-mood-key-swatch {
-  width: 1.5625cqi;
-  height: 0.9375cqi;
-  border-radius: 0.234375cqi;
+  width: 2.1cqi;
+  height: 1.25cqi;
+  border-radius: 0.3cqi;
   background: var(--mood-color);
 }
 section.journey .journey-mood-key-label {
-  /* Previously 0.78125cqi + opacity:0.65 — compounded sub-token size plus
-   * opacity fade made mood scale numbers illegible at desk distance.
-   * Raised to --fs-meta (11.25pt) and opacity ≥0.85 to meet minimum legibility. */
-  font-size: var(--fs-meta);
+  font-size: var(--fs-body-compact);
   opacity: 0.85;
 }
 section.journey .journey-mood-key[data-mood="5"] { --mood-color: var(--journey-mood-5); }
@@ -3199,6 +3250,29 @@ section.journey .journey-mood-key[data-mood="4"] { --mood-color: var(--journey-m
 section.journey .journey-mood-key[data-mood="3"] { --mood-color: var(--journey-mood-3); }
 section.journey .journey-mood-key[data-mood="2"] { --mood-color: var(--journey-mood-2); }
 section.journey .journey-mood-key[data-mood="1"] { --mood-color: var(--journey-mood-1); }
+
+/* ── Key placement: bottom-centre ───────────────────────────────────────────
+ * A journey board is a WIDE diagram, so its actor + mood keys belong at the
+ * BOTTOM-CENTRE (accessibility best practice for a full-width visual), not
+ * crowding the top-left. Reordered to the foot of the flex column and centred;
+ * the board then centres the diagram+key group vertically. Variants whose bands
+ * have a flex-growing plot (curve, swimlane) ignore the centring (the plot
+ * absorbs the free space) but still move their key to the foot. */
+section.journey .journey-board {
+  justify-content: center;
+}
+section.journey .journey-legend,
+section.journey .journey-mood-legend {
+  order: 10;
+  justify-content: center;
+  width: 100%;
+}
+section.journey .journey-legend {
+  margin-top: var(--sp-xl);   /* set the key apart from the diagram above */
+}
+section.journey .journey-mood-legend {
+  margin-top: var(--sp-sm);   /* breathing room between the two key rows */
+}
 
 /* ── Section ribbon ─────────────────────────────────────────────────── */
 section.journey .journey-sections {
@@ -5072,9 +5146,15 @@ section.map .map-figure {
   gap: 3cqi;
 }
 section.map .map-svg {
-  flex: 1 1 auto;
   min-width: 0;
-  height: 100%;
+  /* Width-driven (a world map is wide-short): FILL the 70% canvas zone so the
+   * map scales to the room it's actually given (it was pinned small at 56cqi).
+   * height:auto lets the aspect ratio set the height; max-height guards a tall
+   * two-line subtitle. */
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  max-height: 100%;
   display: block;
 }
 
@@ -8017,6 +8097,69 @@ section.regulatory-update.regulatory-update.priority > :is(ol, ul) > li:nth-chil
 section.roadmap .roadmap-figure {
   display:flex; flex-direction:column; width:100%; flex:1; min-height:0;
 }
+
+/* ── Status-marker KEY ──────────────────────────────────────────────────────
+ * Roadmap cells encode meaning by SYMBOL (✓ shipped / – in flight / ○ planned /
+ * ╱ out of scope). An emailed deck reader can't decode those without a key, so
+ * the transform emits one — only for the states actually present. A wide,
+ * full-width chart wants its key BOTTOM-CENTRE (best practice + accessibility),
+ * not a right rail, so it sits centred under the grid, pushed to the foot of
+ * the figure. Each chip reuses the EXACT disc+masked-glyph recipe the cells use
+ * (one source of truth: a theme tuning --mark-* / --state-color updates both).
+ * Sized to read without squinting, weighted to key the grid, not compete. */
+section.roadmap .roadmap-legend {
+  align-self:center;
+  margin:var(--sp-lg) 0 0;
+  padding:var(--sp-sm) 0 0;
+  list-style:none;
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  align-items:center;
+  gap:var(--sp-sm) var(--sp-xl);
+  font-size:var(--fs-body-compact);
+}
+section.roadmap .roadmap-legend-item {
+  display:inline-flex;
+  align-items:center;
+  gap:var(--sp-sm);
+  color:var(--text-secondary);
+}
+section.roadmap .roadmap-legend-mark {
+  position:relative;
+  width:0.95em;
+  height:0.95em;
+  flex:0 0 auto;
+}
+/* Per-state tokens, legend scope — mirror the cell tokens above. */
+section.roadmap .roadmap-legend-item.state-shipped { --state-color:var(--pass);        --state-mark:var(--mark-check); }
+section.roadmap .roadmap-legend-item.state-wip     { --state-color:var(--warn);        --state-mark:var(--mark-dash);  }
+section.roadmap .roadmap-legend-item.state-planned { --state-color:var(--text-label); }
+section.roadmap .roadmap-legend-item.state-skipped { --state-color:var(--text-muted);  --state-mark:var(--mark-slash); }
+/* Disc (::before) + canvas-knockout glyph (::after) — same recipe as cells. */
+section.roadmap .roadmap-legend-mark::before {
+  content:'';
+  position:absolute;
+  inset:0;
+  border-radius:50%;
+  background-color:var(--state-color, var(--text-muted));
+}
+section.roadmap .roadmap-legend-mark::after {
+  content:'';
+  position:absolute;
+  inset:0;
+  background-color:var(--bg);
+  -webkit-mask:var(--state-mark) center / 72% 72% no-repeat;
+          mask:var(--state-mark) center / 72% 72% no-repeat;
+}
+/* planned = true hollow ring (no centre glyph), matching the cell. */
+section.roadmap .roadmap-legend-item.state-planned .roadmap-legend-mark::before {
+  background-color:transparent;
+  box-shadow:inset 0 0 0 2px var(--state-color);
+}
+section.roadmap .roadmap-legend-item.state-planned .roadmap-legend-mark::after {
+  display:none;
+}
 section.roadmap table {
   width:100%; table-layout:fixed; border-collapse:separate; border-spacing:0;
   /* Dense grid inside the frame: opt down to the compact content step so
@@ -9606,6 +9749,65 @@ section.word-cloud .word-cloud-canvas {
   height: var(--wc-canvas-h);
   margin: 0 auto;
   flex: 0 0 auto;
+}
+
+/* The cloud packs into the LEFT 70% of the canvas; a gradient spine at the
+ * boundary divides it from the "size = frequency" key in the right 30% rail —
+ * the same 70/30 split + spine the categorical charts use. */
+section.word-cloud .word-cloud-canvas::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: calc(var(--wc-cloud-frac, 0.68) * 100%);
+  transform: translate(-50%, -50%);
+  width: var(--chart-spine-w, 2px);
+  height: var(--chart-spine-h, 78%);
+  background: var(--chart-spine);
+  border-radius: var(--chart-spine-w, 2px);
+  pointer-events: none;
+}
+
+/* "size = frequency" key — word size encodes weight, an implicit mapping a
+ * reader can't quantify. A vertical A-ramp (large = more frequent) keys it,
+ * centred in the right rail. */
+section.word-cloud .wc-key {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  width: calc((1 - var(--wc-cloud-frac, 0.68)) * 100%);
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35em;
+  pointer-events: none;
+}
+section.word-cloud .wc-key-label {
+  font-family: var(--font-mono);
+  font-size: var(--fs-meta);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.2em;
+}
+section.word-cloud .wc-key-ramp {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.05em;
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--text-secondary);
+  line-height: 0.95;
+}
+section.word-cloud .wc-key-a--1 { font-size: var(--fs-body); }
+section.word-cloud .wc-key-a--2 { font-size: var(--fs-message); }
+section.word-cloud .wc-key-a--3 { font-size: var(--fs-emphasis); }
+section.word-cloud .wc-key-edge {
+  font-family: var(--font-mono);
+  font-size: var(--fs-meta);
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
 }
 
 section.word-cloud .wc-word {
@@ -11278,6 +11480,160 @@ section.chart-frame .chart-status[data-s="deferred"] {
  * canvas-aware, so the single progress-fill rules cover both modes.) */
 
 
+/* ════════════════════════════════════════════════════════════════════════
+ * CHART LEGEND RAIL — shared key layout for the colour-categorical charts
+ * ────────────────────────────────────────────────────────────────────────
+ * Four chart-family members encode meaning purely by COLOUR, so each needs a
+ * KEY: piechart (wedge ↔ category), radar (polygon ↔ series), map (region ↔
+ * value) and quadrant·cohort (hull ↔ cohort). Before this system each shipped
+ * its own ad-hoc `[figure][gap][legend]` flex row — four different gaps, no
+ * separator, the legend floating in right-edge dead space, the chart shoved
+ * off-centre, map clipping long names. This rail unifies all four on a
+ * deterministic 70 / 30 split:
+ *
+ *   [        chart canvas (70%)        | gradient spine |  key (30%)  ]
+ *
+ * • A 70/30 grid spans the body. The chart is the hero in the wide left zone;
+ *   the key gets a consistent right rail. Each is CENTRED IN ITS OWN ZONE, so
+ *   the composition is stable no matter the chart's footprint or the key's
+ *   length — a short key and a long key both sit centred in the same rail.
+ * • The gradient SPINE sits on the 70/30 boundary (the figure's ::before), a
+ *   fixed generous height centred vertically — the "vertical separator". A
+ *   radar centred in the wide 70 zone keeps its rim labels clear of it.
+ * • Capped width + WRAPPING labels (long names reflow, never clip/sprawl), one
+ *   row rhythm, one swatch — a pie, radar, map and cohort quadrant read as one
+ *   family when the deck is emailed.
+ *
+ * Pure CSS keyed on the existing figure/legend classes, so all three render
+ * paths inherit it with zero transform edits. Palette-blind, canvas-aware.
+ * Scoped `:not(.cover)` (those variants own their own full-bleed layout) and
+ * off radar·small-multiples (no single legend). See
+ * engineering/decisions/2026-06-11-chart-legend-system.md. */
+section.chart-frame {
+  --chart-canvas-share: 70%;             /* the 70 of the 70/30 split           */
+  --chart-rail-share: 30%;               /* the 30 — the key's rail             */
+  --chart-legend-max: 25cqi;             /* key cap (< rail) — labels wrap past  */
+  --chart-legend-pad: var(--sp-xl);      /* fixed spine→key gap (consistent)     */
+  --chart-legend-row-gap: 1cqi;          /* vertical rhythm between legend rows  */
+  --chart-spine-h: 78%;                  /* spine height — % of body, never spills */
+  --chart-spine-w: 2px;                  /* spine thickness                      */
+  /* The spine gradient — a pure accent fade that melts into the canvas at both
+   * ends, so it reads as an intentional rule and not a hard divider. Mixing the
+   * accent with TRANSPARENT (not --border) keeps it a clean tinted line on
+   * either canvas: visible enough to anchor the legend, quiet enough never to
+   * overpower the data. */
+  --chart-spine: linear-gradient(to bottom,
+    transparent 0%,
+    color-mix(in oklab, var(--accent) 32%, transparent) 14%,
+    color-mix(in oklab, var(--accent) 60%, transparent) 50%,
+    color-mix(in oklab, var(--accent) 32%, transparent) 86%,
+    transparent 100%);
+}
+
+/* The rail — a 70/30 grid. The chart is the hero in the wide left zone and the
+ * key a consistent rail on the right; each centres IN ITS OWN ZONE (a stable
+ * composition independent of chart footprint or key length). position:relative
+ * anchors the spine on the boundary. */
+section.piechart:not(.cover) .piechart-figure,
+section.radar:not(.cover) .radar-figure:not([data-variant="small-multiples"]),
+section.map:not(.cover) .map-figure,
+section.quadrant:not(.cover) .quadrant-figure[data-variant="cohort"] {
+  display: grid;
+  grid-template-columns: var(--chart-canvas-share) var(--chart-rail-share);
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+/* Chart centres in its 70% zone (the data is the hero). */
+section.piechart:not(.cover) .piechart-figure > :first-child,
+section.radar:not(.cover) .radar-figure:not([data-variant="small-multiples"]) > :first-child,
+section.map:not(.cover) .map-figure > :first-child,
+section.quadrant:not(.cover) .quadrant-figure[data-variant="cohort"] > :first-child {
+  grid-column: 1;
+  justify-self: center;
+  align-self: center;
+}
+
+/* Key — LEFT-ALIGNED at a fixed inset off the spine, so the spine→key gap is
+ * IDENTICAL on every chart (centring the key in its zone instead made a wide
+ * key — pie, with values — sit closer to the spine than a narrow one). Capped
+ * to the rail, labels WRAP. Per-component legend internals (swatch palette,
+ * value styling) stay in each component's styles. */
+section.piechart:not(.cover) .piechart-legend,
+section.radar:not(.cover) .radar-figure:not([data-variant="small-multiples"]) .radar-legend,
+section.map:not(.cover) .map-legend,
+section.quadrant:not(.cover) .quadrant-figure[data-variant="cohort"] .quadrant-legend {
+  grid-column: 2;
+  justify-self: start;
+  align-self: center;
+  box-sizing: border-box;
+  min-width: 0;
+  max-width: 100%;
+  margin: 0;
+  padding-left: var(--chart-legend-pad);
+  display: flex;
+  flex-direction: column;
+  gap: var(--chart-legend-row-gap);
+}
+
+/* The gradient spine — the figure's ::before on the 70/30 boundary, a fixed
+ * generous height centred vertically. Deterministic: it does not move with the
+ * key's width, so it always reads as the divider between the two zones. */
+section.piechart:not(.cover) .piechart-figure::before,
+section.radar:not(.cover) .radar-figure:not([data-variant="small-multiples"])::before,
+section.map:not(.cover) .map-figure::before,
+section.quadrant:not(.cover) .quadrant-figure[data-variant="cohort"]::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: var(--chart-canvas-share);
+  transform: translate(-50%, -50%);
+  width: var(--chart-spine-w);
+  height: var(--chart-spine-h);
+  background: var(--chart-spine);
+  border-radius: var(--chart-spine-w);
+  pointer-events: none;
+}
+
+/* Shared legend ROW typography — swatch · label · value, unified across the
+ * four keyed charts so they read as one family. Labels WRAP (no clip); values
+ * are tabular and ink-weighted. Each component still owns its swatch colours
+ * and the presence/format of the value cell. */
+section.piechart:not(.cover) .piechart-legend li,
+section.radar:not(.cover) .radar-figure:not([data-variant="small-multiples"]) .radar-legend li,
+section.map:not(.cover) .map-legend-row,
+section.quadrant:not(.cover) .quadrant-figure[data-variant="cohort"] .quadrant-legend li {
+  font-size: var(--fs-body-compact);
+  line-height: var(--lh-snug, 1.25);
+  color: var(--text-body);
+}
+/* Labels reflow rather than clip — the "if users go crazy" guarantee. The
+ * swatch holds its size and pins to the first line so a wrapped label still
+ * reads as one keyed row. */
+section.map:not(.cover) .map-legend-name {
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+}
+
+/* Shared swatch sizing — one consistent chip across all four keyed charts
+ * (each keeps its own fill/border colour). Sized to read clearly without
+ * overpowering the label, with a px floor so it never collapses. */
+section.piechart:not(.cover) .piechart-legend .legend-swatch,
+section.radar:not(.cover) .radar-figure:not([data-variant="small-multiples"]) .radar-legend .radar-swatch,
+section.map:not(.cover) .map-legend .map-swatch,
+section.quadrant:not(.cover) .quadrant-figure[data-variant="cohort"] .quadrant-legend .quadrant-swatch {
+  width: 1.35cqi;
+  height: 1.35cqi;
+  min-width: 12px;
+  min-height: 12px;
+  border-radius: 0.34cqi;
+  flex: 0 0 auto;
+  align-self: start;
+  margin-top: 0.15cqi;   /* optical pin to the first text line */
+}
 
 
 

@@ -2442,7 +2442,7 @@
         },
         {
           "title": "Status pills add a second channel",
-          "body": "Tint bars with `done` / `live` / `at-risk` / `blocked` to layer health onto schedule. The plan reads as both 'when' and 'how it's going' in one chart."
+          "body": "Tint bars with `done` / `live` / `at-risk` / `blocked` to layer health onto schedule. The plan reads as both 'when' and 'how it's going' in one chart. Since the bars carry no status text, a swatch+label status key is emitted automatically below the chart for the statuses present."
         }
       ],
       "antiPatterns": [
@@ -5422,7 +5422,7 @@
         },
         {
           "title": "State markers are the second channel",
-          "body": "Every cell can lead with `[x]` shipped, `[-]` in flight, `[ ]` planned, or `[/]` out of scope. The audience sees both 'what' and 'how it's going' without a separate status slide."
+          "body": "Every cell can lead with `[x]` shipped, `[-]` in flight, `[ ]` planned, or `[/]` out of scope. The audience sees both 'what' and 'how it's going' without a separate status slide. A status key is emitted automatically below the grid for the markers present (suppressed on the `status` and `horizons` variants)."
         },
         {
           "title": "Phase headers carry meta pills",
@@ -6527,7 +6527,7 @@
         },
         {
           "title": "Weight is approximate, not exact",
-          "body": "Word size encodes relative frequency or weight, but the eye reads 'biggest' and 'second biggest' before any precise ratio. Reach for word-cloud when the rank matters more than the count."
+          "body": "Word size encodes relative frequency or weight, but the eye reads 'biggest' and 'second biggest' before any precise ratio. Reach for word-cloud when the rank matters more than the count. A 'size = frequency' key sits in the right rail to make the encoding explicit."
         },
         {
           "title": "Eight to twenty items",

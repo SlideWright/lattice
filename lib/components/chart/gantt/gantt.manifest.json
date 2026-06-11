@@ -34,7 +34,7 @@
     },
     {
       "title": "Status pills add a second channel",
-      "body": "Tint bars with `done` / `live` / `at-risk` / `blocked` to layer health onto schedule. The plan reads as both 'when' and 'how it's going' in one chart."
+      "body": "Tint bars with `done` / `live` / `at-risk` / `blocked` to layer health onto schedule. The plan reads as both 'when' and 'how it's going' in one chart. Since the bars carry no status text, a swatch+label status key is emitted automatically below the chart for the statuses present."
     }
   ],
   "antiPatterns": [

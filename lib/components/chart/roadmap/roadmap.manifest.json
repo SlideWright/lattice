@@ -37,7 +37,7 @@
     },
     {
       "title": "State markers are the second channel",
-      "body": "Every cell can lead with `[x]` shipped, `[-]` in flight, `[ ]` planned, or `[/]` out of scope. The audience sees both 'what' and 'how it's going' without a separate status slide."
+      "body": "Every cell can lead with `[x]` shipped, `[-]` in flight, `[ ]` planned, or `[/]` out of scope. The audience sees both 'what' and 'how it's going' without a separate status slide. A status key is emitted automatically below the grid for the markers present (suppressed on the `status` and `horizons` variants)."
     },
     {
       "title": "Phase headers carry meta pills",

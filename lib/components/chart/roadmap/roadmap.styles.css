@@ -41,6 +41,69 @@
 section.roadmap .roadmap-figure {
   display:flex; flex-direction:column; width:100%; flex:1; min-height:0;
 }
+
+/* ── Status-marker KEY ──────────────────────────────────────────────────────
+ * Roadmap cells encode meaning by SYMBOL (✓ shipped / – in flight / ○ planned /
+ * ╱ out of scope). An emailed deck reader can't decode those without a key, so
+ * the transform emits one — only for the states actually present. A wide,
+ * full-width chart wants its key BOTTOM-CENTRE (best practice + accessibility),
+ * not a right rail, so it sits centred under the grid, pushed to the foot of
+ * the figure. Each chip reuses the EXACT disc+masked-glyph recipe the cells use
+ * (one source of truth: a theme tuning --mark-* / --state-color updates both).
+ * Sized to read without squinting, weighted to key the grid, not compete. */
+section.roadmap .roadmap-legend {
+  align-self:center;
+  margin:var(--sp-lg) 0 0;
+  padding:var(--sp-sm) 0 0;
+  list-style:none;
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  align-items:center;
+  gap:var(--sp-sm) var(--sp-xl);
+  font-size:var(--fs-body-compact);
+}
+section.roadmap .roadmap-legend-item {
+  display:inline-flex;
+  align-items:center;
+  gap:var(--sp-sm);
+  color:var(--text-secondary);
+}
+section.roadmap .roadmap-legend-mark {
+  position:relative;
+  width:0.95em;
+  height:0.95em;
+  flex:0 0 auto;
+}
+/* Per-state tokens, legend scope — mirror the cell tokens above. */
+section.roadmap .roadmap-legend-item.state-shipped { --state-color:var(--pass);        --state-mark:var(--mark-check); }
+section.roadmap .roadmap-legend-item.state-wip     { --state-color:var(--warn);        --state-mark:var(--mark-dash);  }
+section.roadmap .roadmap-legend-item.state-planned { --state-color:var(--text-label); }
+section.roadmap .roadmap-legend-item.state-skipped { --state-color:var(--text-muted);  --state-mark:var(--mark-slash); }
+/* Disc (::before) + canvas-knockout glyph (::after) — same recipe as cells. */
+section.roadmap .roadmap-legend-mark::before {
+  content:'';
+  position:absolute;
+  inset:0;
+  border-radius:50%;
+  background-color:var(--state-color, var(--text-muted));
+}
+section.roadmap .roadmap-legend-mark::after {
+  content:'';
+  position:absolute;
+  inset:0;
+  background-color:var(--bg);
+  -webkit-mask:var(--state-mark) center / 72% 72% no-repeat;
+          mask:var(--state-mark) center / 72% 72% no-repeat;
+}
+/* planned = true hollow ring (no centre glyph), matching the cell. */
+section.roadmap .roadmap-legend-item.state-planned .roadmap-legend-mark::before {
+  background-color:transparent;
+  box-shadow:inset 0 0 0 2px var(--state-color);
+}
+section.roadmap .roadmap-legend-item.state-planned .roadmap-legend-mark::after {
+  display:none;
+}
 section.roadmap table {
   width:100%; table-layout:fixed; border-collapse:separate; border-spacing:0;
   /* Dense grid inside the frame: opt down to the compact content step so

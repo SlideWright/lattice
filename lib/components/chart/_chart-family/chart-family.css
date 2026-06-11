@@ -480,6 +480,160 @@ section.chart-frame .chart-status[data-s="deferred"] {
  * canvas-aware, so the single progress-fill rules cover both modes.) */
 
 
+/* ════════════════════════════════════════════════════════════════════════
+ * CHART LEGEND RAIL — shared key layout for the colour-categorical charts
+ * ────────────────────────────────────────────────────────────────────────
+ * Four chart-family members encode meaning purely by COLOUR, so each needs a
+ * KEY: piechart (wedge ↔ category), radar (polygon ↔ series), map (region ↔
+ * value) and quadrant·cohort (hull ↔ cohort). Before this system each shipped
+ * its own ad-hoc `[figure][gap][legend]` flex row — four different gaps, no
+ * separator, the legend floating in right-edge dead space, the chart shoved
+ * off-centre, map clipping long names. This rail unifies all four on a
+ * deterministic 70 / 30 split:
+ *
+ *   [        chart canvas (70%)        | gradient spine |  key (30%)  ]
+ *
+ * • A 70/30 grid spans the body. The chart is the hero in the wide left zone;
+ *   the key gets a consistent right rail. Each is CENTRED IN ITS OWN ZONE, so
+ *   the composition is stable no matter the chart's footprint or the key's
+ *   length — a short key and a long key both sit centred in the same rail.
+ * • The gradient SPINE sits on the 70/30 boundary (the figure's ::before), a
+ *   fixed generous height centred vertically — the "vertical separator". A
+ *   radar centred in the wide 70 zone keeps its rim labels clear of it.
+ * • Capped width + WRAPPING labels (long names reflow, never clip/sprawl), one
+ *   row rhythm, one swatch — a pie, radar, map and cohort quadrant read as one
+ *   family when the deck is emailed.
+ *
+ * Pure CSS keyed on the existing figure/legend classes, so all three render
+ * paths inherit it with zero transform edits. Palette-blind, canvas-aware.
+ * Scoped `:not(.cover)` (those variants own their own full-bleed layout) and
+ * off radar·small-multiples (no single legend). See
+ * engineering/decisions/2026-06-11-chart-legend-system.md. */
+section.chart-frame {
+  --chart-canvas-share: 70%;             /* the 70 of the 70/30 split           */
+  --chart-rail-share: 30%;               /* the 30 — the key's rail             */
+  --chart-legend-max: 25cqi;             /* key cap (< rail) — labels wrap past  */
+  --chart-legend-pad: var(--sp-xl);      /* fixed spine→key gap (consistent)     */
+  --chart-legend-row-gap: 1cqi;          /* vertical rhythm between legend rows  */
+  --chart-spine-h: 78%;                  /* spine height — % of body, never spills */
+  --chart-spine-w: 2px;                  /* spine thickness                      */
+  /* The spine gradient — a pure accent fade that melts into the canvas at both
+   * ends, so it reads as an intentional rule and not a hard divider. Mixing the
+   * accent with TRANSPARENT (not --border) keeps it a clean tinted line on
+   * either canvas: visible enough to anchor the legend, quiet enough never to
+   * overpower the data. */
+  --chart-spine: linear-gradient(to bottom,
+    transparent 0%,
+    color-mix(in oklab, var(--accent) 32%, transparent) 14%,
+    color-mix(in oklab, var(--accent) 60%, transparent) 50%,
+    color-mix(in oklab, var(--accent) 32%, transparent) 86%,
+    transparent 100%);
+}
+
+/* The rail — a 70/30 grid. The chart is the hero in the wide left zone and the
+ * key a consistent rail on the right; each centres IN ITS OWN ZONE (a stable
+ * composition independent of chart footprint or key length). position:relative
+ * anchors the spine on the boundary. */
+section.piechart:not(.cover) .piechart-figure,
+section.radar:not(.cover) .radar-figure:not([data-variant="small-multiples"]),
+section.map:not(.cover) .map-figure,
+section.quadrant:not(.cover) .quadrant-figure[data-variant="cohort"] {
+  display: grid;
+  grid-template-columns: var(--chart-canvas-share) var(--chart-rail-share);
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+/* Chart centres in its 70% zone (the data is the hero). */
+section.piechart:not(.cover) .piechart-figure > :first-child,
+section.radar:not(.cover) .radar-figure:not([data-variant="small-multiples"]) > :first-child,
+section.map:not(.cover) .map-figure > :first-child,
+section.quadrant:not(.cover) .quadrant-figure[data-variant="cohort"] > :first-child {
+  grid-column: 1;
+  justify-self: center;
+  align-self: center;
+}
+
+/* Key — LEFT-ALIGNED at a fixed inset off the spine, so the spine→key gap is
+ * IDENTICAL on every chart (centring the key in its zone instead made a wide
+ * key — pie, with values — sit closer to the spine than a narrow one). Capped
+ * to the rail, labels WRAP. Per-component legend internals (swatch palette,
+ * value styling) stay in each component's styles. */
+section.piechart:not(.cover) .piechart-legend,
+section.radar:not(.cover) .radar-figure:not([data-variant="small-multiples"]) .radar-legend,
+section.map:not(.cover) .map-legend,
+section.quadrant:not(.cover) .quadrant-figure[data-variant="cohort"] .quadrant-legend {
+  grid-column: 2;
+  justify-self: start;
+  align-self: center;
+  box-sizing: border-box;
+  min-width: 0;
+  max-width: 100%;
+  margin: 0;
+  padding-left: var(--chart-legend-pad);
+  display: flex;
+  flex-direction: column;
+  gap: var(--chart-legend-row-gap);
+}
+
+/* The gradient spine — the figure's ::before on the 70/30 boundary, a fixed
+ * generous height centred vertically. Deterministic: it does not move with the
+ * key's width, so it always reads as the divider between the two zones. */
+section.piechart:not(.cover) .piechart-figure::before,
+section.radar:not(.cover) .radar-figure:not([data-variant="small-multiples"])::before,
+section.map:not(.cover) .map-figure::before,
+section.quadrant:not(.cover) .quadrant-figure[data-variant="cohort"]::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: var(--chart-canvas-share);
+  transform: translate(-50%, -50%);
+  width: var(--chart-spine-w);
+  height: var(--chart-spine-h);
+  background: var(--chart-spine);
+  border-radius: var(--chart-spine-w);
+  pointer-events: none;
+}
+
+/* Shared legend ROW typography — swatch · label · value, unified across the
+ * four keyed charts so they read as one family. Labels WRAP (no clip); values
+ * are tabular and ink-weighted. Each component still owns its swatch colours
+ * and the presence/format of the value cell. */
+section.piechart:not(.cover) .piechart-legend li,
+section.radar:not(.cover) .radar-figure:not([data-variant="small-multiples"]) .radar-legend li,
+section.map:not(.cover) .map-legend-row,
+section.quadrant:not(.cover) .quadrant-figure[data-variant="cohort"] .quadrant-legend li {
+  font-size: var(--fs-body-compact);
+  line-height: var(--lh-snug, 1.25);
+  color: var(--text-body);
+}
+/* Labels reflow rather than clip — the "if users go crazy" guarantee. The
+ * swatch holds its size and pins to the first line so a wrapped label still
+ * reads as one keyed row. */
+section.map:not(.cover) .map-legend-name {
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+}
+
+/* Shared swatch sizing — one consistent chip across all four keyed charts
+ * (each keeps its own fill/border colour). Sized to read clearly without
+ * overpowering the label, with a px floor so it never collapses. */
+section.piechart:not(.cover) .piechart-legend .legend-swatch,
+section.radar:not(.cover) .radar-figure:not([data-variant="small-multiples"]) .radar-legend .radar-swatch,
+section.map:not(.cover) .map-legend .map-swatch,
+section.quadrant:not(.cover) .quadrant-figure[data-variant="cohort"] .quadrant-legend .quadrant-swatch {
+  width: 1.35cqi;
+  height: 1.35cqi;
+  min-width: 12px;
+  min-height: 12px;
+  border-radius: 0.34cqi;
+  flex: 0 0 auto;
+  align-self: start;
+  margin-top: 0.15cqi;   /* optical pin to the first text line */
+}
 
 
 

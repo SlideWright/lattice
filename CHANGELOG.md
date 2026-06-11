@@ -330,6 +330,31 @@ in patch versions.
 
 ### Added
 
+- **A shared legend rail for the colour-categorical charts, and a status key
+  for roadmap.** The four charts that encode meaning by colour — `piechart`,
+  `radar`, `map`, and `quadrant·cohort` — now share one legend treatment: a
+  deterministic **70/30 split** with the chart as the hero in a wide left zone,
+  the key a consistent right rail, each centred in its own zone, a gradient
+  **separator spine** on the boundary, and labels that **wrap** instead of
+  clipping (map's long names no longer truncate). Swatches and label type are
+  unified across all four, and the spine reads on both canvases. Separately, `roadmap` now emits a
+  **bottom-centre status key** (✓ shipped · – in flight · ○ planned · ╱ out of
+  scope) for the marker states actually present, so an emailed deck reader can
+  decode the symbols; it is omitted on the `status` variant (already labelled
+  per-cell) and `horizons` (its cards carry Now/Next/Later framing). And
+  `journey` — a wide board — moves its actor + mood keys from the top-left to
+  **bottom-centre** and centres the diagram vertically (all five variants).
+  `gantt` (status by bar colour) gains a bottom-centre **swatch + label** key
+  for the statuses present, each swatch reusing the bar's exact fill; and
+  `word-cloud` joins the 70/30 rail with a vertical **size = frequency** key in
+  the right zone. A consistency pass left-aligns every key at a fixed inset off
+  the spine (so the gap is identical chart-to-chart), lets `map` fill its zone
+  instead of a fixed width, keeps the `word-cloud` cloud clear of its divider,
+  opens up `journey`'s bottom keys, and re-centres the `funnel` bands (they
+  were drawn right-of-centre). New `--chart-legend-*` /
+  `--chart-spine-*` tokens on `section.chart-frame` are the override hooks. See
+  `engineering/decisions/2026-06-11-chart-legend-system.md` and the demo deck
+  `examples/chart-legends.md`.
 - **Editor autocomplete is now a workspace preference (Settings → Workspace).**
   A new on/off toggle (on by default) silences the deck-grammar completion popup
   for authors who'd rather type without it. Persisted in localStorage like the
