@@ -673,12 +673,119 @@ var require_starters = __commonJS({
   }
 });
 
+// lib/theme/ai.js
+var require_ai = __commonJS({
+  "lib/theme/ai.js"(exports, module) {
+    var { ESSENTIAL_KEYS: ESSENTIAL_KEYS2 } = require_derive();
+    var { normalizeHex: normalizeHex2 } = require_color();
+    var KEY_DESCRIPTIONS = {
+      bg: "light page canvas, near-white",
+      bgAlt: "slightly darker card / alternate surface (still light)",
+      textHeading: "near-black heading ink",
+      textBody: "dark grey body ink",
+      textMuted: "mid grey, decorative",
+      accent: "the brand colour, saturated and distinct",
+      accentSoft: "a very pale wash of the accent",
+      pass: "success green",
+      warn: "warning amber",
+      fail: "error red"
+    };
+    var SEED_SYSTEM2 = 'You are a palette designer for the Lattice slide engine. Given a short description, output ONLY a compact JSON object \u2014 no prose, no markdown \u2014 with EXACTLY these keys, each a 6-digit hex colour (e.g. "#1a2b3c"):\n' + ESSENTIAL_KEYS2.map((k) => `  "${k}": ${KEY_DESCRIPTIONS[k]}`).join("\n") + "\nRules: bg and bgAlt must be light (a slide canvas); textHeading and textBody must be dark enough to read on them; accent is saturated; accentSoft is a pale tint of the accent. Output the JSON object only.";
+    function seedMessages2(description) {
+      return [
+        { role: "system", content: SEED_SYSTEM2 },
+        { role: "user", content: String(description || "").trim() || "a clean, professional palette" }
+      ];
+    }
+    function refineMessages2(current, instruction) {
+      return [
+        { role: "system", content: SEED_SYSTEM2 },
+        { role: "assistant", content: JSON.stringify(current) },
+        {
+          role: "user",
+          content: `Adjust the palette per this instruction, keeping it coherent and readable: "${String(instruction || "").trim()}". Output the full JSON object with all keys.`
+        }
+      ];
+    }
+    var norm = (k) => String(k).toLowerCase().replace(/[^a-z0-9]/g, "");
+    var KEY_BY_NORM = (() => {
+      const m = {};
+      for (const k of ESSENTIAL_KEYS2) m[norm(k)] = k;
+      Object.assign(m, {
+        background: "bg",
+        canvas: "bg",
+        surface: "bg",
+        bgalt: "bgAlt",
+        backgroundalt: "bgAlt",
+        card: "bgAlt",
+        surfacealt: "bgAlt",
+        heading: "textHeading",
+        headingink: "textHeading",
+        textheading: "textHeading",
+        ink: "textHeading",
+        body: "textBody",
+        textbody: "textBody",
+        bodyink: "textBody",
+        muted: "textMuted",
+        textmuted: "textMuted",
+        accentsoft: "accentSoft",
+        accentsoftfill: "accentSoft",
+        success: "pass",
+        warning: "warn",
+        error: "fail",
+        danger: "fail"
+      });
+      return m;
+    })();
+    function safeParse(s) {
+      try {
+        return JSON.parse(s);
+      } catch {
+        const m = String(s).match(/\{[\s\S]*\}/);
+        if (m) {
+          try {
+            return JSON.parse(m[0]);
+          } catch {
+          }
+        }
+        return null;
+      }
+    }
+    function coerceEssentials2(raw, fallback) {
+      const obj = (typeof raw === "string" ? safeParse(raw) : raw) || {};
+      const remapped = {};
+      for (const [k, v] of Object.entries(obj)) {
+        const canonical = KEY_BY_NORM[norm(k)];
+        if (canonical) remapped[canonical] = v;
+      }
+      const essentials = {};
+      const filled = [];
+      const applied = [];
+      for (const key of ESSENTIAL_KEYS2) {
+        if (key in remapped) {
+          try {
+            essentials[key] = normalizeHex2(remapped[key]);
+            applied.push(key);
+            continue;
+          } catch {
+          }
+        }
+        essentials[key] = fallback[key];
+        filled.push(key);
+      }
+      return { essentials, filled, applied, ok: filled.length === 0 && applied.length > 0 };
+    }
+    module.exports = { SEED_SYSTEM: SEED_SYSTEM2, seedMessages: seedMessages2, refineMessages: refineMessages2, coerceEssentials: coerceEssentials2 };
+  }
+});
+
 // lib/theme/theme-core.entry.js
 var import_color = __toESM(require_color());
 var import_derive = __toESM(require_derive());
 var import_contrast = __toESM(require_contrast());
 var import_serialize = __toESM(require_serialize());
 var import_starters = __toESM(require_starters());
+var import_ai = __toESM(require_ai());
 var {
   normalizeHex,
   hexToRgb,
@@ -709,6 +816,7 @@ var {
 var { resolveVars, contractPairs, contentPairs, auditVars, auditBoth, meter } = import_contrast.default;
 var { serializeTheme } = import_serialize.default;
 var { STARTERS, getStarter } = import_starters.default;
+var { SEED_SYSTEM, seedMessages, refineMessages, coerceEssentials } = import_ai.default;
 export {
   AA,
   AAA,
@@ -717,9 +825,11 @@ export {
   ESSENTIAL_KEYS,
   PALE_L,
   REQUIRED_TOKENS,
+  SEED_SYSTEM,
   STARTERS,
   auditBoth,
   auditVars,
+  coerceEssentials,
   contentPairs,
   contractPairs,
   contrastRatio,
@@ -733,11 +843,13 @@ export {
   normalizeHex,
   oklchToHex,
   pickInk,
+  refineMessages,
   relativeLuminance,
   requiredTokenList,
   resolveVars,
   rgbToHex,
   rotateHue,
+  seedMessages,
   serializeTheme,
   validateEssentials,
   withChroma,

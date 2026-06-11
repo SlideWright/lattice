@@ -14,13 +14,27 @@
 // docs/astro.config.mjs. No model is involved in Faculty 1's deterministic
 // core; seeds come from the starter library.
 
+// The on-device / OpenRouter model ladder — the SAME adapter the Drawing Board
+// Architect uses (connection persists in localStorage, so a model connected
+// there works here too). complete() ALWAYS resolves: it floors to the
+// deterministic core when no model is present.
+import { createArchitectModel } from './architect-model.js';
 import { SLIDE_BOX } from './frame-css.js';
 // The pure theme core (lib/theme/*) is CommonJS and its modules require() each
 // other, which Vite's dev server can't transform in arbitrary source files. So
 // we consume it through the esbuild bundle (tools/build-theme-core.js →
 // theme-core.generated.js): one ESM module, real named exports, the SAME maths
 // as the Node tooling + the WCAG gate. Rebuild with `npm run theme-core:build`.
-import { auditBoth, deriveTheme, STARTERS, serializeTheme, validateEssentials } from './theme-core.generated.js';
+import {
+  auditBoth,
+  coerceEssentials,
+  deriveTheme,
+  refineMessages,
+  STARTERS,
+  seedMessages,
+  serializeTheme,
+  validateEssentials,
+} from './theme-core.generated.js';
 
 const PREVIEW_THEME = 'studio-preview'; // fixed @theme name for the live render
 const KATEX = 'https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css';
@@ -135,6 +149,14 @@ export function initThemeStudio(config) {
     copy: root.querySelector('.studio-copy'),
     download: root.querySelector('.studio-download'),
     code: root.querySelector('.studio-code'),
+    // AI tier
+    aiPrompt: root.querySelector('.studio-ai-prompt'),
+    aiSeed: root.querySelector('.studio-ai-seed'),
+    aiRefine: root.querySelector('.studio-ai-refine'),
+    aiRefineBtn: root.querySelector('.studio-ai-refine-btn'),
+    aiStatus: root.querySelector('.studio-ai-status'),
+    aiConnect: root.querySelector('.studio-ai-connect'),
+    tabs: [...root.querySelectorAll('.studio-tab')],
   };
 
   const state = {
@@ -144,6 +166,20 @@ export function initThemeStudio(config) {
     css: '',
   };
   if (els.name) els.name.value = STARTERS[0].name;
+
+  // The model ladder — shared with the Drawing Board via localStorage. Floors
+  // to the deterministic core when nothing is connected.
+  const model = createArchitectModel({
+    getSettings: () => {
+      let on = true;
+      try {
+        on = localStorage.getItem('lattice-db-model') !== 'off';
+      } catch {
+        /* private mode */
+      }
+      return { modelEnabled: on };
+    },
+  });
 
   let fetchedLattice = null;
   function ensureBaseTheme() {
@@ -372,6 +408,129 @@ export function initThemeStudio(config) {
     timer = setTimeout(run, 180);
   }
 
+  // ── AI tier (Phase 2) — seed from a description, refine conversationally ──
+  // The model only PROPOSES an essential set; coerceEssentials + the
+  // deterministic derivation + the contrast gate dispose. complete() floors to
+  // the deterministic core when nothing is connected, so we gate on
+  // availability and guide the author to connect rather than silently no-op.
+  function setAiStatus(msg, isErr) {
+    if (!els.aiStatus) return;
+    els.aiStatus.textContent = msg;
+    els.aiStatus.classList.toggle('err', !!isErr);
+  }
+
+  function modelConnected() {
+    try {
+      return model.availability().generation !== 'floor';
+    } catch {
+      return false;
+    }
+  }
+
+  function refreshAiStatus() {
+    const connected = modelConnected();
+    let label = 'No model connected';
+    if (connected) {
+      const a = model.availability();
+      label =
+        a.generation === 'openrouter'
+          ? `OpenRouter · ${model.openRouterModelName?.() || 'connected'}`
+          : `On-device · ${a.generation}`;
+    }
+    setAiStatus(connected ? `AI: ${label}` : 'AI: connect a model to seed / refine');
+    if (els.aiConnect) els.aiConnect.hidden = connected;
+    if (els.aiSeed) els.aiSeed.disabled = false; // always clickable; guides if floored
+    if (els.aiRefineBtn) els.aiRefineBtn.disabled = false;
+  }
+
+  let aiBusy = false;
+  async function callModel(messages) {
+    aiBusy = true;
+    try {
+      return await model.complete({ messages, json: true, fallback: state.essentials });
+    } finally {
+      aiBusy = false;
+    }
+  }
+
+  function applyAiResult(reply, what) {
+    const { essentials, ok, filled } = coerceEssentials(reply, state.essentials);
+    if (!ok) {
+      setAiStatus(`${what} produced no usable palette — try a more specific prompt.`, true);
+      return;
+    }
+    state.essentials = essentials;
+    state.label = (els.name && els.name.value) || state.label;
+    syncFields();
+    run();
+    const note = filled.length ? ` (${filled.length} kept from current)` : '';
+    setAiStatus(`${what} applied${note}.`);
+  }
+
+  async function seedWithAI() {
+    if (aiBusy) return;
+    if (!modelConnected()) {
+      setAiStatus('Connect a model first (button below) — then describe a palette.', true);
+      return;
+    }
+    const desc = els.aiPrompt ? els.aiPrompt.value.trim() : '';
+    setAiStatus('Seeding from your description…');
+    try {
+      applyAiResult(await callModel(seedMessages(desc)), 'Seed');
+    } catch (e) {
+      setAiStatus('Seed failed: ' + (e.message || e), true);
+    }
+  }
+
+  async function refineWithAI() {
+    if (aiBusy) return;
+    if (!modelConnected()) {
+      setAiStatus('Connect a model first to refine.', true);
+      return;
+    }
+    const instruction = els.aiRefine ? els.aiRefine.value.trim() : '';
+    if (!instruction) {
+      setAiStatus('Type a refinement, e.g. “cooler, more contrast on the accent”.', true);
+      return;
+    }
+    setAiStatus('Refining…');
+    try {
+      applyAiResult(await callModel(refineMessages(state.essentials, instruction)), 'Refine');
+      if (els.aiRefine) els.aiRefine.value = '';
+    } catch (e) {
+      setAiStatus('Refine failed: ' + (e.message || e), true);
+    }
+  }
+
+  async function connectModel() {
+    try {
+      const callback = location.origin + location.pathname; // return here after OAuth
+      const url = await model.beginOpenRouterAuth(callback);
+      if (url) location.href = url;
+    } catch (e) {
+      setAiStatus('Connect failed: ' + (e.message || e), true);
+    }
+  }
+
+  // Resume an OpenRouter OAuth redirect (?code=) so the author can connect from
+  // the Workbench itself, not only the Drawing Board.
+  async function resumeAuthIfPending() {
+    try {
+      const u = new URL(location.href);
+      const code = u.searchParams.get('code');
+      if (code && model.hasPendingOpenRouterAuth?.()) {
+        setAiStatus('Finishing connection…');
+        await model.resumeOpenRouterAuth(code);
+        u.searchParams.delete('code');
+        u.searchParams.delete('scope');
+        history.replaceState({}, '', u.pathname + u.search + u.hash);
+      }
+    } catch {
+      /* non-fatal — stays on the deterministic floor */
+    }
+    refreshAiStatus();
+  }
+
   // ── Actions ─────────────────────────────────────────────────────────────
   function wireActions() {
     els.copy?.addEventListener('click', async () => {
@@ -400,12 +559,31 @@ export function initThemeStudio(config) {
         run();
       });
     }
+    // AI tier
+    els.aiSeed?.addEventListener('click', seedWithAI);
+    els.aiRefineBtn?.addEventListener('click', refineWithAI);
+    els.aiConnect?.addEventListener('click', connectModel);
+    els.aiRefine?.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        refineWithAI();
+      }
+    });
+    // Mobile tabs (Design · Preview · Contrast) — toggle which pane shows.
+    for (const t of els.tabs) {
+      t.addEventListener('click', () => {
+        root.dataset.tab = t.dataset.tab;
+        for (const x of els.tabs) x.classList.toggle('is-active', x === t);
+        if (t.dataset.tab === 'preview') run(); // re-fit after reveal
+      });
+    }
   }
 
   // ── Boot ────────────────────────────────────────────────────────────────
   buildFields();
   buildStarters();
   wireActions();
+  resumeAuthIfPending(); // also calls refreshAiStatus()
 
   function whenReady(cb) {
     if (window.LatticePlayground) return cb();

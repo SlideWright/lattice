@@ -46,6 +46,7 @@ import derive from './derive.js';
 import contrast from './contrast.js';
 import serialize from './serialize.js';
 import starters from './starters.js';
+import ai from './ai.js';
 
 // color
 export const {
@@ -64,6 +65,8 @@ export const { resolveVars, contractPairs, contentPairs, auditVars, auditBoth, m
 export const { serializeTheme } = serialize;
 // starters
 export const { STARTERS, getStarter } = starters;
+// ai (Phase 2 — prompt builders + reply coercion; the model call is the caller's)
+export const { SEED_SYSTEM, seedMessages, refineMessages, coerceEssentials } = ai;
 `;
 
 const BUILD_OPTIONS = {

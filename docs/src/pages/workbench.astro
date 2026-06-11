@@ -72,7 +72,14 @@ const links = [
 			</div>
 		</header>
 
-		<main class="studio">
+		<main class="studio" data-tab="design">
+			<!-- Mobile-only tab bar (hidden ≥1024px via CSS). -->
+			<div class="studio-tabs" role="tablist">
+				<button type="button" class="studio-tab is-active" data-tab="design">Design</button>
+				<button type="button" class="studio-tab" data-tab="preview">Preview</button>
+				<button type="button" class="studio-tab" data-tab="contrast">Contrast</button>
+			</div>
+
 			<!-- Controls: starters · name · essentials · actions -->
 			<section class="studio-panel studio-controls">
 				<div class="studio-head">
@@ -80,6 +87,22 @@ const links = [
 					<h1 class="studio-title">Theme Studio</h1>
 					<p class="studio-sub">Set a handful of colours. The studio derives the full token
 						contract, holds it to WCAG AA, and renders it live.</p>
+				</div>
+
+				<div class="studio-block studio-ai">
+					<h2 class="studio-h2">Seed with AI</h2>
+					<p class="studio-ai-status">AI: checking…</p>
+					<textarea class="studio-ai-prompt" rows="2" spellcheck="false"
+						placeholder="Describe a palette — e.g. “warm editorial, terracotta accent, confident”"></textarea>
+					<div class="studio-ai-row">
+						<button type="button" class="studio-btn studio-primary studio-ai-seed">Seed</button>
+						<button type="button" class="studio-btn studio-ai-connect" hidden>Connect a model</button>
+					</div>
+					<div class="studio-ai-row">
+						<input type="text" class="studio-ai-refine" spellcheck="false"
+							placeholder="Refine — e.g. “cooler, more contrast”" />
+						<button type="button" class="studio-btn studio-ai-refine-btn">Refine</button>
+					</div>
 				</div>
 
 				<div class="studio-block">

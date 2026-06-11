@@ -357,11 +357,92 @@
 	white-space: pre;
 }
 
-/* ── Responsive: stack the three panes ───────────────────────────────────── */
-@media (max-width: 1100px) {
-	.wb-page { height: auto; overflow: visible; }
+/* ── AI tier (seed + refine) ─────────────────────────────────────────────── */
+.studio-ai {
+	border-bottom: 1px solid var(--border);
+	padding-bottom: 16px;
+}
+.studio-ai-status {
+	font-family: var(--font-mono);
+	font-size: 11px;
+	color: var(--text-muted);
+	margin: 0 0 8px;
+}
+.studio-ai-status.err { color: #b26a00; }
+.studio-ai-prompt,
+.studio-ai-refine {
+	width: 100%;
+	box-sizing: border-box;
+	padding: 8px 10px;
+	border: 1px solid var(--border);
+	border-radius: var(--radius-sm);
+	background: var(--bg);
+	color: var(--text-heading);
+	font: inherit;
+	font-size: 13px;
+}
+.studio-ai-prompt { resize: vertical; min-height: 44px; }
+.studio-ai-prompt:focus,
+.studio-ai-refine:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.studio-ai-row {
+	display: flex;
+	gap: 8px;
+	margin-top: 8px;
+}
+.studio-ai-row .studio-ai-refine { flex: 1 1 auto; min-width: 0; }
+.studio-ai-row .studio-btn { flex: 1 1 0; }
+.studio-ai-row .studio-ai-refine-btn { flex: 0 0 auto; }
+
+/* ── Mobile: a tabbed single column (Design · Preview · Contrast) ─────────── */
+.studio-tabs { display: none; }
+
+@media (max-width: 1024px) {
+	.wb-page { height: auto; min-height: 100dvh; overflow: visible; }
 	.studio { grid-template-columns: 1fr; }
 	.studio-panel { overflow: visible; }
-	.studio-controls, .studio-audit { border: 0; border-bottom: 1px solid var(--border); }
-	.studio-preview-host iframe.studio-frame { min-height: 1200px; }
+	.studio-controls,
+	.studio-audit { border: 0; border-top: 1px solid var(--border); }
+	.studio-stage { padding: 0; }
+	/* The stage has no flex parent height to fill on mobile, so pin the preview
+	   to a viewport-relative height and let it scroll internally. */
+	.studio-preview-host { height: 68vh; }
+	.studio-preview-host iframe.studio-frame { min-height: 1100px; }
+	.studio-actions { position: static; background: none; }
+
+	/* Mobile tab bar; each tab reveals one panel. */
+	.studio-tabs {
+		display: flex;
+		background: var(--bg-alt);
+		border-bottom: 1px solid var(--border);
+	}
+	.studio-tab {
+		flex: 1 1 0;
+		padding: 11px 8px;
+		border: 0;
+		background: none;
+		font: inherit;
+		font-size: 13px;
+		font-weight: 600;
+		color: var(--text-muted);
+		cursor: pointer;
+		border-bottom: 2px solid transparent;
+	}
+	.studio-tab.is-active {
+		color: var(--accent);
+		border-bottom-color: var(--accent);
+	}
+	/* Show only the active panel on mobile. */
+	.studio[data-tab='design'] .studio-stage,
+	.studio[data-tab='design'] .studio-audit,
+	.studio[data-tab='preview'] .studio-controls,
+	.studio[data-tab='preview'] .studio-audit,
+	.studio[data-tab='contrast'] .studio-controls,
+	.studio[data-tab='contrast'] .studio-stage { display: none; }
+}
+
+/* Narrow phones: starters to one column, stack the refine row. */
+@media (max-width: 460px) {
+	.studio-starters { grid-template-columns: 1fr; }
+	.studio-ai-row { flex-wrap: wrap; }
+	.studio-ai-row .studio-btn { flex: 1 1 100%; }
 }
