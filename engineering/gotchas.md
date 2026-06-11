@@ -1537,3 +1537,53 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
   read), this whole class of path-resolution failure goes away.
 - **Commit:** `fix(docs): resolve the playground asset-version dir from the
   project root, not import.meta.url`.
+
+### You CAN run + screenshot the docs site in the cloud sandbox
+
+- **Symptom:** An agent concludes a web-UI change (Drawing Board, Workbench,
+  landing) is "unverifiable in this headless environment" and hands off to a
+  desktop session for the visual check. **This is wrong** — the sandbox can
+  build, run, and screenshot the Astro site.
+- **Cause:** False assumption. The sandbox has Node, the puppeteer-cached
+  Chromium (used for marp PDF rendering), and can serve `astro dev` on
+  localhost. The visual loop is: serve → `tools/screenshot.js <url> <png>` →
+  view the PNG with the Read tool (renders inline) or `SendUserFile`.
+- **Mitigation:** Documented as a first-class loop in
+  `engineering/development.md` § "Previewing the docs site (Astro) +
+  screenshots" and summarized in `CLAUDE.md` § "You CAN see the web app".
+  The reusable tool is `tools/screenshot.js`.
+- **Triggered by:** Any change to `docs/src/**` you want to eyeball.
+- **Removable when:** Never — this is the standing capability, not a
+  workaround.
+
+### Docs `npm run dev` → `sh: 1: astro: not found`
+
+- **Symptom:** `cd docs && npm run dev` (or `npm run start`) prints the
+  sync-step output then dies with `sh: 1: astro: not found`; no server.
+- **Cause:** Two compounding things. (1) `docs/` is a **separate npm
+  package, not a root workspace**, so a fresh sandbox's root `npm install`
+  (and the SessionStart hook) never installs `docs/node_modules` — run
+  `cd docs && npm install` once. (2) Even installed, the `dev`/`start`
+  scripts chain `… && astro dev` and `astro` doesn't resolve on PATH in
+  this sandbox's script shell.
+- **Mitigation:** Install docs deps once, then invoke the binary directly:
+  `cd docs && ./node_modules/.bin/astro dev --host 127.0.0.1 --port 4321`
+  (run `npm run sync:portal && npm run sync:playground` first if you need
+  fresh portal/playground assets). Pages serve under the `/lattice` base.
+- **Triggered by:** Starting the docs site for a preview/screenshot.
+- **Removable when:** docs becomes a real workspace AND the script PATH
+  resolves — until then, the direct-bin invocation is the reliable path.
+
+### `pkill -f astro` kills the shell that's launching astro
+
+- **Symptom:** A launch script that does `pkill -f "astro"` then starts
+  `astro dev` exits with a non-zero signal code (e.g. 144) and the server
+  never comes up — even though astro is installed and works.
+- **Cause:** `pkill -f` matches on the **full command line**, and the very
+  shell running the compound command has "astro" in its argv (the
+  `… astro dev …` it's about to exec), so `pkill` terminates itself.
+- **Mitigation:** Don't broad-match-kill from inside the launching shell.
+  Stop a stale server by **PID** (saved at launch) or by **port**, or use a
+  pattern that can't match the current command line.
+- **Triggered by:** "Restart the dev server" one-liners.
+- **Removable when:** Never — inherent to `pkill -f` self-matching.
