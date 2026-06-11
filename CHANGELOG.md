@@ -49,6 +49,13 @@ in patch versions.
   auto-scaling, `div.marpit > section` prefixing, the `video` webkit hack,
   `scroll-snap-align`) is deliberately absent. A deck now renders to a styled
   PDF through the engine alone, with no marp-core in the loop.
+- **The docs playground can render through `lattice-engine` (P3, opt-in).** The
+  playground bundle now carries both engines; `window.LatticePlayground` gains
+  `setEngine('marp'|'lattice')` and an `engine` getter, and a `?engine=lattice`
+  query param selects the owned engine on load. The default stays marp-core, so
+  visitors and every existing gate are unchanged — but the Drawing Board now
+  doubles as a live A/B harness for the Marp-replacement engine. Themes register
+  on both engines, so switching needs no re-fetch.
 
 ### Changed
 
