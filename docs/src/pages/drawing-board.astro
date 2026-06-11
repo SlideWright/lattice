@@ -225,14 +225,14 @@ const dbData = JSON.stringify({
 							{isPreviewDeploy && (
 								<span class="db-arch-build" title="Build + render engine of this preview deploy">
 									<span>build {buildId}</span>
-									<span>engine <b id="db-arch-engine">marp-core</b></span>
+									<span>engine <b id="db-arch-engine">lattice-engine</b></span>
 								</span>
 							)}
 						</div>
 						{isPreviewDeploy && (
 							<script
 								is:inline
-								set:html={`(function(){var el=document.getElementById('db-arch-engine');if(!el)return;var eng='marp';try{eng=new URLSearchParams(location.search).get('engine')||localStorage.getItem('lattice-db-render-engine')||'marp';}catch(e){}el.textContent=eng==='lattice'?'lattice-engine':'marp-core';})();`}
+								set:html={`(function(){var el=document.getElementById('db-arch-engine');if(!el)return;var eng='lattice';try{eng=new URLSearchParams(location.search).get('engine')||localStorage.getItem('lattice-db-render-engine')||'lattice';}catch(e){}el.textContent=eng==='lattice'?'lattice-engine':'marp-core';})();`}
 							/>
 						)}
 						<div class="db-arch-onboard" id="db-arch-onboard"></div>
@@ -833,7 +833,7 @@ const dbData = JSON.stringify({
 				const PG = window.LatticePlayground;
 				const dbd = JSON.parse(document.getElementById('db-data').textContent);
 				const meta = {
-					engine: (PG && PG.engine) || 'marp',
+					engine: (PG && PG.engine) || 'lattice',
 					version: dbd.version || '',
 					build: dbd.buildId || '',
 					palette: root.getAttribute('data-palette') || '',
