@@ -50,6 +50,14 @@
  * ink so it reads on every canvas (incl. dark, via the light-dark token). */
 section.sketch {
   --sketch-ink: var(--text-heading);
+  /* The hand-drawn RULE — a near-straight stroke with a slight pen-waver, as
+   * a tiling SVG mask. Lines (table cell rules, ledger/agenda row rules, the
+   * divider) wear this so they read as ruled-by-hand, not a machine hairline
+   * — the line-shaped counterpart to the boxes' asymmetric corners. The shape
+   * rides in the mask; the colour is `background-color: var(--sketch-ink)`, so
+   * it stays palette-blind (no baked hex). PDF-safe: a static image, not the
+   * feTurbulence filter that collapses Marp's print scaling. */
+  --sketch-wave: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 140 7'%3E%3Cpath d='M0 3.5 Q12 3 23 3.7 Q34 4 46 3.3 Q58 3 70 3.6 Q82 4 94 3.3 Q106 3 117 3.7 Q128 4 140 3.5' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E");
   /* The section's own default font goes hand too, so EVERY text node on the
    * slide that a component doesn't explicitly font — emphasis, links, stray
    * spans, inherited prose — reads hand-drawn rather than the clean engine
@@ -231,17 +239,36 @@ section.sketch.obligation-matrix table {
   border-spacing: 0;
 }
 
-/* Interior rules become ink strokes rather than spreadsheet hairlines. The
- * ledger's own frame replaces the first/last row rule (no doubled line). The
- * agenda's row rules ride the same ink. */
+/* Interior rules become hand-drawn wavy strokes, not straight hairlines — the
+ * line-shaped version of the boxes' wobble. The straight border is hidden and
+ * a masked --sketch-wave strip is laid over where it sat (a ::after pinned to
+ * the row/cell bottom). The frame owns the ledger's outer edge, so the
+ * first/last row's own rule is dropped to avoid doubling it. */
 section.sketch.compare-table td,
 section.sketch.obligation-matrix td,
 section.sketch.list-tabular > ol > li,
 section.sketch.agenda > ol > li {
-  border-bottom-color: var(--sketch-ink);
+  position: relative;
+  border-bottom-color: transparent;
 }
 section.sketch.list-tabular > ol > li:first-child { border-top-color: transparent; }
-section.sketch.list-tabular > ol > li:last-child { border-bottom-color: transparent; }
+section.sketch.compare-table td::after,
+section.sketch.obligation-matrix td::after,
+section.sketch.list-tabular > ol > li::after,
+section.sketch.agenda > ol > li::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 7px;
+  background-color: var(--sketch-ink);
+  -webkit-mask: var(--sketch-wave) repeat-x center / 140px 7px;
+  mask: var(--sketch-wave) repeat-x center / 140px 7px;
+  pointer-events: none;
+}
+/* The frame already draws the ledger's last edge — drop the last row's rule. */
+section.sketch.list-tabular > ol > li:last-child::after { display: none; }
 
 /* Boxed blockquotes (the quote callout, the redline statement) become drawn
  * boxes like the cards. redline keeps its semantic left spine — we wobble
@@ -268,6 +295,10 @@ section.sketch.list > ul > li {
 /* The divider rule bends into a hand stroke (the h2-underline trick) and
  * thickens a touch so it reads as drawn ink, not a printer's rule. */
 section.sketch hr {
-  height: 0.3125cqi;
-  border-radius: 95% 4px 90% 5px / 8px 14px 6px 12px;
+  height: 7px;
+  border: none;
+  border-radius: 0;
+  background: var(--sketch-ink);
+  -webkit-mask: var(--sketch-wave) repeat-x center / 140px 7px;
+  mask: var(--sketch-wave) repeat-x center / 140px 7px;
 }

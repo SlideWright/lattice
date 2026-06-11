@@ -369,9 +369,14 @@ in patch versions.
   every stroke resolves through `var(--token)`, so any theme colours it. Default
   is full handwriting; `sketch-clean-body` returns prose to the clean engine face
   for text-dense slides. New tokens: `--sketch-font-display`, `--sketch-font-body`,
-  `--sketch-ink`, and the engine-level `--font-label` label-voice seam. Lives in `lib/base/base.sketch.css`; the two hand fonts join the
-  engine's existing Google-Fonts `@import`. Pure CSS + type (no SVG filters), so it
-  survives the PDF pipeline. Documented in `lib/base/base.docs.md`; demo at
+  `--sketch-ink`, the engine-level `--font-label` label-voice seam, and
+  `--sketch-wave` (the hand-drawn rule). Lives in `lib/base/base.sketch.css`; the two hand fonts join the
+  engine's existing Google-Fonts `@import`. The lines a deck draws — table cell
+  rules, ledger/agenda row rules, the `<hr>` divider — wear `--sketch-wave`, a
+  near-straight pen-waver rendered as a tiling SVG **mask** (shape in the mask,
+  colour via `background-color: var(--sketch-ink)`, so it stays palette-blind);
+  it's a static image, not the `feTurbulence` **filter** that collapses Marp's
+  print scaling, so it survives the PDF. Documented in `lib/base/base.docs.md`; demo at
   `examples/sketch.md`. See `engineering/decisions/2026-06-11-sketch-finish.md`.
 - **`carta` palette — warm paper and ink.** A new theme (`carta` / `carta-dark`),
   the blessed pairing for the `sketch` finish: a warm off-white sheet, near-black

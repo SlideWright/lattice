@@ -475,11 +475,17 @@ Or per slide: `<!-- _class: cards-grid sketch -->`.
 | `--sketch-ink` | The ink the boxes are drawn in (defaults to `--text-heading`); a theme override seam. |
 | `--sketch-font-display` / `--sketch-font-body` | The hand fonts; swap either to re-flavour the whole finish in one line. |
 | `--pill-font` | Re-pointed at the hand body face under `sketch` so label chips/badges read hand-drawn; override per theme to restore a clean label font. |
+| `--font-label` | The label voice (eyebrows, table headers, stat sub-labels, header/footer, pagination); defaults to `--font-mono`, re-pointed at the hand sans under `sketch`. |
+| `--sketch-wave` | The hand-drawn rule — a near-straight pen-waver as a tiling SVG mask, worn by table cell rules, ledger/agenda row rules, and `<hr>`. |
 
-**PDF-safe by design.** The look is pure type + `border-radius` geometry.
-A true "roughen" pass (SVG `feTurbulence` + `feDisplacementMap`) was
-prototyped and rejected: it survives on screen but collapses Marp's
-print-scale transform, shrinking the slide in the PDF. See
+**PDF-safe by design.** Boxes are `border-radius` geometry (asymmetric
+per-corner curves read as freehand); the lines a deck draws wear
+`--sketch-wave`, a near-straight pen-waver carried as a tiling SVG **mask**
+(shape in the mask, colour via `background-color: var(--sketch-ink)` — so it
+stays palette-blind). Both are static; the SVG `feTurbulence` +
+`feDisplacementMap` **filter** "roughen" pass was prototyped and rejected —
+it survives on screen but collapses Marp's print-scale transform, shrinking
+the slide in the PDF. A mask is not a filter, so it ships clean. See
 `engineering/decisions/2026-06-11-sketch-finish.md`.
 
 **Charts/diagrams.** The finish reskins the heading, the HTML legend, and
