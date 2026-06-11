@@ -369,9 +369,13 @@
 	margin: 0 0 8px;
 }
 .studio-ai-status.err { color: #b26a00; }
-.studio-ai-prompt,
-.studio-ai-refine {
-	width: 100%;
+.studio-ai-row {
+	display: flex;
+	gap: 8px;
+}
+.studio-ai-prompt {
+	flex: 1 1 auto;
+	min-width: 0;
 	box-sizing: border-box;
 	padding: 8px 10px;
 	border: 1px solid var(--border);
@@ -381,17 +385,31 @@
 	font: inherit;
 	font-size: 13px;
 }
-.studio-ai-prompt { resize: vertical; min-height: 44px; }
-.studio-ai-prompt:focus,
-.studio-ai-refine:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
-.studio-ai-row {
+.studio-ai-prompt:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.studio-ai-row .studio-ai-ask { flex: 0 0 auto; }
+.studio-ai-connect { width: 100%; margin-top: 8px; }
+/* Recent prompts — re-runnable chips. */
+.studio-ai-history {
 	display: flex;
-	gap: 8px;
-	margin-top: 8px;
+	flex-wrap: wrap;
+	gap: 6px;
+	margin-top: 10px;
 }
-.studio-ai-row .studio-ai-refine { flex: 1 1 auto; min-width: 0; }
-.studio-ai-row .studio-btn { flex: 1 1 0; }
-.studio-ai-row .studio-ai-refine-btn { flex: 0 0 auto; }
+.studio-ai-chip {
+	max-width: 100%;
+	padding: 3px 9px;
+	border: 1px solid var(--border);
+	border-radius: 999px;
+	background: var(--bg);
+	color: var(--text-body);
+	font: inherit;
+	font-size: 11.5px;
+	cursor: pointer;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.studio-ai-chip:hover { border-color: var(--accent); color: var(--accent); }
 
 /* ── Mobile: a tabbed single column (Design · Preview · Contrast) ─────────── */
 .studio-tabs { display: none; }

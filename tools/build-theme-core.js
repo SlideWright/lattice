@@ -65,8 +65,8 @@ export const { resolveVars, contractPairs, contentPairs, auditVars, auditBoth, m
 export const { serializeTheme } = serialize;
 // starters
 export const { STARTERS, getStarter } = starters;
-// ai (Phase 2 — prompt builders + reply coercion; the model call is the caller's)
-export const { SEED_SYSTEM, seedMessages, refineMessages, coerceEssentials } = ai;
+// ai (Phase 2 — one prompt builder + reply coercion; the model call is the caller's)
+export const { ASK_SYSTEM, askMessages, coerceEssentials } = ai;
 `;
 
 const BUILD_OPTIONS = {

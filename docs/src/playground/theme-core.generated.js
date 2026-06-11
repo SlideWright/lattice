@@ -690,21 +690,12 @@ var require_ai = __commonJS({
       warn: "warning amber",
       fail: "error red"
     };
-    var SEED_SYSTEM2 = 'You are a palette designer for the Lattice slide engine. Given a short description, output ONLY a compact JSON object \u2014 no prose, no markdown \u2014 with EXACTLY these keys, each a 6-digit hex colour (e.g. "#1a2b3c"):\n' + ESSENTIAL_KEYS2.map((k) => `  "${k}": ${KEY_DESCRIPTIONS[k]}`).join("\n") + "\nRules: bg and bgAlt must be light (a slide canvas); textHeading and textBody must be dark enough to read on them; accent is saturated; accentSoft is a pale tint of the accent. Output the JSON object only.";
-    function seedMessages2(description) {
+    var ASK_SYSTEM2 = 'You are a palette designer for the Lattice slide engine. You will be given the CURRENT palette (as JSON) and a request. If the request describes a new look, return a complete new palette; if it asks for a change (e.g. "cooler", "more contrast", "navy accent"), adjust the current palette accordingly. Either way, output ONLY a compact JSON object \u2014 no prose, no markdown \u2014 with EXACTLY these keys, each a 6-digit hex colour (e.g. "#1a2b3c"):\n' + ESSENTIAL_KEYS2.map((k) => `  "${k}": ${KEY_DESCRIPTIONS[k]}`).join("\n") + "\nRules: bg and bgAlt must be light (a slide canvas); textHeading and textBody must be dark enough to read on them; accent is saturated; accentSoft is a pale tint of the accent. Output the full JSON object with all keys.";
+    function askMessages2(current, prompt) {
       return [
-        { role: "system", content: SEED_SYSTEM2 },
-        { role: "user", content: String(description || "").trim() || "a clean, professional palette" }
-      ];
-    }
-    function refineMessages2(current, instruction) {
-      return [
-        { role: "system", content: SEED_SYSTEM2 },
-        { role: "assistant", content: JSON.stringify(current) },
-        {
-          role: "user",
-          content: `Adjust the palette per this instruction, keeping it coherent and readable: "${String(instruction || "").trim()}". Output the full JSON object with all keys.`
-        }
+        { role: "system", content: ASK_SYSTEM2 },
+        { role: "assistant", content: JSON.stringify(current || {}) },
+        { role: "user", content: String(prompt || "").trim() || "a clean, professional palette" }
       ];
     }
     var norm = (k) => String(k).toLowerCase().replace(/[^a-z0-9]/g, "");
@@ -775,7 +766,7 @@ var require_ai = __commonJS({
       }
       return { essentials, filled, applied, ok: filled.length === 0 && applied.length > 0 };
     }
-    module.exports = { SEED_SYSTEM: SEED_SYSTEM2, seedMessages: seedMessages2, refineMessages: refineMessages2, coerceEssentials: coerceEssentials2 };
+    module.exports = { ASK_SYSTEM: ASK_SYSTEM2, askMessages: askMessages2, coerceEssentials: coerceEssentials2 };
   }
 });
 
@@ -816,17 +807,18 @@ var {
 var { resolveVars, contractPairs, contentPairs, auditVars, auditBoth, meter } = import_contrast.default;
 var { serializeTheme } = import_serialize.default;
 var { STARTERS, getStarter } = import_starters.default;
-var { SEED_SYSTEM, seedMessages, refineMessages, coerceEssentials } = import_ai.default;
+var { ASK_SYSTEM, askMessages, coerceEssentials } = import_ai.default;
 export {
   AA,
   AAA,
   AA_LARGE,
+  ASK_SYSTEM,
   DEEP_L,
   ESSENTIAL_KEYS,
   PALE_L,
   REQUIRED_TOKENS,
-  SEED_SYSTEM,
   STARTERS,
+  askMessages,
   auditBoth,
   auditVars,
   coerceEssentials,
@@ -843,13 +835,11 @@ export {
   normalizeHex,
   oklchToHex,
   pickInk,
-  refineMessages,
   relativeLuminance,
   requiredTokenList,
   resolveVars,
   rgbToHex,
   rotateHue,
-  seedMessages,
   serializeTheme,
   validateEssentials,
   withChroma,

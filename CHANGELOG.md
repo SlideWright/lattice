@@ -114,12 +114,15 @@ in patch versions.
   contract, repaired contrast-aware to clear WCAG AA in both canvas modes. The
   derivation + contrast maths are the SAME the Node tooling and the palette
   contrast gate use (the gate now shares `lib/theme/color.js`).
-  - **AI tier (Phase 2):** seed a palette from a free-text description and
-    refine it conversationally, via the same on-device / OpenRouter model
-    ladder the Drawing Board uses (connection shared through `localStorage`).
-    The model only proposes an essential set; the deterministic derivation +
-    contrast gate dispose. Degrades cleanly to the deterministic studio with a
-    "connect a model" prompt when none is connected.
+  - **AI tier (Phase 2):** one conversational box — *describe* a palette to
+    originate ("warm editorial, terracotta") or *ask for a change* ("cooler",
+    "navy accent") to adjust; the model infers which from your words (the
+    current palette is sent as context), and recent prompts return as
+    re-runnable chips. Uses the same on-device / OpenRouter model ladder the
+    Drawing Board uses (connection shared through `localStorage`). The model
+    only proposes an essential set; the deterministic derivation + contrast
+    gate dispose. Degrades cleanly with a "connect a model" prompt when none
+    is connected.
   - **Responsive:** a Design · Preview · Contrast tab bar on small screens;
     single-column reflow.
 

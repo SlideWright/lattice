@@ -10,7 +10,7 @@
 const { test, describe } = require('node:test');
 const assert = require('node:assert/strict');
 
-const { seedMessages, refineMessages, coerceEssentials } = require('../../../lib/theme/ai.js');
+const { askMessages, coerceEssentials } = require('../../../lib/theme/ai.js');
 const { deriveTheme, ESSENTIAL_KEYS } = require('../../../lib/theme/derive.js');
 const { auditBoth } = require('../../../lib/theme/contrast.js');
 const { STARTERS } = require('../../../lib/theme/starters.js');
@@ -18,24 +18,24 @@ const { STARTERS } = require('../../../lib/theme/starters.js');
 const FALLBACK = STARTERS[0].essentials;
 
 describe('theme-ai', () => {
-  test('seedMessages carries the description and the JSON contract', () => {
-    const msgs = seedMessages('warm editorial, terracotta');
+  test('askMessages threads the current palette + the request, with the JSON contract', () => {
+    const msgs = askMessages(FALLBACK, 'warm editorial, terracotta');
     assert.equal(msgs[0].role, 'system');
     assert.match(msgs[0].content, /JSON/i);
     for (const k of ESSENTIAL_KEYS) assert.match(msgs[0].content, new RegExp(`"${k}"`));
-    assert.equal(msgs[1].content, 'warm editorial, terracotta');
-  });
-
-  test('seedMessages falls back to a default brief when empty', () => {
-    assert.ok(seedMessages('').at(-1).content.length > 0);
-    assert.ok(seedMessages(null).at(-1).content.length > 0);
-  });
-
-  test('refineMessages threads the current palette + instruction', () => {
-    const msgs = refineMessages(FALLBACK, 'cooler, more contrast');
     assert.equal(msgs[1].role, 'assistant');
-    assert.deepEqual(JSON.parse(msgs[1].content), FALLBACK);
-    assert.match(msgs[2].content, /cooler, more contrast/);
+    assert.deepEqual(JSON.parse(msgs[1].content), FALLBACK); // current palette as context
+    assert.equal(msgs.at(-1).content, 'warm editorial, terracotta');
+  });
+
+  test('askMessages handles both originate and adjust phrasing', () => {
+    assert.equal(askMessages(FALLBACK, 'a navy corporate palette').at(-1).content, 'a navy corporate palette');
+    assert.equal(askMessages(FALLBACK, 'cooler').at(-1).content, 'cooler');
+  });
+
+  test('askMessages falls back to a default brief when empty', () => {
+    assert.ok(askMessages(FALLBACK, '').at(-1).content.length > 0);
+    assert.ok(askMessages(FALLBACK, null).at(-1).content.length > 0);
   });
 
   test('coerceEssentials accepts a clean object and derives contrast-clean', () => {

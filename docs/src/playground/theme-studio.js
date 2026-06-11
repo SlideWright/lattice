@@ -26,12 +26,11 @@ import { SLIDE_BOX } from './frame-css.js';
 // theme-core.generated.js): one ESM module, real named exports, the SAME maths
 // as the Node tooling + the WCAG gate. Rebuild with `npm run theme-core:build`.
 import {
+  askMessages,
   auditBoth,
   coerceEssentials,
   deriveTheme,
-  refineMessages,
   STARTERS,
-  seedMessages,
   serializeTheme,
   validateEssentials,
 } from './theme-core.generated.js';
@@ -149,13 +148,12 @@ export function initThemeStudio(config) {
     copy: root.querySelector('.studio-copy'),
     download: root.querySelector('.studio-download'),
     code: root.querySelector('.studio-code'),
-    // AI tier
+    // AI tier — one conversational box
     aiPrompt: root.querySelector('.studio-ai-prompt'),
-    aiSeed: root.querySelector('.studio-ai-seed'),
-    aiRefine: root.querySelector('.studio-ai-refine'),
-    aiRefineBtn: root.querySelector('.studio-ai-refine-btn'),
+    aiAsk: root.querySelector('.studio-ai-ask'),
     aiStatus: root.querySelector('.studio-ai-status'),
     aiConnect: root.querySelector('.studio-ai-connect'),
+    aiHistory: root.querySelector('.studio-ai-history'),
     tabs: [...root.querySelectorAll('.studio-tab')],
   };
 
@@ -437,68 +435,74 @@ export function initThemeStudio(config) {
           ? `OpenRouter · ${model.openRouterModelName?.() || 'connected'}`
           : `On-device · ${a.generation}`;
     }
-    setAiStatus(connected ? `AI: ${label}` : 'AI: connect a model to seed / refine');
+    setAiStatus(connected ? `AI: ${label}` : 'AI: connect a model to design with words');
     if (els.aiConnect) els.aiConnect.hidden = connected;
-    if (els.aiSeed) els.aiSeed.disabled = false; // always clickable; guides if floored
-    if (els.aiRefineBtn) els.aiRefineBtn.disabled = false;
+  }
+
+  // Recent prompts (most-recent-first), shown as re-runnable chips.
+  const history = [];
+  function pushHistory(prompt) {
+    const i = history.indexOf(prompt);
+    if (i !== -1) history.splice(i, 1);
+    history.unshift(prompt);
+    history.length = Math.min(history.length, 5);
+    renderHistory();
+  }
+  function renderHistory() {
+    if (!els.aiHistory) return;
+    els.aiHistory.innerHTML = '';
+    els.aiHistory.hidden = history.length === 0;
+    for (const p of history) {
+      const chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = 'studio-ai-chip';
+      chip.textContent = p;
+      chip.title = 'Run again: ' + p;
+      chip.addEventListener('click', () => ask(p));
+      els.aiHistory.appendChild(chip);
+    }
   }
 
   let aiBusy = false;
-  async function callModel(messages) {
+  // ONE request handler — originate ("warm editorial") or adjust ("cooler"); the
+  // model decides from the words, with the current palette as context.
+  async function ask(prompt) {
+    const text = String(prompt ?? (els.aiPrompt ? els.aiPrompt.value : '')).trim();
+    if (aiBusy) return;
+    if (!modelConnected()) {
+      setAiStatus('Connect a model first (button below), then ask.', true);
+      return;
+    }
+    if (!text) {
+      setAiStatus('Describe a palette, or ask for a change — e.g. “navy accent”.', true);
+      return;
+    }
     aiBusy = true;
+    if (els.aiAsk) els.aiAsk.disabled = true;
+    setAiStatus('Asking the model…');
     try {
-      return await model.complete({ messages, json: true, fallback: state.essentials });
+      const reply = await model.complete({
+        messages: askMessages(state.essentials, text),
+        json: true,
+        fallback: state.essentials,
+      });
+      const { essentials, ok, filled } = coerceEssentials(reply, state.essentials);
+      if (!ok) {
+        setAiStatus('No usable palette came back — try rephrasing.', true);
+        return;
+      }
+      state.essentials = essentials;
+      syncFields();
+      run();
+      pushHistory(text);
+      if (els.aiPrompt) els.aiPrompt.value = '';
+      const note = filled.length ? ` (${filled.length} kept)` : '';
+      setAiStatus(`Applied${note}.`);
+    } catch (e) {
+      setAiStatus('Request failed: ' + (e.message || e), true);
     } finally {
       aiBusy = false;
-    }
-  }
-
-  function applyAiResult(reply, what) {
-    const { essentials, ok, filled } = coerceEssentials(reply, state.essentials);
-    if (!ok) {
-      setAiStatus(`${what} produced no usable palette — try a more specific prompt.`, true);
-      return;
-    }
-    state.essentials = essentials;
-    state.label = (els.name && els.name.value) || state.label;
-    syncFields();
-    run();
-    const note = filled.length ? ` (${filled.length} kept from current)` : '';
-    setAiStatus(`${what} applied${note}.`);
-  }
-
-  async function seedWithAI() {
-    if (aiBusy) return;
-    if (!modelConnected()) {
-      setAiStatus('Connect a model first (button below) — then describe a palette.', true);
-      return;
-    }
-    const desc = els.aiPrompt ? els.aiPrompt.value.trim() : '';
-    setAiStatus('Seeding from your description…');
-    try {
-      applyAiResult(await callModel(seedMessages(desc)), 'Seed');
-    } catch (e) {
-      setAiStatus('Seed failed: ' + (e.message || e), true);
-    }
-  }
-
-  async function refineWithAI() {
-    if (aiBusy) return;
-    if (!modelConnected()) {
-      setAiStatus('Connect a model first to refine.', true);
-      return;
-    }
-    const instruction = els.aiRefine ? els.aiRefine.value.trim() : '';
-    if (!instruction) {
-      setAiStatus('Type a refinement, e.g. “cooler, more contrast on the accent”.', true);
-      return;
-    }
-    setAiStatus('Refining…');
-    try {
-      applyAiResult(await callModel(refineMessages(state.essentials, instruction)), 'Refine');
-      if (els.aiRefine) els.aiRefine.value = '';
-    } catch (e) {
-      setAiStatus('Refine failed: ' + (e.message || e), true);
+      if (els.aiAsk) els.aiAsk.disabled = false;
     }
   }
 
@@ -559,14 +563,13 @@ export function initThemeStudio(config) {
         run();
       });
     }
-    // AI tier
-    els.aiSeed?.addEventListener('click', seedWithAI);
-    els.aiRefineBtn?.addEventListener('click', refineWithAI);
+    // AI tier — one box
+    els.aiAsk?.addEventListener('click', () => ask());
     els.aiConnect?.addEventListener('click', connectModel);
-    els.aiRefine?.addEventListener('keydown', e => {
-      if (e.key === 'Enter') {
+    els.aiPrompt?.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
-        refineWithAI();
+        ask();
       }
     });
     // Mobile tabs (Design · Preview · Contrast) — toggle which pane shows.
