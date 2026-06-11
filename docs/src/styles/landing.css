@@ -47,6 +47,8 @@
 	/* Drawing Board glyphs — Lucide (ISC), same mask technique as above. */
 	--icon-volume-2: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolygon points='11 5 6 9 2 9 2 15 6 15 11 19 11 5'/%3e%3cpath d='M15.54 8.46a5 5 0 0 1 0 7.07'/%3e%3cpath d='M19.07 4.93a10 10 0 0 1 0 14.14'/%3e%3c/svg%3e");
 	--icon-settings: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z'/%3e%3ccircle cx='12' cy='12' r='3'/%3e%3c/svg%3e");
+	/* Lucide `layout-grid` — a 2×2 grid of slides; reads as "gallery / browse decks". */
+	--icon-gallery: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3crect width='7' height='7' x='3' y='3' rx='1'/%3e%3crect width='7' height='7' x='14' y='3' rx='1'/%3e%3crect width='7' height='7' x='14' y='14' rx='1'/%3e%3crect width='7' height='7' x='3' y='14' rx='1'/%3e%3c/svg%3e");
 	--icon-flag: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z'/%3e%3cline x1='4' x2='4' y1='22' y2='15'/%3e%3c/svg%3e");
 	--icon-chevron-left: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='m15 18-6-6 6-6'/%3e%3c/svg%3e");
 	--icon-chevron-right: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='m9 18 6-6-6-6'/%3e%3c/svg%3e");
@@ -97,6 +99,7 @@
 .ico-check { --ico: var(--icon-check); }
 .ico-x { --ico: var(--icon-x); }
 .ico-settings { --ico: var(--icon-settings); }
+.ico-gallery { --ico: var(--icon-gallery); }
 .ico-plus { --ico: var(--icon-plus); }
 .ico-undo { --ico: var(--icon-undo); }
 .ico-minus { --ico: var(--icon-minus); }

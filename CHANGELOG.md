@@ -27,6 +27,16 @@ in patch versions.
 
 ### Added
 
+- **Playground — "Load a deck" drawer.** The playground's ⚙ insert menu is now a
+  slide-in **Galleries** drawer (a labeled grid-icon button, not a gear, so its
+  function reads as "browse + load a full deck"). It lists the repo's showcase
+  decks — **Jargon** and the **Design system** tour under *Showcases*, plus one
+  survey deck per component family (Anchors → Legal) under *By family* — each
+  with a slide count. Picking one drops the whole deck into the editor and renders
+  it live in the chosen palette. The demoted per-component scaffold actions (reset
+  to example / blank skeleton) move into the drawer's *This component* section.
+  Local image assets in the loaded decks are inlined as data URIs at build time so
+  they render in the sandboxed preview. Docs-site only.
 - **Drawing Board — Deck setup drawer.** A new config button in the editor toolbar
   (beside Export — front matter is a document-level setting) opens a slide-in
   drawer for the deck's Marp front matter: theme, slide size
