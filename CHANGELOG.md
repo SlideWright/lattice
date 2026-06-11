@@ -770,6 +770,21 @@ in patch versions.
   ~1.87) and `--cm-detail` (a body-blended hint colour, lifted to ~3.85 while
   staying secondary to the label); the popup shadow is also deepened for
   elevation. Docs-site CodeMirror only — no engine change.
+- **The editor autocomplete popup no longer renders as an unthemed white box
+  (notably on iOS Safari).** The popup theme lived in the editor's scoped
+  `EditorView.theme`, but CodeMirror renders completion tooltips in a
+  fixed/detached layer that can fall outside the `.cm-editor` element, where the
+  scoped rules don't reach — so the popup fell back to CodeMirror's default white
+  panel, jarring on the dark editor. The theme now lives in a global stylesheet
+  injected once (using the base palette tokens, which resolve anywhere under
+  `<html>`; the editor's `--cm-*` tokens are scoped to `.cm-editor`). Drawing
+  Board (docs-site) only.
+- **The editor's first text selection on iOS Safari now uses the themed
+  highlight, not the system tint.** iOS could paint the native (lavender)
+  selection before applying CodeMirror's injected theme, so the first selection
+  read wrong until a style recalc (e.g. a palette/mode toggle). The editor now
+  forces one reflow on the frame after mount, applying the theme up front.
+  Docs-site CodeMirror only.
 - **The AI-tier status indicator no longer relies on colour alone (WCAG 1.4.1).** The
   green/grey connectivity dot — on the model chip and the settings "In use" row — is
   replaced by a per-state **Lucide glyph**: `cloud` (cloud tier) · `cpu` (on-device) ·

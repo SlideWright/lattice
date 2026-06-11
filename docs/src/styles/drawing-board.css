@@ -1560,9 +1560,37 @@ button.db-tl-body:hover {
 	position: absolute;
 	inset: 0;
 	overflow: hidden;
+	background: var(--bg);
 }
 .db-editor-host .cm-editor {
 	height: 100%;
+}
+/* The pre-hydration seed textarea (#db-editor-ta) carries the starter markdown
+ * to the mount script and is the no-JS fallback. With JS (the head script adds
+ * html.db-js before first paint) it's HIDDEN: CodeMirror fills #db-editor-host,
+ * and the content appears once in its final position — no white flash, and no
+ * "jump" from the textarea's metrics (no gutter, different padding) to CM's.
+ * Without JS it stays visible, styled to match the editor (dark surface, mono,
+ * no native chrome, 16px to dodge iOS zoom) so it's never the default white box. */
+html.db-js #db-editor-ta {
+	display: none;
+}
+#db-editor-ta {
+	box-sizing: border-box;
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	padding: 14px 12px;
+	border: 0;
+	outline: none;
+	resize: none;
+	background: var(--bg);
+	color: var(--text-body);
+	font-family: var(--font-mono);
+	font-size: 16px;
+	line-height: 1.6;
+	-webkit-appearance: none;
+	appearance: none;
 }
 
 /* ── The preview filmstrip ────────────────────────────────────────────────── */

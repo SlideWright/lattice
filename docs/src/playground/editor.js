@@ -244,62 +244,57 @@ const latticeTheme = EditorView.theme({
 	},
 	'::selection': { backgroundColor: 'var(--cm-selection)' },
 	'.cm-matchingBracket': { backgroundColor: 'var(--cm-match)', outline: 'none' },
-	// Autocomplete popup (region/group-name + class completion). CodeMirror's
-	// default is a white panel with a bright-blue selected row and a white info
-	// card — jarring on the dark editor and off-brand in light mode. Re-theme it
-	// off the page tokens so it matches the editor and recolours with
-	// palette/mode. (Same vehicle CodeMirror's own default theme uses, so these
-	// override it; the tooltip renders inside .cm-editor, so the theme reaches it.)
-	'.cm-tooltip.cm-tooltip-autocomplete': {
-		border: '1px solid var(--cm-pop-border)',
-		borderRadius: '8px',
-		backgroundColor: 'var(--bg)',
-		boxShadow: '0 12px 30px color-mix(in srgb, var(--text-heading) 30%, transparent)',
-		overflow: 'hidden',
-	},
-	'.cm-tooltip-autocomplete > ul': {
-		fontFamily: 'var(--font-mono)',
-		fontSize: '13px',
-		maxHeight: '15em',
-	},
-	'.cm-tooltip-autocomplete > ul > li': {
-		padding: '3px 10px',
-		color: 'var(--text-body)',
-	},
-	'.cm-tooltip-autocomplete > ul > li[aria-selected]': {
-		backgroundColor: 'var(--accent)',
-		color: 'var(--on-accent)',
-	},
-	'.cm-completionMatchedText': {
-		textDecoration: 'none',
-		fontWeight: '700',
-		color: 'var(--accent)',
-	},
-	'.cm-tooltip-autocomplete > ul > li[aria-selected] .cm-completionMatchedText': {
-		color: 'var(--on-accent)',
-	},
-	'.cm-completionDetail': {
-		color: 'var(--cm-detail)',
-		fontStyle: 'italic',
-	},
-	'.cm-tooltip-autocomplete > ul > li[aria-selected] .cm-completionDetail': {
-		color: 'var(--on-accent)',
-		opacity: '0.8',
-	},
-	// The side info card (the white box in the report).
-	'.cm-tooltip.cm-completionInfo': {
-		border: '1px solid var(--cm-pop-border)',
-		borderRadius: '8px',
-		backgroundColor: 'var(--bg-alt)',
-		color: 'var(--text-body)',
-		padding: '8px 10px',
-		fontFamily: 'var(--font-body, inherit)',
-		fontSize: '12.5px',
-		lineHeight: '1.45',
-		maxWidth: '22em',
-		boxShadow: '0 10px 28px color-mix(in srgb, var(--text-heading) 22%, transparent)',
-	},
+	// NOTE: the autocomplete popup (.cm-tooltip-autocomplete / .cm-completionInfo)
+	// is themed in a GLOBAL stylesheet (ensureTooltipTheme below), NOT here —
+	// EditorView.theme is scoped to the .cm-editor element, and CodeMirror renders
+	// completion tooltips in a fixed/detached layer that can fall OUTSIDE it
+	// (notably on iOS Safari), where the scoped rules don't reach and the popup
+	// falls back to CodeMirror's default white panel. The global rules reach it
+	// wherever CM places it; the palette vars resolve anywhere under <html>. The
+	// --cm-* tokens are editor-scoped, so the global block uses the base tokens.
 });
+
+// Global autocomplete-popup theme. Injected once into <head> (not via
+// EditorView.theme) so it reaches the completion tooltip even when CodeMirror
+// places it in a detached/fixed layer outside .cm-editor — the cause of the
+// unthemed white box on iOS Safari. Backgrounds use !important to beat CM's
+// dynamically-injected base theme regardless of stylesheet order.
+const TOOLTIP_CSS = `
+.cm-tooltip.cm-tooltip-autocomplete {
+	border: 1px solid color-mix(in srgb, var(--border) 45%, var(--text-muted));
+	border-radius: 8px;
+	background-color: var(--bg) !important;
+	color: var(--text-body);
+	box-shadow: 0 12px 30px color-mix(in srgb, var(--text-heading) 30%, transparent);
+	overflow: hidden;
+}
+.cm-tooltip-autocomplete > ul { font-family: var(--font-mono); font-size: 13px; max-height: 15em; }
+.cm-tooltip-autocomplete > ul > li { padding: 3px 10px; color: var(--text-body); }
+.cm-tooltip-autocomplete > ul > li[aria-selected] { background-color: var(--accent); color: var(--on-accent); }
+.cm-completionMatchedText { text-decoration: none; font-weight: 700; color: var(--accent); }
+.cm-tooltip-autocomplete > ul > li[aria-selected] .cm-completionMatchedText { color: var(--on-accent); }
+.cm-completionDetail { color: color-mix(in srgb, var(--text-muted) 50%, var(--text-body)); font-style: italic; }
+.cm-tooltip-autocomplete > ul > li[aria-selected] .cm-completionDetail { color: var(--on-accent); opacity: 0.8; }
+.cm-tooltip.cm-completionInfo {
+	border: 1px solid color-mix(in srgb, var(--border) 45%, var(--text-muted));
+	border-radius: 8px;
+	background-color: var(--bg-alt) !important;
+	color: var(--text-body);
+	padding: 8px 10px;
+	font-family: var(--font-body, inherit);
+	font-size: 12.5px;
+	line-height: 1.45;
+	max-width: 22em;
+	box-shadow: 0 10px 28px color-mix(in srgb, var(--text-heading) 22%, transparent);
+}`;
+
+function ensureTooltipTheme() {
+	if (typeof document === 'undefined' || document.getElementById('lattice-cm-tooltip-theme')) return;
+	const style = document.createElement('style');
+	style.id = 'lattice-cm-tooltip-theme';
+	style.textContent = TOOLTIP_CSS;
+	document.head.appendChild(style);
+}
 
 // Editor chrome variant that grows to fit its content instead of filling a
 // fixed-height pane — no inner scrollbar, so the whole markdown is visible at
@@ -327,6 +322,7 @@ const autoHeightTheme = EditorView.theme({
 // (default true) sets the initial state; `setAutocomplete(bool)` toggles it live
 // — the Drawing Board wires both to a workspace preference.
 export function createEditor({ parent, doc = '', onChange, onCursor, autoHeight = false, vocab, catalog, themes, autocomplete = true }) {
+	ensureTooltipTheme(); // global popup theme (reaches CM's detached tooltip layer)
 	// The autocomplete extension lives in a Compartment so the on/off preference
 	// can reconfigure it live (built once with the vocab; toggled to [] when off).
 	const autocompleteExt = latticeAutocomplete({ vocab, catalog, themes });
@@ -371,6 +367,19 @@ export function createEditor({ parent, doc = '', onChange, onCursor, autoHeight 
 			],
 		}),
 	});
+	// iOS Safari can paint the native selection highlight before it applies
+	// CodeMirror's injected theme — so the FIRST text selection shows the system
+	// (lavender) tint instead of the themed `--cm-selection`, and only corrects
+	// after a style recalc (e.g. a palette/mode toggle). Force one reflow on the
+	// next frame so the theme is applied up front, not only after a manual toggle.
+	if (typeof requestAnimationFrame === 'function') {
+		requestAnimationFrame(() => {
+			try {
+				view.requestMeasure();
+				void view.scrollDOM.offsetHeight; // force a style/layout flush
+			} catch {}
+		});
+	}
 	return {
 		getValue: () => view.state.doc.toString(),
 		setValue: (text) => view.dispatch({ changes: { from: 0, to: view.state.doc.length, insert: text } }),
