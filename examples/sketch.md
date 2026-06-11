@@ -59,6 +59,26 @@ Turn it on once with `class: sketch` in the front matter and it propagates to ev
 
 ---
 
+<!-- _class: verdict-grid -->
+<!-- _footer: "Every card layout gets the drawn box — and the chips ride the hand too" -->
+
+`One hand, every surface`
+
+## Not just cards-grid.
+
+- Build in-house
+  - [x] Certified
+  - [~] Residency
+  - [ ] Export
+  - Full control of every axis, and three engineer-quarters from having any of it.
+- Vendor West
+  - [x] Certified
+  - [x] Residency
+  - [x] Export
+  - Certified, in-region, and self-serve on every axis. Recommended.
+
+---
+
 <!-- _class: piechart -->
 <!-- _footer: "Charts — sketch reskins the heading and legend; the SVG marks stay clean" -->
 

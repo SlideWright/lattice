@@ -12004,8 +12004,10 @@ section.treatment-none {
  *   1. Handwriting type   — --sketch-font-display on headings,
  *                           --sketch-font-body on prose (base.tokens.css).
  *   2. Hand-drawn boxes    — asymmetric border-radius + an offset "ink"
- *                           stroke + a per-card micro-rotation, on the
- *                           card-family surfaces (cards-grid, cards-stack).
+ *                           stroke + a per-card micro-rotation, on every
+ *                           card-style layout's card surface (the
+ *                           CARD_STYLE_LAYOUTS family in
+ *                           lib/authoring/lint-core.js).
  *
  * Default `sketch` is FULL handwriting (headings + body). `sketch-clean-body`
  * opts body back to the clean --font-body for dense, text-heavy slides
@@ -12028,6 +12030,10 @@ section.treatment-none {
  * ink so it reads on every canvas (incl. dark, via the light-dark token). */
 section.sketch {
   --sketch-ink: var(--text-heading);
+  /* Component label pills / badges (state-marker chips, pricing tags,
+   * etc.) ride the hand body face too, so every glyph of prose on the
+   * slide is hand-drawn. Real inline `code` stays monospace (below). */
+  --pill-font: var(--sketch-font-body);
 }
 
 /* ── HANDWRITING TYPE ─────────────────────────────────────────────────
@@ -12081,19 +12087,33 @@ section.sketch.cards-grid > ol > li,
 section.sketch.cards-grid .card,
 section.sketch.cards-stack > ul > li,
 section.sketch.cards-stack > ol > li,
-section.sketch.cards-stack .card {
+section.sketch.cards-stack .card,
+section.sketch.verdict-grid > ul > li,
+section.sketch.decision > ol > li,
+section.sketch.matrix-2x2 > ol > li,
+section.sketch.pricing > ul > li,
+section.sketch.featured .feat-card,
+section.sketch.featured .sub-card,
+section.sketch.compare-prose .card,
+section.sketch.compare-prose > ol > li,
+section.sketch.citation-card > blockquote {
   border: 2px solid var(--sketch-ink) !important;
   border-radius: 255px 12px 225px 15px / 15px 225px 15px 255px !important;
   box-shadow: 2px 3px 0 -1px color-mix(in srgb, var(--sketch-ink) 30%, transparent);
 }
-/* Alternate the radius + a slight tilt per card so the grid reads
- * hand-placed rather than stamped. */
+/* Alternate the radius + a slight tilt per card so each grid of cards
+ * reads hand-placed rather than stamped. Scoped to the multi-card list
+ * layouts (single-card layouts get the drawn box above, no tilt). */
 section.sketch.cards-grid > ul > li:nth-child(2n),
 section.sketch.cards-grid > ol > li:nth-child(2n),
 section.sketch.cards-grid .card:nth-child(2n),
 section.sketch.cards-stack > ul > li:nth-child(2n),
 section.sketch.cards-stack > ol > li:nth-child(2n),
-section.sketch.cards-stack .card:nth-child(2n) {
+section.sketch.cards-stack .card:nth-child(2n),
+section.sketch.verdict-grid > ul > li:nth-child(2n),
+section.sketch.decision > ol > li:nth-child(2n),
+section.sketch.matrix-2x2 > ol > li:nth-child(2n),
+section.sketch.pricing > ul > li:nth-child(2n) {
   border-radius: 15px 225px 15px 255px / 225px 15px 255px 15px !important;
   transform: rotate(-0.5deg);
 }
@@ -12102,7 +12122,11 @@ section.sketch.cards-grid > ol > li:nth-child(3n),
 section.sketch.cards-grid .card:nth-child(3n),
 section.sketch.cards-stack > ul > li:nth-child(3n),
 section.sketch.cards-stack > ol > li:nth-child(3n),
-section.sketch.cards-stack .card:nth-child(3n) {
+section.sketch.cards-stack .card:nth-child(3n),
+section.sketch.verdict-grid > ul > li:nth-child(3n),
+section.sketch.decision > ol > li:nth-child(3n),
+section.sketch.matrix-2x2 > ol > li:nth-child(3n),
+section.sketch.pricing > ul > li:nth-child(3n) {
   border-radius: 225px 15px 255px 18px / 15px 255px 15px 225px !important;
   transform: rotate(0.4deg);
 }

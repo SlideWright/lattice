@@ -339,8 +339,12 @@ in patch versions.
   modifier (`class: sketch` deck-wide, or `_class: <layout> sketch` per slide)
   that swaps Lattice into a hand-drawn register: felt-tip headings (Caveat), a
   legible hand-sans for prose (Shantell Sans), a wobbly accent underline, and
-  card surfaces (`cards-grid`, `cards-stack`) redrawn as sketched boxes
-  (asymmetric radius + offset ink stroke + per-card tilt). It is palette-blind —
+  the card surface of every card-style layout (`cards-grid`, `cards-stack`,
+  `verdict-grid`, `decision`, `matrix-2x2`, `pricing`, `featured`,
+  `compare-prose`, `citation-card`) redrawn as a sketched box (asymmetric radius
+  + offset ink stroke + per-card tilt). Every glyph of prose takes a hand face —
+  including label pills/badges (via the `--pill-font` seam); only real inline
+  `code` stays monospace. It is palette-blind —
   every stroke resolves through `var(--token)`, so any theme colours it. Default
   is full handwriting; `sketch-clean-body` returns prose to the clean engine face
   for text-dense slides. New tokens: `--sketch-font-display`, `--sketch-font-body`,

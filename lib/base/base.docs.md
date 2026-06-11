@@ -428,9 +428,14 @@ Equivalent to writing all three Marp suppression directives
 The hand-drawn **finish** — a deck-wide skin that swaps Lattice into a
 hand-drawn register: felt-tip headings (`--sketch-font-display`, Caveat),
 a legible hand-sans for prose (`--sketch-font-body`, Shantell Sans), a
-wobbly accent underline on the slide heading, and card surfaces
-(`cards-grid`, `cards-stack`) redrawn as sketched boxes — an asymmetric
-corner radius, an offset "ink" stroke, and a fractional per-card tilt.
+wobbly accent underline on the slide heading, and the card surface of
+**every card-style layout** (`cards-grid`, `cards-stack`, `verdict-grid`,
+`decision`, `matrix-2x2`, `pricing`, `featured`, `compare-prose`,
+`citation-card`) redrawn as a sketched box — an asymmetric corner radius,
+an offset "ink" stroke, and a fractional per-card tilt on the multi-card
+grids. Every glyph of prose takes a hand face — including component label
+pills (state-marker chips, pricing tags) via the `--pill-font` seam; only
+real inline `code` stays monospace, so it can't be misread.
 
 It is a **Finish-layer** modifier in the Function · Form · Substance ·
 Finish model: it changes type and box geometry, never colour. Every
@@ -453,6 +458,7 @@ Or per slide: `<!-- _class: cards-grid sketch -->`.
 | `sketch sketch-clean-body` | Keep hand headings + boxes; return prose to the clean `--font-body` for text-dense slides. |
 | `--sketch-ink` | The ink the boxes are drawn in (defaults to `--text-heading`); a theme override seam. |
 | `--sketch-font-display` / `--sketch-font-body` | The hand fonts; swap either to re-flavour the whole finish in one line. |
+| `--pill-font` | Re-pointed at the hand body face under `sketch` so label chips/badges read hand-drawn; override per theme to restore a clean label font. |
 
 **PDF-safe by design.** The look is pure type + `border-radius` geometry.
 A true "roughen" pass (SVG `feTurbulence` + `feDisplacementMap`) was
