@@ -19,7 +19,7 @@ import { sql } from '@codemirror/lang-sql';
 import { yaml } from '@codemirror/lang-yaml';
 import { bracketMatching, HighlightStyle, indentOnInput, LanguageDescription, LanguageSupport, StreamLanguage, syntaxHighlighting } from '@codemirror/language';
 import { languages } from '@codemirror/language-data';
-import { EditorState } from '@codemirror/state';
+import { Compartment, EditorState } from '@codemirror/state';
 import { drawSelection, EditorView, highlightActiveLine, highlightActiveLineGutter, keymap, lineNumbers } from '@codemirror/view';
 import { tags as t } from '@lezer/highlight';
 import { latticeAutocomplete } from './complete.js';
@@ -323,8 +323,14 @@ const autoHeightTheme = EditorView.theme({
 // autocompletion — component names + modifiers inside `<!-- _class: … -->`,
 // theme names in front matter, and more. All optional; without them only the
 // map region completer (self-sufficient from the baked basemaps) is live, so
-// the playground / Specimen editors keep working unchanged.
-export function createEditor({ parent, doc = '', onChange, onCursor, autoHeight = false, vocab, catalog, themes }) {
+// the playground / Specimen editors keep working unchanged. `autocomplete`
+// (default true) sets the initial state; `setAutocomplete(bool)` toggles it live
+// — the Drawing Board wires both to a workspace preference.
+export function createEditor({ parent, doc = '', onChange, onCursor, autoHeight = false, vocab, catalog, themes, autocomplete = true }) {
+	// The autocomplete extension lives in a Compartment so the on/off preference
+	// can reconfigure it live (built once with the vocab; toggled to [] when off).
+	const autocompleteExt = latticeAutocomplete({ vocab, catalog, themes });
+	const autocompleteComp = new Compartment();
 	const listener = EditorView.updateListener.of((u) => {
 		if (u.docChanged && onChange) onChange(u.state.doc.toString());
 		if (onCursor && (u.docChanged || u.selectionSet)) {
@@ -355,8 +361,9 @@ export function createEditor({ parent, doc = '', onChange, onCursor, autoHeight 
 				// `_class:` directives, theme names in front matter, slot skeletons,
 				// and region names inside map slides (static vocab, from the page's
 				// catalog/vocab/themes or the baked basemaps). All deterministic, no
-				// model call; inert outside its context.
-				latticeAutocomplete({ vocab, catalog, themes }),
+				// model call; inert outside its context. In a Compartment so the
+				// workspace preference can switch it off/on live.
+				autocompleteComp.of(autocomplete ? autocompleteExt : []),
 				latticeTheme,
 				...(autoHeight ? [autoHeightTheme] : []),
 				keymap.of([indentWithTab, ...defaultKeymap, ...historyKeymap]),
@@ -369,6 +376,9 @@ export function createEditor({ parent, doc = '', onChange, onCursor, autoHeight 
 		setValue: (text) => view.dispatch({ changes: { from: 0, to: view.state.doc.length, insert: text } }),
 		focus: () => view.focus(),
 		destroy: () => view.destroy(),
+		// Toggle deck-grammar autocomplete live (workspace preference). Reconfigures
+		// the compartment to the built extension or nothing.
+		setAutocomplete: (on) => view.dispatch({ effects: autocompleteComp.reconfigure(on ? autocompleteExt : []) }),
 		// Move the cursor to (1-based) line `n` and scroll it into view. Clamped
 		// to the document. Used by the Drawing Board's preview->editor sync.
 		goToLine: (n) => {

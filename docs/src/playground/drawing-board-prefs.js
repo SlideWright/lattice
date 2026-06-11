@@ -24,6 +24,9 @@ export const PREFS = {
   // How delete behaves: an inline "Delete?" confirm in the row, or an optimistic
   // removal with an Undo toast (no gate, fully reversible for a few seconds).
   deleteStyle: { key: 'lattice-db-delete-style', def: 'confirm',  values: ['confirm', 'undo'] },
+  // Deck-grammar autocomplete in the editor (component names, modifiers, theme
+  // names, skeletons, map regions, …). On by default; off silences the popup.
+  autocomplete: { key: 'lattice-db-autocomplete', def: 'on',      values: ['on', 'off'] },
 };
 
 export function getPref(name) {

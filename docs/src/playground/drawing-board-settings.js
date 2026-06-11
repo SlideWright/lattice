@@ -136,6 +136,8 @@ function workspaceSection() {
   ws.append(prefRow('historyCap', 'Auto checkpoints kept per deck', null, ['10', '30', '100', 'All'],
     () => { try { window.__dbStore?.applyHistoryCap?.(); } catch {} }));
   ws.append(prefRow('deleteStyle', 'Deleting a deck', null, ['Asks to confirm', 'Undo toast']));
+  ws.append(prefRow('autocomplete', 'Editor autocomplete', null, ['On', 'Off'],
+    (v) => { try { window.__dbEditor?.setAutocomplete?.(v === 'on'); } catch {} }));
   return ws;
 }
 
