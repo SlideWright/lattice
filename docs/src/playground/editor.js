@@ -189,6 +189,30 @@ const latticeTheme = EditorView.theme({
 		fontSize: '13.5px',
 		color: 'var(--text-body)',
 		backgroundColor: 'var(--bg)',
+		// ── Editor contrast tokens ───────────────────────────────────────────────
+		// The cursor-line and text-selection highlights were both a flat low-alpha
+		// wash of --accent (active line 6%, selection 22%). That left the active
+		// line near-invisible on every palette (WCAG band-contrast ~1.06–1.16) and
+		// the selection faint on the low-chroma / warm light palettes. These named
+		// tokens are the single tunable contract: the active line bumps to a clearly
+		// visible band (free — alpha too low to touch text legibility), while the
+		// selection keeps its existing 22% fill (so body text stays legible on the
+		// worst low-contrast palette, cuoio-light — no accessibility regression) and
+		// gains a defining 1px accent edge: the definition a heavier fill can't buy
+		// without hurting legibility. A downstream theme can override any of them.
+		'--cm-active-line': 'color-mix(in srgb, var(--accent) 12%, transparent)',
+		'--cm-active-gutter': 'color-mix(in srgb, var(--accent) 18%, transparent)',
+		'--cm-selection': 'color-mix(in srgb, var(--accent) 22%, transparent)',
+		'--cm-selection-edge': 'color-mix(in srgb, var(--accent) 45%, transparent)',
+		'--cm-match': 'color-mix(in srgb, var(--accent) 26%, transparent)',
+		// Autocomplete popup. The panel reused --bg (identical to the editor) with a
+		// plain --border edge, so in light mode it floated with no visible boundary
+		// (border-vs-bg ~1.21 on indaco-light), and the detail/type hint reused
+		// --text-muted, which drops to WCAG ~2.5 on the warm light palettes. A
+		// muted-blended border lifts the panel edge to ~1.87; a body-blended detail
+		// colour lifts the hint to ~3.85 while staying secondary to the label.
+		'--cm-pop-border': 'color-mix(in srgb, var(--border) 45%, var(--text-muted))',
+		'--cm-detail': 'color-mix(in srgb, var(--text-muted) 50%, var(--text-body))',
 	},
 	// On touch devices, iOS Safari auto-zooms the page when you focus an input
 	// whose font is under 16px. Bump the editable surface to 16px on coarse
@@ -208,13 +232,18 @@ const latticeTheme = EditorView.theme({
 		border: 'none',
 		borderRight: '1px solid var(--border)',
 	},
-	'.cm-activeLine': { backgroundColor: 'color-mix(in srgb, var(--accent) 6%, transparent)' },
-	'.cm-activeLineGutter': { backgroundColor: 'color-mix(in srgb, var(--accent) 8%, transparent)', color: 'var(--accent)' },
+	'.cm-activeLine': { backgroundColor: 'var(--cm-active-line)' },
+	'.cm-activeLineGutter': { backgroundColor: 'var(--cm-active-gutter)', color: 'var(--accent)' },
 	'&.cm-focused .cm-cursor': { borderLeftColor: 'var(--accent)' },
-	'.cm-selectionBackground, &.cm-focused .cm-selectionBackground, ::selection': {
-		backgroundColor: 'color-mix(in srgb, var(--accent) 22%, transparent)',
+	// The fill stays moderate (legibility-safe); the inset edge gives the band the
+	// crisp definition a heavier fill would cost in text contrast. ::selection (the
+	// native fallback before drawSelection paints) keeps the plain fill.
+	'.cm-selectionBackground, &.cm-focused .cm-selectionBackground': {
+		backgroundColor: 'var(--cm-selection)',
+		boxShadow: 'inset 0 0 0 1px var(--cm-selection-edge)',
 	},
-	'.cm-matchingBracket': { backgroundColor: 'color-mix(in srgb, var(--accent) 18%, transparent)', outline: 'none' },
+	'::selection': { backgroundColor: 'var(--cm-selection)' },
+	'.cm-matchingBracket': { backgroundColor: 'var(--cm-match)', outline: 'none' },
 	// Autocomplete popup (region/group-name + class completion). CodeMirror's
 	// default is a white panel with a bright-blue selected row and a white info
 	// card — jarring on the dark editor and off-brand in light mode. Re-theme it
@@ -222,10 +251,10 @@ const latticeTheme = EditorView.theme({
 	// palette/mode. (Same vehicle CodeMirror's own default theme uses, so these
 	// override it; the tooltip renders inside .cm-editor, so the theme reaches it.)
 	'.cm-tooltip.cm-tooltip-autocomplete': {
-		border: '1px solid var(--border)',
+		border: '1px solid var(--cm-pop-border)',
 		borderRadius: '8px',
 		backgroundColor: 'var(--bg)',
-		boxShadow: '0 10px 28px color-mix(in srgb, var(--text-heading) 22%, transparent)',
+		boxShadow: '0 12px 30px color-mix(in srgb, var(--text-heading) 30%, transparent)',
 		overflow: 'hidden',
 	},
 	'.cm-tooltip-autocomplete > ul': {
@@ -250,7 +279,7 @@ const latticeTheme = EditorView.theme({
 		color: 'var(--on-accent)',
 	},
 	'.cm-completionDetail': {
-		color: 'var(--text-muted)',
+		color: 'var(--cm-detail)',
 		fontStyle: 'italic',
 	},
 	'.cm-tooltip-autocomplete > ul > li[aria-selected] .cm-completionDetail': {
@@ -259,7 +288,7 @@ const latticeTheme = EditorView.theme({
 	},
 	// The side info card (the white box in the report).
 	'.cm-tooltip.cm-completionInfo': {
-		border: '1px solid var(--border)',
+		border: '1px solid var(--cm-pop-border)',
 		borderRadius: '8px',
 		backgroundColor: 'var(--bg-alt)',
 		color: 'var(--text-body)',
