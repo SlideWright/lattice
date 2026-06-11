@@ -330,6 +330,18 @@ in patch versions.
 
 ### Added
 
+- **`agenda` gains five interchangeable styles + page references.** The default
+  is now **`ledger`** — a contents page with hand-leadered rows and an optional
+  right-aligned page reference (end any item with an inline-code `` `p.15` ``).
+  Four opt-in style modifiers swap the structure: **`circles`** (numbers in drawn
+  rings), **`rail`** (numbered nodes on a vertical journey line), **`cards`**
+  (boxed rows), and **`checks`** (a progress checklist — with `progress-N`, past
+  items get a tick, the current one an arrow, future ones an empty box). All five
+  are palette-blind and compose with `progress-N`; the `sketch` finish re-skins
+  each by hand (wobbled rings/cards/boxes, a wavy rail and active rule, hand
+  arrow/tick) by swapping only mark shapes, never colour. **Changed:** a bare
+  `agenda` slide now renders as the leadered ledger rather than the former plain
+  ruled list — same markdown, new look.
 - **Editor autocomplete is now a workspace preference (Settings → Workspace).**
   A new on/off toggle (on by default) silences the deck-grammar completion popup
   for authors who'd rather type without it. Persisted in localStorage like the

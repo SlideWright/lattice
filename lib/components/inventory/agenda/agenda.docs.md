@@ -6,13 +6,14 @@
 
 **Tags** `agenda-setting` · `overview` · `onboarding` · `kickoff`
 
-Use as the second slide of any multi-section deck. Numbers are generated; authors just write the section titles.
+Use as the second slide of any multi-section deck. Numbers are generated; authors just write the section titles. Five interchangeable styles — the default `ledger` (a contents page with optional page references), plus `circles`, `rail`, `cards`, and `checks` — all compose with the `progress-N` 'you are here' modifier.
 
 ## When to use
 
 - **Second slide of the deck.** Right after the title, before the first section. Orients the audience and sets the cadence of what's coming.
 - **Three to six sections.** Sweet spot is four. Past six sections the list crowds and the audience stops counting. Roll up or split the deck.
 - **Reuse with progress variants.** Drop the same agenda between sections with `progress-N` to show how far through the deck the room is. Lightweight wayfinding.
+- **Pick a style, optionally with page refs.** The default `ledger` reads as a contents page; add `circles`, `rail`, `cards`, or `checks` to change the structure. On `ledger`, end an item with an inline-code page ref — e.g. `` `p.15` `` — to print a right-aligned page number with a leader; omit it for just number + title.
 
 ## When NOT to use
 
@@ -154,6 +155,70 @@ Same wayfinding pattern on a six-section agenda — current position at the sixt
 4. Migration plan
 5. Risks and mitigations
 6. Decision and next steps
+```
+
+### `circles` — Style · circles
+
+Each section number sits in a drawn ring; with `progress-N` the current ring fills with the accent. A calmer, more graphic take on the contents page.
+
+```markdown
+<!-- _class: agenda circles progress-3 -->
+
+## Where we are now.
+
+1. The four-layer model
+2. Component manifests
+3. The shipped components
+4. Discovery — scaffolder & snippets
+5. What ships next
+```
+
+### `rail` — Style · rail
+
+Numbered nodes threaded on a vertical journey line — reads as moving down the deck. The active node fills with the accent.
+
+```markdown
+<!-- _class: agenda rail progress-3 -->
+
+## Where we are now.
+
+1. The four-layer model
+2. Component manifests
+3. The shipped components
+4. Discovery — scaffolder & snippets
+5. What ships next
+```
+
+### `cards` — Style · cards
+
+Each section is a boxed row; the current card fills with the accent wash and takes the accent border.
+
+```markdown
+<!-- _class: agenda cards progress-3 -->
+
+## Where we are now.
+
+1. The four-layer model
+2. Component manifests
+3. The shipped components
+4. Discovery — scaffolder & snippets
+5. What ships next
+```
+
+### `checks` — Style · checks
+
+A progress checklist: with `progress-N`, sections already covered get a tick, the current one an arrow, and upcoming ones an empty box — the whole journey-state at a glance.
+
+```markdown
+<!-- _class: agenda checks progress-3 -->
+
+## Where we are now.
+
+1. The four-layer model
+2. Component manifests
+3. The shipped components
+4. Discovery — scaffolder & snippets
+5. What ships next
 ```
 
 ## Universal modifiers

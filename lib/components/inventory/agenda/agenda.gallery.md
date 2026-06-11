@@ -20,11 +20,11 @@ Auto-numbered table of contents for the deck.
 
 ## What this review covers.
 
-1. Where Q2 landed against plan — slide 3
-2. The enterprise renewal shortfall — slide 8
-3. What we are changing in Q3 — slide 14
-4. The resourcing ask — slide 21
-5. Risks we are watching — slide 27
+1. Where Q2 landed against plan `p.3`
+2. The enterprise renewal shortfall `p.8`
+3. What we are changing in Q3 `p.14`
+4. The resourcing ask `p.21`
+5. Risks we are watching `p.27`
 
 
 ---
@@ -114,16 +114,87 @@ Auto-numbered table of contents for the deck.
 
 ---
 
+<!-- _class: agenda circles progress-3 -->
+<!-- _footer: "Style · circles · agenda circles" -->
+
+## Where we are now.
+
+1. The four-layer model
+2. Component manifests
+3. The shipped components
+4. Discovery — scaffolder & snippets
+5. What ships next
+
+
+---
+
+<!-- _class: agenda rail progress-3 -->
+<!-- _footer: "Style · rail · agenda rail" -->
+
+## Where we are now.
+
+1. The four-layer model
+2. Component manifests
+3. The shipped components
+4. Discovery — scaffolder & snippets
+5. What ships next
+
+
+---
+
+<!-- _class: agenda cards progress-3 -->
+<!-- _footer: "Style · cards · agenda cards" -->
+
+## Where we are now.
+
+1. The four-layer model
+2. Component manifests
+3. The shipped components
+4. Discovery — scaffolder & snippets
+5. What ships next
+
+
+---
+
+<!-- _class: agenda checks progress-3 -->
+<!-- _footer: "Style · checks · agenda checks" -->
+
+## Where we are now.
+
+1. The four-layer model
+2. Component manifests
+3. The shipped components
+4. Discovery — scaffolder & snippets
+5. What ships next
+
+
+---
+
+<!-- _class: agenda progress-4 -->
+<!-- _footer: "Stress test · agenda" -->
+
+## Where we are now.
+
+1. Why we're here — the problem we set out to solve `p.3`
+2. Where the business landed against plan `p.9`
+3. The proposal on the table `p.16`
+4. Migration plan and sequencing `p.24`
+5. Risks and the mitigations we're funding `p.31`
+6. The decision and immediate next steps `p.38`
+
+
+---
+
 <!-- _class: agenda dark -->
 <!-- _footer: "Composition: dark · agenda dark" -->
 
 ## What this review covers.
 
-1. Where Q2 landed against plan — slide 3
-2. The enterprise renewal shortfall — slide 8
-3. What we are changing in Q3 — slide 14
-4. The resourcing ask — slide 21
-5. Risks we are watching — slide 27
+1. Where Q2 landed against plan `p.3`
+2. The enterprise renewal shortfall `p.8`
+3. What we are changing in Q3 `p.14`
+4. The resourcing ask `p.21`
+5. Risks we are watching `p.27`
 
 
 ---
@@ -133,11 +204,11 @@ Auto-numbered table of contents for the deck.
 
 ## What this review covers.
 
-1. Where Q2 landed against plan — slide 3
-2. The enterprise renewal shortfall — slide 8
-3. What we are changing in Q3 — slide 14
-4. The resourcing ask — slide 21
-5. Risks we are watching — slide 27
+1. Where Q2 landed against plan `p.3`
+2. The enterprise renewal shortfall `p.8`
+3. What we are changing in Q3 `p.14`
+4. The resourcing ask `p.21`
+5. Risks we are watching `p.27`
 
 
 ---
@@ -147,11 +218,11 @@ Auto-numbered table of contents for the deck.
 
 ## What this review covers.
 
-1. Where Q2 landed against plan — slide 3
-2. The enterprise renewal shortfall — slide 8
-3. What we are changing in Q3 — slide 14
-4. The resourcing ask — slide 21
-5. Risks we are watching — slide 27
+1. Where Q2 landed against plan `p.3`
+2. The enterprise renewal shortfall `p.8`
+3. What we are changing in Q3 `p.14`
+4. The resourcing ask `p.21`
+5. Risks we are watching `p.27`
 
 
 ---

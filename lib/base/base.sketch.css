@@ -257,7 +257,6 @@ section.sketch.obligation-matrix table {
 section.sketch.compare-table td,
 section.sketch.obligation-matrix td,
 section.sketch.list-tabular > ol > li,
-section.sketch.agenda > ol > li,
 section.sketch.list.principles > ol > li {
   position: relative;
   border-bottom-color: transparent;
@@ -266,7 +265,6 @@ section.sketch.list-tabular > ol > li:first-child { border-top-color: transparen
 section.sketch.compare-table td::after,
 section.sketch.obligation-matrix td::after,
 section.sketch.list-tabular > ol > li::after,
-section.sketch.agenda > ol > li::after,
 section.sketch.list.principles > ol > li:not(:last-child)::after {
   content: "";
   position: absolute;
@@ -371,10 +369,76 @@ section.sketch.checklist > :is(ul, ol) {
   gap: var(--sp-xs);
 }
 
-/* Agenda "you are here" pointer — a hand-drawn chevron under the finish
- * (bowed arms), replacing the clean geometric one. The active-row chevron
- * ::after (agenda.styles.css) out-specifies the sketch wave ::after, so the
- * active row shows the pointer and the rest keep their wavy rules. */
+/* ── agenda under the sketch finish ────────────────────────────────────────
+ * The five agenda styles (ledger default + circles/rail/cards/checks) are
+ * structured in agenda.styles.css. The finish (a) swaps the mark SHAPES to
+ * hand-drawn — the bowed arrow, looser tick, wavy rail — by redefining the
+ * --ag-* tokens; (b) sets the numerals in the hand display face; and (c)
+ * wobbles the drawn geometry (rings, cards, boxes) + bends the active rule
+ * and the rail into pen strokes. Colour never changes here, so every palette
+ * still colours it. */
 section.sketch.agenda {
-  --agenda-marker: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 16'%3E%3Cpath d='M3 2.8 Q5.4 5 8 8 Q5.2 11.2 2.8 13.4' fill='none' stroke='%23000' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  --ag-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 18'%3E%3Cpath d='M2 9 Q9 8.5 16 9 M12.5 3 Q19 6 21.5 9 Q19 12 12.5 15' fill='none' stroke='%23000' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  --ag-check: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M2.4 8.6 Q4.6 11.2 5.8 12.8 Q8.8 6 13.6 2.2' fill='none' stroke='%23000' stroke-width='2.7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  --ag-rail: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 7 140'%3E%3Cpath d='M3.5 0 Q1.3 12 3.7 23 Q5.7 35 3.2 47 Q1.4 58 3.6 70 Q5.6 82 3.3 94 Q1.3 105 3.7 117 Q5.5 128 3.5 140' fill='none' stroke='%23000' stroke-width='2.6' stroke-linecap='round'/%3E%3C/svg%3E");
+}
+/* Numerals in the hand display face (harmless on the markless ::before of
+ * checks/active-ledger, which carry no text). */
+section.sketch.agenda > ol > li::before { font-family: var(--sketch-font-display); }
+
+/* Ledger — the active "you are here" rule bends into a pen stroke. Scoped to
+ * ledger only (:not the styled variants): checks reuses the active row's
+ * ::after for its arrow at the same nth-child, so an unscoped rule would
+ * overwrite that arrow with this horizontal wave strip. */
+section.sketch.agenda:not(.circles):not(.rail):not(.cards):not(.checks).progress-1 > ol > li:nth-child(1)::after,
+section.sketch.agenda:not(.circles):not(.rail):not(.cards):not(.checks).progress-2 > ol > li:nth-child(2)::after,
+section.sketch.agenda:not(.circles):not(.rail):not(.cards):not(.checks).progress-3 > ol > li:nth-child(3)::after,
+section.sketch.agenda:not(.circles):not(.rail):not(.cards):not(.checks).progress-4 > ol > li:nth-child(4)::after,
+section.sketch.agenda:not(.circles):not(.rail):not(.cards):not(.checks).progress-5 > ol > li:nth-child(5)::after,
+section.sketch.agenda:not(.circles):not(.rail):not(.cards):not(.checks).progress-6 > ol > li:nth-child(6)::after {
+  height: 7px;
+  -webkit-mask: var(--sketch-wave) repeat-x center / 140px 7px;
+  mask: var(--sketch-wave) repeat-x center / 140px 7px;
+}
+
+/* circles — hand-drawn rings with an offset ink + a per-row tilt. */
+section.sketch.agenda.circles > ol > li::before {
+  border-color: var(--sketch-ink);
+  border-radius: 47% 53% 49% 51% / 53% 47% 52% 48%;
+  box-shadow: 1.5px 2px 0 -1px color-mix(in srgb, var(--sketch-ink) 26%, transparent);
+}
+section.sketch.agenda.circles > ol > li:nth-child(odd)::before { transform: rotate(-2deg); }
+section.sketch.agenda.circles > ol > li:nth-child(even)::before { transform: rotate(2deg); }
+
+/* cards — wobbled corners + offset ink, alternating tilt. */
+section.sketch.agenda.cards > ol > li {
+  border-color: var(--sketch-ink);
+  border-radius: 255px 14px 235px 16px / 16px 235px 14px 255px;
+  box-shadow: 2px 3px 0 -1px color-mix(in srgb, var(--sketch-ink) 26%, transparent);
+}
+section.sketch.agenda.cards > ol > li:nth-child(odd) { transform: rotate(-0.4deg); }
+section.sketch.agenda.cards > ol > li:nth-child(even) { transform: rotate(0.4deg); }
+
+/* checks — hand-drawn boxes. The "current" arrow lives inside a small filled
+ * box; the bowed hand arrow muddies at that knockout scale, so checks keeps
+ * the crisp geometric arrow (a clean mark inside a drawn box reads fine). */
+section.sketch.agenda.checks {
+  --ag-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 18'%3E%3Cpath d='M2 9 H21 M14 3 L21 9 L14 15' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+section.sketch.agenda.checks > ol > li::before {
+  border-color: var(--sketch-ink);
+  border-radius: 5px 13px 6px 12px / 12px 6px 13px 5px;
+}
+section.sketch.agenda.checks > ol > li:nth-child(odd)::before { transform: rotate(-1.5deg); }
+section.sketch.agenda.checks > ol > li:nth-child(even)::before { transform: rotate(1.5deg); }
+
+/* rail — the journey line becomes a wavy pen stroke; nodes get hand corners. */
+section.sketch.agenda.rail > ol::before {
+  width: 6px; background-color: var(--sketch-ink);
+  -webkit-mask: var(--ag-rail) repeat-y center / 6px 140px;
+  mask: var(--ag-rail) repeat-y center / 6px 140px;
+}
+section.sketch.agenda.rail > ol > li::before {
+  border-color: var(--sketch-ink);
+  border-radius: 50% 47% 53% 49% / 49% 53% 47% 51%;
 }
