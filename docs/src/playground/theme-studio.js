@@ -19,12 +19,13 @@
 // there works here too). complete() ALWAYS resolves: it floors to the
 // deterministic core when no model is present.
 import { createArchitectModel } from './architect-model.js';
-import { SLIDE_BOX } from './frame-css.js';
 // The pure theme core (lib/theme/*) is CommonJS and its modules require() each
 // other, which Vite's dev server can't transform in arbitrary source files. So
 // we consume it through the esbuild bundle (tools/build-theme-core.js →
 // theme-core.generated.js): one ESM module, real named exports, the SAME maths
 // as the Node tooling + the WCAG gate. Rebuild with `npm run theme-core:build`.
+import { deleteAsset, listAssets, putAsset } from './asset-store.js';
+import { SLIDE_BOX } from './frame-css.js';
 import {
   askMessages,
   auditBoth,
@@ -32,6 +33,7 @@ import {
   deriveTheme,
   STARTERS,
   serializeTheme,
+  themeAsset,
   validateEssentials,
 } from './theme-core.generated.js';
 
@@ -148,6 +150,8 @@ export function initThemeStudio(config) {
     copy: root.querySelector('.studio-copy'),
     download: root.querySelector('.studio-download'),
     code: root.querySelector('.studio-code'),
+    save: root.querySelector('.studio-theme-save'),
+    library: root.querySelector('.studio-theme-library'),
     // AI tier — one conversational box
     aiPrompt: root.querySelector('.studio-ai-prompt'),
     aiAsk: root.querySelector('.studio-ai-ask'),
@@ -535,8 +539,66 @@ export function initThemeStudio(config) {
     refreshAiStatus();
   }
 
+  // ── Library (Workbench asset store) ──────────────────────────────────────
+  async function saveToLibrary() {
+    const name = slugify(els.name ? els.name.value : 'studio');
+    try {
+      const asset = themeAsset({ name, label: state.label, essentials: state.essentials, css: state.css });
+      await putAsset(asset);
+      setStatus(`Saved “${name}” to your library.`);
+      renderLibrary();
+    } catch (e) {
+      setStatus('Save failed: ' + (e.message || e), true);
+    }
+  }
+  function loadAsset(asset) {
+    if (asset.essentials) state.essentials = { ...asset.essentials };
+    state.label = asset.label || asset.name;
+    if (els.name) els.name.value = asset.name;
+    syncFields();
+    run();
+    setStatus(`Loaded “${asset.name}” from library.`);
+  }
+  async function renderLibrary() {
+    if (!els.library) return;
+    let assets = [];
+    try {
+      assets = await listAssets('theme');
+    } catch {
+      els.library.innerHTML = '<p class="studio-lib-empty">Library unavailable (private mode?).</p>';
+      return;
+    }
+    els.library.innerHTML = '';
+    if (assets.length === 0) {
+      els.library.innerHTML = '<p class="studio-lib-empty">No saved themes yet. Craft one, then “Save current”.</p>';
+      return;
+    }
+    for (const a of assets) {
+      const row = document.createElement('div');
+      row.className = 'studio-lib-item';
+      const load = document.createElement('button');
+      load.type = 'button';
+      load.className = 'studio-lib-load';
+      load.textContent = a.name;
+      load.title = `Load ${a.name}`;
+      load.addEventListener('click', () => loadAsset(a));
+      const del = document.createElement('button');
+      del.type = 'button';
+      del.className = 'studio-lib-del';
+      del.textContent = '×';
+      del.title = `Delete ${a.name}`;
+      del.addEventListener('click', async () => {
+        await deleteAsset(a.id);
+        renderLibrary();
+      });
+      row.append(load, del);
+      els.library.appendChild(row);
+    }
+  }
+
   // ── Actions ─────────────────────────────────────────────────────────────
   function wireActions() {
+    els.save?.addEventListener('click', saveToLibrary);
     els.copy?.addEventListener('click', async () => {
       try {
         await navigator.clipboard.writeText(state.css);
@@ -586,6 +648,7 @@ export function initThemeStudio(config) {
   buildFields();
   buildStarters();
   wireActions();
+  renderLibrary();
   resumeAuthIfPending(); // also calls refreshAiStatus()
 
   function whenReady(cb) {

@@ -461,6 +461,58 @@
 /* ── Faculty switch (Theme Studio ⇄ Layout Studio) ───────────────────────── */
 /* `.studio { display:grid }` beats the UA [hidden] rule, so restate it. */
 .studio[hidden] { display: none; }
+
+/* ── Library (the Workbench asset store) ─────────────────────────────────── */
+.studio-lib-head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+	margin-bottom: 10px;
+}
+.studio-lib-head .studio-h2 { margin: 0; }
+.studio-lib-save { flex: 0 0 auto; padding: 5px 12px; }
+.studio-library {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+.studio-lib-empty {
+	font-size: 12px;
+	color: var(--text-muted);
+	margin: 0;
+}
+.studio-lib-item {
+	display: grid;
+	grid-template-columns: 1fr auto;
+	gap: 6px;
+}
+.studio-lib-load {
+	text-align: left;
+	padding: 6px 10px;
+	border: 1px solid var(--border);
+	border-radius: var(--radius-sm);
+	background: var(--bg);
+	color: var(--text-body);
+	font: inherit;
+	font-size: 12.5px;
+	cursor: pointer;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+.studio-lib-load:hover { border-color: var(--accent); color: var(--accent); }
+.studio-lib-del {
+	width: 30px;
+	border: 1px solid var(--border);
+	border-radius: var(--radius-sm);
+	background: var(--bg);
+	color: var(--text-muted);
+	font-size: 16px;
+	line-height: 1;
+	cursor: pointer;
+}
+.studio-lib-del:hover { border-color: #b26a00; color: #b26a00; }
 .wb-faculty {
 	display: flex;
 	gap: 4px;

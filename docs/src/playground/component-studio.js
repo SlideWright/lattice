@@ -15,6 +15,7 @@
 // preview palette is borrowed from the Theme Studio core so a component previews
 // on a real, contrast-clean theme without the author choosing one.
 
+import { deleteAsset, listAssets, putAsset } from './asset-store.js';
 import { SLIDE_BOX } from './frame-css.js';
 import {
   componentAsset,
@@ -77,6 +78,8 @@ export function initLayoutStudio(config) {
     copyCss: root.querySelector('.lstudio-copy-css'),
     copyManifest: root.querySelector('.lstudio-copy-manifest'),
     download: root.querySelector('.lstudio-download'),
+    save: root.querySelector('.lstudio-save'),
+    library: root.querySelector('.lstudio-library'),
     tabs: [...root.querySelectorAll('.studio-tab')],
   };
 
@@ -313,7 +316,71 @@ export function initLayoutStudio(config) {
     a.click();
     URL.revokeObjectURL(a.href);
   }
+  // ── Library (Workbench asset store) ──────────────────────────────────────
+  async function saveToLibrary() {
+    readFields();
+    try {
+      await putAsset(componentAsset({ css: state.css, manifest: currentManifest(), skeleton: state.skeleton }));
+      setStatus(`Saved “${slugify(state.name)}” to your library.`);
+      renderLibrary();
+    } catch (e) {
+      setStatus('Save failed: ' + (e.message || e), true);
+    }
+  }
+  function loadAsset(asset) {
+    const m = asset.manifest || {};
+    state.name = asset.name;
+    state.function = m.function || state.function;
+    state.form = m.form || state.form;
+    state.substance = m.substance || state.substance;
+    state.tags = Array.isArray(m.tags) ? m.tags.join(', ') : state.tags;
+    state.description = m.description || '';
+    state.css = asset.text || '';
+    state.skeleton = asset.skeleton || m.skeleton || '';
+    syncFields();
+    markActiveStarter(asset.name);
+    run();
+    setStatus(`Loaded “${asset.name}” from library.`);
+  }
+  async function renderLibrary() {
+    if (!els.library) return;
+    let assets = [];
+    try {
+      assets = await listAssets('component');
+    } catch {
+      els.library.innerHTML = '<p class="studio-lib-empty">Library unavailable (private mode?).</p>';
+      return;
+    }
+    els.library.innerHTML = '';
+    if (assets.length === 0) {
+      els.library.innerHTML = '<p class="studio-lib-empty">No saved components yet. Author one, then “Save current”.</p>';
+      return;
+    }
+    for (const a of assets) {
+      const row = document.createElement('div');
+      row.className = 'studio-lib-item';
+      const load = document.createElement('button');
+      load.type = 'button';
+      load.className = 'studio-lib-load';
+      load.textContent = a.name;
+      load.title = `Load ${a.name}`;
+      load.addEventListener('click', () => loadAsset(a));
+      const del = document.createElement('button');
+      del.type = 'button';
+      del.className = 'studio-lib-del';
+      del.textContent = '×';
+      del.title = `Delete ${a.name}`;
+      del.addEventListener('click', async () => {
+        await deleteAsset(a.id);
+        renderLibrary();
+      });
+      row.append(load, del);
+      els.library.appendChild(row);
+    }
+  }
+
   function wireActions() {
+    els.save?.addEventListener('click', saveToLibrary);
     els.copyCss?.addEventListener('click', () => copyText(state.css, 'Component CSS copied.'));
     els.copyManifest?.addEventListener('click', () => {
       const files = scaffoldFiles({ css: state.css, manifest: currentManifest(), skeleton: state.skeleton });
@@ -366,6 +433,7 @@ export function initLayoutStudio(config) {
   buildStarters();
   syncFields();
   wireActions();
+  renderLibrary();
 
   function whenReady(cb) {
     if (window.LatticePlayground) return cb();
