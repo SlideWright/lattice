@@ -35,6 +35,11 @@ describe('lint-core: detector helpers', () => {
     assert.equal(core.findSplitBodylessItem('- Title. body'), '- Title. body');
     assert.equal(core.findSplitBodylessItem('- Title\n  - body'), null);
   });
+  test('findOrderedInlineTitleBodyLine catches "1. **Title.** body", null when clean', () => {
+    assert.equal(core.findOrderedInlineTitleBodyLine('1. **Claim.** body here'), '1. **Claim.** body here');
+    assert.equal(core.findOrderedInlineTitleBodyLine('1. Claim\n   - body here'), null);
+    assert.equal(core.findOrderedInlineTitleBodyLine('1. 94%'), null); // bare number, no trailing body
+  });
 });
 
 describe('lint-core: isKnownModifier', () => {
@@ -69,6 +74,23 @@ describe('lint-core: lintTextWith rules', () => {
     assert.ok(f);
     assert.equal(f.severity, 'error');
     assert.equal(f.classToken, 'cards-grid');
+  });
+
+  test('rule 2 — card-style ORDERED inline title+body is also an error', () => {
+    const f = ruleFor(`${FM}<!-- _class: cards-grid -->\n\n## H\n\n1. **Claim.** inline body\n`, 'card-style-inline-title');
+    assert.ok(f, 'ordered `1. **Title.** body` on a card-style layout must be flagged');
+    assert.equal(f.severity, 'error');
+  });
+
+  test('rule 2b — unordered inline title+body on a ledger/numbered layout is an error', () => {
+    const f = ruleFor(`${FM}<!-- _class: kpi -->\n\n## H\n\n- **Platform licensing.** $1.2M — 3-year commitment.\n`, 'ledger-inline-title');
+    assert.ok(f, 'ledger layouts want a numbered list, not an unordered bold lead-in');
+    assert.equal(f.severity, 'error');
+    assert.equal(f.classToken, 'kpi');
+  });
+
+  test('rule 2b — a correctly authored numbered ledger slide is clean', () => {
+    assert.equal(ruleFor(`${FM}<!-- _class: kpi -->\n\n## H\n\n1. 94%\n   - label\n`, 'ledger-inline-title'), undefined);
   });
 
   test('rule 3 — bold in an ordered statement (principles) is an error', () => {

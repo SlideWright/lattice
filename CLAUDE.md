@@ -330,8 +330,8 @@ caught by the hook instead of by reviewer eyeballs.
   obligation-matrix, actors) opt DOWN to `--fs-body-compact` (13.5 pt).
   `--fs-hero` is the ONE big number on a slide; rows of comparable
   metrics use `--fs-h1` (48 pt). A few layouts use documented explicit
-  cqi sizes between tokens (split-statement / kpi.briefing supports at
-  38 pt, split-list watermark at 110 pt). Picking by "feel" or t-shirt
+  cqi sizes between tokens (split-panel pullquote / kpi.briefing supports at
+  38 pt, split-panel watermark at 110 pt). Picking by "feel" or t-shirt
   size (`fs-md` / `fs-lg`) is the legacy pattern; those names are
   retired. See `engineering/typography.md`.
 - **Avoid `:not(:has(...))` / `:is(:has(...), :has(...))` in theme CSS.**

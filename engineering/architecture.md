@@ -81,7 +81,7 @@ lines. Its job is:
    render the body via a small markdown-it-compatible converter, apply
    per-class scaffolding (header, footer, pagination ::after).
    Structured layouts (`cards-grid`, `cards-stack`, `compare-prose`,
-   `featured`, `split-list`, `stats`, etc. — full list below in
+   `featured`, `split-panel`, `stats`, etc. — full list below in
    [Layout categories: structured vs unstructured](#layout-categories-structured-vs-unstructured))
    rewrite their `ul`/`ol` body into purpose-built DOM the CSS targets;
    unstructured layouts pass through as plain semantic HTML.
@@ -110,8 +110,8 @@ lists the CSS styles.
 
 | Category | Classes | Post-processor |
 |---|---|---|
-| Structured | `cards-grid`, `cards-side`, `cards-stack`, `checklist`, `compare-prose`, `compare-code`, `featured`, `list-criteria`, `list-tabular`, `quadrant`, `radar`, `roadmap`, `split-list`, `stats`, `verdict-grid`, `word-cloud` | yes — `lattice-emulator.js` rewrites DOM |
-| Unstructured | `title`, `divider`, `subtopic`, `closing`, `content`, `diagram`, `quote`, `list`, `list-steps`, `timeline`, `big-number`, `image`, `code` | no — CSS-only |
+| Structured | `cards-grid`, `cards-stack`, `checklist`, `compare-prose`, `compare-code`, `featured`, `list-criteria`, `list-tabular`, `quadrant`, `radar`, `roadmap`, `split-panel`, `stats`, `verdict-grid`, `word-cloud` | yes — `lattice-emulator.js` rewrites DOM |
+| Unstructured | `title`, `divider`, `closing`, `content`, `diagram`, `quote`, `list`, `list-steps`, `big-number`, `image`, `code` | no — CSS-only |
 
 Modifiers (`dark`, `mirror`, image-specific `full` / `contain`, etc.)
 compose with both categories.
@@ -177,9 +177,8 @@ versa:
 
 The distinction that surprises people: `split-panels` lives in
 `lib/core/`, not with a component, because it is a *structural
-primitive* — six distinct components in five buckets (split-metric in
-evidence, split-compare in comparison, split-steps in progression,
-split-list/brief/statement in statement) opt into its left-anchor /
+primitive* — two distinct components in two buckets (`split-panel` in
+statement, `split-compare` in comparison) opt into its left-anchor /
 right-content panel mechanism, and they don't even share DOM class
 names. It is the same kind of thing as `split-slides`, not the same
 kind of thing as `roadmap.transform.js`. Different role → different

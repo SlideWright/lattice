@@ -138,8 +138,8 @@ delivered by the `\`label\`` inline-code paragraph modifier in
 - **Raw cqi font-sizes.** `font-size: 1.484375cqi` bypasses the token
   system. A few layouts legitimately need a size *between* tokens and
   use an explicit cqi value with a comment explaining why — the
-  half-canvas pull-quote (split-statement, 3.9583cqi = 38 pt, between h2
-  and h1), the split-list decorative watermark (11.46cqi = 110 pt, above
+  half-canvas pull-quote (split-panel pullquote, 3.9583cqi = 38 pt, between h2
+  and h1), the split-panel decorative watermark (11.46cqi = 110 pt, above
   hero), and the kpi.briefing supports (3.9583cqi = 38 pt, between h2 and
   h1). These are documented exceptions, not the norm. Undocumented
   sub-token rawness in tokens.css is a bug. Each of the three wraps its
@@ -179,7 +179,7 @@ the 11-token system shipped with, producing today's 12-token contract:
 
 A handful of layouts use explicit cqi sizes *between* tokens (see §4):
 the half-canvas pull-quote and kpi.briefing supports at 38 pt (between
-h2 and h1), and the split-list watermark at 110 pt (above hero). These
+h2 and h1), and the split-panel watermark at 110 pt (above hero). These
 are documented in their component CSS.
 
 ## 6 — Cross-references

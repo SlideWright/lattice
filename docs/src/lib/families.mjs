@@ -9,19 +9,19 @@
 // same orders are shipped to the client (component-browser.js) so the "Group
 // by" switch can re-group without a round trip.
 
-// Ordered families. Each component appears in exactly one; every one of the 58
+// Ordered families. Each component appears in exactly one; every one of the 53
 // components is covered (see test below in the page build). Keep split-* whole
 // and let "Charts & diagrams" be the broad data-viz family.
 export const FAMILY_DEFS = [
-	{ key: 'titles', label: 'Titles & breaks', members: ['title', 'divider', 'subtopic', 'closing'] },
+	{ key: 'titles', label: 'Titles & breaks', members: ['title', 'divider', 'closing'] },
 	{ key: 'statements', label: 'Statements', members: ['big-number', 'content', 'quote'] },
 	{ key: 'numbers', label: 'Numbers & KPIs', members: ['kpi', 'stats'] },
-	{ key: 'lists', label: 'Lists & inventories', members: ['list', 'list-tabular', 'checklist', 'agenda', 'principles', 'tldr', 'actors', 'glossary', 'list-steps', 'list-criteria'] },
-	{ key: 'cards', label: 'Cards', members: ['cards-grid', 'cards-side', 'cards-stack'] },
-	{ key: 'compare', label: 'Compare', members: ['before-after', 'compare-prose', 'compare-table', 'decision', 'matrix-2x2', 'redline', 'verdict-grid'] },
-	{ key: 'timelines', label: 'Timelines & roadmaps', members: ['timeline', 'roadmap'] },
-	{ key: 'charts', label: 'Charts & diagrams', members: ['journey', 'gantt', 'kanban', 'piechart', 'progress', 'quadrant', 'radar', 'state-chart', 'timeline-list', 'word-cloud', 'diagram'] },
-	{ key: 'splits', label: 'Split layouts', members: ['split-brief', 'split-list', 'split-statement', 'split-compare', 'split-steps', 'split-metric'] },
+	{ key: 'lists', label: 'Lists & inventories', members: ['list', 'list-tabular', 'checklist', 'agenda', 'actors', 'glossary', 'list-steps', 'list-criteria', 'logo-wall', 'q-and-a'] },
+	{ key: 'cards', label: 'Cards', members: ['cards-grid', 'cards-stack'] },
+	{ key: 'compare', label: 'Compare', members: ['compare-prose', 'compare-table', 'decision', 'matrix-2x2', 'redline', 'verdict-grid', 'pricing'] },
+	{ key: 'timelines', label: 'Timelines & roadmaps', members: ['timeline-list', 'roadmap'] },
+	{ key: 'charts', label: 'Charts & diagrams', members: ['journey', 'gantt', 'kanban', 'piechart', 'progress', 'quadrant', 'radar', 'state-chart', 'word-cloud', 'diagram', 'funnel', 'map'] },
+	{ key: 'splits', label: 'Split layouts', members: ['split-panel', 'split-compare'] },
 	{ key: 'codemath', label: 'Code & math', members: ['code', 'compare-code', 'math'] },
 	{ key: 'legal', label: 'Legal', members: ['authority-chain', 'citation-card', 'obligation-matrix', 'regulatory-update', 'statute-stack'] },
 	{ key: 'images', label: 'Images', members: ['featured', 'image'] },

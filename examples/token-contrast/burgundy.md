@@ -41,13 +41,13 @@ Body text at full strength for comparison. The eyebrow above and the subtitle li
 
 ## KPI labels and the footnote both use secondary ink.
 
-1. **94%**
+1. 94%
    - Signal-classification success
    - target 99%, gap is a known issue
-2. **18 min**
+2. 18 min
    - p99 decision close
    - target 20 min, beating target
-3. **114%**
+3. 114%
    - Net revenue retention
    - sustained above the 110% threshold
 
@@ -131,13 +131,13 @@ Body text at full strength for comparison. On the dark canvas the eyebrow and su
 
 ## KPI labels and footnote on the dark canvas.
 
-1. **94%**
+1. 94%
    - Signal-classification success
    - target 99%, gap is a known issue
-2. **18 min**
+2. 18 min
    - p99 decision close
    - target 20 min, beating target
-3. **114%**
+3. 114%
    - Net revenue retention
    - sustained above the 110% threshold
 

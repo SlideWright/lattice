@@ -39,6 +39,20 @@ in patch versions.
   `test/unit/palette/token-parity.test.js` gate that no palette falls back to
   the lattice cascade for a contract token, and `chart-contrast.test.js` now
   gates the chart palette of all 13 (was 3).
+- **Authoring validator catches two more inline-bold footguns.** The shared
+  lint engine (`lib/authoring/lint-core.js` — used by the `lint:deck` CLI, the
+  manifest `validate()` gate, and the Drawing Board / coach Architect panel) now
+  flags: (1) the **ordered** flavour of the card-style footgun
+  (`1. **Title.** body` on `cards-grid`/`cards-stack`/etc., not just the
+  unordered `- **Title.** body`), and (2) a new `ledger-inline-title` rule for
+  **ledger/numbered** layouts (`list-tabular`, `agenda`, `kpi`, `stats`,
+  `list-criteria`, `list-steps`, `timeline-list`, `state-chart`,
+  `authority-chain`, `regulatory-update`) authored as an unordered bold lead-in
+  (`- **Name.** value`) instead of the numbered ledger shape (`1. Name` /
+  `   - value`). These were the gaps that let broken authoring through the
+  commit gate and out of the coach. Existing decks/manifests/docs were swept
+  clean to satisfy the stricter rules.
+
 - **Playground — "Load a deck" drawer.** The playground's ⚙ insert menu is now a
   slide-in **Galleries** drawer (a labeled grid-icon button, not a gear, so its
   function reads as "browse + load a full deck"). It lists the repo's showcase

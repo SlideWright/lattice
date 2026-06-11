@@ -70,13 +70,13 @@ This produces output like:
 
 ```text
 001  title                           The decision framework, designed…
-002  split-list                     Three acts and five appendices.
+002  split-panel                     Three acts and five appendices.
 003  divider                         The shape of the design.
 004  content                         We need to protect sensitive data…
-019  split-list                     Every architecture is a set of bets.
+019  split-panel                     Every architecture is a set of bets.
 ```
 
-**Reference this manifest for every slide lookup.** When you want to find slide `split-list`, read the number from the manifest — do not guess.
+**Reference this manifest for every slide lookup.** When you want to find slide `split-panel`, read the number from the manifest — do not guess.
 
 Also run the same command against the marp-cli HTML to confirm slide numbering is identical:
 
@@ -117,7 +117,7 @@ view_image /tmp/lattice-slides/019.png   ← candidate
 
 | Class keyword       | Why it's risky                             |
 | ------------------- | ------------------------------------------ |
-| `split-list`       | Code-p and h5 placement in panel-left      |
+| `split-panel`       | Code-p and h5 placement in panel-left      |
 | `featured`          | extractCard plain-text title fallback      |
 | `list-criteria`     | Depth-aware `<li>` + `.crit-body` wrapping |
 | `cards-stack`       | Nested-list card parsing inside `.card`    |

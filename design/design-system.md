@@ -88,11 +88,11 @@ The four layers also correspond to **the four audiences** Lattice serves:
 
 | Function       | The audience leaves knowing…                       | Examples |
 |----------------|----------------------------------------------------|----------|
-| **Anchor**     | where they are in the deck                         | `title`, `divider`, `subtopic`, `closing` |
-| **Statement**  | one declarative claim                              | `big-number`, `quote`, `split-list`, `content` |
-| **Inventory**  | a parallel set of related items                    | `cards-grid`, `cards-stack`, `list`, `actors`, `principles`, `agenda`, `tldr`, `glossary`, `list-tabular`, `checklist` |
-| **Comparison** | how two or more options differ                    | `compare-prose`, `compare-code`, `compare-table`, `before-after`, `verdict-grid`, `decision`, `matrix-2x2` |
-| **Progression**| an ordered movement through stages or time        | `timeline`, `list-steps`, `list-criteria`, `roadmap`, `gantt`, `kanban` |
+| **Anchor**     | where they are in the deck                         | `title`, `divider`, `closing` |
+| **Statement**  | one declarative claim                              | `big-number`, `quote`, `split-panel`, `content` |
+| **Inventory**  | a parallel set of related items                    | `cards-grid`, `cards-stack`, `list`, `actors`, `agenda`, `glossary`, `list-tabular`, `checklist`, `q-and-a`, `logo-wall` |
+| **Comparison** | how two or more options differ                    | `compare-prose`, `compare-code`, `compare-table`, `verdict-grid`, `decision`, `matrix-2x2` |
+| **Progression**| an ordered movement through stages or time        | `list-steps`, `list-criteria`, `roadmap`, `gantt`, `kanban` |
 | **Evidence**   | data that supports the argument                    | `stats`, `kpi`, `chart-family` (progress, piechart, timeline-list), `radar`, `quadrant`, `word-cloud`, `diagram`, `code` |
 | **Imagery**    | a visual that carries its own meaning              | `image`, `featured` |
 
@@ -225,10 +225,10 @@ lib/components/cards-grid.json
   "variants": ["compact", "loose", "dark", "mirror", "accent", "numbered", "four", "three"],
   "slots": {
     "title":  { "selector": "h2",         "required": true,  "description": "Slide heading." },
-    "cards":  { "selector": "ul > li",    "required": true,  "description": "Each list item becomes one card. Lead each li with **Card Title.** then body text." },
+    "cards":  { "selector": "ul > li",    "required": true,  "description": "Each list item becomes one card. A top-level bullet is the card title (renders bold); an indented bullet underneath carries the body text." },
     "insight":{ "selector": "blockquote", "required": false, "description": "Optional key-insight panel above the cards." }
   },
-  "skeleton": "<!-- _class: cards-grid -->\n\n## Slide heading.\n\n- **First card title.** Body text for the first card, one sentence.\n- **Second card title.** Body text for the second card, one sentence.\n- **Third card title.** Body text for the third card, one sentence.\n- **Fourth card title.** Body text for the fourth card, one sentence.\n",
+  "skeleton": "<!-- _class: cards-grid -->\n\n## Slide heading.\n\n- First card title\n  - Body text for the first card, one sentence.\n- Second card title\n  - Body text for the second card, one sentence.\n- Third card title\n  - Body text for the third card, one sentence.\n- Fourth card title\n  - Body text for the fourth card, one sentence.\n",
   "example": "examples/snippets/cards-grid.md",
   "anatomyBlock": "T7-card-grid-2x2"
 }
@@ -252,7 +252,7 @@ Variants don't all belong to one component. Some apply to every layout
 ("dark", "with-period"); some apply to most ("compact", "loose",
 "accent"); some apply to a family of layouts ("checks-*" for the
 state-bearing layouts, "canvas" for charts); some are strictly per-layout
-("mirror" for split-list, "four" for cards-grid). The manifest model
+("watermark" for split-panel, "four" for cards-grid). The manifest model
 recognises four tiers:
 
 **Tier 1 — Universal (25 variants).** Apply to every component. Added
@@ -391,12 +391,18 @@ AI agents authoring decks get a discovery surface and a validation loop:
   loads in a single read. Generated alongside `components.md/.html` by
   `tools/build-docs-portal.js`.
 - **`npm run lint:deck -- <file>`** (`tools/lint-deck.js` →
-  `lib/authoring/lint.js`) — runs the markdown footgun checks
-  (card-style inline-title, ordered-list bold, class typos) against a
+  `lib/authoring/lint.js`) — runs the markdown footgun checks against a
   *draft* deck and emits structured, fix-oriented diagnostics with no
-  Chromium render. The fast edit→check loop. The per-manifest equivalents
-  of the same rules run in `validate()`; the repo-wide commit gate is
-  `test/unit/components/deck-authoring.test.js`.
+  Chromium render. The fast edit→check loop. The checks: card-style
+  inline-title (`- **Title.** body` *or* `1. **Title.** body` on
+  card-style layouts), ledger inline-title (`- **Name.** value` on a
+  ledger/numbered layout that wants `1. Name` / `   - value`), ordered-list
+  bold (a `**span**` inside a `principles` statement), split/number slot
+  bodyless items, and class typos. The per-manifest equivalents of the same
+  rules run in `validate()`; the repo-wide commit gate is
+  `test/unit/components/deck-authoring.test.js`. All checks live in the pure,
+  browser-safe `lib/authoring/lint-core.js` — the single source shared by the
+  CLI, `validate()`, and the Drawing Board / coach Architect panel.
 - **`AGENTS.md`** (repo root) — the vendor-neutral entrypoint pointing any
   agent at `design/skill.md`, the catalog, and the linter.
 
@@ -430,7 +436,7 @@ colors. See `design.md` §1.3 and `design/theming.md`.
 
 1. Pick `function.form` coordinates. Confirm they're sanctioned in
    §4's matrix; if not, design first.
-2. Write `lib/components/<name>.json` with the manifest fields.
+2. Write `lib/components/<bucket>/<name>/<name>.manifest.json` with the manifest fields.
 3. Implement the CSS in `lattice.css`.
 4. If `substance` is `structure`, add a post-processor in
    `lib/<name>.js` and wire into all three render paths.

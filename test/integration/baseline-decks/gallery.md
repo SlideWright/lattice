@@ -1055,16 +1055,16 @@ The first column is sticky workstream label; phase columns carry numbered chrome
 
 ## Where we are against the targets we set ourselves.
 
-1. **94%**
+1. 94%
    - Signal-classification success
    - target 99%, gap is "known issue"
-2. **18 min**
+2. 18 min
    - p99 decision close
    - target 20 min, beating target
-3. **18**
+3. 18
    - Decisions logged
    - target 340, gap is "cultural"
-4. **1**
+4. 1
    - Calibration cycles run
    - target 6, gap is "structural"
 
@@ -1088,13 +1088,13 @@ The first column is sticky workstream label; phase columns carry numbered chrome
 
 ## Who owns each part of the framework lifecycle.
 
-- **Signal custody** `Signal owner`
+- Signal custody `Signal owner`
   - Runs intake quality. Never tunes the weights — only picks which signals surface.
-- **Policy** `Framework operator`
+- Policy `Framework operator`
   - Owns scoring policy, calibration cadence, and the rollback playbook nobody has run. One person.
-- **Consumption** `Product team`
+- Consumption `Product team`
   - Holds scoring profiles; runs intake and decision-logging; finds the bugs first.
-- **Oversight** `Auditor`
+- Oversight `Auditor`
   - Reads the audit trail, cannot edit weights, and is the only role anyone fears — having read it once.
 
 ---
