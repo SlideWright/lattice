@@ -200,6 +200,31 @@ describe('lattice-engine: css emission (P1.1)', () => {
     assert.equal(eng.render('# A\n', 'ghost').css, '');
   });
 
+  // Regression (#192 default-flip broke dark mode): every `*-dark` theme is a
+  // thin wrapper — `@import '<base>'; :root{color-scheme:dark}` — so the store
+  // must resolve theme-to-theme imports recursively. Without it the wrapper's
+  // import hoisted as a dead `@import '<base>';` and the sheet collapsed to
+  // scaffold-only (~2 KB, no tokens) → unstyled near-black slides. Sweeps the
+  // REAL themes + dist/lattice.css so a new palette can't reintroduce it. See
+  // lib/engine/themes.js resolveThemeImports.
+  test('every real *-dark theme resolves its base import to a full sheet', () => {
+    const eng = createEngine();
+    const themeDir = path.join(ROOT, 'themes');
+    const files = fs.readdirSync(themeDir).filter((f) => f.endsWith('.css'));
+    for (const f of files) eng.addThemes([fs.readFileSync(path.join(themeDir, f), 'utf8')]);
+    eng.addThemes([fs.readFileSync(path.join(ROOT, 'dist', 'lattice.css'), 'utf8')]);
+    const darks = files.map((f) => f.replace(/\.css$/, '')).filter((n) => n.endsWith('-dark'));
+    assert.ok(darks.length >= 10, `expected the dark-wrapper set, got ${darks.length}`);
+    for (const name of darks) {
+      const css = eng.render('# A\n', name).css;
+      assert.match(css, /--fs-body\b/, `${name}: base tokens missing — collapsed sheet`);
+      assert.match(css, /light-dark\(/, `${name}: light-dark() missing — base not inlined`);
+      // No dead theme-name @import left behind (font url() imports are fine).
+      assert.doesNotMatch(css, /@import\s+['"][A-Za-z0-9_-]+['"]/, `${name}: unresolved theme-name @import`);
+      assert.ok(css.length > 100000, `${name}: sheet only ${css.length}B — collapsed`);
+    }
+  });
+
   // Regression: a `:root` token block must be relocated onto the slide section
   // (as Marpit's pack does), or cqi-valued tokens declared there resolve against
   // the viewport — fine on desktop Chromium, collapsed on mobile WebKit. See the
