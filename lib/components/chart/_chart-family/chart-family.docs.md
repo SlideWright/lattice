@@ -59,6 +59,44 @@ chart's interior.
 
 ---
 
+## Legend / key system
+
+A chart carries a **key** only when it encodes meaning by colour, symbol, or
+size — i.e. something the marks don't already spell out. That test sorts the
+13 members into three placements (full rationale + the per-chart catalog:
+`engineering/decisions/2026-06-11-chart-legend-system.md`):
+
+**Colour/size-categorical → right rail (70/30).** `piechart`, `radar`, `map`,
+`quadrant·cohort`, and `word-cloud`. A shared rule in `chart-family.css` lays
+the figure out as a `grid-template-columns: 70% 30%`: the chart is the hero
+centred in the 70% zone, the key a rail in the 30% zone **left-aligned at a
+fixed inset off the spine** (`--chart-legend-pad`) so the spine→key gap is
+identical chart-to-chart. A **gradient spine** (the figure's `::before` on the
+70/30 boundary, height `--chart-spine-h`) divides them. Labels **wrap** past
+`--chart-legend-max`; swatch size and label type are unified. `map` fills its
+zone; `word-cloud` packs its cloud to 62% and carries a vertical
+"size = frequency" ramp in the rail.
+
+**Wide diagram → bottom-centre key.** `roadmap` (status markers ✓/–/○/╱,
+emitted by `buildStatusLegend` for the states present; omitted only on
+`status`, which already labels every cell), `gantt` (a swatch+label status key
+reusing each bar's fill,
+emitted by `buildGanttChart`), and `journey` (actor + mood keys reordered to
+the foot of the board, CSS-only).
+
+**Self-labelling → no key.** `funnel`, `progress`, `kanban`, `timeline-list`,
+`state-chart`, and the non-cohort `quadrant` variants caption every
+band/bar/card/node in place (kanban & state-chart print a labelled status
+pill on each tile), so a separate key would be redundant.
+
+Tokens live on `section.chart-frame`: `--chart-canvas-share` / `--chart-rail-share`,
+`--chart-legend-pad` / `--chart-legend-max` / `--chart-legend-row-gap`,
+`--chart-spine` / `--chart-spine-w` / `--chart-spine-h`. The rail is pure CSS
+(all three render paths inherit it); the roadmap/gantt keys ride the shared
+`transformChartSection`, adding no slides, so cross-renderer parity holds.
+
+---
+
 ## Membership
 
 The closed set of layouts wrapped by chart-family is hard-coded in

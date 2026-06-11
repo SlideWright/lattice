@@ -11,7 +11,7 @@ Use to show what ships in each phase across multiple parallel workstreams. Cells
 ## When to use
 
 - **Phased delivery across workstreams.** When the question is what each team ships in each phase. Workstreams down the side, phases across the top, deliverables in the cells — the whole plan reads in one glance.
-- **State markers are the second channel.** Every cell can lead with `[x]` shipped, `[-]` in flight, `[ ]` planned, or `[/]` out of scope. The audience sees both 'what' and 'how it's going' without a separate status slide.
+- **State markers are the second channel.** Every cell can lead with `[x]` shipped, `[-]` in flight, `[ ]` planned, or `[/]` out of scope. The audience sees both 'what' and 'how it's going' without a separate status slide. A status key is emitted automatically below the grid for the markers present (suppressed only on the `status` variant, which already labels every cell).
 - **Phase headers carry meta pills.** Append `` `Q2 2026` `` to a phase header and the renderer anchors a meta pill on the right of the column. Use it for date, owner, or status tags that frame the phase.
 
 ## When NOT to use
@@ -72,7 +72,7 @@ Tints the phase columns as Horizon 1 / 2 / 3 (now / next / later) per the McKins
 
 `Three-horizon planning`
 
-## Where the framework invests across horizons — Horizon 3 has lived there since 2024.
+## Where the framework invests across horizons.
 
 | Workstream    | Horizon 1 `Now`          | Horizon 2 `Next`         | Horizon 3 `Later`         |
 | ------------- | ------------------------ | ------------------------ | ------------------------- |
@@ -80,8 +80,6 @@ Tints the phase columns as Horizon 1 / 2 / 3 (now / next / later) per the McKins
 | Scoring       | [x] Equal weights      | [-] Per-team calibration   | [ ] Per-decision profiles |
 | Decision Log  | [x] Append-only schema   | [x] Outcome auto-pairing | [ ] Auditor export        |
 | Adoption      | [x] One pilot team       | [/] Second team          | [ ] Org-wide enablement   |
-
-Horizons frame the read: H1 is core business, H2 is emerging, H3 is the option set.
 ```
 
 ### `status` — Status — heavy state treatment

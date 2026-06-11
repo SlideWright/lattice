@@ -37,7 +37,7 @@ Phased multi-workstream grid — phases across the top, workstreams down the sid
 
 `Three-horizon planning`
 
-## Where the framework invests across horizons — Horizon 3 has lived there since 2024.
+## Where the framework invests across horizons.
 
 | Workstream    | Horizon 1 `Now`          | Horizon 2 `Next`         | Horizon 3 `Later`         |
 | ------------- | ------------------------ | ------------------------ | ------------------------- |
@@ -45,8 +45,6 @@ Phased multi-workstream grid — phases across the top, workstreams down the sid
 | Scoring       | [x] Equal weights      | [-] Per-team calibration   | [ ] Per-decision profiles |
 | Decision Log  | [x] Append-only schema   | [x] Outcome auto-pairing | [ ] Auditor export        |
 | Adoption      | [x] One pilot team       | [/] Second team          | [ ] Org-wide enablement   |
-
-Horizons frame the read: H1 is core business, H2 is emerging, H3 is the option set.
 
 
 ---

@@ -24,9 +24,15 @@ section.map .map-figure {
   gap: 3cqi;
 }
 section.map .map-svg {
-  flex: 1 1 auto;
   min-width: 0;
-  height: 100%;
+  /* Width-driven (a world map is wide-short): FILL the 70% canvas zone so the
+   * map scales to the room it's actually given (it was pinned small at 56cqi).
+   * height:auto lets the aspect ratio set the height; max-height guards a tall
+   * two-line subtitle. */
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  max-height: 100%;
   display: block;
 }
 

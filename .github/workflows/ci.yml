@@ -135,11 +135,51 @@ jobs:
         with:
           path: ~/.cache/puppeteer
           key: puppeteer-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
-      - name: Install poppler-utils (for pdfinfo)
-        run: sudo apt-get update && sudo apt-get install -y poppler-utils
+      - name: Install poppler-utils (pdfinfo) + color emoji font
+        # fonts-noto-color-emoji: guarantees raw unicode emoji render in COLOR
+        # in the headless-Chromium PDF renders (the owned paths emit emoji as
+        # plain text, not twemoji <img>). The webfont @import in lattice.css is
+        # a portable bonus, but Chromium honors an installed emoji font far more
+        # reliably than an @font-face one. See engineering/gotchas.md.
+        run: sudo apt-get update && sudo apt-get install -y poppler-utils fonts-noto-color-emoji
       - run: npm ci
       - name: Integration tests
         run: npm run test:integration
+
+  # ── Engine visual parity — the owned lattice-engine must pixel-match Marp ──
+  # Rasterises every gallery slide through BOTH render engines and pixel-diffs
+  # them (tools/engine-parity.mjs); fails on any real divergence. The one
+  # intentional difference (Marp's twemoji <img> vs the engine's font-glyph
+  # emoji) is skipped per slide. This is the gate that lets the owned CSS emitter
+  # return safely (proposal P5): a regression vs Marp can't reach main unseen.
+  engine-parity:
+    needs: [changes, unit]
+    if: needs.changes.outputs.code == 'true'
+    runs-on: ubuntu-latest
+    name: engine-parity (node 22)
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Cache Puppeteer browser
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/puppeteer
+          key: puppeteer-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+      - name: Install color emoji font
+        run: sudo apt-get update && sudo apt-get install -y fonts-noto-color-emoji
+      - run: npm ci
+      - name: Engine visual parity (galleries + jargon)
+        run: npm run parity -- --galleries --jargon
+      - name: Upload diff artifacts on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: engine-parity-diffs
+          path: .scratch/parity/
+          if-no-files-found: ignore
 
   # ── Docs site build — docs (or engine) changes only ────────────────────
   # The deploy workflow (docs.yml) only builds on push to main, so PRs got no
@@ -173,16 +213,16 @@ jobs:
   # "pending" required check.
   ci:
     if: always()
-    needs: [lint, unit, integration, docs-build]
+    needs: [lint, unit, integration, engine-parity, docs-build]
     runs-on: ubuntu-latest
     steps:
       - name: Verify gate
         run: |
-          echo "lint=${{ needs.lint.result }} unit=${{ needs.unit.result }} integration=${{ needs.integration.result }} docs-build=${{ needs.docs-build.result }}"
+          echo "lint=${{ needs.lint.result }} unit=${{ needs.unit.result }} integration=${{ needs.integration.result }} engine-parity=${{ needs.engine-parity.result }} docs-build=${{ needs.docs-build.result }}"
           if [ "${{ needs.lint.result }}" != "success" ]; then
             echo "::error::lint failed"; exit 1
           fi
-          for r in "${{ needs.unit.result }}" "${{ needs.integration.result }}" "${{ needs.docs-build.result }}"; do
+          for r in "${{ needs.unit.result }}" "${{ needs.integration.result }}" "${{ needs.engine-parity.result }}" "${{ needs.docs-build.result }}"; do
             if [ "$r" != "success" ] && [ "$r" != "skipped" ]; then
               echo "::error::a required tier failed ($r)"; exit 1
             fi

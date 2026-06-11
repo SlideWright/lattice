@@ -132,7 +132,7 @@ flow locally. See `RELEASE.md` for the full contract and `tools/release.js`.
 
 ## Tests and the regression baseline
 
-- `npm test` — full unit suite (~4s, 1151 tests). Inner loop.
+- `npm test` — full unit suite (~4s, 1257 tests). Inner loop.
 - `npm run test:<scope>` — one slice (palette/mermaid/parsing/components/cli).
 - `npm run test:watch` — re-run on file change.
 - `npm run test:integration` — ~30s cold, ~0.2s warm (hash-keyed cache).
@@ -371,12 +371,41 @@ and inspect, **say so explicitly** rather than claim success (see below).
 Everything else on the old "did you lint / test / build / update the
 generated docs?" checklist is now the machine's job.
 
+## You CAN see the web app — run the docs site and screenshot it
+
+**The cloud sandbox can build, run, and screenshot the Astro docs site
+(landing, Drawing Board, Workbench, component pages) — do this; never
+claim a web-UI change is unverifiable here.** The full loop, the traps,
+and the per-route table live in `engineering/development.md` §
+"Previewing the docs site (Astro) + screenshots". The short version:
+
+```bash
+# 1. one-time: docs/ is a SEPARATE npm package (not a root workspace)
+cd docs && npm install
+# 2. serve — invoke the bin DIRECTLY (the `npm run dev` script trips
+#    `sh: astro: not found` in this sandbox); base path is /lattice
+nohup ./node_modules/.bin/astro dev --host 127.0.0.1 --port 4321 \
+  > /tmp/astro.log 2>&1 &   # wait for "ready"; routes 200 under /lattice/
+# 3. screenshot any route, then view the PNG with Read (renders inline)
+cd /home/user/lattice
+node tools/screenshot.js http://127.0.0.1:4321/lattice/drawing-board/ \
+  .scratch/shots/db.png --width 1440 --height 900
+```
+
+`tools/screenshot.js` drives the puppeteer-cached Chromium (`--no-sandbox`,
+auto-resolves the binary; `--full`/`--wait <sel>`/`--delay` available). Do
+NOT `pkill -f astro` from a shell whose own command line contains "astro"
+(it self-kills); stop the server by PID or port. See `engineering/gotchas.md`
+for each trap.
+
 ## When you can't see the result
 
-For visual changes (CSS, layouts, themes, gallery), tests verify code
-correctness, not visual correctness. If you cannot rebuild and inspect
-the PDF, **say so explicitly** rather than claim success. Hand off to
-the desktop session for the visual check.
+For **PDF** visual changes (CSS, layouts, themes, gallery), rebuild and
+rasterize for review (`tools/rasterize-for-review.sh`) — that works in the
+sandbox too. For **web-UI** changes, screenshot the running docs site (see
+the section just above). Only if a tool genuinely cannot run here — **say
+so explicitly** rather than claim success; don't assume it can't before
+trying.
 
 ## Visually spot-check any PDF you rebuild as a side effect
 

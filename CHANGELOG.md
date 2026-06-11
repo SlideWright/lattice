@@ -25,6 +25,152 @@ in patch versions.
 
 ## Unreleased
 
+### Added
+
+- **Drawing Board — Deck setup drawer.** A new config button beside the settings
+  chip opens a slide-in drawer for the deck's Marp front matter: theme, slide size
+  (16:9 / 4K / 4:3), page numbers, running header & footer, plus a default slide
+  class, math renderer (KaTeX / MathJax), and document language. The controls are
+  pre-filled from the deck's current front matter and write a managed `---` block
+  at the top of the source — so the Markdown body stays content-only, the values
+  persist across refreshes (they ride the deck source into IndexedDB), and an
+  exported `.md` finally carries `marp: true` + its directives instead of shipping
+  naked. The config chip lights when the deck carries non-theme front matter.
+- **Drawing Board — theme is now explicit + synced.** The top-bar palette picker,
+  the Deck setup drawer's theme select, and the editor's `theme:` front matter are
+  three views of one value: picking a palette writes `theme:` into the deck (no
+  more silent render-time override), editing a valid `theme:` updates the picker
+  and page chrome, and switching decks adopts each deck's theme. Only a registered
+  palette propagates — an unknown/typo theme is left in the source but never
+  applied (the deck can't render unstyled), with a caution note in the drawer. The
+  deck's theme now travels with an exported `.md`.
+
+### Fixed
+
+- **`radar` and `quadrant` now scale with the slide at any resolution.** Their
+  SVGs were ceilinged with a fixed `max-height: 360px`, so on a larger render
+  (e.g. `size: 4K`) the chart stayed pinned small while the cqi-driven type and
+  slide grew around it. The cap is now `50cqh` (50% of the slide height) — the
+  same 360px at HD but resolution-independent, so the chart fills its slot and
+  scales ~3× to 4K. A new render-based gate (`tools/check-svg-scaling.js`,
+  wired into the integration tier) renders a fixture at HD and 4K and asserts
+  each chart SVG scales, catching any future fixed-px cap. First step of the
+  chart responsiveness epic (#180).
+- **`lattice-engine` pagination now counts like marp-core.** A `paginate: false`
+  slide is still counted toward the page numbering, so the next slide reads its
+  true absolute position and the total reflects the whole deck (the engine had
+  renumbered after a hidden slide and undercounted the total — a deck with a
+  `_paginate: false` cover read "1" where marp reads "2"). Caught by the parity
+  sweep on the diagram gallery.
+- **`lattice-engine` now matches marp-core on fenced code, soft breaks, and
+  inline-math delimiters.** A full-corpus visual-parity sweep (the new
+  `tools/engine-parity.mjs`, which rasterises every gallery slide through both
+  engines and pixel-diffs them) caught three real divergences: (1) fenced code
+  rendered as flat monochrome (no `hljs-*` token spans); (2) soft line breaks
+  dropped their `<br>`, collapsing multi-line blockquotes (e.g. a math `stats`
+  slide's CI/p-value lines) onto one line; (3) inline-math `$…$` had no delimiter
+  guards, so currency prose ("$400M … up 28% … $18M") was swallowed as one math
+  span and garbled. The engine now wires highlight.js into markdown-it
+  (byte-identical spans to marp, Mermaid grammar included), sets `breaks: true`,
+  and guards the math delimiters (opening `$` not followed by whitespace, closing
+  `$` not preceded by whitespace nor followed by a digit). New direct dependency:
+  `highlight.js` (pinned to `^11.11.1` to match the copy marp-core bundles).
+- **Drawing Board / playground: decks with YAML front matter no longer render a
+  spurious blank leading slide on the marp engine.** `lib/playground/index.js`
+  forced the selected palette by prepending a `<!-- theme: … -->` comment, which
+  pushed a `---` front-matter fence off line 0 — Marpit then stopped parsing it as
+  front matter, emitting an empty leading slide and painting the directives as
+  body text. The theme directive is now injected *inside* the front matter when
+  present (a leading comment only when there is none). Caught by the parity sweep;
+  Drawing Board (docs-site) only.
+
+### Added
+
+- **`@slidewright/lattice/engine`** — an experimental, owned markdown→slide
+  engine (`lib/engine/`), the P1 core of the Marp-replacement effort
+  (`engineering/decisions/2026-06-10-marp-replacement-proposal.md`). Built on
+  `markdown-it` 14, it reproduces Marpit's slide/directive token contract so the
+  existing Lattice plugins and the transformer registry run on it unchanged, and
+  matches marp-core's per-section HTML structure across the full gallery corpus
+  (55/55 decks; twemoji is the one intentional divergence — emoji render via
+  font, not `<img class="emoji">`). It does **not** yet replace any shipping
+  render path (marp-cli, the playground, and the emulator are untouched). New
+  direct dependency: `markdown-it`.
+- **`lattice-engine` now emits a complete stylesheet (P1.1).** `render().css` is
+  no longer a stub: it composes an engine-owned scaffold with the selected
+  theme, resolving `@import 'lattice'` against the registered base palette and
+  honouring the `size:` directive's `@size` geometry (`lib/engine/css.js`). The
+  scaffold is modeled on Marpit's — load-bearing rules only
+  (slide box + `container-type`, pagination pseudo-element, `@page`/print
+  fidelity), emitted *correctly* (no `padding:inherit` on the pagination
+  number), so themes compose without the `!important` override layer marp-core's
+  defaults force. It also reproduces Marpit's one load-bearing CSS-pack step —
+  relocating each theme `:root { … }` token block onto the slide `:where(section)`
+  so cqi-valued tokens (`--sp-*`, …) resolve against the slide's
+  `container-type:size` container rather than the viewport; left on `:root` they
+  render fine on desktop Chromium but collapse on mobile WebKit (gaps → 0,
+  counters vanish). The marp-only baggage (twemoji img sizing, `marp-h1`
+  auto-scaling, full `div.marpit > section` selector prefixing, the `video`
+  webkit hack, `scroll-snap-align`) is deliberately absent. A deck now renders to
+  a styled PDF through the engine alone, with no marp-core in the loop.
+- **The docs playground can render through `lattice-engine` (P3, opt-in).** The
+  playground bundle now carries both engines; `window.LatticePlayground` gains
+  `setEngine('marp'|'lattice')` and an `engine` getter, and a `?engine=lattice`
+  query param selects the owned engine on load. The default stays marp-core, so
+  visitors and every existing gate are unchanged — but the Drawing Board now
+  doubles as a live A/B harness for the Marp-replacement engine. Themes register
+  on both engines, so switching needs no re-fetch.
+- **Drawing Board: export provenance + a visible build tag.** Because the two
+  engines render pixel-identically (the owned engine delegates CSS packing to
+  marp's, so a marp-core and a lattice-engine PDF differ only by the writer's
+  random PDF `/ID`), exports now record *which* engine produced them. PDF
+  (jsPDF) and PPTX exports stamp the document properties — `Creator`/`Subject`
+  carry the engine + Lattice version + build, and a structured `Keywords` string
+  (`engine=…; lattice=…; build=…; theme=…; mode=…; slides=…; src=…`) packs the
+  full context (the source field is a short FNV-1a hash of the deck markdown).
+  The vector Print path encodes the engine into the PDF title (the only field
+  Chromium lets us set). A matching `build <hash>` + live engine badge rides the
+  Architect header row (right-aligned, stacked) on **PR-preview deploys only**,
+  so a tester on a device can read off exactly which deploy + engine they loaded
+  without it crowding the topbar. Drawing Board (docs-site) only — no engine or
+  package change.
+- **The Workbench — Theme Studio (Faculty 1).** A new docs-site page
+  (`/workbench`) where you craft a palette from a handful of essential colours
+  and watch it derived, contrast-audited, and rendered live on a specimen deck,
+  then copy or download a droppable `themes/<name>.css`. Backed by a new pure,
+  dependency-free engine module **`lib/theme/`** (`color`, `derive`, `contrast`,
+  `serialize`, `starters`, `ai`): an essential set → the full ~100-token Lattice
+  contract, repaired contrast-aware to clear WCAG AA in both canvas modes. The
+  derivation + contrast maths are the SAME the Node tooling and the palette
+  contrast gate use (the gate now shares `lib/theme/color.js`).
+  - **AI tier (Phase 2):** one conversational box — *describe* a palette to
+    originate ("warm editorial, terracotta") or *ask for a change* ("cooler",
+    "navy accent") to adjust; the model infers which from your words (the
+    current palette is sent as context), and recent prompts return as
+    re-runnable chips. Uses the same on-device / OpenRouter model ladder the
+    Drawing Board uses (connection shared through `localStorage`). The model
+    only proposes an essential set; the deterministic derivation + contrast
+    gate dispose. Degrades cleanly with a "connect a model" prompt when none
+    is connected.
+  - **Responsive:** a Design · Preview · Contrast tab bar on small screens;
+    single-column reflow.
+
+  Docs-site feature + additive engine module — no change to existing layouts,
+  themes, or the render path.
+
+### Changed
+
+- **Color emoji now load as a webfont.** `lattice.css` adds `Noto Color Emoji`
+  to its Google Fonts `@import` so raw unicode emoji can render in color on the
+  owned render paths (`lattice-engine`, `lattice-emulator`), which emit emoji as
+  plain text rather than twemoji `<img>`. Because Chromium honors an *installed*
+  emoji font far more reliably than an `@font-face` one, CI and the cloud session
+  hook now also install `fonts-noto-color-emoji`; the SlideWright desktop app
+  must ensure a color emoji font is present in its WebView. The marp-cli /
+  marp-vscode paths still use twemoji and keep the `:not(.emoji)` carve-outs. See
+  `engineering/gotchas.md` "Color emoji needs an installed font on the owned
+  render paths".
+
 ### Removed
 
 - **Breaking: the Puter cloud tier is removed from the Drawing Board.** OpenRouter
@@ -342,6 +488,36 @@ in patch versions.
   arrow/tick) by swapping only mark shapes, never colour. **Changed:** a bare
   `agenda` slide now renders as the leadered ledger rather than the former plain
   ruled list — same markdown, new look.
+- **A shared legend rail for the colour-categorical charts, and a status key
+  for roadmap.** The four charts that encode meaning by colour — `piechart`,
+  `radar`, `map`, and `quadrant·cohort` — now share one legend treatment: a
+  deterministic **70/30 split** with the chart as the hero in a wide left zone,
+  the key a consistent right rail, each centred in its own zone, a gradient
+  **separator spine** on the boundary, and labels that **wrap** instead of
+  clipping (map's long names no longer truncate). Swatches and label type are
+  unified across all four, and the spine reads on both canvases. Separately, `roadmap` now emits a
+  **bottom-centre status key** (✓ shipped · – in flight · ○ planned · ╱ out of
+  scope) for the marker states actually present, so an emailed deck reader can
+  decode the symbols; it is omitted on the `status` variant (already labelled
+  per-cell) and `horizons` (its cards carry Now/Next/Later framing). And
+  `journey` — a wide board — moves its actor + mood keys from the top-left to
+  **bottom-centre** and centres the diagram vertically (all five variants).
+  `gantt` (status by bar colour) gains a bottom-centre **swatch + label** key
+  for the statuses present, each swatch reusing the bar's exact fill; and
+  `word-cloud` joins the 70/30 rail with a vertical **size = frequency** key in
+  the right zone. A consistency pass left-aligns every key at a fixed inset off
+  the spine (so the gap is identical chart-to-chart), lets `map` fill its zone
+  instead of a fixed width, keeps the `word-cloud` cloud clear of its divider,
+  opens up `journey`'s bottom keys, and re-centres the `funnel` bands (they
+  were drawn right-of-centre). New `--chart-legend-*` /
+  `--chart-spine-*` tokens on `section.chart-frame` are the override hooks. See
+  `engineering/decisions/2026-06-11-chart-legend-system.md` and the demo deck
+  `examples/chart-legends.md`.
+- **`roadmap·horizons` now shows the status key too.** The horizons grid sizes
+  to its cards (instead of stretching to fill the body) and the figure centres
+  the stack, so the bottom-centre ✓/–/○/╱ key sits in the freed space below the
+  cards — at full card density, light and dark. It was the one variant the key
+  skipped (#178).
 - **Editor autocomplete is now a workspace preference (Settings → Workspace).**
   A new on/off toggle (on by default) silences the deck-grammar completion popup
   for authors who'd rather type without it. Persisted in localStorage like the

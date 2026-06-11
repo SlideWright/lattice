@@ -22,6 +22,11 @@ const { test, describe } = require('node:test');
 const assert = require('node:assert/strict');
 const fs     = require('fs');
 const path   = require('path');
+// The WCAG sRGB luminance + contrast predicate lives in lib/theme/color.js so
+// the Theme Studio's live meter and contrast-aware derivation reuse THIS gate's
+// exact maths instead of a drifting copy. (Same functions, extracted; the
+// formula comment above documents what they compute.)
+const { contrastRatio } = require('../../../lib/theme/color.js');
 
 describe('contrast', () => {
   // ── Palette parser with light/dark mode awareness ───────────────────────
@@ -86,39 +91,9 @@ describe('contrast', () => {
   }
 
   // ── WCAG sRGB luminance + contrast ratio ────────────────────────────────
-  function hexToRgb(hex) {
-    const h = hex.trim().replace(/^#/, '');
-    if (h.length === 3) {
-      return [
-        parseInt(h[0] + h[0], 16),
-        parseInt(h[1] + h[1], 16),
-        parseInt(h[2] + h[2], 16),
-      ];
-    }
-    if (h.length === 6) {
-      return [
-        parseInt(h.slice(0, 2), 16),
-        parseInt(h.slice(2, 4), 16),
-        parseInt(h.slice(4, 6), 16),
-      ];
-    }
-    throw new Error(`not a hex color: ${hex}`);
-  }
-
-  function relativeLuminance(rgb) {
-    const linear = rgb.map(v => {
-      const c = v / 255;
-      return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
-    });
-    return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2];
-  }
-
-  function contrastRatio(hexA, hexB) {
-    const lA = relativeLuminance(hexToRgb(hexA));
-    const lB = relativeLuminance(hexToRgb(hexB));
-    const [hi, lo] = lA > lB ? [lA, lB] : [lB, lA];
-    return (hi + 0.05) / (lo + 0.05);
-  }
+  // hexToRgb / relativeLuminance / contrastRatio now come from
+  // lib/theme/color.js (imported at the top) — the single source the Theme
+  // Studio shares. The values they produce are unchanged.
 
   // ── Pair definitions ────────────────────────────────────────────────────
   // Each entry is a [fill-token, text-token] tuple. The contrast bar is

@@ -61,6 +61,65 @@ section.word-cloud .word-cloud-canvas {
   flex: 0 0 auto;
 }
 
+/* The cloud packs into the LEFT 70% of the canvas; a gradient spine at the
+ * boundary divides it from the "size = frequency" key in the right 30% rail —
+ * the same 70/30 split + spine the categorical charts use. */
+section.word-cloud .word-cloud-canvas::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: calc(var(--wc-cloud-frac, 0.68) * 100%);
+  transform: translate(-50%, -50%);
+  width: var(--chart-spine-w, 2px);
+  height: var(--chart-spine-h, 78%);
+  background: var(--chart-spine);
+  border-radius: var(--chart-spine-w, 2px);
+  pointer-events: none;
+}
+
+/* "size = frequency" key — word size encodes weight, an implicit mapping a
+ * reader can't quantify. A vertical A-ramp (large = more frequent) keys it,
+ * centred in the right rail. */
+section.word-cloud .wc-key {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  width: calc((1 - var(--wc-cloud-frac, 0.68)) * 100%);
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35em;
+  pointer-events: none;
+}
+section.word-cloud .wc-key-label {
+  font-family: var(--font-mono);
+  font-size: var(--fs-meta);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.2em;
+}
+section.word-cloud .wc-key-ramp {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.05em;
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--text-secondary);
+  line-height: 0.95;
+}
+section.word-cloud .wc-key-a--1 { font-size: var(--fs-body); }
+section.word-cloud .wc-key-a--2 { font-size: var(--fs-message); }
+section.word-cloud .wc-key-a--3 { font-size: var(--fs-emphasis); }
+section.word-cloud .wc-key-edge {
+  font-family: var(--font-mono);
+  font-size: var(--fs-meta);
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+
 section.word-cloud .wc-word {
   position: absolute;
   left: var(--wc-x);

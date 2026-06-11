@@ -3984,7 +3984,7 @@ Use for project plans with overlapping or staggered tasks. Each task is a bar on
 
 - **Overlapping work across lanes.** When tasks run in parallel across multiple workstreams and the audience needs to see who is busy when. The lane-stacked bars make concurrency visible at a glance.
 - **Span is the story.** Each bar's length encodes its duration. Use gantt when start dates, end dates, and overlap are what you want the audience to remember.
-- **Status pills add a second channel.** Tint bars with `done` / `live` / `at-risk` / `blocked` to layer health onto schedule. The plan reads as both 'when' and 'how it's going' in one chart.
+- **Status pills add a second channel.** Tint bars with `done` / `live` / `at-risk` / `blocked` to layer health onto schedule. The plan reads as both 'when' and 'how it's going' in one chart. Since the bars carry no status text, a swatch+label status key is emitted automatically below the chart for the statuses present.
 
 #### When NOT to use
 
@@ -5154,7 +5154,7 @@ Use to show what ships in each phase across multiple parallel workstreams. Cells
 #### When to use
 
 - **Phased delivery across workstreams.** When the question is what each team ships in each phase. Workstreams down the side, phases across the top, deliverables in the cells — the whole plan reads in one glance.
-- **State markers are the second channel.** Every cell can lead with `[x]` shipped, `[-]` in flight, `[ ]` planned, or `[/]` out of scope. The audience sees both 'what' and 'how it's going' without a separate status slide.
+- **State markers are the second channel.** Every cell can lead with `[x]` shipped, `[-]` in flight, `[ ]` planned, or `[/]` out of scope. The audience sees both 'what' and 'how it's going' without a separate status slide. A status key is emitted automatically below the grid for the markers present (suppressed only on the `status` variant, which already labels every cell).
 - **Phase headers carry meta pills.** Append `` `Q2 2026` `` to a phase header and the renderer anchors a meta pill on the right of the column. Use it for date, owner, or status tags that frame the phase.
 
 #### When NOT to use
@@ -5215,7 +5215,7 @@ Tints the phase columns as Horizon 1 / 2 / 3 (now / next / later) per the McKins
 
 `Three-horizon planning`
 
-## Where the framework invests across horizons — Horizon 3 has lived there since 2024.
+## Where the framework invests across horizons.
 
 | Workstream    | Horizon 1 `Now`          | Horizon 2 `Next`         | Horizon 3 `Later`         |
 | ------------- | ------------------------ | ------------------------ | ------------------------- |
@@ -5223,8 +5223,6 @@ Tints the phase columns as Horizon 1 / 2 / 3 (now / next / later) per the McKins
 | Scoring       | [x] Equal weights      | [-] Per-team calibration   | [ ] Per-decision profiles |
 | Decision Log  | [x] Append-only schema   | [x] Outcome auto-pairing | [ ] Auditor export        |
 | Adoption      | [x] One pilot team       | [/] Second team          | [ ] Org-wide enablement   |
-
-Horizons frame the read: H1 is core business, H2 is emerging, H3 is the option set.
 ```
 
 ##### `status` — Status — heavy state treatment
@@ -5544,7 +5542,7 @@ Use for qualitative summaries — retrospective themes, survey verbatims. Word s
 #### When to use
 
 - **Qualitative themes at a glance.** Retrospective summaries, survey verbatims, theme extraction, sentiment scans. The cloud lands what the corpus is about; the silhouette and the biggest words are the read.
-- **Weight is approximate, not exact.** Word size encodes relative frequency or weight, but the eye reads 'biggest' and 'second biggest' before any precise ratio. Reach for word-cloud when the rank matters more than the count.
+- **Weight is approximate, not exact.** Word size encodes relative frequency or weight, but the eye reads 'biggest' and 'second biggest' before any precise ratio. Reach for word-cloud when the rank matters more than the count. A 'size = frequency' key sits in the right rail to make the encoding explicit.
 - **Eight to twenty items.** Below eight the spiral looks bare and the layout wastes the canvas. Past about twenty the smallest words become unreadable. Trim the long tail or cap the cloud at a 'top 15' before authoring.
 
 #### When NOT to use

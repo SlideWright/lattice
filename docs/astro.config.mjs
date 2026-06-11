@@ -35,6 +35,10 @@ export default defineConfig({
 				// The Architect imports the repo's pure CommonJS authoring engines
 				// (lint-core, review-core, scorecard) so the browser runs the SAME
 				// checks as Node. Apply the CJS→ESM transform to all of lib/authoring/.
+				// (The Theme Studio's lib/theme core requires() across files, which
+				// this transform can't follow in dev, so it's consumed via the
+				// esbuild bundle theme-core.generated.js instead — see
+				// tools/build-theme-core.js.)
 				include: [/lib[/\\]authoring[/\\][\w-]+\.js$/, /node_modules/],
 				transformMixedEsModules: true,
 			},

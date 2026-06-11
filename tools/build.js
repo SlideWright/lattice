@@ -23,7 +23,8 @@
  *   7. canonical doc portal    tools/build-docs-portal.js (components.md/.json)
  *   8. landing tokens          tools/build-landing-tokens.js  (docs site palette CSS)
  *   9. playground bundle       tools/build-playground.js      (docs site browser engine)
- *  10. dist README            tools/build-dist-readme.js (indexes dist/; runs last)
+ *  10. theme-core bundle       tools/build-theme-core.js      (docs site Theme Studio core)
+ *  11. dist README            tools/build-dist-readme.js (indexes dist/; runs last)
  *
  * Gallery PDFs are NOT part of this build: they need Chromium, take tens
  * of seconds, and are regression artifacts rather than shipped source.
@@ -60,6 +61,7 @@ const STEPS = [
   { label: 'doc portal (components.md/.json)', script: 'build-docs-portal.js' },
   { label: 'landing tokens (docs site)', script: 'build-landing-tokens.js' },
   { label: 'playground bundle (docs site)', script: 'build-playground.js' },
+  { label: 'theme-core bundle (docs site)', script: 'build-theme-core.js' },
   // Last — it indexes the finished dist/ folder, so every other artifact
   // must already be (re)written before it runs.
   { label: 'dist README', script: 'build-dist-readme.js' },

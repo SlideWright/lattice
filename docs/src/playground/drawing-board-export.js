@@ -26,6 +26,56 @@ function safeName(name) {
 	return (name || 'deck').trim().replace(/[^\w.-]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60) || 'deck';
 }
 
+// ── Provenance metadata ───────────────────────────────────────────────────────
+// The marp-core and lattice-engine outputs are pixel-identical by design (the
+// engine delegates CSS theme-packing to marp's packer), so two exports are
+// byte-identical apart from the writer's random PDF /ID — indistinguishable by
+// eye OR by diff. Stamping each export with which engine + build produced it is
+// the only way to tell them apart after the fact. FNV-1a over the deck source
+// gives a short, dependency-free provenance hash so a PDF can be tied back to a
+// specific markdown.
+function shortHash(str) {
+	let h = 0x811c9dc5;
+	for (let i = 0; i < str.length; i++) {
+		h ^= str.charCodeAt(i);
+		h = Math.imul(h, 0x01000193);
+	}
+	return (h >>> 0).toString(16).padStart(8, '0');
+}
+
+function engineLabel(engine) {
+	return engine === 'lattice' ? 'lattice-engine' : 'marp-core';
+}
+
+// Derive the human-readable summary + machine-parseable keyword string the
+// exporters write into standard PDF/PPTX document properties. (jsPDF exposes no
+// public custom-/Info-key API, so the structured fields ride in `keywords`,
+// which every viewer surfaces under Document Properties.)
+function provenance(meta, slides) {
+	const m = meta || {};
+	const eng = engineLabel(m.engine);
+	const ver = m.version ? `Lattice ${m.version}` : 'Lattice';
+	const build = m.build ? ` (build ${m.build})` : '';
+	const theme = m.palette ? `${m.palette}/${m.mode || 'light'}` : '';
+	const src = m.source ? shortHash(m.source) : '';
+	const summary =
+		`Rendered by ${eng} · ${ver}${build}` +
+		(theme ? ` · theme ${theme}` : '') +
+		(slides ? ` · ${slides} slide${slides === 1 ? '' : 's'}` : '');
+	const keywords = [
+		`engine=${eng}`,
+		m.version && `lattice=${m.version}`,
+		m.build && `build=${m.build}`,
+		m.palette && `theme=${m.palette}`,
+		m.mode && `mode=${m.mode}`,
+		slides && `slides=${slides}`,
+		src && `src=${src}`,
+	]
+		.filter(Boolean)
+		.join('; ');
+	return { eng, summary, keywords };
+}
+
 function download(blob, filename) {
 	const url = URL.createObjectURL(blob);
 	const a = document.createElement('a');
@@ -87,11 +137,19 @@ async function rasterizeSection(section) {
 }
 
 // ── PDF (one-click image PDF) ─────────────────────────────────────────────────
-export async function exportPdf(frame, name, onStatus) {
+export async function exportPdf(frame, name, onStatus, meta) {
 	const sections = await sectionsOf(frame);
 	if (onStatus) onStatus('Preparing PDF…');
 	const { jsPDF } = await import('jspdf');
 	const pdf = new jsPDF({ orientation: 'landscape', unit: 'px', format: [1280, 720], compress: true });
+	const { eng, summary, keywords } = provenance(meta, sections.length);
+	pdf.setProperties({
+		title: (name || 'deck').trim(),
+		subject: summary,
+		author: 'Lattice Drawing Board',
+		keywords,
+		creator: `Lattice · ${eng}`,
+	});
 	for (let i = 0; i < sections.length; i++) {
 		if (onStatus) onStatus('Rendering slide ' + (i + 1) + ' of ' + sections.length + '…');
 		const png = await rasterizeSection(sections[i]);
@@ -102,11 +160,16 @@ export async function exportPdf(frame, name, onStatus) {
 }
 
 // ── PPTX (image-slides) ───────────────────────────────────────────────────────
-export async function exportPptx(frame, name, onStatus) {
+export async function exportPptx(frame, name, onStatus, meta) {
 	const sections = await sectionsOf(frame);
 	if (onStatus) onStatus('Preparing PowerPoint…');
 	const { default: PptxGenJS } = await import('pptxgenjs');
 	const pptx = new PptxGenJS();
+	const { eng, summary } = provenance(meta, sections.length);
+	pptx.title = (name || 'deck').trim();
+	pptx.subject = summary;
+	pptx.author = 'Lattice Drawing Board';
+	pptx.company = `Lattice · ${eng}`;
 	pptx.layout = 'LAYOUT_WIDE'; // 13.333 x 7.5in, 16:9 — matches the 1280x720 box
 	for (let i = 0; i < sections.length; i++) {
 		if (onStatus) onStatus('Rendering slide ' + (i + 1) + ' of ' + sections.length + '…');
@@ -118,9 +181,15 @@ export async function exportPptx(frame, name, onStatus) {
 }
 
 // ── Print (vector, selectable — the browser's own PDF engine) ─────────────────
-export function exportPrint(frame) {
+export function exportPrint(frame, meta) {
 	const win = frame?.contentWindow;
 	if (!win) throw new Error('Preview not ready yet.');
+	// Chromium's print-to-PDF carries only one document-property field we can set:
+	// the title (it hard-sets Producer/Creator itself). Encode the engine into it
+	// so a vector Print PDF is still tellable apart — it also becomes the suggested
+	// filename in the dialog, which is the behaviour authors expect.
+	const doc = frame.contentDocument;
+	if (doc && meta) doc.title = `${(meta.deck || 'deck').trim()} · ${engineLabel(meta.engine)}`;
 	win.focus();
 	win.print();
 }

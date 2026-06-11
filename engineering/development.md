@@ -49,7 +49,7 @@ a consumer needs Node 18 or 20, they pin to Lattice 1.x.
 | Script | Purpose |
 | --- | --- |
 | `build`, `build:gallery`, … | Rebuild one or all gallery PDFs |
-| `test` | Full unit suite (~4s, 1151 tests) |
+| `test` | Full unit suite (~4s, 1257 tests) |
 | `test:watch` | Re-run unit suite on file change |
 | `test:<scope>` | Scoped unit subset (`palette`/`mermaid`/`parsing`/`components`/`cli`) |
 | `test:integration` | Full integration suite (page-count + parity) |
@@ -57,6 +57,8 @@ a consumer needs Node 18 or 20, they pin to Lattice 1.x.
 | `test:all` | Unit + integration umbrella |
 | `test:coverage` | c8 over the unit suite |
 | `test:coverage:all` | c8 over unit + integration |
+| `bench` | tinybench render benchmark, marp-core vs lattice-engine (`-- --export` adds the rasterize tier, `-- --json` dumps machine-readable) |
+| `parity` | Visual engine-parity harness — rasterise a deck through both engines and pixel-diff per slide (`-- --galleries` / `-- --jargon` / `-- --dark`) |
 | `lint`, `lint:fix` | Biome check / Biome check --write |
 | `clean:scratch` | Delete `.scratch/*` entries older than 14 days |
 | `prepare` | Wires lefthook hooks on `npm install` |
@@ -76,9 +78,20 @@ test/integration/galleries/   emulator.{gallery,gallery-mermaid},
 test/integration/parity/      parity, deck-class-fm, chart-family
 test/integration/mermaid/     mermaid-smoke
 test/integration/screenshot/  screenshot
+test/benchmark/               engine-bench.mjs (npm run bench; not in npm test)
 test/helpers/                 render.js, pdf.js, palette.js
 test/fixtures/                small .md decks for integration
 ```
+
+`tools/engine-parity.mjs` (`npm run parity`) is the visual-parity harness — it
+rasterises every gallery slide through both render engines and pixel-diffs them,
+exiting non-zero on any real divergence (the one intentional difference, Marp's
+twemoji `<img>` vs the engine's font-glyph emoji, is skipped per slide). It is
+**a required CI gate** — the `engine-parity` job in `ci.yml` runs
+`npm run parity -- --galleries --jargon` on every code change, so the owned
+engine can't regress against marp-core unseen (it's the safety net for bringing
+the owned CSS emitter back, proposal P5). It is NOT in `npm test` or the pre-push
+hook (too slow for the inner loop); run it locally when changing `lib/engine/`.
 
 Each test file wraps its body in `describe('<file-basename>', () => {…})`
 so TAP output groups by file. Source of truth: `package.json` scripts
@@ -217,6 +230,69 @@ cast noise costs more readability than the type signal returns.
 Recommended VS Code extensions:
 - `biomejs.biome` — inline lint feedback from `biome.json`
 - `marp-team.marp-vscode` — preview `.md` decks
+
+## Previewing the docs site (Astro) + screenshots
+
+The docs site under `docs/` (Astro + Starlight) hosts the landing page, the
+**Drawing Board**, the **Workbench**, the **Playground**, and the component
+pages. **You can build, run, AND screenshot it in the cloud sandbox** — this
+is the visual-verification path for any web-UI change (the counterpart to
+`tools/rasterize-for-review.sh` for PDFs). Don't claim a web-UI change is
+unverifiable here; run the site and look.
+
+### The loop
+
+```bash
+# 1. ONE-TIME per sandbox: docs/ is a SEPARATE npm package, NOT a root
+#    workspace, so the root `npm install` does not cover it.
+cd docs && npm install
+
+# 2. Serve. Invoke the astro binary DIRECTLY — the `npm run dev` /
+#    `npm run start` scripts trip `sh: 1: astro: not found` in this sandbox
+#    (PATH quirk). Run the two sync steps first if you need fresh portal /
+#    playground assets; for most UI work they're already staged.
+npm run sync:portal --silent && npm run sync:playground --silent
+nohup ./node_modules/.bin/astro dev --host 127.0.0.1 --port 4321 \
+  > /tmp/astro.log 2>&1 &
+#   wait until /tmp/astro.log prints "ready"; the `base` is /lattice, so
+#   pages live under http://127.0.0.1:4321/lattice/… (trailing slash).
+
+# 3. Screenshot any route, then VIEW the PNG with the Read tool (renders
+#    inline) or SendUserFile.
+cd ..   # back to repo root (puppeteer lives in the ROOT node_modules)
+node tools/screenshot.js http://127.0.0.1:4321/lattice/drawing-board/ \
+  .scratch/shots/drawing-board.png --width 1440 --height 900
+```
+
+`tools/screenshot.js` drives the puppeteer-cached Chromium
+(`--no-sandbox`; resolves the binary from `CHROME_PATH` or the puppeteer
+cache). Flags: `--width`/`--height`, `--full` (full-page), `--wait <css>`
+(wait for a selector — useful for the Drawing Board's hydrated panels),
+`--delay <ms>`. Write PNGs under `.scratch/` (gitignored, 14-day GC).
+
+### Routes
+
+| Route | URL |
+| --- | --- |
+| Landing | `http://127.0.0.1:4321/lattice/` |
+| Drawing Board | `…/lattice/drawing-board/` |
+| Playground | `…/lattice/playground/` |
+| Components index | `…/lattice/components/` |
+
+Nav links are defined in `docs/src/components/TopBar.astro` (+ injected via
+`SocialIcons.astro`) — that's where a new top-level entry (e.g. the
+Workbench) is added.
+
+### Traps (full entries in `gotchas.md`)
+
+- **`docs/` is a separate package** → its own `npm install`; the root
+  install / SessionStart hook does not cover it.
+- **`npm run dev` → `sh: astro: not found`** → call
+  `./node_modules/.bin/astro` directly.
+- **`pkill -f astro` self-kills** the shell whose command line contains
+  "astro" → stop the server by PID or by port instead.
+- **Base path `/lattice`** → a bare `http://127.0.0.1:4321/` 404s; use the
+  `/lattice/…` prefix.
 
 ---
 
