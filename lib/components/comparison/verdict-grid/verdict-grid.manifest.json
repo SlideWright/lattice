@@ -1,6 +1,7 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "verdict-grid",
+  "families": ["state-markers"],
   "function": "comparison",
   "form": "grid",
   "substance": "structure",

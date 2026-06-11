@@ -65,6 +65,7 @@
     "build:check": "node tools/build.js --check",
     "new:theme": "node tools/new-theme.js",
     "new:slide": "node tools/new-slide.js",
+    "new:component": "node tools/new-component.js",
     "snippets:build": "node tools/build-snippets.js",
     "snippets:check": "node tools/build-snippets.js --check",
     "css:build": "node tools/build-css.js",

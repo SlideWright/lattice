@@ -785,15 +785,18 @@ describe('component-manifest', () => {
       }
     });
 
-    test('familyModifiersFor scopes modifiers by component name + bucket', () => {
+    test('familyModifiersFor scopes by manifest `families` (per-layout) + bucket', () => {
       const checks = ['checks-ringed', 'checks-knockout', 'checks-bold', 'checks-outline', 'checks-tonal', 'heat'];
-      // state-bearing layouts get the checkbox style variants + heat
-      assert.deepEqual(familyModifiersFor({ name: 'checklist', function: 'inventory' }), checks);
-      assert.deepEqual(familyModifiersFor({ name: 'verdict-grid', function: 'comparison' }), checks);
-      // chart components get `canvas`; roadmap is BOTH state-bearing and chart
+      // state-markers membership is declared per-layout via `families`
+      assert.deepEqual(familyModifiersFor({ name: 'checklist', function: 'inventory', families: ['state-markers'] }), checks);
+      assert.deepEqual(familyModifiersFor({ name: 'verdict-grid', function: 'comparison', families: ['state-markers'] }), checks);
+      // chart components get `canvas` by BUCKET (no manifest opt-in needed)
       assert.deepEqual(familyModifiersFor({ name: 'piechart', function: 'evidence', bucket: 'chart' }), ['canvas']);
-      assert.deepEqual(familyModifiersFor({ name: 'roadmap', function: 'progression', bucket: 'chart' }), [...checks, 'canvas']);
-      // unrelated layouts get nothing
+      // roadmap is BOTH: declares state-markers AND is in the chart bucket
+      assert.deepEqual(familyModifiersFor({ name: 'roadmap', function: 'progression', bucket: 'chart', families: ['state-markers'] }), [...checks, 'canvas']);
+      // a layout that declares no family and isn't bucket-scoped gets nothing —
+      // even if its name once matched the retired by-name list
+      assert.deepEqual(familyModifiersFor({ name: 'checklist', function: 'inventory' }), []);
       assert.deepEqual(familyModifiersFor({ name: 'title', function: 'anchor' }), []);
     });
 
