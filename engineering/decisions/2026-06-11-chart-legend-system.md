@@ -1,47 +1,38 @@
-# Chart legend system — the rail, the spine, the catalog
+# Chart legend system — the 70/30 rail, the spine, the catalog
 
 **Status:** implemented 2026-06-11.
 **Scope:** the four colour-categorical chart-family members
 (`piechart`, `radar`, `map`, `quadrant·cohort`), the `roadmap` status key,
-and the shared `.chart-frame` skeleton.
+and the shared `.chart-frame` skeleton. The chart family has **13** members;
+this note covers the ones that encode meaning by colour or symbol (the rest
+self-label — see the catalog).
 
 ## The complaint
 
-> "Some charts have legends. Other charts that should have a legend don't.
-> Charts with legends on the right don't have balance or a vertical
-> separator. Make them balanced (left or right) with a separator — Feng
-> shui — not forced to centre, because a right-side legend can't be. Legends
-> get consistent, appropriate space, can wrap if authors go long, must not
-> overpower but mustn't make you squint or be squished. Consistent legend
-> placement per chart category. The checkbox icons (roadmap) need a legend
-> too. Be mindful of header/footer/pagination overflow. Make sure we have
-> legends — the decks are emailed."
+> "Some charts have legends. Others that should don't. Right-side legends
+> have no balance and no separator. Use the same principle as a 70-30 flex
+> split and centre the content in its parent zone. Consistent legend
+> placement per chart category. Legends get appropriate space, can wrap if
+> authors go long, must not overpower but mustn't make you squint or be
+> squished. The checkbox icons (roadmap) need a legend too. Mind the
+> header/footer/pagination space. The decks are emailed."
 
-## What was actually wrong (baseline audit)
+## What was wrong (baseline audit)
 
-Rasterizing the chart bucket gallery surfaced one root cause behind every
-symptom: **the legend was a per-component afterthought.** Each chart that
-needs a key shipped its own ad-hoc `[figure][gap][legend]` flex row:
-
-| Chart | Gap | Separator | Legend width | Long-name behaviour |
-|---|---|---|---|---|
-| piechart | `sp-2xl` | none | `21–29cqi` | wrap |
-| radar | `sp-xl` | none | `auto` (floats) | wrap |
-| map | `3cqi` | none | `34cqi` | **clipped (ellipsis)** |
-| quadrant·cohort | `sp-lg` | none | `auto` (floats) | wrap |
-
-Because each was a *pair centred as a group with no anchor*, the legend hung
-in right-edge dead space. Four gaps, four swatch sizes, three font sizes,
-one chart silently clipping names, and `roadmap`'s symbol cells had no key
-at all.
+One root cause behind every symptom: **the legend was a per-component
+afterthought.** Each chart that needs a key shipped its own ad-hoc
+`[figure][gap][legend]` flex row — four different gaps, no separator, the key
+floating in right-edge dead space, the chart shoved off-centre (radar's rim
+labels even collided with where a separator would go), and `map` clipping
+long names. `roadmap`'s symbol cells had no key at all.
 
 ## Systems read — what kind of thing a legend is, and where it goes
 
 A legend is a **key**: it earns its place only when colour or symbol carries
-meaning the marks don't spell out. That test sorts the bucket *and* dictates
-placement.
+meaning the marks don't spell out. That test sorts all 13 members *and*
+dictates placement.
 
-**Colour-categorical → right rail (chart + spine + key):**
+**Colour-categorical → right rail (70/30):**
 - `piechart` (wedge ↔ category), `radar` (polygon ↔ series),
   `map` (region ↔ value), `quadrant·cohort` (hull ↔ cohort).
 
@@ -52,8 +43,8 @@ placement.
 
 **Self-labelling → the marks ARE the key (no legend, by design):**
 - `funnel`, `progress`, `gantt`, `kanban`, `timeline-list`, `state-chart` —
-  every band/bar/card/node is captioned in place; the status-pill
-  vocabulary is its own labelled key.
+  every band/bar/card/node is captioned in place; the status-pill vocabulary
+  is its own labelled key.
 - `word-cloud` — size encodes weight; the word is its own label.
 - `quadrant` (default/threshold/trail) — the four quadrant titles are the
   key, printed in-grid.
@@ -63,68 +54,70 @@ placement.
   imbalance is *vertical*, a separate concern (see follow-ups).
 
 So "make sure we have legends" is satisfied by guaranteeing every chart that
-encodes meaning by colour or symbol carries a world-class key, while the
-self-labelling charts stay clean. An emailed deck is readable because
-nothing relies on an un-keyed encoding.
+encodes by colour or symbol carries a world-class key, while the
+self-labelling charts stay clean.
 
-## The design: a balanced group, a gradient spine
+## The design: a 70 / 30 split, content centred in each zone
 
-A right-side legend *cannot* sit at the slide centre (the chart would have
-to slide off-axis to make room), so chasing a centred spine fights the
-content. The answer is **balance, not centring — Feng shui.** The figure is
-a content-sized flex row centred as one group: the chart keeps its own
-footprint and leans left, the key its capped width on the right, and the
-gradient spine between them anchors the pair.
+A right-side legend cannot sit at the slide centre (the chart would slide
+off-axis to make room), and a content-sized "balanced group" drifts with the
+legend's width — a long key shoves the chart left, a short key leaves it
+floating. The deterministic answer is a **70 / 30 split**: the chart is the
+hero in a wide left zone, the key a consistent right rail, and **each is
+centred in its own zone**. The composition is then stable regardless of the
+chart's footprint or the key's length, and the spine marks the boundary.
 
 ```
-┌───────────────── chart-body ─────────────────┐
-│                                                │
-│        chart canvas    |    legend rail        │
-│      (own footprint)  >|<   (wraps, capped)    │
-│                       >|<                       │
-│                    gradient spine               │
-└───────────────────────────────────────────────┘
-        the GROUP centres — chart leans left, key right
++------------------ chart-body ------------------+
+|                              |                  |
+|       chart canvas (70%)     |    key (30%)     |
+|     (centred in its zone)   >|<   (centred)     |
+|                             >|<                  |
+|                       gradient spine             |
++--------------------------------------------------+
+   each zone centres its own content; spine on the 70/30 line
 ```
 
 Five moves, each answering one line of the brief:
 
-1. **Balanced group, not a slide-centred chart.** `justify-content: center`
-   on a content-sized row: a wide chart with a short key and a narrow chart
-   with a long key both read as balanced. Variable-width legends never knock
-   the composition off; the right-edge dead space is gone.
+1. **A 70/30 split, content centred per zone.** `grid-template-columns: 70%
+   30%`; the chart `justify-self: center` in the wide zone, the key
+   `justify-self: center` in its rail. A wide chart with a short key and a
+   narrow chart with a long key render identically stable — variable legend
+   width never knocks the composition off. The chart is the hero at 70%; the
+   key is a calm, consistent rail.
 
-2. **A gradient spine between chart and key.** The separator is the legend's
-   `::before`, drawn in the gap to the chart's right — a pure-accent rule
-   that melts into the canvas top and bottom, a fixed generous height
-   centred on the key. It anchors the legend so it stops floating, and only
-   renders when a legend exists (no orphan rule). Quiet on light, luminous
-   on dark — verified on both canvases.
+2. **A gradient spine on the boundary.** The separator is the figure's
+   `::before` pinned to the 70/30 line — a pure-accent rule that melts into
+   the canvas top and bottom, with an **adaptive height (% of the body)** so
+   it never spills into header or footer. Deterministic: it does not move
+   with the key's width. Quiet on light, luminous on dark — verified on both.
 
-3. **Vertical centring that doesn't sit low.** `align-items: center` inside
-   a `.chart-body` that already centres its content puts the group on the
-   body's optical centre; the spine is the fixed anchor so balance reads
-   even when the key is short.
+3. **Vertical centring that doesn't sit low.** `align-items: center` inside a
+   `.chart-body` that already centres its content puts the assembly on the
+   body's optical centre; the spine is the fixed anchor.
 
-4. **Consistent, readable space that wraps.** One `--chart-legend-gap`, one
-   `--chart-legend-max` cap, one `--chart-legend-row-gap`, one swatch size.
-   Labels are body-compact (13.5pt) so nothing squints, the row rhythm so
-   nothing squishes, and labels **wrap** past the cap (map's clip-to-
-   ellipsis is gone). Capped width keeps the key from overpowering the data.
+4. **Consistent, readable space that wraps.** One `--chart-legend-max` cap,
+   one `--chart-legend-row-gap`, one swatch size. Labels are body-compact
+   (13.5pt) so nothing squints, the row rhythm so nothing squishes, and
+   labels **wrap** past the cap (map's clip-to-ellipsis is gone). The cap
+   (< the 30% rail) keeps the key from overpowering the data.
 
-5. **Maximised space, preserved gaps.** The chart keeps its full footprint
-   beside the key instead of being pinned small next to a floating legend.
+5. **The 70% zone clears the awkward cases.** A radar's rim axis labels paint
+   outside its square box; centred in a wide 70% zone they sit well clear of
+   the spine (the earlier centred-group put them on top of it). The cohort
+   quadrant, which floated left before, now centres cleanly in its zone too.
 
 ### Roadmap's bottom-centre status key
 
 The transform emits a key under the grid **only for the states actually
-present**, reusing the exact disc+masked-glyph recipe the cells use (one
-source of truth: a theme tuning `--mark-*` / `--state-color` updates both).
-It lives inside `.roadmap-figure`, so the chart-frame body wrap keeps it
-within the body — never spilling to the footer. Two variants opt out:
-`status` already prints the labels on every cell, and `horizons` is too
-vertically dense (its cards carry their own Now/Next/Later framing). Marker-
-less variants (swimlane, milestones) get no key automatically.
+present**, reusing the cells' exact disc+masked-glyph recipe (one source of
+truth: a theme tuning `--mark-*` / `--state-color` updates both). It lives
+inside `.roadmap-figure`, so the chart-frame body wrap keeps it within the
+body — never spilling to the footer. Two variants opt out: `status` already
+prints the labels on every cell, and `horizons` is too vertically dense (its
+cards carry their own Now/Next/Later framing). Marker-less variants get no
+key automatically.
 
 ## Tokens (the contract)
 
@@ -132,35 +125,36 @@ Set on `section.chart-frame`, overridable per chart:
 
 | Token | Default | Role |
 |---|---|---|
-| `--chart-legend-gap` | `var(--sp-2xl)` | gutter between canvas and rail |
-| `--chart-legend-max` | `30cqi` | rail width cap — labels wrap past it |
+| `--chart-canvas-share` | `70%` | the 70 of the 70/30 split |
+| `--chart-rail-share` | `30%` | the 30 — the key's rail |
+| `--chart-legend-max` | `25cqi` | key cap (< rail) — labels wrap past it |
 | `--chart-legend-row-gap` | `1cqi` | vertical rhythm between rows |
-| `--chart-legend-pad` | `var(--sp-lg)` | legend text inset off the spine |
-| `--chart-spine-h` | `27cqi` | spine height (consistent, centred) |
+| `--chart-spine-h` | `78%` | spine height (% of body, never spills) |
 | `--chart-spine-w` | `2px` | spine thickness |
 | `--chart-spine` | accent→transparent fade | the gradient rule |
 
 `map` widens its own basemap (`width: 56cqi` — a world map wants more than a
-pie); the spine stays anchored to the canvas|rail boundary, a deliberate
-divider regardless.
+pie); the 70% zone holds it. Any chart can retune its split via the share
+tokens.
 
 ## Iteration log
 
 Rounds on the shared system, judged against pie · radar · map ·
 cohort-quadrant + a long-label stress slide + roadmap, light and dark:
 
-1. **v1 — full-width 1fr/1fr grid, spine pinned to the slide centre.**
-   Technically centred, but a right-side legend *can't* be centred, so the
-   symmetric grid fought the content (the brief pushed back on this).
-2. **v2 — balanced content-sized group (`justify-content: center`).** Chart
-   leans left, key right, group centred — the Feng-shui read. Spine moved to
-   the canvas|key boundary.
-3. **v3 — spine strengthened on light (pure-accent fade, 60% core), swatches
-   unified to 1.35cqi, labels lifted to body-compact** so nothing squints.
-4. **v4 — map basemap bounded to 56cqi so the pair balances; long-label
-   stress slide reflows cleanly.**
-5. **v5 — roadmap bottom-centre status key (the "checkbox icons"), gated off
-   `horizons`/`status` and absent when no markers exist.** Shipped.
+1. **v1 — full-width 1fr/1fr grid, spine pinned to slide-centre.** A
+   right-side legend can't be slide-centred; the symmetric grid fought it.
+2. **v2 — content-sized balanced group (`justify-content: center`).** Better,
+   but the composition drifted with legend width and radar's rim labels
+   collided with the spine.
+3. **v3 — spine strengthened (pure-accent fade), swatches unified to
+   1.35cqi, labels lifted to body-compact** so nothing squints.
+4. **v4 — roadmap bottom-centre status key** (the "checkbox icons"), gated
+   off `horizons`/`status`, absent when no markers exist.
+5. **v5 — the 70/30 split** (this revision): chart hero left, key rail right,
+   each centred in its own zone, spine on the boundary at adaptive height.
+   Stable across all footprints; radar labels and the cohort quadrant both
+   land cleanly. Shipped.
 
 ## What this does NOT change
 

@@ -332,12 +332,12 @@ in patch versions.
 
 - **A shared legend rail for the colour-categorical charts, and a status key
   for roadmap.** The four charts that encode meaning by colour — `piechart`,
-  `radar`, `map`, and `quadrant·cohort` — now share one legend treatment: the
-  chart, a gradient **separator spine**, and the key read as a single balanced
-  group (chart leaning left, key right), with a consistent gutter, a capped
-  width, and labels that **wrap** instead of clipping (map's long names no
-  longer truncate). Swatches and label type are unified across all four, and
-  the spine reads on both canvases. Separately, `roadmap` now emits a
+  `radar`, `map`, and `quadrant·cohort` — now share one legend treatment: a
+  deterministic **70/30 split** with the chart as the hero in a wide left zone,
+  the key a consistent right rail, each centred in its own zone, a gradient
+  **separator spine** on the boundary, and labels that **wrap** instead of
+  clipping (map's long names no longer truncate). Swatches and label type are
+  unified across all four, and the spine reads on both canvases. Separately, `roadmap` now emits a
   **bottom-centre status key** (✓ shipped · – in flight · ○ planned · ╱ out of
   scope) for the marker states actually present, so an emailed deck reader can
   decode the symbols; it is omitted on the `status` variant (already labelled
