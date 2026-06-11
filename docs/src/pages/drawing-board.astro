@@ -939,6 +939,10 @@ const dbData = JSON.stringify({
 					'      s.style.transform="scale("+sc+")";',
 					'      s.style.marginBottom=(720*sc-720+22)+"px";',
 					'    }',
+					// Reveal only once scaled — the srcdoc hides .marpit so the first paint
+					// (and the display:none->block pane switch on mobile, where clientWidth
+					// is 0 until shown) never flashes the slides at full 1280px width.
+					'    marpit.style.visibility="visible";',
 					'  }',
 					'  window.__latticeFit=fit;',
 					'  window.addEventListener("resize",fit);',
@@ -965,9 +969,14 @@ const dbData = JSON.stringify({
 					'  tag();',
 					'  function setActive(i){var s=secs();for(var k=0;k<s.length;k++)s[k].classList.toggle("db-active",k===i);}',
 					'  function scrollTo(i,smooth){var s=secs();if(!s[i])return;window.scrollTo({top:Math.max(0,s[i].offsetTop-22),behavior:smooth?"smooth":"auto"});setActive(i);}',
-					// Which slide owns the centre of the viewport? getBoundingClientRect is
-					// post-transform, so this is robust to the FIT scale + collapsed margins.
-					'  function centered(){var s=secs();if(!s.length)return -1;var mid=window.innerHeight/2,best=0,bd=Infinity;for(var i=0;i<s.length;i++){var r=s[i].getBoundingClientRect();var d=Math.abs(r.top+r.height/2-mid);if(d<bd){bd=d;best=i;}}return best;}',
+					// Which slide have we scrolled to? Slides are a fixed-pitch filmstrip
+					// (each slot = FIT-scaled 720*sc + 22px gap), so the slide aligned to the
+					// viewport top is pure arithmetic: round(scrollY / slotH). This anchors to
+					// the TOP — so a fresh load at scrollY 0 reports slide 0 (not whatever sits
+					// at the viewport centre), and it agrees with scrollTo() below, which puts
+					// slide i's top at the viewport top. (Also avoids a getBoundingClientRect
+					// over every slide each scroll — which would defeat content-visibility.)
+					'  function centered(){var m=document.querySelector(".marpit");var s=secs();if(!s.length)return -1;var w=m?m.clientWidth:0;if(!w)return 0;var slotH=720*(w/1280)+22;if(slotH<=0)return 0;var i=Math.round(window.scrollY/slotH);if(i<0)i=0;if(i>=s.length)i=s.length-1;return i;}',
 					// Report the centred slide as you scroll. The window "scroll" event is
 					// unreliable for same-origin iframes on iOS Safari (touch / momentum
 					// scroll often doesn't fire it), so an IntersectionObserver — which
@@ -994,6 +1003,10 @@ const dbData = JSON.stringify({
 						'<!doctype html><html><head><meta charset="utf-8">' +
 						'<link rel="stylesheet" href="' + KATEX + '">' +
 						'<style>html,body{margin:0;padding:22px;background:' + bg + ';}' +
+						// Hidden until the FIT agent scales the 1280px sections to the
+						// container width (it flips this to visible). Prevents the
+						// full-size first-paint flash, esp. on mobile. See FIT above.
+						'.marpit{visibility:hidden;}' +
 						SLIDE_BOX +
 						'.marpit>section{display:block;transform-origin:top left;cursor:pointer;' +
 						// Browser-native virtualization: fixed 1280x720 slides, so the
