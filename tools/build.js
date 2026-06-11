@@ -62,6 +62,7 @@ const STEPS = [
   { label: 'landing tokens (docs site)', script: 'build-landing-tokens.js' },
   { label: 'playground bundle (docs site)', script: 'build-playground.js' },
   { label: 'theme-core bundle (docs site)', script: 'build-theme-core.js' },
+  { label: 'layout-core bundle (docs site)', script: 'build-layout-core.js' },
   // Last — it indexes the finished dist/ folder, so every other artifact
   // must already be (re)written before it runs.
   { label: 'dist README', script: 'build-dist-readme.js' },
