@@ -27,6 +27,12 @@ in patch versions.
 
 ### Fixed
 
+- **`lattice-engine` pagination now counts like marp-core.** A `paginate: false`
+  slide is still counted toward the page numbering, so the next slide reads its
+  true absolute position and the total reflects the whole deck (the engine had
+  renumbered after a hidden slide and undercounted the total — a deck with a
+  `_paginate: false` cover read "1" where marp reads "2"). Caught by the parity
+  sweep on the diagram gallery.
 - **`lattice-engine` now matches marp-core on fenced code, soft breaks, and
   inline-math delimiters.** A full-corpus visual-parity sweep (the new
   `tools/engine-parity.mjs`, which rasterises every gallery slide through both
