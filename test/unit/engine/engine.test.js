@@ -19,6 +19,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { Marp } = require('@marp-team/marp-core');
 const { createEngine } = require('../../../lib/engine');
+const { composeCss, parseSizes, scaffold } = require('../../../lib/engine/css');
 const plugins = require('../../../lib/integrations/marp/plugins');
 const { applyAllToHtml } = require('../../../lib/transformers/registry');
 
@@ -141,6 +142,54 @@ describe('lattice-engine: contract', () => {
     // Unregistered theme is not applied as a section attr (marp-core parity).
     const { html } = eng.render('<!-- theme: ghost -->\n\n# A\n', 'ghost');
     assert.doesNotMatch(html, /--theme:ghost/);
+  });
+});
+
+describe('lattice-engine: css emission (P1.1)', () => {
+  const BASE = '/* @theme lattice\n * @size hd 1280px 720px\n * @size 4K 3840px 2160px */\nsection { color: #111; }';
+  const PALETTE = "/* @theme cuoio */\n@import 'lattice';\n:root { --accent: #840; }";
+
+  test('scaffold emits the load-bearing rules with @size geometry', () => {
+    const s = scaffold({ width: '1280px', height: '720px' });
+    assert.match(s, /width:\s*1280px/);
+    assert.match(s, /height:\s*720px/);
+    assert.match(s, /container-type:\s*size/);
+    assert.match(s, /content:\s*attr\(data-marpit-pagination\)/);
+    assert.match(s, /@page\s*\{[^}]*size:\s*1280px 720px/);
+    assert.match(s, /@media print/);
+  });
+
+  test('scaffold carries NONE of marp-core’s baggage', () => {
+    const s = scaffold({ width: '1280px', height: '720px' });
+    assert.doesNotMatch(s, /marp-h1/);
+    assert.doesNotMatch(s, /data-marp-twemoji/);
+    assert.doesNotMatch(s, /div\.marpit\s*>/);
+    assert.doesNotMatch(s, /scroll-snap-align/);
+    assert.doesNotMatch(s, /webkit-media-controls/);
+    assert.doesNotMatch(s, /padding:\s*inherit/); // the rule that forced !important
+  });
+
+  test('composeCss resolves @import ‘lattice’ against the registered base', () => {
+    const out = composeCss({ themeCss: PALETTE, baseLatticeCss: BASE });
+    assert.doesNotMatch(out, /@import\s+['"]lattice['"]/); // resolved, not left dangling
+    assert.match(out, /--accent:\s*#840/); // palette tokens present
+    assert.match(out, /color:\s*#111/); // base rules inlined
+  });
+
+  test('size: directive selects the matching @size geometry', () => {
+    assert.equal(parseSizes(BASE).get('4K').width, '3840px');
+    const out = composeCss({ themeCss: PALETTE, baseLatticeCss: BASE, sizeName: '4K' });
+    assert.match(out, /width:\s*3840px/);
+    assert.match(out, /size:\s*3840px 2160px/);
+  });
+
+  test('render() returns scaffold + resolved theme; unknown theme → empty', () => {
+    const eng = createEngine();
+    eng.addThemes([BASE, PALETTE]);
+    const { css } = eng.render('# A\n', 'cuoio');
+    assert.match(css, /container-type:\s*size/); // scaffold
+    assert.match(css, /--accent:\s*#840/); // resolved palette
+    assert.equal(eng.render('# A\n', 'ghost').css, '');
   });
 });
 

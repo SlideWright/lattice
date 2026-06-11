@@ -35,9 +35,20 @@ in patch versions.
   matches marp-core's per-section HTML structure across the full gallery corpus
   (55/55 decks; twemoji is the one intentional divergence — emoji render via
   font, not `<img class="emoji">`). It does **not** yet replace any shipping
-  render path (marp-cli, the playground, and the emulator are untouched); the
-  `css` output is a stub pending the scaffold/`@import`/`@size` work (P1.1). New
+  render path (marp-cli, the playground, and the emulator are untouched). New
   direct dependency: `markdown-it`.
+- **`lattice-engine` now emits a complete stylesheet (P1.1).** `render().css` is
+  no longer a stub: it composes an engine-owned scaffold with the selected
+  theme, resolving `@import 'lattice'` against the registered base palette and
+  honouring the `size:` directive's `@size` geometry (`lib/engine/css.js`). The
+  scaffold is reverse-engineered from Marpit's — load-bearing rules only
+  (slide box + `container-type`, pagination pseudo-element, `@page`/print
+  fidelity), emitted *correctly* (no `padding:inherit` on the pagination
+  number), so themes compose without the `!important` override layer marp-core's
+  defaults force. The marp-only baggage (twemoji img sizing, `marp-h1`
+  auto-scaling, `div.marpit > section` prefixing, the `video` webkit hack,
+  `scroll-snap-align`) is deliberately absent. A deck now renders to a styled
+  PDF through the engine alone, with no marp-core in the loop.
 
 ### Changed
 
