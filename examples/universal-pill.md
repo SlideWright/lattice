@@ -45,16 +45,16 @@ centre-aligned text, colour left to carry the meaning.
 ### Financial · Q4 2026
 ## Same pill, with the uppercase opt-in.
 
-1. **$2.4B**
+1. $2.4B
    - Total revenue
    - target $2.2B · +9% `On plan` `Board`
-2. **42%**
+2. 42%
    - Gross margin
    - +2pp QoQ `On plan` `Audit`
-3. **$1.1B**
+3. $1.1B
    - Cash & equivalents
    - +$180M QoQ `On plan` `Investor`
-4. **+18%**
+4. +18%
    - YoY revenue growth
    - vs 14% prior year `Ahead` `Board`
 

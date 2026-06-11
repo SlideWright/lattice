@@ -74,15 +74,15 @@ Function · Form · Substance · Finish. Authored in short names, organized in f
 ## Pick by intent. Then by data shape.
 
 1. Anchor
-   - Orientation — title, divider, subtopic, closing.
+   - Orientation — title, divider, closing.
 2. Statement
-   - One declarative claim — big-number, quote, split-list, content.
+   - One declarative claim — big-number, quote, split-panel, content.
 3. Inventory
    - Parallel items — cards-grid, cards-stack, list, list-tabular.
 4. Comparison
-   - Contrast options — compare-prose, verdict-grid, before-after.
+   - Contrast options — compare-prose, verdict-grid, compare-table.
 5. Progression
-   - Ordered movement — timeline, list-steps, roadmap.
+   - Ordered movement — list-steps, list-criteria, roadmap.
 6. Evidence
    - Data into picture — stats, kpi, quadrant, radar, diagram, code.
 7. Imagery
@@ -125,13 +125,13 @@ Function · Form · Substance · Finish. Authored in short names, organized in f
 
 <!-- _class: cards-stack -->
 
-## Each layout ships a manifest at `lib/components/<name>.json`.
+## Each layout ships a manifest at `lib/components/<bucket>/<name>/<name>.manifest.json`.
 
 - Single source of truth.
   - name, function, form, substance, description, purpose, variants, slots, skeleton. The rendering pipeline is unchanged — manifests are metadata.
 - Consumed everywhere.
   - Scaffolder reads `skeleton`. Snippets read `skeleton` + `name`. The catalog groups by `function`. Editor autocomplete reads `variants`. Docs link from `docs`.
-- 45 components shipped.
+- 53 components shipped.
   - Every layout currently used in the galleries (or supported by chart-family) has one. Validation gate keeps them well-formed.
 
 ---
@@ -154,7 +154,7 @@ Function · Form · Substance · Finish. Authored in short names, organized in f
 - CLI scaffolder
   - `npm run new:slide -- --list` prints the catalog grouped by function. `npm run new:slide -- cards-grid` emits the skeleton. Exit codes: 0 success, 1 unknown, 2 usage.
 - VS Code snippets
-  - Type `lattice-` in any .md file. Autocomplete shows all 45 components by name and description. Tab inserts the canonical skeleton. Generated from manifests; freshness enforced by `npm run snippets:check`.
+  - Type `lattice-` in any .md file. Autocomplete shows all 53 components by name and description. Tab inserts the canonical skeleton. Generated from manifests; freshness enforced by `npm run snippets:check`.
 
 ---
 
@@ -174,7 +174,7 @@ Function · Form · Substance · Finish. Authored in short names, organized in f
 ## What ships on this branch.
 
 - [x] Spec — `design/design-system.md` with the four-layer model and component contract.
-- [x] Manifests — 45 components in `lib/components/<name>.json`, schema validator, loader.
+- [x] Manifests — 53 components in `lib/components/<bucket>/<name>/<name>.manifest.json`, schema validator, loader.
 - [x] Scaffolder — `tools/new-slide.js` with `--list` and component-name modes.
 - [x] VS Code snippets — `.vscode/lattice.code-snippets` generated and committed.
 - [x] CLAUDE.md pointer — design-system.md at the top of "Read these first".

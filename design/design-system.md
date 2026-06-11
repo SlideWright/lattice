@@ -88,11 +88,11 @@ The four layers also correspond to **the four audiences** Lattice serves:
 
 | Function       | The audience leaves knowing…                       | Examples |
 |----------------|----------------------------------------------------|----------|
-| **Anchor**     | where they are in the deck                         | `title`, `divider`, `subtopic`, `closing` |
-| **Statement**  | one declarative claim                              | `big-number`, `quote`, `split-list`, `content` |
-| **Inventory**  | a parallel set of related items                    | `cards-grid`, `cards-stack`, `list`, `actors`, `principles`, `agenda`, `tldr`, `glossary`, `list-tabular`, `checklist` |
-| **Comparison** | how two or more options differ                    | `compare-prose`, `compare-code`, `compare-table`, `before-after`, `verdict-grid`, `decision`, `matrix-2x2` |
-| **Progression**| an ordered movement through stages or time        | `timeline`, `list-steps`, `list-criteria`, `roadmap`, `gantt`, `kanban` |
+| **Anchor**     | where they are in the deck                         | `title`, `divider`, `closing` |
+| **Statement**  | one declarative claim                              | `big-number`, `quote`, `split-panel`, `content` |
+| **Inventory**  | a parallel set of related items                    | `cards-grid`, `cards-stack`, `list`, `actors`, `agenda`, `glossary`, `list-tabular`, `checklist`, `q-and-a`, `logo-wall` |
+| **Comparison** | how two or more options differ                    | `compare-prose`, `compare-code`, `compare-table`, `verdict-grid`, `decision`, `matrix-2x2` |
+| **Progression**| an ordered movement through stages or time        | `list-steps`, `list-criteria`, `roadmap`, `gantt`, `kanban` |
 | **Evidence**   | data that supports the argument                    | `stats`, `kpi`, `chart-family` (progress, piechart, timeline-list), `radar`, `quadrant`, `word-cloud`, `diagram`, `code` |
 | **Imagery**    | a visual that carries its own meaning              | `image`, `featured` |
 
@@ -252,7 +252,7 @@ Variants don't all belong to one component. Some apply to every layout
 ("dark", "with-period"); some apply to most ("compact", "loose",
 "accent"); some apply to a family of layouts ("checks-*" for the
 state-bearing layouts, "canvas" for charts); some are strictly per-layout
-("mirror" for split-list, "four" for cards-grid). The manifest model
+("watermark" for split-panel, "four" for cards-grid). The manifest model
 recognises four tiers:
 
 **Tier 1 — Universal (25 variants).** Apply to every component. Added
@@ -436,7 +436,7 @@ colors. See `design.md` §1.3 and `design/theming.md`.
 
 1. Pick `function.form` coordinates. Confirm they're sanctioned in
    §4's matrix; if not, design first.
-2. Write `lib/components/<name>.json` with the manifest fields.
+2. Write `lib/components/<bucket>/<name>/<name>.manifest.json` with the manifest fields.
 3. Implement the CSS in `lattice.css`.
 4. If `substance` is `structure`, add a post-processor in
    `lib/<name>.js` and wire into all three render paths.
