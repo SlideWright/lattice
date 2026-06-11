@@ -1740,7 +1740,58 @@ function parseSlide(raw, index) {
   ].join(''));
 }
 
-const slides = rawSlides.map((s, i) => parseSlide(s, i));
+// ── P2: optional engine-backed parse path (env-gated, default OFF) ──────────
+// `LATTICE_EMULATOR_ENGINE=1` routes parsing through lib/engine (the owned
+// markdown→slide engine) instead of the bespoke parseSlide regex parser, so
+// Lattice converges on ONE markdown implementation. Default-off keeps the
+// shipped bin on parseSlide until the engine↔emulator parity gate
+// (tools/emulator-engine-parity.mjs) is clean across the corpus — see
+// engineering/decisions/2026-06-11-emulator-on-engine-p2.md.
+//
+// The engine already runs the SAME plugins + registry + highlight.js + KaTeX +
+// deck-logo as parseSlide's downstream, so the engine path only has to:
+//   - feed the mermaid-preprocessed source WITH front matter (rawMd), so the
+//     engine's directive layer resolves paginate/header/footer/class/size;
+//   - re-tag each section with `data-marpit-slide` (the engine omits it; the
+//     page template's sizing / overflow watcher / PDF pagination key off it);
+//   - and downstream, SKIP applyDeckLogoToHtml (the engine already injected it).
+const USE_ENGINE = process.env.LATTICE_EMULATOR_ENGINE === '1';
+
+// Depth-counted scan over <section>…</section> so nested split-panel sections
+// stay inside their parent. Reproduces parseSlide's "one <section> string per
+// slide" array shape from the engine's assembled <div class="marpit"> document.
+function splitTopLevelSections(marpitHtml) {
+  const out = [];
+  const re = /<section\b[^>]*>|<\/section>/gi;
+  let depth = 0;
+  let start = -1;
+  let m;
+  while ((m = re.exec(marpitHtml)) !== null) {
+    if (m[0][1] === '/') {
+      depth--;
+      if (depth === 0 && start >= 0) {
+        out.push(marpitHtml.slice(start, re.lastIndex));
+        start = -1;
+      }
+    } else {
+      if (depth === 0) start = m.index;
+      depth++;
+    }
+  }
+  return out;
+}
+
+function engineSlides() {
+  const latticeEngine = require('./lib/engine');
+  const engine = latticeEngine.createEngine();
+  engine.addThemes([readFileOrDie(cssFile, 'layout CSS'), fs.readFileSync(palettePath, 'utf8')]);
+  const { html } = engine.render(rawMd, paletteName);
+  return splitTopLevelSections(html).map((sec, i) =>
+    sec.replace(/^<section\b/i, `<section data-marpit-slide="${i + 1}"`),
+  );
+}
+
+const slides = USE_ENGINE ? engineSlides() : rawSlides.map((s, i) => parseSlide(s, i));
 
 // ── Marp-equivalent CSS for pagination and header/footer ────────────────────
 // Marp injects these styles itself; we reproduce them here since we're
@@ -1904,7 +1955,11 @@ const highlightedSlides = slides.map(s => applyHighlighting(s));
 // "first slide" check in the rewriter (used by `logo-on: title`)
 // sees the slides in source order.
 const { applyDeckLogoToHtml } = require('./marp.config').plugins;
-const slidesWithLogo = applyDeckLogoToHtml(highlightedSlides.join('\n'), rawMd);
+// The engine path already ran applyDeckLogoToHtml inside engine.render — re-running
+// it here would inject a second logo, so the engine path joins as-is.
+const slidesWithLogo = USE_ENGINE
+  ? highlightedSlides.join('\n')
+  : applyDeckLogoToHtml(highlightedSlides.join('\n'), rawMd);
 
 // ── KaTeX CSS link ────────────────────────────────────────────────────────
 // KaTeX's CSS references font files via relative `url(fonts/…woff2)` paths,

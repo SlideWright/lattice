@@ -1,6 +1,7 @@
 # P2 — put the emulator on `lattice-engine`
 
-**Status:** plan / proposed. Implements **P2** of
+**Status:** in progress — steps 1–3 landed behind a default-OFF flag; gaps
+enumerated, not yet closed (see **Progress log** below). Implements **P2** of
 [`2026-06-10-marp-replacement-proposal.md`](2026-06-10-marp-replacement-proposal.md)
 §9, sequenced after the owned CSS emitter (merged). Written before code because
 the target is the shipped `bin`/`main`, and the migration is not a drop-in.
@@ -87,11 +88,50 @@ what the shared plugins already produce," not "re-implement features."
    cross-renderer parity) stays green; visually spot-check a sample of rebuilt
    PDFs (`tools/rasterize-for-review.sh`), since page counts don't catch layout.
 
+## Progress log
+
+### 2026-06-11 — flagged engine path + gap inventory
+
+The seam now branches on **`LATTICE_EMULATOR_ENGINE=1`** (default OFF, so the
+shipped `bin`/`main` stays on `parseSlide`). The engine path:
+`engine.render(rawMd, paletteName)` (rawMd = the mermaid-preprocessed source
+*with* front matter, so the engine's directive layer resolves the globals) →
+`splitTopLevelSections` (depth-counted, nested split-panels stay nested) →
+re-tag each `<section>` with `data-marpit-slide="N"` (the **one** attribute the
+engine omits that the page template's sizing / overflow watcher / PDF pagination
+key off) → downstream `applyDeckLogoToHtml` is **skipped** (the engine already
+injected the logo). `parseSlide` is untouched and still default.
+
+**Verification method** — per-page md5 of `pdftoppm` rasters, engine vs
+`parseSlide`, same deck/palette. Sharper than the struct-level harness (which
+over-reports CSS-equivalent markup differences): it compares the *rendered
+pixels*, which is what actually has to match.
+
+**Results (indaco):**
+
+| Deck | Pages | Differ | Nature of the diff |
+|---|---|---|---|
+| inventory/cards-grid | 13 | **0** | byte-identical — engine keeps the card title in the `<li>`, emulator lifts it, but the CSS renders both the same |
+| statement/split-panel | 12 | 1 | TBD |
+| diagram/diagram (mermaid) | 31 | 1 | TBD — mermaid passthrough is the #1 risk |
+| chart/roadmap | 11 | 2 | TBD |
+| math/math (KaTeX) | 15 | 2 | **overflow ring** — identical children, but the engine section renders >12px taller (likely a KaTeX-metrics edge), tripping the overflow watcher |
+| legal/legal | 40 | 11 | mixed — slide 4 is a **missing takeaway divider** (real structural drop), not an overflow ring |
+
+**Gap classes so far:** (a) the overflow watcher tripping on engine sections
+where `parseSlide`'s sat just under the 12px tolerance (math) — chase the KaTeX
+option parity + any section-attribute height effect; (b) a dropped/changed
+element vs the bespoke parser (legal takeaway divider) — real parser-output
+difference to reconcile. cards-grid proves the *approach* is sound (different
+HTML, identical pixels); the gaps are a finite, per-deck triage list, not a
+rewrite. **Do not flip the default until this table is all-zero.**
+
 ## Rollback
 
-Every step is reversible; the seam is a single call site. `parseSlide` stays in
-the tree until step 1's harness reports zero gaps, so a swap that regresses any
-deck is caught before the parser is deleted.
+Every step is reversible; the seam is a single call site behind a default-OFF
+flag. `parseSlide` stays in the tree until the rendered-pixel A/B is all-zero
+across the corpus, so a swap that regresses any deck is caught before the parser
+is deleted.
 
 ## Not in scope
 
