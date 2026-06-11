@@ -12037,6 +12037,18 @@ section.treatment-none {
  * ink so it reads on every canvas (incl. dark, via the light-dark token). */
 section.sketch {
   --sketch-ink: var(--text-heading);
+  /* Re-point the engine's display font TOKEN at the felt-tip face. Headings
+   * pick this up, but so does every component that pins
+   * `font-family: var(--font-display)` on a non-heading element — the stats
+   * / big-number metric numerals, the quote text, the KPI hero figures, ~16
+   * components in all. Routing the token (not the elements) is what makes
+   * the finish reach them: custom-property inheritance overrides the value
+   * each component rule pulls, regardless of that rule's specificity, so no
+   * display numeral falls through to the theme's serif. `--font-mono` is
+   * deliberately NOT re-pointed — real inline `code` must stay unambiguous.
+   * Body prose is handled by the element selectors below (not the token) so
+   * `sketch-clean-body` can revert it without losing the hand display. */
+  --font-display: var(--sketch-font-display);
   /* Component label pills / badges (state-marker chips, pricing tags,
    * etc.) ride the hand body face too, so every glyph of prose on the
    * slide is hand-drawn. Real inline `code` stays monospace (below). */

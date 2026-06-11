@@ -348,7 +348,11 @@ in patch versions.
   blockquotes (`quote`, `redline`), bordered rows (`actors`), and the `<hr>`
   divider — under one rule: roughen the lines the deck draws, never invent a box
   (so `big-number`/`stats` pure-type slides and contained photos/`code`/chart SVG
-  stay untouched; meaning-bearing borders keep their hue). Every glyph of prose takes a hand face —
+  stay untouched; meaning-bearing borders keep their hue). The finish re-points the
+  `--font-display` token (not just heading elements) at the felt-tip face, so the
+  metric numerals that ~16 components pin to `var(--font-display)` — `stats`,
+  `big-number`, `quote` text, KPI heroes — take the hand face too instead of
+  falling through to the theme's serif. Every glyph of prose takes a hand face —
   including label pills/badges (via the `--pill-font` seam); only real inline
   `code` stays monospace. It is palette-blind —
   every stroke resolves through `var(--token)`, so any theme colours it. Default
