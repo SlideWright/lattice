@@ -231,6 +231,69 @@ Recommended VS Code extensions:
 - `biomejs.biome` — inline lint feedback from `biome.json`
 - `marp-team.marp-vscode` — preview `.md` decks
 
+## Previewing the docs site (Astro) + screenshots
+
+The docs site under `docs/` (Astro + Starlight) hosts the landing page, the
+**Drawing Board**, the **Workbench**, the **Playground**, and the component
+pages. **You can build, run, AND screenshot it in the cloud sandbox** — this
+is the visual-verification path for any web-UI change (the counterpart to
+`tools/rasterize-for-review.sh` for PDFs). Don't claim a web-UI change is
+unverifiable here; run the site and look.
+
+### The loop
+
+```bash
+# 1. ONE-TIME per sandbox: docs/ is a SEPARATE npm package, NOT a root
+#    workspace, so the root `npm install` does not cover it.
+cd docs && npm install
+
+# 2. Serve. Invoke the astro binary DIRECTLY — the `npm run dev` /
+#    `npm run start` scripts trip `sh: 1: astro: not found` in this sandbox
+#    (PATH quirk). Run the two sync steps first if you need fresh portal /
+#    playground assets; for most UI work they're already staged.
+npm run sync:portal --silent && npm run sync:playground --silent
+nohup ./node_modules/.bin/astro dev --host 127.0.0.1 --port 4321 \
+  > /tmp/astro.log 2>&1 &
+#   wait until /tmp/astro.log prints "ready"; the `base` is /lattice, so
+#   pages live under http://127.0.0.1:4321/lattice/… (trailing slash).
+
+# 3. Screenshot any route, then VIEW the PNG with the Read tool (renders
+#    inline) or SendUserFile.
+cd ..   # back to repo root (puppeteer lives in the ROOT node_modules)
+node tools/screenshot.js http://127.0.0.1:4321/lattice/drawing-board/ \
+  .scratch/shots/drawing-board.png --width 1440 --height 900
+```
+
+`tools/screenshot.js` drives the puppeteer-cached Chromium
+(`--no-sandbox`; resolves the binary from `CHROME_PATH` or the puppeteer
+cache). Flags: `--width`/`--height`, `--full` (full-page), `--wait <css>`
+(wait for a selector — useful for the Drawing Board's hydrated panels),
+`--delay <ms>`. Write PNGs under `.scratch/` (gitignored, 14-day GC).
+
+### Routes
+
+| Route | URL |
+| --- | --- |
+| Landing | `http://127.0.0.1:4321/lattice/` |
+| Drawing Board | `…/lattice/drawing-board/` |
+| Playground | `…/lattice/playground/` |
+| Components index | `…/lattice/components/` |
+
+Nav links are defined in `docs/src/components/TopBar.astro` (+ injected via
+`SocialIcons.astro`) — that's where a new top-level entry (e.g. the
+Workbench) is added.
+
+### Traps (full entries in `gotchas.md`)
+
+- **`docs/` is a separate package** → its own `npm install`; the root
+  install / SessionStart hook does not cover it.
+- **`npm run dev` → `sh: astro: not found`** → call
+  `./node_modules/.bin/astro` directly.
+- **`pkill -f astro` self-kills** the shell whose command line contains
+  "astro" → stop the server by PID or by port instead.
+- **Base path `/lattice`** → a bare `http://127.0.0.1:4321/` 404s; use the
+  `/lattice/…` prefix.
+
 ---
 
 ## Cross-cutting rules

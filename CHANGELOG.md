@@ -105,6 +105,29 @@ in patch versions.
   so a tester on a device can read off exactly which deploy + engine they loaded
   without it crowding the topbar. Drawing Board (docs-site) only — no engine or
   package change.
+- **The Workbench — Theme Studio (Faculty 1).** A new docs-site page
+  (`/workbench`) where you craft a palette from a handful of essential colours
+  and watch it derived, contrast-audited, and rendered live on a specimen deck,
+  then copy or download a droppable `themes/<name>.css`. Backed by a new pure,
+  dependency-free engine module **`lib/theme/`** (`color`, `derive`, `contrast`,
+  `serialize`, `starters`, `ai`): an essential set → the full ~100-token Lattice
+  contract, repaired contrast-aware to clear WCAG AA in both canvas modes. The
+  derivation + contrast maths are the SAME the Node tooling and the palette
+  contrast gate use (the gate now shares `lib/theme/color.js`).
+  - **AI tier (Phase 2):** one conversational box — *describe* a palette to
+    originate ("warm editorial, terracotta") or *ask for a change* ("cooler",
+    "navy accent") to adjust; the model infers which from your words (the
+    current palette is sent as context), and recent prompts return as
+    re-runnable chips. Uses the same on-device / OpenRouter model ladder the
+    Drawing Board uses (connection shared through `localStorage`). The model
+    only proposes an essential set; the deterministic derivation + contrast
+    gate dispose. Degrades cleanly with a "connect a model" prompt when none
+    is connected.
+  - **Responsive:** a Design · Preview · Contrast tab bar on small screens;
+    single-column reflow.
+
+  Docs-site feature + additive engine module — no change to existing layouts,
+  themes, or the render path.
 
 ### Changed
 

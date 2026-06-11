@@ -10,6 +10,7 @@
       "!node_modules",
       "!dist",
       "!docs/public/playground/lattice-playground.js",
+      "!docs/src/playground/theme-core.generated.js",
       "!**/*.min.js",
       "!mermaid-v11.min.js",
       "!examples/**/*.json",
