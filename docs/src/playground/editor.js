@@ -367,6 +367,19 @@ export function createEditor({ parent, doc = '', onChange, onCursor, autoHeight 
 			],
 		}),
 	});
+	// iOS Safari can paint the native selection highlight before it applies
+	// CodeMirror's injected theme — so the FIRST text selection shows the system
+	// (lavender) tint instead of the themed `--cm-selection`, and only corrects
+	// after a style recalc (e.g. a palette/mode toggle). Force one reflow on the
+	// next frame so the theme is applied up front, not only after a manual toggle.
+	if (typeof requestAnimationFrame === 'function') {
+		requestAnimationFrame(() => {
+			try {
+				view.requestMeasure();
+				void view.scrollDOM.offsetHeight; // force a style/layout flush
+			} catch {}
+		});
+	}
 	return {
 		getValue: () => view.state.doc.toString(),
 		setValue: (text) => view.dispatch({ changes: { from: 0, to: view.state.doc.length, insert: text } }),
