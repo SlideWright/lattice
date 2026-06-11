@@ -25,6 +25,26 @@ in patch versions.
 
 ## Unreleased
 
+### Added
+
+- **Drawing Board — Deck setup drawer.** A new config button beside the settings
+  chip opens a slide-in drawer for the deck's Marp front matter: theme, slide size
+  (16:9 / 4K / 4:3), page numbers, running header & footer, plus a default slide
+  class, math renderer (KaTeX / MathJax), and document language. The controls are
+  pre-filled from the deck's current front matter and write a managed `---` block
+  at the top of the source — so the Markdown body stays content-only, the values
+  persist across refreshes (they ride the deck source into IndexedDB), and an
+  exported `.md` finally carries `marp: true` + its directives instead of shipping
+  naked. The config chip lights when the deck carries non-theme front matter.
+- **Drawing Board — theme is now explicit + synced.** The top-bar palette picker,
+  the Deck setup drawer's theme select, and the editor's `theme:` front matter are
+  three views of one value: picking a palette writes `theme:` into the deck (no
+  more silent render-time override), editing a valid `theme:` updates the picker
+  and page chrome, and switching decks adopts each deck's theme. Only a registered
+  palette propagates — an unknown/typo theme is left in the source but never
+  applied (the deck can't render unstyled), with a caution note in the drawer. The
+  deck's theme now travels with an exported `.md`.
+
 ### Fixed
 
 - **`radar` and `quadrant` now scale with the slide at any resolution.** Their

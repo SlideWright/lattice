@@ -213,6 +213,7 @@ body.db-page .topbar {
 .db-drawer-close::before,
 .db-new-deck::before,
 .db-model-chip::before,
+.db-config-chip::before,
 .db-focus-open::before,
 .db-refine-open::before,
 .db-refine-open::after,
@@ -236,6 +237,7 @@ body.db-page .topbar {
 .db-drawer-close::before { --db-glyph: var(--icon-x); }
 .db-new-deck::before { --db-glyph: var(--icon-plus); margin-right: 0.3em; }
 .db-model-chip::before { --db-glyph: var(--icon-settings); margin-right: 0.34em; }
+.db-config-chip::before { --db-glyph: var(--icon-sliders-horizontal); }
 .db-focus-open::before { --db-glyph: var(--icon-scan); margin-right: 0.34em; }
 .db-refine-open::before { --db-glyph: var(--icon-pencil); margin-right: 0.34em; }
 .db-refine-open::after { --db-glyph: var(--icon-chevron-down); margin-left: 0.3em; }
@@ -324,6 +326,36 @@ body.db-page .topbar {
 .db-model-chip[data-tier='loader-circle']::after { --db-glyph: var(--icon-loader-circle); animation: db-tier-spin 0.8s linear infinite; }
 @media (prefers-reduced-motion: reduce) {
 	.db-model-chip[data-tier='loader-circle']::after { animation: none; }
+}
+
+/* ── The deck-setup chip — opens the front-matter config drawer ────────────────
+ * An icon-only sibling of the settings chip (sliders glyph). The `is-set` cue
+ * mirrors the model chip's active state: accent border + glyph when the deck
+ * carries any managed front matter, quiet otherwise. */
+.db-config-chip {
+	flex: 0 0 auto;
+	display: inline-grid;
+	place-items: center;
+	width: 30px;
+	height: 28px;
+	color: var(--text-muted);
+	background: var(--bg);
+	border: 1px solid var(--border);
+	border-radius: 999px;
+	cursor: pointer;
+	transition: color 0.12s, border-color 0.12s;
+}
+.db-config-chip::before {
+	width: 0.95em;
+	height: 0.95em;
+}
+.db-config-chip:hover {
+	color: var(--text-heading);
+	border-color: var(--accent);
+}
+.db-config-chip.is-set {
+	color: var(--accent);
+	border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
 }
 
 /* ── Decks & history popover (folded out of the old rail, anchored in the
@@ -2185,7 +2217,8 @@ html.db-js #db-editor-ta {
 	border-radius: var(--radius-sm) var(--radius-sm) 0 0;
 }
 .db-settings-workspace,
-.db-settings-ondevice {
+.db-settings-ondevice,
+.db-drawer-config .db-drawer-body {
 	display: flex;
 	flex-direction: column;
 	gap: 0.55rem;
@@ -2225,6 +2258,57 @@ html.db-js #db-editor-ta {
 	border-color: var(--accent);
 }
 .db-pref-select:focus-visible {
+	outline: none;
+	border-color: var(--accent);
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+
+/* ── Deck-setup fields (the config drawer) ────────────────────────────────────
+ * Stacked label-above-input fields for the free-text front-matter directives
+ * (header / footer / class / lang) — they run long, so they take the full width
+ * rather than the inline .db-pref-row layout the selects + switch use. */
+.db-config-field {
+	display: flex;
+	flex-direction: column;
+	gap: 0.3rem;
+}
+.db-config-input {
+	width: 100%;
+	font: inherit;
+	font-size: 0.82rem;
+	color: var(--text-body);
+	background: var(--bg);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-sm);
+	padding: 0.4rem 0.55rem;
+}
+.db-config-input::placeholder {
+	color: var(--text-muted);
+}
+/* Keep the inline select rows (theme / size / math) from collapsing the
+ * label+hint column when an option's text runs long — cap the select and hold a
+ * floor under the text so a label never wraps one word per line. */
+.db-drawer-config .db-pref-row {
+	align-items: baseline;
+}
+.db-drawer-config .db-pref-text {
+	flex: 1 1 auto;
+	min-width: 7rem;
+}
+.db-drawer-config .db-pref-select {
+	max-width: 11rem;
+}
+/* Unknown-theme note — the deck declares a `theme:` that isn't a registered
+ * palette, so it isn't propagated. Tinted to read as a caution, not an error. */
+.db-config-warn {
+	color: var(--accent);
+	border-left: 2px solid color-mix(in srgb, var(--accent) 50%, var(--border));
+	padding-left: 0.5rem;
+}
+.db-config-input:hover {
+	border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+}
+.db-config-input:focus-visible {
 	outline: none;
 	border-color: var(--accent);
 	box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent);

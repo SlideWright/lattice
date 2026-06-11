@@ -109,6 +109,27 @@ reference and the linter use. Every suggestion is deterministic and offline;
   basemap resolves, including blocs and categories like `European Union` or
   `Global South`, so the spelling matches on the first try.
 
+## Deck setup (front matter without the YAML)
+
+The Drawing Board's **Deck setup** drawer — the sliders button beside the
+settings chip — edits the deck's front matter through plain controls, so you
+never hand-write the `---` block and the Markdown body stays content-only. It
+covers the whole-deck settings: **theme**, slide **size** (16:9 / 4K / 4:3),
+**page numbers**, running **header** / **footer**, and a few advanced ones
+(a default slide **class**, **math** renderer, document **language**). The
+controls are pre-filled from whatever front matter the deck already has, and
+each change writes a minimal block back to the top of the source — so the
+values persist across refreshes and travel with an exported `.md`. A deck with
+nothing configured carries no front matter at all.
+
+**Theme is one value in three places.** The top-bar palette picker, the Deck
+setup drawer's theme select, and the editor's `theme:` line are kept in sync:
+pick a palette in either control and it's written into the deck (and the
+preview + page recolor); type a valid `theme:` in the editor and the picker
+follows. Only a registered palette is applied — a typo stays in your source so
+you can fix it, but the deck keeps rendering in the last valid palette rather
+than going unstyled, and the drawer flags it.
+
 ## Where to go next
 
 - [Themes & palettes](/lattice/guides/themes/) — choose or author a palette.
