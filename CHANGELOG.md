@@ -27,6 +27,15 @@ in patch versions.
 
 ### Fixed
 
+- **`radar` and `quadrant` now scale with the slide at any resolution.** Their
+  SVGs were ceilinged with a fixed `max-height: 360px`, so on a larger render
+  (e.g. `size: 4K`) the chart stayed pinned small while the cqi-driven type and
+  slide grew around it. The cap is now `50cqh` (50% of the slide height) — the
+  same 360px at HD but resolution-independent, so the chart fills its slot and
+  scales ~3× to 4K. A new render-based gate (`tools/check-svg-scaling.js`,
+  wired into the integration tier) renders a fixture at HD and 4K and asserts
+  each chart SVG scales, catching any future fixed-px cap. First step of the
+  chart responsiveness epic (#180).
 - **`lattice-engine` pagination now counts like marp-core.** A `paginate: false`
   slide is still counted toward the page numbering, so the next slide reads its
   true absolute position and the total reflects the whole deck (the engine had
