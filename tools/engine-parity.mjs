@@ -162,6 +162,19 @@ async function diffPair(page, aBuf, bBuf) {
   );
 }
 
+// Split flat marp HTML (inlineSVG:false → `div.marpit > section`, no nesting)
+// into one string per slide, so we can flag the documented twemoji difference.
+function sectionHtml(html) {
+  const out = [];
+  const re = /<section\b[^>]*>[\s\S]*?<\/section>/gi;
+  let mm = re.exec(html);
+  while (mm) {
+    out.push(mm[0]);
+    mm = re.exec(html);
+  }
+  return out;
+}
+
 // ── Per-deck run ──────────────────────────────────────────────────────────────
 async function runDeck(browser, diffPage, deckPath, cliPalette, dark) {
   const md = readFileSync(deckPath, 'utf8');
@@ -177,6 +190,13 @@ async function runDeck(browser, diffPage, deckPath, cliPalette, dark) {
   const marpShots = await shoot(browser, m.html, m.css, dark);
   const engineShots = await shoot(browser, e.html, e.css, dark);
 
+  // Marp rewrites unicode emoji to `<img class="emoji">` (twemoji); the owned
+  // engine renders them as font glyphs — the ONE intentional, documented
+  // divergence. Skip parity on any slide whose marp render carries an emoji img,
+  // so the harness gates on real differences only.
+  const marpSections = sectionHtml(m.html);
+  const hasEmoji = (i) => /class="[^"]*\bemoji\b/.test(marpSections[i] || '');
+
   const n = Math.max(marpShots.length, engineShots.length);
   const slides = [];
   let worst = 0;
@@ -184,6 +204,10 @@ async function runDeck(browser, diffPage, deckPath, cliPalette, dark) {
     if (!marpShots[i] || !engineShots[i]) {
       slides.push({ i, status: 'COUNT_MISMATCH', diffPx: -1 });
       worst = Infinity;
+      continue;
+    }
+    if (hasEmoji(i)) {
+      slides.push({ i, status: 'skip-emoji', diffPx: 0 });
       continue;
     }
     const d = await diffPair(diffPage, marpShots[i], engineShots[i]);
@@ -238,9 +262,11 @@ async function main() {
     try {
       const r = await runDeck(browser, diffPage, deck, cliPalette, dark);
       report.push(r);
-      const failed = r.slides.filter((s) => s.status !== 'ok');
-      const tag = r.marp !== r.engine ? `COUNT ${r.marp}≠${r.engine}` : failed.length ? `${failed.length} slide(s) diverge` : 'PARITY';
-      const flag = failed.length || r.marp !== r.engine ? '✗' : '✓';
+      const failed = r.slides.filter((s) => s.status === 'FAIL' || s.status === 'COUNT_MISMATCH');
+      const skipped = r.slides.filter((s) => s.status === 'skip-emoji').length;
+      const skipTag = skipped ? ` (+${skipped} emoji-skip)` : '';
+      const tag = r.marp !== r.engine ? `COUNT ${r.marp}≠${r.engine}` : failed.length ? `${failed.length} slide(s) diverge` : `PARITY${skipTag}`;
+      const flag = failed.length ? '✗' : '✓';
       if (flag === '✗') anyFail = true;
       console.log(`${flag} ${r.deck} [${r.palette}] ${r.marp}pp — ${tag}` + (failed.length ? `: ${failed.map((s) => `#${s.i + 1}(${s.diffPx}px)`).join(', ')}` : ''));
     } catch (err) {
