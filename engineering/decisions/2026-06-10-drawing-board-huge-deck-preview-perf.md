@@ -91,10 +91,32 @@ mega-deck still needs JS windowing (to also defer off-screen transform work) —
 at which point export must materialize the full deck (it reads all sections from
 `contentDocument`, `drawing-board-export.js:48`).
 
-## Verification boundary
+## Verification (browser, 2026-06-10/11)
 
-The DOM changes can't be exercised here (no `docs/node_modules`; the deployed
-site is behind a cert proxy). The controller passes `node --check` (no syntax
-errors), but "typing stays smooth on a 200-slide deck; charts/Mermaid still
-draw on edited slides; export still emits every slide" must be confirmed
-interactively on a desktop session.
+The sandbox **can** run the site: `npm install` in `docs/` works (network is
+available), `npm run dev` serves it, and the puppeteer-cached Chrome
+(`$CHROME_PATH`) drives it headless. (An earlier claim that it couldn't be run
+here was wrong.)
+
+**Proven — incremental patch:** loaded a generated 200-slide deck (481 ms), then
+edited exactly one slide. Result: the iframe document **persisted** (a marker set
+on `contentWindow` survived the edit) and **200 of 201 section nodes kept their
+test tags** — i.e. exactly one `<section>` was replaced, not the deck rebuilt.
+Edit reflected in ~400 ms (incl. the 220 ms debounce). Screenshots confirm
+correct rendering (dark title slide + filmstrip; verdict-grid badges drawn = the
+runtime observer transforms patched/mounted sections).
+
+**Export:** the PDF path enumerates **every** slide (reached "Rendering slide 7
+of 13" before the probe timed out) — `content-visibility` does not hide slides
+from export. It's slow here only because html-to-image fetches Google Fonts from
+a CDN the sandbox proxy blocks (an environment artifact, not the change).
+
+**Not verifiable headless — `content-visibility` skipping:** a *clean control*
+(plain divs with `content-visibility:auto`, no Drawing Board code) also reports
+far off-screen items as "rendered" via `checkVisibility({contentVisibilityAuto})`
+— so headless Chrome ('new') doesn't engage viewport-based content-visibility
+skipping, and this harness can't measure the paint/scroll benefit. The CSS is
+applied (computed `content-visibility:auto`), renders correctly, and doesn't
+break export; the actual off-screen-skipping win needs a **headed** browser to
+observe (no display in the sandbox). The technique is standard for fixed-size
+scroll items; this is a measurement limit, not evidence it fails.
