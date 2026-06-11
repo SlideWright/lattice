@@ -237,11 +237,11 @@ const pgData = JSON.stringify({
 		</main>
 
 		<!-- "Load a deck" drawer — slides in from the right over a scrim. Two
-		     kinds of action read as distinct sections: load a full showcase /
-		     family survey deck (top), or scaffold the picked component (bottom).
-		     The grouped <ul> is also the no-JS fallback (the controller wires the
-		     open/close + click-to-load; with JS off the buttons are inert but the
-		     catalog is still visible). -->
+		     kinds of action read as distinct sections: scaffold the picked
+		     component (top — the quick, in-flow action), or load a full showcase /
+		     family survey deck (below). The grouped <ul> is also the no-JS fallback
+		     (the controller wires the open/close + click-to-load; with JS off the
+		     buttons are inert but the catalog is still visible). -->
 		<button type="button" class="pg-drawer-scrim" id="pg-drawer-scrim" hidden aria-label="Close"></button>
 		<aside class="pg-drawer" id="pg-drawer" aria-label="Load a deck" aria-hidden="true">
 			<div class="pg-drawer-head">
@@ -251,6 +251,14 @@ const pgData = JSON.stringify({
 				</button>
 			</div>
 			<div class="pg-drawer-body">
+				<section class="pg-drawer-sec">
+					<h3 class="pg-drawer-sec-title">This component</h3>
+					<p class="pg-drawer-sec-hint">Scaffold the component selected in the bar.</p>
+					<div class="pg-drawer-actions">
+						<button type="button" class="pg-menu-item" id="pg-insert-sample">Reset to example</button>
+						<button type="button" class="pg-menu-item" id="pg-insert-skeleton">Insert blank skeleton</button>
+					</div>
+				</section>
 				{galleryGroups.map((grp) => (
 					<section class="pg-drawer-sec">
 						<h3 class="pg-drawer-sec-title">{grp.key}</h3>
@@ -267,14 +275,6 @@ const pgData = JSON.stringify({
 						</ul>
 					</section>
 				))}
-				<section class="pg-drawer-sec">
-					<h3 class="pg-drawer-sec-title">This component</h3>
-					<p class="pg-drawer-sec-hint">Scaffold whichever component is selected above.</p>
-					<div class="pg-drawer-actions">
-						<button type="button" class="pg-menu-item" id="pg-insert-sample">Reset to example</button>
-						<button type="button" class="pg-menu-item" id="pg-insert-skeleton">Insert blank skeleton</button>
-					</div>
-				</section>
 			</div>
 		</aside>
 
