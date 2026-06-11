@@ -1,11 +1,10 @@
 /**
  * Unit: preview-virtual.js — the pure, DOM-free kernel behind the Drawing
- * Board's virtualized incremental preview.
+ * Board's incremental preview.
  *
- * Proves slide splitting from marp's flat `<section>` output, the per-slide
- * diff (which slides changed + whether the count changed), the windowing math
- * (which indices to mount for a given scroll position), the spacer heights that
- * keep the scrollbar honest, and the range-change short-circuit.
+ * Proves slide splitting from marp's flat `<section>` output and the per-slide
+ * diff (which slides changed + whether the count changed) — the two pieces the
+ * patch path uses to replace only the <section> nodes whose HTML changed.
  *
  * DOM-free module → tested directly, no iframe / browser. The iframe controller
  * that consumes it lives in drawing-board.astro and is verified interactively.
@@ -85,60 +84,5 @@ describe('diffSections', () => {
 		const d = diffSections(null, ['<section>a</section>', '<section>b</section>']);
 		assert.deepEqual(d.changed, [0, 1]);
 		assert.equal(d.countChanged, true);
-	});
-});
-
-describe('windowRange', () => {
-	const slotH = 100; // 100px per slide slot
-
-	test('top of a long deck mounts the first screenful + buffer', async () => {
-		const { windowRange } = await load();
-		// viewport 0..500 → slots 0..5; buffer 2 → start 0 (clamped), end 7
-		assert.deepEqual(windowRange(0, 500, slotH, 1000, 2), { start: 0, end: 7 });
-	});
-
-	test('scrolled into the middle mounts only the visible window', async () => {
-		const { windowRange } = await load();
-		// scrollTop 5000 (slot 50), viewport 500 (5 slots) → 48..57
-		assert.deepEqual(windowRange(5000, 500, slotH, 1000, 2), { start: 48, end: 57 });
-	});
-
-	test('end is clamped to the deck length', async () => {
-		const { windowRange } = await load();
-		const r = windowRange(9600, 500, slotH, 100, 2); // near the bottom of 100 slides
-		assert.equal(r.end, 100);
-		assert.ok(r.start <= r.end);
-	});
-
-	test('degenerate inputs → empty window', async () => {
-		const { windowRange } = await load();
-		assert.deepEqual(windowRange(0, 500, slotH, 0, 2), { start: 0, end: 0 });
-		assert.deepEqual(windowRange(0, 500, 0, 10, 2), { start: 0, end: 0 });
-	});
-});
-
-describe('spacers', () => {
-	test('top + mounted + bottom always sums to the full scroll height', async () => {
-		const { spacers, windowRange } = await load();
-		const slotH = 80;
-		const count = 300;
-		const r = windowRange(4000, 600, slotH, count, 2);
-		const sp = spacers(r.start, r.end, count, slotH);
-		const mounted = (r.end - r.start) * slotH;
-		assert.equal(sp.top + mounted + sp.bottom, count * slotH);
-	});
-
-	test('whole deck mounted → no spacers', async () => {
-		const { spacers } = await load();
-		assert.deepEqual(spacers(0, 10, 10, 90), { top: 0, bottom: 0 });
-	});
-});
-
-describe('rangeChanged', () => {
-	test('detects a moved window and short-circuits an unchanged one', async () => {
-		const { rangeChanged } = await load();
-		assert.equal(rangeChanged({ start: 0, end: 7 }, { start: 0, end: 7 }), false);
-		assert.equal(rangeChanged({ start: 0, end: 7 }, { start: 1, end: 8 }), true);
-		assert.equal(rangeChanged(null, { start: 0, end: 7 }), true);
 	});
 });

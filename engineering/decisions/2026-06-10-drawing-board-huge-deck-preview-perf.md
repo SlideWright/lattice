@@ -57,9 +57,14 @@ that recommendation is withdrawn.)
 ## Build status
 
 **Landed — kernel (unit-tested in Node):**
-`docs/src/playground/preview-virtual.js` + `test/.../preview-virtual.test.js`
-(14 tests): `splitSections`, `diffSections`, `windowRange`, `spacers`,
-`rangeChanged`.
+`docs/src/playground/preview-virtual.js` + `test/.../preview-virtual.test.js`:
+`splitSections`, `diffSections` — the two pieces the patch path uses.
+
+> A first cut of this kernel also shipped JS-windowing math (`windowRange`,
+> `spacers`, `rangeChanged`) for a hand-rolled virtual list. We went with
+> `content-visibility:auto` instead (below), so that math had no runtime
+> consumer and was removed as dead code — recoverable from git history if a
+> mega-deck ever needs DOM-node-reducing JS windowing.
 
 **Landed — incremental patch (`drawing-board.astro`, needs browser verify):**
 the persistent-iframe path. `render()` now full-writes the srcdoc only on first
@@ -85,11 +90,10 @@ from print + html-to-image).
 
 This is the right tool for *fixed-size* items: a JS virtual list (Virtuoso-style)
 earns its complexity on *variable-height* lists and when DOM-node count must
-shrink. Here layout/paint was the cost, not node count, and the kernel’s
-`windowRange`/`spacers` remain available if desktop profiling shows a chart-heavy
-mega-deck still needs JS windowing (to also defer off-screen transform work) —
-at which point export must materialize the full deck (it reads all sections from
-`contentDocument`, `drawing-board-export.js:48`).
+shrink. Here layout/paint was the cost, not node count. If a chart-heavy
+mega-deck ever does need JS windowing (to also defer off-screen transform work),
+note the constraint: export reads all sections from `contentDocument`
+(`drawing-board-export.js:48`), so it would have to materialize the full deck.
 
 ## Verification (browser, 2026-06-10/11)
 
