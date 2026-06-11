@@ -77,11 +77,11 @@ Confirmed with the user before this note was written:
    *first* reach, and the design must leave the door open to transforms.
    (You *design a layout*; the unit it yields is a *component* — see Faculty
    2's term check.)
-2. **Theme studio surface — curated essentials + AI seed + AI
-   conversational.** A small essential token set drives a derivation of the
-   full ~101-token contract; the model can *seed* a starting palette from a
-   description and *refine* it conversationally; the form stays the precise
-   control.
+2. **Theme studio surface — curated essentials + AI.** A small essential
+   token set drives a derivation of the full ~101-token contract; the model
+   originates or adjusts the essential set from natural language; the form
+   stays the precise control. (*Shipped* as a single conversational box rather
+   than the separate seed/refine first imagined — see Faculty 1.)
 3. **Sequencing — theme studio first.** Prove the originate → asset →
    render → export loop end-to-end on the tractable faculty, then put the
    layout studio on the same rails.
@@ -128,19 +128,25 @@ The author (or the model) sets a **small essential set**, and the studio
   check, never duplicate it" discipline the Architect uses with
   `lint-core.js`.)
 
-### AI seed + conversational refinement
+### AI: one conversational box (shipped 2026-06-11)
 
 The model is the Architect's, reused verbatim (`architect-model.js` ladder:
-Prompt API → Transformers.js → WebLLM → Puter/OpenRouter → deterministic
-floor). Two model touchpoints, both **constrained to emit the essential set
-only** — the studio derives the rest, so the model can never produce an
-inconsistent 101-token soup:
+Prompt API → Transformers.js → WebLLM → OpenRouter → deterministic floor),
+sharing the connection through `localStorage` so a model connected on the
+Drawing Board works here too. The model touchpoint is **constrained to emit
+the essential set only** — the studio derives the rest, so the model can never
+produce an inconsistent 101-token soup.
 
-- **Seed:** "a warm forest palette, formal register" → the model returns the
-  ~10 essential tokens as JSON; the studio derives + validates + previews.
-- **Refine (conversational):** "deeper accent, lighten the surfaces, calmer
-  semantics" → the model returns a *diff* over the essential set; the studio
-  re-derives and re-previews. The author still sees and can pin every value.
+**Shipped as ONE box, not two.** This note originally specced *seed* and
+*refine* as separate touchpoints; the implementation collapsed them into a
+single `askMessages(current, prompt)` surface (`lib/theme/ai.js`). The author
+types either a description (originate) or a change (adjust); the current
+palette is always threaded as context, and the model infers which from the
+words — so "warm forest, formal register" returns a fresh essential set while
+"deeper accent, calmer semantics" returns an adjusted one. Recent prompts
+return as re-runnable chips. Dropping the seed/refine split removed the "which
+box do I type in?" ambiguity; the three ways to set a palette are now distinct
+— **pick** (starters) · **say** (the AI box) · **tune** (the fields).
 
 **Tooling-first, exactly as the Architect (§4 of the architect note):** the
 model proposes essential tokens; **derivation, validation, and contrast
@@ -427,9 +433,15 @@ URL** for today, consistent with the Drawing Board's no-backend design.
    the export/graduation bridge are the next slices (see "next" below).
    *This first ship proves the originate → derive → render loop on the
    tractable faculty.*
-2. **Theme Studio — AI seed + conversational refine.** The Architect model
-   touchpoints, constrained to the essential set; deterministic derivation
-   and gating unchanged across tiers.
+2. **Theme Studio — AI, one conversational box.** ✅ **Shipped** (2026-06-11,
+   #174). The Architect model touchpoint, constrained to the essential set;
+   deterministic derivation and gating unchanged across tiers. Shipped as a
+   *single* `askMessages(current, prompt)` box (originate **or** adjust, the
+   model infers from the words) rather than the separate seed/refine the note
+   first specced — recent prompts return as re-runnable chips. Connection
+   shared with the Drawing Board via `localStorage`; floors to the starter
+   library + direct token edits with no model. (See "AI: one conversational
+   box" above.)
 3. **Layout Studio — CSS-only, deterministic.** The `component` asset kind;
    the `.<name>`-scoped CSS + manifest; the hex/selector/slot gates; live
    skeleton preview; local components in the author's component picker.
