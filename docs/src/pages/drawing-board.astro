@@ -104,6 +104,13 @@ const pg = assetBase();
 // off exactly which build they loaded. Correlates with the deployed
 // `/playground/v/<hash>/` path.
 const buildId = (pg.match(/v\/([0-9a-f]{6,})/)?.[1] || 'dev').slice(0, 8);
+// Show the build + engine provenance badge ONLY on PR-preview deploys (and local
+// dev), never on the public production site. GitHub Pages (production) builds
+// without CF_PAGES; Cloudflare `*.pages.dev` branch deploys ARE the PR previews —
+// excluding a `main`-branch Cloudflare deploy keeps it off any future production
+// custom-domain build too.
+const isPreviewDeploy =
+	import.meta.env.DEV || (Boolean(process.env.CF_PAGES) && process.env.CF_PAGES_BRANCH !== 'main');
 
 const tokensCss = readFileSync(join(docsRoot, 'src/styles/lattice-tokens.generated.css'), 'utf8');
 const palettes = [...new Set([...tokensCss.matchAll(/data-palette="([^"]+)"/g)].map((m) => m[1]))];
@@ -116,6 +123,9 @@ const starter =
 	(heroComp && heroComp.sample) ||
 	'<!-- _class: title silent -->\n\n`the drawing board`\n\n# A new deck\n\nStart sketching — the preview tracks every edit.\n';
 
+// Engine + build provenance stamped into PDF/PPTX exports (drawing-board-export.js).
+const pkgVersion = require(join(repoRoot, 'package.json')).version;
+
 const dbData = JSON.stringify({
 	themeBase: url(pg + 'themes/'),
 	runtimeUrl: url(pg + 'lattice-runtime.js'),
@@ -125,6 +135,8 @@ const dbData = JSON.stringify({
 	lintVocab,
 	themes: themeNames,
 	catalog: obCatalog,
+	version: pkgVersion,
+	buildId,
 });
 ---
 
@@ -160,11 +172,6 @@ const dbData = JSON.stringify({
 					<img class="brand-logo" src={url('lattice-logo.png')} alt="" width="30" height="30" />
 					<span class="brand-mark">Lattice</span>
 				</a>
-				<span
-					class="db-build-tag"
-					title="Build / asset version of this deploy — tell Claude this value to confirm which build you're testing"
-					style="font:600 10px/1 var(--font-mono, ui-monospace, monospace);color:var(--text-muted, #888);letter-spacing:.05em;padding:3px 6px;border:1px solid color-mix(in srgb, currentColor 30%, transparent);border-radius:6px;margin-left:6px;white-space:nowrap"
-				>build {buildId}</span>
 				<nav class="topnav" id="topnav">
 					<a class="navlink" href={url('getting-started/')}>Get started</a>
 					<a class="navlink" href={url('guides/authoring/')}>Guides</a>
@@ -211,7 +218,19 @@ const dbData = JSON.stringify({
 						<div class="db-arch-mark">
 							<span class="db-arch-glyph" aria-hidden="true">A</span>
 							<span class="db-arch-name">the Architect<small>your deck partner</small></span>
+							{isPreviewDeploy && (
+								<span class="db-arch-build" title="Build + render engine of this preview deploy">
+									<span>build {buildId}</span>
+									<span>engine <b id="db-arch-engine">marp-core</b></span>
+								</span>
+							)}
 						</div>
+						{isPreviewDeploy && (
+							<script
+								is:inline
+								set:html={`(function(){var el=document.getElementById('db-arch-engine');if(!el)return;var eng='marp';try{eng=new URLSearchParams(location.search).get('engine')||localStorage.getItem('lattice-db-render-engine')||'marp';}catch(e){}el.textContent=eng==='lattice'?'lattice-engine':'marp-core';})();`}
+							/>
+						)}
 						<div class="db-arch-onboard" id="db-arch-onboard"></div>
 
 						<!-- Coach (deterministic) vs Converse (generative) — the help mode for
@@ -764,11 +783,25 @@ const dbData = JSON.stringify({
 				const kind = btn.getAttribute('data-export');
 				const frame = document.getElementById('db-frame');
 				const source = window.__dbEditor ? window.__dbEditor.getValue() : '';
+				// Provenance for the export stamp: which engine + build + theme rendered
+				// these slides (drawing-board-export.js packs it into document properties).
+				const root = document.documentElement;
+				const PG = window.LatticePlayground;
+				const dbd = JSON.parse(document.getElementById('db-data').textContent);
+				const meta = {
+					engine: (PG && PG.engine) || 'marp',
+					version: dbd.version || '',
+					build: dbd.buildId || '',
+					palette: root.getAttribute('data-palette') || '',
+					mode: root.getAttribute('data-mode') || 'light',
+					source,
+					deck: deckName(),
+				};
 				try {
 					if (kind === 'md') { exportMarkdown(source, deckName()); status('Markdown exported.'); }
-					else if (kind === 'pdf') { status('Exporting PDF…'); await exportPdf(frame, deckName(), (m) => status(m)); status('PDF exported.'); }
-					else if (kind === 'pptx') { await exportPptx(frame, deckName(), (m) => status(m)); status('PowerPoint exported.'); }
-					else if (kind === 'print') { exportPrint(frame); status('Opening print dialog…'); }
+					else if (kind === 'pdf') { status('Exporting PDF…'); await exportPdf(frame, deckName(), (m) => status(m), meta); status('PDF exported.'); }
+					else if (kind === 'pptx') { await exportPptx(frame, deckName(), (m) => status(m), meta); status('PowerPoint exported.'); }
+					else if (kind === 'print') { exportPrint(frame, meta); status('Opening print dialog…'); }
 				} catch (err) { status(String(err.message || err), true); }
 			});
 		</script>

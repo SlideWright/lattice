@@ -61,6 +61,20 @@ in patch versions.
   visitors and every existing gate are unchanged — but the Drawing Board now
   doubles as a live A/B harness for the Marp-replacement engine. Themes register
   on both engines, so switching needs no re-fetch.
+- **Drawing Board: export provenance + a visible build tag.** Because the two
+  engines render pixel-identically (the owned engine delegates CSS packing to
+  marp's, so a marp-core and a lattice-engine PDF differ only by the writer's
+  random PDF `/ID`), exports now record *which* engine produced them. PDF
+  (jsPDF) and PPTX exports stamp the document properties — `Creator`/`Subject`
+  carry the engine + Lattice version + build, and a structured `Keywords` string
+  (`engine=…; lattice=…; build=…; theme=…; mode=…; slides=…; src=…`) packs the
+  full context (the source field is a short FNV-1a hash of the deck markdown).
+  The vector Print path encodes the engine into the PDF title (the only field
+  Chromium lets us set). A matching `build <hash>` + live engine badge rides the
+  Architect header row (right-aligned, stacked) on **PR-preview deploys only**,
+  so a tester on a device can read off exactly which deploy + engine they loaded
+  without it crowding the topbar. Drawing Board (docs-site) only — no engine or
+  package change.
 
 ### Changed
 
