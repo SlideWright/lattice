@@ -370,3 +370,11 @@ section.sketch.split-panel .panel-right :is(p, li, strong) {
 section.sketch.checklist > :is(ul, ol) {
   gap: var(--sp-xs);
 }
+
+/* Agenda "you are here" pointer — a hand-drawn chevron under the finish
+ * (bowed arms), replacing the clean geometric one. The active-row chevron
+ * ::after (agenda.styles.css) out-specifies the sketch wave ::after, so the
+ * active row shows the pointer and the rest keep their wavy rules. */
+section.sketch.agenda {
+  --agenda-marker: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 16'%3E%3Cpath d='M3 2.8 Q5.4 5 8 8 Q5.2 11.2 2.8 13.4' fill='none' stroke='%23000' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}

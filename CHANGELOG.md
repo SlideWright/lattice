@@ -797,6 +797,16 @@ in patch versions.
 
 ### Fixed
 
+- **Agenda "you are here" row no longer relies on background colour alone
+  (WCAG 1.4.1).** The `progress` modifier marked the active row with an
+  accent-soft background band (+ a thin accent left-border) — a colour-only
+  cue that fails colour-blind viewers. It now triple-codes the active row:
+  a **chevron pointer** in the left gutter (shape), the row **indents right**
+  (position), the **label goes bold** (weight), and the background band stays
+  (colour, for everyone who can see it) — plus the existing past/future
+  opacity fade. Applies to every theme (clean chevron); the `sketch` finish
+  draws a hand chevron and drops the active row's wavy rule so the pointer +
+  band carry it. New `--agenda-marker` token holds the pointer SVG.
 - **`sketch` finish — second audit pass (visible-defect fixes).** (1) **Wavy
   rules now read as hand-drawn** — the `--sketch-wave` amplitude was too low to
   perceive at slide scale, so table/ledger/agenda rules looked machine-straight;

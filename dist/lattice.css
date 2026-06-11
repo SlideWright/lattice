@@ -780,7 +780,14 @@ section.actors > ol > li > ol > li {
  * A single agenda slide holds up to six sections at a legible row
  * height; group beyond that rather than spilling onto the footer.
  * ──────────────────────────────────────────────────────────────────────── */
-section.agenda { display:flex; flex-direction:column; }
+section.agenda {
+  display:flex; flex-direction:column;
+  /* The "you are here" pointer for the progress modifier. A chevron the
+   * active row carries in its left gutter — a SHAPE + POSITION cue that does
+   * not rely on the background hue (WCAG 1.4.1). The sketch finish overrides
+   * this with a hand-drawn chevron. */
+  --agenda-marker: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 16'%3E%3Cpath d='M3 3 L8 8 L3 13' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
 section.agenda h2 { font-size:var(--fs-emphasis); margin-bottom:var(--sp-lg); }
 section.agenda ol {
   list-style:none; padding:0; margin:0;
@@ -816,6 +823,15 @@ section.agenda ol > li::before {
  * dark canvas while still reading as "not yet reached". */
 section.agenda[class*="progress-"] ol > li { opacity:0.55; }
 section.dark.agenda[class*="progress-"] ol > li { opacity:0.65; }
+/* Active "you are here" row. Triple-coded so it never relies on the
+ * background hue alone (WCAG 1.4.1):
+ *   - SHAPE: a chevron pointer in the left gutter (::after, below);
+ *   - POSITION: the row indents right (padding-left) so it visibly juts in;
+ *   - WEIGHT: the label goes bold;
+ *   - COLOUR: the accent-soft band stays for everyone who can see it;
+ *   - plus the past/future opacity fade (below).
+ * The old thin accent left-border + accent-coloured bottom rule are dropped —
+ * the chevron + band + shift carry it, and the colored rule read as noise. */
 section.agenda.progress-1 ol > li:nth-child(1),
 section.agenda.progress-2 ol > li:nth-child(2),
 section.agenda.progress-3 ol > li:nth-child(3),
@@ -824,10 +840,28 @@ section.agenda.progress-5 ol > li:nth-child(5),
 section.agenda.progress-6 ol > li:nth-child(6) {
   opacity:1;
   background:var(--accent-soft);
-  border-left:3px solid var(--accent);
-  margin-left:calc(-1 * var(--sp-md));
-  padding-left:var(--sp-md);
-  border-bottom-color:var(--accent);
+  font-weight:700;
+  position:relative;
+  padding-left:var(--sp-xl);
+}
+section.agenda.progress-1 ol > li:nth-child(1)::after,
+section.agenda.progress-2 ol > li:nth-child(2)::after,
+section.agenda.progress-3 ol > li:nth-child(3)::after,
+section.agenda.progress-4 ol > li:nth-child(4)::after,
+section.agenda.progress-5 ol > li:nth-child(5)::after,
+section.agenda.progress-6 ol > li:nth-child(6)::after {
+  content:"";
+  position:absolute;
+  left:var(--sp-2xs);
+  top:50%;
+  transform:translateY(-50%);
+  right:auto; bottom:auto;
+  width:var(--sp-md);
+  height:var(--sp-md);
+  background-color:var(--accent);
+  -webkit-mask:var(--agenda-marker) no-repeat center / contain;
+  mask:var(--agenda-marker) no-repeat center / contain;
+  pointer-events:none;
 }
 /* Past rows (those before the highlighted one) get muted-but-not-faded text. */
 section.agenda.progress-2 ol > li:nth-child(-n+1),
@@ -12375,6 +12409,14 @@ section.sketch.split-panel .panel-right :is(p, li, strong) {
  * last row into the footer. Tighten the inter-row gap so the set clears it. */
 section.sketch.checklist > :is(ul, ol) {
   gap: var(--sp-xs);
+}
+
+/* Agenda "you are here" pointer — a hand-drawn chevron under the finish
+ * (bowed arms), replacing the clean geometric one. The active-row chevron
+ * ::after (agenda.styles.css) out-specifies the sketch wave ::after, so the
+ * active row shows the pointer and the rest keep their wavy rules. */
+section.sketch.agenda {
+  --agenda-marker: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 16'%3E%3Cpath d='M3 2.8 Q5.4 5 8 8 Q5.2 11.2 2.8 13.4' fill='none' stroke='%23000' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
 }
 
 /* === lib/shared/shared.styles.css === */
