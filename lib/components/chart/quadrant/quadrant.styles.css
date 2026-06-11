@@ -110,13 +110,13 @@ section.quadrant .quadrant-figure {
 }
 
 section.quadrant .quadrant-svg {
-  /* Responsive: scale to the figure's height, keeping the 420:320 viewBox
-   * aspect (= 1.3125). max-height caps it at the proven 360px footprint at
-   * standard size; below that the chart shrinks rather than clipping. The
-   * viewBox + aspect-ratio do the scaling math; overflow:visible lets the
-   * axis-name descenders paint outside the 320-unit box. */
+  /* Fills its slot's height, keeping the 420:320 viewBox aspect (= 1.3125),
+   * ceilinged at 50cqh — 50% of the SLIDE height: the old 360px at HD, now
+   * SCALING with resolution (50cqh = 360px @HD, 1080px @4K). The viewBox +
+   * aspect-ratio do the scaling math; overflow:visible lets the axis-name
+   * descenders paint outside the 320-unit box. No fixed px. (See #180.) */
   height: 100%;
-  max-height: 360px;
+  max-height: 50cqh;
   width: auto;
   aspect-ratio: 420 / 320;
   flex: 0 1 auto;
