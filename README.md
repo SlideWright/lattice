@@ -10,7 +10,7 @@
 A Marp-based slide deck system for boardroom-quality decks — PDF, HTML, PPTX, or PNG sets — from Markdown.
 
 Lattice produces decks where every slide is a deliberate layout — title,
-diagram, compare-prose, split-list, verdict-grid, and 20+ more —
+diagram, compare-prose, split-panel, verdict-grid, and 20+ more —
 themed through a single CSS palette and rendered to your delivery format
 with no manual formatting work. Decks read as ink-on-paper and pass
 WCAG AA throughout.
@@ -23,7 +23,7 @@ decompositions; project leads get gantt charts, kanban boards, and
 roadmaps; engineers and architects get all 25 Mermaid diagram types and
 side-by-side code diffs; lawyers and compliance get statute stacks,
 authority chains, and obligation matrices; analysts get radar, quadrant,
-and KPI layouts. Fifty-eight layouts, one syntax you already know — no
+and KPI layouts. Fifty-three layouts, one syntax you already know — no
 drawing tools, no boxes, no pasted screenshots.
 
 Lattice is the engine layer of [SlideWright](https://github.com/slidewright) —
@@ -55,7 +55,7 @@ context renders identically.
   text-bearing surface. Preview them all in the
   [component reference](https://slidewright.github.io/lattice/components/).
 - **53 layouts.** Title, divider, content, diagram, cards-grid, compare-prose,
-  quote, timeline, big-number, split-list, verdict-grid, more.
+  quote, timeline-list, big-number, split-panel, verdict-grid, more.
   Each layout has an authoring contract documented in [design/skill.md](design/skill.md).
 - **Mermaid integration.** All 25 renderable Mermaid diagram types are
   themed to match the deck. Per-diagram CSS overrides for the nine that

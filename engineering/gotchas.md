@@ -406,7 +406,7 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
 ### Playground renders broken in mobile Safari/WebKit (counters "00", chart text overlaps, marks drop)
 
 - **Symptom:** On the live docs playground (`/lattice/playground/`) in mobile
-  Safari / iOS / any WebKit browser: numbered components (`principles`,
+  Safari / iOS / any WebKit browser: numbered components (`list principles`,
   `list-criteria`) show `00` for every counter instead of `01 02 03…`; charts
   (`state-chart` etc.) render with giant labels overlapping each other; SVG
   state marks (checklist/verdict-grid/obligation-matrix discs) lose their
@@ -448,7 +448,7 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
 
 - **Symptom:** A deck rendered through the OWNED engine (`?engine=lattice` / the
   Drawing Board's Render-engine toggle) on mobile Safari/iOS: spacing collapses
-  (cards/list rows overlap with ~0 gap), `list-criteria`/`principles` counters
+  (cards/list rows overlap with ~0 gap), `list-criteria`/`list principles` counters
   vanish, title/KPI slides don't centre with breathing room. The SAME deck
   through marp-core (the default engine), and the SAME engine output in headless
   Chromium (`tools/engine-diff.js`), render perfectly. Looks like the
@@ -1166,7 +1166,7 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
   Nested sublists live at `> ul > li > ul > li` and do not match.
 - **Triggered by:** Any layout where top-level `li` items have nested
   `ul`/`ol` sublists and the container receives descendant-scoped styling.
-  Hit on the `split-brief` right-panel border-left accent.
+  Hit on the `split-panel` right-panel border-left accent.
 - **Removable when:** Never — this is correct CSS scoping; note it here to
   avoid the same mistake in future layouts.
 - **Commits:** Split-panel feature commit.
