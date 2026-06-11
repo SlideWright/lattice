@@ -78,8 +78,9 @@ zone; `word-cloud` packs its cloud to 62% and carries a vertical
 "size = frequency" ramp in the rail.
 
 **Wide diagram → bottom-centre key.** `roadmap` (status markers ✓/–/○/╱,
-emitted by `buildStatusLegend` for the states present; omitted on `status` /
-`horizons`), `gantt` (a swatch+label status key reusing each bar's fill,
+emitted by `buildStatusLegend` for the states present; omitted only on
+`status`, which already labels every cell), `gantt` (a swatch+label status key
+reusing each bar's fill,
 emitted by `buildGanttChart`), and `journey` (actor + mood keys reordered to
 the foot of the board, CSS-only).
 

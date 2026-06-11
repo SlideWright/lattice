@@ -472,6 +472,11 @@ in patch versions.
   `--chart-spine-*` tokens on `section.chart-frame` are the override hooks. See
   `engineering/decisions/2026-06-11-chart-legend-system.md` and the demo deck
   `examples/chart-legends.md`.
+- **`roadmap·horizons` now shows the status key too.** The horizons grid sizes
+  to its cards (instead of stretching to fill the body) and the figure centres
+  the stack, so the bottom-centre ✓/–/○/╱ key sits in the freed space below the
+  cards — at full card density, light and dark. It was the one variant the key
+  skipped (#178).
 - **Editor autocomplete is now a workspace preference (Settings → Workspace).**
   A new on/off toggle (on by default) silences the deck-grammar completion popup
   for authors who'd rather type without it. Persisted in localStorage like the

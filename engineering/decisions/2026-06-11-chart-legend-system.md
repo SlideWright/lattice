@@ -119,10 +119,11 @@ The transform emits a key under the grid **only for the states actually
 present**, reusing the cells' exact disc+masked-glyph recipe (one source of
 truth: a theme tuning `--mark-*` / `--state-color` updates both). It lives
 inside `.roadmap-figure`, so the chart-frame body wrap keeps it within the
-body — never spilling to the footer. Two variants opt out: `status` already
-prints the labels on every cell, and `horizons` is too vertically dense (its
-cards carry their own Now/Next/Later framing). Marker-less variants get no
-key automatically.
+body — never spilling to the footer. One variant opts out: `status` already
+prints the labels on every cell, so a key is redundant. (`horizons` once opted
+out too — its grid stretched to fill the body — but the grid now sizes to its
+cards and the figure centres the stack, freeing a key row at full card density;
+see #178.) Marker-less variants get no key automatically.
 
 ## Tokens (the contract)
 
@@ -155,7 +156,8 @@ cohort-quadrant + a long-label stress slide + roadmap, light and dark:
 3. **v3 — spine strengthened (pure-accent fade), swatches unified to
    1.35cqi, labels lifted to body-compact** so nothing squints.
 4. **v4 — roadmap bottom-centre status key** (the "checkbox icons"), gated
-   off `horizons`/`status`, absent when no markers exist.
+   off `status` (and initially `horizons`, since lifted — #178), absent when
+   no markers exist.
 5. **v5 — the 70/30 split**: chart hero left, key rail right, each centred in
    its own zone, spine on the boundary at adaptive height. Stable across all
    footprints; radar labels and the cohort quadrant both land cleanly.
@@ -182,6 +184,11 @@ cohort-quadrant + a long-label stress slide + roadmap, light and dark:
 - `cover` variants (own their full-bleed layout, scoped `:not(.cover)`) and
   `radar·small-multiples` (no single legend, excluded by variant).
 
-## Follow-ups (deliberately deferred)
+## Follow-ups
 
-- **roadmap·horizons key** — would need a density redesign to make room.
+- ~~roadmap·horizons key~~ — **done** (#178): the horizons grid sizes to its
+  cards and the figure centres the stack, so the bottom-centre status key fits
+  below at full card density (light + dark). The chart stays the main course —
+  the cards aren't compacted; the sample is just authored cleanly (a one-line
+  title, no trailing caption), which is what frees the room. No open follow-ups
+  remain.
