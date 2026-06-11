@@ -141,8 +141,8 @@ function workspaceSection() {
   // Render engine. Switching reloads so the playground bundle re-applies the
   // choice at boot (lib/playground/index.js reads the same pref key) and every
   // preview re-renders through the selected engine.
-  ws.append(prefRow('renderEngine', 'Render engine', 'lattice-engine is the experimental Marp replacement',
-    ['Marp Core (default)', 'lattice-engine (experimental)'],
+  ws.append(prefRow('renderEngine', 'Render engine', 'lattice-engine (default) is the owned Marp replacement; Marp Core is the fallback / A-B oracle',
+    ['Marp Core', 'lattice-engine (default)'],
     () => { try { location.reload(); } catch {} }));
   return ws;
 }

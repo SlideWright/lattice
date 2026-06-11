@@ -40,6 +40,21 @@ docs site.
 > harness is the gate for un-shelving it (P5): the owned CSS emitter can return
 > once it pixel-matches across the corpus.
 
+> **Default-flip update (2026-06-11): the owned engine + owned CSS are now the
+> docs-site default.** P5's emitter cleared the parity gate and shipped behind
+> `?css=engine`; this flip promotes the whole owned path to the default. The
+> playground module (`active='lattice'`, `ownCss=true`) and the Drawing Board
+> `renderEngine` workspace pref (`def:'lattice'`) both default to the owned engine;
+> `?engine=marp` / `?css=marp` are the escape hatches and marp-core stays bundled
+> as the live A/B oracle. Desktop verified (Drawing Board renders verdict-grid
+> identically; Architect label reads `lattice-engine`). **GATE: the one
+> un-automatable check remains — a real iOS Safari pass on the owned CSS emitter.
+> The original P1.1 shelving bug (collapsed cqi / dropped counters) was invisible
+> to every headless-Chromium gate, so this flip is prepped and reversible but must
+> not merge until that on-device check is confirmed.** This makes path #4 (docs
+> playground) the first surface to default off marp-core; dropping the bundled
+> `@marp-team/marp-core` import entirely is a later phase.
+
 **Recommendation in one line:** build `lattice-engine` on `markdown-it`
 directly — keep the markdown-it/GFM core Marp already wraps, drop the
 Marpit/marp-core *slide layer* (splitting, directives, theme registration,
