@@ -266,3 +266,52 @@ describe('lattice-engine: structural parity vs marp-core', () => {
     });
   }
 });
+
+// The owned CSS emitter's mobile-WebKit regressions (collapsed cqi, dropped
+// counters) are INVISIBLE to the headless-Chromium pixel gates — they live in the
+// CSS cascade, not the rendered frame. So we gate the emitter at the RULE level:
+// pack the REAL dist/lattice.css through both the engine and marp-core, then assert
+// the three load-bearing pack behaviours match exactly. Rule-level parity ⇒
+// browser-independent ⇒ catches the bug class the pixel harness cannot.
+describe('lattice-engine: CSS-pack parity vs marp-core (load-bearing rules)', () => {
+  const LATTICE = fs.readFileSync(path.join(ROOT, 'dist/lattice.css'), 'utf8');
+  const PALETTE = fs.readFileSync(path.join(ROOT, 'themes/indaco.css'), 'utf8');
+  const enginePack = composeCss({ themeCss: PALETTE, baseLatticeCss: LATTICE });
+  const marpPack = (() => {
+    const m = new Marp({ html: true, math: 'katex', minifyCSS: false, script: false, inlineSVG: false });
+    m.themeSet.add(LATTICE);
+    m.themeSet.add(PALETTE);
+    return m.render('<!-- theme: indaco -->\n# x\n').css;
+  })();
+  const strip = (css) => css.replace(/\/\*[\s\S]*?\*\//g, '');
+  // The selector block that declares the first match of `re` (e.g. a token).
+  const declaringSelector = (css, re) => {
+    const c = strip(css);
+    const m = re.exec(c);
+    if (!m) return null;
+    const open = c.lastIndexOf('{', m.index);
+    return c.slice(c.lastIndexOf('}', open) + 1, open).trim().replace(/\s+/g, ' ');
+  };
+
+  test('cqi tokens carry the same specificity-preserving selector in both engines', () => {
+    for (const re of [/--sp-md:/, /--sp-lg:/, /--radius-md:/]) {
+      const e = declaringSelector(enginePack, re);
+      const m = declaringSelector(marpPack, re);
+      assert.ok(e && /:where\(section\):not\(\[\\20 root\]\)/.test(e), `engine ${re} on "${e}"`);
+      assert.equal(e, m, `${re} selector parity`); // identical, incl. the (0,1,0) guard
+    }
+  });
+
+  test('divider/closing counters reset on the same dead selector in both engines', () => {
+    const re = /counter-reset:\s*lat-divider/;
+    const e = declaringSelector(enginePack, re);
+    assert.equal(e, declaringSelector(marpPack, re));
+    assert.match(e, /section body$/); // dead → implicit root reset, exactly as marp
+  });
+
+  test('neither engine emits live non-pagination ::after content', () => {
+    const live = (css) => /content:\s*counter\(lat-/.test(strip(css));
+    assert.equal(live(enginePack), false);
+    assert.equal(live(marpPack), false);
+  });
+});

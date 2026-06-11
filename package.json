@@ -114,6 +114,7 @@
     "test:components": "node --test 'test/unit/components/*.test.js'",
     "test:cli": "node --test 'test/unit/cli/*.test.js'",
     "test:playground": "node --test 'test/unit/playground/*.test.js'",
+    "test:engine": "node --test 'test/unit/engine/*.test.js'",
     "test:transformers": "node --test 'test/unit/transformers/*.test.js'",
     "test:integration": "node --test 'test/integration/**/*.test.js'",
     "test:integration:galleries": "node --test 'test/integration/galleries/*.test.js'",
