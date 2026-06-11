@@ -1778,26 +1778,34 @@ const googleFonts = `
 // These local faces win over the @import (declared later in the cascade), so
 // the PDF embeds the real type with no network. Absent (e.g. the shipped npm
 // bin, where assets/ isn't in the tarball) it returns '' and the @import path
-// is used unchanged. Playfair/JetBrains aren't self-hosted yet — see
-// assets/fonts/README.md.
+// is used unchanged. Covers the full engine type stack: the display serif
+// (Playfair, incl. italics), the body sans (Outfit), the mono (JetBrains), and
+// the `sketch` hand pair (Caveat, Shantell Sans). See assets/fonts/README.md.
 const SELF_HOSTED_FACES = [
-  ['Caveat', 400, 'caveat-400'],
-  ['Caveat', 700, 'caveat-700'],
-  ['Shantell Sans', 400, 'shantell-400'],
-  ['Shantell Sans', 700, 'shantell-700'],
-  ['Outfit', 400, 'outfit-400'],
-  ['Outfit', 700, 'outfit-700'],
+  ['Caveat', 400, 'normal', 'caveat-400'],
+  ['Caveat', 700, 'normal', 'caveat-700'],
+  ['Shantell Sans', 400, 'normal', 'shantell-400'],
+  ['Shantell Sans', 700, 'normal', 'shantell-700'],
+  ['Outfit', 400, 'normal', 'outfit-400'],
+  ['Outfit', 700, 'normal', 'outfit-700'],
+  ['Playfair Display', 400, 'normal', 'playfair-400'],
+  ['Playfair Display', 700, 'normal', 'playfair-700'],
+  ['Playfair Display', 400, 'italic', 'playfair-italic-400'],
+  ['Playfair Display', 700, 'italic', 'playfair-italic-700'],
+  ['JetBrains Mono', 400, 'normal', 'jetbrains-400'],
+  ['JetBrains Mono', 500, 'normal', 'jetbrains-500'],
+  ['JetBrains Mono', 600, 'normal', 'jetbrains-600'],
 ];
 function embeddedFontsStyle() {
   const dir = path.join(PKG_ROOT, 'assets', 'fonts');
   if (!fs.existsSync(dir)) return '';
   const faces = [];
-  for (const [family, weight, file] of SELF_HOSTED_FACES) {
+  for (const [family, weight, style, file] of SELF_HOSTED_FACES) {
     const fp = path.join(dir, `${file}.woff2`);
     if (!fs.existsSync(fp)) continue;
     const b64 = fs.readFileSync(fp).toString('base64');
     faces.push(
-      `@font-face{font-family:'${family}';font-style:normal;font-weight:${weight};` +
+      `@font-face{font-family:'${family}';font-style:${style};font-weight:${weight};` +
       `font-display:swap;src:url(data:font/woff2;base64,${b64}) format('woff2');}`,
     );
   }

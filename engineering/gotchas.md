@@ -309,10 +309,10 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
   `document.fonts` before `page.pdf()`. So the repo's own renders embed
   the real type offline. `assets/` is excluded from the npm tarball, so
   the shipped bin still uses Google fonts for end users.
-- **Still open:** Playfair Display + JetBrains Mono aren't self-hosted
-  yet, so non-`sketch` headings and inline code still fall back in a
-  network-less render. Drop their woff2 into `assets/fonts/` and add
-  them to `SELF_HOSTED_FACES` to close it.
+- **Coverage:** the whole engine stack is self-hosted — Playfair Display
+  (incl. italics), Outfit, JetBrains Mono, Caveat, Shantell Sans — so a
+  network-less render embeds every face. To add a weight/family, drop its
+  woff2 into `assets/fonts/` and add a row to `SELF_HOSTED_FACES`.
 - **Verify the right way:** check the *rendered pixels* (rasterize a
   page), not `pdffonts`/`get_fonts()` — a subset-embedded face often
   reports an empty name and reads as "missing" when it's actually there.
