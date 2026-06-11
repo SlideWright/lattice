@@ -379,6 +379,7 @@ const dbData = JSON.stringify({
 				vocab: data.lintVocab,
 				catalog: data.catalog,
 				themes: data.themes,
+				autocomplete: getPref('autocomplete') === 'on',
 				onChange: (v) => { if (notify) notify(v); },
 				onCursor: (line) => { for (const f of cursorFns) f(line); },
 			});
@@ -394,6 +395,7 @@ const dbData = JSON.stringify({
 				replaceSelection: (t) => ed.replaceSelection(t),
 				onChange: (fn) => { notify = fn; },
 				onCursor: (fn) => { cursorFns.push(fn); },
+				setAutocomplete: (on) => ed.setAutocomplete(on),
 			};
 			window.dispatchEvent(new Event('db-editor-ready'));
 		</script>

@@ -330,6 +330,11 @@ in patch versions.
 
 ### Added
 
+- **Editor autocomplete is now a workspace preference (Settings → Workspace).**
+  A new on/off toggle (on by default) silences the deck-grammar completion popup
+  for authors who'd rather type without it. Persisted in localStorage like the
+  other workspace prefs; applied live via a CodeMirror compartment, so flipping
+  it takes effect without reloading. Drawing Board (docs-site) only.
 - **Autocomplete is now self-maintaining, gated by a parity test.** Two new
   optional manifest fields make completion data co-located with the component:
   `families` (opt a layout into a scoped family modifier group, e.g.
