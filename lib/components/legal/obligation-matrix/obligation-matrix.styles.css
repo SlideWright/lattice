@@ -27,7 +27,7 @@ section.obligation-matrix table {
 }
 section.obligation-matrix thead tr { background:var(--spectrum) bottom / 100% 2px no-repeat; }
 section.obligation-matrix thead th {
-  font-family:var(--font-mono);
+  font-family:var(--font-label);
   font-size:var(--fs-meta);
   font-weight:700;
   letter-spacing:0.10em;

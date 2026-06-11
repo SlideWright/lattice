@@ -352,13 +352,17 @@ in patch versions.
   `--font-display` token (not just heading elements) at the felt-tip face, so the
   metric numerals that ~16 components pin to `var(--font-display)` — `stats`,
   `big-number`, `quote` text, KPI heroes — take the hand face too instead of
-  falling through to the theme's serif. Every glyph of prose takes a hand face —
-  including label pills/badges (via the `--pill-font` seam); only real inline
-  `code` stays monospace. It is palette-blind —
+  falling through to the theme's serif. The structural "label voice" — eyebrows,
+  table column headers, stat sub-labels, KEY INSIGHT, the running header/footer —
+  rides the hand SANS too, via a new `--font-label` token (defaults to
+  `--font-mono`, re-pointed under `sketch`), so labels read hand-drawn instead of
+  "computer"; real `code`/`pre`/math stay on `--font-mono`. Every glyph of prose
+  takes a hand face — including label pills/badges (via the `--pill-font` seam);
+  only real inline `code` stays monospace. It is palette-blind —
   every stroke resolves through `var(--token)`, so any theme colours it. Default
   is full handwriting; `sketch-clean-body` returns prose to the clean engine face
   for text-dense slides. New tokens: `--sketch-font-display`, `--sketch-font-body`,
-  `--sketch-ink`. Lives in `lib/base/base.sketch.css`; the two hand fonts join the
+  `--sketch-ink`, and the engine-level `--font-label` label-voice seam. Lives in `lib/base/base.sketch.css`; the two hand fonts join the
   engine's existing Google-Fonts `@import`. Pure CSS + type (no SVG filters), so it
   survives the PDF pipeline. Documented in `lib/base/base.docs.md`; demo at
   `examples/sketch.md`. See `engineering/decisions/2026-06-11-sketch-finish.md`.

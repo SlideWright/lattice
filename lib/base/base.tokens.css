@@ -49,6 +49,14 @@
   --font-display: 'Playfair Display', Georgia, serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji';
   --font-body:    'Outfit', system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji';
   --font-mono:    'JetBrains Mono', 'Courier New', monospace, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji';
+  /* The "label voice" — small uppercase tracked labels (eyebrows, table
+     column headers, stat sub-labels, KEY INSIGHT, running header/footer).
+     Defaults to the mono face, so labels share the structural voice of code
+     by default. It is a seam: the `sketch` finish re-points it at the hand
+     face so labels read hand-drawn while real `code`/`pre`/math stay on
+     --font-mono (data must remain unambiguous). Repoint per theme to give
+     labels their own face without touching code. */
+  --font-label:   var(--font-mono);
 
   /* Sketch finish — the hand-drawn font pair the `sketch` modifier swaps
      in (lib/base/base.sketch.css). Caveat carries display/headings (the

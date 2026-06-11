@@ -62,6 +62,13 @@ section.sketch {
    * Body prose is handled by the element selectors below (not the token) so
    * `sketch-clean-body` can revert it without losing the hand display. */
   --font-display: var(--sketch-font-display);
+  /* The "label voice" — eyebrows, table column headers, stat sub-labels,
+   * KEY INSIGHT, the running header/footer — defaults to the mono face
+   * (shared with code). Re-point it at the legible hand SANS (not the
+   * felt-tip script: small uppercase tracked labels must stay readable) so
+   * the structural labels read hand-drawn instead of "computer" beside the
+   * hand content. Real `code`/`pre`/math stay on --font-mono (untouched). */
+  --font-label: var(--sketch-font-body);
   /* Component label pills / badges (state-marker chips, pricing tags,
    * etc.) ride the hand body face too, so every glyph of prose on the
    * slide is hand-drawn. Real inline `code` stays monospace (below). */

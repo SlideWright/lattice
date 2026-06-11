@@ -101,6 +101,14 @@
   --font-display: 'Playfair Display', Georgia, serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji';
   --font-body:    'Outfit', system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji';
   --font-mono:    'JetBrains Mono', 'Courier New', monospace, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji';
+  /* The "label voice" — small uppercase tracked labels (eyebrows, table
+     column headers, stat sub-labels, KEY INSIGHT, running header/footer).
+     Defaults to the mono face, so labels share the structural voice of code
+     by default. It is a seam: the `sketch` finish re-points it at the hand
+     face so labels read hand-drawn while real `code`/`pre`/math stay on
+     --font-mono (data must remain unambiguous). Repoint per theme to give
+     labels their own face without touching code. */
+  --font-label:   var(--font-mono);
 
   /* Sketch finish — the hand-drawn font pair the `sketch` modifier swaps
      in (lib/base/base.sketch.css). Caveat carries display/headings (the
@@ -2173,7 +2181,7 @@ section.compare-prose.transition:not(:has(.compare-prose-inner)) > :is(ul, ol) >
 section.compare-table h2 { font-size:var(--fs-emphasis); margin-bottom:var(--sp-sm); }
 section.compare-table table { width:100%; table-layout:auto; border-collapse:collapse; font-size:var(--fs-meta); flex:1; }
 section.compare-table thead tr { background:var(--spectrum) bottom / 100% 2px no-repeat; }
-section.compare-table thead th { font-family:var(--font-mono); font-size:var(--fs-meta); font-weight:600; letter-spacing:0.10em; text-transform:uppercase; color:var(--text-label); padding:0.625cqi var(--sp-xs) 0.78125cqi; text-align:left; word-wrap:break-word; overflow-wrap:break-word; }
+section.compare-table thead th { font-family:var(--font-label); font-size:var(--fs-meta); font-weight:600; letter-spacing:0.10em; text-transform:uppercase; color:var(--text-label); padding:0.625cqi var(--sp-xs) 0.78125cqi; text-align:left; word-wrap:break-word; overflow-wrap:break-word; }
 section.compare-table td { padding:0.625cqi var(--sp-xs); border-bottom:1px solid var(--border); color:var(--text-body); vertical-align:top; font-size:var(--fs-body-compact); word-wrap:break-word; overflow-wrap:break-word; }
 section.compare-table td:first-child { font-weight:600; color:var(--text-heading); white-space:nowrap; }
 
@@ -5977,7 +5985,7 @@ section.obligation-matrix table {
 }
 section.obligation-matrix thead tr { background:var(--spectrum) bottom / 100% 2px no-repeat; }
 section.obligation-matrix thead th {
-  font-family:var(--font-mono);
+  font-family:var(--font-label);
   font-size:var(--fs-meta);
   font-weight:700;
   letter-spacing:0.10em;
@@ -9063,7 +9071,7 @@ section.stats > ol > li > ul {
   list-style:none; padding:0; margin:0;
 }
 section.stats > ol > li > ul > li {
-  font-family:var(--font-mono); font-size:var(--fs-meta); font-weight:600;
+  font-family:var(--font-label); font-size:var(--fs-meta); font-weight:600;
   letter-spacing:0.18em; text-transform:uppercase; color:var(--text-label);
 }
 
@@ -9821,7 +9829,7 @@ section p:has(> code:only-child):has(+ h5) > code,
 section p:has(> code:only-child):has(+ ul) > code,
 section p:has(> code:only-child):has(+ ol) > code,
 section p:has(> code:only-child):has(+ pre) > code {
-  font-family: var(--font-mono);
+  font-family: var(--font-label);
   font-size: var(--fs-meta);
   font-weight: 600;
   letter-spacing: 0.18em;
@@ -9869,7 +9877,7 @@ section:not(.quote):not(.featured):not(.math):not(.citation-card) > blockquote {
 }
 section:not(.quote):not(.featured):not(.math):not(.citation-card) > blockquote::before {
   content:'KEY INSIGHT';
-  font-family:var(--font-mono);
+  font-family:var(--font-label);
   font-size:var(--fs-meta);
   font-weight:700;
   letter-spacing:0.12em;
@@ -9920,13 +9928,13 @@ section img.emoji {
 }
 section header {
   position:absolute; top:1.875cqi; left:2.34375cqi; right:2.34375cqi;
-  font-family:var(--font-mono); font-size:var(--fs-meta); font-weight:500;
+  font-family:var(--font-label); font-size:var(--fs-meta); font-weight:500;
   letter-spacing:0.10em; text-transform:uppercase; text-align:left;
   color:var(--marp-slide-header-color, var(--text-muted));
 }
 section footer {
   position:absolute; bottom:1.875cqi; left:2.34375cqi; right:6.25cqi;
-  font-family:var(--font-mono); font-size:var(--fs-meta); font-weight:500;
+  font-family:var(--font-label); font-size:var(--fs-meta); font-weight:500;
   line-height:1; letter-spacing:0.06em; text-align:left;
   color:var(--marp-slide-footer-color, var(--text-muted));
 }
@@ -12062,6 +12070,13 @@ section.sketch {
    * Body prose is handled by the element selectors below (not the token) so
    * `sketch-clean-body` can revert it without losing the hand display. */
   --font-display: var(--sketch-font-display);
+  /* The "label voice" — eyebrows, table column headers, stat sub-labels,
+   * KEY INSIGHT, the running header/footer — defaults to the mono face
+   * (shared with code). Re-point it at the legible hand SANS (not the
+   * felt-tip script: small uppercase tracked labels must stay readable) so
+   * the structural labels read hand-drawn instead of "computer" beside the
+   * hand content. Real `code`/`pre`/math stay on --font-mono (untouched). */
+  --font-label: var(--sketch-font-body);
   /* Component label pills / badges (state-marker chips, pricing tags,
    * etc.) ride the hand body face too, so every glyph of prose on the
    * slide is hand-drawn. Real inline `code` stays monospace (below). */
