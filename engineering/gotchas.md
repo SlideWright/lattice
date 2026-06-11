@@ -438,12 +438,21 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
   every `--sp-*` collapses toward 0 (counters sized in `cqh` of a now-zero-height
   row disappear). **Headless-Chromium gates can't see this** — same blind spot as
   the entry above.
-- **Fix:** `composeCss` (`lib/engine/css.js`) mirrors Marpit's `rootReplace`,
-  rewriting `:root` → `:where(section)` (`rootToSection`), so the token blocks
-  land on the slide container exactly as marp emits them. `:where()` keeps 0
-  specificity so component `section.x` rules still override. Locked by
-  `test/unit/engine/engine.test.js` ("relocates :root token blocks…"). Rebuild:
-  `npm run playground:build`.
+- **Fix (the reliable one):** the playground's lattice-engine path
+  (`lib/playground/index.js render()`) keeps the engine's owned HTML but
+  **delegates CSS theme-packing to marp-core's packer** — pairing the owned HTML
+  with marp's exact, mobile-WebKit-correct stylesheet, byte-identical to the
+  default path. The engine's own emitter (`composeCss`) was the suspect, and
+  relocating its `:root` token blocks onto `:where(section)` (`rootToSection`)
+  made the CSS *closer* to marp's, but that change alone is **not** the
+  mechanism — real desktop WebKit renders both placements identically, so the
+  iOS-only divergence was never localized to a single rule. Emitting marp's CSS
+  verbatim sidesteps the whole question. Reimplementing a mobile-correct owned
+  packer (so the engine drops the marp-core CSS dependency) is tracked as P5.
+- **Why headless gates miss it:** every regression gate renders via headless
+  Chromium; the divergence only manifests on real iOS Safari, and even
+  Playwright's Linux WebKit does not reproduce it. The only true test is an iOS
+  device. Rebuild after touching the engine CSS path: `npm run playground:build`.
 - **Triggered by:** Any theme that declares cqi-valued custom properties on
   `:root` — i.e. all of them.
 
