@@ -120,6 +120,14 @@ for (const f of process.argv.slice(2)) {
     continue;
   }
 
+  // lib/theme/* — the Theme Studio deterministic core (colour math, token
+  // derivation, serialization, contrast audit, starters). Palette-shaped;
+  // covered by the theme-*.test.js files under test/unit/palette/.
+  if (rel.startsWith('lib/theme/') && rel.endsWith('.js')) {
+    scripts.add('test:palette');
+    continue;
+  }
+
   // lib/<file>.js (top-level shared infrastructure)
   if (rel.startsWith('lib/') && rel.endsWith('.js')) {
     const script = SCRIPT_FOR_LIB[path.basename(rel)];
