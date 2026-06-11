@@ -366,6 +366,7 @@ const dbData = JSON.stringify({
 		     seeded from the textarea, exposes a tiny adapter on window. -->
 		<script>
 			import { createEditor } from '../playground/editor.js';
+			import { getPref } from '../playground/drawing-board-prefs.js';
 			const host = document.getElementById('db-editor-host');
 			const ta = document.getElementById('db-editor-ta');
 			const initial = ta ? ta.value : '';
