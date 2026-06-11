@@ -22,6 +22,24 @@ docs site.
 > containers for the PDF path, and the P2–P5 path migrations. The sections
 > below are the original proposal, kept as the rationale of record.
 
+> **Parity update (2026-06-11): engine ↔ marp-core at pixel parity.** A
+> standalone visual-parity harness (`tools/engine-parity.mjs`, `npm run parity`)
+> now rasterises every gallery slide through both engines and pixel-diffs them; a
+> tinybench benchmark (`npm run bench`) tracks render cost. A full-corpus sweep
+> (65 galleries + jargon, light/dark) drove the owned engine to **exact pixel
+> parity with marp-core except the one intentional twemoji→font emoji
+> difference.** Five real divergences were found and closed: fenced-code syntax
+> highlighting (wire highlight.js into the markdown-it instance), soft line
+> breaks (`breaks: true`), inline-math `$…$` delimiter guards (currency prose no
+> longer mathified), `_paginate: false` slide counting (absolute position +
+> whole-deck total), and a playground front-matter bug (forced theme is now
+> injected *inside* the YAML, not via a leading comment that displaced the fence).
+> The benchmark confirms the engine's own HTML is cheap (~15 ms / jargon); the
+> render-time gap vs marp is the **marp CSS packer the lattice path still borrows**
+> — i.e. P1.1's emitter remains shelved (it broke mobile WebKit). The parity
+> harness is the gate for un-shelving it (P5): the owned CSS emitter can return
+> once it pixel-matches across the corpus.
+
 **Recommendation in one line:** build `lattice-engine` on `markdown-it`
 directly — keep the markdown-it/GFM core Marp already wraps, drop the
 Marpit/marp-core *slide layer* (splitting, directives, theme registration,

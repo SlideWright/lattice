@@ -49,7 +49,7 @@ a consumer needs Node 18 or 20, they pin to Lattice 1.x.
 | Script | Purpose |
 | --- | --- |
 | `build`, `build:gallery`, … | Rebuild one or all gallery PDFs |
-| `test` | Full unit suite (~4s, 1151 tests) |
+| `test` | Full unit suite (~4s, 1257 tests) |
 | `test:watch` | Re-run unit suite on file change |
 | `test:<scope>` | Scoped unit subset (`palette`/`mermaid`/`parsing`/`components`/`cli`) |
 | `test:integration` | Full integration suite (page-count + parity) |

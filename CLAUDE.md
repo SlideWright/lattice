@@ -132,7 +132,7 @@ flow locally. See `RELEASE.md` for the full contract and `tools/release.js`.
 
 ## Tests and the regression baseline
 
-- `npm test` — full unit suite (~4s, 1151 tests). Inner loop.
+- `npm test` — full unit suite (~4s, 1257 tests). Inner loop.
 - `npm run test:<scope>` — one slice (palette/mermaid/parsing/components/cli).
 - `npm run test:watch` — re-run on file change.
 - `npm run test:integration` — ~30s cold, ~0.2s warm (hash-keyed cache).
