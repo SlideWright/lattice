@@ -1,6 +1,7 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "obligation-matrix",
+  "families": ["state-markers"],
   "function": "comparison",
   "bucket": "legal",
   "form": "matrix",

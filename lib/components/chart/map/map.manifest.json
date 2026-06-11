@@ -1,6 +1,7 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "map",
+  "dataCompletion": true,
   "function": "evidence",
   "form": "spatial",
   "substance": "series",

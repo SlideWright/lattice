@@ -330,6 +330,19 @@ in patch versions.
 
 ### Added
 
+- **Autocomplete is now self-maintaining, gated by a parity test.** Two new
+  optional manifest fields make completion data co-located with the component:
+  `families` (opt a layout into a scoped family modifier group, e.g.
+  `["state-markers"]` for the `checks-*`/`heat` modifiers — membership now lives
+  in the manifest instead of a central by-name list) and `dataCompletion` (the
+  layout has a static body-data vocabulary the editor completes, e.g. `map`). A
+  new unit gate (`autocomplete-parity.test.js`) asserts completion never offers
+  a modifier the linter rejects, that no family token is offered nowhere, and
+  that the `dataCompletion` flags match the editor's data-source registry — so a
+  future layout/variant/modifier can't be added to the engine without flowing
+  into completion. New `npm run new:component` scaffold templates these fields at
+  creation. Migration is behavior-preserving (the same layouts get the same
+  modifiers); see `engineering/decisions/2026-06-11-autocomplete-self-maintenance.md`.
 - **Drawing Board autocomplete reaches beyond `_class:` into the rest of the
   deck grammar.** Four new deterministic, offline completion contexts: the
   registered `theme:` names in front matter (a theme the engine doesn't know

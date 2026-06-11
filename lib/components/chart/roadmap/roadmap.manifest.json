@@ -1,6 +1,7 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "roadmap",
+  "families": ["state-markers"],
   "function": "progression",
   "bucket": "chart",
   "form": "matrix",

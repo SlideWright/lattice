@@ -285,19 +285,23 @@ not all. Manifests opt OUT via `excludes`; default is accepted.
 
 **Tier 3 — Family (scoped).** Cross-cutting section modifiers that apply
 to a SUBSET of layouts — neither universal nor a single component's
-variant. Registered in `FAMILY_MODIFIERS` (`lib/components/index.js`),
-keyed by component name and/or bucket:
+variant. The token sets live in `FAMILY_MODIFIERS`
+(`lib/components/index.js`); membership is declared two ways —
+**per-layout** via the manifest's `families` field (co-located, so a new
+state-bearing layout opts in next to where it's defined) and **per-bucket**
+via the group's `buckets` (when the family is genuinely bucket-wide):
 
-| Family | Modifiers | Scope |
+| Family | Modifiers | Scope (how) |
 |---|---|---|
-| State-markers | `checks-ringed`, `checks-knockout`, `checks-bold`, `checks-outline`, `checks-tonal`, `heat` | `checklist`, `verdict-grid`, `obligation-matrix`, `roadmap` |
+| State-markers | `checks-ringed`, `checks-knockout`, `checks-bold`, `checks-outline`, `checks-tonal`, `heat` | layouts declaring `families: ["state-markers"]` — `checklist`, `verdict-grid`, `obligation-matrix`, `roadmap` |
 | Chart | `canvas` | the `chart` bucket |
 
 `familyModifiersFor(manifest)` resolves the in-scope set, which the
 docs-portal hands to the catalog so the Drawing Board / playground
 autocomplete offers them **only on the layouts they apply to** (right
 after the component's own variants). The linter accepts the flat union
-(`FAMILY_MODIFIER_TOKENS`) everywhere.
+(`FAMILY_MODIFIER_TOKENS`) everywhere, and the autocomplete-parity test
+keeps the two from drifting.
 
 **Tier 4 — Layout-specific.** The manifest's `variants` field. Things
 like `mirror`, `numbered`, `four`, `chosen`, `donut`, etc. Specific to

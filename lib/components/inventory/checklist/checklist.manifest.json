@@ -1,6 +1,7 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "checklist",
+  "families": ["state-markers"],
   "function": "inventory",
   "form": "stack",
   "substance": "structure",
