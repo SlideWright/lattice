@@ -144,6 +144,24 @@ in patch versions.
   Wired through all three render paths via the shared transformer registry;
   incompatible with `math` / `compare-code` (they drive their own title grid).
   See `engineering/decisions/2026-06-11-islands.md` and `examples/islands.md`.
+- **Universal token system — phase 1 (categorical vocabulary).** The overloaded
+  `--cN-light` / `--cN-dark` categorical pair gains a self-describing, foreground/
+  background-explicit vocabulary: `--cat-N-fill` (pale categorical surface),
+  `--cat-N-mark` (saturated stroke / mark / cScale feed), `--cat-on-fill` /
+  `--cat-on-mark` (ink for text placed on each). Where the old `-light` / `-dark`
+  suffix named a *tier* yet collided with the color-scheme meaning of `--dark-*`
+  and the `light-dark()` function, the new names say exactly what a token is and
+  where it goes — color-scheme now lives only inside the `light-dark()` value.
+  Phase 1 aliases new→old, so values are **byte-identical** (zero visual change;
+  all 14 hand-audited / AA-tested palettes untouched) and every existing consumer
+  (`mermaid.css`, the chart transforms) keeps resolving through the old names
+  while the three render paths' Mermaid bridges read the new names. The emulator's
+  offline palette resolver is upgraded to a real recursive evaluator
+  (`lib/core/resolve-token-expr.js`: `var()`+fallback, `light-dark()`,
+  `color-mix()` in oklab/srgb), the offline twin of `getComputedStyle`, so a
+  bridge token may now hold any expression the three paths share. Design,
+  crosswalk, and the remaining phases:
+  `engineering/decisions/2026-06-11-universal-token-system.md`.
 - **Workbench export bridge — library themes reach the Drawing Board.** A theme
   saved in the Workbench library is now selectable in the Drawing Board's palette
   picker (listed with a *(saved)* suffix), registers with the in-browser engine,

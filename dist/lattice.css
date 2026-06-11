@@ -198,6 +198,65 @@
    * AA-safe; all --cN-dark/--c-ink-dark pairs are AA-safe. Hex values are
    * sourced from the Brand-triad rank-1 proposal in themes/palette-audit.md. */
 
+  /* ════════════════════════════════════════════════════════════════════
+   * UNIVERSAL TOKEN SYSTEM — categorical vocabulary (phase 1)
+   * ────────────────────────────────────────────────────────────────────
+   * Full design + crosswalk + strategy:
+   * engineering/decisions/2026-06-11-universal-token-system.md
+   *
+   * The token system is organized on TWO axes:
+   *   1. ABSTRACTION    primitive → semantic → component.
+   *   2. RENDER SHAPE   css-rich (color-mix / nested var(); resolved live by
+   *                     the browser + the marp-vscode runtime) VS bridge-flat
+   *                     (also read by the emulator's offline Mermaid resolver,
+   *                     parsePaletteVars). Bridge tokens used to be required to
+   *                     be a literal or a single light-dark(); the resolver is
+   *                     now a real recursive evaluator (var()+fallback,
+   *                     light-dark(), color-mix() in oklab/srgb), so a bridge
+   *                     token may be any expression those three paths share.
+   *
+   * This block introduces the self-describing CATEGORICAL vocabulary that
+   * replaces the overloaded `--cN-light` / `--cN-dark` pair. There, the
+   * `-light` / `-dark` suffix named a TIER (pale fill vs deep mark) yet
+   * collided head-on with (a) the color-scheme meaning of `--dark-*` and
+   * (b) the light-dark() function — so `--c1-light` was NOT "light-mode c1",
+   * it was a pale fill that itself held a light-dark() pair. The new names
+   * say exactly what they are and where they go:
+   *
+   *   --cat-N-fill   pale categorical SURFACE          (was --cN-light)
+   *   --cat-N-mark   saturated stroke / mark / cScale  (was --cN-dark)
+   *   --cat-on-fill  ink for text placed ON a -fill    (was --c-ink-light)
+   *   --cat-on-mark  ink for text placed ON a -mark    (was --c-ink-dark)
+   *
+   * `fill` / `mark` / `on-fill` / `on-mark` are WYSIWYM and collision-free
+   * (`ink` was already taken by the on-fill text token; the `--accent` /
+   * `--on-accent` pair sets the `on-` precedent). Color-scheme NEVER appears
+   * in a token name — it lives only inside the light-dark() VALUE the theme
+   * assigns to the aliased --cN-light / --cN-dark.
+   *
+   * PHASE 1 (this commit) aliases new → old, so values are byte-identical:
+   * zero visual change, all 14 hand-audited / AA-tested palettes untouched,
+   * and every existing consumer (mermaid.css's ~250 SVG override rules, the
+   * chart transforms) keeps resolving through the old names while the three
+   * render paths' Mermaid bridges read the NEW names. A later phase flips
+   * canonical-ity (themes declare --cat-* directly, old names become the thin
+   * alias) and migrates the remaining groups (diagram-structural, status,
+   * surfaces, the chart `--cat1-*` triad → `--chart-cat-*`). See the note. */
+  --cat-1-fill:  var(--c1-light);   --cat-1-mark:  var(--c1-dark);
+  --cat-2-fill:  var(--c2-light);   --cat-2-mark:  var(--c2-dark);
+  --cat-3-fill:  var(--c3-light);   --cat-3-mark:  var(--c3-dark);
+  --cat-4-fill:  var(--c4-light);   --cat-4-mark:  var(--c4-dark);
+  --cat-5-fill:  var(--c5-light);   --cat-5-mark:  var(--c5-dark);
+  --cat-6-fill:  var(--c6-light);   --cat-6-mark:  var(--c6-dark);
+  --cat-7-fill:  var(--c7-light);   --cat-7-mark:  var(--c7-dark);
+  --cat-8-fill:  var(--c8-light);   --cat-8-mark:  var(--c8-dark);
+  --cat-9-fill:  var(--c9-light);   --cat-9-mark:  var(--c9-dark);
+  --cat-10-fill: var(--c10-light);  --cat-10-mark: var(--c10-dark);
+  --cat-11-fill: var(--c11-light);  --cat-11-mark: var(--c11-dark);
+  --cat-12-fill: var(--c12-light);  --cat-12-mark: var(--c12-dark);
+  --cat-on-fill: var(--c-ink-light);
+  --cat-on-mark: var(--c-ink-dark);
+
   /* ── Universal semantic palette ───────────────────────────────────────
    * Status-signaling colours shared by every theme. Gantt task lifecycle,
    * sequence-diagram notes, alarm fills, today markers — none of those
