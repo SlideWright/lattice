@@ -25,6 +25,100 @@ in patch versions.
 
 ## Unreleased
 
+### Fixed
+
+- **`lattice-engine` pagination now counts like marp-core.** A `paginate: false`
+  slide is still counted toward the page numbering, so the next slide reads its
+  true absolute position and the total reflects the whole deck (the engine had
+  renumbered after a hidden slide and undercounted the total — a deck with a
+  `_paginate: false` cover read "1" where marp reads "2"). Caught by the parity
+  sweep on the diagram gallery.
+- **`lattice-engine` now matches marp-core on fenced code, soft breaks, and
+  inline-math delimiters.** A full-corpus visual-parity sweep (the new
+  `tools/engine-parity.mjs`, which rasterises every gallery slide through both
+  engines and pixel-diffs them) caught three real divergences: (1) fenced code
+  rendered as flat monochrome (no `hljs-*` token spans); (2) soft line breaks
+  dropped their `<br>`, collapsing multi-line blockquotes (e.g. a math `stats`
+  slide's CI/p-value lines) onto one line; (3) inline-math `$…$` had no delimiter
+  guards, so currency prose ("$400M … up 28% … $18M") was swallowed as one math
+  span and garbled. The engine now wires highlight.js into markdown-it
+  (byte-identical spans to marp, Mermaid grammar included), sets `breaks: true`,
+  and guards the math delimiters (opening `$` not followed by whitespace, closing
+  `$` not preceded by whitespace nor followed by a digit). New direct dependency:
+  `highlight.js` (pinned to `^11.11.1` to match the copy marp-core bundles).
+- **Drawing Board / playground: decks with YAML front matter no longer render a
+  spurious blank leading slide on the marp engine.** `lib/playground/index.js`
+  forced the selected palette by prepending a `<!-- theme: … -->` comment, which
+  pushed a `---` front-matter fence off line 0 — Marpit then stopped parsing it as
+  front matter, emitting an empty leading slide and painting the directives as
+  body text. The theme directive is now injected *inside* the front matter when
+  present (a leading comment only when there is none). Caught by the parity sweep;
+  Drawing Board (docs-site) only.
+
+### Added
+
+- **`@slidewright/lattice/engine`** — an experimental, owned markdown→slide
+  engine (`lib/engine/`), the P1 core of the Marp-replacement effort
+  (`engineering/decisions/2026-06-10-marp-replacement-proposal.md`). Built on
+  `markdown-it` 14, it reproduces Marpit's slide/directive token contract so the
+  existing Lattice plugins and the transformer registry run on it unchanged, and
+  matches marp-core's per-section HTML structure across the full gallery corpus
+  (55/55 decks; twemoji is the one intentional divergence — emoji render via
+  font, not `<img class="emoji">`). It does **not** yet replace any shipping
+  render path (marp-cli, the playground, and the emulator are untouched). New
+  direct dependency: `markdown-it`.
+- **`lattice-engine` now emits a complete stylesheet (P1.1).** `render().css` is
+  no longer a stub: it composes an engine-owned scaffold with the selected
+  theme, resolving `@import 'lattice'` against the registered base palette and
+  honouring the `size:` directive's `@size` geometry (`lib/engine/css.js`). The
+  scaffold is modeled on Marpit's — load-bearing rules only
+  (slide box + `container-type`, pagination pseudo-element, `@page`/print
+  fidelity), emitted *correctly* (no `padding:inherit` on the pagination
+  number), so themes compose without the `!important` override layer marp-core's
+  defaults force. It also reproduces Marpit's one load-bearing CSS-pack step —
+  relocating each theme `:root { … }` token block onto the slide `:where(section)`
+  so cqi-valued tokens (`--sp-*`, …) resolve against the slide's
+  `container-type:size` container rather than the viewport; left on `:root` they
+  render fine on desktop Chromium but collapse on mobile WebKit (gaps → 0,
+  counters vanish). The marp-only baggage (twemoji img sizing, `marp-h1`
+  auto-scaling, full `div.marpit > section` selector prefixing, the `video`
+  webkit hack, `scroll-snap-align`) is deliberately absent. A deck now renders to
+  a styled PDF through the engine alone, with no marp-core in the loop.
+- **The docs playground can render through `lattice-engine` (P3, opt-in).** The
+  playground bundle now carries both engines; `window.LatticePlayground` gains
+  `setEngine('marp'|'lattice')` and an `engine` getter, and a `?engine=lattice`
+  query param selects the owned engine on load. The default stays marp-core, so
+  visitors and every existing gate are unchanged — but the Drawing Board now
+  doubles as a live A/B harness for the Marp-replacement engine. Themes register
+  on both engines, so switching needs no re-fetch.
+- **Drawing Board: export provenance + a visible build tag.** Because the two
+  engines render pixel-identically (the owned engine delegates CSS packing to
+  marp's, so a marp-core and a lattice-engine PDF differ only by the writer's
+  random PDF `/ID`), exports now record *which* engine produced them. PDF
+  (jsPDF) and PPTX exports stamp the document properties — `Creator`/`Subject`
+  carry the engine + Lattice version + build, and a structured `Keywords` string
+  (`engine=…; lattice=…; build=…; theme=…; mode=…; slides=…; src=…`) packs the
+  full context (the source field is a short FNV-1a hash of the deck markdown).
+  The vector Print path encodes the engine into the PDF title (the only field
+  Chromium lets us set). A matching `build <hash>` + live engine badge rides the
+  Architect header row (right-aligned, stacked) on **PR-preview deploys only**,
+  so a tester on a device can read off exactly which deploy + engine they loaded
+  without it crowding the topbar. Drawing Board (docs-site) only — no engine or
+  package change.
+
+### Changed
+
+- **Color emoji now load as a webfont.** `lattice.css` adds `Noto Color Emoji`
+  to its Google Fonts `@import` so raw unicode emoji can render in color on the
+  owned render paths (`lattice-engine`, `lattice-emulator`), which emit emoji as
+  plain text rather than twemoji `<img>`. Because Chromium honors an *installed*
+  emoji font far more reliably than an `@font-face` one, CI and the cloud session
+  hook now also install `fonts-noto-color-emoji`; the SlideWright desktop app
+  must ensure a color emoji font is present in its WebView. The marp-cli /
+  marp-vscode paths still use twemoji and keep the `:not(.emoji)` carve-outs. See
+  `engineering/gotchas.md` "Color emoji needs an installed font on the owned
+  render paths".
+
 ### Removed
 
 - **Breaking: the Puter cloud tier is removed from the Drawing Board.** OpenRouter

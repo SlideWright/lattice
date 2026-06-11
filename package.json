@@ -39,6 +39,7 @@
     "./default/min": "./dist/lattice-default.min.css",
     "./config": "./marp.config.js",
     "./marp.config.js": "./marp.config.js",
+    "./engine": "./lib/engine/index.js",
     "./themes/*": "./themes/*",
     "./lib/*": "./lib/*",
     "./dist/*": "./dist/*",
@@ -101,6 +102,8 @@
     "preview:watch": "node tools/preview.js --watch",
     "test": "node --test 'test/unit/**/*.test.js'",
     "test:watch": "node --test --watch 'test/unit/**/*.test.js'",
+    "bench": "node test/benchmark/engine-bench.mjs",
+    "parity": "node tools/engine-parity.mjs",
     "test:coverage": "c8 node --test 'test/unit/**/*.test.js'",
     "test:coverage:all": "c8 node --test 'test/unit/**/*.test.js' 'test/integration/**/*.test.js'",
     "test:palette": "node --test 'test/unit/palette/*.test.js'",
@@ -128,7 +131,9 @@
     "@marp-team/marp-cli": "^4.3.1",
     "@mermaid-js/mermaid-cli": "^11.0.0",
     "function-plot": "^1.25.4",
+    "highlight.js": "^11.11.1",
     "katex": "^0.16.46",
+    "markdown-it": "^14.1.1",
     "puppeteer": "^23.0.0"
   },
   "engines": {
@@ -139,6 +144,7 @@
     "c8": "^11.0.0",
     "esbuild": "^0.28.0",
     "jsdom": "^29.1.1",
-    "lefthook": "^2.1.6"
+    "lefthook": "^2.1.6",
+    "tinybench": "^6.0.2"
   }
 }

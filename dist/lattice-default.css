@@ -82,7 +82,7 @@
  * render paths load the webfonts the same way.
  */
 
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Noto+Color+Emoji&display=swap');
 
 :root {
   /* Color tokens are defined by the active palette (themes/<name>.css),
@@ -95,9 +95,16 @@
   /* Emoji fallbacks (Apple/Segoe/Noto) are appended to every stack so raw
      unicode emoji in headings, body, and chrome render inline at the local
      font's metrics. Without them, Chromium falls back unpredictably and the
-     emoji may render larger than the text and push lines around. The
-     marp-cli path also rewrites emoji to <img class="emoji"> (twemoji);
-     section img.emoji handles that variant. */
+     emoji may render larger than the text and push lines around.
+     'Noto Color Emoji' is also LOADED via the @import above (unicode-range
+     subsetted, so glyphs fetch only when an emoji is actually used) — this is
+     what makes raw unicode emoji render in COLOR reliably on the owned render
+     paths (lattice-engine, lattice-emulator) even on a bare CI/server or the
+     desktop WebView where no system emoji font is installed. Those paths emit
+     emoji as plain text (no twemoji). The marp-cli / marp-vscode paths instead
+     rewrite emoji to <img class="emoji"> (twemoji); section img.emoji handles
+     that variant, and the loaded font is simply unused there (unicode-range
+     keeps it from touching any non-emoji text). */
   --font-display: 'Playfair Display', Georgia, serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji';
   --font-body:    'Outfit', system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji';
   --font-mono:    'JetBrains Mono', 'Courier New', monospace, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji';

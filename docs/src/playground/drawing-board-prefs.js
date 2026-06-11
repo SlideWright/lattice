@@ -27,6 +27,11 @@ export const PREFS = {
   // Deck-grammar autocomplete in the editor (component names, modifiers, theme
   // names, skeletons, map regions, …). On by default; off silences the popup.
   autocomplete: { key: 'lattice-db-autocomplete', def: 'on',      values: ['on', 'off'] },
+  // Which render engine the live preview uses: marp-core (default) or the owned
+  // lattice-engine (the Marp-replacement, opt-in). The playground bundle reads
+  // this same key at boot — see lib/playground/index.js ENGINE_PREF_KEY — so the
+  // choice applies across the Drawing Board, specimens, and the landing tiles.
+  renderEngine: { key: 'lattice-db-render-engine', def: 'marp',   values: ['marp', 'lattice'] },
 };
 
 export function getPref(name) {

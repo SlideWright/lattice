@@ -155,3 +155,17 @@ it is load-bearing.
   `radar`, the seven `math*` layouts, and the six legal-family
   layouts. Housekeeping, not history: when a layout ships outside
   the catalogues, add an entry here.
+- [2026-06-10-marp-replacement-proposal.md](2026-06-10-marp-replacement-proposal.md) —
+  full proposal to replace Marp. Audits exactly what Marp/Marpit does
+  for Lattice today (one dep, `@marp-team/marp-cli`; the thin slide
+  layer: GFM parse, `---` splitting, directives, `@theme`/`@size`,
+  `<section>` chrome, `![bg]`, KaTeX, twemoji/auto-scaling) versus
+  what's already ours (the markdown-it plugins, the transformer
+  registry, `lattice.css`). Maps the four render paths (emulator +
+  runtime already Marp-free; marp-cli + the docs playground still
+  coupled), the emulator's hand-rolled-regex parser gaps vs GFM, the
+  VS Code question (marp-vscode *is* Marp Core — Scope 1 keeps it),
+  and the website's single render seam. Recommends building
+  `lattice-engine` on `markdown-it` and a five-phase plan that keeps
+  the baselines green. Expands the "Own the engine" section of the
+  Tauri note. **Status: proposal / open.**

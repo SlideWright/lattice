@@ -105,6 +105,39 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
   and on by default. The `:not(.emoji)` carve-out is the correct shape.
 - **Commits:** `claude/fix-emoji-rendering-WO4vI`.
 
+### Color emoji needs an installed font on the owned render paths
+
+- **Symptom:** Emoji render as monochrome glyphs or tofu boxes (▯) in
+  PDFs produced by `lattice-engine` or `lattice-emulator` on a bare
+  host (CI runner, server, a freshly-provisioned desktop WebView) — even
+  though they look fine on a Mac/Windows dev machine.
+- **Cause:** Unlike the marp-cli / marp-vscode paths (which rewrite
+  emoji to twemoji `<img>` — see the entry above), the **owned paths
+  emit emoji as plain unicode text**. Headless Chromium then needs a
+  *color* emoji font to be available to render them. The `--font-*`
+  stacks name `'Noto Color Emoji'` and `lattice.css` now also loads it
+  as a webfont via the Google Fonts `@import`, **but Chromium is
+  unreliable about honoring `@font-face` for emoji presentation
+  sequences** — it frequently bypasses the webfont and uses the
+  platform emoji font. So the webfont is a portable bonus, not a
+  guarantee; an *installed* color emoji font is the reliable mechanism.
+- **Mitigation:** Install `fonts-noto-color-emoji` (Debian/Ubuntu) in
+  every environment that renders Lattice PDFs:
+  - **CI** — `.github/workflows/ci.yml`, the integration job's apt step.
+  - **Cloud sessions** — `.claude/hooks/session-start.sh` (step 2b).
+  - **The SlideWright desktop app** — its WebView/packaging must ship or
+    install a color emoji font; the engine alone can't guarantee it.
+- **Triggered by:** Any unicode emoji in a deck rendered through
+  `lattice-engine` / `lattice-emulator` on a host without a color
+  emoji font.
+- **Removable when:** Never fully — it's inherent to emitting emoji as
+  text. The webfont `@import` and the font installs together are the
+  correct shape. (Note: this sandbox's headless Chromium loads **no**
+  webfonts at all, so verify emoji rendering relies on the *installed*
+  font here, not the `@import`.)
+- **See:** `engineering/decisions/2026-06-10-marp-replacement-proposal.md`
+  (the twemoji-drop decision).
+
 ### Marpit "spot replaces global" for the `class:` directive
 
 - **Symptom:** Adding `class: dark` to front matter does nothing on a
@@ -382,6 +415,46 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
   foreignObject) rather than per-feature, so new components inherit it.
 - **Removable when:** WebKit gains reliable layout for HTML in a scaled SVG
   `<foreignObject>`. No timeline; don't count on it.
+
+### lattice-engine: deck looks fine on desktop but collapses on mobile WebKit (no `:root` token relocation)
+
+- **Symptom:** A deck rendered through the OWNED engine (`?engine=lattice` / the
+  Drawing Board's Render-engine toggle) on mobile Safari/iOS: spacing collapses
+  (cards/list rows overlap with ~0 gap), `list-criteria`/`principles` counters
+  vanish, title/KPI slides don't centre with breathing room. The SAME deck
+  through marp-core (the default engine), and the SAME engine output in headless
+  Chromium (`tools/engine-diff.js`), render perfectly. Looks like the
+  foreignObject WebKit class above, but the engine already renders
+  `inlineSVG:false` plain sections — so that's not it.
+- **Cause:** Lattice declares its cqi spacing/radius scale on `:root`
+  (`dist/lattice.css` `:root { --sp-md:1.875cqi; … }`). A `cqi` unit resolves
+  against the element's nearest `container-type` ancestor; `:root` has none, so
+  it falls back to the viewport. Marpit's theme `pack()` quietly rewrites every
+  theme `:root` selector onto the slide `section` (the `container-type:size`
+  query container) — so on the marp path the tokens resolve against the SLIDE.
+  The engine's first clean CSS emitter (P1.1) inlined `@import 'lattice'` with no
+  selector rewrite, leaving the tokens trapped on `:root`. Desktop Chromium
+  re-resolves cqi at the use-site so it looks fine; mobile WebKit does not, and
+  every `--sp-*` collapses toward 0 (counters sized in `cqh` of a now-zero-height
+  row disappear). **Headless-Chromium gates can't see this** — same blind spot as
+  the entry above.
+- **Fix (the reliable one):** the playground's lattice-engine path
+  (`lib/playground/index.js render()`) keeps the engine's owned HTML but
+  **delegates CSS theme-packing to marp-core's packer** — pairing the owned HTML
+  with marp's exact, mobile-WebKit-correct stylesheet, byte-identical to the
+  default path. The engine's own emitter (`composeCss`) was the suspect, and
+  relocating its `:root` token blocks onto `:where(section)` (`rootToSection`)
+  made the CSS *closer* to marp's, but that change alone is **not** the
+  mechanism — real desktop WebKit renders both placements identically, so the
+  iOS-only divergence was never localized to a single rule. Emitting marp's CSS
+  verbatim sidesteps the whole question. Reimplementing a mobile-correct owned
+  packer (so the engine drops the marp-core CSS dependency) is tracked as P5.
+- **Why headless gates miss it:** every regression gate renders via headless
+  Chromium; the divergence only manifests on real iOS Safari, and even
+  Playwright's Linux WebKit does not reproduce it. The only true test is an iOS
+  device. Rebuild after touching the engine CSS path: `npm run playground:build`.
+- **Triggered by:** Any theme that declares cqi-valued custom properties on
+  `:root` — i.e. all of them.
 
 ### Playground math (and any cqi/cqh layout) renders tiny + "jumps/rescales"
 
