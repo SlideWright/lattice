@@ -347,8 +347,12 @@ in patch versions.
   `gantt` (status by bar colour) gains a bottom-centre **swatch + label** key
   for the statuses present, each swatch reusing the bar's exact fill; and
   `word-cloud` joins the 70/30 rail with a vertical **size = frequency** key in
-  the right zone. New `--chart-legend-*` / `--chart-spine-*` tokens on
-  `section.chart-frame` are the override hooks. See
+  the right zone. A consistency pass left-aligns every key at a fixed inset off
+  the spine (so the gap is identical chart-to-chart), lets `map` fill its zone
+  instead of a fixed width, keeps the `word-cloud` cloud clear of its divider,
+  opens up `journey`'s bottom keys, and re-centres the `funnel` bands (they
+  were drawn right-of-centre). New `--chart-legend-*` /
+  `--chart-spine-*` tokens on `section.chart-frame` are the override hooks. See
   `engineering/decisions/2026-06-11-chart-legend-system.md` and the demo deck
   `examples/chart-legends.md`.
 - **Editor autocomplete is now a workspace preference (Settings → Workspace).**

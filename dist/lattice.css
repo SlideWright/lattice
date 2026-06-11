@@ -3164,12 +3164,14 @@ section.journey .journey-board {
 section.journey .journey-legend {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--sp-sm) var(--sp-md);
+  /* Generous horizontal rhythm — the key sits in a full-width band with room to
+   * spare, so the actors spread out instead of bunching. */
+  gap: var(--sp-md) var(--sp-2xl);
   list-style: none;
   margin: 0;
   padding: 0;
-  font-size: var(--fs-meta);
-  color: var(--text-muted, var(--text-body));
+  font-size: var(--fs-body-compact);
+  color: var(--text-secondary, var(--text-body));
 }
 section.journey .journey-actor {
   display: inline-flex;
@@ -3186,19 +3188,19 @@ section.journey .journey-actor-dot {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 1.09375cqi;
-  height: 1.09375cqi;
+  width: 1.45cqi;
+  height: 1.45cqi;
   border-radius: 50%;
   background: var(--actor-color);
   color: var(--on-accent, var(--on-dark-primary));
-  font-size: 0.664cqi;
+  font-size: 0.85cqi;
   font-weight: 700;
   line-height: 1;
   letter-spacing: 0.02em;
   flex-shrink: 0;
 }
 section.journey .journey-actor-dot[data-label-len="2"] {
-  font-size: 0.546875cqi;
+  font-size: 0.7cqi;
   letter-spacing: 0;
 }
 section.journey .journey-actor-name {
@@ -3210,12 +3212,12 @@ section.journey .journey-mood-legend {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 0.46875cqi;
+  gap: 0.85cqi;
   list-style: none;
   margin: 0;
   padding: 0;
-  font-size: var(--fs-meta);
-  color: var(--text-muted, var(--text-body));
+  font-size: var(--fs-body-compact);
+  color: var(--text-secondary, var(--text-body));
   letter-spacing: 0.02em;
 }
 section.journey .journey-mood-key {
@@ -3234,16 +3236,13 @@ section.journey .journey-mood-key-high {
   opacity: 0.75;
 }
 section.journey .journey-mood-key-swatch {
-  width: 1.5625cqi;
-  height: 0.9375cqi;
-  border-radius: 0.234375cqi;
+  width: 2.1cqi;
+  height: 1.25cqi;
+  border-radius: 0.3cqi;
   background: var(--mood-color);
 }
 section.journey .journey-mood-key-label {
-  /* Previously 0.78125cqi + opacity:0.65 — compounded sub-token size plus
-   * opacity fade made mood scale numbers illegible at desk distance.
-   * Raised to --fs-meta (11.25pt) and opacity ≥0.85 to meet minimum legibility. */
-  font-size: var(--fs-meta);
+  font-size: var(--fs-body-compact);
   opacity: 0.85;
 }
 section.journey .journey-mood-key[data-mood="5"] { --mood-color: var(--journey-mood-5); }
@@ -3269,10 +3268,10 @@ section.journey .journey-mood-legend {
   width: 100%;
 }
 section.journey .journey-legend {
-  margin-top: var(--sp-lg);   /* set the key apart from the diagram above */
+  margin-top: var(--sp-xl);   /* set the key apart from the diagram above */
 }
 section.journey .journey-mood-legend {
-  margin-top: var(--sp-2xs);  /* the two key rows sit together at the foot */
+  margin-top: var(--sp-sm);   /* breathing room between the two key rows */
 }
 
 /* ── Section ribbon ─────────────────────────────────────────────────── */
@@ -5147,12 +5146,12 @@ section.map .map-figure {
   gap: 3cqi;
 }
 section.map .map-svg {
-  flex: 0 1 auto;
   min-width: 0;
-  /* Width-driven (a world map is wide-short): take a generous but bounded share
-   * of the group so the legend rail keeps its room and the pair stays balanced.
-   * height:auto lets the aspect ratio set the height. */
-  width: 56cqi;
+  /* Width-driven (a world map is wide-short): FILL the 70% canvas zone so the
+   * map scales to the room it's actually given (it was pinned small at 56cqi).
+   * height:auto lets the aspect ratio set the height; max-height guards a tall
+   * two-line subtitle. */
+  width: 100%;
   max-width: 100%;
   height: auto;
   max-height: 100%;
@@ -11514,6 +11513,7 @@ section.chart-frame {
   --chart-canvas-share: 70%;             /* the 70 of the 70/30 split           */
   --chart-rail-share: 30%;               /* the 30 — the key's rail             */
   --chart-legend-max: 25cqi;             /* key cap (< rail) — labels wrap past  */
+  --chart-legend-pad: var(--sp-xl);      /* fixed spine→key gap (consistent)     */
   --chart-legend-row-gap: 1cqi;          /* vertical rhythm between legend rows  */
   --chart-spine-h: 78%;                  /* spine height — % of body, never spills */
   --chart-spine-w: 2px;                  /* spine thickness                      */
@@ -11556,22 +11556,23 @@ section.quadrant:not(.cover) .quadrant-figure[data-variant="cohort"] > :first-ch
   align-self: center;
 }
 
-/* Key centres in its 30% rail — a capped width so it never overpowers the
- * chart, a readable body-compact ramp and a generous row rhythm so nothing
- * squints or squishes, and labels that WRAP past the cap. Per-component legend
- * internals (swatch palette, value styling) stay in each component's styles. */
+/* Key — LEFT-ALIGNED at a fixed inset off the spine, so the spine→key gap is
+ * IDENTICAL on every chart (centring the key in its zone instead made a wide
+ * key — pie, with values — sit closer to the spine than a narrow one). Capped
+ * to the rail, labels WRAP. Per-component legend internals (swatch palette,
+ * value styling) stay in each component's styles. */
 section.piechart:not(.cover) .piechart-legend,
 section.radar:not(.cover) .radar-figure:not([data-variant="small-multiples"]) .radar-legend,
 section.map:not(.cover) .map-legend,
 section.quadrant:not(.cover) .quadrant-figure[data-variant="cohort"] .quadrant-legend {
   grid-column: 2;
-  justify-self: center;
+  justify-self: start;
   align-self: center;
   box-sizing: border-box;
   min-width: 0;
-  max-width: min(var(--chart-legend-max), 100%);
+  max-width: 100%;
   margin: 0;
-  padding: 0;
+  padding-left: var(--chart-legend-pad);
   display: flex;
   flex-direction: column;
   gap: var(--chart-legend-row-gap);

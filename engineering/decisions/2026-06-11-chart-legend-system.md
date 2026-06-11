@@ -156,10 +156,20 @@ cohort-quadrant + a long-label stress slide + roadmap, light and dark:
    1.35cqi, labels lifted to body-compact** so nothing squints.
 4. **v4 — roadmap bottom-centre status key** (the "checkbox icons"), gated
    off `horizons`/`status`, absent when no markers exist.
-5. **v5 — the 70/30 split** (this revision): chart hero left, key rail right,
-   each centred in its own zone, spine on the boundary at adaptive height.
-   Stable across all footprints; radar labels and the cohort quadrant both
-   land cleanly. Shipped.
+5. **v5 — the 70/30 split**: chart hero left, key rail right, each centred in
+   its own zone, spine on the boundary at adaptive height. Stable across all
+   footprints; radar labels and the cohort quadrant both land cleanly.
+6. **v6 — cross-chart consistency pass.** Keys are now **left-aligned at a
+   fixed inset off the spine** (`--chart-legend-pad`), so the spine→key gap is
+   identical on every chart (centring made a wide key sit closer than a narrow
+   one). `map` fills its 70% zone instead of a fixed 56cqi (it was pinned
+   small). `word-cloud` packs to 62% with the spine at 70%, so the cloud no
+   longer touches the divider. `funnel` re-centres its bands on the viewBox
+   centre (they were drawn 28 units right, pushing the whole figure off-axis).
+   `journey`'s bottom keys get generous gaps + larger dots/swatches so they
+   use the full-width band instead of bunching. `kanban`/`state-chart` audited
+   — both already print a labelled status pill on every card/node, so neither
+   needs a key (only `gantt`, whose bars carry no text, did). Shipped.
 
 ## What this does NOT change
 

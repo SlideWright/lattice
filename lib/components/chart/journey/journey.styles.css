@@ -104,12 +104,14 @@ section.journey .journey-board {
 section.journey .journey-legend {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--sp-sm) var(--sp-md);
+  /* Generous horizontal rhythm — the key sits in a full-width band with room to
+   * spare, so the actors spread out instead of bunching. */
+  gap: var(--sp-md) var(--sp-2xl);
   list-style: none;
   margin: 0;
   padding: 0;
-  font-size: var(--fs-meta);
-  color: var(--text-muted, var(--text-body));
+  font-size: var(--fs-body-compact);
+  color: var(--text-secondary, var(--text-body));
 }
 section.journey .journey-actor {
   display: inline-flex;
@@ -126,19 +128,19 @@ section.journey .journey-actor-dot {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 1.09375cqi;
-  height: 1.09375cqi;
+  width: 1.45cqi;
+  height: 1.45cqi;
   border-radius: 50%;
   background: var(--actor-color);
   color: var(--on-accent, var(--on-dark-primary));
-  font-size: 0.664cqi;
+  font-size: 0.85cqi;
   font-weight: 700;
   line-height: 1;
   letter-spacing: 0.02em;
   flex-shrink: 0;
 }
 section.journey .journey-actor-dot[data-label-len="2"] {
-  font-size: 0.546875cqi;
+  font-size: 0.7cqi;
   letter-spacing: 0;
 }
 section.journey .journey-actor-name {
@@ -150,12 +152,12 @@ section.journey .journey-mood-legend {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 0.46875cqi;
+  gap: 0.85cqi;
   list-style: none;
   margin: 0;
   padding: 0;
-  font-size: var(--fs-meta);
-  color: var(--text-muted, var(--text-body));
+  font-size: var(--fs-body-compact);
+  color: var(--text-secondary, var(--text-body));
   letter-spacing: 0.02em;
 }
 section.journey .journey-mood-key {
@@ -174,16 +176,13 @@ section.journey .journey-mood-key-high {
   opacity: 0.75;
 }
 section.journey .journey-mood-key-swatch {
-  width: 1.5625cqi;
-  height: 0.9375cqi;
-  border-radius: 0.234375cqi;
+  width: 2.1cqi;
+  height: 1.25cqi;
+  border-radius: 0.3cqi;
   background: var(--mood-color);
 }
 section.journey .journey-mood-key-label {
-  /* Previously 0.78125cqi + opacity:0.65 — compounded sub-token size plus
-   * opacity fade made mood scale numbers illegible at desk distance.
-   * Raised to --fs-meta (11.25pt) and opacity ≥0.85 to meet minimum legibility. */
-  font-size: var(--fs-meta);
+  font-size: var(--fs-body-compact);
   opacity: 0.85;
 }
 section.journey .journey-mood-key[data-mood="5"] { --mood-color: var(--journey-mood-5); }
@@ -209,10 +208,10 @@ section.journey .journey-mood-legend {
   width: 100%;
 }
 section.journey .journey-legend {
-  margin-top: var(--sp-lg);   /* set the key apart from the diagram above */
+  margin-top: var(--sp-xl);   /* set the key apart from the diagram above */
 }
 section.journey .journey-mood-legend {
-  margin-top: var(--sp-2xs);  /* the two key rows sit together at the foot */
+  margin-top: var(--sp-sm);   /* breathing room between the two key rows */
 }
 
 /* ── Section ribbon ─────────────────────────────────────────────────── */
