@@ -12020,7 +12020,14 @@ section.treatment-none {
  *                           stroke + a per-card micro-rotation, on every
  *                           card-style layout's card surface (the
  *                           CARD_STYLE_LAYOUTS family in
- *                           lib/authoring/lint-core.js).
+ *                           lib/authoring/lint-core.js), AND on the other
+ *                           structures that draw their own lines — table
+ *                           frames + rules (compare-table, glossary,
+ *                           obligation-matrix, list-tabular), boxed
+ *                           blockquotes (quote, redline), bordered rows
+ *                           (actors), and the divider rule. The finish
+ *                           roughens lines the deck draws; it never invents
+ *                           a box (big-number / stats stay pure type).
  *
  * Default `sketch` is FULL handwriting (headings + body). `sketch-clean-body`
  * opts body back to the clean --font-body for dense, text-heavy slides
@@ -12142,6 +12149,72 @@ section.sketch.matrix-2x2 > ol > li:nth-child(3n),
 section.sketch.pricing > ul > li:nth-child(3n) {
   border-radius: 225px 15px 255px 18px / 15px 255px 15px 225px !important;
   transform: rotate(0.4deg);
+}
+
+/* ── HAND-DRAWN RULES — the structures that draw their OWN lines ──────────
+ * The card family above gets the full drawn box. The principle for
+ * everything else: the finish ROUGHENS lines the deck already draws — table
+ * grids, the ledger rules, blockquote frames, the divider stroke — so no
+ * machine-straight hairline survives next to the hand type. It does NOT
+ * invent boxes: structures that draw no lines (big-number, stats — pure
+ * centred type) stay font-only, and content the slide merely contains
+ * (photos, real `code`, chart SVG geometry) is out of scope by the same
+ * rule. See engineering/decisions/2026-06-11-sketch-finish.md.
+ *
+ * Tables carry a drawn FRAME (border + asymmetric radius + offset ink),
+ * gentler than the card radius so a full-width grid reads as a hand-ruled
+ * box, not a balloon. collapse→separate because border-radius is inert on
+ * border-collapse:collapse; border-spacing:0 keeps the rows tight. */
+section.sketch.compare-table table,
+section.sketch.glossary table,
+section.sketch.obligation-matrix table,
+section.sketch.list-tabular > ol {
+  border: 2px solid var(--sketch-ink);
+  border-radius: 18px 5px 15px 8px / 8px 15px 5px 18px;
+  box-shadow: 2px 3px 0 -1px color-mix(in srgb, var(--sketch-ink) 30%, transparent);
+}
+section.sketch.compare-table table,
+section.sketch.glossary table,
+section.sketch.obligation-matrix table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+/* Interior rules become ink strokes rather than spreadsheet hairlines. The
+ * ledger's own frame replaces the first/last row rule (no doubled line). */
+section.sketch.compare-table td,
+section.sketch.obligation-matrix td,
+section.sketch.list-tabular > ol > li {
+  border-bottom-color: var(--sketch-ink);
+}
+section.sketch.list-tabular > ol > li:first-child { border-top-color: transparent; }
+section.sketch.list-tabular > ol > li:last-child { border-bottom-color: transparent; }
+
+/* Boxed blockquotes (the quote callout, the redline statement) become drawn
+ * boxes like the cards. redline keeps its semantic left spine — we wobble
+ * the corners and add the offset ink, never recolour the meaning-bearing
+ * border. actors rows are bordered row-cards: same hand corners, colours
+ * (the per-actor left hue) untouched. */
+section.sketch.quote blockquote {
+  border: 2px solid var(--sketch-ink) !important;
+  border-radius: 255px 12px 225px 15px / 15px 225px 15px 255px !important;
+  box-shadow: 2px 3px 0 -1px color-mix(in srgb, var(--sketch-ink) 30%, transparent);
+}
+section.sketch.redline > blockquote {
+  border-radius: 4px 225px 15px 4px / 4px 15px 225px 4px;
+  box-shadow: 2px 3px 0 -1px color-mix(in srgb, var(--sketch-ink) 30%, transparent);
+}
+section.sketch.actors > ul > li,
+section.sketch.actors > ol > li {
+  border-radius: 255px 12px 225px 15px / 15px 225px 15px 255px;
+  box-shadow: 2px 3px 0 -1px color-mix(in srgb, var(--sketch-ink) 30%, transparent);
+}
+
+/* The divider rule bends into a hand stroke (the h2-underline trick) and
+ * thickens a touch so it reads as drawn ink, not a printer's rule. */
+section.sketch hr {
+  height: 0.3125cqi;
+  border-radius: 95% 4px 90% 5px / 8px 14px 6px 12px;
 }
 
 /* === lib/shared/shared.styles.css === */

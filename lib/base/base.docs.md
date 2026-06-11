@@ -433,7 +433,17 @@ wobbly accent underline on the slide heading, and the card surface of
 `decision`, `matrix-2x2`, `pricing`, `featured`, `compare-prose`,
 `citation-card`) redrawn as a sketched box — an asymmetric corner radius,
 an offset "ink" stroke, and a fractional per-card tilt on the multi-card
-grids. Every glyph of prose takes a hand face — including component label
+grids. The same hand treatment reaches **every other structure that draws
+its own lines**: table frames + cell rules (`compare-table`, `glossary`,
+`obligation-matrix`, `list-tabular`), boxed blockquotes (`quote`,
+`redline`), bordered rows (`actors`), and the `<hr>` divider rule. The
+governing rule is *roughen the lines the deck draws, never invent a box* —
+so structures that draw none (`big-number`, `stats` — pure centred type)
+stay font-only, and content the slide merely contains (photos, real
+`code`, chart/diagram SVG geometry) is left untouched. Where a structure
+carries a meaning-bearing colour (the per-actor hue, redline's add/remove
+spine) the finish wobbles the corners but never recolours the border.
+Every glyph of prose takes a hand face — including component label
 pills (state-marker chips, pricing tags) via the `--pill-font` seam; only
 real inline `code` stays monospace, so it can't be misread.
 

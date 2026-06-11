@@ -96,6 +96,41 @@ Because the finish is CSS and fonts, it reskins the heading and the HTML legend 
 
 ---
 
+<!-- _class: compare-table -->
+<!-- _footer: "Tables get a drawn frame and ink rules — not just the cards" -->
+
+`Beyond the cards`
+
+## The grid is hand-ruled too.
+
+| Surface       | Hand type | Drawn line     |
+| ------------- | --------- | -------------- |
+| Cards         | ✓         | box + tilt     |
+| Tables        | ✓         | frame + rules  |
+| Blockquotes   | ✓         | drawn box      |
+| Bordered rows | ✓         | hand corners   |
+| Photos & code | ✗         | left untouched |
+
+_The finish roughens every line the deck draws itself — and stops at content it merely contains._
+
+---
+
+<!-- _class: actors -->
+<!-- _footer: "actors — bordered rows take the hand corners, the per-actor hue stays" -->
+
+`Rows, drawn`
+
+## Each row is a sketched card.
+
+- Owns the visual contract `Design Lead`
+  - Holds `lattice.css` and signs off every token change before it ships.
+- Keeps the three renderers honest `Engine Owner`
+  - Guards cross-renderer parity so the emulator, marp-cli, and runtime never drift.
+- Carries the editorial voice `Narrative Lead`
+  - Edits every shipped deck so the prose reads aloud without a stumble.
+
+---
+
 <!-- _class: closing -->
 <!-- _footer: "theme: carta · class: sketch" -->
 

@@ -342,7 +342,13 @@ in patch versions.
   the card surface of every card-style layout (`cards-grid`, `cards-stack`,
   `verdict-grid`, `decision`, `matrix-2x2`, `pricing`, `featured`,
   `compare-prose`, `citation-card`) redrawn as a sketched box (asymmetric radius
-  + offset ink stroke + per-card tilt). Every glyph of prose takes a hand face —
+  + offset ink stroke + per-card tilt). The hand treatment reaches every other
+  structure that draws its own lines too — table frames + cell rules
+  (`compare-table`, `glossary`, `obligation-matrix`, `list-tabular`), boxed
+  blockquotes (`quote`, `redline`), bordered rows (`actors`), and the `<hr>`
+  divider — under one rule: roughen the lines the deck draws, never invent a box
+  (so `big-number`/`stats` pure-type slides and contained photos/`code`/chart SVG
+  stay untouched; meaning-bearing borders keep their hue). Every glyph of prose takes a hand face —
   including label pills/badges (via the `--pill-font` seam); only real inline
   `code` stays monospace. It is palette-blind —
   every stroke resolves through `var(--token)`, so any theme colours it. Default
