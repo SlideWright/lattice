@@ -91,6 +91,15 @@ in patch versions.
 
 ### Fixed
 
+- **Inline-code chips no longer flatten code blocks or run eyebrows off the
+  slide.** A `white-space:nowrap` on `section code` (added to keep hyphenated
+  identifier chips like `--bg-alt` from wrapping at the hyphen) also matched
+  `<code>` inside `<pre>` — collapsing every fenced code block onto one
+  clipped line — and long backtick eyebrows/labels, which then overflowed the
+  slide and tripped the overflow ring. Reverted the blanket nowrap: inline
+  code wraps normally again and block code keeps its newlines (the `pre code`
+  reset now pins `white-space:pre`). Affected every deck with a `code` /
+  `compare-code` slide or a long eyebrow. See `engineering/gotchas.md`.
 - **`radar` and `quadrant` now scale with the slide at any resolution.** Their
   SVGs were ceilinged with a fixed `max-height: 360px`, so on a larger render
   (e.g. `size: 4K`) the chart stayed pinned small while the cqi-driven type and
@@ -556,6 +565,18 @@ in patch versions.
 
 ### Added
 
+- **`agenda` gains five interchangeable styles + page references.** The default
+  is now **`ledger`** — a contents page with hand-leadered rows and an optional
+  right-aligned page reference (end any item with an inline-code `` `p.15` ``).
+  Four opt-in style modifiers swap the structure: **`circles`** (numbers in drawn
+  rings), **`rail`** (numbered nodes on a vertical journey line), **`cards`**
+  (boxed rows), and **`checks`** (a progress checklist — with `progress-N`, past
+  items get a tick, the current one an arrow, future ones an empty box). All five
+  are palette-blind and compose with `progress-N`; the `sketch` finish re-skins
+  each by hand (wobbled rings/cards/boxes, a wavy rail and active rule, hand
+  arrow/tick) by swapping only mark shapes, never colour. **Changed:** a bare
+  `agenda` slide now renders as the leadered ledger rather than the former plain
+  ruled list — same markdown, new look.
 - **A shared legend rail for the colour-categorical charts, and a status key
   for roadmap.** The four charts that encode meaning by colour — `piechart`,
   `radar`, `map`, and `quadrant·cohort` — now share one legend treatment: a
@@ -591,6 +612,53 @@ in patch versions.
   for authors who'd rather type without it. Persisted in localStorage like the
   other workspace prefs; applied live via a CodeMirror compartment, so flipping
   it takes effect without reloading. Drawing Board (docs-site) only.
+- **`sketch` finish — a hand-drawn skin for any deck.** A new Finish-layer
+  modifier (`class: sketch` deck-wide, or `_class: <layout> sketch` per slide)
+  that swaps Lattice into a hand-drawn register: felt-tip headings (Caveat), a
+  legible hand-sans for prose (Shantell Sans), a wobbly accent underline, and
+  the card surface of every card-style layout (`cards-grid`, `cards-stack`,
+  `verdict-grid`, `decision`, `matrix-2x2`, `pricing`, `featured`,
+  `compare-prose`, `citation-card`) redrawn as a sketched box (asymmetric radius
+  + offset ink stroke + per-card tilt). The hand treatment reaches every other
+  structure that draws its own lines too — table frames + cell rules
+  (`compare-table`, `glossary`, `obligation-matrix`, `list-tabular`), boxed
+  blockquotes (`quote`, `redline`), bordered/ruled row layouts (`actors`, `list`,
+  `checklist`, `agenda`), and the `<hr>`
+  divider — under one rule: roughen the lines the deck draws, never invent a box
+  (so `big-number`/`stats` pure-type slides and contained photos/`code`/chart SVG
+  stay untouched; meaning-bearing borders keep their hue). The finish re-points the
+  `--font-display` token (not just heading elements) at the felt-tip face, so the
+  metric numerals that ~16 components pin to `var(--font-display)` — `stats`,
+  `big-number`, `quote` text, KPI heroes — take the hand face too instead of
+  falling through to the theme's serif. The structural "label voice" — eyebrows,
+  table column headers, stat sub-labels, KEY INSIGHT, the running header/footer —
+  rides the hand SANS too, via a new `--font-label` token (defaults to
+  `--font-mono`, re-pointed under `sketch`), so labels read hand-drawn instead of
+  "computer"; real `code`/`pre`/math stay on `--font-mono`. Pagination (Marp's
+  `section::after`) joins them on the hand label face. The slide's default font
+  itself goes hand under `sketch`, so every remaining text node a component
+  doesn't explicitly font — emphasis, links, stray prose — is hand too, not just
+  the enumerated elements. Plain bullet lists (the `content` / `split-compare`
+  layouts) trade the mechanical disc for a hand-jotted en-dash in the felt-tip
+  face. Every glyph of prose
+  takes a hand face — including label pills/badges (via the `--pill-font` seam);
+  only real inline `code` stays monospace. It is palette-blind —
+  every stroke resolves through `var(--token)`, so any theme colours it. Default
+  is full handwriting; `sketch-clean-body` returns prose to the clean engine face
+  for text-dense slides. New tokens: `--sketch-font-display`, `--sketch-font-body`,
+  `--sketch-ink`, the engine-level `--font-label` label-voice seam, and
+  `--sketch-wave` (the hand-drawn rule). Lives in `lib/base/base.sketch.css`; the two hand fonts join the
+  engine's existing Google-Fonts `@import`. The lines a deck draws — table cell
+  rules, ledger/agenda row rules, the `<hr>` divider — wear `--sketch-wave`, a
+  near-straight pen-waver rendered as a tiling SVG **mask** (shape in the mask,
+  colour via `background-color: var(--sketch-ink)`, so it stays palette-blind);
+  it's a static image, not the `feTurbulence` **filter** that collapses Marp's
+  print scaling, so it survives the PDF. Documented in `lib/base/base.docs.md`; demo at
+  `examples/sketch.md`. See `engineering/decisions/2026-06-11-sketch-finish.md`.
+- **`carta` palette — warm paper and ink.** A new theme (`carta` / `carta-dark`),
+  the blessed pairing for the `sketch` finish: a warm off-white sheet, near-black
+  sepia-leaning ink, and a fountain-pen ink-blue accent. Registered in
+  `marp.config.js` and `.vscode/settings.json`; contrast-verified.
 - **Autocomplete is now self-maintaining, gated by a parity test.** Two new
   optional manifest fields make completion data co-located with the component:
   `families` (opt a layout into a scoped family modifier group, e.g.
@@ -1006,6 +1074,67 @@ in patch versions.
 
 ### Fixed
 
+- **Agenda "you are here" row no longer relies on background colour alone
+  (WCAG 1.4.1).** The `progress` modifier marked the active row with an
+  accent-soft background band (+ a thin accent left-border) — a colour-only
+  cue that fails colour-blind viewers. It now triple-codes the active row:
+  a **chevron pointer** in the left gutter (shape), the row **indents right**
+  (position), the **label goes bold** (weight), and the background band stays
+  (colour, for everyone who can see it) — plus the existing past/future
+  opacity fade. Applies to every theme (clean chevron); the `sketch` finish
+  draws a hand chevron and drops the active row's wavy rule so the pointer +
+  band carry it. New `--agenda-marker` token holds the pointer SVG.
+- **`sketch` finish — second audit pass (visible-defect fixes).** (1) **Wavy
+  rules now read as hand-drawn** — the `--sketch-wave` amplitude was too low to
+  perceive at slide scale, so table/ledger/agenda rules looked machine-straight;
+  raised it so the wobble registers. (2) **Counters take the hand** — the
+  numeral/step counters (`agenda`, `list`, `list-criteria`, `list-steps`) pinned
+  `--font-mono`, so they stayed mono beside hand content; re-pointed them at
+  `--font-label` (hand under `sketch`, identical mono everywhere else). (3)
+  **Responsive guards so contained content stops overflowing under the wider
+  hand font:** `list` rows step down to `--fs-body` to fit their equal-height
+  bands (was overlapping); `split-panel` right-zone cards step to the compact
+  size to fit the fixed panel (was clipping the last card); the `checklist`
+  inter-row gap tightens so a 7-row set clears the footer. The principle: content
+  that fit the engine face still fits; only a genuinely overstuffed slide
+  overflows.
+- **`sketch` finish robustness — a slide-by-slide audit of the finish on a
+  full editorial deck fixed a batch of defects.** (1) **Dropped the `1.08em`
+  body bump** — it enlarged every body element AND discarded the compact sizes
+  dense layouts set (`--fs-body-compact`), overrunning fixed content budgets;
+  it was the single biggest source of clipped slides (glossaries, tables).
+  (2) **`--font-body` is now re-pointed as a token** under `sketch` (like
+  `--font-display`/`--font-label`), so components that pin `var(--font-body)` on
+  a nested element (big-number caption, key-insight body) get the hand sans
+  instead of leaking the clean face; `sketch-clean-body` restores it via the new
+  `--font-body-clean` alias. (3) **matrix-2x2 quadrants get the hand box** —
+  the box selectors only matched `> ol > li`, missing the `ul`-based variant.
+  (4) **The generic KEY INSIGHT blockquote** now becomes a drawn box like the
+  cards/quote. (5) **No more synthetic italic on Caveat** — the quote face,
+  which has no italic, was being slanted into a muddy oblique. (6) **Chart-frame
+  slides no longer double-rule the heading** — the straight `.chart-header`
+  hairline is suppressed (the hand wavy underline already draws it).
+  (7) **list-principles dividers** join the wavy-rule family. Genuinely
+  over-budget slides (a 3-card split-panel, a 4-state verdict-grid) still want
+  `sketch-clean-body`; kpi separators + the cuoio dark-accent tone are noted
+  follow-ups.
+- **Inline `code` chips no longer fragment on hyphenated tokens.** `section code`
+  gained `white-space:nowrap`, so an identifier like `--bg-alt` stays on one line
+  instead of breaking to `--`/`bg-`/`alt` inside the chip (worst under the wider
+  hand font, but a latent bug on every deck). Matches the state-pill, which
+  already nowraps.
+- **Committed deck PDFs embed the real fonts, even on a network-less render.**
+  The emulator pulled its type from a Google-Fonts `<link>`/`@import`, so a build
+  without network (the cloud sandbox, the pre-commit PDF rebuild) embedded a
+  serif/sans **fallback** — the committed `.pdf`s (e.g. `examples/sketch.pdf`)
+  shipped looking nothing like the design, and the page-count tests never caught
+  it. `lattice-emulator.js` now base64-injects the full self-hosted type stack
+  (`assets/fonts/` — Playfair Display incl. italics, Outfit, JetBrains Mono, and
+  the `sketch` pair Caveat + Shantell Sans) as an inline `@font-face` block that
+  wins over the `@import`, and waits on `document.fonts` before printing, so PDFs
+  embed every face with no network — a network-less render is now the intended
+  design, not a fallback. The shipped npm bin doesn't carry `assets/` (excluded
+  from the tarball), so end users still resolve fonts from Google unchanged.
 - **The Drawing Board editor mounts again.** The editor-mount script read the
   `autocomplete` workspace preference via `getPref(...)` but never imported it
   into that `<script>` module — and each Astro `<script>` is its own ES module,

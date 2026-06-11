@@ -1769,6 +1769,50 @@ const googleFonts = `
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Noto+Color+Emoji&display=swap" rel="stylesheet">`;
 
+// ── Self-hosted fonts (offline PDF embedding) ────────────────────────────────
+// The Google <link>/@import above needs the network. In a network-less render
+// (the cloud sandbox, the pre-commit PDF rebuild) the faces never load, so the
+// printed PDF embeds a serif/sans FALLBACK — committed deck PDFs then ship
+// looking nothing like the design. Fix it at the render layer: base64 the
+// woff2 files we self-host (assets/fonts/) into an inline @font-face block.
+// These local faces win over the @import (declared later in the cascade), so
+// the PDF embeds the real type with no network. Absent (e.g. the shipped npm
+// bin, where assets/ isn't in the tarball) it returns '' and the @import path
+// is used unchanged. Covers the full engine type stack: the display serif
+// (Playfair, incl. italics), the body sans (Outfit), the mono (JetBrains), and
+// the `sketch` hand pair (Caveat, Shantell Sans). See assets/fonts/README.md.
+const SELF_HOSTED_FACES = [
+  ['Caveat', 400, 'normal', 'caveat-400'],
+  ['Caveat', 700, 'normal', 'caveat-700'],
+  ['Shantell Sans', 400, 'normal', 'shantell-400'],
+  ['Shantell Sans', 700, 'normal', 'shantell-700'],
+  ['Outfit', 400, 'normal', 'outfit-400'],
+  ['Outfit', 700, 'normal', 'outfit-700'],
+  ['Playfair Display', 400, 'normal', 'playfair-400'],
+  ['Playfair Display', 700, 'normal', 'playfair-700'],
+  ['Playfair Display', 400, 'italic', 'playfair-italic-400'],
+  ['Playfair Display', 700, 'italic', 'playfair-italic-700'],
+  ['JetBrains Mono', 400, 'normal', 'jetbrains-400'],
+  ['JetBrains Mono', 500, 'normal', 'jetbrains-500'],
+  ['JetBrains Mono', 600, 'normal', 'jetbrains-600'],
+];
+function embeddedFontsStyle() {
+  const dir = path.join(PKG_ROOT, 'assets', 'fonts');
+  if (!fs.existsSync(dir)) return '';
+  const faces = [];
+  for (const [family, weight, style, file] of SELF_HOSTED_FACES) {
+    const fp = path.join(dir, `${file}.woff2`);
+    if (!fs.existsSync(fp)) continue;
+    const b64 = fs.readFileSync(fp).toString('base64');
+    faces.push(
+      `@font-face{font-family:'${family}';font-style:${style};font-weight:${weight};` +
+      `font-display:swap;src:url(data:font/woff2;base64,${b64}) format('woff2');}`,
+    );
+  }
+  return faces.length ? `<style id="lattice-embedded-fonts">${faces.join('')}</style>` : '';
+}
+const embeddedFonts = embeddedFontsStyle();
+
 // ── Build-time syntax highlighter ─────────────────────────────────────────────
 // Tokenizes code at build time into <span class="token X"> elements.
 // Covers: javascript, typescript, python, bash, css, yaml, json.
@@ -1928,6 +1972,7 @@ if (hasStateChart) {
 const htmlDoc = `<!DOCTYPE html>
 <html><head><meta charset="utf-8">
 ${googleFonts}
+${embeddedFonts}
 ${katexCssLink}
 <style>
 @page { size: ${slideW}px ${slideH}px; margin: 0; }
@@ -2011,6 +2056,17 @@ const puppeteer = loadPuppeteer();
   await page.goto('file://' + path.resolve(outHtml), {
     waitUntil: 'networkidle0',
     timeout: 60000
+  });
+  // Force every declared @font-face to load (incl. the base64 self-hosted
+  // faces) and settle before measuring/printing. Marp's template lazy-loads
+  // fonts per active slide, so document.fonts.ready alone resolves without
+  // faces used only on later slides; explicitly load() them all. Without this
+  // the overflow pass and the PDF can be laid out in the fallback metrics.
+  await page.evaluate(async () => {
+    try {
+      await Promise.all([...document.fonts].map((f) => f.load().catch(() => {})));
+      await document.fonts.ready;
+    } catch (_e) { /* fonts API unavailable — proceed with whatever loaded */ }
   });
   // Tag any section whose content exceeds the 1280×720 frame so the red
   // overflow ring (defined in lattice.css under `section.overflow`) is

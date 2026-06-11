@@ -13,6 +13,7 @@ that any component can opt into.
 | `base.modifiers.css` | Auto-detected chrome — eyebrow, subtitle, key-insight panel, below-note, annotation. Triggered by markdown patterns the author writes (no class needed). |
 | `base.variants.css` | Universal opt-in variants — `dark`, `mirror`, `numbered`, `silent`, state markers, tone tokens. Composed via `_class:`. |
 | `base.treatments.css` | 27 treatment utility classes — 12 tints (`tint-corner at-tl`, `tint-vignette`, etc.) and 11 marks (`mark-orbit`, `mark-seeds`, etc.) plus `treatment-none` — for peripheral atmospheric accents. |
+| `base.sketch.css` | The `sketch` finish modifier — a deck-wide hand-drawn skin (handwriting type + drawn boxes). Palette-blind; composed via `class:` / `_class:`. |
 
 ---
 
@@ -421,6 +422,76 @@ break.
 Equivalent to writing all three Marp suppression directives
 (`<!-- _paginate: false -->`, `<!-- _header: "" -->`,
 `<!-- _footer: "" -->`) in one token.
+
+### `sketch`
+
+The hand-drawn **finish** — a deck-wide skin that swaps Lattice into a
+hand-drawn register: felt-tip headings (`--sketch-font-display`, Caveat),
+a legible hand-sans for prose (`--sketch-font-body`, Shantell Sans), a
+wobbly accent underline on the slide heading, and the card surface of
+**every card-style layout** (`cards-grid`, `cards-stack`, `verdict-grid`,
+`decision`, `matrix-2x2`, `pricing`, `featured`, `compare-prose`,
+`citation-card`) redrawn as a sketched box — an asymmetric corner radius,
+an offset "ink" stroke, and a fractional per-card tilt on the multi-card
+grids. The same hand treatment reaches **every other structure that draws
+its own lines**: table frames + cell rules (`compare-table`, `glossary`,
+`obligation-matrix`, `list-tabular`), boxed blockquotes (`quote`,
+`redline`), bordered/ruled row layouts (`actors`, `list`, `checklist`,
+`agenda`), and the `<hr>` divider rule. The
+governing rule is *roughen the lines the deck draws, never invent a box* —
+so structures that draw none (`big-number`, `stats` — pure centred type)
+stay font-only, and content the slide merely contains (photos, real
+`code`, chart/diagram SVG geometry) is left untouched. Where a structure
+carries a meaning-bearing colour (the per-actor hue, redline's add/remove
+spine) the finish wobbles the corners but never recolours the border.
+Every glyph of prose takes a hand face. The display numerals (`stats`,
+`big-number`, `quote`, KPI heroes) ride the felt-tip via the `--font-display`
+token; the label voice — eyebrows, table column headers, stat sub-labels,
+KEY INSIGHT, the running header/footer, and pagination — rides the hand sans
+via the `--font-label` seam; the slide's default font goes hand too, so
+emphasis, links, and any stray prose follow without enumeration; and label
+pills/badges ride the `--pill-font` seam. Only real inline `code`, `pre`, and
+the `math` component stay monospace, so data can't be misread.
+
+It is a **Finish-layer** modifier in the Function · Form · Substance ·
+Finish model: it changes type and box geometry, never colour. Every
+stroke resolves through a palette token, so the finish is **palette-blind**
+— pair it with any theme and that theme colours it. The curated `carta`
+paper-and-ink palette is the blessed pairing.
+
+```yaml
+---
+theme: carta      # paper + ink; any palette works
+class: sketch     # deck-wide — propagates to every slide
+---
+```
+
+Or per slide: `<!-- _class: cards-grid sketch -->`.
+
+| Token / class | Effect |
+|---|---|
+| `sketch` | Full handwriting (headings **and** body) + drawn boxes. The default. |
+| `sketch sketch-clean-body` | Keep hand headings + boxes; return prose to the clean `--font-body` for text-dense slides. |
+| `--sketch-ink` | The ink the boxes are drawn in (defaults to `--text-heading`); a theme override seam. |
+| `--sketch-font-display` / `--sketch-font-body` | The hand fonts; swap either to re-flavour the whole finish in one line. |
+| `--pill-font` | Re-pointed at the hand body face under `sketch` so label chips/badges read hand-drawn; override per theme to restore a clean label font. |
+| `--font-label` | The label voice (eyebrows, table headers, stat sub-labels, header/footer, pagination); defaults to `--font-mono`, re-pointed at the hand sans under `sketch`. |
+| `--sketch-wave` | The hand-drawn rule — a near-straight pen-waver as a tiling SVG mask, worn by table cell rules, ledger/agenda row rules, and `<hr>`. |
+
+**PDF-safe by design.** Boxes are `border-radius` geometry (asymmetric
+per-corner curves read as freehand); the lines a deck draws wear
+`--sketch-wave`, a near-straight pen-waver carried as a tiling SVG **mask**
+(shape in the mask, colour via `background-color: var(--sketch-ink)` — so it
+stays palette-blind). Both are static; the SVG `feTurbulence` +
+`feDisplacementMap` **filter** "roughen" pass was prototyped and rejected —
+it survives on screen but collapses Marp's print-scale transform, shrinking
+the slide in the PDF. A mask is not a filter, so it ships clean. See
+`engineering/decisions/2026-06-11-sketch-finish.md`.
+
+**Charts/diagrams.** The finish reskins the heading, the HTML legend, and
+card text, but cannot reach inside a chart's SVG geometry — wedges, bars,
+and lines keep their own marks. Hand-drawn chart *marks* are a deferred
+follow-up.
 
 ### `scale-l` / `scale-xl` / `scale-2xl`
 

@@ -30,11 +30,11 @@ Inventory — parallel sets of related items.
 
 ## What this review covers.
 
-1. Where Q2 landed against plan — slide 3
-2. The enterprise renewal shortfall — slide 8
-3. What we are changing in Q3 — slide 14
-4. The resourcing ask — slide 21
-5. Risks we are watching — slide 27
+1. Where Q2 landed against plan `p.3`
+2. The enterprise renewal shortfall `p.8`
+3. What we are changing in Q3 `p.14`
+4. The resourcing ask `p.21`
+5. Risks we are watching `p.27`
 
 ---
 

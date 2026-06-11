@@ -69,7 +69,7 @@
  * render paths load the webfonts the same way.
  */
 
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Noto+Color+Emoji&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Caveat:wght@400;700&family=Shantell+Sans:wght@400;500;700&family=Noto+Color+Emoji&display=swap');
 
 :root {
   /* Color tokens are defined by the active palette (themes/<name>.css),
@@ -94,7 +94,32 @@
      keeps it from touching any non-emoji text). */
   --font-display: 'Playfair Display', Georgia, serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji';
   --font-body:    'Outfit', system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji';
+  /* Stable handle to the CLEAN body face. The `sketch` finish re-points
+     --font-body itself at the hand sans (so every component that pulls
+     var(--font-body) goes hand regardless of selector specificity); this
+     alias preserves the engine face so `sketch-clean-body` can restore it.
+     Computed at :root, so it stays the clean stack even where --font-body
+     is overridden downstream. */
+  --font-body-clean: var(--font-body);
   --font-mono:    'JetBrains Mono', 'Courier New', monospace, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji';
+  /* The "label voice" — small uppercase tracked labels (eyebrows, table
+     column headers, stat sub-labels, KEY INSIGHT, running header/footer).
+     Defaults to the mono face, so labels share the structural voice of code
+     by default. It is a seam: the `sketch` finish re-points it at the hand
+     face so labels read hand-drawn while real `code`/`pre`/math stay on
+     --font-mono (data must remain unambiguous). Repoint per theme to give
+     labels their own face without touching code. */
+  --font-label:   var(--font-mono);
+
+  /* Sketch finish — the hand-drawn font pair the `sketch` modifier swaps
+     in (lib/base/base.sketch.css). Caveat carries display/headings (the
+     felt-tip signal); Shantell Sans carries body (a designed-for-UI hand
+     sans that stays legible across a dense slide). Both are palette-blind
+     and used only under section.sketch, so non-sketch decks never load
+     them as the active family. Swap either token to re-flavour the whole
+     finish in one line. */
+  --sketch-font-display: 'Caveat', 'Bradley Hand', cursive, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji';
+  --sketch-font-body:    'Shantell Sans', system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji';
 
   /* ── Spacing scale (cqi — proportional to the 1280px HD baseline) ───
    * 100cqi = slide inline size. Formula: px / 1280 * 100 = cqi.
@@ -571,6 +596,10 @@ section em { font-style:italic; }
  * surface rebinds only --code-inline-fg (see base.modifiers.css dark-island
  * block + base.tokens.css). NOTE: color is declared before background so
  * currentColor in the wash resolves to this element's ink. */
+/* Inline `code` chips MUST wrap — do not add white-space:nowrap here. Eyebrows
+ * and long labels are authored as backtick inline-code, so a blanket nowrap on
+ * `section code` runs them off the slide (and collapses `pre code` blocks). The
+ * cascade wraps inline code; block code keeps its newlines via the reset below. */
 section code { font-family:var(--font-mono); font-size:0.85em; color:var(--code-inline-fg, var(--accent)); background:var(--code-inline-bg, color-mix(in srgb, currentColor 10%, transparent)); padding:0.15625cqi 0.46875cqi; border-radius:0.3125cqi; border:1px solid var(--code-inline-border, color-mix(in srgb, currentColor 22%, transparent)); }
 /* Reset inline-code chip styling for code that's inside a fenced block.
  * Covers both `<pre>` (lattice-emulator output, where mermaid is pre-rendered
@@ -578,7 +607,7 @@ section code { font-family:var(--font-mono); font-size:0.85em; color:var(--code-
  * source remains in the DOM until lattice-runtime.js upgrades it). Without
  * the marp-pre branch, mermaid source blocks render briefly as inline-code
  * chips in VS Code preview before the upgrade lands. */
-section :is(pre, marp-pre) code { background:none; border:none; padding:0; border-radius:0; color:inherit; font-size:inherit; }
+section :is(pre, marp-pre) code { background:none; border:none; padding:0; border-radius:0; color:inherit; font-size:inherit; white-space:pre; }
 section hr { border:none; height:0.15625cqi; background:var(--spectrum); border-radius:0.15625cqi; width:5.625cqi; margin:var(--sp-sm) auto; }
 section ul { list-style:none; padding:0; margin:0; }
 section ol { padding:0; margin:0; }
@@ -742,91 +771,263 @@ section.actors > ol > li > ol > li {
 }
 
 /* === lib/components/inventory/agenda/agenda.styles.css === */
-/* agenda — extracted from lib/_legacy.css (batch 3).
- * See lib/components/agenda/agenda.manifest.json for the component contract.
- */
-
-/* ── AGENDA ────────────────────────────────────────────────────────────
- * ## heading
- * 1. The Design       — page 7
- * 2. The Phasing      — page 18
- * 3. The Choices      — page 26
+/* agenda — auto-numbered table of contents for the deck.
+ * See lib/components/inventory/agenda/agenda.manifest.json for the contract.
  *
- * Auto-numbered table-of-contents. Each row: counter prefix, section
- * title, dotted leader, page reference. Used between sections in
- * long decks.
+ * ── STYLE VARIANTS ─────────────────────────────────────────────────────
+ * The agenda has five interchangeable visual styles. The DEFAULT (no style
+ * class) is `ledger`: a contents page with hand-leadered rows + optional
+ * page references. Four opt-in styles swap the structure:
+ *   - `circles`  — each section number sits in a drawn ring
+ *   - `rail`     — numbered nodes threaded on a vertical journey line
+ *   - `cards`    — each section is a boxed row
+ *   - `checks`   — checkbox rows; with `progress-N`, past items get a tick,
+ *                  the current one an arrow, future ones an empty box
+ * All five are palette-blind (every colour is a token) and compose with the
+ * `progress-N` "you are here" modifier and the universal modifiers
+ * (`dark`, `compact`, …). The `sketch` finish (lib/base/base.sketch.css)
+ * re-skins them by hand — it swaps the --ag-* mark SHAPES and wobbles the
+ * geometry, but never recolours, so this file stays the single source of
+ * the structure.
  *
- * Modifier `progress N` (where N is 1-6) highlights the Nth row as
- * "you are here." Past rows render muted; future rows render normal.
- * A single agenda slide holds up to six sections at a legible row
- * height; group beyond that rather than spilling onto the footer.
+ * Modifier `progress N` (1-6) highlights the Nth row as "you are here":
+ * past rows render muted, future rows dimmed. A single agenda slide holds
+ * up to six sections at a legible row height; group beyond that.
  * ──────────────────────────────────────────────────────────────────────── */
-section.agenda { display:flex; flex-direction:column; }
-section.agenda h2 { font-size:var(--fs-emphasis); margin-bottom:var(--sp-lg); }
+
+section.agenda {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* The hand/finish layer overrides these mark SHAPES (sketch draws bowed
+   * arrows, wavy dots, a looser tick). Colour stays a token at the use site,
+   * so the marks are palette-blind. */
+  --ag-outline: color-mix(in srgb, var(--text-heading) 30%, transparent);
+  --ag-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 18'%3E%3Cpath d='M2 9 H21 M14 3 L21 9 L14 15' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  --ag-check: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 8.5 L6.5 12 L13 4' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  --ag-dots: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 4'%3E%3Ccircle cx='2' cy='2' r='1'/%3E%3C/svg%3E");
+}
+section.agenda h2 { font-size: var(--fs-emphasis); margin-bottom: var(--sp-lg); }
 section.agenda ol {
-  list-style:none; padding:0; margin:0;
-  counter-reset:agenda-counter;
-  display:flex; flex-direction:column;
-  gap:var(--sp-sm);
-  flex:1;
+  list-style: none; padding: 0; margin: 0;
+  counter-reset: agenda-counter;
+  display: flex; flex-direction: column;
 }
 section.agenda ol > li {
-  counter-increment:agenda-counter;
-  display:grid;
-  grid-template-columns:auto 1fr;
-  column-gap:var(--sp-md);
-  align-items:baseline;
-  font-size:var(--fs-body);
-  font-weight:500;
-  line-height:var(--lh-relaxed);
-  color:var(--text-heading);
-  padding:var(--sp-xs) 0;
-  border-bottom:1px solid var(--border);
+  counter-increment: agenda-counter;
+  color: var(--text-heading);
+  font-size: var(--fs-message);
+  line-height: var(--lh-snug);
 }
-section.agenda ol > li::before {
-  content:counter(agenda-counter, decimal-leading-zero);
-  font-family:var(--font-mono);
-  font-size:var(--fs-body);
-  font-weight:700;
-  letter-spacing:0.12em;
-  color:var(--accent);
+/* Future/past dimming shared by every style. */
+section.agenda[class*="progress-"] ol > li { opacity: 0.45; }
+section.dark.agenda[class*="progress-"] ol > li { opacity: 0.55; }
+
+/* ── DEFAULT: LEDGER ─────────────────────────────────────────────────────
+ * Contents page. Number · title · dotted leader · optional page ref (a
+ * trailing inline `code`, e.g. `p.15`). Active row gets an arrow + accent
+ * solid rule. Scoped with :not() so a style class (circles/rail/cards/
+ * checks) fully replaces it rather than inheriting the leader/arrow. Plain
+ * :not() (no :has) is Marp-Chromium-safe — see engineering/gotchas.md. */
+section.agenda:not(.circles):not(.rail):not(.cards):not(.checks) ol { gap: var(--sp-sm); }
+section.agenda:not(.circles):not(.rail):not(.cards):not(.checks) ol > li {
+  display: flex; align-items: baseline; gap: var(--sp-md);
+  position: relative; padding-bottom: var(--sp-sm); padding-right: var(--sp-xs);
 }
-/* progress modifier — highlights "you are here" row.
- * Non-active rows at 0.55 opacity for the future-items dimming.
- * Dark mode raises future-items to 0.65 so they stay legible on the
- * dark canvas while still reading as "not yet reached". */
-section.agenda[class*="progress-"] ol > li { opacity:0.55; }
-section.dark.agenda[class*="progress-"] ol > li { opacity:0.65; }
-section.agenda.progress-1 ol > li:nth-child(1),
-section.agenda.progress-2 ol > li:nth-child(2),
-section.agenda.progress-3 ol > li:nth-child(3),
-section.agenda.progress-4 ol > li:nth-child(4),
-section.agenda.progress-5 ol > li:nth-child(5),
-section.agenda.progress-6 ol > li:nth-child(6) {
-  opacity:1;
-  background:var(--accent-soft);
-  border-left:3px solid var(--accent);
-  margin-left:calc(-1 * var(--sp-md));
-  padding-left:var(--sp-md);
-  border-bottom-color:var(--accent);
+section.agenda:not(.circles):not(.rail):not(.cards):not(.checks) ol > li::before {
+  content: counter(agenda-counter, decimal-leading-zero);
+  font-family: var(--font-label); font-weight: 700; letter-spacing: 0.06em;
+  color: var(--accent); font-size: var(--fs-body);
 }
-/* Past rows (those before the highlighted one) get muted-but-not-faded text. */
-section.agenda.progress-2 ol > li:nth-child(-n+1),
-section.agenda.progress-3 ol > li:nth-child(-n+2),
-section.agenda.progress-4 ol > li:nth-child(-n+3),
-section.agenda.progress-5 ol > li:nth-child(-n+4),
-section.agenda.progress-6 ol > li:nth-child(-n+5) {
-  opacity:0.4;
+section.agenda:not(.circles):not(.rail):not(.cards):not(.checks) ol > li code {
+  margin-left: auto; background: none; border: none; box-shadow: none; border-radius: 0;
+  padding: 0 0 0 var(--sp-md);
+  font-family: var(--font-label); font-weight: 600; letter-spacing: 0.03em;
+  color: var(--text-secondary); font-size: var(--fs-body-compact);
 }
-/* Dark-mode bump: 0.4 reads near-invisible on dark canvas, especially with
- * ≥2 past rows. Raise to 0.55 to keep the past/active/future three-state
- * hierarchy legible while still signalling "already covered". */
-section.dark.agenda.progress-2 ol > li:nth-child(-n+1),
-section.dark.agenda.progress-3 ol > li:nth-child(-n+2),
-section.dark.agenda.progress-4 ol > li:nth-child(-n+3),
-section.dark.agenda.progress-5 ol > li:nth-child(-n+4),
-section.dark.agenda.progress-6 ol > li:nth-child(-n+5) {
-  opacity:0.55;
+section.agenda:not(.circles):not(.rail):not(.cards):not(.checks) ol > li::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 4px;
+  background-color: var(--ag-outline);
+  -webkit-mask: var(--ag-dots) repeat-x left center / 12px 4px;
+  mask: var(--ag-dots) repeat-x left center / 12px 4px;
+}
+section.agenda:not(.circles):not(.rail):not(.cards):not(.checks).progress-1 ol > li:nth-child(1),
+section.agenda:not(.circles):not(.rail):not(.cards):not(.checks).progress-2 ol > li:nth-child(2),
+section.agenda:not(.circles):not(.rail):not(.cards):not(.checks).progress-3 ol > li:nth-child(3),
+section.agenda:not(.circles):not(.rail):not(.cards):not(.checks).progress-4 ol > li:nth-child(4),
+section.agenda:not(.circles):not(.rail):not(.cards):not(.checks).progress-5 ol > li:nth-child(5),
+section.agenda:not(.circles):not(.rail):not(.cards):not(.checks).progress-6 ol > li:nth-child(6) {
+  opacity: 1; font-weight: 700; padding-left: var(--sp-xl);
+}
+section.agenda:not(.circles):not(.rail):not(.cards):not(.checks).progress-1 ol > li:nth-child(1)::before,
+section.agenda:not(.circles):not(.rail):not(.cards):not(.checks).progress-2 ol > li:nth-child(2)::before,
+section.agenda:not(.circles):not(.rail):not(.cards):not(.checks).progress-3 ol > li:nth-child(3)::before,
+section.agenda:not(.circles):not(.rail):not(.cards):not(.checks).progress-4 ol > li:nth-child(4)::before,
+section.agenda:not(.circles):not(.rail):not(.cards):not(.checks).progress-5 ol > li:nth-child(5)::before,
+section.agenda:not(.circles):not(.rail):not(.cards):not(.checks).progress-6 ol > li:nth-child(6)::before {
+  content: ""; width: 1.4em; height: 1.4em; align-self: center; margin-right: var(--sp-2xs);
+  background-color: var(--accent);
+  -webkit-mask: var(--ag-arrow) no-repeat center / contain;
+  mask: var(--ag-arrow) no-repeat center / contain;
+}
+section.agenda:not(.circles):not(.rail):not(.cards):not(.checks).progress-1 ol > li:nth-child(1) code,
+section.agenda:not(.circles):not(.rail):not(.cards):not(.checks).progress-2 ol > li:nth-child(2) code,
+section.agenda:not(.circles):not(.rail):not(.cards):not(.checks).progress-3 ol > li:nth-child(3) code,
+section.agenda:not(.circles):not(.rail):not(.cards):not(.checks).progress-4 ol > li:nth-child(4) code,
+section.agenda:not(.circles):not(.rail):not(.cards):not(.checks).progress-5 ol > li:nth-child(5) code,
+section.agenda:not(.circles):not(.rail):not(.cards):not(.checks).progress-6 ol > li:nth-child(6) code { color: var(--accent); }
+section.agenda:not(.circles):not(.rail):not(.cards):not(.checks).progress-1 ol > li:nth-child(1)::after,
+section.agenda:not(.circles):not(.rail):not(.cards):not(.checks).progress-2 ol > li:nth-child(2)::after,
+section.agenda:not(.circles):not(.rail):not(.cards):not(.checks).progress-3 ol > li:nth-child(3)::after,
+section.agenda:not(.circles):not(.rail):not(.cards):not(.checks).progress-4 ol > li:nth-child(4)::after,
+section.agenda:not(.circles):not(.rail):not(.cards):not(.checks).progress-5 ol > li:nth-child(5)::after,
+section.agenda:not(.circles):not(.rail):not(.cards):not(.checks).progress-6 ol > li:nth-child(6)::after {
+  background-color: var(--accent); -webkit-mask: none; mask: none; height: 2px;
+}
+
+/* ── circles ─────────────────────────────────────────────────────────────
+ * Each section number in a drawn ring; active ring fills with the accent. */
+section.agenda.circles ol { gap: var(--sp-sm); }
+section.agenda.circles ol > li {
+  display: grid; grid-template-columns: auto 1fr; column-gap: var(--sp-md); align-items: center;
+  padding: 0; position: static;
+}
+section.agenda.circles ol > li::before {
+  content: counter(agenda-counter); display: grid; place-items: center;
+  width: 2.4em; height: 2.4em; border-radius: 50%;
+  border: 2px solid var(--ag-outline); background: none; margin: 0; letter-spacing: normal;
+  font-family: var(--font-label); font-weight: 700; font-size: var(--fs-message); line-height: 1;
+  color: var(--accent); -webkit-mask: none; mask: none;
+}
+section.agenda.circles ol > li::after { content: none; }
+section.agenda.circles.progress-1 ol > li:nth-child(1),
+section.agenda.circles.progress-2 ol > li:nth-child(2),
+section.agenda.circles.progress-3 ol > li:nth-child(3),
+section.agenda.circles.progress-4 ol > li:nth-child(4),
+section.agenda.circles.progress-5 ol > li:nth-child(5),
+section.agenda.circles.progress-6 ol > li:nth-child(6) { opacity: 1; font-weight: 700; padding-left: 0; }
+section.agenda.circles.progress-1 ol > li:nth-child(1)::before,
+section.agenda.circles.progress-2 ol > li:nth-child(2)::before,
+section.agenda.circles.progress-3 ol > li:nth-child(3)::before,
+section.agenda.circles.progress-4 ol > li:nth-child(4)::before,
+section.agenda.circles.progress-5 ol > li:nth-child(5)::before,
+section.agenda.circles.progress-6 ol > li:nth-child(6)::before {
+  content: counter(agenda-counter); width: 2.4em; height: 2.4em; margin: 0;
+  background: var(--accent); color: var(--on-accent); border-color: var(--accent);
+}
+
+/* ── rail ────────────────────────────────────────────────────────────────
+ * Numbered nodes threaded on a vertical journey line. */
+section.agenda.rail ol { gap: 0; position: relative; }
+section.agenda.rail ol::before {
+  content: ""; position: absolute; left: 1.7em; top: 1.7em; bottom: 1.7em;
+  width: 2px; transform: translateX(-50%); background: var(--ag-outline);
+}
+section.agenda.rail ol > li {
+  display: grid; grid-template-columns: 3.4em 1fr; align-items: center; column-gap: var(--sp-md);
+  padding: var(--sp-xs) 0; position: static;
+}
+section.agenda.rail ol > li::before {
+  content: counter(agenda-counter); justify-self: center; display: grid; place-items: center;
+  width: 2.2em; height: 2.2em; position: relative; z-index: 1; margin: 0; letter-spacing: normal;
+  background: var(--bg); border: 2px solid var(--ag-outline); border-radius: 50%;
+  font-family: var(--font-label); font-weight: 700; font-size: var(--fs-body); line-height: 1;
+  color: var(--accent); -webkit-mask: none; mask: none;
+}
+section.agenda.rail ol > li::after { content: none; }
+section.agenda.rail.progress-1 ol > li:nth-child(1),
+section.agenda.rail.progress-2 ol > li:nth-child(2),
+section.agenda.rail.progress-3 ol > li:nth-child(3),
+section.agenda.rail.progress-4 ol > li:nth-child(4),
+section.agenda.rail.progress-5 ol > li:nth-child(5),
+section.agenda.rail.progress-6 ol > li:nth-child(6) { opacity: 1; font-weight: 700; padding-left: 0; }
+section.agenda.rail.progress-1 ol > li:nth-child(1)::before,
+section.agenda.rail.progress-2 ol > li:nth-child(2)::before,
+section.agenda.rail.progress-3 ol > li:nth-child(3)::before,
+section.agenda.rail.progress-4 ol > li:nth-child(4)::before,
+section.agenda.rail.progress-5 ol > li:nth-child(5)::before,
+section.agenda.rail.progress-6 ol > li:nth-child(6)::before {
+  content: counter(agenda-counter); margin: 0;
+  background: var(--accent); color: var(--on-accent); border-color: var(--accent); transform: scale(1.18);
+}
+
+/* ── cards ───────────────────────────────────────────────────────────────
+ * Each section a boxed row; active card fills with the accent wash. */
+section.agenda.cards ol { gap: var(--sp-sm); }
+section.agenda.cards ol > li {
+  display: grid; grid-template-columns: auto 1fr; column-gap: var(--sp-md); align-items: baseline;
+  padding: var(--sp-sm) var(--sp-md); position: static;
+  border: 1.5px solid var(--ag-outline); border-radius: 10px; background: var(--bg-alt);
+}
+section.agenda.cards ol > li::before {
+  content: counter(agenda-counter, decimal-leading-zero); margin: 0;
+  font-family: var(--font-label); font-weight: 700; letter-spacing: 0.04em;
+  color: var(--accent); font-size: var(--fs-body); -webkit-mask: none; mask: none; width: auto; height: auto; border: none;
+}
+section.agenda.cards ol > li::after { content: none; }
+section.agenda.cards.progress-1 ol > li:nth-child(1),
+section.agenda.cards.progress-2 ol > li:nth-child(2),
+section.agenda.cards.progress-3 ol > li:nth-child(3),
+section.agenda.cards.progress-4 ol > li:nth-child(4),
+section.agenda.cards.progress-5 ol > li:nth-child(5),
+section.agenda.cards.progress-6 ol > li:nth-child(6) {
+  opacity: 1; font-weight: 700; padding-left: var(--sp-md);
+  background: var(--accent-soft); border-color: var(--accent);
+}
+
+/* ── checks ──────────────────────────────────────────────────────────────
+ * Checkbox rows. With progress-N: past = tick, current = arrow box,
+ * future = empty box. Without progress, a plain row of empty boxes. */
+section.agenda.checks ol { gap: var(--sp-sm); }
+section.agenda.checks ol > li {
+  display: grid; grid-template-columns: auto 1fr; column-gap: var(--sp-md); align-items: center;
+  padding: 0; position: relative;
+}
+section.agenda.checks ol > li::before {
+  content: ""; width: 1.5em; height: 1.5em; margin: 0;
+  border: 2px solid var(--ag-outline); border-radius: 4px;
+  background: none; -webkit-mask: none; mask: none;
+}
+section.agenda.checks ol > li::after { content: none; }
+/* past — ticked */
+section.agenda.checks.progress-2 ol > li:nth-child(-n+1),
+section.agenda.checks.progress-3 ol > li:nth-child(-n+2),
+section.agenda.checks.progress-4 ol > li:nth-child(-n+3),
+section.agenda.checks.progress-5 ol > li:nth-child(-n+4),
+section.agenda.checks.progress-6 ol > li:nth-child(-n+5) { opacity: 0.5; }
+section.agenda.checks.progress-2 ol > li:nth-child(-n+1)::after,
+section.agenda.checks.progress-3 ol > li:nth-child(-n+2)::after,
+section.agenda.checks.progress-4 ol > li:nth-child(-n+3)::after,
+section.agenda.checks.progress-5 ol > li:nth-child(-n+4)::after,
+section.agenda.checks.progress-6 ol > li:nth-child(-n+5)::after {
+  content: ""; position: absolute; left: 0; width: 1.5em; height: 1.5em; top: 50%; transform: translateY(-50%);
+  background-color: var(--accent);
+  -webkit-mask: var(--ag-check) no-repeat center / 80%; mask: var(--ag-check) no-repeat center / 80%;
+}
+/* current — arrow box */
+section.agenda.checks.progress-1 ol > li:nth-child(1),
+section.agenda.checks.progress-2 ol > li:nth-child(2),
+section.agenda.checks.progress-3 ol > li:nth-child(3),
+section.agenda.checks.progress-4 ol > li:nth-child(4),
+section.agenda.checks.progress-5 ol > li:nth-child(5),
+section.agenda.checks.progress-6 ol > li:nth-child(6) { opacity: 1; font-weight: 700; }
+section.agenda.checks.progress-1 ol > li:nth-child(1)::before,
+section.agenda.checks.progress-2 ol > li:nth-child(2)::before,
+section.agenda.checks.progress-3 ol > li:nth-child(3)::before,
+section.agenda.checks.progress-4 ol > li:nth-child(4)::before,
+section.agenda.checks.progress-5 ol > li:nth-child(5)::before,
+section.agenda.checks.progress-6 ol > li:nth-child(6)::before {
+  background: var(--accent); border-color: var(--accent);
+}
+section.agenda.checks.progress-1 ol > li:nth-child(1)::after,
+section.agenda.checks.progress-2 ol > li:nth-child(2)::after,
+section.agenda.checks.progress-3 ol > li:nth-child(3)::after,
+section.agenda.checks.progress-4 ol > li:nth-child(4)::after,
+section.agenda.checks.progress-5 ol > li:nth-child(5)::after,
+section.agenda.checks.progress-6 ol > li:nth-child(6)::after {
+  content: ""; position: absolute; left: 0; width: 1.5em; height: 1.5em; top: 50%; transform: translateY(-50%);
+  background-color: var(--on-accent);
+  -webkit-mask: var(--ag-arrow) no-repeat center / contain; mask: var(--ag-arrow) no-repeat center / contain;
 }
 
 /* === lib/components/legal/authority-chain/authority-chain.styles.css === */
@@ -2160,7 +2361,7 @@ section.compare-prose.transition:not(:has(.compare-prose-inner)) > :is(ul, ol) >
 section.compare-table h2 { font-size:var(--fs-emphasis); margin-bottom:var(--sp-sm); }
 section.compare-table table { width:100%; table-layout:auto; border-collapse:collapse; font-size:var(--fs-meta); flex:1; }
 section.compare-table thead tr { background:var(--spectrum) bottom / 100% 2px no-repeat; }
-section.compare-table thead th { font-family:var(--font-mono); font-size:var(--fs-meta); font-weight:600; letter-spacing:0.10em; text-transform:uppercase; color:var(--text-label); padding:0.625cqi var(--sp-xs) 0.78125cqi; text-align:left; word-wrap:break-word; overflow-wrap:break-word; }
+section.compare-table thead th { font-family:var(--font-label); font-size:var(--fs-meta); font-weight:600; letter-spacing:0.10em; text-transform:uppercase; color:var(--text-label); padding:0.625cqi var(--sp-xs) 0.78125cqi; text-align:left; word-wrap:break-word; overflow-wrap:break-word; }
 section.compare-table td { padding:0.625cqi var(--sp-xs); border-bottom:1px solid var(--border); color:var(--text-body); vertical-align:top; font-size:var(--fs-body-compact); word-wrap:break-word; overflow-wrap:break-word; }
 section.compare-table td:first-child { font-weight:600; color:var(--text-heading); white-space:nowrap; }
 
@@ -4477,7 +4678,7 @@ section.list > ol > li {
 }
 section.list > ol > li::before {
   content:counter(list-counter, decimal-leading-zero);
-  font-family:var(--font-mono); font-size:var(--fs-h4); font-weight:700; color:var(--accent);
+  font-family:var(--font-label); font-size:var(--fs-h4); font-weight:700; color:var(--accent);
 }
 
 /* ── takeaway register — former `tldr` component (inventory.list.takeaway) ──
@@ -4498,7 +4699,7 @@ section.list.takeaway.numbered > :is(ul,ol) > li { counter-increment:list-take-c
 section.list.takeaway.numbered > :is(ul,ol) { counter-reset:list-take-counter; }
 section.list.takeaway.numbered > :is(ul,ol) > li::before {
   content:counter(list-take-counter, decimal-leading-zero);
-  font-family:var(--font-mono); font-size:var(--fs-emphasis); font-weight:700;
+  font-family:var(--font-label); font-size:var(--fs-emphasis); font-weight:700;
   letter-spacing:0.02em; color:var(--accent); line-height:1;
   flex:0 0 auto; min-width:2.4em;
 }
@@ -4519,7 +4720,7 @@ section.list.principles > ol > li {
 section.list.principles > ol > li:last-child { border-bottom:none; }
 section.list.principles > ol > li::before {
   content:counter(list-principle-counter, decimal-leading-zero);
-  font-family:var(--font-mono); font-size:var(--fs-h1); font-weight:700;
+  font-family:var(--font-label); font-size:var(--fs-h1); font-weight:700;
   letter-spacing:0.02em; color:var(--accent); line-height:1; align-self:center;
 }
 section.list.principles.lettered > ol > li::before { content:counter(list-principle-counter, upper-alpha); }
@@ -4552,7 +4753,7 @@ section.list-criteria > :is(ol, ul) > li::before {
   content:counter(crit-counter, decimal-leading-zero);
   flex-shrink:0; align-self:stretch;
   display:flex; align-items:center; justify-content:center;
-  font-family:var(--font-mono); font-size:55cqh; font-weight:700;
+  font-family:var(--font-label); font-size:55cqh; font-weight:700;
   color:var(--accent); line-height:1;
 }
 section.list-criteria .crit-body {
@@ -4614,7 +4815,7 @@ section.list-steps ol > li:not(:last-child)::after {
   border-left:10px solid var(--border);
   z-index:1;
 }
-section.list-steps ol > li::before { content:'STEP ' counter(step-counter, decimal-leading-zero); font-family:var(--font-mono); font-size:var(--fs-meta); font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-label); }
+section.list-steps ol > li::before { content:'STEP ' counter(step-counter, decimal-leading-zero); font-family:var(--font-label); font-size:var(--fs-meta); font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-label); }
 section.list-steps ol > li strong { display:block; }
 section.list-steps ol > li p { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); margin:0; }
 section.list-steps ol > li:not(:has(> ul)) > p { flex:1; }
@@ -4716,7 +4917,7 @@ section.list-steps.timeline > ol > li::before {
   display:flex; align-items:center; justify-content:center;
   width:2.03125cqi; height:2.03125cqi; border-radius:50%;
   background:var(--accent); color:var(--on-accent, var(--on-dark-primary));
-  font-family:var(--font-mono); font-size:var(--fs-meta); font-weight:700; line-height:1;
+  font-family:var(--font-label); font-size:var(--fs-meta); font-weight:700; line-height:1;
   margin-bottom:1.09375cqi; flex-shrink:0;
 }
 section.list-steps.timeline > ul > li::before {
@@ -6044,7 +6245,7 @@ section.obligation-matrix table {
 }
 section.obligation-matrix thead tr { background:var(--spectrum) bottom / 100% 2px no-repeat; }
 section.obligation-matrix thead th {
-  font-family:var(--font-mono);
+  font-family:var(--font-label);
   font-size:var(--fs-meta);
   font-weight:700;
   letter-spacing:0.10em;
@@ -9203,7 +9404,7 @@ section.stats > ol > li > ul {
   list-style:none; padding:0; margin:0;
 }
 section.stats > ol > li > ul > li {
-  font-family:var(--font-mono); font-size:var(--fs-meta); font-weight:600;
+  font-family:var(--font-label); font-size:var(--fs-meta); font-weight:600;
   letter-spacing:0.18em; text-transform:uppercase; color:var(--text-label);
 }
 
@@ -10020,7 +10221,7 @@ section p:has(> code:only-child):has(+ h5) > code,
 section p:has(> code:only-child):has(+ ul) > code,
 section p:has(> code:only-child):has(+ ol) > code,
 section p:has(> code:only-child):has(+ pre) > code {
-  font-family: var(--font-mono);
+  font-family: var(--font-label);
   font-size: var(--fs-meta);
   font-weight: 600;
   letter-spacing: 0.18em;
@@ -10068,7 +10269,7 @@ section:not(.quote):not(.featured):not(.math):not(.citation-card) > blockquote {
 }
 section:not(.quote):not(.featured):not(.math):not(.citation-card) > blockquote::before {
   content:'KEY INSIGHT';
-  font-family:var(--font-mono);
+  font-family:var(--font-label);
   font-size:var(--fs-meta);
   font-weight:700;
   letter-spacing:0.12em;
@@ -10119,13 +10320,13 @@ section img.emoji {
 }
 section header {
   position:absolute; top:1.875cqi; left:2.34375cqi; right:2.34375cqi;
-  font-family:var(--font-mono); font-size:var(--fs-meta); font-weight:500;
+  font-family:var(--font-label); font-size:var(--fs-meta); font-weight:500;
   letter-spacing:0.10em; text-transform:uppercase; text-align:left;
   color:var(--marp-slide-header-color, var(--text-muted));
 }
 section footer {
   position:absolute; bottom:1.875cqi; left:2.34375cqi; right:6.25cqi;
-  font-family:var(--font-mono); font-size:var(--fs-meta); font-weight:500;
+  font-family:var(--font-label); font-size:var(--fs-meta); font-weight:500;
   line-height:1; letter-spacing:0.06em; text-align:left;
   color:var(--marp-slide-footer-color, var(--text-muted));
 }
@@ -12364,6 +12565,479 @@ section.mark-chevron::before {
 section.treatment-none {
   --_bg-radial: none;
   --_bg-linear: none;
+}
+
+/* === lib/base/base.sketch.css === */
+/* base.sketch.css — the `sketch` finish modifier.
+ *
+ * A hand-drawn "stencil sketch" skin applied deck-wide (front-matter
+ * `class: sketch`) or per-slide (`<!-- _class: <layout> sketch -->`).
+ * It is a FINISH-layer cross-cutting modifier in the Function · Form ·
+ * Substance · Finish model — it changes type and box geometry, never
+ * colour. Every value goes through a palette token (`var(--…)`), so the
+ * finish is palette-blind: pair it with ANY theme and that theme colours
+ * it. The curated `carta` paper/ink palette is the blessed pairing
+ * (`theme: carta` + `class: sketch`), but `theme: indaco class: sketch`
+ * works identically in blue.
+ *
+ * Two parts make the look, both PDF-safe vector (no SVG filters — a
+ * feTurbulence/feDisplacementMap "roughen" pass reads on screen but
+ * collapses Marp's print-scale transform, so the slide shrinks in the
+ * PDF; see engineering/gotchas.md). The parts:
+ *   1. Handwriting type   — --sketch-font-display on headings,
+ *                           --sketch-font-body on prose (base.tokens.css).
+ *   2. Hand-drawn boxes    — asymmetric border-radius + an offset "ink"
+ *                           stroke + a per-card micro-rotation, on every
+ *                           card-style layout's card surface (the
+ *                           CARD_STYLE_LAYOUTS family in
+ *                           lib/authoring/lint-core.js), AND on the other
+ *                           structures that draw their own lines — table
+ *                           frames + rules (compare-table, glossary,
+ *                           obligation-matrix, list-tabular), boxed
+ *                           blockquotes (quote, redline), bordered rows
+ *                           (actors), and the divider rule. The finish
+ *                           roughens lines the deck draws; it never invents
+ *                           a box (big-number / stats stay pure type).
+ *
+ * Default `sketch` is FULL handwriting (headings + body). `sketch-clean-body`
+ * opts body back to the clean --font-body for dense, text-heavy slides
+ * while keeping the hand headings + boxes.
+ *
+ * Charts/diagrams: the finish is CSS + fonts, so it reskins the heading,
+ * the HTML legend, and card text — but it cannot reach inside a chart's
+ * SVG geometry, so wedges/bars/lines keep their own marks. Hand-drawn
+ * chart MARKS are a deferred follow-up (chart-family SVG work); see
+ * engineering/decisions/2026-06-11-sketch-finish.md.
+ *
+ * Bundle position: tail, alongside the other Finish-tier modifiers, so
+ * its slide-scoped selectors (section.sketch …) compose on top of every
+ * component. See tools/build-css.js.
+ */
+
+/* The ink the hand-drawn strokes are drawn in. A seam: a theme can
+ * override --sketch-ink to draw the boxes in a softer or warmer ink than
+ * its heading colour without touching this file. Defaults to the heading
+ * ink so it reads on every canvas (incl. dark, via the light-dark token). */
+section.sketch {
+  --sketch-ink: var(--text-heading);
+  /* The hand-drawn RULE — a near-straight stroke with a slight pen-waver, as
+   * a tiling SVG mask. Lines (table cell rules, ledger/agenda row rules, the
+   * divider) wear this so they read as ruled-by-hand, not a machine hairline
+   * — the line-shaped counterpart to the boxes' asymmetric corners. The shape
+   * rides in the mask; the colour is `background-color: var(--sketch-ink)`, so
+   * it stays palette-blind (no baked hex). PDF-safe: a static image, not the
+   * feTurbulence filter that collapses Marp's print scaling. */
+  --sketch-wave: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 140 7'%3E%3Cpath d='M0 3.5 Q12 1.5 23 3.7 Q35 5.5 47 3.2 Q58 1.6 70 3.6 Q82 5.4 94 3.3 Q105 1.5 117 3.7 Q128 5.3 140 3.5' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+  /* The section's own default font tracks --font-body (re-pointed just
+   * below), so EVERY text node a component doesn't explicitly font — prose,
+   * emphasis, links, stray spans — reads hand. Using the token (not a literal
+   * hand face) means `sketch-clean-body` reverts the section default too. */
+  font-family: var(--font-body);
+  /* Re-point the engine type TOKENS at the hand faces. Routing the TOKEN (not
+   * enumerating elements) is what makes the finish reach every component
+   * regardless of selector specificity: custom-property inheritance overrides
+   * the value each component rule pulls. So a component that pins
+   * `var(--font-display)` on a metric numeral (stats / big-number / KPI hero)
+   * gets Caveat, and one that pins `var(--font-body)` on a caption
+   * (big-number sub-label, key-insight body) gets Shantell — no clean-face
+   * leaks, no per-component overrides. `--font-mono` is deliberately NOT
+   * re-pointed: real inline `code`/`pre`/math must stay unambiguous.
+   * `sketch-clean-body` restores --font-body to --font-body-clean. */
+  --font-display: var(--sketch-font-display);
+  --font-body: var(--sketch-font-body);
+  /* The "label voice" — eyebrows, table column headers, stat sub-labels,
+   * KEY INSIGHT, the running header/footer — defaults to the mono face
+   * (shared with code). Re-point it at the legible hand SANS (not the
+   * felt-tip script: small uppercase tracked labels must stay readable) so
+   * the structural labels read hand-drawn instead of "computer" beside the
+   * hand content. Real `code`/`pre`/math stay on --font-mono (untouched). */
+  --font-label: var(--sketch-font-body);
+  /* Component label pills / badges (state-marker chips, pricing tags,
+   * etc.) ride the hand body face too, so every glyph of prose on the
+   * slide is hand-drawn. Real inline `code` stays monospace (below). */
+  --pill-font: var(--sketch-font-body);
+}
+
+/* ── HANDWRITING TYPE ─────────────────────────────────────────────────
+ * Headings/display resolve to the felt-tip face via the --font-display
+ * token (above); this rule adds the hand weight + tracking. Body prose
+ * resolves via the --font-body token (above), so there is no body element
+ * selector here. Code stays monospace (--font-mono untouched).
+ *
+ * NOTE: there is deliberately NO x-height "bump" (the old `font-size:1.08em`
+ * on p/li/td). It enlarged every body element 8% AND discarded the compact
+ * sizes dense layouts set (glossary/list-tabular `--fs-body-compact`),
+ * overrunning fixed content budgets — the single biggest source of clipped
+ * slides. Shantell's x-height reads fine at the engine sizes; dense decks
+ * use `sketch-clean-body` for the rare slide that still needs the clean
+ * footprint. */
+section.sketch :is(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--sketch-font-display);
+  font-weight: 700;
+  letter-spacing: 0.005em;
+}
+/* Pagination (Marp's section::after) ships from the scaffold with
+ * `font-family: var(--font-mono) !important`, so it needs an !important
+ * override at higher specificity (.sketch class) to ride the hand label
+ * voice like the header / footer chrome. */
+section.sketch::after {
+  font-family: var(--font-label) !important;
+}
+
+/* Plain bullet / number lists take a hand-jotted mark in the felt-tip face.
+ * Scoped to `content` + `split-compare` — the ONLY layouts that re-enable
+ * native markers (base sets `list-style:none` everywhere else). Scoping it
+ * here, not to a bare `ul > li::marker`, is deliberate: setting `content` on
+ * a `list-style:none` row would FORCE a stray marker onto the boxed/ruled row
+ * layouts (list, checklist, actors) and the `::before` counter lists. The
+ * bullet becomes an en-dash (reads as a pen-jotted list mark, and renders
+ * identically in the fallback face); `ol` figures just take the hand. */
+section.sketch.content :is(ul, ol) > li::marker,
+section.sketch.split-compare .option :is(ul, ol) > li::marker {
+  font-family: var(--sketch-font-display);
+  color: var(--accent);
+}
+section.sketch.content ul > li::marker,
+section.sketch.split-compare .option ul > li::marker {
+  content: "\2013\00a0";
+}
+
+/* `sketch-clean-body` — keep the hand headings + boxes, return prose to the
+ * clean engine body face. One token reset: restore --font-body to the clean
+ * stack. Because the section default and every component pull var(--font-body),
+ * this reverts all body prose at once; --font-display / --font-label stay
+ * re-pointed, so headings and labels keep the hand. The escape hatch for the
+ * rare text-dense slide that still needs the clean footprint. */
+section.sketch.sketch-clean-body {
+  --font-body: var(--font-body-clean);
+}
+
+/* ── HAND-DRAWN HEADING RULE ──────────────────────────────────────────
+ * A wobbly underline under the slide heading. The asymmetric border-
+ * radius bends a straight border into a drawn stroke; width:fit-content
+ * keeps it the length of the words above it. Accent-hued so it picks up
+ * the palette. */
+section.sketch h2 {
+  width: fit-content;
+  max-width: 100%;
+  padding-bottom: var(--sp-2xs);
+  border-bottom: 2.5px solid var(--accent);
+  border-radius: 0 0 95% 4px / 0 0 14px 8px;
+}
+
+/* ── HAND-DRAWN BOXES ─────────────────────────────────────────────────
+ * Card-family surfaces become sketched boxes: a heavier ink border, the
+ * classic asymmetric border-radius that reads as a hand-drawn rectangle,
+ * an offset "ink" shadow (drawn twice), and a per-card micro-rotation so
+ * no two boxes sit identically. Targets both render paths each card
+ * component ships: the marp-cli native `> ul/ol > li` and the lattice.js
+ * post-processed `.card`.
+ */
+section.sketch.cards-grid > ul > li,
+section.sketch.cards-grid > ol > li,
+section.sketch.cards-grid .card,
+section.sketch.cards-stack > ul > li,
+section.sketch.cards-stack > ol > li,
+section.sketch.cards-stack .card,
+section.sketch.verdict-grid > ul > li,
+section.sketch.decision > ol > li,
+section.sketch.matrix-2x2 > ol > li,
+section.sketch.matrix-2x2 > ul > li,
+section.sketch.pricing > ul > li,
+section.sketch.featured .feat-card,
+section.sketch.featured .sub-card,
+section.sketch.compare-prose .card,
+section.sketch.compare-prose > ol > li,
+section.sketch.citation-card > blockquote,
+/* The generic "KEY INSIGHT" blockquote (the trailing `> blockquote` on any
+ * non-specialised layout — same target as base.modifiers' key-insight chrome)
+ * becomes a drawn box too. redline/quote/featured/math/citation-card own their
+ * blockquote and are excluded so their borders/spines aren't clobbered. */
+section.sketch:not(.quote):not(.featured):not(.math):not(.citation-card):not(.redline) > blockquote {
+  border: 2px solid var(--sketch-ink) !important;
+  border-radius: 255px 12px 225px 15px / 15px 225px 15px 255px !important;
+  box-shadow: 2px 3px 0 -1px color-mix(in srgb, var(--sketch-ink) 30%, transparent);
+}
+/* Alternate the radius + a slight tilt per card so each grid of cards
+ * reads hand-placed rather than stamped. Scoped to the multi-card list
+ * layouts (single-card layouts get the drawn box above, no tilt). */
+section.sketch.cards-grid > ul > li:nth-child(2n),
+section.sketch.cards-grid > ol > li:nth-child(2n),
+section.sketch.cards-grid .card:nth-child(2n),
+section.sketch.cards-stack > ul > li:nth-child(2n),
+section.sketch.cards-stack > ol > li:nth-child(2n),
+section.sketch.cards-stack .card:nth-child(2n),
+section.sketch.verdict-grid > ul > li:nth-child(2n),
+section.sketch.decision > ol > li:nth-child(2n),
+section.sketch.matrix-2x2 > ol > li:nth-child(2n),
+section.sketch.matrix-2x2 > ul > li:nth-child(2n),
+section.sketch.pricing > ul > li:nth-child(2n) {
+  border-radius: 15px 225px 15px 255px / 225px 15px 255px 15px !important;
+  transform: rotate(-0.5deg);
+}
+section.sketch.cards-grid > ul > li:nth-child(3n),
+section.sketch.cards-grid > ol > li:nth-child(3n),
+section.sketch.cards-grid .card:nth-child(3n),
+section.sketch.cards-stack > ul > li:nth-child(3n),
+section.sketch.cards-stack > ol > li:nth-child(3n),
+section.sketch.cards-stack .card:nth-child(3n),
+section.sketch.verdict-grid > ul > li:nth-child(3n),
+section.sketch.decision > ol > li:nth-child(3n),
+section.sketch.matrix-2x2 > ol > li:nth-child(3n),
+section.sketch.matrix-2x2 > ul > li:nth-child(3n),
+section.sketch.pricing > ul > li:nth-child(3n) {
+  border-radius: 225px 15px 255px 18px / 15px 255px 15px 225px !important;
+  transform: rotate(0.4deg);
+}
+
+/* ── corner tags: number badges + lifted-label / banner headers ────────────
+ * The numbered card badge (cards-grid/cards-stack `::before` counter) and the
+ * lifted-label corner tag / banner header (decision + compare-prose
+ * `strong:first-child`) ship as accent chips in the MONO face with clean
+ * geometric corners — so they sat un-sketched on otherwise hand-drawn cards.
+ * Give the numerals the hand display face, the labels the hand sans, and the
+ * flush chips a wobbled corner. Banner headers keep their straight full-width
+ * strip (the card's overflow clips it to the card's own hand corners) and only
+ * switch font, so the radius wobble is scoped to the non-banner chips. */
+section.sketch.cards-grid > :is(ul, ol) > li::before,
+section.sketch.cards-grid .card::before,
+section.sketch.cards-stack > :is(ul, ol) > li::before,
+section.sketch.cards-stack .card::before {
+  font-family: var(--sketch-font-display);
+  border-radius: 15px 2px 12px 3px / 3px 12px 2px 15px;
+}
+section.sketch.decision > :is(ul, ol) > li > strong:first-child,
+section.sketch.compare-prose > :is(ul, ol) > li > strong:first-child,
+section.sketch.compare-prose .compare-prose-inner .card > strong:first-child {
+  font-family: var(--font-label) !important;
+}
+section.sketch.decision:not(.banner-tag) > :is(ul, ol) > li > strong:first-child,
+section.sketch.compare-prose:not(.banner-tag) > :is(ul, ol) > li > strong:first-child,
+section.sketch.compare-prose:not(.banner-tag) .compare-prose-inner .card > strong:first-child {
+  border-radius: 15px 2px 12px 3px / 3px 12px 2px 15px !important;
+}
+
+/* ── HAND-DRAWN RULES — the structures that draw their OWN lines ──────────
+ * The card family above gets the full drawn box. The principle for
+ * everything else: the finish ROUGHENS lines the deck already draws — table
+ * grids, the ledger rules, blockquote frames, the divider stroke — so no
+ * machine-straight hairline survives next to the hand type. It does NOT
+ * invent boxes: structures that draw no lines (big-number, stats — pure
+ * centred type) stay font-only, and content the slide merely contains
+ * (photos, real `code`, chart SVG geometry) is out of scope by the same
+ * rule. See engineering/decisions/2026-06-11-sketch-finish.md.
+ *
+ * Tables carry a drawn FRAME (border + asymmetric radius + offset ink),
+ * gentler than the card radius so a full-width grid reads as a hand-ruled
+ * box, not a balloon. collapse→separate because border-radius is inert on
+ * border-collapse:collapse; border-spacing:0 keeps the rows tight. */
+section.sketch.compare-table table,
+section.sketch.glossary table,
+section.sketch.obligation-matrix table,
+section.sketch.list-tabular > ol {
+  border: 2px solid var(--sketch-ink);
+  border-radius: 18px 5px 15px 8px / 8px 15px 5px 18px;
+  box-shadow: 2px 3px 0 -1px color-mix(in srgb, var(--sketch-ink) 30%, transparent);
+}
+section.sketch.compare-table table,
+section.sketch.glossary table,
+section.sketch.obligation-matrix table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+/* Interior rules become hand-drawn wavy strokes, not straight hairlines — the
+ * line-shaped version of the boxes' wobble. The straight border is hidden and
+ * a masked --sketch-wave strip is laid over where it sat (a ::after pinned to
+ * the row/cell bottom). The frame owns the ledger's outer edge, so the
+ * first/last row's own rule is dropped to avoid doubling it. */
+section.sketch.compare-table td,
+section.sketch.obligation-matrix td,
+section.sketch.list-tabular > ol > li,
+section.sketch.list.principles > ol > li {
+  position: relative;
+  border-bottom-color: transparent;
+}
+section.sketch.list-tabular > ol > li:first-child { border-top-color: transparent; }
+section.sketch.compare-table td::after,
+section.sketch.obligation-matrix td::after,
+section.sketch.list-tabular > ol > li::after,
+section.sketch.list.principles > ol > li:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 7px;
+  background-color: var(--sketch-ink);
+  -webkit-mask: var(--sketch-wave) repeat-x center / 140px 7px;
+  mask: var(--sketch-wave) repeat-x center / 140px 7px;
+  pointer-events: none;
+}
+/* The frame already draws the ledger's last edge — drop the last row's rule. */
+section.sketch.list-tabular > ol > li:last-child::after { display: none; }
+
+/* Boxed blockquotes (the quote callout, the redline statement) become drawn
+ * boxes like the cards. redline keeps its semantic left spine — we wobble
+ * the corners and add the offset ink, never recolour the meaning-bearing
+ * border. actors rows are bordered row-cards: same hand corners, colours
+ * (the per-actor left hue) untouched. */
+section.sketch.quote blockquote {
+  border: 2px solid var(--sketch-ink) !important;
+  border-radius: 255px 12px 225px 15px / 15px 225px 15px 255px !important;
+  box-shadow: 2px 3px 0 -1px color-mix(in srgb, var(--sketch-ink) 30%, transparent);
+}
+section.sketch.redline > blockquote,
+section.sketch.checklist > ol > li {
+  border-radius: 4px 225px 15px 4px / 4px 15px 225px 4px;
+  box-shadow: 2px 3px 0 -1px color-mix(in srgb, var(--sketch-ink) 30%, transparent);
+}
+section.sketch.actors > ul > li,
+section.sketch.actors > ol > li,
+section.sketch.list > ul > li {
+  border-radius: 255px 12px 225px 15px / 15px 225px 15px 255px;
+  box-shadow: 2px 3px 0 -1px color-mix(in srgb, var(--sketch-ink) 30%, transparent);
+}
+
+/* The divider rule bends into a hand stroke (the h2-underline trick) and
+ * thickens a touch so it reads as drawn ink, not a printer's rule. */
+section.sketch hr {
+  height: 7px;
+  border: none;
+  border-radius: 0;
+  background: var(--sketch-ink);
+  -webkit-mask: var(--sketch-wave) repeat-x center / 140px 7px;
+  mask: var(--sketch-wave) repeat-x center / 140px 7px;
+}
+
+/* ── TARGETED FIXES ───────────────────────────────────────────────────────
+ * Caveat ships no italic, so any `font-style:italic` on the display face
+ * synthesizes an oblique slant on an already-cursive script — muddy. The
+ * quote component pins its blockquote text italic; drop it (Caveat's natural
+ * slant already reads handwritten). */
+section.sketch.quote blockquote p {
+  font-style: normal;
+}
+
+/* Chart-frame slides draw a straight 1px rule under the heading
+ * (.chart-header::after). The sketch h2 already carries the drawn wavy
+ * underline, so that rule is a redundant SECOND rule — and a machine-straight
+ * one next to hand type. Suppress it (the hand underline stays). */
+section.sketch.chart-frame .chart-header::after {
+  display: none;
+}
+
+/* The full-bleed / contain image caption is clamped to ~2 lines via a tuned
+ * `max-height` calibrated for the clean body face. The hand sans sets a
+ * slightly taller line, so the 2nd line was guillotined; give the clamp a
+ * little more room under the finish. */
+section.sketch.image.full p:last-of-type,
+section.sketch.image.contain p:last-of-type {
+  max-height: 5.6cqi;
+}
+
+/* ── RESPONSIVE GUARDS ────────────────────────────────────────────────────
+ * The hand sans sets a wider/taller footprint than the engine body face, so
+ * layouts that pack content into a fixed- or equal-height box can tip
+ * CONTAINED content past the edge under sketch. Keep them responsive:
+ * content that fit the engine face still fits; only a genuinely overstuffed
+ * slide overflows the whole frame (and trips the overflow ring). */
+
+/* list: rows are equal-height bands (flex:1 1 0) sized for the engine face at
+ * --fs-message (21pt). The wider hand font makes a multi-line item overrun
+ * its 1/N band and collide with the next. Step the rows down to --fs-body so
+ * the same content fits the same bands (short-item lists still read fine, a
+ * touch quieter). */
+section.sketch.list > :is(ul, ol) > li {
+  font-size: var(--fs-body);
+}
+
+/* split-panel: the right-zone supporting cards are sized for the engine face
+ * in a fixed-width panel; the wider hand font pushed the last card past the
+ * panel (and the section clips it). Drop them to the compact step so the set
+ * fits. */
+section.sketch.split-panel .panel-right :is(p, li, strong) {
+  font-size: var(--fs-body-compact);
+}
+
+/* checklist: a full 7-row list plus the per-row offset-ink shadow runs the
+ * last row into the footer. Tighten the inter-row gap so the set clears it. */
+section.sketch.checklist > :is(ul, ol) {
+  gap: var(--sp-xs);
+}
+
+/* ── agenda under the sketch finish ────────────────────────────────────────
+ * The five agenda styles (ledger default + circles/rail/cards/checks) are
+ * structured in agenda.styles.css. The finish (a) swaps the mark SHAPES to
+ * hand-drawn — the bowed arrow, looser tick, wavy rail — by redefining the
+ * --ag-* tokens; (b) sets the numerals in the hand display face; and (c)
+ * wobbles the drawn geometry (rings, cards, boxes) + bends the active rule
+ * and the rail into pen strokes. Colour never changes here, so every palette
+ * still colours it. */
+section.sketch.agenda {
+  --ag-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 18'%3E%3Cpath d='M2 9 Q9 8.5 16 9 M12.5 3 Q19 6 21.5 9 Q19 12 12.5 15' fill='none' stroke='%23000' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  --ag-check: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M2.4 8.6 Q4.6 11.2 5.8 12.8 Q8.8 6 13.6 2.2' fill='none' stroke='%23000' stroke-width='2.7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  --ag-rail: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 7 140'%3E%3Cpath d='M3.5 0 Q1.3 12 3.7 23 Q5.7 35 3.2 47 Q1.4 58 3.6 70 Q5.6 82 3.3 94 Q1.3 105 3.7 117 Q5.5 128 3.5 140' fill='none' stroke='%23000' stroke-width='2.6' stroke-linecap='round'/%3E%3C/svg%3E");
+}
+/* Numerals in the hand display face (harmless on the markless ::before of
+ * checks/active-ledger, which carry no text). */
+section.sketch.agenda > ol > li::before { font-family: var(--sketch-font-display); }
+
+/* Ledger — the active "you are here" rule bends into a pen stroke. Scoped to
+ * ledger only (:not the styled variants): checks reuses the active row's
+ * ::after for its arrow at the same nth-child, so an unscoped rule would
+ * overwrite that arrow with this horizontal wave strip. */
+section.sketch.agenda:not(.circles):not(.rail):not(.cards):not(.checks).progress-1 > ol > li:nth-child(1)::after,
+section.sketch.agenda:not(.circles):not(.rail):not(.cards):not(.checks).progress-2 > ol > li:nth-child(2)::after,
+section.sketch.agenda:not(.circles):not(.rail):not(.cards):not(.checks).progress-3 > ol > li:nth-child(3)::after,
+section.sketch.agenda:not(.circles):not(.rail):not(.cards):not(.checks).progress-4 > ol > li:nth-child(4)::after,
+section.sketch.agenda:not(.circles):not(.rail):not(.cards):not(.checks).progress-5 > ol > li:nth-child(5)::after,
+section.sketch.agenda:not(.circles):not(.rail):not(.cards):not(.checks).progress-6 > ol > li:nth-child(6)::after {
+  height: 7px;
+  -webkit-mask: var(--sketch-wave) repeat-x center / 140px 7px;
+  mask: var(--sketch-wave) repeat-x center / 140px 7px;
+}
+
+/* circles — hand-drawn rings with an offset ink + a per-row tilt. */
+section.sketch.agenda.circles > ol > li::before {
+  border-color: var(--sketch-ink);
+  border-radius: 47% 53% 49% 51% / 53% 47% 52% 48%;
+  box-shadow: 1.5px 2px 0 -1px color-mix(in srgb, var(--sketch-ink) 26%, transparent);
+}
+section.sketch.agenda.circles > ol > li:nth-child(odd)::before { transform: rotate(-2deg); }
+section.sketch.agenda.circles > ol > li:nth-child(even)::before { transform: rotate(2deg); }
+
+/* cards — wobbled corners + offset ink, alternating tilt. */
+section.sketch.agenda.cards > ol > li {
+  border-color: var(--sketch-ink);
+  border-radius: 255px 14px 235px 16px / 16px 235px 14px 255px;
+  box-shadow: 2px 3px 0 -1px color-mix(in srgb, var(--sketch-ink) 26%, transparent);
+}
+section.sketch.agenda.cards > ol > li:nth-child(odd) { transform: rotate(-0.4deg); }
+section.sketch.agenda.cards > ol > li:nth-child(even) { transform: rotate(0.4deg); }
+
+/* checks — hand-drawn boxes. The "current" arrow lives inside a small filled
+ * box; the bowed hand arrow muddies at that knockout scale, so checks keeps
+ * the crisp geometric arrow (a clean mark inside a drawn box reads fine). */
+section.sketch.agenda.checks {
+  --ag-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 18'%3E%3Cpath d='M2 9 H21 M14 3 L21 9 L14 15' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+section.sketch.agenda.checks > ol > li::before {
+  border-color: var(--sketch-ink);
+  border-radius: 5px 13px 6px 12px / 12px 6px 13px 5px;
+}
+section.sketch.agenda.checks > ol > li:nth-child(odd)::before { transform: rotate(-1.5deg); }
+section.sketch.agenda.checks > ol > li:nth-child(even)::before { transform: rotate(1.5deg); }
+
+/* rail — the journey line becomes a wavy pen stroke; nodes get hand corners. */
+section.sketch.agenda.rail > ol::before {
+  width: 6px; background-color: var(--sketch-ink);
+  -webkit-mask: var(--ag-rail) repeat-y center / 6px 140px;
+  mask: var(--ag-rail) repeat-y center / 6px 140px;
+}
+section.sketch.agenda.rail > ol > li::before {
+  border-color: var(--sketch-ink);
+  border-radius: 50% 47% 53% 49% / 49% 53% 47% 51%;
 }
 
 /* === lib/shared/shared.styles.css === */

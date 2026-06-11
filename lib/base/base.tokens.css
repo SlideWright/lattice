@@ -30,7 +30,7 @@
  * render paths load the webfonts the same way.
  */
 
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Noto+Color+Emoji&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Caveat:wght@400;700&family=Shantell+Sans:wght@400;500;700&family=Noto+Color+Emoji&display=swap');
 
 :root {
   /* Color tokens are defined by the active palette (themes/<name>.css),
@@ -55,7 +55,32 @@
      keeps it from touching any non-emoji text). */
   --font-display: 'Playfair Display', Georgia, serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji';
   --font-body:    'Outfit', system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji';
+  /* Stable handle to the CLEAN body face. The `sketch` finish re-points
+     --font-body itself at the hand sans (so every component that pulls
+     var(--font-body) goes hand regardless of selector specificity); this
+     alias preserves the engine face so `sketch-clean-body` can restore it.
+     Computed at :root, so it stays the clean stack even where --font-body
+     is overridden downstream. */
+  --font-body-clean: var(--font-body);
   --font-mono:    'JetBrains Mono', 'Courier New', monospace, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji';
+  /* The "label voice" — small uppercase tracked labels (eyebrows, table
+     column headers, stat sub-labels, KEY INSIGHT, running header/footer).
+     Defaults to the mono face, so labels share the structural voice of code
+     by default. It is a seam: the `sketch` finish re-points it at the hand
+     face so labels read hand-drawn while real `code`/`pre`/math stay on
+     --font-mono (data must remain unambiguous). Repoint per theme to give
+     labels their own face without touching code. */
+  --font-label:   var(--font-mono);
+
+  /* Sketch finish — the hand-drawn font pair the `sketch` modifier swaps
+     in (lib/base/base.sketch.css). Caveat carries display/headings (the
+     felt-tip signal); Shantell Sans carries body (a designed-for-UI hand
+     sans that stays legible across a dense slide). Both are palette-blind
+     and used only under section.sketch, so non-sketch decks never load
+     them as the active family. Swap either token to re-flavour the whole
+     finish in one line. */
+  --sketch-font-display: 'Caveat', 'Bradley Hand', cursive, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji';
+  --sketch-font-body:    'Shantell Sans', system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji';
 
   /* ── Spacing scale (cqi — proportional to the 1280px HD baseline) ───
    * 100cqi = slide inline size. Formula: px / 1280 * 100 = cqi.

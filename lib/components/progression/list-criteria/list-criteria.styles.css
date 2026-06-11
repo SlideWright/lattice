@@ -23,7 +23,7 @@ section.list-criteria > :is(ol, ul) > li::before {
   content:counter(crit-counter, decimal-leading-zero);
   flex-shrink:0; align-self:stretch;
   display:flex; align-items:center; justify-content:center;
-  font-family:var(--font-mono); font-size:55cqh; font-weight:700;
+  font-family:var(--font-label); font-size:55cqh; font-weight:700;
   color:var(--accent); line-height:1;
 }
 section.list-criteria .crit-body {

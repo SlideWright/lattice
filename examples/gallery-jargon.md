@@ -646,9 +646,12 @@ The architecture change is the calibration loop. The culture change is still in 
 
 ## The case for the framework in three moves
 
-1. **Claim.** The framework gets calibrated prioritization with audit-grade decision custody. We stop paying re-litigation cost on every quarterly review.
-2. **Evidence.** The pilot ran six months across four product teams. Decision close-time dropped. Calibration ran once. The four teams have since been reorganized into three teams. One is now a platform team. None of them count in the "before" baseline.
-3. **Implication.** The framework works. The deck says so. The deck was written by the framework team. We trust the framework team. The framework told us to.
+1. Claim.
+   - The framework gets calibrated prioritization with audit-grade decision custody. We stop paying re-litigation cost on every quarterly review.
+2. Evidence.
+   - The pilot ran six months across four product teams. Decision close-time dropped. Calibration ran once. The four teams have since been reorganized into three teams. One is now a platform team. None of them count in the "before" baseline.
+3. Implication.
+   - The framework works. The deck says so. The deck was written by the framework team. We trust the framework team. The framework told us to.
 
 ---
 
