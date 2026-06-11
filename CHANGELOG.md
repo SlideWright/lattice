@@ -330,6 +330,21 @@ in patch versions.
 
 ### Added
 
+- **A shared legend rail for the colour-categorical charts, and a status key
+  for roadmap.** The four charts that encode meaning by colour — `piechart`,
+  `radar`, `map`, and `quadrant·cohort` — now share one legend treatment: the
+  chart, a gradient **separator spine**, and the key read as a single balanced
+  group (chart leaning left, key right), with a consistent gutter, a capped
+  width, and labels that **wrap** instead of clipping (map's long names no
+  longer truncate). Swatches and label type are unified across all four, and
+  the spine reads on both canvases. Separately, `roadmap` now emits a
+  **bottom-centre status key** (✓ shipped · – in flight · ○ planned · ╱ out of
+  scope) for the marker states actually present, so an emailed deck reader can
+  decode the symbols; it is omitted on the `status` variant (already labelled
+  per-cell) and `horizons` (its cards carry Now/Next/Later framing). New
+  `--chart-legend-*` / `--chart-spine-*` tokens on `section.chart-frame` are the
+  override hooks. See `engineering/decisions/2026-06-11-chart-legend-system.md`
+  and the demo deck `examples/chart-legends.md`.
 - **Editor autocomplete is now a workspace preference (Settings → Workspace).**
   A new on/off toggle (on by default) silences the deck-grammar completion popup
   for authors who'd rather type without it. Persisted in localStorage like the

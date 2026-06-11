@@ -24,9 +24,15 @@ section.map .map-figure {
   gap: 3cqi;
 }
 section.map .map-svg {
-  flex: 1 1 auto;
+  flex: 0 1 auto;
   min-width: 0;
-  height: 100%;
+  /* Width-driven (a world map is wide-short): take a generous but bounded share
+   * of the group so the legend rail keeps its room and the pair stays balanced.
+   * height:auto lets the aspect ratio set the height. */
+  width: 56cqi;
+  max-width: 100%;
+  height: auto;
+  max-height: 100%;
   display: block;
 }
 
