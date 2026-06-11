@@ -145,5 +145,5 @@ section.map .map-legend-row--unmatched .map-legend-value {
 }
 section.map .map-swatch--unmatched {
   background: transparent;
-  border: 1px dashed var(--text-muted);
+  border: var(--chart-hairline) dashed var(--text-muted);
 }
