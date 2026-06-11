@@ -262,6 +262,116 @@ describe('makeDataSource — per-component gate (surface D)', () => {
 	});
 });
 
+describe('inFrontMatter — front-matter detection (Tier 1)', () => {
+	test('true inside the opening YAML block, false past the closing fence', async () => {
+		const { inFrontMatter } = await load();
+		const lines = ['---', 'marp: true', 'theme: indaco', '---', '', '<!-- _class: title -->'];
+		assert.equal(inFrontMatter(getter(lines), 1), false); // the opening fence line itself
+		assert.equal(inFrontMatter(getter(lines), 3), true); // the theme: line
+		assert.equal(inFrontMatter(getter(lines), 6), false); // body, past the close
+	});
+
+	test('false when the document does not open with a fence', async () => {
+		const { inFrontMatter } = await load();
+		const lines = ['# just a heading', 'theme: not-front-matter'];
+		assert.equal(inFrontMatter(getter(lines), 2), false);
+	});
+
+	test('an unterminated block (mid-typing) still counts', async () => {
+		const { inFrontMatter } = await load();
+		const lines = ['---', 'theme: ind'];
+		assert.equal(inFrontMatter(getter(lines), 2), true);
+	});
+});
+
+describe('themeValuePosition — the theme: value slot (Tier 1)', () => {
+	test('captures the partial after `theme:`', async () => {
+		const { themeValuePosition } = await load();
+		assert.deepEqual(themeValuePosition('theme: ind'), { from: 'theme: '.length, typed: 'ind' });
+		assert.deepEqual(themeValuePosition('theme: '), { from: 'theme: '.length, typed: '' });
+	});
+
+	test('null on non-theme lines or once a value + trailing content exists', async () => {
+		const { themeValuePosition } = await load();
+		assert.equal(themeValuePosition('paginate: true'), null);
+		assert.equal(themeValuePosition('  header: "Q4 review"'), null);
+	});
+});
+
+describe('directiveNameAt / paginateValuePosition / fenceLangAt (Tier 2)', () => {
+	test('directiveNameAt captures a directive name before the colon', async () => {
+		const { directiveNameAt } = await load();
+		assert.deepEqual(directiveNameAt('<!-- _pag'), { from: '<!-- '.length, typed: '_pag' });
+		assert.deepEqual(directiveNameAt('<!-- '), { from: '<!-- '.length, typed: '' });
+	});
+
+	test('directiveNameAt stops once a colon is typed (value sources take over)', async () => {
+		const { directiveNameAt } = await load();
+		assert.equal(directiveNameAt('<!-- _class: cards'), null);
+		assert.equal(directiveNameAt('## a heading'), null);
+	});
+
+	test('paginateValuePosition captures the value after _paginate:', async () => {
+		const { paginateValuePosition } = await load();
+		assert.deepEqual(paginateValuePosition('<!-- _paginate: fa'), { from: '<!-- _paginate: '.length, typed: 'fa' });
+		assert.equal(paginateValuePosition('<!-- _header: x'), null);
+	});
+
+	test('fenceLangAt captures the info string on a fence line', async () => {
+		const { fenceLangAt } = await load();
+		assert.deepEqual(fenceLangAt('```mer'), { from: 3, typed: 'mer' });
+		assert.deepEqual(fenceLangAt('  ~~~'), { from: 5, typed: '' });
+		assert.equal(fenceLangAt('not a fence'), null);
+		assert.equal(fenceLangAt('```js extra'), null); // trailing content → not a bare info string
+	});
+});
+
+describe('inFencedLang / identifierBefore (Tier 3 — mermaid keywords)', () => {
+	test('detects the cursor is inside a ```mermaid block', async () => {
+		const { inFencedLang } = await load();
+		const lines = ['```mermaid', 'graph TD', 'A --> B', '```'];
+		assert.equal(inFencedLang(getter(lines), 2, ['mermaid']), 'mermaid');
+		assert.equal(inFencedLang(getter(lines), 3, ['mermaid']), 'mermaid');
+	});
+
+	test('null inside a non-mermaid fence, and past a closing fence', async () => {
+		const { inFencedLang } = await load();
+		const js = ['```js', 'const x = 1', '```'];
+		assert.equal(inFencedLang(getter(js), 2, ['mermaid']), null);
+		const after = ['```mermaid', 'graph TD', '```', 'plain prose'];
+		assert.equal(inFencedLang(getter(after), 4, ['mermaid']), null); // past the close
+	});
+
+	test('a fence line is itself a boundary — even after an unclosed mermaid block', async () => {
+		const { inFencedLang } = await load();
+		// malformed: ```mermaid never closed, then a ```js opener. The ```js line
+		// must NOT count as "inside mermaid" (so only fence-lang completes there).
+		const malformed = ['```mermaid', 'graph TD', '```js'];
+		assert.equal(inFencedLang(getter(malformed), 3, ['mermaid']), null);
+		// and the cursor on a mermaid block's own closing fence is a boundary too
+		const onClose = ['```mermaid', 'graph TD', '```'];
+		assert.equal(inFencedLang(getter(onClose), 3, ['mermaid']), null);
+	});
+
+	test('identifierBefore captures a letter-led token incl. hyphen/digits', async () => {
+		const { identifierBefore } = await load();
+		assert.deepEqual(identifierBefore('  gr'), { from: 2, typed: 'gr' });
+		assert.deepEqual(identifierBefore('stateDiagram-v'), { from: 0, typed: 'stateDiagram-v' });
+		assert.equal(identifierBefore('123'), null); // not letter-led
+		assert.equal(identifierBefore('A --> '), null); // no trailing word
+	});
+});
+
+describe('MERMAID_KEYWORDS — shared with the highlighter (Tier 3)', () => {
+	test('KW_DECLARE rebuilt from the shared list is byte-identical to the prior literal', async () => {
+		const { MERMAID_KEYWORDS } = await import('../../../docs/src/playground/grammar-vocab.js');
+		const built = `^(?:${MERMAID_KEYWORDS.declare.join('|')})(?![\\w$-])`;
+		const prior =
+			'^(?:action|callback|class|classDef|classDiagram|click|direction|erDiagram|flowchart|gantt|gitGraph|graph|journey|link|linkStyle|pie|requirementDiagram|sequenceDiagram|stateDiagram-v2|stateDiagram|style|subgraph)(?![\\w$-])';
+		assert.equal(built, prior);
+	});
+});
+
 describe('mapBasemapFor — world is the default basemap (regression)', () => {
 	test('a bare `map` slide resolves to the WORLD basemap, not US', async () => {
 		const { mapBasemapFor } = await load();

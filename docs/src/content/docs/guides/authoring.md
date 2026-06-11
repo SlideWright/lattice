@@ -85,10 +85,36 @@ For example `<!-- _class: cards-grid dark -->` renders the grid on the
 dark canvas. The catalog of modifiers lives in the design system
 reference in the repository.
 
+## Autocomplete in the Drawing Board
+
+The **[Drawing Board](/lattice/drawing-board/)** is the in-browser editor. It
+completes the deck vocabulary as you type, from the same catalog the component
+reference and the linter use. Every suggestion is deterministic and offline;
+`Ctrl-Space` summons any of them on demand.
+
+- **`theme:` in front matter** — the registered palette names. An unknown one
+  renders an unstyled white deck, so the name stays valid.
+- **Inside `<!-- _class: … -->`** — layout names (tagged by bucket), then the
+  modifiers that layout accepts, its own variants first and the universal ones
+  after.
+- **On an empty slide** — a `skeleton` completion drops the layout's slot
+  scaffold already in the correct nesting, so a card-style slide starts from
+  the `- Title` / `  - body` shape rather than the inline-bold trap above.
+- **Other slide directives** — `_paginate`, `_header`, `_footer`, and friends
+  inside an HTML comment, plus `_paginate`'s `true` / `false` / `skip` values.
+- **Fence languages** — the language id after ` ``` `, including the
+  `mermaid` and `chart` blocks Lattice renders.
+- **Inside a `mermaid` block** — the Mermaid diagram and flow keywords.
+- **Inside a `map` slide's list** — the country, state, and group names the
+  basemap resolves, including blocs and categories like `European Union` or
+  `Global South`, so the spelling matches on the first try.
+
 ## Where to go next
 
 - [Themes & palettes](/lattice/guides/themes/) — choose or author a palette.
 - [Component reference](/lattice/components/) — every layout's
   authoring contract.
+- [Drawing Board](/lattice/drawing-board/) — author a full deck in the
+  browser (autocomplete, live linting).
 - [`reference/skill.md`](https://github.com/slidewright/lattice/blob/main/reference/skill.md)
   in the repo — the full deck-authoring contract.

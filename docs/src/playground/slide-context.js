@@ -13,8 +13,8 @@
 
 // The class directive, matched anywhere on a line. Mirrors the class-token
 // notion in lib/authoring/lint-core.js so completion and lint agree by
-// construction.
-export const CLASS_RE = /<!--\s*_class:\s*([^>]+?)\s*-->/;
+// construction. Module-private — used by slideClassAt below.
+const CLASS_RE = /<!--\s*_class:\s*([^>]+?)\s*-->/;
 
 const SLIDE_BREAK = /^---\s*$/;
 
@@ -161,4 +161,91 @@ export function makeDataSource(components, fn) {
 		if (!info || !set.has(info.name)) return null;
 		return fn(context, info, line);
 	};
+}
+
+// ── Front matter: the deck's opening YAML block ──────────────────────────────
+
+// True when 1-based `lineNo` sits inside the deck's front matter — the YAML
+// block fenced by `---` at the very top of the file. Line 1 must be the opening
+// fence; the cursor is in the block until a closing `---` appears above it (an
+// unterminated block mid-typing still counts, so completion works as you write
+// the header). `getLine(n)` is 1-based.
+export function inFrontMatter(getLine, lineNo) {
+	if (lineNo < 2) return false; // line 1 is the opening fence itself
+	if ((getLine(1) ?? '').trim() !== '---') return false;
+	for (let n = 2; n < lineNo; n++) {
+		if ((getLine(n) ?? '').trim() === '---') return false; // a closing fence sits above the cursor
+	}
+	return true;
+}
+
+// The cursor's position on a `theme:` front-matter line, for theme-name
+// completion: the text before the cursor must be `theme:` then an optional
+// partial value (no trailing content). Returns `{ from, typed }` (from = the
+// column where the value starts) or null.
+export function themeValuePosition(before) {
+	const m = before.match(/^(\s*theme:\s*)(\S*)$/);
+	if (!m) return null;
+	return { from: m[1].length, typed: m[2] };
+}
+
+// ── Slide directives + fences (Tier 2) ───────────────────────────────────────
+
+// The cursor's position on a directive NAME being typed inside an HTML comment,
+// before any colon — `<!-- _pag|`. Returns `{ from, typed }` (typed keeps the
+// leading `_`) or null. Once the colon is typed this stops matching, so the
+// per-directive value/grammar sources take over (e.g. `_class:` → component
+// names).
+export function directiveNameAt(before) {
+	const m = before.match(/^(\s*<!--\s*)(_?[\w-]*)$/);
+	if (!m) return null;
+	return { from: m[1].length, typed: m[2] };
+}
+
+// The cursor's position on a `_paginate:` value inside an HTML comment —
+// `<!-- _paginate: fa|`. Returns `{ from, typed }` or null.
+export function paginateValuePosition(before) {
+	const m = before.match(/^(\s*<!--\s*_paginate:\s*)([\w-]*)$/);
+	if (!m) return null;
+	return { from: m[1].length, typed: m[2] };
+}
+
+// The cursor's position on a fenced-code info string — the language id right
+// after the opening ``` / ~~~ on a fence line. Returns `{ from, typed }` or
+// null.
+export function fenceLangAt(before) {
+	const m = before.match(/^(\s*(?:```|~~~))([\w-]*)$/);
+	if (!m) return null;
+	return { from: m[1].length, typed: m[2] };
+}
+
+// ── Inside a fenced block (Tier 3) ───────────────────────────────────────────
+
+const FENCE_LINE = /^\s*(?:```|~~~)\s*([\w-]*)/;
+
+// Which fenced language the cursor's line sits INSIDE, walking up to the nearest
+// fence line: an opening fence carries a language (` ```mermaid `), a closing
+// fence is bare (` ``` `). Returns the language if it's one of `langs`, else
+// null (bare/closing fence, a different language, or no fence above). `getLine`
+// is 1-based; the cursor's own line is not examined (the fence-info-string
+// source owns the opening line).
+export function inFencedLang(getLine, lineNo, langs) {
+	if (FENCE_LINE.test(getLine(lineNo) ?? '')) return null; // the cursor's own line is a fence boundary
+	for (let n = lineNo - 1; n >= 1; n--) {
+		const m = (getLine(n) ?? '').match(FENCE_LINE);
+		if (m) {
+			const lang = m[1];
+			return lang && langs.includes(lang) ? lang : null; // bare fence (closing) or other lang → not inside
+		}
+	}
+	return null;
+}
+
+// The identifier being typed immediately before the cursor (letter-led, may
+// carry digits/hyphens, e.g. `stateDiagram-v2`). Returns `{ from, typed }` or
+// null — used to anchor keyword completion inside a fenced sub-language.
+export function identifierBefore(before) {
+	const m = before.match(/([A-Za-z][\w-]*)$/);
+	if (!m) return null;
+	return { from: before.length - m[1].length, typed: m[1] };
 }

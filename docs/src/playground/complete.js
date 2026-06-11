@@ -19,20 +19,89 @@
 
 import { autocompletion } from '@codemirror/autocomplete';
 import { dataSources } from './data-sources.js';
+import { DIRECTIVE_NAMES, FENCE_LANGS, MERMAID_KEYWORDS, PAGINATE_VALUES } from './grammar-vocab.js';
 import {
 	blankBodyPartial,
 	classDirectiveCompletion,
 	classOptions,
+	directiveNameAt,
+	fenceLangAt,
+	identifierBefore,
+	inFencedLang,
+	inFrontMatter,
 	modifierOptions,
+	paginateValuePosition,
 	skeletonBody,
 	slideBodyEmpty,
 	slideClassAt,
+	themeValuePosition,
 } from './slide-context.js';
 
 const TOKEN = /^[\w-]*$/;
+const DIRECTIVE_TOKEN = /^_?[\w-]*$/;
+
+// Static option lists (built once) for the line-local Tier-2 sources.
+const DIRECTIVE_OPTIONS = DIRECTIVE_NAMES.map((d) => ({ label: d, type: 'keyword', detail: 'directive' }));
+const PAGINATE_OPTIONS = PAGINATE_VALUES.map((v) => ({ label: v, type: 'constant' }));
+const FENCE_OPTIONS = FENCE_LANGS.map((l) => ({ label: l, type: 'constant', detail: 'language' }));
+
+// Mermaid keyword options (declaration openers + flow/block keywords), the
+// in-fence completion vocabulary. CodeMirror prefix-filters against the typed
+// word, so a node id that matches no keyword shows nothing — low noise.
+const MERMAID_OPTIONS = [...MERMAID_KEYWORDS.declare, ...MERMAID_KEYWORDS.flow].map((k) => ({
+	label: k,
+	type: 'keyword',
+	detail: 'mermaid',
+}));
+
+// Completes Mermaid keywords inside a ```mermaid fence — the diagram component's
+// authoring surface. Walks up to confirm the enclosing fence is mermaid.
+function mermaidSource(context) {
+	const doc = context.state.doc;
+	const line = doc.lineAt(context.pos);
+	if (inFencedLang((n) => doc.line(n).text, line.number, ['mermaid']) !== 'mermaid') return null;
+	const before = context.state.sliceDoc(line.from, context.pos);
+	const spot = identifierBefore(before);
+	if (!spot) return null;
+	if (!spot.typed && !context.explicit) return null;
+	return { from: line.from + spot.from, options: MERMAID_OPTIONS, validFor: /^[\w-]*$/ };
+}
+
+// A line-local source: `detect(before)` returns `{ from, typed } | null`,
+// `options` is the static list. Shapes the result with the shared restraint
+// (quiet on an empty position unless Ctrl-Space) and offset mapping.
+function lineLocalSource(detect, options, validFor = TOKEN) {
+	const opts = options;
+	return (context) => {
+		const line = context.state.doc.lineAt(context.pos);
+		const before = context.state.sliceDoc(line.from, context.pos);
+		const spot = detect(before);
+		if (!spot) return null;
+		if (!spot.typed && !context.explicit) return null;
+		return { from: line.from + spot.from, options: opts, validFor };
+	};
+}
+
+// Completes the registered theme names after `theme:` in the deck's front
+// matter. A theme not in marp.config.js's themeSet renders unstyled (white,
+// no tokens) — a documented gotcha this prevents at the keystroke.
+function themeSource(themes) {
+	if (!themes?.length) return () => null;
+	const options = themes.map((t) => ({ label: t, type: 'constant', detail: 'theme' }));
+	return (context) => {
+		const doc = context.state.doc;
+		const line = doc.lineAt(context.pos);
+		if (!inFrontMatter((n) => doc.line(n).text, line.number)) return null;
+		const before = context.state.sliceDoc(line.from, context.pos);
+		const spot = themeValuePosition(before);
+		if (!spot) return null;
+		if (!spot.typed && !context.explicit) return null;
+		return { from: line.from + spot.from, options, validFor: TOKEN };
+	};
+}
 
 // Completes the component name and modifiers inside a `_class:` directive.
-export function classDirectiveSource(catalog, universalModifiers) {
+function classDirectiveSource(catalog, universalModifiers) {
 	return (context) => {
 		const line = context.state.doc.lineAt(context.pos);
 		const before = context.state.sliceDoc(line.from, context.pos);
@@ -56,7 +125,7 @@ export function classDirectiveSource(catalog, universalModifiers) {
 // correct nesting/slot shape, plain text (no snippet fields: skeletons contain
 // literal `$`/`{` that snippet templates would mis-parse). Inert once the slide
 // has any content, so it never clobbers authored body.
-export function skeletonSource(catalog) {
+function skeletonSource(catalog) {
 	if (!catalog?.length) return () => null;
 	const byName = new Map(catalog.map((c) => [c.name, c]));
 	return (context) => {
@@ -90,12 +159,22 @@ export function skeletonSource(catalog) {
 
 // Build the editor's autocomplete extension. `vocab` is the Drawing Board's
 // lintVocab ({ names, modifiers, universalModifiers, mapRegions }); `catalog` is
-// the compact component catalog ({ name, bucket, variants, skeleton, … }). Both
-// optional — without them only the (self-sufficient) data sources are live.
-export function latticeAutocomplete({ vocab, catalog } = {}) {
+// the compact component catalog ({ name, bucket, variants, skeleton, … });
+// `themes` is the registered theme-name list. All optional — without them only
+// the (self-sufficient) data sources are live.
+export function latticeAutocomplete({ vocab, catalog, themes } = {}) {
 	const universalModifiers = (vocab && (vocab.universalModifiers || vocab.modifiers)) || [];
 	return autocompletion({
-		override: [classDirectiveSource(catalog, universalModifiers), skeletonSource(catalog), ...dataSources],
+		override: [
+			themeSource(themes),
+			lineLocalSource(directiveNameAt, DIRECTIVE_OPTIONS, DIRECTIVE_TOKEN),
+			lineLocalSource(paginateValuePosition, PAGINATE_OPTIONS),
+			lineLocalSource(fenceLangAt, FENCE_OPTIONS),
+			mermaidSource,
+			classDirectiveSource(catalog, universalModifiers),
+			skeletonSource(catalog),
+			...dataSources,
+		],
 		activateOnTyping: true,
 		icons: false,
 	});

@@ -73,6 +73,26 @@ const lintVocab = {
 	mapRegions,
 };
 
+// Registered theme names for front-matter `theme:` autocomplete — the `@theme`
+// name declared inside each stylesheet in marp.config.js's themeSet (that set,
+// not the filenames, is what Marp actually registers; a `theme:` outside it
+// renders unstyled — see engineering/gotchas.md). Read at build time.
+const marpConfig = require(join(repoRoot, 'marp.config.js'));
+const themeNames = [
+	...new Set(
+		(marpConfig.themeSet || [])
+			.map((p) => {
+				try {
+					const m = readFileSync(p, 'utf8').match(/@theme\s+([\w-]+)/);
+					return m && m[1];
+				} catch {
+					return null;
+				}
+			})
+			.filter(Boolean),
+	),
+].sort();
+
 const base = import.meta.env.BASE_URL;
 const url = (p) => joinBase(base, p);
 // Cache-busted prefix for the playground's runtime-fetched assets (see
@@ -97,6 +117,7 @@ const dbData = JSON.stringify({
 	slideBox: SLIDE_BOX,
 	starter,
 	lintVocab,
+	themes: themeNames,
 	catalog: obCatalog,
 });
 ---
@@ -357,6 +378,7 @@ const dbData = JSON.stringify({
 				doc: initial,
 				vocab: data.lintVocab,
 				catalog: data.catalog,
+				themes: data.themes,
 				onChange: (v) => { if (notify) notify(v); },
 				onCursor: (line) => { for (const f of cursorFns) f(line); },
 			});
