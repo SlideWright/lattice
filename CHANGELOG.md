@@ -750,6 +750,13 @@ in patch versions.
 
 ### Fixed
 
+- **The Drawing Board editor mounts again.** The editor-mount script read the
+  `autocomplete` workspace preference via `getPref(...)` but never imported it
+  into that `<script>` module — and each Astro `<script>` is its own ES module,
+  so the call threw `getPref is not a function` before CodeMirror mounted. The
+  editor pane came up blank (the hidden no-JS seed textarea masked nothing once
+  `html.db-js` was set). Fixed by importing `getPref` into the editor-mount
+  block. Docs-site Drawing Board only — no engine change.
 - **Editor cursor-line and selection highlights now read clearly on every palette
   and mode.** Both were a flat low-alpha wash of `--accent` (active line 6%,
   selection 22%), which left the cursor line near-invisible everywhere (WCAG
