@@ -2519,6 +2519,58 @@ section.gantt.chart-frame .chart-body {
   width: 100%;
 }
 
+/* Status key — gantt encodes status by BAR COLOUR with no text on the bar, so
+ * an emailed reader needs a key. A centred row of swatch + label chips (the
+ * piechart-legend idiom) sits just below the chart; each swatch reuses the
+ * bar's exact fill, so a chip and a bar of the same status read identically.
+ * The builder emits only the statuses actually present. */
+.gantt-chart .gantt-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: var(--sp-sm) var(--sp-lg);
+  margin-top: var(--sp-xl);
+  align-self: center;
+}
+.gantt-chart .gantt-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-sm);
+  font-size: var(--fs-body-compact);
+  color: var(--text-body);
+}
+.gantt-chart .gantt-legend-swatch {
+  width: 1.35cqi;
+  height: 1.35cqi;
+  min-width: 12px;
+  min-height: 12px;
+  border-radius: 0.34cqi;
+  flex: 0 0 auto;
+  /* The bar's canonical fill recipe, in miniature — same --fill-hue/--fill-ink
+   * (set per status below), so the chip matches its bar exactly. */
+  --fill-hue: var(--state-info-hue);
+  --fill-ink: var(--state-info-ink);
+  background: linear-gradient(180deg,
+    light-dark(color-mix(in oklab, var(--fill-hue) var(--chart-fill-top-l),    var(--bg)),
+               color-mix(in oklab, var(--fill-hue) var(--chart-fill-top-d),    black)) 0%,
+    light-dark(color-mix(in oklab, var(--fill-hue) var(--chart-fill-bottom-l), var(--bg)),
+               color-mix(in oklab, var(--fill-hue) var(--chart-fill-bottom-d), black)) 100%);
+  border: 1px solid var(--fill-ink);
+}
+/* Per-status fill — the SAME pairs the bars use, shared so a chip can never
+ * drift from its bar. */
+.gantt-legend-item[data-s="on-track"] .gantt-legend-swatch,
+.gantt-legend-item[data-s="done"] .gantt-legend-swatch,
+.gantt-legend-item[data-s="live"] .gantt-legend-swatch     { --fill-hue: var(--state-pass-hue); --fill-ink: var(--state-pass-ink); }
+.gantt-legend-item[data-s="at-risk"] .gantt-legend-swatch,
+.gantt-legend-item[data-s="warn"] .gantt-legend-swatch     { --fill-hue: var(--state-warn-hue); --fill-ink: var(--state-warn-ink); }
+.gantt-legend-item[data-s="blocked"] .gantt-legend-swatch,
+.gantt-legend-item[data-s="fail"] .gantt-legend-swatch     { --fill-hue: var(--state-fail-hue); --fill-ink: var(--state-fail-ink); }
+.gantt-legend-item[data-s="pilot"] .gantt-legend-swatch,
+.gantt-legend-item[data-s="decision"] .gantt-legend-swatch { --fill-hue: var(--state-info-hue); --fill-ink: var(--state-info-ink); }
+.gantt-legend-item[data-s="deferred"] .gantt-legend-swatch { --fill-hue: var(--state-mute-hue); --fill-ink: var(--state-mute-ink); }
+
 /* ── GANTT ──
  * Mermaid bug: taskTextOutsideLeft/Right ignore taskTextOutsideColor for
  * some bar widths. Force dark text in the outside-the-bar margin.
@@ -9698,6 +9750,65 @@ section.word-cloud .word-cloud-canvas {
   height: var(--wc-canvas-h);
   margin: 0 auto;
   flex: 0 0 auto;
+}
+
+/* The cloud packs into the LEFT 70% of the canvas; a gradient spine at the
+ * boundary divides it from the "size = frequency" key in the right 30% rail —
+ * the same 70/30 split + spine the categorical charts use. */
+section.word-cloud .word-cloud-canvas::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: calc(var(--wc-cloud-frac, 0.68) * 100%);
+  transform: translate(-50%, -50%);
+  width: var(--chart-spine-w, 2px);
+  height: var(--chart-spine-h, 78%);
+  background: var(--chart-spine);
+  border-radius: var(--chart-spine-w, 2px);
+  pointer-events: none;
+}
+
+/* "size = frequency" key — word size encodes weight, an implicit mapping a
+ * reader can't quantify. A vertical A-ramp (large = more frequent) keys it,
+ * centred in the right rail. */
+section.word-cloud .wc-key {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  width: calc((1 - var(--wc-cloud-frac, 0.68)) * 100%);
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35em;
+  pointer-events: none;
+}
+section.word-cloud .wc-key-label {
+  font-family: var(--font-mono);
+  font-size: var(--fs-meta);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.2em;
+}
+section.word-cloud .wc-key-ramp {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.05em;
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--text-secondary);
+  line-height: 0.95;
+}
+section.word-cloud .wc-key-a--1 { font-size: var(--fs-body); }
+section.word-cloud .wc-key-a--2 { font-size: var(--fs-message); }
+section.word-cloud .wc-key-a--3 { font-size: var(--fs-emphasis); }
+section.word-cloud .wc-key-edge {
+  font-family: var(--font-mono);
+  font-size: var(--fs-meta);
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
 }
 
 section.word-cloud .wc-word {

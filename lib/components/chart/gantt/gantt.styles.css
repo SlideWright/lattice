@@ -25,6 +25,58 @@ section.gantt.chart-frame .chart-body {
   width: 100%;
 }
 
+/* Status key — gantt encodes status by BAR COLOUR with no text on the bar, so
+ * an emailed reader needs a key. A centred row of swatch + label chips (the
+ * piechart-legend idiom) sits just below the chart; each swatch reuses the
+ * bar's exact fill, so a chip and a bar of the same status read identically.
+ * The builder emits only the statuses actually present. */
+.gantt-chart .gantt-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: var(--sp-sm) var(--sp-lg);
+  margin-top: var(--sp-xl);
+  align-self: center;
+}
+.gantt-chart .gantt-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-sm);
+  font-size: var(--fs-body-compact);
+  color: var(--text-body);
+}
+.gantt-chart .gantt-legend-swatch {
+  width: 1.35cqi;
+  height: 1.35cqi;
+  min-width: 12px;
+  min-height: 12px;
+  border-radius: 0.34cqi;
+  flex: 0 0 auto;
+  /* The bar's canonical fill recipe, in miniature — same --fill-hue/--fill-ink
+   * (set per status below), so the chip matches its bar exactly. */
+  --fill-hue: var(--state-info-hue);
+  --fill-ink: var(--state-info-ink);
+  background: linear-gradient(180deg,
+    light-dark(color-mix(in oklab, var(--fill-hue) var(--chart-fill-top-l),    var(--bg)),
+               color-mix(in oklab, var(--fill-hue) var(--chart-fill-top-d),    black)) 0%,
+    light-dark(color-mix(in oklab, var(--fill-hue) var(--chart-fill-bottom-l), var(--bg)),
+               color-mix(in oklab, var(--fill-hue) var(--chart-fill-bottom-d), black)) 100%);
+  border: 1px solid var(--fill-ink);
+}
+/* Per-status fill — the SAME pairs the bars use, shared so a chip can never
+ * drift from its bar. */
+.gantt-legend-item[data-s="on-track"] .gantt-legend-swatch,
+.gantt-legend-item[data-s="done"] .gantt-legend-swatch,
+.gantt-legend-item[data-s="live"] .gantt-legend-swatch     { --fill-hue: var(--state-pass-hue); --fill-ink: var(--state-pass-ink); }
+.gantt-legend-item[data-s="at-risk"] .gantt-legend-swatch,
+.gantt-legend-item[data-s="warn"] .gantt-legend-swatch     { --fill-hue: var(--state-warn-hue); --fill-ink: var(--state-warn-ink); }
+.gantt-legend-item[data-s="blocked"] .gantt-legend-swatch,
+.gantt-legend-item[data-s="fail"] .gantt-legend-swatch     { --fill-hue: var(--state-fail-hue); --fill-ink: var(--state-fail-ink); }
+.gantt-legend-item[data-s="pilot"] .gantt-legend-swatch,
+.gantt-legend-item[data-s="decision"] .gantt-legend-swatch { --fill-hue: var(--state-info-hue); --fill-ink: var(--state-info-ink); }
+.gantt-legend-item[data-s="deferred"] .gantt-legend-swatch { --fill-hue: var(--state-mute-hue); --fill-ink: var(--state-mute-ink); }
+
 /* ── GANTT ──
  * Mermaid bug: taskTextOutsideLeft/Right ignore taskTextOutsideColor for
  * some bar widths. Force dark text in the outside-the-bar margin.

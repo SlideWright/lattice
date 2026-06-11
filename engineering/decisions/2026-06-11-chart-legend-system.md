@@ -34,7 +34,9 @@ dictates placement.
 
 **Colour-categorical → right rail (70/30):**
 - `piechart` (wedge ↔ category), `radar` (polygon ↔ series),
-  `map` (region ↔ value), `quadrant·cohort` (hull ↔ cohort).
+  `map` (region ↔ value), `quadrant·cohort` (hull ↔ cohort), and
+  `word-cloud` (the word **size** ↔ frequency — an implicit scale, so its key
+  is a vertical size ramp in the right rail rather than a swatch list).
 
 **Wide diagram → bottom-centre key:**
 - `roadmap` — cells encode by symbol (✓ shipped · – in flight · ○ planned ·
@@ -45,17 +47,19 @@ dictates placement.
   left the board top-heavy; they now sit **bottom-centre**, and the board
   centres the diagram+key group vertically. CSS-only (the keys are reordered
   to the foot of the flex column), safe across all five variants.
+- `gantt` — bars encode status by COLOUR with no text on the bar (green = done,
+  amber = at-risk, …). A swatch+label key (the piechart-legend idiom, each
+  swatch reusing the bar's exact fill) sits bottom-centre, listing only the
+  statuses present.
 
 **Self-labelling → the marks ARE the key (no legend, by design):**
-- `funnel`, `progress`, `gantt`, `kanban`, `timeline-list`, `state-chart` —
-  every band/bar/card/node is captioned in place; the status-pill vocabulary
-  is its own labelled key.
-- `word-cloud` — size encodes weight; the word is its own label.
+- `progress`, `kanban`, `timeline-list`, `state-chart`, `funnel` — every
+  band/bar/card/node is captioned in place; status pills label themselves.
 - `quadrant` (default/threshold/trail) — the four quadrant titles are the
   key, printed in-grid.
 
 So "make sure we have legends" is satisfied by guaranteeing every chart that
-encodes by colour or symbol carries a world-class key, while the
+encodes by colour, symbol, or size carries a world-class key, while the
 self-labelling charts stay clean.
 
 ## The design: a 70 / 30 split, content centred in each zone
@@ -170,8 +174,4 @@ cohort-quadrant + a long-label stress slide + roadmap, light and dark:
 
 ## Follow-ups (deliberately deferred)
 
-- **word-cloud size key** — size encodes weight with no scale key; a "size =
-  frequency" note would close it.
-- **gantt status key** — an optional key for the done/at-risk/blocked pills on
-  cold-open emailed decks.
 - **roadmap·horizons key** — would need a density redesign to make room.

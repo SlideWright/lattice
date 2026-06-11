@@ -343,10 +343,14 @@ in patch versions.
   decode the symbols; it is omitted on the `status` variant (already labelled
   per-cell) and `horizons` (its cards carry Now/Next/Later framing). And
   `journey` — a wide board — moves its actor + mood keys from the top-left to
-  **bottom-centre** and centres the diagram vertically (all five variants). New
-  `--chart-legend-*` / `--chart-spine-*` tokens on `section.chart-frame` are the
-  override hooks. See `engineering/decisions/2026-06-11-chart-legend-system.md`
-  and the demo deck `examples/chart-legends.md`.
+  **bottom-centre** and centres the diagram vertically (all five variants).
+  `gantt` (status by bar colour) gains a bottom-centre **swatch + label** key
+  for the statuses present, each swatch reusing the bar's exact fill; and
+  `word-cloud` joins the 70/30 rail with a vertical **size = frequency** key in
+  the right zone. New `--chart-legend-*` / `--chart-spine-*` tokens on
+  `section.chart-frame` are the override hooks. See
+  `engineering/decisions/2026-06-11-chart-legend-system.md` and the demo deck
+  `examples/chart-legends.md`.
 - **Editor autocomplete is now a workspace preference (Settings → Workspace).**
   A new on/off toggle (on by default) silences the deck-grammar completion popup
   for authors who'd rather type without it. Persisted in localStorage like the
