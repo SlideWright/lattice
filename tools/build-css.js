@@ -20,6 +20,7 @@
  *   9. lib/_chart-family.css     shared chart-frame chrome + .chart-status
  *                                vocabulary (progress / kanban / timeline-list)
  *  10. lib/base/base.treatments.css  27 utility classes (12 tints + 11 marks + reset)
+ *  10b. lib/base/base.sketch.css  the `sketch` finish modifier (hand-drawn skin)
  *  11. lib/_semi-universal.css   compact, loose, accent
  *  12. lib/_universal.css        dark, with-period, tint-*, mark-*, state, tone, chrome
  *  13. lib/_diagram-overrides.css  Mermaid SVG theme overrides
@@ -83,6 +84,10 @@ const CHART_FAMILY_SOURCE = 'lib/components/chart/_chart-family/chart-family.css
 // 27 utility classes (12 tints + 11 marks + treatment-none reset) for
 // peripheral atmospheric accents. All palette-blind via var(--accent).
 const TREATMENTS_SOURCE = 'lib/base/base.treatments.css';
+// The `sketch` finish modifier — hand-drawn skin (handwriting + drawn
+// boxes), palette-blind via var(--…). Tail tier so its section.sketch …
+// selectors compose on top of every component. See lib/base/base.sketch.css.
+const SKETCH_SOURCE = 'lib/base/base.sketch.css';
 const TAIL_SOURCES = [
   'lib/shared/shared.styles.css',
   'lib/base/base.variants.css',
@@ -220,6 +225,11 @@ function bundle() {
   if (treatments) {
     parts.push(`/* === ${TREATMENTS_SOURCE} === */`);
     parts.push(treatments);
+  }
+  const sketch = readIfExists(SKETCH_SOURCE);
+  if (sketch) {
+    parts.push(`/* === ${SKETCH_SOURCE} === */`);
+    parts.push(sketch);
   }
   // Tail: semi-universal → universal → diagram overrides. Each later
   // tier wins over earlier tiers by source order.

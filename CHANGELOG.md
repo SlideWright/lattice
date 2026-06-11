@@ -335,6 +335,23 @@ in patch versions.
   for authors who'd rather type without it. Persisted in localStorage like the
   other workspace prefs; applied live via a CodeMirror compartment, so flipping
   it takes effect without reloading. Drawing Board (docs-site) only.
+- **`sketch` finish — a hand-drawn skin for any deck.** A new Finish-layer
+  modifier (`class: sketch` deck-wide, or `_class: <layout> sketch` per slide)
+  that swaps Lattice into a hand-drawn register: felt-tip headings (Caveat), a
+  legible hand-sans for prose (Shantell Sans), a wobbly accent underline, and
+  card surfaces (`cards-grid`, `cards-stack`) redrawn as sketched boxes
+  (asymmetric radius + offset ink stroke + per-card tilt). It is palette-blind —
+  every stroke resolves through `var(--token)`, so any theme colours it. Default
+  is full handwriting; `sketch-clean-body` returns prose to the clean engine face
+  for text-dense slides. New tokens: `--sketch-font-display`, `--sketch-font-body`,
+  `--sketch-ink`. Lives in `lib/base/base.sketch.css`; the two hand fonts join the
+  engine's existing Google-Fonts `@import`. Pure CSS + type (no SVG filters), so it
+  survives the PDF pipeline. Documented in `lib/base/base.docs.md`; demo at
+  `examples/sketch.md`. See `engineering/decisions/2026-06-11-sketch-finish.md`.
+- **`carta` palette — warm paper and ink.** A new theme (`carta` / `carta-dark`),
+  the blessed pairing for the `sketch` finish: a warm off-white sheet, near-black
+  sepia-leaning ink, and a fountain-pen ink-blue accent. Registered in
+  `marp.config.js` and `.vscode/settings.json`; contrast-verified.
 - **Autocomplete is now self-maintaining, gated by a parity test.** Two new
   optional manifest fields make completion data co-located with the component:
   `families` (opt a layout into a scoped family modifier group, e.g.

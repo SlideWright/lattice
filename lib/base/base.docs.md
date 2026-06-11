@@ -13,6 +13,7 @@ that any component can opt into.
 | `base.modifiers.css` | Auto-detected chrome — eyebrow, subtitle, key-insight panel, below-note, annotation. Triggered by markdown patterns the author writes (no class needed). |
 | `base.variants.css` | Universal opt-in variants — `dark`, `mirror`, `numbered`, `silent`, state markers, tone tokens. Composed via `_class:`. |
 | `base.treatments.css` | 27 treatment utility classes — 12 tints (`tint-corner at-tl`, `tint-vignette`, etc.) and 11 marks (`mark-orbit`, `mark-seeds`, etc.) plus `treatment-none` — for peripheral atmospheric accents. |
+| `base.sketch.css` | The `sketch` finish modifier — a deck-wide hand-drawn skin (handwriting type + drawn boxes). Palette-blind; composed via `class:` / `_class:`. |
 
 ---
 
@@ -421,6 +422,48 @@ break.
 Equivalent to writing all three Marp suppression directives
 (`<!-- _paginate: false -->`, `<!-- _header: "" -->`,
 `<!-- _footer: "" -->`) in one token.
+
+### `sketch`
+
+The hand-drawn **finish** — a deck-wide skin that swaps Lattice into a
+hand-drawn register: felt-tip headings (`--sketch-font-display`, Caveat),
+a legible hand-sans for prose (`--sketch-font-body`, Shantell Sans), a
+wobbly accent underline on the slide heading, and card surfaces
+(`cards-grid`, `cards-stack`) redrawn as sketched boxes — an asymmetric
+corner radius, an offset "ink" stroke, and a fractional per-card tilt.
+
+It is a **Finish-layer** modifier in the Function · Form · Substance ·
+Finish model: it changes type and box geometry, never colour. Every
+stroke resolves through a palette token, so the finish is **palette-blind**
+— pair it with any theme and that theme colours it. The curated `carta`
+paper-and-ink palette is the blessed pairing.
+
+```yaml
+---
+theme: carta      # paper + ink; any palette works
+class: sketch     # deck-wide — propagates to every slide
+---
+```
+
+Or per slide: `<!-- _class: cards-grid sketch -->`.
+
+| Token / class | Effect |
+|---|---|
+| `sketch` | Full handwriting (headings **and** body) + drawn boxes. The default. |
+| `sketch sketch-clean-body` | Keep hand headings + boxes; return prose to the clean `--font-body` for text-dense slides. |
+| `--sketch-ink` | The ink the boxes are drawn in (defaults to `--text-heading`); a theme override seam. |
+| `--sketch-font-display` / `--sketch-font-body` | The hand fonts; swap either to re-flavour the whole finish in one line. |
+
+**PDF-safe by design.** The look is pure type + `border-radius` geometry.
+A true "roughen" pass (SVG `feTurbulence` + `feDisplacementMap`) was
+prototyped and rejected: it survives on screen but collapses Marp's
+print-scale transform, shrinking the slide in the PDF. See
+`engineering/decisions/2026-06-11-sketch-finish.md`.
+
+**Charts/diagrams.** The finish reskins the heading, the HTML legend, and
+card text, but cannot reach inside a chart's SVG geometry — wedges, bars,
+and lines keep their own marks. Hand-drawn chart *marks* are a deferred
+follow-up.
 
 ### `scale-l` / `scale-xl` / `scale-2xl`
 

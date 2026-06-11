@@ -69,7 +69,7 @@
  * render paths load the webfonts the same way.
  */
 
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Caveat:wght@400;700&family=Shantell+Sans:wght@400;500;700&display=swap');
 
 :root {
   /* Color tokens are defined by the active palette (themes/<name>.css),
@@ -88,6 +88,16 @@
   --font-display: 'Playfair Display', Georgia, serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji';
   --font-body:    'Outfit', system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji';
   --font-mono:    'JetBrains Mono', 'Courier New', monospace, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji';
+
+  /* Sketch finish — the hand-drawn font pair the `sketch` modifier swaps
+     in (lib/base/base.sketch.css). Caveat carries display/headings (the
+     felt-tip signal); Shantell Sans carries body (a designed-for-UI hand
+     sans that stays legible across a dense slide). Both are palette-blind
+     and used only under section.sketch, so non-sketch decks never load
+     them as the active family. Swap either token to re-flavour the whole
+     finish in one line. */
+  --sketch-font-display: 'Caveat', 'Bradley Hand', cursive, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji';
+  --sketch-font-body:    'Shantell Sans', system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji';
 
   /* ── Spacing scale (cqi — proportional to the 1280px HD baseline) ───
    * 100cqi = slide inline size. Formula: px / 1280 * 100 = cqi.
@@ -11972,6 +11982,129 @@ section.mark-chevron::before {
 section.treatment-none {
   --_bg-radial: none;
   --_bg-linear: none;
+}
+
+/* === lib/base/base.sketch.css === */
+/* base.sketch.css — the `sketch` finish modifier.
+ *
+ * A hand-drawn "stencil sketch" skin applied deck-wide (front-matter
+ * `class: sketch`) or per-slide (`<!-- _class: <layout> sketch -->`).
+ * It is a FINISH-layer cross-cutting modifier in the Function · Form ·
+ * Substance · Finish model — it changes type and box geometry, never
+ * colour. Every value goes through a palette token (`var(--…)`), so the
+ * finish is palette-blind: pair it with ANY theme and that theme colours
+ * it. The curated `carta` paper/ink palette is the blessed pairing
+ * (`theme: carta` + `class: sketch`), but `theme: indaco class: sketch`
+ * works identically in blue.
+ *
+ * Two parts make the look, both PDF-safe vector (no SVG filters — a
+ * feTurbulence/feDisplacementMap "roughen" pass reads on screen but
+ * collapses Marp's print-scale transform, so the slide shrinks in the
+ * PDF; see engineering/gotchas.md). The parts:
+ *   1. Handwriting type   — --sketch-font-display on headings,
+ *                           --sketch-font-body on prose (base.tokens.css).
+ *   2. Hand-drawn boxes    — asymmetric border-radius + an offset "ink"
+ *                           stroke + a per-card micro-rotation, on the
+ *                           card-family surfaces (cards-grid, cards-stack).
+ *
+ * Default `sketch` is FULL handwriting (headings + body). `sketch-clean-body`
+ * opts body back to the clean --font-body for dense, text-heavy slides
+ * while keeping the hand headings + boxes.
+ *
+ * Charts/diagrams: the finish is CSS + fonts, so it reskins the heading,
+ * the HTML legend, and card text — but it cannot reach inside a chart's
+ * SVG geometry, so wedges/bars/lines keep their own marks. Hand-drawn
+ * chart MARKS are a deferred follow-up (chart-family SVG work); see
+ * engineering/decisions/2026-06-11-sketch-finish.md.
+ *
+ * Bundle position: tail, alongside the other Finish-tier modifiers, so
+ * its slide-scoped selectors (section.sketch …) compose on top of every
+ * component. See tools/build-css.js.
+ */
+
+/* The ink the hand-drawn strokes are drawn in. A seam: a theme can
+ * override --sketch-ink to draw the boxes in a softer or warmer ink than
+ * its heading colour without touching this file. Defaults to the heading
+ * ink so it reads on every canvas (incl. dark, via the light-dark token). */
+section.sketch {
+  --sketch-ink: var(--text-heading);
+}
+
+/* ── HANDWRITING TYPE ─────────────────────────────────────────────────
+ * Headings/display in the felt-tip face; prose in the hand sans, bumped
+ * a touch to compensate for the smaller hand-font x-height. Code stays
+ * monospace (real inline code must remain unambiguous). */
+section.sketch :is(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--sketch-font-display);
+  font-weight: 700;
+  letter-spacing: 0.005em;
+}
+section.sketch :is(p, li, td, th, blockquote, figcaption, dt, dd) {
+  font-family: var(--sketch-font-body);
+}
+/* x-height compensation for the hand body face. cqi-proportional so it
+ * tracks the slide scale like the rest of the type system. */
+section.sketch :is(p, li, td, th, blockquote) {
+  font-size: 1.08em;
+}
+
+/* `sketch-clean-body` — keep the hand headings + boxes, return prose to
+ * the clean engine body face. The escape hatch for text-dense slides. */
+section.sketch.sketch-clean-body :is(p, li, td, th, blockquote, figcaption, dt, dd) {
+  font-family: var(--font-body);
+  font-size: revert;
+}
+
+/* ── HAND-DRAWN HEADING RULE ──────────────────────────────────────────
+ * A wobbly underline under the slide heading. The asymmetric border-
+ * radius bends a straight border into a drawn stroke; width:fit-content
+ * keeps it the length of the words above it. Accent-hued so it picks up
+ * the palette. */
+section.sketch h2 {
+  width: fit-content;
+  max-width: 100%;
+  padding-bottom: var(--sp-2xs);
+  border-bottom: 2.5px solid var(--accent);
+  border-radius: 0 0 95% 4px / 0 0 14px 8px;
+}
+
+/* ── HAND-DRAWN BOXES ─────────────────────────────────────────────────
+ * Card-family surfaces become sketched boxes: a heavier ink border, the
+ * classic asymmetric border-radius that reads as a hand-drawn rectangle,
+ * an offset "ink" shadow (drawn twice), and a per-card micro-rotation so
+ * no two boxes sit identically. Targets both render paths each card
+ * component ships: the marp-cli native `> ul/ol > li` and the lattice.js
+ * post-processed `.card`.
+ */
+section.sketch.cards-grid > ul > li,
+section.sketch.cards-grid > ol > li,
+section.sketch.cards-grid .card,
+section.sketch.cards-stack > ul > li,
+section.sketch.cards-stack > ol > li,
+section.sketch.cards-stack .card {
+  border: 2px solid var(--sketch-ink) !important;
+  border-radius: 255px 12px 225px 15px / 15px 225px 15px 255px !important;
+  box-shadow: 2px 3px 0 -1px color-mix(in srgb, var(--sketch-ink) 30%, transparent);
+}
+/* Alternate the radius + a slight tilt per card so the grid reads
+ * hand-placed rather than stamped. */
+section.sketch.cards-grid > ul > li:nth-child(2n),
+section.sketch.cards-grid > ol > li:nth-child(2n),
+section.sketch.cards-grid .card:nth-child(2n),
+section.sketch.cards-stack > ul > li:nth-child(2n),
+section.sketch.cards-stack > ol > li:nth-child(2n),
+section.sketch.cards-stack .card:nth-child(2n) {
+  border-radius: 15px 225px 15px 255px / 225px 15px 255px 15px !important;
+  transform: rotate(-0.5deg);
+}
+section.sketch.cards-grid > ul > li:nth-child(3n),
+section.sketch.cards-grid > ol > li:nth-child(3n),
+section.sketch.cards-grid .card:nth-child(3n),
+section.sketch.cards-stack > ul > li:nth-child(3n),
+section.sketch.cards-stack > ol > li:nth-child(3n),
+section.sketch.cards-stack .card:nth-child(3n) {
+  border-radius: 225px 15px 255px 18px / 15px 255px 15px 225px !important;
+  transform: rotate(0.4deg);
 }
 
 /* === lib/shared/shared.styles.css === */

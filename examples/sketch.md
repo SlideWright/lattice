@@ -1,0 +1,86 @@
+---
+marp: true
+theme: carta
+paginate: true
+class: sketch
+header: "Lattice · sketch finish"
+---
+
+<!-- _class: title silent -->
+
+`Finish · the sketch modifier`
+
+# A boardroom deck, drawn by hand.
+
+The `sketch` finish swaps Lattice into a hand-drawn skin — felt-tip headings, a legible hand-sans for body, and boxes that read as sketched. It is palette-blind, so any theme colours it; here it rides the `carta` paper-and-ink palette.
+
+---
+
+<!-- _class: content -->
+<!-- _footer: "One class, every slide — class: sketch in front matter" -->
+
+`How it works`
+
+## Form, not colour.
+
+Turn it on once with `class: sketch` in the front matter and it propagates to every slide. Every stroke is drawn in a palette token, so swapping `theme: carta` for `theme: indaco` recolours the whole sketch in blue without touching a layout.
+
+---
+
+<!-- _class: cards-grid three -->
+<!-- _footer: "cards-grid — hand-drawn boxes with a per-card tilt" -->
+
+`Why it reads as hand-made`
+
+## Three moves do the work.
+
+- Handwriting
+  - Caveat carries the headings; Shantell Sans keeps body prose legible across a dense slide.
+- Drawn boxes
+  - An asymmetric corner radius plus an offset ink stroke turns each card into a sketched rectangle.
+- A human tilt
+  - Every other card rotates a fraction of a degree, so the grid reads placed-by-hand, not stamped.
+
+---
+
+<!-- _class: cards-stack -->
+<!-- _footer: "cards-stack — the same finish on a stacked form" -->
+
+`The finish travels`
+
+## It is not tied to one layout.
+
+- Palette-blind by contract
+  - Colours resolve through `var(--token)`, so the finish never assumes a hue — it inherits the active theme's.
+- PDF-safe by design
+  - The look is pure type and border geometry; no SVG filters, which collapse Marp's print scaling.
+- Opt body back to clean
+  - Add `sketch-clean-body` to keep the hand headings and boxes while prose returns to the crisp engine face.
+
+---
+
+<!-- _class: piechart -->
+<!-- _footer: "Charts — sketch reskins the heading and legend; the SVG marks stay clean" -->
+
+`Charts under sketch`
+
+## The frame is drawn; the data is exact.
+
+Because the finish is CSS and fonts, it reskins the heading and the HTML legend — but a chart's SVG wedges keep their own precise geometry, so the numbers never wobble.
+
+- Deck production `46%`
+- Meetings about meetings `22%`
+- Realigning on priorities `18%`
+- Stakeholder management `9%`
+- Actually deciding `5%`
+
+---
+
+<!-- _class: closing -->
+<!-- _footer: "theme: carta · class: sketch" -->
+
+`Finish · sketch`
+
+## Sketched, but still boardroom.
+
+Pair `sketch` with `carta` for paper-and-ink, or with any palette for the same hand on a different page.

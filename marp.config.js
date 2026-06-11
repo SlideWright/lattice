@@ -45,6 +45,8 @@ module.exports = {
     "themes/burgundy.css",
     "themes/burgundy-dark.css",
     "themes/carbone.css",
+    "themes/carta.css",
+    "themes/carta-dark.css",
     "themes/concrete.css",
     "themes/concrete-dark.css",
     "themes/crepuscolo.css",
