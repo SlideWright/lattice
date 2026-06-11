@@ -138,6 +138,12 @@ function workspaceSection() {
   ws.append(prefRow('deleteStyle', 'Deleting a deck', null, ['Asks to confirm', 'Undo toast']));
   ws.append(prefRow('autocomplete', 'Editor autocomplete', null, ['On', 'Off'],
     (v) => { try { window.__dbEditor?.setAutocomplete?.(v === 'on'); } catch {} }));
+  // Render engine. Switching reloads so the playground bundle re-applies the
+  // choice at boot (lib/playground/index.js reads the same pref key) and every
+  // preview re-renders through the selected engine.
+  ws.append(prefRow('renderEngine', 'Render engine', 'lattice-engine is the experimental Marp replacement',
+    ['Marp Core (default)', 'lattice-engine (experimental)'],
+    () => { try { location.reload(); } catch {} }));
   return ws;
 }
 
