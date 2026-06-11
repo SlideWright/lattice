@@ -427,7 +427,8 @@ treat changes here as breaking.
    do *not* ship a knob that inverts it (see §12.4).
 3. **Lint-clean by construction.** The authoring surface must survive a standard
    markdown linter (markdownlint) with default rules. That drives the
-   heading-split mode (§12.3) and the `{{ }}` interpolation choice (§12.5).
+   heading-split mode (§12.3); the variable grammar (§12.5) is itself
+   lint-driven — a `$` *inside inline code*, never a bare sigil in prose.
 4. **Marp-superset.** `marp: true`, `theme`, `paginate`, `header`, `footer`,
    `class`, `style`, `size`, and the `_`-prefixed per-slide spot directives keep
    Marp's exact semantics. New keys are additive; a Marp deck imports unchanged.
@@ -447,16 +448,16 @@ directive (the `<!-- _key: … -->` spot form, or its non-`_` global form).
 | `split` | `rule`\|`h2`\|`hybrid` | `rule` | D | How the body divides into slides (§12.3). |
 | `paginate` | bool | `true` | D, S | Page numbers. `_paginate: false` skips one slide; deck `false` is opt-out. |
 | `pagination` | object | — | D | Optional `{ start, format, total }` for the number's text. |
-| `header` / `footer` | string (interpolated) | — | D, S | Chrome text; supports `{{ vars }}` (§12.5). Empty string clears. |
+| `header` / `footer` | string (interpolated) | — | D, S | Chrome text; supports `$name` variables (§12.5). Empty string clears. |
 | `logo` | path \| URL \| object | — | D, S | Deck mark. Object form: `{ src, position, scale, link }`. `_logo: none` suppresses. |
 | `background` | string \| object | theme bg | D, S | Deck-wide background; precedence in §12.4. |
 | `fonts` | object | theme fonts | D | `{ display, body, mono }` → the three font tokens (§12.6). |
 | `vars` | map | `{}` | D | Author-defined interpolation variables (§12.5). |
-| `title` | string | first `#` text | D | Deck title → PDF `/Title`, OG tag, `{{title}}`. |
-| `author` | string \| list | — | D | → PDF `/Author`, OG, `{{author}}`. |
+| `title` | string | first `#` text | D | Deck title → PDF `/Title`, OG tag, `$deck.title`. |
+| `author` | string \| list | — | D | → PDF `/Author`, OG, `$deck.author`. |
 | `description` | string | — | D | → PDF `/Subject`, OG `description`. |
-| `tags` | list | `[]` | D | → PDF `/Keywords`, OG `keywords`, `{{tags}}`. |
-| `date` | date \| `auto` | `auto` (build date) | D | `{{date}}`; `auto` resolves at render. |
+| `tags` | list | `[]` | D | → PDF `/Keywords`, OG `keywords`, `$deck.tags`. |
+| `date` | date \| `auto` | `auto` (build date) | D | `$now.date`; `auto` resolves at render. |
 | `class` | string | — | D, S | Deck-wide / per-slide layout class (Marp parity). |
 | `style` | css string | — | D | Inline `<style>` escape hatch (Marp parity). |
 | `lang` / `dir` | string | `en` / `ltr` | D | Document language + direction. |
@@ -517,32 +518,50 @@ concrete use case argues otherwise; the bar is high.
 
 ### 12.5 Variables & interpolation
 
-`vars:` defines author variables; the engine also provides **built-ins**. Both
-interpolate into `header`, `footer`, `title`, and slide body text via mustache-
-style `{{ name }}` (chosen over `${ }` because it never collides with markdown,
-KaTeX `$…$`, or template-literal-looking code, and survives markdownlint).
+**Lattice already has a locked variable grammar** — do not invent another.
+[`2026-05-11-inline-code-directives.md`](2026-05-11-inline-code-directives.md)
+(decisions-locked, not-yet-implemented) defines a variable as **backtick inline
+code with a `$` sigil**: `` `$client` `` → the value of `client` from
+front-matter `vars:`. The rules already decided there hold verbatim:
+
+- **`$` is the only sigil**, bare not braced (`` `$client` ``, never
+  `` `${client}` ``). Sigils `:` `@` `#` `!` are forbidden because CSS-themed
+  decks routinely write `` `:root` ``, `` `@media` ``, `` `#id` ``, `` `!important` ``.
+- **Dotted paths** are part of the grammar: `^\$[A-Za-z_][\w.]*$`
+  (`` `$client.legal_name` ``).
+- **No composition** — a variable is the *entire* code span; `` `$a report` ``
+  is not a thing. Surrounding prose is plain markdown.
+- **Plain inline code is untouched** — only a leading `$` triggers a variable.
+
+Because header/footer/title are markdown-rendered, the same `` `$name` `` form
+works there as in the body:
 
 ```yaml
 vars:
   client: Northwind
   quarter: Q3 FY26
-footer: "{{client}} · {{quarter}} · {{page}}/{{pages}}"
+footer: "`$client` · `$quarter` · `$slide.page`/`$slide.total`"
 ```
 
-Built-in variables (always available, no declaration):
+**Built-in variables (a proposed *extension* to that grammar).** The inline-code
+note covers only author `vars:`; the engine should also expose render-time
+built-ins. They slot into the existing dotted-path syntax under **reserved
+namespaces** (so they can't collide with a user `vars:` key, which is a bare
+identifier):
 
-| Variable | Resolves to |
+| Built-in | Resolves to |
 |---|---|
-| `{{title}}` `{{author}}` `{{description}}` | the metadata keys (§12.2) |
-| `{{date}}` `{{datetime}}` `{{time}}` `{{year}}` | render-time clock; `date` honors `date:` if set, else build date |
-| `{{page}}` `{{pages}}` | current slide number / deck total |
-| `{{theme}}` `{{size}}` | active palette name / size preset |
-| `{{tags}}` | comma-joined `tags` |
+| `` `$deck.title` `` `` `$deck.author` `` `` `$deck.description` `` | the metadata keys (§12.2) |
+| `` `$deck.theme` `` `` `$deck.size` `` `` `$deck.tags` `` | active palette / size preset / joined tags |
+| `` `$slide.page` `` `` `$slide.total` `` | current slide number / deck total |
+| `` `$now.date` `` `` `$now.time` `` `` `$now.datetime` `` `` `$now.year` `` | render-time clock; `$now.date` honors `date:` if set, else build date |
 
-Resolution is at render time, after split, so `{{page}}/{{pages}}` are correct
-per slide. Unknown `{{x}}` renders literally and the linter warns (typo guard).
-A literal brace pair escapes as `{{ "{{" }}` / backtick-fenced code is never
-interpolated.
+Resolution is at render time, after the split, so `` `$slide.page` `` is correct
+per slide. An unknown `` `$x` `` renders literally and the linter
+(`lib/authoring/lint-core.js`) warns — the same typo guard the inline-code note
+specifies for unknown directives. **When the inline-code grammar ships, this
+built-in namespace table folds into it** (and into `templates.md`); it lives
+here only as the engine-side requirement.
 
 ### 12.6 Fonts — `fonts`
 
