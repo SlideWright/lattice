@@ -12,6 +12,7 @@ import { SLIDE_BOX } from '../playground/frame-css.js';
 import { buildCatalog, buildLenses, groupCatalog } from '../lib/families.mjs';
 import { joinBase } from '../lib/base-url.mjs';
 import { assetBase } from '../playground/asset-version.mjs';
+import { loadGalleries, GALLERY_GROUPS } from '../playground/galleries.mjs';
 
 const docsRoot = process.cwd();
 const repoRoot = join(docsRoot, '..');
@@ -54,15 +55,32 @@ const pickerGroups = groupCatalog(components, 'function'); // SSR default (no-JS
 const heroComp = manifests.find((m) => m.showcase && m.showcase.hero);
 const starter = (heroComp && heroComp.sample) || '<!-- _class: title silent -->\n\n# Lattice\n';
 
+// Full showcase + per-family survey decks for the "Load a deck" drawer. Loaded
+// from repo markdown at build time (galleries.mjs), with local image assets
+// inlined as data URIs so the preview iframe renders them. The drawer renders
+// labels + slide counts (SSR, below); the controller only needs id → source.
+const galleries = loadGalleries(repoRoot);
+const galleryGroups = GALLERY_GROUPS.map((grp) => ({
+	...grp,
+	items: galleries.filter((g) => g.group === grp.key),
+})).filter((grp) => grp.items.length);
+const gallerySources = Object.fromEntries(galleries.map((g) => [g.id, g.source]));
+
+// Escape `<` as its JSON unicode form so a deck source containing a literal
+// `</script>` (the jargon gallery ends with two) can't close the data
+// `<script>` tag early — that truncates the JSON, the controller's JSON.parse
+// throws, and the tail spills into the page as visible text. `JSON.parse`
+// decodes `<` back to `<`, so the deck source is unchanged.
 const pgData = JSON.stringify({
 	catalog,
 	components,
 	lenses,
+	gallerySources,
 	themeBase: url(pg + 'themes/'),
 	runtimeUrl: url(pg + 'lattice-runtime.js'),
 	defaultPalette: 'indaco',
 	slideBox: SLIDE_BOX,
-});
+}).replace(/</g, '\\u003c');
 ---
 
 <!doctype html>
@@ -176,30 +194,27 @@ const pgData = JSON.stringify({
 			</div>
 			</div>
 			<!-- Actions cluster (row 2 on mobile): Edit/Preview grouped at the left,
-			     ⚙ pushed to the right edge. ⚙ holds the demoted insert options —
-			     selecting a component inserts its example; this menu holds the
-			     rarer skeleton + reset paths. -->
+			     the Galleries button pushed to the right edge. It opens the
+			     "Load a deck" drawer — a labeled grid icon, not a gear, because the
+			     action is "browse + load a full showcase deck", not "settings". The
+			     drawer also carries the demoted per-component scaffold actions. -->
 			<div class="pg-bar-actions">
 				<div class="pg-tabs" role="tablist">
 					<button class="pg-tab" id="tab-edit" role="tab" aria-selected="true">Edit</button>
 					<button class="pg-tab" id="tab-preview" role="tab" aria-selected="false">Preview</button>
 				</div>
 				<span class="pg-status" id="pg-status">Ready.</span>
-				<div class="pg-settings" id="pg-settings">
-					<button
-						type="button"
-						class="pg-icon-btn"
-						id="pg-settings-trigger"
-						aria-haspopup="menu"
-						aria-expanded="false"
-						aria-label="Insert options"
-						title="Insert options"
-					><span class="ico ico-settings" aria-hidden="true"></span></button>
-					<div class="pg-settings-pop" id="pg-settings-pop" hidden role="menu" aria-label="Insert options">
-						<button type="button" class="pg-menu-item" id="pg-insert-sample" role="menuitem">Reset to example</button>
-						<button type="button" class="pg-menu-item" id="pg-insert-skeleton" role="menuitem">Insert blank skeleton</button>
-					</div>
-				</div>
+				<button
+					type="button"
+					class="pg-galleries-btn"
+					id="pg-galleries-trigger"
+					aria-haspopup="dialog"
+					aria-expanded="false"
+					aria-controls="pg-drawer"
+				>
+					<span class="ico ico-gallery" aria-hidden="true"></span>
+					<span>Galleries</span>
+				</button>
 			</div>
 		</div>
 
@@ -220,6 +235,48 @@ const pgData = JSON.stringify({
 				</div>
 			</section>
 		</main>
+
+		<!-- "Load a deck" drawer — slides in from the right over a scrim. Two
+		     kinds of action read as distinct sections: load a full showcase /
+		     family survey deck (top), or scaffold the picked component (bottom).
+		     The grouped <ul> is also the no-JS fallback (the controller wires the
+		     open/close + click-to-load; with JS off the buttons are inert but the
+		     catalog is still visible). -->
+		<button type="button" class="pg-drawer-scrim" id="pg-drawer-scrim" hidden aria-label="Close"></button>
+		<aside class="pg-drawer" id="pg-drawer" aria-label="Load a deck" aria-hidden="true">
+			<div class="pg-drawer-head">
+				<span class="pg-drawer-title">Load a deck</span>
+				<button type="button" class="pg-drawer-close" id="pg-drawer-close" aria-label="Close">
+					<span class="ico ico-x" aria-hidden="true"></span>
+				</button>
+			</div>
+			<div class="pg-drawer-body">
+				{galleryGroups.map((grp) => (
+					<section class="pg-drawer-sec">
+						<h3 class="pg-drawer-sec-title">{grp.key}</h3>
+						<p class="pg-drawer-sec-hint">{grp.hint}</p>
+						<ul class="pg-gallery-list">
+							{grp.items.map((g) => (
+								<li>
+									<button type="button" class="pg-gallery-item" data-gallery={g.id}>
+										<span class="pg-gallery-item-name">{g.label}</span>
+										<span class="pg-gallery-item-meta">{g.slides} {g.slides === 1 ? 'slide' : 'slides'}</span>
+									</button>
+								</li>
+							))}
+						</ul>
+					</section>
+				))}
+				<section class="pg-drawer-sec">
+					<h3 class="pg-drawer-sec-title">This component</h3>
+					<p class="pg-drawer-sec-hint">Scaffold whichever component is selected above.</p>
+					<div class="pg-drawer-actions">
+						<button type="button" class="pg-menu-item" id="pg-insert-sample">Reset to example</button>
+						<button type="button" class="pg-menu-item" id="pg-insert-skeleton">Insert blank skeleton</button>
+					</div>
+				</section>
+			</div>
+		</aside>
 
 		<script type="application/json" id="pg-data" is:inline set:html={pgData}></script>
 
@@ -524,44 +581,59 @@ const pgData = JSON.stringify({
 					}
 					setSource(md); saveSource(); render();
 				});
-				// ⚙ settings popover: the demoted insert actions. "Reset to example"
-				// reloads the component's filled sample; "Insert blank skeleton"
-				// loads the bare slot scaffold for authoring from scratch.
-				var settingsWrap = document.getElementById('pg-settings');
-				var settingsTrigger = document.getElementById('pg-settings-trigger');
-				var settingsPop = document.getElementById('pg-settings-pop');
-				function clampSettings() {
-					if (window.__pgClampPopover) window.__pgClampPopover(settingsPop);
+				// "Load a deck" drawer. The Galleries button opens a slide-in panel
+				// over a scrim; picking a showcase / family deck drops the whole deck
+				// into the editor and renders it. The demoted per-component scaffold
+				// actions (reset-to-example / blank-skeleton) live in the drawer's
+				// last section.
+				var gallerySources = data.gallerySources || {};
+				var drawer = document.getElementById('pg-drawer');
+				var drawerScrim = document.getElementById('pg-drawer-scrim');
+				var drawerClose = document.getElementById('pg-drawer-close');
+				var galleriesTrigger = document.getElementById('pg-galleries-trigger');
+				function openDrawer() {
+					drawer.classList.add('is-open');
+					drawer.setAttribute('aria-hidden', 'false');
+					drawerScrim.hidden = false;
+					galleriesTrigger.setAttribute('aria-expanded', 'true');
 				}
-				function closeSettings() {
-					if (settingsPop) { settingsPop.hidden = true; settingsPop.style.transform = ''; }
-					if (settingsTrigger) settingsTrigger.setAttribute('aria-expanded', 'false');
+				function closeDrawer() {
+					drawer.classList.remove('is-open');
+					drawer.setAttribute('aria-hidden', 'true');
+					drawerScrim.hidden = true;
+					galleriesTrigger.setAttribute('aria-expanded', 'false');
 				}
-				if (settingsTrigger && settingsPop) {
-					settingsTrigger.addEventListener('click', function (e) {
-						e.stopPropagation();
-						var willOpen = settingsPop.hidden;
-						settingsPop.hidden = !willOpen;
-						settingsTrigger.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
-						if (willOpen) clampSettings(); // keep on-screen if the ⚙ wrapped near an edge
+				if (galleriesTrigger && drawer) {
+					galleriesTrigger.addEventListener('click', function () {
+						if (drawer.classList.contains('is-open')) closeDrawer();
+						else openDrawer();
 					});
-					document.addEventListener('click', function (e) {
-						if (settingsWrap && !settingsWrap.contains(e.target)) closeSettings();
-					});
+					drawerClose.addEventListener('click', closeDrawer);
+					drawerScrim.addEventListener('click', closeDrawer);
 					document.addEventListener('keydown', function (e) {
-						if (e.key === 'Escape') closeSettings();
+						if (e.key === 'Escape' && drawer.classList.contains('is-open')) closeDrawer();
 					});
-					window.addEventListener('resize', function () {
-						if (settingsPop && !settingsPop.hidden) clampSettings();
+					// Load a full showcase / family deck into the editor + preview.
+					Array.prototype.forEach.call(document.querySelectorAll('.pg-gallery-item'), function (btn) {
+						btn.addEventListener('click', function () {
+							var id = btn.getAttribute('data-gallery');
+							var src = gallerySources[id];
+							if (src == null) { setStatus('Gallery unavailable.', true); return; }
+							setSource(src); saveSource(); syncPickers(); render();
+							closeDrawer();
+							setPane('preview'); // surface the result (the active pane on phones)
+						});
 					});
 				}
+				// "Reset to example" reloads the picked component's filled sample;
+				// "Insert blank skeleton" loads its bare slot scaffold.
 				document.getElementById('pg-insert-sample').addEventListener('click', function () {
-					closeSettings();
+					closeDrawer();
 					if (currentName && catalog[currentName]) { setSource(catalog[currentName].sample); populateVariants(currentName); saveSource(); render(); }
 					else setStatus('Pick a component first.', true);
 				});
 				document.getElementById('pg-insert-skeleton').addEventListener('click', function () {
-					closeSettings();
+					closeDrawer();
 					if (currentName && catalog[currentName]) { setSource(catalog[currentName].skeleton); populateVariants(currentName); saveSource(); render(); }
 					else setStatus('Pick a component first.', true);
 				});

@@ -230,51 +230,192 @@
 	font-size: 13px;
 }
 
-/* ── ⚙ insert-options menu ───────────────────────────────────────────────── */
-.pg-settings {
-	position: relative;
-}
-.pg-icon-btn {
+/* ── Galleries trigger + "Load a deck" drawer ─────────────────────────────────
+ * The trigger is a labeled grid-icon button (not a gear) so its function reads
+ * as "browse + load a deck", not "settings". It opens a slide-in drawer over a
+ * scrim — the same in-house pattern as the Drawing Board's deck/settings
+ * drawers (transform + scrim + an `.is-open` toggle). */
+.pg-galleries-btn {
 	display: inline-flex;
 	align-items: center;
-	justify-content: center;
-	width: 34px;
-	height: 34px;
+	gap: 7px;
+	flex: 0 0 auto;
+	padding: 7px 12px;
 	border: 1px solid var(--border);
 	border-radius: var(--radius-sm);
 	background: var(--bg);
 	color: var(--text-body);
-	font-size: 15px;
+	font-family: var(--font-body);
+	font-size: 13px;
 	line-height: 1;
 	cursor: pointer;
 }
-.pg-icon-btn:hover,
-.pg-icon-btn[aria-expanded='true'] {
+.pg-galleries-btn:hover,
+.pg-galleries-btn[aria-expanded='true'] {
 	border-color: var(--accent);
 	color: var(--accent);
 }
-.pg-settings-pop {
-	position: absolute;
-	top: calc(100% + 6px);
+.pg-galleries-btn .ico {
+	width: 15px;
+	height: 15px;
+}
+
+.pg-drawer-scrim {
+	position: fixed;
+	inset: 0;
+	z-index: 1900;
+	border: 0;
+	margin: 0;
+	padding: 0;
+	background: rgba(0, 0, 0, 0.42);
+	cursor: default;
+	opacity: 0;
+	animation: pg-scrim-in 0.18s ease forwards;
+}
+.pg-drawer-scrim[hidden] {
+	display: none;
+}
+@keyframes pg-scrim-in {
+	to {
+		opacity: 1;
+	}
+}
+.pg-drawer {
+	position: fixed;
+	top: 0;
 	right: 0;
-	z-index: 60;
-	min-width: 190px;
+	bottom: 0;
+	z-index: 1910;
 	display: flex;
 	flex-direction: column;
-	padding: 5px;
+	width: 360px;
+	max-width: 88vw;
+	background: var(--bg);
+	border-left: 1px solid var(--border);
+	box-shadow: var(--shadow-lg);
+	transform: translateX(100%);
+	transition: transform 0.22s ease;
+	will-change: transform;
+}
+.pg-drawer.is-open {
+	transform: translateX(0);
+}
+.pg-drawer:not(.is-open) {
+	pointer-events: none; /* off-screen but kept in the DOM for the slide-out */
+}
+.pg-drawer-head {
+	flex: 0 0 auto;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+	height: 46px;
+	padding: 0 8px 0 16px;
+	border-bottom: 1px solid var(--border);
+	background: var(--bg-alt);
+}
+.pg-drawer-title {
+	font-family: var(--font-mono);
+	font-size: 11px;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: var(--text-muted);
+}
+.pg-drawer-close {
+	flex: 0 0 auto;
+	display: inline-grid;
+	place-items: center;
+	width: 30px;
+	height: 30px;
+	color: var(--text-muted);
+	background: none;
+	border: 1px solid transparent;
+	border-radius: var(--radius-sm);
+	cursor: pointer;
+}
+.pg-drawer-close .ico {
+	width: 16px;
+	height: 16px;
+}
+.pg-drawer-close:hover {
+	color: var(--text-heading);
+	border-color: var(--border);
+	background: var(--bg);
+}
+.pg-drawer-body {
+	flex: 1 1 auto;
+	min-height: 0;
+	overflow-y: auto;
+	padding: 14px;
+}
+.pg-drawer-sec {
+	margin-bottom: 18px;
+}
+.pg-drawer-sec:last-child {
+	margin-bottom: 4px;
+}
+.pg-drawer-sec-title {
+	margin: 0 0 2px;
+	font-family: var(--font-mono);
+	font-size: 11px;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: var(--accent);
+}
+.pg-drawer-sec-hint {
+	margin: 0 0 8px;
+	font-size: 12px;
+	line-height: 1.4;
+	color: var(--text-muted);
+}
+.pg-gallery-list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+}
+.pg-gallery-item {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 12px;
+	width: 100%;
+	padding: 9px 11px;
 	border: 1px solid var(--border);
 	border-radius: var(--radius-sm);
 	background: var(--bg);
-	box-shadow: var(--shadow-lg);
+	color: var(--text-body);
+	text-align: left;
+	cursor: pointer;
 }
-.pg-settings-pop[hidden] {
-	display: none;
+.pg-gallery-item:hover {
+	border-color: var(--accent);
+	background: var(--bg-alt);
+}
+.pg-gallery-item-name {
+	font-family: var(--font-body);
+	font-size: 13.5px;
+	font-weight: 600;
+}
+.pg-gallery-item-meta {
+	flex: 0 0 auto;
+	font-family: var(--font-mono);
+	font-size: 10.5px;
+	letter-spacing: 0.04em;
+	color: var(--text-muted);
+}
+.pg-drawer-actions {
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
 }
 .pg-menu-item {
-	padding: 8px 10px;
-	border: 0;
+	padding: 9px 11px;
+	border: 1px solid var(--border);
 	border-radius: var(--radius-sm);
-	background: transparent;
+	background: var(--bg);
 	color: var(--text-body);
 	font-family: var(--font-body);
 	font-size: 13px;
@@ -282,6 +423,7 @@
 	cursor: pointer;
 }
 .pg-menu-item:hover {
+	border-color: var(--accent);
 	background: var(--bg-alt);
 	color: var(--accent);
 }
