@@ -189,6 +189,22 @@ const latticeTheme = EditorView.theme({
 		fontSize: '13.5px',
 		color: 'var(--text-body)',
 		backgroundColor: 'var(--bg)',
+		// ── Editor contrast tokens ───────────────────────────────────────────────
+		// The cursor-line and text-selection highlights were both a flat low-alpha
+		// wash of --accent (active line 6%, selection 22%). That left the active
+		// line near-invisible on every palette (WCAG band-contrast ~1.06–1.16) and
+		// the selection faint on the low-chroma / warm light palettes. These named
+		// tokens are the single tunable contract: the active line bumps to a clearly
+		// visible band (free — alpha too low to touch text legibility), while the
+		// selection keeps its existing 22% fill (so body text stays legible on the
+		// worst low-contrast palette, cuoio-light — no accessibility regression) and
+		// gains a defining 1px accent edge: the definition a heavier fill can't buy
+		// without hurting legibility. A downstream theme can override any of them.
+		'--cm-active-line': 'color-mix(in srgb, var(--accent) 12%, transparent)',
+		'--cm-active-gutter': 'color-mix(in srgb, var(--accent) 18%, transparent)',
+		'--cm-selection': 'color-mix(in srgb, var(--accent) 22%, transparent)',
+		'--cm-selection-edge': 'color-mix(in srgb, var(--accent) 45%, transparent)',
+		'--cm-match': 'color-mix(in srgb, var(--accent) 26%, transparent)',
 	},
 	// On touch devices, iOS Safari auto-zooms the page when you focus an input
 	// whose font is under 16px. Bump the editable surface to 16px on coarse
@@ -208,13 +224,18 @@ const latticeTheme = EditorView.theme({
 		border: 'none',
 		borderRight: '1px solid var(--border)',
 	},
-	'.cm-activeLine': { backgroundColor: 'color-mix(in srgb, var(--accent) 6%, transparent)' },
-	'.cm-activeLineGutter': { backgroundColor: 'color-mix(in srgb, var(--accent) 8%, transparent)', color: 'var(--accent)' },
+	'.cm-activeLine': { backgroundColor: 'var(--cm-active-line)' },
+	'.cm-activeLineGutter': { backgroundColor: 'var(--cm-active-gutter)', color: 'var(--accent)' },
 	'&.cm-focused .cm-cursor': { borderLeftColor: 'var(--accent)' },
-	'.cm-selectionBackground, &.cm-focused .cm-selectionBackground, ::selection': {
-		backgroundColor: 'color-mix(in srgb, var(--accent) 22%, transparent)',
+	// The fill stays moderate (legibility-safe); the inset edge gives the band the
+	// crisp definition a heavier fill would cost in text contrast. ::selection (the
+	// native fallback before drawSelection paints) keeps the plain fill.
+	'.cm-selectionBackground, &.cm-focused .cm-selectionBackground': {
+		backgroundColor: 'var(--cm-selection)',
+		boxShadow: 'inset 0 0 0 1px var(--cm-selection-edge)',
 	},
-	'.cm-matchingBracket': { backgroundColor: 'color-mix(in srgb, var(--accent) 18%, transparent)', outline: 'none' },
+	'::selection': { backgroundColor: 'var(--cm-selection)' },
+	'.cm-matchingBracket': { backgroundColor: 'var(--cm-match)', outline: 'none' },
 	// Autocomplete popup (region/group-name + class completion). CodeMirror's
 	// default is a white panel with a bright-blue selected row and a white info
 	// card — jarring on the dark editor and off-brand in light mode. Re-theme it

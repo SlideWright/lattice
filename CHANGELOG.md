@@ -745,6 +745,17 @@ in patch versions.
 
 ### Fixed
 
+- **Editor cursor-line and selection highlights now read clearly on every palette
+  and mode.** Both were a flat low-alpha wash of `--accent` (active line 6%,
+  selection 22%), which left the cursor line near-invisible everywhere (WCAG
+  band-contrast ~1.06–1.16) and the multi-line selection faint on the low-chroma
+  and warm light palettes. The active line bumps to a visible band (12% — alpha
+  far too low to touch text legibility), and the selection keeps its legibility-safe
+  22% fill but gains a 1px `--accent` edge for definition a heavier fill can't buy
+  without dimming code. The four values are now named tokens on the editor
+  (`--cm-active-line`, `--cm-active-gutter`, `--cm-selection`, `--cm-selection-edge`,
+  `--cm-match`) so a downstream theme can tune them. Playground / Drawing Board /
+  Specimen editors (docs-site CodeMirror) only — no engine change.
 - **The AI-tier status indicator no longer relies on colour alone (WCAG 1.4.1).** The
   green/grey connectivity dot — on the model chip and the settings "In use" row — is
   replaced by a per-state **Lucide glyph**: `cloud` (cloud tier) · `cpu` (on-device) ·
