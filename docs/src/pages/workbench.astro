@@ -1,0 +1,168 @@
+---
+// The Workbench — a standalone Astro route (like the Playground / Drawing
+// Board) where an author FABRICATES the parts of a deck. Faculty 1, the Theme
+// Studio, ships first (engineering/decisions/2026-06-10-design-studio-themes-
+// layouts.md): craft a palette from a handful of essential colours and see it
+// derived, audited for WCAG AA, and rendered live on a specimen deck — then
+// copy or download a droppable themes/<name>.css. All the colour maths is the
+// pure repo core (lib/theme/*), run in the browser; the live render uses the
+// same engine as the Playground (window.LatticePlayground).
+import '../styles/landing.css';
+import '../styles/workbench.css';
+import { joinBase } from '../lib/base-url.mjs';
+import { assetBase } from '../playground/asset-version.mjs';
+
+const base = import.meta.env.BASE_URL;
+const url = (p) => joinBase(base, p);
+const pg = assetBase();
+
+const studioData = JSON.stringify({
+	themeBase: url(pg + 'themes/'),
+	runtimeUrl: url(pg + 'lattice-runtime.js'),
+});
+
+const links = [
+	{ label: 'Get started', href: url('getting-started/'), seg: 'getting-started' },
+	{ label: 'Guides', href: url('guides/authoring/'), seg: 'guides' },
+	{ label: 'Playground', href: url('playground/'), seg: 'playground' },
+	{ label: 'Drawing Board', href: url('drawing-board/'), seg: 'drawing-board' },
+	{ label: 'Workbench', href: url('workbench/'), seg: 'workbench' },
+	{ label: 'Components', href: url('components/'), seg: 'components' },
+];
+---
+
+<!doctype html>
+<html lang="en" data-palette="indaco" data-mode="light">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Lattice Workbench — craft a theme</title>
+		<meta name="description" content="Craft a Lattice palette from a handful of essential colours. The Workbench derives the full token contract, audits WCAG AA contrast, and renders it live on a specimen deck — copy or download a droppable theme." />
+		<link rel="icon" type="image/png" href={url('lattice-logo.png')} />
+		<script is:inline>
+			(function () {
+				var r = document.documentElement;
+				try {
+					var p = localStorage.getItem('lattice-docs-palette');
+					if (p) r.setAttribute('data-palette', p);
+					var m = localStorage.getItem('lattice-docs-mode');
+					if (m === 'light' || m === 'dark') r.setAttribute('data-mode', m);
+					else if (window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches) r.setAttribute('data-mode', 'dark');
+				} catch (e) {}
+			})();
+		</script>
+	</head>
+	<body class="wb-page">
+		<header class="topbar">
+			<div class="wrap topbar-inner" style="max-width:none">
+				<a class="brand" href={url('')}>
+					<img class="brand-logo" src={url('lattice-logo.png')} alt="" width="30" height="30" />
+					<span class="brand-mark">Lattice</span>
+				</a>
+				<nav class="topnav" id="topnav">
+					{links.map((l) => (
+						<a class="navlink" href={l.href} aria-current={l.seg === 'workbench' ? 'page' : undefined}>{l.label}</a>
+					))}
+					<a class="navlink" href="https://github.com/slidewright/lattice">GitHub</a>
+				</nav>
+				<div class="topbar-actions">
+					<button class="mode-toggle" id="mode-toggle" aria-label="Toggle light / dark" title="Toggle light / dark"></button>
+					<button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-controls="topnav" aria-expanded="false"></button>
+				</div>
+			</div>
+		</header>
+
+		<main class="studio">
+			<!-- Controls: starters · name · essentials · actions -->
+			<section class="studio-panel studio-controls">
+				<div class="studio-head">
+					<p class="studio-eyebrow">The Workbench</p>
+					<h1 class="studio-title">Theme Studio</h1>
+					<p class="studio-sub">Set a handful of colours. The studio derives the full token
+						contract, holds it to WCAG AA, and renders it live.</p>
+				</div>
+
+				<div class="studio-block">
+					<h2 class="studio-h2">Start from</h2>
+					<div class="studio-starters"></div>
+				</div>
+
+				<div class="studio-block">
+					<label class="studio-name-row">
+						<span class="studio-h2">Theme name</span>
+						<input id="studio-name" class="studio-name" type="text" spellcheck="false" autocomplete="off" />
+					</label>
+				</div>
+
+				<div class="studio-block">
+					<h2 class="studio-h2">Essentials</h2>
+					<div class="studio-fields"></div>
+				</div>
+
+				<div class="studio-actions">
+					<button type="button" class="studio-btn studio-copy">Copy CSS</button>
+					<button type="button" class="studio-btn studio-primary studio-download">Download .css</button>
+				</div>
+			</section>
+
+			<!-- Stage: the live specimen -->
+			<section class="studio-panel studio-stage">
+				<div class="studio-stage-head">
+					<span class="studio-stage-title">Live preview</span>
+					<div class="studio-mode">
+						<button type="button" class="studio-mode-btn is-active" data-mode="light">Light</button>
+						<button type="button" class="studio-mode-btn" data-mode="dark">Dark</button>
+					</div>
+					<span class="studio-status"></span>
+				</div>
+				<div class="studio-preview-host"></div>
+			</section>
+
+			<!-- Audit: the contrast meter + the generated CSS -->
+			<section class="studio-panel studio-audit">
+				<h2 class="studio-h2">Contrast</h2>
+				<p class="studio-meter-summary"></p>
+				<div class="studio-meter"></div>
+				<details class="studio-css">
+					<summary>Theme CSS</summary>
+					<pre class="studio-code"></pre>
+				</details>
+			</section>
+		</main>
+
+		<script type="application/json" id="studio-data" set:html={studioData}></script>
+
+		<!-- The in-browser engine (same bundle as the Playground). -->
+		<script is:inline defer src={url(pg + 'lattice-playground.js')}></script>
+
+		<!-- Topbar chrome: light/dark + mobile nav. -->
+		<script is:inline>
+			(function () {
+				var root = document.documentElement;
+				var modeBtn = document.getElementById('mode-toggle');
+				if (modeBtn) {
+					modeBtn.addEventListener('click', function () {
+						var next = root.getAttribute('data-mode') === 'dark' ? 'light' : 'dark';
+						root.setAttribute('data-mode', next);
+						try { localStorage.setItem('lattice-docs-mode', next); } catch (e) {}
+					});
+				}
+				var navToggle = document.getElementById('nav-toggle');
+				var topbar = document.querySelector('.topbar');
+				if (navToggle && topbar) {
+					navToggle.addEventListener('click', function () {
+						var open = topbar.classList.toggle('nav-open');
+						navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+					});
+				}
+			})();
+		</script>
+
+		<!-- The Theme Studio controller (bundled module: imports lib/theme/*). -->
+		<script>
+			import { initThemeStudio } from '../playground/theme-studio.js';
+			const cfg = JSON.parse(document.getElementById('studio-data').textContent);
+			initThemeStudio(cfg);
+		</script>
+	</body>
+</html>

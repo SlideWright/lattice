@@ -105,6 +105,17 @@ in patch versions.
   so a tester on a device can read off exactly which deploy + engine they loaded
   without it crowding the topbar. Drawing Board (docs-site) only — no engine or
   package change.
+- **The Workbench — Theme Studio (Faculty 1).** A new docs-site page
+  (`/workbench`) where you craft a palette from a handful of essential colours
+  and watch it derived, contrast-audited, and rendered live on a specimen deck,
+  then copy or download a droppable `themes/<name>.css`. Backed by a new pure,
+  dependency-free engine module **`lib/theme/`** (`color`, `derive`, `contrast`,
+  `serialize`, `starters`): an essential set → the full ~100-token Lattice
+  contract, repaired contrast-aware to clear WCAG AA in both canvas modes. The
+  derivation + contrast maths are the SAME the Node tooling and the palette
+  contrast gate use (the gate now shares `lib/theme/color.js`). Docs-site
+  feature + additive engine module — no change to existing layouts, themes, or
+  the render path.
 
 ### Changed
 

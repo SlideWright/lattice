@@ -418,10 +418,15 @@ URL** for today, consistent with the Drawing Board's no-backend design.
 ## Phasing
 
 1. **Theme Studio — essentials + derivation + live preview + contrast
-   meter.** Deterministic core, no model required (seed = a starter-palette
-   library on the floor). Output = `kind:'theme'` asset. Demo deck per
-   workflow.md. *This is the first ship; it proves the originate → asset →
-   render loop on the tractable faculty.*
+   meter.** ✅ **Shipped** (2026-06-11) as the docs-site `/workbench` page:
+   the pure core `lib/theme/` (color · derive · contrast · serialize ·
+   starters), the essentials editor, the live specimen render via
+   `window.LatticePlayground`, the per-pair contrast meter, and copy/download
+   of a droppable `themes/<name>.css`. Deterministic, no model (seed = the
+   starter library). Browser-scoped for now; the `kind:'theme'` asset write +
+   the export/graduation bridge are the next slices (see "next" below).
+   *This first ship proves the originate → derive → render loop on the
+   tractable faculty.*
 2. **Theme Studio — AI seed + conversational refine.** The Architect model
    touchpoints, constrained to the essential set; deterministic derivation
    and gating unchanged across tiers.
