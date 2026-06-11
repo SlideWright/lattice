@@ -397,3 +397,228 @@ Each phase is independently shippable and leaves the baselines green.
    precedent fits, but its size may warrant its own bucket.)
 5. **Separate package?** The Tauri app wants `lattice-engine` in a WebView;
    should it ship as its own `exports` subpath from day one?
+6. **Front-matter precedence override (§12.4):** do we ship the
+   `background-precedence`-style inversion knob, or hold the line on a single
+   predictable cascade? Recommend the latter.
+7. **Remote-resource policy (§12.10):** which front-matter values may be URLs,
+   and what is the fetch/cache/allow-list posture for the build (`--allow-local-files`
+   today) vs the browser (CORS) vs the Tauri WebView?
+
+---
+
+## 12. The front-matter / deck-config contract
+
+This section specifies the deck-configuration surface `lattice-engine` owns —
+the YAML front-matter block plus the per-slide directive comments that override
+it. It is a **superset of Marp's** directive set (so existing decks keep
+working) with Lattice-native additions. It is the engine's public authoring API;
+treat changes here as breaking.
+
+### 12.1 Principles
+
+1. **Zero-config is a great deck.** Every key has a sensible default. A file
+   with *no* front matter at all — just markdown — renders a correct, on-brand
+   deck (default palette, `hd` size, `---` splitting, pagination on, title
+   inferred from the first `#`). Front matter is for overriding, never for
+   *enabling*.
+2. **One predictable cascade.** Precedence is always **per-slide directive >
+   deck front matter > theme default > engine default** — specific beats
+   general, the same direction CSS and Marp already train authors to expect. We
+   do *not* ship a knob that inverts it (see §12.4).
+3. **Lint-clean by construction.** The authoring surface must survive a standard
+   markdown linter (markdownlint) with default rules. That drives the
+   heading-split mode (§12.3) and the `{{ }}` interpolation choice (§12.5).
+4. **Marp-superset.** `marp: true`, `theme`, `paginate`, `header`, `footer`,
+   `class`, `style`, `size`, and the `_`-prefixed per-slide spot directives keep
+   Marp's exact semantics. New keys are additive; a Marp deck imports unchanged.
+5. **Resources can be remote (§12.10).** `theme`, `fonts`, `logo`, background
+   images, and data sources accept a URL as well as a repo-relative path, so a
+   deck can pull its brand kit from the web.
+
+### 12.2 The key table
+
+`scope` = where it may appear: **D** deck front matter, **S** per-slide
+directive (the `<!-- _key: … -->` spot form, or its non-`_` global form).
+
+| Key | Type | Default | Scope | Notes |
+|---|---|---|---|---|
+| `theme` | name \| URL | default palette (`cuoio`) | D, S | Registered palette name, or a URL/path to a `@theme` stylesheet (§12.10). |
+| `size` | preset \| `WxH` | `hd` (1280×720) | D | Named preset (§12.7) or explicit `1920x1080`. |
+| `split` | `rule`\|`h2`\|`hybrid` | `rule` | D | How the body divides into slides (§12.3). |
+| `paginate` | bool | `true` | D, S | Page numbers. `_paginate: false` skips one slide; deck `false` is opt-out. |
+| `pagination` | object | — | D | Optional `{ start, format, total }` for the number's text. |
+| `header` / `footer` | string (interpolated) | — | D, S | Chrome text; supports `{{ vars }}` (§12.5). Empty string clears. |
+| `logo` | path \| URL \| object | — | D, S | Deck mark. Object form: `{ src, position, scale, link }`. `_logo: none` suppresses. |
+| `background` | string \| object | theme bg | D, S | Deck-wide background; precedence in §12.4. |
+| `fonts` | object | theme fonts | D | `{ display, body, mono }` → the three font tokens (§12.6). |
+| `vars` | map | `{}` | D | Author-defined interpolation variables (§12.5). |
+| `title` | string | first `#` text | D | Deck title → PDF `/Title`, OG tag, `{{title}}`. |
+| `author` | string \| list | — | D | → PDF `/Author`, OG, `{{author}}`. |
+| `description` | string | — | D | → PDF `/Subject`, OG `description`. |
+| `tags` | list | `[]` | D | → PDF `/Keywords`, OG `keywords`, `{{tags}}`. |
+| `date` | date \| `auto` | `auto` (build date) | D | `{{date}}`; `auto` resolves at render. |
+| `class` | string | — | D, S | Deck-wide / per-slide layout class (Marp parity). |
+| `style` | css string | — | D | Inline `<style>` escape hatch (Marp parity). |
+| `lang` / `dir` | string | `en` / `ltr` | D | Document language + direction. |
+
+### 12.3 Deck splitting — `split`
+
+Marp splits only on a `---` thematic break. markdownlint's `MD035`/heading rules
+and many house styles dislike bare `---` in prose, and authors routinely *forget*
+it. So the engine offers three modes:
+
+- **`rule` (default, Marp-compatible).** `---` between blocks starts a new slide.
+- **`h2`.** Every `##` opens a new slide. The block **before the first `##`** —
+  typically a single `#` H1 plus a tagline — becomes the **title slide**, auto-
+  classed `title` (§"title" component). This yields a fully lint-clean document
+  with a normal heading outline and *no* `---` at all: `#` = deck title, each
+  `##` = a slide heading. H1 is reserved for the title slide; a second `#` in the
+  body is an authoring error the linter (`lib/authoring/lint-core.js`) should flag.
+- **`hybrid`.** Split on *either* `##` or `---`, for decks that mix a heading
+  outline with explicit breaks (e.g. two slides under one `##`).
+
+Per-slide front matter inside a heading-split deck is still the `<!-- _key -->`
+comment form, attached to the slide whose heading it follows. Explicit
+`<!-- _class: title -->` always wins over the inferred title detection.
+
+### 12.4 Backgrounds & precedence
+
+A background can be a color token, a gradient, or an image, set at three levels.
+The cascade is the standard one — **most specific wins**:
+
+```
+per-slide  ![bg …](url)  or  <!-- _background: … -->     ← highest
+   ▲
+deck       front-matter  background:
+   ▲
+theme      the palette's section background               ← lowest (default)
+```
+
+`background` accepts a shorthand string (`background: "#0b1020"`,
+`background: url(cover.png)`, `background: linear-gradient(...)`) or an object:
+
+```yaml
+background:
+  image: https://cdn.example.com/cover.jpg   # path or URL (§12.10)
+  color: "#0b1020"        # shows through / behind the image
+  fit: cover              # cover | contain | tile  (maps to ![bg fit])
+  position: center
+  opacity: 0.9
+  filter: blur(2px)       # passthrough to the bg layer
+```
+
+A slide opts out of the deck background with `<!-- _background: none -->`
+(falls back to the theme), or overrides it with the existing Marp `![bg]`
+image syntax. **We deliberately do not ship a precedence-inversion key** (the
+"redefine who overrides whom" idea): inverting the cascade per deck makes a
+slide's appearance non-local and unpredictable, and every real need is already
+served by *explicit* per-slide overrides. Captured as Open Question 6 in case a
+concrete use case argues otherwise; the bar is high.
+
+### 12.5 Variables & interpolation
+
+`vars:` defines author variables; the engine also provides **built-ins**. Both
+interpolate into `header`, `footer`, `title`, and slide body text via mustache-
+style `{{ name }}` (chosen over `${ }` because it never collides with markdown,
+KaTeX `$…$`, or template-literal-looking code, and survives markdownlint).
+
+```yaml
+vars:
+  client: Northwind
+  quarter: Q3 FY26
+footer: "{{client}} · {{quarter}} · {{page}}/{{pages}}"
+```
+
+Built-in variables (always available, no declaration):
+
+| Variable | Resolves to |
+|---|---|
+| `{{title}}` `{{author}}` `{{description}}` | the metadata keys (§12.2) |
+| `{{date}}` `{{datetime}}` `{{time}}` `{{year}}` | render-time clock; `date` honors `date:` if set, else build date |
+| `{{page}}` `{{pages}}` | current slide number / deck total |
+| `{{theme}}` `{{size}}` | active palette name / size preset |
+| `{{tags}}` | comma-joined `tags` |
+
+Resolution is at render time, after split, so `{{page}}/{{pages}}` are correct
+per slide. Unknown `{{x}}` renders literally and the linter warns (typo guard).
+A literal brace pair escapes as `{{ "{{" }}` / backtick-fenced code is never
+interpolated.
+
+### 12.6 Fonts — `fonts`
+
+Maps directly onto the three typography tokens (`--font-display`, `--font-body`,
+`--font-mono`); unset roles inherit the theme.
+
+```yaml
+fonts:
+  display: "Fraunces"                         # bare name → resolve from CDN
+  body:    "Inter"
+  mono:    https://example.com/Berkeley.css   # a @font-face stylesheet URL
+```
+
+A bare family name resolves through the configured webfont provider (Google
+Fonts by default) and the engine injects the `@import`; a URL to a `.css`
+`@font-face` sheet or a font file is used directly (§12.10). The emoji fallback
+chain (`Noto Color Emoji`, …) is always appended so emoji render in color
+regardless of the chosen families.
+
+### 12.7 Sizes — `size`
+
+Named presets resolve to `@size` geometry; `WxH` is taken verbatim. Beyond the
+deck sizes Lattice ships today (`hd`, `4K`, `16:9`, `standard`), the engine adds
+social, print, and mobile presets so one deck source can target many surfaces:
+
+| Group | Presets |
+|---|---|
+| Slides (today) | `hd` 1280×720 · `4k` 3840×2160 · `16:9` · `standard` 960×720 |
+| Social | `og` 1200×630 · `linkedin` 1200×627 · `x` 1600×900 · `ig-square` 1080×1080 · `ig-portrait` 1080×1350 · `ig-story` 1080×1920 |
+| Print | `a4-landscape` · `a4-portrait` · `letter-landscape` · `letter-portrait` (at print DPI) |
+| Mobile | `mobile` 390×844 · `tablet` 834×1112 |
+
+Presets live in the theme's `@size` block (engine-resolved, §"P1.1"), so a theme
+can add brand-specific sizes. cqi-based layouts reflow proportionally across any
+size with no per-size rules.
+
+### 12.8 Header / footer / logo / pagination
+
+These are deck chrome with Marp-compatible toggling: a deck-level value sets the
+default; the `_`-prefixed per-slide form overrides or clears one slide
+(`_footer: ""`, `_paginate: false`, `_header: "Confidential"`, `_logo: none`).
+`title silent` and the `silent` modifier remain the one-token way to suppress all
+three on a title/section slide. `logo` renders through the existing
+`applyDeckLogoToHtml` path; its object form adds `position` (corner),
+`scale`, and an optional `link`.
+
+### 12.9 Zero-config defaults (the out-of-the-box deck)
+
+With an empty (or absent) front matter the engine resolves:
+
+```yaml
+theme: <default palette>     size: hd            split: rule
+paginate: true               header/footer: none  logo: none
+background: <theme section>  fonts: <theme>       title: <first “# …”>
+date: auto                   lang: en             dir: ltr
+```
+
+— i.e. exactly today's good-looking default. No key is *required*; front matter
+only ever narrows or rebrands.
+
+### 12.10 Remote resources & migration
+
+`theme`, `fonts`, `logo`, and background images accept an absolute URL in
+addition to a repo-relative path. Posture per host (Open Question 7):
+
+- **Build / emulator (Chromium):** today's `--allow-local-files` covers local
+  paths; remote URLs need an explicit network fetch with an allow-list + an
+  on-disk cache (so a build is reproducible and offline-friendly once warmed).
+- **Browser playground / Drawing Board:** subject to CORS; document which
+  providers send permissive headers (Google Fonts does, arbitrary image hosts
+  may not). Fetched theme/font text is registered via the existing `addThemes`
+  path.
+- **Tauri WebView:** uses the app's CSP allow-list.
+
+**Migration:** a Marp deck's front matter is already valid input — `theme`,
+`paginate`, `header`, `footer`, `size` (via theme `@size`), `class`, `style`,
+and the `_` directives are honored unchanged; `marp: true` is accepted and
+ignored. The new keys (`split`, `vars`, `fonts`, object `background`/`logo`,
+the metadata block) are purely additive, so adoption is incremental.
