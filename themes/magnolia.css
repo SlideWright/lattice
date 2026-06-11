@@ -41,9 +41,9 @@
  *   • Default scheme is light at zero specificity; author overrides via
  *     `style:` directive, `<!-- _class: dark -->`, or the magnolia-dark
  *     variant theme always win the cascade.
- *   • Semantic signals (--pass/--fail/--warn) intentionally do not switch
- *     between modes: they back the white SVG strokes baked into checklist
- *     state markers, which require the colour to stay dark in both modes.
+ *   • Semantic signals (--pass/--fail/--warn) are self-curated as
+ *     light-dark() pairs (the variable contract), AA on both canvases;
+ *     -bg tints derive from them.
  *     --fail uses #7E2F38 garnet-deep so it converges with the palette
  *     without breaking the white-stroke contrast contract.
  */
@@ -86,6 +86,10 @@
    * rather than clashing with the warm accent. Dark mode lifts the
    * garnet to a brighter shade that keeps AA contrast on dark canvas. */
   --fail: light-dark(#7E2F38, #D27087);
+  /* Self-curated semantic trio — warm green/amber/red, AA>=4.5 on
+   * both canvases (light value vs --bg, dark value vs --dark-bg). */
+  --pass: light-dark(#2D6A3F, #6FCC4D);
+  --warn: light-dark(#9E5F00, #F0A848);
   --pass-bg: color-mix(in srgb, var(--pass) 12%, transparent);
   --fail-bg: color-mix(in srgb, var(--fail) 12%, transparent);
   --warn-bg: color-mix(in srgb, var(--warn) 12%, transparent);

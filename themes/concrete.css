@@ -43,9 +43,9 @@
  *   • Default scheme is light at zero specificity; author overrides via
  *     `style:` directive, `<!-- _class: dark -->`, or the concrete-dark
  *     variant theme always win the cascade.
- *   • Semantic signals (--pass/--fail/--warn) intentionally do not switch
- *     between modes: they back the white SVG strokes baked into checklist
- *     state markers, which require the colour to stay dark in both modes.
+ *   • Semantic signals (--pass/--fail/--warn) are self-curated as
+ *     light-dark() pairs (the variable contract), AA on both canvases;
+ *     -bg tints derive from them.
  */
 
 @import 'lattice';
@@ -81,10 +81,14 @@
 
   /* ── Semantic signals — derived backgrounds only ───────────────────
    * --pass/--warn/--fail are defined as light-dark() pairs in
-   * lattice.css :root (universal status palette). Themes can override
-   * by re-declaring with their own light-dark() pair; this theme
-   * inherits the defaults. The -bg soft tints stay theme-local so
+   * lattice.css :root (universal status palette). Each theme self-curates its own trio (above), per the
+   * variable contract — AA on both canvases. The -bg soft tints stay theme-local so
    * each palette can pick its own alpha. */
+  /* Self-curated semantic trio — neutral green/amber/red, AA>=4.5 on
+   * both canvases (light value vs --bg, dark value vs --dark-bg). */
+  --pass: light-dark(#214F26, #73C77C);
+  --warn: light-dark(#683C00, #DCAA4C);
+  --fail: light-dark(#8E0B13, #EC8585);
   --pass-bg: color-mix(in srgb, var(--pass) 12%, transparent);
   --fail-bg: color-mix(in srgb, var(--fail) 12%, transparent);
   --warn-bg: color-mix(in srgb, var(--warn) 12%, transparent);
@@ -219,14 +223,14 @@ section pre.hljs {
    * black dark canvas. Light side = the audited pigment (drives the border
    * at full strength + a 24% tint for the fill); dark side = the same hue
    * lifted toward white so it stays vivid on the dark canvas. */
-  --chart-cat1: light-dark(#6A4E4E, color-mix(in oklab, #6A4E4E, white 30%));  /* dusty rose    */
-  --chart-cat2: light-dark(#3E6A58, color-mix(in oklab, #3E6A58, white 30%));  /* sage green    */
-  --chart-cat3: light-dark(#47526E, color-mix(in oklab, #47526E, white 30%));  /* steel blue    */
-  --chart-cat4: light-dark(#6B5D49, color-mix(in oklab, #6B5D49, white 30%));  /* warm taupe    */
-  --chart-cat5: light-dark(#6D3E53, color-mix(in oklab, #6D3E53, white 30%));  /* mauve         */
-  --chart-cat6: light-dark(#4F6667, color-mix(in oklab, #4F6667, white 30%));  /* slate teal    */
-  --chart-cat7: light-dark(#63634F, color-mix(in oklab, #63634F, white 30%));  /* khaki olive   */
-  --chart-cat8: light-dark(#516751, color-mix(in oklab, #516751, white 30%));  /* muted green   */
+  --chart-cat1: light-dark(#6E3D50, color-mix(in oklab, #6E3D50, white 30%));  /* dusty rose    */
+  --chart-cat2: light-dark(#1D6F48, color-mix(in oklab, #1D6F48, white 30%));  /* sage green    */
+  --chart-cat3: light-dark(#474479, color-mix(in oklab, #474479, white 30%));  /* steel blue    */
+  --chart-cat4: light-dark(#636632, color-mix(in oklab, #636632, white 30%));  /* warm taupe    */
+  --chart-cat5: light-dark(#722E5E, color-mix(in oklab, #722E5E, white 30%));  /* mauve         */
+  --chart-cat6: light-dark(#3E6B59, color-mix(in oklab, #3E6B59, white 30%));  /* slate teal    */
+  --chart-cat7: light-dark(#635F4F, color-mix(in oklab, #635F4F, white 30%));  /* khaki olive   */
+  --chart-cat8: light-dark(#4E664F, color-mix(in oklab, #4E664F, white 30%));  /* muted green   */
 
   /* Semantic spectrum — charts that encode meaning (gantt bars, progress,
    * status pills, state-chart, timeline). pass/fail reuse concrete's
@@ -240,5 +244,5 @@ section pre.hljs {
   --chart-state-warn: light-dark(#854608, #E89030); /* burnt ochre    */
   --chart-state-fail: var(--fail);                  /* status red     */
   --chart-state-info: light-dark(#2F567F, #79A6D6); /* deep slate     */
-  --chart-state-mute: light-dark(#6F6354, #A69882); /* warm greige    */
+  --chart-state-mute: light-dark(#68675B, #A69882); /* warm greige    */
 }

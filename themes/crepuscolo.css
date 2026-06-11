@@ -89,6 +89,11 @@
    * lattice.css :root (universal status palette). This theme inherits
    * the defaults. The -bg soft tints stay theme-local so each palette
    * can pick its own alpha. */
+  /* Self-curated semantic trio — warm green/amber/red, AA>=4.5 on
+   * both canvases (light value vs --bg, dark value vs --dark-bg). */
+  --pass: light-dark(#2D6A3F, #6FCC4D);
+  --warn: light-dark(#9E5F00, #F0A848);
+  --fail: light-dark(#9E1F1F, #F58282);
   --pass-bg: color-mix(in srgb, var(--pass) 12%, transparent);
   --fail-bg: color-mix(in srgb, var(--fail) 12%, transparent);
   --warn-bg: color-mix(in srgb, var(--warn) 12%, transparent);
@@ -226,12 +231,12 @@ section pre.hljs {
    * side = the audited pigment (drives the border at full strength + a 24%
    * tint for the fill); dark side = the same hue lifted toward white so it
    * stays vivid on deep-plum canvas. */
-  --chart-cat1: light-dark(#5C3285, color-mix(in oklab, #5C3285, white 30%));  /* violet      */
-  --chart-cat2: light-dark(#7E742B, color-mix(in oklab, #7E742B, white 30%));  /* olive        */
-  --chart-cat3: light-dark(#308235, color-mix(in oklab, #308235, white 30%));  /* forest       */
-  --chart-cat4: light-dark(#823682, color-mix(in oklab, #823682, white 30%));  /* magenta      */
-  --chart-cat5: light-dark(#363682, color-mix(in oklab, #363682, white 30%));  /* indigo       */
-  --chart-cat6: light-dark(#597E34, color-mix(in oklab, #597E34, white 30%));  /* sage         */
+  --chart-cat1: light-dark(#68378B, color-mix(in oklab, #68378B, white 30%));  /* violet      */
+  --chart-cat2: light-dark(#8E652E, color-mix(in oklab, #8E652E, white 30%));  /* olive        */
+  --chart-cat3: light-dark(#008600, color-mix(in oklab, #008600, white 30%));  /* forest       */
+  --chart-cat4: light-dark(#973784, color-mix(in oklab, #973784, white 30%));  /* magenta      */
+  --chart-cat5: light-dark(#304792, color-mix(in oklab, #304792, white 30%));  /* indigo       */
+  --chart-cat6: light-dark(#557A30, color-mix(in oklab, #557A30, white 30%));  /* sage         */
   --chart-cat7: light-dark(#7C3C5C, color-mix(in oklab, #7C3C5C, white 30%));  /* mauve        */
   --chart-cat8: light-dark(#7C5C3C, color-mix(in oklab, #7C5C3C, white 30%));  /* umber        */
 
@@ -242,6 +247,6 @@ section pre.hljs {
   --chart-state-pass: var(--pass);                  /* signal green  */
   --chart-state-warn: var(--warn);                  /* signal amber  */
   --chart-state-fail: var(--fail);                  /* alarm crimson */
-  --chart-state-info: light-dark(#3E6A9E, #79A6D6); /* dusty slate   */
-  --chart-state-mute: light-dark(#6F6354, #A69882); /* violet taupe  */
+  --chart-state-info: light-dark(#396CA3, #76A6D9); /* dusty slate   */
+  --chart-state-mute: light-dark(#735161, #A69882); /* violet taupe  */
 }

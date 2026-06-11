@@ -10,9 +10,10 @@
  *   2. categories are distinct     — adjacent `--chart-cat*` ≥ 0.15 OKLab
  *   3. status roles are distinct   — the 5 `--chart-state-*` mutually ≥ 0.12
  *
- * This locks that in for the three curated exemplars (cuoio, onyx, indaco), so
- * a re-curation that picks a hue too close to the canvas or to a neighbour
- * fails here instead of shipping muddy/indistinct charts. Resolves the full
+ * This locks that in for all 13 curated themes (cuoio/onyx/indaco were the
+ * original exemplars; the rest were brought to parity), so a re-curation that
+ * picks a hue too close to the canvas or to a neighbour fails here instead of
+ * shipping muddy/indistinct charts. Resolves the full
  * token expression — `light-dark()`, `var()` with fallback, and
  * `color-mix(in oklab, …)` (the dark-side hues + tints) — which the existing
  * contrast-audit.js intentionally skips.
