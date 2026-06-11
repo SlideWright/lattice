@@ -82,7 +82,9 @@ var require_gate = __commonJS({
         while (i < end) {
           const ch = src[i];
           if (ch === "{") {
-            const head = src.slice(chunkStart, i).trim();
+            const raw = src.slice(chunkStart, i);
+            const head = raw.trim();
+            const lead = raw.length - raw.trimStart().length;
             let depth = 1;
             let j = i + 1;
             for (; j < end && depth > 0; j++) {
@@ -95,7 +97,7 @@ var require_gate = __commonJS({
               const at = head.split(/\s/)[0].toLowerCase();
               if (at === "@media" || at === "@supports") block2(bodyStart, bodyEnd);
             } else if (head) {
-              visit({ selector: head, line: lineAt(src, chunkStart) });
+              visit({ selector: head, line: lineAt(src, chunkStart + lead) });
             }
             i = j;
             chunkStart = i;

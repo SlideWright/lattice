@@ -49,6 +49,12 @@ describe('gate — selector scoping', () => {
     assert.equal(u.length, 1);
     assert.match(u[0].selector, /ul li/);
   });
+  test('reports the line of the selector itself (not the previous rule end)', () => {
+    const css = 'section.foo {\n  color: var(--text-body);\n}\nul {\n  margin: 0;\n}';
+    const u = findUnscopedSelectors(css, 'foo');
+    assert.equal(u.length, 1);
+    assert.equal(u[0].line, 4); // `ul` is on line 4
+  });
   test('flags one comma-part even when a sibling part is scoped', () => {
     const u = findUnscopedSelectors('.foo .a, .b { }', 'foo');
     assert.deepEqual(u.map(x => x.selector), ['.b']);

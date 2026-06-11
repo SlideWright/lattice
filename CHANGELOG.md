@@ -189,6 +189,19 @@ in patch versions.
 
   Docs-site feature + additive engine module — no change to existing layouts,
   themes, or the render path.
+- **The Workbench — Layout Studio (Faculty 2, CSS-only).** A second faculty on
+  `/workbench` (a faculty switch in the header — Theme Studio ⇄ Layout Studio):
+  author a CSS-only local *component* — palette-blind CSS scoped to its own
+  `_class`, plus a manifest and a skeleton — and watch it rendered live and held
+  to the engine's own invariants by a deterministic gate (tokens-only, `.<name>`
+  selector scoping, manifest/skeleton coherence). Backed by a new pure engine
+  module **`lib/layout/`** (`gate`, `scaffold`, `starters`): the SAME gates the
+  unit tests run, bundled to the browser. Copy the CSS/manifest or download a
+  graduation scaffold (`<name>.{manifest.json,styles.css,skeleton.md}` in the
+  engine's own `lib/components/<bucket>/<name>/` folder shape). Browser-scoped
+  for now — Save-to-library (the asset store) and model-assisted authoring land
+  in the next slices. Docs-site feature + additive engine module — no change to
+  existing layouts, themes, or the render path.
 
 ### Changed
 
