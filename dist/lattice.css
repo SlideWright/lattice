@@ -12771,6 +12771,33 @@ section.sketch.pricing > ul > li:nth-child(3n) {
   transform: rotate(0.4deg);
 }
 
+/* ── corner tags: number badges + lifted-label / banner headers ────────────
+ * The numbered card badge (cards-grid/cards-stack `::before` counter) and the
+ * lifted-label corner tag / banner header (decision + compare-prose
+ * `strong:first-child`) ship as accent chips in the MONO face with clean
+ * geometric corners — so they sat un-sketched on otherwise hand-drawn cards.
+ * Give the numerals the hand display face, the labels the hand sans, and the
+ * flush chips a wobbled corner. Banner headers keep their straight full-width
+ * strip (the card's overflow clips it to the card's own hand corners) and only
+ * switch font, so the radius wobble is scoped to the non-banner chips. */
+section.sketch.cards-grid > :is(ul, ol) > li::before,
+section.sketch.cards-grid .card::before,
+section.sketch.cards-stack > :is(ul, ol) > li::before,
+section.sketch.cards-stack .card::before {
+  font-family: var(--sketch-font-display);
+  border-radius: 15px 2px 12px 3px / 3px 12px 2px 15px;
+}
+section.sketch.decision > :is(ul, ol) > li > strong:first-child,
+section.sketch.compare-prose > :is(ul, ol) > li > strong:first-child,
+section.sketch.compare-prose .compare-prose-inner .card > strong:first-child {
+  font-family: var(--font-label) !important;
+}
+section.sketch.decision:not(.banner-tag) > :is(ul, ol) > li > strong:first-child,
+section.sketch.compare-prose:not(.banner-tag) > :is(ul, ol) > li > strong:first-child,
+section.sketch.compare-prose:not(.banner-tag) .compare-prose-inner .card > strong:first-child {
+  border-radius: 15px 2px 12px 3px / 3px 12px 2px 15px !important;
+}
+
 /* ── HAND-DRAWN RULES — the structures that draw their OWN lines ──────────
  * The card family above gets the full drawn box. The principle for
  * everything else: the finish ROUGHENS lines the deck already draws — table
