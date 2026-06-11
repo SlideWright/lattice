@@ -64,10 +64,18 @@ in patch versions.
   on the load-bearing rules — closing the mobile-WebKit regressions (collapsed cqi
   spacing, dropped CSS counters) that shelved the earlier P1.1 emitter. Gated by a
   new browser-independent CSS-pack parity test vs marp-core and by full desktop
-  pixel parity across the 89pp baseline gallery (`tools/engine-parity.mjs
-  --own-css`). The owned sheet is ~43% smaller than marp's pack (drops twemoji /
-  `marp-h1` auto-scaling / scroll-snap baggage). Default stays on marp's packer
+  pixel parity across the 89pp baseline gallery + the full 65-gallery component
+  corpus (`tools/engine-parity.mjs --own-css`). The owned sheet is ~43% smaller
+  than marp's pack (drops twemoji / `marp-h1` auto-scaling / scroll-snap baggage)
+  and the owned `composeCss` is ~7× faster than marp's packer, cutting the full
+  playground render path to ~2.6× faster than marp. Default stays on marp's packer
   pending a real-device check; `?css=engine` (implies `?engine=lattice`) opts in.
+- **`dist/lattice.css` now bundles the KaTeX base stylesheet.** `tools/build-css.js`
+  vendors KaTeX's layout sheet from the installed `katex` package (font URLs
+  rewritten to the pinned jsDelivr CDN, as marp-core does) into the engine bundle,
+  so math glyphs are styled by `dist/lattice.css` alone — no marp-core injection
+  required. This is what lets the owned CSS emitter reach math parity; it also
+  means any drop-in `dist/lattice.css` consumer now renders `$…$` math correctly.
 
 ### Fixed
 
