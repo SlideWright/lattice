@@ -27,6 +27,16 @@ in patch versions.
 
 ### Added
 
+- **Workbench export bridge — library themes reach the Drawing Board.** A theme
+  saved in the Workbench library is now selectable in the Drawing Board's palette
+  picker (listed with a *(saved)* suffix), registers with the in-browser engine,
+  and renders live — light *and* dark, resolved from its single `light-dark()`
+  file. The choice persists in the deck's `theme:` front matter like any palette,
+  and every export carries it: **Markdown** embeds the theme's CSS self-contained
+  (so a re-import or a lattice-configured `marp-cli` run keeps the palette without
+  installing the theme), while PDF / PPTX / Print already rasterize the themed
+  preview. Components remain a follow-on slice. See
+  `engineering/decisions/2026-06-11-workbench-export-bridge.md`.
 - **Theme token parity — all 13 palettes are now fully self-curated.** Every
   shipped theme now defines its own chart-family palette (`--chart-cat1..8` +
   `--chart-state-*`) and its own semantic signal trio (`--pass` / `--warn` /

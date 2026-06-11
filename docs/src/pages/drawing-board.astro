@@ -801,6 +801,7 @@ const dbData = JSON.stringify({
 		     the module on first PPTX use, so it never loads unless invoked. -->
 		<script>
 			import { exportMarkdown, exportPdf, exportPptx, exportPrint } from '../playground/drawing-board-export.js';
+			import { listAssets } from '../playground/asset-store.js';
 			const wrap = document.getElementById('db-export-wrap');
 			const trigger = document.getElementById('db-export');
 			const menu = document.getElementById('db-export-menu');
@@ -840,13 +841,50 @@ const dbData = JSON.stringify({
 					source,
 					deck: deckName(),
 				};
+				// Export bridge: if the deck's active theme is a Workbench *library*
+				// theme (not a built-in palette), resolve its saved CSS so the Markdown
+				// export can embed it self-contained. PDF/PPTX/Print rasterize the live
+				// DOM, which already carries the theme — only Markdown needs the embed.
+				async function activeLibraryTheme() {
+					const pal = root.getAttribute('data-palette') || '';
+					if (!pal) return null;
+					try {
+						const hit = (await listAssets('theme')).find((t) => t.name === pal);
+						return hit ? { name: hit.name, css: hit.text || '' } : null;
+					} catch (_e) { return null; }
+				}
 				try {
-					if (kind === 'md') { exportMarkdown(source, deckName()); status('Markdown exported.'); }
+					if (kind === 'md') {
+						const lib = await activeLibraryTheme();
+						exportMarkdown(source, deckName(), lib);
+						status(lib ? 'Markdown exported (theme embedded).' : 'Markdown exported.');
+					}
 					else if (kind === 'pdf') { status('Exporting PDF…'); await exportPdf(frame, deckName(), (m) => status(m), meta); status('PDF exported.'); }
 					else if (kind === 'pptx') { await exportPptx(frame, deckName(), (m) => status(m), meta); status('PowerPoint exported.'); }
 					else if (kind === 'print') { exportPrint(frame, meta); status('Opening print dialog…'); }
 				} catch (err) { status(String(err.message || err), true); }
 			});
+		</script>
+
+		<!-- Workbench library themes (export bridge) — load the user's saved themes
+		     from the lattice-workbench asset store and hand them to the inline
+		     render controller (which is is:inline and can't import) via a global +
+		     a refresh event. See engineering/decisions/2026-06-11-workbench-export-
+		     bridge.md. -->
+		<script>
+			import { listAssets } from '../playground/asset-store.js';
+			async function loadLibraryThemes() {
+				let themes = [];
+				try {
+					themes = (await listAssets('theme'))
+						.map((t) => ({ name: t.name, label: t.label || t.name, css: t.text || '' }))
+						.filter((t) => t.name && t.css);
+				} catch (_e) { themes = []; }
+				window.__dbLibraryThemes = themes;
+				window.dispatchEvent(new Event('db-library-themes'));
+			}
+			window.addEventListener('db-library-themes-refresh', loadLibraryThemes);
+			loadLibraryThemes();
 		</script>
 
 		<!-- Focus edit modes (Slice 9). The toolbar button enables when the cursor
@@ -1004,6 +1042,11 @@ const dbData = JSON.stringify({
 					var PG = window.LatticePlayground;
 					if (!latticeReady) latticeReady = fetchTheme('lattice').then(function (css) { PG.addThemes([css]); });
 					var jobs = [latticeReady];
+					// Library theme: one saved file (light-dark() pairs), already in memory.
+					// Register after lattice (the CSS @imports it); no -dark variant.
+					if (LIB[palette]) {
+						return latticeReady.then(function () { if (!PG.hasTheme(palette)) PG.addThemes([LIB[palette]]); });
+					}
 					if (!PG.hasTheme(palette)) jobs.push(fetchTheme(palette).then(function (css) { PG.addThemes([css]); }));
 					if (mode === 'dark') {
 						jobs.push(fetchTheme(palette + '-dark').then(function (css) { PG.addThemes([css]); }).catch(function () {}));
@@ -1084,9 +1127,13 @@ const dbData = JSON.stringify({
 					'})();',
 				].join('\n');
 
-				function writeFrame(html, css, mode) {
+				function writeFrame(html, css, mode, forceScheme) {
 					var bg = mode === 'dark' ? '#0c0c0c' : '#e7e7ea';
 					var ACCENT = (getComputedStyle(root).getPropertyValue('--accent') || '').trim() || '#b0492e';
+					// Single-file library themes (export bridge) resolve light/dark via
+					// light-dark(); force the canvas scheme so dark renders dark. Built-in
+					// paired -dark themes don't need it, so it's library-only (forceScheme).
+					var SCHEME = forceScheme ? ':root{color-scheme:' + (mode === 'dark' ? 'dark' : 'light') + ';}' : '';
 					// srcdoc (fresh browsing context per render) so lattice-runtime.js's
 					// one-shot Mermaid guard resets each render — see playground.astro +
 					// engineering/gotchas.md "Playground: Mermaid stops rendering".
@@ -1094,6 +1141,7 @@ const dbData = JSON.stringify({
 						'<!doctype html><html><head><meta charset="utf-8">' +
 						'<link rel="stylesheet" href="' + KATEX + '">' +
 						'<style>html,body{margin:0;padding:22px;background:' + bg + ';}' +
+						SCHEME +
 						// Hidden until the FIT agent scales the 1280px sections to the
 						// container width (it flips this to visible). Prevents the
 						// full-size first-paint flash, esp. on mobile. See FIT above.
@@ -1192,7 +1240,7 @@ const dbData = JSON.stringify({
 							// otherwise (first render, palette/mode switch) do a full rebuild.
 							var patched = sig === frameSig && frame.contentDocument && frame.contentDocument.querySelector('.marpit')
 								? patchFrame(sections) : false;
-							if (!patched) { writeFrame(out.html, out.css, mode); frameSig = sig; lastSections = sections; }
+							if (!patched) { writeFrame(out.html, out.css, mode, !!LIB[palette]); frameSig = sig; lastSections = sections; }
 							totalSlides = sections.length;
 							recomputeStarts();
 							setSlideStatus();
@@ -1287,7 +1335,34 @@ const dbData = JSON.stringify({
 				// not forced on at render time the way the old picker did. Only a
 				// registered palette propagates — a typo or unknown theme is left in the
 				// source but never applied, so the deck can't render unstyled.
-				var PALETTES = data.palettes || [];
+				var PALETTES = (data.palettes || []).slice();
+				// Workbench library themes (export bridge): name -> saved CSS. Merged into
+				// the PALETTES vocabulary + the picker so a saved theme is selectable, and
+				// registered with the engine on demand (ensureThemes). Loaded async from
+				// IndexedDB by the loader module above; refreshed on its event. See
+				// engineering/decisions/2026-06-11-workbench-export-bridge.md.
+				var LIB = {};
+				function refreshLibraryThemes() {
+					var themes = window.__dbLibraryThemes || [];
+					for (var i = 0; i < themes.length; i++) {
+						var t = themes[i];
+						if (!t || !t.name || !t.css) continue;
+						var fresh = !LIB[t.name];
+						LIB[t.name] = t.css;
+						if (PALETTES.indexOf(t.name) === -1) PALETTES.push(t.name);
+						if (fresh && paletteSel && !paletteSel.querySelector('option[value="' + t.name + '"]')) {
+							var opt = document.createElement('option');
+							opt.value = t.name;
+							opt.textContent = (t.label || t.name) + ' (saved)';
+							paletteSel.appendChild(opt);
+						}
+					}
+					// A deck whose `theme:` names a now-known library theme can finally apply.
+					if (syncThemeControls()) render();
+					paletteSel.value = root.getAttribute('data-palette');
+				}
+				window.addEventListener('db-library-themes', refreshLibraryThemes);
+				if (window.__dbLibraryThemes) refreshLibraryThemes();
 				function deckTheme() {
 					var fm = /^---[ \t]*\r?\n([\s\S]*?)\r?\n---/.exec(getSource());
 					if (!fm) return null;

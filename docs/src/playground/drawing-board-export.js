@@ -88,8 +88,37 @@ function download(blob, filename) {
 }
 
 // ── Markdown ────────────────────────────────────────────────────────────────
-export function exportMarkdown(source, name) {
-	download(new Blob([source], { type: 'text/markdown;charset=utf-8' }), safeName(name) + '.md');
+// Self-contained embed for a Workbench *library* theme (export bridge — see
+// engineering/decisions/2026-06-11-workbench-export-bridge.md). A library theme
+// isn't registered in marp.config.js themeSet, so a bare `theme:<name>` directive
+// renders palette-less for a CLI consumer. We keep the directive (a Drawing Board
+// re-import resolves the theme by name) AND inline the saved CSS — which already
+// carries `@import 'lattice';` — as a Marp global <style> right after the front
+// matter, so a lattice-configured marp-cli run styles correctly off the block
+// even when the directive name is unknown to it. Pure + DOM-free → unit-tested.
+// `theme` is { name, css } for a library theme, or null/undefined for a built-in
+// (whose `theme:` resolves from themeSet — nothing to embed).
+export function embedThemeInMarkdown(source, theme) {
+	const src = String(source || '');
+	if (!theme?.css) return src;
+	const block =
+		'<style>\n' +
+		'/* Lattice Workbench — embedded theme "' +
+		String(theme.name || 'theme') +
+		'" (self-contained: this deck keeps its palette\n' +
+		'   even where the theme is not installed). Generated on export. */\n' +
+		String(theme.css).trim() +
+		'\n</style>\n';
+	// Place the block just after the front matter (or at the top if there is none),
+	// blank-line-separated so it reads as its own Marp directive scope.
+	const fm = /^(---[ \t]*\r?\n[\s\S]*?\r?\n---[ \t]*(?:\r?\n|$))/.exec(src);
+	if (fm) return src.slice(0, fm[0].length) + '\n' + block + '\n' + src.slice(fm[0].length);
+	return block + '\n' + src;
+}
+
+export function exportMarkdown(source, name, theme) {
+	const md = embedThemeInMarkdown(source, theme);
+	download(new Blob([md], { type: 'text/markdown;charset=utf-8' }), safeName(name) + '.md');
 }
 
 async function sectionsOf(frame) {
