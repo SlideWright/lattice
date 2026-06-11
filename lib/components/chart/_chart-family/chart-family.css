@@ -239,7 +239,23 @@ section.chart-frame {
   --chart-fill-top-l: 20%;     --chart-fill-top-d: 48%;
   --chart-fill-bottom-l: 38%;  --chart-fill-bottom-d: 64%;
   --chart-fill-edge: 38%;
-  --chart-fill-accent: 4px;
+  --chart-fill-accent: clamp(4px, 0.31cqi, 7px);
+
+  /* ── RESOLUTION-STABLE LINE WEIGHTS ────────────────────────────────────────
+   * Lattice renders the slide DOM at its NATIVE pixel size (HD 1280 … 4K 3840),
+   * so cqi tracks real pixels but a fixed `1px` border stays 1px and visually
+   * thins toward nothing as resolution climbs (#180). These tokens give every
+   * chart border/rule/accent ONE weight that floors crisp and caps tight:
+   *   clamp(<legacy px>, <cqi>, <cap>)
+   * The floor equals the legacy px and the cqi term sits just under it at HD
+   * (0.078cqi = 1.0px @HD), so clamp returns the floor and HD output is
+   * byte-identical — no gallery churn. Above HD the cqi term lifts the weight
+   * until the cap (a "tight" ~2× ceiling, not the 3× a pure-cqi line would hit),
+   * so a hairline never thickens into a bar at 4K/10K. Swatch/coordinate px
+   * inside SVG viewBoxes are NOT line weights — they scale with the SVG and stay
+   * untouched. */
+  --chart-hairline: clamp(1px, 0.078cqi, 2px);   /* 1px borders, rules, separators */
+  --chart-accent-lg: clamp(6px, 0.46cqi, 9px);   /* heavy accent stripe (roadmap milestone) */
 }
 
 section.chart-frame .chart-header {
@@ -264,7 +280,7 @@ section.chart-frame .chart-header::after {
   bottom: 0;
   transform: translateX(-50%);
   width: 7.5cqi;
-  height: 1px;
+  height: var(--chart-hairline);
   background: color-mix(in oklab, var(--accent) 50%, transparent);
 }
 
@@ -381,7 +397,7 @@ section.chart-frame.canvas:not(.state-chart) .chart-body {
       color-mix(in oklab, white 13%, transparent) 0%,
       color-mix(in oklab, white 5%, transparent) 100%));
   /* The glass EDGE: a faint cool hairline on light, a luminous edge on dark. */
-  border: 1px solid light-dark(
+  border: var(--chart-hairline) solid light-dark(
     color-mix(in oklab, var(--text-heading) 10%, transparent),
     color-mix(in oklab, white 14%, transparent));
   /* Apple-squircle-ish corner — larger, continuous-feeling radius. */
@@ -417,7 +433,7 @@ section.chart-frame .chart-caption::before {
   content: '';
   display: block;
   width: 7.5cqi;
-  height: 1px;
+  height: var(--chart-hairline);
   margin: 0 auto var(--sp-sm);
   background: color-mix(in oklab, var(--border) 90%, transparent);
 }
@@ -451,7 +467,7 @@ section.chart-frame .chart-status {
   background: linear-gradient(180deg,
     light-dark(color-mix(in oklab, var(--pill-hue) 33%, var(--bg)), color-mix(in oklab, var(--pill-hue) 48%, black)) 0%,
     light-dark(color-mix(in oklab, var(--pill-hue) 54%, var(--bg)), color-mix(in oklab, var(--pill-hue) 64%, black)) 100%);
-  border: 1px solid var(--pill-ink);
+  border: var(--chart-hairline) solid var(--pill-ink);
   color: var(--text-heading);
 }
 /* One rule per status — canvas-aware --state-* tokens, no `.dark` overrides. */
@@ -516,7 +532,7 @@ section.chart-frame {
   --chart-legend-pad: var(--sp-xl);      /* fixed spine→key gap (consistent)     */
   --chart-legend-row-gap: 1cqi;          /* vertical rhythm between legend rows  */
   --chart-spine-h: 78%;                  /* spine height — % of body, never spills */
-  --chart-spine-w: 2px;                  /* spine thickness                      */
+  --chart-spine-w: clamp(2px, 0.156cqi, 4px); /* spine thickness (res-stable)    */
   /* The spine gradient — a pure accent fade that melts into the canvas at both
    * ends, so it reads as an intentional rule and not a hard divider. Mixing the
    * accent with TRANSPARENT (not --border) keeps it a clean tinted line on
@@ -704,7 +720,7 @@ section.chart-frame.cover .chart-header h2 {
     color-mix(in oklab, var(--text-heading) 15%, var(--bg)) 0%,
     color-mix(in oklab, var(--text-heading) 8%, var(--bg)) 55%,
     color-mix(in oklab, var(--text-heading) 5%, var(--bg)) 100%);
-  border-top: 1px solid color-mix(in oklab, var(--text-heading) 13%, transparent);
+  border-top: var(--chart-hairline) solid color-mix(in oklab, var(--text-heading) 13%, transparent);
   color: var(--text-heading);
   font-family: var(--font-display);
   font-size: var(--fs-h3);

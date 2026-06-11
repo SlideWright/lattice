@@ -159,11 +159,19 @@ describe('lattice-engine: css emission (P1.1)', () => {
     assert.match(s, /@media print/);
   });
 
+  test('scaffold scopes the slide box to div.marpit > section (Marpit geometry specificity)', () => {
+    const s = scaffold({ width: '1280px', height: '720px' });
+    // Bare `section` (0,0,1) would lose @size to a preview frame's `.marpit >
+    // section { width }` (0,1,1); marp's `div.marpit > section` (0,1,2) wins, so
+    // ours must too or the slide collapses to the frame's size.
+    assert.match(s, /div\.marpit > section\s*\{[^}]*container-type:\s*size/);
+    assert.doesNotMatch(s, /^section\s*\{/m); // no UNscoped section box at a line start
+  });
+
   test('scaffold carries NONE of marp-core’s baggage', () => {
     const s = scaffold({ width: '1280px', height: '720px' });
     assert.doesNotMatch(s, /marp-h1/);
     assert.doesNotMatch(s, /data-marp-twemoji/);
-    assert.doesNotMatch(s, /div\.marpit\s*>/);
     assert.doesNotMatch(s, /scroll-snap-align/);
     assert.doesNotMatch(s, /webkit-media-controls/);
     assert.doesNotMatch(s, /padding:\s*inherit/); // the rule that forced !important
@@ -196,12 +204,44 @@ describe('lattice-engine: css emission (P1.1)', () => {
   // (as Marpit's pack does), or cqi-valued tokens declared there resolve against
   // the viewport — fine on desktop Chromium, collapsed on mobile WebKit. See the
   // rootToSection note in lib/engine/css.js.
-  test('relocates :root token blocks onto :where(section) (mobile-cqi fix)', () => {
+  test('relocates :root token blocks onto :where(section):not([\\20 root]) — mobile-cqi fix, preserving (0,1,0) specificity', () => {
     const ROOTY = "/* @theme cuoio */\n@import 'lattice';\n:root { --sp-md: 1.875cqi; }\n:root, section { --fs-body: 2cqi; }";
     const out = composeCss({ themeCss: ROOTY, baseLatticeCss: BASE });
-    // the cqi token is now owned by a section selector, not bare :root
+    // the cqi token is owned by a section selector, not bare :root …
     assert.match(out, /:where\(section\)[^{]*\{[^}]*--sp-md:\s*1\.875cqi/);
     assert.doesNotMatch(out, /(^|[\s,}]):root\s*\{[^}]*--sp-md/m); // no bare :root carrying it
+    // … AND it carries Marpit's `:not([\20 root])` specificity guard, so the real
+    // tokens (0,1,0) still beat lattice.css's `:where(:root)` fallbacks (0,0,0).
+    // Bare `:where(section)` (0,0,0) was the cascade slip behind the mobile bug.
+    assert.match(out, /:where\(section\):not\(\[\\20 root\]\)\s*\{[^}]*--sp-md:\s*1\.875cqi/);
+  });
+
+  test('packs theme selectors under the slide container (Marpit prepend), keeping body live-but-scoped', () => {
+    const THEME =
+      "/* @theme cuoio */\n@import 'lattice';\nsection.foo { color: red; }\n.bar { color: blue; }\nbody { counter-reset: n; }";
+    const out = composeCss({ themeCss: THEME, baseLatticeCss: BASE });
+    // a section-leading selector → div.marpit > section.foo (the slide), not a descendant
+    assert.match(out, /div\.marpit > section\.foo\s*\{[^}]*color:\s*red/);
+    // a bare class → descendant of the slide (still matches in-slide content)
+    assert.match(out, /div\.marpit > section \.bar\s*\{[^}]*color:\s*blue/);
+    // `body` becomes the dead `div.marpit > section body` so counters fall back to
+    // the implicit root reset — matching marp (the "dropped counters" fix).
+    assert.match(out, /div\.marpit > section body\s*\{[^}]*counter-reset:\s*n/);
+  });
+
+  test('comments out non-pagination ::after content (Marpit pagination plugin)', () => {
+    const THEME =
+      "/* @theme cuoio */\n@import 'lattice';\n" +
+      "section.num::after { content: counter(c); color: red; }\n" +
+      "section.page::after { content: attr(data-marpit-pagination); }\n" +
+      "section.tag::before { content: 'DRAFT'; }";
+    const out = composeCss({ themeCss: THEME, baseLatticeCss: BASE });
+    assert.match(out, /\/\* content: counter\(c\); \*\//); // masked: commented, not deleted
+    const live = out.replace(/\/\*[\s\S]*?\*\//g, ''); // strip comments → only live decls remain
+    assert.doesNotMatch(live, /content:\s*counter\(c\)/); // no live numbered ::after content
+    assert.match(out, /color:\s*red/); // sibling decls survive
+    assert.match(out, /content:\s*attr\(data-marpit-pagination\)/); // the page number is kept
+    assert.match(out, /content:\s*'DRAFT'/); // ::before content is untouched (not a pagination target)
   });
 
   test('inlines the base exactly once (a prose @import in a comment is ignored)', () => {
@@ -233,4 +273,53 @@ describe('lattice-engine: structural parity vs marp-core', () => {
       }
     });
   }
+});
+
+// The owned CSS emitter's mobile-WebKit regressions (collapsed cqi, dropped
+// counters) are INVISIBLE to the headless-Chromium pixel gates — they live in the
+// CSS cascade, not the rendered frame. So we gate the emitter at the RULE level:
+// pack the REAL dist/lattice.css through both the engine and marp-core, then assert
+// the three load-bearing pack behaviours match exactly. Rule-level parity ⇒
+// browser-independent ⇒ catches the bug class the pixel harness cannot.
+describe('lattice-engine: CSS-pack parity vs marp-core (load-bearing rules)', () => {
+  const LATTICE = fs.readFileSync(path.join(ROOT, 'dist/lattice.css'), 'utf8');
+  const PALETTE = fs.readFileSync(path.join(ROOT, 'themes/indaco.css'), 'utf8');
+  const enginePack = composeCss({ themeCss: PALETTE, baseLatticeCss: LATTICE });
+  const marpPack = (() => {
+    const m = new Marp({ html: true, math: 'katex', minifyCSS: false, script: false, inlineSVG: false });
+    m.themeSet.add(LATTICE);
+    m.themeSet.add(PALETTE);
+    return m.render('<!-- theme: indaco -->\n# x\n').css;
+  })();
+  const strip = (css) => css.replace(/\/\*[\s\S]*?\*\//g, '');
+  // The selector block that declares the first match of `re` (e.g. a token).
+  const declaringSelector = (css, re) => {
+    const c = strip(css);
+    const m = re.exec(c);
+    if (!m) return null;
+    const open = c.lastIndexOf('{', m.index);
+    return c.slice(c.lastIndexOf('}', open) + 1, open).trim().replace(/\s+/g, ' ');
+  };
+
+  test('cqi tokens carry the same specificity-preserving selector in both engines', () => {
+    for (const re of [/--sp-md:/, /--sp-lg:/, /--radius-md:/]) {
+      const e = declaringSelector(enginePack, re);
+      const m = declaringSelector(marpPack, re);
+      assert.ok(e && /:where\(section\):not\(\[\\20 root\]\)/.test(e), `engine ${re} on "${e}"`);
+      assert.equal(e, m, `${re} selector parity`); // identical, incl. the (0,1,0) guard
+    }
+  });
+
+  test('divider/closing counters reset on the same dead selector in both engines', () => {
+    const re = /counter-reset:\s*lat-divider/;
+    const e = declaringSelector(enginePack, re);
+    assert.equal(e, declaringSelector(marpPack, re));
+    assert.match(e, /section body$/); // dead → implicit root reset, exactly as marp
+  });
+
+  test('neither engine emits live non-pagination ::after content', () => {
+    const live = (css) => /content:\s*counter\(lat-/.test(strip(css));
+    assert.equal(live(enginePack), false);
+    assert.equal(live(marpPack), false);
+  });
 });

@@ -112,6 +112,29 @@ function readIfExists(rel) {
   return fs.readFileSync(abs, 'utf8').replace(/\s+$/, '') + '\n';
 }
 
+// KaTeX base stylesheet — the math-glyph layout engine CSS. Unlike the other
+// integrations (highlight-js, mermaid), whose lib/integrations/<name>/<name>.css
+// is a hand-authored token map, KaTeX's base is the package's own ~720-selector
+// layout sheet, so we vendor it from the installed `katex` package at build time
+// (auto-synced — no stale committed blob) and rewrite its relative `fonts/` URLs
+// to the pinned jsDelivr CDN, exactly as marp-core does, so the woff2 glyph fonts
+// resolve in the browser / srcdoc. Bundling it into dist/lattice.css is what lets
+// the owned CSS emitter ship math styling itself instead of borrowing marp-core's
+// injected copy. See lib/integrations/katex/katex.docs.md.
+function katexBaseCss() {
+  let cssPath;
+  let version;
+  try {
+    cssPath = require.resolve('katex/dist/katex.min.css');
+    version = require('katex/package.json').version;
+  } catch (_e) {
+    return null; // katex not installed — math degrades to unstyled glyphs
+  }
+  const cdn = `https://cdn.jsdelivr.net/npm/katex@${version}/dist`;
+  const raw = fs.readFileSync(cssPath, 'utf8').replace(/\s+$/, '');
+  return `${raw.replace(/url\(\s*(['"]?)fonts\//g, `url($1${cdn}/fonts/`)}\n`;
+}
+
 // Walk lib/components/ for per-component <name>.styles.css files. Tolerates
 // three shapes during the Phase 3 disk-reorg migration:
 //   1. Flat per-component:  lib/components/<name>/<name>.styles.css
@@ -189,6 +212,14 @@ function bundle() {
       parts.push(`/* === ${rel} === */`);
       parts.push(text);
     }
+  }
+  // KaTeX base layout sheet (vendored from the package). Early, before
+  // components/modifiers, so lattice's own KaTeX tweaks (base.modifiers.css)
+  // override the package defaults at source order.
+  const katex = katexBaseCss();
+  if (katex) {
+    parts.push('/* === KaTeX base stylesheet — vendored from the katex package, fonts → jsDelivr CDN === */');
+    parts.push(katex);
   }
   // Declare the cascade once for the whole bundle (reserved for future
   // use — see file header for why @layer is inactive today).

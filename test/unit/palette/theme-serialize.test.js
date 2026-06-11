@@ -11,7 +11,7 @@ const { test, describe } = require('node:test');
 const assert = require('node:assert/strict');
 
 const { deriveTheme, requiredTokenList } = require('../../../lib/theme/derive.js');
-const { serializeTheme } = require('../../../lib/theme/serialize.js');
+const { serializeTheme, themeAsset } = require('../../../lib/theme/serialize.js');
 const { auditVars } = require('../../../lib/theme/contrast.js');
 const { STARTERS } = require('../../../lib/theme/starters.js');
 
@@ -66,4 +66,23 @@ describe('theme-serialize', () => {
       }
     });
   }
+
+  describe('themeAsset', () => {
+    test('shapes a library-scoped kind:theme record carrying css + essentials', () => {
+      const essentials = STARTERS[0].essentials;
+      const css = serializeTheme(deriveTheme(essentials), { name: 'dusk' });
+      const a = themeAsset({ name: 'dusk', label: 'Dusk', essentials, css });
+      assert.equal(a.kind, 'theme');
+      assert.equal(a.name, 'dusk');
+      assert.equal(a.label, 'Dusk');
+      assert.equal(a.deckId, null);
+      assert.equal(a.provenance, 'studio');
+      assert.equal(a.text, css);
+      assert.equal(a.essentials, essentials);
+      assert.equal(typeof a.addedAt, 'number');
+    });
+    test('throws on a non-slug name', () => {
+      assert.throws(() => themeAsset({ name: 'Bad Name', css: 'x' }), /slug/);
+    });
+  });
 });

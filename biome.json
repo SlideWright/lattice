@@ -11,6 +11,7 @@
       "!dist",
       "!docs/public/playground/lattice-playground.js",
       "!docs/src/playground/theme-core.generated.js",
+      "!docs/src/playground/layout-core.generated.js",
       "!**/*.min.js",
       "!mermaid-v11.min.js",
       "!examples/**/*.json",

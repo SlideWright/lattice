@@ -91,6 +91,15 @@ pre-commit:
         - 'lib/theme/**/*.js'
         - 'tools/build-theme-core.js'
       run: npm run theme-core:check --silent
+    - name: layout-core-bundle-freshness
+      # Form-layer sibling of theme-core-bundle-freshness: catches "edited
+      # lib/layout/*, forgot to rebuild docs/src/playground/layout-core.generated.js"
+      # (the Workbench's Layout Studio imports it). Same cheap esbuild
+      # rebuild-to-buffer + byte-diff via npm run layout-core:check.
+      glob:
+        - 'lib/layout/**/*.js'
+        - 'tools/build-layout-core.js'
+      run: npm run layout-core:check --silent
     - name: dist-readme-freshness
       # Catches "changed which files dist/ ships (or their descriptions),
       # forgot to regenerate dist/README.md". The README indexes dist/

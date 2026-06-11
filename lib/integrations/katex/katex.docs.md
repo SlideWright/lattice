@@ -7,9 +7,13 @@ Primary consumer: the `math` component.
 **External dep:** `katex` (declared directly in `package.json` — not
 transitive).
 
-**This folder has no CSS file** because KaTeX ships its own
-(`node_modules/katex/dist/katex.min.css`) which Lattice embeds at
-render time rather than re-authoring. See "CSS handoff" below.
+**This folder has no hand-authored CSS file** because KaTeX ships its own
+~720-selector layout sheet (`node_modules/katex/dist/katex.min.css`), which
+Lattice vendors from the package at build time rather than re-authoring.
+`tools/build-css.js` reads it, rewrites the relative `fonts/` URLs to the
+pinned jsDelivr CDN (exactly as marp-core does), and bundles it into
+`dist/lattice.css` — so the owned CSS emitter ships math styling itself, with
+no marp-core dependency. See "CSS handoff" below.
 
 ---
 
@@ -38,9 +42,22 @@ output — KaTeX is deterministic given the same input.
 
 ## CSS handoff
 
-KaTeX's CSS defines `~80` selectors for math glyph spacing, fraction
-bars, radicals, matrices, etc. Lattice doesn't override any of them —
-KaTeX's typography is the math typography. Lattice's font tokens
+KaTeX's base sheet defines ~720 selectors for math glyph spacing, fraction
+bars, radicals, matrices, etc. It reaches a rendered deck three ways, all
+equivalent:
+
+- **Owned engine / `dist/lattice.css`** — `tools/build-css.js` bundles the
+  CDN-rewritten base into the engine sheet (before components, so Lattice's
+  tweaks win on source order). This is what un-blocks the owned CSS emitter.
+- **marp-cli / emulator (PDF)** — `lattice-emulator.js` links the local
+  `katex.min.css` into the export HTML (`--allow-local-files`).
+- **marp-core path** — marp injects its own copy via its `math` option.
+  During the marp→owned transition both copies coexist in the marp path;
+  they are byte-equivalent (same pinned version, same CDN), so the duplicate
+  is inert and disappears once marp is removed.
+
+Lattice doesn't override the base layout — KaTeX's typography is the math
+typography. Lattice's font tokens
 override the math font family (KaTeX's default `KaTeX_Main` is
 preserved for actual glyphs; surrounding prose uses Lattice's
 `--font-body`).

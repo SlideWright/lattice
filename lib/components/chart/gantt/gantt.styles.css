@@ -62,7 +62,7 @@ section.gantt.chart-frame .chart-body {
                color-mix(in oklab, var(--fill-hue) var(--chart-fill-top-d),    black)) 0%,
     light-dark(color-mix(in oklab, var(--fill-hue) var(--chart-fill-bottom-l), var(--bg)),
                color-mix(in oklab, var(--fill-hue) var(--chart-fill-bottom-d), black)) 100%);
-  border: 1px solid var(--fill-ink);
+  border: var(--chart-hairline) solid var(--fill-ink);
 }
 /* Per-status fill — the SAME pairs the bars use, shared so a chip can never
  * drift from its bar. */
@@ -97,7 +97,7 @@ section .taskTextOutsideLeft, section .taskTextOutsideRight { fill: var(--text-h
   align-items: center;
   padding-bottom: var(--sp-xs);
   margin-bottom: 0.3125cqi;
-  border-bottom: 1px solid var(--chart-rule);
+  border-bottom: var(--chart-hairline) solid var(--chart-rule);
 }
 
 .gantt-axis-spacer {
@@ -126,7 +126,7 @@ section .taskTextOutsideLeft, section .taskTextOutsideRight { fill: var(--text-h
   flex-direction: row;
   align-items: center;
   min-height: 3.90625cqi;
-  border-bottom: 1px solid color-mix(in oklab, var(--border) 50%, transparent);
+  border-bottom: var(--chart-hairline) solid color-mix(in oklab, var(--border) 50%, transparent);
 }
 .gantt-lane:last-child { border-bottom: none; }
 
@@ -187,7 +187,7 @@ section .taskTextOutsideLeft, section .taskTextOutsideRight { fill: var(--text-h
                color-mix(in oklab, var(--fill-hue) var(--chart-fill-top-d),    black)) 0%,
     light-dark(color-mix(in oklab, var(--fill-hue) var(--chart-fill-bottom-l), var(--bg)),
                color-mix(in oklab, var(--fill-hue) var(--chart-fill-bottom-d), black)) 100%);
-  border: 1px solid color-mix(in oklab, var(--fill-hue) var(--chart-fill-edge), var(--border));
+  border: var(--chart-hairline) solid color-mix(in oklab, var(--fill-hue) var(--chart-fill-edge), var(--border));
   border-left: var(--chart-fill-accent) solid var(--fill-ink);
   color: var(--text-heading);
   font-family: var(--font-body);

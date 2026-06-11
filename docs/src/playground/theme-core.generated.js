@@ -589,7 +589,23 @@ ${SIZE_BLOCK}
       return `${blocks.join("\n\n")}
 `;
     }
-    module.exports = { serializeTheme: serializeTheme2 };
+    function themeAsset2({ name, label, essentials, css } = {}, { id, deckId = null, provenance = "studio" } = {}) {
+      if (!name || !/^[a-z][a-z0-9-]*$/.test(name)) {
+        throw new Error(`theme name must be a lowercase slug, got: ${name}`);
+      }
+      return {
+        ...id ? { id } : {},
+        deckId,
+        kind: "theme",
+        name,
+        label: label || name,
+        text: String(css || ""),
+        essentials: essentials || null,
+        provenance,
+        addedAt: Date.now()
+      };
+    }
+    module.exports = { serializeTheme: serializeTheme2, themeAsset: themeAsset2 };
   }
 });
 
@@ -805,7 +821,7 @@ var {
   DEEP_L
 } = import_derive.default;
 var { resolveVars, contractPairs, contentPairs, auditVars, auditBoth, meter } = import_contrast.default;
-var { serializeTheme } = import_serialize.default;
+var { serializeTheme, themeAsset } = import_serialize.default;
 var { STARTERS, getStarter } = import_starters.default;
 var { ASK_SYSTEM, askMessages, coerceEssentials } = import_ai.default;
 export {
@@ -841,6 +857,7 @@ export {
   rgbToHex,
   rotateHue,
   serializeTheme,
+  themeAsset,
   validateEssentials,
   withChroma,
   withLightness

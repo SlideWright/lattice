@@ -83,7 +83,7 @@ section.kanban.chart-frame .chart-body {
                color-mix(in oklab, var(--fill-hue) var(--chart-fill-top-d),    black)) 0%,
     light-dark(color-mix(in oklab, var(--fill-hue) var(--chart-fill-bottom-l), var(--bg)),
                color-mix(in oklab, var(--fill-hue) var(--chart-fill-bottom-d), black)) 100%);
-  border: 1px solid color-mix(in oklab, var(--fill-hue) var(--chart-fill-edge), var(--border));
+  border: var(--chart-hairline) solid color-mix(in oklab, var(--fill-hue) var(--chart-fill-edge), var(--border));
   border-left: var(--chart-fill-accent) solid var(--fill-ink);
   border-radius: 0.46875cqi;
   padding: 0.703125cqi var(--sp-sm);
@@ -129,7 +129,7 @@ section.kanban.chart-frame .chart-body {
   justify-content: center;
   width: 1.71875cqi; height: 1.5625cqi;
   border-radius: 0.3125cqi;
-  border: 1px solid var(--border);
+  border: var(--chart-hairline) solid var(--border);
   background: var(--bg);
   font-family: var(--font-mono);
   font-size: var(--fs-meta);

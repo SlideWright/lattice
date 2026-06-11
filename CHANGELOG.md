@@ -27,8 +27,19 @@ in patch versions.
 
 ### Added
 
-- **Drawing Board — Deck setup drawer.** A new config button beside the settings
-  chip opens a slide-in drawer for the deck's Marp front matter: theme, slide size
+- **Playground — "Load a deck" drawer.** The playground's ⚙ insert menu is now a
+  slide-in **Galleries** drawer (a labeled grid-icon button, not a gear, so its
+  function reads as "browse + load a full deck"). It lists the repo's showcase
+  decks — **Jargon** and the **Design system** tour under *Showcases*, plus one
+  survey deck per component family (Anchors → Legal) under *By family* — each
+  with a slide count. Picking one drops the whole deck into the editor and renders
+  it live in the chosen palette. The demoted per-component scaffold actions (reset
+  to example / blank skeleton) move into the drawer's *This component* section.
+  Local image assets in the loaded decks are inlined as data URIs at build time so
+  they render in the sandboxed preview. Docs-site only.
+- **Drawing Board — Deck setup drawer.** A new config button in the editor toolbar
+  (beside Export — front matter is a document-level setting) opens a slide-in
+  drawer for the deck's Marp front matter: theme, slide size
   (16:9 / 4K / 4:3), page numbers, running header & footer, plus a default slide
   class, math renderer (KaTeX / MathJax), and document language. The controls are
   pre-filled from the deck's current front matter and write a managed `---` block
@@ -44,6 +55,27 @@ in patch versions.
   palette propagates — an unknown/typo theme is left in the source but never
   applied (the deck can't render unstyled), with a caution note in the drawer. The
   deck's theme now travels with an exported `.md`.
+- **`lattice-engine` owned CSS emitter, opt-in via `?css=engine`.** The owned
+  engine can now emit its own theme-packed stylesheet instead of borrowing
+  marp-core's packer — the last marp dependency on the playground/Drawing Board
+  path. The emitter (`lib/engine/css.js`) faithfully mirrors Marpit's pack
+  pipeline (root-replace + the `:not([\20 root])` specificity guard, slide-scoping
+  prepend, `::after` pagination-content masking) so the cascade is byte-equivalent
+  on the load-bearing rules — closing the mobile-WebKit regressions (collapsed cqi
+  spacing, dropped CSS counters) that shelved the earlier P1.1 emitter. Gated by a
+  new browser-independent CSS-pack parity test vs marp-core and by full desktop
+  pixel parity across the 89pp baseline gallery + the full 65-gallery component
+  corpus (`tools/engine-parity.mjs --own-css`). The owned sheet is ~43% smaller
+  than marp's pack (drops twemoji / `marp-h1` auto-scaling / scroll-snap baggage)
+  and the owned `composeCss` is ~7× faster than marp's packer, cutting the full
+  playground render path to ~2.6× faster than marp. Default stays on marp's packer
+  pending a real-device check; `?css=engine` (implies `?engine=lattice`) opts in.
+- **`dist/lattice.css` now bundles the KaTeX base stylesheet.** `tools/build-css.js`
+  vendors KaTeX's layout sheet from the installed `katex` package (font URLs
+  rewritten to the pinned jsDelivr CDN, as marp-core does) into the engine bundle,
+  so math glyphs are styled by `dist/lattice.css` alone — no marp-core injection
+  required. This is what lets the owned CSS emitter reach math parity; it also
+  means any drop-in `dist/lattice.css` consumer now renders `$…$` math correctly.
 
 ### Fixed
 
@@ -65,6 +97,19 @@ in patch versions.
   wired into the integration tier) renders a fixture at HD and 4K and asserts
   each chart SVG scales, catching any future fixed-px cap. First step of the
   chart responsiveness epic (#180).
+- **Chart borders, rules, and accent stripes now hold their weight at any
+  resolution.** Every chart hairline was a fixed `1px` (and the spine `2px`,
+  fill/phase accents `4px`/`6px`) — pinned px that visually thin toward nothing
+  as the native render resolution climbs (a `1px` rule at 4K is a third the
+  relative weight it has at HD). They now route through resolution-stable line
+  tokens — `--chart-hairline`, `--chart-spine-w`, `--chart-fill-accent`,
+  `--chart-accent-lg` — each a `clamp(<legacy px>, <cqi>, <cap>)` that floors at
+  the legacy px (so HD output is byte-identical, no gallery churn) and grows to a
+  tight ~2× cap above HD (a hairline never thickens into a bar at 4K/10K). Applies
+  family-wide across gantt, kanban, progress, roadmap, map, piechart, quadrant,
+  timeline-list, and the shared chart frame. Second step of #180; journey's
+  decorative band/curve strokes (a proportional, not hairline, treatment) and the
+  state-chart / word-cloud rebuilds remain tracked there.
 - **`lattice-engine` pagination now counts like marp-core.** A `paginate: false`
   slide is still counted toward the page numbering, so the next slide reads its
   true absolute position and the total reflects the whole deck (the engine had
@@ -166,6 +211,29 @@ in patch versions.
 
   Docs-site feature + additive engine module — no change to existing layouts,
   themes, or the render path.
+- **The Workbench — Layout Studio (Faculty 2, CSS-only).** A second faculty on
+  `/workbench` (a faculty switch in the header — Theme Studio ⇄ Layout Studio):
+  author a CSS-only local *component* — palette-blind CSS scoped to its own
+  `_class`, plus a manifest and a skeleton — and watch it rendered live and held
+  to the engine's own invariants by a deterministic gate (tokens-only, `.<name>`
+  selector scoping, manifest/skeleton coherence). Backed by a new pure engine
+  module **`lib/layout/`** (`gate`, `scaffold`, `starters`): the SAME gates the
+  unit tests run, bundled to the browser. Copy the CSS/manifest or download a
+  graduation scaffold (`<name>.{manifest.json,styles.css,skeleton.md}` in the
+  engine's own `lib/components/<bucket>/<name>/` folder shape). Browser-scoped
+  for now. Docs-site feature + additive engine module — no change to existing
+  layouts, themes, or the render path.
+- **The Workbench — a saved-asset library (IndexedDB).** Both studios gain a
+  **Library**: “Save current” persists the work as an asset record
+  (`kind:'theme'` / `kind:'component'`), and saved assets load back for editing
+  or delete — your crafted themes and components survive a reload. A first slice
+  of the asset model (`2026-06-09-drawing-board-asset-import.md`): a dedicated
+  `lattice-workbench` IndexedDB store, kept separate from the Drawing Board's DB
+  so a first asset slice can't perturb its schema. The record SHAPES are the
+  pure, unit-tested repo core (`themeAsset` in `lib/theme/serialize.js`,
+  `componentAsset` in `lib/layout/scaffold.js`). Cross-surface reuse (the
+  Drawing Board consuming library themes; deck-export materialization across all
+  three render paths) is the next slice — the export bridge. Docs-site only.
 
 ### Changed
 
