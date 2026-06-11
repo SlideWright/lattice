@@ -30,7 +30,7 @@
     },
     {
       "title": "Weight is approximate, not exact",
-      "body": "Word size encodes relative frequency or weight, but the eye reads 'biggest' and 'second biggest' before any precise ratio. Reach for word-cloud when the rank matters more than the count."
+      "body": "Word size encodes relative frequency or weight, but the eye reads 'biggest' and 'second biggest' before any precise ratio. Reach for word-cloud when the rank matters more than the count. A 'size = frequency' key sits in the right rail to make the encoding explicit."
     },
     {
       "title": "Eight to twenty items",
