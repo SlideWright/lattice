@@ -341,7 +341,9 @@ in patch versions.
   **bottom-centre status key** (✓ shipped · – in flight · ○ planned · ╱ out of
   scope) for the marker states actually present, so an emailed deck reader can
   decode the symbols; it is omitted on the `status` variant (already labelled
-  per-cell) and `horizons` (its cards carry Now/Next/Later framing). New
+  per-cell) and `horizons` (its cards carry Now/Next/Later framing). And
+  `journey` — a wide board — moves its actor + mood keys from the top-left to
+  **bottom-centre** and centres the diagram vertically (all five variants). New
   `--chart-legend-*` / `--chart-spine-*` tokens on `section.chart-frame` are the
   override hooks. See `engineering/decisions/2026-06-11-chart-legend-system.md`
   and the demo deck `examples/chart-legends.md`.

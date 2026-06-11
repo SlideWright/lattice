@@ -36,10 +36,15 @@ dictates placement.
 - `piechart` (wedge ↔ category), `radar` (polygon ↔ series),
   `map` (region ↔ value), `quadrant·cohort` (hull ↔ cohort).
 
-**Wide symbol grid → bottom-centre key:**
+**Wide diagram → bottom-centre key:**
 - `roadmap` — cells encode by symbol (✓ shipped · – in flight · ○ planned ·
   ╱ out of scope). A right rail would crowd a full-width grid, so the key
   sits bottom-centre (accessibility best practice for wide visuals).
+- `journey` — a wide board (sections + tasks + timeline + mood band across
+  the full width). Its actor + mood keys previously crowded the top-left and
+  left the board top-heavy; they now sit **bottom-centre**, and the board
+  centres the diagram+key group vertically. CSS-only (the keys are reordered
+  to the foot of the flex column), safe across all five variants.
 
 **Self-labelling → the marks ARE the key (no legend, by design):**
 - `funnel`, `progress`, `gantt`, `kanban`, `timeline-list`, `state-chart` —
@@ -48,10 +53,6 @@ dictates placement.
 - `word-cloud` — size encodes weight; the word is its own label.
 - `quadrant` (default/threshold/trail) — the four quadrant titles are the
   key, printed in-grid.
-
-**Already-keyed, different geometry (left as-is):**
-- `journey` — actor + mood legends key the board from top-left. Its
-  imbalance is *vertical*, a separate concern (see follow-ups).
 
 So "make sure we have legends" is satisfied by guaranteeing every chart that
 encodes by colour or symbol carries a world-class key, while the
@@ -169,6 +170,8 @@ cohort-quadrant + a long-label stress slide + roadmap, light and dark:
 
 ## Follow-ups (deliberately deferred)
 
-- **journey vertical balance** — the board is top-heavy; centring it is a
-  change to journey's own grid, not the rail.
+- **word-cloud size key** — size encodes weight with no scale key; a "size =
+  frequency" note would close it.
+- **gantt status key** — an optional key for the done/at-risk/blocked pills on
+  cold-open emailed decks.
 - **roadmap·horizons key** — would need a density redesign to make room.

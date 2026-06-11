@@ -3213,6 +3213,29 @@ section.journey .journey-mood-key[data-mood="3"] { --mood-color: var(--journey-m
 section.journey .journey-mood-key[data-mood="2"] { --mood-color: var(--journey-mood-2); }
 section.journey .journey-mood-key[data-mood="1"] { --mood-color: var(--journey-mood-1); }
 
+/* ── Key placement: bottom-centre ───────────────────────────────────────────
+ * A journey board is a WIDE diagram, so its actor + mood keys belong at the
+ * BOTTOM-CENTRE (accessibility best practice for a full-width visual), not
+ * crowding the top-left. Reordered to the foot of the flex column and centred;
+ * the board then centres the diagram+key group vertically. Variants whose bands
+ * have a flex-growing plot (curve, swimlane) ignore the centring (the plot
+ * absorbs the free space) but still move their key to the foot. */
+section.journey .journey-board {
+  justify-content: center;
+}
+section.journey .journey-legend,
+section.journey .journey-mood-legend {
+  order: 10;
+  justify-content: center;
+  width: 100%;
+}
+section.journey .journey-legend {
+  margin-top: var(--sp-lg);   /* set the key apart from the diagram above */
+}
+section.journey .journey-mood-legend {
+  margin-top: var(--sp-2xs);  /* the two key rows sit together at the foot */
+}
+
 /* ── Section ribbon ─────────────────────────────────────────────────── */
 section.journey .journey-sections {
   display: grid;
