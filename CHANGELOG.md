@@ -25,6 +25,16 @@ in patch versions.
 
 ## Unreleased
 
+### Changed
+
+- **Playground / Drawing Board now render via the owned `lattice-engine` by
+  default** (HTML + the owned CSS emitter), with marp-core demoted to the
+  `?engine=marp` / `?css=marp` escape hatch and live A/B oracle. The owned path
+  reached full pixel parity with marp-core across the gallery corpus + the 89pp
+  baseline and renders ~2.6× faster. The default `renderEngine` workspace pref and
+  the playground module both flip to `lattice`. marp-core stays bundled for now;
+  removing it is a later phase. (Docs-site only; the PDF/build path is unchanged.)
+
 ### Added
 
 - **Playground — "Load a deck" drawer.** The playground's ⚙ insert menu is now a
