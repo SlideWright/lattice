@@ -12102,6 +12102,24 @@ section.sketch::after {
   font-family: var(--font-label) !important;
 }
 
+/* Plain bullet / number lists take a hand-jotted mark in the felt-tip face.
+ * Scoped to `content` + `split-compare` — the ONLY layouts that re-enable
+ * native markers (base sets `list-style:none` everywhere else). Scoping it
+ * here, not to a bare `ul > li::marker`, is deliberate: setting `content` on
+ * a `list-style:none` row would FORCE a stray marker onto the boxed/ruled row
+ * layouts (list, checklist, actors) and the `::before` counter lists. The
+ * bullet becomes an en-dash (reads as a pen-jotted list mark, and renders
+ * identically in the fallback face); `ol` figures just take the hand. */
+section.sketch.content :is(ul, ol) > li::marker,
+section.sketch.split-compare .option :is(ul, ol) > li::marker {
+  font-family: var(--sketch-font-display);
+  color: var(--accent);
+}
+section.sketch.content ul > li::marker,
+section.sketch.split-compare .option ul > li::marker {
+  content: "\2013\00a0";
+}
+
 /* `sketch-clean-body` — keep the hand headings + boxes, return prose to
  * the clean engine body face. The escape hatch for text-dense slides. */
 section.sketch.sketch-clean-body :is(p, li, td, th, blockquote, figcaption, dt, dd) {

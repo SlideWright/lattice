@@ -361,7 +361,9 @@ in patch versions.
   `section::after`) joins them on the hand label face. The slide's default font
   itself goes hand under `sketch`, so every remaining text node a component
   doesn't explicitly font — emphasis, links, stray prose — is hand too, not just
-  the enumerated elements. Every glyph of prose
+  the enumerated elements. Plain bullet lists (the `content` / `split-compare`
+  layouts) trade the mechanical disc for a hand-jotted en-dash in the felt-tip
+  face. Every glyph of prose
   takes a hand face — including label pills/badges (via the `--pill-font` seam);
   only real inline `code` stays monospace. It is palette-blind —
   every stroke resolves through `var(--token)`, so any theme colours it. Default

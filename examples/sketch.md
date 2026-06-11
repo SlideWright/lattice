@@ -131,6 +131,48 @@ _The finish roughens every line the deck draws itself — and stops at content i
 
 ---
 
+<!-- _class: list -->
+<!-- _footer: "list — bordered rows get the hand box, just like the cards" -->
+
+`The list family, drawn`
+
+## Each point sits in its own sketched box.
+
+- The list layout's rows are bordered cards — so they take the hand box and the offset ink.
+- Checklists ride a left spine; the spine stays its state colour, the corners go hand-drawn.
+- An agenda's row rules ink up like a table's, instead of staying a printer's hairline.
+
+---
+
+<!-- _class: checklist -->
+<!-- _footer: "checklist — the left spine keeps its state hue; corners go hand" -->
+
+`Readiness, by hand`
+
+## Go-live checklist for the sketch finish.
+
+- [x] Tables, blockquotes, and rows take the drawn box
+- [x] Display numerals and labels ride the hand face
+- [x] Pagination, header, and footer go hand
+- [-] Hand-drawn bullet marks, landing now
+- [ ] Hand-drawn chart marks, deferred with the SVG work
+
+---
+
+<!-- _class: agenda -->
+<!-- _footer: "agenda — the row rules ink up; the numerals take the hand" -->
+
+`What the finish now covers`
+
+## Every structure that draws its own line.
+
+1. Cards and the card family — the drawn box with a per-card tilt
+2. Tables and ledgers — a hand frame and inked rules
+3. Blockquotes and bordered rows — hand corners, colours kept
+4. Bullets, labels, and pagination — all on the hand face
+
+---
+
 <!-- _class: closing -->
 <!-- _footer: "theme: carta · class: sketch" -->
 
