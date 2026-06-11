@@ -159,11 +159,19 @@ describe('lattice-engine: css emission (P1.1)', () => {
     assert.match(s, /@media print/);
   });
 
+  test('scaffold scopes the slide box to div.marpit > section (Marpit geometry specificity)', () => {
+    const s = scaffold({ width: '1280px', height: '720px' });
+    // Bare `section` (0,0,1) would lose @size to a preview frame's `.marpit >
+    // section { width }` (0,1,1); marp's `div.marpit > section` (0,1,2) wins, so
+    // ours must too or the slide collapses to the frame's size.
+    assert.match(s, /div\.marpit > section\s*\{[^}]*container-type:\s*size/);
+    assert.doesNotMatch(s, /^section\s*\{/m); // no UNscoped section box at a line start
+  });
+
   test('scaffold carries NONE of marp-core’s baggage', () => {
     const s = scaffold({ width: '1280px', height: '720px' });
     assert.doesNotMatch(s, /marp-h1/);
     assert.doesNotMatch(s, /data-marp-twemoji/);
-    assert.doesNotMatch(s, /div\.marpit\s*>/);
     assert.doesNotMatch(s, /scroll-snap-align/);
     assert.doesNotMatch(s, /webkit-media-controls/);
     assert.doesNotMatch(s, /padding:\s*inherit/); // the rule that forced !important
