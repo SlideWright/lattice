@@ -83,10 +83,15 @@ test/helpers/                 render.js, pdf.js, palette.js
 test/fixtures/                small .md decks for integration
 ```
 
-`tools/engine-parity.mjs` (`npm run parity`) is the standalone visual-parity
-harness — it rasterises every gallery slide through both render engines and
-pixel-diffs them. It is a diagnostic tool, not part of `npm test`; reach for it
-when changing `lib/engine/` to confirm the owned engine still matches marp-core.
+`tools/engine-parity.mjs` (`npm run parity`) is the visual-parity harness — it
+rasterises every gallery slide through both render engines and pixel-diffs them,
+exiting non-zero on any real divergence (the one intentional difference, Marp's
+twemoji `<img>` vs the engine's font-glyph emoji, is skipped per slide). It is
+**a required CI gate** — the `engine-parity` job in `ci.yml` runs
+`npm run parity -- --galleries --jargon` on every code change, so the owned
+engine can't regress against marp-core unseen (it's the safety net for bringing
+the owned CSS emitter back, proposal P5). It is NOT in `npm test` or the pre-push
+hook (too slow for the inner loop); run it locally when changing `lib/engine/`.
 
 Each test file wraps its body in `describe('<file-basename>', () => {…})`
 so TAP output groups by file. Source of truth: `package.json` scripts
