@@ -62,7 +62,7 @@ export const {
 // contrast
 export const { resolveVars, contractPairs, contentPairs, auditVars, auditBoth, meter } = contrast;
 // serialize
-export const { serializeTheme } = serialize;
+export const { serializeTheme, themeAsset } = serialize;
 // starters
 export const { STARTERS, getStarter } = starters;
 // ai (Phase 2 — one prompt builder + reply coercion; the model call is the caller's)

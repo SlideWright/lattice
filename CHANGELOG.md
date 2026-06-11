@@ -202,6 +202,29 @@ in patch versions.
 
   Docs-site feature + additive engine module — no change to existing layouts,
   themes, or the render path.
+- **The Workbench — Layout Studio (Faculty 2, CSS-only).** A second faculty on
+  `/workbench` (a faculty switch in the header — Theme Studio ⇄ Layout Studio):
+  author a CSS-only local *component* — palette-blind CSS scoped to its own
+  `_class`, plus a manifest and a skeleton — and watch it rendered live and held
+  to the engine's own invariants by a deterministic gate (tokens-only, `.<name>`
+  selector scoping, manifest/skeleton coherence). Backed by a new pure engine
+  module **`lib/layout/`** (`gate`, `scaffold`, `starters`): the SAME gates the
+  unit tests run, bundled to the browser. Copy the CSS/manifest or download a
+  graduation scaffold (`<name>.{manifest.json,styles.css,skeleton.md}` in the
+  engine's own `lib/components/<bucket>/<name>/` folder shape). Browser-scoped
+  for now. Docs-site feature + additive engine module — no change to existing
+  layouts, themes, or the render path.
+- **The Workbench — a saved-asset library (IndexedDB).** Both studios gain a
+  **Library**: “Save current” persists the work as an asset record
+  (`kind:'theme'` / `kind:'component'`), and saved assets load back for editing
+  or delete — your crafted themes and components survive a reload. A first slice
+  of the asset model (`2026-06-09-drawing-board-asset-import.md`): a dedicated
+  `lattice-workbench` IndexedDB store, kept separate from the Drawing Board's DB
+  so a first asset slice can't perturb its schema. The record SHAPES are the
+  pure, unit-tested repo core (`themeAsset` in `lib/theme/serialize.js`,
+  `componentAsset` in `lib/layout/scaffold.js`). Cross-surface reuse (the
+  Drawing Board consuming library themes; deck-export materialization across all
+  three render paths) is the next slice — the export bridge. Docs-site only.
 
 ### Changed
 
