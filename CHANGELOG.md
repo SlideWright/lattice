@@ -797,6 +797,31 @@ in patch versions.
 
 ### Fixed
 
+- **`sketch` finish robustness — a slide-by-slide audit of the finish on a
+  full editorial deck fixed a batch of defects.** (1) **Dropped the `1.08em`
+  body bump** — it enlarged every body element AND discarded the compact sizes
+  dense layouts set (`--fs-body-compact`), overrunning fixed content budgets;
+  it was the single biggest source of clipped slides (glossaries, tables).
+  (2) **`--font-body` is now re-pointed as a token** under `sketch` (like
+  `--font-display`/`--font-label`), so components that pin `var(--font-body)` on
+  a nested element (big-number caption, key-insight body) get the hand sans
+  instead of leaking the clean face; `sketch-clean-body` restores it via the new
+  `--font-body-clean` alias. (3) **matrix-2x2 quadrants get the hand box** —
+  the box selectors only matched `> ol > li`, missing the `ul`-based variant.
+  (4) **The generic KEY INSIGHT blockquote** now becomes a drawn box like the
+  cards/quote. (5) **No more synthetic italic on Caveat** — the quote face,
+  which has no italic, was being slanted into a muddy oblique. (6) **Chart-frame
+  slides no longer double-rule the heading** — the straight `.chart-header`
+  hairline is suppressed (the hand wavy underline already draws it).
+  (7) **list-principles dividers** join the wavy-rule family. Genuinely
+  over-budget slides (a 3-card split-panel, a 4-state verdict-grid) still want
+  `sketch-clean-body`; kpi separators + the cuoio dark-accent tone are noted
+  follow-ups.
+- **Inline `code` chips no longer fragment on hyphenated tokens.** `section code`
+  gained `white-space:nowrap`, so an identifier like `--bg-alt` stays on one line
+  instead of breaking to `--`/`bg-`/`alt` inside the chip (worst under the wider
+  hand font, but a latent bug on every deck). Matches the state-pill, which
+  already nowraps.
 - **Committed deck PDFs embed the real fonts, even on a network-less render.**
   The emulator pulled its type from a Google-Fonts `<link>`/`@import`, so a build
   without network (the cloud sandbox, the pre-commit PDF rebuild) embedded a
