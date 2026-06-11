@@ -97,11 +97,13 @@ canvas, not a generic red.
 
 ## Curating a remaining theme — the gold-standard checklist
 
-`cuoio`, `onyx`, and `indaco` are the **curated exemplars** — the quality bar.
-Every other shipped theme (`ardesia`, `atelier`, `brina`, `burgundy`, `carbone`,
-`concrete`, `crepuscolo`, `laguna`, `magnolia`, `mustard`, …) still inherits the
-engine's default Apple-hue spectrum. Bringing one up to standard is the same
-recipe each exemplar followed:
+All 13 shipped themes are now curated to this standard — `cuoio`, `onyx`, and
+`indaco` were the original exemplars and the rest (`ardesia`, `atelier`,
+`brina`, `burgundy`, `carbone`, `concrete`, `crepuscolo`, `laguna`, `magnolia`,
+`mustard`) followed. `test/unit/palette/chart-contrast.test.js` gates every one,
+and `npm run scorecard` grades them. A brand-new theme starts on the engine's
+default Apple-hue spectrum; bring it up to standard with the same recipe each
+of these followed:
 
 1. **Pick the distinguishing axis.** Does the theme have the chroma budget for
    eight well-spaced hues (cuoio, indaco) — or does its identity forbid a
