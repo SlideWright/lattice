@@ -411,8 +411,17 @@ section.roadmap.horizons .horizons {
   display:grid;
   grid-template-columns:repeat(var(--horizon-count, 3), 1fr);
   gap:var(--sp-md);
-  flex:1;
+  /* Size to the cards (not the full body height) so the bottom-centre status
+   * key sits in the freed space below them; the figure centres the stack. */
+  flex:0 1 auto;
   min-height:0;
+}
+section.roadmap.horizons .roadmap-figure {
+  justify-content:center;
+  gap:var(--sp-sm);
+}
+section.roadmap.horizons .roadmap-legend {
+  margin-top:var(--sp-sm);
 }
 section.roadmap.horizons .horizon-card {
   display:flex;
