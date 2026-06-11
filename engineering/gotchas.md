@@ -289,6 +289,34 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
 - **Commits:** documentation-only — captured here so future sessions
   don't conclude the tool is missing.
 
+### A rendered PDF shows serif/fallback type, not the design fonts
+
+- **Symptom:** A committed deck PDF (e.g. `examples/sketch.pdf`) opens
+  with serif headings and a plain sans body — none of the design's
+  Playfair/Outfit, or under `sketch` none of the Caveat/Shantell hand
+  type. It looks the same no matter where you open the PDF.
+- **Cause:** Fonts are embedded into a PDF **at render time**, never
+  fetched when viewed. The engine loads its faces from a Google-Fonts
+  `<link>`/`@import`, which needs the network. A render with no network
+  — the cloud sandbox, the pre-commit PDF rebuild — silently embeds a
+  system fallback instead. The page-count tests don't catch it (font
+  swaps don't change slide count), so the broken PDF ships green. The
+  trap: "open it on a networked device and the fonts resolve" is FALSE
+  — a fallback-font PDF is fallback forever.
+- **Fix:** `lattice-emulator.js` base64-injects the self-hosted woff2 in
+  `assets/fonts/` (Caveat, Shantell Sans, Outfit) as an inline
+  `@font-face` block that wins over the `@import`, and waits on
+  `document.fonts` before `page.pdf()`. So the repo's own renders embed
+  the real type offline. `assets/` is excluded from the npm tarball, so
+  the shipped bin still uses Google fonts for end users.
+- **Still open:** Playfair Display + JetBrains Mono aren't self-hosted
+  yet, so non-`sketch` headings and inline code still fall back in a
+  network-less render. Drop their woff2 into `assets/fonts/` and add
+  them to `SELF_HOSTED_FACES` to close it.
+- **Verify the right way:** check the *rendered pixels* (rasterize a
+  page), not `pdffonts`/`get_fonts()` — a subset-embedded face often
+  reports an empty name and reads as "missing" when it's actually there.
+
 ### marp-cli ignores `theme:` front matter unless the theme is in `themeSet`
 
 - **Symptom:** A deck specifies `theme: mustard` (or any other named

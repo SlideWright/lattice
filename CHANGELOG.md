@@ -797,6 +797,18 @@ in patch versions.
 
 ### Fixed
 
+- **Committed deck PDFs embed the real fonts, even on a network-less render.**
+  The emulator pulled its type from a Google-Fonts `<link>`/`@import`, so a build
+  without network (the cloud sandbox, the pre-commit PDF rebuild) embedded a
+  serif/sans **fallback** — the committed `.pdf`s (e.g. `examples/sketch.pdf`)
+  shipped looking nothing like the design, and the page-count tests never caught
+  it. `lattice-emulator.js` now base64-injects self-hosted woff2 (`assets/fonts/`
+  — Caveat, Shantell Sans, Outfit) as an inline `@font-face` block that wins over
+  the `@import`, and waits on `document.fonts` before printing, so PDFs embed the
+  hand fonts with no network. The shipped npm bin doesn't carry `assets/`
+  (excluded from the tarball), so end users still resolve fonts from Google
+  unchanged. Playfair Display + JetBrains Mono aren't self-hosted yet — they
+  still fall back offline; see `assets/fonts/README.md`.
 - **The Drawing Board editor mounts again.** The editor-mount script read the
   `autocomplete` workspace preference via `getPref(...)` but never imported it
   into that `<script>` module — and each Astro `<script>` is its own ES module,
