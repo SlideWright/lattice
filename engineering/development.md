@@ -57,6 +57,8 @@ a consumer needs Node 18 or 20, they pin to Lattice 1.x.
 | `test:all` | Unit + integration umbrella |
 | `test:coverage` | c8 over the unit suite |
 | `test:coverage:all` | c8 over unit + integration |
+| `bench` | tinybench render benchmark, marp-core vs lattice-engine (`-- --export` adds the rasterize tier, `-- --json` dumps machine-readable) |
+| `parity` | Visual engine-parity harness — rasterise a deck through both engines and pixel-diff per slide (`-- --galleries` / `-- --jargon` / `-- --dark`) |
 | `lint`, `lint:fix` | Biome check / Biome check --write |
 | `clean:scratch` | Delete `.scratch/*` entries older than 14 days |
 | `prepare` | Wires lefthook hooks on `npm install` |
@@ -76,9 +78,15 @@ test/integration/galleries/   emulator.{gallery,gallery-mermaid},
 test/integration/parity/      parity, deck-class-fm, chart-family
 test/integration/mermaid/     mermaid-smoke
 test/integration/screenshot/  screenshot
+test/benchmark/               engine-bench.mjs (npm run bench; not in npm test)
 test/helpers/                 render.js, pdf.js, palette.js
 test/fixtures/                small .md decks for integration
 ```
+
+`tools/engine-parity.mjs` (`npm run parity`) is the standalone visual-parity
+harness — it rasterises every gallery slide through both render engines and
+pixel-diffs them. It is a diagnostic tool, not part of `npm test`; reach for it
+when changing `lib/engine/` to confirm the owned engine still matches marp-core.
 
 Each test file wraps its body in `describe('<file-basename>', () => {…})`
 so TAP output groups by file. Source of truth: `package.json` scripts
