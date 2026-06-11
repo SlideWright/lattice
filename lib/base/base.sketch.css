@@ -50,6 +50,13 @@
  * ink so it reads on every canvas (incl. dark, via the light-dark token). */
 section.sketch {
   --sketch-ink: var(--text-heading);
+  /* The section's own default font goes hand too, so EVERY text node on the
+   * slide that a component doesn't explicitly font — emphasis, links, stray
+   * spans, inherited prose — reads hand-drawn rather than the clean engine
+   * body face. Headings/display resolve via --font-display, prose via the
+   * element selectors below, labels via --font-label, code via --font-mono
+   * (untouched); this default catches everything else. */
+  font-family: var(--sketch-font-body);
   /* Re-point the engine's display font TOKEN at the felt-tip face. Headings
    * pick this up, but so does every component that pins
    * `font-family: var(--font-display)` on a non-heading element — the stats
@@ -91,6 +98,13 @@ section.sketch :is(p, li, td, th, blockquote, figcaption, dt, dd) {
  * tracks the slide scale like the rest of the type system. */
 section.sketch :is(p, li, td, th, blockquote) {
   font-size: 1.08em;
+}
+/* Pagination (Marp's section::after) ships from the scaffold with
+ * `font-family: var(--font-mono) !important`, so it needs an !important
+ * override at higher specificity (.sketch class) to ride the hand label
+ * voice like the header / footer chrome. */
+section.sketch::after {
+  font-family: var(--font-label) !important;
 }
 
 /* `sketch-clean-body` — keep the hand headings + boxes, return prose to
@@ -200,10 +214,12 @@ section.sketch.obligation-matrix table {
 }
 
 /* Interior rules become ink strokes rather than spreadsheet hairlines. The
- * ledger's own frame replaces the first/last row rule (no doubled line). */
+ * ledger's own frame replaces the first/last row rule (no doubled line). The
+ * agenda's row rules ride the same ink. */
 section.sketch.compare-table td,
 section.sketch.obligation-matrix td,
-section.sketch.list-tabular > ol > li {
+section.sketch.list-tabular > ol > li,
+section.sketch.agenda > ol > li {
   border-bottom-color: var(--sketch-ink);
 }
 section.sketch.list-tabular > ol > li:first-child { border-top-color: transparent; }
@@ -219,12 +235,14 @@ section.sketch.quote blockquote {
   border-radius: 255px 12px 225px 15px / 15px 225px 15px 255px !important;
   box-shadow: 2px 3px 0 -1px color-mix(in srgb, var(--sketch-ink) 30%, transparent);
 }
-section.sketch.redline > blockquote {
+section.sketch.redline > blockquote,
+section.sketch.checklist > ol > li {
   border-radius: 4px 225px 15px 4px / 4px 15px 225px 4px;
   box-shadow: 2px 3px 0 -1px color-mix(in srgb, var(--sketch-ink) 30%, transparent);
 }
 section.sketch.actors > ul > li,
-section.sketch.actors > ol > li {
+section.sketch.actors > ol > li,
+section.sketch.list > ul > li {
   border-radius: 255px 12px 225px 15px / 15px 225px 15px 255px;
   box-shadow: 2px 3px 0 -1px color-mix(in srgb, var(--sketch-ink) 30%, transparent);
 }

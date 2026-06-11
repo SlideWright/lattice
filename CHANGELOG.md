@@ -345,7 +345,8 @@ in patch versions.
   + offset ink stroke + per-card tilt). The hand treatment reaches every other
   structure that draws its own lines too — table frames + cell rules
   (`compare-table`, `glossary`, `obligation-matrix`, `list-tabular`), boxed
-  blockquotes (`quote`, `redline`), bordered rows (`actors`), and the `<hr>`
+  blockquotes (`quote`, `redline`), bordered/ruled row layouts (`actors`, `list`,
+  `checklist`, `agenda`), and the `<hr>`
   divider — under one rule: roughen the lines the deck draws, never invent a box
   (so `big-number`/`stats` pure-type slides and contained photos/`code`/chart SVG
   stay untouched; meaning-bearing borders keep their hue). The finish re-points the
@@ -356,7 +357,11 @@ in patch versions.
   table column headers, stat sub-labels, KEY INSIGHT, the running header/footer —
   rides the hand SANS too, via a new `--font-label` token (defaults to
   `--font-mono`, re-pointed under `sketch`), so labels read hand-drawn instead of
-  "computer"; real `code`/`pre`/math stay on `--font-mono`. Every glyph of prose
+  "computer"; real `code`/`pre`/math stay on `--font-mono`. Pagination (Marp's
+  `section::after`) joins them on the hand label face. The slide's default font
+  itself goes hand under `sketch`, so every remaining text node a component
+  doesn't explicitly font — emphasis, links, stray prose — is hand too, not just
+  the enumerated elements. Every glyph of prose
   takes a hand face — including label pills/badges (via the `--pill-font` seam);
   only real inline `code` stays monospace. It is palette-blind —
   every stroke resolves through `var(--token)`, so any theme colours it. Default

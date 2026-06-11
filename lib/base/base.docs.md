@@ -436,16 +436,22 @@ an offset "ink" stroke, and a fractional per-card tilt on the multi-card
 grids. The same hand treatment reaches **every other structure that draws
 its own lines**: table frames + cell rules (`compare-table`, `glossary`,
 `obligation-matrix`, `list-tabular`), boxed blockquotes (`quote`,
-`redline`), bordered rows (`actors`), and the `<hr>` divider rule. The
+`redline`), bordered/ruled row layouts (`actors`, `list`, `checklist`,
+`agenda`), and the `<hr>` divider rule. The
 governing rule is *roughen the lines the deck draws, never invent a box* —
 so structures that draw none (`big-number`, `stats` — pure centred type)
 stay font-only, and content the slide merely contains (photos, real
 `code`, chart/diagram SVG geometry) is left untouched. Where a structure
 carries a meaning-bearing colour (the per-actor hue, redline's add/remove
 spine) the finish wobbles the corners but never recolours the border.
-Every glyph of prose takes a hand face — including component label
-pills (state-marker chips, pricing tags) via the `--pill-font` seam; only
-real inline `code` stays monospace, so it can't be misread.
+Every glyph of prose takes a hand face. The display numerals (`stats`,
+`big-number`, `quote`, KPI heroes) ride the felt-tip via the `--font-display`
+token; the label voice — eyebrows, table column headers, stat sub-labels,
+KEY INSIGHT, the running header/footer, and pagination — rides the hand sans
+via the `--font-label` seam; the slide's default font goes hand too, so
+emphasis, links, and any stray prose follow without enumeration; and label
+pills/badges ride the `--pill-font` seam. Only real inline `code`, `pre`, and
+the `math` component stay monospace, so data can't be misread.
 
 It is a **Finish-layer** modifier in the Function · Form · Substance ·
 Finish model: it changes type and box geometry, never colour. Every
