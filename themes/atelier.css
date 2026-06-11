@@ -41,9 +41,9 @@
  *   • Default scheme is light at zero specificity; author overrides via
  *     `style:` directive, `<!-- _class: dark -->`, or the atelier-dark
  *     variant theme always win the cascade.
- *   • Semantic signals (--pass/--fail/--warn) intentionally do not switch
- *     between modes: they back the white SVG strokes baked into checklist
- *     state markers, which require the colour to stay dark in both modes.
+ *   • Semantic signals (--pass/--fail/--warn) are self-curated as
+ *     light-dark() pairs (the variable contract), AA on both canvases;
+ *     -bg tints derive from them.
  */
 
 @import 'lattice';
@@ -80,10 +80,14 @@
 
   /* ── Semantic signals — derived backgrounds only ───────────────────
    * --pass/--warn/--fail are defined as light-dark() pairs in
-   * lattice.css :root (universal status palette). Themes can override
-   * by re-declaring with their own light-dark() pair; this theme
-   * inherits the defaults. The -bg soft tints stay theme-local so
+   * lattice.css :root (universal status palette). Each theme self-curates its own trio (above), per the
+   * variable contract — AA on both canvases. The -bg soft tints stay theme-local so
    * each palette can pick its own alpha. */
+  /* Self-curated semantic trio — warm green/amber/red, AA>=4.5 on
+   * both canvases (light value vs --bg, dark value vs --dark-bg). */
+  --pass: light-dark(#2D6A3F, #6FCC4D);
+  --warn: light-dark(#965800, #F0A848);
+  --fail: light-dark(#9E1F1F, #F58282);
   --pass-bg: color-mix(in srgb, var(--pass) 12%, transparent);
   --fail-bg: color-mix(in srgb, var(--fail) 12%, transparent);
   --warn-bg: color-mix(in srgb, var(--warn) 12%, transparent);
@@ -196,4 +200,45 @@ section pre.hljs {
    *   --c-subcontainer  kanban ticket, a box nested in a cluster */
   --c-container:     light-dark(#E0DDD3, #232019);
   --c-subcontainer:  light-dark(#D1CEC5, #34312A);
+}
+
+/* ── Chart-family palette ───────────────────────────────────────────────
+ * Atelier's curation of the chart-family's two colour spectrums (defined in
+ * lib/components/chart/_chart-family/chart-family.css). The engine ships a
+ * canvas-aware Apple-hue default; untuned themes inherit it. Atelier overrides
+ * both spectrums with its muted artist's-studio pigments so charts read native
+ * to the "hand-finished oat & amber" brand instead of borrowing the cool system
+ * palette.
+ *
+ * Each hook is the `light-dark(lightCanvasVivid, darkCanvasVivid)` shape the
+ * chart-family expects: on oat the value is a low-chroma pigment (it drives the
+ * wedge/bar border at full strength and a 24% tint for the fill); on deep-brown
+ * canvas it lifts toward white via color-mix(in oklab, …, white 30%) so the
+ * same hue stays readable without boosting chroma. See design/theming.md
+ * (chart palette) and the chart-family.css token block for the contract. */
+:root {
+  /* Categorical spectrum — atelier's audited Brand-triad pigments.
+   * Low-chroma earth/studio hues ported from the theme's own pigment set,
+   * most-distinct-first. Light side = the audited pigment (drives the border
+   * at full strength + a 24% tint for the fill); dark side = the same hue
+   * lifted toward white so it stays vivid on the deep-brown canvas. */
+  --chart-cat1: light-dark(#8C502D, color-mix(in oklab, #8C502D, white 30%));  /* umber      */
+  --chart-cat2: light-dark(#0E7582, color-mix(in oklab, #0E7582, white 30%));  /* teal       */
+  --chart-cat3: light-dark(#5C397E, color-mix(in oklab, #5C397E, white 30%));  /* indigo     */
+  --chart-cat4: light-dark(#626E33, color-mix(in oklab, #626E33, white 30%));  /* olive      */
+  --chart-cat5: light-dark(#833244, color-mix(in oklab, #833244, white 30%));  /* terracotta */
+  --chart-cat6: light-dark(#376A81, color-mix(in oklab, #376A81, white 30%));  /* slate      */
+  --chart-cat7: light-dark(#596F41, color-mix(in oklab, #596F41, white 30%));  /* sage       */
+  --chart-cat8: light-dark(#46715D, color-mix(in oklab, #46715D, white 30%));  /* verdigris  */
+
+  /* Semantic spectrum — charts that encode meaning (gantt bars, progress,
+   * status pills, state-chart, timeline). pass/warn/fail reuse atelier's own
+   * status trio so a gantt at-risk bar matches a --warn chip; info takes a
+   * dusty slate blue tuned to atelier's warm-achromatic canvas; mute a warm
+   * taupe derived from --text-muted. */
+  --chart-state-pass: var(--pass);                  /* studio green  */
+  --chart-state-warn: var(--warn);                  /* amber caution */
+  --chart-state-fail: var(--fail);                  /* terracotta alarm */
+  --chart-state-info: light-dark(#3E6A9E, #79A6D6); /* dusty slate   */
+  --chart-state-mute: light-dark(#6E4E5D, #A69882); /* warm taupe    */
 }

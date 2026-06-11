@@ -43,9 +43,9 @@
  *   • Default scheme is light at zero specificity; author overrides via
  *     `style:` directive, `<!-- _class: dark -->`, or the concrete-dark
  *     variant theme always win the cascade.
- *   • Semantic signals (--pass/--fail/--warn) intentionally do not switch
- *     between modes: they back the white SVG strokes baked into checklist
- *     state markers, which require the colour to stay dark in both modes.
+ *   • Semantic signals (--pass/--fail/--warn) are self-curated as
+ *     light-dark() pairs (the variable contract), AA on both canvases;
+ *     -bg tints derive from them.
  */
 
 @import 'lattice';
@@ -81,10 +81,14 @@
 
   /* ── Semantic signals — derived backgrounds only ───────────────────
    * --pass/--warn/--fail are defined as light-dark() pairs in
-   * lattice.css :root (universal status palette). Themes can override
-   * by re-declaring with their own light-dark() pair; this theme
-   * inherits the defaults. The -bg soft tints stay theme-local so
+   * lattice.css :root (universal status palette). Each theme self-curates its own trio (above), per the
+   * variable contract — AA on both canvases. The -bg soft tints stay theme-local so
    * each palette can pick its own alpha. */
+  /* Self-curated semantic trio — neutral green/amber/red, AA>=4.5 on
+   * both canvases (light value vs --bg, dark value vs --dark-bg). */
+  --pass: light-dark(#214F26, #73C77C);
+  --warn: light-dark(#683C00, #DCAA4C);
+  --fail: light-dark(#8E0B13, #EC8585);
   --pass-bg: color-mix(in srgb, var(--pass) 12%, transparent);
   --fail-bg: color-mix(in srgb, var(--fail) 12%, transparent);
   --warn-bg: color-mix(in srgb, var(--warn) 12%, transparent);
@@ -197,4 +201,48 @@ section pre.hljs {
    *   --c-subcontainer  kanban ticket, a box nested in a cluster */
   --c-container:     light-dark(#A8A8A8, #2D2D2D);
   --c-subcontainer:  light-dark(#9A9A9A, #3F3F3F);
+}
+
+/* ── Chart-family palette ───────────────────────────────────────────────
+ * Concrete's curation of the chart-family's two colour spectrums (defined in
+ * lib/components/chart/_chart-family/chart-family.css). The engine ships a
+ * canvas-aware Apple-hue default; untuned themes inherit it. Concrete overrides
+ * both spectrums with its own low-chroma greige pigments so charts read native
+ * to the "poured concrete" brand instead of borrowing the cool system palette.
+ *
+ * Each hook is the `light-dark(lightCanvasVivid, darkCanvasVivid)` shape the
+ * chart-family expects: on the gray canvas the value is a low-chroma earth
+ * pigment (it drives the wedge/bar border at full strength and a 24% tint for
+ * the fill); on the dark canvas it lifts to a brighter same-hue sibling via
+ * color-mix(in oklab, …, white 30%). See design/theming.md (chart palette) and
+ * the chart-family.css token block for the contract. */
+:root {
+  /* Categorical spectrum — concrete's audited Brand-triad pigments.
+   * Eight low-chroma greige hues, separated by hue + value so categories
+   * stay distinguishable on both the mid-gray light canvas and the near-
+   * black dark canvas. Light side = the audited pigment (drives the border
+   * at full strength + a 24% tint for the fill); dark side = the same hue
+   * lifted toward white so it stays vivid on the dark canvas. */
+  --chart-cat1: light-dark(#6E3D50, color-mix(in oklab, #6E3D50, white 30%));  /* dusty rose    */
+  --chart-cat2: light-dark(#1D6F48, color-mix(in oklab, #1D6F48, white 30%));  /* sage green    */
+  --chart-cat3: light-dark(#474479, color-mix(in oklab, #474479, white 30%));  /* steel blue    */
+  --chart-cat4: light-dark(#636632, color-mix(in oklab, #636632, white 30%));  /* warm taupe    */
+  --chart-cat5: light-dark(#722E5E, color-mix(in oklab, #722E5E, white 30%));  /* mauve         */
+  --chart-cat6: light-dark(#3E6B59, color-mix(in oklab, #3E6B59, white 30%));  /* slate teal    */
+  --chart-cat7: light-dark(#635F4F, color-mix(in oklab, #635F4F, white 30%));  /* khaki olive   */
+  --chart-cat8: light-dark(#4E664F, color-mix(in oklab, #4E664F, white 30%));  /* muted green   */
+
+  /* Semantic spectrum — charts that encode meaning (gantt bars, progress,
+   * status pills, state-chart, timeline). pass/fail reuse concrete's
+   * inherited status trio; warn and info are DEEPENED on the light side
+   * because concrete's canvas is an unusually dark greige (#B8B8B5) — the
+   * universal amber/slate only reach ~2.5–2.8:1 there, so a richer burnt
+   * ochre + deep slate clear the 3:1 mark with authority while keeping the
+   * same blue-info / amber-warn role language as the curated trio. Dark
+   * sides lift to clear the espresso-gray canvas. mute is the system greige. */
+  --chart-state-pass: var(--pass);                  /* status green   */
+  --chart-state-warn: light-dark(#854608, #E89030); /* burnt ochre    */
+  --chart-state-fail: var(--fail);                  /* status red     */
+  --chart-state-info: light-dark(#2F567F, #79A6D6); /* deep slate     */
+  --chart-state-mute: light-dark(#68675B, #A69882); /* warm greige    */
 }

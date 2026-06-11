@@ -27,6 +27,18 @@ in patch versions.
 
 ### Added
 
+- **Theme token parity — all 13 palettes are now fully self-curated.** Every
+  shipped theme now defines its own chart-family palette (`--chart-cat1..8` +
+  `--chart-state-*`) and its own semantic signal trio (`--pass` / `--warn` /
+  `--fail`), tuned to the palette and AA-verified on both canvases, instead of
+  leaning on the engine fallback. `carbone` gained the 12-slot `--c1..12`
+  Mermaid band scale it was missing (which had left its corner tags and
+  diagram fills undefined). The previously-curated `cuoio` / `indaco` / `onyx`
+  remain the reference. A new `npm run scorecard` grades every theme on token
+  completeness + palette quality, `npm run scorecard:check` and
+  `test/unit/palette/token-parity.test.js` gate that no palette falls back to
+  the lattice cascade for a contract token, and `chart-contrast.test.js` now
+  gates the chart palette of all 13 (was 3).
 - **Playground — "Load a deck" drawer.** The playground's ⚙ insert menu is now a
   slide-in **Galleries** drawer (a labeled grid-icon button, not a gear, so its
   function reads as "browse + load a full deck"). It lists the repo's showcase

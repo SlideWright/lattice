@@ -39,9 +39,9 @@
  *   • Default scheme is light at zero specificity; author overrides via
  *     `style:` directive, `<!-- _class: dark -->`, or the laguna-dark
  *     variant theme always win the cascade.
- *   • Semantic signals (--pass/--fail/--warn) intentionally do not switch
- *     between modes: they back the white SVG strokes baked into checklist
- *     state markers, which require the colour to stay dark in both modes.
+ *   • Semantic signals (--pass/--fail/--warn) are self-curated as
+ *     light-dark() pairs (the variable contract), AA on both canvases;
+ *     -bg tints derive from them.
  */
 
 @import 'lattice';
@@ -77,10 +77,14 @@
 
   /* ── Semantic signals — derived backgrounds only ───────────────────
    * --pass/--warn/--fail are defined as light-dark() pairs in
-   * lattice.css :root (universal status palette). Themes can override
-   * by re-declaring with their own light-dark() pair; this theme
-   * inherits the defaults. The -bg soft tints stay theme-local so
+   * lattice.css :root (universal status palette). Each theme self-curates its own trio (above), per the
+   * variable contract — AA on both canvases. The -bg soft tints stay theme-local so
    * each palette can pick its own alpha. */
+  /* Self-curated semantic trio — cool green/amber/red, AA>=4.5 on
+   * both canvases (light value vs --bg, dark value vs --dark-bg). */
+  --pass: light-dark(#1C7A4A, #4FD08C);
+  --warn: light-dark(#926100, #E6B255);
+  --fail: light-dark(#A81E38, #F07F92);
   --pass-bg: color-mix(in srgb, var(--pass) 12%, transparent);
   --fail-bg: color-mix(in srgb, var(--fail) 12%, transparent);
   --warn-bg: color-mix(in srgb, var(--warn) 12%, transparent);
@@ -197,4 +201,44 @@ section pre.hljs {
    *   --c-subcontainer  kanban ticket, a box nested in a cluster */
   --c-container:     light-dark(#D9E5E6, #20292A);
   --c-subcontainer:  light-dark(#CAD6D7, #313B3C);
+}
+
+/* ── Chart-family palette ───────────────────────────────────────────────
+ * Laguna's curation of the chart-family's two colour spectrums (defined in
+ * lib/components/chart/_chart-family/chart-family.css). The engine ships a
+ * canvas-aware Apple-hue default; untuned themes inherit it. Laguna overrides
+ * both spectrums with its coastal-teal pigments so charts read native to the
+ * "teal on warm sand" brand instead of borrowing the cool system palette.
+ *
+ * Each hook is the `light-dark(lightCanvasVivid, darkCanvasVivid)` shape the
+ * chart-family expects: on warm sand the value is a saturated coastal pigment
+ * (it drives the wedge/bar border at full strength and a 24% tint for the
+ * fill); on deep-sea canvas it lifts to a brighter same-hue sibling via
+ * color-mix(in oklab, <pigment>, white 30%). See design/theming.md
+ * (chart palette) and chart-family.css for the full contract. */
+:root {
+  /* Categorical spectrum — laguna's audited Brand-triad pigments, ordered
+   * most-distinct-first so adjacent bars/wedges stay legible.
+   * Light side = the audited pigment (drives border at full strength + a
+   * 24% tint for the fill); dark side = same hue lifted toward white 30%
+   * in OKLab so it stays vivid on the deep-sea (#04181B) canvas. */
+  --chart-cat1: light-dark(#2B7E85, color-mix(in oklab, #2B7E85, white 30%));  /* teal        */
+  --chart-cat2: light-dark(#831A5A, color-mix(in oklab, #831A5A, white 30%));  /* berry       */
+  --chart-cat3: light-dark(#7F7523, color-mix(in oklab, #7F7523, white 30%));  /* bronze      */
+  --chart-cat4: light-dark(#3A417F, color-mix(in oklab, #3A417F, white 30%));  /* slate-blue  */
+  --chart-cat5: light-dark(#248442, color-mix(in oklab, #248442, white 30%));  /* seafoam     */
+  --chart-cat6: light-dark(#982B2B, color-mix(in oklab, #982B2B, white 30%));  /* rust        */
+  --chart-cat7: light-dark(#42407D, color-mix(in oklab, #42407D, white 30%));  /* indigo      */
+  --chart-cat8: light-dark(#803877, color-mix(in oklab, #803877, white 30%));  /* plum        */
+
+  /* Semantic spectrum — charts that encode meaning (gantt bars, progress,
+   * status pills, state-chart, timeline). pass/warn/fail reuse laguna's own
+   * status trio so a gantt at-risk bar matches a --warn chip; info is a
+   * deeper indigo-blue (nudged away from the coastal teal of cat1 so the
+   * two remain distinct); mute derives from --text-muted's warm-sand gray. */
+  --chart-state-pass: var(--pass);                  /* coastal green  */
+  --chart-state-warn: var(--warn);                  /* sand amber     */
+  --chart-state-fail: var(--fail);                  /* coral alarm    */
+  --chart-state-info: light-dark(#39619F, #7690D3); /* indigo-blue    */
+  --chart-state-mute: light-dark(#79898D, #AFBBCB); /* sand gray      */
 }
