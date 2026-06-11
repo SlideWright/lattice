@@ -497,13 +497,13 @@ Phase 3 is where org-wide enablement lives. Phase 3 has been in the roadmap sinc
 
 ## Who owns each part of the framework lifecycle
 
-- **Signal custody** `Signal owner`
+- Signal custody `Signal owner`
   - Manages intake quality and source diversity. Never tunes scoring weights directly. Tunes them indirectly by choosing which signals to surface and which to classify as low-confidence.
-- **Policy** `Framework operator`
+- Policy `Framework operator`
   - Owns scoring policy, calibration cadence, version floors, and rollback playbooks. Currently one person. This is noted in the risk register.
-- **Consumption** `Product team`
+- Consumption `Product team`
   - Holds time-bound scoring profiles. Runs intake and decision-logging. Primarily interacts with the framework by asking the Framework operator to adjust the weights.
-- **Oversight** `Auditor`
+- Oversight `Auditor`
   - Reads the Decision Log audit trail. Cannot edit weights. Has read the audit trail once. Found 18 entries. Asked if that was expected.
 
 ---
@@ -646,12 +646,12 @@ The architecture change is the calibration loop. The culture change is still in 
 
 ## The case for the framework in three moves
 
-1. Claim.
-   - The framework gets calibrated prioritization with audit-grade decision custody. We stop paying re-litigation cost on every quarterly review.
-2. Evidence.
-   - The pilot ran six months across four product teams. Decision close-time dropped. Calibration ran once. The four teams have since been reorganized into three teams. One is now a platform team. None of them count in the "before" baseline.
-3. Implication.
-   - The framework works. The deck says so. The deck was written by the framework team. We trust the framework team. The framework told us to.
+- Claim
+  - The framework gets calibrated prioritization with audit-grade decision custody. We stop paying re-litigation cost on every quarterly review.
+- Evidence
+  - The pilot ran six months across four product teams. Decision close-time dropped. Calibration ran once. The four teams have since been reorganized into three teams. One is now a platform team. None of them count in the "before" baseline.
+- Implication
+  - The framework works. The deck says so. The deck was written by the framework team. We trust the framework team. The framework told us to.
 
 ---
 
@@ -762,16 +762,16 @@ The pilot team measured what the pilot team built.
 
 ## Where we are against quarter targets
 
-1. **94%**
+1. 94%
    - Signal-classification success
    - target 99%, gap is "known issue"
-2. **18 min**
+2. 18 min
    - p99 decision close
    - target 20 min, beating target
-3. **18**
+3. 18
    - Decisions logged
    - target 340, gap is "cultural"
-4. **1**
+4. 1
    - Calibration cycles run
    - target 6, gap is "structural"
 

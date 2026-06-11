@@ -46,7 +46,11 @@ const { describe, test } = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
-const { CARD_STYLE_LAYOUTS, findInlineTitleBodyLine } = require('../../../lib/components');
+const {
+  CARD_STYLE_LAYOUTS,
+  findInlineTitleBodyLine,
+  findOrderedInlineTitleBodyLine,
+} = require('../../../lib/components');
 
 const ROOT = path.join(__dirname, '..', '..', '..');
 const CARD_STYLE = new Set(CARD_STYLE_LAYOUTS);
@@ -78,7 +82,7 @@ function scanDeck(absPath) {
     const classes = m[1].split(/\s+/);
     const cardClasses = classes.filter((c) => CARD_STYLE.has(c));
     if (cardClasses.length === 0) return;
-    const offending = findInlineTitleBodyLine(slide);
+    const offending = findInlineTitleBodyLine(slide) || findOrderedInlineTitleBodyLine(slide);
     if (offending) {
       offenses.push({ slideIdx, classToken: cardClasses[0], line: offending });
     }

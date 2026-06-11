@@ -73,13 +73,20 @@ Function · Form · Substance · Finish. Authored in short names, organized in f
 
 ## Pick by intent. Then by data shape.
 
-- **Anchor.** Orientation — title, divider, subtopic, closing.
-- **Statement.** One declarative claim — big-number, quote, split-list, content.
-- **Inventory.** Parallel items — cards-grid, cards-stack, list, list-tabular.
-- **Comparison.** Contrast options — compare-prose, verdict-grid, before-after.
-- **Progression.** Ordered movement — timeline, list-steps, roadmap.
-- **Evidence.** Data into picture — stats, kpi, quadrant, radar, diagram, code.
-- **Imagery.** Visual that carries meaning — image, featured.
+1. Anchor
+   - Orientation — title, divider, subtopic, closing.
+2. Statement
+   - One declarative claim — big-number, quote, split-list, content.
+3. Inventory
+   - Parallel items — cards-grid, cards-stack, list, list-tabular.
+4. Comparison
+   - Contrast options — compare-prose, verdict-grid, before-after.
+5. Progression
+   - Ordered movement — timeline, list-steps, roadmap.
+6. Evidence
+   - Data into picture — stats, kpi, quadrant, radar, diagram, code.
+7. Imagery
+   - Visual that carries meaning — image, featured.
 
 ---
 
@@ -140,13 +147,13 @@ Function · Form · Substance · Finish. Authored in short names, organized in f
 
 ---
 
-<!-- _class: cards-side -->
+<!-- _class: cards-stack horizontal -->
 
 ## Two paths from blank deck to a slide skeleton.
 
-- CLI scaffolder.
+- CLI scaffolder
   - `npm run new:slide -- --list` prints the catalog grouped by function. `npm run new:slide -- cards-grid` emits the skeleton. Exit codes: 0 success, 1 unknown, 2 usage.
-- VS Code snippets.
+- VS Code snippets
   - Type `lattice-` in any .md file. Autocomplete shows all 45 components by name and description. Tab inserts the canonical skeleton. Generated from manifests; freshness enforced by `npm run snippets:check`.
 
 ---

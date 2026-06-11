@@ -225,10 +225,10 @@ lib/components/cards-grid.json
   "variants": ["compact", "loose", "dark", "mirror", "accent", "numbered", "four", "three"],
   "slots": {
     "title":  { "selector": "h2",         "required": true,  "description": "Slide heading." },
-    "cards":  { "selector": "ul > li",    "required": true,  "description": "Each list item becomes one card. Lead each li with **Card Title.** then body text." },
+    "cards":  { "selector": "ul > li",    "required": true,  "description": "Each list item becomes one card. A top-level bullet is the card title (renders bold); an indented bullet underneath carries the body text." },
     "insight":{ "selector": "blockquote", "required": false, "description": "Optional key-insight panel above the cards." }
   },
-  "skeleton": "<!-- _class: cards-grid -->\n\n## Slide heading.\n\n- **First card title.** Body text for the first card, one sentence.\n- **Second card title.** Body text for the second card, one sentence.\n- **Third card title.** Body text for the third card, one sentence.\n- **Fourth card title.** Body text for the fourth card, one sentence.\n",
+  "skeleton": "<!-- _class: cards-grid -->\n\n## Slide heading.\n\n- First card title\n  - Body text for the first card, one sentence.\n- Second card title\n  - Body text for the second card, one sentence.\n- Third card title\n  - Body text for the third card, one sentence.\n- Fourth card title\n  - Body text for the fourth card, one sentence.\n",
   "example": "examples/snippets/cards-grid.md",
   "anatomyBlock": "T7-card-grid-2x2"
 }
@@ -391,12 +391,18 @@ AI agents authoring decks get a discovery surface and a validation loop:
   loads in a single read. Generated alongside `components.md/.html` by
   `tools/build-docs-portal.js`.
 - **`npm run lint:deck -- <file>`** (`tools/lint-deck.js` →
-  `lib/authoring/lint.js`) — runs the markdown footgun checks
-  (card-style inline-title, ordered-list bold, class typos) against a
+  `lib/authoring/lint.js`) — runs the markdown footgun checks against a
   *draft* deck and emits structured, fix-oriented diagnostics with no
-  Chromium render. The fast edit→check loop. The per-manifest equivalents
-  of the same rules run in `validate()`; the repo-wide commit gate is
-  `test/unit/components/deck-authoring.test.js`.
+  Chromium render. The fast edit→check loop. The checks: card-style
+  inline-title (`- **Title.** body` *or* `1. **Title.** body` on
+  card-style layouts), ledger inline-title (`- **Name.** value` on a
+  ledger/numbered layout that wants `1. Name` / `   - value`), ordered-list
+  bold (a `**span**` inside a `principles` statement), split/number slot
+  bodyless items, and class typos. The per-manifest equivalents of the same
+  rules run in `validate()`; the repo-wide commit gate is
+  `test/unit/components/deck-authoring.test.js`. All checks live in the pure,
+  browser-safe `lib/authoring/lint-core.js` — the single source shared by the
+  CLI, `validate()`, and the Drawing Board / coach Architect panel.
 - **`AGENTS.md`** (repo root) — the vendor-neutral entrypoint pointing any
   agent at `design/skill.md`, the catalog, and the linter.
 
