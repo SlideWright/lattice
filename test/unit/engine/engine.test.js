@@ -208,6 +208,34 @@ describe('lattice-engine: css emission (P1.1)', () => {
     assert.match(out, /:where\(section\):not\(\[\\20 root\]\)\s*\{[^}]*--sp-md:\s*1\.875cqi/);
   });
 
+  test('packs theme selectors under the slide container (Marpit prepend), keeping body live-but-scoped', () => {
+    const THEME =
+      "/* @theme cuoio */\n@import 'lattice';\nsection.foo { color: red; }\n.bar { color: blue; }\nbody { counter-reset: n; }";
+    const out = composeCss({ themeCss: THEME, baseLatticeCss: BASE });
+    // a section-leading selector → div.marpit > section.foo (the slide), not a descendant
+    assert.match(out, /div\.marpit > section\.foo\s*\{[^}]*color:\s*red/);
+    // a bare class → descendant of the slide (still matches in-slide content)
+    assert.match(out, /div\.marpit > section \.bar\s*\{[^}]*color:\s*blue/);
+    // `body` becomes the dead `div.marpit > section body` so counters fall back to
+    // the implicit root reset — matching marp (the "dropped counters" fix).
+    assert.match(out, /div\.marpit > section body\s*\{[^}]*counter-reset:\s*n/);
+  });
+
+  test('comments out non-pagination ::after content (Marpit pagination plugin)', () => {
+    const THEME =
+      "/* @theme cuoio */\n@import 'lattice';\n" +
+      "section.num::after { content: counter(c); color: red; }\n" +
+      "section.page::after { content: attr(data-marpit-pagination); }\n" +
+      "section.tag::before { content: 'DRAFT'; }";
+    const out = composeCss({ themeCss: THEME, baseLatticeCss: BASE });
+    assert.match(out, /\/\* content: counter\(c\); \*\//); // masked: commented, not deleted
+    const live = out.replace(/\/\*[\s\S]*?\*\//g, ''); // strip comments → only live decls remain
+    assert.doesNotMatch(live, /content:\s*counter\(c\)/); // no live numbered ::after content
+    assert.match(out, /color:\s*red/); // sibling decls survive
+    assert.match(out, /content:\s*attr\(data-marpit-pagination\)/); // the page number is kept
+    assert.match(out, /content:\s*'DRAFT'/); // ::before content is untouched (not a pagination target)
+  });
+
   test('inlines the base exactly once (a prose @import in a comment is ignored)', () => {
     // The palette mentions `@import 'lattice'` inside a comment; only the real
     // rule should inline the base — otherwise the sheet doubles in size.
