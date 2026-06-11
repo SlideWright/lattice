@@ -133,8 +133,26 @@
   /* ── Mermaid extensions ────────────────────────────────────────────── */
   --c-stroke:          var(--brand-accent);
   --c-accent-warm:     #FFD166;
-  /* Dark-canvas fills — slightly tinted graphite rather than pale pastels */
-  /* cScale / gitgraph — mid-brightness brand palette on dark canvas */
+
+  /* ── Numbered band scale (--c1..12) — Mermaid cScale / gitgraph, the
+   * corner --tag-bg (var(--c2-dark)), and the actors-pill ladder all
+   * consume these. Carbone is single-canvas dark, so each slot is a pair
+   * of plain values (no light-dark()): -dark is the vivid stroke/mark
+   * pigment (>=3:1 on the #1A1A1C canvas) and -light is a deep graphite
+   * fill tinted with that hue (light --c-ink clears it >=8:1). Twelve hues
+   * spread across the wheel, anchored at carbone's electric green. */
+  --c1-light:  #304936; --c1-dark:  #5BC878;  /* green   */
+  --c2-light:  #2B4B41; --c2-dark:  #34D3A6;  /* emerald */
+  --c3-light:  #2C4950; --c3-dark:  #3BC8E0;  /* cyan    */
+  --c4-light:  #293A59; --c4-dark:  #4A8CFF;  /* blue    */
+  --c5-light:  #303455; --c5-dark:  #6E72F0;  /* indigo  */
+  --c6-light:  #3C3356; --c6-dark:  #9A6EF5;  /* violet  */
+  --c7-light:  #47324B; --c7-dark:  #C06ECC;  /* purple  */
+  --c8-light:  #522F3A; --c8-dark:  #E85A8A;  /* magenta */
+  --c9-light:  #553130; --c9-dark:  #F2655F;  /* coral   */
+  --c10-light: #54352A; --c10-dark: #F07840;  /* orange  */
+  --c11-light: #54452B; --c11-dark: #F5B832;  /* amber   */
+  --c12-light: #444D2F; --c12-dark: #B8D84A;  /* lime    */
 }
 /* Completion tokens — band-text pairs, line, gantt state, note, error.
  * References earlier palette tokens so this block stays a single
