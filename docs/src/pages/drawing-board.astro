@@ -134,6 +134,9 @@ const dbData = JSON.stringify({
 	starter,
 	lintVocab,
 	themes: themeNames,
+	// The base palette names the top-bar picker offers — the valid vocabulary for
+	// the Deck setup drawer's theme control + the controller's propagation guard.
+	palettes,
 	catalog: obCatalog,
 	version: pkgVersion,
 	buildId,
@@ -513,6 +516,12 @@ const dbData = JSON.stringify({
 				trigger: document.getElementById('db-config-open'),
 				getSource: () => (window.__dbEditor ? window.__dbEditor.getValue() : ''),
 				setSource: (next) => { if (window.__dbEditor) window.__dbEditor.setValue(next); },
+				// Theme is the deck's palette: the drawer's select offers the same base
+				// names as the top-bar picker, and falls back to the live page palette
+				// when the deck declares none. Writes flow back through setSource → the
+				// controller's onEdit → syncThemeControls (picker + chrome) below.
+				palettes: data.palettes || [],
+				getDefaultTheme: () => document.documentElement.getAttribute('data-palette') || (data.palettes && data.palettes[0]) || '',
 			});
 			window.__dbConfig = config;
 			config.syncTrigger();
@@ -1195,6 +1204,7 @@ const dbData = JSON.stringify({
 
 				function onEdit() {
 					recomputeStarts();
+					syncThemeControls(); // a valid `theme:` edit drives the picker + page chrome
 					scheduleRender();
 					if (window.__dbStore) window.__dbStore.saveActive(getSource());
 					if (window.__dbArchitect) window.__dbArchitect.update(getSource());
@@ -1210,6 +1220,7 @@ const dbData = JSON.stringify({
 					setSource(src);
 					recomputeStarts();
 					frameSig = ''; // a new deck → fresh srcdoc (resets runtime/Mermaid state)
+					syncThemeControls(); // adopt the loaded deck's theme before rendering it
 					render();
 					if (window.__dbArchitect) window.__dbArchitect.update(src);
 					if (window.__dbConfig) window.__dbConfig.syncTrigger(); // refresh the config cue for the loaded deck
@@ -1260,6 +1271,7 @@ const dbData = JSON.stringify({
 					window.__dbEditor.onChange(onEdit);
 					window.__dbEditor.onCursor(onCursorMove);
 					recomputeStarts();
+					syncThemeControls(); // adopt the initial deck's declared theme on first wire
 					render();
 					if (window.__dbArchitect) window.__dbArchitect.update(getSource());
 				}
@@ -1268,12 +1280,50 @@ const dbData = JSON.stringify({
 				var taEl = document.getElementById('db-editor-ta');
 				if (taEl) taEl.addEventListener('input', onEdit);
 
+				// ── Theme sync (deck `theme:` ⟷ palette picker ⟷ Deck setup drawer) ───
+				// The deck's `theme:` front matter is the single source of truth; the
+				// top-bar picker and the drawer's theme select are synced views of it, and
+				// the value is written EXPLICITLY into the deck (transparent + portable),
+				// not forced on at render time the way the old picker did. Only a
+				// registered palette propagates — a typo or unknown theme is left in the
+				// source but never applied, so the deck can't render unstyled.
+				var PALETTES = data.palettes || [];
+				function deckTheme() {
+					var fm = /^---[ \t]*\r?\n([\s\S]*?)\r?\n---/.exec(getSource());
+					if (!fm) return null;
+					var m = /^[ \t]*theme:[ \t]*(.+?)[ \t]*$/im.exec(fm[1]);
+					if (!m) return null;
+					var name = m[1].replace(/^["']|["']$/g, '').trim();
+					return PALETTES.indexOf(name) !== -1 ? name : null; // null = absent OR invalid → don't propagate
+				}
+				// Pull the picker + page chrome into line with the deck's declared theme
+				// (read-only — never writes the source). Persists the valid palette as the
+				// default for new decks. Returns true when the palette actually changed.
+				function syncThemeControls() {
+					var t = deckTheme();
+					if (!t) return false; // no/invalid theme → leave the chrome on its current palette
+					var changed = root.getAttribute('data-palette') !== t;
+					if (changed) root.setAttribute('data-palette', t);
+					if (paletteSel.value !== t) paletteSel.value = t;
+					try { localStorage.setItem('lattice-docs-palette', t); } catch (e) {}
+					return changed;
+				}
+				// Write a (valid) theme into the deck source — the single mutation point the
+				// picker and the drawer share. setSource fires onEdit → syncThemeControls +
+				// render, so the chrome and preview follow from the one source edit.
+				function applyTheme(name) {
+					if (PALETTES.indexOf(name) === -1) return; // guard: never propagate a nonexistent theme
+					try { localStorage.setItem('lattice-docs-palette', name); } catch (e) {}
+					if (window.__dbConfig && window.__dbConfig.writeFrontMatter && window.__dbEditor) {
+						setSource(window.__dbConfig.writeFrontMatter(getSource(), 'theme', name));
+					} else {
+						root.setAttribute('data-palette', name); // editor/config not mounted yet → live-only fallback
+						render();
+					}
+				}
+
 				// ── Palette / mode ────────────────────────────────────────────────────
-				paletteSel.addEventListener('change', function () {
-					root.setAttribute('data-palette', paletteSel.value);
-					try { localStorage.setItem('lattice-docs-palette', paletteSel.value); } catch (e) {}
-					render();
-				});
+				paletteSel.addEventListener('change', function () { applyTheme(paletteSel.value); });
 				modeBtn.addEventListener('click', function () {
 					var next = root.getAttribute('data-mode') === 'dark' ? 'light' : 'dark';
 					root.setAttribute('data-mode', next);
@@ -1287,6 +1337,7 @@ const dbData = JSON.stringify({
 						var changed = false;
 						if (p && p !== root.getAttribute('data-palette')) { root.setAttribute('data-palette', p); changed = true; }
 						if ((m === 'light' || m === 'dark') && m !== root.getAttribute('data-mode')) { root.setAttribute('data-mode', m); changed = true; }
+						if (syncThemeControls()) changed = true; // the deck's own theme wins over the stored palette
 						paletteSel.value = root.getAttribute('data-palette');
 						if (changed) render();
 					} catch (e) {}

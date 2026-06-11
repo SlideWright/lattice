@@ -26,6 +26,13 @@
 // The managed fields and their "default" (omitted) value. A field at its default
 // is dropped from the block, so a pristine deck carries no front matter at all.
 const FIELD_DEFAULTS = {
+  // `theme` is the deck's palette — the one value the top-bar picker, this
+  // drawer's select, and the editor all reflect (full three-way sync). It's
+  // written explicitly into the deck (transparent, portable) rather than forced
+  // on at render time. Validity is enforced where it's PROPAGATED (the
+  // controller only syncs a registered palette), not here — writeFrontMatter
+  // never scrubs a hand-typed value out of the author's source.
+  theme: '',
   size: '16:9', // Marp's default page size (themes also define 4K / standard)
   paginate: 'false',
   header: '',
@@ -73,6 +80,7 @@ export function readFrontMatter(source) {
   const map = {};
   for (const [k, v] of entries) map[k] = stripQuotes(v);
   return {
+    theme: map.theme || '',
     size: map.size || '16:9',
     paginate: TRUEY.test(map.paginate || ''),
     header: map.header || '',
@@ -80,9 +88,10 @@ export function readFrontMatter(source) {
     class: map.class || '',
     math: map.math || '',
     lang: map.lang || '',
-    // Whether the deck currently carries ANY managed front matter — drives the
-    // trigger's "configured" cue.
-    configured: present && MANAGED.some((k) => map[k] != null && map[k] !== '' && !isDefault(k, map[k])),
+    // Whether the deck carries any NON-THEME managed front matter — drives the
+    // trigger's "configured" cue. `theme` is excluded: with full sync nearly
+    // every deck has one, so it isn't a signal of bespoke setup.
+    configured: present && MANAGED.some((k) => k !== 'theme' && map[k] != null && map[k] !== '' && !isDefault(k, map[k])),
   };
 }
 
@@ -164,9 +173,9 @@ export function writeFrontMatter(source, key, value) {
 // matter, and writes each change straight back into the editor source (which
 // re-renders + autosaves via the controller's onEdit). DOM-only; called when the
 // drawer opens.
-export function createConfigPanel({ host, trigger, getSource, setSource }) {
+export function createConfigPanel({ host, trigger, getSource, setSource, palettes = [], getDefaultTheme = () => '' }) {
   if (!host || typeof getSource !== 'function' || typeof setSource !== 'function') {
-    return { render() {}, syncTrigger() {} };
+    return { render() {}, syncTrigger() {}, writeFrontMatter };
   }
 
   const el = (tag, cls, text) => {
@@ -175,6 +184,7 @@ export function createConfigPanel({ host, trigger, getSource, setSource }) {
     if (text != null) e.textContent = text;
     return e;
   };
+  const titleCase = (s) => s.replace(/(^|-)(\w)/g, (_, sep, c) => (sep ? ' ' : '') + c.toUpperCase());
 
   // Reflect whether the deck carries managed front matter on the trigger — a
   // quiet accent cue (matching the model chip's active state) that the deck has
@@ -199,8 +209,10 @@ export function createConfigPanel({ host, trigger, getSource, setSource }) {
     return t;
   }
 
-  // An inline select row (size, math) — label/hint left, <select> right.
-  function selectRow(key, label, hint, options, current) {
+  // An inline select row (theme, size, math) — label/hint left, <select> right.
+  // `rerender` re-paints the panel after a change (the theme row uses it so the
+  // "unknown theme" note + the select settle on the new valid value).
+  function selectRow(key, label, hint, options, current, rerender = false) {
     const row = el('div', 'db-pref-row');
     const sel = el('select', 'db-pref-select');
     sel.setAttribute('aria-label', label);
@@ -211,7 +223,7 @@ export function createConfigPanel({ host, trigger, getSource, setSource }) {
       if (value === current) o.selected = true;
       sel.append(o);
     }
-    sel.addEventListener('change', () => apply(key, sel.value));
+    sel.addEventListener('change', () => { apply(key, sel.value); if (rerender) render(); });
     row.append(text(label, hint), sel);
     return row;
   }
@@ -258,6 +270,24 @@ export function createConfigPanel({ host, trigger, getSource, setSource }) {
       'These live in the deck’s front matter — managed for you, so the Markdown stays clean. ' +
       'They apply to the whole deck and travel with an exported .md.'));
 
+    // Theme — the deck's palette, written into the front matter and kept in sync
+    // with the top-bar palette picker (same value, set in either place). Light /
+    // dark is the separate top-bar toggle, so the options are the base palettes.
+    if (palettes.length) {
+      const raw = fm.theme;
+      const valid = !!raw && palettes.includes(raw);
+      const current = valid ? raw : (getDefaultTheme() || palettes[0] || '');
+      host.append(selectRow('theme', 'Theme',
+        'Palette for the whole deck — synced with the top-bar picker', // transparent, not magic
+        palettes.map((p) => [p, titleCase(p)]), current, true));
+      if (raw && !valid) {
+        // Don't propagate a nonexistent theme — say so, and keep rendering the
+        // fallback rather than blanking the deck.
+        host.append(el('p', 'db-settings-note db-config-warn',
+          `“${raw}” isn’t a known theme — the deck renders with ${current} until you pick a valid one.`));
+      }
+    }
+
     host.append(selectRow('size', 'Slide size', 'The page aspect ratio + resolution', [
       ['16:9', 'Widescreen 16:9 · 1280×720 (default)'],
       ['4K', '4K · 3840×2160'],
@@ -277,11 +307,8 @@ export function createConfigPanel({ host, trigger, getSource, setSource }) {
     ], fm.math === 'mathjax' ? 'mathjax' : ''));
     host.append(textField('lang', 'Language', 'The deck’s document language tag', fm.lang, 'e.g. en'));
 
-    host.append(el('p', 'db-settings-note',
-      'Theme & colour come from the palette picker in the top bar — not here.'));
-
     syncTrigger();
   }
 
-  return { render, syncTrigger };
+  return { render, syncTrigger, writeFrontMatter };
 }

@@ -2285,6 +2285,13 @@ html.db-js #db-editor-ta {
 .db-config-input::placeholder {
 	color: var(--text-muted);
 }
+/* Unknown-theme note — the deck declares a `theme:` that isn't a registered
+ * palette, so it isn't propagated. Tinted to read as a caution, not an error. */
+.db-config-warn {
+	color: var(--accent);
+	border-left: 2px solid color-mix(in srgb, var(--accent) 50%, var(--border));
+	padding-left: 0.5rem;
+}
 .db-config-input:hover {
 	border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
 }

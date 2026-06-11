@@ -54,18 +54,40 @@ store**: the author never types YAML, and we re-emit a **minimal** block —
 only non-default keys, always led by `marp: true`, and removed entirely
 when nothing is configured (back to a pristine deck).
 
-## Decision 2 — theme is NOT a control here
+## Decision 2 — theme IS a control here, synced three ways (revised)
 
-The top-bar palette picker owns the live theme and `withTheme()` overrides
-any source `theme:`, so a theme control would be a live no-op that fights
-the picker. The drawer owns what the picker doesn't: `size`, `paginate`,
-`header`, `footer`, and the lower-traffic `class` / `math` / `lang`. A note
-in the drawer points authors at the palette picker.
+> **Revised 2026-06-11.** The first cut excluded theme (the picker "owned"
+> it and `withTheme()` overrode any source `theme:`, so a control looked
+> like a no-op). The prompt pushed back: that override is *magic* — what
+> you pick never appears in the deck and is lost on export. The fix isn't to
+> hide theme; it's to make `theme:` the explicit single source of truth.
 
-(Consequence left open: an exported `.md` still carries no `theme:`, so it
-renders under marp-cli's default theme, not the studio palette. Same gap as
-before this change; baking the active palette into the export block is a
-separate export-fidelity nicety, not done here.)
+The deck's `theme:` front matter is **the** value. Three controls are
+synced views of it:
+
+- the **top-bar palette picker** (writes `theme:` on change),
+- the **Deck setup drawer's theme select** (same), and
+- the **editor** (a valid `theme:` edit drives the picker + page chrome).
+
+Switching decks adopts each deck's declared theme. The win: transparent
+(you see what's applied), portable (an exported `.md` finally carries the
+theme), and no silent override.
+
+**The guard the prompt insisted on — only propagate a *valid* theme.** A
+name is valid iff it's one of the registered base palettes (the picker's
+vocabulary; light/dark stays the separate mode toggle, so the `-dark`
+variants aren't offered). A typo / unknown theme is **left in the author's
+source** (we never scrub it) but is **never applied** — the chrome + render
+keep the last valid palette, so the deck can't go unstyled, and the drawer
+shows a caution note. `withTheme()` is unchanged: the controller keeps
+`data-palette` in lock-step with the deck's valid theme, so what `withTheme`
+injects already equals the source value (plus `-dark` for mode).
+
+Cost accepted (the picker now mutates the deck): every deck gains a
+`theme:` line once a palette is chosen, and flipping palettes to compare
+looks edits the source (autosaved, no checkpoint). Worth it for the
+transparency + portability. `theme` is excluded from the chip's "configured"
+cue precisely because it's now near-ubiquitous.
 
 ## Decision 3 — `math` offers KaTeX / MathJax only (no "off")
 
@@ -94,4 +116,6 @@ work.
 - Per-slide spot directives (`_class`, `_paginate`, …). The prompt's "per
   slide" was resolved to **deck-wide front matter only**; a per-slide
   section keyed to the active filmstrip slide is a future extension.
-- Baking the active palette into the export block (see Decision 2).
+- Dark mode is still the top-bar toggle (a docs-site concept), not captured
+  in the deck — so an exported `.md` carries the base `theme:` but not the
+  light/dark choice. (The deck's theme itself now exports, per Decision 2.)

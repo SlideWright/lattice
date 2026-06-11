@@ -45,6 +45,13 @@ describe('readFrontMatter', () => {
     const fm = readFrontMatter('---\nmarp: true\n---\n\n# Deck\n');
     assert.equal(fm.configured, false);
   });
+
+  test('parses theme, and theme alone does not count as "configured"', async () => {
+    const { readFrontMatter } = await import(MOD);
+    const fm = readFrontMatter('---\nmarp: true\ntheme: cuoio\n---\n\n# Deck\n');
+    assert.equal(fm.theme, 'cuoio');
+    assert.equal(fm.configured, false, 'theme is ubiquitous under full sync — not a bespoke-setup signal');
+  });
 });
 
 describe('writeFrontMatter', () => {
@@ -128,6 +135,34 @@ describe('writeFrontMatter', () => {
     assert.equal((src.match(/header:/g) || []).length, 1);
     assert.ok(src.includes('header: Second'));
   });
+
+  test('theme writes right after marp, and updates in place (no duplicate)', async () => {
+    const { writeFrontMatter } = await import(MOD);
+    let src = writeFrontMatter(CLEAN, 'theme', 'indaco');
+    assert.ok(/^---\nmarp: true\ntheme: indaco\n---\n/.test(src), 'theme leads the block after marp');
+    src = writeFrontMatter(src, 'paginate', true);
+    src = writeFrontMatter(src, 'theme', 'cuoio'); // switch palette
+    assert.equal((src.match(/theme:/g) || []).length, 1, 'no duplicate theme key');
+    assert.ok(src.includes('theme: cuoio'));
+    assert.ok(src.includes('paginate: true'));
+  });
+
+  test('clearing theme ("") drops just the theme key', async () => {
+    const { writeFrontMatter } = await import(MOD);
+    let src = writeFrontMatter(CLEAN, 'theme', 'indaco');
+    src = writeFrontMatter(src, 'paginate', true);
+    src = writeFrontMatter(src, 'theme', '');
+    assert.ok(!src.includes('theme:'));
+    assert.ok(src.includes('paginate: true'));
+  });
+
+  test('writeFrontMatter never scrubs an unknown theme from the author source', async () => {
+    // Validity is enforced at PROPAGATION (the controller), not here — a typo
+    // stays in the deck so the author can fix it; it just isn't applied live.
+    const { writeFrontMatter } = await import(MOD);
+    const src = writeFrontMatter(CLEAN, 'theme', 'totally-made-up');
+    assert.ok(src.includes('theme: totally-made-up'));
+  });
 });
 
 describe('createConfigPanel (DOM)', () => {
@@ -150,6 +185,8 @@ describe('createConfigPanel (DOM)', () => {
         trigger,
         getSource: () => source,
         setSource: (next) => { source = next; },
+        palettes: ['indaco', 'cuoio', 'atelier'],
+        getDefaultTheme: () => 'indaco',
       });
       return { panel, host, trigger, get: () => source };
     });
@@ -158,7 +195,7 @@ describe('createConfigPanel (DOM)', () => {
   test('renders controls pre-filled from the deck front matter', async () => {
     const { panel, host } = await mount('---\nmarp: true\nsize: 4K\npaginate: true\n---\n\n# Deck\n');
     panel.render();
-    const size = host.querySelector('select');
+    const size = host.querySelector('select[aria-label="Slide size"]');
     assert.equal(size.value, '4K', 'size select reflects the deck');
     const paginate = host.querySelector('.db-switch-input');
     assert.equal(paginate.checked, true, 'paginate switch reflects the deck');
@@ -184,5 +221,29 @@ describe('createConfigPanel (DOM)', () => {
     panel.syncTrigger();
     assert.equal(trigger.classList.contains('is-set'), true, 'configured deck → lit chip');
     assert.ok(get().includes('paginate: true'));
+  });
+
+  test('theme select is pre-filled (deck theme, else default) and writes on change', async () => {
+    const withTheme = await mount('---\nmarp: true\ntheme: cuoio\n---\n\n# Deck\n');
+    withTheme.panel.render();
+    assert.equal(withTheme.host.querySelector('select').value, 'cuoio', 'reflects the deck theme');
+
+    const clean = await mount(CLEAN);
+    clean.panel.render();
+    const themeSel = clean.host.querySelector('select');
+    assert.equal(themeSel.value, 'indaco', 'falls back to the default theme when the deck declares none');
+    themeSel.value = 'atelier';
+    themeSel.dispatchEvent(new dom.window.Event('change'));
+    assert.ok(clean.get().includes('theme: atelier'), 'picking writes theme into the source');
+    assert.equal(clean.trigger.classList.contains('is-set'), false, 'theme alone does not light the chip');
+  });
+
+  test('an unknown deck theme shows a caution note and falls back', async () => {
+    const { panel, host } = await mount('---\nmarp: true\ntheme: made-up\n---\n\n# Deck\n');
+    panel.render();
+    const warn = host.querySelector('.db-config-warn');
+    assert.ok(warn, 'a caution note renders for the unknown theme');
+    assert.match(warn.textContent, /made-up/);
+    assert.equal(host.querySelector('select').value, 'indaco', 'the select shows the fallback, not the bad value');
   });
 });
