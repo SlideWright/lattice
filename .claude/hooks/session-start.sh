@@ -68,3 +68,15 @@ CHROME_BIN="$(ls /root/.cache/puppeteer/chrome/linux-*/chrome-linux64/chrome 2>/
 if [ -n "$CHROME_BIN" ] && [ -n "${CLAUDE_ENV_FILE:-}" ]; then
   echo "export CHROME_PATH=\"$CHROME_BIN\"" >> "$CLAUDE_ENV_FILE"
 fi
+
+# 4. Docs-site deps. docs/ is a SEPARATE npm package (not a root workspace), so
+#    the root install above never touches it — yet any docs/src/** preview or
+#    screenshot needs it. Install best-effort so docs work is never blocked on a
+#    manual `cd docs && npm install` (the single most-rediscovered friction).
+#    Non-fatal and quiet: a transient failure must not abort the session.
+( cd "$CLAUDE_PROJECT_DIR/docs" && npm install --no-audit --no-fund ) >/dev/null 2>&1 || true
+
+# 5. Point every session at the centralized standard-practice digest. The hook's
+#    stdout lands in the session's initial context, so this one line is what
+#    turns "rediscover the sandbox each time" into "read it once, up front".
+echo "Lattice sandbox ready — standard practice (render / docs-site / lint / test cheatsheet): see CLAUDE.md § \"Cloud sandbox\"."
