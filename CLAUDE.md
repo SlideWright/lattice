@@ -55,7 +55,8 @@ every colour goes through `var(--token)`. Themes (`themes/indaco.css`,
 
 Any authoring transform needs to land in all three or the paths drift:
 
-1. **`lattice-emulator.js`** — build-time CLI; inline implementations.
+1. **`lattice-emulator.js`** — build-time CLI; mostly inline implementations,
+   increasingly delegating to the shared registry kernels (e.g. `below-note`).
 2. **`marp.config.js`** → **`lib/core/*.js`** + **`lib/components/chart/_chart-family/chart-family.js`** + **`lib/integrations/*/`** — the marp-cli path.
 3. **`dist/lattice-runtime.js`** — DOM transforms for marp-vscode preview
    (esbuild bundle of `lib/runtime/index.js`).

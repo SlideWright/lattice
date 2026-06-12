@@ -1,6 +1,7 @@
 # P2 — put the emulator on `lattice-engine`
 
-**Status:** plan / proposed. Implements **P2** of
+**Status:** in progress — steps 1–3 landed behind a default-OFF flag; gaps
+enumerated, not yet closed (see **Progress log** below). Implements **P2** of
 [`2026-06-10-marp-replacement-proposal.md`](2026-06-10-marp-replacement-proposal.md)
 §9, sequenced after the owned CSS emitter (merged). Written before code because
 the target is the shipped `bin`/`main`, and the migration is not a drop-in.
@@ -87,11 +88,157 @@ what the shared plugins already produce," not "re-implement features."
    cross-renderer parity) stays green; visually spot-check a sample of rebuilt
    PDFs (`tools/rasterize-for-review.sh`), since page counts don't catch layout.
 
+## Progress log
+
+### 2026-06-11 — flagged engine path + gap inventory
+
+The seam now branches on **`LATTICE_EMULATOR_ENGINE=1`** (default OFF, so the
+shipped `bin`/`main` stays on `parseSlide`). The engine path:
+`engine.render(rawMd, paletteName)` (rawMd = the mermaid-preprocessed source
+*with* front matter, so the engine's directive layer resolves the globals) →
+`splitTopLevelSections` (depth-counted, nested split-panels stay nested) →
+re-tag each `<section>` with `data-marpit-slide="N"` (the **one** attribute the
+engine omits that the page template's sizing / overflow watcher / PDF pagination
+key off) → downstream `applyDeckLogoToHtml` is **skipped** (the engine already
+injected the logo). `parseSlide` is untouched and still default.
+
+**Verification method** — per-page md5 of `pdftoppm` rasters, engine vs
+`parseSlide`, same deck/palette. Sharper than the struct-level harness (which
+over-reports CSS-equivalent markup differences): it compares the *rendered
+pixels*, which is what actually has to match.
+
+**Results (indaco):**
+
+| Deck | Pages | Differ | Nature of the diff |
+|---|---|---|---|
+| inventory/cards-grid | 13 | **0** | byte-identical — engine keeps the card title in the `<li>`, emulator lifts it, but the CSS renders both the same |
+| statement/split-panel | 12 | 1 | TBD |
+| diagram/diagram (mermaid) | 31 | 1 | TBD — mermaid passthrough is the #1 risk |
+| chart/roadmap | 11 | 2 | TBD |
+| math/math (KaTeX) | 15 | 2 | **overflow ring** — identical children, but the engine section renders >12px taller (likely a KaTeX-metrics edge), tripping the overflow watcher |
+| legal/legal | 40 | 11 | mixed — slide 4 is a **missing takeaway divider** (real structural drop), not an overflow ring |
+
+**Gap classes so far:** (a) the overflow watcher tripping on engine sections
+where `parseSlide`'s sat just under the 12px tolerance (math) — chase the KaTeX
+option parity + any section-attribute height effect; (b) a dropped/changed
+element vs the bespoke parser (legal takeaway divider) — real parser-output
+difference to reconcile. cards-grid proves the *approach* is sound (different
+HTML, identical pixels); the gaps are a finite, per-deck triage list, not a
+rewrite.
+
+### 2026-06-12 — triage + first regression fix; the gate is "no regressions"
+
+Drilled into the two gap classes, and the right **gate reframes**: byte-identical
+to `parseSlide` is the wrong bar — it would freeze the bespoke parser's *bugs*
+(the engine is GFM-correct and fixes e.g. bold-inside-inline-code). The bar is
+**no visible regressions**; each diff is triaged regression / improvement / noise.
+
+- **Math overflow (slide 6) — REGRESSION, FIXED.** Not a height edge: the engine
+  used KaTeX `output:'htmlAndMathml'` (marp-core's default), and the hidden MathML
+  annotation's *unclipped* layout inflated `scrollWidth` by ~1220px → the slide
+  overflow watcher baked a stale red ring into the PDF. Fix: `installMath` takes an
+  `output` option (default `htmlAndMathml`, so the playground/marp A/B stays at
+  parity); the **emulator** path passes `mathOutput:'html'` — matching the
+  emulator's own existing `output:'html'` KaTeX call, and a PDF has no
+  screen-reader to consume the MathML. Math A/B 2→1; the residual (slide 9) is a
+  sub-pixel difference, visually identical → **noise, accept.**
+- **Legal takeaway divider (slide 4) — NOT a regression; a pipeline gap.** The
+  `.below-note` hairline wrap (trailing `<p>` after a structural block) is
+  **bespoke to `parseSlide`** (`lattice-emulator.js`, the "Universal below-note"
+  block), *not* in the shared plugins/registry — so marp-cli and the engine never
+  produced it. The emulator has silently diverged from marp here all along (the
+  cross-renderer gate only checks page counts). Dropping it makes the emulator
+  *match* marp; the **correct** convergence is to move the wrap into the shared
+  plugins so all three renderers agree (changes marp-cli output + baselines → its
+  own reviewed change, not a P2 quick-fix). Likely the bulk of legal's 11 diffs.
+
+### 2026-06-12 — full triage complete; only one true engine gap
+
+Every diff across the six probe decks is now categorized. **Three of the four
+remaining diffs are not engine bugs — the engine is marp-correct and `parseSlide`
+was the lenient/quirky outlier**, which is the whole reason P2 exists.
+
+| Deck / slide | Diff | Category | Action |
+|---|---|---|---|
+| cards-grid | — | byte-identical | none |
+| math s6 | overflow ring (MathML `scrollWidth`) | **regression** | **FIXED** (`mathOutput:'html'`) |
+| math s9 | sub-pixel | noise | accept |
+| roadmap s3/s4 | sub-pixel (status icons) | noise | accept |
+| split-panel s3 | `## 114*%*` → literal `*` | **source authoring bug** | engine is CommonMark-correct (confirmed: marp-cli also emits literal `*`); `parseSlide`'s regex was lenient. Fix the deck (`114<em>%</em>` or CSS). |
+| diagram s18 | eyebrow/title styling lost, overflows | **source authoring bug** | duplicate `<!-- _class: diagram -->` + `<!-- _class: content -->`; engine takes the last (`content`) **exactly like marp-cli** (confirmed), `parseSlide` took the first. Fix the deck (one `_class`). |
+| legal (×11) | `.below-note` hairline absent | **pipeline gap** | the one real gap — below. |
+
+**The lesson:** `parseSlide` has been *masking* deck authoring bugs (non-CommonMark
+emphasis, duplicate directives) by being more lenient than marp — and silently
+diverging from marp-cli on those slides all along. The swap surfaces them. They're
+fixed in the **decks**, not the engine.
+
+### The one true gap: migrate `.below-note` to the shared pipeline
+
+`.below-note` (wrap a trailing `<p>` after a structural block in the hairline
+treatment) lives **only** in `parseSlide` (the "Universal below-note" block) — so
+marp-cli, the engine, and the runtime never produced it. To converge ("three paths
+must agree") it moves into the shared registry as a transformer with
+`applyToHtml` / `applyToSection` / `applyToDom`. Two complications found while
+scoping it (why it's a careful change, not a one-liner):
+
+1. **Footer anchoring.** The regex anchors the trailing `<p>` at the section end
+   (`…</p>\s*$`). In `parseSlide` it runs on the **body** (pre-chrome) so that
+   holds; in the engine's `applyToHtml` the section ends in `<footer>`, so the
+   kernel must match `<p>…</p>` before an optional trailing `<footer>`.
+2. **Ordering / per-section class.** below-note runs **last**, after several
+   transforms that settle the trailing-`<p>` shape — but in the emulator some of
+   those (code-cols, crit, table, h2-pill) are *still* `parseSlide`-bespoke and run
+   *after* the single `applyAllToSection` call. And it needs the section **class**
+   for its exclusion list (`title/closing/quote/big-number/content/diagram/…`).
+   So `applyToHtml` must iterate top-level sections (depth-aware, for nested
+   split-panels) and read each class. It is entangled with the broader
+   bespoke-transform migration; do it deliberately and gate on the
+   **emulator default-path galleries staying byte-identical** (they're emulator-
+   built baselines — the safety net).
+
+**Status of the flip:** the engine path is correct on every deck except where a
+deck has its own authoring bug. Order of operations to finish P2: (a) fix the two
+deck authoring bugs; (b) migrate `.below-note`; (c) re-run the corpus A/B → all
+diffs improvement/noise; (d) flip the default, delete `parseSlide`.
+
+### 2026-06-12 — (a) deck bugs fixed; (b) `.below-note` migrated
+
+- **(a) DONE.** split-panel `114*%*` → `114<em>%</em>` (manifest sample + variant
+  caption, regenerated); diagram duplicate `_class` stripped. Both render-neutral
+  on the emulator; engine path now zero-diff on those decks.
+- **(b) DONE.** `.below-note` is now a shared kernel, `lib/core/below-note.js`
+  (`wrapSectionBody` for the emulator body, `applyToHtml` for the full
+  Marpit HTML, `applyToDom` for the runtime), wired into the registry via
+  `lib/transformers/below-note.js` (registered last; **no `applyToSection`** so
+  it does not re-order ahead of `parseSlide`'s bespoke crit/glossary
+  transforms — the emulator calls the kernel directly as its last step). The
+  footer-anchoring (complication #1) is solved by an optional trailing-`<footer>`
+  group in the regex that is byte-equivalent to the old `…</p>\s*$` for the
+  footer-less emulator body. The ordering question (complication #2) is sidestepped
+  by keeping the emulator's explicit last-call rather than folding into
+  `applyAllToSection`.
+  - **Safety net held:** emulator default-path rasters byte-identical across
+    legal (40pp) + baseline (89pp) + glossary — 169 pages, 0 diffs.
+  - **Goal met:** marp-cli now emits `<div class="below-note">…</div><footer>`;
+    engine↔marp **FULL PARITY across 65 decks**; runtime bundle carries it
+    (`applyToDom`). Unit suite +11 (`test/unit/transformers/below-note.test.js`).
+  - **Legal A/B:** engine-vs-`parseSlide` diffs 11 → 4; the resolved 7 were
+    below-note. The residual 4 (slides 2/8/19/20) are **engine-correctness
+    improvements** — e.g. slide 2 is the bold-inside-inline-code case
+    (`parseSlide` wrongly bolds `**Federal**` inside `<code>`; the engine keeps
+    it literal, matching marp). Those belong to step (c), not below-note.
+
+Remaining to finish P2: (c) finish triaging the corpus A/B (the residual diffs
+are improvements/noise so far); (d) flip the default + delete `parseSlide`.
+
 ## Rollback
 
-Every step is reversible; the seam is a single call site. `parseSlide` stays in
-the tree until step 1's harness reports zero gaps, so a swap that regresses any
-deck is caught before the parser is deleted.
+Every step is reversible; the seam is a single call site behind a default-OFF
+flag. `parseSlide` stays in the tree until the rendered-pixel A/B is fully
+triaged (every diff an improvement / noise / logged follow-up, no open
+regressions), so a swap that regresses any deck is caught before the parser is
+deleted.
 
 ## Not in scope
 

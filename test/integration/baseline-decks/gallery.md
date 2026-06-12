@@ -1314,7 +1314,7 @@ Three structural factors explain 90% of the shortfall — all addressable before
 
 `Net Revenue Retention`
 
-## 114*%*
+## 114<em>%</em>
 
 Measured across all customers active for 12+ months, March 31 cohort.
 

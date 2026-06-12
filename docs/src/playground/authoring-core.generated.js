@@ -292,7 +292,7 @@ ${indent}  ${bullet} ${body.trim()}`;
             classToken: cls,
             line: m[0],
             message: `'${cls}' has no '## ' headline \u2014 the transform lifts the <h2> into the left panel, so the headline${isMetric ? " / hero number" : ""} renders empty`,
-            fix: isMetric ? "Add the hero number as an h2: `## 114*%*` (the `*\u2026*` styles the unit)." : "Add a `## Headline` line for the left panel."
+            fix: isMetric ? "Add the hero number as an h2: `## 114<em>%</em>` (wrap the unit in `<em>` to style it smaller; plain `*%*` is not CommonMark emphasis next to a digit)." : "Add a `## Headline` line for the left panel."
           });
         }
         if (tokens.includes("split-panel") && tokens.includes("pullquote") && !/^>\s/m.test(slide)) {

@@ -995,6 +995,10 @@ const content   = rawMd.replace(/^---[\s\S]*?---\n/, '');
 const { splitSlides }    = require('./lib/core/split-slides');
 // Named-slot lift helper used by decision / compare-prose (incl. transition).
 const { liftSlotLabel }  = require('./lib/core/slot-label-lift');
+// Universal below-note kernel — the trailing-`<p>` hairline wrap. parseSlide
+// calls wrapSectionBody as its LAST transform; the same kernel feeds the
+// marp-cli / runtime paths via lib/transformers/below-note.js.
+const belowNote          = require('./lib/core/below-note');
 // Shared transformer registry — dispatches chart-family, split-panels,
 // roadmap, journey, and word-cloud per-section via applyAllToSection.
 // See lib/transformers/registry.js for the contract and order rationale.
@@ -1681,17 +1685,14 @@ function parseSlide(raw, index) {
 
 
   // ── Universal below-note ─────────────────────────────────────────────────────
-  // Any layout where the last element in html is a plain <p> gets it wrapped
-  // in .below-note for the full-width hairline treatment.
-  // Excludes: bookends and layouts where trailing <p> is already claimed
-  // (caption / attribution / main content / italic legend).
-  const noBeloNote = ['title','closing','quote','big-number','divider','image','split-panel','split-compare','content','diagram','stats','code','roadmap','progress','timeline-list','piechart','gantt','kanban','image-razor','image-brief','image-chamber'];
-  const isNoBelowNote = noBeloNote.some(x => cls.includes(x));
-  if (!isNoBelowNote) {
-    // Only wrap a trailing <p> as below-note if it follows a structural block
-    // (div, ul, ol, table, pre) — not if it follows another <p> (that's main content)
-    html = html.replace(/((?:<\/div>|<\/ul>|<\/ol>|<\/table>|<\/pre>|<\/blockquote>)\s*)<p>([\s\S]*?)<\/p>\s*$/, '$1<div class="below-note"><p>$2</p></div>');
-  }
+  // Wrap a layout's trailing <p> (the editorial hairline note that follows a
+  // structural block — div/ul/ol/table/pre/blockquote, never another <p>,
+  // which is main content) in .below-note for the full-width hairline
+  // treatment. Runs LAST so the bespoke crit/glossary transforms above have
+  // settled the trailing element. The kernel (lib/core/below-note.js) owns the
+  // exclusion list + regex and is shared with the marp-cli / runtime paths so
+  // all three renderers agree. cls drives the exclusion check.
+  html = belowNote.wrapSectionBody(html, cls);
 
   // ── Assemble section — matching Marp v4 HTML output ───────────────────────
   // Marp produces:
@@ -1740,7 +1741,61 @@ function parseSlide(raw, index) {
   ].join(''));
 }
 
-const slides = rawSlides.map((s, i) => parseSlide(s, i));
+// ── P2: optional engine-backed parse path (env-gated, default OFF) ──────────
+// `LATTICE_EMULATOR_ENGINE=1` routes parsing through lib/engine (the owned
+// markdown→slide engine) instead of the bespoke parseSlide regex parser, so
+// Lattice converges on ONE markdown implementation. Default-off keeps the
+// shipped bin on parseSlide until the engine↔emulator parity gate
+// (tools/emulator-engine-parity.mjs) is clean across the corpus — see
+// engineering/decisions/2026-06-11-emulator-on-engine-p2.md.
+//
+// The engine already runs the SAME plugins + registry + highlight.js + KaTeX +
+// deck-logo as parseSlide's downstream, so the engine path only has to:
+//   - feed the mermaid-preprocessed source WITH front matter (rawMd), so the
+//     engine's directive layer resolves paginate/header/footer/class/size;
+//   - re-tag each section with `data-marpit-slide` (the engine omits it; the
+//     page template's sizing / overflow watcher / PDF pagination key off it);
+//   - and downstream, SKIP applyDeckLogoToHtml (the engine already injected it).
+const USE_ENGINE = process.env.LATTICE_EMULATOR_ENGINE === '1';
+
+// Depth-counted scan over <section>…</section> so nested split-panel sections
+// stay inside their parent. Reproduces parseSlide's "one <section> string per
+// slide" array shape from the engine's assembled <div class="marpit"> document.
+function splitTopLevelSections(marpitHtml) {
+  const out = [];
+  const re = /<section\b[^>]*>|<\/section>/gi;
+  let depth = 0;
+  let start = -1;
+  let m;
+  while ((m = re.exec(marpitHtml)) !== null) {
+    if (m[0][1] === '/') {
+      depth--;
+      if (depth === 0 && start >= 0) {
+        out.push(marpitHtml.slice(start, re.lastIndex));
+        start = -1;
+      }
+    } else {
+      if (depth === 0) start = m.index;
+      depth++;
+    }
+  }
+  return out;
+}
+
+function engineSlides() {
+  const latticeEngine = require('./lib/engine');
+  // mathOutput:'html' drops KaTeX's hidden MathML annotation — it can't be read
+  // in a PDF and its unclipped layout trips the slide overflow watcher (a stale
+  // ring), matching the emulator's own `output:'html'` KaTeX call.
+  const engine = latticeEngine.createEngine({ mathOutput: 'html' });
+  engine.addThemes([readFileOrDie(cssFile, 'layout CSS'), fs.readFileSync(palettePath, 'utf8')]);
+  const { html } = engine.render(rawMd, paletteName);
+  return splitTopLevelSections(html).map((sec, i) =>
+    sec.replace(/^<section\b/i, `<section data-marpit-slide="${i + 1}"`),
+  );
+}
+
+const slides = USE_ENGINE ? engineSlides() : rawSlides.map((s, i) => parseSlide(s, i));
 
 // ── Marp-equivalent CSS for pagination and header/footer ────────────────────
 // Marp injects these styles itself; we reproduce them here since we're
@@ -1904,7 +1959,11 @@ const highlightedSlides = slides.map(s => applyHighlighting(s));
 // "first slide" check in the rewriter (used by `logo-on: title`)
 // sees the slides in source order.
 const { applyDeckLogoToHtml } = require('./marp.config').plugins;
-const slidesWithLogo = applyDeckLogoToHtml(highlightedSlides.join('\n'), rawMd);
+// The engine path already ran applyDeckLogoToHtml inside engine.render — re-running
+// it here would inject a second logo, so the engine path joins as-is.
+const slidesWithLogo = USE_ENGINE
+  ? highlightedSlides.join('\n')
+  : applyDeckLogoToHtml(highlightedSlides.join('\n'), rawMd);
 
 // ── KaTeX CSS link ────────────────────────────────────────────────────────
 // KaTeX's CSS references font files via relative `url(fonts/…woff2)` paths,

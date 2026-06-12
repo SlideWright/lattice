@@ -172,7 +172,7 @@ versa:
 |------|-----------|------|
 | **Component transform** | one component's CSS/manifest | `lib/components/<bucket>/<name>/<name>.transform.js` (roadmap, journey, word-cloud, the chart layouts) |
 | **Bucket-family transform** | one bucket | `lib/components/<bucket>/_family/` (chart-family) |
-| **Structural primitive** | nothing — any component opts in | `lib/core/` (split-panels, split-slides, slot-label-lift, match-section, resolve-palette) |
+| **Structural primitive** | nothing — any component opts in | `lib/core/` (split-panels, split-slides, below-note, slot-label-lift, match-section, resolve-palette) |
 | **Registry + render adapters** | the wiring across render paths | `lib/transformers/` |
 
 The distinction that surprises people: `split-panels` lives in

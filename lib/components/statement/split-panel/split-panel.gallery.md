@@ -39,7 +39,7 @@ The quarter closed on plan for retention, and three findings explain the new-bus
 
 `Net Revenue Retention`
 
-## 114*%*
+## 114<em>%</em>
 
 Trailing twelve months, top-50 accounts, versus a 108% target.
 
