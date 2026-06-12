@@ -214,6 +214,13 @@ in patch versions.
   calls the same kernel as its last `parseSlide` step); engine↔marp parity holds
   across the full 65-deck gallery sweep. (Mirrors the chart-caption footer-peel
   above — same trailing-`<footer>` handling, applied to the hairline note.)
+- **`split-panel` `metric` documented sample now uses `114<em>%</em>`, not
+  `114*%*`.** The component's shipped sample + variant caption (in the manifest,
+  the generated `split-panel.docs.md`, and `dist/docs/components.{md,json}`) and
+  the `split-panel metric` footgun-lint fix-it hint taught `114*%*` to shrink the
+  unit — but `*%*` is not CommonMark emphasis next to a digit, so marp-cli and the
+  engine emit literal asterisks (only the emulator's lenient parser styled it).
+  All those surfaces now use an explicit `<em>`.
 - **Inline-code chips no longer flatten code blocks or run eyebrows off the
   slide.** A `white-space:nowrap` on `section code` (added to keep hyphenated
   identifier chips like `--bg-alt` from wrapping at the hyphen) also matched
