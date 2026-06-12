@@ -27,6 +27,19 @@ in patch versions.
 
 ### Changed
 
+- **The reference trio's chart palettes are re-tuned to the quality bar they
+  set.** `cuoio`, `indaco`, and `onyx` previously sat at grade C/C/B on
+  `npm run scorecard` — the brand-triad curation that gives them tight brand
+  affinity also clustered their categorical hues, which the scorecard penalises.
+  Surgical, identity-preserving nudges (categorical pigments held to ΔE ≤ 0.05;
+  chart-only `info`/`mute` free; semantic trios left untouched) lift all three to
+  **B** (cuoio 83.6, indaco 85.2, onyx 89.2) with the hard chart-contrast gate
+  still green. The standout fix: **onyx's `at-risk` gantt/kanban state was olive,
+  nearly indistinguishable from its green `done`/`live`** — it's now a proper
+  amber, so a blocked-but-on-track bar finally reads as a warning. onyx stays
+  achromatic (its category grays are chroma-locked); indaco's change is
+  imperceptible; cuoio's charts read a touch more vivid (more categorical
+  separation). The previously-curated values remain in git history.
 - **The `sketch` finish now hand-draws the metadata pills / badges too.** The
   shared `--pill-radius` (a machine-perfect `999px` lozenge) becomes a wobbled
   hand-drawn chip corner under `sketch`, so every metadata pill, state-marker

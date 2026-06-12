@@ -224,19 +224,19 @@ section pre.hljs {
    * red → slate → green → near-black → grays, then olive. The triad leads;
    * grays fill the long tail. All slots clear 3:1 on both canvases. */
   --chart-cat1: light-dark(#C71F2D, #E5484D);  /* signature red — hero       */
-  --chart-cat2: light-dark(#3F5680, #8FA8CE);  /* slate                      */
-  --chart-cat3: light-dark(#2C7A4B, #56C07E);  /* green                      */
+  --chart-cat2: light-dark(#3F5680, #94A3D3);  /* slate                      */
+  --chart-cat3: light-dark(#38834B, #53C579);  /* green                      */
   --chart-cat4: light-dark(#2B2B2B, #E0E0E0);  /* near-black / near-white    */
-  --chart-cat5: light-dark(#8A8A8A, #8E8E8E);  /* mid gray                   */
-  --chart-cat6: light-dark(#555555, #BDBDBD);  /* dark-mid / light gray      */
+  --chart-cat5: light-dark(#8C8688, #86888C);  /* mid gray                   */
+  --chart-cat6: light-dark(#545454, #BAC3BF);  /* dark-mid / light gray      */
   --chart-cat7: light-dark(#6B6F48, #AEB386);  /* olive (supporting accent)  */
   --chart-cat8: light-dark(#707070, #D2D2D2);  /* mid / light gray           */
 
   /* Status — pass green / warn olive / fail red / info slate / mute gray:
    * the same hues as the categories so status + categorical read as one. */
   --chart-state-pass: light-dark(#2C7A4B, #56C07E);  /* done — green            */
-  --chart-state-warn: light-dark(#6B6F48, #AEB386);  /* at-risk — olive         */
+  --chart-state-warn: light-dark(#B57D00, #F1AC40);  /* at-risk — olive         */
   --chart-state-fail: light-dark(#C71F2D, #E5484D);  /* blocked — signature red */
-  --chart-state-info: light-dark(#3F5680, #8FA8CE);  /* decision — slate        */
-  --chart-state-mute: light-dark(#AEAEAE, #6E6E6E);  /* deferred — gray         */
+  --chart-state-info: light-dark(#384C81, #85A1D9);  /* decision — slate        */
+  --chart-state-mute: light-dark(#B4AEB4, #6E6E6E);  /* deferred — gray         */
 }
