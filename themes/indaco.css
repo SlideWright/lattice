@@ -289,10 +289,10 @@
    * token block for the contract. AA-verified both canvases (border ≥3:1,
    * label text ≥4.5:1). */
   --chart-cat1: light-dark(#006398, color-mix(in oklab, #006398, white 30%));  /* blue    */
-  --chart-cat2: light-dark(#993D00, color-mix(in oklab, #993D00, white 30%));  /* rust    */
+  --chart-cat2: light-dark(#9C3F00, color-mix(in oklab, #9C3F00, white 30%));  /* rust    */
   --chart-cat3: light-dark(#2E6F00, color-mix(in oklab, #2E6F00, white 30%));  /* green   */
-  --chart-cat4: light-dark(#953170, color-mix(in oklab, #953170, white 30%));  /* magenta */
-  --chart-cat5: light-dark(#7142A0, color-mix(in oklab, #7142A0, white 30%));  /* purple  */
+  --chart-cat4: light-dark(#A9255D, color-mix(in oklab, #A9255D, white 30%));  /* magenta */
+  --chart-cat5: light-dark(#6444BB, color-mix(in oklab, #6444BB, white 30%));  /* purple  */
   --chart-cat6: light-dark(#006D60, color-mix(in oklab, #006D60, white 30%));  /* teal    */
   --chart-cat7: light-dark(#835100, color-mix(in oklab, #835100, white 30%));  /* gold    */
   --chart-cat8: light-dark(#006A79, color-mix(in oklab, #006A79, white 30%));  /* cyan    */
@@ -304,6 +304,6 @@
   --chart-state-pass: light-dark(#2F6B12, #6FCC4D);  /* done — forest green (= --pass)   */
   --chart-state-warn: light-dark(#8F5E00, #E3A93C);  /* at-risk — saddle amber           */
   --chart-state-fail: light-dark(#C0283A, #FF6B72);  /* blocked — cool crimson           */
-  --chart-state-info: light-dark(#00598C, #82C8E5);  /* decision — indaco blue           */
-  --chart-state-mute: light-dark(#6B7F9A, #9AAAC0);  /* deferred — blue-gray (= --muted) */
+  --chart-state-info: light-dark(#00598C, #7FC8E5);  /* decision — indaco blue           */
+  --chart-state-mute: light-dark(#6B7F9A, #928FB8);  /* deferred — blue-gray (= --muted) */
 }
