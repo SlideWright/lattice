@@ -24,7 +24,9 @@
  *   8. landing tokens          tools/build-landing-tokens.js  (docs site palette CSS)
  *   9. playground bundle       tools/build-playground.js      (docs site browser engine)
  *  10. theme-core bundle       tools/build-theme-core.js      (docs site Theme Studio core)
- *  11. dist README            tools/build-dist-readme.js (indexes dist/; runs last)
+ *  11. layout-core bundle      tools/build-layout-core.js     (docs site Layout Studio core)
+ *  12. authoring-core bundle   tools/build-authoring-core.js  (docs site Architect/Coach core)
+ *  13. dist README            tools/build-dist-readme.js (indexes dist/; runs last)
  *
  * Gallery PDFs are NOT part of this build: they need Chromium, take tens
  * of seconds, and are regression artifacts rather than shipped source.
@@ -63,6 +65,7 @@ const STEPS = [
   { label: 'playground bundle (docs site)', script: 'build-playground.js' },
   { label: 'theme-core bundle (docs site)', script: 'build-theme-core.js' },
   { label: 'layout-core bundle (docs site)', script: 'build-layout-core.js' },
+  { label: 'authoring-core bundle (docs site)', script: 'build-authoring-core.js' },
   // Last — it indexes the finished dist/ folder, so every other artifact
   // must already be (re)written before it runs.
   { label: 'dist README', script: 'build-dist-readme.js' },

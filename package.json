@@ -87,6 +87,8 @@
     "theme-core:check": "node tools/build-theme-core.js --check",
     "layout-core:build": "node tools/build-layout-core.js",
     "layout-core:check": "node tools/build-layout-core.js --check",
+    "authoring-core:build": "node tools/build-authoring-core.js",
+    "authoring-core:check": "node tools/build-authoring-core.js --check",
     "dist-readme:build": "node tools/build-dist-readme.js",
     "dist-readme:check": "node tools/build-dist-readme.js --check",
     "release": "node tools/release.js",

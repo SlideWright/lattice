@@ -100,6 +100,19 @@ pre-commit:
         - 'lib/layout/**/*.js'
         - 'tools/build-layout-core.js'
       run: npm run layout-core:check --silent
+    - name: authoring-core-bundle-freshness
+      # Sibling of theme/layout-core-bundle-freshness: catches "edited an
+      # authoring engine (lint-core/review-core/scorecard), forgot to rebuild
+      # docs/src/playground/authoring-core.generated.js" (the Drawing Board's
+      # Architect + Coach import it; raw lib/authoring CJS can't be browser-
+      # imported in `astro dev`). Same cheap esbuild rebuild-to-buffer +
+      # byte-diff via npm run authoring-core:check.
+      glob:
+        - 'lib/authoring/lint-core.js'
+        - 'lib/authoring/review-core.js'
+        - 'lib/authoring/scorecard.js'
+        - 'tools/build-authoring-core.js'
+      run: npm run authoring-core:check --silent
     - name: dist-readme-freshness
       # Catches "changed which files dist/ ships (or their descriptions),
       # forgot to regenerate dist/README.md". The README indexes dist/
