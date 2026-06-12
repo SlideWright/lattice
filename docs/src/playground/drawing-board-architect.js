@@ -255,7 +255,15 @@ export function createArchitect({ vocab, catalog, mount, reveal, applyFix }) {
 		timer = setTimeout(run, 250);
 	}
 
-	return { update, getAssessment: () => assessment };
+	// Teach the linter the author's saved local components (component bridge), so
+	// a valid `_class: <local>` isn't flagged "unknown class". The names join the
+	// live vocab Set; the caller re-runs update() to re-lint. See
+	// engineering/decisions/2026-06-12-workbench-component-bridge.md.
+	function addNames(names) {
+		for (const n of names || []) if (n) vocabSets.names.add(n);
+	}
+
+	return { update, addNames, getAssessment: () => assessment };
 }
 
 // ── Onboarding: two modes — Drafting & Freehand (deterministic, zero-model) ───

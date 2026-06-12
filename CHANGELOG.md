@@ -44,6 +44,19 @@ in patch versions.
 
 ### Added
 
+- **Workbench component bridge — local components reach the Drawing Board.** A
+  CSS-only component authored and saved in the Workbench Layout Studio is now
+  usable in the Drawing Board: it completes inside `_class:` (and offers its saved
+  skeleton) marked *local*, renders live the moment a slide opts into its class,
+  and **every Markdown export vendors only the components the deck references** as
+  self-contained `<style>` blocks — so the exported `.md` renders the component
+  across all three engine paths (marp-cli / emulator / runtime), not just in the
+  browser. PDF / PPTX / Print already rasterize the live preview. Detection is one
+  pure scan of the deck's `_class` directives that feeds both live render and
+  export, so they can't drift. The Layout Studio blocks a local name that collides
+  with a shipped component class at save time. CSS-only only; transform-bearing
+  components remain graduation-only. See
+  `engineering/decisions/2026-06-12-workbench-component-bridge.md`.
 - **Workbench export bridge — library themes reach the Drawing Board.** A theme
   saved in the Workbench library is now selectable in the Drawing Board's palette
   picker (listed with a *(saved)* suffix), registers with the in-browser engine,

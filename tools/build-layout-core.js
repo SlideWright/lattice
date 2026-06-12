@@ -32,6 +32,7 @@ const ENTRY_CONTENTS = `
 import gate from './gate.js';
 import scaffold from './scaffold.js';
 import starters from './starters.js';
+import bridge from './bridge.js';
 
 // gate (deterministic — model proposes, these dispose)
 export const {
@@ -46,6 +47,11 @@ export const {
 } = scaffold;
 // starters (the no-model floor + the head start)
 export const { STARTERS, getStarter } = starters;
+// bridge (local component → live render + export, across all three paths)
+export const {
+  referencedComponents, embedComponentsInMarkdown, stripEmbeddedComponents,
+  collidesWithShipped,
+} = bridge;
 `;
 
 const BUILD_OPTIONS = {
