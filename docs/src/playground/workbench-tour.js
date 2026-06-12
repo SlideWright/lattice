@@ -10,25 +10,25 @@ const STEPS = [
 		popover: {
 			title: 'Welcome to the Workbench',
 			description:
-				'This is where you fabricate the parts of a deck. The Theme Studio — open now — turns a handful of colours into a full, WCAG-checked palette you can drop into any deck. Here is the tour.',
+				'This is where you craft a theme. A Lattice palette is just a handful of colours — the studio derives the rest and holds it to WCAG AA. Here’s the tour, in the order you’d build one.',
 		},
 	},
 	{
-		element: '.wb-faculty',
+		element: '.studio-fields',
 		popover: {
-			title: 'Two studios, one bench',
+			title: 'Set a few core colours',
 			description:
-				'The Workbench has two faculties. <strong>Theme Studio</strong> crafts a colour palette; <strong>Layout Studio</strong> authors a CSS-only component. Switch between them here anytime — this tour walks the Theme Studio.',
-			side: 'bottom',
+				'This is the whole job: pick a handful of essentials, and the studio derives the full token contract from them — surfaces, text, borders, accents — so the palette stays coherent. Start here.',
+			side: 'right',
 			align: 'start',
 		},
 	},
 	{
 		element: '.studio-ai',
 		popover: {
-			title: 'Design with AI',
+			title: 'Or just describe it',
 			description:
-				'Describe the palette you want in plain language — “warm editorial”, “cooler”, “navy accent” — and the studio drafts it for you. Optional: works with or without a connected model.',
+				'Rather not pick colours by hand? Describe the palette in plain language — “warm editorial”, “cooler”, “navy accent” — and the studio drafts the essentials for you. Works with or without a connected model.',
 			side: 'bottom',
 			align: 'start',
 		},
@@ -36,79 +36,39 @@ const STEPS = [
 	{
 		element: '.studio-starters',
 		popover: {
-			title: 'Start from a preset',
+			title: 'Or begin from a preset',
 			description:
-				'Prefer to begin by hand? Pick a shipped palette as your starting point, then adjust. Every starter is a real Lattice theme.',
+				'A third way in: start from a shipped palette and adjust. Every starter is a real Lattice theme.',
 			side: 'bottom',
-			align: 'start',
-		},
-	},
-	{
-		element: '.studio-name',
-		popover: {
-			title: 'Name your theme',
-			description:
-				'This becomes the filename — <code>themes/&lt;name&gt;.css</code> — when you download. Keep it short and lowercase.',
-			side: 'bottom',
-			align: 'start',
-		},
-	},
-	{
-		element: '.studio-fields',
-		popover: {
-			title: 'Set the essentials',
-			description:
-				'Choose just a few core colours. The studio derives the rest of the token contract — surfaces, text, borders, accents — so the whole palette stays coherent.',
-			side: 'right',
 			align: 'start',
 		},
 	},
 	{
 		element: '.studio-stage',
 		popover: {
-			title: 'Live specimen',
+			title: 'See it live',
 			description:
-				'Every change renders instantly on a real specimen deck, using the exact same engine the Drawing Board and CLI use. What you see here is what ships.',
+				'Every change renders instantly on a real specimen deck, through the same engine the Drawing Board and CLI use — and you can flip the specimen between light and dark to check both. What you see is what ships.',
 			side: 'left',
 			align: 'start',
-		},
-	},
-	{
-		element: '.studio-stage .studio-mode',
-		popover: {
-			title: 'Check light and dark',
-			description:
-				'Flip the specimen between light and dark to confirm your palette holds up both ways before you commit to it.',
-			side: 'bottom',
-			align: 'center',
 		},
 	},
 	{
 		element: '.studio-audit',
 		popover: {
-			title: 'Contrast audit',
+			title: 'Held to WCAG AA',
 			description:
-				'The studio holds your palette to WCAG AA automatically. The meter flags any text/background pair that falls short, so accessibility is built in — not bolted on later.',
+				'The meter checks every text/background pair as you go and flags anything that falls short — so accessible contrast is built in, not bolted on later.',
 			side: 'left',
-			align: 'start',
-		},
-	},
-	{
-		element: '.studio-lib-block',
-		popover: {
-			title: 'Save to your library',
-			description:
-				'Save the current palette to keep iterating across visits — your library lives in this browser, no account needed.',
-			side: 'top',
 			align: 'start',
 		},
 	},
 	{
 		element: '.studio-actions',
 		popover: {
-			title: 'Copy or download',
+			title: 'Save it, then ship it',
 			description:
-				'When it’s ready, copy the CSS to the clipboard or download a drop-in <code>themes/&lt;name&gt;.css</code>. That single file is the whole theme.',
+				'Name the theme, save it to your library to keep iterating across visits, then copy the CSS or download a drop-in <code>themes/&lt;name&gt;.css</code> — that one file is the whole theme.',
 			side: 'top',
 			align: 'center',
 		},
@@ -116,7 +76,7 @@ const STEPS = [
 	{
 		element: '.wb-faculty',
 		popover: {
-			title: 'Next: the Layout Studio',
+			title: 'There’s a second bench',
 			description:
 				'That’s the Theme Studio. Switch to <strong>Layout Studio</strong> to author a palette-blind component the same way. Replay this tour anytime from the <strong>Tour</strong> button up top.',
 			side: 'bottom',

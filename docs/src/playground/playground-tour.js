@@ -9,7 +9,7 @@ const STEPS = [
 		popover: {
 			title: 'Welcome to the Playground',
 			description:
-				'A live sandbox for Lattice. Drop in any component, edit the Markdown, and watch boardroom-quality slides render through the real engine as you type. Here’s the quick tour.',
+				'A live sandbox for Lattice: drop in a component, edit its Markdown, watch it render. Here’s the quick tour — it follows what you’d actually try.',
 		},
 	},
 	{
@@ -23,21 +23,11 @@ const STEPS = [
 		},
 	},
 	{
-		element: '.pg-variant-picker',
-		popover: {
-			title: 'Switch variants',
-			description:
-				'Many components ship more than one shape. Once you’ve picked a component, this menu flips between its variants so you can compare them instantly.',
-			side: 'bottom',
-			align: 'start',
-		},
-	},
-	{
 		element: '#editor-host',
 		popover: {
-			title: 'Edit the Markdown',
+			title: 'Edit its Markdown',
 			description:
-				'Write plain Lattice Markdown here. Autocomplete knows the component classes and theme tokens, so <code>&lt;!-- _class: … --&gt;</code> is a keystroke away. On a phone, the Edit / Preview tabs swap this for the slides.',
+				'Tweak the example here in plain Lattice Markdown — autocomplete knows the component classes and theme tokens. Many components ship several shapes; the <strong>Variant</strong> menu above flips between them.',
 			side: 'right',
 			align: 'start',
 		},
@@ -45,9 +35,9 @@ const STEPS = [
 	{
 		element: '#preview',
 		popover: {
-			title: 'Live slides',
+			title: 'See it render live',
 			description:
-				'Your Markdown renders here continuously through the same engine that produces the shipped PDFs — no build step, no refresh.',
+				'Your Markdown renders here as you type, through the same engine that produces the shipped PDFs — no build step, no refresh. On a phone, the Edit / Preview tabs swap between this and the editor.',
 			side: 'left',
 			align: 'start',
 		},
@@ -55,7 +45,7 @@ const STEPS = [
 	{
 		element: '#pg-galleries-trigger',
 		popover: {
-			title: 'Load a full deck',
+			title: 'Or load a full deck',
 			description:
 				'Rather start from something complete? Open the galleries drawer to load a whole showcase or family-survey deck and explore it slide by slide.',
 			side: 'bottom',
@@ -67,17 +57,7 @@ const STEPS = [
 		popover: {
 			title: 'Try any palette',
 			description:
-				'Recolour everything from this menu. Layouts are palette-blind, so the same Markdown looks at home in every theme.',
-			side: 'bottom',
-			align: 'end',
-		},
-	},
-	{
-		element: '#mode-toggle',
-		popover: {
-			title: 'Light or dark',
-			description:
-				'Flip between light and dark to check your slides read well both ways.',
+				'Recolour everything from here — layouts are palette-blind, so the same Markdown looks at home in every theme, light or dark.',
 			side: 'bottom',
 			align: 'end',
 		},
@@ -86,7 +66,7 @@ const STEPS = [
 		popover: {
 			title: 'That’s the Playground',
 			description:
-				'Replay this anytime from the <strong>Tour</strong> button up top. When you’re ready to build a full deck, the <strong>Drawing Board</strong> adds an AI partner and version history; the <strong>Workbench</strong> crafts themes and components.',
+				'Replay this anytime from the <strong>Tour</strong> button up top. Ready for more? The <strong>Drawing Board</strong> builds full decks with an AI partner and version history; the <strong>Workbench</strong> crafts themes and components.',
 		},
 	},
 ];

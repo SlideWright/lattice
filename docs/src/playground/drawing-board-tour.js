@@ -9,85 +9,55 @@ const STEPS = [
 		popover: {
 			title: 'Welcome to the Drawing Board',
 			description:
-				'A full deck workspace: write Markdown, get live review from the Architect, and watch boardroom-quality slides render as you type. Here’s the two-minute tour.',
-		},
-	},
-	{
-		element: '#db-architect',
-		popover: {
-			title: 'The Architect',
-			description:
-				'Your deck partner. It reviews your slides against Lattice’s design contract and suggests fixes — deterministically, so the same deck always gets the same read.',
-			side: 'right',
-			align: 'start',
-		},
-	},
-	{
-		element: '#db-arch-modes',
-		popover: {
-			title: 'Coach or Converse',
-			description:
-				'<strong>Coach</strong> offers deterministic next-step chips and findings — no model required. <strong>Converse</strong> opens a chat once you connect a model. Start in Coach; it works offline.',
-			side: 'right',
-			align: 'start',
-		},
-	},
-	{
-		element: '#db-arch-composer',
-		popover: {
-			title: 'Ask the Architect',
-			description:
-				'Type a question about your deck — “is this slide too dense?”, “suggest a layout for these three points”. Answers ground in your actual Markdown and the component catalog.',
-			side: 'top',
-			align: 'start',
+				'The shortest path from an idea to a finished deck: write Markdown, watch it render, ship it. Here’s the two-minute tour — it follows what you’ll actually do.',
 		},
 	},
 	{
 		element: '#db-editor',
 		popover: {
-			title: 'The Markdown editor',
+			title: 'Start here — write',
 			description:
-				'Write the deck here in plain Lattice Markdown. Autocomplete knows the component classes and theme tokens, so <code>&lt;!-- _class: … --&gt;</code> and friends are a keystroke away.',
+				'This is the deck, in plain Lattice Markdown. Autocomplete knows the component classes and theme tokens, so <code>&lt;!-- _class: … --&gt;</code> is a keystroke away. Just start typing.',
 			side: 'top',
 			align: 'center',
 		},
 	},
 	{
-		element: '#db-config-open',
-		popover: {
-			title: 'Deck setup',
-			description:
-				'Set the front-matter without hand-editing it: theme, slide size, pagination, header and footer all live in this drawer.',
-			side: 'bottom',
-			align: 'end',
-		},
-	},
-	{
 		element: '#db-preview',
 		popover: {
-			title: 'Live slides',
+			title: '…and watch it render',
 			description:
-				'Your deck renders here continuously through the real Lattice engine — the same one that produces the shipped PDFs. No build step, no refresh.',
+				'Your slides appear here as you type — through the same engine that produces the shipped PDFs, so what you see is what ships. No build step, no refresh. <strong>Practice</strong> up top rehearses them full-screen.',
 			side: 'left',
 			align: 'start',
 		},
 	},
 	{
-		element: '#db-practice-open',
+		element: '#db-architect',
 		popover: {
-			title: 'Practice mode',
+			title: 'Your deck partner',
 			description:
-				'Rehearse full-screen with pacing when the deck is ready — a presenter view without leaving the page.',
+				'The Architect reviews your slides against Lattice’s design contract and suggests fixes. <strong>Coach</strong> gives deterministic next-step chips with no model needed; <strong>Converse</strong> opens a chat once you connect one. Start in Coach — it works offline.',
+			side: 'right',
+			align: 'start',
+		},
+	},
+	{
+		element: '#db-config-open',
+		popover: {
+			title: 'Set up the deck',
+			description:
+				'Theme, slide size, pagination, header and footer — set them here instead of hand-editing front-matter.',
 			side: 'bottom',
-			align: 'center',
+			align: 'end',
 		},
 	},
 	{
 		element: '#db-export',
 		popover: {
-			title: 'Export anywhere',
+			title: 'Ship it',
 			description:
-				'Ship the deck as Markdown, a vector PDF, image-based PowerPoint, or straight to print — all from here.',
+				'Export the finished deck as Markdown, a vector PDF, image-based PowerPoint, or straight to print — whatever the moment needs.',
 			side: 'bottom',
 			align: 'center',
 		},
@@ -95,7 +65,7 @@ const STEPS = [
 	{
 		element: '#db-decks-open',
 		popover: {
-			title: 'Decks & versions',
+			title: 'It’s all saved',
 			description:
 				'Your decks and their full revision history live in this browser. Every state is checkpointed, so you can always restore an earlier draft — nothing is lost.',
 			side: 'bottom',
@@ -105,9 +75,9 @@ const STEPS = [
 	{
 		element: '#db-model-chip',
 		popover: {
-			title: 'Settings & on-device AI',
+			title: 'Settings',
 			description:
-				'Tune the workspace and choose how the Architect thinks — connect a model or run a smaller one on-device. The chip shows the current tier at a glance.',
+				'Tune the workspace and choose how the Architect thinks — connect a model or run one on-device. It’s also where you can switch these guided tours off.',
 			side: 'bottom',
 			align: 'start',
 		},
@@ -117,7 +87,7 @@ const STEPS = [
 		popover: {
 			title: 'Try any palette',
 			description:
-				'Recolour the entire workspace from this menu — layouts are palette-blind, so the same deck looks at home in every theme. That’s the whole tour; replay it anytime from the <strong>Tour</strong> button.',
+				'Recolour the whole workspace from here — layouts are palette-blind, so the same deck looks at home in every theme. That’s the tour; replay it anytime from the <strong>Tour</strong> button.',
 			side: 'bottom',
 			align: 'end',
 		},
