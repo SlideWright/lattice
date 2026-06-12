@@ -894,8 +894,9 @@ const bgImage            = require('./lib/core/bg-image');
 //     page template's sizing / overflow watcher / PDF pagination key off it).
 
 // Depth-counted scan over <section>…</section> so nested split-panel sections
-// stay inside their parent. Reproduces parseSlide's "one <section> string per
-// slide" array shape from the engine's assembled <div class="marpit"> document.
+// stay inside their parent. Produces the "one <section> string per slide" array
+// shape the emulator's downstream (highlight, deck-logo, page template) expects,
+// from the engine's assembled <div class="marpit"> document.
 function splitTopLevelSections(marpitHtml) {
   const out = [];
   const re = /<section\b[^>]*>|<\/section>/gi;

@@ -1,8 +1,8 @@
 /**
  * Unit tests for the `![bg …]` half-canvas image kernel (lib/core/bg-image.js)
- * that the emulator's engine-backed path uses to reproduce parseSlide's
- * lattice-bg / image-text panel (lib/engine matches marp WEB mode, which
- * collapses bg left/right to a full-bleed background with no <img>).
+ * that the emulator's engine-backed path uses to build the lattice-bg /
+ * image-text panel (lib/engine matches marp WEB mode, which collapses bg
+ * left/right to a full-bleed background with no <img>).
  */
 
 const { test, describe } = require('node:test');
@@ -69,7 +69,7 @@ describe('bg-image — primitives', () => {
     assert.equal(bg.isHalfCanvasImage('content'), false);
   });
 
-  test('bgDiv matches parseSlide markup exactly', () => {
+  test('bgDiv produces the canonical lattice-bg / image-asset markup', () => {
     assert.equal(
       bg.bgDiv(' right', 'x.svg'),
       '<div class="lattice-bg lattice-bg-right"><img class="image-asset" src="x.svg" alt=""/></div>',
