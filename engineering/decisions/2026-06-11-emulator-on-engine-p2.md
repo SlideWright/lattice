@@ -202,6 +202,36 @@ deck has its own authoring bug. Order of operations to finish P2: (a) fix the tw
 deck authoring bugs; (b) migrate `.below-note`; (c) re-run the corpus A/B → all
 diffs improvement/noise; (d) flip the default, delete `parseSlide`.
 
+### 2026-06-12 — (a) deck bugs fixed; (b) `.below-note` migrated
+
+- **(a) DONE.** split-panel `114*%*` → `114<em>%</em>` (manifest sample + variant
+  caption, regenerated); diagram duplicate `_class` stripped. Both render-neutral
+  on the emulator; engine path now zero-diff on those decks.
+- **(b) DONE.** `.below-note` is now a shared kernel, `lib/core/below-note.js`
+  (`wrapSectionBody` for the emulator body, `applyToHtml` for the full
+  Marpit HTML, `applyToDom` for the runtime), wired into the registry via
+  `lib/transformers/below-note.js` (registered last; **no `applyToSection`** so
+  it does not re-order ahead of `parseSlide`'s bespoke crit/glossary
+  transforms — the emulator calls the kernel directly as its last step). The
+  footer-anchoring (complication #1) is solved by an optional trailing-`<footer>`
+  group in the regex that is byte-equivalent to the old `…</p>\s*$` for the
+  footer-less emulator body. The ordering question (complication #2) is sidestepped
+  by keeping the emulator's explicit last-call rather than folding into
+  `applyAllToSection`.
+  - **Safety net held:** emulator default-path rasters byte-identical across
+    legal (40pp) + baseline (89pp) + glossary — 169 pages, 0 diffs.
+  - **Goal met:** marp-cli now emits `<div class="below-note">…</div><footer>`;
+    engine↔marp **FULL PARITY across 65 decks**; runtime bundle carries it
+    (`applyToDom`). Unit suite +11 (`test/unit/transformers/below-note.test.js`).
+  - **Legal A/B:** engine-vs-`parseSlide` diffs 11 → 4; the resolved 7 were
+    below-note. The residual 4 (slides 2/8/19/20) are **engine-correctness
+    improvements** — e.g. slide 2 is the bold-inside-inline-code case
+    (`parseSlide` wrongly bolds `**Federal**` inside `<code>`; the engine keeps
+    it literal, matching marp). Those belong to step (c), not below-note.
+
+Remaining to finish P2: (c) finish triaging the corpus A/B (the residual diffs
+are improvements/noise so far); (d) flip the default + delete `parseSlide`.
+
 ## Rollback
 
 Every step is reversible; the seam is a single call site behind a default-OFF

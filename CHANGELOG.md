@@ -203,6 +203,17 @@ in patch versions.
   layouts. Surfaced on the `gallery-jargon` donut slide; the piechart `donut`
   sample now carries a caption so the case is covered. See
   `engineering/gotchas.md`.
+- **The `.below-note` hairline now renders under marp-cli and the marp-vscode
+  preview, not just the emulator.** The trailing-`<p>` hairline wrap was bespoke
+  to the emulator's `parseSlide`, so the marp-cli render path and the runtime
+  (marp-vscode preview) silently omitted it — the emulator had diverged from
+  marp on every slide with an editorial below-note (the cross-renderer gate only
+  checks page counts). The wrap is now a shared kernel (`lib/core/below-note.js`)
+  wired into the transformer registry (`applyToHtml` / `applyToDom`), so all
+  three render paths agree. The emulator's default output is byte-identical (it
+  calls the same kernel as its last `parseSlide` step); engine↔marp parity holds
+  across the full 65-deck gallery sweep. (Mirrors the chart-caption footer-peel
+  above — same trailing-`<footer>` handling, applied to the hairline note.)
 - **Inline-code chips no longer flatten code blocks or run eyebrows off the
   slide.** A `white-space:nowrap` on `section code` (added to keep hyphenated
   identifier chips like `--bg-alt` from wrapping at the hyphen) also matched

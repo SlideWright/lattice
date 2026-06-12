@@ -995,6 +995,10 @@ const content   = rawMd.replace(/^---[\s\S]*?---\n/, '');
 const { splitSlides }    = require('./lib/core/split-slides');
 // Named-slot lift helper used by decision / compare-prose (incl. transition).
 const { liftSlotLabel }  = require('./lib/core/slot-label-lift');
+// Universal below-note kernel — the trailing-`<p>` hairline wrap. parseSlide
+// calls wrapSectionBody as its LAST transform; the same kernel feeds the
+// marp-cli / runtime paths via lib/transformers/below-note.js.
+const belowNote          = require('./lib/core/below-note');
 // Shared transformer registry — dispatches chart-family, split-panels,
 // roadmap, journey, and word-cloud per-section via applyAllToSection.
 // See lib/transformers/registry.js for the contract and order rationale.
@@ -1681,17 +1685,14 @@ function parseSlide(raw, index) {
 
 
   // ── Universal below-note ─────────────────────────────────────────────────────
-  // Any layout where the last element in html is a plain <p> gets it wrapped
-  // in .below-note for the full-width hairline treatment.
-  // Excludes: bookends and layouts where trailing <p> is already claimed
-  // (caption / attribution / main content / italic legend).
-  const noBeloNote = ['title','closing','quote','big-number','divider','image','split-panel','split-compare','content','diagram','stats','code','roadmap','progress','timeline-list','piechart','gantt','kanban','image-razor','image-brief','image-chamber'];
-  const isNoBelowNote = noBeloNote.some(x => cls.includes(x));
-  if (!isNoBelowNote) {
-    // Only wrap a trailing <p> as below-note if it follows a structural block
-    // (div, ul, ol, table, pre) — not if it follows another <p> (that's main content)
-    html = html.replace(/((?:<\/div>|<\/ul>|<\/ol>|<\/table>|<\/pre>|<\/blockquote>)\s*)<p>([\s\S]*?)<\/p>\s*$/, '$1<div class="below-note"><p>$2</p></div>');
-  }
+  // Wrap a layout's trailing <p> (the editorial hairline note that follows a
+  // structural block — div/ul/ol/table/pre/blockquote, never another <p>,
+  // which is main content) in .below-note for the full-width hairline
+  // treatment. Runs LAST so the bespoke crit/glossary transforms above have
+  // settled the trailing element. The kernel (lib/core/below-note.js) owns the
+  // exclusion list + regex and is shared with the marp-cli / runtime paths so
+  // all three renderers agree. cls drives the exclusion check.
+  html = belowNote.wrapSectionBody(html, cls);
 
   // ── Assemble section — matching Marp v4 HTML output ───────────────────────
   // Marp produces:
