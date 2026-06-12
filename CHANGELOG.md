@@ -89,6 +89,15 @@ in patch versions.
   with a shipped component class at save time. CSS-only only; transform-bearing
   components remain graduation-only. See
   `engineering/decisions/2026-06-12-workbench-component-bridge.md`.
+- **Progress island + island gap/clip contract (islands model, Phase 2b).** On
+  `islands` slides, a footer-centre dot-rail orients the audience: it derives
+  sections from the deck's `divider` slides and stamps one dot per section
+  (current elongated + accented, labelled with the divider title) into every
+  islands slide within a section — across all three render paths; absent when
+  the deck has no dividers; opt out with `no-progress`. Islands now also keep
+  a **defined gap** to their neighbours (a footer safe-area reserve) and
+  **clip their own overflow**, so poorly-fitting content is cut at the berth
+  rather than bleeding across islands.
 - **Masthead-bay islands — `meta:` + re-docked status (islands model, Phase 2).**
   The reserved masthead bay (Phase 1) now carries two islands on `islands`
   slides. A new deck-wide `meta:` front-matter directive (date · owner ·

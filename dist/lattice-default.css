@@ -13405,6 +13405,21 @@ section.confidential::before {
  *
  * `islands` is incompatible with `math` / `compare-code` (they drive their
  * own title grid via `> h2`); don't combine them. */
+/* Island gap + clip contract (berth-overlay phase). Islands must never touch
+ * or bleed into one another: each berth keeps a DEFINED gap to its neighbours,
+ * and content that overflows a berth is CLIPPED, not allowed to spill across.
+ *   · masthead↔body — the band's margin-bottom + hairline rule is the gap.
+ *   · body↔footer   — `islands` reserves a footer safe-area (padding-bottom)
+ *                     so well-authored content keeps clear of the footer /
+ *                     progress berth. (The fully-bounded body clip — a hard
+ *                     max-height stage box — lands with the Phase 4 stage
+ *                     wrapper; until then the section's own overflow:hidden
+ *                     stops anything escaping the slide.)
+ *   · per-island    — the masthead + bay clip their own overflow, so a long
+ *                     title or meta line is cut at its berth, never bled. */
+section.islands {
+  padding-bottom: calc(var(--_sec-1cqi, 1cqi) * 8.75);
+}
 section.islands .isl-masthead {
   display: grid;
   grid-template-columns: [m-stage] 1fr [m-bay] auto;
@@ -13413,7 +13428,9 @@ section.islands .isl-masthead {
   margin-bottom: var(--sp-lg);
   padding-bottom: var(--sp-md);
   border-bottom: 1px solid var(--border);
+  overflow: hidden;
 }
+section.islands .isl-masthead .m-bay { overflow: hidden; }
 section.islands .isl-masthead .m-stage { min-width: 0; grid-column: m-stage; }
 section.islands .isl-masthead .m-bay   { grid-column: m-bay; }
 
@@ -13479,6 +13496,45 @@ section.islands.draft .m-bay::after {
   color: var(--warn);
   background: color-mix(in srgb, var(--warn) 12%, transparent);
   border-color: color-mix(in srgb, var(--warn) 32%, transparent);
+}
+
+/* ── ISLANDS · progress island — section dot-rail (Phase 2b) ─────────────
+ * A footer-centre berth injected (across all three render paths) into every
+ * `islands` slide that falls within a section. One dot per section, the
+ * current one elongated + accented, labelled with the section's divider
+ * title. Derives orientation from `divider` slides; absent without them.
+ * Opt out with `no-progress`; `silent` suppresses it with the rest of the
+ * chrome. */
+section.islands .isl-progress {
+  position: absolute;
+  bottom: var(--isl-inset-y);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-sm);
+  pointer-events: none;
+}
+.isl-progress .seg {
+  font-family: var(--font-label);
+  font-size: var(--fs-meta);
+  font-weight: 500;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: var(--text-label);
+  margin-right: var(--sp-xs);
+}
+.isl-progress .dot {
+  width: 0.85cqi;
+  height: 0.85cqi;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--text-muted) 50%, transparent);
+}
+.isl-progress .dot.on {
+  width: 2.6cqi;
+  border-radius: 999px;
+  background: var(--accent);
 }
 
 /* === lib/integrations/mermaid/mermaid.css === */

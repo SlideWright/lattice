@@ -3,7 +3,7 @@ marp: true
 theme: cuoio
 paginate: true
 header: "Lattice · Islands"
-footer: "SlideWright · Islands Phase 2"
+footer: "SlideWright · Islands Phase 2b"
 meta: "Q2 FY26 · Board Pack | Owner · S. Aden"
 ---
 
@@ -11,9 +11,17 @@ meta: "Q2 FY26 · Board Pack | Owner · S. Aden"
 
 # Slides as Islands
 
-`Composition Model · Phase 2 — the masthead bay`
+`Composition Model · Phase 2b — the bay + the progress rail`
 
-A slide is a sea plus a fixed set of berths. Phase 1 lifted the title into a named band; Phase 2 docks the meta and status islands into the band's reserved bay — additive, palette-blind, across every render path.
+A slide is a sea plus a fixed set of berths. The masthead band holds the title and a populated bay; the footer now carries a section progress rail. Additive, palette-blind, across every render path.
+
+---
+
+<!-- _class: divider -->
+
+`Section 01`
+
+## The Lift
 
 ---
 
@@ -23,9 +31,7 @@ A slide is a sea plus a fixed set of berths. Phase 1 lifted the title into a nam
 
 ## The masthead is now a band, not the top of a flow.
 
-The `islands` modifier wraps the eyebrow and the title into a dedicated masthead band with a hairline rule and a reserved right bay. Everything below this rule is the slide body — a clean, separately-addressable region.
-
-Authoring is unchanged: you still write a backtick eyebrow and a `## title`. The transform does the lifting across all three render paths.
+The `islands` modifier wraps the eyebrow and title into a dedicated masthead band with a hairline rule and a reserved right bay. Everything below the rule is the slide body — a clean, separately-addressable region. Authoring is unchanged.
 
 ---
 
@@ -34,11 +40,19 @@ Authoring is unchanged: you still write a backtick eyebrow and a `## title`. The
 ## The band composes with components untouched.
 
 - Body stays a section child
-  - Cards, lists, charts, and tables remain direct children of the section, so every `section.X > …` selector keeps matching. Nothing about the component changes.
+  - Cards, lists, charts, and tables remain direct children of the section, so every `section.X > …` selector keeps matching.
 - Only the masthead moves
-  - The eyebrow and the first heading lift into the band; the rest of the slide is left exactly where the author put it.
+  - The eyebrow and first heading lift into the band; the rest is left exactly where the author put it.
 - One opt-in token
-  - Add `islands` to any content layout. It is incompatible only with `math` and `compare-code`, which drive their own title grid.
+  - Add `islands` to any content layout. Incompatible only with `math` and `compare-code`.
+
+---
+
+<!-- _class: divider -->
+
+`Section 02`
+
+## The Bay
 
 ---
 
@@ -48,7 +62,7 @@ Authoring is unchanged: you still write a backtick eyebrow and a `## title`. The
 
 ## The lift is identical across every render path.
 
-`marp-cli, the emulator, and the runtime all dispatch one registry-wired transform.`
+`marp-cli, the emulator, and the runtime dispatch one registry-wired transform.`
 
 1. 3
    - render paths
@@ -61,22 +75,36 @@ Authoring is unchanged: you still write a backtick eyebrow and a `## title`. The
 
 <!-- _class: content islands wip -->
 
-`Takeaway · What Phase 2 Adds`
+`Takeaway · The Bay`
 
-## The bay now docks meta and status islands.
+## The bay docks the meta and status islands.
 
-The masthead bay — empty in Phase 1 — now carries the `meta:` island (a deck-wide date · owner · classification line) and a status chip that re-docks the slide's state marker (this slide is `wip`) from a corner stamp into the bay.
+> Key insight: the `meta:` line and a status chip (this slide is `wip`) now ride the bay the masthead reserved in Phase 1.
 
-With the band in place, Phase 2 can drop the meta, logo, and status islands into the reserved bay, and Phase 4 can turn the body into a concrete, centred stage — without re-litigating where the title lives.
+---
 
-> Key insight: name the regions once, and every later island has a berth to dock at.
+<!-- _class: divider -->
+
+`Section 03`
+
+## Orientation
+
+---
+
+<!-- _class: content islands -->
+
+`Footer · The Progress Rail`
+
+## The footer now orients the audience.
+
+The progress island reads the deck's `divider` slides as sections and stamps a dot-rail into the footer centre of every `islands` slide — current section elongated and accented, labelled with the divider title. You are on dot three of three.
 
 ---
 
 <!-- _class: closing silent -->
 
-# The bay is populated.
+# The bay and the rail have landed.
 
-`Next · Phase 2b — progress · watermark islands`
+`Next · Phase 2c — the watermark island`
 
 Inspect this deck against the model in engineering/decisions/2026-06-11-islands.md.

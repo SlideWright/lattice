@@ -16,6 +16,7 @@ const {
   applyDeckLogoToHtml,
   readDeckLogoFrontMatter,
   applyMastheadMetaToHtml,
+  applyProgressRailToHtml,
   stateClassesFor,
   verdictGridBadges,
   obligationMatrixBadges,
@@ -112,6 +113,10 @@ module.exports = {
         // meta island — fills the masthead bay the registry just built with
         // the front-matter `meta:` directive. Runs last so the bay exists.
         result.html = applyMastheadMetaToHtml(result.html, markdown);
+        // progress island — derives sections from dividers and injects the
+        // footer-centre dot-rail. Deck-level (needs every section), so it
+        // runs here on the full shell, not in the per-section registry.
+        result.html = applyProgressRailToHtml(result.html);
       }
       return result;
     };
@@ -129,6 +134,7 @@ module.exports.plugins = {
   applyDeckLogoToHtml,
   readDeckLogoFrontMatter,
   applyMastheadMetaToHtml,
+  applyProgressRailToHtml,
   stateClassesFor,
   verdictGridBadges,
   obligationMatrixBadges,

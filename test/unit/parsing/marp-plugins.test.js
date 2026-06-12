@@ -175,6 +175,54 @@ describe('marp-plugins', () => {
     const out = plugins.applyMastheadMetaToHtml(html, '---\nmeta: "<b> & x"\n---\n');
     assert.match(out, /&lt;b&gt; &amp; x/);
 
+  // ── applyProgressRailToHtml (islands progress island, Phase 2b) ────────
+
+  const deck = (sections) => sections.join('');
+  const sec = (cls, inner = '') => `<section class="${cls}" data-marpit-slide="x">${inner}</section>`;
+
+  test('applyProgressRailToHtml: injects a dot-rail into islands slides within a section', () => {
+    const html = deck([
+      sec('divider', '<h2>The Lift</h2>'),
+      sec('content islands'),
+      sec('divider', '<h2>The Bay</h2>'),
+      sec('content islands'),
+    ]);
+    const out = plugins.applyProgressRailToHtml(html);
+    const rails = [...out.matchAll(/<nav class="isl-progress"[^>]*>([\s\S]*?)<\/nav>/g)];
+    assert.equal(rails.length, 2, 'one rail per islands slide');
+    // two sections → two dots each; first islands slide marks dot 1, second marks dot 2
+    assert.equal((rails[0][1].match(/class="dot/g) || []).length, 2);
+    assert.match(rails[0][1], /<span class="seg">The Lift<\/span>/);
+    assert.match(rails[0][1], /<span class="dot on"><\/span><span class="dot"><\/span>/);
+    assert.match(rails[1][1], /<span class="seg">The Bay<\/span>/);
+    assert.match(rails[1][1], /<span class="dot"><\/span><span class="dot on"><\/span>/);
+  });
+
+  test('applyProgressRailToHtml: no dividers → no-op (nothing to orient against)', () => {
+    const html = deck([sec('content islands'), sec('content islands')]);
+    assert.equal(plugins.applyProgressRailToHtml(html), html);
+  });
+
+  test('applyProgressRailToHtml: divider slides and non-islands slides get no rail', () => {
+    const html = deck([sec('divider', '<h2>S</h2>'), sec('content')]);
+    assert.ok(!/isl-progress/.test(plugins.applyProgressRailToHtml(html)));
+  });
+
+  test('applyProgressRailToHtml: `no-progress` and `silent` suppress the rail', () => {
+    const html = deck([
+      sec('divider', '<h2>S</h2>'),
+      sec('content islands no-progress'),
+      sec('content islands silent'),
+    ]);
+    assert.ok(!/isl-progress/.test(plugins.applyProgressRailToHtml(html)));
+  });
+
+  test('applyProgressRailToHtml: idempotent', () => {
+    const html = deck([sec('divider', '<h2>S</h2>'), sec('content islands')]);
+    const once = plugins.applyProgressRailToHtml(html);
+    assert.equal(plugins.applyProgressRailToHtml(once), once);
+  });
+
   // ── applyDeckLogoToHtml ────────────────────────────────────────────────
 
   function logoFixture(html) {
