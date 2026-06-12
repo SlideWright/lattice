@@ -965,9 +965,10 @@ const globalFinish   = finishClasses((fm.match(/^\s*finish:\s*["']?([A-Za-z0-9_-
 const deckWideClass  = [globalClass, globalFinish].filter(Boolean).join(' ');
 // Deck-wide `islands:` toggle — resolved to the `islands` class on every
 // eligible section in parseSlide (mirrors marp.config.js's
-// applyIslandsToggleToHtml; same eligibility helper, one source).
-const { islandsToggleClass } = require('./lib/integrations/marp/plugins');
-const islandsGlobal  = /^\s*islands:\s*["']?(?:true|on|yes)["']?\s*$/im.test(fm);
+// applyIslandsToggleToHtml; same helpers, one source). `readIslandsMode`
+// yields 'off' | 'on' | 'minimal'.
+const { islandsToggleClass, readIslandsMode } = require('./lib/integrations/marp/plugins');
+const islandsMode    = readIslandsMode(rawMd);
 const DEFAULT_SIZE   = 'hd';
 const SLIDE_SIZES    = { hd: [1280, 720], HD: [1280, 720], '4K': [3840, 2160], '4k': [3840, 2160], standard: [960, 720] };
 const deckSizeName   = (fm.match(/^\s*size:\s*["']?([\w:/-]+)["']?\s*$/m) || [])[1] || DEFAULT_SIZE;
@@ -1076,7 +1077,7 @@ function parseSlide(raw, index) {
     }
     classAttr = cur.join(' ');
   }
-  if (islandsGlobal) classAttr = islandsToggleClass(classAttr);
+  if (islandsMode !== 'off') classAttr = islandsToggleClass(classAttr, islandsMode);
 
   if (raw.includes('_paginate: false')) paginate = false;
   if (raw.includes('_paginate: true'))  paginate = true;

@@ -99,6 +99,20 @@ in patch versions.
   server render paths (marp-cli + emulator) via one shared eligibility helper;
   build-time only, like the deck-wide `class:` / `logo:` directives (use a
   per-slide `islands` token in the marp-vscode preview). See `examples/islands.md`.
+- **`islands:` deck-wide toggle (`off` / `on` / `minimal`).** One front-matter
+  flag enables the islands model across a deck — it resolves to the per-slide
+  `islands` class on every eligible section, so the masthead band, bay (meta +
+  status), and progress rail just appear without tagging each slide. `on`
+  (also `true`) is the full model; `minimal` keeps the band + bay but drops the
+  progress rail (adds `no-progress`); `off` (also `false`, the default) is
+  disabled. Bookends (`title` / `divider` / `closing`), the title-grid layouts
+  (`math` / `compare-code`), the sovereign split layouts, and imagery are
+  skipped automatically; a single slide opts out with `no-islands`. Applied in
+  both server render paths (marp-cli + emulator) via one shared eligibility
+  helper; build-time only, like the deck-wide `class:` / `logo:` directives.
+  Surfaced in the Drawing Board **Deck setup** drawer (a three-way select) and
+  in editor **autocomplete** (`off` / `on` / `minimal` after `islands:`). See
+  `examples/islands.md`.
 - **Watermark island (islands model, Phase 2c).** Add `watermark` to an
   `islands` slide and a large, palette-blind ghost of the current section
   number paints behind the content (z-behind, clipped by the section) —

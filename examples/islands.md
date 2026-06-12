@@ -5,7 +5,7 @@ paginate: true
 header: "Lattice · Islands"
 footer: "SlideWright · Islands"
 meta: "Q2 FY26 · Board Pack | Owner · S. Aden"
-islands: true
+islands: on
 ---
 
 <!-- _class: title silent -->

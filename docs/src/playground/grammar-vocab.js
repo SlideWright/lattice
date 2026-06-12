@@ -16,6 +16,12 @@ export const DIRECTIVE_NAMES = ['_class', '_paginate', '_header', '_footer', '_b
 // colours — not completable.
 export const PAGINATE_VALUES = ['true', 'false', 'skip', 'hold'];
 
+// Value vocabulary for the deck-level `islands:` front-matter toggle — the
+// islands composition model. 'on' = masthead band + bay + progress rail;
+// 'minimal' = band + bay, no rail; 'off' = disabled. Mirrors ISLANDS_MODES in
+// lib/integrations/marp/plugins.js.
+export const ISLANDS_VALUES = ['off', 'on', 'minimal'];
+
 // Fence info-strings worth completing: the Lattice-special focusable fences
 // (`mermaid`, `chart`) plus the languages editor.js highlights, with the common
 // short aliases (`js`/`ts`/`py`) so they resolve too. A practical completion

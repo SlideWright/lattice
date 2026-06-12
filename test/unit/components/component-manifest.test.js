@@ -820,9 +820,9 @@ describe('component-manifest', () => {
       ]);
     });
 
-    test('chrome group has silent + the three surgicals + islands/no-islands', () => {
+    test('chrome group has silent + the surgicals + islands/no-islands/no-progress', () => {
       assert.deepEqual([...UNIVERSAL_GROUPS.chrome].sort(), [
-        'islands', 'no-footer', 'no-header', 'no-islands', 'no-paginate', 'silent',
+        'islands', 'no-footer', 'no-header', 'no-islands', 'no-paginate', 'no-progress', 'silent',
       ]);
     });
   });

@@ -19,7 +19,7 @@
 
 import { autocompletion } from '@codemirror/autocomplete';
 import { dataSources } from './data-sources.js';
-import { DIRECTIVE_NAMES, FENCE_LANGS, MERMAID_KEYWORDS, PAGINATE_VALUES } from './grammar-vocab.js';
+import { DIRECTIVE_NAMES, FENCE_LANGS, ISLANDS_VALUES, MERMAID_KEYWORDS, PAGINATE_VALUES } from './grammar-vocab.js';
 import {
 	blankBodyPartial,
 	classDirectiveCompletion,
@@ -29,6 +29,7 @@ import {
 	identifierBefore,
 	inFencedLang,
 	inFrontMatter,
+	islandsValuePosition,
 	modifierOptions,
 	paginateValuePosition,
 	skeletonBody,
@@ -43,6 +44,7 @@ const DIRECTIVE_TOKEN = /^_?[\w-]*$/;
 // Static option lists (built once) for the line-local Tier-2 sources.
 const DIRECTIVE_OPTIONS = DIRECTIVE_NAMES.map((d) => ({ label: d, type: 'keyword', detail: 'directive' }));
 const PAGINATE_OPTIONS = PAGINATE_VALUES.map((v) => ({ label: v, type: 'constant' }));
+const ISLANDS_OPTIONS = ISLANDS_VALUES.map((v) => ({ label: v, type: 'constant', detail: 'islands' }));
 const FENCE_OPTIONS = FENCE_LANGS.map((l) => ({ label: l, type: 'constant', detail: 'language' }));
 
 // Mermaid keyword options (declaration openers + flow/block keywords), the
@@ -169,6 +171,7 @@ export function latticeAutocomplete({ vocab, catalog, themes } = {}) {
 			themeSource(themes),
 			lineLocalSource(directiveNameAt, DIRECTIVE_OPTIONS, DIRECTIVE_TOKEN),
 			lineLocalSource(paginateValuePosition, PAGINATE_OPTIONS),
+			lineLocalSource(islandsValuePosition, ISLANDS_OPTIONS),
 			lineLocalSource(fenceLangAt, FENCE_OPTIONS),
 			mermaidSource,
 			classDirectiveSource(catalog, universalModifiers),

@@ -262,41 +262,52 @@ describe('marp-plugins', () => {
     assert.equal(plugins.applyWatermarkToHtml(once), once);
   });
 
-  // ── islands deck-wide toggle (`islands: true`) ─────────────────────────
+  // ── islands deck-wide toggle (`islands: off | on | minimal`) ───────────
 
-  test('readIslandsFrontMatter: true / on / yes enable; false / missing do not', () => {
-    for (const v of ['true', 'on', 'yes', 'TRUE', '"on"']) {
-      assert.equal(plugins.readIslandsFrontMatter(`---\nislands: ${v}\n---\n`), true, v);
+  test('readIslandsMode: on / true / yes → on; minimal → minimal; off / false / missing → off', () => {
+    for (const v of ['true', 'on', 'yes', 'ON', '"on"']) {
+      assert.equal(plugins.readIslandsMode(`---\nislands: ${v}\n---\n`), 'on', v);
     }
-    assert.equal(plugins.readIslandsFrontMatter('---\nislands: false\n---\n'), false);
-    assert.equal(plugins.readIslandsFrontMatter('---\ntheme: cuoio\n---\n'), false);
+    assert.equal(plugins.readIslandsMode('---\nislands: minimal\n---\n'), 'minimal');
+    for (const v of ['false', 'off', 'no']) {
+      assert.equal(plugins.readIslandsMode(`---\nislands: ${v}\n---\n`), 'off', v);
+    }
+    assert.equal(plugins.readIslandsMode('---\ntheme: cuoio\n---\n'), 'off');
   });
 
-  test('islandsToggleClass: adds islands to content; skips bookends / sovereign / incompatible', () => {
-    assert.equal(plugins.islandsToggleClass('content'), 'content islands');
-    assert.equal(plugins.islandsToggleClass('cards-grid compact'), 'cards-grid compact islands');
-    assert.equal(plugins.islandsToggleClass(''), 'islands'); // bare slide
+  test('islandsToggleClass: `on` adds islands to content; skips bookends / sovereign / incompatible', () => {
+    assert.equal(plugins.islandsToggleClass('content', 'on'), 'content islands');
+    assert.equal(plugins.islandsToggleClass('cards-grid compact', 'on'), 'cards-grid compact islands');
+    assert.equal(plugins.islandsToggleClass('', 'on'), 'islands'); // bare slide
     for (const skip of ['title', 'divider', 'closing', 'math', 'compare-code', 'split-panel', 'image', 'featured']) {
-      assert.equal(plugins.islandsToggleClass(skip), skip, `should skip ${skip}`);
+      assert.equal(plugins.islandsToggleClass(skip, 'on'), skip, `should skip ${skip}`);
     }
+  });
+
+  test('islandsToggleClass: `minimal` adds islands + no-progress; `off` is a no-op', () => {
+    assert.equal(plugins.islandsToggleClass('content', 'minimal'), 'content islands no-progress');
+    assert.equal(plugins.islandsToggleClass('divider', 'minimal'), 'divider'); // still skips bookends
+    assert.equal(plugins.islandsToggleClass('content', 'off'), 'content');
   });
 
   test('islandsToggleClass: respects explicit islands / no-islands; idempotent', () => {
-    assert.equal(plugins.islandsToggleClass('content islands'), 'content islands');
-    assert.equal(plugins.islandsToggleClass('content no-islands'), 'content no-islands');
-    assert.equal(plugins.islandsToggleClass(plugins.islandsToggleClass('content')), 'content islands');
+    assert.equal(plugins.islandsToggleClass('content islands', 'on'), 'content islands');
+    assert.equal(plugins.islandsToggleClass('content no-islands', 'on'), 'content no-islands');
+    assert.equal(plugins.islandsToggleClass(plugins.islandsToggleClass('content', 'on'), 'on'), 'content islands');
   });
 
-  test('applyIslandsToggleToHtml: only fires with the toggle; rewrites eligible sections', () => {
+  test('applyIslandsToggleToHtml: off no-ops; on/minimal rewrite eligible sections', () => {
     const html =
       '<section class="content" data-marpit-slide="1"></section>' +
       '<section class="divider" data-marpit-slide="2"></section>' +
       '<section data-marpit-slide="3"></section>';
-    assert.equal(plugins.applyIslandsToggleToHtml(html, '---\nislands: false\n---\n'), html, 'no-op when off');
-    const out = plugins.applyIslandsToggleToHtml(html, '---\nislands: true\n---\n');
-    assert.match(out, /<section class="content islands" data-marpit-slide="1">/);
-    assert.match(out, /<section class="divider" data-marpit-slide="2">/, 'divider skipped');
-    assert.match(out, /<section class="islands" data-marpit-slide="3">/, 'bare slide gets a class attr');
+    assert.equal(plugins.applyIslandsToggleToHtml(html, '---\nislands: off\n---\n'), html, 'no-op when off');
+    const on = plugins.applyIslandsToggleToHtml(html, '---\nislands: on\n---\n');
+    assert.match(on, /<section class="content islands" data-marpit-slide="1">/);
+    assert.match(on, /<section class="divider" data-marpit-slide="2">/, 'divider skipped');
+    assert.match(on, /<section class="islands" data-marpit-slide="3">/, 'bare slide gets a class attr');
+    const min = plugins.applyIslandsToggleToHtml(html, '---\nislands: minimal\n---\n');
+    assert.match(min, /<section class="content islands no-progress" data-marpit-slide="1">/);
   });
 
   // ── applyDeckLogoToHtml ────────────────────────────────────────────────
