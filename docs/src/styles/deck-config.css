@@ -1,0 +1,154 @@
+/* deck-config.css — the universal deck-setup panel (createConfigPanel in
+ * docs/src/playground/deck-config.js), styled for the surfaces that DON'T already
+ * carry the Drawing Board's full stylesheet: the Playground and the Workbench.
+ *
+ * The Drawing Board styles the same `db-*` panel classes itself (drawing-board.css,
+ * unscoped). Here they're scoped under a `.deck-config` host wrapper, so the two
+ * never collide: a DB panel (no wrapper) uses drawing-board.css; a Playground /
+ * Workbench panel (host has `.deck-config`) uses this. All values resolve through
+ * the page palette tokens, present on every route. */
+
+.deck-config .db-settings-note {
+	font-size: 0.74rem;
+	line-height: 1.5;
+	color: var(--text-muted);
+	margin: 0.5rem 0 0;
+}
+.deck-config .db-settings-head {
+	margin: 0.9rem 0 0.4rem;
+	font-size: 0.82rem;
+	color: var(--text-heading);
+}
+
+/* Inline select / switch rows (finish, tokens, size, paginate, islands, …). */
+.deck-config .db-pref-row {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 0.6rem;
+	margin: 0.55rem 0;
+}
+.deck-config .db-pref-text {
+	display: flex;
+	flex: 1 1 auto;
+	flex-direction: column;
+	gap: 0.1rem;
+	min-width: 7rem;
+}
+.deck-config .db-pref-label {
+	font-size: 0.82rem;
+	color: var(--text-body);
+}
+.deck-config .db-pref-hint {
+	font-size: 0.7rem;
+	color: var(--text-muted);
+}
+.deck-config .db-pref-select {
+	flex: 0 0 auto;
+	max-width: 11rem;
+	font: inherit;
+	font-size: 0.78rem;
+	color: var(--text-body);
+	background: var(--bg);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-sm, 6px);
+	padding: 0.28rem 0.45rem;
+	cursor: pointer;
+}
+.deck-config .db-pref-select:hover {
+	border-color: var(--accent);
+}
+.deck-config .db-pref-select:focus-visible {
+	outline: none;
+	border-color: var(--accent);
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+
+/* Stacked full-width text fields (header / footer / class / lang). */
+.deck-config .db-config-field {
+	display: flex;
+	flex-direction: column;
+	gap: 0.3rem;
+	margin: 0.55rem 0;
+}
+.deck-config .db-config-input {
+	width: 100%;
+	font: inherit;
+	font-size: 0.82rem;
+	color: var(--text-body);
+	background: var(--bg);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-sm, 6px);
+	padding: 0.4rem 0.55rem;
+}
+.deck-config .db-config-input::placeholder {
+	color: var(--text-muted);
+}
+.deck-config .db-config-input:hover {
+	border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+}
+.deck-config .db-config-input:focus-visible {
+	outline: none;
+	border-color: var(--accent);
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+
+/* Unknown-theme caution note. */
+.deck-config .db-config-warn {
+	color: var(--accent);
+	border-left: 2px solid color-mix(in srgb, var(--accent) 50%, var(--border));
+	padding-left: 0.5rem;
+}
+
+/* Pagination switch row (mirrors the DB settings switch). */
+.deck-config .db-or-switch {
+	display: flex;
+	align-items: center;
+	gap: 0.6rem;
+	margin: 0.55rem 0;
+	cursor: pointer;
+}
+.deck-config .db-or-switch .db-pref-text {
+	flex: 1 1 auto;
+}
+.deck-config .db-switch {
+	position: relative;
+	flex: 0 0 auto;
+	width: 38px;
+	height: 22px;
+}
+.deck-config .db-switch-input {
+	position: absolute;
+	inset: 0;
+	margin: 0;
+	opacity: 0;
+	cursor: pointer;
+}
+.deck-config .db-switch-knob {
+	position: absolute;
+	inset: 0;
+	background: color-mix(in srgb, var(--text-muted) 45%, transparent);
+	border-radius: 999px;
+	transition: background 0.16s ease;
+}
+.deck-config .db-switch-knob::after {
+	content: '';
+	position: absolute;
+	top: 2px;
+	left: 2px;
+	width: 18px;
+	height: 18px;
+	background: var(--bg);
+	border-radius: 50%;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+	transition: transform 0.16s ease;
+}
+.deck-config .db-switch-input:checked + .db-switch-knob {
+	background: var(--accent);
+}
+.deck-config .db-switch-input:checked + .db-switch-knob::after {
+	transform: translateX(16px);
+}
+.deck-config .db-switch-input:focus-visible + .db-switch-knob {
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 30%, transparent);
+}

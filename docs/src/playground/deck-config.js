@@ -1,22 +1,27 @@
-// The Drawing Board — deck setup (front-matter config drawer).
+// Deck setup — the universal front-matter config panel.
 //
-// A first-class home for the deck's Marp front matter, so the author never
+// A first-class home for a deck's Marp front matter, so the author never
 // hand-writes YAML and the Markdown body stays content-only ("the deck stays
-// clean"). The drawer's controls read/write a MANAGED `---` block at the very
-// top of the deck source — the single channel that already persists (IndexedDB,
-// via drawing-board-store.js) and exports (drawing-board-export.js ships the
-// source verbatim). So these settings survive refreshes and travel with an
-// exported `.md` for free, with no second data channel to keep in sync.
+// clean"). The controls read/write a MANAGED `---` block at the very top of a
+// deck source through an injected getSource/setSource pair — so the panel is
+// decoupled from where the source lives. It backs three surfaces:
+//   • Drawing Board / Playground — SOURCE-backed: the block lives inline at the
+//     top of the editor's markdown (persists + exports with the deck for free).
+//   • Workbench (Theme / Layout Studio) — STATE-backed: the studio hands the
+//     panel a VIRTUAL source (`block + fixed specimen/skeleton`); setSource
+//     strips the block back off and stores just it, applying it at render time —
+//     so a fixed preview deck is configurable "behind the scenes", no raw YAML.
 //
-// Theme/palette is deliberately NOT here: the topbar palette picker owns it and
-// the playground's withTheme() (lib/playground/index.js) overrides any source
-// `theme:` at render time, so a theme control would be a live no-op. This drawer
-// owns the directives the picker doesn't: size, paginate, header, footer, plus
-// the lower-traffic class / math / lang.
+// `fields` (optional) is an allow-list of which managed keys to render — the
+// surface's PROFILE. Omitted = every field (the Drawing Board's full author
+// set). A preview surface passes the render-register subset (finish, tokens,
+// size, paginate, islands) so deck chrome (header/footer/lang/…) stays out of a
+// theme/component preview. The parse/serialize layer is field-agnostic; only the
+// rendered rows are filtered.
 //
 // The parse/serialize helpers are PURE (no DOM, no storage) and unit-tested in
-// test/unit/playground/drawing-board-config.test.js. createConfigPanel() is the
-// only DOM consumer and is never called at import, so the module loads in Node.
+// test/unit/playground/deck-config.test.js. createConfigPanel() is the only DOM
+// consumer and is never called at import, so the module loads in Node.
 //
 // Front-matter grammar matches Marp / lib/engine/directives.js: a leading
 // `---\n…\n---` flat key:value block. We re-emit a minimal block — only
@@ -67,6 +72,20 @@ const FINISH_LABELS = {
 // Emit order for known keys; any unmanaged keys we preserved trail in their
 // original order. `marp` leads (it's what tells marp-cli to render the deck).
 const EMIT_ORDER = ['marp', 'theme', 'finish', 'tokens', 'size', 'paginate', 'header', 'footer', 'class', 'islands', 'math', 'lang'];
+
+// Field PROFILES per surface — the `fields` allow-list createConfigPanel takes.
+//   author  — every field (the Drawing Board: full set, theme three-way synced).
+//   noTheme — full set minus `theme` (the Playground: its top-bar palette picker
+//             is the theme control, and there's no source-theme sync there, so a
+//             drawer theme row would be a confusing no-op).
+//   preview — the render registers only (the Workbench: knobs that change how a
+//             theme/component PREVIEWS — finish/tokens/size/paginate/islands —
+//             with no deck chrome and no theme, which the studio itself owns).
+export const CONFIG_PROFILES = Object.freeze({
+  author: null,
+  noTheme: ['finish', 'tokens', 'size', 'paginate', 'header', 'footer', 'class', 'islands', 'math', 'lang'],
+  preview: ['finish', 'tokens', 'size', 'paginate', 'islands'],
+});
 
 const TRUEY = /^(true|yes|on|1)$/i;
 
@@ -213,10 +232,15 @@ export function writeFrontMatter(source, key, value) {
 // matter, and writes each change straight back into the editor source (which
 // re-renders + autosaves via the controller's onEdit). DOM-only; called when the
 // drawer opens.
-export function createConfigPanel({ host, trigger, getSource, setSource, palettes = [], finishes = [], getDefaultTheme = () => '' }) {
+export function createConfigPanel({ host, trigger, getSource, setSource, palettes = [], finishes = [], getDefaultTheme = () => '', fields = null, note } = {}) {
   if (!host || typeof getSource !== 'function' || typeof setSource !== 'function') {
     return { render() {}, syncTrigger() {}, writeFrontMatter };
   }
+
+  // The surface's field PROFILE: an allow-list of which managed keys to render.
+  // null = every field (the full author set). `show(key)` gates each row.
+  const allow = Array.isArray(fields) ? new Set(fields) : null;
+  const show = (key) => !allow || allow.has(key);
 
   const el = (tag, cls, text) => {
     const e = document.createElement(tag);
@@ -306,14 +330,14 @@ export function createConfigPanel({ host, trigger, getSource, setSource, palette
     const fm = readFrontMatter(getSource());
     host.innerHTML = '';
 
-    host.append(el('p', 'db-settings-note',
+    host.append(el('p', 'db-settings-note', note ||
       'These live in the deck’s front matter — managed for you, so the Markdown stays clean. ' +
       'They apply to the whole deck and travel with an exported .md.'));
 
     // Theme — the deck's palette, written into the front matter and kept in sync
     // with the top-bar palette picker (same value, set in either place). Light /
     // dark is the separate top-bar toggle, so the options are the base palettes.
-    if (palettes.length) {
+    if (show('theme') && palettes.length) {
       const raw = fm.theme;
       const valid = !!raw && palettes.includes(raw);
       const current = valid ? raw : (getDefaultTheme() || palettes[0] || '');
@@ -331,7 +355,7 @@ export function createConfigPanel({ host, trigger, getSource, setSource, palette
     // Finish — the deck-wide type/geometry register (boardroom / sketch /
     // sketch-clean), orthogonal to the palette. Boardroom is the baseline, so
     // picking it clears the key (a clean deck carries no finish:).
-    if (finishes.length) {
+    if (show('finish') && finishes.length) {
       const current = fm.finish && finishes.includes(fm.finish) ? fm.finish : 'boardroom';
       host.append(selectRow('finish', 'Finish',
         'Hand-drawn or clean — applies to the whole deck',
@@ -340,35 +364,46 @@ export function createConfigPanel({ host, trigger, getSource, setSource, palette
 
     // Token system — the deck's token vocabulary. Universal renders against the
     // new --cat-*/--diagram-* names (identical output); a migration-safety A/B.
-    host.append(selectRow('tokens', 'Token system',
-      'universal = the new --cat-*/--diagram-* names (renders identically)',
-      [['current', 'Current (legacy names)'], ['universal', 'Universal (new names)']], fm.tokens));
+    if (show('tokens')) {
+      host.append(selectRow('tokens', 'Token system',
+        'universal = the new --cat-*/--diagram-* names (renders identically)',
+        [['current', 'Current (legacy names)'], ['universal', 'Universal (new names)']], fm.tokens));
+    }
 
-    host.append(selectRow('size', 'Slide size', 'Aspect ratio (16:9 is the default)', [
-      ['16:9', '16:9 · 1280×720'],
-      ['4K', '4K · 3840×2160'],
-      ['standard', '4:3 · 960×720'],
-    ], fm.size));
+    if (show('size')) {
+      host.append(selectRow('size', 'Slide size', 'Aspect ratio (16:9 is the default)', [
+        ['16:9', '16:9 · 1280×720'],
+        ['4K', '4K · 3840×2160'],
+        ['standard', '4:3 · 960×720'],
+      ], fm.size));
+    }
 
-    host.append(switchRow('paginate', 'Page numbers', 'Show pagination on every slide', fm.paginate));
-    host.append(textField('header', 'Header', 'Running header text on every slide', fm.header, 'e.g. Lattice · Q3 Board Review'));
-    host.append(textField('footer', 'Footer', 'Running footer text on every slide', fm.footer, 'e.g. Confidential'));
+    if (show('paginate')) host.append(switchRow('paginate', 'Page numbers', 'Show pagination on every slide', fm.paginate));
+    if (show('header')) host.append(textField('header', 'Header', 'Running header text on every slide', fm.header, 'e.g. Lattice · Q3 Board Review'));
+    if (show('footer')) host.append(textField('footer', 'Footer', 'Running footer text on every slide', fm.footer, 'e.g. Confidential'));
 
     // Islands — the deck-wide composition model (masthead band + bay + rail).
-    host.append(selectRow('islands', 'Islands', 'Masthead band, meta/status bay & progress rail, deck-wide', [
-      ['off', 'Off'],
-      ['on', 'On — band, bay & rail'],
-      ['minimal', 'Minimal — band & bay, no rail'],
-    ], fm.islands));
+    if (show('islands')) {
+      host.append(selectRow('islands', 'Islands', 'Masthead band, meta/status bay & progress rail, deck-wide', [
+        ['off', 'Off'],
+        ['on', 'On — band, bay & rail'],
+        ['minimal', 'Minimal — band & bay, no rail'],
+      ], fm.islands));
+    }
 
-    host.append(el('h3', 'db-settings-head db-settings-subhead', 'Advanced'));
-
-    host.append(textField('class', 'Default slide class', 'A class applied to every slide (e.g. dark)', fm.class, 'e.g. dark'));
-    host.append(selectRow('math', 'Math renderer', 'How $…$ math is typeset', [
-      ['', 'KaTeX (default)'],
-      ['mathjax', 'MathJax'],
-    ], fm.math === 'mathjax' ? 'mathjax' : ''));
-    host.append(textField('lang', 'Language', 'The deck’s document language tag', fm.lang, 'e.g. en'));
+    // Advanced — the lower-traffic deck-authoring keys. Only shown when the
+    // profile includes at least one of them (a preview surface omits them all).
+    if (show('class') || show('math') || show('lang')) {
+      host.append(el('h3', 'db-settings-head db-settings-subhead', 'Advanced'));
+      if (show('class')) host.append(textField('class', 'Default slide class', 'A class applied to every slide (e.g. dark)', fm.class, 'e.g. dark'));
+      if (show('math')) {
+        host.append(selectRow('math', 'Math renderer', 'How $…$ math is typeset', [
+          ['', 'KaTeX (default)'],
+          ['mathjax', 'MathJax'],
+        ], fm.math === 'mathjax' ? 'mathjax' : ''));
+      }
+      if (show('lang')) host.append(textField('lang', 'Language', 'The deck’s document language tag', fm.lang, 'e.g. en'));
+    }
 
     syncTrigger();
   }

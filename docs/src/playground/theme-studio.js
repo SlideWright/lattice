@@ -26,6 +26,7 @@ import { createArchitectModel } from './architect-model.js';
 // as the Node tooling + the WCAG gate. Rebuild with `npm run theme-core:build`.
 import { deleteAsset, listAssets, putAsset } from './asset-store.js';
 import { SLIDE_BOX } from './frame-css.js';
+import { mountStudioPreviewConfig } from './studio-preview-config.js';
 import {
   askMessages,
   auditBoth,
@@ -134,7 +135,7 @@ function slugify(name, fallback = 'studio') {
 }
 
 export function initThemeStudio(config) {
-  const { themeBase, runtimeUrl } = config;
+  const { themeBase, runtimeUrl, finishes = [] } = config;
   const root = document.querySelector('.studio');
   if (!root) return;
 
@@ -168,6 +169,17 @@ export function initThemeStudio(config) {
     css: '',
   };
   if (els.name) els.name.value = STARTERS[0].name;
+
+  // Preview setup — a state-backed deck-config that applies a finish / size /
+  // islands to the specimen behind the scenes, so the theme can be auditioned
+  // under sketch etc. `run` (hoisted below) re-renders on every change.
+  const previewConfig = mountStudioPreviewConfig({
+    root,
+    body: () => SPECIMEN,
+    onChange: () => run(),
+    finishes,
+    storageKey: 'lattice-wb-theme-preview-fm',
+  });
 
   // The model ladder — shared with the Drawing Board via localStorage. Floors
   // to the deterministic core when nothing is connected.
@@ -396,7 +408,7 @@ export function initThemeStudio(config) {
       .then(() => {
         const previewCss = serializeTheme(map, { name: PREVIEW_THEME, label: state.label });
         PG.addThemes([previewCss]);
-        const out = PG.render(SPECIMEN, PREVIEW_THEME);
+        const out = PG.render(previewConfig.composed(), PREVIEW_THEME);
         writeFrame(out.html, out.css);
         const n = (out.html.match(/<\/section>/g) || []).length;
         setStatus(`Live · ${n} specimen slide${n === 1 ? '' : 's'} · ${exportName}.css`);

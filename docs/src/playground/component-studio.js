@@ -24,6 +24,7 @@ import {
   STARTERS,
   scaffoldFiles,
 } from './layout-core.generated.js';
+import { mountStudioPreviewConfig } from './studio-preview-config.js';
 // Borrow a ready palette for the preview — the component is palette-blind, so
 // any contrast-clean theme proves it obeyed the token rule.
 import { deriveTheme, serializeTheme, STARTERS as THEME_STARTERS } from './theme-core.generated.js';
@@ -57,7 +58,7 @@ function slugify(name, fallback = 'component') {
 }
 
 export function initLayoutStudio(config) {
-  const { themeBase, runtimeUrl, shippedNames = [] } = config;
+  const { themeBase, runtimeUrl, shippedNames = [], finishes = [] } = config;
   const root = document.querySelector('.studio-layout');
   if (!root) return;
 
@@ -96,6 +97,17 @@ export function initLayoutStudio(config) {
     skeleton: first.skeleton,
     mode: 'light',
   };
+
+  // Preview setup — apply a finish / size / islands to the skeleton preview
+  // behind the scenes (so a component can be auditioned under sketch, etc.),
+  // without it leaking into the saved component. `run` (hoisted) re-renders.
+  const previewConfig = mountStudioPreviewConfig({
+    root,
+    body: () => state.skeleton,
+    onChange: () => run(),
+    finishes,
+    storageKey: 'lattice-wb-layout-preview-fm',
+  });
 
   // ── Preview palette (borrowed from the Theme Studio core) ─────────────────
   let fetchedBase = null;
@@ -283,7 +295,7 @@ export function initLayoutStudio(config) {
     ensureBaseTheme()
       .then(() => {
         ensurePalette();
-        const out = PG.render(state.skeleton, PREVIEW_PALETTE);
+        const out = PG.render(previewConfig.composed(), PREVIEW_PALETTE);
         // The component CSS is palette-blind; append it after the theme CSS.
         writeFrame(out.html, out.css + '\n/* component */\n' + state.css);
         const n = (out.html.match(/<\/section>/g) || []).length;
