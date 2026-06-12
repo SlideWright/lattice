@@ -124,14 +124,45 @@ option parity + any section-attribute height effect; (b) a dropped/changed
 element vs the bespoke parser (legal takeaway divider) — real parser-output
 difference to reconcile. cards-grid proves the *approach* is sound (different
 HTML, identical pixels); the gaps are a finite, per-deck triage list, not a
-rewrite. **Do not flip the default until this table is all-zero.**
+rewrite.
+
+### 2026-06-12 — triage + first regression fix; the gate is "no regressions"
+
+Drilled into the two gap classes, and the right **gate reframes**: byte-identical
+to `parseSlide` is the wrong bar — it would freeze the bespoke parser's *bugs*
+(the engine is GFM-correct and fixes e.g. bold-inside-inline-code). The bar is
+**no visible regressions**; each diff is triaged regression / improvement / noise.
+
+- **Math overflow (slide 6) — REGRESSION, FIXED.** Not a height edge: the engine
+  used KaTeX `output:'htmlAndMathml'` (marp-core's default), and the hidden MathML
+  annotation's *unclipped* layout inflated `scrollWidth` by ~1220px → the slide
+  overflow watcher baked a stale red ring into the PDF. Fix: `installMath` takes an
+  `output` option (default `htmlAndMathml`, so the playground/marp A/B stays at
+  parity); the **emulator** path passes `mathOutput:'html'` — matching the
+  emulator's own existing `output:'html'` KaTeX call, and a PDF has no
+  screen-reader to consume the MathML. Math A/B 2→1; the residual (slide 9) is a
+  sub-pixel difference, visually identical → **noise, accept.**
+- **Legal takeaway divider (slide 4) — NOT a regression; a pipeline gap.** The
+  `.below-note` hairline wrap (trailing `<p>` after a structural block) is
+  **bespoke to `parseSlide`** (`lattice-emulator.js`, the "Universal below-note"
+  block), *not* in the shared plugins/registry — so marp-cli and the engine never
+  produced it. The emulator has silently diverged from marp here all along (the
+  cross-renderer gate only checks page counts). Dropping it makes the emulator
+  *match* marp; the **correct** convergence is to move the wrap into the shared
+  plugins so all three renderers agree (changes marp-cli output + baselines → its
+  own reviewed change, not a P2 quick-fix). Likely the bulk of legal's 11 diffs.
+
+**Remaining:** split-panel (1), diagram/mermaid (1), roadmap (2) still un-triaged.
+**Flip the default once every diff is triaged to improvement/noise or a logged
+follow-up — not when the count hits zero.**
 
 ## Rollback
 
 Every step is reversible; the seam is a single call site behind a default-OFF
-flag. `parseSlide` stays in the tree until the rendered-pixel A/B is all-zero
-across the corpus, so a swap that regresses any deck is caught before the parser
-is deleted.
+flag. `parseSlide` stays in the tree until the rendered-pixel A/B is fully
+triaged (every diff an improvement / noise / logged follow-up, no open
+regressions), so a swap that regresses any deck is caught before the parser is
+deleted.
 
 ## Not in scope
 

@@ -1783,7 +1783,10 @@ function splitTopLevelSections(marpitHtml) {
 
 function engineSlides() {
   const latticeEngine = require('./lib/engine');
-  const engine = latticeEngine.createEngine();
+  // mathOutput:'html' drops KaTeX's hidden MathML annotation — it can't be read
+  // in a PDF and its unclipped layout trips the slide overflow watcher (a stale
+  // ring), matching the emulator's own `output:'html'` KaTeX call.
+  const engine = latticeEngine.createEngine({ mathOutput: 'html' });
   engine.addThemes([readFileOrDie(cssFile, 'layout CSS'), fs.readFileSync(palettePath, 'utf8')]);
   const { html } = engine.render(rawMd, paletteName);
   return splitTopLevelSections(html).map((sec, i) =>
