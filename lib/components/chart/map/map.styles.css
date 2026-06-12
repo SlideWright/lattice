@@ -87,8 +87,8 @@ section.map .map-legend-row {
 section.map .map-swatch {
   width: 1.6cqi;
   height: 1.6cqi;
-  min-width: 11px;
-  min-height: 11px;
+  min-width: 11px;  /* sanctioned: legend-swatch floor below the 1.6cqi size — keeps the swatch legible at sub-HD renders, never the computed size */
+  min-height: 11px; /* sanctioned: legend-swatch floor (see min-width) */
   border-radius: 3px;
   display: inline-block;
 }

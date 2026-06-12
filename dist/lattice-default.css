@@ -2767,8 +2767,8 @@ section.gantt.chart-frame .chart-body {
 .gantt-chart .gantt-legend-swatch {
   width: 1.35cqi;
   height: 1.35cqi;
-  min-width: 12px;
-  min-height: 12px;
+  min-width: 12px;  /* sanctioned: legend-swatch floor below the 1.35cqi size — keeps the swatch legible at sub-HD renders, never the computed size */
+  min-height: 12px; /* sanctioned: legend-swatch floor (see min-width) */
   border-radius: 0.34cqi;
   flex: 0 0 auto;
   /* The bar's canonical fill recipe, in miniature — same --fill-hue/--fill-ink
@@ -2883,9 +2883,13 @@ section .taskTextOutsideLeft, section .taskTextOutsideRight { fill: var(--text-h
  * sits on every tinted fill at ≥ 5.3:1. */
 .gantt-bar {
   position: absolute;
-  top: 5px; bottom: 5px;
-  left:  calc((var(--gantt-col-start) - 1) / var(--gantt-cols) * 100% + 3px);
-  width: calc( var(--gantt-col-span)       / var(--gantt-cols) * 100% - 6px);
+  /* The bar geometry is %-based (calc over --gantt-cols); the px below are small
+   * fixed insets kept px on purpose — a constant vertical inset within the row
+   * track and a thin inter-bar gutter that stays hairline-scale, not a widening
+   * band at 4K. */
+  top: 5px; bottom: 5px;  /* sanctioned: constant vertical inset within the %-based row track */
+  left:  calc((var(--gantt-col-start) - 1) / var(--gantt-cols) * 100% + 3px); /* sanctioned: thin inter-bar gutter (hairline-scale) */
+  width: calc( var(--gantt-col-span)       / var(--gantt-cols) * 100% - 6px); /* sanctioned: thin inter-bar gutter (hairline-scale) */
   border-radius: 0.46875cqi;
   /* Match the pie / quadrant / radar depth-gradient language. Those three read
    * rich because they fill with a hue-into-bg gradient (~42–82%), NOT the flat
@@ -3448,7 +3452,7 @@ section.journey .journey-mood-key {
   display: inline-flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
+  gap: 2px;  /* sanctioned: hairline-scale gap between stacked actor glyphs */
   line-height: 1;
 }
 section.journey .journey-mood-key-low,
@@ -3536,7 +3540,7 @@ section.journey .journey-section::before {
   content: "";
   position: absolute;
   inset: 0 0 auto 0;
-  height: 3px;
+  height: 3px;  /* sanctioned: top accent rule — a hairline, resolution-stable by design */
   background: var(--section-accent, var(--accent));
   border-radius: var(--radius-sm) var(--radius-sm) 0 0;
 }
@@ -3569,10 +3573,10 @@ section.journey .journey-task {
  * the actor identifier; no white ring is needed to lift it off the chip. */
 section.journey .journey-task-actors {
   position: absolute;
-  top: 4px;
-  left: 4px;
+  top: 4px;  /* sanctioned: hairline-scale corner inset of the actor-dot cluster on the task chip */
+  left: 4px; /* sanctioned: hairline-scale corner inset (see top) */
   display: inline-flex;
-  gap: 2px;
+  gap: 2px;  /* sanctioned: hairline-scale gap between actor dots */
 }
 section.journey .journey-task-label {
   font-weight: 500;
@@ -3848,7 +3852,7 @@ section.journey .journey-lane-track {
   grid-column: 2 / -1;
   grid-row: var(--row);
   align-self: center;
-  height: 2px;
+  height: 2px;  /* sanctioned: actor connector rule — a hairline, resolution-stable by design */
   background: color-mix(in oklab, var(--actor-color) 35%, transparent);
   border-radius: 1px;
 }
@@ -3924,7 +3928,7 @@ section.journey.weighted .journey-task::after {
   content: counter(volume) "%";
   counter-reset: volume var(--volume-pct);
   position: absolute;
-  top: 4px;
+  top: 4px;  /* sanctioned: hairline-scale top inset of the volume % badge */
   left: 0;
   right: 0;
   text-align: center;
@@ -3944,8 +3948,8 @@ section.journey.weighted .journey-task-actors {
   /* Move actor dots from top-left to top-right corner so they don't
    * clip the % badge on narrow chips. */
   left: auto;
-  right: 4px;
-  top: 4px;
+  right: 4px;  /* sanctioned: hairline-scale corner inset (actor dots moved off the % badge on narrow chips) */
+  top: 4px;    /* sanctioned: hairline-scale corner inset (see right) */
 }
 
 /* === lib/components/chart/kanban/kanban.styles.css === */
@@ -5433,8 +5437,8 @@ section.map .map-legend-row {
 section.map .map-swatch {
   width: 1.6cqi;
   height: 1.6cqi;
-  min-width: 11px;
-  min-height: 11px;
+  min-width: 11px;  /* sanctioned: legend-swatch floor below the 1.6cqi size — keeps the swatch legible at sub-HD renders, never the computed size */
+  min-height: 11px; /* sanctioned: legend-swatch floor (see min-width) */
   border-radius: 3px;
   display: inline-block;
 }
@@ -8626,7 +8630,7 @@ section.roadmap.status td.cell-state .cell-state-label {
   letter-spacing:0.10em;
   text-transform:uppercase;
   color:var(--state-color, var(--text-muted));
-  margin-bottom:2px;
+  margin-bottom:2px; /* sanctioned: hairline-scale label spacing */
   line-height:1.2;
 }
 section.roadmap.status td.cell-state .cell-state-text {
@@ -8717,7 +8721,7 @@ section.roadmap.horizons .horizon-card {
 section.roadmap.horizons .horizon-head {
   display:flex;
   flex-direction:column;
-  gap:2px;
+  gap:2px; /* sanctioned: hairline-scale gap in the horizon head */
   margin-bottom:var(--sp-sm);
   padding-bottom:var(--sp-sm);
   border-bottom:var(--chart-hairline) solid var(--border);
@@ -8771,7 +8775,7 @@ section.roadmap.horizons .horizon-rows {
 section.roadmap.horizons .horizon-rows > li {
   display:flex;
   flex-direction:column;
-  gap:2px;
+  gap:2px; /* sanctioned: hairline-scale gap in the horizon row */
   padding-left:var(--sp-sm);
   border-left:2px solid color-mix(in srgb, var(--phase-accent, var(--accent)) 40%, var(--border));
 }
@@ -8828,7 +8832,7 @@ section.roadmap.swimlane tbody td:not(:first-child)::before {
   content:'';
   position:absolute;
   left:0; top:25%; bottom:25%;
-  width:3px;
+  width:3px; /* sanctioned: phase-accent edge rule — a hairline, resolution-stable by design */
   background:color-mix(in srgb, var(--phase-accent, var(--accent)) 60%, var(--border));
   border-radius:2px;
 }
@@ -9723,7 +9727,7 @@ section.timeline-list .timeline-spine::before {
   top: 1.484375cqi;
   left: 6%;
   right: 6%;
-  height: 2px;
+  height: 2px;  /* sanctioned: timeline spine rule — a hairline, resolution-stable by design */
   background: linear-gradient(
     to right,
     color-mix(in oklab, var(--accent) 12%, transparent) 0%,
@@ -11894,8 +11898,8 @@ section.map:not(.cover) .map-legend .map-swatch,
 section.quadrant:not(.cover) .quadrant-figure[data-variant="cohort"] .quadrant-legend .quadrant-swatch {
   width: 1.35cqi;
   height: 1.35cqi;
-  min-width: 12px;
-  min-height: 12px;
+  min-width: 12px;  /* sanctioned: legend-swatch floor below the 1.35cqi size — keeps a swatch legible at sub-HD renders, never the computed size */
+  min-height: 12px; /* sanctioned: legend-swatch floor (see min-width) */
   border-radius: 0.34cqi;
   flex: 0 0 auto;
   align-self: start;

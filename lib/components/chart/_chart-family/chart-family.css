@@ -643,8 +643,8 @@ section.map:not(.cover) .map-legend .map-swatch,
 section.quadrant:not(.cover) .quadrant-figure[data-variant="cohort"] .quadrant-legend .quadrant-swatch {
   width: 1.35cqi;
   height: 1.35cqi;
-  min-width: 12px;
-  min-height: 12px;
+  min-width: 12px;  /* sanctioned: legend-swatch floor below the 1.35cqi size — keeps a swatch legible at sub-HD renders, never the computed size */
+  min-height: 12px; /* sanctioned: legend-swatch floor (see min-width) */
   border-radius: 0.34cqi;
   flex: 0 0 auto;
   align-self: start;

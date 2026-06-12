@@ -164,7 +164,7 @@ section.journey .journey-mood-key {
   display: inline-flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
+  gap: 2px;  /* sanctioned: hairline-scale gap between stacked actor glyphs */
   line-height: 1;
 }
 section.journey .journey-mood-key-low,
@@ -252,7 +252,7 @@ section.journey .journey-section::before {
   content: "";
   position: absolute;
   inset: 0 0 auto 0;
-  height: 3px;
+  height: 3px;  /* sanctioned: top accent rule — a hairline, resolution-stable by design */
   background: var(--section-accent, var(--accent));
   border-radius: var(--radius-sm) var(--radius-sm) 0 0;
 }
@@ -285,10 +285,10 @@ section.journey .journey-task {
  * the actor identifier; no white ring is needed to lift it off the chip. */
 section.journey .journey-task-actors {
   position: absolute;
-  top: 4px;
-  left: 4px;
+  top: 4px;  /* sanctioned: hairline-scale corner inset of the actor-dot cluster on the task chip */
+  left: 4px; /* sanctioned: hairline-scale corner inset (see top) */
   display: inline-flex;
-  gap: 2px;
+  gap: 2px;  /* sanctioned: hairline-scale gap between actor dots */
 }
 section.journey .journey-task-label {
   font-weight: 500;
@@ -564,7 +564,7 @@ section.journey .journey-lane-track {
   grid-column: 2 / -1;
   grid-row: var(--row);
   align-self: center;
-  height: 2px;
+  height: 2px;  /* sanctioned: actor connector rule — a hairline, resolution-stable by design */
   background: color-mix(in oklab, var(--actor-color) 35%, transparent);
   border-radius: 1px;
 }
@@ -640,7 +640,7 @@ section.journey.weighted .journey-task::after {
   content: counter(volume) "%";
   counter-reset: volume var(--volume-pct);
   position: absolute;
-  top: 4px;
+  top: 4px;  /* sanctioned: hairline-scale top inset of the volume % badge */
   left: 0;
   right: 0;
   text-align: center;
@@ -660,8 +660,8 @@ section.journey.weighted .journey-task-actors {
   /* Move actor dots from top-left to top-right corner so they don't
    * clip the % badge on narrow chips. */
   left: auto;
-  right: 4px;
-  top: 4px;
+  right: 4px;  /* sanctioned: hairline-scale corner inset (actor dots moved off the % badge on narrow chips) */
+  top: 4px;    /* sanctioned: hairline-scale corner inset (see right) */
 }
 
 
