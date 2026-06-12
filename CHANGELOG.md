@@ -89,6 +89,14 @@ in patch versions.
   with a shipped component class at save time. CSS-only only; transform-bearing
   components remain graduation-only. See
   `engineering/decisions/2026-06-12-workbench-component-bridge.md`.
+- **`islands` modifier — the masthead band (islands model, Phase 1).** Opt in
+  with `<!-- _class: <layout> islands -->` and the slide's eyebrow + title lift
+  out of content flow into a named `.isl-masthead` band (hairline rule + a
+  reserved right bay for the meta/logo/status islands coming in Phase 2). The
+  body stays a direct child of the section, so components compose unchanged.
+  Wired through all three render paths via the shared transformer registry;
+  incompatible with `math` / `compare-code` (they drive their own title grid).
+  See `engineering/decisions/2026-06-11-islands.md` and `examples/islands.md`.
 - **Workbench export bridge — library themes reach the Drawing Board.** A theme
   saved in the Workbench library is now selectable in the Drawing Board's palette
   picker (listed with a *(saved)* suffix), registers with the in-browser engine,

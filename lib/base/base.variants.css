@@ -231,3 +231,27 @@ section.confidential::before {
 }
 
 
+
+/* ── ISLANDS · masthead band (opt-in via `islands`) ─────────────────────
+ * The mastheadLift transform (lib/core/masthead-lift.js + the registry)
+ * wraps the eyebrow + title into `.isl-masthead` so the slide's masthead is
+ * a named band with a reserved right bay — `.m-bay` is where the meta / logo
+ * / status islands land in Phase 2. The slide body stays a DIRECT child of
+ * <section>, so every component's `section.X > …` selectors still compose.
+ * The eyebrow and title keep their normal element-level styling (the
+ * `p:has(>code)+h2` eyebrow rule and `section h2` both still match inside the
+ * band). Phase 1 of the islands model — engineering/decisions/2026-06-11-islands.md.
+ *
+ * `islands` is incompatible with `math` / `compare-code` (they drive their
+ * own title grid via `> h2`); don't combine them. */
+section.islands .isl-masthead {
+  display: grid;
+  grid-template-columns: [m-stage] 1fr [m-bay] auto;
+  column-gap: var(--sp-lg);
+  align-items: start;
+  margin-bottom: var(--sp-lg);
+  padding-bottom: var(--sp-md);
+  border-bottom: 1px solid var(--border);
+}
+section.islands .isl-masthead .m-stage { min-width: 0; grid-column: m-stage; }
+section.islands .isl-masthead .m-bay   { grid-column: m-bay; }
