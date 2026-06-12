@@ -326,3 +326,22 @@ deleted.
 
 P3 (drop marp-core from the playground — gated on the owned emitter's on-device
 sign-off) and P4 (retire marp-cli). marp-vscode stays (Scope 1).
+
+**Constraint — marp is NOT being deleted, and cannot be until the VS Code preview
+has a viable replacement.** Two things are easy to conflate:
+
+- **Deleting `parseSlide` (this note, step d)** removes the *emulator's own*
+  bespoke regex parser and converges the emulator on `lib/engine`. The emulator is
+  already marp-free, so this touches **no marp dependency** — it is pure
+  consolidation.
+- **Removing marp** is a different, later axis. **marp-vscode *is* Marp Core**, and
+  it is the live-preview pane — our documented fastest inner loop
+  (CLAUDE.md). `lib/runtime/index.js` is a *passenger* that post-processes the DOM
+  marp-vscode already produced; remove marp-vscode and there is **no in-repo preview
+  pane left**. So marp stays a hard dependency of the dev loop until a viable
+  `lattice-engine`-powered VS Code preview/extension exists to replace it
+  (**Scope 2** in `2026-06-10-marp-replacement-proposal.md` §6 — a separate, larger
+  effort not yet started). P2–P4 deliberately keep marp-vscode and its
+  compatibility shims (`marp.scaffold.css`, the `data-marpit-*` attributes). **Do
+  not plan or imply a full marp removal until that replacement lands.**
+
