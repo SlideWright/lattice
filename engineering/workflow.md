@@ -258,6 +258,12 @@ Do not close a feature branch until all three are updated and integration tests 
 
 ## Merging
 
-- PRs merge into `main` via squash or a clean rebase — no merge commits.
+- PRs merge into `main` via **squash-and-merge by default** — across many
+  parallel AI sessions a single PR can carry 20+ noisy commits, and squashing
+  keeps `main` one reviewable, revertable commit per PR. Use rebase-and-merge
+  only for a deliberately curated, atomic commit series (each commit
+  independently meaningful). Never a merge commit. (This is the *merge* method;
+  it's independent of keeping the branch rebased on `main` before merge — see
+  the rebase step above.)
 - Delete the remote branch after merge.
 - Remove the local worktree if one was used.
