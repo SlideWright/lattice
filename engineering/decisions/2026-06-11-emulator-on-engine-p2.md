@@ -1,7 +1,8 @@
 # P2 — put the emulator on `lattice-engine`
 
-**Status:** in progress — steps 1–3 landed behind a default-OFF flag; gaps
-enumerated, not yet closed (see **Progress log** below). Implements **P2** of
+**Status:** DONE — the emulator renders through `lib/engine`; `parseSlide` is
+deleted and the `LATTICE_EMULATOR_ENGINE` flag is gone (see the final **Progress
+log** entry). Corpus flip A/B gated the swap to zero regressions. Implements **P2** of
 [`2026-06-10-marp-replacement-proposal.md`](2026-06-10-marp-replacement-proposal.md)
 §9, sequenced after the owned CSS emitter (merged). Written before code because
 the target is the shipped `bin`/`main`, and the migration is not a drop-in.
@@ -313,6 +314,36 @@ kernels), which also fixes marp-cli + the runtime, then re-run the corpus A/B to
 green. That is the remaining structure work; nothing else in the corpus blocks the
 flip. `![bg]` is landed; the rest of P1.1 (true Marpit inline-SVG) is NOT needed for
 the emulator path and is unrelated to this gate.
+
+### 2026-06-12 — (d) DONE: featured + compare-code migrated, default flipped, `parseSlide` deleted
+
+The gate work and the flip both landed:
+
+1. **`featured` + `compare-code` migrated** to the shared registry — kernels in
+   each component folder (`lib/components/imagery/featured/featured.transform.js`,
+   `lib/components/code/compare-code/compare-code.transform.js`) + adapters
+   (`lib/transformers/{featured,compare-code}.js`) with
+   `applyToHtml`/`applyToSection`/`applyToDom`, the `.below-note` pattern. Fixes
+   the engine path **and** marp-cli + the runtime (both rendered a plain `<ul>` /
+   flat code sequence before). parseSlide default byte-identical; +11 unit tests.
+   Corpus: **69 → 54** differing pages, every one improvement/noise — **no
+   structure-needing regressions remain.**
+2. **The flip:** `engineSlides()` is now the emulator's only parse path. The
+   `LATTICE_EMULATOR_ENGINE` flag and the `USE_ENGINE` ternaries are gone.
+3. **`parseSlide` deleted** (~620 lines) plus the now-dead helpers it alone fed:
+   `parseInline`, the KaTeX `extractMath`/`restoreMath` pipeline (the engine
+   renders math itself; the emulator only links KaTeX's CSS), the `hljs` require
+   (the engine highlights), and the deck-directive parsing block
+   (`paginateGlobal`/`globalHeader`/`globalFooter`/`deckWideClass`/islands/
+   `headingDivider`/`splitSlides`/`liftSlotLabel`/`belowNote`/registry/radar/
+   quadrant requires) — all resolved inside `engine.render` now. biome's
+   unused-code lint drove the dead-code sweep; `lib/engine` keeps only `rawMd`,
+   the slide-size vars, `globalStyle`, and `bgImage`.
+
+Verified on the bare default (no env): baseline 89pp, math 15pp (KaTeX renders),
+featured 8pp, compare-code 8pp — all correct; unit suite 1639, build + build:check
+green. The `tools/emulator-flip-ab.mjs` harness is now degenerate (both paths are
+the engine) — retained for history; re-point it if a second parser ever returns.
 
 ## Rollback
 

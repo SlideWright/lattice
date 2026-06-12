@@ -46,38 +46,11 @@ const PKG_ROOT = (() => {
   return __dirname;
 })();
 
-// highlight.js — available as transitive dep of mermaid-cli, or as a
-// project dep. Try standard resolution first, then mermaid-cli's bundled copy.
-let hljs;
-{
-  const tryPaths = ['highlight.js'];
-  try {
-    const globalRoot = require('child_process')
-      .execSync('npm root -g', { stdio: ['pipe', 'pipe', 'ignore'] })
-      .toString().trim();
-    if (globalRoot) {
-      tryPaths.push(path.join(globalRoot, '@mermaid-js', 'mermaid-cli', 'node_modules', 'highlight.js'));
-    }
-  } catch (_e) { /* npm not on path */ }
-  tryPaths.push(path.join('node_modules', '@mermaid-js', 'mermaid-cli', 'node_modules', 'highlight.js'));
-  for (const p of tryPaths) {
-    try { hljs = require(p); break; } catch (_e) { /* try next */ }
-  }
-}
-
-// ── KaTeX (math rendering) ────────────────────────────────────────────────
-// Server-side LaTeX → HTML at slide-parse time. Two-phase pipeline:
-//   1. extractMath(text)   — pull $$...$$ / $...$ out of markdown, replace
-//                            each with an opaque token the markdown parser
-//                            won't touch (no $, _, *, ^, etc.)
-//   2. restoreMath(html)   — after parseInline / table / list handling,
-//                            swap tokens back for katex.renderToString output
-// This mirrors Marp's `math: 'katex'` config (set in marp.config.js) so the
-// CLI path and emulator produce equivalent math markup. KaTeX is required
-// lazily — if it isn't installed, math passes through as plain text and a
-// one-time warning is emitted, so a missing optional dep can't break the build.
-let katex;
-try { katex = require('katex'); } catch (_e) { /* math unavailable; degrades to plaintext */ }
+// ── KaTeX CSS ────────────────────────────────────────────────────────────────
+// The engine (lib/engine, created with `mathOutput:'html'`) renders `$…$` /
+// `$$…$$` to KaTeX markup itself; the emulator only links KaTeX's stylesheet so
+// the glyph fonts resolve in the PDF. Resolved lazily — absent the optional dep,
+// no link is emitted and math degrades to plain text.
 let katexCssAbsPath = '';
 try { katexCssAbsPath = require.resolve('katex/dist/katex.min.css'); } catch (_e) { /* no css link emitted */ }
 
@@ -92,78 +65,6 @@ try { katexCssAbsPath = require.resolve('katex/dist/katex.min.css'); } catch (_e
 // (lattice-runtime.js) load the same bundle for path parity.
 let functionPlotJsAbsPath = '';
 try { functionPlotJsAbsPath = require.resolve('function-plot/dist/function-plot.js'); } catch (_e) { /* no script emitted */ }
-
-const MATH_TOKEN_PREFIX  = 'LATTICEMATH';
-const MATH_TOKEN_SUFFIX  = '';
-const mathRegistry = []; // index → { tex, display }
-
-function extractOnePart(text) {
-  // Display math first ($$...$$, multiline). The non-greedy [\s\S]+? avoids
-  // over-matching across two unrelated $$ pairs. We require non-empty content
-  // so accidental "$$" pairs in prose don't capture.
-  text = text.replace(/\$\$([\s\S]+?)\$\$/g, (_, tex) => {
-    const i = mathRegistry.length;
-    mathRegistry.push({ tex: tex.trim(), display: true });
-    return MATH_TOKEN_PREFIX + i + MATH_TOKEN_SUFFIX;
-  });
-  // Inline math ($...$). Forbid newlines inside, and disallow $ adjacent to
-  // a digit on the outside (e.g. "$5" prices) — KaTeX inline must be bounded
-  // by non-digit context. Content can't start or end with whitespace.
-  text = text.replace(/(^|[^\\$\d])\$([^$\n][^$\n]*?[^$\n\s])\$(?!\d)/g, (_m, pre, tex) => {
-    const i = mathRegistry.length;
-    mathRegistry.push({ tex, display: false });
-    return pre + MATH_TOKEN_PREFIX + i + MATH_TOKEN_SUFFIX;
-  });
-  // Single-char inline math: $x$ — handled separately since the [^$\n\s]
-  // tail anchor above requires ≥2 chars.
-  text = text.replace(/(^|[^\\$\d])\$([^$\n\s])\$(?!\d)/g, (_m, pre, tex) => {
-    const i = mathRegistry.length;
-    mathRegistry.push({ tex, display: false });
-    return pre + MATH_TOKEN_PREFIX + i + MATH_TOKEN_SUFFIX;
-  });
-  return text;
-}
-
-function extractMath(text) {
-  if (!katex) return text;
-  // Skip math extraction inside:
-  //   - fenced code blocks (```…```) and inline code (`…`)
-  //   - inlined mermaid SVG (<div class="mermaid-svg">…</div>) — emitted
-  //     by preprocessMermaid before extractMath runs. Mermaid stylesheets
-  //     include CSS attribute selectors like `[id$="-foo"]` whose `$`
-  //     would otherwise match as a math delimiter, splicing KaTeX error
-  //     spans into the SVG <style> block and breaking the diagram render.
-  // Split keeps the delimiters as odd-indexed parts; only even parts are
-  // candidates for math.
-  const parts = text.split(/(```[\s\S]*?```|`[^`\n]+`|<div class="mermaid-svg">[\s\S]*?<\/div>)/);
-  for (let i = 0; i < parts.length; i += 2) {
-    parts[i] = extractOnePart(parts[i]);
-  }
-  return parts.join('');
-}
-
-function restoreMath(html) {
-  if (!katex || !mathRegistry.length) return html;
-  const re = new RegExp(MATH_TOKEN_PREFIX + '(\\d+)' + MATH_TOKEN_SUFFIX, 'g');
-  return html.replace(re, (_, i) => {
-    const entry = mathRegistry[+i];
-    if (!entry) return '';
-    try {
-      return katex.renderToString(entry.tex, {
-        displayMode: entry.display,
-        throwOnError: false,
-        output: 'html',
-        strict: false,
-        trust: false,
-      });
-    } catch (_e) {
-      // KaTeX with throwOnError:false rarely throws, but guard anyway —
-      // print the source so authors can spot the broken expression.
-      const safe = entry.tex.replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
-      return `<span class="math-error" title="KaTeX error">${safe}</span>`;
-    }
-  });
-}
 
 // ── Help / version (handled before positional parsing) ─────────────────────
 function listAvailablePalettes() {
@@ -326,7 +227,6 @@ const md = readFileOrDie(mdFile, 'source markdown');
 // matter > default). Logic lives in lib/resolve-palette.js so it can
 // be unit-tested in isolation; see test/unit/palette-resolution.test.js.
 const { resolvePalette } = require('./lib/core/resolve-palette');
-const { finishClasses } = require('./lib/core/resolve-finish');
 const paletteName = resolvePalette({ md, cliArg: paletteArg }).name;
 const palettePath = path.join(PKG_ROOT, 'themes', `${paletteName}.css`);
 if (!fs.existsSync(palettePath)) {
@@ -943,25 +843,8 @@ function preprocessMermaid(source) {
 const rawMd = preprocessMermaid(md);
 const fmMatch = rawMd.match(/^---([\s\S]*?)---\n/);
 const fm      = fmMatch ? fmMatch[1] : '';
-const paginateGlobal = /^\s*paginate:\s*true/m.test(fm);
-const globalHeader   = (fm.match(/^\s*header:\s*["']?(.*?)["']?\s*$/m) || [])[1] || '';
-const globalFooter   = (fm.match(/^\s*footer:\s*["']?(.*?)["']?\s*$/m) || [])[1] || '';
-// Deck-wide class (Marp `class:` directive, applied to every section).
-// Marp distinguishes the deck-wide form (no leading underscore) from the
-// per-slide `_class:` directive. Multiple classes are space-separated.
-const globalClass    = (fm.match(/^\s*class:\s*["']?(.*?)["']?\s*$/m) || [])[1] || '';
-// Deck-wide `finish:` register → CSS classes appended to every section, just
-// like `class:` (sketch → `sketch`; sketch-clean → `sketch sketch-clean-body`;
-// boardroom/omitted → none). Folded into the deck-wide class so the existing
-// per-slide append below carries it too. See lib/core/resolve-finish.js.
-const globalFinish   = finishClasses((fm.match(/^\s*finish:\s*["']?([A-Za-z0-9_-]+)["']?\s*$/m) || [])[1] || '');
-const deckWideClass  = [globalClass, globalFinish].filter(Boolean).join(' ');
-// Deck-wide `islands:` toggle — resolved to the `islands` class on every
-// eligible section in parseSlide (mirrors marp.config.js's
-// applyIslandsToggleToHtml; same helpers, one source). `readIslandsMode`
-// yields 'off' | 'on' | 'minimal'.
-const { islandsToggleClass, readIslandsMode } = require('./lib/integrations/marp/plugins');
-const islandsMode    = readIslandsMode(rawMd);
+// Slide geometry — the engine resolves `size:` for its own layout, but the
+// emulator's page template needs the pixel dimensions for the puppeteer PDF.
 const DEFAULT_SIZE   = 'hd';
 const SLIDE_SIZES    = { hd: [1280, 720], HD: [1280, 720], '4K': [3840, 2160], '4k': [3840, 2160], standard: [960, 720] };
 const deckSizeName   = (fm.match(/^\s*size:\s*["']?([\w:/-]+)["']?\s*$/m) || [])[1] || DEFAULT_SIZE;
@@ -989,708 +872,26 @@ function readGlobalStyle(fmText) {
   return '';
 }
 const globalStyle = readGlobalStyle(fm);
-const headingDivider = (() => {
-  const m = fm.match(/^\s*headingDivider:\s*(\d+)/m);
-  return m ? Math.max(1, Math.min(6, parseInt(m[1], 10))) : null;
-})();
 
-const content   = rawMd.replace(/^---[\s\S]*?---\n/, '');
-
-// Slide splitter — extracted to lib/split-slides.js so it can be unit-tested
-// directly. See that file for the fence-and-headingDivider rationale.
-const { splitSlides }    = require('./lib/core/split-slides');
-// Named-slot lift helper used by decision / compare-prose (incl. transition).
-const { liftSlotLabel }  = require('./lib/core/slot-label-lift');
-// Universal below-note kernel — the trailing-`<p>` hairline wrap. parseSlide
-// calls wrapSectionBody as its LAST transform; the same kernel feeds the
-// marp-cli / runtime paths via lib/transformers/below-note.js.
-const belowNote          = require('./lib/core/below-note');
-// `![bg …]` half-canvas image handling. parseSlide uses bgDiv; the engine path
-// uses liftBgImages + wrapImageText to reproduce the lattice-bg/image-text panel
-// (lib/engine matches marp WEB mode, which collapses bg left/right to full-bleed).
+// `![bg …]` half-canvas image handling — the engine path uses liftBgImages
+// (markdown pre-pass) + wrapImageText (HTML post-pass) to reproduce the
+// lattice-bg/image-text panel, since lib/engine matches marp WEB mode (which
+// collapses bg left/right to a full-bleed background). See engineSlides().
 const bgImage            = require('./lib/core/bg-image');
-// Shared transformer registry — dispatches chart-family, split-panels,
-// roadmap, journey, and word-cloud per-section via applyAllToSection.
-// See lib/transformers/registry.js for the contract and order rationale.
-const sharedTransformerRegistry = require('./lib/transformers/registry');
-// Radar chart kernel — parsing + SVG-geometry engine for the `radar`
-// chart-family member (one default + five modifier variants). Section
-// dispatch lives in the inline chart-family block below; this kernel is
-// shared with lib/components/chart/_chart-family/chart-family.js (marp.config.js path) and mirrored in
-// lattice-runtime.js.
-const _radar = require('./lib/components/chart/radar/radar.transform');
-// Quadrant chart kernel — 2×2 scatter / matrix layout (one default + five
-// modifier variants: bubble, trail, cohort, threshold, magic). Same
-// kernel-as-module pattern as radar.
-const _quadrant = require('./lib/components/chart/quadrant/quadrant.transform');
 
-const rawSlides = splitSlides(content, headingDivider);
-const _total     = rawSlides.length;
-
-// ── Inline parser ────────────────────────────────────────────────────────────
-function parseInline(t) {
-  // Escape HTML special chars inside inline code so authors can write
-  // angle-bracket-y samples (e.g. `<section>`, `<img src="...">`) without
-  // the browser parsing them as real DOM elements. Standard markdown
-  // behaviour; previously omitted, which let literal `<section>` text
-  // inside code blocks spawn nested DOM sections that broke layout.
-  const escapeInlineCode = (s) => s
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
-  return t
-    // Inline content images: `![alt](url)`. Block-level background images
-    // (`![bg …]`) are consumed earlier (see the `^!\[bg` pass), so by here
-    // only in-flow marks remain — e.g. a `logo-wall` list of brand SVGs.
-    // marp-core renders these natively in the marp-cli and runtime paths;
-    // this brings the emulator to parity. Runs first so the `[]()` delimiters
-    // aren't disturbed by the emphasis passes.
-    .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (_, alt, url) => `<img src="${url}" alt="${alt}">`)
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*(.+?)\*/g,     '<em>$1</em>')
-    .replace(/(?<!\w)_([^_]+?)_(?!\w)/g, '<em>$1</em>')
-    .replace(/`(.+?)`/g,       (_, c) => '<code>' + escapeInlineCode(c) + '</code>');
-}
-
-// ── Slide parser ─────────────────────────────────────────────────────────────
-function parseSlide(raw, index) {
-  // Read per-slide directives. Deck-wide `class:` from front matter is
-  // APPENDED to the per-slide `_class:` (Lattice extension to Marpit's
-  // native "spot replaces global" rule). Mirrors the deckClassPropagate
-  // Marpit plugin in marp.config.js so both render paths produce
-  // identical class lists. See plugin docstring for rationale.
-  let classAttr = '';
-  let paginate  = paginateGlobal;
-  let header    = globalHeader;
-  let footer    = globalFooter;
-  let bgColor   = '';
-
-  const cm = raw.match(/<!--\s*_class:\s*(.*?)\s*-->/);
-  if (cm) classAttr = cm[1].trim();
-  if (deckWideClass) {
-    const cur = classAttr.split(/\s+/).filter(Boolean);
-    for (const t of deckWideClass.split(/\s+/).filter(Boolean)) {
-      if (!cur.includes(t)) cur.push(t);
-    }
-    classAttr = cur.join(' ');
-  }
-  if (islandsMode !== 'off') classAttr = islandsToggleClass(classAttr, islandsMode);
-
-  if (raw.includes('_paginate: false')) paginate = false;
-  if (raw.includes('_paginate: true'))  paginate = true;
-
-  const hm = raw.match(/<!--\s*_header:\s*["']?(.*?)["']?\s*-->/);
-  if (hm) header = hm[1].trim();
-
-  const fm2 = raw.match(/<!--\s*_footer:\s*["']?(.*?)["']?\s*-->/);
-  if (fm2) footer = fm2[1].trim();
-
-  const bg = raw.match(/<!--\s*_backgroundColor:\s*(.*?)\s*-->/);
-  if (bg) bgColor = bg[1].trim();
-
-  // Strip all directives before parsing content
-  raw = raw.replace(/<!--.*?-->/gs, '').trim();
-
-  // ── Math extraction (before any markdown processing) ─────────────────────
-  // $$…$$ and $…$ become opaque tokens so the markdown parser doesn't try
-  // to italicise `_` subscripts or bold `*` multiplications inside LaTeX.
-  // Restored to KaTeX HTML by restoreMath() at the end of parseSlide. The
-  // Marp CLI path (marp.config.js) handles math natively via `math: 'katex'`;
-  // see that file for the parity contract.
-  raw = extractMath(raw);
-
-  // ── Marp background image syntax ─────────────────────────────────────────
-  // Handles: ![bg right](url), ![bg left](url), ![bg](url) and the same with
-  // a `fit` keyword in any position (![bg right fit], ![bg fit right], etc.).
-  // The `fit` keyword is Marp-native and switches the preview's
-  // background-size from cover→contain; we accept it here so the same source
-  // renders identically in VS Code Marp preview and in our build pipeline.
-  // Capture the entire keyword blob then parse inside the callback —
-  // capturing inside a quantified group resets on each iteration in JS.
-  // Anchored to line start (^) so inline backtick code containing ![bg...] is not consumed.
-  let bgImageHtml = '';
-  raw = raw.replace(bgImage.BG_RE, (_, kw, url) => {
-    // The directive grammar + the `.lattice-bg`/`image-asset` markup live in
-    // lib/core/bg-image.js, shared with the engine-backed path. `image-asset` is
-    // the class the image-asset transformer rewrites marpit's figure to, so all
-    // paths share one CSS selector for object-fit / position / box-shadow.
-    bgImageHtml = bgImage.bgDiv(kw, url);
-    return '';
-  });
-
-  // ── Markdown → HTML ────────────────────────────────────────────────────────
-  // Pre-process: convert fenced code blocks to highlighted <pre><code>
-  // Uses highlight.js server-side — no CDN dependency
-  raw = raw.replace(/```(\w*)\n([\s\S]*?)```/g, (_, lang, code) => {
-    const trimmed = code.replace(/\n$/, ''); // strip trailing newline
-    // `latticeplot` is intercepted here so the JSON config doesn't get
-    // syntax-highlighted into a <pre><code> block. Emit a placeholder div
-    // that the vendored function-plot bundle inflates to an SVG at runtime.
-    // base64 isolates the JSON from HTML-attribute escaping concerns.
-    if (lang === 'latticeplot') {
-      const cfg64 = Buffer.from(trimmed, 'utf8').toString('base64');
-      return `<div class="latticeplot" data-fp-config="${cfg64}"></div>`;
-    }
-    let highlighted;
-    if (hljs && lang && hljs.getLanguage(lang)) {
-      try {
-        highlighted = hljs.highlight(trimmed, { language: lang }).value;
-      } catch(_e) {
-        highlighted = trimmed.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-      }
-    } else {
-      highlighted = trimmed.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    }
-    const langClass = lang ? ` class="language-${lang} hljs"` : ' class="hljs"';
-    return `<pre class="hljs language-${lang || 'none'}"><code${langClass}>${highlighted}</code></pre>`;
-  });
-
-  // Pre-process: convert markdown tables to HTML before line-by-line parsing
-  raw = raw.replace(/((?:\|.+\|\n?)+)/g, (tableBlock) => {
-    const tableLines = tableBlock.trim().split('\n').filter(l => l.trim());
-    if (tableLines.length < 2) return tableBlock;
-    // Check second line is a separator row
-    if (!/^\|[-:\s|]+\|$/.test(tableLines[1].trim())) return tableBlock;
-
-    const parseRow = (line) => line.trim()
-      .replace(/^\||\|$/g, '')
-      .split('|')
-      .map(cell => cell.trim());
-
-    const headers = parseRow(tableLines[0]);
-    const bodyRows = tableLines.slice(2);
-
-    const thead = '<thead><tr>' +
-      headers.map(h => `<th>${parseInline(h)}</th>`).join('') +
-      '</tr></thead>';
-    const tbody = '<tbody>' +
-      bodyRows.map(row => {
-        const cells = parseRow(row);
-        return '<tr>' + cells.map((c, i) =>
-          i === 0
-            ? `<td><strong>${parseInline(c)}</strong></td>`
-            : `<td>${parseInline(c)}</td>`
-        ).join('') + '</tr>';
-      }).join('') +
-      '</tbody>';
-
-    return `<table>${thead}${tbody}</table>\n`;
-  });
-
-  let html = '';
-  const lines = raw.split('\n');
-  let inList = false, inOrderedList = false, inSubList = false, inSubSubList = false, inBlockquote = false, inPre = false;
-  const sp = classAttr.includes('no-period') ? s => s.replace(/\.\s*$/, '') : s => s;
-  const ap = classAttr.includes('with-period')   ? s => /[.!?:…]$/.test(s.trimEnd()) ? s : s.trimEnd() + '.' : s => s;
-
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-    const t    = line.trim();
-
-    // Track <pre> blocks — pass content through verbatim, no markdown parsing
-    if (t.startsWith('<pre ') || t === '<pre>') {
-      // Check if this is a self-contained single-line pre (open and close on same line)
-      if (t.includes('</pre>')) {
-        html += line + '\n';
-        continue; // single-line pre — don't set inPre flag
-      }
-      inPre = true;  html += line + '\n'; continue;
-    }
-    if (t.startsWith('</pre>') || t.startsWith('</code></pre>') || t.endsWith('</code></pre>') || t.endsWith('</pre>')) { inPre = false; html += line + '\n'; continue; }
-    if (inPre) { html += line + '\n'; continue; }
-
-    if (!t) {
-      if (inSubSubList)   { html += '</ul></li>';  inSubSubList   = false; }
-      if (inSubList)      { html += '</ul></li>';  inSubList      = false; }
-      if (inList)         { html += '</ul>';        inList         = false; }
-      if (inOrderedList)  { html += '</ol>';        inOrderedList  = false; }
-      if (inBlockquote)   { html += '</blockquote>'; inBlockquote  = false; }
-      continue;
-    }
-    if      (t.startsWith('######')) { html += `<h6>${parseInline(ap(sp(t.slice(6).trim())))}</h6>`; }
-    else if (t.startsWith('#####'))  { html += `<h5>${parseInline(ap(sp(t.slice(5).trim())))}</h5>`; }
-    else if (t.startsWith('####'))   { html += `<h4>${parseInline(ap(sp(t.slice(4).trim())))}</h4>`; }
-    else if (t.startsWith('### '))   { html += `<h3>${parseInline(ap(sp(t.slice(4))))}</h3>`; }
-    else if (t.startsWith('## '))    { html += `<h2>${parseInline(ap(sp(t.slice(3))))}</h2>`; }
-    else if (t.startsWith('# '))     { html += `<h1>${parseInline(ap(sp(t.slice(2))))}</h1>`; }
-    else if (/^(\*{3,}|_{3,})$/.test(t)) { html += '<hr>'; }
-    else if (t.startsWith('> ')) {
-      if (!inBlockquote) { html += '<blockquote>'; inBlockquote = true; }
-      html += `<p>${parseInline(t.slice(2))}</p>`;
-    }
-    else if (/^ {4,}- /.test(line)) {
-      if (!inSubSubList) { html += '<ul>'; inSubSubList = true; }
-      html += `<li>${parseInline(t.slice(2))}</li>`;
-    }
-    else if (/^ {2,}- /.test(line)) {
-      if (inSubSubList)   { html += '</ul></li>'; inSubSubList = false; }
-      if (!inSubList)     { html += '<ul>'; inSubList = true; }
-      html += `<li>${parseInline(t.slice(2))}`;
-      const nextL2 = i + 1 < lines.length ? lines[i + 1] : '';
-      if (!/^ {4,}- /.test(nextL2)) html += '</li>';
-    }
-    else if (t.startsWith('- ')) {
-      if (inSubSubList)   { html += '</ul></li>'; inSubSubList  = false; }
-      if (inSubList)      { html += '</ul></li>'; inSubList     = false; }
-      if (inOrderedList)  { html += '</ol>';       inOrderedList = false; }
-      if (!inList)        { html += '<ul>';        inList        = true;  }
-      html += `<li>${parseInline(t.slice(2))}`;
-      const next = i + 1 < lines.length ? lines[i + 1] : '';
-      if (!/^ {2,}- /.test(next)) html += '</li>';
-    }
-    else if (/^\d+\. /.test(t)) {
-      // Ordered list item — e.g. "1. item text"
-      if (inList)        { html += '</ul>'; inList = false; }
-      if (inSubSubList)  { html += '</ul></li>'; inSubSubList = false; }
-      if (inSubList)     { html += '</ul></li>'; inSubList = false; }
-      if (!inOrderedList) { html += '<ol>'; inOrderedList = true; }
-      html += `<li>${parseInline(t.replace(/^\d+\. /, ''))}`;
-      // Check if next line is a sub-list — if not, close immediately
-      const nextOl = i + 1 < lines.length ? lines[i + 1] : '';
-      if (!/^ {2,}- /.test(nextOl) && !/^ {3}/.test(nextOl)) html += '</li>';
-    }
-    else if (t.startsWith('<')) { html += t + '\n'; }
-    else {
-      if (inBlockquote) { html += '</blockquote>'; inBlockquote = false; }
-      if (inSubSubList) { html += '</ul></li>';    inSubSubList = false; }
-      if (inSubList)    { html += '</ul></li>';    inSubList    = false; }
-      if (inList)       { html += '</ul>';         inList       = false; }
-      html += `<p>${parseInline(t)}</p>`;
-    }
-  }
-  if (inSubSubList) html += '</ul></li>';
-  if (inSubList)    html += '</ul></li>';
-  if (inList)       html += '</ul>';
-  if (inOrderedList) html += '</ol>';
-  if (inBlockquote) html += '</blockquote>';
-
-  // ── Layout-specific post-processing ──────────────────────────────────────
-  // Wraps native markdown elements into the containers CSS needs for layout.
-  // This is the only place structural HTML is generated — never in the .md source.
-
-  const cls = classAttr;
-  // Whole-class-token test — treats hyphenated names as atomic so `timeline`
-  // does NOT match the unrelated `timeline-list` chart class (`.includes`
-  // would). Mirrors the SLOT_LAYOUTS boundary regex in the marp plugin.
-  const hasClass = (name) => new RegExp(`(?<![\\w-])${name}(?![\\w-])`).test(cls);
-  // Slot-label lift — extracted to lib/slot-label-lift.js for unit testing.
-  // See that file for behavior; same closure binding (used by cards-stack
-  // and the decision / compare-prose handlers below).
-
-  // cards-grid: wrap ul/ol into .cards-grid-inner, each top-level li becomes a .card.
-  // Uses depth tracking to handle nested lists (li > ul/ol for body text).
-  // handles 2 cards (1 row), 3 cards (2+1 via CSS :last-child:nth-child(odd)), 4 cards (2×2)
-  // cards-grid-2plus1 consolidates here
-  if (cls.includes('cards-grid')) {
-    const listMatch = html.match(/<(ul|ol)>/);
-    if (listMatch) {
-      const listTag = listMatch[1];
-      const openList = `<${listTag}>`, closeList = `</${listTag}>`;
-      const listStart = html.indexOf(openList);
-      // Walk forward tracking nesting depth to find the matching close tag
-      let depth = 0, pos = listStart, listEnd = -1;
-      while (pos < html.length) {
-        if (html.startsWith(openList, pos)) { depth++; pos += openList.length; }
-        else if (html.startsWith(closeList, pos)) { depth--; if (depth === 0) { listEnd = pos; break; } pos += closeList.length; }
-        else pos++;
-      }
-      if (listEnd !== -1) {
-        const inner = html.slice(listStart + openList.length, listEnd);
-        // Extract top-level <li> items by tracking nesting depth
-        const items = [];
-        let liDepth = 0, liStart = -1, i = 0;
-        while (i < inner.length) {
-          if (inner.startsWith('<li>', i)) { if (liDepth === 0) liStart = i + 4; liDepth++; i += 4; }
-          else if (inner.startsWith('</li>', i)) { liDepth--; if (liDepth === 0 && liStart !== -1) { items.push(inner.slice(liStart, i)); liStart = -1; } i += 5; }
-          else i++;
-        }
-        const cards = items.map(c => `<div class="card">${c}</div>`).join('');
-        const innerClass = listTag === 'ol' ? 'cards-grid-inner cards-grid-inner--ordered' : 'cards-grid-inner';
-        html = html.slice(0, listStart) + `<div class="${innerClass}">${cards}</div>` + html.slice(listEnd + closeList.length);
-      }
-    }
-  }
-
-  // cards-stack: flat ul/ol → .cards-stack-inner; each li becomes a .card.
-  // Same nested-list card contract as cards-grid: the li's first line is the
-  // title (auto-bold by CSS), a trailing inline `code` is a pill, and a nested
-  // ul/ol carries the body. The li inner HTML is preserved verbatim.
-  if (cls.includes('cards-stack')) {
-    const listMatch = html.match(/<(ul|ol)>/);
-    if (listMatch) {
-      const listTag = listMatch[1];
-      const openList = `<${listTag}>`, closeList = `</${listTag}>`;
-      const listStart = html.indexOf(openList);
-      let depth = 0, pos = listStart, listEnd = -1;
-      while (pos < html.length) {
-        if (html.startsWith(openList, pos)) { depth++; pos += openList.length; }
-        else if (html.startsWith(closeList, pos)) { depth--; if (depth === 0) { listEnd = pos; break; } pos += closeList.length; }
-        else pos++;
-      }
-      if (listEnd !== -1) {
-        const inner = html.slice(listStart + openList.length, listEnd);
-        const items = [];
-        let liDepth = 0, liStart = -1, i = 0;
-        while (i < inner.length) {
-          if (inner.startsWith('<li>', i)) { if (liDepth === 0) liStart = i + 4; liDepth++; i += 4; }
-          else if (inner.startsWith('</li>', i)) { liDepth--; if (liDepth === 0 && liStart !== -1) { items.push(inner.slice(liStart, i)); liStart = -1; } i += 5; }
-          else i++;
-        }
-        const cards = items.map(c => `<div class="card">${c}</div>`).join('');
-        const innerCls = listTag === 'ol' ? 'cards-stack-inner cards-stack-inner--ordered' : 'cards-stack-inner';
-        html = html.slice(0, listStart) + `<div class="${innerCls}">${cards}</div>` + html.slice(listEnd + closeList.length);
-      }
-    }
-  }
-
-  // compare-prose: wrap ul/ol, 2 li as cards with → connector between, optional trailing p
-  if (cls.includes('compare-prose')) {
-    const listMatch = html.match(/<(ul|ol)>/);
-    if (listMatch) {
-      const listTag = listMatch[1];
-      const openList = `<${listTag}>`, closeList = `</${listTag}>`;
-      const listStart = html.indexOf(openList);
-      let depth = 0, pos = listStart, listEnd = -1;
-      while (pos < html.length) {
-        if (html.startsWith(openList, pos)) { depth++; pos += openList.length; }
-        else if (html.startsWith(closeList, pos)) { depth--; if (depth === 0) { listEnd = pos; break; } pos += closeList.length; }
-        else pos++;
-      }
-      if (listEnd !== -1) {
-        const inner = html.slice(listStart + openList.length, listEnd);
-        const items = [];
-        let liDepth = 0, liStart = -1, i = 0;
-        while (i < inner.length) {
-          if (inner.startsWith('<li>', i)) { if (liDepth === 0) liStart = i + 4; liDepth++; i += 4; }
-          else if (inner.startsWith('</li>', i)) { liDepth--; if (liDepth === 0 && liStart !== -1) { items.push(inner.slice(liStart, i)); liStart = -1; } i += 5; }
-          else i++;
-        }
-        const cards = items.map(c => `<div class="card">${liftSlotLabel(c)}</div>`);
-        const inner_html = `<div class="compare-prose-inner">${cards[0]}<div class="connector">❯</div>${cards[1] || ''}</div>`;
-        html = html.slice(0, listStart) + inner_html + html.slice(listEnd + closeList.length);
-      }
-    }
-  }
-
-  // decision / statute-stack / regulatory-update /
-  // authority-chain / redline / timeline / list-criteria / actors:
-  // named-slot layouts where each top-level li is a card with a slot
-  // label (Build / Federal / Statute / Pilot / a criterion /
-  // a responsibility). The CSS keeps these as native ul/ol > li (no card
-  // div wrapper); the only post-process needed is lifting the leading
-  // text into <strong> so the labeled-corner-tag and slot-card CSS
-  // triggers without authors typing `**…**`. (list-criteria is also
-  // wrapped in .crit-body below — this lift runs first so the <strong>
-  // lands inside the wrapper; actors keeps its trailing `code` pill a
-  // sibling of the <strong> via liftSlotLabel's trailing-code rule.)
-  if (cls.includes('decision') ||
-      cls.includes('statute-stack') || cls.includes('regulatory-update') ||
-      cls.includes('authority-chain') || cls.includes('redline') ||
-      hasClass('timeline') || hasClass('list-criteria') ||
-      hasClass('actors') || hasClass('kpi') || hasClass('stats')) {
-    const liftOpts = { chipTail: hasClass('actors') };
-    html = html.replace(/<(ul|ol)>([\s\S]*)<\/\1>/, (_full, tag, inner) => {
-      // Walk top-level <li>…</li> with depth tracking.
-      const out = [];
-      let liDepth = 0, liStart = -1, i = 0, lastEmitted = 0;
-      while (i < inner.length) {
-        if (inner.startsWith('<li>', i)) {
-          if (liDepth === 0) liStart = i + 4;
-          liDepth++; i += 4;
-        } else if (inner.startsWith('</li>', i)) {
-          liDepth--;
-          if (liDepth === 0 && liStart !== -1) {
-            out.push(inner.slice(lastEmitted, liStart));
-            out.push(liftSlotLabel(inner.slice(liStart, i), liftOpts));
-            lastEmitted = i;
-            liStart = -1;
-          }
-          i += 5;
-        } else i++;
-      }
-      out.push(inner.slice(lastEmitted));
-      return `<${tag}>${out.join('')}</${tag}>`;
-    });
-  }
-
-  // stats now renders from a plain nested list (number = lifted <strong>,
-  // label = nested sublist) via the slot-label lift above + stats.styles.css.
-  // The old parse-and-rebuild into .stats-row (emulator-only; marp/runtime
-  // always used the CSS fallback) is gone — see
-  // engineering/decisions/2026-06-07-slot-header-auto-lift.md.
-
-  // roadmap, journey, word-cloud now run via the shared transformer
-  // registry call further down (sharedTransformerRegistry.applyAllToSection).
-  // Same kernel, same order as marp.config.js's render hook.
-
-  // Universal state-token grammar — shared by verdict-grid, obligation-matrix,
-  // checklist (and roadmap, in lib/components/roadmap/transform.js). Markdown markers map to
-  // semantic + shape classes; CSS draws the visual via SVG masks (see the
-  // UNIVERSAL STATE TOKEN block in lattice.css). Sibling implementations
-  // in marp.config.js and lattice-runtime.js must stay in sync.
-  //
-  //   [x] → pass + state-full     (filled disc)
-  //   [-] → warn + state-half     (half-filled disc)
-  //   [ ] → fail + state-empty    (outline disc)
-  //   [/] → skip + state-slashed  (filled disc + diagonal slash)
-  const stateClassesFor = (marker, neutralEmpty = false) => {
-    if (marker === 'x') return { sem: 'pass', shape: 'state-full' };
-    if (marker === '-') return { sem: 'warn', shape: 'state-half' };
-    if (marker === '/') return { sem: 'skip', shape: 'state-slashed' };
-    // `[ ]` is neutral "todo / pending" in checklist/obligation/roadmap, but
-    // "not met" in verdict-grid — neutralEmpty picks the open-ring treatment.
-    return neutralEmpty
-      ? { sem: 'todo', shape: 'state-todo' }
-      : { sem: 'fail', shape: 'state-empty' };
-  };
-
-  // verdict-grid (and pricing, which shares the nested-card-with-badges shape —
-  // per-tier feature rows): transform [x]/[-]/[ ]/[/] prefixed inner li items
-  // into badge spans. The ul > li card structure and last-inner-li body text
-  // (verdict rationale / pricing "who it's for" line) are left intact for CSS.
-  if (cls.includes('verdict-grid') || cls.includes('pricing')) {
-    html = html.replace(/<li>\s*\[([x\-/ ])\]\s*([\s\S]*?)<\/li>/g, (_, marker, label) => {
-      const { sem, shape } = stateClassesFor(marker);
-      return `<li><span class="badge ${sem} ${shape}">${label.trim()}</span></li>`;
-    });
-  }
-
-  // obligation-matrix: transform [x]/[-]/[ ]/[/] prefixed td cell text into
-  // state spans. Mirrors verdictGridBadges and checklistItemStates but
-  // operates on table cells. The bracket marker is stripped — CSS draws
-  // the universal state token (coloured disc + shape class). Trailing
-  // label preserved as the span's text content.
-  if (cls.includes('obligation-matrix')) {
-    html = html.replace(/<td>\s*\[([x\-/ ])\]\s*([\s\S]*?)<\/td>/g, (_, marker, label) => {
-      const { sem, shape } = stateClassesFor(marker, true); // obligation [ ] = exempt (neutral)
-      return `<td><span class="state ${sem} ${shape}">${label.trim()}</span></td>`;
-    });
-  }
-
-  // checklist: top-level <li> whose body starts with [x]/[-]/[ ]/[/] gets
-  // class="state {pass|warn|fail|skip} {state-full|state-half|state-empty|state-slashed}"
-  // and the marker stripped. CSS draws the universal state token via
-  // ::before and pins a trailing <code> as the right-aligned row pill
-  // (universal pill convention, shared with cards-grid / actors).
-  if (cls.includes('checklist')) {
-    html = html.replace(/<li>([\s\S]*?)<\/li>/g, (full, inner) => {
-      const m = /^\s*\[([x\-/ ])\]\s*/.exec(inner);
-      if (!m) return full;
-      const { sem, shape } = stateClassesFor(m[1], true); // checklist [ ] = todo (neutral)
-      return `<li class="state ${sem} ${shape}">${inner.slice(m[0].length)}</li>`;
-    });
-  }
-
-  // featured / compare-code structure now come from the shared registry
-  // (lib/transformers/featured.js, compare-code.js) via applyAllToSection below,
-  // so the marp-cli + runtime paths produce them too. Were bespoke here.
-
-  // Registry-managed transformers — chart-family (progress, timeline-list,
-  // piechart, gantt, kanban, radar, quadrant) and split-* (split-panel,
-  // split-compare).
-  // chart-family appends `chart-frame` to the section's class list;
-  // applyAllToSection returns the cumulative { html, cls } so we pick up
-  // both. marp.config.js dispatches through the same registry on the
-  // marp-cli path.
-  ({ html, cls: classAttr } = sharedTransformerRegistry.applyAllToSection(html, classAttr));
-
-  // criteria: wrap each top-level li content in .crit-body (depth-aware — non-greedy
-  // regex breaks on nested lists since it stops at the first </li>)
-  if (cls.includes('list-criteria')) {
-    const critListMatch = html.match(/<(ul|ol)>/);
-    if (critListMatch) {
-      const critTag = critListMatch[1];
-      const critOpen = `<${critTag}>`, critClose = `</${critTag}>`;
-      const critStart = html.indexOf(critOpen);
-      let cdepth = 0, cpos = critStart, critEnd = -1;
-      while (cpos < html.length) {
-        if (html.startsWith(critOpen, cpos))  { cdepth++; cpos += critOpen.length; }
-        else if (html.startsWith(critClose, cpos)) { cdepth--; if (cdepth === 0) { critEnd = cpos; break; } cpos += critClose.length; }
-        else cpos++;
-      }
-      if (critEnd !== -1) {
-        const critInner = html.slice(critStart + critOpen.length, critEnd);
-        const critItems = [];
-        let cliDepth = 0, cliStart = -1, ci = 0;
-        while (ci < critInner.length) {
-          if (critInner.startsWith('<li>', ci))       { if (cliDepth === 0) cliStart = ci + 4; cliDepth++; ci += 4; }
-          else if (critInner.startsWith('</li>', ci)) { cliDepth--; if (cliDepth === 0 && cliStart !== -1) { critItems.push(critInner.slice(cliStart, ci)); cliStart = -1; } ci += 5; }
-          else ci++;
-        }
-        const wrappedCrit = critItems.map(c => `<li><div class="crit-body">${c}</div></li>`).join('');
-        html = html.slice(0, critStart + critOpen.length) + wrappedCrit + html.slice(critEnd);
-      }
-    }
-  }
-
-  // steps: ol already renders correctly via CSS counter + strong
-  // list-tabular: nested ul flattens into the parent grid via CSS
-  // `display:contents`, so no runtime DOM transform is needed — all three
-  // render paths (this emulator, marp-cli, lattice-runtime) ship the same
-  // markdown shape through identical CSS.
-
-  // ── glossary: nested-list → table transform ──────────────────────────────
-  // Author writes:
-  //   - Term
-  //     - Definition
-  // Runtime transforms to a 2-column table with the term auto-bolded.
-  // Mirrors the Marpit plugin in marp.config.js and the DOM injector in
-  // lattice-runtime.js so all three pipelines emit identical HTML.
-  if (cls.includes('glossary')) {
-    // Find the first top-level <ul>...</ul> with balanced depth (a non-greedy
-    // regex would stop at the FIRST nested </ul>).
-    const startIdx = html.indexOf('<ul>');
-    if (startIdx >= 0) {
-      const tagRe = /<(\/?)ul>/g;
-      tagRe.lastIndex = startIdx;
-      let depth = 0, endIdx = -1, m;
-      while ((m = tagRe.exec(html)) !== null) {
-        if (m[1] === '') depth++;
-        else { depth--; if (depth === 0) { endIdx = m.index + m[0].length; break; } }
-      }
-      if (endIdx > startIdx) {
-        const inner = html.slice(startIdx + 4, endIdx - 5); // strip outer <ul></ul>
-        // Walk top-level <li>…</li> spans; for each, split term from any nested <ul>.
-        const liRe = /<(\/?)(ul|li)>/g;
-        let liDepth = 0, itemStart = -1;
-        const items = [];
-        let t;
-        while ((t = liRe.exec(inner)) !== null) {
-          const closing = t[1] === '/';
-          const tag = t[2];
-          if (tag === 'li' && !closing && liDepth === 0) { itemStart = t.index + t[0].length; liDepth = 1; continue; }
-          if (tag === 'ul' && !closing && liDepth >= 1) { liDepth++; continue; }
-          if (tag === 'ul' && closing && liDepth >= 2) { liDepth--; continue; }
-          if (tag === 'li' && closing && liDepth === 1) {
-            items.push(inner.slice(itemStart, t.index));
-            liDepth = 0; itemStart = -1;
-          }
-        }
-        const rows = [];
-        for (const item of items) {
-          const nestedIdx = item.search(/<ul>/);
-          let term, def;
-          if (nestedIdx >= 0) {
-            term = item.slice(0, nestedIdx).trim();
-            const nested = item.slice(nestedIdx);
-            const defMatch = nested.match(/<ul>\s*<li>([\s\S]*?)<\/li>\s*<\/ul>/);
-            def = defMatch ? defMatch[1].trim() : '';
-          } else {
-            term = item.trim(); def = '';
-          }
-          if (!/^<(?:strong|b)\b/i.test(term)) term = `<strong>${term}</strong>`;
-          rows.push(`<tr><td>${term}</td><td>${def}</td></tr>`);
-        }
-        if (rows.length) {
-          const thead = `<thead><tr><th>Term</th><th>Definition</th></tr></thead>`;
-          const table = `<table>${thead}<tbody>\n${rows.join('\n')}\n</tbody></table>`;
-          html = html.slice(0, startIdx) + table + html.slice(endIdx);
-        }
-      }
-    }
-  }
-
-  // ── glossary: auto-range pill ────────────────────────────────────────────
-  // Every glossary slide gets a brand pill appended to its h2, spanning the
-  // alphabetic range of the table — e.g. `Glossary` becomes
-  // `Glossary <span class="range-pill">A – G</span>`. The first and last
-  // visible characters of the table's first-column cells are read at parse
-  // time, so reordering entries cannot desync the header. Mirrors the Marpit
-  // plugin in marp.config.js so the result is identical in build, VS Code
-  // Marp preview, and this LLM-env emulator.
-  if (cls.includes('glossary')) {
-    const tbodyMatch = html.match(/<tbody>([\s\S]*?)<\/tbody>/);
-    if (tbodyMatch) {
-      const rows = [...tbodyMatch[1].matchAll(/<tr>([\s\S]*?)<\/tr>/g)];
-      if (rows.length) {
-        const firstCell = rows[0][1].match(/<td>([\s\S]*?)<\/td>/);
-        const lastCell  = rows[rows.length - 1][1].match(/<td>([\s\S]*?)<\/td>/);
-        const firstChar = (s) => (s.replace(/<[^>]+>/g, '').trim()[0] || '').toUpperCase();
-        if (firstCell && lastCell) {
-          const a = firstChar(firstCell[1]);
-          const z = firstChar(lastCell[1]);
-          const range = a === z ? a : `${a} – ${z}`;
-          const pill = ` <span class="range-pill">${range}</span>`;
-          html = html.replace(/(<h2>[\s\S]*?)(<\/h2>)/, (_, open, close) => `${open}${pill}${close}`);
-        }
-      }
-    }
-  }
-
-
-  // ── Universal below-note ─────────────────────────────────────────────────────
-  // Wrap a layout's trailing <p> (the editorial hairline note that follows a
-  // structural block — div/ul/ol/table/pre/blockquote, never another <p>,
-  // which is main content) in .below-note for the full-width hairline
-  // treatment. Runs LAST so the bespoke crit/glossary transforms above have
-  // settled the trailing element. The kernel (lib/core/below-note.js) owns the
-  // exclusion list + regex and is shared with the marp-cli / runtime paths so
-  // all three renderers agree. cls drives the exclusion check.
-  html = belowNote.wrapSectionBody(html, cls);
-
-  // ── Assemble section — matching Marp v4 HTML output ───────────────────────
-  // Marp produces:
-  //   <section id="N" class="..." data-marpit-slide="N"
-  //            data-marpit-pagination="N" style="--marp-slide:N;">
-  //     <header><p>text</p></header>   ← only when header is set
-  //     [content]
-  //     <footer><p>text</p></footer>   ← only when footer is set
-  //   </section>
-  //
-  // Pagination is rendered via the native Marp mechanism: a CSS pseudo-element
-  // `section::after { content: attr(data-marpit-pagination); }` fed by the
-  // data attribute on the section itself. We do NOT inject a real DOM element —
-  // that would create two pagination paths (Marp CLI vs lattice-emulator.js) with
-  // divergent positioning. Single mechanism, single CSS rule.
-
-  const slideNum   = index + 1;
-  const styleAttr  = bgColor
-    ? ` style="--marp-slide:${slideNum};background-color:${bgColor};"`
-    : ` style="--marp-slide:${slideNum};"`;
-  const paginAttr  = paginate ? ` data-marpit-pagination="${slideNum}"` : '';
-
-  const headerEl   = header  ? `<header><div style="display:block;width:100%;text-align:left">${header}</div></header>` : '';
-  const footerEl   = footer  ? `<footer><div style="display:block;width:100%;text-align:left">${footer}</div></footer>` : '';
-
-  // Half-canvas image slides wrap their text content in `.image-text` so the
-  // section can use the canonical split-* pattern (flex row, panels with
-  // explicit width) instead of the percentage-padding anti-pattern that
-  // would shrink `container-type: size`'s reported content-box and warp
-  // every cqi unit inside the section. Mirrored by the image-text-panel
-  // transformer for the marp-cli + runtime paths.
-  const _isHalfCanvasImage =
-    /\bimage\b/.test(classAttr) && !/\b(?:full|contain|museum)\b/.test(classAttr);
-  const bodyHtml = _isHalfCanvasImage
-    ? `<div class="image-text">${html}</div>`
-    : html;
-
-  return restoreMath([
-    `<section id="${slideNum}" class="${classAttr}"`,
-    ` data-marpit-slide="${slideNum}"${paginAttr}${styleAttr}>`,
-    headerEl,
-    bgImageHtml,
-    bodyHtml,
-    footerEl,
-    `</section>`
-  ].join(''));
-}
-
-// ── P2: optional engine-backed parse path (env-gated, default OFF) ──────────
-// `LATTICE_EMULATOR_ENGINE=1` routes parsing through lib/engine (the owned
-// markdown→slide engine) instead of the bespoke parseSlide regex parser, so
-// Lattice converges on ONE markdown implementation. Default-off keeps the
-// shipped bin on parseSlide until the engine↔emulator parity gate
-// (tools/emulator-engine-parity.mjs) is clean across the corpus — see
+// ── P2: the markdown→slide engine (lib/engine) is the emulator's parser ─────
+// Lattice converges on ONE markdown implementation: the owned lib/engine, the
+// same engine that powers marp.config.js. parseSlide — the bespoke regex parser
+// the emulator shipped with — is retired (P2 step d). The corpus flip-A/B
+// (tools/emulator-flip-ab.mjs) gated this swap to zero regressions; see
 // engineering/decisions/2026-06-11-emulator-on-engine-p2.md.
 //
-// The engine already runs the SAME plugins + registry + highlight.js + KaTeX +
-// deck-logo as parseSlide's downstream, so the engine path only has to:
+// The engine runs the SAME plugins + registry + highlight.js + KaTeX + deck-logo
+// + island injectors, so the emulator only has to:
 //   - feed the mermaid-preprocessed source WITH front matter (rawMd), so the
 //     engine's directive layer resolves paginate/header/footer/class/size;
 //   - re-tag each section with `data-marpit-slide` (the engine omits it; the
-//     page template's sizing / overflow watcher / PDF pagination key off it);
-//   - and downstream, SKIP applyDeckLogoToHtml (the engine already injected it).
-const USE_ENGINE = process.env.LATTICE_EMULATOR_ENGINE === '1';
+//     page template's sizing / overflow watcher / PDF pagination key off it).
 
 // Depth-counted scan over <section>…</section> so nested split-panel sections
 // stay inside their parent. Reproduces parseSlide's "one <section> string per
@@ -1742,7 +943,7 @@ function engineSlides() {
   });
 }
 
-const slides = USE_ENGINE ? engineSlides() : rawSlides.map((s, i) => parseSlide(s, i));
+const slides = engineSlides();
 
 // ── Marp-equivalent CSS for pagination and header/footer ────────────────────
 // Marp injects these styles itself; we reproduce them here since we're
@@ -1891,49 +1092,27 @@ function applyHighlighting(html) {
 
 const highlightedSlides = slides.map(s => applyHighlighting(s));
 
-// Convenience `logo:` directive — inject the `<img class="deck-logo">`
-// element into each section per the `logo-on` rule. Real DOM (not a
-// ::before pseudo) so it composes with ::before-based decorations like
-// mark-orbit. Sibling: marp.config.js's `applyDeckLogoToHtml` — both
-// renderers must produce identical injection. See the function's
-// header comment for the build-time-only contract.
-//
-// NOTE: this directive is a build-time convenience only. It does NOT
-// render in the marp-vscode preview because the extension doesn't load
-// workspace marp.config.js plugins. See engineering/gotchas.md.
-//
-// Called on the joined HTML rather than slide-by-slide so the
-// "first slide" check in the rewriter (used by `logo-on: title`)
-// sees the slides in source order.
+// Deck-logo (`logo:`) + the island injectors (masthead-meta, progress-rail,
+// watermark). These key off `data-marpit-slide`, which engineSlides() stamps on
+// each section AFTER engine.render returns — so engine.render's own logo pass
+// no-ops (the tag isn't there yet) and it never runs the island injectors at
+// all. The emulator therefore runs all four here, on the tagged + joined HTML,
+// exactly as the marp-cli render hook does. Same fns as marp.config.js — the
+// three render paths must agree. Called on the joined HTML (not slide-by-slide)
+// so the "first slide" check in the logo rewriter (`logo-on: title`) sees source
+// order.
 const { applyDeckLogoToHtml, applyMastheadMetaToHtml, applyProgressRailToHtml, applyWatermarkToHtml } = require('./marp.config').plugins;
-// The engine path already ran applyDeckLogoToHtml + the island injectors inside
-// engine.render — re-running here would double-process, so the engine path joins
-// as-is and the post-process injectors below are skipped under USE_ENGINE.
-const slidesWithLogo = USE_ENGINE
-  ? highlightedSlides.join('\n')
-  : applyDeckLogoToHtml(highlightedSlides.join('\n'), rawMd);
-// meta island — fill the masthead bay (built by the per-section registry pass
-// above) with the front-matter `meta:` directive. Sibling of marp.config.js's
-// render-hook call; both renderers must agree.
-const slidesWithMeta = USE_ENGINE
-  ? slidesWithLogo
-  : applyMastheadMetaToHtml(slidesWithLogo, rawMd);
-// progress island — derive sections from dividers, inject the footer-centre
-// dot-rail into each islands slide. Deck-level; same fn as marp.config.js.
-const slidesWithProgress = USE_ENGINE
-  ? slidesWithMeta
-  : applyProgressRailToHtml(slidesWithMeta);
-// watermark island — section-number ghost behind `islands watermark` slides.
-const slidesWithMeta2 = USE_ENGINE
-  ? slidesWithProgress
-  : applyWatermarkToHtml(slidesWithProgress);
+let injected = applyDeckLogoToHtml(highlightedSlides.join('\n'), rawMd);
+injected = applyMastheadMetaToHtml(injected, rawMd);
+injected = applyProgressRailToHtml(injected);
+const slidesWithMeta2 = applyWatermarkToHtml(injected);
 
 // ── KaTeX CSS link ────────────────────────────────────────────────────────
 // KaTeX's CSS references font files via relative `url(fonts/…woff2)` paths,
 // so we link to the actual file in node_modules; the browser resolves the
 // font URLs against that origin. file:// works under puppeteer because
 // allowLocalFiles is the default for `page.goto('file://...')`.
-const katexCssLink = (katex && katexCssAbsPath)
+const katexCssLink = katexCssAbsPath
   ? `<link rel="stylesheet" href="file://${katexCssAbsPath}">`
   : '';
 
