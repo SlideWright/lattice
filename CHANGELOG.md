@@ -68,6 +68,14 @@ in patch versions.
 
 ### Fixed
 
+- **`featured` and `compare-code` layouts now render under marp-cli and the
+  marp-vscode preview, not just the emulator.** Both transforms — the featured
+  hero/sub-card grid and the compare-code two-column structure — were bespoke to
+  the emulator's `parseSlide`, so the marp-cli render path and the runtime emitted
+  a plain `<ul>` (featured) or a flat `<p><code>`/`<pre>` sequence (compare-code).
+  Migrated into the shared transformer registry (`lib/transformers/featured.js`,
+  `compare-code.js`, with kernels in each component folder), so all three render
+  paths agree. Emulator default output is byte-identical; engine↔marp parity holds.
 - **The docs-site live preview now loads the sketch hand fonts — `finish:
   sketch` decks no longer render hand headings over a clean-sans body.** Each
   preview slide renders into an `srcdoc` iframe whose `<style>` concatenates the

@@ -1481,63 +1481,9 @@ function parseSlide(raw, index) {
     });
   }
 
-  // featured: first list item = .feat-card (accent hero), rest = .sub-row > .sub-card
-  if (cls.includes('featured')) {
-    const ulIdx = html.indexOf('<ul>');
-    if (ulIdx !== -1) {
-      // Depth-aware scan to find the matching </ul>
-      let depth = 0, pos = ulIdx, ulEnd = -1;
-      while (pos < html.length) {
-        if (html.startsWith('<ul>', pos))       { depth++; pos += 4; }
-        else if (html.startsWith('</ul>', pos)) { depth--; if (depth === 0) { ulEnd = pos; break; } pos += 5; }
-        else pos++;
-      }
-      if (ulEnd !== -1) {
-        const ulInner = html.slice(ulIdx + 4, ulEnd);
-        // Depth-aware: collect top-level <li> contents
-        const items = [];
-        let liDepth = 0, liStart = -1, i = 0;
-        while (i < ulInner.length) {
-          if (ulInner.startsWith('<li>', i))       { if (liDepth === 0) liStart = i + 4; liDepth++; i += 4; }
-          else if (ulInner.startsWith('</li>', i)) { liDepth--; if (liDepth === 0 && liStart !== -1) { items.push(ulInner.slice(liStart, i)); liStart = -1; } i += 5; }
-          else i++;
-        }
-        const extractCard = (content) => {
-          const strongMatch = content.match(/<strong>(.*?)<\/strong>/);
-          const innerUlIdx = content.indexOf('<ul>');
-          let title, body;
-          if (strongMatch) {
-            title = strongMatch[1];
-            if (innerUlIdx !== -1) {
-              const innerLiMatch = content.slice(innerUlIdx).match(/<li>([\s\S]*?)<\/li>/);
-              body = innerLiMatch ? innerLiMatch[1].trim() : '';
-            } else {
-              body = content.replace(strongMatch[0], '').trim();
-            }
-          } else {
-            // No <strong>: title is all content before first <ul>, body is inside nested <li>
-            if (innerUlIdx !== -1) {
-              title = content.slice(0, innerUlIdx).trim();
-              const innerLiMatch = content.slice(innerUlIdx).match(/<li>([\s\S]*?)<\/li>/);
-              body = innerLiMatch ? innerLiMatch[1].trim() : '';
-            } else {
-              title = '';
-              body = content.trim();
-            }
-          }
-          return { title, body };
-        };
-        const [first, ...rest] = items;
-        const { title: featTitle, body: featBody } = extractCard(first);
-        const featCard = `<div class="feat-card"><strong>${featTitle}</strong><p>${featBody}</p></div>`;
-        const subCards = rest.map(content => {
-          const { title, body } = extractCard(content);
-          return `<div class="sub-card"><strong>${title}</strong><p>${body}</p></div>`;
-        });
-        html = html.slice(0, ulIdx) + `<div class="feat-layout">${featCard}<div class="sub-row">${subCards.join('')}</div></div>` + html.slice(ulEnd + 5);
-      }
-    }
-  }
+  // featured / compare-code structure now come from the shared registry
+  // (lib/transformers/featured.js, compare-code.js) via applyAllToSection below,
+  // so the marp-cli + runtime paths produce them too. Were bespoke here.
 
   // Registry-managed transformers — chart-family (progress, timeline-list,
   // piechart, gantt, kanban, radar, quadrant) and split-* (split-panel,
@@ -1547,25 +1493,6 @@ function parseSlide(raw, index) {
   // both. marp.config.js dispatches through the same registry on the
   // marp-cli path.
   ({ html, cls: classAttr } = sharedTransformerRegistry.applyAllToSection(html, classAttr));
-
-  // compare-code: pair each p>code+pre into .code-col divs inside .code-cols
-  // Structure: [p>code(eyebrow)] h2(heading) p>code(left-label) pre p>code(right-label) pre
-  // Column labels are inline-code paragraphs (p>code), consistent with the eyebrow convention.
-  // Eyebrow = p>code appearing before h2 (at start of html); column labels = p>code after h2.
-  if (cls.includes('compare-code')) {
-    const eyeMatch = html.match(/^(<p><code>[\s\S]*?<\/code><\/p>)/);
-    const h2Match  = html.match(/(<h2>[\s\S]*?<\/h2>)/);
-    const eyeEl = eyeMatch ? eyeMatch[1] : '';
-    const h2El  = h2Match  ? h2Match[1]  : '';
-    // Remove eyebrow and h2, leaving the two col p>code+pre pairs
-    let rest = html;
-    if (eyeEl) rest = rest.replace(eyeEl, '');
-    if (h2El)  rest = rest.replace(h2El,  '');
-    // Split on p>code to get column pairs, filter empties
-    const parts = rest.split(/(?=<p><code>)/).filter(s => s.trim());
-    const cols = parts.map(p => `<div class="code-col">${p.trim()}</div>`).join('');
-    html = `${eyeEl}${h2El}<div class="code-cols">${cols}</div>`;
-  }
 
   // criteria: wrap each top-level li content in .crit-body (depth-aware — non-greedy
   // regex breaks on nested lists since it stops at the first </li>)
