@@ -345,7 +345,7 @@ section.roadmap.status td.cell-state .cell-state-label {
   letter-spacing:0.10em;
   text-transform:uppercase;
   color:var(--state-color, var(--text-muted));
-  margin-bottom:2px;
+  margin-bottom:2px; /* sanctioned: hairline-scale label spacing */
   line-height:1.2;
 }
 section.roadmap.status td.cell-state .cell-state-text {
@@ -436,7 +436,7 @@ section.roadmap.horizons .horizon-card {
 section.roadmap.horizons .horizon-head {
   display:flex;
   flex-direction:column;
-  gap:2px;
+  gap:2px; /* sanctioned: hairline-scale gap in the horizon head */
   margin-bottom:var(--sp-sm);
   padding-bottom:var(--sp-sm);
   border-bottom:var(--chart-hairline) solid var(--border);
@@ -490,7 +490,7 @@ section.roadmap.horizons .horizon-rows {
 section.roadmap.horizons .horizon-rows > li {
   display:flex;
   flex-direction:column;
-  gap:2px;
+  gap:2px; /* sanctioned: hairline-scale gap in the horizon row */
   padding-left:var(--sp-sm);
   border-left:2px solid color-mix(in srgb, var(--phase-accent, var(--accent)) 40%, var(--border));
 }
@@ -547,7 +547,7 @@ section.roadmap.swimlane tbody td:not(:first-child)::before {
   content:'';
   position:absolute;
   left:0; top:25%; bottom:25%;
-  width:3px;
+  width:3px; /* sanctioned: phase-accent edge rule — a hairline, resolution-stable by design */
   background:color-mix(in srgb, var(--phase-accent, var(--accent)) 60%, var(--border));
   border-radius:2px;
 }

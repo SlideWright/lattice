@@ -49,8 +49,8 @@ section.gantt.chart-frame .chart-body {
 .gantt-chart .gantt-legend-swatch {
   width: 1.35cqi;
   height: 1.35cqi;
-  min-width: 12px;
-  min-height: 12px;
+  min-width: 12px;  /* sanctioned: legend-swatch floor below the 1.35cqi size — keeps the swatch legible at sub-HD renders, never the computed size */
+  min-height: 12px; /* sanctioned: legend-swatch floor (see min-width) */
   border-radius: 0.34cqi;
   flex: 0 0 auto;
   /* The bar's canonical fill recipe, in miniature — same --fill-hue/--fill-ink
@@ -165,9 +165,13 @@ section .taskTextOutsideLeft, section .taskTextOutsideRight { fill: var(--text-h
  * sits on every tinted fill at ≥ 5.3:1. */
 .gantt-bar {
   position: absolute;
-  top: 5px; bottom: 5px;
-  left:  calc((var(--gantt-col-start) - 1) / var(--gantt-cols) * 100% + 3px);
-  width: calc( var(--gantt-col-span)       / var(--gantt-cols) * 100% - 6px);
+  /* The bar geometry is %-based (calc over --gantt-cols); the px below are small
+   * fixed insets kept px on purpose — a constant vertical inset within the row
+   * track and a thin inter-bar gutter that stays hairline-scale, not a widening
+   * band at 4K. */
+  top: 5px; bottom: 5px;  /* sanctioned: constant vertical inset within the %-based row track */
+  left:  calc((var(--gantt-col-start) - 1) / var(--gantt-cols) * 100% + 3px); /* sanctioned: thin inter-bar gutter (hairline-scale) */
+  width: calc( var(--gantt-col-span)       / var(--gantt-cols) * 100% - 6px); /* sanctioned: thin inter-bar gutter (hairline-scale) */
   border-radius: 0.46875cqi;
   /* Match the pie / quadrant / radar depth-gradient language. Those three read
    * rich because they fill with a hue-into-bg gradient (~42–82%), NOT the flat
