@@ -45,12 +45,18 @@ architectural fork) — and bundle those into one `AskUserQuestion`.
    `.github/pull_request_template.md` — don't wait to be asked. Do NOT open a
    draft PR up front: that spams CI and the build agent. Wait until the work
    is genuinely ready for review, then open it once.
-7. **Auto-watch the PR, then squash-merge.** Immediately after creating a PR,
-   subscribe to its activity and drive CI green / address review comments —
-   never ask "should I watch the PR?", the answer is always yes. When CI is
-   green, **squash-and-merge** (never a merge commit; rebase-and-merge only for
-   a deliberately curated, atomic commit series). Across many parallel AI
-   sessions a PR can carry 20+ noisy commits — squashing keeps `main` one
+7. **Auto-watch the PR and drive it green — then ASK to merge; never merge
+   unasked.** Immediately after creating a PR, subscribe to its activity and
+   drive CI green / address review comments — never ask "should I watch the
+   PR?", the answer is always yes. When it's green and review-ready, **stop and
+   ask me for merge authorization.** A human stays in the loop to review and
+   approve every merge: **never merge without my explicit, current go-ahead.**
+   Prior authorization does NOT carry forward — "merge it" on one PR authorizes
+   that merge only, never the next. (`doneMeansMerged` means keep working until
+   the PR is ready for *me* to merge — not merge-it-yourself.) Once I authorize,
+   **squash-merge** by default: never a merge commit; rebase-and-merge only for
+   a deliberately curated, atomic commit series. Across many parallel AI
+   sessions a PR can carry 20+ noisy commits, so squashing keeps `main` one
    reviewable, revertable commit per PR. See `engineering/workflow.md`.
 
 Rules 6–7 deliberately override the harness defaults (which otherwise hold
