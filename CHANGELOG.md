@@ -68,6 +68,14 @@ in patch versions.
 
 ### Fixed
 
+- **The `lib/engine` render path now produces the full islands model** — the
+  `islands:` toggle, the masthead `meta:` island, the footer progress-rail, and
+  the section watermark. The engine only resolved the masthead band before, so
+  `islands` decks rendered through the engine (the emulator after the P2 flip,
+  and the Drawing Board / playground) lost their meta/progress/watermark islands.
+  The toggle now runs before the transformer registry (so masthead-lift sees the
+  `islands` class) and the three injectors run after, matching marp.config.js's
+  render-hook order exactly.
 - **`featured` and `compare-code` layouts now render under marp-cli and the
   marp-vscode preview, not just the emulator.** Both transforms — the featured
   hero/sub-card grid and the compare-code two-column structure — were bespoke to

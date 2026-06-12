@@ -1092,20 +1092,15 @@ function applyHighlighting(html) {
 
 const highlightedSlides = slides.map(s => applyHighlighting(s));
 
-// Deck-logo (`logo:`) + the island injectors (masthead-meta, progress-rail,
-// watermark). These key off `data-marpit-slide`, which engineSlides() stamps on
-// each section AFTER engine.render returns — so engine.render's own logo pass
-// no-ops (the tag isn't there yet) and it never runs the island injectors at
-// all. The emulator therefore runs all four here, on the tagged + joined HTML,
-// exactly as the marp-cli render hook does. Same fns as marp.config.js — the
-// three render paths must agree. Called on the joined HTML (not slide-by-slide)
-// so the "first slide" check in the logo rewriter (`logo-on: title`) sees source
-// order.
-const { applyDeckLogoToHtml, applyMastheadMetaToHtml, applyProgressRailToHtml, applyWatermarkToHtml } = require('./marp.config').plugins;
-let injected = applyDeckLogoToHtml(highlightedSlides.join('\n'), rawMd);
-injected = applyMastheadMetaToHtml(injected, rawMd);
-injected = applyProgressRailToHtml(injected);
-const slidesWithMeta2 = applyWatermarkToHtml(injected);
+// Deck-logo (`logo:`). The islands toggle + the masthead-meta / progress-rail /
+// watermark injectors already ran inside engine.render (they match on section
+// class). deck-logo is the ONE injector that keys off `data-marpit-slide` — which
+// engineSlides() stamps AFTER engine.render — so the engine's own logo pass
+// no-ops and the emulator runs it here, post-stamp. Same fn as marp.config.js's
+// render hook. Called on the joined HTML (not slide-by-slide) so the "first slide"
+// check in the logo rewriter (`logo-on: title`) sees source order.
+const { applyDeckLogoToHtml } = require('./marp.config').plugins;
+const slidesWithMeta2 = applyDeckLogoToHtml(highlightedSlides.join('\n'), rawMd);
 
 // ── KaTeX CSS link ────────────────────────────────────────────────────────
 // KaTeX's CSS references font files via relative `url(fonts/…woff2)` paths,
