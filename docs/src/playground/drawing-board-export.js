@@ -22,6 +22,8 @@
 //
 // jspdf / pptxgenjs / html-to-image are lazy-imported (own chunks).
 
+import { embedComponentsInMarkdown } from './layout-core.generated.js';
+
 function safeName(name) {
 	return (name || 'deck').trim().replace(/[^\w.-]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60) || 'deck';
 }
@@ -116,8 +118,14 @@ export function embedThemeInMarkdown(source, theme) {
 	return block + '\n' + src;
 }
 
-export function exportMarkdown(source, name, theme) {
-	const md = embedThemeInMarkdown(source, theme);
+// `components` is the array of referenced library components ({ name, css }) the
+// deck uses — vendored as global <style> blocks so the exported .md renders them
+// across all three engine paths (the component bridge; see
+// engineering/decisions/2026-06-12-workbench-component-bridge.md). Pairs with the
+// theme embed: theme first, then components, both self-contained.
+export function exportMarkdown(source, name, theme, components) {
+	let md = embedThemeInMarkdown(source, theme);
+	md = embedComponentsInMarkdown(md, components);
 	download(new Blob([md], { type: 'text/markdown;charset=utf-8' }), safeName(name) + '.md');
 }
 

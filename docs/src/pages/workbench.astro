@@ -7,6 +7,8 @@
 // copy or download a droppable themes/<name>.css. All the colour maths is the
 // pure repo core (lib/theme/*), run in the browser; the live render uses the
 // same engine as the Playground (window.LatticePlayground).
+import { createRequire } from 'node:module';
+import { join } from 'node:path';
 import '../styles/landing.css';
 import '../styles/workbench.css';
 import { joinBase } from '../lib/base-url.mjs';
@@ -16,9 +18,18 @@ const base = import.meta.env.BASE_URL;
 const url = (p) => joinBase(base, p);
 const pg = assetBase();
 
+// Shipped component class names, loaded at build time from the live manifests.
+// The Layout Studio blocks a local component whose name collides with one of
+// these (the component bridge keeps a saved local name from shadowing or
+// double-defining a shipped class). See the component-bridge decision note.
+const require = createRequire(import.meta.url);
+const { loadAll } = require(join(process.cwd(), '..', 'lib/components', 'index.js'));
+const shippedNames = loadAll().map((m) => m.name);
+
 const studioData = JSON.stringify({
 	themeBase: url(pg + 'themes/'),
 	runtimeUrl: url(pg + 'lattice-runtime.js'),
+	shippedNames,
 });
 
 const links = [

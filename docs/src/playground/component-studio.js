@@ -18,6 +18,7 @@
 import { deleteAsset, listAssets, putAsset } from './asset-store.js';
 import { SLIDE_BOX } from './frame-css.js';
 import {
+  collidesWithShipped,
   componentAsset,
   gateComponent,
   STARTERS,
@@ -56,7 +57,7 @@ function slugify(name, fallback = 'component') {
 }
 
 export function initLayoutStudio(config) {
-  const { themeBase, runtimeUrl } = config;
+  const { themeBase, runtimeUrl, shippedNames = [] } = config;
   const root = document.querySelector('.studio-layout');
   if (!root) return;
 
@@ -319,9 +320,19 @@ export function initLayoutStudio(config) {
   // ── Library (Workbench asset store) ──────────────────────────────────────
   async function saveToLibrary() {
     readFields();
+    // Collision guard (component bridge): a local component must not take the
+    // name of a shipped component class — otherwise the deck author can't tell
+    // which they got, and an export would double-define the selector. Block it
+    // at save time and ask for a rename. See the component-bridge decision note.
+    const slug = slugify(state.name);
+    if (collidesWithShipped(slug, shippedNames)) {
+      setStatus(`“${slug}” is a built-in component — pick a different name for your local one.`, true);
+      els.name?.focus();
+      return;
+    }
     try {
       await putAsset(componentAsset({ css: state.css, manifest: currentManifest(), skeleton: state.skeleton }));
-      setStatus(`Saved “${slugify(state.name)}” to your library.`);
+      setStatus(`Saved “${slug}” to your library.`);
       renderLibrary();
     } catch (e) {
       setStatus('Save failed: ' + (e.message || e), true);

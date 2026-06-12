@@ -438,6 +438,31 @@ const dbData = JSON.stringify({
 				onCursor: (line) => { for (const f of cursorFns) f(line); },
 			});
 			if (ta) ta.remove();
+			// Component bridge — autocomplete: merge the author's saved local
+			// components into the live catalog + lint vocab so they complete inside
+			// `_class:` (and offer their saved skeleton on an empty classed body) just
+			// like a shipped component, marked *local*. The completion sources read
+			// these arrays at completion time, so an in-place merge surfaces without
+			// rebuilding the editor. See the component-bridge decision note.
+			function mergeLocalComponents() {
+				const local = window.__dbLibraryComponents || [];
+				const have = new Set((data.catalog || []).map((c) => c.name));
+				for (const c of local) {
+					if (!c || !c.name || have.has(c.name)) continue;
+					data.catalog.push({
+						name: c.name,
+						bucket: c.bucket || 'inventory',
+						skeleton: c.skeleton || `<!-- _class: ${c.name} -->\n`,
+						local: true,
+					});
+					if (data.lintVocab && data.lintVocab.names && data.lintVocab.names.indexOf(c.name) === -1) {
+						data.lintVocab.names.push(c.name);
+					}
+					have.add(c.name);
+				}
+			}
+			window.addEventListener('db-library-components', mergeLocalComponents);
+			mergeLocalComponents();
 			window.__dbEditor = {
 				getValue: () => ed.getValue(),
 				setValue: (t) => ed.setValue(t),
@@ -623,6 +648,17 @@ const dbData = JSON.stringify({
 				applyFix: (newSource) => { if (window.__dbEditor) window.__dbEditor.setValue(newSource); },
 			});
 			window.__dbArchitect = architect;
+			// Component bridge: teach the Architect's linter the author's saved local
+			// components so a valid `_class: <local>` isn't flagged "unknown class".
+			// Re-runs the review once names are known (and on every library refresh).
+			function mergeArchComponents() {
+				const local = window.__dbLibraryComponents || [];
+				if (!local.length) return;
+				architect.addNames(local.map((c) => c.name));
+				architect.update(window.__dbEditor ? window.__dbEditor.getValue() : '');
+			}
+			window.addEventListener('db-library-components', mergeArchComponents);
+			mergeArchComponents();
 
 			// Coach console (deterministic): action chips -> result cards. The Coach
 			// view's structured answers replace a fake chat composer.
@@ -802,6 +838,7 @@ const dbData = JSON.stringify({
 		<script>
 			import { exportMarkdown, exportPdf, exportPptx, exportPrint } from '../playground/drawing-board-export.js';
 			import { listAssets } from '../playground/asset-store.js';
+			import { referencedComponents } from '../playground/layout-core.generated.js';
 			const wrap = document.getElementById('db-export-wrap');
 			const trigger = document.getElementById('db-export');
 			const menu = document.getElementById('db-export-menu');
@@ -853,11 +890,30 @@ const dbData = JSON.stringify({
 						return hit ? { name: hit.name, css: hit.text || '' } : null;
 					} catch (_e) { return null; }
 				}
+				// Component bridge: vendor the CSS of every library component the deck
+				// references (detected from its _class directives), so the exported .md
+				// renders them across all three engine paths. Referenced-only keeps it
+				// lean; PDF/PPTX/Print rasterize the already-styled live DOM.
+				async function referencedLibraryComponents() {
+					try {
+						const lib = await listAssets('component');
+						if (!lib.length) return [];
+						const refs = referencedComponents(source, lib.map((c) => c.name));
+						return refs
+							.map((name) => lib.find((c) => c.name === name))
+							.filter(Boolean)
+							.map((c) => ({ name: c.name, css: c.text || '' }));
+					} catch (_e) { return []; }
+				}
 				try {
 					if (kind === 'md') {
 						const lib = await activeLibraryTheme();
-						exportMarkdown(source, deckName(), lib);
-						status(lib ? 'Markdown exported (theme embedded).' : 'Markdown exported.');
+						const comps = await referencedLibraryComponents();
+						exportMarkdown(source, deckName(), lib, comps);
+						const bits = [];
+						if (lib) bits.push('theme');
+						if (comps.length) bits.push(comps.length + ' component' + (comps.length === 1 ? '' : 's'));
+						status(bits.length ? `Markdown exported (${bits.join(' + ')} embedded).` : 'Markdown exported.');
 					}
 					else if (kind === 'pdf') { status('Exporting PDF…'); await exportPdf(frame, deckName(), (m) => status(m), meta); status('PDF exported.'); }
 					else if (kind === 'pptx') { await exportPptx(frame, deckName(), (m) => status(m), meta); status('PowerPoint exported.'); }
@@ -885,6 +941,46 @@ const dbData = JSON.stringify({
 			}
 			window.addEventListener('db-library-themes-refresh', loadLibraryThemes);
 			loadLibraryThemes();
+		</script>
+
+		<!-- Workbench library COMPONENTS (component bridge) — load the user's saved
+		     CSS-only local components and expose (a) the raw list for the editor's
+		     autocomplete merge, and (b) a prepare() helper the is:inline render
+		     controller + export use to vendor only the components a deck references.
+		     One pure scan (referencedComponents) feeds live render AND export, so
+		     they can't drift. See engineering/decisions/2026-06-12-workbench-
+		     component-bridge.md. -->
+		<script>
+			import { listAssets } from '../playground/asset-store.js';
+			import { referencedComponents, embedComponentsInMarkdown } from '../playground/layout-core.generated.js';
+			let LIBC = [];
+			const names = () => LIBC.map((c) => c.name);
+			const refComps = (src) =>
+				referencedComponents(src, names()).map((n) => LIBC.find((c) => c.name === n)).filter(Boolean);
+			// Stable across reloads of the list (methods read the live LIBC). embed()
+			// vendors referenced component CSS into the source; key() is the referenced
+			// set, folded into the render signature so a newly-referenced component
+			// forces a full frame rebuild (its CSS lands in out.css, which the
+			// section-only patch path does not refresh).
+			window.__dbComponents = {
+				list: () => LIBC,
+				embed: (src) => embedComponentsInMarkdown(src, refComps(src)),
+				key: (src) => referencedComponents(src, names()).join(','),
+			};
+			async function loadLibraryComponents() {
+				try {
+					LIBC = (await listAssets('component'))
+						.map((c) => ({
+							name: c.name, css: c.text || '', bucket: c.bucket || null,
+							skeleton: c.skeleton || '', manifest: c.manifest || null,
+						}))
+						.filter((c) => c.name && c.css);
+				} catch (_e) { LIBC = []; }
+				window.__dbLibraryComponents = LIBC;
+				window.dispatchEvent(new Event('db-library-components'));
+			}
+			window.addEventListener('db-library-components-refresh', loadLibraryComponents);
+			loadLibraryComponents();
 		</script>
 
 		<!-- Focus edit modes (Slice 9). The toolbar button enables when the cursor
@@ -1233,8 +1329,17 @@ const dbData = JSON.stringify({
 					ensureThemes(palette, mode).then(function () {
 						var theme = mode === 'dark' && PG.hasTheme(palette + '-dark') ? palette + '-dark' : palette;
 						try {
-							var out = PG.render(getSource(), theme);
-							var sig = theme + '|' + mode;
+							// Component bridge: vendor referenced library components into the
+							// source before render (the SAME embed the .md export uses, so live
+							// === export). The referenced set is folded into sig so a
+							// newly-referenced component triggers a full rebuild — its CSS lands
+							// in out.css, which the section-only patch path doesn't refresh.
+							var raw = getSource();
+							var DBC = window.__dbComponents;
+							var src = DBC ? DBC.embed(raw) : raw;
+							var ckey = DBC ? DBC.key(raw) : '';
+							var out = PG.render(src, theme);
+							var sig = theme + '|' + mode + '|' + ckey;
 							var sections = splitSections(out.html);
 							// Patch when the document already exists for this theme/mode;
 							// otherwise (first render, palette/mode switch) do a full rebuild.

@@ -435,10 +435,77 @@ var require_starters = __commonJS({
   }
 });
 
+// lib/layout/bridge.js
+var require_bridge = __commonJS({
+  "lib/layout/bridge.js"(exports, module) {
+    var FRONT_MATTER_RE = /^(---[ \t]*\r?\n[\s\S]*?\r?\n---[ \t]*(?:\r?\n|$))/;
+    var CLASS_DIRECTIVE_RE = /<!--\s*_?class\s*:\s*([^>]*?)\s*-->/g;
+    var FM_CLASS_RE = /^[ \t]*class[ \t]*:[ \t]*(.+?)[ \t]*$/im;
+    function referencedComponents2(source, names) {
+      const src = String(source || "");
+      const lib = new Set(names || []);
+      if (!lib.size) return [];
+      const seen = /* @__PURE__ */ new Set();
+      const out = [];
+      const consider = (raw) => {
+        for (const tok of String(raw || "").trim().split(/\s+/)) {
+          if (lib.has(tok) && !seen.has(tok)) {
+            seen.add(tok);
+            out.push(tok);
+          }
+        }
+      };
+      const fm = FRONT_MATTER_RE.exec(src);
+      if (fm) {
+        const m = FM_CLASS_RE.exec(fm[0]);
+        if (m) consider(m[1]);
+      }
+      CLASS_DIRECTIVE_RE.lastIndex = 0;
+      let d;
+      while ((d = CLASS_DIRECTIVE_RE.exec(src)) !== null) consider(d[1]);
+      return out;
+    }
+    var COMPONENT_BLOCK_MARK = "Lattice Workbench \u2014 embedded component";
+    var EMBEDDED_BLOCK_RE = new RegExp(
+      `<style>\\s*\\n?/\\* ${COMPONENT_BLOCK_MARK} [\\s\\S]*?<\\/style>\\n*`,
+      "g"
+    );
+    function stripEmbeddedComponents2(source) {
+      return String(source || "").replace(EMBEDDED_BLOCK_RE, "");
+    }
+    function componentBlock(name, css) {
+      return `<style>
+/* ${COMPONENT_BLOCK_MARK} "${String(name || "component")}" (self-contained:
+   this deck keeps the layout even where the component is not installed).
+   Palette-blind \u2014 every colour is a token. Generated on export. */
+` + String(css || "").trim() + "\n</style>\n";
+    }
+    function embedComponentsInMarkdown2(source, components) {
+      const src = stripEmbeddedComponents2(source);
+      const list = (components || []).filter((c) => c?.css);
+      if (!list.length) return src;
+      const blocks = list.slice().sort((a, b) => String(a.name).localeCompare(String(b.name))).map((c) => componentBlock(c.name, c.css)).join("\n");
+      const fm = FRONT_MATTER_RE.exec(src);
+      if (fm) return src.slice(0, fm[0].length) + "\n" + blocks + "\n" + src.slice(fm[0].length);
+      return blocks + "\n" + src;
+    }
+    function collidesWithShipped2(name, shippedNames) {
+      return new Set(shippedNames || []).has(String(name || "").trim());
+    }
+    module.exports = {
+      referencedComponents: referencedComponents2,
+      embedComponentsInMarkdown: embedComponentsInMarkdown2,
+      stripEmbeddedComponents: stripEmbeddedComponents2,
+      collidesWithShipped: collidesWithShipped2
+    };
+  }
+});
+
 // lib/layout/layout-core.entry.js
 var import_gate = __toESM(require_gate());
 var import_scaffold = __toESM(require_scaffold());
 var import_starters = __toESM(require_starters());
+var import_bridge = __toESM(require_bridge());
 var {
   FUNCTIONS,
   BUCKETS,
@@ -464,6 +531,12 @@ var {
   componentAsset
 } = import_scaffold.default;
 var { STARTERS, getStarter } = import_starters.default;
+var {
+  referencedComponents,
+  embedComponentsInMarkdown,
+  stripEmbeddedComponents,
+  collidesWithShipped
+} = import_bridge.default;
 export {
   BUCKETS,
   CSS_ONLY_SUBSTANCES,
@@ -473,7 +546,9 @@ export {
   NAME_RE,
   STARTERS,
   SUBSTANCES,
+  collidesWithShipped,
   componentAsset,
+  embedComponentsInMarkdown,
   findHexLiterals,
   findUnscopedSelectors,
   gateComponent,
@@ -481,10 +556,12 @@ export {
   getStarter,
   manifestJson,
   manifestObject,
+  referencedComponents,
   scaffoldDir,
   scaffoldFiles,
   skeletonInvokes,
   skeletonMd,
+  stripEmbeddedComponents,
   stylesCss,
   validateManifest
 };
