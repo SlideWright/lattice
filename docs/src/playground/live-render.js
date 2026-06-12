@@ -99,8 +99,8 @@ export function createLiveRenderer({ themeBase, runtimeUrl }) {
     const w = host.clientWidth;
     // Scale by the slide's OWN box (stashed by renderInto), not a hardcoded
     // 1280×720 — otherwise a 4K (3840-wide) slide is scaled 3× too large. The
-    // element's intrinsic size is CSS-pinned to HD, so a non-HD deck also needs
-    // the element resized to its real box before the transform fits it.
+    // element's CSS pins it to HD by default, so a non-HD deck also needs the
+    // element resized to its real box here before the transform fits it.
     const geom = host.__latticeGeom || { width: DEFAULT_W, height: DEFAULT_H };
     fr.style.width = geom.width + 'px';
     fr.style.height = geom.height + 'px';

@@ -83,7 +83,7 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
   function frameDoc(html, css, bg, geom) {
     // Fit every rehearsal slide to the deck's OWN `@size` box, not a hardcoded
     // 1280×720 — a 4K deck would otherwise scale 3× too large.
-    const sw = (geom && geom.width) || 1280, sh = (geom && geom.height) || 720;
+    const sw = geom?.width || 1280, sh = geom?.height || 720;
     const box = '.marpit>section{width:' + sw + 'px;height:' + sh + 'px}';
     const FIT = '(function(){function secs(){var m=document.querySelector(".marpit");return m?m.querySelectorAll(":scope>section"):[]}'
       + 'function fit(){var s=secs();var sc=Math.min((innerWidth-40)/' + sw + ',(innerHeight-40)/' + sh + ');var top=Math.max(20,(innerHeight-' + sh + '*sc)/2);for(var i=0;i<s.length;i++){s[i].style.transformOrigin="top center";s[i].style.transform="translateX(-50%) scale("+sc+")";s[i].style.position="absolute";s[i].style.left="50%";s[i].style.top=top+"px";s[i].style.display=s[i].classList.contains("pv-on")?"block":"none"}}'

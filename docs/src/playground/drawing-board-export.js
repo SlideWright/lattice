@@ -155,8 +155,8 @@ async function sectionsOf(frame) {
 // the export to the top-left ninth. `offsetWidth/Height` are the untransformed
 // layout box (the FIT scale doesn't affect them); HD is the fallback.
 function slideGeom(section) {
-	const w = (section && section.offsetWidth) || 1280;
-	const h = (section && section.offsetHeight) || 720;
+	const w = section?.offsetWidth || 1280;
+	const h = section?.offsetHeight || 720;
 	return { w, h };
 }
 
@@ -273,7 +273,7 @@ export async function exportPptx(frame, name, onStatus, meta) {
 	pptx.subject = summary;
 	pptx.author = 'Lattice Drawing Board';
 	pptx.company = `Lattice · ${eng}`;
-	pptx.layout = 'LAYOUT_WIDE'; // 13.333 x 7.5in, 16:9 — matches the 1280x720 box
+	pptx.layout = 'LAYOUT_WIDE'; // 13.333 x 7.5in, 16:9 — matches any 16:9 @size (HD/4K); the PNG full-bleeds it
 	for (let i = 0; i < sections.length; i++) {
 		if (onStatus) onStatus('Rendering slide ' + (i + 1) + ' of ' + sections.length + '…');
 		const png = await rasterizeSection(sections[i], fontEmbedCSS);

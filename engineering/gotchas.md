@@ -1631,12 +1631,12 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
 - **Commits:** `d91decc` (px→cqi refactor); fixed in the commit that
   wraps the non-slide fallback in :where().
 
-### Docs-site Drawing Board previewed/exported 4K decks oversized + cropped
+### Docs-site preview/export rendered 4K decks oversized + cropped
 
-- **Symptom:** A `size: 4K` deck in the docs-site **Drawing Board** (not VS
-  Code — the browser preview) rendered ~3× too large and overflowed the pane;
-  PDF/PPTX export captured only the top-left ninth of each slide. HD looked
-  fine.
+- **Symptom:** A `size: 4K` deck in the docs-site **Drawing Board** or
+  **Playground** (not VS Code — the browser preview) rendered ~3× too large and
+  overflowed the pane; the Drawing Board's PDF/PPTX export captured only the
+  top-left ninth of each slide. HD looked fine.
 - **Cause:** The owned engine resolves `@size` correctly and emits a real
   `div.marpit > section { width: 3840px; height: 2160px }`, but every browser
   host that fit-scales and exports the slide **hardcoded 1280×720**: the Drawing
@@ -1650,10 +1650,10 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
   host derives its fit divisor, intrinsic/`contain-intrinsic-size` box, `@page`
   size, and export raster/page size from that. `frame-css.js` exposes
   `slideBox(w,h)` / `singleSlideFrame(w,h)` (the HD constants stay for the
-  fixed-specimen studios). The Drawing Board injects `window.__SLIDE_W/H` into
-  the iframe for FIT/SYNC and folds the geometry into the preview rebuild `sig`
-  so a `size:` edit triggers a full srcdoc rewrite (not a section-only patch
-  that would leave stale globals).
+  fixed-specimen studios). The Drawing Board + Playground inject
+  `window.__SLIDE_W/H` into the iframe for FIT/SYNC; the Drawing Board also folds
+  the geometry into its preview rebuild `sig`, so a `size:` edit triggers a full
+  srcdoc rewrite (not a section-only patch that would leave stale globals).
 - **Triggered by:** Any non-HD `size:` (`4K`, `standard`/4:3) in a browser host.
   The marp-cli / emulator PDF path was unaffected (it sizes the Puppeteer
   viewport from `@size`).
