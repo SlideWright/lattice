@@ -12,6 +12,7 @@ import '../styles/deck-config.css';
 import { SLIDE_BOX } from '../playground/frame-css.js';
 import { buildCatalog, buildLenses, groupCatalog } from '../lib/families.mjs';
 import { joinBase } from '../lib/base-url.mjs';
+import { isPreviewDeploy } from '../lib/deploy-env.mjs';
 import { assetBase } from '../playground/asset-version.mjs';
 import { loadGalleries, GALLERY_GROUPS } from '../playground/galleries.mjs';
 
@@ -27,6 +28,14 @@ const url = (p) => joinBase(base, p);
 // Cache-busted prefix for the playground's runtime-fetched assets (see
 // asset-version.mjs); the bare `playground/` route is unchanged.
 const pg = assetBase();
+
+// Guided tours run on the production site only — never local dev or the
+// Cloudflare PR previews. Baked into the HTML so the client gate is build-time.
+const previewDeploy = isPreviewDeploy({
+	dev: import.meta.env.DEV,
+	cfPages: process.env.CF_PAGES,
+	cfBranch: process.env.CF_PAGES_BRANCH,
+});
 
 const tokensCss = readFileSync(join(docsRoot, 'src/styles/lattice-tokens.generated.css'), 'utf8');
 const palettes = [...new Set([...tokensCss.matchAll(/data-palette="([^"]+)"/g)].map((m) => m[1]))];
@@ -88,7 +97,7 @@ const pgData = JSON.stringify({
 ---
 
 <!doctype html>
-<html lang="en" data-palette="indaco" data-mode="light">
+<html lang="en" data-palette="indaco" data-mode="light" data-tours={previewDeploy ? 'off' : 'on'}>
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />

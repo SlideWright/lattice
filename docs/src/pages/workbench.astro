@@ -13,11 +13,20 @@ import '../styles/landing.css';
 import '../styles/workbench.css';
 import '../styles/deck-config.css';
 import { joinBase } from '../lib/base-url.mjs';
+import { isPreviewDeploy } from '../lib/deploy-env.mjs';
 import { assetBase } from '../playground/asset-version.mjs';
 
 const base = import.meta.env.BASE_URL;
 const url = (p) => joinBase(base, p);
 const pg = assetBase();
+
+// Guided tours run on the production site only — never local dev or the
+// Cloudflare PR previews. Baked into the HTML so the client gate is build-time.
+const previewDeploy = isPreviewDeploy({
+	dev: import.meta.env.DEV,
+	cfPages: process.env.CF_PAGES,
+	cfBranch: process.env.CF_PAGES_BRANCH,
+});
 
 // Shipped component class names, loaded at build time from the live manifests.
 // The Layout Studio blocks a local component whose name collides with one of
@@ -46,7 +55,7 @@ const links = [
 ---
 
 <!doctype html>
-<html lang="en" data-palette="indaco" data-mode="light">
+<html lang="en" data-palette="indaco" data-mode="light" data-tours={previewDeploy ? 'off' : 'on'}>
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />

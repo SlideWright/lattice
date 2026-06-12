@@ -22,6 +22,19 @@ import { onToursEnabledChange, toursEnabled } from './tour-prefs.js';
 
 const SEEN_PREFIX = 'lattice-tour-seen-';
 
+// Tours ship to every build but only ACTIVATE on the production site. The page
+// build stamps `data-tours="on"` on <html> for production (GitHub Pages / a
+// main-branch Cloudflare deploy) and "off" for local dev and the Cloudflare
+// *.pages.dev PR previews (see docs/src/lib/deploy-env.mjs). Fail closed: only
+// an explicit "on" runs them.
+function toursAllowedHere() {
+	try {
+		return document.documentElement.dataset.tours === 'on';
+	} catch {
+		return false;
+	}
+}
+
 function prefersReducedMotion() {
 	try {
 		return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -68,6 +81,8 @@ export function initGuidedTour(opts) {
 	} = opts || {};
 
 	if (!key || !Array.isArray(steps) || steps.length === 0) return { start() {} };
+	// Production-only: no button, no auto-run on dev / preview deploys.
+	if (!toursAllowedHere()) return { start() {} };
 
 	const seenKey = SEEN_PREFIX + key;
 	const seen = () => {

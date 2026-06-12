@@ -62,7 +62,9 @@ in patch versions.
   the topbar. Tours are mobile-aware — they switch the active pane/tab to bring
   each step's target on screen — and palette-blind, themed entirely from the
   design tokens. A global **Guided tours** on/off toggle in the Drawing Board's
-  Workspace settings governs all three surfaces and takes effect live.
+  Workspace settings governs all three surfaces and takes effect live. Tours
+  activate on the production site only — never local dev or Cloudflare PR
+  previews (gated build-time via `docs/src/lib/deploy-env.mjs`).
 
 ### Fixed
 
