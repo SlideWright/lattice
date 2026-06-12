@@ -383,6 +383,43 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
   page), not `pdffonts`/`get_fonts()` — a subset-embedded face often
   reports an empty name and reads as "missing" when it's actually there.
 
+### Drawing Board PDF/PPTX export shows fallback type on some slides
+
+- **Symptom:** A deck exported from the docs-site Drawing Board (Export →
+  PDF or PowerPoint) renders *most* type correctly but a face drops to a
+  system fallback on a subset of slides — classically, a `finish: sketch`
+  deck keeps its Caveat headings but the Shantell Sans **body** goes clean
+  Outfit. The live preview looks right; only the exported file is wrong.
+  This is the **web-export** twin of the marp-cli fallback gotcha above —
+  same symptom, different render path and fix.
+- **Cause:** The image exporters (`docs/src/playground/drawing-board-
+  export.js`) rasterize every slide through `html-to-image`, including
+  off-screen ones they force-visible mid-loop. Marp's template lazy-loads
+  each web-font face only when the *active* slide needs it, and the export
+  awaited `document.fonts.ready` **once**, up front — before those
+  off-screen slides requested their faces. A face first needed by an
+  off-screen slide hadn't finished loading from Google Fonts when its slide
+  rasterized, so that slide baked in a fallback. Headings survived only
+  because a bookend slide was active at export time. Letting
+  `html-to-image` chase the cross-origin Google-Fonts `@import` itself is
+  also unreliable (its `cssRules` read is CORS-blocked).
+- **Fix:** `docs/src/playground/font-embed.js` vendors every engine text
+  face (latin subset, in `docs/src/playground/fonts/`), builds **one**
+  data-URI `@font-face` sheet, and hands it to every `html-to-image` call
+  as `fontEmbedCSS` — so each rasterized slide is self-contained, no
+  network, no race. It also injects the faces into the preview doc and
+  awaits them so the cloned nodes lay out with real metrics. The module is
+  lazy-`import()`ed (its `.woff2` imports aren't Node-loadable, which would
+  break the export module's unit tests). Covers PDF + PPTX (shared
+  rasterizer); the vector `Print` path renders through the browser's own
+  engine and was never affected.
+- **Verify the right way:** rasterize a body slide of an exported sketch
+  deck and read the pixels — `pdffonts` is useless here (the export is an
+  *image* PDF; text is baked into PNGs, not embedded as PDF fonts).
+- **Note:** This is docs-export-scoped. The published engine and its
+  Google-Fonts `@import` are unchanged; npm consumers and the live preview
+  still load from Google.
+
 ### marp-cli ignores `theme:` front matter unless the theme is in `themeSet`
 
 - **Symptom:** A deck specifies `theme: mustard` (or any other named
