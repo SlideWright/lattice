@@ -84,6 +84,21 @@ in patch versions.
   Migrated into the shared transformer registry (`lib/transformers/featured.js`,
   `compare-code.js`, with kernels in each component folder), so all three render
   paths agree. Emulator default output is byte-identical; engine↔marp parity holds.
+- **Body copy now scales with the slide in every preview — it no longer
+  collapses to a fixed ~10px (tiny on a 4K slide) while headings scaled.** The
+  `--fs-*` typography tokens were the one family of section-OWN `cqi` properties
+  never wired into the `--_sec-1cqi` hook that padding and the accent border
+  already used. `section{container-type:size}` forbids the section from querying
+  its own `cqi`, so its `font-size:var(--fs-body)` — which every gfm body element
+  (`p`, `ul/li`, `td`, `blockquote`, …) inherits — fell back to the ICB; that's
+  the slide only on the canonical emulator/print path (viewport = slide), but in
+  an iframe/VS Code preview the ICB is the editor pane, so body text rendered
+  pane-relative and shrank to a third of its size on a 4K slide. The `--fs-*`
+  tokens now route through `var(--_sec-1cqi, 1cqi)` (`base.tokens.css`), so the
+  docs-site preview/export AND the VS Code preview all render body copy at the
+  intended size, while the `1cqi` fallback keeps the canonical/print render
+  byte-identical. Headings were always correct (they're children, not
+  section-own). Affects rendering only; no authoring change.
 - **`size: 4K` decks now preview and export correctly in the docs-site Drawing
   Board and Playground — they no longer render ~3× oversized, and PDF/PPTX
   export the full slide instead of a cropped corner.** The owned engine resolves

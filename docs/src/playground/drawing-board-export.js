@@ -241,9 +241,17 @@ export async function exportPdf(frame, name, onStatus, meta) {
 	const { sections, fontEmbedCSS } = await sectionsOf(frame);
 	if (onStatus) onStatus('Preparing PDF…');
 	const { jsPDF } = await import('jspdf');
-	// Size the page to the deck's real slide box (every slide shares the deck's
-	// `@size`), so a 4K deck exports 3840×2160 pages instead of a 1280 crop.
-	const { w: pageW, h: pageH } = slideGeom(sections[0]);
+	// The PAGE is a fixed physical size — the deck's aspect ratio at a canonical
+	// 720pt height — NOT the pixel box. `@size` changes the RASTER resolution (a
+	// 4K slide rasterizes to a 3840px PNG), not the page: a 4K page sized from the
+	// pixel box would be 3840px → a ~71-inch sheet. So normalize the box to height
+	// 720 (HD/standard already are; 4K scales 3840×2160→1280×720) and let the
+	// native-resolution PNG embed at high DPI inside it. HD/standard pages are
+	// unchanged; 4K now matches HD's page with a sharper image.
+	const { w: boxW, h: boxH } = slideGeom(sections[0]);
+	const PAGE_H = 720;
+	const pageH = PAGE_H;
+	const pageW = Math.round((boxW * PAGE_H) / boxH);
 	const pdf = new jsPDF({ orientation: 'landscape', unit: 'px', format: [pageW, pageH], compress: true });
 	const { eng, summary, keywords } = provenance(meta, sections.length);
 	pdf.setProperties({

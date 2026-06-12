@@ -201,8 +201,12 @@ accessibility bump, the whole scale can be raised in one move without
 re-picking sizes.
 
 A single unitless multiplier, **`--fs-scale`** (default `1`), is baked
-into the scaling tokens: `--fs-body: calc(1.67cqi * var(--fs-scale))`,
-and so on. The three documented between-token raw-cqi sites (§4) carry it
+into the scaling tokens: `--fs-body: calc(1.67 * var(--_sec-1cqi, 1cqi) *
+var(--fs-scale))`, and so on. (The `1cqi` is wrapped in
+`var(--_sec-1cqi, 1cqi)` so the section's OWN font-size resolves against the
+slide width in iframe/VS Code previews, not the editor viewport — see
+`engineering/gotchas.md` "Section geometry AND body font … look wrong". The
+fallback keeps the canonical/print render identical.) The three documented between-token raw-cqi sites (§4) carry it
 too. Raising it scales the readable sizes **in lockstep** — body,
 supporting headings (h3–h6), hero, chrome (pagination / footer / eyebrow)
 — so the tuned proportions are preserved; only the magnitude moves.

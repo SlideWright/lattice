@@ -1525,14 +1525,17 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
   (cascade-order dependence) is fragile.
 - **Commits:** `d3ffaca`
 
-### Section geometry (padding, border) looks wrong in VS Code preview at any size
+### Section geometry AND body font (padding, border, body text) look wrong in any non-canonical preview
 
-- **Symptom:** In VS Code preview, slide padding on all four sides and
-  the top accent border are narrower than expected — content appears to
-  bleed toward the edges. Divider slides have a noticeably tight
-  left-indent. The effect is more visible on 4K slides (where the
-  absolute delta is larger) but applies to HD slides too whenever the
-  editor viewport width differs from 1280 px.
+- **Symptom:** In a preview where the viewport width ≠ the slide width —
+  VS Code marp preview, AND the docs-site iframe preview/export (Drawing
+  Board, Playground) — slide padding on all four sides and the top accent
+  border are narrower than expected, and **body copy is undersized** (it
+  collapses toward a fixed ~10px regardless of `@size`, so headings scale
+  but paragraphs/lists/tables do not — egregious on a 4K slide, where body
+  text renders at a third of its intended size). Divider slides have a
+  noticeably tight left-indent. Applies to HD too (just a smaller delta);
+  the canonical emulator/print PDF is always correct.
 - **Cause:** `section { container-type:size }` makes the section element
   its own cqi container. CSS spec forbids an element from using cqi to
   query its own size (circular dependency), so any `Xcqi` value *on
@@ -1547,19 +1550,30 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
 - **Fix:** `lattice.css` expresses every direct-cqi property on `section`
   as `calc(var(--_sec-1cqi, 1cqi) * X)` where `X` is the original cqi
   coefficient (e.g. `padding: calc(var(--_sec-1cqi,1cqi)*6.875)
-  calc(var(--_sec-1cqi,1cqi)*5)`). The `1cqi` fallback fires only in the
-  emulator/print path where the ICB is already correct. In VS Code,
-  `patchSectionGeometry()` in `lattice-runtime.js` sets
+  calc(var(--_sec-1cqi,1cqi)*5)`). **This includes the `--fs-*` typography
+  tokens** (`base.tokens.css`): the section's own `font-size:var(--fs-body)`
+  — which every gfm body element inherits — is a direct-cqi property and so
+  routes through the same hook (`--fs-body: calc(1.67 *
+  var(--_sec-1cqi,1cqi) * var(--fs-scale))`). Child consumers
+  (`h2{font-size:var(--fs-h2)}`, …) inherit the section's already-substituted
+  value, so they resolve identically; this was the long-standing gap — padding
+  and border were converted years before the fonts. The `1cqi` fallback fires
+  only in the emulator/print path where the ICB is already correct. In any
+  iframe/VS Code preview, `patchSectionGeometry()` in `lattice-runtime.js` sets
   `--_sec-1cqi = section.offsetWidth / 100` as a concrete `px` value
   (e.g. `38.400px` for a 3840 px 4K slide) so every `calc()` resolves
   against the real slide width. Any new direct-cqi property added to
-  `section` or `section.*` in the future must follow the same pattern —
-  write `calc(var(--_sec-1cqi,1cqi)*X)`, not a bare `Xcqi`.
-- **Triggered by:** Any slide opened in marp-vscode preview. The PDF and
-  emulator paths are unaffected because their ICB matches the slide size.
+  `section` or `section.*` — or any token consumed as a section-OWN property —
+  must follow the same pattern: `calc(... * var(--_sec-1cqi,1cqi) * ...)`,
+  never a bare `Xcqi`. (Tokens consumed only by *children* — most `--sp-*`
+  gaps — keep bare `cqi`; they query the section correctly on their own.)
+- **Triggered by:** Any slide in a preview whose viewport ≠ the slide width
+  (marp-vscode, the docs-site srcdoc iframes). The PDF and emulator paths are
+  unaffected because their ICB/viewport matches the slide size.
 - **Commits:** `334434f` (initial fix, top/bottom only); `fe6f894`
   (extend to padding-left/right); `41ef9e1` (extend to divider
-  padding-left); `1bf458c` (unify all under `--_sec-1cqi`).
+  padding-left); `1bf458c` (unify all under `--_sec-1cqi`); the `--fs-*`
+  typography tokens joined the hook later (this branch).
 
 ### Layout components inherit line-height silently from the section body default
 
