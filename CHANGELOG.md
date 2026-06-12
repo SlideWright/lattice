@@ -27,6 +27,19 @@ in patch versions.
 
 ### Added
 
+- **Contracts + Layout-swapping — the `inventory` contract (first slice).** A new
+  sibling tier (`lib/contracts/`) makes the **Function** layer first-class: a
+  *contract* names a Purpose's content shape (slots + cardinalities + one
+  canonical DOM + samples), and *conforming Layouts* style that DOM, so an author
+  swaps the look for the **same Content** with one class — pure CSS, no
+  re-author. Ships the `inventory` contract and four conforming, palette-blind
+  Layouts — `layout-ledger`, `layout-cards`, `layout-timeline`,
+  `layout-editorial` — bundled into `lattice.css` and recognised by the deck
+  linter. Demo: `examples/contract-inventory.md` (one Content, four Layouts). The
+  base KEY INSIGHT rule now excludes the `layout-*` tier (contract Layouts own
+  their blockquote; pixel-identical for existing decks). Adds the two-register
+  vocabulary (`design-system.md §2.5`) the model uses. See
+  `engineering/decisions/2026-06-12-contracts-layout-swapping.md`.
 - **The deck-setup front-matter panel is now universal — in the Playground and
   the Workbench too, not just the Drawing Board.** The config panel
   (`docs/src/playground/deck-config.js`, relocated from `drawing-board-config.js`)

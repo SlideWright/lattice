@@ -88,9 +88,24 @@ const TREATMENTS_SOURCE = 'lib/base/base.treatments.css';
 // boxes), palette-blind via var(--…). Tail tier so its section.sketch …
 // selectors compose on top of every component. See lib/base/base.sketch.css.
 const SKETCH_SOURCE = 'lib/base/base.sketch.css';
+// Contract-tier Layout CSS — every lib/contracts/<fn>/<fn>.layouts.css, the
+// css-only Layouts that style each contract's canonical DOM (a sibling tier to
+// components; see lib/contracts/). Bundled after base.variants so they win at
+// equal specificity, like components.
+const CONTRACT_LAYOUT_SOURCES = (() => {
+  const dir = path.join(ROOT, 'lib', 'contracts');
+  if (!fs.existsSync(dir)) return [];
+  return fs.readdirSync(dir, { withFileTypes: true })
+    .filter((d) => d.isDirectory())
+    .map((d) => `lib/contracts/${d.name}/${d.name}.layouts.css`)
+    .filter((rel) => fs.existsSync(path.join(ROOT, rel)))
+    .sort();
+})();
+
 const TAIL_SOURCES = [
   'lib/shared/shared.styles.css',
   'lib/base/base.variants.css',
+  ...CONTRACT_LAYOUT_SOURCES,
   'lib/integrations/mermaid/mermaid.css',
 ];
 
