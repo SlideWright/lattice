@@ -309,6 +309,12 @@ const pgData = JSON.stringify({
 			initTemplatePicker();
 		</script>
 
+		<!-- Guided tour: first-visit walkthrough + replay button (driver.js). -->
+		<script>
+			import { initPlaygroundTour } from '../playground/playground-tour.js';
+			initPlaygroundTour();
+		</script>
+
 		<script is:inline defer src={url(pg + 'lattice-playground.js')}></script>
 		<script is:inline>
 			(function () {

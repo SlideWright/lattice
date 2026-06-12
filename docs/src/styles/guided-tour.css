@@ -67,7 +67,7 @@
 	border: 1px solid var(--border);
 	border-radius: var(--radius-md, 12px);
 	box-shadow: 0 18px 48px -12px rgba(16, 18, 22, 0.45);
-	max-width: 340px;
+	max-width: min(340px, calc(100vw - 28px));
 	padding: 18px 18px 14px;
 	font-family: var(--font-body, inherit);
 }
