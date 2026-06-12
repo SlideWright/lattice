@@ -14,7 +14,7 @@
 // which sidesteps the Safari foreignObject scaling bug (see that file's
 // srcdoc comment for the full why).
 
-import { SINGLE_SLIDE_FRAME } from './frame-css.js';
+import { DEFAULT_H, DEFAULT_W, singleSlideFrame } from './frame-css.js';
 
 const MERMAID = 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js';
 
@@ -67,11 +67,13 @@ export function createLiveRenderer({ themeBase, runtimeUrl }) {
     return Promise.all(jobs);
   }
 
-  // Render the slide at its INTRINSIC 1280×720 and scale the iframe ELEMENT
+  // Render the slide at its INTRINSIC `@size` box and scale the iframe ELEMENT
   // (never the SVG) to fit the container — see the index.astro srcdoc note.
-  function srcdoc(html, css, mode, mermaid) {
+  // `geom` is the render's reported { width, height } (px); a `size: 4K` deck
+  // pins a 3840×2160 box here so scaleFrame can divide by the right width.
+  function srcdoc(html, css, mode, mermaid, geom) {
     const bg = mode === 'dark' ? '#0c0c0c' : '#e7e7ea';
-    // SINGLE_SLIDE_FRAME pins the intrinsic 1280×720 box (the single source of
+    // singleSlideFrame() pins the intrinsic `@size` box (the single source of
     // truth in frame-css.js); a second html,body rule adds the dynamic bg.
     let s =
       '<!doctype html><html><head><meta charset="utf-8"><style>' +
@@ -79,7 +81,7 @@ export function createLiveRenderer({ themeBase, runtimeUrl }) {
       // keeping it up top documents intent). Without this the iframe has no
       // Caveat/Shantell and sketch decks render body in a system sans.
       fontFaceCss +
-      SINGLE_SLIDE_FRAME +
+      singleSlideFrame(geom.width, geom.height) +
       'html,body{background:' +
       bg +
       '}' +
@@ -95,7 +97,14 @@ export function createLiveRenderer({ themeBase, runtimeUrl }) {
     const fr = host.querySelector('iframe.live');
     if (!fr) return;
     const w = host.clientWidth;
-    if (w > 0) fr.style.transform = 'scale(' + (w / 1280).toFixed(5) + ')';
+    // Scale by the slide's OWN box (stashed by renderInto), not a hardcoded
+    // 1280×720 — otherwise a 4K (3840-wide) slide is scaled 3× too large. The
+    // element's intrinsic size is CSS-pinned to HD, so a non-HD deck also needs
+    // the element resized to its real box before the transform fits it.
+    const geom = host.__latticeGeom || { width: DEFAULT_W, height: DEFAULT_H };
+    fr.style.width = geom.width + 'px';
+    fr.style.height = geom.height + 'px';
+    if (w > 0) fr.style.transform = 'scale(' + (w / geom.width).toFixed(5) + ')';
   }
 
   /**
@@ -116,6 +125,8 @@ export function createLiveRenderer({ themeBase, runtimeUrl }) {
         } catch (e) {
           return { ok: false, slides: 0, error: String(e?.message || e) };
         }
+        // Stash the resolved slide box so scaleFrame divides by the right width.
+        host.__latticeGeom = { width: out.width || DEFAULT_W, height: out.height || DEFAULT_H };
         let fr = host.querySelector('iframe.live');
         if (!fr) {
           fr = document.createElement('iframe');
@@ -129,7 +140,7 @@ export function createLiveRenderer({ themeBase, runtimeUrl }) {
           }
         }
         fr.onload = () => scaleFrame(host);
-        fr.srcdoc = srcdoc(out.html, out.css, mode, mermaid);
+        fr.srcdoc = srcdoc(out.html, out.css, mode, mermaid, host.__latticeGeom);
         scaleFrame(host);
         host.classList.add('is-live');
         const slides = (out.html.match(/<\/section>/g) || []).length;

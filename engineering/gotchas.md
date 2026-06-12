@@ -1631,6 +1631,35 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
 - **Commits:** `d91decc` (px→cqi refactor); fixed in the commit that
   wraps the non-slide fallback in :where().
 
+### Docs-site Drawing Board previewed/exported 4K decks oversized + cropped
+
+- **Symptom:** A `size: 4K` deck in the docs-site **Drawing Board** (not VS
+  Code — the browser preview) rendered ~3× too large and overflowed the pane;
+  PDF/PPTX export captured only the top-left ninth of each slide. HD looked
+  fine.
+- **Cause:** The owned engine resolves `@size` correctly and emits a real
+  `div.marpit > section { width: 3840px; height: 2160px }`, but every browser
+  host that fit-scales and exports the slide **hardcoded 1280×720**: the Drawing
+  Board FIT used `sc = w / 1280`, `frame-css.js` pinned `.marpit>section{width:
+  1280px}` (which silently LOST to the engine scaffold's `div.marpit > section`
+  at 0,1,2 vs 0,1,1 — so the box was really 3840 but scaled as if 1280), and the
+  exporter rasterized a 1280×720 crop onto a 1280×720 jsPDF page. At HD every
+  hardcoded 1280/720 happened to be correct, hiding the bug.
+- **Fix:** The render reports its resolved box — `playground render()` →
+  `{ html, css, width, height }` (px), from `lib/engine` `resolveSize`. Every
+  host derives its fit divisor, intrinsic/`contain-intrinsic-size` box, `@page`
+  size, and export raster/page size from that. `frame-css.js` exposes
+  `slideBox(w,h)` / `singleSlideFrame(w,h)` (the HD constants stay for the
+  fixed-specimen studios). The Drawing Board injects `window.__SLIDE_W/H` into
+  the iframe for FIT/SYNC and folds the geometry into the preview rebuild `sig`
+  so a `size:` edit triggers a full srcdoc rewrite (not a section-only patch
+  that would leave stale globals).
+- **Triggered by:** Any non-HD `size:` (`4K`, `standard`/4:3) in a browser host.
+  The marp-cli / emulator PDF path was unaffected (it sizes the Puppeteer
+  viewport from `@size`).
+- **Don't reintroduce:** never hardcode `1280`/`720` in a preview/export host —
+  thread the geometry from the render result through `frame-css.js`.
+
 ## G-gen merge must use non-G file's G-gen block, not the G-file's block
 
 - **Symptom:** After promoting G-files to canonical (merging cuoio-G.css

@@ -84,6 +84,24 @@ in patch versions.
   Migrated into the shared transformer registry (`lib/transformers/featured.js`,
   `compare-code.js`, with kernels in each component folder), so all three render
   paths agree. Emulator default output is byte-identical; engine↔marp parity holds.
+- **`size: 4K` decks now preview and export correctly in the docs-site Drawing
+  Board — they no longer render ~3× oversized, and PDF/PPTX export the full
+  slide instead of a cropped corner.** The owned engine resolves the deck's
+  `@size` geometry correctly (a 4K deck is a real 3840×2160 box), but every
+  browser host that scales and exports the slide hardcoded HD: the preview
+  fit-scaled by `w / 1280` (so a 3840-wide slide overflowed 3×) and the image
+  exporters captured a 1280×720 crop onto a 1280×720 page (the top-left ninth of
+  a 4K slide). The render now reports its resolved box (`render()` →
+  `{ html, css, width, height }`), and the preview fit, virtualization
+  placeholder, print page, and export page/raster size all derive from it — so a
+  4K deck previews identically to HD (same 16:9, just fit-scaled) and exports at
+  native 4K. A `size:` edit now also forces a full preview rebuild (the box is
+  baked into the iframe). Also fixed: image-PDF/PPTX content slides no longer
+  show a full-slide rainbow fill — html-to-image mis-rendered the spectrum
+  ribbon's gradient `border-image` as a whole-element fill, so the ribbon is now
+  repainted as a thin top background strip during rasterization. Docs-only; the
+  published engine and the marp-cli PDF path (which already sized 4K from the
+  Puppeteer viewport) are unchanged.
 - **The docs-site live preview now loads the sketch hand fonts — `finish:
   sketch` decks no longer render hand headings over a clean-sans body.** Each
   preview slide renders into an `srcdoc` iframe whose `<style>` concatenates the

@@ -150,32 +150,75 @@ async function sectionsOf(frame) {
 	return { sections, fontEmbedCSS };
 }
 
-// Rasterize one rendered slide to a 2x PNG data URL. `fontEmbedCSS` (the vendored,
-// data-URI'd faces) is handed to html-to-image so the clone embeds every font
-// itself rather than chasing the cross-origin Google-Fonts @import.
+// The slide's true box (px) from its own layout, NOT a hardcoded 1280×720 — a
+// `size: 4K` deck lays out a 3840×2160 section, and capturing it at 1280 cropped
+// the export to the top-left ninth. `offsetWidth/Height` are the untransformed
+// layout box (the FIT scale doesn't affect them); HD is the fallback.
+function slideGeom(section) {
+	const w = (section && section.offsetWidth) || 1280;
+	const h = (section && section.offsetHeight) || 720;
+	return { w, h };
+}
+
+// Rasterize one rendered slide to a PNG data URL at its native box. `fontEmbedCSS`
+// (the vendored, data-URI'd faces) is handed to html-to-image so the clone embeds
+// every font itself rather than chasing the cross-origin Google-Fonts @import.
 async function rasterizeSection(section, fontEmbedCSS) {
 	const { toPng } = await import('html-to-image');
-	// Bookend slides (title/closing/divider) carry an inert `border-image-source`
-	// (the spectrum) with `border-top:none` — invisible in the browser, but
-	// html-to-image inlines the computed border-image and fills it across the
-	// whole slide, burying the dark canvas. Neutralize it on the LIVE node (so the
-	// computed value html-to-image copies is `none`) ONLY where the border is
-	// effectively absent — content slides keep their real spectrum ribbon — then
-	// restore. The change is invisible in the preview (the border was already 0).
+	// The spectrum ribbon is a `border-top` whose `border-image-source` is a
+	// linear-gradient. html-to-image inlines that computed border-image and
+	// MIS-RENDERS it — filling the gradient across the whole element instead of
+	// the border strip. So:
+	//   - Bookend slides (title/closing/divider) carry the spectrum as an INERT
+	//     border (`border-top:none`) over a solid canvas — html-to-image would
+	//     fill it and bury the canvas. Just drop the border-image.
+	//   - Content slides carry a REAL ~12px ribbon — left alone it fills the whole
+	//     slide with rainbow, burying the content. Repaint it as a top background
+	//     strip (html-to-image renders gradient BACKGROUNDS correctly) and make the
+	//     now-blank border transparent. Layout is unchanged (the border keeps its
+	//     width), so this is invisible in the preview and faithful in the export.
 	const cs = getComputedStyle(section);
 	const borderless = parseFloat(cs.borderTopWidth) === 0 || cs.borderTopStyle === 'none';
-	const prevBorderImage = section.style.borderImageSource;
-	if (borderless && cs.borderImageSource !== 'none') section.style.borderImageSource = 'none';
+	const hasGradientBorder = cs.borderImageSource && cs.borderImageSource !== 'none';
+	const prev = {
+		borderImageSource: section.style.borderImageSource,
+		borderTopColor: section.style.borderTopColor,
+		backgroundImage: section.style.backgroundImage,
+		backgroundRepeat: section.style.backgroundRepeat,
+		backgroundPosition: section.style.backgroundPosition,
+		backgroundSize: section.style.backgroundSize,
+	};
+	if (hasGradientBorder && borderless) {
+		section.style.borderImageSource = 'none';
+	} else if (hasGradientBorder) {
+		const grad = cs.borderImageSource;
+		const tw = cs.borderTopWidth;
+		// Layer the ribbon gradient as a top strip OVER the slide's own background
+		// (preserved — a canvas colour rides on background-color, untouched here; an
+		// image canvas is kept as the second layer).
+		const baseImg = cs.backgroundImage && cs.backgroundImage !== 'none' ? cs.backgroundImage : '';
+		section.style.backgroundImage = baseImg ? `${grad}, ${baseImg}` : grad;
+		section.style.backgroundRepeat = baseImg ? `no-repeat, ${cs.backgroundRepeat}` : 'no-repeat';
+		section.style.backgroundPosition = baseImg ? `top left, ${cs.backgroundPosition}` : 'top left';
+		section.style.backgroundSize = baseImg ? `100% ${tw}, ${cs.backgroundSize}` : `100% ${tw}`;
+		section.style.borderImageSource = 'none';
+		section.style.borderTopColor = 'transparent';
+	}
 	// The preview sets content-visibility:auto on slides (virtualization), which
 	// leaves off-screen sections unrendered. Force this one visible so
 	// html-to-image rasterizes a laid-out slide, then restore.
 	const prevCV = section.style.contentVisibility;
 	section.style.contentVisibility = 'visible';
+	const { w, h } = slideGeom(section);
+	// Cap the device-pixel multiplier so a 4K box (3840) rasterizes near its
+	// native 3840 rather than a 7680 canvas that risks an OOM in the browser;
+	// HD keeps the 2× retina capture it always had.
+	const pixelRatio = w > 2048 ? 1 : 2;
 	try {
 		return await toPng(section, {
-			width: 1280,
-			height: 720,
-			pixelRatio: 2,
+			width: w,
+			height: h,
+			pixelRatio,
 			cacheBust: true,
 			fontEmbedCSS,
 			// transform:none undoes the live FIT scale; no backgroundColor (see header).
@@ -183,7 +226,12 @@ async function rasterizeSection(section, fontEmbedCSS) {
 			filter: (n) => !(n.classList?.contains('db-active')),
 		});
 	} finally {
-		section.style.borderImageSource = prevBorderImage;
+		section.style.borderImageSource = prev.borderImageSource;
+		section.style.borderTopColor = prev.borderTopColor;
+		section.style.backgroundImage = prev.backgroundImage;
+		section.style.backgroundRepeat = prev.backgroundRepeat;
+		section.style.backgroundPosition = prev.backgroundPosition;
+		section.style.backgroundSize = prev.backgroundSize;
 		section.style.contentVisibility = prevCV;
 	}
 }
@@ -193,7 +241,10 @@ export async function exportPdf(frame, name, onStatus, meta) {
 	const { sections, fontEmbedCSS } = await sectionsOf(frame);
 	if (onStatus) onStatus('Preparing PDF…');
 	const { jsPDF } = await import('jspdf');
-	const pdf = new jsPDF({ orientation: 'landscape', unit: 'px', format: [1280, 720], compress: true });
+	// Size the page to the deck's real slide box (every slide shares the deck's
+	// `@size`), so a 4K deck exports 3840×2160 pages instead of a 1280 crop.
+	const { w: pageW, h: pageH } = slideGeom(sections[0]);
+	const pdf = new jsPDF({ orientation: 'landscape', unit: 'px', format: [pageW, pageH], compress: true });
 	const { eng, summary, keywords } = provenance(meta, sections.length);
 	pdf.setProperties({
 		title: (name || 'deck').trim(),
@@ -205,8 +256,8 @@ export async function exportPdf(frame, name, onStatus, meta) {
 	for (let i = 0; i < sections.length; i++) {
 		if (onStatus) onStatus('Rendering slide ' + (i + 1) + ' of ' + sections.length + '…');
 		const png = await rasterizeSection(sections[i], fontEmbedCSS);
-		if (i > 0) pdf.addPage([1280, 720], 'landscape');
-		pdf.addImage(png, 'PNG', 0, 0, 1280, 720);
+		if (i > 0) pdf.addPage([pageW, pageH], 'landscape');
+		pdf.addImage(png, 'PNG', 0, 0, pageW, pageH);
 	}
 	pdf.save(safeName(name) + '.pdf');
 }

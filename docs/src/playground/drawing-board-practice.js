@@ -25,7 +25,7 @@ function fmt(s) {
   return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
 }
 
-export function createPractice({ host, getSource, slideBox, runtimeUrl, themeBase, bucketOf }) {
+export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketOf }) {
   if (!host) return { open() {} };
   const PG = () => window.LatticePlayground;
   const root = document.documentElement;
@@ -80,16 +80,20 @@ export function createPractice({ host, getSource, slideBox, runtimeUrl, themeBas
     }
   }
 
-  function frameDoc(html, css, bg) {
+  function frameDoc(html, css, bg, geom) {
+    // Fit every rehearsal slide to the deck's OWN `@size` box, not a hardcoded
+    // 1280×720 — a 4K deck would otherwise scale 3× too large.
+    const sw = (geom && geom.width) || 1280, sh = (geom && geom.height) || 720;
+    const box = '.marpit>section{width:' + sw + 'px;height:' + sh + 'px}';
     const FIT = '(function(){function secs(){var m=document.querySelector(".marpit");return m?m.querySelectorAll(":scope>section"):[]}'
-      + 'function fit(){var s=secs();var sc=Math.min((innerWidth-40)/1280,(innerHeight-40)/720);var top=Math.max(20,(innerHeight-720*sc)/2);for(var i=0;i<s.length;i++){s[i].style.transformOrigin="top center";s[i].style.transform="translateX(-50%) scale("+sc+")";s[i].style.position="absolute";s[i].style.left="50%";s[i].style.top=top+"px";s[i].style.display=s[i].classList.contains("pv-on")?"block":"none"}}'
+      + 'function fit(){var s=secs();var sc=Math.min((innerWidth-40)/' + sw + ',(innerHeight-40)/' + sh + ');var top=Math.max(20,(innerHeight-' + sh + '*sc)/2);for(var i=0;i<s.length;i++){s[i].style.transformOrigin="top center";s[i].style.transform="translateX(-50%) scale("+sc+")";s[i].style.position="absolute";s[i].style.left="50%";s[i].style.top=top+"px";s[i].style.display=s[i].classList.contains("pv-on")?"block":"none"}}'
       + 'function show(n){var s=secs();for(var i=0;i<s.length;i++)s[i].classList.toggle("pv-on",i===n);fit()}'
       + 'window.addEventListener("message",function(e){if(e.data&&e.data.pv!=null)show(e.data.pv|0)});'
       + 'window.addEventListener("resize",fit);[60,400,1500].forEach(function(t){setTimeout(fit,t)});show(0);'
       + '})();';
     return '<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="' + KATEX + '">'
       + '<style>html,body{margin:0;height:100vh;overflow:hidden;background:' + bg + ';}'
-      + slideBox + '.marpit>section{box-shadow:0 12px 50px rgba(0,0,0,.35);border-radius:8px;}'
+      + box + '.marpit>section{box-shadow:0 12px 50px rgba(0,0,0,.35);border-radius:8px;}'
       + css + '</style></head><body>' + html
       + '<scr' + 'ipt src="' + MERMAID + '"></scr' + 'ipt>'
       + '<scr' + 'ipt src="' + runtimeUrl + '"></scr' + 'ipt>'
@@ -194,7 +198,7 @@ export function createPractice({ host, getSource, slideBox, runtimeUrl, themeBas
     run.append(bar, frame, nav);
     host.appendChild(run);
 
-    frame.srcdoc = frameDoc(out.html, out.css, bg);
+    frame.srcdoc = frameDoc(out.html, out.css, bg, { width: out.width, height: out.height });
     startedAt = Date.now();
     refreshChrome();
     refreshClock();

@@ -75,4 +75,15 @@ describe('playground engine', () => {
     assert.equal(pg.hasTheme('cuoio'), true);
     assert.equal(pg.hasTheme('does-not-exist'), false);
   });
+
+  test('render() reports the @size box so hosts fit-scale the real slide', async () => {
+    const pg = await loadEngine();
+    const hd = pg.render('# A\n', 'cuoio');
+    assert.deepEqual({ width: hd.width, height: hd.height }, { width: 1280, height: 720 });
+    // A `size: 4K` deck reports its 3840-wide box — the preview divides by this,
+    // not a hardcoded 1280 (the bug where 4K previewed 3× oversized + exported
+    // a cropped page). cuoio.css declares `@size 4K 3840px 2160px`.
+    const k = pg.render('---\nsize: 4K\n---\n# A\n', 'cuoio');
+    assert.deepEqual({ width: k.width, height: k.height }, { width: 3840, height: 2160 });
+  });
 });
