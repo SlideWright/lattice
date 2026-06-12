@@ -336,7 +336,26 @@ ${indent}  ${bullet} ${body.trim()}`;
         }
       });
       if (vocab.mapRegions) findings.push(...findUnknownMapRegions(source, vocab.mapRegions));
+      if (vocab.finishNames) findings.push(...findUnknownFinish(source, vocab.finishNames));
       return findings;
+    }
+    function findUnknownFinish(source, finishNames) {
+      const fmBlock = source.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?/);
+      if (!fmBlock) return [];
+      const fmFinish = fmBlock[1].match(/^\s*finish:\s*["']?([A-Za-z0-9_-]+)["']?\s*$/m);
+      if (!fmFinish) return [];
+      const value = fmFinish[1].trim();
+      const known = new Set([...finishNames].map((n) => String(n).toLowerCase()));
+      if (known.has(value.toLowerCase())) return [];
+      return [{
+        slide: 0,
+        rule: "unknown-finish",
+        severity: "warning",
+        classToken: value,
+        line: fmFinish[0].trim(),
+        message: `'${value}' is not a known finish register \u2014 the deck would silently render the boardroom baseline`,
+        fix: `Set front-matter \`finish:\` to one of: ${[...finishNames].join(", ")}.`
+      }];
     }
     module.exports = {
       CLASS_DIRECTIVE,
@@ -351,6 +370,7 @@ ${indent}  ${bullet} ${body.trim()}`;
       findBoldOrderedStatement,
       findSplitBodylessItem,
       findUnknownMapRegions,
+      findUnknownFinish,
       nearestRegion,
       editDistance,
       isKnownModifier,

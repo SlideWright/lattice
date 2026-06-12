@@ -55,6 +55,8 @@ export function createArchitect({ vocab, catalog, mount, reveal, applyFix }) {
 			vocabSets.mapRegions[which] = { valid: new Set(v.valid || []), names: v.names || [] };
 		}
 	}
+	// Finish register names — the deck-wide `finish:` front-matter validator.
+	if (vocab?.finishNames) vocabSets.finishNames = vocab.finishNames;
 	const bucketByName = new Map((catalog || []).map((c) => [c.name, c.bucket]));
 	const bucketOf = (n) => bucketByName.get(n) || null;
 	let lastSource = '';

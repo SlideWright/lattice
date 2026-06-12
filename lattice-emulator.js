@@ -326,6 +326,7 @@ const md = readFileOrDie(mdFile, 'source markdown');
 // matter > default). Logic lives in lib/resolve-palette.js so it can
 // be unit-tested in isolation; see test/unit/palette-resolution.test.js.
 const { resolvePalette } = require('./lib/core/resolve-palette');
+const { finishClasses } = require('./lib/core/resolve-finish');
 const paletteName = resolvePalette({ md, cliArg: paletteArg }).name;
 const palettePath = path.join(PKG_ROOT, 'themes', `${paletteName}.css`);
 if (!fs.existsSync(palettePath)) {
@@ -956,6 +957,12 @@ const globalFooter   = (fm.match(/^\s*footer:\s*["']?(.*?)["']?\s*$/m) || [])[1]
 // Marp distinguishes the deck-wide form (no leading underscore) from the
 // per-slide `_class:` directive. Multiple classes are space-separated.
 const globalClass    = (fm.match(/^\s*class:\s*["']?(.*?)["']?\s*$/m) || [])[1] || '';
+// Deck-wide `finish:` register → CSS classes appended to every section, just
+// like `class:` (sketch → `sketch`; sketch-clean → `sketch sketch-clean-body`;
+// boardroom/omitted → none). Folded into the deck-wide class so the existing
+// per-slide append below carries it too. See lib/core/resolve-finish.js.
+const globalFinish   = finishClasses((fm.match(/^\s*finish:\s*["']?([A-Za-z0-9_-]+)["']?\s*$/m) || [])[1] || '');
+const deckWideClass  = [globalClass, globalFinish].filter(Boolean).join(' ');
 const DEFAULT_SIZE   = 'hd';
 const SLIDE_SIZES    = { hd: [1280, 720], HD: [1280, 720], '4K': [3840, 2160], '4k': [3840, 2160], standard: [960, 720] };
 const deckSizeName   = (fm.match(/^\s*size:\s*["']?([\w:/-]+)["']?\s*$/m) || [])[1] || DEFAULT_SIZE;
@@ -1057,9 +1064,9 @@ function parseSlide(raw, index) {
 
   const cm = raw.match(/<!--\s*_class:\s*(.*?)\s*-->/);
   if (cm) classAttr = cm[1].trim();
-  if (globalClass) {
+  if (deckWideClass) {
     const cur = classAttr.split(/\s+/).filter(Boolean);
-    for (const t of globalClass.split(/\s+/).filter(Boolean)) {
+    for (const t of deckWideClass.split(/\s+/).filter(Boolean)) {
       if (!cur.includes(t)) cur.push(t);
     }
     classAttr = cur.join(' ');

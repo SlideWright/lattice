@@ -100,6 +100,49 @@ describe('marp-plugins', () => {
     assert.ok(cls.includes('cards-grid'));
   });
 
+  test('deckClassPropagate: front-matter `finish: sketch` propagates the mapped class to every section', () => {
+    const m = makeMarp(plugins.deckClassPropagate);
+    const md = [
+      '---', 'finish: sketch', '---', '',
+      '# Slide 1', '',
+      '---', '',
+      '<!-- _class: cards-grid -->',
+      '# Slide 2',
+    ].join('\n');
+    const { html } = m.render(md);
+    const sections = [...html.matchAll(/<section[^>]*class="([^"]*)"/g)].map(x => x[1].split(/\s+/).filter(Boolean));
+    assert.equal(sections.length, 2);
+    for (const cls of sections) assert.ok(cls.includes('sketch'), `missing 'sketch'; got [${cls.join(', ')}]`);
+    // Composes with the per-slide layout class, not replaces it.
+    assert.ok(sections[1].includes('cards-grid'), `slide 2 lost 'cards-grid'; got [${sections[1].join(', ')}]`);
+  });
+
+  test('deckClassPropagate: `finish: sketch-clean` maps to both the sketch + clean-body tokens', () => {
+    const m = makeMarp(plugins.deckClassPropagate);
+    const md = ['---', 'finish: sketch-clean', '---', '', '# Slide'].join('\n');
+    const { html } = m.render(md);
+    const cls = html.match(/<section[^>]*class="([^"]*)"/)[1].split(/\s+/).filter(Boolean);
+    assert.ok(cls.includes('sketch'));
+    assert.ok(cls.includes('sketch-clean-body'));
+  });
+
+  test('deckClassPropagate: `class:` and `finish:` compose on every section', () => {
+    const m = makeMarp(plugins.deckClassPropagate);
+    const md = ['---', 'class: numbered', 'finish: sketch', '---', '', '# Slide'].join('\n');
+    const { html } = m.render(md);
+    const cls = html.match(/<section[^>]*class="([^"]*)"/)[1].split(/\s+/).filter(Boolean);
+    assert.ok(cls.includes('numbered'));
+    assert.ok(cls.includes('sketch'));
+  });
+
+  test('deckClassPropagate: an unknown `finish:` value maps to no class (silent baseline)', () => {
+    const m = makeMarp(plugins.deckClassPropagate);
+    const md = ['---', 'finish: sketchh', '---', '', '<!-- _class: title -->', '# Slide'].join('\n');
+    const { html } = m.render(md);
+    const cls = html.match(/<section[^>]*class="([^"]*)"/)[1].split(/\s+/).filter(Boolean);
+    assert.deepEqual(cls, ['title'], `unknown finish should add nothing; got [${cls.join(', ')}]`);
+  });
+
   // ── applyDeckLogoToHtml ────────────────────────────────────────────────
 
   function logoFixture(html) {
