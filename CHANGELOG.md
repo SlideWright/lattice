@@ -110,12 +110,13 @@ in patch versions.
   the marp-cli path.** The bespoke `parseSlide` regex parser the emulator shipped
   with is retired; the `LATTICE_EMULATOR_ENGINE` opt-in flag is gone (the engine
   is the only path). The swap was gated to **zero regressions** by a full-corpus
-  per-page render A/B (`tools/emulator-flip-ab.mjs`): every deck renders the same
-  or better. The one visible render change is a **GFM-correctness improvement** —
-  bold/emphasis markers inside inline code (`` `**x**` ``) now stay literal
-  instead of being parsed as `<strong>`, matching CommonMark + the marp-cli path.
-  Math (KaTeX), syntax highlighting, deck-logo, and the island injectors are all
-  handled by the engine; the emulator no longer re-implements them. See
+  per-page render A/B harness: every deck renders the same or better. The one
+  visible render change is a **GFM-correctness improvement** — bold/emphasis
+  markers inside inline code (`` `**x**` ``) now stay literal instead of being
+  parsed as `<strong>`, matching CommonMark + the marp-cli path. Math (KaTeX) and
+  syntax highlighting are handled by the engine; the deck-logo + island injectors
+  still run in the emulator (they key off `data-marpit-slide`, stamped after the
+  engine renders). See
   `engineering/decisions/2026-06-11-emulator-on-engine-p2.md` (P2 step d).
 - **The reference trio's chart palettes are re-tuned to the quality bar they
   set.** `cuoio`, `indaco`, and `onyx` previously sat at grade C/C/B on

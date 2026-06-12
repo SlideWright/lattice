@@ -1,9 +1,9 @@
 /**
  * Unit tests for the pill-tag transformer.
  *
- * Covers both the HTML-string kernel (tagPills / applyToHtml / applyToSection,
- * used by marp-cli + lattice-emulator) and the DOM walk (applyToDom, used by
- * lattice-runtime). The contract: a trailing `<code>` immediately before a
+ * Covers both the HTML-string kernel (tagPills / applyToHtml, used by marp-cli
+ * + lattice-emulator) and the DOM walk (applyToDom, used by lattice-runtime).
+ * The contract: a trailing `<code>` immediately before a
  * nested list is tagged `lat-pill`; a mid-sentence `<code>` on a row that
  * merely has a nested list is NOT.
  */
@@ -50,12 +50,6 @@ describe('pill-tag — HTML kernel', () => {
     const twice = pillTag.tagPills(once);
     assert.equal(once, twice);
     assert.equal((twice.match(/lat-pill/g) || []).length, 1);
-  });
-
-  test('applyToSection returns { html, cls } with cls preserved', () => {
-    const r = pillTag.applyToSection('<li><code>x</code><ul><li>d</li></ul></li>', 'cards-grid');
-    assert.equal(r.cls, 'cards-grid');
-    assert.match(r.html, /lat-pill/);
   });
 });
 

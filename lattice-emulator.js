@@ -930,10 +930,10 @@ function engineSlides() {
   const { html } = engine.render(bgImage.liftBgImages(rawMd), paletteName);
   const imageScrim = require('./lib/transformers/image-scrim');
   return splitTopLevelSections(html).map((sec, i) => {
-    // Re-tag the slide index, then reproduce the per-section image fixups
-    // parseSlide gets from its template + applyAllToSection: wrap half-canvas
-    // prose in `.image-text`, and inject the contrast scrim for full/contain
-    // image layouts (after the lattice-bg so it darkens the image, not the text).
+    // Re-tag the slide index, then apply the per-section image fixups the
+    // engine's basic-mode render doesn't: wrap half-canvas prose in
+    // `.image-text`, and inject the contrast scrim for full/contain image
+    // layouts (after the lattice-bg so it darkens the image, not the text).
     let s = bgImage.wrapImageText(sec.replace(/^<section\b/i, `<section data-marpit-slide="${i + 1}"`));
     const cls = (s.match(/^<section\b[^>]*\bclass="([^"]*)"/i) || ['', ''])[1];
     if (imageScrim.needsScrim(cls) && s.indexOf('class="image-scrim') === -1) {

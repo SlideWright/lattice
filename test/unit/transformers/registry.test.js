@@ -5,11 +5,19 @@
  * paths (marp-cli, lattice-emulator, lattice-runtime). These tests pin
  * the registry's shape contract and assert that the currently-registered
  * transformers each conform to it.
+ *
+ * The string path is `applyToHtml` (whole-document) — there is no
+ * per-section interface anymore (the emulator runs on lib/engine, which
+ * uses applyToHtml; `parseSlide` + its `applyAllToSection` pass were retired
+ * in P2). The per-section transform LOGIC still lives in the kernels
+ * (lib/core/split-panels, …/_chart-family), exercised directly below.
  */
 
 const { test, describe } = require('node:test');
 const assert = require('node:assert/strict');
 const registry = require('../../../lib/transformers/registry');
+const splitEngine = require('../../../lib/core/split-panels');
+const chartEngine = require('../../../lib/components/chart/_chart-family/chart-family');
 
 describe('transformer registry', () => {
   test('TRANSFORMERS is a non-empty array', () => {
@@ -30,9 +38,8 @@ describe('transformer registry', () => {
   test('every transformer exposes at least one apply method', () => {
     for (const t of registry.TRANSFORMERS) {
       const hasApply = typeof t.applyToHtml === 'function' ||
-                       typeof t.applyToSectionInner === 'function' ||
                        typeof t.applyToDom === 'function';
-      assert.ok(hasApply, `transformer ${t.name} must expose at least one apply* method`);
+      assert.ok(hasApply, `transformer ${t.name} must expose applyToHtml or applyToDom`);
     }
   });
 
@@ -66,7 +73,7 @@ describe('transformer registry', () => {
   });
 });
 
-describe('split-panels transformer (via registry)', () => {
+describe('split-panels transformer', () => {
   const splitPanels = registry.getByName('split-panels');
 
   test('declares the split-panel family layouts', () => {
@@ -81,47 +88,46 @@ describe('split-panels transformer (via registry)', () => {
     }
   });
 
-  test('applyToSection rewrites split-panel; cls unchanged', () => {
+  // The split rewrite logic lives in the kernel (transformSplitSection); the
+  // registry adapter is a thin applyToHtml/applyToDom wrapper over it.
+  test('transformSplitSection rewrites split-panel (never mutates cls)', () => {
     const inner =
       '<p><code>EYEBROW</code></p>' +
       '<h2>Title</h2>' +
       '<p>Intro paragraph.</p>' +
       '<ul><li>title<ul><li>body</li></ul></li></ul>';
-    const { html, cls } = splitPanels.applyToSection(inner, 'split-panel');
+    const html = splitEngine.transformSplitSection(inner, 'split-panel');
     assert.match(html, /<div class="panel-left">/);
     assert.match(html, /<span class="panel-eyebrow">EYEBROW<\/span>/);
     assert.match(html, /<div class="panel-right">/);
-    assert.equal(cls, 'split-panel', 'split-panels does not mutate cls');
   });
 
-  test('applyToSection rewrites split-panel watermark into panel-left / panel-right', () => {
+  test('transformSplitSection rewrites split-panel watermark into panel-left / panel-right', () => {
     const inner =
       '<h5>section heading</h5>' +
       '<p><code>Section 02</code></p>' +
       '<h2>List title</h2>' +
       '<ul><li>item</li></ul>';
-    const { html } = splitPanels.applyToSection(inner, 'split-panel watermark');
+    const html = splitEngine.transformSplitSection(inner, 'split-panel watermark');
     assert.match(html, /<div class="panel-left">/);
     assert.match(html, /<div class="watermark">L<\/div>/);
     assert.match(html, /<div class="panel-right">/);
   });
 
-  test('applyToSection passes through non-split sections', () => {
+  test('transformSplitSection passes through non-split sections', () => {
     const inner = '<h2>Plain content</h2><p>nothing special.</p>';
-    const { html, cls } = splitPanels.applyToSection(inner, 'content');
-    assert.equal(html, inner);
-    assert.equal(cls, 'content');
+    assert.equal(splitEngine.transformSplitSection(inner, 'content'), inner);
   });
 
-  test('applyToSection is idempotent per layout', () => {
+  test('transformSplitSection is idempotent per layout', () => {
     const inner =
       '<p><code>20</code></p>' +
       '<h2>42%</h2>' +
       '<p>of teams report cycle wins.</p>' +
       '<ul><li>title<ul><li>body</li></ul></li></ul>';
-    const once  = splitPanels.applyToSection(inner, 'split-panel metric');
-    const twice = splitPanels.applyToSection(once.html,  'split-panel metric');
-    assert.equal(twice.html, once.html);
+    const once  = splitEngine.transformSplitSection(inner, 'split-panel metric');
+    const twice = splitEngine.transformSplitSection(once, 'split-panel metric');
+    assert.equal(twice, once);
   });
 
   test('applyToHtml runs against full Marpit HTML and rewrites only split-* sections', () => {
@@ -140,7 +146,7 @@ describe('split-panels transformer (via registry)', () => {
   });
 });
 
-describe('chart-family transformer (via registry)', () => {
+describe('chart-family transformer', () => {
   const chartFamily = registry.getByName('chart-family');
 
   test('declares the chart-family layouts', () => {
@@ -154,7 +160,9 @@ describe('chart-family transformer (via registry)', () => {
     }
   });
 
-  test('applyToSection on a progress slide wraps in chart-frame + appends class', () => {
+  // The chart-frame wrap + caption lift live in the kernel (transformChartSection),
+  // which returns { html, cls } — cls gains `chart-frame`.
+  test('transformChartSection on a progress slide wraps in chart-frame + appends class', () => {
     const inner =
       '<h2>Q3 progress</h2>' +
       '<p>Five workstreams.</p>' +
@@ -162,7 +170,7 @@ describe('chart-family transformer (via registry)', () => {
       '<li>API surface <code>72</code> <code>on-track</code></li>' +
       '<li>Migrations <code>40</code> <code>at-risk</code></li>' +
       '</ul>';
-    const { html, cls } = chartFamily.applyToSection(inner, 'progress');
+    const { html, cls } = chartEngine.transformChartSection(inner, 'progress');
     assert.match(html, /<div class="chart-header">/);
     assert.match(html, /<div class="chart-body">/);
     assert.match(html, /<div class="progress-bars">/);
@@ -170,19 +178,19 @@ describe('chart-family transformer (via registry)', () => {
       `chart-frame should be appended to cls; got "${cls}"`);
   });
 
-  test('applyToSection lifts a trailing caption into .chart-caption', () => {
+  test('transformChartSection lifts a trailing caption into .chart-caption', () => {
     const inner =
       '<h2>Q3 progress</h2>' +
       '<ul><li>API <code>72</code></li></ul>' +
       '<p>Refreshed weekly.</p>';
-    const { html } = chartFamily.applyToSection(inner, 'progress');
+    const { html } = chartEngine.transformChartSection(inner, 'progress');
     assert.match(html, /<p class="chart-caption">Refreshed weekly\.<\/p>/,
       'trailing paragraph becomes the chart-caption');
     assert.doesNotMatch(html, /<\/div><p>Refreshed weekly\.<\/p>/,
       'no raw section-level caption left behind');
   });
 
-  test('applyToSection lifts the caption even when a _footer follows it', () => {
+  test('transformChartSection lifts the caption even when a _footer follows it', () => {
     // Regression: Marpit appends <footer> after the user's trailing <p> when
     // a `_footer` directive is set, which used to defeat the end-anchored
     // caption match (gotchas.md "Chart caption swallowed when _footer is set").
@@ -191,7 +199,7 @@ describe('chart-family transformer (via registry)', () => {
       '<ul><li>API <code>72</code></li></ul>' +
       '<p>Refreshed weekly.</p>' +
       '<footer>src · progress</footer>';
-    const { html } = chartFamily.applyToSection(inner, 'progress');
+    const { html } = chartEngine.transformChartSection(inner, 'progress');
     assert.match(html, /<p class="chart-caption">Refreshed weekly\.<\/p>/,
       'caption is lifted despite the trailing footer');
     assert.match(html, /<footer>src · progress<\/footer>/,
@@ -201,19 +209,19 @@ describe('chart-family transformer (via registry)', () => {
       'caption renders before the footer');
   });
 
-  test('applyToSection passes through non-chart sections', () => {
+  test('transformChartSection passes through non-chart sections', () => {
     const inner = '<h2>Plain</h2><p>nothing.</p>';
-    const { html, cls } = chartFamily.applyToSection(inner, 'content');
+    const { html, cls } = chartEngine.transformChartSection(inner, 'content');
     assert.equal(html, inner);
     assert.equal(cls, 'content');
   });
 
-  test('applyToSection is idempotent — chart-frame already set is a no-op', () => {
+  test('transformChartSection is idempotent — chart-frame already set is a no-op', () => {
     const inner =
       '<h2>Title</h2>' +
       '<ul><li>row <code>50</code></li></ul>';
-    const once  = chartFamily.applyToSection(inner, 'progress');
-    const twice = chartFamily.applyToSection(once.html, once.cls);
+    const once  = chartEngine.transformChartSection(inner, 'progress');
+    const twice = chartEngine.transformChartSection(once.html, once.cls);
     // Idempotent at the class-list level — chart-frame should not double.
     const tokens = twice.cls.split(/\s+/).filter(Boolean);
     const frameCount = tokens.filter(t => t === 'chart-frame').length;
@@ -221,30 +229,27 @@ describe('chart-family transformer (via registry)', () => {
   });
 });
 
-describe('applyAllToSection — registry composition', () => {
-  test('chart-family runs before split-panels (no-op on each other\'s sections)', () => {
-    const chartInner =
+describe('applyAllToHtml — registry composition', () => {
+  test('chart-family rewrites a progress section + appends chart-frame to its class', () => {
+    const html =
+      '<section class="progress">' +
       '<h2>Progress</h2>' +
-      '<ul><li>row <code>50</code></li></ul>';
-    const r = registry.applyAllToSection(chartInner, 'progress');
-    assert.match(r.html, /<div class="chart-body">/, 'chart-family ran');
-    assert.ok(r.cls.split(/\s+/).includes('chart-frame'));
+      '<ul><li>row <code>50</code></li></ul>' +
+      '</section>';
+    const out = registry.applyAllToHtml(html);
+    assert.match(out, /<div class="chart-body">/, 'chart-family ran');
+    assert.match(out, /<section class="progress[^"]*\bchart-frame\b/, 'chart-frame on the section');
   });
 
-  test('applyAllToSection on a split-panel section runs split-panels (chart-family is a no-op)', () => {
-    const inner =
+  test('a split-panel section runs split-panels (chart-family is a no-op on it)', () => {
+    const html =
+      '<section class="split-panel">' +
       '<p><code>X</code></p><h2>T</h2><p>intro.</p>' +
-      '<ul><li>a</li></ul>';
-    const r = registry.applyAllToSection(inner, 'split-panel');
-    assert.match(r.html, /<div class="panel-left">/);
-    // chart-family didn't touch this section — cls unchanged
-    assert.equal(r.cls, 'split-panel');
-  });
-
-  test('applyAllToSection on a plain section is a complete no-op', () => {
-    const inner = '<h2>Plain</h2><p>nothing.</p>';
-    const r = registry.applyAllToSection(inner, 'content');
-    assert.equal(r.html, inner);
-    assert.equal(r.cls, 'content');
+      '<ul><li>a</li></ul>' +
+      '</section>';
+    const out = registry.applyAllToHtml(html);
+    assert.match(out, /<div class="panel-left">/);
+    // chart-family didn't touch this section — class unchanged (no chart-frame).
+    assert.doesNotMatch(out, /chart-frame/);
   });
 });

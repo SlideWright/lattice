@@ -342,8 +342,13 @@ The gate work and the flip both landed:
 
 Verified on the bare default (no env): baseline 89pp, math 15pp (KaTeX renders),
 featured 8pp, compare-code 8pp — all correct; unit suite 1639, build + build:check
-green. The `tools/emulator-flip-ab.mjs` harness is now degenerate (both paths are
-the engine) — retained for history; re-point it if a second parser ever returns.
+green. The `tools/emulator-flip-ab.mjs` harness (which compared the two parsers)
+was removed at the flip — with parseSlide gone it compares the engine to itself;
+resurrect it from git history if a second parser ever returns. The registry's
+per-section interface (`applyAllToSection` + every transformer's `applyToSection`)
+went with it — `parseSlide` was its only caller; marp-cli uses `applyToHtml`, the
+runtime uses `applyToDom`, and the per-section transform logic still lives in the
+kernels (`transformSplitSection`, `transformChartSection`, …).
 
 ## Rollback
 
