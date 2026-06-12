@@ -274,6 +274,46 @@ Remaining to finish P2: **(c) done** (above); (c.5 / P1.1) implement inline-SVG
 advanced backgrounds in lib/engine — the gate to (d); (d) flip the default + delete
 `parseSlide` once the corpus is all improvement/noise.
 
+### 2026-06-12 — `![bg]` fixed via a lifted kernel (NOT inline-SVG); re-triage finds 2 more parseSlide-only transforms
+
+Two corrections to the entry above, from actually building the fix + re-triaging
+without lumping:
+
+1. **The `![bg]` fix is NOT P1.1 / Marpit inline-SVG.** The emulator's PDF path
+   renders the image layout as lattice's OWN `lattice-bg` / `image-asset` /
+   `image-text` structure, not Marpit's inline-SVG split containers — so the fix is
+   to lift parseSlide's `![bg]` handling into a shared kernel
+   (`lib/core/bg-image.js`: `liftBgImages` markdown pre-pass + `wrapImageText` HTML
+   post-pass) and apply it in the engine path, leaving lib/engine's web↔marp
+   contract untouched. The full/contain contrast **scrim** is injected by class in
+   the engine path (image-scrim now exports `needsScrim` / `SCRIM_HTML`; parseSlide
+   gets it from `applyAllToSection`, which the engine path doesn't run).
+   parseSlide now shares the kernel's `bgDiv` — default path byte-identical (image
+   + 89pp baseline, 0 diffs). **Result: the image gallery is now A/B-identical
+   (11pp, 0 diffs); corpus 91 → 69 differing pages.**
+
+2. **The "one blocker" was an undercount — lumping `featured` with the image
+   layouts hid it.** A careful re-triage (no lumping) of the 69 finds the only
+   *structure-needing* regressions are **`featured` (feat-layout) and `compare-code`
+   (code-cols)** — both parseSlide-only transforms that marp-cli ALSO lacks for
+   their list-based slides (confirmed: marp-cli renders them as plain `<ul>` too),
+   exactly like `.below-note` was. Every other differing deck is either:
+   - **CSS-tolerant** — cards-grid, cards-stack, list-criteria (crit), glossary,
+     verdict-grid, pricing, checklist, the slot-label-lift family: the engine emits
+     a plain list but the layout CSS renders it identically (A/B `✓`); only
+     featured/compare-code have CSS that *requires* the bespoke wrapper DOM.
+   - **noise** — compare-prose (×11), split-compare, obligation-matrix, roadmap,
+     math s9: sub-pixel (status icons / anti-aliasing), visually identical.
+   - **improvement** — bold-inside-inline-code stays literal (legal, list-steps,
+     code, q-and-a): the engine is GFM-correct.
+
+**So the gate to (d) is: migrate `featured` + `compare-code` into the shared
+registry** (the same below-note pattern — `applyToHtml`/`applyToSection`/`applyToDom`
+kernels), which also fixes marp-cli + the runtime, then re-run the corpus A/B to
+green. That is the remaining structure work; nothing else in the corpus blocks the
+flip. `![bg]` is landed; the rest of P1.1 (true Marpit inline-SVG) is NOT needed for
+the emulator path and is unrelated to this gate.
+
 ## Rollback
 
 Every step is reversible; the seam is a single call site behind a default-OFF

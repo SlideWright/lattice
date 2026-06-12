@@ -1005,6 +1005,10 @@ const { liftSlotLabel }  = require('./lib/core/slot-label-lift');
 // calls wrapSectionBody as its LAST transform; the same kernel feeds the
 // marp-cli / runtime paths via lib/transformers/below-note.js.
 const belowNote          = require('./lib/core/below-note');
+// `![bg …]` half-canvas image handling. parseSlide uses bgDiv; the engine path
+// uses liftBgImages + wrapImageText to reproduce the lattice-bg/image-text panel
+// (lib/engine matches marp WEB mode, which collapses bg left/right to full-bleed).
+const bgImage            = require('./lib/core/bg-image');
 // Shared transformer registry — dispatches chart-family, split-panels,
 // roadmap, journey, and word-cloud per-section via applyAllToSection.
 // See lib/transformers/registry.js for the contract and order rationale.
@@ -1105,16 +1109,12 @@ function parseSlide(raw, index) {
   // capturing inside a quantified group resets on each iteration in JS.
   // Anchored to line start (^) so inline backtick code containing ![bg...] is not consumed.
   let bgImageHtml = '';
-  raw = raw.replace(/^!\[bg((?:\s+\w+)*)\]\(([^)]+)\)/gm, (_, kw, url) => {
-    const side = /\bright\b/.test(kw) ? 'right'
-               : /\bleft\b/.test(kw)  ? 'left'
-               : 'full';
-    // CSS (.lattice-bg, .lattice-bg-right/left/full) owns wrapper
-    // positioning. `class="image-asset"` on the img matches the
-    // canonical class the image-asset transformer rewrites marpit's
-    // figure to, so both render paths share the same CSS selector for
-    // object-fit / object-position / box-shadow on the image element.
-    bgImageHtml = `<div class="lattice-bg lattice-bg-${side}"><img class="image-asset" src="${url}" alt=""/></div>`;
+  raw = raw.replace(bgImage.BG_RE, (_, kw, url) => {
+    // The directive grammar + the `.lattice-bg`/`image-asset` markup live in
+    // lib/core/bg-image.js, shared with the engine-backed path. `image-asset` is
+    // the class the image-asset transformer rewrites marpit's figure to, so all
+    // paths share one CSS selector for object-fit / position / box-shadow.
+    bgImageHtml = bgImage.bgDiv(kw, url);
     return '';
   });
 
@@ -1796,10 +1796,23 @@ function engineSlides() {
   // ring), matching the emulator's own `output:'html'` KaTeX call.
   const engine = latticeEngine.createEngine({ mathOutput: 'html' });
   engine.addThemes([readFileOrDie(cssFile, 'layout CSS'), fs.readFileSync(palettePath, 'utf8')]);
-  const { html } = engine.render(rawMd, paletteName);
-  return splitTopLevelSections(html).map((sec, i) =>
-    sec.replace(/^<section\b/i, `<section data-marpit-slide="${i + 1}"`),
-  );
+  // Rewrite `![bg side](url)` to the lattice-bg/image-asset div BEFORE render so
+  // the engine's basic-mode background ruler never collapses the split (lib/engine
+  // matches marp WEB mode; the emulator's PDF path wants the half-canvas panel).
+  const { html } = engine.render(bgImage.liftBgImages(rawMd), paletteName);
+  const imageScrim = require('./lib/transformers/image-scrim');
+  return splitTopLevelSections(html).map((sec, i) => {
+    // Re-tag the slide index, then reproduce the per-section image fixups
+    // parseSlide gets from its template + applyAllToSection: wrap half-canvas
+    // prose in `.image-text`, and inject the contrast scrim for full/contain
+    // image layouts (after the lattice-bg so it darkens the image, not the text).
+    let s = bgImage.wrapImageText(sec.replace(/^<section\b/i, `<section data-marpit-slide="${i + 1}"`));
+    const cls = (s.match(/^<section\b[^>]*\bclass="([^"]*)"/i) || ['', ''])[1];
+    if (imageScrim.needsScrim(cls) && s.indexOf('class="image-scrim') === -1) {
+      s = s.replace(/(<div class="lattice-bg[\s\S]*?<\/div>)/, `$1${imageScrim.SCRIM_HTML}`);
+    }
+    return s;
+  });
 }
 
 const slides = USE_ENGINE ? engineSlides() : rawSlides.map((s, i) => parseSlide(s, i));
