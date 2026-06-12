@@ -58,8 +58,11 @@
 #   2  PDF doesn't exist
 #   3  --check failed (output exceeds 2000px)
 #
-# Requires: pdftoppm (poppler-utils), mogrify + identify (ImageMagick),
-#           pdfinfo (for --overview).
+# Requires: pdftoppm (poppler-utils). pdfinfo (poppler-utils) for --overview.
+#           ImageMagick (mogrify + identify) ONLY for --crop / --region; the
+#           plain and --overview paths degrade to a poppler-only render (PNG
+#           size is read directly, falling back to python3) so visual review
+#           still works on a container without ImageMagick.
 #
 # See CLAUDE.md "Rasterize PDFs through tools/rasterize-for-review.sh".
 
@@ -113,10 +116,38 @@ done
 }
 
 command -v pdftoppm >/dev/null || { echo "error: pdftoppm not installed (poppler-utils)" >&2; exit 1; }
-command -v mogrify  >/dev/null || { echo "error: mogrify not installed (ImageMagick)"     >&2; exit 1; }
-command -v identify >/dev/null || { echo "error: identify not installed (ImageMagick)"    >&2; exit 1; }
+# ImageMagick is only needed to CROP. The common path (plain render, --overview,
+# --check) reads PNG sizes without it (see png_dims). Fail loudly only when a
+# crop is actually requested and mogrify is absent.
+if [[ -n "$crop" || -n "$region" ]]; then
+  command -v mogrify >/dev/null || {
+    echo "error: --crop/--region needs mogrify (ImageMagick); it is not installed." >&2
+    echo "       Plain and --overview rasterization work without it." >&2
+    exit 1
+  }
+fi
 [[ $overview -eq 1 ]] && {
   command -v pdfinfo >/dev/null || { echo "error: pdfinfo not installed (poppler-utils)" >&2; exit 1; }
+}
+
+# Read a PNG's "width height" in pixels. Prefer ImageMagick's identify; fall
+# back to a stdlib python3 read of the IHDR header so the size guards work on a
+# poppler-only container. Errors only if neither tool is available.
+png_dims() {
+  if command -v identify >/dev/null 2>&1; then
+    identify -format "%w %h" "$1"
+  elif command -v python3 >/dev/null 2>&1; then
+    python3 - "$1" <<'PY'
+import struct, sys
+with open(sys.argv[1], "rb") as fh:
+    fh.read(16)  # 8-byte PNG signature + 4-byte length + "IHDR"
+    w, h = struct.unpack(">II", fh.read(8))
+print(w, h)
+PY
+  else
+    echo "error: need ImageMagick 'identify' or python3 to measure PNG size" >&2
+    exit 1
+  fi
 }
 
 if [[ -z "$out_dir" ]]; then
@@ -152,7 +183,7 @@ pdftoppm -r "$dpi" -png "${page_args[@]}" "$pdf" "$out_dir/p" >&2
 # dimensions to <=2000px so the output always passes --check.
 if [[ -n "$region" ]]; then
   first_png="$(ls "$out_dir"/p-*.png | head -1)"
-  dims="$(identify -format "%w %h" "$first_png")"
+  dims="$(png_dims "$first_png")"
   W="${dims% *}"
   H="${dims#* }"
   MAX=2000
@@ -185,7 +216,7 @@ fi
 if [[ $check -eq 1 ]]; then
   bad=0
   for f in "$out_dir"/p-*.png; do
-    dims="$(identify -format "%w %h" "$f")"
+    dims="$(png_dims "$f")"
     W="${dims% *}"
     H="${dims#* }"
     if [[ $W -gt 2000 || $H -gt 2000 ]]; then

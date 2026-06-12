@@ -210,6 +210,45 @@ progression, evidence, imagery, chart, diagram, math, code, legal.
 
 ---
 
+## Cloud sandbox — standard practice (applies every web session)
+
+The SessionStart hook provisions everything and **exports `CHROME_PATH`**: root
+`node_modules`, poppler-utils, ImageMagick (best-effort), the emoji font, the
+`docs/` package's deps, and the lefthook gates. These are the recurring
+frictions — each one cost a prior session a debugging cycle. Don't re-discover
+them; this block is canonical, the per-topic docs are the deep reference.
+
+- **Render/test need `CHROME_PATH`** (the hook sets it). If a render says "no
+  suitable browser found", re-export:
+  `export CHROME_PATH=$(ls /root/.cache/puppeteer/chrome/linux-*/chrome-linux64/chrome | head -1)`.
+- **See a slide without a browser:** `npx marp <deck> --config-file
+  marp.config.js --allow-local-files --images png -o .scratch/x.png` → it writes
+  one `x.NNN.png` per slide → `Read` it (renders inline). Full-quality PDFs →
+  `tools/rasterize-for-review.sh <pdf> --overview --check` (poppler-only;
+  ImageMagick is needed *only* for `--crop`/`--region`).
+- **Lint is `npm run lint`** — never `npx biome` (the registry `biome` is the
+  wrong package).
+- **One test file:** `node --test <file>` — the `<dir>` form errors; use
+  `npm test` for the suite.
+- **The docs site is a SEPARATE npm package** (the hook installs its deps).
+  Serve it via the **bin** — `cd docs && ./node_modules/.bin/astro dev --host
+  127.0.0.1 --port 4321` (`npm run dev` → "astro: not found"). After any `lib/`
+  rebuild, re-run `node docs/scripts/sync-playground-assets.mjs` or the preview
+  silently serves a **stale bundle as a 200**. Stop the server **by port**
+  (`fuser -k 4321/tcp`), never `pkill -f astro` (it self-kills). Screenshot with
+  `node tools/screenshot.js <url> <png>` → `Read` it.
+- **After a squash-merge, sync local `main`** (`git fetch origin && git reset
+  --hard origin/main`) before branching/rebasing — a stale local `main` is what
+  triggers the Stop hook's "unverified / rewrite history" nag. **Never** rewrite
+  shared history; GitHub is the verification source of truth.
+
+Deep reference: `engineering/development.md` (tooling), `engineering/gotchas.md`
+(symptom index — e.g. the stale-bundle trap), `engineering/workflow.md`
+(rebase/merge). Cross-cutting render facts (fonts fall back to serif here, the
+TLS proxy MITMs CDN webfonts) live in `engineering/gotchas.md`.
+
+---
+
 ## Visual iteration loop
 
 - **Iterate with `npm run preview` + `SendUserFile`** — no per-iteration
@@ -220,8 +259,8 @@ progression, evidence, imagery, chart, diagram, math, code, legal.
 - **The final PR commit includes all rebuilt PDFs** (external reviewers need
   raw-URL access); the raw `raw.githubusercontent.com` URL goes only in the
   final PR reply.
-- `marp-cli` works here once `CHROME_PATH` points at the puppeteer chromium
-  (`engineering/gotchas.md`). The SessionStart hook sets this up on the web.
+- `marp-cli`/`CHROME_PATH` and the browser-free PNG preview live in
+  §"Cloud sandbox" above — that's the canonical env reference.
 
 ---
 

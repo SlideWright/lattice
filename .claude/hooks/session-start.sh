@@ -32,7 +32,8 @@ npm install --no-audit --no-fund
 #    pinned .deb and silently leaves pdfinfo missing, which fails the integration
 #    gate (and, under set -e, aborts the rest of this hook before CHROME_PATH is
 #    exported). Only pay the update cost when something actually needs installing.
-if ! command -v pdfinfo >/dev/null 2>&1 || ! fc-list 2>/dev/null | grep -qi "noto color emoji"; then
+if ! command -v pdfinfo >/dev/null 2>&1 || ! command -v mogrify >/dev/null 2>&1 \
+   || ! fc-list 2>/dev/null | grep -qi "noto color emoji"; then
   apt-get update || sudo apt-get update || true
 fi
 
@@ -43,7 +44,16 @@ if ! command -v pdfinfo >/dev/null 2>&1; then
   apt-get install -y poppler-utils || sudo apt-get install -y poppler-utils || true
 fi
 
-# 2b. Color emoji font. The owned render paths (lattice-engine, lattice-emulator)
+# 2b. ImageMagick → mogrify / identify, used by tools/rasterize-for-review.sh
+#     for --crop / --region detail shots. Best-effort and non-fatal: the script
+#     degrades to a poppler-only path (plain + --overview render, with PNG sizes
+#     read via python3) when ImageMagick is absent, so a transient apt outage
+#     only costs the crop feature, not visual review.
+if ! command -v mogrify >/dev/null 2>&1; then
+  apt-get install -y imagemagick || sudo apt-get install -y imagemagick || true
+fi
+
+# 2c. Color emoji font. The owned render paths (lattice-engine, lattice-emulator)
 #     emit raw unicode emoji as plain text (no twemoji <img>), so a color emoji
 #     font must be present for them to render in color in headless Chromium. The
 #     webfont @import in lattice.css is a portable bonus, but an installed font
@@ -58,3 +68,18 @@ CHROME_BIN="$(ls /root/.cache/puppeteer/chrome/linux-*/chrome-linux64/chrome 2>/
 if [ -n "$CHROME_BIN" ] && [ -n "${CLAUDE_ENV_FILE:-}" ]; then
   echo "export CHROME_PATH=\"$CHROME_BIN\"" >> "$CLAUDE_ENV_FILE"
 fi
+
+# 4. Docs-site deps. docs/ is a SEPARATE npm package (not a root workspace), so
+#    the root install above never touches it — yet any docs/src/** preview or
+#    screenshot needs it. Install best-effort so docs work is never blocked on a
+#    manual `cd docs && npm install` (the single most-rediscovered friction).
+#    GATED on the astro bin so a warm container (and every non-docs session)
+#    skips the heavy Astro/CodeMirror install. Non-fatal and quiet.
+if [ ! -x "$CLAUDE_PROJECT_DIR/docs/node_modules/.bin/astro" ]; then
+  ( cd "$CLAUDE_PROJECT_DIR/docs" && npm install --no-audit --no-fund ) >/dev/null 2>&1 || true
+fi
+
+# 5. Point every session at the centralized standard-practice digest. The hook's
+#    stdout lands in the session's initial context, so this one line is what
+#    turns "rediscover the sandbox each time" into "read it once, up front".
+echo "Lattice sandbox ready — standard practice (render / docs-site / lint / test cheatsheet): see CLAUDE.md § \"Cloud sandbox\"."
