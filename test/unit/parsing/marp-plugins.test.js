@@ -174,6 +174,7 @@ describe('marp-plugins', () => {
     const html = '<section class="islands"><div class="m-bay"></div></section>';
     const out = plugins.applyMastheadMetaToHtml(html, '---\nmeta: "<b> & x"\n---\n');
     assert.match(out, /&lt;b&gt; &amp; x/);
+  });
 
   // ── applyProgressRailToHtml (islands progress island, Phase 2b) ────────
 
