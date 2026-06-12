@@ -219,12 +219,12 @@ describe('word-cloud', () => {
     assert.equal(colors.size, 6, 'six consecutive ranks at weight 3 should yield 6 distinct hues');
   });
 
-  test('colorForWord: heat-ramp maps weight bands to scale-N', () => {
+  test('colorForWord: heat-ramp maps weight bands to seq-N', () => {
     const opts = VARIANT_OPTS.spectrum;
     assert.equal(colorForWord(1, 5, opts),   'var(--accent)');
-    assert.equal(colorForWord(1, 4, opts),   'var(--scale-700)');
-    assert.equal(colorForWord(1, 3, opts),   'var(--scale-500)');
-    assert.equal(colorForWord(1, 2, opts),   'var(--scale-400)');
+    assert.equal(colorForWord(1, 4, opts),   'var(--seq-700)');
+    assert.equal(colorForWord(1, 3, opts),   'var(--seq-500)');
+    assert.equal(colorForWord(1, 2, opts),   'var(--seq-400)');
     assert.equal(colorForWord(1, 1, opts),   'var(--text-muted)');
   });
 
@@ -393,7 +393,7 @@ describe('word-cloud', () => {
   test('buildCanvas: spectrum variant uses heat-ramp colors', () => {
     const items = parseItems(UL_HTML);
     const out = buildCanvas(items, 'spectrum');
-    assert.match(out, /--wc-color:var\(--scale-/);
+    assert.match(out, /--wc-color:var\(--seq-/);
   });
 
   // ── transformWordCloudSection ───────────────────────────────────────────

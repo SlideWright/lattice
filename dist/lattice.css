@@ -477,6 +477,19 @@
   --scale-800: color-mix(in oklab, var(--scale-500) 35%, black);
   --scale-900: color-mix(in oklab, var(--scale-500) 18%, black);
 
+  /* ── Phase 5 · sequential ramp (--scale-* → --seq-*) ──────────────────
+   * P8: "scale" meant two unrelated things — this ordered colour ramp AND
+   * the typographic multiplier `--fs-scale`. The ramp is renamed to the
+   * unambiguous `--seq-*` (sequential). Aliased to the existing stops
+   * (byte-identical); consumers read `--seq-*`, the `--scale-*` anchor +
+   * derivation stay as the source until the flip. The token's purpose is now
+   * legible — `--seq-700` is "a sequential ramp stop", never a font size. */
+  --seq-50:  var(--scale-50);   --seq-100: var(--scale-100);
+  --seq-200: var(--scale-200);  --seq-300: var(--scale-300);
+  --seq-400: var(--scale-400);  --seq-500: var(--scale-500);
+  --seq-600: var(--scale-600);  --seq-700: var(--scale-700);
+  --seq-800: var(--scale-800);  --seq-900: var(--scale-900);
+
   /* ── Tag (--tag-bg / --tag-text) ───────────────────────────────────────
    * Secondary accent for status badges / brand-status pills. Distinct
    * from --accent: gives a theme its DUOTONE partner (Atlas: navy + gold;

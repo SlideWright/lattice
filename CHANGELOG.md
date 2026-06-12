@@ -192,6 +192,15 @@ in patch versions.
   `light-dark()` pairs flip later). `--bg` / `--bg-alt` / `--border` are kept
   as-is — clear and short, not magic. Demo deck:
   `examples/universal-tokens-p4-surfaces.md`.
+- **Universal token system — phase 5 (sequential ramp).** Fixes the P8
+  collision where "scale" meant two unrelated things — the ordered colour ramp
+  `--scale-50…900` *and* the typographic multiplier `--fs-scale`. The ramp is
+  renamed to the unambiguous `--seq-50…900` (sequential / quantitative
+  encoding). Aliased to the existing stops (byte-identical); the sole consumer
+  (the word-cloud heat-ramp) repoints to `--seq-*`, the `--scale-*` anchor +
+  derivation stay as the source until the flip. `--fs-scale` is untouched and
+  now the only "scale" left. Demo deck:
+  `examples/universal-tokens-p5-sequential.md`.
 - **Workbench export bridge — library themes reach the Drawing Board.** A theme
   saved in the Workbench library is now selectable in the Drawing Board's palette
   picker (listed with a *(saved)* suffix), registers with the in-browser engine,
