@@ -137,6 +137,20 @@ in patch versions.
 
 ### Fixed
 
+- **`state-chart` now scales as one unit at any resolution.** The state-machine
+  diagram laid its nodes out entirely in fixed px (column gutters, gaps, node
+  padding, max-widths, the SVG edge/label/marker strokes), so on a larger render
+  the cqi-sized node text grew while the diagram chrome stayed pinned — the same
+  fixed-px hazard as the chart caps (#180). Node layout is now cqi, and the
+  browser-measured edge overlay (which draws edges/markers/labels in JS px from
+  the measured node boxes) rescales every geometry constant by the live cqi
+  factor — `S = (section px-per-cqi) / 12.8`, =1 at HD, ~3 at 4K — so edges,
+  arrowheads, gap floors, and label metrics track the nodes instead of pinning
+  small. All variants (default / curved / lr / inline, light + dark) verified at
+  HD and 4K through all three renderers. Page counts unchanged; the px→cqi
+  reflow shifts HD geometry sub-pixel, so the committed galleries were
+  regenerated (no perceptible change). Third slice of the chart responsiveness
+  epic (#180).
 - **Chart-family captions no longer leak to the slide edge when a `_footer`
   is set.** A trailing caption paragraph on any chart-frame layout (piechart,
   gantt, radar, timeline-list, …) was only lifted into the centred
