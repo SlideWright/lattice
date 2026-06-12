@@ -1,20 +1,24 @@
-// Shared guided-tour helper for the docs workspaces (Workbench + Drawing
-// Board). Wraps driver.js (MIT, ~5 KB, zero-dep) so both pages get the same
-// behaviour from one place: a "Take a tour" button in the topbar, a one-time
-// auto-start on a visitor's first arrival, and palette-blind popover styling
-// that reads from the same design tokens as the rest of the site.
+// Shared guided-tour helper for the docs workspaces (Playground · Workbench ·
+// Drawing Board). Wraps driver.js (MIT, ~5 KB, zero-dep) so every page gets the
+// same behaviour from one place: a "Tour" button in the topbar, a one-time
+// auto-start on a visitor's first arrival, a global on/off honoured everywhere
+// (the Drawing Board settings drawer writes it), and palette-blind popover
+// styling that reads the same design tokens as the rest of the site.
 //
 // driver.js was chosen over intro.js / Shepherd.js because both of those are
 // AGPL-3.0 (commercial licence otherwise) — a poison pill for an MIT repo that
 // ships as @slidewright/lattice. driver.js is MIT and framework-agnostic, which
 // matches this site's vanilla-JS / plain-CSS stack exactly.
 //
-// Per-page step decks live beside this file (workbench-tour.js,
-// drawing-board-tour.js); they describe WHICH elements to spotlight, this owns
-// HOW the tour runs.
+// Per-page step decks live beside this file (playground-tour.js,
+// workbench-tour.js, drawing-board-tour.js); they describe WHICH elements to
+// spotlight and, via `onReveal`, how to bring a target on screen — the
+// workspaces show one pane at a time on mobile, so a step's target may sit in
+// an inactive tab. This module owns HOW the tour runs.
 import { driver } from 'driver.js';
 import 'driver.js/dist/driver.css';
 import '../styles/guided-tour.css';
+import { onToursEnabledChange, toursEnabled } from './tour-prefs.js';
 
 const SEEN_PREFIX = 'lattice-tour-seen-';
 
@@ -26,22 +30,15 @@ function prefersReducedMotion() {
 	}
 }
 
-// A step is "live" when it has no element (a centered modal card) or its
-// selector resolves to an element that is actually rendered. Filtering keeps
-// the tour graceful on narrow layouts where a panel may be tab-hidden, instead
-// of stranding the user on a popover pinned to nothing.
+// A step is kept when it has no element (a centered modal card) or its target
+// exists in the DOM. Existence — not current visibility — is the test on
+// purpose: on a phone the target may be in a tab-hidden pane, and `onReveal`
+// switches to that pane before the spotlight lands. Steps whose selector
+// resolves to nothing are dropped so the tour never strands on empty space.
 function isStepLive(step) {
 	if (!step?.element) return true;
-	const el =
-		typeof step.element === 'string'
-			? document.querySelector(step.element)
-			: step.element;
-	if (!el) return false;
-	// offsetParent is null for display:none; allow position:fixed (offsetParent
-	// is also null there) by falling back to a client-rect check.
-	if (el.offsetParent !== null) return true;
-	const rect = el.getBoundingClientRect();
-	return rect.width > 0 || rect.height > 0;
+	if (typeof step.element !== 'string') return Boolean(step.element);
+	return Boolean(document.querySelector(step.element));
 }
 
 /**
@@ -50,6 +47,9 @@ function isStepLive(step) {
  * @param {object} opts
  * @param {string} opts.key        Stable id for the localStorage "seen" flag.
  * @param {Array}  opts.steps      driver.js step objects (element + popover).
+ * @param {(el: Element, step: object) => void} [opts.onReveal]  Bring a step's
+ *        target on screen (e.g. switch the active mobile tab). Runs before each
+ *        spotlight; a no-op on desktop where every pane is already visible.
  * @param {string} [opts.buttonLabel='Tour']
  * @param {string} [opts.buttonTitle='Take a guided tour of this page']
  * @param {boolean}[opts.autoStart=true]  Auto-run once on a first visit.
@@ -60,6 +60,7 @@ export function initGuidedTour(opts) {
 	const {
 		key,
 		steps,
+		onReveal,
 		buttonLabel = 'Tour',
 		buttonTitle = 'Take a guided tour of this page',
 		autoStart = true,
@@ -82,6 +83,21 @@ export function initGuidedTour(opts) {
 		} catch {}
 	};
 
+	// Resolve the step's element and hand it to the page's reveal hook so the
+	// right tab is showing before driver measures and positions the popover.
+	const reveal = (element, step) => {
+		if (typeof onReveal !== 'function') return;
+		const el =
+			element ||
+			(typeof step?.element === 'string'
+				? document.querySelector(step.element)
+				: step?.element);
+		if (!el) return;
+		try {
+			onReveal(el, step);
+		} catch {}
+	};
+
 	const start = () => {
 		const live = steps.filter(isStepLive);
 		if (live.length === 0) return;
@@ -99,16 +115,20 @@ export function initGuidedTour(opts) {
 			prevBtnText: 'Back',
 			doneBtnText: 'Done',
 			progressText: '{{current}} of {{total}}',
+			// Switch to the target's pane before each spotlight (mobile tabs).
+			onHighlightStarted: (element, step) => reveal(element, step),
 			steps: live,
 		});
 		tour.drive();
 	};
 
-	// Topbar button — replay anytime. Slotted ahead of the existing actions so
-	// it reads left-to-right before the palette / mode controls.
+	// Topbar button — created and torn down on demand so the Drawing Board's
+	// "Guided tours" setting can flip it without a reload.
 	const actions = document.querySelector('.topbar-actions');
-	if (actions && !actions.querySelector('.tour-btn')) {
-		const btn = document.createElement('button');
+	let btn = null;
+	const mountButton = () => {
+		if (!actions || btn) return;
+		btn = document.createElement('button');
 		btn.type = 'button';
 		btn.className = 'tour-btn';
 		btn.title = buttonTitle;
@@ -119,16 +139,33 @@ export function initGuidedTour(opts) {
 			start();
 		});
 		actions.insertBefore(btn, actions.firstChild);
-	}
+	};
+	const unmountButton = () => {
+		if (btn) {
+			btn.remove();
+			btn = null;
+		}
+	};
 
-	// First-visit auto-run. Marked seen the moment it fires so a reload or an
-	// early close never re-interrupts the same visitor.
-	if (autoStart && !seen()) {
-		window.setTimeout(() => {
-			if (seen()) return;
-			markSeen();
-			start();
-		}, autoStartDelay);
+	// Honour the global flag, and react to it live on this page (the Drawing
+	// Board settings toggle dispatches through tour-prefs).
+	const applyEnabled = (on) => {
+		if (on) mountButton();
+		else unmountButton();
+	};
+	onToursEnabledChange(applyEnabled);
+
+	if (toursEnabled()) {
+		mountButton();
+		// First-visit auto-run. Marked seen the moment it fires so a reload or an
+		// early close never re-interrupts the same visitor.
+		if (autoStart && !seen()) {
+			window.setTimeout(() => {
+				if (seen() || !toursEnabled()) return;
+				markSeen();
+				start();
+			}, autoStartDelay);
+		}
 	}
 
 	return { start };

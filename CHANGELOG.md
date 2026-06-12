@@ -39,6 +39,14 @@ in patch versions.
   so a typo surfaces instead of silently rendering the baseline. Prefer it over
   `class: sketch` when the intent is "this whole deck is sketch."
 
+- **Guided tours for the docs workspaces.** The Playground, Workbench, and
+  Drawing Board each ship a context-sensitive walkthrough (built on driver.js,
+  MIT) that auto-runs once on a first visit and replays from a "Tour" button in
+  the topbar. Tours are mobile-aware — they switch the active pane/tab to bring
+  each step's target on screen — and palette-blind, themed entirely from the
+  design tokens. A global **Guided tours** on/off toggle in the Drawing Board's
+  Workspace settings governs all three surfaces and takes effect live.
+
 ### Changed
 
 - **The reference trio's chart palettes are re-tuned to the quality bar they

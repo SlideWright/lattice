@@ -9,6 +9,7 @@
 
 import { orSupportsCache } from './architect-model.js';
 import { getPref, PREFS, setPref } from './drawing-board-prefs.js';
+import { setToursEnabled, toursEnabled } from './tour-prefs.js';
 
 const MODEL_KEY = 'lattice-db-model'; // master on/off
 const TIER_KEY = 'lattice-db-loaded-tier'; // which tier the user loaded (persisted)
@@ -144,7 +145,30 @@ function workspaceSection() {
   ws.append(prefRow('renderEngine', 'Render engine', 'lattice-engine (default) is the owned Marp replacement; Marp Core is the fallback / A-B oracle',
     ['Marp Core', 'lattice-engine (default)'],
     () => { try { location.reload(); } catch {} }));
+  ws.append(guidedToursToggle());
   return ws;
+}
+
+// Guided tours on/off — a global, cross-surface switch. Reads/writes the shared
+// tour-prefs flag, so flipping it here also governs the Playground and
+// Workbench. On this page it takes effect live: tour-prefs notifies the running
+// tour, which adds or removes its topbar "Tour" button without a reload.
+function guidedToursToggle() {
+  const row = el('label', 'db-or-switch');
+  const text = el('span', 'db-pref-text');
+  text.append(el('span', 'db-pref-label', 'Guided tours'));
+  text.append(el('span', 'db-pref-hint',
+    'First-visit walkthroughs of the Playground, Workbench, and Drawing Board, plus the “Tour” button. Turn off to hide them everywhere.'));
+  const sw = el('span', 'db-switch');
+  const cb = el('input');
+  cb.type = 'checkbox';
+  cb.className = 'db-switch-input';
+  cb.setAttribute('aria-label', 'Guided tours');
+  cb.checked = toursEnabled();
+  cb.addEventListener('change', () => setToursEnabled(cb.checked));
+  sw.append(cb, el('span', 'db-switch-knob'));
+  row.append(text, sw);
+  return row;
 }
 
 const readEnabled = () => { try { return localStorage.getItem(MODEL_KEY) !== 'off'; } catch { return true; } };

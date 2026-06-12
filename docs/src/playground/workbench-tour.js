@@ -125,6 +125,28 @@ const STEPS = [
 	},
 ];
 
+// On mobile a studio shows one pane at a time (Design · Preview · Contrast).
+// If a step's target is in a hidden pane, switch to its tab first. Each pane
+// maps to a studio-tab value; the buttons live inside the active faculty's
+// <main class="studio">. A no-op on desktop, where all panes are visible.
+const WB_TAB_OF = [
+	['.studio-controls', 'design'],
+	['.studio-stage', 'preview'],
+	['.studio-audit', 'contrast'],
+];
+
+function revealStep(el) {
+	if (el.offsetParent !== null) return; // already on screen
+	for (const [sel, tab] of WB_TAB_OF) {
+		const host = el.closest(sel);
+		if (!host) continue;
+		const main = host.closest('main.studio');
+		const btn = main?.querySelector(`.studio-tab[data-tab="${tab}"]`);
+		if (btn) btn.click();
+		return;
+	}
+}
+
 export function initWorkbenchTour() {
-	return initGuidedTour({ key: 'workbench', steps: STEPS });
+	return initGuidedTour({ key: 'workbench', steps: STEPS, onReveal: revealStep });
 }

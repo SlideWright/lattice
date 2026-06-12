@@ -124,6 +124,26 @@ const STEPS = [
 	},
 ];
 
+// On mobile the workspace shows one panel at a time (Architect · Edit ·
+// Preview). If a step's target is in a hidden panel, switch to its tab first.
+// Each panel id maps to a mobile-tab pane; the topbar (palette, settings) stays
+// visible so its steps need no reveal. A no-op on desktop, where all three
+// panels show at once.
+const DB_PANE_OF = {
+	'db-architect': 'architect',
+	'db-editor': 'editor',
+	'db-preview': 'preview',
+};
+
+function revealStep(el) {
+	if (el.offsetParent !== null) return; // already on screen
+	const panel = el.closest('.db-panel');
+	const pane = panel && DB_PANE_OF[panel.id];
+	if (!pane) return;
+	const tab = document.querySelector(`.db-mobile-tab[data-pane="${pane}"]`);
+	if (tab) tab.click();
+}
+
 export function initDrawingBoardTour() {
-	return initGuidedTour({ key: 'drawing-board', steps: STEPS });
+	return initGuidedTour({ key: 'drawing-board', steps: STEPS, onReveal: revealStep });
 }
