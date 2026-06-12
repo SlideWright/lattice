@@ -27,7 +27,15 @@ describe('readFrontMatter', () => {
     assert.equal(fm.class, '');
     assert.equal(fm.math, '');
     assert.equal(fm.lang, '');
+    assert.equal(fm.tokens, 'current');
     assert.equal(fm.configured, false);
+  });
+
+  test('reads tokens: universal and flags it as configured', async () => {
+    const { readFrontMatter } = await import(MOD);
+    const fm = readFrontMatter('---\nmarp: true\ntokens: universal\n---\n\n# Deck\n');
+    assert.equal(fm.tokens, 'universal');
+    assert.equal(fm.configured, true);
   });
 
   test('parses a real block, quoted values, and booleans', async () => {
@@ -101,6 +109,15 @@ describe('writeFrontMatter', () => {
     assert.equal(block, '---\nmarp: true\nclass: dark\nislands: on');
     // off clears it back out
     assert.ok(!writeFrontMatter(on, 'islands', 'off').includes('islands:'));
+  });
+
+  test('tokens: universal is emitted; current (the default) is omitted/cleared', async () => {
+    const { writeFrontMatter } = await import(MOD);
+    const uni = writeFrontMatter(CLEAN, 'tokens', 'universal');
+    assert.ok(uni.includes('tokens: universal'));
+    // back to the default → the directive drops out (and the block collapses)
+    const back = writeFrontMatter(uni, 'tokens', 'current');
+    assert.ok(!back.includes('tokens:'), 'current is the default and should not be written');
   });
 
   test('quotes a value containing a colon (would break a flat YAML read)', async () => {

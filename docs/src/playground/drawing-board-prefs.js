@@ -33,13 +33,6 @@ export const PREFS = {
   // lib/playground/index.js ENGINE_PREF_KEY — so the choice applies across the
   // Drawing Board, specimens, and the landing tiles.
   renderEngine: { key: 'lattice-db-render-engine', def: 'lattice', values: ['marp', 'lattice'] },
-  // Which token VOCABULARY the preview renders with: the current (legacy) names
-  // or the new universal --cat-*/--diagram-* set. A migration-safety A/B for the
-  // in-flight universal-token work — both render identically (the flip is
-  // byte-identical, asserted by test/unit/tokens/crosswalk.test.js). The board
-  // flips the fetched engine + theme CSS client-side via the crosswalk. See
-  // engineering/decisions/2026-06-11-universal-token-system.md.
-  tokenSystem: { key: 'lattice-db-token-system', def: 'current', values: ['current', 'universal'] },
 };
 
 export function getPref(name) {

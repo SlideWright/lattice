@@ -298,6 +298,21 @@ describe('themeValuePosition — the theme: value slot (Tier 1)', () => {
 	});
 });
 
+describe('tokensValuePosition — the tokens: value slot (Tier 1)', () => {
+	test('captures the partial after `tokens:`', async () => {
+		const { tokensValuePosition } = await load();
+		assert.deepEqual(tokensValuePosition('tokens: uni'), { from: 'tokens: '.length, typed: 'uni' });
+		assert.deepEqual(tokensValuePosition('tokens: '), { from: 'tokens: '.length, typed: '' });
+		assert.deepEqual(tokensValuePosition('  tokens: current'), { from: '  tokens: '.length, typed: 'current' });
+	});
+
+	test('null on non-tokens lines or once trailing content exists', async () => {
+		const { tokensValuePosition } = await load();
+		assert.equal(tokensValuePosition('theme: indaco'), null);
+		assert.equal(tokensValuePosition('tokens: universal extra'), null);
+	});
+});
+
 describe('directiveNameAt / paginateValuePosition / fenceLangAt (Tier 2)', () => {
 	test('directiveNameAt captures a directive name before the colon', async () => {
 		const { directiveNameAt } = await load();

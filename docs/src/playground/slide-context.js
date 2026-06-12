@@ -198,6 +198,15 @@ export function islandsValuePosition(before) {
 	return { from: m[1].length, typed: m[2] };
 }
 
+// The cursor's position on a `tokens:` front-matter line, for the token-vocabulary
+// completion (`current` / `universal`): `tokens:` then an optional partial value.
+// Returns `{ from, typed }` (from = where the value starts) or null.
+export function tokensValuePosition(before) {
+	const m = before.match(/^(\s*tokens:\s*)([\w-]*)$/);
+	if (!m) return null;
+	return { from: m[1].length, typed: m[2] };
+}
+
 // ── Slide directives + fences (Tier 2) ───────────────────────────────────────
 
 // The cursor's position on a directive NAME being typed inside an HTML comment,

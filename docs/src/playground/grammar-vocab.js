@@ -22,6 +22,12 @@ export const PAGINATE_VALUES = ['true', 'false', 'skip', 'hold'];
 // lib/integrations/marp/plugins.js.
 export const ISLANDS_VALUES = ['off', 'on', 'minimal'];
 
+// Value vocabulary for the Lattice-specific `tokens:` front-matter directive,
+// which picks the deck's token vocabulary in the Drawing Board: `current` (the
+// legacy --c1-*/--bg-* names, the default when omitted) or `universal` (the new
+// --cat-*/--diagram-* names). Both render identically — a migration-safety A/B.
+export const TOKENS_VALUES = ['current', 'universal'];
+
 // Fence info-strings worth completing: the Lattice-special focusable fences
 // (`mermaid`, `chart`) plus the languages editor.js highlights, with the common
 // short aliases (`js`/`ts`/`py`) so they resolve too. A practical completion

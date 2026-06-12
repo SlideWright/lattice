@@ -284,6 +284,19 @@ properties.
   contrast / token-parity / mermaid-var-map fixtures (checker F9). This is where
   `mermaid.css`'s ~250 SVG rules + `derive.js`'s `REQUIRED_TOKENS` + the 14
   themes finally move off the old spellings.
+- **Validation A/B (shipped).** Before the irreversible flip, the migration is
+  de-risked two ways. (1) `lib/tokens/crosswalk.js` is the SoT old→new map plus
+  the `flip()` transform; `test/unit/tokens/crosswalk.test.js` resolves every
+  crosswalk token under the flipped system and asserts it equals the current
+  value (indaco + cuoio, light + dark) — the byte-identical guarantee, gated in
+  the unit suite. (2) The **Drawing Board** reads a `tokens:` front-matter
+  directive (`current` | `universal`, default current) — deck-setup drawer
+  control + editor autocomplete — and renders the deck against the universal
+  vocabulary by flipping the engine + theme CSS client-side via the crosswalk,
+  namespaced under `-u` `@theme` names so both vocabularies coexist live. Flip a
+  real deck back and forth to confirm it renders identically before committing to
+  the canonical flip. Drawing-Board-only (marp-cli ignores the directive, so a
+  deck stays portable).
 - **The post-flip token-tier lint.** Once the old names are gone, extend
   `check-ownership.js`: forbid a color-scheme word (`light`/`dark`) in any token
   name, forbid a Tier-1 primitive consumed for colour-role in a component, and

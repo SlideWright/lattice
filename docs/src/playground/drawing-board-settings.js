@@ -144,13 +144,6 @@ function workspaceSection() {
   ws.append(prefRow('renderEngine', 'Render engine', 'lattice-engine (default) is the owned Marp replacement; Marp Core is the fallback / A-B oracle',
     ['Marp Core', 'lattice-engine (default)'],
     () => { try { location.reload(); } catch {} }));
-  // Token system. Universal flips the fetched engine + theme CSS to the new
-  // --cat-*/--diagram-* names client-side; both render identically (the flip is
-  // byte-identical). A safety A/B for the in-flight universal-token migration.
-  // Reloads so the next render re-fetches and re-applies the chosen vocabulary.
-  ws.append(prefRow('tokenSystem', 'Token system', 'Universal = the new --cat-*/--diagram-* names (renders identically)',
-    ['Current (legacy names)', 'Universal (new names)'],
-    () => { try { location.reload(); } catch {} }));
   return ws;
 }
 
