@@ -98,7 +98,14 @@ in patch versions.
   docs-site preview/export AND the VS Code preview all render body copy at the
   intended size, while the `1cqi` fallback keeps the canonical/print render
   byte-identical. Headings were always correct (they're children, not
-  section-own). Affects rendering only; no authoring change.
+  section-own). The same root cause hit a handful of section-OWN **spacing**
+  properties — chart-frame's footer safe-band, KPI's header-clearance padding,
+  math/redline/citation grid gaps — so the `--sp-*` scale was given the same
+  treatment (and the three remaining bare-`cqi` section-own literals —
+  `chart-frame` padding, `citation-card.margin` columns, `accent` border —
+  were wrapped too), closing the whole class. Affects rendering only; no
+  authoring change, and the canonical/print render is byte-for-byte unchanged
+  (verified by pixel-diff across the KPI + chart galleries).
 - **`size: 4K` decks now preview and export correctly in the docs-site Drawing
   Board and Playground — they no longer render ~3× oversized, and PDF/PPTX
   export the full slide instead of a cropped corner.** The owned engine resolves

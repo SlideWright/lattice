@@ -1554,10 +1554,14 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
   tokens** (`base.tokens.css`): the section's own `font-size:var(--fs-body)`
   — which every gfm body element inherits — is a direct-cqi property and so
   routes through the same hook (`--fs-body: calc(1.67 *
-  var(--_sec-1cqi,1cqi) * var(--fs-scale))`). Child consumers
-  (`h2{font-size:var(--fs-h2)}`, …) inherit the section's already-substituted
-  value, so they resolve identically; this was the long-standing gap — padding
-  and border were converted years before the fonts. The `1cqi` fallback fires
+  var(--_sec-1cqi,1cqi) * var(--fs-scale))`), **as do the `--sp-*` spacing
+  tokens** — a `section.kpi{padding:var(--sp-lg)}` / `section.math{gap:var(--sp-md)}`
+  is exactly the same section-own self-reference, so the whole `--sp-*` scale is
+  declared on `:root, section` and routed through `--_sec-1cqi`. Child consumers
+  (`h2{font-size:var(--fs-h2)}`, inner flex/grid gaps, …) inherit the section's
+  already-substituted value, so they resolve identically; padding and border
+  were converted years before the fonts and spacing tokens joined. The `1cqi`
+  fallback fires
   only in the emulator/print path where the ICB is already correct. In any
   iframe/VS Code preview, `patchSectionGeometry()` in `lattice-runtime.js` sets
   `--_sec-1cqi = section.offsetWidth / 100` as a concrete `px` value
@@ -1565,15 +1569,18 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
   against the real slide width. Any new direct-cqi property added to
   `section` or `section.*` — or any token consumed as a section-OWN property —
   must follow the same pattern: `calc(... * var(--_sec-1cqi,1cqi) * ...)`,
-  never a bare `Xcqi`. (Tokens consumed only by *children* — most `--sp-*`
-  gaps — keep bare `cqi`; they query the section correctly on their own.)
+  never a bare `Xcqi`. The `--fs-*` and `--sp-*` tokens already carry the hook,
+  so consuming them on a section is safe; a bare `Xcqi` literal on a section
+  (e.g. `section.chart-frame{padding:0 0 4.375cqi}`) is the trap — wrap it.
 - **Triggered by:** Any slide in a preview whose viewport ≠ the slide width
   (marp-vscode, the docs-site srcdoc iframes). The PDF and emulator paths are
   unaffected because their ICB/viewport matches the slide size.
 - **Commits:** `334434f` (initial fix, top/bottom only); `fe6f894`
   (extend to padding-left/right); `41ef9e1` (extend to divider
   padding-left); `1bf458c` (unify all under `--_sec-1cqi`); the `--fs-*`
-  typography tokens joined the hook later (this branch).
+  typography and `--sp-*` spacing tokens plus the remaining bare-cqi
+  section-own literals (`chart-frame`, `citation-card.margin`, `accent`)
+  joined the hook later (this branch).
 
 ### Layout components inherit line-height silently from the section body default
 

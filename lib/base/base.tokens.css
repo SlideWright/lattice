@@ -82,11 +82,12 @@
   --sketch-font-display: 'Caveat', 'Bradley Hand', cursive, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji';
   --sketch-font-body:    'Shantell Sans', system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji';
 
-  /* ── Spacing scale (cqi — proportional to the 1280px HD baseline) ───
-   * 100cqi = slide inline size. Formula: px / 1280 * 100 = cqi.
-   * At HD (1280px) these resolve to the original px values exactly.
-   * At 4K (3840px) they triple automatically — no extra rules needed. */
-  --sp-3xs:0.15625cqi; --sp-2xs:0.3125cqi; --sp-xs:0.625cqi; --sp-sm:1.25cqi; --sp-md:1.875cqi; --sp-lg:2.5cqi; --sp-xl:3.75cqi; --sp-2xl:5cqi;
+  /* ── Spacing scale ── moved to a `:root, section` block below so it routes
+   * through `--_sec-1cqi` (same as the --fs-* tokens). A section-OWN consumer
+   * — e.g. `section.kpi{padding-top:var(--sp-lg)}`, `section.math{gap:var(--sp-md)}`
+   * — cannot resolve a bare `cqi` against the section it sits on (container-type
+   * self-reference) and collapsed in iframe/VS Code previews. See the spacing
+   * block near the typography tokens. */
 
   /* ── Font sizes ────────────────────────────────────────────────────
    * The 12-token typography contract. Three scales — content (5),
@@ -588,6 +589,30 @@
   --state-ring-inner-w: 0px;    /* inner ring width (outline / tonal) */
   --state-mark-pct: 0%;         /* mark colour = this % --state-color, rest --bg (0% = knockout) */
   --state-disc-scale: 1;        /* disc + mark size multiplier (bold bumps it) */
+}
+
+/* ── Spacing scale (proportional to the 1280px HD baseline) ────────────
+ * Coefficient × the slide's 1cqi. Formula: px / 1280 * 100 = coefficient.
+ * At HD these resolve to the original px values exactly; at 4K they triple
+ * automatically. Routed through `var(--_sec-1cqi, 1cqi)` (NOT a bare `cqi`)
+ * for the SAME reason as the --fs-* tokens below: `section{container-type:size}`
+ * forbids the section from querying its own `cqi`, so a section-OWN consumer
+ * (`section.kpi` padding, `section.math` grid gap, `section.redline` gaps, …)
+ * fell back to the ICB — the slide only on the canonical/print path, the editor
+ * pane in a preview iframe. The runtime sets `--_sec-1cqi`; the `1cqi` fallback
+ * keeps the canonical render identical. Child consumers (the vast majority —
+ * inner gaps/padding) inherit the section's already-substituted value, so they
+ * resolve exactly as a bare `cqi` against the section would. Declared on BOTH
+ * :root and section so the section copy re-substitutes --_sec-1cqi per slide. */
+:root, section {
+  --sp-3xs: calc(0.15625 * var(--_sec-1cqi, 1cqi));
+  --sp-2xs: calc(0.3125  * var(--_sec-1cqi, 1cqi));
+  --sp-xs:  calc(0.625   * var(--_sec-1cqi, 1cqi));
+  --sp-sm:  calc(1.25    * var(--_sec-1cqi, 1cqi));
+  --sp-md:  calc(1.875   * var(--_sec-1cqi, 1cqi));
+  --sp-lg:  calc(2.5     * var(--_sec-1cqi, 1cqi));
+  --sp-xl:  calc(3.75    * var(--_sec-1cqi, 1cqi));
+  --sp-2xl: calc(5       * var(--_sec-1cqi, 1cqi));
 }
 
 /* ── The 12 typography tokens, scaled ──────────────────────────────────

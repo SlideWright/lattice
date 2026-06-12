@@ -64,7 +64,7 @@ section.chart-frame {
    * top chrome instead. Bottom padding leaves a clean band for the
    * footer chrome (absolute, bottom:24px) so chart-caption never
    * collides with footer/page-number text. */
-  padding: 0 0 4.375cqi;
+  padding: 0 0 calc(4.375 * var(--_sec-1cqi, 1cqi)); /* section-OWN cqi: route through --_sec-1cqi (preview self-reference) */
   border-top: none;
   background: var(--bg);
 }
