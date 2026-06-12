@@ -3,17 +3,18 @@ marp: true
 theme: cuoio
 paginate: true
 header: "Lattice · Islands"
-footer: "SlideWright · Islands Phase 2c"
+footer: "SlideWright · Islands"
 meta: "Q2 FY26 · Board Pack | Owner · S. Aden"
+islands: true
 ---
 
 <!-- _class: title silent -->
 
 # Slides as Islands
 
-`Composition Model · Phase 2c — the watermark island`
+`Composition Model · the deck-wide toggle`
 
-A slide is a sea plus a fixed set of berths. The masthead band holds the title and a populated bay; the footer now carries a section progress rail. Additive, palette-blind, across every render path.
+A slide is a sea plus a fixed set of berths. One front-matter flag — `islands: true` — enables the whole model across the deck: the masthead band, a populated bay, a footer progress rail, and section watermarks. Palette-blind, across every render path.
 
 ---
 
@@ -25,17 +26,17 @@ A slide is a sea plus a fixed set of berths. The masthead band holds the title a
 
 ---
 
-<!-- _class: content islands confidential watermark -->
+<!-- _class: content confidential watermark -->
 
-`Context · The Lift`
+`Context · The Toggle`
 
-## The masthead is now a band, not the top of a flow.
+## One flag turns the model on for the whole deck.
 
-The `islands` modifier wraps the eyebrow and title into a dedicated masthead band with a hairline rule and a reserved right bay. Everything below the rule is the slide body — a clean, separately-addressable region. Authoring is unchanged.
+`islands: true` resolves to the `islands` class on every eligible slide — so the band, bay, and rail just appear. Bookends (this section's divider, the title, the closing) are skipped automatically; a single slide can opt out with `no-islands`.
 
 ---
 
-<!-- _class: cards-grid islands -->
+<!-- _class: cards-grid -->
 
 ## The band composes with components untouched.
 
@@ -43,8 +44,8 @@ The `islands` modifier wraps the eyebrow and title into a dedicated masthead ban
   - Cards, lists, charts, and tables remain direct children of the section, so every `section.X > …` selector keeps matching.
 - Only the masthead moves
   - The eyebrow and first heading lift into the band; the rest is left exactly where the author put it.
-- One opt-in token
-  - Add `islands` to any content layout. Incompatible only with `math` and `compare-code`.
+- Skipped where it shouldn't apply
+  - Bookends, `math` / `compare-code`, the sovereign split layouts, and imagery are left alone.
 
 ---
 
@@ -56,30 +57,30 @@ The `islands` modifier wraps the eyebrow and title into a dedicated masthead ban
 
 ---
 
-<!-- _class: stats islands -->
+<!-- _class: stats -->
 
 `Evidence · Same Engine, Three Paths`
 
-## The lift is identical across every render path.
+## The flag resolves identically across every render path.
 
-`marp-cli, the emulator, and the runtime dispatch one registry-wired transform.`
+`The toggle becomes the islands class in marp-cli and the emulator alike — one eligibility helper, one source.`
 
-1. 3
+1. 1
+   - front-matter flag
+2. 3
    - render paths
-2. 1
-   - opt-in token
 3. 0
-   - components broken
+   - slides hand-tagged
 
 ---
 
-<!-- _class: content islands wip -->
+<!-- _class: content wip -->
 
 `Takeaway · The Bay`
 
 ## The bay docks the meta and status islands.
 
-> Key insight: the `meta:` line and a status chip (this slide is `wip`) now ride the bay the masthead reserved in Phase 1.
+> Key insight: the `meta:` line and a status chip (this slide is `wip`) ride the bay — no per-slide `islands` token needed, the deck flag supplies it.
 
 ---
 
@@ -91,19 +92,19 @@ The `islands` modifier wraps the eyebrow and title into a dedicated masthead ban
 
 ---
 
-<!-- _class: content islands watermark -->
+<!-- _class: content watermark -->
 
 `Footer · The Progress Rail`
 
-## The footer now orients the audience.
+## The footer orients the audience.
 
-The progress island reads the deck's `divider` slides as sections and stamps a dot-rail into the footer centre of every `islands` slide — current section elongated and accented, labelled with the divider title. The watermark island echoes the section number behind this text.
+The progress island reads the deck's `divider` slides as sections and stamps a dot-rail into the footer centre of every islands slide — current section elongated and accented. The watermark echoes the section number behind this text.
 
 ---
 
 <!-- _class: closing silent -->
 
-# The five islands have landed.
+# One flag, the whole model.
 
 `Next · Phase 4 — the concrete stage wrapper`
 

@@ -18,6 +18,9 @@ const {
   applyMastheadMetaToHtml,
   applyProgressRailToHtml,
   applyWatermarkToHtml,
+  readIslandsFrontMatter,
+  islandsToggleClass,
+  applyIslandsToggleToHtml,
   stateClassesFor,
   verdictGridBadges,
   obligationMatrixBadges,
@@ -101,6 +104,10 @@ module.exports = {
     marp.render = (markdown, env) => {
       const result = originalRender(markdown, env);
       if (result && typeof result.html === 'string') {
+        // Deck-wide `islands:` toggle — resolve it to the `islands` class on
+        // every eligible section FIRST, so the registry's masthead-lift and
+        // the island injectors below all see it.
+        result.html = applyIslandsToggleToHtml(result.html, markdown);
         // Shared transformer registry — dispatches chart-family,
         // split-panels, roadmap, journey, word-cloud (in that order).
         // See lib/transformers/registry.js for the order rationale and
@@ -140,6 +147,9 @@ module.exports.plugins = {
   applyMastheadMetaToHtml,
   applyProgressRailToHtml,
   applyWatermarkToHtml,
+  readIslandsFrontMatter,
+  islandsToggleClass,
+  applyIslandsToggleToHtml,
   stateClassesFor,
   verdictGridBadges,
   obligationMatrixBadges,

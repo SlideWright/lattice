@@ -253,6 +253,43 @@ describe('marp-plugins', () => {
     assert.equal(plugins.applyWatermarkToHtml(once), once);
   });
 
+  // ── islands deck-wide toggle (`islands: true`) ─────────────────────────
+
+  test('readIslandsFrontMatter: true / on / yes enable; false / missing do not', () => {
+    for (const v of ['true', 'on', 'yes', 'TRUE', '"on"']) {
+      assert.equal(plugins.readIslandsFrontMatter(`---\nislands: ${v}\n---\n`), true, v);
+    }
+    assert.equal(plugins.readIslandsFrontMatter('---\nislands: false\n---\n'), false);
+    assert.equal(plugins.readIslandsFrontMatter('---\ntheme: cuoio\n---\n'), false);
+  });
+
+  test('islandsToggleClass: adds islands to content; skips bookends / sovereign / incompatible', () => {
+    assert.equal(plugins.islandsToggleClass('content'), 'content islands');
+    assert.equal(plugins.islandsToggleClass('cards-grid compact'), 'cards-grid compact islands');
+    assert.equal(plugins.islandsToggleClass(''), 'islands'); // bare slide
+    for (const skip of ['title', 'divider', 'closing', 'math', 'compare-code', 'split-panel', 'image', 'featured']) {
+      assert.equal(plugins.islandsToggleClass(skip), skip, `should skip ${skip}`);
+    }
+  });
+
+  test('islandsToggleClass: respects explicit islands / no-islands; idempotent', () => {
+    assert.equal(plugins.islandsToggleClass('content islands'), 'content islands');
+    assert.equal(plugins.islandsToggleClass('content no-islands'), 'content no-islands');
+    assert.equal(plugins.islandsToggleClass(plugins.islandsToggleClass('content')), 'content islands');
+  });
+
+  test('applyIslandsToggleToHtml: only fires with the toggle; rewrites eligible sections', () => {
+    const html =
+      '<section class="content" data-marpit-slide="1"></section>' +
+      '<section class="divider" data-marpit-slide="2"></section>' +
+      '<section data-marpit-slide="3"></section>';
+    assert.equal(plugins.applyIslandsToggleToHtml(html, '---\nislands: false\n---\n'), html, 'no-op when off');
+    const out = plugins.applyIslandsToggleToHtml(html, '---\nislands: true\n---\n');
+    assert.match(out, /<section class="content islands" data-marpit-slide="1">/);
+    assert.match(out, /<section class="divider" data-marpit-slide="2">/, 'divider skipped');
+    assert.match(out, /<section class="islands" data-marpit-slide="3">/, 'bare slide gets a class attr');
+  });
+
   // ── applyDeckLogoToHtml ────────────────────────────────────────────────
 
   function logoFixture(html) {

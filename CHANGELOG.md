@@ -89,6 +89,16 @@ in patch versions.
   with a shipped component class at save time. CSS-only only; transform-bearing
   components remain graduation-only. See
   `engineering/decisions/2026-06-12-workbench-component-bridge.md`.
+- **`islands: true` deck-wide toggle.** One front-matter flag enables the whole
+  islands model across a deck — it resolves to the per-slide `islands` class on
+  every eligible section, so the masthead band, bay (meta + status), progress
+  rail, and watermarks just appear without tagging each slide. Bookends
+  (`title` / `divider` / `closing`), the title-grid layouts (`math` /
+  `compare-code`), the sovereign split layouts, and imagery are skipped
+  automatically; a single slide opts out with `no-islands`. Applied in both
+  server render paths (marp-cli + emulator) via one shared eligibility helper;
+  build-time only, like the deck-wide `class:` / `logo:` directives (use a
+  per-slide `islands` token in the marp-vscode preview). See `examples/islands.md`.
 - **Watermark island (islands model, Phase 2c).** Add `watermark` to an
   `islands` slide and a large, palette-blind ghost of the current section
   number paints behind the content (z-behind, clipped by the section) —
