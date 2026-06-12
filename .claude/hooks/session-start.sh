@@ -73,8 +73,11 @@ fi
 #    the root install above never touches it — yet any docs/src/** preview or
 #    screenshot needs it. Install best-effort so docs work is never blocked on a
 #    manual `cd docs && npm install` (the single most-rediscovered friction).
-#    Non-fatal and quiet: a transient failure must not abort the session.
-( cd "$CLAUDE_PROJECT_DIR/docs" && npm install --no-audit --no-fund ) >/dev/null 2>&1 || true
+#    GATED on the astro bin so a warm container (and every non-docs session)
+#    skips the heavy Astro/CodeMirror install. Non-fatal and quiet.
+if [ ! -x "$CLAUDE_PROJECT_DIR/docs/node_modules/.bin/astro" ]; then
+  ( cd "$CLAUDE_PROJECT_DIR/docs" && npm install --no-audit --no-fund ) >/dev/null 2>&1 || true
+fi
 
 # 5. Point every session at the centralized standard-practice digest. The hook's
 #    stdout lands in the session's initial context, so this one line is what

@@ -1744,14 +1744,15 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
   is the *deploy-time, unversioned-URL* failure; this is the *dev-time,
   stale-versioned-copy* failure.
 - **Mitigation:** After rebuilding anything under `lib/` (or running
-  `npm run build`), re-stage before reloading:
-  `node docs/scripts/sync-playground-assets.mjs` (or `cd docs && npm run
-  sync:playground`). **Bisect code-bug vs stale-bundle in seconds:** run the
-  engine in plain Node —
-  `node -e "console.log(require('./lib/engine/index.js').render(deck,'indaco').html)"`;
-  if Node is correct but the browser isn't, it's the bundle, not your code.
-  In-browser, `page.evaluate(() => window.LatticePlayground.engine)` returning
-  `undefined`/stale confirms it.
+  `npm run build`), re-stage before reloading: `node
+  docs/scripts/sync-playground-assets.mjs` (or `cd docs && npm run
+  sync:playground`). **Confirm stale-bundle vs real code-bug** without
+  bisecting source: re-stage, hard-reload, and see if the symptom clears — if
+  it does, it was the served copy, not your code. In-browser, the preview's
+  `window.LatticePlayground.render(md, 'indaco')` reflects the *loaded* bundle,
+  so its output changing only after a re-stage is the tell. (Don't reach for
+  `lib/engine/index.js` as a Node oracle — it's the EXPERIMENTAL P1 core, not a
+  shipping render path; see HARD RULE 1's three paths.)
 - **Triggered by:** Editing the engine, then previewing via the directly-invoked
   `astro dev` bin (which skips `predev` sync). `npm run dev` would have re-synced.
 - **Removable when:** Never, while the preview loads a content-hashed staged

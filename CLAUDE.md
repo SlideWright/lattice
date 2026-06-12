@@ -259,8 +259,8 @@ TLS proxy MITMs CDN webfonts) live in `engineering/gotchas.md`.
 - **The final PR commit includes all rebuilt PDFs** (external reviewers need
   raw-URL access); the raw `raw.githubusercontent.com` URL goes only in the
   final PR reply.
-- `marp-cli` works here once `CHROME_PATH` points at the puppeteer chromium
-  (`engineering/gotchas.md`). The SessionStart hook sets this up on the web.
+- `marp-cli`/`CHROME_PATH` and the browser-free PNG preview live in
+  §"Cloud sandbox" above — that's the canonical env reference.
 
 ---
 
