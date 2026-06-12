@@ -27,6 +27,11 @@ in patch versions.
 
 ### Changed
 
+- **The `sketch` finish now hand-draws the metadata pills / badges too.** The
+  shared `--pill-radius` (a machine-perfect `999px` lozenge) becomes a wobbled
+  hand-drawn chip corner under `sketch`, so every metadata pill, state-marker
+  chip, and label badge rides the hand like the cards around it (their text was
+  already on the hand face). One token override; no per-component selectors.
 - **Playground / Drawing Board now render via the owned `lattice-engine` by
   default** (HTML + the owned CSS emitter), with marp-core demoted to the
   `?engine=marp` / `?css=marp` escape hatch and live A/B oracle. The owned path

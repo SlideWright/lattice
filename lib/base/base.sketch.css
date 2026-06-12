@@ -86,6 +86,10 @@ section.sketch {
    * etc.) ride the hand body face too, so every glyph of prose on the
    * slide is hand-drawn. Real inline `code` stays monospace (below). */
   --pill-font: var(--sketch-font-body);
+  /* …and their corners stop being machine-perfect lozenges: the shared
+   * --pill-radius (a 999px pill) becomes a hand-drawn asymmetric chip, so
+   * every metadata pill / badge / chip rides the hand like the cards. */
+  --pill-radius: 14px 3px 11px 4px / 4px 11px 3px 14px;
 }
 
 /* ── HANDWRITING TYPE ─────────────────────────────────────────────────
