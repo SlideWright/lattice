@@ -58,6 +58,39 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
 
 ---
 
+### Chart caption swallowed when `_footer` is set
+
+- **Symptom:** A trailing caption paragraph on a chart-frame slide
+  (piechart, gantt, radar, timeline-list, …) renders as a raw,
+  full-width, body-size `<p>` flush against the slide's **left edge**
+  instead of the centred, mono, meta-size `.chart-caption` with its
+  hairline. Looks like content "overflowing" the chart. Reproduced on
+  the `gallery-jargon.md` donut slide; the per-component galleries
+  never tripped it because none pairs a trailing caption with a footer
+  on a non-`cover` chart.
+- **Cause:** `wrapChartFrame` lifts the caption from the last `<p>` in
+  the post-body region with an **end-of-string** anchor
+  (`/<p…>(…)<\/p>\s*$/`). A `_footer:` directive makes Marpit append
+  `<footer>…</footer>` after the user's paragraph, so the section ends
+  `…</p><footer>…</footer>` — the `$` never matches, the caption is
+  never lifted into `.chart-caption`, and it survives as a bare
+  `<section>`-level paragraph (full content width, left-aligned).
+- **Mitigation:** `wrapChartFrame`
+  (`lib/components/chart/_chart-family/chart-family.js`) peels a
+  trailing `<footer>…</footer>` off before matching the caption, then
+  re-appends it so footer order is preserved. The fix is single-source
+  — the emulator and runtime bundle the same kernel, so all three
+  render paths and all 13 chart-frame layouts are covered by the one
+  change.
+- **Triggered by:** Any chart-frame slide that has BOTH a trailing
+  caption paragraph AND a `_footer` (or deck-level `footer:`) — i.e.
+  essentially every real deck slide that wants a caption.
+- **Removable when:** Never, while a `_footer` directive can follow the
+  caption in the section body.
+- **Commits:** the chart caption + footer fix.
+
+---
+
 ## Marp / Marpit
 
 ### Marp Preview emits `<marp-pre>`, marp-cli emits `<pre is="marp-pre">`

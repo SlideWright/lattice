@@ -40,13 +40,15 @@ Nearly half went to producing decks; the deciding itself was the smallest slice.
 
 ## Where the engineering quarter actually went.
 
-Wedges drawn proportionally; the toil-and-on-call slice is the one nobody put in the roadmap.
+The toil-and-on-call slice is the one nobody put in the roadmap.
 
 - Signal Intake build `46%`
 - Scoring policy work `22%`
 - Decision Log integration `18%`
 - Explaining the framework to stakeholders `9%`
 - Toil and on-call `5%`
+
+Refreshed weekly · figures from the time-tracking export
 
 
 ---
