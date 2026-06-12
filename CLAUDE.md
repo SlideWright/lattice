@@ -2,493 +2,223 @@
 
 Lattice is a Marp-based slide-deck engine that renders boardroom-quality
 PDFs from Markdown. It is the engine layer of the **SlideWright** org; a
-Tauri desktop wrapper (also called SlideWright) embeds the same engine.
+Tauri desktop wrapper (also SlideWright) embeds the same engine.
 
-**The visual contract is `lattice.css`.** Layouts are palette-blind —
-every colour goes through `var(--token)`. Themes (`themes/indaco.css`,
+**The visual contract is `lattice.css`.** Layouts are palette-blind: every
+colour goes through `var(--token)`. Themes (`themes/indaco.css`,
 `themes/cuoio.css`, …) supply the tokens.
 
-## Read these before non-trivial work
+This file is short on purpose. It orients you and points to the canonical
+doc for each topic. **Read the pointed-to doc before non-trivial work in its
+area — do not work from memory of it.**
 
-- **`design/design-system.md`** — Function · Form · Substance · Finish.
-  The canonical four-layer model. Tells you what kind of thing each
-  layout, modifier, chart engine, or palette token *is*, and how they
-  compose. Authors keep using short names like `cards-grid`; the model
-  organizes the catalog, docs, and engine. If you read exactly one
-  Lattice document, read this one.
-- **`engineering/workflow.md`** — branching, feature decks, commit
-  discipline, the share-the-PDF rule, three-renderer gate. Canonical
-  for all workflow conventions; this file is a thin pointer.
-- **`engineering/development.md`** — Node versions, npm scripts,
-  test layout, lint, hooks, coverage, CI, integration cache, editor
-  setup. Read before changing any tooling, lint config, hook, CI
-  workflow, or test infrastructure. Includes the "when you do X, also
-  do Y" rules for adding lib files, themes, and scripts.
-- **`engineering/gotchas.md`** — when something behaves strangely,
-  check here FIRST. Symptoms in headings are searchable. Add an entry
-  BEFORE committing any non-obvious fix; the commit can then link to it.
-- **`engineering/architecture.md`** — engine internals.
-- **`design/theming.md`** — palette tokens, Mermaid contract.
-- **`design/editorial.md`** — prose rules for the gallery and shipped decks.
-- **`design/skill.md`** — deck-authoring contract.
-- **`engineering/`** — canonical references (design, pipeline,
-  mermaid, audit, gotchas, treatments, workflow, development,
-  cascade).
-- **`engineering/cascade.md`** — read before touching the CSS
-  cascade or `@layer` declarations. Captures why `@layer` is
-  declared-but-inert (the `!important` interactions between
-  marp.scaffold and base.variants), the trap that broke an earlier
-  partial activation attempt, and the conditions required for a
-  safe full activation.
-- **`lib/base/base.docs.md`** — cross-cutting authoring contract
-  (eyebrow, subtitle, key-insight, state markers, dark/mirror/numbered,
-  treatments). Was previously inside
-  `engineering/templates.md`, retired 2026-05-17.
-- **`lib/components/<bucket>/<name>/<name>.docs.md`** — per-component
-  contracts (slots, variants, when/why, anti-patterns) generated from
-  each manifest's prose fields. `<bucket>` is one of 12: anchor,
-  statement, inventory, comparison, progression, evidence, imagery,
-  chart, diagram, math, code, legal. See `design-system.md` §9.
-- **`engineering/decisions/YYYY-MM-DD-topic.md`** — durable investigation notes.
+---
 
-## Three render paths must agree
+## DEFAULT OPERATING MODE — act without being asked
 
-Any authoring transform needs to land in all three or the paths drift:
+The standing expectation is an agent that drives routine work to completion
+on its own. Do NOT stop to ask permission for the steps below; only stop
+when a decision is genuinely mine (irreversible, ambiguous *direction*, an
+architectural fork) — and bundle those into one `AskUserQuestion`.
 
-1. **`lattice-emulator.js`** — build-time CLI; mostly inline implementations,
-   increasingly delegating to the shared registry kernels (e.g. `below-note`).
-2. **`marp.config.js`** → **`lib/core/*.js`** + **`lib/components/chart/_chart-family/chart-family.js`** + **`lib/integrations/*/`** — the marp-cli path.
-3. **`dist/lattice-runtime.js`** — DOM transforms for marp-vscode preview
-   (esbuild bundle of `lib/runtime/index.js`).
+1. **Finish the loop.** A task is done when it's implemented, verified,
+   documented, and shipped — not when it compiles. Don't hand back at the
+   first green and wait for "now lint / now test / now push."
+2. **Don't settle.** "Builds" and "tests pass" is the floor. Self-critique
+   the result and raise it before returning it. For visual work, the bar is
+   §Quality Bar below.
+3. **Stay rebased — check, don't ask.** Before you push and before you call
+   anything done, `git fetch origin main` and rebase the branch if it has
+   drifted. Never ship from a stale branch; never wait to be told to rebase.
+   (A Stop hook nudges you if you forget — see `.claude/hooks/stop-rebase-check.sh`.)
+4. **Run the gates yourself, proactively.** `npm run lint`, the unit suite,
+   `npm run build:check` (the CI/stale-artifact gate), and the integration
+   tier — run them *before* declaring done, so "done" is true when you say
+   it. (Hooks also enforce these at commit/push; that's a backstop, not a
+   substitute for verifying first.)
+5. **Keep docs + changelog in sync in the SAME change.** Any behavior change
+   updates the matching `engineering/`/`design/` doc AND `CHANGELOG.md`
+   `## Unreleased`. Generated docs (`dist/docs/*`) regenerate via build.
+   Never return a behavior change with stale docs — don't make me ask.
+6. **Open the PR yourself when the work is review-ready.** When the branch's
+   meaty work is complete, verified, and pushed, open a PR using
+   `.github/pull_request_template.md` — don't wait to be asked. Do NOT open a
+   draft PR up front: that spams CI and the build agent. Wait until the work
+   is genuinely ready for review, then open it once.
+7. **Auto-watch the PR.** Immediately after creating a PR, subscribe to its
+   activity and drive CI green / address review comments. Never ask "should
+   I watch the PR?" — the answer is always yes.
 
-Each transform documents its sibling implementations in a header comment
-(see `liftSlotLabel`, `chartFamily`, `splitPanelCounter`). The integration
-tier asserts cross-renderer parity on slide count.
+Rules 6–7 deliberately override the harness defaults (which otherwise hold
+off on PR creation and ask before watching). This file takes precedence;
+treat them as the standing instruction. The `doneMeansMerged` setting in
+`.claude/settings.json` reinforces this — keep working to a merge-ready state.
 
-**Where a transform kernel lives is determined by what it's coupled to**
-(full table in `engineering/architecture.md` § "Where transforms live"):
-component-coupled → `lib/components/<bucket>/<name>/<name>.transform.js`;
-bucket-coupled → `lib/components/<bucket>/_family/`; coupled to nothing
-(a structural primitive any component opts into, e.g. `split-panels`,
-`split-slides`) → `lib/core/`. The `lib/transformers/` registry is the
-wiring layer — a registry-shaped adapter around each kernel, exposing the
-uniform interface the three render paths consume.
+---
 
-## The build — `dist/` and `npm run build`
+## QUALITY BAR — 10/10 boardroom, or it isn't done
 
-Generated, committed artifacts live in **`dist/`**:
-`dist/lattice.css` (engine bundle), `dist/lattice-default.css`
-(`build-default-bundle.js` flattens the engine + the default palette,
-cuoio, into one drop-in stylesheet with `@import 'lattice'` resolved —
-the zero-config / browser-droppable default; change `DEFAULT_THEME` in
-that generator to re-bless another palette), `dist/lattice-runtime.js`
-(esbuild runtime bundle), `dist/lattice-emulator.js` (the esbuild-bundled
-emulator CLI — the package `bin`/`main`; `build-emulator.js` inlines the
-local engine graph and leaves node_modules deps external, mirroring the
-runtime split of `lib/runtime/index.js` source → `dist/` bundle),
-`dist/docs/components.{md,json}` (the canonical single-file component
-reference — `.md` the human-readable plain-Markdown edition, `.json` the
-machine catalog for agents/tooling; the browsable edition with live previews
-+ an in-browser editor is the docs-site component pages,
-`docs/src/pages/components/`), and `dist/README.md` (`build-dist-readme.js` indexes the folder;
-runs last). These are the shipped/public paths — decks load
-`dist/lattice.css` via `marp.config.js` `themeSet`, and the README/jsdelivr
-URLs point into `dist/`. Do not hand-edit them. (The repo-root
-`lattice-emulator.js` is the **source** the bundle builds from — and the
-path tests/tools invoke directly; the bundle uses a package-root walk so it
-resolves `themes/` and `dist/lattice.css` from either location.)
+For anything a human sees — themes, `lattice.css`, layouts, the docs site,
+UI/UX — **"it renders" is the floor, not the goal.** The target is the
+boardroom 10/10 rubric (`engineering/decisions/2026-06-06-layout-audit/`).
+Before handing visual work back:
 
-- `npm run build` — regenerate every artifact in dependency order,
-  behind the collision gate. `npm run build:check` is the CI/stale gate.
-- `npm run check:ownership` — the collision guard. Many layers share
-  shape on purpose (every theme defines the same tokens; the image
-  scrim/asset/text-panel trio co-own the `image` class). The guard
-  hard-fails on *accidental* collisions — duplicate transformer names,
-  unlisted layout co-ownership, duplicate component CSS selectors,
-  duplicate component names, missing core theme tokens — and forces the
-  intentional cases into the allow-lists in `tools/check-ownership.js`.
-  Individual generators (`css:build`, `runtime:build`, `emulator:build`,
-  `snippets:build`, `docs:components`, `docs:portal`, `dist-readme:build`)
-  still exist for targeted rebuilds.
+- Rebuild and **actually look at it**: `SendUserFile` / `tools/rasterize-for-review.sh`
+  for PDFs; build + run the Astro docs site and `tools/screenshot.js` for
+  web/UI. The sandbox CAN do both — see `engineering/development.md`.
+- Run `tools/pixel-check.js` to catch unintended drift.
+- Fix what's short of excellent without being told — spacing, alignment,
+  contrast, type hierarchy, register, dead canvas.
+- If a tool genuinely cannot run here, **say so**; never claim visual
+  quality you did not verify.
 
-**What ships to npm.** The package is `@slidewright/lattice`, consumed
-through named `exports` subpaths — `/css` (`dist/lattice.css`),
-`/runtime` (`dist/lattice-runtime.js`), `/config` (`marp.config.js`),
-`/themes/<name>.css`, plus the `lattice` `bin` / `main` / `.` export, all
-now pointing at the bundled `dist/lattice-emulator.js` (not the repo-root
-source). The
-`files` allowlist ships engine source, `dist/`, `themes/`, and the two
-authoring docs (`design/skill.md`, `design/design-system.md`)
-only. **PDFs and `*.gallery.md` are excluded from the tarball** (the
-`!**/*.pdf` / `!**/*.gallery.md` negations) — they are regression
-baselines + reviewer deliverables, kept in git but never shipped. Don't
-widen `files` to drag them back in; the tarball is ~2.3 MB, not ~28 MB,
-for that reason. **Releases are automated but manually triggered** — the
-**Release** workflow (`.github/workflows/release.yml`, `workflow_dispatch`)
-derives the semver bump from `CHANGELOG.md` `## Unreleased` via
-`tools/changelog.js`, rolls the changelog, tags, pushes to `main`, and
-publishes a GitHub Release with notes + the showcase zip; **npm publish is
-opt-in** (off until an `NPM_TOKEN` is set). `npm run release` runs the same
-flow locally. See `RELEASE.md` for the full contract and `tools/release.js`.
+### Website / responsive UI — desktop · tablet · mobile
 
-## Tests and the regression baseline
+The docs site (landing, Drawing Board, Workbench, component pages) ships to
+three form factors with distinct real estate and capabilities. Treat all
+three as first-class:
 
-- `npm test` — full unit suite (~4s, 1257 tests). Inner loop.
-- `npm run test:<scope>` — one slice (palette/mermaid/parsing/components/cli).
-- `npm run test:watch` — re-run on file change.
-- `npm run test:integration` — ~30s cold, ~0.2s warm (hash-keyed cache).
-  Rebuilds the page-counted decks through both renderers. CI runs this
-  before merge; cache is disabled when `CI=true`.
-- `npm run test:all` — both tiers.
+- **Responsive across every breakpoint.** Each website change must hold up on
+  desktop (~1440px), tablet (~820px), and mobile (~390px). Keep the
+  experience *familiar* across platforms — one visual language, not three
+  different apps.
+- **Respect real estate.** On mobile (and largely on tablet), icon+text
+  controls eat space and break layouts — favor **icon-only** controls there,
+  keeping the text label for desktop. For tablet specifically, **assess each
+  feature's viability** rather than assuming the desktop layout just scales.
+- **No jank.** No shaky / jumpy / jittery layout shift, reflow, or animation
+  glitches. Reserve space for async content; avoid cumulative layout shift.
+- **Always screenshot-verify all three breakpoints.** No website change is
+  done without `tools/screenshot.js` evidence at desktop, tablet, AND mobile
+  widths (see `engineering/development.md`). "It builds" is not verification.
+- **Export changes require MY inspection — STOP and show me.** Anything that
+  affects exported content (PDF export, deck rendering, font embedding) is the
+  one exception to "act without being asked": generate a representative demo
+  deck, render it in **both dark and light mode**, and send both PDFs for my
+  sign-off before considering the work done.
 
-Full tooling details (scopes, hooks, CI structure, cache behaviour)
-live in `engineering/development.md`.
+---
 
-**Two regression tiers:**
+## MAKER-CHECKER — verify non-trivial work with parallel agents
 
-- **Per-component galleries** (53 components × 2 themes = 106 PDFs,
-  one pair per `lib/components/<bucket>/<name>/`). Every enriched
-  manifest's `expectedGallerySlideCount()` is asserted against the
-  light PDF page count, and the dark PDF must match the light count
-  (catches transforms that drop slides under the dark variant). See
-  `test/integration/components/component-galleries.test.js`. The KPI
-  regression signal lives in
-  `lib/components/evidence/kpi/kpi.gallery.light.pdf` (was the
-  standalone `kpi-gallery.md` deck).
-- **Per-bucket survey galleries** (12 buckets × 2 themes = 24 PDFs at
-  `lib/components/<bucket>/<bucket>.gallery.{light,dark}.pdf`).
-  Generated from `manifest.sample` via `npm run build:bucket-galleries`;
-  see `test/integration/components/bucket-galleries.test.js`.
-- **CI baseline deck** (page count inlined in the test file):
-  `test/integration/baseline-decks/gallery.md` (89pp). A drift fails
-  the integration tier; the cross-renderer parity gate also runs on
-  it. Lives with the test infrastructure, not in `examples/`.
-- **Mermaid showcase** (~31pp): now the `diagram` component's own
-  hand-authored gallery at
-  `lib/components/diagram/diagram/diagram.gallery.md` (marked
-  `galleryAuthored: true` in the manifest). One slide per Mermaid
-  diagram type — covers what the standalone `gallery-mermaid` deck
-  used to cover, but lives with the component it documents.
+Separate *making* from *checking*. For any change that is non-trivial or hard
+to reverse — infra/hooks/CI, engine transforms, a visual pass, a refactor —
+after you (the maker) finish, spawn independent checker agents **in parallel**
+and split the review two ways, for sanity and speed:
 
-`examples/gallery-jargon.md` is a long-running editorial showcase —
-stable and shared, but not page-count-asserted. The isolation rule
-applies to all baseline-tier decks — see workflow.md.
+- **Inspection** — bug-hunt the actual diff: correctness, edge cases,
+  shell/CSS/JS footguns, "does it do what it claims."
+- **Assessment** — judge fit and risk: does it meet the goal, does it weaken a
+  guarantee, scope/altitude, what's missing.
 
-## The visual-iteration loop
+Run them concurrently (one message, multiple `Agent` calls), fold the findings
+back in, *then* commit. Skip it for trivial edits — this is for when a second,
+independent set of eyes earns its latency.
 
-**During development: `npm run preview` + `SendUserFile`.** Don't
-commit per iteration. The preview tool auto-detects scope from
-`git diff` (L0 nothing, L1 single deck, L2 component-scoped, L3
-full), rebuilds only what's affected, pixel-diffs against the
-last commit, and outputs the file paths to stream via
-`SendUserFile`. Per-iteration cost drops from ~30s (build + commit
-+ push + reviewer-fetch) to ~10s (build + send).
+---
 
-```text
-edit source  →  npm run preview [-- <deck>]  →  SendUserFile <files>
-```
+## HARD RULES (these override convenience; a violation is a defect)
 
-Scope detection — what `npm run preview` does for each kind of change:
+1. **Three render paths must agree.** Any authoring transform lands in all
+   three or the paths drift: `lattice-emulator.js` (build-time CLI),
+   `marp.config.js` → `lib/core/*` + chart-family + integrations (marp-cli),
+   and `dist/lattice-runtime.js` (vscode preview). Each kernel documents its
+   siblings in a header comment. See `engineering/architecture.md`.
+2. **Never hand-edit `dist/`.** It is generated. Regenerate with
+   `npm run build` (behind the collision gate).
+3. **No hex literals in layout CSS — always `var(--token)`.**
+4. **Typography is the 12-token system** (`--fs-*`). Never t-shirt sizes
+   (`fs-md`/`fs-lg`); those are retired. See `engineering/typography.md`.
+5. **Card-style layouts forbid inline `- **Title.** body`.** Use the nested
+   form `- Title` / `  - body`. `deck-authoring.test.js` enforces it; the
+   8-layout set is in `lib/authoring/lint-core.js` (`CARD_STYLE_LAYOUTS`).
+6. **Before authoring any `<!-- _class: X -->` slide**, in the SAME turn:
+   open `lib/components/<bucket>/X/X.docs.md` (find with
+   `find lib/components -name X -type d`) AND grep
+   `test/integration/baseline-decks/gallery.md` for a live example. For base
+   modifiers (`tint-*`, `with-*`, `dark`, …) open `lib/base/base.docs.md`.
+7. **Edit lint rules in `lib/authoring/lint-core.js` only** — pure, fs-free,
+   shared by the CLI, `validate()`, and the browser. Never duplicate.
+8. **Isolate feature/fix content from the six long-running galleries.**
+   Layouts graduate in a separate post-review commit. See `engineering/workflow.md`.
+9. **Ship a per-feature demo deck** `examples/<slug>.md` (+ committed `.pdf`),
+   6–10 slides, title → demo → close. Contract in `engineering/workflow.md`.
+10. **Record every user-visible change in `CHANGELOG.md` `## Unreleased`
+    as it lands.** Lead with `**Breaking:**` for anything that breaks an
+    existing deck/consumer. Pure-internal work needs no entry. See `RELEASE.md`.
+11. **Use the old per-theme token names** (`--c1-light`, `--c-stroke`, …)
+    until the canonical universal-token flip. `tokens: universal` is a
+    Drawing-Board-only A/B. See `lib/base/base.docs.md`.
+12. **Avoid `:not(:has(...))` / `:is(:has(...), …)` in theme CSS** — silently
+    broken in the Marp preview Chromium. See `engineering/gotchas.md`.
+13. **Commit messages are `area(scope): short summary`.** PRs follow
+    `.github/pull_request_template.md` (Problem → What changed → Tests →
+    Caveats), titled the same way.
+14. **A hook failure is a root cause to fix, never a `--no-verify` to skip.**
 
-- L0 (no visual impact) — tests, docs, manifest, README. No build.
-- L1 (single deck or example.md) — rebuild + diff that deck only.
-- L2 (component CSS / transform) — rebuild every deck using the
-  component class; diff per-page across them.
-- L3 (shared CSS / engine / theme) — rebuild every deck in the
-  preview set (`ALL_DECKS` in `tools/preview.js`, currently just
-  `examples/gallery-jargon.md`; the baseline, mermaid, design-system,
-  and palette-audit decks live with their owners and are covered by
-  the integration tier instead); send the top 5 diffs by pixel count.
+---
 
-`--full` overrides to L3 explicitly. `npm run preview:watch -- <deck>`
-runs a file watcher and auto-rebuilds on the desktop (opens the PDF
-in your default viewer; viewer reloads when the file changes).
+## Read the canonical doc before working in its area
 
-**For desktop authors using VS Code**: the marp-vscode preview pane
-is the fastest inner loop — no preview tool needed; the preview
-updates live as you edit. `lattice-runtime.js` handles all the
-runtime transforms (chart-family, structure post-processing).
+| Working on… | Read first |
+|---|---|
+| What a component/modifier/token *is*, catalog shape | `design/design-system.md` |
+| Branching, feature decks, share-the-PDF, rebase, 3-renderer gate | `engineering/workflow.md` |
+| Node, npm scripts, tests, lint, hooks, CI, "add X also do Y" | `engineering/development.md` |
+| Something behaving strangely (symptom index) | `engineering/gotchas.md` |
+| Engine internals, where transform kernels live | `engineering/architecture.md` |
+| The CSS cascade / `@layer` (declared-but-inert; the trap) | `engineering/cascade.md` |
+| Typography scales | `engineering/typography.md` |
+| Palette tokens, Mermaid contract | `design/theming.md` |
+| Prose rules for galleries/decks | `design/editorial.md` |
+| The deck-authoring contract | `design/skill.md` |
+| Cross-cutting authoring (eyebrow, subtitle, base modifiers) | `lib/base/base.docs.md` |
+| A specific component's slots/variants/anti-patterns | `lib/components/<bucket>/<name>/<name>.docs.md` |
+| Picking a component as an agent (machine catalog) | `dist/docs/components.json`, `AGENTS.md` |
+| The 10/10 visual rubric | `engineering/decisions/2026-06-06-layout-audit/` |
+| Release / publish | `RELEASE.md` |
+| Durable investigation notes | `engineering/decisions/YYYY-MM-DD-topic.md` |
 
-**Final commit per PR includes all rebuilt PDFs** — external
-reviewers still need raw-URL access to flip through the deliverable.
-A pre-commit hook (lefthook) catches the "staged .md without .pdf"
-case and the "stale .pdf relative to source" case. Bypassable via
-`--no-verify` only as last resort.
+The 12 component buckets: anchor, statement, inventory, comparison,
+progression, evidence, imagery, chart, diagram, math, code, legal.
 
-The old per-iteration "build + commit + push + share raw URL" loop
-is removed. PDFs being out-of-sync with source within a PR is now
-caught by the hook instead of by reviewer eyeballs.
+---
 
-## High-friction reminders (the rules you forget)
+## The build, tests, and gates (the machine polices these — don't re-police)
 
-- **Isolate feature/fix content from the long-running galleries.** Do
-  not add slides or modifier examples to any of the six long-running
-  decks while a feature is in development. Layouts graduate into them
-  in a separate commit after review. See workflow.md.
-- **Ship a per-feature demo deck.** Every feature or fix branch creates
-  `examples/<slug>.md` (+ committed `.pdf`) so the reviewer can see the
-  work in one click. Six to ten slides, title → demo → closing. Full
-  authoring + build + share contract in workflow.md.
-- **Use `npm run preview` for visual iteration.** Edit → preview →
-  `SendUserFile`. No commits per iteration. The preview tool
-  auto-detects scope (L0-L3) and surfaces only the affected files.
-  See "The visual-iteration loop" above.
-- **`SendUserFile` is the primary delivery during dev.** Raw
-  `raw.githubusercontent.com` URLs go only in the FINAL PR-summary
-  reply (so external reviewers have a permanent link). During
-  iteration the user reads the PDF from `SendUserFile` directly.
-- **Design before code on rethink requests.** When the user asks to
-  "rethink X," write the design model first — name the axes, list
-  candidate moves, recommend one. Confirm direction in one round trip
-  before editing CSS or transforms. Bundle adjacent decisions in one
-  `AskUserQuestion`. Kills the ship → critique → re-ship churn.
-- **Consult component docs before authoring slides.** Before writing
-  any slide that uses `<!-- _class: X -->`, locate the component's
-  bucket-nested folder (use `find lib/components -name X -type d`) and
-  open `lib/components/<bucket>/X/X.docs.md` AND grep
-  `test/integration/baseline-decks/gallery.md` for a working example
-  **in the same turn**. Same rule for base modifiers
-  (`tint-*`, `mark-*`, `with-*`, `dark`, `numbered`, …): open
-  `lib/base/base.docs.md` first. Do not author from memory of docs
-  read earlier in the session. The docs name the slot syntax, the
-  required nesting depth, the bullet shape, and the markdown footguns
-  (e.g. literal `*` in prose triggers emphasis; literal `<tag>` in
-  inline code needs escaping or `&lt;`). Skipping this step is how
-  decks ship with `**Label.** body` when the layout actually wants
-  `- Label\n  - body`, or with prose describing an abandoned
-  implementation, or with `tint-<em>` leaking into rendered output.
-- **Lint drafts with `npm run lint:deck -- <file>`.** The author-facing
-  linter (`tools/lint-deck.js` → `lib/authoring/lint.js` → the pure
-  `lib/authoring/lint-core.js`) flags the card-style inline-title,
-  ordered-list-bold, and class-typo footguns with no render — run it before
-  rendering. **`lint-core.js` is the single source of those checks** — pure,
-  `fs`-free, dependency-free — shared by this CLI, `lib/components`'s
-  `validate()`, and the browser (the Drawing Board's Architect panel runs the
-  *same* engine client-side, vocab injected). Edit lint rules THERE, never
-  duplicate them. `dist/docs/components.json` is the machine catalog (axes,
-  tags, slots, skeletons, when/anti/related) an agent loads to pick a
-  component; `AGENTS.md` is the vendor-neutral entrypoint. See
-  `design/design-system.md` §7.
-- **Card-style layouts forbid inline `- **Title.** body`.** The
-  CARD_STYLE_LAYOUTS set (defined in `lib/authoring/lint-core.js`,
-  re-exported by `lib/components/index.js`) lists 8
-  layouts (cards-grid, cards-stack, featured, compare-prose,
-  matrix-2x2, verdict-grid, decision, citation-card) whose autobold li
-  rule makes body text after `<strong>` inherit `font-weight:700`. The contract on every
-  card-style slide is the nested format:
-  ```
-  - Title
-    - body text continues here
-  ```
-  Not `- **Title.** body text`. The validator
-  (`findInlineTitleBodyLine` + `test/unit/components/deck-authoring.test.js`)
-  catches this across every `.md` deck in the repo at commit time —
-  if a test fails with "inline `- **Title.** body` on card-style
-  slides," apply the nested format.
-- **Title slides use `title silent` + `\`eyebrow\`` + plain subtitle.**
-  Per `lib/components/anchor/title/title.docs.md`: the `silent`
-  modifier suppresses pagination, header, footer in one token. The
-  eyebrow goes in backtick-wrapped inline code. The subtitle is a
-  plain paragraph. Don't pile prose into a second paragraph —
-  the title slot is a single tight composition: eyebrow → h1 →
-  subtitle. Look at `lib/components/inventory/inventory.gallery.md`
-  for the bucket-survey reference and any per-component gallery for
-  the component-doc reference.
-- **`tokens: universal` front matter is a Drawing-Board-only, temporary
-  A/B.** It renders a deck against the new `--cat-*`/`--diagram-*`
-  vocabulary (identical output — byte-identical flip) to validate the
-  in-flight universal-token migration. `marp-cli` / the emulator ignore
-  it, so a deck stays portable; it's retired at the canonical flip. Full
-  note in `lib/base/base.docs.md`; rationale in
-  `engineering/decisions/2026-06-11-universal-token-system.md` §10. Until
-  that flip, author and document tokens with the **old** names
-  (`--c1-light`, `--c-stroke`, …) — they remain the canonical per-theme
-  source.
-- **Commit messages are `area(scope): short summary`.** Match `git log`.
-- **Pull requests follow `.github/pull_request_template.md`.** The title is the
-  same `area(scope): short summary` as the commit — never a vague "Updates" or a
-  bare branch name. The body leads with a plain-language sentence, then
-  **Problem/Why → What changed → Tests → Caveats**, and names what was NOT
-  verified. This is the house style for both the typed `create pr` and the
-  Create-PR button — keep them in parity. (The harness appends the session
-  link; don't add the model id anywhere in the PR.)
-- **Record every user-visible change in `CHANGELOG.md` `## Unreleased`
-  as it lands** — not at release time. The changelog is the source of
-  truth the release reads: `tools/changelog.js` derives the semver bump
-  from the Keep-a-Changelog categories there (`### Removed` /
-  `**Breaking:**` → major, `### Added`/`### Changed`/`### Deprecated` →
-  minor, `### Fixed`/`### Security` → patch). When a change alters a
-  shipped surface (a component, modifier, token, export, theme, CLI
-  flag, or render behavior), add or update the right `## Unreleased`
-  entry **in the same change** — pure-internal refactors/tests/docs need
-  no entry. Lead a bullet with `**Breaking:**` for any change that breaks
-  an existing deck or consumer, so it scores major even under
-  `### Changed`. The release workflow rolls `## Unreleased` into a dated
-  section; you keep it accurate. See `RELEASE.md`.
-- **No hex literals in layout rules.** Always `var(--token)`.
-- **Typography uses the 12-token system.** Three scales: content
-  (`--fs-meta` 11.25 / `--fs-body-compact` 13.5 / `--fs-body` 16 /
-  `--fs-message` 21 / `--fs-emphasis` 30 pt), heading (`--fs-h1` 48 …
-  `--fs-h6` 11.25, per-level independent; h4/h5/h6 tied to
-  message/body/meta), display (`--fs-hero` 86 pt, class-driven). Values
-  are normalized to the proven legacy footprint (a touch above it), NOT
-  the projection-floor inflation the first rethink shipped — Lattice
-  makes boardroom PDFs read at desk distance, not projected at 20ft. All
-  HTML headings auto-resolve via `base.elements.css`. The cascade default
-  is `--fs-body` (16 pt) for cards / lists / inline prose; slide-level
-  statement prose opts UP to `--fs-message` (21 pt); dense table/grid
-  cells (list-tabular, glossary, compare-table, matrix-2x2, verdict-grid,
-  obligation-matrix, actors) opt DOWN to `--fs-body-compact` (13.5 pt).
-  `--fs-hero` is the ONE big number on a slide; rows of comparable
-  metrics use `--fs-h1` (48 pt). A few layouts use documented explicit
-  cqi sizes between tokens (split-panel pullquote / kpi.briefing supports at
-  38 pt, split-panel watermark at 110 pt). Picking by "feel" or t-shirt
-  size (`fs-md` / `fs-lg`) is the legacy pattern; those names are
-  retired. See `engineering/typography.md`.
-- **Avoid `:not(:has(...))` / `:is(:has(...), :has(...))` in theme CSS.**
-  Silently broken in the Marp preview Chromium build. See
-  `engineering/gotchas.md`.
-- **`.scratch/` has a 14-day lifecycle** (`npm run clean:scratch`). Use
-  it for throwaway experiments.
+- `npm run build` regenerates every `dist/` artifact in dependency order
+  behind `npm run check:ownership` (the collision guard). `build:check` is
+  the CI/stale gate.
+- `npm test` is the inner loop; `npm run test:integration` is the
+  cross-renderer + PDF-page-count tier; `test:<scope>` runs one slice.
+  Counts and scopes live in `engineering/development.md` — don't memorize them.
+- **Hooks make the checklist blocking** so you don't run it from memory:
+  pre-commit (lint + affected tests + deck-footgun lint + PDF rebuild +
+  freshness gates), pre-push (full lint + repo deck lint + `build:check` +
+  full unit + full integration), commit-msg (format). Per §Default Operating
+  Mode, run these yourself *before* you reach the hook — the hook is the backstop.
 
-## Definition of Done — the gates run for you; don't re-police them
+---
 
-The quality checklist is **enforced by git hooks, not by memory**. Once
-`node_modules` is installed (the web SessionStart hook at
-`.claude/hooks/session-start.sh` guarantees this, along with
-`poppler-utils` and `CHROME_PATH`), lefthook makes these blocking — a
-commit or push simply fails until they pass. Don't manually re-run them
-"to be sure," and never reach for `npx biome` (wrong package on the
-registry — use `npm run lint` or `node_modules/.bin/biome`):
+## Visual iteration loop
 
-- **At commit (`pre-commit`)** — biome lint (staged), affected unit
-  tests, deck-footgun lint (staged decks), auto-rebuild of staged deck
-  PDFs, and freshness gates for the runtime/emulator bundles, dist
-  README, and component docs/portal.
-- **At push (`pre-push`)** — full biome lint, repo-wide deck lint,
-  `build:check` (the CI build / stale-artifact gate), the full unit
-  suite, and the **full integration tier** (cross-renderer parity + PDF
-  page counts). Nothing unverified reaches the remote.
-- **commit-msg** — the `area(scope):` format check.
+- **Iterate with `npm run preview` + `SendUserFile`** — no per-iteration
+  commits. The tool auto-detects scope (L0–L3 from `git diff`), rebuilds only
+  what's affected, and pixel-diffs against the last commit. Loop:
+  `edit → npm run preview [-- <deck>] → SendUserFile <files>`.
+- **Lint drafts with `npm run lint:deck -- <file>`** before rendering.
+- **The final PR commit includes all rebuilt PDFs** (external reviewers need
+  raw-URL access); the raw `raw.githubusercontent.com` URL goes only in the
+  final PR reply.
+- `marp-cli` works here once `CHROME_PATH` points at the puppeteer chromium
+  (`engineering/gotchas.md`). The SessionStart hook sets this up on the web.
 
-A hook failure is a **root cause to fix, not a `--no-verify` to skip**.
+---
 
-**What the hooks cannot do is the one thing left to you: visual
-judgment.** Tests verify code correctness, not that the slide *looks*
-right. So on any visual change (CSS, layout, theme, gallery) the standing
-rule is: rebuild, **`SendUserFile` the rendered PDF**, and run
-`tools/pixel-check.js` to catch unintended drift. If you cannot rebuild
-and inspect, **say so explicitly** rather than claim success (see below).
-Everything else on the old "did you lint / test / build / update the
-generated docs?" checklist is now the machine's job.
+## Design-before-code on "rethink X" requests
 
-## You CAN see the web app — run the docs site and screenshot it
+When asked to rethink something, write the design model first — name the
+axes, list candidate moves, recommend one, confirm in one `AskUserQuestion`
+round trip — before editing CSS or transforms. Bundle adjacent decisions.
 
-**The cloud sandbox can build, run, and screenshot the Astro docs site
-(landing, Drawing Board, Workbench, component pages) — do this; never
-claim a web-UI change is unverifiable here.** The full loop, the traps,
-and the per-route table live in `engineering/development.md` §
-"Previewing the docs site (Astro) + screenshots". The short version:
-
-```bash
-# 1. one-time: docs/ is a SEPARATE npm package (not a root workspace)
-cd docs && npm install
-# 2. serve — invoke the bin DIRECTLY (the `npm run dev` script trips
-#    `sh: astro: not found` in this sandbox); base path is /lattice
-nohup ./node_modules/.bin/astro dev --host 127.0.0.1 --port 4321 \
-  > /tmp/astro.log 2>&1 &   # wait for "ready"; routes 200 under /lattice/
-# 3. screenshot any route, then view the PNG with Read (renders inline)
-cd /home/user/lattice
-node tools/screenshot.js http://127.0.0.1:4321/lattice/drawing-board/ \
-  .scratch/shots/db.png --width 1440 --height 900
-```
-
-`tools/screenshot.js` drives the puppeteer-cached Chromium (`--no-sandbox`,
-auto-resolves the binary; `--full`/`--wait <sel>`/`--delay` available). Do
-NOT `pkill -f astro` from a shell whose own command line contains "astro"
-(it self-kills); stop the server by PID or port. See `engineering/gotchas.md`
-for each trap.
-
-## When you can't see the result
-
-For **PDF** visual changes (CSS, layouts, themes, gallery), rebuild and
-rasterize for review (`tools/rasterize-for-review.sh`) — that works in the
-sandbox too. For **web-UI** changes, screenshot the running docs site (see
-the section just above). Only if a tool genuinely cannot run here — **say
-so explicitly** rather than claim success; don't assume it can't before
-trying.
-
-## Visually spot-check any PDF you rebuild as a side effect
-
-A CSS or theme change that cascades into `examples/` or galleries
-forces rebuilds across many decks. **Build success is not enough.**
-The rebuilt PDFs reflect both your CSS change AND whatever latent
-source bugs were there before — environmental drift (Chromium
-version, fonts) and authoring bugs in the source surface identically
-in a rebuild. Open at least one representative page per rebuilt deck
-via `SendUserFile` before committing, or run
-`node tools/pixel-check.js diff <label>` against a pre-change
-snapshot so unexpected drift surfaces as a failed gate rather than
-as committed broken output.
-
-The `deck-authoring.test.js` gate catches the specific
-inline-format-on-card-style-layouts violation at `npm test` time,
-but it doesn't catch every authoring bug — only that pattern. The
-visual spot-check is the general-purpose defense; the test is the
-specific one.
-
-**Rasterize PDFs through `tools/rasterize-for-review.sh`.** Lattice is
-a design system; **visual fidelity is what we're checking**, so
-downscaling a rasterized slide to fit a session image limit defeats
-the purpose. The wrapper renders at full quality and gives you two
-complementary modes so you never fragment the diagnosis:
-
-- **`--overview`** — auto-picks a DPI so the WHOLE slide fits under
-  2000px. Low-DPI rasterization of a vector PDF is NOT downscaling;
-  text shapes are still computed at full mathematical precision,
-  just sampled to a coarser pixel grid. Use this first to see the
-  big picture.
-- **`--region <name>` / `--crop "WxH+X+Y"`** — full DPI, partial
-  slide. Use after overview identifies a specific area to inspect
-  in detail (font edges, gradient stops, etc.).
-
-```bash
-# Big picture of a 4K slide — full layout visible
-tools/rasterize-for-review.sh test/integration/baseline-decks/gallery.pdf -f 38 -l 38 --overview --check
-
-# Detail of one region at full DPI
-tools/rasterize-for-review.sh test/integration/baseline-decks/gallery.pdf -f 38 -l 38 --region left --check
-
-# Custom geometry crop
-tools/rasterize-for-review.sh ... --crop "1500x900+1000+500"
-```
-
-`--check` is the universal safety gate — refuses to succeed if any
-output exceeds 2000px on longest side (the conversation API's
-inline-image limit). Region shortcuts clamp dimensions automatically
-so they always pass `--check`. The codebase's automated pipelines
-(`tools/pixel-check.js`, `tools/preview.js`) rasterize at 72dpi for
-their own use and don't need this wrapper.
-
-**Workflow**: `--overview` to see the big picture → identify suspect
-area → `--region` for full-quality detail. No more guess-and-check.
-
-**`marp-cli` works in the cloud sandbox — set `CHROME_PATH` first.**
-The puppeteer-cached chromium binary isn't on the system PATH, so
-`npx marp` exits with "no suitable browser found" until you point it
-at the cached binary. The integration test helper at
-`test/helpers/render.js` inherits `process.env`, so the same env var
-covers tests too.
-
-```bash
-CHROME_PATH=$(ls /root/.cache/puppeteer/chrome/linux-*/chrome-linux64/chrome | head -1) \
-  npx marp <deck>.md --config-file marp.config.js \
-    --allow-local-files --pdf -o <deck>.pdf
-```
-
-See `engineering/gotchas.md` "marp-cli works in the cloud sandbox
-— set `CHROME_PATH`" for the full entry. Same file documents the
-matching `themeSet` requirement: any deck whose front-matter `theme:`
-directive names a theme not listed in `marp.config.js` `themeSet`
-renders without a palette (white bg, no tokens) — every theme under
-`themes/` is registered there as of `6aad1e6`.
+`.scratch/` is for throwaway experiments (14-day lifecycle, `npm run clean:scratch`).

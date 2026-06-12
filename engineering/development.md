@@ -119,9 +119,14 @@ Configuration in `lefthook.yml`.
 - `affected-tests` — `tools/affected-tests.js` maps staged paths to
   scoped scripts; runs only what's affected. See *Affected tests* below.
 
-**pre-push** (serial, ~5s safety net):
+**pre-push** (serial, fail-fast cheap-first):
 - `lint` — full tree
+- `lint-deck` — repo-wide strict author-facing footgun sweep
+- `build-check` — the CI/stale-artifact gate (regen + byte-diff of `dist/`)
 - `unit-tests` — full unit suite
+- `integration-tests` — full cross-renderer parity + PDF page-count tier.
+  Skipped when a push touches no render-relevant files (the job mirrors CI's
+  `code` paths-filter in `.github/workflows/ci.yml`; keep the two in sync).
 
 **commit-msg** (~0.01s):
 - `format` — `tools/check-commit-msg.sh` validates `area(scope): summary`.

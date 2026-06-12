@@ -179,9 +179,26 @@ pre-push:
       # exports CHROME_PATH. The inline locate is a fallback so the gate is
       # self-contained even if the session env didn't propagate. Warm cache
       # makes repeat runs near-instant; a real source change is ~30s.
+      #
+      # Path guard — mirrors the `code` paths-filter in .github/workflows/ci.yml
+      # exactly (keep the two in sync): the render tier can only be affected by
+      # render-relevant files, so skip it when a push touches none. Fail OPEN —
+      # if the merge-base or the diff can't be resolved, run it. CI re-runs the
+      # full filter on the PR, so a docs/config-only push skipping here is still
+      # covered before anything reaches main.
       run: |
-        export CHROME_PATH="${CHROME_PATH:-$(ls /root/.cache/puppeteer/chrome/linux-*/chrome-linux64/chrome 2>/dev/null | head -1)}"
-        npm run test:integration
+        base="$(git merge-base HEAD origin/main 2>/dev/null || true)"
+        run_it=1
+        if [ -n "$base" ] && files="$(git diff --name-only "$base"...HEAD 2>/dev/null)"; then
+          printf '%s\n' "$files" | grep -qE '^lib/|^tools/|^test/|^themes/|^dist/|^examples/|^marp\.config\.js$|^lattice-emulator\.js$|^mermaid-v11\.min\.js$|^package\.json$|^package-lock\.json$|^\.github/workflows/ci\.yml$' || run_it=0
+        fi
+        if [ "$run_it" = 1 ]; then
+          export CHROME_PATH="${CHROME_PATH:-$(ls /root/.cache/puppeteer/chrome/linux-*/chrome-linux64/chrome 2>/dev/null | head -1)}"
+          npm run test:integration
+        else
+          command -v pdfinfo >/dev/null 2>&1 || echo "  ⚠ pdfinfo missing (poppler-utils) — the integration gate that re-checks it was skipped"
+          echo "integration-tests: skipped — no render-relevant changes vs origin/main (docs/config only)"
+        fi
 
 commit-msg:
   jobs:
