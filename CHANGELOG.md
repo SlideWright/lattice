@@ -212,6 +212,19 @@ in patch versions.
   categorical systems stay distinct by design (12 diagram band slots vs 8 chart
   slots — Wong 2011), now with names that say which is which. Demo deck:
   `examples/universal-tokens-p6-chart-cat.md`.
+- **Universal token system — phase 7 (self-policing gate).** Adds
+  `test/unit/palette/universal-token-vocabulary.test.js` — a CI gate that fails
+  the build if any phase's vocabulary (`--cat-*`, `--diagram-*`, `--status-*`,
+  `--surface-inverse`, `--scheme-dark-*`, `--seq-*`) is left undefined or its
+  alias dropped, so the system stays honest going forward. The originally
+  planned "move component knobs out of `:root`" is **reclassified, not
+  executed**: investigation showed `--chart-fill-*` is already component-scoped
+  and `--pill-*` / `--mark-*` / the state-disc knobs are genuine *universal
+  component primitives* (consumed by `base.modifiers` + 10+ components) that
+  correctly live in base — nothing to relocate. Capstone demo deck:
+  `examples/universal-tokens-p7-system.md`. The remaining work (the canonical
+  flip off the old names + the post-flip name lint) is documented in the
+  decision note.
 - **Workbench export bridge — library themes reach the Drawing Board.** A theme
   saved in the Workbench library is now selectable in the Drawing Board's palette
   picker (listed with a *(saved)* suffix), registers with the in-browser engine,

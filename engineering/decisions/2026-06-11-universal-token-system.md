@@ -1,8 +1,8 @@
 # Universal token system — design, crosswalk, and migration strategy
 
 **Date:** 2026-06-11
-**Status:** design accepted · **phase 1 implemented** (categorical group) ·
-phases 2–7 proposed
+**Status:** design accepted · **phases 1–7 implemented** (alias era) ·
+canonical flip + post-flip lint remain
 **Scope:** `lib/base/base.tokens.css`, `themes/*.css`, the three render-path
 Mermaid bridges (`lattice-emulator.js`, `lib/runtime/index.js`,
 `marp.config.js`), `lib/theme/derive.js`, the gates
@@ -167,7 +167,7 @@ The contrast contract is **preserved by construction**, not by re-tuning:
 | **4 (done)** | surfaces / scheme | `--bg-dark`, `--dark-*` | `--surface-inverse` (8 consumers repointed), `--scheme-dark-*` (vocabulary; the per-theme `light-dark()` pairs flip later). **Refined:** `--bg` / `--bg-alt` / `--border` are kept as-is — clear and short, not magic; renaming them would be churn without payoff. |
 | **5 (done)** | sequential | `--scale-50..900` (+ `--scale-500`) | `--seq-50..900` — frees "scale" from the `--fs-scale` collision (word-cloud repointed; the ramp anchor + derivation flip later) |
 | **6 (done)** | chart triad | `--cat1..8-{hue,fill,ink}` | `--chart-cat-1..8-{hue,fill,ink}` — **flipped, not aliased**: the bare `cat` name is *eliminated*, killing the near-collision with phase-1 `--cat-N-*`. Self-contained (chart CSS + transforms, not bridge-fed), so a direct rename is cleaner than an alias that would leave the collision. Theme hooks `--chart-catN` kept. |
-| 7 | component knobs | `--state-fill-pct`, `--pill-pad-y`, `--mark-*`, `--chart-fill-*` in `:root` | move into component CSS (Tier 3) |
+| **7 (done — reclassified)** | component knobs | `--pill-*`, `--mark-*`, state-disc knobs, `--chart-fill-*` | **No relocation needed.** Investigation showed the premise was overstated: `--chart-fill-*` is *already* component-scoped (`section.chart-frame`); `--pill-*` and `--mark-*` / state-disc knobs are consumed by `base.modifiers` **and** 10+ components, i.e. genuine *universal component primitives* that correctly live in base (not magic — the shared recipe). Phase 7 instead ships the **self-policing vocabulary gate** (`test/unit/palette/universal-token-vocabulary.test.js`). |
 
 The two categorical systems stay **separate** (12 diagram slots vs 8 chart
 slots is a *designed* divergence — Wong 2011 perceptual ceiling for charts;
@@ -233,7 +233,25 @@ Mirrors the typography template, with the maker–checker corrections folded in:
   confirms the `light-dark()` inside each `--cat-*` value resolves to its dark
   branch through the new names.
 
-## 10 — Open decisions (future phases)
+### Phases 2–7 — same recipe, each shipped green
+
+Every phase below was committed separately, each with a demo deck, and each
+gated by the full unit suite + the integration tier (cross-renderer parity +
+page counts, 167/0) + a visual spot-check:
+
+| Phase | Group | Verified |
+|---|---|---|
+| 2 | diagram-structural (`--diagram-stroke/line/accent-warm`) | flowchart strokes + edges |
+| 3 | status axis (`--status-*`) + diagram lifecycle (`--diagram-active/done/critical/today/note`) | checklist discs + gantt lifecycle |
+| 4 | surfaces (`--surface-inverse`, `--scheme-dark-*`) | title + code dark panels |
+| 5 | sequential (`--seq-*`) | word-cloud heat-ramp |
+| 6 | chart categorical (`--chart-cat-*`, **flip**) | piechart + radar |
+| 7 | self-policing vocabulary gate (no relocation needed — see §7 row 7) | `universal-token-vocabulary.test.js` 12/12 |
+
+Final state of the alias era: full unit suite **1498/1498**, integration
+**167/0**, demo decks `examples/universal-tokens*.md`.
+
+## 10 — Remaining work
 
 - ~~Whether phase 3 collapses the three status systems to one vocabulary~~
   **Resolved (two honest axes):** a STATUS axis `--status-*` shared by engine
@@ -243,5 +261,18 @@ Mirrors the typography template, with the maker–checker corrections folded in:
 - Folding in the deferred **Model A** (`2026-06-05-token-structure-audit.md`):
   retire most of `--on-dark-*` by giving dark panels a scoped
   `color-scheme: dark`, so they reuse the one canvas ramp.
-- When to flip canonical-ity (themes declare `--cat-*` directly; old names
-  become the thin alias) and retire the alias layer per group.
+- **The canonical flip (the headline remaining work).** All seven groups ship
+  as *aliases new→old* — the new vocabulary is what every render path and new
+  consumer reads, but the old names (`--c1-light`, `--c-stroke`, `--pass`,
+  `--bg-dark`, `--scale-*`, …) are still the per-theme / base source. The flip
+  makes the new names canonical (themes declare `--cat-*` etc. directly; the old
+  names become thin aliases or retire), atomically per group with the
+  contrast / token-parity / mermaid-var-map fixtures (checker F9). This is where
+  `mermaid.css`'s ~250 SVG rules + `derive.js`'s `REQUIRED_TOKENS` + the 14
+  themes finally move off the old spellings.
+- **The post-flip token-tier lint.** Once the old names are gone, extend
+  `check-ownership.js`: forbid a color-scheme word (`light`/`dark`) in any token
+  name, forbid a Tier-1 primitive consumed for colour-role in a component, and
+  assert every theme defines the Tier-2 input set (the 13 `*-dark.css` wrappers
+  exempt). Cannot run during the alias era because the old `*-light`/`*-dark`
+  names still exist by design.
