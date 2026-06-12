@@ -96,6 +96,17 @@ function faceRule(face, src) {
 	);
 }
 
+// A @font-face block that references each vendored woff2 by its bundled URL
+// (NOT inlined as a data URI) — for registering the faces in a live preview
+// iframe. The browser fetches + caches each woff2 once across renders, so this
+// is far lighter than the data-URI sheet a per-render srcdoc would otherwise
+// carry. The preview needs this because the engine's Google-Fonts @import is
+// inert inside the srcdoc <style> (it lands after other rules, where CSS ignores
+// @import), so without it sketch's Caveat/Shantell never load in the preview.
+export function previewFontFaceCss() {
+	return FACES.map((f) => faceRule(f, f.url)).join('\n');
+}
+
 // Build the data-URI @font-face stylesheet once and memoize it. Fetches are
 // same-origin (Vite-served bundled assets), so this is fast and offline-safe.
 let cssPromise = null;

@@ -19,6 +19,7 @@ import { join } from 'node:path';
 import '../styles/landing.css';
 import '../styles/drawing-board.css';
 import { SLIDE_BOX } from '../playground/frame-css.js';
+import { previewFontFaceCss } from '../playground/font-embed.js';
 import { assetBase } from '../playground/asset-version.mjs';
 import { joinBase } from '../lib/base-url.mjs';
 import { pickGrammarVariants } from '../playground/architect-knowledge.js';
@@ -137,6 +138,12 @@ const dbData = JSON.stringify({
 	runtimeUrl: url(pg + 'lattice-runtime.js'),
 	defaultPalette: 'indaco',
 	slideBox: SLIDE_BOX,
+	// Self-hosted @font-face block for the preview iframe. The engine's
+	// Google-Fonts @import is inert inside the srcdoc <style> (it lands after
+	// other rules; CSS ignores an @import that isn't first), so the iframe loads
+	// none of its own webfonts — sketch's Caveat/Shantell never appear and body
+	// drops to a system sans. Built from the vendored woff2 (URLs, not inlined).
+	previewFontCss: previewFontFaceCss(),
 	starter,
 	lintVocab,
 	themes: themeNames,
@@ -1063,6 +1070,7 @@ const dbData = JSON.stringify({
 				var THEME_BASE = data.themeBase;
 				var RUNTIME_URL = data.runtimeUrl;
 				var SLIDE_BOX = data.slideBox;
+				var PREVIEW_FONT_CSS = data.previewFontCss || '';
 				// Per-deck token vocabulary, selected by the `tokens:` front-matter
 				// directive (current | universal). Universal renders the deck against the
 				// new --cat-*/--diagram-* names — identical output (byte-identical flip,
@@ -1282,6 +1290,9 @@ const dbData = JSON.stringify({
 					frame.srcdoc =
 						'<!doctype html><html><head><meta charset="utf-8">' +
 						'<link rel="stylesheet" href="' + KATEX + '">' +
+						// Register the vendored faces (Caveat/Shantell + the boardroom set) so
+						// the preview doesn't depend on the engine @import that goes inert here.
+						'<style>' + PREVIEW_FONT_CSS + '</style>' +
 						'<style>html,body{margin:0;padding:22px;background:' + bg + ';}' +
 						SCHEME +
 						// Hidden until the FIT agent scales the 1280px sections to the

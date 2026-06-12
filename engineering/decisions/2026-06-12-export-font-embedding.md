@@ -85,6 +85,31 @@ Verify by rasterizing a body slide and reading the pixels — `pdffonts` is
 useless here because the export is an *image* PDF (text is baked into PNGs, not
 embedded as PDF font objects).
 
+## The live preview had the same blind spot
+
+Investigating a follow-up report (sketch body still clean in the on-screen
+preview, not just the export) surfaced a sibling bug with the same root — the
+engine's Google-Fonts `@import` doesn't reach the iframe. Each preview slide
+renders into an `srcdoc` whose `<style>` concatenates `frame-CSS + theme-CSS`;
+the `@import` that sits at the top of the theme CSS lands **after** the frame
+rules, and CSS ignores an `@import` that isn't the first rule. So the iframe
+registers no webfonts of its own and renders only the faces the **parent docs
+page** loaded into the shared same-origin font cache (Playfair/Outfit/JetBrains).
+Caveat/Shantell are never loaded by the docs UI, so sketch headings fall to the
+system hand font (`'Bradley Hand', cursive`) — still hand-looking — while body
+falls to `system-ui` and looks clean. The token re-pointing was always correct;
+the font was just absent.
+
+Fix: register the vendored faces in the iframe directly via
+`previewFontFaceCss()` (a lightweight `@font-face` block referencing the bundled
+woff2 by URL, not inlined — the browser caches each once). The Drawing Board
+threads it through `data.previewFontCss` into its `writeFrame` srcdoc (its render
+controller is `is:inline` and can't import, so the block is built in the page
+frontmatter); `live-render.js` (playground / landing hero / component specimens)
+lazy-imports the same builder. Verified by inspecting the iframe's
+`document.fonts` (Caveat/Shantell now register and load) and screenshotting a
+sketch deck (body, eyebrows, bullets render in Shantell).
+
 ## Follow-ups
 
 - Refresh the vendored woff2 if the engine's font set changes (re-run the

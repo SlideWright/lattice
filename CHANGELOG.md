@@ -49,6 +49,18 @@ in patch versions.
 
 ### Fixed
 
+- **The docs-site live preview now loads the sketch hand fonts — `finish:
+  sketch` decks no longer render hand headings over a clean-sans body.** Each
+  preview slide renders into an `srcdoc` iframe whose `<style>` concatenates the
+  frame CSS before the theme CSS, which demoted the engine's Google-Fonts
+  `@import` past the first-rule position where CSS honors it — so the iframe
+  registered none of its own webfonts and showed only the faces the parent docs
+  page happened to load (Playfair/Outfit/JetBrains). Caveat/Shantell were absent,
+  so sketch headings fell to a system hand font (still hand-looking) while body
+  fell to a system sans. The preview now registers the vendored faces directly
+  (`previewFontFaceCss()` → `data.previewFontCss` for the Drawing Board's
+  `writeFrame`; a lazy import in `live-render.js` for the playground, landing
+  hero, and component specimens). Docs-only.
 - **Drawing Board PDF / PowerPoint exports now embed every web font — body
   text on `finish: sketch` decks no longer drops to a system fallback.** The
   image exporters rasterize every slide through html-to-image, which chased the
