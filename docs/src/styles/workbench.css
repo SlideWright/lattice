@@ -635,3 +635,19 @@
 	.studio-ai-row .studio-btn { flex: 1 1 100%; }
 	.lstudio-field { grid-template-columns: 1fr; }
 }
+
+/* Preview setup — the state-backed deck-config panel (Theme + Layout Studio).
+ * A small panel that drops below the stage head; the shared deck-config.css
+ * styles its rows (the host carries `.deck-config`). */
+.studio-preview-config {
+	margin: 0 0 0.7rem;
+	padding: 0.6rem 0.85rem 0.75rem;
+	border: 1px solid var(--border);
+	border-radius: var(--radius-sm, 6px);
+	background: color-mix(in srgb, var(--text-heading) 3%, var(--bg));
+	max-width: 24rem;
+}
+.studio-preview-setup-btn[aria-expanded="true"] {
+	border-color: var(--accent);
+	color: var(--accent);
+}

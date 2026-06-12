@@ -11,6 +11,7 @@ import { createRequire } from 'node:module';
 import { join } from 'node:path';
 import '../styles/landing.css';
 import '../styles/workbench.css';
+import '../styles/deck-config.css';
 import { joinBase } from '../lib/base-url.mjs';
 import { assetBase } from '../playground/asset-version.mjs';
 
@@ -24,12 +25,14 @@ const pg = assetBase();
 // double-defining a shipped class). See the component-bridge decision note.
 const require = createRequire(import.meta.url);
 const { loadAll } = require(join(process.cwd(), '..', 'lib/components', 'index.js'));
+const { FINISH_NAMES } = require(join(process.cwd(), '..', 'lib/core', 'resolve-finish.js'));
 const shippedNames = loadAll().map((m) => m.name);
 
 const studioData = JSON.stringify({
 	themeBase: url(pg + 'themes/'),
 	runtimeUrl: url(pg + 'lattice-runtime.js'),
 	shippedNames,
+	finishes: FINISH_NAMES,
 });
 
 const links = [
@@ -156,8 +159,10 @@ const links = [
 						<button type="button" class="studio-mode-btn is-active" data-mode="light">Light</button>
 						<button type="button" class="studio-mode-btn" data-mode="dark">Dark</button>
 					</div>
+					<button type="button" class="studio-mode-btn studio-preview-setup-btn" data-preview-setup aria-expanded="false" title="Preview setup — render this preview under a finish, size, or islands">Preview setup</button>
 					<span class="studio-status"></span>
 				</div>
+				<div class="studio-preview-config deck-config" hidden></div>
 				<div class="studio-preview-host"></div>
 			</section>
 
@@ -243,8 +248,10 @@ const links = [
 						<button type="button" class="studio-mode-btn is-active" data-mode="light">Light</button>
 						<button type="button" class="studio-mode-btn" data-mode="dark">Dark</button>
 					</div>
+					<button type="button" class="studio-mode-btn studio-preview-setup-btn" data-preview-setup aria-expanded="false" title="Preview setup — render this preview under a finish, size, or islands">Preview setup</button>
 					<span class="studio-status"></span>
 				</div>
+				<div class="studio-preview-config deck-config" hidden></div>
 				<div class="studio-preview-host"></div>
 			</section>
 

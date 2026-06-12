@@ -27,6 +27,17 @@ in patch versions.
 
 ### Added
 
+- **The deck-setup front-matter panel is now universal — in the Playground and
+  the Workbench too, not just the Drawing Board.** The config panel
+  (`docs/src/playground/deck-config.js`, relocated from `drawing-board-config.js`)
+  gained a `fields` profile so each surface shows the right subset: the
+  Playground gets a **Deck setup** drawer (everything except `theme:`, which its
+  palette picker owns); the Workbench's Theme + Layout Studios get a state-backed
+  **Preview setup** that applies a finish / size / islands to the specimen or
+  skeleton preview behind the scenes — so you can audit a theme or component
+  under `sketch` without it leaking into the saved asset. Sensible defaults
+  (boardroom / clean), full power on tap. Editor front-matter autocomplete for
+  `finish:` rides along in the Playground.
 - **New `finish:` front-matter key — apply a finish deck-wide by name.**
   `finish:` is a Lattice front-matter extension (orthogonal to `theme:`) that
   names the whole-deck finish in one readable token and propagates it to every

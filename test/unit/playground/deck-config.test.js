@@ -1,5 +1,5 @@
 /**
- * Unit: the Drawing Board deck-setup module's pure front-matter helpers.
+ * Unit: the universal deck-setup module's pure front-matter helpers.
  *
  * The drawer DOM (createConfigPanel) is verified headless. Here we prove the
  * pure, fs-free parse/serialize pair the controls read + write through:
@@ -11,7 +11,7 @@ const { test, describe, before, after } = require('node:test');
 const assert = require('node:assert/strict');
 const { JSDOM } = require('jsdom');
 
-const MOD = '../../../docs/src/playground/drawing-board-config.js';
+const MOD = '../../../docs/src/playground/deck-config.js';
 
 // A deck with no front matter — the Drawing Board's normal "clean" state.
 const CLEAN = '<!-- _class: title silent -->\n\n# A new deck\n\nStart sketching.\n';
@@ -314,5 +314,53 @@ describe('createConfigPanel (DOM)', () => {
     assert.ok(warn, 'a caution note renders for the unknown theme');
     assert.match(warn.textContent, /made-up/);
     assert.equal(host.querySelector('select').value, 'indaco', 'the select shows the fallback, not the bad value');
+  });
+
+  // A profile mount: pass an explicit `fields` allow-list + finishes/note.
+  function mountProfile(initial, fields, extra = {}) {
+    let source = initial;
+    const host = document.createElement('div');
+    return import(MOD).then(({ createConfigPanel }) => {
+      const panel = createConfigPanel({
+        host, trigger: document.createElement('button'),
+        getSource: () => source, setSource: (next) => { source = next; },
+        palettes: ['indaco', 'cuoio'], getDefaultTheme: () => 'indaco',
+        finishes: ['boardroom', 'sketch', 'sketch-clean'], fields, ...extra,
+      });
+      return { panel, host, get: () => source };
+    });
+  }
+
+  test('the preview profile renders only the render-register rows (no theme / chrome / Advanced)', async () => {
+    const { CONFIG_PROFILES } = await import(MOD);
+    const { panel, host } = await mountProfile(CLEAN, CONFIG_PROFILES.preview);
+    panel.render();
+    const labels = [...host.querySelectorAll('.db-pref-label')].map((n) => n.textContent);
+    assert.ok(labels.includes('Finish'), 'finish present');
+    assert.ok(labels.includes('Slide size'), 'size present');
+    assert.ok(labels.includes('Islands'), 'islands present');
+    assert.ok(!labels.includes('Theme'), 'theme excluded — the studio owns the palette');
+    assert.ok(!labels.includes('Header'), 'deck chrome excluded');
+    assert.ok(!host.textContent.includes('Advanced'), 'no Advanced section in a preview profile');
+  });
+
+  test('the noTheme profile (Playground) drops theme but keeps everything else, incl. Advanced', async () => {
+    const { CONFIG_PROFILES } = await import(MOD);
+    const { panel, host } = await mountProfile(CLEAN, CONFIG_PROFILES.noTheme);
+    panel.render();
+    const labels = [...host.querySelectorAll('.db-pref-label')].map((n) => n.textContent);
+    assert.ok(!labels.includes('Theme'), 'theme excluded — the top-bar picker owns it');
+    assert.ok(labels.includes('Finish') && labels.includes('Header') && labels.includes('Default slide class'));
+    assert.ok(host.textContent.includes('Advanced'), 'Advanced section present');
+  });
+
+  test('the finish row writes through and a custom note replaces the default intro', async () => {
+    const { panel, host, get } = await mountProfile(CLEAN, ['finish'], { note: 'Behind the scenes.' });
+    panel.render();
+    assert.ok(host.querySelector('.db-settings-note').textContent.includes('Behind the scenes.'));
+    const sel = host.querySelector('select[aria-label="Finish"]');
+    sel.value = 'sketch';
+    sel.dispatchEvent(new dom.window.Event('change'));
+    assert.ok(get().includes('finish: sketch'));
   });
 });
