@@ -232,6 +232,48 @@ diffs improvement/noise; (d) flip the default, delete `parseSlide`.
 Remaining to finish P2: (c) finish triaging the corpus A/B (the residual diffs
 are improvements/noise so far); (d) flip the default + delete `parseSlide`.
 
+### 2026-06-12 — (c) full-corpus flip A/B triaged; one blocker: `![bg]` split backgrounds (P1.1)
+
+Built `tools/emulator-flip-ab.mjs` — renders every deck through the emulator's two
+internal paths (default `parseSlide` vs `LATTICE_EMULATOR_ENGINE=1`), rasterizes at
+72 dpi, and per-page md5-diffs them. This is the permanent flip-safety gate. Full
+light corpus (indaco): **67 decks, 19 with diffs, 91 differing pages, and zero
+page-count / structural slide drops** — which is exactly why the page-count
+integration tier never caught any of this.
+
+Every differing page falls into three categories:
+
+| Category | Verdict | Where |
+|---|---|---|
+| `![bg left\|right]` split image layouts collapse | **REGRESSION — the one blocker** | imagery/image (8), featured (5), imagery bucket (2); + image slides in jargon/baseline |
+| bold-inside-inline-code stays literal | improvement (engine is GFM-correct; `parseSlide` wrongly bolds inside `<code>`) | legal s2, list-steps s15, code, compare-code, q-and-a |
+| sub-pixel (status icons, anti-aliasing) | noise — visually identical | compare-prose (×11), split-compare, obligation-matrix, roadmap s3, math s9 |
+
+**The one blocker — `![bg]` advanced backgrounds.** `parseSlide` has bespoke
+`![bg right]` → `lattice-bg` / `image-asset` / `image-text` handling; marp-cli gets
+the equivalent from Marpit's inline-SVG advanced background (the PDF path,
+`inlineSVG:true`). But **lib/engine implements only basic-mode `![bg]`**
+(`inlineSVG:false`, the web-runtime path): `lib/engine/background-image.js` collapses
+`bg left/right` to a single full-bleed CSS background and emits **0 `<img>`** — *by
+design*, its header naming the directional split "the **P1.1 milestone (the PDF
+path)**", not yet built. So the emulator's engine path, which renders PDFs through
+lib/engine, drops the image panel and the layout collapses to full-width text. The
+engine↔marp parity gate passed because BOTH run web/basic mode there; only the
+emulator's PDF path exposes the gap.
+
+**Consequence for the flip:** step (d) is blocked on **P1.1 — inline-SVG advanced
+backgrounds in lib/engine** (reproduce Marpit's split-container DOM +
+`image-text`/`image-asset` wrappers on the PDF path). That is a real engine
+milestone, not a triage fix. The earlier note that "the engine already does all of
+these [incl. `![bg]`]" was over-optimistic — it does basic mode, not the PDF split.
+Everything else in the corpus is improvement or noise, so once P1.1 lands the corpus
+should go all-green and the flip is safe; until then the engine path stays the
+default-OFF flag it is.
+
+Remaining to finish P2: **(c) done** (above); (c.5 / P1.1) implement inline-SVG
+advanced backgrounds in lib/engine — the gate to (d); (d) flip the default + delete
+`parseSlide` once the corpus is all improvement/noise.
+
 ## Rollback
 
 Every step is reversible; the seam is a single call site behind a default-OFF
