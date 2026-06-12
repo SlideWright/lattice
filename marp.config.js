@@ -17,6 +17,7 @@ const {
   readDeckLogoFrontMatter,
   applyMastheadMetaToHtml,
   applyProgressRailToHtml,
+  applyWatermarkToHtml,
   stateClassesFor,
   verdictGridBadges,
   obligationMatrixBadges,
@@ -117,6 +118,9 @@ module.exports = {
         // footer-centre dot-rail. Deck-level (needs every section), so it
         // runs here on the full shell, not in the per-section registry.
         result.html = applyProgressRailToHtml(result.html);
+        // watermark island — section-number ghost behind `islands watermark`
+        // slides. Same divider-derived section model.
+        result.html = applyWatermarkToHtml(result.html);
       }
       return result;
     };
@@ -135,6 +139,7 @@ module.exports.plugins = {
   readDeckLogoFrontMatter,
   applyMastheadMetaToHtml,
   applyProgressRailToHtml,
+  applyWatermarkToHtml,
   stateClassesFor,
   verdictGridBadges,
   obligationMatrixBadges,

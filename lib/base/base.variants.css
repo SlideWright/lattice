@@ -258,6 +258,9 @@ section.confidential::before {
  *                     title or meta line is cut at its berth, never bled. */
 section.islands {
   padding-bottom: calc(var(--_sec-1cqi, 1cqi) * 8.75);
+  /* Own stacking context so the z-behind watermark island paints ABOVE the
+   * canvas but BELOW the (non-positioned) body content. */
+  isolation: isolate;
 }
 section.islands .isl-masthead {
   display: grid;
@@ -375,3 +378,25 @@ section.islands .isl-progress {
   border-radius: 999px;
   background: var(--accent);
 }
+
+/* ── ISLANDS · watermark island — section-number ghost (Phase 2c) ───────
+ * A large z-behind background glyph (the section number) on `islands
+ * watermark` slides. z-index:-1 keeps it ABOVE the canvas but BEHIND the
+ * (non-positioned) body content; the section's overflow:hidden clips the
+ * overscan. Palette-blind; lifts to the on-dark ghost on dark canvases. */
+section.islands .isl-watermark {
+  position: absolute;
+  right: -2cqi;
+  bottom: -9cqi;
+  z-index: -1;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 44cqi;
+  line-height: 0.8;
+  letter-spacing: -0.03em;
+  color: color-mix(in srgb, var(--accent) 14%, transparent);
+  pointer-events: none;
+  user-select: none;
+}
+section.islands.dark .isl-watermark,
+section.dark.islands .isl-watermark { color: var(--on-dark-watermark); }

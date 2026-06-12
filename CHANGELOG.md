@@ -89,6 +89,12 @@ in patch versions.
   with a shipped component class at save time. CSS-only only; transform-bearing
   components remain graduation-only. See
   `engineering/decisions/2026-06-12-workbench-component-bridge.md`.
+- **Watermark island (islands model, Phase 2c).** Add `watermark` to an
+  `islands` slide and a large, palette-blind ghost of the current section
+  number paints behind the content (z-behind, clipped by the section) —
+  reinforcing the orientation the progress rail provides. Reuses the same
+  divider-derived section model; no-op without dividers. Completes the five
+  bay/footer/atmosphere islands of the model.
 - **Progress island + island gap/clip contract (islands model, Phase 2b).** On
   `islands` slides, a footer-centre dot-rail orients the audience: it derives
   sections from the deck's `divider` slides and stamps one dot per section

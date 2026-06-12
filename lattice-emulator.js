@@ -1965,7 +1965,7 @@ const highlightedSlides = slides.map(s => applyHighlighting(s));
 // Called on the joined HTML rather than slide-by-slide so the
 // "first slide" check in the rewriter (used by `logo-on: title`)
 // sees the slides in source order.
-const { applyDeckLogoToHtml, applyMastheadMetaToHtml, applyProgressRailToHtml } = require('./marp.config').plugins;
+const { applyDeckLogoToHtml, applyMastheadMetaToHtml, applyProgressRailToHtml, applyWatermarkToHtml } = require('./marp.config').plugins;
 // The engine path already ran applyDeckLogoToHtml + the island injectors inside
 // engine.render — re-running here would double-process, so the engine path joins
 // as-is and the post-process injectors below are skipped under USE_ENGINE.
@@ -1980,9 +1980,13 @@ const slidesWithMeta = USE_ENGINE
   : applyMastheadMetaToHtml(slidesWithLogo, rawMd);
 // progress island — derive sections from dividers, inject the footer-centre
 // dot-rail into each islands slide. Deck-level; same fn as marp.config.js.
-const slidesWithMeta2 = USE_ENGINE
+const slidesWithProgress = USE_ENGINE
   ? slidesWithMeta
   : applyProgressRailToHtml(slidesWithMeta);
+// watermark island — section-number ghost behind `islands watermark` slides.
+const slidesWithMeta2 = USE_ENGINE
+  ? slidesWithProgress
+  : applyWatermarkToHtml(slidesWithProgress);
 
 // ── KaTeX CSS link ────────────────────────────────────────────────────────
 // KaTeX's CSS references font files via relative `url(fonts/…woff2)` paths,

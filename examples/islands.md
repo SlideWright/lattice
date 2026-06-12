@@ -3,7 +3,7 @@ marp: true
 theme: cuoio
 paginate: true
 header: "Lattice · Islands"
-footer: "SlideWright · Islands Phase 2b"
+footer: "SlideWright · Islands Phase 2c"
 meta: "Q2 FY26 · Board Pack | Owner · S. Aden"
 ---
 
@@ -11,7 +11,7 @@ meta: "Q2 FY26 · Board Pack | Owner · S. Aden"
 
 # Slides as Islands
 
-`Composition Model · Phase 2b — the bay + the progress rail`
+`Composition Model · Phase 2c — the watermark island`
 
 A slide is a sea plus a fixed set of berths. The masthead band holds the title and a populated bay; the footer now carries a section progress rail. Additive, palette-blind, across every render path.
 
@@ -25,7 +25,7 @@ A slide is a sea plus a fixed set of berths. The masthead band holds the title a
 
 ---
 
-<!-- _class: content islands confidential -->
+<!-- _class: content islands confidential watermark -->
 
 `Context · The Lift`
 
@@ -91,20 +91,20 @@ The `islands` modifier wraps the eyebrow and title into a dedicated masthead ban
 
 ---
 
-<!-- _class: content islands -->
+<!-- _class: content islands watermark -->
 
 `Footer · The Progress Rail`
 
 ## The footer now orients the audience.
 
-The progress island reads the deck's `divider` slides as sections and stamps a dot-rail into the footer centre of every `islands` slide — current section elongated and accented, labelled with the divider title. You are on dot three of three.
+The progress island reads the deck's `divider` slides as sections and stamps a dot-rail into the footer centre of every `islands` slide — current section elongated and accented, labelled with the divider title. The watermark island echoes the section number behind this text.
 
 ---
 
 <!-- _class: closing silent -->
 
-# The bay and the rail have landed.
+# The five islands have landed.
 
-`Next · Phase 2c — the watermark island`
+`Next · Phase 4 — the concrete stage wrapper`
 
 Inspect this deck against the model in engineering/decisions/2026-06-11-islands.md.

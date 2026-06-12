@@ -223,6 +223,36 @@ describe('marp-plugins', () => {
     assert.equal(plugins.applyProgressRailToHtml(once), once);
   });
 
+  // ── applyWatermarkToHtml (islands watermark island, Phase 2c) ──────────
+
+  test('applyWatermarkToHtml: injects the 2-digit section number on islands+watermark slides', () => {
+    const html = deck([
+      sec('divider', '<h2>One</h2>'),
+      sec('content islands watermark'),
+      sec('divider', '<h2>Two</h2>'),
+      sec('content islands watermark'),
+    ]);
+    const out = plugins.applyWatermarkToHtml(html);
+    const wms = [...out.matchAll(/<div class="isl-watermark"[^>]*>(\d+)<\/div>/g)].map((m) => m[1]);
+    assert.deepEqual(wms, ['01', '02']);
+  });
+
+  test('applyWatermarkToHtml: only fires with BOTH islands and watermark', () => {
+    const html = deck([sec('divider', '<h2>S</h2>'), sec('content islands'), sec('content watermark')]);
+    assert.ok(!/isl-watermark/.test(plugins.applyWatermarkToHtml(html)));
+  });
+
+  test('applyWatermarkToHtml: no dividers → no-op', () => {
+    const html = deck([sec('content islands watermark')]);
+    assert.equal(plugins.applyWatermarkToHtml(html), html);
+  });
+
+  test('applyWatermarkToHtml: idempotent', () => {
+    const html = deck([sec('divider', '<h2>S</h2>'), sec('content islands watermark')]);
+    const once = plugins.applyWatermarkToHtml(html);
+    assert.equal(plugins.applyWatermarkToHtml(once), once);
+  });
+
   // ── applyDeckLogoToHtml ────────────────────────────────────────────────
 
   function logoFixture(html) {
