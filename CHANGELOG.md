@@ -34,6 +34,13 @@ in patch versions.
   baseline and renders ~2.6× faster. The default `renderEngine` workspace pref and
   the playground module both flip to `lattice`. marp-core stays bundled for now;
   removing it is a later phase. (Docs-site only; the PDF/build path is unchanged.)
+  - **Fix (dark mode):** the owned CSS emitter only resolved `@import 'lattice'`,
+    so every `*-dark` theme — a thin wrapper (`@import '<base>'; :root{color-scheme:
+    dark}`) — collapsed to a scaffold-only ~2 KB sheet (no tokens), rendering dark
+    slides as unstyled near-black. The theme store now resolves theme-to-theme
+    `@import 'name'` recursively against the registered themes, so all 13 dark
+    wrappers inline their base palette + the lattice base. Guarded by a real-theme
+    sweep in `test/unit/engine/engine.test.js`.
 
 ### Added
 
