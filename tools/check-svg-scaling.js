@@ -30,7 +30,7 @@ const EMULATOR = path.join(ROOT, 'lattice-emulator.js');
 const FIXTURE = process.argv[2] || path.join(ROOT, 'test', 'fixtures', 'responsive-charts.md');
 
 // Selectors measured + the size names (front-matter `size:`) and their widths.
-const SELECTORS = ['.radar-svg', '.quadrant-svg'];
+const SELECTORS = ['.radar-svg', '.quadrant-svg', '.wc-svg'];
 const SMALL = { name: 'hd', w: 1280 };
 const LARGE = { name: '4K', w: 3840 };
 const EXPECT = LARGE.w / SMALL.w;          // 3 — the HD→4K slide ratio

@@ -36,12 +36,15 @@ describe('word-cloud.applyToDom (via chart-family)', () => {
     assert.ok(section.classList.contains('chart-frame'), 'section tagged chart-frame');
     const canvas = section.querySelector('.chart-body > .word-cloud-canvas');
     assert.ok(canvas, 'word-cloud-canvas nested in chart-body');
+    assert.ok(canvas.querySelector('svg.wc-svg[viewBox="0 0 1100 320"]'),
+      'cloud rendered as a viewBox SVG');
     const words = canvas.querySelectorAll('.wc-word');
-    assert.equal(words.length, 3, 'three wc-word spans');
+    assert.equal(words.length, 3, 'three wc-word <text> nodes');
     for (const w of words) {
       const style = w.getAttribute('style') || '';
-      assert.ok(style.includes('--wc-x:'),     `${w.textContent}: --wc-x set`);
-      assert.ok(style.includes('--wc-color:'), `${w.textContent}: --wc-color set`);
+      assert.ok(w.hasAttribute('x') && w.hasAttribute('y'), `${w.textContent}: x/y set`);
+      assert.ok(w.hasAttribute('font-size'),                `${w.textContent}: font-size set`);
+      assert.ok(style.includes('--wc-color:'),              `${w.textContent}: --wc-color set`);
     }
   });
 
