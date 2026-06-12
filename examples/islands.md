@@ -1,0 +1,111 @@
+---
+marp: true
+theme: cuoio
+paginate: true
+header: "Lattice · Islands"
+footer: "SlideWright · Islands"
+meta: "Q2 FY26 · Board Pack | Owner · S. Aden"
+islands: on
+---
+
+<!-- _class: title silent -->
+
+# Slides as Islands
+
+`Composition Model · the deck-wide toggle`
+
+A slide is a sea plus a fixed set of berths. One front-matter flag — `islands: true` — enables the whole model across the deck: the masthead band, a populated bay, a footer progress rail, and section watermarks. Palette-blind, across every render path.
+
+---
+
+<!-- _class: divider -->
+
+`Section 01`
+
+## The Lift
+
+---
+
+<!-- _class: content confidential watermark -->
+
+`Context · The Toggle`
+
+## One flag turns the model on for the whole deck.
+
+`islands: true` resolves to the `islands` class on every eligible slide — so the band, bay, and rail just appear. Bookends (this section's divider, the title, the closing) are skipped automatically; a single slide can opt out with `no-islands`.
+
+---
+
+<!-- _class: cards-grid -->
+
+## The band composes with components untouched.
+
+- Body stays a section child
+  - Cards, lists, charts, and tables remain direct children of the section, so every `section.X > …` selector keeps matching.
+- Only the masthead moves
+  - The eyebrow and first heading lift into the band; the rest is left exactly where the author put it.
+- Skipped where it shouldn't apply
+  - Bookends, `math` / `compare-code`, the sovereign split layouts, and imagery are left alone.
+
+---
+
+<!-- _class: divider -->
+
+`Section 02`
+
+## The Bay
+
+---
+
+<!-- _class: stats -->
+
+`Evidence · Same Engine, Three Paths`
+
+## The flag resolves identically across every render path.
+
+`The toggle becomes the islands class in marp-cli and the emulator alike — one eligibility helper, one source.`
+
+1. 1
+   - front-matter flag
+2. 3
+   - render paths
+3. 0
+   - slides hand-tagged
+
+---
+
+<!-- _class: content wip -->
+
+`Takeaway · The Bay`
+
+## The bay docks the meta and status islands.
+
+> Key insight: the `meta:` line and a status chip (this slide is `wip`) ride the bay — no per-slide `islands` token needed, the deck flag supplies it.
+
+---
+
+<!-- _class: divider -->
+
+`Section 03`
+
+## Orientation
+
+---
+
+<!-- _class: content watermark -->
+
+`Footer · The Progress Rail`
+
+## The footer orients the audience.
+
+The progress island reads the deck's `divider` slides as sections and stamps a dot-rail into the footer centre of every islands slide — current section elongated and accented. The watermark echoes the section number behind this text.
+
+---
+
+<!-- _class: closing silent -->
+
+# One flag, the whole model.
+
+`Next · Phase 4 — the concrete stage wrapper`
+
+Inspect this deck against the model in engineering/decisions/2026-06-11-islands.md.

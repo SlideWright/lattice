@@ -89,6 +89,61 @@ in patch versions.
   with a shipped component class at save time. CSS-only only; transform-bearing
   components remain graduation-only. See
   `engineering/decisions/2026-06-12-workbench-component-bridge.md`.
+- **`islands: true` deck-wide toggle.** One front-matter flag enables the whole
+  islands model across a deck — it resolves to the per-slide `islands` class on
+  every eligible section, so the masthead band, bay (meta + status), progress
+  rail, and watermarks just appear without tagging each slide. Bookends
+  (`title` / `divider` / `closing`), the title-grid layouts (`math` /
+  `compare-code`), the sovereign split layouts, and imagery are skipped
+  automatically; a single slide opts out with `no-islands`. Applied in both
+  server render paths (marp-cli + emulator) via one shared eligibility helper;
+  build-time only, like the deck-wide `class:` / `logo:` directives (use a
+  per-slide `islands` token in the marp-vscode preview). See `examples/islands.md`.
+- **`islands:` deck-wide toggle (`off` / `on` / `minimal`).** One front-matter
+  flag enables the islands model across a deck — it resolves to the per-slide
+  `islands` class on every eligible section, so the masthead band, bay (meta +
+  status), and progress rail just appear without tagging each slide. `on`
+  (also `true`) is the full model; `minimal` keeps the band + bay but drops the
+  progress rail (adds `no-progress`); `off` (also `false`, the default) is
+  disabled. Bookends (`title` / `divider` / `closing`), the title-grid layouts
+  (`math` / `compare-code`), the sovereign split layouts, and imagery are
+  skipped automatically; a single slide opts out with `no-islands`. Applied in
+  both server render paths (marp-cli + emulator) via one shared eligibility
+  helper; build-time only, like the deck-wide `class:` / `logo:` directives.
+  Surfaced in the Drawing Board **Deck setup** drawer (a three-way select) and
+  in editor **autocomplete** (`off` / `on` / `minimal` after `islands:`). See
+  `examples/islands.md`.
+- **Watermark island (islands model, Phase 2c).** Add `watermark` to an
+  `islands` slide and a large, palette-blind ghost of the current section
+  number paints behind the content (z-behind, clipped by the section) —
+  reinforcing the orientation the progress rail provides. Reuses the same
+  divider-derived section model; no-op without dividers. Completes the five
+  bay/footer/atmosphere islands of the model.
+- **Progress island + island gap/clip contract (islands model, Phase 2b).** On
+  `islands` slides, a footer-centre dot-rail orients the audience: it derives
+  sections from the deck's `divider` slides and stamps one dot per section
+  (current elongated + accented, labelled with the divider title) into every
+  islands slide within a section — across all three render paths; absent when
+  the deck has no dividers; opt out with `no-progress`. Islands now also keep
+  a **defined gap** to their neighbours (a footer safe-area reserve) and
+  **clip their own overflow**, so poorly-fitting content is cut at the berth
+  rather than bleeding across islands.
+- **Masthead-bay islands — `meta:` + re-docked status (islands model, Phase 2).**
+  The reserved masthead bay (Phase 1) now carries two islands on `islands`
+  slides. A new deck-wide `meta:` front-matter directive (date · owner ·
+  classification; ` | ` splits into stacked lines) injects a `.isl-meta`
+  island into the bay across all three render paths. And the label-type state
+  markers (`confidential` · `wip` · `draft`) re-dock from their corner
+  stamp / full-width band into a clean bay chip when combined with `islands`
+  (their default treatment is unchanged without it). See `examples/islands.md`.
+- **`islands` modifier — the masthead band (islands model, Phase 1).** Opt in
+  with `<!-- _class: <layout> islands -->` and the slide's eyebrow + title lift
+  out of content flow into a named `.isl-masthead` band (hairline rule + a
+  reserved right bay for the meta/logo/status islands coming in Phase 2). The
+  body stays a direct child of the section, so components compose unchanged.
+  Wired through all three render paths via the shared transformer registry;
+  incompatible with `math` / `compare-code` (they drive their own title grid).
+  See `engineering/decisions/2026-06-11-islands.md` and `examples/islands.md`.
 - **Workbench export bridge — library themes reach the Drawing Board.** A theme
   saved in the Workbench library is now selectable in the Drawing Board's palette
   picker (listed with a *(saved)* suffix), registers with the in-browser engine,

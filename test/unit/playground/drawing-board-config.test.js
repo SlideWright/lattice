@@ -52,6 +52,16 @@ describe('readFrontMatter', () => {
     assert.equal(fm.theme, 'cuoio');
     assert.equal(fm.configured, false, 'theme is ubiquitous under full sync — not a bespoke-setup signal');
   });
+
+  test('islands toggle: canonicalises on/true/minimal/off; absent = off, not configured', async () => {
+    const { readFrontMatter } = await import(MOD);
+    assert.equal(readFrontMatter('---\nmarp: true\nislands: on\n---\n').islands, 'on');
+    assert.equal(readFrontMatter('---\nmarp: true\nislands: true\n---\n').islands, 'on');
+    assert.equal(readFrontMatter('---\nmarp: true\nislands: minimal\n---\n').islands, 'minimal');
+    assert.equal(readFrontMatter('---\nmarp: true\nislands: off\n---\n').islands, 'off');
+    assert.equal(readFrontMatter(CLEAN).islands, 'off');
+    assert.equal(readFrontMatter('---\nmarp: true\nislands: on\n---\n').configured, true);
+  });
 });
 
 describe('writeFrontMatter', () => {
@@ -76,6 +86,21 @@ describe('writeFrontMatter', () => {
     src = writeFrontMatter(src, 'size', '4K');
     const block = src.slice(0, src.indexOf('\n---\n'));
     assert.equal(block, '---\nmarp: true\nsize: 4K\npaginate: true\nfooter: Confidential');
+  });
+
+  test('islands: writes on/minimal in canonical slot; off (default) omits it', async () => {
+    const { writeFrontMatter } = await import(MOD);
+    const on = writeFrontMatter(CLEAN, 'islands', 'on');
+    assert.ok(/^---\nmarp: true\nislands: on\n---\n/.test(on));
+    const min = writeFrontMatter(CLEAN, 'islands', 'minimal');
+    assert.ok(min.includes('islands: minimal\n'));
+    // `class` precedes `islands` in the canonical order
+    let src = writeFrontMatter(CLEAN, 'islands', 'on');
+    src = writeFrontMatter(src, 'class', 'dark');
+    const block = src.slice(0, src.indexOf('\n---\n'));
+    assert.equal(block, '---\nmarp: true\nclass: dark\nislands: on');
+    // off clears it back out
+    assert.ok(!writeFrontMatter(on, 'islands', 'off').includes('islands:'));
   });
 
   test('quotes a value containing a colon (would break a flat YAML read)', async () => {

@@ -38,6 +38,10 @@ const FIELD_DEFAULTS = {
   header: '',
   footer: '',
   class: '',
+  // `islands` enables the islands model deck-wide: 'off' (default) / 'on'
+  // (masthead band + bay + progress rail) / 'minimal' (band + bay, no rail).
+  // `true`/`yes` are read as 'on'; the canonical written value is on/minimal.
+  islands: 'off',
   math: '', // '' / 'katex' = the default KaTeX renderer; 'mathjax' switches
   lang: '',
 };
@@ -45,9 +49,18 @@ const MANAGED = Object.keys(FIELD_DEFAULTS);
 
 // Emit order for known keys; any unmanaged keys we preserved trail in their
 // original order. `marp` leads (it's what tells marp-cli to render the deck).
-const EMIT_ORDER = ['marp', 'theme', 'size', 'paginate', 'header', 'footer', 'class', 'math', 'lang'];
+const EMIT_ORDER = ['marp', 'theme', 'size', 'paginate', 'header', 'footer', 'class', 'islands', 'math', 'lang'];
 
 const TRUEY = /^(true|yes|on|1)$/i;
+
+// Canonicalise an `islands:` value to one of the three modes. Mirrors
+// readIslandsMode in lib/integrations/marp/plugins.js.
+function islandsMode(raw) {
+  const v = (raw == null ? '' : String(raw)).trim().toLowerCase();
+  if (TRUEY.test(v)) return 'on';
+  if (v === 'minimal') return 'minimal';
+  return 'off';
+}
 
 function stripQuotes(v) {
   const t = (v || '').trim();
@@ -86,6 +99,7 @@ export function readFrontMatter(source) {
     header: map.header || '',
     footer: map.footer || '',
     class: map.class || '',
+    islands: islandsMode(map.islands),
     math: map.math || '',
     lang: map.lang || '',
     // Whether the deck carries any NON-THEME managed front matter — drives the
@@ -98,6 +112,7 @@ export function readFrontMatter(source) {
 function isDefault(key, value) {
   if (key === 'paginate') return !TRUEY.test(value);
   if (key === 'math') return value === '' || value === 'katex';
+  if (key === 'islands') return islandsMode(value) === 'off';
   return (value == null ? '' : String(value)) === FIELD_DEFAULTS[key];
 }
 
@@ -108,6 +123,7 @@ function normalize(key, value) {
   if (key === 'paginate') return value === true || TRUEY.test(value || '') ? 'true' : null;
   const v = (value == null ? '' : String(value)).trim();
   if (key === 'math') return v === '' || v === 'katex' ? null : v;
+  if (key === 'islands') { const m = islandsMode(v); return m === 'off' ? null : m; }
   if (v === '' || v === FIELD_DEFAULTS[key]) return null;
   return v;
 }
@@ -297,6 +313,13 @@ export function createConfigPanel({ host, trigger, getSource, setSource, palette
     host.append(switchRow('paginate', 'Page numbers', 'Show pagination on every slide', fm.paginate));
     host.append(textField('header', 'Header', 'Running header text on every slide', fm.header, 'e.g. Lattice · Q3 Board Review'));
     host.append(textField('footer', 'Footer', 'Running footer text on every slide', fm.footer, 'e.g. Confidential'));
+
+    // Islands — the deck-wide composition model (masthead band + bay + rail).
+    host.append(selectRow('islands', 'Islands', 'Masthead band, meta/status bay & progress rail, deck-wide', [
+      ['off', 'Off'],
+      ['on', 'On — band, bay & rail'],
+      ['minimal', 'Minimal — band & bay, no rail'],
+    ], fm.islands));
 
     host.append(el('h3', 'db-settings-head db-settings-subhead', 'Advanced'));
 

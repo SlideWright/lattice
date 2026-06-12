@@ -963,6 +963,12 @@ const globalClass    = (fm.match(/^\s*class:\s*["']?(.*?)["']?\s*$/m) || [])[1] 
 // per-slide append below carries it too. See lib/core/resolve-finish.js.
 const globalFinish   = finishClasses((fm.match(/^\s*finish:\s*["']?([A-Za-z0-9_-]+)["']?\s*$/m) || [])[1] || '');
 const deckWideClass  = [globalClass, globalFinish].filter(Boolean).join(' ');
+// Deck-wide `islands:` toggle — resolved to the `islands` class on every
+// eligible section in parseSlide (mirrors marp.config.js's
+// applyIslandsToggleToHtml; same helpers, one source). `readIslandsMode`
+// yields 'off' | 'on' | 'minimal'.
+const { islandsToggleClass, readIslandsMode } = require('./lib/integrations/marp/plugins');
+const islandsMode    = readIslandsMode(rawMd);
 const DEFAULT_SIZE   = 'hd';
 const SLIDE_SIZES    = { hd: [1280, 720], HD: [1280, 720], '4K': [3840, 2160], '4k': [3840, 2160], standard: [960, 720] };
 const deckSizeName   = (fm.match(/^\s*size:\s*["']?([\w:/-]+)["']?\s*$/m) || [])[1] || DEFAULT_SIZE;
@@ -1071,6 +1077,7 @@ function parseSlide(raw, index) {
     }
     classAttr = cur.join(' ');
   }
+  if (islandsMode !== 'off') classAttr = islandsToggleClass(classAttr, islandsMode);
 
   if (raw.includes('_paginate: false')) paginate = false;
   if (raw.includes('_paginate: true'))  paginate = true;
@@ -1965,12 +1972,28 @@ const highlightedSlides = slides.map(s => applyHighlighting(s));
 // Called on the joined HTML rather than slide-by-slide so the
 // "first slide" check in the rewriter (used by `logo-on: title`)
 // sees the slides in source order.
-const { applyDeckLogoToHtml } = require('./marp.config').plugins;
-// The engine path already ran applyDeckLogoToHtml inside engine.render — re-running
-// it here would inject a second logo, so the engine path joins as-is.
+const { applyDeckLogoToHtml, applyMastheadMetaToHtml, applyProgressRailToHtml, applyWatermarkToHtml } = require('./marp.config').plugins;
+// The engine path already ran applyDeckLogoToHtml + the island injectors inside
+// engine.render — re-running here would double-process, so the engine path joins
+// as-is and the post-process injectors below are skipped under USE_ENGINE.
 const slidesWithLogo = USE_ENGINE
   ? highlightedSlides.join('\n')
   : applyDeckLogoToHtml(highlightedSlides.join('\n'), rawMd);
+// meta island — fill the masthead bay (built by the per-section registry pass
+// above) with the front-matter `meta:` directive. Sibling of marp.config.js's
+// render-hook call; both renderers must agree.
+const slidesWithMeta = USE_ENGINE
+  ? slidesWithLogo
+  : applyMastheadMetaToHtml(slidesWithLogo, rawMd);
+// progress island — derive sections from dividers, inject the footer-centre
+// dot-rail into each islands slide. Deck-level; same fn as marp.config.js.
+const slidesWithProgress = USE_ENGINE
+  ? slidesWithMeta
+  : applyProgressRailToHtml(slidesWithMeta);
+// watermark island — section-number ghost behind `islands watermark` slides.
+const slidesWithMeta2 = USE_ENGINE
+  ? slidesWithProgress
+  : applyWatermarkToHtml(slidesWithProgress);
 
 // ── KaTeX CSS link ────────────────────────────────────────────────────────
 // KaTeX's CSS references font files via relative `url(fonts/…woff2)` paths,
@@ -2048,7 +2071,7 @@ section[data-marpit-slide] { width: ${slideW}px !important; height: ${slideH}px 
 ${marpSystemCss}
 ${globalStyle ? `\n/* Front-matter style: directive */\n${globalStyle}\n` : ''}
 </style></head><body>
-${slidesWithLogo}
+${slidesWithMeta2}
 ${functionPlotScript}
 ${stateChartScript}
 <script>

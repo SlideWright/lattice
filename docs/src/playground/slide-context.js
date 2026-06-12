@@ -189,6 +189,15 @@ export function themeValuePosition(before) {
 	return { from: m[1].length, typed: m[2] };
 }
 
+// The cursor's position on a value being typed after the deck-level `islands:`
+// front-matter key — `islands: m|`. Returns `{ from, typed }` or null, so the
+// off/on/minimal vocabulary completes here.
+export function islandsValuePosition(before) {
+	const m = before.match(/^(\s*islands:\s*)(\S*)$/);
+	if (!m) return null;
+	return { from: m[1].length, typed: m[2] };
+}
+
 // ── Slide directives + fences (Tier 2) ───────────────────────────────────────
 
 // The cursor's position on a directive NAME being typed inside an HTML comment,

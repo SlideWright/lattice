@@ -143,6 +143,174 @@ describe('marp-plugins', () => {
     assert.deepEqual(cls, ['title'], `unknown finish should add nothing; got [${cls.join(', ')}]`);
   });
 
+  // ── applyMastheadMetaToHtml (islands meta island, Phase 2) ─────────────
+
+  test('applyMastheadMetaToHtml: fills the reserved .m-bay of islands sections', () => {
+    const html = '<section class="content islands"><div class="isl-masthead"><div class="m-stage"><h2>T</h2></div><div class="m-bay"></div></div></section>';
+    const md = '---\nmeta: "Q2 FY26 · Board Pack"\n---\n';
+    const out = plugins.applyMastheadMetaToHtml(html, md);
+    assert.match(out, /<div class="m-bay"><div class="isl-meta">Q2 FY26 · Board Pack<\/div><\/div>/);
+  });
+
+  test('applyMastheadMetaToHtml: a `|` splits into stacked lines', () => {
+    const html = '<section class="islands"><div class="m-bay"></div></section>';
+    const out = plugins.applyMastheadMetaToHtml(html, '---\nmeta: "A | B"\n---\n');
+    assert.match(out, /<div class="isl-meta">A<br>B<\/div>/);
+  });
+
+  test('applyMastheadMetaToHtml: no-op without `meta:` front matter', () => {
+    const html = '<section class="islands"><div class="m-bay"></div></section>';
+    assert.equal(plugins.applyMastheadMetaToHtml(html, '---\ntheme: cuoio\n---\n'), html);
+  });
+
+  test('applyMastheadMetaToHtml: idempotent — only an EMPTY bay matches', () => {
+    const html = '<section class="islands"><div class="m-bay"></div></section>';
+    const md = '---\nmeta: X\n---\n';
+    const once = plugins.applyMastheadMetaToHtml(html, md);
+    assert.equal(plugins.applyMastheadMetaToHtml(once, md), once);
+  });
+
+  test('applyMastheadMetaToHtml: escapes HTML in the meta value', () => {
+    const html = '<section class="islands"><div class="m-bay"></div></section>';
+    const out = plugins.applyMastheadMetaToHtml(html, '---\nmeta: "<b> & x"\n---\n');
+    assert.match(out, /&lt;b&gt; &amp; x/);
+  });
+
+  // ── applyProgressRailToHtml (islands progress island, Phase 2b) ────────
+
+  const deck = (sections) => sections.join('');
+  const sec = (cls, inner = '') => `<section class="${cls}" data-marpit-slide="x">${inner}</section>`;
+
+  test('applyProgressRailToHtml: injects a dot-rail into islands slides within a section', () => {
+    const html = deck([
+      sec('divider', '<h2>The Lift</h2>'),
+      sec('content islands'),
+      sec('divider', '<h2>The Bay</h2>'),
+      sec('content islands'),
+    ]);
+    const out = plugins.applyProgressRailToHtml(html);
+    const rails = [...out.matchAll(/<nav class="isl-progress"[^>]*>([\s\S]*?)<\/nav>/g)];
+    assert.equal(rails.length, 2, 'one rail per islands slide');
+    // two sections → two dots each; first islands slide marks dot 1, second marks dot 2
+    assert.equal((rails[0][1].match(/class="dot/g) || []).length, 2);
+    assert.match(rails[0][1], /<span class="seg">The Lift<\/span>/);
+    assert.match(rails[0][1], /<span class="dot on"><\/span><span class="dot"><\/span>/);
+    assert.match(rails[1][1], /<span class="seg">The Bay<\/span>/);
+    assert.match(rails[1][1], /<span class="dot"><\/span><span class="dot on"><\/span>/);
+  });
+
+  test('applyProgressRailToHtml: rail label prefers the divider eyebrow over its heading', () => {
+    const html = deck([
+      sec('divider', '<p><code>Section 01</code></p><h2>A very long editorial heading sentence</h2>'),
+      sec('content islands'),
+    ]);
+    const seg = plugins.applyProgressRailToHtml(html).match(/<span class="seg">([^<]*)<\/span>/);
+    assert.equal(seg[1], 'Section 01');
+  });
+
+  test('applyProgressRailToHtml: no dividers → no-op (nothing to orient against)', () => {
+    const html = deck([sec('content islands'), sec('content islands')]);
+    assert.equal(plugins.applyProgressRailToHtml(html), html);
+  });
+
+  test('applyProgressRailToHtml: divider slides and non-islands slides get no rail', () => {
+    const html = deck([sec('divider', '<h2>S</h2>'), sec('content')]);
+    assert.ok(!/isl-progress/.test(plugins.applyProgressRailToHtml(html)));
+  });
+
+  test('applyProgressRailToHtml: `no-progress` and `silent` suppress the rail', () => {
+    const html = deck([
+      sec('divider', '<h2>S</h2>'),
+      sec('content islands no-progress'),
+      sec('content islands silent'),
+    ]);
+    assert.ok(!/isl-progress/.test(plugins.applyProgressRailToHtml(html)));
+  });
+
+  test('applyProgressRailToHtml: idempotent', () => {
+    const html = deck([sec('divider', '<h2>S</h2>'), sec('content islands')]);
+    const once = plugins.applyProgressRailToHtml(html);
+    assert.equal(plugins.applyProgressRailToHtml(once), once);
+  });
+
+  // ── applyWatermarkToHtml (islands watermark island, Phase 2c) ──────────
+
+  test('applyWatermarkToHtml: injects the 2-digit section number on islands+watermark slides', () => {
+    const html = deck([
+      sec('divider', '<h2>One</h2>'),
+      sec('content islands watermark'),
+      sec('divider', '<h2>Two</h2>'),
+      sec('content islands watermark'),
+    ]);
+    const out = plugins.applyWatermarkToHtml(html);
+    const wms = [...out.matchAll(/<div class="isl-watermark"[^>]*>(\d+)<\/div>/g)].map((m) => m[1]);
+    assert.deepEqual(wms, ['01', '02']);
+  });
+
+  test('applyWatermarkToHtml: only fires with BOTH islands and watermark', () => {
+    const html = deck([sec('divider', '<h2>S</h2>'), sec('content islands'), sec('content watermark')]);
+    assert.ok(!/isl-watermark/.test(plugins.applyWatermarkToHtml(html)));
+  });
+
+  test('applyWatermarkToHtml: no dividers → no-op', () => {
+    const html = deck([sec('content islands watermark')]);
+    assert.equal(plugins.applyWatermarkToHtml(html), html);
+  });
+
+  test('applyWatermarkToHtml: idempotent', () => {
+    const html = deck([sec('divider', '<h2>S</h2>'), sec('content islands watermark')]);
+    const once = plugins.applyWatermarkToHtml(html);
+    assert.equal(plugins.applyWatermarkToHtml(once), once);
+  });
+
+  // ── islands deck-wide toggle (`islands: off | on | minimal`) ───────────
+
+  test('readIslandsMode: on / true / yes → on; minimal → minimal; off / false / missing → off', () => {
+    for (const v of ['true', 'on', 'yes', 'ON', '"on"']) {
+      assert.equal(plugins.readIslandsMode(`---\nislands: ${v}\n---\n`), 'on', v);
+    }
+    assert.equal(plugins.readIslandsMode('---\nislands: minimal\n---\n'), 'minimal');
+    for (const v of ['false', 'off', 'no']) {
+      assert.equal(plugins.readIslandsMode(`---\nislands: ${v}\n---\n`), 'off', v);
+    }
+    assert.equal(plugins.readIslandsMode('---\ntheme: cuoio\n---\n'), 'off');
+  });
+
+  test('islandsToggleClass: `on` adds islands to content; skips bookends / sovereign / incompatible', () => {
+    assert.equal(plugins.islandsToggleClass('content', 'on'), 'content islands');
+    assert.equal(plugins.islandsToggleClass('cards-grid compact', 'on'), 'cards-grid compact islands');
+    assert.equal(plugins.islandsToggleClass('', 'on'), 'islands'); // bare slide
+    for (const skip of ['title', 'divider', 'closing', 'math', 'compare-code', 'split-panel', 'image', 'featured']) {
+      assert.equal(plugins.islandsToggleClass(skip, 'on'), skip, `should skip ${skip}`);
+    }
+  });
+
+  test('islandsToggleClass: `minimal` adds islands + no-progress; `off` is a no-op', () => {
+    assert.equal(plugins.islandsToggleClass('content', 'minimal'), 'content islands no-progress');
+    assert.equal(plugins.islandsToggleClass('divider', 'minimal'), 'divider'); // still skips bookends
+    assert.equal(plugins.islandsToggleClass('content', 'off'), 'content');
+  });
+
+  test('islandsToggleClass: respects explicit islands / no-islands; idempotent', () => {
+    assert.equal(plugins.islandsToggleClass('content islands', 'on'), 'content islands');
+    assert.equal(plugins.islandsToggleClass('content no-islands', 'on'), 'content no-islands');
+    assert.equal(plugins.islandsToggleClass(plugins.islandsToggleClass('content', 'on'), 'on'), 'content islands');
+  });
+
+  test('applyIslandsToggleToHtml: off no-ops; on/minimal rewrite eligible sections', () => {
+    const html =
+      '<section class="content" data-marpit-slide="1"></section>' +
+      '<section class="divider" data-marpit-slide="2"></section>' +
+      '<section data-marpit-slide="3"></section>';
+    assert.equal(plugins.applyIslandsToggleToHtml(html, '---\nislands: off\n---\n'), html, 'no-op when off');
+    const on = plugins.applyIslandsToggleToHtml(html, '---\nislands: on\n---\n');
+    assert.match(on, /<section class="content islands" data-marpit-slide="1">/);
+    assert.match(on, /<section class="divider" data-marpit-slide="2">/, 'divider skipped');
+    assert.match(on, /<section class="islands" data-marpit-slide="3">/, 'bare slide gets a class attr');
+    const min = plugins.applyIslandsToggleToHtml(html, '---\nislands: minimal\n---\n');
+    assert.match(min, /<section class="content islands no-progress" data-marpit-slide="1">/);
+  });
+
   // ── applyDeckLogoToHtml ────────────────────────────────────────────────
 
   function logoFixture(html) {
