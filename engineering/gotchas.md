@@ -1723,7 +1723,41 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
 - **Commit:** `fix(docs): resolve the playground asset-version dir from the
   project root, not import.meta.url`.
 
-### You CAN run + screenshot the docs site in the cloud sandbox
+### Playground preview serves a STALE engine bundle (a 200, not a 404)
+
+- **Symptom:** In `astro dev`, after you rebuild the engine (`npm run build`
+  at the repo root, or any edit under `lib/`), the Playground/Workbench preview
+  renders with the **old** engine: front matter shows up as visible text,
+  `finishes:` / deck-class directives don't apply, and `window.LatticePlayground`
+  is missing newer API. Nothing 404s — the network tab is all 200s — so it
+  looks like *your* code is broken, and you can burn an hour bisecting source
+  that's actually correct.
+- **Cause:** The preview loads the engine from a **content-hashed** copy at
+  `docs/public/playground/v/<hash>/lattice-playground.js`, staged by
+  `sync-playground-assets.mjs` (`npm run sync:playground`, which `npm run dev`
+  runs as a `predev` step). When you start the server via the **bin directly**
+  (`./node_modules/.bin/astro dev` — the documented workaround for
+  `astro: not found`), that predev step is skipped, and rebuilding the engine
+  afterward updates `dist/` but **not** the staged `v/<hash>/` copy. The page
+  keeps serving the previously-staged bundle: a valid file (200), just stale.
+  This is the sibling of "Playground/specimen previews 404…" above — that one
+  is the *deploy-time, unversioned-URL* failure; this is the *dev-time,
+  stale-versioned-copy* failure.
+- **Mitigation:** After rebuilding anything under `lib/` (or running
+  `npm run build`), re-stage before reloading:
+  `node docs/scripts/sync-playground-assets.mjs` (or `cd docs && npm run
+  sync:playground`). **Bisect code-bug vs stale-bundle in seconds:** run the
+  engine in plain Node —
+  `node -e "console.log(require('./lib/engine/index.js').render(deck,'indaco').html)"`;
+  if Node is correct but the browser isn't, it's the bundle, not your code.
+  In-browser, `page.evaluate(() => window.LatticePlayground.engine)` returning
+  `undefined`/stale confirms it.
+- **Triggered by:** Editing the engine, then previewing via the directly-invoked
+  `astro dev` bin (which skips `predev` sync). `npm run dev` would have re-synced.
+- **Removable when:** Never, while the preview loads a content-hashed staged
+  copy rather than importing `dist/` live — the staging step is the contract.
+
+
 
 - **Symptom:** An agent concludes a web-UI change (Drawing Board, Workbench,
   landing) is "unverifiable in this headless environment" and hands off to a
