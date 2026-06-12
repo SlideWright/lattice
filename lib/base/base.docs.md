@@ -723,6 +723,35 @@ crests); reach for `auto` otherwise.
 
 ---
 
+## Front matter — `tokens:` (Drawing Board only · temporary)
+
+A migration-validation directive, **not** a permanent authoring feature.
+Selects which token vocabulary the **Drawing Board** renders the deck
+against:
+
+```yaml
+---
+marp: true
+theme: indaco
+tokens: universal   # current (default, omit) | universal
+---
+```
+
+- `current` (the default — omit it) renders against the legacy token
+  names (`--c1-light`, `--c-stroke`, `--bg-dark`, `--scale-*`, …).
+- `universal` renders against the new role-based names
+  (`--cat-*`, `--diagram-*`, `--surface-*`, `--seq-*`, …). Output is
+  **identical** — the flip is byte-identical, asserted by
+  `test/unit/tokens/crosswalk.test.js` — so this is an A/B to confirm a
+  deck survives the in-flight universal-token migration, viewable in the
+  deck-setup drawer with editor autocomplete.
+
+**Scope:** Drawing Board only. `marp-cli` and the emulator ignore it, so a
+deck stays portable. It will be **retired once the canonical flip lands**
+(see `engineering/decisions/2026-06-11-universal-token-system.md` §10).
+
+---
+
 ## Composition syntax
 
 Modifiers compose space-separated after the layout name.
