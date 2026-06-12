@@ -129,7 +129,7 @@ describe('map kernel', () => {
       // Region <path>s emit in basemap order; the legend preserves authored
       // order, so assert slot rotation there.
       const legend = html.slice(html.indexOf('map-legend'));
-      const slots = [...legend.matchAll(/map-swatch--hl" style="--region-hue:var\(--cat(\d)-hue\)"/g)].map((x) => +x[1]);
+      const slots = [...legend.matchAll(/map-swatch--hl" style="--region-hue:var\(--chart-cat-(\d)-hue\)"/g)].map((x) => +x[1]);
       assert.deepEqual(slots, [1, 2, 3, 4, 5, 6, 1], 'seventh region wraps back to slot 1');
     });
   });

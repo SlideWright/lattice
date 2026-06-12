@@ -144,6 +144,87 @@ in patch versions.
   Wired through all three render paths via the shared transformer registry;
   incompatible with `math` / `compare-code` (they drive their own title grid).
   See `engineering/decisions/2026-06-11-islands.md` and `examples/islands.md`.
+- **Universal token system — phase 1 (categorical vocabulary).** The overloaded
+  `--cN-light` / `--cN-dark` categorical pair gains a self-describing, foreground/
+  background-explicit vocabulary: `--cat-N-fill` (pale categorical surface),
+  `--cat-N-mark` (saturated stroke / mark / cScale feed), `--cat-on-fill` /
+  `--cat-on-mark` (ink for text placed on each). Where the old `-light` / `-dark`
+  suffix named a *tier* yet collided with the color-scheme meaning of `--dark-*`
+  and the `light-dark()` function, the new names say exactly what a token is and
+  where it goes — color-scheme now lives only inside the `light-dark()` value.
+  Phase 1 aliases new→old, so values are **byte-identical** (zero visual change;
+  all 14 hand-audited / AA-tested palettes untouched) and every existing consumer
+  (`mermaid.css`, the chart transforms) keeps resolving through the old names
+  while the three render paths' Mermaid bridges read the new names. The emulator's
+  offline palette resolver is upgraded to a real recursive evaluator
+  (`lib/core/resolve-token-expr.js`: `var()`+fallback, `light-dark()`,
+  `color-mix()` in oklab/srgb), the offline twin of `getComputedStyle`, so a
+  bridge token may now hold any expression the three paths share. Design,
+  crosswalk, and the remaining phases:
+  `engineering/decisions/2026-06-11-universal-token-system.md`.
+- **Universal token system — phase 2 (diagram-structural).** The structural
+  foregrounds move off the overloaded `--c-` junk-drawer prefix onto the
+  `--diagram-` group: `--diagram-stroke` (band borders, was `--c-stroke`),
+  `--diagram-line` (edges / arrows / connectors, was `--c-line`), and
+  `--diagram-accent-warm` (radar's second curve, was `--c-accent-warm`).
+  Aliased new→old (byte-identical); the three render paths' Mermaid bridges
+  read the new names while `mermaid.css`'s ~90 SVG rules and the radar override
+  keep the old names via the alias and migrate later. Demo deck:
+  `examples/universal-tokens-p2-structural.md`.
+- **Universal token system — phase 3 (status + diagram lifecycle).** The three
+  tangled "status" systems resolve into **two honest axes**. (1) A single STATUS
+  vocabulary `--status-{pass,warn,fail,info,mute}` shared by the engine
+  state-discs and the charts (`--pass/warn/fail` alias to it; info/mute borrow
+  the chart family's canonical semantic hues). (2) A *separate* diagram
+  lifecycle/annotation axis renamed off `--c-warm/cool/alarm/mark/note` onto
+  semantic names — `--diagram-active` / `--diagram-done` / `--diagram-critical`
+  (+ paired `-mark` strokes), `--diagram-today`, `--diagram-note` — because a
+  gantt "in-progress" tone is not a "warn". Aliased new→old (byte-identical);
+  the lifecycle bridges (gantt / notes / error in both renderers) read the new
+  names, `mermaid.css` keeps the old via the alias. Demo deck:
+  `examples/universal-tokens-p3-status.md`.
+- **Universal token system — phase 4 (surfaces / scheme).** Fixes the P9
+  collision where `--bg-dark` (a dark *panel* on a light deck — title / divider /
+  closing / split rails / code) sat one keystroke from `--dark-bg` (the canvas
+  in dark *mode*), opposite roles. `--bg-dark` → `--surface-inverse` (its 8
+  component/integration consumers repointed, byte-identical); the `--dark-*`
+  color-scheme inputs gain `--scheme-dark-*` names (vocabulary now; the per-theme
+  `light-dark()` pairs flip later). `--bg` / `--bg-alt` / `--border` are kept
+  as-is — clear and short, not magic. Demo deck:
+  `examples/universal-tokens-p4-surfaces.md`.
+- **Universal token system — phase 5 (sequential ramp).** Fixes the P8
+  collision where "scale" meant two unrelated things — the ordered colour ramp
+  `--scale-50…900` *and* the typographic multiplier `--fs-scale`. The ramp is
+  renamed to the unambiguous `--seq-50…900` (sequential / quantitative
+  encoding). Aliased to the existing stops (byte-identical); the sole consumer
+  (the word-cloud heat-ramp) repoints to `--seq-*`, the `--scale-*` anchor +
+  derivation stay as the source until the flip. `--fs-scale` is untouched and
+  now the only "scale" left. Demo deck:
+  `examples/universal-tokens-p5-sequential.md`.
+- **Universal token system — phase 6 (chart categorical).** The chart-family
+  colour spectrum moves off the bare `--cat1-{hue,fill,ink}` … `--cat8-*` — which
+  sat one hyphen from phase 1's diagram `--cat-1-*` — onto its own namespaced
+  `--chart-cat-1-{hue,fill,ink}` … `--chart-cat-8-*`. Unlike the earlier phases
+  this is a **flip, not an alias**: the bare `cat` name is eliminated entirely
+  (the spectrum is self-contained in the chart CSS + transforms, not bridge-fed),
+  so the near-collision is gone rather than merely deprecated. Values are
+  byte-identical; the theme override hooks `--chart-catN` are unchanged. The two
+  categorical systems stay distinct by design (12 diagram band slots vs 8 chart
+  slots — Wong 2011), now with names that say which is which. Demo deck:
+  `examples/universal-tokens-p6-chart-cat.md`.
+- **Universal token system — phase 7 (self-policing gate).** Adds
+  `test/unit/palette/universal-token-vocabulary.test.js` — a CI gate that fails
+  the build if any phase's vocabulary (`--cat-*`, `--diagram-*`, `--status-*`,
+  `--surface-inverse`, `--scheme-dark-*`, `--seq-*`) is left undefined or its
+  alias dropped, so the system stays honest going forward. The originally
+  planned "move component knobs out of `:root`" is **reclassified, not
+  executed**: investigation showed `--chart-fill-*` is already component-scoped
+  and `--pill-*` / `--mark-*` / the state-disc knobs are genuine *universal
+  component primitives* (consumed by `base.modifiers` + 10+ components) that
+  correctly live in base — nothing to relocate. Capstone demo deck:
+  `examples/universal-tokens-p7-system.md`. The remaining work (the canonical
+  flip off the old names + the post-flip name lint) is documented in the
+  decision note.
 - **Workbench export bridge — library themes reach the Drawing Board.** A theme
   saved in the Workbench library is now selectable in the Drawing Board's palette
   picker (listed with a *(saved)* suffix), registers with the in-browser engine,

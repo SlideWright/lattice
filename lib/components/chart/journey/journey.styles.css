@@ -52,7 +52,7 @@
   --journey-mood-1-deep: var(--c6-dark);
 
   /* Surfaces */
-  --journey-section-bg:   color-mix(in oklab, var(--bg-alt) 70%, var(--bg-dark));
+  --journey-section-bg:   color-mix(in oklab, var(--bg-alt) 70%, var(--surface-inverse));
   /* Section bar bg mixes toward --bg-dark on BOTH canvases → always a dark
    * surface. --on-accent flips to --bg-dark in dark mode (same value) giving
    * near-zero contrast (~2.5:1). Use --on-dark-primary (always-light token)

@@ -404,12 +404,12 @@ const MERMAID_VAR_MAP = {
   background:               { var: 'bg' },
 
   // Primary/secondary/tertiary fills (pale band)
-  primaryColor:             { var: 'c1-light' },
-  secondaryColor:           { var: 'c2-light' },
+  primaryColor:             { var: 'cat-1-fill' },
+  secondaryColor:           { var: 'cat-2-fill' },
   tertiaryColor:            { var: 'bg-alt' },
-  primaryBorderColor:       { var: 'c-stroke' },
-  secondaryBorderColor:     { var: 'c-stroke' },
-  tertiaryBorderColor:      { var: 'c-stroke' },
+  primaryBorderColor:       { var: 'diagram-stroke' },
+  secondaryBorderColor:     { var: 'diagram-stroke' },
+  tertiaryBorderColor:      { var: 'diagram-stroke' },
 
   // Text — ONE token, --c-ink-light, for every text element. It flips
   // with the canvas (dark ink on a light canvas, light ink on a dark
@@ -417,42 +417,42 @@ const MERMAID_VAR_MAP = {
   // the canvas too, so ink and fill always stay matched. Text on a
   // categorical fill, text on a pale surface, titles, edge labels —
   // all the same token, all flip together.
-  primaryTextColor:         { var: 'c-ink-light' },
-  secondaryTextColor:       { var: 'c-ink-light' },
-  tertiaryTextColor:        { var: 'c-ink-light' },
-  textColor:                { var: 'c-ink-light' },
-  titleColor:               { var: 'c-ink-light' },
-  labelTextColor:           { var: 'c-ink-light' },
-  loopTextColor:            { var: 'c-ink-light' },
-  classText:                { var: 'c-ink-light' },
-  labelColor:               { var: 'c-ink-light' },
+  primaryTextColor:         { var: 'cat-on-fill' },
+  secondaryTextColor:       { var: 'cat-on-fill' },
+  tertiaryTextColor:        { var: 'cat-on-fill' },
+  textColor:                { var: 'cat-on-fill' },
+  titleColor:               { var: 'cat-on-fill' },
+  labelTextColor:           { var: 'cat-on-fill' },
+  loopTextColor:            { var: 'cat-on-fill' },
+  classText:                { var: 'cat-on-fill' },
+  labelColor:               { var: 'cat-on-fill' },
 
   // Lines (near-black on white canvas)
-  lineColor:                { var: 'c-line' },
-  defaultLinkColor:         { var: 'c-line' },
+  lineColor:                { var: 'diagram-line' },
+  defaultLinkColor:         { var: 'diagram-line' },
   edgeLabelBackground:      { var: 'bg' },
   labelBackground:          { var: 'bg' },
 
   // Main background paths
-  mainBkg:                  { var: 'c1-light' },
-  nodeBorder:               { var: 'c-stroke' },
-  nodeTextColor:            { var: 'c-ink-light' },   // flowchart node text, on fill
+  mainBkg:                  { var: 'cat-1-fill' },
+  nodeBorder:               { var: 'diagram-stroke' },
+  nodeTextColor:            { var: 'cat-on-fill' },   // flowchart node text, on fill
   clusterBkg:               { var: 'bg-alt' },
-  clusterBorder:            { var: 'c-stroke' },
+  clusterBorder:            { var: 'diagram-stroke' },
 
   // cScale (mid-tone band) — kanban lighten brings to L≈70
-  cScale0:                  { var: 'c1-dark' },
-  cScale1:                  { var: 'c2-dark' },
-  cScale2:                  { var: 'c3-dark' },
-  cScale3:                  { var: 'c4-dark' },
-  cScale4:                  { var: 'c5-dark' },
-  cScale5:                  { var: 'c6-dark' },
-  cScale6:                  { var: 'c1-dark' },
-  cScale7:                  { var: 'c2-dark' },
-  cScale8:                  { var: 'c3-dark' },
-  cScale9:                  { var: 'c4-dark' },
-  cScale10:                 { var: 'c5-dark' },
-  cScale11:                 { var: 'c6-dark' },
+  cScale0:                  { var: 'cat-1-mark' },
+  cScale1:                  { var: 'cat-2-mark' },
+  cScale2:                  { var: 'cat-3-mark' },
+  cScale3:                  { var: 'cat-4-mark' },
+  cScale4:                  { var: 'cat-5-mark' },
+  cScale5:                  { var: 'cat-6-mark' },
+  cScale6:                  { var: 'cat-1-mark' },
+  cScale7:                  { var: 'cat-2-mark' },
+  cScale8:                  { var: 'cat-3-mark' },
+  cScale9:                  { var: 'cat-4-mark' },
+  cScale10:                 { var: 'cat-5-mark' },
+  cScale11:                 { var: 'cat-6-mark' },
 
   // cScaleLabel — text fill in Mermaid's auto-generated
   // `.section-${r-1} text { fill: cScaleLabel${r} }` rule. Mermaid's own
@@ -461,134 +461,134 @@ const MERMAID_VAR_MAP = {
   // paired band-text token (all map to --text-heading in shipped palettes)
   // ensures the auto rule renders dark ink, regardless of whether our
   // explicit CSS overrides match the diagram in question.
-  cScaleLabel0:  { var: 'c-ink-light' },
-  cScaleLabel1:  { var: 'c-ink-light' },
-  cScaleLabel2:  { var: 'c-ink-light' },
-  cScaleLabel3:  { var: 'c-ink-light' },
-  cScaleLabel4:  { var: 'c-ink-light' },
-  cScaleLabel5:  { var: 'c-ink-light' },
-  cScaleLabel6:  { var: 'c-ink-light' },
-  cScaleLabel7:  { var: 'c-ink-light' },
-  cScaleLabel8:  { var: 'c-ink-light' },
-  cScaleLabel9:  { var: 'c-ink-light' },
-  cScaleLabel10: { var: 'c-ink-light' },
-  cScaleLabel11: { var: 'c-ink-light' },
+  cScaleLabel0:  { var: 'cat-on-fill' },
+  cScaleLabel1:  { var: 'cat-on-fill' },
+  cScaleLabel2:  { var: 'cat-on-fill' },
+  cScaleLabel3:  { var: 'cat-on-fill' },
+  cScaleLabel4:  { var: 'cat-on-fill' },
+  cScaleLabel5:  { var: 'cat-on-fill' },
+  cScaleLabel6:  { var: 'cat-on-fill' },
+  cScaleLabel7:  { var: 'cat-on-fill' },
+  cScaleLabel8:  { var: 'cat-on-fill' },
+  cScaleLabel9:  { var: 'cat-on-fill' },
+  cScaleLabel10: { var: 'cat-on-fill' },
+  cScaleLabel11: { var: 'cat-on-fill' },
 
   // fillType (subgraph / mindmap-level fills, pale band)
-  fillType0: { var: 'c1-light' },
-  fillType1: { var: 'c2-light' },
-  fillType2: { var: 'c3-light' },
-  fillType3: { var: 'c4-light' },
-  fillType4: { var: 'c5-light' },
-  fillType5: { var: 'c6-light' },
-  fillType6: { var: 'c1-light' },
-  fillType7: { var: 'c2-light' },
+  fillType0: { var: 'cat-1-fill' },
+  fillType1: { var: 'cat-2-fill' },
+  fillType2: { var: 'cat-3-fill' },
+  fillType3: { var: 'cat-4-fill' },
+  fillType4: { var: 'cat-5-fill' },
+  fillType5: { var: 'cat-6-fill' },
+  fillType6: { var: 'cat-1-fill' },
+  fillType7: { var: 'cat-2-fill' },
 
   // Sequence diagram
-  actorBkg:                 { var: 'c1-light' },
-  actorBorder:              { var: 'c-stroke' },
-  actorTextColor:           { var: 'c-ink-light' },   // sequence actor text, on fill
-  actorLineColor:           { var: 'c-line' },
-  signalColor:              { var: 'c-line' },
-  signalTextColor:          { var: 'c-ink-light' },
+  actorBkg:                 { var: 'cat-1-fill' },
+  actorBorder:              { var: 'diagram-stroke' },
+  actorTextColor:           { var: 'cat-on-fill' },   // sequence actor text, on fill
+  actorLineColor:           { var: 'diagram-line' },
+  signalColor:              { var: 'diagram-line' },
+  signalTextColor:          { var: 'cat-on-fill' },
   labelBoxBkgColor:         { var: 'bg-alt' },
-  labelBoxBorderColor:      { var: 'c-stroke' },
-  activationBorderColor:    { var: 'c-stroke' },
-  activationBkgColor:       { var: 'c1-light' },
-  sequenceNumberColor:      { var: 'c-ink-light' },
+  labelBoxBorderColor:      { var: 'diagram-stroke' },
+  activationBorderColor:    { var: 'diagram-stroke' },
+  activationBkgColor:       { var: 'cat-1-fill' },
+  sequenceNumberColor:      { var: 'cat-on-fill' },
 
   // Notes (yellow accent — category-distinct)
-  noteBkgColor:             { var: 'c-note' },
-  noteTextColor:            { var: 'c-ink-light' },
-  noteBorderColor:          { var: 'c-mark' },
+  noteBkgColor:             { var: 'diagram-note' },
+  noteTextColor:            { var: 'cat-on-fill' },
+  noteBorderColor:          { var: 'diagram-today' },
 
   // Error (alarm — saturated red)
-  errorBkgColor:            { var: 'c-alarm' },
-  errorTextColor:           { var: 'c-ink-light' },
+  errorBkgColor:            { var: 'diagram-critical' },
+  errorTextColor:           { var: 'cat-on-fill' },
 
   // Pie chart (pale band cycle — unified contract)
-  pie1:  { var: 'c1-light' },
-  pie2:  { var: 'c2-light' },
-  pie3:  { var: 'c3-light' },
-  pie4:  { var: 'c4-light' },
-  pie5:  { var: 'c5-light' },
-  pie6:  { var: 'c6-light' },
-  pie7:  { var: 'c7-light' },
-  pie8:  { var: 'c8-light' },
-  pie9:  { var: 'c9-light' },
-  pie10: { var: 'c10-light' },
-  pie11: { var: 'c11-light' },
-  pie12: { var: 'c12-light' },
+  pie1:  { var: 'cat-1-fill' },
+  pie2:  { var: 'cat-2-fill' },
+  pie3:  { var: 'cat-3-fill' },
+  pie4:  { var: 'cat-4-fill' },
+  pie5:  { var: 'cat-5-fill' },
+  pie6:  { var: 'cat-6-fill' },
+  pie7:  { var: 'cat-7-fill' },
+  pie8:  { var: 'cat-8-fill' },
+  pie9:  { var: 'cat-9-fill' },
+  pie10: { var: 'cat-10-fill' },
+  pie11: { var: 'cat-11-fill' },
+  pie12: { var: 'cat-12-fill' },
   pieTitleTextSize:    { literal: '18px' },
-  pieTitleTextColor:   { var: 'c-ink-light' },
+  pieTitleTextColor:   { var: 'cat-on-fill' },
   pieSectionTextSize:  { literal: '14px' },
-  pieSectionTextColor: { var: 'c-ink-light' },   // text on pie slices, on fill
+  pieSectionTextColor: { var: 'cat-on-fill' },   // text on pie slices, on fill
   pieLegendTextSize:   { literal: '13px' },
-  pieLegendTextColor:  { var: 'c-ink-light' },
+  pieLegendTextColor:  { var: 'cat-on-fill' },
   pieStrokeColor:      { var: 'bg' },
   pieStrokeWidth:      { literal: '2px' },
   pieOuterStrokeWidth: { literal: '2px' },
-  pieOuterStrokeColor: { var: 'c-stroke' },
+  pieOuterStrokeColor: { var: 'diagram-stroke' },
   pieOpacity:          { literal: '1' },
 
   // Gantt (pale bars, dark text, alarm-only saturation)
   sectionBkgColor:        { var: 'bg-alt' },
   altSectionBkgColor:     { var: 'bg' },
-  sectionBkgColor2:       { var: 'c1-light' },
-  taskBkgColor:           { var: 'c1-light' },
-  taskTextColor:          { var: 'c-ink-light' },   // text on task bar, on fill
-  taskTextLightColor:     { var: 'c-ink-light' },   // ditto, Mermaid's "dark bar" variant
-  taskTextOutsideColor:   { var: 'c-ink-light' },  // text in the margin, on canvas
-  taskTextClickableColor: { var: 'c-ink-light' },   // text on task bar, on fill
-  taskBorderColor:        { var: 'c-stroke' },
-  activeTaskBkgColor:     { var: 'c-warm-light' },
-  activeTaskBorderColor:  { var: 'c-warm-dark' },
-  gridColor:              { var: 'c-cool-light' },
-  doneTaskBkgColor:       { var: 'c-cool-light' },
-  doneTaskBorderColor:    { var: 'c-cool-dark' },
-  critBkgColor:           { var: 'c-alarm' },
-  critBorderColor:        { var: 'c-alarm-dark' },
-  todayLineColor:         { var: 'c-mark' },
+  sectionBkgColor2:       { var: 'cat-1-fill' },
+  taskBkgColor:           { var: 'cat-1-fill' },
+  taskTextColor:          { var: 'cat-on-fill' },   // text on task bar, on fill
+  taskTextLightColor:     { var: 'cat-on-fill' },   // ditto, Mermaid's "dark bar" variant
+  taskTextOutsideColor:   { var: 'cat-on-fill' },  // text in the margin, on canvas
+  taskTextClickableColor: { var: 'cat-on-fill' },   // text on task bar, on fill
+  taskBorderColor:        { var: 'diagram-stroke' },
+  activeTaskBkgColor:     { var: 'diagram-active' },
+  activeTaskBorderColor:  { var: 'diagram-active-mark' },
+  gridColor:              { var: 'diagram-done' },
+  doneTaskBkgColor:       { var: 'diagram-done' },
+  doneTaskBorderColor:    { var: 'diagram-done-mark' },
+  critBkgColor:           { var: 'diagram-critical' },
+  critBorderColor:        { var: 'diagram-critical-mark' },
+  todayLineColor:         { var: 'diagram-today' },
 
   // Git graph
-  git0: { var: 'c1-dark' },
-  git1: { var: 'c2-dark' },
-  git2: { var: 'c3-dark' },
-  git3: { var: 'c4-dark' },
-  git4: { var: 'c5-dark' },
-  git5: { var: 'c6-dark' },
-  git6: { var: 'c8-dark' },
-  git7: { var: 'c7-dark' },
-  gitBranchLabel0: { var: 'c-ink-light' },
-  gitBranchLabel1: { var: 'c-ink-light' },
-  gitBranchLabel2: { var: 'c-ink-light' },
-  gitBranchLabel3: { var: 'c-ink-light' },
-  gitBranchLabel4: { var: 'c-ink-light' },
-  gitBranchLabel5: { var: 'c-ink-light' },
-  gitBranchLabel6: { var: 'c-ink-light' },
-  gitBranchLabel7: { var: 'c-ink-light' },
-  commitLabelColor:      { var: 'c-ink-light' },
+  git0: { var: 'cat-1-mark' },
+  git1: { var: 'cat-2-mark' },
+  git2: { var: 'cat-3-mark' },
+  git3: { var: 'cat-4-mark' },
+  git4: { var: 'cat-5-mark' },
+  git5: { var: 'cat-6-mark' },
+  git6: { var: 'cat-8-mark' },
+  git7: { var: 'cat-7-mark' },
+  gitBranchLabel0: { var: 'cat-on-fill' },
+  gitBranchLabel1: { var: 'cat-on-fill' },
+  gitBranchLabel2: { var: 'cat-on-fill' },
+  gitBranchLabel3: { var: 'cat-on-fill' },
+  gitBranchLabel4: { var: 'cat-on-fill' },
+  gitBranchLabel5: { var: 'cat-on-fill' },
+  gitBranchLabel6: { var: 'cat-on-fill' },
+  gitBranchLabel7: { var: 'cat-on-fill' },
+  commitLabelColor:      { var: 'cat-on-fill' },
   commitLabelBackground: { var: 'bg-alt' },
-  tagLabelColor:         { var: 'c-ink-light' },  // flips with canvas
+  tagLabelColor:         { var: 'cat-on-fill' },  // flips with canvas
   tagLabelBackground:    { var: 'bg-alt' },        // neutral label chip — distinct
-  tagLabelBorder:        { var: 'c-stroke' },       // from the colour-coded branch chips
+  tagLabelBorder:        { var: 'diagram-stroke' },       // from the colour-coded branch chips
 
   // Quadrant chart
-  quadrant1Fill:                    { var: 'c1-light' },
-  quadrant2Fill:                    { var: 'c2-light' },
-  quadrant3Fill:                    { var: 'c3-light' },
-  quadrant4Fill:                    { var: 'c4-light' },
-  quadrant1TextFill:                { var: 'c1-dark' },
-  quadrant2TextFill:                { var: 'c2-dark' },
-  quadrant3TextFill:                { var: 'c3-dark' },
-  quadrant4TextFill:                { var: 'c4-dark' },
-  quadrantPointFill:                { var: 'c-stroke' },
-  quadrantPointTextFill:            { var: 'c-ink-light' },
-  quadrantXAxisTextFill:            { var: 'c-ink-light' },
-  quadrantYAxisTextFill:            { var: 'c-ink-light' },
-  quadrantInternalBorderStrokeFill: { var: 'c8-dark' },
-  quadrantExternalBorderStrokeFill: { var: 'c-stroke' },
-  quadrantTitleFill:                { var: 'c-ink-light' },
+  quadrant1Fill:                    { var: 'cat-1-fill' },
+  quadrant2Fill:                    { var: 'cat-2-fill' },
+  quadrant3Fill:                    { var: 'cat-3-fill' },
+  quadrant4Fill:                    { var: 'cat-4-fill' },
+  quadrant1TextFill:                { var: 'cat-1-mark' },
+  quadrant2TextFill:                { var: 'cat-2-mark' },
+  quadrant3TextFill:                { var: 'cat-3-mark' },
+  quadrant4TextFill:                { var: 'cat-4-mark' },
+  quadrantPointFill:                { var: 'diagram-stroke' },
+  quadrantPointTextFill:            { var: 'cat-on-fill' },
+  quadrantXAxisTextFill:            { var: 'cat-on-fill' },
+  quadrantYAxisTextFill:            { var: 'cat-on-fill' },
+  quadrantInternalBorderStrokeFill: { var: 'cat-8-mark' },
+  quadrantExternalBorderStrokeFill: { var: 'diagram-stroke' },
+  quadrantTitleFill:                { var: 'cat-on-fill' },
 
   // State / class
   altBackground: { var: 'bg-alt' },
@@ -604,15 +604,20 @@ const MERMAID_VAR_MAP = {
     xAxisTitleColor:  { var: 'text-heading' },
     yAxisLabelColor:  { var: 'text-heading' },
     yAxisTitleColor:  { var: 'text-heading' },
-    plotColorPalette: { joinVars: ['c1-dark', 'c2-dark', 'c3-dark', 'c4-dark', 'c5-dark', 'c6-dark'] },
+    plotColorPalette: { joinVars: ['cat-1-mark', 'cat-2-mark', 'cat-3-mark', 'cat-4-mark', 'cat-5-mark', 'cat-6-mark'] },
   }},
 };
 
+// Offline value evaluator shared with the unit tests — var()/light-dark()/
+// color-mix() → literal, the offline twin of getComputedStyle. See
+// lib/core/resolve-token-expr.js.
+const { resolveTokenExpr } = require('./lib/core/resolve-token-expr');
+
 // ── Resolver: parses CSS custom properties from the palette file ─────────
 // Walks every :root { ... } block and extracts --variable-name: <value>,
-// then resolves light-dark() and one level of var() references. Returns
-// a flat map suitable for feeding Mermaid themeVariables (which expects
-// literal colors, not CSS expressions).
+// then resolves each value with resolveTokenExpr() (var()+fallback,
+// light-dark(), color-mix()). Returns a flat map suitable for feeding
+// Mermaid themeVariables (which expects literal colors, not CSS expressions).
 function parsePaletteVars(paletteCSSContent, forceDark) {
   // Strip CSS comments first so doc blocks containing example strings
   // like `":root{color-scheme:dark}"` don't break the :root brace matcher.
@@ -634,27 +639,15 @@ function parsePaletteVars(paletteCSSContent, forceDark) {
   // `forceDark` collapses to the dark branch regardless — used by the
   // dual-render path to bake a second, dark-scheme SVG for section.dark slides.
   const isDark = forceDark || /:root\s*\{[^}]*color-scheme\s*:\s*dark\b/.test(stripped);
-  for (const k of Object.keys(vars)) {
-    const ld = vars[k].match(/^light-dark\(\s*([^,]+?)\s*,\s*(.+?)\s*\)$/i);
-    if (ld) vars[k] = isDark ? ld[2] : ld[1];
-  }
-  // Resolve var() references iteratively. Chained references (e.g.
-  // `--text-heading: light-dark(var(--brand-blue-deep), ...)`) leave a
-  // single pass mid-chain. Iterate to a fixed point (capped) so every
-  // chained var() lands on its literal hex.
-  for (let pass = 0; pass < 8; pass++) {
-    let changed = false;
-    for (const k of Object.keys(vars)) {
-      const v = vars[k];
-      const ref = v.match(/^var\(--([a-z0-9-]+)\)$/i);
-      if (ref && vars[ref[1]] && vars[ref[1]] !== v) {
-        vars[k] = vars[ref[1]];
-        changed = true;
-      }
-    }
-    if (!changed) break;
-  }
-  return vars;
+  // Resolve every declaration against the RAW map with the recursive
+  // evaluator. Order-independent, unlike the former "collapse light-dark,
+  // then chase one-level var()" passes — those could not follow an alias
+  // declared new→old (var(--cat-1-fill) → var(--c1-light) → light-dark() →
+  // hex) nor evaluate color-mix(). resolveTokenExpr reads from the raw map
+  // so chained var()s resolve regardless of declaration order.
+  const resolved = {};
+  for (const k of Object.keys(vars)) resolved[k] = resolveTokenExpr(vars[k], vars, isDark);
+  return resolved;
 }
 
 // ── Build the Mermaid themeVariables object from the map + CSS vars ──────

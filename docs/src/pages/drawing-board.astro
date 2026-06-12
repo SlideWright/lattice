@@ -127,8 +127,13 @@ const starter =
 // Engine + build provenance stamped into PDF/PPTX exports (drawing-board-export.js).
 const pkgVersion = require(join(repoRoot, 'package.json')).version;
 
+// Universal-token crosswalk (the SoT old→new pairs) for the "Token system"
+// toggle — the board flips fetched CSS client-side via token-flip.js.
+const { PAIRS: tokenCrosswalk } = require(join(repoRoot, 'lib/tokens/crosswalk.js'));
+
 const dbData = JSON.stringify({
 	themeBase: url(pg + 'themes/'),
+	crosswalk: tokenCrosswalk,
 	runtimeUrl: url(pg + 'lattice-runtime.js'),
 	defaultPalette: 'indaco',
 	slideBox: SLIDE_BOX,
@@ -1058,6 +1063,39 @@ const dbData = JSON.stringify({
 				var THEME_BASE = data.themeBase;
 				var RUNTIME_URL = data.runtimeUrl;
 				var SLIDE_BOX = data.slideBox;
+				// Per-deck token vocabulary, selected by the `tokens:` front-matter
+				// directive (current | universal). Universal renders the deck against the
+				// new --cat-*/--diagram-* names — identical output (byte-identical flip,
+				// asserted by test/unit/tokens/crosswalk.test.js), a migration-safety A/B.
+				// To let both vocabularies coexist live (no reload), the universal engine
+				// + theme are registered under suffixed @theme names (lattice-u / <pal>-u)
+				// and the deck renders against the -u variant. Crosswalk pairs are the SoT
+				// (lib/tokens/crosswalk.js), injected via db-data; flipTokens mirrors flip().
+				function deckTokens() {
+					var s = getSource();
+					var m = s.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+					if (!m) return 'current';
+					var t = m[1].match(/^[ \t]*tokens:[ \t]*(\S+)/m);
+					return t && /^universal$/i.test(t[1]) ? 'universal' : 'current';
+				}
+				function flipTokens(css) {
+					if (!data.crosswalk) return css;
+					var pairs = data.crosswalk.slice().sort(function (a, b) { return b.old.length - a.old.length; });
+					var out = css;
+					for (var i = 0; i < pairs.length; i++) {
+						var esc = pairs[i].old.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+						out = out.replace(new RegExp('--' + esc + '(?![\\w-])', 'g'), '--' + pairs[i].new);
+					}
+					return out.replace(/--([a-z0-9-]+)\s*:\s*var\(\s*--\1\s*\)\s*;?/gi, '');
+				}
+				// Flip to the universal vocabulary AND namespace the theme so it coexists
+				// with the legacy one: `@theme indaco` → `@theme indaco-u`, and every
+				// `@import 'base'` → `@import 'base-u'` (indaco→lattice, indaco-dark→indaco).
+				function variantize(css) {
+					return flipTokens(css)
+						.replace(/(@theme\s+)([\w-]+)/g, '$1$2-u')
+						.replace(/(@import\s+['"])([\w-]+)(['"])/g, '$1$2-u$3');
+				}
 				var root = document.documentElement;
 				var frame = document.getElementById('db-frame');
 				var statusEl = document.getElementById('db-status');
@@ -1120,33 +1158,40 @@ const dbData = JSON.stringify({
 
 				paletteSel.value = root.getAttribute('data-palette');
 				var fetched = {};
-				var latticeReady = null;
+				var engineReady = {}; // per-vocabulary engine registration: lattice / lattice-u
 
 				function setStatus(msg, isErr) {
 					statusEl.textContent = msg;
 					statusEl.classList.toggle('err', !!isErr);
 				}
-				function fetchTheme(name) {
-					if (!fetched[name]) {
-						fetched[name] = fetch(THEME_BASE + name + '.css').then(function (r) {
+				// Fetch a theme file by its base name; in universal mode flip + namespace
+				// it to the -u variant. Cached per (name, vocabulary).
+				function fetchTheme(name, universal) {
+					var key = name + (universal ? '#u' : '');
+					if (!fetched[key]) {
+						fetched[key] = fetch(THEME_BASE + name + '.css').then(function (r) {
 							if (!r.ok) throw new Error('theme ' + name + ' (' + r.status + ')');
 							return r.text();
-						});
+						}).then(function (css) { return universal ? variantize(css) : css; });
 					}
-					return fetched[name];
+					return fetched[key];
 				}
-				function ensureThemes(palette, mode) {
+				function ensureThemes(palette, mode, universal) {
 					var PG = window.LatticePlayground;
-					if (!latticeReady) latticeReady = fetchTheme('lattice').then(function (css) { PG.addThemes([css]); });
-					var jobs = [latticeReady];
+					var suffix = universal ? '-u' : '';
+					// Engine registered once per vocabulary (lattice / lattice-u); the
+					// palette theme @imports whichever one matches its own suffix.
+					var engineName = 'lattice' + suffix;
+					if (!engineReady[engineName]) engineReady[engineName] = fetchTheme('lattice', universal).then(function (css) { PG.addThemes([css]); });
+					var jobs = [engineReady[engineName]];
 					// Library theme: one saved file (light-dark() pairs), already in memory.
 					// Register after lattice (the CSS @imports it); no -dark variant.
 					if (LIB[palette]) {
-						return latticeReady.then(function () { if (!PG.hasTheme(palette)) PG.addThemes([LIB[palette]]); });
+						return engineReady[engineName].then(function () { if (!PG.hasTheme(palette + suffix)) PG.addThemes([universal ? variantize(LIB[palette]) : LIB[palette]]); });
 					}
-					if (!PG.hasTheme(palette)) jobs.push(fetchTheme(palette).then(function (css) { PG.addThemes([css]); }));
-					if (mode === 'dark') {
-						jobs.push(fetchTheme(palette + '-dark').then(function (css) { PG.addThemes([css]); }).catch(function () {}));
+					if (!PG.hasTheme(palette + suffix)) jobs.push(fetchTheme(palette, universal).then(function (css) { PG.addThemes([css]); }));
+					if (mode === 'dark' && !PG.hasTheme(palette + '-dark' + suffix)) {
+						jobs.push(fetchTheme(palette + '-dark', universal).then(function (css) { PG.addThemes([css]); }).catch(function () {}));
 					}
 					return Promise.all(jobs);
 				}
@@ -1326,9 +1371,11 @@ const dbData = JSON.stringify({
 					if (!PG) { setStatus('Loading engine…'); return setTimeout(render, 60); }
 					var palette = root.getAttribute('data-palette') || 'indaco';
 					var mode = root.getAttribute('data-mode') === 'dark' ? 'dark' : 'light';
+					var universal = deckTokens() === 'universal';
+					var suffix = universal ? '-u' : '';
 					setStatus('Rendering…');
-					ensureThemes(palette, mode).then(function () {
-						var theme = mode === 'dark' && PG.hasTheme(palette + '-dark') ? palette + '-dark' : palette;
+					ensureThemes(palette, mode, universal).then(function () {
+						var theme = (mode === 'dark' && PG.hasTheme(palette + '-dark' + suffix) ? palette + '-dark' : palette) + suffix;
 						try {
 							// Component bridge: vendor referenced library components into the
 							// source before render (the SAME embed the .md export uses, so live

@@ -211,6 +211,133 @@
    * AA-safe; all --cN-dark/--c-ink-dark pairs are AA-safe. Hex values are
    * sourced from the Brand-triad rank-1 proposal in themes/palette-audit.md. */
 
+  /* ════════════════════════════════════════════════════════════════════
+   * UNIVERSAL TOKEN SYSTEM — categorical vocabulary (phase 1)
+   * ────────────────────────────────────────────────────────────────────
+   * Full design + crosswalk + strategy:
+   * engineering/decisions/2026-06-11-universal-token-system.md
+   *
+   * The token system is organized on TWO axes:
+   *   1. ABSTRACTION    primitive → semantic → component.
+   *   2. RENDER SHAPE   css-rich (color-mix / nested var(); resolved live by
+   *                     the browser + the marp-vscode runtime) VS bridge-flat
+   *                     (also read by the emulator's offline Mermaid resolver,
+   *                     parsePaletteVars). Bridge tokens used to be required to
+   *                     be a literal or a single light-dark(); the resolver is
+   *                     now a real recursive evaluator (var()+fallback,
+   *                     light-dark(), color-mix() in oklab/srgb), so a bridge
+   *                     token may be any expression those three paths share.
+   *
+   * This block introduces the self-describing CATEGORICAL vocabulary that
+   * replaces the overloaded `--cN-light` / `--cN-dark` pair. There, the
+   * `-light` / `-dark` suffix named a TIER (pale fill vs deep mark) yet
+   * collided head-on with (a) the color-scheme meaning of `--dark-*` and
+   * (b) the light-dark() function — so `--c1-light` was NOT "light-mode c1",
+   * it was a pale fill that itself held a light-dark() pair. The new names
+   * say exactly what they are and where they go:
+   *
+   *   --cat-N-fill   pale categorical SURFACE          (was --cN-light)
+   *   --cat-N-mark   saturated stroke / mark / cScale  (was --cN-dark)
+   *   --cat-on-fill  ink for text placed ON a -fill    (was --c-ink-light)
+   *   --cat-on-mark  ink for text placed ON a -mark    (was --c-ink-dark)
+   *
+   * `fill` / `mark` / `on-fill` / `on-mark` are WYSIWYM and collision-free
+   * (`ink` was already taken by the on-fill text token; the `--accent` /
+   * `--on-accent` pair sets the `on-` precedent). Color-scheme NEVER appears
+   * in a token name — it lives only inside the light-dark() VALUE the theme
+   * assigns to the aliased --cN-light / --cN-dark.
+   *
+   * PHASE 1 (this commit) aliases new → old, so values are byte-identical:
+   * zero visual change, all 14 hand-audited / AA-tested palettes untouched,
+   * and every existing consumer (mermaid.css's ~250 SVG override rules, the
+   * chart transforms) keeps resolving through the old names while the three
+   * render paths' Mermaid bridges read the NEW names. A later phase flips
+   * canonical-ity (themes declare --cat-* directly, old names become the thin
+   * alias) and migrates the remaining groups (diagram-structural, status,
+   * surfaces, the chart `--cat1-*` triad → `--chart-cat-*`). See the note. */
+  --cat-1-fill:  var(--c1-light);   --cat-1-mark:  var(--c1-dark);
+  --cat-2-fill:  var(--c2-light);   --cat-2-mark:  var(--c2-dark);
+  --cat-3-fill:  var(--c3-light);   --cat-3-mark:  var(--c3-dark);
+  --cat-4-fill:  var(--c4-light);   --cat-4-mark:  var(--c4-dark);
+  --cat-5-fill:  var(--c5-light);   --cat-5-mark:  var(--c5-dark);
+  --cat-6-fill:  var(--c6-light);   --cat-6-mark:  var(--c6-dark);
+  --cat-7-fill:  var(--c7-light);   --cat-7-mark:  var(--c7-dark);
+  --cat-8-fill:  var(--c8-light);   --cat-8-mark:  var(--c8-dark);
+  --cat-9-fill:  var(--c9-light);   --cat-9-mark:  var(--c9-dark);
+  --cat-10-fill: var(--c10-light);  --cat-10-mark: var(--c10-dark);
+  --cat-11-fill: var(--c11-light);  --cat-11-mark: var(--c11-dark);
+  --cat-12-fill: var(--c12-light);  --cat-12-mark: var(--c12-dark);
+  --cat-on-fill: var(--c-ink-light);
+  --cat-on-mark: var(--c-ink-dark);
+
+  /* ── Phase 2 · diagram-structural ─────────────────────────────────────
+   * The structural foregrounds every diagram band/edge needs, renamed off
+   * the overloaded `--c-` junk-drawer prefix onto the `--diagram-` group so
+   * the prefix says the surface (a diagram) and the role says the job:
+   *   --diagram-stroke       border around any band fill (foreground)
+   *   --diagram-line         edges / arrows / connectors (foreground)
+   *   --diagram-accent-warm  secondary warm accent (radar's 2nd curve)
+   * Aliased new→old (byte-identical). The bridges read the new names; the
+   * ~90 mermaid.css SVG rules + the radar override keep the old names via
+   * the alias and migrate later. See the decision note. */
+  --diagram-stroke:      var(--c-stroke);
+  --diagram-line:        var(--c-line);
+  --diagram-accent-warm: var(--c-accent-warm);
+
+  /* ── Phase 3 · status (the one semantic-signal axis) ──────────────────
+   * ONE status vocabulary shared by the engine state-discs (checklist /
+   * verdict / obligation / roadmap) and the charts. pass/warn/fail stay the
+   * per-theme curated source; info/mute borrow the chart family's canonical
+   * semantic hues (its documented fallback, so the alias is defined even on a
+   * theme that hasn't set the chart hook). Aliased (byte-identical). This is
+   * the STATUS axis — distinct from the diagram lifecycle below (a gantt
+   * "in-progress" tone is not a "warn"). */
+  --status-pass: var(--pass);  --status-pass-bg: var(--pass-bg);
+  --status-warn: var(--warn);  --status-warn-bg: var(--warn-bg);
+  --status-fail: var(--fail);  --status-fail-bg: var(--fail-bg);
+  --status-info: var(--chart-state-info, light-dark(#0A6CE0, #2E8BFF));
+  --status-mute: var(--chart-state-mute, light-dark(#6B7480, #9AA7B6));
+
+  /* ── Phase 3 · diagram lifecycle / annotation ─────────────────────────
+   * The Mermaid gantt lifecycle + note/error annotation colours, renamed off
+   * the `--c-` junk drawer onto SEMANTIC `--diagram-*` names — restoring the
+   * pre-2026-05-14 `--diagram-state-*` intent. A fill + a paired `-mark`
+   * stroke per state. The value reuse is documented, not hidden: the grid
+   * borrows the `done` tone; the note border borrows the `today` highlight
+   * (the bridges point gridColor → --diagram-done and noteBorder →
+   * --diagram-today). Aliased new→old (byte-identical); mermaid.css keeps the
+   * old names via the alias and migrates later. */
+  --diagram-active:        var(--c-warm-light);
+  --diagram-active-mark:   var(--c-warm-dark);
+  --diagram-done:          var(--c-cool-light);
+  --diagram-done-mark:     var(--c-cool-dark);
+  --diagram-critical:      var(--c-alarm);
+  --diagram-critical-mark: var(--c-alarm-dark);
+  --diagram-today:         var(--c-mark);
+  --diagram-note:          var(--c-note);
+
+  /* ── Phase 4 · surfaces / scheme (the --bg-dark vs --dark-bg fix) ──────
+   * P9: `--bg-dark` (a dark PANEL surface painted on a light deck — title /
+   * divider / closing / split rails) and `--dark-bg` (the canvas in dark
+   * MODE) are near-identical names with opposite roles. Disambiguated:
+   *   --surface-inverse   the dark panel on a light deck (was --bg-dark)
+   *   --scheme-dark-*     the dark-color-scheme inputs (was --dark-*)
+   * `--bg` / `--bg-alt` / `--border` are clear and stay as-is (no gratuitous
+   * churn). --surface-inverse is aliased + its 8 component consumers repoint to
+   * it now (byte-identical). The --scheme-dark-* set is vocabulary: its only
+   * consumers are the per-theme light-dark() pairs, which repoint at the flip;
+   * introducing the names here lets the flip be a pure find-replace later. */
+  --surface-inverse: var(--bg-dark);
+  --scheme-dark-bg:            var(--dark-bg);
+  --scheme-dark-bg-alt:        var(--dark-bg-alt);
+  --scheme-dark-border:        var(--dark-border);
+  --scheme-dark-text-heading:  var(--dark-text-heading);
+  --scheme-dark-text-body:     var(--dark-text-body);
+  --scheme-dark-text-display:  var(--dark-text-display);
+  --scheme-dark-text-secondary: var(--dark-text-secondary);
+  --scheme-dark-text-label:    var(--dark-text-label);
+  --scheme-dark-text-muted:    var(--dark-text-muted);
+
   /* ── Universal semantic palette ───────────────────────────────────────
    * Status-signaling colours shared by every theme. Gantt task lifecycle,
    * sequence-diagram notes, alarm fills, today markers — none of those
@@ -318,7 +445,7 @@
    * --code-text is theme-defined for syntax-on-dark legibility. The
    * fallbacks below match the indaco values so unstyled renders are still
    * usable as a diagnostic. */
-  --code-bg:   var(--bg-dark, #001D33);
+  --code-bg:   var(--surface-inverse, #001D33);
   --code-text: #CBD9E8;
 
   /* ── Inline code chip ─────────────────────────────────────────────────────
@@ -362,6 +489,19 @@
   --scale-700: color-mix(in oklab, var(--scale-500) 55%, black);
   --scale-800: color-mix(in oklab, var(--scale-500) 35%, black);
   --scale-900: color-mix(in oklab, var(--scale-500) 18%, black);
+
+  /* ── Phase 5 · sequential ramp (--scale-* → --seq-*) ──────────────────
+   * P8: "scale" meant two unrelated things — this ordered colour ramp AND
+   * the typographic multiplier `--fs-scale`. The ramp is renamed to the
+   * unambiguous `--seq-*` (sequential). Aliased to the existing stops
+   * (byte-identical); consumers read `--seq-*`, the `--scale-*` anchor +
+   * derivation stay as the source until the flip. The token's purpose is now
+   * legible — `--seq-700` is "a sequential ramp stop", never a font size. */
+  --seq-50:  var(--scale-50);   --seq-100: var(--scale-100);
+  --seq-200: var(--scale-200);  --seq-300: var(--scale-300);
+  --seq-400: var(--scale-400);  --seq-500: var(--scale-500);
+  --seq-600: var(--scale-600);  --seq-700: var(--scale-700);
+  --seq-800: var(--scale-800);  --seq-900: var(--scale-900);
 
   /* ── Tag (--tag-bg / --tag-text) ───────────────────────────────────────
    * Secondary accent for status badges / brand-status pills. Distinct
@@ -1959,7 +2099,7 @@ section.citation-card :is(ul,ol) > li > strong ~ * { font-weight: 400; }
 
 
 
-section.closing { justify-content:center; align-items:center; background:var(--bg-dark); }
+section.closing { justify-content:center; align-items:center; background:var(--surface-inverse); }
 section.closing { border-top: none; }
 section.closing hr { margin:0 auto var(--sp-md); }
 section.closing h2 { font-size:var(--fs-h1); color:var(--text-display); max-width:54.6875cqi; margin:0 auto var(--sp-sm); text-align:center; }
@@ -2556,7 +2696,7 @@ section.diagram > blockquote { align-self:stretch; }
  * See lib/components/divider/divider.manifest.json for the component contract.
  */
 
-section.divider { background:var(--bg-dark); padding-left:calc(var(--_sec-1cqi,1cqi)*9.375); justify-content:center; align-items:flex-start; }
+section.divider { background:var(--surface-inverse); padding-left:calc(var(--_sec-1cqi,1cqi)*9.375); justify-content:center; align-items:flex-start; }
 section.divider { border-top: none; }
 section.divider::before { content:''; position:absolute; left:0; top:0; bottom:0; width:0.46875cqi; background:var(--spectrum-vertical, var(--spectrum)); }
 /* Section heading slot is h2 — a divider names a section of the deck, not
@@ -2660,7 +2800,7 @@ section.featured :is(ul,ol) > li > strong ~ * { font-weight: 400; }
  * SVG of centred trapezoid bands, stage labels (left), values (right), and the
  * stage-to-stage conversion % in the gaps. All colour lives here so the kernel
  * stays palette-blind: bands carry `--i` (their index) and ride a single-hue
- * ramp off --cat1-hue; text uses the canvas ink tokens. Unlayered like every
+ * ramp off --chart-cat-1-hue; text uses the canvas ink tokens. Unlayered like every
  * other component file (broad @layer activation is blocked — see cascade.md). */
 
 section.funnel .funnel-figure {
@@ -2690,16 +2830,16 @@ section.funnel .funnel-svg {
  * polygons in the figure, so the count tracks stage order. (Same rotation idiom
  * as piechart.styles.css; see the gotchas note on nth-of-type vs nth-child.) */
 section.funnel .funnel-band {
-  fill: color-mix(in oklab, var(--cat1-hue) 82%, var(--bg));
+  fill: color-mix(in oklab, var(--chart-cat-1-hue) 82%, var(--bg));
   stroke: var(--bg);
   stroke-width: 0.75;
 }
-section.funnel .funnel-band:nth-of-type(6n + 1) { fill: color-mix(in oklab, var(--cat1-hue) 82%, var(--bg)); }
-section.funnel .funnel-band:nth-of-type(6n + 2) { fill: color-mix(in oklab, var(--cat2-hue) 82%, var(--bg)); }
-section.funnel .funnel-band:nth-of-type(6n + 3) { fill: color-mix(in oklab, var(--cat3-hue) 82%, var(--bg)); }
-section.funnel .funnel-band:nth-of-type(6n + 4) { fill: color-mix(in oklab, var(--cat4-hue) 82%, var(--bg)); }
-section.funnel .funnel-band:nth-of-type(6n + 5) { fill: color-mix(in oklab, var(--cat5-hue) 82%, var(--bg)); }
-section.funnel .funnel-band:nth-of-type(6n + 6) { fill: color-mix(in oklab, var(--cat6-hue) 82%, var(--bg)); }
+section.funnel .funnel-band:nth-of-type(6n + 1) { fill: color-mix(in oklab, var(--chart-cat-1-hue) 82%, var(--bg)); }
+section.funnel .funnel-band:nth-of-type(6n + 2) { fill: color-mix(in oklab, var(--chart-cat-2-hue) 82%, var(--bg)); }
+section.funnel .funnel-band:nth-of-type(6n + 3) { fill: color-mix(in oklab, var(--chart-cat-3-hue) 82%, var(--bg)); }
+section.funnel .funnel-band:nth-of-type(6n + 4) { fill: color-mix(in oklab, var(--chart-cat-4-hue) 82%, var(--bg)); }
+section.funnel .funnel-band:nth-of-type(6n + 5) { fill: color-mix(in oklab, var(--chart-cat-5-hue) 82%, var(--bg)); }
+section.funnel .funnel-band:nth-of-type(6n + 6) { fill: color-mix(in oklab, var(--chart-cat-6-hue) 82%, var(--bg)); }
 
 /* Stage label — left column, right-aligned to the band. */
 section.funnel .funnel-label {
@@ -3354,7 +3494,7 @@ section.image.museum p:last-of-type {
   --journey-mood-1-deep: var(--c6-dark);
 
   /* Surfaces */
-  --journey-section-bg:   color-mix(in oklab, var(--bg-alt) 70%, var(--bg-dark));
+  --journey-section-bg:   color-mix(in oklab, var(--bg-alt) 70%, var(--surface-inverse));
   /* Section bar bg mixes toward --bg-dark on BOTH canvases → always a dark
    * surface. --on-accent flips to --bg-dark in dark mode (same value) giving
    * near-zero contrast (~2.5:1). Use --on-dark-primary (always-light token)
@@ -4045,7 +4185,7 @@ section.kanban.chart-frame .chart-body {
 .kanban-card {
   /* THE CANONICAL CHART FILL (defined in chart-family.css). Kanban is the
    * reference: a card's hue is its lane colour, its edge the same lane ink. */
-  --fill-hue: var(--lane-color, var(--cat1-ink));
+  --fill-hue: var(--lane-color, var(--chart-cat-1-ink));
   --fill-ink: var(--lane-color, var(--border));
   background: linear-gradient(180deg,
     light-dark(color-mix(in oklab, var(--fill-hue) var(--chart-fill-top-l),    var(--bg)),
@@ -5368,7 +5508,7 @@ section.logo-wall.dark.color > ul > li img {
  * The kernel (map.transform.js) emits a <div class="map-figure"> holding an
  * SVG basemap (one <path> per region) and a legend (swatch · name · value).
  * All colour lives here so the kernel stays palette-blind: choropleth regions
- * carry a `--mix` percentage and ride a single-hue ramp off --cat1-hue;
+ * carry a `--mix` percentage and ride a single-hue ramp off --chart-cat-1-hue;
  * highlight regions carry a `--region-hue` var-reference into a --catN slot;
  * unnamed regions take the neutral base fill. Unlayered like every other
  * component file (broad @layer activation is blocked — see cascade.md). */
@@ -5411,12 +5551,12 @@ section.map .map-region {
   stroke-linejoin: round;
 }
 
-/* Choropleth — one sequential ramp off --cat1-hue, mixed into the neutral
+/* Choropleth — one sequential ramp off --chart-cat-1-hue, mixed into the neutral
  * base (--map-base) so low values read as a faint tint of the hue OVER the
  * empty fill, never below it. The kernel sets --mix (a color-mix percentage)
  * per region: low → faint hue, high → saturated. Low→high on the ramp. */
 section.map .map-region--on {
-  fill: color-mix(in oklab, var(--cat1-hue) var(--mix), var(--map-base));
+  fill: color-mix(in oklab, var(--chart-cat-1-hue) var(--mix), var(--map-base));
 }
 
 /* Highlight — categorical: each named region rides its --catN slot hue at
@@ -5457,7 +5597,7 @@ section.map .map-swatch {
   display: inline-block;
 }
 section.map .map-swatch--on {
-  background: color-mix(in oklab, var(--cat1-hue) var(--mix), var(--map-base));
+  background: color-mix(in oklab, var(--chart-cat-1-hue) var(--mix), var(--map-base));
 }
 section.map .map-swatch--hl {
   background: color-mix(in oklab, var(--region-hue) 82%, var(--bg));
@@ -6494,25 +6634,25 @@ section.piechart .piechart-legend .legend-pct {
  * legend swatches keep nth-child — their container has no such leading sibling.
  * See engineering/gotchas.md "Pie wedge borders off-by-one". */
 section.piechart .wedge:nth-of-type(6n+1),
-section.piechart .legend-swatch:nth-child(6n+1) { fill: var(--cat1-fill); stroke: var(--cat1-ink); background: var(--cat1-fill); border: var(--chart-hairline) solid var(--cat1-ink); }
+section.piechart .legend-swatch:nth-child(6n+1) { fill: var(--chart-cat-1-fill); stroke: var(--chart-cat-1-ink); background: var(--chart-cat-1-fill); border: var(--chart-hairline) solid var(--chart-cat-1-ink); }
 section.piechart .wedge:nth-of-type(6n+2),
-section.piechart .legend-swatch:nth-child(6n+2) { fill: var(--cat2-fill); stroke: var(--cat2-ink); background: var(--cat2-fill); border: var(--chart-hairline) solid var(--cat2-ink); }
+section.piechart .legend-swatch:nth-child(6n+2) { fill: var(--chart-cat-2-fill); stroke: var(--chart-cat-2-ink); background: var(--chart-cat-2-fill); border: var(--chart-hairline) solid var(--chart-cat-2-ink); }
 section.piechart .wedge:nth-of-type(6n+3),
-section.piechart .legend-swatch:nth-child(6n+3) { fill: var(--cat3-fill); stroke: var(--cat3-ink); background: var(--cat3-fill); border: var(--chart-hairline) solid var(--cat3-ink); }
+section.piechart .legend-swatch:nth-child(6n+3) { fill: var(--chart-cat-3-fill); stroke: var(--chart-cat-3-ink); background: var(--chart-cat-3-fill); border: var(--chart-hairline) solid var(--chart-cat-3-ink); }
 section.piechart .wedge:nth-of-type(6n+4),
-section.piechart .legend-swatch:nth-child(6n+4) { fill: var(--cat4-fill); stroke: var(--cat4-ink); background: var(--cat4-fill); border: var(--chart-hairline) solid var(--cat4-ink); }
+section.piechart .legend-swatch:nth-child(6n+4) { fill: var(--chart-cat-4-fill); stroke: var(--chart-cat-4-ink); background: var(--chart-cat-4-fill); border: var(--chart-hairline) solid var(--chart-cat-4-ink); }
 section.piechart .wedge:nth-of-type(6n+5),
-section.piechart .legend-swatch:nth-child(6n+5) { fill: var(--cat5-fill); stroke: var(--cat5-ink); background: var(--cat5-fill); border: var(--chart-hairline) solid var(--cat5-ink); }
+section.piechart .legend-swatch:nth-child(6n+5) { fill: var(--chart-cat-5-fill); stroke: var(--chart-cat-5-ink); background: var(--chart-cat-5-fill); border: var(--chart-hairline) solid var(--chart-cat-5-ink); }
 section.piechart .wedge:nth-of-type(6n),
-section.piechart .legend-swatch:nth-child(6n)   { fill: var(--cat6-fill); stroke: var(--cat6-ink); background: var(--cat6-fill); border: var(--chart-hairline) solid var(--cat6-ink); }
+section.piechart .legend-swatch:nth-child(6n)   { fill: var(--chart-cat-6-fill); stroke: var(--chart-cat-6-ink); background: var(--chart-cat-6-fill); border: var(--chart-hairline) solid var(--chart-cat-6-ink); }
 
 /* The legend swatch has its own row indexing using li order. */
-section.piechart .piechart-legend li:nth-child(6n+1) .legend-swatch { background: var(--cat1-fill); border: var(--chart-hairline) solid var(--cat1-ink); }
-section.piechart .piechart-legend li:nth-child(6n+2) .legend-swatch { background: var(--cat2-fill); border: var(--chart-hairline) solid var(--cat2-ink); }
-section.piechart .piechart-legend li:nth-child(6n+3) .legend-swatch { background: var(--cat3-fill); border: var(--chart-hairline) solid var(--cat3-ink); }
-section.piechart .piechart-legend li:nth-child(6n+4) .legend-swatch { background: var(--cat4-fill); border: var(--chart-hairline) solid var(--cat4-ink); }
-section.piechart .piechart-legend li:nth-child(6n+5) .legend-swatch { background: var(--cat5-fill); border: var(--chart-hairline) solid var(--cat5-ink); }
-section.piechart .piechart-legend li:nth-child(6n)   .legend-swatch { background: var(--cat6-fill); border: var(--chart-hairline) solid var(--cat6-ink); }
+section.piechart .piechart-legend li:nth-child(6n+1) .legend-swatch { background: var(--chart-cat-1-fill); border: var(--chart-hairline) solid var(--chart-cat-1-ink); }
+section.piechart .piechart-legend li:nth-child(6n+2) .legend-swatch { background: var(--chart-cat-2-fill); border: var(--chart-hairline) solid var(--chart-cat-2-ink); }
+section.piechart .piechart-legend li:nth-child(6n+3) .legend-swatch { background: var(--chart-cat-3-fill); border: var(--chart-hairline) solid var(--chart-cat-3-ink); }
+section.piechart .piechart-legend li:nth-child(6n+4) .legend-swatch { background: var(--chart-cat-4-fill); border: var(--chart-hairline) solid var(--chart-cat-4-ink); }
+section.piechart .piechart-legend li:nth-child(6n+5) .legend-swatch { background: var(--chart-cat-5-fill); border: var(--chart-hairline) solid var(--chart-cat-5-ink); }
+section.piechart .piechart-legend li:nth-child(6n)   .legend-swatch { background: var(--chart-cat-6-fill); border: var(--chart-hairline) solid var(--chart-cat-6-ink); }
 
 /* === lib/components/comparison/pricing/pricing.styles.css === */
 /* pricing — plan tiers with prices, feature checklists, and one recommended
@@ -6702,8 +6842,8 @@ section.progress .progress-fill {
    * members keep the shared --chart-fill-* vertical wash (they have no --pct).
    * A bar with no status is the categorical cat1 slot; status variants re-point
    * the --fill-* pair. Authors pin a categorical hue with `--fill`. */
-  --fill-hue: var(--fill, var(--cat1-hue));
-  --fill-ink: var(--cat1-ink);
+  --fill-hue: var(--fill, var(--chart-cat-1-hue));
+  --fill-ink: var(--chart-cat-1-ink);
   background: linear-gradient(90deg,
     light-dark(color-mix(in oklab, var(--fill-hue) 12%, var(--bg)),
                color-mix(in oklab, var(--fill-hue) 30%, black)) 0%,
@@ -7086,10 +7226,10 @@ section.quadrant {
  * lives in _chart-family.css and guarantees fill + border share a hue and
  * flip with the canvas (pale fill / deep border on light, deep fill / pale
  * border on dark). The quadrant just assigns slots 1-4 in reading order. */
-section.quadrant [data-cell="0"] { --cell-fill: var(--cat1-fill); --cell-ink: var(--cat1-ink); }
-section.quadrant [data-cell="1"] { --cell-fill: var(--cat2-fill); --cell-ink: var(--cat2-ink); }
-section.quadrant [data-cell="2"] { --cell-fill: var(--cat3-fill); --cell-ink: var(--cat3-ink); }
-section.quadrant [data-cell="3"] { --cell-fill: var(--cat4-fill); --cell-ink: var(--cat4-ink); }
+section.quadrant [data-cell="0"] { --cell-fill: var(--chart-cat-1-fill); --cell-ink: var(--chart-cat-1-ink); }
+section.quadrant [data-cell="1"] { --cell-fill: var(--chart-cat-2-fill); --cell-ink: var(--chart-cat-2-ink); }
+section.quadrant [data-cell="2"] { --cell-fill: var(--chart-cat-3-fill); --cell-ink: var(--chart-cat-3-ink); }
+section.quadrant [data-cell="3"] { --cell-fill: var(--chart-cat-4-fill); --cell-ink: var(--chart-cat-4-ink); }
 
 /* quadrant is a chart-family member — section layout, header/body/caption
  * skeleton and h2 styling all come from section.chart-frame. The figure
@@ -8890,7 +9030,7 @@ section.roadmap.milestones tbody td:not(:first-child) {
  */
 
 section.split-compare { padding:0; flex-direction:row; }
-section.split-compare .compare-left { width:30%; flex-shrink:0; background:var(--bg-dark); display:flex; flex-direction:column; justify-content:center; padding:var(--sp-xl) var(--sp-lg); position:relative; }
+section.split-compare .compare-left { width:30%; flex-shrink:0; background:var(--surface-inverse); display:flex; flex-direction:column; justify-content:center; padding:var(--sp-xl) var(--sp-lg); position:relative; }
 section.split-compare .compare-left::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:var(--accent); }
 section.split-compare .compare-left .frame-label { display:block; font-size:var(--fs-meta); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--on-dark-secondary); margin-bottom:var(--sp-sm); }
 section.split-compare .compare-left h2 { font-size:var(--fs-h3); color:var(--on-dark-primary); font-weight:800; line-height:var(--lh-tight); margin:0 0 var(--sp-md); }
@@ -8934,7 +9074,7 @@ section.split-compare .verdict blockquote p { font-size:var(--fs-body); font-fam
 
 /* ── base = featured heading + findings (former split-brief) ─────────────── */
 section.split-panel { padding:0; flex-direction:row; }
-section.split-panel .panel-left { width:38%; flex-shrink:0; background:var(--bg-dark); display:flex; flex-direction:column; justify-content:flex-end; padding:var(--sp-xl) var(--sp-lg); position:relative; overflow:hidden; }
+section.split-panel .panel-left { width:38%; flex-shrink:0; background:var(--surface-inverse); display:flex; flex-direction:column; justify-content:flex-end; padding:var(--sp-xl) var(--sp-lg); position:relative; overflow:hidden; }
 section.split-panel .panel-left::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:var(--accent); }
 section.split-panel .panel-eyebrow { display:block; font-size:var(--fs-meta); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--on-dark-secondary); margin-bottom:var(--sp-md); }
 section.split-panel .panel-left h2 { font-size:var(--fs-h1); color:var(--on-dark-primary); line-height:var(--lh-tight); margin:0 0 var(--sp-sm); font-weight:800; }
@@ -8954,7 +9094,7 @@ section.split-panel.metric .panel-eyebrow { color:var(--text-secondary); margin-
 section.split-panel.metric .panel-left h2 { font-size:var(--fs-hero); font-family:var(--font-display); font-weight:900; color:var(--text-heading); line-height:1; margin:0 0 var(--sp-sm); }
 section.split-panel.metric .panel-left h2 em { font-size:var(--fs-h1); font-weight:700; font-style:normal; color:var(--text-secondary); }
 section.split-panel.metric .panel-left p { font-size:var(--fs-meta); font-family:var(--font-body); color:var(--text-body); line-height:var(--lh-snug); max-width:26ch; margin:0; padding-top:var(--sp-sm); border-top:1px solid var(--border); }
-section.split-panel.metric .panel-right { background:var(--bg-dark); }
+section.split-panel.metric .panel-right { background:var(--surface-inverse); }
 section.split-panel.metric .panel-right h3 { color:var(--on-dark-secondary); border-bottom-color:var(--on-dark-watermark); }
 section.split-panel.metric .panel-right > ul > li { border-left:2px solid var(--on-dark-watermark); }
 section.split-panel.metric .panel-right > ul > li > strong { color:var(--on-dark-primary); }
@@ -9764,7 +9904,7 @@ section.timeline-list .timeline-dot {
   width: 1.09375cqi; height: 1.09375cqi;
   border-radius: 50%;
   background: var(--bg);             /* hollow — centre matches the slide */
-  border: 3px solid var(--cat1-ink); /* per-stage colour, cycled below */
+  border: 3px solid var(--chart-cat-1-ink); /* per-stage colour, cycled below */
   box-shadow: 0 0 0 4px var(--bg);
   margin-bottom: var(--sp-sm);
   flex: 0 0 auto;
@@ -9773,12 +9913,12 @@ section.timeline-list .timeline-dot {
  * matching pie / kanban / word-cloud — categorical colour for sequential
  * stages. Six-rotation, like the other categorical members. The spine and
  * date pills stay accent so the row still reads as one timeline. */
-section.timeline-list .timeline-item:nth-child(6n+1) .timeline-dot { border-color: var(--cat1-ink); }
-section.timeline-list .timeline-item:nth-child(6n+2) .timeline-dot { border-color: var(--cat2-ink); }
-section.timeline-list .timeline-item:nth-child(6n+3) .timeline-dot { border-color: var(--cat3-ink); }
-section.timeline-list .timeline-item:nth-child(6n+4) .timeline-dot { border-color: var(--cat4-ink); }
-section.timeline-list .timeline-item:nth-child(6n+5) .timeline-dot { border-color: var(--cat5-ink); }
-section.timeline-list .timeline-item:nth-child(6n)   .timeline-dot { border-color: var(--cat6-ink); }
+section.timeline-list .timeline-item:nth-child(6n+1) .timeline-dot { border-color: var(--chart-cat-1-ink); }
+section.timeline-list .timeline-item:nth-child(6n+2) .timeline-dot { border-color: var(--chart-cat-2-ink); }
+section.timeline-list .timeline-item:nth-child(6n+3) .timeline-dot { border-color: var(--chart-cat-3-ink); }
+section.timeline-list .timeline-item:nth-child(6n+4) .timeline-dot { border-color: var(--chart-cat-4-ink); }
+section.timeline-list .timeline-item:nth-child(6n+5) .timeline-dot { border-color: var(--chart-cat-5-ink); }
+section.timeline-list .timeline-item:nth-child(6n)   .timeline-dot { border-color: var(--chart-cat-6-ink); }
 section.timeline-list .timeline-pill {
   display: inline-flex;
   align-items: center;
@@ -9828,7 +9968,7 @@ section.timeline-list .timeline-body {
  * See lib/components/title/title.manifest.json for the component contract.
  */
 
-section.title { justify-content:center; align-items:center; background:var(--bg-dark); }
+section.title { justify-content:center; align-items:center; background:var(--surface-inverse); }
 section.title { border-top: none; }
 section.title h1 { font-size:var(--fs-h1); color:var(--text-display); margin-bottom:var(--sp-xs); text-align:center; }
 section.title hr { background:var(--accent); height:1px; width:64px; margin:var(--sp-sm) auto; }
@@ -10131,13 +10271,13 @@ section.word-cloud .wc-word[data-rotated="1"] {
  * Muted words (--text-muted) and accent words (--accent) need no override —
  * those tokens already have good dark-mode dark values. */
 section.dark.word-cloud {
-  --cat1-ink: var(--cat1-hue);
-  --cat2-ink: var(--cat2-hue);
-  --cat3-ink: var(--cat3-hue);
-  --cat4-ink: var(--cat4-hue);
-  --cat5-ink: var(--cat5-hue);
-  --cat6-ink: var(--cat6-hue);
-  --cat7-ink: var(--cat7-hue);
+  --chart-cat-1-ink: var(--chart-cat-1-hue);
+  --chart-cat-2-ink: var(--chart-cat-2-hue);
+  --chart-cat-3-ink: var(--chart-cat-3-hue);
+  --chart-cat-4-ink: var(--chart-cat-4-hue);
+  --chart-cat-5-ink: var(--chart-cat-5-hue);
+  --chart-cat-6-ink: var(--chart-cat-6-hue);
+  --chart-cat-7-ink: var(--chart-cat-7-hue);
 }
 
 /* === lib/base/base.modifiers.css === */
@@ -11126,7 +11266,7 @@ img.deck-logo.deck-logo-brand {
 
 /* ── Syntax highlight (highlight.js) ──────────────────────────────────────
  * Palette-blind rule structure — tokens are theme-defined, defaults above. */
-section pre.hljs { background:var(--spectrum) bottom / 100% 3px no-repeat, var(--bg-dark); padding:var(--sp-sm) var(--sp-md); padding-bottom:calc(var(--sp-sm) + 3px); box-sizing:border-box; border-radius:var(--radius-md); overflow-x:auto; margin:0; }
+section pre.hljs { background:var(--spectrum) bottom / 100% 3px no-repeat, var(--surface-inverse); padding:var(--sp-sm) var(--sp-md); padding-bottom:calc(var(--sp-sm) + 3px); box-sizing:border-box; border-radius:var(--radius-md); overflow-x:auto; margin:0; }
 section code.hljs { font-family:var(--font-mono); font-size:var(--fs-meta); line-height:var(--lh-base); color:var(--code-text); background:none; padding:0; display:block; }
 /* Diagram source <pre> — override Marp's bundled section pre/code defaults */
 section.diagram :is(pre, marp-pre):not([data-mermaid-state="rendered"]),
@@ -11385,32 +11525,32 @@ section.word-cloud { /* word-cloud is a chart-frame member; the bare selector al
    * Theme-overridable: a theme sets `--chart-catN` (same light-dark shape) at
    * :root to flavour the spectrum to its character; the var() indirection lets
    * the theme always win, and untuned themes inherit this master set. */
-  --cat1-hue: var(--chart-cat1, light-dark(#0A6CE0, #2E8BFF));  /* blue   */
-  --cat2-hue: var(--chart-cat2, light-dark(#C2670A, #FFA630));  /* orange */
-  --cat3-hue: var(--chart-cat3, light-dark(#1E9E48, #34D058));  /* green  */
-  --cat4-hue: var(--chart-cat4, light-dark(#9333D6, #BE5AF2));  /* purple */
-  --cat5-hue: var(--chart-cat5, light-dark(#0E96AE, #3FC8E0));  /* teal   */
-  --cat6-hue: var(--chart-cat6, light-dark(#E11D48, #FF4D6A));  /* rose   */
-  --cat7-hue: var(--chart-cat7, light-dark(#B5860A, #FFD426));  /* gold   */
-  --cat8-hue: var(--chart-cat8, light-dark(#4B49C9, #6E6CF0));  /* indigo */
+  --chart-cat-1-hue: var(--chart-cat1, light-dark(#0A6CE0, #2E8BFF));  /* blue   */
+  --chart-cat-2-hue: var(--chart-cat2, light-dark(#C2670A, #FFA630));  /* orange */
+  --chart-cat-3-hue: var(--chart-cat3, light-dark(#1E9E48, #34D058));  /* green  */
+  --chart-cat-4-hue: var(--chart-cat4, light-dark(#9333D6, #BE5AF2));  /* purple */
+  --chart-cat-5-hue: var(--chart-cat5, light-dark(#0E96AE, #3FC8E0));  /* teal   */
+  --chart-cat-6-hue: var(--chart-cat6, light-dark(#E11D48, #FF4D6A));  /* rose   */
+  --chart-cat-7-hue: var(--chart-cat7, light-dark(#B5860A, #FFD426));  /* gold   */
+  --chart-cat-8-hue: var(--chart-cat8, light-dark(#4B49C9, #6E6CF0));  /* indigo */
 
-  --cat1-fill: light-dark(color-mix(in oklab, var(--cat1-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat1-hue) 40%, black));
-  --cat2-fill: light-dark(color-mix(in oklab, var(--cat2-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat2-hue) 40%, black));
-  --cat3-fill: light-dark(color-mix(in oklab, var(--cat3-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat3-hue) 40%, black));
-  --cat4-fill: light-dark(color-mix(in oklab, var(--cat4-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat4-hue) 40%, black));
-  --cat5-fill: light-dark(color-mix(in oklab, var(--cat5-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat5-hue) 40%, black));
-  --cat6-fill: light-dark(color-mix(in oklab, var(--cat6-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat6-hue) 40%, black));
-  --cat7-fill: light-dark(color-mix(in oklab, var(--cat7-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat7-hue) 40%, black));
-  --cat8-fill: light-dark(color-mix(in oklab, var(--cat8-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat8-hue) 40%, black));
+  --chart-cat-1-fill: light-dark(color-mix(in oklab, var(--chart-cat-1-hue) 24%, var(--bg)), color-mix(in oklab, var(--chart-cat-1-hue) 40%, black));
+  --chart-cat-2-fill: light-dark(color-mix(in oklab, var(--chart-cat-2-hue) 24%, var(--bg)), color-mix(in oklab, var(--chart-cat-2-hue) 40%, black));
+  --chart-cat-3-fill: light-dark(color-mix(in oklab, var(--chart-cat-3-hue) 24%, var(--bg)), color-mix(in oklab, var(--chart-cat-3-hue) 40%, black));
+  --chart-cat-4-fill: light-dark(color-mix(in oklab, var(--chart-cat-4-hue) 24%, var(--bg)), color-mix(in oklab, var(--chart-cat-4-hue) 40%, black));
+  --chart-cat-5-fill: light-dark(color-mix(in oklab, var(--chart-cat-5-hue) 24%, var(--bg)), color-mix(in oklab, var(--chart-cat-5-hue) 40%, black));
+  --chart-cat-6-fill: light-dark(color-mix(in oklab, var(--chart-cat-6-hue) 24%, var(--bg)), color-mix(in oklab, var(--chart-cat-6-hue) 40%, black));
+  --chart-cat-7-fill: light-dark(color-mix(in oklab, var(--chart-cat-7-hue) 24%, var(--bg)), color-mix(in oklab, var(--chart-cat-7-hue) 40%, black));
+  --chart-cat-8-fill: light-dark(color-mix(in oklab, var(--chart-cat-8-hue) 24%, var(--bg)), color-mix(in oklab, var(--chart-cat-8-hue) 40%, black));
 
-  --cat1-ink: light-dark(var(--cat1-hue), color-mix(in oklab, var(--cat1-hue) 78%, white));
-  --cat2-ink: light-dark(var(--cat2-hue), color-mix(in oklab, var(--cat2-hue) 78%, white));
-  --cat3-ink: light-dark(var(--cat3-hue), color-mix(in oklab, var(--cat3-hue) 78%, white));
-  --cat4-ink: light-dark(var(--cat4-hue), color-mix(in oklab, var(--cat4-hue) 78%, white));
-  --cat5-ink: light-dark(var(--cat5-hue), color-mix(in oklab, var(--cat5-hue) 78%, white));
-  --cat6-ink: light-dark(var(--cat6-hue), color-mix(in oklab, var(--cat6-hue) 78%, white));
-  --cat7-ink: light-dark(var(--cat7-hue), color-mix(in oklab, var(--cat7-hue) 78%, white));
-  --cat8-ink: light-dark(var(--cat8-hue), color-mix(in oklab, var(--cat8-hue) 78%, white));
+  --chart-cat-1-ink: light-dark(var(--chart-cat-1-hue), color-mix(in oklab, var(--chart-cat-1-hue) 78%, white));
+  --chart-cat-2-ink: light-dark(var(--chart-cat-2-hue), color-mix(in oklab, var(--chart-cat-2-hue) 78%, white));
+  --chart-cat-3-ink: light-dark(var(--chart-cat-3-hue), color-mix(in oklab, var(--chart-cat-3-hue) 78%, white));
+  --chart-cat-4-ink: light-dark(var(--chart-cat-4-hue), color-mix(in oklab, var(--chart-cat-4-hue) 78%, white));
+  --chart-cat-5-ink: light-dark(var(--chart-cat-5-hue), color-mix(in oklab, var(--chart-cat-5-hue) 78%, white));
+  --chart-cat-6-ink: light-dark(var(--chart-cat-6-hue), color-mix(in oklab, var(--chart-cat-6-hue) 78%, white));
+  --chart-cat-7-ink: light-dark(var(--chart-cat-7-hue), color-mix(in oklab, var(--chart-cat-7-hue) 78%, white));
+  --chart-cat-8-ink: light-dark(var(--chart-cat-8-hue), color-mix(in oklab, var(--chart-cat-8-hue) 78%, white));
 
   /* The mix target for the categorical SVG gradients (pie wedges, quadrant
    * zones — emitted inline by the transforms). Light canvas mixes the hue into

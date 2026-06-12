@@ -33,6 +33,11 @@ const FIELD_DEFAULTS = {
   // controller only syncs a registered palette), not here — writeFrontMatter
   // never scrubs a hand-typed value out of the author's source.
   theme: '',
+  // Token vocabulary the Drawing Board renders the deck against: 'current' (the
+  // legacy names, the default → omitted) or 'universal' (the new --cat-*/--diagram-*
+  // names). Both render identically — a migration-safety A/B. Drawing-Board-only:
+  // marp-cli ignores it, so a deck stays portable.
+  tokens: 'current',
   size: '16:9', // Marp's default page size (themes also define 4K / standard)
   paginate: 'false',
   header: '',
@@ -49,7 +54,7 @@ const MANAGED = Object.keys(FIELD_DEFAULTS);
 
 // Emit order for known keys; any unmanaged keys we preserved trail in their
 // original order. `marp` leads (it's what tells marp-cli to render the deck).
-const EMIT_ORDER = ['marp', 'theme', 'size', 'paginate', 'header', 'footer', 'class', 'islands', 'math', 'lang'];
+const EMIT_ORDER = ['marp', 'theme', 'tokens', 'size', 'paginate', 'header', 'footer', 'class', 'islands', 'math', 'lang'];
 
 const TRUEY = /^(true|yes|on|1)$/i;
 
@@ -94,6 +99,7 @@ export function readFrontMatter(source) {
   for (const [k, v] of entries) map[k] = stripQuotes(v);
   return {
     theme: map.theme || '',
+    tokens: map.tokens || 'current',
     size: map.size || '16:9',
     paginate: TRUEY.test(map.paginate || ''),
     header: map.header || '',
@@ -303,6 +309,12 @@ export function createConfigPanel({ host, trigger, getSource, setSource, palette
           `“${raw}” isn’t a known theme — the deck renders with ${current} until you pick a valid one.`));
       }
     }
+
+    // Token system — the deck's token vocabulary. Universal renders against the
+    // new --cat-*/--diagram-* names (identical output); a migration-safety A/B.
+    host.append(selectRow('tokens', 'Token system',
+      'universal = the new --cat-*/--diagram-* names (renders identically)',
+      [['current', 'Current (legacy names)'], ['universal', 'Universal (new names)']], fm.tokens));
 
     host.append(selectRow('size', 'Slide size', 'Aspect ratio (16:9 is the default)', [
       ['16:9', '16:9 · 1280×720'],

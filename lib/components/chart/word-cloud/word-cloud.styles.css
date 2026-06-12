@@ -189,12 +189,12 @@ section.word-cloud .wc-word[data-rotated="1"] {
  * Muted words (--text-muted) and accent words (--accent) need no override —
  * those tokens already have good dark-mode dark values. */
 section.dark.word-cloud {
-  --cat1-ink: var(--cat1-hue);
-  --cat2-ink: var(--cat2-hue);
-  --cat3-ink: var(--cat3-hue);
-  --cat4-ink: var(--cat4-hue);
-  --cat5-ink: var(--cat5-hue);
-  --cat6-ink: var(--cat6-hue);
-  --cat7-ink: var(--cat7-hue);
+  --chart-cat-1-ink: var(--chart-cat-1-hue);
+  --chart-cat-2-ink: var(--chart-cat-2-hue);
+  --chart-cat-3-ink: var(--chart-cat-3-hue);
+  --chart-cat-4-ink: var(--chart-cat-4-hue);
+  --chart-cat-5-ink: var(--chart-cat-5-hue);
+  --chart-cat-6-ink: var(--chart-cat-6-hue);
+  --chart-cat-7-ink: var(--chart-cat-7-hue);
 }
 

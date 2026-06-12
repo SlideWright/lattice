@@ -65,10 +65,10 @@ section.quadrant {
  * lives in _chart-family.css and guarantees fill + border share a hue and
  * flip with the canvas (pale fill / deep border on light, deep fill / pale
  * border on dark). The quadrant just assigns slots 1-4 in reading order. */
-section.quadrant [data-cell="0"] { --cell-fill: var(--cat1-fill); --cell-ink: var(--cat1-ink); }
-section.quadrant [data-cell="1"] { --cell-fill: var(--cat2-fill); --cell-ink: var(--cat2-ink); }
-section.quadrant [data-cell="2"] { --cell-fill: var(--cat3-fill); --cell-ink: var(--cat3-ink); }
-section.quadrant [data-cell="3"] { --cell-fill: var(--cat4-fill); --cell-ink: var(--cat4-ink); }
+section.quadrant [data-cell="0"] { --cell-fill: var(--chart-cat-1-fill); --cell-ink: var(--chart-cat-1-ink); }
+section.quadrant [data-cell="1"] { --cell-fill: var(--chart-cat-2-fill); --cell-ink: var(--chart-cat-2-ink); }
+section.quadrant [data-cell="2"] { --cell-fill: var(--chart-cat-3-fill); --cell-ink: var(--chart-cat-3-ink); }
+section.quadrant [data-cell="3"] { --cell-fill: var(--chart-cat-4-fill); --cell-ink: var(--chart-cat-4-ink); }
 
 /* quadrant is a chart-family member — section layout, header/body/caption
  * skeleton and h2 styling all come from section.chart-frame. The figure

@@ -294,6 +294,16 @@ caught by the hook instead of by reviewer eyeballs.
   subtitle. Look at `lib/components/inventory/inventory.gallery.md`
   for the bucket-survey reference and any per-component gallery for
   the component-doc reference.
+- **`tokens: universal` front matter is a Drawing-Board-only, temporary
+  A/B.** It renders a deck against the new `--cat-*`/`--diagram-*`
+  vocabulary (identical output — byte-identical flip) to validate the
+  in-flight universal-token migration. `marp-cli` / the emulator ignore
+  it, so a deck stays portable; it's retired at the canonical flip. Full
+  note in `lib/base/base.docs.md`; rationale in
+  `engineering/decisions/2026-06-11-universal-token-system.md` §10. Until
+  that flip, author and document tokens with the **old** names
+  (`--c1-light`, `--c-stroke`, …) — they remain the canonical per-theme
+  source.
 - **Commit messages are `area(scope): short summary`.** Match `git log`.
 - **Pull requests follow `.github/pull_request_template.md`.** The title is the
   same `area(scope): short summary` as the commit — never a vague "Updates" or a

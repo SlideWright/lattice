@@ -91,8 +91,8 @@ describe('chart-family.applyToDom', () => {
     // the raw cN scale (or an undefined --cat-<name> token).
     const styles = [...polys].map(p => p.getAttribute('style') || '');
     for (const s of styles) {
-      assert.match(s, /--series-color:\s*var\(--cat\d-hue\)/,
-        `series-color resolves through the chart spectrum (--catN-hue); got "${s}"`);
+      assert.match(s, /--series-color:\s*var\(--chart-cat-\d-hue\)/,
+        `series-color resolves through the chart spectrum (--chart-cat-N-hue); got "${s}"`);
     }
     // Each default-variant polygon also carries the area-fade gradient.
     for (const s of styles) {
