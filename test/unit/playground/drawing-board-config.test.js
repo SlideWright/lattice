@@ -155,6 +155,33 @@ describe('writeFrontMatter', () => {
     assert.equal(writeFrontMatter(CLEAN, 'math', ''), CLEAN);
   });
 
+  test('finish: sketch / sketch-clean are written; boardroom + empty are the baseline and omitted', async () => {
+    const { writeFrontMatter, readFrontMatter } = await import(MOD);
+    assert.ok(writeFrontMatter(CLEAN, 'finish', 'sketch').includes('finish: sketch'));
+    assert.ok(writeFrontMatter(CLEAN, 'finish', 'sketch-clean').includes('finish: sketch-clean'));
+    assert.equal(writeFrontMatter(CLEAN, 'finish', 'boardroom'), CLEAN, 'boardroom is the baseline → no key');
+    assert.equal(writeFrontMatter(CLEAN, 'finish', ''), CLEAN);
+    // round-trips, and selecting boardroom over an existing sketch clears it.
+    const sketched = writeFrontMatter(CLEAN, 'finish', 'sketch');
+    assert.equal(readFrontMatter(sketched).finish, 'sketch');
+    assert.equal(writeFrontMatter(sketched, 'finish', 'boardroom'), CLEAN);
+  });
+
+  test('finish is emitted right after theme, before size', async () => {
+    const { writeFrontMatter } = await import(MOD);
+    let src = writeFrontMatter(CLEAN, 'size', '4K');
+    src = writeFrontMatter(src, 'finish', 'sketch');
+    const block = src.slice(0, src.indexOf('\n---', 4));
+    assert.ok(block.indexOf('finish: sketch') < block.indexOf('size: 4K'), block);
+  });
+
+  test('a sketch finish counts as "configured" (lights the setup chip)', async () => {
+    const { readFrontMatter } = await import(MOD);
+    assert.equal(readFrontMatter('---\nmarp: true\nfinish: sketch\n---\n\n# Deck\n').configured, true);
+    assert.equal(readFrontMatter('---\nmarp: true\nfinish: boardroom\n---\n\n# Deck\n').configured, false,
+      'boardroom is the baseline — not a bespoke-setup signal');
+  });
+
   test('preserves unmanaged keys (style, backgroundColor) on write-back', async () => {
     const { writeFrontMatter } = await import(MOD);
     const src = '---\nmarp: true\nbackgroundColor: "#000"\nstyle: section{}\n---\n\n# Deck\n';

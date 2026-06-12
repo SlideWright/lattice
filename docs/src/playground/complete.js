@@ -26,6 +26,7 @@ import {
 	classOptions,
 	directiveNameAt,
 	fenceLangAt,
+	finishValuePosition,
 	identifierBefore,
 	inFencedLang,
 	inFrontMatter,
@@ -104,6 +105,25 @@ function themeSource(themes) {
 	};
 }
 
+// Completes the deck-wide finish register after `finish:` in the front matter
+// (boardroom / sketch / sketch-clean). The names come from the same handoff the
+// linter validates against (lintVocab.finishNames → lib/core/resolve-finish.js),
+// so completion and the unknown-finish lint speak one vocabulary.
+function finishSource(finishes) {
+	if (!finishes?.length) return () => null;
+	const options = finishes.map((f) => ({ label: f, type: 'constant', detail: 'finish' }));
+	return (context) => {
+		const doc = context.state.doc;
+		const line = doc.lineAt(context.pos);
+		if (!inFrontMatter((n) => doc.line(n).text, line.number)) return null;
+		const before = context.state.sliceDoc(line.from, context.pos);
+		const spot = finishValuePosition(before);
+		if (!spot) return null;
+		if (!spot.typed && !context.explicit) return null;
+		return { from: line.from + spot.from, options, validFor: TOKEN };
+	};
+}
+
 // Completes the component name and modifiers inside a `_class:` directive.
 function classDirectiveSource(catalog, universalModifiers) {
 	return (context) => {
@@ -164,13 +184,15 @@ function skeletonSource(catalog) {
 // Build the editor's autocomplete extension. `vocab` is the Drawing Board's
 // lintVocab ({ names, modifiers, universalModifiers, mapRegions }); `catalog` is
 // the compact component catalog ({ name, bucket, variants, skeleton, … });
-// `themes` is the registered theme-name list. All optional — without them only
-// the (self-sufficient) data sources are live.
-export function latticeAutocomplete({ vocab, catalog, themes } = {}) {
+// `themes` is the registered theme-name list; `finishes` the finish-register
+// names. All optional — without them only the (self-sufficient) data sources
+// are live.
+export function latticeAutocomplete({ vocab, catalog, themes, finishes } = {}) {
 	const universalModifiers = (vocab && (vocab.universalModifiers || vocab.modifiers)) || [];
 	return autocompletion({
 		override: [
 			themeSource(themes),
+			finishSource(finishes),
 			lineLocalSource(directiveNameAt, DIRECTIVE_OPTIONS, DIRECTIVE_TOKEN),
 			lineLocalSource(paginateValuePosition, PAGINATE_OPTIONS),
 			lineLocalSource(islandsValuePosition, ISLANDS_OPTIONS),

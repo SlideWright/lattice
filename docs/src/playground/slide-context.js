@@ -207,6 +207,16 @@ export function tokensValuePosition(before) {
 	return { from: m[1].length, typed: m[2] };
 }
 
+// The cursor's position on a `finish:` front-matter line, for finish-register
+// completion (the deck-wide finish: boardroom / sketch / sketch-clean). Mirrors
+// themeValuePosition — `finish:` then an optional partial value, no trailing
+// content. Returns `{ from, typed }` or null.
+export function finishValuePosition(before) {
+	const m = before.match(/^(\s*finish:\s*)(\S*)$/);
+	if (!m) return null;
+	return { from: m[1].length, typed: m[2] };
+}
+
 // ── Slide directives + fences (Tier 2) ───────────────────────────────────────
 
 // The cursor's position on a directive NAME being typed inside an HTML comment,

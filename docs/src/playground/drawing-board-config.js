@@ -33,6 +33,9 @@ const FIELD_DEFAULTS = {
   // controller only syncs a registered palette), not here — writeFrontMatter
   // never scrubs a hand-typed value out of the author's source.
   theme: '',
+  // `finish` is the deck-wide finish register (lib/core/resolve-finish.js):
+  // '' / 'boardroom' is the baseline (omitted), 'sketch' / 'sketch-clean' opt in.
+  finish: '',
   // Token vocabulary the Drawing Board renders the deck against: 'current' (the
   // legacy names, the default → omitted) or 'universal' (the new --cat-*/--diagram-*
   // names). Both render identically — a migration-safety A/B. Drawing-Board-only:
@@ -52,9 +55,18 @@ const FIELD_DEFAULTS = {
 };
 const MANAGED = Object.keys(FIELD_DEFAULTS);
 
+// Human labels for the finish-register options (the names themselves come from
+// the resolve-finish handoff, so an added finish still appears — titleCased —
+// without touching this map).
+const FINISH_LABELS = {
+  boardroom: 'Boardroom — clean baseline',
+  sketch: 'Sketch — hand-drawn',
+  'sketch-clean': 'Sketch · clean body',
+};
+
 // Emit order for known keys; any unmanaged keys we preserved trail in their
 // original order. `marp` leads (it's what tells marp-cli to render the deck).
-const EMIT_ORDER = ['marp', 'theme', 'tokens', 'size', 'paginate', 'header', 'footer', 'class', 'islands', 'math', 'lang'];
+const EMIT_ORDER = ['marp', 'theme', 'finish', 'tokens', 'size', 'paginate', 'header', 'footer', 'class', 'islands', 'math', 'lang'];
 
 const TRUEY = /^(true|yes|on|1)$/i;
 
@@ -99,6 +111,7 @@ export function readFrontMatter(source) {
   for (const [k, v] of entries) map[k] = stripQuotes(v);
   return {
     theme: map.theme || '',
+    finish: map.finish || '',
     tokens: map.tokens || 'current',
     size: map.size || '16:9',
     paginate: TRUEY.test(map.paginate || ''),
@@ -119,6 +132,9 @@ function isDefault(key, value) {
   if (key === 'paginate') return !TRUEY.test(value);
   if (key === 'math') return value === '' || value === 'katex';
   if (key === 'islands') return islandsMode(value) === 'off';
+  // 'boardroom' is the named baseline — the same no-class result as omitting
+  // finish, so it's treated as the default and dropped from the block.
+  if (key === 'finish') { const f = (value == null ? '' : String(value)).trim().toLowerCase(); return f === '' || f === 'boardroom'; }
   return (value == null ? '' : String(value)) === FIELD_DEFAULTS[key];
 }
 
@@ -130,6 +146,8 @@ function normalize(key, value) {
   const v = (value == null ? '' : String(value)).trim();
   if (key === 'math') return v === '' || v === 'katex' ? null : v;
   if (key === 'islands') { const m = islandsMode(v); return m === 'off' ? null : m; }
+  // boardroom = baseline → omit (same no-class render as no key at all).
+  if (key === 'finish') { const f = v.toLowerCase(); return f === '' || f === 'boardroom' ? null : f; }
   if (v === '' || v === FIELD_DEFAULTS[key]) return null;
   return v;
 }
@@ -195,7 +213,7 @@ export function writeFrontMatter(source, key, value) {
 // matter, and writes each change straight back into the editor source (which
 // re-renders + autosaves via the controller's onEdit). DOM-only; called when the
 // drawer opens.
-export function createConfigPanel({ host, trigger, getSource, setSource, palettes = [], getDefaultTheme = () => '' }) {
+export function createConfigPanel({ host, trigger, getSource, setSource, palettes = [], finishes = [], getDefaultTheme = () => '' }) {
   if (!host || typeof getSource !== 'function' || typeof setSource !== 'function') {
     return { render() {}, syncTrigger() {}, writeFrontMatter };
   }
@@ -308,6 +326,16 @@ export function createConfigPanel({ host, trigger, getSource, setSource, palette
         host.append(el('p', 'db-settings-note db-config-warn',
           `“${raw}” isn’t a known theme — the deck renders with ${current} until you pick a valid one.`));
       }
+    }
+
+    // Finish — the deck-wide type/geometry register (boardroom / sketch /
+    // sketch-clean), orthogonal to the palette. Boardroom is the baseline, so
+    // picking it clears the key (a clean deck carries no finish:).
+    if (finishes.length) {
+      const current = fm.finish && finishes.includes(fm.finish) ? fm.finish : 'boardroom';
+      host.append(selectRow('finish', 'Finish',
+        'Hand-drawn or clean — applies to the whole deck',
+        finishes.map((f) => [f, FINISH_LABELS[f] || titleCase(f)]), current));
     }
 
     // Token system — the deck's token vocabulary. Universal renders against the
