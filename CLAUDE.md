@@ -99,6 +99,24 @@ three as first-class:
 
 ---
 
+## MAKER-CHECKER — verify non-trivial work with parallel agents
+
+Separate *making* from *checking*. For any change that is non-trivial or hard
+to reverse — infra/hooks/CI, engine transforms, a visual pass, a refactor —
+after you (the maker) finish, spawn independent checker agents **in parallel**
+and split the review two ways, for sanity and speed:
+
+- **Inspection** — bug-hunt the actual diff: correctness, edge cases,
+  shell/CSS/JS footguns, "does it do what it claims."
+- **Assessment** — judge fit and risk: does it meet the goal, does it weaken a
+  guarantee, scope/altitude, what's missing.
+
+Run them concurrently (one message, multiple `Agent` calls), fold the findings
+back in, *then* commit. Skip it for trivial edits — this is for when a second,
+independent set of eyes earns its latency.
+
+---
+
 ## HARD RULES (these override convenience; a violation is a defect)
 
 1. **Three render paths must agree.** Any authoring transform lands in all

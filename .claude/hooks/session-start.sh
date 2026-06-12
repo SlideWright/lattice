@@ -27,9 +27,20 @@ cd "$CLAUDE_PROJECT_DIR"
 #    the pre-commit / pre-push gates are actually active in this session.
 npm install --no-audit --no-fund
 
-# 2. System deps for the PDF pipeline. Idempotent: skip if already present.
+# 2. System deps for the PDF pipeline. A fresh container's apt index is often
+#    stale, so refresh it once before installing — a stale index 404s on the
+#    pinned .deb and silently leaves pdfinfo missing, which fails the integration
+#    gate (and, under set -e, aborts the rest of this hook before CHROME_PATH is
+#    exported). Only pay the update cost when something actually needs installing.
+if ! command -v pdfinfo >/dev/null 2>&1 || ! fc-list 2>/dev/null | grep -qi "noto color emoji"; then
+  apt-get update || sudo apt-get update || true
+fi
+
+# 2a. poppler-utils → pdfinfo / pdftoppm (PDF page counts + rasterize-for-review).
+#     Non-fatal: a transient apt outage must not abort the rest of setup; the
+#     pre-push gate re-checks pdfinfo loudly anyway.
 if ! command -v pdfinfo >/dev/null 2>&1; then
-  apt-get install -y poppler-utils || sudo apt-get install -y poppler-utils
+  apt-get install -y poppler-utils || sudo apt-get install -y poppler-utils || true
 fi
 
 # 2b. Color emoji font. The owned render paths (lattice-engine, lattice-emulator)
