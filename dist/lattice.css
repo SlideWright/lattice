@@ -257,6 +257,20 @@
   --cat-on-fill: var(--c-ink-light);
   --cat-on-mark: var(--c-ink-dark);
 
+  /* ── Phase 2 · diagram-structural ─────────────────────────────────────
+   * The structural foregrounds every diagram band/edge needs, renamed off
+   * the overloaded `--c-` junk-drawer prefix onto the `--diagram-` group so
+   * the prefix says the surface (a diagram) and the role says the job:
+   *   --diagram-stroke       border around any band fill (foreground)
+   *   --diagram-line         edges / arrows / connectors (foreground)
+   *   --diagram-accent-warm  secondary warm accent (radar's 2nd curve)
+   * Aliased new→old (byte-identical). The bridges read the new names; the
+   * ~90 mermaid.css SVG rules + the radar override keep the old names via
+   * the alias and migrate later. See the decision note. */
+  --diagram-stroke:      var(--c-stroke);
+  --diagram-line:        var(--c-line);
+  --diagram-accent-warm: var(--c-accent-warm);
+
   /* ── Universal semantic palette ───────────────────────────────────────
    * Status-signaling colours shared by every theme. Gantt task lifecycle,
    * sequence-diagram notes, alarm fills, today markers — none of those

@@ -161,7 +161,7 @@ The contrast contract is **preserved by construction**, not by re-tuning:
 | Phase | Group | Old | New |
 |---|---|---|---|
 | **1 (done)** | categorical | `--cN-light` / `--cN-dark` / `--c-ink-light` / `--c-ink-dark` | `--cat-N-fill` / `--cat-N-mark` / `--cat-on-fill` / `--cat-on-mark` |
-| 2 | diagram-structural | `--c-stroke` / `--c-line` / `--c-accent-warm` | `--diagram-stroke` / `--diagram-line` / `--diagram-accent-warm` |
+| **2 (done)** | diagram-structural | `--c-stroke` / `--c-line` / `--c-accent-warm` | `--diagram-stroke` / `--diagram-line` / `--diagram-accent-warm` |
 | 3 | status (unify vocab) | `--pass/warn/fail`, `--c-warm/cool/alarm/mark/note`, `--chart-state-*` | `--status-{pass,warn,fail,info,mute}-{hue,fill,ink}` (bridge + css-rich variants per render shape) |
 | 4 | surfaces / scheme | `--bg`/`--bg-alt`/`--bg-dark`, `--dark-*` | `--surface`/`--surface-alt`/`--surface-inverse`, `--scheme-dark-*` |
 | 5 | sequential | `--scale-50..900` (+ `--scale-500`) | `--seq-50..900` (frees "scale" for type) |

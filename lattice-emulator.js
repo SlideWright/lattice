@@ -407,9 +407,9 @@ const MERMAID_VAR_MAP = {
   primaryColor:             { var: 'cat-1-fill' },
   secondaryColor:           { var: 'cat-2-fill' },
   tertiaryColor:            { var: 'bg-alt' },
-  primaryBorderColor:       { var: 'c-stroke' },
-  secondaryBorderColor:     { var: 'c-stroke' },
-  tertiaryBorderColor:      { var: 'c-stroke' },
+  primaryBorderColor:       { var: 'diagram-stroke' },
+  secondaryBorderColor:     { var: 'diagram-stroke' },
+  tertiaryBorderColor:      { var: 'diagram-stroke' },
 
   // Text — ONE token, --c-ink-light, for every text element. It flips
   // with the canvas (dark ink on a light canvas, light ink on a dark
@@ -428,17 +428,17 @@ const MERMAID_VAR_MAP = {
   labelColor:               { var: 'cat-on-fill' },
 
   // Lines (near-black on white canvas)
-  lineColor:                { var: 'c-line' },
-  defaultLinkColor:         { var: 'c-line' },
+  lineColor:                { var: 'diagram-line' },
+  defaultLinkColor:         { var: 'diagram-line' },
   edgeLabelBackground:      { var: 'bg' },
   labelBackground:          { var: 'bg' },
 
   // Main background paths
   mainBkg:                  { var: 'cat-1-fill' },
-  nodeBorder:               { var: 'c-stroke' },
+  nodeBorder:               { var: 'diagram-stroke' },
   nodeTextColor:            { var: 'cat-on-fill' },   // flowchart node text, on fill
   clusterBkg:               { var: 'bg-alt' },
-  clusterBorder:            { var: 'c-stroke' },
+  clusterBorder:            { var: 'diagram-stroke' },
 
   // cScale (mid-tone band) — kanban lighten brings to L≈70
   cScale0:                  { var: 'cat-1-mark' },
@@ -486,14 +486,14 @@ const MERMAID_VAR_MAP = {
 
   // Sequence diagram
   actorBkg:                 { var: 'cat-1-fill' },
-  actorBorder:              { var: 'c-stroke' },
+  actorBorder:              { var: 'diagram-stroke' },
   actorTextColor:           { var: 'cat-on-fill' },   // sequence actor text, on fill
-  actorLineColor:           { var: 'c-line' },
-  signalColor:              { var: 'c-line' },
+  actorLineColor:           { var: 'diagram-line' },
+  signalColor:              { var: 'diagram-line' },
   signalTextColor:          { var: 'cat-on-fill' },
   labelBoxBkgColor:         { var: 'bg-alt' },
-  labelBoxBorderColor:      { var: 'c-stroke' },
-  activationBorderColor:    { var: 'c-stroke' },
+  labelBoxBorderColor:      { var: 'diagram-stroke' },
+  activationBorderColor:    { var: 'diagram-stroke' },
   activationBkgColor:       { var: 'cat-1-fill' },
   sequenceNumberColor:      { var: 'cat-on-fill' },
 
@@ -528,7 +528,7 @@ const MERMAID_VAR_MAP = {
   pieStrokeColor:      { var: 'bg' },
   pieStrokeWidth:      { literal: '2px' },
   pieOuterStrokeWidth: { literal: '2px' },
-  pieOuterStrokeColor: { var: 'c-stroke' },
+  pieOuterStrokeColor: { var: 'diagram-stroke' },
   pieOpacity:          { literal: '1' },
 
   // Gantt (pale bars, dark text, alarm-only saturation)
@@ -540,7 +540,7 @@ const MERMAID_VAR_MAP = {
   taskTextLightColor:     { var: 'cat-on-fill' },   // ditto, Mermaid's "dark bar" variant
   taskTextOutsideColor:   { var: 'cat-on-fill' },  // text in the margin, on canvas
   taskTextClickableColor: { var: 'cat-on-fill' },   // text on task bar, on fill
-  taskBorderColor:        { var: 'c-stroke' },
+  taskBorderColor:        { var: 'diagram-stroke' },
   activeTaskBkgColor:     { var: 'c-warm-light' },
   activeTaskBorderColor:  { var: 'c-warm-dark' },
   gridColor:              { var: 'c-cool-light' },
@@ -571,7 +571,7 @@ const MERMAID_VAR_MAP = {
   commitLabelBackground: { var: 'bg-alt' },
   tagLabelColor:         { var: 'cat-on-fill' },  // flips with canvas
   tagLabelBackground:    { var: 'bg-alt' },        // neutral label chip — distinct
-  tagLabelBorder:        { var: 'c-stroke' },       // from the colour-coded branch chips
+  tagLabelBorder:        { var: 'diagram-stroke' },       // from the colour-coded branch chips
 
   // Quadrant chart
   quadrant1Fill:                    { var: 'cat-1-fill' },
@@ -582,12 +582,12 @@ const MERMAID_VAR_MAP = {
   quadrant2TextFill:                { var: 'cat-2-mark' },
   quadrant3TextFill:                { var: 'cat-3-mark' },
   quadrant4TextFill:                { var: 'cat-4-mark' },
-  quadrantPointFill:                { var: 'c-stroke' },
+  quadrantPointFill:                { var: 'diagram-stroke' },
   quadrantPointTextFill:            { var: 'cat-on-fill' },
   quadrantXAxisTextFill:            { var: 'cat-on-fill' },
   quadrantYAxisTextFill:            { var: 'cat-on-fill' },
   quadrantInternalBorderStrokeFill: { var: 'cat-8-mark' },
-  quadrantExternalBorderStrokeFill: { var: 'c-stroke' },
+  quadrantExternalBorderStrokeFill: { var: 'diagram-stroke' },
   quadrantTitleFill:                { var: 'cat-on-fill' },
 
   // State / class

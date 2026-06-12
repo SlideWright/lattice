@@ -162,6 +162,15 @@ in patch versions.
   bridge token may now hold any expression the three paths share. Design,
   crosswalk, and the remaining phases:
   `engineering/decisions/2026-06-11-universal-token-system.md`.
+- **Universal token system — phase 2 (diagram-structural).** The structural
+  foregrounds move off the overloaded `--c-` junk-drawer prefix onto the
+  `--diagram-` group: `--diagram-stroke` (band borders, was `--c-stroke`),
+  `--diagram-line` (edges / arrows / connectors, was `--c-line`), and
+  `--diagram-accent-warm` (radar's second curve, was `--c-accent-warm`).
+  Aliased new→old (byte-identical); the three render paths' Mermaid bridges
+  read the new names while `mermaid.css`'s ~90 SVG rules and the radar override
+  keep the old names via the alias and migrate later. Demo deck:
+  `examples/universal-tokens-p2-structural.md`.
 - **Workbench export bridge — library themes reach the Drawing Board.** A theme
   saved in the Workbench library is now selectable in the Drawing Board's palette
   picker (listed with a *(saved)* suffix), registers with the in-browser engine,
