@@ -251,6 +251,20 @@ page counts, 167/0) + a visual spot-check:
 Final state of the alias era: full unit suite **1498/1498**, integration
 **167/0**, demo decks `examples/universal-tokens*.md`.
 
+### Cross-renderer COLOUR parity (gap closed)
+
+The structural parity gate proves the renderers agree on slide *count*, not
+*colour*. `test/integration/parity/color-parity.test.js` closes that: it
+resolves every bridge token through the emulator's resolver
+(`resolve-token-expr.js`) **and** through a real marp-cli-rendered DOM read by
+headless Chromium, and asserts the identical RGB — indaco + cuoio, light + dark.
+It also pins the resolver's `color-mix()` math to Chromium (±3/channel),
+guarding the moment colour-mix flows through the bridge (re-derivation, the
+chart triad). Note: the browser side **must** render through marp-cli (tokens on
+`section` via Marpit's `:root`→`section` rewrite); hand-injecting `:root` CSS
+does not reproduce production and gives false negatives on alias-to-alias custom
+properties.
+
 ## 10 — Remaining work
 
 - ~~Whether phase 3 collapses the three status systems to one vocabulary~~
