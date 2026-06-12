@@ -47,6 +47,23 @@ in patch versions.
   design tokens. A global **Guided tours** on/off toggle in the Drawing Board's
   Workspace settings governs all three surfaces and takes effect live.
 
+### Fixed
+
+- **Drawing Board PDF / PowerPoint exports now embed every web font — body
+  text on `finish: sketch` decks no longer drops to a system fallback.** The
+  image exporters rasterize every slide through html-to-image, which chased the
+  engine CSS's cross-origin Google-Fonts `@import` and lost a lazy-load race:
+  Marp's template loads each face only for the active slide, so a font first
+  needed by an off-screen slide (notably the Shantell Sans **body** face of a
+  sketch deck) hadn't finished loading when its slide rasterized, and that slide
+  fell back to a clean sans (headings kept Caveat only because a bookend slide
+  was active). The export now vendors every engine text face (latin subset,
+  Noto Color Emoji excluded) and hands html-to-image a precomputed data-URI
+  `fontEmbedCSS`, so each rasterized slide is self-contained and all fonts embed
+  deterministically. Affects PDF and PPTX (shared rasterizer); the vector
+  `Print` path was never affected. Docs-only; the published engine and its
+  Google-Fonts `@import` are unchanged.
+
 ### Changed
 
 - **The reference trio's chart palettes are re-tuned to the quality bar they
