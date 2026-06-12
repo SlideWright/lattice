@@ -47,12 +47,17 @@ docs site.
 > `renderEngine` workspace pref (`def:'lattice'`) both default to the owned engine;
 > `?engine=marp` / `?css=marp` are the escape hatches and marp-core stays bundled
 > as the live A/B oracle. Desktop verified (Drawing Board renders verdict-grid
-> identically; Architect label reads `lattice-engine`). **GATE: the one
-> un-automatable check remains — a real iOS Safari pass on the owned CSS emitter.
-> The original P1.1 shelving bug (collapsed cqi / dropped counters) was invisible
-> to every headless-Chromium gate, so this flip is prepped and reversible but must
-> not merge until that on-device check is confirmed.** This makes path #4 (docs
-> playground) the first surface to default off marp-core; dropping the bundled
+> identically; Architect label reads `lattice-engine`). **GATE CLEARED
+> (2026-06-12):** the iOS Safari on-device pass is confirmed. On a real iPhone /
+> iOS Safari, against the **live production bundle** (`?css=engine`;
+> `slidewright.github.io/lattice/playground/lattice-playground.js` md5-verified
+> byte-identical to `main`, so it was the owned emitter, not a stale-deploy marp
+> fallback): `big-number`'s `cqi`-sized numeral renders full-size and
+> `list-steps`' CSS counters fire — the exact two failure modes the P1.1 shelving
+> bug (collapsed cqi / dropped counters) produced, both clean. The owned CSS
+> default is now validated on **every** surface: headless-Chromium parity (CI),
+> the 66-deck engine↔marp gate, and live iOS WebKit. This makes path #4 (docs
+> playground) the first surface defaulted off marp-core; dropping the bundled
 > `@marp-team/marp-core` import entirely is a later phase.
 
 **Recommendation in one line:** build `lattice-engine` on `markdown-it`
