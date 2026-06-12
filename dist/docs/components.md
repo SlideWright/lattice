@@ -618,14 +618,14 @@ One-sentence framing paragraph explaining what the points cover.
 
 ##### `metric` — Metric — hero number owns the room
 
-Flips the polarity: light left panel with one hero number (wrap a unit in *italics*, e.g. `114*%*`, to render it smaller), dark right panel with the supporting findings. The `h2` is the number; the inline-code eyebrow is the unit label; the lede is the measurement context. Was the standalone `split-metric` component before 2026-06-07.
+Flips the polarity: light left panel with one hero number (wrap a unit in an `<em>`, e.g. `114<em>%</em>`, to render it smaller — note plain `*%*` is not CommonMark emphasis next to a digit), dark right panel with the supporting findings. The `h2` is the number; the inline-code eyebrow is the unit label; the lede is the measurement context. Was the standalone `split-metric` component before 2026-06-07.
 
 ```markdown
 <!-- _class: split-panel metric -->
 
 `Net Revenue Retention`
 
-## 114*%*
+## 114<em>%</em>
 
 Trailing twelve months, top-50 accounts, versus a 108% target.
 

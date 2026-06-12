@@ -444,8 +444,6 @@ timeline
 
 <!-- _class: diagram -->
 
-<!-- _class: content -->
-
 `15 · ZenUML`
 
 ## A simpler sequence-diagram dialect.
