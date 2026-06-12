@@ -502,6 +502,11 @@ describe('browser layout (fake DOM)', () => {
     const fig = {
       getAttribute(k) { return Object.hasOwn(attrs, k) ? attrs[k] : null; },
       getBoundingClientRect() { return { left: 0, top: 0, width: 2400, height: 1200 }; },
+      // The layout reads the enclosing section's width to scale its px geometry
+      // by the live cqi factor (S). 1280 = HD ⇒ S=1, so the geometry assertions
+      // below exercise the original baseline constants. (Scaling at 4K is
+      // covered by the rendered HD/4K gallery spot-checks.)
+      closest(sel) { return sel === 'section' ? { getBoundingClientRect() { return { width: 1280 }; } } : null; },
       querySelector(sel) {
         if (sel === '.state-chart-edges') return svg;
         if (sel === '.state-nodes') return ol;
