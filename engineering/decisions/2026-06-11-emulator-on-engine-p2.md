@@ -152,9 +152,55 @@ to `parseSlide` is the wrong bar — it would freeze the bespoke parser's *bugs*
   plugins so all three renderers agree (changes marp-cli output + baselines → its
   own reviewed change, not a P2 quick-fix). Likely the bulk of legal's 11 diffs.
 
-**Remaining:** split-panel (1), diagram/mermaid (1), roadmap (2) still un-triaged.
-**Flip the default once every diff is triaged to improvement/noise or a logged
-follow-up — not when the count hits zero.**
+### 2026-06-12 — full triage complete; only one true engine gap
+
+Every diff across the six probe decks is now categorized. **Three of the four
+remaining diffs are not engine bugs — the engine is marp-correct and `parseSlide`
+was the lenient/quirky outlier**, which is the whole reason P2 exists.
+
+| Deck / slide | Diff | Category | Action |
+|---|---|---|---|
+| cards-grid | — | byte-identical | none |
+| math s6 | overflow ring (MathML `scrollWidth`) | **regression** | **FIXED** (`mathOutput:'html'`) |
+| math s9 | sub-pixel | noise | accept |
+| roadmap s3/s4 | sub-pixel (status icons) | noise | accept |
+| split-panel s3 | `## 114*%*` → literal `*` | **source authoring bug** | engine is CommonMark-correct (confirmed: marp-cli also emits literal `*`); `parseSlide`'s regex was lenient. Fix the deck (`114<em>%</em>` or CSS). |
+| diagram s18 | eyebrow/title styling lost, overflows | **source authoring bug** | duplicate `<!-- _class: diagram -->` + `<!-- _class: content -->`; engine takes the last (`content`) **exactly like marp-cli** (confirmed), `parseSlide` took the first. Fix the deck (one `_class`). |
+| legal (×11) | `.below-note` hairline absent | **pipeline gap** | the one real gap — below. |
+
+**The lesson:** `parseSlide` has been *masking* deck authoring bugs (non-CommonMark
+emphasis, duplicate directives) by being more lenient than marp — and silently
+diverging from marp-cli on those slides all along. The swap surfaces them. They're
+fixed in the **decks**, not the engine.
+
+### The one true gap: migrate `.below-note` to the shared pipeline
+
+`.below-note` (wrap a trailing `<p>` after a structural block in the hairline
+treatment) lives **only** in `parseSlide` (the "Universal below-note" block) — so
+marp-cli, the engine, and the runtime never produced it. To converge ("three paths
+must agree") it moves into the shared registry as a transformer with
+`applyToHtml` / `applyToSection` / `applyToDom`. Two complications found while
+scoping it (why it's a careful change, not a one-liner):
+
+1. **Footer anchoring.** The regex anchors the trailing `<p>` at the section end
+   (`…</p>\s*$`). In `parseSlide` it runs on the **body** (pre-chrome) so that
+   holds; in the engine's `applyToHtml` the section ends in `<footer>`, so the
+   kernel must match `<p>…</p>` before an optional trailing `<footer>`.
+2. **Ordering / per-section class.** below-note runs **last**, after several
+   transforms that settle the trailing-`<p>` shape — but in the emulator some of
+   those (code-cols, crit, table, h2-pill) are *still* `parseSlide`-bespoke and run
+   *after* the single `applyAllToSection` call. And it needs the section **class**
+   for its exclusion list (`title/closing/quote/big-number/content/diagram/…`).
+   So `applyToHtml` must iterate top-level sections (depth-aware, for nested
+   split-panels) and read each class. It is entangled with the broader
+   bespoke-transform migration; do it deliberately and gate on the
+   **emulator default-path galleries staying byte-identical** (they're emulator-
+   built baselines — the safety net).
+
+**Status of the flip:** the engine path is correct on every deck except where a
+deck has its own authoring bug. Order of operations to finish P2: (a) fix the two
+deck authoring bugs; (b) migrate `.below-note`; (c) re-run the corpus A/B → all
+diffs improvement/noise; (d) flip the default, delete `parseSlide`.
 
 ## Rollback
 
