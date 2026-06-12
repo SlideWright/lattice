@@ -258,6 +258,10 @@ Do not close a feature branch until all three are updated and integration tests 
 
 ## Merging
 
+- **Merging requires explicit human authorization.** An agent drives the PR to
+  green and *asks* to merge — it never merges on its own, and prior approval of
+  one PR is not license to merge the next. A human reviews and authorizes every
+  merge.
 - PRs merge into `main` via **squash-and-merge by default** — across many
   parallel AI sessions a single PR can carry 20+ noisy commits, and squashing
   keeps `main` one reviewable, revertable commit per PR. Use rebase-and-merge
