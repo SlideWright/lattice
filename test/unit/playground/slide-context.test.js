@@ -313,6 +313,21 @@ describe('tokensValuePosition — the tokens: value slot (Tier 1)', () => {
 	});
 });
 
+describe('finishValuePosition — the finish: register slot (Tier 1)', () => {
+	test('captures the partial after `finish:` (incl. the hyphenated value)', async () => {
+		const { finishValuePosition } = await load();
+		assert.deepEqual(finishValuePosition('finish: sk'), { from: 'finish: '.length, typed: 'sk' });
+		assert.deepEqual(finishValuePosition('finish: '), { from: 'finish: '.length, typed: '' });
+		assert.deepEqual(finishValuePosition('finish: sketch-cl'), { from: 'finish: '.length, typed: 'sketch-cl' });
+	});
+
+	test('null on non-finish lines', async () => {
+		const { finishValuePosition } = await load();
+		assert.equal(finishValuePosition('theme: indaco'), null);
+		assert.equal(finishValuePosition('paginate: true'), null);
+	});
+});
+
 describe('directiveNameAt / paginateValuePosition / fenceLangAt (Tier 2)', () => {
 	test('directiveNameAt captures a directive name before the colon', async () => {
 		const { directiveNameAt } = await load();

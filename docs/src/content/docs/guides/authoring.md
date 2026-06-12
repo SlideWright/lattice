@@ -120,6 +120,9 @@ reference and the linter use. Every suggestion is deterministic and offline;
 
 - **`theme:` in front matter** — the registered palette names. An unknown one
   renders an unstyled white deck, so the name stays valid.
+- **`finish:` in front matter** — the finish-register names (`boardroom`,
+  `sketch`, `sketch-clean`), the same set the linter validates, so a typo can't
+  slip through. The **Deck setup** drawer also exposes Finish as a picker.
 - **Inside `<!-- _class: … -->`** — layout names (tagged by bucket), then the
   modifiers that layout accepts, its own variants first and the universal ones
   after.

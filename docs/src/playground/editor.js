@@ -321,11 +321,11 @@ const autoHeightTheme = EditorView.theme({
 // the playground / Specimen editors keep working unchanged. `autocomplete`
 // (default true) sets the initial state; `setAutocomplete(bool)` toggles it live
 // — the Drawing Board wires both to a workspace preference.
-export function createEditor({ parent, doc = '', onChange, onCursor, autoHeight = false, vocab, catalog, themes, autocomplete = true }) {
+export function createEditor({ parent, doc = '', onChange, onCursor, autoHeight = false, vocab, catalog, themes, finishes, autocomplete = true }) {
 	ensureTooltipTheme(); // global popup theme (reaches CM's detached tooltip layer)
 	// The autocomplete extension lives in a Compartment so the on/off preference
 	// can reconfigure it live (built once with the vocab; toggled to [] when off).
-	const autocompleteExt = latticeAutocomplete({ vocab, catalog, themes });
+	const autocompleteExt = latticeAutocomplete({ vocab, catalog, themes, finishes });
 	const autocompleteComp = new Compartment();
 	const listener = EditorView.updateListener.of((u) => {
 		if (u.docChanged && onChange) onChange(u.state.doc.toString());

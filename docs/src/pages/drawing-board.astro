@@ -439,6 +439,7 @@ const dbData = JSON.stringify({
 				vocab: data.lintVocab,
 				catalog: data.catalog,
 				themes: data.themes,
+				finishes: (data.lintVocab && data.lintVocab.finishNames) || [],
 				autocomplete: getPref('autocomplete') === 'on',
 				onChange: (v) => { if (notify) notify(v); },
 				onCursor: (line) => { for (const f of cursorFns) f(line); },
@@ -552,6 +553,7 @@ const dbData = JSON.stringify({
 				// when the deck declares none. Writes flow back through setSource → the
 				// controller's onEdit → syncThemeControls (picker + chrome) below.
 				palettes: data.palettes || [],
+				finishes: (data.lintVocab && data.lintVocab.finishNames) || [],
 				getDefaultTheme: () => document.documentElement.getAttribute('data-palette') || (data.palettes && data.palettes[0]) || '',
 			});
 			window.__dbConfig = config;

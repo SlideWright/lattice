@@ -38,6 +38,12 @@ in patch versions.
   `npm run lint:deck` flags an unrecognized value as an `unknown-finish` warning
   so a typo surfaces instead of silently rendering the baseline. Prefer it over
   `class: sketch` when the intent is "this whole deck is sketch."
+- **The Drawing Board surfaces `finish:` in both the deck-setup drawer and
+  editor autocomplete.** The setup drawer gains a **Finish** picker (Boardroom /
+  Sketch / Sketch · clean body) next to the theme control — picking Boardroom
+  clears the key, since it's the baseline — and typing `finish:` in the front
+  matter completes the register names from the same vocabulary the linter
+  validates against, so the in-browser editor and the deck-lint stay in lockstep.
 
 ### Changed
 
