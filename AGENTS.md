@@ -5,7 +5,10 @@ Markdown file; each slide opts into a **component** via a
 `<!-- _class: <name> -->` directive and fills its slots with ordinary
 Markdown. This file orients any AI agent (Claude Code, Copilot, Cursor, an
 SDK agent) toward authoring decks correctly. For engine/contributor work,
-read `CLAUDE.md` and the `engineering/` docs instead.
+read `CLAUDE.md` and the `engineering/` docs instead — and before building any
+script or tool, check `engineering/capabilities.md` (the generated index of
+every script, tool, and framework) so you extend what exists rather than
+reinvent it.
 
 ## Read these first
 

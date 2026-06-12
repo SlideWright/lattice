@@ -165,6 +165,12 @@ independent set of eyes earns its latency.
     `.github/pull_request_template.md` (Problem → What changed → Tests →
     Caveats), titled the same way.
 14. **A hook failure is a root cause to fix, never a `--no-verify` to skip.**
+15. **Don't reinvent tooling — check `engineering/capabilities.md` first.** Before
+    building any script, harness, benchmark, or framework, consult the capability
+    index (generated from every npm script + `tools/` file; `npm run` and `ls
+    tools/` are the live source). We almost certainly already have it — extend it,
+    don't rebuild it. New tools/scripts must be described there (the
+    `capabilities:check` gate enforces it).
 
 ---
 
@@ -185,6 +191,7 @@ independent set of eyes earns its latency.
 | Cross-cutting authoring (eyebrow, subtitle, base modifiers) | `lib/base/base.docs.md` |
 | A specific component's slots/variants/anti-patterns | `lib/components/<bucket>/<name>/<name>.docs.md` |
 | Picking a component as an agent (machine catalog) | `dist/docs/components.json`, `AGENTS.md` |
+| What scripts/tools/frameworks already exist (don't reinvent) | `engineering/capabilities.md` |
 | The 10/10 visual rubric | `engineering/decisions/2026-06-06-layout-audit/` |
 | Release / publish | `RELEASE.md` |
 | Durable investigation notes | `engineering/decisions/YYYY-MM-DD-topic.md` |
