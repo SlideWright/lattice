@@ -183,6 +183,15 @@ in patch versions.
   the lifecycle bridges (gantt / notes / error in both renderers) read the new
   names, `mermaid.css` keeps the old via the alias. Demo deck:
   `examples/universal-tokens-p3-status.md`.
+- **Universal token system — phase 4 (surfaces / scheme).** Fixes the P9
+  collision where `--bg-dark` (a dark *panel* on a light deck — title / divider /
+  closing / split rails / code) sat one keystroke from `--dark-bg` (the canvas
+  in dark *mode*), opposite roles. `--bg-dark` → `--surface-inverse` (its 8
+  component/integration consumers repointed, byte-identical); the `--dark-*`
+  color-scheme inputs gain `--scheme-dark-*` names (vocabulary now; the per-theme
+  `light-dark()` pairs flip later). `--bg` / `--bg-alt` / `--border` are kept
+  as-is — clear and short, not magic. Demo deck:
+  `examples/universal-tokens-p4-surfaces.md`.
 - **Workbench export bridge — library themes reach the Drawing Board.** A theme
   saved in the Workbench library is now selectable in the Drawing Board's palette
   picker (listed with a *(saved)* suffix), registers with the in-browser engine,

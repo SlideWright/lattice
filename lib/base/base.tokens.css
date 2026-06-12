@@ -264,6 +264,28 @@
   --diagram-today:         var(--c-mark);
   --diagram-note:          var(--c-note);
 
+  /* ── Phase 4 · surfaces / scheme (the --bg-dark vs --dark-bg fix) ──────
+   * P9: `--bg-dark` (a dark PANEL surface painted on a light deck — title /
+   * divider / closing / split rails) and `--dark-bg` (the canvas in dark
+   * MODE) are near-identical names with opposite roles. Disambiguated:
+   *   --surface-inverse   the dark panel on a light deck (was --bg-dark)
+   *   --scheme-dark-*     the dark-color-scheme inputs (was --dark-*)
+   * `--bg` / `--bg-alt` / `--border` are clear and stay as-is (no gratuitous
+   * churn). --surface-inverse is aliased + its 8 component consumers repoint to
+   * it now (byte-identical). The --scheme-dark-* set is vocabulary: its only
+   * consumers are the per-theme light-dark() pairs, which repoint at the flip;
+   * introducing the names here lets the flip be a pure find-replace later. */
+  --surface-inverse: var(--bg-dark);
+  --scheme-dark-bg:            var(--dark-bg);
+  --scheme-dark-bg-alt:        var(--dark-bg-alt);
+  --scheme-dark-border:        var(--dark-border);
+  --scheme-dark-text-heading:  var(--dark-text-heading);
+  --scheme-dark-text-body:     var(--dark-text-body);
+  --scheme-dark-text-display:  var(--dark-text-display);
+  --scheme-dark-text-secondary: var(--dark-text-secondary);
+  --scheme-dark-text-label:    var(--dark-text-label);
+  --scheme-dark-text-muted:    var(--dark-text-muted);
+
   /* ── Universal semantic palette ───────────────────────────────────────
    * Status-signaling colours shared by every theme. Gantt task lifecycle,
    * sequence-diagram notes, alarm fills, today markers — none of those
@@ -371,7 +393,7 @@
    * --code-text is theme-defined for syntax-on-dark legibility. The
    * fallbacks below match the indaco values so unstyled renders are still
    * usable as a diagnostic. */
-  --code-bg:   var(--bg-dark, #001D33);
+  --code-bg:   var(--surface-inverse, #001D33);
   --code-text: #CBD9E8;
 
   /* ── Inline code chip ─────────────────────────────────────────────────────

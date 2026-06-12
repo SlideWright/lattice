@@ -316,6 +316,28 @@
   --diagram-today:         var(--c-mark);
   --diagram-note:          var(--c-note);
 
+  /* ── Phase 4 · surfaces / scheme (the --bg-dark vs --dark-bg fix) ──────
+   * P9: `--bg-dark` (a dark PANEL surface painted on a light deck — title /
+   * divider / closing / split rails) and `--dark-bg` (the canvas in dark
+   * MODE) are near-identical names with opposite roles. Disambiguated:
+   *   --surface-inverse   the dark panel on a light deck (was --bg-dark)
+   *   --scheme-dark-*     the dark-color-scheme inputs (was --dark-*)
+   * `--bg` / `--bg-alt` / `--border` are clear and stay as-is (no gratuitous
+   * churn). --surface-inverse is aliased + its 8 component consumers repoint to
+   * it now (byte-identical). The --scheme-dark-* set is vocabulary: its only
+   * consumers are the per-theme light-dark() pairs, which repoint at the flip;
+   * introducing the names here lets the flip be a pure find-replace later. */
+  --surface-inverse: var(--bg-dark);
+  --scheme-dark-bg:            var(--dark-bg);
+  --scheme-dark-bg-alt:        var(--dark-bg-alt);
+  --scheme-dark-border:        var(--dark-border);
+  --scheme-dark-text-heading:  var(--dark-text-heading);
+  --scheme-dark-text-body:     var(--dark-text-body);
+  --scheme-dark-text-display:  var(--dark-text-display);
+  --scheme-dark-text-secondary: var(--dark-text-secondary);
+  --scheme-dark-text-label:    var(--dark-text-label);
+  --scheme-dark-text-muted:    var(--dark-text-muted);
+
   /* ── Universal semantic palette ───────────────────────────────────────
    * Status-signaling colours shared by every theme. Gantt task lifecycle,
    * sequence-diagram notes, alarm fills, today markers — none of those
@@ -423,7 +445,7 @@
    * --code-text is theme-defined for syntax-on-dark legibility. The
    * fallbacks below match the indaco values so unstyled renders are still
    * usable as a diagnostic. */
-  --code-bg:   var(--bg-dark, #001D33);
+  --code-bg:   var(--surface-inverse, #001D33);
   --code-text: #CBD9E8;
 
   /* ── Inline code chip ─────────────────────────────────────────────────────
@@ -2064,7 +2086,7 @@ section.citation-card :is(ul,ol) > li > strong ~ * { font-weight: 400; }
 
 
 
-section.closing { justify-content:center; align-items:center; background:var(--bg-dark); }
+section.closing { justify-content:center; align-items:center; background:var(--surface-inverse); }
 section.closing { border-top: none; }
 section.closing hr { margin:0 auto var(--sp-md); }
 section.closing h2 { font-size:var(--fs-h1); color:var(--text-display); max-width:54.6875cqi; margin:0 auto var(--sp-sm); text-align:center; }
@@ -2661,7 +2683,7 @@ section.diagram > blockquote { align-self:stretch; }
  * See lib/components/divider/divider.manifest.json for the component contract.
  */
 
-section.divider { background:var(--bg-dark); padding-left:calc(var(--_sec-1cqi,1cqi)*9.375); justify-content:center; align-items:flex-start; }
+section.divider { background:var(--surface-inverse); padding-left:calc(var(--_sec-1cqi,1cqi)*9.375); justify-content:center; align-items:flex-start; }
 section.divider { border-top: none; }
 section.divider::before { content:''; position:absolute; left:0; top:0; bottom:0; width:0.46875cqi; background:var(--spectrum-vertical, var(--spectrum)); }
 /* Section heading slot is h2 — a divider names a section of the deck, not
@@ -3459,7 +3481,7 @@ section.image.museum p:last-of-type {
   --journey-mood-1-deep: var(--c6-dark);
 
   /* Surfaces */
-  --journey-section-bg:   color-mix(in oklab, var(--bg-alt) 70%, var(--bg-dark));
+  --journey-section-bg:   color-mix(in oklab, var(--bg-alt) 70%, var(--surface-inverse));
   /* Section bar bg mixes toward --bg-dark on BOTH canvases → always a dark
    * surface. --on-accent flips to --bg-dark in dark mode (same value) giving
    * near-zero contrast (~2.5:1). Use --on-dark-primary (always-light token)
@@ -8995,7 +9017,7 @@ section.roadmap.milestones tbody td:not(:first-child) {
  */
 
 section.split-compare { padding:0; flex-direction:row; }
-section.split-compare .compare-left { width:30%; flex-shrink:0; background:var(--bg-dark); display:flex; flex-direction:column; justify-content:center; padding:var(--sp-xl) var(--sp-lg); position:relative; }
+section.split-compare .compare-left { width:30%; flex-shrink:0; background:var(--surface-inverse); display:flex; flex-direction:column; justify-content:center; padding:var(--sp-xl) var(--sp-lg); position:relative; }
 section.split-compare .compare-left::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:var(--accent); }
 section.split-compare .compare-left .frame-label { display:block; font-size:var(--fs-meta); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--on-dark-secondary); margin-bottom:var(--sp-sm); }
 section.split-compare .compare-left h2 { font-size:var(--fs-h3); color:var(--on-dark-primary); font-weight:800; line-height:var(--lh-tight); margin:0 0 var(--sp-md); }
@@ -9039,7 +9061,7 @@ section.split-compare .verdict blockquote p { font-size:var(--fs-body); font-fam
 
 /* ── base = featured heading + findings (former split-brief) ─────────────── */
 section.split-panel { padding:0; flex-direction:row; }
-section.split-panel .panel-left { width:38%; flex-shrink:0; background:var(--bg-dark); display:flex; flex-direction:column; justify-content:flex-end; padding:var(--sp-xl) var(--sp-lg); position:relative; overflow:hidden; }
+section.split-panel .panel-left { width:38%; flex-shrink:0; background:var(--surface-inverse); display:flex; flex-direction:column; justify-content:flex-end; padding:var(--sp-xl) var(--sp-lg); position:relative; overflow:hidden; }
 section.split-panel .panel-left::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:var(--accent); }
 section.split-panel .panel-eyebrow { display:block; font-size:var(--fs-meta); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--on-dark-secondary); margin-bottom:var(--sp-md); }
 section.split-panel .panel-left h2 { font-size:var(--fs-h1); color:var(--on-dark-primary); line-height:var(--lh-tight); margin:0 0 var(--sp-sm); font-weight:800; }
@@ -9059,7 +9081,7 @@ section.split-panel.metric .panel-eyebrow { color:var(--text-secondary); margin-
 section.split-panel.metric .panel-left h2 { font-size:var(--fs-hero); font-family:var(--font-display); font-weight:900; color:var(--text-heading); line-height:1; margin:0 0 var(--sp-sm); }
 section.split-panel.metric .panel-left h2 em { font-size:var(--fs-h1); font-weight:700; font-style:normal; color:var(--text-secondary); }
 section.split-panel.metric .panel-left p { font-size:var(--fs-meta); font-family:var(--font-body); color:var(--text-body); line-height:var(--lh-snug); max-width:26ch; margin:0; padding-top:var(--sp-sm); border-top:1px solid var(--border); }
-section.split-panel.metric .panel-right { background:var(--bg-dark); }
+section.split-panel.metric .panel-right { background:var(--surface-inverse); }
 section.split-panel.metric .panel-right h3 { color:var(--on-dark-secondary); border-bottom-color:var(--on-dark-watermark); }
 section.split-panel.metric .panel-right > ul > li { border-left:2px solid var(--on-dark-watermark); }
 section.split-panel.metric .panel-right > ul > li > strong { color:var(--on-dark-primary); }
@@ -9933,7 +9955,7 @@ section.timeline-list .timeline-body {
  * See lib/components/title/title.manifest.json for the component contract.
  */
 
-section.title { justify-content:center; align-items:center; background:var(--bg-dark); }
+section.title { justify-content:center; align-items:center; background:var(--surface-inverse); }
 section.title { border-top: none; }
 section.title h1 { font-size:var(--fs-h1); color:var(--text-display); margin-bottom:var(--sp-xs); text-align:center; }
 section.title hr { background:var(--accent); height:1px; width:64px; margin:var(--sp-sm) auto; }
@@ -11231,7 +11253,7 @@ img.deck-logo.deck-logo-brand {
 
 /* ── Syntax highlight (highlight.js) ──────────────────────────────────────
  * Palette-blind rule structure — tokens are theme-defined, defaults above. */
-section pre.hljs { background:var(--spectrum) bottom / 100% 3px no-repeat, var(--bg-dark); padding:var(--sp-sm) var(--sp-md); padding-bottom:calc(var(--sp-sm) + 3px); box-sizing:border-box; border-radius:var(--radius-md); overflow-x:auto; margin:0; }
+section pre.hljs { background:var(--spectrum) bottom / 100% 3px no-repeat, var(--surface-inverse); padding:var(--sp-sm) var(--sp-md); padding-bottom:calc(var(--sp-sm) + 3px); box-sizing:border-box; border-radius:var(--radius-md); overflow-x:auto; margin:0; }
 section code.hljs { font-family:var(--font-mono); font-size:var(--fs-meta); line-height:var(--lh-base); color:var(--code-text); background:none; padding:0; display:block; }
 /* Diagram source <pre> — override Marp's bundled section pre/code defaults */
 section.diagram :is(pre, marp-pre):not([data-mermaid-state="rendered"]),

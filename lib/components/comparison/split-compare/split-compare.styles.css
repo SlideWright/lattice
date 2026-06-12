@@ -9,7 +9,7 @@
  */
 
 section.split-compare { padding:0; flex-direction:row; }
-section.split-compare .compare-left { width:30%; flex-shrink:0; background:var(--bg-dark); display:flex; flex-direction:column; justify-content:center; padding:var(--sp-xl) var(--sp-lg); position:relative; }
+section.split-compare .compare-left { width:30%; flex-shrink:0; background:var(--surface-inverse); display:flex; flex-direction:column; justify-content:center; padding:var(--sp-xl) var(--sp-lg); position:relative; }
 section.split-compare .compare-left::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:var(--accent); }
 section.split-compare .compare-left .frame-label { display:block; font-size:var(--fs-meta); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--on-dark-secondary); margin-bottom:var(--sp-sm); }
 section.split-compare .compare-left h2 { font-size:var(--fs-h3); color:var(--on-dark-primary); font-weight:800; line-height:var(--lh-tight); margin:0 0 var(--sp-md); }
