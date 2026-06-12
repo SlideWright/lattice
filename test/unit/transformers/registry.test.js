@@ -170,6 +170,37 @@ describe('chart-family transformer (via registry)', () => {
       `chart-frame should be appended to cls; got "${cls}"`);
   });
 
+  test('applyToSection lifts a trailing caption into .chart-caption', () => {
+    const inner =
+      '<h2>Q3 progress</h2>' +
+      '<ul><li>API <code>72</code></li></ul>' +
+      '<p>Refreshed weekly.</p>';
+    const { html } = chartFamily.applyToSection(inner, 'progress');
+    assert.match(html, /<p class="chart-caption">Refreshed weekly\.<\/p>/,
+      'trailing paragraph becomes the chart-caption');
+    assert.doesNotMatch(html, /<\/div><p>Refreshed weekly\.<\/p>/,
+      'no raw section-level caption left behind');
+  });
+
+  test('applyToSection lifts the caption even when a _footer follows it', () => {
+    // Regression: Marpit appends <footer> after the user's trailing <p> when
+    // a `_footer` directive is set, which used to defeat the end-anchored
+    // caption match (gotchas.md "Chart caption swallowed when _footer is set").
+    const inner =
+      '<h2>Q3 progress</h2>' +
+      '<ul><li>API <code>72</code></li></ul>' +
+      '<p>Refreshed weekly.</p>' +
+      '<footer>src · progress</footer>';
+    const { html } = chartFamily.applyToSection(inner, 'progress');
+    assert.match(html, /<p class="chart-caption">Refreshed weekly\.<\/p>/,
+      'caption is lifted despite the trailing footer');
+    assert.match(html, /<footer>src · progress<\/footer>/,
+      'the footer is preserved');
+    // Caption precedes footer in the output.
+    assert.ok(html.indexOf('chart-caption') < html.indexOf('<footer>'),
+      'caption renders before the footer');
+  });
+
   test('applyToSection passes through non-chart sections', () => {
     const inner = '<h2>Plain</h2><p>nothing.</p>';
     const { html, cls } = chartFamily.applyToSection(inner, 'content');

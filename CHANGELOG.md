@@ -132,6 +132,18 @@ in patch versions.
 
 ### Fixed
 
+- **Chart-family captions no longer leak to the slide edge when a `_footer`
+  is set.** A trailing caption paragraph on any chart-frame layout (piechart,
+  gantt, radar, timeline-list, …) was only lifted into the centred
+  `.chart-caption` when the slide had no footer — the caption matcher anchored
+  to end-of-string, and a `_footer` directive makes Marpit append `<footer>`
+  after the paragraph, so the caption fell through as a raw full-width,
+  body-size `<p>` flush against the slide's left edge. `wrapChartFrame` now
+  peels a trailing `<footer>` off before matching the caption and re-appends
+  it. Single-source fix — all three render paths and all 13 chart-frame
+  layouts. Surfaced on the `gallery-jargon` donut slide; the piechart `donut`
+  sample now carries a caption so the case is covered. See
+  `engineering/gotchas.md`.
 - **Inline-code chips no longer flatten code blocks or run eyebrows off the
   slide.** A `white-space:nowrap` on `section code` (added to keep hyphenated
   identifier chips like `--bg-alt` from wrapping at the hyphen) also matched
