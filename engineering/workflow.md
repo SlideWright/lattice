@@ -244,6 +244,25 @@ graduates from "new" to "documented". Treat them like
    git rebase origin/main
    ```
 
+   Two conflicts recur on nearly every rebase here — resolve them
+   mechanically, never hand-merge:
+
+   - **Generated artifacts** (`dist/**`, `docs/public/playground/*.js`)
+     conflict constantly. Don't merge them by hand — take *either* side just
+     to continue (you're about to overwrite it), finish the rebase, then
+     **regenerate** with `npm run build` and fold the result into its owning
+     commit (`git commit --fixup=<sha>` then `git rebase -i --autosquash`).
+     The build is deterministic, so `npm run build:check` on a **clean** tree
+     is the real proof HEAD is fresh (uncommitted-but-rebuilt files mask a
+     stale HEAD).
+   - **`CHANGELOG.md` `## Unreleased`** conflicts every time (everyone
+     appends) — resolve by **keeping both** entries, never picking a side.
+   - Binary `examples/*.pdf` conflicts: resolve the `.md` first, re-render
+     (`npx marp … --pdf`, with `CHROME_PATH` set), `git add` both, continue.
+
+   Force-push the rebased branch with `git push --force-with-lease` — never
+   plain `--force`.
+
 For inner-loop iteration, scoped test scripts (`test:palette`, `test:components`, …), `test:watch`, the pre-commit / pre-push / commit-msg hooks, coverage, and the integration-test cache all live in `engineering/development.md`. That file is the tooling reference; this one is the process reference.
 
 ## Three-renderer rule
@@ -271,3 +290,13 @@ Do not close a feature branch until all three are updated and integration tests 
   the rebase step above.)
 - Delete the remote branch after merge.
 - Remove the local worktree if one was used.
+- After a squash-merge, your **local `main` has diverged** from the squashed
+  `origin/main` (it still carries the pre-squash commits). Don't rebase onto it
+  or branch from it — `git fetch origin && git reset --hard origin/main`, or cut
+  the next branch straight from `origin/main`. The Stop hook's "N unverified
+  commits / rewrite history" nag is exactly this divergence surfacing
+  (`origin/main..HEAD` enumerating the stale local commits); the fix is to
+  **sync local `main`**, never to force-push or rewrite shared history. GitHub
+  is the verification source of truth — squash merges are committed by GitHub
+  (`noreply@github.com`) and show **Verified** there regardless of the local
+  `%G?` check.
