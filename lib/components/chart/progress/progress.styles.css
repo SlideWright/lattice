@@ -70,8 +70,8 @@ section.progress .progress-fill {
    * members keep the shared --chart-fill-* vertical wash (they have no --pct).
    * A bar with no status is the categorical cat1 slot; status variants re-point
    * the --fill-* pair. Authors pin a categorical hue with `--fill`. */
-  --fill-hue: var(--fill, var(--cat1-hue));
-  --fill-ink: var(--cat1-ink);
+  --fill-hue: var(--fill, var(--chart-cat-1-hue));
+  --fill-ink: var(--chart-cat-1-ink);
   background: linear-gradient(90deg,
     light-dark(color-mix(in oklab, var(--fill-hue) 12%, var(--bg)),
                color-mix(in oklab, var(--fill-hue) 30%, black)) 0%,

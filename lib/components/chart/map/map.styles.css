@@ -4,7 +4,7 @@
  * The kernel (map.transform.js) emits a <div class="map-figure"> holding an
  * SVG basemap (one <path> per region) and a legend (swatch · name · value).
  * All colour lives here so the kernel stays palette-blind: choropleth regions
- * carry a `--mix` percentage and ride a single-hue ramp off --cat1-hue;
+ * carry a `--mix` percentage and ride a single-hue ramp off --chart-cat-1-hue;
  * highlight regions carry a `--region-hue` var-reference into a --catN slot;
  * unnamed regions take the neutral base fill. Unlayered like every other
  * component file (broad @layer activation is blocked — see cascade.md). */
@@ -47,12 +47,12 @@ section.map .map-region {
   stroke-linejoin: round;
 }
 
-/* Choropleth — one sequential ramp off --cat1-hue, mixed into the neutral
+/* Choropleth — one sequential ramp off --chart-cat-1-hue, mixed into the neutral
  * base (--map-base) so low values read as a faint tint of the hue OVER the
  * empty fill, never below it. The kernel sets --mix (a color-mix percentage)
  * per region: low → faint hue, high → saturated. Low→high on the ramp. */
 section.map .map-region--on {
-  fill: color-mix(in oklab, var(--cat1-hue) var(--mix), var(--map-base));
+  fill: color-mix(in oklab, var(--chart-cat-1-hue) var(--mix), var(--map-base));
 }
 
 /* Highlight — categorical: each named region rides its --catN slot hue at
@@ -93,7 +93,7 @@ section.map .map-swatch {
   display: inline-block;
 }
 section.map .map-swatch--on {
-  background: color-mix(in oklab, var(--cat1-hue) var(--mix), var(--map-base));
+  background: color-mix(in oklab, var(--chart-cat-1-hue) var(--mix), var(--map-base));
 }
 section.map .map-swatch--hl {
   background: color-mix(in oklab, var(--region-hue) 82%, var(--bg));

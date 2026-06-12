@@ -57,7 +57,7 @@ section.timeline-list .timeline-dot {
   width: 1.09375cqi; height: 1.09375cqi;
   border-radius: 50%;
   background: var(--bg);             /* hollow — centre matches the slide */
-  border: 3px solid var(--cat1-ink); /* per-stage colour, cycled below */
+  border: 3px solid var(--chart-cat-1-ink); /* per-stage colour, cycled below */
   box-shadow: 0 0 0 4px var(--bg);
   margin-bottom: var(--sp-sm);
   flex: 0 0 auto;
@@ -66,12 +66,12 @@ section.timeline-list .timeline-dot {
  * matching pie / kanban / word-cloud — categorical colour for sequential
  * stages. Six-rotation, like the other categorical members. The spine and
  * date pills stay accent so the row still reads as one timeline. */
-section.timeline-list .timeline-item:nth-child(6n+1) .timeline-dot { border-color: var(--cat1-ink); }
-section.timeline-list .timeline-item:nth-child(6n+2) .timeline-dot { border-color: var(--cat2-ink); }
-section.timeline-list .timeline-item:nth-child(6n+3) .timeline-dot { border-color: var(--cat3-ink); }
-section.timeline-list .timeline-item:nth-child(6n+4) .timeline-dot { border-color: var(--cat4-ink); }
-section.timeline-list .timeline-item:nth-child(6n+5) .timeline-dot { border-color: var(--cat5-ink); }
-section.timeline-list .timeline-item:nth-child(6n)   .timeline-dot { border-color: var(--cat6-ink); }
+section.timeline-list .timeline-item:nth-child(6n+1) .timeline-dot { border-color: var(--chart-cat-1-ink); }
+section.timeline-list .timeline-item:nth-child(6n+2) .timeline-dot { border-color: var(--chart-cat-2-ink); }
+section.timeline-list .timeline-item:nth-child(6n+3) .timeline-dot { border-color: var(--chart-cat-3-ink); }
+section.timeline-list .timeline-item:nth-child(6n+4) .timeline-dot { border-color: var(--chart-cat-4-ink); }
+section.timeline-list .timeline-item:nth-child(6n+5) .timeline-dot { border-color: var(--chart-cat-5-ink); }
+section.timeline-list .timeline-item:nth-child(6n)   .timeline-dot { border-color: var(--chart-cat-6-ink); }
 section.timeline-list .timeline-pill {
   display: inline-flex;
   align-items: center;

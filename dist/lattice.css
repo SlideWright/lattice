@@ -2787,7 +2787,7 @@ section.featured :is(ul,ol) > li > strong ~ * { font-weight: 400; }
  * SVG of centred trapezoid bands, stage labels (left), values (right), and the
  * stage-to-stage conversion % in the gaps. All colour lives here so the kernel
  * stays palette-blind: bands carry `--i` (their index) and ride a single-hue
- * ramp off --cat1-hue; text uses the canvas ink tokens. Unlayered like every
+ * ramp off --chart-cat-1-hue; text uses the canvas ink tokens. Unlayered like every
  * other component file (broad @layer activation is blocked — see cascade.md). */
 
 section.funnel .funnel-figure {
@@ -2817,16 +2817,16 @@ section.funnel .funnel-svg {
  * polygons in the figure, so the count tracks stage order. (Same rotation idiom
  * as piechart.styles.css; see the gotchas note on nth-of-type vs nth-child.) */
 section.funnel .funnel-band {
-  fill: color-mix(in oklab, var(--cat1-hue) 82%, var(--bg));
+  fill: color-mix(in oklab, var(--chart-cat-1-hue) 82%, var(--bg));
   stroke: var(--bg);
   stroke-width: 0.75;
 }
-section.funnel .funnel-band:nth-of-type(6n + 1) { fill: color-mix(in oklab, var(--cat1-hue) 82%, var(--bg)); }
-section.funnel .funnel-band:nth-of-type(6n + 2) { fill: color-mix(in oklab, var(--cat2-hue) 82%, var(--bg)); }
-section.funnel .funnel-band:nth-of-type(6n + 3) { fill: color-mix(in oklab, var(--cat3-hue) 82%, var(--bg)); }
-section.funnel .funnel-band:nth-of-type(6n + 4) { fill: color-mix(in oklab, var(--cat4-hue) 82%, var(--bg)); }
-section.funnel .funnel-band:nth-of-type(6n + 5) { fill: color-mix(in oklab, var(--cat5-hue) 82%, var(--bg)); }
-section.funnel .funnel-band:nth-of-type(6n + 6) { fill: color-mix(in oklab, var(--cat6-hue) 82%, var(--bg)); }
+section.funnel .funnel-band:nth-of-type(6n + 1) { fill: color-mix(in oklab, var(--chart-cat-1-hue) 82%, var(--bg)); }
+section.funnel .funnel-band:nth-of-type(6n + 2) { fill: color-mix(in oklab, var(--chart-cat-2-hue) 82%, var(--bg)); }
+section.funnel .funnel-band:nth-of-type(6n + 3) { fill: color-mix(in oklab, var(--chart-cat-3-hue) 82%, var(--bg)); }
+section.funnel .funnel-band:nth-of-type(6n + 4) { fill: color-mix(in oklab, var(--chart-cat-4-hue) 82%, var(--bg)); }
+section.funnel .funnel-band:nth-of-type(6n + 5) { fill: color-mix(in oklab, var(--chart-cat-5-hue) 82%, var(--bg)); }
+section.funnel .funnel-band:nth-of-type(6n + 6) { fill: color-mix(in oklab, var(--chart-cat-6-hue) 82%, var(--bg)); }
 
 /* Stage label — left column, right-aligned to the band. */
 section.funnel .funnel-label {
@@ -4172,7 +4172,7 @@ section.kanban.chart-frame .chart-body {
 .kanban-card {
   /* THE CANONICAL CHART FILL (defined in chart-family.css). Kanban is the
    * reference: a card's hue is its lane colour, its edge the same lane ink. */
-  --fill-hue: var(--lane-color, var(--cat1-ink));
+  --fill-hue: var(--lane-color, var(--chart-cat-1-ink));
   --fill-ink: var(--lane-color, var(--border));
   background: linear-gradient(180deg,
     light-dark(color-mix(in oklab, var(--fill-hue) var(--chart-fill-top-l),    var(--bg)),
@@ -5495,7 +5495,7 @@ section.logo-wall.dark.color > ul > li img {
  * The kernel (map.transform.js) emits a <div class="map-figure"> holding an
  * SVG basemap (one <path> per region) and a legend (swatch · name · value).
  * All colour lives here so the kernel stays palette-blind: choropleth regions
- * carry a `--mix` percentage and ride a single-hue ramp off --cat1-hue;
+ * carry a `--mix` percentage and ride a single-hue ramp off --chart-cat-1-hue;
  * highlight regions carry a `--region-hue` var-reference into a --catN slot;
  * unnamed regions take the neutral base fill. Unlayered like every other
  * component file (broad @layer activation is blocked — see cascade.md). */
@@ -5538,12 +5538,12 @@ section.map .map-region {
   stroke-linejoin: round;
 }
 
-/* Choropleth — one sequential ramp off --cat1-hue, mixed into the neutral
+/* Choropleth — one sequential ramp off --chart-cat-1-hue, mixed into the neutral
  * base (--map-base) so low values read as a faint tint of the hue OVER the
  * empty fill, never below it. The kernel sets --mix (a color-mix percentage)
  * per region: low → faint hue, high → saturated. Low→high on the ramp. */
 section.map .map-region--on {
-  fill: color-mix(in oklab, var(--cat1-hue) var(--mix), var(--map-base));
+  fill: color-mix(in oklab, var(--chart-cat-1-hue) var(--mix), var(--map-base));
 }
 
 /* Highlight — categorical: each named region rides its --catN slot hue at
@@ -5584,7 +5584,7 @@ section.map .map-swatch {
   display: inline-block;
 }
 section.map .map-swatch--on {
-  background: color-mix(in oklab, var(--cat1-hue) var(--mix), var(--map-base));
+  background: color-mix(in oklab, var(--chart-cat-1-hue) var(--mix), var(--map-base));
 }
 section.map .map-swatch--hl {
   background: color-mix(in oklab, var(--region-hue) 82%, var(--bg));
@@ -6621,25 +6621,25 @@ section.piechart .piechart-legend .legend-pct {
  * legend swatches keep nth-child — their container has no such leading sibling.
  * See engineering/gotchas.md "Pie wedge borders off-by-one". */
 section.piechart .wedge:nth-of-type(6n+1),
-section.piechart .legend-swatch:nth-child(6n+1) { fill: var(--cat1-fill); stroke: var(--cat1-ink); background: var(--cat1-fill); border: var(--chart-hairline) solid var(--cat1-ink); }
+section.piechart .legend-swatch:nth-child(6n+1) { fill: var(--chart-cat-1-fill); stroke: var(--chart-cat-1-ink); background: var(--chart-cat-1-fill); border: var(--chart-hairline) solid var(--chart-cat-1-ink); }
 section.piechart .wedge:nth-of-type(6n+2),
-section.piechart .legend-swatch:nth-child(6n+2) { fill: var(--cat2-fill); stroke: var(--cat2-ink); background: var(--cat2-fill); border: var(--chart-hairline) solid var(--cat2-ink); }
+section.piechart .legend-swatch:nth-child(6n+2) { fill: var(--chart-cat-2-fill); stroke: var(--chart-cat-2-ink); background: var(--chart-cat-2-fill); border: var(--chart-hairline) solid var(--chart-cat-2-ink); }
 section.piechart .wedge:nth-of-type(6n+3),
-section.piechart .legend-swatch:nth-child(6n+3) { fill: var(--cat3-fill); stroke: var(--cat3-ink); background: var(--cat3-fill); border: var(--chart-hairline) solid var(--cat3-ink); }
+section.piechart .legend-swatch:nth-child(6n+3) { fill: var(--chart-cat-3-fill); stroke: var(--chart-cat-3-ink); background: var(--chart-cat-3-fill); border: var(--chart-hairline) solid var(--chart-cat-3-ink); }
 section.piechart .wedge:nth-of-type(6n+4),
-section.piechart .legend-swatch:nth-child(6n+4) { fill: var(--cat4-fill); stroke: var(--cat4-ink); background: var(--cat4-fill); border: var(--chart-hairline) solid var(--cat4-ink); }
+section.piechart .legend-swatch:nth-child(6n+4) { fill: var(--chart-cat-4-fill); stroke: var(--chart-cat-4-ink); background: var(--chart-cat-4-fill); border: var(--chart-hairline) solid var(--chart-cat-4-ink); }
 section.piechart .wedge:nth-of-type(6n+5),
-section.piechart .legend-swatch:nth-child(6n+5) { fill: var(--cat5-fill); stroke: var(--cat5-ink); background: var(--cat5-fill); border: var(--chart-hairline) solid var(--cat5-ink); }
+section.piechart .legend-swatch:nth-child(6n+5) { fill: var(--chart-cat-5-fill); stroke: var(--chart-cat-5-ink); background: var(--chart-cat-5-fill); border: var(--chart-hairline) solid var(--chart-cat-5-ink); }
 section.piechart .wedge:nth-of-type(6n),
-section.piechart .legend-swatch:nth-child(6n)   { fill: var(--cat6-fill); stroke: var(--cat6-ink); background: var(--cat6-fill); border: var(--chart-hairline) solid var(--cat6-ink); }
+section.piechart .legend-swatch:nth-child(6n)   { fill: var(--chart-cat-6-fill); stroke: var(--chart-cat-6-ink); background: var(--chart-cat-6-fill); border: var(--chart-hairline) solid var(--chart-cat-6-ink); }
 
 /* The legend swatch has its own row indexing using li order. */
-section.piechart .piechart-legend li:nth-child(6n+1) .legend-swatch { background: var(--cat1-fill); border: var(--chart-hairline) solid var(--cat1-ink); }
-section.piechart .piechart-legend li:nth-child(6n+2) .legend-swatch { background: var(--cat2-fill); border: var(--chart-hairline) solid var(--cat2-ink); }
-section.piechart .piechart-legend li:nth-child(6n+3) .legend-swatch { background: var(--cat3-fill); border: var(--chart-hairline) solid var(--cat3-ink); }
-section.piechart .piechart-legend li:nth-child(6n+4) .legend-swatch { background: var(--cat4-fill); border: var(--chart-hairline) solid var(--cat4-ink); }
-section.piechart .piechart-legend li:nth-child(6n+5) .legend-swatch { background: var(--cat5-fill); border: var(--chart-hairline) solid var(--cat5-ink); }
-section.piechart .piechart-legend li:nth-child(6n)   .legend-swatch { background: var(--cat6-fill); border: var(--chart-hairline) solid var(--cat6-ink); }
+section.piechart .piechart-legend li:nth-child(6n+1) .legend-swatch { background: var(--chart-cat-1-fill); border: var(--chart-hairline) solid var(--chart-cat-1-ink); }
+section.piechart .piechart-legend li:nth-child(6n+2) .legend-swatch { background: var(--chart-cat-2-fill); border: var(--chart-hairline) solid var(--chart-cat-2-ink); }
+section.piechart .piechart-legend li:nth-child(6n+3) .legend-swatch { background: var(--chart-cat-3-fill); border: var(--chart-hairline) solid var(--chart-cat-3-ink); }
+section.piechart .piechart-legend li:nth-child(6n+4) .legend-swatch { background: var(--chart-cat-4-fill); border: var(--chart-hairline) solid var(--chart-cat-4-ink); }
+section.piechart .piechart-legend li:nth-child(6n+5) .legend-swatch { background: var(--chart-cat-5-fill); border: var(--chart-hairline) solid var(--chart-cat-5-ink); }
+section.piechart .piechart-legend li:nth-child(6n)   .legend-swatch { background: var(--chart-cat-6-fill); border: var(--chart-hairline) solid var(--chart-cat-6-ink); }
 
 /* === lib/components/comparison/pricing/pricing.styles.css === */
 /* pricing — plan tiers with prices, feature checklists, and one recommended
@@ -6829,8 +6829,8 @@ section.progress .progress-fill {
    * members keep the shared --chart-fill-* vertical wash (they have no --pct).
    * A bar with no status is the categorical cat1 slot; status variants re-point
    * the --fill-* pair. Authors pin a categorical hue with `--fill`. */
-  --fill-hue: var(--fill, var(--cat1-hue));
-  --fill-ink: var(--cat1-ink);
+  --fill-hue: var(--fill, var(--chart-cat-1-hue));
+  --fill-ink: var(--chart-cat-1-ink);
   background: linear-gradient(90deg,
     light-dark(color-mix(in oklab, var(--fill-hue) 12%, var(--bg)),
                color-mix(in oklab, var(--fill-hue) 30%, black)) 0%,
@@ -7213,10 +7213,10 @@ section.quadrant {
  * lives in _chart-family.css and guarantees fill + border share a hue and
  * flip with the canvas (pale fill / deep border on light, deep fill / pale
  * border on dark). The quadrant just assigns slots 1-4 in reading order. */
-section.quadrant [data-cell="0"] { --cell-fill: var(--cat1-fill); --cell-ink: var(--cat1-ink); }
-section.quadrant [data-cell="1"] { --cell-fill: var(--cat2-fill); --cell-ink: var(--cat2-ink); }
-section.quadrant [data-cell="2"] { --cell-fill: var(--cat3-fill); --cell-ink: var(--cat3-ink); }
-section.quadrant [data-cell="3"] { --cell-fill: var(--cat4-fill); --cell-ink: var(--cat4-ink); }
+section.quadrant [data-cell="0"] { --cell-fill: var(--chart-cat-1-fill); --cell-ink: var(--chart-cat-1-ink); }
+section.quadrant [data-cell="1"] { --cell-fill: var(--chart-cat-2-fill); --cell-ink: var(--chart-cat-2-ink); }
+section.quadrant [data-cell="2"] { --cell-fill: var(--chart-cat-3-fill); --cell-ink: var(--chart-cat-3-ink); }
+section.quadrant [data-cell="3"] { --cell-fill: var(--chart-cat-4-fill); --cell-ink: var(--chart-cat-4-ink); }
 
 /* quadrant is a chart-family member — section layout, header/body/caption
  * skeleton and h2 styling all come from section.chart-frame. The figure
@@ -9891,7 +9891,7 @@ section.timeline-list .timeline-dot {
   width: 1.09375cqi; height: 1.09375cqi;
   border-radius: 50%;
   background: var(--bg);             /* hollow — centre matches the slide */
-  border: 3px solid var(--cat1-ink); /* per-stage colour, cycled below */
+  border: 3px solid var(--chart-cat-1-ink); /* per-stage colour, cycled below */
   box-shadow: 0 0 0 4px var(--bg);
   margin-bottom: var(--sp-sm);
   flex: 0 0 auto;
@@ -9900,12 +9900,12 @@ section.timeline-list .timeline-dot {
  * matching pie / kanban / word-cloud — categorical colour for sequential
  * stages. Six-rotation, like the other categorical members. The spine and
  * date pills stay accent so the row still reads as one timeline. */
-section.timeline-list .timeline-item:nth-child(6n+1) .timeline-dot { border-color: var(--cat1-ink); }
-section.timeline-list .timeline-item:nth-child(6n+2) .timeline-dot { border-color: var(--cat2-ink); }
-section.timeline-list .timeline-item:nth-child(6n+3) .timeline-dot { border-color: var(--cat3-ink); }
-section.timeline-list .timeline-item:nth-child(6n+4) .timeline-dot { border-color: var(--cat4-ink); }
-section.timeline-list .timeline-item:nth-child(6n+5) .timeline-dot { border-color: var(--cat5-ink); }
-section.timeline-list .timeline-item:nth-child(6n)   .timeline-dot { border-color: var(--cat6-ink); }
+section.timeline-list .timeline-item:nth-child(6n+1) .timeline-dot { border-color: var(--chart-cat-1-ink); }
+section.timeline-list .timeline-item:nth-child(6n+2) .timeline-dot { border-color: var(--chart-cat-2-ink); }
+section.timeline-list .timeline-item:nth-child(6n+3) .timeline-dot { border-color: var(--chart-cat-3-ink); }
+section.timeline-list .timeline-item:nth-child(6n+4) .timeline-dot { border-color: var(--chart-cat-4-ink); }
+section.timeline-list .timeline-item:nth-child(6n+5) .timeline-dot { border-color: var(--chart-cat-5-ink); }
+section.timeline-list .timeline-item:nth-child(6n)   .timeline-dot { border-color: var(--chart-cat-6-ink); }
 section.timeline-list .timeline-pill {
   display: inline-flex;
   align-items: center;
@@ -10258,13 +10258,13 @@ section.word-cloud .wc-word[data-rotated="1"] {
  * Muted words (--text-muted) and accent words (--accent) need no override —
  * those tokens already have good dark-mode dark values. */
 section.dark.word-cloud {
-  --cat1-ink: var(--cat1-hue);
-  --cat2-ink: var(--cat2-hue);
-  --cat3-ink: var(--cat3-hue);
-  --cat4-ink: var(--cat4-hue);
-  --cat5-ink: var(--cat5-hue);
-  --cat6-ink: var(--cat6-hue);
-  --cat7-ink: var(--cat7-hue);
+  --chart-cat-1-ink: var(--chart-cat-1-hue);
+  --chart-cat-2-ink: var(--chart-cat-2-hue);
+  --chart-cat-3-ink: var(--chart-cat-3-hue);
+  --chart-cat-4-ink: var(--chart-cat-4-hue);
+  --chart-cat-5-ink: var(--chart-cat-5-hue);
+  --chart-cat-6-ink: var(--chart-cat-6-hue);
+  --chart-cat-7-ink: var(--chart-cat-7-hue);
 }
 
 /* === lib/base/base.modifiers.css === */
@@ -11512,32 +11512,32 @@ section.word-cloud { /* word-cloud is a chart-frame member; the bare selector al
    * Theme-overridable: a theme sets `--chart-catN` (same light-dark shape) at
    * :root to flavour the spectrum to its character; the var() indirection lets
    * the theme always win, and untuned themes inherit this master set. */
-  --cat1-hue: var(--chart-cat1, light-dark(#0A6CE0, #2E8BFF));  /* blue   */
-  --cat2-hue: var(--chart-cat2, light-dark(#C2670A, #FFA630));  /* orange */
-  --cat3-hue: var(--chart-cat3, light-dark(#1E9E48, #34D058));  /* green  */
-  --cat4-hue: var(--chart-cat4, light-dark(#9333D6, #BE5AF2));  /* purple */
-  --cat5-hue: var(--chart-cat5, light-dark(#0E96AE, #3FC8E0));  /* teal   */
-  --cat6-hue: var(--chart-cat6, light-dark(#E11D48, #FF4D6A));  /* rose   */
-  --cat7-hue: var(--chart-cat7, light-dark(#B5860A, #FFD426));  /* gold   */
-  --cat8-hue: var(--chart-cat8, light-dark(#4B49C9, #6E6CF0));  /* indigo */
+  --chart-cat-1-hue: var(--chart-cat1, light-dark(#0A6CE0, #2E8BFF));  /* blue   */
+  --chart-cat-2-hue: var(--chart-cat2, light-dark(#C2670A, #FFA630));  /* orange */
+  --chart-cat-3-hue: var(--chart-cat3, light-dark(#1E9E48, #34D058));  /* green  */
+  --chart-cat-4-hue: var(--chart-cat4, light-dark(#9333D6, #BE5AF2));  /* purple */
+  --chart-cat-5-hue: var(--chart-cat5, light-dark(#0E96AE, #3FC8E0));  /* teal   */
+  --chart-cat-6-hue: var(--chart-cat6, light-dark(#E11D48, #FF4D6A));  /* rose   */
+  --chart-cat-7-hue: var(--chart-cat7, light-dark(#B5860A, #FFD426));  /* gold   */
+  --chart-cat-8-hue: var(--chart-cat8, light-dark(#4B49C9, #6E6CF0));  /* indigo */
 
-  --cat1-fill: light-dark(color-mix(in oklab, var(--cat1-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat1-hue) 40%, black));
-  --cat2-fill: light-dark(color-mix(in oklab, var(--cat2-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat2-hue) 40%, black));
-  --cat3-fill: light-dark(color-mix(in oklab, var(--cat3-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat3-hue) 40%, black));
-  --cat4-fill: light-dark(color-mix(in oklab, var(--cat4-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat4-hue) 40%, black));
-  --cat5-fill: light-dark(color-mix(in oklab, var(--cat5-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat5-hue) 40%, black));
-  --cat6-fill: light-dark(color-mix(in oklab, var(--cat6-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat6-hue) 40%, black));
-  --cat7-fill: light-dark(color-mix(in oklab, var(--cat7-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat7-hue) 40%, black));
-  --cat8-fill: light-dark(color-mix(in oklab, var(--cat8-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat8-hue) 40%, black));
+  --chart-cat-1-fill: light-dark(color-mix(in oklab, var(--chart-cat-1-hue) 24%, var(--bg)), color-mix(in oklab, var(--chart-cat-1-hue) 40%, black));
+  --chart-cat-2-fill: light-dark(color-mix(in oklab, var(--chart-cat-2-hue) 24%, var(--bg)), color-mix(in oklab, var(--chart-cat-2-hue) 40%, black));
+  --chart-cat-3-fill: light-dark(color-mix(in oklab, var(--chart-cat-3-hue) 24%, var(--bg)), color-mix(in oklab, var(--chart-cat-3-hue) 40%, black));
+  --chart-cat-4-fill: light-dark(color-mix(in oklab, var(--chart-cat-4-hue) 24%, var(--bg)), color-mix(in oklab, var(--chart-cat-4-hue) 40%, black));
+  --chart-cat-5-fill: light-dark(color-mix(in oklab, var(--chart-cat-5-hue) 24%, var(--bg)), color-mix(in oklab, var(--chart-cat-5-hue) 40%, black));
+  --chart-cat-6-fill: light-dark(color-mix(in oklab, var(--chart-cat-6-hue) 24%, var(--bg)), color-mix(in oklab, var(--chart-cat-6-hue) 40%, black));
+  --chart-cat-7-fill: light-dark(color-mix(in oklab, var(--chart-cat-7-hue) 24%, var(--bg)), color-mix(in oklab, var(--chart-cat-7-hue) 40%, black));
+  --chart-cat-8-fill: light-dark(color-mix(in oklab, var(--chart-cat-8-hue) 24%, var(--bg)), color-mix(in oklab, var(--chart-cat-8-hue) 40%, black));
 
-  --cat1-ink: light-dark(var(--cat1-hue), color-mix(in oklab, var(--cat1-hue) 78%, white));
-  --cat2-ink: light-dark(var(--cat2-hue), color-mix(in oklab, var(--cat2-hue) 78%, white));
-  --cat3-ink: light-dark(var(--cat3-hue), color-mix(in oklab, var(--cat3-hue) 78%, white));
-  --cat4-ink: light-dark(var(--cat4-hue), color-mix(in oklab, var(--cat4-hue) 78%, white));
-  --cat5-ink: light-dark(var(--cat5-hue), color-mix(in oklab, var(--cat5-hue) 78%, white));
-  --cat6-ink: light-dark(var(--cat6-hue), color-mix(in oklab, var(--cat6-hue) 78%, white));
-  --cat7-ink: light-dark(var(--cat7-hue), color-mix(in oklab, var(--cat7-hue) 78%, white));
-  --cat8-ink: light-dark(var(--cat8-hue), color-mix(in oklab, var(--cat8-hue) 78%, white));
+  --chart-cat-1-ink: light-dark(var(--chart-cat-1-hue), color-mix(in oklab, var(--chart-cat-1-hue) 78%, white));
+  --chart-cat-2-ink: light-dark(var(--chart-cat-2-hue), color-mix(in oklab, var(--chart-cat-2-hue) 78%, white));
+  --chart-cat-3-ink: light-dark(var(--chart-cat-3-hue), color-mix(in oklab, var(--chart-cat-3-hue) 78%, white));
+  --chart-cat-4-ink: light-dark(var(--chart-cat-4-hue), color-mix(in oklab, var(--chart-cat-4-hue) 78%, white));
+  --chart-cat-5-ink: light-dark(var(--chart-cat-5-hue), color-mix(in oklab, var(--chart-cat-5-hue) 78%, white));
+  --chart-cat-6-ink: light-dark(var(--chart-cat-6-hue), color-mix(in oklab, var(--chart-cat-6-hue) 78%, white));
+  --chart-cat-7-ink: light-dark(var(--chart-cat-7-hue), color-mix(in oklab, var(--chart-cat-7-hue) 78%, white));
+  --chart-cat-8-ink: light-dark(var(--chart-cat-8-hue), color-mix(in oklab, var(--chart-cat-8-hue) 78%, white));
 
   /* The mix target for the categorical SVG gradients (pie wedges, quadrant
    * zones — emitted inline by the transforms). Light canvas mixes the hue into

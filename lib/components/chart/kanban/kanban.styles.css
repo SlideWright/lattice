@@ -76,7 +76,7 @@ section.kanban.chart-frame .chart-body {
 .kanban-card {
   /* THE CANONICAL CHART FILL (defined in chart-family.css). Kanban is the
    * reference: a card's hue is its lane colour, its edge the same lane ink. */
-  --fill-hue: var(--lane-color, var(--cat1-ink));
+  --fill-hue: var(--lane-color, var(--chart-cat-1-ink));
   --fill-ink: var(--lane-color, var(--border));
   background: linear-gradient(180deg,
     light-dark(color-mix(in oklab, var(--fill-hue) var(--chart-fill-top-l),    var(--bg)),

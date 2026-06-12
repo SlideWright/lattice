@@ -201,6 +201,17 @@ in patch versions.
   derivation stay as the source until the flip. `--fs-scale` is untouched and
   now the only "scale" left. Demo deck:
   `examples/universal-tokens-p5-sequential.md`.
+- **Universal token system — phase 6 (chart categorical).** The chart-family
+  colour spectrum moves off the bare `--cat1-{hue,fill,ink}` … `--cat8-*` — which
+  sat one hyphen from phase 1's diagram `--cat-1-*` — onto its own namespaced
+  `--chart-cat-1-{hue,fill,ink}` … `--chart-cat-8-*`. Unlike the earlier phases
+  this is a **flip, not an alias**: the bare `cat` name is eliminated entirely
+  (the spectrum is self-contained in the chart CSS + transforms, not bridge-fed),
+  so the near-collision is gone rather than merely deprecated. Values are
+  byte-identical; the theme override hooks `--chart-catN` are unchanged. The two
+  categorical systems stay distinct by design (12 diagram band slots vs 8 chart
+  slots — Wong 2011), now with names that say which is which. Demo deck:
+  `examples/universal-tokens-p6-chart-cat.md`.
 - **Workbench export bridge — library themes reach the Drawing Board.** A theme
   saved in the Workbench library is now selectable in the Drawing Board's palette
   picker (listed with a *(saved)* suffix), registers with the in-browser engine,

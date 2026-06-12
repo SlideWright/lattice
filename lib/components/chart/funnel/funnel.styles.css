@@ -5,7 +5,7 @@
  * SVG of centred trapezoid bands, stage labels (left), values (right), and the
  * stage-to-stage conversion % in the gaps. All colour lives here so the kernel
  * stays palette-blind: bands carry `--i` (their index) and ride a single-hue
- * ramp off --cat1-hue; text uses the canvas ink tokens. Unlayered like every
+ * ramp off --chart-cat-1-hue; text uses the canvas ink tokens. Unlayered like every
  * other component file (broad @layer activation is blocked — see cascade.md). */
 
 section.funnel .funnel-figure {
@@ -35,16 +35,16 @@ section.funnel .funnel-svg {
  * polygons in the figure, so the count tracks stage order. (Same rotation idiom
  * as piechart.styles.css; see the gotchas note on nth-of-type vs nth-child.) */
 section.funnel .funnel-band {
-  fill: color-mix(in oklab, var(--cat1-hue) 82%, var(--bg));
+  fill: color-mix(in oklab, var(--chart-cat-1-hue) 82%, var(--bg));
   stroke: var(--bg);
   stroke-width: 0.75;
 }
-section.funnel .funnel-band:nth-of-type(6n + 1) { fill: color-mix(in oklab, var(--cat1-hue) 82%, var(--bg)); }
-section.funnel .funnel-band:nth-of-type(6n + 2) { fill: color-mix(in oklab, var(--cat2-hue) 82%, var(--bg)); }
-section.funnel .funnel-band:nth-of-type(6n + 3) { fill: color-mix(in oklab, var(--cat3-hue) 82%, var(--bg)); }
-section.funnel .funnel-band:nth-of-type(6n + 4) { fill: color-mix(in oklab, var(--cat4-hue) 82%, var(--bg)); }
-section.funnel .funnel-band:nth-of-type(6n + 5) { fill: color-mix(in oklab, var(--cat5-hue) 82%, var(--bg)); }
-section.funnel .funnel-band:nth-of-type(6n + 6) { fill: color-mix(in oklab, var(--cat6-hue) 82%, var(--bg)); }
+section.funnel .funnel-band:nth-of-type(6n + 1) { fill: color-mix(in oklab, var(--chart-cat-1-hue) 82%, var(--bg)); }
+section.funnel .funnel-band:nth-of-type(6n + 2) { fill: color-mix(in oklab, var(--chart-cat-2-hue) 82%, var(--bg)); }
+section.funnel .funnel-band:nth-of-type(6n + 3) { fill: color-mix(in oklab, var(--chart-cat-3-hue) 82%, var(--bg)); }
+section.funnel .funnel-band:nth-of-type(6n + 4) { fill: color-mix(in oklab, var(--chart-cat-4-hue) 82%, var(--bg)); }
+section.funnel .funnel-band:nth-of-type(6n + 5) { fill: color-mix(in oklab, var(--chart-cat-5-hue) 82%, var(--bg)); }
+section.funnel .funnel-band:nth-of-type(6n + 6) { fill: color-mix(in oklab, var(--chart-cat-6-hue) 82%, var(--bg)); }
 
 /* Stage label — left column, right-aligned to the band. */
 section.funnel .funnel-label {

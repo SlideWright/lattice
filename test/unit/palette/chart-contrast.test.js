@@ -181,7 +181,7 @@ describe('chart palette — curated theme assessment', () => {
       const cats = [];
       for (let i = 1; i <= 8; i++) {
         const rgb = resolve(vars[`chart-cat${i}`], vars, mode);
-        if (rgb) cats.push({ i, rgb, fill: resolve(vars[`cat${i}-fill`], vars, mode) });
+        if (rgb) cats.push({ i, rgb, fill: resolve(vars[`chart-cat-${i}-fill`], vars, mode) });
       }
       const states = ['pass', 'warn', 'fail', 'info', 'mute']
         .map(k => ({ k, rgb: resolve(vars[`chart-state-${k}`], vars, mode), fill: resolve(vars[`state-${k}-fill`], vars, mode) }))
@@ -190,14 +190,14 @@ describe('chart palette — curated theme assessment', () => {
       test(`${theme}/${mode}: every chart hue + fill resolves`, () => {
         assert.equal(cats.length, 8, `${theme}/${mode}: expected 8 --chart-cat*, got ${cats.length}`);
         assert.equal(states.length, 5, `${theme}/${mode}: expected 5 --chart-state-*, got ${states.length}`);
-        for (const c of cats) assert.ok(c.fill, `${theme}/${mode}: --cat${c.i}-fill must resolve`);
+        for (const c of cats) assert.ok(c.fill, `${theme}/${mode}: --chart-cat-${c.i}-fill must resolve`);
         for (const s of states) assert.ok(s.fill, `${theme}/${mode}: --state-${s.k}-fill must resolve`);
       });
 
       test(`${theme}/${mode}: heading label clears every fill (AA, ≥${TEXT_ON_FILL}:1)`, () => {
         for (const { i, fill } of cats) {
           const r = contrast(textHeading, fill);
-          assert.ok(r >= TEXT_ON_FILL, `${theme}/${mode}: --text-heading on --cat${i}-fill = ${r.toFixed(2)}:1 (< ${TEXT_ON_FILL})`);
+          assert.ok(r >= TEXT_ON_FILL, `${theme}/${mode}: --text-heading on --chart-cat-${i}-fill = ${r.toFixed(2)}:1 (< ${TEXT_ON_FILL})`);
         }
         for (const { k, fill } of states) {
           const r = contrast(textHeading, fill);

@@ -116,32 +116,32 @@ section.word-cloud { /* word-cloud is a chart-frame member; the bare selector al
    * Theme-overridable: a theme sets `--chart-catN` (same light-dark shape) at
    * :root to flavour the spectrum to its character; the var() indirection lets
    * the theme always win, and untuned themes inherit this master set. */
-  --cat1-hue: var(--chart-cat1, light-dark(#0A6CE0, #2E8BFF));  /* blue   */
-  --cat2-hue: var(--chart-cat2, light-dark(#C2670A, #FFA630));  /* orange */
-  --cat3-hue: var(--chart-cat3, light-dark(#1E9E48, #34D058));  /* green  */
-  --cat4-hue: var(--chart-cat4, light-dark(#9333D6, #BE5AF2));  /* purple */
-  --cat5-hue: var(--chart-cat5, light-dark(#0E96AE, #3FC8E0));  /* teal   */
-  --cat6-hue: var(--chart-cat6, light-dark(#E11D48, #FF4D6A));  /* rose   */
-  --cat7-hue: var(--chart-cat7, light-dark(#B5860A, #FFD426));  /* gold   */
-  --cat8-hue: var(--chart-cat8, light-dark(#4B49C9, #6E6CF0));  /* indigo */
+  --chart-cat-1-hue: var(--chart-cat1, light-dark(#0A6CE0, #2E8BFF));  /* blue   */
+  --chart-cat-2-hue: var(--chart-cat2, light-dark(#C2670A, #FFA630));  /* orange */
+  --chart-cat-3-hue: var(--chart-cat3, light-dark(#1E9E48, #34D058));  /* green  */
+  --chart-cat-4-hue: var(--chart-cat4, light-dark(#9333D6, #BE5AF2));  /* purple */
+  --chart-cat-5-hue: var(--chart-cat5, light-dark(#0E96AE, #3FC8E0));  /* teal   */
+  --chart-cat-6-hue: var(--chart-cat6, light-dark(#E11D48, #FF4D6A));  /* rose   */
+  --chart-cat-7-hue: var(--chart-cat7, light-dark(#B5860A, #FFD426));  /* gold   */
+  --chart-cat-8-hue: var(--chart-cat8, light-dark(#4B49C9, #6E6CF0));  /* indigo */
 
-  --cat1-fill: light-dark(color-mix(in oklab, var(--cat1-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat1-hue) 40%, black));
-  --cat2-fill: light-dark(color-mix(in oklab, var(--cat2-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat2-hue) 40%, black));
-  --cat3-fill: light-dark(color-mix(in oklab, var(--cat3-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat3-hue) 40%, black));
-  --cat4-fill: light-dark(color-mix(in oklab, var(--cat4-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat4-hue) 40%, black));
-  --cat5-fill: light-dark(color-mix(in oklab, var(--cat5-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat5-hue) 40%, black));
-  --cat6-fill: light-dark(color-mix(in oklab, var(--cat6-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat6-hue) 40%, black));
-  --cat7-fill: light-dark(color-mix(in oklab, var(--cat7-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat7-hue) 40%, black));
-  --cat8-fill: light-dark(color-mix(in oklab, var(--cat8-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat8-hue) 40%, black));
+  --chart-cat-1-fill: light-dark(color-mix(in oklab, var(--chart-cat-1-hue) 24%, var(--bg)), color-mix(in oklab, var(--chart-cat-1-hue) 40%, black));
+  --chart-cat-2-fill: light-dark(color-mix(in oklab, var(--chart-cat-2-hue) 24%, var(--bg)), color-mix(in oklab, var(--chart-cat-2-hue) 40%, black));
+  --chart-cat-3-fill: light-dark(color-mix(in oklab, var(--chart-cat-3-hue) 24%, var(--bg)), color-mix(in oklab, var(--chart-cat-3-hue) 40%, black));
+  --chart-cat-4-fill: light-dark(color-mix(in oklab, var(--chart-cat-4-hue) 24%, var(--bg)), color-mix(in oklab, var(--chart-cat-4-hue) 40%, black));
+  --chart-cat-5-fill: light-dark(color-mix(in oklab, var(--chart-cat-5-hue) 24%, var(--bg)), color-mix(in oklab, var(--chart-cat-5-hue) 40%, black));
+  --chart-cat-6-fill: light-dark(color-mix(in oklab, var(--chart-cat-6-hue) 24%, var(--bg)), color-mix(in oklab, var(--chart-cat-6-hue) 40%, black));
+  --chart-cat-7-fill: light-dark(color-mix(in oklab, var(--chart-cat-7-hue) 24%, var(--bg)), color-mix(in oklab, var(--chart-cat-7-hue) 40%, black));
+  --chart-cat-8-fill: light-dark(color-mix(in oklab, var(--chart-cat-8-hue) 24%, var(--bg)), color-mix(in oklab, var(--chart-cat-8-hue) 40%, black));
 
-  --cat1-ink: light-dark(var(--cat1-hue), color-mix(in oklab, var(--cat1-hue) 78%, white));
-  --cat2-ink: light-dark(var(--cat2-hue), color-mix(in oklab, var(--cat2-hue) 78%, white));
-  --cat3-ink: light-dark(var(--cat3-hue), color-mix(in oklab, var(--cat3-hue) 78%, white));
-  --cat4-ink: light-dark(var(--cat4-hue), color-mix(in oklab, var(--cat4-hue) 78%, white));
-  --cat5-ink: light-dark(var(--cat5-hue), color-mix(in oklab, var(--cat5-hue) 78%, white));
-  --cat6-ink: light-dark(var(--cat6-hue), color-mix(in oklab, var(--cat6-hue) 78%, white));
-  --cat7-ink: light-dark(var(--cat7-hue), color-mix(in oklab, var(--cat7-hue) 78%, white));
-  --cat8-ink: light-dark(var(--cat8-hue), color-mix(in oklab, var(--cat8-hue) 78%, white));
+  --chart-cat-1-ink: light-dark(var(--chart-cat-1-hue), color-mix(in oklab, var(--chart-cat-1-hue) 78%, white));
+  --chart-cat-2-ink: light-dark(var(--chart-cat-2-hue), color-mix(in oklab, var(--chart-cat-2-hue) 78%, white));
+  --chart-cat-3-ink: light-dark(var(--chart-cat-3-hue), color-mix(in oklab, var(--chart-cat-3-hue) 78%, white));
+  --chart-cat-4-ink: light-dark(var(--chart-cat-4-hue), color-mix(in oklab, var(--chart-cat-4-hue) 78%, white));
+  --chart-cat-5-ink: light-dark(var(--chart-cat-5-hue), color-mix(in oklab, var(--chart-cat-5-hue) 78%, white));
+  --chart-cat-6-ink: light-dark(var(--chart-cat-6-hue), color-mix(in oklab, var(--chart-cat-6-hue) 78%, white));
+  --chart-cat-7-ink: light-dark(var(--chart-cat-7-hue), color-mix(in oklab, var(--chart-cat-7-hue) 78%, white));
+  --chart-cat-8-ink: light-dark(var(--chart-cat-8-hue), color-mix(in oklab, var(--chart-cat-8-hue) 78%, white));
 
   /* The mix target for the categorical SVG gradients (pie wedges, quadrant
    * zones — emitted inline by the transforms). Light canvas mixes the hue into

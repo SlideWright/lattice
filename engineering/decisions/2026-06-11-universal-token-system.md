@@ -166,7 +166,7 @@ The contrast contract is **preserved by construction**, not by re-tuning:
 | **3 (done)** | diagram lifecycle | `--c-warm/cool/alarm/mark/note` | `--diagram-{active,done,critical,today,note}` (+ paired `-mark` strokes) — a *separate* axis; lifecycle ≠ status |
 | **4 (done)** | surfaces / scheme | `--bg-dark`, `--dark-*` | `--surface-inverse` (8 consumers repointed), `--scheme-dark-*` (vocabulary; the per-theme `light-dark()` pairs flip later). **Refined:** `--bg` / `--bg-alt` / `--border` are kept as-is — clear and short, not magic; renaming them would be churn without payoff. |
 | **5 (done)** | sequential | `--scale-50..900` (+ `--scale-500`) | `--seq-50..900` — frees "scale" from the `--fs-scale` collision (word-cloud repointed; the ramp anchor + derivation flip later) |
-| 6 | chart triad | `--cat1..8-{hue,fill,ink}` | `--chart-cat-N-{hue,fill,ink}` (kills the bare-`cat` near-collision with phase-1 `--cat-*`) |
+| **6 (done)** | chart triad | `--cat1..8-{hue,fill,ink}` | `--chart-cat-1..8-{hue,fill,ink}` — **flipped, not aliased**: the bare `cat` name is *eliminated*, killing the near-collision with phase-1 `--cat-N-*`. Self-contained (chart CSS + transforms, not bridge-fed), so a direct rename is cleaner than an alias that would leave the collision. Theme hooks `--chart-catN` kept. |
 | 7 | component knobs | `--state-fill-pct`, `--pill-pad-y`, `--mark-*`, `--chart-fill-*` in `:root` | move into component CSS (Tier 3) |
 
 The two categorical systems stay **separate** (12 diagram slots vs 8 chart
