@@ -284,6 +284,38 @@
   --diagram-line:        var(--c-line);
   --diagram-accent-warm: var(--c-accent-warm);
 
+  /* ── Phase 3 · status (the one semantic-signal axis) ──────────────────
+   * ONE status vocabulary shared by the engine state-discs (checklist /
+   * verdict / obligation / roadmap) and the charts. pass/warn/fail stay the
+   * per-theme curated source; info/mute borrow the chart family's canonical
+   * semantic hues (its documented fallback, so the alias is defined even on a
+   * theme that hasn't set the chart hook). Aliased (byte-identical). This is
+   * the STATUS axis — distinct from the diagram lifecycle below (a gantt
+   * "in-progress" tone is not a "warn"). */
+  --status-pass: var(--pass);  --status-pass-bg: var(--pass-bg);
+  --status-warn: var(--warn);  --status-warn-bg: var(--warn-bg);
+  --status-fail: var(--fail);  --status-fail-bg: var(--fail-bg);
+  --status-info: var(--chart-state-info, light-dark(#0A6CE0, #2E8BFF));
+  --status-mute: var(--chart-state-mute, light-dark(#6B7480, #9AA7B6));
+
+  /* ── Phase 3 · diagram lifecycle / annotation ─────────────────────────
+   * The Mermaid gantt lifecycle + note/error annotation colours, renamed off
+   * the `--c-` junk drawer onto SEMANTIC `--diagram-*` names — restoring the
+   * pre-2026-05-14 `--diagram-state-*` intent. A fill + a paired `-mark`
+   * stroke per state. The value reuse is documented, not hidden: the grid
+   * borrows the `done` tone; the note border borrows the `today` highlight
+   * (the bridges point gridColor → --diagram-done and noteBorder →
+   * --diagram-today). Aliased new→old (byte-identical); mermaid.css keeps the
+   * old names via the alias and migrates later. */
+  --diagram-active:        var(--c-warm-light);
+  --diagram-active-mark:   var(--c-warm-dark);
+  --diagram-done:          var(--c-cool-light);
+  --diagram-done-mark:     var(--c-cool-dark);
+  --diagram-critical:      var(--c-alarm);
+  --diagram-critical-mark: var(--c-alarm-dark);
+  --diagram-today:         var(--c-mark);
+  --diagram-note:          var(--c-note);
+
   /* ── Universal semantic palette ───────────────────────────────────────
    * Status-signaling colours shared by every theme. Gantt task lifecycle,
    * sequence-diagram notes, alarm fills, today markers — none of those

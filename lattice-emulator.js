@@ -498,12 +498,12 @@ const MERMAID_VAR_MAP = {
   sequenceNumberColor:      { var: 'cat-on-fill' },
 
   // Notes (yellow accent — category-distinct)
-  noteBkgColor:             { var: 'c-note' },
+  noteBkgColor:             { var: 'diagram-note' },
   noteTextColor:            { var: 'cat-on-fill' },
-  noteBorderColor:          { var: 'c-mark' },
+  noteBorderColor:          { var: 'diagram-today' },
 
   // Error (alarm — saturated red)
-  errorBkgColor:            { var: 'c-alarm' },
+  errorBkgColor:            { var: 'diagram-critical' },
   errorTextColor:           { var: 'cat-on-fill' },
 
   // Pie chart (pale band cycle — unified contract)
@@ -541,14 +541,14 @@ const MERMAID_VAR_MAP = {
   taskTextOutsideColor:   { var: 'cat-on-fill' },  // text in the margin, on canvas
   taskTextClickableColor: { var: 'cat-on-fill' },   // text on task bar, on fill
   taskBorderColor:        { var: 'diagram-stroke' },
-  activeTaskBkgColor:     { var: 'c-warm-light' },
-  activeTaskBorderColor:  { var: 'c-warm-dark' },
-  gridColor:              { var: 'c-cool-light' },
-  doneTaskBkgColor:       { var: 'c-cool-light' },
-  doneTaskBorderColor:    { var: 'c-cool-dark' },
-  critBkgColor:           { var: 'c-alarm' },
-  critBorderColor:        { var: 'c-alarm-dark' },
-  todayLineColor:         { var: 'c-mark' },
+  activeTaskBkgColor:     { var: 'diagram-active' },
+  activeTaskBorderColor:  { var: 'diagram-active-mark' },
+  gridColor:              { var: 'diagram-done' },
+  doneTaskBkgColor:       { var: 'diagram-done' },
+  doneTaskBorderColor:    { var: 'diagram-done-mark' },
+  critBkgColor:           { var: 'diagram-critical' },
+  critBorderColor:        { var: 'diagram-critical-mark' },
+  todayLineColor:         { var: 'diagram-today' },
 
   // Git graph
   git0: { var: 'cat-1-mark' },

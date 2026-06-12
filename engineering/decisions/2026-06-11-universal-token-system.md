@@ -162,7 +162,8 @@ The contrast contract is **preserved by construction**, not by re-tuning:
 |---|---|---|---|
 | **1 (done)** | categorical | `--cN-light` / `--cN-dark` / `--c-ink-light` / `--c-ink-dark` | `--cat-N-fill` / `--cat-N-mark` / `--cat-on-fill` / `--cat-on-mark` |
 | **2 (done)** | diagram-structural | `--c-stroke` / `--c-line` / `--c-accent-warm` | `--diagram-stroke` / `--diagram-line` / `--diagram-accent-warm` |
-| 3 | status (unify vocab) | `--pass/warn/fail`, `--c-warm/cool/alarm/mark/note`, `--chart-state-*` | `--status-{pass,warn,fail,info,mute}-{hue,fill,ink}` (bridge + css-rich variants per render shape) |
+| **3 (done)** | status axis | `--pass/warn/fail` (+ chart `--chart-state-*`) | `--status-{pass,warn,fail,info,mute}` — one vocabulary for engine discs + charts; `--pass/warn/fail` alias to it (not bridge-fed) |
+| **3 (done)** | diagram lifecycle | `--c-warm/cool/alarm/mark/note` | `--diagram-{active,done,critical,today,note}` (+ paired `-mark` strokes) — a *separate* axis; lifecycle ≠ status |
 | 4 | surfaces / scheme | `--bg`/`--bg-alt`/`--bg-dark`, `--dark-*` | `--surface`/`--surface-alt`/`--surface-inverse`, `--scheme-dark-*` |
 | 5 | sequential | `--scale-50..900` (+ `--scale-500`) | `--seq-50..900` (frees "scale" for type) |
 | 6 | chart triad | `--cat1..8-{hue,fill,ink}` | `--chart-cat-N-{hue,fill,ink}` (kills the bare-`cat` near-collision with phase-1 `--cat-*`) |
@@ -234,9 +235,11 @@ Mirrors the typography template, with the maker–checker corrections folded in:
 
 ## 10 — Open decisions (future phases)
 
-- Whether phase 3 collapses the three status systems to one vocabulary with
-  per-render-shape variants, or keeps `--pass/warn/fail` as the canonical
-  Tier-2 status and makes the others aliases.
+- ~~Whether phase 3 collapses the three status systems to one vocabulary~~
+  **Resolved (two honest axes):** a STATUS axis `--status-*` shared by engine
+  discs + charts (`--pass/warn/fail` alias to it), and a SEPARATE diagram
+  lifecycle/annotation axis on semantic `--diagram-*` names — because a gantt
+  "in-progress" tone is not a "warn". Shipped in phase 3.
 - Folding in the deferred **Model A** (`2026-06-05-token-structure-audit.md`):
   retire most of `--on-dark-*` by giving dark panels a scoped
   `color-scheme: dark`, so they reuse the one canvas ramp.

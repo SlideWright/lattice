@@ -171,6 +171,18 @@ in patch versions.
   read the new names while `mermaid.css`'s ~90 SVG rules and the radar override
   keep the old names via the alias and migrate later. Demo deck:
   `examples/universal-tokens-p2-structural.md`.
+- **Universal token system — phase 3 (status + diagram lifecycle).** The three
+  tangled "status" systems resolve into **two honest axes**. (1) A single STATUS
+  vocabulary `--status-{pass,warn,fail,info,mute}` shared by the engine
+  state-discs and the charts (`--pass/warn/fail` alias to it; info/mute borrow
+  the chart family's canonical semantic hues). (2) A *separate* diagram
+  lifecycle/annotation axis renamed off `--c-warm/cool/alarm/mark/note` onto
+  semantic names — `--diagram-active` / `--diagram-done` / `--diagram-critical`
+  (+ paired `-mark` strokes), `--diagram-today`, `--diagram-note` — because a
+  gantt "in-progress" tone is not a "warn". Aliased new→old (byte-identical);
+  the lifecycle bridges (gantt / notes / error in both renderers) read the new
+  names, `mermaid.css` keeps the old via the alias. Demo deck:
+  `examples/universal-tokens-p3-status.md`.
 - **Workbench export bridge — library themes reach the Drawing Board.** A theme
   saved in the Workbench library is now selectable in the Drawing Board's palette
   picker (listed with a *(saved)* suffix), registers with the in-browser engine,
