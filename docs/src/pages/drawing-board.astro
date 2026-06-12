@@ -127,8 +127,13 @@ const starter =
 // Engine + build provenance stamped into PDF/PPTX exports (drawing-board-export.js).
 const pkgVersion = require(join(repoRoot, 'package.json')).version;
 
+// Universal-token crosswalk (the SoT old→new pairs) for the "Token system"
+// toggle — the board flips fetched CSS client-side via token-flip.js.
+const { PAIRS: tokenCrosswalk } = require(join(repoRoot, 'lib/tokens/crosswalk.js'));
+
 const dbData = JSON.stringify({
 	themeBase: url(pg + 'themes/'),
+	crosswalk: tokenCrosswalk,
 	runtimeUrl: url(pg + 'lattice-runtime.js'),
 	defaultPalette: 'indaco',
 	slideBox: SLIDE_BOX,
@@ -1058,6 +1063,21 @@ const dbData = JSON.stringify({
 				var THEME_BASE = data.themeBase;
 				var RUNTIME_URL = data.runtimeUrl;
 				var SLIDE_BOX = data.slideBox;
+				// "Token system: Universal" flips the fetched engine + theme CSS to the
+				// new --cat-*/--diagram-* names (renders identically; byte-identical flip,
+				// asserted by test/unit/tokens/crosswalk.test.js). Crosswalk pairs are the
+				// SoT (lib/tokens/crosswalk.js), injected via db-data; this mirrors flip().
+				var USE_UNIVERSAL_TOKENS = (function () { try { return localStorage.getItem('lattice-db-token-system') === 'universal'; } catch (e) { return false; } })();
+				function universalize(css) {
+					if (!USE_UNIVERSAL_TOKENS || !data.crosswalk) return css;
+					var pairs = data.crosswalk.slice().sort(function (a, b) { return b.old.length - a.old.length; });
+					var out = css;
+					for (var i = 0; i < pairs.length; i++) {
+						var esc = pairs[i].old.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+						out = out.replace(new RegExp('--' + esc + '(?![\\w-])', 'g'), '--' + pairs[i].new);
+					}
+					return out.replace(/--([a-z0-9-]+)\s*:\s*var\(\s*--\1\s*\)\s*;?/gi, '');
+				}
 				var root = document.documentElement;
 				var frame = document.getElementById('db-frame');
 				var statusEl = document.getElementById('db-status');
@@ -1131,7 +1151,7 @@ const dbData = JSON.stringify({
 						fetched[name] = fetch(THEME_BASE + name + '.css').then(function (r) {
 							if (!r.ok) throw new Error('theme ' + name + ' (' + r.status + ')');
 							return r.text();
-						});
+						}).then(universalize); // flips to --cat-*/--diagram-* when Token system = Universal
 					}
 					return fetched[name];
 				}
