@@ -72,6 +72,31 @@ Before handing visual work back:
 - If a tool genuinely cannot run here, **say so**; never claim visual
   quality you did not verify.
 
+### Website / responsive UI — desktop · tablet · mobile
+
+The docs site (landing, Drawing Board, Workbench, component pages) ships to
+three form factors with distinct real estate and capabilities. Treat all
+three as first-class:
+
+- **Responsive across every breakpoint.** Each website change must hold up on
+  desktop (~1440px), tablet (~820px), and mobile (~390px). Keep the
+  experience *familiar* across platforms — one visual language, not three
+  different apps.
+- **Respect real estate.** On mobile (and largely on tablet), icon+text
+  controls eat space and break layouts — favor **icon-only** controls there,
+  keeping the text label for desktop. For tablet specifically, **assess each
+  feature's viability** rather than assuming the desktop layout just scales.
+- **No jank.** No shaky / jumpy / jittery layout shift, reflow, or animation
+  glitches. Reserve space for async content; avoid cumulative layout shift.
+- **Always screenshot-verify all three breakpoints.** No website change is
+  done without `tools/screenshot.js` evidence at desktop, tablet, AND mobile
+  widths (see `engineering/development.md`). "It builds" is not verification.
+- **Export changes require MY inspection — STOP and show me.** Anything that
+  affects exported content (PDF export, deck rendering, font embedding) is the
+  one exception to "act without being asked": generate a representative demo
+  deck, render it in **both dark and light mode**, and send both PDFs for my
+  sign-off before considering the work done.
+
 ---
 
 ## HARD RULES (these override convenience; a violation is a defect)
