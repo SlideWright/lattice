@@ -15,6 +15,7 @@ const {
   deckClassPropagate,
   applyDeckLogoToHtml,
   readDeckLogoFrontMatter,
+  applyMastheadMetaToHtml,
   stateClassesFor,
   verdictGridBadges,
   obligationMatrixBadges,
@@ -108,6 +109,9 @@ module.exports = {
         // not on per-section content. The shape doesn't fit the
         // registry's per-section primitive.
         result.html = applyDeckLogoToHtml(result.html, markdown);
+        // meta island — fills the masthead bay the registry just built with
+        // the front-matter `meta:` directive. Runs last so the bay exists.
+        result.html = applyMastheadMetaToHtml(result.html, markdown);
       }
       return result;
     };
@@ -124,6 +128,7 @@ module.exports.plugins = {
   deckClassPropagate,
   applyDeckLogoToHtml,
   readDeckLogoFrontMatter,
+  applyMastheadMetaToHtml,
   stateClassesFor,
   verdictGridBadges,
   obligationMatrixBadges,

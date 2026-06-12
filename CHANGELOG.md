@@ -89,6 +89,14 @@ in patch versions.
   with a shipped component class at save time. CSS-only only; transform-bearing
   components remain graduation-only. See
   `engineering/decisions/2026-06-12-workbench-component-bridge.md`.
+- **Masthead-bay islands — `meta:` + re-docked status (islands model, Phase 2).**
+  The reserved masthead bay (Phase 1) now carries two islands on `islands`
+  slides. A new deck-wide `meta:` front-matter directive (date · owner ·
+  classification; ` | ` splits into stacked lines) injects a `.isl-meta`
+  island into the bay across all three render paths. And the label-type state
+  markers (`confidential` · `wip` · `draft`) re-dock from their corner
+  stamp / full-width band into a clean bay chip when combined with `islands`
+  (their default treatment is unchanged without it). See `examples/islands.md`.
 - **`islands` modifier — the masthead band (islands model, Phase 1).** Opt in
   with `<!-- _class: <layout> islands -->` and the slide's eyebrow + title lift
   out of content flow into a named `.isl-masthead` band (hairline rule + a

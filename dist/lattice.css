@@ -13404,6 +13404,70 @@ section.islands .isl-masthead {
 section.islands .isl-masthead .m-stage { min-width: 0; grid-column: m-stage; }
 section.islands .isl-masthead .m-bay   { grid-column: m-bay; }
 
+/* ── ISLANDS · masthead-bay islands — meta · status (Phase 2) ───────────
+ * The reserved bay stacks its islands top-down, right-aligned: the meta
+ * island (front-matter `meta:`, injected by applyMastheadMetaToHtml across
+ * all three render paths) on top, the status chip beneath. Both are
+ * palette-blind. See engineering/decisions/2026-06-11-islands.md. */
+section.islands .isl-masthead .m-bay {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--sp-sm);
+  text-align: right;
+}
+
+/* meta island — date · owner · classification */
+.isl-meta {
+  font-family: var(--font-label);
+  font-size: var(--fs-meta);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  line-height: 1.6;
+  text-transform: uppercase;
+  color: var(--text-label);
+}
+
+/* status island — under `islands`, the label-type state markers
+ * (confidential · wip · draft) dock in the bay as a clean chip, REPLACING
+ * their default corner stamp / full-width band / canvas watermark. The
+ * more-specific `section.islands.<state>` selector wins over the base
+ * `section.<state>::before` rule, so the default treatment is suppressed
+ * without !important. (redacted / tbd / archived keep their stronger
+ * full-canvas overlays — those are deliberate "do not circulate" signals,
+ * not a quiet bay marker.) */
+section.islands.confidential::before,
+section.islands.wip::before,
+section.islands.draft::before { content: none; background: none; }
+
+section.islands:is(.confidential, .wip, .draft) .m-bay::after {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-label);
+  font-size: var(--fs-meta);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: var(--sp-2xs) var(--sp-sm);
+  border-radius: var(--pill-radius);
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 32%, transparent);
+}
+section.islands.confidential .m-bay::after { content: 'Confidential'; }
+section.islands.wip .m-bay::after {
+  content: 'WIP';
+  color: var(--warn);
+  background: color-mix(in srgb, var(--warn) 12%, transparent);
+  border-color: color-mix(in srgb, var(--warn) 32%, transparent);
+}
+section.islands.draft .m-bay::after {
+  content: 'Draft';
+  color: var(--warn);
+  background: color-mix(in srgb, var(--warn) 12%, transparent);
+  border-color: color-mix(in srgb, var(--warn) 32%, transparent);
+}
+
 /* === lib/integrations/mermaid/mermaid.css === */
 /* _diagram-overrides.css — Mermaid SVG selectors, palette-blind.
  *

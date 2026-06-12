@@ -143,6 +143,38 @@ describe('marp-plugins', () => {
     assert.deepEqual(cls, ['title'], `unknown finish should add nothing; got [${cls.join(', ')}]`);
   });
 
+  // ── applyMastheadMetaToHtml (islands meta island, Phase 2) ─────────────
+
+  test('applyMastheadMetaToHtml: fills the reserved .m-bay of islands sections', () => {
+    const html = '<section class="content islands"><div class="isl-masthead"><div class="m-stage"><h2>T</h2></div><div class="m-bay"></div></div></section>';
+    const md = '---\nmeta: "Q2 FY26 · Board Pack"\n---\n';
+    const out = plugins.applyMastheadMetaToHtml(html, md);
+    assert.match(out, /<div class="m-bay"><div class="isl-meta">Q2 FY26 · Board Pack<\/div><\/div>/);
+  });
+
+  test('applyMastheadMetaToHtml: a `|` splits into stacked lines', () => {
+    const html = '<section class="islands"><div class="m-bay"></div></section>';
+    const out = plugins.applyMastheadMetaToHtml(html, '---\nmeta: "A | B"\n---\n');
+    assert.match(out, /<div class="isl-meta">A<br>B<\/div>/);
+  });
+
+  test('applyMastheadMetaToHtml: no-op without `meta:` front matter', () => {
+    const html = '<section class="islands"><div class="m-bay"></div></section>';
+    assert.equal(plugins.applyMastheadMetaToHtml(html, '---\ntheme: cuoio\n---\n'), html);
+  });
+
+  test('applyMastheadMetaToHtml: idempotent — only an EMPTY bay matches', () => {
+    const html = '<section class="islands"><div class="m-bay"></div></section>';
+    const md = '---\nmeta: X\n---\n';
+    const once = plugins.applyMastheadMetaToHtml(html, md);
+    assert.equal(plugins.applyMastheadMetaToHtml(once, md), once);
+  });
+
+  test('applyMastheadMetaToHtml: escapes HTML in the meta value', () => {
+    const html = '<section class="islands"><div class="m-bay"></div></section>';
+    const out = plugins.applyMastheadMetaToHtml(html, '---\nmeta: "<b> & x"\n---\n');
+    assert.match(out, /&lt;b&gt; &amp; x/);
+
   // ── applyDeckLogoToHtml ────────────────────────────────────────────────
 
   function logoFixture(html) {

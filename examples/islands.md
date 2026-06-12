@@ -3,20 +3,21 @@ marp: true
 theme: cuoio
 paginate: true
 header: "Lattice · Islands"
-footer: "SlideWright · Islands Phase 1"
+footer: "SlideWright · Islands Phase 2"
+meta: "Q2 FY26 · Board Pack | Owner · S. Aden"
 ---
 
 <!-- _class: title silent -->
 
 # Slides as Islands
 
-`Composition Model · Phase 1 — the masthead band`
+`Composition Model · Phase 2 — the masthead bay`
 
-A slide is a sea plus a fixed set of berths. Phase 1 lifts the eyebrow and title out of content flow into a named masthead band — the body stays put, so every component still composes.
+A slide is a sea plus a fixed set of berths. Phase 1 lifted the title into a named band; Phase 2 docks the meta and status islands into the band's reserved bay — additive, palette-blind, across every render path.
 
 ---
 
-<!-- _class: content islands -->
+<!-- _class: content islands confidential -->
 
 `Context · The Lift`
 
@@ -58,11 +59,13 @@ Authoring is unchanged: you still write a backtick eyebrow and a `## title`. The
 
 ---
 
-<!-- _class: content islands -->
+<!-- _class: content islands wip -->
 
-`Takeaway · What Phase 1 Buys`
+`Takeaway · What Phase 2 Adds`
 
-## A named masthead is the foundation the next phases build on.
+## The bay now docks meta and status islands.
+
+The masthead bay — empty in Phase 1 — now carries the `meta:` island (a deck-wide date · owner · classification line) and a status chip that re-docks the slide's state marker (this slide is `wip`) from a corner stamp into the bay.
 
 With the band in place, Phase 2 can drop the meta, logo, and status islands into the reserved bay, and Phase 4 can turn the body into a concrete, centred stage — without re-litigating where the title lives.
 
@@ -72,8 +75,8 @@ With the band in place, Phase 2 can drop the meta, logo, and status islands into
 
 <!-- _class: closing silent -->
 
-# The masthead has landed.
+# The bay is populated.
 
-`Next · Phase 2 — meta · progress · status islands`
+`Next · Phase 2b — progress · watermark islands`
 
 Inspect this deck against the model in engineering/decisions/2026-06-11-islands.md.
