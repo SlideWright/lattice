@@ -11,10 +11,11 @@
 // Voiced as "the Architect" per the naming decision.
 
 import Fuse from 'fuse.js';
-import lintCore from '../../../lib/authoring/lint-core.js';
-import reviewCore from '../../../lib/authoring/review-core.js';
-import scorecard from '../../../lib/authoring/scorecard.js';
 import { cosineRank } from './architect-retrieval.js';
+// The pure authoring cores (lib/authoring/*) are CommonJS; consume them through
+// the esbuild bundle so they load in `astro dev` too (a direct /@fs import of a
+// source CJS file has no `default` export in dev — see tools/build-authoring-core.js).
+import { lintCore, reviewCore, scorecard } from './authoring-core.generated.js';
 
 // 1-based source line where each REAL slide begins, indexed by the HUMAN slide
 // number (front matter skipped) — so `starts[finding.slide]` maps a finding to

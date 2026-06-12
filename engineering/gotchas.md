@@ -1555,6 +1555,37 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
 
 ## Docs site (Astro + GitHub Pages)
 
+### Drawing Board Architect/Coach panels dead in `astro dev` (CJS over `/@fs`)
+
+- **Symptom:** In `astro dev` (local docs preview), the Drawing Board's whole
+  left rail — the Architect, the Coach chips, the config drawer — is inert:
+  `window.__dbArchitect` and `window.__dbConfig` are `undefined`, while
+  `__dbStore`/`__dbEditor` are fine. The console shows
+  `The requested module '/@fs/.../lib/authoring/lint-core.js' does not provide
+  an export named 'default'`. The **deployed/built** site works — it's dev-only.
+- **Cause:** That `<script>` block imported the repo's pure CommonJS authoring
+  engines directly (`import lintCore from '../../../lib/authoring/lint-core.js'`,
+  + review-core, scorecard). Rollup's `commonjsOptions` converts CJS→ESM in the
+  **build**, but Vite's **dev** server serves a source CJS file fetched over
+  `/@fs` (above the docs root) *without* that transform, so its `module.exports`
+  surfaces no `default` export. The first such import (lint-core) throws and
+  aborts the entire block, taking every panel mounted in it down with it. The
+  config comment claiming the build nudge fixed dev was wrong — it never covered
+  dev. (Leaf-or-not is irrelevant; the `/@fs` source-CJS serve is the trap.)
+- **Fix:** Consume the cores through a committed esbuild bundle —
+  `tools/build-authoring-core.js` → `docs/src/playground/authoring-core.generated.js`
+  (one in-root ESM module, real named exports `{ lintCore, reviewCore,
+  scorecard }`) — exactly as the Theme Studio (`theme-core.generated.js`) and
+  Layout Studio (`layout-core.generated.js`) already do. Importers switch to
+  `import { … } from './authoring-core.generated.js'`. A lefthook
+  `authoring-core-bundle-freshness` gate (glob on the three sources +
+  the tool) byte-diffs via `npm run authoring-core:check`. The now-needless
+  `commonjsOptions` for `lib/authoring` is removed.
+- **Removable when:** the authoring cores become real ESM (then a direct import
+  works in dev and the bundle/gate can go). Until then the bundle is the contract.
+- **Commit:** `fix(docs): load Architect authoring cores via an esbuild bundle so
+  they work in astro dev`.
+
 ### Playground/specimen previews 404 on the engine CSS + runtime
 
 - **Symptom:** On the *deployed* docs site (slidewright.github.io/lattice),

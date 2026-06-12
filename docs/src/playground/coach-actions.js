@@ -9,8 +9,10 @@
 // A card is { title, body: string[], jump?: slideNumber, needMinutes?: bool }.
 //
 // Ask-detection and pacing are imported from review-core so the chips and the
-// scorecard share ONE definition each — they can't drift apart.
-import reviewCore from '../../../lib/authoring/review-core.js';
+// scorecard share ONE definition each — they can't drift apart. Via the esbuild
+// bundle (not a direct CJS import) so it loads in `astro dev` — see
+// tools/build-authoring-core.js.
+import { reviewCore } from './authoring-core.generated.js';
 
 const SEV_WEIGHT = { error: 3, warning: 2, suggestion: 1 };
 const SEV_ORDER = { error: 0, warning: 1, suggestion: 2 };

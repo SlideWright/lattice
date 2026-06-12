@@ -23,26 +23,17 @@ const onCloudflare = Boolean(process.env.CF_PAGES);
 export default defineConfig({
 	site: process.env.SITE_URL || (onCloudflare ? process.env.CF_PAGES_URL : 'https://slidewright.github.io'),
 	base: onCloudflare ? '/' : '/lattice',
-	// The Drawing Board's Architect panel imports the repo's pure CommonJS
-	// lint-core (lib/authoring/lint-core.js) so the browser runs the SAME checks
-	// as the Node CLI. Two Vite nudges make that work: allow resolving the file
-	// above the docs root, and apply the CJS→ESM transform to it (Rollup treats
-	// project .js as ESM by default, so its module.exports would read as undefined).
+	// `server.fs.allow: ['..']` lets the dev server resolve repo files above the
+	// docs root (e.g. map-complete.js's lib/components basemap JSON). The pure
+	// authoring engines (lint-core/review-core/scorecard) and the Theme/Layout
+	// Studio cores are CommonJS that Vite's dev server can't transform when a
+	// source file is fetched over /@fs — its module.exports reads as no `default`
+	// export and the importing <script> block dies. So the browser consumes them
+	// through committed esbuild bundles (authoring-core / theme-core /
+	// layout-core .generated.js) that load in dev AND ship in the build; no
+	// CJS→ESM build nudge is needed. See tools/build-authoring-core.js.
 	vite: {
 		server: { fs: { allow: ['..'] } },
-		build: {
-			commonjsOptions: {
-				// The Architect imports the repo's pure CommonJS authoring engines
-				// (lint-core, review-core, scorecard) so the browser runs the SAME
-				// checks as Node. Apply the CJS→ESM transform to all of lib/authoring/.
-				// (The Theme Studio's lib/theme core requires() across files, which
-				// this transform can't follow in dev, so it's consumed via the
-				// esbuild bundle theme-core.generated.js instead — see
-				// tools/build-theme-core.js.)
-				include: [/lib[/\\]authoring[/\\][\w-]+\.js$/, /node_modules/],
-				transformMixedEsModules: true,
-			},
-		},
 	},
 	integrations: [
 		starlight({
