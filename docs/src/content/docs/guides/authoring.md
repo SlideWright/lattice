@@ -41,8 +41,8 @@ One-line subtitle that frames the deck.
 
 Three things to notice:
 
-1. **Front matter** selects the palette (`theme:`) and global chrome
-   (`paginate`, `header`, `footer`).
+1. **Front matter** selects the palette (`theme:`), the deck's finish
+   (`finish:`), and global chrome (`paginate`, `header`, `footer`).
 2. **`---`** separates slides.
 3. **`<!-- _class: NAME -->`** picks the layout for that slide. The
    layout decides the structure; your Markdown fills the slots.
@@ -84,6 +84,32 @@ Any layout accepts universal modifiers appended to the class —
 For example `<!-- _class: cards-grid dark -->` renders the grid on the
 dark canvas. The catalog of modifiers lives in the design system
 reference in the repository.
+
+## The `finish:` key — a hand-drawn deck
+
+A **finish** is the deck's type-and-geometry voice, separate from its
+palette. Set it once in front matter and every slide inherits it:
+
+```markdown
+---
+theme: carta        # palette — still owns the colours
+finish: sketch      # finish — the whole-deck voice
+---
+```
+
+`finish:` takes one of three values:
+
+- **`boardroom`** — the clean baseline. The default when you omit the key.
+- **`sketch`** — a hand-drawn register: felt-tip headings, a hand-sans for
+  prose, and every card/box redrawn as a sketched frame.
+- **`sketch-clean`** — hand headings and boxes, but a clean body font for
+  text-dense slides.
+
+The finish is **palette-blind** — it wobbles type and geometry, never
+colour, so it pairs with any theme. It also **composes** with per-slide
+layouts: `finish: sketch` plus `<!-- _class: cards-grid -->` renders a
+hand-drawn grid with no extra markup. A misspelled value (`finish: sketchh`)
+is caught by the deck linter rather than silently rendering the baseline.
 
 ## Autocomplete in the Drawing Board
 

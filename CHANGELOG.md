@@ -25,6 +25,20 @@ in patch versions.
 
 ## Unreleased
 
+### Added
+
+- **New `finish:` front-matter key — apply a finish deck-wide by name.**
+  `finish:` is a Lattice front-matter extension (orthogonal to `theme:`) that
+  names the whole-deck finish in one readable token and propagates it to every
+  slide, composing with any per-slide `_class:` (so `finish: sketch` +
+  `_class: cards-grid` → `class="cards-grid sketch"`). The open register
+  (`lib/core/resolve-finish.js`) ships three values: `boardroom` (the baseline,
+  also the omitted default), `sketch`, and `sketch-clean` (hand headings +
+  boxes, clean body for dense slides). All three render paths read it, and
+  `npm run lint:deck` flags an unrecognized value as an `unknown-finish` warning
+  so a typo surfaces instead of silently rendering the baseline. Prefer it over
+  `class: sketch` when the intent is "this whole deck is sketch."
+
 ### Changed
 
 - **The reference trio's chart palettes are re-tuned to the quality bar they

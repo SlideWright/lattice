@@ -143,6 +143,27 @@ describe('deck linter', () => {
     assert.equal(f.slide, 2);
   });
 
+  test('warns on an unrecognized front-matter `finish:` register value (warning)', () => {
+    const src = '---\nmarp: true\ntheme: indaco\nfinish: sketchh\n---\n\n## H.\n';
+    const f = lintText(src, { vocab }).find((x) => x.rule === 'unknown-finish');
+    assert.ok(f, JSON.stringify(lintText(src, { vocab })));
+    assert.equal(f.severity, 'warning');
+    assert.equal(f.classToken, 'sketchh');
+    assert.match(f.fix, /boardroom, sketch, sketch-clean/);
+  });
+
+  test('accepts the known finish register values (boardroom / sketch / sketch-clean)', () => {
+    for (const v of ['boardroom', 'sketch', 'sketch-clean', 'SKETCH']) {
+      const src = `---\nmarp: true\ntheme: indaco\nfinish: ${v}\n---\n\n## H.\n`;
+      assert.equal(lintText(src, { vocab }).filter((x) => x.rule === 'unknown-finish').length, 0, v);
+    }
+  });
+
+  test('a body `finish:` code span is not mistaken for the front-matter key', () => {
+    const src = `${FM}<!-- _class: content -->\n\n## H.\n\n\`finish: bogus\` is just prose.\n`;
+    assert.equal(lintText(src, { vocab }).filter((x) => x.rule === 'unknown-finish').length, 0);
+  });
+
   test('every committed deck is completely lint-clean (no errors, no warnings)', () => {
     // The deck tree is clean and the gate is --strict, so warnings count too.
     // Locks in the fixes for the baseline gallery (cards-stack inline-title),

@@ -462,11 +462,35 @@ paper-and-ink palette is the blessed pairing.
 ```yaml
 ---
 theme: carta      # paper + ink; any palette works
-class: sketch     # deck-wide — propagates to every slide
+finish: sketch    # deck-wide register — propagates to every slide
 ---
 ```
 
 Or per slide: `<!-- _class: cards-grid sketch -->`.
+
+#### The `finish:` front-matter register
+
+`finish:` is the **deck-wide finish selector** — a Lattice front-matter
+extension (Marpit has no native key) that names the whole-deck finish in one
+readable token, orthogonal to `theme:`. It resolves to the same CSS classes
+you'd otherwise hand-spell on `class:`, and **composes** with any per-slide
+`_class:` (the same append-not-replace semantic as the deck-wide `class:`
+directive), so `finish: sketch` + `<!-- _class: cards-grid -->` renders
+`class="cards-grid sketch"`. Use `finish:` rather than `class: sketch` when the
+intent is "this whole deck is sketch" — it reads as a register, not a layout
+class, and a typo is caught by the deck linter instead of silently rendering
+the baseline.
+
+| `finish:` value | Resolves to | Effect |
+|---|---|---|
+| `boardroom` | *(no class)* | The baseline — clean type, square boxes. The default when `finish:` is omitted. |
+| `sketch` | `sketch` | Full handwriting (headings **and** body) + drawn boxes. |
+| `sketch-clean` | `sketch sketch-clean-body` | Keep hand headings + boxes; return prose to the clean `--font-body` for text-dense slides. |
+
+The register is **open** (defined in `lib/core/resolve-finish.js`) and read by
+all three render paths. An unrecognized value (e.g. `finish: sketchh`) resolves
+to no classes — so it would silently ship the boardroom baseline — which is why
+`npm run lint:deck` flags it as an `unknown-finish` warning.
 
 | Token / class | Effect |
 |---|---|
