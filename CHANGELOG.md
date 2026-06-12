@@ -47,6 +47,35 @@ in patch versions.
   design tokens. A global **Guided tours** on/off toggle in the Drawing Board's
   Workspace settings governs all three surfaces and takes effect live.
 
+### Fixed
+
+- **The docs-site live preview now loads the sketch hand fonts — `finish:
+  sketch` decks no longer render hand headings over a clean-sans body.** Each
+  preview slide renders into an `srcdoc` iframe whose `<style>` concatenates the
+  frame CSS before the theme CSS, which demoted the engine's Google-Fonts
+  `@import` past the first-rule position where CSS honors it — so the iframe
+  registered none of its own webfonts and showed only the faces the parent docs
+  page happened to load (Playfair/Outfit/JetBrains). Caveat/Shantell were absent,
+  so sketch headings fell to a system hand font (still hand-looking) while body
+  fell to a system sans. The preview now registers the vendored faces directly
+  (`previewFontFaceCss()` → `data.previewFontCss` for the Drawing Board's
+  `writeFrame`; a lazy import in `live-render.js` for the playground, landing
+  hero, and component specimens). Docs-only.
+- **Drawing Board PDF / PowerPoint exports now embed every web font — body
+  text on `finish: sketch` decks no longer drops to a system fallback.** The
+  image exporters rasterize every slide through html-to-image, which chased the
+  engine CSS's cross-origin Google-Fonts `@import` and lost a lazy-load race:
+  Marp's template loads each face only for the active slide, so a font first
+  needed by an off-screen slide (notably the Shantell Sans **body** face of a
+  sketch deck) hadn't finished loading when its slide rasterized, and that slide
+  fell back to a clean sans (headings kept Caveat only because a bookend slide
+  was active). The export now vendors every engine text face (latin subset,
+  Noto Color Emoji excluded) and hands html-to-image a precomputed data-URI
+  `fontEmbedCSS`, so each rasterized slide is self-contained and all fonts embed
+  deterministically. Affects PDF and PPTX (shared rasterizer); the vector
+  `Print` path was never affected. Docs-only; the published engine and its
+  Google-Fonts `@import` are unchanged.
+
 ### Changed
 
 - **The reference trio's chart palettes are re-tuned to the quality bar they

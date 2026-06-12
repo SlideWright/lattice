@@ -10,8 +10,13 @@
 //   - Print    : the browser print path — true vector, selectable, but a dialog.
 //
 // Rasterization uses html-to-image (toPng): it clones the slide, inlines the
-// computed styles AND embeds the web fonts (follows the engine CSS's @import of
-// Google Fonts, fetching + inlining the files), then renders to a 2x canvas.
+// computed styles AND embeds the web fonts, then renders to a 2x canvas. The
+// fonts are NOT left to html-to-image's own collection (it chased the engine
+// CSS's cross-origin Google-Fonts @import and lost a lazy-load race — off-screen
+// slides rasterized before their faces finished loading, so e.g. a `finish:
+// sketch` deck's Shantell body font dropped to a system fallback). Instead we
+// pass a precomputed `fontEmbedCSS` of vendored, data-URI'd faces (font-embed.js)
+// to every call, so each clone is self-contained and every font embeds.
 //
 // IMPORTANT: do NOT pass a `backgroundColor` — a forced white overrides the
 // solid dark canvas of the title/closing/divider slides
@@ -134,12 +139,21 @@ async function sectionsOf(frame) {
 	if (!doc) throw new Error('Preview not ready yet.');
 	const sections = doc.querySelectorAll('.marpit>section');
 	if (!sections.length) throw new Error('Nothing to export yet.');
-	try { await doc.fonts.ready; } catch (_e) { /* fonts best-effort */ }
-	return sections;
+	// Build the data-URI font sheet once, inject it into the preview doc, and wait
+	// for every face — so off-screen slides (forced visible mid-loop) rasterize
+	// with their fonts already resolved instead of racing the lazy loader.
+	// Lazy-imported (its bundled .woff2 imports are not Node-loadable, so the pure
+	// markdown kernels above stay unit-testable) — same split as jspdf/pptxgenjs.
+	const { buildFontEmbedCss, ensureFontsLoaded } = await import('./font-embed.js');
+	const fontEmbedCSS = await buildFontEmbedCss();
+	await ensureFontsLoaded(doc, fontEmbedCSS);
+	return { sections, fontEmbedCSS };
 }
 
-// Rasterize one rendered slide to a 2x PNG data URL (fonts embedded).
-async function rasterizeSection(section) {
+// Rasterize one rendered slide to a 2x PNG data URL. `fontEmbedCSS` (the vendored,
+// data-URI'd faces) is handed to html-to-image so the clone embeds every font
+// itself rather than chasing the cross-origin Google-Fonts @import.
+async function rasterizeSection(section, fontEmbedCSS) {
 	const { toPng } = await import('html-to-image');
 	// Bookend slides (title/closing/divider) carry an inert `border-image-source`
 	// (the spectrum) with `border-top:none` — invisible in the browser, but
@@ -163,6 +177,7 @@ async function rasterizeSection(section) {
 			height: 720,
 			pixelRatio: 2,
 			cacheBust: true,
+			fontEmbedCSS,
 			// transform:none undoes the live FIT scale; no backgroundColor (see header).
 			style: { transform: 'none', margin: '0', boxShadow: 'none', outline: 'none', borderRadius: '0' },
 			filter: (n) => !(n.classList?.contains('db-active')),
@@ -175,7 +190,7 @@ async function rasterizeSection(section) {
 
 // ── PDF (one-click image PDF) ─────────────────────────────────────────────────
 export async function exportPdf(frame, name, onStatus, meta) {
-	const sections = await sectionsOf(frame);
+	const { sections, fontEmbedCSS } = await sectionsOf(frame);
 	if (onStatus) onStatus('Preparing PDF…');
 	const { jsPDF } = await import('jspdf');
 	const pdf = new jsPDF({ orientation: 'landscape', unit: 'px', format: [1280, 720], compress: true });
@@ -189,7 +204,7 @@ export async function exportPdf(frame, name, onStatus, meta) {
 	});
 	for (let i = 0; i < sections.length; i++) {
 		if (onStatus) onStatus('Rendering slide ' + (i + 1) + ' of ' + sections.length + '…');
-		const png = await rasterizeSection(sections[i]);
+		const png = await rasterizeSection(sections[i], fontEmbedCSS);
 		if (i > 0) pdf.addPage([1280, 720], 'landscape');
 		pdf.addImage(png, 'PNG', 0, 0, 1280, 720);
 	}
@@ -198,7 +213,7 @@ export async function exportPdf(frame, name, onStatus, meta) {
 
 // ── PPTX (image-slides) ───────────────────────────────────────────────────────
 export async function exportPptx(frame, name, onStatus, meta) {
-	const sections = await sectionsOf(frame);
+	const { sections, fontEmbedCSS } = await sectionsOf(frame);
 	if (onStatus) onStatus('Preparing PowerPoint…');
 	const { default: PptxGenJS } = await import('pptxgenjs');
 	const pptx = new PptxGenJS();
@@ -210,7 +225,7 @@ export async function exportPptx(frame, name, onStatus, meta) {
 	pptx.layout = 'LAYOUT_WIDE'; // 13.333 x 7.5in, 16:9 — matches the 1280x720 box
 	for (let i = 0; i < sections.length; i++) {
 		if (onStatus) onStatus('Rendering slide ' + (i + 1) + ' of ' + sections.length + '…');
-		const png = await rasterizeSection(sections[i]);
+		const png = await rasterizeSection(sections[i], fontEmbedCSS);
 		pptx.addSlide().addImage({ data: png, x: 0, y: 0, w: '100%', h: '100%' });
 	}
 	if (onStatus) onStatus('Building .pptx…');

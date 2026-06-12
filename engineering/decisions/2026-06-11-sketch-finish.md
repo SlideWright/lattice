@@ -107,3 +107,15 @@ a Puppeteer pipeline that embeds the woff2 files locally (and waits on
 `document.fonts.ready` + force-loads every face, since Marp's bespoke
 template lazy-loads fonts only for the active slide). In production the two
 hand fonts ride the engine's existing Google-Fonts `@import` unchanged.
+
+**Update (2026-06-12):** that same lazy-load-only-for-the-active-slide
+behaviour bit the docs-site **Drawing Board image export** — its
+`html-to-image` rasterizer walks every slide (incl. off-screen) but awaited
+fonts only once up front, so a face first needed by an off-screen slide (the
+Shantell body face was the reported case) baked in a fallback while the
+Caveat headings survived. Fixed by vendoring every engine face and handing
+the rasterizer a precomputed data-URI `fontEmbedCSS`
+(`docs/src/playground/font-embed.js`); see
+`engineering/decisions/2026-06-12-export-font-embedding.md` and the
+"Drawing Board PDF/PPTX export shows fallback type" gotcha. Export-scoped —
+the engine `@import` is still untouched.

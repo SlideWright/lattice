@@ -383,6 +383,74 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
   page), not `pdffonts`/`get_fonts()` — a subset-embedded face often
   reports an empty name and reads as "missing" when it's actually there.
 
+### Drawing Board PDF/PPTX export shows fallback type on some slides
+
+- **Symptom:** A deck exported from the docs-site Drawing Board (Export →
+  PDF or PowerPoint) renders *most* type correctly but a face drops to a
+  system fallback on a subset of slides — classically, a `finish: sketch`
+  deck keeps its Caveat headings but the Shantell Sans **body** goes clean
+  Outfit. The live preview looks right; only the exported file is wrong.
+  This is the **web-export** twin of the marp-cli fallback gotcha above —
+  same symptom, different render path and fix.
+- **Cause:** The image exporters (`docs/src/playground/drawing-board-
+  export.js`) rasterize every slide through `html-to-image`, including
+  off-screen ones they force-visible mid-loop. Marp's template lazy-loads
+  each web-font face only when the *active* slide needs it, and the export
+  awaited `document.fonts.ready` **once**, up front — before those
+  off-screen slides requested their faces. A face first needed by an
+  off-screen slide hadn't finished loading from Google Fonts when its slide
+  rasterized, so that slide baked in a fallback. Headings survived only
+  because a bookend slide was active at export time. Letting
+  `html-to-image` chase the cross-origin Google-Fonts `@import` itself is
+  also unreliable (its `cssRules` read is CORS-blocked).
+- **Fix:** `docs/src/playground/font-embed.js` vendors every engine text
+  face (latin subset, in `docs/src/playground/fonts/`), builds **one**
+  data-URI `@font-face` sheet, and hands it to every `html-to-image` call
+  as `fontEmbedCSS` — so each rasterized slide is self-contained, no
+  network, no race. It also injects the faces into the preview doc and
+  awaits them so the cloned nodes lay out with real metrics. The module is
+  lazy-`import()`ed (its `.woff2` imports aren't Node-loadable, which would
+  break the export module's unit tests). Covers PDF + PPTX (shared
+  rasterizer); the vector `Print` path renders through the browser's own
+  engine and was never affected.
+- **Verify the right way:** rasterize a body slide of an exported sketch
+  deck and read the pixels — `pdffonts` is useless here (the export is an
+  *image* PDF; text is baked into PNGs, not embedded as PDF fonts).
+- **Note:** This is docs-export-scoped. The published engine and its
+  Google-Fonts `@import` are unchanged; npm consumers load from Google.
+
+### Drawing Board / playground LIVE PREVIEW shows hand-body decks in a system sans
+
+- **Symptom:** A `finish: sketch` deck in the docs-site live preview shows
+  hand-drawn *headings* but a clean-sans *body* (and clean eyebrows, pills,
+  bullets) — it looks like "only headings are styled." It is the same
+  fallback-asymmetry as the export, but visible on screen, before any export.
+- **Cause:** The preview renders each slide into an `srcdoc` iframe whose
+  `<style>` is `frame-CSS + theme-CSS` concatenated. The engine's Google-Fonts
+  `@import` rides at the top of the theme CSS, but once it's concatenated
+  **after** the frame rules it is no longer the first rule in the sheet — and
+  **CSS silently ignores an `@import` that isn't first.** So the iframe
+  registers *none* of its own webfonts; it renders only the faces the **parent
+  docs page** already loaded into the shared same-origin font cache
+  (Playfair/Outfit/JetBrains, from `styles/landing.css`). The docs UI never
+  loads Caveat/Shantell, so the sketch faces are simply absent in the iframe —
+  headings fall to the system hand font in the `--sketch-font-display` stack
+  (`'Bradley Hand', cursive`) and so still *look* hand, while body falls to
+  `system-ui, sans-serif` and looks clean. The split is a fallback artifact, not
+  a missing CSS rule: the token re-pointing (`--font-body` → Shantell) is
+  correct and reaches every element; the font just wasn't loaded.
+- **Diagnosis tip:** In the iframe, `document.fonts` will list KaTeX faces but
+  **not** Caveat/Shantell/Outfit/Playfair, and `document.fonts.load("16px
+  'Shantell Sans'")` resolves to `0 face(s)` — proof the face isn't registered.
+  `document.fonts.check(...)` is a trap here: it returns `true` for an
+  unregistered family (it reports the system fallback as "ready").
+- **Fix:** Register the vendored faces in the iframe directly. The Drawing Board
+  passes a `@font-face` block (built from `previewFontFaceCss()`, referencing the
+  bundled woff2 by URL) through `data.previewFontCss` into `writeFrame`'s srcdoc;
+  `live-render.js` (playground / hero / specimens) lazy-imports the same builder.
+  The faces are now genuinely present in the iframe regardless of the inert
+  `@import` or what the parent loaded.
+
 ### marp-cli ignores `theme:` front matter unless the theme is in `themeSet`
 
 - **Symptom:** A deck specifies `theme: mustard` (or any other named

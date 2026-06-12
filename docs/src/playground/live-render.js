@@ -27,6 +27,25 @@ export function createLiveRenderer({ themeBase, runtimeUrl }) {
   const fetched = {}; // theme name -> Promise<cssText>
   let latticeReady = null;
 
+  // Self-hosted preview fonts. The engine's Google-Fonts @import is inert inside
+  // the srcdoc <style> (it lands after SINGLE_SLIDE_FRAME, and CSS ignores an
+  // @import that isn't first), so the iframe loads none of its own webfonts and
+  // would render only the faces the parent docs page happens to load — never the
+  // sketch finish's Caveat/Shantell. We register the vendored faces ourselves.
+  // Lazy-imported + cached: font-embed.js pulls bundled .woff2 that Node can't
+  // load, so a static import would break this module's unit test. The @font-face
+  // references the woff2 by URL (browser caches once), not inlined per render.
+  let fontFaceCss = '';
+  let fontFacesReady = null;
+  function ensurePreviewFonts() {
+    if (!fontFacesReady) {
+      fontFacesReady = import('./font-embed.js')
+        .then((m) => { fontFaceCss = m.previewFontFaceCss(); })
+        .catch(() => { fontFaceCss = ''; });
+    }
+    return fontFacesReady;
+  }
+
   function fetchTheme(name) {
     if (!fetched[name]) {
       fetched[name] = fetch(themeBase + name + '.css').then((r) => {
@@ -56,6 +75,10 @@ export function createLiveRenderer({ themeBase, runtimeUrl }) {
     // truth in frame-css.js); a second html,body rule adds the dynamic bg.
     let s =
       '<!doctype html><html><head><meta charset="utf-8"><style>' +
+      // Register the vendored faces first (@font-face is position-independent, but
+      // keeping it up top documents intent). Without this the iframe has no
+      // Caveat/Shantell and sketch decks render body in a system sans.
+      fontFaceCss +
       SINGLE_SLIDE_FRAME +
       'html,body{background:' +
       bg +
@@ -84,7 +107,7 @@ export function createLiveRenderer({ themeBase, runtimeUrl }) {
     if (!PG) return Promise.resolve({ ok: false, slides: 0, error: 'engine not loaded' });
     const palette = root.getAttribute('data-palette') || 'indaco';
     const mode = root.getAttribute('data-mode') === 'dark' ? 'dark' : 'light';
-    return ensureThemes(palette, mode)
+    return Promise.all([ensureThemes(palette, mode), ensurePreviewFonts()])
       .then(() => {
         const theme = mode === 'dark' && PG.hasTheme(palette + '-dark') ? palette + '-dark' : palette;
         let out;
