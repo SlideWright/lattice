@@ -1,7 +1,8 @@
 # P2 — put the emulator on `lattice-engine`
 
-**Status:** in progress — steps 1–3 landed behind a default-OFF flag; gaps
-enumerated, not yet closed (see **Progress log** below). Implements **P2** of
+**Status:** DONE — the emulator renders through `lib/engine`; `parseSlide` is
+deleted and the `LATTICE_EMULATOR_ENGINE` flag is gone (see the final **Progress
+log** entry). Corpus flip A/B gated the swap to zero regressions. Implements **P2** of
 [`2026-06-10-marp-replacement-proposal.md`](2026-06-10-marp-replacement-proposal.md)
 §9, sequenced after the owned CSS emitter (merged). Written before code because
 the target is the shipped `bin`/`main`, and the migration is not a drop-in.
@@ -232,6 +233,123 @@ diffs improvement/noise; (d) flip the default, delete `parseSlide`.
 Remaining to finish P2: (c) finish triaging the corpus A/B (the residual diffs
 are improvements/noise so far); (d) flip the default + delete `parseSlide`.
 
+### 2026-06-12 — (c) full-corpus flip A/B triaged; one blocker: `![bg]` split backgrounds (P1.1)
+
+Built `tools/emulator-flip-ab.mjs` — renders every deck through the emulator's two
+internal paths (default `parseSlide` vs `LATTICE_EMULATOR_ENGINE=1`), rasterizes at
+72 dpi, and per-page md5-diffs them. This is the permanent flip-safety gate. Full
+light corpus (indaco): **67 decks, 19 with diffs, 91 differing pages, and zero
+page-count / structural slide drops** — which is exactly why the page-count
+integration tier never caught any of this.
+
+Every differing page falls into three categories:
+
+| Category | Verdict | Where |
+|---|---|---|
+| `![bg left\|right]` split image layouts collapse | **REGRESSION — the one blocker** | imagery/image (8), featured (5), imagery bucket (2); + image slides in jargon/baseline |
+| bold-inside-inline-code stays literal | improvement (engine is GFM-correct; `parseSlide` wrongly bolds inside `<code>`) | legal s2, list-steps s15, code, compare-code, q-and-a |
+| sub-pixel (status icons, anti-aliasing) | noise — visually identical | compare-prose (×11), split-compare, obligation-matrix, roadmap s3, math s9 |
+
+**The one blocker — `![bg]` advanced backgrounds.** `parseSlide` has bespoke
+`![bg right]` → `lattice-bg` / `image-asset` / `image-text` handling; marp-cli gets
+the equivalent from Marpit's inline-SVG advanced background (the PDF path,
+`inlineSVG:true`). But **lib/engine implements only basic-mode `![bg]`**
+(`inlineSVG:false`, the web-runtime path): `lib/engine/background-image.js` collapses
+`bg left/right` to a single full-bleed CSS background and emits **0 `<img>`** — *by
+design*, its header naming the directional split "the **P1.1 milestone (the PDF
+path)**", not yet built. So the emulator's engine path, which renders PDFs through
+lib/engine, drops the image panel and the layout collapses to full-width text. The
+engine↔marp parity gate passed because BOTH run web/basic mode there; only the
+emulator's PDF path exposes the gap.
+
+**Consequence for the flip:** step (d) is blocked on **P1.1 — inline-SVG advanced
+backgrounds in lib/engine** (reproduce Marpit's split-container DOM +
+`image-text`/`image-asset` wrappers on the PDF path). That is a real engine
+milestone, not a triage fix. The earlier note that "the engine already does all of
+these [incl. `![bg]`]" was over-optimistic — it does basic mode, not the PDF split.
+Everything else in the corpus is improvement or noise, so once P1.1 lands the corpus
+should go all-green and the flip is safe; until then the engine path stays the
+default-OFF flag it is.
+
+Remaining to finish P2: **(c) done** (above); (c.5 / P1.1) implement inline-SVG
+advanced backgrounds in lib/engine — the gate to (d); (d) flip the default + delete
+`parseSlide` once the corpus is all improvement/noise.
+
+### 2026-06-12 — `![bg]` fixed via a lifted kernel (NOT inline-SVG); re-triage finds 2 more parseSlide-only transforms
+
+Two corrections to the entry above, from actually building the fix + re-triaging
+without lumping:
+
+1. **The `![bg]` fix is NOT P1.1 / Marpit inline-SVG.** The emulator's PDF path
+   renders the image layout as lattice's OWN `lattice-bg` / `image-asset` /
+   `image-text` structure, not Marpit's inline-SVG split containers — so the fix is
+   to lift parseSlide's `![bg]` handling into a shared kernel
+   (`lib/core/bg-image.js`: `liftBgImages` markdown pre-pass + `wrapImageText` HTML
+   post-pass) and apply it in the engine path, leaving lib/engine's web↔marp
+   contract untouched. The full/contain contrast **scrim** is injected by class in
+   the engine path (image-scrim now exports `needsScrim` / `SCRIM_HTML`; parseSlide
+   gets it from `applyAllToSection`, which the engine path doesn't run).
+   parseSlide now shares the kernel's `bgDiv` — default path byte-identical (image
+   + 89pp baseline, 0 diffs). **Result: the image gallery is now A/B-identical
+   (11pp, 0 diffs); corpus 91 → 69 differing pages.**
+
+2. **The "one blocker" was an undercount — lumping `featured` with the image
+   layouts hid it.** A careful re-triage (no lumping) of the 69 finds the only
+   *structure-needing* regressions are **`featured` (feat-layout) and `compare-code`
+   (code-cols)** — both parseSlide-only transforms that marp-cli ALSO lacks for
+   their list-based slides (confirmed: marp-cli renders them as plain `<ul>` too),
+   exactly like `.below-note` was. Every other differing deck is either:
+   - **CSS-tolerant** — cards-grid, cards-stack, list-criteria (crit), glossary,
+     verdict-grid, pricing, checklist, the slot-label-lift family: the engine emits
+     a plain list but the layout CSS renders it identically (A/B `✓`); only
+     featured/compare-code have CSS that *requires* the bespoke wrapper DOM.
+   - **noise** — compare-prose (×11), split-compare, obligation-matrix, roadmap,
+     math s9: sub-pixel (status icons / anti-aliasing), visually identical.
+   - **improvement** — bold-inside-inline-code stays literal (legal, list-steps,
+     code, q-and-a): the engine is GFM-correct.
+
+**So the gate to (d) is: migrate `featured` + `compare-code` into the shared
+registry** (the same below-note pattern — `applyToHtml`/`applyToSection`/`applyToDom`
+kernels), which also fixes marp-cli + the runtime, then re-run the corpus A/B to
+green. That is the remaining structure work; nothing else in the corpus blocks the
+flip. `![bg]` is landed; the rest of P1.1 (true Marpit inline-SVG) is NOT needed for
+the emulator path and is unrelated to this gate.
+
+### 2026-06-12 — (d) DONE: featured + compare-code migrated, default flipped, `parseSlide` deleted
+
+The gate work and the flip both landed:
+
+1. **`featured` + `compare-code` migrated** to the shared registry — kernels in
+   each component folder (`lib/components/imagery/featured/featured.transform.js`,
+   `lib/components/code/compare-code/compare-code.transform.js`) + adapters
+   (`lib/transformers/{featured,compare-code}.js`) with
+   `applyToHtml`/`applyToSection`/`applyToDom`, the `.below-note` pattern. Fixes
+   the engine path **and** marp-cli + the runtime (both rendered a plain `<ul>` /
+   flat code sequence before). parseSlide default byte-identical; +11 unit tests.
+   Corpus: **69 → 54** differing pages, every one improvement/noise — **no
+   structure-needing regressions remain.**
+2. **The flip:** `engineSlides()` is now the emulator's only parse path. The
+   `LATTICE_EMULATOR_ENGINE` flag and the `USE_ENGINE` ternaries are gone.
+3. **`parseSlide` deleted** (~620 lines) plus the now-dead helpers it alone fed:
+   `parseInline`, the KaTeX `extractMath`/`restoreMath` pipeline (the engine
+   renders math itself; the emulator only links KaTeX's CSS), the `hljs` require
+   (the engine highlights), and the deck-directive parsing block
+   (`paginateGlobal`/`globalHeader`/`globalFooter`/`deckWideClass`/islands/
+   `headingDivider`/`splitSlides`/`liftSlotLabel`/`belowNote`/registry/radar/
+   quadrant requires) — all resolved inside `engine.render` now. biome's
+   unused-code lint drove the dead-code sweep; `lib/engine` keeps only `rawMd`,
+   the slide-size vars, `globalStyle`, and `bgImage`.
+
+Verified on the bare default (no env): baseline 89pp, math 15pp (KaTeX renders),
+featured 8pp, compare-code 8pp — all correct; unit suite 1639, build + build:check
+green. The `tools/emulator-flip-ab.mjs` harness (which compared the two parsers)
+was removed at the flip — with parseSlide gone it compares the engine to itself;
+resurrect it from git history if a second parser ever returns. The registry's
+per-section interface (`applyAllToSection` + every transformer's `applyToSection`)
+went with it — `parseSlide` was its only caller; marp-cli uses `applyToHtml`, the
+runtime uses `applyToDom`, and the per-section transform logic still lives in the
+kernels (`transformSplitSection`, `transformChartSection`, …).
+
 ## Rollback
 
 Every step is reversible; the seam is a single call site behind a default-OFF
@@ -244,3 +362,22 @@ deleted.
 
 P3 (drop marp-core from the playground — gated on the owned emitter's on-device
 sign-off) and P4 (retire marp-cli). marp-vscode stays (Scope 1).
+
+**Constraint — marp is NOT being deleted, and cannot be until the VS Code preview
+has a viable replacement.** Two things are easy to conflate:
+
+- **Deleting `parseSlide` (this note, step d)** removes the *emulator's own*
+  bespoke regex parser and converges the emulator on `lib/engine`. The emulator is
+  already marp-free, so this touches **no marp dependency** — it is pure
+  consolidation.
+- **Removing marp** is a different, later axis. **marp-vscode *is* Marp Core**, and
+  it is the live-preview pane — our documented fastest inner loop
+  (CLAUDE.md). `lib/runtime/index.js` is a *passenger* that post-processes the DOM
+  marp-vscode already produced; remove marp-vscode and there is **no in-repo preview
+  pane left**. So marp stays a hard dependency of the dev loop until a viable
+  `lattice-engine`-powered VS Code preview/extension exists to replace it
+  (**Scope 2** in `2026-06-10-marp-replacement-proposal.md` §6 — a separate, larger
+  effort not yet started). P2–P4 deliberately keep marp-vscode and its
+  compatibility shims (`marp.scaffold.css`, the `data-marpit-*` attributes). **Do
+  not plan or imply a full marp removal until that replacement lands.**
+

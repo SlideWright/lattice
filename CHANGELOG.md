@@ -68,6 +68,22 @@ in patch versions.
 
 ### Fixed
 
+- **The `lib/engine` render path now produces the full islands model** — the
+  `islands:` toggle, the masthead `meta:` island, the footer progress-rail, and
+  the section watermark. The engine only resolved the masthead band before, so
+  `islands` decks rendered through the engine (the emulator after the P2 flip,
+  and the Drawing Board / playground) lost their meta/progress/watermark islands.
+  The toggle now runs before the transformer registry (so masthead-lift sees the
+  `islands` class) and the three injectors run after, matching marp.config.js's
+  render-hook order exactly.
+- **`featured` and `compare-code` layouts now render under marp-cli and the
+  marp-vscode preview, not just the emulator.** Both transforms — the featured
+  hero/sub-card grid and the compare-code two-column structure — were bespoke to
+  the emulator's `parseSlide`, so the marp-cli render path and the runtime emitted
+  a plain `<ul>` (featured) or a flat `<p><code>`/`<pre>` sequence (compare-code).
+  Migrated into the shared transformer registry (`lib/transformers/featured.js`,
+  `compare-code.js`, with kernels in each component folder), so all three render
+  paths agree. Emulator default output is byte-identical; engine↔marp parity holds.
 - **The docs-site live preview now loads the sketch hand fonts — `finish:
   sketch` decks no longer render hand headings over a clean-sans body.** Each
   preview slide renders into an `srcdoc` iframe whose `<style>` concatenates the
@@ -97,6 +113,19 @@ in patch versions.
 
 ### Changed
 
+- **The emulator (the `lattice` CLI / shipped `bin`) now renders through the
+  owned `lib/engine` — one markdown implementation, the same engine that powers
+  the marp-cli path.** The bespoke `parseSlide` regex parser the emulator shipped
+  with is retired; the `LATTICE_EMULATOR_ENGINE` opt-in flag is gone (the engine
+  is the only path). The swap was gated to **zero regressions** by a full-corpus
+  per-page render A/B harness: every deck renders the same or better. The one
+  visible render change is a **GFM-correctness improvement** — bold/emphasis
+  markers inside inline code (`` `**x**` ``) now stay literal instead of being
+  parsed as `<strong>`, matching CommonMark + the marp-cli path. Math (KaTeX) and
+  syntax highlighting are handled by the engine; the deck-logo + island injectors
+  still run in the emulator (they key off `data-marpit-slide`, stamped after the
+  engine renders). See
+  `engineering/decisions/2026-06-11-emulator-on-engine-p2.md` (P2 step d).
 - **The reference trio's chart palettes are re-tuned to the quality bar they
   set.** `cuoio`, `indaco`, and `onyx` previously sat at grade C/C/B on
   `npm run scorecard` — the brand-triad curation that gives them tight brand
