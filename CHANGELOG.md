@@ -137,6 +137,20 @@ in patch versions.
 
 ### Fixed
 
+- **`word-cloud` now scales as one unit at any resolution.** The cloud was
+  emitted as absolutely-positioned `<span>`s inside a fixed-px (1100×320)
+  canvas, so at a larger render (e.g. `size: 4K`) the words stayed pinned at
+  their HD pixel sizes while the slide grew around them — the last pure-HTML
+  fixed-px chart (#180). The build-time spiral packer is unchanged (its
+  coordinates were always an abstract 1100×320 space); only the emission
+  changed — the cloud is now a `viewBox="0 0 1100 320"` SVG whose `<text>`
+  nodes carry the packer's coordinates as viewBox units, so the whole cloud
+  scales crisp with the slide (~3× at 4K), exactly like the pie/radar/quadrant
+  SVG members. The canvas box moved from fixed px to cqi (85.9375 × 25cqi); the
+  key rail + gradient spine stay HTML (already resolution-stable). All five
+  variants verified light + dark at HD and 4K; `.wc-svg` joins the
+  `check-svg-scaling` 4K fidelity gate. Fourth slice of the chart
+  responsiveness epic (#180).
 - **`state-chart` now scales as one unit at any resolution.** The state-machine
   diagram laid its nodes out entirely in fixed px (column gutters, gaps, node
   padding, max-widths, the SVG edge/label/marker strokes), so on a larger render

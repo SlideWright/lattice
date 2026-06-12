@@ -363,23 +363,20 @@ describe('word-cloud', () => {
 
   // ── buildCanvas (emission) ──────────────────────────────────────────────
 
-  test('buildCanvas: emits .word-cloud-canvas wrapper with canvas dims', () => {
+  test('buildCanvas: emits .word-cloud-canvas wrapper around a viewBox SVG', () => {
     const items = parseItems(UL_HTML);
     const out = buildCanvas(items, 'default');
     assert.match(out, /<div class="word-cloud-canvas"/);
-    assert.match(out, /--wc-canvas-w:1100px/);
-    assert.match(out, /--wc-canvas-h:320px/);
+    assert.match(out, /<svg class="wc-svg" viewBox="0 0 1100 320"/);
     assert.match(out, /data-variant="default"/);
   });
 
-  test('buildCanvas: emits one span per packed word with positioning vars', () => {
+  test('buildCanvas: emits one <text> per packed word with position + size attrs', () => {
     const items = parseItems(UL_HTML);
     const out = buildCanvas(items, 'default');
-    const spans = out.match(/<span class="wc-word"/g) || [];
-    assert.equal(spans.length, items.length);
-    assert.match(out, /--wc-x:[\d.]+px/);
-    assert.match(out, /--wc-y:[\d.]+px/);
-    assert.match(out, /--wc-size:[\d.]+px/);
+    const texts = out.match(/<text class="wc-word"/g) || [];
+    assert.equal(texts.length, items.length);
+    assert.match(out, /<text class="wc-word" x="[\d.]+" y="[\d.]+" font-size="[\d.]+"/);
     assert.match(out, /--wc-color:var\(--/);
   });
 
@@ -387,9 +384,9 @@ describe('word-cloud', () => {
     const items = parseItems(UL_HTML);
     const out = buildCanvas(items, 'default');
     // Discipline is weight 4.5, rank 2 — it doesn't get accent; Execution is 5, rank 1 → accent
-    // Match the rank-1 span specifically
-    const rank1 = out.match(/<span class="wc-word" data-weight="5" data-rank="1"[^>]*>/);
-    assert.ok(rank1, 'rank 1 span present');
+    // Match the rank-1 <text> specifically
+    const rank1 = out.match(/<text class="wc-word"[^>]*data-weight="5" data-rank="1"[^>]*>/);
+    assert.ok(rank1, 'rank 1 text present');
     assert.match(rank1[0], /--wc-color:var\(--accent\)/);
   });
 

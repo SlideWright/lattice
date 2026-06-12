@@ -14,17 +14,19 @@
  * is deterministic across rebuilds.
  *
  * Layout output:
- *   <div class="word-cloud-canvas" style="--wc-canvas-w:1200px;--wc-canvas-h:540px">
- *     <span class="wc-word" data-weight="5" data-rank="1"
- *           style="--wc-x:..;--wc-y:..;--wc-size:..;--wc-rot:..;--wc-color:..">Word</span>
- *     …
+ *   <div class="word-cloud-canvas" style="--wc-cloud-frac:0.70">
+ *     <svg class="wc-svg" viewBox="0 0 1100 320" preserveAspectRatio="xMidYMid meet">
+ *       <text class="wc-word" x=".." y=".." font-size=".." data-weight="5"
+ *             data-rank="1" style="--wc-color:..">Word</text>
+ *       …
+ *     </svg>
+ *     <div class="wc-key">…</div>          ← key rail (HTML overlay)
  *   </div>
  *
- * The CSS reads the per-word variables and positions each span at its
- * center coordinate; the packer's collision rects are bbox-aligned
- * (top-left), so the CSS translate(-50%,-50%) converts coordinates
- * back. Rotation policy is rank-keyed in the packer; CSS just applies
- * the value.
+ * The packer's px coordinates ARE the SVG viewBox units, so positions/sizes
+ * scale with the SVG at any resolution (the #180 fix). text-anchor:middle +
+ * dominant-baseline:central centre each word on its anchor; rotation is an
+ * SVG transform about that anchor. Rotation policy is rank-keyed in the packer.
  *
  * Five variants share the engine; per-variant behavior lives entirely
  * in lib/word-cloud.js's VARIANT_OPTS table — CSS treats them all the
@@ -50,15 +52,33 @@
  * here any more. Only the canvas geometry and per-word positioning below are
  * word-cloud's own. */
 
-/* Canvas is a fixed-pixel rectangle (CANVAS_W × CANVAS_H = 1100×320 — see
- * word-cloud.transform.js); the packer works in the same coordinate space.
- * Centered inside .chart-body's centered flex column. */
+/* Canvas keeps the packer's 1100×320 footprint (CANVAS_W × CANVAS_H — see
+ * word-cloud.transform.js) but expressed in cqi instead of fixed px:
+ * 1100px = 85.9375cqi and 320px = 25cqi at the proven HD footprint (1cqi =
+ * 12.8px), so the box — and the viewBox SVG that fills it — scale crisp with
+ * the slide at any render resolution (≈3× at 4K) instead of pinning small.
+ * Explicit cqi dimensions (not width:100% + aspect-ratio) because every child
+ * is absolutely positioned, leaving the flex item no in-flow content to size
+ * from. The positioning context for the cloud SVG + key rail + spine overlay. */
 section.word-cloud .word-cloud-canvas {
   position: relative;
-  width: var(--wc-canvas-w);
-  height: var(--wc-canvas-h);
+  width: 85.9375cqi;
+  height: 25cqi;
   margin: 0 auto;
   flex: 0 0 auto;
+}
+
+/* The cloud itself — a viewBox SVG filling the canvas. The packer's px
+ * coordinates are viewBox units, so word positions/sizes scale with the SVG.
+ * overflow:visible lets a glyph's optical bbox breathe past the viewBox edge
+ * (the packer already keeps anchors inside), matching the old span behaviour. */
+section.word-cloud .wc-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
 }
 
 /* The cloud packs into the LEFT 70% of the canvas; a gradient spine at the
@@ -120,19 +140,16 @@ section.word-cloud .wc-key-edge {
   color: var(--text-muted);
 }
 
+/* Each word is an SVG <text>. Position (x/y), font-size, and any rotation are
+ * presentation attributes emitted by the packer; text-anchor + dominant-baseline
+ * centre the glyph on its anchor (replacing the old translate(-50%,-50%)). */
 section.word-cloud .wc-word {
-  position: absolute;
-  left: var(--wc-x);
-  top:  var(--wc-y);
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: var(--wc-size);
-  color: var(--wc-color);
-  line-height: 1;
-  white-space: nowrap;
+  fill: var(--wc-color);
   letter-spacing: -0.015em;
-  transform: translate(-50%, -50%) rotate(var(--wc-rot, 0deg));
-  transform-origin: center;
+  text-anchor: middle;
+  dominant-baseline: central;
 }
 
 /* Bottom-tier words read as supporting vocabulary — lighter weight and

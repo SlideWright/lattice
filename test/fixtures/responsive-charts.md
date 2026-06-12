@@ -31,3 +31,16 @@
 - Strategic Bets
   - Scoring v2 `8, 88`
   - Decision API `7, 74`
+
+---
+
+<!-- _class: word-cloud -->
+
+## Word cloud must scale with the slide.
+
+- Execution `5`
+- Discipline `4.5`
+- Velocity `4`
+- Talent `3`
+- Risk `2`
+- Cadence `1`
