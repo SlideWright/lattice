@@ -13514,6 +13514,12 @@ section.islands .isl-progress {
   text-transform: uppercase;
   color: var(--text-label);
   margin-right: var(--sp-xs);
+  /* Truncate a long section label so the rail never overruns the footer
+   * berth / collides with footer-left. */
+  max-width: 24cqi;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .isl-progress .dot {
   width: 0.85cqi;

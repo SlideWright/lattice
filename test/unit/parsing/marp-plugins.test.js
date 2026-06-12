@@ -198,6 +198,15 @@ describe('marp-plugins', () => {
     assert.match(rails[1][1], /<span class="dot"><\/span><span class="dot on"><\/span>/);
   });
 
+  test('applyProgressRailToHtml: rail label prefers the divider eyebrow over its heading', () => {
+    const html = deck([
+      sec('divider', '<p><code>Section 01</code></p><h2>A very long editorial heading sentence</h2>'),
+      sec('content islands'),
+    ]);
+    const seg = plugins.applyProgressRailToHtml(html).match(/<span class="seg">([^<]*)<\/span>/);
+    assert.equal(seg[1], 'Section 01');
+  });
+
   test('applyProgressRailToHtml: no dividers → no-op (nothing to orient against)', () => {
     const html = deck([sec('content islands'), sec('content islands')]);
     assert.equal(plugins.applyProgressRailToHtml(html), html);
