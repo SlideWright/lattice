@@ -91,6 +91,8 @@
     "authoring-core:check": "node tools/build-authoring-core.js --check",
     "dist-readme:build": "node tools/build-dist-readme.js",
     "dist-readme:check": "node tools/build-dist-readme.js --check",
+    "capabilities:build": "node tools/build-capabilities.js",
+    "capabilities:check": "node tools/build-capabilities.js --check",
     "release": "node tools/release.js",
     "release:dry": "node tools/release.js --dry-run",
     "release:zip": "node tools/build-release-zip.js",

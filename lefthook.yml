@@ -121,6 +121,15 @@ pre-commit:
       glob:
         - 'tools/build-dist-readme.js'
       run: npm run dist-readme:check --silent
+    - name: capabilities-freshness
+      # Catches "added/renamed an npm script or a tools/ file, forgot to
+      # regenerate engineering/capabilities.md (or describe the new
+      # capability)". Sources are package.json scripts + tools/ headers, so
+      # both are triggers; build:check covers it in CI too.
+      glob:
+        - 'package.json'
+        - 'tools/**'
+      run: npm run capabilities:check --silent
     - name: component-docs-freshness
       # Catches the "edited a manifest, forgot to regenerate the
       # <name>.docs.md and <name>.gallery.md siblings" failure mode.

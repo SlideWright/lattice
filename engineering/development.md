@@ -46,22 +46,27 @@ a consumer needs Node 18 or 20, they pin to Lattice 1.x.
 
 ## npm scripts
 
+**The full, always-current catalog of every script, tool, and framework is
+[`engineering/capabilities.md`](./capabilities.md)** — generated from
+`package.json` + the `tools/` headers and gated by `capabilities:check`, so it
+can't drift. `npm run` lists every script live. **Before building any tool or
+harness, look there first** (we already have a benchmark, a parity harness,
+scaffolders, …). This section calls out only the daily inner-loop:
+
 | Script | Purpose |
 | --- | --- |
-| `build`, `build:gallery`, … | Rebuild one or all gallery PDFs |
-| `test` | Full unit suite (~4s, 1257 tests) |
-| `test:watch` | Re-run unit suite on file change |
-| `test:<scope>` | Scoped unit subset (`palette`/`mermaid`/`parsing`/`components`/`cli`) |
-| `test:integration` | Full integration suite (page-count + parity) |
-| `test:integration:<scope>` | Scoped integration subset |
-| `test:all` | Unit + integration umbrella |
-| `test:coverage` | c8 over the unit suite |
-| `test:coverage:all` | c8 over unit + integration |
+| `test` | Full unit suite (the inner loop) |
+| `test:watch` | Re-run the unit suite on file change |
+| `test:<scope>` | Scoped unit subset (`palette`/`mermaid`/`parsing`/`components`/`cli`/`engine`/`layout`/…) |
+| `test:integration` | Cross-renderer integration tier (page-count + parity) |
 | `bench` | tinybench render benchmark, marp-core vs lattice-engine (`-- --export` adds the rasterize tier, `-- --json` dumps machine-readable) |
 | `parity` | Visual engine-parity harness — rasterise a deck through both engines and pixel-diff per slide (`-- --galleries` / `-- --jargon` / `-- --dark`) |
-| `lint`, `lint:fix` | Biome check / Biome check --write |
-| `clean:scratch` | Delete `.scratch/*` entries older than 14 days |
-| `prepare` | Wires lefthook hooks on `npm install` |
+| `lint`, `lint:fix` | Biome check / Biome check --write (never `npx biome`) |
+| `preview` | Fast visual-iteration loop (scope-detect, rebuild affected, pixel-diff) |
+| `build`, `build:check` | Regenerate / freshness-gate every generated artifact |
+
+Everything else — the `*:build` / `*:check` generators, `new:*` scaffolders,
+gallery builds, release and docs-portal scripts — lives in `capabilities.md`.
 
 ## Test layout
 
