@@ -90,11 +90,11 @@ finish — and it lives where it should, at [lattice.style](https://lattice.styl
 
 ## What you get
 
-- **A renderer.** Two paths from the same source: `marp-cli` (preferred —
-  emits PDF, HTML, PPTX, or PNG sets) and `lattice-emulator.js` (for
-  sandboxed/no-network builds — emits PDF plus an HTML sidecar). Mermaid
-  diagrams pre-render as inline SVG. Code blocks syntax-highlight. Slides
-  are 1280×720.
+- **A renderer.** The bundled `lattice-emulator.js` emits PDF, PPTX, and PNG
+  sets (plus an HTML sidecar) from the same source — the output extension picks
+  the format, and PPTX/PNG rasterize from the same render as the PDF. `marp-cli`
+  remains an alternative path if you already use it. Mermaid diagrams pre-render
+  as inline SVG. Code blocks syntax-highlight. Slides are 1280×720.
 - **Thirteen palettes.** `indaco` (cool indigo, the default) and `cuoio`
   (warm leather) are the canonical pair, alongside `ardesia`, `atelier`,
   `brina`, `burgundy`, `carbone`, `concrete`, `crepuscolo`, `laguna`,
@@ -184,29 +184,31 @@ source, `dist/`, `themes/`, and the authoring docs. Regression-baseline
 PDFs and per-bucket galleries stay in git but are excluded from the
 package.
 
-### Render to PDF, HTML, or PPTX
+### Render to PDF, PPTX, or PNG
 
-The package bundles `@marp-team/marp-cli`, which emits all three formats.
-Point it at the shipped config (which registers the theme set) and pick
-the output flag:
+The bundled `lattice` bin (the emulator) emits all of them from one source —
+the **output extension picks the format** — plus an HTML sidecar:
+
+```sh
+lattice deck.md deck.pdf     # vector PDF, selectable text
+lattice deck.md deck.pptx    # PowerPoint, one full-bleed image per slide
+lattice deck.md deck.png     # one PNG per slide → deck.001.png, deck.002.png, …
+```
+
+PPTX and PNG rasterize from the same headless-Chromium render as the PDF, so
+every format is pixel-identical. Rendering needs Chromium — set `CHROME_PATH`
+if no system Chrome is found.
+
+> **PPTX note.** Slides export as one full-bleed *image* per slide (not editable
+> text/shapes) — the same model marp uses for its default PPTX. Editable export
+> (marp's `--pptx-editable`, which needs LibreOffice) is not included.
+
+Already use marp-cli? It still works against the shipped config:
 
 ```sh
 CONFIG=node_modules/@slidewright/lattice/marp.config.js
-
-npx marp deck.md --config-file $CONFIG --pdf  -o deck.pdf
-npx marp deck.md --config-file $CONFIG --html -o deck.html
-npx marp deck.md --config-file $CONFIG --pptx -o deck.pptx
+npx marp deck.md --config-file $CONFIG --pptx -o deck.pptx   # --pdf, --html, --images png
 ```
-
-The `lattice` bin (the emulator) is a fast path for **PDF**, and writes
-an **HTML** sidecar alongside it — but it does not produce PPTX. For
-PPTX, use marp-cli as above.
-
-> **PPTX caveat.** Marp exports PPTX as one full-bleed *image* per slide
-> (not editable text/shapes). Editable export is experimental
-> (`--pptx-editable`) and needs LibreOffice on `PATH` (or `SOFFICE_PATH`).
-> PDF/HTML/PPTX all render through headless Chromium — set `CHROME_PATH`
-> if no system Chrome is found.
 
 ## Render the example galleries
 
@@ -220,27 +222,18 @@ for what the renderer produces. Re-rendering them after an engine or
 palette change should produce visually equivalent output; they're the
 regression check for the project.
 
-For other delivery formats from the same source, run marp-cli from the
-repo root — [marp.config.js](marp.config.js) registers both palettes and
-sets the image scale; the deck's `theme:` front matter selects which
-palette to use:
+For other delivery formats from the same source, just change the output
+extension — the deck's `theme:` front matter selects the palette:
 
 ```sh
-npx @marp-team/marp-cli deck.md --pdf --output deck.pdf
-# or --html, --pptx, --images png
+node lattice-emulator.js deck.md deck.pptx   # PowerPoint (image slides)
+node lattice-emulator.js deck.md deck.png    # → deck.001.png, deck.002.png, …
 ```
 
-The marp config sets `--image-scale 3`, so PNG output rasterizes at 3×
-the slide dimensions (3840×2160 from 1280×720) — sharp on retina
-displays and projectors. PDF and HTML are vector throughout (text,
-SVG-rendered Mermaid, code highlighting); image scale only affects the
-PNG path. From outside the repo root, pass both palettes explicitly:
-
-```sh
-npx @marp-team/marp-cli deck.md \
-  --theme-set themes/indaco.css themes/cuoio.css dist/lattice.css \
-  --image-scale 3 --pdf --output deck.pdf
-```
+PNG slides rasterize at 2× the slide dimensions (2560×1440 from 1280×720) —
+sharp on retina displays and projectors. PDF is vector throughout (text,
+SVG-rendered Mermaid, code highlighting); the 2× scale only affects the raster
+(PNG/PPTX) paths.
 
 The full pipeline (Mermaid pre-rendering, image conversion, PPTX
 assembly) lives in [engineering/pipeline.md](engineering/pipeline.md).

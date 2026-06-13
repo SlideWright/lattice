@@ -1312,11 +1312,15 @@ const puppeteer = loadPuppeteer();
   // 264 px (4K), which makes the overflow-detection pass see a different
   // content area than the printed PDF.
   // PDF prints at 1× (the vector page is resolution-independent). PNG/PPTX
-  // rasterize, so render at 2× for crisp images — but cap the long edge at
-  // ~3840px so a 4K (3840×2160) @size doesn't try to paint a 7680px canvas and
-  // risk an OOM (same trade-off the browser exporter makes). HD → 2×, 4K → 1×.
+  // rasterize, so scale up for crisp images while keeping the long edge near
+  // 3840px — a 4K (3840×2160) @size at 2× would paint a 7680px canvas and risk
+  // an OOM (same trade-off the browser exporter makes). The largest integer
+  // factor whose long edge stays ≤ 3840: HD (1280) → 2×, 4K (3840) → 1×, and any
+  // custom @size is capped rather than left to blow up.
   const RASTER = OUT_FORMAT === 'pptx' || OUT_FORMAT === 'png';
-  const rasterScale = RASTER ? (slideW >= 2560 ? 1 : 2) : 1;
+  const rasterScale = RASTER
+    ? Math.max(1, Math.min(2, Math.floor(3840 / Math.max(slideW, slideH))))
+    : 1;
   await page.setViewport({ width: slideW, height: slideH, deviceScaleFactor: rasterScale });
   await page.goto('file://' + path.resolve(outHtml), {
     waitUntil: 'networkidle0',
@@ -1404,7 +1408,12 @@ const puppeteer = loadPuppeteer();
       if (!QUIET) console.log(`PPTX: ${count} slides → ${outFile}`);
     }
   }
-})();
+})().catch((e) => {
+  // Surface render/export failures as a one-line error (matching readFileOrDie),
+  // not a raw unhandled-rejection stack trace that reads like a crash.
+  console.error(`error: ${e && e.message ? e.message : e}`);
+  process.exit(1);
+});
 
 // Attach each slide's speaker note as a PDF "Text" annotation (a sticky note)
 // in the top-left corner of its page, so any PDF viewer surfaces it on click.
