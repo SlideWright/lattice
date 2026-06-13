@@ -59,6 +59,25 @@ const OUT = join(ROOT, '.scratch', 'regression');
 // cross-environment rasterizer AA, not a license for visible change.
 const FUZZ = '3%'; // ≈ channel delta 8 / 255, the engine-parity threshold
 const FAIL_FRACTION = 0.0005; // 0.05% of the page (≈ 260 px at 72dpi 960×540)
+// Mermaid galleries (the chart + diagram buckets) render fine mmdc-produced SVG
+// vector/text whose sub-pixel anti-aliasing is NOT bit-identical across machine
+// classes: a golden blessed on one machine drifts ~0.4–0.5% on another (e.g. the
+// sandbox bless env vs a GitHub CI runner) even with identical Chromium + the
+// same embedded fonts — the §7.1 "0px" spike only measured same-machine-class.
+// That is below human-visible but above FAIL_FRACTION, so these galleries get a
+// wider per-page floor. Real unblessed drift is far larger (a CSS change moves
+// 10–100% of a page — see the Step-1 RED test), so the gate stays meaningful; the
+// golden-diff before/after comment is the human catch for any subtle intended
+// change. Flat-content galleries keep the strict floor. See
+// engineering/gotchas.md ("committed render golden doesn't match a fresh render").
+const FAIL_FRACTION_MERMAID = 0.01; // 1% — ~2× the observed cross-machine AA noise
+
+// Galleries in the chart or diagram bucket are the only ones whose content is
+// mmdc-rendered SVG, so they're the only ones that need the wider floor.
+const MERMAID_BUCKET_RE = /\/components\/(chart|diagram)\//;
+function failFractionFor(galleryMd) {
+  return MERMAID_BUCKET_RE.test(galleryMd) ? FAIL_FRACTION_MERMAID : FAIL_FRACTION;
+}
 
 const THEMES = ['light', 'dark'];
 
@@ -160,6 +179,7 @@ function bless(only) {
 // ── Per-gallery run ───────────────────────────────────────────────────────────
 function runGallery(galleryMd) {
   const name = deckName(galleryMd);
+  const failFraction = failFractionFor(galleryMd);
   const result = { deck: relative(ROOT, galleryMd), name, themes: {}, fail: false };
   for (const theme of THEMES) {
     const golden = goldenFor(galleryMd, theme);
@@ -184,7 +204,7 @@ function runGallery(galleryMd) {
     // A page fails if its over-fuzz pixel count exceeds FAIL_FRACTION, OR if the
     // page count itself changed (pixels === -1 sentinel from pixelDiff).
     const drifted = diff.perPage.filter(
-      (p) => p.pixels === -1 || (p.total ? p.pixels / p.total > FAIL_FRACTION : p.pixels > 0),
+      (p) => p.pixels === -1 || (p.total ? p.pixels / p.total > failFraction : p.pixels > 0),
     );
     const worst = diff.perPage.reduce((m, p) => Math.max(m, p.total ? p.pixels / p.total : (p.pixels > 0 ? 1 : 0)), 0);
     const themeResult = {
@@ -271,7 +291,7 @@ function main() {
   mkdirSync(OUT, { recursive: true });
   writeFileSync(join(OUT, 'report.json'), JSON.stringify(report, null, 2));
   if (json) {
-    process.stdout.write(JSON.stringify({ ok: !anyFail, fuzz: FUZZ, failFraction: FAIL_FRACTION, report }, null, 2) + '\n');
+    process.stdout.write(JSON.stringify({ ok: !anyFail, fuzz: FUZZ, failFraction: FAIL_FRACTION, failFractionMermaid: FAIL_FRACTION_MERMAID, report }, null, 2) + '\n');
   } else {
     const failed = report.filter((r) => r.fail);
     process.stdout.write(`\n${report.length} galleries × ${THEMES.length} moods. `);

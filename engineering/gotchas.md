@@ -420,6 +420,17 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
   marp-validated. Re-blessing changes exported PDFs (font embedding), so per the
   QUALITY BAR show before/after (dark + light) for sign-off. See
   `engineering/decisions/2026-06-12-p4-regression-gate-retire-marp.md` §9.
+- **The one real exception — cross-*machine* mermaid AA (not stale, not same-machine).**
+  Determinism is 0px cross-*session* on one machine class, but **fine mmdc-SVG
+  vector/text is not bit-identical across machine *classes***. A golden blessed
+  in the cloud sandbox drifts ~0.4–0.5% on a GitHub CI runner — below
+  human-visible, but it tripped the regression gate's 0.05% floor on the
+  `diagram` bucket on its first CI run. Fonts, Chromium, and CSS were all
+  verified identical; the residue is sub-pixel anti-aliasing of fine vectors.
+  **This is why `tools/regression-gate.mjs` gives the chart + diagram (mermaid)
+  buckets a wider `FAIL_FRACTION_MERMAID` (1%) while flat galleries keep 0.05%.**
+  If a *flat* gallery diffs, it's still a stale golden (diagnose as above); only
+  fine mermaid content has this cross-machine floor.
 - **Lesson:** a stale artifact is not a broken renderer. Exclude the boring cause
   before relitigating a settled design decision.
 

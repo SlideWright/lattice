@@ -308,7 +308,10 @@ in patch versions.
   `npm run regress` renders every gallery fresh through the owned emulator and
   pixel-diffs it against its committed golden PDF; a code PR fails if any deck's
   golden is stale (unblessed drift) — re-bless locally (`npm run bless`) and
-  commit. It runs **alongside** the marp `engine-parity` gate for now;
+  commit. (Mermaid galleries — the chart + diagram buckets — get a wider per-page
+  tolerance, because fine SVG vector/text isn't bit-identical across machine
+  classes; flat-content galleries keep the strict floor.) It runs **alongside**
+  the marp `engine-parity` gate for now;
   `engine-parity` is removed once the regression gate is trusted (Step 3). A new
   **non-gating `golden-diff` job** posts a sticky PR comment + a
   before │ after │ overlay montage artifact of the slides whose committed golden

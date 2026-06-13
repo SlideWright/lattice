@@ -236,7 +236,28 @@ measured pain.
   (`rights="none" pattern="PDF"` → `read|write`).
 - No `package.json` script for `golden-diff` (it's CI-only) — avoids re-staling
   the emulator bundle (which inlines `package.json`); `capabilities.md` indexes
-  it from the tool header. **Step 3 (retire marp) remains.**
+  it from the tool header.
+
+**Cross-machine golden stability — the §7.1 gap, found on the gate's first CI
+run.** The gate ran green locally but RED in CI on one gallery: the **`diagram`
+bucket** drifted **0.45%** on 4 pages (light) / 0.44% (dark). Excluded every
+boring cause — goldens not stale (green on every sandbox machine), fonts
+correctly embedded (Playfair/Outfit/JetBrainsMono, no fallback), Chromium
+identical (both bless + CI use Chrome-for-Testing `131.0.6778.204`). The residue
+is **sub-pixel anti-aliasing of fine mmdc-SVG vector/text, which is not
+bit-identical across machine *classes*** (the sandbox bless env vs a GitHub
+runner). The §7.1 spike measured "0px cross-*session*" but only same-machine —
+it never tested the diagram/chart (mermaid) galleries, the one content type with
+this sensitivity. **Resolution (maintainer decision): a targeted per-page floor
+— mermaid galleries (chart + diagram buckets) get `FAIL_FRACTION_MERMAID = 1%`
+(~2× the observed noise); the 63 flat-content galleries keep the strict 0.05%.**
+Real unblessed drift is 10–100% of a page (Step-1 RED test), so the gate stays
+meaningful, and the `golden-diff` before/after comment is the human catch for a
+subtle intended change. Considered and rejected: re-blessing in CI (breaks the
+local-bless model) and baking deterministic Chrome flags into the shipped
+emulator (a no-op on the sandbox in spot-tests, but it changes the *product's*
+render path to satisfy a *test* — the wrong tradeoff). **Step 3 (retire marp)
+remains.**
 
 ## 9. Build handoff — START HERE (for the implementing session)
 
