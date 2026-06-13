@@ -180,3 +180,82 @@ the repo already half-runs, and scales from solo (bless = sign-off) to team
 - Footprint: install size + package-count delta, with vs without marp-cli — _TBD_
 - Final `npm run bench` engine-vs-marp table — _TBD_
 - Date / commit of the marp-validated golden freeze — _TBD_
+
+## 9. Build handoff — START HERE (for the implementing session)
+
+**State on arrival (2026-06-13):** P1 (lib/engine), P2 (emulator on lib/engine,
+parseSlide deleted), P5 (owned CSS emitter, iOS-validated) are all merged on
+`main`. This note's design + the §7.1 spike are merged. **Nothing in this build
+has started.** `@marp-team/marp-cli` is still a runtime `dependency`; the
+marp-parity gate (`npm run parity` → `tools/engine-parity.mjs`, CI job
+`engine-parity`) is still live and green.
+
+**Goal:** ship the regression gate, then retire `@marp-team/marp-cli` so the
+installed package is marp-free. **marp-vscode stays** (Scope 2 — the VS Code
+preview; untouched).
+
+**Sandbox:** read CLAUDE.md § "Cloud sandbox" first. Renders need `CHROME_PATH`
+(SessionStart hook exports it; re-export if you see "no suitable browser").
+
+**Decisions already locked — do NOT relitigate (see §2–§8):**
+- Gate is **regression** (fresh render vs committed golden), not parity.
+- Compare **rasterized pixels with tolerance, NEVER PDF bytes** (PDFs byte-churn
+  from timestamps; pixels are deterministic — §7.1 proved 0 px drift cross-session).
+- Goldens = the **committed gallery PDFs** (reuse; no PNG tree).
+- **bless is LOCAL** (rebuild + commit the PDF); CI never writes goldens.
+- Review = **CI posts before/after** (diff-montage PDF artifact + summary comment);
+  a human looks before merge (solo: bless = sign-off; team: turn on
+  branch-protection required-review — a setting, no code).
+- **bless-then-retire** + **benchmark-then-retire**: freeze marp-validated goldens
+  and record the final `npm run bench` + footprint numbers WHILE marp still
+  exists, then remove marp.
+
+**Reuse — HARD RULE 15, do not reinvent:**
+- `tools/pixel-check.js` — its two-stage comparator (byte → pdftoppm + ImageMagick
+  `compare` per page; "0 changed pixels = OK, byte drift is timestamp noise"). The
+  comparator to lift/share.
+- `tools/engine-parity.mjs` — `galleryDecks()` (the corpus), `FAIL_FRACTION`
+  (0.05%), the rasterize/diff patterns.
+- `tools/build-galleries.js --only <name>` — rebuild one gallery (light+dark) =
+  the bless primitive. (`injectDark` lives here for the dark variant.)
+- `tools/rasterize-for-review.sh --overview` — contact sheet for the montage.
+
+**Build order (one PR per step):**
+
+*Step 1 — regression gate (marp stays as the safety net).*
+- `tools/regression-gate.mjs` (or extend build-galleries): per gallery (light +
+  dark) render fresh to a tmp path, `pixelDiff` vs the committed golden PDF, fail
+  on any page over tolerance. Flags: `--only`, `--bless` (→ build-galleries).
+- **Verify three things:** (a) full corpus is GREEN (committed goldens already ==
+  fresh renders; §7.1 confirmed 4 — do all 65×2); (b) it goes RED when you tweak a
+  layout's CSS without blessing (proves it catches drift), then green after
+  `--bless`; (c) it AGREES with `npm run parity` across the corpus (same pass/fail
+  set) — this proves the regression gate is as strict as the marp gate before we
+  drop marp.
+- If the full corpus is NOT all green on arrival, the stale goldens must be
+  re-blessed first (that's the "freeze marp-validated goldens" step).
+
+*Step 2 — CI.* Add the gate to `.github/workflows/ci.yml` (model on the existing
+`engine-parity` job). On drift: build the before/after diff-montage PDF, upload as
+an artifact, post a summary comment ("N slides drifted in {decks}"). Keep the marp
+`engine-parity` job running in parallel for now.
+
+*Step 3 — retire marp (LAST, only once 1+2 are trusted).*
+- First **record §A metrics:** `npm run bench` engine-vs-marp table + a clean
+  `npm install` footprint delta (with vs without marp-cli). And §7.3 audit:
+  confirm no marp-using test asserts something only a second renderer can.
+- Remove `@marp-team/marp-cli` from `package.json` `dependencies`. Strip marp from:
+  `test/helpers/render.js`, `test/integration/parity/*.test.js`,
+  `test/integration/galleries/marp.gallery.test.js`,
+  `test/benchmark/engine-bench.mjs` (record-then-strip),
+  `test/unit/engine/engine.test.js`, `test/unit/parsing/marp-plugins.test.js`.
+  Remove the marp `engine-parity` CI job.
+- **KEEP:** `marp.config.js` (shipped for marp-vscode + BYO-marp-cli authors) and
+  the marp-vscode CSS shims (`marp.scaffold.css`, `:is(pre, marp-pre)`, twemoji
+  `:not(.emoji)`) — the documented Scope-1 tax.
+- Update CHANGELOG (lead `**Breaking:**` — consumers rendering via our marp.config
+  now bring their own marp-cli), `engineering/capabilities.md`, and §A here.
+
+**Done when:** the regression gate is the CI visual gate, `@marp-team/marp-cli` is
+out of `dependencies`, `npm install @slidewright/lattice` is marp-free, every gate
+is green, and §A is filled.
