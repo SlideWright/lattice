@@ -28,7 +28,7 @@ describe('readFrontMatter', () => {
     assert.equal(fm.math, '');
     assert.equal(fm.lang, '');
     assert.equal(fm.tokens, 'current');
-    assert.equal(fm.split, 'rule');
+    assert.equal(fm.split, 'headings');
     assert.equal(fm.configured, false);
   });
 
@@ -168,17 +168,17 @@ describe('writeFrontMatter', () => {
     assert.equal(writeFrontMatter(sketched, 'finish', 'boardroom'), CLEAN);
   });
 
-  test('split: headings is written; rule (the default) is omitted/cleared', async () => {
+  test('split: rule is written; headings (the default) is omitted/cleared', async () => {
     const { writeFrontMatter, readFrontMatter } = await import(MOD);
-    const h = writeFrontMatter(CLEAN, 'split', 'headings');
-    assert.ok(h.includes('split: headings'));
-    assert.equal(readFrontMatter(h).split, 'headings');
-    assert.equal(readFrontMatter(h).configured, true);
-    // rule is the named baseline → no key (same render as omitting split).
-    assert.equal(writeFrontMatter(CLEAN, 'split', 'rule'), CLEAN);
+    const r = writeFrontMatter(CLEAN, 'split', 'rule');
+    assert.ok(r.includes('split: rule'));
+    assert.equal(readFrontMatter(r).split, 'rule');
+    assert.equal(readFrontMatter(r).configured, true);
+    // headings is the default → no key (same render as omitting split).
+    assert.equal(writeFrontMatter(CLEAN, 'split', 'headings'), CLEAN);
     assert.equal(writeFrontMatter(CLEAN, 'split', ''), CLEAN);
-    // selecting rule over an existing headings clears it back to clean.
-    assert.equal(writeFrontMatter(h, 'split', 'rule'), CLEAN);
+    // selecting headings over an existing rule clears it back to clean.
+    assert.equal(writeFrontMatter(r, 'split', 'headings'), CLEAN);
   });
 
   test('finish is emitted right after theme, before size', async () => {

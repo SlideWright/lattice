@@ -43,8 +43,9 @@ Three things to notice:
 
 1. **Front matter** selects the palette (`theme:`), the deck's finish
    (`finish:`), and global chrome (`paginate`, `header`, `footer`).
-2. **`---`** separates slides — or set `split: headings` and let each `##` start
-   a new slide instead (see The `split:` key below).
+2. **Headings** separate slides by default — each `##` starts a new one (and a
+   `---` still works too). Set `split: rule` for separators-only (see The
+   `split:` key below).
 3. **`<!-- _class: NAME -->`** picks the layout for that slide. The
    layout decides the structure; your Markdown fills the slots.
 
@@ -86,17 +87,15 @@ For example `<!-- _class: cards-grid dark -->` renders the grid on the
 dark canvas. The catalog of modifiers lives in the design system
 reference in the repository.
 
-## The `split:` key — divide by headings, not `---`
+## The `split:` key — your outline divides the slides
 
-By default a deck splits on `---` thematic breaks (`split: rule`). If you'd
-rather let your outline do the dividing, set `split: headings` and the first
-`#` becomes the lead slide while every `##` after it opens a new one — so the
-body is clean Markdown with no separators to remember:
+**By default, your headings split the deck.** The first `#` is the lead slide
+and every `##` after it opens a new one, so the body is clean Markdown with no
+separators to remember:
 
 ```markdown
 ---
 theme: indaco
-split: headings    # ## starts each slide; no --- needed
 ---
 
 # Deck title          ← the lead slide
@@ -110,14 +109,25 @@ split: headings    # ## starts each slide; no --- needed
 ## Second topic        ← another slide
 ```
 
-A slide's `<!-- _class: NAME -->` directive and its eyebrow are written
-*above* the heading (so the eyebrow renders above the title) and **stay with
-that slide** — the break is pulled back over them, never orphaning onto the
-slide before. `split: headings` is also **hybrid**: an explicit `---` still
-forces a break, which is how you give a slide no heading at all (an image
-slide) or split two slides under one idea. `split:` takes exactly two values
-— `rule` and `headings` — and a misspelling is caught by the deck linter
-(`unknown-split`) rather than silently falling back to `rule`.
+A slide's `<!-- _class: NAME -->` directive and its eyebrow are written *above*
+the heading (so the eyebrow renders above the title) and **stay with that
+slide** — the break is pulled back over them, never orphaning onto the slide
+before. The default is also **hybrid**: an explicit `---` still forces a break,
+which is how you give a slide no heading at all (an image slide) or split two
+slides under one idea.
+
+To opt back into the classic behaviour — split **only** on `---`, never on a
+heading — set `split: rule` in front matter:
+
+```markdown
+---
+split: rule    # separators only; headings never split
+---
+```
+
+`split:` takes exactly two values — `headings` (the default) and `rule` — and a
+misspelling is caught by the deck linter (`unknown-split`) rather than silently
+falling back to the default.
 
 ## The `finish:` key — a hand-drawn deck
 

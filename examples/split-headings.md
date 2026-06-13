@@ -1,19 +1,18 @@
 ---
 marp: true
 theme: indaco
-split: headings
 paginate: true
-header: "Lattice · split: headings"
+header: "Lattice · slides from headings"
 ---
 
 <!-- _class: title silent -->
 <!-- _paginate: false -->
 
-`split: headings`
+`slides from your outline`
 
 # Write the outline. Skip the separators.
 
-One key in front matter turns every `##` into a slide — so a deck reads like
+There's nothing to set — every `##` is a slide by default, so a deck reads like
 a document, with no `---` to remember or forget.
 
 <!-- _class: divider light -->
@@ -21,8 +20,8 @@ a document, with no `---` to remember or forget.
 ## Headings already mark your slides.
 
 The first `#` is the lead slide; every `##` after it opens a new one. You were
-going to write those headings anyway — `split: headings` just lets them do the
-dividing, so the body stays clean Markdown an outliner or linter is happy with.
+going to write those headings anyway — Lattice just lets them do the dividing
+by default, so the body stays clean Markdown an outliner or linter is happy with.
 
 <!-- _class: cards-grid -->
 
@@ -74,15 +73,15 @@ never orphans onto the slide before.
 - The guard
   - `npm run lint:deck` flags an `unknown-split` value.
 - The fallback
-  - An unknown mode renders as `rule` — your `---` still work.
+  - An unknown mode falls back to the default — your deck still renders.
 - The vocabulary
-  - Exactly two modes: `rule` and `headings`.
+  - Exactly two modes: `headings` (default) and `rule`.
 
 <!-- _class: title silent -->
 
-`one line, no separators`
+`nothing to set`
 
 # Keep the content. Drop the dashes.
 
-Set `split: headings` once and the same ideas ship as a clean, outline-shaped
-deck. Set it back to `rule` and your `---` are exactly as they were.
+This very deck sets no `split:` key — the headings do the work. Add
+`split: rule` only if you want to go back to splitting on `---`.
