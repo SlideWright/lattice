@@ -25,6 +25,19 @@ in patch versions.
 
 ## Unreleased
 
+### Added
+
+- **The bundled CLI now exports PPTX and PNG natively — no marp-cli.**
+  `lattice deck.md out.pptx` writes an image-per-slide PowerPoint, and
+  `lattice deck.md out.png` writes one PNG per slide (`out.001.png`, …). The
+  output extension picks the format; `.pdf` still produces the vector,
+  selectable-text PDF. PPTX/PNG rasterize from the same headless-Chromium render
+  the PDF uses, so all formats are pixel-identical. PPTX assembly uses
+  `pptxgenjs` (the same library and image-per-slide model as the Drawing Board's
+  browser exporter), so the CLI and web paths emit comparable decks. This is the
+  owned, marp-free export path; editable PPTX (marp's LibreOffice variant) is
+  intentionally not included.
+
 ### Changed
 
 - **The `math canvas` plot fence is now ` ```functionplot ` (was ` ```latticeplot `).**

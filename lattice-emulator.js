@@ -78,15 +78,19 @@ function listAvailablePalettes() {
 }
 
 function showHelp() {
-  console.log(`lattice-emulator — Marp-faithful PDF/HTML renderer for Lattice decks
+  console.log(`lattice-emulator — PDF / PPTX / PNG / HTML renderer for Lattice decks
 
 USAGE
-  node lattice-emulator.js <source.md> <output.pdf> [palette]
-  node lattice-emulator.js <source.md> <custom.css> <output.pdf> [palette]
+  node lattice-emulator.js <source.md> <output.pdf|.pptx|.png> [palette]
+  node lattice-emulator.js <source.md> <custom.css> <output> [palette]
 
 ARGUMENTS
   source.md          Markdown source (required)
-  output.pdf         Output PDF path (required); HTML sidecar written alongside
+  output             Output path (required); the extension picks the format:
+                       .pdf   vector PDF, selectable text (default; + HTML sidecar)
+                       .pptx  PowerPoint, one full-bleed slide image per slide
+                       .png   one PNG per slide, written as <output>.NNN.png
+                     An HTML sidecar is always written alongside.
   custom.css         Optional layout CSS override; if omitted, the bundled
                      lattice.css from the install dir is used
   palette            Palette name (e.g. 'indaco', 'cuoio')
@@ -94,7 +98,7 @@ ARGUMENTS
 OPTIONS
   -h, --help              Show this help and exit
   -v, --version           Show version and exit
-  -o, --output PATH       Output PDF path (alternative to positional output.pdf)
+  -o, --output PATH       Output path (alternative to positional output)
   -p, --palette NAME      Palette name (alternative to positional palette)
   -c, --css PATH          Layout CSS override (alternative to positional custom.css)
   -q, --quiet             Suppress non-error progress output
@@ -129,6 +133,8 @@ EXIT CODES
 
 EXAMPLES
   node lattice-emulator.js deck.md out.pdf
+  node lattice-emulator.js deck.md out.pptx          # PowerPoint (image slides)
+  node lattice-emulator.js deck.md out.png           # → out.001.png, out.002.png, …
   node lattice-emulator.js deck.md out.pdf cuoio
   node lattice-emulator.js deck.md custom-layouts.css out.pdf cuoio
   LATTICE_PALETTE=cuoio node lattice-emulator.js deck.md out.pdf
@@ -224,6 +230,14 @@ if (!mdFile || !outFile) {
   console.error('Run with --help for full options. Default palette: indaco.');
   process.exit(1);
 }
+
+// Output format is driven by the output extension: `.pptx` → image-per-slide
+// PowerPoint (owned, via pptxgenjs), `.png` → one PNG per slide (`<base>.NNN.png`),
+// anything else → the vector PDF (the original, selectable-text path). PPTX/PNG
+// are rasterized from the same headless-Chromium render the PDF uses, so all
+// three formats are byte-for-byte the same pixels.
+const OUT_EXT = path.extname(outFile).toLowerCase();
+const OUT_FORMAT = OUT_EXT === '.pptx' ? 'pptx' : (OUT_EXT === '.png' ? 'png' : 'pdf');
 
 // Friendly error wrapper for file reads. Bare ENOENT throws produce
 // stack traces that look like crashes; this surfaces them as one-line
@@ -1251,7 +1265,7 @@ ${stateChartScript}
 </script>
 </body></html>`;
 
-const outHtml = outFile.replace(/\.pdf$/i, '.html');
+const outHtml = outFile.replace(/\.(pdf|pptx|png)$/i, '') + '.html';
 fs.writeFileSync(outHtml, htmlDoc);
 if (!QUIET) console.log(`HTML: ${slides.length} slides → ${outHtml}`);
 
@@ -1297,7 +1311,17 @@ const puppeteer = loadPuppeteer();
   // resolve to 6.875% × 800 = 55 px instead of the intended 88 px (HD) or
   // 264 px (4K), which makes the overflow-detection pass see a different
   // content area than the printed PDF.
-  await page.setViewport({ width: slideW, height: slideH, deviceScaleFactor: 1 });
+  // PDF prints at 1× (the vector page is resolution-independent). PNG/PPTX
+  // rasterize, so scale up for crisp images while keeping the long edge near
+  // 3840px — a 4K (3840×2160) @size at 2× would paint a 7680px canvas and risk
+  // an OOM (same trade-off the browser exporter makes). The largest integer
+  // factor whose long edge stays ≤ 3840: HD (1280) → 2×, 4K (3840) → 1×, and any
+  // custom @size is capped rather than left to blow up.
+  const RASTER = OUT_FORMAT === 'pptx' || OUT_FORMAT === 'png';
+  const rasterScale = RASTER
+    ? Math.max(1, Math.min(2, Math.floor(3840 / Math.max(slideW, slideH))))
+    : 1;
+  await page.setViewport({ width: slideW, height: slideH, deviceScaleFactor: rasterScale });
   await page.goto('file://' + path.resolve(outHtml), {
     waitUntil: 'networkidle0',
     timeout: 60000
@@ -1338,22 +1362,58 @@ const puppeteer = loadPuppeteer();
   if (overflowing.length) {
     console.warn(`  ⚠ Overflow on slide${overflowing.length > 1 ? 's' : ''} ${overflowing.join(', ')} — red ring drawn in PDF.`);
   }
-  // Render to a buffer (no `path`) so we can post-process before writing: the
-  // speaker notes are attached as per-page PDF text annotations.
-  const pdfBytes = await page.pdf({
-    width: `${slideW}px`, height: `${slideH}px`,
-    printBackground: true,
-    preferCSSPageSize: true
-  });
-  await browser.close();
-  const finalBytes = await embedNotesInPdf(pdfBytes, slideNotes);
-  fs.writeFileSync(outFile, finalBytes);
-  const noteCount = slideNotes.filter(Boolean).length;
-  if (!QUIET) {
-    console.log(`PDF: ${outFile}${noteCount ? ` (${noteCount} slide${noteCount > 1 ? 's' : ''} with speaker notes)` : ''}`);
+  if (OUT_FORMAT === 'pdf') {
+    // Render to a buffer (no `path`) so we can post-process before writing: the
+    // speaker notes are attached as per-page PDF text annotations.
+    const pdfBytes = await page.pdf({
+      width: `${slideW}px`, height: `${slideH}px`,
+      printBackground: true,
+      preferCSSPageSize: true
+    });
+    await browser.close();
+    const finalBytes = await embedNotesInPdf(pdfBytes, slideNotes);
+    fs.writeFileSync(outFile, finalBytes);
+    const noteCount = slideNotes.filter(Boolean).length;
+    if (!QUIET) {
+      console.log(`PDF: ${outFile}${noteCount ? ` (${noteCount} slide${noteCount > 1 ? 's' : ''} with speaker notes)` : ''}`);
+    }
+    if (NOTES_SIDECAR) writeNotesSidecar(outFile, slideNotes);
+  } else {
+    // PNG / PPTX: rasterize one image per slide from the SAME rendered page.
+    // Each `section[data-marpit-slide]` is exactly slideW×slideH (fixed-page),
+    // so an element screenshot yields a clean full-bleed slide image.
+    const handles = await page.$$('section[data-marpit-slide]');
+    const pngBuffers = [];
+    for (const h of handles) {
+      pngBuffers.push(await h.screenshot({ type: 'png' }));
+    }
+    await browser.close();
+
+    if (OUT_FORMAT === 'png') {
+      // `deck.png` → `deck.001.png`, `deck.002.png`, … (a per-slide set, the
+      // same convention marp's `--images png` used).
+      const base = outFile.replace(/\.png$/i, '');
+      const pad = Math.max(3, String(pngBuffers.length).length);
+      pngBuffers.forEach((buf, i) => {
+        fs.writeFileSync(`${base}.${String(i + 1).padStart(pad, '0')}.png`, buf);
+      });
+      if (!QUIET) console.log(`PNG: ${pngBuffers.length} slides → ${base}.NNN.png`);
+    } else {
+      // PPTX — image-per-slide via the shared writer (lib/export/pptx-export.js).
+      const { writePptx } = require('./lib/export/pptx-export');
+      const count = await writePptx(outFile, pngBuffers, {
+        title: path.basename(outFile).replace(/\.pptx$/i, ''),
+        company: `Lattice · ${paletteName}`,
+      });
+      if (!QUIET) console.log(`PPTX: ${count} slides → ${outFile}`);
+    }
   }
-  if (NOTES_SIDECAR) writeNotesSidecar(outFile, slideNotes);
-})();
+})().catch((e) => {
+  // Surface render/export failures as a one-line error (matching readFileOrDie),
+  // not a raw unhandled-rejection stack trace that reads like a crash.
+  console.error(`error: ${e && e.message ? e.message : e}`);
+  process.exit(1);
+});
 
 // Attach each slide's speaker note as a PDF "Text" annotation (a sticky note)
 // in the top-left corner of its page, so any PDF viewer surfaces it on click.
