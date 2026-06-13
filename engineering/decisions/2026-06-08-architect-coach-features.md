@@ -122,10 +122,18 @@ reference, minus "Write a reply"):
 > stage: it carries the slide's ambient guidance and *becomes* the timed beat at
 > its moment, then settles back — one calm focal point, not a top-bar cue, so the
 > chrome never reflows. A no-zoom viewport + `touch-action` kill the iOS
-> double-tap zoom. The start screen suggests a length from deck density.
+> double-tap zoom. The start screen suggests a length from deck density and shows
+> a **whole-deck read** (`buildDeckRead`) — the structural take the per-slide
+> cards can't give: time split (ask %, opening %), fit vs the length, and
+> front-loading — recomputed live as the length changes. During the run a
+> **pace-aware** `over` beat (`overBeat`) outranks the authored delivery beats
+> once you linger past ~1.3× a slide's budget — the one cue keyed to actual dwell
+> vs target, not a fixed fraction.
 >
-> **Still Phase 2:** spoken-rehearsal critique (speech-to-text). The text below
-> is the original design model, kept for provenance.
+> **Still Phase 2:** the model layering richer qualitative deck-level critique
+> ("the through-line breaks at slide 6") on top of the structural read, and
+> spoken-rehearsal critique (speech-to-text). The text below is the original
+> design model, kept for provenance.
 
 A rehearsal / presenter surface — mostly deterministic:
 

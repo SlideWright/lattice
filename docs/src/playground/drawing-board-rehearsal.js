@@ -166,23 +166,70 @@ export function buildDeterministicPlan(source, minutes, { bucketOf } = {}) {
   });
   const totalSeconds = Math.max(1, minutes) * 60;
   const targets = allocate(metas, totalSeconds);
+  const suggestMinutes = Math.max(1, Math.round(suggestSeconds(metas) / 60));
+  const slides = metas.map((m, i) => ({
+    index: i,
+    comp: m.comp,
+    role: m.role,
+    title: m.title,
+    words: m.words,
+    target: targets[i],
+    why: WHY[m.role] || WHY.body,
+    beats: beatsFor(m.role, m.words),
+    snippet: m.snippet,
+  }));
   return {
     source: 'deterministic',
     minutes,
     totalTarget: totalSeconds,
-    suggestMinutes: Math.max(1, Math.round(suggestSeconds(metas) / 60)),
-    slides: metas.map((m, i) => ({
-      index: i,
-      comp: m.comp,
-      role: m.role,
-      title: m.title,
-      words: m.words,
-      target: targets[i],
-      why: WHY[m.role] || WHY.body,
-      beats: beatsFor(m.role, m.words),
-      snippet: m.snippet,
-    })),
+    suggestMinutes,
+    slides,
+    deck: buildDeckRead(slides, minutes, totalSeconds, suggestMinutes),
   };
+}
+
+// The whole-deck READ — a structural take on the arc the per-slide cards can't
+// give: how the time is split (the ask, the opening), whether the deck fits the
+// length, and front-loading. Pure timing math (no model — these are honest
+// percentages, not opinions), surfaced on the start screen so you plan before
+// you rehearse. Returns { summary, fit, askPct, flags:[{tone,text}] }.
+export function buildDeckRead(slides, minutes, totalSeconds, suggestMinutes) {
+  const byRole = {};
+  for (const s of slides) byRole[s.role] = (byRole[s.role] || 0) + s.target;
+  const pct = (r) => Math.round(((byRole[r] || 0) / totalSeconds) * 100);
+  const has = (r) => slides.some((s) => s.role === r);
+  const flags = [];
+
+  const askPct = pct('decision');
+  if (!has('decision')) flags.push({ tone: 'warn', text: 'No explicit ask — end on a decision slide so the room knows what you want.' });
+  else if (askPct < 10) flags.push({ tone: 'warn', text: `The ask gets only ${askPct}% of your time — it’s the point; give it more room.` });
+
+  if (!has('open')) flags.push({ tone: 'warn', text: 'No clear opening — set the frame before the first detail.' });
+  if (!has('close')) flags.push({ tone: 'info', text: 'No closing slide — land on a deliberate close, not the last data slide.' });
+
+  const third = Math.max(1, Math.floor(slides.length / 3));
+  if (slides.length >= 6) {
+    const frac = (arr) => arr.reduce((a, s) => a + s.target, 0) / totalSeconds;
+    if (frac(slides.slice(0, third)) > 0.5) flags.push({ tone: 'info', text: 'Front-loaded — over half your time is in the first third; make sure the payoff still breathes.' });
+  }
+
+  let fit = 'good';
+  if (minutes >= suggestMinutes * 1.5) { fit = 'loose'; flags.push({ tone: 'info', text: `You’ve booked ${minutes} min for ~${suggestMinutes} min of material — slow down, or go deeper.` }); }
+  else if (minutes <= suggestMinutes * 0.6) { fit = 'tight'; flags.push({ tone: 'warn', text: `~${suggestMinutes} min of material in ${minutes} — you’ll be rushing. Cut slides or extend.` }); }
+
+  const summary = `${slides.length} slide${slides.length === 1 ? '' : 's'} · ${minutes} min — ${has('decision') ? `ask ${askPct}%` : 'no ask'}, opening ${pct('open')}%.`;
+  return { summary, fit, askPct, flags: flags.slice(0, 3) };
+}
+
+// A pace-aware nudge: once you linger past ~1.3× a slide's budget, surface a live
+// "over time" beat that outranks the authored delivery beats — the one place the
+// coaching keys off your ACTUAL dwell vs the target, not a fixed fraction. Static
+// text (so its key is stable and it doesn't re-fade each tick). Returns a beat or
+// null. `kind:'over'` is styled like the behind/over pace state.
+export const OVER_FACTOR = 1.3;
+export function overBeat(onSlide, target) {
+  if (!(target > 0) || onSlide <= target * OVER_FACTOR) return null;
+  return { at: 1, kind: 'over', text: 'Over time on this slide — land it and move on.', hold: Infinity };
 }
 
 // ── AI refinement ─────────────────────────────────────────────────────────────

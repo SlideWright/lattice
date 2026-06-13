@@ -1822,6 +1822,53 @@ html.db-js #db-editor-ta {
 	font-size: 0.8rem;
 	color: #8fc7ff;
 }
+/* The whole-deck read — the structural take, under the length input. The summary
+   is quiet; each flag is a tone-keyed line (warn = warm, info = cool/muted). */
+.db-pv-read {
+	display: grid;
+	gap: 0.5rem;
+	justify-items: center;
+	width: 100%;
+}
+.db-pv-read-summary {
+	margin: 0;
+	font-size: 0.82rem;
+	color: #cfcfd6;
+	font-variant-numeric: tabular-nums;
+}
+.db-pv-read-flags {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: grid;
+	gap: 0.35rem;
+	width: 100%;
+	max-width: 40ch;
+	text-align: left;
+}
+.db-pv-read-flag {
+	position: relative;
+	padding-left: 1rem;
+	font-size: 0.8rem;
+	line-height: 1.4;
+	color: rgba(244, 244, 246, 0.78);
+}
+.db-pv-read-flag::before {
+	content: '';
+	position: absolute;
+	left: 0.1rem;
+	top: 0.5em;
+	width: 6px;
+	height: 6px;
+	border-radius: 999px;
+	background: #8fc7ff;
+}
+.db-pv-read-flag[data-tone='warn'] {
+	color: rgba(255, 200, 188, 0.92);
+}
+.db-pv-read-flag[data-tone='warn']::before {
+	background: #ff9d8a;
+}
 
 /* Running view — bar (top) · slide stage (fill) · nav (bottom). */
 .db-pv-run {
@@ -1986,6 +2033,12 @@ html.db-js #db-editor-ta {
 .db-pv-coach-pill[data-kind='breathe'] .db-pv-coach-kind { background: #7fe3a4; }
 .db-pv-coach-pill[data-kind='transition'] .db-pv-coach-kind { background: #c9b8ff; }
 .db-pv-coach-pill[data-kind='emphasis'] .db-pv-coach-kind { background: #ffb38a; }
+.db-pv-coach-pill[data-kind='over'] .db-pv-coach-kind { background: #ff9d8a; }
+/* The pace-aware "over time" nudge reads as urgent — a warm border + tint. */
+.db-pv-coach-pill[data-kind='over'] {
+	border-color: rgba(255, 157, 138, 0.5);
+	background: rgba(40, 20, 18, 0.84);
+}
 .db-pv-coach-text {
 	min-width: 0;
 }

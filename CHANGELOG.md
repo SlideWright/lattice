@@ -108,7 +108,11 @@ in patch versions.
   edit re-assesses. The cloud path honours the session **budget cap** and records
   spend in the tally, exactly like the chat; tiny/built-in tiers keep the proven
   floor rather than overriding it with weaker output. The start screen suggests a
-  length from deck density (deterministic — opening it never bills). Guidance
+  length from deck density and shows a **whole-deck read** — how the time splits
+  (the ask %, the opening %), whether the deck fits the length, front-loading —
+  recomputed live as you change the length (deterministic — opening it never
+  bills). During the run, a **pace-aware "over time" nudge** surfaces once you
+  linger past a slide's budget, keyed to your actual dwell. Guidance
   moved off the cramped top bar into a **single coaching pill on an unassuming
   gradient scrim** over the lower stage — it carries the slide's ambient guidance
   and becomes the timed beat at its moment — so the close button no longer shifts.

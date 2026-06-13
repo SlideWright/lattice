@@ -16,11 +16,11 @@
 
 import { KATEX_URL, MERMAID_URL } from './deck-preview.js';
 import { isCapableTier } from './drawing-board-chat.js';
-import { createRehearsalPlanner } from './drawing-board-rehearsal.js';
+import { createRehearsalPlanner, overBeat } from './drawing-board-rehearsal.js';
 import { budgetStatus, readBudgetCap, readBudgetMode, readSpend, recordSpend } from './drawing-board-settings.js';
 import { slideBox } from './frame-css.js';
 
-const BEAT_LABEL = { pause: 'Pause', eye: 'Look up', breathe: 'Breathe', transition: 'Transition', emphasis: 'Emphasize' };
+const BEAT_LABEL = { pause: 'Pause', eye: 'Look up', breathe: 'Breathe', transition: 'Transition', emphasis: 'Emphasize', over: 'Over time' };
 
 function fmt(s) {
   s = Math.max(0, Math.round(s));
@@ -177,18 +177,22 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
     else if (diff > 0) { elPace.textContent = fmt(diff) + ' over'; elPace.className = 'db-pv-pace behind'; }
     else { elPace.textContent = fmt(-diff) + ' ahead'; elPace.className = 'db-pv-pace ahead'; }
     // The coaching pill: a timed beat if one is live (relative to time on THIS
-    // slide — self-paced), otherwise the slide's ambient guidance.
+    // slide — self-paced), otherwise the slide's ambient guidance. A pace-aware
+    // "over time" nudge — keyed off ACTUAL dwell vs the slide's target — outranks
+    // the authored delivery beats.
     const sp = plan?.slides[idx];
     if (!sp) { renderCoach({ key: 'none' }); return; }
+    const onSlide = (Date.now() - slideEnteredAt) / 1000;
+    const tgt = sp.target || 1;
     let active = null;
     if (sp.beats?.length) {
-      const onSlide = (Date.now() - slideEnteredAt) / 1000;
-      const tgt = sp.target || 1;
       for (const b of sp.beats) {
         const t = b.at * tgt;
         if (onSlide >= t && onSlide < t + (b.hold || 3)) active = b; // latest-wins
       }
     }
+    const over = overBeat(onSlide, sp.target);
+    if (over) active = over; // running over the slide's budget wins
     if (active) renderCoach({ key: idx + ':' + active.kind + ':' + active.at, kind: active.kind, label: BEAT_LABEL[active.kind] || active.kind, text: active.text });
     else renderCoach({ key: idx + ':ambient', kind: null, label: null, text: sp.why });
   }
@@ -294,20 +298,43 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
     form.addEventListener('submit', (e) => { e.preventDefault(); start(Math.max(1, Number(input.value) || 10)); });
     s.append(form);
 
-    // A deterministic suggested length + a note when AI coaching is live. The
-    // suggestion uses detOnly() so merely opening the screen NEVER fires a billed
-    // model call — only Start does. One tap applies it.
-    try {
-      const det = planner.detOnly(getSource(), Number(input.value) || 10, { bucketOf });
-      if (det.slides.length) {
-        input.value = String(det.suggestMinutes);
-        const hint = el('button', 'db-pv-suggest'); hint.type = 'button';
-        hint.textContent = `Suggested ${det.suggestMinutes} min for ${det.slides.length} slides`;
-        hint.title = 'Set the input to the suggested length';
-        hint.addEventListener('click', () => { input.value = String(det.suggestMinutes); input.focus(); });
-        s.append(hint);
+    // A deterministic suggested length + a whole-deck READ (the structural take:
+    // time split, the ask, fit, front-loading) + a note when AI coaching is live.
+    // All of it uses detOnly() so merely opening the screen NEVER fires a billed
+    // model call — only Start does. The read re-computes live as you change the
+    // length (the fit flags depend on it).
+    const read = el('div', 'db-pv-read');
+    const renderRead = (mins) => {
+      read.innerHTML = '';
+      let det;
+      try { det = planner.detOnly(getSource(), mins, { bucketOf }); } catch { return; }
+      if (!det.slides.length) return;
+      const hint = el('button', 'db-pv-suggest'); hint.type = 'button';
+      hint.textContent = `Suggested ${det.suggestMinutes} min for ${det.slides.length} slide${det.slides.length === 1 ? '' : 's'}`;
+      hint.title = 'Set the input to the suggested length';
+      hint.addEventListener('click', () => { input.value = String(det.suggestMinutes); renderRead(det.suggestMinutes); input.focus(); });
+      read.append(hint);
+      if (det.deck) {
+        read.append(el('p', 'db-pv-read-summary', det.deck.summary));
+        if (det.deck.flags.length) {
+          const ul = el('ul', 'db-pv-read-flags');
+          for (const f of det.deck.flags) {
+            const li = el('li', 'db-pv-read-flag'); li.dataset.tone = f.tone || 'info';
+            li.textContent = f.text;
+            ul.append(li);
+          }
+          read.append(ul);
+        }
       }
+    };
+    s.append(read);
+    // Seed the input at the suggested length, then render the read for it.
+    try {
+      const seed = planner.detOnly(getSource(), Number(input.value) || 10, { bucketOf });
+      if (seed.slides.length) input.value = String(seed.suggestMinutes);
     } catch { /* no source yet — fine */ }
+    renderRead(Math.max(1, Number(input.value) || 10));
+    input.addEventListener('input', () => renderRead(Math.max(1, Number(input.value) || 10)));
     // The note only shows for tiers strong enough to actually tailor the plan
     // (the floor/tiny tiers keep the proven deterministic coaching).
     const avail = model?.availability ? model.availability() : null;

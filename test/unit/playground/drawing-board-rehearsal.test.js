@@ -66,6 +66,60 @@ describe('buildDeterministicPlan', () => {
   });
 });
 
+describe('buildDeckRead (whole-deck structural read)', () => {
+  test('rides on the plan and summarises the arc', async () => {
+    const { buildDeterministicPlan } = await load();
+    const p = buildDeterministicPlan(DECK, 10);
+    assert.ok(p.deck, 'plan carries a deck read');
+    assert.match(p.deck.summary, /6 slides · 10 min/);
+    assert.match(p.deck.summary, /ask \d+%/);
+    assert.ok(Array.isArray(p.deck.flags));
+  });
+
+  test('flags a missing ask', async () => {
+    const { buildDeckRead, buildDeterministicPlan } = await load();
+    const noAsk = '<!-- _class: title -->\n# A\n\n---\n\n<!-- _class: stats -->\n## B\n\n---\n\n<!-- _class: closing -->\n## C';
+    const p = buildDeterministicPlan(noAsk, 10);
+    assert.ok(p.deck.flags.some((f) => /No explicit ask/.test(f.text) && f.tone === 'warn'));
+    // direct call also works
+    const r = buildDeckRead(p.slides, 10, 600, 5);
+    assert.equal(typeof r.summary, 'string');
+  });
+
+  test('flags a tight fit (too much material for the time)', async () => {
+    const { buildDeckRead } = await load();
+    // open+decision+close present (so only the fit flag is raised), 1 min booked
+    // against 10 min of material → tight.
+    const slides = [{ role: 'open', target: 60 }, { role: 'data', target: 60 }, { role: 'decision', target: 120 }, { role: 'close', target: 60 }];
+    const r = buildDeckRead(slides, 1, 300, 10);
+    assert.equal(r.fit, 'tight');
+    assert.ok(r.flags.some((f) => /rushing/.test(f.text)));
+  });
+
+  test('caps flags to three', async () => {
+    const { buildDeckRead } = await load();
+    const slides = [{ role: 'body', target: 60 }, { role: 'body', target: 60 }];
+    const r = buildDeckRead(slides, 30, 120, 1); // missing ask+open+close, loose fit → many flags
+    assert.ok(r.flags.length <= 3);
+  });
+});
+
+describe('overBeat (pace-aware nudge)', () => {
+  test('null until you linger past ~1.3x the budget, then fires', async () => {
+    const { overBeat } = await load();
+    assert.equal(overBeat(50, 60), null); // under budget
+    assert.equal(overBeat(70, 60), null); // a little over, within 1.3x
+    const b = overBeat(100, 60); // well over
+    assert.ok(b && b.kind === 'over');
+    assert.match(b.text, /Over time/);
+  });
+  test('guards a zero/garbage target', async () => {
+    const { overBeat } = await load();
+    assert.equal(overBeat(100, 0), null);
+    assert.equal(overBeat(100, NaN), null);
+  });
+});
+
 describe('mergeAiPlan', () => {
   test('overrides why/target/beats and re-normalises to the length', async () => {
     const { buildDeterministicPlan, mergeAiPlan } = await load();
