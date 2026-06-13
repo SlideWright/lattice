@@ -183,9 +183,13 @@ comment kinds are **not** notes, matching Marpit exactly:
   the note/non-note boundary.
 
 A conformant L1 renderer SHOULD surface notes through whatever presenter channel
-it offers (the reference engine embeds a per-page PDF annotation and a hidden
-`aside.lattice-notes` HTML element). How a note is *presented* is
-implementation-defined; *what counts as a note* is the contract above.
+it offers. How a note is *presented* is implementation-defined; *what counts as a
+note* is the contract above, and that boundary is what conformance fixes. Among
+the reference render paths today, **Lattice's emulator** materialises notes — a
+per-page PDF text annotation plus a hidden `aside.lattice-notes` element in the
+HTML sidecar; under marp-cli the same comments are marp-core's native notes
+(surfaced by `marp --pdf-notes` or a PPTX export); the VS Code preview does not
+surface them yet. All three draw the note/non-note line identically.
 
 - **Degrades to:** nothing visible — an HTML comment is invisible in every
   Markdown renderer, and on GitHub/GitLab a comment is already how an author
