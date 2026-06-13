@@ -94,6 +94,19 @@ in patch versions.
   `SELF_HOSTED_FACES` + `assets/fonts/`, and the Drawing Board export's
   `font-embed.js`) ever drift again — closing the silent-font-fallback class of
   bug that the `finish: sketch` body-drop first surfaced.
+- **Jargon gallery — closing-accent slide no longer overflows.** The final
+  `closing accent` slide ran its body off the top and bottom of the frame (the
+  "very thorough" punchline was clipped) in the default boardroom render; its
+  body is trimmed to fit while keeping the joke. Same pass trimmed copy on a few
+  slides that only overflowed under `finish: sketch` (`featured mirror`,
+  `image full`, the `cards-grid compact` heading) and removed two zero-coverage
+  appendix duplicates (the portrait `image full dark` stress-test slide that
+  admitted it had "never been used in a real deck", and the `image left` slide
+  that rendered pixel-identically to its `image mirror` alias) — 80 → 78 slides.
+  Filed `engineering/decisions/2026-06-13-islands-sketch-density-collisions.md`
+  documenting the broader islands/sketch chrome-reservation collisions the audit
+  surfaced (not yet fixed; `islands: off` is the current workaround for dense
+  decks).
 - **The `lib/engine` render path now produces the full islands model** — the
   `islands:` toggle, the masthead `meta:` island, the footer progress-rail, and
   the section watermark. The engine only resolved the masthead band before, so
