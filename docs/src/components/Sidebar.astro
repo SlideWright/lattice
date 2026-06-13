@@ -13,22 +13,17 @@ import MobileMenuFooter from 'virtual:starlight/components/MobileMenuFooter';
 import SidebarPersister from '@astrojs/starlight/components/SidebarPersister.astro';
 import SidebarSublist from '@astrojs/starlight/components/SidebarSublist.astro';
 import { joinBase } from '../lib/base-url.mjs';
+import { primaryNav, GITHUB_URL, isCurrent } from '../lib/nav.mjs';
 
 const { sidebar } = Astro.locals.starlightRoute;
 
 const base = import.meta.env.BASE_URL;
 const url = (p) => joinBase(base, p);
 const here = Astro.url.pathname;
-const links = [
-	{ label: 'Home', href: url('') },
-	{ label: 'Get started', href: url('getting-started/'), seg: 'getting-started' },
-	{ label: 'Guides', href: url('guides/authoring/'), seg: 'guides' },
-	{ label: 'Playground', href: url('playground/'), seg: 'playground' },
-	{ label: 'Drawing Board', href: url('drawing-board/'), seg: 'drawing-board' },
-	{ label: 'Workbench', href: url('workbench/'), seg: 'workbench' },
-	{ label: 'Components', href: url('components/'), seg: 'components' },
-];
-const isCurrent = (seg) => seg && here.includes('/' + seg);
+// Home + the shared primary nav (src/lib/nav.mjs). One "Docs" entry now, so the
+// mobile menu no longer stacks a Get started/Guides/Tools list on top of the
+// doc-section tree below — the two navs stop overlapping.
+const links = [{ label: 'Home', href: url(''), match: [] }, ...primaryNav(url)];
 ---
 
 <nav class="lx-sitenav" aria-label="Site">
@@ -36,13 +31,13 @@ const isCurrent = (seg) => seg && here.includes('/' + seg);
 		{
 			links.map((l) => (
 				<li>
-					<a href={l.href} aria-current={isCurrent(l.seg) ? 'page' : undefined}>
+					<a href={l.href} aria-current={isCurrent(l, here) ? 'page' : undefined}>
 						{l.label}
 					</a>
 				</li>
 			))
 		}
-		<li><a href="https://github.com/slidewright/lattice">GitHub</a></li>
+		<li><a href={GITHUB_URL}>GitHub</a></li>
 	</ul>
 </nav>
 

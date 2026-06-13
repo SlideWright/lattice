@@ -10,21 +10,19 @@
 //   palettes  string[]  — selectable palette names (titleCased for display)
 //   current   string?   — 'getting-started' | 'guides' | 'playground' | 'components'
 //   wide      boolean   — full-bleed inner (playground/components) vs centered (landing)
-const { palettes = [], current = null, wide = false } = Astro.props;
+// `current` is accepted for back-compat but no longer needed — aria-current is
+// derived from the request path (isCurrent), so it's uniform across surfaces.
+const { palettes = [], wide = false } = Astro.props;
 
 import { joinBase } from '../lib/base-url.mjs';
+import { primaryNav, GITHUB_URL, isCurrent } from '../lib/nav.mjs';
 const base = import.meta.env.BASE_URL;
 const url = (p) => joinBase(base, p);
 const titleCase = (s) => s.replace(/(^|-)(\w)/g, (_, sep, c) => (sep ? ' ' : '') + c.toUpperCase());
 
-const links = [
-	{ label: 'Get started', href: url('getting-started/'), seg: 'getting-started' },
-	{ label: 'Guides', href: url('guides/authoring/'), seg: 'guides' },
-	{ label: 'Playground', href: url('playground/'), seg: 'playground' },
-	{ label: 'Drawing Board', href: url('drawing-board/'), seg: 'drawing-board' },
-	{ label: 'Workbench', href: url('workbench/'), seg: 'workbench' },
-	{ label: 'Components', href: url('components/'), seg: 'components' },
-];
+// Single source of truth (src/lib/nav.mjs) — same links on every surface.
+const links = primaryNav(url);
+const here = Astro.url.pathname;
 ---
 
 <header class="topbar">
@@ -35,9 +33,9 @@ const links = [
 		</a>
 		<nav class="topnav" id="topnav">
 			{links.map((l) => (
-				<a class="navlink" href={l.href} aria-current={current === l.seg ? 'page' : undefined}>{l.label}</a>
+				<a class="navlink" href={l.href} aria-current={isCurrent(l, here) ? 'page' : undefined}>{l.label}</a>
 			))}
-			<a class="navlink" href="https://github.com/slidewright/lattice">GitHub</a>
+			<a class="navlink" href={GITHUB_URL}>GitHub</a>
 		</nav>
 		<div class="topbar-actions">
 			<div class="controls">

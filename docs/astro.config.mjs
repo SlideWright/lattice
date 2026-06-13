@@ -72,37 +72,33 @@ export default defineConfig({
 			social: [
 				{ icon: 'github', label: 'GitHub', href: 'https://github.com/slidewright/lattice' },
 			],
+			// The docs sidebar is now docs-only: one coherent learning track,
+			// Introduction → Get started → Guides. The apps (Playground, Drawing
+			// Board, Workbench) and the Components reference live in the primary
+			// nav (src/lib/nav.mjs) — they were previously duplicated here as a
+			// "Tools" group, which (together with the old "Get started"/"Guides"
+			// top links) is what made the mobile menu stack two overlapping navs.
+			// Principles now sits up front under Introduction, and the "Docs"
+			// nav entry lands on the Overview hub that also cards into it.
 			sidebar: [
 				{
-					label: 'Start here',
+					label: 'Introduction',
 					items: [
 						{ label: 'Overview', slug: 'overview' },
 						{ label: 'What is Lattice?', slug: 'introduction' },
-						{ label: 'The story', slug: 'story' },
 						{ label: 'Principles', slug: 'principles' },
-						{ label: 'Getting started', slug: 'getting-started' },
+						{ label: 'The story', slug: 'story' },
 					],
+				},
+				{
+					label: 'Get started',
+					items: [{ label: 'Getting started', slug: 'getting-started' }],
 				},
 				{
 					label: 'Guides',
 					items: [
 						{ label: 'Authoring decks', slug: 'guides/authoring' },
 						{ label: 'Themes & palettes', slug: 'guides/themes' },
-					],
-				},
-				{
-					// Standalone routes that live outside Starlight's page tree (the
-					// landing-styled playground and the component pages). Surfacing
-					// them here keeps the docs zone from dead-ending — a reader in
-					// the guides can reach the interactive tools in one click.
-					// "Components" is the single canonical pointer to the reference
-					// (the component pages); the topbar/header use the same label
-					// and destination, so there's one "Components" everywhere.
-					label: 'Tools',
-					items: [
-						{ label: 'Playground', link: '/playground/' },
-						{ label: 'Drawing Board', link: '/drawing-board/' },
-						{ label: 'Components', link: '/components/' },
 					],
 				},
 			],

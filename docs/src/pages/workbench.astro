@@ -13,6 +13,7 @@ import '../styles/landing.css';
 import '../styles/workbench.css';
 import '../styles/deck-config.css';
 import { joinBase } from '../lib/base-url.mjs';
+import { primaryNav, GITHUB_URL, isCurrent } from '../lib/nav.mjs';
 import { isPreviewDeploy } from '../lib/deploy-env.mjs';
 import { assetBase } from '../playground/asset-version.mjs';
 
@@ -44,14 +45,8 @@ const studioData = JSON.stringify({
 	finishes: FINISH_NAMES,
 });
 
-const links = [
-	{ label: 'Get started', href: url('getting-started/'), seg: 'getting-started' },
-	{ label: 'Guides', href: url('guides/authoring/'), seg: 'guides' },
-	{ label: 'Playground', href: url('playground/'), seg: 'playground' },
-	{ label: 'Drawing Board', href: url('drawing-board/'), seg: 'drawing-board' },
-	{ label: 'Workbench', href: url('workbench/'), seg: 'workbench' },
-	{ label: 'Components', href: url('components/'), seg: 'components' },
-];
+const links = primaryNav(url); // shared primary nav — src/lib/nav.mjs
+const here = Astro.url.pathname;
 ---
 
 <!doctype html>
@@ -84,9 +79,9 @@ const links = [
 				</a>
 				<nav class="topnav" id="topnav">
 					{links.map((l) => (
-						<a class="navlink" href={l.href} aria-current={l.seg === 'workbench' ? 'page' : undefined}>{l.label}</a>
+						<a class="navlink" href={l.href} aria-current={isCurrent(l, here) ? 'page' : undefined}>{l.label}</a>
 					))}
-					<a class="navlink" href="https://github.com/slidewright/lattice">GitHub</a>
+					<a class="navlink" href={GITHUB_URL}>GitHub</a>
 				</nav>
 				<div class="topbar-actions">
 					<button class="mode-toggle" id="mode-toggle" aria-label="Toggle light / dark" title="Toggle light / dark"></button>

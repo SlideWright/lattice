@@ -173,6 +173,18 @@ in patch versions.
   shared `chrome-icons.css` imported by both the standalone pages and the docs
   skin (so the two topbars can't drift), and the docs mobile menu button is
   restyled to the same bordered-square toggle the rest of the site uses.
+  **The site navigation is now one coherent taxonomy.** The primary nav lives
+  in a single shared source (`docs/src/lib/nav.mjs`) consumed by every surface
+  — the landing/playground/drawing-board/workbench topbars, the component
+  topbar, and the docs header + mobile sidebar — so it can't drift. The two
+  overlapping doc links (`Get started` + `Guides`) collapse into one **Docs**
+  entry that lands on the Overview hub (now carding into Principles, What is
+  Lattice?, Get started, the guides, and Components); the apps (Playground,
+  Drawing Board, Workbench) and Components stay as their own entries. The docs
+  sidebar is now docs-only — `Introduction` (Overview · What is Lattice? ·
+  **Principles** · The story) → `Get started` → `Guides` — with the duplicate
+  "Tools" group removed, so the mobile menu no longer stacks two near-identical
+  navigations and Principles is no longer buried.
 
 - **The CI visual-correctness gate is now a per-component semantic-invariant
   suite** (delivering the P4 pivot away from the retired pixel gate). Every
