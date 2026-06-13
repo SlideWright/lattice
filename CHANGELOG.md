@@ -60,19 +60,23 @@ in patch versions.
   a parity test pins its keep/drop boundary to marp-core's own comment
   collection so the render paths can't drift (HARD RULE #1). Demo:
   `examples/speaker-notes.md`.
-- **`split: headings` — divide a deck by its headings, not `---`.** A new
-  deck-wide front-matter key chooses how the body splits into slides:
-  `split: rule` (the default — unchanged Marp behaviour, split on `---`) or
-  `split: headings`, where the first `#` is the lead slide and every subsequent
-  `##` opens a new one, so a deck reads like a document with no separators to
-  forget. The headings divider is **eyebrow-aware** — a slide's `<!-- _class -->`
-  directive and its eyebrow, written above the title, are pulled onto that
-  slide instead of orphaning onto the previous one — and **hybrid**: an explicit
-  `---` still forces a break. Implemented as one shared `hr`-injection plugin so
-  the emulator, marp-cli, and the playground split identically (HARD RULE #1),
-  proven slide-count-identical to `rule` on every committed deck. Settable from
-  the Drawing Board's Deck Setup panel; an unknown value warns (`unknown-split`)
-  via the deck linter. Demo: `examples/split-headings.md` (a `---`-free deck).
+- **Breaking: decks divide on headings by default — the `split:` front-matter
+  key.** A new deck-wide key chooses how the body splits into slides. The
+  default is now **`split: headings`**: the first `#` is the lead slide and
+  every subsequent `##` opens a new one, so a deck reads like a document with no
+  separators to forget. Set **`split: rule`** to keep the classic
+  separators-only behaviour (split only on `---`). The headings divider is
+  **eyebrow-aware** — a slide's `<!-- _class -->` directive and its eyebrow
+  (a `p` whose only child is one inline-`code` span), written above the title,
+  are pulled onto that slide instead of orphaning onto the previous one — and
+  **hybrid**: an explicit `---` still forces a break. Implemented as one shared
+  `hr`-injection plugin so the Lattice engine, marp-cli, and the playground
+  split identically (HARD RULE #1), and **slide-count-identical on every classic
+  `---`-separated deck**, so existing decks are unaffected. Settable from the
+  Drawing Board's Deck Setup panel; an unknown value warns (`unknown-split`) via
+  the deck linter. Demo: `examples/split-headings.md`. Note: stock Marp (incl.
+  the marp-vscode preview) doesn't run the divider — Marp portability is served
+  by a planned Export-to-Marp bundle; the Lattice engine is the source of truth.
 - **LFM — Lattice-Flavored Markdown, named and specified.** Lattice's authoring
   dialect now has a name and a versioned spec (`LFM 1.0-draft`) under `spec/`.
   LFM is defined as a **profile of Markdown** (`CommonMark + GFM task lists + the

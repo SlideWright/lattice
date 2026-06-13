@@ -62,18 +62,18 @@ function sections(md, expected, label) {
 const fm = (mode, body) => `---\nmarp: true\nsplit: ${mode}\n---\n\n${body}`;
 
 describe('resolve-split', () => {
-  test('default mode is rule (absent / empty / unknown)', () => {
-    assert.equal(resolveSplitMode(''), 'rule');
-    assert.equal(resolveSplitMode('---\nmarp: true\n---\n\n# A'), 'rule');
-    assert.equal(resolveSplitMode('---\nsplit: nonsense\n---\n\n# A'), 'rule');
+  test('default mode is headings (absent / empty / unknown)', () => {
+    assert.equal(resolveSplitMode(''), 'headings');
+    assert.equal(resolveSplitMode('---\nmarp: true\n---\n\n# A'), 'headings');
+    assert.equal(resolveSplitMode('---\nsplit: nonsense\n---\n\n# A'), 'headings');
   });
-  test('reads headings and is case/quote tolerant', () => {
-    assert.equal(resolveSplitMode('---\nsplit: headings\n---\n'), 'headings');
-    assert.equal(resolveSplitMode('---\nsplit: "Headings"\n---\n'), 'headings');
+  test('reads an explicit rule opt-out and is case/quote tolerant', () => {
+    assert.equal(resolveSplitMode('---\nsplit: rule\n---\n'), 'rule');
+    assert.equal(resolveSplitMode('---\nsplit: "Rule"\n---\n'), 'rule');
   });
   test('an explicit override wins over the front matter', () => {
-    assert.equal(resolveSplitMode('---\nsplit: rule\n---\n', 'headings'), 'headings');
-    assert.equal(resolveSplitMode('---\nsplit: headings\n---\n', 'bogus'), 'headings');
+    assert.equal(resolveSplitMode('---\nsplit: headings\n---\n', 'rule'), 'rule');
+    assert.equal(resolveSplitMode('---\nsplit: rule\n---\n', 'bogus'), 'rule');
   });
   test('isKnownSplit + SPLIT_NAMES', () => {
     assert.deepEqual([...SPLIT_NAMES], ['rule', 'headings']);
@@ -83,15 +83,15 @@ describe('resolve-split', () => {
 });
 
 describe('headingSplit (both render paths agree)', () => {
-  test('rule mode (default): only `---` splits, headings do not', () => {
+  test('rule mode (opt-out): only `---` splits, headings do not', () => {
     sections(fm('rule', '# A\n\n## still A\n\nbody\n\n---\n\n## B\n'), 2, 'rule');
   });
 
-  test('a deck with no split key behaves exactly like rule', () => {
-    const body = '# A\n\n## still A\n\n---\n\n## B\n';
+  test('a deck with no split key behaves exactly like headings (the default)', () => {
+    const body = '# A\n\n## B\n\n## C\n';
     assert.equal(
       sections(`---\nmarp: true\n---\n\n${body}`, null, 'no-key'),
-      sections(fm('rule', body), null, 'rule'),
+      sections(fm('headings', body), null, 'headings'),
     );
   });
 
@@ -151,6 +151,17 @@ describe('headingSplit (both render paths agree)', () => {
         `${label}: lead-in (eyebrow + _class) must land on slide 2`);
     }
   });
+
+  test('pull-back only matches a TRUE eyebrow (code:only-child), not any code paragraph', () => {
+    // The eyebrow the splitter pulls back must be the exact shape the CSS styles
+    // (`p:has(> code:only-child)`). A paragraph with two code spans is NOT an
+    // eyebrow, so it stays as trailing content of the previous slide.
+    const secs = splitSections(engineHtml(fm('headings',
+      '# A\n\nintro\n\n`one` `two`\n\n## B\n\nbody\n')));
+    assert.equal(secs.length, 2, 'two slides');
+    assert.ok(secs[0].includes('one') && secs[0].includes('two'),
+      'a two-code paragraph is not an eyebrow — it stays on slide 1');
+  });
 });
 
 describe('backward-compat invariance over the committed corpus', () => {
@@ -162,10 +173,11 @@ describe('backward-compat invariance over the committed corpus', () => {
     ...globMd(path.join(REPO, 'examples', 'token-contrast')),
     path.join(REPO, 'test', 'integration', 'baseline-decks', 'gallery.md'),
   ].filter((f) => fs.existsSync(f))
-    // Exclude decks authored FOR headings (e.g. examples/split-headings.md): they
-    // intentionally carry no `---`, so forcing them to `rule` collapses them. The
-    // invariant is about `rule`-authored decks surviving a headings default.
-    .filter((f) => resolveSplitMode(fs.readFileSync(f, 'utf8')) !== 'headings');
+    // Restrict to classic `---`-separated decks: a deck with no body separator
+    // (e.g. examples/split-headings.md) collapses to one slide under `rule`, so
+    // it can't be rule/headings-invariant by construction. The invariant proves
+    // that a deck written the classic way is unchanged by the headings default.
+    .filter((f) => hasBodySeparator(fs.readFileSync(f, 'utf8')));
 
   for (const file of decks) {
     const name = path.relative(REPO, file);
@@ -178,6 +190,13 @@ describe('backward-compat invariance over the committed corpus', () => {
     });
   }
 });
+
+// True if the deck body (front matter stripped) contains a top-level `---`
+// thematic-break separator — i.e. it's a classic separator-split deck.
+function hasBodySeparator(src) {
+  const body = src.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n/, '');
+  return /^---[ \t]*$/m.test(body);
+}
 
 // List *.md directly under dir (non-recursive), absolute paths.
 function globMd(dir) {

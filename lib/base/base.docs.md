@@ -499,10 +499,10 @@ front-matter extension (`lib/core/resolve-split.js`), binary by design:
 
 | `split:` value | Slides divide on | Notes |
 |---|---|---|
-| `rule` | a top-level `---` only | The Marp-compatible **default** (omit the key). |
-| `headings` | the first `#` (lead) + every `##`, **and** `---` | Eyebrow-aware + hybrid (below). |
+| `headings` | the first `#` (lead) + every `##`, **and** `---` | The **default** (omit the key). Eyebrow-aware + hybrid (below). |
+| `rule` | a top-level `---` only | Opt back into the Marp-classic separators-only behaviour. |
 
-In `headings` mode the divider is **eyebrow-aware**: a slide's lead-in — its
+The default `headings` divider is **eyebrow-aware**: a slide's lead-in — its
 `<!-- _key -->` directive comments and its eyebrow paragraph, both written
 *above* the heading — is pulled onto the heading's slide, never orphaned onto
 the one before. It is **hybrid**: a literal `---` still forces a break (use it
@@ -510,17 +510,19 @@ for a heading-less image slide, or two slides under one idea). It is
 implemented as one shared `hr`-injection ruler
 (`headingSplit` in `lib/integrations/marp/plugins.js`, run `.before('marpit_slide')`)
 so the emulator, marp-cli, and the playground produce identical boundaries —
-and it is **slide-count-identical to `rule` on every committed deck** (pinned
-by `test/unit/parsing/heading-split.test.js`), so it can become the default
-later without disturbing what's written. An unrecognized value resolves to
-`rule`; `npm run lint:deck` flags it as an `unknown-split` warning.
+and it is **slide-count-identical to `rule` on every classic `---`-separated
+deck** (pinned by `test/unit/parsing/heading-split.test.js`), which is why the
+default flip leaves existing decks unchanged. An unrecognized value resolves to
+the default; `npm run lint:deck` flags it as an `unknown-split` warning.
 
-**VS Code live-preview caveat.** Like the `islands:` / `logo:` directives, the
-heading divider runs only in the two export paths — the stock marp-vscode
-preview can't load our plugin, so a `headings`-mode deck that omits `---`
-under-segments *in the live preview* while still exporting correctly. Keep a
-few `---` if you rely on the preview, or check the rendered PDF. See
-`engineering/decisions/2026-06-13-split-frontmatter.md`.
+**On vanilla Marp (incl. the marp-vscode live preview).** Lattice is the source
+of truth: the Drawing Board preview and the PDF export both run our engine, so
+the divider is always correct there. Stock Marp doesn't run our splitter, so a
+deck opened directly in the marp-vscode preview divides only on `---`. That's
+expected — Marp is an *export target*, served by a self-contained bundle that
+bakes the splits into literal `---` (planned; see
+`engineering/decisions/2026-06-13-split-frontmatter.md`), not a live render
+path we keep in lockstep.
 
 | Token / class | Effect |
 |---|---|

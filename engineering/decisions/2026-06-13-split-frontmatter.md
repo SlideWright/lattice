@@ -1,6 +1,15 @@
 # `split:` — a front-matter key for heading-driven slide division
 
-**Date:** 2026-06-13 · **Status:** landed (opt-in; default `rule`)
+**Date:** 2026-06-13 · **Status:** landed; **default flipped to `headings`** (see Update)
+
+> **Update (2026-06-13, same day):** the default was flipped from `rule` to
+> **`headings`** in a follow-up, and the architecture reframed: **Lattice's own
+> engine is the source of truth**, and **Marp is an export *target*, not a live
+> render path**. The marp-vscode preview limitation below is therefore no longer
+> something we patch — the Lattice-native surfaces (Drawing Board preview, PDF
+> export) are always correct, and vanilla-Marp portability is served by a planned
+> "Export to Marp" bundle that bakes the computed splits into literal `---`
+> (self-contained `.md` + themes + README). See §Known limitation / §Follow-ups.
 
 ## Problem
 
@@ -17,8 +26,12 @@ A deck-wide front-matter key **`split:`** with two values:
 
 | value | divides on | default? |
 |---|---|---|
-| `rule` | a top-level `---` only (Marp-compatible) | **yes** |
-| `headings` | the first `#` (lead) + every `##`, **and** `---` (hybrid) | no |
+| `headings` | the first `#` (lead) + every `##`, **and** `---` (hybrid) | **yes** (after the flip) |
+| `rule` | a top-level `---` only (Marp-classic) | no — explicit opt-out |
+
+*(Originally shipped with `rule` as the default to de-risk; flipped to `headings`
+the same day once the corpus-invariance regression confirmed no committed deck
+changes — see Update at top and §Evidence.)*
 
 - **Name `split:`** — already reserved for this in the 2026-06-10 Marp-replacement
   proposal §12.3, and consistent with the `finish:` / `islands:` / `theme:`
@@ -81,19 +94,27 @@ The deck linter warns on an unknown value (`unknown-split`, gated on
 
 Demo: `examples/split-headings.md` — a 7-slide deck with **no `---`**.
 
-## Known limitation — the VS Code live preview
+## Known limitation — vanilla Marp (incl. the marp-vscode live preview)
 
-The VS Code Marp **preview** path (`dist/lattice-runtime.js`) is a DOM
-post-processor over the stock marp-vscode extension's marp-core, which does
-**not** load `marp.config.js` — so it cannot run `headingSplit`, and a
-`headings`-mode deck that omits `---` will under-segment *in the live preview*
-while still **exporting correctly** through the emulator/marp-cli. Re-splitting
-already-rendered DOM (re-deriving pagination/headers/islands per synthesized
-section) is fragile and out of scope for v1. Documented; a runtime DOM
-re-split is a possible follow-up.
+Stock Marp (the marp-vscode preview, a bare `marp-cli` invocation that doesn't
+load our config) doesn't run `headingSplit`, so a default/`headings` deck that
+omits `---` divides only on `---` there — under-segmenting relative to our
+output. **This is by design under the reframed architecture:** Lattice's own
+engine is the source of truth (the Drawing Board preview and the PDF export are
+always correct), and Marp is an *export target*, not a live render path we keep
+in lockstep. The right fix is therefore not to patch the preview but to ship
+**Export to Marp** — a self-contained bundle (`.md` + themes + README) whose
+`.md` has the computed splits **baked into literal `---`**, so it renders
+correctly in any vanilla Marp tool with zero dependency on our code. (Emitting
+Marp's native `headingDivider` was considered and rejected: it splits before
+*every* heading, re-orphaning the eyebrow/`_class` lead-in our pull-back exists
+to fix — verified — and conflicts with our splitter when both are present.)
 
 ## Follow-ups
 
-1. **Default flip** to `headings` once the opt-in has mileage — the invariance
-   regression makes it a small, evidence-backed change.
-2. **Preview parity** — optional runtime DOM re-split for `split: headings`.
+1. ~~**Default flip** to `headings`.~~ **Done** (same-day follow-up) — the
+   corpus-invariance regression confirmed no committed deck changes.
+2. **Export to Marp** — the self-contained bundle (`.md` with splits baked into
+   `---`, + themes + README). This is the sanctioned path for using a Lattice
+   deck in any vanilla Marp tool, and the proper resolution of the preview
+   limitation above. Its own feature, to be specced separately.
