@@ -1251,7 +1251,7 @@ ${stateChartScript}
 </script>
 </body></html>`;
 
-const outHtml = outFile.replace(/\.pdf$/, '.html');
+const outHtml = outFile.replace(/\.pdf$/i, '.html');
 fs.writeFileSync(outHtml, htmlDoc);
 if (!QUIET) console.log(`HTML: ${slides.length} slides → ${outHtml}`);
 
@@ -1366,6 +1366,13 @@ async function embedNotesInPdf(pdfBytes, notes) {
     const { PDFDocument, PDFName, PDFString } = require('pdf-lib');
     const doc = await PDFDocument.load(pdfBytes);
     const pages = doc.getPages();
+    // notes[i] is keyed to PDF page i (both derive from the slide array). Guard
+    // the invariant: if a future transform ever made puppeteer emit a different
+    // page count, annotating by index would silently land notes on wrong pages.
+    if (pages.length !== notes.length) {
+      console.warn(`  ⚠ Speaker notes: ${notes.length} slide notes but ${pages.length} PDF pages — skipping note annotations to avoid misplacement.`);
+      return pdfBytes;
+    }
     pages.forEach((pg, i) => {
       const note = notes[i];
       if (!note) return;

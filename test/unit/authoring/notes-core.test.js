@@ -133,3 +133,32 @@ describe('notes-core: parity with marp-core comment collection', () => {
     });
   }
 });
+
+describe('notes-core: malformed input is linear (no ReDoS)', () => {
+  test('an unterminated <!-- with a long run resolves quickly to null', () => {
+    // The old `<!--+\s*([\s\S]*?)\s*--+>` pattern was quadratic here (a 5k run
+    // hung >30s). The linear pattern must finish in milliseconds. node:test has
+    // no per-test timeout, so we assert wall-time directly.
+    const html = `<section><!-- ${' '.repeat(200000)}no close`;
+    const t = Date.now();
+    const note = core.notesFromHtml(html);
+    const elapsed = Date.now() - t;
+    assert.equal(note, null, 'an unterminated comment is not a note');
+    assert.ok(elapsed < 1000, `extraction took ${elapsed}ms — expected linear/sub-second`);
+  });
+});
+
+describe('notes-core: known comment-collection deltas vs marp-core', () => {
+  // These are documented in spec/LFM-1.0.md §3.5 as explicitly NOT guaranteed
+  // identical across parsers — they depend on comment *segmentation*, not the
+  // note boundary. These tests lock notes-core's current behavior so a future
+  // change to it is a conscious decision, not a silent drift.
+  test('adjacent comments with no blank line are both collected', () => {
+    // marp-core collects only the first here; the HTML scan sees both.
+    assert.equal(core.notesFromHtml('<section><!-- a --><!-- b --></section>'), 'a\n\nb');
+  });
+  test('a comment inside a rendered block is still lifted', () => {
+    // marp-core folds this into an HTML-block token and does not collect it.
+    assert.equal(core.notesFromHtml('<section><div><!-- x --></div></section>'), 'x');
+  });
+});

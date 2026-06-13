@@ -189,7 +189,17 @@ the reference render paths today, **Lattice's emulator** materialises notes — 
 per-page PDF text annotation plus a hidden `aside.lattice-notes` element in the
 HTML sidecar; under marp-cli the same comments are marp-core's native notes
 (surfaced by `marp --pdf-notes` or a PPTX export); the VS Code preview does not
-surface them yet. All three draw the note/non-note line identically.
+surface them yet.
+
+The **directive and tooling-pragma exclusions** above are the pinned part of the
+contract: they are identical across implementations (the reference
+implementation locks them to marp-core with a parity test). A few rare
+comment-*placement* cases are explicitly **not** guaranteed identical, because
+they depend on how a given parser segments comments rather than on the note
+boundary: a comment buried inside a raw HTML block, two comments with no blank
+line between them, and a single comment that mixes a directive with prose. A
+conformant tool MAY collect these differently; authors should keep a note in its
+own comment, on its own line.
 
 - **Degrades to:** nothing visible — an HTML comment is invisible in every
   Markdown renderer, and on GitHub/GitLab a comment is already how an author
