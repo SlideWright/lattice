@@ -556,6 +556,10 @@ section.map:not(.cover) .map-figure,
 section.quadrant:not(.cover) .quadrant-figure[data-variant="cohort"] {
   display: grid;
   grid-template-columns: var(--chart-canvas-share) var(--chart-rail-share);
+  /* A FILLING row (not the default `auto`), so each diagram's `height:100%`
+     resolves against the real body height and grows to --chart-diagram-max
+     instead of collapsing to a small intrinsic size with dead space. */
+  grid-template-rows: minmax(0, 1fr);
   align-items: center;
   width: 100%;
   height: 100%;
@@ -597,11 +601,13 @@ section.quadrant:not(.cover) .quadrant-figure[data-variant="cohort"] .quadrant-l
   padding-left: var(--chart-legend-pad);
   display: flex;
   flex-direction: column;
-  /* Proportional key: full `--fs-body-compact` until the figure box drops below
-     the diagram's design height, then tracks `cqh` DOWN with the diagram. Rows,
-     swatches and gaps are `em` (below + per chart) so the whole key scales with
-     this font. */
-  font-size: min(var(--fs-body-compact), 3.9cqh);
+  /* Fixed, reliable key size. `cqh` in `font-size` does NOT track the figure
+     the way it does in layout properties (it resolves in a different phase), so
+     a `min(--fs-body-compact, cqh)` "scale" silently didn't — the key stayed put
+     while the diagram scaled. Since the diagram now box-fits DOWN under a squeeze
+     (freeing vertical room), a fixed key no longer truncates, so we keep it
+     simple and honest. Rows/swatches/gaps are `em` off this. */
+  font-size: var(--fs-body-compact);
   gap: var(--chart-legend-row-gap);
 }
 

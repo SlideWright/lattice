@@ -81,21 +81,21 @@ in patch versions.
 
 ### Fixed
 
-- **The `piechart` disc is now responsive — it no longer collapses to a
-  half-ring (with a truncated legend) when vertical space is tight.** The disc
-  was sized as a fixed `32cqi` square (tied to slide *width*, blind to height),
-  so any vertical squeeze — a masthead band under `islands: on`, a multi-line
-  caption, or larger `finish: sketch` type — overflowed the flexed chart body
-  and the slide's `overflow:hidden` clipped the bottom of the ring. It now uses
-  the same height-bound responsive idiom as `radar`/`quadrant` (`height:100%;
-  width:auto; aspect-ratio:1; max-height:32cqi`): the ring fills the available
-  height and its width follows, capped at the design size, so it shrinks to a
-  smaller FULL ring instead of clipping. Boardroom renders are unchanged (the
-  cap holds the size); only height-constrained slides differ. **The legend
-  scales with it** — the figure is a query container and the legend font is
-  `min(--fs-meta, cqh)` with its rows/swatches/gutters in `em`, so disc and
-  legend shrink together and stay proportional (and the legend can't truncate)
-  instead of a shrunk disc sitting beside a full-size, overflowing legend.
+- **The keyed chart-family diagrams (`piechart`, `radar`, `quadrant`) are now
+  responsive — they fill their box and scale with the available height instead
+  of collapsing.** The pie disc was a fixed `32cqi` square (tied to slide
+  *width*, blind to height), so any vertical squeeze — a masthead band under
+  `islands: on`, a multi-line caption, or larger `finish: sketch` type —
+  overflowed the flexed body and the slide's `overflow:hidden` clipped it to a
+  half-ring; radar/quadrant under-filled and read inconsistently sized. Each
+  diagram now fills its figure's OWN height (`height: 100cqh`, width via
+  `aspect-ratio`) with **no per-chart max cap — the parent body is the only
+  bound**, so they're a consistent size (radar no longer renders smaller than
+  the pie) and shrink to a smaller FULL diagram under a squeeze. Axis/rim labels
+  are SVG `<text>` in the viewBox, so they scale with the diagram. The HTML key
+  stays a fixed `--fs-body-compact` (reliable proportional text scaling via
+  `cqh` in `font-size` isn't achievable in CSS) — but because the diagram now
+  shrinks under a squeeze, the freed room keeps the fixed key from truncating.
   (Surfaced by `gallery-jargon`'s `piechart donut` under `islands: on` — #229.)
 - **`word-cloud` is responsive-safe under a vertical squeeze.** Its canvas was
   a fixed `85.9×25cqi` box (its absolutely-positioned children give it no
@@ -104,13 +104,10 @@ in patch versions.
   tall caption scales the cloud + key + spine down together (the `wc-svg`
   viewBox `meet` letterboxes them) instead of risking overflow. With this, every
   chart-family graphic now fits its box: the fixed-aspect SVGs (`piechart`,
-  `radar`, `quadrant`) are height-bound, the wide SVGs (`funnel`, `map`,
-  `word-cloud`) are width-bound, and the HTML+SVG charts fill width and flex.
-  **The shared keyed-chart legend** (the 70/30 rail on `piechart` / `radar` /
-  `map` / `quadrant-cohort`) scales with the diagram too — each figure is a query
-  container and the shared key font is `min(--fs-body-compact, cqh)` with
-  rows/swatches/gaps in `em`, so the diagram and key shrink together and the key
-  can't truncate.
+  `radar`, `quadrant`) fill their figure height, the wide SVGs (`funnel`, `map`,
+  `word-cloud`) are width-bound, and the HTML+SVG charts fill width and flex. The
+  shared keyed-chart key (the 70/30 rail) stays a fixed `--fs-body-compact` and
+  no longer truncates, since the diagram shrinks under a squeeze to free the row.
 - **Offline-rendered PDFs now embed the engine's intermediate font weights
   instead of synthesising them.** The self-hosted set the emulator base64-injects
   (`assets/fonts/` + `SELF_HOSTED_FACES`) was missing four faces the engine's

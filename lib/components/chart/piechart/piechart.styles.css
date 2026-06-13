@@ -30,13 +30,16 @@ section.piechart .piechart-svg {
      height, width follows the 1:1 aspect, capped at the 32cqi design size (cover
      drops chrome → 36cqi). Shrinks to a smaller FULL ring under a squeeze
      instead of clipping to a half-ring. */
-  height: 100%;
+  height: 100cqh;     /* fill the figure's OWN height (it's a container) — `%`
+                         falls back to the SVG's intrinsic viewBox size in the
+                         grid, leaving dead space. No max cap: the parent body
+                         (and the layout/islands safe-area) is the only bound. */
   width: auto;
-  max-height: 32cqi;
+  max-width: 100%;    /* don't exceed the diagram's grid column */
   aspect-ratio: 1 / 1;
   display: block;
 }
-section.piechart.cover .piechart-svg { max-height: 36cqi; }
+section.piechart.cover .piechart-svg { height: 100%; max-height: 36cqi; }
 section.piechart .piechart-svg .wedge {
   /* Stroke colour is the slot's --catN-ink (set per nth-child below); the
    * wedge fill is the same hue's --catN-fill. Pale fill + deep border on a
@@ -45,12 +48,11 @@ section.piechart .piechart-svg .wedge {
   paint-order: stroke;
 }
 section.piechart .piechart-legend {
-  /* Proportional to the disc: the font is `--fs-meta` until the figure box
-     drops below the disc's 32cqi cap, then it tracks `3.66cqh` (= --fs-meta at
-     32cqi) DOWN in lock-step with the shrinking disc. Everything else is `em`,
-     so rows, swatches, gutters and gaps all scale with that font — the whole
-     legend shrinks with the disc and can't truncate. */
-  font-size: min(var(--fs-meta), 3.66cqh);
+  /* Fixed --fs-meta (cover-variant key; the shared 70/30 rail drives the
+     non-cover key). `cqh` in font-size doesn't track the figure reliably, and
+     the disc box-fitting down frees room, so a fixed key won't truncate. Rows,
+     swatches and gaps are `em` off this. */
+  font-size: var(--fs-meta);
   flex: 0 1 auto;
   display: flex;
   flex-direction: column;
