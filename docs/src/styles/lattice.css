@@ -234,6 +234,26 @@ h1#_top {
 	}
 }
 
+/* ── Code blocks (Expressive Code) — accent-bound chrome ────────────────────
+ * The frame (bg/border/shadow) already tracks the palette via Starlight's UI
+ * theme colours (→ our --sl-color-* remap); the syntax hues come from the
+ * quiet Vitesse pair (astro.config). Here we tie the *interactive* accents to
+ * the palette so the whole block reads as the current theme: the focus ring,
+ * the copy button's border, the active editor-tab indicator, the text
+ * selection, and the scrollbar thumb. Unlayered, so it beats EC's own
+ * `@layer starlight.components` defaults regardless of [data-theme] scope. */
+.expressive-code {
+	--ec-focusBrd: var(--accent);
+	--ec-codeSelBg: color-mix(in srgb, var(--accent) 22%, transparent);
+	--ec-uiSelBg: color-mix(in srgb, var(--accent) 22%, transparent);
+	--ec-sbThumbCol: color-mix(in srgb, var(--text-muted) 38%, transparent);
+	--ec-sbThumbHoverCol: color-mix(in srgb, var(--accent) 55%, transparent);
+	/* Frame chrome accents */
+	--ec-frm-edActTabIndTopCol: var(--accent);
+	--ec-frm-inlBtnBrd: var(--accent);
+	--ec-frm-inlBtnFg: var(--accent);
+}
+
 /* ── Site nav group inside the mobile sidebar menu ──────────────────────────
  * Injected at the top of Sidebar.astro so the hamburger menu starts with the
  * full set of site destinations (incl. Home + Workbench). Hidden on desktop,

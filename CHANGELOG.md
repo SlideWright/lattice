@@ -163,6 +163,13 @@ in patch versions.
   Implemented as four small Starlight component overrides (`Header`,
   `ThemeProvider`, `Sidebar`, `MobileMenuFooter`) plus the token remap in
   `docs/src/styles/lattice.css`; no engine or deck behaviour changes.
+  **Code blocks** join the theming too: the syntax highlighter switches from
+  the default saturated night-owl to the restrained, low-saturation Vitesse
+  pair so code sits calmly inside any palette (instead of a cool blue fighting
+  the warm themes), and the block's interactive accents — focus ring, copy
+  button, active-tab indicator, selection, scrollbar — bind to the palette
+  accent. The frame already tracked the palette via Starlight's UI theme
+  colours.
 
 - **The CI visual-correctness gate is now a per-component semantic-invariant
   suite** (delivering the P4 pivot away from the retired pixel gate). Every

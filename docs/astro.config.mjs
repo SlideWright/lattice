@@ -55,6 +55,20 @@ export default defineConfig({
 			description:
 				'A Marp-based slide-deck engine that renders boardroom-quality PDFs from Markdown. Themed layouts, Mermaid diagrams, WCAG AA throughout.',
 			customCss: ['./src/styles/lattice.css'],
+			// Code blocks (Expressive Code). The frame/chrome already tracks the
+			// palette because `useStarlightUiThemeColors` binds it to --sl-color-*
+			// (which we remap to the site tokens). The default syntax theme
+			// (night-owl) is a saturated cool blue that fights the warmer palettes,
+			// so swap in the restrained, low-saturation Vitesse pair: it sits
+			// calmly inside ANY of the 14 palettes. We keep the UI-theme-colour
+			// binding ON (it defaults off once `themes` is set) so the frame stays
+			// palette-bound; only the token hues come from Vitesse. The accent-
+			// driven bits (focus ring, copy button, active-tab indicator, selection,
+			// scrollbar) are bound to var(--accent) in lattice.css (.expressive-code).
+			expressiveCode: {
+				themes: ['vitesse-light', 'vitesse-dark'],
+				useStarlightUiThemeColors: true,
+			},
 			social: [
 				{ icon: 'github', label: 'GitHub', href: 'https://github.com/slidewright/lattice' },
 			],
