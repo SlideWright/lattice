@@ -1,18 +1,19 @@
 # LFM 1.0 — Lattice-Flavored Markdown
 
-**Status:** Draft · **Version:** 1.0 · **Date:** 2026-06-13
+**Version:** 1.0-draft (pre-ratification) · **Status:** Draft · **Date:** 2026-06-13
+**License:** [CC-BY-4.0](#12-governance--license)
 
 LFM (Lattice-Flavored Markdown) is the authoring dialect of the
 [Lattice](../README.md) slide engine. Its name follows *GitHub-Flavored
-Markdown* deliberately: LFM is **a profile of Markdown, not a new language.**
+Markdown*: LFM is **a profile of Markdown, not a new language.**
 
 > **LFM = CommonMark + GFM task lists + the Lattice extension set.**
 
-A document written in LFM is a valid Markdown document. Every LFM extension is
-designed so that a renderer with **no knowledge of Lattice** — GitHub, GitLab,
-Bitbucket, Confluence, or a plain CommonMark viewer — still renders something
-readable. That property, **graceful degradation**, is the constitution of the
-standard and the criterion for adopting any future extension (§5).
+A document written in LFM is a valid Markdown document. Every LFM extension
+MUST render readably in a CommonMark viewer that has **no knowledge of
+Lattice** — GitHub, GitLab, Bitbucket, and Confluence included. That property is
+**graceful degradation**, the governing rule of the standard and the criterion
+for adopting any future extension (§5).
 
 This document specifies what LFM adds to Markdown, how each addition degrades,
 and what makes a document *conformant*. It does not specify a parser: LFM rides
@@ -31,9 +32,9 @@ LFM defines three levels so a tool can advertise precisely what it supports.
 | **L1** | *Lattice-structured* | The renderer understands the **slide** and **block** extensions (§2–§3): `_class` directives, front-matter directives, the card grammar, and state markers. It produces Lattice layouts. |
 | **L2** | *Lattice-diagnostic* | The tool additionally implements the [Diagnostic Protocol](./diagnostics.md): it validates a document, reports findings with stable rule IDs, and offers machine-applicable fixes. |
 
-A **conformant LFM document** is one that is valid at L0 and, for every Lattice
-construct it uses, follows the grammar in §2–§4. A **conformant LFM renderer**
-declares the highest level it implements.
+A **conformant LFM document** is valid at L0 and follows the grammar in §2–§4
+for every Lattice construct it uses. A **conformant LFM renderer** declares the
+highest level it implements.
 
 ## 2. Slide-level extensions
 
@@ -71,6 +72,9 @@ in addition to Marpit's own (`theme`, `paginate`, `_class`, …):
 | `finish:` | `boardroom` \| `sketch` \| `sketch-clean` | Deck-wide visual register. Unknown values are a diagnostic (§ `unknown-finish`). |
 | `logo:` | path | Deck logo injected into the masthead. |
 
+These two keys are the complete LFM-added front-matter surface in 1.0; every
+other recognised key belongs to Marpit.
+
 - **Degrades to:** front matter is hidden or shown as a metadata table,
   depending on the host. **L0-clean** (it is YAML front matter, which every
   GFM host already special-cases).
@@ -79,7 +83,9 @@ in addition to Marpit's own (`theme`, `paginate`, `_class`, …):
 
 ### 3.1 The card grammar (nested-list slots)
 
-Card-style and ledger layouts read a **title + body** from a nested list. The
+Card-style and ledger layouts read a **title + body** from a nested list (a
+*card-style* layout is one whose grammar declares a card slot; the set is
+published in [`dist/docs/grammar.json`](../dist/docs/grammar.json)). The
 canonical shape is:
 
 ```markdown
@@ -114,7 +120,7 @@ grammar is **shared** across `checklist`, `verdict-grid`, `obligation-matrix`,
 
 - **`[x]` / `[ ]` degrade to:** real checkboxes in any GFM host. **L0-clean.**
 - **`[-]` / `[/]` degrade to:** literal text (`[-] …`). Readable but not a
-  checkbox — the one documented non-GFM-clean construct in LFM 1.0 (§5.1).
+  checkbox — LFM 1.0's only non-GFM-clean construct (§5.1).
 
 ### 3.3 Fenced sub-languages (charts & diagrams)
 
@@ -126,16 +132,18 @@ is its own mini-spec; LFM only requires that it degrades to a code block.
 | `functionplot` | A [function-plot](https://mauriciopoppe.github.io/function-plot/) graph spec (JSON body: mathematical functions + axes). Used today by the `math` component's `canvas` variant to draw a curve beside an equation. | A code block showing the JSON config. **L0-clean.** |
 | `mermaid` | Mermaid (passthrough), used by the `diagram` component. | A code block. **L0-clean** (and Mermaid-aware hosts render the diagram). |
 
-Each fence is **named after the library that renders it** — `functionplot`
-(function-plot), `mermaid` (Mermaid) — exactly as the equation half of `math`
-uses standard `$$…$$` for its renderer (KaTeX). LFM does **not** rebrand these
-or claim to own their config languages. What LFM owns is narrow and consistent
-across all three: the fence registration, the SVG **theming** that makes the
-output inherit the deck's palette tokens, and the **degradation contract**. The
-fence body is **not Markdown** — it is the renderer library's own configuration
-language, owned by that library and referenced from
-[`dist/docs/grammar.json`](../dist/docs/grammar.json) rather than inlined here,
-so this prose spec stays stable as those options evolve.
+Each fence is **named after the library that renders it**: `functionplot` for
+function-plot, `mermaid` for Mermaid. This matches how the equation half of the
+`math` component uses standard `$$…$$` to pass through to KaTeX. LFM does
+**not** rebrand these libraries or claim to own their config languages.
+
+What LFM owns is narrow and consistent across all three: the fence
+registration, the SVG **theming** that makes the output inherit the deck's
+palette tokens, and the **degradation contract**. The fence body is the
+renderer library's own configuration language, not Markdown, and LFM does not
+own its schema. [`dist/docs/grammar.json`](../dist/docs/grammar.json) records
+each fence's library, component, and deprecated aliases; the config schema stays
+with that library, so this prose spec stays stable as those options evolve.
 
 > **Deprecated alias.** The `functionplot` fence was previously named
 > `latticeplot`. That name implied a Lattice-owned grammar that does not exist
@@ -164,18 +172,21 @@ is generated, not enumerated here, so it cannot drift:
   description), its **skeleton**, and the **fences/state-markers** it reads.
 - **Modifiers** — recognised by set membership or by these prefix families:
   `tint-`, `mark-`, `with-`, `at-`, `no-`, `tone-`, `treatment-`, `checks-`,
-  plus the universal/semi-universal variant sets. See
+  plus the universal/semi-universal variant sets. The authoritative prefix list
+  is `MODIFIER_PREFIXES` in
+  [`lib/authoring/lint-core.js`](../lib/authoring/lint-core.js); the enumerated
+  variant tiers are catalogued in
   [`design/design-system.md`](../design/design-system.md) §6.5.
 
 An unrecognised token is a diagnostic (`unknown-class`) with a did-you-mean
 suggestion, never a hard parse error — an LFM document with a typo is still a
 valid Markdown document.
 
-## 5. Graceful degradation — the constitution
+## 5. Graceful degradation — the governing rule
 
 **Every LFM extension MUST render as readable Markdown in an LFM-unaware
-renderer.** This is not a nicety; it is the property that makes LFM safe for a
-host like GitHub to render and safe for an author to write without lock-in.
+renderer.** This is the property that makes LFM safe for a host like GitHub to
+render, and safe for an author to write without lock-in.
 
 **Rule for future extensions:** no construct may be added to LFM without a row
 in the degradation table (§2–§3) stating exactly what an unaware renderer
@@ -187,8 +198,8 @@ LFM 1.0 has exactly one: the **`[-]` and `[/]` state markers** (§3.2). GFM
 task-list syntax covers only `[x]` and `[ ]`, so `[-]`/`[/]` render as literal
 text in a vanilla GFM host. They are retained because the four-state grammar is
 load-bearing across five components and the literal-text fallback is readable.
-A future LFM version MAY introduce GFM-clean aliases; until then this is
-documented, intended behaviour, not a bug.
+A future LFM version MAY introduce GFM-clean aliases. Until then, this is a
+documented exception, not a conformance failure.
 
 ## 6. Relationship to other standards
 
@@ -196,14 +207,17 @@ documented, intended behaviour, not a bug.
   valid (if Lattice-inert) LFM document.
 - **GFM** — LFM adopts GFM task lists and tables. The only divergence is §5.1.
 - **Marpit / Marp** — LFM's slide model (`_class`, `---` separators, front
-  matter) is Marpit-compatible; Lattice is a Marp-based engine. LFM names and
-  constrains the subset that produces boardroom layouts.
+  matter) is Marpit-compatible; Lattice is a Marp-based engine. Marpit gives
+  you slides and a directive syntax; LFM adds what Marpit does not specify — a
+  named, versioned, conformance-levelled contract, the degradation guarantee
+  (§5), a fixed component/modifier vocabulary (§4), and a stable diagnostic
+  protocol. LFM names and constrains the subset that produces boardroom layouts.
 - **Mermaid** — embedded as a fenced sub-language (§3.3), unchanged.
 
 ## 7. Versioning
 
 LFM follows SemVer at the *standard* level, tracking the engine's stability
-contract (layouts and tokens are stable surfaces — see `CHANGELOG.md`):
+contract: layouts and tokens are stable surfaces (see `CHANGELOG.md`).
 
 - **Major** — removing or breaking an extension, or breaking degradation.
 - **Minor** — adding an extension (with its degradation row) or a component.
@@ -213,9 +227,166 @@ The machine-readable surface (`grammar.json`, `components.json`) is regenerated
 from the manifests on every build, so it always matches the engine that ships
 alongside this document.
 
+## 8. Conformance testing
+
+Conformance is verifiable at each level, with a distinct test shape per level:
+
+- **L0 (degradation).** A fixture pairs an LFM source fragment with the readable
+  Markdown a Lattice-unaware renderer MUST produce. The degradation rows in
+  §2–§3 are the normative seed for this corpus.
+- **L1 (structure).** A fixture pairs an LFM document with the components and
+  slots a renderer MUST resolve from it — the `_class` token, the card-grammar
+  reads, the state-marker semantics. The per-component grammar in
+  [`dist/docs/grammar.json`](../dist/docs/grammar.json) is the oracle.
+- **L2 (diagnostics).** A fixture pairs an LFM document with the exact set of
+  findings (diagnostics §1) a tool MUST emit: rule ID, severity, slide, and any
+  autofix result. The reference implementation's lint fixtures are the seed and
+  its output is the v1 oracle.
+
+A formal, runnable conformance suite is **forthcoming** — step 2 of the adoption
+path in the `2026-06-13-lfm-standard` decision note. Until it ships, the
+degradation tables in §2–§3 and the reference implementation's fixtures are the
+conformance contract.
+
+## 9. Security considerations
+
+LFM itself executes nothing: the prose layer is CommonMark, and every extension
+degrades to valid Markdown. The security surface is the fenced **sub-languages a
+host renders** (§3.3): Mermaid and function-plot both produce SVG from
+author-supplied configuration. A host that renders untrusted LFM MUST treat
+them as it treats any embedded renderer.
+
+- **Sanitise the rendered SVG.** Strip scripts, foreign objects, and event
+  handlers before inlining the output — exactly as a host already does for a
+  `mermaid` block.
+- **Bound the work.** A fence body is attacker-controllable. A host SHOULD cap
+  render time and output size to resist denial-of-service from a pathological
+  config.
+- **Resolve asset paths under the host's policy.** The `logo:` directive (§2.3)
+  and any local-file reference resolve against the host's asset policy, not
+  LFM's; a host MUST NOT widen its file-access surface to render LFM. The
+  Lattice reference engine gates local files behind an explicit
+  `--allow-local-files` flag.
+
+## 10. Adding to the vocabulary
+
+The component, modifier, and fence vocabulary is **closed to the manifest set**
+in LFM 1.0: a third party cannot register a new `_class` component, modifier
+prefix, or fence into the standard at authoring time. New vocabulary enters LFM
+the way every current entry did — a component manifest (or a fence
+registration) is added to the engine, and the build projects it into
+`grammar.json`, so the published grammar and the linter vocabulary update
+together and cannot drift (§4).
+
+An unrecognised token is therefore a diagnostic (`unknown-class`), never a parse
+error: an author who reaches for vocabulary that does not exist is warned, not
+blocked. A registration path for out-of-tree vocabulary — an org-private
+modifier family, a third-party fence such as `vega-lite` — is deferred (§11).
+
+## 11. Non-goals (LFM 1.0)
+
+LFM 1.0 deliberately does **not**:
+
+- **Define a parser or a formal grammar (ABNF/EBNF) for the prose layer.** LFM
+  rides CommonMark; the parser is CommonMark's. `grammar.json` is a structural
+  projection (selectors + skeletons), not a parser grammar.
+- **Re-encode the `[-]` / `[/]` state markers** into GFM-clean glyphs (§5.1).
+  The current glyphs are documented, not changed, in 1.0.
+- **Open a registration path** for out-of-tree components, modifiers, or fences
+  (§10).
+- **Ship a Language Server or character-precise diagnostic ranges.** The
+  diagnostic protocol is their foundation; see diagnostics §6.
+
+## 12. Governance & license
+
+- **License.** This specification — the prose under `spec/` — is published under
+  **[CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/)**. Anyone may
+  implement LFM (a renderer, a linter, a `remark` plugin) and redistribute the
+  spec, with attribution. The Lattice engine's *code* is MIT; the spec carries
+  its own license because a normative document is a different artifact from the
+  reference implementation.
+- **Steward.** The SlideWright project stewards LFM. The spec is the owned
+  asset; conformant implementations are interchangeable, and a second
+  implementation is an explicit adoption goal.
+- **Amendments.** Changes follow the SemVer rules in §7 and land through the
+  project's normal review — a PR against `spec/`, recorded in the history below
+  and in `CHANGELOG.md`. Any change to a normative MUST/MAY requires a version
+  bump per §7.
+
+### Document history
+
+| Version | Date | Change |
+|---|---|---|
+| 1.0-draft | 2026-06-13 | Initial draft. Formalises the existing extension set, conformance levels, degradation table, and the companion diagnostic protocol. |
+
+## Appendix A — A worked example (informative)
+
+A three-slide LFM deck, and how the same source reads in each environment:
+
+````markdown
+---
+theme: indaco
+finish: boardroom
+paginate: true
 ---
 
-*This spec is generated-adjacent: the vocabulary and per-component grammar it
-points to (`dist/docs/grammar.json`, `dist/docs/components.json`) are built
-from the component manifests by `tools/build-docs-portal.js`. The prose here is
-the stable contract; the machine artifacts are the always-current detail.*
+<!-- _class: title -->
+
+# Q3 Strategy
+
+`Board review · 2026-06-13`
+
+How we get to plan by year-end.
+
+---
+
+<!-- _class: checklist -->
+
+## Readiness
+
+- [x] Revenue plan signed
+- [-] Hiring partially staffed
+- [ ] Security audit scheduled
+
+---
+
+<!-- _class: cards-grid -->
+
+## Bets
+
+- Expand EU
+  - Two markets live by Q4.
+- Ship the API
+  - Private beta with six design partners.
+````
+
+**In a Lattice-unaware viewer (GitHub, plain CommonMark):**
+
+- The front matter is hidden or shown as a metadata table.
+- The `_class` comments are invisible.
+- `---` renders as horizontal rules between sections.
+- `[x]` and `[ ]` render as real checkboxes; `[-]` renders as the literal text
+  `[-]` (§5.1).
+- The eyebrow code-span and the "Bets" nested list render as ordinary inline
+  code and a nested bullet list.
+
+A reviewer on GitHub sees a titled, sectioned checklist and a list of bets — the
+document is **completely readable** with no Lattice support.
+
+**In Lattice (L1+):**
+
+- Slide 1 renders the `title` component: display headline, eyebrow, standfirst.
+- Slide 2 renders `checklist`, mapping `[x]` / `[-]` / `[ ]` to pass / partial /
+  todo states.
+- Slide 3 renders `cards-grid`, lifting each card's first line to a bold title
+  above its body.
+
+Nothing in the source is lost on the way down, and nothing Lattice-specific
+leaks up into the degraded view.
+
+---
+
+*This spec is generated-adjacent: `tools/build-docs-portal.js` builds the
+vocabulary and per-component grammar it points to (`dist/docs/grammar.json`,
+`dist/docs/components.json`) from the component manifests. This prose is the
+stable contract; the machine artifacts are the always-current detail.*

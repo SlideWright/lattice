@@ -4,14 +4,15 @@
 **Companion to:** [`LFM-1.0.md`](./LFM-1.0.md) (conformance level **L2**)
 
 A conformant LFM document is always valid Markdown (§ LFM L0), so LFM
-diagnostics are never *parse errors* — they are **authoring findings**:
-"this is valid Markdown, but on *this Lattice layout* it will not render the way
-you intend." This document specifies the stable shape of a finding, the frozen
-rule registry, severities, and the contract for machine-applicable fixes.
+diagnostics are never *parse errors*. They are **authoring findings**:
+constructs that are valid Markdown but, on *this Lattice layout*, will not
+render the way the author intends. This document specifies the stable shape of a
+finding, the frozen rule registry, severities, and the contract for
+machine-applicable fixes.
 
 This is the surface a tooling vendor implements to give LFM authors inline
-squiggles and quick-fixes — in an editor, a CI check, a PR bot, or a host like
-GitHub. It is the foundation a future LFM Language Server builds on (§6).
+findings and quick-fixes — in an editor, a CI check, a PR bot, or a host like
+GitHub. This protocol is the foundation of a future LFM Language Server (§6).
 
 The reference implementation is `lib/authoring/lint-core.js` (pure, fs-free,
 shared by the CLI `tools/lint-deck.js`, the engine's `validate()`, and the
@@ -57,11 +58,11 @@ A diagnostic is a JSON object:
 ## 2. Severities
 
 - **`error`** — the slide will render visibly wrong (a slot inherits the wrong
-  weight, a grid row splits, a required slot renders empty). An author almost
-  always wants to fix these before shipping.
-- **`warning`** — the slide will render, but likely not as intended, or a typo
-  silently selected a fallback (unknown class, unknown finish, unresolved map
-  region). Surfaced, not blocking.
+  weight, a grid row splits, a required slot renders empty). Authors SHOULD
+  resolve every error before publishing.
+- **`warning`** — the slide will render, but likely not as intended; for
+  example, a typo silently selected a fallback (unknown class, unknown finish,
+  unresolved map region). Warnings are surfaced but do not block rendering.
 
 There is no `info`/`hint` tier in v1; a future minor version MAY add one.
 
@@ -77,7 +78,7 @@ below are the canonical v1 identifiers the reference implementation emits, and
 
 | Rule ID | Severity | Autofix | What it catches |
 |---|---|---|---|
-| `unknown-class` | warning | — | A `_class` token that is not a known component or modifier. Carries a did-you-mean suggestion when one is close (bounded Levenshtein). |
+| `unknown-class` | warning | — | A `_class` token that is not a known component or modifier. |
 | `card-style-inline-title` | error | ✓ | `- **Title.** body` on a card-style layout — the body inherits the parent `li` bold. Fix: nested `- Title` / `  - body`. |
 | `ledger-inline-title` | error | — | The unordered inline-bold shape on a ledger/numbered layout, which wants the ordered `1. Name` / `   - body` shape. |
 | `statement-ol-bold` | error | — | A `**bold**` span inside an ordered-list statement, which splits the counter-grid row (e.g. `principles`). |
@@ -89,20 +90,28 @@ below are the canonical v1 identifiers the reference implementation emits, and
 | `unknown-map-region` | warning | — | A `map` list item whose lead name the basemap can't resolve. Carries a did-you-mean against the basemap vocabulary. |
 | `unknown-finish` | warning | — | A front-matter `finish:` value that isn't a known register — the deck would silently render the boardroom baseline. |
 
+> **Autofix is per-finding, not per-rule.** The ✓ marks rules that *can* offer a
+> deterministic autofix; whether a given finding carries one depends on its
+> source line. `card-style-inline-title` and `split-bodyless-item` autofix the
+> bold inline shape (`- **Title.** body`); a bare-title or ambiguous-split
+> finding emits `autofixable: false` and relies on the `fix` guidance (§4).
+
 The machine-readable companion to this table is the per-component grammar in
 [`dist/docs/grammar.json`](../dist/docs/grammar.json), which records, per
 component, the slot/shape contract these rules enforce.
 
 ## 4. Machine-applicable fixes
 
-When `autofixable` is `true`, the finding has a **deterministic, unique**
-rewrite — there is exactly one correct result, so a tool may apply it without
-asking. The reference implementation exposes:
+When `autofixable` is `true`, exactly one correct rewrite exists, so a tool MAY
+apply it without prompting the author. The reference implementation exposes:
 
-- `autofixNestedTitle(line)` — converts `- **Title.** body` →
-  `- Title` / `  - body`. Returns `null` for shapes that are not uniquely
-  fixable (a bare title, an ambiguous non-bold split), which therefore keep
-  `autofixable: false` and rely on the `fix` guidance.
+- `autofixNestedTitle(line)` — converts the **unordered** inline shape
+  `- **Title.** body` → `- Title` / `  - body`. It returns `null` for shapes
+  that are not uniquely fixable: a bare title, an ambiguous non-bold split, or
+  the ordered ledger form (`1. **Name.** body`, whose corrected list type is
+  ambiguous). Those emit `autofixable: false` and rely on the `fix` guidance.
+  The ordered ledger shape is intentionally not auto-fixed, matching
+  `ledger-inline-title` carrying no autofix.
 - `applyFix(source, finding)` — applies an autofixable finding to the document,
   scoped to the finding's slide so an identical line elsewhere is untouched.
 

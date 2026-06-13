@@ -17,15 +17,13 @@ parser and linter, does every component manifest carry a grammar section, what
 about chart semantics, how does this power error identification and correction,
 and do we build on something or roll our own?
 
-The ambition behind the question is reach: name and own the standard, and
-eventually get LFM rendered *inside* GitHub, GitLab, Bitbucket, and Confluence
-the way Mermaid is.
+The ambition is reach: name and own the standard, and eventually get LFM
+rendered *inside* GitHub, GitLab, Bitbucket, and Confluence the way Mermaid is.
 
 ## What we already have (the raw material)
 
-The honest finding from auditing the engine: **most of this already exists in
-pieces.** The decision is whether to *name and formalise* it, not whether to
-build it.
+Auditing the engine shows that **most of this already exists in pieces.** The
+decision is whether to *name and formalise* it, not whether to build it.
 
 - **Extensions over CommonMark, not a new language.** Every Lattice construct
   rides `markdown-it` / Marpit. There is **no custom parser**:
@@ -45,9 +43,8 @@ build it.
   (CSS selector + `required` + description), `skeleton`, and `sample`. That
   *is* a grammar; it was simply never labelled or exported as one.
 - **The Mermaid pattern, already** — the `functionplot` fence (then
-  `latticeplot`) is a fenced DSL that degrades to a code block. Structurally
-  identical to how Mermaid won
-  embedding.
+  `latticeplot`) is a fenced DSL that degrades to a code block, the same
+  structure that earned Mermaid its embedding in GitHub.
 
 So we are not starting a standard. We are **promoting an undocumented one to a
 named, versioned, conformant spec.**
@@ -56,25 +53,25 @@ named, versioned, conformant spec.**
 
 **Owning a parser is the opposite of getting embedded.** GitHub, GitLab,
 Bitbucket, and Confluence will not adopt a bespoke parser or a language that
-breaks in their existing CommonMark/GFM renderer. What they *do* embed are
-graceful supersets and fenced DSLs that degrade to something sane: GFM is
-CommonMark + extensions; Mermaid is a code block that upgrades to a diagram.
-Both won by being **zero-risk to adopt.**
+breaks in their existing CommonMark/GFM renderer. What those platforms embed are
+graceful supersets and fenced DSLs that degrade cleanly: GFM extends CommonMark;
+Mermaid is a code block that upgrades to a diagram. Both succeeded because
+adopting them carries no risk to an existing renderer.
 
 **Decision:** LFM is a **profile of Markdown**, defined as
 
 > `LFM = CommonMark + GFM task lists + {the Lattice extension set}`
 
-versioned (`LFM 1.0`). The **spec is the asset we own; parsers are
-interchangeable implementations.** We should *want* a second conformant
-implementation (a `remark` plugin) to prove LFM is a spec, not a single
-product. (Posture confirmed with the owner on 2026-06-13: "Markdown profile",
-rejecting "Proprietary superset".)
+versioned (`LFM 1.0`). **The spec is what we own; parsers are interchangeable
+implementations.** We should publish it under a permissive license (CC-BY-4.0)
+and actively encourage a second conformant implementation (a `remark` plugin),
+so LFM is provably a spec and not a single product. (Posture confirmed with the
+owner on 2026-06-13: "Markdown profile", rejecting "Proprietary superset".)
 
 ### Consequences
 
-1. **Graceful degradation is the constitution.** Every extension must render as
-   *readable* Markdown in a vanilla viewer. This is the exact criterion a
+1. **Graceful degradation is the governing rule.** Every extension must render
+   as *readable* Markdown in a vanilla viewer. This is the exact criterion a
    GitHub/GitLab/Confluence PM will judge adoption on. `spec/LFM-1.0.md` carries
    a degradation table; every future extension must add a row before it ships.
 2. **No custom parser — ever, for the standard.** The owned `lattice-engine`
@@ -100,8 +97,8 @@ rather than rewrite it. Lint rules stay single-source in
 
 Do **not** hand-write EBNF 60 times and do not fork the lint vocabulary. The
 manifests already encode each component's grammar in `slots` + `skeleton`. We
-**project** that into a machine-readable grammar artifact rather than authoring
-a new hand-maintained field:
+**generate** `grammar.json` from those manifests rather than maintaining a
+separate hand-written field:
 
 - `tools/build-docs-portal.js` (which already loads every manifest and emits
   `dist/docs/components.json`) gains a third output, `dist/docs/grammar.json`.
@@ -111,8 +108,8 @@ a new hand-maintained field:
 - The freshness gate, ownership guard, and `dist/README.md` index extend
   automatically — no new build step, no new hand-maintained file.
 
-This keeps the grammar honest by construction: it cannot drift from what the
-engine actually accepts, because it is generated from the same fields the
+This keeps the grammar honest by construction: it stays in lockstep with what
+the engine actually accepts, because it is generated from the same fields the
 engine reads.
 
 ### Chart / diagram semantics — the Mermaid model we already built
@@ -134,51 +131,57 @@ inlined.
 ### The `latticeplot` → `functionplot` rename (honesty audit)
 
 The fence shipped originally as `latticeplot`. Reviewing it for this spec
-surfaced that the name was a **vanity rebrand**: Lattice does nothing to
-function-plot it does not also do to Mermaid (render via the library, theme its
-SVG through `var(--token)`), and the body authors write is function-plot's
-config schema *verbatim* — so the Lattice-branded name implied an
-engine-agnostic abstraction that does not exist, and the implied
-engine-swappability was illusory (swap the engine and every deck breaks). The
-honest, internally-consistent move — matching how we already treat both Mermaid
-and `$$`/KaTeX — is to name the fence after its engine. So `latticeplot` →
-`functionplot`, with `latticeplot` retained as a **deprecated alias for one
-release**. A genuinely Lattice-owned, engine-agnostic plot vocabulary (with
-function-plot as one swappable backend behind a translator) remains a possible
-future bet; *that* would earn back a Lattice-owned name — this rename does not
-foreclose it, it just stops claiming it before it exists.
+surfaced the name as a **vanity rebrand**. Lattice does nothing to function-plot
+that it does not also do to Mermaid: it renders via the library and themes the
+SVG through `var(--token)`. The body authors write is function-plot's config
+schema *verbatim*. So the Lattice-branded name implied an engine-agnostic
+abstraction that does not exist, and the implied engine-swappability was
+illusory — swap the engine and every deck breaks. The consistent move, matching
+how we already treat both Mermaid and `$$`/KaTeX, is to name the fence after its
+engine. So `latticeplot` → `functionplot`, with `latticeplot` retained as a
+**deprecated alias for one release**. A genuinely Lattice-owned, engine-agnostic
+plot vocabulary — function-plot as one swappable backend behind a translator —
+remains a possible future bet. That would earn back a Lattice-owned name; this
+rename does not foreclose it, it just stops claiming it before it exists.
 
-### Error identification & correction — the moat
+### Error identification & correction — the tooling leverage
 
-This is where the durable value is, and it is nearly built. We formalise the
-linter's findings into a stable **diagnostic protocol** (`spec/diagnostics.md`):
-frozen rule IDs, severity, location, message, and machine-applicable `fix`.
-That is what makes embedding *valuable* to a tooling vendor — inline squiggles
-and quick-fixes in any editor, not merely prettier slides — and it is the
-defensible IP. The existing rule IDs (`unknown-class`, `card-style-inline-title`,
-…) are frozen as the v1 registry; the `lfm/<rule>` namespace is the published
-convention going forward. A Language Server is the natural next step and is
+Most of this already exists in the linter. We formalise its findings into a
+stable **diagnostic protocol** (`spec/diagnostics.md`): frozen rule IDs,
+severity, location, message, and machine-applicable `fix`. That is what makes
+embedding *valuable* to a tooling vendor — inline findings and quick-fixes in
+any editor, not merely prettier slides. The defensibility is
+not the rule list itself, which a competitor can read and reimplement; it is
+that the rules and the published grammar are generated from the same manifests,
+so the two cannot drift. The existing rule IDs (`unknown-class`,
+`card-style-inline-title`, …) are frozen as the v1 registry; `lfm/<rule>` is the
+published qualified form. A Language Server is the natural next step and is
 sketched as non-goal-for-now in the protocol doc.
 
 ## The embedding endgame (how we actually "own" it)
 
-The playbook that worked for GFM, Mermaid, and MDX, in order:
+The steps that carried GFM, Mermaid, and MDX into the platforms, in dependency
+order:
 
 1. A crisp, public, **versioned spec** (`LFM 1.0`).
 2. A **conformance test suite** (the degradation table + linter fixtures are
    the seed).
-3. A **liberally-licensed reference implementation** + a *second* (remark)
-   implementation, to prove it is a spec and not a product.
-4. **Graceful degradation as an ironclad rule**, so adoption is risk-free.
+3. A **liberally-licensed reference implementation**, plus a *second* (remark)
+   implementation to prove LFM is portable, not a single vendor's feature.
+4. **Graceful degradation as a near-absolute rule** — one documented v1
+   exception (`[-]`/`[/]`, §5.1) — so adoption stays low-risk.
 5. The **diagnostic protocol**, so tooling vendors get leverage.
 
-Embedding follows reach; reach follows zero-risk adoption + real tooling value.
-None of steps 1–5 require a parser of our own.
+Steps 1 and 4–5 are largely done; steps 2 and 3 are the unbuilt majority. Host
+adoption is a further bet we have not started; it depends on the zero-risk
+adoption and demonstrated tooling value that steps 2–5 build, neither of which
+is complete yet. None of steps 1–5 require a parser of our own.
 
 ## What this change ships
 
-- `spec/LFM-1.0.md` — the LFM 1.0 specification (extension set, conformance
-  rules, degradation table).
+- `spec/LFM-1.0.md` — the LFM 1.0 specification: extension set, conformance
+  levels, degradation table, conformance-test shapes, security considerations,
+  governance + CC-BY-4.0 license, and a worked end-to-end example.
 - `spec/diagnostics.md` — the LFM Diagnostic Protocol (finding shape + frozen
   rule registry).
 - `dist/docs/grammar.json` — the generated, machine-readable per-component
