@@ -1541,6 +1541,33 @@ button.db-tl-body:hover {
 	padding: 0.45rem 0.55rem;
 	white-space: pre-wrap;
 }
+/* The model "Fix" — an accent-tinted sibling of How-to-fix, marked by the wand. */
+.db-finding-fixai {
+	color: var(--accent);
+	border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+	display: inline-flex;
+	align-items: center;
+	gap: 0.3em;
+}
+.db-finding-fixai:hover {
+	background: color-mix(in srgb, var(--accent) 12%, transparent);
+	color: var(--accent);
+}
+.db-finding-fixai[disabled] {
+	color: var(--text-muted);
+	cursor: default;
+}
+/* An honest one-line note when a fix can't be offered (budget, model error, no-op). */
+.db-finding-note {
+	margin: 0.45rem 0 0;
+	font-size: 0.72rem;
+	line-height: 1.45;
+	color: var(--text-muted);
+}
+/* The reviewable fix diff sits below the finding's action row. */
+.db-finding .db-edit-card {
+	margin-top: 0.5rem;
+}
 
 /* The composer — present + framed, disabled until Slice 5 wakes the Architect. */
 .db-arch-composer {
