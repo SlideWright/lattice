@@ -9,37 +9,48 @@
  * surface panel matches every other chart's size and inset — no
  * piechart-specific override. */
 section.piechart .piechart-figure {
+  /* SVG-native legend (2026-06-13-svg-native-legend.md): the figure holds ONE
+     self-contained <svg> (diagram + spine + key in one viewBox). It only needs
+     to centre + size that SVG; the 70/30 split, spine and key now live INSIDE
+     the viewBox, so they scale with the diagram by construction (no CSS grid,
+     no `cqh`-in-`font-size`). container-type:size lets the SVG's height:100cqh
+     resolve against this box. */
   display: flex;
-  flex-direction: row;
   align-items: center;
   justify-content: center;
-  gap: var(--sp-2xl);
   width: 100%;
-  /* Fill the flexed .chart-body, AND be a query container: the disc fills the
-     box height (capped at 32cqi) and the legend font is `min(--fs-meta, Kcqh)`
-     off THIS box's height — so the disc and legend shrink TOGETHER under a
-     squeeze and stay proportional. cqh on the legend (a descendant) resolves
-     cleanly against this container's height. */
   flex: 1 1 auto;
   min-height: 0;
   container-type: size;
 }
 section.piechart .piechart-svg {
   flex: 0 0 auto;
-  /* Responsive, height-bound (the radar/quadrant idiom, #180): fill the box
-     height, width follows the 1:1 aspect, capped at the 32cqi design size (cover
-     drops chrome → 36cqi). Shrinks to a smaller FULL ring under a squeeze
-     instead of clipping to a half-ring. */
-  height: 100cqh;     /* fill the figure's OWN height (it's a container) — `%`
-                         falls back to the SVG's intrinsic viewBox size in the
-                         grid, leaving dead space. No max cap: the parent body
-                         (and the layout/islands safe-area) is the only bound. */
+  /* Height-bound: fill the box height; width follows the unified viewBox aspect
+     (disc 200 + two divider gaps + key rail = 376 : 200). Shrinks to a smaller
+     FULL unit under a squeeze — diagram AND key together — instead of clipping. */
+  height: 100cqh;
   width: auto;
-  max-width: 100%;    /* don't exceed the diagram's grid column */
-  aspect-ratio: 1 / 1;
+  max-width: 100%;
   display: block;
 }
-section.piechart.cover .piechart-svg { height: 100%; max-height: 36cqi; }
+/* Cover is full-bleed. With the key now INSIDE the SVG the figure has no
+   intrinsic-height child, so a %/cqh chain collapses to 0 (blank). Mirror the
+   proven radar.cover fix: drop the figure's size-containment so the SVG's `cqi`
+   resolves against the SECTION (container-type:size), and give the SVG an
+   explicit `cqi` height that scales the whole unit (disc + key) up. The viewBox
+   `meet` keeps it undistorted; max-height guards a tall two-line caption. */
+section.piechart.cover .piechart-figure {
+  container-type: normal;
+  height: auto;
+  width: 100%;
+  max-width: 100%;
+}
+section.piechart.cover .piechart-svg {
+  height: 38cqi;
+  width: auto;
+  max-height: 100%;
+  max-width: 100%;
+}
 section.piechart .piechart-svg .wedge {
   /* Stroke colour is the slot's --catN-ink (set per nth-child below); the
    * wedge fill is the same hue's --catN-fill. Pale fill + deep border on a
@@ -47,42 +58,9 @@ section.piechart .piechart-svg .wedge {
   stroke-width: 1.5;
   paint-order: stroke;
 }
-section.piechart .piechart-legend {
-  /* Fixed --fs-meta (cover-variant key; the shared 70/30 rail drives the
-     non-cover key). `cqh` in font-size doesn't track the figure reliably, and
-     the disc box-fitting down frees room, so a fixed key won't truncate. Rows,
-     swatches and gaps are `em` off this. */
-  font-size: var(--fs-meta);
-  flex: 0 1 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 0.668em;
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  min-width: 18.7em;
-  max-width: 25.4em;
-}
-section.piechart .piechart-legend li {
-  display: grid;
-  grid-template-columns: 1.28em 1fr auto;
-  align-items: center;
-  gap: 1.07em;
-  color: var(--text-body);
-  padding: 0;
-}
-section.piechart .piechart-legend .legend-swatch {
-  width: 0.935em; height: 0.935em;
-  border-radius: 0.2em;
-  display: inline-block;
-}
-section.piechart .piechart-legend .legend-pct {
-  font-family: var(--font-mono);
-  /* inherits the figure's cqh font (≈ --fs-meta at design height) so it scales */
-  font-weight: 600;
-  color: var(--text-heading);
-  font-variant-numeric: tabular-nums;
-}
+/* SVG-native legend TYPE is now shared across the four keyed charts — see the
+   `.chart-key-*` rules in _chart-family/chart-family.css (the geometry is emitted
+   by svg-legend.js). The pie no longer owns per-chart key text rules. */
 
 /* Categorical wedge / swatch palette — six-rotation on the shared chart
  * category model (--catN-fill = wedge fill, --catN-ink = wedge border /
@@ -94,27 +72,17 @@ section.piechart .piechart-legend .legend-pct {
  * Wedges count by nth-of-TYPE, not nth-child: the SVG's first child is the
  * <defs> block (gradient definitions), which would offset nth-child by one and
  * shift every wedge's border to the NEXT slot's hue (the teal wedge picking up
- * --cat6 rose was the visible tell). nth-of-type(<path>) ignores <defs>. The
- * legend swatches keep nth-child — their container has no such leading sibling.
+ * --cat6 rose was the visible tell). nth-of-type(<path>) ignores <defs> AND the
+ * trailing spine <rect> / legend <rect>+<text> (different element types). The
+ * wedge FILL here is overridden by the kernel's inline radial gradient; these
+ * rules supply the per-slot STROKE (--catN-ink). The legend swatches are now
+ * SVG <rect class="pie-key-swatch"> coloured inline by the kernel (slot hue +
+ * --catN-ink edge), so they no longer ride these selectors.
  * See engineering/gotchas.md "Pie wedge borders off-by-one". */
-section.piechart .wedge:nth-of-type(6n+1),
-section.piechart .legend-swatch:nth-child(6n+1) { fill: var(--chart-cat-1-fill); stroke: var(--chart-cat-1-ink); background: var(--chart-cat-1-fill); border: var(--chart-hairline) solid var(--chart-cat-1-ink); }
-section.piechart .wedge:nth-of-type(6n+2),
-section.piechart .legend-swatch:nth-child(6n+2) { fill: var(--chart-cat-2-fill); stroke: var(--chart-cat-2-ink); background: var(--chart-cat-2-fill); border: var(--chart-hairline) solid var(--chart-cat-2-ink); }
-section.piechart .wedge:nth-of-type(6n+3),
-section.piechart .legend-swatch:nth-child(6n+3) { fill: var(--chart-cat-3-fill); stroke: var(--chart-cat-3-ink); background: var(--chart-cat-3-fill); border: var(--chart-hairline) solid var(--chart-cat-3-ink); }
-section.piechart .wedge:nth-of-type(6n+4),
-section.piechart .legend-swatch:nth-child(6n+4) { fill: var(--chart-cat-4-fill); stroke: var(--chart-cat-4-ink); background: var(--chart-cat-4-fill); border: var(--chart-hairline) solid var(--chart-cat-4-ink); }
-section.piechart .wedge:nth-of-type(6n+5),
-section.piechart .legend-swatch:nth-child(6n+5) { fill: var(--chart-cat-5-fill); stroke: var(--chart-cat-5-ink); background: var(--chart-cat-5-fill); border: var(--chart-hairline) solid var(--chart-cat-5-ink); }
-section.piechart .wedge:nth-of-type(6n),
-section.piechart .legend-swatch:nth-child(6n)   { fill: var(--chart-cat-6-fill); stroke: var(--chart-cat-6-ink); background: var(--chart-cat-6-fill); border: var(--chart-hairline) solid var(--chart-cat-6-ink); }
-
-/* The legend swatch has its own row indexing using li order. */
-section.piechart .piechart-legend li:nth-child(6n+1) .legend-swatch { background: var(--chart-cat-1-fill); border: var(--chart-hairline) solid var(--chart-cat-1-ink); }
-section.piechart .piechart-legend li:nth-child(6n+2) .legend-swatch { background: var(--chart-cat-2-fill); border: var(--chart-hairline) solid var(--chart-cat-2-ink); }
-section.piechart .piechart-legend li:nth-child(6n+3) .legend-swatch { background: var(--chart-cat-3-fill); border: var(--chart-hairline) solid var(--chart-cat-3-ink); }
-section.piechart .piechart-legend li:nth-child(6n+4) .legend-swatch { background: var(--chart-cat-4-fill); border: var(--chart-hairline) solid var(--chart-cat-4-ink); }
-section.piechart .piechart-legend li:nth-child(6n+5) .legend-swatch { background: var(--chart-cat-5-fill); border: var(--chart-hairline) solid var(--chart-cat-5-ink); }
-section.piechart .piechart-legend li:nth-child(6n)   .legend-swatch { background: var(--chart-cat-6-fill); border: var(--chart-hairline) solid var(--chart-cat-6-ink); }
+section.piechart .wedge:nth-of-type(6n+1) { fill: var(--chart-cat-1-fill); stroke: var(--chart-cat-1-ink); }
+section.piechart .wedge:nth-of-type(6n+2) { fill: var(--chart-cat-2-fill); stroke: var(--chart-cat-2-ink); }
+section.piechart .wedge:nth-of-type(6n+3) { fill: var(--chart-cat-3-fill); stroke: var(--chart-cat-3-ink); }
+section.piechart .wedge:nth-of-type(6n+4) { fill: var(--chart-cat-4-fill); stroke: var(--chart-cat-4-ink); }
+section.piechart .wedge:nth-of-type(6n+5) { fill: var(--chart-cat-5-fill); stroke: var(--chart-cat-5-ink); }
+section.piechart .wedge:nth-of-type(6n)   { fill: var(--chart-cat-6-fill); stroke: var(--chart-cat-6-ink); }
 

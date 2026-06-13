@@ -109,12 +109,14 @@ section.quadrant .quadrant-figure {
   min-height: 0;
 }
 
-section.quadrant .quadrant-svg {
-  /* Section-relative fill, capped at 50cqh (50% slide height). Unlike pie/radar,
-   * the common quadrant is NOT in the shared 70/30 grid (no legend rail) and its
-   * figure isn't a query container, so `cqh` here means the SLIDE, not a figure
-   * box — keep the resolution-stable cqh cap it shipped with (#180). The
-   * cohort variant rides the shared grid for its key. */
+/* The COHORT variant is excluded — it ships the SVG-native key (diagram + spine +
+ * key in one viewBox) and is sized by the shared rule in chart-family.css, so the
+ * old square-ish `aspect-ratio:420/320` + `50cqh` cap (which would letterbox the
+ * now-wider unit) must not reach it. */
+section.quadrant .quadrant-svg:not(.quadrant-svg--cohort) {
+  /* Section-relative fill, capped at 50cqh (50% slide height). The common
+   * quadrant is NOT in a query-container figure, so `cqh` here means the SLIDE;
+   * keep the resolution-stable cqh cap it shipped with (#180). */
   height: 100%;
   max-height: 50cqh;
   width: auto;
@@ -283,38 +285,9 @@ section.quadrant .quadrant-cohort-label {
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
-section.quadrant .quadrant-figure[data-variant="cohort"] {
-  gap: var(--sp-lg);
-}
-section.quadrant .quadrant-legend {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--sp-2xs);
-  flex: 0 1 auto;
-}
-section.quadrant .quadrant-legend li {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  gap: var(--sp-xs);
-  font-size: var(--fs-meta);
-  color: var(--text-body);
-}
-section.quadrant .quadrant-legend .quadrant-swatch {
-  width: 0.85em;
-  height: 0.85em;
-  border-radius: 3px;
-  background: var(--cell-fill);
-  border: var(--chart-hairline) solid var(--cell-ink);
-}
-section.quadrant .quadrant-legend .quadrant-legend-count {
-  font-family: var(--font-mono, var(--font-body));
-  font-size: var(--fs-meta);
-  color: var(--text-secondary);
-}
+/* The cohort key is now SVG-native (svg-legend.js → `.chart-key-*`, styled in
+ * _chart-family/chart-family.css); the old HTML `.quadrant-legend` rules are
+ * retired with it. See 2026-06-13-svg-native-legend.md. */
 
 /* ── Threshold variant: target badges at the axis crossings ───────────── */
 section.quadrant .quadrant-target-badge {

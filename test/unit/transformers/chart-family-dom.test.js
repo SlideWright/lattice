@@ -54,8 +54,15 @@ describe('chart-family.applyToDom', () => {
     assert.ok(sec.classList.contains('chart-frame'));
     assert.ok(sec.querySelector('.piechart-figure svg.piechart-svg'),
       'piechart SVG emitted');
-    assert.equal(sec.querySelectorAll('.piechart-legend li').length, 3,
-      'three legend entries');
+    // SVG-native legend (2026-06-13-svg-native-legend.md): the key is now inside
+    // the diagram's <svg> as a swatch <rect> + label/value <text> per series,
+    // not an HTML <ol>. Three series → three labels, values and swatches.
+    assert.equal(sec.querySelectorAll('.piechart-svg .chart-key-label').length, 3,
+      'three legend labels');
+    assert.equal(sec.querySelectorAll('.piechart-svg .chart-key-value').length, 3,
+      'three legend values');
+    assert.equal(sec.querySelectorAll('.piechart-svg .chart-key-swatch').length, 3,
+      'three legend swatches');
   });
 
   test('radar: builds polygons with per-series colours from the chart spectrum (--catN-hue)', () => {

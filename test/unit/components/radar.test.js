@@ -232,7 +232,12 @@ test('buildRadar: default emits a figure, svg, grid, two polygons, legend', () =
   assert.match(out, /<svg class="radar-svg"/);
   assert.match(out, /class="radar-ring"/);
   assert.equal((out.match(/class="radar-poly"/g) || []).length, 2);
-  assert.match(out, /<ol class="radar-legend">/);
+  // SVG-native key (2026-06-13-svg-native-legend.md): the legend lives inside the
+  // diagram <svg> as a swatch <rect> + label <text> per series, not an HTML <ol>.
+  assert.equal((out.match(/class="chart-key-swatch"/g) || []).length, 2);
+  assert.equal((out.match(/class="chart-key-label"/g) || []).length, 2);
+  // Radar keys carry NO value column (the rail reclaims that width for labels).
+  assert.equal((out.match(/class="chart-key-value"/g) || []).length, 0);
 });
 
 test('buildRadar: minimal flag is recorded on the figure', () => {

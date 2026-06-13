@@ -83,8 +83,10 @@ describe('map kernel', () => {
       const m = parseMap(ul([['California', '4'], ['Atlantis', '9']]));
       const html = buildMap(m, 'choropleth');
       assert.match(html, /data-unmatched="Atlantis"/);
-      assert.match(html, /map-legend-row--unmatched/);
-      assert.match(html, /map-swatch--unmatched/);
+      // SVG-native key (2026-06-13-svg-native-legend.md): the unmatched row is a
+      // hollow swatch (fill:transparent) with a "?" value, inside the diagram <svg>.
+      assert.match(html, /class="chart-key-swatch"[^>]*fill="transparent"/);
+      assert.match(html, /class="chart-key-value"[^>]*>\?<\/text>/);
     });
 
     test('no unmatched names → no data-unmatched attribute', () => {
@@ -126,10 +128,9 @@ describe('map kernel', () => {
       const names = ['California', 'Texas', 'New York', 'Florida', 'Illinois', 'Ohio', 'Georgia'];
       const m = parseMap(ul(names.map((n, i) => [n, String(i)])));
       const html = buildMap(m, 'highlight');
-      // Region <path>s emit in basemap order; the legend preserves authored
-      // order, so assert slot rotation there.
-      const legend = html.slice(html.indexOf('map-legend'));
-      const slots = [...legend.matchAll(/map-swatch--hl" style="--region-hue:var\(--chart-cat-(\d)-hue\)"/g)].map((x) => +x[1]);
+      // Region <path>s emit in basemap order; the SVG-native key swatches
+      // preserve authored order, so assert slot rotation off the swatch fills.
+      const slots = [...html.matchAll(/class="chart-key-swatch"[^>]*?fill="color-mix\(in oklab, var\(--chart-cat-(\d)-hue\)/g)].map((x) => +x[1]);
       assert.deepEqual(slots, [1, 2, 3, 4, 5, 6, 1], 'seventh region wraps back to slot 1');
     });
   });
@@ -234,7 +235,7 @@ describe('map kernel', () => {
     test('grouped modifier clusters the legend by continent', () => {
       const m = parseMap(wul([['Brazil', '1'], ['Japan', '2'], ['European Union', '3']]), WORLD_BASEMAP);
       const html = buildMap(m, 'highlight', ['map', 'world', 'grouped']);
-      const heads = [...html.matchAll(/map-legend-head">([^<]+)</g)].map((x) => x[1]);
+      const heads = [...html.matchAll(/chart-key-head"[^>]*><tspan[^>]*>([^<]+)</g)].map((x) => x[1]);
       assert.ok(heads.includes('South America') && heads.includes('Asia') && heads.includes('Groups'));
     });
   });

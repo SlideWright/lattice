@@ -360,7 +360,11 @@ test('buildQuadrant: cohort emits convex hulls + a legend', () => {
   const out = buildQuadrant(modelFour(), 'cohort', SCALE);
   assert.match(out, /data-variant="cohort"/);
   assert.match(out, /class="quadrant-hulls"/);
-  assert.match(out, /<ol class="quadrant-legend">/);
+  // SVG-native key (2026-06-13-svg-native-legend.md): one swatch <rect> + label
+  // <text> + count <text> per cohort, inside the diagram <svg> (not an HTML <ol>).
+  assert.match(out, /class="chart-key-swatch"/);
+  assert.match(out, /class="chart-key-label"/);
+  assert.match(out, /class="chart-key-value"/);
   // Groups with 1 point each get neither a polygon nor a 2-point line; the
   // 2-item Strategic Bets group hits the 2-point hull branch.
   assert.match(out, /quadrant-hull-line/);

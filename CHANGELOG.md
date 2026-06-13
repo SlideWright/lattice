@@ -281,6 +281,25 @@ in patch versions.
 
 ### Changed
 
+- **The four keyed charts (`piechart`, `radar`, `map`, cohort `quadrant`) now
+  have SVG-native legends + spines — each chart is one self-contained, uniformly
+  scaling unit.** The diagram, gradient divider spine, and key now share a single
+  `<svg>` viewBox instead of a CSS 70/30 grid with an HTML legend, emitted by a
+  shared builder (`svg-legend.js`) so all four read as **one family**. The whole
+  chart scales as one with the container (no `cqh`-in-`font-size` drift): the key
+  grows on `cover`, shrinks proportionally under a squeeze. The legend font is a
+  **fixed ratio of the diagram height**, so the key renders at the **same physical
+  size on every chart** regardless of each diagram's own viewBox; a pathological
+  long-tail key grows the **viewBox height** so the whole unit scales down
+  together (the 11-slice pie no longer clips). Labels **wrap fully — no
+  ellipsis**; the swatch centres on the first line; every colour stays on palette
+  tokens, and the labels route through `--font-label` so the `sketch` finish still
+  reskins them in the hand sans. The map's swatches mirror its region fills
+  (highlight hue / choropleth ramp), with group headings and a hollow `?` chip for
+  unmatched names; radar/cohort reference series keep a quiet swatch. The key text
+  is re-stated in an SVG `<desc>` so screen readers still hear the names + values
+  (the chart is one `role="img"`). See
+  `engineering/decisions/2026-06-13-svg-native-legend.md`.
 - **The emulator (the `lattice` CLI / shipped `bin`) now renders through the
   owned `lib/engine` — one markdown implementation, the same engine that powers
   the marp-cli path.** The bespoke `parseSlide` regex parser the emulator shipped
