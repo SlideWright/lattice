@@ -56,6 +56,7 @@ harness the index can't infer, add it to `FRAMEWORKS` in the generator.
 | `docs:portal:check` | Freshness gate for the component catalog (md/json) + LFM grammar.json. |
 | `emulator:build` | Build dist/lattice-emulator.js — the bundled Marp-faithful CLI (package bin/main). |
 | `emulator:check` | Freshness gate for the emulator bundle. |
+| `export:marp` | Export a deck as a portable Marp bundle: splits baked to ---, themes, assets, a self-contained engine + marp-cli config, and a README. `<deck.md> <out-dir-or-zip> [palette]`. |
 | `layout-core:build` | Bundle the pure Layout Studio core for the browser (docs site). |
 | `layout-core:check` | Freshness gate for the layout-core bundle. |
 | `playground:build` | Build docs/public/playground/lattice-playground.js — the in-browser engine bundle. |
@@ -231,4 +232,5 @@ harness the index can't infer, add it to `FRAMEWORKS` in the generator.
 |---|---|
 | `tools/ascii-preview.py` | ASCII layout preview helper for engineering/templates.md (and friends). |
 | `tools/check-fonts.js` | Font-embedding parity gate — keep the engine's font demand and offline supplies in sync. |
+| `tools/export-marp.js` | export-marp — produce a portable, self-contained bundle of a Lattice deck for |
 | `tools/golden-diff.mjs` | Post a PR comment + before/after montage of the gallery slides whose committed golden moved vs the base branch. |

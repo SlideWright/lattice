@@ -519,10 +519,10 @@ the default; `npm run lint:deck` flags it as an `unknown-split` warning.
 of truth: the Drawing Board preview and the PDF export both run our engine, so
 the divider is always correct there. Stock Marp doesn't run our splitter, so a
 deck opened directly in the marp-vscode preview divides only on `---`. That's
-expected — Marp is an *export target*, served by a self-contained bundle that
-bakes the splits into literal `---` (planned; see
-`engineering/decisions/2026-06-13-split-frontmatter.md`), not a live render
-path we keep in lockstep.
+expected — Marp is an *export target*, served by a self-contained bundle
+(`npm run export:marp`) that bakes the splits into literal `---` (and packs the
+themes, assets, a renderer + a marp-cli config, and a README), not a live render
+path we keep in lockstep. See `engineering/decisions/2026-06-13-export-to-marp.md`.
 
 | Token / class | Effect |
 |---|---|
