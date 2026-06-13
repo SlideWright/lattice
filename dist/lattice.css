@@ -6593,30 +6593,28 @@ section.piechart .piechart-figure {
   justify-content: center;
   gap: var(--sp-2xl);
   width: 100%;
-  /* Fill the flexed .chart-body so the disc's `height: …100%` has a definite
-     box to fit against (and can shrink when chrome/caption steals height). */
+  /* Fill the flexed .chart-body, AND be a query container: the disc fills the
+     box height (capped at 32cqi) and the legend font is `min(--fs-meta, Kcqh)`
+     off THIS box's height — so the disc and legend shrink TOGETHER under a
+     squeeze and stay proportional. cqh on the legend (a descendant) resolves
+     cleanly against this container's height. */
   flex: 1 1 auto;
   min-height: 0;
+  container-type: size;
 }
 section.piechart .piechart-svg {
   flex: 0 0 auto;
-  /* Responsive, height-bound — the same idiom as radar/quadrant (#180), not a
-   * fixed square. The disc FILLS the slot height and lets width follow the 1:1
-   * aspect-ratio, capped at 32cqi (cover drops chrome → 36cqi) so it never
-   * exceeds its design size when the body is tall. When a masthead band, a long
-   * caption, or larger hand type shortens the body, the disc shrinks with it —
-   * staying a FULL ring — instead of overflowing and clipping to a half-ring.
-   * (Was a fixed 32cqi square, blind to height → the donut collapsed under any
-   * vertical squeeze; see gallery-jargon `piechart donut` under `islands: on`.) */
+  /* Responsive, height-bound (the radar/quadrant idiom, #180): fill the box
+     height, width follows the 1:1 aspect, capped at the 32cqi design size (cover
+     drops chrome → 36cqi). Shrinks to a smaller FULL ring under a squeeze
+     instead of clipping to a half-ring. */
   height: 100%;
   width: auto;
   max-height: 32cqi;
   aspect-ratio: 1 / 1;
   display: block;
 }
-section.piechart.cover .piechart-svg {
-  max-height: 36cqi;
-}
+section.piechart.cover .piechart-svg { max-height: 36cqi; }
 section.piechart .piechart-svg .wedge {
   /* Stroke colour is the slot's --catN-ink (set per nth-child below); the
    * wedge fill is the same hue's --catN-fill. Pale fill + deep border on a
@@ -6625,33 +6623,38 @@ section.piechart .piechart-svg .wedge {
   paint-order: stroke;
 }
 section.piechart .piechart-legend {
+  /* Proportional to the disc: the font is `--fs-meta` until the figure box
+     drops below the disc's 32cqi cap, then it tracks `3.66cqh` (= --fs-meta at
+     32cqi) DOWN in lock-step with the shrinking disc. Everything else is `em`,
+     so rows, swatches, gutters and gaps all scale with that font — the whole
+     legend shrinks with the disc and can't truncate. */
+  font-size: min(var(--fs-meta), 3.66cqh);
   flex: 0 1 auto;
   display: flex;
   flex-direction: column;
-  gap: 0.78125cqi;
+  gap: 0.668em;
   list-style: none;
   padding: 0;
   margin: 0;
-  min-width: 21.875cqi;
-  max-width: 29.6875cqi;
+  min-width: 18.7em;
+  max-width: 25.4em;
 }
 section.piechart .piechart-legend li {
   display: grid;
-  grid-template-columns: 1.5cqi 1fr auto;
+  grid-template-columns: 1.28em 1fr auto;
   align-items: center;
-  gap: var(--sp-sm);
-  font-size: var(--fs-meta);
+  gap: 1.07em;
   color: var(--text-body);
   padding: 0;
 }
 section.piechart .piechart-legend .legend-swatch {
-  width: 1.09375cqi; height: 1.09375cqi;
-  border-radius: 0.234375cqi;
+  width: 0.935em; height: 0.935em;
+  border-radius: 0.2em;
   display: inline-block;
 }
 section.piechart .piechart-legend .legend-pct {
   font-family: var(--font-mono);
-  font-size: var(--fs-meta);
+  /* inherits the figure's cqh font (≈ --fs-meta at design height) so it scales */
   font-weight: 600;
   color: var(--text-heading);
   font-variant-numeric: tabular-nums;

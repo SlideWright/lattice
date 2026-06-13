@@ -91,8 +91,12 @@ in patch versions.
   width:auto; aspect-ratio:1; max-height:32cqi`): the ring fills the available
   height and its width follows, capped at the design size, so it shrinks to a
   smaller FULL ring instead of clipping. Boardroom renders are unchanged (the
-  cap holds the size); only height-constrained slides differ. (Surfaced by
-  `gallery-jargon`'s `piechart donut` under `islands: on` — see #229.)
+  cap holds the size); only height-constrained slides differ. **The legend
+  scales with it** — the figure is a query container and the legend font is
+  `min(--fs-meta, cqh)` with its rows/swatches/gutters in `em`, so disc and
+  legend shrink together and stay proportional (and the legend can't truncate)
+  instead of a shrunk disc sitting beside a full-size, overflowing legend.
+  (Surfaced by `gallery-jargon`'s `piechart donut` under `islands: on` — #229.)
 - **`word-cloud` is responsive-safe under a vertical squeeze.** Its canvas was
   a fixed `85.9×25cqi` box (its absolutely-positioned children give it no
   in-flow size to shrink from); it now keeps that design size but caps at
