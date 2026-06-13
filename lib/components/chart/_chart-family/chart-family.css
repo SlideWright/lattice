@@ -550,7 +550,10 @@ section.chart-frame {
  * key a consistent rail on the right; each centres IN ITS OWN ZONE (a stable
  * composition independent of chart footprint or key length). position:relative
  * anchors the spine on the boundary. */
-section.piechart:not(.cover) .piechart-figure,
+/* piechart is NOT in this shared rail — it ships the SVG-native legend (its
+   diagram + spine + key are one viewBox); see piechart.styles.css and
+   2026-06-13-svg-native-legend.md. radar/map/quadrant still use the CSS 70/30
+   grid below until they graduate to the SVG-native key in the fan-out. */
 section.radar:not(.cover) .radar-figure:not([data-variant="small-multiples"]),
 section.map:not(.cover) .map-figure,
 section.quadrant:not(.cover) .quadrant-figure[data-variant="cohort"] {
@@ -573,7 +576,6 @@ section.quadrant:not(.cover) .quadrant-figure[data-variant="cohort"] {
 }
 
 /* Chart centres in its 70% zone (the data is the hero). */
-section.piechart:not(.cover) .piechart-figure > :first-child,
 section.radar:not(.cover) .radar-figure:not([data-variant="small-multiples"]) > :first-child,
 section.map:not(.cover) .map-figure > :first-child,
 section.quadrant:not(.cover) .quadrant-figure[data-variant="cohort"] > :first-child {
@@ -587,7 +589,6 @@ section.quadrant:not(.cover) .quadrant-figure[data-variant="cohort"] > :first-ch
  * key — pie, with values — sit closer to the spine than a narrow one). Capped
  * to the rail, labels WRAP. Per-component legend internals (swatch palette,
  * value styling) stay in each component's styles. */
-section.piechart:not(.cover) .piechart-legend,
 section.radar:not(.cover) .radar-figure:not([data-variant="small-multiples"]) .radar-legend,
 section.map:not(.cover) .map-legend,
 section.quadrant:not(.cover) .quadrant-figure[data-variant="cohort"] .quadrant-legend {
@@ -614,7 +615,6 @@ section.quadrant:not(.cover) .quadrant-figure[data-variant="cohort"] .quadrant-l
 /* The gradient spine — the figure's ::before on the 70/30 boundary, a fixed
  * generous height centred vertically. Deterministic: it does not move with the
  * key's width, so it always reads as the divider between the two zones. */
-section.piechart:not(.cover) .piechart-figure::before,
 section.radar:not(.cover) .radar-figure:not([data-variant="small-multiples"])::before,
 section.map:not(.cover) .map-figure::before,
 section.quadrant:not(.cover) .quadrant-figure[data-variant="cohort"]::before {
@@ -634,7 +634,6 @@ section.quadrant:not(.cover) .quadrant-figure[data-variant="cohort"]::before {
  * four keyed charts so they read as one family. Labels WRAP (no clip); values
  * are tabular and ink-weighted. Each component still owns its swatch colours
  * and the presence/format of the value cell. */
-section.piechart:not(.cover) .piechart-legend li,
 section.radar:not(.cover) .radar-figure:not([data-variant="small-multiples"]) .radar-legend li,
 section.map:not(.cover) .map-legend-row,
 section.quadrant:not(.cover) .quadrant-figure[data-variant="cohort"] .quadrant-legend li {
@@ -654,7 +653,6 @@ section.map:not(.cover) .map-legend-name {
 /* Shared swatch sizing — one consistent chip across all four keyed charts
  * (each keeps its own fill/border colour). Sized to read clearly without
  * overpowering the label, with a px floor so it never collapses. */
-section.piechart:not(.cover) .piechart-legend .legend-swatch,
 section.radar:not(.cover) .radar-figure:not([data-variant="small-multiples"]) .radar-legend .radar-swatch,
 section.map:not(.cover) .map-legend .map-swatch,
 section.quadrant:not(.cover) .quadrant-figure[data-variant="cohort"] .quadrant-legend .quadrant-swatch {

@@ -72,17 +72,42 @@ SVG `<text>` does not auto-wrap; HTML did it for free (the "labels WRAP, no clip
 at build time. Decision:
 
 > **Word-boundary wrap to a character budget**, derived from the rail width in
-> viewBox units and a **conservative average advance** (≈ `0.58em` for the label
-> sans), **capped at 2 lines**, with an **ellipsis** on overflow. Emitted as
-> `<tspan x=… dy=…>` rows. Deterministic, pure-JS, identical in all three paths.
+> viewBox units and a **conservative average advance** (≈ `0.6em` for the label
+> sans). Wrap **FULLY — no line cap, no ellipsis** (a single over-long token is
+> hard-broken across lines, matching CSS `overflow-wrap`). Emitted as
+> `<tspan x=… y=…>` rows. Deterministic, pure-JS, identical in all three paths.
 
-Rationale: the rail is narrow by design (`--chart-legend-max: 25cqi`) and
-boardroom legend labels are short categorical names — 2 lines is generous. The
-budget is **conservative** (break early) so an approximate metric never *clips*;
-worst case is a slightly-early wrap, never an overrun. This **narrows** the
-old "wrap forever" guarantee to "wrap to 2 lines, then ellipsis" — an
-intentional, documented contract change for the keyed charts, justified by the
-fixed-width rail.
+Rationale: the budget is **conservative** (break early) so an approximate metric
+never *clips* and never reaches the reserved value column. The SVG-native key
+**KEEPS the original "labels wrap, never clip" guarantee** — no ellipsis ever.
+
+### (a-bis) The legend font is FIXED-ratio; the UNIT scales, never the font
+A tempting-but-wrong move (rejected after review): when many rows overrun the
+viewBox, shrink the *font* to fit. That makes the key look puny beside a full-
+size disc and — worse — gives two pies with different slice counts **different
+legend text sizes**. Inconsistent and amateurish. Decision:
+
+> The legend font is a **fixed number of user units** (`FS = 9`) — a constant
+> **ratio** to the disc. Because the whole `<svg>` scales to the container
+> (`height:100cqh` / the cover `cqi` size), the key scales **with the
+> container**, in lockstep with the diagram (small in an islands thumbnail,
+> large on a cover) — but it is **never re-shrunk per chart** by slice count.
+> "Fixed" means fixed in viewBox units, **not** fixed pixels.
+
+Overflow is absorbed by the **viewBox HEIGHT**, not the font: `VB_H =
+max(200, stackH + 2·margin)`. ≤6 slices (the pie's own perceptual cap —
+`PIE_PALETTE` is 6, and the docs say consolidate past it) always fit the disc's
+200-unit box at `FS = 9`, so **every real pie's key is identical** (`VB_H` stays
+200, the disc keeps its size). A pathological long-tail key grows `VB_H`, so the
+**whole unit — disc AND key — renders a touch smaller in lockstep**; the font's
+ratio to the disc is unchanged, so the key is never singled out and shrunk. The
+disc therefore centres on `cy = VB_H/2`, and the CSS drops any static
+`aspect-ratio` so the intrinsic viewBox aspect drives sizing.
+
+**Swatch alignment.** The swatch `<rect>` centres on the **first line's** optical
+middle (`baseFirst − 0.34·FS − SW/2`), not the whole multi-line block, so a
+wrapped 2–3 line label still reads as one keyed row (swatch ─ first line ─ value
+all on one optical line).
 
 ### (b) Font-token routing + a sketch re-verify gate
 Today the **sketch** finish reskins the HTML legend **for free**, because
@@ -187,7 +212,10 @@ from the long-running galleries; charts graduate in a separate post-review step)
       spine / legend flex remains on the piechart path.
 - [ ] Legend **scales with the diagram** at thumbnail, boardroom, and `cover`
       sizes (the whole point) — verified by eye + pixel-check.
-- [ ] Long labels **wrap to 2 lines then ellipsis**; no clip, no rail overrun.
+- [ ] Long labels **wrap fully (no ellipsis)**; no clip, no rail overrun.
+- [ ] Legend font is a **fixed ratio** — identical text size across pies (≤6
+      slices); a long-tail key grows the **viewBox** (whole unit scales), never
+      the font (11-slice case). Swatch centres on the first line.
 - [ ] **`class: sketch` puts the hand font on the legend** (light + dark).
 - [ ] All colors via `var(--token)`; lint/`build:check`/unit/parity green.
 - [ ] Three render paths emit byte-identical legend geometry (parity tier).

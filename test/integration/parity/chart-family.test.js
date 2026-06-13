@@ -87,14 +87,18 @@ describe('chart-family', () => {
     const pc = html.match(/<section[^>]*class="piechart donut chart-frame"[^>]*>[\s\S]*?<\/section>/);
     assert.ok(pc, 'piechart donut section not found');
     assert.match(pc[0], /<div class="piechart-figure">/);
-    assert.match(pc[0], /<svg class="piechart-svg" viewBox="0 0 200 200"/);
+    // SVG-native legend (2026-06-13-svg-native-legend.md): diagram + spine + key
+    // share one viewBox, widened to 376 (disc 200 + two divider gaps + key rail).
+    assert.match(pc[0], /<svg class="piechart-svg" viewBox="0 0 376 200"/);
     // Donut path uses inner radius (r=50) — solid pies wouldn't carry it
     assert.match(pc[0], /A 50 50 0/);
-    // 5 wedges + 5 legend rows
+    // 5 wedges + 5 SVG legend rows (swatch <rect> + label <text> per series)
     const wedges = (pc[0].match(/<path class="wedge"/g) || []).length;
-    const legend = (pc[0].match(/<li><span class="legend-swatch"/g) || []).length;
+    const swatches = (pc[0].match(/<rect class="pie-key-swatch"/g) || []).length;
+    const labels = (pc[0].match(/<text class="pie-key-label"/g) || []).length;
     assert.equal(wedges, 5, `expected 5 wedges, got ${wedges}`);
-    assert.equal(legend, 5, `expected 5 legend rows, got ${legend}`);
+    assert.equal(swatches, 5, `expected 5 legend swatches, got ${swatches}`);
+    assert.equal(labels, 5, `expected 5 legend labels, got ${labels}`);
   });
 
   test('header/body/caption skeleton extracts eyebrow, subtitle, italic caption', { timeout: 180000 }, () => {
