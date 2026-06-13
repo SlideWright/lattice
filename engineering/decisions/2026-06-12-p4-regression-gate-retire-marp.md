@@ -70,6 +70,30 @@ keeps `golden-diff` (inline) + the shared montage helpers, records this pivot, a
 seeds the invariant suite. The sections below are retained as the historical
 design and the still-valid environment findings (§7.1, §A).
 
+**Build status (2026-06-13, branch `claude/p4-component-invariants`).** Phase 1+2
+landed and GREEN across all **53 components / 197 assertions**:
+`test/helpers/semantic-render.js` renders each component's manifest `sample`
+through the cached emulator (its `.html` sidecar = production CSS+DOM, no cascade
+duplication) and `test/integration/invariants/component-invariants.test.js`
+asserts layer 1 (required slots resolve) + layer 2 (no overflow; heading contrast
+≥ WCAG AA) + layer 3 (`component-invariants.layer3.js`). It runs in the
+integration tier, so it already gates via the required `ci` check. Two findings
+the corpus pass forced, worth remembering:
+- **Manifest slot selectors are the AUTHORING contract, written against the slide
+  `<section>` root** — normalise a leading `section` → `:scope` (and bare
+  selectors → descendant) per comma-group, or a `section > p, section > ul` clause
+  leaks unscoped and false-fails.
+- **TRANSFORM components consume their authored markup** (a chart's `ul > li` →
+  `.chart-body` svg/HTML frame; glossary → `<table>`; compare-code → code panels;
+  featured → `.feat-card`). Layer-1's slot check is skipped for them (the `TRANSFORM`
+  set) and layer-3 asserts the rendered contract instead. (Long-term, making those
+  manifests' slot selectors rendered-accurate — as roadmap/state-chart/diagram
+  already are — would let layer-1 cover them automatically; deferred since the
+  manifests also drive the docs site's authoring guidance.)
+
+Still ahead: richer layer-3 (legend-entry == series-count, etc.), and Step 3
+(delete marp + `engine-parity`, making this the sole gate).
+
 ## 1. Goal
 
 Retire `@marp-team/marp-cli` — the last marp dependency in our tree (Scope 1 of
