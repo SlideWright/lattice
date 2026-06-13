@@ -337,6 +337,7 @@ ${indent}  ${bullet} ${body.trim()}`;
       });
       if (vocab.mapRegions) findings.push(...findUnknownMapRegions(source, vocab.mapRegions));
       if (vocab.finishNames) findings.push(...findUnknownFinish(source, vocab.finishNames));
+      if (vocab.splitNames) findings.push(...findUnknownSplit(source, vocab.splitNames));
       return findings;
     }
     function findUnknownFinish(source, finishNames) {
@@ -355,6 +356,24 @@ ${indent}  ${bullet} ${body.trim()}`;
         line: fmFinish[0].trim(),
         message: `'${value}' is not a known finish register \u2014 the deck would silently render the boardroom baseline`,
         fix: `Set front-matter \`finish:\` to one of: ${[...finishNames].join(", ")}.`
+      }];
+    }
+    function findUnknownSplit(source, splitNames) {
+      const fmBlock = source.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?/);
+      if (!fmBlock) return [];
+      const fmSplit = fmBlock[1].match(/^\s*split:\s*["']?([A-Za-z0-9_-]+)["']?\s*$/m);
+      if (!fmSplit) return [];
+      const value = fmSplit[1].trim();
+      const known = new Set([...splitNames].map((n) => String(n).toLowerCase()));
+      if (known.has(value.toLowerCase())) return [];
+      return [{
+        slide: 0,
+        rule: "unknown-split",
+        severity: "warning",
+        classToken: value,
+        line: fmSplit[0].trim(),
+        message: `'${value}' is not a known split mode \u2014 the deck would silently fall back to 'rule' (split on ---)`,
+        fix: `Set front-matter \`split:\` to one of: ${[...splitNames].join(", ")}.`
       }];
     }
     module.exports = {

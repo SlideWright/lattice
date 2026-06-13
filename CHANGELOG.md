@@ -27,6 +27,19 @@ in patch versions.
 
 ### Added
 
+- **`split: headings` — divide a deck by its headings, not `---`.** A new
+  deck-wide front-matter key chooses how the body splits into slides:
+  `split: rule` (the default — unchanged Marp behaviour, split on `---`) or
+  `split: headings`, where the first `#` is the lead slide and every subsequent
+  `##` opens a new one, so a deck reads like a document with no separators to
+  forget. The headings divider is **eyebrow-aware** — a slide's `<!-- _class -->`
+  directive and its eyebrow, written above the title, are pulled onto that
+  slide instead of orphaning onto the previous one — and **hybrid**: an explicit
+  `---` still forces a break. Implemented as one shared `hr`-injection plugin so
+  the emulator, marp-cli, and the playground split identically (HARD RULE #1),
+  proven slide-count-identical to `rule` on every committed deck. Settable from
+  the Drawing Board's Deck Setup panel; an unknown value warns (`unknown-split`)
+  via the deck linter. Demo: `examples/split-headings.md` (a `---`-free deck).
 - **Contracts + Layout-swapping — the `inventory` contract (first slice).** A new
   sibling tier (`lib/contracts/`) makes the **Function** layer first-class: a
   *contract* names a Purpose's content shape (slots + cardinalities + one

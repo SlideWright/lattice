@@ -207,6 +207,14 @@ export function tokensValuePosition(before) {
 	return { from: m[1].length, typed: m[2] };
 }
 
+// The cursor's position on a `split:` front-matter line, for split-mode
+// completion (`rule` / `headings`). Mirrors tokensValuePosition.
+export function splitValuePosition(before) {
+	const m = before.match(/^(\s*split:\s*)([\w-]*)$/);
+	if (!m) return null;
+	return { from: m[1].length, typed: m[2] };
+}
+
 // The cursor's position on a `finish:` front-matter line, for finish-register
 // completion (the deck-wide finish: boardroom / sketch / sketch-clean). Mirrors
 // themeValuePosition — `finish:` then an optional partial value, no trailing

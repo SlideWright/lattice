@@ -46,6 +46,10 @@ const FIELD_DEFAULTS = {
   // names). Both render identically — a migration-safety A/B. Drawing-Board-only:
   // marp-cli ignores it, so a deck stays portable.
   tokens: 'current',
+  // `split` is how the body divides into slides (lib/core/resolve-split.js):
+  // 'rule' (the default → omitted) splits on `---`; 'headings' splits on each
+  // h1/h2 (eyebrow-aware, `---` still honoured) so the deck needs no separators.
+  split: 'rule',
   size: '16:9', // Marp's default page size (themes also define 4K / standard)
   paginate: 'false',
   header: '',
@@ -71,7 +75,7 @@ const FINISH_LABELS = {
 
 // Emit order for known keys; any unmanaged keys we preserved trail in their
 // original order. `marp` leads (it's what tells marp-cli to render the deck).
-const EMIT_ORDER = ['marp', 'theme', 'finish', 'tokens', 'size', 'paginate', 'header', 'footer', 'class', 'islands', 'math', 'lang'];
+const EMIT_ORDER = ['marp', 'theme', 'finish', 'tokens', 'split', 'size', 'paginate', 'header', 'footer', 'class', 'islands', 'math', 'lang'];
 
 // Field PROFILES per surface — the `fields` allow-list createConfigPanel takes.
 //   author  — every field (the Drawing Board: full set, theme three-way synced).
@@ -83,7 +87,7 @@ const EMIT_ORDER = ['marp', 'theme', 'finish', 'tokens', 'size', 'paginate', 'he
 //             with no deck chrome and no theme, which the studio itself owns).
 export const CONFIG_PROFILES = Object.freeze({
   author: null,
-  noTheme: ['finish', 'tokens', 'size', 'paginate', 'header', 'footer', 'class', 'islands', 'math', 'lang'],
+  noTheme: ['finish', 'tokens', 'split', 'size', 'paginate', 'header', 'footer', 'class', 'islands', 'math', 'lang'],
   preview: ['finish', 'tokens', 'size', 'paginate', 'islands'],
 });
 
@@ -132,6 +136,7 @@ export function readFrontMatter(source) {
     theme: map.theme || '',
     finish: map.finish || '',
     tokens: map.tokens || 'current',
+    split: (map.split || 'rule').trim().toLowerCase() === 'headings' ? 'headings' : 'rule',
     size: map.size || '16:9',
     paginate: TRUEY.test(map.paginate || ''),
     header: map.header || '',
@@ -154,6 +159,9 @@ function isDefault(key, value) {
   // 'boardroom' is the named baseline — the same no-class result as omitting
   // finish, so it's treated as the default and dropped from the block.
   if (key === 'finish') { const f = (value == null ? '' : String(value)).trim().toLowerCase(); return f === '' || f === 'boardroom'; }
+  // 'rule' is the named baseline (the Marp-compatible default) — same render as
+  // omitting split, so it's dropped from the block; only 'headings' is written.
+  if (key === 'split') { const s = (value == null ? '' : String(value)).trim().toLowerCase(); return s === '' || s === 'rule'; }
   return (value == null ? '' : String(value)) === FIELD_DEFAULTS[key];
 }
 
@@ -167,6 +175,7 @@ function normalize(key, value) {
   if (key === 'islands') { const m = islandsMode(v); return m === 'off' ? null : m; }
   // boardroom = baseline → omit (same no-class render as no key at all).
   if (key === 'finish') { const f = v.toLowerCase(); return f === '' || f === 'boardroom' ? null : f; }
+  if (key === 'split') { return v.toLowerCase() === 'headings' ? 'headings' : null; }
   if (v === '' || v === FIELD_DEFAULTS[key]) return null;
   return v;
 }
@@ -368,6 +377,15 @@ export function createConfigPanel({ host, trigger, getSource, setSource, palette
       host.append(selectRow('tokens', 'Token system',
         'universal = the new --cat-*/--diagram-* names (renders identically)',
         [['current', 'Current (legacy names)'], ['universal', 'Universal (new names)']], fm.tokens));
+    }
+
+    // Slide splitting — how the body divides into slides. 'rule' (the default)
+    // needs a `---` between slides; 'headings' starts a slide at each ## (the
+    // first # is the lead) so the deck needs no separators — `---` still works.
+    if (show('split')) {
+      host.append(selectRow('split', 'Slide splitting',
+        'Start a new slide on --- (default) or on each ## heading',
+        [['rule', 'On --- dividers'], ['headings', 'On ## headings']], fm.split));
     }
 
     if (show('size')) {

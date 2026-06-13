@@ -19,7 +19,7 @@
 
 import { autocompletion } from '@codemirror/autocomplete';
 import { dataSources } from './data-sources.js';
-import { DIRECTIVE_NAMES, FENCE_LANGS, ISLANDS_VALUES, MERMAID_KEYWORDS, PAGINATE_VALUES, TOKENS_VALUES } from './grammar-vocab.js';
+import { DIRECTIVE_NAMES, FENCE_LANGS, ISLANDS_VALUES, MERMAID_KEYWORDS, PAGINATE_VALUES, SPLIT_VALUES, TOKENS_VALUES } from './grammar-vocab.js';
 import {
 	blankBodyPartial,
 	classDirectiveCompletion,
@@ -36,6 +36,7 @@ import {
 	skeletonBody,
 	slideBodyEmpty,
 	slideClassAt,
+	splitValuePosition,
 	themeValuePosition,
 	tokensValuePosition,
 } from './slide-context.js';
@@ -48,6 +49,7 @@ const DIRECTIVE_OPTIONS = DIRECTIVE_NAMES.map((d) => ({ label: d, type: 'keyword
 const PAGINATE_OPTIONS = PAGINATE_VALUES.map((v) => ({ label: v, type: 'constant' }));
 const ISLANDS_OPTIONS = ISLANDS_VALUES.map((v) => ({ label: v, type: 'constant', detail: 'islands' }));
 const TOKENS_OPTIONS = TOKENS_VALUES.map((v) => ({ label: v, type: 'constant', detail: 'tokens' }));
+const SPLIT_OPTIONS = SPLIT_VALUES.map((v) => ({ label: v, type: 'constant', detail: 'split' }));
 const FENCE_OPTIONS = FENCE_LANGS.map((l) => ({ label: l, type: 'constant', detail: 'language' }));
 
 // Mermaid keyword options (declaration openers + flow/block keywords), the
@@ -197,6 +199,7 @@ export function latticeAutocomplete({ vocab, catalog, themes, finishes } = {}) {
 			lineLocalSource(paginateValuePosition, PAGINATE_OPTIONS),
 			lineLocalSource(islandsValuePosition, ISLANDS_OPTIONS),
 			lineLocalSource(tokensValuePosition, TOKENS_OPTIONS),
+			lineLocalSource(splitValuePosition, SPLIT_OPTIONS),
 			lineLocalSource(fenceLangAt, FENCE_OPTIONS),
 			mermaidSource,
 			classDirectiveSource(catalog, universalModifiers),

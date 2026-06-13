@@ -28,6 +28,11 @@ export const ISLANDS_VALUES = ['off', 'on', 'minimal'];
 // --cat-*/--diagram-* names). Both render identically — a migration-safety A/B.
 export const TOKENS_VALUES = ['current', 'universal'];
 
+// Value vocabulary for the Lattice `split:` front-matter directive, which picks
+// how the body divides into slides: `rule` (split on `---`, the default) or
+// `headings` (split on each h1/h2). Mirrors lib/core/resolve-split.js SPLIT_NAMES.
+export const SPLIT_VALUES = ['rule', 'headings'];
+
 // Fence info-strings worth completing: the Lattice-special focusable fences
 // (`mermaid`, `chart`) plus the languages editor.js highlights, with the common
 // short aliases (`js`/`ts`/`py`) so they resolve too. A practical completion

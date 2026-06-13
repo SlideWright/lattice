@@ -1,0 +1,194 @@
+/**
+ * Unit: the `split: headings` slide divider (lib/integrations/marp/plugins.js
+ * `headingSplit` + lib/core/resolve-split.js).
+ *
+ * `split: headings` lets a deck divide on h1/h2 instead of `---`, the house
+ * "sticky rule": the first `#` is the lead slide, each subsequent `##` starts a
+ * slide. The divider is EYEBROW-AWARE — the first heading of a slide never
+ * splits, so lead content above a title (an eyebrow tag, a kicker) stays with
+ * that title — and HYBRID — an author-written `---` still splits.
+ *
+ * HARD RULE #1: the transform must produce the same slide boundaries in both
+ * render paths. We assert section counts through BOTH @marp-team/marp-core (the
+ * marp-cli export path) AND lib/engine (the emulator / playground path), and
+ * pin the backward-compat invariant: every committed deck splits to the SAME
+ * slide count under `headings` as under the default `rule` (the evidence that
+ * a future default flip is safe for today's corpus).
+ */
+
+const { test, describe } = require('node:test');
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+const { Marp } = require('@marp-team/marp-core');
+const { plugins } = require('../../../marp.config');
+const latticeEngine = require('../../../lib/engine');
+const { resolveSplitMode, isKnownSplit, SPLIT_NAMES } = require('../../../lib/core/resolve-split');
+
+const REPO = path.join(__dirname, '..', '..', '..');
+
+// Rendered HTML through the marp-cli export path.
+function marpHtml(md) {
+  const m = new Marp();
+  m.use(plugins.headingSplit);
+  return m.render(md).html;
+}
+function marpSections(md) {
+  return (marpHtml(md).match(/<section[\s>]/g) || []).length;
+}
+
+// Rendered HTML through the emulator / playground engine path.
+const engine = latticeEngine.createEngine();
+const engineHtml = (md) => engine.render(md).html;
+function engineSections(md) {
+  return (engineHtml(md).match(/<section[\s>]/g) || []).length;
+}
+
+// Split rendered HTML into per-<section> chunks (slide-scoped substrings).
+function splitSections(html) {
+  return html.split(/(?=<section[\s>])/).filter((s) => /^<section[\s>]/.test(s))
+    .map((s) => s.slice(0, s.indexOf('</section>') + 1 || undefined));
+}
+
+// Assert both render paths agree on a deck's slide count, and return it.
+function sections(md, expected, label) {
+  const a = marpSections(md);
+  const b = engineSections(md);
+  assert.equal(a, b, `${label}: marp-cli (${a}) and engine (${b}) must agree (HARD RULE #1)`);
+  if (expected != null) assert.equal(a, expected, `${label}: expected ${expected} slides, got ${a}`);
+  return a;
+}
+
+const fm = (mode, body) => `---\nmarp: true\nsplit: ${mode}\n---\n\n${body}`;
+
+describe('resolve-split', () => {
+  test('default mode is rule (absent / empty / unknown)', () => {
+    assert.equal(resolveSplitMode(''), 'rule');
+    assert.equal(resolveSplitMode('---\nmarp: true\n---\n\n# A'), 'rule');
+    assert.equal(resolveSplitMode('---\nsplit: nonsense\n---\n\n# A'), 'rule');
+  });
+  test('reads headings and is case/quote tolerant', () => {
+    assert.equal(resolveSplitMode('---\nsplit: headings\n---\n'), 'headings');
+    assert.equal(resolveSplitMode('---\nsplit: "Headings"\n---\n'), 'headings');
+  });
+  test('an explicit override wins over the front matter', () => {
+    assert.equal(resolveSplitMode('---\nsplit: rule\n---\n', 'headings'), 'headings');
+    assert.equal(resolveSplitMode('---\nsplit: headings\n---\n', 'bogus'), 'headings');
+  });
+  test('isKnownSplit + SPLIT_NAMES', () => {
+    assert.deepEqual([...SPLIT_NAMES], ['rule', 'headings']);
+    assert.ok(isKnownSplit('rule') && isKnownSplit('HEADINGS'));
+    assert.ok(!isKnownSplit('heading') && !isKnownSplit(''));
+  });
+});
+
+describe('headingSplit (both render paths agree)', () => {
+  test('rule mode (default): only `---` splits, headings do not', () => {
+    sections(fm('rule', '# A\n\n## still A\n\nbody\n\n---\n\n## B\n'), 2, 'rule');
+  });
+
+  test('a deck with no split key behaves exactly like rule', () => {
+    const body = '# A\n\n## still A\n\n---\n\n## B\n';
+    assert.equal(
+      sections(`---\nmarp: true\n---\n\n${body}`, null, 'no-key'),
+      sections(fm('rule', body), null, 'rule'),
+    );
+  });
+
+  test('headings mode: first # is the lead, each ## opens a slide', () => {
+    sections(fm('headings', '# Lead\n\nkicker\n\n## One\n\nbody\n\n## Two\n\nbody\n\n## Three\n'),
+      4, 'headings');
+  });
+
+  test('eyebrow-aware: lead content above a title stays on the title slide', () => {
+    // The eyebrow + kicker precede each ## but must NOT orphan into their own
+    // slide — only the SECOND-and-later heading of a slide injects a break.
+    const body = '`Eyebrow`\n\n# Lead\n\ntagline\n\n`Tag`\n\n## One\n\nbody\n\n`Tag`\n\n## Two\n';
+    sections(fm('headings', body), 3, 'eyebrow-aware');
+  });
+
+  test('hybrid: an explicit `---` still forces a break in headings mode', () => {
+    // A `---` between two headingless blocks under one heading: headings alone
+    // would keep them as ONE slide; the `---` splits them — proving hybrid.
+    const body = '# A\n\nfirst part\n\n---\n\nsecond part\n';
+    assert.equal(engineSections(fm('headings', body.replace('---\n\n', ''))), 1, 'no --- → 1 slide');
+    sections(fm('headings', body), 2, 'hybrid');
+  });
+
+  test('fence-safe: headings inside a code fence do not split', () => {
+    const body = '# A\n\n```md\n## not a slide\n# also not\n```\n\n## Real B\n';
+    sections(fm('headings', body), 2, 'fence-safe');
+  });
+
+  test('h3+ never splits — only h1/h2 are slide headings', () => {
+    sections(fm('headings', '# A\n\n### sub\n\nbody\n\n### another\n\n## B\n'), 2, 'h3');
+  });
+
+  test('a nested heading (in a blockquote) does not split', () => {
+    sections(fm('headings', '# A\n\n> ## quoted\n\nbody\n\n## B\n'), 2, 'nested');
+  });
+
+  test('CRLF front matter splits identically (no leaked-front-matter divergence)', () => {
+    // A Windows-authored deck: the engine front-matter stripper must be CRLF-
+    // tolerant, or the `split: headings` line leaks into the body as a heading
+    // and the two paths disagree on slide count.
+    const crlf = '---\r\nmarp: true\r\nsplit: headings\r\n---\r\n\r\n# A\r\n\r\n## B\r\n';
+    sections(crlf, 2, 'crlf');
+  });
+
+  test('pull-back: a slide\'s `_class` + eyebrow (above the ##) land on THAT slide', () => {
+    // The lead-in is written above the heading (so the eyebrow renders above the
+    // title); the break must go before it, not before the bare heading, or it
+    // orphans onto the previous slide.
+    const md = fm('headings',
+      '# Lead\n\nintro\n\n<!-- _class: cards-grid -->\n\n`Kicker`\n\n## Two\n\nbody\n');
+    for (const [label, render] of [['marp-cli', marpHtml], ['engine', engineHtml]]) {
+      const secs = splitSections(render(md));
+      assert.equal(secs.length, 2, `${label}: 2 slides`);
+      assert.ok(!secs[0].includes('Kicker') && !/class="[^"]*cards-grid/.test(secs[0]),
+        `${label}: lead-in must NOT orphan onto slide 1`);
+      assert.ok(secs[1].includes('Kicker') && /class="[^"]*cards-grid/.test(secs[1]),
+        `${label}: lead-in (eyebrow + _class) must land on slide 2`);
+    }
+  });
+});
+
+describe('backward-compat invariance over the committed corpus', () => {
+  // Every committed deck splits to the SAME count under headings as under rule
+  // — proven once offline, pinned here so a future deck that would fragment
+  // under a headings default is caught (it should declare `split: rule`).
+  const decks = [
+    ...globMd(path.join(REPO, 'examples')),
+    ...globMd(path.join(REPO, 'examples', 'token-contrast')),
+    path.join(REPO, 'test', 'integration', 'baseline-decks', 'gallery.md'),
+  ].filter((f) => fs.existsSync(f))
+    // Exclude decks authored FOR headings (e.g. examples/split-headings.md): they
+    // intentionally carry no `---`, so forcing them to `rule` collapses them. The
+    // invariant is about `rule`-authored decks surviving a headings default.
+    .filter((f) => resolveSplitMode(fs.readFileSync(f, 'utf8')) !== 'headings');
+
+  for (const file of decks) {
+    const name = path.relative(REPO, file);
+    test(`${name}: rule and headings yield identical slide counts`, () => {
+      const src = fs.readFileSync(file, 'utf8');
+      const ruled = engineSections(forceSplit(src, 'rule'));
+      const headed = engineSections(forceSplit(src, 'headings'));
+      assert.equal(headed, ruled,
+        `${name} fragments under headings (${headed} vs ${ruled}) — it must set split: rule`);
+    });
+  }
+});
+
+// List *.md directly under dir (non-recursive), absolute paths.
+function globMd(dir) {
+  if (!fs.existsSync(dir)) return [];
+  return fs.readdirSync(dir).filter((f) => f.endsWith('.md')).map((f) => path.join(dir, f));
+}
+
+// Force a deck's front matter to a given split mode (insert or replace the key).
+function forceSplit(src, mode) {
+  const m = /^---\r?\n([\s\S]*?)\r?\n---\r?\n/.exec(src);
+  if (!m) return `---\nmarp: true\nsplit: ${mode}\n---\n\n${src}`;
+  const body = m[1].replace(/^\s*split:.*$/m, '').replace(/\n{2,}/g, '\n').trim();
+  return `---\n${body}\nsplit: ${mode}\n---\n${src.slice(m[0].length)}`;
+}
