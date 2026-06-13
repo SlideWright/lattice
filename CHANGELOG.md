@@ -304,6 +304,18 @@ in patch versions.
   is re-stated in an SVG `<desc>` so screen readers still hear the names + values
   (the chart is one `role="img"`). See
   `engineering/decisions/2026-06-13-svg-native-legend.md`.
+- **The visual regression gate now runs in CI as a required check (P4 Step 2).**
+  `npm run regress` renders every gallery fresh through the owned emulator and
+  pixel-diffs it against its committed golden PDF; a code PR fails if any deck's
+  golden is stale (unblessed drift) — re-bless locally (`npm run bless`) and
+  commit. It runs **alongside** the marp `engine-parity` gate for now;
+  `engine-parity` is removed once the regression gate is trusted (Step 3). A new
+  **non-gating `golden-diff` job** posts a sticky PR comment + a
+  before │ after │ overlay montage artifact of the slides whose committed golden
+  visually changed vs the base branch — the reviewer's before/after surface (the
+  pixel-diff filters out PDF byte-churn, so a rebuild-only golden reads as "no
+  visual change"). See
+  `engineering/decisions/2026-06-12-p4-regression-gate-retire-marp.md` §4.
 - **The emulator (the `lattice` CLI / shipped `bin`) now renders through the
   owned `lib/engine` — one markdown implementation, the same engine that powers
   the marp-cli path.** The bespoke `parseSlide` regex parser the emulator shipped

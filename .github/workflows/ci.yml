@@ -181,6 +181,106 @@ jobs:
           path: .scratch/parity/
           if-no-files-found: ignore
 
+  # ── Visual regression gate — fresh render must match the committed golden ──
+  # engine-parity's single-renderer successor (P4): renders every gallery fresh
+  # through the owned emulator and pixel-diffs it against the committed golden PDF
+  # (lib/components/**/<name>.gallery.{light,dark}.pdf). GREEN = the author blessed
+  # correctly; RED = unblessed drift (CSS/source changed but a deck's golden is
+  # stale) — re-bless locally (`npm run bless [-- --only <name>]`) and commit the
+  # refreshed PDFs. Runs ALONGSIDE engine-parity for now; engine-parity is retired
+  # once this is trusted (P4 Step 3). Needs Chromium (renders), poppler (rasterize),
+  # and the color emoji font — same toolchain as integration/engine-parity.
+  regression:
+    needs: [changes, unit]
+    if: needs.changes.outputs.code == 'true'
+    runs-on: ubuntu-latest
+    name: regression (node 22)
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Cache Puppeteer browser
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/puppeteer
+          key: puppeteer-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+      - name: Install poppler-utils + ImageMagick + color emoji font
+        run: sudo apt-get update && sudo apt-get install -y poppler-utils imagemagick fonts-noto-color-emoji
+      - name: Allow ImageMagick PDF coder (for the drift-montage artifact)
+        # IM6's default policy.xml blocks the PDF coder, which would break the
+        # `convert montages… drift.pdf` artifact built on a RED run. Relax it.
+        run: sudo sed -i 's/rights="none" pattern="PDF"/rights="read|write" pattern="PDF"/' /etc/ImageMagick-6/policy.xml || true
+      - run: npm ci
+      - name: Visual regression gate (render == committed golden)
+        run: npm run regress
+      - name: Upload drift montages on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: regression-drift
+          path: .scratch/regression/
+          if-no-files-found: ignore
+
+  # ── Golden before/after — post the intended visual change on the PR ────────
+  # Informational, NON-gating (the regression gate above is the blocker). Diffs
+  # THIS PR's committed goldens against the base branch, rasterizes only the slides
+  # that VISUALLY changed (pixel-diff filters out PDF byte-churn from a rebuild),
+  # uploads a before │ after │ overlay montage, and posts/updates a sticky PR
+  # comment ("N slides changed in {galleries}"). No rendering → no Chromium; just
+  # poppler + ImageMagick over the committed PDFs. See tools/golden-diff.mjs.
+  golden-diff:
+    needs: changes
+    if: github.event_name == 'pull_request' && needs.changes.outputs.code == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    env:
+      PUPPETEER_SKIP_DOWNLOAD: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # need base-branch history to diff goldens
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install poppler-utils + ImageMagick
+        run: sudo apt-get update && sudo apt-get install -y poppler-utils imagemagick
+      - name: Allow ImageMagick PDF coder (for the montage PDF)
+        run: sudo sed -i 's/rights="none" pattern="PDF"/rights="read|write" pattern="PDF"/' /etc/ImageMagick-6/policy.xml || true
+      - run: npm ci
+      - name: Compute golden before/after
+        run: node tools/golden-diff.mjs --base ${{ github.event.pull_request.base.sha }}
+      - name: Upload montage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: golden-diff-changes
+          path: .scratch/golden-diff/changes.pdf
+          if-no-files-found: ignore
+      - name: Post/update before/after comment
+        continue-on-error: true # a read-only token (fork PR) must not fail the run
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const dir = '.scratch/golden-diff';
+            const report = JSON.parse(fs.readFileSync(`${dir}/report.json`, 'utf8'));
+            const marker = '<!-- golden-diff -->';
+            const { data: comments } = await github.rest.issues.listComments({
+              ...context.repo, issue_number: context.issue.number, per_page: 100,
+            });
+            const existing = comments.find((c) => c.body && c.body.includes(marker));
+            if (!report.changed && !existing) return; // nothing to say, no prior comment
+            const body = fs.readFileSync(`${dir}/summary.md`, 'utf8') + '\n' + marker;
+            if (existing) {
+              await github.rest.issues.updateComment({ ...context.repo, comment_id: existing.id, body });
+            } else {
+              await github.rest.issues.createComment({ ...context.repo, issue_number: context.issue.number, body });
+            }
+
   # ── Docs site build — docs (or engine) changes only ────────────────────
   # The deploy workflow (docs.yml) only builds on push to main, so PRs got no
   # docs-build validation. This builds the Astro site (same `npm run build` the
@@ -213,16 +313,16 @@ jobs:
   # "pending" required check.
   ci:
     if: always()
-    needs: [lint, unit, integration, engine-parity, docs-build]
+    needs: [lint, unit, integration, engine-parity, regression, docs-build]
     runs-on: ubuntu-latest
     steps:
       - name: Verify gate
         run: |
-          echo "lint=${{ needs.lint.result }} unit=${{ needs.unit.result }} integration=${{ needs.integration.result }} engine-parity=${{ needs.engine-parity.result }} docs-build=${{ needs.docs-build.result }}"
+          echo "lint=${{ needs.lint.result }} unit=${{ needs.unit.result }} integration=${{ needs.integration.result }} engine-parity=${{ needs.engine-parity.result }} regression=${{ needs.regression.result }} docs-build=${{ needs.docs-build.result }}"
           if [ "${{ needs.lint.result }}" != "success" ]; then
             echo "::error::lint failed"; exit 1
           fi
-          for r in "${{ needs.unit.result }}" "${{ needs.integration.result }}" "${{ needs.engine-parity.result }}" "${{ needs.docs-build.result }}"; do
+          for r in "${{ needs.unit.result }}" "${{ needs.integration.result }}" "${{ needs.engine-parity.result }}" "${{ needs.regression.result }}" "${{ needs.docs-build.result }}"; do
             if [ "$r" != "success" ] && [ "$r" != "skipped" ]; then
               echo "::error::a required tier failed ($r)"; exit 1
             fi

@@ -201,6 +201,43 @@ parity` agrees (both all-green) — the gate is as strict as the marp gate.
 must render the fresh candidate INTO the gallery's own dir or every image slide
 false-fails blank. **Steps 2 (CI) and 3 (retire marp) remain.**
 
+### Step 2 — done (2026-06-13)
+
+The gate is wired into CI as a **required check**, plus the reviewer's
+before/after surface. The gate runs **full-corpus per-PR** (not
+affected-scoped). This is a deliberate maintainer decision that **overrides §D
+of `2026-06-13-gate-strategy-change-detection.md`**, which had recommended a
+scoped-per-PR + full-corpus-nightly hybrid: in practice the maintainer's
+sessions are opportunistic and cross-cutting, so almost every PR carries an L3
+change that a scoped run would escalate to full anyway — scoping would buy
+little while risking the bucket-vs-component gallery-name collision that doc's
+checker addendum flagged. Scoping (and the merge-queue + render caching that
+would serialize the parallel-session cost) is deferred until that cost is
+measured pain.
+
+- **`.github/workflows/ci.yml`** — two jobs. `regression` (gating, in the `ci`
+  required aggregator, `code`-tier): Chromium + poppler + emoji font, runs
+  `npm run regress`, uploads the drift montage on RED. `golden-diff`
+  (**non-gating**, PR-only, `code`-tier): no Chromium — rasterizes the committed
+  goldens, diffs THIS PR's against `base.sha`, uploads a before│after│overlay
+  montage artifact, and posts/updates a sticky PR comment via
+  `actions/github-script` (`pull-requests: write`, `continue-on-error` so a
+  read-only fork token can't fail the run). `engine-parity` keeps running in
+  parallel — removed in Step 3.
+- **`tools/golden-diff.mjs` (new)** — the before/after computer. `git diff` is
+  only the cheap candidate filter; the pixel-diff (gate tolerance: fuzz 3% /
+  0.05%) is the truth, so PDF byte-churn from a rebuild reads as "no visual
+  change". Emits `summary.md` (comment body) + `report.json` + `changes.pdf`.
+- **`tools/pixel-check.js`** — extracted `montageTriptych` + `pngsToPdf`
+  (HARD RULE 15); `regression-gate.mjs`'s `buildMontage` now calls them, and the
+  gate's per-page montages gained a `deck · mood · slide N` caption.
+- **CI gotcha encoded:** IM6's default `policy.xml` blocks the PDF coder, which
+  would break `convert montages… .pdf`; both jobs relax it
+  (`rights="none" pattern="PDF"` → `read|write`).
+- No `package.json` script for `golden-diff` (it's CI-only) — avoids re-staling
+  the emulator bundle (which inlines `package.json`); `capabilities.md` indexes
+  it from the tool header. **Step 3 (retire marp) remains.**
+
 ## 9. Build handoff — START HERE (for the implementing session)
 
 **State on arrival (2026-06-13):** P1 (lib/engine), P2 (emulator on lib/engine,

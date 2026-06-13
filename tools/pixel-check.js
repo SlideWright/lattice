@@ -182,6 +182,35 @@ function pixelDiff(baselinePdf, currentPdf, deck, opts = {}) {
   return { pages, perPage, totalPx, tmpDir };
 }
 
+// ── Montage helpers (shared: regression-gate + golden-diff, HARD RULE 15) ─────
+// Build one "before │ after │ overlay" triptych PNG for a drifted page, straight
+// from the rasterized paths pixelDiff returns (`oldPng`/`newPng`/`diffPng`).
+// Reusing those paths avoids reconstructing pdftoppm's filenames, whose
+// zero-padding varies with page count. Returns the montage path, or null if a
+// tile is missing or ImageMagick's `montage` isn't installed. `opts.title` adds a
+// caption (deck · mood · slide N) so a reviewer flipping the bundle has context.
+function montageTriptych(page, outPng, opts = {}) {
+  const { oldPng, newPng, diffPng } = page;
+  if (!oldPng || !newPng || !fs.existsSync(oldPng) || !fs.existsSync(newPng)) return null;
+  const overlay = diffPng && fs.existsSync(diffPng) ? diffPng : newPng;
+  const titleArgs = opts.title ? ['-title', opts.title] : [];
+  const r = spawnSync(
+    'montage',
+    [oldPng, newPng, overlay, '-tile', '3x1', '-geometry', '+6+6', '-background', '#888', ...titleArgs, outPng],
+    { stdio: 'ignore' },
+  );
+  return r.status === 0 && fs.existsSync(outPng) ? outPng : null;
+}
+
+// Bundle a list of PNGs into one PDF (ImageMagick `convert`). Returns the PDF
+// path, or null if `convert` is missing or there's nothing to bundle. (CI relaxes
+// the IM PDF-coder policy so the write is allowed — see the workflow.)
+function pngsToPdf(pngs, outPdf) {
+  if (!pngs.length) return null;
+  const r = spawnSync('convert', [...pngs, outPdf], { stdio: 'ignore' });
+  return r.status === 0 && fs.existsSync(outPdf) ? outPdf : null;
+}
+
 function diff(label, decks, opts = {}) {
   const dir = path.join(SNAPSHOT_ROOT, label);
   if (!fs.existsSync(dir)) {
@@ -358,4 +387,4 @@ function main(argv) {
 
 if (require.main === module) process.exit(main(process.argv.slice(2)));
 
-module.exports = { snapshot, diff, clean, ls, pixelDiff };
+module.exports = { snapshot, diff, clean, ls, pixelDiff, montageTriptych, pngsToPdf };

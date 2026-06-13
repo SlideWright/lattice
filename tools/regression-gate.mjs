@@ -44,7 +44,7 @@ import { basename, dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const require = createRequire(import.meta.url);
-const { pixelDiff } = require('./pixel-check.js');
+const { pixelDiff, montageTriptych, pngsToPdf } = require('./pixel-check.js');
 const { injectDark } = require('./build-galleries.js');
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -211,28 +211,11 @@ function buildMontage(name, theme, themeResult) {
   const dir = themeResult.tmpDir;
   const montages = [];
   for (const d of pages) {
-    // Use the rasterized paths pixelDiff returned — pdftoppm's zero-padding
-    // varies with page count, so reconstructing `old-NN.png` here would miss
-    // the <10-page galleries (the majority).
-    const old = d.oldPng;
-    const fresh = d.newPng;
-    if (!old || !fresh || !existsSync(old) || !existsSync(fresh)) continue;
-    const overlay = d.diffPng && existsSync(d.diffPng) ? d.diffPng : fresh;
-    const tiles = [old, fresh, overlay];
     const m = join(dir, `montage-${String(d.page).padStart(3, '0')}.png`);
-    try {
-      execFileSync('montage', [...tiles, '-tile', '3x1', '-geometry', '+6+6', '-background', '#888', m], { stdio: 'ignore' });
-      montages.push(m);
-    } catch { /* montage missing — skip artifact */ }
+    const made = montageTriptych(d, m, { title: `${name} · ${theme} · slide ${d.page}` });
+    if (made) montages.push(made);
   }
-  if (!montages.length) return null;
-  const outPdf = join(OUT, `${name}.${theme}.drift.pdf`);
-  try {
-    execFileSync('convert', [...montages, outPdf], { stdio: 'ignore' });
-    return outPdf;
-  } catch {
-    return null;
-  }
+  return pngsToPdf(montages, join(OUT, `${name}.${theme}.drift.pdf`));
 }
 
 // ── Main ──────────────────────────────────────────────────────────────────────
