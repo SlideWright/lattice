@@ -130,6 +130,18 @@ pre-commit:
         - 'package.json'
         - 'tools/**'
       run: npm run capabilities:check --silent
+    - name: fonts-freshness
+      # Catches "added a weight to the @import or a face to one PDF path,
+      # forgot the other" — the silent font-fallback class of bug. Diffs the
+      # @import demand against both offline supplies (emulator SELF_HOSTED_FACES
+      # + assets/fonts/, and the web-export font-embed.js). build:check runs the
+      # same gate in CI (build.js preflight). Any of the four sources is a trigger.
+      glob:
+        - 'lib/base/base.tokens.css'
+        - 'lattice-emulator.js'
+        - 'assets/fonts/**'
+        - 'docs/src/playground/font-embed.js'
+      run: npm run fonts:check --silent
     - name: component-docs-freshness
       # Catches the "edited a manifest, forgot to regenerate the
       # <name>.docs.md and <name>.gallery.md siblings" failure mode.

@@ -131,6 +131,7 @@ const SCRIPT_META = {
   'lint:deck:all':            ['Lint & audit', 'Repo-wide strict deck lint (always-on CI gate).'],
   'check:ownership':          ['Lint & audit', 'Collision/ownership guard: hard-fails on accidental duplicate selectors/transformers/names.'],
   'check:responsive':         ['Lint & audit', 'Static lint: no fixed-px layout in chart CSS (responsive contract).'],
+  'fonts:check':              ['Lint & audit', 'Font-embedding parity gate: the @import demand and both offline PDF supplies must list the same faces, so a render never silently falls back.'],
   'scorecard':                ['Lint & audit', 'Token-parity + palette-quality score for every theme.'],
   'scorecard:check':          ['Lint & audit', 'Gate: fail if any theme scorecard regresses.'],
 

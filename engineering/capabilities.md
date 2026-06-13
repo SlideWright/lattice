@@ -113,6 +113,7 @@ harness the index can't infer, add it to `FRAMEWORKS` in the generator.
 |---|---|
 | `check:ownership` | Collision/ownership guard: hard-fails on accidental duplicate selectors/transformers/names. |
 | `check:responsive` | Static lint: no fixed-px layout in chart CSS (responsive contract). |
+| `fonts:check` | Font-embedding parity gate: the @import demand and both offline PDF supplies must list the same faces, so a render never silently falls back. |
 | `lint` | Biome over the JS tree (read-only). NEVER `npx biome`. |
 | `lint:deck` | Author-facing footgun checks on one deck (card-style title, ordered-list bold, unknown _class). |
 | `lint:deck:all` | Repo-wide strict deck lint (always-on CI gate). |
@@ -226,3 +227,4 @@ harness the index can't infer, add it to `FRAMEWORKS` in the generator.
 | Name | What it does |
 |---|---|
 | `tools/ascii-preview.py` | ASCII layout preview helper for engineering/templates.md (and friends). |
+| `tools/check-fonts.js` | Font-embedding parity gate — keep the engine's font demand and offline supplies in sync. |

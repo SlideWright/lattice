@@ -11,13 +11,21 @@ const { describe, test } = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
-const { STEPS, GUARD } = require('../../../tools/build');
+const { STEPS, GUARD, PREFLIGHT } = require('../../../tools/build');
 
 const TOOLS = path.join(__dirname, '..', '..', '..', 'tools');
 
 describe('build orchestrator', () => {
   test('the guard step exists', () => {
     assert.ok(fs.existsSync(path.join(TOOLS, GUARD.script)), `missing ${GUARD.script}`);
+  });
+
+  test('every preflight gate names an existing script', () => {
+    assert.ok(PREFLIGHT.length > 0);
+    for (const gate of PREFLIGHT) {
+      assert.ok(gate.label, 'preflight gate missing label');
+      assert.ok(fs.existsSync(path.join(TOOLS, gate.script)), `missing ${gate.script}`);
+    }
   });
 
   test('every step names an existing generator script', () => {

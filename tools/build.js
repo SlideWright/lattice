@@ -14,6 +14,7 @@
  *
  * Steps (in order):
  *   0. ownership guard        tools/check-ownership.js   (gate — no output)
+ *   0b. font-embedding parity  tools/check-fonts.js       (preflight gate)
  *   1. lattice.css            tools/build-css.js
  *   2. lattice-default.css    tools/build-default-bundle.js  (engine + default palette)
  *   3. lattice-runtime.js     tools/build-runtime.js
@@ -53,6 +54,13 @@ const ROOT = path.join(__dirname, '..');
 // The guard runs first and has no build/check distinction (it only
 // reads), so it is always invoked plain.
 const GUARD = { label: 'ownership guard', script: 'check-ownership.js' };
+
+// Read-only preflight gates that run after the ownership guard and before any
+// artifact is (re)generated — a desynced font set should fail the build, not
+// bake a fallback PDF. Each only reads, so it is invoked plain (no --check).
+const PREFLIGHT = [
+  { label: 'font-embedding parity', script: 'check-fonts.js' },
+];
 
 const STEPS = [
   { label: 'lattice.css', script: 'build-css.js' },
@@ -94,6 +102,15 @@ function main(argv) {
     return 1;
   }
 
+  // Read-only preflight gates (font parity, …) — fail before generating.
+  for (const gate of PREFLIGHT) {
+    process.stdout.write(`▸ ${gate.label}\n`);
+    if (!runStep(gate, false)) {
+      process.stderr.write(`\nbuild aborted: ${gate.label} failed.\n`);
+      return 1;
+    }
+  }
+
   const failed = [];
   for (const step of STEPS) {
     process.stdout.write(`\n▸ ${step.label}\n`);
@@ -117,4 +134,4 @@ function main(argv) {
 
 if (require.main === module) process.exit(main(process.argv.slice(2)));
 
-module.exports = { STEPS, GUARD };
+module.exports = { STEPS, GUARD, PREFLIGHT };
