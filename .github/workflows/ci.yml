@@ -181,6 +181,152 @@ jobs:
           path: .scratch/parity/
           if-no-files-found: ignore
 
+  # ── (Visual regression gate REMOVED — pivoted to component invariants) ──────
+  # P4 originally wired `npm run regress` (fresh render == committed golden) in as
+  # the CI visual gate. That pixel gate is RETIRED: across GitHub's heterogeneous
+  # runners Skia's CPU-dispatched rasterization isn't bit-identical, so it flaked
+  # ~0.4–2% on a *different* gallery each run — and post-marp a self-golden pixel
+  # gate detects *change*, not *correctness*. `npm run regress` survives as a
+  # LOCAL spot-check only. The CI visual-correctness gate is now the per-component
+  # SEMANTIC-INVARIANT suite (render via lib/engine → assert computed-style /
+  # structure; deterministic + machine-independent). `golden-diff` below stays —
+  # it diffs two committed PDFs on one runner, so it isn't flaky. See
+  # engineering/decisions/2026-06-12-p4-regression-gate-retire-marp.md §0.
+
+  # ── Golden before/after — post the intended visual change on the PR ────────
+  # Informational, NON-gating (the regression gate above is the blocker). Diffs
+  # THIS PR's committed goldens against the base branch, rasterizes only the slides
+  # that VISUALLY changed (pixel-diff filters out PDF byte-churn from a rebuild),
+  # and posts/updates a sticky PR comment ("N slides changed in {galleries}") with
+  # the before │ after │ overlay montages embedded INLINE. Inline images need a
+  # URL GitHub will serve, so the PNGs are hosted on the orphan `ci-drift-images`
+  # branch (a pure image store, never merged) and the comment links raw URLs; the
+  # full set also uploads as the `golden-diff-changes` artifact. No rendering → no
+  # Chromium; just poppler + ImageMagick over the committed PDFs. See
+  # tools/golden-diff.mjs.
+  golden-diff:
+    needs: changes
+    if: github.event_name == 'pull_request' && needs.changes.outputs.code == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # push before/after PNGs to the orphan ci-drift-images branch
+      pull-requests: write
+    env:
+      PUPPETEER_SKIP_DOWNLOAD: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # need base-branch history to diff goldens
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install poppler-utils + ImageMagick
+        run: sudo apt-get update && sudo apt-get install -y poppler-utils imagemagick
+      - name: Allow ImageMagick PDF coder (for the montage PDF)
+        run: sudo sed -i 's/rights="none" pattern="PDF"/rights="read|write" pattern="PDF"/' /etc/ImageMagick-6/policy.xml || true
+      - run: npm ci
+      - name: Compute golden before/after
+        run: node tools/golden-diff.mjs --base ${{ github.event.pull_request.base.sha }}
+      - name: Upload montage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: golden-diff-changes
+          path: .scratch/golden-diff/changes.pdf
+          if-no-files-found: ignore
+      - name: Publish before/after PNGs to the image branch
+        id: publish
+        continue-on-error: true # non-gating: a push race must not red-X the job — the comment then falls back to table + artifact
+        # Inline images in a PR comment must come from a URL GitHub will serve, so
+        # the bot hosts them on the orphan `ci-drift-images` branch (a pure image
+        # store, never merged) and the comment embeds raw.githubusercontent.com
+        # URLs. Same-repo PRs only — a fork PR's GITHUB_TOKEN is read-only and
+        # can't push; those fall back to the table + downloadable artifact.
+        if: >-
+          github.event.pull_request.head.repo.full_name == github.repository &&
+          hashFiles('.scratch/golden-diff/montages/*.png') != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR: ${{ github.event.pull_request.number }}
+          SHA: ${{ github.event.pull_request.head.sha }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          BRANCH=ci-drift-images
+          DEST="pr-${PR}/${SHA}"
+          REMOTE="https://x-access-token:${GH_TOKEN}@github.com/${REPO}.git"
+          work="$(mktemp -d)"
+          if git clone --quiet --depth 1 --branch "$BRANCH" --single-branch "$REMOTE" "$work" 2>/dev/null; then
+            cd "$work"
+          else
+            cd "$work"; git init -q; git remote add origin "$REMOTE"; git checkout -q --orphan "$BRANCH"
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          rm -rf "pr-${PR}" # keep only this PR's latest commit → bound branch growth
+          mkdir -p "$DEST"
+          cp "$GITHUB_WORKSPACE"/.scratch/golden-diff/montages/*.png "$DEST"/
+          git add -A
+          git commit -q -m "ci(golden-diff): #${PR} @ ${SHA:0:7} before/after montages" \
+            || echo "no image delta (tree already matches branch tip)"
+          # Same-branch races across concurrent PRs touch different pr-*/ subtrees,
+          # so a rejected push just needs a merge of the other PR's commit + retry.
+          # `published` is set ONLY after the push actually lands — so the comment
+          # never embeds a raw URL that 404s (it falls back to table + artifact).
+          for i in 1 2 3; do
+            if git push -q origin "$BRANCH"; then
+              echo "published=true" >> "$GITHUB_OUTPUT"
+              echo "pushed $DEST ($(ls "$DEST" | wc -l) imgs)"
+              exit 0
+            fi
+            git fetch -q origin "$BRANCH" && git merge -q --no-edit --allow-unrelated-histories origin/"$BRANCH" || true
+            sleep $((i * 2))
+          done
+          echo "push failed after retries — comment falls back to table + artifact"
+          exit 1
+      - name: Post/update before/after comment
+        continue-on-error: true # a read-only token (fork PR) must not fail the run
+        uses: actions/github-script@v7
+        env:
+          PUBLISHED: ${{ steps.publish.outputs.published }}
+        with:
+          script: |
+            const fs = require('fs');
+            const dir = '.scratch/golden-diff';
+            const report = JSON.parse(fs.readFileSync(`${dir}/report.json`, 'utf8'));
+            const marker = '<!-- golden-diff -->';
+            const { data: comments } = await github.rest.issues.listComments({
+              ...context.repo, issue_number: context.issue.number, per_page: 100,
+            });
+            const existing = comments.find((c) => c.body && c.body.includes(marker));
+            if (!report.changed && !existing) return; // nothing to say, no prior comment
+
+            let body = fs.readFileSync(`${dir}/summary.md`, 'utf8');
+
+            // Embed the montages inline — only when the publish step actually pushed
+            // them (same-repo PR); otherwise the table + artifact stand alone.
+            const imgs = report.inlineMontages || [];
+            if (process.env.PUBLISHED === 'true' && imgs.length) {
+              const sha = context.payload.pull_request.head.sha;
+              const baseUrl = `https://raw.githubusercontent.com/${context.payload.repository.full_name}/ci-drift-images/pr-${context.issue.number}/${sha}`;
+              const blocks = imgs.map((m) =>
+                `**\`${m.name}\` · ${m.mood} · slide ${m.page}** — before │ after │ overlay\n\n` +
+                `![${m.name} ${m.mood} slide ${m.page}](${baseUrl}/${m.file})`
+              ).join('\n\n');
+              const more = report.inlineCapped
+                ? `\n\n_…and ${report.montages.length - imgs.length} more changed slide(s) — see the **\`golden-diff-changes\`** artifact for the full set._`
+                : '';
+              const n = imgs.length, of = report.inlineCapped ? ` (of ${report.montages.length})` : '';
+              body += `\n<details><summary>🖼️ before │ after │ overlay — ${n} slide${n === 1 ? '' : 's'}${of}</summary>\n\n${blocks}${more}\n\n</details>\n`;
+            }
+
+            body += '\n' + marker;
+            if (existing) {
+              await github.rest.issues.updateComment({ ...context.repo, comment_id: existing.id, body });
+            } else {
+              await github.rest.issues.createComment({ ...context.repo, issue_number: context.issue.number, body });
+            }
+
   # ── Docs site build — docs (or engine) changes only ────────────────────
   # The deploy workflow (docs.yml) only builds on push to main, so PRs got no
   # docs-build validation. This builds the Astro site (same `npm run build` the
@@ -211,6 +357,9 @@ jobs:
   # passes when lint succeeds and the test tiers either passed or were
   # skipped (docs-only) — so conditional jobs never leave a PR stuck on a
   # "pending" required check.
+  # NOTE: `regression` is intentionally ABSENT from needs/the failure loop — it is
+  # advisory in Step 2 (see its job comment). It still runs and reports; it just
+  # doesn't gate. Step 3 adds it here once cross-runner determinism is fixed.
   ci:
     if: always()
     needs: [lint, unit, integration, engine-parity, docs-build]

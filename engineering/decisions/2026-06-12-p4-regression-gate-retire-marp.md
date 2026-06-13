@@ -1,9 +1,74 @@
-# P4 — retire marp-cli: parity testing → regression testing
+# P4 — retire marp-cli: parity → ~~regression~~ → component-invariant testing
 
-**Status:** design (pre-code), de-risked. The 2026-06-13 spike resolved the one
+**Status:** ~~design (pre-code), de-risked. The 2026-06-13 spike resolved the one
 real technical risk (golden env-stability — §7.1) positively; only the §7.3
 test-migration audit remains, and that's done during implementation. Ready to
-build.
+build.~~ **PIVOTED 2026-06-13 — see §0.**
+
+> **⚠️ PIVOT (2026-06-13) — this supersedes the pixel-regression thesis below.**
+> Wiring the pixel-regression gate into CI surfaced *flaky cross-runner
+> rasterization drift* (Skia's CPU-dispatched raster differs by GitHub runner CPU
+> on fine vector + image content, ~0.4–2%, a *different* gallery each run — §A).
+> That exposed the deeper problem: **post-marp, a self-golden pixel gate detects
+> _change_, not _correctness_** — a golden blessed with a bug passes forever — and
+> it fights machine physics to do even that. **We're pivoting from the pixel gate
+> to per-component SEMANTIC INVARIANTS.** See **§0 — Pivot**. Everything from §2
+> onward is preserved as the historical design + the still-valid env findings,
+> but the "pixel regression is the CI gate" conclusion is retired.
+
+## 0. Pivot (2026-06-13): pixel-regression gate → per-component semantic invariants
+
+**Why.** `engine-parity` was an A/B test against an *external* truth (marp): marp
+*defined* correct, and we proved the owned engine matched it — real value during
+the migration. The pixel **regression** gate this doc proposed is a different,
+weaker thing: it compares each gallery to *a previously-blessed render of itself*.
+That detects *change*, not *correctness* — a golden blessed with a bug passes
+forever — and it turned out to fight machine physics: across GitHub's
+heterogeneous runners, Skia's CPU-dispatched rasterization is not bit-identical,
+so the same code drifts ~0.4–2% on a *different* gallery each CI run (§A). Every
+mitigation we tried (per-bucket tolerance, advisory mode, deterministic-raster
+flags, inline montages) was tax to make a low-value signal not-flaky. When you
+spend that much defending a gate, the gate is wrong.
+
+**The model.** Each component carries its own idea of correctness as **semantic
+invariants** — render the component's example through `lib/engine::render()` into
+a real headless-Chrome DOM (the exact seam `test/integration/parity/color-parity.test.js`
+already uses) and assert on *meaning*, not pixels. Three layers:
+
+| Layer | Source | Coverage | Authoring |
+|---|---|---|---|
+| **1 · Contract** | manifest `slots` (CSS selector + `required`), `_class` | every component, **auto-derived** | none — a new component is covered free |
+| **2 · Universal** | every rendered slide | WCAG contrast, computed colors resolve to palette tokens, no overflow/clipping, one `section`/slide | none — runs on all |
+| **3 · Semantic** | hand-authored, high-value few | funnel widths ∝ values, radar N series → N polygons, big-number is the largest type | opt-in, where a component has a distinctive truth |
+
+These assert *logical* values (selectors, ratios, contrast) — **deterministic and
+machine-independent**, so the cross-runner flakiness simply doesn't exist — and
+need no PDF/poppler (HTML + `getComputedStyle` only), so they're *cheaper* than
+today's page-count tier.
+
+**Plumbing.** One new `test/helpers/semantic-render.js` (wraps `lib/engine::render`
++ Puppeteer, mirroring `render.js`). No render-pipeline changes; no new deps.
+
+**What changes.**
+- **Retired:** the pixel-regression **CI gate**. `npm run regress` survives only
+  as a **local** spot-check tool (handy for a manual visual diff), never wired
+  into CI. `engine-parity` still dies with marp (Step 3) as planned.
+- **Kept:** committed gallery goldens (as human-review artifacts) and **`golden-diff`**
+  — the before/after reviewer comment, now with **inline images** (#239). It
+  diffs two *committed* PDFs on *one* runner, so it is **not** subject to the
+  cross-runner flakiness; it's a review aid, not a gate.
+- **New CI visual-correctness gate:** the semantic-invariant suite (layers 1–2
+  across all ~54 components, plus layer-3 where it earns it).
+
+**Phasing.** (1) `semantic-render.js` + layers 1–2 across the corpus, wired as the
+CI gate. (2) layer-3 semantic invariants for the components that have a
+distinctive truth (charts especially). (3) Step 3: delete marp + `engine-parity`;
+the invariant suite is the sole visual-correctness gate.
+
+**PR #239** is repurposed to land this pivot: it drops the `regression` CI job,
+keeps `golden-diff` (inline) + the shared montage helpers, records this pivot, and
+seeds the invariant suite. The sections below are retained as the historical
+design and the still-valid environment findings (§7.1, §A).
 
 ## 1. Goal
 
@@ -200,6 +265,81 @@ parity` agrees (both all-green) — the gate is as strict as the marp gate.
 (`![bg](sample.svg)`, logos) against the OUTPUT pdf's directory, so the gate
 must render the fresh candidate INTO the gallery's own dir or every image slide
 false-fails blank. **Steps 2 (CI) and 3 (retire marp) remain.**
+
+### Step 2 — done (2026-06-13)
+
+The gate is wired into CI as a **required check**, plus the reviewer's
+before/after surface. The gate runs **full-corpus per-PR** (not
+affected-scoped). This is a deliberate maintainer decision that **overrides §D
+of `2026-06-13-gate-strategy-change-detection.md`**, which had recommended a
+scoped-per-PR + full-corpus-nightly hybrid: in practice the maintainer's
+sessions are opportunistic and cross-cutting, so almost every PR carries an L3
+change that a scoped run would escalate to full anyway — scoping would buy
+little while risking the bucket-vs-component gallery-name collision that doc's
+checker addendum flagged. Scoping (and the merge-queue + render caching that
+would serialize the parallel-session cost) is deferred until that cost is
+measured pain.
+
+- **`.github/workflows/ci.yml`** — two jobs. `regression` (gating, in the `ci`
+  required aggregator, `code`-tier): Chromium + poppler + emoji font, runs
+  `npm run regress`, uploads the drift montage on RED. `golden-diff`
+  (**non-gating**, PR-only, `code`-tier): no Chromium — rasterizes the committed
+  goldens, diffs THIS PR's against `base.sha`, and posts/updates a sticky PR
+  comment via `actions/github-script` (`pull-requests: write`, `continue-on-error`
+  so a read-only fork token can't fail the run) with the before│after│overlay
+  montages embedded **inline** (fulfilling §4's "inline PNG previews"). Inline
+  comment images need a GitHub-served URL, so a `publish` step (`contents: write`,
+  same-repo only) pushes the PNGs to the orphan **`ci-drift-images`** branch (a
+  never-merged image store, `pr-<num>/<sha>/…`) and the comment links
+  `raw.githubusercontent.com` URLs; the full set also uploads as the
+  `golden-diff-changes` artifact (and is the fork-PR fallback). `engine-parity`
+  keeps running in parallel — removed in Step 3.
+- **`tools/golden-diff.mjs` (new)** — the before/after computer. `git diff` is
+  only the cheap candidate filter; the pixel-diff (gate tolerance: fuzz 3% /
+  0.05%) is the truth, so PDF byte-churn from a rebuild reads as "no visual
+  change". Emits `summary.md` (comment body) + `report.json` (incl. `inlineMontages`,
+  capped at 8, most-changed gallery first) + per-slide `montages/*.png` + `changes.pdf`.
+- **`tools/pixel-check.js`** — extracted `montageTriptych` + `pngsToPdf`
+  (HARD RULE 15); `regression-gate.mjs`'s `buildMontage` now calls them, and the
+  gate's per-page montages gained a `deck · mood · slide N` caption.
+- **CI gotcha encoded:** IM6's default `policy.xml` blocks the PDF coder, which
+  would break `convert montages… .pdf`; both jobs relax it
+  (`rights="none" pattern="PDF"` → `read|write`).
+- No `package.json` script for `golden-diff` (it's CI-only) — avoids re-staling
+  the emulator bundle (which inlines `package.json`); `capabilities.md` indexes
+  it from the tool header.
+
+**Cross-machine golden stability — the §7.1 gap, found on the gate's CI runs (the
+key Step-2 finding).** The gate ran green on every sandbox machine but RED in CI
+— and the drift was **flaky across runners**: run 1 drifted the `diagram` bucket
+(0.45% / 4pg); run 2 had `diagram` green but `imagery` — a *flat* bucket — drift
+**2.01%** on 1 page. Excluded every boring cause: goldens not stale (green across
+sandbox machines), fonts correctly embedded (Playfair/Outfit/JetBrainsMono, no
+fallback), Chromium identical (both bless + CI use Chrome-for-Testing
+`131.0.6778.204`). The residue is **Skia's CPU-dispatched rasterization differing
+by runner CPU** — sub-pixel AA on fine vector *and* image content, intermittently
+(a different gallery each run, on GitHub's heterogeneous runners). The §7.1 spike
+measured "0px cross-*session*" but only same-machine-class; it never tested
+across runner CPUs. **This is not bucket-localized, so per-bucket tolerance is
+whack-a-mole with an unknown, flaky ceiling** (the `FAIL_FRACTION_MERMAID = 1%`
+floor for chart+diagram fixed `diagram` but `imagery` then surfaced at 2%).
+
+**Resolution (maintainer decision): the regression gate is ADVISORY in Step 2 —
+it runs and uploads its drift montage on every code PR, but is NOT in the
+required `ci` gate.** No coverage is lost: **`engine-parity` is still the hard
+visual gate throughout Step 2**, so this gate only needs to *prove itself* in
+advisory mode. **Step 3 owns the cross-runner determinism fix** — pin Skia off
+its CPU-feature path with deterministic raster flags (`--disable-skia-runtime-opts`
++ `--font-render-hinting=none` + `--disable-lcd-text` + `--force-color-profile=srgb`;
+spot-tested a no-op on the sandbox, so likely no re-bless), validated across
+several CI runs — and only then promotes `regression` into the required `ci`
+gate, as `engine-parity` is removed. The `FAIL_FRACTION_MERMAID` floor stays as a
+partial mitigation that keeps the advisory signal cleaner meanwhile. Considered
+and rejected for Step 2: a high global tolerance (~3–4%) — loosens the gate
+broadly against a flaky ceiling; and baking the raster flags in *now* — it
+changes the *product's* render path and needs multi-run CI validation, which
+belongs in the focused Step-3 effort, not bolted onto Step 2. **Step 3 (retire
+marp + harden + promote the gate) remains.**
 
 ## 9. Build handoff — START HERE (for the implementing session)
 

@@ -304,6 +304,24 @@ in patch versions.
   is re-stated in an SVG `<desc>` so screen readers still hear the names + values
   (the chart is one `role="img"`). See
   `engineering/decisions/2026-06-13-svg-native-legend.md`.
+- **PR reviews now get an inline before/after of any intended visual change.** A
+  non-gating `golden-diff` CI job diffs THIS PR's committed gallery goldens
+  against the base branch, rasterizes only the slides that *visually* changed (the
+  pixel-diff filters out PDF byte-churn, so a rebuild-only golden reads as "no
+  visual change"), and posts a sticky PR comment with the before │ after │ overlay
+  montages embedded **inline** (hosted on the orphan `ci-drift-images` branch; the
+  full set also uploads as the `golden-diff-changes` artifact). It compares two
+  *committed* PDFs on one runner, so it's deterministic — unlike the pixel gate
+  below.
+- **The pixel-regression gate was _not_ adopted as a CI gate — P4 pivoted to
+  per-component semantic invariants.** `npm run regress` (fresh render == committed
+  golden) ships as a **local** spot-check only: across GitHub's runners Skia's
+  CPU-dispatched rasterization isn't bit-identical (it flaked ~0.4–2% on a
+  *different* gallery each CI run), and post-marp a self-golden pixel gate measures
+  *change*, not *correctness*. The CI visual-correctness gate becomes the
+  semantic-invariant suite (render via `lib/engine` → assert computed-style /
+  structure; deterministic + machine-independent). See
+  `engineering/decisions/2026-06-12-p4-regression-gate-retire-marp.md` §0.
 - **The emulator (the `lattice` CLI / shipped `bin`) now renders through the
   owned `lib/engine` — one markdown implementation, the same engine that powers
   the marp-cli path.** The bespoke `parseSlide` regex parser the emulator shipped
