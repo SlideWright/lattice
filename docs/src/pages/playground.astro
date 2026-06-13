@@ -222,10 +222,11 @@ const pgData = JSON.stringify({
 					aria-haspopup="dialog"
 					aria-expanded="false"
 					aria-controls="pg-config-drawer"
+					aria-label="Deck setup"
 					title="Deck setup — front matter for this deck"
 				>
 					<span class="ico ico-settings" aria-hidden="true"></span>
-					<span>Deck setup</span>
+					<span class="pg-btn-text">Deck setup</span>
 				</button>
 				<button
 					type="button"
@@ -234,9 +235,11 @@ const pgData = JSON.stringify({
 					aria-haspopup="dialog"
 					aria-expanded="false"
 					aria-controls="pg-drawer"
+					aria-label="Galleries"
+					title="Galleries — load a showcase or family deck"
 				>
 					<span class="ico ico-gallery" aria-hidden="true"></span>
-					<span>Galleries</span>
+					<span class="pg-btn-text">Galleries</span>
 				</button>
 			</div>
 		</div>
@@ -392,6 +395,17 @@ const pgData = JSON.stringify({
 			initPlaygroundTour();
 		</script>
 
+		<!-- Bridge: expose the shared filmstrip-preview controller (deck-preview.js)
+		     on window so the inline classic controller below can drive the iframe
+		     write/patch/fit through one implementation (also used by the Drawing
+		     Board and both Workbench studios). Deferred like the engine bundle; the
+		     controller's render() guards on window.LatticeDeckPreview the same way it
+		     guards on the engine. -->
+		<script>
+			import { renderDeck } from '../playground/deck-preview.js';
+			window.LatticeDeckPreview = { renderDeck };
+		</script>
+
 		<script is:inline defer src={url(pg + 'lattice-playground.js')}></script>
 		<script is:inline>
 			(function () {
@@ -403,7 +417,6 @@ const pgData = JSON.stringify({
 				// `@size` geometry (PG.render → { width, height }). Defaults to HD; a
 				// `size: 4K` deck previews at its real 3840×2160 box, not 3× oversized.
 				var curGeom = { w: 1280, h: 720 };
-				function slideBoxCss(w, h) { return '.marpit>section{width:' + w + 'px;height:' + h + 'px}'; }
 				var root = document.documentElement;
 				var frame = document.getElementById('preview');
 				var statusEl = document.getElementById('pg-status');
@@ -477,92 +490,27 @@ const pgData = JSON.stringify({
 					return Promise.all(jobs);
 				}
 
-				var KATEX = 'https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css';
-				// UMD build sets window.mermaid, which lattice-runtime.js polls for and
-				// then renders ```mermaid fences (and charts/split-panels via applyAllToDom).
-				var MERMAID = 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js';
-
-				// The engine renders with inlineSVG:false (see lib/playground/index.js),
-				// so each slide is a plain fixed-size <section> inside <div class="marpit">
-				// rather than Marp's <svg><foreignObject> wrapper. This `fit` routine
-				// scales every section to the iframe width with a CSS transform; a
-				// negative margin-bottom collapses the gap the un-scaled box would
-				// otherwise leave (transform doesn't change layout box size). Re-run on
-				// viewport resize and on content-height changes (Mermaid/charts render
-				// async, growing a section after the first pass). The Marp Safari
-				// foreignObject polyfill is gone — there's no foreignObject to fix, which
-				// is exactly why the WebKit render failures disappear.
-				var FIT = [
-					'(function(){',
-					'  function fit(){',
-					'    var marpit=document.querySelector(".marpit"); if(!marpit) return;',
-					'    var w=marpit.clientWidth; if(!w) return;',
-					// Each section is pinned to the deck's `@size` box (writeFrame injects
-					// window.__SLIDE_W/H), so scale by the constant w/SW — no offsetWidth
-					// measurement to drift as KaTeX/Mermaid stream in. marginBottom collapses
-					// the gap the un-scaled layout box leaves (transform doesn't shrink it).
-					'    var SW=window.__SLIDE_W||1280, SH=window.__SLIDE_H||720;',
-					'    var secs=marpit.querySelectorAll(":scope>section");',
-					'    var sc=w/SW;',
-					'    for(var i=0;i<secs.length;i++){var s=secs[i];',
-					'      s.style.transformOrigin="top left";',
-					'      s.style.transform="scale("+sc+")";',
-					'      s.style.marginBottom=(SH*sc-SH+16)+"px";',
-					'    }',
-					'  }',
-					'  window.addEventListener("resize",fit);',
-					'  if(typeof ResizeObserver!=="undefined"){',
-					'    var ro=new ResizeObserver(function(){fit();});',
-					'    var m=document.querySelector(".marpit");',
-					'    if(m){ro.observe(document.documentElement);',
-					'      var ss=m.querySelectorAll(":scope>section");',
-					'      for(var i=0;i<ss.length;i++) ro.observe(ss[i]);}',
-					'  }',
-					'  fit();',
-					// Backstop for async Mermaid/chart renders that grow a section after
-					// the observers are attached (or where ResizeObserver is absent).
-					'  [60,300,1200,2500].forEach(function(t){setTimeout(fit,t);});',
-					'})();',
-				].join('\n');
-
-				function writeFrame(html, css, mode) {
-					var bg = mode === 'dark' ? '#0c0c0c' : '#e7e7ea';
-					var gw = curGeom.w, gh = curGeom.h;
-					var GEOM_GLOBALS = 'window.__SLIDE_W=' + gw + ';window.__SLIDE_H=' + gh + ';';
-					// Use srcdoc (a fresh browsing context per render), NOT
-					// doc.open()/write()/close(). The latter clears the document but
-					// KEEPS the iframe window, so lattice-runtime.js's one-shot guard
-					// (globalScope.__llMermaidBootstrapLoaded) survives — the starter
-					// render sets it, and every later render short-circuits the whole
-					// runtime, so Mermaid/charts added after the first edit never
-					// render. A fresh srcdoc window resets the guard each time.
-					// See engineering/gotchas.md "Playground: Mermaid stops rendering".
-					frame.srcdoc =
-						'<!doctype html><html><head><meta charset="utf-8">' +
-						'<link rel="stylesheet" href="' + KATEX + '">' +
-						'<style>html,body{margin:0;padding:18px;background:' + bg + ';}' +
-						// slideBoxCss pins each slide to its intrinsic `@size` box (HD default,
-						// 3840×2160 at `size: 4K`) BEFORE FIT scales it. Without it,
-						// `section{container-type:size}` collapses and cqi/cqh-based layouts
-						// (math.matrix/.compare) render tiny + jitter. See frame-css.js +
-						// engineering/gotchas.md. A second rule adds this host's chrome.
-						slideBoxCss(gw, gh) +
-						'.marpit>section{display:block;transform-origin:top left;' +
-						'box-shadow:0 8px 30px rgba(0,0,0,.22);border-radius:6px;}' +
-						css + '</style></head><body>' + html +
-						'<scr' + 'ipt src="' + MERMAID + '"></scr' + 'ipt>' +
-						'<scr' + 'ipt src="' + RUNTIME_URL + '"></scr' + 'ipt>' +
-						'<scr' + 'ipt>' + GEOM_GLOBALS + '</scr' + 'ipt>' +
-						'<scr' + 'ipt>' + FIT + '</scr' + 'ipt>' +
-						'</body></html>';
-				}
+				// The slide preview is the shared filmstrip controller (deck-preview.js):
+				// ONE persistent iframe, patched per edit (only the changed <section>s)
+				// behind a visibility gate (anti-flash) with a clamped height (anti-gap),
+				// content-visibility virtualizing the off-screen slides on big galleries.
+				// It's exposed on window.LatticeDeckPreview by the bundled bridge module
+				// below; this inline controller hands it (html, css, mode, geom, sig). The
+				// host renders inlineSVG:false, so each slide is a plain fixed-`@size`
+				// <section> the FIT agent scales to the container width.
+				var previewState = { frameSig: '', lastSections: null };
 
 				var timer = null;
 				function scheduleRender() { clearTimeout(timer); timer = setTimeout(render, 220); }
+				// Force a fresh srcdoc on the next render — explicit deck swaps (gallery
+				// load, template pick, variant change, scaffold insert) reset the runtime +
+				// Mermaid state rather than patch into a stale document.
+				function freshRender() { previewState.frameSig = ''; render(); }
 
 				function render() {
 					var PG = window.LatticePlayground;
-					if (!PG) { setStatus('Loading engine…'); return setTimeout(render, 60); }
+					var DP = window.LatticeDeckPreview;
+					if (!PG || !DP) { setStatus('Loading engine…'); return setTimeout(render, 60); }
 					var palette = root.getAttribute('data-palette') || 'indaco';
 					var mode = root.getAttribute('data-mode') === 'dark' ? 'dark' : 'light';
 					setStatus('Rendering…');
@@ -571,8 +519,15 @@ const pgData = JSON.stringify({
 						try {
 							var out = PG.render(getSource(), theme);
 							curGeom = { w: out.width || 1280, h: out.height || 720 };
-							writeFrame(out.html, out.css, mode);
-							setStatus('Rendered ' + (out.html.match(/<\/section>/g) || []).length + ' slide(s).');
+							var r = DP.renderDeck({
+								frame: frame,
+								html: out.html, css: out.css, mode: mode, geom: curGeom,
+								sig: theme + '|' + mode + '|' + curGeom.w + 'x' + curGeom.h,
+								state: previewState,
+								runtimeUrl: RUNTIME_URL, gap: 16, contentVisibility: true, center: true,
+							});
+							previewState = r.state;
+							setStatus('Rendered ' + r.count + ' slide(s).');
 						} catch (e) {
 							setStatus(String(e.message || e), true);
 						}
@@ -660,7 +615,7 @@ const pgData = JSON.stringify({
 				// The popover picker reports a selection via this event (detail.name).
 				window.addEventListener('pg-template-pick', function (e) {
 					var name = e.detail && e.detail.name;
-					if (name && catalog[name]) { setCurrentName(name); setSource(catalog[name].sample); populateVariants(name); saveSource(); render(); }
+					if (name && catalog[name]) { setCurrentName(name); setSource(catalog[name].sample); populateVariants(name); saveSource(); freshRender(); }
 				});
 				varSel.addEventListener('change', function () {
 					var comp = catalog[currentName];
@@ -671,7 +626,7 @@ const pgData = JSON.stringify({
 						var v = (comp.variants || []).filter(function (x) { return x.key === key; })[0];
 						if (v) md = v.sample;
 					}
-					setSource(md); saveSource(); render();
+					setSource(md); saveSource(); freshRender();
 				});
 				// "Load a deck" drawer. The Galleries button opens a slide-in panel
 				// over a scrim; picking a showcase / family deck drops the whole deck
@@ -711,7 +666,7 @@ const pgData = JSON.stringify({
 							var id = btn.getAttribute('data-gallery');
 							var src = gallerySources[id];
 							if (src == null) { setStatus('Gallery unavailable.', true); return; }
-							setSource(src); saveSource(); syncPickers(); render();
+							setSource(src); saveSource(); syncPickers(); freshRender();
 							closeDrawer();
 							setPane('preview'); // surface the result (the active pane on phones)
 						});
@@ -721,12 +676,12 @@ const pgData = JSON.stringify({
 				// "Insert blank skeleton" loads its bare slot scaffold.
 				document.getElementById('pg-insert-sample').addEventListener('click', function () {
 					closeDrawer();
-					if (currentName && catalog[currentName]) { setSource(catalog[currentName].sample); populateVariants(currentName); saveSource(); render(); }
+					if (currentName && catalog[currentName]) { setSource(catalog[currentName].sample); populateVariants(currentName); saveSource(); freshRender(); }
 					else setStatus('Pick a component first.', true);
 				});
 				document.getElementById('pg-insert-skeleton').addEventListener('click', function () {
 					closeDrawer();
-					if (currentName && catalog[currentName]) { setSource(catalog[currentName].skeleton); populateVariants(currentName); saveSource(); render(); }
+					if (currentName && catalog[currentName]) { setSource(catalog[currentName].skeleton); populateVariants(currentName); saveSource(); freshRender(); }
 					else setStatus('Pick a component first.', true);
 				});
 				// Reflect whatever the editor currently holds (starter deck, restored

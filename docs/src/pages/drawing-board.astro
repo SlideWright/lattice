@@ -1065,6 +1065,15 @@ const dbData = JSON.stringify({
 			if (openBtn) openBtn.addEventListener('click', () => practice.open());
 		</script>
 
+		<!-- Bridge: expose the shared filmstrip-preview controller (deck-preview.js)
+		     on window so the is:inline render controller (which can't import) drives
+		     the iframe write/patch/fit through one implementation — the same module
+		     the playground + both Workbench studios use. -->
+		<script>
+			import { renderDeck } from '../playground/deck-preview.js';
+			window.LatticeDeckPreview = { renderDeck };
+		</script>
+
 		<script is:inline defer src={url(pg + 'lattice-playground.js')}></script>
 		<script is:inline>
 			(function () {
@@ -1077,7 +1086,6 @@ const dbData = JSON.stringify({
 				// the first render; a `size:` edit refreshes it (and forces a full
 				// srcdoc rewrite, since the box bakes into the frame — see render()).
 				var curGeom = { w: 1280, h: 720 };
-				function slideBoxCss(w, h) { return '.marpit>section{width:' + w + 'px;height:' + h + 'px}'; }
 				// Per-deck token vocabulary, selected by the `tokens:` front-matter
 				// directive (current | universal). Universal renders the deck against the
 				// new --cat-*/--diagram-* names — identical output (byte-identical flip,
@@ -1211,193 +1219,26 @@ const dbData = JSON.stringify({
 					return Promise.all(jobs);
 				}
 
-				var KATEX = 'https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css';
-				var MERMAID = 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js';
 
-				// Scale every section to the iframe width + stack them as a filmstrip.
-				// (Same proven kernel as the playground; Slice 2 adds cursor<->slide sync
-				// and per-slide numbering on top of this.) The engine renders with
-				// inlineSVG:false, so each slide is a plain <section> sized to the deck's
-				// `@size` box (HD default; 3840x2160 at `size: 4K`). writeFrame injects
-				// that box as window.__SLIDE_W/H so the scale divides by the real width —
-				// a 4K deck scaled by a hardcoded 1280 rendered 3x oversized.
-				var FIT = [
-					'(function(){',
-					'  function fit(){',
-					'    var marpit=document.querySelector(".marpit"); if(!marpit) return;',
-					'    var w=marpit.clientWidth; if(!w) return;',
-					'    var SW=window.__SLIDE_W||1280, SH=window.__SLIDE_H||720;',
-					'    var secs=marpit.querySelectorAll(":scope>section");',
-					'    var sc=w/SW;',
-					'    for(var i=0;i<secs.length;i++){var s=secs[i];',
-					'      s.style.transformOrigin="top left";',
-					'      s.style.transform="scale("+sc+")";',
-					'      s.style.marginBottom=(SH*sc-SH+22)+"px";',
-					'    }',
-					// Reveal only once scaled — the srcdoc hides .marpit so the first paint
-					// (and the display:none->block pane switch on mobile, where clientWidth
-					// is 0 until shown) never flashes the slides at full 1280px width.
-					'    marpit.style.visibility="visible";',
-					'  }',
-					'  window.__latticeFit=fit;',
-					'  window.addEventListener("resize",fit);',
-					'  if(typeof ResizeObserver!=="undefined"){',
-					'    var ro=new ResizeObserver(function(){fit();});',
-					'    var m=document.querySelector(".marpit");',
-					'    if(m){ro.observe(document.documentElement);',
-					'      var ss=m.querySelectorAll(":scope>section");',
-					'      for(var i=0;i<ss.length;i++) ro.observe(ss[i]);}',
-					'  }',
-					'  fit();',
-					'  [60,300,1200,2500].forEach(function(t){setTimeout(fit,t);});',
-					'})();',
-				].join('\n');
-
-				// In-iframe sync agent: tags each section with its index, reports clicks
-				// to the parent, and listens for scroll/active messages. Lives in the
-				// srcdoc so it re-installs on every render (fresh browsing context).
-				var SYNC = [
-					'(function(){',
-					'  function secs(){var m=document.querySelector(".marpit");return m?m.querySelectorAll(":scope>section"):[];}',
-					'  function tag(){var s=secs();for(var i=0;i<s.length;i++)s[i].setAttribute("data-idx",i);}',
-					'  window.__latticeTag=tag;',
-					'  tag();',
-					'  function setActive(i){var s=secs();for(var k=0;k<s.length;k++)s[k].classList.toggle("db-active",k===i);}',
-					'  function scrollTo(i,smooth){var s=secs();if(!s[i])return;window.scrollTo({top:Math.max(0,s[i].offsetTop-22),behavior:smooth?"smooth":"auto"});setActive(i);}',
-					// Which slide have we scrolled to? Slides are a fixed-pitch filmstrip
-					// (each slot = FIT-scaled 720*sc + 22px gap), so the slide aligned to the
-					// viewport top is pure arithmetic: round(scrollY / slotH). This anchors to
-					// the TOP — so a fresh load at scrollY 0 reports slide 0 (not whatever sits
-					// at the viewport centre), and it agrees with scrollTo() below, which puts
-					// slide i's top at the viewport top. (Also avoids a getBoundingClientRect
-					// over every slide each scroll — which would defeat content-visibility.)
-					'  function centered(){var m=document.querySelector(".marpit");var s=secs();if(!s.length)return -1;var w=m?m.clientWidth:0;if(!w)return 0;var SW=window.__SLIDE_W||1280,SH=window.__SLIDE_H||720;var slotH=SH*(w/SW)+22;if(slotH<=0)return 0;var i=Math.round(window.scrollY/slotH);if(i<0)i=0;if(i>=s.length)i=s.length-1;return i;}',
-					// Report the centred slide as you scroll. The window "scroll" event is
-					// unreliable for same-origin iframes on iOS Safari (touch / momentum
-					// scroll often doesn't fire it), so an IntersectionObserver — which
-					// updates during scroll regardless — drives the same recompute. Both
-					// paths funnel through report(), deduped via lastC.
-					'  var raf=0,lastC=-1;',
-					'  function report(){var i=centered();if(i>=0&&i!==lastC){lastC=i;setActive(i);parent.postMessage({type:"db-slide-scrolled",idx:i},"*");}}',
-					'  function onScroll(){if(raf)return;raf=requestAnimationFrame(function(){raf=0;report();});}',
-					'  window.addEventListener("scroll",onScroll,{passive:true});',
-					'  if(typeof IntersectionObserver!=="undefined"){var io=new IntersectionObserver(onScroll,{rootMargin:"-45% 0px -45% 0px"});var _ss=secs();for(var _si=0;_si<_ss.length;_si++)io.observe(_ss[_si]);}',
-					'  document.addEventListener("click",function(e){var n=e.target;while(n&&!(n.parentNode&&n.parentNode.classList&&n.parentNode.classList.contains("marpit")))n=n.parentNode;if(n)parent.postMessage({type:"db-slide-click",idx:+n.getAttribute("data-idx")},"*");});',
-					'  window.addEventListener("message",function(e){var d=e.data||{};if(d.type==="db-scroll-to")scrollTo(d.idx,d.smooth);else if(d.type==="db-set-active")setActive(d.idx);});',
-					'  parent.postMessage({type:"db-frame-ready"},"*");',
-					'})();',
-				].join('\n');
-
-				function writeFrame(html, css, mode, forceScheme) {
-					var bg = mode === 'dark' ? '#0c0c0c' : '#e7e7ea';
-					var ACCENT = (getComputedStyle(root).getPropertyValue('--accent') || '').trim() || '#b0492e';
-					// The deck's resolved `@size` box (px) — drives the slide-box pin, the
-					// virtualization placeholder, the print page, and the FIT/SYNC globals
-					// so a `size: 4K` deck previews + exports at its real 3840x2160, not HD.
-					var gw = curGeom.w, gh = curGeom.h;
-					var GEOM_GLOBALS = 'window.__SLIDE_W=' + gw + ';window.__SLIDE_H=' + gh + ';';
-					// Single-file library themes (export bridge) resolve light/dark via
-					// light-dark(); force the canvas scheme so dark renders dark. Built-in
-					// paired -dark themes don't need it, so it's library-only (forceScheme).
-					var SCHEME = forceScheme ? ':root{color-scheme:' + (mode === 'dark' ? 'dark' : 'light') + ';}' : '';
-					// srcdoc (fresh browsing context per render) so lattice-runtime.js's
-					// one-shot Mermaid guard resets each render — see playground.astro +
-					// engineering/gotchas.md "Playground: Mermaid stops rendering".
-					frame.srcdoc =
-						'<!doctype html><html><head><meta charset="utf-8">' +
-						'<link rel="stylesheet" href="' + KATEX + '">' +
-						// Register the vendored faces (Caveat/Shantell + the boardroom set) so
-						// the preview doesn't depend on the engine @import that goes inert here.
-						'<style>' + PREVIEW_FONT_CSS + '</style>' +
-						'<style>html,body{margin:0;padding:22px;background:' + bg + ';}' +
-						SCHEME +
-						// Hidden until the FIT agent scales the 1280px sections to the
-						// container width (it flips this to visible). Prevents the
-						// full-size first-paint flash, esp. on mobile. See FIT above.
-						'.marpit{visibility:hidden;}' +
-						slideBoxCss(gw, gh) +
-						'.marpit>section{display:block;transform-origin:top left;cursor:pointer;' +
-						// Browser-native virtualization: fixed-size slides, so the browser can
-						// skip laying out / painting off-screen ones (smooth scroll + fast
-						// initial render on huge decks) while every node stays in the DOM —
-						// export / cursor-sync / incremental patch are untouched. The
-						// placeholder must match the real box or the scroll math drifts.
-						// Overridden to `visible` for print + html-to-image export (below /
-						// drawing-board-export.js) so off-screen slides aren't dropped.
-						'content-visibility:auto;contain-intrinsic-size:' + gw + 'px ' + gh + 'px;' +
-						'box-shadow:0 8px 30px rgba(0,0,0,.22);border-radius:6px;}' +
-						'.marpit>section.db-active{outline:3px solid ' + ACCENT + ';outline-offset:4px;}' +
-						// Print path (Slice 4 PDF export): un-scale each section to a full
-						// slide-size page and page-break between them. exportPdf() just calls
-						// this iframe's print dialog over the already-rendered slides.
-						'@page{size:' + gw + 'px ' + gh + 'px;margin:0;}' +
-						'@media print{html,body{padding:0;margin:0;background:#fff;}' +
-						'.marpit>section{content-visibility:visible!important;transform:none!important;margin:0!important;box-shadow:none!important;border-radius:0!important;outline:none!important;break-after:page;}' +
-						'.marpit>section:last-child{break-after:auto;}}' +
-						css + '</style></head><body>' + html +
-						'<scr' + 'ipt src="' + MERMAID + '"></scr' + 'ipt>' +
-						'<scr' + 'ipt src="' + RUNTIME_URL + '"></scr' + 'ipt>' +
-						'<scr' + 'ipt>' + GEOM_GLOBALS + '</scr' + 'ipt>' +
-						'<scr' + 'ipt>' + FIT + '</scr' + 'ipt>' +
-						'<scr' + 'ipt>' + SYNC + '</scr' + 'ipt>' +
-						'</body></html>';
-				}
-
-				// ── Incremental preview: persistent iframe, patch only changed slides ─
-				// The freeze on big decks came from rebuilding the WHOLE iframe on every
-				// edit (writeFrame → srcdoc → re-parse + re-transform + re-lay-out all N
-				// slides). marp-core's render is cheap (~285ms @ 800 slides); the cost was
-				// mounting every slide. So we keep ONE persistent iframe and on edit
-				// replace only the <section> nodes whose HTML changed — the runtime's
-				// document.body observer re-runs every transform (global + component-
-				// scoped) on the replaced sections for free, and FIT/sync re-apply via the
-				// agents' __latticeFit / __latticeTag hooks. A full writeFrame still runs on
-				// first render and on palette/mode change (theme CSS + Mermaid theming bake
-				// into the document, so those need a fresh srcdoc). splitSections mirrors
-				// docs/src/playground/preview-virtual.js (unit-tested there).
-				var lastSections = null; // section HTML strings in the live document
-				var frameSig = '';       // theme|mode the current srcdoc was built for
-				function splitSections(html) {
-					var out = [], open = /<section\b[^>]*>/gi, CLOSE = '</section>', m;
-					while ((m = open.exec(html))) {
-						var c = html.indexOf(CLOSE, m.index);
-						if (c === -1) break;
-						out.push(html.slice(m.index, c + CLOSE.length));
-						open.lastIndex = c + CLOSE.length;
-					}
-					return out;
-				}
-				function patchFrame(next) {
-					var doc = frame.contentDocument;
-					var marpit = doc && doc.querySelector('.marpit');
-					if (!marpit) return false;
-					var cur = marpit.querySelectorAll(':scope>section');
-					if (next.length !== cur.length) {
-						// Slide added/removed: rebuild the filmstrip body only — no script
-						// re-eval; the runtime/Mermaid/FIT/sync agents persist and re-process.
-						marpit.innerHTML = next.join('\n');
-					} else {
-						var prev = lastSections || [];
-						for (var i = 0; i < next.length; i++) {
-							if (prev[i] === next[i]) continue;
-							var holder = doc.createElement('div');
-							holder.innerHTML = next[i];
-							var fresh = holder.firstElementChild;
-							if (fresh && cur[i]) marpit.replaceChild(fresh, cur[i]);
-						}
-					}
-					lastSections = next;
-					var w = frame.contentWindow;
-					if (w && w.__latticeTag) w.__latticeTag();
-					if (w && w.__latticeFit) w.__latticeFit();
-					return true;
-				}
+				// The slide preview is the shared filmstrip controller (deck-preview.js) —
+				// ONE persistent iframe, patched per edit (only the changed <section>s)
+				// behind a visibility gate, with content-visibility virtualizing off-screen
+				// slides and a clamped height (no dead trailing scroll). The Drawing Board's
+				// extras ride on opts: the cursor↔slide SYNC agent, the db-active outline,
+				// the print page, the vendored @font-face CSS, and the library-theme forced
+				// color-scheme. The cursor-sync MESSAGE LISTENERS (db-slide-scrolled /
+				// -click / -frame-ready) and the postToFrame() sender stay in this
+				// controller; the module only injects the in-iframe SYNC agent they talk to.
+				// Exposed on window.LatticeDeckPreview by the bundled bridge module below;
+				// render() guards on it the same way it guards on the engine.
+				var previewState = { frameSig: '', lastSections: null };
 
 				var timer = null;
 				function scheduleRender() { clearTimeout(timer); timer = setTimeout(render, 220); }
 				function render() {
 					var PG = window.LatticePlayground;
-					if (!PG) { setStatus('Loading engine…'); return setTimeout(render, 60); }
+					var DP = window.LatticeDeckPreview;
+					if (!PG || !DP) { setStatus('Loading engine…'); return setTimeout(render, 60); }
 					var palette = root.getAttribute('data-palette') || 'indaco';
 					var mode = root.getAttribute('data-mode') === 'dark' ? 'dark' : 'light';
 					var universal = deckTokens() === 'universal';
@@ -1416,19 +1257,28 @@ const dbData = JSON.stringify({
 							var src = DBC ? DBC.embed(raw) : raw;
 							var ckey = DBC ? DBC.key(raw) : '';
 							var out = PG.render(src, theme);
-							// The resolved `@size` box rides on the render; stash it for FIT/
-							// writeFrame and fold it into sig, so a `size:` edit (which changes
-							// the baked box) forces a full srcdoc rewrite rather than a
-							// section-only patch that would leave stale geometry globals.
+							// The resolved `@size` box rides on the render; fold it into sig so a
+							// `size:` edit (which changes the baked box) forces a full srcdoc
+							// rewrite rather than a section-only patch with stale geometry.
 							curGeom = { w: out.width || 1280, h: out.height || 720 };
-							var sig = theme + '|' + mode + '|' + ckey + '|' + curGeom.w + 'x' + curGeom.h;
-							var sections = splitSections(out.html);
-							// Patch when the document already exists for this theme/mode;
-							// otherwise (first render, palette/mode switch) do a full rebuild.
-							var patched = sig === frameSig && frame.contentDocument && frame.contentDocument.querySelector('.marpit')
-								? patchFrame(sections) : false;
-							if (!patched) { writeFrame(out.html, out.css, mode, !!LIB[palette]); frameSig = sig; lastSections = sections; }
-							totalSlides = sections.length;
+							// Active-slide outline tint, read live so it tracks the palette/mode.
+							var ACCENT = (getComputedStyle(root).getPropertyValue('--accent') || '').trim() || '#b0492e';
+							var r = DP.renderDeck({
+								frame: frame,
+								html: out.html, css: out.css, mode: mode, geom: curGeom,
+								sig: theme + '|' + mode + '|' + ckey + '|' + curGeom.w + 'x' + curGeom.h,
+								state: previewState,
+								runtimeUrl: RUNTIME_URL, padding: 22, gap: 22,
+								fontCss: PREVIEW_FONT_CSS,
+								// Single-file library themes resolve light/dark via light-dark();
+								// force the canvas scheme so dark renders dark (built-in paired
+								// -dark themes don't need it).
+								colorScheme: LIB[palette] ? mode : null,
+								contentVisibility: true, cursor: true, activeOutline: ACCENT,
+								printRules: true, sync: true,
+							});
+							previewState = r.state;
+							totalSlides = r.count;
 							recomputeStarts();
 							setSlideStatus();
 						} catch (e) {
@@ -1454,7 +1304,7 @@ const dbData = JSON.stringify({
 					if (src == null) return;
 					setSource(src);
 					recomputeStarts();
-					frameSig = ''; // a new deck → fresh srcdoc (resets runtime/Mermaid state)
+					previewState.frameSig = ''; // a new deck → fresh srcdoc (resets runtime/Mermaid state)
 					syncThemeControls(); // adopt the loaded deck's theme before rendering it
 					render();
 					if (window.__dbArchitect) window.__dbArchitect.update(src);
