@@ -138,18 +138,30 @@ reference, minus "Write a reply"):
 > vs target, not a fixed fraction.
 >
 > **The running chrome (revised).** The top bar is a pure **locator**, no timing:
-> a per-slide progress **spine** (`computeSections` walks the plan, opening a
-> section at slide 0 and each `role: 'section'` divider; each boundary gets an
-> `at-divider` tick, the current slide's segment is accented) over a row that
-> names the **current section + position** (left) and **previews the next
-> section** — `next · The ask` (right) — so a transition never surprises you;
-> the next-section preview drops below 640px to protect the width. All timing
-> lives in a composed **bottom HUD** merged with the nav: the **clock dominates**,
-> with pace + target grouped behind a hairline divider, balanced between Prev and
-> Next. Moving the clock and pace off the top edge hands that height back to the
-> slide — the stage is taller on every breakpoint. This replaced the first cut,
-> which stacked the clock and pace in the top bar (concept "A"); the locator +
+> a **per-section progress spine** (`computeSections` walks the plan, opening a
+> section at slide 0 and each `role: 'section'` divider, recording each section's
+> slide-count) — **one segment per section**, its width ∝ that count, filled
+> left-to-right by your progress within it (completed sections read full, the
+> current one partially, those ahead empty). One segment **per section, not per
+> slide**, is deliberate: a per-slide spine barcoded a long deck and — with a
+> per-segment minimum width — overflowed the viewport, which widened the overlay
+> and clipped **Next** on a phone. The spine sits over a row that names the
+> **current section + position** (left) and **previews the next section** —
+> `next · The ask` (right) — so a transition never surprises you; the
+> next-section preview drops below 640px to protect the width. All timing lives in
+> a composed **bottom HUD** merged with the nav: the **clock dominates**, with
+> pace + target grouped behind a hairline divider, balanced between Prev and Next.
+> Moving the clock and pace off the top edge hands that height back to the slide —
+> the stage is taller on every breakpoint. This replaced the first cut, which
+> stacked the clock and pace in the top bar (concept "A"); the locator +
 > bottom-HUD split ("D+") scored higher on legibility and stage real-estate.
+>
+> **Stage centring is responsive, not viewport-pinned.** The slide-box iframe
+> centres each slide in a container of `height: 100%` (its real box) and computes
+> the fit-scale from the iframe's own `clientWidth/clientHeight` — **not** `100vh`
+> or `innerHeight`, which inside an iframe on iOS Safari report the *main* page
+> viewport and made slides "ride high" there. (The original `frame-css` centring
+> fixed the desktop case but used `100vh`, so iOS was never actually fixed.)
 >
 > **Still Phase 2:** the model layering richer qualitative deck-level critique
 > ("the through-line breaks at slide 6") on top of the structural read, and

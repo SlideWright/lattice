@@ -1885,37 +1885,39 @@ html.db-js #db-editor-ta {
 	background: rgba(0, 0, 0, 0.5);
 	border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 	font-size: 0.9rem;
+	min-width: 0;
+	overflow: hidden;
 }
-/* Progress spine: one segment per slide, filled up to the current one; a tick
-   marks where each new section (divider) begins. */
+/* Progress spine: one segment per SECTION, its width ∝ the section's slide count
+   (set inline via flex-grow). Each segment fills left-to-right by progress within
+   that section — completed sections read full, the current one partially, those
+   ahead empty. A handful of bars at any deck size; the gaps mark section breaks.
+   `min-width: 0` lets segments shrink freely so the spine never widens the bar
+   (a per-slide spine with a min-width barcoded + overflowed long decks). */
 .db-pv-spine {
 	display: flex;
 	gap: 3px;
+	min-width: 0;
 }
 .db-pv-seg {
 	position: relative;
 	flex: 1 1 0;
-	min-width: 2px;
+	min-width: 0;
 	height: 4px;
 	border-radius: 2px;
 	background: rgba(255, 255, 255, 0.16);
-	transition: background 0.2s ease;
+	overflow: hidden;
 }
-.db-pv-seg.done {
-	background: rgba(255, 255, 255, 0.5);
-}
-.db-pv-seg.cur {
-	background: #4a9ed8;
-}
-.db-pv-seg.at-divider::before {
-	content: '';
+.db-pv-seg-fill {
 	position: absolute;
-	left: -3px;
-	top: -2px;
-	bottom: -2px;
-	width: 2px;
-	border-radius: 1px;
+	inset: 0 auto 0 0;
+	width: 0;
+	border-radius: 2px;
 	background: rgba(255, 255, 255, 0.5);
+	transition: width 0.25s ease;
+}
+.db-pv-seg.cur .db-pv-seg-fill {
+	background: #4a9ed8;
 }
 /* The locator row: current section + position (left) · next-section preview +
    AI tag + close (right). Pure orientation — no timing lives here. */
@@ -2158,6 +2160,7 @@ html.db-js #db-editor-ta {
 	display: flex;
 	align-items: center;
 	gap: 0.85rem;
+	min-width: 0;
 }
 .db-pv-vr {
 	width: 1px;
