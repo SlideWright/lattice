@@ -15,7 +15,9 @@
 // rehearsal slide looks identical to the same slide in the preview.
 
 import { KATEX_URL, MERMAID_URL } from './deck-preview.js';
+import { isCapableTier } from './drawing-board-chat.js';
 import { createRehearsalPlanner } from './drawing-board-rehearsal.js';
+import { budgetStatus, readBudgetCap, readBudgetMode, readSpend, recordSpend } from './drawing-board-settings.js';
 import { slideBox } from './frame-css.js';
 
 const BEAT_LABEL = { pause: 'Pause', eye: 'Look up', breathe: 'Breathe', transition: 'Transition', emphasis: 'Emphasize' };
@@ -29,7 +31,22 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
   if (!host) return { open() {} };
   const PG = () => window.LatticePlayground;
   const root = document.documentElement;
-  const planner = createRehearsalPlanner({ model });
+  // The cost/quality gate (same discipline as the chat): only strong tiers may
+  // override the proven deterministic floor; cloud calls respect the session
+  // budget cap; spend lands in the session tally. Built here so the planner module
+  // stays pure (it never imports settings). Local tiers are free → no budget gate.
+  const gate = model
+    ? {
+        capable: (gen) => isCapableTier(gen),
+        allow: () => {
+          const a = model.availability ? model.availability() : {};
+          if (a.generation !== 'openrouter') return true;
+          return !budgetStatus({ sessionSpend: readSpend().session, cap: readBudgetCap(), mode: readBudgetMode() }).blocked;
+        },
+        onUsage: (u) => recordSpend(u?.cost, u?.total_tokens ?? ((u?.prompt_tokens || 0) + (u?.completion_tokens || 0))),
+      }
+    : null;
+  const planner = createRehearsalPlanner({ model, gate });
   const fetched = {};
 
   let plan = null; // the live rehearsal plan (deterministic, possibly AI-refined)
@@ -37,7 +54,7 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
   let startedAt = 0;
   let slideEnteredAt = 0;
   let tick = null;
-  let shownBeatKey = null;
+  let shownCoachKey = null;
 
   const el = (tag, cls, text) => {
     const e = document.createElement(tag);
@@ -103,8 +120,7 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
   let elPace;
   let elTarget;
   let elAi;
-  let elWhy;
-  let elBeat;
+  let elCoach; // the single coaching pill (ambient guidance OR a timed beat)
 
   function close() {
     if (tick) { clearInterval(tick); tick = null; }
@@ -122,8 +138,7 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
     idx = Math.max(0, Math.min(slideCount() - 1, n));
     if (frame?.contentWindow) frame.contentWindow.postMessage({ pv: idx }, '*');
     slideEnteredAt = Date.now();
-    shownBeatKey = null;
-    if (elBeat) { elBeat.classList.remove('show'); elBeat.hidden = true; }
+    shownCoachKey = null;
     refreshChrome();
     refreshTick();
   }
@@ -131,30 +146,24 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
     const sp = plan?.slides[idx];
     elSlide.textContent = (idx + 1) + ' / ' + slideCount();
     elTarget.textContent = 'target ' + fmt(sp ? sp.target : 0);
-    elWhy.textContent = sp ? sp.why : '';
-    elWhy.hidden = !(sp?.why);
     if (elAi) elAi.hidden = !(plan && plan.source === 'ai');
   }
 
-  function showBeat(b) {
-    const key = idx + ':' + b.kind + ':' + b.at;
-    if (key === shownBeatKey) return;
-    shownBeatKey = key;
-    elBeat.hidden = false;
-    elBeat.dataset.kind = b.kind;
-    elBeat.innerHTML = '';
-    elBeat.append(
-      el('span', 'db-pv-beat-kind', BEAT_LABEL[b.kind] || b.kind),
-      el('span', 'db-pv-beat-text', b.text),
-    );
-    // reflow → transition in
-    void elBeat.offsetWidth;
-    elBeat.classList.add('show');
-  }
-  function hideBeat() {
-    if (!shownBeatKey) return;
-    shownBeatKey = null;
-    elBeat.classList.remove('show');
+  // ONE pill. It carries the slide's ambient guidance by default and BECOMES the
+  // timed beat (pause / look up / breathe / …) at its moment, then settles back —
+  // so there's a single, calm focal point over the stage, not two stacked lines.
+  function renderCoach(want) {
+    if (want.key === shownCoachKey) return;
+    shownCoachKey = want.key;
+    if (!want.text) { elCoach.hidden = true; elCoach.classList.remove('show'); return; }
+    elCoach.hidden = false;
+    elCoach.dataset.kind = want.kind || '';
+    elCoach.classList.toggle('is-beat', !!want.label);
+    elCoach.innerHTML = '';
+    if (want.label) elCoach.append(el('span', 'db-pv-coach-kind', want.label));
+    elCoach.append(el('span', 'db-pv-coach-text', want.text));
+    void elCoach.offsetWidth; // reflow → fade the swap in
+    elCoach.classList.add('show');
   }
 
   function refreshTick() {
@@ -167,19 +176,21 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
     if (Math.abs(diff) < 8) { elPace.textContent = 'on track'; elPace.className = 'db-pv-pace ok'; }
     else if (diff > 0) { elPace.textContent = fmt(diff) + ' over'; elPace.className = 'db-pv-pace behind'; }
     else { elPace.textContent = fmt(-diff) + ' ahead'; elPace.className = 'db-pv-pace ahead'; }
-    // timed coaching beats — relative to time spent on THIS slide (self-paced)
+    // The coaching pill: a timed beat if one is live (relative to time on THIS
+    // slide — self-paced), otherwise the slide's ambient guidance.
     const sp = plan?.slides[idx];
-    if (sp?.beats?.length) {
+    if (!sp) { renderCoach({ key: 'none' }); return; }
+    let active = null;
+    if (sp.beats?.length) {
       const onSlide = (Date.now() - slideEnteredAt) / 1000;
       const tgt = sp.target || 1;
-      let active = null;
       for (const b of sp.beats) {
         const t = b.at * tgt;
         if (onSlide >= t && onSlide < t + (b.hold || 3)) active = b; // latest-wins
       }
-      if (active) showBeat(active);
-      else hideBeat();
-    } else hideBeat();
+    }
+    if (active) renderCoach({ key: idx + ':' + active.kind + ':' + active.at, kind: active.kind, label: BEAT_LABEL[active.kind] || active.kind, text: active.text });
+    else renderCoach({ key: idx + ':ambient', kind: null, label: null, text: sp.why });
   }
 
   function waitForPG(tries = 60) {
@@ -235,10 +246,12 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
     const stage = el('div', 'db-pv-stage');
     frame = el('iframe', 'db-pv-frame');
     frame.setAttribute('title', 'Practice slide');
+    // Re-assert the current slide once the iframe's message listener is live — a
+    // fast early Next/Arrow before load would otherwise leave the stage on slide 0.
+    frame.addEventListener('load', () => { try { frame.contentWindow.postMessage({ pv: idx }, '*'); } catch { /* cross-origin guard */ } });
     const coach = el('div', 'db-pv-coach');
-    elBeat = el('div', 'db-pv-beat'); elBeat.hidden = true;
-    elWhy = el('div', 'db-pv-why');
-    coach.append(elBeat, elWhy);
+    elCoach = el('div', 'db-pv-coach-pill'); elCoach.hidden = true;
+    coach.append(elCoach);
     stage.append(frame, coach);
 
     const nav = el('div', 'db-pv-nav');
@@ -262,8 +275,10 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
   }
 
   function open() {
+    if (tick) { clearInterval(tick); tick = null; } // re-opening mid-run: don't leak the timer
     host.hidden = false;
     host.innerHTML = '';
+    document.removeEventListener('keydown', onKey); // avoid a double-bound listener
     document.addEventListener('keydown', onKey);
 
     const s = el('div', 'db-pv-start');
@@ -279,10 +294,11 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
     form.addEventListener('submit', (e) => { e.preventDefault(); start(Math.max(1, Number(input.value) || 10)); });
     s.append(form);
 
-    // A deterministic suggested length + a note when AI coaching is live. Both are
-    // instant + optional — the suggestion is one tap to apply.
+    // A deterministic suggested length + a note when AI coaching is live. The
+    // suggestion uses detOnly() so merely opening the screen NEVER fires a billed
+    // model call — only Start does. One tap applies it.
     try {
-      const det = planner.plan(getSource(), Number(input.value) || 10, { bucketOf }).det;
+      const det = planner.detOnly(getSource(), Number(input.value) || 10, { bucketOf });
       if (det.slides.length) {
         input.value = String(det.suggestMinutes);
         const hint = el('button', 'db-pv-suggest'); hint.type = 'button';
@@ -292,8 +308,10 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
         s.append(hint);
       }
     } catch { /* no source yet — fine */ }
+    // The note only shows for tiers strong enough to actually tailor the plan
+    // (the floor/tiny tiers keep the proven deterministic coaching).
     const avail = model?.availability ? model.availability() : null;
-    if (avail?.modelOn && avail.generation !== 'floor') {
+    if (avail?.modelOn && isCapableTier(avail.generation)) {
       s.append(el('p', 'db-pv-ainote', '✦ AI coaching on — pacing and cues will be tailored to this deck.'));
     }
 

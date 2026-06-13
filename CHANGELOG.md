@@ -101,12 +101,17 @@ in patch versions.
   timed **coaching beats** (pause / look up for eye contact / breathe / signpost
   a section transition / emphasize) that surface at their moment over the slide.
   The plan is deterministic and instant by default (role + density heuristics,
-  works offline); when a generation model is connected (cloud OpenRouter or a
-  local tier) it **auto-tailors** the pacing, rationale, and beats to *this*
-  deck, memoised per deck-revision so an unchanged deck never re-bills and an
-  edit re-assesses. The start screen now suggests a length from deck density.
-  Guidance moved off the cramped top bar into an **unassuming gradient scrim**
-  over the lower stage, so the close button no longer shifts when a cue appears.
+  the proven floor, works offline); when a **capable** model is connected (cloud
+  OpenRouter or a desktop WebLLM tier) it **auto-tailors** the pacing, rationale,
+  and beats to *this* deck — reading a snippet of each slide's prose — memoised
+  per deck-revision so an unchanged deck never re-bills and re-opening after an
+  edit re-assesses. The cloud path honours the session **budget cap** and records
+  spend in the tally, exactly like the chat; tiny/built-in tiers keep the proven
+  floor rather than overriding it with weaker output. The start screen suggests a
+  length from deck density (deterministic — opening it never bills). Guidance
+  moved off the cramped top bar into a **single coaching pill on an unassuming
+  gradient scrim** over the lower stage — it carries the slide's ambient guidance
+  and becomes the timed beat at its moment — so the close button no longer shifts.
   And the stage now renders through the shared slide-box contract (`frame-css`),
   centring each slide exactly as the live preview does — fixing the slides that
   "rode high" — plus a no-zoom viewport that kills the iOS double-tap zoom. See

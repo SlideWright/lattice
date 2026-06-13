@@ -1929,48 +1929,49 @@ html.db-js #db-editor-ta {
 	position: absolute;
 	inset: auto 0 0 0;
 	pointer-events: none;
-	padding: 2.4rem clamp(1rem, 4vw, 2.5rem) clamp(0.9rem, 2.2vw, 1.4rem);
+	padding: 2.6rem clamp(1rem, 4vw, 2.5rem) clamp(1rem, 2.4vw, 1.6rem);
 	display: grid;
-	gap: 0.5rem;
 	justify-items: center;
 	text-align: center;
-	background: linear-gradient(to top, rgba(8, 8, 11, 0.82) 0%, rgba(8, 8, 11, 0.5) 45%, rgba(8, 8, 11, 0) 100%);
+	background: linear-gradient(to top, rgba(8, 8, 11, 0.82) 0%, rgba(8, 8, 11, 0.48) 46%, rgba(8, 8, 11, 0) 100%);
 }
-/* The ambient line — the slide's role/rationale. Always present, quiet. */
-.db-pv-why {
-	max-width: 46ch;
-	font-size: 0.86rem;
-	line-height: 1.45;
-	color: rgba(244, 244, 246, 0.82);
-}
-.db-pv-why[hidden] {
-	display: none;
-}
-/* A timed beat — surfaces at its moment, then fades. Stronger than the ambient
-   line, colour-keyed to the kind. Respects reduced-motion (fades, never slides).*/
-.db-pv-beat {
+/* ONE pill. It carries the slide's ambient guidance by default and BECOMES the
+   timed beat at its moment (a colour-keyed kicker + a stronger lift), then settles
+   back — a single calm focal point, never two stacked lines. Reduced-motion fades
+   without the slide-up. */
+.db-pv-coach-pill {
 	display: inline-flex;
 	align-items: center;
 	gap: 0.6rem;
-	padding: 0.5rem 0.95rem;
+	max-width: min(52ch, 92%);
+	padding: 0.5rem 1rem;
 	border-radius: 999px;
-	background: rgba(16, 16, 22, 0.78);
-	border: 1px solid rgba(255, 255, 255, 0.14);
-	box-shadow: 0 8px 28px rgba(0, 0, 0, 0.4);
-	font-size: 0.95rem;
-	color: #f4f4f6;
+	background: rgba(16, 16, 22, 0.7);
+	border: 1px solid rgba(255, 255, 255, 0.12);
+	box-shadow: 0 8px 28px rgba(0, 0, 0, 0.38);
+	font-size: 0.92rem;
+	line-height: 1.4;
+	color: rgba(244, 244, 246, 0.86);
 	opacity: 0;
-	transform: translateY(10px);
-	transition: opacity 0.32s ease, transform 0.32s ease;
+	transform: translateY(8px);
+	transition: opacity 0.32s ease, transform 0.32s ease, border-color 0.32s ease, background 0.32s ease;
 }
-.db-pv-beat[hidden] {
+.db-pv-coach-pill[hidden] {
 	display: none;
 }
-.db-pv-beat.show {
+.db-pv-coach-pill.show {
 	opacity: 1;
 	transform: translateY(0);
 }
-.db-pv-beat-kind {
+/* Beat state — brighter, fully-opaque text + a slightly stronger surface. */
+.db-pv-coach-pill.is-beat {
+	background: rgba(18, 18, 24, 0.82);
+	border-color: rgba(255, 255, 255, 0.18);
+	color: #f4f4f6;
+	font-weight: 500;
+}
+.db-pv-coach-kind {
+	flex: 0 0 auto;
 	font-size: 0.66rem;
 	font-weight: 700;
 	letter-spacing: 0.08em;
@@ -1980,20 +1981,20 @@ html.db-js #db-editor-ta {
 	color: #0b0b0e;
 	background: #e6c98a;
 }
-.db-pv-beat[data-kind='pause'] .db-pv-beat-kind { background: #e6c98a; }
-.db-pv-beat[data-kind='eye'] .db-pv-beat-kind { background: #8fc7ff; }
-.db-pv-beat[data-kind='breathe'] .db-pv-beat-kind { background: #7fe3a4; }
-.db-pv-beat[data-kind='transition'] .db-pv-beat-kind { background: #c9b8ff; }
-.db-pv-beat[data-kind='emphasis'] .db-pv-beat-kind { background: #ffb38a; }
-.db-pv-beat-text {
-	font-weight: 500;
+.db-pv-coach-pill[data-kind='pause'] .db-pv-coach-kind { background: #e6c98a; }
+.db-pv-coach-pill[data-kind='eye'] .db-pv-coach-kind { background: #8fc7ff; }
+.db-pv-coach-pill[data-kind='breathe'] .db-pv-coach-kind { background: #7fe3a4; }
+.db-pv-coach-pill[data-kind='transition'] .db-pv-coach-kind { background: #c9b8ff; }
+.db-pv-coach-pill[data-kind='emphasis'] .db-pv-coach-kind { background: #ffb38a; }
+.db-pv-coach-text {
+	min-width: 0;
 }
 @media (prefers-reduced-motion: reduce) {
-	.db-pv-beat {
+	.db-pv-coach-pill {
 		transition: opacity 0.2s ease;
 		transform: none;
 	}
-	.db-pv-beat.show {
+	.db-pv-coach-pill.show {
 		transform: none;
 	}
 }
@@ -2038,14 +2039,31 @@ html.db-js #db-editor-ta {
 	color: #b9b9c2;
 }
 
+/* Tablet (~820px) — the desktop layout scales cleanly; just ease the nav button
+   min-width so three controls never crowd in portrait. */
+@media (max-width: 860px) {
+	.db-pv-btn {
+		min-width: 84px;
+	}
+}
+
 /* Touch / narrow — fatten the tap targets; the coaching lives over the stage now
-   (a scrim), so the bar stays a single stable row with the close pinned right. */
+   (a single pill on a scrim), so the bar stays one stable row, close pinned right.
+   The AI tag SHRINKS rather than disappears — on the platform least likely to
+   notice, it's the signal that the cloud is being used. */
 @media (max-width: 640px) {
 	.db-pv-bar {
 		gap: 0.5rem;
 	}
 	.db-pv-ai {
-		display: none;
+		font-size: 0;
+		padding: 0.26rem;
+		line-height: 0;
+	}
+	.db-pv-ai::before {
+		content: '✦';
+		font-size: 0.8rem;
+		line-height: 1;
 	}
 	.db-pv-btn {
 		flex: 1 1 0;
@@ -2055,11 +2073,8 @@ html.db-js #db-editor-ta {
 	.db-pv-target {
 		flex: 0 0 auto;
 	}
-	.db-pv-why {
-		font-size: 0.8rem;
-	}
-	.db-pv-beat {
-		font-size: 0.88rem;
+	.db-pv-coach-pill {
+		font-size: 0.86rem;
 	}
 }
 

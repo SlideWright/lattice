@@ -112,6 +112,16 @@ describe('mergeAiPlan', () => {
     assert.equal(mergeAiPlan(floor, { slides: [] }), null);
     assert.equal(mergeAiPlan(floor, null), null);
   });
+
+  test('does NOT mutate the floor plan (the det plan is already on screen)', async () => {
+    const { buildDeterministicPlan, mergeAiPlan } = await load();
+    const floor = buildDeterministicPlan(DECK, 10);
+    const before = floor.slides.map((s) => s.target);
+    // a skewed response forces a non-trivial re-normalisation factor
+    mergeAiPlan(floor, { slides: [{ i: 0, target: 999 }] });
+    const after = floor.slides.map((s) => s.target);
+    assert.deepEqual(after, before, 'floor targets must be untouched by the merge');
+  });
 });
 
 describe('createRehearsalPlanner', () => {
@@ -152,6 +162,46 @@ describe('createRehearsalPlanner', () => {
     const model = { availability: () => ({ modelOn: true, generation: 'floor' }), complete: async () => { calls++; return {}; } };
     const planner = createRehearsalPlanner({ model });
     assert.equal(await planner.plan(DECK, 10).refined, null);
+    assert.equal(calls, 0);
+  });
+
+  test('the gate blocks weak tiers, budget-stops, and forwards usage', async () => {
+    const { createRehearsalPlanner } = await load();
+    const aiResp = { slides: [{ i: 0, why: 'AI open', target: 60 }] };
+    const make = (gate) => {
+      let calls = 0;
+      let usageSeen = null;
+      const model = {
+        availability: () => ({ modelOn: true, generation: 'openrouter' }),
+        complete: async (opts) => { calls++; if (opts.onUsage) opts.onUsage({ cost: 0.01 }); return aiResp; },
+      };
+      return { planner: createRehearsalPlanner({ model, gate: gate({ markUsage: (u) => { usageSeen = u; } }) }), calls: () => calls, usage: () => usageSeen };
+    };
+    // capable=false → never called, floor stands
+    const a = make(() => ({ capable: () => false }));
+    assert.equal(await a.planner.plan(DECK, 10).refined, null);
+    assert.equal(a.calls(), 0);
+    // allow=false (budget stop) → never called
+    const b = make(() => ({ capable: () => true, allow: () => false }));
+    assert.equal(await b.planner.plan(DECK, 11).refined, null);
+    assert.equal(b.calls(), 0);
+    // allowed + capable → called, and usage is forwarded to onUsage
+    const c = make(({ markUsage }) => ({ capable: () => true, allow: () => true, onUsage: markUsage }));
+    const p = await c.planner.plan(DECK, 12).refined;
+    assert.equal(p.source, 'ai');
+    assert.equal(c.calls(), 1);
+    assert.deepEqual(c.usage(), { cost: 0.01 });
+  });
+
+  test('detOnly returns the floor without ever calling the model', async () => {
+    const { createRehearsalPlanner } = await load();
+    let calls = 0;
+    const model = { availability: () => ({ modelOn: true, generation: 'openrouter' }), complete: async () => { calls++; return {}; } };
+    const planner = createRehearsalPlanner({ model });
+    const det = planner.detOnly(DECK, 10);
+    assert.equal(det.source, 'deterministic');
+    assert.equal(det.slides.length, 6);
+    await new Promise((r) => setTimeout(r, 0));
     assert.equal(calls, 0);
   });
 });

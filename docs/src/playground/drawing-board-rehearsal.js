@@ -74,6 +74,17 @@ function titleOf(chunk) {
   const line = (head ? head[1] : body.split('\n').find((l) => l.trim())) || '';
   return line.replace(/[#*_`>|\\-]/g, '').trim().slice(0, 64);
 }
+// A short prose snippet (title stripped) so the model coaches from the slide's
+// CONTENT, not just its title — capped tight to keep the prompt small.
+function snippetOf(chunk, title) {
+  const flat = chunk
+    .replace(/<!--[\s\S]*?-->/g, ' ')
+    .replace(/[#*_`>|]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  const rest = title && flat.startsWith(title) ? flat.slice(title.length) : flat;
+  return rest.trim().slice(0, 140);
+}
 
 function roleOf(comp, idx, total, chunk, bucketOf) {
   if (idx === 0) return 'open';
@@ -150,7 +161,8 @@ export function buildDeterministicPlan(source, minutes, { bucketOf } = {}) {
     const comp = classOf(c);
     const words = wordsOf(c);
     const role = roleOf(comp, i, total, c, bucketOf);
-    return { comp, words, role, title: titleOf(c) };
+    const title = titleOf(c);
+    return { comp, words, role, title, snippet: snippetOf(c, title) };
   });
   const totalSeconds = Math.max(1, minutes) * 60;
   const targets = allocate(metas, totalSeconds);
@@ -168,6 +180,7 @@ export function buildDeterministicPlan(source, minutes, { bucketOf } = {}) {
       target: targets[i],
       why: WHY[m.role] || WHY.body,
       beats: beatsFor(m.role, m.words),
+      snippet: m.snippet,
     })),
   };
 }
@@ -176,25 +189,29 @@ export function buildDeterministicPlan(source, minutes, { bucketOf } = {}) {
 
 function digest(plan) {
   return plan.slides
-    .map((s) => `${s.index} [${s.comp || s.role}] "${s.title || ''}" (${s.words}w)`)
+    .map((s) => `${s.index} [${s.role}${s.comp ? '/' + s.comp : ''}] "${s.title || ''}" (${s.words}w)${s.snippet ? ' — ' + s.snippet : ''}`)
     .join('\n');
 }
 
 function buildMessages(plan) {
   const totalS = Math.round(plan.totalTarget);
   const sys =
-    'You are a world-class presentation rehearsal coach for boardroom decks. ' +
-    'Given a deck digest and a target talk length, return concise, specific, per-slide ' +
-    'coaching as STRICT JSON only — no prose, no markdown. Calm, professional register.';
+    'You are a world-class presentation rehearsal coach for boardroom decks. Given a ' +
+    'deck digest and a target talk length, return concise, specific, per-slide coaching ' +
+    'as STRICT JSON only — no prose, no markdown. Calm, professional, executive register.';
   const user =
     `Talk length: ${plan.minutes} min (~${totalS}s). ${plan.slides.length} slides.\n` +
     'Return JSON exactly: {"slides":[{"i":<index>,"target":<seconds>,"why":"<=14 words",' +
     '"beats":[{"at":<0..1 fraction of the slide>,"kind":"pause|eye|breathe|transition|emphasis",' +
     '"text":"<=12 words, imperative","hold":<2..6>}]}]}\n' +
-    `Rules: targets should sum to about ${totalS}s; spend more on the ask, the data, ` +
-    'and the opening, less on dividers/transitions. 0–2 beats per slide, only where a ' +
-    'beat genuinely helps delivery (a number to land, a visual to absorb, an ask to hold). ' +
-    '"why" explains the dwell + the slide’s job. Keep every string tight.\n\nSlides:\n' +
+    `Rules: targets should SUM to about ${totalS}s — pace the whole arc, not each slide in ` +
+    'isolation: spend more on the opening, the data, and the ask; less on dividers. Use ' +
+    'beats for DELIVERY: "pause" to let a number/claim land, "eye" to look up and hold the ' +
+    'room (especially on the ask + opening), "breathe" to slow a dense or emotional slide, ' +
+    '"transition" on a divider/section change to signpost what’s next, "emphasis" to stress ' +
+    'one point. 0–2 beats per slide, only where one genuinely helps. Let "why" capture the ' +
+    'dwell, the slide’s job, and the cadence (e.g. "slow — let it land" vs "brisk list"). ' +
+    'Use the snippet to be specific. Keep every string tight.\n\nSlides:\n' +
     digest(plan);
   return [
     { role: 'system', content: sys },
@@ -219,7 +236,9 @@ export function mergeAiPlan(floor, ai) {
   if (!byI.size) return null;
   const slides = floor.slides.map((s) => {
     const r = byI.get(s.index);
-    if (!r) return s;
+    // Clone untouched rows too — the re-normalise below mutates `target`, and the
+    // floor (`det`) is already on screen sharing these objects; never mutate it.
+    if (!r) return { ...s };
     const why = typeof r.why === 'string' && r.why.trim() ? r.why.trim().slice(0, 120) : s.why;
     const target = clamp(r.target, 2, floor.totalTarget, s.target);
     let beats = s.beats;
@@ -243,18 +262,34 @@ export function mergeAiPlan(floor, ai) {
 // `plan()` returns { det, refined } — `det` is ready immediately; `refined` is a
 // Promise resolving to an AI plan (or null when no model / it fails / unchanged
 // floor). Practice shows `det` instantly and swaps in `refined` when it lands.
-export function createRehearsalPlanner({ model } = {}) {
+//
+// `gate` (optional, injected by the browser caller so this module stays pure +
+// Node-testable) enforces the same cost/quality discipline as the rest of the
+// Architect WITHOUT importing the settings module:
+//   • capable(generation) → only let strong tiers override the proven floor (a
+//     tiny 0.5B/built-in model would replace good heuristics with bland text).
+//   • allow() → respect the session budget cap before a billed cloud call.
+//   • onUsage(u) → record the spend into the session tally.
+export function createRehearsalPlanner({ model, gate } = {}) {
   let cache = { key: null, plan: null };
 
   async function refine(floor) {
     const avail = model?.availability ? model.availability() : null;
     if (!avail?.modelOn || avail.generation === 'floor') return null;
+    if (gate?.capable && !gate.capable(avail.generation)) return null;
+    if (gate?.allow && !gate.allow()) return null;
     try {
-      const out = await model.complete({ messages: buildMessages(floor), json: true, fallback: null });
+      const out = await model.complete({ messages: buildMessages(floor), json: true, fallback: null, onUsage: gate?.onUsage });
       return mergeAiPlan(floor, out);
     } catch {
       return null;
     }
+  }
+
+  // Deterministic-only: the start screen's length suggestion must NOT trigger a
+  // billed refine (it only reads `det`). Callers that just want the floor use this.
+  function detOnly(source, minutes, ctx = {}) {
+    return buildDeterministicPlan(source, minutes, ctx);
   }
 
   function plan(source, minutes, ctx = {}) {
@@ -270,5 +305,5 @@ export function createRehearsalPlanner({ model } = {}) {
     return { det, refined };
   }
 
-  return { plan };
+  return { plan, detOnly };
 }
