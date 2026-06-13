@@ -144,17 +144,31 @@ h1#_top {
 	font-weight: 600;
 }
 
-/* Search sits between nav and controls, flexing to take the slack. Reuses
- * Starlight's <site-search>; we just let it grow and cap its width. */
+/* Mobile: search is just its magnifier button, parked with the controls as a
+ * tidy right-hand cluster (margin-auto eats the slack after the brand). Keeping
+ * it shrink-wrapped — not a flex-grow that collapses to 0 and clips against the
+ * wordmark on a 360px phone — is what makes the narrow topbar sit right. */
 .lx-search {
-	flex: 1 1 auto;
+	flex: 0 0 auto;
 	display: flex;
 	justify-content: flex-end;
 	min-width: 0;
+	margin-inline-start: auto;
 }
 .lx-search site-search {
-	width: 100%;
-	max-width: 22rem;
+	width: auto;
+}
+/* Desktop: search flexes to fill the slack between nav and controls and opens
+ * into the full "Search ⌘K" pill. */
+@media (min-width: 50rem) {
+	.lx-search {
+		flex: 1 1 auto;
+		margin-inline-start: 0;
+	}
+	.lx-search site-search {
+		width: 100%;
+		max-width: 22rem;
+	}
 }
 
 .lx-controls {
@@ -230,11 +244,13 @@ starlight-menu-button[aria-expanded='true'] button {
 	background: var(--bg);
 }
 
-/* The brand text turns into just the logo on the narrowest screens so the
- * search + controls keep room next to the fixed sidebar toggle. */
+/* Narrowest screens: keep the "Lattice" wordmark (the landing topbar shows it
+ * on mobile too — the docs zone should match, not drop to a lonely logo).
+ * Tighten the row gap and cap the palette select so the wordmark, the compact
+ * search icon, the controls, and the fixed sidebar toggle all fit one line. */
 @media (max-width: 30rem) {
-	.lx-brand .lx-mark {
-		display: none;
+	.lx-topbar {
+		gap: 0.6rem;
 	}
 	.lx-palette {
 		max-width: 6.5rem;
