@@ -39,116 +39,125 @@ already equal what marp produces — i.e. they're marp-validated *right now*.
 2. **Benchmark-then-retire (metrics).** The `npm run bench` engine-vs-marp
    numbers need marp-core; Option A removes it. So **record the final
    engine-vs-marp benchmark + the footprint delta as a dated measurement** in
-   this note's appendix *before* retiring, then repoint the ongoing benchmark to
+   §A *before* retiring, then repoint the ongoing benchmark to
    **engine-over-time** (a speed-regression signal, not a vs-marp claim — that
    claim is already made and recorded).
 
-## 4. The regression gate
+## 4. The gate + the bless flow (GitHub-native, local-bless)
 
-### Goldens — reuse the committed gallery PDFs, don't add an image tree
-We already commit `*.gallery.{light,dark}.pdf` for every component + bucket (65
-each). **Those are the goldens.** The gate rasterizes the committed PDF and a
-fresh render and pixel-diffs — no new committed PNG tree to bloat the repo. This
-is a direct repurpose of `tools/engine-parity.mjs`, which already rasterizes +
-diffs (with tolerance `FAIL_FRACTION = 0.05%`, channel delta > 8); it just diffs
-against the committed PDF instead of a marp render.
+The flow is deliberately simple — **no bot writes to the branch, no custom
+approval trigger.** It maps to mechanics that already exist.
 
-### `bless` — the primitive
-`npm run bless [-- <deck>]` re-renders the affected decks and overwrites the
-committed golden PDFs. Mechanical + automated. (This is essentially today's
-`build:galleries` rebuild, named for intent.)
+**Goldens — reuse the committed gallery PDFs.** We already commit
+`*.gallery.{light,dark}.pdf` for every component + bucket (65 each). **Those are
+the goldens.** No new image tree to bloat the repo.
 
-### The CI-driven review + bless loop (chosen flow)
-The gate is **CI-enforced** (a red gate blocks merge, like every other check),
-and the review/bless happens **in CI** — not reliant on contributors having the
-render toolchain locally:
+**`bless` is LOCAL — and is already how Lattice works.** When you change a
+layout you run `npm run bless [-- <deck>]` (re-render the affected galleries =
+new golden PDFs) and commit them *in the same PR*. The pre-commit hook already
+auto-rebuilds staged decks, so this is mostly today's flow, named for intent.
 
-1. Gate runs on the PR; renders fresh, diffs vs committed golden PDFs.
-2. On drift it builds a **single diff-montage PDF of only the changed slides**
-   (each page: before │ after │ diff-overlay) and uploads it as a workflow
-   artifact — extending the existing `engine-parity-diffs` artifact upload. It
-   posts a summary comment: "*N slides drifted across {kpi, stats}; see
-   diff.pdf*."
-   - **Why a PDF, not N inline images:** the diff count == changed-slide count —
-     a handful for a targeted change, but **dozens-to-hundreds for a shared-CSS
-     change**. Loose PNGs don't scale; one montage PDF the reviewer flips through
-     does. (`rasterize-for-review.sh --overview` / ImageMagick `montage` already
-     build contact sheets.)
-3. A **maintainer** inspects the montage and, if the change is intended +
-   correct, approves via a controlled trigger (PR label e.g. `bless-ok` or a
-   `/bless` comment — restricted to maintainers; see §7).
-4. A CI job runs `bless`, commits the updated golden PDFs to the PR branch; the
-   gate re-runs green. The committed golden change is itself the reviewable
-   record in the PR diff.
+**The PR flow:**
 
-**No merge ever bypasses the gate.** Intended changes (net-new components,
-improvements to existing ones — which we will absolutely do) go green by
-*blessing*, and the bless is gated by maintainer inspection. Pure regressions
-(unblessed drift) stay red. Same gate for everything; the bless is the universal
-"this change is intended" signal.
+1. Author changes a layout, blesses locally, commits the updated golden PDFs in
+   the PR branch.
+2. **CI regression gate** (`tools/engine-parity.mjs` repurposed): renders fresh,
+   asserts `render == the committed golden`. Green = the author blessed
+   correctly; **Red = unblessed drift** — they changed CSS/source but a deck's
+   committed PDF is stale. This is the safety net: nothing reaches main with a
+   render that doesn't match its committed golden.
+3. **CI before/after job:** diffs the PR's golden PDFs against main's, posts the
+   result on the PR — **inline PNG previews** of the changed slides in a comment
+   + the full **diff-montage PDF (changed slides only, before │ after │ overlay)
+   as a downloadable artifact** (extends the existing `engine-parity-diffs`
+   upload). The diff count == changed-slide count — a handful for a targeted
+   change, dozens-to-hundreds for a shared-CSS change — so a montage beats N
+   loose images. The author/reviewer flips through one doc.
+4. Human looks at the before/after, then merges.
+
+**Who "blesses" / approves, by shop size:**
+
+- **Solo (today):** committing the goldens + reading the CI before/after PDF
+  **is** the sign-off. (GitHub blocks self-approval, so a *required*-review rule
+  would only block a solo author — don't enable it yet.) The gate (render ==
+  golden) still enforces no unblessed drift.
+- **Team (later):** flip on branch-protection "require 1 approving review" — a
+  **one-line GitHub setting, no code change.** An intended visual change then
+  needs a second contributor to read the before/after PDF and approve. The CI
+  comment is already the review surface.
 
 **Automated vs human:** the *re-render* is automated (`bless`); the *"is the new
-look correct?"* judgment stays human (maintainer inspecting the montage + the
-committed-golden diff in the PR). No tool can answer "is it good," only "did it
-change" — that split is the point.
+look correct?"* judgment stays human (reading the before/after). No tool can
+answer "is it good," only "did it change" — that split is the point.
 
 ## 5. What changes in the tree (migration inventory)
 
 - `package.json`: remove `@marp-team/marp-cli` from `dependencies`. (Option A:
   nothing added back — no marp anywhere.)
-- `tools/engine-parity.mjs` → the regression gate (diff vs committed golden PDF;
-  add `--bless`). Rename to reflect "regression," not "parity."
+- `tools/engine-parity.mjs` → the regression gate (diff a fresh render vs the
+  committed golden PDF; add `--bless` to overwrite goldens). Rename to reflect
+  "regression," not "parity."
 - The marp render path retires: `test/helpers/render.js` + the ~6
   `test/integration/parity/*.test.js` + `test/integration/galleries/marp.gallery.test.js`
-  drop their `npx marp` spawns. The *engine* assertions stay (now self-checks /
-  golden-backed); the *marp comparison* assertions are removed.
-- `test/benchmark/engine-bench.mjs`: record the final marp comparison (§3.2),
-  then strip the `@marp-team/marp-core` import; the ongoing bench tracks
+  drop their `npx marp` spawns. The *engine* assertions stay (now golden-backed);
+  the *marp comparison* assertions are removed.
+- `test/benchmark/engine-bench.mjs`: record the final marp comparison (§3.2 /
+  §A), then strip the `@marp-team/marp-core` import; the ongoing bench tracks
   engine-over-time.
 - 2 unit tests import marp-core (`test/unit/engine/engine.test.js`,
   `test/unit/parsing/marp-plugins.test.js`) — re-point to golden/engine-only
   assertions or delete the marp-comparison cases.
-- `.github/workflows/ci.yml`: the `engine-parity` job → the regression gate; add
-  the montage-artifact + the bless-on-approval job.
+- `.github/workflows/ci.yml`: the `engine-parity` job → the regression gate +
+  the before/after-PDF comment job. **No bless-on-approval / bot-commit job** —
+  bless is local.
 - `marp.config.js` **stays** (shipped for marp-vscode + BYO-marp-cli authors).
   The marp-vscode compatibility shims in CSS (`marp.scaffold.css`, the
   `:is(pre, marp-pre)` carve-outs, twemoji `:not(.emoji)`) **stay** — the
   documented Scope-1 tax.
 
-## 6. Metrics (capture before retiring; the user asked)
+## 6. Metrics (capture before retiring; recorded in §A)
 
-- **Footprint delta — the P4 win.** Measure a clean `npm install` *with* vs
-  *without* marp-cli: MB removed from `node_modules`, packages removed from the
-  tree, install-time delta. Honest delta (puppeteer + markdown-it are shared and
-  stay), not the raw 42 MB `du`.
-- **Final engine-vs-marp benchmark** (`npm run bench`) — recorded, dated, in the
-  appendix, as the last word on "we were faster than marp."
+- **Footprint delta — the P4 win.** A clean `npm install` *with* vs *without*
+  marp-cli: MB removed from `node_modules`, packages removed, install-time delta.
+  Honest delta (puppeteer + markdown-it are shared and stay), not the raw 42 MB.
+- **Final engine-vs-marp benchmark** (`npm run bench`) — dated, the last word on
+  "we were faster than marp."
 - **Ongoing:** engine self-speed (the bench, marp stripped) as a perf-regression
   signal.
 
 ## 7. Open questions (need sign-off before code)
 
-1. **Golden env-stability — the real technical risk.** A regression gate diffs a
-   *fresh* render (CI env) against a *committed* golden (whatever env blessed
-   it). Unlike the old parity gate — which rendered both sides in the *same* CI
-   run, so font/Chromium drift cancelled — golden drift does **not** cancel.
-   Mitigations to pick: (a) pin the render env hard (Chromium + fonts) so blessed
-   == CI; (b) always `bless` *in CI* (goldens only ever generated in the CI env);
-   (c) lean on the existing 0.05% tolerance to absorb sub-pixel AA. Likely (b)+(c).
-2. **Bless trigger security.** Who can fire `bless-ok` / `/bless`? Must be
-   maintainer-only (a contributor must not self-approve a golden change). GitHub
-   Action with an actor/permission check.
-3. **PDF goldens vs PNG goldens.** Reusing committed PDFs avoids an image tree
-   but couples the gate to PDF rasterization determinism. Alternative: commit
-   per-slide PNGs (bigger repo, simpler diff). Lean PDF-reuse + (b) above.
-4. **Test-migration size.** ~10 files lose their marp comparison. Confirm none
-   asserts something *only* a second renderer can (audit before deleting).
+1. **Golden env-stability — the real technical risk, and the one to validate
+   empirically.** Today's parity gate renders both sides in the *same* CI run,
+   so font/Chromium drift cancels. A regression gate diffs a *fresh CI* render
+   against a *locally-blessed* committed golden, so author-env↔CI-env drift does
+   **not** cancel. Mitigations already in our favor: the emulator **embeds**
+   self-hosted fonts into the PDF (deterministic type), Chromium is
+   puppeteer-pinned, and the existing **0.05% tolerance** absorbs sub-pixel AA.
+   First implementation step is to *measure* whether locally-blessed goldens are
+   stable against a CI render. **If not**, the targeted fallback is "bless in CI"
+   (a label triggers CI to regenerate just the goldens) — reintroducing a little
+   machinery only where proven necessary.
+2. **PDF goldens vs PNG goldens.** Reusing committed PDFs avoids an image tree
+   but couples the gate to PDF rasterization determinism. Lean: PDF-reuse, revisit
+   only if §7.1 forces it.
+3. **Test-migration audit.** ~10 files lose their marp comparison. Confirm none
+   asserts something *only* a second renderer can before deleting.
+
+*(The earlier "bless-trigger security" question is gone — bless is local, so CI
+never writes to the branch and there's nothing to gate.)*
 
 ## 8. Recommendation
 
 Option A (full excision, regression gate) with **bless-then-retire** +
-**benchmark-then-retire**, the **PDF-golden / CI-driven montage-review / bless**
-loop above, resolving §7.1 via "bless in CI + keep the tolerance." This delivers
-the marp-free shipped package, keeps a strict CI gate, and makes intended visual
-changes a one-approval flow — with the objective floor preserved by blessing
-while marp is still here to validate it.
+**benchmark-then-retire**, and the **local-bless / CI-posts-before-after-PDF**
+flow above. It delivers the marp-free shipped package, keeps a strict CI gate
+(render == committed golden), makes intended changes a commit-the-goldens flow
+the repo already half-runs, and scales from solo (bless = sign-off) to team
+(add required-review, a setting). Validate §7.1 first; it's the only real risk.
+
+## A. Recorded measurements (filled at implementation, pre-retirement)
+
+- Footprint: install size + package-count delta, with vs without marp-cli — _TBD_
+- Final `npm run bench` engine-vs-marp table — _TBD_
+- Date / commit of the marp-validated golden freeze — _TBD_
