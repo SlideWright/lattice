@@ -57,6 +57,8 @@ export function createArchitect({ vocab, catalog, mount, reveal, applyFix }) {
 	}
 	// Finish register names — the deck-wide `finish:` front-matter validator.
 	if (vocab?.finishNames) vocabSets.finishNames = vocab.finishNames;
+	// Split mode names — the deck-wide `split:` front-matter validator.
+	if (vocab?.splitNames) vocabSets.splitNames = vocab.splitNames;
 	const bucketByName = new Map((catalog || []).map((c) => [c.name, c.bucket]));
 	const bucketOf = (n) => bucketByName.get(n) || null;
 	let lastSource = '';

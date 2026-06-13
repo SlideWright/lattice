@@ -43,7 +43,8 @@ Three things to notice:
 
 1. **Front matter** selects the palette (`theme:`), the deck's finish
    (`finish:`), and global chrome (`paginate`, `header`, `footer`).
-2. **`---`** separates slides.
+2. **`---`** separates slides — or set `split: headings` and let each `##` start
+   a new slide instead (see The `split:` key below).
 3. **`<!-- _class: NAME -->`** picks the layout for that slide. The
    layout decides the structure; your Markdown fills the slots.
 
@@ -85,6 +86,39 @@ For example `<!-- _class: cards-grid dark -->` renders the grid on the
 dark canvas. The catalog of modifiers lives in the design system
 reference in the repository.
 
+## The `split:` key — divide by headings, not `---`
+
+By default a deck splits on `---` thematic breaks (`split: rule`). If you'd
+rather let your outline do the dividing, set `split: headings` and the first
+`#` becomes the lead slide while every `##` after it opens a new one — so the
+body is clean Markdown with no separators to remember:
+
+```markdown
+---
+theme: indaco
+split: headings    # ## starts each slide; no --- needed
+---
+
+# Deck title          ← the lead slide
+
+`Category · Date`
+
+## First topic         ← a new slide
+
+…body…
+
+## Second topic        ← another slide
+```
+
+A slide's `<!-- _class: NAME -->` directive and its eyebrow are written
+*above* the heading (so the eyebrow renders above the title) and **stay with
+that slide** — the break is pulled back over them, never orphaning onto the
+slide before. `split: headings` is also **hybrid**: an explicit `---` still
+forces a break, which is how you give a slide no heading at all (an image
+slide) or split two slides under one idea. `split:` takes exactly two values
+— `rule` and `headings` — and a misspelling is caught by the deck linter
+(`unknown-split`) rather than silently falling back to `rule`.
+
 ## The `finish:` key — a hand-drawn deck
 
 A **finish** is the deck's type-and-geometry voice, separate from its
@@ -123,6 +157,9 @@ reference and the linter use. Every suggestion is deterministic and offline;
 - **`finish:` in front matter** — the finish-register names (`boardroom`,
   `sketch`, `sketch-clean`), the same set the linter validates, so a typo can't
   slip through. The **Deck setup** drawer also exposes Finish as a picker.
+- **`split:` in front matter** — the two split modes (`rule`, `headings`), again
+  linter-validated. The **Deck setup** drawer exposes it as the Slide-splitting
+  picker.
 - **Inside `<!-- _class: … -->`** — layout names (tagged by bucket), then the
   modifiers that layout accepts, its own variants first and the universal ones
   after.

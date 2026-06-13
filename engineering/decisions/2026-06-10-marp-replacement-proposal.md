@@ -502,6 +502,11 @@ directive (the `<!-- _key: … -->` spot form, or its non-`_` global form).
 
 ### 12.3 Deck splitting — `split`
 
+> **Shipped (2026-06-13):** `split:` landed as a **binary** key — `rule`
+> (default) and `headings` — not the three modes sketched below. The shipped
+> `headings` folds `h2` + `hybrid` into one eyebrow-aware, `---`-honouring mode.
+> See `engineering/decisions/2026-06-13-split-frontmatter.md`.
+
 Marp splits only on a `---` thematic break. markdownlint's `MD035`/heading rules
 and many house styles dislike bare `---` in prose, and authors routinely *forget*
 it. So the engine offers three modes:

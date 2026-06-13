@@ -31,6 +31,7 @@ const SCRIPT_FOR_LIB = {
   'match-section.js':     'test:parsing',
   'slot-label-lift.js':   'test:parsing',
   'split-slides.js':      'test:parsing',
+  'resolve-split.js':     'test:parsing',
   // The deck-lint engine + its Node binding — covered by lint-deck.test.js +
   // lint-core.test.js, both under test/unit/components/.
   'lint.js':              'test:components',

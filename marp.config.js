@@ -12,6 +12,7 @@
 
 const path = require('node:path');
 const {
+  headingSplit,
   deckClassPropagate,
   applyDeckLogoToHtml,
   readDeckLogoFrontMatter,
@@ -84,7 +85,8 @@ module.exports = {
   math: 'katex',
   engine: ({ marp }) => {
     registerMermaidHljs(marp);
-    marp.use(deckClassPropagate)
+    marp.use(headingSplit)
+        .use(deckClassPropagate)
         .use(verdictGridBadges)
         .use(obligationMatrixBadges)
         .use(checklistItemStates)
@@ -142,6 +144,7 @@ module.exports = {
 // safe; consumers should treat it as test-internal API. Re-exported from
 // the shared module (lib/integrations/marp/plugins.js) — single source.
 module.exports.plugins = {
+  headingSplit,
   deckClassPropagate,
   applyDeckLogoToHtml,
   readDeckLogoFrontMatter,

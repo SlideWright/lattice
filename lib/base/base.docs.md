@@ -492,6 +492,36 @@ all three render paths. An unrecognized value (e.g. `finish: sketchh`) resolves
 to no classes — so it would silently ship the boardroom baseline — which is why
 `npm run lint:deck` flags it as an `unknown-finish` warning.
 
+#### The `split:` front-matter divider
+
+`split:` is the **deck-wide slide divider selector** — another Lattice
+front-matter extension (`lib/core/resolve-split.js`), binary by design:
+
+| `split:` value | Slides divide on | Notes |
+|---|---|---|
+| `rule` | a top-level `---` only | The Marp-compatible **default** (omit the key). |
+| `headings` | the first `#` (lead) + every `##`, **and** `---` | Eyebrow-aware + hybrid (below). |
+
+In `headings` mode the divider is **eyebrow-aware**: a slide's lead-in — its
+`<!-- _key -->` directive comments and its eyebrow paragraph, both written
+*above* the heading — is pulled onto the heading's slide, never orphaned onto
+the one before. It is **hybrid**: a literal `---` still forces a break (use it
+for a heading-less image slide, or two slides under one idea). It is
+implemented as one shared `hr`-injection ruler
+(`headingSplit` in `lib/integrations/marp/plugins.js`, run `.before('marpit_slide')`)
+so the emulator, marp-cli, and the playground produce identical boundaries —
+and it is **slide-count-identical to `rule` on every committed deck** (pinned
+by `test/unit/parsing/heading-split.test.js`), so it can become the default
+later without disturbing what's written. An unrecognized value resolves to
+`rule`; `npm run lint:deck` flags it as an `unknown-split` warning.
+
+**VS Code live-preview caveat.** Like the `islands:` / `logo:` directives, the
+heading divider runs only in the two export paths — the stock marp-vscode
+preview can't load our plugin, so a `headings`-mode deck that omits `---`
+under-segments *in the live preview* while still exporting correctly. Keep a
+few `---` if you rely on the preview, or check the rendered PDF. See
+`engineering/decisions/2026-06-13-split-frontmatter.md`.
+
 | Token / class | Effect |
 |---|---|
 | `sketch` | Full handwriting (headings **and** body) + drawn boxes. The default. |
