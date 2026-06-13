@@ -123,12 +123,16 @@ is its own mini-spec; LFM only requires that it degrades to a code block.
 
 | Info string | Sub-language | Degrades to |
 |---|---|---|
-| `latticeplot` | Lattice chart config (JSON/YAML body) | A code block showing the config. **L0-clean.** |
-| `mermaid` | Mermaid (passthrough) | A code block. **L0-clean** (and Mermaid-aware hosts render the diagram). |
+| `latticeplot` | A [function-plot](https://mauriciopoppe.github.io/function-plot/) graph spec (JSON body: mathematical functions + axes). Used today by the `math` component's `canvas` variant to draw a curve beside an equation. | A code block showing the JSON config. **L0-clean.** |
+| `mermaid` | Mermaid (passthrough), used by the `diagram` component. | A code block. **L0-clean** (and Mermaid-aware hosts render the diagram). |
 
-The chart-config grammar is owned by the Lattice chart family and referenced
-from [`dist/docs/grammar.json`](../dist/docs/grammar.json), not inlined here —
-keeping the prose spec stable as chart options evolve.
+The body of each fence is **not Markdown** — it is the configuration language
+of the library that renders it (function-plot, Mermaid). Those schemas are owned
+by their libraries and the components that use them, and are referenced from
+[`dist/docs/grammar.json`](../dist/docs/grammar.json) rather than inlined here,
+so this prose spec stays stable as those options evolve. LFM's only requirement
+of a fenced sub-language is the degradation contract: an LFM-unaware renderer
+shows the fence as a plain code block.
 
 ### 3.4 Other inline conventions
 

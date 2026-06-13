@@ -116,11 +116,16 @@ engine reads.
 ### Chart / diagram semantics — the Mermaid model we already built
 
 Each fenced DSL is its own sub-spec: own grammar, own diagnostics, degrades to
-a code block. `latticeplot` is *our Mermaid* and already follows this shape;
-Mermaid passthrough is the other. We do **not** fold chart config into the
-prose grammar — it stays a fenced sub-language. `grammar.json` records each
-fence's `info` string and its degraded form; the detailed chart-config grammar
-remains owned by the chart family and referenced, not inlined.
+a code block. `latticeplot` (a [function-plot](https://mauriciopoppe.github.io/function-plot/)
+graph spec, used today by the `math canvas` layout to draw a curve beside an
+equation) is *our Mermaid* and already follows this shape; Mermaid passthrough
+(the `diagram` component) is the other. Note this is **distinct** from the
+`chart` bucket (bar/line/donut/radar/map), which renders through the owned
+chart-family registry, not a fence. We do **not** fold a fence's config into the
+prose grammar — it stays a fenced sub-language whose body is the renderer
+library's own config language. `grammar.json` records each fence's info string,
+the library and component that own it, and its degraded form; the detailed
+config schema stays owned by that library and is referenced, not inlined.
 
 ### Error identification & correction — the moat
 

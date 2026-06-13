@@ -395,11 +395,13 @@ const STATE_MARKERS_NOTE = 'semantic is universal; shape is the canonical state-
 // markers via its own transform.
 const STATE_MARKER_COMPONENTS = ['checklist', 'verdict-grid', 'obligation-matrix', 'pricing', 'roadmap'];
 
-// Fenced sub-languages LFM recognises (info string → degraded form). Each is
-// its own mini-spec that degrades to a code block in an LFM-unaware renderer.
+// Fenced sub-languages LFM recognises (info string → degraded form). The fence
+// body is NOT Markdown — it is the config language of the library that renders
+// it, owned by that library and the component that uses it, not by LFM. Each
+// degrades to a plain code block in an LFM-unaware renderer.
 const FENCES = {
-  latticeplot: { sublanguage: 'lattice-chart-config', degradesTo: 'code-block' },
-  mermaid: { sublanguage: 'mermaid', degradesTo: 'code-block' },
+  latticeplot: { sublanguage: 'function-plot', body: 'json', usedBy: ['math'], degradesTo: 'code-block' },
+  mermaid: { sublanguage: 'mermaid', body: 'mermaid', usedBy: ['diagram'], degradesTo: 'code-block' },
 };
 
 /**

@@ -36,11 +36,19 @@
   ],
   "fences": {
     "latticeplot": {
-      "sublanguage": "lattice-chart-config",
+      "sublanguage": "function-plot",
+      "body": "json",
+      "usedBy": [
+        "math"
+      ],
       "degradesTo": "code-block"
     },
     "mermaid": {
       "sublanguage": "mermaid",
+      "body": "mermaid",
+      "usedBy": [
+        "diagram"
+      ],
       "degradesTo": "code-block"
     }
   },
