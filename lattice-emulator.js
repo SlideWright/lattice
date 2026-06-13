@@ -55,9 +55,10 @@ let katexCssAbsPath = '';
 try { katexCssAbsPath = require.resolve('katex/dist/katex.min.css'); } catch (_e) { /* no css link emitted */ }
 
 // ── function-plot (math function plotting in math.canvas) ─────────────────
-// ```latticeplot fences carry a JSON function-plot config; the build emits
-// a `<div class="latticeplot" data-fp-config="…">` placeholder that the
-// vendored function-plot UMD bundle inflates to an SVG on page load — same
+// ```functionplot fences (alias: the deprecated ```latticeplot) carry a JSON
+// function-plot config; the build emits a `<div class="functionplot"
+// data-fp-config="…">` placeholder that the vendored function-plot UMD bundle
+// inflates to an SVG on page load — same
 // pre-render-then-PDF flow puppeteer uses for the rest of the deck. The
 // library is purpose-built for y=f(x), parametric, polar, implicit, and
 // vector-field plots; it parses math.js expressions and skips asymptotes
@@ -97,9 +98,22 @@ OPTIONS
   -p, --palette NAME      Palette name (alternative to positional palette)
   -c, --css PATH          Layout CSS override (alternative to positional custom.css)
   -q, --quiet             Suppress non-error progress output
+      --notes             Also write a plaintext speaker-notes sidecar
+                          (<output>.notes.txt), one block per slide
+      --notes-icon        Show a clickable sticky-note icon on each slide with
+                          a note (default: notes are embedded but hidden)
 
   Both --flag value and --flag=value syntax accepted. Positional args still
   work; named flags take precedence when both are supplied.
+
+SPEAKER NOTES
+  A non-directive HTML comment on a slide is that slide's speaker note
+  (Marp-faithful; see spec/LFM-1.0.md). Each note is embedded as a per-page PDF
+  text annotation and a hidden HTML presenter-notes channel. By default the PDF
+  annotation is hidden — the note is embedded and tool-extractable, but no icon
+  marks the slide; --notes-icon exposes a clickable sticky note instead. --notes
+  additionally writes a plaintext sidecar. Tooling pragmas (markdownlint /
+  prettier) are not notes.
 
 PALETTE RESOLUTION (highest precedence first)
   1. CLI palette positional argument
@@ -151,6 +165,8 @@ function parseArgs(argv) {
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === '-q' || a === '--quiet') { flags.quiet = true; continue; }
+    if (a === '--notes') { flags.notes = true; continue; }
+    if (a === '--notes-icon') { flags['notes-icon'] = true; continue; }
     // --flag=value form
     const eq = a.match(/^(--?[A-Za-z][\w-]*)=(.*)$/);
     if (eq && opts[eq[1]]) { flags[opts[eq[1]]] = eq[2]; continue; }
@@ -196,6 +212,8 @@ if (flags.css)     cssFile    = flags.css;
 if (flags.output)  outFile    = flags.output;
 if (flags.palette) paletteArg = flags.palette;
 const QUIET = flags.quiet;
+const NOTES_SIDECAR = !!flags.notes;
+const NOTES_ICON = !!flags['notes-icon'];
 
 if (!mdFile || !outFile) {
   console.error('Usage:');
@@ -946,6 +964,28 @@ function engineSlides() {
 
 const slides = engineSlides();
 
+// ── Speaker notes ──────────────────────────────────────────────────────────
+// A non-directive HTML comment on a slide is that slide's speaker note
+// (Marp-faithful; LFM §3.5). notes-core is the single source shared with the
+// marp-cli path (HARD RULE #1); extracting from the already-rendered `slides`
+// keeps the note index aligned with the slide split (incl. `split: headings`).
+// Each note is lifted into a hidden presenter-notes channel and the raw comment
+// nodes are stripped — exactly what Marp does, so the rendered HTML/PDF carry
+// the note once, structurally, rather than as an invisible comment.
+const notesCore = require('./lib/authoring/notes-core');
+const escapeHtml = (s) => String(s)
+  .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const slideNotes = notesCore.extractSlideNotes(slides);
+const slidesWithNotes = slides.map((sec, i) => {
+  const stripped = notesCore.stripCommentNodes(sec);
+  const note = slideNotes[i];
+  if (!note) return stripped;
+  const aside = `<aside class="lattice-notes" hidden data-slide="${i + 1}">${escapeHtml(note)}</aside>`;
+  // Inject just inside the opening <section> so the channel travels with its
+  // slide. `hidden` keeps it out of layout/print and the overflow watcher.
+  return stripped.replace(/^(\s*<section\b[^>]*>)/i, `$1${aside}`);
+});
+
 // ── Marp-equivalent CSS for pagination and header/footer ────────────────────
 // Marp injects these styles itself; we reproduce them here since we're
 // not running through marp-core.
@@ -965,6 +1005,10 @@ section { position: relative; }
 section[data-marpit-pagination]::after {
   content: attr(data-marpit-pagination);
 }
+
+/* Speaker-notes channel: a hidden, non-printing per-slide aside. Pinned off
+   explicitly so a theme styling bare <aside> can never leak it into the PDF. */
+aside.lattice-notes { display: none !important; }
 `;
 
 // ── Google Fonts ─────────────────────────────────────────────────────────────
@@ -1095,7 +1139,7 @@ function applyHighlighting(html) {
   );
 }
 
-const highlightedSlides = slides.map(s => applyHighlighting(s));
+const highlightedSlides = slidesWithNotes.map(s => applyHighlighting(s));
 
 // Deck-logo (`logo:`). The islands toggle + the masthead-meta / progress-rail /
 // watermark injectors already ran inside engine.render (they match on section
@@ -1117,17 +1161,17 @@ const katexCssLink = katexCssAbsPath
   : '';
 
 // ── function-plot script + bootstrap ──────────────────────────────────────
-// Only emitted if at least one slide actually contains a latticeplot block,
+// Only emitted if at least one slide actually contains a functionplot block,
 // so decks that don't use it pay nothing. The bootstrap runs synchronously
 // on DOMContentLoaded; puppeteer's `waitUntil: networkidle0` covers it.
-const hasLatticePlot = highlightedSlides.some(s => s.includes('class="latticeplot"'));
-const functionPlotScript = (hasLatticePlot && functionPlotJsAbsPath)
+const hasFunctionPlot = highlightedSlides.some(s => s.includes('class="functionplot"'));
+const functionPlotScript = (hasFunctionPlot && functionPlotJsAbsPath)
   ? `<script src="file://${functionPlotJsAbsPath}"></script>
 <script>
 (function(){
   function inflate() {
     if (typeof window.functionPlot !== 'function') return;
-    document.querySelectorAll('div.latticeplot[data-fp-config]').forEach(function(div){
+    document.querySelectorAll('div.functionplot[data-fp-config]').forEach(function(div){
       if (div.dataset.fpInflated === '1') return;
       try {
         var cfg = JSON.parse(atob(div.getAttribute('data-fp-config')));
@@ -1140,8 +1184,8 @@ const functionPlotScript = (hasLatticePlot && functionPlotJsAbsPath)
         window.functionPlot(cfg);
         div.dataset.fpInflated = '1';
       } catch (e) {
-        div.textContent = 'latticeplot error: ' + e.message;
-        div.classList.add('latticeplot-error');
+        div.textContent = 'functionplot error: ' + e.message;
+        div.classList.add('functionplot-error');
       }
     });
   }
@@ -1207,7 +1251,7 @@ ${stateChartScript}
 </script>
 </body></html>`;
 
-const outHtml = outFile.replace(/\.pdf$/, '.html');
+const outHtml = outFile.replace(/\.pdf$/i, '.html');
 fs.writeFileSync(outHtml, htmlDoc);
 if (!QUIET) console.log(`HTML: ${slides.length} slides → ${outHtml}`);
 
@@ -1294,12 +1338,81 @@ const puppeteer = loadPuppeteer();
   if (overflowing.length) {
     console.warn(`  ⚠ Overflow on slide${overflowing.length > 1 ? 's' : ''} ${overflowing.join(', ')} — red ring drawn in PDF.`);
   }
-  await page.pdf({
-    path: outFile,
+  // Render to a buffer (no `path`) so we can post-process before writing: the
+  // speaker notes are attached as per-page PDF text annotations.
+  const pdfBytes = await page.pdf({
     width: `${slideW}px`, height: `${slideH}px`,
     printBackground: true,
     preferCSSPageSize: true
   });
   await browser.close();
-  if (!QUIET) console.log(`PDF: ${outFile}`);
+  const finalBytes = await embedNotesInPdf(pdfBytes, slideNotes);
+  fs.writeFileSync(outFile, finalBytes);
+  const noteCount = slideNotes.filter(Boolean).length;
+  if (!QUIET) {
+    console.log(`PDF: ${outFile}${noteCount ? ` (${noteCount} slide${noteCount > 1 ? 's' : ''} with speaker notes)` : ''}`);
+  }
+  if (NOTES_SIDECAR) writeNotesSidecar(outFile, slideNotes);
 })();
+
+// Attach each slide's speaker note as a PDF "Text" annotation (a sticky note)
+// in the top-left corner of its page, so any PDF viewer surfaces it on click.
+// Slides without a note get no annotation. Returns the modified PDF bytes; on
+// any pdf-lib failure it falls back to the un-annotated bytes (the visible deck
+// must never be lost to a notes problem).
+async function embedNotesInPdf(pdfBytes, notes) {
+  if (!notes.some(Boolean)) return pdfBytes;
+  try {
+    const { PDFDocument, PDFName, PDFString } = require('pdf-lib');
+    const doc = await PDFDocument.load(pdfBytes);
+    const pages = doc.getPages();
+    // notes[i] is keyed to PDF page i (both derive from the slide array). Guard
+    // the invariant: if a future transform ever made puppeteer emit a different
+    // page count, annotating by index would silently land notes on wrong pages.
+    if (pages.length !== notes.length) {
+      console.warn(`  ⚠ Speaker notes: ${notes.length} slide notes but ${pages.length} PDF pages — skipping note annotations to avoid misplacement.`);
+      return pdfBytes;
+    }
+    pages.forEach((pg, i) => {
+      const note = notes[i];
+      if (!note) return;
+      const { height } = pg.getSize();
+      const annot = doc.context.obj({
+        Type: 'Annot',
+        Subtype: 'Text',
+        Name: 'Note',
+        Open: false,
+        // 24×24 icon tucked into the top-left (PDF origin is bottom-left).
+        Rect: [12, height - 36, 36, height - 12],
+        Contents: PDFString.of(note),
+        T: PDFString.of('Speaker notes'),
+        // Hidden (flag bit 2) by default: the note is embedded and
+        // tool-extractable, but no icon mars the boardroom slide and it never
+        // prints. --notes-icon omits the flag, exposing a clickable sticky note.
+        ...(NOTES_ICON ? {} : { F: 2 }),
+      });
+      const ref = doc.context.register(annot);
+      let annots = pg.node.get(PDFName.of('Annots'));
+      if (!annots) {
+        annots = doc.context.obj([]);
+        pg.node.set(PDFName.of('Annots'), annots);
+      }
+      annots.push(ref);
+    });
+    return await doc.save();
+  } catch (e) {
+    console.warn(`  ⚠ Could not embed speaker notes into the PDF (${e.message}); writing deck without note annotations.`);
+    return pdfBytes;
+  }
+}
+
+// Plaintext speaker-notes sidecar: one block per slide that has a note.
+function writeNotesSidecar(pdfPath, notes) {
+  const blocks = [];
+  notes.forEach((note, i) => {
+    if (note) blocks.push(`# Slide ${i + 1}\n\n${note}\n`);
+  });
+  const sidecar = pdfPath.replace(/\.pdf$/i, '') + '.notes.txt';
+  fs.writeFileSync(sidecar, blocks.length ? blocks.join('\n') : '(no speaker notes in this deck)\n');
+  if (!QUIET) console.log(`Notes: ${blocks.length} slide${blocks.length === 1 ? '' : 's'} → ${sidecar}`);
+}

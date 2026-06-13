@@ -572,7 +572,7 @@ describe('marp-plugins', () => {
   });
 
   test('slotLabelLift: `timeline` does NOT match the `timeline-list` chart class', () => {
-    // `timeline-list` is a latticeplot chart whose <li> leads carry a date
+    // `timeline-list` is a chart-family layout whose <li> leads carry a date
     // chip + title that the chart transform owns — the lift must not touch
     // it. A plain \b boundary would mis-fire (hyphen is a word boundary).
     const m = makeMarp(plugins.slotLabelLift);
@@ -682,14 +682,14 @@ describe('marp-plugins', () => {
     assert.match(html, /<h2[^>]*>No period added<\/h2>/);
   });
 
-  // ── latticeplotFences ──────────────────────────────────────────────────
+  // ── functionPlotFences ─────────────────────────────────────────────────
 
-  test('latticeplotFences: ```latticeplot becomes a div.latticeplot with base64-encoded config', () => {
-    const m = makeMarp(plugins.latticeplotFences);
+  test('functionPlotFences: ```functionplot becomes a div.functionplot with base64-encoded config', () => {
+    const m = makeMarp(plugins.functionPlotFences);
     const cfg = '{ "data": [{ "fn": "sin(x)" }] }';
-    const md = '```latticeplot\n' + cfg + '\n```';
+    const md = '```functionplot\n' + cfg + '\n```';
     const { html } = m.render(md);
-    assert.match(html, /<div class="latticeplot" data-fp-config="[A-Za-z0-9+/=]+"><\/div>/,
+    assert.match(html, /<div class="functionplot" data-fp-config="[A-Za-z0-9+/=]+"><\/div>/,
       'should emit placeholder div with base64 config');
     // Round-trip: the base64 in the div decodes to the original config (plus \n)
     const m2 = html.match(/data-fp-config="([^"]+)"/);
@@ -698,19 +698,27 @@ describe('marp-plugins', () => {
     assert.equal(decoded.trim(), cfg.trim());
   });
 
-  test('latticeplotFences: other fenced languages are left to the default renderer', () => {
-    const m = makeMarp(plugins.latticeplotFences);
+  test('functionPlotFences: the deprecated ```latticeplot alias still emits a div.functionplot', () => {
+    const m = makeMarp(plugins.functionPlotFences);
+    const cfg = '{ "data": [{ "fn": "cos(x)" }] }';
+    const { html } = m.render('```latticeplot\n' + cfg + '\n```');
+    assert.match(html, /<div class="functionplot" data-fp-config="[A-Za-z0-9+/=]+"><\/div>/,
+      'the legacy latticeplot fence renders identically to functionplot');
+  });
+
+  test('functionPlotFences: other fenced languages are left to the default renderer', () => {
+    const m = makeMarp(plugins.functionPlotFences);
     const { html } = m.render('```js\nconst x = 1;\n```');
     // marp-core wraps fences as <pre is="marp-pre" …><code class="language-js">…</code></pre>
     // and runs the contents through highlight.js (so `const` becomes a span).
     assert.match(html, /<code[^>]*language-js[^>]*>[\s\S]*const[\s\S]*x = /);
-    assert.doesNotMatch(html, /class="latticeplot"/);
+    assert.doesNotMatch(html, /class="functionplot"/);
   });
 
-  test('latticeplotFences: a fence with no language is also left alone', () => {
-    const m = makeMarp(plugins.latticeplotFences);
+  test('functionPlotFences: a fence with no language is also left alone', () => {
+    const m = makeMarp(plugins.functionPlotFences);
     const { html } = m.render('```\nplain text\n```');
     assert.match(html, /<code[^>]*>plain text/);
-    assert.doesNotMatch(html, /class="latticeplot"/);
+    assert.doesNotMatch(html, /class="functionplot"/);
   });
 });

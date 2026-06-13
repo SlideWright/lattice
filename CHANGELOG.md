@@ -25,8 +25,41 @@ in patch versions.
 
 ## Unreleased
 
+### Changed
+
+- **The `math canvas` plot fence is now ` ```functionplot ` (was ` ```latticeplot `).**
+  The fence is renamed after the library that renders it (function-plot) — the
+  same convention as ` ```mermaid ` and the `$$…$$` KaTeX math the same
+  component already uses. Lattice never owned the plot config (the fence body is
+  function-plot's schema verbatim); the old name implied an abstraction that
+  doesn't exist, so it was corrected for honesty. Rendered output is unchanged.
+  Internal: the placeholder is now `<div class="functionplot">` (was
+  `latticeplot`), and the LFM spec (`spec/LFM-1.0.md` §3.3) documents fences as
+  renderer-named, third-party sub-languages. See
+  `engineering/decisions/2026-06-13-lfm-standard.md`.
+
+### Deprecated
+
+- **The ` ```latticeplot ` fence is deprecated — use ` ```functionplot `.** It is
+  retained as a working alias for one release and will be removed in a future
+  major version. Existing decks keep rendering unchanged in the meantime.
+
 ### Added
 
+- **Speaker notes — a non-directive HTML comment is that slide's note
+  (Marp-faithful, LFM §3.5).** Any `<!-- … -->` that isn't a directive or a
+  tooling pragma (`markdownlint`/`prettier`) becomes the slide's speaker note,
+  matching Marp exactly. The emulator now embeds each note as a per-page **PDF
+  text annotation** and a hidden **HTML presenter-notes channel**
+  (`<aside class="lattice-notes">`), and `--notes` writes a plaintext
+  `.notes.txt` sidecar. The PDF annotation is **hidden by default** — embedded
+  and tool-extractable, but no icon marks the boardroom slide and it never
+  prints; `--notes-icon` exposes a clickable sticky note instead. Extraction is
+  single-sourced in `lib/authoring/notes-core.js` and run over the rendered
+  slides, so the note index tracks the slide split (including `split: headings`);
+  a parity test pins its keep/drop boundary to marp-core's own comment
+  collection so the render paths can't drift (HARD RULE #1). Demo:
+  `examples/speaker-notes.md`.
 - **`split: headings` — divide a deck by its headings, not `---`.** A new
   deck-wide front-matter key chooses how the body splits into slides:
   `split: rule` (the default — unchanged Marp behaviour, split on `---`) or
@@ -40,6 +73,24 @@ in patch versions.
   proven slide-count-identical to `rule` on every committed deck. Settable from
   the Drawing Board's Deck Setup panel; an unknown value warns (`unknown-split`)
   via the deck linter. Demo: `examples/split-headings.md` (a `---`-free deck).
+- **LFM — Lattice-Flavored Markdown, named and specified.** Lattice's authoring
+  dialect now has a name and a versioned spec (`LFM 1.0-draft`) under `spec/`.
+  LFM is defined as a **profile of Markdown** (`CommonMark + GFM task lists + the
+  Lattice extension set`), with **graceful degradation** as its governing rule:
+  every extension renders as readable Markdown in an LFM-unaware host. Ships
+  `spec/LFM-1.0.md` — the extension set, three conformance levels, the
+  degradation table (including the one known non-GFM-clean construct, the
+  `[-]`/`[/]` state markers), conformance-test shapes per level, security
+  considerations for the embedded sub-language fences, governance under a
+  **CC-BY-4.0** spec license, and a worked end-to-end example. Also ships
+  `spec/diagnostics.md` (the LFM Diagnostic Protocol — the stable finding shape
+  and frozen rule registry the deck linter already emits) and a new generated
+  artifact `dist/docs/grammar.json`: the machine-readable per-component grammar
+  (each `_class` token, its slots + required slots, the modifiers it accepts,
+  and the shared state-marker / fence sub-grammars), projected from the
+  manifests by `tools/build-docs-portal.js` alongside `components.json`.
+  Rationale and the embedding endgame:
+  `engineering/decisions/2026-06-13-lfm-standard.md`.
 - **Contracts + Layout-swapping — the `inventory` contract (first slice).** A new
   sibling tier (`lib/contracts/`) makes the **Function** layer first-class: a
   *contract* names a Purpose's content shape (slots + cardinalities + one

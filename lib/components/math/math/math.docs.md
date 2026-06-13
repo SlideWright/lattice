@@ -138,7 +138,7 @@ Maximises the posterior — conditions on the prior $p(\theta)$. Uncertainty is 
 
 ### `canvas` — Canvas — equation left, plot right
 
-Pairs a hero equation with a `latticeplot` chart. Best when the shape of the function is half the argument — sigmoids, distributions, decision boundaries.
+Pairs a hero equation with a `functionplot` graph (rendered by the function-plot library). Best when the shape of the function is half the argument — sigmoids, distributions, decision boundaries.
 
 ```markdown
 <!-- _class: math canvas -->
@@ -149,7 +149,7 @@ $$ \sigma(x) = \dfrac{1}{1 + e^{-x}} $$
 
 Maps $\mathbb{R} \to (0,1)$. $S$-shaped, $\sigma(0) = 0.5$, steepest slope at the origin.
 
-```latticeplot
+```functionplot
 {
   "data": [
     { "fn": "1 / (1 + exp(-x))" },

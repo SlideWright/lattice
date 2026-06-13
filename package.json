@@ -150,6 +150,7 @@
     "highlight.js": "^11.11.1",
     "katex": "^0.16.46",
     "markdown-it": "^14.1.1",
+    "pdf-lib": "^1.17.1",
     "puppeteer": "^23.0.0"
   },
   "engines": {

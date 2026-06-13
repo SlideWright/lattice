@@ -12,6 +12,12 @@
  *                           every component's axes, tags, slots, skeleton,
  *                           and when/anti/related prose, plus the controlled
  *                           vocabularies, in one flat deterministic document.
+ *   dist/docs/grammar.json — the machine-readable per-component grammar for
+ *                           LFM (Lattice-Flavored Markdown): each component's
+ *                           _class token, slots (selector + required), the
+ *                           modifier tokens it accepts, and the shared state-
+ *                           marker / fence sub-grammars. A third projection of
+ *                           the same manifest source. See spec/LFM-1.0.md.
  *
  * The browsable, themable HTML edition is no longer a single generated blob
  * here — it is the docs site's per-component pages (docs/src/pages/components/
@@ -57,6 +63,7 @@ const THEMES_DIR = path.join(ROOT, 'themes');
 const DOCS_DIR = path.join(ROOT, 'dist', 'docs');
 const MD_FILE = path.join(DOCS_DIR, 'components.md');
 const JSON_FILE = path.join(DOCS_DIR, 'components.json');
+const GRAMMAR_FILE = path.join(DOCS_DIR, 'grammar.json');
 
 // The browsable HTML reference now lives at the docs-site components route.
 const PORTAL_URL = 'https://slidewright.github.io/lattice/components/';
@@ -354,12 +361,103 @@ function renderPortalJson(manifests) {
   return `${JSON.stringify(doc, null, 2)}\n`;
 }
 
+// ── LFM grammar projection ───────────────────────────────────────────────
+// The shared cross-component grammars. These mirror the canonical handlers in
+// lib/integrations/marp/plugins.js (stateClassesFor + the verdict-grid /
+// obligation-matrix / checklist / roadmap state plugins, and functionPlotFences)
+// and the chart-family Mermaid registration. They are declared here — as
+// lib/authoring/lint.js declares its own modifier lists — because the plugin
+// module exports the behaviour, not these vocabularies. Keep in sync if the
+// plugin set changes; the grammar.json --check gate makes drift loud.
+
+// The universal state-token marker grammar (lib/integrations/marp/plugins.js
+// `stateClassesFor`). The `semantic` is universal across every state-marker
+// component; the `shape` is the canonical state-token CSS recipe used by
+// checklist / verdict-grid / obligation-matrix / pricing. The chart-family
+// `roadmap` reuses the same markers + semantics but maps them to its own
+// shape classes (state-shipped / state-wip / state-planned / state-skipped) —
+// see `stateMarkersNote` below. `[ ]` is overloaded: neutral
+// todo/planned/exempt in checklist/roadmap/obligation-matrix, "not met" in
+// verdict-grid.
+const STATE_MARKERS = {
+  '[x]': { semantic: 'pass', shape: 'state-full', gfm: true },
+  '[ ]': { semantic: 'neutral-or-fail', shape: 'state-todo|state-empty', gfm: true,
+    note: 'Context-dependent: todo/planned/exempt in checklist/roadmap/obligation-matrix; not-met in verdict-grid.' },
+  '[-]': { semantic: 'warn', shape: 'state-half', gfm: false },
+  '[/]': { semantic: 'skip', shape: 'state-slashed', gfm: false },
+};
+const STATE_MARKERS_NOTE = 'semantic is universal; shape is the canonical state-token recipe (checklist/verdict-grid/obligation-matrix/pricing). The chart-family roadmap maps the same markers/semantics to its own shape classes (state-shipped/state-wip/state-planned/state-skipped).';
+
+// Components that read the shared state-marker grammar — the markdown-it state
+// plugins keyed on these class names in lib/integrations/marp/plugins.js
+// (verdict-grid + pricing share one plugin; checklist and obligation-matrix
+// each have their own), plus the chart-family `roadmap`, which reads the same
+// markers via its own transform.
+const STATE_MARKER_COMPONENTS = ['checklist', 'verdict-grid', 'obligation-matrix', 'pricing', 'roadmap'];
+
+// Fenced sub-languages LFM recognises (info string → degraded form). The fence
+// body is NOT Markdown — it is the config language of the library that renders
+// it, owned by that library and the component that uses it, not by LFM. Each
+// degrades to a plain code block in an LFM-unaware renderer. The fence is named
+// after its renderer (like `mermaid`), not branded — `latticeplot` is retained
+// as a DEPRECATED alias of `functionplot` for one release.
+const FENCES = {
+  functionplot: { sublanguage: 'function-plot', body: 'json', usedBy: ['math'], deprecatedAliases: ['latticeplot'], degradesTo: 'code-block' },
+  mermaid: { sublanguage: 'mermaid', body: 'mermaid', usedBy: ['diagram'], degradesTo: 'code-block' },
+};
+
+/**
+ * Project the component manifests into dist/docs/grammar.json — the
+ * machine-readable per-component grammar for LFM (Lattice-Flavored Markdown).
+ * A third projection of the same manifest source that backs components.json
+ * (catalog) and the linter vocabulary. For each component it records the
+ * `_class` token, its slots (selector + required + description), which slots
+ * are required, the modifier tokens it accepts, and whether it reads the shared
+ * state-marker / fence sub-grammars. Deterministic and idempotent.
+ * See spec/LFM-1.0.md §4 and spec/diagnostics.md.
+ */
+function renderGrammarJson(manifests) {
+  const stateSet = new Set(STATE_MARKER_COMPONENTS);
+  const components = manifests.map((m) => {
+    const slots = m.slots || {};
+    const requiredSlots = Object.entries(slots)
+      .filter(([, s]) => s && s.required === true)
+      .map(([k]) => k);
+    return {
+      name: m.name,
+      classToken: m.name,
+      bucket: manifestBucket(m),
+      substance: m.substance,
+      skeleton: m.skeleton,
+      slots,
+      requiredSlots,
+      modifiers: effectiveVariants(m),
+      familyModifiers: familyModifiersFor(m),
+      readsStateMarkers: stateSet.has(m.name),
+    };
+  });
+  const doc = {
+    $comment: 'Generated by tools/build-docs-portal.js from the component manifests — do not edit by hand. The machine-readable per-component grammar for LFM (Lattice-Flavored Markdown). See spec/LFM-1.0.md and spec/diagnostics.md.',
+    spec: 'LFM 1.0',
+    specHref: 'https://github.com/slidewright/lattice/blob/main/spec/LFM-1.0.md',
+    classDirective: '<!-- _class: <name> [modifier …] -->',
+    stateMarkers: STATE_MARKERS,
+    stateMarkersNote: STATE_MARKERS_NOTE,
+    stateMarkerComponents: [...STATE_MARKER_COMPONENTS].sort(),
+    fences: FENCES,
+    count: components.length,
+    components,
+  };
+  return `${JSON.stringify(doc, null, 2)}\n`;
+}
+
 // ── CLI ────────────────────────────────────────────────────────────────────
 function build() {
   const manifests = loadAll();
   return {
     md: renderPortalMd(manifests),
     json: renderPortalJson(manifests),
+    grammar: renderGrammarJson(manifests),
     count: manifests.length,
   };
 }
@@ -371,11 +469,12 @@ function isStale(file, content) {
 
 function main(argv) {
   const check = argv.includes('--check');
-  const { md, json, count } = build();
+  const { md, json, grammar, count } = build();
   fs.mkdirSync(DOCS_DIR, { recursive: true });
   const targets = [
     { file: MD_FILE, content: md, label: 'dist/docs/components.md' },
     { file: JSON_FILE, content: json, label: 'dist/docs/components.json' },
+    { file: GRAMMAR_FILE, content: grammar, label: 'dist/docs/grammar.json' },
   ];
 
   if (check) {
@@ -408,6 +507,7 @@ if (require.main === module) process.exit(main(process.argv.slice(2)));
 module.exports = {
   renderPortalMd,
   renderPortalJson,
+  renderGrammarJson,
   resolvePalettes,
   listBasePalettes,
   paletteCss,
@@ -415,4 +515,5 @@ module.exports = {
   build,
   MD_FILE,
   JSON_FILE,
+  GRAMMAR_FILE,
 };

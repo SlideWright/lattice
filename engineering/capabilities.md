@@ -52,8 +52,8 @@ harness the index can't infer, add it to `FRAMEWORKS` in the generator.
 | `docs:components:check` | Freshness gate for the per-component docs. |
 | `docs:landing-tokens` | Emit per-palette CSS token blocks for the docs landing page. |
 | `docs:landing-tokens:check` | Freshness gate for the landing-page token blocks. |
-| `docs:portal` | Aggregate manifests into dist/docs/components.{md,json} — the canonical component catalog. |
-| `docs:portal:check` | Freshness gate for the component catalog (md/json). |
+| `docs:portal` | Aggregate manifests into dist/docs/components.{md,json} + grammar.json (the LFM per-component grammar) — the canonical component catalog. |
+| `docs:portal:check` | Freshness gate for the component catalog (md/json) + LFM grammar.json. |
 | `emulator:build` | Build dist/lattice-emulator.js — the bundled Marp-faithful CLI (package bin/main). |
 | `emulator:check` | Freshness gate for the emulator bundle. |
 | `layout-core:build` | Bundle the pure Layout Studio core for the browser (docs site). |

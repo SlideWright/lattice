@@ -87,8 +87,8 @@ const SCRIPT_META = {
   'capabilities:check':       ['Build & bundle', 'Freshness gate for capabilities.md; fails on drift or any undescribed script/tool.'],
   'docs:components':          ['Build & bundle', 'Generate per-component docs.md + gallery.md siblings from each manifest.'],
   'docs:components:check':    ['Build & bundle', 'Freshness gate for the per-component docs.'],
-  'docs:portal':              ['Build & bundle', 'Aggregate manifests into dist/docs/components.{md,json} — the canonical component catalog.'],
-  'docs:portal:check':        ['Build & bundle', 'Freshness gate for the component catalog (md/json).'],
+  'docs:portal':              ['Build & bundle', 'Aggregate manifests into dist/docs/components.{md,json} + grammar.json (the LFM per-component grammar) — the canonical component catalog.'],
+  'docs:portal:check':        ['Build & bundle', 'Freshness gate for the component catalog (md/json) + LFM grammar.json.'],
   'docs:landing-tokens':      ['Build & bundle', 'Emit per-palette CSS token blocks for the docs landing page.'],
   'docs:landing-tokens:check':['Build & bundle', 'Freshness gate for the landing-page token blocks.'],
 
