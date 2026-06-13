@@ -26,11 +26,61 @@ authority chains, and obligation matrices; analysts get radar, quadrant,
 and KPI layouts. Fifty-three layouts, one syntax you already know — no
 drawing tools, no boxes, no pasted screenshots.
 
-Lattice is the engine layer of [SlideWright](https://github.com/slidewright) —
-a project for building deck-quality documents with discipline. The same
-Lattice engine that runs from the command line will also run inside the
-SlideWright desktop app (under development), so a deck authored in either
-context renders identically.
+Lattice is the engine at the heart of **Lattice Style** — a project born
+from a refusal to keep fighting the slide tools we all use, building
+deck-quality documents with the discipline of a design system.
+([Read the story](#why-lattice-style-exists).) The same Lattice engine that
+runs from the command line will also run inside **SlideWright**, the desktop
+app (under development), so a deck authored in either context renders
+identically.
+
+## Why Lattice Style exists
+
+I built Lattice because I can't stand what the slide tools we all use do to
+the people who use them.
+
+PowerPoint was revolutionary when it arrived — and then three decades of
+tools, desktop and web alike, copied its shape without ever questioning it.
+The same blank canvas. The same master slide everything inherits from, until
+the first override sends the whole deck drifting. They make authors
+unproductive by design, and they have no guardrails — nothing stops poor
+taste or poor authorship, so the burden of consistency falls on you, slide
+after slide, the night before the meeting. You can't even tell what changed
+between two versions. And so we all sit through presentations that are worse
+than they needed to be — not because the author had nothing to say, but
+because the tool fought them the entire way.
+
+No amount of AI bolted on top can mask flaws that deep. The foundation is
+wrong for today's work.
+
+**Lattice is the answer I wanted to exist:** a deck as a text file, with the
+discipline of a design system and taste built into the engine instead of
+left to chance. You write the words. The structure holds. The finish is
+consistent by default — and swapping it is one line, not a thousand
+hand-edits. What changed shows up in a `git diff`, line by line. And poor
+taste runs out of places to hide. **Lattice Style** is the project I'm
+building around it.
+
+## The name
+
+A *lattice* is a frame of crossed members that holds everything it carries
+in alignment — rigid where it must be, open everywhere else. That's the
+engine: a structural frame for an argument, where every slide sits on the
+same grid, the same palette, the same deliberate layouts. You bring the
+meaning; the lattice keeps it straight.
+
+*Style* is the other half, and it means two things at once. The literal one:
+this is a styling engine — themes, palettes, one `lattice.css` contract, a
+whole deck restyled in a single line. The deeper one: **style as craft.**
+Lattice is built on four layers — **Function · Form · Substance · Finish** —
+and that isn't engineering jargon, it's the vocabulary of anyone who makes
+things well. A tailor talks about *form*. A shoemaker talks about *finish*.
+Take style seriously — the way you'd take a well-made shoe seriously — and
+those four words are exactly what it means: *does it work, what's its shape,
+what's it made of, how is it finished.*
+
+So **Lattice Style**: structure you can trust, with taste. The frame and the
+finish — and it lives where it should, at [lattice.style](https://lattice.style).
 
 > **Documentation:** <https://slidewright.github.io/lattice/> — intro,
 > getting started, authoring and theming guides, and the interactive
@@ -330,14 +380,16 @@ via `expectedGallerySlideCount()`.
 integration suite asserts cross-renderer parity, and the browser
 preview path explicitly targets marp-cli output.
 
-## SlideWright ecosystem
+## The Lattice Style project
 
-Lattice is part of [SlideWright](https://github.com/slidewright), an
-organization that publishes tools for crafting deck-quality documents.
-Other repositories under SlideWright (current and planned):
+Lattice is the engine at the core of **Lattice Style**, a project that
+publishes tools for crafting deck-quality documents. The repositories
+(current and planned, hosted at
+[github.com/slidewright](https://github.com/slidewright) until the org
+handle catches up to the name):
 
 - **lattice** — this repo. The deck rendering engine + default palette.
-- **slidewright** — the desktop app (Tauri). Wraps the Lattice engine
+- **SlideWright** — the desktop app (Tauri). Wraps the Lattice engine
   with a markdown editor, live preview, theme picker, and PDF export.
   Aims to make Lattice approachable for people who don't run `node`
   from a terminal. (Under development.)
