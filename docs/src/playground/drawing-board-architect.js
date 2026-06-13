@@ -425,7 +425,9 @@ export function createArchitect({ vocab, catalog, mount, reveal, applyFix, model
 	// next deck edit. Re-render on the model-change event so the buttons track the
 	// live tier immediately. (architect-model.js dispatches db-model-changed.)
 	if (fixGate && typeof window !== 'undefined') {
-		window.addEventListener('db-model-changed', () => run());
+		// Route through update() (not run() directly) so rapid tier toggles inherit
+		// the 250ms debounce instead of forcing a synchronous re-lint each time.
+		window.addEventListener('db-model-changed', () => update(lastSource));
 	}
 
 	return { update, addNames, getAssessment: () => assessment };
