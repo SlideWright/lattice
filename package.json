@@ -116,6 +116,8 @@
     "test:watch": "node --test --watch 'test/unit/**/*.test.js'",
     "bench": "node test/benchmark/engine-bench.mjs",
     "parity": "node tools/engine-parity.mjs",
+    "regress": "node tools/regression-gate.mjs",
+    "bless": "node tools/regression-gate.mjs --bless",
     "test:coverage": "c8 node --test 'test/unit/**/*.test.js'",
     "test:coverage:all": "c8 node --test 'test/unit/**/*.test.js' 'test/integration/**/*.test.js'",
     "test:palette": "node --test 'test/unit/palette/*.test.js'",

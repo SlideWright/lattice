@@ -119,30 +119,64 @@ function snapshot(label, decks) {
   return results;
 }
 
-function pixelDiff(baselinePdf, currentPdf, deck) {
+// Rasterize two PDFs page-by-page (pdftoppm 72dpi) and pixel-diff each page
+// with ImageMagick `compare -metric AE`. The metric is changed-pixel COUNT.
+//
+// `opts.fuzz` (e.g. '3%') tells `compare` to treat per-channel colour deltas
+// within that tolerance as equal — the antialiasing carve-out the regression
+// gate needs. pixel-check's own _legacy.css flow leaves it unset (exact 0 px,
+// same-session); the gate (tools/regression-gate.mjs) passes a fuzz so glyph-
+// edge AA shimmer between the committed golden and a fresh render doesn't read
+// as drift. Each differing page also returns `total` (pixel count, for a caller
+// gating on a FRACTION) and the rasterized `oldPng`/`newPng`/`diffPng` paths
+// (so a caller building a montage never has to reconstruct pdftoppm's filenames,
+// whose zero-padding varies with page count).
+function pixelDiff(baselinePdf, currentPdf, deck, opts = {}) {
   const tmpDir = path.join('/tmp', `pixel-check-${process.pid}-${deck}`);
   fs.rmSync(tmpDir, { recursive: true, force: true });
   fs.mkdirSync(tmpDir, { recursive: true });
   spawnSync('pdftoppm', ['-r', '72', '-png', baselinePdf, `${tmpDir}/old`], { stdio: 'ignore' });
   spawnSync('pdftoppm', ['-r', '72', '-png', currentPdf, `${tmpDir}/new`], { stdio: 'ignore' });
-  const oldPngs = fs.readdirSync(tmpDir).filter((f) => f.startsWith('old-') && f.endsWith('.png')).sort();
-  const newPngs = fs.readdirSync(tmpDir).filter((f) => f.startsWith('new-') && f.endsWith('.png')).sort();
+  // pdftoppm pads the page number to the width of the highest page (`old-1.png`
+  // for a <10-page PDF, `old-01.png` for 10-99). A plain string sort would then
+  // order `old-10` before `old-2`, mispairing pages — so sort by parsed number.
+  const pageNo = (f) => { const m = f.match(/-(\d+)\.png$/); return m ? Number(m[1]) : 0; };
+  const byNum = (a, b) => pageNo(a) - pageNo(b);
+  const oldPngs = fs.readdirSync(tmpDir).filter((f) => f.startsWith('old-') && f.endsWith('.png')).sort(byNum);
+  const newPngs = fs.readdirSync(tmpDir).filter((f) => f.startsWith('new-') && f.endsWith('.png')).sort(byNum);
   const pages = Math.max(oldPngs.length, newPngs.length);
+  const fuzzArgs = opts.fuzz ? ['-fuzz', opts.fuzz] : [];
+  const dims = (p) => {
+    const out = (spawnSync('identify', ['-format', '%w %h', p], { encoding: 'utf8' }).stdout || '').trim();
+    const [w, h] = out.split(/\s+/).map(Number);
+    return { w: w || 0, h: h || 0 };
+  };
   const perPage = [];
   let totalPx = 0;
   for (let i = 0; i < pages; i++) {
     const oldP = oldPngs[i] ? path.join(tmpDir, oldPngs[i]) : null;
     const newP = newPngs[i] ? path.join(tmpDir, newPngs[i]) : null;
     if (!oldP || !newP) {
-      perPage.push({ page: i + 1, pixels: -1, note: oldP ? 'new page added' : 'page removed' });
+      perPage.push({ page: i + 1, pixels: -1, note: oldP ? 'new page added' : 'page removed', oldPng: oldP, newPng: newP });
+      totalPx += 1;
+      continue;
+    }
+    // Guard the dangerous direction: ImageMagick 6's `compare` on differently-
+    // sized images diffs only the overlapping top-left region and reports 0 —
+    // so a render whose page geometry changed would false-PASS. Detect the size
+    // mismatch up front and fail the page (pixels = -1).
+    const od = dims(oldP);
+    const nd = dims(newP);
+    if (od.w !== nd.w || od.h !== nd.h) {
+      perPage.push({ page: i + 1, pixels: -1, note: `page resized ${od.w}x${od.h}→${nd.w}x${nd.h}`, total: od.w * od.h, oldPng: oldP, newPng: newP });
       totalPx += 1;
       continue;
     }
     const diffPng = path.join(tmpDir, `diff-${String(i + 1).padStart(3, '0')}.png`);
-    const r = spawnSync('compare', ['-metric', 'AE', oldP, newP, diffPng], { encoding: 'utf8' });
+    const r = spawnSync('compare', [...fuzzArgs, '-metric', 'AE', oldP, newP, diffPng], { encoding: 'utf8' });
     const raw = (r.stderr || '').trim();
     const px = /^\d+$/.test(raw) ? parseInt(raw, 10) : 0;
-    if (px > 0) perPage.push({ page: i + 1, pixels: px, diffPng });
+    if (px > 0) perPage.push({ page: i + 1, pixels: px, total: od.w * od.h, diffPng, oldPng: oldP, newPng: newP });
     totalPx += px;
   }
   return { pages, perPage, totalPx, tmpDir };
@@ -324,4 +358,4 @@ function main(argv) {
 
 if (require.main === module) process.exit(main(process.argv.slice(2)));
 
-module.exports = { snapshot, diff, clean, ls };
+module.exports = { snapshot, diff, clean, ls, pixelDiff };

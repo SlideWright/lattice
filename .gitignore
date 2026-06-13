@@ -51,5 +51,13 @@ test/integration/**/*.html
 !lib/components/**/*.pdf
 !lib/base/**/*.pdf
 
+# Regression-gate fresh-render tempfiles — tools/regression-gate.mjs renders
+# each candidate into the gallery's OWN dir (so relative assets resolve) as a
+# `.regr-*` dotfile and normally deletes it. This MUST sit after the
+# `!lib/components/**/*.pdf` negations above, or that negation would force-track
+# a `.regr-*.pdf` left behind by a killed-mid-run. Re-ignore the whole family.
+lib/components/**/.regr-*
+lib/base/**/.regr-*
+
 # emulator render sidecars next to the palette-audit deck
 themes/*.html

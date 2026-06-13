@@ -177,9 +177,29 @@ the repo already half-runs, and scales from solo (bless = sign-off) to team
 
 ## A. Recorded measurements (filled at implementation, pre-retirement)
 
-- Footprint: install size + package-count delta, with vs without marp-cli — _TBD_
-- Final `npm run bench` engine-vs-marp table — _TBD_
-- Date / commit of the marp-validated golden freeze — _TBD_
+- Footprint: install size + package-count delta, with vs without marp-cli — _TBD (Step 3)_
+- Final `npm run bench` engine-vs-marp table — _TBD (Step 3)_
+- **Date / commit of the marp-validated golden freeze — 2026-06-13, on
+  `claude/p4-regression-gate-retire-marp-grqv14` (rebased onto `main`
+  `860c086`).** All 65 galleries × {light,dark} were re-blessed with the
+  current self-hosted font set (post-#226, which added `outfit-300/500/600` +
+  `shantell-500`) — the prior goldens (#213) predated it and read as ~5.8% drift
+  on text. `npm run parity` was green (engine == marp) at the freeze, so the
+  frozen goldens are marp-validated. The regression gate (`npm run regress`) is
+  green across the full corpus against this freeze.
+
+### Step 1 — done (2026-06-13)
+
+The regression gate ships: `tools/regression-gate.mjs` (`npm run regress`,
+`npm run bless`), reusing `pixel-check.js`'s comparator (now `pixelDiff` +
+a `fuzz` tolerance), `build-galleries.js` `injectDark`, and the builders as the
+bless primitive. Verified: (a) full corpus GREEN vs the re-blessed goldens;
+(b) a CSS tweak without bless goes RED, GREEN after revert/bless; (c) `npm run
+parity` agrees (both all-green) — the gate is as strict as the marp gate.
+**Gotcha worth keeping:** the emulator resolves a deck's relative asset paths
+(`![bg](sample.svg)`, logos) against the OUTPUT pdf's directory, so the gate
+must render the fresh candidate INTO the gallery's own dir or every image slide
+false-fails blank. **Steps 2 (CI) and 3 (retire marp) remain.**
 
 ## 9. Build handoff — START HERE (for the implementing session)
 
