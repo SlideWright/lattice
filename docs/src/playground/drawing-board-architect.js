@@ -11,11 +11,16 @@
 // Voiced as "the Architect" per the naming decision.
 
 import Fuse from 'fuse.js';
+import { applyEdit, diffLines, sliceSlide } from './architect-edits.js';
+import { requestSlideFix } from './architect-fix.js';
+import { orSupportsCache } from './architect-model.js';
 import { cosineRank } from './architect-retrieval.js';
 // The pure authoring cores (lib/authoring/*) are CommonJS; consume them through
 // the esbuild bundle so they load in `astro dev` too (a direct /@fs import of a
 // source CJS file has no `default` export in dev — see tools/build-authoring-core.js).
 import { lintCore, reviewCore, scorecard } from './authoring-core.generated.js';
+import { isCapableTier } from './drawing-board-chat.js';
+import { budgetStatus, readBudgetCap, readBudgetMode, readCachingEnabled, readSpend, recordSpend } from './drawing-board-settings.js';
 
 // 1-based source line where each REAL slide begins, indexed by the HUMAN slide
 // number (front matter skipped) — so `starts[finding.slide]` maps a finding to
@@ -41,7 +46,29 @@ function hasContent(src) {
 	return /<!--\s*_class:/.test(src) && src.split(/^---$/m).filter((s) => s.trim()).length > 1;
 }
 
-export function createArchitect({ vocab, catalog, mount, reveal, applyFix }) {
+export function createArchitect({ vocab, catalog, mount, reveal, applyFix, model }) {
+	// The cost/quality gate for the per-finding model "Fix" — the SAME discipline as
+	// the chat and Practice: only a strong tier is offered (a tiny WASM model rambles
+	// on a slide rewrite), cloud calls respect the session budget cap, the prompt is
+	// cached when the provider supports it, and spend lands in the session tally.
+	// Local tiers are free → no budget gate. Null when no model was wired (the
+	// deterministic floor: How-to-fix + the exact mechanical Apply fix still stand).
+	const fixGate = model
+		? {
+				available: () => isCapableTier(model.availability().generation),
+				allow: () => {
+					const a = model.availability();
+					if (a.generation !== 'openrouter') return true;
+					return !budgetStatus({ sessionSpend: readSpend().session, cap: readBudgetCap(), mode: readBudgetMode() }).blocked;
+				},
+				cache: () => {
+					const a = model.availability();
+					return a.generation === 'openrouter' && readCachingEnabled() && orSupportsCache(model.openRouterModel?.() || '');
+				},
+				onUsage: (u) => recordSpend(u?.cost, u?.total_tokens ?? ((u?.prompt_tokens || 0) + (u?.completion_tokens || 0))),
+			}
+		: null;
+	let fixAbort = null; // aborts an in-flight Fix when the deck changes (stale + wasteful)
 	const vocabSets = {
 		names: new Set((vocab?.names) || []),
 		modifiers: new Set((vocab?.modifiers) || []),
@@ -141,9 +168,131 @@ export function createArchitect({ vocab, catalog, mount, reveal, applyFix }) {
 			fixBtn.textContent = fix.hidden ? 'How to fix' : 'Hide';
 		});
 		actions.append(revealBtn, fixBtn);
+
+		// AI Fix — the model rewrites the flagged slide; the author reviews a diff and
+		// clicks Apply (the deterministic engine re-scores). Only offered for JUDGEMENT
+		// findings on a real slide and only when a strong tier is connected: the
+		// mechanical footguns above already get the exact, free "Apply fix", and a
+		// deck-level finding (slide 0) has no single slide to rewrite. The How-to-fix
+		// guidance stays regardless, so the floor never loses a capability.
+		if (fixGate && applyFix && f.slide >= 1 && !f.autofixable && fixGate.available()) {
+			const aiBtn = document.createElement('button');
+			aiBtn.type = 'button';
+			aiBtn.className = 'db-finding-btn db-finding-fixai';
+			aiBtn.innerHTML = '<span class="ico ico-wand" aria-hidden="true"></span> Fix';
+			aiBtn.addEventListener('click', () => runAiFix(f, aiBtn, wrap));
+			actions.append(aiBtn);
+		}
+
 		wrap.appendChild(actions);
 		if (f.fix) wrap.appendChild(fix);
 		return wrap;
+	}
+
+	// Clear any prior Fix diff/note on a finding before a new attempt (or on Discard).
+	function clearFixUI(wrap) {
+		for (const n of wrap.querySelectorAll('.db-edit-card, .db-finding-note')) n.remove();
+	}
+	function noteEl(text) {
+		const p = document.createElement('p');
+		p.className = 'db-finding-note';
+		p.setAttribute('role', 'status'); // announce the outcome to assistive tech
+		p.textContent = text;
+		return p;
+	}
+
+	// The reviewable diff card for a model fix — reuses the Converse edit-card chrome
+	// (.db-edit-*) so a fix looks identical wherever it's offered. No undo/persist
+	// state machine here: it's a one-shot (Apply re-renders the panel and clears it;
+	// Discard removes it). Apply splices against the CURRENT source via applyEdit.
+	function fixCardEl(finding, { edit, before, after }) {
+		const card = document.createElement('div');
+		card.className = 'db-edit-card';
+		card.dataset.state = 'open';
+		const head = document.createElement('div');
+		head.className = 'db-edit-head';
+		head.append(
+			Object.assign(document.createElement('span'), { className: 'db-edit-icon ico ico-wand' }),
+			Object.assign(document.createElement('span'), { className: 'db-edit-title', textContent: `Rewrite slide ${finding.slide}` }),
+		);
+		card.appendChild(head);
+		const body = document.createElement('div');
+		body.className = 'db-edit-body';
+		const diff = document.createElement('div');
+		diff.className = 'db-edit-diff';
+		for (const row of diffLines(before, after)) {
+			const sign = row.type === 'add' ? '+ ' : row.type === 'del' ? '− ' : '  ';
+			diff.appendChild(Object.assign(document.createElement('div'), { className: 'db-diff-' + row.type, textContent: sign + row.text }));
+		}
+		body.appendChild(diff);
+		const acts = document.createElement('div');
+		acts.className = 'db-edit-actions';
+		const apply = Object.assign(document.createElement('button'), { type: 'button', className: 'db-btn db-btn-primary', textContent: 'Apply' });
+		const discard = Object.assign(document.createElement('button'), { type: 'button', className: 'db-btn', textContent: 'Discard' });
+		apply.addEventListener('click', () => {
+			// Guard the race where the deck changed between proposing this fix and the
+			// click (before the 250ms re-render wiped the card): if the target slide no
+			// longer matches what we diffed against, applying would splice onto shifted
+			// content. Refuse and ask for a re-run rather than mangle the deck.
+			if (sliceSlide(lastSource, finding.slide).trim() !== before.trim()) {
+				card.replaceWith(noteEl('The slide changed since this fix was proposed — re-run Fix to refresh it.'));
+				return;
+			}
+			const out = applyEdit(lastSource, edit);
+			if (out != null) applyFix(out); // setValue → re-render replaces the panel
+		});
+		discard.addEventListener('click', () => card.remove());
+		acts.append(apply, discard);
+		body.appendChild(acts);
+		card.appendChild(body);
+		return card;
+	}
+
+	// Run a model fix for one finding: gate on budget, show a busy state, request the
+	// rewrite, then render the diff (or an honest note). Aborts any prior in-flight
+	// fix (and run() aborts this one) so a stale, already-paid fix never lands.
+	async function runAiFix(finding, btn, wrap) {
+		if (btn.dataset.busy === '1') return;
+		clearFixUI(wrap);
+		if (!fixGate.allow()) {
+			wrap.appendChild(noteEl('You’ve hit your session budget — raise or clear the cap in Settings to use Fix.'));
+			return;
+		}
+		const label = btn.innerHTML;
+		btn.dataset.busy = '1';
+		btn.disabled = true;
+		btn.setAttribute('aria-busy', 'true');
+		btn.innerHTML = '<span class="ico ico-loader" aria-hidden="true"></span> Fixing…';
+		if (fixAbort) fixAbort.abort();
+		const ctrl = new AbortController();
+		fixAbort = ctrl;
+		let result = null;
+		let failed = false;
+		try {
+			result = await requestSlideFix({ model, gate: fixGate, source: lastSource, finding, catalog, signal: ctrl.signal });
+		} catch (_e) {
+			failed = true;
+		} finally {
+			if (fixAbort === ctrl) fixAbort = null;
+		}
+		if (!btn.isConnected) return; // panel re-rendered mid-flight — the button is gone
+		// Restore the button on EVERY outcome (success, failure, or abort-by-another
+		// fix) so it never sticks on "Fixing…". An aborted run was superseded, so bail
+		// before rendering its now-stale note/card.
+		btn.dataset.busy = '';
+		btn.disabled = false;
+		btn.removeAttribute('aria-busy');
+		btn.innerHTML = label;
+		if (ctrl.signal.aborted) return;
+		// One honest note for "no usable fix": a transport error and an empty/no-op
+		// reply are indistinguishable here, because the model adapter floors on error
+		// (returns templated text, never an edit block) rather than throwing — so we
+		// don't claim to know which happened. The deterministic guidance still stands.
+		if (failed || !result) {
+			wrap.appendChild(noteEl('No fix came back — the guidance above still applies. Try Converse to talk it through.'));
+			return;
+		}
+		wrap.appendChild(fixCardEl(finding, result));
 	}
 
 	// Read the scorecard aloud via the browser's built-in TTS (no model, no dep).
@@ -237,6 +386,9 @@ export function createArchitect({ vocab, catalog, mount, reveal, applyFix }) {
 	let assessment = { source: '', findings: [], scorecard: null };
 
 	function run() {
+		// A deck change invalidates any in-flight fix (its slide may have moved); abort
+		// it so a stale, already-billed rewrite can't land on the wrong slide.
+		if (fixAbort) { fixAbort.abort(); fixAbort = null; }
 		try {
 			const has = hasContent(lastSource);
 			// Let the onboarding collapse its doors when a real deck is being worked on.

@@ -81,6 +81,24 @@ Replaces the chat composer in deterministic mode with a structured surface:
 No free-text input in Coach. The "ask me anything" feeling comes from the chips,
 not a composer.
 
+> **Update (2026-06-13) — a model *Fix* on findings.** A finding's actions are
+> now Reveal / How-to-fix / **Fix**, where Fix appears only when a capable tier
+> (cloud / WebLLM) is connected and the finding is a judgement call (not a
+> mechanically-autofixable footgun, which keeps its exact `Apply fix`). Fix asks
+> the model to rewrite *that one slide* and renders a reviewable ± diff inline,
+> reusing Converse's EDIT-BLOCK protocol + diff card; nothing changes until the
+> author clicks **Apply**, and then the deterministic engine re-scores. This does
+> **not** soften the Coach/Converse split: Coach still owns *detection and
+> scoring* deterministically and offers no free-text input — a model may only
+> *propose a fix* for an already-deterministically-found issue, gated, behind
+> Apply + re-score, with the floor (How-to-fix) intact when no model is present.
+> Pure core: `architect-fix.js`. Spend respects the session budget cap; the
+> prompt is cached where the provider supports it. **Known fast-follow:** the
+> button's tier gate is evaluated when the findings render, so connecting a model
+> *after* the panel is showing only surfaces Fix on the next re-score (any deck
+> edit) — wiring a `db-model-changed` refresh is deferred (the connect points are
+> spread across the settings flow).
+
 ## Converse (generative) — the detail
 
 - Entering Converse reveals the **composer** + the thread (the existing chat

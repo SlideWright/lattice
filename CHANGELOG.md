@@ -57,6 +57,19 @@ in patch versions.
   produce the identical slides. Full structural-component fidelity needs the
   bundled engine / `marp-cli`; stock marp-core renders splits + styling + raw
   fences. First slice of `engineering/decisions/2026-06-13-export-to-marp.md`.
+- **The Drawing Board Coach can now _fix_ a flagged slide, not just explain it
+  — when a capable model is connected.** Each judgement finding (a wall-of-text
+  slide, a label-only title — the rules a rule can't mechanically rewrite) grows
+  a **Fix** button next to *How to fix*. It asks the model to rewrite just that
+  slide, shows the change as a reviewable ± diff, and applies nothing until you
+  click **Apply** — at which point the deterministic engine re-scores (the model
+  never owns correctness). It reuses the same EDIT-BLOCK protocol and diff card
+  as Converse, respects the session budget cap, and caches the prompt where the
+  provider supports it. The button only appears on a strong tier (cloud /
+  WebLLM); with no model, the deterministic *How to fix* guidance and the exact
+  mechanical *Apply fix* are unchanged — the floor loses nothing. New module
+  `architect-fix.js` (pure, headless-tested). See
+  `engineering/decisions/2026-06-08-drawing-board-coach-vs-converse.md`.
 - **Speaker notes — a non-directive HTML comment is that slide's note
   (Marp-faithful, LFM §3.5).** Any `<!-- … -->` that isn't a directive or a
   tooling pragma (`markdownlint`/`prettier`) becomes the slide's speaker note,
