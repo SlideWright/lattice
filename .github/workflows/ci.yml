@@ -187,9 +187,20 @@ jobs:
   # (lib/components/**/<name>.gallery.{light,dark}.pdf). GREEN = the author blessed
   # correctly; RED = unblessed drift (CSS/source changed but a deck's golden is
   # stale) — re-bless locally (`npm run bless [-- --only <name>]`) and commit the
-  # refreshed PDFs. Runs ALONGSIDE engine-parity for now; engine-parity is retired
-  # once this is trusted (P4 Step 3). Needs Chromium (renders), poppler (rasterize),
-  # and the color emoji font — same toolchain as integration/engine-parity.
+  # refreshed PDFs.
+  #
+  # ADVISORY in Step 2 — deliberately NOT in the required `ci` gate below. The
+  # gate's first CI runs surfaced FLAKY cross-runner drift: GitHub's runners are
+  # heterogeneous, and Skia's CPU-dispatched rasterization differs by runner CPU
+  # on fine vector AND image content (~0.4–2%), intermittently (a different
+  # gallery each run). engine-parity is STILL the hard visual gate through Step 2,
+  # so this runs + uploads its drift montage for visibility without blocking on
+  # that noise. Step 3 makes it the SOLE blocking gate (when engine-parity is
+  # removed) — and OWNS the cross-runner determinism fix first (deterministic
+  # Skia/raster flags: --disable-skia-runtime-opts + font-render-hinting=none +
+  # --disable-lcd-text + --force-color-profile=srgb, validated across several CI
+  # runs). See engineering/decisions/2026-06-12-p4-regression-gate-retire-marp.md §A.
+  # Needs Chromium (renders), poppler (rasterize), and the color emoji font.
   regression:
     needs: [changes, unit]
     if: needs.changes.outputs.code == 'true'
@@ -311,18 +322,21 @@ jobs:
   # passes when lint succeeds and the test tiers either passed or were
   # skipped (docs-only) — so conditional jobs never leave a PR stuck on a
   # "pending" required check.
+  # NOTE: `regression` is intentionally ABSENT from needs/the failure loop — it is
+  # advisory in Step 2 (see its job comment). It still runs and reports; it just
+  # doesn't gate. Step 3 adds it here once cross-runner determinism is fixed.
   ci:
     if: always()
-    needs: [lint, unit, integration, engine-parity, regression, docs-build]
+    needs: [lint, unit, integration, engine-parity, docs-build]
     runs-on: ubuntu-latest
     steps:
       - name: Verify gate
         run: |
-          echo "lint=${{ needs.lint.result }} unit=${{ needs.unit.result }} integration=${{ needs.integration.result }} engine-parity=${{ needs.engine-parity.result }} regression=${{ needs.regression.result }} docs-build=${{ needs.docs-build.result }}"
+          echo "lint=${{ needs.lint.result }} unit=${{ needs.unit.result }} integration=${{ needs.integration.result }} engine-parity=${{ needs.engine-parity.result }} docs-build=${{ needs.docs-build.result }}"
           if [ "${{ needs.lint.result }}" != "success" ]; then
             echo "::error::lint failed"; exit 1
           fi
-          for r in "${{ needs.unit.result }}" "${{ needs.integration.result }}" "${{ needs.engine-parity.result }}" "${{ needs.regression.result }}" "${{ needs.docs-build.result }}"; do
+          for r in "${{ needs.unit.result }}" "${{ needs.integration.result }}" "${{ needs.engine-parity.result }}" "${{ needs.docs-build.result }}"; do
             if [ "$r" != "success" ] && [ "$r" != "skipped" ]; then
               echo "::error::a required tier failed ($r)"; exit 1
             fi

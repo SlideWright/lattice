@@ -304,14 +304,18 @@ in patch versions.
   is re-stated in an SVG `<desc>` so screen readers still hear the names + values
   (the chart is one `role="img"`). See
   `engineering/decisions/2026-06-13-svg-native-legend.md`.
-- **The visual regression gate now runs in CI as a required check (P4 Step 2).**
+- **The visual regression gate now runs in CI, advisory in P4 Step 2.**
   `npm run regress` renders every gallery fresh through the owned emulator and
-  pixel-diffs it against its committed golden PDF; a code PR fails if any deck's
-  golden is stale (unblessed drift) — re-bless locally (`npm run bless`) and
-  commit. (Mermaid galleries — the chart + diagram buckets — get a wider per-page
-  tolerance, because fine SVG vector/text isn't bit-identical across machine
-  classes; flat-content galleries keep the strict floor.) It runs **alongside**
-  the marp `engine-parity` gate for now;
+  pixel-diffs it against its committed golden PDF, uploading a drift montage when
+  a deck's golden is stale (unblessed drift) — re-bless locally (`npm run bless`)
+  and commit. It runs on every code PR but is **not** in the required check yet:
+  its first CI runs surfaced flaky cross-runner rasterization drift (Skia's
+  CPU-dispatched raster differs by runner CPU on fine vector + image content), so
+  it stays advisory while `engine-parity` remains the hard visual gate; Step 3
+  fixes cross-runner determinism and promotes it to blocking as `engine-parity`
+  is removed. (Mermaid galleries — chart + diagram buckets — already get a wider
+  per-page tolerance as a partial mitigation; flat galleries keep the strict
+  floor.) It runs **alongside** the marp `engine-parity` gate for now;
   `engine-parity` is removed once the regression gate is trusted (Step 3). A new
   **non-gating `golden-diff` job** posts a sticky PR comment + a
   before │ after │ overlay montage artifact of the slides whose committed golden

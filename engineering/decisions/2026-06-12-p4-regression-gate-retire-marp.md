@@ -238,26 +238,37 @@ measured pain.
   the emulator bundle (which inlines `package.json`); `capabilities.md` indexes
   it from the tool header.
 
-**Cross-machine golden stability — the §7.1 gap, found on the gate's first CI
-run.** The gate ran green locally but RED in CI on one gallery: the **`diagram`
-bucket** drifted **0.45%** on 4 pages (light) / 0.44% (dark). Excluded every
-boring cause — goldens not stale (green on every sandbox machine), fonts
-correctly embedded (Playfair/Outfit/JetBrainsMono, no fallback), Chromium
-identical (both bless + CI use Chrome-for-Testing `131.0.6778.204`). The residue
-is **sub-pixel anti-aliasing of fine mmdc-SVG vector/text, which is not
-bit-identical across machine *classes*** (the sandbox bless env vs a GitHub
-runner). The §7.1 spike measured "0px cross-*session*" but only same-machine —
-it never tested the diagram/chart (mermaid) galleries, the one content type with
-this sensitivity. **Resolution (maintainer decision): a targeted per-page floor
-— mermaid galleries (chart + diagram buckets) get `FAIL_FRACTION_MERMAID = 1%`
-(~2× the observed noise); the 63 flat-content galleries keep the strict 0.05%.**
-Real unblessed drift is 10–100% of a page (Step-1 RED test), so the gate stays
-meaningful, and the `golden-diff` before/after comment is the human catch for a
-subtle intended change. Considered and rejected: re-blessing in CI (breaks the
-local-bless model) and baking deterministic Chrome flags into the shipped
-emulator (a no-op on the sandbox in spot-tests, but it changes the *product's*
-render path to satisfy a *test* — the wrong tradeoff). **Step 3 (retire marp)
-remains.**
+**Cross-machine golden stability — the §7.1 gap, found on the gate's CI runs (the
+key Step-2 finding).** The gate ran green on every sandbox machine but RED in CI
+— and the drift was **flaky across runners**: run 1 drifted the `diagram` bucket
+(0.45% / 4pg); run 2 had `diagram` green but `imagery` — a *flat* bucket — drift
+**2.01%** on 1 page. Excluded every boring cause: goldens not stale (green across
+sandbox machines), fonts correctly embedded (Playfair/Outfit/JetBrainsMono, no
+fallback), Chromium identical (both bless + CI use Chrome-for-Testing
+`131.0.6778.204`). The residue is **Skia's CPU-dispatched rasterization differing
+by runner CPU** — sub-pixel AA on fine vector *and* image content, intermittently
+(a different gallery each run, on GitHub's heterogeneous runners). The §7.1 spike
+measured "0px cross-*session*" but only same-machine-class; it never tested
+across runner CPUs. **This is not bucket-localized, so per-bucket tolerance is
+whack-a-mole with an unknown, flaky ceiling** (the `FAIL_FRACTION_MERMAID = 1%`
+floor for chart+diagram fixed `diagram` but `imagery` then surfaced at 2%).
+
+**Resolution (maintainer decision): the regression gate is ADVISORY in Step 2 —
+it runs and uploads its drift montage on every code PR, but is NOT in the
+required `ci` gate.** No coverage is lost: **`engine-parity` is still the hard
+visual gate throughout Step 2**, so this gate only needs to *prove itself* in
+advisory mode. **Step 3 owns the cross-runner determinism fix** — pin Skia off
+its CPU-feature path with deterministic raster flags (`--disable-skia-runtime-opts`
++ `--font-render-hinting=none` + `--disable-lcd-text` + `--force-color-profile=srgb`;
+spot-tested a no-op on the sandbox, so likely no re-bless), validated across
+several CI runs — and only then promotes `regression` into the required `ci`
+gate, as `engine-parity` is removed. The `FAIL_FRACTION_MERMAID` floor stays as a
+partial mitigation that keeps the advisory signal cleaner meanwhile. Considered
+and rejected for Step 2: a high global tolerance (~3–4%) — loosens the gate
+broadly against a flaky ceiling; and baking the raster flags in *now* — it
+changes the *product's* render path and needs multi-run CI validation, which
+belongs in the focused Step-3 effort, not bolted onto Step 2. **Step 3 (retire
+marp + harden + promote the gate) remains.**
 
 ## 9. Build handoff — START HERE (for the implementing session)
 
