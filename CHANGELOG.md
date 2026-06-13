@@ -67,9 +67,21 @@ in patch versions.
   as Converse, respects the session budget cap, and caches the prompt where the
   provider supports it. The button only appears on a strong tier (cloud /
   WebLLM); with no model, the deterministic *How to fix* guidance and the exact
-  mechanical *Apply fix* are unchanged — the floor loses nothing. New module
+  mechanical *Apply fix* are unchanged — the floor loses nothing. The button also
+  tracks the live tier — connect or disconnect a model mid-session and Fix
+  appears or hides immediately (no deck edit needed). New module
   `architect-fix.js` (pure, headless-tested). See
   `engineering/decisions/2026-06-08-drawing-board-coach-vs-converse.md`.
+- **The Architect is now grounded in the presentation canon (cloud tier).** A
+  distilled principle pack — Minto, Duarte, Knaflic, Reynolds, and the
+  common-pitfalls literature, as our own terse, attributed synthesis of the
+  public *frameworks* — feeds the model the *why* behind each finding and how the
+  field says to fix it. The cards matching a deck's findings ride the Converse
+  prompt (so advice is canon-grounded, not generic), and the one card for a
+  finding rides its **Fix** rewrite (so the rewrite follows the principle). New
+  pure module `presentation-canon.js` (headless-tested); cloud-tier only, riding
+  the per-turn tail so it never invalidates the cached primer. See
+  `engineering/decisions/2026-06-13-coach-canon-knowledge-pack.md`.
 - **Speaker notes — a non-directive HTML comment is that slide's note
   (Marp-faithful, LFM §3.5).** Any `<!-- … -->` that isn't a directive or a
   tooling pragma (`markdownlint`/`prettier`) becomes the slide's speaker note,

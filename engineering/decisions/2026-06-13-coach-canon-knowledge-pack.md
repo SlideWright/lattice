@@ -1,12 +1,25 @@
 # A presentation-canon knowledge pack for the Coach (2026-06-13)
 
-> Status: **design model / spec.** No code yet. Decides *how* to give the
+> Status: **v1 shipped** (was: design / spec). Decides *how* to give the
 > cloud-tier Coach the canon's qualitative judgement (Minto / Duarte / Knaflic
 > / *Presentation Pitfalls* / Zen) without re-billing a book on every call and
 > without copyright exposure. Companion to the coach-features spec
 > (`2026-06-08-architect-coach-features.md`, the `[det]`/`[model]` split), the
 > Phase-2 build (`2026-06-08-drawing-board-phase-2-build.md`, the model ladder),
 > and the Coach-vs-Converse pivot (`2026-06-08-drawing-board-coach-vs-converse.md`).
+>
+> **Shipped (2026-06-13):** `docs/src/playground/presentation-canon.js` — the
+> principle cards + `buildCanonContext()` (deck-level, findings-gated) and
+> `canonForFinding()` (single-finding). Wired into Converse's rich prompt and the
+> per-finding Fix prompt, both cloud-tier only, riding the per-turn dynamic tail
+> (NOT the cached prefix — the retrieved set is findings-derived, so caching it
+> would invalidate the primer every turn; it's a few hundred tokens by design).
+> Retrieval is deterministic rule→card mapping for v1 (reliable + pure); the
+> embeddings-ranked variant (`cosineRank`) and the standalone model-written
+> scorecard-summary slot remain the named next consumers. Open questions below
+> resolved: pack authored directly from the public frameworks (not a web-research
+> pass); per-finding + a fixed core arc set for deck-level; tail placement over a
+> combined cached prefix (correctness over the marginal cache win).
 
 ## The gap this closes
 

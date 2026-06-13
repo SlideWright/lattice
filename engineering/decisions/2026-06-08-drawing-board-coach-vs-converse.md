@@ -93,11 +93,12 @@ not a composer.
 > *propose a fix* for an already-deterministically-found issue, gated, behind
 > Apply + re-score, with the floor (How-to-fix) intact when no model is present.
 > Pure core: `architect-fix.js`. Spend respects the session budget cap; the
-> prompt is cached where the provider supports it. **Known fast-follow:** the
-> button's tier gate is evaluated when the findings render, so connecting a model
-> *after* the panel is showing only surfaces Fix on the next re-score (any deck
-> edit) — wiring a `db-model-changed` refresh is deferred (the connect points are
-> spread across the settings flow).
+> prompt is cached where the provider supports it. The button tracks the live
+> tier: `architect-model.js` dispatches a `db-model-changed` window event on
+> every connect / disconnect / model-swap / summon, and the Architect re-renders
+> on it, so Fix appears/hides the moment availability changes (no deck edit
+> needed). The rewrite is grounded in the canon principle behind the finding —
+> see `2026-06-13-coach-canon-knowledge-pack.md`.
 
 ## Converse (generative) — the detail
 

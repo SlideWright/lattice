@@ -16,6 +16,7 @@
 
 import { EDIT_PROTOCOL, numberSlides, parseEdits, sliceSlide } from './architect-edits.js';
 import { buildLatticePrimer } from './architect-knowledge.js';
+import { canonForFinding } from './presentation-canon.js';
 
 // Build the messages for fixing ONE finding. Mirrors the chat's rich prompt: a
 // cacheable STATIC prefix (persona + Lattice primer + the edit protocol —
@@ -31,10 +32,15 @@ export function buildFixMessages({ source, finding, catalog, cache } = {}) {
 		'layout choice; never invent content the author didn’t give you. Return EXACTLY ' +
 		'ONE edit block for the flagged slide and nothing else (no prose, no preamble).';
 	const systemStatic = `${persona}\n\n${buildLatticePrimer(catalog)}\n\n${EDIT_PROTOCOL}`;
+	// Ground the rewrite in the canon principle behind this finding (when one maps),
+	// so the fix follows the field's guidance, not the model's generic instinct.
+	const card = canonForFinding(finding);
+	const principle = card ? `Apply this principle: ${card.principle} (${card.source}) — ${card.fix}\n` : '';
 	const systemDynamic =
 		`\n\nThe flagged slide is slide ${slideNo}.\n` +
 		`Issue: ${finding?.message || ''}\n` +
 		(finding?.fix ? `How to fix (guidance): ${finding.fix}\n` : '') +
+		principle +
 		`\nThe full deck (each slide tagged [slide N] — edit ONLY slide ${slideNo}, and never ` +
 		`copy the [slide N] marker into the edit body):\n${numberSlides(source)}`;
 	const system = systemStatic + systemDynamic;

@@ -559,6 +559,15 @@ export function createArchitectModel({ getSettings } = {}) {
     } catch { return null; }
   }
 
+  // Announce a generation-tier change (connect / disconnect / model swap / summon)
+  // so live surfaces re-evaluate what they offer — e.g. the Coach's per-finding
+  // "Fix" button, gated on a capable tier, appears the moment a model connects
+  // instead of waiting for the next deck edit. Fire-and-forget; SSR/Node no-op.
+  const emitChange = () => {
+    if (!hasWindow) return;
+    try { window.dispatchEvent(new Event('db-model-changed')); } catch {}
+  };
+
   return {
     complete,
     embed,
@@ -575,7 +584,7 @@ export function createArchitectModel({ getSettings } = {}) {
         modelOn: modelOn(),
       };
     },
-    setTier(name) { tierPref = name; },
+    setTier(name) { tierPref = name; emitChange(); },
     // OpenRouter cloud tier — one-click OAuth (PKCE), the user's own account.
     // beginOpenRouterAuth() returns the URL to redirect to; the page navigates
     // there. On return (?code=) the page calls resumeOpenRouterAuth(code), which
@@ -584,22 +593,24 @@ export function createArchitectModel({ getSettings } = {}) {
     async beginOpenRouterAuth(callbackUrl) { return openrouter.beginAuth(callbackUrl); },
     async resumeOpenRouterAuth(code) {
       await openrouter.completeAuth(code);
+      emitChange();
       return true;
     },
     listOpenRouterModels() { return openrouter.listModels(); },
     openRouterModel() { return openrouter.getModel(); },
-    setOpenRouterModel(id) { openrouter.setModel(id); },
+    setOpenRouterModel(id) { openrouter.setModel(id); emitChange(); },
     openRouterModelName() { return openrouter.modelName(); },
     openRouterAccount() { return openrouter.accountInfo(); },
     // Snapshot/restore the stored key so the settings UI can offer an Undo on
     // Disconnect (mirroring the deck-deletion guardrail) without re-running OAuth.
     openRouterKeySnapshot() { return openrouter.keySnapshot(); },
-    restoreOpenRouter(key) { openrouter.restore(key); },
-    disconnectOpenRouter() { openrouter.disconnect(); },
+    restoreOpenRouter(key) { openrouter.restore(key); emitChange(); },
+    disconnectOpenRouter() { openrouter.disconnect(); emitChange(); },
     // WebLLM opt-in — the deliberate "summon the Architect" (~1GB, WebGPU) download.
     async summon(onProgress, signal) {
       await webllm.load(onProgress, signal);
       tierPref = 'webllm';
+      emitChange();
       return true;
     },
     // The universal Transformers.js tier — the no-WebGPU fallback (Safari/mobile).
@@ -607,6 +618,7 @@ export function createArchitectModel({ getSettings } = {}) {
     // Prompt API. Never throws to the caller's flow — caller surfaces progress.
     async loadUniversal(onProgress, signal) {
       await universal.load(onProgress, signal);
+      emitChange();
       return true;
     },
     webgpu: detectWebGPU(),
