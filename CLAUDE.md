@@ -27,10 +27,13 @@ architectural fork) — and bundle those into one `AskUserQuestion`.
 2. **Don't settle.** "Builds" and "tests pass" is the floor. Self-critique
    the result and raise it before returning it. For visual work, the bar is
    §Quality Bar below.
-3. **Stay rebased — check, don't ask.** Before you push and before you call
-   anything done, `git fetch origin main` and rebase the branch if it has
-   drifted. Never ship from a stale branch; never wait to be told to rebase.
-   (A Stop hook nudges you if you forget — see `.claude/hooks/stop-rebase-check.sh`.)
+3. **Stay rebased — check, don't ask.** Before you push, before you call
+   anything done, and **while an open PR waits**, `git fetch origin main` and
+   rebase the branch if it has drifted. Never ship from a stale branch; never
+   let an open PR sit behind `main` or conflicted; never wait to be told to
+   rebase. (A Stop hook nudges you if you forget — see
+   `.claude/hooks/stop-rebase-check.sh`; HARD RULE #16 makes the open-PR case
+   blocking, because webhooks never deliver the drift/conflict trigger.)
 4. **Run the gates yourself, proactively.** `npm run lint`, the unit suite,
    `npm run build:check` (the CI/stale-artifact gate), and the integration
    tier — run them *before* declaring done, so "done" is true when you say
@@ -79,6 +82,12 @@ Before handing visual work back:
 - Run `tools/pixel-check.js` to catch unintended drift.
 - Fix what's short of excellent without being told — spacing, alignment,
   contrast, type hierarchy, register, dead canvas.
+- **For a *large* visual sweep — every gallery, a whole-bucket audit, a theme
+  across all components, a responsive pass over many pages — fan out parallel
+  reviewer agents** (one per deck/bucket/breakpoint, maker-checker), each
+  viewing *whole* slides. Don't tile a single slide across agents (it destroys
+  the composition); don't review a big sweep serially. See
+  `engineering/visual-review.md`.
 - If a tool genuinely cannot run here, **say so**; never claim visual
   quality you did not verify.
 
@@ -171,6 +180,18 @@ independent set of eyes earns its latency.
     tools/` are the live source). We almost certainly already have it — extend it,
     don't rebuild it. New tools/scripts must be described there (the
     `capabilities:check` gate enforces it).
+16. **Keep an open PR mergeable — detect drift/conflict yourself; webhooks
+    won't.** GitHub never pushes "`main` moved", "now conflicted", or "CI
+    passed", so a PR you're watching goes stale or blocked **silently**.
+    Therefore re-check at three points — on every PR event, immediately before
+    you ask for merge authorization, and again immediately before an authorized
+    merge executes: `git fetch origin main` and read the PR's mergeable state
+    (`pull_request_read`). If `main` drifted or the PR conflicts, **rebase onto
+    `origin/main` and re-verify without being asked** — resolve the recurring
+    `CHANGELOG`/`dist` conflicts mechanically, then `git push --force-with-lease`.
+    Where `send_later` is available, also arm a ~30–60 min self-check-in that
+    re-runs this until the PR is merged or closed. Never let an open PR sit
+    behind `main`, conflicted, or CI-red. See `engineering/workflow.md`.
 
 ---
 
@@ -193,6 +214,7 @@ independent set of eyes earns its latency.
 | Picking a component as an agent (machine catalog) | `dist/docs/components.json`, `AGENTS.md` |
 | What scripts/tools/frameworks already exist (don't reinvent) | `engineering/capabilities.md` |
 | The 10/10 visual rubric | `engineering/decisions/2026-06-06-layout-audit/` |
+| A large visual sweep / parallel reviewer fan-out | `engineering/visual-review.md` |
 | Release / publish | `RELEASE.md` |
 | Durable investigation notes | `engineering/decisions/YYYY-MM-DD-topic.md` |
 

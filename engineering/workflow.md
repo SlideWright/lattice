@@ -275,6 +275,61 @@ Any authoring transform must land in all three render paths or they drift:
 
 Do not close a feature branch until all three are updated and integration tests pass.
 
+## Keeping an open PR mergeable while it waits
+
+A PR is not "done and parked" the moment CI goes green — it sits open while you
+wait for merge authorization, and `main` keeps moving under it. **GitHub webhooks
+never deliver the events that matter here:** "`main` moved", "this PR is now
+conflicted", and "CI passed" are all silent. So nothing wakes you when your PR
+goes stale or blocked — you have to check. This is HARD RULE #16.
+
+Re-check mergeability at three points, every one of which is reachable without a
+scheduler:
+
+1. **On every PR event you receive** (a comment, a CI transition, a review) —
+   while you're already handling it, also `git fetch origin main` and look at
+   whether the branch is behind.
+2. **Immediately before you ask for merge authorization** — "green and ready"
+   must mean *still* rebased on `origin/main`, not green against a `main` from an
+   hour ago.
+3. **Immediately before an authorized merge executes** — re-fetch and confirm
+   the PR is still mergeable; authorization given against a stale branch does not
+   survive a conflict.
+
+At each, read the PR's mergeable state with `pull_request_read` (`mergeable` /
+`mergeable_state`) and compare local `HEAD` to `origin/main`
+(`git rev-list --left-right --count origin/main...HEAD`). If the branch is behind
+or conflicted, **rebase without being asked**:
+
+```bash
+git fetch origin main
+git rebase origin/main          # resolve the recurring CHANGELOG / dist /
+                                # examples-*.pdf conflicts mechanically — see
+                                # the rebase step above, never hand-merge them
+git push --force-with-lease
+```
+
+Re-run the gates after the rebase (the content under you changed) and re-confirm
+CI. A pure *behind-but-not-conflicted* branch can alternatively be advanced with
+GitHub's "Update branch" (`update_pull_request_branch`) — harmless under
+squash-merge since the PR history is squashed away — but a real conflict always
+needs the local rebase above.
+
+Be honest about the residual hole: checkpoint 1 is **event-gated**. If `main`
+moves while your PR is already green and no comment/CI/review event arrives,
+nothing fires — the PR sits silently behind `main` until you next touch it.
+Checkpoints 2 and 3 are the backstop that *guarantees* freshness at merge time;
+they do not keep it continuously fresh in between. The Stop hook can't close that
+gap either — `.claude/hooks/stop-rebase-check.sh` is local-only by design (no
+`git fetch`, can't call MCP), so it cannot see the remote PR's behind/conflict
+state. That is *why* this discipline is agent-driven rather than hook-enforced.
+
+**Where `send_later` is available**, that gap closes: arm a ~30–60 min
+self-check-in that re-runs this loop and re-arms itself until the PR is merged or
+closed — the only way to catch drift while no event is arriving. Where it is not
+(some sessions don't expose it), the three checkpoints above are the floor —
+never let an open PR sit behind `main`, conflicted, or CI-red.
+
 ## Merging
 
 - **Merging requires explicit human authorization.** An agent drives the PR to

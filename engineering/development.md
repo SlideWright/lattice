@@ -250,6 +250,11 @@ is the visual-verification path for any web-UI change (the counterpart to
 `tools/rasterize-for-review.sh` for PDFs). Don't claim a web-UI change is
 unverifiable here; run the site and look.
 
+> Reviewing something *large* — every gallery, a whole-bucket audit, a
+> responsive pass over many routes? Don't do it serially. Fan out parallel
+> reviewer agents (one per deck/bucket/breakpoint), each running the tools
+> below on its slice. See `engineering/visual-review.md`.
+
 ### The loop
 
 ```bash
