@@ -60,7 +60,11 @@ architectural fork) — and bundle those into one `AskUserQuestion`.
    **squash-merge** by default: never a merge commit; rebase-and-merge only for
    a deliberately curated, atomic commit series. Across many parallel AI
    sessions a PR can carry 20+ noisy commits, so squashing keeps `main` one
-   reviewable, revertable commit per PR. See `engineering/workflow.md`.
+   reviewable, revertable commit per PR. **After every merge — once local `main`
+   is synced — post a brief standup** (epic/feature · story · completed · on deck
+   for *this* thread) so I can re-orient across my many parallel sessions; it's
+   the closing beat of the merge, derived from existing repo/GitHub signals, not
+   an optional extra. See `engineering/workflow.md` (§Merging, §Post-merge standup).
 
 Rules 6–7 deliberately override the harness defaults (which otherwise hold
 off on PR creation and ask before watching). This file takes precedence;
