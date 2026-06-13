@@ -1,7 +1,9 @@
 # P4 — retire marp-cli: parity testing → regression testing
 
-**Status:** design (pre-code). Decision captured from the 2026-06-12 discussion;
-needs sign-off on the open questions in §7 before implementation.
+**Status:** design (pre-code), de-risked. The 2026-06-13 spike resolved the one
+real technical risk (golden env-stability — §7.1) positively; only the §7.3
+test-migration audit remains, and that's done during implementation. Ready to
+build.
 
 ## 1. Goal
 
@@ -50,7 +52,9 @@ approval trigger.** It maps to mechanics that already exist.
 
 **Goldens — reuse the committed gallery PDFs.** We already commit
 `*.gallery.{light,dark}.pdf` for every component + bucket (65 each). **Those are
-the goldens.** No new image tree to bloat the repo.
+the goldens.** No new image tree to bloat the repo. The gate compares them by
+**rasterizing to pixels and diffing with tolerance — never by PDF bytes** (PDFs
+aren't byte-reproducible; pixels are — see the §7.1 spike).
 
 **`bless` is LOCAL — and is already how Lattice works.** When you change a
 layout you run `npm run bless [-- <deck>]` (re-render the affected galleries =
@@ -125,27 +129,42 @@ answer "is it good," only "did it change" — that split is the point.
 - **Ongoing:** engine self-speed (the bench, marp stripped) as a perf-regression
   signal.
 
-## 7. Open questions (need sign-off before code)
+## 7. Open questions
 
-1. **Golden env-stability — the real technical risk, and the one to validate
-   empirically.** Today's parity gate renders both sides in the *same* CI run,
-   so font/Chromium drift cancels. A regression gate diffs a *fresh CI* render
-   against a *locally-blessed* committed golden, so author-env↔CI-env drift does
-   **not** cancel. Mitigations already in our favor: the emulator **embeds**
-   self-hosted fonts into the PDF (deterministic type), Chromium is
-   puppeteer-pinned, and the existing **0.05% tolerance** absorbs sub-pixel AA.
-   First implementation step is to *measure* whether locally-blessed goldens are
-   stable against a CI render. **If not**, the targeted fallback is "bless in CI"
-   (a label triggers CI to regenerate just the goldens) — reintroducing a little
-   machinery only where proven necessary.
-2. **PDF goldens vs PNG goldens.** Reusing committed PDFs avoids an image tree
-   but couples the gate to PDF rasterization determinism. Lean: PDF-reuse, revisit
-   only if §7.1 forces it.
+### Resolved by the 2026-06-13 spike
+
+1. **Golden env-stability — RESOLVED (positive).** Measured directly: rendered
+   `featured`, `kpi`, `compare-code`, `big-number` galleries fresh in a *new*
+   sandbox session and diffed against the goldens committed in a *prior* session.
+   Result: **0 pixels differ beyond tolerance** (ImageMagick `-fuzz 3%`, ≈ the
+   gate's channel-delta-8) on the worst page of all four. Cross-session pixel
+   output is deterministic, so locally-blessed goldens are stable enough for the
+   gate. The "bless in CI" fallback is **not needed**. (Embedded fonts + pinned
+   Chromium + the 0.05% tolerance carry it, as predicted.)
+
+   **→ Design rule this forces: the gate compares rasterized *pixels* with
+   tolerance, NEVER PDF *bytes*.** The same spike showed the PDFs are *not*
+   byte-reproducible (md5 differs every render — timestamps, object/font-subset
+   ordering), so a byte-diff would false-fail 100% of the time. Pixels are
+   deterministic; bytes are not. `engine-parity.mjs` already rasterizes, so this
+   is the natural path — but it's the trap a naive "diff the committed PDF" gate
+   would fall into.
+
+2. **PDF vs PNG goldens — DECIDED: reuse the committed PDFs.** Since pixels are
+   deterministic but PDF bytes aren't, the gate rasterizes the committed PDF
+   on-the-fly and pixel-diffs (tolerance). PDFs are already committed for human
+   review; their byte-churn on rebuild is the pre-existing status quo; a separate
+   PNG tree would only buy byte-stable goldens we don't gate on anyway (we need
+   AA tolerance regardless). No new image tree.
+
+### Still open
+
 3. **Test-migration audit.** ~10 files lose their marp comparison. Confirm none
    asserts something *only* a second renderer can before deleting.
 
 *(The earlier "bless-trigger security" question is gone — bless is local, so CI
 never writes to the branch and there's nothing to gate.)*
+
 
 ## 8. Recommendation
 
