@@ -94,6 +94,21 @@ in patch versions.
 
 ### Changed
 
+- **The docs zone now reads as part of one website, not a bolted-on subsite.**
+  The Starlight docs header is reskinned into the same topbar the landing,
+  playground, and component pages carry — brand, the full global nav (incl.
+  Workbench + GitHub), search, a palette `<select>`, and a light/dark toggle —
+  wired to the shared `lattice-docs-palette` / `lattice-docs-mode` keys so a
+  palette/mode chosen anywhere on the site carries across the jump. Starlight's
+  `--sl-color-*` surface is remapped onto the site palette tokens, so **all 14
+  palettes re-theme the whole docs chrome** (header, sidebar, prose, search
+  dialog) in light and dark, exactly like the rest of the site. Navigation no
+  longer dead-ends at the logo: on tablet/mobile the global links lead the
+  sidebar/hamburger menu (Home … GitHub), so you can always get back out.
+  Implemented as four small Starlight component overrides (`Header`,
+  `ThemeProvider`, `Sidebar`, `MobileMenuFooter`) plus the token remap in
+  `docs/src/styles/lattice.css`; no engine or deck behaviour changes.
+
 - **The Drawing Board's Practice mode is now a real rehearsal coach.** It used to
   pace you against a word-count target and drop a one-word cue in the top bar.
   Now a **rehearsal planner** (`drawing-board-rehearsal.js`) turns the deck +

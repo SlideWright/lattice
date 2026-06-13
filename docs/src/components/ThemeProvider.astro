@@ -1,0 +1,38 @@
+---
+// Override of Starlight's ThemeProvider. Sets the theme attributes before
+// first paint (FOUC-free) from the SAME localStorage keys the rest of the
+// site uses (lattice-docs-palette / -mode), so a palette/mode chosen on the
+// landing or playground is already applied when the docs zone loads.
+//
+// We set three attributes on <html>:
+//   data-mode    — drives the site palette tokens (lattice-tokens.generated.css)
+//   data-palette — which of the 14 palettes
+//   data-theme   — Starlight's own switch (its base CSS + code-block themes);
+//                  kept in lockstep with data-mode.
+// Falls back to the OS colour-scheme for mode and to indaco for palette.
+//
+// Keeps a no-op StarlightThemeProvider global so any leftover Starlight code
+// that calls updatePickers() (e.g. if a default picker is ever re-introduced)
+// doesn't throw. The visible mode/palette controls live in Header.astro.
+---
+
+<script is:inline>
+	(function () {
+		var root = document.documentElement;
+		function read(key) {
+			try { return localStorage.getItem(key); } catch (e) { return null; }
+		}
+		var palette = read('lattice-docs-palette');
+		if (palette) root.setAttribute('data-palette', palette);
+		else if (!root.getAttribute('data-palette')) root.setAttribute('data-palette', 'indaco');
+
+		var mode = read('lattice-docs-mode');
+		if (mode !== 'light' && mode !== 'dark') {
+			mode = window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+		}
+		root.setAttribute('data-mode', mode);
+		root.dataset.theme = mode;
+	})();
+
+	window.StarlightThemeProvider = { updatePickers: function () {} };
+</script>

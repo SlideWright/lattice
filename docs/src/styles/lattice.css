@@ -1,31 +1,87 @@
-/* Lattice branding for Starlight — indaco accent ramp + the engine's
- * own type pairing (Playfair Display headings, Outfit body, JetBrains
- * Mono code). Mirrors lattice.css / themes/indaco.css. */
+/* Lattice skin for Starlight — makes the docs zone present as part of the
+ * same website, not a bolted-on subsite.
+ *
+ * The whole site (landing, playground, components) themes from ONE generated
+ * token file (lattice-tokens.generated.css): per-palette / per-mode values for
+ * --bg / --accent / --text-* / --border keyed on html[data-palette][data-mode].
+ * Here we (1) pull that file in, (2) remap Starlight's --sl-color-* surface
+ * onto those site tokens, and (3) re-skin the header into the site topbar.
+ * Net effect: picking any of the 14 palettes re-themes the docs exactly like
+ * the rest of the site, and a palette/mode chosen on another page carries
+ * across the jump (shared localStorage keys: lattice-docs-palette / -mode,
+ * wired in Header.astro; data-palette/-mode set pre-paint in ThemeProvider).
+ *
+ * Mirrors lattice.css / themes/indaco.css and the landing's type pairing
+ * (Playfair Display headings, Outfit body, JetBrains Mono code). */
 
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import './lattice-tokens.generated.css';
 
 :root {
 	--sl-font: 'Outfit', system-ui, sans-serif;
 	--sl-font-mono: 'JetBrains Mono', 'Courier New', monospace;
+
+	/* Fallback palette (indaco light) for the SSR/no-JS first paint, before
+	 * ThemeProvider sets data-palette/-mode. Overridden by the generated blocks
+	 * the moment those attributes land. Mirrors landing.css. */
+	--bg: #ffffff;
+	--bg-alt: #f2f5fa;
+	--border: #e4eaf2;
+	--text-heading: #0a1628;
+	--text-body: #1e3a5f;
+	--text-muted: #6b7f9a;
+	--accent: #006fa8;
+	--accent-soft: #eff6fc;
+	--on-accent: #ffffff;
+	--bg-dark: #003d66;
+
+	/* UI-chrome icons — Lucide (https://lucide.dev, ISC), as data-URI masks
+	 * painted with `background: currentColor` so they track the palette. */
+	--lx-icon-moon: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z'/%3e%3c/svg%3e");
+	--lx-icon-sun: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3ccircle cx='12' cy='12' r='4'/%3e%3cpath d='M12 2v2'/%3e%3cpath d='M12 20v2'/%3e%3cpath d='m4.93 4.93 1.41 1.41'/%3e%3cpath d='m17.66 17.66 1.41 1.41'/%3e%3cpath d='M2 12h2'/%3e%3cpath d='M20 12h2'/%3e%3cpath d='m6.34 17.66-1.41 1.41'/%3e%3cpath d='m19.07 4.93-1.41 1.41'/%3e%3c/svg%3e");
 }
 
-/* Dark theme accent (indaco on dark canvas). */
-:root[data-theme='dark'] {
-	--sl-color-accent-low: #002847;
-	--sl-color-accent: #006fa8;
-	--sl-color-accent-high: #82c8e5;
-	--sl-color-text-accent: #82c8e5;
+/* ── Remap Starlight's colour surface onto the site palette tokens ──────────
+ * These rules are intentionally UNLAYERED, so they win over Starlight's
+ * @layer starlight.base props.css regardless of its [data-theme] specificity.
+ * The site tokens are themselves mode-aware (resolved per data-mode), so a
+ * single block covers both light and dark — no data-theme branching needed.
+ * We remap only the neutral/semantic tokens; the categorical hues
+ * (orange/green/red/purple/blue used by asides + syntax) stay Starlight's. */
+:root {
+	/* Surfaces */
+	--sl-color-bg: var(--bg);
+	--sl-color-bg-nav: var(--bg);
+	--sl-color-bg-sidebar: var(--bg);
+	--sl-color-bg-inline-code: var(--bg-alt);
+	--sl-color-black: var(--bg);
+	--sl-color-gray-6: var(--bg-alt);
+	--sl-color-gray-7: var(--bg-alt);
+
+	/* Hairlines / borders */
+	--sl-color-hairline: var(--border);
+	--sl-color-hairline-light: var(--border);
+	--sl-color-hairline-shade: var(--border);
+	--sl-color-gray-5: var(--border);
+
+	/* Text ramp (most → least contrast) */
+	--sl-color-white: var(--text-heading);
+	--sl-color-gray-1: var(--text-heading);
+	--sl-color-text: var(--text-body);
+	--sl-color-gray-2: var(--text-body);
+	--sl-color-gray-3: var(--text-muted);
+	--sl-color-gray-4: var(--text-muted);
+
+	/* Accent */
+	--sl-color-accent: var(--accent);
+	--sl-color-accent-high: var(--accent);
+	--sl-color-accent-low: var(--accent-soft);
+	--sl-color-text-accent: var(--accent);
+	--sl-color-bg-accent: var(--accent);
+	--sl-color-text-invert: var(--on-accent);
 }
 
-/* Light theme accent (indaco on paper). */
-:root[data-theme='light'] {
-	--sl-color-accent-low: #eff6fc;
-	--sl-color-accent: #006fa8;
-	--sl-color-accent-high: #003d66;
-	--sl-color-text-accent: #006fa8;
-}
-
-/* Display face on the big headings, matching deck titles. */
+/* Display face on the big headings, matching deck titles + the landing hero. */
 .sl-markdown-content h1,
 .sl-markdown-content h2,
 .hero h1,
@@ -33,39 +89,187 @@ h1#_top {
 	font-family: 'Playfair Display', Georgia, serif;
 	letter-spacing: -0.015em;
 }
-
-/* Splash hero title gets the full display treatment. */
 .hero h1 {
 	font-weight: 700;
 }
 
-/* Global nav links injected into the header via the SocialIcons override.
- * Hidden below 64rem, where the sidebar (with its Tools group) and the
- * mobile menu carry the same destinations — avoids crowding the header
- * against the search box on narrow viewports. The link for the current
- * section gets aria-current="page" (set in SocialIcons.astro). */
-.lattice-headernav {
+/* ── Header → site topbar ───────────────────────────────────────────────────
+ * Starlight's PageFrame supplies the fixed bar (.header) with the right
+ * border + background (now themed via the remapped tokens) and reserves space
+ * for the mobile sidebar toggle. We lay out the topbar content inside it. */
+.lx-topbar {
+	display: flex;
+	align-items: center;
+	gap: 1.25rem;
+	width: 100%;
+	height: 100%;
+}
+.lx-brand {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	text-decoration: none;
+	flex: 0 0 auto;
+}
+.lx-brand img {
+	display: block;
+	height: 1.875rem;
+	width: auto;
+}
+.lx-brand .lx-mark {
+	font-family: 'Playfair Display', Georgia, serif;
+	font-weight: 700;
+	font-size: 1.375rem;
+	line-height: 1;
+	color: var(--text-heading);
+	letter-spacing: -0.01em;
+}
+
+/* Global nav — desktop only; the mobile sidebar carries the same links (the
+ * .lx-sitenav group injected into Sidebar.astro), so navigation never
+ * dead-ends at the logo. */
+.lx-nav {
 	display: none;
 }
-@media (min-width: 64rem) {
-	.lattice-headernav {
+.lx-nav a {
+	font-size: var(--sl-text-sm);
+	font-weight: 500;
+	color: var(--sl-color-text);
+	text-decoration: none;
+	white-space: nowrap;
+}
+.lx-nav a:hover {
+	color: var(--sl-color-text-accent);
+}
+.lx-nav a[aria-current='page'] {
+	color: var(--sl-color-text-accent);
+	font-weight: 600;
+}
+
+/* Search sits between nav and controls, flexing to take the slack. Reuses
+ * Starlight's <site-search>; we just let it grow and cap its width. */
+.lx-search {
+	flex: 1 1 auto;
+	display: flex;
+	justify-content: flex-end;
+	min-width: 0;
+}
+.lx-search site-search {
+	width: 100%;
+	max-width: 22rem;
+}
+
+.lx-controls {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	flex: 0 0 auto;
+}
+.lx-palette {
+	padding: 0.35rem 0.55rem;
+	border: 1px solid var(--border);
+	border-radius: 8px;
+	background: var(--bg);
+	color: var(--text-body);
+	font-family: var(--sl-font);
+	font-size: var(--sl-text-xs);
+	cursor: pointer;
+	max-width: 9.5rem;
+}
+.lx-palette:focus-visible {
+	outline: 2px solid var(--accent);
+	outline-offset: 1px;
+	border-color: var(--accent);
+}
+.lx-mode {
+	flex: 0 0 auto;
+	display: inline-grid;
+	place-items: center;
+	width: 2.125rem;
+	height: 2.125rem;
+	border-radius: 8px;
+	border: 1px solid var(--border);
+	background: var(--bg);
+	color: var(--text-body);
+	cursor: pointer;
+}
+.lx-mode:hover {
+	border-color: var(--accent);
+	color: var(--accent);
+}
+.lx-mode::before {
+	content: '';
+	width: 1rem;
+	height: 1rem;
+	background: currentColor;
+	-webkit-mask: var(--lx-icon-moon) center / contain no-repeat;
+	mask: var(--lx-icon-moon) center / contain no-repeat;
+}
+:root[data-mode='dark'] .lx-mode::before {
+	-webkit-mask-image: var(--lx-icon-sun);
+	mask-image: var(--lx-icon-sun);
+}
+
+/* The brand text turns into just the logo on the narrowest screens so the
+ * search + controls keep room next to the fixed sidebar toggle. */
+@media (max-width: 30rem) {
+	.lx-brand .lx-mark {
+		display: none;
+	}
+	.lx-palette {
+		max-width: 6.5rem;
+	}
+}
+
+/* Wide desktop: reveal the global nav; the topbar then reads exactly like the
+ * landing topbar (brand · nav · search · palette · mode). We wait for 72rem —
+ * below that the brand + 7 links + search + controls can't fit on one row
+ * (they overflowed at the ~50rem sidebar breakpoint), so in the 50–72rem band
+ * the left sidebar's .lx-sitenav group carries the global nav instead. */
+@media (min-width: 72rem) {
+	.lx-nav {
 		display: flex;
 		align-items: center;
 		gap: 1.15rem;
-		margin-inline-end: 0.5rem;
 	}
-	.lattice-headernav a {
-		font-size: var(--sl-text-sm);
-		font-weight: 500;
-		color: var(--sl-color-text);
-		text-decoration: none;
-		white-space: nowrap;
-	}
-	.lattice-headernav a:hover {
-		color: var(--sl-color-text-accent);
-	}
-	.lattice-headernav a[aria-current='page'] {
-		color: var(--sl-color-text-accent);
-		font-weight: 600;
+}
+
+/* ── Site nav group inside the mobile sidebar menu ──────────────────────────
+ * Injected at the top of Sidebar.astro so the hamburger menu starts with the
+ * full set of site destinations (incl. Home + Workbench). Hidden on desktop,
+ * where the header nav carries them. */
+.lx-sitenav {
+	display: block;
+	margin-bottom: 0.5rem;
+	padding-bottom: 0.75rem;
+	border-bottom: 1px solid var(--sl-color-hairline-light);
+}
+.lx-sitenav ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+}
+.lx-sitenav a {
+	display: block;
+	padding: 0.4rem 0;
+	font-size: var(--sl-text-base);
+	font-weight: 600;
+	color: var(--sl-color-white);
+	text-decoration: none;
+}
+.lx-sitenav a:hover,
+.lx-sitenav a[aria-current='page'] {
+	color: var(--sl-color-text-accent);
+}
+/* Hidden only once the header nav appears (72rem). Below that it shows in
+ * BOTH the mobile hamburger menu (<50rem) and the inline left sidebar
+ * (50–72rem) — the band where the header nav doesn't fit — so global
+ * navigation (Home, Workbench, …) is always one tap away. */
+@media (min-width: 72rem) {
+	.lx-sitenav {
+		display: none;
 	}
 }

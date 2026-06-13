@@ -40,9 +40,16 @@ export default defineConfig({
 			title: 'Lattice',
 			favicon: '/lattice-logo.png',
 			components: {
-				// Inject the global nav links into the header (next to the social
-				// icons) so the docs zone shares the landing/playground topbar.
-				SocialIcons: './src/components/SocialIcons.astro',
+				// Re-skin the docs zone as part of the one website (not a bolted-on
+				// subsite). Header becomes the site topbar (brand · global nav ·
+				// search · palette · light/dark); ThemeProvider sets palette+mode
+				// pre-paint from the shared localStorage keys; Sidebar prepends a
+				// mobile-only "Site" nav group so the hamburger never dead-ends at
+				// the logo; MobileMenuFooter is emptied to leave one control surface.
+				Header: './src/components/Header.astro',
+				ThemeProvider: './src/components/ThemeProvider.astro',
+				Sidebar: './src/components/Sidebar.astro',
+				MobileMenuFooter: './src/components/MobileMenuFooter.astro',
 			},
 			logo: { src: './public/lattice-logo.png', alt: 'Lattice' },
 			description:
