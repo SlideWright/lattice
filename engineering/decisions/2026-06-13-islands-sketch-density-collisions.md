@@ -1,6 +1,9 @@
 # Islands + sketch density collisions — the chrome doesn't reserve its own space
 
-**Status:** open defect, filed 2026-06-13. Found while auditing
+**Status:** **Defect 1 resolved 2026-06-13** via M1 (container-basis
+reservation — see the resolution note at the end of Defect 1); Defects 2–3 and
+the M2 follow-ons (exact-berth fade, footer↔section-label column) remain open.
+Originally filed 2026-06-13. Found while auditing
 `examples/gallery-jargon.md` ("the jargon gallery") under the Drawing-Board
 A/B settings a user actually runs: **`finish: sketch` + `islands: on` + 4K +
 `theme: crepuscolo`**. Sibling context: `2026-06-11-islands.md` (the islands
@@ -77,6 +80,35 @@ to keep them in agreement (HARD RULE 1).
 Until fixed, the safe authoring guidance for dense decks is `islands: off` or
 `islands: minimal` (drops the progress rail but keeps the band+bay, so it
 doesn't resolve the top-clip).
+
+### Resolved 2026-06-13 — M1 (container-basis reservation)
+
+The reframe that made the fix small: the band **was** reserved — but as an
+**in-flow `margin`**, so it sat *inside* the section's content box. Because
+`section { container-type: size }`, every component sizes itself with `cqi/cqh`
+against that content box, which still counted the band, so a component sized to
+`section − footer` and physically overran the real body (`section − footer −
+band`) by ~the band's height. The collision was a **container-query basis**
+mismatch, not a missing reservation.
+
+**M1 fix (shipped):** flip the masthead band to an **absolutely-positioned berth
+reserved via `section.islands { padding-top }`** (mirroring the existing footer
+`padding-bottom`). The content box now equals the true body area, so `cqi/cqh`
+resolve to the real berth and components stop overgrowing. Body overflow is
+**hard-clipped** (`overflow: hidden`) so it can't bleed across the band/footer;
+the runtime overflow ring (`section.scrollHeight > clientHeight`) still fires
+because the body flows in-section, so an over-stuffed slide reads "too much" in
+authoring. Pure CSS in `lib/base/base.variants.css` → `dist/lattice.css`, so all
+three render paths inherit it with no transform change; `islands: off` is
+byte-identical; resolution-invariant (all `cqi`, zero fixed px). Verified on the
+jargon gallery `islands: on`: `list-criteria`, `cards-grid` (incl. 2-line
+titles), and `piechart donut` (full ring + legend restored) at HD and 4K.
+
+**Deferred to M2 (the `.isl-main` stage wrapper, Phase 4 of the islands model):**
+the **soft clip** — an *exact-berth* fade on the cut line — needs a bounded body
+box; an unbounded `::after` scrim dims legitimate content on dense-but-fitting
+slides, so it's not shipped here. The **footer↔centred-section-label** column
+(the horizontal twin below) is likewise unaddressed by M1.
 
 ## Defect 2 — sketch ghosts numerals on the split-panel watermark (secondary)
 
