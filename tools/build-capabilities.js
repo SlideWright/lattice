@@ -123,6 +123,8 @@ const SCRIPT_META = {
   'test:integration:screenshot':['Test & verify', 'Integration scope: the screenshot harness.'],
   'bench':                    ['Test & verify', 'tinybench render benchmark (marp-core vs lattice-engine). On-demand; not in `npm test`. `-- --export` / `-- --json`.'],
   'parity':                   ['Test & verify', 'Visual parity harness: rasterize a deck through both engines and pixel-diff (required CI gate).'],
+  'regress':                  ['Test & verify', 'Visual regression gate: render every gallery fresh and pixel-diff it against the committed golden PDF; fails on unblessed drift.'],
+  'bless':                    ['Test & verify', 'Re-render the gallery goldens (the regression gate baseline) and overwrite them; commit the refreshed PDFs. `-- --only <name>` for one.'],
 
   // Lint & audit
   'lint':                     ['Lint & audit', 'Biome over the JS tree (read-only). NEVER `npx biome`.'],
@@ -170,6 +172,7 @@ const TOOL_GROUP = {
   'pixel-check.js': 'Lint / audit',
   // Render/visual
   'engine-parity.mjs': 'Render / visual', 'emulator-engine-parity.mjs': 'Render / visual', 'engine-diff.js': 'Render / visual',
+  'regression-gate.mjs': 'Render / visual',
   'preview.js': 'Render / visual', 'screenshot.js': 'Render / visual', 'screenshot-slides.js': 'Render / visual',
   'rasterize-for-review.sh': 'Render / visual',
   // Release

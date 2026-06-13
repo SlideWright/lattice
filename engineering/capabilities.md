@@ -86,7 +86,9 @@ harness the index can't infer, add it to `FRAMEWORKS` in the generator.
 | Name | What it does |
 |---|---|
 | `bench` | tinybench render benchmark (marp-core vs lattice-engine). On-demand; not in `npm test`. `-- --export` / `-- --json`. |
+| `bless` | Re-render the gallery goldens (the regression gate baseline) and overwrite them; commit the refreshed PDFs. `-- --only <name>` for one. |
 | `parity` | Visual parity harness: rasterize a deck through both engines and pixel-diff (required CI gate). |
+| `regress` | Visual regression gate: render every gallery fresh and pixel-diff it against the committed golden PDF; fails on unblessed drift. |
 | `test` | Full unit suite (node:test). The inner loop. |
 | `test:all` | Unit + integration umbrella. |
 | `test:cli` | Unit scope: the CLI. |
@@ -203,6 +205,7 @@ harness the index can't infer, add it to `FRAMEWORKS` in the generator.
 | `tools/engine-parity.mjs` | render engines (marp-core and the owned lattice-engine) and pixel-diff them. |
 | `tools/preview.js` | Preview tool — fast visual-iteration loop for Lattice decks. |
 | `tools/rasterize-for-review.sh` | Rasterize a PDF for inline review at FULL QUALITY. |
+| `tools/regression-gate.mjs` | Render every gallery fresh, pixel-diff it against the committed golden PDF, and fail on unblessed drift. |
 | `tools/screenshot-slides.js` | Screenshot each slide of a rendered deck to PNGs (dev helper). |
 | `tools/screenshot.js` | Screenshot a URL to a PNG with the puppeteer-cached Chromium. |
 
