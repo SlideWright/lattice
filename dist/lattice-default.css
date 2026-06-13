@@ -10191,13 +10191,21 @@ section.verdict-grid :is(ul,ol) > li > strong ~ * { font-weight: 400; }
  * the slide at any render resolution (≈3× at 4K) instead of pinning small.
  * Explicit cqi dimensions (not width:100% + aspect-ratio) because every child
  * is absolutely positioned, leaving the flex item no in-flow content to size
- * from. The positioning context for the cloud SVG + key rail + spine overlay. */
+ * from. The positioning context for the cloud SVG + key rail + spine overlay.
+ * `max-width`/`max-height: 100%` are the responsive safety nets: the canvas
+ * targets its 85.9×25cqi design size but never exceeds the flexed `.chart-body`
+ * box, so a masthead band / tall caption shrinks it to fit instead of
+ * overflowing. The cloud + key + spine are all %-relative to the canvas, and the
+ * wc-svg viewBox uses `meet`, so everything scales down together — no clip. */
 section.word-cloud .word-cloud-canvas {
   position: relative;
   width: 85.9375cqi;
   height: 25cqi;
+  max-width: 100%;
+  max-height: 100%;
   margin: 0 auto;
-  flex: 0 0 auto;
+  flex: 0 1 auto;
+  min-height: 0;
 }
 
 /* The cloud itself — a viewBox SVG filling the canvas. The packer's px

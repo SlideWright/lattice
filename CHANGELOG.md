@@ -93,6 +93,15 @@ in patch versions.
   smaller FULL ring instead of clipping. Boardroom renders are unchanged (the
   cap holds the size); only height-constrained slides differ. (Surfaced by
   `gallery-jargon`'s `piechart donut` under `islands: on` — see #229.)
+- **`word-cloud` is responsive-safe under a vertical squeeze.** Its canvas was
+  a fixed `85.9×25cqi` box (its absolutely-positioned children give it no
+  in-flow size to shrink from); it now keeps that design size but caps at
+  `max-width/max-height: 100%` of the flexed chart body, so a masthead band or
+  tall caption scales the cloud + key + spine down together (the `wc-svg`
+  viewBox `meet` letterboxes them) instead of risking overflow. With this, every
+  chart-family graphic now fits its box: the fixed-aspect SVGs (`piechart`,
+  `radar`, `quadrant`) are height-bound, the wide SVGs (`funnel`, `map`,
+  `word-cloud`) are width-bound, and the HTML+SVG charts fill width and flex.
 - **Offline-rendered PDFs now embed the engine's intermediate font weights
   instead of synthesising them.** The self-hosted set the emulator base64-injects
   (`assets/fonts/` + `SELF_HOSTED_FACES`) was missing four faces the engine's
