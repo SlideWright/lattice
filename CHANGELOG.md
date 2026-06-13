@@ -40,6 +40,21 @@ in patch versions.
   proven slide-count-identical to `rule` on every committed deck. Settable from
   the Drawing Board's Deck Setup panel; an unknown value warns (`unknown-split`)
   via the deck linter. Demo: `examples/split-headings.md` (a `---`-free deck).
+- **LFM — Lattice-Flavored Markdown, named and specified.** Lattice's authoring
+  dialect now has a name and a versioned spec under `spec/`. LFM is defined as a
+  **profile of Markdown** (`CommonMark + GFM task lists + the Lattice extension
+  set`), with **graceful degradation** as its constitution: every extension
+  renders as readable Markdown in an LFM-unaware host. Ships `spec/LFM-1.0.md`
+  (the extension set, three conformance levels, and the degradation table —
+  including the one known non-GFM-clean construct, the `[-]`/`[/]` state
+  markers), `spec/diagnostics.md` (the LFM Diagnostic Protocol — the stable
+  finding shape and frozen rule registry the deck linter already emits), and a
+  new generated artifact `dist/docs/grammar.json`: the machine-readable
+  per-component grammar (each `_class` token, its slots + required slots, the
+  modifiers it accepts, and the shared state-marker / fence sub-grammars),
+  projected from the manifests by `tools/build-docs-portal.js` alongside
+  `components.json`. Rationale and the embedding endgame:
+  `engineering/decisions/2026-06-13-lfm-standard.md`.
 - **Contracts + Layout-swapping — the `inventory` contract (first slice).** A new
   sibling tier (`lib/contracts/`) makes the **Function** layer first-class: a
   *contract* names a Purpose's content shape (slots + cardinalities + one
