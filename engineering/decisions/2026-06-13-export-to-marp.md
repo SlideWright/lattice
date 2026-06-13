@@ -1,16 +1,17 @@
 # Proposal: Export to Marp — the portable deck bundle
 
-**Date:** 2026-06-13 · **Status:** **P1 implemented** (`tools/export-marp.js`,
+**Date:** 2026-06-13 · **Status:** **P1 + P2 implemented** (`tools/export-marp.js`,
 `npm run export:marp`) — see §6 · **Owner:** TBD
 
-> **Implemented (P1):** the split baker (`lib/core/bake-splits.js`, sharing
-> `lib/core/heading-split-core.js` with the live divider so they can't drift)
-> and the exporter (`tools/export-marp.js` → bundle/zip) have landed. Decisions
-> taken: **Q1** — ship the self-contained engine for zero-install rendering AND
-> a `marp-cli` config (both); **Q2** — diagrams render via the bundled engine /
-> marp-cli, raw fences in stock preview (pre-bake deferred); **Q3** — the deck's
-> palette + dark only. P2 (diagram pre-bake) and P3 (Drawing-Board button)
-> remain.
+> **Implemented (P1 + P2):** the split baker (`lib/core/bake-splits.js`, sharing
+> `lib/core/heading-split-core.js` with the live divider so they can't drift),
+> the exporter (`tools/export-marp.js` → bundle/zip), and the in-browser render
+> (bundled `mermaid` + `lattice-runtime` loaded by two appended `<script>` tags)
+> have landed. Decisions taken: **Q1** — ship the self-contained engine for
+> zero-install rendering AND a `marp-cli` config (both); **Q2** — diagrams +
+> components render client-side from the exported HTML via the injected runtime
+> (chosen over server-side SVG pre-bake); **Q3** — the deck's palette + dark
+> only. **P3** (Drawing-Board button) remains.
 **Related:** `2026-06-13-split-frontmatter.md` (the heading divider + the
 "Marp is an export target" reframe), `2026-06-10-marp-replacement-proposal.md`
 (engine ownership / P4 retire-marp-cli).
@@ -136,8 +137,14 @@ a representative deck.
   files, baked splits (fixing the preview-splitting concern), themes, localized
   assets, and exact rendering via the bundled engine or `marp-cli`. Diagrams
   render there; raw fences in stock preview. (`tools/export-marp.js`.)
-- **P2 — Diagram pre-bake (step 3).** SVG-embed Mermaid/charts so stock tools
-  show diagrams too. Heavier (needs the render step in the exporter).
+- **P2 — In-browser render via injected scripts. ✅ DONE.** Rather than
+  pre-baking SVG, the exporter packages `mermaid-v11.min.js` +
+  `lattice-runtime.min.js` and appends two `<script>` tags (under a
+  `markdownlint-disable MD033`) at the end of the deck. When the deck is exported
+  to HTML and opened in a browser, the runtime renders Mermaid/chart diagrams
+  **and** the structural components client-side — closing most of the stock-tool
+  fidelity gap without a server-side render step. (Verified: the exported HTML
+  renders a Mermaid flowchart to SVG in a headless browser.)
 - **P3 — Drawing-Board UI.** An "Export to Marp" button beside the existing
   export, wired to the same pipeline, returning the `.zip` in-browser.
 
