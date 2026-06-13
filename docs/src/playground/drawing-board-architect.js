@@ -419,6 +419,15 @@ export function createArchitect({ vocab, catalog, mount, reveal, applyFix, model
 		for (const n of names || []) if (n) vocabSets.names.add(n);
 	}
 
+	// Connecting / disconnecting / swapping a model changes which findings can
+	// offer "Fix" (it's gated on a capable tier). The gate is read when a finding
+	// renders, so without this a mid-session connect wouldn't surface Fix until the
+	// next deck edit. Re-render on the model-change event so the buttons track the
+	// live tier immediately. (architect-model.js dispatches db-model-changed.)
+	if (fixGate && typeof window !== 'undefined') {
+		window.addEventListener('db-model-changed', () => run());
+	}
+
 	return { update, addNames, getAssessment: () => assessment };
 }
 

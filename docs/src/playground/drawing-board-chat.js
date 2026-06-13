@@ -15,6 +15,7 @@ import { buildLatticePrimer } from './architect-knowledge.js';
 import { orSupportsCache } from './architect-model.js';
 import { renderMarkdown, renderMarkdownStream } from './chat-markdown.js';
 import { budgetStatus, readBudgetCap, readBudgetMode, readCachingEnabled, readSpend, readStandingInstructions, recordSpend } from './drawing-board-settings.js';
+import { buildCanonContext } from './presentation-canon.js';
 
 const BUDGET_WARNED_KEY = 'lattice-db-budget-warned'; // session flag so we toast each threshold once
 
@@ -95,8 +96,14 @@ export function buildChatMessages({ source, assessment, history, userText, catal
       `${buildLatticePrimer(catalog)}\n\n` +
       `${EDIT_PROTOCOL}` +
       standingBlock;
+    // Canon principles for THIS deck's findings (cloud tier only). It rides the
+    // DYNAMIC tail, not the cached prefix: it's findings-derived, so caching it
+    // would break the prefix every turn — and the retrieved set is small (a few
+    // hundred tokens) by design. See presentation-canon.js.
+    const canon = buildCanonContext({ findings: assessment?.findings || [] });
     systemDynamic =
       `\n\n${score}\n${findings ? `Mechanical issues the deterministic review found:\n${findings}\n` : 'No mechanical issues found.\n'}` +
+      (canon ? `\n${canon}\n` : '') +
       (numbered ? `\nThe current deck (each slide tagged [slide N] — address slides by that number; never copy the marker into an edit body):\n${numbered}` : '');
     system = systemStatic + systemDynamic;
   } else {

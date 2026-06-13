@@ -39,6 +39,20 @@ function mockModel(reply) {
 const EDIT = (slide, body) => '````lattice-edit slide=' + slide + '\n' + body + '\n````';
 
 describe('buildFixMessages', () => {
+  test('injects the canon principle when the finding rule maps to a card', async () => {
+    const { buildFixMessages } = await load();
+    const ruled = { slide: 2, rule: 'wall-of-text', message: 'a dense slide', fix: 'split it' };
+    const msgs = buildFixMessages({ source: DECK, finding: ruled, catalog: [], cache: false });
+    assert.match(msgs[0].content, /Apply this principle/);
+    assert.match(msgs[0].content, /one idea per slide/i);
+  });
+
+  test('no canon line when the finding rule does not map', async () => {
+    const { buildFixMessages } = await load();
+    const msgs = buildFixMessages({ source: DECK, finding: { slide: 2, message: 'x' }, catalog: [], cache: false });
+    assert.doesNotMatch(msgs[0].content, /Apply this principle/);
+  });
+
   test('non-cache: one system string + a user turn, grounded in the finding + deck', async () => {
     const { buildFixMessages } = await load();
     const msgs = buildFixMessages({ source: DECK, finding, catalog: [], cache: false });
