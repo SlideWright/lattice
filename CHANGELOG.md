@@ -214,6 +214,23 @@ in patch versions.
 
 ### Fixed
 
+- **Practice's progress spine no longer barcodes — or breaks the layout — on a
+  long deck.** The spine rendered one segment per slide with a fixed minimum
+  width, so a 78-slide deck packed ~78 ticks past the viewport width; the
+  overflow then widened the whole overlay and pushed the **Next** button off the
+  right edge on a phone. It's now **one segment per section**, each sized to its
+  slide count and filled left-to-right by your progress within it — a clean
+  handful of bars at any deck size, and it can never widen the bar.
+
+- **Practice slides no longer "ride high" on iOS.** The rehearsal stage centred
+  each slide in a container sized with `100vh`, which inside an iframe on iOS
+  Safari resolves to the *main* viewport rather than the iframe's box — so the
+  slide centred against the wrong height and sat too high. The stage now fills
+  its real container responsively (`height: 100%`) and the fit measures the
+  iframe's own content box (`clientWidth/Height`) instead of viewport units, so a
+  slide is centred identically on every browser. (The earlier "rode high" fix
+  centred correctly on desktop but never reached iOS.)
+
 - **Practice mode no longer mis-counts a `split: headings` (or fenced-`---`)
   deck as a single slide.** It re-implemented slide-splitting with a source
   regex that only knew about top-level `---`, so a deck the engine divides by

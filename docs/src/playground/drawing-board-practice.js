@@ -111,8 +111,9 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
       'function secs(){var m=document.querySelector(".marpit");return m?m.querySelectorAll(":scope>section"):[]}' +
       'var cur=0;' +
       'function fit(){var s=secs();if(!s.length)return;' +
-      'var pad=Math.max(14,Math.min(innerWidth,innerHeight)*0.04);' +
-      'var sc=Math.min((innerWidth-pad*2)/' + sw + ',(innerHeight-pad*2)/' + sh + ');if(!(sc>0))sc=1;' +
+      'var d=document.documentElement,W=d.clientWidth,H=d.clientHeight;' +
+      'var pad=Math.max(14,Math.min(W,H)*0.04);' +
+      'var sc=Math.min((W-pad*2)/' + sw + ',(H-pad*2)/' + sh + ');if(!(sc>0))sc=1;' +
       'for(var i=0;i<s.length;i++){var on=i===cur;s[i].style.display=on?"block":"none";' +
       'if(on){s[i].style.transformOrigin="center center";s[i].style.transform="scale("+sc+")"}}}' +
       'function show(n){cur=n|0;fit()}' +
@@ -126,7 +127,7 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
       '<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">' +
       '<link rel="stylesheet" href="' + KATEX_URL + '">' +
       '<style>html,body{margin:0;padding:0;height:100%;background:' + bg + ';overflow:hidden;touch-action:manipulation;-webkit-text-size-adjust:100%;}' +
-      '.marpit{height:100vh;display:flex;align-items:center;justify-content:center;visibility:hidden;}' +
+      '.marpit{height:100%;display:flex;align-items:center;justify-content:center;visibility:hidden;}' +
       slideBox(sw, sh) +
       '.marpit>section{flex:0 0 auto;box-shadow:0 18px 60px rgba(0,0,0,.45);border-radius:10px;}' +
       css + '</style></head><body>' + html +
@@ -175,6 +176,13 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
       }
       sectionOf[i] = sections.length - 1;
     }
+    // Each section spans [start, end) — its length drives the spine segment's
+    // proportional width, so the spine stays a handful of clean segments whether
+    // the deck is 6 slides or 78 (never one tick-per-slide, which barcodes + overflows).
+    for (let s = 0; s < sections.length; s++) {
+      sections[s].end = s + 1 < sections.length ? sections[s + 1].start : slides.length;
+      sections[s].len = sections[s].end - sections[s].start;
+    }
   }
   // The section after the one you're in — drives the top-right "next ·" preview.
   function nextSection(i) { return sections[sectionOf[i] + 1] || null; }
@@ -201,10 +209,16 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
       }
     }
     if (elSpine) {
+      // One segment per section; fill it left-to-right by progress WITHIN the
+      // section (completed sections read full, the current one partially, ahead empty).
       const segs = elSpine.children;
       for (let i = 0; i < segs.length; i++) {
-        segs[i].classList.toggle('done', i < idx);
-        segs[i].classList.toggle('cur', i === idx);
+        const sec = sections[i];
+        const cur = idx >= sec.start && idx < sec.end;
+        const frac = idx >= sec.end ? 1 : idx < sec.start ? 0 : (idx - sec.start + 1) / sec.len;
+        segs[i].classList.toggle('cur', cur);
+        const fill = segs[i].firstChild;
+        if (fill) fill.style.width = Math.round(frac * 100) + '%';
       }
     }
     elTarget.textContent = 'target ' + fmt(sp ? sp.target : 0);
@@ -292,16 +306,19 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
     host.innerHTML = '';
     const run = el('div', 'db-pv-run');
 
-    // The bar (top): a per-slide progress spine (section breaks ticked) over a
-    // row that just LOCATES you in the arc — current section + position (left),
-    // the next section previewed + AI tag + close (right). No timing up here; the
-    // clock and pace live in the bottom HUD, so the top stays a calm hairline and
-    // the slide gets the height back.
+    // The bar (top): a per-SECTION progress spine over a row that just LOCATES
+    // you in the arc — current section + position (left), the next section
+    // previewed + AI tag + close (right). No timing up here; the clock and pace
+    // live in the bottom HUD, so the top stays a calm hairline and the slide gets
+    // the height back. One segment per section (width ∝ its slide count) keeps the
+    // spine a clean handful of bars at any deck size — never a per-slide barcode
+    // that overflows the viewport on a long deck.
     const bar = el('div', 'db-pv-bar');
     elSpine = el('div', 'db-pv-spine');
-    for (let i = 0; i < plan.slides.length; i++) {
+    for (let i = 0; i < sections.length; i++) {
       const seg = el('span', 'db-pv-seg');
-      if (i > 0 && sectionOf[i] !== sectionOf[i - 1]) seg.classList.add('at-divider');
+      seg.style.flexGrow = String(sections[i].len || 1);
+      seg.append(el('span', 'db-pv-seg-fill'));
       elSpine.append(seg);
     }
     const row = el('div', 'db-pv-bar-row');
