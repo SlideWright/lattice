@@ -115,6 +115,13 @@ reference, minus "Write a reply"):
 > The start screen's length suggestion is **deterministic-only** — opening it
 > never bills; only Start does.
 >
+> **Slide segmentation is engine-authoritative.** Practice derives its slides
+> from the engine's rendered `<section>` list (`metasFromSections`), NOT a source
+> `---` regex — because `split: headings` and fenced `---` mean only the engine
+> knows the real boundaries. (The source split, `metasFromSource`, survives as a
+> fallback for when the engine isn't ready.) This is what stops a `split:
+> headings` deck reading as "1 slide / 154 min" with a dead Next button.
+>
 > **The surface.** A full overlay (Esc to exit). Render parity with the live
 > preview via the shared `frame-css` slide-box contract (one slide, flex-centred,
 > uniform scale) — fixing the earlier bespoke renderer that rode slides high. The

@@ -154,16 +154,62 @@ function allocate(metas, totalSeconds) {
 
 // The deterministic plan — the always-available floor. `bucketOf(name)` maps a
 // component to its bucket (for role fallback); optional.
-export function buildDeterministicPlan(source, minutes, { bucketOf } = {}) {
+// ── Slide metas: two sources, one shape ───────────────────────────────────────
+//
+// A "meta" is { comp, words, role, title, snippet } per slide. There are two ways
+// to get them, and they MUST agree with what the deck actually renders:
+//
+//   • metasFromSections — AUTHORITATIVE. The engine already split the deck (it
+//     honours `---`, fenced code, and `split: headings`, which a source regex
+//     cannot), so the rendered <section> list is the truth. Practice uses this.
+//   • metasFromSource — a fallback for when the engine isn't ready. A naive
+//     `---` split; correct for plain `split: rule` decks, wrong for headings/fence
+//     decks — which is exactly the bug that made a big deck read as "1 slide".
+function metaFromChunk(comp, words, role, title, snippet) {
+  return { comp, words, role, title, snippet };
+}
+
+export function metasFromSource(source, { bucketOf } = {}) {
   const chunks = parseSlides(source);
   const total = chunks.length;
-  const metas = chunks.map((c, i) => {
+  return chunks.map((c, i) => {
     const comp = classOf(c);
-    const words = wordsOf(c);
-    const role = roleOf(comp, i, total, c, bucketOf);
     const title = titleOf(c);
-    return { comp, words, role, title, snippet: snippetOf(c, title) };
+    return metaFromChunk(comp, wordsOf(c), roleOf(comp, i, total, c, bucketOf), title, snippetOf(c, title));
   });
+}
+
+// The component for a rendered <section>: its `_class` becomes a class token. Pick
+// a known special role-class, else a catalog-known component, else the first class.
+const ROLE_CLASSES = new Set(['title', 'divider', 'decision', 'closing', 'big-number', 'kpi', 'stats', 'quote', 'featured', 'image']);
+function sectionComp(html, bucketOf) {
+  const m = html.match(/<section[^>]*\sclass="([^"]*)"/i);
+  if (!m) return null;
+  const classes = m[1].split(/\s+/).filter(Boolean);
+  return classes.find((c) => ROLE_CLASSES.has(c)) || (bucketOf && classes.find((c) => bucketOf(c))) || classes[0] || null;
+}
+function stripTags(html) {
+  return html.replace(/<[^>]+>/g, ' ').replace(/&[a-z]+;/gi, ' ').replace(/\s+/g, ' ').trim();
+}
+function sectionTitle(html) {
+  const m = html.match(/<h[1-3][^>]*>([\s\S]*?)<\/h[1-3]>/i);
+  return m ? stripTags(m[1]).slice(0, 64) : '';
+}
+export function metasFromSections(sections, { bucketOf } = {}) {
+  const total = sections.length;
+  return sections.map((html, i) => {
+    const comp = sectionComp(html, bucketOf);
+    const text = stripTags(html);
+    const title = sectionTitle(html);
+    const snippet = (title && text.startsWith(title) ? text.slice(title.length) : text).trim().slice(0, 140);
+    return metaFromChunk(comp, text.split(/\s+/).filter(Boolean).length, roleOf(comp, i, total, text, bucketOf), title, snippet);
+  });
+}
+
+// The pure plan core — metas → dwell targets, beats, why, suggestion, deck read.
+// Source-agnostic, so it's identical whether the metas came from the engine or the
+// source fallback.
+export function buildPlanFromMetas(metas, minutes) {
   const totalSeconds = Math.max(1, minutes) * 60;
   const targets = allocate(metas, totalSeconds);
   const suggestMinutes = Math.max(1, Math.round(suggestSeconds(metas) / 60));
@@ -186,6 +232,15 @@ export function buildDeterministicPlan(source, minutes, { bucketOf } = {}) {
     slides,
     deck: buildDeckRead(slides, minutes, totalSeconds, suggestMinutes),
   };
+}
+
+// Convenience builders. `buildDeterministicPlan` (source) stays for the fallback +
+// the unit tests; Practice prefers the sections path.
+export function buildDeterministicPlan(source, minutes, ctx = {}) {
+  return buildPlanFromMetas(metasFromSource(source, ctx), minutes);
+}
+export function buildDeterministicPlanFromSections(sections, minutes, ctx = {}) {
+  return buildPlanFromMetas(metasFromSections(sections, ctx), minutes);
 }
 
 // The whole-deck READ — a structural take on the arc the per-slide cards can't
@@ -308,7 +363,11 @@ export function mergeAiPlan(floor, ai) {
 // The planner: deterministic-now, AI-refined-soon, memoised per (deck+minutes).
 // `plan()` returns { det, refined } — `det` is ready immediately; `refined` is a
 // Promise resolving to an AI plan (or null when no model / it fails / unchanged
-// floor). Practice shows `det` instantly and swaps in `refined` when it lands.
+// The planner: deterministic-now, AI-refined-soon, memoised per (metas+minutes).
+// It is source-agnostic — callers pass already-extracted `metas` (engine-derived
+// when possible, source-derived as a fallback), so the plan always matches what
+// the deck actually renders. `plan()` returns { det, refined } — `det` is ready
+// immediately; `refined` resolves to an AI plan (or null when no model / it fails).
 //
 // `gate` (optional, injected by the browser caller so this module stays pure +
 // Node-testable) enforces the same cost/quality discipline as the rest of the
@@ -317,6 +376,9 @@ export function mergeAiPlan(floor, ai) {
 //     tiny 0.5B/built-in model would replace good heuristics with bland text).
 //   • allow() → respect the session budget cap before a billed cloud call.
 //   • onUsage(u) → record the spend into the session tally.
+function metaSig(metas) {
+  return hash((metas || []).map((m) => (m.comp || '') + ':' + m.words).join('|'));
+}
 export function createRehearsalPlanner({ model, gate } = {}) {
   let cache = { key: null, plan: null };
 
@@ -335,13 +397,13 @@ export function createRehearsalPlanner({ model, gate } = {}) {
 
   // Deterministic-only: the start screen's length suggestion must NOT trigger a
   // billed refine (it only reads `det`). Callers that just want the floor use this.
-  function detOnly(source, minutes, ctx = {}) {
-    return buildDeterministicPlan(source, minutes, ctx);
+  function detOnly(metas, minutes) {
+    return buildPlanFromMetas(metas, minutes);
   }
 
-  function plan(source, minutes, ctx = {}) {
-    const det = buildDeterministicPlan(source, minutes, ctx);
-    const key = hash(source || '') + '@' + minutes;
+  function plan(metas, minutes) {
+    const det = buildPlanFromMetas(metas, minutes);
+    const key = metaSig(metas) + '@' + minutes;
     if (cache.key === key && cache.plan) return { det, refined: Promise.resolve(cache.plan) };
     const refined = refine(det)
       .then((p) => {

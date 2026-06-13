@@ -14,9 +14,9 @@
 // source of truth and centres a single slide with flex + a uniform scale, so a
 // rehearsal slide looks identical to the same slide in the preview.
 
-import { KATEX_URL, MERMAID_URL } from './deck-preview.js';
+import { KATEX_URL, MERMAID_URL, splitSections } from './deck-preview.js';
 import { isCapableTier } from './drawing-board-chat.js';
-import { createRehearsalPlanner, overBeat } from './drawing-board-rehearsal.js';
+import { createRehearsalPlanner, metasFromSections, metasFromSource, overBeat } from './drawing-board-rehearsal.js';
 import { budgetStatus, readBudgetCap, readBudgetMode, readSpend, recordSpend } from './drawing-board-settings.js';
 import { slideBox } from './frame-css.js';
 
@@ -55,6 +55,8 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
   let slideEnteredAt = 0;
   let tick = null;
   let shownCoachKey = null;
+  let prepared = null; // { out, sections, metas, bg } — one engine render, shared by the start screen + the run
+  let cachedMetas = null; // the slide metas the read/plan run off (engine-derived, source as fallback)
 
   const el = (tag, cls, text) => {
     const e = document.createElement(tag);
@@ -72,6 +74,29 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
       if (!fetched[name]) fetched[name] = fetch(themeBase + name + '.css').then((r) => r.text()).then((c) => pg.addThemes([c])).catch(() => {});
       await fetched[name];
     }
+  }
+
+  // Render the deck through the engine ONCE and derive the slide metas from the
+  // rendered <section> list — the AUTHORITATIVE segmentation (it honours `---`,
+  // fenced code, AND `split: headings`, which a source-regex split cannot; that
+  // mismatch is what made a big `split: headings` deck read as "1 slide"). The
+  // same render feeds both the start-screen read and the run, so the plan's slide
+  // count always equals what's on the stage. Cached on `prepared`.
+  async function prepare() {
+    let pg = PG();
+    if (!pg) pg = await waitForPG();
+    const palette = root.getAttribute('data-palette') || 'indaco';
+    const mode = root.getAttribute('data-mode') === 'dark' ? 'dark' : 'light';
+    await ensureTheme(palette);
+    if (mode === 'dark') await ensureTheme(palette + '-dark');
+    const theme = mode === 'dark' && pg.hasTheme(palette + '-dark') ? palette + '-dark' : palette;
+    const source = getSource();
+    const out = pg.render(source, theme);
+    const sections = splitSections(out.html);
+    const metas = sections.length ? metasFromSections(sections, { bucketOf }) : metasFromSource(source, { bucketOf });
+    prepared = { out, sections, metas, bg: mode === 'dark' ? '#0c0c0c' : '#15110d' };
+    cachedMetas = metas;
+    return prepared;
   }
 
   // The rehearsal iframe. ONE slide, centred, scaled uniformly to fit — the slide
@@ -215,21 +240,15 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
   }
 
   async function start(minutes) {
-    const source = getSource();
-    const { det, refined } = planner.plan(source, minutes, { bucketOf });
+    // Reuse the render the start screen already did (same deck → same sections);
+    // only render fresh if it isn't ready yet.
+    let prep = prepared;
+    if (!prep) { try { prep = await prepare(); } catch { close(); return; } }
+    const { out, metas, bg } = prep;
+    const { det, refined } = planner.plan(metas, minutes);
     plan = det;
     if (!plan.slides.length) { close(); return; }
     idx = 0;
-
-    let pg = PG();
-    if (!pg) { try { pg = await waitForPG(); } catch { close(); return; } }
-    const palette = root.getAttribute('data-palette') || 'indaco';
-    const mode = root.getAttribute('data-mode') === 'dark' ? 'dark' : 'light';
-    await ensureTheme(palette);
-    if (mode === 'dark') await ensureTheme(palette + '-dark');
-    const theme = mode === 'dark' && pg.hasTheme(palette + '-dark') ? palette + '-dark' : palette;
-    const out = pg.render(source, theme);
-    const bg = mode === 'dark' ? '#0c0c0c' : '#15110d';
 
     // Build the running view: bar (top) · stage with the coaching scrim · nav.
     host.innerHTML = '';
@@ -300,15 +319,16 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
 
     // A deterministic suggested length + a whole-deck READ (the structural take:
     // time split, the ask, fit, front-loading) + a note when AI coaching is live.
-    // All of it uses detOnly() so merely opening the screen NEVER fires a billed
-    // model call — only Start does. The read re-computes live as you change the
-    // length (the fit flags depend on it).
+    // It reads off the ENGINE-derived metas (so the slide count is correct even
+    // for `split: headings` decks) via detOnly() — no billed call; only Start
+    // fires the model. Re-computes live as you change the length.
     const read = el('div', 'db-pv-read');
+    let seeded = false;
     const renderRead = (mins) => {
       read.innerHTML = '';
-      let det;
-      try { det = planner.detOnly(getSource(), mins, { bucketOf }); } catch { return; }
-      if (!det.slides.length) return;
+      if (!cachedMetas) { read.append(el('p', 'db-pv-read-summary', 'Reading your deck…')); return; }
+      if (!cachedMetas.length) return;
+      const det = planner.detOnly(cachedMetas, mins);
       const hint = el('button', 'db-pv-suggest'); hint.type = 'button';
       hint.textContent = `Suggested ${det.suggestMinutes} min for ${det.slides.length} slide${det.slides.length === 1 ? '' : 's'}`;
       hint.title = 'Set the input to the suggested length';
@@ -328,13 +348,18 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
       }
     };
     s.append(read);
-    // Seed the input at the suggested length, then render the read for it.
-    try {
-      const seed = planner.detOnly(getSource(), Number(input.value) || 10, { bucketOf });
-      if (seed.slides.length) input.value = String(seed.suggestMinutes);
-    } catch { /* no source yet — fine */ }
-    renderRead(Math.max(1, Number(input.value) || 10));
-    input.addEventListener('input', () => renderRead(Math.max(1, Number(input.value) || 10)));
+    renderRead(Math.max(1, Number(input.value) || 10)); // shows "Reading your deck…" until prepare() lands
+    input.addEventListener('input', () => { seeded = true; renderRead(Math.max(1, Number(input.value) || 10)); });
+    // Engine render → authoritative metas; seed the suggested length, then the read.
+    // Fall back to a source split only if the engine never comes up.
+    prepared = null; cachedMetas = null;
+    prepare()
+      .catch(() => { cachedMetas = metasFromSource(getSource(), { bucketOf }); })
+      .finally(() => {
+        if (host.hidden) return; // closed while we were rendering
+        if (!seeded && cachedMetas?.length) input.value = String(planner.detOnly(cachedMetas, 10).suggestMinutes);
+        renderRead(Math.max(1, Number(input.value) || 10));
+      });
     // The note only shows for tiers strong enough to actually tailor the plan
     // (the floor/tiny tiers keep the proven deterministic coaching).
     const avail = model?.availability ? model.availability() : null;
