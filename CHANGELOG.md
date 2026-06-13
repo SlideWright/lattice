@@ -54,9 +54,13 @@ in patch versions.
   assets, a bundled zero-install renderer, a `marp-cli` config, and a README.
   The baker (`lib/core/bake-splits.js`) shares its boundary computation with the
   live divider (`lib/core/heading-split-core.js`), so a baked deck is proven to
-  produce the identical slides. Full structural-component fidelity needs the
-  bundled engine / `marp-cli`; stock marp-core renders splits + styling + raw
-  fences. First slice of `engineering/decisions/2026-06-13-export-to-marp.md`.
+  produce the identical slides. The bundle also packs `mermaid` + the Lattice
+  browser runtime and appends two `<script>` tags to the deck, so an exported
+  **HTML** opened in a browser renders Mermaid/chart diagrams **and** structural
+  components (card grids, split panels, islands, badges) client-side. Full
+  fidelity also via the bundled engine / `marp-cli`; stock marp-core (no scripts)
+  renders splits + styling + raw fences. See
+  `engineering/decisions/2026-06-13-export-to-marp.md`.
 - **The Drawing Board Coach can now _fix_ a flagged slide, not just explain it
   — when a capable model is connected.** Each judgement finding (a wall-of-text
   slide, a label-only title — the rules a rule can't mechanically rewrite) grows

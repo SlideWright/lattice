@@ -101,7 +101,9 @@ function main(argv) {
   const fm = fmMatch ? fmMatch[0] : '';
   const body = fmMatch ? baked.slice(fm.length) : baked;
   const localized = localizeAssets(body, path.dirname(path.resolve(deckPath)), dest);
-  fs.writeFileSync(path.join(dest, `${name}.md`), fm + localized.body);
+  // Append the runtime scripts so diagrams + structural components render
+  // client-side when the deck is opened as HTML in a browser.
+  fs.writeFileSync(path.join(dest, `${name}.md`), `${fm}${localized.body.replace(/\s*$/, '')}\n${RUNTIME_SCRIPTS}`);
 
   // 3) the engine stylesheet at dist/lattice.css + the deck's palette under
   // themes/ — the exact layout the bundled emulator expects (it resolves
@@ -118,6 +120,9 @@ function main(argv) {
   // 4) zero-install engine — the bundled Lattice renderer + mermaid runtime, at
   // the same dist/ location the emulator ships from so its sibling lookups work.
   copyInto(path.join(ROOT, 'dist', 'lattice-emulator.js'), path.join(dest, 'dist', 'lattice-emulator.js'));
+  // Browser runtime + mermaid for the in-browser HTML render (the appended
+  // <script> tags below load these; see RUNTIME_SCRIPTS).
+  copyInto(path.join(ROOT, 'dist', 'lattice-runtime.min.js'), path.join(dest, 'lattice-runtime.min.js'));
   if (fs.existsSync(path.join(ROOT, 'mermaid-v11.min.js'))) {
     copyInto(path.join(ROOT, 'mermaid-v11.min.js'), path.join(dest, 'mermaid-v11.min.js'));
   }
@@ -156,6 +161,19 @@ function packageJson(name) {
     },
   };
 }
+
+// Appended to the exported deck's markdown (at EOF). The bundled mermaid + the
+// Lattice browser runtime render diagrams and structural components CLIENT-SIDE
+// when the deck is opened as HTML in a browser — so a stock Marp HTML export
+// still shows the full deck, not raw fences. The markdownlint-disable keeps the
+// inline <script> tags from tripping MD033 when the .md is edited.
+const RUNTIME_SCRIPTS = [
+  '',
+  '<!-- markdownlint-disable MD033 -->',
+  '<script src="mermaid-v11.min.js"></script>',
+  '<script src="lattice-runtime.min.js"></script>',
+  '',
+].join('\n');
 
 // The marp-cli config: load the Lattice engine (full fidelity) and register the
 // bundled theme CSS. Falls back to a bare config if the engine isn't installed,
@@ -197,14 +215,22 @@ npm install
 npm run pdf      # → ${name}.pdf   (or: npm run html)
 \`\`\`
 
+## Open the HTML in a browser (diagrams + components, no install)
+
+\`${name}.html\` (from \`npm run html\` above, or any Marp HTML export of
+\`${name}.md\`) loads the bundled \`mermaid-v11.min.js\` + \`lattice-runtime.min.js\`
+via two \`<script>\` tags at the end of the deck. Opened in a browser they render
+Mermaid/chart diagrams **and** the structural layouts (card grids, split panels,
+islands, badge tables) client-side — so the HTML shows the full deck even though
+plain Marp didn't draw them.
+
 ## Quick preview (VS Code)
 
 Open \`${name}.md\` with the Marp for VS Code extension after pointing
 \`markdown.marp.themes\` at the files in \`themes/\` (${themes.join(', ')}).
-Slides split and style correctly. Note: rich structural layouts
-(card grids, split panels, islands, badge tables) are rendered by the Lattice
-engine — in the stock VS Code preview they appear simplified. Use the
-full-fidelity commands above for the real output.
+Slides split and style correctly. (The VS Code preview blocks inline scripts, so
+diagrams/components show there only via the full-fidelity commands above or the
+HTML-in-a-browser route.)
 
 ## What's in here
 
@@ -215,6 +241,7 @@ full-fidelity commands above for the real output.
 | \`dist/lattice-emulator.js\` | the bundled Lattice renderer (zero-install) |
 | \`themes/\` | the \`${palette}\` palette (+ dark) |
 | \`assets/\` | local images the deck references |
+| \`mermaid-v11.min.js\`, \`lattice-runtime.min.js\` | render diagrams + components in the browser (loaded by the deck's trailing \`<script>\` tags) |
 | \`marp.config.cjs\` | Marp CLI config (loads the engine + themes) |
 `;
 }

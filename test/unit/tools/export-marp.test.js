@@ -55,9 +55,16 @@ describe('export-marp bundle (end-to-end)', () => {
     for (const f of [
       'split-headings.md', 'README.md', 'marp.config.cjs', 'package.json',
       'dist/lattice.css', 'dist/lattice-emulator.js', 'themes/indaco.css', 'themes/indaco-dark.css',
+      'mermaid-v11.min.js', 'lattice-runtime.min.js',
     ]) {
       assert.ok(fs.existsSync(path.join(dest, f)), `bundle is missing ${f}`);
     }
+  });
+
+  test('deck ends with the runtime scripts (browser render) under a lint-ignore', () => {
+    const baked = fs.readFileSync(path.join(dest, 'split-headings.md'), 'utf8');
+    assert.match(baked, /<!-- markdownlint-disable MD033 -->\n<script src="mermaid-v11\.min\.js"><\/script>\n<script src="lattice-runtime\.min\.js"><\/script>\s*$/,
+      'markdown ends with the lint-ignore + mermaid + runtime script tags');
   });
 
   test('baked deck.md states split: rule and divides into the same slides', () => {
