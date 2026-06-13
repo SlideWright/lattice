@@ -1,20 +1,24 @@
 /**
- * Component SEMANTIC INVARIANTS — render each component's example through the
- * real emulator, then assert on the MEANING of the laid-out DOM rather than its
+ * Component SEMANTIC INVARIANTS — render every component's example through the
+ * real emulator and assert on the MEANING of the laid-out DOM rather than its
  * pixels. The deterministic, machine-independent successor to the pixel-golden
  * gate (P4 pivot; see
  * engineering/decisions/2026-06-12-p4-regression-gate-retire-marp.md §0).
  *
- * Three invariant layers (this file is the layer 1–2 PROOF on a few components;
- * the full corpus + layer-3 semantic checks follow):
+ * Invariant layers:
  *   1 · Contract  — every REQUIRED slot's manifest selector resolves on the slide
- *                   (derived automatically from <name>.manifest.json `slots`).
- *   2 · Universal — the slide does not overflow its frame, and the heading meets
- *                   WCAG AA contrast against the slide background.
- *   3 · Semantic  — (later) per-component truths: funnel widths ∝ values, etc.
+ *                   (auto-derived from each <name>.manifest.json `slots`; a new
+ *                   component is covered the moment its manifest lands).
+ *   2 · Universal — the slide does not overflow its 1280×720 frame, and every
+ *                   heading meets WCAG AA contrast against its background.
+ *   3 · Semantic  — per-component truths (see component-invariants.layer3.js):
+ *                   funnel widths ∝ values, radar N series → N polygons, etc.
  *
- * Needs Chromium (CHROME_PATH or the puppeteer cache) + the emulator — same
- * toolchain as the other integration tests.
+ * WHY this isn't flaky like the pixel gate: selector matches, the overflow flag,
+ * and computed colours are logical facts of the laid-out DOM — no sub-pixel AA.
+ *
+ * Local iteration: `INV_ONLY=funnel,kpi node --test <thisfile>` renders just those.
+ * Needs Chromium (CHROME_PATH / puppeteer cache) + the emulator.
  */
 
 const { test, describe, before, after } = require('node:test');
@@ -24,6 +28,7 @@ const os = require('node:os');
 const path = require('node:path');
 const puppeteer = require('puppeteer');
 const { renderHtml, deckFromSample, ROOT } = require('../../helpers/semantic-render');
+const { LAYER3, TRANSFORM } = require('./component-invariants.layer3');
 
 /** Best-effort Chromium path — mirrors color-parity.test.js / tools/screenshot.js. */
 function resolveChrome() {
@@ -38,53 +43,57 @@ function resolveChrome() {
   return undefined;
 }
 
-function manifest(rel) {
-  return JSON.parse(fs.readFileSync(path.join(ROOT, 'lib', 'components', rel), 'utf8'));
+/** Every component manifest, sorted, optionally filtered by INV_ONLY=name,name. */
+function allComponents() {
+  const out = [];
+  (function walk(dir) {
+    for (const ent of fs.readdirSync(dir, { withFileTypes: true })) {
+      const p = path.join(dir, ent.name);
+      if (ent.isDirectory()) walk(p);
+      else if (ent.name.endsWith('.manifest.json')) out.push(p);
+    }
+  })(path.join(ROOT, 'lib', 'components'));
+  let mans = out.sort().map((f) => JSON.parse(fs.readFileSync(f, 'utf8')));
+  const only = (process.env.INV_ONLY || '').split(',').map((s) => s.trim()).filter(Boolean);
+  if (only.length) mans = mans.filter((m) => only.includes(m.name));
+  return mans;
 }
 
-// The layer 1–2 proof set: text-only components (no image assets to resolve)
-// across four buckets, exercising distinct slot shapes (h2 + list, number list,
-// numbered KPIs, axis list).
-const COMPONENTS = [
-  'inventory/cards-grid/cards-grid',
-  'statement/big-number/big-number',
-  'evidence/kpi/kpi',
-  'comparison/matrix-2x2/matrix-2x2',
-];
-
 const SLIDE = 'section[data-marpit-slide="1"]';
+// Mermaid samples (chart + diagram buckets) spawn mmdc per diagram — give them room.
+const MERMAID = new Set(['chart', 'diagram']);
+const renderTimeout = (m) => (MERMAID.has(m.function) || MERMAID.has(m.bucket) ? 240000 : 60000);
 
-// Browser-side: WCAG contrast ratio between the heading text colour and the
-// nearest opaque background. Format-agnostic (rgb/oklab/color()) via a 1px canvas,
-// the same normalisation color-parity.test.js uses. Returns null if no heading.
-function headingContrastInPage() {
+/** Browser-side: WCAG contrast of every heading vs its nearest opaque background.
+ *  Returns the worst (lowest) ratio, or null if the slide has no heading. */
+function worstHeadingContrast() {
   const sec = document.querySelector('section[data-marpit-slide="1"]');
-  const h = sec && sec.querySelector('h1, h2');
-  if (!h) return null;
+  if (!sec) return null;
+  const heads = [...sec.querySelectorAll('h1, h2, h3')];
+  if (!heads.length) return null;
   const toRgb = (c) => {
-    const cv = document.createElement('canvas');
-    cv.width = cv.height = 1;
-    const ctx = cv.getContext('2d');
-    ctx.fillStyle = '#000';
-    ctx.fillStyle = c;
-    ctx.fillRect(0, 0, 1, 1);
-    const d = ctx.getImageData(0, 0, 1, 1).data;
-    return [d[0], d[1], d[2]];
+    const cv = document.createElement('canvas'); cv.width = cv.height = 1;
+    const ctx = cv.getContext('2d'); ctx.fillStyle = '#000'; ctx.fillStyle = c; ctx.fillRect(0, 0, 1, 1);
+    const d = ctx.getImageData(0, 0, 1, 1).data; return [d[0], d[1], d[2]];
   };
-  let el = h;
-  let bg = null;
-  while (el) {
-    const b = getComputedStyle(el).backgroundColor;
-    if (b && b !== 'transparent' && !/^rgba\(0, 0, 0, 0\)/.test(b)) { bg = b; break; }
-    el = el.parentElement;
-  }
   const lum = ([r, g, b]) => {
     const f = (v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; };
     return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b);
   };
-  const l1 = lum(toRgb(getComputedStyle(h).color));
-  const l2 = lum(toRgb(bg || 'rgb(255,255,255)'));
-  return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
+  let worst = Infinity;
+  for (const h of heads) {
+    if (!h.textContent.trim()) continue;
+    let el = h, bg = null;
+    while (el) {
+      const b = getComputedStyle(el).backgroundColor;
+      if (b && b !== 'transparent' && !/^rgba\(0, 0, 0, 0\)/.test(b)) { bg = b; break; }
+      el = el.parentElement;
+    }
+    const l1 = lum(toRgb(getComputedStyle(h).color));
+    const l2 = lum(toRgb(bg || 'rgb(255,255,255)'));
+    worst = Math.min(worst, (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05));
+  }
+  return Number.isFinite(worst) ? worst : null;
 }
 
 describe('component semantic invariants (assert meaning, not pixels)', () => {
@@ -98,37 +107,61 @@ describe('component semantic invariants (assert meaning, not pixels)', () => {
   });
   after(async () => { if (browser) await browser.close(); });
 
-  for (const rel of COMPONENTS) {
-    const m = manifest(`${rel}.manifest.json`);
-    describe(m.name, () => {
+  for (const m of allComponents()) {
+    describe(`${m.function}/${m.name}`, () => {
       let page;
       before(async () => {
-        const html = renderHtml(deckFromSample(m.sample), { key: m.name });
+        const html = renderHtml(deckFromSample(m.sample), { key: m.name, timeout: renderTimeout(m) });
         page = await browser.newPage();
         await page.goto(`file://${html}`, { waitUntil: 'load', timeout: 60000 });
-      });
+      }, { timeout: renderTimeout(m) + 30000 });
       after(async () => { if (page) await page.close(); });
 
-      // ── Layer 1 — every required slot's selector resolves ──
-      for (const [slot, spec] of Object.entries(m.slots).filter(([, s]) => s.required)) {
-        test(`contract: required slot "${slot}" (${spec.selector}) renders`, async () => {
-          const n = await page.$$eval(`${SLIDE} ${spec.selector}`, (els) => els.length).catch(() => 0);
-          assert.ok(n >= 1, `expected ≥1 "${spec.selector}" for required slot "${slot}", got ${n}`);
-        });
+      // ── Layer 1 — every required slot's selector resolves in the rendered DOM ──
+      // Skipped for TRANSFORM components, whose authoring slot (e.g. a `ul > li`) is
+      // CONSUMED into rendered output (an <svg> chart frame, a <table>, code panels);
+      // their rendered contract is asserted by layer 3 instead.
+      if (!TRANSFORM.has(m.name)) {
+        for (const [slot, spec] of Object.entries(m.slots || {}).filter(([, s]) => s.required)) {
+          test(`contract: required slot "${slot}" (${spec.selector}) renders`, async () => {
+            const n = await page.evaluate((sel) => {
+              const s = document.querySelector('section[data-marpit-slide="1"]');
+              if (!s) return -1;
+              // Manifest selectors are written against the slide <section> root: a
+              // leading `section` IS this element (→ :scope), a bare selector is a
+              // descendant. Normalise per comma-group so `section > p, section > ul`
+              // scopes to the slide instead of leaking an unscoped second clause.
+              const norm = sel.split(',').map((x) => {
+                x = x.trim();
+                return /^section\b/.test(x) ? x.replace(/^section\b/, ':scope') : `:scope ${x}`;
+              }).join(', ');
+              try { return s.querySelectorAll(norm).length; } catch { return -2; }
+            }, spec.selector);
+            assert.ok(n >= 1, `expected ≥1 "${spec.selector}" for required slot "${slot}", got ${n}`);
+          });
+        }
       }
 
-      // ── Layer 2a — content fits the frame (emulator's overflow watcher) ──
+      // ── Layer 2a — content fits the frame ──
       test('universal: slide does not overflow its frame', async () => {
         const over = await page.$eval(SLIDE, (s) => s.classList.contains('overflow'));
         assert.equal(over, false, 'slide content overflows the 1280×720 frame (.overflow)');
       });
 
-      // ── Layer 2b — heading meets WCAG AA contrast on the slide background ──
+      // ── Layer 2b — headings meet WCAG AA contrast ──
       test('universal: heading contrast ≥ 4.5:1', async () => {
-        const ratio = await page.evaluate(headingContrastInPage);
-        if (ratio === null) return; // component has no heading slot (e.g. big-number)
-        assert.ok(ratio >= 4.5, `heading contrast ${ratio.toFixed(2)}:1 < 4.5:1 (WCAG AA)`);
+        const ratio = await page.evaluate(worstHeadingContrast);
+        if (ratio === null) return; // no heading slot
+        assert.ok(ratio >= 4.5, `worst heading contrast ${ratio.toFixed(2)}:1 < 4.5:1 (WCAG AA)`);
       });
+
+      // ── Layer 3 — per-component semantic truths (opt-in) ──
+      const layer3 = LAYER3[m.name];
+      if (layer3) {
+        for (const [label, fn] of Object.entries(layer3)) {
+          test(`semantic: ${label}`, async () => { await fn(page, assert, SLIDE); });
+        }
+      }
     });
   }
 });
