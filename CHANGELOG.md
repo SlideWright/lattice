@@ -74,6 +74,28 @@ in patch versions.
   retained as a working alias for one release and will be removed in a future
   major version. Existing decks keep rendering unchanged in the meantime.
 
+### Fixed
+
+- **`islands: on` no longer collides content-dense slides.** With islands
+  enabled, `list-criteria`, `actors`, `roadmap`, the `piechart donut` (which
+  collapsed to a half-ring), and other dense layouts overran — bodies ran into
+  the next item's title and into the footer berth. The masthead band was
+  reserved as an *in-flow* margin, so it sat inside the section's content box;
+  since `section { container-type: size }`, components size themselves with
+  `cqi/cqh` against that box — which still included the band — so they sized to
+  `section − footer` and overran the real body by ~the band's height. The band
+  is now an **absolutely-positioned berth reserved via `padding-top`** (mirroring
+  the footer's `padding-bottom`), so the content box equals the true body area
+  and `cqi/cqh` resolve to the real berth — components stop overgrowing. Body
+  overflow is **hard-clipped** at the berth (`overflow: hidden`) instead of
+  bleeding across the chrome, and the runtime overflow ring still fires so an
+  over-stuffed slide reads "too much" in authoring. CSS-only in
+  `base.variants.css`, so all three render paths inherit it; `islands: off`
+  (boardroom) is byte-identical. Resolution-invariant (no fixed px — all `cqi`),
+  so HD/FHD/4K render identically. Resolves Defect 1 of
+  `engineering/decisions/2026-06-13-islands-sketch-density-collisions.md`. (The
+  exact-berth fade + the footer↔section-label column are tracked as M2 there.)
+
 ### Added
 
 - **Export a single chart as a standalone `.svg`.** The four keyed charts
