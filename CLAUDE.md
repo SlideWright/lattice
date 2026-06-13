@@ -183,14 +183,18 @@ independent set of eyes earns its latency.
 16. **Keep an open PR mergeable — detect drift/conflict yourself; webhooks
     won't.** GitHub never pushes "`main` moved", "now conflicted", or "CI
     passed", so a PR you're watching goes stale or blocked **silently**.
-    Therefore re-check at three points — on every PR event, immediately before
-    you ask for merge authorization, and again immediately before an authorized
-    merge executes: `git fetch origin main` and read the PR's mergeable state
+    Therefore **run a continuous drift watch — arm the `Monitor` tool the moment
+    the PR goes green — and rebase automatically; never make me ask you to
+    rebase.** That watch is the primary mechanism; also re-check at three
+    guaranteed touch-points (on every PR event, immediately before you ask for
+    merge authorization, and again immediately before an authorized merge
+    executes): `git fetch origin main` and read the PR's mergeable state
     (`pull_request_read`). If `main` drifted or the PR conflicts, **rebase onto
     `origin/main` and re-verify without being asked** — resolve the recurring
-    `CHANGELOG`/`dist` conflicts mechanically, then `git push --force-with-lease`.
-    Where `send_later` is available, also arm a ~30–60 min self-check-in that
-    re-runs this until the PR is merged or closed. Never let an open PR sit
+    `CHANGELOG`/`dist` conflicts mechanically, then `git push --force-with-lease`,
+    silently (surface only a real code conflict needing my judgment).
+    (`send_later`, where available, is an equivalent timer; neither it nor
+    `Monitor` survives the container being reclaimed.) Never let an open PR sit
     behind `main`, conflicted, or CI-red. See `engineering/workflow.md`.
 
 ---

@@ -283,8 +283,9 @@ never deliver the events that matter here:** "`main` moved", "this PR is now
 conflicted", and "CI passed" are all silent. So nothing wakes you when your PR
 goes stale or blocked — you have to check. This is HARD RULE #16.
 
-Re-check mergeability at three points, every one of which is reachable without a
-scheduler:
+Re-check mergeability at four points — three guaranteed touch-points (below) and,
+above all, a **continuous background watch** (point 4) that rebases automatically
+so a human never has to ask for it:
 
 1. **On every PR event you receive** (a comment, a CI transition, a review) —
    while you're already handling it, also `git fetch origin main` and look at
@@ -315,20 +316,48 @@ GitHub's "Update branch" (`update_pull_request_branch`) — harmless under
 squash-merge since the PR history is squashed away — but a real conflict always
 needs the local rebase above.
 
-Be honest about the residual hole: checkpoint 1 is **event-gated**. If `main`
-moves while your PR is already green and no comment/CI/review event arrives,
-nothing fires — the PR sits silently behind `main` until you next touch it.
-Checkpoints 2 and 3 are the backstop that *guarantees* freshness at merge time;
-they do not keep it continuously fresh in between. The Stop hook can't close that
-gap either — `.claude/hooks/stop-rebase-check.sh` is local-only by design (no
-`git fetch`, can't call MCP), so it cannot see the remote PR's behind/conflict
-state. That is *why* this discipline is agent-driven rather than hook-enforced.
+The honest weakness of checkpoints 1–3: checkpoint 1 is **event-gated** and 2–3
+fire only at merge time. If `main` moves while your PR sits green and no
+comment/CI/review event arrives, none of them wake you — the PR drifts behind
+`main` silently until someone pokes you, which is exactly the cross-session merge
+race that wastes a reviewer's time. The Stop hook can't help either
+(`.claude/hooks/stop-rebase-check.sh` is local-only by design — no `git fetch`,
+no MCP — so it can't see the remote PR's behind/conflict state). That is why a
+green PR must also carry checkpoint 4:
 
-**Where `send_later` is available**, that gap closes: arm a ~30–60 min
-self-check-in that re-runs this loop and re-arms itself until the PR is merged or
-closed — the only way to catch drift while no event is arriving. Where it is not
-(some sessions don't expose it), the three checkpoints above are the floor —
-never let an open PR sit behind `main`, conflicted, or CI-red.
+4. **A continuous background drift watch — arm it the instant the PR goes green,
+   and rebase automatically. Never make a human ask you to rebase.** Webhooks
+   never deliver "`main` moved", so poll for it yourself. In web sessions the
+   `Monitor` tool runs a persistent loop that wakes you on the *transition* into
+   "needs rebase" (so it fires once, not every poll). It is a **detector only** —
+   it never touches the index; *you* perform the rebase, so conflicts get
+   judgment and the force-push stays coordinated with your own edits:
+
+   ```bash
+   # Monitor (persistent): emits one line when origin/main first advances past the PR.
+   prev=ok
+   while true; do
+     git fetch origin main -q 2>/dev/null || { sleep 60; continue; }
+     behind=$(git rev-list --count HEAD..origin/main)
+     if [ "$behind" -gt 0 ] && [ "$prev" = ok ]; then
+       echo "REBASE-NEEDED: origin/main advanced $behind commit(s)"; prev=behind
+     elif [ "$behind" -eq 0 ]; then prev=ok; fi
+     sleep 60
+   done
+   ```
+
+   On a `REBASE-NEEDED` event, run the rebase block above, re-run the gates,
+   re-confirm CI, and let the watch re-arm (after the rebase `behind` returns to
+   0). Do it **silently** — surface to the human only a *real code conflict* that
+   needs a judgment call, never the routine `CHANGELOG` / `dist` ones. `TaskStop`
+   the watch once the PR is merged or closed.
+
+`send_later`, where a session exposes it, is an equivalent timer-based mechanism
+and a fine backup; but neither it nor `Monitor` survives the container being
+reclaimed, so the at-merge checkpoints 2–3 remain the floor — never let an open
+PR sit behind `main`, conflicted, or CI-red. The only *session-independent* fix is
+a `push`-to-`main` GitHub Action that runs `update_pull_request_branch` on open
+PRs; adopt it if cross-session races keep recurring despite the watch.
 
 ## Merging
 
