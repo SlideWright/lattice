@@ -134,6 +134,59 @@ export function exportMarkdown(source, name, theme, components) {
 	download(new Blob([md], { type: 'text/markdown;charset=utf-8' }), safeName(name) + '.md');
 }
 
+// Export to Marp — the SAME self-contained bundle as `npm run export:marp`,
+// assembled in the browser: bake the slide splits into literal `---`, fetch the
+// staged static assets (minified engine / stylesheet / runtime / mermaid) + the
+// palette CSS, then zip + download. The bundle spec (templates + the asset
+// manifest) and the split baker come from the playground engine
+// (window.LatticePlayground.marp), shared with the CLI so the two can't drift.
+// `themeBase` is the hashed `…/playground/v/<hash>/themes/` URL the Drawing Board
+// already fetches palettes from; the static assets sit beside it under export/.
+export async function exportMarp(source, name, palette, themeBase) {
+	const PG = typeof window !== 'undefined' ? window.LatticePlayground : undefined;
+	const marp = PG?.marp;
+	if (!marp) throw new Error('engine not ready — try again in a moment');
+	const { bakeSplits, STATIC_ASSETS, MARP_CONFIG_CJS, withRuntimeScripts, packageJson, readme } = marp;
+	const slug = safeName(name);
+	const baseName = (p) => p.split('/').pop();
+
+	const { default: JSZip } = await import('jszip');
+	const zip = new JSZip();
+	const dir = zip.folder(slug);
+
+	// deck.md — splits baked + the runtime <script> tags appended.
+	dir.file(`${slug}.md`, withRuntimeScripts(bakeSplits(source)));
+
+	// palette CSS (+ dark), fetched from the staged theme dir. Fall back to the
+	// default palette if the deck's theme isn't a served built-in (e.g. a
+	// Workbench library theme), so the bundle is always renderable.
+	const exportBase = themeBase.replace(/themes\/$/, 'export/');
+	let chosen = (palette || 'indaco').toLowerCase();
+	let bundledThemes = [];
+	for (const cand of [chosen, 'indaco']) {
+		bundledThemes = [];
+		for (const tf of [`${cand}.css`, `${cand}-dark.css`]) {
+			const r = await fetch(themeBase + tf).catch(() => null);
+			if (r?.ok) { dir.file(`themes/${tf}`, await r.blob()); bundledThemes.push(`themes/${tf}`); }
+		}
+		if (bundledThemes.length) { chosen = cand; break; }
+	}
+
+	// static assets — minified engine, stylesheet, runtime, mermaid.
+	await Promise.all(STATIC_ASSETS.map(async ({ from, to }) => {
+		const r = await fetch(exportBase + baseName(from)).catch(() => null);
+		if (r?.ok) dir.file(to, await r.blob());
+	}));
+
+	// generated text files (the shared bundle spec).
+	dir.file('marp.config.cjs', MARP_CONFIG_CJS);
+	dir.file('package.json', `${JSON.stringify(packageJson(slug), null, 2)}\n`);
+	dir.file('README.md', readme({ name: slug, palette: chosen, themes: ['dist/lattice.css', ...bundledThemes] }));
+
+	const blob = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE' });
+	download(blob, `${slug}.zip`);
+}
+
 async function sectionsOf(frame) {
 	const doc = frame?.contentDocument;
 	if (!doc) throw new Error('Preview not ready yet.');
