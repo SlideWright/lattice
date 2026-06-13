@@ -1047,9 +1047,12 @@ const dbData = JSON.stringify({
 			else window.addEventListener('db-editor-ready', wireFocus, { once: true });
 		</script>
 
-		<!-- Practice mode (full-screen rehearsal). Lazily renders the deck one slide
-		     at a time through render path #2 (window.LatticePlayground) + the runtime
-		     in its own iframe, and paces against a density-weighted talk length. -->
+		<!-- Practice mode (full-screen rehearsal). Renders the deck one slide at a
+		     time through render path #2 (window.LatticePlayground) + the runtime in
+		     its own iframe (slide-box pinned for preview parity), paces against a
+		     target talk length, and coaches delivery with timed beats over the slide.
+		     The plan is deterministic by default, AI-tailored when a model is
+		     connected (see drawing-board-rehearsal.js). -->
 		<script>
 			import { createPractice } from '../playground/drawing-board-practice.js';
 			const data = JSON.parse(document.getElementById('db-data').textContent);
@@ -1061,6 +1064,9 @@ const dbData = JSON.stringify({
 				runtimeUrl: data.runtimeUrl,
 				themeBase: data.themeBase,
 				bucketOf: (name) => buckets.get(name) || null,
+				// Share the page's model ladder so a connected cloud/local tier tailors
+				// the rehearsal plan; absent one, the deterministic floor still runs.
+				model: window.__dbModel,
 			});
 			const openBtn = document.getElementById('db-practice-open');
 			if (openBtn) openBtn.addEventListener('click', () => practice.open());

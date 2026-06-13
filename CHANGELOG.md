@@ -92,6 +92,26 @@ in patch versions.
   activate on the production site only — never local dev or Cloudflare PR
   previews (gated build-time via `docs/src/lib/deploy-env.mjs`).
 
+### Changed
+
+- **The Drawing Board's Practice mode is now a real rehearsal coach.** It used to
+  pace you against a word-count target and drop a one-word cue in the top bar.
+  Now a **rehearsal planner** (`drawing-board-rehearsal.js`) turns the deck +
+  your talk length into a per-slide plan — dwell time, a one-line *why*, and
+  timed **coaching beats** (pause / look up for eye contact / breathe / signpost
+  a section transition / emphasize) that surface at their moment over the slide.
+  The plan is deterministic and instant by default (role + density heuristics,
+  works offline); when a generation model is connected (cloud OpenRouter or a
+  local tier) it **auto-tailors** the pacing, rationale, and beats to *this*
+  deck, memoised per deck-revision so an unchanged deck never re-bills and an
+  edit re-assesses. The start screen now suggests a length from deck density.
+  Guidance moved off the cramped top bar into an **unassuming gradient scrim**
+  over the lower stage, so the close button no longer shifts when a cue appears.
+  And the stage now renders through the shared slide-box contract (`frame-css`),
+  centring each slide exactly as the live preview does — fixing the slides that
+  "rode high" — plus a no-zoom viewport that kills the iOS double-tap zoom. See
+  `engineering/decisions/2026-06-08-architect-coach-features.md`.
+
 ### Fixed
 
 - **The docs-site live preview no longer flickers, flashes, or leaves a dead
