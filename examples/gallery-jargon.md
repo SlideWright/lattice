@@ -14,7 +14,7 @@ header: "Lattice · Decision Framework Gallery"
 
 `Decision Framework · Q3 2025`
 
-An 80-slide answer to the question "have you considered writing things down"
+A 78-slide answer to the question "have you considered writing things down"
 
 ---
 
@@ -950,18 +950,6 @@ Set `header:` and `footer:` in frontmatter for deck-level labels. The header alw
 
 ---
 
-<!-- _class: image full dark -->
-<!-- _footer: "Full-bleed image, dark canvas · image full dark" -->
-<!-- _paginate: false -->
-
-## [ Signal Pipeline · Portrait Asset — Dark ]
-
-A tall asset on a wide canvas, dark canvas variant. The lattice pattern fills the space on either side. This slide is in every gallery. It has never been used in a real deck. It is here to prove that it works.
-
-![bg fit](../lib/components/imagery/image/sample-image-portrait.svg)
-
----
-
 <!-- _class: list dark -->
 <!-- _footer: "Dark modifier on list · list dark" -->
 
@@ -1000,19 +988,6 @@ This is the pattern for slides where the visual is the supporting material, not 
 
 ---
 
-<!-- _class: image left -->
-<!-- _footer: "Half-canvas image left · image left" -->
-
-`Layout · Image Left`
-
-## Lead with the image, follow with the argument
-
-Use `image left` when the visual earns the left-column position — when it is the premise, not the evidence. In practice this layout appears most often when someone wants the image on the left and discovers after the fact that there is a modifier for it.
-
-![bg left fit](../lib/components/imagery/image/sample-image-portrait.svg)
-
----
-
 <!-- _class: image mirror -->
 <!-- _footer: "Cross-cutting mirror modifier · image mirror" -->
 
@@ -1032,7 +1007,7 @@ The `mirror` modifier is the canonical cross-cutting orientation flag. The `left
 
 ## Signal Pipeline · Reference Visualization
 
-Weekly Signal Brief — the primary deliverable of the intake pipeline, distributed every Monday, opened by an estimated 3 of the 14 eligible PMs
+Weekly Signal Brief — the intake pipeline's primary deliverable, shipped every Monday, opened by an estimated 3 of 14 eligible PMs
 
 ![bg fit](../lib/components/imagery/image/sample-image.svg)
 
@@ -1099,7 +1074,7 @@ Trailing blockquote becomes a key insight; trailing paragraph becomes a below-no
 
 `Modifier · compact`
 
-## Compact tightens the spacing scale ~25%, end-to-end
+## Compact tightens the spacing scale ~25%
 
 - What changes
   - `--sp-xs` through `--sp-2xl` shrink. Card gaps, list gutters, and section padding follow because every layout reads them via `var()`.
@@ -1177,7 +1152,7 @@ The below-note is for the caveat. The calibration loop has run once. We are call
 - The scoring model requires the loop
   - Without calibration, the weights are static. Static weights are a spreadsheet. The featured layout puts supporting cards on the left. They are written after the hero claim is decided, to make the claim feel inevitable.
 - The Decision Log enables the loop
-  - The loop requires outcome data. Outcome data requires logged decisions. The Decision Log has 18 entries. The loop has run once. The framework is calibrated. The third card in a featured layout is the one the presenter skips when running long. It contains the most important caveat.
+  - The loop requires outcome data. Outcome data requires logged decisions. The Decision Log has 18 entries; the loop has run once. The framework is calibrated. The third sub-card is the one the presenter skips when running long — it holds the most important caveat.
 
 ---
 
@@ -1249,9 +1224,7 @@ The below-note is for the caveat. The calibration loop has run once. We are call
 
 ## Accent replaces the rainbow stripe with a single editorial colour
 
-The default top border is a spectrum gradient. The `accent` modifier swaps it for one solid colour and tints the slide heading. Use it when one slide carries the editorial weight of a section and you want the visual chrome to confirm what the content already implies.
-
-It composes with `dark`. On the dark canvas, `accent.dark` restores a solid accent stripe where the spectrum was suppressed. The framework has a modifier for this. The framework team is very thorough.
+It tints the heading and composes with `dark` — where `accent.dark` restores the stripe the spectrum suppression removed. The framework has a modifier for this. The framework team is very thorough.
 
 <!-- Import Mermaid and the Lattice runtime theme for VS Code / web preview.
      The build script (lattice-emulator.js) pre-renders Mermaid to SVG at build time
