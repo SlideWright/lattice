@@ -387,6 +387,42 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
   page), not `pdffonts`/`get_fonts()` — a subset-embedded face often
   reports an empty name and reads as "missing" when it's actually there.
 
+### A committed render golden doesn't match a fresh render — check staleness FIRST
+
+- **Symptom:** a committed gallery golden
+  (`lib/components/**/*.gallery.{light,dark}.pdf`, or any committed PDF) diffs
+  against a fresh render — text-heavy pages show a few percent of changed pixels,
+  even at `compare -fuzz 3%`. Two fresh renders in the *same* session are
+  pixel-identical (AE=0), so it is not session noise, and fuzz/blur can't
+  tolerate it away.
+- **Do NOT conclude the renderer is non-deterministic.** Self-hosted fonts
+  (`assets/fonts/`, embedded by `lattice-emulator.js`) + pinned Chromium make
+  cross-session renders deterministic *by design* (the P4 §7.1 spike measured 0px
+  drift). A cross-*artifact* diff is almost always a **stale golden**, not jitter.
+  Relitigating a de-risked design (CI-blessed goldens / an AA-tolerant comparator
+  / dropping pixel-gating) before excluding staleness is the wasted-cycle trap
+  this entry exists to stop.
+- **Diagnose the boring cause first, in this order:**
+  1. `pdffonts <committed-golden>` vs `pdffonts <fresh-render>` — **different
+     embedded font subsets ⇒ the golden was blessed before a font change** (e.g.
+     #226 added Outfit 300/500/600 + Shantell 500). That alone explains a
+     text-only pixel delta.
+  2. `git log -1 -- <golden>` vs the history of `assets/fonts/`,
+     `lib/base/base.tokens.css` (the `@import`), and `lattice.css` — if the
+     golden's commit predates a font/CSS change, it is stale.
+  3. Confirm determinism is intact: render the same deck twice → AE=0; render
+     against the golden's **exact** tree (`git show <golden-commit>:dist/lattice.css`
+     …) — if it *still* differs, the delta is environmental (fonts/assets), not
+     CSS. That is the self-hosted-font story, not non-determinism.
+- **Fix:** re-bless — rebuild + commit the goldens (`node tools/build-galleries.js
+  [--only <name>]` + `node tools/build-bucket-galleries.js`). Confirm
+  `npm run parity` (engine == marp) is green first so the frozen goldens stay
+  marp-validated. Re-blessing changes exported PDFs (font embedding), so per the
+  QUALITY BAR show before/after (dark + light) for sign-off. See
+  `engineering/decisions/2026-06-12-p4-regression-gate-retire-marp.md` §9.
+- **Lesson:** a stale artifact is not a broken renderer. Exclude the boring cause
+  before relitigating a settled design decision.
+
 ### Drawing Board PDF/PPTX export shows fallback type on some slides
 
 - **Symptom:** A deck exported from the docs-site Drawing Board (Export →
