@@ -384,3 +384,34 @@ PRs; adopt it if cross-session races keep recurring despite the watch.
   is the verification source of truth — squash merges are committed by GitHub
   (`noreply@github.com`) and show **Verified** there regardless of the local
   `%G?` check.
+
+## Post-merge standup — orient me, every merge
+
+I run many of your sibling sessions in parallel and lose the thread between them.
+So **the moment a merge is confirmed and local `main` is synced, post a brief
+standup** — it is the closing beat of every merge, not an optional extra. Keep it
+to ~5 lines, *derived from signals already in the repo and GitHub* — there is no
+separate epic/story tracker to maintain:
+
+- **Epic / feature** — the initiative this work belongs to: the governing
+  `engineering/decisions/YYYY-MM-DD-*.md` doc if one exists, else a short, *stable*
+  label inferred from the branch/PR theme. Reuse the same label across a session so
+  I recognise the thread at a glance (e.g. "agent-workflow hardening").
+- **Story** — what this PR set out to do (its title), and the branch.
+- **Completed** — the PR just merged (`#N`, squashed sha), plus any sibling PRs
+  merged earlier in the *same* thread/session so multi-PR work reads cumulatively.
+  Note the `CHANGELOG` / release category if the change is user-visible.
+- **On deck (this thread)** — the next concrete step(s) for *this* line of work,
+  pulled from the decision doc's remaining steps, branch TODOs, or the obvious
+  follow-on. If nothing remains, say so: "thread complete — awaiting direction."
+  Scope is deliberately *this thread*, not a cross-session sweep.
+
+Template:
+
+```
+📋 Standup — merged #N (<sha>)
+• Epic:      <initiative / decisions-doc / inferred label>
+• Story:     <what the PR did> · <branch>
+• Completed: #N <one line> (+ #M, #K earlier this thread)
+• On deck:   <next step for this thread, or "thread complete — awaiting direction">
+```
