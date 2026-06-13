@@ -169,7 +169,10 @@ in patch versions.
   the warm themes), and the block's interactive accents — focus ring, copy
   button, active-tab indicator, selection, scrollbar — bind to the palette
   accent. The frame already tracked the palette via Starlight's UI theme
-  colours.
+  colours. The topbar's chrome glyphs (menu / moon / sun) now live in one
+  shared `chrome-icons.css` imported by both the standalone pages and the docs
+  skin (so the two topbars can't drift), and the docs mobile menu button is
+  restyled to the same bordered-square toggle the rest of the site uses.
 
 - **The CI visual-correctness gate is now a per-component semantic-invariant
   suite** (delivering the P4 pivot away from the retired pixel gate). Every

@@ -16,6 +16,9 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 @import './lattice-tokens.generated.css';
+/* Topbar chrome glyphs (menu / moon / sun) — shared with the standalone pages
+ * (landing.css) so the docs topbar can't drift from the rest of the site. */
+@import './chrome-icons.css';
 
 :root {
 	--sl-font: 'Outfit', system-ui, sans-serif;
@@ -34,11 +37,6 @@
 	--accent-soft: #eff6fc;
 	--on-accent: #ffffff;
 	--bg-dark: #003d66;
-
-	/* UI-chrome icons — Lucide (https://lucide.dev, ISC), as data-URI masks
-	 * painted with `background: currentColor` so they track the palette. */
-	--lx-icon-moon: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z'/%3e%3c/svg%3e");
-	--lx-icon-sun: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3ccircle cx='12' cy='12' r='4'/%3e%3cpath d='M12 2v2'/%3e%3cpath d='M12 20v2'/%3e%3cpath d='m4.93 4.93 1.41 1.41'/%3e%3cpath d='m17.66 17.66 1.41 1.41'/%3e%3cpath d='M2 12h2'/%3e%3cpath d='M20 12h2'/%3e%3cpath d='m6.34 17.66-1.41 1.41'/%3e%3cpath d='m19.07 4.93-1.41 1.41'/%3e%3c/svg%3e");
 }
 
 /* ── Remap Starlight's colour surface onto the site palette tokens ──────────
@@ -202,12 +200,34 @@ h1#_top {
 	width: 1rem;
 	height: 1rem;
 	background: currentColor;
-	-webkit-mask: var(--lx-icon-moon) center / contain no-repeat;
-	mask: var(--lx-icon-moon) center / contain no-repeat;
+	-webkit-mask: var(--icon-moon) center / contain no-repeat;
+	mask: var(--icon-moon) center / contain no-repeat;
 }
 :root[data-mode='dark'] .lx-mode::before {
-	-webkit-mask-image: var(--lx-icon-sun);
-	mask-image: var(--lx-icon-sun);
+	-webkit-mask-image: var(--icon-sun);
+	mask-image: var(--icon-sun);
+}
+
+/* Mobile sidebar toggle (Starlight's <starlight-menu-button>). Restyle the
+ * default floating white circle into the same bordered square the site's own
+ * nav-toggle uses (landing/components), palette-bound, so the docs hamburger
+ * matches the rest of the site instead of reading as Starlight chrome. Keeps
+ * Starlight's fixed positioning + its bars/close glyphs; only the chip
+ * appearance changes. Unlayered → beats Starlight's @layer starlight.core. */
+starlight-menu-button button {
+	width: 2.125rem;
+	height: 2.125rem;
+	border-radius: 8px;
+	border: 1px solid var(--border);
+	background: var(--bg);
+	color: var(--text-body);
+	box-shadow: none;
+}
+starlight-menu-button button:hover,
+starlight-menu-button[aria-expanded='true'] button {
+	border-color: var(--accent);
+	color: var(--accent);
+	background: var(--bg);
 }
 
 /* The brand text turns into just the logo on the narrowest screens so the
