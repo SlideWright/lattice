@@ -113,8 +113,13 @@ sketch deck (body, eyebrows, bullets render in Shantell).
 ## Follow-ups
 
 - Refresh the vendored woff2 if the engine's font set changes (re-run the
-  latin-subset fetch). A generator + freshness gate (like the other
-  `*.generated` docs assets) would automate the staleness check; deferred —
-  the engine font set is stable and the manual refresh is a rare event.
+  latin-subset fetch). **Done (2026-06-13):** the `fonts:check` gate
+  (`tools/check-fonts.js`, wired into `build:check` + the pre-commit hook) diffs
+  the `@import` demand against both offline supplies — the emulator's
+  `SELF_HOSTED_FACES` + `assets/fonts/` and this export's `font-embed.js` — and
+  fails the build on drift, so a forgotten weight can't ship a fallback PDF. The
+  same pass brought the emulator to full parity (it was missing `Outfit
+  300/500/600` + `Shantell Sans 500`). A uniform re-subset of the woff2 still
+  needs network and stays deferred.
 - If extended-latin / non-latin decks need export fidelity, widen the vendored
   subset beyond `latin`.

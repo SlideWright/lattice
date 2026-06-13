@@ -68,6 +68,19 @@ in patch versions.
 
 ### Fixed
 
+- **Offline-rendered PDFs now embed the engine's intermediate font weights
+  instead of synthesising them.** The self-hosted set the emulator base64-injects
+  (`assets/fonts/` + `SELF_HOSTED_FACES`) was missing four faces the engine's
+  `@import` actually requests — `Outfit 300/500/600` and `Shantell Sans 500` —
+  so committed/offline PDFs faux-interpolated every `font-weight:300/500/600`
+  body run (titles, `section strong`, meta/labels, sketch body) from the 400/700
+  cuts. All 17 faces are now self-hosted on both PDF paths, matching what online
+  renders already showed. A new **`fonts:check`** parity gate
+  (`tools/check-fonts.js`, run by `build:check` and pre-commit) fails the build
+  if the `@import` demand and the two offline supplies (the emulator's
+  `SELF_HOSTED_FACES` + `assets/fonts/`, and the Drawing Board export's
+  `font-embed.js`) ever drift again — closing the silent-font-fallback class of
+  bug that the `finish: sketch` body-drop first surfaced.
 - **The `lib/engine` render path now produces the full islands model** — the
   `islands:` toggle, the masthead `meta:` island, the footer progress-rail, and
   the section watermark. The engine only resolved the masthead band before, so
