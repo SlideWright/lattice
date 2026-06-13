@@ -58,24 +58,9 @@ section.piechart .piechart-svg .wedge {
   stroke-width: 1.5;
   paint-order: stroke;
 }
-/* SVG-native legend text (2026-06-13-svg-native-legend.md). Geometry (positions,
-   wrapping, swatch rects, spine) is emitted by the kernel in viewBox units so it
-   scales with the diagram; only the TYPE comes from CSS, via tokens:
-   • labels route through --font-label (the "label voice") so section.sketch's
-     token re-point reskins them in the hand sans — a literal face here would
-     silently break the sketch finish on charts.
-   • values stay --font-mono + tabular for column alignment (mono is intentionally
-     NOT re-pointed under sketch). */
-section.piechart .piechart-svg .pie-key-label {
-  font-family: var(--font-label);
-  fill: var(--text-body);
-}
-section.piechart .piechart-svg .pie-key-value {
-  font-family: var(--font-mono);
-  fill: var(--text-heading);
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-}
+/* SVG-native legend TYPE is now shared across the four keyed charts — see the
+   `.chart-key-*` rules in _chart-family/chart-family.css (the geometry is emitted
+   by svg-legend.js). The pie no longer owns per-chart key text rules. */
 
 /* Categorical wedge / swatch palette — six-rotation on the shared chart
  * category model (--catN-fill = wedge fill, --catN-ink = wedge border /

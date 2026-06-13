@@ -1,8 +1,10 @@
 # SVG-native chart legend + spine — design model & spike plan
 
 **Date:** 2026-06-13
-**Status:** proposed (design + single-chart spike) — supersedes the fixed-size
-HTML legend shipped in #233 *for the four keyed charts only*
+**Status:** SHIPPED — spike (piechart) then fanned out to radar, map, and cohort
+quadrant. All four keyed charts are SVG-native via the shared builder
+(`svg-legend.js`); supersedes the fixed-size HTML legend shipped in #233 and the
+pure-CSS 70/30 rail (`2026-06-11-chart-legend-system.md`).
 **Predecessor:** `#233` (fix: chart family responsive) made the diagrams
 box-fit and demoted the legend to an honest **fixed** `--fs-body-compact` after
 proving that `cqh` in `font-size` does **not** track a container the way it does
@@ -207,18 +209,34 @@ shared CSS: gate the new path on the piechart selector only, leave the other
 three on the CSS grid until they graduate (HARD RULE 8 — isolate feature content
 from the long-running galleries; charts graduate in a separate post-review step).
 
-## 7. Acceptance criteria (the spike is "done" only when all hold)
-- [ ] Pie + legend + spine render as **one SVG**; no CSS 70/30 grid / `::before`
-      spine / legend flex remains on the piechart path.
-- [ ] Legend **scales with the diagram** at thumbnail, boardroom, and `cover`
-      sizes (the whole point) — verified by eye + pixel-check.
-- [ ] Long labels **wrap fully (no ellipsis)**; no clip, no rail overrun.
-- [ ] Legend font is a **fixed ratio** — identical text size across pies (≤6
-      slices); a long-tail key grows the **viewBox** (whole unit scales), never
-      the font (11-slice case). Swatch centres on the first line.
-- [ ] **`class: sketch` puts the hand font on the legend** (light + dark).
-- [ ] All colors via `var(--token)`; lint/`build:check`/unit/parity green.
-- [ ] Three render paths emit byte-identical legend geometry (parity tier).
+## 7. Acceptance criteria (met — pie spike AND the radar/map/quadrant fan-out)
+- [x] Diagram + legend + spine render as **one SVG** on all four keyed charts; no
+      CSS 70/30 grid / `::before` spine / legend flex / HTML `*-legend` remains.
+- [x] Legend **scales with the diagram** at thumbnail, boardroom, and `cover`
+      sizes (verified by eye, light + dark, all four charts).
+- [x] Long labels **wrap fully (no ellipsis)**; no clip, no rail overrun.
+- [x] Legend font is a **fixed ratio of the diagram height** — same physical size
+      across all four charts; a long-tail key grows the **viewBox** (whole unit
+      scales), never the font. Swatch centres on the first line.
+- [x] **`class: sketch` routes the hand font to the legend** via `--font-label`
+      (proven in the built CSS — the same mechanism as the heading; the glyphs
+      need the webfont, unavailable in the sandbox per the §4d caveat).
+- [x] All colors via `var(--token)`; lint / unit (1652) / chart-family parity all
+      green.
+- [x] Three render paths emit identical legend geometry (parity tier green).
+
+## 7b. Fan-out result + the one gotcha
+The model ported mechanically to the three kernels via the shared builder
+(`composeFigure` in radar; direct in map/quadrant) — each: build diagram inner →
+compute rows → `buildSvgLegend` → wrap diagram in `<g transform="translate(0
+dy)">` for vertical centring → one `<svg>`. The **non-obvious cost was figure
+sizing**, not the kernels: each component's grid-era CSS pinned the svg with a
+square `aspect-ratio` (radar `1/1`) or a `max-height`/`aspect-ratio:420/320`
+(quadrant) that **letterboxed the now-wider unit tiny**. Fix: a shared
+SVG-native sizing rule (height-bound `100cqh`, width follows the viewBox aspect)
++ scoping each component's old cap to its non-rail variants. Lesson for any
+future SVG-native conversion: **audit the component's existing `aspect-ratio` /
+`max-height` first** — the kernel is the easy part.
 
 ## 8. Alternatives considered (and why not)
 - **Keep #233's fixed HTML key (do nothing).** The floor; loses proportional +

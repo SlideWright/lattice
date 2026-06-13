@@ -497,47 +497,38 @@ section.chart-frame .chart-status[data-s="deferred"] {
 
 
 /* ════════════════════════════════════════════════════════════════════════
- * CHART LEGEND RAIL — shared key layout for the colour-categorical charts
+ * CHART KEY — SVG-native legend + spine for the colour-categorical charts
  * ────────────────────────────────────────────────────────────────────────
  * Four chart-family members encode meaning purely by COLOUR, so each needs a
  * KEY: piechart (wedge ↔ category), radar (polygon ↔ series), map (region ↔
- * value) and quadrant·cohort (hull ↔ cohort). Before this system each shipped
- * its own ad-hoc `[figure][gap][legend]` flex row — four different gaps, no
- * separator, the legend floating in right-edge dead space, the chart shoved
- * off-centre, map clipping long names. This rail unifies all four on a
- * deterministic 70 / 30 split:
+ * value) and quadrant·cohort (hull ↔ cohort). The diagram, the gradient SPINE,
+ * and the key now share ONE <svg> viewBox, emitted by the kernels via the shared
+ * builder (svg-legend.js):
  *
- *   [        chart canvas (70%)        | gradient spine |  key (30%)  ]
+ *   <svg>  [ diagram ]  │spine│  [ swatch · wrapping label · value ]  </svg>
  *
- * • A 70/30 grid spans the body. The chart is the hero in the wide left zone;
- *   the key gets a consistent right rail. Each is CENTRED IN ITS OWN ZONE, so
- *   the composition is stable no matter the chart's footprint or the key's
- *   length — a short key and a long key both sit centred in the same rail.
- * • The gradient SPINE sits on the 70/30 boundary (the figure's ::before), a
- *   fixed generous height centred vertically — the "vertical separator". A
- *   radar centred in the wide 70 zone keeps its rim labels clear of it.
- * • Capped width + WRAPPING labels (long names reflow, never clip/sprawl), one
- *   row rhythm, one swatch — a pie, radar, map and cohort quadrant read as one
- *   family when the deck is emailed.
+ * • The whole unit scales as one — thumbnail to full-bleed — so the key tracks
+ *   the diagram by construction (no CSS grid, no `cqh`-in-`font-size`, which is
+ *   the wall the old 70/30-rail CSS hit: the key wouldn't scale with the
+ *   diagram). The key font is a fixed RATIO of the diagram height, so all four
+ *   render the key at the same physical size — one family.
+ * • Labels WRAP (never clip); a long-tail key grows the unit HEIGHT (shrinking
+ *   the whole unit), never the font alone. Palette-blind, canvas-aware.
  *
- * Pure CSS keyed on the existing figure/legend classes, so all three render
- * paths inherit it with zero transform edits. Palette-blind, canvas-aware.
- * Scoped `:not(.cover)` (those variants own their own full-bleed layout) and
- * off radar·small-multiples (no single legend). See
- * engineering/decisions/2026-06-11-chart-legend-system.md. */
+ * This CSS now carries only the key TYPE (`.chart-key-*`, below — geometry is in
+ * the SVG) plus the figure SIZING that centres + scales each chart's single svg.
+ * Scoped `:not(.cover)` (those variants own their own full-bleed layout, where
+ * the key scales up inside the svg for free) and off radar·small-multiples (no
+ * single key). See engineering/decisions/2026-06-13-svg-native-legend.md
+ * (supersedes 2026-06-11-chart-legend-system.md). */
 section.chart-frame {
-  --chart-canvas-share: 70%;             /* the 70 of the 70/30 split           */
-  --chart-rail-share: 30%;               /* the 30 — the key's rail             */
-  --chart-legend-max: 25cqi;             /* key cap (< rail) — labels wrap past  */
-  --chart-legend-pad: var(--sp-xl);      /* fixed spine→key gap (consistent)     */
-  --chart-legend-row-gap: 0.7em;         /* vertical rhythm — em off the key font (scales) */
+  /* The four KEYED charts (pie/radar/map/cohort quadrant) now emit their spine in
+   * SVG (svg-legend.js inlines these same stops), so the 70/30-rail tokens are
+   * retired. These spine tokens survive because WORD-CLOUD still draws a CSS
+   * spine from them (word-cloud.styles.css) — a pure accent fade that melts into
+   * the canvas at both ends, reading as a rule, not a hard divider. */
   --chart-spine-h: 78%;                  /* spine height — % of body, never spills */
   --chart-spine-w: clamp(2px, 0.156cqi, 4px); /* spine thickness (res-stable)    */
-  /* The spine gradient — a pure accent fade that melts into the canvas at both
-   * ends, so it reads as an intentional rule and not a hard divider. Mixing the
-   * accent with TRANSPARENT (not --border) keeps it a clean tinted line on
-   * either canvas: visible enough to anchor the legend, quiet enough never to
-   * overpower the data. */
   --chart-spine: linear-gradient(to bottom,
     transparent 0%,
     color-mix(in oklab, var(--accent) 32%, transparent) 14%,
@@ -546,126 +537,64 @@ section.chart-frame {
     transparent 100%);
 }
 
-/* The rail — a 70/30 grid. The chart is the hero in the wide left zone and the
- * key a consistent rail on the right; each centres IN ITS OWN ZONE (a stable
- * composition independent of chart footprint or key length). position:relative
- * anchors the spine on the boundary. */
-/* piechart is NOT in this shared rail — it ships the SVG-native legend (its
-   diagram + spine + key are one viewBox); see piechart.styles.css and
-   2026-06-13-svg-native-legend.md. radar/map/quadrant still use the CSS 70/30
-   grid below until they graduate to the SVG-native key in the fan-out. */
+/* SVG-native key TYPE — shared across the four keyed charts (pie/radar/map/cohort
+ * quadrant). The legend GEOMETRY (swatch rects, wrapping labels, values, spine)
+ * is emitted by the kernels in viewBox units (svg-legend.js) so it scales with
+ * the diagram; only the TYPE comes from CSS, via tokens:
+ *   • labels/heads route through --font-label (the "label voice") so
+ *     section.sketch's token re-point reskins them in the hand sans — a literal
+ *     face here would silently break the sketch finish on charts.
+ *   • values stay --font-mono + tabular for column alignment (mono is
+ *     deliberately NOT re-pointed under sketch).
+ * See engineering/decisions/2026-06-13-svg-native-legend.md §4(b). */
+section.chart-frame .chart-key-label,
+section.chart-frame .chart-key-head {
+  font-family: var(--font-label);
+  fill: var(--text-body);
+}
+section.chart-frame .chart-key-head {
+  fill: var(--text-heading);
+  font-weight: 600;
+}
+section.chart-frame .chart-key-value {
+  font-family: var(--font-mono);
+  fill: var(--text-heading);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* SVG-NATIVE FIGURE SIZING — radar / map / cohort-quadrant. Each figure now holds
+ * ONE self-contained <svg> (diagram + spine + key in one viewBox, emitted by
+ * svg-legend.js), so the figure only CENTRES + SIZES that svg; the 70/30 split,
+ * spine and key live INSIDE the viewBox and scale with the diagram by
+ * construction (no CSS grid, no `cqh`-in-`font-size`). The svg is height-bound
+ * (height:100cqh against the size-container figure); width follows the unified
+ * viewBox aspect and is capped to the box, so a vertical squeeze shrinks the
+ * WHOLE unit (diagram AND key) instead of clipping. Mirrors the piechart rule in
+ * piechart.styles.css (kept separate so the pie's cover chain is untouched). Off
+ * `.cover` (full-bleed, each chart's own rule) and radar·small-multiples (its own
+ * grid of minis). See engineering/decisions/2026-06-13-svg-native-legend.md. */
 section.radar:not(.cover) .radar-figure:not([data-variant="small-multiples"]),
 section.map:not(.cover) .map-figure,
 section.quadrant:not(.cover) .quadrant-figure[data-variant="cohort"] {
-  display: grid;
-  grid-template-columns: var(--chart-canvas-share) var(--chart-rail-share);
-  /* A FILLING row (not the default `auto`), so each diagram's `height:100%`
-     resolves against the real body height and grows to --chart-diagram-max
-     instead of collapsing to a small intrinsic size with dead space. */
-  grid-template-rows: minmax(0, 1fr);
+  display: flex;
   align-items: center;
+  justify-content: center;
   width: 100%;
-  height: 100%;
-  position: relative;
-  /* The figure is the RESPONSIVE UNIT (definite 100%×100% box): the key's font
-     is `min(--fs-body-compact, cqh)` off THIS box and its rows/swatches/gaps are
-     `em`, so the diagram (height-bound) and the key shrink TOGETHER under a
-     vertical squeeze and stay proportional — the key never sits full-size beside
-     a shrunk diagram, and can't overflow/truncate. */
+  flex: 1 1 auto;
+  min-height: 0;
   container-type: size;
 }
-
-/* Chart centres in its 70% zone (the data is the hero). */
-section.radar:not(.cover) .radar-figure:not([data-variant="small-multiples"]) > :first-child,
-section.map:not(.cover) .map-figure > :first-child,
-section.quadrant:not(.cover) .quadrant-figure[data-variant="cohort"] > :first-child {
-  grid-column: 1;
-  justify-self: center;
-  align-self: center;
-}
-
-/* Key — LEFT-ALIGNED at a fixed inset off the spine, so the spine→key gap is
- * IDENTICAL on every chart (centring the key in its zone instead made a wide
- * key — pie, with values — sit closer to the spine than a narrow one). Capped
- * to the rail, labels WRAP. Per-component legend internals (swatch palette,
- * value styling) stay in each component's styles. */
-section.radar:not(.cover) .radar-figure:not([data-variant="small-multiples"]) .radar-legend,
-section.map:not(.cover) .map-legend,
-section.quadrant:not(.cover) .quadrant-figure[data-variant="cohort"] .quadrant-legend {
-  grid-column: 2;
-  justify-self: start;
-  align-self: center;
-  box-sizing: border-box;
-  min-width: 0;
-  max-width: 100%;
-  margin: 0;
-  padding-left: var(--chart-legend-pad);
-  display: flex;
-  flex-direction: column;
-  /* Fixed, reliable key size. `cqh` in `font-size` does NOT track the figure
-     the way it does in layout properties (it resolves in a different phase), so
-     a `min(--fs-body-compact, cqh)` "scale" silently didn't — the key stayed put
-     while the diagram scaled. Since the diagram now box-fits DOWN under a squeeze
-     (freeing vertical room), a fixed key no longer truncates, so we keep it
-     simple and honest. Rows/swatches/gaps are `em` off this. */
-  font-size: var(--fs-body-compact);
-  gap: var(--chart-legend-row-gap);
-}
-
-/* The gradient spine — the figure's ::before on the 70/30 boundary, a fixed
- * generous height centred vertically. Deterministic: it does not move with the
- * key's width, so it always reads as the divider between the two zones. */
-section.radar:not(.cover) .radar-figure:not([data-variant="small-multiples"])::before,
-section.map:not(.cover) .map-figure::before,
-section.quadrant:not(.cover) .quadrant-figure[data-variant="cohort"]::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: var(--chart-canvas-share);
-  transform: translate(-50%, -50%);
-  width: var(--chart-spine-w);
-  height: var(--chart-spine-h);
-  background: var(--chart-spine);
-  border-radius: var(--chart-spine-w);
-  pointer-events: none;
-}
-
-/* Shared legend ROW typography — swatch · label · value, unified across the
- * four keyed charts so they read as one family. Labels WRAP (no clip); values
- * are tabular and ink-weighted. Each component still owns its swatch colours
- * and the presence/format of the value cell. */
-section.radar:not(.cover) .radar-figure:not([data-variant="small-multiples"]) .radar-legend li,
-section.map:not(.cover) .map-legend-row,
-section.quadrant:not(.cover) .quadrant-figure[data-variant="cohort"] .quadrant-legend li {
-  /* font-size inherits the key's proportional `min(--fs-body-compact, cqh)` */
-  line-height: var(--lh-snug, 1.25);
-  color: var(--text-body);
-}
-/* Labels reflow rather than clip — the "if users go crazy" guarantee. The
- * swatch holds its size and pins to the first line so a wrapped label still
- * reads as one keyed row. */
-section.map:not(.cover) .map-legend-name {
-  overflow: visible;
-  text-overflow: clip;
-  white-space: normal;
-}
-
-/* Shared swatch sizing — one consistent chip across all four keyed charts
- * (each keeps its own fill/border colour). Sized to read clearly without
- * overpowering the label, with a px floor so it never collapses. */
-section.radar:not(.cover) .radar-figure:not([data-variant="small-multiples"]) .radar-legend .radar-swatch,
-section.map:not(.cover) .map-legend .map-swatch,
-section.quadrant:not(.cover) .quadrant-figure[data-variant="cohort"] .quadrant-legend .quadrant-swatch {
-  width: 0.96em;    /* em off the key font so the swatch scales with the rows */
-  height: 0.96em;
-  min-width: 12px;  /* sanctioned: legend-swatch floor — keeps a swatch legible at sub-HD renders, never the computed size */
-  min-height: 12px; /* sanctioned: legend-swatch floor (see min-width) */
-  border-radius: 0.24em;
+section.radar:not(.cover) .radar-svg:not(.radar-svg--mini),
+section.map:not(.cover) .map-svg,
+section.quadrant:not(.cover) .quadrant-svg--cohort {
   flex: 0 0 auto;
-  align-self: start;
-  margin-top: 0.1em;   /* optical pin to the first text line */
+  height: 100cqh;
+  width: auto;
+  max-width: 100%;
+  display: block;
+  overflow: visible;   /* radar rim labels / quadrant edge labels paint just outside the plot box */
 }
-
 
 
 /* ── COVER ── `cover`, a CHART-FAMILY modifier ───────────────────────────────

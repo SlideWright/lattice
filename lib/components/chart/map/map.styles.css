@@ -64,86 +64,9 @@ section.map .map-region--hl {
 }
 
 /* ── Legend ───────────────────────────────────────────────────────────────
- * Modelled on the piechart legend (swatch · label · value) but namespaced so
- * the two don't co-own selectors. A compact column flanking the map. */
-section.map .map-legend {
-  flex: 0 0 auto;
-  align-self: center;
-  max-width: 34cqi;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 0.7cqi;
-  font-size: var(--fs-body-compact);
-}
-section.map .map-legend-row {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  gap: 1.2cqi;
-}
-section.map .map-swatch {
-  width: 1.6cqi;
-  height: 1.6cqi;
-  min-width: 11px;  /* sanctioned: legend-swatch floor below the 1.6cqi size — keeps the swatch legible at sub-HD renders, never the computed size */
-  min-height: 11px; /* sanctioned: legend-swatch floor (see min-width) */
-  border-radius: 3px;
-  display: inline-block;
-}
-section.map .map-swatch--on {
-  background: color-mix(in oklab, var(--chart-cat-1-hue) var(--mix), var(--map-base));
-}
-section.map .map-swatch--hl {
-  background: color-mix(in oklab, var(--region-hue) 82%, var(--bg));
-}
-section.map .map-legend-name {
-  color: var(--text-body);
-  font-family: var(--font-body);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* A group entry (a "fat alias" — a continent / bloc that filled a SET of
- * regions) reads a touch heavier than a single country, so a legend mixing
- * blocs and countries stays legible. */
-section.map .map-legend-row--group .map-legend-name {
-  font-weight: 600;
-}
-
-/* Continent / cluster header in the `grouped` legend modifier — a quiet
- * full-width label above each cluster of entries. */
-section.map .map-legend-head {
-  margin-top: 0.4cqi;
-  color: var(--text-muted);
-  font-family: var(--font-meta, var(--font-body));
-  font-size: var(--fs-meta);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-section.map .map-legend-head:first-child { margin-top: 0; }
-section.map .map-legend-value {
-  color: var(--text-heading);
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-  justify-self: end;
-}
-
-/* Unmatched names — reported, never silently dropped. A muted row with a
- * hollow swatch + "?" tells the author exactly which lead text the basemap
- * couldn't bind (the kernel also stamps data-unmatched on the figure). */
-section.map .map-legend-row--unmatched .map-legend-name {
-  color: var(--text-muted);
-  font-style: italic;
-}
-section.map .map-legend-row--unmatched .map-legend-value {
-  color: var(--text-muted);
-  font-weight: 400;
-}
-section.map .map-swatch--unmatched {
-  background: transparent;
-  border: var(--chart-hairline) dashed var(--text-muted);
-}
+ * The key is now SVG-native (svg-legend.js → `.chart-key-*`, styled in
+ * _chart-family/chart-family.css): the kernel emits swatch <rect>s whose fills
+ * mirror the region fills (highlight hue / choropleth ramp), group headings as
+ * `.chart-key-head` rows, and unmatched names as a hollow `?` chip. The old HTML
+ * `.map-legend` / `.map-swatch` rules are retired with it; the `.map-region-*`
+ * fills below are unchanged. See 2026-06-13-svg-native-legend.md. */

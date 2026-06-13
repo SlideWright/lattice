@@ -88,14 +88,15 @@ describe('chart-family', () => {
     assert.ok(pc, 'piechart donut section not found');
     assert.match(pc[0], /<div class="piechart-figure">/);
     // SVG-native legend (2026-06-13-svg-native-legend.md): diagram + spine + key
-    // share one viewBox, widened to 376 (disc 200 + two divider gaps + key rail).
-    assert.match(pc[0], /<svg class="piechart-svg" viewBox="0 0 376 200"/);
+    // share one viewBox, widened to 377 (disc 200 + two divider gaps + key rail;
+    // the shared builder Math.ceils the exact rail width).
+    assert.match(pc[0], /<svg class="piechart-svg" viewBox="0 0 377 200"/);
     // Donut path uses inner radius (r=50) — solid pies wouldn't carry it
     assert.match(pc[0], /A 50 50 0/);
     // 5 wedges + 5 SVG legend rows (swatch <rect> + label <text> per series)
     const wedges = (pc[0].match(/<path class="wedge"/g) || []).length;
-    const swatches = (pc[0].match(/<rect class="pie-key-swatch"/g) || []).length;
-    const labels = (pc[0].match(/<text class="pie-key-label"/g) || []).length;
+    const swatches = (pc[0].match(/<rect class="chart-key-swatch"/g) || []).length;
+    const labels = (pc[0].match(/<text class="chart-key-label"/g) || []).length;
     assert.equal(wedges, 5, `expected 5 wedges, got ${wedges}`);
     assert.equal(swatches, 5, `expected 5 legend swatches, got ${swatches}`);
     assert.equal(labels, 5, `expected 5 legend labels, got ${labels}`);

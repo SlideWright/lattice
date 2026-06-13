@@ -66,17 +66,13 @@ section.radar .radar-figure {
 }
 
 section.radar .radar-svg {
-  /* Fill the figure's OWN height (it's a container), less a margin for the rim
-   * labels that paint outside the 300-unit viewBox (overflow:visible). cqh
-   * resolves against the figure cleanly where `%` fell back to the intrinsic
-   * viewBox. No max cap — the parent body (and the islands safe-area) is the
-   * bound. (See #180 for the original resolution-stable sizing.) */
-  height: 90cqh;
-  width: auto;
-  max-width: 100%;
-  aspect-ratio: 1 / 1;
-  flex: 0 1 auto;
-  overflow: visible;   /* rim labels paint just outside the 300-unit viewBox */
+  /* Sizing (height-bound on the unified viewBox aspect — diagram + key as one
+   * unit) is the shared SVG-native rule in _chart-family/chart-family.css. The
+   * old square `aspect-ratio:1/1` is retired: the viewBox is no longer square
+   * (it now includes the key rail), so forcing a square letterboxed the whole
+   * unit small. Only the rim-label overflow stays radar's own — axis labels
+   * paint just outside the plot box. */
+  overflow: visible;
 }
 
 /* Mermaid radar-beta styling (`.radarCurve-N`, `.radarGraticule`, …) used to
@@ -142,39 +138,12 @@ section.radar .radar-dot {
   stroke-width: 1;
 }
 
-/* ── Legend ───────────────────────────────────────────────────────────── */
-section.radar .radar-legend {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--sp-2xs);
-  flex: 0 1 auto;
-}
-section.radar .radar-legend li {
-  display: flex;
-  align-items: center;
-  gap: var(--sp-xs);
-  font-size: var(--fs-meta);
-  color: var(--text-body);
-}
-section.radar .radar-legend .radar-swatch {
-  width: 0.85em;
-  height: 0.85em;
-  border-radius: 3px;
-  background: var(--series-color);
-  flex: 0 0 auto;
-}
-section.radar .radar-legend li[data-kind="target"] .radar-swatch,
-section.radar .radar-legend li[data-kind="before"] .radar-swatch,
-section.radar .radar-legend li[data-kind="band"] .radar-swatch {
-  background: none;
-  border: 1.5px dashed var(--text-muted);
-}
-section.radar .radar-legend li[data-kind] {
-  color: var(--text-secondary);
-}
+/* ── Legend ───────────────────────────────────────────────────────────────
+ * The key is now SVG-native (svg-legend.js → `.chart-key-*`, styled in
+ * _chart-family/chart-family.css). A muted reference series (target / before /
+ * comparison band) is keyed with a quiet swatch from the kernel rather than the
+ * old dashed-chip CSS. The HTML `.radar-legend` rules are retired with it. See
+ * 2026-06-13-svg-native-legend.md. */
 
 /* ── target: actual vs a reference polygon, per-axis gap segments ─────── */
 section.radar .radar-poly--target {
@@ -308,12 +277,13 @@ section.radar.dark {
  * and the chart family generalizes it (chart-family.css `section.chart-frame
  * .cover`): the bleed, hidden chrome, exposed title, filled chart-body, and the
  * sheen caption band all come from there. This block adds only radar's own
- * extras — the diagram-centring three-column track, the scaled-up square SVG, a
- * responsive legend column, and the lifted scale ticks. Pure CSS. */
+ * extras — centring and scaling up the single SVG unit (diagram + key), and the
+ * lifted scale ticks. Pure CSS. */
 
-/* Three-column track: equal 1fr gutters flank the auto-width diagram, so the
- * DIAGRAM centres on the slide (not the diagram-plus-legend group); the legend
- * gets its own right column with room to hold and wrap longer series names. */
+/* The cover unit is now ONE svg (diagram + spine + key in one viewBox), so cover
+ * just CENTRES + scales it: equal 1fr gutters flank the auto-width svg so the
+ * whole unit centres on the slide (the key scales up with the diagram — the
+ * "cover just works" property of the SVG-native key). */
 section.radar.cover .radar-figure {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
@@ -322,9 +292,8 @@ section.radar.cover .radar-figure {
   max-width: 100%;
   height: auto;
 }
-/* Explicit cqi size scales the diagram up (the base max-height:360px cap and
- * flex-height both fail here); aspect-ratio 1/1 from the base rule keeps it
- * square, max-height guards against a tall two-line caption. */
+/* Explicit cqi size scales the unit up (the base flex-height / cap both fail at
+ * full-bleed); max-height guards against a tall two-line caption. */
 section.radar.cover .radar-svg {
   grid-column: 2;
   justify-self: center;
@@ -332,19 +301,6 @@ section.radar.cover .radar-svg {
   width: auto;
   max-height: 100%;
   max-width: 100%;
-}
-/* Legend in the right column: fills the column (so long series names WRAP
- * inside it instead of overflowing or clipping — responsive), left-aligned a
- * comfortable gap off the diagram, vertically centred. */
-section.radar.cover .radar-legend {
-  position: static;
-  grid-column: 3;
-  justify-self: stretch;
-  align-self: center;
-  width: 100%;
-  box-sizing: border-box;
-  margin: 0;
-  padding-left: var(--sp-lg);
 }
 
 /* Scale ticks read too faint at full-bleed size — lift them off --text-muted

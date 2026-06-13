@@ -57,11 +57,11 @@ describe('chart-family.applyToDom', () => {
     // SVG-native legend (2026-06-13-svg-native-legend.md): the key is now inside
     // the diagram's <svg> as a swatch <rect> + label/value <text> per series,
     // not an HTML <ol>. Three series → three labels, values and swatches.
-    assert.equal(sec.querySelectorAll('.piechart-svg .pie-key-label').length, 3,
+    assert.equal(sec.querySelectorAll('.piechart-svg .chart-key-label').length, 3,
       'three legend labels');
-    assert.equal(sec.querySelectorAll('.piechart-svg .pie-key-value').length, 3,
+    assert.equal(sec.querySelectorAll('.piechart-svg .chart-key-value').length, 3,
       'three legend values');
-    assert.equal(sec.querySelectorAll('.piechart-svg .pie-key-swatch').length, 3,
+    assert.equal(sec.querySelectorAll('.piechart-svg .chart-key-swatch').length, 3,
       'three legend swatches');
   });
 
