@@ -10474,7 +10474,7 @@ section.dark p:has(> code:only-child):has(+ pre) > code { color: var(--on-dark-s
  * Excluded layouts handle blockquote themselves:
  *   quote, featured (primary content)
  */
-section:not(.quote):not(.featured):not(.math):not(.citation-card) > blockquote {
+section:not(.quote):not(.featured):not(.math):not(.citation-card):not([class*="layout-"]) > blockquote {
   background:var(--accent-soft);
   border:1px solid var(--accent);
   border-radius:var(--radius-md);
@@ -10482,7 +10482,7 @@ section:not(.quote):not(.featured):not(.math):not(.citation-card) > blockquote {
   margin-top:var(--sp-sm);
   flex-shrink:0;
 }
-section:not(.quote):not(.featured):not(.math):not(.citation-card) > blockquote::before {
+section:not(.quote):not(.featured):not(.math):not(.citation-card):not([class*="layout-"]) > blockquote::before {
   content:'KEY INSIGHT';
   font-family:var(--font-label);
   font-size:var(--fs-meta);
@@ -10493,19 +10493,19 @@ section:not(.quote):not(.featured):not(.math):not(.citation-card) > blockquote::
   display:block;
   margin-bottom:0.46875cqi;
 }
-section:not(.quote):not(.featured):not(.math):not(.citation-card) > blockquote p {
+section:not(.quote):not(.featured):not(.math):not(.citation-card):not([class*="layout-"]) > blockquote p {
   font-family:var(--font-body);
   font-size:var(--fs-message);
   color:var(--text-heading);
   line-height:var(--lh-snug);
   margin:0;
 }
-section:not(.quote):not(.featured):not(.math):not(.citation-card) > blockquote ul {
+section:not(.quote):not(.featured):not(.math):not(.citation-card):not([class*="layout-"]) > blockquote ul {
   list-style:none;
   padding:0; margin:0;
   display:flex; flex-direction:column; gap:0.46875cqi;
 }
-section:not(.quote):not(.featured):not(.math):not(.citation-card) > blockquote li {
+section:not(.quote):not(.featured):not(.math):not(.citation-card):not([class*="layout-"]) > blockquote li {
   font-family:var(--font-body);
   font-size:var(--fs-message);
   color:var(--text-heading);
@@ -10513,7 +10513,7 @@ section:not(.quote):not(.featured):not(.math):not(.citation-card) > blockquote l
   padding-left:var(--sp-md);
   position:relative;
 }
-section:not(.quote):not(.featured):not(.math):not(.citation-card) > blockquote li::before {
+section:not(.quote):not(.featured):not(.math):not(.citation-card):not([class*="layout-"]) > blockquote li::before {
   content:'—';
   position:absolute; left:0;
   color:var(--accent);
@@ -13735,6 +13735,121 @@ section.islands .isl-watermark {
 }
 section.islands.dark .isl-watermark,
 section.dark.islands .isl-watermark { color: var(--on-dark-watermark); }
+
+/* === lib/contracts/inventory/inventory.layouts.css === */
+/* Inventory contract — conforming Layouts (Form).
+ *
+ * Four css-only Layouts that style the SAME canonical inventory DOM (eyebrow
+ * `p>code` · `h2` · `ul>li` with a `<strong>` lead · trailing `blockquote`),
+ * so an author swaps the look by changing one class — no re-author, no JS.
+ * Palette-blind: every value is a var(--token). See
+ * engineering/decisions/2026-06-12-contracts-layout-swapping.md and
+ * lib/contracts/inventory/inventory.contract.json.
+ *
+ * Bundled via TAIL_SOURCES in tools/build-css.js. The eyebrow + h2 inherit
+ * their base styling (base.modifiers / base.elements); these rules arrange the
+ * items + insight, which is where the looks diverge. */
+
+/* ── Layout · LEDGER — numbered rows, hairline rules, accent insight band ── */
+section.layout-ledger > ul {
+  list-style: none; padding: 0; margin: var(--sp-sm) 0 0;
+  display: flex; flex-direction: column; flex: 1; justify-content: center; counter-reset: r;
+}
+section.layout-ledger > ul > li {
+  counter-increment: r; position: relative; list-style: none;
+  padding: var(--sp-sm) 0 var(--sp-sm) 5cqi;
+  border-bottom: 1px solid var(--border); font-size: var(--fs-body); color: var(--text-body);
+}
+section.layout-ledger > ul > li::before {
+  content: counter(r, decimal-leading-zero); position: absolute; left: 0; top: var(--sp-sm);
+  font-family: var(--font-mono); font-size: var(--fs-h3); font-weight: 600; color: var(--accent);
+}
+section.layout-ledger > ul > li strong {
+  display: block; font-family: var(--font-display); font-size: var(--fs-h3);
+  font-weight: 700; color: var(--text-heading); margin-bottom: var(--sp-3xs);
+}
+section.layout-ledger > blockquote {
+  margin: var(--sp-md) 0 0; padding: var(--sp-sm) var(--sp-md);
+  background: var(--accent); color: var(--on-accent); border-radius: var(--radius-md);
+  font-size: var(--fs-message); font-weight: 600;
+}
+
+/* ── Layout · CARDS — equal grid, insight as a centred pull-quote ── */
+section.layout-cards > ul {
+  list-style: none; padding: 0; margin: var(--sp-md) 0 0;
+  display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-md); flex: 1; align-content: center;
+}
+section.layout-cards > ul > li {
+  list-style: none; background: var(--bg-alt); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: var(--sp-md);
+  font-size: var(--fs-body); color: var(--text-body);
+}
+section.layout-cards > ul > li strong {
+  display: block; font-family: var(--font-display); font-size: var(--fs-h3);
+  font-weight: 700; color: var(--text-heading); margin-bottom: var(--sp-xs);
+}
+section.layout-cards > blockquote {
+  margin: var(--sp-md) 0 0; text-align: center; font-family: var(--font-display);
+  font-style: italic; font-size: var(--fs-message); color: var(--accent);
+}
+section.layout-cards > blockquote::before { content: '\201C'; }
+section.layout-cards > blockquote::after  { content: '\201D'; }
+
+/* ── Layout · TIMELINE — horizontal numbered run, insight above ── */
+section.layout-timeline > blockquote {
+  order: -1; text-align: center; font-family: var(--font-display);
+  font-size: var(--fs-message); color: var(--text-muted); margin: 0 0 var(--sp-md);
+}
+section.layout-timeline > ul {
+  list-style: none; padding: 0; margin: var(--sp-md) 0 0;
+  display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr);
+  gap: var(--sp-lg); flex: 1; align-content: center; counter-reset: t;
+}
+section.layout-timeline > ul > li {
+  counter-increment: t; position: relative; list-style: none;
+  padding-top: 4.5cqi; font-size: var(--fs-body-compact); color: var(--text-body);
+}
+section.layout-timeline > ul > li::before {
+  content: counter(t); position: absolute; top: 0; left: 0; width: 3cqi; height: 3cqi;
+  border-radius: 50%; background: var(--accent); color: var(--on-accent);
+  display: grid; place-items: center; font-family: var(--font-mono);
+  font-weight: 600; font-size: var(--fs-body-compact); z-index: 2;
+}
+section.layout-timeline > ul > li::after {
+  content: ''; position: absolute; top: 1.5cqi; left: 3cqi; right: calc(var(--sp-lg) * -1);
+  height: 2px; background: var(--border);
+}
+section.layout-timeline > ul > li:last-child::after { display: none; }
+section.layout-timeline > ul > li strong {
+  display: block; font-family: var(--font-display); font-size: var(--fs-h3);
+  font-weight: 700; color: var(--text-heading); margin-bottom: var(--sp-2xs);
+}
+
+/* ── Layout · EDITORIAL — magazine split (title + insight | ruled items) ── */
+section.layout-editorial {
+  display: grid; grid-template-columns: 1fr 1.25fr; column-gap: var(--sp-2xl); align-content: center;
+}
+section.layout-editorial > p:has(> code) { grid-column: 1; grid-row: 1; margin: 0; }
+section.layout-editorial > h2 {
+  grid-column: 1; grid-row: 2; font-size: var(--fs-h1); line-height: var(--lh-tight); margin: 0;
+}
+section.layout-editorial > blockquote {
+  grid-column: 1; grid-row: 3; margin: var(--sp-md) 0 0;
+  font-family: var(--font-display); font-style: italic; font-size: var(--fs-message);
+  color: var(--accent); border-left: 0.3cqi solid var(--accent); padding-left: var(--sp-md);
+}
+section.layout-editorial > ul {
+  grid-column: 2; grid-row: 1 / 4; list-style: none; padding: 0; margin: 0;
+  display: flex; flex-direction: column; justify-content: center; gap: var(--sp-md);
+}
+section.layout-editorial > ul > li {
+  list-style: none; padding-left: var(--sp-md); border-left: 2px solid var(--border);
+  font-size: var(--fs-body); color: var(--text-body);
+}
+section.layout-editorial > ul > li strong {
+  display: block; font-family: var(--font-display); font-size: var(--fs-message);
+  font-weight: 700; color: var(--text-heading); margin-bottom: var(--sp-3xs);
+}
 
 /* === lib/integrations/mermaid/mermaid.css === */
 /* _diagram-overrides.css — Mermaid SVG selectors, palette-blind.

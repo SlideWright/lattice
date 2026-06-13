@@ -84,6 +84,34 @@ The four layers also correspond to **the four audiences** Lattice serves:
 
 ---
 
+## 2.5 The vocabulary — two registers, one mapping
+
+The four concepts have **two names each**, on purpose: a precise **system**
+word for the spine and a plain **human** word for the surface. The rule is
+strict — **exactly one system word and one human word per concept, no third
+synonym anywhere.** Code, manifests, and docs use the system column; UI,
+prompts, and author-facing copy use the human column; the AI reasons in the
+system register and speaks in the human register.
+
+| System (spine) | Human (surface) | The author's question | The author's verb |
+|---|---|---|---|
+| **Function** | **Purpose** | "what's the point of this slide?" | *(rarely changed — it's the intent)* |
+| **Form** | **Layout** | "how is it laid out?" | "show it as cards / steps / a list" |
+| **Substance** | **Content** | "what goes on it?" | "write / paste this" |
+| **Finish** | **Style** | "what should it feel like?" | "make it formal / sketchy / dark" |
+
+**The one word we legislate against: "look."** It is ambiguous — it means
+**Layout** (Form) *or* **Style** (Finish), the only collision in the model. It
+is never a canonical term; resolving "make it look different" into *Layout* vs
+*Style* is an explicit interpretation step (the AI asks or infers). Any word
+outside these two columns is a convenience term, not a concept, and is scoped
+or retired rather than allowed to drift.
+
+The human register is **generated from** the system register, never coined
+independently — so the surfaces can't drift apart.
+
+---
+
 ## 3. The 7 functions
 
 | Function       | The audience leaves knowing…                       | Examples |
