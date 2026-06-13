@@ -29,6 +29,14 @@ node lattice-emulator.js examples/gallery-mermaid.md examples/gallery-mermaid.pd
 Open `examples/gallery.pdf` — that is the fastest answer to "what does
 this produce?".
 
+The output extension picks the format — the same render, delivered as a
+vector PDF, a PowerPoint, or a PNG set:
+
+```sh
+node lattice-emulator.js examples/gallery.md gallery.pptx   # PowerPoint (image slides)
+node lattice-emulator.js examples/gallery.md gallery.png    # → gallery.001.png, gallery.002.png, …
+```
+
 ## Render your own deck
 
 A deck is a Markdown file with a small front-matter block selecting a
