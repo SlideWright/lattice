@@ -81,6 +81,33 @@ in patch versions.
 
 ### Fixed
 
+- **The keyed chart-family diagrams (`piechart`, `radar`, `quadrant`) are now
+  responsive — they fill their box and scale with the available height instead
+  of collapsing.** The pie disc was a fixed `32cqi` square (tied to slide
+  *width*, blind to height), so any vertical squeeze — a masthead band under
+  `islands: on`, a multi-line caption, or larger `finish: sketch` type —
+  overflowed the flexed body and the slide's `overflow:hidden` clipped it to a
+  half-ring; radar/quadrant under-filled and read inconsistently sized. Each
+  diagram now fills its figure's OWN height (`height: 100cqh`, width via
+  `aspect-ratio`) with **no per-chart max cap — the parent body is the only
+  bound**, so they're a consistent size (radar no longer renders smaller than
+  the pie) and shrink to a smaller FULL diagram under a squeeze. Axis/rim labels
+  are SVG `<text>` in the viewBox, so they scale with the diagram. The HTML key
+  stays a fixed `--fs-body-compact` (reliable proportional text scaling via
+  `cqh` in `font-size` isn't achievable in CSS) — but because the diagram now
+  shrinks under a squeeze, the freed room keeps the fixed key from truncating.
+  (Surfaced by `gallery-jargon`'s `piechart donut` under `islands: on` — #229.)
+- **`word-cloud` is responsive-safe under a vertical squeeze.** Its canvas was
+  a fixed `85.9×25cqi` box (its absolutely-positioned children give it no
+  in-flow size to shrink from); it now keeps that design size but caps at
+  `max-width/max-height: 100%` of the flexed chart body, so a masthead band or
+  tall caption scales the cloud + key + spine down together (the `wc-svg`
+  viewBox `meet` letterboxes them) instead of risking overflow. With this, every
+  chart-family graphic now fits its box: the fixed-aspect SVGs (`piechart`,
+  `radar`, `quadrant`) fill their figure height, the wide SVGs (`funnel`, `map`,
+  `word-cloud`) are width-bound, and the HTML+SVG charts fill width and flex. The
+  shared keyed-chart key (the 70/30 rail) stays a fixed `--fs-body-compact` and
+  no longer truncates, since the diagram shrinks under a squeeze to free the row.
 - **Offline-rendered PDFs now embed the engine's intermediate font weights
   instead of synthesising them.** The self-hosted set the emulator base64-injects
   (`assets/fonts/` + `SELF_HOSTED_FACES`) was missing four faces the engine's

@@ -110,11 +110,11 @@ section.quadrant .quadrant-figure {
 }
 
 section.quadrant .quadrant-svg {
-  /* Fills its slot's height, keeping the 420:320 viewBox aspect (= 1.3125),
-   * ceilinged at 50cqh — 50% of the SLIDE height: the old 360px at HD, now
-   * SCALING with resolution (50cqh = 360px @HD, 1080px @4K). The viewBox +
-   * aspect-ratio do the scaling math; overflow:visible lets the axis-name
-   * descenders paint outside the 320-unit box. No fixed px. (See #180.) */
+  /* Section-relative fill, capped at 50cqh (50% slide height). Unlike pie/radar,
+   * the common quadrant is NOT in the shared 70/30 grid (no legend rail) and its
+   * figure isn't a query container, so `cqh` here means the SLIDE, not a figure
+   * box — keep the resolution-stable cqh cap it shipped with (#180). The
+   * cohort variant rides the shared grid for its key. */
   height: 100%;
   max-height: 50cqh;
   width: auto;
