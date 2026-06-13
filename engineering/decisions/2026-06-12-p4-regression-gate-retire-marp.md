@@ -1,9 +1,74 @@
-# P4 — retire marp-cli: parity testing → regression testing
+# P4 — retire marp-cli: parity → ~~regression~~ → component-invariant testing
 
-**Status:** design (pre-code), de-risked. The 2026-06-13 spike resolved the one
+**Status:** ~~design (pre-code), de-risked. The 2026-06-13 spike resolved the one
 real technical risk (golden env-stability — §7.1) positively; only the §7.3
 test-migration audit remains, and that's done during implementation. Ready to
-build.
+build.~~ **PIVOTED 2026-06-13 — see §0.**
+
+> **⚠️ PIVOT (2026-06-13) — this supersedes the pixel-regression thesis below.**
+> Wiring the pixel-regression gate into CI surfaced *flaky cross-runner
+> rasterization drift* (Skia's CPU-dispatched raster differs by GitHub runner CPU
+> on fine vector + image content, ~0.4–2%, a *different* gallery each run — §A).
+> That exposed the deeper problem: **post-marp, a self-golden pixel gate detects
+> _change_, not _correctness_** — a golden blessed with a bug passes forever — and
+> it fights machine physics to do even that. **We're pivoting from the pixel gate
+> to per-component SEMANTIC INVARIANTS.** See **§0 — Pivot**. Everything from §2
+> onward is preserved as the historical design + the still-valid env findings,
+> but the "pixel regression is the CI gate" conclusion is retired.
+
+## 0. Pivot (2026-06-13): pixel-regression gate → per-component semantic invariants
+
+**Why.** `engine-parity` was an A/B test against an *external* truth (marp): marp
+*defined* correct, and we proved the owned engine matched it — real value during
+the migration. The pixel **regression** gate this doc proposed is a different,
+weaker thing: it compares each gallery to *a previously-blessed render of itself*.
+That detects *change*, not *correctness* — a golden blessed with a bug passes
+forever — and it turned out to fight machine physics: across GitHub's
+heterogeneous runners, Skia's CPU-dispatched rasterization is not bit-identical,
+so the same code drifts ~0.4–2% on a *different* gallery each CI run (§A). Every
+mitigation we tried (per-bucket tolerance, advisory mode, deterministic-raster
+flags, inline montages) was tax to make a low-value signal not-flaky. When you
+spend that much defending a gate, the gate is wrong.
+
+**The model.** Each component carries its own idea of correctness as **semantic
+invariants** — render the component's example through `lib/engine::render()` into
+a real headless-Chrome DOM (the exact seam `test/integration/parity/color-parity.test.js`
+already uses) and assert on *meaning*, not pixels. Three layers:
+
+| Layer | Source | Coverage | Authoring |
+|---|---|---|---|
+| **1 · Contract** | manifest `slots` (CSS selector + `required`), `_class` | every component, **auto-derived** | none — a new component is covered free |
+| **2 · Universal** | every rendered slide | WCAG contrast, computed colors resolve to palette tokens, no overflow/clipping, one `section`/slide | none — runs on all |
+| **3 · Semantic** | hand-authored, high-value few | funnel widths ∝ values, radar N series → N polygons, big-number is the largest type | opt-in, where a component has a distinctive truth |
+
+These assert *logical* values (selectors, ratios, contrast) — **deterministic and
+machine-independent**, so the cross-runner flakiness simply doesn't exist — and
+need no PDF/poppler (HTML + `getComputedStyle` only), so they're *cheaper* than
+today's page-count tier.
+
+**Plumbing.** One new `test/helpers/semantic-render.js` (wraps `lib/engine::render`
++ Puppeteer, mirroring `render.js`). No render-pipeline changes; no new deps.
+
+**What changes.**
+- **Retired:** the pixel-regression **CI gate**. `npm run regress` survives only
+  as a **local** spot-check tool (handy for a manual visual diff), never wired
+  into CI. `engine-parity` still dies with marp (Step 3) as planned.
+- **Kept:** committed gallery goldens (as human-review artifacts) and **`golden-diff`**
+  — the before/after reviewer comment, now with **inline images** (#239). It
+  diffs two *committed* PDFs on *one* runner, so it is **not** subject to the
+  cross-runner flakiness; it's a review aid, not a gate.
+- **New CI visual-correctness gate:** the semantic-invariant suite (layers 1–2
+  across all ~54 components, plus layer-3 where it earns it).
+
+**Phasing.** (1) `semantic-render.js` + layers 1–2 across the corpus, wired as the
+CI gate. (2) layer-3 semantic invariants for the components that have a
+distinctive truth (charts especially). (3) Step 3: delete marp + `engine-parity`;
+the invariant suite is the sole visual-correctness gate.
+
+**PR #239** is repurposed to land this pivot: it drops the `regression` CI job,
+keeps `golden-diff` (inline) + the shared montage helpers, records this pivot, and
+seeds the invariant suite. The sections below are retained as the historical
+design and the still-valid environment findings (§7.1, §A).
 
 ## 1. Goal
 

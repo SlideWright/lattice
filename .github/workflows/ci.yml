@@ -181,58 +181,17 @@ jobs:
           path: .scratch/parity/
           if-no-files-found: ignore
 
-  # ── Visual regression gate — fresh render must match the committed golden ──
-  # engine-parity's single-renderer successor (P4): renders every gallery fresh
-  # through the owned emulator and pixel-diffs it against the committed golden PDF
-  # (lib/components/**/<name>.gallery.{light,dark}.pdf). GREEN = the author blessed
-  # correctly; RED = unblessed drift (CSS/source changed but a deck's golden is
-  # stale) — re-bless locally (`npm run bless [-- --only <name>]`) and commit the
-  # refreshed PDFs.
-  #
-  # ADVISORY in Step 2 — deliberately NOT in the required `ci` gate below. The
-  # gate's first CI runs surfaced FLAKY cross-runner drift: GitHub's runners are
-  # heterogeneous, and Skia's CPU-dispatched rasterization differs by runner CPU
-  # on fine vector AND image content (~0.4–2%), intermittently (a different
-  # gallery each run). engine-parity is STILL the hard visual gate through Step 2,
-  # so this runs + uploads its drift montage for visibility without blocking on
-  # that noise. Step 3 makes it the SOLE blocking gate (when engine-parity is
-  # removed) — and OWNS the cross-runner determinism fix first (deterministic
-  # Skia/raster flags: --disable-skia-runtime-opts + font-render-hinting=none +
-  # --disable-lcd-text + --force-color-profile=srgb, validated across several CI
-  # runs). See engineering/decisions/2026-06-12-p4-regression-gate-retire-marp.md §A.
-  # Needs Chromium (renders), poppler (rasterize), and the color emoji font.
-  regression:
-    needs: [changes, unit]
-    if: needs.changes.outputs.code == 'true'
-    runs-on: ubuntu-latest
-    name: regression (node 22)
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-      - name: Cache Puppeteer browser
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/puppeteer
-          key: puppeteer-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
-      - name: Install poppler-utils + ImageMagick + color emoji font
-        run: sudo apt-get update && sudo apt-get install -y poppler-utils imagemagick fonts-noto-color-emoji
-      - name: Allow ImageMagick PDF coder (for the drift-montage artifact)
-        # IM6's default policy.xml blocks the PDF coder, which would break the
-        # `convert montages… drift.pdf` artifact built on a RED run. Relax it.
-        run: sudo sed -i 's/rights="none" pattern="PDF"/rights="read|write" pattern="PDF"/' /etc/ImageMagick-6/policy.xml || true
-      - run: npm ci
-      - name: Visual regression gate (render == committed golden)
-        run: npm run regress
-      - name: Upload drift montages on failure
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: regression-drift
-          path: .scratch/regression/
-          if-no-files-found: ignore
+  # ── (Visual regression gate REMOVED — pivoted to component invariants) ──────
+  # P4 originally wired `npm run regress` (fresh render == committed golden) in as
+  # the CI visual gate. That pixel gate is RETIRED: across GitHub's heterogeneous
+  # runners Skia's CPU-dispatched rasterization isn't bit-identical, so it flaked
+  # ~0.4–2% on a *different* gallery each run — and post-marp a self-golden pixel
+  # gate detects *change*, not *correctness*. `npm run regress` survives as a
+  # LOCAL spot-check only. The CI visual-correctness gate is now the per-component
+  # SEMANTIC-INVARIANT suite (render via lib/engine → assert computed-style /
+  # structure; deterministic + machine-independent). `golden-diff` below stays —
+  # it diffs two committed PDFs on one runner, so it isn't flaky. See
+  # engineering/decisions/2026-06-12-p4-regression-gate-retire-marp.md §0.
 
   # ── Golden before/after — post the intended visual change on the PR ────────
   # Informational, NON-gating (the regression gate above is the blocker). Diffs
