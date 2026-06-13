@@ -14,9 +14,9 @@
 // source of truth and centres a single slide with flex + a uniform scale, so a
 // rehearsal slide looks identical to the same slide in the preview.
 
-import { KATEX_URL, MERMAID_URL } from './deck-preview.js';
+import { KATEX_URL, MERMAID_URL, splitSections } from './deck-preview.js';
 import { isCapableTier } from './drawing-board-chat.js';
-import { createRehearsalPlanner, overBeat } from './drawing-board-rehearsal.js';
+import { createRehearsalPlanner, metasFromSections, metasFromSource, overBeat } from './drawing-board-rehearsal.js';
 import { budgetStatus, readBudgetCap, readBudgetMode, readSpend, recordSpend } from './drawing-board-settings.js';
 import { slideBox } from './frame-css.js';
 
@@ -55,6 +55,8 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
   let slideEnteredAt = 0;
   let tick = null;
   let shownCoachKey = null;
+  let prepared = null; // { out, sections, metas, bg } — one engine render, shared by the start screen + the run
+  let cachedMetas = null; // the slide metas the read/plan run off (engine-derived, source as fallback)
 
   const el = (tag, cls, text) => {
     const e = document.createElement(tag);
@@ -72,6 +74,29 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
       if (!fetched[name]) fetched[name] = fetch(themeBase + name + '.css').then((r) => r.text()).then((c) => pg.addThemes([c])).catch(() => {});
       await fetched[name];
     }
+  }
+
+  // Render the deck through the engine ONCE and derive the slide metas from the
+  // rendered <section> list — the AUTHORITATIVE segmentation (it honours `---`,
+  // fenced code, AND `split: headings`, which a source-regex split cannot; that
+  // mismatch is what made a big `split: headings` deck read as "1 slide"). The
+  // same render feeds both the start-screen read and the run, so the plan's slide
+  // count always equals what's on the stage. Cached on `prepared`.
+  async function prepare() {
+    let pg = PG();
+    if (!pg) pg = await waitForPG();
+    const palette = root.getAttribute('data-palette') || 'indaco';
+    const mode = root.getAttribute('data-mode') === 'dark' ? 'dark' : 'light';
+    await ensureTheme(palette);
+    if (mode === 'dark') await ensureTheme(palette + '-dark');
+    const theme = mode === 'dark' && pg.hasTheme(palette + '-dark') ? palette + '-dark' : palette;
+    const source = getSource();
+    const out = pg.render(source, theme);
+    const sections = splitSections(out.html);
+    const metas = sections.length ? metasFromSections(sections, { bucketOf }) : metasFromSource(source, { bucketOf });
+    prepared = { out, sections, metas, bg: mode === 'dark' ? '#0c0c0c' : '#15110d' };
+    cachedMetas = metas;
+    return prepared;
   }
 
   // The rehearsal iframe. ONE slide, centred, scaled uniformly to fit — the slide
@@ -120,6 +145,11 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
   let elPace;
   let elTarget;
   let elAi;
+  let elSpine; // the per-slide progress spine (section breaks marked)
+  let elSection; // the current section's name
+  let elNext; // the next section, previewed top-right so transitions never surprise you
+  let sections = []; // [{ start, title }] — a section opens at slide 0 and each divider
+  let sectionOf = []; // slide index → section index
   let elCoach; // the single coaching pill (ambient guidance OR a timed beat)
 
   function close() {
@@ -134,6 +164,20 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
     else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(idx - 1); }
   }
   function slideCount() { return plan ? plan.slides.length : 0; }
+  // A section opens at the first slide and at every divider (the `section` role);
+  // its name is the divider's title. Lets the bar show "where in the arc" you are.
+  function computeSections(slides) {
+    sections = [];
+    sectionOf = [];
+    for (let i = 0; i < slides.length; i++) {
+      if (i === 0 || slides[i].role === 'section') {
+        sections.push({ start: i, title: slides[i].title || (i === 0 ? 'Opening' : 'Section') });
+      }
+      sectionOf[i] = sections.length - 1;
+    }
+  }
+  // The section after the one you're in — drives the top-right "next ·" preview.
+  function nextSection(i) { return sections[sectionOf[i] + 1] || null; }
   function go(n) {
     idx = Math.max(0, Math.min(slideCount() - 1, n));
     if (frame?.contentWindow) frame.contentWindow.postMessage({ pv: idx }, '*');
@@ -145,6 +189,24 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
   function refreshChrome() {
     const sp = plan?.slides[idx];
     elSlide.textContent = (idx + 1) + ' / ' + slideCount();
+    if (elSection) elSection.textContent = sections[sectionOf[idx]]?.title || '';
+    if (elNext) {
+      const ns = nextSection(idx);
+      if (ns) {
+        elNext.hidden = false;
+        elNext.innerHTML = '';
+        elNext.append(el('span', 'db-pv-next-k', 'next'), el('span', 'db-pv-next-n', ns.title));
+      } else {
+        elNext.hidden = true;
+      }
+    }
+    if (elSpine) {
+      const segs = elSpine.children;
+      for (let i = 0; i < segs.length; i++) {
+        segs[i].classList.toggle('done', i < idx);
+        segs[i].classList.toggle('cur', i === idx);
+      }
+    }
     elTarget.textContent = 'target ' + fmt(sp ? sp.target : 0);
     if (elAi) elAi.hidden = !(plan && plan.source === 'ai');
   }
@@ -215,37 +277,49 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
   }
 
   async function start(minutes) {
-    const source = getSource();
-    const { det, refined } = planner.plan(source, minutes, { bucketOf });
+    // Reuse the render the start screen already did (same deck → same sections);
+    // only render fresh if it isn't ready yet.
+    let prep = prepared;
+    if (!prep) { try { prep = await prepare(); } catch { close(); return; } }
+    const { out, metas, bg } = prep;
+    const { det, refined } = planner.plan(metas, minutes);
     plan = det;
     if (!plan.slides.length) { close(); return; }
+    computeSections(plan.slides);
     idx = 0;
-
-    let pg = PG();
-    if (!pg) { try { pg = await waitForPG(); } catch { close(); return; } }
-    const palette = root.getAttribute('data-palette') || 'indaco';
-    const mode = root.getAttribute('data-mode') === 'dark' ? 'dark' : 'light';
-    await ensureTheme(palette);
-    if (mode === 'dark') await ensureTheme(palette + '-dark');
-    const theme = mode === 'dark' && pg.hasTheme(palette + '-dark') ? palette + '-dark' : palette;
-    const out = pg.render(source, theme);
-    const bg = mode === 'dark' ? '#0c0c0c' : '#15110d';
 
     // Build the running view: bar (top) · stage with the coaching scrim · nav.
     host.innerHTML = '';
     const run = el('div', 'db-pv-run');
 
+    // The bar (top): a per-slide progress spine (section breaks ticked) over a
+    // row that just LOCATES you in the arc — current section + position (left),
+    // the next section previewed + AI tag + close (right). No timing up here; the
+    // clock and pace live in the bottom HUD, so the top stays a calm hairline and
+    // the slide gets the height back.
     const bar = el('div', 'db-pv-bar');
+    elSpine = el('div', 'db-pv-spine');
+    for (let i = 0; i < plan.slides.length; i++) {
+      const seg = el('span', 'db-pv-seg');
+      if (i > 0 && sectionOf[i] !== sectionOf[i - 1]) seg.classList.add('at-divider');
+      elSpine.append(seg);
+    }
+    const row = el('div', 'db-pv-bar-row');
+    const left = el('div', 'db-pv-bar-left');
+    elSection = el('span', 'db-pv-section');
     elSlide = el('span', 'db-pv-slide');
-    elClock = el('span', 'db-pv-clock', '0:00');
-    elPace = el('span', 'db-pv-pace ok', 'on track');
+    left.append(elSection, elSlide);
+    const right = el('div', 'db-pv-bar-right');
+    elNext = el('span', 'db-pv-next-section'); elNext.hidden = true;
     elAi = el('span', 'db-pv-ai', '✦ AI‑tuned'); elAi.hidden = true; elAi.title = 'Pacing + cues tailored to this deck by your connected model';
     const closeBtn = el('button', 'db-pv-x'); // glyph drawn by CSS: .db-pv-x::before
     closeBtn.type = 'button';
     closeBtn.title = 'Exit practice (Esc)';
     closeBtn.setAttribute('aria-label', 'Exit practice');
     closeBtn.addEventListener('click', close);
-    bar.append(elSlide, elClock, elPace, elAi, closeBtn);
+    right.append(elNext, elAi, closeBtn);
+    row.append(left, right);
+    bar.append(elSpine, row);
 
     const stage = el('div', 'db-pv-stage');
     frame = el('iframe', 'db-pv-frame');
@@ -258,11 +332,21 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
     coach.append(elCoach);
     stage.append(frame, coach);
 
+    // The bottom HUD: Prev (left) · a composed readout — the clock dominant, the
+    // pace + target grouped behind a hairline (centre) · Next (right). One calm,
+    // legible strip; the clock is the focal point you glance at, not a crowd.
     const nav = el('div', 'db-pv-nav');
     const prev = el('button', 'db-pv-btn'); prev.type = 'button'; prev.innerHTML = '<span class="ico ico-chevron-left" aria-hidden="true"></span> Prev'; prev.addEventListener('click', () => go(idx - 1));
+    const readout = el('div', 'db-pv-readout');
+    elClock = el('span', 'db-pv-clock', '0:00');
+    const vr = el('span', 'db-pv-vr');
+    const pacewrap = el('div', 'db-pv-pacewrap');
+    elPace = el('span', 'db-pv-pace ok', 'on track');
     elTarget = el('span', 'db-pv-target');
+    pacewrap.append(elPace, elTarget);
+    readout.append(elClock, vr, pacewrap);
     const next = el('button', 'db-pv-btn db-pv-next'); next.type = 'button'; next.innerHTML = 'Next <span class="ico ico-chevron-right" aria-hidden="true"></span>'; next.addEventListener('click', () => go(idx + 1));
-    nav.append(prev, elTarget, next);
+    nav.append(prev, readout, next);
 
     run.append(bar, stage, nav);
     host.appendChild(run);
@@ -300,15 +384,16 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
 
     // A deterministic suggested length + a whole-deck READ (the structural take:
     // time split, the ask, fit, front-loading) + a note when AI coaching is live.
-    // All of it uses detOnly() so merely opening the screen NEVER fires a billed
-    // model call — only Start does. The read re-computes live as you change the
-    // length (the fit flags depend on it).
+    // It reads off the ENGINE-derived metas (so the slide count is correct even
+    // for `split: headings` decks) via detOnly() — no billed call; only Start
+    // fires the model. Re-computes live as you change the length.
     const read = el('div', 'db-pv-read');
+    let seeded = false;
     const renderRead = (mins) => {
       read.innerHTML = '';
-      let det;
-      try { det = planner.detOnly(getSource(), mins, { bucketOf }); } catch { return; }
-      if (!det.slides.length) return;
+      if (!cachedMetas) { read.append(el('p', 'db-pv-read-summary', 'Reading your deck…')); return; }
+      if (!cachedMetas.length) return;
+      const det = planner.detOnly(cachedMetas, mins);
       const hint = el('button', 'db-pv-suggest'); hint.type = 'button';
       hint.textContent = `Suggested ${det.suggestMinutes} min for ${det.slides.length} slide${det.slides.length === 1 ? '' : 's'}`;
       hint.title = 'Set the input to the suggested length';
@@ -328,13 +413,18 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
       }
     };
     s.append(read);
-    // Seed the input at the suggested length, then render the read for it.
-    try {
-      const seed = planner.detOnly(getSource(), Number(input.value) || 10, { bucketOf });
-      if (seed.slides.length) input.value = String(seed.suggestMinutes);
-    } catch { /* no source yet — fine */ }
-    renderRead(Math.max(1, Number(input.value) || 10));
-    input.addEventListener('input', () => renderRead(Math.max(1, Number(input.value) || 10)));
+    renderRead(Math.max(1, Number(input.value) || 10)); // shows "Reading your deck…" until prepare() lands
+    input.addEventListener('input', () => { seeded = true; renderRead(Math.max(1, Number(input.value) || 10)); });
+    // Engine render → authoritative metas; seed the suggested length, then the read.
+    // Fall back to a source split only if the engine never comes up.
+    prepared = null; cachedMetas = null;
+    prepare()
+      .catch(() => { cachedMetas = metasFromSource(getSource(), { bucketOf }); })
+      .finally(() => {
+        if (host.hidden) return; // closed while we were rendering
+        if (!seeded && cachedMetas?.length) input.value = String(planner.detOnly(cachedMetas, 10).suggestMinutes);
+        renderRead(Math.max(1, Number(input.value) || 10));
+      });
     // The note only shows for tiers strong enough to actually tailor the plan
     // (the floor/tiny tiers keep the proven deterministic coaching).
     const avail = model?.availability ? model.availability() : null;

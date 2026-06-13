@@ -196,8 +196,29 @@ in patch versions.
   "rode high" — plus a no-zoom viewport that kills the iOS double-tap zoom. See
   `engineering/decisions/2026-06-08-architect-coach-features.md`.
 
+- **Practice's running chrome is redesigned for legibility and stage room.** The
+  top bar is now a pure **locator** — a per-slide progress **spine** that ticks
+  each section boundary and names where you are (current section + position),
+  with the **next section previewed** (`next · The ask`) so a transition never
+  surprises you. All timing moved off the top into a composed **bottom HUD**: the
+  clock is the dominant focal point, with pace and target grouped behind a
+  hairline, balanced between Prev and Next. Pulling the clock and pace off the top
+  edge hands that height back to the slide — the rehearsal stage is taller on
+  every form factor. Responsive across desktop · tablet · mobile (the
+  next-section preview drops on mobile to protect the width). See
+  `engineering/decisions/2026-06-08-architect-coach-features.md`.
+
 ### Fixed
 
+- **Practice mode no longer mis-counts a `split: headings` (or fenced-`---`)
+  deck as a single slide.** It re-implemented slide-splitting with a source
+  regex that only knew about top-level `---`, so a deck the engine divides by
+  heading collapsed to one giant slide — producing an absurd suggested length
+  (e.g. "154 min for 1 slide") and a dead **Next** button. Practice now derives
+  its slides from the engine's rendered `<section>` list (the authoritative
+  segmentation, shared with the live preview), so the rehearsal plan, the
+  whole-deck read, and navigation always match what the deck actually renders.
+  The source split remains only as a fallback when the engine isn't ready.
 - **The docs-site live preview no longer flickers, flashes, or leaves a dead
   scroll gap — and all four preview surfaces now share ONE controller.** The
   Playground, the Drawing Board, and both Workbench studios had each re-rolled the

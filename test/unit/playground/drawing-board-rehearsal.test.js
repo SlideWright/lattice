@@ -178,49 +178,49 @@ describe('mergeAiPlan', () => {
   });
 });
 
-describe('createRehearsalPlanner', () => {
+describe('createRehearsalPlanner (metas-based)', () => {
   test('floors instantly with no model; refined resolves null', async () => {
-    const { createRehearsalPlanner } = await load();
+    const { createRehearsalPlanner, metasFromSource } = await load();
     const planner = createRehearsalPlanner({});
-    const { det, refined } = planner.plan(DECK, 10);
+    const { det, refined } = planner.plan(metasFromSource(DECK), 10);
     assert.equal(det.slides.length, 6);
     assert.equal(await refined, null);
   });
 
-  test('uses the model when a real backend is live, and caches per (deck+minutes)', async () => {
-    const { createRehearsalPlanner } = await load();
+  test('uses the model when a real backend is live, and caches per (metas+minutes)', async () => {
+    const { createRehearsalPlanner, metasFromSource } = await load();
+    const M = metasFromSource(DECK);
     let calls = 0;
     const model = {
       availability: () => ({ modelOn: true, generation: 'mock' }),
       complete: async () => { calls++; return { slides: [{ i: 0, why: 'AI open', target: 60 }] }; },
     };
     const planner = createRehearsalPlanner({ model });
-    const first = planner.plan(DECK, 10);
-    const aiPlan = await first.refined;
+    const aiPlan = await planner.plan(M, 10).refined;
     assert.equal(aiPlan.source, 'ai');
     assert.equal(aiPlan.slides[0].why, 'AI open');
     assert.equal(calls, 1);
-    // same deck + minutes → served from cache, no second model call
-    const second = planner.plan(DECK, 10);
-    assert.equal(await second.refined, aiPlan);
+    // same metas + minutes → served from cache, no second model call
+    assert.equal(await planner.plan(M, 10).refined, aiPlan);
     assert.equal(calls, 1);
     // changed length → re-assessed
-    planner.plan(DECK, 12);
+    planner.plan(M, 12);
     await new Promise((r) => setTimeout(r, 0));
     assert.equal(calls, 2);
   });
 
   test('a floor-only model is not called', async () => {
-    const { createRehearsalPlanner } = await load();
+    const { createRehearsalPlanner, metasFromSource } = await load();
     let calls = 0;
     const model = { availability: () => ({ modelOn: true, generation: 'floor' }), complete: async () => { calls++; return {}; } };
     const planner = createRehearsalPlanner({ model });
-    assert.equal(await planner.plan(DECK, 10).refined, null);
+    assert.equal(await planner.plan(metasFromSource(DECK), 10).refined, null);
     assert.equal(calls, 0);
   });
 
   test('the gate blocks weak tiers, budget-stops, and forwards usage', async () => {
-    const { createRehearsalPlanner } = await load();
+    const { createRehearsalPlanner, metasFromSource } = await load();
+    const M = metasFromSource(DECK);
     const aiResp = { slides: [{ i: 0, why: 'AI open', target: 60 }] };
     const make = (gate) => {
       let calls = 0;
@@ -233,29 +233,63 @@ describe('createRehearsalPlanner', () => {
     };
     // capable=false → never called, floor stands
     const a = make(() => ({ capable: () => false }));
-    assert.equal(await a.planner.plan(DECK, 10).refined, null);
+    assert.equal(await a.planner.plan(M, 10).refined, null);
     assert.equal(a.calls(), 0);
     // allow=false (budget stop) → never called
     const b = make(() => ({ capable: () => true, allow: () => false }));
-    assert.equal(await b.planner.plan(DECK, 11).refined, null);
+    assert.equal(await b.planner.plan(M, 11).refined, null);
     assert.equal(b.calls(), 0);
     // allowed + capable → called, and usage is forwarded to onUsage
     const c = make(({ markUsage }) => ({ capable: () => true, allow: () => true, onUsage: markUsage }));
-    const p = await c.planner.plan(DECK, 12).refined;
+    const p = await c.planner.plan(M, 12).refined;
     assert.equal(p.source, 'ai');
     assert.equal(c.calls(), 1);
     assert.deepEqual(c.usage(), { cost: 0.01 });
   });
 
   test('detOnly returns the floor without ever calling the model', async () => {
-    const { createRehearsalPlanner } = await load();
+    const { createRehearsalPlanner, metasFromSource } = await load();
     let calls = 0;
     const model = { availability: () => ({ modelOn: true, generation: 'openrouter' }), complete: async () => { calls++; return {}; } };
     const planner = createRehearsalPlanner({ model });
-    const det = planner.detOnly(DECK, 10);
+    const det = planner.detOnly(metasFromSource(DECK), 10);
     assert.equal(det.source, 'deterministic');
     assert.equal(det.slides.length, 6);
     await new Promise((r) => setTimeout(r, 0));
     assert.equal(calls, 0);
+  });
+});
+
+describe('metasFromSections (engine-authoritative split — the big-deck fix)', () => {
+  test('counts one slide per rendered <section>, not per source `---`', async () => {
+    const { metasFromSections, buildDeterministicPlanFromSections } = await load();
+    // A `split: headings` deck is ONE source block but renders as many sections;
+    // the rendered list is the truth. Five sections → five slides.
+    const sections = [
+      '<section class="title"><h1>New deck</h1><p>Budget proposal</p></section>',
+      '<section class="divider"><h2>Where we stand</h2></section>',
+      '<section class="big-number"><h2>$2.4B</h2><p>Total revenue ahead of plan</p></section>',
+      '<section class="decision"><h2>The ask</h2><p>Approve the FY27 budget.</p></section>',
+      '<section class="closing"><h2>Thank you</h2></section>',
+    ];
+    const metas = metasFromSections(sections);
+    assert.equal(metas.length, 5);
+    assert.equal(metas[0].role, 'open');
+    assert.equal(metas[1].role, 'section');
+    assert.equal(metas[2].role, 'data');
+    assert.equal(metas[3].role, 'decision');
+    assert.equal(metas[4].role, 'close');
+    assert.equal(metas[2].title, '$2.4B');
+    const plan = buildDeterministicPlanFromSections(sections, 10);
+    assert.equal(plan.slides.length, 5);
+    const sum = plan.slides.reduce((a, s) => a + s.target, 0);
+    assert.ok(Math.abs(sum - 600) < 1);
+  });
+
+  test('falls back to the first class / catalog lookup for the component', async () => {
+    const { metasFromSections } = await load();
+    const bucketOf = (n) => (n === 'verdict-grid' ? 'comparison' : null);
+    const metas = metasFromSections(['<section class="lead-in verdict-grid tint-accent"><h2>Options</h2></section>'], { bucketOf });
+    assert.equal(metas[0].comp, 'verdict-grid'); // catalog-known beats the leading non-component class
   });
 });
