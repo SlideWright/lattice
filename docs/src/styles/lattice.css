@@ -91,6 +91,21 @@ h1#_top {
 	font-weight: 700;
 }
 
+/* ── Card icon tiles — palette-bound, not Starlight's fixed rainbow ─────────
+ * Starlight's <Card> cycles the icon tile through fixed categorical hues
+ * (--sl-color-purple/orange/green/red/blue) by card position. Those ignore the
+ * palette and aren't contrast-curated per mode, so they clash on the ink-only
+ * themes (onyx, concrete) and warm themes. Bind the tile to the curated
+ * accent pair instead — accent border + accent-soft fill — so every card's
+ * icon adapts to the active palette and mode, in keeping with the one-palette
+ * principle. The glyph already follows the heading colour, which sits with
+ * AA contrast on accent-soft across the shipped palettes. Unlayered → beats
+ * Starlight's @layer starlight.components nth-child rules. */
+.sl-markdown-content .card {
+	--sl-card-border: var(--accent);
+	--sl-card-bg: var(--accent-soft);
+}
+
 /* ── Header → site topbar ───────────────────────────────────────────────────
  * Starlight's PageFrame supplies the fixed bar (.header) with the right
  * border + background (now themed via the remapped tokens) and reserves space

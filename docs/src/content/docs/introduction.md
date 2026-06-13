@@ -30,7 +30,7 @@ engine knows. Open
 [`examples/gallery.pdf`](https://github.com/slidewright/lattice/blob/main/examples/gallery.pdf).
 That is the answer to "what does this actually produce?". For an
 interactive tour of every layout — themable in any palette — see the
-[component reference](/lattice/components/).
+[component reference](/components/).
 
 ## What you get
 
@@ -102,16 +102,16 @@ own.
 ## Two ways to use it
 
 - **From a terminal.** Install Node.js, write Markdown, run one
-  command, get a PDF. See [Getting started](/lattice/getting-started/).
+  command, get a PDF. See [Getting started](/getting-started/).
 - **From a desktop app.** **SlideWright** is the editor application
   (under active development) that wraps the same Lattice engine for
   people who do not want to touch a terminal.
 
 ## Where to go next
 
-- [Get started](/lattice/getting-started/) — install the toolchain and render
+- [Get started](/getting-started/) — install the toolchain and render
   your first deck.
-- [Author decks](/lattice/guides/authoring/) — the layout catalog and authoring
+- [Author decks](/guides/authoring/) — the layout catalog and authoring
   contract.
-- [Browse components](/lattice/components/) — every layout,
+- [Browse components](/components/) — every layout,
   themable in any palette.

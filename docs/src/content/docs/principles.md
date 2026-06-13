@@ -275,7 +275,7 @@ anyone hands you the room.
 
 - [The design system](https://github.com/slidewright/lattice/blob/main/design/design-system.md) —
   the full four-layer model, in depth.
-- [Author decks](/lattice/guides/authoring/) — the layout catalog and
+- [Author decks](/guides/authoring/) — the layout catalog and
   the authoring contract.
-- [Browse components](/lattice/components/) — every layout, themable in
+- [Browse components](/components/) — every layout, themable in
   any palette.

@@ -185,6 +185,13 @@ in patch versions.
   **Principles** · The story) → `Get started` → `Guides` — with the duplicate
   "Tools" group removed, so the mobile menu no longer stacks two near-identical
   navigations and Principles is no longer buried.
+  **Fixed:** hand-written content links were hardcoded to the `/lattice/` base,
+  so they 404'd on the Cloudflare (root-base) deployment. Content now uses
+  base-less root-relative links and a `rehype-base-links` plugin prefixes the
+  active base at build, so they resolve under both deploy targets; a branded,
+  navigable **404** page replaces the dead-end. **Card icon tiles** now bind to
+  the curated `--accent` / `--accent-soft` pair instead of Starlight's fixed
+  rainbow hues, so they keep contrast across every palette and light/dark mode.
 
 - **The CI visual-correctness gate is now a per-component semantic-invariant
   suite** (delivering the P4 pivot away from the retired pixel gate). Every

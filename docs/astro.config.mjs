@@ -2,6 +2,7 @@
 
 import starlight from '@astrojs/starlight';
 import { defineConfig } from 'astro/config';
+import { rehypeBaseLinks } from './plugins/rehype-base-links.mjs';
 
 // Project Pages site: https://slidewright.github.io/lattice/
 // `site` + `base` must match the GitHub Pages URL so generated links and
@@ -34,6 +35,12 @@ export default defineConfig({
 	// CJS→ESM build nudge is needed. See tools/build-authoring-core.js.
 	vite: {
 		server: { fs: { allow: ['..'] } },
+	},
+	// Base-prefix hand-written, root-relative content links so they resolve
+	// under both deploy bases (/lattice on GitHub Pages, / on Cloudflare).
+	// Applies to Starlight's Markdown/MDX content too. See plugins/.
+	markdown: {
+		rehypePlugins: [rehypeBaseLinks],
 	},
 	integrations: [
 		starlight({

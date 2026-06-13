@@ -83,9 +83,9 @@ npx @marp-team/marp-cli deck.md \
 
 ## What to read next
 
-- [Authoring decks](/lattice/guides/authoring/) — the layout catalog and the
+- [Authoring decks](/guides/authoring/) — the layout catalog and the
   authoring contract for each layout.
-- [Themes & palettes](/lattice/guides/themes/) — pick a palette, or author your
+- [Themes & palettes](/guides/themes/) — pick a palette, or author your
   own.
-- [Component reference](/lattice/components/) — every layout, slot,
+- [Component reference](/components/) — every layout, slot,
   and modifier, browsable in any palette.
