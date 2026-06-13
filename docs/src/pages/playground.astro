@@ -11,6 +11,7 @@ import '../styles/playground.css';
 import '../styles/deck-config.css';
 import { buildCatalog, buildLenses, groupCatalog } from '../lib/families.mjs';
 import { joinBase } from '../lib/base-url.mjs';
+import { primaryNav, GITHUB_URL, isCurrent } from '../lib/nav.mjs';
 import { isPreviewDeploy } from '../lib/deploy-env.mjs';
 import { assetBase } from '../playground/asset-version.mjs';
 import { loadGalleries, GALLERY_GROUPS } from '../playground/galleries.mjs';
@@ -24,6 +25,8 @@ const manifests = loadAll();
 
 const base = import.meta.env.BASE_URL;
 const url = (p) => joinBase(base, p);
+const navLinks = primaryNav(url); // shared primary nav — src/lib/nav.mjs
+const here = Astro.url.pathname;
 // Cache-busted prefix for the playground's runtime-fetched assets (see
 // asset-version.mjs); the bare `playground/` route is unchanged.
 const pg = assetBase();
@@ -123,13 +126,10 @@ const pgData = JSON.stringify({
 					<span class="brand-mark">Lattice</span>
 				</a>
 				<nav class="topnav" id="topnav">
-					<a class="navlink" href={url('getting-started/')}>Get started</a>
-					<a class="navlink" href={url('guides/authoring/')}>Guides</a>
-					<a class="navlink" href={url('playground/')} aria-current="page">Playground</a>
-					<a class="navlink" href={url('drawing-board/')}>Drawing Board</a>
-					<a class="navlink" href={url('workbench/')}>Workbench</a>
-					<a class="navlink" href={url('components/')}>Components</a>
-					<a class="navlink" href="https://github.com/slidewright/lattice">GitHub</a>
+					{navLinks.map((l) => (
+						<a class="navlink" href={l.href} aria-current={isCurrent(l, here) ? 'page' : undefined}>{l.label}</a>
+					))}
+					<a class="navlink" href={GITHUB_URL}>GitHub</a>
 				</nav>
 				<div class="topbar-actions">
 					<div class="controls">

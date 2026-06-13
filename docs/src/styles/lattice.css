@@ -16,6 +16,9 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 @import './lattice-tokens.generated.css';
+/* Topbar chrome glyphs (menu / moon / sun) — shared with the standalone pages
+ * (landing.css) so the docs topbar can't drift from the rest of the site. */
+@import './chrome-icons.css';
 
 :root {
 	--sl-font: 'Outfit', system-ui, sans-serif;
@@ -34,11 +37,6 @@
 	--accent-soft: #eff6fc;
 	--on-accent: #ffffff;
 	--bg-dark: #003d66;
-
-	/* UI-chrome icons — Lucide (https://lucide.dev, ISC), as data-URI masks
-	 * painted with `background: currentColor` so they track the palette. */
-	--lx-icon-moon: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z'/%3e%3c/svg%3e");
-	--lx-icon-sun: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3ccircle cx='12' cy='12' r='4'/%3e%3cpath d='M12 2v2'/%3e%3cpath d='M12 20v2'/%3e%3cpath d='m4.93 4.93 1.41 1.41'/%3e%3cpath d='m17.66 17.66 1.41 1.41'/%3e%3cpath d='M2 12h2'/%3e%3cpath d='M20 12h2'/%3e%3cpath d='m6.34 17.66-1.41 1.41'/%3e%3cpath d='m19.07 4.93-1.41 1.41'/%3e%3c/svg%3e");
 }
 
 /* ── Remap Starlight's colour surface onto the site palette tokens ──────────
@@ -93,6 +91,31 @@ h1#_top {
 	font-weight: 700;
 }
 
+/* ── Card icon tiles — distinct, but from each theme's curated palette ──────
+ * Starlight's <Card> cycles the icon tile through FIXED categorical hues
+ * (--sl-color-purple/orange/green/red/blue) by card position — palette-blind
+ * and not contrast-curated per mode, so they clash on the ink-only (onyx,
+ * concrete) and warm themes. Keep the distinct-per-card look the rainbow gave,
+ * but source it from the palette's OWN categorical series (--chart-cat1..8 —
+ * tuned per palette AND light/dark, exposed to the docs via
+ * lattice-tokens.generated.css). Each icon gets its hue's full colour for the
+ * glyph + border and a faint same-hue fill, so it stays distinct AND on-palette
+ * with AA contrast in every theme/mode. Unlayered → beats Starlight's
+ * @layer starlight.components nth-child rules. */
+.sl-markdown-content .card .icon {
+	color: var(--lx-cat, var(--accent));
+	border-color: var(--lx-cat, var(--accent));
+	background-color: color-mix(in srgb, var(--lx-cat, var(--accent)) 14%, var(--bg));
+}
+.sl-markdown-content .card:nth-child(8n + 1) .icon { --lx-cat: var(--chart-cat1); }
+.sl-markdown-content .card:nth-child(8n + 2) .icon { --lx-cat: var(--chart-cat2); }
+.sl-markdown-content .card:nth-child(8n + 3) .icon { --lx-cat: var(--chart-cat3); }
+.sl-markdown-content .card:nth-child(8n + 4) .icon { --lx-cat: var(--chart-cat4); }
+.sl-markdown-content .card:nth-child(8n + 5) .icon { --lx-cat: var(--chart-cat5); }
+.sl-markdown-content .card:nth-child(8n + 6) .icon { --lx-cat: var(--chart-cat6); }
+.sl-markdown-content .card:nth-child(8n + 7) .icon { --lx-cat: var(--chart-cat7); }
+.sl-markdown-content .card:nth-child(8n + 8) .icon { --lx-cat: var(--chart-cat8); }
+
 /* ── Header → site topbar ───────────────────────────────────────────────────
  * Starlight's PageFrame supplies the fixed bar (.header) with the right
  * border + background (now themed via the remapped tokens) and reserves space
@@ -146,17 +169,31 @@ h1#_top {
 	font-weight: 600;
 }
 
-/* Search sits between nav and controls, flexing to take the slack. Reuses
- * Starlight's <site-search>; we just let it grow and cap its width. */
+/* Mobile: search is just its magnifier button, parked with the controls as a
+ * tidy right-hand cluster (margin-auto eats the slack after the brand). Keeping
+ * it shrink-wrapped — not a flex-grow that collapses to 0 and clips against the
+ * wordmark on a 360px phone — is what makes the narrow topbar sit right. */
 .lx-search {
-	flex: 1 1 auto;
+	flex: 0 0 auto;
 	display: flex;
 	justify-content: flex-end;
 	min-width: 0;
+	margin-inline-start: auto;
 }
 .lx-search site-search {
-	width: 100%;
-	max-width: 22rem;
+	width: auto;
+}
+/* Desktop: search flexes to fill the slack between nav and controls and opens
+ * into the full "Search ⌘K" pill. */
+@media (min-width: 50rem) {
+	.lx-search {
+		flex: 1 1 auto;
+		margin-inline-start: 0;
+	}
+	.lx-search site-search {
+		width: 100%;
+		max-width: 22rem;
+	}
 }
 
 .lx-controls {
@@ -202,19 +239,43 @@ h1#_top {
 	width: 1rem;
 	height: 1rem;
 	background: currentColor;
-	-webkit-mask: var(--lx-icon-moon) center / contain no-repeat;
-	mask: var(--lx-icon-moon) center / contain no-repeat;
+	-webkit-mask: var(--icon-moon) center / contain no-repeat;
+	mask: var(--icon-moon) center / contain no-repeat;
 }
 :root[data-mode='dark'] .lx-mode::before {
-	-webkit-mask-image: var(--lx-icon-sun);
-	mask-image: var(--lx-icon-sun);
+	-webkit-mask-image: var(--icon-sun);
+	mask-image: var(--icon-sun);
 }
 
-/* The brand text turns into just the logo on the narrowest screens so the
- * search + controls keep room next to the fixed sidebar toggle. */
+/* Mobile sidebar toggle (Starlight's <starlight-menu-button>). Restyle the
+ * default floating white circle into the same bordered square the site's own
+ * nav-toggle uses (landing/components), palette-bound, so the docs hamburger
+ * matches the rest of the site instead of reading as Starlight chrome. Keeps
+ * Starlight's fixed positioning + its bars/close glyphs; only the chip
+ * appearance changes. Unlayered → beats Starlight's @layer starlight.core. */
+starlight-menu-button button {
+	width: 2.125rem;
+	height: 2.125rem;
+	border-radius: 8px;
+	border: 1px solid var(--border);
+	background: var(--bg);
+	color: var(--text-body);
+	box-shadow: none;
+}
+starlight-menu-button button:hover,
+starlight-menu-button[aria-expanded='true'] button {
+	border-color: var(--accent);
+	color: var(--accent);
+	background: var(--bg);
+}
+
+/* Narrowest screens: keep the "Lattice" wordmark (the landing topbar shows it
+ * on mobile too — the docs zone should match, not drop to a lonely logo).
+ * Tighten the row gap and cap the palette select so the wordmark, the compact
+ * search icon, the controls, and the fixed sidebar toggle all fit one line. */
 @media (max-width: 30rem) {
-	.lx-brand .lx-mark {
-		display: none;
+	.lx-topbar {
+		gap: 0.6rem;
 	}
 	.lx-palette {
 		max-width: 6.5rem;
@@ -232,6 +293,26 @@ h1#_top {
 		align-items: center;
 		gap: 1.15rem;
 	}
+}
+
+/* ── Code blocks (Expressive Code) — accent-bound chrome ────────────────────
+ * The frame (bg/border/shadow) already tracks the palette via Starlight's UI
+ * theme colours (→ our --sl-color-* remap); the syntax hues come from the
+ * quiet Vitesse pair (astro.config). Here we tie the *interactive* accents to
+ * the palette so the whole block reads as the current theme: the focus ring,
+ * the copy button's border, the active editor-tab indicator, the text
+ * selection, and the scrollbar thumb. Unlayered, so it beats EC's own
+ * `@layer starlight.components` defaults regardless of [data-theme] scope. */
+.expressive-code {
+	--ec-focusBrd: var(--accent);
+	--ec-codeSelBg: color-mix(in srgb, var(--accent) 22%, transparent);
+	--ec-uiSelBg: color-mix(in srgb, var(--accent) 22%, transparent);
+	--ec-sbThumbCol: color-mix(in srgb, var(--text-muted) 38%, transparent);
+	--ec-sbThumbHoverCol: color-mix(in srgb, var(--accent) 55%, transparent);
+	/* Frame chrome accents */
+	--ec-frm-edActTabIndTopCol: var(--accent);
+	--ec-frm-inlBtnBrd: var(--accent);
+	--ec-frm-inlBtnFg: var(--accent);
 }
 
 /* ── Site nav group inside the mobile sidebar menu ──────────────────────────

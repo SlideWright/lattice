@@ -163,6 +163,37 @@ in patch versions.
   Implemented as four small Starlight component overrides (`Header`,
   `ThemeProvider`, `Sidebar`, `MobileMenuFooter`) plus the token remap in
   `docs/src/styles/lattice.css`; no engine or deck behaviour changes.
+  **Code blocks** join the theming too: the syntax highlighter switches from
+  the default saturated night-owl to the restrained, low-saturation Vitesse
+  pair so code sits calmly inside any palette (instead of a cool blue fighting
+  the warm themes), and the block's interactive accents — focus ring, copy
+  button, active-tab indicator, selection, scrollbar — bind to the palette
+  accent. The frame already tracked the palette via Starlight's UI theme
+  colours. The topbar's chrome glyphs (menu / moon / sun) now live in one
+  shared `chrome-icons.css` imported by both the standalone pages and the docs
+  skin (so the two topbars can't drift), and the docs mobile menu button is
+  restyled to the same bordered-square toggle the rest of the site uses.
+  **The site navigation is now one coherent taxonomy.** The primary nav lives
+  in a single shared source (`docs/src/lib/nav.mjs`) consumed by every surface
+  — the landing/playground/drawing-board/workbench topbars, the component
+  topbar, and the docs header + mobile sidebar — so it can't drift. The two
+  overlapping doc links (`Get started` + `Guides`) collapse into one **Docs**
+  entry that lands on the Overview hub (now carding into Principles, What is
+  Lattice?, Get started, the guides, and Components); the apps (Playground,
+  Drawing Board, Workbench) and Components stay as their own entries. The docs
+  sidebar is now docs-only — `Introduction` (Overview · What is Lattice? ·
+  **Principles** · The story) → `Get started` → `Guides` — with the duplicate
+  "Tools" group removed, so the mobile menu no longer stacks two near-identical
+  navigations and Principles is no longer buried.
+  **Fixed:** hand-written content links were hardcoded to the `/lattice/` base,
+  so they 404'd on the Cloudflare (root-base) deployment. Content now uses
+  base-less root-relative links and a `rehype-base-links` plugin prefixes the
+  active base at build, so they resolve under both deploy targets; a branded,
+  navigable **404** page replaces the dead-end. **Card icon tiles** keep their
+  distinct per-card colours, but now drawn from each palette's own curated
+  categorical series (`--chart-cat1…8`, tuned per palette AND light/dark, newly
+  exposed to the docs) instead of Starlight's fixed rainbow — so they stay
+  distinct yet on-palette with AA contrast in every theme and mode.
 
 - **The CI visual-correctness gate is now a per-component semantic-invariant
   suite** (delivering the P4 pivot away from the retired pixel gate). Every

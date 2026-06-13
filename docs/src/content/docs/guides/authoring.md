@@ -57,7 +57,7 @@ job they do — anchor, statement, inventory, comparison, progression,
 evidence, imagery, plus the substance buckets (chart, diagram, math,
 code) and the legal domain set.
 
-The fastest way to choose is the **[component reference](/lattice/components/)**:
+The fastest way to choose is the **[component reference](/components/)**:
 an interactive catalog of every layout with its slots, variants, when to
 reach for it, and when not to — and you can preview the whole thing in
 any Lattice palette. The same content is also available as a single
@@ -157,7 +157,7 @@ is caught by the deck linter rather than silently rendering the baseline.
 
 ## Autocomplete in the Drawing Board
 
-The **[Drawing Board](/lattice/drawing-board/)** is the in-browser editor. It
+The **[Drawing Board](/drawing-board/)** is the in-browser editor. It
 completes the deck vocabulary as you type, from the same catalog the component
 reference and the linter use. Every suggestion is deterministic and offline;
 `Ctrl-Space` summons any of them on demand.
@@ -208,10 +208,10 @@ than going unstyled, and the drawer flags it.
 
 ## Where to go next
 
-- [Themes & palettes](/lattice/guides/themes/) — choose or author a palette.
-- [Component reference](/lattice/components/) — every layout's
+- [Themes & palettes](/guides/themes/) — choose or author a palette.
+- [Component reference](/components/) — every layout's
   authoring contract.
-- [Drawing Board](/lattice/drawing-board/) — author a full deck in the
+- [Drawing Board](/drawing-board/) — author a full deck in the
   browser (autocomplete, live linting).
 - [`reference/skill.md`](https://github.com/slidewright/lattice/blob/main/reference/skill.md)
   in the repo — the full deck-authoring contract.

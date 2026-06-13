@@ -17,6 +17,7 @@ import { join } from 'node:path';
 import Search from 'virtual:starlight/components/Search';
 import config from 'virtual:starlight/user-config';
 import { joinBase } from '../lib/base-url.mjs';
+import { primaryNav, GITHUB_URL, isCurrent } from '../lib/nav.mjs';
 
 const base = import.meta.env.BASE_URL;
 const url = (p) => joinBase(base, p);
@@ -28,15 +29,7 @@ const tokensCss = readFileSync(join(process.cwd(), 'src/styles/lattice-tokens.ge
 const palettes = [...new Set([...tokensCss.matchAll(/data-palette="([^"]+)"/g)].map((x) => x[1]))];
 
 const here = Astro.url.pathname;
-const links = [
-	{ label: 'Get started', href: url('getting-started/'), seg: 'getting-started' },
-	{ label: 'Guides', href: url('guides/authoring/'), seg: 'guides' },
-	{ label: 'Playground', href: url('playground/'), seg: 'playground' },
-	{ label: 'Drawing Board', href: url('drawing-board/'), seg: 'drawing-board' },
-	{ label: 'Workbench', href: url('workbench/'), seg: 'workbench' },
-	{ label: 'Components', href: url('components/'), seg: 'components' },
-];
-const isCurrent = (seg) => here.includes('/' + seg);
+const links = primaryNav(url); // single source of truth — src/lib/nav.mjs
 const shouldRenderSearch =
 	config.pagefind || config.components.Search !== '@astrojs/starlight/components/Search.astro';
 ---
@@ -50,12 +43,12 @@ const shouldRenderSearch =
 	<nav class="lx-nav" aria-label="Site">
 		{
 			links.map((l) => (
-				<a href={l.href} aria-current={isCurrent(l.seg) ? 'page' : undefined}>
+				<a href={l.href} aria-current={isCurrent(l, here) ? 'page' : undefined}>
 					{l.label}
 				</a>
 			))
 		}
-		<a href="https://github.com/slidewright/lattice">GitHub</a>
+		<a href={GITHUB_URL}>GitHub</a>
 	</nav>
 
 	{

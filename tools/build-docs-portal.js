@@ -75,6 +75,11 @@ const PORTAL_TOKENS = [
   'bg', 'bg-alt', 'border',
   'text-heading', 'text-body', 'text-muted',
   'accent', 'accent-soft', 'on-accent', 'bg-dark',
+  // The per-palette categorical series (each tuned per palette AND light/dark),
+  // so the docs chrome can use distinct-but-on-palette colours — e.g. the Card
+  // icon tiles cycle through these instead of Starlight's fixed rainbow.
+  'chart-cat1', 'chart-cat2', 'chart-cat3', 'chart-cat4',
+  'chart-cat5', 'chart-cat6', 'chart-cat7', 'chart-cat8',
 ];
 
 // Palettes surfaced first in the dropdown (the two canonical palettes
