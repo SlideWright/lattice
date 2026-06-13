@@ -219,15 +219,21 @@ measured pain.
   required aggregator, `code`-tier): Chromium + poppler + emoji font, runs
   `npm run regress`, uploads the drift montage on RED. `golden-diff`
   (**non-gating**, PR-only, `code`-tier): no Chromium — rasterizes the committed
-  goldens, diffs THIS PR's against `base.sha`, uploads a before│after│overlay
-  montage artifact, and posts/updates a sticky PR comment via
-  `actions/github-script` (`pull-requests: write`, `continue-on-error` so a
-  read-only fork token can't fail the run). `engine-parity` keeps running in
-  parallel — removed in Step 3.
+  goldens, diffs THIS PR's against `base.sha`, and posts/updates a sticky PR
+  comment via `actions/github-script` (`pull-requests: write`, `continue-on-error`
+  so a read-only fork token can't fail the run) with the before│after│overlay
+  montages embedded **inline** (fulfilling §4's "inline PNG previews"). Inline
+  comment images need a GitHub-served URL, so a `publish` step (`contents: write`,
+  same-repo only) pushes the PNGs to the orphan **`ci-drift-images`** branch (a
+  never-merged image store, `pr-<num>/<sha>/…`) and the comment links
+  `raw.githubusercontent.com` URLs; the full set also uploads as the
+  `golden-diff-changes` artifact (and is the fork-PR fallback). `engine-parity`
+  keeps running in parallel — removed in Step 3.
 - **`tools/golden-diff.mjs` (new)** — the before/after computer. `git diff` is
   only the cheap candidate filter; the pixel-diff (gate tolerance: fuzz 3% /
   0.05%) is the truth, so PDF byte-churn from a rebuild reads as "no visual
-  change". Emits `summary.md` (comment body) + `report.json` + `changes.pdf`.
+  change". Emits `summary.md` (comment body) + `report.json` (incl. `inlineMontages`,
+  capped at 8, most-changed gallery first) + per-slide `montages/*.png` + `changes.pdf`.
 - **`tools/pixel-check.js`** — extracted `montageTriptych` + `pngsToPdf`
   (HARD RULE 15); `regression-gate.mjs`'s `buildMontage` now calls them, and the
   gate's per-page montages gained a `deck · mood · slide N` caption.

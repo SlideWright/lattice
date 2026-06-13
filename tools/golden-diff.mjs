@@ -24,14 +24,19 @@
 // Output (under .scratch/golden-diff/):
 //   changes.pdf   — combined before│after│overlay montage (CI artifact); only
 //                   written when ≥1 slide changed
-//   summary.md    — markdown comment body (always written)
-//   report.json   — { changed, slides, galleries, … } (always written)
+//   montages/     — one before│after│overlay PNG per changed slide, stable-named
+//                   <name>.<mood>.s<NNN>.png. CI pushes these to the orphan
+//                   `ci-drift-images` branch and embeds the raw URLs inline in the
+//                   PR comment (report.inlineMontages is the capped embed list).
+//   summary.md    — markdown comment body, table + pointers (always written); CI
+//                   appends the inline images from report.inlineMontages.
+//   report.json   — { changed, slides, galleries, montages, inlineMontages, … }
 //
 // Exit 0 always — this is informational and never gates (the regression gate is
 // the blocker). A git/tool failure exits 2 so CI surfaces a broken run.
 
 import { execFileSync } from 'node:child_process';
-import { existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -41,6 +46,13 @@ const { pixelDiff, montageTriptych, pngsToPdf } = require('./pixel-check.js');
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, '.scratch', 'golden-diff');
+const MONTAGE_DIR = join(OUT, 'montages');
+
+// Cap how many before/after montages embed INLINE in the PR comment — a
+// shared-CSS change can move hundreds of slides, and a comment full of stacked
+// images is unreadable. The first INLINE_CAP (most-changed galleries first) embed
+// inline; the complete set always lives in the changes.pdf artifact.
+const INLINE_CAP = 8;
 
 // Mirror the regression gate's tolerance so "what changed" agrees with "what the
 // gate would catch": a page counts as changed only if its over-fuzz pixel count
@@ -93,11 +105,12 @@ function main() {
   const base = baseIdx >= 0 ? args[baseIdx + 1] : 'origin/main';
 
   rmSync(OUT, { recursive: true, force: true });
-  mkdirSync(OUT, { recursive: true });
+  mkdirSync(MONTAGE_DIR, { recursive: true });
 
   const candidates = changedGoldens(base);
   const entries = []; // { name, mood, relPath, status, slides, montages: [png] }
-  const montagePngs = [];
+  const montagePngs = []; // absolute paths under MONTAGE_DIR, for the changes.pdf artifact
+  const montageMeta = []; // { name, mood, page, file } — file is the stable basename
 
   for (const relPath of candidates) {
     const { name, mood } = describe(relPath);
@@ -131,7 +144,20 @@ function main() {
     for (const d of drifted) {
       const m = join(diff.tmpDir, `gd-${name}-${mood}-${String(d.page).padStart(3, '0')}.png`);
       const made = montageTriptych(d, m, { title: `${name} · ${mood} · slide ${d.page}` });
-      if (made) montagePngs.push(made);
+      if (!made) continue;
+      // Persist into MONTAGE_DIR under a stable, URL-safe, COLLISION-FREE basename
+      // so CI can push it to the image branch and embed a deterministic raw URL.
+      // The basename derives from the full relPath (which is unique), NOT from
+      // `name` — gallery leaf names repeat across buckets (diagram, code, math all
+      // exist at both bucket and component level), so a name-based file would let
+      // cpSync silently overwrite one montage with another. `name`/`mood` stay for
+      // the human caption/table; only the file is path-keyed.
+      const slug = relPath.replace(/^lib\/components\//, '').replace(/\.pdf$/, '').replace(/[^a-z0-9]+/gi, '_');
+      const file = `${slug}_s${String(d.page).padStart(3, '0')}.png`;
+      const dest = join(MONTAGE_DIR, file);
+      cpSync(made, dest);
+      montagePngs.push(dest);
+      montageMeta.push({ name, mood, page: d.page, file });
     }
     entries.push({ name, mood, relPath, status: 'changed', slides: drifted.length });
   }
@@ -168,7 +194,29 @@ function main() {
   const summary = lines.join('\n') + '\n';
   writeFileSync(join(OUT, 'summary.md'), summary);
 
-  const report = { base, changed, totalSlides, galleries: entries, artifact: artifact ? 'changes.pdf' : null };
+  // Pick the INLINE_CAP montages to embed: most-changed gallery·mood first (the
+  // same ordering the summary table uses), then by name/page — so the inline
+  // images and the table spotlight the SAME galleries. The full set (every
+  // montage, candidate order) always lives in the changes.pdf artifact.
+  const slidesByKey = new Map(changedEntries.map((e) => [`${e.name}.${e.mood}`, e.slides]));
+  const inlineOrder = [...montageMeta].sort(
+    (a, b) =>
+      (slidesByKey.get(`${b.name}.${b.mood}`) || 0) - (slidesByKey.get(`${a.name}.${a.mood}`) || 0) ||
+      a.name.localeCompare(b.name) ||
+      a.page - b.page,
+  );
+
+  const report = {
+    base,
+    changed,
+    totalSlides,
+    galleries: entries,
+    artifact: artifact ? 'changes.pdf' : null,
+    montagesDir: 'montages',
+    montages: montageMeta,
+    inlineMontages: inlineOrder.slice(0, INLINE_CAP),
+    inlineCapped: montageMeta.length > INLINE_CAP,
+  };
   writeFileSync(join(OUT, 'report.json'), JSON.stringify(report, null, 2));
 
   if (json) {
