@@ -52,9 +52,9 @@ export function singleSlideFrame(w = DEFAULT_W, h = DEFAULT_H) {
 	);
 }
 
-// Back-compat HD constants for the fixed-specimen hosts (theme-studio,
-// component-studio) whose preview content is always authored HD — they never
-// carry a user `size:`, so the box is the default. Size-aware hosts call the
-// functions above with the render's reported geometry instead.
-export const SLIDE_BOX = slideBox();
+// Back-compat HD constant for the single-slide hosts (the landing hero in
+// index.astro, the component specimens via live-render.js) whose preview content
+// is always authored HD. Size-aware hosts — the filmstrip previews (deck-preview.js)
+// and any specimen carrying a user `size:` — call the functions above with the
+// render's reported geometry instead.
 export const SINGLE_SLIDE_FRAME = singleSlideFrame();

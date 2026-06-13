@@ -579,3 +579,42 @@
 		display: none;
 	}
 }
+
+/* Phones: the actions row (Edit · Preview · status · Deck setup · Galleries) is
+   too wide once it stacks full-width — the status truncates to a meaningless
+   one-character sliver between Preview and Deck setup, and the labelled buttons
+   shove Galleries off-screen. So drop the status (low value on a phone) and
+   collapse Deck setup / Galleries to icon-only (their aria-label + title keep
+   them accessible), per CLAUDE.md's mobile real-estate guidance. Tablet and up
+   keep the text labels and the status. */
+@media (max-width: 560px) {
+	.pg-status {
+		display: none;
+	}
+	.pg-galleries-btn {
+		margin-left: 0;
+		padding: 7px 10px;
+	}
+	/* Push the icon buttons to the right edge now that the status (which carried
+	   margin-left:auto) is gone. */
+	#pg-config-trigger {
+		margin-left: auto;
+	}
+	.pg-galleries-btn .pg-btn-text {
+		/* Visually hidden but kept for AT that ignores aria-label on a button with
+		   child text — the icon stays. */
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border: 0;
+	}
+	.pg-galleries-btn .ico {
+		width: 17px;
+		height: 17px;
+	}
+}

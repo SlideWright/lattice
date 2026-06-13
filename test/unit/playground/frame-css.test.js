@@ -5,7 +5,7 @@
  * geometry (not a hardcoded 1280×720). A host that scales by `w / slideWidth`
  * MUST size the section to the same width, or a `size: 4K` deck renders at the
  * wrong size — the 4K-preview bug. The no-arg form is the HD default the
- * fixed-specimen hosts (theme-studio, component-studio) rely on.
+ * single-slide hosts (landing hero, component specimens) rely on.
  *
  * DOM-free module → tested directly, no iframe / browser.
  */
@@ -19,12 +19,10 @@ async function load() {
 
 describe('frame-css geometry helpers', () => {
 	test('slideBox() defaults to the HD box', async () => {
-		const { slideBox, SLIDE_BOX, DEFAULT_W, DEFAULT_H } = await load();
+		const { slideBox, DEFAULT_W, DEFAULT_H } = await load();
 		assert.equal(DEFAULT_W, 1280);
 		assert.equal(DEFAULT_H, 720);
 		assert.equal(slideBox(), '.marpit>section{width:1280px;height:720px}');
-		// The back-compat constant is the no-arg default (fixed-HD specimens).
-		assert.equal(SLIDE_BOX, slideBox());
 	});
 
 	test('slideBox(w, h) sizes the box to the deck geometry (4K)', async () => {

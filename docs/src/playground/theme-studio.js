@@ -25,7 +25,7 @@ import { createArchitectModel } from './architect-model.js';
 // theme-core.generated.js): one ESM module, real named exports, the SAME maths
 // as the Node tooling + the WCAG gate. Rebuild with `npm run theme-core:build`.
 import { deleteAsset, listAssets, putAsset } from './asset-store.js';
-import { SLIDE_BOX } from './frame-css.js';
+import { hashString, renderDeck } from './deck-preview.js';
 import { mountStudioPreviewConfig } from './studio-preview-config.js';
 import {
   askMessages,
@@ -39,8 +39,6 @@ import {
 } from './theme-core.generated.js';
 
 const PREVIEW_THEME = 'studio-preview'; // fixed @theme name for the live render
-const KATEX = 'https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css';
-const MERMAID = 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js';
 
 // Author-facing grouping of the essential set (lib/theme ESSENTIAL_KEYS).
 const FIELD_GROUPS = [
@@ -302,36 +300,14 @@ export function initThemeStudio(config) {
   }
 
   // ── Live preview ────────────────────────────────────────────────────────
-  const FIT = [
-    '(function(){function fit(){var m=document.querySelector(".marpit");if(!m)return;',
-    'var w=m.clientWidth;if(!w)return;var s=m.querySelectorAll(":scope>section");var sc=w/1280;',
-    'for(var i=0;i<s.length;i++){var e=s[i];e.style.transformOrigin="top left";',
-    'e.style.transform="scale("+sc+")";e.style.marginBottom=(720*sc-720+18)+"px";}}',
-    'window.addEventListener("resize",fit);if(typeof ResizeObserver!=="undefined"){',
-    'var ro=new ResizeObserver(function(){fit();});var m=document.querySelector(".marpit");',
-    'if(m){ro.observe(document.documentElement);var ss=m.querySelectorAll(":scope>section");',
-    'for(var i=0;i<ss.length;i++)ro.observe(ss[i]);}}fit();',
-    '[60,300,1200,2500].forEach(function(t){setTimeout(fit,t);});})();',
-  ].join('');
-
-  function writeFrame(html, css) {
-    const dark = state.mode === 'dark';
-    const bg = dark ? '#0c0c0c' : '#e7e7ea';
-    // Force the canvas scheme so the theme's light-dark() pairs resolve to the
-    // chosen side (:root beats the theme's :where(:root) default).
-    const scheme = dark ? ':root{color-scheme:dark}' : ':root{color-scheme:light}';
-    const frame =
-      '<!doctype html><html><head><meta charset="utf-8">' +
-      '<link rel="stylesheet" href="' + KATEX + '">' +
-      '<style>html,body{margin:0;padding:18px;background:' + bg + ';}' +
-      scheme +
-      SLIDE_BOX +
-      '.marpit>section{display:block;transform-origin:top left;' +
-      'box-shadow:0 8px 30px rgba(0,0,0,.22);border-radius:6px;}' +
-      css + '</style></head><body>' + html +
-      '<scr' + 'ipt src="' + MERMAID + '"></scr' + 'ipt>' +
-      '<scr' + 'ipt src="' + runtimeUrl + '"></scr' + 'ipt>' +
-      '<scr' + 'ipt>' + FIT + '</scr' + 'ipt></body></html>';
+  // The shared filmstrip-preview controller (deck-preview.js) owns the iframe
+  // write/patch/fit — the visibility gate (anti-flash), the height clamp
+  // (anti-gap) and size-awareness come for free. The token CSS bakes into the
+  // document, so its hash rides in the sig: a palette edit forces a full rewrite,
+  // not a section-only patch that would leave the stale theme. colorScheme forces
+  // the canvas side so the theme's light-dark() pairs resolve as chosen.
+  let previewState = { frameSig: '', lastSections: null };
+  function writeFrame(html, css, geom) {
     let fr = els.preview.querySelector('iframe.studio-frame');
     if (!fr) {
       fr = document.createElement('iframe');
@@ -339,7 +315,12 @@ export function initThemeStudio(config) {
       fr.setAttribute('title', 'Live theme preview');
       els.preview.appendChild(fr);
     }
-    fr.srcdoc = frame;
+    const mode = state.mode === 'dark' ? 'dark' : 'light';
+    const sig = mode + '|' + geom.w + 'x' + geom.h + '|' + hashString(css);
+    previewState = renderDeck({
+      frame: fr, html, css, mode, geom, sig, state: previewState,
+      runtimeUrl, gap: 18, colorScheme: mode, center: true,
+    }).state;
   }
 
   // ── Contrast meter ──────────────────────────────────────────────────────
@@ -409,7 +390,7 @@ export function initThemeStudio(config) {
         const previewCss = serializeTheme(map, { name: PREVIEW_THEME, label: state.label });
         PG.addThemes([previewCss]);
         const out = PG.render(previewConfig.composed(), PREVIEW_THEME);
-        writeFrame(out.html, out.css);
+        writeFrame(out.html, out.css, { w: out.width || 1280, h: out.height || 720 });
         const n = (out.html.match(/<\/section>/g) || []).length;
         setStatus(`Live · ${n} specimen slide${n === 1 ? '' : 's'} · ${exportName}.css`);
       })

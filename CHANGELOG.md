@@ -81,6 +81,28 @@ in patch versions.
 
 ### Fixed
 
+- **The docs-site live preview no longer flickers, flashes, or leaves a dead
+  scroll gap — and all four preview surfaces now share ONE controller.** The
+  Playground, the Drawing Board, and both Workbench studios had each re-rolled the
+  same "render → write iframe → scale every slide" routine and then drifted: only
+  the Drawing Board had grown the visibility gate (anti first-paint flash) and the
+  incremental section patch (anti per-keystroke reload flicker); the Playground
+  and the two studios flashed (worst on the 4K jargon gallery, where un-scaled
+  slides briefly painted at 3840px), flickered on every keystroke, left ~`SH·(1−scale)`
+  of dead trailing scroll below the deck, and the studios weren't even size-aware
+  (a `size: 4K` deck rendered 3× oversized). They now all run through one shared
+  module (`docs/src/playground/deck-preview.js`, built on the unit-tested
+  `preview-virtual.js` split kernel): a `.marpit` visibility gate revealed only
+  once scaled, a height clamp that clips the last slide's un-scaled box tail,
+  incremental patching of just the changed `<section>`s, and size-awareness
+  everywhere. Short decks center in the preview (like the component specimens)
+  while tall decks top-align and scroll (`justify-content: safe center`). The
+  Drawing Board keeps its cursor↔slide sync, content-visibility virtualization,
+  and PDF/PNG export unchanged.
+- **Playground action bar fits a phone.** On narrow screens the truncated render
+  status (a meaningless one-character sliver wedged between *Preview* and *Deck
+  setup*) is hidden, and *Deck setup* / *Galleries* collapse to icon-only buttons
+  (labels kept for screen readers and the desktop layout) so nothing overflows.
 - **The keyed chart-family diagrams (`piechart`, `radar`, `quadrant`) are now
   responsive — they fill their box and scale with the available height instead
   of collapsing.** The pie disc was a fixed `32cqi` square (tied to slide
