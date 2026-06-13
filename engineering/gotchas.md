@@ -434,6 +434,32 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
 - **Lesson:** a stale artifact is not a broken renderer. Exclude the boring cause
   before relitigating a settled design decision.
 
+### A manifest slot's `selector` describes AUTHORING input — a transform may consume it
+
+- **Symptom:** the semantic-invariant suite
+  (`test/integration/invariants/component-invariants.test.js`) reports a required
+  slot's selector resolving to **0** elements in the rendered DOM, for a component
+  that clearly renders fine — e.g. `funnel`'s `stages: "ul > li"`, `glossary`'s
+  `entries: "ul > li"`, `compare-code`'s `left: "section > h3 + pre"`.
+- **Cause:** `<name>.manifest.json` `slots[].selector` documents the **authoring
+  contract** (the markdown you *write*), not the rendered output. For
+  CSS-styled components the authored markup survives (`cards-grid`'s `ul > li`
+  becomes the cards), so the selector matches the rendered DOM. But **transforming
+  components consume their input**: a chart's `ul > li` becomes a `.chart-body`
+  SVG/HTML frame, `glossary`'s list becomes a `<table>`, `featured`'s list becomes
+  `.feat-card`s. The authored selector is gone from the render.
+- **Fix:** those components live in the `TRANSFORM` set
+  (`component-invariants.layer3.js`); layer-1's slot check is skipped for them and
+  layer-3 asserts the **rendered** contract instead. Add a new transforming
+  component to that set + give it a layer-3 entry.
+- **Also:** manifest selectors are written against the slide `<section>` *root*, so
+  a leading `section` IS that element — the suite normalises it to `:scope` per
+  comma-group. A bare `section > p, section > ul` queried unscoped leaks its second
+  clause and false-fails. (And note `roadmap`/`state-chart` pass layer-1 only by
+  tag-shape luck — `roadmap`'s `horizons` modifier transposes its `<table>` away.)
+- **Lesson:** "the slot selector doesn't match the render" usually means the slot
+  documents *input*, not *output* — not that the component is broken.
+
 ### Drawing Board PDF/PPTX export shows fallback type on some slides
 
 - **Symptom:** A deck exported from the docs-site Drawing Board (Export →

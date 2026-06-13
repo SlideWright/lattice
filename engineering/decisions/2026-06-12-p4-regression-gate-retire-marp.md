@@ -38,7 +38,7 @@ already uses) and assert on *meaning*, not pixels. Three layers:
 | Layer | Source | Coverage | Authoring |
 |---|---|---|---|
 | **1 · Contract** | manifest `slots` (CSS selector + `required`), `_class` | every component, **auto-derived** | none — a new component is covered free |
-| **2 · Universal** | every rendered slide | WCAG contrast, computed colors resolve to palette tokens, no overflow/clipping, one `section`/slide | none — runs on all |
+| **2 · Universal** | every rendered slide | heading WCAG contrast + no overflow (built); computed colours resolve to palette tokens (*phase-2*) | none — runs on all |
 | **3 · Semantic** | hand-authored, high-value few | funnel widths ∝ values, radar N series → N polygons, big-number is the largest type | opt-in, where a component has a distinctive truth |
 
 These assert *logical* values (selectors, ratios, contrast) — **deterministic and
@@ -69,6 +69,49 @@ the invariant suite is the sole visual-correctness gate.
 keeps `golden-diff` (inline) + the shared montage helpers, records this pivot, and
 seeds the invariant suite. The sections below are retained as the historical
 design and the still-valid environment findings (§7.1, §A).
+
+**Build status (2026-06-13, branch `claude/p4-component-invariants`).** Phase 1+2
+landed and GREEN across all **53 components / 197 assertions**:
+`test/helpers/semantic-render.js` renders each component's manifest `sample`
+through the cached emulator (its `.html` sidecar = production CSS+DOM, no cascade
+duplication) and `test/integration/invariants/component-invariants.test.js`
+asserts layer 1 (required slots resolve) + layer 2 (no overflow; heading contrast
+≥ WCAG AA) + layer 3 (`component-invariants.layer3.js`). It runs in the
+integration tier, so it already gates via the required `ci` check. Two findings
+the corpus pass forced, worth remembering:
+- **Manifest slot selectors are the AUTHORING contract, written against the slide
+  `<section>` root** — normalise a leading `section` → `:scope` (and bare
+  selectors → descendant) per comma-group, or a `section > p, section > ul` clause
+  leaks unscoped and false-fails.
+- **TRANSFORM components consume their authored markup** (a chart's `ul > li` →
+  `.chart-body` svg/HTML frame; glossary → `<table>`; compare-code → code panels;
+  featured → `.feat-card`). Layer-1's slot check is skipped for them (the `TRANSFORM`
+  set) and layer-3 asserts the rendered contract instead. (Long-term, making those
+  manifests' slot selectors rendered-accurate — as roadmap/state-chart/diagram
+  already are — would let layer-1 cover them automatically; deferred since the
+  manifests also drive the docs site's authoring guidance.)
+
+**Phase-2 — NOT yet built (the §0 model table lists these as the target; today's
+suite does not implement them):**
+- The layer-2 **palette-token-resolution** check (every computed colour must
+  resolve to a theme token — HARD RULE 3). Layer 2 today is **overflow + heading
+  contrast only**; body-text contrast and the token check are unbuilt.
+- **Richer layer-3** — current layer-3 is the "the transform produced its frame"
+  *floor* (`.chart-body`/`table`/`pre`/`.feat-card` exists). The valuable per-
+  component truths are TODO: funnel stage count == authored items + monotonic
+  widths; kpi/big-number rendered count == source count + big-number is the
+  largest type; piechart/radar legend entries == series; state-chart node/edge
+  counts == authored; roadmap cell-states == authored markers.
+- **Manifest-slot accuracy:** the `TRANSFORM` set is a *test-side bridge*. Some
+  chart manifests' slot selectors describe consumed **authoring input**, others
+  (`roadmap`, `state-chart`, `diagram`) describe **rendered output** — and
+  `roadmap`'s `table` slot passes only because the sample is `status` mode (the
+  `horizons` modifier transposes the table into `.horizon-card`s and would
+  false-fail). The durable fix is rendered-accurate slot selectors everywhere
+  (what `diagram` does), shrinking `TRANSFORM` toward zero and improving the docs
+  site — deferred since manifests also drive authoring guidance.
+
+Then Step 3 (delete marp + `engine-parity`, making this the sole gate).
 
 ## 1. Goal
 

@@ -160,6 +160,15 @@ in patch versions.
   `ThemeProvider`, `Sidebar`, `MobileMenuFooter`) plus the token remap in
   `docs/src/styles/lattice.css`; no engine or deck behaviour changes.
 
+- **The CI visual-correctness gate is now a per-component semantic-invariant
+  suite** (delivering the P4 pivot away from the retired pixel gate). Every
+  component's example renders through the real emulator and is asserted on the
+  *meaning* of its DOM, not its pixels — required slots resolve, no overflow,
+  headings meet WCAG AA contrast, and transforming components render their real
+  output (a chart's list → an `.chart-body` frame, glossary → a `<table>`, etc.).
+  53 components, deterministic and machine-independent (no cross-runner flakiness),
+  runs in the integration tier. See
+  `engineering/decisions/2026-06-12-p4-regression-gate-retire-marp.md` §0.
 - **The Drawing Board's Practice mode is now a real rehearsal coach.** It used to
   pace you against a word-count target and drop a one-word cue in the top bar.
   Now a **rehearsal planner** (`drawing-board-rehearsal.js`) turns the deck +
