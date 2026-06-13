@@ -1,0 +1,117 @@
+---
+// Override of Starlight's header. Replaces the default Starlight chrome
+// (site-title + centred search + theme dropdown + social icons) with the SAME
+// topbar the landing/playground/components pages carry — brand, global nav,
+// search, palette <select>, and a light/dark moon toggle — so the docs zone
+// reads as part of one website rather than a bolted-on subsite.
+//
+// Search is Starlight's own <site-search> (Pagefind), kept and restyled.
+// The palette + mode controls write the shared localStorage keys
+// (lattice-docs-palette / -mode) and set data-palette / data-mode / data-theme,
+// so a choice made here carries to the landing/playground and vice-versa.
+// The mobile sidebar toggle is rendered by PageFrame; the global nav also
+// lives at the top of the mobile sidebar (Sidebar.astro) so narrow viewports
+// never dead-end at the logo. Styling: docs/src/styles/lattice.css.
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import Search from 'virtual:starlight/components/Search';
+import config from 'virtual:starlight/user-config';
+import { joinBase } from '../lib/base-url.mjs';
+
+const base = import.meta.env.BASE_URL;
+const url = (p) => joinBase(base, p);
+const titleCase = (s) => s.replace(/(^|-)(\w)/g, (_, sep, c) => (sep ? ' ' : '') + c.toUpperCase());
+
+// Same derivation the component portal uses: the palette names ARE the
+// data-palette keys in the generated token file (indaco first → default).
+const tokensCss = readFileSync(join(process.cwd(), 'src/styles/lattice-tokens.generated.css'), 'utf8');
+const palettes = [...new Set([...tokensCss.matchAll(/data-palette="([^"]+)"/g)].map((x) => x[1]))];
+
+const here = Astro.url.pathname;
+const links = [
+	{ label: 'Get started', href: url('getting-started/'), seg: 'getting-started' },
+	{ label: 'Guides', href: url('guides/authoring/'), seg: 'guides' },
+	{ label: 'Playground', href: url('playground/'), seg: 'playground' },
+	{ label: 'Drawing Board', href: url('drawing-board/'), seg: 'drawing-board' },
+	{ label: 'Workbench', href: url('workbench/'), seg: 'workbench' },
+	{ label: 'Components', href: url('components/'), seg: 'components' },
+];
+const isCurrent = (seg) => here.includes('/' + seg);
+const shouldRenderSearch =
+	config.pagefind || config.components.Search !== '@astrojs/starlight/components/Search.astro';
+---
+
+<div class="lx-topbar">
+	<a class="lx-brand" href={url('')}>
+		<img src={url('lattice-logo.png')} alt="" width="30" height="30" />
+		<span class="lx-mark">Lattice</span>
+	</a>
+
+	<nav class="lx-nav" aria-label="Site">
+		{
+			links.map((l) => (
+				<a href={l.href} aria-current={isCurrent(l.seg) ? 'page' : undefined}>
+					{l.label}
+				</a>
+			))
+		}
+		<a href="https://github.com/slidewright/lattice">GitHub</a>
+	</nav>
+
+	{
+		shouldRenderSearch && (
+			<div class="lx-search print:hidden">
+				<Search />
+			</div>
+		)
+	}
+
+	<div class="lx-controls print:hidden">
+		<select class="lx-palette" id="palette" aria-label="Palette">
+			{palettes.map((p) => <option value={p}>{titleCase(p)}</option>)}
+		</select>
+		<button class="lx-mode" id="mode-toggle" type="button" aria-label="Toggle light / dark" title="Toggle light / dark"></button>
+	</div>
+</div>
+
+{/* Palette + light/dark wiring. Shares the landing/playground localStorage
+    keys so the choice follows the reader across the whole site. Keeps
+    data-theme in lockstep with data-mode so Starlight's own CSS + code blocks
+    track the toggle. Inlined so it runs on every page (MPA navigation). */}
+<script is:inline>
+	(function () {
+		var root = document.documentElement;
+		var sel = document.getElementById('palette');
+		if (sel) {
+			sel.value = root.getAttribute('data-palette') || 'indaco';
+			sel.addEventListener('change', function () {
+				root.setAttribute('data-palette', sel.value);
+				try { localStorage.setItem('lattice-docs-palette', sel.value); } catch (e) {}
+			});
+		}
+		var btn = document.getElementById('mode-toggle');
+		if (btn) {
+			btn.addEventListener('click', function () {
+				var next = root.getAttribute('data-mode') === 'dark' ? 'light' : 'dark';
+				root.setAttribute('data-mode', next);
+				root.dataset.theme = next; // keep Starlight's CSS + code blocks in sync
+				try { localStorage.setItem('lattice-docs-mode', next); } catch (e) {}
+				try { localStorage.setItem('starlight-theme', next); } catch (e) {}
+			});
+		}
+		// Re-sync from storage on show, incl. bfcache restores where the pre-paint
+		// <head> script doesn't re-run (e.g. Back from the playground).
+		window.addEventListener('pageshow', function () {
+			try {
+				var p = localStorage.getItem('lattice-docs-palette');
+				if (p && p !== root.getAttribute('data-palette')) root.setAttribute('data-palette', p);
+				var m = localStorage.getItem('lattice-docs-mode');
+				if ((m === 'light' || m === 'dark') && m !== root.getAttribute('data-mode')) {
+					root.setAttribute('data-mode', m);
+					root.dataset.theme = m;
+				}
+				if (sel) sel.value = root.getAttribute('data-palette') || 'indaco';
+			} catch (e) {}
+		});
+	})();
+</script>
