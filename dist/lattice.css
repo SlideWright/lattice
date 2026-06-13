@@ -6593,19 +6593,29 @@ section.piechart .piechart-figure {
   justify-content: center;
   gap: var(--sp-2xl);
   width: 100%;
+  /* Fill the flexed .chart-body so the disc's `height: …100%` has a definite
+     box to fit against (and can shrink when chrome/caption steals height). */
+  flex: 1 1 auto;
+  min-height: 0;
 }
 section.piechart .piechart-svg {
   flex: 0 0 auto;
-  /* 32cqi (was 25cqi): at 25cqi the disc floated small in the lower-left with
-   * large dead zones — the wedge proportions are the whole point, so the disc
-   * needs to command the canvas. The cover variant drops chrome → 36cqi. */
-  width: 32cqi;
-  height: 32cqi;
+  /* Responsive, height-bound — the same idiom as radar/quadrant (#180), not a
+   * fixed square. The disc FILLS the slot height and lets width follow the 1:1
+   * aspect-ratio, capped at 32cqi (cover drops chrome → 36cqi) so it never
+   * exceeds its design size when the body is tall. When a masthead band, a long
+   * caption, or larger hand type shortens the body, the disc shrinks with it —
+   * staying a FULL ring — instead of overflowing and clipping to a half-ring.
+   * (Was a fixed 32cqi square, blind to height → the donut collapsed under any
+   * vertical squeeze; see gallery-jargon `piechart donut` under `islands: on`.) */
+  height: 100%;
+  width: auto;
+  max-height: 32cqi;
+  aspect-ratio: 1 / 1;
   display: block;
 }
 section.piechart.cover .piechart-svg {
-  width: 36cqi;
-  height: 36cqi;
+  max-height: 36cqi;
 }
 section.piechart .piechart-svg .wedge {
   /* Stroke colour is the slot's --catN-ink (set per nth-child below); the

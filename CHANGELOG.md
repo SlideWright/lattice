@@ -81,6 +81,18 @@ in patch versions.
 
 ### Fixed
 
+- **The `piechart` disc is now responsive — it no longer collapses to a
+  half-ring (with a truncated legend) when vertical space is tight.** The disc
+  was sized as a fixed `32cqi` square (tied to slide *width*, blind to height),
+  so any vertical squeeze — a masthead band under `islands: on`, a multi-line
+  caption, or larger `finish: sketch` type — overflowed the flexed chart body
+  and the slide's `overflow:hidden` clipped the bottom of the ring. It now uses
+  the same height-bound responsive idiom as `radar`/`quadrant` (`height:100%;
+  width:auto; aspect-ratio:1; max-height:32cqi`): the ring fills the available
+  height and its width follows, capped at the design size, so it shrinks to a
+  smaller FULL ring instead of clipping. Boardroom renders are unchanged (the
+  cap holds the size); only height-constrained slides differ. (Surfaced by
+  `gallery-jargon`'s `piechart donut` under `islands: on` — see #229.)
 - **Offline-rendered PDFs now embed the engine's intermediate font weights
   instead of synthesising them.** The self-hosted set the emulator base64-injects
   (`assets/fonts/` + `SELF_HOSTED_FACES`) was missing four faces the engine's
