@@ -113,6 +113,17 @@ pre-commit:
         - 'lib/authoring/scorecard.js'
         - 'tools/build-authoring-core.js'
       run: npm run authoring-core:check --silent
+    - name: standalone-core-bundle-freshness
+      # Sibling of the theme/layout/authoring core gates: catches "edited
+      # lib/components/chart/_chart-family/standalone-svg.js, forgot to rebuild
+      # docs/src/playground/standalone-svg.generated.js" (the Drawing Board's
+      # "download chart as SVG" action imports it; the raw CJS module can't be
+      # browser-imported in `astro dev`). Same cheap esbuild rebuild-to-buffer +
+      # byte-diff via npm run standalone-core:check.
+      glob:
+        - 'lib/components/chart/_chart-family/standalone-svg.js'
+        - 'tools/build-standalone-core.js'
+      run: npm run standalone-core:check --silent
     - name: dist-readme-freshness
       # Catches "changed which files dist/ ships (or their descriptions),
       # forgot to regenerate dist/README.md". The README indexes dist/

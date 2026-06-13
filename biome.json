@@ -13,6 +13,7 @@
       "!docs/src/playground/theme-core.generated.js",
       "!docs/src/playground/layout-core.generated.js",
       "!docs/src/playground/authoring-core.generated.js",
+      "!docs/src/playground/standalone-svg.generated.js",
       "!**/*.min.js",
       "!mermaid-v11.min.js",
       "!examples/**/*.json",

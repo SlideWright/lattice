@@ -318,6 +318,7 @@ const dbData = JSON.stringify({
 							<button class="db-menu-item" type="button" data-export="pdf" role="menuitem">PDF<small>.pdf — one click</small></button>
 							<button class="db-menu-item" type="button" data-export="pptx" role="menuitem">PowerPoint<small>.pptx — image slides</small></button>
 							<button class="db-menu-item" type="button" data-export="print" role="menuitem">Print<small>vector + selectable text</small></button>
+							<button class="db-menu-item" type="button" data-export="charts-svg" role="menuitem" id="db-export-chart-svg" hidden>Chart SVG<small>.svg — this slide's chart, standalone</small></button>
 						</div>
 					</div>
 					<!-- Deck setup — front-matter config (theme, size, pagination,
@@ -854,7 +855,7 @@ const dbData = JSON.stringify({
 		<!-- Export — MD / PDF / PPTX (Slice 4). PptxGenJS is lazy-imported inside
 		     the module on first PPTX use, so it never loads unless invoked. -->
 		<script>
-			import { exportMarkdown, exportPdf, exportPptx, exportPrint } from '../playground/drawing-board-export.js';
+			import { exportMarkdown, exportPdf, exportPptx, exportPrint, exportChartsSvg, activeChartSvg } from '../playground/drawing-board-export.js';
 			import { listAssets } from '../playground/asset-store.js';
 			import { referencedComponents } from '../playground/layout-core.generated.js';
 			const wrap = document.getElementById('db-export-wrap');
@@ -870,6 +871,8 @@ const dbData = JSON.stringify({
 			trigger.addEventListener('click', (e) => {
 				e.stopPropagation();
 				const open = menu.hidden;
+				// "Chart SVG" shows only when the cursor's slide has a chart (it exports THAT chart).
+				const __ci = document.getElementById("db-export-chart-svg"); if (__ci) __ci.hidden = !activeChartSvg(document.getElementById("db-frame"));
 				menu.hidden = !open;
 				trigger.setAttribute('aria-expanded', open ? 'true' : 'false');
 			});
@@ -936,6 +939,7 @@ const dbData = JSON.stringify({
 					else if (kind === 'pdf') { status('Exporting PDF…'); await exportPdf(frame, deckName(), (m) => status(m), meta); status('PDF exported.'); }
 					else if (kind === 'pptx') { await exportPptx(frame, deckName(), (m) => status(m), meta); status('PowerPoint exported.'); }
 					else if (kind === 'print') { exportPrint(frame, meta); status('Opening print dialog…'); }
+					else if (kind === 'charts-svg') { status('Exporting chart SVG…'); await exportChartsSvg(frame, deckName(), (m) => status(m)); }
 				} catch (err) { status(String(err.message || err), true); }
 			});
 		</script>

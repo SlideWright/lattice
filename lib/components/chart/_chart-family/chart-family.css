@@ -521,21 +521,10 @@ section.chart-frame .chart-status[data-s="deferred"] {
  * the key scales up inside the svg for free) and off radar·small-multiples (no
  * single key). See engineering/decisions/2026-06-13-svg-native-legend.md
  * (supersedes 2026-06-11-chart-legend-system.md). */
-section.chart-frame {
-  /* The four KEYED charts (pie/radar/map/cohort quadrant) now emit their spine in
-   * SVG (svg-legend.js inlines these same stops), so the 70/30-rail tokens are
-   * retired. These spine tokens survive because WORD-CLOUD still draws a CSS
-   * spine from them (word-cloud.styles.css) — a pure accent fade that melts into
-   * the canvas at both ends, reading as a rule, not a hard divider. */
-  --chart-spine-h: 78%;                  /* spine height — % of body, never spills */
-  --chart-spine-w: clamp(2px, 0.156cqi, 4px); /* spine thickness (res-stable)    */
-  --chart-spine: linear-gradient(to bottom,
-    transparent 0%,
-    color-mix(in oklab, var(--accent) 32%, transparent) 14%,
-    color-mix(in oklab, var(--accent) 60%, transparent) 50%,
-    color-mix(in oklab, var(--accent) 32%, transparent) 86%,
-    transparent 100%);
-}
+/* The old shared `section.chart-frame { --chart-spine* }` block is gone: the four
+ * keyed charts emit their spine in SVG (svg-legend.js inlines the stops), and the
+ * one remaining CSS-spine member — word-cloud — now owns those tokens on
+ * `section.word-cloud` (word-cloud.styles.css). See §7b of the decision doc. */
 
 /* SVG-native key TYPE — shared across the four keyed charts (pie/radar/map/cohort
  * quadrant). The legend GEOMETRY (swatch rects, wrapping labels, values, spine)

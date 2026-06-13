@@ -66,16 +66,17 @@ size — i.e. something the marks don't already spell out. That test sorts the
 13 members into three placements (full rationale + the per-chart catalog:
 `engineering/decisions/2026-06-11-chart-legend-system.md`):
 
-**Colour/size-categorical → right rail (70/30).** `piechart`, `radar`, `map`,
-`quadrant·cohort`, and `word-cloud`. A shared rule in `chart-family.css` lays
-the figure out as a `grid-template-columns: 70% 30%`: the chart is the hero
-centred in the 70% zone, the key a rail in the 30% zone **left-aligned at a
-fixed inset off the spine** (`--chart-legend-pad`) so the spine→key gap is
-identical chart-to-chart. A **gradient spine** (the figure's `::before` on the
-70/30 boundary, height `--chart-spine-h`) divides them. Labels **wrap** past
-`--chart-legend-max`; swatch size and label type are unified. `map` fills its
-zone; `word-cloud` packs its cloud to 62% and carries a vertical
-"size = frequency" ramp in the rail.
+**Colour/size-categorical → integrated SVG key.** `piechart`, `radar`, `map`,
+and `quadrant·cohort` carry their key **inside the diagram's own `<svg>`
+viewBox**: diagram, a gradient **spine**, and the swatch+label+value key are one
+unit that scales together (emitted by `svg-legend.js` — see
+`engineering/decisions/2026-06-13-svg-native-legend.md`). No CSS grid, no
+`::before` spine — the key is SVG `<text>`/`<rect>` in viewBox units, so it tracks
+the diagram at any size and the four read as one family; long labels **wrap**
+(never clip). `word-cloud` is the lone holdout: it still lays out as a CSS `grid`
+(cloud in the left ~68%, a vertical "size = frequency" ramp in the right rail)
+with a gradient **spine** drawn by `.word-cloud-canvas::after`, and it now
+**solely owns the `--chart-spine*` tokens** the keyed charts used to share.
 
 **Wide diagram → bottom-centre key.** `roadmap` (status markers ✓/–/○/╱,
 emitted by `buildStatusLegend` for the states present; omitted only on
@@ -89,11 +90,48 @@ the foot of the board, CSS-only).
 band/bar/card/node in place (kanban & state-chart print a labelled status
 pill on each tile), so a separate key would be redundant.
 
-Tokens live on `section.chart-frame`: `--chart-canvas-share` / `--chart-rail-share`,
-`--chart-legend-pad` / `--chart-legend-max` / `--chart-legend-row-gap`,
-`--chart-spine` / `--chart-spine-w` / `--chart-spine-h`. The rail is pure CSS
-(all three render paths inherit it); the roadmap/gantt keys ride the shared
+The keyed charts' key carries only TYPE from CSS — `.chart-key-label` / `-value`
+/ `-head` set fill + route `--font-label` / `--font-mono` (so the `sketch` finish
+reskins the labels); the GEOMETRY lives in the SVG. The only CSS-rail tokens left
+are `word-cloud`'s own `--chart-spine` / `--chart-spine-w` / `--chart-spine-h` (on
+`section.word-cloud`). The roadmap/gantt/journey keys ride the shared
 `transformChartSection`, adding no slides, so cross-renderer parity holds.
+
+---
+
+## Standalone export — one chart as a self-contained `.svg`
+
+Because the four keyed charts are **one `<svg>`** (diagram + spine + key in a
+single viewBox), a chart can be lifted out of a deck as a portable file. It is
+not portable *as-emitted*, though: colours are `var(--token)`/`color-mix()` and
+the key text is styled by `.chart-key-*` CSS classes, so a detached SVG with no
+stylesheet renders **black, unstyled, serif**. The export resolves this:
+
+- **`lib/components/chart/_chart-family/standalone-svg.js`** — the shared core.
+  `flattenSvgStyles` walks the rendered chart and inlines the browser's
+  **computed** paint/text styles as literals (so `var()`/`color-mix()` bake to
+  `rgb()`/`oklab()` and no external CSS is needed); gradient `<stop>`s are
+  resolved through a rendered probe (defs aren't laid out, so `getComputedStyle`
+  won't resolve them there). `finalizeStandaloneSvg` then guarantees `xmlns`, a
+  `viewBox`-derived intrinsic `width`/`height`, and injects the embedded fonts.
+  `collectFontFamilies` subsets which faces to embed.
+- **CLI — `tools/export-chart-svg.js`** (headless): `node tools/export-chart-svg.js
+  <deck.md> [--slide N] [--chart I] [--theme NAME] [--mode light|dark]
+  [-o out.svg] [--all]`. Renders through `window.LatticePlayground.render` in a
+  puppeteer page, embeds the engine fonts from disk
+  (`tools/lib/chart-font-embed.js`), writes the file.
+- **Drawing Board** — a **"Chart SVG"** entry in the Export menu, shown **only
+  when the cursor's slide carries a chart** (gated on the `.db-active` section),
+  exporting that one chart. Reuses the same core in the browser via the esbuild
+  ESM bundle `standalone-svg.generated.js`, embedding fonts through
+  `docs/src/playground/font-embed.js`.
+
+**Caveats.** Resolved colours come out as `oklab()` where the source used
+`color-mix(in oklab, …)` — every current browser (and Inkscape ≥1.0 / resvg)
+renders it, older SVG renderers may not. The export keeps a `viewBox`, so it
+stays fully responsive (the intrinsic `width`/`height` is only a default
+footprint). Embed-only — text stays selectable; glyph **outlining** to `<path>`
+was deferred (`2026-06-13-svg-native-legend.md` §4d).
 
 ---
 

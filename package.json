@@ -89,6 +89,8 @@
     "layout-core:check": "node tools/build-layout-core.js --check",
     "authoring-core:build": "node tools/build-authoring-core.js",
     "authoring-core:check": "node tools/build-authoring-core.js --check",
+    "standalone-core:build": "node tools/build-standalone-core.js",
+    "standalone-core:check": "node tools/build-standalone-core.js --check",
     "dist-readme:build": "node tools/build-dist-readme.js",
     "dist-readme:check": "node tools/build-dist-readme.js --check",
     "capabilities:build": "node tools/build-capabilities.js",
