@@ -89,6 +89,24 @@ section.word-cloud .wc-svg {
   overflow: visible;
 }
 
+/* Spine tokens — word-cloud SOLELY owns these now. They used to live on the
+ * shared section.chart-frame block (the four keyed charts drew a CSS spine from
+ * them too), but those charts went SVG-native and inline their own stops
+ * (svg-legend.js), so word-cloud — the one chart-frame member that still draws a
+ * CSS spine — owns them. A pure accent fade, transparent at both ends so it
+ * reads as a rule, not a hard divider. See
+ * engineering/decisions/2026-06-13-svg-native-legend.md §7b. */
+section.word-cloud {
+  --chart-spine-h: 78%;                  /* spine height — % of body, never spills */
+  --chart-spine-w: clamp(2px, 0.156cqi, 4px); /* spine thickness (res-stable)    */
+  --chart-spine: linear-gradient(to bottom,
+    transparent 0%,
+    color-mix(in oklab, var(--accent) 32%, transparent) 14%,
+    color-mix(in oklab, var(--accent) 60%, transparent) 50%,
+    color-mix(in oklab, var(--accent) 32%, transparent) 86%,
+    transparent 100%);
+}
+
 /* The cloud packs into the LEFT 70% of the canvas; a gradient spine at the
  * boundary divides it from the "size = frequency" key in the right 30% rail —
  * the same 70/30 split + spine the categorical charts use. */

@@ -304,3 +304,64 @@ export function exportPrint(frame, meta) {
 	win.focus();
 	win.print();
 }
+
+// ── Standalone chart SVG ──────────────────────────────────────────────────────
+// Lift each keyed chart (pie/radar/map/cohort quadrant) out of the deck as a
+// self-contained .svg — the diagram, spine, and key are already one <svg>, so
+// the export flattens its COMPUTED colours to literals (no theme CSS needed) and
+// embeds the fonts it uses. Shares the core (lib/.../standalone-svg.js) with the
+// CLI sibling tools/export-chart-svg.js — in the browser via the esbuild ESM
+// bundle standalone-svg.generated.js (the raw CJS module can't be imported in
+// `astro dev`, same as the theme/layout/authoring cores).
+
+// Keep only the @font-face blocks for families the chart actually uses, so the
+// downloaded chart carries 2–3 faces, not all 17.
+function subsetFontFaceCss(css, families) {
+	if (!families?.length) return '';
+	const want = new Set(families.map((f) => String(f).toLowerCase()));
+	return (css.match(/@font-face\{[^}]*\}/g) || [])
+		.filter((block) => {
+			const m = block.match(/font-family:\s*'([^']+)'/i);
+			return m && want.has(m[1].toLowerCase());
+		})
+		.join('\n');
+}
+
+// The chart `<svg>` on the slide the editor cursor is in, or null. The controller
+// marks the cursor's slide `.db-active` in the preview (cursor↔slide sync), so
+// THIS gates the export to "the chart you're looking at" — and is what the Export
+// menu reads to show its "Chart SVG" entry only on a chart slide. Scoped to the
+// FOUR keyed layouts (pie/radar/map/quadrant) by section class — the same set
+// the CLI uses — so non-keyed chart-frame slides (state-chart, word-cloud) don't
+// offer a meaningless export. (The quadrant's own svg is aria-hidden, so match on
+// viewBox, not visibility.)
+const KEYED_LAYOUTS = ['piechart', 'radar', 'map', 'quadrant'];
+export function activeChartSvg(frame) {
+	const sec = frame?.contentDocument?.querySelector('.marpit > section.db-active');
+	if (!sec || !KEYED_LAYOUTS.some((c) => sec.classList.contains(c))) return null;
+	return sec.querySelector('svg[viewBox]');
+}
+
+// Export the chart on the cursor's slide as a standalone .svg.
+export async function exportChartsSvg(frame, name, onStatus) {
+	const doc = frame?.contentDocument;
+	const win = frame?.contentWindow;
+	if (!doc || !win) throw new Error('Preview not ready yet.');
+	const svg = activeChartSvg(frame);
+	if (!svg) throw new Error('Put the cursor in a slide that has a chart.');
+	const [core, fontMod] = await Promise.all([
+		import('./standalone-svg.generated.js'),
+		import('./font-embed.js'),
+	]);
+	const { flattenSvgStyles, collectFontFamilies, finalizeStandaloneSvg } = core;
+	const { buildFontEmbedCss, ensureFontsLoaded } = fontMod;
+	// Embed the faces + wait for them, so the live nodes lay out with the real
+	// font before we read computed styles (mirrors the PDF/PPTX path).
+	const fontCssAll = await buildFontEmbedCss();
+	await ensureFontsLoaded(doc, fontCssAll);
+	const markup = new XMLSerializer().serializeToString(flattenSvgStyles(svg, win));
+	const fontFaceCss = subsetFontFaceCss(fontCssAll, collectFontFamilies(markup));
+	const out = finalizeStandaloneSvg(markup, { fontFaceCss });
+	download(new Blob([out], { type: 'image/svg+xml;charset=utf-8' }), safeName(name) + '-chart.svg');
+	if (onStatus) onStatus('Chart downloaded as SVG.');
+}

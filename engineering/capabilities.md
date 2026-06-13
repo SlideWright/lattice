@@ -67,6 +67,8 @@ harness the index can't infer, add it to `FRAMEWORKS` in the generator.
 | `runtime:watch` | Rebuild the runtime bundle on change. |
 | `snippets:build` | Generate .vscode/lattice.code-snippets from component manifests. |
 | `snippets:check` | Freshness gate for the VS Code snippets. |
+| `standalone-core:build` | Bundle the standalone chart-SVG export core for the browser (docs site). |
+| `standalone-core:check` | Freshness gate for the standalone-core bundle. |
 | `theme-core:build` | Bundle the pure Theme Studio core for the browser (docs site). |
 | `theme-core:check` | Freshness gate for the theme-core bundle. |
 
@@ -231,6 +233,8 @@ harness the index can't infer, add it to `FRAMEWORKS` in the generator.
 | Name | What it does |
 |---|---|
 | `tools/ascii-preview.py` | ASCII layout preview helper for engineering/templates.md (and friends). |
+| `tools/build-standalone-core.js` | Bundle the standalone chart-SVG export core for the browser. |
 | `tools/check-fonts.js` | Font-embedding parity gate — keep the engine's font demand and offline supplies in sync. |
+| `tools/export-chart-svg.js` | Export ONE chart from a deck as a standalone, self-contained `.svg` file. |
 | `tools/export-marp.js` | export-marp — produce a portable, self-contained bundle of a Lattice deck for |
 | `tools/golden-diff.mjs` | Post a PR comment + before/after montage of the gallery slides whose committed golden moved vs the base branch. |

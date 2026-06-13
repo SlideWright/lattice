@@ -40,6 +40,13 @@ in patch versions.
 
 ### Changed
 
+- **Chart spine tokens (`--chart-spine` / `-w` / `-h`) moved to
+  `section.word-cloud`.** They lived on the shared `section.chart-frame` block,
+  but since the four keyed charts went SVG-native (#240) only `word-cloud` still
+  draws a CSS spine from them — so it now owns them. Rendering is unchanged; only
+  a consumer overriding these (undocumented) tokens at `section.chart-frame` level
+  would need to retarget `section.word-cloud`.
+
 - **The `math canvas` plot fence is now ` ```functionplot ` (was ` ```latticeplot `).**
   The fence is renamed after the library that renders it (function-plot) — the
   same convention as ` ```mermaid ` and the `$$…$$` KaTeX math the same
@@ -58,6 +65,17 @@ in patch versions.
   major version. Existing decks keep rendering unchanged in the meantime.
 
 ### Added
+
+- **Export a single chart as a standalone `.svg`.** The four keyed charts
+  (pie/radar/map/cohort quadrant) render the diagram, spine, and key as one
+  `<svg>` — now you can lift one out of a deck as a self-contained file that
+  opens correctly anywhere. `node tools/export-chart-svg.js <deck.md> [--slide N]
+  [--mode dark] [-o out.svg]` (or `--all`) renders through the same engine the
+  Drawing Board uses, flattens the theme colours to literals so the detached file
+  needs no stylesheet, and embeds the fonts it uses as data-URIs. In the Drawing
+  Board the same core powers a **"Chart SVG"** entry in the Export menu that
+  appears **only when the cursor's slide has a chart**, exporting that one. See
+  `chart-family.docs.md` § "Standalone export".
 
 - **Export to Marp — a portable deck bundle (`npm run export:marp`).** Exports a
   deck as a self-contained directory or `.zip` for use outside Lattice: the
