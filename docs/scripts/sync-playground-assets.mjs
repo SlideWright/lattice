@@ -27,7 +27,8 @@
 
 import { createHash } from 'node:crypto';
 import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { createRequire } from 'node:module';
+import { basename, dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -47,6 +48,14 @@ const assets = [
 ];
 for (const file of readdirSync(themesDir)) {
   if (file.endsWith('.css')) assets.push([`themes/${file}`, join(themesDir, file)]);
+}
+// The Export-to-Marp static assets (minified engine / stylesheet / runtime /
+// mermaid), staged under export/ so the Drawing Board's in-browser export can
+// fetch them and zip the SAME bundle the CLI produces. Sourced from the shared
+// manifest (lib/core/marp-bundle.js) so the two paths can't drift.
+const { STATIC_ASSETS } = createRequire(import.meta.url)(join(repoRoot, 'lib', 'core', 'marp-bundle.js'));
+for (const { from } of STATIC_ASSETS) {
+  assets.push([`export/${basename(from)}`, join(repoRoot, from)]);
 }
 
 for (const [, src] of assets) {

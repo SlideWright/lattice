@@ -27,6 +27,16 @@ in patch versions.
 
 ### Added
 
+- **Export to Marp from the Drawing Board (the "Marp bundle" export).** The
+  Export menu gains a **Marp bundle (.zip)** item that produces the same
+  portable bundle as `npm run export:marp`, assembled in the browser: it bakes
+  the slide splits into literal `---`, fetches the (minified) engine, stylesheet,
+  runtime, mermaid + the deck's palette, and zips them with a `marp.config.cjs`
+  + README via JSZip. The CLI and the browser share one pure spec
+  (`lib/core/marp-bundle.js`) + split baker so they can't drift. The bundle now
+  ships **minified** JS/CSS under the canonical names (emulator 1.5 MB → 360 KB)
+  and DEFLATE-compresses to ~1.2 MB. Completes
+  `engineering/decisions/2026-06-13-export-to-marp.md` (P3).
 - **The bundled CLI now exports PPTX and PNG natively — no marp-cli.**
   `lattice deck.md out.pptx` writes an image-per-slide PowerPoint, and
   `lattice deck.md out.png` writes one PNG per slide (`out.001.png`, …). The

@@ -1,7 +1,7 @@
 # Proposal: Export to Marp — the portable deck bundle
 
-**Date:** 2026-06-13 · **Status:** **P1 + P2 implemented** (`tools/export-marp.js`,
-`npm run export:marp`) — see §6 · **Owner:** TBD
+**Date:** 2026-06-13 · **Status:** **P1 + P2 + P3 shipped** (`tools/export-marp.js`,
+`npm run export:marp`, + the Drawing Board "Marp bundle" export) — see §6 · **Owner:** TBD
 
 > **Implemented (P1 + P2):** the split baker (`lib/core/bake-splits.js`, sharing
 > `lib/core/heading-split-core.js` with the live divider so they can't drift),
@@ -145,8 +145,16 @@ a representative deck.
   **and** the structural components client-side — closing most of the stock-tool
   fidelity gap without a server-side render step. (Verified: the exported HTML
   renders a Mermaid flowchart to SVG in a headless browser.)
-- **P3 — Drawing-Board UI.** An "Export to Marp" button beside the existing
-  export, wired to the same pipeline, returning the `.zip` in-browser.
+- **P3 — Drawing-Board UI. ✅ DONE.** A "Marp bundle" item in the Export menu,
+  wired to the SAME pipeline in the browser: the split baker + the bundle spec
+  (templates + asset manifest) are exposed on the playground engine
+  (`window.LatticePlayground.marp`, from `lib/core/marp-bundle.js` —
+  the same module the CLI uses), the minified static assets are staged under
+  `playground/v/<hash>/export/` (sync-playground-assets), fetched, and zipped via
+  JSZip for download. The bundle ships **minified** JS/CSS under the canonical
+  names (emulator 1.5 MB → 360 KB, lattice.css → 361 KB) and DEFLATE-compresses
+  to ~1.2 MB. Verified: the in-browser export downloads a valid bundle that
+  renders, menu checked at desktop/tablet/mobile.
 
 ## 7. Open questions (need a decision)
 
