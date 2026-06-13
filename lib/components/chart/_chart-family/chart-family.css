@@ -530,7 +530,7 @@ section.chart-frame {
   --chart-rail-share: 30%;               /* the 30 — the key's rail             */
   --chart-legend-max: 25cqi;             /* key cap (< rail) — labels wrap past  */
   --chart-legend-pad: var(--sp-xl);      /* fixed spine→key gap (consistent)     */
-  --chart-legend-row-gap: 1cqi;          /* vertical rhythm between legend rows  */
+  --chart-legend-row-gap: 0.7em;         /* vertical rhythm — em off the key font (scales) */
   --chart-spine-h: 78%;                  /* spine height — % of body, never spills */
   --chart-spine-w: clamp(2px, 0.156cqi, 4px); /* spine thickness (res-stable)    */
   /* The spine gradient — a pure accent fade that melts into the canvas at both
@@ -560,6 +560,12 @@ section.quadrant:not(.cover) .quadrant-figure[data-variant="cohort"] {
   width: 100%;
   height: 100%;
   position: relative;
+  /* The figure is the RESPONSIVE UNIT (definite 100%×100% box): the key's font
+     is `min(--fs-body-compact, cqh)` off THIS box and its rows/swatches/gaps are
+     `em`, so the diagram (height-bound) and the key shrink TOGETHER under a
+     vertical squeeze and stay proportional — the key never sits full-size beside
+     a shrunk diagram, and can't overflow/truncate. */
+  container-type: size;
 }
 
 /* Chart centres in its 70% zone (the data is the hero). */
@@ -591,6 +597,11 @@ section.quadrant:not(.cover) .quadrant-figure[data-variant="cohort"] .quadrant-l
   padding-left: var(--chart-legend-pad);
   display: flex;
   flex-direction: column;
+  /* Proportional key: full `--fs-body-compact` until the figure box drops below
+     the diagram's design height, then tracks `cqh` DOWN with the diagram. Rows,
+     swatches and gaps are `em` (below + per chart) so the whole key scales with
+     this font. */
+  font-size: min(var(--fs-body-compact), 3.9cqh);
   gap: var(--chart-legend-row-gap);
 }
 
@@ -621,7 +632,7 @@ section.piechart:not(.cover) .piechart-legend li,
 section.radar:not(.cover) .radar-figure:not([data-variant="small-multiples"]) .radar-legend li,
 section.map:not(.cover) .map-legend-row,
 section.quadrant:not(.cover) .quadrant-figure[data-variant="cohort"] .quadrant-legend li {
-  font-size: var(--fs-body-compact);
+  /* font-size inherits the key's proportional `min(--fs-body-compact, cqh)` */
   line-height: var(--lh-snug, 1.25);
   color: var(--text-body);
 }
@@ -641,14 +652,14 @@ section.piechart:not(.cover) .piechart-legend .legend-swatch,
 section.radar:not(.cover) .radar-figure:not([data-variant="small-multiples"]) .radar-legend .radar-swatch,
 section.map:not(.cover) .map-legend .map-swatch,
 section.quadrant:not(.cover) .quadrant-figure[data-variant="cohort"] .quadrant-legend .quadrant-swatch {
-  width: 1.35cqi;
-  height: 1.35cqi;
-  min-width: 12px;  /* sanctioned: legend-swatch floor below the 1.35cqi size — keeps a swatch legible at sub-HD renders, never the computed size */
+  width: 0.96em;    /* em off the key font so the swatch scales with the rows */
+  height: 0.96em;
+  min-width: 12px;  /* sanctioned: legend-swatch floor — keeps a swatch legible at sub-HD renders, never the computed size */
   min-height: 12px; /* sanctioned: legend-swatch floor (see min-width) */
-  border-radius: 0.34cqi;
+  border-radius: 0.24em;
   flex: 0 0 auto;
   align-self: start;
-  margin-top: 0.15cqi;   /* optical pin to the first text line */
+  margin-top: 0.1em;   /* optical pin to the first text line */
 }
 
 

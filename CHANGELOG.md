@@ -106,6 +106,11 @@ in patch versions.
   chart-family graphic now fits its box: the fixed-aspect SVGs (`piechart`,
   `radar`, `quadrant`) are height-bound, the wide SVGs (`funnel`, `map`,
   `word-cloud`) are width-bound, and the HTML+SVG charts fill width and flex.
+  **The shared keyed-chart legend** (the 70/30 rail on `piechart` / `radar` /
+  `map` / `quadrant-cohort`) scales with the diagram too — each figure is a query
+  container and the shared key font is `min(--fs-body-compact, cqh)` with
+  rows/swatches/gaps in `em`, so the diagram and key shrink together and the key
+  can't truncate.
 - **Offline-rendered PDFs now embed the engine's intermediate font weights
   instead of synthesising them.** The self-hosted set the emulator base64-injects
   (`assets/fonts/` + `SELF_HOSTED_FACES`) was missing four faces the engine's
