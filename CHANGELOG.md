@@ -46,6 +46,17 @@ in patch versions.
 
 ### Added
 
+- **Export to Marp — a portable deck bundle (`npm run export:marp`).** Exports a
+  deck as a self-contained directory or `.zip` for use outside Lattice: the
+  `.md` with its `split: headings` boundaries **baked into literal `---`** (so it
+  divides correctly in any Marp tool — incl. the marp-vscode preview — with no
+  Lattice plugin), the engine stylesheet + the deck's palette, localized image
+  assets, a bundled zero-install renderer, a `marp-cli` config, and a README.
+  The baker (`lib/core/bake-splits.js`) shares its boundary computation with the
+  live divider (`lib/core/heading-split-core.js`), so a baked deck is proven to
+  produce the identical slides. Full structural-component fidelity needs the
+  bundled engine / `marp-cli`; stock marp-core renders splits + styling + raw
+  fences. First slice of `engineering/decisions/2026-06-13-export-to-marp.md`.
 - **Speaker notes — a non-directive HTML comment is that slide's note
   (Marp-faithful, LFM §3.5).** Any `<!-- … -->` that isn't a directive or a
   tooling pragma (`markdownlint`/`prettier`) becomes the slide's speaker note,

@@ -1,6 +1,16 @@
 # Proposal: Export to Marp — the portable deck bundle
 
-**Date:** 2026-06-13 · **Status:** proposal (for review) · **Owner:** TBD
+**Date:** 2026-06-13 · **Status:** **P1 implemented** (`tools/export-marp.js`,
+`npm run export:marp`) — see §6 · **Owner:** TBD
+
+> **Implemented (P1):** the split baker (`lib/core/bake-splits.js`, sharing
+> `lib/core/heading-split-core.js` with the live divider so they can't drift)
+> and the exporter (`tools/export-marp.js` → bundle/zip) have landed. Decisions
+> taken: **Q1** — ship the self-contained engine for zero-install rendering AND
+> a `marp-cli` config (both); **Q2** — diagrams render via the bundled engine /
+> marp-cli, raw fences in stock preview (pre-bake deferred); **Q3** — the deck's
+> palette + dark only. P2 (diagram pre-bake) and P3 (Drawing-Board button)
+> remain.
 **Related:** `2026-06-13-split-frontmatter.md` (the heading divider + the
 "Marp is an export target" reframe), `2026-06-10-marp-replacement-proposal.md`
 (engine ownership / P4 retire-marp-cli).
@@ -121,10 +131,11 @@ a representative deck.
 
 ## 6. Phasing (recommended)
 
-- **P1 — Source-faithful bundle (the meat).** Steps 1, 2, 4, 6, 7 + the
-  full-fidelity `marp.config.cjs`. This already delivers: portable files, baked
-  splits (fixing the preview-splitting concern), themes, and exact `marp-cli`
-  rendering. Diagrams render in `marp-cli`; raw fences in stock tools.
+- **P1 — Source-faithful bundle (the meat). ✅ DONE.** Steps 1, 2, 4, 5, 6, 7 +
+  the full-fidelity config + a bundled zero-install engine. Delivers portable
+  files, baked splits (fixing the preview-splitting concern), themes, localized
+  assets, and exact rendering via the bundled engine or `marp-cli`. Diagrams
+  render there; raw fences in stock preview. (`tools/export-marp.js`.)
 - **P2 — Diagram pre-bake (step 3).** SVG-embed Mermaid/charts so stock tools
   show diagrams too. Heavier (needs the render step in the exporter).
 - **P3 — Drawing-Board UI.** An "Export to Marp" button beside the existing

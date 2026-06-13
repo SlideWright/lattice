@@ -131,6 +131,7 @@ const SCRIPT_META = {
   'lint:fix':                 ['Lint & audit', 'Biome check --write (includes import sorting + unsafe fixes).'],
   'lint:deck':                ['Lint & audit', 'Author-facing footgun checks on one deck (card-style title, ordered-list bold, unknown _class).'],
   'lint:deck:all':            ['Lint & audit', 'Repo-wide strict deck lint (always-on CI gate).'],
+  'export:marp':              ['Build & bundle', 'Export a deck as a portable Marp bundle: splits baked to ---, themes, assets, a self-contained engine + marp-cli config, and a README. `<deck.md> <out-dir-or-zip> [palette]`.'],
   'check:ownership':          ['Lint & audit', 'Collision/ownership guard: hard-fails on accidental duplicate selectors/transformers/names.'],
   'check:responsive':         ['Lint & audit', 'Static lint: no fixed-px layout in chart CSS (responsive contract).'],
   'fonts:check':              ['Lint & audit', 'Font-embedding parity gate: the @import demand and both offline PDF supplies must list the same faces, so a render never silently falls back.'],
