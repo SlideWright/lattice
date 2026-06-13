@@ -65,6 +65,16 @@ geometry into the kernel**, which must therefore run **identically in all three
 render paths** (HARD RULE 1). We trade *free CSS inheritance* for *kernel-emitted
 geometry*. That is the cost; §4 pins how we pay it without regressions.
 
+**Accessibility (the second trade — paid, not just accepted).** The key text now
+lives inside an SVG the kernels mark `role="img"`, which on its own would collapse
+the whole chart to one opaque image named only by its `<title>` (the chart type),
+dropping the per-row names + values that the old HTML `<ol>` exposed as a real
+list. We pay this back: `buildSvgLegend` emits a `<desc>` re-enumerating every key
+row (`"Key — India 48.2, Nigeria 36.4, …"`, group heads as `"Asia:"`), so the data
+stays in the accessibility tree as the image's *description*. Not a per-item list
+like the old `<ol>`, but the content is no longer lost — an honest, disclosed
+middle ground (flagged by the maker-checker assessment; pinned by a unit test).
+
 ## 4. The three load-bearing decisions
 
 ### (a) Text-wrapping model — the crux
@@ -237,6 +247,14 @@ SVG-native sizing rule (height-bound `100cqh`, width follows the viewBox aspect)
 + scoping each component's old cap to its non-rail variants. Lesson for any
 future SVG-native conversion: **audit the component's existing `aspect-ratio` /
 `max-height` first** — the kernel is the easy part.
+
+**Leftover token ownership.** The `--chart-spine` / `--chart-spine-w` /
+`--chart-spine-h` tokens survive the rail retirement because `word-cloud` (a
+`chart-frame` member that is NOT one of the four keyed charts) still draws its own
+CSS spine from them. That is correct, not a half-migration — word-cloud never had
+a key. But it now *solely* owns those tokens; a future cleanup could move them
+onto `section.word-cloud` and drop them from the shared `section.chart-frame`
+block.
 
 ## 8. Alternatives considered (and why not)
 - **Keep #233's fixed HTML key (do nothing).** The floor; loses proportional +

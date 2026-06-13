@@ -236,6 +236,8 @@ test('buildRadar: default emits a figure, svg, grid, two polygons, legend', () =
   // diagram <svg> as a swatch <rect> + label <text> per series, not an HTML <ol>.
   assert.equal((out.match(/class="chart-key-swatch"/g) || []).length, 2);
   assert.equal((out.match(/class="chart-key-label"/g) || []).length, 2);
+  // Radar keys carry NO value column (the rail reclaims that width for labels).
+  assert.equal((out.match(/class="chart-key-value"/g) || []).length, 0);
 });
 
 test('buildRadar: minimal flag is recorded on the figure', () => {

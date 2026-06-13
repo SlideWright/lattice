@@ -296,7 +296,9 @@ in patch versions.
   tokens, and the labels route through `--font-label` so the `sketch` finish still
   reskins them in the hand sans. The map's swatches mirror its region fills
   (highlight hue / choropleth ramp), with group headings and a hollow `?` chip for
-  unmatched names; radar/cohort reference series keep a quiet swatch. See
+  unmatched names; radar/cohort reference series keep a quiet swatch. The key text
+  is re-stated in an SVG `<desc>` so screen readers still hear the names + values
+  (the chart is one `role="img"`). See
   `engineering/decisions/2026-06-13-svg-native-legend.md`.
 - **The emulator (the `lattice` CLI / shipped `bin`) now renders through the
   owned `lib/engine` — one markdown implementation, the same engine that powers
