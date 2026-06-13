@@ -387,13 +387,13 @@ section.math.compare > p:not(:has(.katex-display)) {
  *   ## Title
  *   $$ y = \frac{1}{1+e^{-x}} $$
  *   The sigmoid: $S$-shaped, asymptotes at $0$ and $1$.
- *   ```latticeplot
+ *   ```functionplot
  *   { "data": [{ "fn": "1 / (1 + exp(-x))" }],
  *     "xAxis": { "domain": [-6, 6] }, "yAxis": { "domain": [-0.1, 1.1] } }
  *   ```
  *
  * Equation + caption on the left, plot on the right. The plot child is
- * either a ```latticeplot fence (function-plot, the default) or an
+ * either a ```functionplot fence (function-plot, the default) or an
  * `<img>` for externally-rendered SVG / PNG. */
 /* Grid-template-areas keeps equation + caption stacked in the left column
  * without a wrapper div: equation in `eq` (1fr, big), caption in `cap`
@@ -428,12 +428,12 @@ section.math.canvas > p:not(:has(.katex-display)):not(:has(img)) {
   margin: var(--sp-sm) 0 0 0;
 }
 section.math.canvas > p:has(img),
-section.math.canvas > :is(svg, figure, .latticeplot) {
+section.math.canvas > :is(svg, figure, .functionplot) {
   grid-area: plot;
   align-self: center;
   justify-self: center;
 }
-section.math.canvas > .latticeplot {
+section.math.canvas > .functionplot {
   width: 55cqi;
   height: 38cqi;
 }
@@ -611,52 +611,52 @@ section.math.stats > p:not(:has(> .katex-display)):not(:first-of-type) {
  * override those with !important on the inline attributes. The first
  * three traces ride the editorial accents (accent → cool → warm);
  * further traces fall back to muted so they read as supporting context. */
-section .latticeplot .function-plot {
+section .functionplot .function-plot {
   font-family: var(--font-mono);
   color: var(--text-body);
   background: transparent;
 }
-section .latticeplot .function-plot .domain {
+section .functionplot .function-plot .domain {
   stroke: var(--text-muted) !important;
   opacity: 0.6 !important;
 }
-section .latticeplot .function-plot .tick line {
+section .functionplot .function-plot .tick line {
   stroke: var(--border) !important;
 }
-section .latticeplot .function-plot .tick text {
+section .functionplot .function-plot .tick text {
   fill: var(--text-muted) !important;
   font-size: var(--fs-meta);
 }
-section .latticeplot .function-plot .axis-label,
-section .latticeplot .function-plot .x.axis-label,
-section .latticeplot .function-plot .y.axis-label {
+section .functionplot .function-plot .axis-label,
+section .functionplot .function-plot .x.axis-label,
+section .functionplot .function-plot .y.axis-label {
   fill: var(--text-heading) !important;
   font-family: var(--font-body);
   font-size: var(--fs-meta);
   font-weight: 600;
 }
-section .latticeplot .function-plot .line-0 {
+section .functionplot .function-plot .line-0 {
   stroke: var(--accent) !important;
   stroke-width: 2.5 !important;
 }
-section .latticeplot .function-plot .line-1 {
+section .functionplot .function-plot .line-1 {
   stroke: var(--c4-dark, var(--text-heading)) !important;
   stroke-width: 2.5 !important;
 }
-section .latticeplot .function-plot .line-2 {
+section .functionplot .function-plot .line-2 {
   stroke: var(--c7-dark, var(--text-muted)) !important;
   stroke-width: 2.5 !important;
 }
-section .latticeplot .function-plot :is(.line-3, .line-4, .line-5) {
+section .functionplot .function-plot :is(.line-3, .line-4, .line-5) {
   stroke: var(--text-muted) !important;
   stroke-width: 2 !important;
 }
-section .latticeplot .function-plot .annotations .annotation,
-section .latticeplot .function-plot .annotations text {
+section .functionplot .function-plot .annotations .annotation,
+section .functionplot .function-plot .annotations text {
   fill: var(--text-muted) !important;
   stroke: var(--text-muted) !important;
 }
-section .latticeplot-error {
+section .functionplot-error {
   color: var(--warn);
   font-family: var(--font-mono);
   font-size: var(--fs-meta);

@@ -123,16 +123,26 @@ is its own mini-spec; LFM only requires that it degrades to a code block.
 
 | Info string | Sub-language | Degrades to |
 |---|---|---|
-| `latticeplot` | A [function-plot](https://mauriciopoppe.github.io/function-plot/) graph spec (JSON body: mathematical functions + axes). Used today by the `math` component's `canvas` variant to draw a curve beside an equation. | A code block showing the JSON config. **L0-clean.** |
+| `functionplot` | A [function-plot](https://mauriciopoppe.github.io/function-plot/) graph spec (JSON body: mathematical functions + axes). Used today by the `math` component's `canvas` variant to draw a curve beside an equation. | A code block showing the JSON config. **L0-clean.** |
 | `mermaid` | Mermaid (passthrough), used by the `diagram` component. | A code block. **L0-clean** (and Mermaid-aware hosts render the diagram). |
 
-The body of each fence is **not Markdown** — it is the configuration language
-of the library that renders it (function-plot, Mermaid). Those schemas are owned
-by their libraries and the components that use them, and are referenced from
+Each fence is **named after the library that renders it** — `functionplot`
+(function-plot), `mermaid` (Mermaid) — exactly as the equation half of `math`
+uses standard `$$…$$` for its renderer (KaTeX). LFM does **not** rebrand these
+or claim to own their config languages. What LFM owns is narrow and consistent
+across all three: the fence registration, the SVG **theming** that makes the
+output inherit the deck's palette tokens, and the **degradation contract**. The
+fence body is **not Markdown** — it is the renderer library's own configuration
+language, owned by that library and referenced from
 [`dist/docs/grammar.json`](../dist/docs/grammar.json) rather than inlined here,
-so this prose spec stays stable as those options evolve. LFM's only requirement
-of a fenced sub-language is the degradation contract: an LFM-unaware renderer
-shows the fence as a plain code block.
+so this prose spec stays stable as those options evolve.
+
+> **Deprecated alias.** The `functionplot` fence was previously named
+> `latticeplot`. That name implied a Lattice-owned grammar that does not exist
+> (the body is function-plot's, verbatim), so it was renamed for honesty.
+> ```` ```latticeplot ```` is accepted as a **deprecated alias for one release**
+> and will be removed in a future major version. See the
+> `2026-06-13-lfm-standard` decision note.
 
 ### 3.4 Other inline conventions
 

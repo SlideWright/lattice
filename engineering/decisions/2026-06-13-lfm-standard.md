@@ -35,7 +35,8 @@ build it.
   - The nested-list **card grammar** (`- Title` / `  - body`).
   - The **state-marker** grammar `[x] / [-] / [ ] / [/]` shared across
     `checklist`, `verdict-grid`, `obligation-matrix`, `roadmap`, `pricing`.
-  - ` ```latticeplot ` fenced blocks carrying base64-JSON chart config.
+  - ` ```functionplot ` fenced blocks (then named ` ```latticeplot `; see the
+    rename below) carrying a base64-JSON function-plot config.
 - **A real linter already** — `lib/authoring/lint-core.js`: pure, fs-free,
   shared three ways (CLI, `validate()`, the Drawing Board browser panel), with
   **did-you-mean** (`nearestRegion`, bounded Levenshtein) and **autofix**
@@ -43,8 +44,9 @@ build it.
 - **Per-component grammar, informally** — every manifest carries `slots`
   (CSS selector + `required` + description), `skeleton`, and `sample`. That
   *is* a grammar; it was simply never labelled or exported as one.
-- **The Mermaid pattern, already** — `latticeplot` is a fenced DSL that
-  degrades to a code block. Structurally identical to how Mermaid won
+- **The Mermaid pattern, already** — the `functionplot` fence (then
+  `latticeplot`) is a fenced DSL that degrades to a code block. Structurally
+  identical to how Mermaid won
   embedding.
 
 So we are not starting a standard. We are **promoting an undocumented one to a
@@ -116,16 +118,35 @@ engine reads.
 ### Chart / diagram semantics — the Mermaid model we already built
 
 Each fenced DSL is its own sub-spec: own grammar, own diagnostics, degrades to
-a code block. `latticeplot` (a [function-plot](https://mauriciopoppe.github.io/function-plot/)
-graph spec, used today by the `math canvas` layout to draw a curve beside an
-equation) is *our Mermaid* and already follows this shape; Mermaid passthrough
-(the `diagram` component) is the other. Note this is **distinct** from the
-`chart` bucket (bar/line/donut/radar/map), which renders through the owned
-chart-family registry, not a fence. We do **not** fold a fence's config into the
-prose grammar — it stays a fenced sub-language whose body is the renderer
-library's own config language. `grammar.json` records each fence's info string,
-the library and component that own it, and its degraded form; the detailed
-config schema stays owned by that library and is referenced, not inlined.
+a code block. The fence is **named after the library that renders it**, not
+Lattice-branded: `functionplot` ([function-plot](https://mauriciopoppe.github.io/function-plot/),
+used today by the `math canvas` layout to draw a curve beside an equation) and
+`mermaid` (the `diagram` component) — the same way the equation half of `math`
+uses standard `$$…$$` for KaTeX. This is **distinct** from the `chart` bucket
+(bar/line/donut/radar/map), which renders through the owned chart-family
+registry, not a fence. We do **not** fold a fence's config into the prose
+grammar — it stays a fenced sub-language whose body is the renderer library's
+own config language. `grammar.json` records each fence's info string, the
+library and component that own it, deprecated aliases, and its degraded form;
+the detailed config schema stays owned by that library and is referenced, not
+inlined.
+
+### The `latticeplot` → `functionplot` rename (honesty audit)
+
+The fence shipped originally as `latticeplot`. Reviewing it for this spec
+surfaced that the name was a **vanity rebrand**: Lattice does nothing to
+function-plot it does not also do to Mermaid (render via the library, theme its
+SVG through `var(--token)`), and the body authors write is function-plot's
+config schema *verbatim* — so the Lattice-branded name implied an
+engine-agnostic abstraction that does not exist, and the implied
+engine-swappability was illusory (swap the engine and every deck breaks). The
+honest, internally-consistent move — matching how we already treat both Mermaid
+and `$$`/KaTeX — is to name the fence after its engine. So `latticeplot` →
+`functionplot`, with `latticeplot` retained as a **deprecated alias for one
+release**. A genuinely Lattice-owned, engine-agnostic plot vocabulary (with
+function-plot as one swappable backend behind a translator) remains a possible
+future bet; *that* would earn back a Lattice-owned name — this rename does not
+foreclose it, it just stops claiming it before it exists.
 
 ### Error identification & correction — the moat
 

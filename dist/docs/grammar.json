@@ -35,11 +35,14 @@
     "verdict-grid"
   ],
   "fences": {
-    "latticeplot": {
+    "functionplot": {
       "sublanguage": "function-plot",
       "body": "json",
       "usedBy": [
         "math"
+      ],
+      "deprecatedAliases": [
+        "latticeplot"
       ],
       "degradesTo": "code-block"
     },

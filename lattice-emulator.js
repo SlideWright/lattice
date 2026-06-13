@@ -55,9 +55,10 @@ let katexCssAbsPath = '';
 try { katexCssAbsPath = require.resolve('katex/dist/katex.min.css'); } catch (_e) { /* no css link emitted */ }
 
 // ── function-plot (math function plotting in math.canvas) ─────────────────
-// ```latticeplot fences carry a JSON function-plot config; the build emits
-// a `<div class="latticeplot" data-fp-config="…">` placeholder that the
-// vendored function-plot UMD bundle inflates to an SVG on page load — same
+// ```functionplot fences (alias: the deprecated ```latticeplot) carry a JSON
+// function-plot config; the build emits a `<div class="functionplot"
+// data-fp-config="…">` placeholder that the vendored function-plot UMD bundle
+// inflates to an SVG on page load — same
 // pre-render-then-PDF flow puppeteer uses for the rest of the deck. The
 // library is purpose-built for y=f(x), parametric, polar, implicit, and
 // vector-field plots; it parses math.js expressions and skips asymptotes
@@ -1117,17 +1118,17 @@ const katexCssLink = katexCssAbsPath
   : '';
 
 // ── function-plot script + bootstrap ──────────────────────────────────────
-// Only emitted if at least one slide actually contains a latticeplot block,
+// Only emitted if at least one slide actually contains a functionplot block,
 // so decks that don't use it pay nothing. The bootstrap runs synchronously
 // on DOMContentLoaded; puppeteer's `waitUntil: networkidle0` covers it.
-const hasLatticePlot = highlightedSlides.some(s => s.includes('class="latticeplot"'));
-const functionPlotScript = (hasLatticePlot && functionPlotJsAbsPath)
+const hasFunctionPlot = highlightedSlides.some(s => s.includes('class="functionplot"'));
+const functionPlotScript = (hasFunctionPlot && functionPlotJsAbsPath)
   ? `<script src="file://${functionPlotJsAbsPath}"></script>
 <script>
 (function(){
   function inflate() {
     if (typeof window.functionPlot !== 'function') return;
-    document.querySelectorAll('div.latticeplot[data-fp-config]').forEach(function(div){
+    document.querySelectorAll('div.functionplot[data-fp-config]').forEach(function(div){
       if (div.dataset.fpInflated === '1') return;
       try {
         var cfg = JSON.parse(atob(div.getAttribute('data-fp-config')));
@@ -1140,8 +1141,8 @@ const functionPlotScript = (hasLatticePlot && functionPlotJsAbsPath)
         window.functionPlot(cfg);
         div.dataset.fpInflated = '1';
       } catch (e) {
-        div.textContent = 'latticeplot error: ' + e.message;
-        div.classList.add('latticeplot-error');
+        div.textContent = 'functionplot error: ' + e.message;
+        div.classList.add('functionplot-error');
       }
     });
   }

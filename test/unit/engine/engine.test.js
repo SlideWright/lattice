@@ -47,7 +47,7 @@ function makeMarp() {
   m.use(plugins.deckClassPropagate).use(plugins.verdictGridBadges).use(plugins.obligationMatrixBadges)
     .use(plugins.checklistItemStates).use(plugins.slotLabelLift).use(plugins.glossaryListToTable)
     .use(plugins.glossaryRange).use(plugins.stripHeadingPeriods).use(plugins.addHeadingPeriods)
-    .use(plugins.latticeplotFences);
+    .use(plugins.functionPlotFences);
   const orig = m.render.bind(m);
   m.render = (md, env) => {
     const r = orig(md, env);

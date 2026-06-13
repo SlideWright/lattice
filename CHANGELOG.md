@@ -25,6 +25,25 @@ in patch versions.
 
 ## Unreleased
 
+### Changed
+
+- **The `math canvas` plot fence is now ` ```functionplot ` (was ` ```latticeplot `).**
+  The fence is renamed after the library that renders it (function-plot) — the
+  same convention as ` ```mermaid ` and the `$$…$$` KaTeX math the same
+  component already uses. Lattice never owned the plot config (the fence body is
+  function-plot's schema verbatim); the old name implied an abstraction that
+  doesn't exist, so it was corrected for honesty. Rendered output is unchanged.
+  Internal: the placeholder is now `<div class="functionplot">` (was
+  `latticeplot`), and the LFM spec (`spec/LFM-1.0.md` §3.3) documents fences as
+  renderer-named, third-party sub-languages. See
+  `engineering/decisions/2026-06-13-lfm-standard.md`.
+
+### Deprecated
+
+- **The ` ```latticeplot ` fence is deprecated — use ` ```functionplot `.** It is
+  retained as a working alias for one release and will be removed in a future
+  major version. Existing decks keep rendering unchanged in the meantime.
+
 ### Added
 
 - **`split: headings` — divide a deck by its headings, not `---`.** A new

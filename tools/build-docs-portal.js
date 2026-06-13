@@ -364,7 +364,7 @@ function renderPortalJson(manifests) {
 // ── LFM grammar projection ───────────────────────────────────────────────
 // The shared cross-component grammars. These mirror the canonical handlers in
 // lib/integrations/marp/plugins.js (stateClassesFor + the verdict-grid /
-// obligation-matrix / checklist / roadmap state plugins, and latticeplotFences)
+// obligation-matrix / checklist / roadmap state plugins, and functionPlotFences)
 // and the chart-family Mermaid registration. They are declared here — as
 // lib/authoring/lint.js declares its own modifier lists — because the plugin
 // module exports the behaviour, not these vocabularies. Keep in sync if the
@@ -398,9 +398,11 @@ const STATE_MARKER_COMPONENTS = ['checklist', 'verdict-grid', 'obligation-matrix
 // Fenced sub-languages LFM recognises (info string → degraded form). The fence
 // body is NOT Markdown — it is the config language of the library that renders
 // it, owned by that library and the component that uses it, not by LFM. Each
-// degrades to a plain code block in an LFM-unaware renderer.
+// degrades to a plain code block in an LFM-unaware renderer. The fence is named
+// after its renderer (like `mermaid`), not branded — `latticeplot` is retained
+// as a DEPRECATED alias of `functionplot` for one release.
 const FENCES = {
-  latticeplot: { sublanguage: 'function-plot', body: 'json', usedBy: ['math'], degradesTo: 'code-block' },
+  functionplot: { sublanguage: 'function-plot', body: 'json', usedBy: ['math'], deprecatedAliases: ['latticeplot'], degradesTo: 'code-block' },
   mermaid: { sublanguage: 'mermaid', body: 'mermaid', usedBy: ['diagram'], degradesTo: 'code-block' },
 };
 

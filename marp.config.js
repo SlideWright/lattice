@@ -4,7 +4,7 @@
  * The markdown-it / Marpit engine plugins (deck-class propagation, the `logo:`
  * directive, verdict-grid / obligation-matrix / checklist state markers,
  * slot-label lift, glossary table + range, heading-period adjustment,
- * latticeplot fences, Mermaid hljs registration) now live
+ * functionplot fences, Mermaid hljs registration) now live
  * in lib/integrations/marp/plugins.js so the browser playground bundle can run
  * the SAME engine for render parity. This file wires them into marp-cli and
  * adds the HTML-stage transformer registry + deck-logo injection.
@@ -33,7 +33,7 @@ const {
   glossaryListToTable,
   glossaryRange,
   registerMermaidHljs,
-  latticeplotFences,
+  functionPlotFences,
 } = require('./lib/integrations/marp/plugins');
 const { applyAllToHtml: applyTransformerRegistryToHtml } = require('./lib/transformers/registry');
 
@@ -95,7 +95,7 @@ module.exports = {
         .use(glossaryRange)
         .use(stripHeadingPeriods)
         .use(addHeadingPeriods)
-        .use(latticeplotFences);
+        .use(functionPlotFences);
 
     // Wrap render() so chart-family slides are rewritten into the
     // chart-frame skeleton in the rendered HTML — same DOM the export
@@ -160,7 +160,7 @@ module.exports.plugins = {
   obligationMatrixBadges,
   checklistItemStates,
   slotLabelLift,
-  latticeplotFences,
+  functionPlotFences,
   glossaryListToTable,
   glossaryRange,
   stripHeadingPeriods,

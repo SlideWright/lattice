@@ -112,8 +112,8 @@
     },
     "canvas": {
       "label": "Canvas — equation left, plot right",
-      "caption": "Pairs a hero equation with a `latticeplot` chart. Best when the shape of the function is half the argument — sigmoids, distributions, decision boundaries.",
-      "sample": "<!-- _class: math canvas -->\n\n## The sigmoid.\n\n$$ \\sigma(x) = \\dfrac{1}{1 + e^{-x}} $$\n\nMaps $\\mathbb{R} \\to (0,1)$. $S$-shaped, $\\sigma(0) = 0.5$, steepest slope at the origin.\n\n```latticeplot\n{\n  \"data\": [\n    { \"fn\": \"1 / (1 + exp(-x))\" },\n    { \"fn\": \"tanh(x)\" }\n  ],\n  \"xAxis\": { \"domain\": [-6, 6], \"label\": \"x\" },\n  \"yAxis\": { \"domain\": [-1.1, 1.1], \"label\": \"f(x)\" },\n  \"grid\": true\n}\n```\n"
+      "caption": "Pairs a hero equation with a `functionplot` graph (rendered by the function-plot library). Best when the shape of the function is half the argument — sigmoids, distributions, decision boundaries.",
+      "sample": "<!-- _class: math canvas -->\n\n## The sigmoid.\n\n$$ \\sigma(x) = \\dfrac{1}{1 + e^{-x}} $$\n\nMaps $\\mathbb{R} \\to (0,1)$. $S$-shaped, $\\sigma(0) = 0.5$, steepest slope at the origin.\n\n```functionplot\n{\n  \"data\": [\n    { \"fn\": \"1 / (1 + exp(-x))\" },\n    { \"fn\": \"tanh(x)\" }\n  ],\n  \"xAxis\": { \"domain\": [-6, 6], \"label\": \"x\" },\n  \"yAxis\": { \"domain\": [-1.1, 1.1], \"label\": \"f(x)\" },\n  \"grid\": true\n}\n```\n"
     },
     "matrix": {
       "label": "Matrix — matrix + properties",

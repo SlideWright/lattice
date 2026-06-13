@@ -34,8 +34,12 @@ describe('LFM grammar.json projection', () => {
 
   test('declares the LFM spec id and the fence sub-languages', () => {
     assert.equal(doc.spec, 'LFM 1.0');
-    assert.ok(doc.fences.latticeplot, 'latticeplot fence is declared');
+    assert.ok(doc.fences.functionplot, 'functionplot fence is declared');
     assert.ok(doc.fences.mermaid, 'mermaid fence is declared');
+    // The fence is named after its renderer, not Lattice-branded; the old
+    // `latticeplot` name survives only as a recorded deprecated alias.
+    assert.ok(!doc.fences.latticeplot, 'latticeplot is not a first-class fence (renamed)');
+    assert.deepEqual(doc.fences.functionplot.deprecatedAliases, ['latticeplot']);
     for (const f of Object.values(doc.fences)) {
       assert.equal(f.degradesTo, 'code-block', 'every fence degrades to a code block (LFM §3.3)');
     }
