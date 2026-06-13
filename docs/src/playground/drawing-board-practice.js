@@ -145,6 +145,11 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
   let elPace;
   let elTarget;
   let elAi;
+  let elSpine; // the per-slide progress spine (section breaks marked)
+  let elSection; // the current section's name
+  let elNext; // the next section, previewed top-right so transitions never surprise you
+  let sections = []; // [{ start, title }] — a section opens at slide 0 and each divider
+  let sectionOf = []; // slide index → section index
   let elCoach; // the single coaching pill (ambient guidance OR a timed beat)
 
   function close() {
@@ -159,6 +164,20 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
     else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(idx - 1); }
   }
   function slideCount() { return plan ? plan.slides.length : 0; }
+  // A section opens at the first slide and at every divider (the `section` role);
+  // its name is the divider's title. Lets the bar show "where in the arc" you are.
+  function computeSections(slides) {
+    sections = [];
+    sectionOf = [];
+    for (let i = 0; i < slides.length; i++) {
+      if (i === 0 || slides[i].role === 'section') {
+        sections.push({ start: i, title: slides[i].title || (i === 0 ? 'Opening' : 'Section') });
+      }
+      sectionOf[i] = sections.length - 1;
+    }
+  }
+  // The section after the one you're in — drives the top-right "next ·" preview.
+  function nextSection(i) { return sections[sectionOf[i] + 1] || null; }
   function go(n) {
     idx = Math.max(0, Math.min(slideCount() - 1, n));
     if (frame?.contentWindow) frame.contentWindow.postMessage({ pv: idx }, '*');
@@ -170,6 +189,24 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
   function refreshChrome() {
     const sp = plan?.slides[idx];
     elSlide.textContent = (idx + 1) + ' / ' + slideCount();
+    if (elSection) elSection.textContent = sections[sectionOf[idx]]?.title || '';
+    if (elNext) {
+      const ns = nextSection(idx);
+      if (ns) {
+        elNext.hidden = false;
+        elNext.innerHTML = '';
+        elNext.append(el('span', 'db-pv-next-k', 'next'), el('span', 'db-pv-next-n', ns.title));
+      } else {
+        elNext.hidden = true;
+      }
+    }
+    if (elSpine) {
+      const segs = elSpine.children;
+      for (let i = 0; i < segs.length; i++) {
+        segs[i].classList.toggle('done', i < idx);
+        segs[i].classList.toggle('cur', i === idx);
+      }
+    }
     elTarget.textContent = 'target ' + fmt(sp ? sp.target : 0);
     if (elAi) elAi.hidden = !(plan && plan.source === 'ai');
   }
@@ -248,23 +285,41 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
     const { det, refined } = planner.plan(metas, minutes);
     plan = det;
     if (!plan.slides.length) { close(); return; }
+    computeSections(plan.slides);
     idx = 0;
 
     // Build the running view: bar (top) · stage with the coaching scrim · nav.
     host.innerHTML = '';
     const run = el('div', 'db-pv-run');
 
+    // The bar (top): a per-slide progress spine (section breaks ticked) over a
+    // row that just LOCATES you in the arc — current section + position (left),
+    // the next section previewed + AI tag + close (right). No timing up here; the
+    // clock and pace live in the bottom HUD, so the top stays a calm hairline and
+    // the slide gets the height back.
     const bar = el('div', 'db-pv-bar');
+    elSpine = el('div', 'db-pv-spine');
+    for (let i = 0; i < plan.slides.length; i++) {
+      const seg = el('span', 'db-pv-seg');
+      if (i > 0 && sectionOf[i] !== sectionOf[i - 1]) seg.classList.add('at-divider');
+      elSpine.append(seg);
+    }
+    const row = el('div', 'db-pv-bar-row');
+    const left = el('div', 'db-pv-bar-left');
+    elSection = el('span', 'db-pv-section');
     elSlide = el('span', 'db-pv-slide');
-    elClock = el('span', 'db-pv-clock', '0:00');
-    elPace = el('span', 'db-pv-pace ok', 'on track');
+    left.append(elSection, elSlide);
+    const right = el('div', 'db-pv-bar-right');
+    elNext = el('span', 'db-pv-next-section'); elNext.hidden = true;
     elAi = el('span', 'db-pv-ai', '✦ AI‑tuned'); elAi.hidden = true; elAi.title = 'Pacing + cues tailored to this deck by your connected model';
     const closeBtn = el('button', 'db-pv-x'); // glyph drawn by CSS: .db-pv-x::before
     closeBtn.type = 'button';
     closeBtn.title = 'Exit practice (Esc)';
     closeBtn.setAttribute('aria-label', 'Exit practice');
     closeBtn.addEventListener('click', close);
-    bar.append(elSlide, elClock, elPace, elAi, closeBtn);
+    right.append(elNext, elAi, closeBtn);
+    row.append(left, right);
+    bar.append(elSpine, row);
 
     const stage = el('div', 'db-pv-stage');
     frame = el('iframe', 'db-pv-frame');
@@ -277,11 +332,21 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
     coach.append(elCoach);
     stage.append(frame, coach);
 
+    // The bottom HUD: Prev (left) · a composed readout — the clock dominant, the
+    // pace + target grouped behind a hairline (centre) · Next (right). One calm,
+    // legible strip; the clock is the focal point you glance at, not a crowd.
     const nav = el('div', 'db-pv-nav');
     const prev = el('button', 'db-pv-btn'); prev.type = 'button'; prev.innerHTML = '<span class="ico ico-chevron-left" aria-hidden="true"></span> Prev'; prev.addEventListener('click', () => go(idx - 1));
+    const readout = el('div', 'db-pv-readout');
+    elClock = el('span', 'db-pv-clock', '0:00');
+    const vr = el('span', 'db-pv-vr');
+    const pacewrap = el('div', 'db-pv-pacewrap');
+    elPace = el('span', 'db-pv-pace ok', 'on track');
     elTarget = el('span', 'db-pv-target');
+    pacewrap.append(elPace, elTarget);
+    readout.append(elClock, vr, pacewrap);
     const next = el('button', 'db-pv-btn db-pv-next'); next.type = 'button'; next.innerHTML = 'Next <span class="ico ico-chevron-right" aria-hidden="true"></span>'; next.addEventListener('click', () => go(idx + 1));
-    nav.append(prev, elTarget, next);
+    nav.append(prev, readout, next);
 
     run.append(bar, stage, nav);
     host.appendChild(run);

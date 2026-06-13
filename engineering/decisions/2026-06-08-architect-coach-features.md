@@ -137,6 +137,20 @@ reference, minus "Write a reply"):
 > once you linger past ~1.3× a slide's budget — the one cue keyed to actual dwell
 > vs target, not a fixed fraction.
 >
+> **The running chrome (revised).** The top bar is a pure **locator**, no timing:
+> a per-slide progress **spine** (`computeSections` walks the plan, opening a
+> section at slide 0 and each `role: 'section'` divider; each boundary gets an
+> `at-divider` tick, the current slide's segment is accented) over a row that
+> names the **current section + position** (left) and **previews the next
+> section** — `next · The ask` (right) — so a transition never surprises you;
+> the next-section preview drops below 640px to protect the width. All timing
+> lives in a composed **bottom HUD** merged with the nav: the **clock dominates**,
+> with pace + target grouped behind a hairline divider, balanced between Prev and
+> Next. Moving the clock and pace off the top edge hands that height back to the
+> slide — the stage is taller on every breakpoint. This replaced the first cut,
+> which stacked the clock and pace in the top bar (concept "A"); the locator +
+> bottom-HUD split ("D+") scored higher on legibility and stage real-estate.
+>
 > **Still Phase 2:** the model layering richer qualitative deck-level critique
 > ("the through-line breaks at slide 6") on top of the structural read, and
 > spoken-rehearsal critique (speech-to-text). The text below is the original
