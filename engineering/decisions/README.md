@@ -169,3 +169,12 @@ it is load-bearing.
   `lattice-engine` on `markdown-it` and a five-phase plan that keeps
   the baselines green. Expands the "Own the engine" section of the
   Tauri note. **Status: proposal / open.**
+- [2026-06-13-coach-canon-knowledge-pack.md](2026-06-13-coach-canon-knowledge-pack.md) —
+  design model for giving the cloud-tier Coach the presentation canon's
+  *qualitative* judgement (Minto / Duarte / Knaflic / *Pitfalls* / Zen)
+  via a distilled **principle-card pack** injected into the Converse prompt
+  — not OpenRouter file upload (which re-bills a book per call and is
+  copyright-exposed). Reuses the shipped `architect-knowledge.js` cloud-only
+  injection pattern, retrieval-gating (`architect-retrieval.js`), prompt
+  caching (`cache_control`), and the `usage.cost` budget tally; degrades to
+  the deterministic floor. Cloud-tier-only by design. **Status: spec / open.**
