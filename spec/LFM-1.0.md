@@ -160,6 +160,37 @@ with that library, so this prose spec stays stable as those options evolve.
   documented per component in `grammar.json`, and are **L0-clean** by
   construction.
 
+### 3.5 Speaker notes
+
+An **HTML comment on a slide that is neither a directive nor a tooling pragma**
+is that slide's speaker note. This is Marp's own semantics, unchanged:
+
+```markdown
+# The slide title
+
+<!-- Open cold. Pause two seconds before the first word. -->
+```
+
+A slide may carry several note comments; they are concatenated in order. Two
+comment kinds are **not** notes, matching Marpit exactly:
+
+- **Directives** — `<!-- _class: … -->`, `<!-- paginate: true -->`, and any
+  comment that parses as a block of known directive keys (§2.1, §2.3).
+- **Tooling pragmas** — `markdownlint-*`, `prettier-ignore[-start|-end]`, and
+  `lint disable|enable|ignore …` (the editor/formatter control comments). The
+  recognised set is Marpit's `magicCommentMatchers`, mirrored in the reference
+  implementation `lib/authoring/notes-core.js` so every render path agrees on
+  the note/non-note boundary.
+
+A conformant L1 renderer SHOULD surface notes through whatever presenter channel
+it offers (the reference engine embeds a per-page PDF annotation and a hidden
+`aside.lattice-notes` HTML element). How a note is *presented* is
+implementation-defined; *what counts as a note* is the contract above.
+
+- **Degrades to:** nothing visible — an HTML comment is invisible in every
+  Markdown renderer, and on GitHub/GitLab a comment is already how an author
+  leaves an out-of-band remark. **L0-clean.**
+
 ## 4. The component & modifier vocabulary
 
 `_class` tokens are one **component name** plus modifier tokens. The full list

@@ -46,6 +46,20 @@ in patch versions.
 
 ### Added
 
+- **Speaker notes — a non-directive HTML comment is that slide's note
+  (Marp-faithful, LFM §3.5).** Any `<!-- … -->` that isn't a directive or a
+  tooling pragma (`markdownlint`/`prettier`) becomes the slide's speaker note,
+  matching Marp exactly. The emulator now embeds each note as a per-page **PDF
+  text annotation** and a hidden **HTML presenter-notes channel**
+  (`<aside class="lattice-notes">`), and `--notes` writes a plaintext
+  `.notes.txt` sidecar. The PDF annotation is **hidden by default** — embedded
+  and tool-extractable, but no icon marks the boardroom slide and it never
+  prints; `--notes-icon` exposes a clickable sticky note instead. Extraction is
+  single-sourced in `lib/authoring/notes-core.js` and run over the rendered
+  slides, so the note index tracks the slide split (including `split: headings`);
+  a parity test pins its keep/drop boundary to marp-core's own comment
+  collection so the render paths can't drift (HARD RULE #1). Demo:
+  `examples/speaker-notes.md`.
 - **`split: headings` — divide a deck by its headings, not `---`.** A new
   deck-wide front-matter key chooses how the body splits into slides:
   `split: rule` (the default — unchanged Marp behaviour, split on `---`) or
