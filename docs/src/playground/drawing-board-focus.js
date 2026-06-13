@@ -15,7 +15,7 @@ import { findFocusBlock, fragmentSource } from './focus-block.js';
 
 export { findFocusBlock };
 
-export function createFocus({ host, editor, themeBase, runtimeUrl, slideBox }) {
+export function createFocus({ host, editor, themeBase, runtimeUrl }) {
   if (!host) return { open() {}, focusable() { return null; } };
   const PG = () => window.LatticePlayground;
   const root = document.documentElement;
@@ -51,12 +51,16 @@ export function createFocus({ host, editor, themeBase, runtimeUrl, slideBox }) {
   }
 
   function frame(out, bg) {
+    // Fit the single slide to its OWN `@size` box (out.width/height), not a
+    // hardcoded 1280×720 — a 4K fragment would otherwise scale 3× too large.
+    const sw = out.width || 1280, sh = out.height || 720;
+    const box = '.marpit>section{width:' + sw + 'px;height:' + sh + 'px}';
     const FIT = '(function(){function fit(){var m=document.querySelector(".marpit");if(!m)return;var s=m.querySelector(":scope>section");if(!s)return;'
-      + 'var sc=Math.min((innerWidth-32)/1280,(innerHeight-32)/720);s.style.transformOrigin="top center";s.style.transform="translateX(-50%) scale("+sc+")";'
-      + 's.style.position="absolute";s.style.left="50%";s.style.top=Math.max(16,(innerHeight-720*sc)/2)+"px";}'
+      + 'var sc=Math.min((innerWidth-32)/' + sw + ',(innerHeight-32)/' + sh + ');s.style.transformOrigin="top center";s.style.transform="translateX(-50%) scale("+sc+")";'
+      + 's.style.position="absolute";s.style.left="50%";s.style.top=Math.max(16,(innerHeight-' + sh + '*sc)/2)+"px";}'
       + 'window.addEventListener("resize",fit);[60,400,1200].forEach(function(t){setTimeout(fit,t)});fit();})();';
     return '<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="' + KATEX + '">'
-      + '<style>html,body{margin:0;height:100vh;overflow:hidden;background:' + bg + ';}' + slideBox
+      + '<style>html,body{margin:0;height:100vh;overflow:hidden;background:' + bg + ';}' + box
       + '.marpit>section{box-shadow:0 10px 40px rgba(0,0,0,.3);border-radius:8px;}' + out.css + '</style></head><body>'
       + out.html + '<scr' + 'ipt src="' + MERMAID + '"></scr' + 'ipt><scr' + 'ipt src="' + runtimeUrl + '"></scr' + 'ipt>'
       + '<scr' + 'ipt>' + FIT + '</scr' + 'ipt></body></html>';

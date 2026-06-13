@@ -9,7 +9,6 @@ import { join } from 'node:path';
 import '../styles/landing.css';
 import '../styles/playground.css';
 import '../styles/deck-config.css';
-import { SLIDE_BOX } from '../playground/frame-css.js';
 import { buildCatalog, buildLenses, groupCatalog } from '../lib/families.mjs';
 import { joinBase } from '../lib/base-url.mjs';
 import { isPreviewDeploy } from '../lib/deploy-env.mjs';
@@ -90,7 +89,6 @@ const pgData = JSON.stringify({
 	themeBase: url(pg + 'themes/'),
 	runtimeUrl: url(pg + 'lattice-runtime.js'),
 	defaultPalette: 'indaco',
-	slideBox: SLIDE_BOX,
 	palettes,
 	finishes: FINISH_NAMES,
 }).replace(/</g, '\\u003c');
@@ -401,7 +399,11 @@ const pgData = JSON.stringify({
 				var catalog = data.catalog;
 				var THEME_BASE = data.themeBase;
 				var RUNTIME_URL = data.runtimeUrl;
-				var SLIDE_BOX = data.slideBox;
+				// The deck's live slide box (px), resolved per render from the engine's
+				// `@size` geometry (PG.render → { width, height }). Defaults to HD; a
+				// `size: 4K` deck previews at its real 3840×2160 box, not 3× oversized.
+				var curGeom = { w: 1280, h: 720 };
+				function slideBoxCss(w, h) { return '.marpit>section{width:' + w + 'px;height:' + h + 'px}'; }
 				var root = document.documentElement;
 				var frame = document.getElementById('preview');
 				var statusEl = document.getElementById('pg-status');
@@ -495,16 +497,17 @@ const pgData = JSON.stringify({
 					'  function fit(){',
 					'    var marpit=document.querySelector(".marpit"); if(!marpit) return;',
 					'    var w=marpit.clientWidth; if(!w) return;',
-					// Each section is pinned to 1280x720 by SLIDE_BOX (frame-css.js), so
-					// scale by the constant w/1280 — no offsetWidth measurement to drift
-					// as KaTeX/Mermaid stream in. marginBottom collapses the gap the
-					// un-scaled 720px-tall layout box leaves (transform doesn't shrink it).
+					// Each section is pinned to the deck's `@size` box (writeFrame injects
+					// window.__SLIDE_W/H), so scale by the constant w/SW — no offsetWidth
+					// measurement to drift as KaTeX/Mermaid stream in. marginBottom collapses
+					// the gap the un-scaled layout box leaves (transform doesn't shrink it).
+					'    var SW=window.__SLIDE_W||1280, SH=window.__SLIDE_H||720;',
 					'    var secs=marpit.querySelectorAll(":scope>section");',
-					'    var sc=w/1280;',
+					'    var sc=w/SW;',
 					'    for(var i=0;i<secs.length;i++){var s=secs[i];',
 					'      s.style.transformOrigin="top left";',
 					'      s.style.transform="scale("+sc+")";',
-					'      s.style.marginBottom=(720*sc-720+16)+"px";',
+					'      s.style.marginBottom=(SH*sc-SH+16)+"px";',
 					'    }',
 					'  }',
 					'  window.addEventListener("resize",fit);',
@@ -524,6 +527,8 @@ const pgData = JSON.stringify({
 
 				function writeFrame(html, css, mode) {
 					var bg = mode === 'dark' ? '#0c0c0c' : '#e7e7ea';
+					var gw = curGeom.w, gh = curGeom.h;
+					var GEOM_GLOBALS = 'window.__SLIDE_W=' + gw + ';window.__SLIDE_H=' + gh + ';';
 					// Use srcdoc (a fresh browsing context per render), NOT
 					// doc.open()/write()/close(). The latter clears the document but
 					// KEEPS the iframe window, so lattice-runtime.js's one-shot guard
@@ -536,17 +541,18 @@ const pgData = JSON.stringify({
 						'<!doctype html><html><head><meta charset="utf-8">' +
 						'<link rel="stylesheet" href="' + KATEX + '">' +
 						'<style>html,body{margin:0;padding:18px;background:' + bg + ';}' +
-						// SLIDE_BOX pins each slide to its intrinsic 1280x720 box (the single
-						// source of truth in frame-css.js) BEFORE FIT scales it. Without it,
+						// slideBoxCss pins each slide to its intrinsic `@size` box (HD default,
+						// 3840×2160 at `size: 4K`) BEFORE FIT scales it. Without it,
 						// `section{container-type:size}` collapses and cqi/cqh-based layouts
 						// (math.matrix/.compare) render tiny + jitter. See frame-css.js +
 						// engineering/gotchas.md. A second rule adds this host's chrome.
-						SLIDE_BOX +
+						slideBoxCss(gw, gh) +
 						'.marpit>section{display:block;transform-origin:top left;' +
 						'box-shadow:0 8px 30px rgba(0,0,0,.22);border-radius:6px;}' +
 						css + '</style></head><body>' + html +
 						'<scr' + 'ipt src="' + MERMAID + '"></scr' + 'ipt>' +
 						'<scr' + 'ipt src="' + RUNTIME_URL + '"></scr' + 'ipt>' +
+						'<scr' + 'ipt>' + GEOM_GLOBALS + '</scr' + 'ipt>' +
 						'<scr' + 'ipt>' + FIT + '</scr' + 'ipt>' +
 						'</body></html>';
 				}
@@ -564,6 +570,7 @@ const pgData = JSON.stringify({
 						var theme = mode === 'dark' && PG.hasTheme(palette + '-dark') ? palette + '-dark' : palette;
 						try {
 							var out = PG.render(getSource(), theme);
+							curGeom = { w: out.width || 1280, h: out.height || 720 };
 							writeFrame(out.html, out.css, mode);
 							setStatus('Rendered ' + (out.html.match(/<\/section>/g) || []).length + ' slide(s).');
 						} catch (e) {

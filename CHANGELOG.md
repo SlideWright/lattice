@@ -84,6 +84,48 @@ in patch versions.
   Migrated into the shared transformer registry (`lib/transformers/featured.js`,
   `compare-code.js`, with kernels in each component folder), so all three render
   paths agree. Emulator default output is byte-identical; engine↔marp parity holds.
+- **Body copy now scales with the slide in every preview — it no longer
+  collapses to a fixed ~10px (tiny on a 4K slide) while headings scaled.** The
+  `--fs-*` typography tokens were the one family of section-OWN `cqi` properties
+  never wired into the `--_sec-1cqi` hook that padding and the accent border
+  already used. `section{container-type:size}` forbids the section from querying
+  its own `cqi`, so its `font-size:var(--fs-body)` — which every gfm body element
+  (`p`, `ul/li`, `td`, `blockquote`, …) inherits — fell back to the ICB; that's
+  the slide only on the canonical emulator/print path (viewport = slide), but in
+  an iframe/VS Code preview the ICB is the editor pane, so body text rendered
+  pane-relative and shrank to a third of its size on a 4K slide. The `--fs-*`
+  tokens now route through `var(--_sec-1cqi, 1cqi)` (`base.tokens.css`), so the
+  docs-site preview/export AND the VS Code preview all render body copy at the
+  intended size, while the `1cqi` fallback keeps the canonical/print render
+  byte-identical. Headings were always correct (they're children, not
+  section-own). The same root cause hit a handful of section-OWN **spacing**
+  properties — chart-frame's footer safe-band, KPI's header-clearance padding,
+  math/redline/citation grid gaps — so the `--sp-*` scale was given the same
+  treatment (and the three remaining bare-`cqi` section-own literals —
+  `chart-frame` padding, `citation-card.margin` columns, `accent` border —
+  were wrapped too), closing the whole class. Affects rendering only; no
+  authoring change, and the canonical/print render is byte-for-byte unchanged
+  (verified by pixel-diff across the KPI + chart galleries).
+- **`size: 4K` decks now preview and export correctly in the docs-site Drawing
+  Board and Playground — they no longer render ~3× oversized, and PDF/PPTX
+  export the full slide instead of a cropped corner.** The owned engine resolves
+  the deck's
+  `@size` geometry correctly (a 4K deck is a real 3840×2160 box), but every
+  browser host that scales and exports the slide hardcoded HD: the preview
+  fit-scaled by `w / 1280` (so a 3840-wide slide overflowed 3×) and the image
+  exporters captured a 1280×720 crop onto a 1280×720 page (the top-left ninth of
+  a 4K slide). The render now reports its resolved box (`render()` →
+  `{ html, css, width, height }`), and the preview fit (Drawing Board +
+  Playground), virtualization placeholder, print page, and export page/raster
+  size all derive from it — so a
+  4K deck previews identically to HD (same 16:9, just fit-scaled) and exports at
+  native 4K. A `size:` edit now also forces a full preview rebuild (the box is
+  baked into the iframe). Also fixed: image-PDF/PPTX content slides no longer
+  show a full-slide rainbow fill — html-to-image mis-rendered the spectrum
+  ribbon's gradient `border-image` as a whole-element fill, so the ribbon is now
+  repainted as a thin top background strip during rasterization. Docs-only; the
+  published engine and the marp-cli PDF path (which already sized 4K from the
+  Puppeteer viewport) are unchanged.
 - **The docs-site live preview now loads the sketch hand fonts — `finish:
   sketch` decks no longer render hand headings over a clean-sans body.** Each
   preview slide renders into an `srcdoc` iframe whose `<style>` concatenates the

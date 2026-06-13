@@ -200,6 +200,27 @@ describe('lattice-engine: css emission (P1.1)', () => {
     assert.equal(eng.render('# A\n', 'ghost').css, '');
   });
 
+  test('render() reports the resolved @size box in px (drives preview fit-scale)', () => {
+    const eng = createEngine();
+    eng.addThemes([BASE, PALETTE]);
+    // No size: → HD default box.
+    const hd = eng.render('# A\n', 'cuoio');
+    assert.deepEqual({ width: hd.width, height: hd.height }, { width: 1280, height: 720 });
+    // size: 4K → the 3840×2160 box (numbers, not '3840px'), so a host divides by
+    // the real width instead of a hardcoded 1280 (the 4K-preview-oversized bug).
+    const k = eng.render('---\nsize: 4K\n---\n# A\n', 'cuoio');
+    assert.deepEqual({ width: k.width, height: k.height }, { width: 3840, height: 2160 });
+  });
+
+  test('geometry() resolves the box without a full render (marp escape-hatch path)', () => {
+    const eng = createEngine();
+    eng.addThemes([BASE, PALETTE]);
+    assert.deepEqual(eng.geometry('# A\n', 'cuoio'), { width: 1280, height: 720 });
+    assert.deepEqual(eng.geometry('---\nsize: 4K\n---\n# A\n', 'cuoio'), { width: 3840, height: 2160 });
+    // Unknown theme / no registered sizes still yields a usable HD divisor.
+    assert.deepEqual(createEngine().geometry('# A\n', 'ghost'), { width: 1280, height: 720 });
+  });
+
   // Regression (#192 default-flip broke dark mode): every `*-dark` theme is a
   // thin wrapper — `@import '<base>'; :root{color-scheme:dark}` — so the store
   // must resolve theme-to-theme imports recursively. Without it the wrapper's

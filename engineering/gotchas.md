@@ -1525,14 +1525,17 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
   (cascade-order dependence) is fragile.
 - **Commits:** `d3ffaca`
 
-### Section geometry (padding, border) looks wrong in VS Code preview at any size
+### Section geometry AND body font (padding, border, body text) look wrong in any non-canonical preview
 
-- **Symptom:** In VS Code preview, slide padding on all four sides and
-  the top accent border are narrower than expected — content appears to
-  bleed toward the edges. Divider slides have a noticeably tight
-  left-indent. The effect is more visible on 4K slides (where the
-  absolute delta is larger) but applies to HD slides too whenever the
-  editor viewport width differs from 1280 px.
+- **Symptom:** In a preview where the viewport width ≠ the slide width —
+  VS Code marp preview, AND the docs-site iframe preview/export (Drawing
+  Board, Playground) — slide padding on all four sides and the top accent
+  border are narrower than expected, and **body copy is undersized** (it
+  collapses toward a fixed ~10px regardless of `@size`, so headings scale
+  but paragraphs/lists/tables do not — egregious on a 4K slide, where body
+  text renders at a third of its intended size). Divider slides have a
+  noticeably tight left-indent. Applies to HD too (just a smaller delta);
+  the canonical emulator/print PDF is always correct.
 - **Cause:** `section { container-type:size }` makes the section element
   its own cqi container. CSS spec forbids an element from using cqi to
   query its own size (circular dependency), so any `Xcqi` value *on
@@ -1547,19 +1550,37 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
 - **Fix:** `lattice.css` expresses every direct-cqi property on `section`
   as `calc(var(--_sec-1cqi, 1cqi) * X)` where `X` is the original cqi
   coefficient (e.g. `padding: calc(var(--_sec-1cqi,1cqi)*6.875)
-  calc(var(--_sec-1cqi,1cqi)*5)`). The `1cqi` fallback fires only in the
-  emulator/print path where the ICB is already correct. In VS Code,
-  `patchSectionGeometry()` in `lattice-runtime.js` sets
+  calc(var(--_sec-1cqi,1cqi)*5)`). **This includes the `--fs-*` typography
+  tokens** (`base.tokens.css`): the section's own `font-size:var(--fs-body)`
+  — which every gfm body element inherits — is a direct-cqi property and so
+  routes through the same hook (`--fs-body: calc(1.67 *
+  var(--_sec-1cqi,1cqi) * var(--fs-scale))`), **as do the `--sp-*` spacing
+  tokens** — a `section.kpi{padding:var(--sp-lg)}` / `section.math{gap:var(--sp-md)}`
+  is exactly the same section-own self-reference, so the whole `--sp-*` scale is
+  declared on `:root, section` and routed through `--_sec-1cqi`. Child consumers
+  (`h2{font-size:var(--fs-h2)}`, inner flex/grid gaps, …) inherit the section's
+  already-substituted value, so they resolve identically; padding and border
+  were converted years before the fonts and spacing tokens joined. The `1cqi`
+  fallback fires
+  only in the emulator/print path where the ICB is already correct. In any
+  iframe/VS Code preview, `patchSectionGeometry()` in `lattice-runtime.js` sets
   `--_sec-1cqi = section.offsetWidth / 100` as a concrete `px` value
   (e.g. `38.400px` for a 3840 px 4K slide) so every `calc()` resolves
   against the real slide width. Any new direct-cqi property added to
-  `section` or `section.*` in the future must follow the same pattern —
-  write `calc(var(--_sec-1cqi,1cqi)*X)`, not a bare `Xcqi`.
-- **Triggered by:** Any slide opened in marp-vscode preview. The PDF and
-  emulator paths are unaffected because their ICB matches the slide size.
+  `section` or `section.*` — or any token consumed as a section-OWN property —
+  must follow the same pattern: `calc(... * var(--_sec-1cqi,1cqi) * ...)`,
+  never a bare `Xcqi`. The `--fs-*` and `--sp-*` tokens already carry the hook,
+  so consuming them on a section is safe; a bare `Xcqi` literal on a section
+  (e.g. `section.chart-frame{padding:0 0 4.375cqi}`) is the trap — wrap it.
+- **Triggered by:** Any slide in a preview whose viewport ≠ the slide width
+  (marp-vscode, the docs-site srcdoc iframes). The PDF and emulator paths are
+  unaffected because their ICB/viewport matches the slide size.
 - **Commits:** `334434f` (initial fix, top/bottom only); `fe6f894`
   (extend to padding-left/right); `41ef9e1` (extend to divider
-  padding-left); `1bf458c` (unify all under `--_sec-1cqi`).
+  padding-left); `1bf458c` (unify all under `--_sec-1cqi`); the `--fs-*`
+  typography and `--sp-*` spacing tokens plus the remaining bare-cqi
+  section-own literals (`chart-frame`, `citation-card.margin`, `accent`)
+  joined the hook later (this branch).
 
 ### Layout components inherit line-height silently from the section body default
 
@@ -1630,6 +1651,35 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
   agreed at 1152px.
 - **Commits:** `d91decc` (px→cqi refactor); fixed in the commit that
   wraps the non-slide fallback in :where().
+
+### Docs-site preview/export rendered 4K decks oversized + cropped
+
+- **Symptom:** A `size: 4K` deck in the docs-site **Drawing Board** or
+  **Playground** (not VS Code — the browser preview) rendered ~3× too large and
+  overflowed the pane; the Drawing Board's PDF/PPTX export captured only the
+  top-left ninth of each slide. HD looked fine.
+- **Cause:** The owned engine resolves `@size` correctly and emits a real
+  `div.marpit > section { width: 3840px; height: 2160px }`, but every browser
+  host that fit-scales and exports the slide **hardcoded 1280×720**: the Drawing
+  Board FIT used `sc = w / 1280`, `frame-css.js` pinned `.marpit>section{width:
+  1280px}` (which silently LOST to the engine scaffold's `div.marpit > section`
+  at 0,1,2 vs 0,1,1 — so the box was really 3840 but scaled as if 1280), and the
+  exporter rasterized a 1280×720 crop onto a 1280×720 jsPDF page. At HD every
+  hardcoded 1280/720 happened to be correct, hiding the bug.
+- **Fix:** The render reports its resolved box — `playground render()` →
+  `{ html, css, width, height }` (px), from `lib/engine` `resolveSize`. Every
+  host derives its fit divisor, intrinsic/`contain-intrinsic-size` box, `@page`
+  size, and export raster/page size from that. `frame-css.js` exposes
+  `slideBox(w,h)` / `singleSlideFrame(w,h)` (the HD constants stay for the
+  fixed-specimen studios). The Drawing Board + Playground inject
+  `window.__SLIDE_W/H` into the iframe for FIT/SYNC; the Drawing Board also folds
+  the geometry into its preview rebuild `sig`, so a `size:` edit triggers a full
+  srcdoc rewrite (not a section-only patch that would leave stale globals).
+- **Triggered by:** Any non-HD `size:` (`4K`, `standard`/4:3) in a browser host.
+  The marp-cli / emulator PDF path was unaffected (it sizes the Puppeteer
+  viewport from `@size`).
+- **Don't reintroduce:** never hardcode `1280`/`720` in a preview/export host —
+  thread the geometry from the render result through `frame-css.js`.
 
 ## G-gen merge must use non-G file's G-gen block, not the G-file's block
 

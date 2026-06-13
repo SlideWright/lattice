@@ -18,7 +18,6 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import '../styles/landing.css';
 import '../styles/drawing-board.css';
-import { SLIDE_BOX } from '../playground/frame-css.js';
 import { previewFontFaceCss } from '../playground/font-embed.js';
 import { assetBase } from '../playground/asset-version.mjs';
 import { joinBase } from '../lib/base-url.mjs';
@@ -141,7 +140,6 @@ const dbData = JSON.stringify({
 	crosswalk: tokenCrosswalk,
 	runtimeUrl: url(pg + 'lattice-runtime.js'),
 	defaultPalette: 'indaco',
-	slideBox: SLIDE_BOX,
 	// Self-hosted @font-face block for the preview iframe. The engine's
 	// Google-Fonts @import is inert inside the srcdoc <style> (it lands after
 	// other rules; CSS ignores an @import that isn't first), so the iframe loads
@@ -1016,7 +1014,6 @@ const dbData = JSON.stringify({
 					editor: window.__dbEditor,
 					themeBase: data.themeBase,
 					runtimeUrl: data.runtimeUrl,
-					slideBox: data.slideBox,
 				});
 				window.__dbFocus = focus;
 				if (openBtn) openBtn.addEventListener('click', () => focus.open());
@@ -1060,7 +1057,6 @@ const dbData = JSON.stringify({
 			const practice = createPractice({
 				host: document.getElementById('db-practice'),
 				getSource: () => (window.__dbEditor ? window.__dbEditor.getValue() : ''),
-				slideBox: data.slideBox,
 				runtimeUrl: data.runtimeUrl,
 				themeBase: data.themeBase,
 				bucketOf: (name) => buckets.get(name) || null,
@@ -1075,8 +1071,13 @@ const dbData = JSON.stringify({
 				var data = JSON.parse(document.getElementById('db-data').textContent);
 				var THEME_BASE = data.themeBase;
 				var RUNTIME_URL = data.runtimeUrl;
-				var SLIDE_BOX = data.slideBox;
 				var PREVIEW_FONT_CSS = data.previewFontCss || '';
+				// The deck's live slide box (px), resolved per render from the engine's
+				// `@size` geometry (PG.render → { width, height }). Defaults to HD until
+				// the first render; a `size:` edit refreshes it (and forces a full
+				// srcdoc rewrite, since the box bakes into the frame — see render()).
+				var curGeom = { w: 1280, h: 720 };
+				function slideBoxCss(w, h) { return '.marpit>section{width:' + w + 'px;height:' + h + 'px}'; }
 				// Per-deck token vocabulary, selected by the `tokens:` front-matter
 				// directive (current | universal). Universal renders the deck against the
 				// new --cat-*/--diagram-* names — identical output (byte-identical flip,
@@ -1216,18 +1217,22 @@ const dbData = JSON.stringify({
 				// Scale every section to the iframe width + stack them as a filmstrip.
 				// (Same proven kernel as the playground; Slice 2 adds cursor<->slide sync
 				// and per-slide numbering on top of this.) The engine renders with
-				// inlineSVG:false, so each slide is a plain fixed 1280x720 <section>.
+				// inlineSVG:false, so each slide is a plain <section> sized to the deck's
+				// `@size` box (HD default; 3840x2160 at `size: 4K`). writeFrame injects
+				// that box as window.__SLIDE_W/H so the scale divides by the real width —
+				// a 4K deck scaled by a hardcoded 1280 rendered 3x oversized.
 				var FIT = [
 					'(function(){',
 					'  function fit(){',
 					'    var marpit=document.querySelector(".marpit"); if(!marpit) return;',
 					'    var w=marpit.clientWidth; if(!w) return;',
+					'    var SW=window.__SLIDE_W||1280, SH=window.__SLIDE_H||720;',
 					'    var secs=marpit.querySelectorAll(":scope>section");',
-					'    var sc=w/1280;',
+					'    var sc=w/SW;',
 					'    for(var i=0;i<secs.length;i++){var s=secs[i];',
 					'      s.style.transformOrigin="top left";',
 					'      s.style.transform="scale("+sc+")";',
-					'      s.style.marginBottom=(720*sc-720+22)+"px";',
+					'      s.style.marginBottom=(SH*sc-SH+22)+"px";',
 					'    }',
 					// Reveal only once scaled — the srcdoc hides .marpit so the first paint
 					// (and the display:none->block pane switch on mobile, where clientWidth
@@ -1266,7 +1271,7 @@ const dbData = JSON.stringify({
 					// at the viewport centre), and it agrees with scrollTo() below, which puts
 					// slide i's top at the viewport top. (Also avoids a getBoundingClientRect
 					// over every slide each scroll — which would defeat content-visibility.)
-					'  function centered(){var m=document.querySelector(".marpit");var s=secs();if(!s.length)return -1;var w=m?m.clientWidth:0;if(!w)return 0;var slotH=720*(w/1280)+22;if(slotH<=0)return 0;var i=Math.round(window.scrollY/slotH);if(i<0)i=0;if(i>=s.length)i=s.length-1;return i;}',
+					'  function centered(){var m=document.querySelector(".marpit");var s=secs();if(!s.length)return -1;var w=m?m.clientWidth:0;if(!w)return 0;var SW=window.__SLIDE_W||1280,SH=window.__SLIDE_H||720;var slotH=SH*(w/SW)+22;if(slotH<=0)return 0;var i=Math.round(window.scrollY/slotH);if(i<0)i=0;if(i>=s.length)i=s.length-1;return i;}',
 					// Report the centred slide as you scroll. The window "scroll" event is
 					// unreliable for same-origin iframes on iOS Safari (touch / momentum
 					// scroll often doesn't fire it), so an IntersectionObserver — which
@@ -1286,6 +1291,11 @@ const dbData = JSON.stringify({
 				function writeFrame(html, css, mode, forceScheme) {
 					var bg = mode === 'dark' ? '#0c0c0c' : '#e7e7ea';
 					var ACCENT = (getComputedStyle(root).getPropertyValue('--accent') || '').trim() || '#b0492e';
+					// The deck's resolved `@size` box (px) — drives the slide-box pin, the
+					// virtualization placeholder, the print page, and the FIT/SYNC globals
+					// so a `size: 4K` deck previews + exports at its real 3840x2160, not HD.
+					var gw = curGeom.w, gh = curGeom.h;
+					var GEOM_GLOBALS = 'window.__SLIDE_W=' + gw + ';window.__SLIDE_H=' + gh + ';';
 					// Single-file library themes (export bridge) resolve light/dark via
 					// light-dark(); force the canvas scheme so dark renders dark. Built-in
 					// paired -dark themes don't need it, so it's library-only (forceScheme).
@@ -1305,27 +1315,29 @@ const dbData = JSON.stringify({
 						// container width (it flips this to visible). Prevents the
 						// full-size first-paint flash, esp. on mobile. See FIT above.
 						'.marpit{visibility:hidden;}' +
-						SLIDE_BOX +
+						slideBoxCss(gw, gh) +
 						'.marpit>section{display:block;transform-origin:top left;cursor:pointer;' +
-						// Browser-native virtualization: fixed 1280x720 slides, so the
-						// browser can skip laying out / painting off-screen ones (smooth
-						// scroll + fast initial render on huge decks) while every node stays
-						// in the DOM — export / cursor-sync / incremental patch are untouched.
+						// Browser-native virtualization: fixed-size slides, so the browser can
+						// skip laying out / painting off-screen ones (smooth scroll + fast
+						// initial render on huge decks) while every node stays in the DOM —
+						// export / cursor-sync / incremental patch are untouched. The
+						// placeholder must match the real box or the scroll math drifts.
 						// Overridden to `visible` for print + html-to-image export (below /
 						// drawing-board-export.js) so off-screen slides aren't dropped.
-						'content-visibility:auto;contain-intrinsic-size:1280px 720px;' +
+						'content-visibility:auto;contain-intrinsic-size:' + gw + 'px ' + gh + 'px;' +
 						'box-shadow:0 8px 30px rgba(0,0,0,.22);border-radius:6px;}' +
 						'.marpit>section.db-active{outline:3px solid ' + ACCENT + ';outline-offset:4px;}' +
 						// Print path (Slice 4 PDF export): un-scale each section to a full
-						// 1280x720 page and page-break between them. exportPdf() just calls
+						// slide-size page and page-break between them. exportPdf() just calls
 						// this iframe's print dialog over the already-rendered slides.
-						'@page{size:1280px 720px;margin:0;}' +
+						'@page{size:' + gw + 'px ' + gh + 'px;margin:0;}' +
 						'@media print{html,body{padding:0;margin:0;background:#fff;}' +
 						'.marpit>section{content-visibility:visible!important;transform:none!important;margin:0!important;box-shadow:none!important;border-radius:0!important;outline:none!important;break-after:page;}' +
 						'.marpit>section:last-child{break-after:auto;}}' +
 						css + '</style></head><body>' + html +
 						'<scr' + 'ipt src="' + MERMAID + '"></scr' + 'ipt>' +
 						'<scr' + 'ipt src="' + RUNTIME_URL + '"></scr' + 'ipt>' +
+						'<scr' + 'ipt>' + GEOM_GLOBALS + '</scr' + 'ipt>' +
 						'<scr' + 'ipt>' + FIT + '</scr' + 'ipt>' +
 						'<scr' + 'ipt>' + SYNC + '</scr' + 'ipt>' +
 						'</body></html>';
@@ -1404,7 +1416,12 @@ const dbData = JSON.stringify({
 							var src = DBC ? DBC.embed(raw) : raw;
 							var ckey = DBC ? DBC.key(raw) : '';
 							var out = PG.render(src, theme);
-							var sig = theme + '|' + mode + '|' + ckey;
+							// The resolved `@size` box rides on the render; stash it for FIT/
+							// writeFrame and fold it into sig, so a `size:` edit (which changes
+							// the baked box) forces a full srcdoc rewrite rather than a
+							// section-only patch that would leave stale geometry globals.
+							curGeom = { w: out.width || 1280, h: out.height || 720 };
+							var sig = theme + '|' + mode + '|' + ckey + '|' + curGeom.w + 'x' + curGeom.h;
 							var sections = splitSections(out.html);
 							// Patch when the document already exists for this theme/mode;
 							// otherwise (first render, palette/mode switch) do a full rebuild.

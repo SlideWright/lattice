@@ -22,17 +22,39 @@
 // (light/dark) is intentionally NOT here: each host appends its own
 // `html,body{background:…}` rule, since CSS merges multiple rules per selector.
 
-// The intrinsic slide box. Required by EVERY `inlineSVG:false` host — this is
-// the line whose absence collapses `container-type:size`.
-export const SLIDE_BOX = '.marpit>section{width:1280px;height:720px}';
+// Lattice's default slide box (HD). The fallback geometry every host fit-scales
+// against when a deck declares no `size:` (or before the engine reports one).
+export const DEFAULT_W = 1280;
+export const DEFAULT_H = 720;
+
+// The intrinsic slide box, SIZED to the deck's `@size` geometry. Required by
+// EVERY `inlineSVG:false` host — this is the line whose absence collapses
+// `container-type:size`. It must AGREE with the engine scaffold's
+// `div.marpit > section { width;height }`: a `size: 4K` deck is a 3840×2160 box,
+// and a host that pinned 1280 here while scaling by `w/3840` (or vice-versa)
+// renders the slide at the wrong size. Pass the geometry from the render result
+// (PG.render → { width, height }); the no-arg call is the HD default.
+export function slideBox(w = DEFAULT_W, h = DEFAULT_H) {
+	return '.marpit>section{width:' + w + 'px;height:' + h + 'px}';
+}
 
 // Single-slide hosts (landing hero, component specimens) render ONE slide and
 // scale the whole iframe ELEMENT to fit, so they also lock the viewport + the
 // `.marpit` wrapper to one slide. (The `>svg` rule is legacy belt-and-braces;
 // `inlineSVG:false` emits no svg.) The playground renders a multi-slide deck
-// and scales each `<section>` individually, so it uses SLIDE_BOX alone.
-export const SINGLE_SLIDE_FRAME =
-	'html,body{margin:0;padding:0;overflow:hidden;width:1280px;height:720px}' +
-	'.marpit{width:1280px;height:720px}' +
-	'.marpit>svg,svg[data-marpit-svg]{display:block;width:1280px;height:720px}' +
-	SLIDE_BOX;
+// and scales each `<section>` individually, so it uses slideBox() alone.
+export function singleSlideFrame(w = DEFAULT_W, h = DEFAULT_H) {
+	return (
+		'html,body{margin:0;padding:0;overflow:hidden;width:' + w + 'px;height:' + h + 'px}' +
+		'.marpit{width:' + w + 'px;height:' + h + 'px}' +
+		'.marpit>svg,svg[data-marpit-svg]{display:block;width:' + w + 'px;height:' + h + 'px}' +
+		slideBox(w, h)
+	);
+}
+
+// Back-compat HD constants for the fixed-specimen hosts (theme-studio,
+// component-studio) whose preview content is always authored HD — they never
+// carry a user `size:`, so the box is the default. Size-aware hosts call the
+// functions above with the render's reported geometry instead.
+export const SLIDE_BOX = slideBox();
+export const SINGLE_SLIDE_FRAME = singleSlideFrame();
