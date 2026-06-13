@@ -91,20 +91,30 @@ h1#_top {
 	font-weight: 700;
 }
 
-/* ── Card icon tiles — palette-bound, not Starlight's fixed rainbow ─────────
- * Starlight's <Card> cycles the icon tile through fixed categorical hues
- * (--sl-color-purple/orange/green/red/blue) by card position. Those ignore the
- * palette and aren't contrast-curated per mode, so they clash on the ink-only
- * themes (onyx, concrete) and warm themes. Bind the tile to the curated
- * accent pair instead — accent border + accent-soft fill — so every card's
- * icon adapts to the active palette and mode, in keeping with the one-palette
- * principle. The glyph already follows the heading colour, which sits with
- * AA contrast on accent-soft across the shipped palettes. Unlayered → beats
- * Starlight's @layer starlight.components nth-child rules. */
-.sl-markdown-content .card {
-	--sl-card-border: var(--accent);
-	--sl-card-bg: var(--accent-soft);
+/* ── Card icon tiles — distinct, but from each theme's curated palette ──────
+ * Starlight's <Card> cycles the icon tile through FIXED categorical hues
+ * (--sl-color-purple/orange/green/red/blue) by card position — palette-blind
+ * and not contrast-curated per mode, so they clash on the ink-only (onyx,
+ * concrete) and warm themes. Keep the distinct-per-card look the rainbow gave,
+ * but source it from the palette's OWN categorical series (--chart-cat1..8 —
+ * tuned per palette AND light/dark, exposed to the docs via
+ * lattice-tokens.generated.css). Each icon gets its hue's full colour for the
+ * glyph + border and a faint same-hue fill, so it stays distinct AND on-palette
+ * with AA contrast in every theme/mode. Unlayered → beats Starlight's
+ * @layer starlight.components nth-child rules. */
+.sl-markdown-content .card .icon {
+	color: var(--lx-cat, var(--accent));
+	border-color: var(--lx-cat, var(--accent));
+	background-color: color-mix(in srgb, var(--lx-cat, var(--accent)) 14%, var(--bg));
 }
+.sl-markdown-content .card:nth-child(8n + 1) .icon { --lx-cat: var(--chart-cat1); }
+.sl-markdown-content .card:nth-child(8n + 2) .icon { --lx-cat: var(--chart-cat2); }
+.sl-markdown-content .card:nth-child(8n + 3) .icon { --lx-cat: var(--chart-cat3); }
+.sl-markdown-content .card:nth-child(8n + 4) .icon { --lx-cat: var(--chart-cat4); }
+.sl-markdown-content .card:nth-child(8n + 5) .icon { --lx-cat: var(--chart-cat5); }
+.sl-markdown-content .card:nth-child(8n + 6) .icon { --lx-cat: var(--chart-cat6); }
+.sl-markdown-content .card:nth-child(8n + 7) .icon { --lx-cat: var(--chart-cat7); }
+.sl-markdown-content .card:nth-child(8n + 8) .icon { --lx-cat: var(--chart-cat8); }
 
 /* ── Header → site topbar ───────────────────────────────────────────────────
  * Starlight's PageFrame supplies the fixed bar (.header) with the right

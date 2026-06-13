@@ -189,9 +189,11 @@ in patch versions.
   so they 404'd on the Cloudflare (root-base) deployment. Content now uses
   base-less root-relative links and a `rehype-base-links` plugin prefixes the
   active base at build, so they resolve under both deploy targets; a branded,
-  navigable **404** page replaces the dead-end. **Card icon tiles** now bind to
-  the curated `--accent` / `--accent-soft` pair instead of Starlight's fixed
-  rainbow hues, so they keep contrast across every palette and light/dark mode.
+  navigable **404** page replaces the dead-end. **Card icon tiles** keep their
+  distinct per-card colours, but now drawn from each palette's own curated
+  categorical series (`--chart-cat1…8`, tuned per palette AND light/dark, newly
+  exposed to the docs) instead of Starlight's fixed rainbow — so they stay
+  distinct yet on-palette with AA contrast in every theme and mode.
 
 - **The CI visual-correctness gate is now a per-component semantic-invariant
   suite** (delivering the P4 pivot away from the retired pixel gate). Every
