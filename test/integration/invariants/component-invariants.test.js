@@ -64,12 +64,17 @@ const SLIDE = 'section[data-marpit-slide="1"]';
 const MERMAID = new Set(['chart', 'diagram']);
 const renderTimeout = (m) => (MERMAID.has(m.function) || MERMAID.has(m.bucket) ? 240000 : 60000);
 
-/** Browser-side: WCAG contrast of every heading vs its nearest opaque background.
- *  Returns the worst (lowest) ratio, or null if the slide has no heading. */
+/** Browser-side: WCAG contrast of every HEADING vs its nearest opaque background.
+ *  Returns the worst (lowest) ratio, or null if the slide has no heading. NOTE:
+ *  headings only — body-text contrast (and palette-token resolution) are phase-2
+ *  (see decision §0). Headings are the highest contrast-risk surface. */
 function worstHeadingContrast() {
   const sec = document.querySelector('section[data-marpit-slide="1"]');
   if (!sec) return null;
-  const heads = [...sec.querySelectorAll('h1, h2, h3')];
+  // Headings + blockquote (the `quote` component's focal text is a <blockquote>,
+  // not an h-tag). KNOWN phase-2 gap: components whose focal text is neither —
+  // notably big-number's giant figure (a styled <li>) — are not contrast-checked.
+  const heads = [...sec.querySelectorAll('h1, h2, h3, blockquote')];
   if (!heads.length) return null;
   const toRgb = (c) => {
     const cv = document.createElement('canvas'); cv.width = cv.height = 1;
@@ -114,6 +119,20 @@ describe('component semantic invariants (assert meaning, not pixels)', () => {
         const html = renderHtml(deckFromSample(m.sample), { key: m.name, timeout: renderTimeout(m) });
         page = await browser.newPage();
         await page.goto(`file://${html}`, { waitUntil: 'load', timeout: 60000 });
+        // Settle fonts before ANY layout read. The emulator's authoritative
+        // overflow pass runs after document.fonts.ready, but that corrected state
+        // never reaches the .html sidecar — so we mirror the settle here. Without
+        // it, overflow/contrast would measure a mid-load serif fallback (timing-
+        // and proxy-dependent), reintroducing the very machine-nondeterminism the
+        // pixel gate was retired for. Embedded woff2 (data-URI) load without
+        // network; document.fonts.ready resolves on success OR failure, so a
+        // blocked Google-Fonts <link> can't hang it.
+        await page.evaluate(async () => {
+          try {
+            await Promise.all([...document.fonts].map((f) => f.load().catch(() => {})));
+            await document.fonts.ready;
+          } catch { /* Font Loading API absent — proceed */ }
+        });
       }, { timeout: renderTimeout(m) + 30000 });
       after(async () => { if (page) await page.close(); });
 
@@ -143,9 +162,12 @@ describe('component semantic invariants (assert meaning, not pixels)', () => {
       }
 
       // ── Layer 2a — content fits the frame ──
+      // Measure directly (post-fonts-settle) with the emulator's TOL=12, rather
+      // than trust the sidecar's early `.overflow` class (set before fonts loaded).
       test('universal: slide does not overflow its frame', async () => {
-        const over = await page.$eval(SLIDE, (s) => s.classList.contains('overflow'));
-        assert.equal(over, false, 'slide content overflows the 1280×720 frame (.overflow)');
+        const over = await page.$eval(SLIDE, (s) =>
+          s.scrollHeight > s.clientHeight + 12 || s.scrollWidth > s.clientWidth + 12);
+        assert.equal(over, false, 'slide content overflows the 1280×720 frame');
       });
 
       // ── Layer 2b — headings meet WCAG AA contrast ──

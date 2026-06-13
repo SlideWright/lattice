@@ -38,7 +38,7 @@ already uses) and assert on *meaning*, not pixels. Three layers:
 | Layer | Source | Coverage | Authoring |
 |---|---|---|---|
 | **1 · Contract** | manifest `slots` (CSS selector + `required`), `_class` | every component, **auto-derived** | none — a new component is covered free |
-| **2 · Universal** | every rendered slide | WCAG contrast, computed colors resolve to palette tokens, no overflow/clipping, one `section`/slide | none — runs on all |
+| **2 · Universal** | every rendered slide | heading WCAG contrast + no overflow (built); computed colours resolve to palette tokens (*phase-2*) | none — runs on all |
 | **3 · Semantic** | hand-authored, high-value few | funnel widths ∝ values, radar N series → N polygons, big-number is the largest type | opt-in, where a component has a distinctive truth |
 
 These assert *logical* values (selectors, ratios, contrast) — **deterministic and
@@ -91,8 +91,27 @@ the corpus pass forced, worth remembering:
   already are — would let layer-1 cover them automatically; deferred since the
   manifests also drive the docs site's authoring guidance.)
 
-Still ahead: richer layer-3 (legend-entry == series-count, etc.), and Step 3
-(delete marp + `engine-parity`, making this the sole gate).
+**Phase-2 — NOT yet built (the §0 model table lists these as the target; today's
+suite does not implement them):**
+- The layer-2 **palette-token-resolution** check (every computed colour must
+  resolve to a theme token — HARD RULE 3). Layer 2 today is **overflow + heading
+  contrast only**; body-text contrast and the token check are unbuilt.
+- **Richer layer-3** — current layer-3 is the "the transform produced its frame"
+  *floor* (`.chart-body`/`table`/`pre`/`.feat-card` exists). The valuable per-
+  component truths are TODO: funnel stage count == authored items + monotonic
+  widths; kpi/big-number rendered count == source count + big-number is the
+  largest type; piechart/radar legend entries == series; state-chart node/edge
+  counts == authored; roadmap cell-states == authored markers.
+- **Manifest-slot accuracy:** the `TRANSFORM` set is a *test-side bridge*. Some
+  chart manifests' slot selectors describe consumed **authoring input**, others
+  (`roadmap`, `state-chart`, `diagram`) describe **rendered output** — and
+  `roadmap`'s `table` slot passes only because the sample is `status` mode (the
+  `horizons` modifier transposes the table into `.horizon-card`s and would
+  false-fail). The durable fix is rendered-accurate slot selectors everywhere
+  (what `diagram` does), shrinking `TRANSFORM` toward zero and improving the docs
+  site — deferred since manifests also drive authoring guidance.
+
+Then Step 3 (delete marp + `engine-parity`, making this the sole gate).
 
 ## 1. Goal
 
