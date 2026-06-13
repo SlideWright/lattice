@@ -90,7 +90,42 @@ reference, minus "Write a reply"):
   so they're undoable and re-linted — the model proposes, the engine applies.
 - Surfaced inline on a text selection and in the Architect panel.
 
-## 5. Practice mode + timing — Phase 1 core (no model), Phase 2 coaching
+## 5. Practice mode + timing — ✅ shipped (deterministic core + AI coaching)
+
+> **Status: built.** `docs/src/playground/drawing-board-practice.js` (the
+> full-screen stage) + `docs/src/playground/drawing-board-rehearsal.js` (the
+> planner, pure + Node-tested in `test/unit/playground/drawing-board-rehearsal.test.js`).
+> The deterministic floor and the model-on path both ship; the model path is
+> wired through the same `ArchitectModel` ladder as the rest of the Architect.
+>
+> **The plan.** The planner turns the deck + a talk length into a per-slide plan:
+> a `role` (open / section / data / visual / quote / table / decision / close /
+> body), a density × role **dwell** target, a one-line **why**, and timed
+> **coaching beats** (`pause` / `eye` — look up for eye contact / `breathe` /
+> `transition` / `emphasis`), each with an `at` fraction of the slide and a
+> `hold`. The floor is instant + offline; when a **capable** backend is live (the
+> `isCapableTier` gate — OpenRouter cloud or WebLLM; tiny/built-in tiers keep the
+> proven floor rather than overriding it with weaker text) the model **re-tunes**
+> targets, sharpens the *why*, and places better beats from a snippet of each
+> slide's prose — always over the deterministic plan as `fallback` (it never owns
+> correctness), validated + re-normalised before display, **without mutating the
+> on-screen floor**. The cloud call routes through the same **budget gate + spend
+> tally** as the chat. Refined plans are **memoised by (deck content + minutes)**,
+> so an unchanged deck never re-bills and re-opening after an edit re-assesses.
+> The start screen's length suggestion is **deterministic-only** — opening it
+> never bills; only Start does.
+>
+> **The surface.** A full overlay (Esc to exit). Render parity with the live
+> preview via the shared `frame-css` slide-box contract (one slide, flex-centred,
+> uniform scale) — fixing the earlier bespoke renderer that rode slides high. The
+> coaching is a **single pill on an unassuming gradient scrim** over the lower
+> stage: it carries the slide's ambient guidance and *becomes* the timed beat at
+> its moment, then settles back — one calm focal point, not a top-bar cue, so the
+> chrome never reflows. A no-zoom viewport + `touch-action` kill the iOS
+> double-tap zoom. The start screen suggests a length from deck density.
+>
+> **Still Phase 2:** spoken-rehearsal critique (speech-to-text). The text below
+> is the original design model, kept for provenance.
 
 A rehearsal / presenter surface — mostly deterministic:
 
