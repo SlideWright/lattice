@@ -13,6 +13,10 @@
 /* Topbar chrome glyphs (menu / moon / sun) — shared with the Starlight docs
  * skin (lattice.css) so the two topbars can't drift. See chrome-icons.css. */
 @import './chrome-icons.css';
+/* Tailwind v4 + the shadcn ↔ Lattice token bridge (Preflight OFF, scoped to
+ * `.lx-ui` island roots). landing.css is imported by every standalone page, so
+ * this loads Tailwind site-wide for the React islands. See tailwind.css. */
+@import './tailwind.css';
 
 :root {
 	--font-display: 'Playfair Display', Georgia, serif;

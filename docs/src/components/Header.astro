@@ -16,12 +16,12 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import Search from 'virtual:starlight/components/Search';
 import config from 'virtual:starlight/user-config';
+import PaletteControls from './site/PaletteControls.tsx';
 import { joinBase } from '../lib/base-url.mjs';
 import { primaryNav, GITHUB_URL, isCurrent } from '../lib/nav.mjs';
 
 const base = import.meta.env.BASE_URL;
 const url = (p) => joinBase(base, p);
-const titleCase = (s) => s.replace(/(^|-)(\w)/g, (_, sep, c) => (sep ? ' ' : '') + c.toUpperCase());
 
 // Same derivation the component portal uses: the palette names ARE the
 // data-palette keys in the generated token file (indaco first → default).
@@ -59,52 +59,13 @@ const shouldRenderSearch =
 		)
 	}
 
-	<div class="lx-controls print:hidden">
-		<select class="lx-palette" id="palette" aria-label="Palette">
-			{palettes.map((p) => <option value={p}>{titleCase(p)}</option>)}
-		</select>
-		<button class="lx-mode" id="mode-toggle" type="button" aria-label="Toggle light / dark" title="Toggle light / dark"></button>
+	<div class="lx-controls print:hidden lx-ui">
+		<PaletteControls client:load palettes={palettes} />
 	</div>
 </div>
 
-{/* Palette + light/dark wiring. Shares the landing/playground localStorage
-    keys so the choice follows the reader across the whole site. Keeps
-    data-theme in lockstep with data-mode so Starlight's own CSS + code blocks
-    track the toggle. Inlined so it runs on every page (MPA navigation). */}
-<script is:inline>
-	(function () {
-		var root = document.documentElement;
-		var sel = document.getElementById('palette');
-		if (sel) {
-			sel.value = root.getAttribute('data-palette') || 'indaco';
-			sel.addEventListener('change', function () {
-				root.setAttribute('data-palette', sel.value);
-				try { localStorage.setItem('lattice-docs-palette', sel.value); } catch (e) {}
-			});
-		}
-		var btn = document.getElementById('mode-toggle');
-		if (btn) {
-			btn.addEventListener('click', function () {
-				var next = root.getAttribute('data-mode') === 'dark' ? 'light' : 'dark';
-				root.setAttribute('data-mode', next);
-				root.dataset.theme = next; // keep Starlight's CSS + code blocks in sync
-				try { localStorage.setItem('lattice-docs-mode', next); } catch (e) {}
-				try { localStorage.setItem('starlight-theme', next); } catch (e) {}
-			});
-		}
-		// Re-sync from storage on show, incl. bfcache restores where the pre-paint
-		// <head> script doesn't re-run (e.g. Back from the playground).
-		window.addEventListener('pageshow', function () {
-			try {
-				var p = localStorage.getItem('lattice-docs-palette');
-				if (p && p !== root.getAttribute('data-palette')) root.setAttribute('data-palette', p);
-				var m = localStorage.getItem('lattice-docs-mode');
-				if ((m === 'light' || m === 'dark') && m !== root.getAttribute('data-mode')) {
-					root.setAttribute('data-mode', m);
-					root.dataset.theme = m;
-				}
-				if (sel) sel.value = root.getAttribute('data-palette') || 'indaco';
-			} catch (e) {}
-		});
-	})();
-</script>
+{/* Palette + light/dark are now the shared <PaletteControls> island
+    (src/components/site/), which owns the data-palette/data-mode writes,
+    localStorage, the data-theme/starlight-theme lockstep, and the bfcache
+    pageshow re-sync — all via site-chrome.ts. The pre-paint StarlightThemeProvider
+    still sets the attributes before first paint. */}

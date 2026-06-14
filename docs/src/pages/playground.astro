@@ -9,6 +9,7 @@ import { join } from 'node:path';
 import '../styles/landing.css';
 import '../styles/playground.css';
 import '../styles/deck-config.css';
+import PaletteControls from '../components/site/PaletteControls.tsx';
 import { buildCatalog, buildLenses, groupCatalog } from '../lib/families.mjs';
 import { joinBase } from '../lib/base-url.mjs';
 import { primaryNav, GITHUB_URL, isCurrent } from '../lib/nav.mjs';
@@ -41,7 +42,6 @@ const previewDeploy = isPreviewDeploy({
 
 const tokensCss = readFileSync(join(docsRoot, 'src/styles/lattice-tokens.generated.css'), 'utf8');
 const palettes = [...new Set([...tokensCss.matchAll(/data-palette="([^"]+)"/g)].map((m) => m[1]))];
-const titleCase = (s) => s.replace(/(^|-)(\w)/g, (_, sep, c) => (sep ? ' ' : '') + c.toUpperCase());
 
 // Template catalog for the picker. Each component carries its documented
 // variants (modifiers) so the Variant dropdown can load any of them into the
@@ -132,11 +132,8 @@ const pgData = JSON.stringify({
 					<a class="navlink" href={GITHUB_URL}>GitHub</a>
 				</nav>
 				<div class="topbar-actions">
-					<div class="controls">
-						<select class="palette-select" id="palette" aria-label="Palette">
-							{palettes.map((p) => <option value={p}>{titleCase(p)}</option>)}
-						</select>
-						<button class="mode-toggle" id="mode-toggle" aria-label="Toggle light / dark" title="Toggle light / dark"></button>
+					<div class="controls lx-ui">
+						<PaletteControls client:load palettes={palettes} />
 					</div>
 					<button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-controls="topnav" aria-expanded="false"></button>
 				</div>
@@ -420,8 +417,6 @@ const pgData = JSON.stringify({
 				var root = document.documentElement;
 				var frame = document.getElementById('preview');
 				var statusEl = document.getElementById('pg-status');
-				var paletteSel = document.getElementById('palette');
-				var modeBtn = document.getElementById('mode-toggle');
 				var varSel = document.getElementById('pg-variant');
 				var pickerCurrentEl = document.getElementById('pg-template-current');
 
@@ -459,7 +454,6 @@ const pgData = JSON.stringify({
 				var SOURCE_KEY = 'lattice-docs-pg-source';
 				function saveSource() { try { localStorage.setItem(SOURCE_KEY, getSource()); } catch (e) {} }
 
-				paletteSel.value = root.getAttribute('data-palette');
 				var fetched = {}; // theme name -> Promise<cssText>
 				var latticeReady = null;
 
@@ -688,32 +682,11 @@ const pgData = JSON.stringify({
 				// handoff, or persisted source) in the Template + Variant pickers.
 				syncPickers();
 
-				paletteSel.addEventListener('change', function () {
-					root.setAttribute('data-palette', paletteSel.value);
-					try { localStorage.setItem('lattice-docs-palette', paletteSel.value); } catch (e) {}
-					render();
-				});
-				modeBtn.addEventListener('click', function () {
-					var next = root.getAttribute('data-mode') === 'dark' ? 'light' : 'dark';
-					root.setAttribute('data-mode', next);
-					try { localStorage.setItem('lattice-docs-mode', next); } catch (e) {}
-					render();
-				});
-
-				// Re-sync + re-render on back/forward (bfcache) restores, where the
-				// pre-paint script doesn't re-run — so a theme picked elsewhere
-				// sticks when you navigate back to the playground.
-				window.addEventListener('pageshow', function () {
-					try {
-						var p = localStorage.getItem('lattice-docs-palette');
-						var m = localStorage.getItem('lattice-docs-mode');
-						var changed = false;
-						if (p && p !== root.getAttribute('data-palette')) { root.setAttribute('data-palette', p); changed = true; }
-						if ((m === 'light' || m === 'dark') && m !== root.getAttribute('data-mode')) { root.setAttribute('data-mode', m); changed = true; }
-						paletteSel.value = root.getAttribute('data-palette');
-						if (changed) render();
-					} catch (e) {}
-				});
+				// Re-render when the <PaletteControls> island flips data-palette /
+				// data-mode on <html> (it owns the writes + bfcache pageshow re-sync
+				// via site-chrome.ts); this observer just re-renders the preview.
+				new MutationObserver(function () { render(); })
+					.observe(root, { attributes: true, attributeFilter: ['data-palette', 'data-mode'] });
 
 				var navToggle = document.getElementById('nav-toggle');
 				var topbar = document.querySelector('.topbar');
