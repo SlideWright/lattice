@@ -74,7 +74,7 @@ const FIELD_CARDS: FieldCard[] = [
 	{
 		live: 'cards-grid',
 		title: 'And the basics, for everyone',
-		body: 'A bullet list becomes a card grid; a table becomes a comparison matrix. Fifty-eight layouts, one Markdown syntax.',
+		body: 'A bullet list becomes a card grid; a table becomes a comparison matrix. Fifty-three layouts, one Markdown syntax.',
 	},
 ];
 
@@ -142,7 +142,7 @@ const WHY_CARDS: WhyCard[] = [
 	},
 	{
 		id: 'vocabulary',
-		title: 'Fifty-eight layouts, one vocabulary.',
+		title: 'Fifty-three layouts, one vocabulary.',
 		body: (
 			<>
 				Function · Form · Substance · Finish organizes the catalog, so &ldquo;which layout do I want?&rdquo; has an answer
