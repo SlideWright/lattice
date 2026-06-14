@@ -145,6 +145,13 @@ const CATALOG = [
 				border-bottom: 1px solid var(--border);
 			}
 			.cat-table th.feat { width: 34%; color: var(--text-heading); font-size: 14.5px; font-weight: 600; }
+			.cat-table .feat-inner { display: flex; align-items: flex-start; gap: 10px; }
+			.cat-table .ck {
+				flex: 0 0 auto; width: 17px; height: 17px; margin-top: 1px;
+				border-radius: 50%; background: var(--accent); color: var(--on-accent);
+				display: inline-flex; align-items: center; justify-content: center;
+				font-size: 10px; font-weight: 700; line-height: 1;
+			}
 			.cat-table td.detail { color: var(--text-body); font-size: 14px; line-height: 1.5; }
 			.cat-table tbody tr:not(.cat-band):hover { background: var(--bg-alt); }
 			@media (max-width: 560px) {
@@ -212,7 +219,7 @@ const CATALOG = [
 										</tr>
 										{seg.rows.map(([f, d]) => (
 											<tr>
-												<th class="feat" scope="row">{f}</th>
+												<th class="feat" scope="row"><div class="feat-inner"><span class="ck" aria-hidden="true">✓</span><span>{f}</span></div></th>
 												<td class="detail">{d}</td>
 											</tr>
 										))}
