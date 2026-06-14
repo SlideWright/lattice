@@ -7,9 +7,9 @@
 
 The live, claimable work queue — a read-only mirror of [open issues](https://github.com/SlideWright/lattice/issues),
 grouped by board column. Design lives in `engineering/decisions/`; this tracks
-only *status*. **34 open** items.
+only *status*. **37 open** items.
 
-## Backlog (31)
+## Backlog (34)
 
 - [#276](https://github.com/SlideWright/lattice/issues/276) docs: fix drifted counts in design-system.md headline (palettes 25→14) — critical · docs
 - [#277](https://github.com/SlideWright/lattice/issues/277) docs: correct theming.md "13 themes"→14 — high · theming
@@ -35,6 +35,7 @@ only *status*. **34 open** items.
 - [#305](https://github.com/SlideWright/lattice/issues/305) docs: dedupe the two doc-index tables (CLAUDE.md vs skill.md drift) — medium · docs
 - [#306](https://github.com/SlideWright/lattice/issues/306) docs: refresh (or generate) the decisions/README index (12 of 76 ADRs listed) — medium · docs
 - [#307](https://github.com/SlideWright/lattice/issues/307) docs: prune/flip the treatments-rename ADR (shipped; still "implementation-ready") — medium · docs
+- [#308](https://github.com/SlideWright/lattice/issues/308) docs: resolve the P4 regression-gate ADR status (pivot shipped; still strikethrough "pre-code") — medium · engine
 - [#280](https://github.com/SlideWright/lattice/issues/280) docs: fix phantom `--hljs-name`/`--hljs-meta` token rows in highlight-js.docs.md — low · docs
 - [#281](https://github.com/SlideWright/lattice/issues/281) docs: mark design-system.md "9 buckets" as historical (ships 12) — low · docs
 - [#282](https://github.com/SlideWright/lattice/issues/282) docs: mark design-system.md "58 components / 89 pages" as dated (ships 53) — low · docs
@@ -42,6 +43,8 @@ only *status*. **34 open** items.
 - [#297](https://github.com/SlideWright/lattice/issues/297) feat(website): build a visual component catalog (thumbnail picker) — low · website
 - [#298](https://github.com/SlideWright/lattice/issues/298) feat(website): implement the `.latticepack` interchange (zip export/import) — low · website
 - [#300](https://github.com/SlideWright/lattice/issues/300) docs: assess `examples/gallery-jargon.md` for retirement — low · docs
+- [#309](https://github.com/SlideWright/lattice/issues/309) docs: pick a single canonical home for the Mermaid contract (currently in 3 docs) — low · theming
+- [#310](https://github.com/SlideWright/lattice/issues/310) docs: drop/re-anchor the legacy "Part 1–11" doc numbering — low · docs
 
 ## Ready (0)
 
