@@ -8,7 +8,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from '@/components/ui/select';
-import { getMode, getPalette, type Mode, setPalette, syncFromStorage, toggleMode } from '@/lib/site-chrome';
+import { MODE_KEY, type Mode, PALETTE_KEY, setPalette, syncFromStorage, toggleMode } from '@/lib/site-chrome';
 
 const titleCase = (s: string) => s.replace(/(^|-)(\w)/g, (_m, sep, c) => (sep ? ' ' : '') + c.toUpperCase());
 
@@ -40,10 +40,14 @@ export default function PaletteControls({ palettes }: { palettes: string[] }) {
 			setPaletteState(s.palette);
 			setModeState(s.mode);
 		};
-		// keep in sync if another island/page control changes it
-		const onStorage = () => {
-			setPaletteState(getPalette());
-			setModeState(getMode());
+		// Cross-tab sync: when another tab changes palette/mode, re-apply it to
+		// THIS document's <html> attributes (which re-themes the page + its
+		// deck-preview iframes via their observers) and reflect it in the control.
+		const onStorage = (e: StorageEvent) => {
+			if (e.key !== null && e.key !== PALETTE_KEY && e.key !== MODE_KEY) return;
+			const s = syncFromStorage();
+			setPaletteState(s.palette);
+			setModeState(s.mode);
 		};
 		window.addEventListener('pageshow', onShow);
 		window.addEventListener('storage', onStorage);
