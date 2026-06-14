@@ -41,13 +41,13 @@ only *status*. **29 open** items.
 
 _none_
 
-## In progress (1)
-
-- [#275](https://github.com/SlideWright/lattice/issues/275) docs: correct README palette count 13→14 (add missing `carta`) — critical · theming
-
-## In review (0)
+## In progress (0)
 
 _none_
+
+## In review (1)
+
+- [#275](https://github.com/SlideWright/lattice/issues/275) docs: correct README palette count 13→14 (add missing `carta`) — critical · theming
 
 ## Inbox (no status) (3)
 
