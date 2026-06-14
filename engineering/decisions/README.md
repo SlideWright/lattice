@@ -178,3 +178,11 @@ it is load-bearing.
   injection pattern, retrieval-gating (`architect-retrieval.js`), prompt
   caching (`cache_control`), and the `usage.cost` budget tally; degrades to
   the deterministic floor. Cloud-tier-only by design. **Status: spec / open.**
+- [2026-06-14-github-project-management.md](2026-06-14-github-project-management.md) —
+  proposal for lightweight, kanban-style project management that keeps durable
+  design knowledge in markdown ADRs (vendor-neutral) while adding GitHub Issues
+  as a claimable work queue + a Project board, mirrored back to a generated
+  `BACKLOG.md`. Maps epic=decision-doc / card=issue, a `area/type/priority/status`
+  label taxonomy, and the Definition-of-Ready + atomic-claim + WIP safety
+  primitives that let agents pick up work in a distributed but safe fashion (L3,
+  deferred). Adopt L2 first. **Status: design-speculation.**
