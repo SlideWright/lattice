@@ -1,6 +1,6 @@
 ---
-status: design-speculation
-version: 1
+status: design-decision
+version: 2
 last-updated: 2026-06-14
 companion:
   - ./README.md
@@ -8,13 +8,13 @@ companion:
   - 2026-05-10-tauri-exploration.md
 ---
 
-# Proposal: lightweight GitHub project management for distributed agent work
+# Lightweight GitHub project management for distributed agent work
 
-**Status: design-speculation.** Nothing here is implemented or decided. This is
-the model to react to and converge, then flip to `design-decision` and build the
-first slice. Decision direction so far (2026-06-14): adopt **L2** (issues + label
-taxonomy + generated backlog mirror + a kanban Project board) as the first move;
-design **L3** (autonomous agent dispatch) before enabling it.
+**Status: design-decision.** The model below is converged (open questions
+resolved 2026-06-14 — see §Resolved decisions). Next is to build the first
+slice: **L1+L2** — issues + label taxonomy + a generated `BACKLOG.md` mirror +
+a per-repo kanban Project board. **L3** (autonomous agent dispatch) stays
+deferred behind its own claim-contract design.
 
 ## What this proposes (TL;DR)
 
@@ -24,12 +24,12 @@ a **claimable work queue with atomic claim**. Concretely:
 
 - **Issues** become the kanban cards — small, claimable units that *link* their
   governing decision doc rather than restating it.
-- A **GitHub Project** board gives the Backlog → Ready → In&nbsp;progress →
-  In&nbsp;review → Done flow with WIP limits.
+- A **GitHub Project** board (one per repo) gives the Backlog → Ready →
+  In&nbsp;progress → In&nbsp;review → Done flow.
 - A generated, committed **`BACKLOG.md`** mirrors open issues back into the repo,
   so leaving GitHub costs us zero permanent knowledge.
-- A **claim-contract** (Definition of Ready + atomic self-assign + WIP limits)
-  makes later autonomous pickup *distributed but safe*.
+- A **claim-contract** (Definition of Ready + atomic self-assign) makes later
+  autonomous pickup *distributed but safe*.
 
 > **Principle: docs are the brain, issues are the hands.** Durable knowledge stays
 > in markdown (canonical). GitHub owns only *transient coordination* — the queue
@@ -56,26 +56,34 @@ proposal is that half.
 
 ## The model — mapped to Lattice
 
-| Concept | Lives in | Notes |
+This is **kanban-light**, in kanban's own vocabulary — *flow*, not Scrum
+work-breakdown. There is no epic/story/task hierarchy: the board is flat **cards**,
+and an initiative is just the decision doc a card points back to.
+
+| Kanban concept | Lives in | Notes |
 |---|---|---|
-| **Epic / initiative** | `engineering/decisions/*.md` | The durable *why*. Already has `status:`. Canonical. |
-| **Card / story** | **GitHub Issue** | Small, claimable. Body links the decision-doc section; doesn't restate it. |
+| **Card** (work item) | **GitHub Issue** | Small, claimable. Body links the decision-doc section; doesn't restate it. |
+| **Initiative** (grouping) | `engineering/decisions/*.md` | The durable *why*. A card names its initiative via an `area:`/initiative **label** (or board **swimlane**) — not a parent issue. Canonical, already has `status:`. |
 | **Labels** | Issue metadata | `area:*`, `type:*`, `priority:*`, `status:*` (below). |
-| **Board** | **GitHub Project** | Kanban columns + WIP limits + PR-driven automation. |
+| **Board** | **GitHub Project** | One per repo. Columns + PR-driven automation. |
 | **Lock-in insurance** | committed `BACKLOG.md` | One-way mirror of open issues, regenerated in CI. |
 
-Hierarchy is deliberately shallow (kanban-light): **epic = doc, card = issue**.
-GitHub's native issue-types / sub-issues *can* express epic→story→task, but we
-defer that until flat issues prove insufficient.
+We deliberately **do not** use native issue-types / sub-issue trees. Kanban groups
+with **swimlanes and labels**, not parent/child hierarchies; a hierarchy would put
+the initiative in two places (doc + tracking issue) and invite the exact drift this
+design exists to avoid. If flat cards ever prove insufficient we can revisit — but
+the board filter *is* the rollup, so we expect not to.
 
-### Label taxonomy (starting point)
+### Label taxonomy
 
 - `area:*` — the 12 component buckets (`anchor`, `statement`, `inventory`,
   `comparison`, `progression`, `evidence`, `imagery`, `chart`, `diagram`, `math`,
   `code`, `legal`) plus cross-cutting (`engine`, `theming`, `docs`, `infra`,
-  `website`). Reuses vocabulary the repo already speaks.
+  `website`). Reuses vocabulary the repo already speaks; doubles as the
+  initiative/swimlane grouping.
 - `type:` — `feat | fix | docs | infra | refactor | spike`.
-- `priority:` — `p0 | p1 | p2 | p3` (open question: P-scale vs MoSCoW — see below).
+- `priority:` — `p0 | p1 | p2 | p3`. Numeric and visible; mirrors cleanly into
+  `BACKLOG.md`. Not MoSCoW — that's Scrum-flavoured.
 - `status:` — the kanban state machine, mapped to board columns:
 
   | `status:` label | Board column | Meaning |
@@ -88,11 +96,11 @@ defer that until flat issues prove insufficient.
 
 ## Kanban board (L2)
 
-A single GitHub Project board over the repo. Columns mirror the `status:` machine
-above. Two lightweight controls:
+One GitHub Project board per repo. Columns mirror the `status:` machine above.
 
-- **WIP limits** per column (and, later, per agent) — kanban's core throughput and
-  safety knob. Start generous, tighten with data.
+- **No WIP limits at first.** Ship the board without caps and add them only once
+  throughput data shows a real bottleneck — kanban's "start where you are." (When
+  L3 lands, a per-agent cap is the first limit worth adding, to bound blast radius.)
 - **Automation**: PR opened with `Closes #n` → card to *In review*; PR merged →
   *Done* + issue closed. GitHub Projects' built-in workflows cover most of this; a
   thin Action covers the rest.
@@ -110,22 +118,69 @@ status) and writes a committed `BACKLOG.md` grouped by board column. Properties:
 - Fits the `capabilities`-index discipline (HARD RULE #15): the script is
   described in `engineering/capabilities.md`.
 
+`BACKLOG.md` is **not** the roadmap. It is the generated, churny mirror of open
+issues. A separate, curated `ROADMAP.md` (the public narrative the Tauri note
+promises) is hand-written and points at the decision docs — strategic intent, kept
+apart from ticket noise. See §Resolved decisions Q8.
+
+## Seeding the queue: a one-time reconciliation sweep
+
+The backlog buried in prose (workflow-debt, post-foundation-followups, the
+marp-replacement P-series, plus `TODO`/`FIXME` markers in code) becomes issues via
+a **single up-front sweep, run as a maker-checker agent pass** — not lazily as
+items happen to be picked up, and not a hand transcription.
+
+The sweep treats the **codebase as the source of truth** and audits the docs
+*against* it, on the (likely correct) suspicion that prose has drifted, over-claims,
+or describes superseded/abandoned plans:
+
+- **Maker** — a `docs-auditor` pass (read-only, report-only by design) cross-
+  references what ships against what every doc *claims*, and a companion pass
+  harvests code `TODO`/`FIXME`/`XXX` markers. Output: a categorised findings
+  backlog, each finding tagged with the `area:/type:/priority:` taxonomy above.
+- **Checker** — a second agent validates each finding against the code before it
+  becomes an issue, so we don't mint phantom work.
+- **Reconcile in the same pass** — stale claims get corrected and
+  superseded/abandoned plans get marked as such *in the docs*, so the sweep leaves
+  the prose honest, not just the queue seeded.
+
+This is a one-off to reach parity; steady-state intake is just "file an issue."
+
+## Definition of Ready — enforced, not just suggested
+
+An issue is `status:ready` *only* if it links an approved proposal/spec and states
+an acceptance check. For autonomous pickup, `status:ready` has to be **machine-
+trustworthy**, so we enforce it two ways:
+
+- **Issue template** captures the DoR fields (links-to-proposal, acceptance check)
+  — makes the right thing easy.
+- **A lightweight Action gates the `status:ready` label**: when it's applied, the
+  Action validates the fields are present and strips the label + comments if not —
+  makes the right thing *true*.
+
+A template alone only guides; a label gate alone relies on discipline. Together,
+`status:ready` becomes a guarantee an agent can pull against.
+
 ## Distributed-but-safe execution (L3 — deferred, design first)
 
 The end goal: a scheduled session pulls a ready issue and works it autonomously.
 The safety primitives that make "distributed" also "safe":
 
-1. **Definition of Ready** — an issue is `status:ready` *only* if it links an
-   approved proposal/spec and states an acceptance check. Agents never pick up
-   ambiguous work. **This is the single biggest safety lever.**
+1. **Definition of Ready** (above) — agents never pick up ambiguous work. **The
+   single biggest safety lever.**
 2. **Atomic claim = the lock.** To start work, an agent self-assigns **and** flips
-   `status:ready → status:in-progress` as one step; if the issue is already
-   assigned, it skips. No central coordinator, no double-pickup. (Open question:
-   GitHub assignment is not transactional — we may need a comment-token or a small
-   Action to make the claim race-free.)
+   `status:ready → status:in-progress`; if already assigned, it skips. **Decision:**
+   for L1+L2, plain assignment is sufficient — there is no concurrent dispatch yet,
+   so no race to lose. The **race-free** lock is designed *at L3*, when the dispatch
+   loop is concrete; the leading candidate is **branch creation as the lock**
+   (`git push` of `claude/issue-<n>` is an atomic server-side ref create — it wins
+   or fails, no Action required), with a single mutex-label Action as the fallback.
+   Building this now would gold-plate a primitive nothing uses yet. It is, however,
+   a **blocking** prerequisite for turning autonomy on.
 3. **Small, independently-mergeable cards** → few cross-PR conflicts; the
    auto-rebase watch + merge gate absorb the rest.
-4. **WIP limit per agent** — bounds blast radius and keeps `main` reviewable.
+4. **WIP limit per agent** — the first cap we add when L3 lands; bounds blast
+   radius and keeps `main` reviewable.
 5. **Convention thread:** branch `claude/issue-<n>-<slug>` → PR `Closes #n` →
    human-authorised merge → auto-close → standup. Fully traceable and revertable.
 
@@ -135,38 +190,40 @@ trust-tested on a few human-supervised cards.
 
 ## Ceremony: deliberately kanban-light
 
-No sprints, no story points, no estimation theatre. **Pull-based, WIP-limited,
-continuous flow.** The only two "ceremonies" are already lightweight and
-automated: the **post-merge standup** (shipped) and the **Definition of Ready**
-(a label gate, not a meeting).
+No sprints, no story points, no estimation theatre, no PI planning. **Pull-based,
+continuous flow.** The only two "ceremonies" are already lightweight and automated:
+the **post-merge standup** (shipped) and the **Definition of Ready** (a label gate,
+not a meeting).
 
 ## Adoption ladder (reversible)
 
 - **L0** — today: everything in markdown.
-- **L1** — Issues + label taxonomy + generated `BACKLOG.md`. Docs stay the epics.
-- **L2** — add the Project board (kanban columns, WIP limits, PR automation). ← **first move**
+- **L1** — Issues + label taxonomy + generated `BACKLOG.md`. Docs stay the initiatives.
+- **L2** — add the per-repo Project board (kanban columns, PR automation). ← **first move** (with L1)
 - **L3** — autonomous agent dispatch (claim loop). Design the contract first.
 
-**Recommendation:** ship **L1+L2** now — low-risk, reversible, immediately useful —
-and treat **L3** as its own proposal once the claim-contract is specified.
+**Plan:** ship **L1+L2** now — low-risk, reversible, immediately useful — and treat
+**L3** as its own slice once the claim-contract is specified.
 
-## Open questions (to converge before flipping to `design-decision`)
+## Resolved decisions (2026-06-14)
 
-1. **Priority scheme:** `p0–p3` vs MoSCoW vs a single `priority` Project field?
-2. **One board or many:** a single repo board now; how does this scale if/when the
-   Tauri/SlideWright desktop work (see `2026-05-10-tauri-exploration.md`, which
-   already names a public `ROADMAP.md`) gets its own repo?
-3. **Extraction:** how do existing buried backlog items (workflow-debt,
-   post-foundation-followups, the marp-replacement P-series) become issues —
-   one-time manual sweep, or lazily as picked up?
-4. **Definition of Ready enforcement:** issue template checklist, a `status:ready`
-   label gate, or a CI check that a ready issue links a proposal?
-5. **Native issue-types/sub-issues** for epic→story, or epics-as-docs only?
-6. **Claim atomicity:** is GitHub assignment enough, or do we need an Action/token
-   to make the race-free claim in (L3) primitive #2?
-7. **WIP numbers** — starting limits per column / per agent.
-8. **`ROADMAP.md`:** the Tauri note promises a public roadmap. Is that the same
-   artifact as the generated `BACKLOG.md`, or a separate curated narrative?
+1. **Priority scheme** → `p0–p3` **labels**. Numeric, visible in-repo, mirrors
+   cleanly to `BACKLOG.md`. Explicitly not MoSCoW.
+2. **One board or many** → **one Project board per repo.** When the
+   Tauri/SlideWright desktop work splits into its own repo, it gets its own board
+   (and its own `ROADMAP.md`).
+3. **Extraction** → a **one-time maker-checker reconciliation sweep**, code as the
+   source of truth (see §Seeding the queue) — not lazy, not hand-transcribed.
+4. **Definition of Ready enforcement** → **issue template + an Action gate** on the
+   `status:ready` label (see §Definition of Ready).
+5. **Hierarchy** → **flat cards, grouped by initiative label/swimlane**; the
+   decision doc is the initiative. No native issue-types / sub-issue trees.
+6. **Claim atomicity** → **plain assignment for L1+L2; race-free lock designed at
+   L3** (branch-creation-as-lock the leading candidate). Don't pre-build it.
+7. **WIP limits** → **none at first**; add when throughput data shows a bottleneck.
+   Per-agent cap is the first one, arriving with L3.
+8. **`ROADMAP.md`** → **separate** from `BACKLOG.md`: curated human narrative
+   (strategic, points at the docs) vs generated issue mirror (tactical, churny).
 
 ## Risks & non-goals
 
@@ -181,7 +238,7 @@ and treat **L3** as its own proposal once the claim-contract is specified.
 
 ## Next step
 
-Converge the open questions (one `AskUserQuestion` round), flip status to
-`design-decision`, then implement L1+L2 as a single slice: label taxonomy →
-`tools/sync-backlog.js` + `BACKLOG.md` → the Project board + automation → a short
-`engineering/workflow.md` section documenting the card lifecycle.
+Implement **L1+L2** as a single slice: label taxonomy → `tools/sync-backlog.js` +
+`BACKLOG.md` → the per-repo Project board + PR automation → the DoR template +
+label-gate Action → a short `engineering/workflow.md` section documenting the card
+lifecycle. Run the reconciliation sweep (§Seeding the queue) to seed the queue.
