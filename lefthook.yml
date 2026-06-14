@@ -11,7 +11,7 @@ pre-commit:
   parallel: true
   jobs:
     - name: lint
-      glob: '*.{js,mjs,cjs,json}'
+      glob: '*.{js,mjs,cjs,json,ts,tsx}'
       run: npx biome check --no-errors-on-unmatched {staged_files}
     - name: affected-tests
       # Maps staged files → scoped test scripts and runs only those.
