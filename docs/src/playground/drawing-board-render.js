@@ -62,9 +62,9 @@ export function createRenderController(data) {
 	function deckTokens() {
 		var s = getSource();
 		var m = s.match(/^---\r?\n([\s\S]*?)\r?\n---/);
-		if (!m) return 'current';
+		if (!m) return 'universal';
 		var t = m[1].match(/^[ \t]*tokens:[ \t]*(\S+)/m);
-		return t && /^universal$/i.test(t[1]) ? 'universal' : 'current';
+		return t && /^current$/i.test(t[1]) ? 'current' : 'universal';
 	}
 	function flipTokens(css) {
 		if (!data.crosswalk) return css;

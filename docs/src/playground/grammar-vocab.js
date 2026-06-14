@@ -23,10 +23,11 @@ export const PAGINATE_VALUES = ['true', 'false', 'skip', 'hold'];
 export const ISLANDS_VALUES = ['off', 'on', 'minimal'];
 
 // Value vocabulary for the Lattice-specific `tokens:` front-matter directive,
-// which picks the deck's token vocabulary in the Drawing Board: `current` (the
-// legacy --c1-*/--bg-* names, the default when omitted) or `universal` (the new
-// --cat-*/--diagram-* names). Both render identically — a migration-safety A/B.
-export const TOKENS_VALUES = ['current', 'universal'];
+// which picks the deck's token vocabulary in the Drawing Board: `universal` (the
+// new --cat-*/--diagram-*/--seq-* names, the default when omitted) or `current`
+// (the legacy --c1-*/--bg-* names). Both render identically — a migration-safety
+// A/B. The default leads.
+export const TOKENS_VALUES = ['universal', 'current'];
 
 // Value vocabulary for the Lattice `split:` front-matter directive, which picks
 // how the body divides into slides: `rule` (split on `---`, the default) or
