@@ -61,6 +61,19 @@ const CASES = [
 		],
 	},
 	{
+		name: 'drawing-board',
+		path: '/lattice/drawing-board/',
+		// The topbar (React deck-theme picker + mode toggle + hamburger) is the
+		// overflow-prone row at mobile/tablet; the drawers + the export DropdownMenu
+		// + the mobile pane switches are the interaction states that can push width.
+		steps: [
+			{ label: 'decks-drawer', find: () => document.querySelector('#db-decks-open') },
+			{ label: 'pane-preview', find: () => document.querySelector('.db-mobile-tab[data-pane="preview"]') },
+			{ label: 'pane-architect', find: () => document.querySelector('.db-mobile-tab[data-pane="architect"]') },
+			{ label: 'export-menu', find: () => document.querySelector('#db-export') },
+		],
+	},
+	{
 		name: 'docs',
 		path: '/lattice/getting-started/',
 		steps: [{ label: 'sidebar', find: () => document.querySelector('starlight-menu-button button') || [...document.querySelectorAll('button')].find((b) => /menu/i.test(b.getAttribute('aria-label') || '')) }],
