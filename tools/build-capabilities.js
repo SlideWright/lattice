@@ -46,9 +46,8 @@ const silent = argv.includes('--silent') || check;
 const FRAMEWORKS = [
   ['Testing', "Node's built-in test runner (`node:test`) — no Jest/Mocha/Vitest.", '`npm test` (suite) · `node --test <file>` (one file; the `<dir>` form errors)'],
   ['Benchmarking', '`tinybench` render benchmark — marp-core vs lattice-engine, on-demand (NOT in `npm test`).', '`npm run bench` (`-- --export` adds rasterize · `-- --json` machine-readable) · `test/benchmark/engine-bench.mjs`'],
-  ['Visual parity', 'Pixel-diff harness rendering a deck through BOTH engines (required CI gate).', '`npm run parity` · `tools/engine-parity.mjs`'],
   ['Lint / format', 'Biome (linter on, formatter off). The registry `biome` is the WRONG package — always go through npm.', '`npm run lint` / `lint:fix` · never `npx biome`'],
-  ['Rendering', 'marp-cli + marp-core for the shipping render paths; the owned lattice-engine is the P1 core.', '`npx marp … --config-file marp.config.js` (set `CHROME_PATH`)'],
+  ['Rendering', 'The owned lattice-engine renders every shipping path (the emulator CLI + the docs playground). `marp.config.js` ships for BYO marp-cli authors.', '`node lattice-emulator.js deck.md deck.pdf` (set `CHROME_PATH`)'],
   ['Browser automation', 'puppeteer with the cached Chromium (screenshots, export, DOM checks).', '`tools/screenshot.js` · custom scripts from repo root'],
   ['Bundling', 'esbuild — every `dist/` JS bundle and docs-site core is an esbuild build.', '`npm run build` (orchestrates all generators behind the ownership gate)'],
   ['Docs site', 'Astro + Starlight + CodeMirror — a SEPARATE npm package under docs/.', '`cd docs && ./node_modules/.bin/astro dev` (see CLAUDE.md § Cloud sandbox)'],
@@ -174,7 +173,7 @@ const TOOL_GROUP = {
   'lint-deck.js': 'Lint / audit', 'contrast-audit.js': 'Lint / audit', 'theme-scorecard.js': 'Lint / audit',
   'pixel-check.js': 'Lint / audit',
   // Render/visual
-  'engine-parity.mjs': 'Render / visual', 'emulator-engine-parity.mjs': 'Render / visual', 'engine-diff.js': 'Render / visual',
+  'emulator-engine-parity.mjs': 'Render / visual',
   'regression-gate.mjs': 'Render / visual',
   'preview.js': 'Render / visual', 'screenshot.js': 'Render / visual', 'screenshot-slides.js': 'Render / visual',
   'rasterize-for-review.sh': 'Render / visual',

@@ -146,40 +146,14 @@ jobs:
       - name: Integration tests
         run: npm run test:integration
 
-  # ── Engine visual parity — the owned lattice-engine must pixel-match Marp ──
-  # Rasterises every gallery slide through BOTH render engines and pixel-diffs
-  # them (tools/engine-parity.mjs); fails on any real divergence. The one
-  # intentional difference (Marp's twemoji <img> vs the engine's font-glyph
-  # emoji) is skipped per slide. This is the gate that lets the owned CSS emitter
-  # return safely (proposal P5): a regression vs Marp can't reach main unseen.
-  engine-parity:
-    needs: [changes, unit]
-    if: needs.changes.outputs.code == 'true'
-    runs-on: ubuntu-latest
-    name: engine-parity (node 22)
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-      - name: Cache Puppeteer browser
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/puppeteer
-          key: puppeteer-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
-      - name: Install color emoji font
-        run: sudo apt-get update && sudo apt-get install -y fonts-noto-color-emoji
-      - run: npm ci
-      - name: Engine visual parity (galleries + jargon)
-        run: npm run parity -- --galleries --jargon
-      - name: Upload diff artifacts on failure
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: engine-parity-diffs
-          path: .scratch/parity/
-          if-no-files-found: ignore
+  # ── (Engine visual parity REMOVED — marp retired, P4 Step 3) ────────────────
+  # The `engine-parity` job pixel-diffed every gallery slide through the owned
+  # lattice-engine AND marp, with marp as the external oracle. That gate's job
+  # was to catch engine↔marp drift DURING the migration; with marp retired the
+  # owned engine is canonical, so "diverges from marp" is no longer meaningful.
+  # Visual correctness is now the per-component SEMANTIC-INVARIANT suite (runs in
+  # the `integration` job above, marp-free). See
+  # engineering/decisions/2026-06-12-p4-regression-gate-retire-marp.md §0.
 
   # ── (Visual regression gate REMOVED — pivoted to component invariants) ──────
   # P4 originally wired `npm run regress` (fresh render == committed golden) in as
@@ -357,21 +331,21 @@ jobs:
   # passes when lint succeeds and the test tiers either passed or were
   # skipped (docs-only) — so conditional jobs never leave a PR stuck on a
   # "pending" required check.
-  # NOTE: `regression` is intentionally ABSENT from needs/the failure loop — it is
-  # advisory in Step 2 (see its job comment). It still runs and reports; it just
-  # doesn't gate. Step 3 adds it here once cross-runner determinism is fixed.
+  # NOTE: `golden-diff` is intentionally ABSENT from needs/the failure loop — it
+  # is advisory (see its job comment). It still runs and reports; it just doesn't
+  # gate. Visual correctness gates via the semantic-invariant suite in `integration`.
   ci:
     if: always()
-    needs: [lint, unit, integration, engine-parity, docs-build]
+    needs: [lint, unit, integration, docs-build]
     runs-on: ubuntu-latest
     steps:
       - name: Verify gate
         run: |
-          echo "lint=${{ needs.lint.result }} unit=${{ needs.unit.result }} integration=${{ needs.integration.result }} engine-parity=${{ needs.engine-parity.result }} docs-build=${{ needs.docs-build.result }}"
+          echo "lint=${{ needs.lint.result }} unit=${{ needs.unit.result }} integration=${{ needs.integration.result }} docs-build=${{ needs.docs-build.result }}"
           if [ "${{ needs.lint.result }}" != "success" ]; then
             echo "::error::lint failed"; exit 1
           fi
-          for r in "${{ needs.unit.result }}" "${{ needs.integration.result }}" "${{ needs.engine-parity.result }}" "${{ needs.docs-build.result }}"; do
+          for r in "${{ needs.unit.result }}" "${{ needs.integration.result }}" "${{ needs.docs-build.result }}"; do
             if [ "$r" != "success" ] && [ "$r" != "skipped" ]; then
               echo "::error::a required tier failed ($r)"; exit 1
             fi
