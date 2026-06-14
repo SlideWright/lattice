@@ -261,15 +261,15 @@ unverifiable here; run the site and look.
 #    workspace, so the root `npm install` does not cover it.
 cd docs && npm install
 
-# 2. Serve. Invoke the astro binary DIRECTLY — the `npm run dev` /
-#    `npm run start` scripts trip `sh: 1: astro: not found` in this sandbox
-#    (PATH quirk). Run the two sync steps first if you need fresh portal /
-#    playground assets; for most UI work they're already staged.
-npm run sync:portal --silent && npm run sync:playground --silent
-nohup ./node_modules/.bin/astro dev --host 127.0.0.1 --port 4321 \
-  > /tmp/astro.log 2>&1 &
-#   wait until /tmp/astro.log prints "ready"; the `base` is /lattice, so
-#   pages live under http://127.0.0.1:4321/lattice/… (trailing slash).
+# 2. Serve with `npm run dev` — it runs the two sync steps (portal +
+#    playground) THEN `astro dev`, and npm puts node_modules/.bin on PATH so
+#    `astro` resolves. (Running `astro` BARE in a plain shell still fails — it
+#    is not global; and the manual bin path SKIPS the sync steps, so the
+#    preview can serve a stale bundle after a lib/ rebuild.) The `base` is
+#    /lattice, so pages live under http://127.0.0.1:4321/lattice/… (slash).
+cd docs && npm run dev > /tmp/astro.log 2>&1 &
+#   wait until /tmp/astro.log prints "ready". In the cloud sandbox a plain `&`
+#   server can get reaped — prefer the harness's run_in_background to keep it up.
 
 # 3. Screenshot any route, then VIEW the PNG with the Read tool (renders
 #    inline) or SendUserFile.
@@ -301,12 +301,32 @@ Workbench) is added.
 
 - **`docs/` is a separate package** → its own `npm install`; the root
   install / SessionStart hook does not cover it.
-- **`npm run dev` → `sh: astro: not found`** → call
-  `./node_modules/.bin/astro` directly.
+- **Running `astro` BARE → `sh: astro: not found`** (it isn't global) → use
+  `npm run dev` (npm adds `node_modules/.bin` to PATH and runs the sync steps
+  first); the bare-binary path skips the sync and can serve a stale bundle.
 - **`pkill -f astro` self-kills** the shell whose command line contains
-  "astro" → stop the server by PID or by port instead.
+  "astro" → stop the server by PID or by port (`fuser -k 4321/tcp`) instead.
 - **Base path `/lattice`** → a bare `http://127.0.0.1:4321/` 404s; use the
   `/lattice/…` prefix.
+
+### Docs-site quality gates (responsive + web-perf)
+
+Two docs-only gates run in CI (`.github/workflows/lighthouse.yml`, advisory)
+and are runnable locally from `docs/`:
+
+- **`npm run check:overflow`** (`docs/scripts/check-overflow.mjs`) — a
+  horizontal-overflow guard: loads every converted surface at **390 / 820 /
+  1440** (mobile/tablet/desktop), exercises the interaction states (drawer/pane
+  switches, overlay opens), and fails if any page is wider than its viewport (a
+  pannable page breaks on touch). Needs a built `dist/` + `CHROME_PATH`.
+- **`npm run perf`** (= build + `perf:desktop` + `perf:mobile`) — Lighthouse CI
+  budgets, median-of-3, desktop (`lighthouserc.cjs`) and mobile
+  (`lighthouserc.mobile.cjs`). The composite perf **score** is the hard gate;
+  brittle absolute LCP/CLS thresholds are `warn`-tracked (they flap on CI
+  runner variance — see issue #327 for the durable-budget decision).
+
+These live in `docs/package.json` (a separate package), so they are **not** in
+the root capability index that `tools/build-capabilities.js` generates.
 
 ---
 

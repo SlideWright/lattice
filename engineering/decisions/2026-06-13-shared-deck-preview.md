@@ -4,6 +4,14 @@
 **Status:** Adopted
 **Area:** docs site (`docs/src/playground/`, `docs/src/pages/`)
 
+> _Update 2026-06-14:_ this doc covers the **multi-slide filmstrip** controller
+> (`deck-preview.js`), which still stands. The **single-slide** counterpart it
+> mentions as `live-render.js` was later folded into
+> `docs/src/lib/single-slide-render.ts` (consolidation #331), and the Drawing
+> Board's former `is:inline` controller became the importable
+> `drawing-board-render.js` (#335). The living map is now
+> `engineering/architecture.md` § "Docs-site render bridges".
+
 ## Problem
 
 The docs site has four surfaces that render a live, multi-slide "filmstrip"

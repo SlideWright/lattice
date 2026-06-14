@@ -1,10 +1,11 @@
 # shadcn migration — the website (and the shared SlideWright UI layer)
 
-> Status: **v3 — author-ratified, EXECUTING (branch
-> `claude/shadcn-components-migration-rgsrmh`).** Read **§0 (v3 ratified
-> scope)** first — it overrides anything below it that conflicts. The body
-> (§1–§10) is retained as the recon/architecture reference; where v2 assumed
-> a monorepo, desktop sharing, or removing Starlight, **§0 supersedes it.**
+> Status: **LANDED — all surfaces merged to `main` (PRs #319–#325, 2026-06-14).**
+> Followed by the deck-preview consolidation (#331/#335 — see
+> `2026-06-14-deck-preview-consolidation.md`). Read **§0 (v3 ratified scope)**
+> first — it overrides anything below it that conflicts. The body (§1–§10) is
+> retained as the recon/architecture reference; where v2 assumed a monorepo,
+> desktop sharing, or removing Starlight, **§0 supersedes it.**
 
 ## 0. v3 — ratified scope (2026-06-14)
 

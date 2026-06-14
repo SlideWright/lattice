@@ -1002,8 +1002,8 @@ const dbData = JSON.stringify({
 		</script>
 
 		<!-- Workbench library themes (export bridge) — load the user's saved themes
-		     from the lattice-workbench asset store and hand them to the inline
-		     render controller (which is is:inline and can't import) via a global +
+		     from the lattice-workbench asset store and hand them to the
+		     render-controller module (drawing-board-render.js) via a global +
 		     a refresh event. See engineering/decisions/2026-06-11-workbench-export-
 		     bridge.md. -->
 		<script>
@@ -1024,8 +1024,8 @@ const dbData = JSON.stringify({
 
 		<!-- Workbench library COMPONENTS (component bridge) — load the user's saved
 		     CSS-only local components and expose (a) the raw list for the editor's
-		     autocomplete merge, and (b) a prepare() helper the is:inline render
-		     controller + export use to vendor only the components a deck references.
+		     autocomplete merge, and (b) a prepare() helper the render-controller
+		     module + export use to vendor only the components a deck references.
 		     One pure scan (referencedComponents) feeds live render AND export, so
 		     they can't drift. See engineering/decisions/2026-06-12-workbench-
 		     component-bridge.md. -->
@@ -1134,7 +1134,7 @@ const dbData = JSON.stringify({
 		</script>
 
 		<!-- Bridge: expose the shared filmstrip-preview controller (deck-preview.js)
-		     on window so the is:inline render controller (which can't import) drives
+		     on window so the render-controller module (drawing-board-render.js) drives
 		     the iframe write/patch/fit through one implementation — the same module
 		     the playground + both Workbench studios use. -->
 		<script>

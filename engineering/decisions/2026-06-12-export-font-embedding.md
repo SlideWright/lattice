@@ -103,10 +103,14 @@ the font was just absent.
 Fix: register the vendored faces in the iframe directly via
 `previewFontFaceCss()` (a lightweight `@font-face` block referencing the bundled
 woff2 by URL, not inlined — the browser caches each once). The Drawing Board
-threads it through `data.previewFontCss` into its `writeFrame` srcdoc (its render
-controller is `is:inline` and can't import, so the block is built in the page
-frontmatter); `live-render.js` (playground / landing hero / component specimens)
-lazy-imports the same builder. Verified by inspecting the iframe's
+threads it through `data.previewFontCss` into its `writeFrame` srcdoc; the shared
+single-slide renderer (`docs/src/lib/single-slide-render.ts` — playground /
+landing hero / component specimens) lazy-imports the same builder. _(Updated
+2026-06-14: the deck-preview consolidation, #331/#335, folded the old
+`live-render.js` into `single-slide-render.ts` and extracted the Drawing Board's
+former `is:inline` controller into the importable `drawing-board-render.js` — so
+the controller now imports rather than building the block in frontmatter.)_
+Verified by inspecting the iframe's
 `document.fonts` (Caveat/Shantell now register and load) and screenshotting a
 sketch deck (body, eyebrows, bullets render in Shantell).
 

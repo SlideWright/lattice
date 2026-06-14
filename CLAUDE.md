@@ -311,12 +311,14 @@ them; this block is canonical, the per-topic docs are the deep reference.
 - **One test file:** `node --test <file>` — the `<dir>` form errors; use
   `npm test` for the suite.
 - **The docs site is a SEPARATE npm package** (the hook installs its deps).
-  Serve it via the **bin** — `cd docs && ./node_modules/.bin/astro dev --host
-  127.0.0.1 --port 4321` (`npm run dev` → "astro: not found"). After any `lib/`
-  rebuild, re-run `node docs/scripts/sync-playground-assets.mjs` or the preview
-  silently serves a **stale bundle as a 200**. Stop the server **by port**
-  (`fuser -k 4321/tcp`), never `pkill -f astro` (it self-kills). Screenshot with
-  `node tools/screenshot.js <url> <png>` → `Read` it.
+  Serve it with **`cd docs && npm run dev`** — it runs the two sync steps
+  (`sync:portal` + `sync:playground`) THEN `astro dev`, and npm puts
+  `node_modules/.bin` on PATH so `astro` resolves. (Running `astro` BARE in a
+  plain shell fails — it isn't global; and the bare-`./node_modules/.bin/astro`
+  path SKIPS the sync, so after any `lib/` rebuild the preview silently serves a
+  **stale bundle as a 200** — `npm run dev` re-syncs, so prefer it.) Stop the
+  server **by port** (`fuser -k 4321/tcp`), never `pkill -f astro` (it
+  self-kills). Screenshot with `node tools/screenshot.js <url> <png>` → `Read` it.
 - **After a squash-merge, sync local `main`** (`git fetch origin && git reset
   --hard origin/main`) before branching/rebasing — a stale local `main` is what
   triggers the Stop hook's "unverified / rewrite history" nag. **Never** rewrite
