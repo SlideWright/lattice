@@ -7,9 +7,9 @@
 
 The live, claimable work queue — a read-only mirror of [open issues](https://github.com/SlideWright/lattice/issues),
 grouped by board column. Design lives in `engineering/decisions/`; this tracks
-only *status*. **27 open** items.
+only *status*. **29 open** items.
 
-## Backlog (24)
+## Backlog (26)
 
 - [#275](https://github.com/SlideWright/lattice/issues/275) docs: correct README palette count 13→14 (add missing `carta`) — critical · theming
 - [#276](https://github.com/SlideWright/lattice/issues/276) docs: fix drifted counts in design-system.md headline (palettes 25→14) — critical · docs
@@ -29,12 +29,14 @@ only *status*. **27 open** items.
 - [#293](https://github.com/SlideWright/lattice/issues/293) infra: automate the graduation-commit trigger on PR merge — medium · infra
 - [#295](https://github.com/SlideWright/lattice/issues/295) feat(website): Layout Studio — CSS-only `component` asset kind with deterministic gates — medium · website
 - [#296](https://github.com/SlideWright/lattice/issues/296) feat(website): graduation bridge — export a Workbench theme/component as a repo PR scaffold — medium · website
+- [#299](https://github.com/SlideWright/lattice/issues/299) refactor(diagram): give function-plot its own `lib/integrations/function-plot/` home + honest renderPaths — medium · diagram
 - [#280](https://github.com/SlideWright/lattice/issues/280) docs: fix phantom `--hljs-name`/`--hljs-meta` token rows in highlight-js.docs.md — low · docs
 - [#281](https://github.com/SlideWright/lattice/issues/281) docs: mark design-system.md "9 buckets" as historical (ships 12) — low · docs
 - [#282](https://github.com/SlideWright/lattice/issues/282) docs: mark design-system.md "58 components / 89 pages" as dated (ships 53) — low · docs
 - [#294](https://github.com/SlideWright/lattice/issues/294) docs: document `pixel-check` in development.md and decide on a hook — low · infra
 - [#297](https://github.com/SlideWright/lattice/issues/297) feat(website): build a visual component catalog (thumbnail picker) — low · website
 - [#298](https://github.com/SlideWright/lattice/issues/298) feat(website): implement the `.latticepack` interchange (zip export/import) — low · website
+- [#300](https://github.com/SlideWright/lattice/issues/300) docs: assess `examples/gallery-jargon.md` for retirement — low · docs
 
 ## Ready (0)
 
