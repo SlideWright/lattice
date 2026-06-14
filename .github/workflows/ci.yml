@@ -168,7 +168,8 @@ jobs:
   # engineering/decisions/2026-06-12-p4-regression-gate-retire-marp.md §0.
 
   # ── Golden before/after — post the intended visual change on the PR ────────
-  # Informational, NON-gating (the regression gate above is the blocker). Diffs
+  # Informational, NON-gating (the integration tier's semantic-invariant suite is
+  # the visual-correctness blocker). Diffs
   # THIS PR's committed goldens against the base branch, rasterizes only the slides
   # that VISUALLY changed (pixel-diff filters out PDF byte-churn from a rebuild),
   # and posts/updates a sticky PR comment ("N slides changed in {galleries}") with

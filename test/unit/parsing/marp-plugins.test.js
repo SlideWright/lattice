@@ -30,7 +30,7 @@ describe('marp-plugins', () => {
   // NOTE: the owned pipeline defaults to `split: headings`, so a fixture with
   // several headings meant to live on ONE slide must declare `split: rule`.
   function makeMarp(plugin) {
-    const md = new MarkdownIt('commonmark', { html: true });
+    const md = new MarkdownIt('commonmark', { html: true, breaks: true });
     md.enable(['table', 'strikethrough']); // match lib/engine/index.js's markdown-it config
     installSlidePipeline(md);
     if (plugin) md.use(plugin);

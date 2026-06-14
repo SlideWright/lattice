@@ -3,8 +3,9 @@ title: Getting started
 description: Install the Lattice toolchain, render the example galleries, and build your first deck.
 ---
 
-Lattice runs on Node.js. `npm install` pulls in Marp CLI, the Mermaid
-CLI, and Puppeteer (which downloads a matching Chromium). Requires
+Lattice runs on Node.js. `npm install` pulls in the Mermaid CLI and
+Puppeteer (which downloads a matching Chromium); it does **not** pull
+Marp — the owned engine renders every first-party path. Requires
 **Node 22+**.
 
 ## Install
@@ -67,26 +68,21 @@ A decision framework for product leaders.
 of pipeline stalls trace to a single approval step.
 ```
 
-Build it to PDF with the preferred path, Marp CLI:
+Build it with the bundled `lattice` CLI (the owned engine) — the output
+extension picks the format:
 
 ```sh
-npx @marp-team/marp-cli deck.md --pdf --output deck.pdf
+node lattice-emulator.js deck.md deck.pdf     # vector PDF
+node lattice-emulator.js deck.md deck.pptx    # PowerPoint (image slides)
+node lattice-emulator.js deck.md deck.png     # → deck.001.png, deck.002.png, …
 ```
 
-The same source can emit other delivery formats:
+Prefer your own marp-cli? Lattice still ships a Marp config — install marp-cli
+yourself, then point it at the config:
 
 ```sh
-npx @marp-team/marp-cli deck.md --html   --output deck.html
-npx @marp-team/marp-cli deck.md --pptx   --output deck.pptx
-npx @marp-team/marp-cli deck.md --images png   # 3840×2160 PNG set
-```
-
-Run from outside the repo root? Pass the palettes explicitly:
-
-```sh
-npx @marp-team/marp-cli deck.md \
-  --theme-set themes/indaco.css themes/cuoio.css lattice.css \
-  --image-scale 3 --pdf --output deck.pdf
+npm install @marp-team/marp-cli
+npx marp deck.md --config-file marp.config.js --pdf --output deck.pdf
 ```
 
 ## What to read next

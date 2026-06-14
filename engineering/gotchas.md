@@ -324,12 +324,11 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
   following browsers is installed: chrome, edge, firefox." A new
   session might conclude marp-cli isn't available and skip the
   marp-cli render path entirely.
-- **Cause (install side):** `@marp-team/marp-cli` is a regular
-  `dependencies` entry in `package.json` (see the `^4.3.1` line). A
-  normal `npm install` puts the `marp` binary in `node_modules/.bin/`
-  — no extra install step. `npx marp` resolves to that binary. If
-  `npx` is reaching for the network instead, `npm install` hasn't
-  been run yet.
+- **Cause (install side):** `@marp-team/marp-cli` is **no longer bundled** (P4
+  retired it — the owned engine renders every first-party path). `marp.config.js`
+  still ships for BYO authors, but you must install marp-cli yourself
+  (`npm install @marp-team/marp-cli`) before `npx marp` resolves to a local
+  binary — otherwise `npx` reaches for the network.
 - **Cause (browser side):** Once marp-cli launches, its own browser
   auto-detection looks in the standard system locations
   (`/usr/bin/google-chrome`, etc.) and doesn't know about the
@@ -416,8 +415,8 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
      CSS. That is the self-hosted-font story, not non-determinism.
 - **Fix:** re-bless — rebuild + commit the goldens (`node tools/build-galleries.js
   [--only <name>]` + `node tools/build-bucket-galleries.js`). Confirm
-  `npm run parity` (engine == marp) is green first so the frozen goldens stay
-  marp-validated. Re-blessing changes exported PDFs (font embedding), so per the
+  `npm run regress` is green first (fresh render == the committed golden).
+  Re-blessing changes exported PDFs (font embedding), so per the
   QUALITY BAR show before/after (dark + light) for sign-off. See
   `engineering/decisions/2026-06-12-p4-regression-gate-retire-marp.md` §9.
 - **The one real exception — cross-*machine* mermaid AA (not stale, not same-machine).**
@@ -624,14 +623,12 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
 
 ### lattice-engine: deck looks fine on desktop but collapses on mobile WebKit (no `:root` token relocation)
 
-- **Symptom:** A deck rendered through the OWNED engine (`?engine=lattice` / the
-  Drawing Board's Render-engine toggle) on mobile Safari/iOS: spacing collapses
-  (cards/list rows overlap with ~0 gap), `list-criteria`/`list principles` counters
-  vanish, title/KPI slides don't centre with breathing room. The SAME deck
-  through marp-core (the default engine), and the SAME engine output in headless
-  Chromium (`tools/engine-diff.js`), render perfectly. Looks like the
-  foreignObject WebKit class above, but the engine already renders
-  `inlineSVG:false` plain sections — so that's not it.
+- **Symptom:** A deck rendered through the owned engine on mobile Safari/iOS:
+  spacing collapses (cards/list rows overlap with ~0 gap),
+  `list-criteria`/`list principles` counters vanish, title/KPI slides don't centre
+  with breathing room. The SAME engine output renders perfectly in headless
+  Chromium and on desktop WebKit. Looks like the foreignObject WebKit class above,
+  but the engine already renders `inlineSVG:false` plain sections — so that's not it.
 - **Cause:** Lattice declares its cqi spacing/radius scale on `:root`
   (`dist/lattice.css` `:root { --sp-md:1.875cqi; … }`). A `cqi` unit resolves
   against the element's nearest `container-type` ancestor; `:root` has none, so
