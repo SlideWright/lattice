@@ -2,8 +2,8 @@
 
 > **Living document.** The running scorecard of where Lattice's owned engine
 > stands against Marp. Update it whenever the engine gains or loses a capability,
-> the benchmark is re-run, or a "worse" line resolves. **Last verified against the
-> engine: 2026-06-14** (PR #263 — the marp-cli retirement).
+> the benchmark is re-run, or a cost line resolves. **Last verified against the
+> engine: 2026-06-14** (architecture settled; L3 invariant coverage 32 / 53).
 >
 > Point-in-time *rationale* lives in
 > `engineering/decisions/2026-06-12-p4-regression-gate-retire-marp.md` — link there
@@ -11,11 +11,12 @@
 
 ## TL;DR
 
-Marp is gone as a **dependency** and as our **render path**. `lib/engine/`
+Marp is gone as a **dependency** and as our **render path** — `lib/engine/`
 natively re-implements the Marpit core, and `npm install @slidewright/lattice`
-pulls **zero** `@marp-team` packages. What remains is marp-*compatibility* by
-choice (`marp.config.js`, Export-to-Marp, the marp-vscode CSS shims) — we are a
-superset of marp authoring, not captive to it.
+pulls **zero** `@marp-team` packages. **We never use Marp for anything, especially
+not parity/verification.** Lattice is a *superset* of Marp; Marp survives only as a
+user-facing **export target** (`export:marp` + `marp.config.js`) reached through a
+clean handoff — its own thing, behind a boundary.
 
 ## 1. Is Marp gone? — the dependency / render reality
 
@@ -26,9 +27,11 @@ superset of marp authoring, not captive to it.
 | First-party render (CLI · emulator · playground) | **owned engine** | `lib/engine/` |
 | `marp.config.js` | **stays — BYO** | shipped so a user *may* render with their own marp-cli |
 | Export-to-Marp (#250 / #257) | **stays — generates recipient bundles** | the bundle pins marp-cli for the *recipient*, not for us |
-| VS Code live preview | **still marp** | the marp-vscode extension renders via its own marp-core; we ride on top via CSS shims + `dist/lattice-runtime.js` |
+| VS Code live preview | **clean handoff** | the Export-to-Marp bundle is self-contained — anyone who wants Marp tooling exports it and runs Marp on the far side of the boundary; not our concern after the handoff |
 
-**The one surface we don't own: VS Code preview.** Everything else is ours.
+**Marp is fully externalized.** We render every first-party path; Marp is an
+optional *export target* a user hands off to (VS Code, marp-cli) — its own thing,
+behind a clean boundary. Nothing of ours uses Marp, especially not verification.
 
 ## 2. The foundation we own (`lib/engine/`)
 
@@ -79,27 +82,44 @@ are shared and stay — the honest delta is the marp tree only.)
 6. **No upstream coupling** — marp's version / roadmap / abandonment can't break us.
 7. **Output ownership** — PDF / PPTX / PNG / HTML through our CLI.
 
-### Worse / the cost (5)
+### Cost — 2 permanent, accepted
 
-1. **Maintenance burden** — we now own every Marpit bug marp-team used to fix. *(permanent)*
-2. **Lost the second-renderer cross-check** — the parity gate rendered the full corpus through an *independent* engine; the semantic-invariant suite checks DOM / computed-style on one sample per component. Thinner defense against the CSS-regression class only a second renderer surfaces. *(watch — §6)*
-3. **VS Code preview is still rendered by marp** — not 100% ours there. *(open)*
-4. **Ecosystem** — community, plugins, docs, and browser-compat labor are now ours alone. *(permanent)*
-5. **Compat-drift risk** — if marp-team changes the `marpit_*` token model or directive semantics, our shipped `marp.config.js` + export bundles can drift; we test color / chart / front-matter parity, not the full corpus. *(watch)*
+1. **Maintenance burden** — we own every Marpit bug marp-team used to fix.
+2. **Ecosystem labor** — community, plugins, docs, and browser-compat are ours alone.
 
-## 6. Running risks — keep these honest
+Two things that *looked* like costs are settled **design choices**, not regrets:
 
-- **Coverage shape (worse #2).** The semantic-invariant suite is now the only
-  visual gate. If a CSS-regression class slips it, prefer a lightweight *owned*
-  second check (e.g. an independent CSS-resolver oracle) over re-adding marp.
-- **Compat drift (worse #5).** While we market marp-compatibility, the
-  color/chart/front-matter parity tests are the floor — widen them if the export
-  bundle becomes a real product surface.
-- **VS Code (worse #3).** Closes only if/when a first-party preview replaces the
-  marp-vscode dependency.
+- **Owned verification is the whole bar.** We deliberately keep **no** second
+  (marp) renderer as a cross-check — the per-component semantic-invariant suite is
+  the floor and we raise it ourselves (§6). Re-introducing marp for parity is
+  explicitly off the table.
+- **Marp renders only on the far side of the export handoff** (VS Code, marp-cli).
+  That boundary is the feature, not a gap.
+
+## 6. Owned verification — the standing work
+
+The semantic-invariant suite (`test/integration/invariants/`) is our whole visual
+gate, so we deepen it ourselves rather than wish for a second renderer:
+
+- **Layers 1–2** (manifest-driven slot contract + overflow/contrast) auto-cover
+  **all 53 components** the moment a manifest lands.
+- **Layer 3** (per-component semantic truths — `.chart-body` rendered, `table`
+  rows, `.katex` math, `.badge` states, …) is opt-in and growing toward the full
+  catalog — **32 / 53 components** as of 2026-06-14. Add a rule whenever a
+  component has a distinctive rendered truth worth locking; the tail is plain
+  list/heading components already fully covered by Layers 1–2.
+
+The bar is ours to raise — never marp's to validate.
 
 ## Update log
 
-- **2026-06-14** — created alongside PR #263 (marp-cli retired, `engine-parity`
+- **2026-06-14 (b)** — architecture settled: Marp fully externalized as an export
+  target behind a clean handoff (the VS Code "gap" dissolved); scorecard reframed
+  to 2 permanent costs. L3 invariant coverage grown **14 → 32 / 53** components
+  (roadmap/state-chart folded into the chart-family frame check; bespoke rules for
+  code, compare-table, matrix-2x2, pricing, split-compare, verdict-grid, redline,
+  image, actors, checklist, logo-wall, obligation-matrix, citation-card, math,
+  quote, split-panel).
+- **2026-06-14 (a)** — created alongside PR #263 (marp-cli retired, `engine-parity`
   gate removed, playground marp-core A/B dropped). Engine verified
   zero-marp-import; benchmark + footprint recorded above.
