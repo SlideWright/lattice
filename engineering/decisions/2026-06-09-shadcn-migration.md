@@ -90,6 +90,45 @@ migration's "delete the migrated surface's bespoke CSS in the SAME PR" rule
 if a control's utilities "aren't applying," the old CSS for it wasn't deleted.
 Add a per-surface integration check that the island's intended styles win.
 
+**Phase 1 landed (2026-06-14), maker-checker reviewed.** One shared controller
+(`docs/src/lib/site-chrome.ts`) + one accessible shadcn island
+(`docs/src/components/site/PaletteControls.tsx`) replaced **six** hand-rolled
+palette/mode controllers across landing, playground, the components reference,
+the Starlight header (coexists with Pagefind), and the Workbench (mode-only).
+Vitest + RTL harness wired as a CI gate. **The Drawing Board was deliberately
+deferred to its own phase:** its top-bar palette picker writes the *deck's*
+`theme:` front matter (authoring semantics), not just page chrome — folding it
+into the uniform chrome island would be a real UX regression, so it keeps its
+native control until §7 Phase 6 (decide there whether that picker stays
+deck-theme-writing or becomes chrome-only).
+
+**Phase 2 landed (2026-06-14), maker-checker reviewed.** The components
+reference (index grid, left nav, per-component docs, breadcrumb, pager) → React
++ shadcn; `component-browser.js` replaced by a shared module-singleton
+`useSyncExternalStore` driving both the grid and the nav from one query +
+group-by (`docs/src/lib/component-browser-store.ts` + `component-search.ts`).
+`components.css` retired 906 → ~330 lines (kept the Astro shell + `specimen-*`).
+**The live Specimen (CodeMirror + deck-render iframe) stays vanilla** — the
+wrap-don't-reinvent boundary; its variant/open-in-playground handoff attributes
+are preserved exactly.
+
+**Phase 3 in progress (2026-06-14): the Playground.** Wrap, don't reinvent —
+the render loop calls the unchanged `window.LatticePlayground.render` +
+`deck-preview.js renderDeck`; `editor.js` (CodeMirror), `deck-config.js`, and
+the engine bundle are wrapped, not rewritten.
+
+**Operating learnings (this effort):**
+- **Docs-site changes get NO `CHANGELOG.md` entry.** The changelog drives the
+  published *engine* npm package; the docs site doesn't ship in it (HARD RULE
+  10, pure-internal). Each phase's maker tends to add one — revert it.
+- **The engine emulator bundle inlines the ROOT `package.json`.** Adding a root
+  npm script makes `dist/lattice-emulator.js` stale → forces a `dist/` rebuild,
+  which this effort forbids. Keep new website tooling out of root `scripts`
+  (run gates via the unit suite). `docs/package.json` is separate — safe.
+- **Keep the branch rebased onto `main`** (HARD RULE 16). Rebase can *silently*
+  drop a line adjacent to a `main` edit (no conflict shown) — re-verify gates
+  after every rebase.
+
 ---
 
 > Status (historical, v2): **PLAN — checker-reviewed (v2), awaiting author
