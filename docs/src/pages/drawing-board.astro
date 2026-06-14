@@ -245,12 +245,6 @@ const dbData = JSON.stringify({
 								</span>
 							)}
 						</div>
-						{isPreviewDeploy && (
-							<script
-								is:inline
-								set:html={`(function(){var el=document.getElementById('db-arch-engine');if(!el)return;var eng='lattice';try{eng=new URLSearchParams(location.search).get('engine')||localStorage.getItem('lattice-db-render-engine')||'lattice';}catch(e){}el.textContent=eng==='lattice'?'lattice-engine':'marp-core';})();`}
-							/>
-						)}
 						<div class="db-arch-onboard" id="db-arch-onboard"></div>
 
 						<!-- Coach (deterministic) vs Converse (generative) — the help mode for
