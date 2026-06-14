@@ -58,9 +58,8 @@ scaffolders, …). This section calls out only the daily inner-loop:
 | `test` | Full unit suite (the inner loop) |
 | `test:watch` | Re-run the unit suite on file change |
 | `test:<scope>` | Scoped unit subset (`palette`/`mermaid`/`parsing`/`components`/`cli`/`engine`/`layout`/…) |
-| `test:integration` | Cross-renderer integration tier (page-count + parity) |
-| `bench` | tinybench render benchmark, marp-core vs lattice-engine (`-- --export` adds the rasterize tier, `-- --json` dumps machine-readable) |
-| `parity` | Visual engine-parity harness — rasterise a deck through both engines and pixel-diff per slide (`-- --galleries` / `-- --jargon` / `-- --dark`) |
+| `test:integration` | Integration tier (PDF page-count + per-component semantic invariants + screenshot/mermaid smoke) |
+| `bench` | tinybench render benchmark — the owned engine over time (`-- --export` adds the rasterize tier, `-- --json` dumps machine-readable) |
 | `lint`, `lint:fix` | Biome check / Biome check --write (never `npx biome`) |
 | `preview` | Fast visual-iteration loop (scope-detect, rebuild affected, pixel-diff) |
 | `build`, `build:check` | Regenerate / freshness-gate every generated artifact |
@@ -78,9 +77,10 @@ test/unit/parsing/      source-parse, match-section, splitter,
 test/unit/components/   component-manifest, journey, roadmap,
                         word-cloud, quadrant, radar
 test/unit/cli/          cli
-test/integration/galleries/   emulator.{gallery,gallery-mermaid},
-                              marp.gallery
-test/integration/parity/      parity, deck-class-fm, chart-family
+test/integration/galleries/   emulator.{gallery,gallery-mermaid}
+test/integration/parity/      color-parity, deck-class/finish/logo-fm,
+                              speaker-notes, chart-family
+test/integration/invariants/  component-invariants (semantic gate)
 test/integration/mermaid/     mermaid-smoke
 test/integration/screenshot/  screenshot
 test/benchmark/               engine-bench.mjs (npm run bench; not in npm test)
@@ -88,15 +88,14 @@ test/helpers/                 render.js, pdf.js, palette.js
 test/fixtures/                small .md decks for integration
 ```
 
-`tools/engine-parity.mjs` (`npm run parity`) is the visual-parity harness — it
-rasterises every gallery slide through both render engines and pixel-diffs them,
-exiting non-zero on any real divergence (the one intentional difference, Marp's
-twemoji `<img>` vs the engine's font-glyph emoji, is skipped per slide). It is
-**a required CI gate** — the `engine-parity` job in `ci.yml` runs
-`npm run parity -- --galleries --jargon` on every code change, so the owned
-engine can't regress against marp-core unseen (it's the safety net for bringing
-the owned CSS emitter back, proposal P5). It is NOT in `npm test` or the pre-push
-hook (too slow for the inner loop); run it locally when changing `lib/engine/`.
+The CI visual-correctness gate is the **per-component semantic-invariant suite**
+(`test/integration/invariants/component-invariants.test.js`): it renders each
+component's example through `lib/engine` into a real headless-Chrome DOM and
+asserts on *meaning* — required slots resolve, no overflow, heading contrast ≥
+WCAG AA — which is deterministic and machine-independent. It runs in the
+`integration` tier, so the required `ci` check covers it. (The old marp-vs-engine
+`engine-parity` pixel gate was retired with marp in P4 — the owned engine is
+canonical. `npm run regress` survives as a LOCAL golden spot-check.)
 
 Each test file wraps its body in `describe('<file-basename>', () => {…})`
 so TAP output groups by file. Source of truth: `package.json` scripts

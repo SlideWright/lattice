@@ -123,12 +123,12 @@ missing `**Title.**` marker, etc.) causes the post-processor to fall
 back to the raw list rendering, which the CSS does not style. When a
 structured slide looks wrong, check the source list shape first.
 
-**Audit implication.** Structured layouts are where
-`lattice-emulator.js` and `marp-cli` are most likely to diverge — see
-[audit.md §11.4](audit.md#114-comparison-workflow).
-The three-renderer parity gate in the integration tier (running on
-`test/integration/baseline-decks/gallery.md`) catches structural drift
-before merge.
+**Audit implication.** The owned `lib/engine` is canonical for every
+first-party render path. The per-component semantic-invariant suite in the
+integration tier (render via `lib/engine` → assert structure / computed-style)
+catches drift before merge. (The marp-vs-engine pixel-parity gate was retired
+with marp in P4 — see
+`engineering/decisions/2026-06-12-p4-regression-gate-retire-marp.md`.)
 
 ## The runtime path
 

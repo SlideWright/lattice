@@ -142,11 +142,15 @@ independent set of eyes earns its latency.
 
 ## HARD RULES (these override convenience; a violation is a defect)
 
-1. **Three render paths must agree.** Any authoring transform lands in all
-   three or the paths drift: `lattice-emulator.js` (build-time CLI),
-   `marp.config.js` → `lib/core/*` + chart-family + integrations (marp-cli),
-   and `dist/lattice-runtime.js` (vscode preview). Each kernel documents its
-   siblings in a header comment. See `engineering/architecture.md`.
+1. **The render paths share one source of truth — land transforms in the shared
+   kernel, not one path.** Authoring transforms live in `lib/integrations/marp/plugins.js`,
+   `lib/transformers/*`, and `lib/core/*` so every path stays in step: the owned
+   `lib/engine` (the `lattice` CLI **and** the docs playground), the shipped
+   `marp.config.js` (BYO marp-cli — same plugins), and `dist/lattice-runtime.js`
+   (vscode preview). The owned engine is now canonical (the marp-parity gate is
+   retired — P4; visual correctness gates via the per-component semantic-invariant
+   suite). Each kernel documents its siblings in a header comment. See
+   `engineering/architecture.md`.
 2. **Never hand-edit `dist/`.** It is generated. Regenerate with
    `npm run build` (behind the collision gate).
 3. **No hex literals in layout CSS — always `var(--token)`.**
