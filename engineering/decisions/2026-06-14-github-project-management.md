@@ -58,19 +58,19 @@ proposal is that half.
 
 This is **kanban-light**, in kanban's own vocabulary — *flow*, not Scrum
 work-breakdown. There is no epic/story/task hierarchy: the board is flat **cards**,
-and an initiative is just the decision doc a card points back to.
+and a swimlane is just the decision doc a card points back to.
 
 | Kanban concept | Lives in | Notes |
 |---|---|---|
 | **Card** (work item) | **GitHub Issue** | Small, claimable. Body links the decision-doc section; doesn't restate it. |
-| **Initiative** (grouping) | `engineering/decisions/*.md` | The durable *why*. A card names its initiative via an `area:`/initiative **label** (or board **swimlane**) — not a parent issue. Canonical, already has `status:`. |
+| **Swimlane** (grouping) | `engineering/decisions/*.md` | The durable *why*. A card joins its swimlane via a **label** (the `area:` bucket, or a per-doc tag) — not a parent issue. Canonical, already has `status:`. |
 | **Labels** | Issue metadata | `area:*`, `type:*`, `priority:*`, `status:*` (below). |
 | **Board** | **GitHub Project** | One per repo. Columns + PR-driven automation. |
 | **Lock-in insurance** | committed `BACKLOG.md` | One-way mirror of open issues, regenerated in CI. |
 
 We deliberately **do not** use native issue-types / sub-issue trees. Kanban groups
-with **swimlanes and labels**, not parent/child hierarchies; a hierarchy would put
-the initiative in two places (doc + tracking issue) and invite the exact drift this
+with **swimlanes and labels**, not parent/child hierarchies; a hierarchy would
+duplicate the grouping (doc + tracking issue) and invite the exact drift this
 design exists to avoid. If flat cards ever prove insufficient we can revisit — but
 the board filter *is* the rollup, so we expect not to.
 
@@ -80,7 +80,7 @@ the board filter *is* the rollup, so we expect not to.
   `comparison`, `progression`, `evidence`, `imagery`, `chart`, `diagram`, `math`,
   `code`, `legal`) plus cross-cutting (`engine`, `theming`, `docs`, `infra`,
   `website`). Reuses vocabulary the repo already speaks; doubles as the
-  initiative/swimlane grouping.
+  swimlane grouping.
 - `type:` — `feat | fix | docs | infra | refactor | spike`.
 - `priority:` — `p0 | p1 | p2 | p3`. Numeric and visible; mirrors cleanly into
   `BACKLOG.md`. Not MoSCoW — that's Scrum-flavoured.
@@ -198,7 +198,7 @@ not a meeting).
 ## Adoption ladder (reversible)
 
 - **L0** — today: everything in markdown.
-- **L1** — Issues + label taxonomy + generated `BACKLOG.md`. Docs stay the initiatives.
+- **L1** — Issues + label taxonomy + generated `BACKLOG.md`. Docs stay the swimlanes.
 - **L2** — add the per-repo Project board (kanban columns, PR automation). ← **first move** (with L1)
 - **L3** — autonomous agent dispatch (claim loop). Design the contract first.
 
@@ -216,8 +216,8 @@ not a meeting).
    source of truth (see §Seeding the queue) — not lazy, not hand-transcribed.
 4. **Definition of Ready enforcement** → **issue template + an Action gate** on the
    `status:ready` label (see §Definition of Ready).
-5. **Hierarchy** → **flat cards, grouped by initiative label/swimlane**; the
-   decision doc is the initiative. No native issue-types / sub-issue trees.
+5. **Hierarchy** → **flat cards, grouped into swimlanes by label**; the
+   decision doc is the swimlane. No native issue-types / sub-issue trees.
 6. **Claim atomicity** → **plain assignment for L1+L2; race-free lock designed at
    L3** (branch-creation-as-lock the leading candidate). Don't pre-build it.
 7. **WIP limits** → **none at first**; add when throughput data shows a bottleneck.
