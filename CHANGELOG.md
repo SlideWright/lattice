@@ -44,6 +44,17 @@ in patch versions.
 
 ### Added
 
+- **A public comparison page (`/comparison`).** An honest, sourced read on how
+  Lattice stacks up against the field: AI generators (Gamma, Beautiful.ai,
+  Decktopus, Presentations.ai, Plus AI, MagicSlides, SlidesAI), office suites
+  (PowerPoint + Copilot, Google Slides + Gemini, Keynote), code engines (Marp,
+  reveal.js, Slidev, Beamer, Quarto, Spectacle), and design/collab tools (Pitch,
+  Canva, Figma Slides). It credits each rival's real strengths, makes the
+  deterministic/boardroom case with a capability matrix and a cited evidence
+  section, answers "isn't this just Marp?", and concedes where Lattice is the
+  wrong tool. Linked from the primary nav and footer; research source-of-truth in
+  `engineering/decisions/2026-06-14-competitive-analysis.md`.
+
 - **The Drawing Board now shows export progress and an error toast.** A
   one-click PDF/PPTX export rasterizes every slide in the browser — seconds to
   tens of seconds on a phone — but the only feedback was low-contrast text in
@@ -105,6 +116,10 @@ in patch versions.
   major version. Existing decks keep rendering unchanged in the meantime.
 
 ### Fixed
+
+- **Landing page no longer claims "Fifty-eight layouts."** Two marketing
+  strings on the landing said 58; the catalog ships 53. Corrected to match the
+  canonical count (`dist/docs/components.json`).
 
 - **`islands: on` no longer collides content-dense slides.** With islands
   enabled, `list-criteria`, `actors`, `roadmap`, the `piechart donut` (which
