@@ -1,20 +1,17 @@
 ---
 // Component reference index — the browsable catalog landing. A fuzzy search +
 // "Group by" lens (Family by default) organize the whole set; each card links
-// to the focused per-component page. Server-renders the Family grouping;
-// component-browser.js enhances it with fuzzy search + live re-grouping (the
-// same controls live in the left nav). Replaces the old single-page,
-// anchor-scroll portal as the "Components" entry point.
+// to the focused per-component page. The grid + controls are one React island
+// (ComponentIndexIsland) sharing a store with the left-nav island, so search
+// and Group-by drive both. Replaces the old vanilla component-browser.js.
 import { createRequire } from 'node:module';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import ComponentsLayout from '../../layouts/ComponentsLayout.astro';
+import ComponentIndexIsland from '../../components/components-ref/ComponentIndexIsland.tsx';
 import { buildCatalog, buildLenses, groupCatalog } from '../../lib/families.mjs';
-import { joinBase } from '../../lib/base-url.mjs';
 
 const base = import.meta.env.BASE_URL;
-const url = (p) => joinBase(base, p);
-const tc = (s) => (s ? s[0].toUpperCase() + s.slice(1) : s);
 
 const docsRoot = process.cwd();
 const repoRoot = join(docsRoot, '..');
@@ -40,62 +37,6 @@ const palettes = [...new Set([...tokensCss.matchAll(/data-palette="([^"]+)"/g)].
 	current={null}
 >
 	<div class="cindex">
-		<header class="cindex-head">
-			<p class="cindex-eyebrow">Component reference</p>
-			<h1>Every layout, one click from a live preview.</h1>
-			<p class="cindex-lead">
-				{catalog.length} components. Search by name, tag, or what it does — or regroup
-				the set by family, function, or A–Z. Open any one for a preview you can flip
-				into an editor, in the palette you choose up top.
-			</p>
-			<div class="cindex-controls">
-				<input
-					type="search"
-					class="cindex-search-input"
-					data-browser-search
-					placeholder="Search components — name, tag, or description…"
-					aria-label="Search components"
-					autocomplete="off"
-				/>
-				<label class="cindex-groupby">
-					<span>Group by</span>
-					<select data-browser-groupby aria-label="Group components by">
-						{lenses.map((l) => <option value={l.id}>{l.label}</option>)}
-					</select>
-				</label>
-				<span class="cindex-count" data-browser-count></span>
-			</div>
-		</header>
-
-		<div class="cindex-results">
-			{groups.map((g) => (
-				<section class="cindex-bucket">
-					<header class="cindex-bucket-head">
-						<h2>{g.label}</h2>
-						<span class="cindex-bucket-count">{g.items.length}</span>
-					</header>
-					<div class="cindex-grid">
-						{g.items.map((it) => (
-							<a class="ccard" href={url(`components/${it.bucket}/${it.name}/`)}>
-								<div class="ccard-top">
-									<h3>{it.name}</h3>
-									<div class="ccard-ffs">
-										<span class="ffs-pill" title="Function">{tc(it.function)}</span>
-										<span class="ffs-pill" title="Form">{tc(it.form)}</span>
-										<span class="ffs-pill" title="Substance">{tc(it.substance)}</span>
-									</div>
-								</div>
-								<p class="ccard-desc">{it.description}</p>
-								{it.tags.length > 0 && (
-									<div class="ccard-tags">
-										{it.tags.map((t) => <span class="ccard-tag">{t}</span>)}
-									</div>
-								)}
-							</a>
-						))}
-					</div>
-				</section>
-			))}
-		</div>
+		<ComponentIndexIsland client:load catalog={catalog} lenses={lenses} base={base} />
 	</div>
 </ComponentsLayout>
