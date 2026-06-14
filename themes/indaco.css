@@ -137,7 +137,7 @@
 
   /* Sequential ramp anchor — indaco's brand mid-blue. The 9 derivative
    * stops auto-derive in lattice.css :root via OKLab color-mix. */
-  --scale-500: var(--brand-accent);
+  --seq-500: var(--brand-accent);
 
   /* Tag (status badge) defaults to --chart-2 (warm vermilion) via
    * lattice.css; indaco doesn't need to override. */

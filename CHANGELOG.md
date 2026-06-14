@@ -27,6 +27,16 @@ in patch versions.
 
 ### Removed
 
+- **Breaking: the sequential colour-ramp tokens `--scale-50 … --scale-900` are
+  retired in favour of `--seq-50 … --seq-900`** (universal-token canonical flip,
+  group 1 — see `engineering/decisions/2026-06-11-universal-token-system.md`
+  §11). The ramp is now anchored on `--seq-500` (themes set it; `base.tokens.css`
+  derives the other nine stops via OKLab `color-mix`), and consumers already read
+  `--seq-*`. Resolved colours are byte-identical — this is a pure rename that
+  frees "scale" from colliding with the typographic multiplier `--fs-scale`. **If
+  a BYO theme sets `--scale-500`, or a deck reads `var(--scale-NNN)`, rename to
+  `--seq-*`.** (The Drawing-Board `tokens:` toggle resolves both vocabularies for
+  decks mid-migration.)
 - **Breaking: `@marp-team/marp-cli` is no longer a dependency — the installed
   package is marp-free.** Nothing in the shipped runtime ever imported marp (the
   emulator renders via its own Puppeteer path); marp-cli was pulled only for the

@@ -8,7 +8,7 @@
  *      Marp chrome bridges, categorical palette consumers, universal
  *      semantic palette (warm/cool/alarm/mark/note), status-signaling
  *      state tokens (--pass / --warn / --fail), on-accent text tier,
- *      code panel tokens, sequential scale (--scale-50 .. 900), tag
+ *      code panel tokens, sequential ramp (--seq-50 .. 900), tag
  *      tokens, universal state-token slash mask.
  *
  *   2. `:where(:root) { ... }` — zero-specificity universal defaults
@@ -413,44 +413,36 @@
   --code-inline-border: color-mix(in srgb, currentColor 22%, transparent);
 
 
-  /* ── Sequential scale (--scale-50 … --scale-900) ───────────────────────
-   * Tailwind/Carbon-style 10-stop ramp anchored on --scale-500. Used for
+  /* ── Sequential ramp (--seq-50 … --seq-900) ────────────────────────────
+   * Tailwind/Carbon-style 10-stop ramp anchored on --seq-500. Used for
    * sequential / quantitative encoding: heatmap intensity, progress
    * intensity ramps, hover/active states, faint grid lines.
    *
-   * Each theme sets --scale-500 (its anchor — typically the brand mid).
+   * Each theme sets --seq-500 (its anchor — typically the brand mid).
    * The other nine stops auto-derive from the anchor via OKLab color-mix.
    * 50-400 are tints toward white; 600-900 are shades toward black.
    *
-   * Distinct from the categorical --cN-light/--cN-dark cycle. The scale
+   * Distinct from the categorical --cat-N-fill/--cat-N-mark cycle. The ramp
    * is for ORDERED data; the categorical cycle is for UNORDERED groups.
    * Don't substitute.
    *
-   * Default --scale-500 falls back to --accent so unstyled themes still
+   * NAMED --seq-* (not --scale-*) because "scale" also meant the typographic
+   * multiplier --fs-scale (P8): --seq-700 is unmistakably a ramp stop, never
+   * a font size. This group is canonical (universal-token flip, group 1 —
+   * 2026-06-11 ADR §11); the old --scale-* names are retired.
+   *
+   * Default --seq-500 falls back to --accent so unstyled themes still
    * have a usable ramp, but every theme should set it deliberately. */
-  --scale-500: var(--accent);
-  --scale-50:  color-mix(in oklab, var(--scale-500)  8%, white);
-  --scale-100: color-mix(in oklab, var(--scale-500) 18%, white);
-  --scale-200: color-mix(in oklab, var(--scale-500) 35%, white);
-  --scale-300: color-mix(in oklab, var(--scale-500) 55%, white);
-  --scale-400: color-mix(in oklab, var(--scale-500) 78%, white);
-  --scale-600: color-mix(in oklab, var(--scale-500) 78%, black);
-  --scale-700: color-mix(in oklab, var(--scale-500) 55%, black);
-  --scale-800: color-mix(in oklab, var(--scale-500) 35%, black);
-  --scale-900: color-mix(in oklab, var(--scale-500) 18%, black);
-
-  /* ── Phase 5 · sequential ramp (--scale-* → --seq-*) ──────────────────
-   * P8: "scale" meant two unrelated things — this ordered colour ramp AND
-   * the typographic multiplier `--fs-scale`. The ramp is renamed to the
-   * unambiguous `--seq-*` (sequential). Aliased to the existing stops
-   * (byte-identical); consumers read `--seq-*`, the `--scale-*` anchor +
-   * derivation stay as the source until the flip. The token's purpose is now
-   * legible — `--seq-700` is "a sequential ramp stop", never a font size. */
-  --seq-50:  var(--scale-50);   --seq-100: var(--scale-100);
-  --seq-200: var(--scale-200);  --seq-300: var(--scale-300);
-  --seq-400: var(--scale-400);  --seq-500: var(--scale-500);
-  --seq-600: var(--scale-600);  --seq-700: var(--scale-700);
-  --seq-800: var(--scale-800);  --seq-900: var(--scale-900);
+  --seq-500: var(--accent);
+  --seq-50:  color-mix(in oklab, var(--seq-500)  8%, white);
+  --seq-100: color-mix(in oklab, var(--seq-500) 18%, white);
+  --seq-200: color-mix(in oklab, var(--seq-500) 35%, white);
+  --seq-300: color-mix(in oklab, var(--seq-500) 55%, white);
+  --seq-400: color-mix(in oklab, var(--seq-500) 78%, white);
+  --seq-600: color-mix(in oklab, var(--seq-500) 78%, black);
+  --seq-700: color-mix(in oklab, var(--seq-500) 55%, black);
+  --seq-800: color-mix(in oklab, var(--seq-500) 35%, black);
+  --seq-900: color-mix(in oklab, var(--seq-500) 18%, black);
 
   /* ── Tag (--tag-bg / --tag-text) ───────────────────────────────────────
    * Secondary accent for status badges / brand-status pills. Distinct

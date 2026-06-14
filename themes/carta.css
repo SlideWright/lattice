@@ -64,7 +64,7 @@
   --fail-bg: color-mix(in srgb, var(--fail) 10%, transparent);
   --warn-bg: color-mix(in srgb, var(--warn) 10%, transparent);
 
-  --scale-500: var(--brand-accent);
+  --seq-500: var(--brand-accent);
 
   /* ── Dark-panel ramp — warm ────────────────────────────────────────── */
   --bg-warm-mid:   #211C15;

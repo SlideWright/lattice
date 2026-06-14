@@ -98,7 +98,7 @@
   --warn-bg: color-mix(in srgb, var(--warn) 12%, transparent);
 
   /* Sequential ramp anchor — burgundy's brand mid-wine. */
-  --scale-500: var(--brand-accent);
+  --seq-500: var(--brand-accent);
 
   /* Tag uses --chart-2 (champagne) by default — the wine cellar duotone.
    * lattice.css :root sets --tag-bg: var(--chart-2); no override needed. */

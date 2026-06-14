@@ -92,7 +92,7 @@
   --fail-bg: color-mix(in srgb, var(--fail) 12%, transparent);
   --warn-bg: color-mix(in srgb, var(--warn) 12%, transparent);
 
-  --scale-500: var(--brand-canvas);
+  --seq-500: var(--brand-canvas);
 
   /* Tag uses --chart-2 (deep amber) — atelier's hand-finished gold pop. */
 

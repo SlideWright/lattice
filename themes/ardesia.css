@@ -88,7 +88,7 @@
   --fail-bg: color-mix(in srgb, var(--fail) 12%, transparent);
   --warn-bg: color-mix(in srgb, var(--warn) 12%, transparent);
 
-  --scale-500: var(--brand-accent);
+  --seq-500: var(--brand-accent);
 
   /* Tag uses --chart-2 (warm gold) — the only chromatic break ardesia
    * permits, mirroring Boardroom's Graphite gold-tag move. */

@@ -93,7 +93,7 @@
   --fail-bg: color-mix(in srgb, var(--fail) 12%, transparent);
   --warn-bg: color-mix(in srgb, var(--warn) 12%, transparent);
 
-  --scale-500: light-dark(#666666, #B8B8B8);
+  --seq-500: light-dark(#666666, #B8B8B8);
 
   /* Tag uses --chart-2 (saturated red) — Onyx's signature pop. */
 
