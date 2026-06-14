@@ -191,6 +191,35 @@ paths consume. That two-file split (kernel co-located with its
 component or in `lib/core/`; adapter in `lib/transformers/`) keeps
 component folders free of render-path plumbing.
 
+## Docs-site render bridges
+
+The docs site (`docs/`, a separate Astro + React package) renders live deck
+previews on five surfaces (landing, playground, drawing board, both workbench
+studios, component specimens). After the shadcn migration (#319–#325) and the
+deck-preview consolidation (#331/#335) these share one render stack — a render
+fix lands once, not per surface (see
+`engineering/decisions/2026-06-14-deck-preview-consolidation.md`):
+
+- **`docs/src/lib/load-engine.ts`** — on-demand singleton that injects the
+  `~554KB-gz` engine bundle (`window.LatticePlayground`) only when a surface
+  first needs it (off the critical path; keeps mobile LCP sane).
+- **`docs/src/lib/theme-fetch.ts`** — `createThemeFetcher(themeBase)`: fetch +
+  cache theme CSS, register via `PG.addThemes`. The one theme-fetch path all
+  bridges use.
+- **Single-slide** — `docs/src/lib/single-slide-render.ts` (one rendered
+  `<section>` in a scaled `srcdoc` iframe) wrapped by the React
+  `docs/src/components/DeckPreview.tsx`. Backs the landing islands + the 53
+  component specimen pages.
+- **Multi-slide filmstrip** — `docs/src/playground/deck-preview.js` (patch-vs-
+  rewrite, FIT/SYNC agents, content-visibility). Backs the playground, drawing
+  board, and both workbench studios (see `2026-06-13-shared-deck-preview.md`).
+- **Drawing-board controller** — `docs/src/playground/drawing-board-render.js`
+  (`createRenderController`): the render loop over `deck-preview.js` plus the
+  DB-specific token-flip (universal vocabulary) and cursor↔slide sync. The
+  `.astro` page is a thin deferred-module bootstrap that imports it.
+
+This is docs-site plumbing, distinct from the engine transform kernels above.
+
 ## The Mermaid theming wall
 
 Mermaid's theming API has known limits we work around:
