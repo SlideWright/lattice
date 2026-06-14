@@ -346,12 +346,19 @@ jobs:
       - name: Verify gate
         run: |
           echo "lint=${{ needs.lint.result }} unit=${{ needs.unit.result }} integration=${{ needs.integration.result }} docs-build=${{ needs.docs-build.result }}"
-          if [ "${{ needs.lint.result }}" != "success" ]; then
-            echo "::error::lint failed"; exit 1
-          fi
-          for r in "${{ needs.unit.result }}" "${{ needs.integration.result }}" "${{ needs.docs-build.result }}"; do
-            if [ "$r" != "success" ] && [ "$r" != "skipped" ]; then
-              echo "::error::a required tier failed ($r)"; exit 1
-            fi
+          # A tier result is acceptable when it's: success; skipped (a conditional
+          # tier that didn't apply — e.g. docs-only skips unit/integration); or
+          # cancelled. 'cancelled' here is a SUPERSEDED run — a force-push tripped
+          # `concurrency: cancel-in-progress`, so a newer run on the new head SHA
+          # carries the authoritative verdict. Painting the orphaned SHA red on a
+          # supersession-cancel manufactured false-alarm webhooks during a merge
+          # train (see engineering/decisions/2026-06-14-drift-watch-rebase-thrash.md).
+          # Only a real failure/timeout stops the gate.
+          for tier in "lint=${{ needs.lint.result }}" "unit=${{ needs.unit.result }}" \
+                      "integration=${{ needs.integration.result }}" "docs-build=${{ needs.docs-build.result }}"; do
+            case "${tier#*=}" in
+              success|skipped|cancelled) ;;
+              *) echo "::error::tier ${tier%%=*} did not pass (${tier#*=})"; exit 1 ;;
+            esac
           done
           echo "CI gate passed."
