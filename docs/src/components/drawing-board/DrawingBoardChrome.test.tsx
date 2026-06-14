@@ -1,0 +1,105 @@
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import DrawingBoardExportMenu from './DrawingBoardExportMenu';
+import DrawingBoardTopbar from './DrawingBoardTopbar';
+
+afterEach(() => {
+	const r = document.documentElement;
+	r.removeAttribute('data-palette');
+	r.removeAttribute('data-mode');
+	// biome-ignore lint/performance/noDelete: test cleanup of the chrome bus globals.
+	delete (window as unknown as { __dbChrome?: unknown }).__dbChrome;
+	// biome-ignore lint/performance/noDelete: test cleanup of the export bus global.
+	delete (window as unknown as { __dbExport?: unknown }).__dbExport;
+});
+
+describe('DrawingBoardTopbar (deck-theme picker island)', () => {
+	it('renders the deck-theme select + mode toggle', () => {
+		render(<DrawingBoardTopbar palettes={['indaco', 'cuoio']} />);
+		expect(screen.getByRole('button', { name: /toggle light \/ dark/i })).toBeInTheDocument();
+		expect(screen.getByRole('combobox', { name: /deck theme/i })).toBeInTheDocument();
+	});
+
+	it('a palette pick drives the chrome bus applyTheme (writes the deck theme, not page chrome)', async () => {
+		const applyTheme = vi.fn();
+		(window as unknown as { __dbChrome: unknown }).__dbChrome = {
+			getPalette: () => 'indaco',
+			getMode: () => 'light' as const,
+			getPalettes: () => ['indaco', 'cuoio'],
+			applyTheme,
+			toggleMode: () => 'dark' as const,
+		};
+		render(<DrawingBoardTopbar palettes={['indaco', 'cuoio']} />);
+		// Open the radix select and choose cuoio.
+		fireEvent.click(screen.getByRole('combobox', { name: /deck theme/i }));
+		const opt = await screen.findByRole('option', { name: /cuoio/i });
+		fireEvent.click(opt);
+		expect(applyTheme).toHaveBeenCalledWith('cuoio');
+	});
+
+	it('reflects a db-chrome-sync event (deck theme changed underneath)', async () => {
+		render(<DrawingBoardTopbar palettes={['indaco', 'cuoio']} />);
+		act(() => {
+			window.dispatchEvent(
+				new CustomEvent('db-chrome-sync', { detail: { palette: 'cuoio', mode: 'dark', palettes: ['indaco', 'cuoio'] } }),
+			);
+		});
+		await waitFor(() => expect(screen.getByRole('combobox', { name: /deck theme/i })).toHaveTextContent(/cuoio/i));
+	});
+
+	it('the mode toggle drives the chrome bus toggleMode', () => {
+		const toggleMode = vi.fn(() => 'dark' as const);
+		(window as unknown as { __dbChrome: unknown }).__dbChrome = {
+			getPalette: () => 'indaco',
+			getMode: () => 'light' as const,
+			getPalettes: () => ['indaco'],
+			applyTheme: vi.fn(),
+			toggleMode,
+		};
+		render(<DrawingBoardTopbar palettes={['indaco']} />);
+		fireEvent.click(screen.getByRole('button', { name: /toggle light \/ dark/i }));
+		expect(toggleMode).toHaveBeenCalled();
+	});
+});
+
+describe('DrawingBoardExportMenu (chrome only — export logic untouched)', () => {
+	beforeEach(() => {
+		(window as unknown as { __dbExport: unknown }).__dbExport = {
+			run: vi.fn(),
+			hasActiveChart: () => false,
+		};
+	});
+
+	// Radix DropdownMenu opens on keyboard activation reliably in jsdom (mouse
+	// uses pointerdown, which jsdom doesn't fully model); Enter on the focused
+	// trigger is the supported path and exercises the same open + onOpenChange.
+	const openMenu = () => {
+		const trigger = screen.getByRole('button', { name: /export this deck/i });
+		trigger.focus();
+		fireEvent.keyDown(trigger, { key: 'Enter', code: 'Enter' });
+	};
+
+	it('opens and drives the export bus on item select', async () => {
+		const run = vi.fn();
+		(window as unknown as { __dbExport: unknown }).__dbExport = { run, hasActiveChart: () => false };
+		render(<DrawingBoardExportMenu />);
+		openMenu();
+		const pdf = await screen.findByRole('menuitem', { name: /PDF/i });
+		fireEvent.click(pdf);
+		expect(run).toHaveBeenCalledWith('pdf');
+	});
+
+	it('hides "Export chart" unless the active slide has a chart', async () => {
+		render(<DrawingBoardExportMenu />);
+		openMenu();
+		await screen.findByRole('menuitem', { name: /PDF/i });
+		expect(screen.queryByRole('menuitem', { name: /Export chart/i })).not.toBeInTheDocument();
+	});
+
+	it('shows "Export chart" when hasActiveChart() is true', async () => {
+		(window as unknown as { __dbExport: unknown }).__dbExport = { run: vi.fn(), hasActiveChart: () => true };
+		render(<DrawingBoardExportMenu />);
+		openMenu();
+		expect(await screen.findByRole('menuitem', { name: /Export chart/i })).toBeInTheDocument();
+	});
+});
