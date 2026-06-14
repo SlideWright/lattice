@@ -209,3 +209,11 @@ it is load-bearing.
   (engine `--print` flag). Recommends Build A (fix the web path) now + Build B
   (print band + auto-paper-fit PDF export) as the real deliverable.
   **Status: design-decision** (open questions resolved 2026-06-14).
+- [2026-06-14-drift-watch-rebase-thrash.md](2026-06-14-drift-watch-rebase-thrash.md) —
+  a watched PR rebased on *every* `main` movement during a parallel merge train,
+  thrashing CI (~6 force-pushes, ~5 cancelled runs, a spurious red `ci` gate).
+  Two root causes: HARD RULE #16 had no debounce and conflated *behind* with
+  *must-rebase-now*; and the `ci` aggregate gate mapped a supersession
+  `cancelled` → failure. Fix: rebase only at the moments that matter (conflict +
+  the two merge-time checkpoints), keeping the watch as a detector; and treat a
+  `cancelled` tier as non-failing. **Status: design-decision.**

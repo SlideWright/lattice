@@ -47,13 +47,16 @@ decision the workflow already made.
 2. **Don't settle.** "Builds" and "tests pass" is the floor. Self-critique
    the result and raise it before returning it. For visual work, the bar is
    §Quality Bar below.
-3. **Stay rebased — check, don't ask.** Before you push, before you call
+3. **Stay *mergeable* — check, don't ask.** Before you push, before you call
    anything done, and **while an open PR waits**, `git fetch origin main` and
-   rebase the branch if it has drifted. Never ship from a stale branch; never
-   let an open PR sit behind `main` or conflicted; never wait to be told to
-   rebase. (A Stop hook nudges you if you forget — see
-   `.claude/hooks/stop-rebase-check.sh`; HARD RULE #16 makes the open-PR case
-   blocking, because webhooks never deliver the drift/conflict trigger.)
+   rebase if the branch has drifted *and it matters* — a conflict, or behind at a
+   merge-time checkpoint. Never ship from a stale branch; never let an open PR
+   *merge* conflicted or stale; never wait to be told to rebase. But don't chase
+   every `main` movement: a `clean`-but-behind PR mid-flight is fine, and
+   rebasing on every drift thrashes CI against a merge train (HARD RULE #16). (A
+   Stop hook nudges you if you forget — see `.claude/hooks/stop-rebase-check.sh`;
+   HARD RULE #16 makes the open-PR case blocking, because webhooks never deliver
+   the drift/conflict trigger.)
 4. **Run the gates yourself, proactively.** `npm run lint`, the unit suite,
    `npm run build:check` (the CI/stale-artifact gate), and the integration
    tier — run them *before* declaring done, so "done" is true when you say
@@ -208,23 +211,31 @@ independent set of eyes earns its latency.
     tools/` are the live source). We almost certainly already have it — extend it,
     don't rebuild it. New tools/scripts must be described there (the
     `capabilities:check` gate enforces it).
-16. **Keep an open PR mergeable — detect drift/conflict yourself; webhooks
-    won't.** GitHub never pushes "`main` moved", "now conflicted", or "CI
-    passed", so a PR you're watching goes stale or blocked **silently**.
-    Therefore **run a continuous drift watch — arm the `Monitor` tool the moment
-    the PR goes green (poll **lock-free** with `git ls-remote`, never a background
-    `git fetch`; on merge `TaskStop` it *first*, before any local git) — and rebase
-    automatically; never make me ask you to rebase.** That watch is the primary mechanism; also re-check at three
-    guaranteed touch-points (on every PR event, immediately before you ask for
-    merge authorization, and again immediately before an authorized merge
-    executes): `git fetch origin main` and read the PR's mergeable state
-    (`pull_request_read`). If `main` drifted or the PR conflicts, **rebase onto
-    `origin/main` and re-verify without being asked** — resolve the recurring
-    `CHANGELOG`/`dist` conflicts mechanically, then `git push --force-with-lease`,
-    silently (surface only a real code conflict needing my judgment).
-    (`send_later`, where available, is an equivalent timer; neither it nor
-    `Monitor` survives the container being reclaimed.) Never let an open PR sit
-    behind `main`, conflicted, or CI-red. See `engineering/workflow.md`.
+16. **Keep an open PR *mergeable* — which is NOT "zero commits behind." Detect
+    drift/conflict yourself (webhooks won't), but rebase only when it matters.**
+    GitHub never pushes "`main` moved", "now conflicted", or "CI passed", so a
+    watched PR goes stale or blocked **silently** — run a continuous **lock-free**
+    drift watch (arm `Monitor` the moment the PR goes green; poll `git ls-remote`,
+    never a background `git fetch`; on merge `TaskStop` it *first*, before any
+    local git). **But a drift event is NOT an automatic force-push.** Rebasing on
+    *every* `main` movement thrashes against a merge train — N rebases, N
+    cancelled CI runs, a spurious red gate (see
+    `engineering/decisions/2026-06-14-drift-watch-rebase-thrash.md`). Under
+    squash-merge, a branch that is merely *behind* (`mergeable_state: clean`) is
+    harmless until merge. So **rebase only at the moments that matter**: (a) the
+    PR is genuinely blocked — `mergeable_state` is `dirty`/conflicting; (b)
+    immediately before you ask for merge authorization; (c) immediately before an
+    authorized merge executes. On a bare "main moved" event, read `mergeable_state`
+    (`pull_request_read`) and rebase **only if conflicted** — otherwise let a
+    burst settle and absorb it in one rebase at merge time, never one-per-tick.
+    (GitHub computes `mergeable_state` async: treat `unknown`/null as *not yet
+    computed* — re-poll until it settles, never read it as `clean`.)
+    When you do rebase, resolve the recurring `CHANGELOG`/`dist` conflicts
+    mechanically, then `git push --force-with-lease`, silently (surface only a
+    real code conflict needing my judgment). (`send_later` is an equivalent timer;
+    neither it nor `Monitor` survives the container being reclaimed.) Never let an
+    open PR **merge** while conflicted, stale-at-merge, or CI-red — but do not
+    chase every drift. See `engineering/workflow.md`.
 
 ---
 
