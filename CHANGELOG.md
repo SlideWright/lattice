@@ -44,6 +44,19 @@ in patch versions.
 
 ### Added
 
+- **Worked exemplar decks — "what good looks like" for Drafting.** A new
+  `exemplars/` library of complete, boardroom-grade decks (one concrete fictional
+  subject threaded through every slide, declarative takeaway titles, real-looking
+  numbers) so authors start from a finished model, not a skeleton of placeholder
+  stubs. **All 45 Drafting archetypes** are covered, across the five settings
+  (General/Team, Corporate, Academic, Government/Public, Nonprofit) — e.g.
+  *Investor pitch*, *Board update*, *Research findings*, *Policy briefing*,
+  *Donor pitch*. Each is authored once as the full deck and trimmed to **short /
+  standard / full** length variants by a pure, DRY tier filter
+  (`lib/exemplars/tier-filter.js`), so a single source models both a lightning
+  talk and a full 20–30-minute presentation. Wiring the "Open a worked example"
+  path into the Drawing Board UI follows in a separate change.
+  Design: `engineering/decisions/2026-06-14-worked-exemplar-decks.md`.
 - **A public comparison page (`/comparison`).** An honest, sourced read on how
   Lattice stacks up against the field: AI generators (Gamma, Beautiful.ai,
   Decktopus, Presentations.ai, Plus AI, MagicSlides, SlidesAI), office suites
