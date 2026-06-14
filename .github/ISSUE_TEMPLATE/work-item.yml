@@ -1,0 +1,94 @@
+name: Work item (card)
+description: A small, claimable unit of work for the kanban board.
+labels: ["status:backlog"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        A **card** is one small, claimable unit. Keep it narrow enough to land in a
+        single PR. Link the governing decision doc — don't restate its design here.
+        See `engineering/workflow.md` § Work queue and the model in
+        `engineering/decisions/2026-06-14-github-project-management.md`.
+
+        The two **Definition of Ready** fields below (★) are required before this
+        card can move to `status:ready` — a gate Action checks them.
+  - type: input
+    id: summary
+    attributes:
+      label: Summary
+      description: One line — what this card delivers.
+      placeholder: e.g. "Add a per-agent WIP cap to the dispatch loop"
+    validations:
+      required: true
+  - type: textarea
+    id: swimlane
+    attributes:
+      label: ★ Swimlane / governing decision doc
+      description: Link the `engineering/decisions/YYYY-MM-DD-*.md` (or other spec) this card belongs to. This is its initiative grouping.
+      placeholder: e.g. engineering/decisions/2026-06-14-github-project-management.md § Seeding the queue
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: ★ Acceptance check
+      description: How an agent (or reviewer) knows this card is done — a concrete, checkable condition.
+      placeholder: e.g. "`npm run sync:backlog` regenerates BACKLOG.md with the new column; unit test covers the grouping."
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      description: Which part of the product (the swimlane label).
+      options:
+        - "area:anchor"
+        - "area:statement"
+        - "area:inventory"
+        - "area:comparison"
+        - "area:progression"
+        - "area:evidence"
+        - "area:imagery"
+        - "area:chart"
+        - "area:diagram"
+        - "area:math"
+        - "area:code"
+        - "area:legal"
+        - "area:engine"
+        - "area:theming"
+        - "area:docs"
+        - "area:infra"
+        - "area:website"
+    validations:
+      required: true
+  - type: dropdown
+    id: type
+    attributes:
+      label: Type
+      options:
+        - "type:feat"
+        - "type:fix"
+        - "type:docs"
+        - "type:infra"
+        - "type:refactor"
+        - "type:spike"
+    validations:
+      required: true
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      options:
+        - "priority:critical"
+        - "priority:high"
+        - "priority:medium"
+        - "priority:low"
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes / context
+      description: Anything else — constraints, links, prior art. Optional.
+    validations:
+      required: false

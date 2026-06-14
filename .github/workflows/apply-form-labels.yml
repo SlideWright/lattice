@@ -1,0 +1,61 @@
+name: Apply work-item form labels
+
+# GitHub issue forms apply only the static `labels:` front-matter — a dropdown
+# SELECTION does not become a label. So a card filed via work-item.yml would
+# land with just `status:backlog`, leaving its area/type/priority as body text
+# and the BACKLOG sort + board swimlanes inert. This reads the rendered form and
+# applies the selected area:/type:/priority: labels (the dropdown values ARE the
+# label names), intersected with the committed taxonomy so only real labels land.
+#
+# Add-only and idempotent: it never removes labels (a human stays in control of
+# re-triage). Re-running on edit just tops up any newly-selected dimension.
+on:
+  issues:
+    types: [opened, edited]
+
+permissions:
+  issues: write
+
+jobs:
+  label:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const valid = new Set(
+              JSON.parse(fs.readFileSync('.github/labels.json', 'utf8')).map((l) => l.name)
+            );
+            const body = context.payload.issue.body || '';
+
+            // Text under a `### <heading>` up to the next heading/end; '' for _No response_.
+            function section(re) {
+              const m = body.match(re);
+              if (!m) return '';
+              const rest = body.slice(m.index + m[0].length);
+              const next = rest.search(/\n#{1,6}\s/);
+              const text = (next === -1 ? rest : rest.slice(0, next)).trim();
+              return /^_no response_$/i.test(text) ? '' : text;
+            }
+
+            const candidates = [
+              section(/#{1,6}\s+Area[^\n]*\n/i),
+              section(/#{1,6}\s+Type[^\n]*\n/i),
+              section(/#{1,6}\s+Priority[^\n]*\n/i),
+            ];
+
+            const existing = new Set((context.payload.issue.labels || []).map((l) => l.name));
+            const toAdd = candidates
+              .flatMap((s) => s.split(/\s+/))                       // tolerate stray whitespace
+              .filter((t) => /^(area|type|priority):[a-z-]+$/.test(t))
+              .filter((t) => valid.has(t) && !existing.has(t));
+
+            if (toAdd.length === 0) { core.info('No new taxonomy labels to apply.'); return; }
+            await github.rest.issues.addLabels({
+              ...context.repo,
+              issue_number: context.issue.number,
+              labels: [...new Set(toAdd)],
+            });
+            core.info(`Applied: ${[...new Set(toAdd)].join(', ')}`);

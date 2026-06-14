@@ -1,0 +1,54 @@
+name: Sync backlog mirror
+
+# Regenerate the committed BACKLOG.md mirror whenever the open issue queue
+# changes (and daily, as a safety net). One-way: issues → BACKLOG.md, never
+# back. The render is pure (no timestamps), so this only commits on a real
+# queue change.
+#
+# NOTE: this pushes BACKLOG.md to main. If main is protected against direct
+# pushes, allow github-actions[bot] to bypass for this path (one-time branch-
+# protection setting) — otherwise the push step fails visibly. See
+# engineering/workflow.md § Work queue.
+on:
+  issues:
+    types: [opened, edited, deleted, closed, reopened, labeled, unlabeled, assigned, unassigned, transferred]
+  schedule:
+    - cron: '17 6 * * *' # daily 06:17 UTC safety net
+  workflow_dispatch:
+
+permissions:
+  contents: write # commit BACKLOG.md
+  issues: read
+
+concurrency:
+  group: sync-backlog
+  cancel-in-progress: false
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Capture open issues
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue list --state open --limit 1000 \
+            --json number,title,labels,assignees,url,state > .scratch-issues.json
+      - name: Regenerate BACKLOG.md
+        run: node tools/sync-backlog.js --input .scratch-issues.json && rm -f .scratch-issues.json
+      - name: Commit if changed
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- BACKLOG.md; then
+            echo "BACKLOG.md unchanged — nothing to commit."
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add BACKLOG.md
+          git commit -m 'chore(backlog): sync BACKLOG.md to open issues'
+          git push

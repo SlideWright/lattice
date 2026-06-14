@@ -148,6 +148,13 @@ harness the index can't infer, add it to `FRAMEWORKS` in the generator.
 | `release:dry` | Release dry-run — derive the bump and preview without publishing. |
 | `release:zip` | Assemble the curated GitHub release zip. |
 
+### Project queue
+
+| Name | What it does |
+|---|---|
+| `sync:backlog` | Regenerate BACKLOG.md — the one-way mirror of the open GitHub issue queue (input: `gh issue list` JSON). |
+| `sync:labels` | Apply the .github/labels.json taxonomy to the repo labels via the gh CLI (labels-as-code; needs gh auth). |
+
 ### Meta
 
 | Name | What it does |
@@ -230,6 +237,13 @@ harness the index can't infer, add it to `FRAMEWORKS` in the generator.
 | `tools/new-component.js` | Scaffold a new Lattice component (layout). |
 | `tools/new-slide.js` | Slide-skeleton scaffolder. |
 | `tools/new-theme.js` | Scaffold a new Lattice palette from the indaco template. |
+
+### Project queue
+
+| Name | What it does |
+|---|---|
+| `tools/sync-backlog.js` | Generate BACKLOG.md — the committed, one-way mirror of the open GitHub |
+| `tools/sync-labels.js` | Sync the GitHub issue labels to the committed taxonomy in |
 
 ### Misc
 

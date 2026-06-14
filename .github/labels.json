@@ -1,0 +1,36 @@
+[
+  { "name": "area:anchor",      "color": "1d76db", "description": "Anchor bucket — title/section/closing layouts" },
+  { "name": "area:statement",   "color": "1d76db", "description": "Statement bucket — big-number, quote, callout" },
+  { "name": "area:inventory",   "color": "1d76db", "description": "Inventory bucket — lists, stats, cards" },
+  { "name": "area:comparison",  "color": "1d76db", "description": "Comparison bucket — before/after, versus, matrix" },
+  { "name": "area:progression", "color": "1d76db", "description": "Progression bucket — steps, timeline, roadmap" },
+  { "name": "area:evidence",    "color": "1d76db", "description": "Evidence bucket — kpi, proof, citations" },
+  { "name": "area:imagery",     "color": "1d76db", "description": "Imagery bucket — image, gallery, backgrounds" },
+  { "name": "area:chart",       "color": "1d76db", "description": "Chart bucket — native charts, gantt, funnel, kanban" },
+  { "name": "area:diagram",     "color": "1d76db", "description": "Diagram bucket — Mermaid and themed diagrams" },
+  { "name": "area:math",        "color": "1d76db", "description": "Math bucket — KaTeX layouts" },
+  { "name": "area:code",        "color": "1d76db", "description": "Code bucket — code/terminal layouts" },
+  { "name": "area:legal",       "color": "1d76db", "description": "Legal bucket — authority-chain, compliance layouts" },
+  { "name": "area:engine",      "color": "0052cc", "description": "Cross-cutting — the render engine / transforms" },
+  { "name": "area:theming",     "color": "0052cc", "description": "Cross-cutting — palettes, tokens, lattice.css" },
+  { "name": "area:docs",        "color": "0052cc", "description": "Cross-cutting — docs site / engineering docs" },
+  { "name": "area:infra",       "color": "0052cc", "description": "Cross-cutting — CI, hooks, build, tooling" },
+  { "name": "area:website",     "color": "0052cc", "description": "Cross-cutting — the docs website UX (Drawing Board, Workbench)" },
+
+  { "name": "type:feat",     "color": "5319e7", "description": "A new capability" },
+  { "name": "type:fix",      "color": "5319e7", "description": "A bug fix" },
+  { "name": "type:docs",     "color": "5319e7", "description": "Documentation only" },
+  { "name": "type:infra",    "color": "5319e7", "description": "CI / build / tooling / hooks" },
+  { "name": "type:refactor", "color": "5319e7", "description": "Internal change, no behavior shift" },
+  { "name": "type:spike",    "color": "5319e7", "description": "Time-boxed investigation / prototype" },
+
+  { "name": "priority:critical", "color": "b60205", "description": "Drop everything" },
+  { "name": "priority:high",     "color": "d93f0b", "description": "Next up" },
+  { "name": "priority:medium",   "color": "fbca04", "description": "Normal queue" },
+  { "name": "priority:low",      "color": "0e8a16", "description": "Nice to have / someday" },
+
+  { "name": "status:backlog",     "color": "ededed", "description": "Captured, not yet ready" },
+  { "name": "status:ready",       "color": "0e8a16", "description": "Meets Definition of Ready — pickable (gated)" },
+  { "name": "status:in-progress", "color": "1d76db", "description": "Claimed (assignee set); the lock is held" },
+  { "name": "status:review",      "color": "fbca04", "description": "PR open, awaiting CI + human merge" }
+]

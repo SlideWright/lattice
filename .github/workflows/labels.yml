@@ -1,0 +1,33 @@
+name: Sync labels
+
+# Labels-as-code: apply .github/labels.json to the repo's issue labels whenever
+# the taxonomy changes on main. Self-owned (tools/sync-labels.js via the gh CLI)
+# so no marketplace action holds a write-scoped token. Also runnable on demand.
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/labels.json'
+      - 'tools/sync-labels.js'
+      - '.github/workflows/labels.yml'
+  workflow_dispatch:
+
+permissions:
+  issues: write # create/update labels (labels live under the issues scope)
+
+concurrency:
+  group: sync-labels
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Apply label taxonomy
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node tools/sync-labels.js
