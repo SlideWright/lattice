@@ -287,24 +287,37 @@ never deliver the events that matter here:** "`main` moved", "this PR is now
 conflicted", and "CI passed" are all silent. So nothing wakes you when your PR
 goes stale or blocked — you have to check. This is HARD RULE #16.
 
-Re-check mergeability at four points — three guaranteed touch-points (below) and,
-above all, a **continuous background watch** (point 4) that rebases automatically
-so a human never has to ask for it:
+**The goal is to keep the PR *mergeable*, which is not "zero commits behind" at
+every instant.** Under squash-merge a branch that is merely *behind* — no file
+overlap, `mergeable_state: clean` — is harmless until merge; its history is
+squashed away regardless of how far it drifted. So do **not** rebase on every
+`main` movement: during a parallel merge train that is N force-pushes, N
+cancelled CI runs, and a spurious red gate, with green never reachable until you
+stop chasing (the failure documented in
+`decisions/2026-06-14-drift-watch-rebase-thrash.md`). Rebase only when it matters.
+
+Re-check mergeability at three points, plus a **continuous background watch**
+(point 4) that *detects* drift — but acts on it only under the rules below:
 
 1. **On every PR event you receive** (a comment, a CI transition, a review) —
-   while you're already handling it, also `git fetch origin main` and look at
-   whether the branch is behind.
+   while you're already handling it, read `mergeable_state` and rebase **only if
+   it is `dirty`/conflicting**. A `clean`-but-behind branch is left alone.
 2. **Immediately before you ask for merge authorization** — "green and ready"
    must mean *still* rebased on `origin/main`, not green against a `main` from an
-   hour ago.
+   hour ago. Rebase now if behind or conflicted.
 3. **Immediately before an authorized merge executes** — re-fetch and confirm
    the PR is still mergeable; authorization given against a stale branch does not
-   survive a conflict.
+   survive a conflict. Rebase now if behind or conflicted.
 
 At each, read the PR's mergeable state with `pull_request_read` (`mergeable` /
 `mergeable_state`) and compare local `HEAD` to `origin/main`
-(`git rev-list --left-right --count origin/main...HEAD`). If the branch is behind
-or conflicted, **rebase without being asked**:
+(`git rev-list --left-right --count origin/main...HEAD`). Rebase **without being
+asked** when the PR is *conflicted* (any point) or merely *behind* at a
+merge-time checkpoint (points 2–3) — **not** on a bare mid-review "behind".
+GitHub recomputes `mergeable_state` asynchronously after every `main` advance, so
+right after a drift event it can read `unknown`/null (not ready) or even a *stale*
+`clean` — **treat `unknown` as "re-poll until it settles," never conclude `clean`
+from it**, or you'll miss a real conflict until merge time:
 
 ```bash
 git fetch origin main
@@ -315,27 +328,28 @@ git push --force-with-lease
 ```
 
 Re-run the gates after the rebase (the content under you changed) and re-confirm
-CI. A pure *behind-but-not-conflicted* branch can alternatively be advanced with
-GitHub's "Update branch" (`update_pull_request_branch`) — harmless under
-squash-merge since the PR history is squashed away — but a real conflict always
-needs the local rebase above.
+CI. A pure *behind-but-not-conflicted* branch can alternatively be advanced at
+merge time with GitHub's "Update branch" (`update_pull_request_branch`) —
+harmless under squash-merge since the PR history is squashed away — but a real
+conflict always needs the local rebase above.
 
 The honest weakness of checkpoints 1–3: checkpoint 1 is **event-gated** and 2–3
 fire only at merge time. If `main` moves while your PR sits green and no
-comment/CI/review event arrives, none of them wake you — the PR drifts behind
-`main` silently until someone pokes you, which is exactly the cross-session merge
-race that wastes a reviewer's time. The Stop hook can't help either
-(`.claude/hooks/stop-rebase-check.sh` is local-only by design — no `git fetch`,
-no MCP — so it can't see the remote PR's behind/conflict state). That is why a
-green PR must also carry checkpoint 4:
+comment/CI/review event arrives, none of them wake you — so you can't notice the
+PR has become **conflicted** (the only mid-flight state that needs action) until
+someone pokes you. A *clean*-but-behind PR is fine to leave; a *conflicted* one
+that sits silently is the cross-session race that wastes a reviewer's time. The
+Stop hook can't help either (`.claude/hooks/stop-rebase-check.sh` is local-only
+by design — no `git fetch`, no MCP — so it can't see the remote PR's
+behind/conflict state). That is why a green PR must also carry checkpoint 4:
 
-4. **A continuous background drift watch — arm it the instant the PR goes green,
-   and rebase automatically. Never make a human ask you to rebase.** Webhooks
-   never deliver "`main` moved", so poll for it yourself. In web sessions the
-   `Monitor` tool runs a persistent loop that wakes you on the *transition* into
-   "needs rebase" (so it fires once, not every poll). It is a **detector only** —
-   it never touches the index; *you* perform the rebase, so conflicts get
-   judgment and the force-push stays coordinated with your own edits:
+4. **A continuous background drift watch — arm it the instant the PR goes green.
+   It *detects* drift; it does not auto-rebase.** Webhooks never deliver "`main`
+   moved", so poll for it yourself. In web sessions the `Monitor` tool runs a
+   persistent loop that wakes you on the *transition* into "main advanced" (so it
+   fires once per advance, not every poll). It is a **detector only** — it never
+   touches the index, and a fire is **not** a force-push: you triage it per the
+   rules above (rebase only if now conflicted, else let the burst settle):
 
    ```bash
    # Monitor (persistent): emit one line when origin/main first advances past the
@@ -344,7 +358,7 @@ green PR must also carry checkpoint 4:
    #    background loop: fetch WRITES refs/remotes/*, so it races a foreground
    #    rebase/reset for the ref lock ("cannot lock ref 'refs/remotes/origin/main'").
    #  • SELF-TERMINATING — exit when the PR's head branch disappears from origin
-   #    (deleted on merge), so it can't fire a stale REBASE-NEEDED once the merge
+   #    (deleted on merge), so it can't fire a stale MAIN-ADVANCED once the merge
    #    moves main. (Also TaskStop it explicitly on merge — see §Merging.)
    base=$(git ls-remote --heads origin main | cut -f1)   # the sha the PR is rebased onto
    branch=$(git rev-parse --abbrev-ref HEAD)
@@ -353,26 +367,36 @@ green PR must also carry checkpoint 4:
        || { echo "WATCH-DONE: $branch gone from origin (merged/closed)"; exit 0; }
      cur=$(git ls-remote --heads origin main 2>/dev/null | cut -f1)
      if [ -n "$cur" ] && [ "$cur" != "$base" ]; then
-       echo "REBASE-NEEDED: origin/main moved ${base:0:9} -> ${cur:0:9}"
+       echo "MAIN-ADVANCED: origin/main moved ${base:0:9} -> ${cur:0:9}"
        base=$cur        # re-arm to the new baseline; you do the rebase on the event
      fi
      sleep 60
    done
    ```
 
-   On a `REBASE-NEEDED` event, run the rebase block above, re-run the gates,
-   re-confirm CI; the watch re-armed itself (it advanced `base`). Do it
-   **silently** — surface only a *real code conflict* needing a judgment call,
-   never the routine `CHANGELOG` / `dist` ones. **When the PR merges, `TaskStop`
-   this watch FIRST — before any local `git` — see §Merging; the self-terminate
-   above is belt-and-suspenders.**
+   On a `MAIN-ADVANCED` event, **don't reflexively rebase** — read the PR's
+   `mergeable_state` (`pull_request_read`). If it is `dirty`/conflicting, rebase
+   now (run the rebase block above, re-run the gates, re-confirm CI). If it is
+   `clean` (behind but not conflicting), **do nothing** — let the merge train
+   settle and absorb it in one rebase at a merge-time checkpoint. If it is
+   `unknown`/null, GitHub hasn't finished recomputing — **re-poll, don't treat it
+   as `clean`** (concluding `clean` from a not-ready state is how a real conflict
+   slips to merge time). Either way the
+   watch re-armed itself (it advanced `base`). Do it **silently** — surface only a
+   *real code conflict* needing a judgment call, never the routine `CHANGELOG` /
+   `dist` ones. **When the PR merges, `TaskStop` this watch FIRST — before any
+   local `git` — see §Merging; the self-terminate above is belt-and-suspenders.**
 
 `send_later`, where a session exposes it, is an equivalent timer-based mechanism
 and a fine backup; but neither it nor `Monitor` survives the container being
-reclaimed, so the at-merge checkpoints 2–3 remain the floor — never let an open
-PR sit behind `main`, conflicted, or CI-red. The only *session-independent* fix is
-a `push`-to-`main` GitHub Action that runs `update_pull_request_branch` on open
-PRs; adopt it if cross-session races keep recurring despite the watch.
+reclaimed, so the at-merge checkpoints 2–3 remain the floor — never *merge* a PR
+that is conflicted, stale-at-merge, or CI-red (a `clean`-but-behind PR mid-flight
+is fine). The strongest *structural* fix for cross-session races is a GitHub
+**merge queue** (it rebases + tests once at the front of the queue, so no PR
+chases `main` by hand); a lighter `push`-to-`main` Action that runs
+`update_pull_request_branch` on open PRs is the intermediate option. Both are
+architectural adoptions — raise them if cross-session races keep recurring
+despite the watch.
 
 ## Merging
 
@@ -387,6 +411,11 @@ PRs; adopt it if cross-session races keep recurring despite the watch.
   independently meaningful). Never a merge commit. (This is the *merge* method;
   it's independent of keeping the branch rebased on `main` before merge — see
   the rebase step above.)
+- **Land a large migration as *one* squash, not N separately-merged commits.**
+  Every separate merge to `main` is a drift event broadcast to *every* open PR in
+  the repo — N merges in quick succession is a merge train that each watcher must
+  absorb. One squash (or a tight curated series behind a single merge) is one
+  drift event. See `decisions/2026-06-14-drift-watch-rebase-thrash.md`.
 - **Bind a closing keyword to *every* issue the PR resolves.** GitHub
   auto-closes only the issues whose number carries its own keyword, so
   `Closes #1, #2, #3` closes **only #1** and silently leaves the rest open.
@@ -402,7 +431,7 @@ PRs; adopt it if cross-session races keep recurring despite the watch.
   1. **`TaskStop` the drift Monitor FIRST** — before any local `git`. A background
      poller and a foreground `reset`/`rebase` sharing one `.git` contend for ref
      locks. (Lock-free `ls-remote` polling makes this safe; stop it anyway — a
-     merged PR needs no watch, and it must not fire a stale `REBASE-NEEDED`.)
+     merged PR needs no watch, and it must not fire a stale `MAIN-ADVANCED`.)
   2. `git fetch origin`
   3. `git reset --hard origin/main` (or cut the next branch from `origin/main`). On
      a transient `cannot lock ref` (background tooling touched `.git`), retry once.
