@@ -102,6 +102,21 @@ in patch versions.
 
 ### Changed
 
+- **Docs site now prefetches resources to make the in-browser experience feel
+  instant.** Two layers, each matched to its cost. (1) Astro's built-in link
+  prefetching is on site-wide (`hover` strategy): every internal link warms its
+  destination HTML when you point at it. (2) The one heavy asset — the ~554KB-gz
+  render engine bundle (`lattice-playground.js`) — gets a connection-first
+  warming policy (`docs/src/lib/prefetch-engine.ts`): one decision function,
+  identical on desktop/tablet/mobile, that drops a `<link rel="prefetch">` so the
+  bundle is cached before a surface needs it. Capability drives it — `4g`/fast →
+  eager (on the landing funnel) or on app-link intent elsewhere; `3g` → intent
+  only; `2g`/`slow-2g`/`Save-Data`/`prefers-reduced-data` → off; unknown
+  connection (Safari/Firefox have no Network Information API) falls back to the
+  viewport as a proxy. Plus a `preconnect` to the Google Fonts hosts on every
+  page so the webfont round-trip doesn't wait on the render-blocking `@import`.
+  No change to what renders — purely a perceived-latency optimization.
+
 - **Chart spine tokens (`--chart-spine` / `-w` / `-h`) moved to
   `section.word-cloud`.** They lived on the shared `section.chart-frame` block,
   but since the four keyed charts went SVG-native (#240) only `word-cloud` still

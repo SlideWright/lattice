@@ -26,6 +26,12 @@ const onCloudflare = Boolean(process.env.CF_PAGES);
 export default defineConfig({
 	site: process.env.SITE_URL || (onCloudflare ? process.env.CF_PAGES_URL : 'https://slidewright.github.io'),
 	base: onCloudflare ? '/' : '/lattice',
+	// HTML navigation is cheap, so warm it everywhere: every internal <a>
+	// prefetches its destination on hover/focus (the `hover` strategy). The one
+	// expensive asset — the ~554KB-gz engine bundle — is NOT covered here; it
+	// has its own connection-first policy (src/lib/prefetch-engine.ts, wired via
+	// <EngineWarm>) so we never speculatively spend it on a constrained link.
+	prefetch: { prefetchAll: true, defaultStrategy: 'hover' },
 	// `server.fs.allow: ['..']` lets the dev server resolve repo files above the
 	// docs root (e.g. map-complete.js's lib/components basemap JSON). The pure
 	// authoring engines (lint-core/review-core/scorecard) and the Theme/Layout
@@ -53,6 +59,15 @@ export default defineConfig({
 		starlight({
 			title: 'Lattice',
 			favicon: '/lattice-logo.png',
+			// Open the TLS handshake to the Google Fonts hosts up front, so the
+			// webfont round-trip doesn't wait on the render-blocking @import in
+			// lattice.css. gstatic serves the .woff2 over CORS → crossorigin.
+			// Standalone (non-Starlight) routes carry the same pair via
+			// <ResourceHints> (src/components/site/).
+			head: [
+				{ tag: 'link', attrs: { rel: 'preconnect', href: 'https://fonts.googleapis.com' } },
+				{ tag: 'link', attrs: { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' } },
+			],
 			components: {
 				// Re-skin the docs zone as part of the one website (not a bolted-on
 				// subsite). Header becomes the site topbar (brand · global nav ·
