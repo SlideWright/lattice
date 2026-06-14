@@ -7,11 +7,13 @@
 
 The live, claimable work queue — a read-only mirror of [open issues](https://github.com/SlideWright/lattice/issues),
 grouped by board column. Design lives in `engineering/decisions/`; this tracks
-only *status*. **3 open** items.
+only *status*. **6 open** items.
 
-## Backlog (0)
+## Backlog (3)
 
-_none_
+- [#275](https://github.com/SlideWright/lattice/issues/275) docs: correct README palette count 13→14 (add missing `carta`) — critical · theming
+- [#276](https://github.com/SlideWright/lattice/issues/276) docs: fix drifted counts in design-system.md headline (palettes 25→14) — critical · docs
+- [#277](https://github.com/SlideWright/lattice/issues/277) docs: correct theming.md "13 themes"→14 — high · theming
 
 ## Ready (0)
 
