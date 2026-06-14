@@ -185,6 +185,7 @@
 /* ── Actions ─────────────────────────────────────────────────────────────── */
 .studio-actions {
 	display: flex;
+	flex-wrap: wrap;
 	gap: 8px;
 	position: sticky;
 	bottom: 0;
@@ -274,7 +275,7 @@
 }
 .studio-pair {
 	display: grid;
-	grid-template-columns: 1fr auto auto;
+	grid-template-columns: minmax(0, 1fr) auto auto;
 	align-items: center;
 	gap: 8px;
 	padding: 4px 8px;
@@ -387,8 +388,12 @@
 
 @media (max-width: 1024px) {
 	.wb-page { height: auto; min-height: 100dvh; overflow: visible; }
-	.studio { grid-template-columns: 1fr; }
-	.studio-panel { overflow: visible; }
+	/* minmax(0,1fr) (not bare 1fr = minmax(auto,1fr)) so the single mobile
+	   column can shrink to the viewport instead of expanding to the widest
+	   pane's min-content (the contrast meter) — which caused horizontal
+	   overflow + a pannable page that broke on zoom/scroll/tab-switch. */
+	.studio { grid-template-columns: minmax(0, 1fr); align-content: start; }
+	.studio-panel { overflow: visible; min-width: 0; }
 	.studio-controls,
 	.studio-audit { border: 0; border-top: 1px solid var(--border); }
 	.studio-stage { padding: 0; }
