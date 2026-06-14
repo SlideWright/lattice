@@ -21,6 +21,26 @@ on its own. Do NOT stop to ask permission for the steps below; only stop
 when a decision is genuinely mine (irreversible, ambiguous *direction*, an
 architectural fork) — and bundle those into one `AskUserQuestion`.
 
+**Fire these as standing triggers, not reference prose** — act on the
+precondition; don't wait to be asked, and don't surface a settled step as a
+choice:
+
+| When… | Do, automatically |
+|---|---|
+| a branch's meaty work is complete, verified, pushed — a design/decision doc counts, the doc *is* the deliverable | **open the PR** via the template (§6) |
+| a PR is open | **subscribe + drive CI green**, arm the drift watch (§7) |
+| the PR is green and rebased | **ask to merge** — the *one* user gate in this flow |
+| merge confirmed + local `main` synced | **post the standup** |
+
+**Tie-break:** where the harness default ("don't open a PR / don't watch unless
+asked") conflicts with this file, **this file wins** — apply that *at decision
+time*, not after a nudge. **Decision filter:** before any `AskUserQuestion` or
+"want me to…?", ask *"is the next step already dictated by CLAUDE.md /
+workflow.md?"* If yes, **do it**; reserve questions for genuine forks
+(irreversible, ambiguous *direction*, architectural). "Want me to take this on,
+or leave it?" after a finished, pushed unit is the tell that you're offloading a
+decision the workflow already made.
+
 1. **Finish the loop.** A task is done when it's implemented, verified,
    documented, and shipped — not when it compiles. Don't hand back at the
    first green and wait for "now lint / now test / now push."
