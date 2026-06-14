@@ -38,7 +38,7 @@ looks like* end-to-end.
    Drafting offers two paths per archetype: **Open a worked example** (a
    complete, believable, boardroom-grade deck you read/edit) and **Scaffold
    mine** (today's spine of stubs, for a fast blank-ish start).
-2. **Cover all ~48 archetypes** — every entry in `ARCHETYPES`. Phased, not a
+2. **Cover all 45 archetypes** — every entry in `ARCHETYPES`. Phased, not a
    single unreviewed dump (see *Sequencing*).
 3. **Offer length variants** — short / standard / full — so an exemplar can
    model a real 20–30-minute talk, not only a lightning summary.
@@ -47,10 +47,10 @@ looks like* end-to-end.
 
 ### One authored source per archetype, three tiers by filter (DRY)
 
-Authoring 48 × 3 = 144 full decks by hand is untenable to write *and* keep
+Authoring 45 × 3 = 135 full decks by hand is untenable to write *and* keep
 gate-clean. Instead: **author the FULL deck once; mark each slide with the
 minimum tier at which it appears.** A pure filter derives the shorter tiers. One
-source of truth per archetype → **48 authored decks, not 144.**
+source of truth per archetype → **45 authored decks, not 135.**
 
 Per-slide marker (a plain HTML comment — Lattice parses only `_`-prefixed
 directives, so this is inert to the renderer):
@@ -88,7 +88,7 @@ implementation. An untagged slide defaults to `standard` (safe middle).
 - **Island metadata (build-time):** `drawing-board.astro` already assembles
   `dbData` from the manifests. Add an `exemplars` array: per archetype just the
   light metadata — `{ archetype, group, slug, tierCounts: {short,standard,full} }`
-  — **not** the deck bodies (48 full decks inlined would bloat the island by
+  — **not** the deck bodies (45 full decks inlined would bloat the island by
   ~200 KB).
 - **Deck body (on demand):** when the author taps **Open a worked example**, the
   full `.md` is **fetched** from the deployed `exemplars/` path (the same
@@ -133,11 +133,14 @@ looks like, scored). "Build a blank scaffold" is the unchanged `assemble()` path
 
 ## Sequencing (phased — each phase a reviewable unit, HARD RULE #8)
 
-**Phase 1a — the standard, the engine, the proof (this PR).** The tier-filter
-lib + tests, and **one flagship exemplar — *Investor pitch* — authored
-end-to-end across all three tiers to the boardroom bar** (md + committed pdf,
-every tier lint-clean and rendered). This nails the *authoring standard* and the
-DRY length model on real content, with nothing left unverified.
+**Phase 1 — the engine + the full content library (this PR).** The tier-filter
+lib + tests, and **all 45 archetype exemplars authored to the boardroom bar**
+(md + committed pdf, every tier lint-clean and rendered). The flagship —
+*Investor pitch* (Saffron) — set the standard; the other 44 were authored by
+parallel maker-checker author agents (one group per setting), each held to *the
+authoring standard* above and given the flagship as the gold reference, then
+render-verified slide-by-slide (incl. the fragile layouts: radar, Mermaid
+`diagram`, `gantt`, `obligation-matrix`, `journey`, `verdict-grid`).
 
 **Phase 1b — wire it into Drafting (next PR).** Stage the `exemplars/` decks as
 hashed playground assets (`sync-playground-assets.mjs`), add the per-archetype
@@ -149,18 +152,13 @@ tablet / mobile (the website-UI bar). Held separate because it touches the asset
 pipeline + a browser bundle + onboarding UX and must be screenshot-verified at
 all three breakpoints — a distinct review surface from the content.
 
-**Phase 2 — fan-out (subsequent).** The remaining 47 archetypes, authored via
-parallel maker-checker agents (one author + one checker per archetype,
-whole-slide review — `engineering/visual-review.md`), each held to *the authoring
-standard* above. Graduated in batches so review stays tractable; each batch its
-own commit/PR. Not a single 47-deck dump.
-
-This keeps "all 48" as the committed destination while honoring the quality bar
-(every exemplar visually verified) and the isolation rule.
+This ships "all 45" as the content destination while honoring the quality bar
+(every exemplar visually verified) and the isolation rule; only the UI wiring
+remains.
 
 ## Maintenance / honest caveats
 
-- **48 decks is a standing surface to keep green.** Each must re-render and stay
+- **45 decks is a standing surface to keep green.** Each must re-render and stay
   gate-clean as components evolve. Mitigations: the decks use only shipped
   components (no bespoke CSS), a freshness gate renders them in CI like the
   galleries, and a single tier-filter means one code path, not three.
