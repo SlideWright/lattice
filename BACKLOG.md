@@ -7,7 +7,7 @@
 
 The live, claimable work queue — a read-only mirror of [open issues](https://github.com/SlideWright/lattice/issues),
 grouped by board column. Design lives in `engineering/decisions/`; this tracks
-only *status*. **31 open** items.
+only *status*. **32 open** items.
 
 ## Backlog (28)
 
@@ -52,8 +52,9 @@ _none_
 
 _none_
 
-## Inbox (no status) (3)
+## Inbox (no status) (4)
 
 - [#180](https://github.com/SlideWright/lattice/issues/180) epic(chart): resolution-independent charts — cqi-first, kill fixed-px, for any-format / 10K export
 - [#198](https://github.com/SlideWright/lattice/issues/198) bug(examples): gallery-jargon.pdf is not reproducible — rebuild draws overflow rings on 6 unrelated slides + reflows text
 - [#229](https://github.com/SlideWright/lattice/issues/229) islands: masthead band + status bay aren't reserved in the content safe-area — headings collide with the band on dense slides (sketch/4K compound it)
+- [#327](https://github.com/SlideWright/lattice/issues/327) perf: Lighthouse budgets use absolute thresholds that rot as the site grows — revisit gating strategy
