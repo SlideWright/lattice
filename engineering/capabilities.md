@@ -148,6 +148,13 @@ harness the index can't infer, add it to `FRAMEWORKS` in the generator.
 | `clean:scratch` | Delete .scratch/ entries older than 14 days. |
 | `prepare` | npm lifecycle: wire the lefthook git hooks on install. |
 | `prepublishOnly` | npm lifecycle: guard run before publish. |
+| `test:authoring` | **TODO: describe `test:authoring` in tools/build-capabilities.js (SCRIPT_META).** |
+| `test:contracts` | **TODO: describe `test:contracts` in tools/build-capabilities.js (SCRIPT_META).** |
+| `test:core` | **TODO: describe `test:core` in tools/build-capabilities.js (SCRIPT_META).** |
+| `test:export` | **TODO: describe `test:export` in tools/build-capabilities.js (SCRIPT_META).** |
+| `test:release` | **TODO: describe `test:release` in tools/build-capabilities.js (SCRIPT_META).** |
+| `test:tokens` | **TODO: describe `test:tokens` in tools/build-capabilities.js (SCRIPT_META).** |
+| `test:tools` | **TODO: describe `test:tools` in tools/build-capabilities.js (SCRIPT_META).** |
 
 ## Tools — `tools/`
 

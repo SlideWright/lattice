@@ -8,34 +8,21 @@
  * splits, so lead content above a title (an eyebrow tag, a kicker) stays with
  * that title — and HYBRID — an author-written `---` still splits.
  *
- * HARD RULE #1: the transform must produce the same slide boundaries in both
- * render paths. We assert section counts through BOTH @marp-team/marp-core (the
- * marp-cli export path) AND lib/engine (the emulator / playground path), and
- * pin the backward-compat invariant: every committed deck splits to the SAME
- * slide count under `headings` as under the default `rule` (the evidence that
- * a future default flip is safe for today's corpus).
+ * We assert section counts through lib/engine (the canonical render path — the
+ * emulator CLI + the playground), and pin the backward-compat invariant: every
+ * committed deck splits to the SAME slide count under `headings` as under the
+ * default `rule` (the evidence that a future default flip is safe for today's
+ * corpus).
  */
 
 const { test, describe } = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
-const { Marp } = require('@marp-team/marp-core');
-const { plugins } = require('../../../marp.config');
 const latticeEngine = require('../../../lib/engine');
 const { resolveSplitMode, isKnownSplit, SPLIT_NAMES } = require('../../../lib/core/resolve-split');
 
 const REPO = path.join(__dirname, '..', '..', '..');
-
-// Rendered HTML through the marp-cli export path.
-function marpHtml(md) {
-  const m = new Marp();
-  m.use(plugins.headingSplit);
-  return m.render(md).html;
-}
-function marpSections(md) {
-  return (marpHtml(md).match(/<section[\s>]/g) || []).length;
-}
 
 // Rendered HTML through the emulator / playground engine path.
 const engine = latticeEngine.createEngine();
@@ -50,13 +37,11 @@ function splitSections(html) {
     .map((s) => s.slice(0, s.indexOf('</section>') + 1 || undefined));
 }
 
-// Assert both render paths agree on a deck's slide count, and return it.
+// Assert the engine splits a deck to the expected slide count, and return it.
 function sections(md, expected, label) {
-  const a = marpSections(md);
   const b = engineSections(md);
-  assert.equal(a, b, `${label}: marp-cli (${a}) and engine (${b}) must agree (HARD RULE #1)`);
-  if (expected != null) assert.equal(a, expected, `${label}: expected ${expected} slides, got ${a}`);
-  return a;
+  if (expected != null) assert.equal(b, expected, `${label}: expected ${expected} slides, got ${b}`);
+  return b;
 }
 
 const fm = (mode, body) => `---\nmarp: true\nsplit: ${mode}\n---\n\n${body}`;
@@ -82,7 +67,7 @@ describe('resolve-split', () => {
   });
 });
 
-describe('headingSplit (both render paths agree)', () => {
+describe('headingSplit', () => {
   test('rule mode (opt-out): only `---` splits, headings do not', () => {
     sections(fm('rule', '# A\n\n## still A\n\nbody\n\n---\n\n## B\n'), 2, 'rule');
   });
@@ -142,7 +127,7 @@ describe('headingSplit (both render paths agree)', () => {
     // orphans onto the previous slide.
     const md = fm('headings',
       '# Lead\n\nintro\n\n<!-- _class: cards-grid -->\n\n`Kicker`\n\n## Two\n\nbody\n');
-    for (const [label, render] of [['marp-cli', marpHtml], ['engine', engineHtml]]) {
+    for (const [label, render] of [['engine', engineHtml]]) {
       const secs = splitSections(render(md));
       assert.equal(secs.length, 2, `${label}: 2 slides`);
       assert.ok(!secs[0].includes('Kicker') && !/class="[^"]*cards-grid/.test(secs[0]),

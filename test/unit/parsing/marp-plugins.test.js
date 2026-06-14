@@ -3,27 +3,38 @@
  *
  * Each plugin is a markdown-it core-ruler hook that transforms the
  * token stream of slides whose `<section>` carries a specific layout
- * class. Tests load the plugins programmatically via @marp-team/marp-core
- * (which is the engine marp-cli runs internally), apply one plugin in
- * isolation, render fixture markdown, and assert on the HTML output.
+ * class. Tests load the plugins onto the owned slide pipeline (markdown-it +
+ * lib/engine/slides — the marpit-equivalent tokenizer the engine runs them on),
+ * apply one plugin in isolation, render fixture markdown, and assert on the HTML.
  *
  * Why one plugin per test instance: the plugins use named ruler hooks
- * (`split_list_counter`, `verdict_grid_badges`, etc.); applying the
- * same plugin twice to the same Marp instance would throw, and applying
- * unrelated plugins together can hide a regression in one plugin under
- * the side effects of another. Fresh Marp per test is cheap (~5 ms).
+ * (`split_list_counter`, `verdict_grid_badges`, etc.); applying the same plugin
+ * twice to one instance would throw, and applying unrelated plugins together (or
+ * the full transformer registry) can hide a regression in one plugin under
+ * another's side effects. A fresh isolated host per test is cheap.
  */
 
 const { test, describe } = require('node:test');
 const assert = require('node:assert/strict');
-const { Marp } = require('@marp-team/marp-core');
+const MarkdownIt = require('markdown-it');
+const { installSlidePipeline } = require('../../../lib/engine/slides');
 const { plugins } = require('../../../marp.config');
 
 describe('marp-plugins', () => {
+  // Apply ONE plugin in isolation on the owned slide pipeline (markdown-it +
+  // lib/engine/slides — the same marpit-equivalent slide/directive tokenizer the
+  // engine and marp.config.js both run the plugins on). Render fixture markdown,
+  // assert on the HTML. Isolation (not the full engine) keeps each plugin's
+  // regression from hiding under another plugin's side effects or the transformer
+  // registry — the property the marp-core host gave us before marp was retired.
+  // NOTE: the owned pipeline defaults to `split: headings`, so a fixture with
+  // several headings meant to live on ONE slide must declare `split: rule`.
   function makeMarp(plugin) {
-    const m = new Marp();
-    if (plugin) m.use(plugin);
-    return m;
+    const md = new MarkdownIt('commonmark', { html: true });
+    md.enable(['table', 'strikethrough']); // match lib/engine/index.js's markdown-it config
+    installSlidePipeline(md);
+    if (plugin) md.use(plugin);
+    return { render: (src) => ({ html: md.render(src) }) };
   }
 
   // ── deckClassPropagate ─────────────────────────────────────────────────
@@ -613,6 +624,7 @@ describe('marp-plugins', () => {
   test('stripHeadingPeriods: strips trailing period from h1, h2, h3', () => {
     const m = makeMarp(plugins.stripHeadingPeriods);
     const { html } = m.render([
+      '---', 'split: rule', '---', // keep all headings on one slide (engine default is headings-split)
       '<!-- _class: no-period -->',
       '# Title.',
       '## Section.',
@@ -646,6 +658,7 @@ describe('marp-plugins', () => {
   test('addHeadingPeriods: appends period to h1, h2, h3', () => {
     const m = makeMarp(plugins.addHeadingPeriods);
     const { html } = m.render([
+      '---', 'split: rule', '---', // keep all headings on one slide (engine default is headings-split)
       '<!-- _class: with-period -->',
       '# Title',
       '## Section',
