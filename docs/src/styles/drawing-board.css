@@ -2670,7 +2670,10 @@ html.db-js #db-editor-ta {
 	transform: translate(-50%, 0);
 }
 .db-toast-msg {
-	white-space: nowrap;
+	/* Short status toasts stay on one line; a long export-error message wraps
+	   inside the toast's max-width rather than overflowing the viewport. */
+	white-space: normal;
+	overflow-wrap: anywhere;
 }
 .db-toast-undo {
 	flex: 0 0 auto;
@@ -2686,6 +2689,71 @@ html.db-js #db-editor-ta {
 }
 .db-toast-undo:hover {
 	background: color-mix(in srgb, var(--bg) 34%, transparent);
+}
+
+/* ── Export progress (pane-independent cue for a long rasterizing export) ─────
+ * The inline .db-status sits in the preview header — out of sight from the
+ * editor pane on mobile, where Export is tapped. This floating card mirrors the
+ * toast's surface so the two read as one system, and carries a determinate bar
+ * (slide i of N) so a slow phone export reads as "working", not "broken". */
+.db-progress {
+	position: fixed;
+	left: 50%;
+	bottom: 1.4rem;
+	transform: translate(-50%, 1rem);
+	z-index: 3000;
+	width: min(22rem, calc(100vw - 2rem));
+	display: flex;
+	flex-direction: column;
+	gap: 0.6rem;
+	padding: 0.8rem 0.95rem 0.85rem;
+	background: var(--text-heading);
+	color: var(--bg);
+	border-radius: var(--radius-md);
+	box-shadow: 0 12px 40px rgba(0, 0, 0, 0.28);
+	opacity: 0;
+	transition: opacity 0.18s, transform 0.18s;
+}
+.db-progress.is-in {
+	opacity: 1;
+	transform: translate(-50%, 0);
+}
+.db-progress-msg {
+	font-size: 0.82rem;
+	font-variant-numeric: tabular-nums;
+}
+.db-progress-track {
+	position: relative;
+	height: 4px;
+	border-radius: 999px;
+	overflow: hidden;
+	background: color-mix(in srgb, var(--bg) 22%, transparent);
+}
+.db-progress-fill {
+	position: absolute;
+	inset: 0 auto 0 0;
+	width: 0;
+	border-radius: 999px;
+	background: var(--bg);
+	transition: width 0.25s ease;
+}
+/* Indeterminate: no slide count yet (asset fetch, .pptx assembly) — slide a
+   short pill across the track. */
+.db-progress.is-indeterminate .db-progress-fill {
+	width: 35%;
+	animation: db-progress-slide 1.1s ease-in-out infinite;
+}
+@keyframes db-progress-slide {
+	0% { transform: translateX(-120%); }
+	100% { transform: translateX(320%); }
+}
+@media (prefers-reduced-motion: reduce) {
+	.db-progress { transition: opacity 0.18s; transform: translate(-50%, 0); }
+	.db-progress.is-indeterminate .db-progress-fill {
+		animation: none;
+		width: 100%;
+		opacity: 0.55;
+	}
 }
 
 /* ── Refine actions menu (Slice 9b) ─────────────────────────────────────────── */

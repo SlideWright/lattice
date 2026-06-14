@@ -44,6 +44,19 @@ in patch versions.
 
 ### Added
 
+- **The Drawing Board now shows export progress and an error toast.** A
+  one-click PDF/PPTX export rasterizes every slide in the browser — seconds to
+  tens of seconds on a phone — but the only feedback was low-contrast text in
+  the *preview* pane header, invisible from the editor pane where Export is
+  tapped (so on mobile a slow export read as "nothing happened / it's broken").
+  Export now raises a floating, pane-independent progress card with a
+  determinate bar (slide _i_ of _N_ for PDF/PPTX, indeterminate for the Marp
+  bundle's asset fetch + `.pptx` assembly), and a **failure surfaces as a toast
+  with a one-tap Retry** instead of only a buried status line. The inline
+  status still updates for desktop users who watch it. No change to exported
+  file content. Fixes the "iOS export doesn't seem to work" report (it works —
+  it was the missing feedback). See `docs/src/playground/drawing-board-export.js`
+  and `docs/src/pages/drawing-board.astro`.
 - **Export to Marp from the Drawing Board (the "Marp bundle" export).** The
   Export menu gains a **Marp bundle (.zip)** item that produces the same
   portable bundle as `npm run export:marp`, assembled in the browser: it bakes
