@@ -189,3 +189,19 @@ it is load-bearing.
   that lets agents pick up work distributed-but-safe (L3, deferred — race-free lock
   designed then). Ship L1+L2 first. **Status: design-decision** (open questions
   resolved 2026-06-14).
+- [2026-06-14-deck-print-styling.md](2026-06-14-deck-print-styling.md) —
+  print support that survives the trip to the boardroom, on paper, in colour
+  *and* black-and-white. Separates the two surfaces (the CLI/puppeteer colour
+  PDF is already landscape/full-bleed/exact-colour and stays; the web "Print"
+  button = bare `window.print()` into the browser's portrait dialog is the "ugly
+  as sin"). Core gap: nothing survives grayscale (every palette encodes meaning
+  in hue). Decision (paper-first; dedicated print theme mode; design-doc-first):
+  a `--print-*` **token band** per theme selected by an explicit `print` mode —
+  the same move as the existing `--dark-*` band, *not* plain `@media print`
+  (which would also strip the colour PDF). B&W survivability via border + stepped
+  lightness + SVG pattern fills, gated by extending `contrast.test.js` to white.
+  Orientation prefill answered two ways: landscape PDF MediaBox + `/PrintScaling
+  /None` (the strong, dialog-free path), and `@page { size: A4 landscape }`
+  keyword to prefill the `window.print()` dialog. Flags the 16:9-vs-paper
+  letterbox crux and recommends Build A (fix the web path) now + Build B (print
+  band + paper-PDF export) as the real deliverable. **Status: design-speculation.**
