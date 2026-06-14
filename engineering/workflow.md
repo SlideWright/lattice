@@ -338,23 +338,34 @@ green PR must also carry checkpoint 4:
    judgment and the force-push stays coordinated with your own edits:
 
    ```bash
-   # Monitor (persistent): emits one line when origin/main first advances past the PR.
-   prev=ok
+   # Monitor (persistent): emit one line when origin/main first advances past the
+   # PR. Two non-negotiables, learned from a ref-lock incident:
+   #  • LOCK-FREE — poll with `git ls-remote` (read-only). NEVER `git fetch` in a
+   #    background loop: fetch WRITES refs/remotes/*, so it races a foreground
+   #    rebase/reset for the ref lock ("cannot lock ref 'refs/remotes/origin/main'").
+   #  • SELF-TERMINATING — exit when the PR's head branch disappears from origin
+   #    (deleted on merge), so it can't fire a stale REBASE-NEEDED once the merge
+   #    moves main. (Also TaskStop it explicitly on merge — see §Merging.)
+   base=$(git ls-remote --heads origin main | cut -f1)   # the sha the PR is rebased onto
+   branch=$(git rev-parse --abbrev-ref HEAD)
    while true; do
-     git fetch origin main -q 2>/dev/null || { sleep 60; continue; }
-     behind=$(git rev-list --count HEAD..origin/main)
-     if [ "$behind" -gt 0 ] && [ "$prev" = ok ]; then
-       echo "REBASE-NEEDED: origin/main advanced $behind commit(s)"; prev=behind
-     elif [ "$behind" -eq 0 ]; then prev=ok; fi
+     git ls-remote --exit-code --heads origin "$branch" >/dev/null 2>&1 \
+       || { echo "WATCH-DONE: $branch gone from origin (merged/closed)"; exit 0; }
+     cur=$(git ls-remote --heads origin main 2>/dev/null | cut -f1)
+     if [ -n "$cur" ] && [ "$cur" != "$base" ]; then
+       echo "REBASE-NEEDED: origin/main moved ${base:0:9} -> ${cur:0:9}"
+       base=$cur        # re-arm to the new baseline; you do the rebase on the event
+     fi
      sleep 60
    done
    ```
 
    On a `REBASE-NEEDED` event, run the rebase block above, re-run the gates,
-   re-confirm CI, and let the watch re-arm (after the rebase `behind` returns to
-   0). Do it **silently** — surface to the human only a *real code conflict* that
-   needs a judgment call, never the routine `CHANGELOG` / `dist` ones. `TaskStop`
-   the watch once the PR is merged or closed.
+   re-confirm CI; the watch re-armed itself (it advanced `base`). Do it
+   **silently** — surface only a *real code conflict* needing a judgment call,
+   never the routine `CHANGELOG` / `dist` ones. **When the PR merges, `TaskStop`
+   this watch FIRST — before any local `git` — see §Merging; the self-terminate
+   above is belt-and-suspenders.**
 
 `send_later`, where a session exposes it, is an equivalent timer-based mechanism
 and a fine backup; but neither it nor `Monitor` survives the container being
@@ -384,8 +395,25 @@ PRs; adopt it if cross-session races keep recurring despite the watch.
   it sees a bare comma-list after a keyword, and `pr-autoclose-issues.yml`
   re-parses the body on merge and closes the whole list as a backstop. Don't
   hand-close the stragglers after the fact — fix the keywords.
-- Delete the remote branch after merge.
-- Remove the local worktree if one was used.
+- **Post-merge teardown — run these strictly in order, one tool call at a time,
+  NEVER in a single parallel batch.** A batched `TaskStop` + `git reset` lets the
+  still-running drift watch's git race the reset for a ref lock ("cannot lock ref
+  'refs/remotes/origin/main' … is at X but expected Y"):
+  1. **`TaskStop` the drift Monitor FIRST** — before any local `git`. A background
+     poller and a foreground `reset`/`rebase` sharing one `.git` contend for ref
+     locks. (Lock-free `ls-remote` polling makes this safe; stop it anyway — a
+     merged PR needs no watch, and it must not fire a stale `REBASE-NEEDED`.)
+  2. `git fetch origin`
+  3. `git reset --hard origin/main` (or cut the next branch from `origin/main`). On
+     a transient `cannot lock ref` (background tooling touched `.git`), retry once.
+  4. Delete the remote branch (usually automatic on merge); remove the worktree if
+     one was used.
+  5. Post-merge standup.
+  Rule of thumb: never run two git processes against one working copy at once —
+  isolate any background poller to a separate worktree, or keep it read-only
+  (`ls-remote`). Also distinguish drift cases: "`main` moved under an OPEN PR" is
+  actionable (rebase); "my PR just merged, `main` moved" is expected (just sync) —
+  the post-merge `main` divergence below is the latter, not a rebase trigger.
 - After a squash-merge, your **local `main` has diverged** from the squashed
   `origin/main` (it still carries the pre-squash commits). Don't rebase onto it
   or branch from it — `git fetch origin && git reset --hard origin/main`, or cut

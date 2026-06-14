@@ -192,8 +192,9 @@ independent set of eyes earns its latency.
     won't.** GitHub never pushes "`main` moved", "now conflicted", or "CI
     passed", so a PR you're watching goes stale or blocked **silently**.
     Therefore **run a continuous drift watch — arm the `Monitor` tool the moment
-    the PR goes green — and rebase automatically; never make me ask you to
-    rebase.** That watch is the primary mechanism; also re-check at three
+    the PR goes green (poll **lock-free** with `git ls-remote`, never a background
+    `git fetch`; on merge `TaskStop` it *first*, before any local git) — and rebase
+    automatically; never make me ask you to rebase.** That watch is the primary mechanism; also re-check at three
     guaranteed touch-points (on every PR event, immediately before you ask for
     merge authorization, and again immediately before an authorized merge
     executes): `git fetch origin main` and read the PR's mergeable state
