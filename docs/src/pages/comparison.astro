@@ -478,29 +478,29 @@ const WEAKNESSES = [
 						eyebrow="The fair question"
 						title="“Isn’t Lattice just Marp with a coat of paint?”"
 					>
-						Lattice grew out of the Marp lineage, so the engineers reading this deserve a straight answer. We keep
-						Marp’s plumbing. We add the whole design-system layer that Marp leaves to you.
+						No. Lattice runs on its own engine and its own design system. Marp is one export path out of a
+						Lattice deck; the engine inside is ours.
 					</SectionHead>
 					<div class="grid grid-cols-1 gap-[18px] lg:grid-cols-2">
 						<div class="rounded-xl border border-border bg-card p-[26px] shadow-sm">
-							<h3 class="m-0 mb-3 text-[17px] font-semibold text-[var(--text-heading)]">What we keep, and credit</h3>
+							<h3 class="m-0 mb-3 text-[17px] font-semibold text-[var(--text-heading)]">What we started from</h3>
 							<p class="m-0 text-[14.5px] leading-[1.65] text-foreground">
-								The Markdown authoring model and the Markdown to HTML to headless-Chromium to PDF render path. Plain
-								text gives you determinism and git diffs for free, as it does for every code engine. Lattice did not
-								invent that, and we built on Marp’s render path because it works.
+								One good idea: write a deck in Markdown and render it through headless Chromium to PDF. Plain text
+								buys determinism and git diffs, true of every code engine. We built on Marp’s engine for the early
+								versions, then replaced it with our own at v1.0.0.
 							</p>
 						</div>
 						<div class="rounded-xl border border-border bg-card p-[26px] shadow-sm">
-							<h3 class="m-0 mb-3 text-[17px] font-semibold text-[var(--text-heading)]">What Lattice adds on top</h3>
+							<h3 class="m-0 mb-3 text-[17px] font-semibold text-[var(--text-heading)]">What Lattice is now</h3>
 							<p class="m-0 mb-3 text-[14.5px] leading-[1.65] text-foreground">
 								Marp’s own docs say it has <strong>“no component system, design tokens, slots, or layout
-								primitives,”</strong> and it ships three generic themes. That gap is what Lattice fills:
+								primitives,”</strong> and it ships three generic themes. Lattice brings all of it:
 							</p>
 							<ul class="m-0 list-disc space-y-1.5 pl-5 text-[14.5px] leading-[1.55] text-foreground">
 								<li><strong>53 named layouts</strong> across 12 buckets. Pick the meaning, get the composition.</li>
 								<li>A <strong>design-token system</strong> and <strong>14 palettes</strong>. Layouts never name a colour.</li>
 								<li><strong>Boardroom-grade defaults</strong> and WCAG-AA contrast in every palette, light and dark.</li>
-								<li>An <strong>owned, pinned render engine</strong>. We dropped the Marp dependency at v1.0.0 and pinned the toolchain Marp leaves loose, so output stops drifting machine to machine.</li>
+								<li>An <strong>owned, pinned render engine</strong>. We dropped the Marp dependency at v1.0.0 and pinned the toolchain end to end. It renders plain HTML sections, not SVG-wrapped slides, so modern CSS — container queries, counters, masks — works natively and layout holds across browsers.</li>
 								<li><strong>Agent authoring.</strong> A machine catalog and a shared linter steer an LLM to on-brand decks instead of guesses.</li>
 							</ul>
 						</div>
