@@ -86,7 +86,7 @@ const here = Astro.url.pathname;
 				</nav>
 				<div class="topbar-actions">
 					<div class="lx-ui" style="display:inline-flex">
-						<PaletteControls client:load palettes={[]} />
+						<PaletteControls client:idle palettes={[]} />
 					</div>
 					<button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-controls="topnav" aria-expanded="false"></button>
 				</div>

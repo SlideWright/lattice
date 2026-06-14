@@ -14,4 +14,4 @@ const { catalog = [], lenses = [], current = null } = Astro.props;
 const base = import.meta.env.BASE_URL;
 ---
 
-<ComponentNavIsland client:load catalog={catalog} lenses={lenses} base={base} current={current} />
+<ComponentNavIsland client:idle catalog={catalog} lenses={lenses} base={base} current={current} />
