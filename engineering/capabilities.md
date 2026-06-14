@@ -53,6 +53,8 @@ harness the index can't infer, add it to `FRAMEWORKS` in the generator.
 | `docs:landing-tokens:check` | Freshness gate for the landing-page token blocks. |
 | `docs:portal` | Aggregate manifests into dist/docs/components.{md,json} + grammar.json (the LFM per-component grammar) — the canonical component catalog. |
 | `docs:portal:check` | Freshness gate for the component catalog (md/json) + LFM grammar.json. |
+| `docs:spec` | Generate the docs-site Specification pages (LFM 1.0 + Diagnostic Protocol) from the canonical spec/*.md. |
+| `docs:spec:check` | Freshness gate for the generated docs-site spec pages (stale vs spec/). |
 | `emulator:build` | Build dist/lattice-emulator.js — the bundled Marp-faithful CLI (package bin/main). |
 | `emulator:check` | Freshness gate for the emulator bundle. |
 | `export:marp` | Export a deck as a portable Marp bundle: splits baked to ---, themes, assets, a self-contained engine + marp-cli config, and a README. `<deck.md> <out-dir-or-zip> [palette]`. |
@@ -251,6 +253,7 @@ harness the index can't infer, add it to `FRAMEWORKS` in the generator.
 | Name | What it does |
 |---|---|
 | `tools/ascii-preview.py` | ASCII layout preview helper for engineering/templates.md (and friends). |
+| `tools/build-spec-docs.js` | Publish the owned LFM standards (spec/*.md) onto the docs website as |
 | `tools/build-standalone-core.js` | Bundle the standalone chart-SVG export core for the browser. |
 | `tools/check-fonts.js` | Font-embedding parity gate — keep the engine's font demand and offline supplies in sync. |
 | `tools/export-chart-svg.js` | Export a deck's chart(s) as standalone image files — SVG for the vector |

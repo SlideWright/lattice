@@ -71,6 +71,7 @@ const STEPS = [
   { label: 'per-component docs', script: 'build-component-docs.js' },
   { label: 'doc portal (components.md/.json)', script: 'build-docs-portal.js' },
   { label: 'landing tokens (docs site)', script: 'build-landing-tokens.js' },
+  { label: 'spec pages (docs site)', script: 'build-spec-docs.js' },
   { label: 'playground bundle (docs site)', script: 'build-playground.js' },
   { label: 'theme-core bundle (docs site)', script: 'build-theme-core.js' },
   { label: 'layout-core bundle (docs site)', script: 'build-layout-core.js' },

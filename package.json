@@ -105,6 +105,8 @@
     "docs:portal:check": "node tools/build-docs-portal.js --check",
     "docs:landing-tokens": "node tools/build-landing-tokens.js",
     "docs:landing-tokens:check": "node tools/build-landing-tokens.js --check",
+    "docs:spec": "node tools/build-spec-docs.js",
+    "docs:spec:check": "node tools/build-spec-docs.js --check",
     "check:ownership": "node tools/check-ownership.js",
     "check:responsive": "node tools/check-chart-responsiveness.js",
     "fonts:check": "node tools/check-fonts.js",
