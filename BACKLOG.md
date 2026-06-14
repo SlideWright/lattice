@@ -7,7 +7,7 @@
 
 The live, claimable work queue — a read-only mirror of [open issues](https://github.com/SlideWright/lattice/issues),
 grouped by board column. Design lives in `engineering/decisions/`; this tracks
-only *status*. **32 open** items.
+only *status*. **31 open** items.
 
 ## Backlog (28)
 
@@ -48,9 +48,9 @@ _none_
 
 _none_
 
-## In review (1)
+## In review (0)
 
-- [#316](https://github.com/SlideWright/lattice/issues/316) infra: make DEFAULT OPERATING MODE fire as standing triggers (proactive PR/merge flow) — medium · infra
+_none_
 
 ## Inbox (no status) (3)
 
