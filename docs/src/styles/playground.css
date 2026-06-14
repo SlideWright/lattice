@@ -145,6 +145,13 @@
 	height: 100%;
 	border: 0;
 	display: block;
+	position: relative;
+	z-index: 1; /* above the loading skeleton (.pg-preview-wrap::after, z-index 0) */
+	/* Transparent until a deck renders so the skeleton shows through the empty
+	   iframe; the rendered srcdoc paints its own opaque background over it. */
+	background: transparent;
+}
+.pg-preview-wrap.is-live #preview {
 	background: var(--bg-alt);
 }
 .pg-status {

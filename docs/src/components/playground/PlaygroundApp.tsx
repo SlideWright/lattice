@@ -47,7 +47,7 @@ export type PlaygroundData = {
  * the config panel (DeckSetupSheet). None are reimplemented.
  */
 export function PlaygroundApp({ data }: { data: PlaygroundData }) {
-	const { catalog, components, lenses, gallerySources, galleryGroups, themeBase, runtimeUrl, palettes, finishes, starter } = data;
+	const { catalog, components, lenses, gallerySources, galleryGroups, themeBase, runtimeUrl, engineUrl, palettes, finishes, starter } = data;
 
 	const [currentName, setCurrentName] = React.useState('');
 	const [variant, setVariant] = React.useState('default');
@@ -58,7 +58,7 @@ export function PlaygroundApp({ data }: { data: PlaygroundData }) {
 
 	const frameRef = React.useRef<HTMLIFrameElement>(null);
 	const editorRef = React.useRef<EditorAdapter | null>(null);
-	const engineRef = React.useRef(createEngineBridge(themeBase, runtimeUrl));
+	const engineRef = React.useRef(createEngineBridge(themeBase, runtimeUrl, engineUrl));
 	const previewStateRef = React.useRef<PreviewState>({ frameSig: '', lastSections: null });
 	const timerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 	const variants = React.useMemo(() => variantOptions(catalog, currentName), [catalog, currentName]);
@@ -114,6 +114,9 @@ export function PlaygroundApp({ data }: { data: PlaygroundData }) {
 			} else {
 				previewStateRef.current = r.state;
 				setStatusLine(`Rendered ${r.count} slide(s).`);
+				// Drop the loading skeleton once real slides have painted (the iframe
+				// is opaque and covers the host; this removes the placeholder behind it).
+				frame.parentElement?.classList.add('is-live');
 			}
 		},
 		[getSource, setStatusLine],
@@ -223,6 +226,22 @@ export function PlaygroundApp({ data }: { data: PlaygroundData }) {
 		obs.observe(root, { attributes: true, attributeFilter: ['data-palette', 'data-mode'] });
 		return () => obs.disconnect();
 	}, [render]);
+
+	// Trigger the on-demand engine load once the chrome has mounted/painted. The
+	// preview is core to the playground, so load it promptly (on idle / next
+	// tick) — but NOT eagerly in <head>, so the toolbar + editor host paint
+	// first. The render loop already polls window.LatticePlayground, so the first
+	// render fires as soon as the bundle resolves.
+	React.useEffect(() => {
+		const engine = engineRef.current;
+		const ric = (window as unknown as { requestIdleCallback?: (cb: () => void) => number }).requestIdleCallback;
+		if (ric) {
+			ric(() => engine.ensure());
+		} else {
+			const t = setTimeout(() => engine.ensure(), 0);
+			return () => clearTimeout(t);
+		}
+	}, []);
 
 	// Cleanup any pending timer on unmount.
 	React.useEffect(() => {

@@ -17,6 +17,7 @@ export type RestyleData = {
 	palettes: Palette[];
 	themeBase: string;
 	runtimeUrl: string;
+	engineUrl: string;
 	frameCss: string;
 };
 
@@ -24,7 +25,7 @@ export default function RestyleShowcase({ data }: { data: RestyleData }) {
 	const { palettes } = data;
 	const [idx, setIdx] = React.useState(0);
 	const stageRef = React.useRef<HTMLDivElement>(null);
-	const engineRef = React.useRef(createLandingEngine(data.themeBase, data.runtimeUrl, data.frameCss));
+	const engineRef = React.useRef(createLandingEngine(data.themeBase, data.runtimeUrl, data.frameCss, data.engineUrl));
 
 	const idxRef = React.useRef(idx);
 	idxRef.current = idx;
@@ -139,7 +140,7 @@ export default function RestyleShowcase({ data }: { data: RestyleData }) {
 				role="img"
 				onMouseEnter={pause}
 				onMouseLeave={resume}
-				className="relative m-0 aspect-video w-full overflow-hidden rounded-[14px] border border-border bg-muted shadow-lg"
+				className="live-host relative m-0 aspect-video w-full overflow-hidden rounded-[14px] border border-border bg-muted shadow-lg"
 				aria-label="A slide re-rendered through the selected palette"
 			/>
 			<div className="mt-[18px] flex items-center justify-between gap-4">
