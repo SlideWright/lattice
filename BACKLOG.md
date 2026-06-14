@@ -7,9 +7,9 @@
 
 The live, claimable work queue — a read-only mirror of [open issues](https://github.com/SlideWright/lattice/issues),
 grouped by board column. Design lives in `engineering/decisions/`; this tracks
-only *status*. **31 open** items.
+only *status*. **34 open** items.
 
-## Backlog (28)
+## Backlog (31)
 
 - [#276](https://github.com/SlideWright/lattice/issues/276) docs: fix drifted counts in design-system.md headline (palettes 25→14) — critical · docs
 - [#277](https://github.com/SlideWright/lattice/issues/277) docs: correct theming.md "13 themes"→14 — high · theming
@@ -32,6 +32,9 @@ only *status*. **31 open** items.
 - [#295](https://github.com/SlideWright/lattice/issues/295) feat(website): Layout Studio — CSS-only `component` asset kind with deterministic gates — medium · website
 - [#296](https://github.com/SlideWright/lattice/issues/296) feat(website): graduation bridge — export a Workbench theme/component as a repo PR scaffold — medium · website
 - [#299](https://github.com/SlideWright/lattice/issues/299) refactor(diagram): give function-plot its own `lib/integrations/function-plot/` home + honest renderPaths — medium · diagram
+- [#305](https://github.com/SlideWright/lattice/issues/305) docs: dedupe the two doc-index tables (CLAUDE.md vs skill.md drift) — medium · docs
+- [#306](https://github.com/SlideWright/lattice/issues/306) docs: refresh (or generate) the decisions/README index (12 of 76 ADRs listed) — medium · docs
+- [#307](https://github.com/SlideWright/lattice/issues/307) docs: prune/flip the treatments-rename ADR (shipped; still "implementation-ready") — medium · docs
 - [#280](https://github.com/SlideWright/lattice/issues/280) docs: fix phantom `--hljs-name`/`--hljs-meta` token rows in highlight-js.docs.md — low · docs
 - [#281](https://github.com/SlideWright/lattice/issues/281) docs: mark design-system.md "9 buckets" as historical (ships 12) — low · docs
 - [#282](https://github.com/SlideWright/lattice/issues/282) docs: mark design-system.md "58 components / 89 pages" as dated (ships 53) — low · docs
