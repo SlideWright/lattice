@@ -31,3 +31,7 @@ NOT verified. A small before → after table helps when several things shifted.
 
 <!-- Anything you couldn't verify (e.g. a live on-device check), follow-ups, or
      "none". Flag breaking changes here, led with **Breaking:**. -->
+
+<!-- CLOSING ISSUES — bind a keyword to EACH issue number, or only the first closes:
+       Closes #1, closes #2, closes #3   (NOT "Closes #1, #2, #3" — that closes only #1)
+     One per line works too. The pr-closing-keywords check enforces this. -->
