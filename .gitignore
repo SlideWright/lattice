@@ -64,3 +64,6 @@ lib/base/**/.regr-*
 
 # emulator render sidecars next to the palette-audit deck
 themes/*.html
+
+# Agent isolation worktrees (transient; auto-cleaned)
+.claude/worktrees/

@@ -101,10 +101,10 @@ describe('contrast', () => {
   // use 3:1 but we hold all diagram text to the stricter bar.
   //
   // Two tiers per slot in the new categorical contract:
-  //   --cN-light pairs with --cat-on-fill (non-flipping dark ink, AA against fill)
-  //   --cN-dark  pairs with --cat-on-mark  (white-ish, AA against deep fill)
+  //   --cat-N-fill pairs with --cat-on-fill (non-flipping dark ink, AA against fill)
+  //   --cat-N-mark pairs with --cat-on-mark  (white-ish, AA against deep fill)
   //
-  // --text-heading is NOT used for cN-light pairs because it flips via
+  // --text-heading is NOT used for cat-N-fill pairs because it flips via
   // light-dark() — in dark-canvas mode it resolves to white, which would
   // give white-on-pale and break AA. The bands stay pale in both canvas
   // modes (bands are "figure windows" with their own ink/paper contract,
@@ -119,8 +119,8 @@ describe('contrast', () => {
     'cat-on-mark',
   ]);
 
-  // (Quadrant charts read the cN palette directly now — fills are cN-light
-  // region tints, data marks are cN-dark graphical objects, and ALL text is
+  // (Quadrant charts read the cat palette directly now — fills are cat-N-fill
+  // region tints, data marks are cat-N-mark graphical objects, and ALL text is
   // neutral --text-heading, which is covered by the --text-heading/bg test
   // below. No quadrant-specific text-contrast pair remains.)
 
