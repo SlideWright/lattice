@@ -7,18 +7,13 @@
 
 The live, claimable work queue — a read-only mirror of [open issues](https://github.com/SlideWright/lattice/issues),
 grouped by board column. Design lives in `engineering/decisions/`; this tracks
-only *status*. **36 open** items.
+only *status*. **31 open** items.
 
-## Backlog (33)
+## Backlog (28)
 
-- [#277](https://github.com/SlideWright/lattice/issues/277) docs: correct theming.md "13 themes"→14 — high · theming
-- [#278](https://github.com/SlideWright/lattice/issues/278) docs: correct marp-independence.md "58 layouts"→53 — high · engine
 - [#283](https://github.com/SlideWright/lattice/issues/283) refactor(css): audit and reduce `!important` (~490 repo-wide) — high · engine
 - [#284](https://github.com/SlideWright/lattice/issues/284) refactor(css): activate `@layer` for per-component + modifier CSS — high · engine
 - [#287](https://github.com/SlideWright/lattice/issues/287) refactor(engine): LPM Phase 1 — manifest `render` block + `transformSection` adapter; migrate the chart kernels — high · engine
-- [#302](https://github.com/SlideWright/lattice/issues/302) docs: mark marp-replacement ADR as superseded/shipped (still says "proposal / open") — high · engine
-- [#303](https://github.com/SlideWright/lattice/issues/303) docs: rewrite/delete engineering/audit.md (still teaches retired marp-cli parity) — high · engine
-- [#304](https://github.com/SlideWright/lattice/issues/304) docs: reconcile the CLAUDE.md canonical-doc table (7 docs missing) — high · docs
 - [#279](https://github.com/SlideWright/lattice/issues/279) docs: reconcile Mermaid diagram-type count (README "25" vs gallery "26") — medium · diagram
 - [#285](https://github.com/SlideWright/lattice/issues/285) refactor(css): retire the SPECIFICITY-BUMP HACKs (citation-card, redline, regulatory-update) — medium · engine
 - [#286](https://github.com/SlideWright/lattice/issues/286) refactor(css): namespace variant classes that collide with component names — medium · engine
