@@ -1,6 +1,7 @@
 # Deck-preview consolidation — shared render bridges
 
-**Status:** in progress (Tier 1 first). Follows the shadcn migration (PRs #319–#325).
+**Status:** Tier 1 landed (`#327` follow-up, c91f4c2c); Tier 2 (drawing-board
+controller extraction) done — see PR2 below. Follows the shadcn migration (PRs #319–#325).
 **Why:** the docs site renders Lattice decks into live previews from ~7 bridges
 with two real duplication classes. The migration left these copy-pasted; this
 consolidates them behind shared modules so a render fix lands once, not eight
@@ -71,8 +72,37 @@ leave it; it is not the duplication.
 
 **PR2 — drawing-board/practice/focus (higher risk, separate branch):**
 4. Extract the drawing-board inline controller to a vanilla module; keep the
-   is:inline shim thin; preserve token-flip + cursor-sync exactly.
-5. Point practice + focus at the shared `buildSrcdoc` (`sync/clamp/contentVisibility=false`).
+   is:inline shim thin; preserve token-flip + cursor-sync exactly. **Done** —
+   `src/playground/drawing-board-render.js` (`createRenderController(data)`); the
+   `.astro` is:inline controller is replaced by a thin module-`<script>` bootstrap
+   that imports + calls it. The controller is order-independent (event/global
+   wiring + a PG/DP polling guard), so the deferred-module move preserves the prior
+   is:inline behaviour. Theme fetch/cache delegates to the shared `theme-fetch.ts`;
+   the DB-specific universal token-flip wrapper (`variantize`, suffixed
+   `lattice-u`/`<pal>-u` registration) stays in the controller.
+5. ~~Point practice + focus at the shared `buildSrcdoc`.~~ **Deferred — kept
+   standalone (deliberate).** `buildSrcdoc` stacks *all* sections and scales to
+   *width only* (`fitAgent` does `sc = w/SW`); practice's `frameDoc` and focus's
+   `frame` render a *single* slide scaled to fit *both* width AND height, and
+   practice additionally drives a `pv` postMessage slide-navigation. `buildSrcdoc`
+   has no single-slide fit-both-dimensions mode and no `pv` agent even with
+   `sync/clamp/contentVisibility=false`, so pointing them at it would be a
+   behaviour regression (wrong fit math, lost presenter navigation) — exactly the
+   "knob makes it riskier than the duplication it removes" carve-out. A future
+   `buildSrcdoc` `mode: 'single'` (fit-both + optional `pv`) could reunify them;
+   left for a dedicated change so this higher-risk tier stays behaviour-preserving.
+
+   **Residual (noted, not done in Tier 2):** practice + focus still inline-copy the
+   *raw theme fetch/cache* in their own `ensureTheme(name)` (practice 68-77, focus
+   42-51) — duplication class #1, the "8 → 1" goal — so that count is really
+   "6 → 1 + 2 copies." Migrating them onto `createThemeFetcher` is the low-risk
+   *half* of goal #5, BUT it is not a no-op: their raw `fetch().then(r=>r.text())`
+   skips the shared fetcher's `!r.ok` throw, the named-theme fetch is wrapped in
+   `.catch(()=>{})`, and they call `ensureTheme(palette)` + `ensureTheme(palette+'-dark')`
+   as two separate units rather than the shared `ensure(palette, mode)`. So a clean
+   migration is a small behaviour change (a 404 would throw instead of feeding an
+   error body to `addThemes`) — left out of this behaviour-preserving tier; land it
+   as its own small PR1 follow-up, mapping `ensureTheme` onto `themeFetcher.fetch`/`ensure`.
 
 ## Verification (every PR)
 - `npm run lint`, `npx vitest run`, `astro build`, `npm run check:overflow` — green.
