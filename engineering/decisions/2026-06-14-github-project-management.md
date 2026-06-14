@@ -82,8 +82,11 @@ the board filter *is* the rollup, so we expect not to.
   `website`). Reuses vocabulary the repo already speaks; doubles as the
   swimlane grouping.
 - `type:` — `feat | fix | docs | infra | refactor | spike`.
-- `priority:` — `p0 | p1 | p2 | p3`. Numeric and visible; mirrors cleanly into
-  `BACKLOG.md`. Not MoSCoW — that's Scrum-flavoured.
+- `priority:` — `critical | high | medium | low`. Self-describing words,
+  deliberately **not** numeric `pN`: bare `P0`–`P4` already mean marp-program
+  *phase* (and severity) across this repo (`CLAUDE.md`, the CHANGELOG, several
+  ADRs/filenames), so a `pN` priority would collide on letter-case alone. Not
+  MoSCoW either — that's Scrum-flavoured.
 - `status:` — the kanban state machine, mapped to board columns:
 
   | `status:` label | Board column | Meaning |
@@ -207,8 +210,10 @@ not a meeting).
 
 ## Resolved decisions (2026-06-14)
 
-1. **Priority scheme** → `p0–p3` **labels**. Numeric, visible in-repo, mirrors
-   cleanly to `BACKLOG.md`. Explicitly not MoSCoW.
+1. **Priority scheme** → word labels `priority:critical | high | medium | low`.
+   Chosen over numeric `p0–p3` because bare `P0`–`P4` is already the repo's
+   *phase*/severity notation (the marp program) — a `pN` priority would overload
+   it on case alone. Not MoSCoW (Scrum-flavoured).
 2. **One board or many** → **one Project board per repo.** When the
    Tauri/SlideWright desktop work splits into its own repo, it gets its own board
    (and its own `ROADMAP.md`).
