@@ -1,8 +1,10 @@
 ---
 // Shared global topbar for the landing-styled standalone routes (landing,
 // playground, component pages). Renders the brand, the global nav, and the
-// palette / light-dark controls. The ids (#palette, #mode-toggle,
-// #nav-toggle, #topnav) are wired by each page's controller (or, for the
+// palette / light-dark controls. The palette + mode controls are the shared
+// <PaletteControls> island (src/components/site/), which owns the
+// data-palette/data-mode writes via site-chrome.ts; the remaining ids
+// (#nav-toggle, #topnav) are wired by each page's controller (or, for the
 // component pages, by ComponentsLayout). `current` drives aria-current so
 // "you are here" is true in the header.
 //
@@ -14,11 +16,11 @@
 // derived from the request path (isCurrent), so it's uniform across surfaces.
 const { palettes = [], wide = false } = Astro.props;
 
+import PaletteControls from './site/PaletteControls.tsx';
 import { joinBase } from '../lib/base-url.mjs';
 import { primaryNav, GITHUB_URL, isCurrent } from '../lib/nav.mjs';
 const base = import.meta.env.BASE_URL;
 const url = (p) => joinBase(base, p);
-const titleCase = (s) => s.replace(/(^|-)(\w)/g, (_, sep, c) => (sep ? ' ' : '') + c.toUpperCase());
 
 // Single source of truth (src/lib/nav.mjs) — same links on every surface.
 const links = primaryNav(url);
@@ -38,11 +40,8 @@ const here = Astro.url.pathname;
 			<a class="navlink" href={GITHUB_URL}>GitHub</a>
 		</nav>
 		<div class="topbar-actions">
-			<div class="controls">
-				<select class="palette-select" id="palette" aria-label="Palette">
-					{palettes.map((p) => <option value={p}>{titleCase(p)}</option>)}
-				</select>
-				<button class="mode-toggle" id="mode-toggle" aria-label="Toggle light / dark" title="Toggle light / dark"></button>
+			<div class="controls lx-ui">
+				<PaletteControls client:load palettes={palettes} />
 			</div>
 			<button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-controls="topnav" aria-expanded="false"></button>
 		</div>

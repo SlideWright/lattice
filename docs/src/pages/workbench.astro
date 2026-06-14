@@ -12,6 +12,7 @@ import { join } from 'node:path';
 import '../styles/landing.css';
 import '../styles/workbench.css';
 import '../styles/deck-config.css';
+import PaletteControls from '../components/site/PaletteControls.tsx';
 import { joinBase } from '../lib/base-url.mjs';
 import { primaryNav, GITHUB_URL, isCurrent } from '../lib/nav.mjs';
 import { isPreviewDeploy } from '../lib/deploy-env.mjs';
@@ -84,7 +85,9 @@ const here = Astro.url.pathname;
 					<a class="navlink" href={GITHUB_URL}>GitHub</a>
 				</nav>
 				<div class="topbar-actions">
-					<button class="mode-toggle" id="mode-toggle" aria-label="Toggle light / dark" title="Toggle light / dark"></button>
+					<div class="lx-ui" style="display:inline-flex">
+						<PaletteControls client:load palettes={[]} />
+					</div>
 					<button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-controls="topnav" aria-expanded="false"></button>
 				</div>
 			</div>
@@ -272,18 +275,12 @@ const here = Astro.url.pathname;
 		<!-- The in-browser engine (same bundle as the Playground). -->
 		<script is:inline defer src={url(pg + 'lattice-playground.js')}></script>
 
-		<!-- Topbar chrome: light/dark + mobile nav. -->
+		<!-- Topbar chrome: mobile nav. The light/dark toggle is the shared
+		     <PaletteControls> island (mode-only here — the Workbench has no global
+		     palette picker), which owns the data-mode write + localStorage + bfcache
+		     pageshow re-sync via site-chrome.ts. -->
 		<script is:inline>
 			(function () {
-				var root = document.documentElement;
-				var modeBtn = document.getElementById('mode-toggle');
-				if (modeBtn) {
-					modeBtn.addEventListener('click', function () {
-						var next = root.getAttribute('data-mode') === 'dark' ? 'light' : 'dark';
-						root.setAttribute('data-mode', next);
-						try { localStorage.setItem('lattice-docs-mode', next); } catch (e) {}
-					});
-				}
 				var navToggle = document.getElementById('nav-toggle');
 				var topbar = document.querySelector('.topbar');
 				if (navToggle && topbar) {
