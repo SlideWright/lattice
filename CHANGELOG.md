@@ -95,15 +95,13 @@ in patch versions.
   path into the Drawing Board UI follows in a separate change.
   Design: `engineering/decisions/2026-06-14-worked-exemplar-decks.md`.
 
-- **A features page (`/features`).** A positive, on-its-own-terms answer to "why
-  Lattice" (the comparison page covers "vs. them"; this covers "us"). Groups the
-  real differentiators — field-native layouts (53 across 12 buckets), one source
-  rendered pixel-identical to PDF/PPTX/PNG/HTML, one-line restyle with WCAG-AA
-  guaranteed in every palette, a deck that behaves like code (git-diffable, a
-  built-in deterministic linter, reproducible output), native diagrams/math (25
-  Mermaid types auto-themed + pre-rendered to SVG, KaTeX, function-plot), AI
-  authoring on your terms (machine catalog + spec, bring-your-own-model), and
-  MIT/offline/no-lock-in. Linked from the primary nav and footer.
+- **A features page (`/features`).** A scannable, segmented capability catalog —
+  the comparison page covers "vs. them"; this is the "just us" reference. Built
+  as a single catalog table (the comparison matrix's styling, minus the
+  competitor columns) with a Feature/Details split, grouped into Authoring, the
+  53-layout field-native catalog (by bucket), Theming & brand, Output &
+  rendering, Deck-as-code, AI authoring, and Ownership. Marketing prose stays on
+  the landing; this page is the reference. Linked from the primary nav and footer.
 - **A public comparison page (`/comparison`).** An honest, sourced read on how
   Lattice stacks up against the field: AI generators (Gamma, Beautiful.ai,
   Decktopus, Presentations.ai, Plus AI, MagicSlides, SlidesAI), office suites
