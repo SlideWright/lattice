@@ -12,14 +12,13 @@
  *     file needs no theme CSS — lib/.../standalone-svg.js) + embed the used fonts
  *     → a `.svg` that opens anywhere.
  *   - Every other chart-frame slide (gantt/kanban/progress/journey/…) is HTML/CSS
- *     or mixed, so we SCREENSHOT its container element → a `.png`. Because the
- *     engine renders the real layout (this is how the chart galleries are made),
- *     the screenshot captures it faithfully — unlike an in-browser DOM clone,
- *     which collapses these layouts to blank.
+ *     or mixed, so we SCREENSHOT its container element → a `.png`, cropped to the
+ *     content. This is the headless/automation surface.
  *
- * The Drawing Board's "Export chart" button shares the SVG core + font machinery
- * for the vector tier; the PNG tier needs this engine path (no in-browser
- * equivalent). See chart-family.docs.md § "Standalone export".
+ * The Drawing Board's "Export chart" button does the same job in the browser: SVG
+ * via this shared core, PNG via `html-to-image` (it rasterizes these charts
+ * faithfully — see drawing-board-export.js). This CLI is the no-browser path. See
+ * chart-family.docs.md § "Standalone export".
  *
  * Usage:
  *   node tools/export-chart-svg.js <deck.md> [options]
@@ -193,12 +192,30 @@ async function main() {
         const handle = sectionHandles[t.slide - 1];
         if (!handle) { console.warn(`! slide ${t.slide}: not found, skipped`); continue; }
         const outPath = a.out && !a.all
-          ? path.resolve(a.out.replace(/\.svg$/i, '.png'))
+          ? path.resolve(`${a.out.replace(/\.(svg|png)$/i, '')}.png`)
           : path.resolve(a.all
             ? `${deckBase}-s${String(t.slide).padStart(2, '0')}-c00.png`
             : `${deckBase}-slide${t.slide}.png`);
         fs.mkdirSync(path.dirname(outPath), { recursive: true });
-        await handle.screenshot({ path: outPath });
+        // Keep the section at its full box (container queries need the fixed
+        // height to resolve) but CLIP the capture to where content actually ends:
+        // short charts (gantt/kanban) otherwise trail a half-slide of dead canvas.
+        const box = await handle.boundingBox();
+        const contentH = await page.evaluate((idx) => {
+          const sec = document.querySelectorAll('.marpit > section')[idx];
+          const top = sec.getBoundingClientRect().top;
+          const full = sec.getBoundingClientRect().height;
+          let bottom = top;
+          sec.querySelectorAll('*').forEach((el) => {
+            const cs = getComputedStyle(el);
+            if (cs.display === 'none' || cs.visibility === 'hidden' || parseFloat(cs.opacity) === 0) return;
+            const r = el.getBoundingClientRect();
+            if (r.width > 0 && r.height > 0) bottom = Math.max(bottom, r.bottom);
+          });
+          const padB = parseFloat(getComputedStyle(sec).paddingBottom) || 0;
+          return Math.min(full, Math.ceil((bottom - top) + Math.min(padB, 48)));
+        }, t.slide - 1);
+        await page.screenshot({ path: outPath, clip: { x: box.x, y: box.y, width: box.width, height: contentH } });
         const bytes = fs.statSync(outPath).size;
         written.push({ outPath, bytes });
         console.log(`✓ slide ${t.slide} (image) → ${path.relative(process.cwd(), outPath)} (${(bytes / 1024).toFixed(1)} KB)`);
