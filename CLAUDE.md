@@ -219,9 +219,15 @@ independent set of eyes earns its latency.
 | Where we stand vs Marp (independence scorecard, living) | `engineering/marp-independence.md` |
 | The CSS cascade / `@layer` (declared-but-inert; the trap) | `engineering/cascade.md` |
 | Typography scales | `engineering/typography.md` |
+| Running the render pipeline (PDF/HTML/PPTX output formats) | `engineering/pipeline.md` |
+| Authoring/rendering Mermaid diagrams (the `<div class="mermaid">` contract) | `engineering/mermaid.md` |
+| Adding a treatment — `tint-*` / `mark-*` peripheral accents | `engineering/treatments.md` |
 | Palette tokens, Mermaid contract | `design/theming.md` |
+| Core visual design principles (hierarchy, restraint) | `design/design-principles.md` |
+| How a slide is composed — the Form vocabulary | `design/forms.md` |
 | Prose rules for galleries/decks | `design/editorial.md` |
 | The deck-authoring contract | `design/skill.md` |
+| A rendered gallery of the design-system model | `design/design-system.gallery.md` |
 | Cross-cutting authoring (eyebrow, subtitle, base modifiers) | `lib/base/base.docs.md` |
 | A specific component's slots/variants/anti-patterns | `lib/components/<bucket>/<name>/<name>.docs.md` |
 | Picking a component as an agent (machine catalog) | `dist/docs/components.json`, `AGENTS.md` |

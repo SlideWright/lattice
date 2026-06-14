@@ -18,11 +18,11 @@ Open the relevant file before starting work. Only load what the current task nee
 | Writing or editing slide content | [design.md](./design-principles.md) + `lib/components/<name>/<name>.docs.md` per component |
 | **Picking a component** by purpose (the *what kind of slide*) | [design-system.md §3](./design-system.md#3-the-7-functions) — function families table |
 | **Cross-cutting authoring patterns** (eyebrow, subtitle, key-insight, state markers, dark/mirror/numbered, etc.) | [../lib/base/base.docs.md](../lib/base/base.docs.md) |
-| Scaffolding a new slide from a known component | `npm run new:slide <component>` (skeleton via the manifest); `npm run new:slide -- --list` enumerates the 58 shipped components |
+| Scaffolding a new slide from a known component | `npm run new:slide <component>` (skeleton via the manifest); `npm run new:slide -- --list` enumerates the 53 shipped components |
 | Adding a treatment — tint or mark (`tint-*` / `mark-*` classes, `at-*` placement) | [treatments.md](../engineering/treatments.md) |
 | Adding a Mermaid diagram | [mermaid.md](../engineering/mermaid.md) |
 | Running the render pipeline (PDF/HTML/PPTX) | [pipeline.md](../engineering/pipeline.md) |
-| Comparing lattice-emulator.js vs marp-cli output | [audit.md](../engineering/audit.md) |
+| Verifying render correctness (semantic-invariant suite, visual review) | [visual-review.md](../engineering/visual-review.md) |
 | Hitting an unexpected behavior, hack, or browser/Marp/Mermaid quirk | [gotchas.md](../engineering/gotchas.md) — read first when something breaks in an unfamiliar way; add an entry when you find a new one |
 
 **Do not load all files at once.** Load only what the task requires.

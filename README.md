@@ -332,7 +332,7 @@ lattice/
 │   ├── workflow.md            # branching, commits, three-renderer gate
 │   ├── development.md         # tooling, tests, lint, CI, hooks
 │   ├── gotchas.md             # symptom-keyed fixes — read first when something breaks
-│   ├── cascade.md, mermaid.md, pipeline.md, typography.md, treatments.md, audit.md
+│   ├── cascade.md, mermaid.md, pipeline.md, typography.md, treatments.md, visual-review.md
 │   └── decisions/             # durable investigation notes + design proposals
 │
 ├── design/                    # design system + authoring contract
