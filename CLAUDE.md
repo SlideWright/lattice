@@ -61,7 +61,7 @@ architectural fork) — and bundle those into one `AskUserQuestion`.
    a deliberately curated, atomic commit series. Across many parallel AI
    sessions a PR can carry 20+ noisy commits, so squashing keeps `main` one
    reviewable, revertable commit per PR. **After every merge — once local `main`
-   is synced — post a brief standup** (epic/feature · story · completed · on deck
+   is synced — post a brief standup** (swimlane · card · completed · on deck
    for *this* thread) so I can re-orient across my many parallel sessions; it's
    the closing beat of the merge, derived from existing repo/GitHub signals, not
    an optional extra. See `engineering/workflow.md` (§Merging, §Post-merge standup).

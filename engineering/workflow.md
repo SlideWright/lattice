@@ -395,13 +395,13 @@ I run many of your sibling sessions in parallel and lose the thread between them
 So **the moment a merge is confirmed and local `main` is synced, post a brief
 standup** — it is the closing beat of every merge, not an optional extra. Keep it
 to ~5 lines, *derived from signals already in the repo and GitHub* — there is no
-separate epic/story tracker to maintain:
+separate swimlane/card tracker to maintain:
 
-- **Epic / feature** — the initiative this work belongs to: the governing
+- **Swimlane** — the line of work this card sits in: the governing
   `engineering/decisions/YYYY-MM-DD-*.md` doc if one exists, else a short, *stable*
   label inferred from the branch/PR theme. Reuse the same label across a session so
   I recognise the thread at a glance (e.g. "agent-workflow hardening").
-- **Story** — what this PR set out to do (its title), and the branch.
+- **Card** — what this PR set out to do (its title), and the branch.
 - **Completed** — the PR just merged (`#N`, squashed sha), plus any sibling PRs
   merged earlier in the *same* thread/session so multi-PR work reads cumulatively.
   Note the `CHANGELOG` / release category if the change is user-visible.
@@ -414,8 +414,8 @@ Template:
 
 ```
 📋 Standup — merged #N (<sha>)
-• Epic:      <initiative / decisions-doc / inferred label>
-• Story:     <what the PR did> · <branch>
+• Swimlane:  <decisions-doc / inferred label>
+• Card:      <what the PR did> · <branch>
 • Completed: #N <one line> (+ #M, #K earlier this thread)
 • On deck:   <next step for this thread, or "thread complete — awaiting direction">
 ```
