@@ -17,8 +17,8 @@ specialist references for one layer once you have this model.
 ## 1. The problem this solves
 
 Lattice grew organically from a small palette and a handful of card
-layouts into ~35 layouts, ~18 modifiers, five native chart engines, one
-external diagram pipeline (Mermaid), three rendering paths, and 25
+layouts into 53 layouts, ~18 modifiers, five native chart engines, one
+external diagram pipeline (Mermaid), three rendering paths, and 14
 palettes. Each addition was internally consistent; collectively they
 had no shared vocabulary.
 

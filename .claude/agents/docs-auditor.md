@@ -58,7 +58,7 @@ itself a finding.
   `skill.md`, `editorial.md`, `design-principles.md`.
 - `engineering/` — `architecture.md`, `development.md`, `workflow.md`,
   `pipeline.md`, `mermaid.md`, `typography.md`, `treatments.md`,
-  `cascade.md`, `gotchas.md`, `audit.md`, `decisions/`.
+  `cascade.md`, `gotchas.md`, `visual-review.md`, `decisions/`.
 - The docs website — `docs/src/content/docs/**` (`introduction`,
   `overview.mdx`, `getting-started`, `principles`, `guides/*`) and the
   `docs/src/pages/**` Astro pages (landing `index.astro`, the component

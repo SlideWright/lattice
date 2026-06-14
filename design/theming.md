@@ -196,7 +196,8 @@ trajectory).
 
 Each pair is generated via the Brand-triad strategy in
 `themes/palette-audit.md` (rank-1 proposal per theme). The audit
-deck scores five strategies × 13 themes and shows the resolved hex
+deck scores five strategies × 13 themes (every shipping palette except
+`carta`, which post-dates the audit) and shows the resolved hex
 swatches; copy the rank-1 values into your new palette for a
 known-good starting point.
 

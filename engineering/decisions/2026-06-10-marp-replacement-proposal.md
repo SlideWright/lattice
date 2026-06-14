@@ -1,7 +1,11 @@
 # Replacing Marp — full proposal
 
-**Status:** proposal / open. Supersedes and expands the "Own the engine —
-bootstrap with Marp" section of
+**Status:** shipped / superseded. Marp is fully retired — gone as both a
+dependency and a render path; the owned engine is canonical (CLAUDE.md HARD
+RULE #1). For the current state of record see
+[`engineering/marp-independence.md`](../marp-independence.md); the sections
+below are kept as the rationale of record for how we got there. Supersedes
+and expands the "Own the engine — bootstrap with Marp" section of
 [`2026-05-10-tauri-exploration.md`](2026-05-10-tauri-exploration.md), which
 first committed to owning the engine but framed it around the Tauri desktop
 WebView. This note is repo-scoped: it audits exactly what Marp does for

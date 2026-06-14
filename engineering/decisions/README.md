@@ -168,7 +168,8 @@ it is load-bearing.
   and the website's single render seam. Recommends building
   `lattice-engine` on `markdown-it` and a five-phase plan that keeps
   the baselines green. Expands the "Own the engine" section of the
-  Tauri note. **Status: proposal / open.**
+  Tauri note. **Status: shipped / superseded** — Marp is fully retired;
+  see [`engineering/marp-independence.md`](../marp-independence.md).
 - [2026-06-13-coach-canon-knowledge-pack.md](2026-06-13-coach-canon-knowledge-pack.md) —
   design model for giving the cloud-tier Coach the presentation canon's
   *qualitative* judgement (Minto / Duarte / Knaflic / *Pitfalls* / Zen)
