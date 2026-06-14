@@ -14,6 +14,7 @@ tokenization/
 *.pptx
 *.pdf
 !examples/*.pdf
+!exemplars/**/*.pdf
 !lib/components/**/*.pdf
 !lib/base/**/*.pdf
 !lib/integrations/**/*.pdf
@@ -49,6 +50,7 @@ lib/components/**/*.html
 test/integration/**/*.html
 !examples/*.pdf
 !examples/**/*.pdf
+!exemplars/**/*.pdf
 !lib/components/**/*.pdf
 !lib/base/**/*.pdf
 
