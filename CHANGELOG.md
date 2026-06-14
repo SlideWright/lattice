@@ -51,9 +51,11 @@ in patch versions.
   reveal.js, Slidev, Beamer, Quarto, Spectacle), and design/collab tools (Pitch,
   Canva, Figma Slides). It credits each rival's real strengths, makes the
   deterministic/boardroom case with a capability matrix and a cited evidence
-  section, answers "isn't this just Marp?", and concedes where Lattice is the
-  wrong tool. Linked from the primary nav and footer; research source-of-truth in
-  `engineering/decisions/2026-06-14-competitive-analysis.md`.
+  section, answers "isn't this just Marp?", states the bring-your-own-model
+  stance (OpenRouter, your key/credits, default Claude Sonnet, plus the
+  deterministic-first/prompt-caching/budget-cap cost controls), and concedes
+  where Lattice is the wrong tool. Linked from the primary nav and footer;
+  research source-of-truth in `engineering/decisions/2026-06-14-competitive-analysis.md`.
 
 - **The Drawing Board now shows export progress and an error toast.** A
   one-click PDF/PPTX export rasterizes every slide in the browser — seconds to
