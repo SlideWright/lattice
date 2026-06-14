@@ -200,6 +200,17 @@ in patch versions.
   arrows + keys (see Added), so the strip is one legible readout, not a crowd.
   The sliding section spine up top is unchanged.
 
+- **Docs-site live previews now fetch the minified engine runtime + CSS.** The
+  Playground, Drawing Board, and every component specimen inject the engine
+  runtime and engine stylesheet into their preview iframes; the sync step
+  (`docs/scripts/sync-playground-assets.mjs`) was staging the *readable* builds.
+  It now stages the already-built minified variants (`lattice-runtime.min.js`,
+  `lattice.min.css`) under the same content-hashed URLs — runtime ~1.5MB → 300KB,
+  engine CSS ~727KB → 362KB per preview (~2.3MB → ~0.66MB total), with no change
+  to what renders. The readable `dist/lattice-runtime.js` / `dist/lattice.css`
+  remain the devtools/debug artifacts; the minified builds already backed the
+  Export-to-Marp path, so this just shares them.
+
 - **Chart spine tokens (`--chart-spine` / `-w` / `-h`) moved to
   `section.word-cloud`.** They lived on the shared `section.chart-frame` block,
   but since the four keyed charts went SVG-native (#240) only `word-cloud` still

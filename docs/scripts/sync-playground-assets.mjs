@@ -1,15 +1,26 @@
 // Stage the runtime assets the playground fetches/loads at runtime into a
 // CONTENT-HASHED directory, so a redeploy can never serve them stale:
-//   - dist/lattice-runtime.js  → public/playground/v/<hash>/lattice-runtime.js
+//   - dist/lattice-runtime.min.js → public/playground/v/<hash>/lattice-runtime.js
 //       (the DOM-transform + Mermaid bundle, loaded inside the preview iframe;
 //        renders charts/split-panels and orchestrates Mermaid — the same
-//        bundle marp-vscode preview uses)
-//   - dist/lattice.css          → public/playground/v/<hash>/themes/lattice.css
+//        bundle marp-vscode preview uses. We stage the MINIFIED build: the
+//        preview fetches it over the wire, where size matters; the readable
+//        dist/lattice-runtime.js stays the devtools/debug artifact. ~1.5MB→300KB.)
+//   - dist/lattice.min.css      → public/playground/v/<hash>/themes/lattice.css
+//       (the @theme lattice engine; minified for the same reason. ~727KB→362KB.)
 //   - themes/<name>.css         → public/playground/v/<hash>/themes/<name>.css
-//       (the @theme lattice engine + every palette, fetched + registered by
-//        the playground engine to render in the chosen palette)
+//       (the per-palette token files, fetched + registered by the playground
+//        engine to render in the chosen palette — small, shipped as-authored)
 //   - public/playground/lattice-playground.js (committed engine bundle)
 //                               → public/playground/v/<hash>/lattice-playground.js
+//
+// The staged DEST names are unversioned-of-content on purpose (lattice-runtime.js,
+// themes/lattice.css): the fetch sites (runtimeUrl / themeBase) are unchanged, so
+// swapping the SOURCE to the minified build is invisible to every consumer — only
+// the bytes (and thus the content hash) change. The minified variants are built by
+// the same `npm run build` (build-runtime.js emits both; lattice.min.css via the
+// css pipeline) and already back the Export-to-Marp path, so they're guaranteed
+// present and behaviourally identical to the readable builds.
 //
 // WHY HASHED. These three asset kinds are served from fixed public/ URLs. Astro
 // content-hashes its own page JS, so a redeploy refreshes the page, but the
@@ -34,8 +45,10 @@ import { fileURLToPath } from 'node:url';
 const here = dirname(fileURLToPath(import.meta.url));
 const repoRoot = join(here, '..', '..');
 const themesDir = join(repoRoot, 'themes');
-const latticeCss = join(repoRoot, 'dist', 'lattice.css');
-const runtimeJs = join(repoRoot, 'dist', 'lattice-runtime.js');
+// Preview-fetched engine CSS + runtime: stage the MINIFIED builds (the readable
+// dist/lattice.css + dist/lattice-runtime.js remain the debug artifacts).
+const latticeCss = join(repoRoot, 'dist', 'lattice.min.css');
+const runtimeJs = join(repoRoot, 'dist', 'lattice-runtime.min.js');
 const pgDir = join(here, '..', 'public', 'playground');
 const engineJs = join(pgDir, 'lattice-playground.js'); // committed engine bundle
 
