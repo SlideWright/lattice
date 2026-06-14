@@ -9,9 +9,8 @@ The live, claimable work queue — a read-only mirror of [open issues](https://g
 grouped by board column. Design lives in `engineering/decisions/`; this tracks
 only *status*. **29 open** items.
 
-## Backlog (26)
+## Backlog (25)
 
-- [#275](https://github.com/SlideWright/lattice/issues/275) docs: correct README palette count 13→14 (add missing `carta`) — critical · theming
 - [#276](https://github.com/SlideWright/lattice/issues/276) docs: fix drifted counts in design-system.md headline (palettes 25→14) — critical · docs
 - [#277](https://github.com/SlideWright/lattice/issues/277) docs: correct theming.md "13 themes"→14 — high · theming
 - [#278](https://github.com/SlideWright/lattice/issues/278) docs: correct marp-independence.md "58 layouts"→53 — high · engine
@@ -42,9 +41,9 @@ only *status*. **29 open** items.
 
 _none_
 
-## In progress (0)
+## In progress (1)
 
-_none_
+- [#275](https://github.com/SlideWright/lattice/issues/275) docs: correct README palette count 13→14 (add missing `carta`) — critical · theming
 
 ## In review (0)
 
