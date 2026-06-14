@@ -181,7 +181,7 @@ const TOOL_GROUP = {
   'check-chart-responsiveness.js': 'Check / gate', 'check-svg-scaling.js': 'Check / gate', 'affected-tests.js': 'Check / gate',
   // Lint/audit
   'lint-deck.js': 'Lint / audit', 'contrast-audit.js': 'Lint / audit', 'theme-scorecard.js': 'Lint / audit',
-  'pixel-check.js': 'Lint / audit',
+  'pixel-check.js': 'Lint / audit', 'check-shadcn-bridge-contrast.js': 'Lint / audit',
   // Render/visual
   'emulator-engine-parity.mjs': 'Render / visual',
   'regression-gate.mjs': 'Render / visual',
