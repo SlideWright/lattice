@@ -371,7 +371,12 @@ html[data-mode='dark'] .mode-toggle::before {
 /* Tablet / phone: collapse the nav links behind the hamburger. The links
  * become a full-width dropdown panel under the bar; palette + mode controls
  * stay visible at all sizes. */
-@media (max-width: 760px) {
+/* Raised 760 → 960: the widest topbar (the playground/drawing-board — full nav +
+ * the Tour button + the palette Select, whose width grows with longer palette
+ * names like "crepuscolo") overflowed in the 760–960 tablet band. Hamburger
+ * through that band on every standalone page so the topbar never overflows;
+ * the inline nav returns at ≥960 where it comfortably fits. */
+@media (max-width: 960px) {
 	.nav-toggle {
 		display: inline-flex;
 	}

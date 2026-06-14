@@ -46,3 +46,11 @@ jobs:
         working-directory: docs
         env:
           CHROME_PATH: ${{ steps.chrome.outputs.chrome-path }}
+      # Responsive guard: no page may exceed its viewport width (a pannable page
+      # breaks on touch zoom/scroll/tap). Reuses the dist the perf step built;
+      # exercises the interaction states (pane switches, overlay opens) too.
+      - name: Horizontal-overflow guard (mobile/tablet/desktop)
+        run: npm run check:overflow
+        working-directory: docs
+        env:
+          CHROME_PATH: ${{ steps.chrome.outputs.chrome-path }}

@@ -14,7 +14,8 @@
     "astro": "astro",
     "test": "vitest run",
     "test:watch": "vitest",
-    "perf": "npm run sync:portal && npm run sync:playground && astro build && lhci autorun"
+    "perf": "npm run sync:portal && npm run sync:playground && astro build && lhci autorun",
+    "check:overflow": "node scripts/check-overflow.mjs"
   },
   "dependencies": {
     "@astrojs/react": "^5.0.7",
@@ -63,6 +64,7 @@
     "@testing-library/user-event": "^14.6.1",
     "@vitejs/plugin-react": "^5.2.0",
     "jsdom": "^25.0.1",
+    "puppeteer-core": "^25.1.0",
     "vitest": "^3.2.6"
   }
 }
