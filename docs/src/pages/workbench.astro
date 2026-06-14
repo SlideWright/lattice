@@ -1,18 +1,23 @@
 ---
 // The Workbench — a standalone Astro route (like the Playground / Drawing
-// Board) where an author FABRICATES the parts of a deck. Faculty 1, the Theme
-// Studio, ships first (engineering/decisions/2026-06-10-design-studio-themes-
-// layouts.md): craft a palette from a handful of essential colours and see it
-// derived, audited for WCAG AA, and rendered live on a specimen deck — then
-// copy or download a droppable themes/<name>.css. All the colour maths is the
-// pure repo core (lib/theme/*), run in the browser; the live render uses the
-// same engine as the Playground (window.LatticePlayground).
+// Board) where an author FABRICATES the parts of a deck. Two faculties: the
+// Theme Studio (craft a palette → derived, WCAG-audited, rendered live) and the
+// Layout Studio (author a CSS-only local component, gated like the engine).
+//
+// Phase 5 of the shadcn migration: the page chrome is a React + shadcn island
+// (WorkbenchApp). Astro owns the head, the topbar, and the engine <script>;
+// React owns the faculty Tabs, the action buttons / text inputs / textareas, the
+// theme-CSS Collapsible, the faculty switch, and BOOTS the two vanilla studios —
+// WRAPPING the irreducible engine pieces (theme-studio.js, component-studio.js,
+// deck-config.js, deck-preview.js, the engine bundle, the driver.js tour) rather
+// than reimplementing them. See engineering/decisions/2026-06-09-shadcn-migration.md §0.
 import { createRequire } from 'node:module';
 import { join } from 'node:path';
 import '../styles/landing.css';
 import '../styles/workbench.css';
 import '../styles/deck-config.css';
 import PaletteControls from '../components/site/PaletteControls.tsx';
+import WorkbenchApp from '../components/workbench/WorkbenchApp.tsx';
 import { joinBase } from '../lib/base-url.mjs';
 import { primaryNav, GITHUB_URL, isCurrent } from '../lib/nav.mjs';
 import { isPreviewDeploy } from '../lib/deploy-env.mjs';
@@ -39,12 +44,13 @@ const { loadAll } = require(join(process.cwd(), '..', 'lib/components', 'index.j
 const { FINISH_NAMES } = require(join(process.cwd(), '..', 'lib/core', 'resolve-finish.js'));
 const shippedNames = loadAll().map((m) => m.name);
 
-const studioData = JSON.stringify({
+// The config payload the React island hands to both studios at boot.
+const wbData = {
 	themeBase: url(pg + 'themes/'),
 	runtimeUrl: url(pg + 'lattice-runtime.js'),
 	shippedNames,
 	finishes: FINISH_NAMES,
-});
+};
 
 const links = primaryNav(url); // shared primary nav — src/lib/nav.mjs
 const here = Astro.url.pathname;
@@ -93,184 +99,11 @@ const here = Astro.url.pathname;
 			</div>
 		</header>
 
-		<nav class="wb-faculty" aria-label="Workbench faculty">
-			<button type="button" class="wb-faculty-btn is-active" data-faculty="theme">Theme Studio</button>
-			<button type="button" class="wb-faculty-btn" data-faculty="layout">Layout Studio</button>
-		</nav>
-
-		<main class="studio" data-tab="design">
-			<!-- Mobile-only tab bar (hidden ≥1024px via CSS). -->
-			<div class="studio-tabs" role="tablist">
-				<button type="button" class="studio-tab is-active" data-tab="design">Design</button>
-				<button type="button" class="studio-tab" data-tab="preview">Preview</button>
-				<button type="button" class="studio-tab" data-tab="contrast">Contrast</button>
-			</div>
-
-			<!-- Controls: starters · name · essentials · actions -->
-			<section class="studio-panel studio-controls">
-				<div class="studio-head">
-					<p class="studio-eyebrow">The Workbench</p>
-					<h1 class="studio-title">Theme Studio</h1>
-					<p class="studio-sub">Set a handful of colours. The studio derives the full token
-						contract, holds it to WCAG AA, and renders it live.</p>
-				</div>
-
-				<div class="studio-block studio-ai">
-					<h2 class="studio-h2">Design with AI</h2>
-					<p class="studio-ai-status">AI: checking…</p>
-					<div class="studio-ai-row">
-						<input type="text" class="studio-ai-prompt" spellcheck="false"
-							placeholder="Describe a palette, or ask for a change — “warm editorial”, “cooler”, “navy accent”" />
-						<button type="button" class="studio-btn studio-primary studio-ai-ask">Ask</button>
-					</div>
-					<button type="button" class="studio-btn studio-ai-connect" hidden>Connect a model</button>
-					<div class="studio-ai-history" hidden></div>
-				</div>
-
-				<div class="studio-block">
-					<h2 class="studio-h2">Start from</h2>
-					<div class="studio-starters"></div>
-				</div>
-
-				<div class="studio-block">
-					<label class="studio-name-row">
-						<span class="studio-h2">Theme name</span>
-						<input id="studio-name" class="studio-name" type="text" spellcheck="false" autocomplete="off" />
-					</label>
-				</div>
-
-				<div class="studio-block">
-					<h2 class="studio-h2">Essentials</h2>
-					<div class="studio-fields"></div>
-				</div>
-
-				<div class="studio-block studio-lib-block">
-					<div class="studio-lib-head">
-						<h2 class="studio-h2">Library</h2>
-						<button type="button" class="studio-btn studio-lib-save studio-theme-save">Save current</button>
-					</div>
-					<div class="studio-library studio-theme-library"></div>
-				</div>
-
-				<div class="studio-actions">
-					<button type="button" class="studio-btn studio-copy">Copy CSS</button>
-					<button type="button" class="studio-btn studio-primary studio-download">Download .css</button>
-				</div>
-			</section>
-
-			<!-- Stage: the live specimen -->
-			<section class="studio-panel studio-stage">
-				<div class="studio-stage-head">
-					<span class="studio-stage-title">Live preview</span>
-					<div class="studio-mode">
-						<button type="button" class="studio-mode-btn is-active" data-mode="light">Light</button>
-						<button type="button" class="studio-mode-btn" data-mode="dark">Dark</button>
-					</div>
-					<button type="button" class="studio-mode-btn studio-preview-setup-btn" data-preview-setup aria-expanded="false" title="Preview setup — render this preview under a finish, size, or islands">Preview setup</button>
-					<span class="studio-status"></span>
-				</div>
-				<div class="studio-preview-config deck-config" hidden></div>
-				<div class="studio-preview-host"></div>
-			</section>
-
-			<!-- Audit: the contrast meter + the generated CSS -->
-			<section class="studio-panel studio-audit">
-				<h2 class="studio-h2">Contrast</h2>
-				<p class="studio-meter-summary"></p>
-				<div class="studio-meter"></div>
-				<details class="studio-css">
-					<summary>Theme CSS</summary>
-					<pre class="studio-code"></pre>
-				</details>
-			</section>
-		</main>
-
-		<!-- Faculty 2: the Layout Studio (CSS-only local components). -->
-		<main class="studio studio-layout" data-tab="design" hidden>
-			<div class="studio-tabs" role="tablist">
-				<button type="button" class="studio-tab is-active" data-tab="design">Design</button>
-				<button type="button" class="studio-tab" data-tab="preview">Preview</button>
-				<button type="button" class="studio-tab" data-tab="contrast">Gate</button>
-			</div>
-
-			<!-- Controls: starters · identity · styles · skeleton · actions -->
-			<section class="studio-panel studio-controls">
-				<div class="studio-head">
-					<p class="studio-eyebrow">The Workbench</p>
-					<h1 class="studio-title">Layout Studio</h1>
-					<p class="studio-sub">Author a CSS-only component — palette-blind, scoped to its
-						own class. The studio renders it live and gates it like the engine would.</p>
-				</div>
-
-				<div class="studio-block">
-					<h2 class="studio-h2">Start from</h2>
-					<div class="studio-starters lstudio-starters"></div>
-				</div>
-
-				<div class="studio-block">
-					<h2 class="studio-h2">Identity</h2>
-					<div class="lstudio-fields">
-						<label class="lstudio-field"><span>Name (_class)</span>
-							<input class="lstudio-name" type="text" spellcheck="false" autocomplete="off" /></label>
-						<label class="lstudio-field"><span>Function</span><select class="lstudio-function"></select></label>
-						<label class="lstudio-field"><span>Form</span><select class="lstudio-form"></select></label>
-						<label class="lstudio-field"><span>Substance</span><select class="lstudio-substance"></select></label>
-						<label class="lstudio-field"><span>Tags</span>
-							<input class="lstudio-tags" type="text" spellcheck="false" placeholder="comma, separated" /></label>
-						<label class="lstudio-field"><span>Description</span>
-							<input class="lstudio-description" type="text" /></label>
-					</div>
-				</div>
-
-				<div class="studio-block">
-					<h2 class="studio-h2">Styles — palette-blind, scoped to .name</h2>
-					<textarea class="lstudio-css-editor" rows="10" spellcheck="false"></textarea>
-				</div>
-
-				<div class="studio-block">
-					<h2 class="studio-h2">Skeleton</h2>
-					<textarea class="lstudio-skeleton-editor" rows="6" spellcheck="false"></textarea>
-				</div>
-
-				<div class="studio-block studio-lib-block">
-					<div class="studio-lib-head">
-						<h2 class="studio-h2">Library</h2>
-						<button type="button" class="studio-btn studio-lib-save lstudio-save">Save current</button>
-					</div>
-					<div class="studio-library lstudio-library"></div>
-				</div>
-
-				<div class="studio-actions">
-					<button type="button" class="studio-btn lstudio-copy-css">Copy CSS</button>
-					<button type="button" class="studio-btn lstudio-copy-manifest">Copy manifest</button>
-					<button type="button" class="studio-btn studio-primary lstudio-download">Download scaffold</button>
-				</div>
-			</section>
-
-			<!-- Stage: the live skeleton render -->
-			<section class="studio-panel studio-stage">
-				<div class="studio-stage-head">
-					<span class="studio-stage-title">Live preview</span>
-					<div class="studio-mode">
-						<button type="button" class="studio-mode-btn is-active" data-mode="light">Light</button>
-						<button type="button" class="studio-mode-btn" data-mode="dark">Dark</button>
-					</div>
-					<button type="button" class="studio-mode-btn studio-preview-setup-btn" data-preview-setup aria-expanded="false" title="Preview setup — render this preview under a finish, size, or islands">Preview setup</button>
-					<span class="studio-status"></span>
-				</div>
-				<div class="studio-preview-config deck-config" hidden></div>
-				<div class="studio-preview-host"></div>
-			</section>
-
-			<!-- Audit: the deterministic gate findings -->
-			<section class="studio-panel studio-audit">
-				<h2 class="studio-h2">Gate</h2>
-				<p class="lstudio-findings-summary"></p>
-				<div class="lstudio-findings"></div>
-			</section>
-		</main>
-
-		<script type="application/json" id="studio-data" set:html={studioData}></script>
+		<!-- The Workbench surface: one React + shadcn island owning the faculty
+		     Tabs, the chrome controls, the theme-CSS Collapsible, the faculty
+		     switch, and booting the two vanilla studios into the host elements it
+		     renders (theme-studio.js + component-studio.js, queried by class). -->
+		<WorkbenchApp client:load data={wbData} />
 
 		<!-- The in-browser engine (same bundle as the Playground). -->
 		<script is:inline defer src={url(pg + 'lattice-playground.js')}></script>
@@ -292,43 +125,9 @@ const here = Astro.url.pathname;
 			})();
 		</script>
 
-		<!-- Faculty switch: Theme Studio ⇄ Layout Studio (one Workbench, two benches). -->
-		<script is:inline>
-			(function () {
-				var bar = document.querySelector('.wb-faculty');
-				var theme = document.querySelector('main.studio:not(.studio-layout)');
-				var layout = document.querySelector('main.studio-layout');
-				if (!bar || !theme || !layout) return;
-				function show(f) {
-					var isLayout = f === 'layout';
-					theme.hidden = isLayout;
-					layout.hidden = !isLayout;
-					bar.querySelectorAll('.wb-faculty-btn').forEach(function (b) {
-						b.classList.toggle('is-active', b.dataset.faculty === f);
-					});
-					try { localStorage.setItem('lattice-wb-faculty', f); } catch (e) {}
-					if (isLayout && layout.__layoutStudio) layout.__layoutStudio.run();
-				}
-				bar.addEventListener('click', function (e) {
-					var b = e.target.closest('.wb-faculty-btn');
-					if (b) show(b.dataset.faculty);
-				});
-				var saved;
-				try { saved = localStorage.getItem('lattice-wb-faculty'); } catch (e) {}
-				if (saved === 'layout') show('layout');
-			})();
-		</script>
-
-		<!-- The studio controllers (bundled modules: import lib/theme/* and lib/layout/*). -->
-		<script>
-			import { initThemeStudio } from '../playground/theme-studio.js';
-			import { initLayoutStudio } from '../playground/component-studio.js';
-			const cfg = JSON.parse(document.getElementById('studio-data').textContent);
-			initThemeStudio(cfg);
-			initLayoutStudio(cfg);
-		</script>
-
-		<!-- Guided tour: first-visit walkthrough + replay button (driver.js). -->
+		<!-- Guided tour: first-visit walkthrough + replay button (driver.js). It
+		     targets the live DOM by selector, so it runs after the island hydrates
+		     (a 550ms auto-start delay covers hydration); production-only. -->
 		<script>
 			import { initWorkbenchTour } from '../playground/workbench-tour.js';
 			initWorkbenchTour();

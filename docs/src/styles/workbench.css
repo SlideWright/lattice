@@ -123,25 +123,12 @@
 }
 
 /* ── Theme name ──────────────────────────────────────────────────────────── */
+/* The name field is a shadcn <Input> (.studio-name kept for studio wiring +
+ * the mono face below); its box/border/focus come from shadcn utilities. */
 .studio-name-row {
 	display: block;
 }
-.studio-name {
-	width: 100%;
-	box-sizing: border-box;
-	padding: 8px 10px;
-	border: 1px solid var(--border);
-	border-radius: var(--radius-sm);
-	background: var(--bg);
-	color: var(--text-heading);
-	font-family: var(--font-mono);
-	font-size: 13px;
-}
-.studio-name:focus {
-	outline: none;
-	border-color: var(--accent);
-	box-shadow: 0 0 0 1px var(--accent);
-}
+.studio-name { margin-top: 6px; font-family: var(--font-mono); }
 
 /* ── Essentials form ─────────────────────────────────────────────────────── */
 .studio-group {
@@ -205,26 +192,13 @@
 	margin-top: 6px;
 	background: linear-gradient(to top, var(--bg-alt) 70%, transparent);
 }
-.studio-btn {
-	flex: 1 1 0;
-	padding: 9px 12px;
-	border: 1px solid var(--border);
-	border-radius: var(--radius-sm);
-	background: var(--bg);
-	color: var(--text-heading);
-	font: inherit;
-	font-size: 13px;
-	font-weight: 600;
-	cursor: pointer;
-	transition: border-color 0.12s, background 0.12s;
-}
-.studio-btn:hover { border-color: var(--accent); }
-.studio-primary {
-	background: var(--accent);
-	border-color: var(--accent);
-	color: var(--on-accent);
-}
-.studio-primary:hover { filter: brightness(1.05); }
+/* The studio buttons are now shadcn <Button> islands (they keep the .studio-btn
+ * / .studio-copy / … classes only so the vanilla studios can still wire them by
+ * selector — their LOOK comes from shadcn utilities). Retired here: the bespoke
+ * .studio-btn / .studio-primary visual rules. Only the action-row LAYOUT (equal
+ * thirds, full-width connect) remains, since shadcn Button is inline-flex
+ * shrink-0 and would not fill its track otherwise. */
+.studio-actions .studio-btn { flex: 1 1 0; }
 
 /* ── Stage ───────────────────────────────────────────────────────────────── */
 .studio-stage-head {
@@ -334,7 +308,14 @@
 .studio-css {
 	margin-top: 16px;
 }
-.studio-css summary {
+/* The "Theme CSS" disclosure is now a shadcn Collapsible — its trigger is a
+ * <button class="studio-css-summary">, not a <summary>. Same look as before. */
+.studio-css-summary {
+	display: block;
+	width: 100%;
+	text-align: left;
+	border: 0;
+	background: none;
 	font-family: var(--font-mono);
 	font-size: 11px;
 	letter-spacing: 0.1em;
@@ -342,6 +323,7 @@
 	color: var(--text-muted);
 	cursor: pointer;
 }
+.studio-css-summary:hover { color: var(--text-heading); }
 .studio-code {
 	margin-top: 8px;
 	max-height: 280px;
@@ -373,19 +355,8 @@
 	display: flex;
 	gap: 8px;
 }
-.studio-ai-prompt {
-	flex: 1 1 auto;
-	min-width: 0;
-	box-sizing: border-box;
-	padding: 8px 10px;
-	border: 1px solid var(--border);
-	border-radius: var(--radius-sm);
-	background: var(--bg);
-	color: var(--text-heading);
-	font: inherit;
-	font-size: 13px;
-}
-.studio-ai-prompt:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+/* The prompt is a shadcn <Input>; only its flex behaviour in the row remains. */
+.studio-ai-prompt { flex: 1 1 auto; min-width: 0; }
 .studio-ai-row .studio-ai-ask { flex: 0 0 auto; }
 .studio-ai-connect { width: 100%; margin-top: 8px; }
 /* Recent prompts — re-runnable chips. */
@@ -471,7 +442,7 @@
 	margin-bottom: 10px;
 }
 .studio-lib-head .studio-h2 { margin: 0; }
-.studio-lib-save { flex: 0 0 auto; padding: 5px 12px; }
+.studio-lib-save { flex: 0 0 auto; }
 .studio-library {
 	display: flex;
 	flex-direction: column;
@@ -513,30 +484,16 @@
 	cursor: pointer;
 }
 .studio-lib-del:hover { border-color: #b26a00; color: #b26a00; }
+/* The faculty switch (Theme Studio ⇄ Layout Studio) is now a shadcn Tabs island
+ * inside this bar. The bar keeps its band styling (and is the guided tour's
+ * spotlight target); the bespoke .wb-faculty-btn pill rules are retired in
+ * favour of the shadcn TabsList/TabsTrigger look. */
 .wb-faculty {
 	display: flex;
-	gap: 4px;
 	padding: 8px 20px;
 	background: var(--bg-alt);
 	border-bottom: 1px solid var(--border);
 	flex: 0 0 auto;
-}
-.wb-faculty-btn {
-	padding: 6px 14px;
-	border: 1px solid transparent;
-	border-radius: 999px;
-	background: none;
-	font: inherit;
-	font-size: 13px;
-	font-weight: 600;
-	color: var(--text-muted);
-	cursor: pointer;
-}
-.wb-faculty-btn:hover { color: var(--text-heading); }
-.wb-faculty-btn.is-active {
-	background: var(--bg);
-	border-color: var(--border);
-	color: var(--accent);
 }
 
 /* ── Layout Studio — identity fields ─────────────────────────────────────── */
@@ -571,24 +528,16 @@
 .lstudio-field select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
 .lstudio-name { font-family: var(--font-mono); }
 
-/* Code editors (CSS + skeleton) */
+/* Code editors (CSS + skeleton) — shadcn <Textarea>. The box/border/focus come
+ * from shadcn utilities; only the monospace code face + resize affordance stay. */
 .lstudio-css-editor,
 .lstudio-skeleton-editor {
-	box-sizing: border-box;
-	width: 100%;
 	resize: vertical;
-	padding: 10px;
-	border: 1px solid var(--border);
-	border-radius: var(--radius-sm);
-	background: var(--bg);
-	color: var(--text-body);
 	font-family: var(--font-mono);
 	font-size: 11.5px;
 	line-height: 1.5;
 	tab-size: 2;
 }
-.lstudio-css-editor:focus,
-.lstudio-skeleton-editor:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
 
 /* ── Layout Studio — gate findings (the audit pane) ──────────────────────── */
 .lstudio-findings-summary {

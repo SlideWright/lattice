@@ -403,6 +403,11 @@ export function initThemeStudio(config) {
     timer = setTimeout(run, 180);
   }
 
+  // Expose a thin run handle so React chrome (the faculty Tabs + the mobile
+  // pane Tabs) can re-fit the preview after revealing the stage — the same
+  // `run()` the studio drives internally. Driving, not reimplementing.
+  root.__themeStudio = { run };
+
   // ── AI tier (Phase 2) — seed from a description, refine conversationally ──
   // The model only PROPOSES an essential set; coerceEssentials + the
   // deterministic derivation + the contrast gate dispose. complete() floors to
