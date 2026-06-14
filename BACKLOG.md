@@ -7,11 +7,10 @@
 
 The live, claimable work queue — a read-only mirror of [open issues](https://github.com/SlideWright/lattice/issues),
 grouped by board column. Design lives in `engineering/decisions/`; this tracks
-only *status*. **37 open** items.
+only *status*. **36 open** items.
 
-## Backlog (34)
+## Backlog (33)
 
-- [#276](https://github.com/SlideWright/lattice/issues/276) docs: fix drifted counts in design-system.md headline (palettes 25→14) — critical · docs
 - [#277](https://github.com/SlideWright/lattice/issues/277) docs: correct theming.md "13 themes"→14 — high · theming
 - [#278](https://github.com/SlideWright/lattice/issues/278) docs: correct marp-independence.md "58 layouts"→53 — high · engine
 - [#283](https://github.com/SlideWright/lattice/issues/283) refactor(css): audit and reduce `!important` (~490 repo-wide) — high · engine
