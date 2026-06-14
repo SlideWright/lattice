@@ -216,6 +216,7 @@ independent set of eyes earns its latency.
 | Node, npm scripts, tests, lint, hooks, CI, "add X also do Y" | `engineering/development.md` |
 | Something behaving strangely (symptom index) | `engineering/gotchas.md` |
 | Engine internals, where transform kernels live | `engineering/architecture.md` |
+| Where we stand vs Marp (independence scorecard, living) | `engineering/marp-independence.md` |
 | The CSS cascade / `@layer` (declared-but-inert; the trap) | `engineering/cascade.md` |
 | Typography scales | `engineering/typography.md` |
 | Palette tokens, Mermaid contract | `design/theming.md` |
