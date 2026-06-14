@@ -116,6 +116,19 @@ slide to someone to drop into their own deck or present from
 PowerPoint. Anything you want to change, you change in the source — the
 one place editing ever happens.
 
+Paper is a format too. Nobody asks for it, and the boardroom still
+expects it — the laptop is open, and a printed handout sits on the table
+beside the screen. Yet print is the format that usually fights you. A
+landscape deck gets crushed onto a portrait sheet; a URL and the date
+land in the footer; an afternoon disappears into the print dialog. Worst
+of all, the color charts come out an indistinguishable gray on the
+office laser. None of that should be yours to fix by hand. The board PDF
+already prints the way a slide should — landscape, edge to edge, color
+exact instead of washed out. And a paper handout has to clear one more
+bar: it has to survive black and white. When color drops to gray, the
+distinctions have to ride on border, weight, and pattern, not hue. You
+print the deck and move on.
+
 ## 6. Write what you mean, not where it goes
 
 You write a Lattice deck the way you'd write a memo — in Markdown, the
