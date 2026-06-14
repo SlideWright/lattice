@@ -1,6 +1,8 @@
 // Lighthouse CI — the committed web-performance benchmark + budget gate for the
-// docs site. This replaces ad-hoc/hand-rolled timing: run `npm run perf` (from
-// docs/) locally, and the .github/workflows/lighthouse.yml job runs it on PRs.
+// docs site (DESKTOP form factor). Its companion lighthouserc.mobile.cjs gates
+// MOBILE (added after the shadcn migration regressed mobile). `npm run perf`
+// builds once then runs BOTH (perf:desktop + perf:mobile); the
+// .github/workflows/lighthouse.yml job runs `npm run perf` on PRs.
 //
 // It measures the migrated React-island surfaces (landing, components,
 // playground) plus a Starlight baseline page, median of 3 runs, desktop preset.

@@ -10,6 +10,13 @@
 //
 // It is the de-duplicated successor of index.astro's bottom inline <script>
 // (the per-island copies of ensureThemes / srcdoc / scaleFrame / renderInto).
+//
+// The engine bundle is now loaded ON DEMAND (load-engine.ts) rather than via an
+// eager <script> in the page <head> — whenReady() triggers the injection on
+// first need, so the landing's static hero text paints without the ~554KB-gz
+// engine competing for the main thread.
+
+import { ensureEngine } from './load-engine';
 
 const MERMAID = 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js';
 const SLIDE_W = 1280;
@@ -36,8 +43,8 @@ export function currentPaletteMode(paletteOverride?: string): { palette: string;
 	};
 }
 
-/** Build the landing engine bridge. `themeBase`/`runtimeUrl`/`frameCss` come from the page data payload. */
-export function createLandingEngine(themeBase: string, runtimeUrl: string, frameCss: string) {
+/** Build the landing engine bridge. `themeBase`/`runtimeUrl`/`frameCss`/`engineUrl` come from the page data payload. */
+export function createLandingEngine(themeBase: string, runtimeUrl: string, frameCss: string, engineUrl?: string) {
 	const fetched: Record<string, Promise<string>> = {};
 	let latticeReady: Promise<void> | null = null;
 
@@ -143,9 +150,17 @@ export function createLandingEngine(themeBase: string, runtimeUrl: string, frame
 			});
 	}
 
-	/** Resolve when the engine bundle is present (poll, like the playground). */
+	/**
+	 * Resolve when the engine bundle is present. On first call this also triggers
+	 * the on-demand injection of the engine <script> (ensureEngine) if an
+	 * engineUrl was supplied — so the bundle loads only when an island actually
+	 * needs to render (hero mount, field/restyle in view), not at page load.
+	 * Falls back to a bare poll if no URL was wired (e.g. tests, or a legacy
+	 * eager tag already on the page).
+	 */
 	function whenReady(): Promise<void> {
 		if (ready()) return Promise.resolve();
+		if (engineUrl) return ensureEngine(engineUrl);
 		return new Promise((resolve) => {
 			const t = setInterval(() => {
 				if (ready()) {

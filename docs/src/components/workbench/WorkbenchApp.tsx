@@ -4,6 +4,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
+import { ensureEngine } from '@/lib/load-engine';
 import { FACULTIES, type Faculty, readFaculty, writeFaculty } from '@/lib/workbench-controller';
 import { initLayoutStudio } from '@/playground/component-studio.js';
 import { initThemeStudio } from '@/playground/theme-studio.js';
@@ -11,6 +12,7 @@ import { initThemeStudio } from '@/playground/theme-studio.js';
 export type WorkbenchData = {
 	themeBase: string;
 	runtimeUrl: string;
+	engineUrl: string;
 	shippedNames: string[];
 	finishes: string[];
 };
@@ -66,6 +68,15 @@ export function WorkbenchApp({ data }: { data: WorkbenchData }) {
 		studiosBooted.current = true;
 		initThemeStudio(data);
 		initLayoutStudio(data);
+		// Trigger the on-demand engine load after the chrome has mounted/painted
+		// (on idle), not eagerly in <head> — so the faculty Tabs + controls paint
+		// first. The studios already poll window.LatticePlayground, so the first
+		// preview render fires as soon as the bundle resolves.
+		const ric = (window as unknown as { requestIdleCallback?: (cb: () => void) => number }).requestIdleCallback;
+		if (data.engineUrl) {
+			if (ric) ric(() => ensureEngine(data.engineUrl));
+			else setTimeout(() => ensureEngine(data.engineUrl), 0);
+		}
 	}, [data]);
 
 	// Rehydrate the saved faculty on mount (the studios read no faculty state;

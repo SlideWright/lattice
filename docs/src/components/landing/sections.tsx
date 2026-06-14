@@ -86,7 +86,7 @@ export function FieldCards({ playgroundHref }: { playgroundHref: string }) {
 					<CardContent className="flex flex-col">
 						{/* Live-preview host — filled by FieldCardsLive (data-live-card). */}
 						<div
-							className="relative mb-[18px] aspect-video overflow-hidden rounded-md border border-border bg-muted"
+							className="live-host relative mb-[18px] aspect-video overflow-hidden rounded-md border border-border bg-muted"
 							data-live-card={c.live}
 						/>
 						<h3 className="mb-2 font-[var(--font-body)] text-[18px] font-semibold leading-[1.3] tracking-[-0.01em] text-[var(--text-heading)]">

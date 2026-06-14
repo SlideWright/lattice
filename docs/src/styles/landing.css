@@ -411,3 +411,45 @@ html[data-mode='dark'] .mode-toggle::before {
 		margin-left: 0;
 	}
 }
+
+/* ── Live-preview skeleton (progressive paint) ─────────────────────────────
+   The engine bundle now loads ON DEMAND (load-engine.ts), so a live-preview
+   host is briefly empty before its slide renders. Give every host a subtle,
+   palette-bridged placeholder sized to its own 16:9 box so the region paints
+   immediately (good LCP / no blank-then-pop). The rendered iframe (.live /
+   .studio-frame / #preview) is opaque and paints OVER the skeleton; the
+   `is-live` class the engine adds on first render then removes it entirely.
+   CSS-only — no JS, no layout shift (the host already reserves its box). */
+.live-host:not(.is-live)::after,
+.studio-preview-host:not(.is-live)::after,
+.pg-preview-wrap:not(.is-live)::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: 0; /* under the iframe (which the engine appends after this) */
+	background:
+		linear-gradient(115deg,
+			color-mix(in srgb, var(--bg-alt, #e7e7ea) 88%, var(--border, #c9c9cf)) 0%,
+			color-mix(in srgb, var(--bg-alt, #e7e7ea) 70%, var(--border, #c9c9cf)) 45%,
+			color-mix(in srgb, var(--bg-alt, #e7e7ea) 88%, var(--border, #c9c9cf)) 90%);
+	background-size: 220% 100%;
+	pointer-events: none;
+}
+/* The playground/workbench wraps aren't `position: relative` by default — the
+   ::after is absolutely positioned, so anchor it. Harmless on the landing
+   figures (already relative). */
+.pg-preview-wrap,
+.studio-preview-host { position: relative; }
+
+@media (prefers-reduced-motion: no-preference) {
+	.live-host:not(.is-live)::after,
+	.studio-preview-host:not(.is-live)::after,
+	.pg-preview-wrap:not(.is-live)::after {
+		animation: lx-skeleton-pulse 1.4s ease-in-out infinite;
+	}
+}
+@keyframes lx-skeleton-pulse {
+	0% { background-position: 100% 0; opacity: 1; }
+	50% { opacity: 0.6; }
+	100% { background-position: 0 0; opacity: 1; }
+}

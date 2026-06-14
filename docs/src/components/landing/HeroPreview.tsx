@@ -15,13 +15,14 @@ export type HeroData = {
 	componentName: string;
 	themeBase: string;
 	runtimeUrl: string;
+	engineUrl: string;
 	frameCss: string;
 };
 
 export default function HeroPreview({ data }: { data: HeroData }) {
 	const [view, setView] = React.useState<'preview' | 'source'>('preview');
 	const stageRef = React.useRef<HTMLDivElement>(null);
-	const engineRef = React.useRef(createLandingEngine(data.themeBase, data.runtimeUrl, data.frameCss));
+	const engineRef = React.useRef(createLandingEngine(data.themeBase, data.runtimeUrl, data.frameCss, data.engineUrl));
 	const viewRef = React.useRef(view);
 	viewRef.current = view;
 
@@ -74,7 +75,7 @@ export default function HeroPreview({ data }: { data: HeroData }) {
 				<TabsContent value="preview">
 					<figure
 						ref={stageRef}
-						className="relative m-0 aspect-video w-full overflow-hidden rounded-[14px] border border-border bg-muted shadow-lg"
+						className="live-host relative m-0 aspect-video w-full overflow-hidden rounded-[14px] border border-border bg-muted shadow-lg"
 						aria-label={`A ${data.componentName} slide rendered by Lattice`}
 					/>
 				</TabsContent>

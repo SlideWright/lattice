@@ -99,6 +99,7 @@ const pgData = {
 	galleryGroups,
 	themeBase: url(pg + 'themes/'),
 	runtimeUrl: url(pg + 'lattice-runtime.js'),
+	engineUrl: url(pg + 'lattice-playground.js'),
 	palettes,
 	finishes: FINISH_NAMES,
 	starter,
@@ -172,9 +173,10 @@ const pgData = {
 			window.LatticeDeckPreview = { renderDeck };
 		</script>
 
-		<!-- The marp render engine (window.LatticePlayground). Classic deferred
-		     script; the React render loop guards on its presence and retries. -->
-		<script is:inline defer src={url(pg + 'lattice-playground.js')}></script>
+		<!-- The marp render engine (window.LatticePlayground) is loaded ON DEMAND by
+		     load-engine.ts (PlaygroundApp triggers it on idle, after the chrome
+		     paints), not eagerly here — so the toolbar + editor host paint without
+		     the ~554KB-gz bundle blocking. The render loop polls for the global. -->
 
 		<!-- Mobile nav-toggle (the topbar hamburger) — the one bit of surrounding
 		     chrome still wired imperatively, identical to the other standalone
