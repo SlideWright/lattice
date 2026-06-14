@@ -37,6 +37,6 @@ const palettes = [...new Set([...tokensCss.matchAll(/data-palette="([^"]+)"/g)].
 	current={null}
 >
 	<div class="cindex">
-		<ComponentIndexIsland client:load catalog={catalog} lenses={lenses} base={base} />
+		<ComponentIndexIsland client:visible catalog={catalog} lenses={lenses} base={base} />
 	</div>
 </ComponentsLayout>

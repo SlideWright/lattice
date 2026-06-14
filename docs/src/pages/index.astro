@@ -96,9 +96,13 @@ const cardData = CARD_COMPONENTS.reduce((acc, n) => {
 	return acc;
 }, {});
 
-// Shared engine endpoints handed to every live island.
+// Shared engine endpoints handed to every live island. `engineUrl` is the
+// ~554KB-gz render bundle: it is no longer loaded eagerly in <head> — each
+// island loads it on demand (load-engine.ts, via the bridge's whenReady) when
+// it first needs to render, so the static hero text paints first.
 const themeBase = url(pg + 'themes/');
 const runtimeUrl = url(pg + 'lattice-runtime.js');
+const engineUrl = url(pg + 'lattice-playground.js');
 const frameCss = SINGLE_SLIDE_FRAME;
 
 const heroData = {
@@ -108,15 +112,17 @@ const heroData = {
 	componentName: heroComp.name,
 	themeBase,
 	runtimeUrl,
+	engineUrl,
 	frameCss,
 };
-const fieldCardsData = { cards: cardData, themeBase, runtimeUrl, frameCss };
+const fieldCardsData = { cards: cardData, themeBase, runtimeUrl, engineUrl, frameCss };
 const restyleData = {
 	sample: restyleComp.sample || restyleComp.skeleton,
 	mermaid: needsMermaid(restyleComp.sample || restyleComp.skeleton),
 	palettes: paletteAccents,
 	themeBase,
 	runtimeUrl,
+	engineUrl,
 	frameCss,
 };
 
@@ -184,7 +190,7 @@ const nextSteps = [
 				</nav>
 				<div class="topbar-actions">
 					<div class="controls lx-ui">
-						<PaletteControls client:load palettes={palettes} />
+						<PaletteControls client:idle palettes={palettes} />
 					</div>
 					<button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-controls="topnav" aria-expanded="false"></button>
 				</div>
@@ -216,7 +222,7 @@ const nextSteps = [
 				     null — a zero-box element has nothing for client:visible's observer to
 				     intersect, so it would never hydrate. It does its OWN lazy render
 				     (IntersectionObserver on the section), so eager hydration is cheap. -->
-				<FieldCardsLive client:load data={fieldCardsData} />
+				<FieldCardsLive client:idle data={fieldCardsData} />
 			</section>
 
 			<!-- Why -->
@@ -288,9 +294,10 @@ const nextSteps = [
 			})();
 		</script>
 
-		<!-- The marp render engine (window.LatticePlayground). Classic deferred
-		     script; the live islands (landing-engine.ts) guard on its presence and
-		     retry until it loads. -->
-		<script is:inline defer src={url(pg + 'lattice-playground.js')}></script>
+		<!-- The marp render engine (window.LatticePlayground) is NOT loaded here
+		     anymore — it's injected ON DEMAND by load-engine.ts the first time a
+		     live island needs to render (hero mount, field/restyle in view), so the
+		     static hero text paints without the ~554KB-gz bundle competing for the
+		     main thread. The engine URL is wired through the island data payloads. -->
 	</body>
 </html>

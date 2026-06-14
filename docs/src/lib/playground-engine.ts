@@ -9,6 +9,7 @@
 // Everything here touches window/fetch, so it lives outside the React tree and
 // the pure controller (playground-controller.ts). PlaygroundApp drives it.
 
+import { ensureEngine } from './load-engine';
 import { renderSig, resolveThemeName } from './playground-controller';
 
 type PG = {
@@ -33,8 +34,8 @@ export type RenderResult =
 	| { status: 'error'; message: string }
 	| { status: 'pending' }; // engine not loaded yet — caller should retry
 
-/** Build the per-page engine bridge. `themeBase`/`runtimeUrl` come from pgData. */
-export function createEngineBridge(themeBase: string, runtimeUrl: string) {
+/** Build the per-page engine bridge. `themeBase`/`runtimeUrl`/`engineUrl` come from pgData. */
+export function createEngineBridge(themeBase: string, runtimeUrl: string, engineUrl?: string) {
 	const fetched: Record<string, Promise<string>> = {}; // theme name → Promise<cssText>
 	let latticeReady: Promise<void> | null = null;
 
@@ -67,6 +68,16 @@ export function createEngineBridge(themeBase: string, runtimeUrl: string) {
 	/** True once both irreducible globals are present (engine bundle + bridge). */
 	function ready(): boolean {
 		return Boolean(window.LatticePlayground && window.LatticeDeckPreview);
+	}
+
+	/**
+	 * Trigger the on-demand load of the engine bundle (load-engine.ts). Call this
+	 * once the app has mounted/painted (e.g. on idle) so the chrome paints before
+	 * the ~554KB-gz bundle loads. Idempotent; no-op if no engineUrl was wired
+	 * (the render loop's existing poll still works against any legacy eager tag).
+	 */
+	function ensure(): void {
+		if (engineUrl) void ensureEngine(engineUrl);
 	}
 
 	/**
@@ -110,7 +121,7 @@ export function createEngineBridge(themeBase: string, runtimeUrl: string) {
 		}
 	}
 
-	return { ready, renderInto };
+	return { ready, ensure, renderInto };
 }
 
 export type EngineBridge = ReturnType<typeof createEngineBridge>;

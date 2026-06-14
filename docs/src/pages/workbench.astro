@@ -48,6 +48,7 @@ const shippedNames = loadAll().map((m) => m.name);
 const wbData = {
 	themeBase: url(pg + 'themes/'),
 	runtimeUrl: url(pg + 'lattice-runtime.js'),
+	engineUrl: url(pg + 'lattice-playground.js'),
 	shippedNames,
 	finishes: FINISH_NAMES,
 };
@@ -92,7 +93,7 @@ const here = Astro.url.pathname;
 				</nav>
 				<div class="topbar-actions">
 					<div class="lx-ui" style="display:inline-flex">
-						<PaletteControls client:load palettes={[]} />
+						<PaletteControls client:idle palettes={[]} />
 					</div>
 					<button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-controls="topnav" aria-expanded="false"></button>
 				</div>
@@ -105,8 +106,10 @@ const here = Astro.url.pathname;
 		     renders (theme-studio.js + component-studio.js, queried by class). -->
 		<WorkbenchApp client:load data={wbData} />
 
-		<!-- The in-browser engine (same bundle as the Playground). -->
-		<script is:inline defer src={url(pg + 'lattice-playground.js')}></script>
+		<!-- The in-browser engine (same bundle as the Playground) is loaded ON
+		     DEMAND by load-engine.ts (WorkbenchApp triggers it on idle, after the
+		     chrome paints), not eagerly here — so the faculty Tabs + controls paint
+		     without the ~554KB-gz bundle blocking. The studios poll for the global. -->
 
 		<!-- Topbar chrome: mobile nav. The light/dark toggle is the shared
 		     <PaletteControls> island (mode-only here — the Workbench has no global

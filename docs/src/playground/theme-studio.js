@@ -321,6 +321,8 @@ export function initThemeStudio(config) {
       frame: fr, html, css, mode, geom, sig, state: previewState,
       runtimeUrl, gap: 18, colorScheme: mode, center: true,
     }).state;
+    // Drop the loading skeleton (landing.css) once the preview has rendered.
+    els.preview.classList.add('is-live');
   }
 
   // ── Contrast meter ──────────────────────────────────────────────────────

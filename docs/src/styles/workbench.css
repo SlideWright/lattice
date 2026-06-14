@@ -254,6 +254,8 @@
 	border: 0;
 	display: block;
 	min-height: 1400px;
+	position: relative;
+	z-index: 1; /* above the loading skeleton (.studio-preview-host::after) */
 }
 
 /* ── Contrast audit ──────────────────────────────────────────────────────── */

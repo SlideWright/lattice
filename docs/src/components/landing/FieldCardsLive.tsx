@@ -16,11 +16,12 @@ export type FieldCardsData = {
 	cards: Record<string, { sample: string; mermaid: boolean }>;
 	themeBase: string;
 	runtimeUrl: string;
+	engineUrl: string;
 	frameCss: string;
 };
 
 export default function FieldCardsLive({ data }: { data: FieldCardsData }) {
-	const engineRef = React.useRef(createLandingEngine(data.themeBase, data.runtimeUrl, data.frameCss));
+	const engineRef = React.useRef(createLandingEngine(data.themeBase, data.runtimeUrl, data.frameCss, data.engineUrl));
 	const renderedRef = React.useRef<HTMLElement[]>([]);
 
 	React.useEffect(() => {

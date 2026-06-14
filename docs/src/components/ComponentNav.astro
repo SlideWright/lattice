@@ -14,4 +14,8 @@ const { catalog = [], lenses = [], current = null } = Astro.props;
 const base = import.meta.env.BASE_URL;
 ---
 
-<ComponentNavIsland client:load catalog={catalog} lenses={lenses} base={base} current={current} />
+<!-- client:visible (with a rootMargin so the above-fold sidebar still hydrates
+     promptly): the nav is SSR'd and immediately usable as static markup; its
+     fuzzy-search/regroup interactivity hydrates as it nears the viewport,
+     deferring its JS off the critical path so the page's LCP isn't blocked. -->
+<ComponentNavIsland client:visible={{ rootMargin: '600px' }} catalog={catalog} lenses={lenses} base={base} current={current} />
