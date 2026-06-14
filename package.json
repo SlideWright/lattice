@@ -153,7 +153,6 @@
     "prepublishOnly": "npm test"
   },
   "dependencies": {
-    "@marp-team/marp-cli": "^4.3.1",
     "@mermaid-js/mermaid-cli": "^11.0.0",
     "function-plot": "^1.25.4",
     "highlight.js": "^11.11.1",
