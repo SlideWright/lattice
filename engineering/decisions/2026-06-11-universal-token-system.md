@@ -1,8 +1,9 @@
 # Universal token system — design, crosswalk, and migration strategy
 
-**Date:** 2026-06-11
+**Date:** 2026-06-11 · **flip plan added 2026-06-14**
 **Status:** design accepted · **phases 1–7 implemented** (alias era) ·
-canonical flip + post-flip lint remain
+**canonical flip + post-flip lint now specified as an executable plan (§11)**,
+not yet executed
 **Scope:** `lib/base/base.tokens.css`, `themes/*.css`, the three render-path
 Mermaid bridges (`lattice-emulator.js`, `lib/runtime/index.js`,
 `marp.config.js`), `lib/theme/derive.js`, the gates
@@ -275,15 +276,17 @@ properties.
 - Folding in the deferred **Model A** (`2026-06-05-token-structure-audit.md`):
   retire most of `--on-dark-*` by giving dark panels a scoped
   `color-scheme: dark`, so they reuse the one canvas ramp.
-- **The canonical flip (the headline remaining work).** All seven groups ship
-  as *aliases new→old* — the new vocabulary is what every render path and new
-  consumer reads, but the old names (`--c1-light`, `--c-stroke`, `--pass`,
-  `--bg-dark`, `--scale-*`, …) are still the per-theme / base source. The flip
-  makes the new names canonical (themes declare `--cat-*` etc. directly; the old
-  names become thin aliases or retire), atomically per group with the
-  contrast / token-parity / mermaid-var-map fixtures (checker F9). This is where
-  `mermaid.css`'s ~250 SVG rules + `derive.js`'s `REQUIRED_TOKENS` + the 14
-  themes finally move off the old spellings.
+- **The canonical flip (the headline remaining work) — now fully specified in
+  §11.** All seven groups ship as *aliases new→old* — the new vocabulary is what
+  every render path and new consumer reads, but the old names (`--c1-light`,
+  `--c-stroke`, `--bg-dark`, `--scale-*`, …) are still the per-theme / base
+  source. The flip makes the new names canonical (themes declare `--cat-*` etc.
+  directly; the old names become thin aliases or retire), atomically per group
+  with the contrast / token-parity / mermaid-var-map fixtures (checker F9). This
+  is where `mermaid.css`'s ~250 SVG rules + `derive.js`'s `REQUIRED_TOKENS` + the
+  14 themes finally move off the old spellings. **§11 turns this paragraph into a
+  runnable plan: the exact purge set, per-group ordering, the atomic-commit
+  recipe, the gate moves, validation, rollback, and the post-flip closeout.**
 - **Validation A/B (shipped).** Before the irreversible flip, the migration is
   de-risked two ways. (1) `lib/tokens/crosswalk.js` is the SoT old→new map plus
   the `flip()` transform; `test/unit/tokens/crosswalk.test.js` resolves every
@@ -302,4 +305,161 @@ properties.
   name, forbid a Tier-1 primitive consumed for colour-role in a component, and
   assert every theme defines the Tier-2 input set (the 13 `*-dark.css` wrappers
   exempt). Cannot run during the alias era because the old `*-light`/`*-dark`
-  names still exist by design.
+  names still exist by design. *(Specified as the closeout step in §11.5.)*
+
+## 11 — The canonical flip: executable migration plan
+
+§10 names the surfaces; this section is the runnable plan — the gap between
+"design accepted" and "old names gone." It is the colour-token analogue of the
+typography refactor's flip, and it is a **pure rename**: every step preserves
+the resolved hex byte-for-byte (the §6 contract), so the failure mode is a
+*missed* reference (a token that stops resolving), never a *moved* swatch.
+
+### 11.0 — What "the flip" inverts (the one-paragraph model)
+
+**Today:** the 14 light themes declare the **old** names; `base.tokens.css`
+carries forward aliases **new → old** (`--cat-1-fill: var(--c1-light)`); every
+render path and every new consumer already reads the **new** names.
+**After the flip:** the themes declare the **new** names directly; the old names
+either retire or survive only as thin **back-aliases old → new**
+(`--c1-light: var(--cat-1-fill)`) for as long as a deliberately-deferred
+consumer needs them. `lib/tokens/crosswalk.js`'s `flip()` is the mechanical
+transform that does both halves (rename every old → new, then drop the aliases
+that thereby became self-referential); `test/unit/tokens/crosswalk.test.js`
+proves the result resolves identically before any commit lands.
+
+### 11.1 — Scope: what purges, what deliberately stays
+
+**Purge set (57 names, exactly the `crosswalk.js` `PAIRS`):**
+
+| Group | Names | Old → new |
+|---|---|---|
+| categorical | 26 | `--cN-light/dark`, `--c-ink-light/dark` → `--cat-N-fill/mark`, `--cat-on-fill/mark` |
+| diagram-structural | 3 | `--c-stroke/line/accent-warm` → `--diagram-stroke/line/accent-warm` |
+| diagram-lifecycle | 8 | `--c-warm/cool/alarm/mark/note` (+ `-dark` marks) → `--diagram-active/done/critical/today/note` (+ `-mark`) |
+| surfaces / scheme | 10 | `--bg-dark` → `--surface-inverse`; `--dark-*` → `--scheme-dark-*` |
+| sequential | 10 | `--scale-50..900` → `--seq-50..900` |
+
+**Deliberately NOT purged** (same rationale as keeping `--bg` / `--border` in
+phase 4 — clear, short, no magic):
+
+- **`--pass` / `--warn` / `--fail`** (+ `-bg`) stay the curated status *source*;
+  `--status-*` remain forward aliases **to** them. They carry no color-scheme
+  word and no junk-drawer ambiguity, so the post-flip lint (§11.5) still passes
+  with them present. *Status is the one group that never flips.*
+- **`--chart-cat-1..8-{hue,fill,ink}`** — already canonical (flipped, not
+  aliased, in phase 6).
+- The primitives `--sp-* --radius-* --font-* --fs-* --bg --bg-alt --border`.
+
+### 11.2 — The per-group atomic-commit recipe (identical for each group)
+
+**One group = one atomic commit = one PR.** Within that single commit, in order:
+
+1. **Flip the 14 light themes' *definitions*** old → new (mechanical —
+   `flipTheme` is the reference transform). Confirm the **13 `*-dark.css`
+   wrappers still define zero tokens** (checker F8); they only set
+   `color-scheme`, so they need no edit.
+2. **Sweep every *consumer* of that group's old names → new, in the same
+   commit:** `lib/integrations/mermaid/mermaid.css` SVG-override rules, the chart
+   / diagram transforms, component CSS, `lib/theme/derive.js`
+   (`REQUIRED_TOKENS` + `ESSENTIAL_KEYS`), and any JS string sites not already on
+   the new names. (The emulator `MERMAID_VAR_MAP` + `lib/runtime/index.js` are
+   **already** on the new names since phase 1 — they need no move.)
+3. **Move the asserting gates in lockstep** (checker-F9 atomicity — aliases do
+   not satisfy a contrast-pair assertion across the `derive.js` flip):
+   `lib/theme/contrast.js` `LIGHT_PAIRS` / `DEEP_PAIRS` / the alarm pair switch
+   to the new names; remove the group from `crosswalk.js` `PAIRS` (it is no
+   longer "old"); its names already live in
+   `universal-token-vocabulary.test.js`, which stays green.
+4. **Collapse the aliases in `base.tokens.css`:** delete the group's forward
+   alias block (it would otherwise become `--cat-1-fill: var(--cat-1-fill)`).
+   Add a thin **back-alias old → new** *only* for a consumer you consciously
+   defer — the goal is zero, achieved by completing step 2.
+5. **Rebuild + regenerate:** `npm run build` (behind the ownership gate)
+   refreshes every `dist/` artifact; the Drawing Board re-reads `crosswalk.js`
+   directly at build time (see §11.6), so its A/B follows automatically.
+6. **Ship the group's demo deck** — re-render the existing
+   `examples/universal-tokens-pN-*.md` light **and** dark; it now exercises the
+   *canonical* names rather than the aliases.
+
+### 11.3 — Order: most-isolated → highest-coupling
+
+Flip the groups in increasing blast radius, so the riskiest one lands last
+against a tree where every other group is already proven on the new names:
+
+1. **sequential** — only the word-cloud heat-ramp + the ramp anchor consume it;
+   smallest, self-contained, the warm-up that exercises the recipe end-to-end.
+2. **diagram-structural** (3) — `mermaid.css` strokes/edges + flowchart.
+3. **diagram-lifecycle** (8) — gantt / timeline lifecycle tones.
+4. **surfaces / scheme** (10) — `--surface-inverse` (8 consumers, already
+   repointed in phase 4) + `--scheme-dark-*` + the dark wrappers.
+5. **categorical** (26) — **last.** It is the cross-language wire protocol:
+   `mermaid.css`'s ~250 SVG rules, the chart `cScale` feed, `contrast.js`'s 24
+   pale/deep pairs, `derive.js`'s 26 required entries. Everything else is green
+   before it moves.
+
+(Status never appears — §11.1. Re-derivation / generalising the `hue→fill→ink`
+triad to the engine categoricals is **not** part of any of these commits — it
+changes hex and is a separate contrast-re-audited phase, §6.)
+
+### 11.4 — Per-group gates (all green before the group's PR merges)
+
+- **Byte-identical proof** — `crosswalk.test.js` still resolves the *remaining*
+  (still-aliased) groups to identical values; the flipped group leaves the
+  crosswalk and is now covered by the vocabulary + contrast gates directly.
+- **Unit suite** — incl. `contrast.js` (AA preserved by construction),
+  `mermaid-var-map`, `universal-token-vocabulary`.
+- **Integration** — structural cross-renderer parity **and**
+  `color-parity.test.js` (resolve every bridge token through the emulator
+  resolver **and** a marp-cli-rendered Chromium DOM; assert identical RGB —
+  indaco + cuoio, light + dark).
+- **Pixel-check = zero-diff** vs the pre-flip baseline. This is the **go/no-go**:
+  a pure rename must not move a single pixel; any diff means a missed reference
+  fell back to `initial`/serif. (`tools/pixel-check.js`.)
+- **Visual spot-check** of the group's demo deck, light + dark.
+
+### 11.5 — Closeout (after all five groups are new-canonical)
+
+1. **Post-flip token-tier lint** — extend `tools/check-ownership.js` (§10): no
+   `light`/`dark` *word* in any token name (now enforceable — the `*-light`/
+   `*-dark` spellings are gone), no Tier-1 primitive consumed for colour-role in
+   a component, every theme defines the Tier-2 input set (13 dark wrappers
+   exempt, F8). Wire it into the `capabilities:check` / pre-push gate.
+2. **`CLAUDE.md` HARD RULE #11 flips** — delete "use the old per-theme token
+   names until the flip"; the standing instruction becomes *themes declare the
+   universal names*. Update `lib/base/base.docs.md` and `design/theming.md` in
+   the same change (HARD RULE #5 / §Default-Operating-Mode doc-sync).
+3. **The `tokens:` directive retires (or inverts).** `universal` is now the
+   engine itself, so the Drawing-Board A/B has nothing to compare. Either remove
+   the toggle, or invert it to a `tokens: legacy` back-compat path driven by the
+   *same* `flip()` run in reverse for decks pinned to the old vocabulary. Keep
+   `crosswalk.js` + `flip()` regardless — they become the documented historical
+   map and the legacy-deck shim, not dead code.
+4. **`derive.js` scaffold emits new names** for generated themes; the
+   `REQUIRED_TOKENS` groups are renamed to match.
+5. **`CHANGELOG.md` `## Unreleased`** — lead with **`Breaking:`**: the old
+   per-theme token names (`--c1-light`, `--c-stroke`, `--bg-dark`, `--scale-*`,
+   …) are retired; a BYO theme or external consumer on them must adopt the
+   crosswalk (or pin `tokens: legacy` if that shim is kept).
+
+### 11.6 — Pre-flight reconciliation (do this first, it's free)
+
+`crosswalk.js`'s header comment claims two consumers that **do not exist** —
+`tools/build-universal-css.js` and `docs/src/playground/crosswalk.generated.js`.
+The *actual* consumers are `test/unit/tokens/crosswalk.test.js` (applies `flip()`
+inline — no build step needed) and `docs/src/pages/drawing-board.astro` (a
+direct build-time `require()` of `crosswalk.js`, re-implementing `flip` as
+`flipTokens`). Correct the header so the plan never leans on a phantom tool;
+this is a comment-only fix that can ride the first group's PR.
+
+### 11.7 — Rollback & risk
+
+- Each group is **one atomic, pure-rename commit**, so `git revert` of that
+  commit cleanly restores its alias era; `flip()` makes a re-attempt mechanical.
+- The byte-identical guarantee (§6, gated four ways in §11.4) means the only way
+  a group regresses is a *missed reference*, which the zero-diff pixel-check
+  catches deterministically before merge — there is no "looks close enough"
+  failure surface.
+- The single irreversible-feeling step is closeout #2 (deleting HARD RULE #11);
+  it lands only after all five groups are green and the post-flip lint passes,
+  i.e. when the old names already resolve to nothing in the tree.
