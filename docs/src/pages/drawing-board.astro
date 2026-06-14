@@ -312,7 +312,7 @@ const dbData = JSON.stringify({
 							<button class="db-menu-item" type="button" data-export="pdf" role="menuitem">PDF<small>.pdf — one click</small></button>
 							<button class="db-menu-item" type="button" data-export="pptx" role="menuitem">PowerPoint<small>.pptx — image slides</small></button>
 							<button class="db-menu-item" type="button" data-export="print" role="menuitem">Print<small>vector + selectable text</small></button>
-							<button class="db-menu-item" type="button" data-export="charts-svg" role="menuitem" id="db-export-chart-svg" hidden>Export chart<small>.svg — this slide's chart</small></button>
+							<button class="db-menu-item" type="button" data-export="charts-svg" role="menuitem" id="db-export-chart-svg" hidden>Export chart<small>.svg or .png — this slide's chart</small></button>
 							<button class="db-menu-item" type="button" data-export="marp" role="menuitem">Marp bundle<small>.zip — portable, renders anywhere</small></button>
 						</div>
 					</div>
@@ -850,7 +850,7 @@ const dbData = JSON.stringify({
 		<!-- Export — MD / PDF / PPTX (Slice 4). PptxGenJS is lazy-imported inside
 		     the module on first PPTX use, so it never loads unless invoked. -->
 		<script>
-			import { exportMarkdown, exportMarp, exportPdf, exportPptx, exportPrint, exportChart, activeChartSvg } from '../playground/drawing-board-export.js';
+			import { exportMarkdown, exportMarp, exportPdf, exportPptx, exportPrint, exportChart, activeChartSection } from '../playground/drawing-board-export.js';
 			import { listAssets } from '../playground/asset-store.js';
 			import { referencedComponents } from '../playground/layout-core.generated.js';
 			const wrap = document.getElementById('db-export-wrap');
@@ -867,7 +867,7 @@ const dbData = JSON.stringify({
 				e.stopPropagation();
 				const open = menu.hidden;
 				// "Export chart" shows only when the cursor's slide carries a chart (it exports THAT chart, SVG or PNG).
-				const __ci = document.getElementById("db-export-chart-svg"); if (__ci) __ci.hidden = !activeChartSvg(document.getElementById("db-frame"));
+				const __ci = document.getElementById("db-export-chart-svg"); if (__ci) __ci.hidden = !activeChartSection(document.getElementById("db-frame"));
 				menu.hidden = !open;
 				trigger.setAttribute('aria-expanded', open ? 'true' : 'false');
 			});

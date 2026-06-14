@@ -1,18 +1,22 @@
 # Proposal: Universal chart export — tiered SVG + PNG
 
-**Date:** 2026-06-14 · **Status:** proposal — **revised after a build spike** · **Owner:** TBD
+**Date:** 2026-06-14 · **Status:** implemented · **Owner:** TBD
 
-> **Finding + resolution (2026-06-14):** the **in-browser** PNG tier is not
-> viable — `html-to-image` (the one-click image PDF/PPTX rasterizer) renders the
-> HTML/CSS chart-frame charts (gantt/kanban/progress/…) **blank**, because their
-> container-query layout collapses in the clone-and-reserialize step (verified:
-> the existing browser PDF export of a gantt slide is also blank). **The fix is
-> to screenshot the chart's container through the ENGINE** — puppeteer renders
-> the real layout (this is literally how the chart galleries are produced), so
-> `elementHandle.screenshot()` captures it faithfully. Implemented in the CLI
-> (`tools/export-chart-svg.js`): SVG for the vector charts, an engine-screenshot
-> PNG for every other chart-frame slide. This PR ships **both** — the SVG tier
-> widened to `funnel`, and the universal PNG tier in the CLI.
+> **CORRECTION (2026-06-14).** An earlier revision of this note claimed the
+> **in-browser** PNG tier was "not viable" — that `html-to-image` renders the
+> HTML/CSS chart-frame charts blank and a PNG needs a server/engine screenshot.
+> **That was wrong.** The "blank" was a **test artifact**: the headless probe used
+> an undersized viewport, which collapsed the Drawing Board's preview pane to
+> `0×0`, so *every* slide (charts and plain text alike) captured blank. With a
+> real viewport the preview renders slides at `1280×720` and **`html-to-image`
+> rasterizes the charts faithfully** — verified by exporting a gantt slide
+> in-browser (full bars, axis, legend; not blank).
+>
+> **Resolution.** The web "Export chart" button rasterizes the HTML/CSS charts to
+> PNG **in-browser**, via the SAME `html-to-image` path the one-click PDF/PPTX
+> uses — no server, no engine screenshot. SVG tier (single-`<svg>` charts:
+> piechart/radar/map/quadrant/funnel) is unchanged. `tools/export-chart-svg.js`
+> additionally offers a headless (puppeteer) PNG for CLI/automation use.
 **Related:** the current "Chart SVG" export (`docs/src/playground/drawing-board-export.js`
 `exportChartsSvg` / `activeChartSvg`; CLI sibling `tools/export-chart-svg.js`;
 shared core `lib/components/chart/_chart-family/standalone-svg.js`).
@@ -99,21 +103,18 @@ bug itself is adjacent and may want a separate fix — out of scope here.)
 4. **Naming** — "Export chart" vs "Chart image" vs keep "Chart SVG" + add "Chart
    PNG". *Recommendation: one "Export chart", format automatic.*
 
-## 6. Phasing (revised after the spike)
+## 6. Phasing (as built)
 
-- **P1 — widen SVG (shipping in this PR).** The build spike found only **funnel**
-  cleanly joins the keyed set as a single self-contained `<svg>` (legend in-svg);
-  `journey` has 4 svgs, `state-chart`/`word-cloud` mix in HTML, so they're not
-  safe SVG-tier. So P1 = `piechart/radar/map/quadrant/funnel` (4 → 5), browser +
-  CLI. Small, clean, working.
-- **P2 — PNG via ENGINE screenshot (DONE in the CLI).** `tools/export-chart-svg.js`
-  now screenshots each non-SVG chart's container through puppeteer (the deck
-  rendered with sections pinned to their real box, container queries resolved),
-  writing a `.png`. Verified on gantt + kanban (faithful, not blank). Works for
-  every chart-frame slide. The **web** Drawing Board can't run puppeteer, so its
-  "Export chart" button stays SVG-tier; the PNG tier is the CLI / the desktop
-  (engine-embedded) surface. A web button for it would need a render endpoint —
-  a separate piece.
+- **P1 — widen SVG (done).** `funnel` joins the keyed set as a single
+  self-contained `<svg>` (legend in-svg); `journey` has 4 svgs,
+  `state-chart`/`word-cloud` mix in HTML, so they're PNG-tier, not SVG. So the SVG
+  tier = `piechart/radar/map/quadrant/funnel` (4 → 5), browser + CLI.
+- **P2 — PNG, in-browser (done).** The web "Export chart" button rasterizes every
+  non-SVG chart-frame slide to PNG via the shared `html-to-image` path (2× scale,
+  fonts embedded) — the same one the one-click PDF/PPTX uses. No server. Verified
+  on gantt (faithful, not blank) with a real-size preview. `tools/export-chart-svg.js`
+  also offers a headless puppeteer PNG for CLI/automation (container screenshot,
+  cropped to content).
 - **P3 (optional)** — native-`<svg>` re-engineering of the HTML chart components,
   the only path to *vector* for them.
 

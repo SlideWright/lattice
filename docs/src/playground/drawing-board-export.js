@@ -381,52 +381,79 @@ function subsetFontFaceCss(css, families) {
 }
 
 // The chart `<svg>` on the slide the editor cursor is in, or null. The controller
-// marks the cursor's slide `.db-active` in the preview (cursor↔slide sync), so
-// THIS gates the export to "the chart you're looking at" — and is what the Export
-// menu reads to show its "Chart SVG" entry only on a chart slide. Scoped to the
-// FOUR keyed layouts (pie/radar/map/quadrant) by section class — the same set
-// the CLI uses — so non-keyed chart-frame slides (state-chart, word-cloud) don't
-// offer a meaningless export. (The quadrant's own svg is aria-hidden, so match on
-// viewBox, not visibility.)
-// The chart layouts that render as a SINGLE self-contained <svg> (diagram +
-// in-svg legend/labels) — these export as crisp standalone vector. Every OTHER
-// chart (gantt/kanban/progress/journey/state-chart/roadmap/timeline/word-cloud …)
-// is HTML/CSS or mixed, and exports as a high-res PNG of the slide instead.
+// The cursor's slide is marked `.db-active` in the preview (cursor↔slide sync),
+// so these gate the export to "the chart you're looking at" and drive the Export
+// menu's "Export chart" entry. `CLEAN_SVG_LAYOUTS` are the charts that render as a
+// SINGLE self-contained <svg> (diagram + in-svg legend) → exported as crisp
+// standalone vector. Every OTHER chart-frame slide (gantt/kanban/progress/journey/
+// state-chart/roadmap/timeline/word-cloud) is HTML/CSS or mixed → exported as a
+// high-res PNG, rasterized in-browser by the SAME html-to-image path the
+// one-click PDF/PPTX uses (it renders these charts faithfully).
 const CLEAN_SVG_LAYOUTS = ['piechart', 'radar', 'map', 'quadrant', 'funnel'];
 
-// The keyed single-`<svg>` chart on the cursor's active slide, or null. Drives
-// both the "Export chart" menu visibility and the export. Limited to charts that
-// render as ONE self-contained `<svg>` — the only ones that export reliably in
-// the browser. (HTML/CSS charts can't: the in-browser rasterizer collapses their
-// container-query layout to blank — same limit the one-click image PDF hits.
-// A PNG of those needs a server-side render; see the export-to-marp/chart docs.)
-export function activeChartSvg(frame) {
+// The cursor's active chart slide (ANY `chart-frame` section), or null — drives
+// the "Export chart" menu visibility.
+export function activeChartSection(frame) {
 	const sec = frame?.contentDocument?.querySelector('.marpit > section.db-active');
+	return sec?.classList.contains('chart-frame') ? sec : null;
+}
+
+// The keyed single-`<svg>` chart on the cursor's active slide, or null (SVG tier).
+export function activeChartSvg(frame) {
+	const sec = activeChartSection(frame);
 	if (!sec || !CLEAN_SVG_LAYOUTS.some((c) => sec.classList.contains(c))) return null;
 	return sec.querySelector('svg[viewBox]');
 }
 
-// Export the cursor's chart as a standalone, theme-free `.svg` (the diagram +
-// in-svg legend flattened to literal colours + the embedded fonts it uses).
+function dataUrlToBlob(dataUrl) {
+	const [head, b64] = dataUrl.split(',');
+	const mime = head.match(/data:([^;]+)/)?.[1] || 'image/png';
+	const bin = atob(b64);
+	const arr = new Uint8Array(bin.length);
+	for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+	return new Blob([arr], { type: mime });
+}
+
+// Export the cursor's chart. SVG tier: a single self-contained <svg>
+// (piechart/radar/map/quadrant/funnel) flattens to a standalone, theme-free
+// vector. PNG tier: every other chart-frame slide rasterizes in-browser via the
+// shared html-to-image path (2× scale, fonts embedded) — the same one the
+// one-click PDF uses, which renders these HTML/CSS charts faithfully.
 export async function exportChart(frame, name, onStatus) {
+	const sec = activeChartSection(frame);
+	if (!sec) throw new Error('Put the cursor in a slide that has a chart.');
 	const doc = frame?.contentDocument;
 	const win = frame?.contentWindow;
-	if (!doc || !win) throw new Error('Preview not ready yet.');
 	const svg = activeChartSvg(frame);
-	if (!svg) throw new Error('Put the cursor in a slide that has an SVG chart.');
-	const [core, fontMod] = await Promise.all([
-		import('./standalone-svg.generated.js'),
-		import('./font-embed.js'),
-	]);
-	const { flattenSvgStyles, collectFontFamilies, finalizeStandaloneSvg } = core;
-	const { buildFontEmbedCss, ensureFontsLoaded } = fontMod;
-	// Embed the faces + wait for them, so the live nodes lay out with the real
-	// font before we read computed styles (mirrors the PDF/PPTX path).
-	const fontCssAll = await buildFontEmbedCss();
-	await ensureFontsLoaded(doc, fontCssAll);
-	const markup = new XMLSerializer().serializeToString(flattenSvgStyles(svg, win));
-	const fontFaceCss = subsetFontFaceCss(fontCssAll, collectFontFamilies(markup));
-	const out = finalizeStandaloneSvg(markup, { fontFaceCss });
-	download(new Blob([out], { type: 'image/svg+xml;charset=utf-8' }), `${safeName(name)}-chart.svg`);
-	if (onStatus) onStatus('Chart downloaded as SVG.');
+	if (svg && win && doc) {
+		const [core, fontMod] = await Promise.all([
+			import('./standalone-svg.generated.js'),
+			import('./font-embed.js'),
+		]);
+		const { flattenSvgStyles, collectFontFamilies, finalizeStandaloneSvg } = core;
+		const { buildFontEmbedCss, ensureFontsLoaded } = fontMod;
+		// Embed the faces + wait for them, so the live nodes lay out with the real
+		// font before we read computed styles (mirrors the PDF/PPTX path).
+		const fontCssAll = await buildFontEmbedCss();
+		await ensureFontsLoaded(doc, fontCssAll);
+		const markup = new XMLSerializer().serializeToString(flattenSvgStyles(svg, win));
+		const fontFaceCss = subsetFontFaceCss(fontCssAll, collectFontFamilies(markup));
+		const out = finalizeStandaloneSvg(markup, { fontFaceCss });
+		download(new Blob([out], { type: 'image/svg+xml;charset=utf-8' }), `${safeName(name)}-chart.svg`);
+		if (onStatus) onStatus('Chart downloaded as SVG.');
+		return;
+	}
+	// PNG tier — rasterize the chart slide. Drop `db-active` during capture: it
+	// carries the cursor-slide selection outline (unwanted in the export).
+	if (onStatus) onStatus('Rasterizing chart…');
+	const { fontEmbedCSS } = await sectionsOf(frame);
+	sec.classList.remove('db-active');
+	let dataUrl;
+	try {
+		dataUrl = await rasterizeSection(sec, fontEmbedCSS);
+	} finally {
+		sec.classList.add('db-active');
+	}
+	download(dataUrlToBlob(dataUrl), `${safeName(name)}-chart.png`);
+	if (onStatus) onStatus('Chart downloaded as PNG.');
 }
