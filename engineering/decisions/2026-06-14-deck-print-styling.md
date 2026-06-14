@@ -1,17 +1,18 @@
 ---
-status: design-speculation
-version: 1
+status: design-decision
+version: 2
 supersedes: none
 last-status-update: 2026-06-14
 ---
 
 # Print styling — a deck that survives the trip to the boardroom, on paper, in colour *and* black-and-white
 
-> **Not canonical.** Design-speculation, written ahead of implementation.
-> No shipped behaviour yet. When this note and a shipped surface disagree,
-> the shipped surface wins. Purpose: fix the *shape* of print support — the
-> two deliverables, the dedicated print theme band, and how we prefill
-> orientation — before any CSS or transform lands.
+> **Not canonical.** A design *decision* (all open questions resolved
+> 2026-06-14) but written ahead of implementation — no shipped behaviour yet.
+> When this note and a shipped surface disagree, the shipped surface wins.
+> Purpose: fix the *shape* of print support — the two deliverables, the
+> dedicated print theme band, and how we prefill orientation — before any CSS
+> or transform lands.
 
 ## Symptom — "our print export is about as ugly as sin"
 
@@ -184,32 +185,69 @@ piece).**
    the colour and the print band, for owner sign-off (the export-change STOP
    rule in `CLAUDE.md` applies — print output is exported content).
 
-## Open questions / risks
+## Resolved decisions (2026-06-14)
 
-- **Category ramp in grayscale is the hard problem.** Stepped lightness alone
-  tops out at ~4–5 reliably-distinct grays on cheap printers; beyond that we
-  need **SVG pattern fills**, which touch the chart/diagram renderers, not just
-  tokens. Scope: how many categories must survive B&W, and do we cap series in
-  print mode or always pattern them? *Leaning: borders + ≤5 grays for
-  cards/tables; pattern fills for chart/diagram series.*
-- **4:3 vs 16:9 for paper.** Do we recommend (or auto-offer) 4:3 re-size for the
-  print handout, or always letterbox 16:9? *Leaning: letterbox by default, offer
-  4:3 as the "designed for paper" size — never silently crop.*
-- **Where the mode trigger lives.** Front-matter `mode: print`, an export-time
-  flag, or both? The export option is the must-have (it's a render-time choice,
-  not a deck property); front-matter is a convenience. *Leaning: export option
-  primary; front-matter optional.*
-- **Speaker-notes handout** (slide + notes per page) is the classic boardroom
-  leave-behind and a natural sibling, but it's a separate feature — out of scope
-  here unless folded in deliberately.
-- **CLI parity.** Build B's print band should be reachable from the `lattice`
-  CLI (a `--print` flag), not just the Drawing Board, so the shared-kernel rule
-  (`CLAUDE.md` HARD RULE #1) holds — the mode is a render option, it belongs in
-  the engine, not the web UI.
+The open questions were put to the owner and answered. The design is now
+fixed on these points:
+
+- **Category ramp in grayscale → borders + stepped grays + SVG pattern fills.**
+  Stepped lightness alone tops out at ~4–5 reliably-distinct grays on cheap
+  printers, so the print band gives every fill a distinct gray **and** a black
+  border, **and** chart/diagram *series* get SVG pattern fills (hatch / dot /
+  cross) so distinction survives past five categories. This is the costlier
+  option — it touches the chart/diagram renderers, not only tokens — and is
+  accepted deliberately as the quality bar for B&W. Cards/tables lean on grays +
+  borders; series-bearing components add patterns.
+- **Paper fit → scale-to-fit-the-printable-area and center, paper-blind.**
+  The fit *mechanism* doesn't depend on paper: scale the slide to the printable
+  area, center it, hold a small safe margin (~8–10mm, also dodging the
+  unprintable-edge clip every physical printer has). White letterbox bands
+  simply shrink as the sheet's ratio approaches the slide's. Never crops.
+- **Downloaded-PDF paper size → auto-pick the closest-fit standard sheet.**
+  The baked MediaBox is chosen to best fit the deck's aspect: **16:9 → US Legal**
+  (1.65, the closest standard sheet to 1.78 — only ~7% letterbox vs 27% on
+  Letter), **4:3 → Letter/A4** (by locale). No paper picker in v1 — the engine
+  picks the sheet that wastes the least page; the `window.print()` path still
+  honours whatever the user selects in the dialog (scale-to-fit makes any
+  choice correct).
+- **Slide-aspect → guidance only, 16:9 stays the default.** No forced re-size.
+  Surface a hint at the print-export action ("handouts print fullest on Legal;
+  author at 4:3 to fill Letter/A4") so authors can opt into a paper-friendly
+  aspect without us reflowing their composition.
+- **Mode trigger → export option *and* front-matter `mode: print`.** The
+  export-time option is the must-have (printing is a render choice, not a deck
+  property); front-matter `mode: print` is the optional convenience for authors
+  who always print B&W.
+- **CLI parity → engine `--print` flag, CLI *and* web.** The print band is an
+  engine render option (a `--print` flag), reachable from both the `lattice` CLI
+  and the Drawing Board, honouring the shared-kernel rule (`CLAUDE.md` HARD
+  RULE #1) — the mode lives in the engine, not the UI.
+
+### Paper-fit reference
+
+Page-fill of a slide scaled to fit each landscape sheet (ratio = long ÷ short):
+
+| Paper | Ratio | 16:9 fill | 4:3 fill |
+|---|---|---|---|
+| US Letter | 1.29 | 73% | **97%** |
+| A4 | 1.41 | 80% | 94% |
+| **US Legal** | **1.65** | **93%** | 80% |
+| Tabloid/Ledger | 1.55 | 87% | 86% |
+| *slide* | 1.78 (16:9) · 1.33 (4:3) | — | — |
+
+### Still out of scope
+
+- **Speaker-notes handout** (slide + notes per page) — the classic boardroom
+  leave-behind and a natural sibling, but a separate feature; not folded in
+  here.
 
 ## Recommendation
 
-Ship **Build A now** (it's the literal reported wound and is low-risk), and
-commit to **Build B** as the real deliverable, sequenced: print band + contrast
-gate → paper-PDF export → category-ramp pattern work → demo deck for sign-off.
-Resolve the four open questions in one round before B's CSS lands.
+Ship **Build A now** (the literal reported wound, low-risk: swap the web Print
+stylesheet to scale-to-fit-center + a landscape paper default, kill the dialog
+header/footer). Then **Build B** as the real deliverable, sequenced:
+print band + contrast gate (assert vs white) → auto-paper-fit PDF export
+(closest-fit MediaBox + `/PrintScaling /None`) → category-ramp SVG pattern
+work for chart/diagram → engine `--print` flag for CLI parity → demo deck
+rendered in colour *and* the print band for owner sign-off (the export-change
+STOP rule applies).

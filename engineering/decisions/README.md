@@ -202,6 +202,10 @@ it is load-bearing.
   lightness + SVG pattern fills, gated by extending `contrast.test.js` to white.
   Orientation prefill answered two ways: landscape PDF MediaBox + `/PrintScaling
   /None` (the strong, dialog-free path), and `@page { size: A4 landscape }`
-  keyword to prefill the `window.print()` dialog. Flags the 16:9-vs-paper
-  letterbox crux and recommends Build A (fix the web path) now + Build B (print
-  band + paper-PDF export) as the real deliverable. **Status: design-speculation.**
+  keyword to prefill the `window.print()` dialog. Resolves paper-fit
+  (scale-to-fit-center, paper-blind; auto-pick closest sheet — 16:9→Legal,
+  4:3→Letter/A4), grayscale ramp (borders + stepped grays + SVG pattern fills),
+  the `mode: print` trigger (export option + front-matter), and CLI parity
+  (engine `--print` flag). Recommends Build A (fix the web path) now + Build B
+  (print band + auto-paper-fit PDF export) as the real deliverable.
+  **Status: design-decision** (open questions resolved 2026-06-14).
