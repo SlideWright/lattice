@@ -1,6 +1,8 @@
 // @ts-check
 
+import react from '@astrojs/react';
 import starlight from '@astrojs/starlight';
+import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'astro/config';
 import { rehypeBaseLinks } from './plugins/rehype-base-links.mjs';
 
@@ -35,6 +37,11 @@ export default defineConfig({
 	// CJS→ESM build nudge is needed. See tools/build-authoring-core.js.
 	vite: {
 		server: { fs: { allow: ['..'] } },
+		// Tailwind v4 via its first-party Vite plugin. The entry stylesheet
+		// (src/styles/tailwind.css) imports only the theme + utilities layers —
+		// Preflight is OFF on purpose (see that file's header + the migration
+		// decision doc §0). It carries the shadcn ↔ Lattice token bridge.
+		plugins: [tailwindcss()],
 	},
 	// Base-prefix hand-written, root-relative content links so they resolve
 	// under both deploy bases (/lattice on GitHub Pages, / on Cloudflare).
@@ -110,5 +117,9 @@ export default defineConfig({
 				},
 			],
 		}),
+		// React renderer for the shadcn/ui islands. Astro stays the page-shell
+		// owner; React hydrates only where a `client:*` directive marks an
+		// interactive island (see the migration decision doc §0/§4.3).
+		react(),
 	],
 });

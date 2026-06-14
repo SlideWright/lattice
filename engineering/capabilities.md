@@ -206,6 +206,7 @@ harness the index can't infer, add it to `FRAMEWORKS` in the generator.
 
 | Name | What it does |
 |---|---|
+| `tools/check-shadcn-bridge-contrast.js` | Contrast gate for the shadcn ↔ Lattice token bridge. |
 | `tools/contrast-audit.js` | Contrast and colour-theory audit for all Lattice themes. |
 | `tools/lint-deck.js` | Deck linter CLI — run the authoring footgun checks on a draft deck and |
 | `tools/pixel-check.js` | pixel-check — snapshot/diff harness for the _legacy.css elimination work. |
