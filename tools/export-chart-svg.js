@@ -146,7 +146,7 @@ async function main() {
     // that out would wrongly drop it. Same set the Drawing Board gate uses, and
     // it skips aux overlays (e.g. the state-chart edge svg).
     const index = await page.evaluate(() => {
-      const KEYED = ['piechart', 'radar', 'map', 'quadrant'];
+      const KEYED = ['piechart', 'radar', 'map', 'quadrant', 'funnel'];
       const out = [];
       const sections = Array.from(document.querySelectorAll('.marpit > section'));
       sections.forEach((sec, si) => {

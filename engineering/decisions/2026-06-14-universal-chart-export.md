@@ -1,6 +1,17 @@
 # Proposal: Universal chart export — tiered SVG + PNG
 
-**Date:** 2026-06-14 · **Status:** proposal (for review) · **Owner:** TBD
+**Date:** 2026-06-14 · **Status:** proposal — **revised after a build spike** · **Owner:** TBD
+
+> **Finding (2026-06-14, build spike):** the **in-browser PNG tier is NOT
+> viable.** The browser rasterizer (`html-to-image`, the same one behind the
+> one-click image PDF/PPTX) renders Lattice's HTML/CSS chart-frame charts
+> (gantt/kanban/progress/…) **blank** — their layout relies on container queries
+> + CSS custom properties that the clone-and-reserialize step collapses. Verified
+> directly: the existing browser **PDF export of a gantt slide is also blank**,
+> so this is a pre-existing rasterizer limit, not new. **A PNG of these charts
+> needs a server-side render** (the emulator/puppeteer full render — the
+> canonical PDF path), which is a different, larger piece. The SVG tier is
+> unaffected and works; this PR ships it widened to `funnel` (5 types now).
 **Related:** the current "Chart SVG" export (`docs/src/playground/drawing-board-export.js`
 `exportChartsSvg` / `activeChartSvg`; CLI sibling `tools/export-chart-svg.js`;
 shared core `lib/components/chart/_chart-family/standalone-svg.js`).
@@ -87,18 +98,22 @@ bug itself is adjacent and may want a separate fix — out of scope here.)
 4. **Naming** — "Export chart" vs "Chart image" vs keep "Chart SVG" + add "Chart
    PNG". *Recommendation: one "Export chart", format automatic.*
 
-## 6. Phasing
+## 6. Phasing (revised after the spike)
 
-- **P1 — widen SVG** to all single-`<svg>` charts (the ~9, + mermaid). The biggest
-  clean win; mostly removing the allow-list + per-type validation. Reuses the
-  shared core; keeps CLI parity.
-- **P2 — PNG fallback** for the HTML/CSS charts (gantt/kanban/progress/roadmap/
-  timeline) + mixed slides, via the existing rasterizer. Makes "export any chart"
-  truly universal.
-- **P3 (optional)** — vector for the HTML camp: either `<foreignObject>`-wrap the
-  HTML+CSS into an SVG (vector-ish, fragile across consumers) or re-engineer those
-  components to render as native `<svg>` (large, but the only path to true vector
-  for them).
+- **P1 — widen SVG (shipping in this PR).** The build spike found only **funnel**
+  cleanly joins the keyed set as a single self-contained `<svg>` (legend in-svg);
+  `journey` has 4 svgs, `state-chart`/`word-cloud` mix in HTML, so they're not
+  safe SVG-tier. So P1 = `piechart/radar/map/quadrant/funnel` (4 → 5), browser +
+  CLI. Small, clean, working.
+- **P2 — PNG via SERVER-SIDE render (the real unlock, revised).** The in-browser
+  rasterizer can't do the HTML/CSS charts (see Finding), so the PNG of
+  gantt/kanban/progress/roadmap/timeline/journey/state-chart/word-cloud must come
+  from the emulator/puppeteer. Options: (a) a `lattice deck.md out.png --slide N`
+  CLI path (the emulator already renders PNG per slide) — usable from the Drawing
+  Board via a small render service or the Tauri wrapper; (b) a client→server
+  render call. This is the larger piece and needs its own design.
+- **P3 (optional)** — native-`<svg>` re-engineering of the HTML chart components,
+  the only path to *vector* for them.
 
 ## 7. Risks
 
