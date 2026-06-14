@@ -25,37 +25,24 @@ jobs:
         with:
           script: |
             const fs = require('fs');
+            const { parseForm } = require(`${process.env.GITHUB_WORKSPACE}/.github/scripts/issue-form.js`);
+
             const valid = new Set(
               JSON.parse(fs.readFileSync('.github/labels.json', 'utf8')).map((l) => l.name)
             );
-            const body = context.payload.issue.body || '';
-
-            // Text under a `### <heading>` up to the next heading/end; '' for _No response_.
-            function section(re) {
-              const m = body.match(re);
-              if (!m) return '';
-              const rest = body.slice(m.index + m[0].length);
-              const next = rest.search(/\n#{1,6}\s/);
-              const text = (next === -1 ? rest : rest.slice(0, next)).trim();
-              return /^_no response_$/i.test(text) ? '' : text;
-            }
-
-            const candidates = [
-              section(/#{1,6}\s+Area[^\n]*\n/i),
-              section(/#{1,6}\s+Type[^\n]*\n/i),
-              section(/#{1,6}\s+Priority[^\n]*\n/i),
-            ];
+            const form = parseForm(context.payload.issue.body || '');
 
             const existing = new Set((context.payload.issue.labels || []).map((l) => l.name));
-            const toAdd = candidates
-              .flatMap((s) => s.split(/\s+/))                       // tolerate stray whitespace
+            const toAdd = [form.area, form.type, form.priority]
+              .filter(Boolean)
               .filter((t) => /^(area|type|priority):[a-z-]+$/.test(t))
               .filter((t) => valid.has(t) && !existing.has(t));
 
             if (toAdd.length === 0) { core.info('No new taxonomy labels to apply.'); return; }
+            const labels = [...new Set(toAdd)];
             await github.rest.issues.addLabels({
               ...context.repo,
               issue_number: context.issue.number,
-              labels: [...new Set(toAdd)],
+              labels,
             });
-            core.info(`Applied: ${[...new Set(toAdd)].join(', ')}`);
+            core.info(`Applied: ${labels.join(', ')}`);

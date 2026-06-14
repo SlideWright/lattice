@@ -51,4 +51,15 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add BACKLOG.md
           git commit -m 'chore(backlog): sync BACKLOG.md to open issues'
-          git push
+          # Rebase-and-retry: a human or another workflow can push to main
+          # between checkout and push (the concurrency group only serializes
+          # this workflow against itself). Re-fetch + rebase the single backlog
+          # commit and retry, like the golden-diff job in ci.yml.
+          for i in 1 2 3; do
+            if git push; then exit 0; fi
+            echo "push rejected — rebasing on origin/main and retrying ($i)"
+            git fetch -q origin main && git rebase origin/main || { git rebase --abort || true; }
+            sleep $((i * 3))
+          done
+          echo "::error::sync-backlog: push to main failed after retries (main moving fast, or github-actions[bot] lacks push/bypass on protected main)"
+          exit 1
