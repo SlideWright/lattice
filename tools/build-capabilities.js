@@ -92,6 +92,8 @@ const SCRIPT_META = {
   'docs:portal:check':        ['Build & bundle', 'Freshness gate for the component catalog (md/json) + LFM grammar.json.'],
   'docs:landing-tokens':      ['Build & bundle', 'Emit per-palette CSS token blocks for the docs landing page.'],
   'docs:landing-tokens:check':['Build & bundle', 'Freshness gate for the landing-page token blocks.'],
+  'docs:spec':                ['Build & bundle', 'Generate the docs-site Specification pages (LFM 1.0 + Diagnostic Protocol) from the canonical spec/*.md.'],
+  'docs:spec:check':          ['Build & bundle', 'Freshness gate for the generated docs-site spec pages (stale vs spec/).'],
 
   // Galleries & preview (rendered PDFs)
   'build:galleries':          ['Galleries & preview', 'Rebuild per-component gallery PDFs (light + dark).'],

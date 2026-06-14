@@ -115,6 +115,19 @@ export default defineConfig({
 						{ label: 'Themes & palettes', slug: 'guides/themes' },
 					],
 				},
+				{
+					// The owned LFM standard, published as its own group so it reads as
+					// a standard, not internal docs. Two registers: the plain-words
+					// front door first (authored prose), then the normative specs
+					// (generated from spec/*.md by tools/build-spec-docs.js — never
+					// hand-edited here, so the site can't drift from the canonical spec).
+					label: 'Specification',
+					items: [
+						{ label: 'Understanding LFM', slug: 'spec/understanding-lfm' },
+						{ label: 'LFM 1.0 (spec)', slug: 'spec/lfm' },
+						{ label: 'Diagnostic Protocol', slug: 'spec/diagnostics' },
+					],
+				},
 			],
 		}),
 		// React renderer for the shadcn/ui islands. Astro stays the page-shell

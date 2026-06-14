@@ -57,6 +57,15 @@ in patch versions.
   where Lattice is the wrong tool. Linked from the primary nav and footer;
   research source-of-truth in `engineering/decisions/2026-06-14-competitive-analysis.md`.
 
+- **The LFM standard is now published on the docs site.** The owned standards
+  that previously lived only as repo files (`spec/LFM-1.0.md`, `spec/diagnostics.md`)
+  now have a web home: a new **Specification** section taught in two registers —
+  a plain-words *Understanding LFM* front door for everyone, and the normative
+  *LFM 1.0* spec + *Diagnostic Protocol* for implementers. The normative pages
+  are generated from `spec/*.md` by `tools/build-spec-docs.js` (npm `docs:spec`,
+  with a `docs:spec:check` freshness gate wired into the build), so the site can
+  never drift from the canonical spec; repo-relative links are rewritten to site
+  routes / GitHub source automatically.
 - **The Drawing Board now shows export progress and an error toast.** A
   one-click PDF/PPTX export rasterizes every slide in the browser — seconds to
   tens of seconds on a phone — but the only feedback was low-contrast text in
