@@ -862,6 +862,62 @@ const dbData = JSON.stringify({
 				return (n && n.textContent) || 'deck';
 			};
 			const status = (msg, err) => { if (statusEl) { statusEl.textContent = msg; statusEl.classList.toggle('err', !!err); } };
+
+			// ── Export progress cue ───────────────────────────────────────────────
+			// The inline .db-status lives in the *preview* pane header — invisible from
+			// the editor pane on mobile, where Export is tapped. A rasterizing export
+			// (PDF/PPTX) takes seconds-to-tens-of-seconds on a phone, so without a
+			// pane-independent cue it reads as "nothing happened / it's broken." This
+			// floating card mirrors the toast's visual language and shows a determinate
+			// bar (slide i of N) where we have it, indeterminate otherwise.
+			let progressEl = null;
+			let progressFill = null;
+			let progressMsg = null;
+			function showProgress(msg) {
+				if (!progressEl) {
+					progressEl = document.createElement('div');
+					progressEl.className = 'db-progress is-indeterminate';
+					progressEl.setAttribute('role', 'status');
+					progressEl.setAttribute('aria-live', 'polite');
+					const track = document.createElement('div');
+					track.className = 'db-progress-track';
+					progressFill = document.createElement('div');
+					progressFill.className = 'db-progress-fill';
+					track.appendChild(progressFill);
+					progressMsg = document.createElement('span');
+					progressMsg.className = 'db-progress-msg';
+					progressEl.appendChild(track);
+					progressEl.appendChild(progressMsg);
+					document.body.appendChild(progressEl);
+					requestAnimationFrame(() => progressEl && progressEl.classList.add('is-in'));
+				}
+				if (progressMsg) progressMsg.textContent = msg;
+			}
+			function setProgress(prog) {
+				if (!progressEl) return;
+				if (prog && typeof prog.total === 'number' && prog.total > 0) {
+					progressEl.classList.remove('is-indeterminate');
+					progressFill.style.width = Math.round((prog.current / prog.total) * 100) + '%';
+				} else {
+					progressEl.classList.add('is-indeterminate');
+					progressFill.style.width = '';
+				}
+			}
+			function hideProgress() {
+				if (!progressEl) return;
+				const el = progressEl;
+				el.classList.remove('is-in');
+				setTimeout(() => el.remove(), 200);
+				progressEl = progressFill = progressMsg = null;
+			}
+			// Surface a failure where the user is actually looking (a toast floats over
+			// any pane) AND in the inline status, with a one-tap Retry of the same kind.
+			function exportError(err, retry) {
+				const msg = String((err && err.message) || err || 'Export failed.');
+				status(msg, true);
+				const toast = window.__dbStore && window.__dbStore.toast;
+				if (toast) toast('Export failed: ' + msg, retry ? 'Retry' : null, retry || null);
+			}
 			const closeMenu = () => { menu.hidden = true; trigger.setAttribute('aria-expanded', 'false'); };
 			trigger.addEventListener('click', (e) => {
 				e.stopPropagation();
@@ -878,6 +934,10 @@ const dbData = JSON.stringify({
 				if (!btn) return;
 				closeMenu();
 				const kind = btn.getAttribute('data-export');
+				runExport(kind);
+			});
+
+			async function runExport(kind) {
 				const frame = document.getElementById('db-frame');
 				const source = window.__dbEditor ? window.__dbEditor.getValue() : '';
 				// Provenance for the export stamp: which engine + build + theme rendered
@@ -921,6 +981,9 @@ const dbData = JSON.stringify({
 							.map((c) => ({ name: c.name, css: c.text || '' }));
 					} catch (_e) { return []; }
 				}
+				// Drive both the inline status text AND the floating progress card from
+				// the export callback — the card carries the determinate {current,total}.
+				const onStatus = (m, prog) => { status(m); showProgress(m); setProgress(prog); };
 				try {
 					if (kind === 'md') {
 						const lib = await activeLibraryTheme();
@@ -931,17 +994,18 @@ const dbData = JSON.stringify({
 						if (comps.length) bits.push(comps.length + ' component' + (comps.length === 1 ? '' : 's'));
 						status(bits.length ? `Markdown exported (${bits.join(' + ')} embedded).` : 'Markdown exported.');
 					}
-					else if (kind === 'pdf') { status('Exporting PDF…'); await exportPdf(frame, deckName(), (m) => status(m), meta); status('PDF exported.'); }
-					else if (kind === 'pptx') { await exportPptx(frame, deckName(), (m) => status(m), meta); status('PowerPoint exported.'); }
+					else if (kind === 'pdf') { onStatus('Exporting PDF…'); await exportPdf(frame, deckName(), onStatus, meta); status('PDF exported.'); }
+					else if (kind === 'pptx') { onStatus('Exporting PowerPoint…'); await exportPptx(frame, deckName(), onStatus, meta); status('PowerPoint exported.'); }
 					else if (kind === 'print') { exportPrint(frame, meta); status('Opening print dialog…'); }
-					else if (kind === 'charts-svg') { status('Exporting chart…'); await exportChart(frame, deckName(), (m) => status(m)); }
+					else if (kind === 'charts-svg') { onStatus('Exporting chart…'); await exportChart(frame, deckName(), onStatus); }
 					else if (kind === 'marp') {
-						status('Building Marp bundle…');
+						onStatus('Building Marp bundle…');
 						await exportMarp(source, deckName(), meta.palette, dbd.themeBase);
 						status('Marp bundle exported (.zip).');
 					}
-				} catch (err) { status(String(err.message || err), true); }
-			});
+					hideProgress();
+				} catch (err) { hideProgress(); exportError(err, () => runExport(kind)); }
+			}
 		</script>
 
 		<!-- Workbench library themes (export bridge) — load the user's saved themes

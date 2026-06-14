@@ -315,11 +315,15 @@ export async function exportPdf(frame, name, onStatus, meta) {
 		creator: `Lattice · ${eng}`,
 	});
 	for (let i = 0; i < sections.length; i++) {
-		if (onStatus) onStatus('Rendering slide ' + (i + 1) + ' of ' + sections.length + '…');
+		// Pass a structured {current,total} alongside the message so the caller can
+		// drive a determinate progress bar — the rasterizing loop is the slow part
+		// (seconds-to-tens-of-seconds on a phone), and the only feedback worth a bar.
+		if (onStatus) onStatus('Rendering slide ' + (i + 1) + ' of ' + sections.length + '…', { current: i, total: sections.length });
 		const png = await rasterizeSection(sections[i], fontEmbedCSS);
 		if (i > 0) pdf.addPage([pageW, pageH], 'landscape');
 		pdf.addImage(png, 'PNG', 0, 0, pageW, pageH);
 	}
+	if (onStatus) onStatus('Saving PDF…', { current: sections.length, total: sections.length });
 	pdf.save(safeName(name) + '.pdf');
 }
 
@@ -336,11 +340,11 @@ export async function exportPptx(frame, name, onStatus, meta) {
 	pptx.company = `Lattice · ${eng}`;
 	pptx.layout = 'LAYOUT_WIDE'; // 13.333 x 7.5in, 16:9 — matches any 16:9 @size (HD/4K); the PNG full-bleeds it
 	for (let i = 0; i < sections.length; i++) {
-		if (onStatus) onStatus('Rendering slide ' + (i + 1) + ' of ' + sections.length + '…');
+		if (onStatus) onStatus('Rendering slide ' + (i + 1) + ' of ' + sections.length + '…', { current: i, total: sections.length });
 		const png = await rasterizeSection(sections[i], fontEmbedCSS);
 		pptx.addSlide().addImage({ data: png, x: 0, y: 0, w: '100%', h: '100%' });
 	}
-	if (onStatus) onStatus('Building .pptx…');
+	if (onStatus) onStatus('Building .pptx…', { current: sections.length, total: sections.length });
 	await pptx.writeFile({ fileName: safeName(name) + '.pptx' });
 }
 
