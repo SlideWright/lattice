@@ -44,13 +44,13 @@ only *status*. **32 open** items.
 
 _none_
 
-## In progress (1)
-
-- [#314](https://github.com/SlideWright/lattice/issues/314) infra: harden drift-watch + post-merge teardown against git ref-lock races — medium · infra
-
-## In review (0)
+## In progress (0)
 
 _none_
+
+## In review (1)
+
+- [#314](https://github.com/SlideWright/lattice/issues/314) infra: harden drift-watch + post-merge teardown against git ref-lock races — medium · infra
 
 ## Inbox (no status) (3)
 
