@@ -31,6 +31,7 @@ const NAME_RE  = /^[a-z][a-z0-9_-]{1,31}$/;
 const RESERVED = new Set([
   'lattice', 'indaco', 'indaco-dark',
   'cuoio', 'cuoio-dark', 'atelier', 'atelier-dark',
+  'bambino', 'bambino-dark',
   'brina', 'brina-dark', 'burgundy', 'burgundy-dark',
   'crepuscolo', 'crepuscolo-dark', 'laguna', 'laguna-dark',
   'magnolia', 'magnolia-dark', 'mustard', 'mustard-dark',

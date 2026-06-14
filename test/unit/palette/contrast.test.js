@@ -126,7 +126,7 @@ describe('contrast', () => {
 
   const AA_THRESHOLD = 4.5;
 
-  for (const name of ['indaco', 'cuoio']) {
+  for (const name of ['indaco', 'cuoio', 'bambino']) {
     for (const mode of ['light', 'dark']) {
       test(`contrast: ${name} (${mode}) every --cN-light / --c-ink-light pair clears AA`, () => {
         const vars = loadPaletteWithImports(name, mode);

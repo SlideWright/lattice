@@ -25,6 +25,14 @@ in patch versions.
 
 ## Unreleased
 
+### Added
+
+- **New theme: `bambino`** — a warm cream "boardroom paper" palette with a
+  vivid six-hue categorical spectrum (blue · purple · magenta · red-orange ·
+  olive-gold · green) over paired pale washes, plus a `bambino-dark` variant.
+  AA-verified across every categorical pair in both canvas modes. Select with
+  `theme: bambino` (front matter) or `-p bambino` (emulator).
+
 ### Changed
 
 - **Playground / Drawing Board now render via the owned `lattice-engine` by

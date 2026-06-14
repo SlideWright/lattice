@@ -28,7 +28,7 @@ Two palettes are the canonical pair:
 - **`cuoio`** — warm leather. The warm counterpart.
 
 Beyond those, Lattice ships a full set of palettes — `ardesia`,
-`atelier`, `brina`, `burgundy`, `carbone`, `concrete`, `crepuscolo`,
+`atelier`, `bambino`, `brina`, `burgundy`, `carbone`, `concrete`, `crepuscolo`,
 `laguna`, `magnolia`, `mustard`, `onyx` — most with a paired dark
 canvas variant. You can preview every one of them live: open the
 **[component reference](/lattice/components/)** and pick a palette

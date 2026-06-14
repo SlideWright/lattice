@@ -40,6 +40,8 @@ module.exports = {
     "themes/ardesia-dark.css",
     "themes/atelier.css",
     "themes/atelier-dark.css",
+    "themes/bambino.css",
+    "themes/bambino-dark.css",
     "themes/brina.css",
     "themes/brina-dark.css",
     "themes/burgundy.css",

@@ -18,7 +18,7 @@ const assert = require('node:assert/strict');
 const { loadPalette } = require('../../helpers/palette');
 
 const BASE_THEMES = [
-  'ardesia', 'atelier', 'brina', 'burgundy', 'carbone', 'concrete',
+  'ardesia', 'atelier', 'bambino', 'brina', 'burgundy', 'carbone', 'concrete',
   'crepuscolo', 'cuoio', 'indaco', 'laguna', 'magnolia', 'mustard', 'onyx',
 ];
 

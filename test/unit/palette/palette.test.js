@@ -49,7 +49,7 @@ describe('palette', () => {
     'c-note',
   ];
 
-  for (const name of ['indaco', 'cuoio']) {
+  for (const name of ['indaco', 'cuoio', 'bambino']) {
     test(`palette: ${name} defines all ${REQUIRED_DIAGRAM_VARS.length} required palette tokens`, () => {
       const p = loadPalette(name);
       const missing = REQUIRED_DIAGRAM_VARS.filter(v => !p.vars[v]);

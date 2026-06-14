@@ -45,10 +45,10 @@ context renders identically.
   sandboxed/no-network builds — emits PDF plus an HTML sidecar). Mermaid
   diagrams pre-render as inline SVG. Code blocks syntax-highlight. Slides
   are 1280×720.
-- **Thirteen palettes.** `indaco` (cool indigo, the default) and `cuoio`
+- **Fourteen palettes.** `indaco` (cool indigo, the default) and `cuoio`
   (warm leather) are the canonical pair, alongside `ardesia`, `atelier`,
-  `brina`, `burgundy`, `carbone`, `concrete`, `crepuscolo`, `laguna`,
-  `magnolia`, `mustard`, and `onyx` — most with a paired dark-canvas
+  `bambino`, `brina`, `burgundy`, `carbone`, `concrete`, `crepuscolo`,
+  `laguna`, `magnolia`, `mustard`, and `onyx` — most with a paired dark-canvas
   variant. Authors pick one in front matter (`theme: indaco`). Each
   supplies pale fills, saturated brand borders, and dark ink; saturated
   red is reserved for alarm states. WCAG AA verified across every
@@ -269,9 +269,10 @@ lattice/
 ├── lib/
 │   └── mermaid-hljs.js        # highlight.js language for mermaid source
 │
-├── themes/                    # 13 palettes (+ paired dark variants)
+├── themes/                    # 14 palettes (+ paired dark variants)
 │   ├── indaco.css             # default palette: cool indigo + Mermaid CSS
 │   ├── cuoio.css              # warm leather palette
+│   ├── bambino.css            # warm cream "boardroom paper" palette
 │   └── …                      # ardesia, atelier, brina, burgundy, carbone, …
 │
 ├── examples/

@@ -5,9 +5,10 @@ Layouts (in `lattice.css`) are palette-blind: they only ever reference
 `var(--token)`. A palette supplies the tokens. Swap palettes, every
 colour changes; nothing about layout, spacing, or typography moves.
 
-This directory ships ten palette pairs (`indaco`, `cuoio`, `atelier`,
-`brina`, `burgundy`, `crepuscolo`, `laguna`, `magnolia`, `mustard`,
-`onyx`) plus three structural extras (`ardesia`, `carbone`, `concrete`).
+This directory ships eleven palette pairs (`indaco`, `cuoio`, `atelier`,
+`bambino`, `brina`, `burgundy`, `crepuscolo`, `laguna`, `magnolia`,
+`mustard`, `onyx`) plus three structural extras (`ardesia`, `carbone`,
+`concrete`).
 Each ships a `-dark` variant — a three-line wrapper that flips the
 deck onto a dark canvas without touching colour values.
 

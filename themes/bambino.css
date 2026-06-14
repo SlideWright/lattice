@@ -1,0 +1,358 @@
+/* @theme bambino
+ * @size hd       1280px 720px
+ * @size HD       1280px 720px
+ * @size 4K       3840px 2160px
+ * @size 4k       3840px 2160px
+ * @size standard 960px  720px
+ * @size 16:9     1280px 720px
+ *
+/* Lattice · Bambino palette
+ * ────────────────────────────────────────────────────────────────────────
+ * Warm cream boardroom paper. Light, editorial, ink-on-paper — a sibling
+ * to cuoio's leather warmth, but built around a vivid six-hue categorical
+ * spectrum (blue · purple · magenta · red-orange · olive-gold · green)
+ * carried over from its inspiration deck. Surfaces are warm cream (#FAF7F2
+ * canvas, #FFFFFF cards) with a deep-espresso ink ramp and a bronze /
+ * terracotta accent. The signature is a left-to-right spectrum ribbon that
+ * sweeps through the six categorical hues — that gradient is bambino's
+ * brand mark. Saturated red is reserved for alarm states; every routine
+ * surface stays in the warm cream/spectrum band so the deck reads as
+ * ink-on-paper.
+ *
+ * This file is a sibling palette to indaco.css and cuoio.css; all three
+ * implement the same token contract so layouts in lattice.css stay
+ * palette-blind.
+ *
+ * Design contract
+ * ───────────────
+ *   1. Single text color (#1E1A15, deep ink) on every light surface. No
+ *      auto-inversion logic is relied upon; every text variable below is
+ *      set explicitly.
+ *
+ *   2. Two lightness bands for categorical fills:
+ *        Pale band (--cN-light)  — pale washes of the six signature hues
+ *                                  (+ six more), dark ink on top. Used by
+ *                                  flowchart, sequence, pie, quadrant, and
+ *                                  most diagram/layout fills.
+ *        Deep band (--cN-dark)   — the saturated signature pigments, white
+ *                                  ink on top. Used as foreground marks:
+ *                                  piechart wedges, kpi accents, status
+ *                                  dots, xy-chart plot palette.
+ *
+ *   3. Saturation reserved for two purposes:
+ *        a. Borders. Saturated terracotta #A8521C reads on every pale
+ *           cream/wash fill including white.
+ *        b. Alarm signal. Saturated red only on the alarm/error tokens —
+ *           never on routine fills.
+ *
+ *   4. Every text-bearing token clears WCAG AA (4.5:1) against the surface
+ *      it appears on, verified by `node tools/contrast-audit.js bambino`
+ *      and asserted by test/unit/palette/contrast.test.js. Decorative
+ *      tokens (--text-muted, borders, hairlines, spectrum gradient) are
+ *      WCAG-exempt per design.
+ *
+ * Layout consumption
+ * ──────────────────
+ * lattice.css references every variable below by name. Layouts that rely
+ * on a missing variable fall back to the cascade root (unstyled
+ * black-on-white), which makes missing tokens easy to spot.
+ *
+ * Diagram overrides
+ * ─────────────────
+ * Palette-blind per-diagram Mermaid overrides live at the bottom of
+ * lattice.css, imported transitively via `@import 'lattice';`. Authoring
+ * a new palette is purely a token-declaration job — no per-palette CSS
+ * rules are needed. See engineering/decisions/2026-05-12-diagram-tokens.md
+ * for the architecture.
+ */
+
+@import 'lattice';
+
+/* Zero-specificity light default — see the long comment in the next
+ * :root block. Author overrides via `style: ":root{color-scheme:dark}"`
+ * always win because plain :root is (0,0,1) and :where() is (0,0,0). */
+:where(:root) { color-scheme: light; }
+
+:root {
+  /* ── Color scheme ──────────────────────────────────────────────────────
+   * Default to light. Authors flip to dark deck-wide via Marp's native
+   * front-matter `style:` directive — works in marp-cli, the emulator,
+   * AND the VS Code preview (because `style:` injects CSS that survives
+   * Marpit's directive pipeline). One-line incantations:
+   *
+   *   style: ":root{color-scheme:dark}"        // force whole-deck dark
+   *   style: ":root{color-scheme:light dark}"  // follow OS / viewer pref
+   *
+   * Per-slide override is unaffected: `<!-- _class: dark -->` flips just
+   * that section via lattice.css's section.dark rule.
+   *
+   * The default `color-scheme: light` lives in a sibling :where(:root)
+   * rule above so its specificity is zero — any author override (via
+   * style: directive or the bambino-dark variant theme) wins the cascade. */
+
+  /* ── Bambino brand axis (single source of truth for brand color) ─────── */
+  --brand-canvas:  #2A211A;  /* deep warm espresso — bg-dark / dark panels  */
+  --brand-accent:  #9C4A18;  /* terracotta bronze — accent, 5.77:1 on bg AA */
+
+  /* ── Surfaces ──────────────────────────────────────────────────────────
+   * light-dark() makes every descendant lookup follow the active
+   * color-scheme — at :root, on a section, or anywhere in between.
+   * WCAG annotations refer to the light pair; the dark pair clears AAA on
+   * its own surface. */
+  --bg:       light-dark(#FAF7F2, var(--dark-bg));      /* warm cream / espresso */
+  --bg-alt:   light-dark(#FFFFFF, var(--dark-bg-alt));  /* card fill (white)     */
+  --bg-dark:  var(--brand-canvas); /* dark panels / title / divider         */
+  --border:   light-dark(#E8E1D6, var(--dark-border));  /* deeper-cream hairline */
+
+  /* ── Ink ramp ──────────────────────────────────────────────────────────
+   * heading = ink #1E1A15; body = espresso #3D3228; secondary = walnut
+   * #6B5D4F; label = the terracotta accent; muted = stone (decorative). */
+  --text-display: #FAF7F2;      /* on dark surfaces — 16.78:1 on bg-dark         */
+  --text-heading: light-dark(#1E1A15, var(--dark-text-heading)); /* 16.19:1 / 16.78:1 */
+  --text-body:    light-dark(#3D3228, var(--dark-text-body));    /* 11.66:1 / 10.52:1 */
+  --text-label:   light-dark(var(--brand-accent), var(--dark-text-label)); /* 5.77:1 / 7.96:1 AA */
+  --text-secondary: light-dark(#6B5D4F, var(--dark-text-secondary)); /* walnut — 5.95:1 / AA both sides */
+  --text-muted:   light-dark(#7D705B, var(--dark-text-muted));      /* stone — decorative / de-emphasized; WCAG-exempt */
+
+  /* ── Brand accent ──────────────────────────────────────────────────────
+   * The accent is text-bearing on multiple surfaces (inline code chips,
+   * eyebrows, link colour, card headings), so it follows light-dark() too.
+   * Light pair: terracotta bronze on cream — 5.77:1 on bg, 5.18:1 on
+   * accent-soft. Dark pair: bright bronze on dark-bg-alt — well inside AA
+   * on the inline-code chip surface. */
+  --accent:      light-dark(var(--brand-accent), #D98A4E);
+  --accent-soft: light-dark(#F3EAE0, #3A2A1A);
+  /* Inline-code chip ink — curated + AA-audited on the chip wash; bg/border
+   * derive from it (base.tokens.css). See 2026-06-08-inline-code-contrast.md. */
+  --code-inline-fg: light-dark(#8F4214, var(--accent)); /* light ink deepened for AA on card */
+  /* Text on top of --accent. Light: white on terracotta (6.17:1).
+   * Dark: deep espresso on bright bronze (6.57:1) — fixes corner-tag
+   * contrast which would otherwise be white on bright bronze (fails AA). */
+  --on-accent:   light-dark(#FFFFFF, var(--bg-dark));
+
+  /* ── Semantic signals ─────────────────────────────────────────────────
+   * --warn and --fail come from lattice.css :root (universal status palette,
+   * light-dark() pairs tuned for AA contrast on both canvas modes). --pass
+   * is overridden to a warm-leaning forest green so the "done / shipped"
+   * tone harmonizes with the spectrum; dark mode lifts to a brighter
+   * forest variant for AA contrast on dark canvas. */
+  --pass: light-dark(#2F6B12, #6FCC4D);
+  --fail: light-dark(#A91C2A, #F08A8A);
+  --warn: light-dark(#9A6A00, #E3A93C);
+  --pass-bg: color-mix(in srgb, var(--pass) 10%, transparent);
+  --fail-bg: color-mix(in srgb, var(--fail) 10%, transparent);
+  --warn-bg: color-mix(in srgb, var(--warn) 10%, transparent);
+
+  /* Sequential ramp anchor — bambino's terracotta accent. The 9 derivative
+   * stops auto-derive in lattice.css :root via OKLab color-mix. */
+  --scale-500: var(--brand-accent);
+
+  /* ── Dark-panel ramp ──────────────────────────────────────────────────── */
+  --bg-warm-mid:   #3A2A1A;     /* divider panels (deep) — decorative     */
+  --bg-warm-light: #5B4327;     /* accent panels (lighter) — decorative   */
+  --code-text:     #E0D2BE;     /* code text on dark — AAA on bg-dark     */
+
+  /* ── Spectrum ribbon — the six signature categorical hues ─────────────
+   * blue → purple → magenta → red-orange → olive-gold → green. This sweep
+   * IS bambino's brand mark. Decorative (code block bottom border, dark
+   * canvas top hairline). */
+  --spectrum: linear-gradient(
+    90deg,
+    #326FB3,
+    #6E5CC7,
+    #AA4A84,
+    #C13A20,
+    #806600,
+    #2F7A33
+  );
+  --spectrum-vertical: linear-gradient(
+    180deg,
+    #326FB3,
+    #6E5CC7,
+    #AA4A84,
+    #C13A20,
+    #806600,
+    #2F7A33
+  );
+
+  /* ── Derived on-dark tints ────────────────────────────────────────────── */
+  --on-dark-primary:   color-mix(in srgb, white 90%, transparent);
+  --on-dark-secondary: color-mix(in srgb, white 65%, transparent);
+  --on-dark-ghost:     color-mix(in srgb, white 30%, transparent);
+  --on-dark-watermark: color-mix(in srgb, white 12%, transparent);
+
+  /* Marp chrome mappings */
+  --marp-slide-pagination-color:     var(--text-muted);
+  --marp-slide-pagination-font-size: var(--fs-meta);
+  --marp-slide-header-color: var(--text-muted);
+  --marp-slide-footer-color: var(--text-muted);
+}
+
+/* ── Dark-variant tokens ───────────────────────────────────────────────
+ * Used by section.dark in lattice.css to reskin the slide canvas for
+ * cover/divider/closing layouts that need a dark background. The slide
+ * rule remaps the main tokens to these dark values, so the same layout
+ * structure works on either canvas. All ratios verified against
+ * --dark-bg as the active surface. */
+:root {
+  --dark-bg:           #1C160F;  /* deeper than bg-dark — canvas dark        */
+  --dark-bg-alt:       #2A211A;  /* same as light bg-dark — card on dark     */
+  --dark-border:       #3A2E20;
+  --dark-text-heading: #FAF7F2;  /* 16.78:1 on dark-bg AAA                   */
+  --dark-text-body:    #D6C4A8;  /* warm tan — 10.52:1 on dark-bg AAA        */
+  --dark-text-muted:   #A69882;
+  --dark-text-secondary: #C0B095;
+  --dark-text-label:   #E0A86E;  /* warm bronze — 7.96:1 on dark-bg AAA      */
+  --dark-text-display: #FAF7F2;
+}
+
+/* ── highlight.js syntax tokens ────────────────────────────────────────
+ * Warm earth palette for bambino's dark code block background
+ * (--bg-dark: #2A211A, deep espresso + the spectrum ribbon at bottom).
+ * Warm ambers, terracottas, and muted teals provide contrast against the
+ * dark espresso without importing the cool Night Owl palette. */
+:root {
+  --hljs-comment:    #8A7A66;  /* muted warm taupe, italic               */
+  --hljs-keyword:    #D98A4E;  /* terracotta bronze, italic              */
+  --hljs-built_in:   #94BE6E;  /* warm lime-green — built-ins            */
+  --hljs-number:     #DD9268;  /* warm orange-rust                       */
+  --hljs-literal:    #E08596;  /* warm rose-pink — booleans/null         */
+  --hljs-string:     #D7A968;  /* warm gold/tan                          */
+  --hljs-title:      #DEC074;  /* warm amber-yellow, italic              */
+  --hljs-type:       #7FBEB4;  /* muted teal — cool contrast on warm bg  */
+  --hljs-variable:   #94BE6E;  /* warm lime-green — variables            */
+  --hljs-params:     #7FBEB4;  /* muted teal-mint — parameters           */
+  --hljs-tag:        #7FBEB4;  /* muted teal — HTML tags / names         */
+  --hljs-punctuation:#CFC0A8;  /* warm taupe — operators, punctuation    */
+}
+
+/* ── Diagram tokens ────────────────────────────────────────────────────
+ * Role-named, palette-blind tokens consumed by lattice-diagram.css and
+ * the renderer bridges (lattice-runtime.js, lattice-emulator.js). The
+ * structural shape — which slot is band, stroke, state, etc. — is the
+ * same across every palette; this file supplies bambino's warm values. */
+:root {
+
+  /* ── Structural ───────────────────────────────────────────────────
+   * Universal stroke for any band fill; saturated terracotta reads on
+   * every pale cream/wash tint including white. Line is for edges/arrows
+   * — warm walnut ink on light canvas, warm tan on dark. */
+  --c-stroke: #A8521C;  /* saturated terracotta — reads on white + every wash */
+  --c-line:   light-dark(#3D3228, var(--dark-text-body));
+
+  /* Cross-deck contrast accent — radar's second curve, where a single
+   * warm hue against the pale band reads better than a second pale tint. */
+  --c-accent-warm: var(--brand-accent);
+}
+
+:root {
+  /* Categorical fills — two independent cycles, canvas-mode selected.
+   * Slots 1–6 are bambino's six signature hues + their pale washes (the
+   * loved spectrum); slots 7–12 are six more perceptually distinct hues.
+   *
+   * --cN-light: pale wash (dark --c-ink-light on top) in light mode;
+   *             flips to the deep pigment (off-white ink) on dark canvas.
+   * --cN-dark:  deep pigment (white --c-ink-dark on top) in light mode;
+   *             flips to a pale wash (dark ink) on dark canvas.
+   * NOT suitable as foreground/stroke when pale — use --cN-dark for that. */
+
+  /* slots 1–6 — the six loved signature hues + washes (exact anchors) */
+  --c1-light:  light-dark(#EBF0F6, #326FB3);  /* blue        */
+  --c2-light:  light-dark(#EEEDF8, #6E5CC7);  /* purple      */
+  --c3-light:  light-dark(#F4ECF1, #AA4A84);  /* magenta     */
+  --c4-light:  light-dark(#F8EDE8, #C13A20);  /* red-orange  */
+  --c5-light:  light-dark(#F5F1E3, #806600);  /* olive-gold  */
+  --c6-light:  light-dark(#EAF3EA, #2F7A33);  /* green       */
+  /* slots 7–12 — six more distinct AA hues + washes */
+  --c7-light:  light-dark(#E3F0F1, #0B6E78);  /* teal        */
+  --c8-light:  light-dark(#E8EBF4, #27408F);  /* deep blue   */
+  --c9-light:  light-dark(#F0EAE3, #6B4A2E);  /* cocoa       */
+  --c10-light: light-dark(#F1E9F0, #6E3A6A);  /* plum        */
+  --c11-light: light-dark(#E6F0EA, #1F5E3A);  /* forest      */
+  --c12-light: light-dark(#F6E9EC, #8C2D4A);  /* wine        */
+
+  /* Categorical foreground/stroke — deep pigment on light canvas (white
+   * ink), pale wash on dark canvas (dark ink). Used by kanban lane stripes,
+   * gantt bars, piechart wedges, and any layout that needs the categorical
+   * hue as a visible color. */
+  --c1-dark:   light-dark(#326FB3, #EBF0F6);  /* blue        */
+  --c2-dark:   light-dark(#6E5CC7, #EEEDF8);  /* purple      */
+  --c3-dark:   light-dark(#AA4A84, #F4ECF1);  /* magenta     */
+  --c4-dark:   light-dark(#C13A20, #F8EDE8);  /* red-orange  */
+  --c5-dark:   light-dark(#806600, #F5F1E3);  /* olive-gold  */
+  --c6-dark:   light-dark(#2F7A33, #EAF3EA);  /* green       */
+  --c7-dark:   light-dark(#0B6E78, #E3F0F1);  /* teal        */
+  --c8-dark:   light-dark(#27408F, #E8EBF4);  /* deep blue   */
+  --c9-dark:   light-dark(#6B4A2E, #F0EAE3);  /* cocoa       */
+  --c10-dark:  light-dark(#6E3A6A, #F1E9F0);  /* plum        */
+  --c11-dark:  light-dark(#1F5E3A, #E6F0EA);  /* forest      */
+  --c12-dark:  light-dark(#8C2D4A, #F6E9EC);  /* wine        */
+
+  /* Ink on the categorical fills. --c-ink-light is dark on the pale band
+   * in light mode, off-white on the deep band in dark mode (follows
+   * --text-heading). --c-ink-dark is white on the deep band in light mode,
+   * deep ink on the pale band in dark mode. */
+  --c-ink-light: var(--text-heading);
+  --c-ink-dark:  light-dark(#FFFFFF, #1E1A15);
+
+  /* Semantic palette — 5 roles, each a flipping fill. Curated per theme:
+   * hue nudged toward the warm cream brand within its meaning band,
+   * AA-verified both canvas modes, chroma-capped for restraint. The -dark
+   * companions are strokes → universal --c-stroke.
+   *
+   * --c-alarm pairs with --c-ink-dark above: alarm fill lifts bright in
+   * dark mode, ink flips dark to compensate (both pass AA either way). */
+  --c-warm-light:  light-dark(#F3E2CE, #8A4A10);
+  --c-warm-dark:   var(--c-stroke);
+  --c-cool-light:  light-dark(#E1DACE, #6B5B40);
+  --c-cool-dark:   var(--c-stroke);
+  --c-alarm:       light-dark(#A91C2A, #F08A8A);
+  --c-alarm-dark:  var(--c-stroke);
+  --c-mark:        light-dark(#9C4A18, #D98A4E);
+  --c-note:        light-dark(#F5EFE0, #4A3A28);
+
+  /* Containment tier — two nested structural surfaces. A monotonic
+   * luminance ladder away from the canvas: light deck steps down, dark
+   * deck steps up, one step per nesting level. Warm-tinted at a barely-
+   * there chroma — surfaces, not accents; they never compete with the
+   * --cN fills that sit on them.
+   *   --c-container     flowchart cluster, sankey area, kanban column
+   *   --c-subcontainer  kanban ticket, a box nested in a cluster */
+  --c-container:     light-dark(#F2ECE2, #261F18);
+  --c-subcontainer:  light-dark(#E6DDCF, #38302A);
+}
+
+/* ── Chart-family palette ───────────────────────────────────────────────
+ * Bambino's curation of the chart-family's two colour spectrums (defined in
+ * lib/components/chart/_chart-family/chart-family.css). The engine ships a
+ * canvas-aware Apple-hue default; untuned themes inherit it. Bambino
+ * overrides both spectrums with its signature pigments so charts read native
+ * to the warm-paper brand instead of borrowing the cool system palette.
+ *
+ * Each hook is the `light-dark(lightCanvasVivid, darkCanvasVivid)` shape the
+ * chart-family expects: on cream the value is a saturated pigment (it drives
+ * the wedge/bar border at full strength and a 24% tint for the fill); on
+ * espresso it lifts to a brighter same-hue sibling. */
+:root {
+  /* Categorical spectrum — bambino's six signature hues + two more. These
+   * are bambino's own --cN pigments, so charts share the exact categorical
+   * language as its Mermaid diagrams. */
+  --chart-cat1: light-dark(#326FB3, color-mix(in oklab, #326FB3, white 30%));  /* blue       */
+  --chart-cat2: light-dark(#6E5CC7, color-mix(in oklab, #6E5CC7, white 30%));  /* purple     */
+  --chart-cat3: light-dark(#AA4A84, color-mix(in oklab, #AA4A84, white 30%));  /* magenta    */
+  --chart-cat4: light-dark(#C13A20, color-mix(in oklab, #C13A20, white 30%));  /* red-orange */
+  --chart-cat5: light-dark(#806600, color-mix(in oklab, #806600, white 30%));  /* olive-gold */
+  --chart-cat6: light-dark(#2F7A33, color-mix(in oklab, #2F7A33, white 30%));  /* green      */
+  --chart-cat7: light-dark(#0B6E78, color-mix(in oklab, #0B6E78, white 30%));  /* teal       */
+  --chart-cat8: light-dark(#27408F, color-mix(in oklab, #27408F, white 30%));  /* deep blue  */
+
+  /* Semantic spectrum — charts that encode meaning (gantt bars, progress,
+   * status pills, state-chart, timeline). pass/warn/fail reuse bambino's own
+   * status trio so a gantt at-risk bar matches a --warn chip; info takes the
+   * signature blue, mute a warm stone (not the engine's cool gray). */
+  --chart-state-pass: var(--pass);                  /* forest green   */
+  --chart-state-warn: var(--warn);                  /* ochre amber    */
+  --chart-state-fail: var(--fail);                  /* crimson alarm  */
+  --chart-state-info: light-dark(#326FB3, #7FA8D6); /* signature blue */
+  --chart-state-mute: light-dark(#7D705B, #A69882); /* warm stone     */
+}
