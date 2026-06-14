@@ -184,7 +184,7 @@ const nextSteps = [
 				</nav>
 				<div class="topbar-actions">
 					<div class="controls lx-ui">
-						<PaletteControls client:load palettes={palettes} />
+						<PaletteControls client:idle palettes={palettes} />
 					</div>
 					<button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-controls="topnav" aria-expanded="false"></button>
 				</div>
@@ -216,7 +216,7 @@ const nextSteps = [
 				     null — a zero-box element has nothing for client:visible's observer to
 				     intersect, so it would never hydrate. It does its OWN lazy render
 				     (IntersectionObserver on the section), so eager hydration is cheap. -->
-				<FieldCardsLive client:load data={fieldCardsData} />
+				<FieldCardsLive client:idle data={fieldCardsData} />
 			</section>
 
 			<!-- Why -->

@@ -104,13 +104,33 @@
 }
 /* Editor host: fills the pane; CodeMirror's own scroller handles overflow. */
 .pg-editor-host {
+	position: relative;
 	flex: 1;
 	min-height: 0;
 	overflow: hidden;
 	background: var(--bg);
 }
+.pg-editor-mount {
+	height: 100%;
+}
 .pg-editor-host .cm-editor {
 	height: 100%;
+}
+/* SSR text placeholder painted before CodeMirror hydrates (LCP), removed on
+ * mount. Approximates the editor's monospace look + the line-number gutter. */
+.pg-editor-placeholder {
+	position: absolute;
+	inset: 0;
+	margin: 0;
+	padding: 4px 8px 4px 34px;
+	font-family: var(--sl-font-mono, 'JetBrains Mono', monospace);
+	font-size: 0.85rem;
+	line-height: 1.5;
+	color: var(--text-body);
+	background: var(--bg);
+	white-space: pre;
+	overflow: hidden;
+	pointer-events: none;
 }
 .pg-editor-host .cm-editor.cm-focused {
 	outline: none;
