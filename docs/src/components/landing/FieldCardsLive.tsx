@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { createLandingEngine } from '@/lib/landing-engine';
 import { seedPlaygroundSource } from '@/lib/landing-handoff';
+import { createSingleSlideRenderer } from '@/lib/single-slide-render';
 
 // Invisible controller island for the "speaks your field" section. The cards
 // themselves are static (server-rendered in <FieldCards>); this fills each
@@ -17,11 +17,12 @@ export type FieldCardsData = {
 	themeBase: string;
 	runtimeUrl: string;
 	engineUrl: string;
-	frameCss: string;
 };
 
 export default function FieldCardsLive({ data }: { data: FieldCardsData }) {
-	const engineRef = React.useRef(createLandingEngine(data.themeBase, data.runtimeUrl, data.frameCss, data.engineUrl));
+	const engineRef = React.useRef(
+		createSingleSlideRenderer({ themeBase: data.themeBase, runtimeUrl: data.runtimeUrl, engineUrl: data.engineUrl }),
+	);
 	const renderedRef = React.useRef<HTMLElement[]>([]);
 
 	React.useEffect(() => {
@@ -33,8 +34,8 @@ export default function FieldCardsLive({ data }: { data: FieldCardsData }) {
 			const name = host.getAttribute('data-live-card') || '';
 			const c = data.cards[name];
 			if (!c) return;
-			engine.renderInto(host, c.sample, c.mermaid).then((ok) => {
-				if (ok && !renderedRef.current.includes(host)) renderedRef.current.push(host);
+			engine.renderInto(host, c.sample, c.mermaid).then((r) => {
+				if (r.ok && !renderedRef.current.includes(host)) renderedRef.current.push(host);
 			});
 		};
 

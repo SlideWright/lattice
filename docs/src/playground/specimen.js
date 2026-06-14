@@ -8,11 +8,12 @@
 // sessionStorage so a reload survives, reset on demand); "Open in Playground"
 // hands the current source off to the full playground.
 //
-// Reuses createLiveRenderer (live-render.js) for the preview and createEditor
-// (editor.js) for the source — the same engine + editor the playground uses.
+// Reuses the shared single-slide renderer (../lib/single-slide-render.js) for the
+// preview and createEditor (editor.js) for the source — the same engine + editor
+// the playground uses.
 
+import { createSingleSlideRenderer } from '../lib/single-slide-render';
 import { createEditor } from './editor.js';
-import { createLiveRenderer } from './live-render.js';
 
 const FLIP_MS = 350; // keep in sync with @keyframes ll-flip in components.css
 const SOURCE_KEY = 'lattice-docs-pg-source'; // shared handoff key the playground reads
@@ -77,7 +78,7 @@ export function initSpecimen() {
     editor: null,
   };
 
-  const lr = createLiveRenderer({ themeBase: data.themeBase, runtimeUrl: data.runtimeUrl });
+  const lr = createSingleSlideRenderer({ themeBase: data.themeBase, runtimeUrl: data.runtimeUrl });
 
   function setStatus(msg, isErr) {
     if (!statusEl) return;
@@ -236,7 +237,7 @@ export function initSpecimen() {
   }
 
   // Initial paint + keep the preview live as the topbar palette/mode changes.
-  lr.whenReady(() => {
+  lr.whenReady().then(() => {
     render();
     lr.onThemeChange(() => {
       render();

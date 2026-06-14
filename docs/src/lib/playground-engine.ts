@@ -11,6 +11,7 @@
 
 import { ensureEngine } from './load-engine';
 import { renderSig, resolveThemeName } from './playground-controller';
+import { createThemeFetcher } from './theme-fetch';
 
 type PG = {
 	render: (source: string, theme: string) => { html: string; css: string; width?: number; height?: number };
@@ -36,34 +37,9 @@ export type RenderResult =
 
 /** Build the per-page engine bridge. `themeBase`/`runtimeUrl`/`engineUrl` come from pgData. */
 export function createEngineBridge(themeBase: string, runtimeUrl: string, engineUrl?: string) {
-	const fetched: Record<string, Promise<string>> = {}; // theme name → Promise<cssText>
-	let latticeReady: Promise<void> | null = null;
-
-	function fetchTheme(name: string): Promise<string> {
-		if (!fetched[name]) {
-			fetched[name] = fetch(themeBase + name + '.css').then((r) => {
-				if (!r.ok) throw new Error(`theme ${name} (${r.status})`);
-				return r.text();
-			});
-		}
-		return fetched[name];
-	}
-
-	function ensureThemes(palette: string, mode: 'light' | 'dark'): Promise<void> {
-		const PGref = window.LatticePlayground;
-		if (!PGref) return Promise.reject(new Error('engine not ready'));
-		if (!latticeReady) latticeReady = fetchTheme('lattice').then((css) => PGref.addThemes([css]));
-		const jobs: Promise<void>[] = [latticeReady];
-		if (!PGref.hasTheme(palette)) jobs.push(fetchTheme(palette).then((css) => PGref.addThemes([css])));
-		if (mode === 'dark') {
-			jobs.push(
-				fetchTheme(palette + '-dark')
-					.then((css) => PGref.addThemes([css]))
-					.catch(() => {}),
-			);
-		}
-		return Promise.all(jobs).then(() => undefined);
-	}
+	// Theme fetch + addThemes (the "ensureThemes" pattern) is shared — see
+	// theme-fetch.ts. The bridge only orchestrates render around it.
+	const themes = createThemeFetcher(themeBase);
 
 	/** True once both irreducible globals are present (engine bundle + bridge). */
 	function ready(): boolean {
@@ -97,7 +73,7 @@ export function createEngineBridge(themeBase: string, runtimeUrl: string, engine
 		const DPref = window.LatticeDeckPreview;
 		if (!PGref || !DPref) return { status: 'pending' };
 		try {
-			await ensureThemes(palette, mode);
+			await themes.ensure(palette, mode);
 			const theme = resolveThemeName(palette, mode, PGref.hasTheme(palette + '-dark'));
 			const out = PGref.render(source, theme);
 			const geom = { w: out.width || 1280, h: out.height || 720 };

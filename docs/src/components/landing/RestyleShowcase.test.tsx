@@ -2,15 +2,19 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import RestyleShowcase, { type RestyleData } from './RestyleShowcase';
 
-// Stub the engine bridge so the island never touches window.LatticePlayground /
-// fetch — these tests assert the React chrome (swatch tablist + active name +
-// manual select), not the (separately wrapped) engine render.
-const renderInto = vi.fn(() => Promise.resolve(true));
-vi.mock('@/lib/landing-engine', () => ({
-	createLandingEngine: () => ({
+// Stub the shared single-slide renderer so the island never touches
+// window.LatticePlayground / fetch — these tests assert the React chrome (swatch
+// tablist + active name + manual select), not the (separately wrapped) engine
+// render. The island holds one renderer per mount (a React.useRef instance), so
+// a module-level stub matches that lifetime.
+const renderInto = vi.fn(() => Promise.resolve({ ok: true, slides: 1, error: null }));
+vi.mock('@/lib/single-slide-render', () => ({
+	createSingleSlideRenderer: () => ({
 		ready: () => true,
 		whenReady: () => Promise.resolve(),
 		renderInto,
+		onThemeChange: vi.fn(),
+		scaleFrame: vi.fn(),
 	}),
 }));
 
@@ -24,7 +28,7 @@ const DATA: RestyleData = {
 	],
 	themeBase: '/themes/',
 	runtimeUrl: '/runtime.js',
-	frameCss: '',
+	engineUrl: '/engine.js',
 };
 
 beforeEach(() => {

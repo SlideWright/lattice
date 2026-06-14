@@ -15,6 +15,7 @@
 // preview palette is borrowed from the Theme Studio core so a component previews
 // on a real, contrast-clean theme without the author choosing one.
 
+import { createThemeFetcher } from '../lib/theme-fetch';
 import { deleteAsset, listAssets, putAsset } from './asset-store.js';
 import { hashString, renderDeck } from './deck-preview.js';
 import {
@@ -95,16 +96,10 @@ export function initLayoutStudio(config) {
   });
 
   // ── Preview palette (borrowed from the Theme Studio core) ─────────────────
-  let fetchedBase = null;
-  function ensureBaseTheme() {
-    const PG = window.LatticePlayground;
-    if (!fetchedBase) {
-      fetchedBase = fetch(themeBase + 'lattice.css')
-        .then(r => (r.ok ? r.text() : Promise.reject(new Error('lattice ' + r.status))))
-        .then(css => PG.addThemes([css]));
-    }
-    return fetchedBase;
-  }
+  // Theme fetch + addThemes is shared (theme-fetch.ts). This studio registers its
+  // OWN borrowed palette (PREVIEW_PALETTE), so it only needs base lattice.css.
+  const themes = createThemeFetcher(themeBase);
+  const ensureBaseTheme = () => themes.ensureBase();
   let paletteRegistered = false;
   function ensurePalette() {
     const PG = window.LatticePlayground;

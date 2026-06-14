@@ -3,8 +3,8 @@
 // THE SINGLE SOURCE OF TRUTH for the intrinsic slide box. Every browser host
 // that renders the engine without Marp's `<svg><foreignObject>` wrapper — the
 // playground (docs/src/pages/playground.astro), the landing hero
-// (docs/src/pages/index.astro), and the component-page specimens (via
-// docs/src/playground/live-render.js) — MUST pin the 1280×720 box itself.
+// (docs/src/pages/index.astro), and the component-page specimens (via the shared
+// docs/src/lib/single-slide-render.ts) — MUST pin the 1280×720 box itself.
 //
 // WHY: dist/lattice.css sets `section{container-type:size}`. Size containment
 // refuses to size the box from its contents, so without an explicit
@@ -52,9 +52,9 @@ export function singleSlideFrame(w = DEFAULT_W, h = DEFAULT_H) {
 	);
 }
 
-// Back-compat HD constant for the single-slide hosts (the landing hero in
-// index.astro, the component specimens via live-render.js) whose preview content
-// is always authored HD. Size-aware hosts — the filmstrip previews (deck-preview.js)
-// and any specimen carrying a user `size:` — call the functions above with the
-// render's reported geometry instead.
+// Back-compat HD constant for single-slide hosts whose preview content is always
+// authored HD. The shared single-slide renderer (single-slide-render.ts) calls
+// singleSlideFrame(geom) directly with the render's reported geometry, so it is
+// size-aware for free; this constant remains the HD shorthand for any host that
+// wants the default box without computing geometry.
 export const SINGLE_SLIDE_FRAME = singleSlideFrame();

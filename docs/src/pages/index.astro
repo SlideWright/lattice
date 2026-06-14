@@ -9,8 +9,9 @@
 // cards, section heads) render SERVER-SIDE with NO client: directive → zero JS.
 // Only the genuinely interactive bits hydrate: the hero Preview/Source Tabs
 // (HeroPreview), the field-card live previews (FieldCardsLive), and the restyle
-// carousel (RestyleShowcase). Each WRAPS the irreducible engine via
-// src/lib/landing-engine.ts — it never reimplements the marp render.
+// carousel (RestyleShowcase). Each WRAPS the irreducible engine via the shared
+// <DeckPreview> bridge (src/components/DeckPreview.tsx → src/lib/single-slide-render.ts)
+// — it never reimplements the marp render.
 // See engineering/decisions/2026-06-09-shadcn-migration.md §0.
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
@@ -22,7 +23,6 @@ import HeroPreview from '../components/landing/HeroPreview.tsx';
 import { FieldCards, NextSteps, SectionHead, WhyCards } from '../components/landing/sections.tsx';
 import FieldCardsLive from '../components/landing/FieldCardsLive.tsx';
 import RestyleShowcase from '../components/landing/RestyleShowcase.tsx';
-import { SINGLE_SLIDE_FRAME } from '../playground/frame-css.js';
 import { assetBase } from '../playground/asset-version.mjs';
 import { joinBase } from '../lib/base-url.mjs';
 import { primaryNav, GITHUB_URL, isCurrent } from '../lib/nav.mjs';
@@ -103,7 +103,6 @@ const cardData = CARD_COMPONENTS.reduce((acc, n) => {
 const themeBase = url(pg + 'themes/');
 const runtimeUrl = url(pg + 'lattice-runtime.js');
 const engineUrl = url(pg + 'lattice-playground.js');
-const frameCss = SINGLE_SLIDE_FRAME;
 
 const heroData = {
 	sample: heroComp.sample,
@@ -113,9 +112,8 @@ const heroData = {
 	themeBase,
 	runtimeUrl,
 	engineUrl,
-	frameCss,
 };
-const fieldCardsData = { cards: cardData, themeBase, runtimeUrl, engineUrl, frameCss };
+const fieldCardsData = { cards: cardData, themeBase, runtimeUrl, engineUrl };
 const restyleData = {
 	sample: restyleComp.sample || restyleComp.skeleton,
 	mermaid: needsMermaid(restyleComp.sample || restyleComp.skeleton),
@@ -123,7 +121,6 @@ const restyleData = {
 	themeBase,
 	runtimeUrl,
 	engineUrl,
-	frameCss,
 };
 
 const nextSteps = [

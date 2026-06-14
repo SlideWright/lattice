@@ -573,8 +573,9 @@ in patch versions.
   so sketch headings fell to a system hand font (still hand-looking) while body
   fell to a system sans. The preview now registers the vendored faces directly
   (`previewFontFaceCss()` → `data.previewFontCss` for the Drawing Board's
-  `writeFrame`; a lazy import in `live-render.js` for the playground, landing
-  hero, and component specimens). Docs-only.
+  `writeFrame`; a lazy import in the shared single-slide renderer
+  (`docs/src/lib/single-slide-render.ts`) for the landing hero, restyle and
+  field-card islands, and the component specimens). Docs-only.
 - **Drawing Board PDF / PowerPoint exports now embed every web font — body
   text on `finish: sketch` decks no longer drops to a system fallback.** The
   image exporters rasterize every slide through html-to-image, which chased the
