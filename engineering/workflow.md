@@ -376,6 +376,14 @@ PRs; adopt it if cross-session races keep recurring despite the watch.
   independently meaningful). Never a merge commit. (This is the *merge* method;
   it's independent of keeping the branch rebased on `main` before merge — see
   the rebase step above.)
+- **Bind a closing keyword to *every* issue the PR resolves.** GitHub
+  auto-closes only the issues whose number carries its own keyword, so
+  `Closes #1, #2, #3` closes **only #1** and silently leaves the rest open.
+  Write `Closes #1, closes #2, closes #3` (one keyword per number) or one per
+  line. Two workflows enforce this: `pr-closing-keywords.yml` fails the PR when
+  it sees a bare comma-list after a keyword, and `pr-autoclose-issues.yml`
+  re-parses the body on merge and closes the whole list as a backstop. Don't
+  hand-close the stragglers after the fact — fix the keywords.
 - Delete the remote branch after merge.
 - Remove the local worktree if one was used.
 - After a squash-merge, your **local `main` has diverged** from the squashed
