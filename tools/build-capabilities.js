@@ -156,6 +156,10 @@ const SCRIPT_META = {
   'release:zip':              ['Release', 'Assemble the curated GitHub release zip.'],
   'changelog:bump':           ['Release', 'Roll CHANGELOG.md ## Unreleased → a versioned section (semver from the entries).'],
 
+  // Project queue
+  'sync:backlog':             ['Project queue', 'Regenerate BACKLOG.md — the one-way mirror of the open GitHub issue queue (input: `gh issue list` JSON).'],
+  'sync:labels':              ['Project queue', 'Apply the .github/labels.json taxonomy to the repo labels via the gh CLI (labels-as-code; needs gh auth).'],
+
   // Meta / housekeeping
   'clean:scratch':            ['Meta', 'Delete .scratch/ entries older than 14 days.'],
   'prepare':                  ['Meta', 'npm lifecycle: wire the lefthook git hooks on install.'],
@@ -187,6 +191,8 @@ const TOOL_GROUP = {
   'release.js': 'Release', 'build-release-zip.js': 'Release', 'changelog.js': 'Release',
   // Scaffold
   'new-component.js': 'Scaffold', 'new-theme.js': 'Scaffold', 'new-slide.js': 'Scaffold',
+  // Project queue
+  'sync-backlog.js': 'Project queue', 'sync-labels.js': 'Project queue',
   // Misc
   'ascii-preview.py': 'Misc',
 };
@@ -196,8 +202,8 @@ const TOOL_DESC_OVERRIDE = {
   'screenshot-slides.js': 'Screenshot each slide of a rendered deck to PNGs (dev helper).',
 };
 
-const GROUP_ORDER_SCRIPTS = ['Build & bundle', 'Galleries & preview', 'Test & verify', 'Lint & audit', 'Scaffold', 'Release', 'Meta'];
-const GROUP_ORDER_TOOLS   = ['Build / generate', 'Check / gate', 'Lint / audit', 'Render / visual', 'Release', 'Scaffold', 'Misc'];
+const GROUP_ORDER_SCRIPTS = ['Build & bundle', 'Galleries & preview', 'Test & verify', 'Lint & audit', 'Scaffold', 'Release', 'Project queue', 'Meta'];
+const GROUP_ORDER_TOOLS   = ['Build / generate', 'Check / gate', 'Lint / audit', 'Render / visual', 'Release', 'Scaffold', 'Project queue', 'Misc'];
 
 const TODO_SCRIPT = (n) => `**TODO: describe \`${n}\` in tools/build-capabilities.js (SCRIPT_META).**`;
 const TODO_TOOL   = (n) => `**TODO: add a one-line header description to tools/${n}.**`;

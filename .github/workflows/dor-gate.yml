@@ -1,0 +1,51 @@
+name: Definition of Ready gate
+
+# A card may carry `status:ready` only if it meets the Definition of Ready:
+# a linked governing doc/spec AND a concrete acceptance check (the two ★ fields
+# in the work-item form). When `status:ready` is applied, this validates the
+# issue body; if either field is missing/empty it strips the label and comments,
+# so `status:ready` stays a guarantee an agent can pull against.
+on:
+  issues:
+    types: [labeled]
+
+permissions:
+  issues: write
+
+jobs:
+  validate:
+    if: github.event.label.name == 'status:ready'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4 # for .github/scripts/issue-form.js
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const { parseForm } = require(`${process.env.GITHUB_WORKSPACE}/.github/scripts/issue-form.js`);
+            const form = parseForm(context.payload.issue.body || '');
+
+            const missing = [];
+            if (!form.swimlane) missing.push('a **Swimlane / governing decision doc** link');
+            if (!form.acceptance) missing.push('a concrete **Acceptance check**');
+
+            if (missing.length === 0) {
+              core.info('Definition of Ready satisfied.');
+              return;
+            }
+
+            await github.rest.issues.removeLabel({
+              ...context.repo,
+              issue_number: context.issue.number,
+              name: 'status:ready',
+            }).catch(() => {});
+
+            await github.rest.issues.createComment({
+              ...context.repo,
+              issue_number: context.issue.number,
+              body: [
+                "⛔ **Not ready yet.** `status:ready` was removed because this card is missing " + missing.join(' and ') + '.',
+                '',
+                'The Definition of Ready (see `engineering/workflow.md` § Work queue) requires both before a card is pickable. ' +
+                'Edit the issue to fill the ★ fields, then re-apply `status:ready`.',
+              ].join('\n'),
+            });

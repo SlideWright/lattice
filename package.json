@@ -148,6 +148,8 @@
     "lint:deck": "node tools/lint-deck.js",
     "lint:deck:all": "node tools/lint-deck.js --all --strict",
     "export:marp": "node tools/export-marp.js",
+    "sync:backlog": "node tools/sync-backlog.js",
+    "sync:labels": "node tools/sync-labels.js",
     "clean:scratch": "find .scratch -mindepth 1 -mtime +14 -print -delete",
     "prepare": "lefthook install || true",
     "prepublishOnly": "npm test"
