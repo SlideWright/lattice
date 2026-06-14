@@ -44,13 +44,13 @@ only *status*. **32 open** items.
 
 _none_
 
-## In progress (1)
-
-- [#316](https://github.com/SlideWright/lattice/issues/316) infra: make DEFAULT OPERATING MODE fire as standing triggers (proactive PR/merge flow) — medium · infra
-
-## In review (0)
+## In progress (0)
 
 _none_
+
+## In review (1)
+
+- [#316](https://github.com/SlideWright/lattice/issues/316) infra: make DEFAULT OPERATING MODE fire as standing triggers (proactive PR/merge flow) — medium · infra
 
 ## Inbox (no status) (3)
 
