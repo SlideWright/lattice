@@ -267,13 +267,17 @@ For inner-loop iteration, scoped test scripts (`test:palette`, `test:components`
 
 ## Three-renderer rule
 
-Any authoring transform must land in all three render paths or they drift:
+Any authoring transform must land in the shared kernels so every render path
+stays in step — don't patch one path:
 
-1. `lattice-emulator.js`
-2. `marp.config.js` / `lib/*.js`
-3. `lattice-runtime.js`
+1. the owned `lib/engine` (the `lattice` CLI **and** the docs playground)
+2. `marp.config.js` (shipped for BYO marp-cli authors — runs the same
+   `lib/integrations/marp/plugins.js` + `lib/transformers/*`)
+3. `lattice-runtime.js` (vscode preview)
 
-Do not close a feature branch until all three are updated and integration tests pass.
+The owned engine is canonical (the marp-parity gate was retired in P4). Do not
+close a feature branch until the shared kernels carry the transform and the
+integration tier — including the per-component semantic-invariant suite — passes.
 
 ## Keeping an open PR mergeable while it waits
 

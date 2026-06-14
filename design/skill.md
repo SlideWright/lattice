@@ -37,19 +37,20 @@ Three modes, same `.md` source file — no source changes needed.
 
 | Situation | Use |
 |-----------|-----|
-| VS Code preview / quick export | Mode 1 — Marp Extension |
-| Final PDF/HTML/PPTX for delivery | Mode 2 — Marp CLI (preferred) |
-| LLM environment without Marp CLI | Mode 3 — lattice-emulator.js emulator |
-| Verifying layout spec compliance | Mode 2 preferred, Mode 3 acceptable |
+| Final PDF / PPTX / PNG for delivery | Mode 3 — the `lattice` CLI (owned engine; **default**) |
+| VS Code live preview | Mode 1 — Marp Extension (marp-vscode) |
+| Bring-your-own marp-cli render | Mode 2 — `npx marp --config-file marp.config.js` (install marp-cli first) |
+| Verifying layout spec compliance | Mode 3 (the owned engine is canonical) |
 
-**Check for Marp CLI first:**
+**Default to the bundled `lattice` CLI (Mode 3)** — the owned engine renders every
+first-party path and needs no marp. Reach for marp-cli only if you've installed it
+yourself (`npm install @marp-team/marp-cli`) and specifically want the marp path:
+
 ```bash
-npx @marp-team/marp-cli --version   # use this if it returns a version
-marp --version                       # or this
+npx @marp-team/marp-cli --version   # only meaningful AFTER you install marp-cli
 ```
-Only fall back to `lattice-emulator.js` when both commands fail.
 
-**Mode 2 — Marp CLI:** run from the repo root and the deck's `theme:` front matter selects the palette. [`marp.config.js`](../marp.config.js) registers both `indaco` and `cuoio`; the deck declares which one it wants. Switch only the output flag for different delivery formats.
+**Mode 2 — bring-your-own marp-cli:** Lattice still ships `marp.config.js`, so a deck renders identically under your own marp-cli (install it first). Run from the repo root and the deck's `theme:` front matter selects the palette. [`marp.config.js`](../marp.config.js) registers both `indaco` and `cuoio`; the deck declares which one it wants. Switch only the output flag for different delivery formats.
 ```bash
 # Run from repo root — picks up marp.config.js (themeSet + imageScale: 3)
 npx @marp-team/marp-cli deck.md --pdf        --output output.pdf
@@ -67,14 +68,18 @@ npx @marp-team/marp-cli deck.md \
 
 **Image quality.** PDF and HTML are vector end-to-end (text, SVG-rendered Mermaid, code highlighting) — no DPI knob to turn. PNG export rasterizes through Chromium and is governed by `--image-scale`; the project's [`marp.config.js`](../marp.config.js) sets `imageScale: 3` so invocations from the repo root emit 3840×2160 PNGs (3× the 1280×720 slide). Keep the explicit flag in pipelines that may not run from the repo root.
 
-**Mode 3 — lattice-emulator.js:** `lattice.css` is auto-resolved (always included); the deck's `theme:` front matter selects the palette; explicit CLI arg only when overriding.
+**Mode 3 — the `lattice` CLI (`lattice-emulator.js`, the default):** the owned
+engine — no marp needed. `lattice.css` is auto-resolved; the deck's `theme:` front
+matter selects the palette; the OUTPUT EXTENSION picks the format.
 ```bash
 node lattice-emulator.js examples/gallery-jargon.md output.pdf
-# produces output.html alongside the PDF; uses bundled lattice.css; palette from front matter
+# vector PDF (+ HTML sidecar); bundled lattice.css; palette from front matter
+node lattice-emulator.js examples/gallery-jargon.md output.pptx
+# PowerPoint (one full-bleed image per slide)
+node lattice-emulator.js examples/gallery-jargon.md output.png
+# one PNG per slide → output.001.png, output.002.png, … (2× = 2560×1440)
 node lattice-emulator.js examples/gallery-jargon.md output.pdf cuoio
 # explicit palette override (CLI arg has highest precedence)
-node lattice-emulator.js examples/gallery-jargon.md custom-layouts.css output.pdf
-# pass-through for an alternate layout CSS (rare — only for layout-engine dev work)
 node lattice-emulator.js -o output.pdf -p cuoio examples/gallery-jargon.md
 # named flags: -o/--output, -p/--palette, -c/--css, -q/--quiet (positional still works)
 ```

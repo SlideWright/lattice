@@ -25,6 +25,23 @@ in patch versions.
 
 ## Unreleased
 
+### Removed
+
+- **Breaking: `@marp-team/marp-cli` is no longer a dependency — the installed
+  package is marp-free.** Nothing in the shipped runtime ever imported marp (the
+  emulator renders via its own Puppeteer path); marp-cli was pulled only for the
+  internal parity gate, the old test oracle, and the benchmark baseline, so
+  `npm install @slidewright/lattice` now skips ~42M of marp packages. **If you
+  render via the shipped `marp.config.js` (the BYO `npx marp --config-file …`
+  path), install marp-cli yourself** (`npm i @marp-team/marp-cli`) — the config
+  and the marp-vscode CSS shims still ship, and the Export-to-Marp bundles are
+  unaffected (they pin marp-cli for the recipient). The owned `lattice-engine`
+  renders every first-party path (the `lattice` CLI + the docs playground); the
+  docs playground's `?engine=marp` / `?css=marp` A/B toggle is removed (the owned
+  engine is the sole renderer). The marp-vs-engine parity CI gate is retired in
+  favour of the per-component semantic-invariant suite. See
+  `engineering/decisions/2026-06-12-p4-regression-gate-retire-marp.md`.
+
 ### Added
 
 - **Export to Marp from the Drawing Board (the "Marp bundle" export).** The

@@ -12,7 +12,6 @@
 const { describe, test } = require('node:test');
 const assert = require('node:assert/strict');
 const core = require('../../../lib/authoring/notes-core');
-const { Marp } = require('@marp-team/marp-core');
 
 const sec = (inner) => `<section data-marpit-slide="1">${inner}</section>`;
 
@@ -102,49 +101,20 @@ describe('notes-core: stripCommentNodes', () => {
   });
 });
 
-describe('notes-core: parity with marp-core comment collection', () => {
-  // Each body, on its own slide, must be KEPT/DROPPED identically by
-  // notes-core (isToolingComment) and by marp-core (which omits dropped
-  // comments from result.comments). This is the guard against the two render
-  // paths drifting on the note/pragma boundary.
-  const bodies = [
-    'a plain speaker note',
-    'TODO: tighten this',
-    'Reminder: pause',
-    'prettier-ignore',
-    'markdownlint-disable',
-    'markdownlint-disable-next-line MD033',
-    'markdownlint-enable',
-    'markdownlint-capture',
-    'markdownlint-restore',
-    'lint disable no-html',
-    'foo: 1', // unknown YAML-ish key — marp keeps it as a note
-  ];
-  for (const body of bodies) {
-    test(`"${body}" classified the same by both`, () => {
-      const { comments } = new Marp({ html: true }).render(`# Slide\n\n<!-- ${body} -->`);
-      const marpKept = (comments[0] || []).length > 0;
-      const coreKept = !core.isToolingComment(body);
-      assert.equal(
-        coreKept,
-        marpKept,
-        `notes-core kept=${coreKept} but marp-core kept=${marpKept} for "${body}"`
-      );
-    });
-  }
-});
-
 describe('notes-core: malformed input is linear (no ReDoS)', () => {
   test('an unterminated <!-- with a long run resolves quickly to null', () => {
     // The old `<!--+\s*([\s\S]*?)\s*--+>` pattern was quadratic here (a 5k run
-    // hung >30s). The linear pattern must finish in milliseconds. node:test has
-    // no per-test timeout, so we assert wall-time directly.
+    // hung >30s). The linear pattern finishes in milliseconds. node:test has no
+    // per-test timeout, so we assert wall-time directly — with a generous bound
+    // that still separates linear (ms) from the quadratic blow-up (tens of
+    // seconds) by orders of magnitude, but won't flake under concurrent CI/hook
+    // CPU load the way a sub-second bound did.
     const html = `<section><!-- ${' '.repeat(200000)}no close`;
     const t = Date.now();
     const note = core.notesFromHtml(html);
     const elapsed = Date.now() - t;
     assert.equal(note, null, 'an unterminated comment is not a note');
-    assert.ok(elapsed < 1000, `extraction took ${elapsed}ms — expected linear/sub-second`);
+    assert.ok(elapsed < 5000, `extraction took ${elapsed}ms — expected linear (the quadratic bug hung >30s)`);
   });
 });
 

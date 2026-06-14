@@ -285,8 +285,27 @@ the repo already half-runs, and scales from solo (bless = sign-off) to team
 
 ## A. Recorded measurements (filled at implementation, pre-retirement)
 
-- Footprint: install size + package-count delta, with vs without marp-cli — _TBD (Step 3)_
-- Final `npm run bench` engine-vs-marp table — _TBD (Step 3)_
+- **Footprint delta (2026-06-14).** `@marp-team/*` in `node_modules` measured
+  **42M** before removal: `marp-cli` 40M, `marp-core` 736K, `marpit` 348K (+
+  `marpit-svg-polyfill`) — **4 packages**. After dropping `@marp-team/marp-cli`
+  from `dependencies`, a clean `npm ci` from the lockfile installs **zero**
+  `@marp-team` packages — confirmed `ls node_modules/@marp-team` → absent. The
+  honest install delta is ~42M off a consumer's `npm install @slidewright/lattice`
+  (puppeteer + markdown-it are shared and stay). marp-core was transitive-only via
+  marp-cli, so it left with it; the docs playground (which had used marp-core for
+  the now-removed `?engine=marp` A/B) renders solely through the owned engine, and
+  its bundle dropped 4.2M → 1.8M (−2.4M).
+- **Final `npm run bench` engine-vs-marp table (2026-06-14, while marp-core was
+  still installed — the last word on "we were faster than marp"):**
+
+  | dataset | slides | marp ms | lattice ms | ratio | marp sl/s | lattice sl/s |
+  |---|---:|---:|---:|---:|---:|---:|
+  | normal (jargon) | 79 | 207.7 | 39.3 | **0.19×** | 380 | 2010 |
+  | charts | 14 | 192.3 | 34.7 | **0.18×** | 73 | 404 |
+  | stress (jargon ×6) | 469 | 407.8 | 129.1 | **0.32×** | 1150 | 3634 |
+
+  The owned engine ran **3–5× faster** than marp-core across the corpus. The bench
+  is now repointed to engine-over-time (marp stripped) as a perf-regression signal.
 - **Date / commit of the marp-validated golden freeze — 2026-06-13, on
   `claude/p4-regression-gate-retire-marp-grqv14` (rebased onto `main`
   `860c086`).** All 65 galleries × {light,dark} were re-blessed with the

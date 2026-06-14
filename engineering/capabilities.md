@@ -22,10 +22,9 @@ harness the index can't infer, add it to `FRAMEWORKS` in the generator.
 | Area | What | How to invoke |
 |---|---|---|
 | **Testing** | Node's built-in test runner (`node:test`) — no Jest/Mocha/Vitest. | `npm test` (suite) · `node --test <file>` (one file; the `<dir>` form errors) |
-| **Benchmarking** | `tinybench` render benchmark — marp-core vs lattice-engine, on-demand (NOT in `npm test`). | `npm run bench` (`-- --export` adds rasterize · `-- --json` machine-readable) · `test/benchmark/engine-bench.mjs` |
-| **Visual parity** | Pixel-diff harness rendering a deck through BOTH engines (required CI gate). | `npm run parity` · `tools/engine-parity.mjs` |
+| **Benchmarking** | `tinybench` render benchmark — the owned lattice-engine over time, on-demand (NOT in `npm test`). | `npm run bench` (`-- --export` adds rasterize · `-- --json` machine-readable) · `test/benchmark/engine-bench.mjs` |
 | **Lint / format** | Biome (linter on, formatter off). The registry `biome` is the WRONG package — always go through npm. | `npm run lint` / `lint:fix` · never `npx biome` |
-| **Rendering** | marp-cli + marp-core for the shipping render paths; the owned lattice-engine is the P1 core. | `npx marp … --config-file marp.config.js` (set `CHROME_PATH`) |
+| **Rendering** | The owned lattice-engine renders every shipping path (the emulator CLI + the docs playground). `marp.config.js` ships for BYO marp-cli authors. | `node lattice-emulator.js deck.md deck.pdf` (set `CHROME_PATH`) |
 | **Browser automation** | puppeteer with the cached Chromium (screenshots, export, DOM checks). | `tools/screenshot.js` · custom scripts from repo root |
 | **Bundling** | esbuild — every `dist/` JS bundle and docs-site core is an esbuild build. | `npm run build` (orchestrates all generators behind the ownership gate) |
 | **Docs site** | Astro + Starlight + CodeMirror — a SEPARATE npm package under docs/. | `cd docs && ./node_modules/.bin/astro dev` (see CLAUDE.md § Cloud sandbox) |
@@ -88,27 +87,33 @@ harness the index can't infer, add it to `FRAMEWORKS` in the generator.
 
 | Name | What it does |
 |---|---|
-| `bench` | tinybench render benchmark (marp-core vs lattice-engine). On-demand; not in `npm test`. `-- --export` / `-- --json`. |
+| `bench` | tinybench render benchmark — the owned engine over time (on-demand; not in `npm test`). `-- --export` / `-- --json`. |
 | `bless` | Re-render the gallery goldens (the regression gate baseline) and overwrite them; commit the refreshed PDFs. `-- --only <name>` for one. |
-| `parity` | Visual parity harness: rasterize a deck through both engines and pixel-diff (required CI gate). |
-| `regress` | Visual regression gate: render every gallery fresh and pixel-diff it against the committed golden PDF; fails on unblessed drift. |
+| `regress` | Visual regression gate (LOCAL spot-check): render every gallery fresh and pixel-diff it against the committed golden PDF; fails on unblessed drift. |
 | `test` | Full unit suite (node:test). The inner loop. |
 | `test:all` | Unit + integration umbrella. |
+| `test:authoring` | Unit scope: authoring helpers (speaker notes, …). |
 | `test:cli` | Unit scope: the CLI. |
 | `test:components` | Unit scope: component manifests + per-component logic. |
+| `test:contracts` | Unit scope: component manifest/slot contracts. |
+| `test:core` | Unit scope: lib/core/* (token resolver, splits, marp bundle, …). |
 | `test:coverage` | c8 coverage over the unit suite (→ .scratch/coverage/). |
 | `test:coverage:all` | c8 coverage over unit + integration. |
 | `test:engine` | Unit scope: lattice-engine internals. |
-| `test:integration` | Cross-renderer integration tier (spawns emulator + marp-cli, renders PDFs, page-count parity). |
-| `test:integration:galleries` | Integration scope: gallery parity + page-count regression. |
+| `test:export` | Unit scope: the owned export writers (PPTX, …). |
+| `test:integration` | Integration tier: emulator render → PDF page-count + the per-component semantic-invariant suite + screenshot/mermaid smoke. |
+| `test:integration:galleries` | Integration scope: gallery render + page-count regression. |
 | `test:integration:mermaid` | Integration scope: mermaid smoke render. |
-| `test:integration:parity` | Integration scope: cross-renderer parity, deck-class-fm, chart-family. |
+| `test:integration:parity` | Integration scope: resolver↔DOM colour parity, deck-class/finish/logo front-matter, chart-family. |
 | `test:integration:screenshot` | Integration scope: the screenshot harness. |
 | `test:layout` | Unit scope: the layout system. |
 | `test:mermaid` | Unit scope: mermaid var-map. |
 | `test:palette` | Unit scope: palette, resolution, contrast. |
 | `test:parsing` | Unit scope: source-parse, splitter, slot-label-lift, marp plugins. |
 | `test:playground` | Unit scope: the playground bundle/core. |
+| `test:release` | Unit scope: the release tooling. |
+| `test:tokens` | Unit scope: the universal token system. |
+| `test:tools` | Unit scope: author tools (export-marp, …). |
 | `test:transformers` | Unit scope: transformer registry/adapters. |
 | `test:watch` | Re-run the unit suite on file change. |
 
@@ -204,8 +209,6 @@ harness the index can't infer, add it to `FRAMEWORKS` in the generator.
 | Name | What it does |
 |---|---|
 | `tools/emulator-engine-parity.mjs` | Engine ↔ emulator HTML parity harness (P2 step 1 — see |
-| `tools/engine-diff.js` | engine-diff — side-by-side visual diff of a deck rendered through marp-core |
-| `tools/engine-parity.mjs` | render engines (marp-core and the owned lattice-engine) and pixel-diff them. |
 | `tools/preview.js` | Preview tool — fast visual-iteration loop for Lattice decks. |
 | `tools/rasterize-for-review.sh` | Rasterize a PDF for inline review at FULL QUALITY. |
 | `tools/regression-gate.mjs` | Render every gallery fresh, pixel-diff it against the committed golden PDF, and fail on unblessed drift. |

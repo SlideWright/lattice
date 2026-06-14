@@ -119,24 +119,27 @@ cd lattice
 npm install
 ```
 
-Requires Node 22+. `npm install` pulls in Marp CLI, the Mermaid CLI,
-and Puppeteer (which downloads a matching Chromium).
+Requires Node 22+. `npm install` pulls in the Mermaid CLI and Puppeteer
+(which downloads a matching Chromium). It does **not** pull Marp — the owned
+engine renders every first-party path.
 
 ## Use as a package
 
 Distributed as `@slidewright/lattice` (npm publishing is pending — see
-[RELEASE.md](RELEASE.md)). Lattice is a **Marp theme set**, so the two
-supported ways to consume it both go through the Marp pipeline:
+[RELEASE.md](RELEASE.md)). The bundled `lattice` bin renders through the owned
+engine; Lattice also remains a **Marp theme set**, so a deck authored for it
+renders identically under your own marp-cli:
 
 ```sh
 npm install @slidewright/lattice
 
-# 1. The emulator, exposed as a bin. Resolves the engine + every theme
-#    relative to the installed package, so it works from any directory.
+# 1. The emulator, exposed as a bin (the owned engine). Resolves the engine +
+#    every theme relative to the installed package, so it works from any dir.
 npx lattice deck.md deck.pdf
 
-# 2. marp-cli with the shipped config, which registers the whole theme
-#    set (engine + 25 palettes). Author decks with `theme: indaco` etc.
+# 2. Bring-your-own marp-cli with the shipped config, which registers the whole
+#    theme set (engine + palettes). Author decks with `theme: indaco` etc.
+npm install @marp-team/marp-cli   # marp is no longer bundled — install it yourself
 npx marp deck.md --config-file node_modules/@slidewright/lattice/marp.config.js --pdf
 ```
 

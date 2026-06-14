@@ -17,11 +17,8 @@ const { test, describe } = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
-const { Marp } = require('@marp-team/marp-core');
 const { createEngine } = require('../../../lib/engine');
 const { composeCss, parseSizes, scaffold } = require('../../../lib/engine/css');
-const plugins = require('../../../lib/integrations/marp/plugins');
-const { applyAllToHtml } = require('../../../lib/transformers/registry');
 
 const ROOT = path.join(__dirname, '..', '..', '..');
 
@@ -37,27 +34,6 @@ function makeEngine() {
   const eng = createEngine();
   eng.addThemes(THEME_CSS);
   return eng;
-}
-
-// Reference marp-core, composed exactly like lib/playground/index.js.
-function makeMarp() {
-  const m = new Marp({ html: true, math: 'katex', minifyCSS: false, script: false, inlineSVG: false });
-  for (const t of THEME_CSS) { try { m.themeSet.add(t); } catch (_e) { /* dup */ } }
-  plugins.registerMermaidHljs(m);
-  m.use(plugins.deckClassPropagate).use(plugins.verdictGridBadges).use(plugins.obligationMatrixBadges)
-    .use(plugins.checklistItemStates).use(plugins.slotLabelLift).use(plugins.glossaryListToTable)
-    .use(plugins.glossaryRange).use(plugins.stripHeadingPeriods).use(plugins.addHeadingPeriods)
-    .use(plugins.functionPlotFences);
-  const orig = m.render.bind(m);
-  m.render = (md, env) => {
-    const r = orig(md, env);
-    if (r && typeof r.html === 'string') {
-      r.html = applyAllToHtml(r.html);
-      r.html = plugins.applyDeckLogoToHtml(r.html, md);
-    }
-    return r;
-  };
-  return m;
 }
 
 // Per-section structural fingerprint. Discounts twemoji (intentional drop).
@@ -299,44 +275,18 @@ describe('lattice-engine: css emission (P1.1)', () => {
   });
 });
 
-describe('lattice-engine: structural parity vs marp-core', () => {
-  const decks = [
-    'test/integration/baseline-decks/gallery.md',
-    'lib/components/evidence/kpi/kpi.gallery.md',
-    'lib/components/comparison/comparison.gallery.light.md',
-  ].filter((d) => fs.existsSync(path.join(ROOT, d)));
-
-  for (const deck of decks) {
-    test(`${deck} — every section matches`, () => {
-      const src = fs.readFileSync(path.join(ROOT, deck), 'utf8');
-      // Let each deck's own `theme:` directive win in both engines (no forced
-      // override) so the only variable is the renderer.
-      const mp = profile(makeMarp().render(src).html);
-      const ep = profile(makeEngine().render(src).html);
-      assert.equal(ep.length, mp.length, 'slide count');
-      for (let i = 0; i < mp.length; i++) {
-        assert.deepEqual(ep[i], mp[i], `slide ${i + 1} structural fingerprint`);
-      }
-    });
-  }
-});
-
 // The owned CSS emitter's mobile-WebKit regressions (collapsed cqi, dropped
 // counters) are INVISIBLE to the headless-Chromium pixel gates — they live in the
 // CSS cascade, not the rendered frame. So we gate the emitter at the RULE level:
-// pack the REAL dist/lattice.css through both the engine and marp-core, then assert
-// the three load-bearing pack behaviours match exactly. Rule-level parity ⇒
-// browser-independent ⇒ catches the bug class the pixel harness cannot.
-describe('lattice-engine: CSS-pack parity vs marp-core (load-bearing rules)', () => {
+// pack the REAL dist/lattice.css through the engine and assert the three
+// load-bearing pack behaviours directly. Rule-level ⇒ browser-independent ⇒
+// catches the bug class the pixel harness cannot. (These were cross-checked
+// against marp-core's packer during the migration; the engine is now canonical,
+// so the assertions stand on their own.)
+describe('lattice-engine: CSS-pack (load-bearing rules)', () => {
   const LATTICE = fs.readFileSync(path.join(ROOT, 'dist/lattice.css'), 'utf8');
   const PALETTE = fs.readFileSync(path.join(ROOT, 'themes/indaco.css'), 'utf8');
   const enginePack = composeCss({ themeCss: PALETTE, baseLatticeCss: LATTICE });
-  const marpPack = (() => {
-    const m = new Marp({ html: true, math: 'katex', minifyCSS: false, script: false, inlineSVG: false });
-    m.themeSet.add(LATTICE);
-    m.themeSet.add(PALETTE);
-    return m.render('<!-- theme: indaco -->\n# x\n').css;
-  })();
   const strip = (css) => css.replace(/\/\*[\s\S]*?\*\//g, '');
   // The selector block that declares the first match of `re` (e.g. a token).
   const declaringSelector = (css, re) => {
@@ -347,25 +297,21 @@ describe('lattice-engine: CSS-pack parity vs marp-core (load-bearing rules)', ()
     return c.slice(c.lastIndexOf('}', open) + 1, open).trim().replace(/\s+/g, ' ');
   };
 
-  test('cqi tokens carry the same specificity-preserving selector in both engines', () => {
+  test('cqi tokens carry the specificity-preserving selector', () => {
     for (const re of [/--sp-md:/, /--sp-lg:/, /--radius-md:/]) {
       const e = declaringSelector(enginePack, re);
-      const m = declaringSelector(marpPack, re);
-      assert.ok(e && /:where\(section\):not\(\[\\20 root\]\)/.test(e), `engine ${re} on "${e}"`);
-      assert.equal(e, m, `${re} selector parity`); // identical, incl. the (0,1,0) guard
+      assert.ok(e && /:where\(section\):not\(\[\\20 root\]\)/.test(e), `engine ${re} on "${e}"`); // incl. the (0,1,0) guard
     }
   });
 
-  test('divider/closing counters reset on the same dead selector in both engines', () => {
+  test('divider/closing counters reset on the dead root selector', () => {
     const re = /counter-reset:\s*lat-divider/;
     const e = declaringSelector(enginePack, re);
-    assert.equal(e, declaringSelector(marpPack, re));
-    assert.match(e, /section body$/); // dead → implicit root reset, exactly as marp
+    assert.match(e, /section body$/); // dead → implicit root reset
   });
 
-  test('neither engine emits live non-pagination ::after content', () => {
+  test('no live non-pagination ::after content', () => {
     const live = (css) => /content:\s*counter\(lat-/.test(strip(css));
     assert.equal(live(enginePack), false);
-    assert.equal(live(marpPack), false);
   });
 });

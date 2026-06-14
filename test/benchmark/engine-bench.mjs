@@ -1,10 +1,10 @@
-// Engine rendering benchmark — marp-core vs the owned lattice-engine.
+// Engine rendering benchmark — the owned lattice-engine, over time.
 //
 // Built on tinybench (the runner-agnostic benchmark framework that powers
 // `vitest bench`): it handles warmup, sampling, and the statistics (mean, p99,
-// relative margin of error) so we don't hand-roll timing. Both engines are
-// driven through the real lib/playground/index.js paths the Drawing Board
-// toggles, against the SAME workloads.
+// relative margin of error) so we don't hand-roll timing. Both tiers drive the
+// real lib/playground/index.js path the docs surfaces render through, against the
+// SAME workloads.
 //
 // The jargon gallery (examples/gallery-jargon.md) is the baseline "normal"
 // workload per the design brief; "stress" multiplies it to a large deck and
@@ -15,16 +15,15 @@
 //   node test/benchmark/engine-bench.mjs --export   # + rasterize/export tier
 //   node test/benchmark/engine-bench.mjs --json     # machine-readable dump
 //
-// NOTE on the ratio: the lattice path emits its own HTML AND delegates CSS
-// packing to marp (engine.render(md).html + marp.render(src).css), so it does
-// strictly MORE work than the marp path until the engine ships its own CSS
-// emitter (proposal P5). The breakdown bench isolates the engine's HTML cost
-// from the shared marp CSS cost so the ratio is interpretable.
+// Marp was retired in P4; the final engine-vs-marp comparison (the owned engine
+// rendered 3–5× faster, dated) is recorded in
+// engineering/decisions/2026-06-12-p4-regression-gate-retire-marp.md §A. This
+// bench now tracks the engine's OWN speed over time — a perf-regression signal,
+// not a vs-marp claim.
 
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { Marp } from '@marp-team/marp-core';
 import { Bench } from 'tinybench';
 import latticeEngine from '../../lib/engine/index.js';
 import api from '../../lib/playground/index.js';
@@ -33,8 +32,7 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const wantExport = process.argv.includes('--export');
 const asJson = process.argv.includes('--json');
 
-// Standalone engines for the HTML-only vs CSS-only cost breakdown.
-const rawMarp = new Marp({ html: true, math: 'katex', minifyCSS: false, script: false, inlineSVG: false });
+// Standalone engine for the HTML-only cost line.
 const rawEngine = latticeEngine.createEngine();
 
 const registered = new Set();
@@ -43,11 +41,6 @@ function registerTheme(palette) {
     if (registered.has(rel) || !existsSync(join(ROOT, rel))) continue;
     const css = readFileSync(join(ROOT, rel), 'utf8');
     api.addThemes([css]);
-    try {
-      rawMarp.themeSet.add(css);
-    } catch {
-      /* dup */
-    }
     rawEngine.addThemes([css]);
     registered.add(rel);
   }
@@ -70,47 +63,33 @@ const datasets = [
 ];
 for (const d of datasets) {
   registerTheme(d.theme);
-  d.slides = (rawMarp.render(`<!-- theme: ${d.theme} -->\n${d.src}`).html.match(/<\/section>/g) || []).length;
+  d.slides = (rawEngine.render(d.src, d.theme).html.match(/<\/section>/g) || []).length;
 }
 
 const mean = (task) => task.result.latency.mean; // ms
 
 // ── render tier ───────────────────────────────────────────────────────────────
 async function renderTier() {
-  // marp vs lattice, full render path.
   const main = new Bench({ name: 'render', warmup: true, time: 1500, iterations: 8 });
   for (const d of datasets) {
-    main.add(`${d.name} · marp`, () => api.render(d.src, d.theme), { beforeAll: () => api.setEngine('marp') });
-    main.add(`${d.name} · lattice`, () => api.render(d.src, d.theme), { beforeAll: () => api.setEngine('lattice') });
+    main.add(d.name, () => api.render(d.src, d.theme));
   }
   await main.run();
   console.log('\n=== RENDER · full path (markdown → HTML+CSS) ===');
   console.table(main.table());
 
-  // Cost breakdown: engine HTML only vs the shared marp CSS pack.
-  const split = new Bench({ name: 'breakdown', warmup: true, time: 1500, iterations: 8 });
-  for (const d of datasets) {
-    const src = `<!-- theme: ${d.theme} -->\n${d.src}`;
-    split.add(`${d.name} · engine-HTML`, () => rawEngine.render(d.src));
-    split.add(`${d.name} · marp-CSS`, () => rawMarp.render(src).css);
-  }
-  await split.run();
-  console.log('\n=== RENDER · cost breakdown (where the lattice path spends time) ===');
-  console.table(split.table());
-
-  // Interpreted summary: ratio + slide throughput.
+  // Interpreted summary: ms + slide throughput.
   console.log('\n=== SUMMARY ===');
-  console.log(`${'dataset'.padEnd(20)}${'slides'.padStart(7)}${'marp ms'.padStart(10)}${'lattice ms'.padStart(12)}${'ratio'.padStart(8)}${'marp sl/s'.padStart(11)}${'latt sl/s'.padStart(11)}`);
+  console.log(`${'dataset'.padEnd(20)}${'slides'.padStart(7)}${'ms'.padStart(10)}${'slides/s'.padStart(11)}`);
   const summary = [];
   for (const d of datasets) {
-    const m = mean(main.getTask(`${d.name} · marp`));
-    const l = mean(main.getTask(`${d.name} · lattice`));
+    const l = mean(main.getTask(d.name));
     console.log(
-      `${d.name.padEnd(20)}${String(d.slides).padStart(7)}${m.toFixed(1).padStart(10)}${l.toFixed(1).padStart(12)}${(l / m).toFixed(2).concat('x').padStart(8)}${String(Math.round((d.slides / m) * 1000)).padStart(11)}${String(Math.round((d.slides / l) * 1000)).padStart(11)}`,
+      `${d.name.padEnd(20)}${String(d.slides).padStart(7)}${l.toFixed(1).padStart(10)}${String(Math.round((d.slides / l) * 1000)).padStart(11)}`,
     );
-    summary.push({ dataset: d.name, slides: d.slides, marpMs: m, latticeMs: l, ratio: l / m });
+    summary.push({ dataset: d.name, slides: d.slides, ms: l, slidesPerSec: Math.round((d.slides / l) * 1000) });
   }
-  return { main: main.table(), breakdown: split.table(), summary };
+  return { main: main.table(), summary };
 }
 
 // ── export / rasterize tier (lazy puppeteer) ──────────────────────────────────
@@ -133,8 +112,7 @@ async function exportTier() {
   const browser = await puppeteer.launch({ executablePath: chrome || undefined, args: ['--no-sandbox'] });
   // One full export cycle = render → load → screenshot every slide (what the
   // Drawing Board's html-to-image PDF/PPTX export does, server-side).
-  async function exportOnce(eng, d) {
-    api.setEngine(eng);
+  async function exportOnce(d) {
     const out = api.render(d.src, d.theme);
     const page = await browser.newPage();
     await page.setViewport({ width: 1280, height: 720 });
@@ -147,7 +125,7 @@ async function exportTier() {
   // adding signal; render-tier already covers stress scaling.
   const bench = new Bench({ name: 'export', warmup: false, time: 1, iterations: 2 });
   for (const d of datasets.filter((x) => !x.name.startsWith('stress'))) {
-    for (const eng of ['marp', 'lattice']) bench.add(`${d.name} · ${eng}`, () => exportOnce(eng, d));
+    bench.add(d.name, () => exportOnce(d));
   }
   await bench.run();
   console.log('\n=== EXPORT / RASTERIZE · per-deck screenshot cycle ===');

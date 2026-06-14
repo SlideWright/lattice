@@ -11,7 +11,9 @@ component, every render path, every slide assumes Marp. This folder
 holds Lattice's adapter layer — the small surface where Lattice's
 conventions meet Marp's defaults.
 
-**External dep:** `@marp-team/marp-cli` (declared in `package.json`).
+**External dep:** `@marp-team/marp-cli` — **BYO** (no longer bundled; P4 retired
+it). Install it yourself to render via `marp.config.js`; the owned engine
+(`lib/engine` / the `lattice` CLI) needs no marp.
 
 **Files in this folder:**
 
