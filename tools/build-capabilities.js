@@ -241,7 +241,7 @@ function render() {
   const byGroupS = {};
   for (const name of Object.keys(scripts).sort()) {
     const meta = SCRIPT_META[name];
-    if (!meta) { missing.push(`script: ${name}`); (byGroupS['Meta'] ??= []).push([name, TODO_SCRIPT(name)]); continue; }
+    if (!meta) { missing.push(`script: ${name}`); (byGroupS.Meta ??= []).push([name, TODO_SCRIPT(name)]); continue; }
     (byGroupS[meta[0]] ??= []).push([name, meta[1]]);
   }
   let scriptSections = '';
