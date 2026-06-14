@@ -770,7 +770,9 @@ tokens: universal   # current (default, omit) | universal
 ```
 
 - `current` (the default — omit it) renders against the legacy token
-  names (`--c1-light`, `--c-stroke`, `--bg-dark`, `--scale-*`, …).
+  names (`--c1-light`, `--c-stroke`, `--bg-dark`, …). (The sequential ramp
+  `--scale-*` already flipped to canonical `--seq-*`, so it is no longer a
+  legacy name either path carries — see the universal-token ADR group 1.)
 - `universal` renders against the new role-based names
   (`--cat-*`, `--diagram-*`, `--surface-*`, `--seq-*`, …). Output is
   **identical** — the flip is byte-identical, asserted by

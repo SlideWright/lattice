@@ -1,9 +1,10 @@
 # Universal token system — design, crosswalk, and migration strategy
 
 **Date:** 2026-06-11 · **flip plan added 2026-06-14**
-**Status:** design accepted · **phases 1–7 implemented** (alias era) ·
-**canonical flip + post-flip lint now specified as an executable plan (§11)**,
-not yet executed
+**Status:** design accepted · phases 1–7 implemented (alias era) ·
+canonical flip specified as an executable plan (§11) · **execution underway —
+group 1 (sequential `--scale-*` → `--seq-*`) shipped (PR #339, issue #337);
+groups 2–5 + closeout remain**
 **Scope:** `lib/base/base.tokens.css`, `themes/*.css`, the three render-path
 Mermaid bridges (`lattice-emulator.js`, `lib/runtime/index.js`,
 `marp.config.js`), `lib/theme/derive.js`, the gates

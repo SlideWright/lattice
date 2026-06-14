@@ -93,7 +93,7 @@
   --fail-bg: color-mix(in srgb, var(--fail) 12%, transparent);
   --warn-bg: color-mix(in srgb, var(--warn) 12%, transparent);
 
-  --scale-500: light-dark(#585855, #B8B8B5);
+  --seq-500: light-dark(#585855, #B8B8B5);
 
   /* Tag uses --chart-2 (oxblood) — Concrete's signature accent break. */
 

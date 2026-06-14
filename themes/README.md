@@ -67,7 +67,7 @@ The engine reads the file once. Authors edit one file.
 │     --accent, --accent-soft, --on-accent                         │
 │                                                                  │
 │   /* semantic signals */    ─ --pass / --fail / --warn (+ -bg)   │
-│   /* scale */               ─ --scale-500 anchor; derives 9 stops│
+│   /* seq ramp */            ─ --seq-500 anchor; derives 9 stops  │
 │   /* on-dark tints */       ─ derived from white via color-mix   │
 │   /* spectrum gradient */   ─ optional decorative ribbon         │
 │ }                                                                │
