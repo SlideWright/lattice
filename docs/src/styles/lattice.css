@@ -19,6 +19,11 @@
 /* Topbar chrome glyphs (menu / moon / sun) — shared with the standalone pages
  * (landing.css) so the docs topbar can't drift from the rest of the site. */
 @import './chrome-icons.css';
+/* Tailwind v4 + the shadcn ↔ Lattice token bridge (Preflight OFF, scoped to
+ * `.lx-ui` island roots). Loaded here so Starlight docs pages can host shadcn
+ * islands too; the bridge maps shadcn tokens onto the same palette tokens this
+ * file already remaps for Starlight (--sl-color-*). See tailwind.css. */
+@import './tailwind.css';
 
 :root {
 	--sl-font: 'Outfit', system-ui, sans-serif;

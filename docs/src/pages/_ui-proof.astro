@@ -1,0 +1,42 @@
+---
+// Phase 0 spike route — NOT linked from anywhere. Proves the shadcn + Tailwind
+// + token-bridge pipeline and lets us screenshot the bridge across
+// palettes/modes via ?palette= & ?mode=. The page is statically prerendered,
+// so the palette/mode are applied client-side (pre-paint) from location.search
+// by the inline script below. Deleted once Phase 1 ships the first real island.
+import '../styles/landing.css';
+import ThemeProofIsland from '../components/ui-proof/ThemeProofIsland.tsx';
+---
+
+<!doctype html>
+<html lang="en" data-palette="indaco" data-mode="light">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="robots" content="noindex, nofollow" />
+		<title>UI bridge proof</title>
+		<script is:inline>
+			// Apply ?palette= / ?mode= pre-paint so the generated token blocks
+			// (html[data-palette][data-mode]) resolve before first render.
+			const q = new URLSearchParams(location.search);
+			const root = document.documentElement;
+			if (q.get('palette')) root.setAttribute('data-palette', q.get('palette'));
+			if (q.get('mode')) root.setAttribute('data-mode', q.get('mode'));
+		</script>
+	</head>
+	<body style="margin:0;background:var(--bg);color:var(--text-body);font-family:var(--sl-font,system-ui)">
+		<main style="max-width:48rem;margin:0 auto;padding:2.5rem 1.5rem">
+			<p style="font-size:.8rem;color:var(--text-muted);margin:0 0 1.25rem">
+				<span data-proof-label>palette / mode set from URL</span> — shadcn islands themed through the Lattice bridge
+			</p>
+			<div class="lx-ui">
+				<ThemeProofIsland client:load />
+			</div>
+		</main>
+		<script is:inline>
+			const q = new URLSearchParams(location.search);
+			document.querySelector('[data-proof-label]').textContent =
+				`palette=${q.get('palette') || 'indaco'} · mode=${q.get('mode') || 'light'}`;
+		</script>
+	</body>
+</html>

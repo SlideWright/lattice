@@ -1,0 +1,135 @@
+/* tailwind.css — Tailwind v4 entry + the shadcn ↔ Lattice token bridge.
+ *
+ * PREFLIGHT IS DELIBERATELY OFF. The site ships ~7,000 lines of hand-written
+ * CSS whose cascade is built on UNLAYERED rules beating Starlight's @layer
+ * (see lattice.css:42-44). Tailwind's global reset (Preflight) would reset
+ * every button/link/list/heading on the landing + apps and fight that cascade.
+ * So we import only the `theme` and `utilities` layers — never
+ * `tailwindcss/preflight`. shadcn components get the small baseline they need
+ * from a SCOPED reset under `.lx-ui` (every React island root carries that
+ * class), so nothing leaks page-wide. A guard test asserts preflight stays off.
+ *
+ * THEMING — ONE source of palette truth. The Lattice tokens
+ * (--bg / --accent / --text-* / --chart-cat* on <html>, switched by
+ * data-palette + data-mode, generated from themes/*.css) drive everything.
+ * shadcn's semantic color utilities are mapped onto those tokens below
+ * (@theme inline), so switching palette or mode re-themes every shadcn
+ * component automatically — zero JS, no second theme system. The dark variant
+ * is keyed to [data-mode="dark"] (the site's convention), NOT shadcn's `.dark`.
+ *
+ * See engineering/decisions/2026-06-09-shadcn-migration.md §0 + §4.2. */
+
+@layer theme, base, components, utilities;
+
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' layer(utilities);
+@import 'tw-animate-css';
+
+/* Dark mode follows the site's attribute, not a `.dark` class. */
+@custom-variant dark (&:where([data-mode='dark'], [data-mode='dark'] *));
+
+/* ── Bridge helpers (computed / palette-blind values) ───────────────────────
+ * These live OUTSIDE the Lattice token namespace on purpose: we never redefine
+ * a Lattice token name (that would clobber the brand color or self-reference). */
+:root {
+	/* shadcn's `--accent` is a HOVER/ACTIVE surface (Command rows, ghost
+	 * buttons, Select items) — NOT the brand. Compute a surface guaranteed
+	 * distinct from the card even in dark palettes, where --accent-soft
+	 * collapses onto the surface. */
+	--lx-ui-accent: color-mix(in oklab, var(--bg-alt), var(--accent) 14%);
+	/* Structural, palette-blind (same discipline as shadows). */
+	--radius: 0.5rem;
+	/* Danger is hue-universal; themes/ defines no destructive token, so this is
+	 * a palette-blind ramp (one light value, one dark — WCAG-checked). */
+	--lx-ui-destructive: #c0362c;
+	--lx-ui-destructive-foreground: #ffffff;
+}
+:root[data-mode='dark'] {
+	--lx-ui-destructive: #f4675d;
+	--lx-ui-destructive-foreground: #1c0a08;
+}
+
+/* ── The map: shadcn semantic color tokens → Lattice palette tokens ──────────
+ * `inline` keeps each utility pointing at the live var(), so a palette/mode
+ * switch on <html> re-resolves the Lattice token → re-themes the component.
+ * Collisions handled deliberately: shadcn `--accent` → computed hover surface
+ * (brand goes to `--primary`); shadcn `--border` ≡ Lattice `--border` → direct. */
+@theme inline {
+	--color-background: var(--bg);
+	--color-foreground: var(--text-body);
+	--color-card: var(--bg-alt);
+	--color-card-foreground: var(--text-body);
+	--color-popover: var(--bg);
+	--color-popover-foreground: var(--text-body);
+
+	--color-primary: var(--accent);
+	--color-primary-foreground: var(--on-accent);
+	--color-secondary: var(--bg-alt);
+	--color-secondary-foreground: var(--text-heading);
+	--color-muted: var(--bg-alt);
+	--color-muted-foreground: var(--text-muted);
+
+	--color-accent: var(--lx-ui-accent);
+	--color-accent-foreground: var(--text-heading);
+	--color-destructive: var(--lx-ui-destructive);
+	--color-destructive-foreground: var(--lx-ui-destructive-foreground);
+
+	--color-border: var(--border);
+	--color-input: var(--border);
+	--color-ring: var(--accent);
+
+	/* Charts reuse the palette's own 8 curated categorical hues. */
+	--color-chart-1: var(--chart-cat1);
+	--color-chart-2: var(--chart-cat2);
+	--color-chart-3: var(--chart-cat3);
+	--color-chart-4: var(--chart-cat4);
+	--color-chart-5: var(--chart-cat5);
+
+	--color-sidebar: var(--bg-alt);
+	--color-sidebar-foreground: var(--text-body);
+	--color-sidebar-primary: var(--accent);
+	--color-sidebar-primary-foreground: var(--on-accent);
+	--color-sidebar-accent: var(--lx-ui-accent);
+	--color-sidebar-accent-foreground: var(--text-heading);
+	--color-sidebar-border: var(--border);
+	--color-sidebar-ring: var(--accent);
+
+	--radius-sm: calc(var(--radius) - 4px);
+	--radius-md: calc(var(--radius) - 2px);
+	--radius-lg: var(--radius);
+	--radius-xl: calc(var(--radius) + 4px);
+
+	--font-sans: 'Outfit', system-ui, sans-serif;
+	--font-mono: 'JetBrains Mono', 'Courier New', monospace;
+}
+
+/* ── Scoped baseline for shadcn islands (replaces global Preflight) ──────────
+ * Every React island mounts inside `.lx-ui`. Give just that subtree the
+ * box-sizing + border defaults shadcn components assume, plus form-control
+ * inheritance — without touching the rest of the page. */
+@layer base {
+	.lx-ui,
+	.lx-ui *,
+	.lx-ui *::before,
+	.lx-ui *::after {
+		box-sizing: border-box;
+		border-width: 0;
+		border-style: solid;
+		border-color: var(--border);
+	}
+	.lx-ui button,
+	.lx-ui input,
+	.lx-ui select,
+	.lx-ui textarea {
+		font: inherit;
+		color: inherit;
+		letter-spacing: inherit;
+	}
+	.lx-ui button {
+		background: none;
+		cursor: pointer;
+	}
+	.lx-ui svg {
+		display: block;
+	}
+}
