@@ -523,7 +523,8 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
 - **Fix:** Register the vendored faces in the iframe directly. The Drawing Board
   passes a `@font-face` block (built from `previewFontFaceCss()`, referencing the
   bundled woff2 by URL) through `data.previewFontCss` into `writeFrame`'s srcdoc;
-  `live-render.js` (playground / hero / specimens) lazy-imports the same builder.
+  `single-slide-render.ts` (hero / restyle / field-card islands / specimens)
+  lazy-imports the same builder.
   The faces are now genuinely present in the iframe regardless of the inert
   `@import` or what the parent loaded.
 
@@ -681,10 +682,11 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
   math-layout bug; the CSS contract and the PDFs are correct.
 - **Mitigation:** `docs/src/playground/frame-css.js` is the SINGLE SOURCE OF
   TRUTH for the `.marpit>section{width:1280px;height:720px}` pin (`SLIDE_BOX`)
-  and the single-slide wrapper (`SINGLE_SLIDE_FRAME`). All three
-  `inlineSVG:false` hosts import it — `live-render.js` (specimens) directly,
-  `index.astro` (hero) + `playground.astro` (playground) through the page's
-  JSON data channel — so `container-type:size` always gets a definite box and
+  and the single-slide wrapper (`SINGLE_SLIDE_FRAME` / `singleSlideFrame(geom)`).
+  All `inlineSVG:false` hosts import it — `single-slide-render.ts` (the shared
+  hero / restyle / field-card / specimen renderer) calls `singleSlideFrame(geom)`
+  directly, `playground.astro` (playground) through the page's JSON data channel
+  — so `container-type:size` always gets a definite box and
   the playground `FIT` is deterministic at `scale(w/1280)`. The three used to
   inline the dimensions independently and drifted (the hero pinned the wrapper
   but not `>section`; the playground pinned neither) — which is how this bug

@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { createLandingEngine } from '@/lib/landing-engine';
 import { nextIndex, type Palette } from '@/lib/restyle-carousel';
+import { createSingleSlideRenderer } from '@/lib/single-slide-render';
 
 // "One source, every palette": one slide re-rendered live through every palette,
 // auto-advancing. The swatch rail + the active-name readout are React (shadcn-
@@ -18,14 +18,15 @@ export type RestyleData = {
 	themeBase: string;
 	runtimeUrl: string;
 	engineUrl: string;
-	frameCss: string;
 };
 
 export default function RestyleShowcase({ data }: { data: RestyleData }) {
 	const { palettes } = data;
 	const [idx, setIdx] = React.useState(0);
 	const stageRef = React.useRef<HTMLDivElement>(null);
-	const engineRef = React.useRef(createLandingEngine(data.themeBase, data.runtimeUrl, data.frameCss, data.engineUrl));
+	const engineRef = React.useRef(
+		createSingleSlideRenderer({ themeBase: data.themeBase, runtimeUrl: data.runtimeUrl, engineUrl: data.engineUrl }),
+	);
 
 	const idxRef = React.useRef(idx);
 	idxRef.current = idx;

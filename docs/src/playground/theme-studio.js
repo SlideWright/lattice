@@ -14,19 +14,21 @@
 // docs/astro.config.mjs. No model is involved in Faculty 1's deterministic
 // core; seeds come from the starter library.
 
+// Theme fetch + addThemes (the "ensureThemes" pattern) is shared — theme-fetch.ts.
+import { createThemeFetcher } from '../lib/theme-fetch';
 // The on-device / OpenRouter model ladder — the SAME adapter the Drawing Board
 // Architect uses (connection persists in localStorage, so a model connected
 // there works here too). complete() ALWAYS resolves: it floors to the
 // deterministic core when no model is present.
 import { createArchitectModel } from './architect-model.js';
+import { deleteAsset, listAssets, putAsset } from './asset-store.js';
+import { hashString, renderDeck } from './deck-preview.js';
+import { mountStudioPreviewConfig } from './studio-preview-config.js';
 // The pure theme core (lib/theme/*) is CommonJS and its modules require() each
 // other, which Vite's dev server can't transform in arbitrary source files. So
 // we consume it through the esbuild bundle (tools/build-theme-core.js →
 // theme-core.generated.js): one ESM module, real named exports, the SAME maths
 // as the Node tooling + the WCAG gate. Rebuild with `npm run theme-core:build`.
-import { deleteAsset, listAssets, putAsset } from './asset-store.js';
-import { hashString, renderDeck } from './deck-preview.js';
-import { mountStudioPreviewConfig } from './studio-preview-config.js';
 import {
   askMessages,
   auditBoth,
@@ -193,16 +195,11 @@ export function initThemeStudio(config) {
     },
   });
 
-  let fetchedLattice = null;
-  function ensureBaseTheme() {
-    const PG = window.LatticePlayground;
-    if (!fetchedLattice) {
-      fetchedLattice = fetch(themeBase + 'lattice.css')
-        .then(r => (r.ok ? r.text() : Promise.reject(new Error('lattice ' + r.status))))
-        .then(css => PG.addThemes([css]));
-    }
-    return fetchedLattice;
-  }
+  // Theme fetch + addThemes is shared (theme-fetch.ts). The studio registers its
+  // OWN derived palettes (PREVIEW_THEME), so it only needs the base lattice.css
+  // contract registered once — ensureBase().
+  const themes = createThemeFetcher(themeBase);
+  const ensureBaseTheme = () => themes.ensureBase();
 
   function setStatus(msg, isErr) {
     if (!els.status) return;

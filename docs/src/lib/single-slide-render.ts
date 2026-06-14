@@ -1,0 +1,243 @@
+// Shared single-slide live renderer — the de-duplicated successor of
+// landing-engine.ts (landing islands) AND live-render.js (component specimens).
+//
+// WRAP, DON'T REINVENT. The marp render path lives in window.LatticePlayground
+// (the on-demand engine bundle, injected by load-engine.ts). This module only
+// orchestrates the SAME calls both copies made — fetch theme css → PG.addThemes
+// (via theme-fetch.ts) → PG.render → write an isolated `srcdoc` iframe + scale
+// it to fill its host. Nothing here reimplements the engine; it touches
+// window/fetch/DOM, so it stays OUTSIDE the React tree (DeckPreview.tsx wraps it
+// for the React islands; specimen.js consumes the function form directly).
+//
+// SIBLINGS (kept divergent on purpose): src/playground/deck-preview.js is the
+// MULTI-slide filmstrip superset (playground, drawing-board, both studios). The
+// drawing-board inline controller + practice/focus builders are Tier 2 and own
+// their surface-specific srcdoc. This module is the SINGLE-slide twin only.
+//
+// THE FONT FIX (carried from live-render, now landing gets it too): the engine's
+// Google-Fonts @import is inert inside the srcdoc <style> (it lands after the
+// frame CSS, and CSS ignores an @import that isn't first), so the iframe loads
+// none of its own webfonts and would render only the faces the parent docs page
+// happens to load — never the sketch finish's Caveat/Shantell. We register the
+// vendored faces ourselves (font-embed.js), lazily-imported + cached: font-embed
+// pulls bundled .woff2 that Node can't load, so a static import would break this
+// module in a Node/SSR context — the lazy import keeps construction Node-safe.
+
+import { DEFAULT_H, DEFAULT_W, singleSlideFrame } from '../playground/frame-css.js';
+import { ensureEngine } from './load-engine';
+import { createThemeFetcher } from './theme-fetch';
+
+const MERMAID = 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js';
+
+type PG = {
+	render: (source: string, theme: string) => { html: string; css: string; width?: number; height?: number };
+	addThemes: (css: string[]) => void;
+	hasTheme: (name: string) => boolean;
+};
+
+declare global {
+	interface Window {
+		LatticePlayground?: PG;
+	}
+}
+
+export type Geom = { width: number; height: number };
+export type RenderStatus = { ok: boolean; slides: number; error: string | null };
+
+export type SingleSlideOptions = {
+	/** Base URL the theme CSS is fetched from (`<themeBase><name>.css`). */
+	themeBase: string;
+	/** URL of the runtime bundle injected into each slide iframe. */
+	runtimeUrl: string;
+	/**
+	 * On-demand engine bundle URL. When present, whenReady() triggers the inject
+	 * (load-engine.ts) on first need; absent → whenReady() falls back to a poll
+	 * (tests, or a legacy eager tag already on the page).
+	 */
+	engineUrl?: string;
+};
+
+/** Resolve `<html data-palette/-mode>` → the palette + mode to render with. */
+export function currentPaletteMode(paletteOverride?: string): { palette: string; mode: 'light' | 'dark' } {
+	const root = document.documentElement;
+	return {
+		palette: paletteOverride || root.getAttribute('data-palette') || 'indaco',
+		mode: root.getAttribute('data-mode') === 'dark' ? 'dark' : 'light',
+	};
+}
+
+// Host carries its resolved slide box so scaleFrame divides by the right width
+// (a `size: 4K` deck pins a 3840×2160 box, not the HD default).
+type LiveHost = HTMLElement & { __latticeGeom?: Geom };
+
+/**
+ * Build a single-slide renderer bound to a theme source + runtime URL. Returns:
+ *   - renderInto(host, markdown, mermaid, paletteOverride?) → Promise<RenderStatus>
+ *   - whenReady()       → Promise<void> (triggers on-demand engine load)
+ *   - onThemeChange(cb) → re-run cb (debounced) on a data-palette/-mode flip
+ *   - scaleFrame(host)  → re-fit the host's iframe (after a reveal/resize)
+ *   - ready()           → window.LatticePlayground present?
+ */
+export function createSingleSlideRenderer(opts: SingleSlideOptions) {
+	const { themeBase, runtimeUrl, engineUrl } = opts;
+	const themes = createThemeFetcher(themeBase);
+
+	// Self-hosted preview fonts. Lazy-imported + cached: font-embed.js pulls
+	// bundled .woff2 that Node can't load, so a static import would break this
+	// module's unit test. The @font-face references the woff2 by URL (browser
+	// caches once), not inlined per render.
+	let fontFaceCss = '';
+	let fontFacesReady: Promise<void> | null = null;
+	function ensurePreviewFonts(): Promise<void> {
+		if (!fontFacesReady) {
+			fontFacesReady = import('../playground/font-embed.js')
+				.then((m) => {
+					fontFaceCss = m.previewFontFaceCss();
+				})
+				.catch(() => {
+					fontFaceCss = '';
+				});
+		}
+		return fontFacesReady;
+	}
+
+	// Render the slide at its INTRINSIC `@size` box and scale the iframe ELEMENT
+	// (never the SVG) to fit the host — sidesteps the Safari foreignObject scaling
+	// bug (see frame-css.js + index.astro srcdoc note). `geom` is the render's
+	// reported { width, height } (px).
+	function srcdoc(html: string, css: string, mode: 'light' | 'dark', mermaid: boolean, geom: Geom): string {
+		const bg = mode === 'dark' ? '#0c0c0c' : '#e7e7ea';
+		// Register the vendored faces first (@font-face is position-independent,
+		// but keeping it up top documents intent). Without this the iframe has no
+		// Caveat/Shantell and sketch decks render body in a system sans.
+		let s =
+			'<!doctype html><html><head><meta charset="utf-8"><style>' +
+			fontFaceCss +
+			singleSlideFrame(geom.width, geom.height) +
+			'html,body{background:' +
+			bg +
+			'}' +
+			css +
+			'</style></head><body>' +
+			html;
+		if (mermaid) s += '<scr' + 'ipt src="' + MERMAID + '"></scr' + 'ipt>';
+		s += '<scr' + 'ipt src="' + runtimeUrl + '"></scr' + 'ipt></body></html>';
+		return s;
+	}
+
+	/** Scale the fixed-box iframe to fill its (16:9) host; driven by host width. */
+	function scaleFrame(host: HTMLElement) {
+		const fr = host.querySelector<HTMLIFrameElement>('iframe.live');
+		if (!fr) return;
+		const w = host.clientWidth;
+		// Scale by the slide's OWN box (stashed by renderInto), not a hardcoded
+		// 1280×720 — otherwise a 4K (3840-wide) slide is scaled 3× too large. The
+		// element's CSS pins it to HD by default, so a non-HD deck also needs the
+		// element resized to its real box here before the transform fits it.
+		const geom = (host as LiveHost).__latticeGeom || { width: DEFAULT_W, height: DEFAULT_H };
+		fr.style.width = geom.width + 'px';
+		fr.style.height = geom.height + 'px';
+		if (w > 0) fr.style.transform = 'scale(' + (w / geom.width).toFixed(5) + ')';
+	}
+
+	/** True once the engine bundle has loaded. */
+	function ready(): boolean {
+		return Boolean(window.LatticePlayground);
+	}
+
+	/**
+	 * Render `markdown` into `host` (creating/updating its `iframe.live`), themed
+	 * by the current (or overridden) palette + mode. Resolves to a status object.
+	 */
+	function renderInto(
+		host: HTMLElement,
+		markdown: string,
+		mermaid: boolean,
+		paletteOverride?: string,
+	): Promise<RenderStatus> {
+		const PG = window.LatticePlayground;
+		if (!PG) return Promise.resolve({ ok: false, slides: 0, error: 'engine not loaded' });
+		const { palette, mode } = currentPaletteMode(paletteOverride);
+		return Promise.all([themes.ensure(palette, mode), ensurePreviewFonts()])
+			.then(() => {
+				const theme = mode === 'dark' && PG.hasTheme(palette + '-dark') ? palette + '-dark' : palette;
+				let out: { html: string; css: string; width?: number; height?: number };
+				try {
+					out = PG.render(markdown, theme);
+				} catch (e) {
+					console.error('single-slide render failed', e);
+					return { ok: false, slides: 0, error: String((e as Error)?.message || e) };
+				}
+				// Stash the resolved slide box so scaleFrame divides by the right width.
+				const geom: Geom = { width: out.width || DEFAULT_W, height: out.height || DEFAULT_H };
+				(host as LiveHost).__latticeGeom = geom;
+				let fr = host.querySelector<HTMLIFrameElement>('iframe.live');
+				if (!fr) {
+					fr = document.createElement('iframe');
+					fr.className = 'live';
+					fr.setAttribute('title', 'Live-rendered Lattice slide');
+					fr.setAttribute('scrolling', 'no');
+					fr.setAttribute('tabindex', '-1');
+					// Fixed intrinsic slide box, scaled to fit via a CSS transform set in
+					// scaleFrame. transform-origin top-left so the scaled box aligns to the
+					// host's corner (without it, scaling shrinks around center → offset).
+					fr.style.position = 'absolute';
+					fr.style.top = '0';
+					fr.style.left = '0';
+					fr.style.border = '0';
+					fr.style.width = geom.width + 'px';
+					fr.style.height = geom.height + 'px';
+					fr.style.transformOrigin = 'top left';
+					host.appendChild(fr);
+					if (typeof ResizeObserver !== 'undefined') {
+						new ResizeObserver(() => scaleFrame(host)).observe(host);
+					}
+				}
+				fr.onload = () => scaleFrame(host);
+				fr.srcdoc = srcdoc(out.html, out.css, mode, mermaid, geom);
+				scaleFrame(host);
+				host.classList.add('is-live');
+				const slides = (out.html.match(/<\/section>/g) || []).length;
+				return { ok: true, slides, error: null };
+			})
+			.catch((e) => {
+				// Surface failures in the console (the old landing bridge did; the
+				// specimen also shows them via its status line) so a broken theme fetch
+				// / engine error isn't swallowed silently on the landing islands.
+				console.error('single-slide render failed', e);
+				return { ok: false, slides: 0, error: String((e as Error)?.message || e) };
+			});
+	}
+
+	/**
+	 * Resolve when the engine bundle is present. On first call this also triggers
+	 * the on-demand injection of the engine <script> (ensureEngine) if an
+	 * engineUrl was supplied — so the bundle loads only when an island actually
+	 * needs to render. Falls back to a bare poll if no URL was wired.
+	 */
+	function whenReady(): Promise<void> {
+		if (ready()) return Promise.resolve();
+		if (engineUrl) return ensureEngine(engineUrl);
+		return new Promise((resolve) => {
+			const t = setInterval(() => {
+				if (ready()) {
+					clearInterval(t);
+					resolve();
+				}
+			}, 50);
+		});
+	}
+
+	/** Call `cb` (debounced) whenever the palette or light/dark mode changes. */
+	function onThemeChange(cb: () => void) {
+		let timer: ReturnType<typeof setTimeout>;
+		new MutationObserver(() => {
+			clearTimeout(timer);
+			timer = setTimeout(cb, 80);
+		}).observe(document.documentElement, { attributes: true, attributeFilter: ['data-palette', 'data-mode'] });
+	}
+
+	return { renderInto, whenReady, onThemeChange, scaleFrame, ready };
+}
+
+export type SingleSlideRenderer = ReturnType<typeof createSingleSlideRenderer>;

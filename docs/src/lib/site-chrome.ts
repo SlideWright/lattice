@@ -10,7 +10,7 @@
  * The contract (unchanged, so deck iframes + un-migrated code keep theming):
  *   • `data-palette` / `data-mode` on <html> drive the generated palette tokens
  *     (lattice-tokens.generated.css) and the deck `srcdoc` iframes, which read
- *     those attributes off the host (live-render.js).
+ *     those attributes off the host (single-slide-render.ts).
  *   • `data-theme` is kept in lockstep with `data-mode` for Starlight's own CSS
  *     + code-block themes.
  *   • localStorage keys `lattice-docs-palette` / `lattice-docs-mode` (+

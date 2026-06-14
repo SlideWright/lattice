@@ -3,11 +3,16 @@ import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import HeroPreview, { type HeroData } from './HeroPreview';
 
-vi.mock('@/lib/landing-engine', () => ({
-	createLandingEngine: () => ({
+// Stub the shared single-slide renderer so the island never touches
+// window.LatticePlayground / fetch — these tests assert the React chrome
+// (Preview/Source tabs), not the (separately wrapped) engine render.
+vi.mock('@/lib/single-slide-render', () => ({
+	createSingleSlideRenderer: () => ({
 		ready: () => true,
 		whenReady: () => Promise.resolve(),
-		renderInto: vi.fn(() => Promise.resolve(true)),
+		renderInto: vi.fn(() => Promise.resolve({ ok: true, slides: 1, error: null })),
+		onThemeChange: vi.fn(),
+		scaleFrame: vi.fn(),
 	}),
 }));
 
@@ -18,7 +23,7 @@ const DATA: HeroData = {
 	componentName: 'verdict-grid',
 	themeBase: '/themes/',
 	runtimeUrl: '/runtime.js',
-	frameCss: '',
+	engineUrl: '/engine.js',
 };
 
 describe('HeroPreview island', () => {
