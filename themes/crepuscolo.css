@@ -61,18 +61,18 @@
   --brand-accent:    #5B3D8C;  /* accent (light), text-label          */
 
   /* ── Surfaces ──────────────────────────────────────────────────────── */
-  --bg:       light-dark(#FAF8FC, var(--dark-bg));      /* canvas              */
-  --bg-alt:   light-dark(#EFEBF5, var(--dark-bg-alt));  /* card fill           */
-  --bg-dark:  #2A1B45;                  /* title / divider    */
-  --border:   light-dark(#DCD4E8, var(--dark-border));  /* hairline rule       */
+  --bg:       light-dark(#FAF8FC, var(--scheme-dark-bg));      /* canvas              */
+  --bg-alt:   light-dark(#EFEBF5, var(--scheme-dark-bg-alt));  /* card fill           */
+  --surface-inverse:  #2A1B45;                  /* title / divider    */
+  --border:   light-dark(#DCD4E8, var(--scheme-dark-border));  /* hairline rule       */
 
   /* ── Ink ramp ──────────────────────────────────────────────────────── */
   --text-display: #FFFFFF;
-  --text-heading: light-dark(#150F22, var(--dark-text-heading));     /* L:17.71:1 / D:18.26:1 */
-  --text-body:    light-dark(#2E2542, var(--dark-text-body));        /* L:13.63:1 / D:10.42:1 */
-  --text-label:   light-dark(var(--brand-accent), var(--dark-text-label)); /* L:7.99:1 / D:8.28:1 AAA */
-  --text-secondary: light-dark(#5C546C, var(--dark-text-secondary)); /* secondary prose / subtitle / caption — AA both sides */
-  --text-muted:   light-dark(#8E83A8, var(--dark-text-muted));      /* decorative / de-emphasized — chrome, empty/skipped marks, glyphs; WCAG-exempt */
+  --text-heading: light-dark(#150F22, var(--scheme-dark-text-heading));     /* L:17.71:1 / D:18.26:1 */
+  --text-body:    light-dark(#2E2542, var(--scheme-dark-text-body));        /* L:13.63:1 / D:10.42:1 */
+  --text-label:   light-dark(var(--brand-accent), var(--scheme-dark-text-label)); /* L:7.99:1 / D:8.28:1 AAA */
+  --text-secondary: light-dark(#5C546C, var(--scheme-dark-text-secondary)); /* secondary prose / subtitle / caption — AA both sides */
+  --text-muted:   light-dark(#8E83A8, var(--scheme-dark-text-muted));      /* decorative / de-emphasized — chrome, empty/skipped marks, glyphs; WCAG-exempt */
 
   /* ── Brand accent ──────────────────────────────────────────────────── */
   --accent:      light-dark(var(--brand-accent), #B59ADC); /* L:7.99:1 / D:7.50:1 on bg AAA */
@@ -82,7 +82,7 @@
   --code-inline-fg: var(--accent); /* violet accent — chip AA+ (L:6.82/6.18 · D:6.42/5.39) */
   /* Text on top of --accent — light: white on mid-violet; dark: deep
    * plum on bright lavender. */
-  --on-accent:   light-dark(#FFFFFF, var(--bg-dark));    /* L:8.43:1 / D:7.50:1 */
+  --on-accent:   light-dark(#FFFFFF, var(--surface-inverse));    /* L:8.43:1 / D:7.50:1 */
 
   /* ── Semantic signals — derived backgrounds only ───────────────────
    * --pass/--warn/--fail are defined as light-dark() pairs in
@@ -90,7 +90,7 @@
    * the defaults. The -bg soft tints stay theme-local so each palette
    * can pick its own alpha. */
   /* Self-curated semantic trio — warm green/amber/red, AA>=4.5 on
-   * both canvases (light value vs --bg, dark value vs --dark-bg). */
+   * both canvases (light value vs --bg, dark value vs --scheme-dark-bg). */
   --pass: light-dark(#2D6A3F, #6FCC4D);
   --warn: light-dark(#9E5F00, #F0A848);
   --fail: light-dark(#9E1F1F, #F58282);
@@ -110,19 +110,19 @@
   --spectrum-vertical: linear-gradient(180deg, #2A1B45 0%, #5B3D8C 55%, #B07FB5 100%);
 
   /* ── Dark-variant tokens (referenced by light-dark() above) ───────── */
-  --dark-bg:           #1A0F2D;
-  --dark-bg-alt:       #2A1B45;
-  --dark-border:       #3F2A5C;
-  --dark-text-heading: #FFFFFF;
-  --dark-text-body:    #C8BFE0;
-  --dark-text-muted:   #8E83A8;
-  --dark-text-secondary: #A59CBC;
-  --dark-text-label:   #B5A8D5;
-  --dark-text-display: #FFFFFF;
+  --scheme-dark-bg:           #1A0F2D;
+  --scheme-dark-bg-alt:       #2A1B45;
+  --scheme-dark-border:       #3F2A5C;
+  --scheme-dark-text-heading: #FFFFFF;
+  --scheme-dark-text-body:    #C8BFE0;
+  --scheme-dark-text-muted:   #8E83A8;
+  --scheme-dark-text-secondary: #A59CBC;
+  --scheme-dark-text-label:   #B5A8D5;
+  --scheme-dark-text-display: #FFFFFF;
 
   /* ── Mermaid extensions kept on-theme ──────────────────────────────── */
-  --c-stroke:          #3F2A5C;
-  --c-accent-warm:     #BD5000;
+  --diagram-stroke:          #3F2A5C;
+  --diagram-accent-warm:     #BD5000;
   /* cScale / gitgraph — slot 0 anchors band-1 lavender (BRAND violet).
    * Slot 1 reframed from amber to sage so the cycle echoes band-2's
    * sage-mint hue. Slot 7 swapped from light-violet (collided with
@@ -130,7 +130,7 @@
    * graphical on --bg #FAF8FC. */
 }
 
-/* Code panel — uses the tokenised --code-bg (defaults to var(--bg-dark)
+/* Code panel — uses the tokenised --code-bg (defaults to var(--surface-inverse)
  * in lattice.css). Spectrum hairline anchors the bottom edge. */
 section pre.hljs {
   background: var(--spectrum) bottom / 100% 3px no-repeat, var(--bg-warm-mid);
@@ -141,7 +141,7 @@ section pre.hljs {
  * source of truth per palette. */
 :root {
 
-  --c-line:                  var(--text-heading);
+  --diagram-line:                  var(--text-heading);
 }
 
 /* ── highlight.js syntax tokens ────────────────────────────────────────── */
@@ -161,46 +161,46 @@ section pre.hljs {
 }
 
 :root {
-  --c1-light:  light-dark(#E5DEEB, #6A45A5);
-  --c1-dark:   light-dark(#E5DEEB, #6A45A5);
-  --c2-light:  light-dark(#C8B8D2, #007135);
-  --c2-dark:   light-dark(#C8B8D2, #007135);
-  --c3-light:  light-dark(#F3EDD0, #A03314);
-  --c3-dark:   light-dark(#F3EDD0, #A03314);
-  --c4-light:  light-dark(#D8EEF3, #00697E);
-  --c4-dark:   light-dark(#D8EEF3, #00697E);
-  --c5-light:  light-dark(#D8D5E5, #785800);
-  --c5-dark:   light-dark(#D8D5E5, #785800);
-  --c6-light:  light-dark(#F3DDE0, #1C5BB0);
-  --c6-dark:   light-dark(#F3DDE0, #1C5BB0);
-  --c7-light:  light-dark(#DDE9E6, #9B2E5E);
-  --c7-dark:   light-dark(#DDE9E6, #9B2E5E);
-  --c8-light:  light-dark(#E0D8EC, #006D64);
-  --c8-dark:   light-dark(#E0D8EC, #006D64);
-  --c9-light:  light-dark(#EDE3E8, #813B92);
-  --c9-dark:   light-dark(#EDE3E8, #813B92);
-  --c10-light: light-dark(#F5E8C8, #596500);
-  --c10-dark:  light-dark(#F5E8C8, #596500);
-  --c11-light: light-dark(#E5DEEB, #6845A6);
-  --c11-dark:  light-dark(#E5DEEB, #6845A6);
-  --c12-light: light-dark(#DDEAE5, #8B4B00);
-  --c12-dark:  light-dark(#DDEAE5, #8B4B00);
+  --cat-1-fill:  light-dark(#E5DEEB, #6A45A5);
+  --cat-1-mark:   light-dark(#E5DEEB, #6A45A5);
+  --cat-2-fill:  light-dark(#C8B8D2, #007135);
+  --cat-2-mark:   light-dark(#C8B8D2, #007135);
+  --cat-3-fill:  light-dark(#F3EDD0, #A03314);
+  --cat-3-mark:   light-dark(#F3EDD0, #A03314);
+  --cat-4-fill:  light-dark(#D8EEF3, #00697E);
+  --cat-4-mark:   light-dark(#D8EEF3, #00697E);
+  --cat-5-fill:  light-dark(#D8D5E5, #785800);
+  --cat-5-mark:   light-dark(#D8D5E5, #785800);
+  --cat-6-fill:  light-dark(#F3DDE0, #1C5BB0);
+  --cat-6-mark:   light-dark(#F3DDE0, #1C5BB0);
+  --cat-7-fill:  light-dark(#DDE9E6, #9B2E5E);
+  --cat-7-mark:   light-dark(#DDE9E6, #9B2E5E);
+  --cat-8-fill:  light-dark(#E0D8EC, #006D64);
+  --cat-8-mark:   light-dark(#E0D8EC, #006D64);
+  --cat-9-fill:  light-dark(#EDE3E8, #813B92);
+  --cat-9-mark:   light-dark(#EDE3E8, #813B92);
+  --cat-10-fill: light-dark(#F5E8C8, #596500);
+  --cat-10-mark:  light-dark(#F5E8C8, #596500);
+  --cat-11-fill: light-dark(#E5DEEB, #6845A6);
+  --cat-11-mark:  light-dark(#E5DEEB, #6845A6);
+  --cat-12-fill: light-dark(#DDEAE5, #8B4B00);
+  --cat-12-mark:  light-dark(#DDEAE5, #8B4B00);
 
-  --c-ink-light: var(--text-heading);
-  --c-ink-dark:  var(--text-heading);
+  --cat-on-fill: var(--text-heading);
+  --cat-on-mark:  var(--text-heading);
 
   /* Semantic palette — 5 roles, each a flipping fill. Curated per
    * theme: hue nudged toward the brand within its meaning band,
    * AA-verified both canvas modes, chroma-capped for restraint.
-   * The -dark companions are strokes → universal --c-stroke. */
-  --c-warm-light:  light-dark(#ECC0A8, #91450E);
-  --c-warm-dark:   var(--c-stroke);
-  --c-cool-light:  light-dark(#B4CDEB, #2A5F9A);
-  --c-cool-dark:   var(--c-stroke);
-  --c-alarm:       light-dark(#D15A62, #9A2735);
-  --c-alarm-dark:  var(--c-stroke);
-  --c-mark:        light-dark(#ECB417, #856300);
-  --c-note:        light-dark(#DDD0B0, #7B5F06);
+   * The -dark companions are strokes → universal --diagram-stroke. */
+  --diagram-active:  light-dark(#ECC0A8, #91450E);
+  --diagram-active-mark:   var(--diagram-stroke);
+  --diagram-done:  light-dark(#B4CDEB, #2A5F9A);
+  --diagram-done-mark:   var(--diagram-stroke);
+  --diagram-critical:       light-dark(#D15A62, #9A2735);
+  --diagram-critical-mark:  var(--diagram-stroke);
+  --diagram-today:        light-dark(#ECB417, #856300);
+  --diagram-note:        light-dark(#DDD0B0, #7B5F06);
 
   /* Containment tier — two nested structural surfaces. A monotonic
    * luminance ladder away from the canvas: light deck steps down,

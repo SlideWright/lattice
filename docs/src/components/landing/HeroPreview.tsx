@@ -50,7 +50,7 @@ export default function HeroPreview({ data }: { data: HeroData }) {
 				</TabsContent>
 
 				<TabsContent value="source">
-					<div className="aspect-video overflow-auto rounded-[14px] bg-[var(--bg-dark)] p-5 shadow-lg">
+					<div className="aspect-video overflow-auto rounded-[14px] bg-[var(--surface-inverse)] p-5 shadow-lg">
 						<pre className="m-0 whitespace-pre font-mono text-[12.5px] leading-[1.65] text-[var(--on-dark)]">
 							{/* Pre-highlighted server-side; spans carry .ln-* classes (landing.css keeps them). */}
 							<code

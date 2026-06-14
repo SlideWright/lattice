@@ -55,8 +55,8 @@ describe('structural text-token contrast', () => {
     test(`${name}: defines independent secondary token (+ dark variant)`, () => {
       assert.ok(vars['text-secondary'], `${name} missing --text-secondary`);
       assert.ok(
-        vars['dark-text-secondary'] || !/light-dark/.test(vars['text-secondary']),
-        `${name} uses light-dark for --text-secondary but is missing --dark-text-secondary`,
+        vars['scheme-dark-text-secondary'] || !/light-dark/.test(vars['text-secondary']),
+        `${name} uses light-dark for --text-secondary but is missing --scheme-dark-text-secondary`,
       );
     });
 

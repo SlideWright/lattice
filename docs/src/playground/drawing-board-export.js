@@ -20,7 +20,7 @@
 //
 // IMPORTANT: do NOT pass a `backgroundColor` — a forced white overrides the
 // solid dark canvas of the title/closing/divider slides
-// (section.title { background: var(--bg-dark) }), turning them white. Each slide
+// (section.title { background: var(--surface-inverse) }), turning them white. Each slide
 // paints its own background, so we let it. (Gradient-backed dark slides happened
 // to survive the white because a background-image paints over background-color;
 // solid-colour ones did not — hence title/closing went white on Cuoio.)

@@ -21,32 +21,32 @@ describe('palette', () => {
     'bg', 'bg-alt', 'text-heading',
 
     // Non-flipping ink: paired with --cN-light fills (dark) and --cN-dark
-    // fills (white-ish). Themes can override --c-ink-dark to a cream
+    // fills (white-ish). Themes can override --cat-on-mark to a cream
     // off-white if pure #FFFFFF feels icy on warm-deep slots.
-    'c-ink-light', 'c-ink-dark',
+    'cat-on-fill', 'cat-on-mark',
 
     // Categorical cycle (12 paired slots)
-    'c1-light',  'c2-light',  'c3-light',  'c4-light',
-    'c5-light',  'c6-light',  'c7-light',  'c8-light',
-    'c9-light',  'c10-light', 'c11-light', 'c12-light',
-    'c1-dark',   'c2-dark',   'c3-dark',   'c4-dark',
-    'c5-dark',   'c6-dark',   'c7-dark',   'c8-dark',
-    'c9-dark',   'c10-dark',  'c11-dark',  'c12-dark',
+    'cat-1-fill',  'cat-2-fill',  'cat-3-fill',  'cat-4-fill',
+    'cat-5-fill',  'cat-6-fill',  'cat-7-fill',  'cat-8-fill',
+    'cat-9-fill',  'cat-10-fill', 'cat-11-fill', 'cat-12-fill',
+    'cat-1-mark',   'cat-2-mark',   'cat-3-mark',   'cat-4-mark',
+    'cat-5-mark',   'cat-6-mark',   'cat-7-mark',   'cat-8-mark',
+    'cat-9-mark',   'cat-10-mark',  'cat-11-mark',  'cat-12-mark',
 
     // Structural (per-theme: saturated brand stroke, edge line, secondary
     // warm accent)
-    'c-stroke', 'c-line', 'c-accent-warm',
+    'diagram-stroke', 'diagram-line', 'diagram-accent-warm',
 
     // (Quadrant charts — native + Mermaid — now read the cN categorical
     // palette directly; the former --c-quadrant-* slot tokens are retired.)
 
     // Universal semantic palette (status-signaling — defaults in lattice.css,
     // themes override as needed)
-    'c-warm-light',  'c-warm-dark',
-    'c-cool-light',  'c-cool-dark',
-    'c-alarm',       'c-alarm-dark',
-    'c-mark',
-    'c-note',
+    'diagram-active',  'diagram-active-mark',
+    'diagram-done',  'diagram-done-mark',
+    'diagram-critical',       'diagram-critical-mark',
+    'diagram-today',
+    'diagram-note',
   ];
 
   for (const name of ['indaco', 'cuoio']) {

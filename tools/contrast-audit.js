@@ -188,9 +188,9 @@ const PAIRS = [
   ['text-secondary', 'bg',       'slide: secondary text (subtitle/caption) on canvas'],
   ['text-label',     'bg',       'slide: label / eyebrow on canvas'],
   // ── Dark bookends (title/closing/divider) — translucent on-dark ink ───
-  // on-dark-* are color-mix(white N%, transparent); composited over bg-dark.
-  ['on-dark-primary',   'bg-dark', 'bookend: heading on dark panel'],
-  ['on-dark-secondary', 'bg-dark', 'bookend: subtitle on dark panel'],
+  // on-dark-* are color-mix(white N%, transparent); composited over surface-inverse.
+  ['on-dark-primary',   'surface-inverse', 'bookend: heading on dark panel'],
+  ['on-dark-secondary', 'surface-inverse', 'bookend: subtitle on dark panel'],
   ['text-heading', 'bg-alt',     'slide: heading on card'],
   ['text-heading', 'accent-soft','slide: heading on accent-soft'],
   ['on-accent',    'accent',     'slide: on-accent on accent'],

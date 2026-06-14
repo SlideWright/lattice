@@ -330,7 +330,7 @@ section.dark {
 
 /* ── INLINE-CODE INK on non-flipping dark islands ──
  * title/divider/closing bookends and the split-panel dark rail paint a dark
- * surface via --bg-dark WITHOUT flipping color-scheme, so --accent (the chip's
+ * surface via --surface-inverse WITHOUT flipping color-scheme, so --accent (the chip's
  * default ink) stays on its light-mode value and the chip reads as a bright box
  * on a dark field. Rebind the ink to the on-dark tier; the chip's wash + border
  * track currentColor, so this one value re-tunes the whole chip. Mirrors the
@@ -754,14 +754,14 @@ section.obligation-matrix.pills td:not(:first-child) strong {
 section.obligation-matrix.pills tbody tr:nth-child(odd) td:not(:first-child) { background:none; }
 
 /* .lanes — categorical row stripes. */
-section.obligation-matrix.lanes tbody tr:nth-child(8n+1) > td:first-child { --lane-hue:var(--c1-dark); }
-section.obligation-matrix.lanes tbody tr:nth-child(8n+2) > td:first-child { --lane-hue:var(--c2-dark); }
-section.obligation-matrix.lanes tbody tr:nth-child(8n+3) > td:first-child { --lane-hue:var(--c3-dark); }
-section.obligation-matrix.lanes tbody tr:nth-child(8n+4) > td:first-child { --lane-hue:var(--c4-dark); }
-section.obligation-matrix.lanes tbody tr:nth-child(8n+5) > td:first-child { --lane-hue:var(--c5-dark); }
-section.obligation-matrix.lanes tbody tr:nth-child(8n+6) > td:first-child { --lane-hue:var(--c6-dark); }
-section.obligation-matrix.lanes tbody tr:nth-child(8n+7) > td:first-child { --lane-hue:var(--c7-dark); }
-section.obligation-matrix.lanes tbody tr:nth-child(8n)   > td:first-child { --lane-hue:var(--c8-dark); }
+section.obligation-matrix.lanes tbody tr:nth-child(8n+1) > td:first-child { --lane-hue:var(--cat-1-mark); }
+section.obligation-matrix.lanes tbody tr:nth-child(8n+2) > td:first-child { --lane-hue:var(--cat-2-mark); }
+section.obligation-matrix.lanes tbody tr:nth-child(8n+3) > td:first-child { --lane-hue:var(--cat-3-mark); }
+section.obligation-matrix.lanes tbody tr:nth-child(8n+4) > td:first-child { --lane-hue:var(--cat-4-mark); }
+section.obligation-matrix.lanes tbody tr:nth-child(8n+5) > td:first-child { --lane-hue:var(--cat-5-mark); }
+section.obligation-matrix.lanes tbody tr:nth-child(8n+6) > td:first-child { --lane-hue:var(--cat-6-mark); }
+section.obligation-matrix.lanes tbody tr:nth-child(8n+7) > td:first-child { --lane-hue:var(--cat-7-mark); }
+section.obligation-matrix.lanes tbody tr:nth-child(8n)   > td:first-child { --lane-hue:var(--cat-8-mark); }
 section.obligation-matrix.lanes tbody tr > td:first-child {
   border-left:4px solid var(--lane-hue, var(--accent));
   color:var(--lane-hue, var(--text-heading));

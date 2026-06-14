@@ -148,7 +148,7 @@ section.roadmap thead th:not(:first-child) > code {
   font-size:0.859375cqi;              /* deliberate: small corner tag on a dense header cell */
   font-weight:var(--pill-weight);
   letter-spacing:var(--pill-tracking);
-  color:var(--c-ink-dark);              /* white on the saturated light-canvas fill, near-black on the pale dark-canvas fill */
+  color:var(--cat-on-mark);              /* white on the saturated light-canvas fill, near-black on the pale dark-canvas fill */
   background:var(--phase-accent, var(--accent));
   padding:var(--pill-pad-y) var(--pill-pad-x);
   border:2px solid var(--bg);
@@ -161,21 +161,21 @@ section.roadmap thead th:not(:first-child) > code {
    per row; phase columns read it for their leading column-accent
    stripe per column. */
 section.roadmap thead th:nth-child(8n+2),
-section.roadmap tbody tr:nth-child(8n+1) > td:first-child { --phase-accent:var(--c1-dark); }
+section.roadmap tbody tr:nth-child(8n+1) > td:first-child { --phase-accent:var(--cat-1-mark); }
 section.roadmap thead th:nth-child(8n+3),
-section.roadmap tbody tr:nth-child(8n+2) > td:first-child { --phase-accent:var(--c2-dark); }
+section.roadmap tbody tr:nth-child(8n+2) > td:first-child { --phase-accent:var(--cat-2-mark); }
 section.roadmap thead th:nth-child(8n+4),
-section.roadmap tbody tr:nth-child(8n+3) > td:first-child { --phase-accent:var(--c3-dark); }
+section.roadmap tbody tr:nth-child(8n+3) > td:first-child { --phase-accent:var(--cat-3-mark); }
 section.roadmap thead th:nth-child(8n+5),
-section.roadmap tbody tr:nth-child(8n+4) > td:first-child { --phase-accent:var(--c4-dark); }
+section.roadmap tbody tr:nth-child(8n+4) > td:first-child { --phase-accent:var(--cat-4-mark); }
 section.roadmap thead th:nth-child(8n+6),
-section.roadmap tbody tr:nth-child(8n+5) > td:first-child { --phase-accent:var(--c5-dark); }
+section.roadmap tbody tr:nth-child(8n+5) > td:first-child { --phase-accent:var(--cat-5-mark); }
 section.roadmap thead th:nth-child(8n+7),
-section.roadmap tbody tr:nth-child(8n+6) > td:first-child { --phase-accent:var(--c6-dark); }
+section.roadmap tbody tr:nth-child(8n+6) > td:first-child { --phase-accent:var(--cat-6-mark); }
 section.roadmap thead th:nth-child(8n),
-section.roadmap tbody tr:nth-child(8n+7) > td:first-child { --phase-accent:var(--c7-dark); }
+section.roadmap tbody tr:nth-child(8n+7) > td:first-child { --phase-accent:var(--cat-7-mark); }
 section.roadmap thead th:nth-child(8n+1),
-section.roadmap tbody tr:nth-child(8n)   > td:first-child { --phase-accent:var(--c8-dark); }
+section.roadmap tbody tr:nth-child(8n)   > td:first-child { --phase-accent:var(--cat-8-mark); }
 
 section.roadmap td {
   padding:var(--sp-xs) var(--sp-md);
@@ -454,7 +454,7 @@ section.roadmap.horizons .horizon-meta {
   font-size:0.859375cqi;              /* deliberate: small corner tag, matches the trailing-code pill */
   font-weight:var(--pill-weight);
   letter-spacing:var(--pill-tracking);
-  color:var(--c-ink-dark);              /* white on the saturated light-canvas fill, near-black on the pale dark-canvas fill */
+  color:var(--cat-on-mark);              /* white on the saturated light-canvas fill, near-black on the pale dark-canvas fill */
   background:var(--phase-accent, var(--accent));
   padding:var(--pill-pad-y) var(--pill-pad-x);
   border:2px solid var(--bg-alt);

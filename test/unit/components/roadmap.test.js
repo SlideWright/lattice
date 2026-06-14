@@ -137,8 +137,8 @@ describe('roadmap', () => {
 
   test('horizons: cycles the categorical accent across cards', () => {
     const out = applyHorizons(HORIZONS_TABLE);
-    assert.match(out, /--phase-accent:var\(--c1-dark\)/);
-    assert.match(out, /--phase-accent:var\(--c2-dark\)/);
+    assert.match(out, /--phase-accent:var\(--cat-1-mark\)/);
+    assert.match(out, /--phase-accent:var\(--cat-2-mark\)/);
   });
 
   test('horizons: carries state classes from source cells onto card rows', () => {

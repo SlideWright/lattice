@@ -42,23 +42,23 @@ const THEMES = [
 // --accent-soft-body) are excluded — they derive from a seam the theme owns. ──
 const CONTRACT = [
   // surfaces + ink
-  'bg', 'bg-alt', 'bg-dark', 'border', 'text-display', 'text-heading',
+  'bg', 'bg-alt', 'surface-inverse', 'border', 'text-display', 'text-heading',
   'text-body', 'text-secondary', 'text-label', 'text-muted', 'accent',
   'accent-soft', 'on-accent', 'code-text',
   // semantic signals
   'pass', 'fail', 'warn', 'pass-bg', 'fail-bg', 'warn-bg',
   // dark variant
-  'dark-bg', 'dark-bg-alt', 'dark-border', 'dark-text-heading',
-  'dark-text-body', 'dark-text-display', 'dark-text-secondary',
-  'dark-text-label', 'dark-text-muted',
+  'scheme-dark-bg', 'scheme-dark-bg-alt', 'scheme-dark-border', 'scheme-dark-text-heading',
+  'scheme-dark-text-body', 'scheme-dark-text-display', 'scheme-dark-text-secondary',
+  'scheme-dark-text-label', 'scheme-dark-text-muted',
   // highlight.js
   'hljs-comment', 'hljs-keyword', 'hljs-built_in', 'hljs-number',
   'hljs-literal', 'hljs-string', 'hljs-title', 'hljs-type', 'hljs-variable',
   'hljs-params', 'hljs-tag', 'hljs-punctuation',
   // categorical band scale (12 paired slots) + role tokens
-  ...Array.from({ length: 12 }, (_, i) => [`c${i + 1}-light`, `c${i + 1}-dark`]).flat(),
-  'c-stroke', 'c-line', 'c-ink-light', 'c-ink-dark', 'c-warm-light',
-  'c-warm-dark', 'c-cool-light', 'c-cool-dark', 'c-alarm', 'c-mark', 'c-note',
+  ...Array.from({ length: 12 }, (_, i) => [`cat-${i + 1}-fill`, `cat-${i + 1}-mark`]).flat(),
+  'diagram-stroke', 'diagram-line', 'cat-on-fill', 'cat-on-mark', 'diagram-active',
+  'diagram-active-mark', 'diagram-done', 'diagram-done-mark', 'diagram-critical', 'diagram-today', 'diagram-note',
   'c-container', 'c-subcontainer',
   // chart family
   'chart-cat1', 'chart-cat2', 'chart-cat3', 'chart-cat4', 'chart-cat5',

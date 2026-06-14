@@ -27,11 +27,11 @@ of a palette, which is what makes the rules in the deep reference
  :root {                    │
    --bg: light-dark(…); ────┤   var(--accent) ──────────→  headings, links,
    --accent: …; ────────────┤                              eyebrow rules
-   --c1-light: …;  ─────────┤   var(--c1-light) ────────→  pale categorical
-   --c1-dark:  …;  ─────────┤                              fills (mermaid SVG,
-   --c-stroke: …;  ─────────┤                              decision-list nth-
-   --c-ink-light: …; ───────┤                              child rotations,
-   …                        │   var(--c-stroke) ────────→  every other layout
+   --cat-1-fill: …;  ─────────┤   var(--cat-1-fill) ────────→  pale categorical
+   --cat-1-mark:  …;  ─────────┤                              fills (mermaid SVG,
+   --diagram-stroke: …;  ─────────┤                              decision-list nth-
+   --cat-on-fill: …; ───────┤                              child rotations,
+   …                        │   var(--diagram-stroke) ────────→  every other layout
  }                          ╰                              the engine ships)
 ```
 
@@ -51,52 +51,52 @@ The engine reads the file once. Authors edit one file.
 
 ```
 ┌──────────────────────────────────────────────────────────────────┐
-│ /* @theme <name> */         ← Marp registration, must match file │
-│ @import 'lattice';          ← pulls in layouts + universal       │
-│                               semantic palette + structural vars │
-│                                                                  │
-│ :where(:root){ color-scheme:light; }   ← zero-spec default       │
-│                                                                  │
-│ :root {                                                          │
-│   /* brand axis */          ─ 4-6 hex anchors, your single       │
-│     --brand-<hue>-deep        source of truth for the hue        │
-│                                                                  │
-│   /* surfaces & ink */      ─ light-dark(<light>, <dark>) pairs  │
-│     --bg, --bg-alt, --bg-dark, --border                          │
-│     --text-heading, --text-body, --text-label, --text-muted      │
-│     --accent, --accent-soft, --on-accent                         │
-│                                                                  │
-│   /* semantic signals */    ─ --pass / --fail / --warn (+ -bg)   │
-│   /* seq ramp */            ─ --seq-500 anchor; derives 9 stops  │
-│   /* on-dark tints */       ─ derived from white via color-mix   │
-│   /* spectrum gradient */   ─ optional decorative ribbon         │
-│ }                                                                │
-│                                                                  │
-│ :root {                                                          │
-│   /* dark-variant tokens */ ─ --dark-bg, --dark-text-* …         │
-│ }                            consumed by light-dark() above      │
-│                                                                  │
-│ :root { /* hljs tokens */ } ─ code syntax colours                │
-│ section .hljs-keyword { … } ─ + the rules that apply them        │
-│                                                                  │
-│ :root {                                                          │
-│   /* categorical palette */                                      │
-│     --c1-light..--c12-light ─ 12 pale fills, L≈87                │
-│     --c1-dark ..--c12-dark  ─ 12 deep strokes/inks, L≈32         │
-│     --c-ink-light           ─ dark text on cN-light, fixed hex   │
-│     --c-ink-dark            ─ light text on cN-dark, default #FFF│
-│                                                                  │
-│   /* structural */                                               │
-│     --c-stroke              ─ universal saturated stroke         │
-│     --c-line                ─ edges, arrows (light-dark)         │
-│     --c-accent-warm         ─ secondary warm accent (radar etc.) │
-│                                                                  │
-│   /* optional universal-semantic overrides */                    │
-│     --c-warm-{light,dark}   ─ inherit lattice.css defaults if    │
-│     --c-cool-{light,dark}     omitted (most themes do); override │
-│     --c-alarm, --c-alarm-dark only if you have curated values    │
-│     --c-mark, --c-note        (cuoio overrides for leather feel) │
-│ }                                                                │
+│ /* @theme <name> */         ← Marp registration, must match file                   │
+│ @import 'lattice';          ← pulls in layouts + universal                         │
+│                               semantic palette + structural vars                   │
+│                                                                                    │
+│ :where(:root){ color-scheme:light; }   ← zero-spec default                         │
+│                                                                                    │
+│ :root {                                                                            │
+│   /* brand axis */          ─ 4-6 hex anchors, your single                         │
+│     --brand-<hue>-deep        source of truth for the hue                          │
+│                                                                                    │
+│   /* surfaces & ink */      ─ light-dark(<light>, <dark>) pairs                    │
+│     --bg, --bg-alt, --surface-inverse, --border                                    │
+│     --text-heading, --text-body, --text-label, --text-muted                        │
+│     --accent, --accent-soft, --on-accent                                           │
+│                                                                                    │
+│   /* semantic signals */    ─ --pass / --fail / --warn (+ -bg)                     │
+│   /* seq ramp */            ─ --seq-500 anchor; derives 9 stops                    │
+│   /* on-dark tints */       ─ derived from white via color-mix                     │
+│   /* spectrum gradient */   ─ optional decorative ribbon                           │
+│ }                                                                                  │
+│                                                                                    │
+│ :root {                                                                            │
+│   /* dark-variant tokens */ ─ --scheme-dark-bg, --scheme-dark-text-* …             │
+│ }                            consumed by light-dark() above                        │
+│                                                                                    │
+│ :root { /* hljs tokens */ } ─ code syntax colours                                  │
+│ section .hljs-keyword { … } ─ + the rules that apply them                          │
+│                                                                                    │
+│ :root {                                                                            │
+│   /* categorical palette */                                                        │
+│     --cat-1-fill..--cat-12-fill ─ 12 pale fills, L≈87                              │
+│     --cat-1-mark ..--cat-12-mark  ─ 12 deep strokes/inks, L≈32                     │
+│     --cat-on-fill           ─ dark text on cat-N-fill, fixed hex                   │
+│     --cat-on-mark            ─ light text on cat-N-mark, default #FFF              │
+│                                                                                    │
+│   /* structural */                                                                 │
+│     --diagram-stroke              ─ universal saturated stroke                     │
+│     --diagram-line                ─ edges, arrows (light-dark)                     │
+│     --diagram-accent-warm         ─ secondary warm accent (radar etc.)             │
+│                                                                                    │
+│   /* optional universal-semantic overrides */                                      │
+│     --diagram-active{,-mark}   ─ inherit lattice.css defaults if                   │
+│     --diagram-done{,-mark}     omitted (most themes do); override                  │
+│     --diagram-critical, --diagram-critical-mark only if you have curated values    │
+│     --diagram-today, --diagram-note        (cuoio overrides for leather feel)      │
+│ }                                                                                  │
 └──────────────────────────────────────────────────────────────────┘
 ```
 
@@ -119,31 +119,31 @@ that themes can override:
 
 ```
    L ≈ 87  ┃ █ █ █ █ █ █ █ █ █ █ █ █  pale fills (12 slots)
-   pale    ┃                          --c1-light..--c12-light — every
+   pale    ┃                          --cat-1-fill..--cat-12-fill — every
    tier    ┃                          coloured fill Mermaid can paint
            ┃                          (flowchart, sequence, pie, journey,
            ┃                          mindmap, kanban, c4, treemap,
            ┃                          gitgraph label pills, decision
            ┃                          accents, roadmap horizons)
-           ┃                          → paired --c-ink-light is a fixed
+           ┃                          → paired --cat-on-fill is a fixed
            ┃                            dark hex, ≥10:1 contrast
    ─────── ╋ ──────────────────────────────────────────────────────
    L ≈ 32  ┃ ▓ ▓ ▓ ▓ ▓ ▓ ▓ ▓ ▓ ▓ ▓ ▓  deep strokes/inks (12 slots)
-   deep    ┃                          --c1-dark..--c12-dark — saturated
+   deep    ┃                          --cat-1-mark..--cat-12-mark — saturated
    tier    ┃                          marks: decision-list deep accents,
            ┃                          piechart wedges, gitgraph branch
            ┃                          dots, sankey nodes, kpi trajectory
            ┃                          borders, xy-chart plot palette
-           ┃                          → paired --c-ink-dark is white
+           ┃                          → paired --cat-on-mark is white
            ┃                            (themes can override to a warm
            ┃                            off-white)
    ─────── ╋ ──────────────────────────────────────────────────────
            ┃ universal semantic palette (lattice.css defaults)
-   status  ┃ --c-warm-light + --c-warm-dark   in-progress / warn pair
-   signals ┃ --c-cool-light + --c-cool-dark   done / muted / grid pair
-           ┃ --c-alarm + --c-alarm-dark       saturated red, alarm pair
-           ┃ --c-mark                         saturated yellow highlight
-           ┃ --c-note                         pale yellow aside surface
+   status  ┃ --diagram-active + --diagram-active-mark   in-progress / warn pair
+   signals ┃ --diagram-done + --diagram-done-mark   done / muted / grid pair
+           ┃ --diagram-critical + --diagram-critical-mark       saturated red, alarm pair
+           ┃ --diagram-today                         saturated yellow highlight
+           ┃ --diagram-note                         pale yellow aside surface
 ```
 
 Slot 1 of the categorical cycle doubles as the canonical primary fill
@@ -153,7 +153,7 @@ strategy the palette adopted (Brand triad is the default, generated
 from `examples/palette-audit.md`).
 
 `test/unit/contrast.test.js` asserts AA (4.5:1) on every
-`--cN-light` / `--c-ink-light` pair and every `--cN-dark` / `--c-ink-dark`
+`--cat-N-fill` / `--cat-on-fill` pair and every `--cat-N-mark` / `--cat-on-mark`
 pair, in both light and dark canvas modes.
 
 ---
@@ -175,11 +175,11 @@ The browser resolves the function at every use site against the active
 shims — the same mechanism works in marp-cli, the lattice emulator, and
 the VS Code Marp preview.
 
-The `--c-ink-light` and `--c-ink-dark` tokens are an exception: pinned
+The `--cat-on-fill` and `--cat-on-mark` tokens are an exception: pinned
 to fixed hex (not `light-dark(…)`), because the categorical fills
 themselves stay in their lightness tier in both canvas modes — the text
-on top must too. Same for `--c-mark`, `--c-alarm`, `--c-alarm-dark`,
-`--c-note` (the universal semantic palette is canvas-mode-independent
+on top must too. Same for `--diagram-today`, `--diagram-critical`, `--diagram-critical-mark`,
+`--diagram-note` (the universal semantic palette is canvas-mode-independent
 by design).
 
 ---
@@ -208,23 +208,23 @@ wrapper so the dark variant works on day one.
 What to change, in order of impact:
 
 1. **Brand axis** (`--brand-<hue>-deep`, `--brand-<hue>-mid`,
-   `--brand-<hue>`). These feed `--bg-dark`, `--accent`, `--text-label`.
+   `--brand-<hue>`). These feed `--surface-inverse`, `--accent`, `--text-label`.
    Pick four shades along a single hue; everything else hangs off them.
 2. **Accent** (`--accent`, `--on-accent`). The most-seen colour after
    ink. Must clear 4.5:1 against `--bg` and against `--accent-soft`.
-3. **Categorical cycle** (`--c1-light` / `--c1-dark` through
-   `--c12-light` / `--c12-dark`, plus `--c-ink-light` and `--c-ink-dark`).
+3. **Categorical cycle** (`--cat-1-fill` / `--cat-1-mark` through
+   `--cat-12-fill` / `--cat-12-mark`, plus `--cat-on-fill` and `--cat-on-mark`).
    Sourced from `examples/palette-audit.md` — the rank-1 Brand-triad
    proposal for your theme is a known-good starting point. Each pair
    must clear AA against its paired ink — the contrast test will catch
    slips.
-4. **Structural tokens** (`--c-stroke`, `--c-line`, `--c-accent-warm`).
+4. **Structural tokens** (`--diagram-stroke`, `--diagram-line`, `--diagram-accent-warm`).
    The saturated brand stroke (reads on every pale fill including
    white), the edge/arrow line, and a secondary warm accent for
    radar's second curve and similar.
-5. **Universal semantic palette** (`--c-warm-light` / `--c-warm-dark`
-   / `--c-cool-light` / `--c-cool-dark` / `--c-alarm` / `--c-alarm-dark`
-   / `--c-mark` / `--c-note`). The deck's status-signaling colours.
+5. **Universal semantic palette** (`--diagram-active` / `--diagram-active-mark`
+   / `--diagram-done` / `--diagram-done-mark` / `--diagram-critical` / `--diagram-critical-mark`
+   / `--diagram-today` / `--diagram-note`). The deck's status-signaling colours.
    Inherit lattice.css defaults (cuoio is the one theme that overrides
    for its leather aesthetic).
 6. **Dark variant tokens** (`--dark-*`). Used by `section.dark` and by
@@ -254,14 +254,14 @@ references the `--c-*` tokens by name — your new values flow through.
                                               so lattice.css's universal
                                               semantic palette is visible.
 
-   Flowchart / sequence boxes "float" with    --c-stroke too pale — must be
+   Flowchart / sequence boxes "float" with    --diagram-stroke too pale — must be
    no visible border                          saturated to read on every pale
                                               fill including white
 
-   Pale fill readable in light mode, white    --c-ink-light declared with
+   Pale fill readable in light mode, white    --cat-on-fill declared with
    text on pale fill in dark mode             light-dark(--text-heading,…) —
                                               the fill stays pale in dark
-                                              mode, so pin --c-ink-light
+                                              mode, so pin --cat-on-fill
                                               to a fixed dark hex
 
    One slide is dark but the title shows      section.title pulls --dark-*

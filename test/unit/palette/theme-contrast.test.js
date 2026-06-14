@@ -24,11 +24,11 @@ describe('theme-contrast', () => {
   test('auditVars flags a failing pair and passes a clean one', () => {
     const clean = {
       bg: '#ffffff', 'bg-alt': '#ffffff', 'text-heading': '#000000',
-      'c-ink-dark': '#ffffff', 'c-alarm': '#a10000',
+      'cat-on-mark': '#ffffff', 'diagram-critical': '#a10000',
     };
     // add 12 light + 12 deep pairs that all pass
-    for (let i = 1; i <= 12; i++) { clean[`c${i}-light`] = '#f4f4f4'; clean[`c${i}-dark`] = '#222222'; }
-    clean['c-ink-light'] = '#111111';
+    for (let i = 1; i <= 12; i++) { clean[`cat-${i}-fill`] = '#f4f4f4'; clean[`cat-${i}-mark`] = '#222222'; }
+    clean['cat-on-fill'] = '#111111';
     const ok = auditVars(clean, { mode: 'light', level: 'gate' });
     assert.ok(ok.ok, JSON.stringify(ok.failures.concat(ok.missing)));
 
@@ -49,9 +49,9 @@ describe('theme-contrast', () => {
     const vars = {
       bg: 'light-dark(#ffffff, #000000)', 'bg-alt': 'light-dark(#ffffff, #000000)',
       'text-heading': 'light-dark(#000000, #050505)',
-      'c-ink-light': '#000000', 'c-ink-dark': '#ffffff', 'c-alarm': '#a10000',
+      'cat-on-fill': '#000000', 'cat-on-mark': '#ffffff', 'diagram-critical': '#a10000',
     };
-    for (let i = 1; i <= 12; i++) { vars[`c${i}-light`] = '#f4f4f4'; vars[`c${i}-dark`] = '#222222'; }
+    for (let i = 1; i <= 12; i++) { vars[`cat-${i}-fill`] = '#f4f4f4'; vars[`cat-${i}-mark`] = '#222222'; }
     const both = auditBoth(vars, { level: 'gate' });
     assert.ok(both.light.ok);
     assert.ok(!both.dark.ok); // heading on dark canvas fails

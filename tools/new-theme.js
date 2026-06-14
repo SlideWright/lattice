@@ -54,7 +54,7 @@ function checklistBlock(name) {
  * impact (see themes/README.md for the rationale on each):
  *
  *   1. Brand axis        — 3-5 hex anchors along one hue. Single source
- *                          of truth; drives accent, bg-dark, spectrum.
+ *                          of truth; drives accent, surface-inverse, spectrum.
  *   2. Surfaces / ink    — light-dark() pairs for bg, bg-alt, border,
  *                          text-* tokens. Edit the LIGHT side here; the
  *                          DARK side resolves to --dark-* below.

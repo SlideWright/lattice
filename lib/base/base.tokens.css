@@ -153,15 +153,15 @@
   --marp-slide-footer-color:  var(--text-muted);
 
   /* ── Categorical palette consumers ────────────────────────────────────
-   * Each theme exports 12 paired slots: --c1-light/--c1-dark .. --c12-light/
-   * --c12-dark, plus paired ink: --c-ink-light (non-flipping dark text on
-   * pale fills) and --c-ink-dark (white-ish text on deep fills, default
-   * #FFFFFF, themes can override). All --cN-light/--c-ink-light pairs are
-   * AA-safe; all --cN-dark/--c-ink-dark pairs are AA-safe. Hex values are
+   * Each theme exports 12 paired slots: --cat-1-fill/--cat-1-mark .. --cat-12-fill/
+   * --cat-12-mark, plus paired ink: --cat-on-fill (non-flipping dark text on
+   * pale fills) and --cat-on-mark (white-ish text on deep fills, default
+   * #FFFFFF, themes can override). All --cN-light/--cat-on-fill pairs are
+   * AA-safe; all --cN-dark/--cat-on-mark pairs are AA-safe. Hex values are
    * sourced from the Brand-triad rank-1 proposal in themes/palette-audit.md. */
 
   /* ════════════════════════════════════════════════════════════════════
-   * UNIVERSAL TOKEN SYSTEM — categorical vocabulary (phase 1)
+   * UNIVERSAL TOKEN SYSTEM — categorical vocabulary (group 5, CANONICAL)
    * ────────────────────────────────────────────────────────────────────
    * Full design + crosswalk + strategy:
    * engineering/decisions/2026-06-11-universal-token-system.md
@@ -177,13 +177,11 @@
    *                     light-dark(), color-mix() in oklab/srgb), so a bridge
    *                     token may be any expression those three paths share.
    *
-   * This block introduces the self-describing CATEGORICAL vocabulary that
-   * replaces the overloaded `--cN-light` / `--cN-dark` pair. There, the
-   * `-light` / `-dark` suffix named a TIER (pale fill vs deep mark) yet
-   * collided head-on with (a) the color-scheme meaning of `--dark-*` and
-   * (b) the light-dark() function — so `--c1-light` was NOT "light-mode c1",
-   * it was a pale fill that itself held a light-dark() pair. The new names
-   * say exactly what they are and where they go:
+   * The self-describing CATEGORICAL vocabulary REPLACES the overloaded
+   * `--cN-light` / `--cN-dark` pair, whose `-light` / `-dark` suffix named a
+   * TIER (pale fill vs deep mark) yet collided head-on with (a) the
+   * color-scheme meaning of `--dark-*` and (b) the light-dark() function. The
+   * canonical names say exactly what they are and where they go:
    *
    *   --cat-N-fill   pale categorical SURFACE          (was --cN-light)
    *   --cat-N-mark   saturated stroke / mark / cScale  (was --cN-dark)
@@ -194,44 +192,38 @@
    * (`ink` was already taken by the on-fill text token; the `--accent` /
    * `--on-accent` pair sets the `on-` precedent). Color-scheme NEVER appears
    * in a token name — it lives only inside the light-dark() VALUE the theme
-   * assigns to the aliased --cN-light / --cN-dark.
+   * assigns to each --cat-N-fill / --cat-N-mark.
    *
-   * PHASE 1 (this commit) aliases new → old, so values are byte-identical:
-   * zero visual change, all 14 hand-audited / AA-tested palettes untouched,
-   * and every existing consumer (mermaid.css's ~250 SVG override rules, the
-   * chart transforms) keeps resolving through the old names while the three
-   * render paths' Mermaid bridges read the NEW names. A later phase flips
-   * canonical-ity (themes declare --cat-* directly, old names become the thin
-   * alias) and migrates the remaining groups (diagram-structural, status,
-   * surfaces, the chart `--cat1-*` triad → `--chart-cat-*`). See the note. */
-  --cat-1-fill:  var(--c1-light);   --cat-1-mark:  var(--c1-dark);
-  --cat-2-fill:  var(--c2-light);   --cat-2-mark:  var(--c2-dark);
-  --cat-3-fill:  var(--c3-light);   --cat-3-mark:  var(--c3-dark);
-  --cat-4-fill:  var(--c4-light);   --cat-4-mark:  var(--c4-dark);
-  --cat-5-fill:  var(--c5-light);   --cat-5-mark:  var(--c5-dark);
-  --cat-6-fill:  var(--c6-light);   --cat-6-mark:  var(--c6-dark);
-  --cat-7-fill:  var(--c7-light);   --cat-7-mark:  var(--c7-dark);
-  --cat-8-fill:  var(--c8-light);   --cat-8-mark:  var(--c8-dark);
-  --cat-9-fill:  var(--c9-light);   --cat-9-mark:  var(--c9-dark);
-  --cat-10-fill: var(--c10-light);  --cat-10-mark: var(--c10-dark);
-  --cat-11-fill: var(--c11-light);  --cat-11-mark: var(--c11-dark);
-  --cat-12-fill: var(--c12-light);  --cat-12-mark: var(--c12-dark);
-  --cat-on-fill: var(--c-ink-light);
-  --cat-on-mark: var(--c-ink-dark);
+   * CANONICAL (universal-token flip, group 5 — ADR §11.3): the 14 themes
+   * declare these names directly, mermaid.css's ~250 SVG rules + the chart
+   * transforms read them, and the legacy `--cN-light` / `--cN-dark` /
+   * `--c-ink-*` names are RETIRED. The old→new map lives in lib/tokens/
+   * crosswalk.js + the ADR §7 table for legacy-deck migration. */
+     
+     
+     
+     
+     
+     
+     
+     
+     
+    
+    
+    
+  
+  
 
-  /* ── Phase 2 · diagram-structural ─────────────────────────────────────
-   * The structural foregrounds every diagram band/edge needs, renamed off
-   * the overloaded `--c-` junk-drawer prefix onto the `--diagram-` group so
-   * the prefix says the surface (a diagram) and the role says the job:
+  /* ── diagram-structural ───────────────────────────────────────────────
+   * The structural foregrounds every diagram band/edge needs, off the
+   * overloaded `--c-` junk-drawer prefix onto the `--diagram-` group so the
+   * prefix says the surface (a diagram) and the role says the job:
    *   --diagram-stroke       border around any band fill (foreground)
    *   --diagram-line         edges / arrows / connectors (foreground)
    *   --diagram-accent-warm  secondary warm accent (radar's 2nd curve)
-   * Aliased new→old (byte-identical). The bridges read the new names; the
-   * ~90 mermaid.css SVG rules + the radar override keep the old names via
-   * the alias and migrate later. See the decision note. */
-  --diagram-stroke:      var(--c-stroke);
-  --diagram-line:        var(--c-line);
-  --diagram-accent-warm: var(--c-accent-warm);
+   * Canonical (universal-token flip, group 2 — ADR §11.3): themes declare
+   * these directly and mermaid.css's SVG rules read them; the old
+   * `--diagram-stroke/line/accent-warm` names are retired. */
 
   /* ── Phase 3 · status (the one semantic-signal axis) ──────────────────
    * ONE status vocabulary shared by the engine state-discs (checklist /
@@ -247,45 +239,35 @@
   --status-info: var(--chart-state-info, light-dark(#0A6CE0, #2E8BFF));
   --status-mute: var(--chart-state-mute, light-dark(#6B7480, #9AA7B6));
 
-  /* ── Phase 3 · diagram lifecycle / annotation ─────────────────────────
-   * The Mermaid gantt lifecycle + note/error annotation colours, renamed off
-   * the `--c-` junk drawer onto SEMANTIC `--diagram-*` names — restoring the
+  /* ── diagram lifecycle / annotation (group 3, CANONICAL) ──────────────
+   * The Mermaid gantt lifecycle + note/error annotation colours, off the
+   * `--c-` junk drawer onto SEMANTIC `--diagram-*` names — restoring the
    * pre-2026-05-14 `--diagram-state-*` intent. A fill + a paired `-mark`
    * stroke per state. The value reuse is documented, not hidden: the grid
    * borrows the `done` tone; the note border borrows the `today` highlight
    * (the bridges point gridColor → --diagram-done and noteBorder →
-   * --diagram-today). Aliased new→old (byte-identical); mermaid.css keeps the
-   * old names via the alias and migrates later. */
-  --diagram-active:        var(--c-warm-light);
-  --diagram-active-mark:   var(--c-warm-dark);
-  --diagram-done:          var(--c-cool-light);
-  --diagram-done-mark:     var(--c-cool-dark);
-  --diagram-critical:      var(--c-alarm);
-  --diagram-critical-mark: var(--c-alarm-dark);
-  --diagram-today:         var(--c-mark);
-  --diagram-note:          var(--c-note);
+   * --diagram-today). Canonical (universal-token flip, group 3 — ADR §11.3):
+   * themes declare these directly; the old --c-warm/cool/alarm/mark/note
+   * names are retired. */
 
-  /* ── Phase 4 · surfaces / scheme (the --bg-dark vs --dark-bg fix) ──────
-   * P9: `--bg-dark` (a dark PANEL surface painted on a light deck — title /
-   * divider / closing / split rails) and `--dark-bg` (the canvas in dark
-   * MODE) are near-identical names with opposite roles. Disambiguated:
+  /* ── surfaces / scheme (group 4, CANONICAL) ───────────────────────────
+   * P9: `--surface-inverse` (a dark PANEL surface painted on a light deck —
+   * title / divider / closing / split rails) and `--scheme-dark-bg` (the
+   * canvas in dark MODE) were near-identical names with opposite roles.
+   * Disambiguated:
    *   --surface-inverse   the dark panel on a light deck (was --bg-dark)
    *   --scheme-dark-*     the dark-color-scheme inputs (was --dark-*)
    * `--bg` / `--bg-alt` / `--border` are clear and stay as-is (no gratuitous
-   * churn). --surface-inverse is aliased + its 8 component consumers repoint to
-   * it now (byte-identical). The --scheme-dark-* set is vocabulary: its only
-   * consumers are the per-theme light-dark() pairs, which repoint at the flip;
-   * introducing the names here lets the flip be a pure find-replace later. */
-  --surface-inverse: var(--bg-dark);
-  --scheme-dark-bg:            var(--dark-bg);
-  --scheme-dark-bg-alt:        var(--dark-bg-alt);
-  --scheme-dark-border:        var(--dark-border);
-  --scheme-dark-text-heading:  var(--dark-text-heading);
-  --scheme-dark-text-body:     var(--dark-text-body);
-  --scheme-dark-text-display:  var(--dark-text-display);
-  --scheme-dark-text-secondary: var(--dark-text-secondary);
-  --scheme-dark-text-label:    var(--dark-text-label);
-  --scheme-dark-text-muted:    var(--dark-text-muted);
+   * churn). Canonical (universal-token flip, group 4 — ADR §11.3): the 8
+   * --surface-inverse consumers and the per-theme light-dark() pairs read the
+   * new names directly; --bg-dark / --dark-* are retired. */
+
+  
+  
+  
+  
+  
+  
 
   /* ── Universal semantic palette ───────────────────────────────────────
    * Status-signaling colours shared by every theme. Gantt task lifecycle,
@@ -309,14 +291,14 @@
    * --diagram-error-* tiers. Three values were duplicated across the
    * old tiers (done==grid, today==note-stroke, critical==error-bg);
    * the deduplication is what shrank 12 tokens to 8. */
-  --c-warm-light: #F5E6D8;
-  --c-warm-dark:  #92400E;
-  --c-cool-light: #E0E4EA;
-  --c-cool-dark:  #475569;
-  --c-alarm:      #C20000;
-  --c-alarm-dark: #8B0000;
-  --c-mark:       #F6C700;
-  --c-note:       #FFFBE6;
+  --diagram-active: #F5E6D8;
+  --diagram-active-mark:  #92400E;
+  --diagram-done: #E0E4EA;
+  --diagram-done-mark:  #475569;
+  --diagram-critical:      #C20000;
+  --diagram-critical-mark: #8B0000;
+  --diagram-today:       #F6C700;
+  --diagram-note:       #FFFBE6;
 
   /* ── Status-signaling state tokens — universal defaults ───────────────
    * `--pass`, `--warn`, `--fail` drive the state-token disc colours
@@ -381,7 +363,7 @@
    * already used; the soft body is the canvas body (a pale tint takes canvas
    * ink). Naming both gives the soft container a first-class vocabulary and a
    * single override seam, with no new curated colour. */
-  --on-accent:           light-dark(#FFFFFF, var(--bg-dark, #000));
+  --on-accent:           light-dark(#FFFFFF, var(--surface-inverse, #000));
   --on-accent-secondary: color-mix(in srgb, var(--on-accent) 70%, transparent);
   --on-accent-ghost:     color-mix(in srgb, var(--on-accent) 32%, transparent);
   --on-accent-watermark: color-mix(in srgb, var(--on-accent) 12%, transparent);
@@ -449,11 +431,11 @@
    * from --accent: gives a theme its DUOTONE partner (Atlas: navy + gold;
    * Burgundy: wine + champagne; Onyx: black + saturated red).
    *
-   * Default: --tag-bg = --c2-dark (the second slot of the categorical
+   * Default: --tag-bg = --cat-2-mark (the second slot of the categorical
    * cycle, which under Brand-triad lands on a duotone complement of the
    * theme's brand hue). Achromatic themes can collapse --tag-bg to
    * --accent if they don't want a duotone identity. */
-  --tag-bg:   var(--c2-dark);
+  --tag-bg:   var(--cat-2-mark);
   --tag-text: var(--on-accent, #fff);
 
   /* ── Universal pill — STRUCTURE ONLY ──────────────────────────────────

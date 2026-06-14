@@ -133,7 +133,7 @@ const SINGLETON_TAGS = new Set([
 const REQUIRED_THEME_TOKENS = Object.freeze([
   '--bg', '--bg-alt', '--border',
   '--text-heading', '--text-body', '--text-secondary', '--text-muted',
-  '--accent', '--accent-soft', '--bg-dark',
+  '--accent', '--accent-soft', '--surface-inverse',
 ]);
 
 // ── Selector parsing (paren-aware) ────────────────────────────────────────

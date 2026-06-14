@@ -33,11 +33,11 @@
 section.state-chart {
   --state-node-fill: var(--bg-alt);
   --state-node-ink: var(--text-heading);
-  --state-node-stroke: var(--c-stroke);
-  --state-edge: var(--c-line);
-  --state-edge-back: color-mix(in oklab, var(--c-line) 55%, transparent);
+  --state-node-stroke: var(--diagram-stroke);
+  --state-edge: var(--diagram-line);
+  --state-edge-back: color-mix(in oklab, var(--diagram-line) 55%, transparent);
   --state-index-ink: var(--text-muted);
-  --state-marker: var(--c-line);
+  --state-marker: var(--diagram-line);
   --state-label-bg: var(--bg);
 }
 
@@ -113,7 +113,7 @@ section.state-chart .state-node {
    * at that status's semantic hue — so colour reads as meaning while every node
    * shares the one material. */
   --fill-hue: var(--text-muted);
-  --fill-ink: var(--c-stroke);
+  --fill-ink: var(--diagram-stroke);
   background: linear-gradient(180deg,
     light-dark(color-mix(in oklab, var(--fill-hue) var(--chart-fill-top-l),    var(--bg)),
                color-mix(in oklab, var(--fill-hue) var(--chart-fill-top-d),    black)) 0%,
@@ -263,7 +263,7 @@ section.state-chart.horizontal .state-node-row {
   margin: 0.3125cqi 0;
   /* Same canonical tile as the SVG-variant nodes above. */
   --fill-hue: var(--text-muted);
-  --fill-ink: var(--c-stroke);
+  --fill-ink: var(--diagram-stroke);
   background: linear-gradient(180deg,
     light-dark(color-mix(in oklab, var(--fill-hue) var(--chart-fill-top-l),    var(--bg)),
                color-mix(in oklab, var(--fill-hue) var(--chart-fill-top-d),    black)) 0%,
@@ -363,5 +363,5 @@ section.state-chart.horizontal .state-chip-arrow {
 
 /* ── Dark canvas ─────────────────────────────────────────────────────────
  * section.dark sets color-scheme:dark, flipping every light-dark() token
- * this component consumes (--bg-alt, --text-heading, --c-line, --bg,
+ * this component consumes (--bg-alt, --text-heading, --diagram-line, --bg,
  * --text-muted, and chart-family's --pass/--warn/--fail) automatically. */

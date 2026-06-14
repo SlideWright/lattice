@@ -205,15 +205,15 @@
   --marp-slide-footer-color:  var(--text-muted);
 
   /* ── Categorical palette consumers ────────────────────────────────────
-   * Each theme exports 12 paired slots: --c1-light/--c1-dark .. --c12-light/
-   * --c12-dark, plus paired ink: --c-ink-light (non-flipping dark text on
-   * pale fills) and --c-ink-dark (white-ish text on deep fills, default
-   * #FFFFFF, themes can override). All --cN-light/--c-ink-light pairs are
-   * AA-safe; all --cN-dark/--c-ink-dark pairs are AA-safe. Hex values are
+   * Each theme exports 12 paired slots: --cat-1-fill/--cat-1-mark .. --cat-12-fill/
+   * --cat-12-mark, plus paired ink: --cat-on-fill (non-flipping dark text on
+   * pale fills) and --cat-on-mark (white-ish text on deep fills, default
+   * #FFFFFF, themes can override). All --cN-light/--cat-on-fill pairs are
+   * AA-safe; all --cN-dark/--cat-on-mark pairs are AA-safe. Hex values are
    * sourced from the Brand-triad rank-1 proposal in themes/palette-audit.md. */
 
   /* ════════════════════════════════════════════════════════════════════
-   * UNIVERSAL TOKEN SYSTEM — categorical vocabulary (phase 1)
+   * UNIVERSAL TOKEN SYSTEM — categorical vocabulary (group 5, CANONICAL)
    * ────────────────────────────────────────────────────────────────────
    * Full design + crosswalk + strategy:
    * engineering/decisions/2026-06-11-universal-token-system.md
@@ -229,13 +229,11 @@
    *                     light-dark(), color-mix() in oklab/srgb), so a bridge
    *                     token may be any expression those three paths share.
    *
-   * This block introduces the self-describing CATEGORICAL vocabulary that
-   * replaces the overloaded `--cN-light` / `--cN-dark` pair. There, the
-   * `-light` / `-dark` suffix named a TIER (pale fill vs deep mark) yet
-   * collided head-on with (a) the color-scheme meaning of `--dark-*` and
-   * (b) the light-dark() function — so `--c1-light` was NOT "light-mode c1",
-   * it was a pale fill that itself held a light-dark() pair. The new names
-   * say exactly what they are and where they go:
+   * The self-describing CATEGORICAL vocabulary REPLACES the overloaded
+   * `--cN-light` / `--cN-dark` pair, whose `-light` / `-dark` suffix named a
+   * TIER (pale fill vs deep mark) yet collided head-on with (a) the
+   * color-scheme meaning of `--dark-*` and (b) the light-dark() function. The
+   * canonical names say exactly what they are and where they go:
    *
    *   --cat-N-fill   pale categorical SURFACE          (was --cN-light)
    *   --cat-N-mark   saturated stroke / mark / cScale  (was --cN-dark)
@@ -246,44 +244,38 @@
    * (`ink` was already taken by the on-fill text token; the `--accent` /
    * `--on-accent` pair sets the `on-` precedent). Color-scheme NEVER appears
    * in a token name — it lives only inside the light-dark() VALUE the theme
-   * assigns to the aliased --cN-light / --cN-dark.
+   * assigns to each --cat-N-fill / --cat-N-mark.
    *
-   * PHASE 1 (this commit) aliases new → old, so values are byte-identical:
-   * zero visual change, all 14 hand-audited / AA-tested palettes untouched,
-   * and every existing consumer (mermaid.css's ~250 SVG override rules, the
-   * chart transforms) keeps resolving through the old names while the three
-   * render paths' Mermaid bridges read the NEW names. A later phase flips
-   * canonical-ity (themes declare --cat-* directly, old names become the thin
-   * alias) and migrates the remaining groups (diagram-structural, status,
-   * surfaces, the chart `--cat1-*` triad → `--chart-cat-*`). See the note. */
-  --cat-1-fill:  var(--c1-light);   --cat-1-mark:  var(--c1-dark);
-  --cat-2-fill:  var(--c2-light);   --cat-2-mark:  var(--c2-dark);
-  --cat-3-fill:  var(--c3-light);   --cat-3-mark:  var(--c3-dark);
-  --cat-4-fill:  var(--c4-light);   --cat-4-mark:  var(--c4-dark);
-  --cat-5-fill:  var(--c5-light);   --cat-5-mark:  var(--c5-dark);
-  --cat-6-fill:  var(--c6-light);   --cat-6-mark:  var(--c6-dark);
-  --cat-7-fill:  var(--c7-light);   --cat-7-mark:  var(--c7-dark);
-  --cat-8-fill:  var(--c8-light);   --cat-8-mark:  var(--c8-dark);
-  --cat-9-fill:  var(--c9-light);   --cat-9-mark:  var(--c9-dark);
-  --cat-10-fill: var(--c10-light);  --cat-10-mark: var(--c10-dark);
-  --cat-11-fill: var(--c11-light);  --cat-11-mark: var(--c11-dark);
-  --cat-12-fill: var(--c12-light);  --cat-12-mark: var(--c12-dark);
-  --cat-on-fill: var(--c-ink-light);
-  --cat-on-mark: var(--c-ink-dark);
+   * CANONICAL (universal-token flip, group 5 — ADR §11.3): the 14 themes
+   * declare these names directly, mermaid.css's ~250 SVG rules + the chart
+   * transforms read them, and the legacy `--cN-light` / `--cN-dark` /
+   * `--c-ink-*` names are RETIRED. The old→new map lives in lib/tokens/
+   * crosswalk.js + the ADR §7 table for legacy-deck migration. */
+     
+     
+     
+     
+     
+     
+     
+     
+     
+    
+    
+    
+  
+  
 
-  /* ── Phase 2 · diagram-structural ─────────────────────────────────────
-   * The structural foregrounds every diagram band/edge needs, renamed off
-   * the overloaded `--c-` junk-drawer prefix onto the `--diagram-` group so
-   * the prefix says the surface (a diagram) and the role says the job:
+  /* ── diagram-structural ───────────────────────────────────────────────
+   * The structural foregrounds every diagram band/edge needs, off the
+   * overloaded `--c-` junk-drawer prefix onto the `--diagram-` group so the
+   * prefix says the surface (a diagram) and the role says the job:
    *   --diagram-stroke       border around any band fill (foreground)
    *   --diagram-line         edges / arrows / connectors (foreground)
    *   --diagram-accent-warm  secondary warm accent (radar's 2nd curve)
-   * Aliased new→old (byte-identical). The bridges read the new names; the
-   * ~90 mermaid.css SVG rules + the radar override keep the old names via
-   * the alias and migrate later. See the decision note. */
-  --diagram-stroke:      var(--c-stroke);
-  --diagram-line:        var(--c-line);
-  --diagram-accent-warm: var(--c-accent-warm);
+   * Canonical (universal-token flip, group 2 — ADR §11.3): themes declare
+   * these directly and mermaid.css's SVG rules read them; the old
+   * `--diagram-stroke/line/accent-warm` names are retired. */
 
   /* ── Phase 3 · status (the one semantic-signal axis) ──────────────────
    * ONE status vocabulary shared by the engine state-discs (checklist /
@@ -299,45 +291,35 @@
   --status-info: var(--chart-state-info, light-dark(#0A6CE0, #2E8BFF));
   --status-mute: var(--chart-state-mute, light-dark(#6B7480, #9AA7B6));
 
-  /* ── Phase 3 · diagram lifecycle / annotation ─────────────────────────
-   * The Mermaid gantt lifecycle + note/error annotation colours, renamed off
-   * the `--c-` junk drawer onto SEMANTIC `--diagram-*` names — restoring the
+  /* ── diagram lifecycle / annotation (group 3, CANONICAL) ──────────────
+   * The Mermaid gantt lifecycle + note/error annotation colours, off the
+   * `--c-` junk drawer onto SEMANTIC `--diagram-*` names — restoring the
    * pre-2026-05-14 `--diagram-state-*` intent. A fill + a paired `-mark`
    * stroke per state. The value reuse is documented, not hidden: the grid
    * borrows the `done` tone; the note border borrows the `today` highlight
    * (the bridges point gridColor → --diagram-done and noteBorder →
-   * --diagram-today). Aliased new→old (byte-identical); mermaid.css keeps the
-   * old names via the alias and migrates later. */
-  --diagram-active:        var(--c-warm-light);
-  --diagram-active-mark:   var(--c-warm-dark);
-  --diagram-done:          var(--c-cool-light);
-  --diagram-done-mark:     var(--c-cool-dark);
-  --diagram-critical:      var(--c-alarm);
-  --diagram-critical-mark: var(--c-alarm-dark);
-  --diagram-today:         var(--c-mark);
-  --diagram-note:          var(--c-note);
+   * --diagram-today). Canonical (universal-token flip, group 3 — ADR §11.3):
+   * themes declare these directly; the old --c-warm/cool/alarm/mark/note
+   * names are retired. */
 
-  /* ── Phase 4 · surfaces / scheme (the --bg-dark vs --dark-bg fix) ──────
-   * P9: `--bg-dark` (a dark PANEL surface painted on a light deck — title /
-   * divider / closing / split rails) and `--dark-bg` (the canvas in dark
-   * MODE) are near-identical names with opposite roles. Disambiguated:
+  /* ── surfaces / scheme (group 4, CANONICAL) ───────────────────────────
+   * P9: `--surface-inverse` (a dark PANEL surface painted on a light deck —
+   * title / divider / closing / split rails) and `--scheme-dark-bg` (the
+   * canvas in dark MODE) were near-identical names with opposite roles.
+   * Disambiguated:
    *   --surface-inverse   the dark panel on a light deck (was --bg-dark)
    *   --scheme-dark-*     the dark-color-scheme inputs (was --dark-*)
    * `--bg` / `--bg-alt` / `--border` are clear and stay as-is (no gratuitous
-   * churn). --surface-inverse is aliased + its 8 component consumers repoint to
-   * it now (byte-identical). The --scheme-dark-* set is vocabulary: its only
-   * consumers are the per-theme light-dark() pairs, which repoint at the flip;
-   * introducing the names here lets the flip be a pure find-replace later. */
-  --surface-inverse: var(--bg-dark);
-  --scheme-dark-bg:            var(--dark-bg);
-  --scheme-dark-bg-alt:        var(--dark-bg-alt);
-  --scheme-dark-border:        var(--dark-border);
-  --scheme-dark-text-heading:  var(--dark-text-heading);
-  --scheme-dark-text-body:     var(--dark-text-body);
-  --scheme-dark-text-display:  var(--dark-text-display);
-  --scheme-dark-text-secondary: var(--dark-text-secondary);
-  --scheme-dark-text-label:    var(--dark-text-label);
-  --scheme-dark-text-muted:    var(--dark-text-muted);
+   * churn). Canonical (universal-token flip, group 4 — ADR §11.3): the 8
+   * --surface-inverse consumers and the per-theme light-dark() pairs read the
+   * new names directly; --bg-dark / --dark-* are retired. */
+
+  
+  
+  
+  
+  
+  
 
   /* ── Universal semantic palette ───────────────────────────────────────
    * Status-signaling colours shared by every theme. Gantt task lifecycle,
@@ -361,14 +343,14 @@
    * --diagram-error-* tiers. Three values were duplicated across the
    * old tiers (done==grid, today==note-stroke, critical==error-bg);
    * the deduplication is what shrank 12 tokens to 8. */
-  --c-warm-light: #F5E6D8;
-  --c-warm-dark:  #92400E;
-  --c-cool-light: #E0E4EA;
-  --c-cool-dark:  #475569;
-  --c-alarm:      #C20000;
-  --c-alarm-dark: #8B0000;
-  --c-mark:       #F6C700;
-  --c-note:       #FFFBE6;
+  --diagram-active: #F5E6D8;
+  --diagram-active-mark:  #92400E;
+  --diagram-done: #E0E4EA;
+  --diagram-done-mark:  #475569;
+  --diagram-critical:      #C20000;
+  --diagram-critical-mark: #8B0000;
+  --diagram-today:       #F6C700;
+  --diagram-note:       #FFFBE6;
 
   /* ── Status-signaling state tokens — universal defaults ───────────────
    * `--pass`, `--warn`, `--fail` drive the state-token disc colours
@@ -433,7 +415,7 @@
    * already used; the soft body is the canvas body (a pale tint takes canvas
    * ink). Naming both gives the soft container a first-class vocabulary and a
    * single override seam, with no new curated colour. */
-  --on-accent:           light-dark(#FFFFFF, var(--bg-dark, #000));
+  --on-accent:           light-dark(#FFFFFF, var(--surface-inverse, #000));
   --on-accent-secondary: color-mix(in srgb, var(--on-accent) 70%, transparent);
   --on-accent-ghost:     color-mix(in srgb, var(--on-accent) 32%, transparent);
   --on-accent-watermark: color-mix(in srgb, var(--on-accent) 12%, transparent);
@@ -501,11 +483,11 @@
    * from --accent: gives a theme its DUOTONE partner (Atlas: navy + gold;
    * Burgundy: wine + champagne; Onyx: black + saturated red).
    *
-   * Default: --tag-bg = --c2-dark (the second slot of the categorical
+   * Default: --tag-bg = --cat-2-mark (the second slot of the categorical
    * cycle, which under Brand-triad lands on a duotone complement of the
    * theme's brand hue). Achromatic themes can collapse --tag-bg to
    * --accent if they don't want a duotone identity. */
-  --tag-bg:   var(--c2-dark);
+  --tag-bg:   var(--cat-2-mark);
   --tag-text: var(--on-accent, #fff);
 
   /* ── Universal pill — STRUCTURE ONLY ──────────────────────────────────
@@ -939,14 +921,14 @@ section.actors > ol > li > code {
  * Sets --pill-border on the <li>; both the universal pill rule
  * (border on the <code>) and the actors row marker (border-left on
  * the <li>) consume the same variable. */
-section.actors > :is(ul, ol) > li:nth-child(8n+1) { --pill-border:var(--c1-dark); }
-section.actors > :is(ul, ol) > li:nth-child(8n+2) { --pill-border:var(--c2-dark); }
-section.actors > :is(ul, ol) > li:nth-child(8n+3) { --pill-border:var(--c3-dark); }
-section.actors > :is(ul, ol) > li:nth-child(8n+4) { --pill-border:var(--c4-dark); }
-section.actors > :is(ul, ol) > li:nth-child(8n+5) { --pill-border:var(--c5-dark); }
-section.actors > :is(ul, ol) > li:nth-child(8n+6) { --pill-border:var(--c6-dark); }
-section.actors > :is(ul, ol) > li:nth-child(8n+7) { --pill-border:var(--c7-dark); }
-section.actors > :is(ul, ol) > li:nth-child(8n)   { --pill-border:var(--c8-dark); }
+section.actors > :is(ul, ol) > li:nth-child(8n+1) { --pill-border:var(--cat-1-mark); }
+section.actors > :is(ul, ol) > li:nth-child(8n+2) { --pill-border:var(--cat-2-mark); }
+section.actors > :is(ul, ol) > li:nth-child(8n+3) { --pill-border:var(--cat-3-mark); }
+section.actors > :is(ul, ol) > li:nth-child(8n+4) { --pill-border:var(--cat-4-mark); }
+section.actors > :is(ul, ol) > li:nth-child(8n+5) { --pill-border:var(--cat-5-mark); }
+section.actors > :is(ul, ol) > li:nth-child(8n+6) { --pill-border:var(--cat-6-mark); }
+section.actors > :is(ul, ol) > li:nth-child(8n+7) { --pill-border:var(--cat-7-mark); }
+section.actors > :is(ul, ol) > li:nth-child(8n)   { --pill-border:var(--cat-8-mark); }
 /* The accent left-border picks up the same hue as the chip. */
 section.actors > :is(ul, ol) > li {
   border-left-color:var(--pill-border, var(--accent));
@@ -1294,10 +1276,10 @@ section.authority-chain > :is(ol, ul) > li:not(:last-child)::after {
   background:var(--accent);
 }
 /* Tier hue rotation — Statute / Regulation / Guidance / Case. */
-section.authority-chain > :is(ol, ul) > li:nth-child(8n+1) { --tier-hue:var(--c4-dark); }
-section.authority-chain > :is(ol, ul) > li:nth-child(8n+2) { --tier-hue:var(--c1-dark); }
-section.authority-chain > :is(ol, ul) > li:nth-child(8n+3) { --tier-hue:var(--c6-dark); }
-section.authority-chain > :is(ol, ul) > li:nth-child(8n+4) { --tier-hue:var(--c3-dark); }
+section.authority-chain > :is(ol, ul) > li:nth-child(8n+1) { --tier-hue:var(--cat-4-mark); }
+section.authority-chain > :is(ol, ul) > li:nth-child(8n+2) { --tier-hue:var(--cat-1-mark); }
+section.authority-chain > :is(ol, ul) > li:nth-child(8n+3) { --tier-hue:var(--cat-6-mark); }
+section.authority-chain > :is(ol, ul) > li:nth-child(8n+4) { --tier-hue:var(--cat-3-mark); }
 section.authority-chain > :is(ol, ul) > li > strong:first-child {
   grid-column:1;
   font-family:var(--font-mono);
@@ -2464,8 +2446,8 @@ section.compare-prose .compare-prose-inner .card:has(> strong:first-child) > str
 section.decision > :is(ul, ol) > li:has(> strong:first-child) > strong:first-child {
   background: var(--decision-accent-deep, var(--accent));
   /* --decision-accent-deep resolves to --cN-dark (categorical fill); text on
-   * a --cN-dark fill uses --c-ink-dark (white on light, near-black on dark). */
-  color: var(--c-ink-dark);
+   * a --cN-dark fill uses --cat-on-mark (white on light, near-black on dark). */
+  color: var(--cat-on-mark);
 }
 
 /* ── corner tag, banner variant (.banner-tag modifier) ────────────────────
@@ -2529,7 +2511,7 @@ section.banner-tag.compare-prose .compare-prose-inner .card:has(> strong:first-c
 section.banner-tag.decision > :is(ul, ol) > li:has(> strong:first-child) > strong:first-child {
   background: var(--decision-accent-deep, var(--accent));
   /* --decision-accent-deep resolves to --cN-dark; see flush-corner rule above. */
-  color: var(--c-ink-dark);
+  color: var(--cat-on-mark);
 }
 
 
@@ -2644,14 +2626,14 @@ section.decision > ol > li {
  * mirrors the KPI palette so the two layouts read as siblings (KPI = top
  * accent, decision = bottom accent). Each card's corner-tag fill follows
  * the same variable so the card reads as one colour. */
-section.decision > :is(ul, ol) > li:nth-child(8n+1) { --decision-accent:var(--c1-dark);   --decision-accent-deep:var(--c1-dark); }
-section.decision > :is(ul, ol) > li:nth-child(8n+2) { --decision-accent:var(--c2-dark);  --decision-accent-deep:var(--c2-dark); }
-section.decision > :is(ul, ol) > li:nth-child(8n+3) { --decision-accent:var(--c3-dark); --decision-accent-deep:var(--c3-dark); }
-section.decision > :is(ul, ol) > li:nth-child(8n+4) { --decision-accent:var(--c4-dark); --decision-accent-deep:var(--c4-dark); }
-section.decision > :is(ul, ol) > li:nth-child(8n+5) { --decision-accent:var(--c5-dark);   --decision-accent-deep:var(--c5-dark); }
-section.decision > :is(ul, ol) > li:nth-child(8n+6) { --decision-accent:var(--c6-dark);   --decision-accent-deep:var(--c6-dark); }
-section.decision > :is(ul, ol) > li:nth-child(8n+7) { --decision-accent:var(--c7-dark);  --decision-accent-deep:var(--c7-dark); }
-section.decision > :is(ul, ol) > li:nth-child(8n)   { --decision-accent:var(--c8-dark);  --decision-accent-deep:var(--c8-dark); }
+section.decision > :is(ul, ol) > li:nth-child(8n+1) { --decision-accent:var(--cat-1-mark);   --decision-accent-deep:var(--cat-1-mark); }
+section.decision > :is(ul, ol) > li:nth-child(8n+2) { --decision-accent:var(--cat-2-mark);  --decision-accent-deep:var(--cat-2-mark); }
+section.decision > :is(ul, ol) > li:nth-child(8n+3) { --decision-accent:var(--cat-3-mark); --decision-accent-deep:var(--cat-3-mark); }
+section.decision > :is(ul, ol) > li:nth-child(8n+4) { --decision-accent:var(--cat-4-mark); --decision-accent-deep:var(--cat-4-mark); }
+section.decision > :is(ul, ol) > li:nth-child(8n+5) { --decision-accent:var(--cat-5-mark);   --decision-accent-deep:var(--cat-5-mark); }
+section.decision > :is(ul, ol) > li:nth-child(8n+6) { --decision-accent:var(--cat-6-mark);   --decision-accent-deep:var(--cat-6-mark); }
+section.decision > :is(ul, ol) > li:nth-child(8n+7) { --decision-accent:var(--cat-7-mark);  --decision-accent-deep:var(--cat-7-mark); }
+section.decision > :is(ul, ol) > li:nth-child(8n)   { --decision-accent:var(--cat-8-mark);  --decision-accent-deep:var(--cat-8-mark); }
 section.decision > ul > li > strong,
 section.decision > ol > li > strong {
   display:block;
@@ -3512,23 +3494,23 @@ section.image.museum p:last-of-type {
 
 :root {
   /* Mood ramp — 5 (delight, green) → 3 (neutral, orange) → 1 (pain, rose). */
-  --journey-mood-5: var(--c2-dark);
-  --journey-mood-4: color-mix(in oklab, var(--c2-dark) 55%, var(--c4-dark));
-  --journey-mood-3: var(--c4-dark);
-  --journey-mood-2: color-mix(in oklab, var(--c4-dark) 55%, var(--c6-dark));
-  --journey-mood-1: var(--c6-dark);
+  --journey-mood-5: var(--cat-2-mark);
+  --journey-mood-4: color-mix(in oklab, var(--cat-2-mark) 55%, var(--cat-4-mark));
+  --journey-mood-3: var(--cat-4-mark);
+  --journey-mood-2: color-mix(in oklab, var(--cat-4-mark) 55%, var(--cat-6-mark));
+  --journey-mood-1: var(--cat-6-mark);
 
   /* Deep variants — used for filled chips that carry white text. */
-  --journey-mood-5-deep: var(--c2-dark);
-  --journey-mood-4-deep: color-mix(in oklab, var(--c2-dark) 55%, var(--c4-dark));
-  --journey-mood-3-deep: var(--c4-dark);
-  --journey-mood-2-deep: color-mix(in oklab, var(--c4-dark) 55%, var(--c6-dark));
-  --journey-mood-1-deep: var(--c6-dark);
+  --journey-mood-5-deep: var(--cat-2-mark);
+  --journey-mood-4-deep: color-mix(in oklab, var(--cat-2-mark) 55%, var(--cat-4-mark));
+  --journey-mood-3-deep: var(--cat-4-mark);
+  --journey-mood-2-deep: color-mix(in oklab, var(--cat-4-mark) 55%, var(--cat-6-mark));
+  --journey-mood-1-deep: var(--cat-6-mark);
 
   /* Surfaces */
   --journey-section-bg:   color-mix(in oklab, var(--bg-alt) 70%, var(--surface-inverse));
-  /* Section bar bg mixes toward --bg-dark on BOTH canvases → always a dark
-   * surface. --on-accent flips to --bg-dark in dark mode (same value) giving
+  /* Section bar bg mixes toward --surface-inverse on BOTH canvases → always a dark
+   * surface. --on-accent flips to --surface-inverse in dark mode (same value) giving
    * near-zero contrast (~2.5:1). Use --on-dark-primary (always-light token)
    * so section labels remain legible in both light and dark themes. */
   --journey-section-fg:   var(--on-dark-primary);
@@ -3714,14 +3696,14 @@ section.journey .journey-section {
 }
 /* Categorical accent rotation across sections — same 8-step palette
  * used by roadmap and chart-family for cross-deck consistency. */
-section.journey .journey-section[data-section="0"] { --section-accent: var(--c1-dark); }
-section.journey .journey-section[data-section="1"] { --section-accent: var(--c2-dark); }
-section.journey .journey-section[data-section="2"] { --section-accent: var(--c3-dark); }
-section.journey .journey-section[data-section="3"] { --section-accent: var(--c4-dark); }
-section.journey .journey-section[data-section="4"] { --section-accent: var(--c5-dark); }
-section.journey .journey-section[data-section="5"] { --section-accent: var(--c6-dark); }
-section.journey .journey-section[data-section="6"] { --section-accent: var(--c7-dark); }
-section.journey .journey-section[data-section="7"] { --section-accent: var(--c8-dark); }
+section.journey .journey-section[data-section="0"] { --section-accent: var(--cat-1-mark); }
+section.journey .journey-section[data-section="1"] { --section-accent: var(--cat-2-mark); }
+section.journey .journey-section[data-section="2"] { --section-accent: var(--cat-3-mark); }
+section.journey .journey-section[data-section="3"] { --section-accent: var(--cat-4-mark); }
+section.journey .journey-section[data-section="4"] { --section-accent: var(--cat-5-mark); }
+section.journey .journey-section[data-section="5"] { --section-accent: var(--cat-6-mark); }
+section.journey .journey-section[data-section="6"] { --section-accent: var(--cat-7-mark); }
+section.journey .journey-section[data-section="7"] { --section-accent: var(--cat-8-mark); }
 section.journey .journey-section::before {
   content: "";
   position: absolute;
@@ -4352,28 +4334,28 @@ section.kanban.dark .kanban-size {
  * keep their own scoped mappings; this rule only catches `<g class="cluster section-N">`
  * which is unique to kanban among shipped diagram types.
  */
-section .cluster.section-1 rect, section .cluster.section-1 path, section .cluster.section-1 circle { fill: var(--c1-light) !important; stroke: var(--c-stroke) !important; }
-section .cluster.section-1 text, section .cluster.section-1 tspan, section .cluster.section-1 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .cluster.section-2 rect, section .cluster.section-2 path, section .cluster.section-2 circle { fill: var(--c2-light) !important; stroke: var(--c-stroke) !important; }
-section .cluster.section-2 text, section .cluster.section-2 tspan, section .cluster.section-2 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .cluster.section-3 rect, section .cluster.section-3 path, section .cluster.section-3 circle { fill: var(--c3-light) !important; stroke: var(--c-stroke) !important; }
-section .cluster.section-3 text, section .cluster.section-3 tspan, section .cluster.section-3 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .cluster.section-4 rect, section .cluster.section-4 path, section .cluster.section-4 circle { fill: var(--c4-light) !important; stroke: var(--c-stroke) !important; }
-section .cluster.section-4 text, section .cluster.section-4 tspan, section .cluster.section-4 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .cluster.section-5 rect, section .cluster.section-5 path, section .cluster.section-5 circle { fill: var(--c5-light) !important; stroke: var(--c-stroke) !important; }
-section .cluster.section-5 text, section .cluster.section-5 tspan, section .cluster.section-5 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .cluster.section-6 rect, section .cluster.section-6 path, section .cluster.section-6 circle { fill: var(--c6-light) !important; stroke: var(--c-stroke) !important; }
-section .cluster.section-6 text, section .cluster.section-6 tspan, section .cluster.section-6 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .cluster.section-7 rect, section .cluster.section-7 path, section .cluster.section-7 circle { fill: var(--c7-light) !important; stroke: var(--c-stroke) !important; }
-section .cluster.section-7 text, section .cluster.section-7 tspan, section .cluster.section-7 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .cluster.section-8 rect, section .cluster.section-8 path, section .cluster.section-8 circle { fill: var(--c8-light) !important; stroke: var(--c-stroke) !important; }
-section .cluster.section-8 text, section .cluster.section-8 tspan, section .cluster.section-8 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .cluster.section-9 rect, section .cluster.section-9 path, section .cluster.section-9 circle { fill: var(--c9-light) !important; stroke: var(--c-stroke) !important; }
-section .cluster.section-9 text, section .cluster.section-9 tspan, section .cluster.section-9 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .cluster.section-10 rect, section .cluster.section-10 path, section .cluster.section-10 circle { fill: var(--c10-light) !important; stroke: var(--c-stroke) !important; }
-section .cluster.section-10 text, section .cluster.section-10 tspan, section .cluster.section-10 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .cluster.section-11 rect, section .cluster.section-11 path, section .cluster.section-11 circle { fill: var(--c11-light) !important; stroke: var(--c-stroke) !important; }
-section .cluster.section-11 text, section .cluster.section-11 tspan, section .cluster.section-11 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
+section .cluster.section-1 rect, section .cluster.section-1 path, section .cluster.section-1 circle { fill: var(--cat-1-fill) !important; stroke: var(--diagram-stroke) !important; }
+section .cluster.section-1 text, section .cluster.section-1 tspan, section .cluster.section-1 span { fill: var(--cat-on-fill) !important; color: var(--cat-on-fill) !important; }
+section .cluster.section-2 rect, section .cluster.section-2 path, section .cluster.section-2 circle { fill: var(--cat-2-fill) !important; stroke: var(--diagram-stroke) !important; }
+section .cluster.section-2 text, section .cluster.section-2 tspan, section .cluster.section-2 span { fill: var(--cat-on-fill) !important; color: var(--cat-on-fill) !important; }
+section .cluster.section-3 rect, section .cluster.section-3 path, section .cluster.section-3 circle { fill: var(--cat-3-fill) !important; stroke: var(--diagram-stroke) !important; }
+section .cluster.section-3 text, section .cluster.section-3 tspan, section .cluster.section-3 span { fill: var(--cat-on-fill) !important; color: var(--cat-on-fill) !important; }
+section .cluster.section-4 rect, section .cluster.section-4 path, section .cluster.section-4 circle { fill: var(--cat-4-fill) !important; stroke: var(--diagram-stroke) !important; }
+section .cluster.section-4 text, section .cluster.section-4 tspan, section .cluster.section-4 span { fill: var(--cat-on-fill) !important; color: var(--cat-on-fill) !important; }
+section .cluster.section-5 rect, section .cluster.section-5 path, section .cluster.section-5 circle { fill: var(--cat-5-fill) !important; stroke: var(--diagram-stroke) !important; }
+section .cluster.section-5 text, section .cluster.section-5 tspan, section .cluster.section-5 span { fill: var(--cat-on-fill) !important; color: var(--cat-on-fill) !important; }
+section .cluster.section-6 rect, section .cluster.section-6 path, section .cluster.section-6 circle { fill: var(--cat-6-fill) !important; stroke: var(--diagram-stroke) !important; }
+section .cluster.section-6 text, section .cluster.section-6 tspan, section .cluster.section-6 span { fill: var(--cat-on-fill) !important; color: var(--cat-on-fill) !important; }
+section .cluster.section-7 rect, section .cluster.section-7 path, section .cluster.section-7 circle { fill: var(--cat-7-fill) !important; stroke: var(--diagram-stroke) !important; }
+section .cluster.section-7 text, section .cluster.section-7 tspan, section .cluster.section-7 span { fill: var(--cat-on-fill) !important; color: var(--cat-on-fill) !important; }
+section .cluster.section-8 rect, section .cluster.section-8 path, section .cluster.section-8 circle { fill: var(--cat-8-fill) !important; stroke: var(--diagram-stroke) !important; }
+section .cluster.section-8 text, section .cluster.section-8 tspan, section .cluster.section-8 span { fill: var(--cat-on-fill) !important; color: var(--cat-on-fill) !important; }
+section .cluster.section-9 rect, section .cluster.section-9 path, section .cluster.section-9 circle { fill: var(--cat-9-fill) !important; stroke: var(--diagram-stroke) !important; }
+section .cluster.section-9 text, section .cluster.section-9 tspan, section .cluster.section-9 span { fill: var(--cat-on-fill) !important; color: var(--cat-on-fill) !important; }
+section .cluster.section-10 rect, section .cluster.section-10 path, section .cluster.section-10 circle { fill: var(--cat-10-fill) !important; stroke: var(--diagram-stroke) !important; }
+section .cluster.section-10 text, section .cluster.section-10 tspan, section .cluster.section-10 span { fill: var(--cat-on-fill) !important; color: var(--cat-on-fill) !important; }
+section .cluster.section-11 rect, section .cluster.section-11 path, section .cluster.section-11 circle { fill: var(--cat-11-fill) !important; stroke: var(--diagram-stroke) !important; }
+section .cluster.section-11 text, section .cluster.section-11 tspan, section .cluster.section-11 span { fill: var(--cat-on-fill) !important; color: var(--cat-on-fill) !important; }
 
 /* ── KANBAN TICKETS ──
  * Card-on-band: the ticket sits inside a band-tinted lane, so the inner
@@ -4395,7 +4377,7 @@ section .cluster .items .node .label-container,
 section .items .node rect.basic.label-container,
 section .items .node .label-container {
   fill: var(--c-subcontainer) !important;
-  stroke: var(--c-stroke) !important;
+  stroke: var(--diagram-stroke) !important;
 }
 
 /* === lib/components/evidence/kpi/kpi.styles.css === */
@@ -4732,10 +4714,10 @@ section.kpi.trajectory > ol > li {
   position: relative;
   border-top: 4px solid var(--accent);
 }
-section.kpi.trajectory > ol > li:nth-child(1) { border-top-color: var(--c1-dark); }
-section.kpi.trajectory > ol > li:nth-child(2) { border-top-color: var(--c2-dark); }
-section.kpi.trajectory > ol > li:nth-child(3) { border-top-color: var(--c3-dark); }
-section.kpi.trajectory > ol > li:nth-child(4) { border-top-color: var(--c4-dark); }
+section.kpi.trajectory > ol > li:nth-child(1) { border-top-color: var(--cat-1-mark); }
+section.kpi.trajectory > ol > li:nth-child(2) { border-top-color: var(--cat-2-mark); }
+section.kpi.trajectory > ol > li:nth-child(3) { border-top-color: var(--cat-3-mark); }
+section.kpi.trajectory > ol > li:nth-child(4) { border-top-color: var(--cat-4-mark); }
 section.kpi.trajectory > ol > li > strong {
   font-size: var(--fs-h1);
   line-height: 1;
@@ -5912,16 +5894,16 @@ section.math.theorem blockquote strong:first-child {
  * tokens that every Lattice theme defines; falls back to --accent if a
  * future palette ever drops them. */
 section.math.theorem blockquote:nth-of-type(3n+1) {
-  border-left-color: var(--c4-dark, var(--accent));
+  border-left-color: var(--cat-4-mark, var(--accent));
 }
 section.math.theorem blockquote:nth-of-type(3n+1) strong:first-child {
-  color: var(--c4-dark, var(--accent));
+  color: var(--cat-4-mark, var(--accent));
 }
 section.math.theorem blockquote:nth-of-type(3n+2) {
-  border-left-color: var(--c7-dark, var(--accent));
+  border-left-color: var(--cat-7-mark, var(--accent));
 }
 section.math.theorem blockquote:nth-of-type(3n+2) strong:first-child {
-  color: var(--c7-dark, var(--accent));
+  color: var(--cat-7-mark, var(--accent));
 }
 section.math.theorem blockquote:nth-of-type(3n) {
   border-left-color: var(--text-muted);
@@ -6250,11 +6232,11 @@ section .functionplot .function-plot .line-0 {
   stroke-width: 2.5 !important;
 }
 section .functionplot .function-plot .line-1 {
-  stroke: var(--c4-dark, var(--text-heading)) !important;
+  stroke: var(--cat-4-mark, var(--text-heading)) !important;
   stroke-width: 2.5 !important;
 }
 section .functionplot .function-plot .line-2 {
-  stroke: var(--c7-dark, var(--text-muted)) !important;
+  stroke: var(--cat-7-mark, var(--text-muted)) !important;
   stroke-width: 2.5 !important;
 }
 section .functionplot .function-plot :is(.line-3, .line-4, .line-5) {
@@ -8454,7 +8436,7 @@ section.roadmap thead th:not(:first-child) > code {
   font-size:0.859375cqi;              /* deliberate: small corner tag on a dense header cell */
   font-weight:var(--pill-weight);
   letter-spacing:var(--pill-tracking);
-  color:var(--c-ink-dark);              /* white on the saturated light-canvas fill, near-black on the pale dark-canvas fill */
+  color:var(--cat-on-mark);              /* white on the saturated light-canvas fill, near-black on the pale dark-canvas fill */
   background:var(--phase-accent, var(--accent));
   padding:var(--pill-pad-y) var(--pill-pad-x);
   border:2px solid var(--bg);
@@ -8467,21 +8449,21 @@ section.roadmap thead th:not(:first-child) > code {
    per row; phase columns read it for their leading column-accent
    stripe per column. */
 section.roadmap thead th:nth-child(8n+2),
-section.roadmap tbody tr:nth-child(8n+1) > td:first-child { --phase-accent:var(--c1-dark); }
+section.roadmap tbody tr:nth-child(8n+1) > td:first-child { --phase-accent:var(--cat-1-mark); }
 section.roadmap thead th:nth-child(8n+3),
-section.roadmap tbody tr:nth-child(8n+2) > td:first-child { --phase-accent:var(--c2-dark); }
+section.roadmap tbody tr:nth-child(8n+2) > td:first-child { --phase-accent:var(--cat-2-mark); }
 section.roadmap thead th:nth-child(8n+4),
-section.roadmap tbody tr:nth-child(8n+3) > td:first-child { --phase-accent:var(--c3-dark); }
+section.roadmap tbody tr:nth-child(8n+3) > td:first-child { --phase-accent:var(--cat-3-mark); }
 section.roadmap thead th:nth-child(8n+5),
-section.roadmap tbody tr:nth-child(8n+4) > td:first-child { --phase-accent:var(--c4-dark); }
+section.roadmap tbody tr:nth-child(8n+4) > td:first-child { --phase-accent:var(--cat-4-mark); }
 section.roadmap thead th:nth-child(8n+6),
-section.roadmap tbody tr:nth-child(8n+5) > td:first-child { --phase-accent:var(--c5-dark); }
+section.roadmap tbody tr:nth-child(8n+5) > td:first-child { --phase-accent:var(--cat-5-mark); }
 section.roadmap thead th:nth-child(8n+7),
-section.roadmap tbody tr:nth-child(8n+6) > td:first-child { --phase-accent:var(--c6-dark); }
+section.roadmap tbody tr:nth-child(8n+6) > td:first-child { --phase-accent:var(--cat-6-mark); }
 section.roadmap thead th:nth-child(8n),
-section.roadmap tbody tr:nth-child(8n+7) > td:first-child { --phase-accent:var(--c7-dark); }
+section.roadmap tbody tr:nth-child(8n+7) > td:first-child { --phase-accent:var(--cat-7-mark); }
 section.roadmap thead th:nth-child(8n+1),
-section.roadmap tbody tr:nth-child(8n)   > td:first-child { --phase-accent:var(--c8-dark); }
+section.roadmap tbody tr:nth-child(8n)   > td:first-child { --phase-accent:var(--cat-8-mark); }
 
 section.roadmap td {
   padding:var(--sp-xs) var(--sp-md);
@@ -8760,7 +8742,7 @@ section.roadmap.horizons .horizon-meta {
   font-size:0.859375cqi;              /* deliberate: small corner tag, matches the trailing-code pill */
   font-weight:var(--pill-weight);
   letter-spacing:var(--pill-tracking);
-  color:var(--c-ink-dark);              /* white on the saturated light-canvas fill, near-black on the pale dark-canvas fill */
+  color:var(--cat-on-mark);              /* white on the saturated light-canvas fill, near-black on the pale dark-canvas fill */
   background:var(--phase-accent, var(--accent));
   padding:var(--pill-pad-y) var(--pill-pad-x);
   border:2px solid var(--bg-alt);
@@ -9066,11 +9048,11 @@ section.split-panel :is(ul,ol) > li > strong ~ * { font-weight: 400; }
 section.state-chart {
   --state-node-fill: var(--bg-alt);
   --state-node-ink: var(--text-heading);
-  --state-node-stroke: var(--c-stroke);
-  --state-edge: var(--c-line);
-  --state-edge-back: color-mix(in oklab, var(--c-line) 55%, transparent);
+  --state-node-stroke: var(--diagram-stroke);
+  --state-edge: var(--diagram-line);
+  --state-edge-back: color-mix(in oklab, var(--diagram-line) 55%, transparent);
   --state-index-ink: var(--text-muted);
-  --state-marker: var(--c-line);
+  --state-marker: var(--diagram-line);
   --state-label-bg: var(--bg);
 }
 
@@ -9146,7 +9128,7 @@ section.state-chart .state-node {
    * at that status's semantic hue — so colour reads as meaning while every node
    * shares the one material. */
   --fill-hue: var(--text-muted);
-  --fill-ink: var(--c-stroke);
+  --fill-ink: var(--diagram-stroke);
   background: linear-gradient(180deg,
     light-dark(color-mix(in oklab, var(--fill-hue) var(--chart-fill-top-l),    var(--bg)),
                color-mix(in oklab, var(--fill-hue) var(--chart-fill-top-d),    black)) 0%,
@@ -9296,7 +9278,7 @@ section.state-chart.horizontal .state-node-row {
   margin: 0.3125cqi 0;
   /* Same canonical tile as the SVG-variant nodes above. */
   --fill-hue: var(--text-muted);
-  --fill-ink: var(--c-stroke);
+  --fill-ink: var(--diagram-stroke);
   background: linear-gradient(180deg,
     light-dark(color-mix(in oklab, var(--fill-hue) var(--chart-fill-top-l),    var(--bg)),
                color-mix(in oklab, var(--fill-hue) var(--chart-fill-top-d),    black)) 0%,
@@ -9396,7 +9378,7 @@ section.state-chart.horizontal .state-chip-arrow {
 
 /* ── Dark canvas ─────────────────────────────────────────────────────────
  * section.dark sets color-scheme:dark, flipping every light-dark() token
- * this component consumes (--bg-alt, --text-heading, --c-line, --bg,
+ * this component consumes (--bg-alt, --text-heading, --diagram-line, --bg,
  * --text-muted, and chart-family's --pass/--warn/--fail) automatically. */
 
 /* === lib/components/evidence/stats/stats.styles.css === */
@@ -9503,9 +9485,9 @@ section.statute-stack > ul > li::marker,
 section.statute-stack > ol > li::marker { content:''; }
 /* Three-jurisdiction hue rotation. Federal = warm cobalt, State = warm
  * sienna, Local = warm slate. Cycles after three. */
-section.statute-stack > :is(ul, ol) > li:nth-child(3n+1) { --jur-accent:var(--c4-dark); }
-section.statute-stack > :is(ul, ol) > li:nth-child(3n+2) { --jur-accent:var(--c6-dark); }
-section.statute-stack > :is(ul, ol) > li:nth-child(3n)   { --jur-accent:var(--c1-dark); }
+section.statute-stack > :is(ul, ol) > li:nth-child(3n+1) { --jur-accent:var(--cat-4-mark); }
+section.statute-stack > :is(ul, ol) > li:nth-child(3n+2) { --jur-accent:var(--cat-6-mark); }
+section.statute-stack > :is(ul, ol) > li:nth-child(3n)   { --jur-accent:var(--cat-1-mark); }
 /* Jurisdiction label — eyebrow chrome (auto-bolded by slotLabelLift). */
 section.statute-stack > ul > li > strong:first-child,
 section.statute-stack > ol > li > strong:first-child {
@@ -9695,9 +9677,9 @@ section.statute-stack.lane td:nth-child(2) {
   color:var(--text-heading);
   white-space:nowrap;
 }
-section.statute-stack.lane tbody tr:nth-child(3n+1) { --lane-jur:var(--c4-dark); }
-section.statute-stack.lane tbody tr:nth-child(3n+2) { --lane-jur:var(--c6-dark); }
-section.statute-stack.lane tbody tr:nth-child(3n)   { --lane-jur:var(--c1-dark); }
+section.statute-stack.lane tbody tr:nth-child(3n+1) { --lane-jur:var(--cat-4-mark); }
+section.statute-stack.lane tbody tr:nth-child(3n+2) { --lane-jur:var(--cat-6-mark); }
+section.statute-stack.lane tbody tr:nth-child(3n)   { --lane-jur:var(--cat-1-mark); }
 section.statute-stack.lane tbody tr > td:first-child {
   border-left:3px solid var(--lane-jur, var(--accent));
   padding-left:var(--sp-md);
@@ -10506,7 +10488,7 @@ section.dark {
 
 /* ── INLINE-CODE INK on non-flipping dark islands ──
  * title/divider/closing bookends and the split-panel dark rail paint a dark
- * surface via --bg-dark WITHOUT flipping color-scheme, so --accent (the chip's
+ * surface via --surface-inverse WITHOUT flipping color-scheme, so --accent (the chip's
  * default ink) stays on its light-mode value and the chip reads as a bright box
  * on a dark field. Rebind the ink to the on-dark tier; the chip's wash + border
  * track currentColor, so this one value re-tunes the whole chip. Mirrors the
@@ -10930,14 +10912,14 @@ section.obligation-matrix.pills td:not(:first-child) strong {
 section.obligation-matrix.pills tbody tr:nth-child(odd) td:not(:first-child) { background:none; }
 
 /* .lanes — categorical row stripes. */
-section.obligation-matrix.lanes tbody tr:nth-child(8n+1) > td:first-child { --lane-hue:var(--c1-dark); }
-section.obligation-matrix.lanes tbody tr:nth-child(8n+2) > td:first-child { --lane-hue:var(--c2-dark); }
-section.obligation-matrix.lanes tbody tr:nth-child(8n+3) > td:first-child { --lane-hue:var(--c3-dark); }
-section.obligation-matrix.lanes tbody tr:nth-child(8n+4) > td:first-child { --lane-hue:var(--c4-dark); }
-section.obligation-matrix.lanes tbody tr:nth-child(8n+5) > td:first-child { --lane-hue:var(--c5-dark); }
-section.obligation-matrix.lanes tbody tr:nth-child(8n+6) > td:first-child { --lane-hue:var(--c6-dark); }
-section.obligation-matrix.lanes tbody tr:nth-child(8n+7) > td:first-child { --lane-hue:var(--c7-dark); }
-section.obligation-matrix.lanes tbody tr:nth-child(8n)   > td:first-child { --lane-hue:var(--c8-dark); }
+section.obligation-matrix.lanes tbody tr:nth-child(8n+1) > td:first-child { --lane-hue:var(--cat-1-mark); }
+section.obligation-matrix.lanes tbody tr:nth-child(8n+2) > td:first-child { --lane-hue:var(--cat-2-mark); }
+section.obligation-matrix.lanes tbody tr:nth-child(8n+3) > td:first-child { --lane-hue:var(--cat-3-mark); }
+section.obligation-matrix.lanes tbody tr:nth-child(8n+4) > td:first-child { --lane-hue:var(--cat-4-mark); }
+section.obligation-matrix.lanes tbody tr:nth-child(8n+5) > td:first-child { --lane-hue:var(--cat-5-mark); }
+section.obligation-matrix.lanes tbody tr:nth-child(8n+6) > td:first-child { --lane-hue:var(--cat-6-mark); }
+section.obligation-matrix.lanes tbody tr:nth-child(8n+7) > td:first-child { --lane-hue:var(--cat-7-mark); }
+section.obligation-matrix.lanes tbody tr:nth-child(8n)   > td:first-child { --lane-hue:var(--cat-8-mark); }
 section.obligation-matrix.lanes tbody tr > td:first-child {
   border-left:4px solid var(--lane-hue, var(--accent));
   color:var(--lane-hue, var(--text-heading));
@@ -13814,14 +13796,14 @@ section [class$="TitleText"] { display: none; }
  * Mermaid's auto-emitted inline CSS. (`.radarTitle` is suppressed above.)
  */
 section .radarGraticule {
-  fill: var(--c1-light) !important;
+  fill: var(--cat-1-fill) !important;
   fill-opacity: 0.25 !important;
-  stroke: var(--c-stroke) !important;
+  stroke: var(--diagram-stroke) !important;
   stroke-opacity: 0.20 !important;
   stroke-width: 1 !important;
 }
 section .radarAxisLine {
-  stroke: var(--c-stroke) !important;
+  stroke: var(--diagram-stroke) !important;
   stroke-width: 1.5 !important;
   stroke-opacity: 0.5 !important;
 }
@@ -13836,22 +13818,22 @@ section .radarCurve-4, section .radarCurve-5, section .radarCurve-6, section .ra
   fill-opacity: 0.28 !important;
   stroke-width: 2.5 !important;
 }
-section .radarCurve-0 { fill: var(--c1-dark) !important; stroke: var(--c1-dark) !important; }
-section .radarCurve-1 { fill: var(--c2-dark) !important; stroke: var(--c2-dark) !important; }
-section .radarCurve-2 { fill: var(--c3-dark) !important; stroke: var(--c3-dark) !important; }
-section .radarCurve-3 { fill: var(--c4-dark) !important; stroke: var(--c4-dark) !important; }
-section .radarCurve-4 { fill: var(--c5-dark) !important; stroke: var(--c5-dark) !important; }
-section .radarCurve-5 { fill: var(--c6-dark) !important; stroke: var(--c6-dark) !important; }
-section .radarCurve-6 { fill: var(--c7-dark) !important; stroke: var(--c7-dark) !important; }
-section .radarCurve-7 { fill: var(--c8-dark) !important; stroke: var(--c8-dark) !important; }
-section .radarLegendBox-0 { fill: var(--c1-dark) !important; }
-section .radarLegendBox-1 { fill: var(--c2-dark) !important; }
-section .radarLegendBox-2 { fill: var(--c3-dark) !important; }
-section .radarLegendBox-3 { fill: var(--c4-dark) !important; }
-section .radarLegendBox-4 { fill: var(--c5-dark) !important; }
-section .radarLegendBox-5 { fill: var(--c6-dark) !important; }
-section .radarLegendBox-6 { fill: var(--c7-dark) !important; }
-section .radarLegendBox-7 { fill: var(--c8-dark) !important; }
+section .radarCurve-0 { fill: var(--cat-1-mark) !important; stroke: var(--cat-1-mark) !important; }
+section .radarCurve-1 { fill: var(--cat-2-mark) !important; stroke: var(--cat-2-mark) !important; }
+section .radarCurve-2 { fill: var(--cat-3-mark) !important; stroke: var(--cat-3-mark) !important; }
+section .radarCurve-3 { fill: var(--cat-4-mark) !important; stroke: var(--cat-4-mark) !important; }
+section .radarCurve-4 { fill: var(--cat-5-mark) !important; stroke: var(--cat-5-mark) !important; }
+section .radarCurve-5 { fill: var(--cat-6-mark) !important; stroke: var(--cat-6-mark) !important; }
+section .radarCurve-6 { fill: var(--cat-7-mark) !important; stroke: var(--cat-7-mark) !important; }
+section .radarCurve-7 { fill: var(--cat-8-mark) !important; stroke: var(--cat-8-mark) !important; }
+section .radarLegendBox-0 { fill: var(--cat-1-mark) !important; }
+section .radarLegendBox-1 { fill: var(--cat-2-mark) !important; }
+section .radarLegendBox-2 { fill: var(--cat-3-mark) !important; }
+section .radarLegendBox-3 { fill: var(--cat-4-mark) !important; }
+section .radarLegendBox-4 { fill: var(--cat-5-mark) !important; }
+section .radarLegendBox-5 { fill: var(--cat-6-mark) !important; }
+section .radarLegendBox-6 { fill: var(--cat-7-mark) !important; }
+section .radarLegendBox-7 { fill: var(--cat-8-mark) !important; }
 
 /* ──────────────────────────────────────────────────────────────────────
  * BAND CYCLE — sections / clusters / category panels
@@ -13866,44 +13848,44 @@ section .radarLegendBox-7 { fill: var(--c8-dark) !important; }
  * so every diagram type lands on a tested-contrast band.
  */
 section .cluster.section--1 rect, section .section--1 rect,
-section .section--1 path, section .section--1 circle { fill: var(--c1-light) !important; stroke: var(--c-stroke) !important; }
-section .section--1 text, section .section--1 tspan, section .section--1 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
+section .section--1 path, section .section--1 circle { fill: var(--cat-1-fill) !important; stroke: var(--diagram-stroke) !important; }
+section .section--1 text, section .section--1 tspan, section .section--1 span { fill: var(--cat-on-fill) !important; color: var(--cat-on-fill) !important; }
 section .cluster.section-0 rect, section .section-0 rect,
-section .section-0 path, section .section-0 circle { fill: var(--c1-light) !important; stroke: var(--c-stroke) !important; }
-section .section-0 text, section .section-0 tspan, section .section-0 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
+section .section-0 path, section .section-0 circle { fill: var(--cat-1-fill) !important; stroke: var(--diagram-stroke) !important; }
+section .section-0 text, section .section-0 tspan, section .section-0 span { fill: var(--cat-on-fill) !important; color: var(--cat-on-fill) !important; }
 section .cluster.section-1 rect, section .section-1 rect,
-section .section-1 path, section .section-1 circle { fill: var(--c2-light) !important; stroke: var(--c-stroke) !important; }
-section .section-1 text, section .section-1 tspan, section .section-1 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
+section .section-1 path, section .section-1 circle { fill: var(--cat-2-fill) !important; stroke: var(--diagram-stroke) !important; }
+section .section-1 text, section .section-1 tspan, section .section-1 span { fill: var(--cat-on-fill) !important; color: var(--cat-on-fill) !important; }
 section .cluster.section-2 rect, section .section-2 rect,
-section .section-2 path, section .section-2 circle { fill: var(--c3-light) !important; stroke: var(--c-stroke) !important; }
-section .section-2 text, section .section-2 tspan, section .section-2 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
+section .section-2 path, section .section-2 circle { fill: var(--cat-3-fill) !important; stroke: var(--diagram-stroke) !important; }
+section .section-2 text, section .section-2 tspan, section .section-2 span { fill: var(--cat-on-fill) !important; color: var(--cat-on-fill) !important; }
 section .cluster.section-3 rect, section .section-3 rect,
-section .section-3 path, section .section-3 circle { fill: var(--c4-light) !important; stroke: var(--c-stroke) !important; }
-section .section-3 text, section .section-3 tspan, section .section-3 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
+section .section-3 path, section .section-3 circle { fill: var(--cat-4-fill) !important; stroke: var(--diagram-stroke) !important; }
+section .section-3 text, section .section-3 tspan, section .section-3 span { fill: var(--cat-on-fill) !important; color: var(--cat-on-fill) !important; }
 section .cluster.section-4 rect, section .section-4 rect,
-section .section-4 path, section .section-4 circle { fill: var(--c5-light) !important; stroke: var(--c-stroke) !important; }
-section .section-4 text, section .section-4 tspan, section .section-4 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
+section .section-4 path, section .section-4 circle { fill: var(--cat-5-fill) !important; stroke: var(--diagram-stroke) !important; }
+section .section-4 text, section .section-4 tspan, section .section-4 span { fill: var(--cat-on-fill) !important; color: var(--cat-on-fill) !important; }
 section .cluster.section-5 rect, section .section-5 rect,
-section .section-5 path, section .section-5 circle { fill: var(--c6-light) !important; stroke: var(--c-stroke) !important; }
-section .section-5 text, section .section-5 tspan, section .section-5 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
+section .section-5 path, section .section-5 circle { fill: var(--cat-6-fill) !important; stroke: var(--diagram-stroke) !important; }
+section .section-5 text, section .section-5 tspan, section .section-5 span { fill: var(--cat-on-fill) !important; color: var(--cat-on-fill) !important; }
 section .cluster.section-6 rect, section .section-6 rect,
-section .section-6 path, section .section-6 circle { fill: var(--c7-light) !important; stroke: var(--c-stroke) !important; }
-section .section-6 text, section .section-6 tspan, section .section-6 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
+section .section-6 path, section .section-6 circle { fill: var(--cat-7-fill) !important; stroke: var(--diagram-stroke) !important; }
+section .section-6 text, section .section-6 tspan, section .section-6 span { fill: var(--cat-on-fill) !important; color: var(--cat-on-fill) !important; }
 section .cluster.section-7 rect, section .section-7 rect,
-section .section-7 path, section .section-7 circle { fill: var(--c8-light) !important; stroke: var(--c-stroke) !important; }
-section .section-7 text, section .section-7 tspan, section .section-7 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
+section .section-7 path, section .section-7 circle { fill: var(--cat-8-fill) !important; stroke: var(--diagram-stroke) !important; }
+section .section-7 text, section .section-7 tspan, section .section-7 span { fill: var(--cat-on-fill) !important; color: var(--cat-on-fill) !important; }
 section .cluster.section-8 rect, section .section-8 rect,
-section .section-8 path, section .section-8 circle { fill: var(--c9-light) !important; stroke: var(--c-stroke) !important; }
-section .section-8 text, section .section-8 tspan, section .section-8 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
+section .section-8 path, section .section-8 circle { fill: var(--cat-9-fill) !important; stroke: var(--diagram-stroke) !important; }
+section .section-8 text, section .section-8 tspan, section .section-8 span { fill: var(--cat-on-fill) !important; color: var(--cat-on-fill) !important; }
 section .cluster.section-9 rect, section .section-9 rect,
-section .section-9 path, section .section-9 circle { fill: var(--c10-light) !important; stroke: var(--c-stroke) !important; }
-section .section-9 text, section .section-9 tspan, section .section-9 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
+section .section-9 path, section .section-9 circle { fill: var(--cat-10-fill) !important; stroke: var(--diagram-stroke) !important; }
+section .section-9 text, section .section-9 tspan, section .section-9 span { fill: var(--cat-on-fill) !important; color: var(--cat-on-fill) !important; }
 section .cluster.section-10 rect, section .section-10 rect,
-section .section-10 path, section .section-10 circle { fill: var(--c11-light) !important; stroke: var(--c-stroke) !important; }
-section .section-10 text, section .section-10 tspan, section .section-10 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
+section .section-10 path, section .section-10 circle { fill: var(--cat-11-fill) !important; stroke: var(--diagram-stroke) !important; }
+section .section-10 text, section .section-10 tspan, section .section-10 span { fill: var(--cat-on-fill) !important; color: var(--cat-on-fill) !important; }
 section .cluster.section-11 rect, section .section-11 rect,
-section .section-11 path, section .section-11 circle { fill: var(--c12-light) !important; stroke: var(--c-stroke) !important; }
-section .section-11 text, section .section-11 tspan, section .section-11 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
+section .section-11 path, section .section-11 circle { fill: var(--cat-12-fill) !important; stroke: var(--diagram-stroke) !important; }
+section .section-11 text, section .section-11 tspan, section .section-11 span { fill: var(--cat-on-fill) !important; color: var(--cat-on-fill) !important; }
 
 
 
@@ -13915,8 +13897,8 @@ section .section-11 text, section .section-11 tspan, section .section-11 span { 
 section .node .label-container,
 section .node .basic.label-container,
 section .node .outer-path {
-  fill: var(--c1-light) !important;
-  stroke: var(--c-stroke) !important;
+  fill: var(--cat-1-fill) !important;
+  stroke: var(--diagram-stroke) !important;
 }
 
 /* ── JOURNEY ──
@@ -13931,33 +13913,33 @@ section .node .outer-path {
  * so older renders inherit the same contract.
  */
 section .section-type-0 rect, section .section0 rect,
-section .task-type-0 rect,    section .task0 rect    { fill: var(--c1-light) !important; }
+section .task-type-0 rect,    section .task0 rect    { fill: var(--cat-1-fill) !important; }
 section .section-type-0 text, section .section0 text,
-section .task-type-0 text,    section .task0 text    { fill: var(--c-ink-light) !important; }
+section .task-type-0 text,    section .task0 text    { fill: var(--cat-on-fill) !important; }
 
 section .section-type-1 rect, section .section1 rect,
-section .task-type-1 rect,    section .task1 rect    { fill: var(--c2-light) !important; }
+section .task-type-1 rect,    section .task1 rect    { fill: var(--cat-2-fill) !important; }
 section .section-type-1 text, section .section1 text,
-section .task-type-1 text,    section .task1 text    { fill: var(--c-ink-light) !important; }
+section .task-type-1 text,    section .task1 text    { fill: var(--cat-on-fill) !important; }
 
 section .section-type-2 rect, section .section2 rect,
-section .task-type-2 rect,    section .task2 rect    { fill: var(--c3-light) !important; }
+section .task-type-2 rect,    section .task2 rect    { fill: var(--cat-3-fill) !important; }
 section .section-type-2 text, section .section2 text,
-section .task-type-2 text,    section .task2 text    { fill: var(--c-ink-light) !important; }
+section .task-type-2 text,    section .task2 text    { fill: var(--cat-on-fill) !important; }
 
-section .section-type-3 rect, section .task-type-3 rect { fill: var(--c4-light) !important; }
-section .section-type-3 text, section .task-type-3 text { fill: var(--c-ink-light) !important; }
-section .section-type-4 rect, section .task-type-4 rect { fill: var(--c5-light) !important; }
-section .section-type-4 text, section .task-type-4 text { fill: var(--c-ink-light) !important; }
-section .section-type-5 rect, section .task-type-5 rect { fill: var(--c6-light) !important; }
-section .section-type-5 text, section .task-type-5 text { fill: var(--c-ink-light) !important; }
-section .section-type-6 rect, section .task-type-6 rect { fill: var(--c7-light) !important; }
-section .section-type-6 text, section .task-type-6 text { fill: var(--c-ink-light) !important; }
-section .section-type-7 rect, section .task-type-7 rect { fill: var(--c8-light) !important; }
-section .section-type-7 text, section .task-type-7 text { fill: var(--c-ink-light) !important; }
+section .section-type-3 rect, section .task-type-3 rect { fill: var(--cat-4-fill) !important; }
+section .section-type-3 text, section .task-type-3 text { fill: var(--cat-on-fill) !important; }
+section .section-type-4 rect, section .task-type-4 rect { fill: var(--cat-5-fill) !important; }
+section .section-type-4 text, section .task-type-4 text { fill: var(--cat-on-fill) !important; }
+section .section-type-5 rect, section .task-type-5 rect { fill: var(--cat-6-fill) !important; }
+section .section-type-5 text, section .task-type-5 text { fill: var(--cat-on-fill) !important; }
+section .section-type-6 rect, section .task-type-6 rect { fill: var(--cat-7-fill) !important; }
+section .section-type-6 text, section .task-type-6 text { fill: var(--cat-on-fill) !important; }
+section .section-type-7 rect, section .task-type-7 rect { fill: var(--cat-8-fill) !important; }
+section .section-type-7 text, section .task-type-7 text { fill: var(--cat-on-fill) !important; }
 
 section .journey-section text { font-weight: 600 !important; }
-section .legend text { fill: var(--c-ink-light) !important; }
+section .legend text { fill: var(--cat-on-fill) !important; }
 
 /* ── MINDMAP ──
  * Mindmap reads cScale verbatim with no transformation. cScale inputs
@@ -13968,23 +13950,23 @@ section .legend text { fill: var(--c-ink-light) !important; }
 section .mindmap-node[class*="section-0"] rect,
 section .mindmap-node[class*="section-0"] circle,
 section .mindmap-node[class*="section-0"] polygon,
-section .mindmap-node[class*="section-0"] path { fill: var(--c1-light) !important; }
+section .mindmap-node[class*="section-0"] path { fill: var(--cat-1-fill) !important; }
 section .mindmap-node[class*="section-1"] rect,
 section .mindmap-node[class*="section-1"] circle,
 section .mindmap-node[class*="section-1"] polygon,
-section .mindmap-node[class*="section-1"] path { fill: var(--c2-light) !important; }
+section .mindmap-node[class*="section-1"] path { fill: var(--cat-2-fill) !important; }
 section .mindmap-node[class*="section-2"] rect,
 section .mindmap-node[class*="section-2"] circle,
 section .mindmap-node[class*="section-2"] polygon,
-section .mindmap-node[class*="section-2"] path { fill: var(--c3-light) !important; }
+section .mindmap-node[class*="section-2"] path { fill: var(--cat-3-fill) !important; }
 section .mindmap-node[class*="section-3"] rect,
 section .mindmap-node[class*="section-3"] circle,
 section .mindmap-node[class*="section-3"] polygon,
-section .mindmap-node[class*="section-3"] path { fill: var(--c4-light) !important; }
+section .mindmap-node[class*="section-3"] path { fill: var(--cat-4-fill) !important; }
 section .mindmap-node[class*="section-4"] rect,
 section .mindmap-node[class*="section-4"] circle,
 section .mindmap-node[class*="section-4"] polygon,
-section .mindmap-node[class*="section-4"] path { fill: var(--c5-light) !important; }
+section .mindmap-node[class*="section-4"] path { fill: var(--cat-5-fill) !important; }
 /* Root node: Mermaid emits classes "section-root" AND "section--1"
  * (note double-dash = minus one). Both have hardcoded fills:
  *   .section-root → #C20000 (red — alarm color, wrong for root)
@@ -13994,14 +13976,14 @@ section .mindmap-node[class*="section-4"] path { fill: var(--c5-light) !importan
 section .section-root rect,
 section .section-root circle,
 section .section-root polygon,
-section .section-root path { fill: var(--c1-light) !important; }
+section .section-root path { fill: var(--cat-1-fill) !important; }
 section .section-root text, section .section-root span {
-  fill: var(--c-ink-light) !important;
-  color: var(--c-ink-light) !important;
+  fill: var(--cat-on-fill) !important;
+  color: var(--cat-on-fill) !important;
 }
 section .mindmap-node text, section .mindmap-node tspan, section .mindmap-node foreignObject * {
-  fill: var(--c-ink-light) !important;
-  color: var(--c-ink-light) !important;
+  fill: var(--cat-on-fill) !important;
+  color: var(--cat-on-fill) !important;
 }
 
 /* ── GITGRAPH ARROW FILLS ──
@@ -14015,15 +13997,15 @@ section .arrow5, section .arrow6, section .arrow7 {
 }
 
 /* Gitgraph branch label pills — band fills, paired dark text. */
-section rect.branchLabelBkg.label0 { fill: var(--c1-light) !important; stroke: var(--c-stroke) !important; }
-section rect.branchLabelBkg.label1 { fill: var(--c2-light) !important; stroke: var(--c-stroke) !important; }
-section rect.branchLabelBkg.label2 { fill: var(--c3-light) !important; stroke: var(--c-stroke) !important; }
-section rect.branchLabelBkg.label3 { fill: var(--c4-light) !important; stroke: var(--c-stroke) !important; }
-section rect.branchLabelBkg.label4 { fill: var(--c5-light) !important; stroke: var(--c-stroke) !important; }
-section rect.branchLabelBkg.label5 { fill: var(--c6-light) !important; stroke: var(--c-stroke) !important; }
-section rect.branchLabelBkg.label6 { fill: var(--c7-light) !important; stroke: var(--c-stroke) !important; }
-section rect.branchLabelBkg.label7 { fill: var(--c8-light) !important; stroke: var(--c-stroke) !important; }
-section g.branchLabel text, section .branchLabel text { fill: var(--c-ink-light) !important; }
+section rect.branchLabelBkg.label0 { fill: var(--cat-1-fill) !important; stroke: var(--diagram-stroke) !important; }
+section rect.branchLabelBkg.label1 { fill: var(--cat-2-fill) !important; stroke: var(--diagram-stroke) !important; }
+section rect.branchLabelBkg.label2 { fill: var(--cat-3-fill) !important; stroke: var(--diagram-stroke) !important; }
+section rect.branchLabelBkg.label3 { fill: var(--cat-4-fill) !important; stroke: var(--diagram-stroke) !important; }
+section rect.branchLabelBkg.label4 { fill: var(--cat-5-fill) !important; stroke: var(--diagram-stroke) !important; }
+section rect.branchLabelBkg.label5 { fill: var(--cat-6-fill) !important; stroke: var(--diagram-stroke) !important; }
+section rect.branchLabelBkg.label6 { fill: var(--cat-7-fill) !important; stroke: var(--diagram-stroke) !important; }
+section rect.branchLabelBkg.label7 { fill: var(--cat-8-fill) !important; stroke: var(--diagram-stroke) !important; }
+section g.branchLabel text, section .branchLabel text { fill: var(--cat-on-fill) !important; }
 
 /* ── TREEMAP ──
  * Leaf cycles use the band ladder; section containers stay near-white so
@@ -14031,29 +14013,29 @@ section g.branchLabel text, section .branchLabel text { fill: var(--c-ink-light)
  * selector is more specific than the generic .treemapNode rect rule, so
  * per-cycle hues win.
  */
-section .treemapSection rect, section .treemapNode rect { fill: var(--bg-alt) !important; stroke: var(--c-stroke) !important; }
-section g.leaf0x rect.treemapLeaf { fill: var(--c1-light) !important; stroke: var(--c-stroke) !important; }
-section g.leaf1x rect.treemapLeaf { fill: var(--c2-light) !important; stroke: var(--c-stroke) !important; }
-section g.leaf2x rect.treemapLeaf { fill: var(--c3-light) !important; stroke: var(--c-stroke) !important; }
-section g.leaf3x rect.treemapLeaf { fill: var(--c4-light) !important; stroke: var(--c-stroke) !important; }
-section g.leaf4x rect.treemapLeaf { fill: var(--c5-light) !important; stroke: var(--c-stroke) !important; }
-section g.leaf5x rect.treemapLeaf { fill: var(--c6-light) !important; stroke: var(--c-stroke) !important; }
-section g.leaf6x rect.treemapLeaf { fill: var(--c1-light) !important; stroke: var(--c-stroke) !important; }
-section g.leaf7x rect.treemapLeaf { fill: var(--c2-light) !important; stroke: var(--c-stroke) !important; }
+section .treemapSection rect, section .treemapNode rect { fill: var(--bg-alt) !important; stroke: var(--diagram-stroke) !important; }
+section g.leaf0x rect.treemapLeaf { fill: var(--cat-1-fill) !important; stroke: var(--diagram-stroke) !important; }
+section g.leaf1x rect.treemapLeaf { fill: var(--cat-2-fill) !important; stroke: var(--diagram-stroke) !important; }
+section g.leaf2x rect.treemapLeaf { fill: var(--cat-3-fill) !important; stroke: var(--diagram-stroke) !important; }
+section g.leaf3x rect.treemapLeaf { fill: var(--cat-4-fill) !important; stroke: var(--diagram-stroke) !important; }
+section g.leaf4x rect.treemapLeaf { fill: var(--cat-5-fill) !important; stroke: var(--diagram-stroke) !important; }
+section g.leaf5x rect.treemapLeaf { fill: var(--cat-6-fill) !important; stroke: var(--diagram-stroke) !important; }
+section g.leaf6x rect.treemapLeaf { fill: var(--cat-1-fill) !important; stroke: var(--diagram-stroke) !important; }
+section g.leaf7x rect.treemapLeaf { fill: var(--cat-2-fill) !important; stroke: var(--diagram-stroke) !important; }
 section rect.treemapLeaf { fill-opacity: 1 !important; }
-section .treemapLabel, section .treemapNode text, section .treemapLeaf text { fill: var(--c-ink-light) !important; }
+section .treemapLabel, section .treemapNode text, section .treemapLeaf text { fill: var(--cat-on-fill) !important; }
 
 /* ── C4 ──
  * C4 has a hardcoded official palette (#08427B, #1168BD, etc.) that
  * ignores themeVariables. Override the box fills to band tokens.
  */
-section .person, section .person_ext { fill: var(--c1-light) !important; stroke: var(--c-stroke) !important; }
-section .system, section .system_ext { fill: var(--c2-light) !important; stroke: var(--c-stroke) !important; }
-section .container, section .container_ext { fill: var(--c3-light) !important; stroke: var(--c-stroke) !important; }
-section .component, section .component_ext { fill: var(--c4-light) !important; stroke: var(--c-stroke) !important; }
+section .person, section .person_ext { fill: var(--cat-1-fill) !important; stroke: var(--diagram-stroke) !important; }
+section .system, section .system_ext { fill: var(--cat-2-fill) !important; stroke: var(--diagram-stroke) !important; }
+section .container, section .container_ext { fill: var(--cat-3-fill) !important; stroke: var(--diagram-stroke) !important; }
+section .component, section .component_ext { fill: var(--cat-4-fill) !important; stroke: var(--diagram-stroke) !important; }
 section .person text, section .system text, section .container text, section .component text,
 section .person_ext text, section .system_ext text, section .container_ext text, section .component_ext text,
-section text.legendW, section text.legendT { fill: var(--c-ink-light) !important; }
+section text.legendW, section text.legendT { fill: var(--cat-on-fill) !important; }
 
 /* C4 emits group classes like .person-man, .person-woman, .system-other,
  * .container-db, .component-queue, .boundary, etc. — wider than the bare
@@ -14063,8 +14045,8 @@ section text.legendW, section text.legendT { fill: var(--c-ink-light) !important
 section g[class*="person"] > rect, section g[class*="system"] > rect,
 section g[class*="container"] > rect, section g[class*="component"] > rect,
 section g[class*="boundary"] > rect, section g[class*="node-bkg"] > rect {
-  fill: var(--c1-light) !important;
-  stroke: var(--c-stroke) !important;
+  fill: var(--cat-1-fill) !important;
+  stroke: var(--diagram-stroke) !important;
 }
 /* All text/lines/paths inside any C4 SVG (scoped via :has() so non-C4
  * trees aren't affected). */
@@ -14072,16 +14054,16 @@ section svg:has(g[class*="person"]) text,
 section svg:has(g[class*="person"]) tspan,
 section svg:has(g[class*="system"]) text,
 section svg:has(g[class*="system"]) tspan {
-  fill: var(--c-ink-light) !important;
+  fill: var(--cat-on-fill) !important;
 }
 section svg:has(g[class*="person"]) line,
 section svg:has(g[class*="person"]) path:not([class]),
 section svg:has(g[class*="system"]) line,
 section svg:has(g[class*="system"]) path:not([class]) {
-  stroke: var(--c-line) !important;
+  stroke: var(--diagram-line) !important;
 }
 section text.legendW, section text.legendT, section .legend text, section .legend tspan {
-  fill: var(--c-ink-light) !important;
+  fill: var(--cat-on-fill) !important;
 }
 
 
@@ -14092,23 +14074,23 @@ section text.legendW, section text.legendT, section .legend text, section .legen
  * contrast.
  */
 section .venn-set-0, section g.venn-set-0 path, section .venn-set-0 path {
-  fill: var(--c1-light) !important;
+  fill: var(--cat-1-fill) !important;
   fill-opacity: 1 !important;
-  stroke: var(--c-stroke) !important;
+  stroke: var(--diagram-stroke) !important;
   stroke-width: 2 !important;
   stroke-opacity: 1 !important;
 }
 section .venn-set-1, section g.venn-set-1 path, section .venn-set-1 path {
-  fill: var(--c2-light) !important;
+  fill: var(--cat-2-fill) !important;
   fill-opacity: 1 !important;
-  stroke: var(--c-stroke) !important;
+  stroke: var(--diagram-stroke) !important;
   stroke-width: 2 !important;
   stroke-opacity: 1 !important;
 }
 section .venn-set-2, section g.venn-set-2 path, section .venn-set-2 path {
-  fill: var(--c3-light) !important;
+  fill: var(--cat-3-fill) !important;
   fill-opacity: 1 !important;
-  stroke: var(--c-stroke) !important;
+  stroke: var(--diagram-stroke) !important;
   stroke-width: 2 !important;
   stroke-opacity: 1 !important;
 }
@@ -14123,9 +14105,9 @@ section .venn-area text, section text.label, section text.label tspan, section .
 /* Intersection regions read as "this is the shared region" without
  * competing with the circle colors. */
 section .venn-intersection path, section g.venn-intersection path {
-  fill: var(--c-stroke) !important;
+  fill: var(--diagram-stroke) !important;
   fill-opacity: 0.08 !important;
-  stroke: var(--c-stroke) !important;
+  stroke: var(--diagram-stroke) !important;
   stroke-width: 1.5 !important;
   stroke-dasharray: 4 3 !important;
   stroke-opacity: 0.7 !important;
@@ -14138,7 +14120,7 @@ section .venn-intersection path, section g.venn-intersection path {
 section .ishikawa-head-label { fill: var(--text-heading) !important; font-weight: 600 !important; }
 section .ishikawa-label.cause, section .ishikawa-label.align { fill: var(--text-heading) !important; }
 section .ishikawa-spine, section .ishikawa-arrow, section .ishikawa-branch, section .ishikawa-sub-branch {
-  stroke: var(--c-line) !important;
+  stroke: var(--diagram-line) !important;
 }
 
 
@@ -14153,23 +14135,23 @@ section .ishikawa-spine, section .ishikawa-arrow, section .ishikawa-branch, sect
  * directly with the actual emitted compound selectors.
  */
 section svg:has(path.mouth) circle:not(.face):not([class*="actor-"]) {
-  fill: var(--c-line) !important;
-  stroke: var(--c-line) !important;
+  fill: var(--diagram-line) !important;
+  stroke: var(--diagram-line) !important;
 }
 section circle.face {
   fill: var(--bg-alt) !important;
-  stroke: var(--c-line) !important;
+  stroke: var(--diagram-line) !important;
 }
-section path.mouth { fill: var(--c-line) !important; }
+section path.mouth { fill: var(--diagram-line) !important; }
 section path.mouth, section line.mouth {
-  stroke: var(--c-line) !important;
+  stroke: var(--diagram-line) !important;
 }
-section circle.actor-0 { fill: var(--c1-light) !important; stroke: var(--c-stroke) !important; }
-section circle.actor-1 { fill: var(--c2-light) !important; stroke: var(--c-stroke) !important; }
-section circle.actor-2 { fill: var(--c3-light) !important; stroke: var(--c-stroke) !important; }
-section circle.actor-3 { fill: var(--c4-light) !important; stroke: var(--c-stroke) !important; }
-section circle.actor-4 { fill: var(--c5-light) !important; stroke: var(--c-stroke) !important; }
-section circle.actor-5 { fill: var(--c6-light) !important; stroke: var(--c-stroke) !important; }
+section circle.actor-0 { fill: var(--cat-1-fill) !important; stroke: var(--diagram-stroke) !important; }
+section circle.actor-1 { fill: var(--cat-2-fill) !important; stroke: var(--diagram-stroke) !important; }
+section circle.actor-2 { fill: var(--cat-3-fill) !important; stroke: var(--diagram-stroke) !important; }
+section circle.actor-3 { fill: var(--cat-4-fill) !important; stroke: var(--diagram-stroke) !important; }
+section circle.actor-4 { fill: var(--cat-5-fill) !important; stroke: var(--diagram-stroke) !important; }
+section circle.actor-5 { fill: var(--cat-6-fill) !important; stroke: var(--diagram-stroke) !important; }
 /* Legend titles inherit actor color via <title> SVG element; force their
  * text-bearing tspans to read on the brand palette. */
 section .legend > title, section title { fill: var(--text-heading) !important; }
@@ -14177,7 +14159,7 @@ section rect.section0, section rect.section1, section rect.section2,
 section rect.task0, section rect.task1, section rect.task2,
 section rect[class*="section-type-"], section rect[class*="task-type-"],
 section rect.journey-section, section rect.task {
-  stroke: var(--c-stroke) !important;
+  stroke: var(--diagram-stroke) !important;
 }
 
 /* ── MINDMAP + TIMELINE CONNECTOR LINES ──
@@ -14187,7 +14169,7 @@ section rect.journey-section, section rect.task {
  * so connectors recede behind the colored nodes.
  */
 section line.node-line-, section line[class*="node-line-"] {
-  stroke: var(--c-line) !important;
+  stroke: var(--diagram-line) !important;
   stroke-width: 1.5 !important;
 }
 
@@ -14205,24 +14187,24 @@ section line.node-line-, section line[class*="node-line-"] {
  * NODES carry the distinct colours; the link ribbons ("tentacles") are
  * connective tissue tied to c1 — the brand/lead colour every other
  * diagram opens on — at reduced opacity so overlapping flows stay
- * legible and the node bars remain the primary read. --c1-light is a
+ * legible and the node bars remain the primary read. --cat-1-fill is a
  * light-dark() pair, so the ribbons flip with the canvas.
  */
-section g.nodes > g.node:nth-of-type(1)  > rect { fill: var(--c1-light)  !important; stroke: var(--c-stroke) !important; }
-section g.nodes > g.node:nth-of-type(2)  > rect { fill: var(--c2-light)  !important; stroke: var(--c-stroke) !important; }
-section g.nodes > g.node:nth-of-type(3)  > rect { fill: var(--c3-light)  !important; stroke: var(--c-stroke) !important; }
-section g.nodes > g.node:nth-of-type(4)  > rect { fill: var(--c4-light)  !important; stroke: var(--c-stroke) !important; }
-section g.nodes > g.node:nth-of-type(5)  > rect { fill: var(--c5-light)  !important; stroke: var(--c-stroke) !important; }
-section g.nodes > g.node:nth-of-type(6)  > rect { fill: var(--c6-light)  !important; stroke: var(--c-stroke) !important; }
-section g.nodes > g.node:nth-of-type(7)  > rect { fill: var(--c7-light)  !important; stroke: var(--c-stroke) !important; }
-section g.nodes > g.node:nth-of-type(8)  > rect { fill: var(--c8-light)  !important; stroke: var(--c-stroke) !important; }
-section g.nodes > g.node:nth-of-type(9)  > rect { fill: var(--c1-light)  !important; stroke: var(--c-stroke) !important; }
-section g.nodes > g.node:nth-of-type(10) > rect { fill: var(--c2-light)  !important; stroke: var(--c-stroke) !important; }
+section g.nodes > g.node:nth-of-type(1)  > rect { fill: var(--cat-1-fill)  !important; stroke: var(--diagram-stroke) !important; }
+section g.nodes > g.node:nth-of-type(2)  > rect { fill: var(--cat-2-fill)  !important; stroke: var(--diagram-stroke) !important; }
+section g.nodes > g.node:nth-of-type(3)  > rect { fill: var(--cat-3-fill)  !important; stroke: var(--diagram-stroke) !important; }
+section g.nodes > g.node:nth-of-type(4)  > rect { fill: var(--cat-4-fill)  !important; stroke: var(--diagram-stroke) !important; }
+section g.nodes > g.node:nth-of-type(5)  > rect { fill: var(--cat-5-fill)  !important; stroke: var(--diagram-stroke) !important; }
+section g.nodes > g.node:nth-of-type(6)  > rect { fill: var(--cat-6-fill)  !important; stroke: var(--diagram-stroke) !important; }
+section g.nodes > g.node:nth-of-type(7)  > rect { fill: var(--cat-7-fill)  !important; stroke: var(--diagram-stroke) !important; }
+section g.nodes > g.node:nth-of-type(8)  > rect { fill: var(--cat-8-fill)  !important; stroke: var(--diagram-stroke) !important; }
+section g.nodes > g.node:nth-of-type(9)  > rect { fill: var(--cat-1-fill)  !important; stroke: var(--diagram-stroke) !important; }
+section g.nodes > g.node:nth-of-type(10) > rect { fill: var(--cat-2-fill)  !important; stroke: var(--diagram-stroke) !important; }
 section g.node-labels text, section g.nodes text {
-  fill: var(--c-ink-light) !important;
+  fill: var(--cat-on-fill) !important;
 }
 section g.link path, section g.links path {
-  stroke: var(--c1-light) !important;
+  stroke: var(--cat-1-fill) !important;
   stroke-opacity: 0.4 !important;
   fill: none !important;
 }
@@ -14232,11 +14214,11 @@ section g.link path, section g.links path {
  * brand band-1 + paired dark text.
  */
 section rect.packetBlock {
-  fill: var(--c1-light) !important;
-  stroke: var(--c-stroke) !important;
+  fill: var(--cat-1-fill) !important;
+  stroke: var(--diagram-stroke) !important;
 }
 section text.packetLabel, section text.packetByte, section text.packetTitle {
-  fill: var(--c-ink-light) !important;
+  fill: var(--cat-on-fill) !important;
 }
 
 /* ── ARCHITECTURE ──
@@ -14250,12 +14232,12 @@ section text.packetLabel, section text.packetByte, section text.packetTitle {
 section g.architecture-groups rect:not(.background):not(.node-bkg),
 section g.architecture-services rect:not(.background):not(.node-bkg),
 section g.architecture-service rect:not(.background):not(.node-bkg) {
-  fill: var(--c1-light) !important;
-  stroke: var(--c-stroke) !important;
+  fill: var(--cat-1-fill) !important;
+  stroke: var(--diagram-stroke) !important;
 }
 section g.architecture-groups path.edge,
 section g.architecture-edges path.edge {
-  stroke: var(--c-line) !important;
+  stroke: var(--diagram-line) !important;
   stroke-width: 1.5 !important;
 }
 /* Glyphs inside services: re-skin from white to brand stroke so they
@@ -14268,8 +14250,8 @@ section g.architecture-service svg path,
 section g.architecture-service svg circle,
 section g.architecture-service svg ellipse,
 section g.architecture-service svg line {
-  fill: var(--c-stroke) !important;
-  stroke: var(--c-stroke) !important;
+  fill: var(--diagram-stroke) !important;
+  stroke: var(--diagram-stroke) !important;
 }
 section g.architecture-groups svg path[style*="fill: none"],
 section g.architecture-groups svg circle[style*="fill: none"],
@@ -14283,7 +14265,7 @@ section g.architecture-service svg line[style*="fill: none"] {
 }
 section g.architecture-groups text, section g.architecture-groups tspan,
 section g.architecture-service text, section g.architecture-service tspan {
-  fill: var(--c-ink-light) !important;
+  fill: var(--cat-on-fill) !important;
 }
 
 /* ── ER ROW-RECT EVEN/ODD ──
@@ -14300,7 +14282,7 @@ section g.row-rect-odd > path  { fill: var(--bg) !important; }
  * in some diagram types — notably ER relationship terminals, which come out as
  * thin open outlines. Fill every marker with the flipping edge colour so each
  * connector terminal reads as solidly as its line (matching flowchart/state
- * arrowheads). Not a dark-flip hack: --c-line flips with the canvas, so this
+ * arrowheads). Not a dark-flip hack: --diagram-line flips with the canvas, so this
  * is identical in both schemes — it's a deliberate "solid terminals" style.
  * (Edge LINE strokes and arrowheads are otherwise baked correctly by the
  * lineColor themeVar via dual-render; only the ER marker FILL needs this.) */
@@ -14308,26 +14290,26 @@ section .marker,
 section .marker path,
 section .arrowMarkerPath,
 section .arrowheadPath {
-  fill: var(--c-line) !important;
-  stroke: var(--c-line) !important;
+  fill: var(--diagram-line) !important;
+  stroke: var(--diagram-line) !important;
 }
 
 /* ── JOURNEY AXIS + TASK CONNECTORS (canvas-borne structural lines) ──
  * The journey axis line and the dashed task→face connectors emit as inline
  * stroke="black" — NOT a themeVar, so dual-render can't bake them to the dark
- * scheme. Re-point at the flipping --c-line. Scoped by aria-roledescription
+ * scheme. Re-point at the flipping --diagram-line. Scoped by aria-roledescription
  * and excludes `.mouth` (the smiley strokes on the mood faces). The mood-face
  * fill/eyes/mouth are handled by the journey block above. */
 section svg[aria-roledescription="journey"] line:not(.mouth) {
-  stroke: var(--c-line) !important;
+  stroke: var(--diagram-line) !important;
 }
 
 /* ── TIMELINE AXIS + PERIOD DIVIDERS ──
  * The timeline's section/period divider lines (`.node-line-*`) and the
  * unclassed axis line (inline stroke="black") bake dark, so the spine vanishes
- * on a dark slide. Re-point every timeline line at --c-line. */
+ * on a dark slide. Re-point every timeline line at --diagram-line. */
 section svg[aria-roledescription="timeline"] line {
-  stroke: var(--c-line) !important;
+  stroke: var(--diagram-line) !important;
 }
 
 /* ── TREEVIEW LABELS + LINES (beta type — hardcoded black) ──
@@ -14338,8 +14320,8 @@ section svg[aria-roledescription="timeline"] line {
  * both the file labels and the tree connectors vanish. Re-point at the flipping
  * tokens: dark on a light canvas (unchanged from baked black), light on a dark
  * canvas (now visible). The !important beats Mermaid's un-important inline rule. */
-section .treeView-node-label { fill: var(--c-ink-light) !important; }
-section .treeView-node-line  { stroke: var(--c-line) !important; }
+section .treeView-node-label { fill: var(--cat-on-fill) !important; }
+section .treeView-node-line  { stroke: var(--diagram-line) !important; }
 
 /* ── MINDMAP BRANCH EDGES (per-section colour, brightened) ──
  * Mindmap draws each branch in its section's cScale colour (themeVar
@@ -14352,14 +14334,14 @@ section .treeView-node-line  { stroke: var(--c-line) !important; }
  * (Restores the per-branch colour an earlier over-broad edge rule flattened.)
  * Section indices mirror the mindmap-node fill mapping below: 0→c1 … 5→c6. */
 section svg.mindmapDiagram .section-edge--1,
-section svg.mindmapDiagram .section-edge-0 { stroke: color-mix(in srgb, var(--c1-dark) 78%, var(--c-ink-light)) !important; }
-section svg.mindmapDiagram .section-edge-1 { stroke: color-mix(in srgb, var(--c2-dark) 78%, var(--c-ink-light)) !important; }
-section svg.mindmapDiagram .section-edge-2 { stroke: color-mix(in srgb, var(--c3-dark) 78%, var(--c-ink-light)) !important; }
-section svg.mindmapDiagram .section-edge-3 { stroke: color-mix(in srgb, var(--c4-dark) 78%, var(--c-ink-light)) !important; }
-section svg.mindmapDiagram .section-edge-4 { stroke: color-mix(in srgb, var(--c5-dark) 78%, var(--c-ink-light)) !important; }
-section svg.mindmapDiagram .section-edge-5 { stroke: color-mix(in srgb, var(--c6-dark) 78%, var(--c-ink-light)) !important; }
-section svg.mindmapDiagram .section-edge-6 { stroke: color-mix(in srgb, var(--c1-dark) 78%, var(--c-ink-light)) !important; }
-section svg.mindmapDiagram .section-edge-7 { stroke: color-mix(in srgb, var(--c2-dark) 78%, var(--c-ink-light)) !important; }
+section svg.mindmapDiagram .section-edge-0 { stroke: color-mix(in srgb, var(--cat-1-mark) 78%, var(--cat-on-fill)) !important; }
+section svg.mindmapDiagram .section-edge-1 { stroke: color-mix(in srgb, var(--cat-2-mark) 78%, var(--cat-on-fill)) !important; }
+section svg.mindmapDiagram .section-edge-2 { stroke: color-mix(in srgb, var(--cat-3-mark) 78%, var(--cat-on-fill)) !important; }
+section svg.mindmapDiagram .section-edge-3 { stroke: color-mix(in srgb, var(--cat-4-mark) 78%, var(--cat-on-fill)) !important; }
+section svg.mindmapDiagram .section-edge-4 { stroke: color-mix(in srgb, var(--cat-5-mark) 78%, var(--cat-on-fill)) !important; }
+section svg.mindmapDiagram .section-edge-5 { stroke: color-mix(in srgb, var(--cat-6-mark) 78%, var(--cat-on-fill)) !important; }
+section svg.mindmapDiagram .section-edge-6 { stroke: color-mix(in srgb, var(--cat-1-mark) 78%, var(--cat-on-fill)) !important; }
+section svg.mindmapDiagram .section-edge-7 { stroke: color-mix(in srgb, var(--cat-2-mark) 78%, var(--cat-on-fill)) !important; }
 
 
 /* ── TIMELINE diagram overrides (Mermaid) — relocated from the retired
@@ -14385,30 +14367,30 @@ section svg.mindmapDiagram .section-edge-7 { stroke: color-mix(in srgb, var(--c2
  * types that use bare `.section-N` (mindmap, kanban via .cluster) keep
  * their existing mappings.
  */
-section .timeline-node.section--1 rect, section .timeline-node.section--1 path, section .timeline-node.section--1 circle { fill: var(--c1-light) !important; stroke: var(--c-stroke) !important; }
-section .timeline-node.section--1 text, section .timeline-node.section--1 tspan, section .timeline-node.section--1 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .timeline-node.section-0 rect, section .timeline-node.section-0 path, section .timeline-node.section-0 circle { fill: var(--c2-light) !important; stroke: var(--c-stroke) !important; }
-section .timeline-node.section-0 text, section .timeline-node.section-0 tspan, section .timeline-node.section-0 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .timeline-node.section-1 rect, section .timeline-node.section-1 path, section .timeline-node.section-1 circle { fill: var(--c3-light) !important; stroke: var(--c-stroke) !important; }
-section .timeline-node.section-1 text, section .timeline-node.section-1 tspan, section .timeline-node.section-1 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .timeline-node.section-2 rect, section .timeline-node.section-2 path, section .timeline-node.section-2 circle { fill: var(--c4-light) !important; stroke: var(--c-stroke) !important; }
-section .timeline-node.section-2 text, section .timeline-node.section-2 tspan, section .timeline-node.section-2 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .timeline-node.section-3 rect, section .timeline-node.section-3 path, section .timeline-node.section-3 circle { fill: var(--c5-light) !important; stroke: var(--c-stroke) !important; }
-section .timeline-node.section-3 text, section .timeline-node.section-3 tspan, section .timeline-node.section-3 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .timeline-node.section-4 rect, section .timeline-node.section-4 path, section .timeline-node.section-4 circle { fill: var(--c6-light) !important; stroke: var(--c-stroke) !important; }
-section .timeline-node.section-4 text, section .timeline-node.section-4 tspan, section .timeline-node.section-4 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .timeline-node.section-5 rect, section .timeline-node.section-5 path, section .timeline-node.section-5 circle { fill: var(--c7-light) !important; stroke: var(--c-stroke) !important; }
-section .timeline-node.section-5 text, section .timeline-node.section-5 tspan, section .timeline-node.section-5 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .timeline-node.section-6 rect, section .timeline-node.section-6 path, section .timeline-node.section-6 circle { fill: var(--c8-light) !important; stroke: var(--c-stroke) !important; }
-section .timeline-node.section-6 text, section .timeline-node.section-6 tspan, section .timeline-node.section-6 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .timeline-node.section-7 rect, section .timeline-node.section-7 path, section .timeline-node.section-7 circle { fill: var(--c9-light) !important; stroke: var(--c-stroke) !important; }
-section .timeline-node.section-7 text, section .timeline-node.section-7 tspan, section .timeline-node.section-7 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .timeline-node.section-8 rect, section .timeline-node.section-8 path, section .timeline-node.section-8 circle { fill: var(--c10-light) !important; stroke: var(--c-stroke) !important; }
-section .timeline-node.section-8 text, section .timeline-node.section-8 tspan, section .timeline-node.section-8 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .timeline-node.section-9 rect, section .timeline-node.section-9 path, section .timeline-node.section-9 circle { fill: var(--c11-light) !important; stroke: var(--c-stroke) !important; }
-section .timeline-node.section-9 text, section .timeline-node.section-9 tspan, section .timeline-node.section-9 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .timeline-node.section-10 rect, section .timeline-node.section-10 path, section .timeline-node.section-10 circle { fill: var(--c12-light) !important; stroke: var(--c-stroke) !important; }
-section .timeline-node.section-10 text, section .timeline-node.section-10 tspan, section .timeline-node.section-10 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
+section .timeline-node.section--1 rect, section .timeline-node.section--1 path, section .timeline-node.section--1 circle { fill: var(--cat-1-fill) !important; stroke: var(--diagram-stroke) !important; }
+section .timeline-node.section--1 text, section .timeline-node.section--1 tspan, section .timeline-node.section--1 span { fill: var(--cat-on-fill) !important; color: var(--cat-on-fill) !important; }
+section .timeline-node.section-0 rect, section .timeline-node.section-0 path, section .timeline-node.section-0 circle { fill: var(--cat-2-fill) !important; stroke: var(--diagram-stroke) !important; }
+section .timeline-node.section-0 text, section .timeline-node.section-0 tspan, section .timeline-node.section-0 span { fill: var(--cat-on-fill) !important; color: var(--cat-on-fill) !important; }
+section .timeline-node.section-1 rect, section .timeline-node.section-1 path, section .timeline-node.section-1 circle { fill: var(--cat-3-fill) !important; stroke: var(--diagram-stroke) !important; }
+section .timeline-node.section-1 text, section .timeline-node.section-1 tspan, section .timeline-node.section-1 span { fill: var(--cat-on-fill) !important; color: var(--cat-on-fill) !important; }
+section .timeline-node.section-2 rect, section .timeline-node.section-2 path, section .timeline-node.section-2 circle { fill: var(--cat-4-fill) !important; stroke: var(--diagram-stroke) !important; }
+section .timeline-node.section-2 text, section .timeline-node.section-2 tspan, section .timeline-node.section-2 span { fill: var(--cat-on-fill) !important; color: var(--cat-on-fill) !important; }
+section .timeline-node.section-3 rect, section .timeline-node.section-3 path, section .timeline-node.section-3 circle { fill: var(--cat-5-fill) !important; stroke: var(--diagram-stroke) !important; }
+section .timeline-node.section-3 text, section .timeline-node.section-3 tspan, section .timeline-node.section-3 span { fill: var(--cat-on-fill) !important; color: var(--cat-on-fill) !important; }
+section .timeline-node.section-4 rect, section .timeline-node.section-4 path, section .timeline-node.section-4 circle { fill: var(--cat-6-fill) !important; stroke: var(--diagram-stroke) !important; }
+section .timeline-node.section-4 text, section .timeline-node.section-4 tspan, section .timeline-node.section-4 span { fill: var(--cat-on-fill) !important; color: var(--cat-on-fill) !important; }
+section .timeline-node.section-5 rect, section .timeline-node.section-5 path, section .timeline-node.section-5 circle { fill: var(--cat-7-fill) !important; stroke: var(--diagram-stroke) !important; }
+section .timeline-node.section-5 text, section .timeline-node.section-5 tspan, section .timeline-node.section-5 span { fill: var(--cat-on-fill) !important; color: var(--cat-on-fill) !important; }
+section .timeline-node.section-6 rect, section .timeline-node.section-6 path, section .timeline-node.section-6 circle { fill: var(--cat-8-fill) !important; stroke: var(--diagram-stroke) !important; }
+section .timeline-node.section-6 text, section .timeline-node.section-6 tspan, section .timeline-node.section-6 span { fill: var(--cat-on-fill) !important; color: var(--cat-on-fill) !important; }
+section .timeline-node.section-7 rect, section .timeline-node.section-7 path, section .timeline-node.section-7 circle { fill: var(--cat-9-fill) !important; stroke: var(--diagram-stroke) !important; }
+section .timeline-node.section-7 text, section .timeline-node.section-7 tspan, section .timeline-node.section-7 span { fill: var(--cat-on-fill) !important; color: var(--cat-on-fill) !important; }
+section .timeline-node.section-8 rect, section .timeline-node.section-8 path, section .timeline-node.section-8 circle { fill: var(--cat-10-fill) !important; stroke: var(--diagram-stroke) !important; }
+section .timeline-node.section-8 text, section .timeline-node.section-8 tspan, section .timeline-node.section-8 span { fill: var(--cat-on-fill) !important; color: var(--cat-on-fill) !important; }
+section .timeline-node.section-9 rect, section .timeline-node.section-9 path, section .timeline-node.section-9 circle { fill: var(--cat-11-fill) !important; stroke: var(--diagram-stroke) !important; }
+section .timeline-node.section-9 text, section .timeline-node.section-9 tspan, section .timeline-node.section-9 span { fill: var(--cat-on-fill) !important; color: var(--cat-on-fill) !important; }
+section .timeline-node.section-10 rect, section .timeline-node.section-10 path, section .timeline-node.section-10 circle { fill: var(--cat-12-fill) !important; stroke: var(--diagram-stroke) !important; }
+section .timeline-node.section-10 text, section .timeline-node.section-10 tspan, section .timeline-node.section-10 span { fill: var(--cat-on-fill) !important; color: var(--cat-on-fill) !important; }
 
 /* ── TIMELINE EVENT WRAPPER ──
  * Mermaid wraps every timeline event in <g class="eventWrapper"> and pins
@@ -14459,18 +14441,18 @@ section .eventWrapper { filter: none !important; }
    * declaration (at :root or on a section) flips every descendant
    * lookup without touching the layout CSS. WCAG annotations refer to
    * the light pair; dark pair clears AAA on its own surface. */
-  --bg:       light-dark(#FAF7F2, var(--dark-bg));      /* parchment / espresso */
-  --bg-alt:   light-dark(#F3EDE4, var(--dark-bg-alt));  /* card fill            */
-  --bg-dark:  var(--brand-canvas); /* dark panels / title / divider */
-  --border:   light-dark(#E0D8CC, var(--dark-border));  /* hairline rule        */
+  --bg:       light-dark(#FAF7F2, var(--scheme-dark-bg));      /* parchment / espresso */
+  --bg-alt:   light-dark(#F3EDE4, var(--scheme-dark-bg-alt));  /* card fill            */
+  --surface-inverse:  var(--brand-canvas); /* dark panels / title / divider */
+  --border:   light-dark(#E0D8CC, var(--scheme-dark-border));  /* hairline rule        */
 
   /* ── Ink ramp ──────────────────────────────────────────────────────── */
   --text-display: #FAF7F2;      /* on dark surfaces — 16.19:1 on bg-dark         */
-  --text-heading: light-dark(var(--brand-canvas), var(--dark-text-heading)); /* 16.19:1 / 17.58:1 */
-  --text-body:    light-dark(#6B5D4F, var(--dark-text-body));   /* 5.95:1 / 11.02:1 AA  */
-  --text-label:   light-dark(#6F604F, var(--dark-text-label));  /* 5.68:1 /  9.63:1 AA  */
-  --text-secondary: light-dark(#7B6E62, var(--dark-text-secondary)); /* secondary prose / subtitle / caption — AA both sides */
-  --text-muted:   light-dark(#A69882, var(--dark-text-muted));      /* decorative / de-emphasized — chrome, empty/skipped marks, glyphs; WCAG-exempt */
+  --text-heading: light-dark(var(--brand-canvas), var(--scheme-dark-text-heading)); /* 16.19:1 / 17.58:1 */
+  --text-body:    light-dark(#6B5D4F, var(--scheme-dark-text-body));   /* 5.95:1 / 11.02:1 AA  */
+  --text-label:   light-dark(#6F604F, var(--scheme-dark-text-label));  /* 5.68:1 /  9.63:1 AA  */
+  --text-secondary: light-dark(#7B6E62, var(--scheme-dark-text-secondary)); /* secondary prose / subtitle / caption — AA both sides */
+  --text-muted:   light-dark(#A69882, var(--scheme-dark-text-muted));      /* decorative / de-emphasized — chrome, empty/skipped marks, glyphs; WCAG-exempt */
 
   /* ── Brand accent ──────────────────────────────────────────────────────
    * The accent is text-bearing on multiple surfaces (inline code chips,
@@ -14486,7 +14468,7 @@ section .eventWrapper { filter: none !important; }
   /* Text on top of --accent. Light: white on saddle gold (5.96:1).
    * Dark: espresso on bright gold (~9:1) — fixes corner-tag contrast
    * which would otherwise be white on bright gold (~2.3:1, fails AA). */
-  --on-accent:   light-dark(#FFFFFF, var(--bg-dark));
+  --on-accent:   light-dark(#FFFFFF, var(--surface-inverse));
 
   /* ── Semantic signals ─────────────────────────────────────────────────
    * Cuoio's leather-toned variants of the universal status trio. Each
@@ -14553,22 +14535,22 @@ section .eventWrapper { filter: none !important; }
  * for cover/divider/closing layouts that need a dark canvas. The slide
  * rule remaps the main tokens to these dark values so the same layout
  * structure works on either canvas. All ratios verified against
- * --dark-bg as the active surface. */
+ * --scheme-dark-bg as the active surface. */
 :root {
-  --dark-bg:           #15110D;  /* deeper than bg-dark — canvas dark     */
-  --dark-bg-alt:       #1E1A15;  /* same as light bg-dark — card on dark  */
-  --dark-border:       #3A2E20;
-  --dark-text-heading: #FAF7F2;  /* 17.58:1 on dark-bg AAA                */
-  --dark-text-body:    #D6C4A8;  /* warm tan — 11.02:1 on dark-bg AAA     */
-  --dark-text-muted:   #A69882;
-  --dark-text-secondary: #AB9C85;
-  --dark-text-label:   #C4B8A8;  /* pale tan — 9.63:1 on dark-bg AAA      */
-  --dark-text-display: #FAF7F2;
+  --scheme-dark-bg:           #15110D;  /* deeper than bg-dark — canvas dark     */
+  --scheme-dark-bg-alt:       #1E1A15;  /* same as light bg-dark — card on dark  */
+  --scheme-dark-border:       #3A2E20;
+  --scheme-dark-text-heading: #FAF7F2;  /* 17.58:1 on dark-bg AAA                */
+  --scheme-dark-text-body:    #D6C4A8;  /* warm tan — 11.02:1 on dark-bg AAA     */
+  --scheme-dark-text-muted:   #A69882;
+  --scheme-dark-text-secondary: #AB9C85;
+  --scheme-dark-text-label:   #C4B8A8;  /* pale tan — 9.63:1 on dark-bg AAA      */
+  --scheme-dark-text-display: #FAF7F2;
 }
 
 /* ── highlight.js syntax tokens ────────────────────────────────────────
  * Warm earth palette adapted for Cuoio's dark code block background
- * (--bg-dark: #1e1a15, dark brown + earthy spectrum ribbon at bottom).
+ * (--surface-inverse: #1e1a15, dark brown + earthy spectrum ribbon at bottom).
  * Warm ambers, terracottas, and muted teals provide contrast against
  * the dark brown without importing the cool Night Owl palette used by
  * the indaco theme. */
@@ -14598,61 +14580,61 @@ section .eventWrapper { filter: none !important; }
   /* ── Structural ───────────────────────────────────────────────────
    * Universal stroke for any band fill; deep taupe reads on every
    * cream tint. Line is for edges/arrows — warm brown ink. */
-  --c-stroke: #8B7E6D;  /* deep taupe */
-  --c-line:   #6B5D4F;  /* warm brown ink */
+  --diagram-stroke: #8B7E6D;  /* deep taupe */
+  --diagram-line:   #6B5D4F;  /* warm brown ink */
 
   /* Cross-deck contrast accent — radar's second curve, where a single
    * warm hue against the cream band reads better than a second pale
    * tint. */
-  --c-accent-warm: var(--brand-accent);
+  --diagram-accent-warm: var(--brand-accent);
 }
 
 :root {
-  --c1-light:  light-dark(#E6DAC8, #795700);
-  --c1-dark:   light-dark(#8A672E, #E7E0D5);
-  --c2-light:  light-dark(#D2CAE1, #544DAE);
-  --c2-dark:   light-dark(#327C86, #D5E4E6);
-  --c3-light:  light-dark(#D1C5B3, #97306A);
-  --c3-dark:   light-dark(#3B3286, #D7D5E6);
-  --c4-light:  light-dark(#C7D9DC, #006D61);
-  --c4-dark:   light-dark(#727B2D, #E4E6D5);
-  --c5-light:  light-dark(#E3C5C5, #A03313);
-  --c5-dark:   light-dark(#863B32, #E6D7D5);
-  --c6-light:  light-dark(#D2DCBD, #007225);
-  --c6-dark:   light-dark(#325286, #D5DCE6);
-  --c7-light:  light-dark(#EDD5B8, #7D3C95);
-  --c7-dark:   light-dark(#538038, #DCE5D7);
-  --c8-light:  light-dark(#D7D0C6, #5D6400);
-  --c8-dark:   light-dark(#388064, #D7E5E0);
-  --c9-light:  light-dark(#EBDBC1, #A02D45);
-  --c9-dark:   light-dark(#643880, #E0D7E5);
-  --c10-light: light-dark(#E1CCD9, #00697C);
-  --c10-dark:  light-dark(#803853, #E5D7DC);
-  --c11-light: light-dark(#DDD1BD, #805300);
-  --c11-dark:  light-dark(#388040, #D7E5D8);
-  --c12-light: light-dark(#D5CCE1, #0060A5);
-  --c12-dark:  light-dark(#803877, #E5D7E3);
+  --cat-1-fill:  light-dark(#E6DAC8, #795700);
+  --cat-1-mark:   light-dark(#8A672E, #E7E0D5);
+  --cat-2-fill:  light-dark(#D2CAE1, #544DAE);
+  --cat-2-mark:   light-dark(#327C86, #D5E4E6);
+  --cat-3-fill:  light-dark(#D1C5B3, #97306A);
+  --cat-3-mark:   light-dark(#3B3286, #D7D5E6);
+  --cat-4-fill:  light-dark(#C7D9DC, #006D61);
+  --cat-4-mark:   light-dark(#727B2D, #E4E6D5);
+  --cat-5-fill:  light-dark(#E3C5C5, #A03313);
+  --cat-5-mark:   light-dark(#863B32, #E6D7D5);
+  --cat-6-fill:  light-dark(#D2DCBD, #007225);
+  --cat-6-mark:   light-dark(#325286, #D5DCE6);
+  --cat-7-fill:  light-dark(#EDD5B8, #7D3C95);
+  --cat-7-mark:   light-dark(#538038, #DCE5D7);
+  --cat-8-fill:  light-dark(#D7D0C6, #5D6400);
+  --cat-8-mark:   light-dark(#388064, #D7E5E0);
+  --cat-9-fill:  light-dark(#EBDBC1, #A02D45);
+  --cat-9-mark:   light-dark(#643880, #E0D7E5);
+  --cat-10-fill: light-dark(#E1CCD9, #00697C);
+  --cat-10-mark:  light-dark(#803853, #E5D7DC);
+  --cat-11-fill: light-dark(#DDD1BD, #805300);
+  --cat-11-mark:  light-dark(#388040, #D7E5D8);
+  --cat-12-fill: light-dark(#D5CCE1, #0060A5);
+  --cat-12-mark:  light-dark(#803877, #E5D7E3);
 
-  --c-ink-light: var(--text-heading);
-  --c-ink-dark:  light-dark(#FFFFFF, #1E1A15);
+  --cat-on-fill: var(--text-heading);
+  --cat-on-mark:  light-dark(#FFFFFF, #1E1A15);
 
   /* Semantic palette — 5 roles, each a flipping fill. Curated per
    * theme: hue nudged toward the brand within its meaning band,
    * AA-verified both canvas modes, chroma-capped for restraint.
-   * The -dark companions are strokes → universal --c-stroke.
+   * The -dark companions are strokes → universal --diagram-stroke.
    *
-   * --c-alarm pairs with --c-ink-dark above: alarm fill lifts bright
+   * --diagram-critical pairs with --cat-on-mark above: alarm fill lifts bright
    * in dark mode, ink flips dark to compensate (both pass AA either
    * way). Decoupled from the state-token --fail, which has its own
    * light-dark() pair tuned for canvas contrast, not band-text. */
-  --c-warm-light:  light-dark(#EBDBC1, #825200);
-  --c-warm-dark:   var(--c-stroke);
-  --c-cool-light:  light-dark(#E0D8CC, #6B5B40);
-  --c-cool-dark:   var(--c-stroke);
-  --c-alarm:       light-dark(#9B1C1C, #F87171);
-  --c-alarm-dark:  var(--c-stroke);
-  --c-mark:        light-dark(#7A5A10, #C8A040);
-  --c-note:        light-dark(#F5EFE0, #4A3A28);
+  --diagram-active:  light-dark(#EBDBC1, #825200);
+  --diagram-active-mark:   var(--diagram-stroke);
+  --diagram-done:  light-dark(#E0D8CC, #6B5B40);
+  --diagram-done-mark:   var(--diagram-stroke);
+  --diagram-critical:       light-dark(#9B1C1C, #F87171);
+  --diagram-critical-mark:  var(--diagram-stroke);
+  --diagram-today:        light-dark(#7A5A10, #C8A040);
+  --diagram-note:        light-dark(#F5EFE0, #4A3A28);
 
   /* Containment tier — two nested structural surfaces. A monotonic
    * luminance ladder away from the canvas: light deck steps down,
