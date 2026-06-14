@@ -388,20 +388,32 @@ function subsetFontFaceCss(css, families) {
 // the CLI uses — so non-keyed chart-frame slides (state-chart, word-cloud) don't
 // offer a meaningless export. (The quadrant's own svg is aria-hidden, so match on
 // viewBox, not visibility.)
-const KEYED_LAYOUTS = ['piechart', 'radar', 'map', 'quadrant'];
+// The chart layouts that render as a SINGLE self-contained <svg> (diagram +
+// in-svg legend/labels) — these export as crisp standalone vector. Every OTHER
+// chart (gantt/kanban/progress/journey/state-chart/roadmap/timeline/word-cloud …)
+// is HTML/CSS or mixed, and exports as a high-res PNG of the slide instead.
+const CLEAN_SVG_LAYOUTS = ['piechart', 'radar', 'map', 'quadrant', 'funnel'];
+
+// The keyed single-`<svg>` chart on the cursor's active slide, or null. Drives
+// both the "Export chart" menu visibility and the export. Limited to charts that
+// render as ONE self-contained `<svg>` — the only ones that export reliably in
+// the browser. (HTML/CSS charts can't: the in-browser rasterizer collapses their
+// container-query layout to blank — same limit the one-click image PDF hits.
+// A PNG of those needs a server-side render; see the export-to-marp/chart docs.)
 export function activeChartSvg(frame) {
 	const sec = frame?.contentDocument?.querySelector('.marpit > section.db-active');
-	if (!sec || !KEYED_LAYOUTS.some((c) => sec.classList.contains(c))) return null;
+	if (!sec || !CLEAN_SVG_LAYOUTS.some((c) => sec.classList.contains(c))) return null;
 	return sec.querySelector('svg[viewBox]');
 }
 
-// Export the chart on the cursor's slide as a standalone .svg.
-export async function exportChartsSvg(frame, name, onStatus) {
+// Export the cursor's chart as a standalone, theme-free `.svg` (the diagram +
+// in-svg legend flattened to literal colours + the embedded fonts it uses).
+export async function exportChart(frame, name, onStatus) {
 	const doc = frame?.contentDocument;
 	const win = frame?.contentWindow;
 	if (!doc || !win) throw new Error('Preview not ready yet.');
 	const svg = activeChartSvg(frame);
-	if (!svg) throw new Error('Put the cursor in a slide that has a chart.');
+	if (!svg) throw new Error('Put the cursor in a slide that has an SVG chart.');
 	const [core, fontMod] = await Promise.all([
 		import('./standalone-svg.generated.js'),
 		import('./font-embed.js'),
@@ -415,6 +427,6 @@ export async function exportChartsSvg(frame, name, onStatus) {
 	const markup = new XMLSerializer().serializeToString(flattenSvgStyles(svg, win));
 	const fontFaceCss = subsetFontFaceCss(fontCssAll, collectFontFamilies(markup));
 	const out = finalizeStandaloneSvg(markup, { fontFaceCss });
-	download(new Blob([out], { type: 'image/svg+xml;charset=utf-8' }), safeName(name) + '-chart.svg');
+	download(new Blob([out], { type: 'image/svg+xml;charset=utf-8' }), `${safeName(name)}-chart.svg`);
 	if (onStatus) onStatus('Chart downloaded as SVG.');
 }

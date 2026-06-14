@@ -1,19 +1,25 @@
 #!/usr/bin/env node
 /**
- * Export ONE chart from a deck as a standalone, self-contained `.svg` file.
+ * Export a deck's chart(s) as standalone image files — SVG for the vector
+ * charts, PNG for the HTML/CSS ones.
  *
- * The four keyed charts (pie/radar/map/cohort quadrant) render the diagram,
- * spine, and key as one `<svg>` viewBox — "exportable as one unit" was a goal of
- * that design. This CLI realises it: it renders the deck through the SAME path
- * the Drawing Board uses (`window.LatticePlayground.render` + the runtime, in a
- * headless Chromium), flattens the chart's computed paint/text styles inline (so
- * the detached file needs no theme CSS — see lib/.../standalone-svg.js), embeds
- * the used fonts as data-URIs (tools/lib/chart-font-embed.js), and writes a file
- * that opens correctly anywhere.
+ * It renders the deck through the SAME path the Drawing Board uses
+ * (`window.LatticePlayground.render` + the runtime, in a headless Chromium),
+ * with each section pinned to its real box so container-query layouts resolve.
+ * Then, per chart:
+ *   - Keyed charts (pie/radar/map/quadrant/funnel) are a single self-contained
+ *     `<svg>`: flatten the computed paint/text styles inline (so the detached
+ *     file needs no theme CSS — lib/.../standalone-svg.js) + embed the used fonts
+ *     → a `.svg` that opens anywhere.
+ *   - Every other chart-frame slide (gantt/kanban/progress/journey/…) is HTML/CSS
+ *     or mixed, so we SCREENSHOT its container element → a `.png`. Because the
+ *     engine renders the real layout (this is how the chart galleries are made),
+ *     the screenshot captures it faithfully — unlike an in-browser DOM clone,
+ *     which collapses these layouts to blank.
  *
- * The Drawing Board's "Download chart as SVG" button shares the core + font
- * machinery; this is the headless surface. See chart-family.docs.md
- * § "Standalone export".
+ * The Drawing Board's "Export chart" button shares the SVG core + font machinery
+ * for the vector tier; the PNG tier needs this engine path (no in-browser
+ * equivalent). See chart-family.docs.md § "Standalone export".
  *
  * Usage:
  *   node tools/export-chart-svg.js <deck.md> [options]
@@ -22,8 +28,9 @@
  *     --chart I        0-based index when a slide has multiple charts (default 0)
  *     --theme NAME     theme/palette to render with (default: deck front-matter, else indaco)
  *     --mode light|dark   canvas mode (default light)
- *     -o, --out FILE   output path (default: <deck>-slideN.svg in cwd)
- *     --all            export every chart in the deck (-> <deck>-sNN-cMM.svg)
+ *     -o, --out FILE   output path (default: <deck>-slideN.svg|.png in cwd; the
+ *                      extension is forced to match the chart's tier)
+ *     --all            export every chart in the deck (-> <deck>-sNN-cMM.svg|.png)
  *
  * Needs a Chromium (CHROME_PATH or the puppeteer cache) — like every render here.
  */
@@ -112,7 +119,7 @@ async function main() {
   });
   try {
     const page = await browser.newPage();
-    await page.setViewport({ width: 1400, height: 900, deviceScaleFactor: 1 });
+    await page.setViewport({ width: 1400, height: 900, deviceScaleFactor: 2 });
     await page.setContent('<!doctype html><html><head><meta charset="utf-8"></head><body></body></html>', { waitUntil: 'load' });
     await page.addScriptTag({ content: bundle });
 
@@ -146,12 +153,21 @@ async function main() {
     // that out would wrongly drop it. Same set the Drawing Board gate uses, and
     // it skips aux overlays (e.g. the state-chart edge svg).
     const index = await page.evaluate(() => {
-      const KEYED = ['piechart', 'radar', 'map', 'quadrant'];
+      // Keyed charts render as a single self-contained <svg> → export as vector.
+      // Every OTHER chart-frame slide (gantt/kanban/progress/journey/… — HTML/CSS
+      // or mixed) → screenshot its container to PNG. The engine renders these
+      // correctly (the section is pinned to its real box so container queries
+      // resolve), so a real element screenshot captures them — exactly how the
+      // chart galleries are produced.
+      const KEYED = ['piechart', 'radar', 'map', 'quadrant', 'funnel'];
       const out = [];
       const sections = Array.from(document.querySelectorAll('.marpit > section'));
       sections.forEach((sec, si) => {
-        if (!KEYED.some(c => sec.classList.contains(c))) return;
-        Array.from(sec.querySelectorAll('svg[viewBox]')).forEach((_, ci) => { out.push({ slide: si + 1, chart: ci }); });
+        if (!sec.classList.contains('chart-frame')) return;
+        const svgs = KEYED.some(c => sec.classList.contains(c))
+          ? Array.from(sec.querySelectorAll('svg[viewBox]')) : [];
+        if (svgs.length) svgs.forEach((_, ci) => { out.push({ slide: si + 1, chart: ci, kind: 'svg' }); });
+        else out.push({ slide: si + 1, chart: 0, kind: 'png' });
       });
       return out;
     });
@@ -167,8 +183,27 @@ async function main() {
     await page.evaluate(`window.__flattenSvgStyles = ${flattenSvgStyles.toString()};`);
 
     const deckBase = path.basename(deckPath).replace(/\.md$/i, '');
+    const sectionHandles = await page.$$('.marpit > section');
     const written = [];
     for (const t of targets) {
+      // PNG tier — screenshot the chart's container element. The engine has
+      // rendered it at its real box, so this captures real pixels (no in-browser
+      // DOM-clone, which collapses container-query layouts to blank).
+      if (t.kind === 'png') {
+        const handle = sectionHandles[t.slide - 1];
+        if (!handle) { console.warn(`! slide ${t.slide}: not found, skipped`); continue; }
+        const outPath = a.out && !a.all
+          ? path.resolve(a.out.replace(/\.svg$/i, '.png'))
+          : path.resolve(a.all
+            ? `${deckBase}-s${String(t.slide).padStart(2, '0')}-c00.png`
+            : `${deckBase}-slide${t.slide}.png`);
+        fs.mkdirSync(path.dirname(outPath), { recursive: true });
+        await handle.screenshot({ path: outPath });
+        const bytes = fs.statSync(outPath).size;
+        written.push({ outPath, bytes });
+        console.log(`✓ slide ${t.slide} (image) → ${path.relative(process.cwd(), outPath)} (${(bytes / 1024).toFixed(1)} KB)`);
+        continue;
+      }
       const markup = await page.evaluate((sel) => {
         const sections = Array.from(document.querySelectorAll('.marpit > section'));
         const sec = sections[sel.slide - 1];
