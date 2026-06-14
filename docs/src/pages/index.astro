@@ -2,11 +2,26 @@
 // Lattice landing page — a standalone Astro route (NOT a Starlight page), so it
 // renders full-bleed with the engine's own tokens instead of Starlight chrome.
 // The docs pages (/getting-started, /introduction, …) stay 100% Starlight.
+//
+// Phase 4 of the shadcn migration: the marketing sections are React + Tailwind +
+// shadcn. Astro owns the page shell (head, topbar, footer, the engine <script>);
+// React owns the content. Static sections (hero copy/CTAs, feature/why/next
+// cards, section heads) render SERVER-SIDE with NO client: directive → zero JS.
+// Only the genuinely interactive bits hydrate: the hero Preview/Source Tabs
+// (HeroPreview), the field-card live previews (FieldCardsLive), and the restyle
+// carousel (RestyleShowcase). Each WRAPS the irreducible engine via
+// src/lib/landing-engine.ts — it never reimplements the marp render.
+// See engineering/decisions/2026-06-09-shadcn-migration.md §0.
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { join } from 'node:path';
 import '../styles/landing.css';
 import PaletteControls from '../components/site/PaletteControls.tsx';
+import { HeroCopy } from '../components/landing/HeroCopy.tsx';
+import HeroPreview from '../components/landing/HeroPreview.tsx';
+import { FieldCards, NextSteps, SectionHead, WhyCards } from '../components/landing/sections.tsx';
+import FieldCardsLive from '../components/landing/FieldCardsLive.tsx';
+import RestyleShowcase from '../components/landing/RestyleShowcase.tsx';
 import { SINGLE_SLIDE_FRAME } from '../playground/frame-css.js';
 import { assetBase } from '../playground/asset-version.mjs';
 import { joinBase } from '../lib/base-url.mjs';
@@ -38,7 +53,7 @@ const titleCase = (s) => s.replace(/(^|-)(\w)/g, (_, sep, c) => (sep ? ' ' : '')
 // The hero's left panel shows the REAL manifest sample that produced the right
 // panel's rendered slide image — so "write this, get this" is literally true.
 // Hero = the component flagged `showcase.hero` in its manifest; its sample is
-// shown verbatim as the headline source and rendered as the hero slide image.
+// shown verbatim as the headline source and rendered as the hero slide.
 const heroComp = manifests.find((m) => m.showcase && m.showcase.hero);
 const escapeHtml = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const heroSource = heroComp.sample.trim();
@@ -63,15 +78,14 @@ const paletteAccents = palettes.map((name) => {
 	return { name, label: titleCase(name), accent: hit ? hit[1] : '#888888' };
 });
 
-// Live-render data: the client renders the hero, the field cards, and the
-// restyle demo through the playground runtime so they follow the selected
-// palette + light/dark, instead of being baked-in-indaco static images.
+// Live-render data: the islands render the hero, the field cards, and the
+// restyle demo through the engine runtime so they follow the selected palette +
+// light/dark, instead of being baked-in-indaco static images.
 const needsMermaid = (s) => /```mermaid/.test(s || '');
 
-// The "speaks your field" cards each render a REAL slide live (no static
-// image) through the same playground runtime the hero + carousel use, so they
-// follow the global palette + light/dark. One representative component per
-// field — its manifest sample is the source rendered in the card.
+// The "speaks your field" cards each render a REAL slide live (no static image)
+// through the same engine runtime the hero + carousel use. One representative
+// component per field — its manifest sample is the source rendered in the card.
 const CARD_COMPONENTS = ['math', 'gantt', 'diagram', 'obligation-matrix', 'radar', 'cards-grid'];
 const cardData = CARD_COMPONENTS.reduce((acc, n) => {
 	const m = manifests.find((x) => x.name === n);
@@ -82,18 +96,50 @@ const cardData = CARD_COMPONENTS.reduce((acc, n) => {
 	return acc;
 }, {});
 
-const liveData = JSON.stringify({
-	hero: { name: heroComp.name, sample: heroComp.sample, mermaid: needsMermaid(heroComp.sample) },
-	cards: cardData,
-	restyle: {
-		sample: restyleComp.sample || restyleComp.skeleton,
-		mermaid: needsMermaid(restyleComp.sample || restyleComp.skeleton),
-		palettes: paletteAccents,
+// Shared engine endpoints handed to every live island.
+const themeBase = url(pg + 'themes/');
+const runtimeUrl = url(pg + 'lattice-runtime.js');
+const frameCss = SINGLE_SLIDE_FRAME;
+
+const heroData = {
+	sample: heroComp.sample,
+	mermaid: needsMermaid(heroComp.sample),
+	codeHtml: heroCodeHtml,
+	componentName: heroComp.name,
+	themeBase,
+	runtimeUrl,
+	frameCss,
+};
+const fieldCardsData = { cards: cardData, themeBase, runtimeUrl, frameCss };
+const restyleData = {
+	sample: restyleComp.sample || restyleComp.skeleton,
+	mermaid: needsMermaid(restyleComp.sample || restyleComp.skeleton),
+	palettes: paletteAccents,
+	themeBase,
+	runtimeUrl,
+	frameCss,
+};
+
+const nextSteps = [
+	{
+		href: url('getting-started/'),
+		title: 'Get started',
+		body: 'Install the toolchain and render your first deck in a few minutes.',
+		cta: 'Getting started',
 	},
-	themeBase: url(pg + 'themes/'),
-	runtimeUrl: url(pg + 'lattice-runtime.js'),
-	frameCss: SINGLE_SLIDE_FRAME,
-});
+	{
+		href: url('guides/authoring/'),
+		title: 'Author decks',
+		body: 'Learn the layout catalog and the authoring contract slide by slide.',
+		cta: 'Authoring guide',
+	},
+	{
+		href: url('components/'),
+		title: 'Component reference',
+		body: 'Every layout with a live preview and an in-browser editor — themable in all palettes.',
+		cta: 'Browse components',
+	},
+];
 ---
 
 <!doctype html>
@@ -147,179 +193,59 @@ const liveData = JSON.stringify({
 
 		<main>
 			<!-- Hero -->
-			<section class="hero">
-				<div class="wrap hero-grid">
-					<div class="hero-copy">
-						<p class="eyebrow">A text file in, a polished PDF out</p>
-						<h1>Write the <span class="accent">words</span>. The deck builds itself.</h1>
-						<p class="hero-lead">
-							You write the deck as a Markdown file and pick a named layout for each
-							slide. Lattice assembles every page against one shared palette — no
-							dragging, no nudging, no formatting drift.
-						</p>
-						<div class="cta-row">
-							<a class="btn btn-primary" href={url('playground/')}>Try it in your browser <span class="ico ico-arrow-right" aria-hidden="true"></span></a>
-							<a class="btn btn-ghost" href={url('getting-started/')}>Get started</a>
-						</div>
-						<p class="cta-note">No install to try it. Runs on your laptop or in CI. Fully offline. MIT-licensed.</p>
-					</div>
-
-					<div class="proof">
-						<div class="proof-tabs" role="tablist" aria-label="Hero view">
-							<button class="proof-tab is-active" type="button" id="hero-tab-preview" role="tab" aria-selected="true" aria-controls="hero-stage" data-view="preview">Preview</button>
-							<button class="proof-tab" type="button" id="hero-tab-source" role="tab" aria-selected="false" aria-controls="hero-source" data-view="source">Source</button>
-						</div>
-						<figure class="slide-frame" id="hero-stage" role="tabpanel" aria-labelledby="hero-tab-preview">
-							<img class="for-light" src={url(`showcase/${heroComp.name}.light.webp`)} alt={`A ${heroComp.name} slide rendered by Lattice`} width="1600" height="900" loading="eager" />
-							<img class="for-dark" src={url(`showcase/${heroComp.name}.dark.webp`)} alt={`A ${heroComp.name} slide rendered by Lattice in dark mode`} width="1600" height="900" loading="eager" />
-						</figure>
-						<div class="proof-code" id="hero-source" role="tabpanel" aria-labelledby="hero-tab-source" hidden>
-							<pre><code set:html={heroCodeHtml}></code></pre>
-						</div>
-					</div>
+			<section class="py-[clamp(48px,7vw,96px)] pb-[clamp(40px,5vw,72px)]">
+				<div class="wrap grid grid-cols-1 items-center gap-[clamp(28px,4vw,56px)] lg:grid-cols-[1.05fr_1fr]">
+					<!-- Static copy + CTAs (zero JS). -->
+					<HeroCopy playgroundHref={url('playground/')} getStartedHref={url('getting-started/')} />
+					<!-- Interactive Preview/Source flip + live render (hydrates). -->
+					<HeroPreview client:load data={heroData} />
 				</div>
 			</section>
 
 			<!-- Range: speaks your field -->
-			<section class="section">
+			<section class="py-[clamp(48px,6vw,88px)]">
 				<div class="wrap">
-					<div class="section-head">
-						<p class="eyebrow">Whatever you do, there's a slide for it</p>
-						<h2>Plain Markdown — in the native language of your work.</h2>
-						<p>
-							You write the same lists, tables, and fenced blocks you already
-							know. Lattice renders each in the notation your discipline expects
-							— no drawing tools, no boxes to nudge.
-						</p>
-					</div>
-					<div class="feature-grid">
-						<div class="feature">
-							<div class="feature-shot shot-img" data-live-card="math"></div>
-							<h3>Mathematicians, quants &amp; ML</h3>
-							<p>Real KaTeX equations — Definition / Theorem / Proof cards, derivation chains with a justification column, matrix decompositions, an equation beside its plot.</p>
-							<a class="card-open" href={url('playground/')} data-open-deck="math">Edit this deck <span class="ico ico-arrow-right" aria-hidden="true"></span></a>
-						</div>
-						<div class="feature">
-							<div class="feature-shot shot-img" data-live-card="gantt"></div>
-							<h3>Project leads</h3>
-							<p>Gantt charts, kanban boards, roadmaps, journeys, and step ladders — native SVG rendered straight from a list, not pasted in from Visio.</p>
-							<a class="card-open" href={url('playground/')} data-open-deck="gantt">Edit this deck <span class="ico ico-arrow-right" aria-hidden="true"></span></a>
-						</div>
-						<div class="feature">
-							<div class="feature-shot shot-img" data-live-card="diagram"></div>
-							<h3>Engineers &amp; architects</h3>
-							<p>All 25 Mermaid diagram types, auto-themed to the deck. State charts. Side-by-side code diffs, syntax-highlighted, from two fenced blocks.</p>
-							<a class="card-open" href={url('playground/')} data-open-deck="diagram">Edit this deck <span class="ico ico-arrow-right" aria-hidden="true"></span></a>
-						</div>
-						<div class="feature">
-							<div class="feature-shot shot-img" data-live-card="obligation-matrix"></div>
-							<h3>Lawyers &amp; compliance</h3>
-							<p>Statute stacks, authority chains, obligation matrices, citation cards, and regulatory-update layouts — an actual legal vocabulary.</p>
-							<a class="card-open" href={url('playground/')} data-open-deck="obligation-matrix">Edit this deck <span class="ico ico-arrow-right" aria-hidden="true"></span></a>
-						</div>
-						<div class="feature">
-							<div class="feature-shot shot-img" data-live-card="radar"></div>
-							<h3>Analysts</h3>
-							<p>Radar, quadrant, KPI, stats, progress, pie, and word-cloud — the evidence layouts that turn numbers into an argument.</p>
-							<a class="card-open" href={url('playground/')} data-open-deck="radar">Edit this deck <span class="ico ico-arrow-right" aria-hidden="true"></span></a>
-						</div>
-						<div class="feature">
-							<div class="feature-shot shot-img" data-live-card="cards-grid"></div>
-							<h3>And the basics, for everyone</h3>
-							<p>A bullet list becomes a card grid; a table becomes a comparison matrix. Fifty-eight layouts, one Markdown syntax.</p>
-							<a class="card-open" href={url('playground/')} data-open-deck="cards-grid">Edit this deck <span class="ico ico-arrow-right" aria-hidden="true"></span></a>
-						</div>
-					</div>
+					<SectionHead eyebrow="Whatever you do, there's a slide for it" title="Plain Markdown — in the native language of your work.">
+						You write the same lists, tables, and fenced blocks you already know. Lattice renders each in the notation
+						your discipline expects — no drawing tools, no boxes to nudge.
+					</SectionHead>
+					<FieldCards playgroundHref={url('playground/')} />
 				</div>
+				<!-- Invisible controller: fills the cards' live hosts + wires "Edit this
+				     deck". client:load (not client:visible) because this island renders
+				     null — a zero-box element has nothing for client:visible's observer to
+				     intersect, so it would never hydrate. It does its OWN lazy render
+				     (IntersectionObserver on the section), so eager hydration is cheap. -->
+				<FieldCardsLive client:load data={fieldCardsData} />
 			</section>
 
 			<!-- Why -->
-			<section class="section alt">
+			<section class="border-y border-border bg-muted py-[clamp(48px,6vw,88px)]">
 				<div class="wrap">
-					<div class="section-head">
-						<p class="eyebrow">Why decks drift, and why these don't</p>
-						<h2>Every deck looks like it came from the same team — because it did.</h2>
-						<p>
-							Slide tools make every slide a blank canvas, so the headline font on
-							page 4 drifts from page 5 and the accent blue wanders between two shades.
-							Lattice removes the canvas. You choose meaning; the engine owns the pixels.
-						</p>
-					</div>
-					<div class="feature-grid">
-						<div class="feature">
-							<h3>Brand colors live in one file.</h3>
-							<p>Change a palette once; every deck picks it up on the next build. Layouts never name a colour — they read <code>var(--token)</code>.</p>
-						</div>
-						<div class="feature">
-							<h3>A <code>git diff</code> shows what changed.</h3>
-							<p>A deck is text. Revisions read like code review — line by line — instead of hunting for the box that moved three pixels.</p>
-						</div>
-						<div class="feature">
-							<h3>Mermaid diagrams render in the palette.</h3>
-							<p>Flowcharts and sequence diagrams pick up the deck's tokens automatically. No per-diagram styling, no recolouring by hand.</p>
-						</div>
-						<div class="feature">
-							<h3>Contrast is WCAG AA across every layout.</h3>
-							<p>Accessibility is built into the token contract, not bolted on. Light and dark both clear the bar.</p>
-						</div>
-						<div class="feature">
-							<h3>Fifty-eight layouts, one vocabulary.</h3>
-							<p>Function · Form · Substance · Finish organizes the catalog, so "which layout do I want?" has an answer that isn't <em>scroll the gallery</em>.</p>
-						</div>
-						<div class="feature">
-							<h3>No service, no account, no telemetry.</h3>
-							<p>The engine is a build step. It runs where your code runs and sends nothing anywhere.</p>
-						</div>
-					</div>
+					<SectionHead eyebrow="Why decks drift, and why these don't" title="Every deck looks like it came from the same team — because it did.">
+						Slide tools make every slide a blank canvas, so the headline font on page 4 drifts from page 5 and the accent
+						blue wanders between two shades. Lattice removes the canvas. You choose meaning; the engine owns the pixels.
+					</SectionHead>
+					<WhyCards />
 				</div>
 			</section>
 
 			<!-- Showcase -->
-			<section class="section">
+			<section class="py-[clamp(48px,6vw,88px)]">
 				<div class="wrap">
-					<div class="section-head">
-						<p class="eyebrow">One source, every palette</p>
-						<h2>Change one line. Restyle the whole deck.</h2>
-						<p>
-							Watch a single slide move through all thirteen palettes — in light
-							or dark. Brand colours live in one file and the layouts never name a
-							colour, so a whole deck restyles by editing one <code>theme:</code> line.
-						</p>
-					</div>
-					<div class="restyle">
-						<figure class="restyle-stage shot-img" id="restyle-stage"></figure>
-						<div class="restyle-controls">
-							<div class="restyle-swatches" id="restyle-swatches" role="tablist" aria-label="Choose a palette"></div>
-							<p class="restyle-name"><span id="restyle-name"></span></p>
-						</div>
-					</div>
+					<SectionHead eyebrow="One source, every palette" title="Change one line. Restyle the whole deck.">
+						Watch a single slide move through all thirteen palettes — in light or dark. Brand colours live in one file and
+						the layouts never name a colour, so a whole deck restyles by editing one <code class="font-mono text-[0.88em] text-primary">theme:</code> line.
+					</SectionHead>
+					<RestyleShowcase client:visible data={restyleData} />
 				</div>
 			</section>
 
 			<!-- Next steps -->
-			<section class="section alt">
+			<section class="border-y border-border bg-muted py-[clamp(48px,6vw,88px)]">
 				<div class="wrap">
-					<div class="section-head">
-						<p class="eyebrow">Where to go next</p>
-						<h2>Pick a starting point.</h2>
-					</div>
-					<div class="next-grid">
-						<a class="next-card" href={url('getting-started/')}>
-							<h3>Get started</h3>
-							<p>Install the toolchain and render your first deck in a few minutes.</p>
-							<span class="go">Getting started <span class="ico ico-arrow-right" aria-hidden="true"></span></span>
-						</a>
-						<a class="next-card" href={url('guides/authoring/')}>
-							<h3>Author decks</h3>
-							<p>Learn the layout catalog and the authoring contract slide by slide.</p>
-							<span class="go">Authoring guide <span class="ico ico-arrow-right" aria-hidden="true"></span></span>
-						</a>
-						<a class="next-card" href={url('components/')}>
-							<h3>Component reference</h3>
-							<p>Every layout with a live preview and an in-browser editor — themable in all palettes.</p>
-							<span class="go">Browse components <span class="ico ico-arrow-right" aria-hidden="true"></span></span>
-						</a>
-					</div>
+					<SectionHead eyebrow="Where to go next" title="Pick a starting point." />
+					<NextSteps links={nextSteps} />
 				</div>
 			</section>
 		</main>
@@ -345,10 +271,10 @@ const liveData = JSON.stringify({
 			</div>
 		</footer>
 
-		<!-- Mobile nav toggle. Palette + light/dark are now the shared
-		     <PaletteControls> island (src/components/site/), which owns the
-		     data-palette/data-mode writes + bfcache re-sync via site-chrome.ts;
-		     the live-render observer below picks up the attribute change. -->
+		<!-- Mobile nav toggle. Palette + light/dark are the shared <PaletteControls>
+		     island (src/components/site/), which owns the data-palette/data-mode
+		     writes + bfcache re-sync via site-chrome.ts; the live islands observe
+		     those attribute changes and re-render. -->
 		<script is:inline>
 			(function () {
 				var navToggle = document.getElementById('nav-toggle');
@@ -362,216 +288,9 @@ const liveData = JSON.stringify({
 			})();
 		</script>
 
-		<!-- Live preview: render the hero (and showcase tiles) through the
-		     playground runtime so they follow the selected palette + mode. -->
-		<script type="application/json" id="ll-data" is:inline set:html={liveData}></script>
+		<!-- The marp render engine (window.LatticePlayground). Classic deferred
+		     script; the live islands (landing-engine.ts) guard on its presence and
+		     retry until it loads. -->
 		<script is:inline defer src={url(pg + 'lattice-playground.js')}></script>
-		<script is:inline>
-			(function () {
-				var dataEl = document.getElementById('ll-data');
-				if (!dataEl) return;
-				var D = JSON.parse(dataEl.textContent);
-				var root = document.documentElement;
-				var THEME_BASE = D.themeBase, RUNTIME_URL = D.runtimeUrl, FRAME_CSS = D.frameCss;
-
-				// "Edit this deck" → seed the field card's sample into the playground's
-				// handoff key (the same key specimen.js uses), then let the <a href>
-				// navigate. Registered eagerly so it works before the runtime loads.
-				document.addEventListener('click', function (e) {
-					var a = e.target.closest('[data-open-deck]');
-					if (!a) return;
-					var c = D.cards[a.getAttribute('data-open-deck')];
-					if (c) { try { localStorage.setItem('lattice-docs-pg-source', c.sample); } catch (err) {} }
-				});
-				var MERMAID = 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js';
-
-				// ── Theme fetching (shared with the playground) ──────────────
-				var fetched = {}, latticeReady = null;
-				function fetchTheme(n) {
-					if (!fetched[n]) fetched[n] = fetch(THEME_BASE + n + '.css').then(function (r) { if (!r.ok) throw new Error(n); return r.text(); });
-					return fetched[n];
-				}
-				function ensureThemes(p, m) {
-					var PG = window.LatticePlayground;
-					if (!latticeReady) latticeReady = fetchTheme('lattice').then(function (c) { PG.addThemes([c]); });
-					var jobs = [latticeReady];
-					if (!PG.hasTheme(p)) jobs.push(fetchTheme(p).then(function (c) { PG.addThemes([c]); }));
-					if (m === 'dark') jobs.push(fetchTheme(p + '-dark').then(function (c) { PG.addThemes([c]); }).catch(function () {}));
-					return Promise.all(jobs);
-				}
-				function srcdoc(html, css, mode, mermaid) {
-					var bg = mode === 'dark' ? '#0c0c0c' : '#e7e7ea';
-					// Render the slide at its INTRINSIC 1280x720 and never scale the SVG
-					// itself. Scaling a viewBox SVG that contains <foreignObject> trips a
-					// Safari/WebKit bug, and the marpit-svg-polyfill that works around it
-					// runs a requestAnimationFrame loop that re-fits on every scroll — the
-					// "scales when you scroll" jank (a no-op on Chrome, which is why it
-					// wasn't caught). With a fixed intrinsic size the polyfill isn't
-					// needed; the iframe ELEMENT is CSS-transform-scaled to fit its
-					// container instead (see scaleFrame + .slide-frame iframe.live).
-					// FRAME_CSS (frame-css.js SINGLE_SLIDE_FRAME) pins the intrinsic
-					// 1280x720 box — the single source of truth shared with the
-					// playground + specimens; a second html,body rule adds the dynamic bg.
-					var s = '<!doctype html><html><head><meta charset="utf-8"><style>' + FRAME_CSS +
-						'html,body{background:' + bg + '}' + css +
-						'</style></head><body>' + html;
-					if (mermaid) s += '<scr' + 'ipt src="' + MERMAID + '"></scr' + 'ipt>';
-					s += '<scr' + 'ipt src="' + RUNTIME_URL + '"></scr' + 'ipt></body></html>';
-					return s;
-				}
-				// Scale the fixed 1280x720 iframe to fill its (16:9) container. Driven
-				// by the container's current width, so it stays correct as the layout
-				// reflows — fully responsive without touching the SVG.
-				function scaleFrame(host) {
-					var fr = host.querySelector('iframe.live');
-					if (!fr) return;
-					var w = host.clientWidth;
-					if (w > 0) fr.style.transform = 'scale(' + (w / 1280).toFixed(5) + ')';
-				}
-
-				// ── Render one slide into a container (creates/updates iframe) ─
-				function renderInto(host, sample, mermaid, paletteOverride) {
-					var PG = window.LatticePlayground;
-					if (!PG) return Promise.resolve(false);
-					var p = paletteOverride || root.getAttribute('data-palette') || 'indaco';
-					var m = root.getAttribute('data-mode') === 'dark' ? 'dark' : 'light';
-					return ensureThemes(p, m).then(function () {
-						var theme = (m === 'dark' && PG.hasTheme(p + '-dark')) ? p + '-dark' : p;
-						var out = PG.render(sample, theme);
-						var fr = host.querySelector('iframe.live');
-						if (!fr) {
-							fr = document.createElement('iframe');
-							fr.className = 'live';
-							fr.setAttribute('title', 'Live-rendered Lattice slide');
-							fr.setAttribute('scrolling', 'no');
-							fr.setAttribute('tabindex', '-1');
-							host.appendChild(fr);
-							// Keep the scale correct as the container resizes (responsive).
-							if (typeof ResizeObserver !== 'undefined') {
-								new ResizeObserver(function () { scaleFrame(host); }).observe(host);
-							}
-						}
-						fr.onload = function () { scaleFrame(host); };
-						fr.srcdoc = srcdoc(out.html, out.css, m, mermaid);
-						scaleFrame(host);
-						host.classList.add('is-live');
-						return true;
-					}).catch(function (e) { console.error('live render failed', e); return false; });
-				}
-
-				function whenReady(cb) {
-					if (window.LatticePlayground) return cb();
-					var t = setInterval(function () { if (window.LatticePlayground) { clearInterval(t); cb(); } }, 50);
-				}
-
-				whenReady(function () {
-					// ── Hero: Source / Preview flip ──────────────────────────
-					var stage = document.getElementById('hero-stage');
-					var source = document.getElementById('hero-source');
-					var tabPreview = document.getElementById('hero-tab-preview');
-					var tabSource = document.getElementById('hero-tab-source');
-					var heroView = 'preview';
-					function renderHero() { if (stage && heroView === 'preview') renderInto(stage, D.hero.sample, D.hero.mermaid); }
-					function setHeroView(v) {
-						heroView = v;
-						var preview = v === 'preview';
-						if (stage) stage.hidden = !preview;
-						if (source) source.hidden = preview;
-						if (tabPreview) { tabPreview.classList.toggle('is-active', preview); tabPreview.setAttribute('aria-selected', preview ? 'true' : 'false'); }
-						if (tabSource) { tabSource.classList.toggle('is-active', !preview); tabSource.setAttribute('aria-selected', preview ? 'false' : 'true'); }
-						if (preview) renderHero();
-					}
-					if (tabPreview) tabPreview.addEventListener('click', function () { setHeroView('preview'); });
-					if (tabSource) tabSource.addEventListener('click', function () { setHeroView('source'); });
-					renderHero();
-
-					// ── "Speaks your field" cards: live render, no static fallback ─
-					// Same machinery as the tiles, keyed by data-live-card. Each card
-					// shows a real slide for its field; they sit just under the hero, so
-					// render them as the section nears the viewport.
-					var cardHosts = [].slice.call(document.querySelectorAll('.shot-img[data-live-card]'));
-					var renderedCards = [];
-					function renderCard(host) {
-						var name = host.getAttribute('data-live-card');
-						var c = D.cards[name];
-						if (!c) return;
-						renderInto(host, c.sample, c.mermaid).then(function (ok) { if (ok && renderedCards.indexOf(host) < 0) renderedCards.push(host); });
-					}
-					function renderAllCards() { cardHosts.forEach(renderCard); }
-					var fieldSection = cardHosts.length ? cardHosts[0].closest('.section') : null;
-					if ('IntersectionObserver' in window && fieldSection) {
-						var cio = new IntersectionObserver(function (entries) {
-							if (entries.some(function (e) { return e.isIntersecting; })) { cio.disconnect(); renderAllCards(); }
-						}, { rootMargin: '300px' });
-						cio.observe(fieldSection);
-					} else {
-						renderAllCards();
-					}
-
-					// ── "One source, every palette": one slide, every palette ─
-					var restyleStage = document.getElementById('restyle-stage');
-					var swatchWrap = document.getElementById('restyle-swatches');
-					var nameEl = document.getElementById('restyle-name');
-					var restylePalettes = (D.restyle && D.restyle.palettes) || [];
-					var swatchBtns = [];
-					var restyleIdx = 0, restyleTimer = null, restylePaused = false;
-					var reduceMotion = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
-					function renderRestyle(i) {
-						if (!restylePalettes.length) return;
-						restyleIdx = (i + restylePalettes.length) % restylePalettes.length;
-						var pal = restylePalettes[restyleIdx];
-						if (nameEl) nameEl.textContent = pal.label;
-						swatchBtns.forEach(function (b, k) {
-							var on = k === restyleIdx;
-							b.classList.toggle('active', on);
-							b.setAttribute('aria-selected', on ? 'true' : 'false');
-						});
-						if (restyleStage) renderInto(restyleStage, D.restyle.sample, D.restyle.mermaid, pal.name);
-					}
-					function startRestyle() { if (!reduceMotion && !restyleTimer && restylePalettes.length > 1) restyleTimer = setInterval(function () { if (!restylePaused) renderRestyle(restyleIdx + 1); }, 2600); }
-					function stopRestyle() { if (restyleTimer) { clearInterval(restyleTimer); restyleTimer = null; } }
-					restylePalettes.forEach(function (pal, k) {
-						var b = document.createElement('button');
-						b.type = 'button';
-						b.className = 'swatch';
-						b.style.background = pal.accent;
-						b.title = pal.label;
-						b.setAttribute('role', 'tab');
-						b.setAttribute('aria-label', pal.label);
-						b.addEventListener('click', function () { stopRestyle(); renderRestyle(k); });
-						if (swatchWrap) swatchWrap.appendChild(b);
-						swatchBtns.push(b);
-					});
-					var restyleWidget = restyleStage ? restyleStage.closest('.restyle') : null;
-					if (restyleWidget) {
-						restyleWidget.addEventListener('mouseenter', function () { restylePaused = true; });
-						restyleWidget.addEventListener('mouseleave', function () { restylePaused = false; });
-						restyleWidget.addEventListener('focusin', stopRestyle);
-					}
-					if (restyleStage) {
-						if ('IntersectionObserver' in window) {
-							var rio = new IntersectionObserver(function (entries) {
-								if (entries.some(function (e) { return e.isIntersecting; })) { rio.disconnect(); renderRestyle(0); startRestyle(); }
-							}, { rootMargin: '200px' });
-							rio.observe(restyleStage);
-						} else {
-							renderRestyle(0); startRestyle();
-						}
-					}
-
-
-					// ── Re-render on palette / mode change (hero + visible tiles + cards) ─
-					var reflow;
-					new MutationObserver(function () {
-						clearTimeout(reflow);
-						reflow = setTimeout(function () {
-							renderHero();
-							renderedCards.forEach(renderCard);
-							if (restyleStage && restyleStage.classList.contains('is-live')) renderInto(restyleStage, D.restyle.sample, D.restyle.mermaid, restylePalettes[restyleIdx].name);
-						}, 80);
-					}).observe(root, { attributes: true, attributeFilter: ['data-palette', 'data-mode'] });
-				});
-			})();
-		</script>
 	</body>
 </html>
