@@ -9,13 +9,11 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import ComponentsLayout from '../../../layouts/ComponentsLayout.astro';
 import Specimen from '../../../components/Specimen.astro';
-import ComponentDocs from '../../../components/ComponentDocs.astro';
+import ComponentDocsView from '../../../components/components-ref/ComponentDocsView.tsx';
+import { ComponentPageHeader, ComponentPager } from '../../../components/components-ref/ComponentPageChrome.tsx';
 import { buildCatalog, buildLenses, groupCatalog } from '../../../lib/families.mjs';
-import { joinBase } from '../../../lib/base-url.mjs';
 
 const base = import.meta.env.BASE_URL;
-const url = (p) => joinBase(base, p);
-const tc = (s) => (s ? s[0].toUpperCase() + s.slice(1) : s);
 
 export async function getStaticPaths() {
 	const repoRoot = join(process.cwd(), '..');
@@ -98,40 +96,18 @@ const variantGroups = Array.isArray(m.variantAxes) && m.variantAxes.length
 	current={m.name}
 >
 	<article class="cpage">
-		<header class="cpage-head">
-			<p class="cpage-crumb">
-				<a href={url('components/')}>Components</a>
-				<span aria-hidden="true">/</span>
-				<span>{tc(bucket)}</span>
-			</p>
-			<div class="cpage-titlerow">
-				<h1>{m.name}</h1>
-				<div class="cpage-ffs">
-					<span class="ffs-pill" title="Function">{tc(m.function)}</span>
-					<span class="ffs-pill" title="Form">{tc(m.form)}</span>
-					<span class="ffs-pill" title="Substance">{tc(m.substance)}</span>
-				</div>
-			</div>
-			<p class="cpage-lead">{m.description}</p>
-		</header>
+		<ComponentPageHeader
+			name={m.name}
+			bucket={bucket}
+			description={m.description}
+			triad={{ function: m.function, form: m.form, substance: m.substance }}
+			base={base}
+		/>
 
 		<Specimen name={m.name} sample={sample} mermaid={mermaid} variants={variants} variantGroups={variantGroups} />
 
-		<ComponentDocs m={m} anatomy={anatomy} nameToBucket={nameToBucket} />
+		<ComponentDocsView m={m} anatomy={anatomy} nameToBucket={nameToBucket} base={base} />
 
-		<nav class="cpage-pager" aria-label="Previous and next component">
-			{prev ? (
-				<a class="cpage-pager-link prev" href={url(`components/${prev.bucket}/${prev.name}/`)}>
-					<span class="cpage-pager-dir"><span class="ico ico-arrow-left" aria-hidden="true"></span> Previous</span>
-					<span class="cpage-pager-name">{prev.name}</span>
-				</a>
-			) : <span />}
-			{next ? (
-				<a class="cpage-pager-link next" href={url(`components/${next.bucket}/${next.name}/`)}>
-					<span class="cpage-pager-dir">Next <span class="ico ico-arrow-right" aria-hidden="true"></span></span>
-					<span class="cpage-pager-name">{next.name}</span>
-				</a>
-			) : <span />}
-		</nav>
+		<ComponentPager prev={prev} next={next} base={base} />
 	</article>
 </ComponentsLayout>

@@ -1,64 +1,17 @@
 ---
-// Left navigation for the component reference: a playground-style control
-// surface — fuzzy search (name + tags + description) and a "Group by" select —
-// over a grouped component tree. Server-renders the default Family grouping;
-// component-browser.js enhances it with fuzzy search + live re-grouping (and
-// drives the index grid too). Highlights the current component.
+// Left navigation for the component reference — now a React island
+// (ComponentNavIsland): fuzzy search + a "Group by" select over a grouped
+// component tree, sharing one store with the index grid so search/regroup
+// drive both. Highlights the current component. Replaces the vanilla
+// component-browser.js nav rendering.
 //
 // Props:
 //   catalog  built by lib/families.buildCatalog()
-//   lenses   buildLenses() — for the Group by <select> options
-//   groups   groupCatalog(catalog, 'family') — SSR default
+//   lenses   buildLenses() — for the Group by select options
 //   current  string|null — active component name
-const { catalog = [], lenses = [], groups = [], current = null } = Astro.props;
-
-import { joinBase } from '../lib/base-url.mjs';
+import ComponentNavIsland from './components-ref/ComponentNavIsland.tsx';
+const { catalog = [], lenses = [], current = null } = Astro.props;
 const base = import.meta.env.BASE_URL;
-const url = (p) => joinBase(base, p);
-
-const config = JSON.stringify({ base, current });
-const catalogJson = JSON.stringify(catalog);
 ---
 
-<nav class="cnav" aria-label="Components">
-	<div class="cnav-controls">
-		<input
-			type="search"
-			class="cnav-search-input"
-			data-browser-search
-			placeholder="Search components…"
-			aria-label="Search components by name, tag, or description"
-			autocomplete="off"
-		/>
-		<label class="cnav-groupby">
-			<span>Group by</span>
-			<select data-browser-groupby aria-label="Group components by">
-				{lenses.map((l) => <option value={l.id}>{l.label}</option>)}
-			</select>
-		</label>
-	</div>
-	<div class="cnav-scroll">
-		<a class="cnav-home" href={url('components/')} aria-current={current === null ? 'page' : undefined}>All components</a>
-		{groups.map((g) => (
-			<section class="cnav-bucket">
-				<h2 class="cnav-bucket-title">{g.label}</h2>
-				<ul>
-					{g.items.map((it) => (
-						<li class="cnav-item">
-							<a href={url(`components/${it.bucket}/${it.name}/`)} aria-current={current === it.name ? 'page' : undefined}>
-								{it.name}
-							</a>
-						</li>
-					))}
-				</ul>
-			</section>
-		))}
-	</div>
-</nav>
-
-<script type="application/json" id="component-catalog" is:inline set:html={catalogJson}></script>
-<script type="application/json" id="browser-config" is:inline set:html={config}></script>
-<script>
-	import { initComponentBrowser } from '../playground/component-browser.js';
-	initComponentBrowser();
-</script>
+<ComponentNavIsland client:idle catalog={catalog} lenses={lenses} base={base} current={current} />

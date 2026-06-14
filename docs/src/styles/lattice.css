@@ -19,6 +19,11 @@
 /* Topbar chrome glyphs (menu / moon / sun) — shared with the standalone pages
  * (landing.css) so the docs topbar can't drift from the rest of the site. */
 @import './chrome-icons.css';
+/* Tailwind v4 + the shadcn ↔ Lattice token bridge (Preflight OFF, scoped to
+ * `.lx-ui` island roots). Loaded here so Starlight docs pages can host shadcn
+ * islands too; the bridge maps shadcn tokens onto the same palette tokens this
+ * file already remaps for Starlight (--sl-color-*). See tailwind.css. */
+@import './tailwind.css';
 
 :root {
 	--sl-font: 'Outfit', system-ui, sans-serif;
@@ -202,50 +207,9 @@ h1#_top {
 	gap: 0.5rem;
 	flex: 0 0 auto;
 }
-.lx-palette {
-	padding: 0.35rem 0.55rem;
-	border: 1px solid var(--border);
-	border-radius: 8px;
-	background: var(--bg);
-	color: var(--text-body);
-	font-family: var(--sl-font);
-	font-size: var(--sl-text-xs);
-	cursor: pointer;
-	max-width: 9.5rem;
-}
-.lx-palette:focus-visible {
-	outline: 2px solid var(--accent);
-	outline-offset: 1px;
-	border-color: var(--accent);
-}
-.lx-mode {
-	flex: 0 0 auto;
-	display: inline-grid;
-	place-items: center;
-	width: 2.125rem;
-	height: 2.125rem;
-	border-radius: 8px;
-	border: 1px solid var(--border);
-	background: var(--bg);
-	color: var(--text-body);
-	cursor: pointer;
-}
-.lx-mode:hover {
-	border-color: var(--accent);
-	color: var(--accent);
-}
-.lx-mode::before {
-	content: '';
-	width: 1rem;
-	height: 1rem;
-	background: currentColor;
-	-webkit-mask: var(--icon-moon) center / contain no-repeat;
-	mask: var(--icon-moon) center / contain no-repeat;
-}
-:root[data-mode='dark'] .lx-mode::before {
-	-webkit-mask-image: var(--icon-sun);
-	mask-image: var(--icon-sun);
-}
+/* The palette <select> + light/dark toggle that lived here are now the shared
+ * React <PaletteControls> island (src/components/site/), styled by shadcn +
+ * the token bridge. The .lx-controls flex container above still wraps it. */
 
 /* Mobile sidebar toggle (Starlight's <starlight-menu-button>). Restyle the
  * default floating white circle into the same bordered square the site's own
@@ -276,9 +240,6 @@ starlight-menu-button[aria-expanded='true'] button {
 @media (max-width: 30rem) {
 	.lx-topbar {
 		gap: 0.6rem;
-	}
-	.lx-palette {
-		max-width: 6.5rem;
 	}
 }
 

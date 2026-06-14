@@ -13,6 +13,10 @@
 /* Topbar chrome glyphs (menu / moon / sun) — shared with the Starlight docs
  * skin (lattice.css) so the two topbars can't drift. See chrome-icons.css. */
 @import './chrome-icons.css';
+/* Tailwind v4 + the shadcn ↔ Lattice token bridge (Preflight OFF, scoped to
+ * `.lx-ui` island roots). landing.css is imported by every standalone page, so
+ * this loads Tailwind site-wide for the React islands. See tailwind.css. */
+@import './tailwind.css';
 
 :root {
 	--font-display: 'Playfair Display', Georgia, serif;
@@ -157,6 +161,23 @@ a {
 	color: var(--accent);
 	text-decoration: none;
 }
+/* shadcn components rendered as a link (asChild → <a data-slot=…>) must keep
+ * their OWN color, not the global link colour above. Tailwind's color utilities
+ * are @layer-ed, so they lose to this unlayered `a` rule (the load-bearing
+ * cascade trap, migration doc §0). Hand control back to the component by mapping
+ * each variant's intended foreground here, UNLAYERED, so it wins. Scoped to
+ * .lx-ui island roots so it can't affect ordinary page links. */
+.lx-ui a[data-slot='button'][data-variant='default'] {
+	color: var(--on-accent);
+}
+.lx-ui a[data-slot='button'][data-variant='outline'],
+.lx-ui a[data-slot='button'][data-variant='ghost'],
+.lx-ui a[data-slot='button'][data-variant='link'] {
+	color: var(--text-heading);
+}
+.lx-ui a[data-slot='badge'] {
+	color: var(--accent);
+}
 h1,
 h2,
 h3 {
@@ -174,15 +195,6 @@ code {
 	max-width: var(--maxw);
 	margin: 0 auto;
 	padding: 0 24px;
-}
-.eyebrow {
-	font-family: var(--font-mono);
-	font-size: 12px;
-	font-weight: 500;
-	letter-spacing: 0.16em;
-	text-transform: uppercase;
-	color: var(--accent);
-	margin: 0;
 }
 
 /* ── Top bar ─────────────────────────────────────────────────────────── */
@@ -318,380 +330,6 @@ html[data-mode='dark'] .mode-toggle::before {
 	mask-image: var(--icon-sun);
 }
 
-/* ── Buttons ─────────────────────────────────────────────────────────── */
-.btn {
-	display: inline-flex;
-	align-items: center;
-	gap: 8px;
-	padding: 12px 22px;
-	border-radius: var(--radius-sm);
-	font-family: var(--font-body);
-	font-size: 15px;
-	font-weight: 600;
-	cursor: pointer;
-	border: 1px solid transparent;
-	transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
-}
-.btn-primary {
-	background: var(--accent);
-	color: var(--on-accent);
-	box-shadow: var(--shadow-sm);
-}
-.btn-primary:hover {
-	transform: translateY(-1px);
-	box-shadow: var(--shadow-lg);
-}
-.btn-ghost {
-	background: transparent;
-	color: var(--text-heading);
-	border-color: var(--border);
-}
-.btn-ghost:hover {
-	border-color: var(--accent);
-	color: var(--accent);
-}
-
-/* ── Hero ────────────────────────────────────────────────────────────── */
-.hero {
-	padding: clamp(48px, 7vw, 96px) 0 clamp(40px, 5vw, 72px);
-}
-.hero-grid {
-	display: grid;
-	grid-template-columns: 1.05fr 1fr;
-	gap: clamp(28px, 4vw, 56px);
-	align-items: center;
-}
-/* Both grid items must be allowed to shrink below their intrinsic content
- * width. A grid track defaults to min-width:auto, so the live-preview iframe
- * (intrinsic 1280px) forces the .proof track ~1280px wide — overflowing the
- * viewport, and on WebKit the aspect-ratio:16/9 height re-resolves against
- * that runaway width on every scroll (the "preview grows as you scroll"
- * bug). min-width:0 lets the tracks size to the container instead. */
-.hero-copy,
-.proof {
-	min-width: 0;
-}
-.hero-copy .eyebrow {
-	margin-bottom: 18px;
-}
-.hero h1 {
-	font-size: clamp(38px, 5.4vw, 68px);
-	margin-bottom: 22px;
-}
-.hero h1 .accent {
-	color: var(--accent);
-	font-style: italic;
-}
-.hero-lead {
-	font-size: clamp(17px, 1.5vw, 20px);
-	color: var(--text-body);
-	max-width: 46ch;
-	margin: 0 0 30px;
-}
-.cta-row {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 12px;
-	align-items: center;
-}
-.cta-note {
-	font-size: 13px;
-	color: var(--text-muted);
-	margin: 16px 0 0;
-}
-
-/* The hero proof: a Source / Preview flip. Tabs sit above the stage (never
- * overlaying it); the stage shows the live-rendered slide, the source view
- * shows the Markdown that produced it. */
-.proof {
-	display: flex;
-	flex-direction: column;
-	gap: 12px;
-}
-.proof-tabs {
-	display: inline-flex;
-	align-self: flex-start;
-	gap: 2px;
-	padding: 3px;
-	border: 1px solid var(--border);
-	border-radius: var(--radius-sm);
-	background: var(--bg-alt);
-}
-.proof-tab {
-	appearance: none;
-	border: 0;
-	border-radius: 6px;
-	padding: 6px 16px;
-	font-family: var(--font-body);
-	font-size: 13px;
-	font-weight: 600;
-	color: var(--text-muted);
-	background: transparent;
-	cursor: pointer;
-}
-.proof-tab:hover {
-	color: var(--text-body);
-}
-.proof-tab.is-active {
-	color: var(--accent);
-	background: var(--bg);
-	box-shadow: var(--shadow-sm);
-}
-.proof-code {
-	background: var(--bg-dark);
-	border-radius: var(--radius-md);
-	padding: 18px 20px;
-	box-shadow: var(--shadow-lg);
-	overflow: auto;
-	aspect-ratio: 16 / 9;
-}
-.proof-code pre {
-	margin: 0;
-	font-family: var(--font-mono);
-	font-size: 12.5px;
-	line-height: 1.65;
-	color: var(--on-dark);
-	white-space: pre;
-}
-.proof-code .ln-class {
-	color: color-mix(in srgb, var(--accent) 70%, #ffffff);
-}
-.proof-code .ln-h {
-	color: #fff;
-	font-weight: 600;
-}
-.proof-code .ln-dim {
-	color: var(--on-dark-muted);
-}
-.slide-frame {
-	position: relative;
-	/* <figure> carries a UA margin (0 40px); reset it or width:100% + 40px
-	 * side margins push the frame 40px right and overflow the viewport. */
-	margin: 0;
-	/* Explicit width so it's a DEFINITE dimension: as a flex item in the
-	 * column-flex .proof, an auto width let WebKit resolve width-FROM-height
-	 * (via aspect-ratio), producing a wrong ratio (~1.37). With width:100%,
-	 * aspect-ratio:16/9 derives the height from the width as intended. */
-	width: 100%;
-	border: 1px solid var(--border);
-	border-radius: var(--radius-md);
-	overflow: hidden;
-	box-shadow: var(--shadow-lg);
-	background: var(--bg-alt);
-	aspect-ratio: 16 / 9;
-}
-/* Live-rendered slide (playground runtime) layered over the static fallback
- * image; fades in once rendered so it follows the selected palette + mode. */
-.slide-frame iframe.live,
-.shot-img iframe.live {
-	position: absolute;
-	top: 0;
-	left: 0;
-	/* Fixed intrinsic slide size; scaled to fit the 16:9 container via a CSS
-	 * transform set in JS (scaleFrame). transform-origin top-left so the
-	 * scaled box aligns to the container's corner. The container's
-	 * overflow:hidden + aspect-ratio:16/9 crop it to the right box. */
-	width: 1280px;
-	height: 720px;
-	transform-origin: top left;
-	border: 0;
-	display: block;
-	opacity: 0;
-	transition: opacity 0.25s ease;
-}
-.slide-frame.is-live iframe.live,
-.shot-img.is-live iframe.live {
-	opacity: 1;
-}
-.slide-frame img {
-	/* Absolutely positioned so the static fallback image doesn't add to the
-	 * box height — aspect-ratio:16/9 alone controls it. (When static, height:
-	 * 100% against an aspect-derived height is circular and WebKit resolves it
-	 * by inflating the box, breaking the 16:9 ratio.) */
-	position: absolute;
-	inset: 0;
-	width: 100%;
-	height: 100%;
-	object-fit: cover;
-}
-
-/* ── Section scaffolding ─────────────────────────────────────────────── */
-.section {
-	padding: clamp(48px, 6vw, 88px) 0;
-}
-.section.alt {
-	background: var(--bg-alt);
-	border-top: 1px solid var(--border);
-	border-bottom: 1px solid var(--border);
-}
-.section-head {
-	max-width: 62ch;
-	margin-bottom: 40px;
-}
-.section-head .eyebrow {
-	margin-bottom: 12px;
-}
-.section-head h2 {
-	font-size: clamp(28px, 3.4vw, 42px);
-	margin-bottom: 14px;
-}
-.section-head p {
-	font-size: 17px;
-	color: var(--text-body);
-	margin: 0;
-}
-
-/* ── Feature grid ────────────────────────────────────────────────────── */
-.feature-grid {
-	display: grid;
-	grid-template-columns: repeat(3, 1fr);
-	gap: 18px;
-}
-.feature {
-	background: var(--bg);
-	border: 1px solid var(--border);
-	border-radius: var(--radius-md);
-	padding: 26px 24px;
-	box-shadow: var(--shadow-sm);
-}
-.section.alt .feature {
-	background: var(--bg);
-}
-.feature h3 {
-	font-family: var(--font-body);
-	font-weight: 600;
-	font-size: 18px;
-	letter-spacing: -0.01em;
-	color: var(--text-heading);
-	margin-bottom: 8px;
-	line-height: 1.3;
-}
-.feature p {
-	font-size: 15px;
-	color: var(--text-body);
-	margin: 0;
-}
-.feature code {
-	font-size: 0.88em;
-	color: var(--accent);
-}
-/* Live slide preview at the top of each "speaks your field" card. The runtime
- * fills it with a real slide following the global palette + mode — no static
- * image. Reuses the .shot-img iframe.live scaling (transform set by scaleFrame);
- * this rule just supplies the 16:9 cropping box the standalone host needs. */
-.feature-shot {
-	position: relative;
-	aspect-ratio: 16 / 9;
-	overflow: hidden;
-	border-radius: var(--radius-sm);
-	background: var(--bg-alt);
-	border: 1px solid var(--border);
-	margin-bottom: 18px;
-}
-/* Intentional, dedicated handoff to the playground — a real link (cmd/middle-
- * click opens a new tab), not a click target on the card or its preview. */
-.card-open {
-	display: inline-block;
-	margin-top: 14px;
-	font-size: 13.5px;
-	font-weight: 600;
-	color: var(--accent);
-	text-decoration: none;
-}
-.card-open:hover,
-.card-open:focus-visible {
-	text-decoration: underline;
-}
-
-/* ── Restyle demo: one slide, every palette ──────────────────────────── */
-.restyle {
-	max-width: 860px;
-	margin: 0 auto;
-}
-.restyle-stage {
-	position: relative;
-	aspect-ratio: 16 / 9;
-	overflow: hidden;
-	border-radius: var(--radius-md);
-	border: 1px solid var(--border);
-	background: var(--bg-alt);
-	box-shadow: var(--shadow-md);
-}
-.restyle-controls {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	gap: 16px;
-	margin-top: 18px;
-}
-.restyle-swatches {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 9px;
-}
-.restyle-swatches .swatch {
-	width: 22px;
-	height: 22px;
-	padding: 0;
-	border-radius: 50%;
-	border: 2px solid var(--border);
-	cursor: pointer;
-	transition: transform 0.12s ease, border-color 0.12s ease;
-}
-.restyle-swatches .swatch:hover {
-	transform: scale(1.12);
-}
-.restyle-swatches .swatch.active {
-	border-color: var(--text-heading);
-	transform: scale(1.2);
-}
-.restyle-name {
-	margin: 0;
-	font-weight: 600;
-	font-size: 15px;
-	color: var(--text-heading);
-	min-width: 7ch;
-	text-align: right;
-}
-
-/* ── Next-step cards ─────────────────────────────────────────────────── */
-.next-grid {
-	display: grid;
-	grid-template-columns: repeat(3, 1fr);
-	gap: 18px;
-}
-.next-card {
-	display: block;
-	background: var(--bg);
-	border: 1px solid var(--border);
-	border-radius: var(--radius-md);
-	padding: 26px 24px;
-	box-shadow: var(--shadow-sm);
-	transition: transform 0.14s ease, box-shadow 0.14s ease, border-color 0.14s ease;
-}
-.next-card:hover {
-	transform: translateY(-2px);
-	box-shadow: var(--shadow-lg);
-	border-color: var(--accent);
-}
-.next-card h3 {
-	font-family: var(--font-body);
-	font-weight: 600;
-	font-size: 19px;
-	color: var(--text-heading);
-	margin-bottom: 8px;
-}
-.next-card p {
-	font-size: 15px;
-	color: var(--text-body);
-	margin: 0 0 14px;
-}
-.next-card .go {
-	font-size: 14px;
-	font-weight: 600;
-	color: var(--accent);
-}
-
 /* ── Footer ──────────────────────────────────────────────────────────── */
 .foot {
 	border-top: 1px solid var(--border);
@@ -725,30 +363,11 @@ html[data-mode='dark'] .mode-toggle::before {
 	color: var(--text-muted);
 }
 
-/* Light/dark slide-image swap for the hero fallback image (.light + .dark). */
-.for-dark {
-	display: none;
-}
-html[data-mode='dark'] .for-light {
-	display: none;
-}
-html[data-mode='dark'] .for-dark {
-	display: block;
-}
-
-/* ── Responsive (fluid, single codebase) ─────────────────────────────── */
-@media (max-width: 900px) {
-	.hero-grid {
-		grid-template-columns: 1fr;
-	}
-	.proof {
-		order: -1; /* image-first on small screens */
-	}
-	.feature-grid,
-	.next-grid {
-		grid-template-columns: repeat(2, 1fr);
-	}
-}
+/* ── Responsive (shared topbar chrome) ───────────────────────────────────
+ * Landing-section responsiveness now lives in the React components' Tailwind
+ * utilities (grid-cols-* breakpoints). What remains here is the SHARED topbar
+ * chrome — the same bar renders on the playground / drawing-board / workbench /
+ * components surfaces (TopBar.astro), so these rules must stay. */
 /* Tablet / phone: collapse the nav links behind the hamburger. The links
  * become a full-width dropdown panel under the bar; palette + mode controls
  * stay visible at all sizes. */
@@ -783,10 +402,6 @@ html[data-mode='dark'] .for-dark {
 	}
 }
 @media (max-width: 620px) {
-	.feature-grid,
-	.next-grid {
-		grid-template-columns: 1fr;
-	}
 	.foot .legal {
 		margin-left: 0;
 	}

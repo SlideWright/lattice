@@ -3,13 +3,22 @@
 // the marp-cli render path client-side via docs/public/playground/
 // lattice-playground.js. Type Lattice markdown, pick a component template, see
 // it render live in the chosen palette.
+//
+// Phase 3 of the shadcn migration: the surface is a React + shadcn island
+// (PlaygroundApp). Astro owns the page shell (head, topbar, the engine
+// <script> tags); React owns the toolbar, editor host, preview iframe, and the
+// Sheets — WRAPPING the irreducible engine pieces (CodeMirror editor.js, the
+// filmstrip deck-preview.js, the shared deck-config.js, window.LatticePlayground)
+// rather than reimplementing them. See engineering/decisions/2026-06-09-shadcn-migration.md §0.
 import { createRequire } from 'node:module';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import '../styles/landing.css';
 import '../styles/playground.css';
 import '../styles/deck-config.css';
-import { buildCatalog, buildLenses, groupCatalog } from '../lib/families.mjs';
+import PaletteControls from '../components/site/PaletteControls.tsx';
+import PlaygroundApp from '../components/playground/PlaygroundApp.tsx';
+import { buildCatalog, buildLenses } from '../lib/families.mjs';
 import { joinBase } from '../lib/base-url.mjs';
 import { primaryNav, GITHUB_URL, isCurrent } from '../lib/nav.mjs';
 import { isPreviewDeploy } from '../lib/deploy-env.mjs';
@@ -41,15 +50,12 @@ const previewDeploy = isPreviewDeploy({
 
 const tokensCss = readFileSync(join(docsRoot, 'src/styles/lattice-tokens.generated.css'), 'utf8');
 const palettes = [...new Set([...tokensCss.matchAll(/data-palette="([^"]+)"/g)].map((m) => m[1]))];
-const titleCase = (s) => s.replace(/(^|-)(\w)/g, (_, sep, c) => (sep ? ' ' : '') + c.toUpperCase());
 
 // Template catalog for the picker. Each component carries its documented
 // variants (modifiers) so the Variant dropdown can load any of them into the
-// editor. The `components` array (enriched with the Function·Form·Substance /
-// family / tags fields) feeds the searchable, groupable popover picker —
-// reusing the same buildCatalog + groupCatalog + lenses the component
-// reference browses with, so the playground gains the reference's search +
-// Group-by power without a second taxonomy.
+// editor. The `components` array (the Function·Form·Substance / family / tags
+// fields) feeds the searchable, groupable popover picker — reusing the same
+// buildCatalog + the shared search-core the component reference browses with.
 const catalog = {};
 for (const m of manifests) {
 	const variantDocs = m.variantDocs || {};
@@ -62,7 +68,6 @@ for (const m of manifests) {
 }
 const components = buildCatalog(manifests, manifestBucket);
 const lenses = buildLenses();
-const pickerGroups = groupCatalog(components, 'function'); // SSR default (no-JS fallback)
 
 // Starter deck = the hero component's sample (verdict-grid).
 const heroComp = manifests.find((m) => m.showcase && m.showcase.hero);
@@ -70,31 +75,34 @@ const starter = (heroComp && heroComp.sample) || '<!-- _class: title silent -->\
 
 // Full showcase + per-family survey decks for the "Load a deck" drawer. Loaded
 // from repo markdown at build time (galleries.mjs), with local image assets
-// inlined as data URIs so the preview iframe renders them. The drawer renders
-// labels + slide counts (SSR, below); the controller only needs id → source.
+// inlined as data URIs so the preview iframe renders them. The Sheet renders
+// labels + slide counts; the controller maps id → source.
 const galleries = loadGalleries(repoRoot);
 const galleryGroups = GALLERY_GROUPS.map((grp) => ({
-	...grp,
-	items: galleries.filter((g) => g.group === grp.key),
+	key: grp.key,
+	hint: grp.hint,
+	items: galleries
+		.filter((g) => g.group === grp.key)
+		.map((g) => ({ id: g.id, label: g.label, slides: g.slides })),
 })).filter((grp) => grp.items.length);
 const gallerySources = Object.fromEntries(galleries.map((g) => [g.id, g.source]));
 
-// Escape `<` as its JSON unicode form so a deck source containing a literal
-// `</script>` (the jargon gallery ends with two) can't close the data
-// `<script>` tag early — that truncates the JSON, the controller's JSON.parse
-// throws, and the tail spills into the page as visible text. `JSON.parse`
-// decodes `<` back to `<`, so the deck source is unchanged.
-const pgData = JSON.stringify({
+// The full data payload for the React island. Passed as a prop (Astro
+// serializes it); the deck sources can contain a literal `</script>` (the jargon
+// gallery ends with two), but as a serialized prop — not an inline <script> —
+// Astro escapes it safely, so the old `<` hand-escape is no longer needed.
+const pgData = {
 	catalog,
 	components,
 	lenses,
 	gallerySources,
+	galleryGroups,
 	themeBase: url(pg + 'themes/'),
 	runtimeUrl: url(pg + 'lattice-runtime.js'),
-	defaultPalette: 'indaco',
 	palettes,
 	finishes: FINISH_NAMES,
-}).replace(/</g, '\\u003c');
+	starter,
+};
 ---
 
 <!doctype html>
@@ -132,589 +140,47 @@ const pgData = JSON.stringify({
 					<a class="navlink" href={GITHUB_URL}>GitHub</a>
 				</nav>
 				<div class="topbar-actions">
-					<div class="controls">
-						<select class="palette-select" id="palette" aria-label="Palette">
-							{palettes.map((p) => <option value={p}>{titleCase(p)}</option>)}
-						</select>
-						<button class="mode-toggle" id="mode-toggle" aria-label="Toggle light / dark" title="Toggle light / dark"></button>
+					<div class="controls lx-ui">
+						<PaletteControls client:idle palettes={palettes} />
 					</div>
 					<button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-controls="topnav" aria-expanded="false"></button>
 				</div>
 			</div>
 		</header>
 
-		<div class="pg-bar">
-			<!-- Pickers cluster (row 1 on mobile): Component + Variant, labels on
-			     top so the controls keep the width. The Component picker is a
-			     searchable, groupable popover (template-picker.js); its grouped
-			     <ul> is the no-JS / pre-hydration fallback. -->
-			<div class="pg-bar-pickers">
-			<div class="pg-picker pg-template-picker" id="pg-template-picker">
-				<label id="pg-template-label">Component</label>
-				<button
-					type="button"
-					class="pg-picker-trigger"
-					id="pg-template-trigger"
-					aria-haspopup="listbox"
-					aria-expanded="false"
-					aria-labelledby="pg-template-label pg-template-current"
-				>
-					<span class="pg-picker-current" id="pg-template-current">Pick a component…</span>
-					<span class="pg-picker-caret ico ico-chevron-down" aria-hidden="true"></span>
-				</button>
-				<div class="pg-picker-pop" id="pg-template-pop" hidden>
-					<div class="pg-picker-pop-head">
-						<input
-							type="search"
-							class="pg-picker-search"
-							id="pg-template-search"
-							placeholder="Search components — name, tag, or description…"
-							aria-label="Search components"
-							autocomplete="off"
-						/>
-						<label class="pg-picker-groupby">
-							<span>Group</span>
-							<select id="pg-template-groupby" aria-label="Group components by">
-								{lenses.map((l) => <option value={l.id}>{l.label}</option>)}
-							</select>
-						</label>
-					</div>
-					<div class="pg-picker-list" id="pg-template-list" role="listbox" aria-label="Components">
-						{pickerGroups.map((g) => (
-							<section class="pg-picker-group">
-								<h3 class="pg-picker-group-title">{g.label}</h3>
-								<ul>
-									{g.items.map((it) => (
-										<li>
-											<button type="button" class="pg-picker-option" role="option" aria-selected="false" data-pick={it.name}>
-												{it.name}
-											</button>
-										</li>
-									))}
-								</ul>
-							</section>
-						))}
-					</div>
-				</div>
-			</div>
-			<div class="pg-picker pg-variant-picker">
-				<label for="pg-variant">Variant</label>
-				<select id="pg-variant" class="pg-variant-select" aria-label="Component variant" disabled>
-					<option value="">—</option>
-				</select>
-			</div>
-			</div>
-			<!-- Actions cluster (row 2 on mobile): Edit/Preview grouped at the left,
-			     the Galleries button pushed to the right edge. It opens the
-			     "Load a deck" drawer — a labeled grid icon, not a gear, because the
-			     action is "browse + load a full showcase deck", not "settings". The
-			     drawer also carries the demoted per-component scaffold actions. -->
-			<div class="pg-bar-actions">
-				<div class="pg-tabs" role="tablist">
-					<button class="pg-tab" id="tab-edit" role="tab" aria-selected="true">Edit</button>
-					<button class="pg-tab" id="tab-preview" role="tab" aria-selected="false">Preview</button>
-				</div>
-				<span class="pg-status" id="pg-status">Ready.</span>
-				<button
-					type="button"
-					class="pg-galleries-btn"
-					id="pg-config-trigger"
-					aria-haspopup="dialog"
-					aria-expanded="false"
-					aria-controls="pg-config-drawer"
-					aria-label="Deck setup"
-					title="Deck setup — front matter for this deck"
-				>
-					<span class="ico ico-settings" aria-hidden="true"></span>
-					<span class="pg-btn-text">Deck setup</span>
-				</button>
-				<button
-					type="button"
-					class="pg-galleries-btn"
-					id="pg-galleries-trigger"
-					aria-haspopup="dialog"
-					aria-expanded="false"
-					aria-controls="pg-drawer"
-					aria-label="Galleries"
-					title="Galleries — load a showcase or family deck"
-				>
-					<span class="ico ico-gallery" aria-hidden="true"></span>
-					<span class="pg-btn-text">Galleries</span>
-				</button>
-			</div>
-		</div>
+		<!-- The playground surface: one React + shadcn island owning the toolbar
+		     (component Popover+Command picker, variant Select, mobile Edit/Preview
+		     Tabs, status, the Deck-setup + Galleries Sheets), the CodeMirror editor
+		     host, and the preview iframe. -->
+		<PlaygroundApp client:load data={pgData} />
 
-		<main class="pg-split">
-			<section class="pg-pane editor">
-				<div class="pg-pane-label">Markdown</div>
-				<!-- CodeMirror mounts into #editor-host. The textarea is the no-JS /
-				     pre-hydration fallback and the source of the starter text;
-				     editor.js reads its value, then replaces it. -->
-				<div class="pg-editor-host" id="editor-host">
-					<textarea id="editor" spellcheck="false" aria-label="Lattice markdown editor">{starter}</textarea>
-				</div>
-			</section>
-			<section class="pg-pane preview">
-				<div class="pg-pane-label">Rendered slides</div>
-				<div class="pg-preview-wrap">
-					<iframe id="preview" title="Rendered slides preview"></iframe>
-				</div>
-			</section>
-		</main>
-
-		<!-- "Load a deck" drawer — slides in from the right over a scrim. Two
-		     kinds of action read as distinct sections: scaffold the picked
-		     component (top — the quick, in-flow action), or load a full showcase /
-		     family survey deck (below). The grouped <ul> is also the no-JS fallback
-		     (the controller wires the open/close + click-to-load; with JS off the
-		     buttons are inert but the catalog is still visible). -->
-		<button type="button" class="pg-drawer-scrim" id="pg-drawer-scrim" hidden aria-label="Close"></button>
-		<aside class="pg-drawer" id="pg-drawer" aria-label="Load a deck" aria-hidden="true">
-			<div class="pg-drawer-head">
-				<span class="pg-drawer-title">Load a deck</span>
-				<button type="button" class="pg-drawer-close" id="pg-drawer-close" aria-label="Close">
-					<span class="ico ico-x" aria-hidden="true"></span>
-				</button>
-			</div>
-			<div class="pg-drawer-body">
-				<section class="pg-drawer-sec">
-					<h3 class="pg-drawer-sec-title">This component</h3>
-					<p class="pg-drawer-sec-hint">Scaffold the component selected in the bar.</p>
-					<div class="pg-drawer-actions">
-						<button type="button" class="pg-menu-item" id="pg-insert-sample">Reset to example</button>
-						<button type="button" class="pg-menu-item" id="pg-insert-skeleton">Insert blank skeleton</button>
-					</div>
-				</section>
-				{galleryGroups.map((grp) => (
-					<section class="pg-drawer-sec">
-						<h3 class="pg-drawer-sec-title">{grp.key}</h3>
-						<p class="pg-drawer-sec-hint">{grp.hint}</p>
-						<ul class="pg-gallery-list">
-							{grp.items.map((g) => (
-								<li>
-									<button type="button" class="pg-gallery-item" data-gallery={g.id}>
-										<span class="pg-gallery-item-name">{g.label}</span>
-										<span class="pg-gallery-item-meta">{g.slides} {g.slides === 1 ? 'slide' : 'slides'}</span>
-									</button>
-								</li>
-							))}
-						</ul>
-					</section>
-				))}
-			</div>
-		</aside>
-
-		<!-- Deck setup drawer — the universal front-matter config panel
-		     (createConfigPanel). Same drawer chrome as "Load a deck"; the body host
-		     carries `.deck-config` so the shared deck-config.css styles its rows. -->
-		<button type="button" class="pg-drawer-scrim" id="pg-config-scrim" hidden aria-label="Close"></button>
-		<aside class="pg-drawer" id="pg-config-drawer" aria-label="Deck setup" aria-hidden="true">
-			<div class="pg-drawer-head">
-				<span class="pg-drawer-title">Deck setup</span>
-				<button type="button" class="pg-drawer-close" id="pg-config-close" aria-label="Close">
-					<span class="ico ico-x" aria-hidden="true"></span>
-				</button>
-			</div>
-			<div class="pg-drawer-body deck-config" id="pg-config-pop"></div>
-		</aside>
-
-		<script type="application/json" id="pg-data" is:inline set:html={pgData}></script>
-
-		<!-- CodeMirror editor (bundled by Astro/Vite). Mounts into #editor-host,
-		     seeded from the textarea, and exposes a tiny adapter on window so the
-		     inline controller below reads/writes source through it. Falls back to
-		     the textarea if this module fails to load. -->
-		<script>
-			import { createEditor } from '../playground/editor.js';
-			const host = document.getElementById('editor-host');
-			const ta = document.getElementById('editor');
-			const initial = ta ? ta.value : '';
-			let notify = null;
-			const ed = createEditor({ parent: host, doc: initial, onChange: (v) => { if (notify) notify(v); } });
-			if (ta) ta.remove();
-			window.__pgEditor = {
-				getValue: () => ed.getValue(),
-				setValue: (t) => ed.setValue(t),
-				focus: () => ed.focus(),
-				onChange: (fn) => { notify = fn; },
-			};
-			window.dispatchEvent(new Event('pg-editor-ready'));
-		</script>
-
-		<!-- Deck setup — mounts the universal config panel (noTheme profile: the
-		     top-bar palette picker owns theme here) and wires the drawer open/close.
-		     Writes flow setSource → editor → onChange → live re-render. -->
-		<script>
-			import { createConfigPanel, CONFIG_PROFILES } from '../playground/deck-config.js';
-			const data = JSON.parse(document.getElementById('pg-data').textContent);
-			const drawer = document.getElementById('pg-config-drawer');
-			const scrim = document.getElementById('pg-config-scrim');
-			const trigger = document.getElementById('pg-config-trigger');
-			const config = createConfigPanel({
-				host: document.getElementById('pg-config-pop'),
-				trigger,
-				getSource: () => (window.__pgEditor ? window.__pgEditor.getValue() : ''),
-				setSource: (next) => { if (window.__pgEditor) window.__pgEditor.setValue(next); },
-				palettes: data.palettes || [],
-				finishes: data.finishes || [],
-				fields: CONFIG_PROFILES.noTheme,
-			});
-			function open() {
-				config.render();
-				drawer.classList.add('is-open');
-				drawer.setAttribute('aria-hidden', 'false');
-				scrim.hidden = false;
-				trigger.setAttribute('aria-expanded', 'true');
-			}
-			function close() {
-				drawer.classList.remove('is-open');
-				drawer.setAttribute('aria-hidden', 'true');
-				scrim.hidden = true;
-				trigger.setAttribute('aria-expanded', 'false');
-			}
-			trigger.addEventListener('click', () => (drawer.classList.contains('is-open') ? close() : open()));
-			document.getElementById('pg-config-close').addEventListener('click', close);
-			scrim.addEventListener('click', close);
-			document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && drawer.classList.contains('is-open')) close(); });
-			// Light the chip when the deck already carries managed front matter.
-			window.addEventListener('pg-editor-ready', () => config.syncTrigger());
-			if (window.__pgEditor) config.syncTrigger();
-		</script>
-
-		<!-- Searchable, groupable component picker (popover over the bar trigger).
-		     Bundled by Astro/Vite; talks to the inline controller below via the
-		     `pg-template-pick` event and the window.__pgPicker bridge. -->
-		<script>
-			import { initTemplatePicker } from '../playground/template-picker.js';
-			initTemplatePicker();
-		</script>
-
-		<!-- Guided tour: first-visit walkthrough + replay button (driver.js). -->
+		<!-- Guided tour: first-visit walkthrough + replay button (driver.js). The
+		     tour targets the live DOM by selector, so it runs after the island
+		     hydrates; it's unchanged from the vanilla surface. -->
 		<script>
 			import { initPlaygroundTour } from '../playground/playground-tour.js';
 			initPlaygroundTour();
 		</script>
 
 		<!-- Bridge: expose the shared filmstrip-preview controller (deck-preview.js)
-		     on window so the inline classic controller below can drive the iframe
-		     write/patch/fit through one implementation (also used by the Drawing
-		     Board and both Workbench studios). Deferred like the engine bundle; the
-		     controller's render() guards on window.LatticeDeckPreview the same way it
-		     guards on the engine. -->
+		     on window so the React render loop (playground-engine.ts) can drive the
+		     iframe write/patch/fit through one implementation (also used by the
+		     Drawing Board and both Workbench studios). Deferred like the engine
+		     bundle; the controller guards on window.LatticeDeckPreview's presence. -->
 		<script>
 			import { renderDeck } from '../playground/deck-preview.js';
 			window.LatticeDeckPreview = { renderDeck };
 		</script>
 
+		<!-- The marp render engine (window.LatticePlayground). Classic deferred
+		     script; the React render loop guards on its presence and retries. -->
 		<script is:inline defer src={url(pg + 'lattice-playground.js')}></script>
+
+		<!-- Mobile nav-toggle (the topbar hamburger) — the one bit of surrounding
+		     chrome still wired imperatively, identical to the other standalone
+		     routes (landing, drawing board). -->
 		<script is:inline>
 			(function () {
-				var data = JSON.parse(document.getElementById('pg-data').textContent);
-				var catalog = data.catalog;
-				var THEME_BASE = data.themeBase;
-				var RUNTIME_URL = data.runtimeUrl;
-				// The deck's live slide box (px), resolved per render from the engine's
-				// `@size` geometry (PG.render → { width, height }). Defaults to HD; a
-				// `size: 4K` deck previews at its real 3840×2160 box, not 3× oversized.
-				var curGeom = { w: 1280, h: 720 };
-				var root = document.documentElement;
-				var frame = document.getElementById('preview');
-				var statusEl = document.getElementById('pg-status');
-				var paletteSel = document.getElementById('palette');
-				var modeBtn = document.getElementById('mode-toggle');
-				var varSel = document.getElementById('pg-variant');
-				var pickerCurrentEl = document.getElementById('pg-template-current');
-
-				// The component picker is a popover (template-picker.js, a module);
-				// this controller tracks the active component in `currentName` and
-				// keeps the trigger label + the picker's highlight in sync. Reads
-				// that used to go through the old native <select> now read this.
-				var currentName = '';
-				function setCurrentName(name) {
-					currentName = name || '';
-					if (pickerCurrentEl) pickerCurrentEl.textContent = currentName || 'Pick a component…';
-					if (window.__pgPicker) window.__pgPicker.setCurrent(currentName);
-				}
-				// If the picker module finishes initializing after us, re-push the
-				// current selection so its highlight reflects the live editor.
-				window.addEventListener('pg-picker-ready', function () { if (window.__pgPicker) window.__pgPicker.setCurrent(currentName); });
-
-				// Source accessors: prefer the CodeMirror adapter (window.__pgEditor),
-				// fall back to the textarea if the editor module hasn't loaded yet or
-				// failed (no-JS safety). All source reads/writes go through these.
-				function getSource() {
-					if (window.__pgEditor) return window.__pgEditor.getValue();
-					var ta = document.getElementById('editor');
-					return ta ? ta.value : '';
-				}
-				function setSource(text) {
-					if (window.__pgEditor) { window.__pgEditor.setValue(text); return; }
-					var ta = document.getElementById('editor');
-					if (ta) ta.value = text;
-				}
-
-				// Persist the editor across reloads / refresh / session end so the
-				// author's in-progress deck survives (palette + mode already persist
-				// via the shared localStorage keys).
-				var SOURCE_KEY = 'lattice-docs-pg-source';
-				function saveSource() { try { localStorage.setItem(SOURCE_KEY, getSource()); } catch (e) {} }
-
-				paletteSel.value = root.getAttribute('data-palette');
-				var fetched = {}; // theme name -> Promise<cssText>
-				var latticeReady = null;
-
-				function setStatus(msg, isErr) {
-					statusEl.textContent = msg;
-					statusEl.classList.toggle('err', !!isErr);
-				}
-
-				function fetchTheme(name) {
-					if (!fetched[name]) {
-						fetched[name] = fetch(THEME_BASE + name + '.css').then(function (r) {
-							if (!r.ok) throw new Error('theme ' + name + ' (' + r.status + ')');
-							return r.text();
-						});
-					}
-					return fetched[name];
-				}
-
-				function ensureThemes(palette, mode) {
-					var PG = window.LatticePlayground;
-					if (!latticeReady) latticeReady = fetchTheme('lattice').then(function (css) { PG.addThemes([css]); });
-					var jobs = [latticeReady];
-					if (!PG.hasTheme(palette)) jobs.push(fetchTheme(palette).then(function (css) { PG.addThemes([css]); }));
-					var darkName = palette + '-dark';
-					if (mode === 'dark') {
-						jobs.push(fetchTheme(darkName).then(function (css) { PG.addThemes([css]); }).catch(function () {}));
-					}
-					return Promise.all(jobs);
-				}
-
-				// The slide preview is the shared filmstrip controller (deck-preview.js):
-				// ONE persistent iframe, patched per edit (only the changed <section>s)
-				// behind a visibility gate (anti-flash) with a clamped height (anti-gap),
-				// content-visibility virtualizing the off-screen slides on big galleries.
-				// It's exposed on window.LatticeDeckPreview by the bundled bridge module
-				// below; this inline controller hands it (html, css, mode, geom, sig). The
-				// host renders inlineSVG:false, so each slide is a plain fixed-`@size`
-				// <section> the FIT agent scales to the container width.
-				var previewState = { frameSig: '', lastSections: null };
-
-				var timer = null;
-				function scheduleRender() { clearTimeout(timer); timer = setTimeout(render, 220); }
-				// Force a fresh srcdoc on the next render — explicit deck swaps (gallery
-				// load, template pick, variant change, scaffold insert) reset the runtime +
-				// Mermaid state rather than patch into a stale document.
-				function freshRender() { previewState.frameSig = ''; render(); }
-
-				function render() {
-					var PG = window.LatticePlayground;
-					var DP = window.LatticeDeckPreview;
-					if (!PG || !DP) { setStatus('Loading engine…'); return setTimeout(render, 60); }
-					var palette = root.getAttribute('data-palette') || 'indaco';
-					var mode = root.getAttribute('data-mode') === 'dark' ? 'dark' : 'light';
-					setStatus('Rendering…');
-					ensureThemes(palette, mode).then(function () {
-						var theme = mode === 'dark' && PG.hasTheme(palette + '-dark') ? palette + '-dark' : palette;
-						try {
-							var out = PG.render(getSource(), theme);
-							curGeom = { w: out.width || 1280, h: out.height || 720 };
-							var r = DP.renderDeck({
-								frame: frame,
-								html: out.html, css: out.css, mode: mode, geom: curGeom,
-								sig: theme + '|' + mode + '|' + curGeom.w + 'x' + curGeom.h,
-								state: previewState,
-								runtimeUrl: RUNTIME_URL, gap: 16, contentVisibility: true, center: true,
-							});
-							previewState = r.state;
-							setStatus('Rendered ' + r.count + ' slide(s).');
-						} catch (e) {
-							setStatus(String(e.message || e), true);
-						}
-					}).catch(function (e) { setStatus(String(e.message || e), true); });
-				}
-
-				// Wire change events. CodeMirror reports edits via its onChange
-				// adapter; until/if it loads, the textarea's input event covers it.
-				function onEdit() { saveSource(); syncPickers(); scheduleRender(); }
-				function wireEditorEvents() {
-					if (window.__pgEditor) {
-						window.__pgEditor.onChange(onEdit);
-						// Restore persisted source into the live editor, then render it.
-						try { var saved = localStorage.getItem(SOURCE_KEY); if (saved != null) setSource(saved); } catch (e) {}
-						syncPickers();
-						render();
-					}
-				}
-				if (window.__pgEditor) wireEditorEvents();
-				else window.addEventListener('pg-editor-ready', wireEditorEvents);
-				// Fallback: textarea input (only fires if CodeMirror never replaced it).
-				var taEl = document.getElementById('editor');
-				if (taEl) taEl.addEventListener('input', onEdit);
-
-				// Fill the Variant dropdown for the picked component: 'default' (the
-				// base sample) plus each documented modifier. Disabled when the
-				// component has no variants (or none is picked).
-				function populateVariants(name) {
-					var comp = name && catalog[name];
-					varSel.innerHTML = '';
-					var variants = (comp && comp.variants) || [];
-					if (!comp || !variants.length) {
-						var none = document.createElement('option');
-						none.value = '';
-						none.textContent = '—';
-						varSel.appendChild(none);
-						varSel.disabled = true;
-						return;
-					}
-					varSel.disabled = false;
-					var def = document.createElement('option');
-					def.value = 'default';
-					def.textContent = 'default';
-					varSel.appendChild(def);
-					variants.forEach(function (v) {
-						var o = document.createElement('option');
-						o.value = v.key;
-						o.textContent = v.label;
-						if (v.caption) o.title = v.caption;
-						varSel.appendChild(o);
-					});
-					varSel.value = 'default';
-				}
-
-				// Detect which component (and variant) the current source is, from the
-				// first `<!-- _class: ... -->`: the first class token that names a
-				// component, with any remaining token that matches one of its variant
-				// keys. Lets the pickers reflect a deck loaded via the "Open in
-				// Playground" handoff, a reload, or a paste — instead of sitting on
-				// "Pick a component…".
-				function detectComponent(src) {
-					var m = /<!--\s*_class:\s*([^>]*?)\s*-->/.exec(src || '');
-					if (!m) return null;
-					var tokens = m[1].trim().split(/\s+/).filter(Boolean);
-					var name = null;
-					for (var i = 0; i < tokens.length; i++) { if (catalog[tokens[i]]) { name = tokens[i]; break; } }
-					if (!name) return null;
-					var variant = 'default';
-					var vs = (catalog[name].variants || []);
-					for (var j = 0; j < vs.length; j++) { if (tokens.indexOf(vs[j].key) >= 0) { variant = vs[j].key; break; } }
-					return { name: name, variant: variant };
-				}
-
-				// Sync the Template + Variant pickers to whatever the editor holds.
-				function syncPickers() {
-					var det = detectComponent(getSource());
-					if (!det) return;
-					if (currentName !== det.name) { setCurrentName(det.name); populateVariants(det.name); }
-					else if (varSel.disabled && (catalog[det.name].variants || []).length) { populateVariants(det.name); }
-					for (var i = 0; i < varSel.options.length; i++) {
-						if (varSel.options[i].value === det.variant) { varSel.value = det.variant; break; }
-					}
-				}
-
-				// The popover picker reports a selection via this event (detail.name).
-				window.addEventListener('pg-template-pick', function (e) {
-					var name = e.detail && e.detail.name;
-					if (name && catalog[name]) { setCurrentName(name); setSource(catalog[name].sample); populateVariants(name); saveSource(); freshRender(); }
-				});
-				varSel.addEventListener('change', function () {
-					var comp = catalog[currentName];
-					if (!comp) return;
-					var key = varSel.value;
-					var md = comp.sample;
-					if (key && key !== 'default') {
-						var v = (comp.variants || []).filter(function (x) { return x.key === key; })[0];
-						if (v) md = v.sample;
-					}
-					setSource(md); saveSource(); freshRender();
-				});
-				// "Load a deck" drawer. The Galleries button opens a slide-in panel
-				// over a scrim; picking a showcase / family deck drops the whole deck
-				// into the editor and renders it. The demoted per-component scaffold
-				// actions (reset-to-example / blank-skeleton) live in the drawer's
-				// last section.
-				var gallerySources = data.gallerySources || {};
-				var drawer = document.getElementById('pg-drawer');
-				var drawerScrim = document.getElementById('pg-drawer-scrim');
-				var drawerClose = document.getElementById('pg-drawer-close');
-				var galleriesTrigger = document.getElementById('pg-galleries-trigger');
-				function openDrawer() {
-					drawer.classList.add('is-open');
-					drawer.setAttribute('aria-hidden', 'false');
-					drawerScrim.hidden = false;
-					galleriesTrigger.setAttribute('aria-expanded', 'true');
-				}
-				function closeDrawer() {
-					drawer.classList.remove('is-open');
-					drawer.setAttribute('aria-hidden', 'true');
-					drawerScrim.hidden = true;
-					galleriesTrigger.setAttribute('aria-expanded', 'false');
-				}
-				if (galleriesTrigger && drawer) {
-					galleriesTrigger.addEventListener('click', function () {
-						if (drawer.classList.contains('is-open')) closeDrawer();
-						else openDrawer();
-					});
-					drawerClose.addEventListener('click', closeDrawer);
-					drawerScrim.addEventListener('click', closeDrawer);
-					document.addEventListener('keydown', function (e) {
-						if (e.key === 'Escape' && drawer.classList.contains('is-open')) closeDrawer();
-					});
-					// Load a full showcase / family deck into the editor + preview.
-					Array.prototype.forEach.call(document.querySelectorAll('.pg-gallery-item'), function (btn) {
-						btn.addEventListener('click', function () {
-							var id = btn.getAttribute('data-gallery');
-							var src = gallerySources[id];
-							if (src == null) { setStatus('Gallery unavailable.', true); return; }
-							setSource(src); saveSource(); syncPickers(); freshRender();
-							closeDrawer();
-							setPane('preview'); // surface the result (the active pane on phones)
-						});
-					});
-				}
-				// "Reset to example" reloads the picked component's filled sample;
-				// "Insert blank skeleton" loads its bare slot scaffold.
-				document.getElementById('pg-insert-sample').addEventListener('click', function () {
-					closeDrawer();
-					if (currentName && catalog[currentName]) { setSource(catalog[currentName].sample); populateVariants(currentName); saveSource(); freshRender(); }
-					else setStatus('Pick a component first.', true);
-				});
-				document.getElementById('pg-insert-skeleton').addEventListener('click', function () {
-					closeDrawer();
-					if (currentName && catalog[currentName]) { setSource(catalog[currentName].skeleton); populateVariants(currentName); saveSource(); freshRender(); }
-					else setStatus('Pick a component first.', true);
-				});
-				// Reflect whatever the editor currently holds (starter deck, restored
-				// handoff, or persisted source) in the Template + Variant pickers.
-				syncPickers();
-
-				paletteSel.addEventListener('change', function () {
-					root.setAttribute('data-palette', paletteSel.value);
-					try { localStorage.setItem('lattice-docs-palette', paletteSel.value); } catch (e) {}
-					render();
-				});
-				modeBtn.addEventListener('click', function () {
-					var next = root.getAttribute('data-mode') === 'dark' ? 'light' : 'dark';
-					root.setAttribute('data-mode', next);
-					try { localStorage.setItem('lattice-docs-mode', next); } catch (e) {}
-					render();
-				});
-
-				// Re-sync + re-render on back/forward (bfcache) restores, where the
-				// pre-paint script doesn't re-run — so a theme picked elsewhere
-				// sticks when you navigate back to the playground.
-				window.addEventListener('pageshow', function () {
-					try {
-						var p = localStorage.getItem('lattice-docs-palette');
-						var m = localStorage.getItem('lattice-docs-mode');
-						var changed = false;
-						if (p && p !== root.getAttribute('data-palette')) { root.setAttribute('data-palette', p); changed = true; }
-						if ((m === 'light' || m === 'dark') && m !== root.getAttribute('data-mode')) { root.setAttribute('data-mode', m); changed = true; }
-						paletteSel.value = root.getAttribute('data-palette');
-						if (changed) render();
-					} catch (e) {}
-				});
-
 				var navToggle = document.getElementById('nav-toggle');
 				var topbar = document.querySelector('.topbar');
 				if (navToggle && topbar) {
@@ -723,20 +189,6 @@ const pgData = JSON.stringify({
 						navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
 					});
 				}
-
-				// Mobile Edit | Preview tabs.
-				var tabEdit = document.getElementById('tab-edit');
-				var tabPreview = document.getElementById('tab-preview');
-				function setPane(which) {
-					document.body.setAttribute('data-pane', which);
-					tabEdit.setAttribute('aria-selected', which === 'edit');
-					tabPreview.setAttribute('aria-selected', which === 'preview');
-				}
-				tabEdit.addEventListener('click', function () { setPane('edit'); });
-				tabPreview.addEventListener('click', function () { setPane('preview'); render(); });
-				setPane('edit');
-
-				render();
 			})();
 		</script>
 	</body>

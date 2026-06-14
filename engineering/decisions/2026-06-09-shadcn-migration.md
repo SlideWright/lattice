@@ -1,10 +1,139 @@
 # shadcn migration — the website (and the shared SlideWright UI layer)
 
-> Status: **PLAN — checker-reviewed (v2), awaiting author approval.** No
-> production code has moved. This document is the contract we execute
-> against. Each phase is a maker-checker gate; nothing merges until the
-> checker passes the per-PR checklist in §5. v2 resolves the blockers from
-> the first adversarial checker pass (§10).
+> Status: **v3 — author-ratified, EXECUTING (branch
+> `claude/shadcn-components-migration-rgsrmh`).** Read **§0 (v3 ratified
+> scope)** first — it overrides anything below it that conflicts. The body
+> (§1–§10) is retained as the recon/architecture reference; where v2 assumed
+> a monorepo, desktop sharing, or removing Starlight, **§0 supersedes it.**
+
+## 0. v3 — ratified scope (2026-06-14)
+
+The author reviewed the v2 plan plus a fresh three-agent maker-checker recon
+(surface inventory · token-bridge feasibility · architecture/risk) and
+ratified the following. **These five decisions are the contract; the rest of
+this doc is reference.**
+
+1. **Full React rewrite of every surface — but WRAP, don't reinvent, the
+   irreducible engine.** Each surface (landing, components reference,
+   playground, workbench, drawing board) becomes a real React + shadcn app:
+   React owns the DOM tree, the state, and **all** chrome (buttons, dialogs,
+   drawers, tabs, menus, cards, selects, badges…). The pieces with **no React
+   equivalent and documented solved-bug scar tissue** — the CodeMirror editor
+   instance, the `srcdoc` deck-render iframe, the export/PDF/PPTX pipeline,
+   driver.js tours, the IndexedDB store — are **wrapped in React lifecycle**
+   (single-init `useRef` + cleanup, StrictMode-guarded), **not** reimplemented.
+   This is the only way "full rewrite" and "nothing breaks" coexist.
+2. **Website-only, inside `docs/`. NO monorepo.** React + Tailwind v4 + shadcn
+   are added directly to the `docs/` Astro app. **No** npm-workspace
+   conversion, **no** `packages/ui`/`packages/core`, **no** `apps/desktop`,
+   **no** deploy rewrite. `docs/` keeps its own `package-lock.json`, and the
+   existing `withastro/action` GitHub Pages + Cloudflare deploy stays valid
+   unchanged. (This deletes v2 §8-A and most of §4.1.) Components are still
+   authored cleanly enough to be *extractable* to a shared package later if a
+   desktop app ever materializes — but that is out of scope now.
+3. **Keep Starlight permanently — DROP old Phase 6.** Docs (Introduction, Get
+   started, Guides) stay on Starlight forever; shadcn governs everything else.
+   The Tailwind-↔-Starlight coexistence risk (v2 **T2**) is therefore a
+   *permanent* constraint, not something a final phase ends — permanently
+   mitigated by **Preflight OFF** + Tailwind utilities **layered below** the
+   existing unlayered site CSS + shadcn scoped to island roots. Pagefind stays
+   Starlight-provided (v2 **R-D** is moot).
+4. **Proactive UX improvement, documented per PR.** "Same look and feel" is the
+   floor, not a freeze. Where a control is mislocated, mis-grouped, or doesn't
+   serve its function, it is redesigned during migration — each UX change
+   called out in the PR body and screenshot-verified across ≥3 palettes ×
+   light/dark × desktop/tablet/mobile.
+5. **Overnight cadence: push through surfaces, one PR per surface, never merge
+   unasked.** Open a PR per surface, drive CI green, auto-watch + rebase; stop
+   and ask for merge authorization (HARD RULE 6–7). Export-path work triggers
+   the "STOP and show me" sign-off.
+
+**Corrected facts** (v2 miscounts, fixed): there are **14** base palettes
+(indaco, cuoio, ardesia, atelier, brina, burgundy, carbone, carta, concrete,
+crepuscolo, laguna, magnolia, mustard, onyx — `listBasePalettes()`), not 13;
+carbone is dark-only (identical light/dark blocks). The website token set is
+**18** properties (`--bg`, `--bg-alt`, `--bg-dark`, `--border`,
+`--text-heading/-body/-muted`, `--accent`, `--accent-soft`, `--on-accent`, and
+`--chart-cat1..8`), not 10 — so the bridge **maps the existing 8 per-palette
+categorical hues onto shadcn `--chart-1..5`** instead of inventing a
+palette-blind ramp.
+
+**Foundation validated (Phase 0 spike, 2026-06-14):** the install matrix
+resolves with **zero peer warnings** — Astro 6.3.7 (Vite 7.3.3) · `@astrojs/react`
+5 · React 19.2 · `tailwindcss`/`@tailwindcss/vite` 4.3.1 · shadcn CLI 4.11. The
+token bridge is a **one-way CSS shim** (`shadcn token → var(--lattice-token)`),
+dark variant keyed to `[data-mode="dark"]` (not `.dark`), no second theme system.
+
+**Revised phase order (supersedes §7):** 0 Foundation → 1 Shared chrome
+(topbar: palette `Select` + mode toggle + nav + mobile drawer, killing the 5
+duplicated copies) → 2 Components reference → 3 Landing → 4 Playground → 5
+Workbench → 6 Drawing Board. No Starlight-removal phase; no desktop phase.
+
+**Phase 0 landed (2026-06-14), maker-checker reviewed.** Foundation in
+`docs/`: `@astrojs/react` + Tailwind v4 (`@tailwindcss/vite`, Preflight OFF) +
+shadcn, the token bridge (`docs/src/styles/tailwind.css`), the contrast gate
+(`tools/check-shadcn-bridge-contrast.js`, run by the unit suite — deliberately
+NOT a root npm script, so it never bloats the engine bundle that inlines
+`package.json`), and the invariant guard suite
+(`test/unit/tokens/shadcn-bridge.test.js`). Verified
+visually across indaco/cuoio/carbone/onyx (light+dark) and by a full
+production build (67 pages, Pagefind intact).
+
+**Load-bearing caveat for every later phase (checker P3):** Tailwind's
+`theme`/`utilities` are imported into `@layer`, so they are *layered*; the
+~7k lines of bespoke site CSS are deliberately *unlayered* to beat Starlight
+(`lattice.css`). Unlayered CSS beats layered regardless of specificity — so a
+shadcn island's Tailwind utility class will **silently lose** to any leftover
+unlayered global rule (`a`, `button`, `.lx-*`, …) that still targets it. The
+migration's "delete the migrated surface's bespoke CSS in the SAME PR" rule
+(§4.3) is therefore now load-bearing for **correctness**, not just tidiness:
+if a control's utilities "aren't applying," the old CSS for it wasn't deleted.
+Add a per-surface integration check that the island's intended styles win.
+
+**Phase 1 landed (2026-06-14), maker-checker reviewed.** One shared controller
+(`docs/src/lib/site-chrome.ts`) + one accessible shadcn island
+(`docs/src/components/site/PaletteControls.tsx`) replaced **six** hand-rolled
+palette/mode controllers across landing, playground, the components reference,
+the Starlight header (coexists with Pagefind), and the Workbench (mode-only).
+Vitest + RTL harness wired as a CI gate. **The Drawing Board was deliberately
+deferred to its own phase:** its top-bar palette picker writes the *deck's*
+`theme:` front matter (authoring semantics), not just page chrome — folding it
+into the uniform chrome island would be a real UX regression, so it keeps its
+native control until §7 Phase 6 (decide there whether that picker stays
+deck-theme-writing or becomes chrome-only).
+
+**Phase 2 landed (2026-06-14), maker-checker reviewed.** The components
+reference (index grid, left nav, per-component docs, breadcrumb, pager) → React
++ shadcn; `component-browser.js` replaced by a shared module-singleton
+`useSyncExternalStore` driving both the grid and the nav from one query +
+group-by (`docs/src/lib/component-browser-store.ts` + `component-search.ts`).
+`components.css` retired 906 → ~330 lines (kept the Astro shell + `specimen-*`).
+**The live Specimen (CodeMirror + deck-render iframe) stays vanilla** — the
+wrap-don't-reinvent boundary; its variant/open-in-playground handoff attributes
+are preserved exactly.
+
+**Phase 3 in progress (2026-06-14): the Playground.** Wrap, don't reinvent —
+the render loop calls the unchanged `window.LatticePlayground.render` +
+`deck-preview.js renderDeck`; `editor.js` (CodeMirror), `deck-config.js`, and
+the engine bundle are wrapped, not rewritten.
+
+**Operating learnings (this effort):**
+- **Docs-site changes get NO `CHANGELOG.md` entry.** The changelog drives the
+  published *engine* npm package; the docs site doesn't ship in it (HARD RULE
+  10, pure-internal). Each phase's maker tends to add one — revert it.
+- **The engine emulator bundle inlines the ROOT `package.json`.** Adding a root
+  npm script makes `dist/lattice-emulator.js` stale → forces a `dist/` rebuild,
+  which this effort forbids. Keep new website tooling out of root `scripts`
+  (run gates via the unit suite). `docs/package.json` is separate — safe.
+- **Keep the branch rebased onto `main`** (HARD RULE 16). Rebase can *silently*
+  drop a line adjacent to a `main` edit (no conflict shown) — re-verify gates
+  after every rebase.
+
+---
+
+> Status (historical, v2): **PLAN — checker-reviewed (v2), awaiting author
+> approval.** No production code has moved. Each phase is a maker-checker gate;
+> nothing merges until the checker passes the per-PR checklist in §5.
 
 ## 1. Why
 
