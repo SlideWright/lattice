@@ -93,13 +93,20 @@ layout primitives"** (marpit theme-css.md), ships **three generic themes**
 font-substitution-prone). So:
 - **Genuinely above Marp:** the 53-component/12-bucket system, the token system, the 14
   palettes, palette-blind layouts, boardroom-grade defaults, agent-authorability, and the
-  *owned* pinned render engine that closes Marp's reproducibility gap.
-- **Still Marp's plumbing (concede it):** the Markdown authoring substrate and the
-  Markdown→HTML→headless-Chromium→PDF path. Determinism + git-diffability of plain text are
-  inherited Markdown properties, true of every code engine.
-- Honest line: *"Lattice keeps Marp's proven Markdown-to-PDF engine and adds the entire
-  design-system layer Marp deliberately leaves to you — components, tokens, palettes,
-  polished defaults — plus agent-authorability and an owned deterministic engine."*
+  *owned* pinned render engine that closes Marp's reproducibility gap — including a
+  divergence from Marp's render DOM: Lattice renders plain `<section>` HTML
+  (`inlineSVG:false`), not Marp's default `<svg><foreignObject>` slide wrapper, so
+  container queries / CSS counters / `mask` work natively, no Safari `marpit-svg-polyfill`
+  is needed, and layout stops breaking browser-to-browser (see `engineering/gotchas.md`).
+- **Concede the Markdown lineage, not the engine:** the Markdown authoring model and the
+  Markdown→HTML→headless-Chromium→PDF *idea* came from Marp, and determinism + git-diffability
+  of plain text are inherited Markdown properties true of every code engine. But Lattice dropped
+  the Marp dependency at v1.0.0 and runs its own engine now; marp-cli is a supported BYO export
+  path out of Lattice, not the foundation under it.
+- Honest line: *"Lattice took Marp's Markdown-to-PDF idea, then replaced the engine with its own
+  and added the entire design-system layer Marp leaves to you — components, tokens, palettes,
+  polished defaults — plus agent-authorability. Marp is an export path out of Lattice now, not
+  the engine inside it."*
 
 ---
 
