@@ -183,7 +183,7 @@ it is load-bearing.
   in markdown ADRs (vendor-neutral) while adding GitHub Issues as a claimable work
   queue + a per-repo Project board, mirrored back to a generated `BACKLOG.md`. Flat
   cards grouped into swimlanes by label (decision doc = swimlane; no
-  sub-issue trees), an `area/type/priority(p0–p3)/status` taxonomy, an enforced
+  sub-issue trees), an `area/type/priority(critical–low)/status` taxonomy, an enforced
   Definition-of-Ready (template + label-gate Action), and the atomic-claim primitive
   that lets agents pick up work distributed-but-safe (L3, deferred — race-free lock
   designed then). Ship L1+L2 first. **Status: design-decision** (open questions
