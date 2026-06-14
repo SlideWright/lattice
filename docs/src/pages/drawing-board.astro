@@ -24,6 +24,8 @@ import { joinBase } from '../lib/base-url.mjs';
 import { primaryNav, GITHUB_URL, isCurrent } from '../lib/nav.mjs';
 import { isPreviewDeploy as isPreviewDeployEnv } from '../lib/deploy-env.mjs';
 import { pickGrammarVariants } from '../playground/architect-knowledge.js';
+import DrawingBoardTopbar from '../components/drawing-board/DrawingBoardTopbar.tsx';
+import DrawingBoardExportMenu from '../components/drawing-board/DrawingBoardExportMenu.tsx';
 
 const docsRoot = process.cwd();
 const repoRoot = join(docsRoot, '..');
@@ -123,7 +125,6 @@ const isPreviewDeploy = isPreviewDeployEnv({
 
 const tokensCss = readFileSync(join(docsRoot, 'src/styles/lattice-tokens.generated.css'), 'utf8');
 const palettes = [...new Set([...tokensCss.matchAll(/data-palette="([^"]+)"/g)].map((m) => m[1]))];
-const titleCase = (s) => s.replace(/(^|-)(\w)/g, (_, sep, c) => (sep ? ' ' : '') + c.toUpperCase());
 
 // Starter deck = a known-good sample (the hero component's), so the heartbeat
 // renders something real on first load without risking an authoring footgun.
@@ -143,6 +144,10 @@ const dbData = JSON.stringify({
 	themeBase: url(pg + 'themes/'),
 	crosswalk: tokenCrosswalk,
 	runtimeUrl: url(pg + 'lattice-runtime.js'),
+	// The marp render engine bundle — loaded ON DEMAND (load-engine.ts) after the
+	// chrome paints, not eagerly in <head>. See the engine <script> near the body
+	// end + engineering/decisions/2026-06-09-shadcn-migration.md (perf phase).
+	engineUrl: url(pg + 'lattice-playground.js'),
 	defaultPalette: 'indaco',
 	// Self-hosted @font-face block for the preview iframe. The engine's
 	// Google-Fonts @import is inert inside the srcdoc <style> (it lands after
@@ -201,11 +206,14 @@ const dbData = JSON.stringify({
 					<a class="navlink" href={GITHUB_URL}>GitHub</a>
 				</nav>
 				<div class="topbar-actions">
+					<!-- The deck-theme palette picker + light/dark toggle — a React + shadcn
+					     island (DrawingBoardTopbar). UNLIKE the chrome-only site picker, this
+					     WRITES the deck's `theme:` front matter via the render controller's
+					     window.__dbChrome bus (applyTheme → writeFrontMatter) and mirrors the
+					     deck's theme back onto data-palette — the authoring semantics this
+					     surface needs. client:idle so the chrome paints first. -->
 					<div class="controls">
-						<select class="palette-select" id="palette" aria-label="Palette">
-							{palettes.map((p) => <option value={p}>{titleCase(p)}</option>)}
-						</select>
-						<button class="mode-toggle" id="mode-toggle" aria-label="Toggle light / dark" title="Toggle light / dark"></button>
+						<DrawingBoardTopbar client:idle palettes={palettes} />
 					</div>
 					<button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-controls="topnav" aria-expanded="false"></button>
 				</div>
@@ -305,16 +313,12 @@ const dbData = JSON.stringify({
 						<div class="db-refine-pop" id="db-refine-menu" role="menu" hidden></div>
 					</div>
 					<span class="db-spacer"></span>
-					<div class="db-export" id="db-export-wrap">
-						<button class="db-btn" id="db-export" aria-haspopup="menu" aria-expanded="false" title="Export this deck">Export</button>
-						<div class="db-export-menu" id="db-export-menu" role="menu" hidden>
-							<button class="db-menu-item" type="button" data-export="md" role="menuitem">Markdown<small>.md — the source</small></button>
-							<button class="db-menu-item" type="button" data-export="pdf" role="menuitem">PDF<small>.pdf — one click</small></button>
-							<button class="db-menu-item" type="button" data-export="pptx" role="menuitem">PowerPoint<small>.pptx — image slides</small></button>
-							<button class="db-menu-item" type="button" data-export="print" role="menuitem">Print<small>vector + selectable text</small></button>
-							<button class="db-menu-item" type="button" data-export="charts-svg" role="menuitem" id="db-export-chart-svg" hidden>Export chart<small>.svg or .png — this slide's chart</small></button>
-							<button class="db-menu-item" type="button" data-export="marp" role="menuitem">Marp bundle<small>.zip — portable, renders anywhere</small></button>
-						</div>
+					<!-- Export menu CHROME — a React + shadcn DropdownMenu island. The export
+					     LOGIC + OUTPUT are sign-off-gated and UNCHANGED: the island calls the
+					     vanilla controller's window.__dbExport bus (→ runExport →
+					     drawing-board-export.js). client:idle so the toolbar paints first. -->
+					<div class="db-export lx-ui" id="db-export-wrap">
+						<DrawingBoardExportMenu client:idle />
 					</div>
 					<!-- Deck setup — front-matter config (theme, size, pagination,
 					     header/footer, …). A document-level action, parked at the right
@@ -853,9 +857,6 @@ const dbData = JSON.stringify({
 			import { exportMarkdown, exportMarp, exportPdf, exportPptx, exportPrint, exportChart, activeChartSection } from '../playground/drawing-board-export.js';
 			import { listAssets } from '../playground/asset-store.js';
 			import { referencedComponents } from '../playground/layout-core.generated.js';
-			const wrap = document.getElementById('db-export-wrap');
-			const trigger = document.getElementById('db-export');
-			const menu = document.getElementById('db-export-menu');
 			const statusEl = document.getElementById('db-status');
 			const deckName = () => {
 				const n = document.querySelector('.db-deck[aria-current="true"] .db-deck-name');
@@ -918,24 +919,16 @@ const dbData = JSON.stringify({
 				const toast = window.__dbStore && window.__dbStore.toast;
 				if (toast) toast('Export failed: ' + msg, retry ? 'Retry' : null, retry || null);
 			}
-			const closeMenu = () => { menu.hidden = true; trigger.setAttribute('aria-expanded', 'false'); };
-			trigger.addEventListener('click', (e) => {
-				e.stopPropagation();
-				const open = menu.hidden;
-				// "Export chart" shows only when the cursor's slide carries a chart (it exports THAT chart, SVG or PNG).
-				const __ci = document.getElementById("db-export-chart-svg"); if (__ci) __ci.hidden = !activeChartSection(document.getElementById("db-frame"));
-				menu.hidden = !open;
-				trigger.setAttribute('aria-expanded', open ? 'true' : 'false');
-			});
-			document.addEventListener('click', (e) => { if (wrap && !wrap.contains(e.target)) closeMenu(); });
-			document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMenu(); });
-			menu.addEventListener('click', async (e) => {
-				const btn = e.target.closest('[data-export]');
-				if (!btn) return;
-				closeMenu();
-				const kind = btn.getAttribute('data-export');
-				runExport(kind);
-			});
+			// The Export menu CHROME is a React + shadcn DropdownMenu island
+			// (DrawingBoardExportMenu); the export LOGIC below (runExport →
+			// drawing-board-export.js) is UNCHANGED — the island only drives it
+			// through this bus. "Export chart" shows only when the cursor's slide
+			// carries a chart; the island queries hasActiveChart() each time it opens.
+			window.__dbExport = {
+				run: (kind) => runExport(kind),
+				hasActiveChart: () => !!activeChartSection(document.getElementById('db-frame')),
+			};
+			window.dispatchEvent(new Event('db-export-ready'));
 
 			async function runExport(kind) {
 				const frame = document.getElementById('db-frame');
@@ -1149,7 +1142,24 @@ const dbData = JSON.stringify({
 			window.LatticeDeckPreview = { renderDeck };
 		</script>
 
-		<script is:inline defer src={url(pg + 'lattice-playground.js')}></script>
+		<!-- The marp render engine (window.LatticePlayground) loads ON DEMAND via
+		     load-engine.ts (triggered on idle below, after the chrome + editor
+		     paint), NOT eagerly here — so the topbar + editor host paint without the
+		     ~554KB-gz bundle blocking first paint / mobile LCP. The render loop polls
+		     for the global, so deferring injection is safe (load-engine.ts contract,
+		     matching the playground + workbench surfaces). -->
+		<script>
+			import { ensureEngine } from '../lib/load-engine.ts';
+			const __dbData = JSON.parse(document.getElementById('db-data').textContent);
+			const __engineUrl = __dbData.engineUrl;
+			function __loadEngine() { if (__engineUrl) void ensureEngine(__engineUrl); }
+			// On idle so the chrome paints first; the { timeout } bounds it so a
+			// perpetually busy main thread can't starve the engine load (the render
+			// loop tolerates a late global, but we don't want it indefinitely late).
+			// Falls back to a microtask where requestIdleCallback is unavailable.
+			if (window.requestIdleCallback) window.requestIdleCallback(__loadEngine, { timeout: 2000 });
+			else setTimeout(__loadEngine, 0);
+		</script>
 		<script is:inline>
 			(function () {
 				var data = JSON.parse(document.getElementById('db-data').textContent);
@@ -1254,7 +1264,7 @@ const dbData = JSON.stringify({
 				// controller pushes edits to it via window.__dbStore.saveActive and
 				// receives deck loads via the db-deck-loaded event below.
 
-				paletteSel.value = root.getAttribute('data-palette');
+				if (paletteSel) paletteSel.value = root.getAttribute('data-palette');
 				var fetched = {};
 				var engineReady = {}; // per-vocabulary engine registration: lattice / lattice-u
 
@@ -1471,7 +1481,8 @@ const dbData = JSON.stringify({
 					}
 					// A deck whose `theme:` names a now-known library theme can finally apply.
 					if (syncThemeControls()) render();
-					paletteSel.value = root.getAttribute('data-palette');
+					if (paletteSel) paletteSel.value = root.getAttribute('data-palette');
+					if (window.__dbChrome) emitChromeSync(); // new saved themes → topbar select
 				}
 				window.addEventListener('db-library-themes', refreshLibraryThemes);
 				if (window.__dbLibraryThemes) refreshLibraryThemes();
@@ -1491,8 +1502,9 @@ const dbData = JSON.stringify({
 					if (!t) return false; // no/invalid theme → leave the chrome on its current palette
 					var changed = root.getAttribute('data-palette') !== t;
 					if (changed) root.setAttribute('data-palette', t);
-					if (paletteSel.value !== t) paletteSel.value = t;
+					if (paletteSel && paletteSel.value !== t) paletteSel.value = t;
 					try { localStorage.setItem('lattice-docs-palette', t); } catch (e) {}
+					if (changed && window.__dbChrome) emitChromeSync(); // reflect onto the React topbar
 					return changed;
 				}
 				// Write a (valid) theme into the deck source — the single mutation point the
@@ -1510,13 +1522,43 @@ const dbData = JSON.stringify({
 				}
 
 				// ── Palette / mode ────────────────────────────────────────────────────
-				paletteSel.addEventListener('change', function () { applyTheme(paletteSel.value); });
-				modeBtn.addEventListener('click', function () {
+				// The legacy native controls (#palette, #mode-toggle) are gone — the
+				// React topbar island (DrawingBoardTopbar) owns them now. It drives this
+				// controller through window.__dbChrome (below), preserving the exact
+				// deck-theme-writing semantics: a palette pick WRITES the deck's `theme:`
+				// front matter (applyTheme → writeFrontMatter), and the chrome mirrors
+				// the deck's theme back onto data-palette (syncThemeControls). The
+				// guarded references keep this working even before the island hydrates.
+				if (paletteSel) paletteSel.addEventListener('change', function () { applyTheme(paletteSel.value); });
+				function toggleMode() {
 					var next = root.getAttribute('data-mode') === 'dark' ? 'light' : 'dark';
 					root.setAttribute('data-mode', next);
 					try { localStorage.setItem('lattice-docs-mode', next); } catch (e) {}
 					render();
-				});
+					return next;
+				}
+				if (modeBtn) modeBtn.addEventListener('click', toggleMode);
+				// The chrome bus the React topbar island drives. Mirrors the deck-theme
+				// authoring semantics 1:1 — applyTheme writes the deck's front matter,
+				// syncThemeControls (run on every edit/load) reflects the deck's theme
+				// back to the island via the db-chrome-sync event it listens for.
+				function emitChromeSync() {
+					try {
+						window.dispatchEvent(new CustomEvent('db-chrome-sync', { detail: {
+							palette: root.getAttribute('data-palette') || 'indaco',
+							mode: root.getAttribute('data-mode') === 'dark' ? 'dark' : 'light',
+							palettes: PALETTES.slice(),
+						} }));
+					} catch (e) {}
+				}
+				window.__dbChrome = {
+					getPalette: function () { return root.getAttribute('data-palette') || 'indaco'; },
+					getMode: function () { return root.getAttribute('data-mode') === 'dark' ? 'dark' : 'light'; },
+					getPalettes: function () { return PALETTES.slice(); },
+					applyTheme: applyTheme,
+					toggleMode: toggleMode,
+				};
+				window.dispatchEvent(new Event('db-chrome-ready'));
 				window.addEventListener('pageshow', function () {
 					try {
 						var p = localStorage.getItem('lattice-docs-palette');
@@ -1525,8 +1567,8 @@ const dbData = JSON.stringify({
 						if (p && p !== root.getAttribute('data-palette')) { root.setAttribute('data-palette', p); changed = true; }
 						if ((m === 'light' || m === 'dark') && m !== root.getAttribute('data-mode')) { root.setAttribute('data-mode', m); changed = true; }
 						if (syncThemeControls()) changed = true; // the deck's own theme wins over the stored palette
-						paletteSel.value = root.getAttribute('data-palette');
-						if (changed) render();
+						if (paletteSel) paletteSel.value = root.getAttribute('data-palette');
+						if (changed) { render(); if (window.__dbChrome) emitChromeSync(); }
 					} catch (e) {}
 				});
 

@@ -117,6 +117,52 @@ the render loop calls the unchanged `window.LatticePlayground.render` +
 `deck-preview.js renderDeck`; `editor.js` (CodeMirror), `deck-config.js`, and
 the engine bundle are wrapped, not rewritten.
 
+**Phase 6 — Drawing Board (2026-06-14): CORE delivered, chrome-by-increment.**
+The Drawing Board is the largest/most-coupled surface (~1615-line `.astro` +
+~3400-line CSS + ~25 vanilla modules orchestrated by one `is:inline` render
+controller over the `window.__db*` bus). Per "a working partial beats a broken
+whole", this increment migrates the highest-value, lowest-risk chrome while
+keeping the proven vanilla orchestration intact (the wrap-don't-reinvent
+boundary):
+- **On-demand engine load** — the `lattice-playground.js` bundle no longer ships
+  as an eager `<script defer src>`; it loads via `load-engine.ts ensureEngine()`
+  on idle after the chrome paints (matching the Playground/Workbench perf phase).
+  `engineUrl` added to the `db-data` payload.
+- **Topbar palette/mode → React island** (`components/drawing-board/
+  DrawingBoardTopbar.tsx`, `client:idle`). It REPLICATES the deck-theme-writing
+  semantics (NOT the chrome-only site `PaletteControls`): a palette pick WRITES
+  the deck's `theme:` front matter via the controller's new `window.__dbChrome`
+  bus (`applyTheme` → `__dbConfig.writeFrontMatter`), and `syncThemeControls`
+  mirrors the deck theme back onto `data-palette` and fires `db-chrome-sync` so
+  the island reflects deck-theme changes + newly-saved library palettes. The
+  pre-paint FOUC script + `data-tours` gating are untouched.
+- **Export menu chrome → shadcn DropdownMenu** (`DrawingBoardExportMenu.tsx`).
+  Sign-off-gated: the export LOGIC and OUTPUT are UNCHANGED — `drawing-board-
+  export.js` is byte-identical; the island only drives the unchanged `runExport`
+  via `window.__dbExport`. "Export chart" visibility uses the unchanged
+  `activeChartSection` gate.
+- **CSS retired** (only what migrated): the `.db-export-menu` / `.db-menu-item`
+  blocks + the `#db-export::after` chevron rules in `drawing-board.css`.
+- **Tests + gates:** radix jsdom polyfills added to `vitest.setup.ts`; 7 new
+  island tests; a `drawing-board` case added to `check:overflow` (passes at
+  390/820/1440 with drawer + pane + export-menu interactions). Verified live
+  (puppeteer): editor types, on-demand engine renders the preview, the
+  deck-theme picker writes front matter + re-themes, the export menu opens, a
+  deck is created via the IndexedDB store, Coach/Converse tabs switch.
+
+**Deferred (left vanilla-but-working, driven via the `__db*` bus):** the editor
+host (CodeMirror), the preview filmstrip (`deck-preview.js`), the IndexedDB
+store, the architect/coach/settings/chat modules, the decks/versions/settings/
+deck-setup DRAWERS (vanilla `<aside>` + the IIFE open/close), the mobile pane
+tabs, the resizers, the **Refine menu** (`createRefine` builds its menu DOM
+dynamically and is model-gated — its DOM *is* its logic, so converting the
+chrome would mean reimplementing it, which the boundary forbids), and the
+practice/focus overlays + tours + OAuth. The shared `.palette-select` /
+`.mode-toggle` CSS in `landing.css` is now dead site-wide but is left for the
+Landing phase to retire (out of this surface's scope). The drawer→`Sheet`/
+settings→`Sheet` chrome conversions (the `DeckSetupSheet` precedent) are a
+defensible next increment if pursued as a follow-up.
+
 **Operating learnings (this effort):**
 - **Docs-site changes get NO `CHANGELOG.md` entry.** The changelog drives the
   published *engine* npm package; the docs site doesn't ship in it (HARD RULE

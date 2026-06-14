@@ -217,7 +217,6 @@ body.db-page .topbar {
 .db-focus-open::before,
 .db-refine-open::before,
 .db-refine-open::after,
-#db-export::after,
 .db-arch-jump-btn::before,
 .db-practice-open::before {
 	content: '';
@@ -241,7 +240,6 @@ body.db-page .topbar {
 .db-focus-open::before { --db-glyph: var(--icon-scan); margin-right: 0.34em; }
 .db-refine-open::before { --db-glyph: var(--icon-pencil); margin-right: 0.34em; }
 .db-refine-open::after { --db-glyph: var(--icon-chevron-down); margin-left: 0.3em; }
-#db-export::after { --db-glyph: var(--icon-chevron-down); margin-left: 0.3em; }
 .db-practice-open::before { --db-glyph: var(--icon-play); margin-right: 0.34em; }
 .db-arch-jump-btn[data-dir='top']::before { --db-glyph: var(--icon-chevron-up); }
 .db-arch-jump-btn[data-dir='bottom']::before { --db-glyph: var(--icon-chevron-down); }
@@ -1594,46 +1592,12 @@ button.db-tl-body:hover {
 	border-color: var(--accent);
 }
 
-/* Export dropdown (editor panel head) */
+/* Export dropdown chrome → React shadcn DropdownMenu (DrawingBoardExportMenu).
+   The old .db-export-menu / .db-menu-item rules were retired with the migration;
+   the wrapper keeps position:relative for layout parity in the toolbar row. */
 .db-export {
 	position: relative;
-}
-.db-export-menu {
-	position: absolute;
-	top: calc(100% + 5px);
-	right: 0;
-	z-index: 40;
-	min-width: 218px;
-	background: var(--bg);
-	border: 1px solid var(--border);
-	border-radius: var(--radius-md);
-	box-shadow: var(--shadow-lg);
-	padding: 0.3rem;
-}
-.db-menu-item {
-	display: flex;
-	flex-direction: column;
-	gap: 0.1rem;
-	width: 100%;
-	text-align: left;
-	font: inherit;
-	font-size: 0.86rem;
-	font-weight: 550;
-	color: var(--text-body);
-	background: none;
-	border: 0;
-	border-radius: var(--radius-sm);
-	padding: 0.45rem 0.55rem;
-	cursor: pointer;
-}
-.db-menu-item small {
-	font-weight: 400;
-	font-size: 0.7rem;
-	color: var(--text-muted);
-}
-.db-menu-item:hover {
-	background: var(--bg-alt);
-	color: var(--text-heading);
+	display: inline-flex;
 }
 
 /* ── The editor panel ─────────────────────────────────────────────────────── */
