@@ -69,28 +69,13 @@ const url = (p) => joinBase(base, p);
 			</main>
 		</div>
 
-		<!-- Palette + light/dark + nav wiring. Same localStorage keys as the
-		     landing/playground, so palette/mode follow you across the site. The
-		     Specimen's own observer re-renders the preview when these change. -->
+		<!-- Nav wiring. The palette + light/dark controls are the shared
+		     <PaletteControls> island (in TopBar), which owns the data-palette/
+		     data-mode writes + localStorage + bfcache pageshow re-sync via
+		     site-chrome.ts; the Specimen's own observer re-renders the preview
+		     when those attributes change. This block keeps only the nav toggles. -->
 		<script is:inline>
 			(function () {
-				var root = document.documentElement;
-				var sel = document.getElementById('palette');
-				if (sel) {
-					sel.value = root.getAttribute('data-palette');
-					sel.addEventListener('change', function () {
-						root.setAttribute('data-palette', sel.value);
-						try { localStorage.setItem('lattice-docs-palette', sel.value); } catch (e) {}
-					});
-				}
-				var btn = document.getElementById('mode-toggle');
-				if (btn) {
-					btn.addEventListener('click', function () {
-						var next = root.getAttribute('data-mode') === 'dark' ? 'light' : 'dark';
-						root.setAttribute('data-mode', next);
-						try { localStorage.setItem('lattice-docs-mode', next); } catch (e) {}
-					});
-				}
 				var navToggle = document.getElementById('nav-toggle');
 				var topbar = document.querySelector('.topbar');
 				if (navToggle && topbar) {
@@ -113,21 +98,6 @@ const url = (p) => joinBase(base, p);
 				var aside = document.getElementById('cnav-aside');
 				if (aside) aside.addEventListener('click', function (e) {
 					if (e.target.closest('a')) setNav(false);
-				});
-
-				// Re-sync palette/mode from storage on every show — including
-				// back/forward (bfcache) restores, where the pre-paint <head>
-				// script doesn't re-run, so a theme picked on another page (e.g.
-				// the playground) would otherwise be stale after Back. Setting the
-				// attribute also triggers the Specimen's observer to re-render.
-				window.addEventListener('pageshow', function () {
-					try {
-						var p = localStorage.getItem('lattice-docs-palette');
-						if (p && p !== root.getAttribute('data-palette')) root.setAttribute('data-palette', p);
-						var m = localStorage.getItem('lattice-docs-mode');
-						if ((m === 'light' || m === 'dark') && m !== root.getAttribute('data-mode')) root.setAttribute('data-mode', m);
-						if (sel) sel.value = root.getAttribute('data-palette');
-					} catch (e) {}
 				});
 			})();
 		</script>
