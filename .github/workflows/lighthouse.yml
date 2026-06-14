@@ -1,0 +1,48 @@
+name: Lighthouse (docs perf budget)
+
+# Web-performance budget for the docs site, using Lighthouse CI (@lhci/cli) —
+# the committed config is docs/lighthouserc.cjs. Runs on PRs that touch the
+# docs site or the engine assets it bundles. Advisory by default (NOT in the
+# required `ci` aggregate, mirroring golden-diff): it reports + asserts the
+# budgets so a perf regression (e.g. an island shipping too much JS, or a
+# preview/editor that paints only after hydration) is visible at the PR.
+# Promote to a required check via branch protection once the budgets settle.
+
+on:
+  pull_request:
+    paths:
+      - 'docs/**'
+      - 'lib/**'
+      - 'dist/**'
+      - 'themes/**'
+      - '.github/workflows/lighthouse.yml'
+
+# Don't pile up runs on a busy PR.
+concurrency:
+  group: lighthouse-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lighthouse:
+    runs-on: ubuntu-latest
+    env:
+      PUPPETEER_SKIP_DOWNLOAD: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: docs/package-lock.json
+      - uses: browser-actions/setup-chrome@v1
+        id: chrome
+        with:
+          chrome-version: stable
+      - name: Install docs deps
+        run: npm ci
+        working-directory: docs
+      - name: Lighthouse CI — build + assert budgets
+        run: npm run perf
+        working-directory: docs
+        env:
+          CHROME_PATH: ${{ steps.chrome.outputs.chrome-path }}
