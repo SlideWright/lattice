@@ -9,7 +9,7 @@ The live, claimable work queue — a read-only mirror of [open issues](https://g
 grouped by board column. Design lives in `engineering/decisions/`; this tracks
 only *status*. **32 open** items.
 
-## Backlog (29)
+## Backlog (28)
 
 - [#283](https://github.com/SlideWright/lattice/issues/283) refactor(css): audit and reduce `!important` (~490 repo-wide) — high · engine
 - [#284](https://github.com/SlideWright/lattice/issues/284) refactor(css): activate `@layer` for per-component + modifier CSS — high · engine
@@ -30,7 +30,6 @@ only *status*. **32 open** items.
 - [#306](https://github.com/SlideWright/lattice/issues/306) docs: refresh (or generate) the decisions/README index (12 of 76 ADRs listed) — medium · docs
 - [#307](https://github.com/SlideWright/lattice/issues/307) docs: prune/flip the treatments-rename ADR (shipped; still "implementation-ready") — medium · docs
 - [#308](https://github.com/SlideWright/lattice/issues/308) docs: resolve the P4 regression-gate ADR status (pivot shipped; still strikethrough "pre-code") — medium · engine
-- [#314](https://github.com/SlideWright/lattice/issues/314) infra: harden drift-watch + post-merge teardown against git ref-lock races — medium · infra
 - [#280](https://github.com/SlideWright/lattice/issues/280) docs: fix phantom `--hljs-name`/`--hljs-meta` token rows in highlight-js.docs.md — low · docs
 - [#281](https://github.com/SlideWright/lattice/issues/281) docs: mark design-system.md "9 buckets" as historical (ships 12) — low · docs
 - [#282](https://github.com/SlideWright/lattice/issues/282) docs: mark design-system.md "58 components / 89 pages" as dated (ships 53) — low · docs
@@ -45,9 +44,9 @@ only *status*. **32 open** items.
 
 _none_
 
-## In progress (0)
+## In progress (1)
 
-_none_
+- [#314](https://github.com/SlideWright/lattice/issues/314) infra: harden drift-watch + post-merge teardown against git ref-lock races — medium · infra
 
 ## In review (0)
 
