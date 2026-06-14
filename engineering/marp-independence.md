@@ -3,7 +3,8 @@
 > **Living document.** The running scorecard of where Lattice's owned engine
 > stands against Marp. Update it whenever the engine gains or loses a capability,
 > the benchmark is re-run, or a cost line resolves. **Last verified against the
-> engine: 2026-06-14** (architecture settled; L3 invariant coverage 32 / 53).
+> engine: 2026-06-14** (architecture settled; L3 invariant coverage 53 / 53 —
+> full catalog).
 >
 > Point-in-time *rationale* lives in
 > `engineering/decisions/2026-06-12-p4-regression-gate-retire-marp.md` — link there
@@ -104,15 +105,30 @@ gate, so we deepen it ourselves rather than wish for a second renderer:
 - **Layers 1–2** (manifest-driven slot contract + overflow/contrast) auto-cover
   **all 53 components** the moment a manifest lands.
 - **Layer 3** (per-component semantic truths — `.chart-body` rendered, `table`
-  rows, `.katex` math, `.badge` states, …) is opt-in and growing toward the full
-  catalog — **32 / 53 components** as of 2026-06-14. Add a rule whenever a
-  component has a distinctive rendered truth worth locking; the tail is plain
-  list/heading components already fully covered by Layers 1–2.
+  rows, `.katex` math, `.badge` states, …) now covers the **full catalog —
+  53 / 53 components** as of 2026-06-14. Transform components assert their
+  rendered output (a chart frame, a table, code panels, a compiled mermaid SVG);
+  plain list/heading components — already contract-guaranteed by Layers 1–2 —
+  carry a lighter STRUCTURAL lock (a KPI's figure⇄caption pairing, a decision's
+  two reasoned options, an ordered step sequence, a flat-vs-nested list, the
+  optional eyebrow kicker layer 1 skips). The bar to raise from here is depth on
+  individual rules, not breadth — every component now has a rule.
 
 The bar is ours to raise — never marp's to validate.
 
 ## Update log
 
+- **2026-06-14 (c)** — L3 invariant coverage completed **32 → 53 / 53** (full
+  catalog). Added the 21 remaining components: the `diagram` mermaid→SVG compile
+  (a real transform, like the chart family); KPI/stats figure⇄caption tiles;
+  compare-prose/decision two-option structure; cards-grid/cards-stack/q-and-a
+  title⇄body pairings; list-tabular meta column; the `list` flat-vs-nested lock;
+  ordered-sequence locks for agenda/list-steps/list-criteria; legal label⇄citation
+  rows (authority-chain, regulatory-update, statute-stack); big-number figure (the
+  one focal element the contrast pass can't reach); content prose body; and the
+  minimal-anchor lock (heading + kicker, no list body) for title/divider/closing.
+  Plain components carry deliberately lighter structural locks — Layers 1–2 already
+  guarantee their contract; breadth is done, depth is the ongoing work.
 - **2026-06-14 (b)** — architecture settled: Marp fully externalized as an export
   target behind a clean handoff (the VS Code "gap" dissolved); scorecard reframed
   to 2 permanent costs. L3 invariant coverage grown **14 → 32 / 53** components
