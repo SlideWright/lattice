@@ -30,6 +30,7 @@ export function primaryNav(url) {
 		{ label: 'Drawing Board', href: url('drawing-board/'), match: ['drawing-board'] },
 		{ label: 'Workbench', href: url('workbench/'), match: ['workbench'] },
 		{ label: 'Components', href: url('components/'), match: ['components'] },
+		{ label: 'Features', href: url('features/'), match: ['features'] },
 		{ label: 'Comparison', href: url('comparison/'), match: ['comparison'] },
 	];
 }

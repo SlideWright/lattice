@@ -1,0 +1,390 @@
+---
+// Lattice features page — a standalone Astro route (NOT a Starlight page), a
+// sibling to index.astro and comparison.astro.
+//
+// This page is ABOUT US, not about them. The comparison page argues Lattice vs.
+// the field; this one answers "why Lattice" on its own terms. Some overlap with
+// the landing is fine and intended. Voice: active, declarative, no AI tells.
+// Every count/claim here is verified against the repo (53 components / 12
+// buckets / 14 palettes / 25 Mermaid types / WCAG-AA per README / function-plot
+// + LFM + diagnostics specs in spec/). Keep it that way — don't print a claim
+// you haven't checked.
+import '../styles/landing.css';
+import PaletteControls from '../components/site/PaletteControls.tsx';
+import { SectionHead } from '../components/landing/sections.tsx';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { joinBase } from '../lib/base-url.mjs';
+import { primaryNav, GITHUB_URL, isCurrent } from '../lib/nav.mjs';
+
+const base = import.meta.env.BASE_URL;
+const url = (p) => joinBase(base, p);
+const navLinks = primaryNav(url);
+const here = Astro.url.pathname;
+
+const docsRoot = process.cwd();
+const tokensCss = readFileSync(join(docsRoot, 'src/styles/lattice-tokens.generated.css'), 'utf8');
+const palettes = [...new Set([...tokensCss.matchAll(/data-palette="([^"]+)"/g)].map((m) => m[1]))];
+
+// Field-native vocabularies — one card per discipline. Verified against the
+// component catalog (lib/components/*, dist/docs/components.json).
+const FIELDS = [
+	{
+		who: 'Lawyers & compliance',
+		what: 'Statute stacks, authority chains, obligation matrices, citation cards, regulatory-update layouts. An actual legal vocabulary, not a bullet list pretending to be one.',
+	},
+	{
+		who: 'Mathematicians & quants',
+		what: 'Real KaTeX — Definition / Theorem / Proof cards, derivation chains with a justification column, matrix decompositions, and an equation sitting beside its plotted curve.',
+	},
+	{
+		who: 'Project leads',
+		what: 'Gantt charts, kanban boards, roadmaps, and step ladders rendered straight from a list — native SVG, not a screenshot pasted in from another tool.',
+	},
+	{
+		who: 'Analysts',
+		what: 'Radar, quadrant, KPI, stats, progress, pie, funnel, and word-cloud — the evidence layouts that turn a column of numbers into an argument.',
+	},
+	{
+		who: 'Engineers & architects',
+		what: 'All 25 Mermaid diagram types, auto-themed to the deck. State charts. Side-by-side code diffs, syntax-highlighted, straight from two fenced blocks.',
+	},
+	{
+		who: 'Everyone else',
+		what: 'A bullet list becomes a card grid. A table becomes a comparison matrix. Fifty-three layouts, one Markdown syntax you already know.',
+	},
+];
+
+// "Behaves like code" points.
+const CODE_POINTS = [
+	{
+		head: 'A git diff shows what changed',
+		body: 'A deck is a text file. Revisions read like code review — line by line — instead of hunting for the box that moved three pixels. Branch it, review it, blame it, gate it in CI.',
+	},
+	{
+		head: 'Your deck has a linter',
+		body: 'One deterministic checker runs in your editor, the CLI, and the browser, and returns the same findings everywhere — stable rule IDs, a published diagnostic spec. It flags a malformed deck before you ever render it.',
+	},
+	{
+		head: 'Same input, same pixels',
+		body: 'Render the same source twice and get the same deck. No model in the render path, no randomness, no “looks right on my machine.” Reproducible by construction.',
+	},
+];
+
+// "Yours to keep" points.
+const OWN_POINTS = [
+	{ head: 'MIT-licensed', body: 'Use it, fork it, ship it. No seat fees, no contract, no rug to pull.' },
+	{ head: 'Runs offline', body: 'It’s a build step on your machine. No account, no telemetry, nothing sent anywhere.' },
+	{ head: 'No lock-in', body: 'The source is Markdown you own forever, and you can export a Marp bundle any time you want to leave.' },
+];
+---
+
+<!doctype html>
+<html lang="en" data-palette="indaco" data-mode="light">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Why Lattice — features of a deck engine that holds its shape</title>
+		<meta
+			name="description"
+			content="Why use Lattice: field-native layouts, one source rendered pixel-identical to PDF/PPTX/PNG/HTML, one-line restyle with WCAG-AA guaranteed in every palette, a deck that behaves like code with a built-in linter, native diagrams and math, and AI authoring on your terms — MIT, offline, no lock-in."
+		/>
+		<link rel="icon" type="image/png" href={url('lattice-logo.png')} />
+		<script is:inline>
+			(function () {
+				var r = document.documentElement;
+				try {
+					var p = localStorage.getItem('lattice-docs-palette');
+					if (p) r.setAttribute('data-palette', p);
+					var m = localStorage.getItem('lattice-docs-mode');
+					if (m === 'light' || m === 'dark') r.setAttribute('data-mode', m);
+					else if (window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches)
+						r.setAttribute('data-mode', 'dark');
+				} catch (e) {}
+			})();
+		</script>
+	</head>
+	<body>
+		<header class="topbar">
+			<div class="wrap topbar-inner">
+				<a class="brand" href={url('')}>
+					<img class="brand-logo" src={url('lattice-logo.png')} alt="" width="30" height="30" />
+					<span class="brand-mark">Lattice</span>
+				</a>
+				<nav class="topnav" id="topnav">
+					{navLinks.map((l) => (
+						<a class="navlink" href={l.href} aria-current={isCurrent(l, here) ? 'page' : undefined}>{l.label}</a>
+					))}
+					<a class="navlink" href={GITHUB_URL}>GitHub</a>
+				</nav>
+				<div class="topbar-actions">
+					<div class="controls lx-ui">
+						<PaletteControls client:idle palettes={palettes} />
+					</div>
+					<button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-controls="topnav" aria-expanded="false"></button>
+				</div>
+			</div>
+		</header>
+
+		<main>
+			<!-- Hero -->
+			<section class="py-[clamp(48px,7vw,96px)] pb-[clamp(32px,4vw,56px)]">
+				<div class="wrap max-w-[52rem]">
+					<p class="m-0 mb-4 font-mono text-[12px] font-medium uppercase tracking-[0.16em] text-primary">
+						Why Lattice
+					</p>
+					<h1 class="m-0 mb-5 font-[var(--font-display)] text-[clamp(34px,5.2vw,60px)] font-bold leading-[1.04] tracking-[-0.02em] text-[var(--text-heading)]">
+						A deck engine that holds its shape.
+					</h1>
+					<p class="m-0 mb-4 text-[clamp(17px,2vw,20px)] leading-[1.5] text-foreground">
+						Most slide tools hand you a blank canvas: put anything anywhere. That freedom is exactly why decks drift,
+						break on export, and wander off brand. Lattice treats a deck as <strong>structured content with a grammar,
+						a compiler, and guarantees</strong>. You write the words. The engine holds the line.
+					</p>
+					<p class="m-0 text-[15.5px] leading-[1.6] text-muted-foreground">
+						Here’s what that buys you.
+					</p>
+					<div class="mt-8 flex flex-wrap gap-3">
+						<a
+							href={url('playground/')}
+							class="inline-flex items-center rounded-lg bg-primary px-5 py-2.5 text-[15px] font-semibold shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-lg"
+							style="color: var(--on-accent);"
+						>
+							Try the playground
+						</a>
+						<a
+							href={url('comparison/')}
+							class="inline-flex items-center rounded-lg border border-border bg-card px-5 py-2.5 text-[15px] font-semibold text-foreground transition-colors hover:border-primary"
+						>
+							How we compare
+						</a>
+					</div>
+				</div>
+			</section>
+
+			<!-- Speaks your field -->
+			<section class="border-t border-border py-[clamp(48px,6vw,88px)]">
+				<div class="wrap">
+					<SectionHead
+						eyebrow="Speaks your field"
+						title="Fifty-three layouts that know what you do for a living."
+					>
+						Other tools give you a title slide and a bullet slide and wish you luck. Lattice ships a vocabulary for
+						each discipline — 53 layouts across 12 buckets — so the notation matches the work instead of flattening it.
+					</SectionHead>
+					<div class="grid grid-cols-1 gap-[18px] sm:grid-cols-2 lg:grid-cols-3">
+						{FIELDS.map((f) => (
+							<div class="rounded-xl border border-border bg-card p-[24px] shadow-sm">
+								<h3 class="m-0 mb-2 font-[var(--font-body)] text-[17px] font-semibold leading-[1.3] tracking-[-0.01em] text-[var(--text-heading)]">
+									{f.who}
+								</h3>
+								<p class="m-0 text-[14.5px] leading-[1.6] text-foreground">{f.what}</p>
+							</div>
+						))}
+					</div>
+				</div>
+			</section>
+
+			<!-- One source, every format & palette -->
+			<section class="border-y border-border bg-muted py-[clamp(48px,6vw,88px)]">
+				<div class="wrap">
+					<SectionHead
+						eyebrow="One source, many outputs"
+						title="Write it once. Ship it anywhere, on brand, in any palette."
+					>
+						The deck is one Markdown file. The output extension picks the format, and the engine keeps them all in
+						lockstep.
+					</SectionHead>
+					<div class="grid grid-cols-1 gap-[18px] lg:grid-cols-3">
+						<div class="rounded-xl border border-border bg-card p-[26px] shadow-sm">
+							<h3 class="m-0 mb-2.5 text-[17px] font-semibold text-[var(--text-heading)]">Four formats, identical</h3>
+							<p class="m-0 text-[14.5px] leading-[1.6] text-foreground">
+								PDF, PPTX, PNG, and HTML come off one engine and one source, pixel for pixel. No per-format fiddling,
+								no “the export looks different.”
+							</p>
+						</div>
+						<div class="rounded-xl border border-border bg-card p-[26px] shadow-sm">
+							<h3 class="m-0 mb-2.5 text-[17px] font-semibold text-[var(--text-heading)]">Restyle in one line</h3>
+							<p class="m-0 text-[14.5px] leading-[1.6] text-foreground">
+								Brand colours live in one file. Layouts never name a colour — they read <code class="font-mono text-[0.88em] text-primary">var(--token)</code>.
+								Change the <code class="font-mono text-[0.88em] text-primary">theme:</code> line and the whole deck restyles across 14 palettes, light or dark.
+							</p>
+						</div>
+						<div class="rounded-xl border border-border bg-card p-[26px] shadow-sm">
+							<h3 class="m-0 mb-2.5 text-[17px] font-semibold text-[var(--text-heading)]">Accessible by default</h3>
+							<p class="m-0 text-[14.5px] leading-[1.6] text-foreground">
+								Contrast clears WCAG AA on every text-bearing surface, in every palette, light and dark. It’s baked
+								into the token contract — you can’t ship an off-brand or unreadable slide by accident.
+							</p>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<!-- Behaves like code -->
+			<section class="py-[clamp(48px,6vw,88px)]">
+				<div class="wrap">
+					<SectionHead
+						eyebrow="A deck that behaves like code"
+						title="Plain text in. A reviewable, reproducible deck out."
+					>
+						A deck is content, so Lattice treats it like content: text you can diff, a checker that catches mistakes,
+						and output that comes out the same every time.
+					</SectionHead>
+					<div class="grid grid-cols-1 gap-[18px] lg:grid-cols-3">
+						{CODE_POINTS.map((p) => (
+							<div class="rounded-xl border border-border bg-card p-[26px] shadow-sm">
+								<h3 class="m-0 mb-2.5 text-[17px] font-semibold text-[var(--text-heading)]">{p.head}</h3>
+								<p class="m-0 text-[14.5px] leading-[1.6] text-foreground">{p.body}</p>
+							</div>
+						))}
+					</div>
+				</div>
+			</section>
+
+			<!-- Diagrams & math -->
+			<section class="border-y border-border bg-muted py-[clamp(48px,6vw,88px)]">
+				<div class="wrap">
+					<SectionHead
+						eyebrow="Diagrams and math, first-class"
+						title="The hard stuff renders itself."
+					>
+						The content other tools make you paste in as a flat image is native here — and it picks up your palette
+						on the way through.
+					</SectionHead>
+					<div class="grid grid-cols-1 gap-[18px] lg:grid-cols-2">
+						<div class="rounded-xl border border-border bg-card p-[26px] shadow-sm">
+							<h3 class="m-0 mb-2.5 text-[17px] font-semibold text-[var(--text-heading)]">Diagrams that survive the PDF</h3>
+							<p class="m-0 text-[14.5px] leading-[1.6] text-foreground">
+								All 25 Mermaid diagram types, pre-rendered to SVG at build time so they actually show up in your PDF
+								— and auto-themed to the deck’s tokens, so you never hand-colour a flowchart again.
+							</p>
+						</div>
+						<div class="rounded-xl border border-border bg-card p-[26px] shadow-sm">
+							<h3 class="m-0 mb-2.5 text-[17px] font-semibold text-[var(--text-heading)]">Math that means it</h3>
+							<p class="m-0 text-[14.5px] leading-[1.6] text-foreground">
+								KaTeX equations rendered for real, an equation drawn beside its plotted curve, and native charts that
+								read the palette directly. Notation, not screenshots of notation.
+							</p>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<!-- AI on your terms -->
+			<section class="py-[clamp(48px,6vw,88px)]">
+				<div class="wrap">
+					<SectionHead
+						eyebrow="AI on your terms"
+						title="Built for AI authoring, without owning the AI."
+					>
+						Lattice is a clean target for an LLM — and it leaves the model choice, and the bill, to you.
+					</SectionHead>
+					<div class="grid grid-cols-1 gap-[18px] lg:grid-cols-2">
+						<div class="rounded-xl border border-border bg-card p-[26px] shadow-sm">
+							<h3 class="m-0 mb-2.5 text-[17px] font-semibold text-[var(--text-heading)]">A contract a model can follow</h3>
+							<p class="m-0 text-[14.5px] leading-[1.6] text-foreground">
+								A machine-readable catalog and a published authoring spec mean an agent composes valid, on-brand decks
+								instead of guessing at HTML. The deterministic Coach checks structure without spending a token.
+							</p>
+						</div>
+						<div class="rounded-xl border border-border bg-card p-[26px] shadow-sm">
+							<h3 class="m-0 mb-2.5 text-[17px] font-semibold text-[var(--text-heading)]">Bring your own model</h3>
+							<p class="m-0 text-[14.5px] leading-[1.6] text-foreground">
+								Drive any of 300+ models through OpenRouter on your own account, with a session budget and live spend
+								in front of you. We default to Claude Sonnet because we think it’s the best work per dollar — but it’s
+								a default, not a cage. <a href={url('comparison/')} class="font-semibold text-primary hover:underline">More on our AI stance →</a>
+							</p>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<!-- Yours to keep -->
+			<section class="border-y border-border bg-muted py-[clamp(48px,6vw,88px)]">
+				<div class="wrap">
+					<SectionHead
+						eyebrow="Yours to keep"
+						title="No account. No telemetry. No rug to pull."
+					>
+						Lattice is a tool you run, not a service you rent.
+					</SectionHead>
+					<div class="grid grid-cols-1 gap-[18px] sm:grid-cols-3">
+						{OWN_POINTS.map((p) => (
+							<div class="rounded-xl border border-border bg-card p-[24px] shadow-sm">
+								<h3 class="m-0 mb-2 text-[16px] font-semibold text-[var(--text-heading)]">{p.head}</h3>
+								<p class="m-0 text-[14.5px] leading-[1.6] text-foreground">{p.body}</p>
+							</div>
+						))}
+					</div>
+				</div>
+			</section>
+
+			<!-- CTA -->
+			<section class="py-[clamp(48px,6vw,88px)]">
+				<div class="wrap">
+					<SectionHead eyebrow="Start here" title="See it for yourself." />
+					<div class="grid grid-cols-1 gap-[18px] sm:grid-cols-2 lg:grid-cols-3">
+						<a
+							href={url('playground/')}
+							class="group block rounded-xl border border-border bg-card p-[26px] text-card-foreground shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary hover:shadow-lg"
+						>
+							<h3 class="mb-2 font-[var(--font-body)] text-[19px] font-semibold tracking-[-0.01em] text-[var(--text-heading)]">Open the playground</h3>
+							<p class="m-0 text-[15px] text-foreground">Write a slide, switch every palette, export a real PDF. In the browser, right now.</p>
+						</a>
+						<a
+							href={url('components/')}
+							class="group block rounded-xl border border-border bg-card p-[26px] text-card-foreground shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary hover:shadow-lg"
+						>
+							<h3 class="mb-2 font-[var(--font-body)] text-[19px] font-semibold tracking-[-0.01em] text-[var(--text-heading)]">Browse the layouts</h3>
+							<p class="m-0 text-[15px] text-foreground">Every one of the 53 layouts, live, themable in all 14 palettes.</p>
+						</a>
+						<a
+							href={url('getting-started/')}
+							class="group block rounded-xl border border-border bg-card p-[26px] text-card-foreground shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary hover:shadow-lg"
+						>
+							<h3 class="mb-2 font-[var(--font-body)] text-[19px] font-semibold tracking-[-0.01em] text-[var(--text-heading)]">Render your first deck</h3>
+							<p class="m-0 text-[15px] text-foreground">Install the toolchain and produce a boardroom-grade PDF in a few minutes.</p>
+						</a>
+					</div>
+				</div>
+			</section>
+		</main>
+
+		<footer class="foot">
+			<div class="wrap foot-inner">
+				<a class="brand" href={url('')}>
+					<img class="brand-logo" src={url('lattice-logo.png')} alt="" width="26" height="26" />
+					<span class="brand-mark">Lattice</span>
+				</a>
+				<nav>
+					<a href={url('introduction/')}>What is Lattice?</a>
+					<a href={url('story/')}>Story</a>
+					<a href={url('getting-started/')}>Get started</a>
+					<a href={url('playground/')}>Playground</a>
+					<a href={url('drawing-board/')}>Drawing Board</a>
+					<a href={url('workbench/')}>Workbench</a>
+					<a href={url('guides/authoring/')}>Authoring</a>
+					<a href={url('components/')}>Components</a>
+					<a href={url('features/')}>Features</a>
+					<a href={url('comparison/')}>Comparison</a>
+					<a href="https://github.com/slidewright/lattice">GitHub</a>
+				</nav>
+				<span class="legal">Designed by humans. Refined with Claude. · Part of Lattice Style · MIT-licensed</span>
+			</div>
+		</footer>
+
+		<script is:inline>
+			(function () {
+				var navToggle = document.getElementById('nav-toggle');
+				var topbar = document.querySelector('.topbar');
+				if (navToggle && topbar) {
+					navToggle.addEventListener('click', function () {
+						var open = topbar.classList.toggle('nav-open');
+						navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+					});
+				}
+			})();
+		</script>
+	</body>
+</html>
