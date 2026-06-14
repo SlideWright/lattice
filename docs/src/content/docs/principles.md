@@ -144,10 +144,13 @@ CSS underneath, and you can edit it directly.
 
 Most of what goes wrong in a slide deck is mechanical, and Lattice
 handles all of it. Contrast that meets WCAG AA, on every layout, in
-light and dark — checked automatically, not left to chance. Headings
-that resolve to the right size, spacing that holds, alignment that
-falls where it should. You never spend judgment on any of it, because
-none of it is a matter of judgment.
+light and dark — checked automatically, not left to chance. Color never
+the only signal: about one man in twelve is color-blind and won't say
+so — the one who can't read your red from your green might be the one
+deciding — so every status carries its shape too, a check or an X that
+survives in greyscale. Headings that resolve to the right size, spacing
+that holds, alignment that falls where it should. You never spend
+judgment on any of it, because none of it is a matter of judgment.
 
 The rest is judgment. Whether the claim is true. Whether the slide
 earns its place. Whether the argument lands with this audience, this
