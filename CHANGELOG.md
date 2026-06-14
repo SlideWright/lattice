@@ -27,6 +27,22 @@ in patch versions.
 
 ### Removed
 
+- **Breaking: the canonical flip is complete — the legacy per-theme token names
+  are retired across the engine** (universal-token canonical flip, groups 2–5 —
+  see `engineering/decisions/2026-06-11-universal-token-system.md` §11). The 14
+  themes + the engine now declare only the new role-based names; rename any BYO
+  theme or deck that references the old ones:
+  - categorical: `--cN-light` / `--cN-dark` / `--c-ink-light` / `--c-ink-dark`
+    → `--cat-N-fill` / `--cat-N-mark` / `--cat-on-fill` / `--cat-on-mark`
+  - diagram-structural: `--c-stroke` / `--c-line` / `--c-accent-warm`
+    → `--diagram-stroke` / `--diagram-line` / `--diagram-accent-warm`
+  - diagram lifecycle: `--c-warm/cool/alarm/mark/note` (+ `-dark` marks)
+    → `--diagram-active/done/critical/today/note` (+ `-mark`)
+  - surfaces / scheme: `--bg-dark` → `--surface-inverse`; `--dark-*` → `--scheme-dark-*`
+
+  Resolved colours are byte-identical (a pure rename, verified zero-pixel-drift).
+  The old→new map lives in `lib/tokens/crosswalk.js` + the ADR §7 table; the
+  Drawing-Board `tokens: current` option migrates a legacy-authored deck.
 - **Breaking: the sequential colour-ramp tokens `--scale-50 … --scale-900` are
   retired in favour of `--seq-50 … --seq-900`** (universal-token canonical flip,
   group 1 — see `engineering/decisions/2026-06-11-universal-token-system.md`

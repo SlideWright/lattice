@@ -308,7 +308,7 @@ const css = paletteCSS + '\n' + layoutCSS;
 //      --diagram-* / --cat-* / --text-* tokens.
 //
 //   2. lattice.css "DIAGRAM OVERRIDES" section.  Per-diagram CSS
-//      (`section .section-N rect { fill: var(--c3-light) }` and so
+//      (`section .section-N rect { fill: var(--cat-3-fill) }` and so
 //      on) that target classes Mermaid emits but doesn't theme. Loaded as
 //      a normal page stylesheet via lattice.css; the mmdc-produced SVG is
 //      embedded inline in the host HTML, so the host stylesheet cascades
@@ -343,7 +343,7 @@ const MERMAID_VAR_MAP = {
   secondaryBorderColor:     { var: 'diagram-stroke' },
   tertiaryBorderColor:      { var: 'diagram-stroke' },
 
-  // Text — ONE token, --c-ink-light, for every text element. It flips
+  // Text — ONE token, --cat-on-fill, for every text element. It flips
   // with the canvas (dark ink on a light canvas, light ink on a dark
   // canvas). No "shape text vs canvas text" split: the fills flip with
   // the canvas too, so ink and fill always stay matched. Text on a
@@ -573,9 +573,9 @@ function parsePaletteVars(paletteCSSContent, forceDark) {
   const isDark = forceDark || /:root\s*\{[^}]*color-scheme\s*:\s*dark\b/.test(stripped);
   // Resolve every declaration against the RAW map with the recursive
   // evaluator. Order-independent, unlike the former "collapse light-dark,
-  // then chase one-level var()" passes — those could not follow an alias
-  // declared new→old (var(--cat-1-fill) → var(--c1-light) → light-dark() →
-  // hex) nor evaluate color-mix(). resolveTokenExpr reads from the raw map
+  // then chase one-level var()" passes — those could not follow a chained
+  // token (var(--cat-1-fill) → light-dark() → hex, or one token pointing at
+  // another) nor evaluate color-mix(). resolveTokenExpr reads from the raw map
   // so chained var()s resolve regardless of declaration order.
   const resolved = {};
   for (const k of Object.keys(vars)) resolved[k] = resolveTokenExpr(vars[k], vars, isDark);

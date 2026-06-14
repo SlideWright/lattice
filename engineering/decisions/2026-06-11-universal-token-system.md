@@ -2,9 +2,10 @@
 
 **Date:** 2026-06-11 · **flip plan added 2026-06-14**
 **Status:** design accepted · phases 1–7 implemented (alias era) ·
-canonical flip specified as an executable plan (§11) · **execution underway —
-group 1 (sequential `--scale-*` → `--seq-*`) shipped (PR #339, issue #337);
-groups 2–5 + closeout remain**
+canonical flip specified as an executable plan (§11) · **groups 1–5 FLIPPED to
+canonical (issue #337): group 1 sequential = PR #339, groups 2–5 = the
+follow-on PR; the engine + all 14 themes now declare only the new names. Closeout
+remains — post-flip token-tier lint, HARD RULE #11 flip, toggle inversion.**
 **Scope:** `lib/base/base.tokens.css`, `themes/*.css`, the three render-path
 Mermaid bridges (`lattice-emulator.js`, `lib/runtime/index.js`,
 `marp.config.js`), `lib/theme/derive.js`, the gates
