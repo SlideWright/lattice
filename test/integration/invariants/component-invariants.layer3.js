@@ -2,16 +2,30 @@
  * Layer 3 — per-component SEMANTIC invariants, and the TRANSFORM set.
  *
  * Layers 1–2 (contract slots + universal contrast/overflow) cover every component
- * automatically. But some components TRANSFORM their authored markup: a chart's
- * `ul > li` source list is consumed into an SVG/HTML chart frame, glossary's list
- * becomes a `<table>`, compare-code's fences become code panels, featured's list
- * becomes a feature layout. For those the manifest slot selector describes the
- * AUTHORING input (gone from the rendered DOM), so layer 1's "slot resolves" check
- * is skipped (TRANSFORM set) and the RENDERED-output contract is asserted here.
+ * automatically. Layer 3 adds the per-component truth that those generic layers
+ * can't see. Two flavours:
  *
- * Each entry maps a label → async `(page, assert, SLIDE) => {}` run against the
- * rendered sample slide (`SLIDE` = `section[data-marpit-slide="1"]`). Keep these
- * about MEANING — counts, presence of a computed relationship — not pixels.
+ *   • TRANSFORM components rewrite their authored markup — a chart's `ul > li`
+ *     source list is consumed into an SVG/HTML chart frame, glossary's list
+ *     becomes a `<table>`, compare-code's fences become code panels, featured's
+ *     list becomes a feature layout. For those the manifest slot selector
+ *     describes the AUTHORING input (gone from the rendered DOM), so layer 1's
+ *     "slot resolves" check is skipped (TRANSFORM set) and the RENDERED-output
+ *     contract is asserted here.
+ *
+ *   • PLAIN components render straight semantic HTML styled entirely off the
+ *     section `_class` (no transform, no bespoke classes). Layer 1 only checks
+ *     that each REQUIRED slot selector resolves ≥1; layer 3 locks the distinctive
+ *     STRUCTURE that makes the component itself — the figure⇄caption pairing of a
+ *     KPI tile, the two reasoned options of a decision, an ordered step sequence,
+ *     a flat (non-nested) bullet list, the optional eyebrow kicker layer 1 skips.
+ *     These are deliberately lighter than a transform check (Layers 1–2 already
+ *     guarantee the contract) but still assert MEANING, not pixels.
+ *
+ * Coverage: all 53 components carry a layer-3 rule. Each entry maps a label →
+ * async `(page, assert, SLIDE) => {}` run against the rendered sample slide
+ * (`SLIDE` = `section[data-marpit-slide="1"]`). Keep these about MEANING —
+ * counts, presence of a computed relationship — not pixels.
  */
 
 // Every chart-family component renders the same frame: a `.chart-body` (with a
@@ -32,11 +46,49 @@ function present(sel, min, msg) {
   };
 }
 
+/**
+ * Assert ≥`min` `parentSel` elements EACH contain all of `childSels`. Locks a
+ * structural pairing (e.g. each `ol > li` carries both a `strong` figure and a
+ * nested `:scope > ul` caption) — the relationship layer 1's flat "slot resolves"
+ * check can't express. `:scope` in a childSel refers to the parent element.
+ */
+function eachWith(parentSel, childSels, min, msg) {
+  return async (page, assert, SLIDE) => {
+    const n = await page.$$eval(`${SLIDE} ${parentSel}`, (els, kids) =>
+      els.filter((el) => kids.every((k) => {
+        try { return !!el.querySelector(k); } catch { return false; }
+      })).length, childSels);
+    assert.ok(n >= min, `${msg} (expected ≥${min} "${parentSel}" each with ${childSels.join(' + ')}, got ${n})`);
+  };
+}
+
 function chartFrameRenders() {
   return {
     'renders the chart-family frame (.chart-body)': async (page, assert, SLIDE) => {
       const n = await page.$$eval(`${SLIDE} .chart-body`, (els) => els.length);
       assert.ok(n >= 1, 'chart-family transform did not render a .chart-body frame (authored list not consumed into a chart)');
+    },
+  };
+}
+
+// Anchor slides (title / divider / closing) are minimal centred statements: a
+// single heading + a kicker eyebrow (`p > code`, an OPTIONAL slot layer 1 skips)
+// and — definitionally — NO list body. That last fact is what separates an
+// anchor from every content component, so we lock it.
+function anchorMinimal(headingTag) {
+  return {
+    [`renders a minimal anchor: ${headingTag} + kicker eyebrow, no list body`]: async (page, assert, SLIDE) => {
+      const f = await page.evaluate((sel, tag) => {
+        const s = document.querySelector(sel);
+        return {
+          head: s.querySelectorAll(tag).length,
+          kicker: s.querySelectorAll('p > code').length,
+          lists: s.querySelectorAll('ol, ul').length,
+        };
+      }, SLIDE, headingTag);
+      assert.ok(f.head >= 1, `anchor missing its ${headingTag} heading`);
+      assert.ok(f.kicker >= 1, 'anchor missing its eyebrow kicker (p > code)');
+      assert.equal(f.lists, 0, `anchor unexpectedly rendered ${f.lists} list(s) — not a minimal statement`);
     },
   };
 }
@@ -65,6 +117,11 @@ const LAYER3 = {
     },
   },
 
+  // ── anchor ──
+  title: anchorMinimal('h1'),
+  divider: anchorMinimal('h2'),
+  closing: anchorMinimal('h2'),
+
   // ── code ──
   code: {
     'renders a syntax-highlighted code block (pre > code)':
@@ -75,6 +132,14 @@ const LAYER3 = {
   'compare-table': {
     'authored rows render as a table':
       present('table tr', 2, 'compare-table did not render table rows'),
+  },
+  'compare-prose': {
+    'renders two labelled prose options (strong + nested point)':
+      eachWith('ul > li', ['strong', ':scope > ul'], 2, 'compare-prose did not render two labelled options'),
+  },
+  decision: {
+    'renders two labelled options, each with its reasoning':
+      eachWith('ul > li', ['strong', ':scope > ul'], 2, 'decision did not render two reasoned options'),
   },
   'matrix-2x2': {
     'renders four quadrant cells (li carrying a nested ul)': async (page, assert, SLIDE) => {
@@ -110,6 +175,26 @@ const LAYER3 = {
       present('blockquote', 1, 'redline did not render its blockquote'),
   },
 
+  // ── evidence ──
+  diagram: {
+    'mermaid source compiled to a rendered SVG with nodes': async (page, assert, SLIDE) => {
+      const f = await page.evaluate((sel) => {
+        const s = document.querySelector(sel);
+        return { svg: s.querySelectorAll('svg').length, nodes: s.querySelectorAll('svg .node, svg g.node').length };
+      }, SLIDE);
+      assert.ok(f.svg >= 1, 'diagram did not render a compiled <svg> (mermaid source not transformed)');
+      assert.ok(f.nodes >= 1, 'diagram svg has no rendered nodes (mermaid compile produced an empty/error frame)');
+    },
+  },
+  kpi: {
+    'each KPI tile pairs a figure (strong) with a caption':
+      eachWith('ol > li', ['strong', ':scope > ul'], 2, 'kpi did not render figure+caption tiles'),
+  },
+  stats: {
+    'each stat tile pairs a figure (strong) with a label':
+      eachWith('ol > li', ['strong', ':scope > ul'], 2, 'stats did not render figure+label tiles'),
+  },
+
   // ── imagery ──
   image: {
     'renders an image asset (img)':
@@ -121,16 +206,55 @@ const LAYER3 = {
     'renders actor role pills (.lat-pill)':
       present('.lat-pill', 1, 'actors did not render role pills'),
   },
+  agenda: {
+    'renders ordered agenda items, each with a page locator':
+      eachWith('ol > li', ['code'], 3, 'agenda did not render ordered items with page locators'),
+  },
+  'cards-grid': {
+    'renders multiple cards, each a title with a body':
+      eachWith('ul > li', [':scope > ul'], 3, 'cards-grid did not render title+body cards'),
+  },
+  'cards-stack': {
+    'renders stacked cards, each a title with a body':
+      eachWith('ul > li', [':scope > ul'], 2, 'cards-stack did not render title+body cards'),
+  },
   checklist: {
     'renders status markers (.state)':
       present('.state', 1, 'checklist did not render status markers'),
+  },
+  list: {
+    'renders a flat bullet list (no nested cards)': async (page, assert, SLIDE) => {
+      const f = await page.evaluate((sel) => {
+        const s = document.querySelector(sel);
+        const lis = [...s.querySelectorAll('ul > li')];
+        return { n: lis.length, nested: lis.filter((li) => li.querySelector(':scope > ul')).length };
+      }, SLIDE);
+      assert.ok(f.n >= 3, `list rendered ${f.n} items, expected ≥3`);
+      assert.equal(f.nested, 0, `list is meant to be flat but ${f.nested} item(s) nest a sub-list`);
+    },
+  },
+  'list-tabular': {
+    'each row carries a body and an emphasised meta column':
+      eachWith('ol > li', ['em', ':scope > ul'], 3, 'list-tabular did not render rows with meta columns'),
   },
   'logo-wall': {
     'renders multiple logos (img)':
       present('img', 2, 'logo-wall did not render multiple logos'),
   },
+  'q-and-a': {
+    'each question pairs with its answer':
+      eachWith('ul > li', [':scope > ul'], 2, 'q-and-a did not pair questions with answers'),
+  },
 
   // ── legal ──
+  'authority-chain': {
+    'each tier renders a label and a citation':
+      eachWith('ol > li', ['strong', 'code'], 3, 'authority-chain did not render labelled tiers with citations'),
+  },
+  'citation-card': {
+    'renders the citation (blockquote)':
+      present('blockquote', 1, 'citation-card did not render its blockquote'),
+  },
   'obligation-matrix': {
     'renders an obligation table with status markers': async (page, assert, SLIDE) => {
       const f = await page.evaluate((sel) => {
@@ -141,9 +265,13 @@ const LAYER3 = {
       assert.ok(f.states >= 1, 'obligation-matrix missing status markers (.state)');
     },
   },
-  'citation-card': {
-    'renders the citation (blockquote)':
-      present('blockquote', 1, 'citation-card did not render its blockquote'),
+  'regulatory-update': {
+    'each update renders a citation and an effective-date badge':
+      eachWith('ol > li', ['strong', 'code'], 3, 'regulatory-update did not render cited, dated updates'),
+  },
+  'statute-stack': {
+    'each jurisdiction renders a label and a statutory citation':
+      eachWith('ul > li', ['strong', 'code'], 3, 'statute-stack did not render labelled rows with citations'),
   },
 
   // ── math ──
@@ -152,7 +280,53 @@ const LAYER3 = {
       present('.katex', 1, 'math did not render any KaTeX (authored $…$ not transformed)'),
   },
 
+  // ── progression ──
+  'list-criteria': {
+    'each criterion renders a label and its rationale':
+      eachWith('ol > li', ['strong', ':scope > ul'], 3, 'list-criteria did not render labelled criteria'),
+  },
+  'list-steps': {
+    'renders an ordered sequence of steps, each with detail': async (page, assert, SLIDE) => {
+      const f = await page.evaluate((sel) => {
+        const s = document.querySelector(sel);
+        const ol = s.querySelector('ol');
+        return { ordered: !!ol, steps: ol ? [...ol.children].filter((li) => li.querySelector(':scope > ul')).length : 0 };
+      }, SLIDE);
+      assert.ok(f.ordered, 'list-steps is not an ordered (numbered) sequence');
+      assert.ok(f.steps >= 3, `list-steps rendered ${f.steps} detailed steps, expected ≥3`);
+    },
+  },
+
   // ── statement ──
+  'big-number': {
+    'renders the figure with its caption and an eyebrow': async (page, assert, SLIDE) => {
+      const f = await page.evaluate((sel) => {
+        const s = document.querySelector(sel);
+        return {
+          fig: [...s.querySelectorAll('ul > li')].filter((li) => li.querySelector(':scope > ul')).length,
+          eyebrow: s.querySelectorAll('p > code').length,
+        };
+      }, SLIDE);
+      assert.ok(f.fig >= 1, 'big-number missing its figure+caption (li with a nested caption list)');
+      assert.ok(f.eyebrow >= 1, 'big-number missing its eyebrow kicker');
+    },
+  },
+  content: {
+    'renders a heading over a prose paragraph body, with an eyebrow': async (page, assert, SLIDE) => {
+      const f = await page.evaluate((sel) => {
+        const s = document.querySelector(sel);
+        const ps = [...s.children].filter((e) => e.tagName === 'P');
+        return {
+          h: s.querySelectorAll('h2').length,
+          eyebrow: s.querySelectorAll('p > code').length,
+          prose: ps.filter((p) => !p.querySelector('code') && p.textContent.trim().length > 40).length,
+        };
+      }, SLIDE);
+      assert.ok(f.h >= 1, 'content missing its h2 heading');
+      assert.ok(f.eyebrow >= 1, 'content missing its eyebrow kicker');
+      assert.ok(f.prose >= 1, 'content missing its prose body paragraph');
+    },
+  },
   quote: {
     'renders the quotation (blockquote)':
       present('blockquote', 1, 'quote did not render a blockquote'),
