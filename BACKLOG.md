@@ -7,13 +7,22 @@
 
 The live, claimable work queue — a read-only mirror of [open issues](https://github.com/SlideWright/lattice/issues),
 grouped by board column. Design lives in `engineering/decisions/`; this tracks
-only *status*. **6 open** items.
+only *status*. **15 open** items.
 
-## Backlog (3)
+## Backlog (12)
 
 - [#275](https://github.com/SlideWright/lattice/issues/275) docs: correct README palette count 13→14 (add missing `carta`) — critical · theming
 - [#276](https://github.com/SlideWright/lattice/issues/276) docs: fix drifted counts in design-system.md headline (palettes 25→14) — critical · docs
 - [#277](https://github.com/SlideWright/lattice/issues/277) docs: correct theming.md "13 themes"→14 — high · theming
+- [#278](https://github.com/SlideWright/lattice/issues/278) docs: correct marp-independence.md "58 layouts"→53 — high · engine
+- [#283](https://github.com/SlideWright/lattice/issues/283) refactor(css): audit and reduce `!important` (~490 repo-wide) — high · engine
+- [#284](https://github.com/SlideWright/lattice/issues/284) refactor(css): activate `@layer` for per-component + modifier CSS — high · engine
+- [#279](https://github.com/SlideWright/lattice/issues/279) docs: reconcile Mermaid diagram-type count (README "25" vs gallery "26") — medium · diagram
+- [#285](https://github.com/SlideWright/lattice/issues/285) refactor(css): retire the SPECIFICITY-BUMP HACKs (citation-card, redline, regulatory-update) — medium · engine
+- [#286](https://github.com/SlideWright/lattice/issues/286) refactor(css): namespace variant classes that collide with component names — medium · engine
+- [#280](https://github.com/SlideWright/lattice/issues/280) docs: fix phantom `--hljs-name`/`--hljs-meta` token rows in highlight-js.docs.md — low · docs
+- [#281](https://github.com/SlideWright/lattice/issues/281) docs: mark design-system.md "9 buckets" as historical (ships 12) — low · docs
+- [#282](https://github.com/SlideWright/lattice/issues/282) docs: mark design-system.md "58 components / 89 pages" as dated (ships 53) — low · docs
 
 ## Ready (0)
 
