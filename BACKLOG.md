@@ -7,7 +7,7 @@
 
 The live, claimable work queue — a read-only mirror of [open issues](https://github.com/SlideWright/lattice/issues),
 grouped by board column. Design lives in `engineering/decisions/`; this tracks
-only *status*. **29 open** items.
+only *status*. **28 open** items.
 
 ## Backlog (25)
 
@@ -45,9 +45,9 @@ _none_
 
 _none_
 
-## In review (1)
+## In review (0)
 
-- [#275](https://github.com/SlideWright/lattice/issues/275) docs: correct README palette count 13→14 (add missing `carta`) — critical · theming
+_none_
 
 ## Inbox (no status) (3)
 
