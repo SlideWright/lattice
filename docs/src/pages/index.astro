@@ -6,6 +6,7 @@ import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { join } from 'node:path';
 import '../styles/landing.css';
+import PaletteControls from '../components/site/PaletteControls.tsx';
 import { SINGLE_SLIDE_FRAME } from '../playground/frame-css.js';
 import { assetBase } from '../playground/asset-version.mjs';
 import { joinBase } from '../lib/base-url.mjs';
@@ -136,11 +137,8 @@ const liveData = JSON.stringify({
 					<a class="navlink" href={GITHUB_URL}>GitHub</a>
 				</nav>
 				<div class="topbar-actions">
-					<div class="controls">
-						<select class="palette-select" id="palette" aria-label="Palette">
-							{palettes.map((p) => <option value={p}>{titleCase(p)}</option>)}
-						</select>
-						<button class="mode-toggle" id="mode-toggle" aria-label="Toggle light / dark" title="Toggle light / dark"></button>
+					<div class="controls lx-ui">
+						<PaletteControls client:load palettes={palettes} />
 					</div>
 					<button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-controls="topnav" aria-expanded="false"></button>
 				</div>
@@ -347,38 +345,12 @@ const liveData = JSON.stringify({
 			</div>
 		</footer>
 
-		<!-- Palette + light/dark wiring. Same localStorage keys as the portal. -->
+		<!-- Mobile nav toggle. Palette + light/dark are now the shared
+		     <PaletteControls> island (src/components/site/), which owns the
+		     data-palette/data-mode writes + bfcache re-sync via site-chrome.ts;
+		     the live-render observer below picks up the attribute change. -->
 		<script is:inline>
 			(function () {
-				var root = document.documentElement;
-				var sel = document.getElementById('palette');
-				if (sel) {
-					sel.value = root.getAttribute('data-palette');
-					sel.addEventListener('change', function () {
-						root.setAttribute('data-palette', sel.value);
-						try { localStorage.setItem('lattice-docs-palette', sel.value); } catch (e) {}
-					});
-				}
-				var btn = document.getElementById('mode-toggle');
-				if (btn) {
-					btn.addEventListener('click', function () {
-						var next = root.getAttribute('data-mode') === 'dark' ? 'light' : 'dark';
-						root.setAttribute('data-mode', next);
-						try { localStorage.setItem('lattice-docs-mode', next); } catch (e) {}
-					});
-				}
-				// Re-sync on back/forward (bfcache) restores, where the pre-paint
-				// script doesn't re-run. The live-render observer below picks up the
-				// attribute change and re-renders the hero + tiles.
-				window.addEventListener('pageshow', function () {
-					try {
-						var p = localStorage.getItem('lattice-docs-palette');
-						if (p && p !== root.getAttribute('data-palette')) root.setAttribute('data-palette', p);
-						var m = localStorage.getItem('lattice-docs-mode');
-						if ((m === 'light' || m === 'dark') && m !== root.getAttribute('data-mode')) root.setAttribute('data-mode', m);
-						if (sel) sel.value = root.getAttribute('data-palette');
-					} catch (e) {}
-				});
 				var navToggle = document.getElementById('nav-toggle');
 				var topbar = document.querySelector('.topbar');
 				if (navToggle && topbar) {
