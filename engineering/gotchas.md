@@ -122,8 +122,8 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
   img then gets picked up by the catch-all rule
   `section img { …; display:block; max-width:100% }`, which is intended
   for author-inserted figures. Block + 100% width = own line, full slide
-  width. The marp-cli build and the marp-vscode preview both hit this;
-  lattice-emulator leaves emoji as raw text (no rewrite) but inherits
+  width. The VS Code Marp preview (and any marp-cli-rendered Export-to-Marp
+  bundle) hits this; lattice-emulator leaves emoji as raw text (no rewrite) but inherits
   the inline alignment issue when no emoji font is in the stack.
 - **Mitigation:** Two parts in [lattice.css](../dist/lattice.css):
   1. Exempt the emoji class from the block image rule — the catch-all
@@ -144,8 +144,9 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
   PDFs produced by `lattice-engine` or `lattice-emulator` on a bare
   host (CI runner, server, a freshly-provisioned desktop WebView) — even
   though they look fine on a Mac/Windows dev machine.
-- **Cause:** Unlike the marp-cli / marp-vscode paths (which rewrite
-  emoji to twemoji `<img>` — see the entry above), the **owned paths
+- **Cause:** Unlike the marp-core-based surfaces — the VS Code Marp
+  preview and a marp-cli-rendered Export-to-Marp bundle — which rewrite
+  emoji to twemoji `<img>` (see the entry above), the **owned paths
   emit emoji as plain unicode text**. Headless Chromium then needs a
   *color* emoji font to be available to render them. The `--font-*`
   stacks name `'Noto Color Emoji'` and `lattice.css` now also loads it
@@ -180,10 +181,10 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
   `class:` value entirely on that slide rather than composing with it.
   In a layout-heavy deck (every slide has a `_class:` for layout
   selection), the deck-wide directive lands on zero sections.
-- **Mitigation:** The `deckClassPropagate` Marpit plugin in
-  [marp.config.js:1-50](../marp.config.js#L1-L50) reads the
-  front-matter `class:` line directly from source and *appends* its
-  tokens to every section. The lattice-emulator front-matter parser
+- **Mitigation:** The `deckClassPropagate` markdown-it plugin in
+  `lib/integrations/markdown-it/plugins.js` (run by the owned engine)
+  reads the front-matter `class:` line directly from source and *appends*
+  its tokens to every section. The lattice-emulator front-matter parser
   mirrors this in [lattice-emulator.js](../lattice-emulator.js).
   This intentionally diverges from Marpit's spec.
 - **Triggered by:** Any `class: <value>` in deck front matter.
@@ -196,14 +197,14 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
 
 - **Symptom:** A CSS rule like `.foo { background: white; mask: url("./asset.svg") center / contain no-repeat; }` works in HTTP-served pages and in dev tools, but the masked element renders completely invisible in headless Chromium loading from `file://` (which is how every lattice-emulator PDF build works).
 - **Cause:** Chromium treats each `file://` URL as its own origin and refuses to load mask sources cross-origin, even within `file://`. The same URL works fine as `<img src>` or as `background-image` — only `mask-image` is restricted. No console error; the mask just resolves to fully-transparent.
-- **Mitigation:** Don't use `file://` URLs as `mask-image`. Inline the source as a `data:` URL (works), use an inline SVG `<mask>` element reference (works), or do the visual treatment via a different mechanism (`filter`, `mix-blend-mode`, etc.). The custom-logo feature went through three iterations on this: `::before` pseudo with `var(--deck-logo)` mask → real `<img>` with mask → final filter-only approach with no mask, because filter has none of the origin restrictions and works equally well in marp-cli, lattice-emulator, marp-vscode, and exported HTML.
+- **Mitigation:** Don't use `file://` URLs as `mask-image`. Inline the source as a `data:` URL (works), use an inline SVG `<mask>` element reference (works), or do the visual treatment via a different mechanism (`filter`, `mix-blend-mode`, etc.). The custom-logo feature went through three iterations on this: `::before` pseudo with `var(--deck-logo)` mask → real `<img>` with mask → final filter-only approach with no mask, because filter has none of the origin restrictions and works equally well in lattice-emulator, the VS Code Marp preview, exported HTML, and a marp-cli-rendered Export-to-Marp bundle.
 - **Triggered by:** Any author writing `mask-image: url("./local.svg")` and building locally.
 - **Removable when:** Chromium relaxes the file-origin policy for mask sources. Unlikely.
 - **Commits:** This branch (the custom-logo redesign).
 
 ### Chromium PDF output of CSS `mask-image` renders inconsistently across viewers
 
-- **Symptom:** A `::before` with `mask: url("data:image/svg+xml,…") center / contain no-repeat` renders correctly in the browser AND in the marp-cli PDF builder's headless Chromium, but the resulting PDF, when opened in Apple PDFKit (macOS Preview, iOS), Skia (Chrome's built-in PDF viewer), or PDFium (Edge / VS Code), sometimes drops the mask entirely — the `::before` rectangle appears as a solid tinted block the size of its bounding box, filled with the paint colour, with no shape clipping. Failure is viewer-specific and shape-specific: identical CSS, one mask drops on one viewer and renders fine on another, or the same mask drops only on certain `::before` sizes.
+- **Symptom:** A `::before` with `mask: url("data:image/svg+xml,…") center / contain no-repeat` renders correctly in the browser AND in the owned engine's headless-Chromium PDF render, but the resulting PDF, when opened in Apple PDFKit (macOS Preview, iOS), Skia (Chrome's built-in PDF viewer), or PDFium (Edge / VS Code), sometimes drops the mask entirely — the `::before` rectangle appears as a solid tinted block the size of its bounding box, filled with the paint colour, with no shape clipping. Failure is viewer-specific and shape-specific: identical CSS, one mask drops on one viewer and renders fine on another, or the same mask drops only on certain `::before` sizes.
 - **Cause:** Chromium emits masks in the vector PDF stream using a combination of soft-mask groups and clip paths that the spec permits but that not every PDF reader implements identically. Apple PDFKit is the strictest — it ignores constructs that Skia/PDFium accept, falling back to the unmasked source rectangle. Has held across multiple Chromium versions; not a regression.
 - **Mitigation:**
   - **Cropped `::before` bbox.** Size the `::before` to the shapes' bounding box, not the full slide. When the mask drops, the failure surfaces as a small tinted patch (degradation) rather than a slide-spanning panel of paint (slide-breaking artifact). This is what the orbit-pattern refactor in the treatments library does for the 8 mask-based marks.
@@ -216,7 +217,7 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
 ### Flex-centred caps read high in JetBrains Mono (and `text-box-trim` can't fix it here)
 
 - **Symptom:** A pill/badge laid out as `display:inline-flex; align-items:center; line-height:1` in **JetBrains Mono** looks like its text sits slightly HIGH — more empty space below the glyphs than above — even though the box is centred. Adding `text-box-trim:trim-both; text-box-edge:cap alphabetic` (the spec-correct fix) changes nothing in the rendered PDF.
-- **Cause:** `align-items:center` centres the line BOX, but a font's baseline sits asymmetrically inside it — the descender space below the baseline is reserved even for caps/digits that never use it. The magnitude is **font-specific**: JetBrains Mono seats caps badly (caps land ~7px high, mixed-case ~15px high, in a 60px test pill), while the body sans Outfit lands caps ~1px off — imperceptible. `text-box-trim` would trim the box to the cap/baseline edges and fix it for any font, but it shipped unprefixed only in **Chrome 133** (Feb 2025); the puppeteer-cached Chromium that marp-cli / lattice-emulator render with is **131**, where the property is silently ignored (a `text-box-trim` pill is pixel-identical to one without).
+- **Cause:** `align-items:center` centres the line BOX, but a font's baseline sits asymmetrically inside it — the descender space below the baseline is reserved even for caps/digits that never use it. The magnitude is **font-specific**: JetBrains Mono seats caps badly (caps land ~7px high, mixed-case ~15px high, in a 60px test pill), while the body sans Outfit lands caps ~1px off — imperceptible. `text-box-trim` would trim the box to the cap/baseline edges and fix it for any font, but it shipped unprefixed only in **Chrome 133** (Feb 2025); the puppeteer-cached Chromium that lattice-emulator renders with is **131**, where the property is silently ignored (a `text-box-trim` pill is pixel-identical to one without).
 - **Mitigation:** Don't centre small caps labels in JetBrains Mono. The universal pill uses the **body sans** (`--pill-font: var(--font-body)`), whose metrics centre caps correctly with plain symmetric padding — no optical nudge, no `text-box-trim`. This was the fix for the pill family; it also suits a pill better (a status chip is a label, not code). Measured by rasterising caps pills in both fonts and comparing the ink-gap above vs below. If you must centre caps in mono somewhere, either accept the ~7px lean or wait for `text-box-trim`.
 - **Triggered by:** Any small flex-centred caps label set in JetBrains Mono.
 - **Removable when:** The render Chromium reaches ≥133 — then `text-box-trim:trim-both; text-box-edge:cap alphabetic` becomes the general, font-agnostic fix.
@@ -229,15 +230,16 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
   appears correctly in exported HTML viewed in a browser, but the
   marp-vscode preview pane shows no logo at all.
 - **Cause:** The convenience `logo:` directive is handled by
-  `applyDeckLogoToHtml` in
-  [marp.config.js](../marp.config.js) plus the post-render hook in
+  `applyDeckLogoToHtml` in `lib/integrations/markdown-it/plugins.js`
+  (run by the owned engine) plus the post-render hook in
   [lattice-emulator.js](../lattice-emulator.js) and the runtime
   mirror `applyDeckLogoFromFrontMatter` in
-  [lattice-runtime.js](../dist/lattice-runtime.js). The marp-cli and
+  [lattice-runtime.js](../dist/lattice-runtime.js). The owned-engine and
   emulator paths run at build time; the runtime path fetches the
-  source `.md` from the same origin as the rendered HTML. The
-  marp-vscode extension does **not** load workspace `marp.config.js`
-  plugins, AND the runtime's `fetch()` can't reach workspace files in
+  source `.md` from the same origin as the rendered HTML. The VS Code
+  Marp preview runs marp-core directly, without Lattice's markdown-it
+  plugins, so the build-time hook never fires there, AND the runtime's
+  `fetch()` can't reach workspace files in
   the `vscode-webview://` sandbox — same limitation
   `applyDeckClassFromFrontMatter` documents at
   [lattice-runtime.js:3463-3465](../dist/lattice-runtime.js#L3463-L3465).
@@ -269,9 +271,10 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
 - **Mitigation:** Expand to a comma-separated union with the leading
   `section.X` repeated for each branch:
   `section.A > p, section.B > p { … }`. Note `section:where(:not(.A)…)`
-  is OK — the leading combinator is `section`, not `:where()`. Marp-cli
-  build path doesn't go through the prefixer, so this is preview-only;
-  PDF export looks correct, preview silently breaks.
+  is OK — the leading combinator is `section`, not `:where()`. The owned
+  engine's PDF render doesn't go through Marpit's prefixer, so this is
+  VS Code Marp preview-only; PDF export looks correct, the preview
+  silently breaks.
 - **Triggered by:** Any theme CSS rule whose first selector is
   `:is(...)` or `:where(...)`.
 - **Removable when:** Marpit's prefixer changes its leading-selector
@@ -300,8 +303,8 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
 
 ### lattice-emulator doesn't auto-load `style:` from front matter
 
-- **Symptom:** Same `style: ":root{…}"` works through marp-cli and
-  marp-vscode but is silently ignored by `lattice-emulator.js`.
+- **Symptom:** Same `style: ":root{…}"` works in the VS Code Marp
+  preview but was silently ignored by `lattice-emulator.js`.
 - **Cause:** The emulator hand-rolls its front-matter reader (it
   doesn't use markdown-it / Marpit for parse). Until recently it only
   looked for `paginate:`, `header:`, `footer:`, `class:`, and
@@ -317,42 +320,42 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
   engine. Tracked separately.
 - **Commits:** `6276665`.
 
-### marp-cli works in the cloud sandbox — set `CHROME_PATH`
+### Rendering in the cloud sandbox needs `CHROME_PATH`
 
-- **Symptom:** Running `npx marp` in a Claude Code on Web session
-  fails with "No suitable browser found. Please ensure one of the
-  following browsers is installed: chrome, edge, firefox." A new
-  session might conclude marp-cli isn't available and skip the
-  marp-cli render path entirely.
-- **Cause (install side):** `@marp-team/marp-cli` is **no longer bundled** (P4
-  retired it — the owned engine renders every first-party path). `marp.config.js`
-  still ships for BYO authors, but you must install marp-cli yourself
-  (`npm install @marp-team/marp-cli`) before `npx marp` resolves to a local
-  binary — otherwise `npx` reaches for the network.
-- **Cause (browser side):** Once marp-cli launches, its own browser
-  auto-detection looks in the standard system locations
+- **Symptom:** Rendering a deck in a Claude Code on Web session fails
+  with "No suitable browser found. Please ensure one of the following
+  browsers is installed: chrome, edge, firefox." A new session might
+  conclude no browser is available and skip rendering entirely.
+- **Cause:** The headless-Chromium browser auto-detection (the owned
+  engine's Puppeteer launch, and anything marp-cli-based) looks in the
+  standard system locations
   (`/usr/bin/google-chrome`, etc.) and doesn't know about the
   puppeteer-cached chromium binary that the sandbox ships with. The
   binary IS present at
   `/root/.cache/puppeteer/chrome/linux-<version>/chrome-linux64/chrome`
-  — marp-cli just can't find it on its own.
-- **Mitigation:** Set `CHROME_PATH` in the env before invoking
-  `npx marp`. The integration test helper at
-  [test/helpers/render.js](../test/helpers/render.js) inherits
-  `process.env`, so the same env var works for tests too.
+  — auto-detection just can't find it on its own.
+- **Mitigation:** Set `CHROME_PATH` in the env before rendering. The
+  canonical render is the owned emulator:
 
   ```bash
   CHROME_PATH=$(ls /root/.cache/puppeteer/chrome/linux-*/chrome-linux64/chrome | head -1) \
-    npx marp <deck>.md --config-file marp.config.js \
-      --allow-local-files --pdf -o <deck>.pdf
+    node dist/lattice-emulator.js <deck>.md <deck>.pdf
   ```
 
-- **Triggered by:** Any ad-hoc marp-cli invocation in a fresh
-  cloud-sandbox session.
-- **Removable when:** marp-cli adds puppeteer-cache discovery, or the
-  sandbox ships chromium at one of the canonical system paths.
+  The integration test helper at
+  [test/helpers/render.js](../test/helpers/render.js) inherits
+  `process.env`, so the same env var works for tests too. If you
+  install marp-cli yourself (`npm install @marp-team/marp-cli`) to
+  render an Export-to-Marp bundle — marp-cli is **no longer bundled**
+  (P4 retired it as a render path; the owned engine renders every
+  first-party path) — the identical `CHROME_PATH` discovery issue
+  applies to that `npx marp` invocation.
+- **Triggered by:** Any render (owned emulator, or an ad-hoc marp-cli
+  invocation) in a fresh cloud-sandbox session.
+- **Removable when:** The launcher adds puppeteer-cache discovery, or
+  the sandbox ships chromium at one of the canonical system paths.
 - **Commits:** documentation-only — captured here so future sessions
-  don't conclude the tool is missing.
+  don't conclude no browser is available.
 
 ### A rendered PDF shows serif/fallback type, not the design fonts
 
@@ -466,8 +469,9 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
   system fallback on a subset of slides — classically, a `finish: sketch`
   deck keeps its Caveat headings but the Shantell Sans **body** goes clean
   Outfit. The live preview looks right; only the exported file is wrong.
-  This is the **web-export** twin of the marp-cli fallback gotcha above —
-  same symptom, different render path and fix.
+  This is the **web-export** twin of the offline-font fallback gotcha
+  above ("A rendered PDF shows serif/fallback type") — same symptom,
+  different render path and fix.
 - **Cause:** The image exporters (`docs/src/playground/drawing-board-
   export.js`) rasterize every slide through `html-to-image`, including
   off-screen ones they force-visible mid-loop. Marp's template lazy-loads
@@ -528,28 +532,31 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
   The faces are now genuinely present in the iframe regardless of the inert
   `@import` or what the parent loaded.
 
-### marp-cli ignores `theme:` front matter unless the theme is in `themeSet`
+### marp-cli ignores `theme:` front matter unless the theme is registered (Export-to-Marp bundles)
 
-- **Symptom:** A deck specifies `theme: mustard` (or any other named
+- **Symptom:** A recipient renders an Export-to-Marp bundle with
+  marp-cli and the deck specifies `theme: mustard` (or any other named
   theme), but the marp-cli PDF render comes out with white background,
   black text, and no palette tokens — looks like dark mode is broken,
-  or like the theme silently failed. Same deck rendered through
-  `lattice-emulator.js` looks fine.
-- **Cause:** marp-cli only resolves theme names to files listed in
-  `themeSet` (in `marp.config.js`) or passed via `--theme-set`. If the
-  theme file isn't registered, marp-cli falls back to no theme — every
-  color token (`--bg`, `--text-body`, etc.) is undefined and the
-  defaults render as browser defaults. The emulator path doesn't have
-  this problem because it loads `lattice.css` (which `@import`s the
-  theme via the palette positional argument) directly.
-- **Mitigation:** Every theme under `themes/` is now listed in
-  `marp.config.js` `themeSet` (see commit `6aad1e6`).  Any new theme
-  added to the directory must also be added there or marp-cli renders
-  won't find it.
-- **Triggered by:** Any deck whose front-matter `theme:` directive
-  names a theme not in `themeSet`.
-- **Removable when:** marp-cli supports `themeSet` auto-discovery
-  from a directory glob.
+  or like the theme silently failed. The same deck rendered through the
+  owned engine (`lattice-emulator.js`) looks fine.
+- **Cause:** marp-cli only resolves theme names to files registered in
+  its `themeSet` (or passed via `--theme-set`). If the theme file isn't
+  registered, marp-cli falls back to no theme — every color token
+  (`--bg`, `--text-body`, etc.) is undefined and the defaults render as
+  browser defaults. The owned-engine path doesn't have this problem:
+  theme registration is handled by the engine's ThemeStore
+  (`lib/engine/themes.js`), which loads `lattice.css` (which `@import`s
+  the theme via the palette positional argument) directly.
+- **Mitigation:** The `lib/core/marp-bundle.js` exporter emits an
+  Export-to-Marp bundle that registers every bundled theme so a
+  recipient's marp-cli render resolves the named theme. A bundle that
+  ships a new theme must register it the same way, or the recipient's
+  marp-cli won't find it.
+- **Triggered by:** A recipient rendering an Export-to-Marp bundle
+  whose front-matter `theme:` names a theme marp-cli can't resolve.
+- **Removable when:** marp-cli supports theme auto-discovery from a
+  directory glob.
 - **Commits:** `3fa0462`, `6aad1e6`.
 
 ---
@@ -869,8 +876,9 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
 
 - **Symptom:** Tokens declared in a `:where(:root) { … }` block are
   `getComputedStyle(section).getPropertyValue(...)` → `""` (undefined)
-  in marp-cli **and** the preview, even though a sibling plain
-  `:root { … }` block works. A no-fallback consumer like `color:
+  on any Marpit-scoped surface (the VS Code Marp preview, and the PDF
+  export of a marp-cli-rendered Export-to-Marp bundle), even though a
+  sibling plain `:root { … }` block works. A no-fallback consumer like `color:
   var(--on-dark-secondary)` then inherits whatever the cascade gives
   (dark body ink), so title/closing/divider eyebrows + subtitles and
   every split-* dark panel go invisible — on every theme except the
@@ -942,15 +950,17 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
 
 ## VS Code / marp-vscode
 
-### marp-vscode does NOT load `marp.config.js`
+### The VS Code Marp preview runs marp-core directly, without Lattice's markdown-it plugins
 
-- **Symptom:** Marpit plugins (e.g., `splitPanelCounter`, `verdictGridBadges`,
-  `deckClassPropagate`) work in marp-cli builds and the lattice-emulator
-  pipeline but never fire in VS Code preview.
+- **Symptom:** Lattice's authoring plugins (e.g., `splitPanelCounter`,
+  `verdictGridBadges`, `deckClassPropagate`) work in the owned engine
+  and the lattice-emulator pipeline but never fire in the VS Code Marp
+  preview.
 - **Cause:** marp-vscode 3.5.1 has no `markdown.marp.engine` setting.
   It loads themes via `markdown.marp.themes` but uses the bare Marp
   Core engine for rendering. There is no extension point for engine
-  plugins from the workspace.
+  plugins from the workspace, so the preview never runs Lattice's
+  `lib/integrations/markdown-it/plugins.js`.
 - **Mitigation:** Behaviors that need to fire in VS Code preview must
   be mirrored as DOM transforms in
   [lattice-runtime.js](../dist/lattice-runtime.js) (loaded into the
@@ -993,11 +1003,11 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
   resolve reliably inside the webview context.
 - **Mitigation:** Structural DOM transforms (split panels, chart-family)
   are implemented as HTML-string rewrites in `lib/core/split-panels.js` and
-  `lib/components/chart/_chart-family/chart-family.js`, called from the `engine` render wrapper in
-  [marp.config.js](../marp.config.js). The wrapper runs at render time
-  — before the webview CSP applies — so the HTML is baked correctly before
-  the preview displays it. `lattice-runtime.js` DOM transforms remain as a
-  fallback for the web-export path only.
+  `lib/components/chart/_chart-family/chart-family.js`, run at render time
+  by the owned engine (wired through `lib/integrations/markdown-it/plugins.js`).
+  Because they run at build time — before the webview CSP applies — the
+  HTML is baked correctly before any preview displays it. `lattice-runtime.js`
+  DOM transforms remain as a fallback for the web-export path only.
 - **Triggered by:** Any new structural transform that needs to work in the
   VS Code Marp preview.
 - **Removable when:** marp-vscode lifts its CSP for trusted workspace
@@ -1006,17 +1016,21 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
 
 ### marp-cli timeouts under load (60-90s on small fixtures)
 
-- **Symptom:** `npx --no-install marp ...` runs for >60s on a fixture
-  with two slides and times out.
+- **Symptom:** Rendering an Export-to-Marp bundle with `npx marp ...`
+  runs for >60s on a fixture with two slides and times out.
 - **Cause:** marp-cli fetches Google Fonts on cold starts (the
   Playfair / Outfit / JetBrains-Mono imports we use). Slow network or
   DNS resolution makes this multiply. The lattice-emulator pre-emits
-  the font links the same way but doesn't block on them at render time.
-- **Mitigation:** Run with longer timeouts during testing
-  (`timeout 90`). For deterministic CI, vendor the fonts and inline
-  them.
-- **Triggered by:** Cold marp-cli runs, slow networks.
-- **Removable when:** We vendor the fonts.
+  the font links the same way but doesn't block on them at render time
+  (and self-hosts the woff2 for offline renders — see the offline-font
+  entry above), so the owned engine doesn't hit this.
+- **Mitigation:** Run with longer timeouts (`timeout 90`) when testing a
+  marp-cli render. For a deterministic owned-engine render, the fonts are
+  already vendored and inlined.
+- **Triggered by:** Cold marp-cli runs against an Export-to-Marp bundle,
+  slow networks.
+- **Removable when:** N/A for the owned engine (fonts already vendored);
+  inherent to marp-cli's CDN font fetch.
 - **Commits:** Observed in dev; not yet addressed.
 
 ### VS Code's built-in PDF preview hue-shifts our gradients (pink/magenta)
@@ -1058,8 +1072,8 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
 ### `:not(:has(...))` is unreliable inside Marp's webview Chromium
 
 - **Symptom:** A selector like `p:not(:has(+ h2))` is silently ignored
-  in Marp preview — the rule fires on cases the `:not()` was supposed
-  to exclude. Marp-cli HTML in a current Chrome works fine.
+  in the VS Code Marp preview — the rule fires on cases the `:not()` was
+  supposed to exclude. The same HTML in a current Chrome works fine.
 - **Cause:** The Chromium build embedded in some Marp preview /
   Electron versions handles `:has()` inside `:not()` inconsistently —
   the function pair gets evaluated to `false` (or `true`) regardless
@@ -1262,8 +1276,9 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
 ### Blurred `box-shadow` → opaque grey box around the element in some PDF viewers
 
 - **Symptom:** A small element with a soft drop-shadow (e.g. the state-token
-  disc) renders cleanly in the browser, in `marp --images` PNGs, and in
-  MuPDF/PyMuPDF rasterization — but in **mobile / Quartz PDF viewers** (iOS
+  disc) renders cleanly in the browser, in PNG rasterizations of the
+  emulator PDF (`tools/rasterize-for-review.sh`), and in MuPDF/PyMuPDF
+  rasterization — but in **mobile / Quartz PDF viewers** (iOS
   Files/Preview, some Android apps) a **solid grey square** appears around the
   element's bounding box.
 - **Cause:** Chromium `printToPDF` exports a *blurred* `box-shadow` as a
@@ -1474,23 +1489,28 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
 - **Commits:** Phase 1–4 of the refactor land in the branch
   above; the final cleanup commit removed the alias declarations.
 
-### Three render paths, three transform implementations
+### Two render paths — land transforms in the shared kernel, not one path
 
 - **Symptom:** A new authoring transform (e.g., chart-family layouts,
-  slot-label lift) appears to work in the build pipeline but is
-  missing in marp-cli output, or vice versa.
-- **Cause:** Lattice runs in three render contexts:
-  1. **lattice-emulator** (build path) — own inline implementation
-  2. **marp.config.js engine wrapper** → `lib/components/chart/_chart-family/chart-family.js` (marp-cli export)
-  3. **lattice-runtime.js** (marp-vscode preview, web export)
-  Adding a transform requires touching all three for full coverage.
-- **Mitigation:** Each transform documents its sibling implementations
-  in a header comment (see `liftSlotLabel`, `chartFamily`,
-  `splitPanelCounter` for the pattern). The integration test tier
-  asserts cross-renderer parity on slide count.
+  slot-label lift) appears to work in the owned engine / emulator output
+  but is missing in the `lattice-runtime.js` path, or vice versa.
+- **Cause:** Lattice has two render paths (HARD RULE #1):
+  1. The **owned engine** (`lib/engine`, bundled as `dist/lattice-emulator.js`)
+     — the `lattice` CLI/emulator and the docs playground.
+  2. **`dist/lattice-runtime.js`** — the VS Code Marp preview + published-HTML
+     runtime (DOM transforms).
+  Both consume the shared transform kernel (`lib/integrations/markdown-it/plugins.js`,
+  `lib/transformers/*`, `lib/core/*`); landing a transform in one path
+  only (e.g. the emulator's inline code but not the runtime's DOM mirror)
+  drifts them.
+- **Mitigation:** Land authoring transforms in the shared kernel so both
+  paths stay in step; each kernel documents its siblings in a header
+  comment (see `liftSlotLabel`, `chartFamily`, `splitPanelCounter` for the
+  pattern). The integration test tier asserts cross-renderer parity on
+  slide count.
 - **Triggered by:** Adding any new authoring-time transform.
-- **Removable when:** The three paths converge on a single engine.
-  Tracked separately.
+- **Removable when:** Never — the shared kernel is the standing contract,
+  not a workaround.
 - **Commits:** Pattern established by original `splitPanelCounter`.
 
 ### Chart-family observer's broad `MutationObserver` scope
@@ -1510,14 +1530,15 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
   mutations (e.g., `attributeFilter: ['class']`).
 - **Commits:** `225cea0`.
 
-### Marp silently truncates content past the 1280×720 frame
+### A fixed-size slide frame silently truncates content past 1280×720
 
-- **Symptom:** Authors lose hours debugging clipped content because
-  Marp prints / exports cleanly but visually missing the bottom of a
-  slide. Nothing in the build output flags it.
-- **Cause:** Marp renders each slide into a fixed-size SVG viewport.
-  Anything past the bottom of the viewport gets clipped at the
-  rasterization step with no warning.
+- **Symptom:** Authors lose hours debugging clipped content because the
+  render prints / exports cleanly but is visually missing the bottom of
+  a slide. Nothing in the build output flags it.
+- **Cause:** Each slide renders into a fixed-size viewport (the owned
+  engine's `@page`/Puppeteer viewport; the SVG viewport in the VS Code
+  Marp preview). Anything past the bottom of the viewport gets clipped
+  at the rasterization step with no warning.
 - **Mitigation:** [lattice.css](../dist/lattice.css) defines
   `section.overflow` as a 4px inset red ring (via `box-shadow`, no
   layout shift). [lattice-runtime.js](../dist/lattice-runtime.js)
@@ -1529,7 +1550,8 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
   is burned into the printed deck.
 - **Triggered by:** Any slide with content past the 720px height (or
   whatever your `@size` is set to).
-- **Removable when:** Marp adds native overflow detection.
+- **Removable when:** A render path adds native overflow detection (the
+  fixed-viewport clip has no built-in warning).
 - **Commits:** `0da73e59`.
 
 ### Stray colors escape the palette via Mermaid's hardcoded defaults
@@ -1569,11 +1591,12 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
   top-level `<li>` in `<strong>`. Without idempotency, every
   MutationObserver fire would re-wrap.
 - **Mitigation:** Each implementation (`liftSlotLabel` in
-  `lib/slot-label-lift.js`, the Marpit plugin in `marp.config.js`,
-  the runtime function in `lattice-runtime.js`) checks whether the
-  first element child is already `<strong>` and bails. Idempotency
-  is *required* — runtime fires on every preview re-render.
-- **Triggered by:** Every Marp preview re-render (one per keystroke).
+  `lib/slot-label-lift.js`, the shared-kernel plugin in
+  `lib/integrations/markdown-it/plugins.js`, the runtime function in
+  `lattice-runtime.js`) checks whether the first element child is
+  already `<strong>` and bails. Idempotency is *required* — the runtime
+  fires on every preview re-render.
+- **Triggered by:** Every VS Code Marp preview re-render (one per keystroke).
 - **Removable when:** Never — idempotency is a permanent invariant.
 - **Commits:** Original slot-label-lift commit.
 
@@ -1698,9 +1721,10 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
   was also changed to defer its `</li>` close (checking whether the next line is
   a level-3 item), mirroring the same lookahead the level-1 handler already used.
   All blank-line, paragraph-break, and end-of-content close-out paths updated.
-- **Affects:** `lattice-emulator.js` only. Marp-rendered HTML (marp-cli and
-  marp-vscode) nests correctly from CommonMark; `lattice-runtime.js` uses the
-  DOM so nesting is also correct there.
+- **Affects:** `lattice-emulator.js` only. Marp-core-rendered HTML (the
+  VS Code Marp preview, a marp-cli-rendered Export-to-Marp bundle) nests
+  correctly from CommonMark; `lattice-runtime.js` uses the DOM so nesting
+  is also correct there.
 - **Triggered by:** Any layout that requires 3-level list nesting in the emulator.
   Currently only `kanban` (column → card → meta/body).
 - **Commits:** `277a2c3` (feat(kanban): structured authoring convention and card layout redesign)
@@ -1752,7 +1776,7 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
   the geometry into its preview rebuild `sig`, so a `size:` edit triggers a full
   srcdoc rewrite (not a section-only patch that would leave stale globals).
 - **Triggered by:** Any non-HD `size:` (`4K`, `standard`/4:3) in a browser host.
-  The marp-cli / emulator PDF path was unaffected (it sizes the Puppeteer
+  The owned engine's emulator PDF path was unaffected (it sizes the Puppeteer
   viewport from `@size`).
 - **Don't reintroduce:** never hardcode `1280`/`720` in a preview/export host —
   thread the geometry from the render result through `frame-css.js`.
@@ -1891,7 +1915,7 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
   desktop session for the visual check. **This is wrong** — the sandbox can
   build, run, and screenshot the Astro site.
 - **Cause:** False assumption. The sandbox has Node, the puppeteer-cached
-  Chromium (used for marp PDF rendering), and can serve `astro dev` on
+  Chromium (used for the owned engine's PDF rendering), and can serve `astro dev` on
   localhost. The visual loop is: serve → `tools/screenshot.js <url> <png>` →
   view the PNG with the Read tool (renders inline) or `SendUserFile`.
 - **Mitigation:** Documented as a first-class loop in

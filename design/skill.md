@@ -109,8 +109,8 @@ Works on SVG, PNG, and JPEG. Composes with every treatment
 | Preserve brand colours on a plate | `logo: ./logo.svg` + `logo-style: brand` |
 
 The directive runs at build time. It does **not** render in the
-marp-vscode preview pane because the extension doesn't load workspace
-`marp.config.js` plugins. The published-HTML path
+marp-vscode preview pane, which runs marp-core directly without Lattice's
+markdown-it plugins. The published-HTML path
 (`lattice-runtime.js`) restores it for any deck served from a web
 origin. See [lib/base/base.docs.md § Custom logo](../lib/base/base.docs.md)
 and [gotchas.md](../engineering/gotchas.md).

@@ -317,7 +317,7 @@ lattice/
 │
 ├── engineering/               # internal engineering references
 │   ├── architecture.md        # engine internals
-│   ├── workflow.md            # branching, commits, three-renderer gate
+│   ├── workflow.md            # branching, commits, two-renderer gate
 │   ├── development.md         # tooling, tests, lint, CI, hooks
 │   ├── gotchas.md             # symptom-keyed fixes — read first when something breaks
 │   ├── cascade.md, mermaid.md, pipeline.md, typography.md, treatments.md, visual-review.md

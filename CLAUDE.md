@@ -246,7 +246,7 @@ independent set of eyes earns its latency.
 | Working on… | Read first |
 |---|---|
 | What a component/modifier/token *is*, catalog shape | `design/design-system.md` |
-| Branching, feature decks, share-the-PDF, rebase, 3-renderer gate | `engineering/workflow.md` |
+| Branching, feature decks, share-the-PDF, rebase, 2-renderer gate | `engineering/workflow.md` |
 | Node, npm scripts, tests, lint, hooks, CI, "add X also do Y" | `engineering/development.md` |
 | Something behaving strangely (symptom index) | `engineering/gotchas.md` |
 | Engine internals, where transform kernels live | `engineering/architecture.md` |

@@ -65,9 +65,10 @@ Spawn the makers (then the checkers) **concurrently**: one message, multiple
   fits a whole slide under the 2000px inline limit (poppler-only, no Chromium);
   `--region` / `--crop` for detail. See the script header for all modes. `Read`
   the output PNG and it renders inline.
-- **Browser-free per-slide PNG:** `npx marp <deck> --config-file marp.config.js
-  --allow-local-files --images png -o .scratch/x.png` writes one `x.NNN.png` per
-  slide. Needs `CHROME_PATH`; see `CLAUDE.md` § Cloud sandbox.
+- **Deck → per-slide PNG (no PDF in hand yet):** render with the owned engine,
+  `node dist/lattice-emulator.js <deck> .scratch/x.pdf`, then rasterize as above
+  (`tools/rasterize-for-review.sh .scratch/x.pdf --overview`) for one PNG per
+  slide. Needs `CHROME_PATH` for the render; see `CLAUDE.md` § Cloud sandbox.
 - **Web UI:** `tools/screenshot.js <url> <png> --width …` at the three
   breakpoints. See `engineering/development.md` § Previewing the docs site.
 - **Drift:** `tools/pixel-check.js`, to catch unintended changes vs. the last
