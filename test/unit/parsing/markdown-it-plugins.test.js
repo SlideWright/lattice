@@ -1,10 +1,10 @@
 /**
- * Unit: Marp engine plugins from marp.config.js.
+ * Unit: the shared markdown-it engine plugins (lib/integrations/markdown-it/plugins.js).
  *
  * Each plugin is a markdown-it core-ruler hook that transforms the
  * token stream of slides whose `<section>` carries a specific layout
  * class. Tests load the plugins onto the owned slide pipeline (markdown-it +
- * lib/engine/slides — the marpit-equivalent tokenizer the engine runs them on),
+ * lib/engine/slides — the tokenizer the engine runs them on),
  * apply one plugin in isolation, render fixture markdown, and assert on the HTML.
  *
  * Why one plugin per test instance: the plugins use named ruler hooks
@@ -18,7 +18,7 @@ const { test, describe } = require('node:test');
 const assert = require('node:assert/strict');
 const MarkdownIt = require('markdown-it');
 const { installSlidePipeline } = require('../../../lib/engine/slides');
-const { plugins } = require('../../../marp.config');
+const plugins = require('../../../lib/integrations/markdown-it/plugins');
 
 describe('marp-plugins', () => {
   // Apply ONE plugin in isolation on the owned slide pipeline (markdown-it +

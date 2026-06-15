@@ -48,9 +48,8 @@ const OUT_FILE = path.join(OUT_DIR, `lattice-v${VERSION}.zip`);
 // lib/integrations) and the 142 gallery PDFs the component reference links.
 const PATHSPECS = [
   'dist',                  // css bundles, runtime, emulator, README, docs/components.*
-  'lib',                   // marp.config deps + per-component css/docs/manifests + gallery PDFs
+  'lib',                   // engine deps + per-component css/docs/manifests + gallery PDFs
   'themes',                // all palette files
-  'marp.config.js',        // the marp-cli config
   'examples',              // showcase decks + their PDFs
   'design/skill.md',       // authoring contract
   'design/design-system.md',

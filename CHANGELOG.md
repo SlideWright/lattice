@@ -27,6 +27,25 @@ in patch versions.
 
 ### Removed
 
+- **Breaking: the BYO marp-cli render path is retired — `marp.config.js` is
+  deleted**, along with the `@slidewright/lattice/config` and
+  `@slidewright/lattice/marp.config.js` package exports. Lattice's own engine
+  (`lib/engine`, the `lattice` CLI/emulator + docs playground) and the browser
+  runtime (`dist/lattice-runtime.js`) are the only render paths. The shared
+  markdown-it plugin kernel moved from `lib/integrations/marp/` to
+  `lib/integrations/markdown-it/`. Marp now survives only as the one-way
+  **export-to-Marp** bundle (`export:marp`, the Drawing Board). Consumers who
+  rendered Lattice decks via their own marp-cli + our config should switch to
+  the bundled emulator (`node dist/lattice-emulator.js deck.md deck.pdf`).
+
+- **Changed: the export-to-Marp bundle's `marp.config.cjs` no longer wires a
+  render engine.** Rendering the exported deck *with marp-cli* now applies slide
+  splits + the palette only — it does not draw Lattice's structural components
+  (charts, card grids, split panels, badge tables). Every exported bundle still
+  renders at **full fidelity** via the zero-install bundled engine
+  (`node dist/lattice-emulator.js …`, the bundle README's primary route) and,
+  for HTML opened in a browser, the bundled `lattice-runtime.min.js`.
+
 - **Two phantom variants are removed: `compare-code mirror` and `kpi target`.**
   Both were declared and fully captioned in their manifests but had no backing
   CSS — `compare-code mirror` rendered identically to bare (the central mirror

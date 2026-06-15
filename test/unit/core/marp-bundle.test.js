@@ -34,9 +34,11 @@ describe('marp-bundle spec', () => {
     assert.ok(RUNTIME_SCRIPTS.includes('lattice-runtime.min.js'));
   });
 
-  test('marp.config.cjs loads the engine + builds a themeSet', () => {
-    assert.match(MARP_CONFIG_CJS, /@slidewright\/lattice\/config/);
+  test('marp.config.cjs builds a themeSet and wires no render engine (marp purged)', () => {
     assert.match(MARP_CONFIG_CJS, /themeSet/);
+    assert.match(MARP_CONFIG_CJS, /allowLocalFiles/);
+    assert.doesNotMatch(MARP_CONFIG_CJS, /@slidewright\/lattice\/config/);
+    assert.doesNotMatch(MARP_CONFIG_CJS, /\bengine\b/);
   });
 
   test('packageJson pins marp-cli + the engine and scripts reference the deck', () => {

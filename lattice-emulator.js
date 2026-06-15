@@ -1159,10 +1159,10 @@ const highlightedSlides = slidesWithNotes.map(s => applyHighlighting(s));
 // watermark injectors already ran inside engine.render (they match on section
 // class). deck-logo is the ONE injector that keys off `data-marpit-slide` — which
 // engineSlides() stamps AFTER engine.render — so the engine's own logo pass
-// no-ops and the emulator runs it here, post-stamp. Same fn as marp.config.js's
-// render hook. Called on the joined HTML (not slide-by-slide) so the "first slide"
-// check in the logo rewriter (`logo-on: title`) sees source order.
-const { applyDeckLogoToHtml } = require('./marp.config').plugins;
+// no-ops and the emulator runs it here, post-stamp. Same fn the owned engine's
+// render hook uses. Called on the joined HTML (not slide-by-slide) so the "first
+// slide" check in the logo rewriter (`logo-on: title`) sees source order.
+const { applyDeckLogoToHtml } = require('./lib/integrations/markdown-it/plugins');
 const slidesWithMeta2 = applyDeckLogoToHtml(highlightedSlides.join('\n'), rawMd);
 
 // ── KaTeX CSS link ────────────────────────────────────────────────────────

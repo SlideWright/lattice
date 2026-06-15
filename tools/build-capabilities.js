@@ -47,7 +47,7 @@ const FRAMEWORKS = [
   ['Testing', "Node's built-in test runner (`node:test`) — no Jest/Mocha/Vitest.", '`npm test` (suite) · `node --test <file>` (one file; the `<dir>` form errors)'],
   ['Benchmarking', '`tinybench` render benchmark — the owned lattice-engine over time, on-demand (NOT in `npm test`).', '`npm run bench` (`-- --export` adds rasterize · `-- --json` machine-readable) · `test/benchmark/engine-bench.mjs`'],
   ['Lint / format', 'Biome (linter on, formatter off). The registry `biome` is the WRONG package — always go through npm.', '`npm run lint` / `lint:fix` · never `npx biome`'],
-  ['Rendering', 'The owned lattice-engine renders every shipping path (the emulator CLI + the docs playground). `marp.config.js` ships for BYO marp-cli authors.', '`node lattice-emulator.js deck.md deck.pdf` (set `CHROME_PATH`)'],
+  ['Rendering', 'The owned lattice-engine renders every shipping path (the emulator CLI + the docs playground).', '`node lattice-emulator.js deck.md deck.pdf` (set `CHROME_PATH`)'],
   ['Browser automation', 'puppeteer with the cached Chromium (screenshots, export, DOM checks).', '`tools/screenshot.js` · custom scripts from repo root'],
   ['Bundling', 'esbuild — every `dist/` JS bundle and docs-site core is an esbuild build.', '`npm run build` (orchestrates all generators behind the ownership gate)'],
   ['Docs site', 'Astro + Starlight + React 19 + Tailwind v4 + shadcn/ui (new-york) + CodeMirror — a SEPARATE npm package under docs/. shadcn maps onto the 14-palette Lattice theme via the token bridge (`docs/src/styles/tailwind.css`); React islands are tested with Vitest + Testing Library.', '`cd docs && npm run dev` (runs the sync steps + astro; see CLAUDE.md § Cloud sandbox)'],

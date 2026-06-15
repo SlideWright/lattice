@@ -13,11 +13,12 @@
 ## TL;DR
 
 Marp is gone as a **dependency** and as our **render path** — `lib/engine/`
-natively re-implements the Marpit core, and `npm install @slidewright/lattice`
-pulls **zero** `@marp-team` packages. **We never use Marp for anything, especially
-not parity/verification.** Lattice is a *superset* of Marp; Marp survives only as a
-user-facing **export target** (`export:marp` + `marp.config.js`) reached through a
-clean handoff — its own thing, behind a boundary.
+natively re-implements the Marpit core, `npm install @slidewright/lattice`
+pulls **zero** `@marp-team` packages, and the BYO marp-cli config (`marp.config.js`)
+is **retired** (no Marp render path ships). **We never use Marp for anything,
+especially not parity/verification.** Lattice is a *superset* of Marp; Marp survives
+only as a user-facing **export target** (`export:marp`, the Drawing Board) reached
+through a clean handoff — its own thing, behind a boundary.
 
 ## 1. Is Marp gone? — the dependency / render reality
 
@@ -26,8 +27,8 @@ clean handoff — its own thing, behind a boundary.
 | `dependencies` | **marp-free** | `ls node_modules/@marp-team` → absent after `npm ci` |
 | Source imports | **zero** real `@marp-team` / `marpit` imports | repo-wide grep; remaining marp strings are comments citing the porting source |
 | First-party render (CLI · emulator · playground) | **owned engine** | `lib/engine/` |
-| `marp.config.js` | **stays — BYO** | shipped so a user *may* render with their own marp-cli |
-| Export-to-Marp (#250 / #257) | **stays — generates recipient bundles** | the bundle pins marp-cli for the *recipient*, not for us |
+| `marp.config.js` (BYO marp-cli render path) | **retired** | deleted; the owned engine is the only render path |
+| Export-to-Marp (#250 / #257) | **stays — generates recipient bundles** | the bundle pins marp-cli for the *recipient*, not for us; its generated config ships no engine (split + theme only — full fidelity via the bundled emulator/runtime) |
 | VS Code live preview | **clean handoff** | the Export-to-Marp bundle is self-contained — anyone who wants Marp tooling exports it and runs Marp on the far side of the boundary; not our concern after the handoff |
 
 **Marp is fully externalized.** We render every first-party path; Marp is an

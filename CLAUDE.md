@@ -168,13 +168,15 @@ independent set of eyes earns its latency.
 
 1. **The render paths share one source of truth — land transforms in the shared
    kernel, not one path.** Authoring transforms live in `lib/integrations/markdown-it/plugins.js`,
-   `lib/transformers/*`, and `lib/core/*` so every path stays in step: the owned
-   `lib/engine` (the `lattice` CLI **and** the docs playground), the shipped
-   `marp.config.js` (BYO marp-cli — same plugins), and `dist/lattice-runtime.js`
-   (vscode preview). The owned engine is now canonical (the marp-parity gate is
-   retired — P4; visual correctness gates via the per-component semantic-invariant
-   suite). Each kernel documents its siblings in a header comment. See
-   `engineering/architecture.md`.
+   `lib/transformers/*`, and `lib/core/*` so both render paths stay in step: the owned
+   `lib/engine` (the `lattice` CLI/emulator **and** the docs playground) and
+   `dist/lattice-runtime.js` (the vscode preview / published-HTML runtime). The
+   owned engine is canonical; Marp is fully retired as a render path (no BYO
+   marp-cli config) — visual correctness gates via the per-component
+   semantic-invariant suite. The one remaining Marp surface is the **export-to-Marp**
+   feature (`lib/core/marp-bundle.js`, the Drawing Board) — a one-way bundle for
+   recipients, not a Lattice render path. Each kernel documents its siblings in a
+   header comment. See `engineering/architecture.md`.
 2. **Never hand-edit `dist/`.** It is generated. Regenerate with
    `npm run build` (behind the collision gate).
 3. **No hex literals in layout CSS — always `var(--token)`.**

@@ -73,7 +73,6 @@ describe('preview scope detector', () => {
 
   test('renderer (engine) change → L3', () => {
     assert.equal(detectScope(['lattice-emulator.js']).level, 'L3');
-    assert.equal(detectScope(['marp.config.js']).level, 'L3');
     assert.equal(detectScope(['lib/components/chart/_chart-family/chart-family.js']).level, 'L3');
   });
 

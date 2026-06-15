@@ -33,9 +33,7 @@ const themeSet = [
   path.join(__dirname, 'dist', 'lattice.css'),
   ...fs.readdirSync(path.join(__dirname, 'themes')).map((f) => path.join(__dirname, 'themes', f)),
 ];
-let engine;
-try { engine = require('@slidewright/lattice/config').engine; } catch { /* engine not installed \u2014 degrade to plain Marp */ }
-module.exports = { themeSet, allowLocalFiles: true, ...(engine ? { engine } : {}) };
+module.exports = { themeSet, allowLocalFiles: true };
 `;function Xh(e){return{name:`${Ou(e)}-marp-export`,private:!0,description:`Portable Marp bundle of the "${e}" Lattice deck`,scripts:{pdf:`marp ${e}.md --config-file marp.config.cjs --allow-local-files -o ${e}.pdf`,html:`marp ${e}.md --config-file marp.config.cjs --allow-local-files -o ${e}.html`},dependencies:{"@marp-team/marp-cli":Wh,"@slidewright/lattice":`^${Vh}`}}}function Jh({name:e,palette:t,themes:n}){return`# ${e} \u2014 portable Marp bundle
 
 Exported from Lattice. The deck's slide splits are **baked into literal \`---\`**,
@@ -49,14 +47,19 @@ so it divides correctly in any Marp tool \u2014 no Lattice plugin required.
 node dist/lattice-emulator.js ${e}.md ${e}.pdf ${t}
 \`\`\`
 
-(PDF export needs a local Chrome/Chromium, exactly as Marp itself does.)
+(PDF export needs a local Chrome/Chromium.) This is the recommended route \u2014 it
+renders the whole deck, including charts, forms, and structural layouts.
 
-**With the standard Marp CLI:**
+**With the standard Marp CLI** (splits + themes only):
 
 \`\`\`sh
 npm install
 npm run pdf      # \u2192 ${e}.pdf   (or: npm run html)
 \`\`\`
+
+Marp renders the slides and applies the palette, but it does **not** draw
+Lattice's structural components (charts, card grids, split panels, badge
+tables) \u2014 those need the bundled engine above, or the browser route below.
 
 ## Open the HTML in a browser (diagrams + components, no install)
 
