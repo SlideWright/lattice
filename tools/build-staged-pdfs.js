@@ -10,6 +10,7 @@
  * Scope — markdown that produces a committed PDF:
  *   examples/<name>.md                          → examples/<name>.pdf
  *   test/integration/baseline-decks/<name>.md   → sibling <name>.pdf
+ *   exemplars/<sector>/<name>.md                → sibling <name>.pdf
  *   lib/components/<bucket>/<name>/<name>.gallery.md   (per-component)
  *       → build-galleries.js --only <name>  (light + dark)
  *   lib/components/<bucket>/<bucket>.gallery.md        (bucket survey)
@@ -56,6 +57,11 @@ function classify(file) {
 
   // CI baseline deck (lives with the test infra).
   m = file.match(/^(test\/integration\/baseline-decks\/[a-z][a-z0-9-]*)\.md$/);
+  if (m) return { kind: 'deck', src: file, out: `${m[1]}.pdf` };
+
+  // Worked exemplar deck (exemplars/<sector>/<name>.md → sibling .pdf).
+  // Rendered as-is (the full deck); its committed PDF is the full tier.
+  m = file.match(/^(exemplars\/[a-z][a-z0-9-]*\/[a-z][a-z0-9-]*)\.md$/);
   if (m) return { kind: 'deck', src: file, out: `${m[1]}.pdf` };
 
   // Component / bucket gallery markdown. Disambiguate by depth:

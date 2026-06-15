@@ -168,8 +168,13 @@ rule.
 
 - **45 decks is a standing surface to keep green.** Each must re-render and stay
   gate-clean as components evolve. Mitigations: the decks use only shipped
-  components (no bespoke CSS), a freshness gate renders them in CI like the
-  galleries, and a single tier-filter means one code path, not three.
+  components (no bespoke CSS); the per-deck **render gate**
+  (`test/integration/exemplars/exemplar-render.test.js`) re-renders every deck in
+  CI and asserts page count === source slide count, with the committed PDF gated
+  fresh against the same count — a component change that breaks a deck or drops a
+  slide now fails CI (regenerate with `npm run build:exemplar-pdfs`; the
+  pre-commit hook auto-rebuilds the PDF for an edited deck); and a single
+  tier-filter means one code path, not three.
 - **Island stays lean** because bodies are fetched on demand; only metadata
   inlines.
 - **The spines are not discarded** — they become the *short tier's* backbone and

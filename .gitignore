@@ -47,6 +47,7 @@ examples/*.html
 examples/**/*.html
 examples/*.notes.txt
 design/**/*.html
+exemplars/**/*.html
 lib/components/**/*.html
 test/integration/**/*.html
 !examples/*.pdf
@@ -68,3 +69,8 @@ themes/*.html
 
 # Agent isolation worktrees (transient; auto-cleaned)
 .claude/worktrees/
+
+# perf-collect / perf-nightly working dirs (docs/scripts/perf-collect.mjs;
+# the nightly workflow writes .perf-out/ at the repo root)
+.perf/
+.perf-out/

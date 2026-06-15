@@ -57,4 +57,4 @@ _none_
 - [#180](https://github.com/SlideWright/lattice/issues/180) epic(chart): resolution-independent charts — cqi-first, kill fixed-px, for any-format / 10K export
 - [#198](https://github.com/SlideWright/lattice/issues/198) bug(examples): gallery-jargon.pdf is not reproducible — rebuild draws overflow rings on 6 unrelated slides + reflows text
 - [#229](https://github.com/SlideWright/lattice/issues/229) islands: masthead band + status bay aren't reserved in the content safe-area — headings collide with the band on dense slides (sketch/4K compound it)
-- [#327](https://github.com/SlideWright/lattice/issues/327) perf: Lighthouse budgets use absolute thresholds that rot as the site grows — revisit gating strategy
+- [#356](https://github.com/SlideWright/lattice/issues/356) proposal: Form — revise the lib/forms/ manifest + maintainability cleanups (post-#352)

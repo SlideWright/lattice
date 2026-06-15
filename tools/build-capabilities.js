@@ -105,6 +105,7 @@ const SCRIPT_META = {
   'build:bucket-galleries':   ['Galleries & preview', 'Rebuild per-bucket survey gallery PDFs (light + dark).'],
   'build:bucket-galleries:check':['Galleries & preview', 'Freshness gate for the bucket survey galleries.'],
   'build:gallery-jargon':     ['Galleries & preview', 'Rebuild the jargon showcase gallery PDF.'],
+  'build:exemplar-pdfs':      ['Galleries & preview', 'Bulk-regenerate committed PDFs for the worked exemplar decks (on-demand, like bless; not in build). `-- --only <stem>` for one.'],
   'preview':                  ['Galleries & preview', 'Fast visual-iteration loop: scope-detect from git diff, rebuild affected, pixel-diff vs last commit.'],
   'preview:watch':            ['Galleries & preview', 'Run the preview loop on change.'],
 
@@ -135,6 +136,7 @@ const SCRIPT_META = {
   'test:integration:parity': ['Test & verify', 'Integration scope: resolver↔DOM colour parity, deck-class/finish/logo front-matter, chart-family.'],
   'test:integration:mermaid':['Test & verify', 'Integration scope: mermaid smoke render.'],
   'test:integration:screenshot':['Test & verify', 'Integration scope: the screenshot harness.'],
+  'test:integration:exemplars':['Test & verify', 'Integration scope: the 45 worked exemplars render + committed-PDF freshness (page-count gate).'],
   'bench':                    ['Test & verify', 'tinybench render benchmark — the owned engine over time (on-demand; not in `npm test`). `-- --export` / `-- --json`.'],
   'regress':                  ['Test & verify', 'Visual regression gate (LOCAL spot-check): render every gallery fresh and pixel-diff it against the committed golden PDF; fails on unblessed drift.'],
   'bless':                    ['Test & verify', 'Re-render the gallery goldens (the regression gate baseline) and overwrite them; commit the refreshed PDFs. `-- --only <name>` for one.'],

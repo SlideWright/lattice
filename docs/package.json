@@ -14,9 +14,9 @@
     "astro": "astro",
     "test": "vitest run",
     "test:watch": "vitest",
-    "perf": "npm run sync:portal && npm run sync:playground && astro build && npm run perf:desktop && npm run perf:mobile",
-    "perf:desktop": "lhci autorun --config=lighthouserc.cjs",
-    "perf:mobile": "lhci autorun --config=lighthouserc.mobile.cjs",
+    "perf": "node scripts/perf-collect.mjs --out .perf/local && node scripts/perf-regression.mjs --report .perf/local",
+    "perf:collect": "node scripts/perf-collect.mjs",
+    "perf:compare": "node scripts/perf-regression.mjs",
     "check:overflow": "node scripts/check-overflow.mjs"
   },
   "dependencies": {
