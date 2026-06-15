@@ -12,7 +12,7 @@ holds Lattice's adapter layer — the small surface where Lattice's
 conventions meet Marp's defaults.
 
 **External dep:** `@marp-team/marp-cli` — **BYO** (no longer bundled; P4 retired
-it). Install it yourself to render via `marp.config.js`; the owned engine
+it). The owned engine
 (`lib/engine` / the `lattice` CLI) needs no marp.
 
 **Files in this folder:**
@@ -88,12 +88,12 @@ lattice.css         (bundled output) declares @theme lattice via lib/_theme.css
 ```
 
 Marp registers `lattice.css` and all the palette themes via
-`marp.config.js`'s `themeSet` array. Authors pick a palette via
+the engine's theme set. Authors pick a palette via
 front-matter `theme:` directive.
 
 ---
 
-## What stays in `marp.config.js`
+## What the owned engine wires
 
 The config file at the repo root carries:
 
@@ -124,6 +124,6 @@ integration docs.
 - `themes/README.md` — palette authoring contract.
 - `design/theming.md` — how palettes map their tokens onto Lattice's
   structural surface.
-- `marp.config.js` — Marp's runtime config (lives at repo root).
+- (the BYO marp-cli config has been retired — the owned engine is the only render path)
 - Marp upstream: <https://marpit.marp.app/> for the Marpit core spec
   Lattice extends.

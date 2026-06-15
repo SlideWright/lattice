@@ -10,7 +10,7 @@
  *   - Term
  *     - Definition
  *
- * The runtime (lattice.js + marp.config.js + lattice-runtime.js) transforms
+ * The runtime (lib/engine + lattice-runtime.js) transforms
  * that to a 2-column table, auto-bolds the term, and appends a brand pill
  * to the h2 spanning the alphabetic range — e.g. `A – G`.
  * Term column does not wrap — keep glossary terms short or use a hyphen
@@ -25,7 +25,7 @@ section.glossary td:first-child,
 section.glossary td:first-child strong { color:var(--accent); padding-right:var(--sp-md); white-space:nowrap; font-weight:600; }
 section.glossary h2 { display:flex; align-items:baseline; justify-content:space-between; gap:var(--sp-md); }
 /* Auto-derived alphabet range pill, emitted into the h2 by the runtime
- * (lattice.js) and the Marpit plugin (marp.config.js). Matches the
+ * (lib/engine) and the markdown-it plugin. Matches the
  * neutral .badge pill recipe so it sits naturally alongside other
  * categorical chips elsewhere in the deck. */
 section.glossary h2 .range-pill {

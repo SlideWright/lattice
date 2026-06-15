@@ -20,7 +20,7 @@ was retired in favour of the real skeleton.
 | `chart-family.js` | The dispatcher + inline kernels for `progress` / `timeline-list` / `piechart` / `gantt` / `kanban`, plus shared parsing helpers. Imports the per-component `radar.transform` and `quadrant.transform` kernels which live in their own component folders. |
 
 The dispatcher runs in both render paths:
-- **Marp Core engine plugin** (`marp.config.js`) — wraps Marp's
+- **The owned engine** (`lib/engine`) — wraps the
   `render()` output and post-processes the HTML string.
 - **Emulator build path** (`lattice-emulator.js`) — calls the same
   dispatch inline during per-slide HTML construction.
@@ -187,7 +187,7 @@ The dispatcher runs identically in three places:
 
 | Render path | Where the dispatch is called |
 |---|---|
-| Marp CLI | `marp.config.js` → `applyChartFamilyToHtml(html)` |
+| Engine (HTML) | `lib/engine` → `applyChartFamilyToHtml(html)` |
 | Lattice emulator | `lattice-emulator.js` → inline `transformChartSection()` calls per slide |
 | VS Code preview | `lattice-runtime.js` → DOM mirror that recreates the same wrappers at runtime |
 
@@ -203,7 +203,7 @@ assert page counts to catch transforms that silently change topology.
 The transform is structural (extract eyebrow before h2, subtitle after
 h2, caption italic at the tail, rewrite the list into chart-specific
 markup) and easier to express on rendered HTML than on the token
-stream. The engine plugin in `marp.config.js` wraps `render` and
+stream. The owned engine wraps `render` and
 post-processes the resulting `html` string.
 
 Why not a runtime `<script>`? VS Code Marp preview filters HTML

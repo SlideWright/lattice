@@ -162,7 +162,7 @@ section.compare-prose :is(ul,ol) > li > strong ~ * { font-weight: 400; }
  * the title line so the body fills the card from the top.
  *
  * The leading <strong> wrapper is produced automatically by the build
- * pipeline (slotLabelLift in marp.config.js, mirrored in
+ * pipeline (slotLabelLift in the engine, mirrored in
  * lattice-emulator.js) — authors write plain `- Label` and the structural
  * lift happens in the Marpit token layer. Wrapping `**Label**` in source
  * still works (idempotent) for authors who prefer to be explicit. */

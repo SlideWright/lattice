@@ -2385,7 +2385,7 @@ section.compare-prose :is(ul,ol) > li > strong ~ * { font-weight: 400; }
  * the title line so the body fills the card from the top.
  *
  * The leading <strong> wrapper is produced automatically by the build
- * pipeline (slotLabelLift in marp.config.js, mirrored in
+ * pipeline (slotLabelLift in the engine, mirrored in
  * lattice-emulator.js) — authors write plain `- Label` and the structural
  * lift happens in the Marpit token layer. Wrapping `**Label**` in source
  * still works (idempotent) for authors who prefer to be explicit. */
@@ -3091,7 +3091,7 @@ section .taskTextOutsideLeft, section .taskTextOutsideRight { fill: var(--text-h
  *   - Term
  *     - Definition
  *
- * The runtime (lattice.js + marp.config.js + lattice-runtime.js) transforms
+ * The runtime (lib/engine + lattice-runtime.js) transforms
  * that to a 2-column table, auto-bolds the term, and appends a brand pill
  * to the h2 spanning the alphabetic range — e.g. `A – G`.
  * Term column does not wrap — keep glossary terms short or use a hyphen
@@ -3106,7 +3106,7 @@ section.glossary td:first-child,
 section.glossary td:first-child strong { color:var(--accent); padding-right:var(--sp-md); white-space:nowrap; font-weight:600; }
 section.glossary h2 { display:flex; align-items:baseline; justify-content:space-between; gap:var(--sp-md); }
 /* Auto-derived alphabet range pill, emitted into the h2 by the runtime
- * (lattice.js) and the Marpit plugin (marp.config.js). Matches the
+ * (lib/engine) and the markdown-it plugin. Matches the
  * neutral .badge pill recipe so it sits naturally alongside other
  * categorical chips elsewhere in the deck. */
 section.glossary h2 .range-pill {
@@ -5556,7 +5556,7 @@ section.map .map-region--hl {
  * Boardroom-quality math layouts for mathematicians, quants, ML researchers,
  * physicists, statisticians, and economists. KaTeX (server-side via the
  * `katex` npm package in lattice-emulator.js, native via `math: 'katex'` in
- * marp.config.js) renders `$$…$$` (display) and `$…$` (inline). Layouts
+ * the engine) renders `$$…$$` (display) and `$…$` (inline). Layouts
  * surround the math with the structure each persona expects:
  *
  *   math (bare)         — defaults to `feature` (hero equation + legend)
@@ -7105,7 +7105,7 @@ section.q-and-a.solo > :is(ul, ol) > li > :is(ul, ol) > li {
  * Sibling implementations:
  *   - lib/quadrant.js       transform module (canonical)
  *   - lattice-emulator.js   per-slide HTML-string transform
- *   - marp.config.js        marp-cli render hook
+ *   - lib/engine           the engine render path
  *   - lattice-runtime.js    DOM transform for marp-vscode preview
  */
 
@@ -7456,7 +7456,7 @@ section.quote > p { padding-top:var(--sp-xl); font-size:var(--fs-meta); line-hei
  * Sibling implementations:
  *   - lib/radar.js          transform module (canonical)
  *   - lattice-emulator.js   per-slide HTML-string transform
- *   - marp.config.js        marp-cli render hook
+ *   - lib/engine           the engine render path
  *   - lattice-runtime.js    DOM transform for marp-vscode preview
  */
 
@@ -9961,7 +9961,7 @@ section.verdict-grid :is(ul,ol) > li > strong ~ * { font-weight: 400; }
  * Sibling implementations:
  *   - lib/word-cloud.js     transform module (shared)
  *   - lattice-emulator.js   per-slide HTML-string transform
- *   - marp.config.js        marp-cli render hook
+ *   - lib/engine           the engine render path
  *   - lattice-runtime.js    DOM transform for marp-vscode preview
  */
 
@@ -11100,7 +11100,7 @@ section:not(.overflow) > .overflow-tab { display: none; }
 /* ════════════════════════════════════════════════════════════════════════
  * CUSTOM LOGO — discreet author-supplied brand mark, top-right corner.
  * Author contract, gotchas, and full rationale at lib/base/_logo/logo.docs.md.
- * Implementation: applyDeckLogoToHtml (marp.config.js), inline copy in
+ * Implementation: applyDeckLogoToHtml (lib/engine), inline copy in
  * lattice-emulator.js, applyDeckLogoFromFrontMatter (lattice-runtime.js).
  * ──────────────────────────────────────────────────────────────────── */
 img.deck-logo {
@@ -11199,7 +11199,7 @@ section .hljs-emphasis { font-style:italic; }
 section .hljs-strong { font-weight:700; }
 
 /* Suppress per-token hljs coloring inside the source <pre>. Marp registers
- * a mermaid hljs grammar in marp.config.js so the rendered HTML wraps the
+ * a mermaid hljs grammar in the engine so the rendered HTML wraps the
  * fence content in <span class="hljs-*"> tokens. Coloring those tokens with
  * the per-theme `section .hljs-*` rules paints a JavaScript-style highlight
  * on what is really our diagram source — visually noisy and semantically

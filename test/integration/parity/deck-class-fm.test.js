@@ -4,7 +4,7 @@
  * Marpit's native spec is "spot replaces global" — a slide with
  * `<!-- _class: foo -->` discards the deck-wide `class:` value entirely.
  * Lattice intentionally diverges from that semantic via:
- *   - The `deckClassPropagate` plugin in marp.config.js (runtime path,
+ *   - The `deckClassPropagate` plugin (runtime path,
  *     loaded by VS Code Marp preview and marp-cli)
  *   - The front-matter reader in lattice-emulator.js (emulator path)
  *

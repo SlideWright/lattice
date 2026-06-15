@@ -62,7 +62,7 @@ Three render paths, one contract:
 
 | Path | Parser | Location |
 |---|---|---|
-| marp-cli | `applyDeckLogoToHtml` | `marp.config.js` |
+| engine (HTML) | `applyDeckLogoToHtml` | `lib/engine` |
 | lattice-emulator | inline implementation, same shape | `lattice-emulator.js:1809` |
 | browser (preview pane) | `applyDeckLogoFromFrontMatter` | `lattice-runtime.js` |
 
@@ -72,7 +72,7 @@ CSS lives at `lib/base/base.modifiers.css` around line 849
 ## Gotchas
 
 - **marp-vscode preview pane shows nothing.** The extension does NOT
-  load workspace `marp.config.js` plugins, so the `logo:` directive
+  run the engine's plugins, so the `logo:` directive
   is invisible there. The PDF build and the desktop preview both work.
   See `engineering/gotchas.md`.
 - **Don't use `mask-image` for the same effect.** Chromium blocks

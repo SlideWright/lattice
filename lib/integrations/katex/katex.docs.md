@@ -35,7 +35,7 @@ KaTeX is invoked at build time in `lattice-emulator.js`:
    read correctly regardless of where the deck is viewed.
 
 The Marp Core path uses Marp's built-in KaTeX support (config in
-`marp.config.js`'s `math` option). Both paths produce equivalent
+the engine's `math` option). Both paths produce equivalent
 output — KaTeX is deterministic given the same input.
 
 ---

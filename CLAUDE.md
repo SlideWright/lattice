@@ -303,11 +303,11 @@ them; this block is canonical, the per-topic docs are the deep reference.
 - **Render/test need `CHROME_PATH`** (the hook sets it). If a render says "no
   suitable browser found", re-export:
   `export CHROME_PATH=$(ls /root/.cache/puppeteer/chrome/linux-*/chrome-linux64/chrome | head -1)`.
-- **See a slide without a browser:** `npx marp <deck> --config-file
-  marp.config.js --allow-local-files --images png -o .scratch/x.png` → it writes
-  one `x.NNN.png` per slide → `Read` it (renders inline). Full-quality PDFs →
-  `tools/rasterize-for-review.sh <pdf> --overview --check` (poppler-only;
-  ImageMagick is needed *only* for `--crop`/`--region`).
+- **See a slide without a browser:** render with the owned engine
+  `node dist/lattice-emulator.js <deck> .scratch/x.pdf` then rasterize →
+  `tools/rasterize-for-review.sh .scratch/x.pdf --overview --check` (poppler-only;
+  ImageMagick is needed *only* for `--crop`/`--region`) → it writes one PNG per
+  slide → `Read` it (renders inline).
 - **Lint is `npm run lint`** — never `npx biome` (the registry `biome` is the
   wrong package).
 - **One test file:** `node --test <file>` — the `<dir>` form errors; use

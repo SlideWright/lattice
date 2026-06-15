@@ -677,7 +677,7 @@ tokens meet WCAG AA on body backgrounds. The `.heat` modifier remaps
 `--state-color` to the load/risk axis and the discs follow.
 
 **Implementation contract:** the marker is processed in three channels
-that must stay in lockstep — Marp build (`marp.config.js` →
+that must stay in lockstep — the engine (`lib/engine` →
 `lib/integrations/markdown-it/plugins.js`), emulator (`lattice-emulator.js`),
 and VS Code preview (`lattice-runtime.js`). Each strips the marker and
 adds `class="state {pass|warn|fail|skip|todo} {state-full|state-half|state-empty|state-slashed|state-todo}"`
@@ -733,15 +733,15 @@ independently.
 
 **Three render paths must agree:**
 
-1. `marp.config.js` — `applyDeckLogoToHtml(html, markdown)` runs in
+1. `lib/engine` — `applyDeckLogoToHtml(html, markdown)` runs in
    the `render()` wrapper alongside `applyChartFamilyToHtml`.
 2. `lattice-emulator.js` — `require()`s the same helper from
-   `marp.config.js` and calls it on the assembled HTML.
+   `lib/engine` and calls it on the assembled HTML.
 3. `lattice-runtime.js` — `applyDeckLogoFromFrontMatter()` mirrors
    the same DOM injection at view time for published HTML decks.
 
 ⚠️ **Build-time only for marp-vscode preview.** The extension doesn't
-load workspace `marp.config.js` plugins, so the logo does not appear
+run the engine's plugins, so the logo does not appear
 there. The runtime path covers exported HTML viewed in a browser but
 gracefully no-ops in the vscode-webview sandbox (fetch can't reach
 workspace files). Same constraint `class: dark` has — see

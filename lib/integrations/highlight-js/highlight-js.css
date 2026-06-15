@@ -55,7 +55,7 @@ section .hljs-emphasis { font-style:italic; }
 section .hljs-strong { font-weight:700; }
 
 /* Suppress per-token hljs coloring inside the source <pre>. Marp registers
- * a mermaid hljs grammar in marp.config.js so the rendered HTML wraps the
+ * a mermaid hljs grammar in the engine so the rendered HTML wraps the
  * fence content in <span class="hljs-*"> tokens. Coloring those tokens with
  * the per-theme `section .hljs-*` rules paints a JavaScript-style highlight
  * on what is really our diagram source — visually noisy and semantically

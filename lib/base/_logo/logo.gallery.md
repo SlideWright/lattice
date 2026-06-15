@@ -39,7 +39,7 @@ logo-style: auto | brand          # optional, default `auto`
 logo-on: all | title              # optional, default `all`
 ```
 
-Build-time only. The directive does not render in the marp-vscode preview pane because the extension does not load workspace `marp.config.js` plugins.
+Build-time only. The directive does not render in the marp-vscode preview pane because the extension does not run the engine's plugins.
 
 ---
 
