@@ -508,8 +508,8 @@ The default `headings` divider is **eyebrow-aware**: a slide's lead-in — its
 the one before. It is **hybrid**: a literal `---` still forces a break (use it
 for a heading-less image slide, or two slides under one idea). It is
 implemented as one shared `hr`-injection ruler
-(`headingSplit` in `lib/integrations/markdown-it/plugins.js`, run `.before('marpit_slide')`)
-so the emulator, marp-cli, and the playground produce identical boundaries —
+(`headingSplit` in `lib/integrations/markdown-it/plugins.js`, run `.before('lattice_slide')`)
+so the owned engine (emulator + playground) and the Export-to-Marp baker produce identical boundaries —
 and it is **slide-count-identical to `rule` on every classic `---`-separated
 deck** (pinned by `test/unit/parsing/heading-split.test.js`), which is why the
 default flip leaves existing decks unchanged. An unrecognized value resolves to
