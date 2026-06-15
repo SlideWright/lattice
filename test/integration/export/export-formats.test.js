@@ -101,20 +101,32 @@ describe('export-formats', () => {
     return n;
   }
 
-  test('warns on overflow but keeps the ring out of the exported PDF', { timeout: TIMEOUT }, () => {
+  test('warns on overflow but keeps the ring out of the exported PDF — even when the deck loads the live runtime', { timeout: TIMEOUT }, () => {
     // The overflow signal (a red inset ring + "OVERFLOWS" tab) is an authoring
     // aid for the live preview; the deliverable must stay clean — a red box in
     // front of a board is worse than the silent clip overflow:hidden already
-    // applies. Author a slide that cannot fit the HD frame, render it, and assert
-    // the emulator (a) warns on stderr and (b) strips the ring from the export.
-    // Empirically: a built-in render shows 0 ring pixels; reverting the strip
-    // shows thousands — so this fails if the strip regresses.
+    // applies. Two mechanisms can paint it: the emulator's own inline watcher
+    // (the ring, via the `.overflow` class — removed by the export strip) and
+    // the live-preview runtime (lattice-runtime.js — the ring AND the tab, on a
+    // MutationObserver/ResizeObserver/rAF loop that would re-mark during print
+    // unless the export neutralizes the runtime). The galleries embed that
+    // runtime for VS Code preview, so reproduce that exact case: an overflowing
+    // slide in a deck that loads the runtime. Assert the emulator (a) warns on
+    // stderr and (b) leaves no danger-red ring in the export. Empirically: a
+    // built-in render shows ~0 ring pixels; reverting either the strip or the
+    // runtime abort shows thousands — so this fails if either regresses.
     const dir = tmpDir();
+    // Copy the runtime next to the fixture so `src="lattice-runtime.js"` resolves;
+    // without the export-time abort it re-marks the overflow and re-paints the ring.
+    fs.copyFileSync(path.join(ROOT, 'dist', 'lattice-runtime.js'), path.join(dir, 'lattice-runtime.js'));
     const src = path.join(dir, 'overflow.md');
     const wall = Array.from({ length: 40 }, (_, i) =>
       `- Point ${i + 1}: a deliberately long line of body copy engineered to push this slide's content well past the bottom of the frame so the overflow watcher fires.`,
     ).join('\n');
-    fs.writeFileSync(src, `<!-- _class: content -->\n\n## A slide that cannot possibly fit\n\n${wall}\n`);
+    fs.writeFileSync(
+      src,
+      `<!-- _class: content -->\n\n## A slide that cannot possibly fit\n\n${wall}\n\n<script src="lattice-runtime.js"></script>\n`,
+    );
 
     const out = path.join(dir, 'overflow.pdf');
     const r = spawnSync(process.execPath, [EMULATOR, src, out, '--quiet'], {

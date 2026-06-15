@@ -377,7 +377,13 @@ in patch versions.
   board is worse than the subtle clipping `overflow:hidden` already does, so the
   export stays clean **and warns the author in the console, listing the exact
   overflowing pages** to fix before delivering. (Previously the ring was burned
-  into the PDF.)
+  into the PDF.) The export path enforces this two ways: it strips the
+  `.overflow` class before printing, **and** aborts the live-preview runtime
+  (`lattice-runtime.js`) during the headless render — without that, a deck which
+  embeds the runtime (as the galleries do) would have its MutationObserver /
+  ResizeObserver / rAF watcher re-paint the ring and tab mid-print. The written
+  `.html` keeps the runtime for browser preview; only the PDF/PNG/PPTX render
+  neutralizes it.
 
 - **The Form (`form:`, formerly `islands:`) no longer paints chrome over
   content.** Three real defects are fixed at the root by making the masthead /
