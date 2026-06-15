@@ -1,0 +1,15 @@
+/* meta Tile — date · owner · classification.
+ * Self-contained Form Tile (issue #356): co-located with its kernel
+ * (meta.transform.js) + manifest, bundled by tools/build-css.js into the same
+ * cascade slot the rule held in base.variants.css. The `.masthead-bay` layout
+ * that stacks this Tile is the masthead Cell's concern and stays in
+ * base.variants.css. */
+.tile-meta {
+  font-family: var(--font-label);
+  font-size: var(--fs-meta);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  line-height: 1.6;
+  text-transform: uppercase;
+  color: var(--text-label);
+}

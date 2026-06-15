@@ -1,0 +1,47 @@
+/* progress Tile — section dot-rail in the footer-centre zone.
+ * Self-contained Form Tile (issue #356): co-located with its kernel
+ * (progress.transform.js) + manifest, bundled by tools/build-css.js into the
+ * same cascade slot these rules held in base.variants.css. The footer Cell's
+ * `section.form.has-progress > footer` yield rule (how the footer makes room for
+ * this rail) is the footer Cell's concern and stays in base.variants.css. */
+section.form .tile-progress {
+  position: absolute;
+  bottom: var(--frame-inset-y);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-sm);
+  /* The reserved centre zone — the rail lives inside it and never spills into
+     footer-left or pagination. */
+  max-width: var(--footer-centre-w);
+  pointer-events: none;
+}
+.tile-progress .seg {
+  font-family: var(--font-label);
+  font-size: var(--fs-meta);
+  font-weight: 500;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: var(--text-label);
+  margin-right: var(--sp-xs);
+  /* Within the reserved centre zone, a very long label still truncates
+     gracefully rather than crowding the dots. */
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tile-progress .dot {
+  width: 0.85cqi;
+  height: 0.85cqi;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--text-muted) 50%, transparent);
+}
+.tile-progress .dot.on {
+  width: 2.6cqi;
+  border-radius: 999px;
+  background: var(--accent);
+}

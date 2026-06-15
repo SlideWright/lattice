@@ -16,9 +16,6 @@ const {
   deckClassPropagate,
   applyDeckLogoToHtml,
   readDeckLogoFrontMatter,
-  applyMastheadMetaToHtml,
-  applyProgressRailToHtml,
-  applyWatermarkToHtml,
   FORM_MODES,
   readFormMode,
   formToggleClass,
@@ -35,6 +32,9 @@ const {
   registerMermaidHljs,
   functionPlotFences,
 } = require('./lib/integrations/marp/plugins');
+const watermarkTile = require('./lib/forms/tile/watermark/watermark.transform');
+const metaTile = require('./lib/forms/tile/meta/meta.transform');
+const progressTile = require('./lib/forms/tile/progress/progress.transform');
 const { applyAllToHtml: applyTransformerRegistryToHtml } = require('./lib/transformers/registry');
 
 /** @type {import('@marp-team/marp-cli').MarpCLIConfig} */
@@ -121,16 +121,14 @@ module.exports = {
         // not on per-section content. The shape doesn't fit the
         // registry's per-section primitive.
         result.html = applyDeckLogoToHtml(result.html, markdown);
-        // meta Tile — fills the masthead bay the registry just built with
-        // the front-matter `meta:` directive. Runs last so the bay exists.
-        result.html = applyMastheadMetaToHtml(result.html, markdown);
-        // progress Tile — derives sections from dividers and injects the
-        // footer-centre dot-rail. Deck-level (needs every section), so it
-        // runs here on the full shell, not in the per-section registry.
-        result.html = applyProgressRailToHtml(result.html);
-        // watermark Tile — section-number ghost behind `form watermark`
-        // slides. Same divider-derived section model.
-        result.html = applyWatermarkToHtml(result.html);
+        // meta · progress · watermark Tiles — each a self-contained kernel
+        // (lib/forms/tile/<id>) with one source for all three render paths.
+        // meta fills the masthead bay the registry just built with the
+        // front-matter `meta:`; progress + watermark are deck-level (they need
+        // every section), so they run here on the full shell, not per-section.
+        result.html = metaTile.applyToHtml(result.html, markdown);
+        result.html = progressTile.applyToHtml(result.html);
+        result.html = watermarkTile.applyToHtml(result.html);
       }
       return result;
     };
@@ -148,9 +146,6 @@ module.exports.plugins = {
   deckClassPropagate,
   applyDeckLogoToHtml,
   readDeckLogoFrontMatter,
-  applyMastheadMetaToHtml,
-  applyProgressRailToHtml,
-  applyWatermarkToHtml,
   FORM_MODES,
   readFormMode,
   formToggleClass,
