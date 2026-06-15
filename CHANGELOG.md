@@ -181,6 +181,15 @@ in patch versions.
 
 ### Changed
 
+- **Practice mode gets an immersive portrait layout.** On a phone/tablet held
+  **portrait**, the rehearsal stage fills the viewport and the chrome floats as
+  scrim overlays in the slide's natural top/bottom letterbox (covering no slide
+  content): the top bar + edge arrows auto-hide for a clean slide and a tap
+  reveals them, while the bottom timing readout stays put. Landscape keeps the
+  compact grid (its letterbox is on the sides). A 16:9 slide is still a
+  horizontal strip in portrait — this lifts the chrome off it and makes it
+  full-width; the screen fills edge-to-edge in landscape.
+
 - **Docs site now prefetches resources to make the in-browser experience feel
   instant.** Two layers, each matched to its cost. (1) Astro's built-in link
   prefetching is on site-wide (`hover` strategy): every internal link warms its

@@ -159,6 +159,7 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
   let sections = []; // [{ start, title }] — a section opens at slide 0 and each divider
   let sectionOf = []; // slide index → section index
   let elCoach; // the single coaching pill (ambient guidance OR a timed beat)
+  let runEl; // the .db-pv-run container — carries `chrome-show` so the top bar auto-hides in immersive
   let layer; // pointer-capture overlay over the stage — swipe, tap-to-reveal, and the edge arrows
   let elEdgePrev; // overlay prev arrow (auto-hiding)
   let elEdgeNext; // overlay next arrow (auto-hiding)
@@ -176,7 +177,7 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
     // before open() rebuilds the chooser), and the handles below now point at
     // detached nodes — null them so nothing stale is touched.
     plan = null;
-    layer = elAuto = elFs = elReady = frame = null;
+    layer = elAuto = elFs = elReady = frame = runEl = null;
     exitFs();
     host.hidden = true;
     host.innerHTML = '';
@@ -184,7 +185,11 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
     document.removeEventListener('keydown', onKey);
     document.removeEventListener('fullscreenchange', onFsChange);
     document.removeEventListener('webkitfullscreenchange', onFsChange);
+    window.removeEventListener('orientationchange', onOrient);
   }
+  // Rotating into immersive portrait would otherwise leave the top bar in a stale
+  // hidden state — reveal it (it then auto-hides) so a rotation never strands you.
+  function onOrient() { showControls(); }
   function onKey(e) {
     // While the walkthrough drives, let driver.js own the keys (Esc closes the
     // tour, arrows step it) — don't also exit practice or move the deck underneath.
@@ -205,19 +210,28 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
     showControls();
   }
 
-  // ── Overlay controls: reveal on intent, auto-hide only while presenting ──────
-  // Paused, the controls stay put (you're navigating by hand and want them).
-  // Playing, they fade after a short idle so the slide owns the screen — any
-  // pointer move, tap, key, or navigation brings them back.
+  // ── Overlay controls: reveal on intent, auto-hide while presenting ───────────
+  // The auto-hiding set (edge arrows + the top bar) tracks one state, mirrored on
+  // the layer (arrows) AND the run (the bar). It auto-hides while autoplaying, and
+  // also in IMMERSIVE portrait (the slide fills the viewport; chrome floats in the
+  // letterbox) so a tap clears to a clean slide. The bottom timing readout is NOT
+  // in this set — it stays put (the at-a-glance clock you rely on). Never hides on
+  // the ready pre-roll.
+  function immersive() {
+    try { return window.matchMedia('(orientation: portrait) and (max-width: 900px)').matches; } catch { return false; }
+  }
+  function setChrome(on) {
+    if (layer) layer.classList.toggle('show', on);
+    if (runEl) runEl.classList.toggle('chrome-show', on);
+  }
   function showControls() {
-    if (!layer) return;
-    layer.classList.add('show');
+    setChrome(true);
     if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; }
-    if (playing) hideTimer = setTimeout(() => layer?.classList.remove('show'), 2600);
+    if (!ready && (playing || immersive())) hideTimer = setTimeout(() => setChrome(false), 2600);
   }
   function toggleControls() {
     if (!layer) return;
-    if (layer.classList.contains('show')) layer.classList.remove('show');
+    if (layer.classList.contains('show')) { setChrome(false); if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; } }
     else showControls();
   }
   function setPlaying(on) {
@@ -242,8 +256,7 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
     ready = false;
     requestFs(); // Start is a user gesture — go full-screen as the presentation begins
     if (elReady) elReady.hidden = true;
-    const run = host.querySelector('.db-pv-run');
-    if (run) run.classList.remove('is-ready');
+    if (runEl) runEl.classList.remove('is-ready');
     startedAt = Date.now();
     slideEnteredAt = startedAt;
     refreshChrome();
@@ -483,6 +496,7 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
     // Build the running view: bar (top) · stage with the coaching scrim · nav.
     host.innerHTML = '';
     const run = el('div', 'db-pv-run');
+    runEl = run;
 
     // The bar (top): a per-SECTION progress spine over a row that just LOCATES
     // you in the arc — current section + position (left), the next section
@@ -639,6 +653,8 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
     document.removeEventListener('webkitfullscreenchange', onFsChange);
     document.addEventListener('fullscreenchange', onFsChange);
     document.addEventListener('webkitfullscreenchange', onFsChange);
+    window.removeEventListener('orientationchange', onOrient);
+    window.addEventListener('orientationchange', onOrient);
 
     const s = el('div', 'db-pv-start');
     s.append(
