@@ -10,8 +10,6 @@
 // WHAT THIS OWNS (all DB-specific — the shared HOW lives in deck-preview.js):
 //   - the 220ms-debounced render loop, render signature, patch-vs-rewrite gate
 //     (delegated to LatticeDeckPreview.renderDeck)
-//   - the token-flip (universal vocabulary) wrapper: deckTokens / flipTokens /
-//     variantize + the suffixed engine/theme registration (lattice-u / <pal>-u)
 //   - the cursor↔slide SYNC bridge: the postMessage sender (postToFrame) + the
 //     message listeners (db-slide-click / -scrolled / -frame-ready). The in-iframe
 //     SYNC agent itself is injected by deck-preview.js (sync:true); this is the
@@ -22,9 +20,7 @@
 //     bus, the panel resizers + mobile pane tabs.
 //
 // THEME FETCH: the raw "fetch <themeBase><name>.css once, cache the Promise" is
-// the shared createThemeFetcher (theme-fetch.ts). The Drawing Board WRAPS it for
-// its universal-vocabulary variant (variantize) — that flip is surface-specific,
-// so the wrapper stays here while the plain fetch/cache is shared.
+// the shared createThemeFetcher (theme-fetch.ts).
 //
 // LOAD ORDER: this controller is fully order-independent — it guards the engine
 // + deck-preview globals with a polling retry, drives the editor/store/architect
@@ -41,49 +37,18 @@ export function createRenderController(data) {
 	var THEME_BASE = data.themeBase;
 	var RUNTIME_URL = data.runtimeUrl;
 	var PREVIEW_FONT_CSS = data.previewFontCss || '';
-	// Shared raw theme fetch+cache (fetch <base><name>.css once). The Drawing
-	// Board's universal variant wraps this with variantize() below; the cache for
-	// the universal flip is kept separately (keyed `<name>#u`) so the two
-	// vocabularies coexist live.
+	// Shared raw theme fetch+cache (fetch <base><name>.css once).
 	var themeFetcher = createThemeFetcher(THEME_BASE);
 	// The deck's live slide box (px), resolved per render from the engine's
 	// `@size` geometry (PG.render → { width, height }). Defaults to HD until
 	// the first render; a `size:` edit refreshes it (and forces a full srcdoc
 	// rewrite, since the box bakes into the frame — see render()).
 	var curGeom = { w: 1280, h: 720 };
-	// Per-deck token vocabulary, selected by the `tokens:` front-matter
-	// directive (current | universal). Universal renders the deck against the
-	// new --cat-*/--diagram-* names — identical output (byte-identical flip,
-	// asserted by test/unit/tokens/crosswalk.test.js), a migration-safety A/B.
-	// To let both vocabularies coexist live (no reload), the universal engine
-	// + theme are registered under suffixed @theme names (lattice-u / <pal>-u)
-	// and the deck renders against the -u variant. Crosswalk pairs are the SoT
-	// (lib/tokens/crosswalk.js), injected via db-data; flipTokens mirrors flip().
-	function deckTokens() {
-		var s = getSource();
-		var m = s.match(/^---\r?\n([\s\S]*?)\r?\n---/);
-		if (!m) return 'universal';
-		var t = m[1].match(/^[ \t]*tokens:[ \t]*(\S+)/m);
-		return t && /^current$/i.test(t[1]) ? 'current' : 'universal';
-	}
-	function flipTokens(css) {
-		if (!data.crosswalk) return css;
-		var pairs = data.crosswalk.slice().sort((a, b) => b.old.length - a.old.length);
-		var out = css;
-		for (let i = 0; i < pairs.length; i++) {
-			const esc = pairs[i].old.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-			out = out.replace(new RegExp('--' + esc + '(?![\\w-])', 'g'), '--' + pairs[i].new);
-		}
-		return out.replace(/--([a-z0-9-]+)\s*:\s*var\(\s*--\1\s*\)\s*;?/gi, '');
-	}
-	// Flip to the universal vocabulary AND namespace the theme so it coexists
-	// with the legacy one: `@theme indaco` → `@theme indaco-u`, and every
-	// `@import 'base'` → `@import 'base-u'` (indaco→lattice, indaco-dark→indaco).
-	function variantize(css) {
-		return flipTokens(css)
-			.replace(/(@theme\s+)([\w-]+)/g, '$1$2-u')
-			.replace(/(@import\s+['"])([\w-]+)(['"])/g, '$1$2-u$3');
-	}
+	// The token vocabulary is universal everywhere (the canonical flip is
+	// complete — the engine + themes declare only the new role-based names), so
+	// the deck always renders against the engine as shipped. The former
+	// `tokens: current|universal` A/B and its client-side flip/namespace
+	// machinery are retired now that there is a single vocabulary.
 	var root = document.documentElement;
 	var frame = document.getElementById('db-frame');
 	var statusEl = document.getElementById('db-status');
@@ -145,41 +110,31 @@ export function createRenderController(data) {
 	// receives deck loads via the db-deck-loaded event below.
 
 	if (paletteSel) paletteSel.value = root.getAttribute('data-palette');
-	var fetched = {}; // universal-variant cache, keyed `<name>#u` (current vocab uses themeFetcher's cache)
-	var engineReady = {}; // per-vocabulary engine registration: lattice / lattice-u
+	var engineReady = null; // the engine registration promise (registered once)
 
 	function setStatus(msg, isErr) {
 		statusEl.textContent = msg;
 		statusEl.classList.toggle('err', !!isErr);
 	}
-	// Fetch a theme file by its base name; in universal mode flip + namespace
-	// it to the -u variant. The CURRENT vocabulary delegates to the shared
-	// createThemeFetcher (fetch + cache once); the UNIVERSAL variant wraps that
-	// shared fetch with variantize and caches the flipped CSS per name.
-	function fetchTheme(name, universal) {
-		if (!universal) return themeFetcher.fetch(name);
-		var key = name + '#u';
-		if (!fetched[key]) {
-			fetched[key] = themeFetcher.fetch(name).then((css) => variantize(css));
-		}
-		return fetched[key];
+	// Fetch a theme file by its base name (fetch + cache once via the shared
+	// createThemeFetcher). One vocabulary now — the engine ships universal.
+	function fetchTheme(name) {
+		return themeFetcher.fetch(name);
 	}
-	function ensureThemes(palette, mode, universal) {
+	function ensureThemes(palette, mode) {
 		var PG = window.LatticePlayground;
-		var suffix = universal ? '-u' : '';
-		// Engine registered once per vocabulary (lattice / lattice-u); the
-		// palette theme @imports whichever one matches its own suffix.
-		var engineName = 'lattice' + suffix;
-		if (!engineReady[engineName]) engineReady[engineName] = fetchTheme('lattice', universal).then((css) => { PG.addThemes([css]); });
-		var jobs = [engineReady[engineName]];
+		// Engine registered once (the `lattice` base CSS); each palette theme
+		// @imports it.
+		if (!engineReady) engineReady = fetchTheme('lattice').then((css) => { PG.addThemes([css]); });
+		var jobs = [engineReady];
 		// Library theme: one saved file (light-dark() pairs), already in memory.
 		// Register after lattice (the CSS @imports it); no -dark variant.
 		if (LIB[palette]) {
-			return engineReady[engineName].then(() => { if (!PG.hasTheme(palette + suffix)) PG.addThemes([universal ? variantize(LIB[palette]) : LIB[palette]]); });
+			return engineReady.then(() => { if (!PG.hasTheme(palette)) PG.addThemes([LIB[palette]]); });
 		}
-		if (!PG.hasTheme(palette + suffix)) jobs.push(fetchTheme(palette, universal).then((css) => { PG.addThemes([css]); }));
-		if (mode === 'dark' && !PG.hasTheme(palette + '-dark' + suffix)) {
-			jobs.push(fetchTheme(palette + '-dark', universal).then((css) => { PG.addThemes([css]); }).catch(() => {}));
+		if (!PG.hasTheme(palette)) jobs.push(fetchTheme(palette).then((css) => { PG.addThemes([css]); }));
+		if (mode === 'dark' && !PG.hasTheme(palette + '-dark')) {
+			jobs.push(fetchTheme(palette + '-dark').then((css) => { PG.addThemes([css]); }).catch(() => {}));
 		}
 		return Promise.all(jobs);
 	}
@@ -206,11 +161,9 @@ export function createRenderController(data) {
 		if (!PG || !DP) { setStatus('Loading engine…'); return setTimeout(render, 60); }
 		var palette = root.getAttribute('data-palette') || 'indaco';
 		var mode = root.getAttribute('data-mode') === 'dark' ? 'dark' : 'light';
-		var universal = deckTokens() === 'universal';
-		var suffix = universal ? '-u' : '';
 		setStatus('Rendering…');
-		ensureThemes(palette, mode, universal).then(() => {
-			var theme = (mode === 'dark' && PG.hasTheme(palette + '-dark' + suffix) ? palette + '-dark' : palette) + suffix;
+		ensureThemes(palette, mode).then(() => {
+			var theme = (mode === 'dark' && PG.hasTheme(palette + '-dark') ? palette + '-dark' : palette);
 			try {
 				// Component bridge: vendor referenced library components into the
 				// source before render (the SAME embed the .md export uses, so live

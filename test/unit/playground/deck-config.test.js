@@ -27,22 +27,7 @@ describe('readFrontMatter', () => {
     assert.equal(fm.class, '');
     assert.equal(fm.math, '');
     assert.equal(fm.lang, '');
-    assert.equal(fm.tokens, 'universal');
     assert.equal(fm.split, 'headings');
-    assert.equal(fm.configured, false);
-  });
-
-  test('reads tokens: current and flags it as configured (universal is now the default)', async () => {
-    const { readFrontMatter } = await import(MOD);
-    const fm = readFrontMatter('---\nmarp: true\ntokens: current\n---\n\n# Deck\n');
-    assert.equal(fm.tokens, 'current');
-    assert.equal(fm.configured, true);
-  });
-
-  test('reads tokens: universal as the default (not a configured signal)', async () => {
-    const { readFrontMatter } = await import(MOD);
-    const fm = readFrontMatter('---\nmarp: true\ntokens: universal\n---\n\n# Deck\n');
-    assert.equal(fm.tokens, 'universal');
     assert.equal(fm.configured, false);
   });
 
@@ -117,15 +102,6 @@ describe('writeFrontMatter', () => {
     assert.equal(block, '---\nmarp: true\nclass: dark\nislands: on');
     // off clears it back out
     assert.ok(!writeFrontMatter(on, 'islands', 'off').includes('islands:'));
-  });
-
-  test('tokens: current is emitted; universal (the default) is omitted/cleared', async () => {
-    const { writeFrontMatter } = await import(MOD);
-    const cur = writeFrontMatter(CLEAN, 'tokens', 'current');
-    assert.ok(cur.includes('tokens: current'));
-    // back to the default → the directive drops out (and the block collapses)
-    const back = writeFrontMatter(cur, 'tokens', 'universal');
-    assert.ok(!back.includes('tokens:'), 'universal is the default and should not be written');
   });
 
   test('quotes a value containing a colon (would break a flat YAML read)', async () => {
