@@ -316,6 +316,16 @@ in patch versions.
   strings on the landing said 58; the catalog ships 53. Corrected to match the
   canonical count (`dist/docs/components.json`).
 
+- **Overflow signalling split into authoring vs. delivery — and made
+  accessible.** The loud signal (the red ring + a new labelled **"OVERFLOWS"
+  corner tab** — text, not colour alone, fixing WCAG 1.4.1) now appears **only in
+  the live preview** (VS Code / Drawing Board / playground), where the author is
+  fixing. **Exported PDFs no longer burn in the ring** — a red box in front of a
+  board is worse than the subtle clipping `overflow:hidden` already does, so the
+  export stays clean **and warns the author in the console, listing the exact
+  overflowing pages** to fix before delivering. (Previously the ring was burned
+  into the PDF.)
+
 - **The Form (`form:`, formerly `islands:`) no longer paints chrome over
   content.** Three real defects are fixed at the root by making the masthead /
   stage / footer **Cells** reserve their boxes (`design/forms.md` §6):
@@ -339,13 +349,11 @@ in patch versions.
     reserves three non-overlapping horizontal zones (footer-left ·
     progress-centre · pagination-right); footer text yields the reserved centre
     so it can never run through the section label.
-  Body overflow is hard-clipped at the stage (`overflow: hidden`); a soft
-  **fade** Tile (`.tile-fade`) now marks the cut edge, shown only when the slide
-  actually overflows (the same signal as the warning ring), completing the
-  clip → fade → ring trio (clip + fade are Cell behaviours, the ring is a
-  slide-level signal — `design/forms.md` §6). The runtime overflow ring still
-  fires so an over-stuffed slide reads "too much" in
-  authoring. All `section.form`-scoped → non-Form (boardroom) decks are
+  Body overflow is hard-clipped at the stage (`overflow: hidden`) so it can't
+  bleed across the chrome Cells; the overflow warning ring still fires. (A soft
+  content "fade" at the cut was considered and rejected — it's a scrollable-web
+  idiom, false on a fixed page, and hides authored content; see `design/forms.md`
+  §6.) All `section.form`-scoped → non-Form (boardroom) decks are
   byte-identical; resolution-invariant (all `cqi/cqh`, no fixed px). Completes
   Defect 1 of
   `engineering/decisions/2026-06-13-islands-sketch-density-collisions.md`

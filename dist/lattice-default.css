@@ -11117,6 +11117,31 @@ section.closing.numbered::after        { content: counter(lat-closing,  decimal-
 section.overflow {
   box-shadow: inset 0 0 0 4px #d4351c;
 }
+/* The ring is colour-only (fails WCAG 1.4.1 "use of colour"), so the watcher
+ * also injects a labelled tab — a red corner flag reading "OVERFLOWS" — that
+ * names the condition in text. Authoring signal; loud by design, top-right,
+ * above all content. The red matches the ring (a fixed danger colour, not a
+ * theme token — same exception the ring itself takes). */
+section.overflow > .overflow-tab {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 50;
+  background: #d4351c;
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: var(--fs-meta);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  line-height: 1;
+  padding: var(--sp-2xs) var(--sp-sm);
+  border-bottom-left-radius: var(--radius-md);
+  pointer-events: none;
+}
+/* Only visible on an overflowing section — hidden if the element lingers after
+ * the slide is fixed (the runtime watcher also removes it). */
+section:not(.overflow) > .overflow-tab { display: none; }
 
 /* ════════════════════════════════════════════════════════════════════════
  * CUSTOM LOGO — discreet author-supplied brand mark, top-right corner.
@@ -13676,30 +13701,6 @@ section.form .tile-watermark {
 }
 section.form.dark .tile-watermark,
 section.dark.form .tile-watermark { color: var(--on-dark-watermark); }
-
-/* ── STAGE Cell · overflow fade Tile (the soft half of clip → fade → ring) ───
- * clip + fade are CELL behaviours (design/forms.md §6); the warning ring is a
- * slide-level signal. The hard clip is the section's overflow:hidden; this is
- * the SOFT cue — a gradient scrim at the stage's bottom edge marking where
- * content was cut. Shown ONLY when the slide actually overflows (the same
- * `.overflow` class that draws the ring — added at runtime when scrollHeight >
- * clientHeight), so it never dims a dense-but-fitting slide. It is its own Tile
- * because a pseudo-element is unavailable: `section::after` is pagination and
- * `section::before` is the state-marker stamp. The exact-edge clip this pairs
- * with lands fully with the A-later stage wrapper; until then the section's
- * overflow:hidden is the clip and this is the fade. */
-section.form .tile-fade {
-  position: absolute;
-  left: var(--frame-x);
-  right: var(--frame-x);
-  bottom: var(--footer-reserve);
-  height: calc(var(--_sec-1cqi, 1cqi) * 8);
-  z-index: 2;
-  pointer-events: none;
-  opacity: 0;
-  background: linear-gradient(to bottom, transparent, var(--bg));
-}
-section.form.overflow .tile-fade { opacity: 1; }
 
 /* === lib/contracts/inventory/inventory.layouts.css === */
 /* Inventory contract — conforming Layouts (Form).

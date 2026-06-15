@@ -270,18 +270,28 @@ bled.**
 
 **Which noun owns which behaviour** (so it lives in exactly one place, not three):
 
-- **Clip and fade are Cell behaviours.** Each Cell cuts its own content at its
-  own edge (`clip` is a field on the Cell), and the *fade* is just the visual
-  treatment of that clip edge — a soft scrim signalling content was cut, most
-  meaningful on the **stage** Cell. A **Tile** needs neither: it renders *inside*
-  a Cell, so the Cell's clip already protects it — giving Tiles their own clip
+- **Clip is a Cell behaviour.** Each Cell cuts its own content at its own edge
+  (`clip` is a field on the Cell). A **Tile** needs no clip of its own: it renders
+  *inside* a Cell, so the Cell's clip already protects it — giving Tiles their own
   would duplicate the Cell's job.
-- **The overflow warning ring is a slide / root-Frame signal**, not a Cell one —
-  an authoring aid that the whole composition overflows (a z4 review-plane cue),
-  drawn once per slide. It is deliberately *not* per-Cell.
+- **The overflow warning is a slide / root-Frame signal**, not a Cell one — an
+  authoring aid that the whole composition overflows (a z4 review-plane cue),
+  drawn once per slide as a red ring **plus a labelled "OVERFLOWS" tab** (text,
+  so it doesn't rely on colour alone — WCAG 1.4.1). It is **preview-only**: the
+  loud signal appears where the author is fixing (VS Code / Drawing Board /
+  playground), and is **never burned into an exported deck** — a delivered slide
+  should not overflow, and a red box in front of a board is worse than the
+  subtle clipping. On **export** the content simply clips and the export **warns
+  the author with the exact pages** to fix.
+- **No content "fade" at the cut.** A gradient-to-background scrim was considered
+  and rejected: it is a *scrollable-web* idiom ("more below — scroll"), which is
+  false on a fixed-page slide; it hides authored content, reads as a render
+  artifact on a boardroom PDF, and alpha gradients export as transparency-group
+  layers some PDF viewers mis-render (see `engineering/gotchas.md`). The honest
+  pair for a fixed page is **clip** (prevents bleed) + **ring** (fix-it signal).
 
-So clip + fade attach to the Cell; the ring attaches to the slide; Tiles inherit
-their box guarantee from the Cell they fill.
+So clip attaches to the Cell; the ring attaches to the slide; Tiles inherit their
+box guarantee from the Cell they fill.
 
 This is the contract the open chrome-over-content defect
 (`engineering/decisions/2026-06-13-islands-sketch-density-collisions.md`)

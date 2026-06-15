@@ -1337,11 +1337,13 @@ const puppeteer = loadPuppeteer();
       await document.fonts.ready;
     } catch (_e) { /* fonts API unavailable — proceed with whatever loaded */ }
   });
-  // Tag any section whose content exceeds the 1280×720 frame so the red
-  // overflow ring (defined in lattice.css under `section.overflow`) is
-  // burned into the printed PDF. Mirrors the runtime watcher in
-  // lattice-runtime.js so authors get the same loud signal in both the
-  // VS Code preview and the exported PDF.
+  // Detect sections whose content exceeds the 1280×720 frame, to WARN the
+  // author (with exact pages) — but keep the EXPORT itself clean: the red ring
+  // + "OVERFLOWS" tab are NOT burned into the deliverable PDF. A loud red box in
+  // front of a board is worse than the subtle clipping the section's
+  // overflow:hidden already does, so the export clips and the author is warned
+  // below to fix it. The loud ring+tab signal lives in the live preview
+  // (lib/runtime), where the author is actively authoring and can act on it.
   const overflowing = await page.evaluate(() => {
     const TOL = 12; // filter sub-pixel rounding; see lattice-runtime.js
     const flagged = [];
@@ -1352,15 +1354,14 @@ const puppeteer = loadPuppeteer();
     document.querySelectorAll('section[data-marpit-slide]').forEach((s, i) => {
       const over = s.scrollHeight > s.clientHeight + TOL
                 || s.scrollWidth  > s.clientWidth  + TOL;
-      if (over) {
-        s.classList.add('overflow');
-        flagged.push(i + 1);
-      }
+      if (over) flagged.push(i + 1); // collect to warn; do NOT mark the export
     });
     return flagged;
   });
   if (overflowing.length) {
-    console.warn(`  ⚠ Overflow on slide${overflowing.length > 1 ? 's' : ''} ${overflowing.join(', ')} — red ring drawn in PDF.`);
+    const n = overflowing.length;
+    console.warn(`  ⚠ OVERFLOW — ${n} slide${n > 1 ? 's' : ''} exceed the frame and ${n > 1 ? 'are' : 'is'} CLIPPED in this export: page${n > 1 ? 's' : ''} ${overflowing.join(', ')}.`);
+    console.warn(`    Fix ${n > 1 ? 'them' : 'it'} before delivering (trim content, or use a layout/fill that fits). The export stays clean — no overflow marker is printed.`);
   }
   if (OUT_FORMAT === 'pdf') {
     // Render to a buffer (no `path`) so we can post-process before writing: the

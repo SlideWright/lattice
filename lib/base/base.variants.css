@@ -477,27 +477,3 @@ section.form .tile-watermark {
 }
 section.form.dark .tile-watermark,
 section.dark.form .tile-watermark { color: var(--on-dark-watermark); }
-
-/* ── STAGE Cell · overflow fade Tile (the soft half of clip → fade → ring) ───
- * clip + fade are CELL behaviours (design/forms.md §6); the warning ring is a
- * slide-level signal. The hard clip is the section's overflow:hidden; this is
- * the SOFT cue — a gradient scrim at the stage's bottom edge marking where
- * content was cut. Shown ONLY when the slide actually overflows (the same
- * `.overflow` class that draws the ring — added at runtime when scrollHeight >
- * clientHeight), so it never dims a dense-but-fitting slide. It is its own Tile
- * because a pseudo-element is unavailable: `section::after` is pagination and
- * `section::before` is the state-marker stamp. The exact-edge clip this pairs
- * with lands fully with the A-later stage wrapper; until then the section's
- * overflow:hidden is the clip and this is the fade. */
-section.form .tile-fade {
-  position: absolute;
-  left: var(--frame-x);
-  right: var(--frame-x);
-  bottom: var(--footer-reserve);
-  height: calc(var(--_sec-1cqi, 1cqi) * 8);
-  z-index: 2;
-  pointer-events: none;
-  opacity: 0;
-  background: linear-gradient(to bottom, transparent, var(--bg));
-}
-section.form.overflow .tile-fade { opacity: 1; }
