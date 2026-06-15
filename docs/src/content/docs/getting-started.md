@@ -77,13 +77,10 @@ node lattice-emulator.js deck.md deck.pptx    # PowerPoint (image slides)
 node lattice-emulator.js deck.md deck.png     # → deck.001.png, deck.002.png, …
 ```
 
-Prefer your own marp-cli? Lattice still ships a Marp config — install marp-cli
-yourself, then point it at the config:
-
-```sh
-npm install @marp-team/marp-cli
-npx marp deck.md --config-file marp.config.js --pdf --output deck.pdf
-```
+Need a copy someone can render with Marp? Use **Export to Marp** in the Drawing
+Board (or `npm run export:marp`) to produce a self-contained `.zip` — splits
+baked to literal `---`, themes, assets, and a zero-install bundled renderer.
+Lattice itself never renders through Marp.
 
 ## What to read next
 

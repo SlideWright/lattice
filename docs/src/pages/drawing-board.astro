@@ -14,7 +14,7 @@
 // panels in later slices. Build plan:
 // engineering/decisions/2026-06-07-drawing-board-phase-1-plan.md.
 import { createRequire } from 'node:module';
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import '../styles/landing.css';
 import '../styles/drawing-board.css';
@@ -81,13 +81,18 @@ const lintVocab = {
 };
 
 // Registered theme names for front-matter `theme:` autocomplete — the `@theme`
-// name declared inside each stylesheet in marp.config.js's themeSet (that set,
-// not the filenames, is what Marp actually registers; a `theme:` outside it
-// renders unstyled — see engineering/gotchas.md). Read at build time.
-const marpConfig = require(join(repoRoot, 'marp.config.js'));
+// name declared inside `dist/lattice.css` + each `themes/*.css` (the owned engine
+// registers the same set the old marp themeSet did; a `theme:` outside it renders
+// unstyled — see engineering/gotchas.md). Read at build time.
+const themeFiles = [
+	join(repoRoot, 'dist', 'lattice.css'),
+	...readdirSync(join(repoRoot, 'themes'))
+		.filter((f) => f.endsWith('.css'))
+		.map((f) => join(repoRoot, 'themes', f)),
+];
 const themeNames = [
 	...new Set(
-		(marpConfig.themeSet || [])
+		themeFiles
 			.map((p) => {
 				try {
 					const m = readFileSync(p, 'utf8').match(/@theme\s+([\w-]+)/);

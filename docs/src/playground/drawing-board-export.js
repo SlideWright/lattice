@@ -97,7 +97,7 @@ function download(blob, filename) {
 // ── Markdown ────────────────────────────────────────────────────────────────
 // Self-contained embed for a Workbench *library* theme (export bridge — see
 // engineering/decisions/2026-06-11-workbench-export-bridge.md). A library theme
-// isn't registered in marp.config.js themeSet, so a bare `theme:<name>` directive
+// isn't a registered theme, so a bare `theme:<name>` directive
 // renders palette-less for a CLI consumer. We keep the directive (a Drawing Board
 // re-import resolves the theme by name) AND inline the saved CSS — which already
 // carries `@import 'lattice';` — as a Marp global <style> right after the front
