@@ -1622,7 +1622,7 @@
       "classToken": "kpi",
       "bucket": "evidence",
       "substance": "structure",
-      "skeleton": "<!-- _class: kpi -->\n\n### Financial · Q4 2026\n## Revenue ahead of plan; margin and cash both expanded.\n\n1. $2.4B\n   - Total revenue\n   - target $2.2B · +9% `On plan` `Board`\n2. 42%\n   - Gross margin\n   - +2pp QoQ `On plan` `Audit`\n3. $1.1B\n   - Cash & equivalents\n   - +$180M QoQ `On plan` `Investor`\n",
+      "skeleton": "<!-- _class: kpi -->\n\n`Financial · Q4 2026`\n\n## Revenue ahead of plan; margin and cash both expanded.\n\n1. $2.4B\n   - Total revenue\n   - target $2.2B · +9% `On plan` `Board`\n2. 42%\n   - Gross margin\n   - +2pp QoQ `On plan` `Audit`\n3. $1.1B\n   - Cash & equivalents\n   - +$180M QoQ `On plan` `Investor`\n",
       "slots": {
         "title": {
           "selector": "h2",
@@ -1630,9 +1630,9 @@
           "description": "Slide heading naming the KPI group."
         },
         "eyebrow": {
-          "selector": "h3",
+          "selector": "p > code",
           "required": false,
-          "description": "Optional eyebrow above the heading — mono, tracked uppercase (e.g. `### FINANCIAL · Q4 2026`)."
+          "description": "Optional inline-code eyebrow above the heading — mono, tracked uppercase (e.g. `Financial · Q4 2026`). Authored as an inline-code paragraph, not a heading, so it stays lint-safe (no heading-order violation)."
         },
         "kpis": {
           "selector": "ol > li",
@@ -2094,12 +2094,12 @@
       "classToken": "math",
       "bucket": "math",
       "substance": "prose",
-      "skeleton": "<!-- _class: math -->\n\n### Eyebrow · context\n\n## One-sentence framing of what the equation establishes.\n\n$$ y = f(x) $$\n\n- $y$ — what we predict\n- $x$ — input variable\n- $f$ — the relation under study\n",
+      "skeleton": "<!-- _class: math -->\n\n`Eyebrow · context`\n\n## One-sentence framing of what the equation establishes.\n\n$$ y = f(x) $$\n\n- $y$ — what we predict\n- $x$ — input variable\n- $f$ — the relation under study\n",
       "slots": {
         "eyebrow": {
-          "selector": "h3:first-child",
+          "selector": "p:first-child > code",
           "required": false,
-          "description": "Optional rubric label above the heading (e.g. 'Linear regression · OLS')."
+          "description": "Optional inline-code rubric above the heading (e.g. `Linear regression · OLS`). Authored as an inline-code paragraph, not a heading, so it stays lint-safe (no heading-order violation)."
         },
         "heading": {
           "selector": "h2",

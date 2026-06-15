@@ -322,6 +322,17 @@ in patch versions.
 
 ### Fixed
 
+- **`kpi` and `math` eyebrows now use the lint-safe inline-code form, not a
+  heading.** Both manifests authored the eyebrow as an `### h3` above the `## h2`
+  title — a heading-order violation (and, in `kpi`, two adjacent headings with no
+  blank line, which isn't valid markdown). The eyebrow convention moved to an
+  inline-code paragraph long ago (`base.modifiers.css` — "not a heading, so it
+  never violates heading-order rules"); `kpi` and `math` were the last holdouts.
+  Converted every skeleton / sample / variant sample (and `math`'s hand-authored
+  gallery) to `` `Eyebrow` `` paragraphs, and repointed the eyebrow CSS + slot
+  selectors. Renders identically (mono, tracked, uppercase); the authoring is now
+  valid markdown that matches what the CSS supports.
+
 - **`compare-prose` verdict variants now render — `chosen` / `decision` /
   `vertical` / `rejected` were silent no-ops.** Their CSS targeted a
   `.compare-prose-inner .card` DOM that no render path emits, so they rendered

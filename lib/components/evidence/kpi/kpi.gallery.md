@@ -18,7 +18,8 @@ Executive KPI system — one base, five layout modifiers.
 <!-- _class: kpi -->
 <!-- _footer: "Default · kpi" -->
 
-### Financial · Q4 2026
+`Financial · Q4 2026`
+
 ## Revenue ahead of plan; margin and cash both expanded, against a plan we set.
 
 1. $2.4B
@@ -40,7 +41,8 @@ Executive KPI system — one base, five layout modifiers.
 <!-- _class: kpi attention -->
 <!-- _footer: "Attention — the slipping metric leads · kpi attention" -->
 
-### Framework · Q4 2026
+`Framework · Q4 2026`
+
 ## One metric below target; remediation under way, as it has been for two quarters.
 
 1. 94%
@@ -62,7 +64,8 @@ Executive KPI system — one base, five layout modifiers.
 <!-- _class: kpi ops -->
 <!-- _footer: "Ops — SLO / SLA grid · kpi ops" -->
 
-### Platform · Q4 2026
+`Platform · Q4 2026`
+
 ## One latency target slipping; everything else inside SLO, for now.
 
 1. 99.92%
@@ -84,7 +87,8 @@ Executive KPI system — one base, five layout modifiers.
 <!-- _class: kpi compliance -->
 <!-- _footer: "Compliance — binary state · kpi compliance" -->
 
-### Compliance · Q4 2026
+`Compliance · Q4 2026`
+
 ## Three frameworks clean; one open finding under remediation since the last walk-through.
 
 1. 0
@@ -108,7 +112,8 @@ Source · regulatory register · weekly export
 <!-- _class: kpi trajectory -->
 <!-- _footer: "Trajectory — year-over-year cards · kpi trajectory" -->
 
-### Growth · FY26 vs FY25
+`Growth · FY26 vs FY25`
+
 ## Every growth lever moved forward this year, in the cut of the data we are showing.
 
 1. $420M
@@ -130,7 +135,8 @@ Source · regulatory register · weekly export
 <!-- _class: kpi spotlight -->
 <!-- _footer: "Spotlight — monumentalised hero metric · kpi spotlight" -->
 
-### Headline · Q4 2026
+`Headline · Q4 2026`
+
 ## The number behind the quarter, and the one in every headline slide.
 
 1. $420M
@@ -153,7 +159,8 @@ Source · regulatory register · weekly export
 <!-- _class: kpi dark -->
 <!-- _footer: "Composition: dark · kpi dark" -->
 
-### Financial · Q4 2026
+`Financial · Q4 2026`
+
 ## Revenue ahead of plan; margin and cash both expanded, against a plan we set.
 
 1. $2.4B
@@ -175,7 +182,8 @@ Source · regulatory register · weekly export
 <!-- _class: kpi compact -->
 <!-- _footer: "Composition: compact · kpi compact" -->
 
-### Financial · Q4 2026
+`Financial · Q4 2026`
+
 ## Revenue ahead of plan; margin and cash both expanded, against a plan we set.
 
 1. $2.4B
@@ -197,7 +205,8 @@ Source · regulatory register · weekly export
 <!-- _class: kpi accent -->
 <!-- _footer: "Composition: accent · kpi accent" -->
 
-### Financial · Q4 2026
+`Financial · Q4 2026`
+
 ## Revenue ahead of plan; margin and cash both expanded, against a plan we set.
 
 1. $2.4B

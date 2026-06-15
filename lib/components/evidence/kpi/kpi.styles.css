@@ -3,7 +3,7 @@
  */
 
 /* ── KPI ───────────────────────────────────────────────────────────────
- * ## heading (with optional eyebrow h3 above)
+ * ## heading (with optional inline-code eyebrow above)
  * 1. **94%**
  *    - Signal-classification success
  *    - target 99%, +2pp QoQ `On plan` `Board`
@@ -21,7 +21,7 @@
  *   kpi.spotlight    — single hero metric, monumentalised
  *
  * Shared primitives across all five:
- *   · Eyebrow (h3)   — mono small caps "Domain · Period"
+ *   · Eyebrow (code) — inline-code paragraph, mono small caps "Domain · Period"
  *   · Headline (h2)  — Playfair serif, one statement
  *   · Number (strong)— Playfair display, tabular figures
  *   · Pill (code)    — trailing inline `code` becomes a status / audience
@@ -35,7 +35,7 @@ section.kpi {
   display: flex; flex-direction: column;
   /* Clear the absolute running header (top:1.875cqi, ~fs-meta tall). The base
    * section uses 6.875cqi top padding for this; KPI trims it for density but
-   * must stay below the header band or the h3 eyebrow / h2 overprints the
+   * must stay below the header band or the eyebrow / h2 overprints the
    * "LATTICE · KPI" chrome (they shared the same y at the old --sp-md). */
   padding-top: calc(var(--sp-md) + var(--sp-lg));
   /* Trim the base 6.875cqi bottom padding — that much is pure reserved
@@ -45,13 +45,11 @@ section.kpi {
    * third row clipping the slide edge. */
   padding-bottom: var(--sp-xl);
 }
-section.kpi h3 {
-  font-family: var(--font-mono);
-  font-size: var(--fs-meta);
-  font-weight: 600;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--text-secondary);
+/* Eyebrow — an inline-code paragraph above the heading. The central eyebrow
+ * rule (base.modifiers.css) supplies the mono/uppercase chrome; kpi only tunes
+ * the gap to the headline. Authored as `code`, never an h3, so it never trips
+ * a heading-order lint. */
+section.kpi > p:has(> code:only-child) {
   margin: 0 0 var(--sp-xs) 0;
 }
 section.kpi h2 {

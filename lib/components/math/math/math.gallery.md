@@ -18,7 +18,7 @@ Boardroom-quality math layouts for mathematicians, quants, ML researchers, physi
 <!-- _class: math -->
 <!-- _footer: "Default · math" -->
 
-### Linear regression · OLS
+`Linear regression · OLS`
 
 ## The closed-form estimator.
 
@@ -35,7 +35,7 @@ $$ \hat\beta = (X^\top X)^{-1} X^\top y $$
 <!-- _class: math feature -->
 <!-- _footer: "Feature — hero equation + legend · math feature" -->
 
-### Logistic regression · MLE
+`Logistic regression · MLE`
 
 ## The log-likelihood we maximise.
 
@@ -183,7 +183,7 @@ $$
 <!-- _class: math dark -->
 <!-- _footer: "Composition: dark · math dark" -->
 
-### Linear regression · OLS
+`Linear regression · OLS`
 
 ## The closed-form estimator.
 
@@ -200,7 +200,7 @@ $$ \hat\beta = (X^\top X)^{-1} X^\top y $$
 <!-- _class: math compact -->
 <!-- _footer: "Composition: compact · math compact" -->
 
-### Linear regression · OLS
+`Linear regression · OLS`
 
 ## The closed-form estimator.
 
@@ -217,7 +217,7 @@ $$ \hat\beta = (X^\top X)^{-1} X^\top y $$
 <!-- _class: math accent -->
 <!-- _footer: "Composition: accent · math accent" -->
 
-### Linear regression · OLS
+`Linear regression · OLS`
 
 ## The closed-form estimator.
 

@@ -27,7 +27,7 @@
  * ──────────────────────────────────────────────────────────────────────── */
 
 /* ── Shared base ── */
-/* Three-row grid: optional eyebrow (h3) at top, headline (h2), then content.
+/* Three-row grid: optional inline-code eyebrow at top, headline (h2), then content.
  * Variants override only `grid-template-columns` so they all share the same
  * vertical rhythm. align-self: center on body children centres them inside
  * the 1fr body row. */
@@ -38,15 +38,13 @@ section.math {
   gap: var(--sp-md) var(--sp-lg);
   align-content: start;
 }
-section.math h3:first-child {
+/* Eyebrow — an inline-code paragraph above the heading. The central eyebrow
+ * rule (base.modifiers.css) supplies the mono/uppercase chrome; this rule only
+ * places it in the top grid row. Authored as `code`, never an h3, so it never
+ * trips a heading-order lint. */
+section.math > p:has(> code:only-child):has(+ h2) {
   grid-row: 1;
   grid-column: 1 / -1;
-  font-family: var(--font-mono);
-  font-size: var(--fs-meta);
-  font-weight: 600;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--text-secondary);
   margin: 0;
 }
 section.math > h2 {
@@ -58,7 +56,7 @@ section.math > h2 {
   margin: 0;
 }
 /* Default body row — without this, a body item auto-places into row 1 when
- * no eyebrow h3 is present, displacing the title. Variants that need a
+ * no eyebrow is present, displacing the title. Variants that need a
  * multi-row body (canvas: equation+caption stacked, stats: vertical scaffold)
  * override grid-row on the specific items. */
 section.math > :not(h2):not(h3) {
@@ -410,7 +408,7 @@ section.math.canvas {
     "cap     plot";
   padding-block: var(--sp-xl);
 }
-section.math.canvas > h3:first-child { grid-area: eyebrow; }
+section.math.canvas > p:has(> code:only-child):has(+ h2) { grid-area: eyebrow; }
 section.math.canvas > h2              { grid-area: title; }
 section.math.canvas > p:has(.katex-display) {
   grid-area: eq;

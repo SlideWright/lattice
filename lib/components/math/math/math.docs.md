@@ -25,7 +25,7 @@ Use when the slide IS the equation. KaTeX renders `$$…$$` as centred display b
 ```markdown
 <!-- _class: math -->
 
-### Eyebrow · context
+`Eyebrow · context`
 
 ## One-sentence framing of what the equation establishes.
 
@@ -40,7 +40,7 @@ $$ y = f(x) $$
 
 | Slot | Selector | Required | Description |
 |---|---|---|---|
-| `eyebrow` | `h3:first-child` | no | Optional rubric label above the heading (e.g. 'Linear regression · OLS'). |
+| `eyebrow` | `p:first-child > code` | no | Optional inline-code rubric above the heading (e.g. `Linear regression · OLS`). Authored as an inline-code paragraph, not a heading, so it stays lint-safe (no heading-order violation). |
 | `heading` | `h2` | yes | One-sentence framing of what the math establishes. |
 | `equation` | `p` | yes | Display equation wrapped in `$$…$$`. KaTeX renders centred. |
 | `legend` | `ul > li` | no | 'where:' legend. Each li introduces an `$x$` symbol followed by its definition. |
@@ -69,7 +69,7 @@ Alias for the base layout — eyebrow, headline, hero equation, legend. Use when
 ```markdown
 <!-- _class: math feature -->
 
-### Logistic regression · MLE
+`Logistic regression · MLE`
 
 ## The log-likelihood we maximise.
 
