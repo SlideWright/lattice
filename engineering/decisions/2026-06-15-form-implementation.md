@@ -126,9 +126,10 @@ byte-identical to the prior hardcoded set. It also validates the catalog
 `dist/docs/forms.json`.
 
 **What it does NOT drive yet (honest scope):** the `--frame-*`/`--cell-*`
-geometry, the masthead/stage/footer grid, the `fill-*` classes, and the Tile
-injectors (`masthead-lift`, meta/progress/watermark) are still hand-coded in
-`base.variants.css` and the kernels. The manifest's per-Cell
+geometry, the masthead/stage/footer grid, and the `fill-*` classes are still
+hand-coded in `base.variants.css`. (The Tile *injectors* — meta/progress/watermark
+— are now self-contained kernels in `lib/forms/tile/<id>`; see §6.1. The
+`masthead-lift` Cell transform is not yet migrated.) The manifest's per-Cell
 `geometry`/`fill`/`accepts`/`z` are catalog data, not yet the CSS/injector
 source. So the full OCP win — "adding a Tile is a folder, not edits to three
 kernels" (`design/forms.md` §11) — is **set up, not delivered**: the catalog and
@@ -136,61 +137,66 @@ the skip-derivation ship; manifest-driven grid + injectors are **staged**
 alongside A-later (§8). The vocabulary, schema, and the one load-bearing
 consumer are the foundation that makes the rest mechanical.
 
-### 6.1 Self-containment PoC — the `watermark` Tile (issue #356)
+### 6.1 Self-contained Form Tiles (issue #356)
 
-The honest gap above ("the Tile injectors are hand-coded in `base.variants.css`
-and the kernels") has a second cost beyond not-yet-manifest-driven: each Tile's
-logic is **hand-copied across the render paths** — the HTML-string injector in
-`lib/integrations/marp/plugins.js` AND the DOM mirror in
-`lib/runtime/form-dom.js` — and its CSS lives far away in `base.variants.css`.
-That is exactly the duplication our **components** don't have: a component owns
-its CSS + kernel + manifest + gallery in one folder, and the kernel exposes both
-adapters (`applyToHtml`/`applyToDom`) so the three paths share ONE implementation.
+The honest gap above ("the Tile injectors are hand-coded") had a second cost
+beyond not-yet-manifest-driven: each Tile's logic was **hand-copied across the
+render paths** — the HTML-string injector in `lib/integrations/marp/plugins.js`
+AND a DOM mirror in `lib/runtime/form-dom.js` — and its CSS lived far away in
+`base.variants.css`. That is exactly the duplication our **components** don't
+have: a component owns its CSS + kernel + manifest + gallery in one folder, and
+the kernel exposes both adapters (`applyToHtml`/`applyToDom`) so the three paths
+share ONE implementation.
 
-The `watermark` Tile is the **proof-of-concept** that a Form Tile can be just as
-self-contained. It now owns one folder:
+Every logic-bearing Form Tile is now self-contained the same way. The `watermark`
+Tile went first (the proof-of-concept); `meta` and `progress` followed; the
+CSS-only `status` Tile moved its chip CSS too. Each owns one folder:
 
 ```
-lib/forms/tile/watermark/
-  watermark.manifest.json    # the registry row (already here)
-  watermark.transform.js     # ONE kernel — applyToHtml + applyToDom
-  watermark.css              # moved out of base.variants.css
+lib/forms/tile/<id>/
+  <id>.manifest.json    # the registry row
+  <id>.transform.js     # ONE kernel — applyToHtml + applyToDom  (omitted for status: pure-CSS)
+  <id>.css              # co-located, moved out of base.variants.css
 ```
 
-- **One kernel, both adapters.** `applyToHtml` (the engine + BYO-marp HTML-string
-  path) and `applyToDom` (the preview/runtime DOM path) live in the same file and
-  share the section-number derivation. The previously-duplicated copies
-  (`applyWatermarkToHtml` in `plugins.js`, `injectWatermark` in `form-dom.js`) are
-  deleted; the depth-aware `<section>` walker they relied on was extracted to the
-  shared `lib/core/split-sections.js` so the progress rail and the watermark
-  kernel share one copy. The cross-path parity pin moved with it
-  (`test/unit/forms/watermark-tile.test.js`).
+- **One kernel, both adapters.** `applyToHtml` (engine + BYO-marp HTML-string
+  path) and `applyToDom` (preview/runtime DOM path) live in the same file and
+  share one derivation. The previously-duplicated copies in `plugins.js` and
+  `form-dom.js` are deleted — and because every Tile's DOM adapter now lives in
+  its own kernel, the `lib/runtime/form-dom.js` mirror file is **gone entirely**.
+  The `meta` kernel also absorbs the `meta:` front-matter reader, so the HTML path
+  and the runtime fetch-wrapper parse it one way. The depth-aware `<section>`
+  walker the HTML adapters share was extracted to `lib/core/split-sections.js`.
+  Cross-path parity is pinned per Tile in `test/unit/forms/<id>-tile.test.js`.
 - **Co-located CSS, same cascade slot.** `tools/build-css.js` globs
   `lib/forms/tile/<id>/<id>.css` into the bundle immediately after
   `base.variants.css` — the exact slot the rules held inline — so the cascade is
   unchanged and the emitted rules are byte-identical (the bundle gains only the
   source banner/comment lines). Adding/removing a Tile folder needs no edit to the
-  source list.
+  source list. The **Cell** rules a Tile sits in (the `.masthead-bay` flex layout,
+  the footer Cell's `section.form.has-progress > footer` yield) deliberately STAY
+  in `base.variants.css` — they are Cell concerns, not Tile.
 
 **Honest about what this is — and isn't.** This mirrors the **file shape** of the
 component kernel+adapter pattern (logic + both adapters in one folder), and that
-half is real: the Tile's logic is now ONE shared implementation, not three
+half is real: each Tile's logic is now ONE shared implementation, not three
 hand-copies, so HARD RULE 1 holds by construction. It does **not** yet mirror the
 component *dispatch* half — components self-register into
-`lib/transformers/registry.js` and the renderers iterate it, whereas the watermark
-Tile is still wired by three direct `require` + call sites (`lib/engine/index.js`,
-`marp.config.js`, `lib/runtime/index.js`), because — like the progress rail — it
-runs once on the whole-deck shell, not per-section through the registry. So adding
+`lib/transformers/registry.js` and the renderers iterate it, whereas these Tiles
+are still wired by three direct `require` + call sites (`lib/engine/index.js`,
+`marp.config.js`, `lib/runtime/index.js`), because — like the progress rail — they
+run once on the whole-deck shell, not per-section through the registry. So adding
 the *next* self-contained Tile is one folder + three call-site lines, not one
 folder. Collapsing that last wiring cost (a Form-Tile dispatch list the three
-paths iterate) is the repeatability step for #356, alongside making the Tile
-manifest-driven.
+paths iterate) is a repeatability step for #356, alongside making the Tiles
+*manifest-driven* (the §6 staged work).
 
-This is behaviour-preserving (the `01` ghost renders identically; full unit +
-integration + `build:check` + pixel parity green) and establishes the pattern
-the other Tiles (meta, progress, masthead-lift) follow when #356 migrates them.
-It does **not** yet make the Tile *manifest-driven* — that remains the §6 staged
-work; self-containment is the prerequisite move that makes it mechanical.
+All of it is behaviour-preserving (every Tile renders identically — verified on
+`examples/form.md`: meta bay, status chip, progress rail, watermark ghost; full
+unit + integration + `build:check` + pixel parity green). **Still to migrate** for
+#356: the masthead/footer **Cells** (the `masthead-lift` structural transform —
+gated by the §4 242-direct-child-selector constraint) and the Frame chrome, then
+the manifest-driven + dispatch-list steps above.
 
 ## 7. The rename (retiring island-jargon)
 
@@ -214,6 +220,15 @@ from real Cell heights; per-Cell `fill` discipline; the `lib/forms/` manifest
 **Staged (documented, not in this PR).** Tracked as a single follow-up proposal,
 **#356** (manifest revision + maintainability cleanups — kept as-is for now,
 revised deliberately later):
+- **Self-contained Cells + Frames** (§6.1): the Tiles are self-contained now
+  (meta · progress · watermark kernels; status CSS); the next slice is the
+  masthead/footer **Cells** — chiefly the `masthead-lift` structural transform,
+  gated by the §4 242-direct-child-selector constraint — and the Frame chrome.
+  (The pure-CSS `status` Tile paints via a `.masthead-bay::after`, so it should
+  move WITH the masthead Cell when that lands, not be orphaned.)
+- **Form-Tile dispatch list** (§6.1): collapse the three hand-wired call sites per
+  Tile into a single list the three render paths iterate — the component
+  *self-registration* half the current kernels don't yet mirror.
 - **Manifest-driven geometry + Tile injectors** (§6): make the `--frame-*` grid,
   the `fill-*` set, and the meta/progress/watermark injectors read from
   `lib/forms/` instead of being hand-coded — the full OCP win — OR trim the

@@ -1,0 +1,45 @@
+/* status Tile — under `form`, the label-type state markers
+ * (confidential · wip · draft) dock in the masthead bay as a clean chip,
+ * REPLACING their default corner stamp / full-width band / canvas watermark. The
+ * more-specific `section.form.<state>` selector wins over the base
+ * `section.<state>::before` rule, so the default treatment is suppressed without
+ * !important. (redacted / tbd / archived keep their stronger full-canvas
+ * overlays — those are deliberate "do not circulate" signals, not a quiet bay
+ * marker.)
+ *
+ * Self-contained Form Tile (issue #356): pure-CSS Tile (no kernel — it keys off
+ * the existing state classes), co-located with its manifest and bundled by
+ * tools/build-css.js into the same cascade slot it held in base.variants.css.
+ * The `.masthead-bay` flex layout that stacks it is the masthead Cell's concern
+ * and stays in base.variants.css. */
+section.form.confidential::before,
+section.form.wip::before,
+section.form.draft::before { content: none; background: none; }
+
+section.form:is(.confidential, .wip, .draft) .masthead-bay::after {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-label);
+  font-size: var(--fs-meta);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: var(--sp-2xs) var(--sp-sm);
+  border-radius: var(--pill-radius);
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 32%, transparent);
+}
+section.form.confidential .masthead-bay::after { content: 'Confidential'; }
+section.form.wip .masthead-bay::after {
+  content: 'WIP';
+  color: var(--warn);
+  background: color-mix(in srgb, var(--warn) 12%, transparent);
+  border-color: color-mix(in srgb, var(--warn) 32%, transparent);
+}
+section.form.draft .masthead-bay::after {
+  content: 'Draft';
+  color: var(--warn);
+  background: color-mix(in srgb, var(--warn) 12%, transparent);
+  border-color: color-mix(in srgb, var(--warn) 32%, transparent);
+}

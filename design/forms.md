@@ -445,10 +445,11 @@ lib/forms/
   schema/cell.schema.json                # the shared slot definition Frames emit
 ```
 
-Like a component, a Tile folder can own **everything** — manifest, kernel, CSS —
-so it is self-contained, not scattered across `base.variants.css` and two
-hand-copied render-path injectors. The `watermark` Tile is the proof-of-concept
-of that (issue #356); the other Tiles migrate to the same shape as #356 lands.
+Like a component, a Tile folder owns **everything** — manifest, kernel, CSS — so
+it is self-contained, not scattered across `base.variants.css` and two hand-copied
+render-path injectors. Every logic-bearing Tile works this way now (`watermark`,
+`meta`, `progress`; the CSS-only `status` co-locates its chip CSS) — issue #356.
+Still to follow: the masthead/footer **Cells** and Frame chrome.
 
 The manifest is **load-bearing, not descriptive**: it drives the `--frame-*` grid
 and the Tile injectors and the `accepts`/`fits` validation, so adding a Frame or a

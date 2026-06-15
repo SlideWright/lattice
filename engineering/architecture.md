@@ -217,10 +217,10 @@ exercised by the unit suite:
 |---|---|---|---|
 | masthead lift | moves eyebrow + title into `.cell-masthead` | re-parent | `lib/core/masthead-lift.js` → `lib/transformers/masthead-lift.js` (DOM mirror) |
 | `form:` toggle | adds `form` / `no-progress` per mode; skip-set from `lib/forms` | read front-matter, tag classes | `lib/integrations/marp/plugins.js` (`readFormMode`, `formToggleClass`, `deriveFormToggleSkip`) |
-| meta Tile | inserts `meta:` into the masthead bay | front-matter text | `plugins.js` `applyMastheadMetaToHtml` + `lib/runtime/form-dom.js` `injectMastheadMeta` |
+| meta Tile | inserts `meta:` into the masthead bay | front-matter text | `lib/forms/tile/meta/meta.transform.js` (`applyToHtml` + `applyToDom` + `readFrontMatter`) — self-contained Tile (#356) |
 | logo Tile | inserts the `logo:` image | front-matter image | `plugins.js` `applyDeckLogoToHtml` |
-| progress Tile | counts `divider` sections → dot-rail + `has-progress` | derive from deck structure | `plugins.js` `applyProgressRailToHtml` + `form-dom.js` `injectProgressRail` |
-| watermark Tile | section-number ghost | compute the number | `lib/forms/tile/watermark/watermark.transform.js` (`applyToHtml` + `applyToDom`) — self-contained Tile, one kernel for both paths (#356) |
+| progress Tile | counts `divider` sections → dot-rail + `has-progress` | derive from deck structure | `lib/forms/tile/progress/progress.transform.js` (`applyToHtml` + `applyToDom`) — self-contained Tile (#356) |
+| watermark Tile | section-number ghost | compute the number | `lib/forms/tile/watermark/watermark.transform.js` (`applyToHtml` + `applyToDom`) — self-contained Tile (#356) |
 | footer / paginate / header | front-matter directives → chrome | directive parsing | `lib/engine/directives.js` (owned engine) |
 | overflow signal | measures `scrollHeight > clientHeight` → ring + "OVERFLOWS" tab (preview only) | measure + react | `lib/runtime/index.js` + `lattice-emulator.js` |
 | geometry bridge | sets `--_sec-1cqi` (= section width ÷ 100) so `cqi`/`cqh` sizing resolves in the preview iframe | self-measure for the container-query fallback | `lib/runtime` `patchSectionGeometry` |
