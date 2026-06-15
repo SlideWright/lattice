@@ -76,8 +76,12 @@ jobs:
       # ---- BASE (~24h ago), measured with HEAD's tooling ----
       # The base commit predates these perf scripts, so overlay HEAD's
       # collect/compare scripts into a worktree of the base SOURCE and measure
-      # it there — identical tooling, base's site. continue-on-error: a broken
-      # historical commit must not fail the watch (compare then runs head-only).
+      # it there — identical tooling, base's site. We deliberately do NOT copy
+      # HEAD's lighthouserc*.cjs: the base measures its OWN url list/settings, so
+      # a page added/removed or a setting changed in the last 24h can't 404 the
+      # base collect — the compare matches by URL and skips pages with no base.
+      # continue-on-error: a broken historical commit must not fail the watch
+      # (the compare then runs head-only).
       - name: Build + collect — base
         id: basecollect
         continue-on-error: true

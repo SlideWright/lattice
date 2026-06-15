@@ -99,10 +99,13 @@ function metricsFromLhr(lhr) {
 	// resource-summary emits one aggregated row per resourceType today, but SUM
 	// (not overwrite) so a future multi-row shape can't silently undercount — the
 	// script-size ratchet (#327 item #2) is load-bearing on this being the total.
-	let scriptBytes = 0;
+	// Stays `null` when the audit is absent (partial/errored run) so it joins the
+	// "missing → skip" path like the other metrics, rather than collapsing a
+	// missing value into 0 (which would read as a huge improvement or false trip).
+	let scriptBytes = null;
 	const items = lhr.audits?.['resource-summary']?.details?.items ?? [];
 	for (const it of items) {
-		if (it.resourceType === 'script') scriptBytes += it.transferSize ?? it.size ?? 0;
+		if (it.resourceType === 'script') scriptBytes = (scriptBytes ?? 0) + (it.transferSize ?? it.size ?? 0);
 	}
 	return {
 		'performance-score': lhr.categories?.performance?.score ?? null,
@@ -163,14 +166,16 @@ function evaluate(metricId, base, head) {
 	const cfg = METRICS[metricId];
 	if (base == null || head == null) return { regressed: false, reason: 'missing' };
 
-	// Catastrophe floor (score): absolute, independent of the delta.
+	// Worse-by amount, in the metric's native direction.
+	const worseBy = cfg.higherIsBetter ? base - head : head - base;
+	if (worseBy <= 0) return { regressed: false }; // same or better — never a regression
+
+	// Catastrophe floor (score): head below the floor AND worse than base. Gated
+	// on `worseBy > 0` so a site parked below the floor doesn't file an issue
+	// every single night even on a no-op or improving day.
 	if (cfg.floor != null && head < cfg.floor) {
 		return { regressed: true, reason: `below floor ${cfg.floor}` };
 	}
-
-	// Worse-by amount, in the metric's native direction.
-	const worseBy = cfg.higherIsBetter ? base - head : head - base;
-	if (worseBy <= 0) return { regressed: false }; // same or better
 
 	const noise = cfg.noiseAbs ?? 0;
 	const tol = cfg.tolAbs != null ? cfg.tolAbs : (cfg.tolPct ?? 0) * Math.abs(base);

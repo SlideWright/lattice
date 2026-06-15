@@ -57,6 +57,10 @@ describe('metricsFromLhr', () => {
 		expect(m['total-blocking-time']).toBe(100);
 		expect(m['script-size']).toBe(1500000);
 	});
+	it('returns null script-size when resource-summary is absent (not 0)', () => {
+		const m = metricsFromLhr({ categories: { performance: { score: 0.9 } }, audits: {} });
+		expect(m['script-size']).toBeNull();
+	});
 });
 
 describe('evaluate', () => {
@@ -83,9 +87,16 @@ describe('evaluate', () => {
 	it('ignores a score wobble within noise', () => {
 		expect(evaluate('performance-score', 0.95, 0.94).regressed).toBe(false);
 	});
-	it('flags a head score under the catastrophe floor regardless of delta', () => {
-		// base also low, so delta is tiny — floor still trips.
+	it('flags a head score under the catastrophe floor when it got worse', () => {
 		expect(evaluate('performance-score', 0.52, 0.48).regressed).toBe(true);
+	});
+	it('does NOT fire the floor on an improving (or no-op) day below the floor', () => {
+		expect(evaluate('performance-score', 0.4, 0.45).regressed).toBe(false); // improved
+		expect(evaluate('performance-score', 0.45, 0.45).regressed).toBe(false); // no-op
+	});
+	it('treats a missing metric as skip, not a 0-valued improvement/regression', () => {
+		expect(evaluate('script-size', 1600000, null).regressed).toBe(false); // head missing
+		expect(evaluate('script-size', null, 1600000).regressed).toBe(false); // base missing
 	});
 	it('flags CLS worse by more than 0.05 absolute', () => {
 		expect(evaluate('cumulative-layout-shift', 0.0, 0.1).regressed).toBe(true);
