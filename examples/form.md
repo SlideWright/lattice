@@ -2,19 +2,19 @@
 marp: true
 theme: cuoio
 paginate: true
-header: "Lattice · Islands"
-footer: "SlideWright · Islands"
+header: "Lattice · Form"
+footer: "SlideWright · Form"
 meta: "Q2 FY26 · Board Pack | Owner · S. Aden"
-islands: on
+form: standard
 ---
 
 <!-- _class: title silent -->
 
-# Slides as Islands
+# Slides as Form
 
 `Composition Model · the deck-wide toggle`
 
-A slide is a sea plus a fixed set of berths. One front-matter flag — `islands: true` — enables the whole model across the deck: the masthead band, a populated bay, a footer progress rail, and section watermarks. Palette-blind, across every render path.
+A slide is a Frame plus a fixed set of Cells. One front-matter flag — `form: standard` — enables the whole model across the deck: the masthead band, a populated bay, a footer progress rail, and section watermarks. Palette-blind, across every render path.
 
 ---
 
@@ -32,7 +32,7 @@ A slide is a sea plus a fixed set of berths. One front-matter flag — `islands:
 
 ## One flag turns the model on for the whole deck.
 
-`islands: true` resolves to the `islands` class on every eligible slide — so the band, bay, and rail just appear. Bookends (this section's divider, the title, the closing) are skipped automatically; a single slide can opt out with `no-islands`.
+`form: standard` resolves to the `form` class on every eligible slide — so the band, bay, and rail just appear. Bookends (this section's divider, the title, the closing) are skipped automatically; a single slide can opt out with `no-form`.
 
 ---
 
@@ -63,7 +63,7 @@ A slide is a sea plus a fixed set of berths. One front-matter flag — `islands:
 
 ## The flag resolves identically across every render path.
 
-`The toggle becomes the islands class in marp-cli and the emulator alike — one eligibility helper, one source.`
+`The toggle becomes the form class in marp-cli and the emulator alike — one eligibility helper, one source.`
 
 1. 1
    - front-matter flag
@@ -78,9 +78,9 @@ A slide is a sea plus a fixed set of berths. One front-matter flag — `islands:
 
 `Takeaway · The Bay`
 
-## The bay docks the meta and status islands.
+## The bay docks the meta and status Tiles.
 
-> Key insight: the `meta:` line and a status chip (this slide is `wip`) ride the bay — no per-slide `islands` token needed, the deck flag supplies it.
+> Key insight: the `meta:` line and a status chip (this slide is `wip`) ride the bay — no per-slide `form` token needed, the deck flag supplies it.
 
 ---
 
@@ -98,7 +98,7 @@ A slide is a sea plus a fixed set of berths. One front-matter flag — `islands:
 
 ## The footer orients the audience.
 
-The progress island reads the deck's `divider` slides as sections and stamps a dot-rail into the footer centre of every islands slide — current section elongated and accented. The watermark echoes the section number behind this text.
+The progress Tile reads the deck's `divider` slides as sections and stamps a dot-rail into the footer centre of every Form slide — current section elongated and accented. The watermark echoes the section number behind this text.
 
 ---
 

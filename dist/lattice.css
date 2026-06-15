@@ -178,12 +178,12 @@
    * the berths one coordinate system instead of four coincidences. Values
    * are the historical literals verbatim — this is a pixel-identical rename
    * (Phase 0 of the islands model; see engineering/decisions/2026-06-11-islands.md).
-   *   --isl-inset-x     horizontal inset of every edge berth
-   *   --isl-inset-y     vertical inset of the top/bottom berths
-   *   --isl-page-reserve footer-right gap that reserves the pagination berth */
-  --isl-inset-x:      2.34375cqi;
-  --isl-inset-y:      1.875cqi;
-  --isl-page-reserve: 6.25cqi;
+   *   --frame-inset-x     horizontal inset of every edge berth
+   *   --frame-inset-y     vertical inset of the top/bottom berths
+   *   --frame-page-reserve footer-right gap that reserves the pagination berth */
+  --frame-inset-x:      2.34375cqi;
+  --frame-inset-y:      1.875cqi;
+  --frame-page-reserve: 6.25cqi;
 
   /* ── Marp chrome mappings ── */
   --marp-slide-pagination-color:     var(--text-muted);
@@ -816,8 +816,8 @@ section footer > p {
    defaults that don't match our footer. */
 section::after {
   position: absolute !important;
-  bottom: var(--isl-inset-y) !important;
-  right: var(--isl-inset-x) !important;
+  bottom: var(--frame-inset-y) !important;
+  right: var(--frame-inset-x) !important;
   padding: 0 !important;
   margin: 0 !important;
   font-family: var(--font-mono) !important;
@@ -10369,13 +10369,13 @@ section img.emoji {
   margin:0 0.05em;
 }
 section header {
-  position:absolute; top:var(--isl-inset-y); left:var(--isl-inset-x); right:var(--isl-inset-x);
+  position:absolute; top:var(--frame-inset-y); left:var(--frame-inset-x); right:var(--frame-inset-x);
   font-family:var(--font-label); font-size:var(--fs-meta); font-weight:500;
   letter-spacing:0.10em; text-transform:uppercase; text-align:left;
   color:var(--marp-slide-header-color, var(--text-muted));
 }
 section footer {
-  position:absolute; bottom:var(--isl-inset-y); left:var(--isl-inset-x); right:var(--isl-page-reserve);
+  position:absolute; bottom:var(--frame-inset-y); left:var(--frame-inset-x); right:var(--frame-page-reserve);
   font-family:var(--font-label); font-size:var(--fs-meta); font-weight:500;
   line-height:1; letter-spacing:0.06em; text-align:left;
   color:var(--marp-slide-footer-color, var(--text-muted));
@@ -11076,8 +11076,8 @@ section.overflow {
  * ──────────────────────────────────────────────────────────────────── */
 img.deck-logo {
   position: absolute;
-  top: var(--isl-inset-y);
-  right: var(--isl-inset-x);
+  top: var(--frame-inset-y);
+  right: var(--frame-inset-x);
   width: 6.25cqi;
   height: 4cqi;
   object-fit: contain;
@@ -13331,8 +13331,8 @@ section.confidential::before {
 
 /* ── ISLANDS · masthead band (opt-in via `islands`) ─────────────────────
  * The mastheadLift transform (lib/core/masthead-lift.js + the registry)
- * wraps the eyebrow + title into `.isl-masthead` so the slide's masthead is
- * a named band with a reserved right bay — `.m-bay` is where the meta / logo
+ * wraps the eyebrow + title into `.cell-masthead` so the slide's masthead is
+ * a named band with a reserved right bay — `.masthead-bay` is where the meta / logo
  * / status islands land in Phase 2. The slide body stays a DIRECT child of
  * <section>, so every component's `section.X > …` selectors still compose.
  * The eyebrow and title keep their normal element-level styling (the
@@ -13353,7 +13353,7 @@ section.confidential::before {
  *                     stops anything escaping the slide.)
  *   · per-island    — the masthead + bay clip their own overflow, so a long
  *                     title or meta line is cut at its berth, never bled. */
-section.islands {
+section.form {
   /* The masthead band is an absolutely-positioned berth, NOT in content flow,
    * so the section's content box — and therefore the cqi/cqh basis every
    * component sizes itself against — equals the REAL body area between the band
@@ -13361,11 +13361,11 @@ section.islands {
    * left it inside the content box, so a component sized to `section − footer`
    * and overran the body by ~the band's height (the list-criteria/actors/roadmap
    * pile-ups). See 2026-06-13-islands-sketch-density-collisions.md (Defect 1). */
-  --isl-masthead-h: calc(var(--_sec-1cqi, 1cqi) * 11);
-  --isl-frame-x: calc(var(--_sec-1cqi, 1cqi) * 5);
-  --isl-frame-y: calc(var(--_sec-1cqi, 1cqi) * 6.875);
+  --masthead-h: calc(var(--_sec-1cqi, 1cqi) * 11);
+  --frame-x: calc(var(--_sec-1cqi, 1cqi) * 5);
+  --frame-y: calc(var(--_sec-1cqi, 1cqi) * 6.875);
   position: relative;
-  padding-top: calc(var(--isl-frame-y) + var(--isl-masthead-h) + var(--sp-md));
+  padding-top: calc(var(--frame-y) + var(--masthead-h) + var(--sp-md));
   padding-bottom: calc(var(--_sec-1cqi, 1cqi) * 8.75);
   /* Own stacking context so the z-behind watermark island paints ABOVE the
    * canvas but BELOW the (non-positioned) body content. */
@@ -13380,30 +13380,30 @@ section.islands {
    * slides, so it's deferred to M2 with the wrapper. */
   overflow: hidden;
 }
-section.islands .isl-masthead {
+section.form .cell-masthead {
   position: absolute;
-  top: var(--isl-frame-y);
-  left: var(--isl-frame-x);
-  right: var(--isl-frame-x);
-  height: var(--isl-masthead-h);
+  top: var(--frame-y);
+  left: var(--frame-x);
+  right: var(--frame-x);
+  height: var(--masthead-h);
   display: grid;
-  grid-template-columns: [m-stage] 1fr [m-bay] auto;
+  grid-template-columns: [masthead-lede] 1fr [masthead-bay] auto;
   column-gap: var(--sp-lg);
   align-items: start;
   padding-bottom: var(--sp-md);
   border-bottom: 1px solid var(--border);
   overflow: hidden;
 }
-section.islands .isl-masthead .m-bay { overflow: hidden; }
-section.islands .isl-masthead .m-stage { min-width: 0; grid-column: m-stage; }
-section.islands .isl-masthead .m-bay   { grid-column: m-bay; }
+section.form .cell-masthead .masthead-bay { overflow: hidden; }
+section.form .cell-masthead .masthead-lede { min-width: 0; grid-column: masthead-lede; }
+section.form .cell-masthead .masthead-bay   { grid-column: masthead-bay; }
 
 /* ── ISLANDS · masthead-bay islands — meta · status (Phase 2) ───────────
  * The reserved bay stacks its islands top-down, right-aligned: the meta
  * island (front-matter `meta:`, injected by applyMastheadMetaToHtml across
  * all three render paths) on top, the status chip beneath. Both are
  * palette-blind. See engineering/decisions/2026-06-11-islands.md. */
-section.islands .isl-masthead .m-bay {
+section.form .cell-masthead .masthead-bay {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
@@ -13412,7 +13412,7 @@ section.islands .isl-masthead .m-bay {
 }
 
 /* meta island — date · owner · classification */
-.isl-meta {
+.tile-meta {
   font-family: var(--font-label);
   font-size: var(--fs-meta);
   font-weight: 500;
@@ -13425,16 +13425,16 @@ section.islands .isl-masthead .m-bay {
 /* status island — under `islands`, the label-type state markers
  * (confidential · wip · draft) dock in the bay as a clean chip, REPLACING
  * their default corner stamp / full-width band / canvas watermark. The
- * more-specific `section.islands.<state>` selector wins over the base
+ * more-specific `section.form.<state>` selector wins over the base
  * `section.<state>::before` rule, so the default treatment is suppressed
  * without !important. (redacted / tbd / archived keep their stronger
  * full-canvas overlays — those are deliberate "do not circulate" signals,
  * not a quiet bay marker.) */
-section.islands.confidential::before,
-section.islands.wip::before,
-section.islands.draft::before { content: none; background: none; }
+section.form.confidential::before,
+section.form.wip::before,
+section.form.draft::before { content: none; background: none; }
 
-section.islands:is(.confidential, .wip, .draft) .m-bay::after {
+section.form:is(.confidential, .wip, .draft) .masthead-bay::after {
   display: inline-flex;
   align-items: center;
   font-family: var(--font-label);
@@ -13448,14 +13448,14 @@ section.islands:is(.confidential, .wip, .draft) .m-bay::after {
   background: color-mix(in srgb, var(--accent) 12%, transparent);
   border: 1px solid color-mix(in srgb, var(--accent) 32%, transparent);
 }
-section.islands.confidential .m-bay::after { content: 'Confidential'; }
-section.islands.wip .m-bay::after {
+section.form.confidential .masthead-bay::after { content: 'Confidential'; }
+section.form.wip .masthead-bay::after {
   content: 'WIP';
   color: var(--warn);
   background: color-mix(in srgb, var(--warn) 12%, transparent);
   border-color: color-mix(in srgb, var(--warn) 32%, transparent);
 }
-section.islands.draft .m-bay::after {
+section.form.draft .masthead-bay::after {
   content: 'Draft';
   color: var(--warn);
   background: color-mix(in srgb, var(--warn) 12%, transparent);
@@ -13469,9 +13469,9 @@ section.islands.draft .m-bay::after {
  * title. Derives orientation from `divider` slides; absent without them.
  * Opt out with `no-progress`; `silent` suppresses it with the rest of the
  * chrome. */
-section.islands .isl-progress {
+section.form .tile-progress {
   position: absolute;
-  bottom: var(--isl-inset-y);
+  bottom: var(--frame-inset-y);
   left: 50%;
   transform: translateX(-50%);
   z-index: 3;
@@ -13480,7 +13480,7 @@ section.islands .isl-progress {
   gap: var(--sp-sm);
   pointer-events: none;
 }
-.isl-progress .seg {
+.tile-progress .seg {
   font-family: var(--font-label);
   font-size: var(--fs-meta);
   font-weight: 500;
@@ -13495,13 +13495,13 @@ section.islands .isl-progress {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.isl-progress .dot {
+.tile-progress .dot {
   width: 0.85cqi;
   height: 0.85cqi;
   border-radius: 50%;
   background: color-mix(in srgb, var(--text-muted) 50%, transparent);
 }
-.isl-progress .dot.on {
+.tile-progress .dot.on {
   width: 2.6cqi;
   border-radius: 999px;
   background: var(--accent);
@@ -13512,7 +13512,7 @@ section.islands .isl-progress {
  * watermark` slides. z-index:-1 keeps it ABOVE the canvas but BEHIND the
  * (non-positioned) body content; the section's overflow:hidden clips the
  * overscan. Palette-blind; lifts to the on-dark ghost on dark canvases. */
-section.islands .isl-watermark {
+section.form .tile-watermark {
   position: absolute;
   right: -2cqi;
   bottom: -9cqi;
@@ -13526,8 +13526,8 @@ section.islands .isl-watermark {
   pointer-events: none;
   user-select: none;
 }
-section.islands.dark .isl-watermark,
-section.dark.islands .isl-watermark { color: var(--on-dark-watermark); }
+section.form.dark .tile-watermark,
+section.dark.form .tile-watermark { color: var(--on-dark-watermark); }
 
 /* === lib/contracts/inventory/inventory.layouts.css === */
 /* Inventory contract — conforming Layouts (Form).

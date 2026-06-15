@@ -1155,7 +1155,7 @@ function applyHighlighting(html) {
 
 const highlightedSlides = slidesWithNotes.map(s => applyHighlighting(s));
 
-// Deck-logo (`logo:`). The islands toggle + the masthead-meta / progress-rail /
+// Deck-logo (`logo:`). The Form toggle + the masthead-meta / progress-rail /
 // watermark injectors already ran inside engine.render (they match on section
 // class). deck-logo is the ONE injector that keys off `data-marpit-slide` — which
 // engineSlides() stamps AFTER engine.render — so the engine's own logo pass

@@ -154,55 +154,55 @@ describe('marp-plugins', () => {
     assert.deepEqual(cls, ['title'], `unknown finish should add nothing; got [${cls.join(', ')}]`);
   });
 
-  // ── applyMastheadMetaToHtml (islands meta island, Phase 2) ─────────────
+  // ── applyMastheadMetaToHtml (Form meta Tile, Phase 2) ─────────────
 
-  test('applyMastheadMetaToHtml: fills the reserved .m-bay of islands sections', () => {
-    const html = '<section class="content islands"><div class="isl-masthead"><div class="m-stage"><h2>T</h2></div><div class="m-bay"></div></div></section>';
+  test('applyMastheadMetaToHtml: fills the reserved .masthead-bay of form sections', () => {
+    const html = '<section class="content form"><div class="cell-masthead"><div class="masthead-lede"><h2>T</h2></div><div class="masthead-bay"></div></div></section>';
     const md = '---\nmeta: "Q2 FY26 · Board Pack"\n---\n';
     const out = plugins.applyMastheadMetaToHtml(html, md);
-    assert.match(out, /<div class="m-bay"><div class="isl-meta">Q2 FY26 · Board Pack<\/div><\/div>/);
+    assert.match(out, /<div class="masthead-bay"><div class="tile-meta">Q2 FY26 · Board Pack<\/div><\/div>/);
   });
 
   test('applyMastheadMetaToHtml: a `|` splits into stacked lines', () => {
-    const html = '<section class="islands"><div class="m-bay"></div></section>';
+    const html = '<section class="form"><div class="masthead-bay"></div></section>';
     const out = plugins.applyMastheadMetaToHtml(html, '---\nmeta: "A | B"\n---\n');
-    assert.match(out, /<div class="isl-meta">A<br>B<\/div>/);
+    assert.match(out, /<div class="tile-meta">A<br>B<\/div>/);
   });
 
   test('applyMastheadMetaToHtml: no-op without `meta:` front matter', () => {
-    const html = '<section class="islands"><div class="m-bay"></div></section>';
+    const html = '<section class="form"><div class="masthead-bay"></div></section>';
     assert.equal(plugins.applyMastheadMetaToHtml(html, '---\ntheme: cuoio\n---\n'), html);
   });
 
   test('applyMastheadMetaToHtml: idempotent — only an EMPTY bay matches', () => {
-    const html = '<section class="islands"><div class="m-bay"></div></section>';
+    const html = '<section class="form"><div class="masthead-bay"></div></section>';
     const md = '---\nmeta: X\n---\n';
     const once = plugins.applyMastheadMetaToHtml(html, md);
     assert.equal(plugins.applyMastheadMetaToHtml(once, md), once);
   });
 
   test('applyMastheadMetaToHtml: escapes HTML in the meta value', () => {
-    const html = '<section class="islands"><div class="m-bay"></div></section>';
+    const html = '<section class="form"><div class="masthead-bay"></div></section>';
     const out = plugins.applyMastheadMetaToHtml(html, '---\nmeta: "<b> & x"\n---\n');
     assert.match(out, /&lt;b&gt; &amp; x/);
   });
 
-  // ── applyProgressRailToHtml (islands progress island, Phase 2b) ────────
+  // ── applyProgressRailToHtml (Form progress Tile, Phase 2b) ────────
 
   const deck = (sections) => sections.join('');
   const sec = (cls, inner = '') => `<section class="${cls}" data-marpit-slide="x">${inner}</section>`;
 
-  test('applyProgressRailToHtml: injects a dot-rail into islands slides within a section', () => {
+  test('applyProgressRailToHtml: injects a dot-rail into form slides within a section', () => {
     const html = deck([
       sec('divider', '<h2>The Lift</h2>'),
-      sec('content islands'),
+      sec('content form'),
       sec('divider', '<h2>The Bay</h2>'),
-      sec('content islands'),
+      sec('content form'),
     ]);
     const out = plugins.applyProgressRailToHtml(html);
-    const rails = [...out.matchAll(/<nav class="isl-progress"[^>]*>([\s\S]*?)<\/nav>/g)];
-    assert.equal(rails.length, 2, 'one rail per islands slide');
-    // two sections → two dots each; first islands slide marks dot 1, second marks dot 2
+    const rails = [...out.matchAll(/<nav class="tile-progress"[^>]*>([\s\S]*?)<\/nav>/g)];
+    assert.equal(rails.length, 2, 'one rail per form slide');
+    // two sections → two dots each; first form slide marks dot 1, second marks dot 2
     assert.equal((rails[0][1].match(/class="dot/g) || []).length, 2);
     assert.match(rails[0][1], /<span class="seg">The Lift<\/span>/);
     assert.match(rails[0][1], /<span class="dot on"><\/span><span class="dot"><\/span>/);
@@ -213,113 +213,113 @@ describe('marp-plugins', () => {
   test('applyProgressRailToHtml: rail label prefers the divider eyebrow over its heading', () => {
     const html = deck([
       sec('divider', '<p><code>Section 01</code></p><h2>A very long editorial heading sentence</h2>'),
-      sec('content islands'),
+      sec('content form'),
     ]);
     const seg = plugins.applyProgressRailToHtml(html).match(/<span class="seg">([^<]*)<\/span>/);
     assert.equal(seg[1], 'Section 01');
   });
 
   test('applyProgressRailToHtml: no dividers → no-op (nothing to orient against)', () => {
-    const html = deck([sec('content islands'), sec('content islands')]);
+    const html = deck([sec('content form'), sec('content form')]);
     assert.equal(plugins.applyProgressRailToHtml(html), html);
   });
 
-  test('applyProgressRailToHtml: divider slides and non-islands slides get no rail', () => {
+  test('applyProgressRailToHtml: divider slides and non-form slides get no rail', () => {
     const html = deck([sec('divider', '<h2>S</h2>'), sec('content')]);
-    assert.ok(!/isl-progress/.test(plugins.applyProgressRailToHtml(html)));
+    assert.ok(!/tile-progress/.test(plugins.applyProgressRailToHtml(html)));
   });
 
   test('applyProgressRailToHtml: `no-progress` and `silent` suppress the rail', () => {
     const html = deck([
       sec('divider', '<h2>S</h2>'),
-      sec('content islands no-progress'),
-      sec('content islands silent'),
+      sec('content form no-progress'),
+      sec('content form silent'),
     ]);
-    assert.ok(!/isl-progress/.test(plugins.applyProgressRailToHtml(html)));
+    assert.ok(!/tile-progress/.test(plugins.applyProgressRailToHtml(html)));
   });
 
   test('applyProgressRailToHtml: idempotent', () => {
-    const html = deck([sec('divider', '<h2>S</h2>'), sec('content islands')]);
+    const html = deck([sec('divider', '<h2>S</h2>'), sec('content form')]);
     const once = plugins.applyProgressRailToHtml(html);
     assert.equal(plugins.applyProgressRailToHtml(once), once);
   });
 
-  // ── applyWatermarkToHtml (islands watermark island, Phase 2c) ──────────
+  // ── applyWatermarkToHtml (Form watermark Tile, Phase 2c) ──────────
 
-  test('applyWatermarkToHtml: injects the 2-digit section number on islands+watermark slides', () => {
+  test('applyWatermarkToHtml: injects the 2-digit section number on form+watermark slides', () => {
     const html = deck([
       sec('divider', '<h2>One</h2>'),
-      sec('content islands watermark'),
+      sec('content form watermark'),
       sec('divider', '<h2>Two</h2>'),
-      sec('content islands watermark'),
+      sec('content form watermark'),
     ]);
     const out = plugins.applyWatermarkToHtml(html);
-    const wms = [...out.matchAll(/<div class="isl-watermark"[^>]*>(\d+)<\/div>/g)].map((m) => m[1]);
+    const wms = [...out.matchAll(/<div class="tile-watermark"[^>]*>(\d+)<\/div>/g)].map((m) => m[1]);
     assert.deepEqual(wms, ['01', '02']);
   });
 
-  test('applyWatermarkToHtml: only fires with BOTH islands and watermark', () => {
-    const html = deck([sec('divider', '<h2>S</h2>'), sec('content islands'), sec('content watermark')]);
-    assert.ok(!/isl-watermark/.test(plugins.applyWatermarkToHtml(html)));
+  test('applyWatermarkToHtml: only fires with BOTH form and watermark', () => {
+    const html = deck([sec('divider', '<h2>S</h2>'), sec('content form'), sec('content watermark')]);
+    assert.ok(!/tile-watermark/.test(plugins.applyWatermarkToHtml(html)));
   });
 
   test('applyWatermarkToHtml: no dividers → no-op', () => {
-    const html = deck([sec('content islands watermark')]);
+    const html = deck([sec('content form watermark')]);
     assert.equal(plugins.applyWatermarkToHtml(html), html);
   });
 
   test('applyWatermarkToHtml: idempotent', () => {
-    const html = deck([sec('divider', '<h2>S</h2>'), sec('content islands watermark')]);
+    const html = deck([sec('divider', '<h2>S</h2>'), sec('content form watermark')]);
     const once = plugins.applyWatermarkToHtml(html);
     assert.equal(plugins.applyWatermarkToHtml(once), once);
   });
 
-  // ── islands deck-wide toggle (`islands: off | on | minimal`) ───────────
+  // ── Form deck-wide toggle (`form: off | standard | minimal`) ───────────
 
-  test('readIslandsMode: on / true / yes → on; minimal → minimal; off / false / missing → off', () => {
-    for (const v of ['true', 'on', 'yes', 'ON', '"on"']) {
-      assert.equal(plugins.readIslandsMode(`---\nislands: ${v}\n---\n`), 'on', v);
+  test('readFormMode: standard / on / true / yes → standard; minimal → minimal; off / false / missing → off', () => {
+    for (const v of ['standard', 'true', 'on', 'yes', 'ON', '"standard"']) {
+      assert.equal(plugins.readFormMode(`---\nform: ${v}\n---\n`), 'standard', v);
     }
-    assert.equal(plugins.readIslandsMode('---\nislands: minimal\n---\n'), 'minimal');
+    assert.equal(plugins.readFormMode('---\nform: minimal\n---\n'), 'minimal');
     for (const v of ['false', 'off', 'no']) {
-      assert.equal(plugins.readIslandsMode(`---\nislands: ${v}\n---\n`), 'off', v);
+      assert.equal(plugins.readFormMode(`---\nform: ${v}\n---\n`), 'off', v);
     }
-    assert.equal(plugins.readIslandsMode('---\ntheme: cuoio\n---\n'), 'off');
+    assert.equal(plugins.readFormMode('---\ntheme: cuoio\n---\n'), 'off');
   });
 
-  test('islandsToggleClass: `on` adds islands to content; skips bookends / sovereign / incompatible', () => {
-    assert.equal(plugins.islandsToggleClass('content', 'on'), 'content islands');
-    assert.equal(plugins.islandsToggleClass('cards-grid compact', 'on'), 'cards-grid compact islands');
-    assert.equal(plugins.islandsToggleClass('', 'on'), 'islands'); // bare slide
+  test('formToggleClass: `standard` adds form to content; skips bookends / sovereign / incompatible', () => {
+    assert.equal(plugins.formToggleClass('content', 'standard'), 'content form');
+    assert.equal(plugins.formToggleClass('cards-grid compact', 'standard'), 'cards-grid compact form');
+    assert.equal(plugins.formToggleClass('', 'standard'), 'form'); // bare slide
     for (const skip of ['title', 'divider', 'closing', 'math', 'compare-code', 'split-panel', 'image', 'featured']) {
-      assert.equal(plugins.islandsToggleClass(skip, 'on'), skip, `should skip ${skip}`);
+      assert.equal(plugins.formToggleClass(skip, 'standard'), skip, `should skip ${skip}`);
     }
   });
 
-  test('islandsToggleClass: `minimal` adds islands + no-progress; `off` is a no-op', () => {
-    assert.equal(plugins.islandsToggleClass('content', 'minimal'), 'content islands no-progress');
-    assert.equal(plugins.islandsToggleClass('divider', 'minimal'), 'divider'); // still skips bookends
-    assert.equal(plugins.islandsToggleClass('content', 'off'), 'content');
+  test('formToggleClass: `minimal` adds form + no-progress; `off` is a no-op', () => {
+    assert.equal(plugins.formToggleClass('content', 'minimal'), 'content form no-progress');
+    assert.equal(plugins.formToggleClass('divider', 'minimal'), 'divider'); // still skips bookends
+    assert.equal(plugins.formToggleClass('content', 'off'), 'content');
   });
 
-  test('islandsToggleClass: respects explicit islands / no-islands; idempotent', () => {
-    assert.equal(plugins.islandsToggleClass('content islands', 'on'), 'content islands');
-    assert.equal(plugins.islandsToggleClass('content no-islands', 'on'), 'content no-islands');
-    assert.equal(plugins.islandsToggleClass(plugins.islandsToggleClass('content', 'on'), 'on'), 'content islands');
+  test('formToggleClass: respects explicit form / no-form; idempotent', () => {
+    assert.equal(plugins.formToggleClass('content form', 'standard'), 'content form');
+    assert.equal(plugins.formToggleClass('content no-form', 'standard'), 'content no-form');
+    assert.equal(plugins.formToggleClass(plugins.formToggleClass('content', 'standard'), 'standard'), 'content form');
   });
 
-  test('applyIslandsToggleToHtml: off no-ops; on/minimal rewrite eligible sections', () => {
+  test('applyFormToggleToHtml: off no-ops; standard/minimal rewrite eligible sections', () => {
     const html =
       '<section class="content" data-marpit-slide="1"></section>' +
       '<section class="divider" data-marpit-slide="2"></section>' +
       '<section data-marpit-slide="3"></section>';
-    assert.equal(plugins.applyIslandsToggleToHtml(html, '---\nislands: off\n---\n'), html, 'no-op when off');
-    const on = plugins.applyIslandsToggleToHtml(html, '---\nislands: on\n---\n');
-    assert.match(on, /<section class="content islands" data-marpit-slide="1">/);
-    assert.match(on, /<section class="divider" data-marpit-slide="2">/, 'divider skipped');
-    assert.match(on, /<section class="islands" data-marpit-slide="3">/, 'bare slide gets a class attr');
-    const min = plugins.applyIslandsToggleToHtml(html, '---\nislands: minimal\n---\n');
-    assert.match(min, /<section class="content islands no-progress" data-marpit-slide="1">/);
+    assert.equal(plugins.applyFormToggleToHtml(html, '---\nform: off\n---\n'), html, 'no-op when off');
+    const std = plugins.applyFormToggleToHtml(html, '---\nform: standard\n---\n');
+    assert.match(std, /<section class="content form" data-marpit-slide="1">/);
+    assert.match(std, /<section class="divider" data-marpit-slide="2">/, 'divider skipped');
+    assert.match(std, /<section class="form" data-marpit-slide="3">/, 'bare slide gets a class attr');
+    const min = plugins.applyFormToggleToHtml(html, '---\nform: minimal\n---\n');
+    assert.match(min, /<section class="content form no-progress" data-marpit-slide="1">/);
   });
 
   // ── applyDeckLogoToHtml ────────────────────────────────────────────────
