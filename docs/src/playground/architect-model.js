@@ -604,6 +604,9 @@ export function createArchitectModel({ getSettings } = {}) {
     // Snapshot/restore the stored key so the settings UI can offer an Undo on
     // Disconnect (mirroring the deck-deletion guardrail) without re-running OAuth.
     openRouterKeySnapshot() { return openrouter.keySnapshot(); },
+    // The connected key, for sibling adapters that reuse the same OAuth connection
+    // (e.g. the VoiceModel's openrouter-tts rung). Null when not connected.
+    openRouterKey() { return openrouter.keySnapshot(); },
     restoreOpenRouter(key) { openrouter.restore(key); emitChange(); },
     disconnectOpenRouter() { openrouter.disconnect(); emitChange(); },
     // WebLLM opt-in — the deliberate "summon the Architect" (~1GB, WebGPU) download.

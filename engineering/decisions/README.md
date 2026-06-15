@@ -217,3 +217,21 @@ it is load-bearing.
   `cancelled` → failure. Fix: rebase only at the moments that matter (conflict +
   the two merge-time checkpoints), keeping the watch as a detector; and treat a
   `cancelled` tier as non-failing. **Status: design-decision.**
+- [2026-06-14-read-aloud-kokoro.md](2026-06-14-read-aloud-kokoro.md) —
+  design model for a free/near-free, boardroom-quality read-aloud voice. Bans
+  the browser `speechSynthesis` (per-device lottery, never Siri — kept as a
+  dev/test stand-in only) in favor of **one consistent voice** via a `VoiceModel`
+  **voice ladder** (twin of `architect-model.js`). Two complementary production
+  rungs: **`openrouter-tts`** (primary — OpenRouter shipped a real
+  `POST /api/v1/audio/speech` endpoint in 2026 with gpt-4o-mini-tts / Gemini
+  Flash TTS; reuses the app's existing **browser OAuth key + CORS**, so no new
+  infra, **$0 to the project**, ~0.6¢/slide on the user's own credit) →
+  **`kokoro-wasm`** (Kokoro-82M ONNX in-browser for the no-account/offline/
+  privacy-max case — $0, ships ~80–330 MB weights) → `speechSynthesis` (test
+  only) → `silent` floor. Corrects an earlier draft that wrongly called
+  OpenRouter a dead end (it had no TTS *then*). First surface: **Practice/
+  Rehearsal mode**, speaking the slide's speaker note (`notes-core.js`) synced to
+  the existing dwell targets + pause beats; second: the **Tauri authoring
+  preview** (gains a native Kokoro rung later). Includes a real cost table.
+  **Status: design** — architecture settled; build scope (OpenRouter-first vs.
+  full ladder) is the open call.

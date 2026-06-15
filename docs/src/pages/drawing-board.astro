@@ -524,6 +524,7 @@ const dbData = JSON.stringify({
 			import { createModelSettings } from '../playground/drawing-board-settings.js';
 			import { createConfigPanel } from '../playground/deck-config.js';
 			import { createCoachConsole } from '../playground/coach-console.js';
+			import { createVoiceModel } from '../playground/voice-model.js';
 			import { getPref } from '../playground/drawing-board-prefs.js';
 			const data = JSON.parse(document.getElementById('db-data').textContent);
 
@@ -539,12 +540,19 @@ const dbData = JSON.stringify({
 			});
 			window.__dbModel = model;
 
+			// The read-aloud voice ladder — created once and shared by Practice and the
+			// Settings "Voice" tab (so prefs, the loaded Kokoro worker, and the download
+			// stay in sync). Reuses the architect's OpenRouter key for the hosted rung.
+			const voice = createVoiceModel({ getOpenRouterKey: () => (model.openRouterKey ? model.openRouterKey() : null) });
+			window.__dbVoice = voice;
+
 			// Model settings (Slice 8): the settings chip shows the live tier; the popover
 			// toggles on-device AI, downloads a tier, and removes the cached weights.
 			const settings = createModelSettings({
 				host: document.getElementById('db-settings-pop'),
 				trigger: document.getElementById('db-model-chip'),
 				model,
+				voice,
 				isOpen: () => { const d = document.getElementById('db-settings-drawer'); return !!d && d.classList.contains('is-open'); },
 				onChange: () => { if (window.__dbChat) window.__dbChat.reload(); if (window.__dbSyncConverse) window.__dbSyncConverse(); },
 			});
@@ -1132,6 +1140,18 @@ const dbData = JSON.stringify({
 				// Share the page's model ladder so a connected cloud/local tier tailors
 				// the rehearsal plan; absent one, the deterministic floor still runs.
 				model: window.__dbModel,
+				// Share the one voice model (also configured in Settings → Voice).
+				voice: window.__dbVoice,
+				// Mobile read-aloud (on-device is desktop-only) sends the user here to
+				// connect the cloud voice. Open the Settings drawer on its Voice tab.
+				openVoiceSettings: function () {
+					var drawer = document.getElementById('db-settings-drawer');
+					var isOpen = drawer && drawer.classList.contains('is-open');
+					if (!isOpen) { var chip = document.getElementById('db-model-chip'); if (chip) chip.click(); }
+					var toVoice = function () { if (window.__dbSettings && window.__dbSettings.openTab) window.__dbSettings.openTab('voice'); };
+					toVoice();
+					setTimeout(toVoice, 0); // land on Voice even after the drawer's onOpen selects Cloud
+				},
 			});
 			const openBtn = document.getElementById('db-practice-open');
 			if (openBtn) openBtn.addEventListener('click', () => practice.open());
