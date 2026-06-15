@@ -144,7 +144,6 @@
 
   /* ── Dark-panel ramp ──────────────────────────────────────────────── */
   --bg-warm-mid:   #002847;     /* divider panels (deep) — decorative     */
-  --bg-warm-light: #00558C;     /* accent panels (lighter) — decorative   */
   --code-text:     #CBD9E8;     /* code text on dark — 7.87:1 on bg-dark  */
 
   /* ── Spectrum ribbon — navy → bright blue → green ─────────────────── */

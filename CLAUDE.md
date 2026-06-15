@@ -196,9 +196,16 @@ independent set of eyes earns its latency.
 10. **Record every user-visible change in `CHANGELOG.md` `## Unreleased`
     as it lands.** Lead with `**Breaking:**` for anything that breaks an
     existing deck/consumer. Pure-internal work needs no entry. See `RELEASE.md`.
-11. **Use the old per-theme token names** (`--c1-light`, `--c-stroke`, …)
-    until the canonical universal-token flip. `tokens: universal` is a
-    Drawing-Board-only A/B. See `lib/base/base.docs.md`.
+11. **Themes declare the universal role-based names** (`--cat-*`, `--diagram-*`,
+    `--surface-inverse`, `--scheme-dark-*`, `--seq-*`) — the canonical flip is
+    **done**; the legacy per-theme names (`--c1-light`, `--c-stroke`, `--bg-dark`,
+    `--scale-*`, …) are **retired**, and a regression is blocked by the post-flip
+    lint (`tools/check-ownership.js` → `checkRetiredTokenNames`). Never name a
+    token for a colour-scheme (`-light`/`-dark` suffix) — that lives in the
+    `light-dark()` value; name it for its ROLE. The old→new map is
+    `lib/tokens/crosswalk.js` + ADR §7. In the Drawing Board `tokens: universal`
+    is the default; `tokens: current` is the legacy opt-in. See
+    `lib/base/base.docs.md`.
 12. **Avoid `:not(:has(...))` / `:is(:has(...), …)` in theme CSS** — silently
     broken in the Marp preview Chromium. See `engineering/gotchas.md`.
 13. **Commit messages are `area(scope): short summary`.** PRs follow

@@ -21,8 +21,8 @@
  *      defining choice; do not change it.
  *
  *   2. Card surfaces go LIGHTER than canvas — concrete logic. --bg-alt
- *      (#D5D5D2) is the lifted surface; --bg-warm-light (#A8A8A5) is
- *      a slightly darker fill for secondary surfaces. The usual
+ *      (#D5D5D2) is the lifted surface; --bg-warm-mid is a slightly
+ *      darker fill for secondary surfaces. The usual
  *      paper-card metaphor is inverted.
  *
  *   3. Black ink on gray canvas — pure black (#0F0F0E) reads at 9:1+,
@@ -99,7 +99,6 @@
 
   /* ── Dark-panel ramp ───────────────────────────────────────────────── */
   --bg-warm-mid:   #0F0F0F;
-  --bg-warm-light: #2A2A28;
   --code-text:     #D5D5D2;
 
   /* ── Spectrum — jet → mid-gray → oxblood pop ─────────────────────── */
