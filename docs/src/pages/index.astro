@@ -26,6 +26,8 @@ import RestyleShowcase from '../components/landing/RestyleShowcase.tsx';
 import { assetBase } from '../playground/asset-version.mjs';
 import { joinBase } from '../lib/base-url.mjs';
 import { primaryNav, GITHUB_URL, isCurrent } from '../lib/nav.mjs';
+import ResourceHints from '../components/site/ResourceHints.astro';
+import EngineWarm from '../components/site/EngineWarm.astro';
 
 // Astro evaluates this frontmatter at build time with cwd = docs/, so anchor
 // repo reads to cwd (import.meta.url is unreliable once the page is bundled).
@@ -150,6 +152,7 @@ const nextSteps = [
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<ResourceHints />
 		<title>Lattice — boardroom-quality slide decks from Markdown</title>
 		<meta
 			name="description"
@@ -296,5 +299,10 @@ const nextSteps = [
 		     live island needs to render (hero mount, field/restyle in view), so the
 		     static hero text paints without the ~554KB-gz bundle competing for the
 		     main thread. The engine URL is wired through the island data payloads. -->
+		<!-- Warm that same bundle into cache per the connection-first policy.
+		     allowEager: this is the funnel into the apps, so a fast link fetches it
+		     on idle (priming the jump to Playground/Drawing Board); a slow link or
+		     Save-Data stays hands-off. See src/lib/prefetch-engine.ts. -->
+		<EngineWarm allowEager />
 	</body>
 </html>

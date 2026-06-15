@@ -17,6 +17,7 @@ import '../styles/landing.css';
 import '../styles/playground.css';
 import '../styles/deck-config.css';
 import PaletteControls from '../components/site/PaletteControls.tsx';
+import ResourceHints from '../components/site/ResourceHints.astro';
 import PlaygroundApp from '../components/playground/PlaygroundApp.tsx';
 import { buildCatalog, buildLenses } from '../lib/families.mjs';
 import { joinBase } from '../lib/base-url.mjs';
@@ -111,6 +112,7 @@ const pgData = {
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<ResourceHints />
 		<title>Lattice playground — try it in the browser</title>
 		<meta name="description" content="Write Lattice Markdown and watch it render to boardroom slides live in your browser. Start from any component template." />
 		<link rel="icon" type="image/png" href={url('lattice-logo.png')} />

@@ -17,6 +17,8 @@ import '../styles/landing.css';
 import '../styles/components.css';
 import TopBar from '../components/TopBar.astro';
 import ComponentNav from '../components/ComponentNav.astro';
+import ResourceHints from '../components/site/ResourceHints.astro';
+import EngineWarm from '../components/site/EngineWarm.astro';
 import { joinBase } from '../lib/base-url.mjs';
 
 const { title, description, palettes = [], catalog = [], lenses = [], navGroups = [], current = null } = Astro.props;
@@ -30,6 +32,7 @@ const url = (p) => joinBase(base, p);
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<ResourceHints />
 		<title>{title}</title>
 		<meta name="description" content={description} />
 		<link rel="icon" type="image/png" href={url('lattice-logo.png')} />
@@ -101,5 +104,10 @@ const url = (p) => joinBase(base, p);
 				});
 			})();
 		</script>
+
+		<!-- Intent-gated engine warming: hovering/focusing an app link (the specimen
+		     pages all instantiate the engine) warms the bundle a beat before the
+		     jump. See src/lib/prefetch-engine.ts. -->
+		<EngineWarm />
 	</body>
 </html>

@@ -26,6 +26,7 @@ import { isPreviewDeploy as isPreviewDeployEnv } from '../lib/deploy-env.mjs';
 import { pickGrammarVariants } from '../playground/architect-knowledge.js';
 import DrawingBoardTopbar from '../components/drawing-board/DrawingBoardTopbar.tsx';
 import DrawingBoardExportMenu from '../components/drawing-board/DrawingBoardExportMenu.tsx';
+import ResourceHints from '../components/site/ResourceHints.astro';
 
 const docsRoot = process.cwd();
 const repoRoot = join(docsRoot, '..');
@@ -172,6 +173,7 @@ const dbData = JSON.stringify({
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<ResourceHints />
 		<title>The Drawing Board — author Lattice decks in your browser</title>
 		<meta
 			name="description"

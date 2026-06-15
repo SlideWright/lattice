@@ -13,6 +13,8 @@
 // index.astro; SectionHead is reused from the landing for heading consistency.
 import '../styles/landing.css';
 import PaletteControls from '../components/site/PaletteControls.tsx';
+import ResourceHints from '../components/site/ResourceHints.astro';
+import EngineWarm from '../components/site/EngineWarm.astro';
 import { SectionHead } from '../components/landing/sections.tsx';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -188,6 +190,7 @@ const WEAKNESSES = [
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<ResourceHints />
 		<title>Lattice vs. the alternatives — an honest comparison</title>
 		<meta
 			name="description"
@@ -692,5 +695,9 @@ const WEAKNESSES = [
 				}
 			})();
 		</script>
+
+		<!-- Intent-gated engine warming: hovering/focusing an app link warms the
+		     render bundle a beat before the jump. See src/lib/prefetch-engine.ts. -->
+		<EngineWarm />
 	</body>
 </html>

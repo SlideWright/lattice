@@ -17,6 +17,7 @@ import '../styles/landing.css';
 import '../styles/workbench.css';
 import '../styles/deck-config.css';
 import PaletteControls from '../components/site/PaletteControls.tsx';
+import ResourceHints from '../components/site/ResourceHints.astro';
 import WorkbenchApp from '../components/workbench/WorkbenchApp.tsx';
 import { joinBase } from '../lib/base-url.mjs';
 import { primaryNav, GITHUB_URL, isCurrent } from '../lib/nav.mjs';
@@ -62,6 +63,7 @@ const here = Astro.url.pathname;
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<ResourceHints />
 		<title>Lattice Workbench — craft a theme</title>
 		<meta name="description" content="Craft a Lattice palette from a handful of essential colours. The Workbench derives the full token contract, audits WCAG AA contrast, and renders it live on a specimen deck — copy or download a droppable theme." />
 		<link rel="icon" type="image/png" href={url('lattice-logo.png')} />
