@@ -14,7 +14,7 @@
  * how the image renders (cover / letterbox / matted). Per docs.
  *
  * Render paths:
- *   Marp CLI: [data-marpit-advanced-background-container] figure
+ *   the .lattice-bg figure fills the slot
  *   Emulator: .lattice-bg, .lattice-bg-right / -left / -full
  *
  * Text sizes are absolute (px). Canvas-scaled (--fs-*) tokens shrink
@@ -93,7 +93,7 @@ section.image:not(.full):not(.contain):not(.museum).left {
 }
 
 /* Emulator wrapper — positions the .lattice-bg div as the half-canvas
- * image slot. Marp CLI uses [data-marpit-advanced-background-container]
+ * image slot. the engine emits .lattice-bg-full
  * which marpit positions natively. */
 section.image .lattice-bg { position: absolute; z-index: -1; overflow: hidden; }
 section.image .lattice-bg img { width: 100%; height: 100%; display: block; }
@@ -116,9 +116,7 @@ section.image:not(.full):not(.contain):not(.museum) .image-asset {
   box-shadow: -1px 0 0 var(--border);
 }
 
-/* Legacy selectors still in place for parity until iteration 2 of the
- * Marp Adapter refactor — see engineering/decisions/2026-05-19-marp-adapter.md. */
-section.image:not(.full):not(.contain):not(.museum) [data-marpit-advanced-background-container] figure,
+/* Half-canvas image background sizing (the .lattice-bg image fills its half). */
 section.image:not(.full):not(.contain):not(.museum) .lattice-bg img {
   background-size: cover !important;
   background-position: center !important;
@@ -126,9 +124,7 @@ section.image:not(.full):not(.contain):not(.museum) .lattice-bg img {
   object-position: center !important;
   box-shadow: -1px 0 0 var(--border) !important;
 }
-section.image:not(.full):not(.contain):not(.museum).mirror [data-marpit-advanced-background-container] figure,
 section.image:not(.full):not(.contain):not(.museum).mirror .lattice-bg img,
-section.image:not(.full):not(.contain):not(.museum).left   [data-marpit-advanced-background-container] figure,
 section.image:not(.full):not(.contain):not(.museum).left   .lattice-bg img {
   box-shadow: 1px 0 0 var(--border) !important;
 }
@@ -167,9 +163,6 @@ section.image.museum footer {
 }
 
 /* Image container fills the slide (overlay behind text) */
-section.image.full [data-marpit-advanced-background-container],
-section.image.contain [data-marpit-advanced-background-container],
-section.image.museum [data-marpit-advanced-background-container],
 section.image.full .lattice-bg-full,
 section.image.contain .lattice-bg-full,
 section.image.museum .lattice-bg-full {
@@ -179,7 +172,6 @@ section.image.museum .lattice-bg-full {
 }
 
 /* Cover (default for `.full`) — image fills, cropped */
-section.image.full [data-marpit-advanced-background-container] figure,
 section.image.full .lattice-bg-full img {
   width: 100%; height: 100%;
   background-size: cover !important;
@@ -190,7 +182,6 @@ section.image.full .lattice-bg-full img {
 }
 
 /* Contain — letterbox; matte fills around */
-section.image.contain [data-marpit-advanced-background-container] figure,
 section.image.contain .lattice-bg-full img {
   width: 100%; height: 100%;
   background-size: contain !important;
@@ -203,11 +194,9 @@ section.image.contain .lattice-bg-full img {
 }
 
 /* Museum — image inset 40px with 1px hairline frame */
-section.image.museum [data-marpit-advanced-background-container],
 section.image.museum .lattice-bg-full {
   inset: 40px;
 }
-section.image.museum [data-marpit-advanced-background-container] figure,
 section.image.museum .lattice-bg-full img {
   width: 100%; height: 100%;
   background-size: contain !important;
@@ -222,9 +211,7 @@ section.image.museum .lattice-bg-full img {
 
 /* Bottom scrim — dark gradient that fades to transparent. Real DOM
  * element (injected by lib/transformers/image-scrim.js across all
- * three render paths) because marpit core hides `::before` on its
- * advanced-background content sections with `display: none !important`,
- * which would kill any pseudo-element scrim under marp-cli + runtime.
+ * three render paths) so the scrim is a normal, always-rendered node.
  * Museum skips the scrim — its matte plate provides text contrast. */
 section.image.full .image-scrim,
 section.image.contain .image-scrim {
@@ -274,7 +261,6 @@ section.image.contain p:last-of-type {
  * editorial label + caption (tighter than the scrim'd variants since
  * the matte itself provides contrast). All offsets in cqi so the plate
  * scales with the canvas. */
-section.image.museum [data-marpit-advanced-background-container],
 section.image.museum .lattice-bg-full {
   inset: 3.125cqi 3.125cqi 7.8125cqi 3.125cqi;
 }
