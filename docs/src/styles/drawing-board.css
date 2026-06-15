@@ -1327,6 +1327,101 @@ button.db-tl-body:hover {
 	color: var(--text-muted);
 }
 
+/* Worked-example block — the Drafting picker's primary path: open a real,
+   finished deck for the chosen archetype, trimmed to a chosen length. Tinted to
+   read as the recommended choice above the secondary structure-only scaffold. */
+.db-ex {
+	margin: 0.55rem 0 0.7rem;
+	padding: 0.7rem 0.75rem;
+	border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--border));
+	border-radius: var(--radius-md);
+	background: var(--accent-soft);
+}
+.db-ex-loading {
+	font-size: 0.8rem;
+	color: var(--text-muted);
+}
+.db-ex-label {
+	margin: 0 0 0.55rem;
+	font-size: 0.82rem;
+	line-height: 1.4;
+	color: var(--text-heading);
+}
+.db-ex-tiers {
+	display: flex;
+	gap: 0.35rem;
+}
+.db-ex-tier {
+	flex: 1 1 0;
+	display: flex;
+	flex-direction: column;
+	gap: 0.1rem;
+	align-items: flex-start;
+	font: inherit;
+	text-align: left;
+	color: var(--text-body);
+	background: var(--bg);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-sm);
+	padding: 0.4rem 0.5rem;
+	cursor: pointer;
+	transition: border-color 0.12s, background 0.12s, color 0.12s;
+}
+.db-ex-tier:hover {
+	border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+}
+.db-ex-tier.is-active {
+	border-color: var(--accent);
+	background: color-mix(in srgb, var(--accent) 10%, var(--bg));
+	color: var(--text-heading);
+}
+.db-ex-tier-name {
+	font-size: 0.82rem;
+	font-weight: 600;
+}
+.db-ex-tier-count {
+	font-size: 0.7rem;
+	color: var(--text-muted);
+}
+.db-ex-tier.is-active .db-ex-tier-count {
+	color: var(--text-body);
+}
+.db-ex-open {
+	margin-top: 0.6rem;
+	width: 100%;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.3rem;
+}
+/* Structure-only scaffold — the secondary path under the worked example. */
+.db-struct-label {
+	margin: 0.2rem 0 0.1rem;
+	font-size: 0.7rem;
+	letter-spacing: 0.05em;
+	text-transform: uppercase;
+	color: var(--text-muted);
+}
+.db-ex-build {
+	width: 100%;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.3rem;
+	margin-top: 0.3rem;
+}
+/* Ghost button — quieter than the bordered .db-btn, for a secondary action that
+   shouldn't compete with the primary CTA above it. */
+.db-btn-ghost {
+	background: none;
+	border-color: transparent;
+	color: var(--text-muted);
+}
+.db-btn-ghost:hover {
+	border-color: var(--border);
+	color: var(--text-heading);
+}
+
 /* Scorecard (Structure · Clarity · Data · Pacing · Contract) */
 .db-scorecard {
 	border: 1px solid var(--border);

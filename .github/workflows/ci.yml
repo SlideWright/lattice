@@ -53,6 +53,10 @@ jobs:
               - 'dist/**'
               - 'themes/**'
               - 'lib/**'
+              # The Drawing Board's Drafting picker stages + maps the worked
+              # exemplar decks; the docs vitest gates the archetype→deck mapping,
+              # so an exemplars-only change must re-run the docs job.
+              - 'exemplars/**'
               - 'marp.config.js'
               - '.github/workflows/ci.yml'
 

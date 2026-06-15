@@ -145,6 +145,10 @@ const dbData = JSON.stringify({
 	themeBase: url(pg + 'themes/'),
 	crosswalk: tokenCrosswalk,
 	runtimeUrl: url(pg + 'lattice-runtime.js'),
+	// Base URL for the worked exemplar decks the Drafting picker fetches on demand
+	// (exemplars/<bucket>/<slug>.md, staged hashed by sync-playground-assets.mjs).
+	// Trimmed to the chosen tier in the browser before loading into the editor.
+	exemplarBase: url(pg + 'exemplars/'),
 	// The marp render engine bundle — loaded ON DEMAND (load-engine.ts) after the
 	// chrome paints, not eagerly in <head>. See the engine <script> near the body
 	// end + engineering/decisions/2026-06-09-shadcn-migration.md (perf phase).
@@ -831,6 +835,9 @@ const dbData = JSON.stringify({
 				catalog: data.catalog,
 				mount: document.getElementById('db-arch-onboard'),
 				model,
+				// Base URL for the worked exemplar decks the Drafting picker offers
+				// (fetched on demand, trimmed to the chosen tier in the browser).
+				exemplarBase: data.exemplarBase,
 				onBuild: async (src, name) => {
 					// name = the archetype (Drafting) or undefined (Freehand → auto-titled
 					// from the deck's H1). The store derives the title + description.

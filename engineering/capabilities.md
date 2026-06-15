@@ -57,6 +57,8 @@ harness the index can't infer, add it to `FRAMEWORKS` in the generator.
 | `docs:spec:check` | Freshness gate for the generated docs-site spec pages (stale vs spec/). |
 | `emulator:build` | Build dist/lattice-emulator.js — the bundled Marp-faithful CLI (package bin/main). |
 | `emulator:check` | Freshness gate for the emulator bundle. |
+| `exemplar-core:build` | Bundle the pure exemplar tier-filter for the browser (Drafting picker length chooser). |
+| `exemplar-core:check` | Freshness gate for the exemplar-core bundle. |
 | `export:marp` | Export a deck as a portable Marp bundle: splits baked to ---, themes, assets, a self-contained engine + marp-cli config, and a README. `<deck.md> <out-dir-or-zip> [palette]`. |
 | `layout-core:build` | Bundle the pure Layout Studio core for the browser (docs site). |
 | `layout-core:check` | Freshness gate for the layout-core bundle. |
@@ -183,6 +185,7 @@ harness the index can't infer, add it to `FRAMEWORKS` in the generator.
 | `tools/build-dist-readme.js` | Generate dist/README.md — the index for the distribution folder. |
 | `tools/build-docs-portal.js` | Aggregate every component manifest into the canonical machine + plain-text |
 | `tools/build-emulator.js` | Build the distributable emulator CLI bundle. |
+| `tools/build-exemplar-core.js` | Bundle the pure exemplar tier-filter for the browser (sibling of |
 | `tools/build-galleries.js` | Build per-component gallery PDFs in light and dark themes. |
 | `tools/build-landing-tokens.js` | Emit the per-palette / per-mode CSS token blocks the docs LANDING page |
 | `tools/build-layout-core.js` | Bundle the pure Layout Studio core for the browser (the Form-layer sibling of |

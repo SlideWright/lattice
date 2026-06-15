@@ -25,9 +25,10 @@ const { lintText, buildVocab } = require('../lib/authoring/lint');
 const ROOT = path.join(__dirname, '..');
 
 /**
- * Discover every hand-authored + generated deck in the repo — the same set
- * the commit-time gate (deck-authoring.test.js) covers: examples, the
- * baseline decks, and every bucket/component/integration *.gallery.md.
+ * Discover every hand-authored + generated deck in the repo: examples, the
+ * worked exemplar decks (exemplars/ — the Drafting picker serves these live, so
+ * they stay gate-clean like any shipped deck), the baseline decks, and every
+ * bucket/component/integration *.gallery.md.
  * Used by --all so CI can lint the whole tree in one invocation.
  */
 function discoverDecks() {
@@ -42,6 +43,7 @@ function discoverDecks() {
     }
   };
   walk(path.join(ROOT, 'examples'), (n) => n.endsWith('.md'));
+  walk(path.join(ROOT, 'exemplars'), (n) => n.endsWith('.md'));
   walk(path.join(ROOT, 'test', 'integration', 'baseline-decks'), (n) => n.endsWith('.md'));
   walk(path.join(ROOT, 'lib', 'components'), (n) => n.endsWith('.gallery.md'));
   walk(path.join(ROOT, 'lib', 'integrations'), (n) => n.endsWith('.gallery.md'));
