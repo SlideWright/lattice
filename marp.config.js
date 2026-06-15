@@ -18,7 +18,6 @@ const {
   readDeckLogoFrontMatter,
   applyMastheadMetaToHtml,
   applyProgressRailToHtml,
-  applyWatermarkToHtml,
   FORM_MODES,
   readFormMode,
   formToggleClass,
@@ -35,6 +34,7 @@ const {
   registerMermaidHljs,
   functionPlotFences,
 } = require('./lib/integrations/marp/plugins');
+const watermarkTile = require('./lib/forms/tile/watermark/watermark.transform');
 const { applyAllToHtml: applyTransformerRegistryToHtml } = require('./lib/transformers/registry');
 
 /** @type {import('@marp-team/marp-cli').MarpCLIConfig} */
@@ -129,8 +129,9 @@ module.exports = {
         // runs here on the full shell, not in the per-section registry.
         result.html = applyProgressRailToHtml(result.html);
         // watermark Tile — section-number ghost behind `form watermark`
-        // slides. Same divider-derived section model.
-        result.html = applyWatermarkToHtml(result.html);
+        // slides. Same divider-derived section model. Self-contained kernel
+        // (lib/forms/tile/watermark) — one source for all three render paths.
+        result.html = watermarkTile.applyToHtml(result.html);
       }
       return result;
     };
@@ -150,7 +151,6 @@ module.exports.plugins = {
   readDeckLogoFrontMatter,
   applyMastheadMetaToHtml,
   applyProgressRailToHtml,
-  applyWatermarkToHtml,
   FORM_MODES,
   readFormMode,
   formToggleClass,

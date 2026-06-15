@@ -1,7 +1,8 @@
 /**
  * Unit tests for the Form runtime DOM injectors (lib/runtime/form-dom.js)
- * — the browser/preview render path for the meta / progress / watermark
- * Tiles. Two jobs:
+ * — the browser/preview render path for the meta / progress Tiles. (The
+ * watermark Tile is self-contained — see test/unit/forms/watermark-tile.test.js.)
+ * Two jobs:
  *   1. assert each injector's structure + idempotence on a JSDOM document, and
  *   2. PIN cross-renderer parity: run the DOM injector and the HTML-string
  *      kernel (the marp-cli + emulator path) on the same deck and assert the
@@ -89,33 +90,6 @@ describe('form-dom — injectProgressRail', () => {
   });
 });
 
-describe('form-dom — injectWatermark', () => {
-  const deck = sec('divider', '<h2>One</h2>') + sec('content form watermark') +
-               sec('divider', '<h2>Two</h2>') + sec('content form watermark') +
-               sec('content form'); // no watermark token → skipped
-
-  test('2-digit section number on form+watermark slides only', () => {
-    const d = doc(deck);
-    dom.injectWatermark(d);
-    assert.deepEqual([...d.querySelectorAll('.tile-watermark')].map((n) => n.textContent), ['01', '02']);
-  });
-
-  test('no dividers → no-op; idempotent', () => {
-    const d = doc(sec('content form watermark'));
-    dom.injectWatermark(d);
-    assert.equal(d.querySelector('.tile-watermark'), null);
-    const d2 = doc(deck);
-    dom.injectWatermark(d2);
-    dom.injectWatermark(d2);
-    assert.equal(d2.querySelectorAll('.tile-watermark').length, 2);
-  });
-
-  test('parity: DOM output === HTML-string kernel output', () => {
-    const d = doc(deck);
-    dom.injectWatermark(d);
-    assert.deepEqual(
-      domTilesIn(d, '.tile-watermark'),
-      tilesIn(plugins.applyWatermarkToHtml(deck), '.tile-watermark'),
-    );
-  });
-});
+// The watermark Tile is self-contained (issue #356): it owns both adapters in
+// one kernel, so its structure + idempotence + cross-path parity coverage now
+// lives in test/unit/forms/watermark-tile.test.js, not here.

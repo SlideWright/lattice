@@ -456,24 +456,6 @@ section.form .tile-progress {
   background: var(--accent);
 }
 
-/* ── FORM · watermark Tile — section-number ghost ───────────────────────
- * A large z-behind background glyph (the section number) on `form
- * watermark` slides. z-index:-1 keeps it ABOVE the canvas but BEHIND the
- * (non-positioned) body content; the section's overflow:hidden clips the
- * overscan. Palette-blind; lifts to the on-dark ghost on dark canvases. */
-section.form .tile-watermark {
-  position: absolute;
-  right: -2cqi;
-  bottom: -9cqi;
-  z-index: -1;
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 44cqi;
-  line-height: 0.8;
-  letter-spacing: -0.03em;
-  color: color-mix(in srgb, var(--accent) 14%, transparent);
-  pointer-events: none;
-  user-select: none;
-}
-section.form.dark .tile-watermark,
-section.dark.form .tile-watermark { color: var(--on-dark-watermark); }
+/* The watermark Tile's CSS moved to its self-contained Tile folder
+ * (lib/forms/tile/watermark/watermark.css), bundled by tools/build-css.js
+ * immediately after this file — same cascade slot. See issue #356. */

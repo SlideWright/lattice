@@ -136,6 +136,62 @@ the skip-derivation ship; manifest-driven grid + injectors are **staged**
 alongside A-later (§8). The vocabulary, schema, and the one load-bearing
 consumer are the foundation that makes the rest mechanical.
 
+### 6.1 Self-containment PoC — the `watermark` Tile (issue #356)
+
+The honest gap above ("the Tile injectors are hand-coded in `base.variants.css`
+and the kernels") has a second cost beyond not-yet-manifest-driven: each Tile's
+logic is **hand-copied across the render paths** — the HTML-string injector in
+`lib/integrations/marp/plugins.js` AND the DOM mirror in
+`lib/runtime/form-dom.js` — and its CSS lives far away in `base.variants.css`.
+That is exactly the duplication our **components** don't have: a component owns
+its CSS + kernel + manifest + gallery in one folder, and the kernel exposes both
+adapters (`applyToHtml`/`applyToDom`) so the three paths share ONE implementation.
+
+The `watermark` Tile is the **proof-of-concept** that a Form Tile can be just as
+self-contained. It now owns one folder:
+
+```
+lib/forms/tile/watermark/
+  watermark.manifest.json    # the registry row (already here)
+  watermark.transform.js     # ONE kernel — applyToHtml + applyToDom
+  watermark.css              # moved out of base.variants.css
+```
+
+- **One kernel, both adapters.** `applyToHtml` (the engine + BYO-marp HTML-string
+  path) and `applyToDom` (the preview/runtime DOM path) live in the same file and
+  share the section-number derivation. The previously-duplicated copies
+  (`applyWatermarkToHtml` in `plugins.js`, `injectWatermark` in `form-dom.js`) are
+  deleted; the depth-aware `<section>` walker they relied on was extracted to the
+  shared `lib/core/split-sections.js` so the progress rail and the watermark
+  kernel share one copy. The cross-path parity pin moved with it
+  (`test/unit/forms/watermark-tile.test.js`).
+- **Co-located CSS, same cascade slot.** `tools/build-css.js` globs
+  `lib/forms/tile/<id>/<id>.css` into the bundle immediately after
+  `base.variants.css` — the exact slot the rules held inline — so the cascade is
+  unchanged and the emitted rules are byte-identical (the bundle gains only the
+  source banner/comment lines). Adding/removing a Tile folder needs no edit to the
+  source list.
+
+**Honest about what this is — and isn't.** This mirrors the **file shape** of the
+component kernel+adapter pattern (logic + both adapters in one folder), and that
+half is real: the Tile's logic is now ONE shared implementation, not three
+hand-copies, so HARD RULE 1 holds by construction. It does **not** yet mirror the
+component *dispatch* half — components self-register into
+`lib/transformers/registry.js` and the renderers iterate it, whereas the watermark
+Tile is still wired by three direct `require` + call sites (`lib/engine/index.js`,
+`marp.config.js`, `lib/runtime/index.js`), because — like the progress rail — it
+runs once on the whole-deck shell, not per-section through the registry. So adding
+the *next* self-contained Tile is one folder + three call-site lines, not one
+folder. Collapsing that last wiring cost (a Form-Tile dispatch list the three
+paths iterate) is the repeatability step for #356, alongside making the Tile
+manifest-driven.
+
+This is behaviour-preserving (the `01` ghost renders identically; full unit +
+integration + `build:check` + pixel parity green) and establishes the pattern
+the other Tiles (meta, progress, masthead-lift) follow when #356 migrates them.
+It does **not** yet make the Tile *manifest-driven* — that remains the §6 staged
+work; self-containment is the prerequisite move that makes it mechanical.
+
 ## 7. The rename (retiring island-jargon)
 
 `islands → form` (class + toggle) · `berth → Cell` · `island → Tile` ·

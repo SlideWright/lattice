@@ -257,35 +257,9 @@ describe('marp-plugins', () => {
     assert.equal(plugins.applyProgressRailToHtml(once), once);
   });
 
-  // ── applyWatermarkToHtml (Form watermark Tile, Phase 2c) ──────────
-
-  test('applyWatermarkToHtml: injects the 2-digit section number on form+watermark slides', () => {
-    const html = deck([
-      sec('divider', '<h2>One</h2>'),
-      sec('content form watermark'),
-      sec('divider', '<h2>Two</h2>'),
-      sec('content form watermark'),
-    ]);
-    const out = plugins.applyWatermarkToHtml(html);
-    const wms = [...out.matchAll(/<div class="tile-watermark"[^>]*>(\d+)<\/div>/g)].map((m) => m[1]);
-    assert.deepEqual(wms, ['01', '02']);
-  });
-
-  test('applyWatermarkToHtml: only fires with BOTH form and watermark', () => {
-    const html = deck([sec('divider', '<h2>S</h2>'), sec('content form'), sec('content watermark')]);
-    assert.ok(!/tile-watermark/.test(plugins.applyWatermarkToHtml(html)));
-  });
-
-  test('applyWatermarkToHtml: no dividers → no-op', () => {
-    const html = deck([sec('content form watermark')]);
-    assert.equal(plugins.applyWatermarkToHtml(html), html);
-  });
-
-  test('applyWatermarkToHtml: idempotent', () => {
-    const html = deck([sec('divider', '<h2>S</h2>'), sec('content form watermark')]);
-    const once = plugins.applyWatermarkToHtml(html);
-    assert.equal(plugins.applyWatermarkToHtml(once), once);
-  });
+  // The watermark Tile's HTML-string adapter moved to its self-contained
+  // kernel (lib/forms/tile/watermark); both adapters + the cross-path parity
+  // pin now live in test/unit/forms/watermark-tile.test.js (issue #356).
 
   // ── Form deck-wide toggle (`form: off | standard | minimal`) ───────────
 

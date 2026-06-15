@@ -440,8 +440,15 @@ truth the engine reads**, generated into a machine catalog beside
 lib/forms/
   frame/<frame>/<frame>.manifest.json    # slicers — the selectable structural "themes"
   tile/<tile>/<tile>.manifest.json       # fillers — the registry rows, one folder each
+    tile/<tile>/<tile>.transform.js      #   …its kernel (applyToHtml + applyToDom), and
+    tile/<tile>/<tile>.css               #   …its CSS — co-located, like a component
   schema/cell.schema.json                # the shared slot definition Frames emit
 ```
+
+Like a component, a Tile folder can own **everything** — manifest, kernel, CSS —
+so it is self-contained, not scattered across `base.variants.css` and two
+hand-copied render-path injectors. The `watermark` Tile is the proof-of-concept
+of that (issue #356); the other Tiles migrate to the same shape as #356 lands.
 
 The manifest is **load-bearing, not descriptive**: it drives the `--frame-*` grid
 and the Tile injectors and the `accepts`/`fits` validation, so adding a Frame or a
@@ -453,8 +460,8 @@ the Astro page) — generalise it, do not clone it (HARD RULE 15).
 
 **Doc ownership.** This doc owns the **model and vocabulary** of Form. The
 **concrete schema, on-disk layout, and execution plan** are owned by the
-engineering ADR (`engineering/decisions/2026-06-11-islands.md`, to be updated with
-this vocabulary). The directory sketch above is illustrative of the *shape*; the
+engineering ADR (`engineering/decisions/2026-06-15-form-implementation.md`). The
+directory sketch above is illustrative of the *shape*; the
 ADR is authoritative for the *fields*. Keeping the split explicit is what stops
 the two docs from drifting (the §2.5 hazard, stated as a rule).
 
