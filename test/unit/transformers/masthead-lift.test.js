@@ -20,14 +20,15 @@ describe('masthead-lift — HTML-string kernel', () => {
     const inner = '<p><code>Kicker</code></p><h2>Title</h2><ul><li>body</li></ul>';
     const out = kernel.transformMastheadSection(inner, 'content form');
     assert.match(out, /<div class="cell-masthead"><div class="masthead-lede"><p><code>Kicker<\/code><\/p><h2>Title<\/h2><\/div><div class="masthead-bay"><\/div><\/div>/);
-    // the list is NOT wrapped — it remains after the band, a direct child
-    assert.match(out, /<\/div><ul><li>body<\/li><\/ul>$/);
+    // the list is NOT wrapped — it remains after the band, a direct child,
+    // followed by the stage-Cell overflow fade Tile (last child).
+    assert.match(out, /<\/div><ul><li>body<\/li><\/ul><div class="tile-fade" aria-hidden="true"><\/div>$/);
   });
 
   test('works without an eyebrow (title only)', () => {
     const out = kernel.transformMastheadSection('<h2>Just a title</h2><p>Body.</p>', 'form');
     assert.match(out, /<div class="masthead-lede"><h2>Just a title<\/h2><\/div>/);
-    assert.match(out, /<p>Body\.<\/p>$/);
+    assert.match(out, /<p>Body\.<\/p><div class="tile-fade" aria-hidden="true"><\/div>$/);
   });
 
   test('no-op when the section does not opt in', () => {

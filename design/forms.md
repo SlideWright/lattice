@@ -268,6 +268,21 @@ bled.**
 - **Clip, don't bleed.** `overflow: hidden` is the rule. A too-long title or meta
   line is **cut at its Cell**, never spilled across a neighbour.
 
+**Which noun owns which behaviour** (so it lives in exactly one place, not three):
+
+- **Clip and fade are Cell behaviours.** Each Cell cuts its own content at its
+  own edge (`clip` is a field on the Cell), and the *fade* is just the visual
+  treatment of that clip edge — a soft scrim signalling content was cut, most
+  meaningful on the **stage** Cell. A **Tile** needs neither: it renders *inside*
+  a Cell, so the Cell's clip already protects it — giving Tiles their own clip
+  would duplicate the Cell's job.
+- **The overflow warning ring is a slide / root-Frame signal**, not a Cell one —
+  an authoring aid that the whole composition overflows (a z4 review-plane cue),
+  drawn once per slide. It is deliberately *not* per-Cell.
+
+So clip + fade attach to the Cell; the ring attaches to the slide; Tiles inherit
+their box guarantee from the Cell they fill.
+
 This is the contract the open chrome-over-content defect
 (`engineering/decisions/2026-06-13-islands-sketch-density-collisions.md`)
 violates — chrome painted over content is a Cell failing to reserve its box and

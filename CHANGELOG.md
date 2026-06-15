@@ -339,8 +339,12 @@ in patch versions.
     reserves three non-overlapping horizontal zones (footer-left ·
     progress-centre · pagination-right); footer text yields the reserved centre
     so it can never run through the section label.
-  Body overflow is hard-clipped at the stage (`overflow: hidden`); the runtime
-  overflow ring still fires so an over-stuffed slide reads "too much" in
+  Body overflow is hard-clipped at the stage (`overflow: hidden`); a soft
+  **fade** Tile (`.tile-fade`) now marks the cut edge, shown only when the slide
+  actually overflows (the same signal as the warning ring), completing the
+  clip → fade → ring trio (clip + fade are Cell behaviours, the ring is a
+  slide-level signal — `design/forms.md` §6). The runtime overflow ring still
+  fires so an over-stuffed slide reads "too much" in
   authoring. All `section.form`-scoped → non-Form (boardroom) decks are
   byte-identical; resolution-invariant (all `cqi/cqh`, no fixed px). Completes
   Defect 1 of
