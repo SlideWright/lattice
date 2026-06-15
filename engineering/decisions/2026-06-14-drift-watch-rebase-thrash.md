@@ -1,13 +1,23 @@
 ---
-status: design-decision
-last-updated: 2026-06-14
+status: superseded-in-part
+last-updated: 2026-06-15
 companion:
+  - ./2026-06-15-retire-drift-watch.md
   - ./README.md
   - ../workflow.md
   - ../../CLAUDE.md
 ---
 
 # Drift-watch rebase thrash vs. a parallel merge train
+
+> **Update 2026-06-15 — the watch is retired entirely.** This note's fix kept the
+> continuous drift watch as a *detector* and only debounced the *response*. In
+> practice the watch still flooded the chat with poll/timer events and the
+> debounce logic (async `mergeable_state`, settle windows) was fragile. The
+> follow-on decision drops the background watch altogether in favour of
+> **rebase-before-push** — see `2026-06-15-retire-drift-watch.md`. The root-cause
+> analysis below is still accurate; only the "keep the watch as a detector" half
+> of the decision is superseded.
 
 **Symptom.** A small docs-only PR (#328) sat open and watched while a second
 agent landed a large migration as **many sequential merges to `main`** (~7 moves
@@ -45,29 +55,24 @@ output and the webhook, so each force-push manufactured a false alarm.
 
 **Fix both halves. Keep the watch as a detector; change the response.**
 
-### 1. Rebase at the moments that matter, not every tick (CLAUDE.md #16, workflow.md §4)
+### 1. ~~Rebase at the moments that matter, not every tick~~ — SUPERSEDED
 
-The lock-free drift watch (arm `Monitor` on green; poll `git ls-remote`; never a
-background `git fetch`; `TaskStop` first on merge) **stays** — it is still the
-mechanism that notices `main` moved, which webhooks never deliver. What changes
-is the **response to a drift event**:
+> **Superseded 2026-06-15 — see `2026-06-15-retire-drift-watch.md`.** This half of
+> the decision kept the continuous drift watch and only debounced its *response*
+> (rebase on conflict or at merge time; leave a `clean`-but-behind branch alone).
+> The follow-on decision drops the watch entirely — there is no `Monitor` poller,
+> no arm-on-green, no `MAIN-ADVANCED` triage. Mergeability is now kept by
+> **rebasing right before every push**, plus one re-check before an authorized
+> merge. Do **not** follow the original §1 prose below as live guidance; it is
+> retained only to record what the intermediate fix tried.
 
-- A bare "main moved" event is **not** an automatic force-push. On it, read
-  `mergeable_state` (`pull_request_read`) and rebase **only if conflicted**
-  (`dirty`). A `clean`-but-behind branch is left alone.
-- Rebase only at the three moments that matter: **(a)** the PR is genuinely
-  blocked (`mergeable_state: dirty`/conflicting); **(b)** immediately before
-  asking for merge authorization; **(c)** immediately before an authorized merge
-  executes. A merge train is then absorbed in **one** rebase at merge time, not N
-  mid-flight.
-- This distinguishes *stay mergeable* (the real invariant) from *stay
-  zero-behind* (the failure mode). The at-merge checkpoints remain the floor:
-  never merge while conflicted, stale-at-merge, or CI-red.
-
-Why it's safe: squash-merge collapses the PR's history regardless of how far
-behind the branch was, so being behind never pollutes `main`. Branch protection
-keys checks to the head SHA, so an orphaned (superseded) run's verdict never
-gates the merge — only the latest run on the latest SHA does.
+The original debounce still rested on a sound observation, carried forward into
+the new model: squash-merge collapses the PR's history regardless of how far
+behind the branch was, so being behind never pollutes `main` — which is exactly
+why a parked `clean`-but-behind PR is harmless and needs no watch. (Branch
+protection also keys checks to the head SHA, so an orphaned/superseded run's
+verdict never gates the merge — relevant to §2 below, which is **not**
+superseded.)
 
 ### 2. A superseded (`cancelled`) tier must not paint the PR red (`.github/workflows/ci.yml`)
 

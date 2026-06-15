@@ -48,9 +48,10 @@ item is a discrete unit you can *claim*, *prioritise*, or *hand to an agent*.
 There is no queue and no concurrency primitive. That — not documentation — is what
 blocks "agents pick up work and solve it in a distributed, safe fashion."
 
-This session already built the **safe-execution** half of that goal — the
-auto-rebase drift watch, maker-checker review, human-in-the-loop merge, the
-capability index, and the post-merge standup (see `../workflow.md`). What's
+This session already built the **safe-execution** half of that goal —
+rebase-before-push to stay mergeable, maker-checker review, human-in-the-loop
+merge, the capability index, and the post-merge standup (see `../workflow.md`).
+What's
 missing is the **safe-intake/dispatch** half: how work is queued and claimed. This
 proposal is that half.
 
