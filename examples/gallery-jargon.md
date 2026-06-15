@@ -14,7 +14,7 @@ header: "Lattice · Decision Framework Gallery"
 
 `Decision Framework · Q3 2025`
 
-A 78-slide answer to the question "have you considered writing things down"
+A 64-slide answer to the question "have you considered writing things down"
 
 ---
 
@@ -25,9 +25,9 @@ A 78-slide answer to the question "have you considered writing things down"
 
 1. Why This Exists — slide 3
 2. The Framework — slide 7
-3. The Evaluation — slide 22
-4. The Build — slide 31
-5. The Results — slide 47
+3. The Evaluation — slide 23
+4. The Build — slide 33
+5. The Results — slide 51
 
 ---
 
@@ -295,6 +295,19 @@ The shift from equal to calibrated weights takes two retrospective cycles — 60
 
 ---
 
+<!-- _class: funnel -->
+<!-- _footer: "Pipeline drop-off · funnel" -->
+
+## How a week of signals narrows to one logged decision
+
+- Signals collected `1,840`
+- Passed classification `1,180`
+- Scored above threshold `420`
+- Surfaced in the weekly brief `90`
+- Logged as a decision `18`
+
+---
+
 <!-- _class: closing numbered -->
 <!-- _paginate: false -->
 <!-- _footer: "Section close · closing numbered" -->
@@ -379,6 +392,34 @@ The shift from equal to calibrated weights takes two retrospective cycles — 60
 | Setup time   | 1 day  | 3–4 weeks    | 40+ hours | Same day    |
 
 _Criteria defined by the team building Sprig + Log. We're transparent about it. It's in the footnote._
+
+---
+
+<!-- _class: radar -->
+<!-- _footer: "Spider comparison · radar" -->
+
+`Scale · 0–10, on the criteria we wrote`
+
+## The four tools, scored across the criteria we wrote
+
+- Chorus
+  - Speed `9`
+  - Auditability `2`
+  - Adoption `8`
+  - Calibration `1`
+  - Exposes weights `1`
+- Notion
+  - Speed `7`
+  - Auditability `8`
+  - Adoption `3`
+  - Calibration `2`
+  - Exposes weights `2`
+- Sprig + Log
+  - Speed `9`
+  - Auditability `9`
+  - Adoption `8`
+  - Calibration `9`
+  - Exposes weights `10`
 
 ---
 
@@ -489,6 +530,51 @@ Three phases, four workstreams. We own the policy, the loop, the timeline — an
 | Adoption      | One pilot team      |                       | Org-wide enablement   |
 
 Phase 3 holds org-wide enablement. In the roadmap since 2024. Phase 2 is ongoing.
+
+---
+
+<!-- _class: gantt -->
+<!-- _footer: "Schedule by workstream · gantt" -->
+
+`2026 Q1 → 2026 Q4`
+
+## The build schedule — Phase 3 is the big red bar, as it was last year
+
+- Signal Intake
+  - Connector v1 `Q1 → Q2` `done`
+  - Multi-source dedupe `Q2 → Q4` `live`
+- Scoring
+  - Equal-weights model `Q1 → Q2` `done`
+  - Per-team calibration `Q2 → Q4` `at-risk`
+- Decision Log
+  - Append-only schema `Q1 → Q2` `done`
+  - Outcome auto-pairing `Q3 → Q4` `blocked`
+- Adoption
+  - One pilot team `Q1 → Q2` `done`
+  - Org-wide enablement `Q3 → Q4` `blocked`
+
+---
+
+<!-- _class: kanban -->
+<!-- _footer: "Status board · kanban" -->
+
+`Workstream board · today`
+
+## The build board, mostly one column
+
+- Backlog
+  - Examiner export `M`
+    - decision-log `blocked`
+- In progress
+  - Per-team calibration `L`
+    - scoring `at-risk`
+  - Outcome auto-pairing `M`
+    - decision-log
+  - Org-wide enablement `XL`
+    - adoption `blocked`
+- Shipped
+  - Scoring policy v1 `M`
+    - scoring
 
 ---
 
@@ -744,7 +830,7 @@ The pilot team measured what the pilot team built.
 
 `Recap · Sections 01 through 03`
 
-## Before the results, what you should have learned in the first 46 slides
+## Before the results, what you should have learned in the first 50 slides
 
 - Four components. Two used regularly. → Section 01
 - The evaluation team recommended the tool the evaluation team built. → Section 02
@@ -900,6 +986,56 @@ Cross-functional sign-off · "cross-functional" means two teams instead of one
 
 ---
 
+<!-- _class: quadrant -->
+<!-- _footer: "Two-axis scatter · quadrant" -->
+
+`Confidence 0–10 → Impact 0–10`
+
+## Where the 18 logged decisions landed
+
+- After the fact
+  - Reprioritized the roadmap `2, 7`
+  - Picked the vendor `1, 6`
+  - Killed the connector rewrite `4, 8`
+- Predicted
+  - Cut the onboarding step `7, 5`
+  - Renamed the tier labels `8, 3`
+- Calibrated
+  - Adjusted recency weight `9, 2`
+
+---
+
+<!-- _class: word-cloud -->
+<!-- _footer: "Weighted terms · word-cloud" -->
+
+## The reasons logged for not adopting the framework
+
+- cultural `18`
+- bandwidth `11`
+- "next quarter" `9`
+- didn't know `7`
+- training `5`
+- the poster `3`
+
+---
+
+<!-- _class: journey -->
+<!-- _footer: "Emotional journey · journey" -->
+
+## A product manager's first month with the framework
+
+- Week 1
+  - Onboarding `@pm` `:4`
+  - First weekly brief `@pm` `:3`
+- Week 2
+  - Logging a decision `@pm` `:2`
+- Week 3
+  - The 2σ alert `@pm` `:1`
+- Week 4
+  - Retrospective `@team` `:2`
+
+---
+
 <!-- _class: closing -->
 <!-- _paginate: false -->
 <!-- _footer: "Final ask · closing" -->
@@ -909,319 +1045,6 @@ Cross-functional sign-off · "cross-functional" means two teams instead of one
 ## Next step is a working session, not a debate
 
 `Walk these questions with me in 60–90 minutes. The output is a design we can execute — or agreement that we need another session to design it.`
-
----
-
-<!-- _class: divider light numbered -->
-<!-- _footer: "Section opener, independent counter · divider light numbered" -->
-
-`Section 05 · The Pattern Library`
-
-## The story closed on slide 57. These slides demonstrate authoring patterns
-
-The reference appendix: the layout variants and modifiers used above. Its counter runs independent of the dark divider's — so it stamps 01, not 05.
-
----
-
-<!-- _class: content dark -->
-<!-- _footer: "Dark modifier on prose · content dark" -->
-
-`Dark Variant · Content`
-
-## The token system handles dark without per-element overrides
-
-Every colour is a custom property that remaps on `dark` — cards, text, borders, the suppressed spectrum bar. Popular with executives who want "more premium." Same content, darker box.
-
----
-
-<!-- _class: content -->
-<!-- _footer: "Header and footer demo · content" -->
-<!-- _header: "Lattice · Decision Framework Gallery" -->
-<!-- _footer: "Header stays uppercase · footer renders as written" -->
-
-`Header And Footer`
-
-## Header stays uppercase — footer renders as written
-
-Set `header:` and `footer:` in frontmatter. The header always uppercases; the footer renders as written — which is how "FINAL v3 USE THIS ONE" reaches the board.
-
----
-
-<!-- _class: list dark -->
-<!-- _footer: "Dark modifier on list · list dark" -->
-
-`Dark Variant · List`
-
-## The card stack renders cleanly on dark backgrounds
-
-- Every card fills from `--bg-alt`, and its border remaps too — both shift automatically on dark. Most decks don't build this way. Theirs break.
-- The accent edge keeps `--accent` unchanged, because it already reads on dark. That's partly why the accent was chosen. You're welcome.
-- Body text becomes a warm light tone via `--text-body` — never pure white. Pure white on dark is technically readable and visually unkind.
-
----
-
-<!-- _class: cards-stack dark -->
-<!-- _footer: "Dark modifier on cards-stack · cards-stack dark" -->
-
-`Dark Variant · Cards Stacked`
-
-## Two-card layouts work equally well inverted to dark
-
-- The framework asks one calibration question: what proves your scoring model is improving, and what does a quarter without that proof cost? Every other question in this deck depends on the answer. In practice the answer is "we'll revisit it in Q3" — which is also the quarter the workshop to define "improving" is scheduled for.
-- It's the same shape as any page of written argument — claim, then support. The dark palette changes none of the reading rhythm or the information density. What it changes is how the slide looks in the screenshot your VP forwards to their VP with "see, this is what I mean." The content is identical to the light version. The forward is the feature.
-
----
-
-<!-- _class: image -->
-<!-- _footer: "Half-canvas image right · image" -->
-
-`Layout · Image`
-
-## Image right is the default — text leads, evidence follows
-
-For slides where the visual supports the argument. Native aspect ratio, no cropping — usually a stock lighthouse called "a metaphor for signal."
-
-![bg right fit](../lib/components/imagery/image/sample-image.svg)
-
----
-
-<!-- _class: image mirror -->
-<!-- _footer: "Cross-cutting mirror modifier · image mirror" -->
-
-`Modifier · image mirror`
-
-## Mirror flips the image to the other half — alias of legacy `image left`
-
-`mirror` is the canonical orientation flag. The `left` alias survives for the 40 decks nobody wants to find.
-
-![bg left fit](../lib/components/imagery/image/sample-image-portrait.svg)
-
----
-
-<!-- _class: image full -->
-<!-- _footer: "Full-bleed image · image full" -->
-<!-- _paginate: false -->
-
-## Signal Pipeline · Reference Visualization
-
-Weekly Signal Brief — shipped every Monday, opened by an estimated 3 of 14 eligible PMs
-
-![bg fit](../lib/components/imagery/image/sample-image.svg)
-
----
-
-<!-- _class: cards-grid -->
-<!-- _footer: "Inline code in cards · cards-grid" -->
-
-## Code chips render inside card titles and body alike
-
-- Signal Intake `v2.4`
-  - 94% of structured signals. The other 6% are CEO Slack messages, escalated unscored.
-- Scoring Model `configurable`
-  - Defaults `33 / 33 / 33`. Most set recency to `99` after a bad quarter, call it calibrated.
-- Decision Log `required`
-  - Every change above `P2` needs a rationale. Introduced Q2 2024. Not yet enforced.
-- Calibration Loop `monthly`
-  - First real update after `2 cycles` — about `14 months`.
-
----
-
-<!-- _class: cards-grid -->
-<!-- _footer: "Key insight + annotation · cards-grid" -->
-
-## A trailing italic-only paragraph becomes an annotation
-
-- Signal Intake
-  - Weekly collection across conversations and market data.
-- Scoring Model
-  - Three dimensions, configurable by seven admins.
-- Decision Log
-  - Every decision recorded. Enforced by honor system.
-- Calibration Loop
-  - Predictions vs outcomes. Averages 2.3 attendees.
-
-> The calibration loop separates teams that learn from teams that repeat the same mistakes more thoroughly.
-
-_Pilot retrospective: six months, four teams, one since reorganized out of existence._
-
----
-
-<!-- _class: cards-grid -->
-<!-- _footer: "Key insight + below-note · cards-grid" -->
-
-## A trailing blockquote becomes a key insight; a plain paragraph becomes a below-note
-
-- Signal Intake
-  - The one everyone demos.
-- Scoring Model
-  - The one everyone reconfigures.
-- Decision Log
-  - The one nobody fills out.
-- Calibration Loop
-  - The one that finds no predictions.
-
-> The calibration loop separates teams that learn from teams with very thorough meeting notes about not learning.
-
-Trailing blockquote → key insight; trailing paragraph → below-note.
-
----
-
-<!-- _class: cards-grid compact -->
-<!-- _footer: "Density modifier on cards · cards-grid compact" -->
-
-`Modifier · compact`
-
-## Compact tightens the spacing scale ~25%
-
-- What changes
-  - `--sp-xs` through `--sp-2xl` shrink. Card gaps, gutters, and padding follow, via `var()`.
-- What does not change
-  - Type, palette, and chrome reservation are untouched. A density flag, not a new layout.
-- When to reach for it
-  - One card too many, prose a line long, or a denser rhythm.
-- Composition
-  - Composes with `dark`, `accent`. Not with `title`, `divider`, `image full`.
-
----
-
-<!-- _class: content loose -->
-<!-- _footer: "Inverse density modifier · content loose" -->
-
-`Modifier · loose`
-
-## Loose is the inverse — more breathing room, same layout machinery
-
-The spacing scale grows ~25%. Reach for `loose` when a slide carries one editorial point and wants to feel quiet.
-
-> Density is not importance. `loose` says this page deserves room — because it carries one thing well. The framework team applied it to this quote, which the framework team wrote about the framework.
-
----
-
-<!-- _class: compare-prose -->
-<!-- _footer: "Two options + connector · compare-prose" -->
-
-## Routing signals by source type versus routing by confidence tier
-
-- Route by source type
-  - Structured signals — NPS, tickets, call notes — go to Intake. Unstructured ones — field notes, conference talk, a board member with dinner instincts — route to the owner for manual classification. Clean in theory, fragile at every edge involving an enterprise customer.
-- Route by confidence tier
-  - Signals above 3.0 confidence route straight to scoring; everything below queues for human review. Adaptive — once you've calibrated confidence, which takes two completed cycles. We're in month three, calling it cycle one.
-
-Both paths land on the same PM, who asks why the framework keeps routing things to them.
-
----
-
-<!-- _class: compare-prose chosen -->
-<!-- _footer: "Chosen modifier on compare-prose · compare-prose chosen" -->
-
-## Chosen flags the right-hand card as the winner
-
-- Quarterly recalibration
-  - Weights reviewed once a quarter. Simple, auditable, and blind to everything that happened in between. This is what we did before the framework. We do not discuss that here.
-- Continuous calibration
-  - Weights update at every retrospective once the sample passes 12 logged decisions. We have 18, across six months. The loop has run once.
-
-The right card carries the accent edge and tint — the chosen path. Chosen after the choice was made.
-
----
-
-<!-- _class: compare-prose mirror chosen -->
-<!-- _footer: "Mirror + chosen composition · compare-prose mirror chosen" -->
-
-## Mirror composes with chosen — the accented card reads from the left
-
-- Quarterly recalibration
-  - Reviewed once a quarter on a fixed schedule, no outcome data required to trigger it. Source order is preserved — the first card is always the considered alternative. Mirror flips the rendering, not the intent.
-- Retrospective-triggered recalibration
-  - Weights update once the outcome sample passes 12 decisions. `mirror` puts this card on the left; `chosen` accents it. The audience reads the conclusion first — useful when you're confident they won't ask how many decisions are in the sample. There are 18.
-
-The below-note holds the caveat. The loop ran once. We call it continuous.
-
----
-
-<!-- _class: featured mirror -->
-<!-- _footer: "Mirror modifier on featured · featured mirror" -->
-
-## Mirror puts the hero card on the right; sub-cards stack on the left
-
-- The calibration loop is what closes the framework
-  - The only component that makes the model improve instead of documenting failures better. `mirror` puts it right — premise before conclusion.
-- The scoring model requires the loop
-  - No calibration, static weights — a spreadsheet. Sub-cards go left, written to make the hero inevitable.
-- The Decision Log enables the loop
-  - Loop needs outcomes; outcomes need logged decisions. 18 entries, one run. The card the presenter skips.
-
----
-
-<!-- _class: cards-grid four compact -->
-<!-- _footer: "Four-column grid · cards-grid four compact" -->
-
-`Modifier · cards-grid four`
-
-## Four switches to 4 columns; pair with compact for visual balance
-
-- Sense
-  - Observe. Write it down. Don't interpret yet.
-- Score
-  - A signal is data once it has a number. Calibrated. Eventually.
-- Decide
-  - A signal plus a deadline. A recurring meeting is not a deadline.
-- Review
-  - The retrospective. The loop closes here — if it had data.
-
----
-
-<!-- _class: glossary -->
-<!-- _footer: "Glossary · glossary (auto-table, auto-pill)" -->
-
-## Glossary
-
-- Adoption
-  - PMs logging within 24h of a close. 5.3% now; target 90%. The gap is "cultural."
-- Auditability
-  - Reconstruct any decision months later without its author. The author is always there anyway.
-- Calibration
-  - Predicted vs observed. Requires predictions. See "Decision Log," "Adoption," "Gap."
-- Connector
-  - Sprig ↔ your NPS / support platforms. In "final testing" since Q4 2024.
-- Decision Log
-  - The append-only record of every decision. Append-only in theory, empty in practice.
-- Eligible PM
-  - Past 30-day onboarding on an adopted team. 14 exist; 13 think they're still onboarding.
-- Framework
-  - Speed, Auditability, Adoption, Calibration. Also what people call a spreadsheet.
-
----
-
-<!-- _class: glossary -->
-<!-- _footer: "Glossary continued · glossary (auto-table, auto-pill)" -->
-
-## Glossary
-
-- Predicted outcome
-  - The expectation logged at decision time, fed to calibration. Hypothetically.
-- Prioritization rhythm
-  - Documented "weekly." Observed "whenever there's an incident or a board meeting."
-- Retrospective
-  - Day-30 scoring of decisions vs outcomes. Often day 45. Always runs long.
-- Signal
-  - A survey, an NPS comment, a ticket. Or a 9 PM Slack from whoever last saw a customer.
-- Sprig
-  - The micro-survey behind Tool D. See "Conflict of Interest" — not in this glossary.
-- Tool D
-  - The recommended option, built by this evaluation's authors, best by their criteria.
-
----
-
-<!-- _class: closing accent -->
-<!-- _paginate: false -->
-<!-- _footer: "Accent modifier on closing · closing accent" -->
-
-`Modifier · accent`
-
-## Accent swaps the rainbow stripe for one editorial colour
-
-It tints the heading and composes with `dark`, where `accent.dark` restores the suppressed stripe. The framework team is very thorough.
 
 <!-- Import Mermaid and the Lattice runtime theme for VS Code / web preview.
      The build script (lattice-emulator.js) pre-renders Mermaid to SVG at build time
