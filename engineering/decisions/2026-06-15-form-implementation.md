@@ -66,8 +66,8 @@ Mapped onto the existing three-band structure (the root chrome Frame):
 | Model noun | Code realization |
 |---|---|
 | **Root Frame** | `section.form` — carries the chrome Frame (masthead · stage · footer bands). Stays `display:flex` (see §4). |
-| **Masthead Cell** | `.cell-masthead` — absolute band; an internal sub-Frame splitting into `.masthead-lede` (kicker + title Tiles) and `.masthead-bay` (meta · logo · status Tiles). |
-| **Stage Cell** | the section's **deterministic content region** between the absolute masthead and footer bands. *Not a wrapper element* (see §4) — its box is the fixed-size slide minus the reserved chrome Cells. |
+| **Masthead Cell** | `.cell-masthead` — an **in-flow, content-height band** (the hairline sits directly under the title — no dead space; the band grows for a two-line title), an internal sub-Frame splitting into `.masthead-lede` (kicker + title Tiles) and `.masthead-bay` (meta · logo · status Tiles). |
+| **Stage Cell** | the section's **deterministic content region** below the in-flow masthead and above the absolute footer band. *Not a wrapper element* (see §4) — its box is the fixed-size slide minus the masthead band and the reserved footer. (The masthead is in-flow rather than a fixed-height absolute reserve because charts size against their own `.chart-body`, not the section's cqh, so the band no longer needs to shrink the section's cqh — which is what previously forced a fixed-height reserved band and left dead space under short titles.) |
 | **Footer Cell** | a three-zone coordinate contract (`footer-left` · `progress-centre` · `pagination-right`) with reserved, non-overlapping horizontal budgets. Pagination is a `::after` pseudo-element, so the footer Cell is a **token contract**, not a DOM grid. |
 | **Tiles** | `.tile-meta`, `.tile-progress`, `.tile-watermark`, plus the chrome `<footer>`/`::after`/`<header>` and the component DOM (the content Tile). |
 | **z-planes** | `isolation` / `z-index` stacking contexts (already in use). **Distinct from CSS `@layer`** (inert; blocked by the `!important` competition — `engineering/cascade.md`, issues #283/#284). The Form does **not** touch `@layer`. |
@@ -84,10 +84,11 @@ contents` does not help: selectors match the DOM tree, not the box tree.
 That migration (rewriting 242 selectors + every component's flex assumption) is
 exactly the "A-later" the canonical doc defers. So this ADR implements **B-now
 faithfully**: the stage Cell is the section's already-deterministic content
-region (fixed slide − absolute chrome), the chart-collapse is fixed at its
-cqh-chain root, and the footer Cell is a token contract. The §6 contract
-("every Cell resolves to a deterministic px box") is **satisfied** — the slide
-is fixed-size and the chrome Cells are absolutely reserved, so the stage box is
+region (fixed slide − the in-flow masthead − the reserved footer), the
+chart-collapse is fixed at its cqh-chain root, and the footer Cell is a token
+contract. The §6 contract ("every Cell resolves to a deterministic px box") is
+**satisfied** — the slide is fixed-size and each chrome Cell takes a determinate
+band (the masthead its content height, the footer its reserve), so the stage box is
 deterministic without an element.
 
 **A-later is now de-risked and quantified:** the only remaining work to reach

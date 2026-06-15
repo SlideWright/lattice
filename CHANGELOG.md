@@ -319,10 +319,10 @@ in patch versions.
 - **The Form (`form:`, formerly `islands:`) no longer paints chrome over
   content.** Three real defects are fixed at the root by making the masthead /
   stage / footer **Cells** reserve their boxes (`design/forms.md` §6):
-  - **Masthead reservation.** The band is an absolutely-positioned Cell reserved
-    via the section's `padding-top`, so the section content box equals the true
-    stage area; since `section { container-type: size }`, components size with
-    `cqi/cqh` against the real stage instead of overgrowing into the band.
+  - **Masthead Cell.** An in-flow, content-height band: the hairline sits
+    directly under the title (no dead space under a one-line title; the band
+    grows for a two-line title). Components flow in the real stage below it; the
+    footer is reserved via `padding-bottom`.
   - **Charts no longer collapse OR clip.** A `piechart donut` (and `radar`,
     `map`, the cohort `quadrant`) under the Form failed two ways: on a roomy
     slide it collapsed to a thumbnail (the `cqh`-against-`flex:1`-figure chain

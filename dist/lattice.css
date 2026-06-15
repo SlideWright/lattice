@@ -13446,15 +13446,16 @@ section.confidential::before {
  *                     title or meta line is cut at its Cell, never bled. */
 section.form {
   /* THE ROOT CHROME FRAME — masthead Cell · stage Cell · footer Cell.
-   * The masthead and footer Cells are absolutely-positioned bands (NOT in
-   * content flow); the STAGE Cell is the section's content region between them.
-   * Because the masthead/footer are out of flow and the section is a fixed-size
-   * slide, the stage resolves to a DETERMINISTIC px box independent of its
-   * content (design/forms.md §6) — the cqi/cqh basis every component sizes
-   * against equals the real body area. (Reserving the band as in-flow margin —
-   * the old way — left it inside the content box, so a component sized to
-   * `section − footer` overran the body by ~the band's height.) */
-  --masthead-h: calc(var(--_sec-1cqi, 1cqi) * 11);
+   * The masthead Cell is an IN-FLOW band sized to its own content (so the
+   * hairline sits directly under the title — no dead space), then the STAGE Cell
+   * is the flex content region below it. The footer Cell is an absolutely-
+   * positioned band reserved via `padding-bottom`. The slide is a fixed-size
+   * box and components size against the section content-box, so the stage
+   * resolves deterministically (design/forms.md §6). (Charts size against their
+   * own `.chart-body` content box — see the chart-family in-form rules — so they
+   * don't depend on the section's cqh; that's what lets the masthead be an
+   * in-flow, content-height band instead of a fixed-height reserved one.) */
+  --masthead-h: calc(var(--_sec-1cqi, 1cqi) * 11); /* nominal; the band is content-height (manifest geometry ref) */
   --frame-x: calc(var(--_sec-1cqi, 1cqi) * 5);
   --frame-y: calc(var(--_sec-1cqi, 1cqi) * 6.875);
   /* Footer Cell geometry. The reserve is DERIVED from the real footer Cell
@@ -13467,8 +13468,11 @@ section.form {
   --footer-centre-w: calc(var(--_sec-1cqi, 1cqi) * 30);
   --footer-centre-half: calc(var(--footer-centre-w) / 2);
   position: relative;
-  padding-top: calc(var(--frame-y) + var(--masthead-h) + var(--sp-md));
-  padding-bottom: var(--footer-reserve);
+  /* Explicit frame inset on every side so the in-flow masthead + stage clear the
+   * deck header (top) and keep their side margins EVEN on components that zero
+   * the section padding (e.g. section.chart-frame sets `padding: 0`). No masthead
+   * height-reserve — the in-flow band supplies its own height. */
+  padding: var(--frame-y) var(--frame-x) var(--footer-reserve);
   /* Own stacking context so the z-behind watermark Tile paints ABOVE the canvas
    * but BELOW the (non-positioned) stage content. */
   isolation: isolate;
@@ -13489,24 +13493,23 @@ section.form {
 section.form.fill-center  { justify-content: center; }
 section.form.fill-anchor  { justify-content: flex-end; }
 /* optical-center sits the content slightly above true centre (the eye reads a
- * geometric centre as low) — a touch less reserve up top. */
+ * geometric centre as low) — extra bottom reserve biases it up. */
 section.form.fill-optical {
   justify-content: center;
-  padding-top: calc(var(--frame-y) + var(--masthead-h) + var(--sp-md) - var(--sp-lg));
+  padding-bottom: calc(var(--footer-reserve) + var(--sp-2xl));
 }
 section.form .cell-masthead {
-  position: absolute;
-  top: var(--frame-y);
-  left: var(--frame-x);
-  right: var(--frame-x);
-  height: var(--masthead-h);
+  /* In-flow, content-height band: the hairline sits directly under the title,
+   * so there is no dead space when the title is one line, and the band grows
+   * naturally for a two-line title. (Was a fixed --masthead-h absolute box,
+   * which left ~4-5cqi of empty band below a one-line title.) */
   display: grid;
   grid-template-columns: [masthead-lede] 1fr [masthead-bay] auto;
   column-gap: var(--sp-lg);
   align-items: start;
+  margin-bottom: var(--sp-md);
   padding-bottom: var(--sp-md);
   border-bottom: 1px solid var(--border);
-  overflow: hidden;
 }
 section.form .cell-masthead .masthead-bay { overflow: hidden; }
 section.form .cell-masthead .masthead-lede { min-width: 0; grid-column: masthead-lede; }
