@@ -27,7 +27,7 @@
  *   journey curve        — connected polyline of mood across tasks with
  *                          a y-axis scale and section bands behind.
  *   journey swimlane     — one row per actor; dot at every task the
- *                          actor participates in, sized by that task's mood.
+ *                          actor participates in, coloured by that task's mood.
  *   journey weighted     — task chip widths proportional to `+volume`;
  *                          chip color = mood. Two dimensions at once.
  *

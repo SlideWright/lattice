@@ -122,25 +122,6 @@ Authored as `ol` (`1.` source), the grid stamps a flush top-left accent corner t
    - The source of truth for the calibration loop. Required reading before each retrospective.
 ```
 
-### `mirror` — Mirror (no-op on symmetric grids)
-
-The universal `mirror` modifier is declared for completeness but has no visible effect — cards-grid is a symmetric layout with no inherent left/right asymmetry to flip.
-
-```markdown
-<!-- _class: cards-grid mirror -->
-
-## Mirror is a no-op here.
-
-- First card.
-  - Same position with or without `mirror`.
-- Second card.
-  - Same position with or without `mirror`.
-- Third card.
-  - Symmetric grids have nothing to flip.
-- Fourth card.
-  - This slide renders identically to the default.
-```
-
 ## Universal modifiers
 
 This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.

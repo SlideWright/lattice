@@ -77,7 +77,7 @@
     },
     "asymmetric": {
       "label": "Asymmetric — card-per-row layout",
-      "caption": "Promotes each regulation to its own card with the obligations rendered as inline state pills. Use when row labels need room for a body sentence and the comparison-density of the default grid would crowd them.",
+      "caption": "Promotes each regulation to its own card with the obligations rendered as inline state discs. Use when row labels need room for a body sentence and the comparison-density of the default grid would crowd them.",
       "sample": "<!-- _class: obligation-matrix asymmetric -->\n\n## Privacy obligations — card-per-regime layout.\n\n| Regulation | Notice | Consent | Retention | Breach | DSAR  |\n| ---------- | :----: | :-----: | :-------: | :----: | :---: |\n| GDPR       | [x]    | [x]     | [x]       | [x]    | [x]   |\n| CCPA/CPRA  | [x]    | [-]     | [x]       | [x]    | [x]   |\n| LGPD       | [x]    | [x]     | [x]       | [x]    | [x]   |\n\nEach row promotes to a card with body-level breathing room.\n"
     },
     "pills": {

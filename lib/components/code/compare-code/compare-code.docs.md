@@ -68,44 +68,6 @@ function after() {
 └─────────────────────────────────────────┘
 ```
 
-## Variants (layout-specific)
-
-### `mirror` — Mirror — swap left and right
-
-Flips the left and right columns. Useful when the deck's visual rhythm wants the after-state on the left, or when the natural reading order is new-then-old.
-
-```markdown
-<!-- _class: compare-code mirror -->
-
-`After & before · Component manifest loading`
-
-## Folder-shape lookup, with the prior approach for reference.
-
-`After · folder shape`
-
-```js
-function loadOne(name) {
-  const p = path.join(
-    __dirname, 'lib', 'components',
-    name, 'manifest.json'
-  );
-  return JSON.parse(fs.readFileSync(p, 'utf8'));
-}
-```
-
-`Before · flat file`
-
-```js
-function loadOne(name) {
-  const p = path.join(
-    __dirname, 'lib', 'components',
-    `${name}.json`
-  );
-  return JSON.parse(fs.readFileSync(p, 'utf8'));
-}
-```
-```
-
 ## Universal modifiers
 
 This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.

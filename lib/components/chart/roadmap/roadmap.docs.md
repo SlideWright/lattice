@@ -65,7 +65,7 @@ State markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, – in flight, ○ p
 
 ### `horizons` — Horizons — three-horizon planning framing
 
-Tints the phase columns as Horizon 1 / 2 / 3 (now / next / later) per the McKinsey three-horizons framing. Use when the planning frame is strategic-horizon-aware rather than fiscal-quarter-aware.
+Transposes the phase columns into vertical phase cards — each with a `Phase 01 / 02 / …` eyebrow and a categorical accent — so a three-horizon (now / next / later) read comes from the phase names you write. Use when the planning frame is strategic-horizon-aware rather than fiscal-quarter-aware.
 
 ```markdown
 <!-- _class: roadmap horizons -->
@@ -124,7 +124,7 @@ Renders each workstream as a horizontal track across the phase columns, so a rea
 
 ### `milestones` — Milestones — calendar-aware
 
-Treats the phase headers as dated milestones, carrying their date pill as a subtitle. Use when the cadence of the dates is part of the story, not just the sequence.
+Softly bands the phase columns so the dated headers read as a calendar cadence; the date stays the header's trailing meta pill (no extra chrome). Use when the cadence of the dates is part of the story, not just the sequence.
 
 ```markdown
 <!-- _class: roadmap milestones -->

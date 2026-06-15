@@ -25,7 +25,7 @@ Single authoritative reference — heading + citation + verbatim quote + plain-E
 > "Personal information" means information that identifies, relates to, describes, is reasonably capable of being associated with, or could reasonably be linked, directly or indirectly, with a particular consumer or household.
 
 - In plain English: any data tied to a household or device, not just a named person — IP addresses, cookie IDs, and device fingerprints are all in scope.
-- What we must do.
+- **What we must do.**
   - Treat household-level identifiers as PI in our notice, retention, and DSAR workflows. Audit pixel and tag inventory next quarter.
 
 
@@ -40,7 +40,7 @@ Single authoritative reference — heading + citation + verbatim quote + plain-E
 
 > Information that identifies, relates to, describes, is reasonably capable of being associated with, or could reasonably be linked, directly or indirectly, with a particular consumer or household.
 
-- What we must do.
+- **What we must do.**
   - Audit pixel inventory; treat household IDs as PI in DSAR workflows.
 
 
@@ -87,7 +87,7 @@ Single authoritative reference — heading + citation + verbatim quote + plain-E
 
 - In plain English.
   - Any online identifier that can single out a person — IP address, cookie ID, device fingerprint.
-- What we must do.
+- **What we must do.**
   - Scope notice and retention to cover online identifiers, not just named-person records.
 
 
@@ -103,7 +103,7 @@ Single authoritative reference — heading + citation + verbatim quote + plain-E
 > "Personal information" means information that identifies, relates to, describes, is reasonably capable of being associated with, or could reasonably be linked, directly or indirectly, with a particular consumer or household.
 
 - In plain English: any data tied to a household or device, not just a named person — IP addresses, cookie IDs, and device fingerprints are all in scope.
-- What we must do.
+- **What we must do.**
   - Treat household-level identifiers as PI in our notice, retention, and DSAR workflows. Audit pixel and tag inventory next quarter.
 
 
@@ -119,7 +119,7 @@ Single authoritative reference — heading + citation + verbatim quote + plain-E
 > "Personal information" means information that identifies, relates to, describes, is reasonably capable of being associated with, or could reasonably be linked, directly or indirectly, with a particular consumer or household.
 
 - In plain English: any data tied to a household or device, not just a named person — IP addresses, cookie IDs, and device fingerprints are all in scope.
-- What we must do.
+- **What we must do.**
   - Treat household-level identifiers as PI in our notice, retention, and DSAR workflows. Audit pixel and tag inventory next quarter.
 
 
@@ -135,7 +135,7 @@ Single authoritative reference — heading + citation + verbatim quote + plain-E
 > "Personal information" means information that identifies, relates to, describes, is reasonably capable of being associated with, or could reasonably be linked, directly or indirectly, with a particular consumer or household.
 
 - In plain English: any data tied to a household or device, not just a named person — IP addresses, cookie IDs, and device fingerprints are all in scope.
-- What we must do.
+- **What we must do.**
   - Treat household-level identifiers as PI in our notice, retention, and DSAR workflows. Audit pixel and tag inventory next quarter.
 
 

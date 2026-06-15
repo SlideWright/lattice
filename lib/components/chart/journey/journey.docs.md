@@ -84,7 +84,7 @@ Task chips are tinted by their mood score; plumb lines and faces are suppressed.
 
 ### `curve` — Curve — mood polyline with axis
 
-Renders the mood scores as a polyline over the task sequence with a y-axis scale and section bands behind. Use when the trend across the journey is the headline.
+Renders the mood scores as a polyline over the task sequence with a mood gridline scale and section bands behind. Use when the trend across the journey is the headline.
 
 ```markdown
 <!-- _class: journey curve -->
@@ -104,7 +104,7 @@ Renders the mood scores as a polyline over the task sequence with a y-axis scale
 
 ### `swimlane` — Swimlane — per-actor rows
 
-One row per actor; a dot marks every task that actor participates in, sized by that task's mood. Use when the question is who carries the journey and where the handoffs land.
+One row per actor; a dot marks every task that actor participates in, coloured by that task's mood. Use when the question is who carries the journey and where the handoffs land.
 
 ```markdown
 <!-- _class: journey swimlane -->

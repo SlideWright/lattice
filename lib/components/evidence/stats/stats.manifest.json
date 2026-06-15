@@ -20,7 +20,7 @@
     "subtitle": {
       "selector": "p > code",
       "required": false,
-      "description": "Optional subtitle (inline-code paragraph after h2)."
+      "description": "Optional inline-code paragraph (eyebrow before the h2, or caption after it). Styled by the generic `> p`/`> em` rule, not a dedicated `p > code` rule."
     },
     "tiles": {
       "selector": "ol > li",

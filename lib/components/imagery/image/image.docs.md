@@ -88,7 +88,7 @@ Letterboxed against the slide background — useful for plots, dashboards, and s
 
 ### `museum` — Museum — matted and framed
 
-Full-bleed variant: image inset on a `--bg-alt` matte (40px top/sides, 100px at the bottom) with a 1px hairline frame. Text reads on the matte at the bottom as a mono eyebrow label + body caption — editorial placard, no scrim. Use for the one hero image in a deck that deserves a wall-piece treatment.
+Full-bleed variant: image inset on a `--bg-alt` matte (a wider band at the bottom than the top/sides — ≈40px/100px at HD, scaling with the canvas in cqi) with a 1px hairline frame. Text reads on the matte at the bottom as a mono eyebrow label + body caption — editorial placard, no scrim. Use for the one hero image in a deck that deserves a wall-piece treatment.
 
 ```markdown
 <!-- _class: image museum -->

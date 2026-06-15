@@ -44,40 +44,6 @@ return signals;
 
 ---
 
-<!-- _class: compare-code mirror -->
-<!-- _footer: "Mirror — swap left and right · compare-code mirror" -->
-
-`After & before · Component manifest loading`
-
-## Folder-shape lookup, with the prior approach for reference.
-
-`After · folder shape`
-
-```js
-function loadOne(name) {
-  const p = path.join(
-    __dirname, 'lib', 'components',
-    name, 'manifest.json'
-  );
-  return JSON.parse(fs.readFileSync(p, 'utf8'));
-}
-```
-
-`Before · flat file`
-
-```js
-function loadOne(name) {
-  const p = path.join(
-    __dirname, 'lib', 'components',
-    `${name}.json`
-  );
-  return JSON.parse(fs.readFileSync(p, 'utf8'));
-}
-```
-
-
----
-
 <!-- _class: compare-code dark -->
 <!-- _footer: "Composition: dark · compare-code dark" -->
 

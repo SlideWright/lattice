@@ -11,7 +11,7 @@
  *
  * Roster of responsibilities owned by named actors. Strong = the
  * responsibility (left header). Inline `code` = the actor name,
- * rendered as a filled accent pill, right-aligned. Nested li = body.
+ * rendered as an outlined categorical pill, right-aligned. Nested li = body.
  *
  * Convention: bold is the primary scannable thing; code is the
  * metadata chip. Same convention as everywhere else in Lattice.
@@ -52,7 +52,7 @@ section.actors > ol > li > strong {
   color:var(--text-heading);
   line-height:var(--lh-snug);
 }
-/* Inline code = actor name chip, filled categorical pill, right-aligned.
+/* Inline code = actor name chip, outlined categorical pill, right-aligned.
  * Pill chrome (font, border, bg, color, radius) inherits from the
  * universal pill rule. This block adds grid placement and the actors-
  * specific letter-spacing + slightly wider padding. The categorical

@@ -301,8 +301,8 @@ One-line subtitle that frames the deck.
 | Slot | Selector | Required | Description |
 |---|---|---|---|
 | `heading` | `h1` | yes | Deck title. |
-| `eyebrow` | `p > code` | no | Optional category label below the h1 (inline-code paragraph). |
-| `subtitle` | `p` | no | Optional plain-paragraph subtitle below the eyebrow. |
+| `eyebrow` | `p > code` | no | Optional category label rendered above the h1 (authored as an inline-code paragraph immediately after the h1; flex `order` lifts it above). |
+| `subtitle` | `p` | no | Optional plain-paragraph subtitle below the h1. |
 
 #### Anatomy
 
@@ -675,7 +675,7 @@ What the second phase produces before rollout begins.
 
 ##### `watermark` — Watermark — accent panel + letterform
 
-An accent left panel with a large letterform watermark (the heading's first letter), an `h5` section rubric, and an optional `Audience · / Intent ·` metadata footer on the right. Use for an overview/showcase panel. Was the standalone `split-list` component before 2026-06-07.
+An accent left panel with a large letterform watermark (the heading's first letter), an `h3` section rubric in the right panel, and an optional `Audience · / Intent ·` metadata footer on the right. Use for an overview/showcase panel. Was the standalone `split-list` component before 2026-06-07.
 
 ```markdown
 <!-- _class: split-panel watermark -->
@@ -1166,25 +1166,6 @@ Authored as `ol` (`1.` source), the grid stamps a flush top-left accent corner t
    - The source of truth for the calibration loop. Required reading before each retrospective.
 ```
 
-##### `mirror` — Mirror (no-op on symmetric grids)
-
-The universal `mirror` modifier is declared for completeness but has no visible effect — cards-grid is a symmetric layout with no inherent left/right asymmetry to flip.
-
-```markdown
-<!-- _class: cards-grid mirror -->
-
-## Mirror is a no-op here.
-
-- First card.
-  - Same position with or without `mirror`.
-- Second card.
-  - Same position with or without `mirror`.
-- Third card.
-  - Symmetric grids have nothing to flip.
-- Fourth card.
-  - This slide renders identically to the default.
-```
-
 #### Universal modifiers
 
 This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
@@ -1320,7 +1301,7 @@ See [cards-stack.gallery.light.pdf](../../lib/components/inventory/cards-stack/c
 
 **Tags** `status` · `stoplight` · `process` · `requirements`
 
-Use for completion reports, readiness audits, or pre-flight checks. State markers [x]/[-]/[ ]/[/] produce status-colored circles carrying a distinct mark — check / dash / x / slash — so the shape reads independently of color (colour-blind-safe).
+Use for completion reports, readiness audits, or pre-flight checks. State markers [x]/[-]/[ ]/[/] produce status-colored circles carrying a distinct mark — check / dash / ring / slash — so the shape reads independently of color (colour-blind-safe).
 
 #### When to use
 
@@ -3365,7 +3346,7 @@ Use for KPI dashboards with status framing — current value, target, trend, att
 
 #### When NOT to use
 
-- **Decorative pills without status semantics.** The pills tint the layout (warn, breach, on-track). Don't use them as freeform tags — `On plan`, `At risk`, `Breaching`, `Compliant`, `Remediating` are the vocabulary the engine recognises.
+- **Decorative pills without status semantics.** The pills read as status, not freeform tags. Status colour is assigned by each KPI's row position within the modifier — the engine never reads the pill text — so reserve them for the status vocabulary the position implies (`On plan`, `At risk`, `Breaching`, `Compliant`, `Remediating`). Arbitrary labels land a colour that has nothing to do with the words.
 - **More than four KPIs in attention or spotlight.** `attention` highlights the metric that needs the room; `spotlight` monumentalises one number. Past four KPIs the visual hierarchy collapses — split into two slides.
 - **No targets, no trends.** If the KPIs carry only current values, the slide is a stats row, not a kpi dashboard. Use stats and reclaim the room.
 
@@ -3411,29 +3392,6 @@ Use for KPI dashboards with status framing — current value, target, trend, att
 ```
 
 #### Variants (layout-specific)
-
-##### `target` — Variance-against-target
-
-Bare-bones variance dashboard — each KPI shows current value against target with the gap framed plainly. Best for working sessions where the gap, not the status, is the conversation.
-
-```markdown
-<!-- _class: kpi target -->
-
-## Where we are against quarter targets.
-
-1. 94%
-   - Signal-classification success
-   - target 99%, gap is "known issue"
-2. 18 min
-   - p99 decision close
-   - target 20 min, beating target
-3. 18
-   - Decisions logged
-   - target 340, gap is "cultural"
-4. 1
-   - Calibration cycles run
-   - target 6, gap is "structural"
-```
 
 ##### `attention` — Attention — the slipping metric leads
 
@@ -3622,7 +3580,7 @@ Use for at-a-glance metric rows — quarterly results, headline KPIs. Each tile 
 | Slot | Selector | Required | Description |
 |---|---|---|---|
 | `title` | `h2` | yes | Slide heading framing the metrics. |
-| `subtitle` | `p > code` | no | Optional subtitle (inline-code paragraph after h2). |
+| `subtitle` | `p > code` | no | Optional inline-code paragraph (eyebrow before the h2, or caption after it). Styled by the generic `> p`/`> em` rule, not a dedicated `p > code` rule. |
 | `tiles` | `ol > li` | yes | One li per stat tile, authored as an ordered list (`1.`). The lead is the number (it renders in display type automatically — no `**…**` needed); the caption is a nested bullet beneath it:     1. 73%        - faster close A bare number with no nested caption won't render as the big number. |
 
 #### Anatomy
@@ -3849,7 +3807,7 @@ Letterboxed against the slide background — useful for plots, dashboards, and s
 
 ##### `museum` — Museum — matted and framed
 
-Full-bleed variant: image inset on a `--bg-alt` matte (40px top/sides, 100px at the bottom) with a 1px hairline frame. Text reads on the matte at the bottom as a mono eyebrow label + body caption — editorial placard, no scrim. Use for the one hero image in a deck that deserves a wall-piece treatment.
+Full-bleed variant: image inset on a `--bg-alt` matte (a wider band at the bottom than the top/sides — ≈40px/100px at HD, scaling with the canvas in cqi) with a 1px hairline frame. Text reads on the matte at the bottom as a mono eyebrow label + body caption — editorial placard, no scrim. Use for the one hero image in a deck that deserves a wall-piece treatment.
 
 ```markdown
 <!-- _class: image museum -->
@@ -4133,7 +4091,7 @@ Task chips are tinted by their mood score; plumb lines and faces are suppressed.
 
 ##### `curve` — Curve — mood polyline with axis
 
-Renders the mood scores as a polyline over the task sequence with a y-axis scale and section bands behind. Use when the trend across the journey is the headline.
+Renders the mood scores as a polyline over the task sequence with a mood gridline scale and section bands behind. Use when the trend across the journey is the headline.
 
 ```markdown
 <!-- _class: journey curve -->
@@ -4153,7 +4111,7 @@ Renders the mood scores as a polyline over the task sequence with a y-axis scale
 
 ##### `swimlane` — Swimlane — per-actor rows
 
-One row per actor; a dot marks every task that actor participates in, sized by that task's mood. Use when the question is who carries the journey and where the handoffs land.
+One row per actor; a dot marks every task that actor participates in, coloured by that task's mood. Use when the question is who carries the journey and where the handoffs land.
 
 ```markdown
 <!-- _class: journey swimlane -->
@@ -4478,7 +4436,7 @@ Use for part-to-whole breakdowns with three to six slices. Add the `donut` modif
 
 ##### `donut` — Donut — hollow centre
 
-Hollows the pie into a donut. Visually cleaner for executive decks; the centre can be left blank or used for a total label. Default pick for board and investor material.
+Hollows the pie into a donut. Visually cleaner for executive decks; the centre is left blank for a calmer read. Default pick for board and investor material.
 
 ```markdown
 <!-- _class: piechart donut -->
@@ -4541,7 +4499,7 @@ See [piechart.gallery.light.pdf](../../lib/components/chart/piechart/piechart.ga
 
 **Tags** `percentage` · `stoplight` · `status`
 
-Use for status-tracking across multiple parallel items (project readiness, OKR progress, capacity utilization). Status colors via on-track/at-risk/blocked.
+Use for status-tracking across multiple parallel items (project readiness, OKR progress, capacity utilization). Status colors via the chart-status vocabulary (on-track / done / live, at-risk / warn, blocked / fail, deferred).
 
 #### When to use
 
@@ -5210,7 +5168,7 @@ State markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, – in flight, ○ p
 
 ##### `horizons` — Horizons — three-horizon planning framing
 
-Tints the phase columns as Horizon 1 / 2 / 3 (now / next / later) per the McKinsey three-horizons framing. Use when the planning frame is strategic-horizon-aware rather than fiscal-quarter-aware.
+Transposes the phase columns into vertical phase cards — each with a `Phase 01 / 02 / …` eyebrow and a categorical accent — so a three-horizon (now / next / later) read comes from the phase names you write. Use when the planning frame is strategic-horizon-aware rather than fiscal-quarter-aware.
 
 ```markdown
 <!-- _class: roadmap horizons -->
@@ -5269,7 +5227,7 @@ Renders each workstream as a horizontal track across the phase columns, so a rea
 
 ##### `milestones` — Milestones — calendar-aware
 
-Treats the phase headers as dated milestones, carrying their date pill as a subtitle. Use when the cadence of the dates is part of the story, not just the sequence.
+Softly bands the phase columns so the dated headers read as a calendar cadence; the date stays the header's trailing meta pill (no extra chrome). Use when the cadence of the dates is part of the story, not just the sequence.
 
 ```markdown
 <!-- _class: roadmap milestones -->
@@ -5456,13 +5414,13 @@ See [state-chart.gallery.light.pdf](../../lib/components/chart/state-chart/state
 
 ### timeline-list
 
-> Date-stamped event list — spine with date pills, status pills, and body.
+> Date-stamped event list rendered as a horizontal spine — a dot per event with its date pill above and title, status pill, and body stacked below.
 
 **Function** evidence · **Form** timeline · **Substance** series
 
 **Tags** `changelog` · `milestones` · `status` · `retrospective`
 
-Use for milestone history or annotated timelines. Each item gets a date pill on the left, status pill on the right, body in the middle.
+Use for milestone history or annotated timelines. Each event sits on a left-to-right spine: a dot with its date pill above it, then the title, an optional status pill, and a short body stacked beneath.
 
 #### When to use
 
@@ -6163,44 +6121,6 @@ function after() {
 └─────────────────────────────────────────┘
 ```
 
-#### Variants (layout-specific)
-
-##### `mirror` — Mirror — swap left and right
-
-Flips the left and right columns. Useful when the deck's visual rhythm wants the after-state on the left, or when the natural reading order is new-then-old.
-
-```markdown
-<!-- _class: compare-code mirror -->
-
-`After & before · Component manifest loading`
-
-## Folder-shape lookup, with the prior approach for reference.
-
-`After · folder shape`
-
-```js
-function loadOne(name) {
-  const p = path.join(
-    __dirname, 'lib', 'components',
-    name, 'manifest.json'
-  );
-  return JSON.parse(fs.readFileSync(p, 'utf8'));
-}
-```
-
-`Before · flat file`
-
-```js
-function loadOne(name) {
-  const p = path.join(
-    __dirname, 'lib', 'components',
-    `${name}.json`
-  );
-  return JSON.parse(fs.readFileSync(p, 'utf8'));
-}
-```
-```
-
 #### Universal modifiers
 
 This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
@@ -6423,7 +6343,7 @@ Use when one citation IS the slide. The blockquote carries the verbatim language
 > Verbatim quotation of the cited language.
 
 - Plain-English interpretation of what the language covers.
-- What we must do.
+- **What we must do.**
   - The concrete action this citation argues for.
 ```
 
@@ -6467,7 +6387,7 @@ Promotes the blockquote to a pull-quote scale — the verbatim language reads as
 
 > Information that identifies, relates to, describes, is reasonably capable of being associated with, or could reasonably be linked, directly or indirectly, with a particular consumer or household.
 
-- What we must do.
+- **What we must do.**
   - Audit pixel inventory; treat household IDs as PI in DSAR workflows.
 ```
 
@@ -6507,7 +6427,7 @@ Sets the quotation as the body with the gloss running as margin notes alongside.
 
 ##### `triptych` — Triptych — three panels
 
-Frames the citation, the verbatim text, and the gloss as three panels for a formal presentation of a single authority. Keep the quotation short so it sits comfortably in its panel.
+Frames the verbatim quote and the gloss items as three panels, with the citation spanning above, for a formal presentation of a single authority. Keep the quotation short so it sits comfortably in its panel.
 
 ```markdown
 <!-- _class: citation-card triptych -->
@@ -6520,7 +6440,7 @@ Frames the citation, the verbatim text, and the gloss as three panels for a form
 
 - In plain English.
   - Any online identifier that can single out a person — IP address, cookie ID, device fingerprint.
-- What we must do.
+- **What we must do.**
   - Scope notice and retention to cover online identifiers, not just named-person records.
 ```
 
@@ -6628,7 +6548,7 @@ Red = applies (exposure), green = exempt (relief). Brackets frame the structure.
 
 ##### `asymmetric` — Asymmetric — card-per-row layout
 
-Promotes each regulation to its own card with the obligations rendered as inline state pills. Use when row labels need room for a body sentence and the comparison-density of the default grid would crowd them.
+Promotes each regulation to its own card with the obligations rendered as inline state discs. Use when row labels need room for a body sentence and the comparison-density of the default grid would crowd them.
 
 ```markdown
 <!-- _class: obligation-matrix asymmetric -->

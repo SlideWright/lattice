@@ -172,7 +172,7 @@ section:not(.quote):not(.featured):not(.math):not(.citation-card):not([class*="l
   margin-top:var(--sp-sm);
   flex-shrink:0;
 }
-section:not(.quote):not(.featured):not(.math):not(.citation-card):not([class*="layout-"]) > blockquote::before {
+section:not(.quote):not(.featured):not(.math):not(.citation-card):not(.redline):not([class*="layout-"]) > blockquote::before {
   content:'KEY INSIGHT';
   font-family:var(--font-label);
   font-size:var(--fs-meta);
@@ -842,11 +842,13 @@ section.split-panel.mirror {
   flex-direction: row-reverse;
 }
 
-/* — compare-prose: reverse the two cards (and their connector) —
- * Composes with chosen/rejected/decision: those rules use :nth-child(1|3)
+/* — compare-prose: reverse the two cards (and their chevron) —
+ * Composes with chosen/rejected/decision: those rules use li:first/last-child
  * which in source order remain left-then-right; row-reverse only flips the
- * visual rendering. The chosen card stays the second one in the markdown. */
-section.compare-prose.mirror .compare-prose-inner {
+ * visual rendering. The chosen card stays the second one in the markdown.
+ * Targets the live `> :is(ul,ol)` flex row (the `.compare-prose-inner / .card`
+ * structure is retired and emitted by no render path). */
+section.compare-prose.mirror > :is(ul, ol) {
   flex-direction: row-reverse;
 }
 

@@ -6,7 +6,7 @@
 
 **Tags** `percentage` · `stoplight` · `status`
 
-Use for status-tracking across multiple parallel items (project readiness, OKR progress, capacity utilization). Status colors via on-track/at-risk/blocked.
+Use for status-tracking across multiple parallel items (project readiness, OKR progress, capacity utilization). Status colors via the chart-status vocabulary (on-track / done / live, at-risk / warn, blocked / fail, deferred).
 
 ## When to use
 

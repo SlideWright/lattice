@@ -10,10 +10,12 @@
  * <!-- _class: obligation-matrix -->
  * | Regulation | Notice | Consent | Retention | Breach | DSAR |
  * | ---------- | :----: | :-----: | :-------: | :----: | :--: |
- * | CCPA       | ●      | ◐       | ●         | ●      | ●    |
+ * | CCPA       | [x]    | [-]     | [x]       | [x]    | [x]  |
  *
- * The default uses cell glyphs (●/◐/○ or text). Variants: .heat (cell
- * fills), .pills (cell pills), .lanes (row stripes), .asymmetric (cards).
+ * Cells are authored with the state-marker grammar [x]/[-]/[ ]/[/], decoded
+ * into status-coloured state discs (masked SVG via --state-mark). Variants:
+ * .heat (cell fills), .pills (cell pills), .lanes (row stripes),
+ * .asymmetric (cards).
  * ──────────────────────────────────────────────────────────────────── */
 section.obligation-matrix { display:flex; flex-direction:column; }
 section.obligation-matrix h2 { margin-bottom:var(--sp-md); }

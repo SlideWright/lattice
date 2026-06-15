@@ -62,7 +62,7 @@ Use for part-to-whole breakdowns with three to six slices. Add the `donut` modif
 
 ### `donut` — Donut — hollow centre
 
-Hollows the pie into a donut. Visually cleaner for executive decks; the centre can be left blank or used for a total label. Default pick for board and investor material.
+Hollows the pie into a donut. Visually cleaner for executive decks; the centre is left blank for a calmer read. Default pick for board and investor material.
 
 ```markdown
 <!-- _class: piechart donut -->

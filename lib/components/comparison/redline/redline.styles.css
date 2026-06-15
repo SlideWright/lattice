@@ -3,18 +3,14 @@
  * Extracted from lib/_legacy.css in Phase 4 of the destination map.
  * See lib/components/redline/redline.manifest.json for the component contract.
  *
- * SPECIFICITY-BUMP HACK (transitional). Phase 4 of the _legacy.css
- * split moves component CSS EARLIER in the bundle than lib/_modifiers.css.
- * For rules that tie KEY INSIGHT on specificity (0,3,3 for ::before,
- * 0,3,2 for blockquote) — every `.split`, `.stacked`, and `.three-col`
- * variant that overrides blockquote chrome and blockquote::before
- * content (OLD/NEW labels) — the post-extraction cascade would let
- * KEY INSIGHT win by source order and break the variants. Until KEY
- * INSIGHT is redesigned (Phase 5b proper — likely a custom-property
- * gate), each conflicting selector is duplicated (`.split.split`,
- * `.stacked.stacked`, `.three-col.three-col`) to bump specificity to
- * 0,4,X so it beats KEY INSIGHT on specificity, not source order.
- * Pixel-check verified: 0 diff against pre-phase-5b.
+ * KEY-INSIGHT GATE. The central blockquote eyebrow rule in
+ * lib/base/base.modifiers.css excludes redline (`:not(.redline)`), so a
+ * redline never inherits the "KEY INSIGHT" label — bare/annotated redlines
+ * render a clean diff, and the `.split` / `.stacked` / `.three-col` variants'
+ * own OLD / NEW blockquote::before labels apply unopposed (no source-order
+ * race). The doubled-class selectors below (`.split.split`, …) are a legacy
+ * specificity bump from the _legacy.css split; with the gate in place they
+ * are no longer load-bearing, but are retained as harmless.
  */
 
 /* ── REDLINE ──────────────────────────────────────────────────────────
