@@ -11,7 +11,7 @@ Math — typeset equations and proofs.
 
 <!-- _class: math -->
 
-### Linear regression · OLS
+`Linear regression · OLS`
 
 ## The closed-form estimator.
 

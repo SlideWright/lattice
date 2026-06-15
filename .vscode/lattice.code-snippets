@@ -402,7 +402,8 @@
     "body": [
       "<!-- _class: kpi -->",
       "",
-      "### Financial · Q4 2026",
+      "`Financial · Q4 2026`",
+      "",
       "## Revenue ahead of plan; margin and cash both expanded.",
       "",
       "1. $2.4B",
@@ -519,7 +520,7 @@
     "body": [
       "<!-- _class: math -->",
       "",
-      "### Eyebrow · context",
+      "`Eyebrow · context`",
       "",
       "## One-sentence framing of what the equation establishes.",
       "",

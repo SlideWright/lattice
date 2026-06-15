@@ -20,9 +20,9 @@
   ],
   "slots": {
     "eyebrow": {
-      "selector": "h3:first-child",
+      "selector": "p:first-child > code",
       "required": false,
-      "description": "Optional rubric label above the heading (e.g. 'Linear regression · OLS')."
+      "description": "Optional inline-code rubric above the heading (e.g. `Linear regression · OLS`). Authored as an inline-code paragraph, not a heading, so it stays lint-safe (no heading-order violation)."
     },
     "heading": {
       "selector": "h2",
@@ -40,9 +40,9 @@
       "description": "'where:' legend. Each li introduces an `$x$` symbol followed by its definition."
     }
   },
-  "skeleton": "<!-- _class: math -->\n\n### Eyebrow · context\n\n## One-sentence framing of what the equation establishes.\n\n$$ y = f(x) $$\n\n- $y$ — what we predict\n- $x$ — input variable\n- $f$ — the relation under study\n",
+  "skeleton": "<!-- _class: math -->\n\n`Eyebrow · context`\n\n## One-sentence framing of what the equation establishes.\n\n$$ y = f(x) $$\n\n- $y$ — what we predict\n- $x$ — input variable\n- $f$ — the relation under study\n",
   "anatomyBlock": "math-canvas",
-  "sample": "<!-- _class: math -->\n\n### Linear regression · OLS\n\n## The closed-form estimator.\n\n$$ \\hat\\beta = (X^\\top X)^{-1} X^\\top y $$\n\n- $\\hat\\beta$ — OLS coefficient vector\n- $X$ — design matrix, $n \\times p$\n- $y$ — response vector, length $n$\n- $X^\\top X$ — Gram matrix, $p \\times p$, must be invertible\n",
+  "sample": "<!-- _class: math -->\n\n`Linear regression · OLS`\n\n## The closed-form estimator.\n\n$$ \\hat\\beta = (X^\\top X)^{-1} X^\\top y $$\n\n- $\\hat\\beta$ — OLS coefficient vector\n- $X$ — design matrix, $n \\times p$\n- $y$ — response vector, length $n$\n- $X^\\top X$ — Gram matrix, $p \\times p$, must be invertible\n",
   "whenToUse": [
     {
       "title": "The equation IS the argument",
@@ -93,7 +93,7 @@
     "feature": {
       "label": "Feature — hero equation + legend",
       "caption": "Alias for the base layout — eyebrow, headline, hero equation, legend. Use when you want to make the persona framing explicit in the class list.",
-      "sample": "<!-- _class: math feature -->\n\n### Logistic regression · MLE\n\n## The log-likelihood we maximise.\n\n$$ \\ell(\\beta) = \\sum_{i=1}^{n} \\left[ y_i \\log \\sigma(x_i^\\top \\beta) + (1 - y_i) \\log\\bigl(1 - \\sigma(x_i^\\top \\beta)\\bigr) \\right] $$\n\n- $\\ell$ — log-likelihood, concave in $\\beta$\n- $\\sigma$ — logistic link, $\\sigma(z) = 1/(1+e^{-z})$\n- $y_i$ — observed label, $\\in \\{0,1\\}$\n- $x_i$ — feature vector for observation $i$\n"
+      "sample": "<!-- _class: math feature -->\n\n`Logistic regression · MLE`\n\n## The log-likelihood we maximise.\n\n$$ \\ell(\\beta) = \\sum_{i=1}^{n} \\left[ y_i \\log \\sigma(x_i^\\top \\beta) + (1 - y_i) \\log\\bigl(1 - \\sigma(x_i^\\top \\beta)\\bigr) \\right] $$\n\n- $\\ell$ — log-likelihood, concave in $\\beta$\n- $\\sigma$ — logistic link, $\\sigma(z) = 1/(1+e^{-z})$\n- $y_i$ — observed label, $\\in \\{0,1\\}$\n- $x_i$ — feature vector for observation $i$\n"
     },
     "derivation": {
       "label": "Derivation — proof chain with justification column",

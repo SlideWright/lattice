@@ -12,7 +12,7 @@ Use for KPI dashboards with status framing — current value, target, trend, att
 
 - **Status framing matters as much as the number.** Reach for kpi when the audience needs value, target, trend, AND status indicator together. For ungoverned metric rows use stats; for a single hero number use big-number.
 - **Pick the modifier from the audience.** Board / investor reviews use the bare briefing default. SRE / SLO reviews use `ops`. Auditor / regulator packs use `compliance`. Year-over-year growth stories use `trajectory`. A single hero metric with body copy uses `spotlight`.
-- **One contract across all five.** Every modifier reads the same `### eyebrow / ## headline / 1. value / nested bullets / status pills` authoring contract. Switching modifiers should never require rewriting the prose.
+- **One contract across all five.** Every modifier reads the same `` `eyebrow` `` / `## headline` / `1. value` / nested bullets / status pills authoring contract. Switching modifiers should never require rewriting the prose.
 
 ## When NOT to use
 
@@ -25,7 +25,8 @@ Use for KPI dashboards with status framing — current value, target, trend, att
 ```markdown
 <!-- _class: kpi -->
 
-### Financial · Q4 2026
+`Financial · Q4 2026`
+
 ## Revenue ahead of plan; margin and cash both expanded.
 
 1. $2.4B
@@ -44,7 +45,7 @@ Use for KPI dashboards with status framing — current value, target, trend, att
 | Slot | Selector | Required | Description |
 |---|---|---|---|
 | `title` | `h2` | yes | Slide heading naming the KPI group. |
-| `eyebrow` | `h3` | no | Optional eyebrow above the heading — mono, tracked uppercase (e.g. `### FINANCIAL · Q4 2026`). |
+| `eyebrow` | `p > code` | no | Optional inline-code eyebrow above the heading — mono, tracked uppercase (e.g. `Financial · Q4 2026`). Authored as an inline-code paragraph, not a heading, so it stays lint-safe (no heading-order violation). |
 | `kpis` | `ol > li` | yes | One li per KPI, authored as an ordered list (`1.`). The lead is the metric value (the big number) — it renders in display type automatically (no `**…**` needed); follow it with nested bullets for the metric name, target/trend, and status pills. A bare value with no nested bullets won't render as the number. |
 
 ## Anatomy
@@ -70,7 +71,8 @@ Promotes the one KPI in trouble to hero scale, with the supporting three holding
 ```markdown
 <!-- _class: kpi attention -->
 
-### Framework · Q4 2026
+`Framework · Q4 2026`
+
 ## One metric below target; remediation under way, as it has been for two quarters.
 
 1. 94%
@@ -94,7 +96,8 @@ Promotes the one KPI in trouble to hero scale, with the supporting three holding
 ```markdown
 <!-- _class: kpi ops -->
 
-### Platform · Q4 2026
+`Platform · Q4 2026`
+
 ## One latency target slipping; everything else inside SLO, for now.
 
 1. 99.92%
@@ -118,7 +121,8 @@ Binary-state pills (`Compliant`, `Remediating`, `Open`) with a source footer for
 ```markdown
 <!-- _class: kpi compliance -->
 
-### Compliance · Q4 2026
+`Compliance · Q4 2026`
+
 ## Three frameworks clean; one open finding under remediation since the last walk-through.
 
 1. 0
@@ -144,7 +148,8 @@ Four-up cards with categorical stripes that read as period-over-period movement.
 ```markdown
 <!-- _class: kpi trajectory -->
 
-### Growth · FY26 vs FY25
+`Growth · FY26 vs FY25`
+
 ## Every growth lever moved forward this year, in the cut of the data we are showing.
 
 1. $420M
@@ -168,7 +173,8 @@ Hero KPI gets a paragraph of body copy and a row of context pills; the supportin
 ```markdown
 <!-- _class: kpi spotlight -->
 
-### Headline · Q4 2026
+`Headline · Q4 2026`
+
 ## The number behind the quarter, and the one in every headline slide.
 
 1. $420M
