@@ -378,12 +378,15 @@ in patch versions.
   export stays clean **and warns the author in the console, listing the exact
   overflowing pages** to fix before delivering. (Previously the ring was burned
   into the PDF.) The export path enforces this two ways: it strips the
-  `.overflow` class before printing, **and** aborts the live-preview runtime
-  (`lattice-runtime.js`) during the headless render — without that, a deck which
-  embeds the runtime (as the galleries do) would have its MutationObserver /
-  ResizeObserver / rAF watcher re-paint the ring and tab mid-print. The written
-  `.html` keeps the runtime for browser preview; only the PDF/PNG/PPTX render
-  neutralizes it.
+  `.overflow` class before printing, **and** drops the live-preview runtime
+  (`lattice-runtime.js`) `<script>` tag from the export HTML — without that, a
+  deck which embeds the runtime (as the galleries do) would have its
+  MutationObserver / ResizeObserver / rAF watcher re-paint the ring and tab
+  mid-print. The runtime is a documented no-op for the deliverable (Mermaid is
+  pre-rendered to SVG; styling is the embedded `lattice.css`), and dropping the
+  tag — rather than intercepting the request per page load — keeps every render
+  fast (request interception slowed the 53-component invariants suite enough to
+  time out in CI).
 
 - **The Form (`form:`, formerly `islands:`) no longer paints chrome over
   content.** Three real defects are fixed at the root by making the masthead /

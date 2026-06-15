@@ -1266,7 +1266,19 @@ ${stateChartScript}
 </body></html>`;
 
 const outHtml = outFile.replace(/\.(pdf|pptx|png)$/i, '') + '.html';
-fs.writeFileSync(outHtml, htmlDoc);
+// Strip the live-preview runtime (lattice-runtime.js) from the export HTML.
+// A deck may embed `<script src="…/lattice-runtime.js">` for the VS Code / web
+// preview; that runtime runs the overflow watcher, which CREATES the red
+// ".overflow-tab" and re-marks sections on a MutationObserver/ResizeObserver/rAF
+// loop — re-painting the authoring badge during print and defeating the
+// export-stays-clean contract. Mermaid is pre-rendered to SVG at build time and
+// styling is the embedded lattice.css, so the runtime is a documented no-op for
+// the deliverable. We drop the tag rather than intercept the request per render:
+// request interception adds latency to every page load (it slows the 53-component
+// invariants suite enough to time out in CI). The class-strip below still clears
+// the emulator's own inline-watcher ring.
+const RUNTIME_SCRIPT = /[ \t]*<script\b[^>]*\blattice-runtime(?:\.min)?\.js[^>]*><\/script>\s*/gi;
+fs.writeFileSync(outHtml, htmlDoc.replace(RUNTIME_SCRIPT, ''));
 if (!QUIET) console.log(`HTML: ${slides.length} slides → ${outHtml}`);
 
 // ── PDF via Puppeteer ─────────────────────────────────────────────────────────
@@ -1305,22 +1317,6 @@ const puppeteer = loadPuppeteer();
   if (CHROME_EXEC) launchOpts.executablePath = CHROME_EXEC;
   const browser = await puppeteer.launch(launchOpts);
   const page = await browser.newPage();
-  // Neutralize the LIVE-PREVIEW runtime during export. Decks may embed
-  // `<script src="…/lattice-runtime.js">` for the VS Code / web preview; that
-  // runtime runs the overflow watcher, which CREATES the red ".overflow-tab"
-  // and re-marks sections on a MutationObserver / ResizeObserver / rAF loop —
-  // so it would re-add the authoring badge during print, defeating the
-  // export-stays-clean contract (and outrunning the one-shot strip below).
-  // The runtime is a documented no-op for PDF output (Mermaid is pre-rendered
-  // at build time; plots/state-charts use the emulator's own injected scripts;
-  // styling is the embedded lattice.css), so aborting it only removes the
-  // live-preview chrome. The written .html keeps the tag for anyone previewing
-  // the file in a browser — this abort applies to the headless render only.
-  await page.setRequestInterception(true);
-  page.on('request', (req) => {
-    if (/lattice-runtime(\.min)?\.js(\?|$)/.test(req.url())) req.abort();
-    else req.continue();
-  });
   // Set viewport to slide dimensions so section's own cqi properties (padding,
   // border-top) resolve against the correct ICB in screen mode.  Without this,
   // Puppeteer's default 800×600 viewport causes section's cqi fallback to
