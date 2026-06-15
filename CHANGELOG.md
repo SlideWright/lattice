@@ -94,6 +94,14 @@ in patch versions.
   talk and a full 20–30-minute presentation. Wiring the "Open a worked example"
   path into the Drawing Board UI follows in a separate change.
   Design: `engineering/decisions/2026-06-14-worked-exemplar-decks.md`.
+
+- **A features page (`/features`).** A scannable, segmented capability catalog —
+  the comparison page covers "vs. them"; this is the "just us" reference. Built
+  as a single catalog table (the comparison matrix's styling, minus the
+  competitor columns) with a Feature/Details split, grouped into Authoring, the
+  53-layout field-native catalog (by bucket), Theming & brand, Output &
+  rendering, Deck-as-code, AI authoring, and Ownership. Marketing prose stays on
+  the landing; this page is the reference. Linked from the primary nav and footer.
 - **A public comparison page (`/comparison`).** An honest, sourced read on how
   Lattice stacks up against the field: AI generators (Gamma, Beautiful.ai,
   Decktopus, Presentations.ai, Plus AI, MagicSlides, SlidesAI), office suites

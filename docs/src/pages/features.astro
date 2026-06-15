@@ -1,0 +1,304 @@
+---
+// Lattice features page — a standalone Astro route (NOT a Starlight page), a
+// sibling to index.astro and comparison.astro.
+//
+// Format: a SCANNABLE, SEGMENTED CATALOG. The landing already does the
+// marketing prose; this page is the reference — every capability, grouped by
+// area, with a details column. Same table styling as the comparison matrix, but
+// "just Lattice" (no competitor columns). Static, zero client JS.
+//
+// Honesty bar: every count/name is verified against the repo — 53 components /
+// 12 buckets (the `_chart-family` partial is internal, excluded), 14 palettes,
+// 29 treatments (18 tint + 11 mark), 12-token type scale, 25 Mermaid types.
+import '../styles/landing.css';
+import PaletteControls from '../components/site/PaletteControls.tsx';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { joinBase } from '../lib/base-url.mjs';
+import { primaryNav, GITHUB_URL, isCurrent } from '../lib/nav.mjs';
+
+const base = import.meta.env.BASE_URL;
+const url = (p) => joinBase(base, p);
+const navLinks = primaryNav(url);
+const here = Astro.url.pathname;
+
+const docsRoot = process.cwd();
+const tokensCss = readFileSync(join(docsRoot, 'src/styles/lattice-tokens.generated.css'), 'utf8');
+const palettes = [...new Set([...tokensCss.matchAll(/data-palette="([^"]+)"/g)].map((m) => m[1]))];
+
+// ── The catalog ─────────────────────────────────────────────────────────────
+// Segments → rows (feature · details). Comprehensive on purpose: this is a
+// reference, not a pitch.
+const CATALOG = [
+	{
+		cat: 'Authoring',
+		rows: [
+			['Plain-Markdown source', 'Write decks in the Markdown you already know. No GUI, no proprietary file, no boxes to nudge.'],
+			['53 named layouts, 12 buckets', 'Pick a layout per slide by intent; the engine composes it. Full catalog two sections down.'],
+			['Function · Form · Substance · Finish', 'A four-axis vocabulary for choosing a layout by what it’s for — not by scrolling a gallery.'],
+			['Nested-list slots', 'Structured titles and bodies come from ordinary Markdown lists. No drawing tools.'],
+			['Front-matter directives', 'Set theme, header, footer, pagination, eyebrow, and subtitle once; they apply deck-wide.'],
+			['Custom logo watermark', 'One directive stamps a faint brand mark on every slide, auto-inverted for dark canvas.'],
+		],
+	},
+	{
+		cat: 'Layout catalog — field-native',
+		rows: [
+			['Anchor (3)', 'title · divider · closing'],
+			['Statement (4)', 'content · big-number · quote · split-panel'],
+			['Inventory (10)', 'cards-grid · cards-stack · agenda · checklist · glossary · list · list-tabular · logo-wall · actors · q-and-a'],
+			['Comparison (8)', 'compare-prose · compare-table · matrix-2x2 · verdict-grid · decision · pricing · redline · split-compare'],
+			['Progression (2)', 'list-steps · list-criteria'],
+			['Evidence (2)', 'kpi · stats'],
+			['Chart (13)', 'radar · quadrant · funnel · gantt · kanban · roadmap · journey · piechart · progress · state-chart · timeline-list · word-cloud · map'],
+			['Diagram (1)', 'All 25 Mermaid diagram types, pre-rendered to SVG and auto-themed to the deck.'],
+			['Math (1)', 'KaTeX with Definition/Theorem/Proof cards, derivation chains, matrix decompositions, and an equation beside its function-plot curve.'],
+			['Code (2)', 'code (syntax-highlighted) · compare-code (side-by-side diff)'],
+			['Legal (5)', 'statute-stack · authority-chain · obligation-matrix · citation-card · regulatory-update'],
+			['Imagery (2)', 'image · featured'],
+		],
+	},
+	{
+		cat: 'Theming & brand',
+		rows: [
+			['14 palettes, light + dark', 'Every palette ships a dark variant. Switch the whole deck in one line.'],
+			['Palette-blind layouts', 'Layouts never name a colour — they read var(--token). Restyle a deck by editing one line.'],
+			['WCAG-AA guaranteed', 'Contrast clears AA on every text-bearing surface, in every palette, light and dark.'],
+			['12-token type scale', 'A fixed --fs-* scale. No t-shirt sizes, no per-slide drift.'],
+			['29 treatments', '18 tint and 11 mark peripheral accents (glows, washes, geometric marks), composable on any layout.'],
+			['Native dark canvas', 'Driven by the CSS color-scheme cascade, not class-list hacks — one mechanism across every render path.'],
+		],
+	},
+	{
+		cat: 'Output & rendering',
+		rows: [
+			['Four formats, one source', 'PDF (vector, selectable text), PPTX, PNG (2×), and HTML — the output extension picks the format.'],
+			['Pixel-identical', 'Every format comes off one engine and matches the others.'],
+			['Mermaid → SVG', 'Diagrams pre-render to SVG at build time (so they survive the PDF) and pick up the palette automatically.'],
+			['Reproducible output', 'Same source, same pixels. No model in the render path, no randomness.'],
+			['Responsive typography', 'Font sizes in container-query units scale with the slide canvas.'],
+		],
+	},
+	{
+		cat: 'A deck that behaves like code',
+		rows: [
+			['git-diffable', 'A deck is a text file. Revisions read like code review — line by line.'],
+			['Built-in linter', 'One deterministic checker runs in the editor, the CLI, and the browser, with stable rule IDs and a published diagnostic spec.'],
+			['Drawing Board', 'An in-browser editor with a live filmstrip preview.'],
+			['The Architect', 'A deterministic Coach (lints and scores, spends no tokens) alongside a generative Converse chat.'],
+			['Regression-tested', 'Every layout carries a semantic-invariant baseline that gates each release.'],
+		],
+	},
+	{
+		cat: 'AI authoring',
+		rows: [
+			['Machine catalog + spec', 'A machine-readable component catalog and a published authoring spec let an agent compose valid, on-brand decks.'],
+			['Bring your own model', 'Drive 300+ models through OpenRouter on your own account. Default: Claude Sonnet.'],
+			['Cost controls', 'Deterministic-first checks, prompt caching, a session budget cap, and live spend + balance on screen.'],
+		],
+	},
+	{
+		cat: 'Ownership',
+		rows: [
+			['MIT-licensed', 'Use it, fork it, ship it. No seat fees, no contract.'],
+			['Offline & private', 'A build step on your machine. No account, no telemetry, nothing sent anywhere.'],
+			['No lock-in', 'The source is Markdown you own. Export a Marp bundle any time you want to leave.'],
+		],
+	},
+];
+---
+
+<!doctype html>
+<html lang="en" data-palette="indaco" data-mode="light">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Features — the full Lattice capability catalog</title>
+		<meta
+			name="description"
+			content="A scannable, segmented catalog of everything Lattice does: 53 field-native layouts across 12 buckets, 14 palettes with guaranteed WCAG-AA, one source rendered pixel-identical to PDF/PPTX/PNG/HTML, a deck that behaves like code, native diagrams and math, AI authoring, and MIT/offline/no-lock-in."
+		/>
+		<link rel="icon" type="image/png" href={url('lattice-logo.png')} />
+		<script is:inline>
+			(function () {
+				var r = document.documentElement;
+				try {
+					var p = localStorage.getItem('lattice-docs-palette');
+					if (p) r.setAttribute('data-palette', p);
+					var m = localStorage.getItem('lattice-docs-mode');
+					if (m === 'light' || m === 'dark') r.setAttribute('data-mode', m);
+					else if (window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches)
+						r.setAttribute('data-mode', 'dark');
+				} catch (e) {}
+			})();
+		</script>
+		<style>
+			.cat-table { border-collapse: collapse; width: 100%; }
+			.cat-table th, .cat-table td { text-align: left; vertical-align: middle; padding: 12px 16px; border-bottom: 1px solid var(--border); }
+			.cat-table thead th { font-family: var(--font-mono, monospace); font-size: 11.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-muted); }
+			.cat-table .cat-band th {
+				background: color-mix(in srgb, var(--accent) 8%, transparent);
+				color: var(--accent);
+				font-family: var(--font-mono, monospace);
+				font-size: 12.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em;
+				padding-top: 15px; padding-bottom: 15px;
+				border-bottom: 1px solid var(--border);
+			}
+			.cat-table th.feat { width: 34%; color: var(--text-heading); font-size: 14.5px; font-weight: 600; }
+			.cat-table .feat-inner { display: flex; align-items: center; gap: 10px; }
+			.cat-table .ck {
+				flex: 0 0 auto; width: 17px; height: 17px;
+				border-radius: 50%; background: var(--accent); color: var(--on-accent);
+				display: inline-flex; align-items: center; justify-content: center;
+				font-size: 10px; font-weight: 700; line-height: 1;
+			}
+			.cat-table td.detail { color: var(--text-body); font-size: 14px; line-height: 1.5; }
+			.cat-table tbody tr:not(.cat-band):hover { background: var(--bg-alt); }
+			@media (max-width: 560px) {
+				.cat-table th.feat { width: 42%; }
+				.cat-table th, .cat-table td { padding: 11px 12px; }
+			}
+		</style>
+	</head>
+	<body>
+		<header class="topbar">
+			<div class="wrap topbar-inner">
+				<a class="brand" href={url('')}>
+					<img class="brand-logo" src={url('lattice-logo.png')} alt="" width="30" height="30" />
+					<span class="brand-mark">Lattice</span>
+				</a>
+				<nav class="topnav" id="topnav">
+					{navLinks.map((l) => (
+						<a class="navlink" href={l.href} aria-current={isCurrent(l, here) ? 'page' : undefined}>{l.label}</a>
+					))}
+					<a class="navlink" href={GITHUB_URL}>GitHub</a>
+				</nav>
+				<div class="topbar-actions">
+					<div class="controls lx-ui">
+						<PaletteControls client:idle palettes={palettes} />
+					</div>
+					<button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-controls="topnav" aria-expanded="false"></button>
+				</div>
+			</div>
+		</header>
+
+		<main>
+			<!-- Hero — kept short on purpose; this page is a reference, not a pitch. -->
+			<section class="py-[clamp(40px,5vw,72px)] pb-[clamp(20px,3vw,36px)]">
+				<div class="wrap max-w-[60rem]">
+					<p class="m-0 mb-4 font-mono text-[12px] font-medium uppercase tracking-[0.16em] text-primary">
+						Features
+					</p>
+					<h1 class="m-0 mb-4 font-[var(--font-display)] text-[clamp(32px,4.6vw,52px)] font-bold leading-[1.05] tracking-[-0.02em] text-[var(--text-heading)]">
+						Everything Lattice does, in one place.
+					</h1>
+					<p class="m-0 text-[clamp(16px,1.8vw,18px)] leading-[1.5] text-foreground">
+						The full capability catalog, grouped and scannable. For the pitch, see the
+						<a href={url('')} class="font-semibold text-primary hover:underline">landing</a>; for how we stack up against
+						the field, the <a href={url('comparison/')} class="font-semibold text-primary hover:underline">comparison</a>.
+					</p>
+				</div>
+			</section>
+
+			<!-- The catalog table -->
+			<section class="pb-[clamp(48px,6vw,88px)]">
+				<div class="wrap">
+					<div class="overflow-hidden rounded-xl border border-border bg-card">
+						<table class="cat-table">
+							<thead>
+								<tr>
+									<th class="feat" scope="col">Feature</th>
+									<th scope="col">What it does</th>
+								</tr>
+							</thead>
+							<tbody>
+								{CATALOG.map((seg) => (
+									<>
+										<tr class="cat-band">
+											<th colspan="2" scope="colgroup">{seg.cat}</th>
+										</tr>
+										{seg.rows.map(([f, d]) => (
+											<tr>
+												<th class="feat" scope="row"><div class="feat-inner"><span class="ck" aria-hidden="true">✓</span><span>{f}</span></div></th>
+												<td class="detail">{d}</td>
+											</tr>
+										))}
+									</>
+								))}
+							</tbody>
+						</table>
+					</div>
+					<p class="mt-4 text-[13px] leading-[1.6] text-muted-foreground">
+						53 layouts across 12 buckets · 14 palettes (light + dark) · four output formats from one source.
+						Counts are live against the engine — see the <a href={url('components/')} class="font-semibold text-primary hover:underline">component reference</a> for every layout with a live preview.
+					</p>
+				</div>
+			</section>
+
+			<!-- CTA -->
+			<section class="border-t border-border py-[clamp(40px,5vw,72px)]">
+				<div class="wrap">
+					<div class="grid grid-cols-1 gap-[18px] sm:grid-cols-3">
+						<a
+							href={url('playground/')}
+							class="group block rounded-xl border border-border bg-card p-[24px] text-card-foreground shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary hover:shadow-lg"
+						>
+							<h3 class="mb-2 font-[var(--font-body)] text-[18px] font-semibold tracking-[-0.01em] text-[var(--text-heading)]">Open the playground</h3>
+							<p class="m-0 text-[14.5px] text-foreground">Write a slide, switch every palette, export a real PDF — in the browser.</p>
+						</a>
+						<a
+							href={url('components/')}
+							class="group block rounded-xl border border-border bg-card p-[24px] text-card-foreground shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary hover:shadow-lg"
+						>
+							<h3 class="mb-2 font-[var(--font-body)] text-[18px] font-semibold tracking-[-0.01em] text-[var(--text-heading)]">Browse the layouts</h3>
+							<p class="m-0 text-[14.5px] text-foreground">All 53 layouts, live and themable in every palette.</p>
+						</a>
+						<a
+							href={url('getting-started/')}
+							class="group block rounded-xl border border-border bg-card p-[24px] text-card-foreground shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary hover:shadow-lg"
+						>
+							<h3 class="mb-2 font-[var(--font-body)] text-[18px] font-semibold tracking-[-0.01em] text-[var(--text-heading)]">Render your first deck</h3>
+							<p class="m-0 text-[14.5px] text-foreground">Install the toolchain and ship a boardroom-grade PDF in minutes.</p>
+						</a>
+					</div>
+				</div>
+			</section>
+		</main>
+
+		<footer class="foot">
+			<div class="wrap foot-inner">
+				<a class="brand" href={url('')}>
+					<img class="brand-logo" src={url('lattice-logo.png')} alt="" width="26" height="26" />
+					<span class="brand-mark">Lattice</span>
+				</a>
+				<nav>
+					<a href={url('introduction/')}>What is Lattice?</a>
+					<a href={url('story/')}>Story</a>
+					<a href={url('getting-started/')}>Get started</a>
+					<a href={url('playground/')}>Playground</a>
+					<a href={url('drawing-board/')}>Drawing Board</a>
+					<a href={url('workbench/')}>Workbench</a>
+					<a href={url('guides/authoring/')}>Authoring</a>
+					<a href={url('components/')}>Components</a>
+					<a href={url('features/')}>Features</a>
+					<a href={url('comparison/')}>Comparison</a>
+					<a href="https://github.com/slidewright/lattice">GitHub</a>
+				</nav>
+				<span class="legal">Designed by humans. Refined with Claude. · Part of Lattice Style · MIT-licensed</span>
+			</div>
+		</footer>
+
+		<script is:inline>
+			(function () {
+				var navToggle = document.getElementById('nav-toggle');
+				var topbar = document.querySelector('.topbar');
+				if (navToggle && topbar) {
+					navToggle.addEventListener('click', function () {
+						var open = topbar.classList.toggle('nav-open');
+						navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+					});
+				}
+			})();
+		</script>
+	</body>
+</html>
