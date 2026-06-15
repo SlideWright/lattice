@@ -56,4 +56,4 @@ _none_
 
 - [#180](https://github.com/SlideWright/lattice/issues/180) epic(chart): resolution-independent charts — cqi-first, kill fixed-px, for any-format / 10K export
 - [#198](https://github.com/SlideWright/lattice/issues/198) bug(examples): gallery-jargon.pdf is not reproducible — rebuild draws overflow rings on 6 unrelated slides + reflows text
-- [#356](https://github.com/SlideWright/lattice/issues/356) proposal: Form — revise the lib/forms/ manifest + maintainability cleanups (post-#352)
+- [#356](https://github.com/SlideWright/lattice/issues/356) proposal: make Frame/Cell/Tile self-contained folders (like components)
