@@ -65,6 +65,17 @@ B later without touching the editor binding.**
 
 ## Recommended path — phased, never a rewrite
 
+> **Update (2026-06-15) — the recommended *starting* transport is the Cloudflare
+> Durable Objects relay, not P2P.** Cloudflare Durable Objects are confirmed
+> available on the **free** plan, which removes the only reason to start with
+> WebRTC P2P. A Durable Object relay is **totally free for now** *and*
+> corporate-firewall-proof (a single WSS connection on port 443 — see
+> [Will it work over the internet?](#will-it-work-over-the-internet-in-a-corporate-network)
+> below). So if any of your users are on corporate networks, **skip Phase 1 and
+> build Phase 2's relay as the first networked step** — same effort, far more
+> reliable, and it persists rooms. Phase 1 (pure P2P) remains documented as the
+> *zero-account* option for a purely consumer audience.
+
 ### Phase 0 — Local-first foundation (zero network, valuable solo)
 Add `yjs`, `y-codemirror.next`, `y-indexeddb`. Make the deck source a `Y.Text`,
 bind it to CodeMirror, persist the `Y.Doc` to IndexedDB. **No collaboration yet** —
@@ -89,6 +100,55 @@ same Worker where you'd one day proxy a shared OpenRouter key** if you ever move
 off pure BYO. Frontend change: one provider import. That's it.
 
 ---
+
+## Will it work over the internet? In a corporate network?
+
+The most important practical question, and the answer splits sharply by transport.
+
+**How WebRTC connects (the ICE ladder).** Two browsers try, in order: (1) direct,
+(2) **STUN** — a free, lightweight server that just reveals each peer's public IP
+so they can "hole-punch" through home routers (discovery only, no traffic flows
+through it, free forever), (3) **TURN** — a relay that carries *all* the bytes
+when hole-punching fails (consumes bandwidth → **not reliably free**).
+
+- **Over the open internet (home/consumer): usually works, free.** Two people on
+  different home networks almost always connect via STUN hole-punching — direct
+  P2P, no relay. Fails on **mobile/cellular (CGNAT)** and some ISPs' **symmetric
+  NAT**, which force a TURN fallback.
+- **Corporate networks: P2P frequently fails.** Enterprise firewalls often block
+  UDP outright (WebRTC's preferred transport), use symmetric NAT behind HTTP
+  proxies (STUN can't hole-punch), or block WebRTC by policy (DLP). Surviving that
+  needs **TURN over TLS on 443** — which costs money *and* still doesn't beat the
+  strictest setups. At that point P2P has lost its "zero infra" advantage anyway.
+
+**The transport that works everywhere: a WebSocket relay on 443.** The Cloudflare
+Durable Objects relay (Phase 2 / `y-partyserver`) is a **single WSS connection to
+a well-known host on port 443** — indistinguishable from ordinary HTTPS. It sails
+through virtually every corporate firewall (blocking it would mean blocking the
+web), needs no STUN/TURN/NAT gymnastics, and persists rooms server-side.
+
+### The "totally free for now" stack (recommended)
+
+| Piece | What | Where it runs | Cost |
+|---|---|---|---|
+| Frontend | the Drawing Board, unchanged | **GitHub Pages** | $0 (already have it) |
+| Sync relay | ~50-line `y-partyserver` WebSocket server | **Cloudflare Workers + Durable Objects** (free tier, confirmed) | $0 within free limits |
+| Transport | one **WSS connection on port 443** | — | — |
+| Persistence | rooms survive everyone leaving | Durable Object storage | $0 within free tier |
+| Local cache | offline-first | `y-indexeddb` in the browser | $0 |
+| Client deps | `yjs`, `y-codemirror.next`, `y-indexeddb`, `y-partyserver` | bundled into the site | $0 |
+
+**Honest caveat:** "totally free" ≠ "zero infrastructure" — you need a free
+Cloudflare account and a one-time `wrangler deploy` of a small worker. It stays $0
+until you outgrow the (generous) free tier; past that it's a few dollars, not a
+rewrite. If Cloudflare's free-tier terms ever change, **Deno Deploy** has a free
+tier that also supports WebSockets and can host a drop-in `y-websocket` server —
+identical client code.
+
+**Lazier alternative (consumer-only):** `y-webrtc` + Google's public STUN + no
+account = truly zero infra, but the public signaling servers are unreliable (so you
+end up self-hosting signaling anyway) and **no TURN means it breaks in corporate
+and on mobile/CGNAT**. Only "less setup" on paper.
 
 ## What the collaboration experience looks like
 
@@ -128,8 +188,11 @@ off pure BYO. Frontend change: one provider import. That's it.
 5. **Presence UI**: avatar stack + remote cursor styling (CSS tokens, per HARD
    RULE #3 — no hex literals; collaborator colors via `var(--token)` where they
    touch chrome).
-6. **Signaling (Phase 1)**: a tiny Cloudflare Worker for `y-webrtc` signaling —
-   deployed *separately* from GitHub Pages. Stateless, free.
+6. **Relay (recommended)**: a ~50-line `y-partyserver` worker on Cloudflare
+   Workers + Durable Objects, deployed *separately* from GitHub Pages via
+   `wrangler` — free tier, WSS on 443, persists rooms. (P2P-only alternative: a
+   tiny stateless `y-webrtc` signaling worker instead — but see the corporate
+   caveat above.)
 7. **Opt-in + degrade**: feature-flag it; solo/offline path unchanged.
 8. **Capabilities + changelog**: register any new tooling in
    `engineering/capabilities.md` (HARD RULE #15); `CHANGELOG.md` entry (#10).
