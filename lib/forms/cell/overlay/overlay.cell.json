@@ -1,0 +1,12 @@
+{
+  "$schema": "../../schema/cell.schema.json",
+  "id": "overlay",
+  "region": "overlay",
+  "z": 4,
+  "accepts": ["review"],
+  "capacity": "stack",
+  "fill": "anchor",
+  "gap": "--frame-y",
+  "geometry": { "inset": "--frame-x" },
+  "clip": false
+}

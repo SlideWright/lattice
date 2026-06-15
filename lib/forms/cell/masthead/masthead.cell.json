@@ -1,0 +1,12 @@
+{
+  "$schema": "../../schema/cell.schema.json",
+  "id": "masthead",
+  "region": "masthead",
+  "z": 3,
+  "accepts": ["frame"],
+  "capacity": "one",
+  "fill": "start",
+  "gap": "--frame-y",
+  "geometry": { "size": "--masthead-h", "inset": "--frame-x" },
+  "clip": true
+}

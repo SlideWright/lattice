@@ -1,0 +1,10 @@
+{
+  "$schema": "../../schema/tile.schema.json",
+  "id": "annotation",
+  "kind": "review",
+  "fits": ["overlay"],
+  "z": 4,
+  "population": "authoring grammar — the `<!-- annotation -->` review comment",
+  "hideToken": "silent",
+  "status": "shipped"
+}

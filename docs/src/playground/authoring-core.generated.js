@@ -30,7 +30,7 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 var require_lint_core = __commonJS({
   "lib/authoring/lint-core.js"(exports, module) {
     var CLASS_DIRECTIVE = /<!--\s*_class:\s*([^>]+?)\s*-->/;
-    var MODIFIER_PREFIXES = ["tint-", "mark-", "with-", "at-", "no-", "tone-", "treatment-", "checks-"];
+    var MODIFIER_PREFIXES = ["tint-", "mark-", "with-", "at-", "no-", "tone-", "treatment-", "checks-", "fill-"];
     var CARD_STYLE_LAYOUTS = Object.freeze([
       "cards-grid",
       "cards-stack",

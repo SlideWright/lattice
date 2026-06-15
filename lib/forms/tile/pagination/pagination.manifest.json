@@ -1,0 +1,10 @@
+{
+  "$schema": "../../schema/tile.schema.json",
+  "id": "pagination",
+  "kind": "chrome",
+  "fits": ["pagination-right"],
+  "z": 3,
+  "population": "derived — the `paginate` page number",
+  "hideToken": "no-paginate",
+  "status": "shipped"
+}

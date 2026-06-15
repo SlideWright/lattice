@@ -19,10 +19,10 @@ const {
   applyMastheadMetaToHtml,
   applyProgressRailToHtml,
   applyWatermarkToHtml,
-  ISLANDS_MODES,
-  readIslandsMode,
-  islandsToggleClass,
-  applyIslandsToggleToHtml,
+  FORM_MODES,
+  readFormMode,
+  formToggleClass,
+  applyFormToggleToHtml,
   stateClassesFor,
   verdictGridBadges,
   obligationMatrixBadges,
@@ -107,10 +107,10 @@ module.exports = {
     marp.render = (markdown, env) => {
       const result = originalRender(markdown, env);
       if (result && typeof result.html === 'string') {
-        // Deck-wide `islands:` toggle — resolve it to the `islands` class on
+        // Deck-wide `form:` toggle — resolve it to the `form` class on
         // every eligible section FIRST, so the registry's masthead-lift and
-        // the island injectors below all see it.
-        result.html = applyIslandsToggleToHtml(result.html, markdown);
+        // the Tile injectors below all see it.
+        result.html = applyFormToggleToHtml(result.html, markdown);
         // Shared transformer registry — dispatches chart-family,
         // split-panels, roadmap, journey, word-cloud (in that order).
         // See lib/transformers/registry.js for the order rationale and
@@ -121,14 +121,14 @@ module.exports = {
         // not on per-section content. The shape doesn't fit the
         // registry's per-section primitive.
         result.html = applyDeckLogoToHtml(result.html, markdown);
-        // meta island — fills the masthead bay the registry just built with
+        // meta Tile — fills the masthead bay the registry just built with
         // the front-matter `meta:` directive. Runs last so the bay exists.
         result.html = applyMastheadMetaToHtml(result.html, markdown);
-        // progress island — derives sections from dividers and injects the
+        // progress Tile — derives sections from dividers and injects the
         // footer-centre dot-rail. Deck-level (needs every section), so it
         // runs here on the full shell, not in the per-section registry.
         result.html = applyProgressRailToHtml(result.html);
-        // watermark island — section-number ghost behind `islands watermark`
+        // watermark Tile — section-number ghost behind `form watermark`
         // slides. Same divider-derived section model.
         result.html = applyWatermarkToHtml(result.html);
       }
@@ -151,10 +151,10 @@ module.exports.plugins = {
   applyMastheadMetaToHtml,
   applyProgressRailToHtml,
   applyWatermarkToHtml,
-  ISLANDS_MODES,
-  readIslandsMode,
-  islandsToggleClass,
-  applyIslandsToggleToHtml,
+  FORM_MODES,
+  readFormMode,
+  formToggleClass,
+  applyFormToggleToHtml,
   stateClassesFor,
   verdictGridBadges,
   obligationMatrixBadges,

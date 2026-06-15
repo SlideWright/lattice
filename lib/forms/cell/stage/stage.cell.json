@@ -1,0 +1,12 @@
+{
+  "$schema": "../../schema/cell.schema.json",
+  "id": "stage",
+  "region": "stage",
+  "z": 2,
+  "accepts": ["content", "frame", "surface"],
+  "capacity": "stack",
+  "fill": "optical-center",
+  "gap": "--frame-y",
+  "geometry": { "inset": "--frame-inset-x" },
+  "clip": true
+}

@@ -122,8 +122,28 @@ in patch versions.
   to toggle Auto. A **full-screen** toggle (auto-entered on Start, `Esc` to leave)
   reclaims the browser chrome, and on phones held **landscape** the bar + HUD
   compact so the 16:9 stage fills the freed height instead of a letterboxed sliver.
+- **The Form composition model is now a first-class, engine-read manifest
+  (`lib/forms/`).** Frame + Cell + Tile each get a folder-per-noun catalog
+  (`frame/`, `tile/`, `cell/`, `schema/`) with a loader (`lib/forms/index.js`)
+  mirroring the component-manifest infrastructure, generated into a machine
+  catalog at `dist/docs/forms.json` (new `npm run docs:forms` / `:check`, wired
+  into `npm run build`). The engine's `FORM_TOGGLE_SKIP` (the chrome-exempt
+  sovereign Frames) is now **derived from the frame manifests** instead of a
+  hardcoded array, so adding a sovereign Frame folder auto-updates the toggle's
+  skip behaviour — the Open/Closed win (the derived set is behaviour-identical
+  to the historical one). See `design/forms.md` §11 and
+  `engineering/decisions/2026-06-15-form-implementation.md` §6.
 
-- **A public comparison page (`/comparison`).** An honest, sourced read on how
+- **A value-demonstrating Form gallery (`design/forms.gallery.md` + committed
+  PDF) and a per-feature demo deck (`examples/form.md`).** The gallery makes the
+  case for the model — author one block of Tiles, let a consumer select a Frame
+  and the same Tiles re-flow — and proves the chart-collapse fix (a full-size
+  `piechart donut` and `radar` inside the chrome), the footer-Cell contract (the
+  rail no longer collides with the footer text), the masthead bay (`meta:` + a
+  `confidential` status chip), the watermark Tile, and per-Cell `fill` discipline
+  (`fill-center` vs `fill-anchor` on the same Tile). The payoff sequence carries
+  one block of content under `form: standard`, `form: minimal`, and a sovereign
+  `split-panel` Frame. See `design/forms.md`. An honest, sourced read on how
   Lattice stacks up against the field: AI generators (Gamma, Beautiful.ai,
   Decktopus, Presentations.ai, Plus AI, MagicSlides, SlidesAI), office suites
   (PowerPoint + Copilot, Google Slides + Gemini, Keynote), code engines (Marp,
@@ -250,6 +270,21 @@ in patch versions.
   to what renders. The readable `dist/lattice-runtime.js` / `dist/lattice.css`
   remain the devtools/debug artifacts; the minified builds already backed the
   Export-to-Marp path, so this just shares them.
+- **Breaking: the `islands` composition feature is renamed to `form`** — the
+  canonical Form / Frame / Cell / Tile vocabulary (`design/forms.md`). The
+  deck/section toggle `islands: on | minimal | off` becomes
+  `form: standard | minimal | off` (`standard`/`true`/`on`/`yes` all map to
+  `standard` — the seam for author-selected Frames); per-slide `islands` /
+  `no-islands` classes become `form` / `no-form`; CSS hooks `.isl-*` →
+  `.cell-*` / `.tile-*`, custom properties `--isl-*` → `--frame-*` / `--cell-*`.
+  `masthead` / `progress` / `watermark` are kept (surviving Cell/Tile concepts).
+  Landed lock-step across all three render paths (HARD RULE 1), pixel-identical
+  (a control deck renders AE=0 before/after). See
+  `engineering/decisions/2026-06-15-form-implementation.md` §7.
+
+- **Per-Cell `fill` discipline on the stage** — `fill-center`, `fill-anchor`,
+  and `fill-optical` opt a `form` slide's stage into a board-style content
+  distribution instead of the default top-anchored flow (`design/forms.md` §5).
 
 - **Chart spine tokens (`--chart-spine` / `-w` / `-h`) moved to
   `section.word-cloud`.** They lived on the shared `section.chart-frame` block,
@@ -281,25 +316,50 @@ in patch versions.
   strings on the landing said 58; the catalog ships 53. Corrected to match the
   canonical count (`dist/docs/components.json`).
 
-- **`islands: on` no longer collides content-dense slides.** With islands
-  enabled, `list-criteria`, `actors`, `roadmap`, the `piechart donut` (which
-  collapsed to a half-ring), and other dense layouts overran — bodies ran into
-  the next item's title and into the footer berth. The masthead band was
-  reserved as an *in-flow* margin, so it sat inside the section's content box;
-  since `section { container-type: size }`, components size themselves with
-  `cqi/cqh` against that box — which still included the band — so they sized to
-  `section − footer` and overran the real body by ~the band's height. The band
-  is now an **absolutely-positioned berth reserved via `padding-top`** (mirroring
-  the footer's `padding-bottom`), so the content box equals the true body area
-  and `cqi/cqh` resolve to the real berth — components stop overgrowing. Body
-  overflow is **hard-clipped** at the berth (`overflow: hidden`) instead of
-  bleeding across the chrome, and the runtime overflow ring still fires so an
-  over-stuffed slide reads "too much" in authoring. CSS-only in
-  `base.variants.css`, so all three render paths inherit it; `islands: off`
-  (boardroom) is byte-identical. Resolution-invariant (no fixed px — all `cqi`),
-  so HD/FHD/4K render identically. Resolves Defect 1 of
-  `engineering/decisions/2026-06-13-islands-sketch-density-collisions.md`. (The
-  exact-berth fade + the footer↔section-label column are tracked as M2 there.)
+- **Overflow signalling split into authoring vs. delivery — and made
+  accessible.** The loud signal (the red ring + a new labelled **"OVERFLOWS"
+  corner tab** — text, not colour alone, fixing WCAG 1.4.1) now appears **only in
+  the live preview** (VS Code / Drawing Board / playground), where the author is
+  fixing. **Exported PDFs no longer burn in the ring** — a red box in front of a
+  board is worse than the subtle clipping `overflow:hidden` already does, so the
+  export stays clean **and warns the author in the console, listing the exact
+  overflowing pages** to fix before delivering. (Previously the ring was burned
+  into the PDF.)
+
+- **The Form (`form:`, formerly `islands:`) no longer paints chrome over
+  content.** Three real defects are fixed at the root by making the masthead /
+  stage / footer **Cells** reserve their boxes (`design/forms.md` §6):
+  - **Masthead Cell.** An in-flow, content-height band: the hairline sits
+    directly under the title (no dead space under a one-line title; the band
+    grows for a two-line title). Components flow in the real stage below it; the
+    footer is reserved via `padding-bottom`.
+  - **Charts no longer collapse OR clip.** A `piechart donut` (and `radar`,
+    `map`, the cohort `quadrant`) under the Form failed two ways: on a roomy
+    slide it collapsed to a thumbnail (the `cqh`-against-`flex:1`-figure chain
+    can't grow a replaced `<svg>` in print media); on a *dense* slide (2-line
+    subtitle + caption) an interim `cqi`-height fix overflowed the squeezed
+    `.chart-body` and `overflow:hidden` clipped the ring + legend to a fragment.
+    Charts now size to the **`.chart-body` content box** (`container-type:size`
+    on the body, `display:contents` on the figure, svg `height:100cqh`), which
+    fills the stage reliably in the print context and tracks every chrome combo
+    (0/1/2-line subtitle ± caption) — full ring, all legend rows, no clip, HD
+    and 4K alike. Scoped to `section.form`. See
+    `engineering/decisions/2026-06-15-form-chart-clip.md`.
+  - **Footer no longer collides with the progress rail.** The footer Cell
+    reserves three non-overlapping horizontal zones (footer-left ·
+    progress-centre · pagination-right); footer text yields the reserved centre
+    so it can never run through the section label.
+  Body overflow is hard-clipped at the stage (`overflow: hidden`) so it can't
+  bleed across the chrome Cells; the overflow warning ring still fires. (A soft
+  content "fade" at the cut was considered and rejected — it's a scrollable-web
+  idiom, false on a fixed page, and hides authored content; see `design/forms.md`
+  §6.) All `section.form`-scoped → non-Form (boardroom) decks are
+  byte-identical; resolution-invariant (all `cqi/cqh`, no fixed px). Completes
+  Defect 1 of
+  `engineering/decisions/2026-06-13-islands-sketch-density-collisions.md`
+  (the masthead-reservation note's "M1 fixed the donut" claim was stale — the
+  donut collapse was still live and is fixed here); see
+  `engineering/decisions/2026-06-15-form-implementation.md`.
 
 ### Added
 

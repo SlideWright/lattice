@@ -1,0 +1,12 @@
+{
+  "$schema": "../../schema/cell.schema.json",
+  "id": "footer",
+  "region": "footer",
+  "z": 3,
+  "accepts": ["frame"],
+  "capacity": "one",
+  "fill": "center",
+  "gap": "--frame-y",
+  "geometry": { "size": "--footer-h", "inset": "--frame-x" },
+  "clip": true
+}

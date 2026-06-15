@@ -92,6 +92,8 @@ const SCRIPT_META = {
   'docs:components:check':    ['Build & bundle', 'Freshness gate for the per-component docs.'],
   'docs:portal':              ['Build & bundle', 'Aggregate manifests into dist/docs/components.{md,json} + grammar.json (the LFM per-component grammar) — the canonical component catalog.'],
   'docs:portal:check':        ['Build & bundle', 'Freshness gate for the component catalog (md/json) + LFM grammar.json.'],
+  'docs:forms':               ['Build & bundle', 'Aggregate the Form manifests (lib/forms/{frame,tile,cell}) into dist/docs/forms.json — the machine catalog of the Frame + Cell + Tile composition model.'],
+  'docs:forms:check':         ['Build & bundle', 'Freshness gate for the Form catalog (dist/docs/forms.json).'],
   'docs:landing-tokens':      ['Build & bundle', 'Emit per-palette CSS token blocks for the docs landing page.'],
   'docs:landing-tokens:check':['Build & bundle', 'Freshness gate for the landing-page token blocks.'],
   'docs:spec':                ['Build & bundle', 'Generate the docs-site Specification pages (LFM 1.0 + Diagnostic Protocol) from the canonical spec/*.md.'],

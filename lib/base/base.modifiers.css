@@ -224,13 +224,13 @@ section img.emoji {
   margin:0 0.05em;
 }
 section header {
-  position:absolute; top:var(--isl-inset-y); left:var(--isl-inset-x); right:var(--isl-inset-x);
+  position:absolute; top:var(--frame-inset-y); left:var(--frame-inset-x); right:var(--frame-inset-x);
   font-family:var(--font-label); font-size:var(--fs-meta); font-weight:500;
   letter-spacing:0.10em; text-transform:uppercase; text-align:left;
   color:var(--marp-slide-header-color, var(--text-muted));
 }
 section footer {
-  position:absolute; bottom:var(--isl-inset-y); left:var(--isl-inset-x); right:var(--isl-page-reserve);
+  position:absolute; bottom:var(--frame-inset-y); left:var(--frame-inset-x); right:var(--frame-page-reserve);
   font-family:var(--font-label); font-size:var(--fs-meta); font-weight:500;
   line-height:1; letter-spacing:0.06em; text-align:left;
   color:var(--marp-slide-footer-color, var(--text-muted));
@@ -922,6 +922,31 @@ section.closing.numbered::after        { content: counter(lat-closing,  decimal-
 section.overflow {
   box-shadow: inset 0 0 0 4px #d4351c;
 }
+/* The ring is colour-only (fails WCAG 1.4.1 "use of colour"), so the watcher
+ * also injects a labelled tab — a red corner flag reading "OVERFLOWS" — that
+ * names the condition in text. Authoring signal; loud by design, top-right,
+ * above all content. The red matches the ring (a fixed danger colour, not a
+ * theme token — same exception the ring itself takes). */
+section.overflow > .overflow-tab {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 50;
+  background: #d4351c;
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: var(--fs-meta);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  line-height: 1;
+  padding: var(--sp-2xs) var(--sp-sm);
+  border-bottom-left-radius: var(--radius-md);
+  pointer-events: none;
+}
+/* Only visible on an overflowing section — hidden if the element lingers after
+ * the slide is fixed (the runtime watcher also removes it). */
+section:not(.overflow) > .overflow-tab { display: none; }
 
 /* ════════════════════════════════════════════════════════════════════════
  * CUSTOM LOGO — discreet author-supplied brand mark, top-right corner.
@@ -931,8 +956,8 @@ section.overflow {
  * ──────────────────────────────────────────────────────────────────── */
 img.deck-logo {
   position: absolute;
-  top: var(--isl-inset-y);
-  right: var(--isl-inset-x);
+  top: var(--frame-inset-y);
+  right: var(--frame-inset-x);
   width: 6.25cqi;
   height: 4cqi;
   object-fit: contain;

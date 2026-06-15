@@ -1,0 +1,10 @@
+{
+  "$schema": "../../schema/tile.schema.json",
+  "id": "kicker",
+  "kind": "chrome",
+  "fits": ["masthead-lede"],
+  "z": 3,
+  "population": "authoring grammar — the `eyebrow` inline-code line",
+  "hideToken": "no-kicker",
+  "status": "shipped"
+}

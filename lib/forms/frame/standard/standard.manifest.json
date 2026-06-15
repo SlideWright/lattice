@@ -1,0 +1,20 @@
+{
+  "$schema": "../../schema/frame.schema.json",
+  "id": "standard",
+  "form": "bookend",
+  "kind": "root",
+  "exemptFromChrome": false,
+  "description": "The full root chrome Frame: masthead band (lede + bay), stage, and footer with the progress rail. The default Form deck composition (design/forms.md §9; the `form: standard` toggle).",
+  "cells": [
+    "masthead",
+    "masthead-lede",
+    "masthead-bay",
+    "stage",
+    "footer",
+    "footer-left",
+    "progress-centre",
+    "pagination-right",
+    "overlay"
+  ],
+  "suppresses": []
+}

@@ -139,12 +139,12 @@
    * the berths one coordinate system instead of four coincidences. Values
    * are the historical literals verbatim — this is a pixel-identical rename
    * (Phase 0 of the islands model; see engineering/decisions/2026-06-11-islands.md).
-   *   --isl-inset-x     horizontal inset of every edge berth
-   *   --isl-inset-y     vertical inset of the top/bottom berths
-   *   --isl-page-reserve footer-right gap that reserves the pagination berth */
-  --isl-inset-x:      2.34375cqi;
-  --isl-inset-y:      1.875cqi;
-  --isl-page-reserve: 6.25cqi;
+   *   --frame-inset-x     horizontal inset of every edge berth
+   *   --frame-inset-y     vertical inset of the top/bottom berths
+   *   --frame-page-reserve footer-right gap that reserves the pagination berth */
+  --frame-inset-x:      2.34375cqi;
+  --frame-inset-y:      1.875cqi;
+  --frame-page-reserve: 6.25cqi;
 
   /* ── Marp chrome mappings ── */
   --marp-slide-pagination-color:     var(--text-muted);

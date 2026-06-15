@@ -49,6 +49,8 @@ harness the index can't infer, add it to `FRAMEWORKS` in the generator.
 | `dist-readme:check` | Freshness gate for dist/README.md. |
 | `docs:components` | Generate per-component docs.md + gallery.md siblings from each manifest. |
 | `docs:components:check` | Freshness gate for the per-component docs. |
+| `docs:forms` | Aggregate the Form manifests (lib/forms/{frame,tile,cell}) into dist/docs/forms.json — the machine catalog of the Frame + Cell + Tile composition model. |
+| `docs:forms:check` | Freshness gate for the Form catalog (dist/docs/forms.json). |
 | `docs:landing-tokens` | Emit per-palette CSS token blocks for the docs landing page. |
 | `docs:landing-tokens:check` | Freshness gate for the landing-page token blocks. |
 | `docs:portal` | Aggregate manifests into dist/docs/components.{md,json} + grammar.json (the LFM per-component grammar) — the canonical component catalog. |
@@ -259,6 +261,7 @@ harness the index can't infer, add it to `FRAMEWORKS` in the generator.
 |---|---|
 | `tools/ascii-preview.py` | ASCII layout preview helper for engineering/templates.md (and friends). |
 | `tools/build-exemplar-pdfs.js` | Regenerate the committed PDF for every worked exemplar deck |
+| `tools/build-forms.js` | Generate dist/docs/forms.json — the machine-readable catalog of Lattice's |
 | `tools/build-spec-docs.js` | Publish the owned LFM standards (spec/*.md) onto the docs website as |
 | `tools/build-standalone-core.js` | Bundle the standalone chart-SVG export core for the browser. |
 | `tools/check-fonts.js` | Font-embedding parity gate — keep the engine's font demand and offline supplies in sync. |

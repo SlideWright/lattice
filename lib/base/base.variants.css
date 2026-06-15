@@ -232,81 +232,109 @@ section.confidential::before {
 
 
 
-/* ── ISLANDS · masthead band (opt-in via `islands`) ─────────────────────
+/* ── FORM · masthead Cell (opt-in via `form`) ───────────────────────────
  * The mastheadLift transform (lib/core/masthead-lift.js + the registry)
- * wraps the eyebrow + title into `.isl-masthead` so the slide's masthead is
- * a named band with a reserved right bay — `.m-bay` is where the meta / logo
- * / status islands land in Phase 2. The slide body stays a DIRECT child of
- * <section>, so every component's `section.X > …` selectors still compose.
- * The eyebrow and title keep their normal element-level styling (the
- * `p:has(>code)+h2` eyebrow rule and `section h2` both still match inside the
- * band). Phase 1 of the islands model — engineering/decisions/2026-06-11-islands.md.
+ * wraps the eyebrow + title into `.cell-masthead` so the slide's masthead is
+ * a named band with a reserved right bay — `.masthead-bay` is where the
+ * meta / logo / status Tiles dock. The slide body stays a DIRECT child of
+ * <section>, so every component's `section.X > …` selectors still compose
+ * (the stage Cell is the section content region, NOT a wrapper — see
+ * engineering/decisions/2026-06-15-form-implementation.md §4). The eyebrow and
+ * title keep their normal element-level styling (the `p:has(>code)+h2` eyebrow
+ * rule and `section h2` both still match inside the band). Canonical model:
+ * design/forms.md.
  *
- * `islands` is incompatible with `math` / `compare-code` (they drive their
- * own title grid via `> h2`); don't combine them. */
-/* Island gap + clip contract (berth-overlay phase). Islands must never touch
- * or bleed into one another: each berth keeps a DEFINED gap to its neighbours,
- * and content that overflows a berth is CLIPPED, not allowed to spill across.
- *   · masthead↔body — the band's margin-bottom + hairline rule is the gap.
- *   · body↔footer   — `islands` reserves a footer safe-area (padding-bottom)
- *                     so well-authored content keeps clear of the footer /
- *                     progress berth. (The fully-bounded body clip — a hard
- *                     max-height stage box — lands with the Phase 4 stage
- *                     wrapper; until then the section's own overflow:hidden
- *                     stops anything escaping the slide.)
- *   · per-island    — the masthead + bay clip their own overflow, so a long
- *                     title or meta line is cut at its berth, never bled. */
-section.islands {
-  /* The masthead band is an absolutely-positioned berth, NOT in content flow,
-   * so the section's content box — and therefore the cqi/cqh basis every
-   * component sizes itself against — equals the REAL body area between the band
-   * and the footer berth. Reserving the band as in-flow margin (the old way)
-   * left it inside the content box, so a component sized to `section − footer`
-   * and overran the body by ~the band's height (the list-criteria/actors/roadmap
-   * pile-ups). See 2026-06-13-islands-sketch-density-collisions.md (Defect 1). */
-  --isl-masthead-h: calc(var(--_sec-1cqi, 1cqi) * 11);
-  --isl-frame-x: calc(var(--_sec-1cqi, 1cqi) * 5);
-  --isl-frame-y: calc(var(--_sec-1cqi, 1cqi) * 6.875);
+ * `form` is incompatible with `math` / `compare-code` (they drive their
+ * own title grid via `> h2`); they're chrome-exempt in the toggle's skip set. */
+/* Cell gap + clip contract (design/forms.md §6). Cells must never touch or
+ * bleed into one another: each Cell keeps a DEFINED gap to its neighbours, and
+ * content that overflows a Cell is CLIPPED, not allowed to spill across.
+ *   · masthead↔stage — the band's margin-bottom + hairline rule is the gap.
+ *   · stage↔footer   — `form` reserves a footer safe-area (padding-bottom,
+ *                     derived from the real footer Cell height) so content
+ *                     keeps clear of the footer / progress Cell. (The fully-
+ *                     bounded soft clip — an exact-edge fade — needs the
+ *                     A-later stage wrapper; until then the section's own
+ *                     overflow:hidden hard-clips anything escaping the slide.)
+ *   · per-Cell       — the masthead + bay clip their own overflow, so a long
+ *                     title or meta line is cut at its Cell, never bled. */
+section.form {
+  /* THE ROOT CHROME FRAME — masthead Cell · stage Cell · footer Cell.
+   * The masthead Cell is an IN-FLOW band sized to its own content (so the
+   * hairline sits directly under the title — no dead space), then the STAGE Cell
+   * is the flex content region below it. The footer Cell is an absolutely-
+   * positioned band reserved via `padding-bottom`. The slide is a fixed-size
+   * box and components size against the section content-box, so the stage
+   * resolves deterministically (design/forms.md §6). (Charts size against their
+   * own `.chart-body` content box — see the chart-family in-form rules — so they
+   * don't depend on the section's cqh; that's what lets the masthead be an
+   * in-flow, content-height band instead of a fixed-height reserved one.) */
+  --masthead-h: calc(var(--_sec-1cqi, 1cqi) * 11); /* nominal; the band is content-height (manifest geometry ref) */
+  --frame-x: calc(var(--_sec-1cqi, 1cqi) * 5);
+  --frame-y: calc(var(--_sec-1cqi, 1cqi) * 6.875);
+  /* Footer Cell geometry. The reserve is DERIVED from the real footer Cell
+   * height (baseline inset + band height + gap), not a magic number, so the
+   * stage's bottom edge ends exactly where the footer Cell begins. The centre
+   * zone is the progress rail's reserved horizontal budget (see the footer Cell
+   * rules below) — footer-left yields it so the two can never collide. */
+  --footer-h: calc(var(--_sec-1cqi, 1cqi) * 5);
+  --footer-reserve: calc(var(--frame-inset-y) + var(--footer-h) + var(--sp-md));
+  --footer-centre-w: calc(var(--_sec-1cqi, 1cqi) * 30);
+  --footer-centre-half: calc(var(--footer-centre-w) / 2);
   position: relative;
-  padding-top: calc(var(--isl-frame-y) + var(--isl-masthead-h) + var(--sp-md));
-  padding-bottom: calc(var(--_sec-1cqi, 1cqi) * 8.75);
-  /* Own stacking context so the z-behind watermark island paints ABOVE the
-   * canvas but BELOW the (non-positioned) body content. */
+  /* Explicit frame inset on every side so the in-flow masthead + stage clear the
+   * deck header (top) and keep their side margins EVEN on components that zero
+   * the section padding (e.g. section.chart-frame sets `padding: 0`). No masthead
+   * height-reserve — the in-flow band supplies its own height. */
+  padding: var(--frame-y) var(--frame-x) var(--footer-reserve);
+  /* Own stacking context so the z-behind watermark Tile paints ABOVE the canvas
+   * but BELOW the (non-positioned) stage content. */
   isolation: isolate;
-  /* Clip signal — the hard half. Content that exceeds the body berth is cut by
-   * the section's own clip rather than bleeding across the band/footer islands,
-   * and the runtime overflow ring (section scrollHeight > clientHeight) still
-   * fires because the body flows in-section — so an over-stuffed islands slide
-   * reads "you're doing too much" in authoring. The SOFT half (a fade at the
-   * exact berth edge) needs the `.isl-main` stage wrapper to bound it precisely;
-   * an unbounded ::after scrim dims legitimate content on dense-but-fitting
-   * slides, so it's deferred to M2 with the wrapper. */
+  /* Clip, don't bleed (design/forms.md §6). Stage content that exceeds its box
+   * is cut by the section's clip rather than bleeding across the masthead/footer
+   * Cells; the runtime overflow ring (scrollHeight > clientHeight) still fires
+   * because the stage flows in-section, so an over-stuffed slide reads "too
+   * much" in authoring. (A soft exact-edge fade needs the A-later stage wrapper
+   * — 2026-06-15-form-implementation.md §4/§8; the hard clip ships here.) */
   overflow: hidden;
 }
-section.islands .isl-masthead {
-  position: absolute;
-  top: var(--isl-frame-y);
-  left: var(--isl-frame-x);
-  right: var(--isl-frame-x);
-  height: var(--isl-masthead-h);
+
+/* ── STAGE Cell · fill discipline (design/forms.md §5) ──────────────────────
+ * How an underfilling stage distributes its content — the difference between a
+ * "grid of correct boxes" and a board deck. Default is `start` (top-anchored
+ * flow, unchanged). Authors opt a slide into a board-style distribution; each
+ * is a Cell `fill` value made selectable. */
+section.form.fill-center  { justify-content: center; }
+section.form.fill-anchor  { justify-content: flex-end; }
+/* optical-center sits the content slightly above true centre (the eye reads a
+ * geometric centre as low) — extra bottom reserve biases it up. */
+section.form.fill-optical {
+  justify-content: center;
+  padding-bottom: calc(var(--footer-reserve) + var(--sp-2xl));
+}
+section.form .cell-masthead {
+  /* In-flow, content-height band: the hairline sits directly under the title,
+   * so there is no dead space when the title is one line, and the band grows
+   * naturally for a two-line title. (Was a fixed --masthead-h absolute box,
+   * which left ~4-5cqi of empty band below a one-line title.) */
   display: grid;
-  grid-template-columns: [m-stage] 1fr [m-bay] auto;
+  grid-template-columns: [masthead-lede] 1fr [masthead-bay] auto;
   column-gap: var(--sp-lg);
   align-items: start;
+  margin-bottom: var(--sp-md);
   padding-bottom: var(--sp-md);
   border-bottom: 1px solid var(--border);
-  overflow: hidden;
 }
-section.islands .isl-masthead .m-bay { overflow: hidden; }
-section.islands .isl-masthead .m-stage { min-width: 0; grid-column: m-stage; }
-section.islands .isl-masthead .m-bay   { grid-column: m-bay; }
+section.form .cell-masthead .masthead-bay { overflow: hidden; }
+section.form .cell-masthead .masthead-lede { min-width: 0; grid-column: masthead-lede; }
+section.form .cell-masthead .masthead-bay   { grid-column: masthead-bay; }
 
-/* ── ISLANDS · masthead-bay islands — meta · status (Phase 2) ───────────
- * The reserved bay stacks its islands top-down, right-aligned: the meta
- * island (front-matter `meta:`, injected by applyMastheadMetaToHtml across
- * all three render paths) on top, the status chip beneath. Both are
- * palette-blind. See engineering/decisions/2026-06-11-islands.md. */
-section.islands .isl-masthead .m-bay {
+/* ── FORM · masthead-bay Tiles — meta · status ──────────────────────────
+ * The reserved bay stacks its Tiles top-down, right-aligned: the meta Tile
+ * (front-matter `meta:`, injected by applyMastheadMetaToHtml across all three
+ * render paths) on top, the status chip beneath. Both are palette-blind.
+ * See design/forms.md §8. */
+section.form .cell-masthead .masthead-bay {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
@@ -314,8 +342,8 @@ section.islands .isl-masthead .m-bay {
   text-align: right;
 }
 
-/* meta island — date · owner · classification */
-.isl-meta {
+/* meta Tile — date · owner · classification */
+.tile-meta {
   font-family: var(--font-label);
   font-size: var(--fs-meta);
   font-weight: 500;
@@ -325,19 +353,19 @@ section.islands .isl-masthead .m-bay {
   color: var(--text-label);
 }
 
-/* status island — under `islands`, the label-type state markers
+/* status Tile — under `form`, the label-type state markers
  * (confidential · wip · draft) dock in the bay as a clean chip, REPLACING
  * their default corner stamp / full-width band / canvas watermark. The
- * more-specific `section.islands.<state>` selector wins over the base
+ * more-specific `section.form.<state>` selector wins over the base
  * `section.<state>::before` rule, so the default treatment is suppressed
  * without !important. (redacted / tbd / archived keep their stronger
  * full-canvas overlays — those are deliberate "do not circulate" signals,
  * not a quiet bay marker.) */
-section.islands.confidential::before,
-section.islands.wip::before,
-section.islands.draft::before { content: none; background: none; }
+section.form.confidential::before,
+section.form.wip::before,
+section.form.draft::before { content: none; background: none; }
 
-section.islands:is(.confidential, .wip, .draft) .m-bay::after {
+section.form:is(.confidential, .wip, .draft) .masthead-bay::after {
   display: inline-flex;
   align-items: center;
   font-family: var(--font-label);
@@ -351,39 +379,57 @@ section.islands:is(.confidential, .wip, .draft) .m-bay::after {
   background: color-mix(in srgb, var(--accent) 12%, transparent);
   border: 1px solid color-mix(in srgb, var(--accent) 32%, transparent);
 }
-section.islands.confidential .m-bay::after { content: 'Confidential'; }
-section.islands.wip .m-bay::after {
+section.form.confidential .masthead-bay::after { content: 'Confidential'; }
+section.form.wip .masthead-bay::after {
   content: 'WIP';
   color: var(--warn);
   background: color-mix(in srgb, var(--warn) 12%, transparent);
   border-color: color-mix(in srgb, var(--warn) 32%, transparent);
 }
-section.islands.draft .m-bay::after {
+section.form.draft .masthead-bay::after {
   content: 'Draft';
   color: var(--warn);
   background: color-mix(in srgb, var(--warn) 12%, transparent);
   border-color: color-mix(in srgb, var(--warn) 32%, transparent);
 }
 
-/* ── ISLANDS · progress island — section dot-rail (Phase 2b) ─────────────
- * A footer-centre berth injected (across all three render paths) into every
- * `islands` slide that falls within a section. One dot per section, the
- * current one elongated + accented, labelled with the section's divider
- * title. Derives orientation from `divider` slides; absent without them.
- * Opt out with `no-progress`; `silent` suppresses it with the rest of the
- * chrome. */
-section.islands .isl-progress {
+/* ── FOOTER Cell — three reserved zones (design/forms.md §6) ─────────────────
+ * The footer band holds three Tiles that historically collided because each was
+ * an independent absolute at the same baseline with no shared budget: footer-
+ * left (the `footer:` text), progress-centre (the section rail), pagination-
+ * right (`::after`). Pagination is a pseudo-element, so the footer Cell is a
+ * TOKEN COORDINATE CONTRACT, not a DOM grid: footer-left yields the reserved
+ * centre zone so it can never run through the rail, and the centre zone ends
+ * before the pagination zone. (Non-form decks keep the full-width footer — this
+ * is scoped to section.form.) */
+section.form.has-progress > footer {
+  /* Yield to the reserved centre zone ONLY when a progress rail is present
+   * (the injectors add `has-progress`); a rail-less form slide keeps the
+   * default full-width footer. Right edge = 50% + half the centre zone + gap. */
+  right: calc(50% + var(--footer-centre-half) + var(--sp-md));
+}
+
+/* ── PROGRESS Tile — section dot-rail in the footer-centre zone ──────────────
+ * Injected (across all three render paths) into every `form` slide within a
+ * section: one dot per section, the current one elongated + accented, labelled
+ * with the section's divider title. Absent without `divider` slides. Opt out
+ * with `no-progress`; `silent` suppresses it with the rest of the chrome. */
+section.form .tile-progress {
   position: absolute;
-  bottom: var(--isl-inset-y);
+  bottom: var(--frame-inset-y);
   left: 50%;
   transform: translateX(-50%);
   z-index: 3;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: var(--sp-sm);
+  /* The reserved centre zone — the rail lives inside it and never spills into
+   * footer-left or pagination. */
+  max-width: var(--footer-centre-w);
   pointer-events: none;
 }
-.isl-progress .seg {
+.tile-progress .seg {
   font-family: var(--font-label);
   font-size: var(--fs-meta);
   font-weight: 500;
@@ -391,31 +437,31 @@ section.islands .isl-progress {
   text-transform: uppercase;
   color: var(--text-label);
   margin-right: var(--sp-xs);
-  /* Truncate a long section label so the rail never overruns the footer
-   * berth / collides with footer-left. */
-  max-width: 24cqi;
+  /* Within the reserved centre zone, a very long label still truncates
+   * gracefully rather than crowding the dots. */
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.isl-progress .dot {
+.tile-progress .dot {
   width: 0.85cqi;
   height: 0.85cqi;
   border-radius: 50%;
   background: color-mix(in srgb, var(--text-muted) 50%, transparent);
 }
-.isl-progress .dot.on {
+.tile-progress .dot.on {
   width: 2.6cqi;
   border-radius: 999px;
   background: var(--accent);
 }
 
-/* ── ISLANDS · watermark island — section-number ghost (Phase 2c) ───────
- * A large z-behind background glyph (the section number) on `islands
+/* ── FORM · watermark Tile — section-number ghost ───────────────────────
+ * A large z-behind background glyph (the section number) on `form
  * watermark` slides. z-index:-1 keeps it ABOVE the canvas but BEHIND the
  * (non-positioned) body content; the section's overflow:hidden clips the
  * overscan. Palette-blind; lifts to the on-dark ghost on dark canvases. */
-section.islands .isl-watermark {
+section.form .tile-watermark {
   position: absolute;
   right: -2cqi;
   bottom: -9cqi;
@@ -429,5 +475,5 @@ section.islands .isl-watermark {
   pointer-events: none;
   user-select: none;
 }
-section.islands.dark .isl-watermark,
-section.dark.islands .isl-watermark { color: var(--on-dark-watermark); }
+section.form.dark .tile-watermark,
+section.dark.form .tile-watermark { color: var(--on-dark-watermark); }
