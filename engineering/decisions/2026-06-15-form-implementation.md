@@ -155,11 +155,14 @@ from real Cell heights; per-Cell `fill` discipline; the `lib/forms/` manifest
 `design/forms.gallery.md` value demo + `examples/form.md` demo deck; docs sync
 (`design-system.md` §2.5, CLAUDE.md row, CHANGELOG).
 
-**Staged (documented, not in this PR):**
+**Staged (documented, not in this PR).** Tracked as a single follow-up proposal,
+**#356** (manifest revision + maintainability cleanups — kept as-is for now,
+revised deliberately later):
 - **Manifest-driven geometry + Tile injectors** (§6): make the `--frame-*` grid,
   the `fill-*` set, and the meta/progress/watermark injectors read from
-  `lib/forms/` instead of being hand-coded — the full OCP win. The catalog +
-  schema + skip-derivation that ship here are its foundation.
+  `lib/forms/` instead of being hand-coded — the full OCP win — OR trim the
+  manifest to load-bearing-only. The catalog + schema + skip-derivation that ship
+  here are its foundation; the keep-vs-trim decision is #356.
 - **A — section-as-grid**: the 242-child-selector migration + flex→grid audit
   (§4). The B-now content Cell is its prerequisite and is now in place.
 - **`@layer` activation** (#283/#284) — blocked, untouched.
