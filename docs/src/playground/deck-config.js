@@ -41,11 +41,13 @@ const FIELD_DEFAULTS = {
   // `finish` is the deck-wide finish register (lib/core/resolve-finish.js):
   // '' / 'boardroom' is the baseline (omitted), 'sketch' / 'sketch-clean' opt in.
   finish: '',
-  // Token vocabulary the Drawing Board renders the deck against: 'current' (the
-  // legacy names, the default → omitted) or 'universal' (the new --cat-*/--diagram-*
-  // names). Both render identically — a migration-safety A/B. Drawing-Board-only:
-  // marp-cli ignores it, so a deck stays portable.
-  tokens: 'current',
+  // Token vocabulary the Drawing Board renders the deck against: 'universal' (the
+  // new --cat-*/--diagram-*/--seq-* names, the default → omitted) or 'current' (the
+  // legacy names). Both render identically — a migration-safety A/B. Drawing-Board-
+  // only: marp-cli ignores it, so a deck stays portable. Default is 'universal' as
+  // the canonical flip lands group-by-group (universal-token ADR §11); 'current' is
+  // the opt-in legacy path, kept available until the flip completes.
+  tokens: 'universal',
   // `split` is how the body divides into slides (lib/core/resolve-split.js):
   // 'headings' (the default → omitted) splits on each h1/h2 (eyebrow-aware, `---`
   // still honoured) so the deck needs no separators; 'rule' opts back to `---`-only.
@@ -135,7 +137,7 @@ export function readFrontMatter(source) {
   return {
     theme: map.theme || '',
     finish: map.finish || '',
-    tokens: map.tokens || 'current',
+    tokens: map.tokens || 'universal',
     split: (map.split || 'headings').trim().toLowerCase() === 'rule' ? 'rule' : 'headings',
     size: map.size || '16:9',
     paginate: TRUEY.test(map.paginate || ''),
@@ -371,12 +373,13 @@ export function createConfigPanel({ host, trigger, getSource, setSource, palette
         finishes.map((f) => [f, FINISH_LABELS[f] || titleCase(f)]), current));
     }
 
-    // Token system — the deck's token vocabulary. Universal renders against the
-    // new --cat-*/--diagram-* names (identical output); a migration-safety A/B.
+    // Token system — the deck's token vocabulary. Universal (the default) renders
+    // against the new --cat-*/--diagram-* names (identical output); 'current' is the
+    // opt-in legacy path. A migration-safety A/B; the default option leads.
     if (show('tokens')) {
       host.append(selectRow('tokens', 'Token system',
-        'universal = the new --cat-*/--diagram-* names (renders identically)',
-        [['current', 'Current (legacy names)'], ['universal', 'Universal (new names)']], fm.tokens));
+        'universal = the new --cat-*/--diagram-* names (the default; renders identically)',
+        [['universal', 'Universal (new names)'], ['current', 'Current (legacy names)']], fm.tokens));
     }
 
     // Slide splitting — how the body divides into slides. 'headings' (the

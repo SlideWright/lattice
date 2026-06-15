@@ -25,6 +25,17 @@ in patch versions.
 
 ## Unreleased
 
+### Changed
+
+- **Drawing Board / Workbench: the `tokens:` deck directive now defaults to
+  `universal`** (the new `--cat-*`/`--diagram-*`/`--seq-*` vocabulary) instead of
+  `current`. A deck with no `tokens:` line now renders against the universal names;
+  `tokens: current` is the explicit opt-in to the legacy names (the dropdown keeps
+  both). Output is byte-identical, so nothing renders differently — this just makes
+  the canonical vocabulary the default as the universal-token flip lands
+  (`engineering/decisions/2026-06-11-universal-token-system.md` §11). Drawing-Board
+  only; `marp-cli`/the emulator ignore the directive, so decks stay portable.
+
 ### Removed
 
 - **Breaking: the canonical flip is complete — the legacy per-theme token names
