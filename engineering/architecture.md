@@ -220,7 +220,7 @@ exercised by the unit suite:
 | meta Tile | inserts `meta:` into the masthead bay | front-matter text | `plugins.js` `applyMastheadMetaToHtml` + `lib/runtime/form-dom.js` `injectMastheadMeta` |
 | logo Tile | inserts the `logo:` image | front-matter image | `plugins.js` `applyDeckLogoToHtml` |
 | progress Tile | counts `divider` sections → dot-rail + `has-progress` | derive from deck structure | `plugins.js` `applyProgressRailToHtml` + `form-dom.js` `injectProgressRail` |
-| watermark Tile | section-number ghost | compute the number | `plugins.js` `applyWatermarkToHtml` + `form-dom.js` `injectWatermark` |
+| watermark Tile | section-number ghost | compute the number | `lib/forms/tile/watermark/watermark.transform.js` (`applyToHtml` + `applyToDom`) — self-contained Tile, one kernel for both paths (#356) |
 | footer / paginate / header | front-matter directives → chrome | directive parsing | `lib/engine/directives.js` (owned engine) |
 | overflow signal | measures `scrollHeight > clientHeight` → ring + "OVERFLOWS" tab (preview only) | measure + react | `lib/runtime/index.js` + `lattice-emulator.js` |
 | geometry bridge | sets `--_sec-1cqi` (= section width ÷ 100) so `cqi`/`cqh` sizing resolves in the preview iframe | self-measure for the container-query fallback | `lib/runtime` `patchSectionGeometry` |
@@ -228,11 +228,14 @@ exercised by the unit suite:
 Two consequences worth keeping in mind:
 
 - **Maintenance is bounded, not sprawling.** Changing a Tile means editing its
-  CSS (one cohesive place) plus, for the injected Tiles, two mirrored copies (the
-  HTML-string path in `plugins.js` and the live-DOM path in `form-dom.js`) that
-  the three render paths require. That duplication is the real recurring cost —
-  but it is two copies, not N, and the unit suite asserts the paths agree (HARD
-  RULE 1). The list above is the whole surface.
+  CSS (one cohesive place) plus, for the still-mirrored Tiles (meta, progress),
+  two copies (the HTML-string path in `plugins.js` and the live-DOM path in
+  `form-dom.js`) that the three render paths require. That duplication is the real
+  recurring cost — but it is two copies, not N, and the unit suite asserts the
+  paths agree (HARD RULE 1). The **watermark Tile** is the first to retire that
+  cost: it is self-contained (`lib/forms/tile/watermark/`), with ONE kernel
+  exposing both adapters and its CSS co-located — the pattern the other Tiles
+  follow as #356 lands. The list above is the whole surface.
 - **The one descriptive exception is the `lib/forms/` catalog.** It documents the
   Frame/Cell/Tile model but is read by the engine for only one thing today (the
   sovereign skip-set). Wiring it to *drive* the CSS/injectors — so adding a Tile
