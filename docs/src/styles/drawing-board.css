@@ -2618,6 +2618,64 @@ html.db-js #db-editor-ta {
 	}
 }
 
+/* ── Immersive portrait — lift the slide, float the chrome ────────────────────
+   On a phone/tablet held PORTRAIT, a 16:9 slide leaves big empty bands top and
+   bottom. Instead of spending layout rows on the bar + HUD (which shrinks the
+   slide), the stage fills the viewport and the chrome floats as scrim overlays IN
+   that letterbox — covering no slide content. The top bar (spine + locator) and
+   edge arrows auto-hide (JS toggles `.chrome-show` on the run; a tap reveals); the
+   bottom timing readout stays put — the at-a-glance clock. Landscape keeps the
+   compact grid (its letterbox is on the sides, no room for a horizontal bar). */
+@media (orientation: portrait) and (max-width: 900px) {
+	.db-pv-run {
+		display: block;
+		position: relative;
+	}
+	.db-pv-stage {
+		position: absolute;
+		inset: 0;
+		z-index: 0;
+	}
+	/* Top bar → a scrim overlay in the top letterbox; auto-hides with the arrows. */
+	.db-pv-bar {
+		position: absolute;
+		inset: 0 0 auto 0;
+		z-index: 4;
+		border-bottom: 0;
+		padding: calc(0.5rem + env(safe-area-inset-top)) 1rem 1.4rem;
+		background: linear-gradient(to bottom, rgba(0, 0, 0, 0.62) 0%, rgba(0, 0, 0, 0.3) 58%, rgba(0, 0, 0, 0) 100%);
+		opacity: 0;
+		transform: translateY(-8px);
+		pointer-events: none;
+		transition: opacity 0.28s ease, transform 0.28s ease;
+	}
+	.db-pv-run.chrome-show .db-pv-bar,
+	.db-pv-run:focus-within .db-pv-bar {
+		opacity: 1;
+		transform: none;
+		pointer-events: auto;
+	}
+	/* Bottom readout → a scrim overlay in the bottom letterbox; ALWAYS visible. */
+	.db-pv-nav {
+		position: absolute;
+		inset: auto 0 0 0;
+		z-index: 4;
+		border-top: 0;
+		padding: 1.4rem 1rem calc(0.7rem + env(safe-area-inset-bottom));
+		background: linear-gradient(to top, rgba(0, 0, 0, 0.62) 0%, rgba(0, 0, 0, 0.3) 58%, rgba(0, 0, 0, 0) 100%);
+	}
+	/* Keep the coaching pill clear of the always-on readout band. */
+	.db-pv-coach {
+		padding-bottom: 5.5rem;
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.db-pv-bar {
+			transition: opacity 0.2s ease;
+			transform: none;
+		}
+	}
+}
+
 /* ── Focus edit mode ────────────────────────────────────────────────────────
    A full-screen split: an isolated sub-editor (left) + a live fragment preview
    (right), over a top action bar. Themed off the page tokens. On narrow screens
