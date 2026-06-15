@@ -1,0 +1,147 @@
+name: Perf nightly (docs regression watch)
+
+# NIGHTLY relative web-perf regression watch for the docs site. Replaces the old
+# per-PR Lighthouse budget (absolute thresholds that rotted as the site grew and
+# flapped on CI runner variance — issue #327). The perf gate is the ONLY gate
+# whose verdict depends on the runner (CPU speed + whether the CDN web fonts
+# loaded), not just the code, so per the repo gate-strategy
+# (engineering/decisions/2026-06-13-gate-strategy-change-detection.md §C/§D) it
+# moves OFF the PR critical path to a nightly on `main`. See
+# engineering/decisions/2026-06-15-docs-perf-gating-policy.md for the full policy.
+#
+# Shape: B-injob relative budget. It builds + measures `main@HEAD` AND the
+# `main` commit from ~24h ago, BACK-TO-BACK ON THE SAME RUNNER, and compares the
+# medians (scripts/perf-regression.mjs). Measuring both on one runner cancels
+# systematic hardware differences; only a real regression beyond tolerance trips
+# it. Stateless — no committed baseline, no update ritual. Double-build cost is
+# free at night. On a regression it opens / appends a rolling tracking issue.
+
+on:
+  schedule:
+    - cron: '37 5 * * *' # daily 05:37 UTC (before the 06:17 backlog sync)
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write # open / append the perf-regression tracking issue
+
+concurrency:
+  group: perf-nightly
+  cancel-in-progress: false
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    env:
+      PUPPETEER_SKIP_DOWNLOAD: '1'
+      HEAD_OUT: ${{ github.workspace }}/.perf-out/head
+      BASE_OUT: ${{ github.workspace }}/.perf-out/base
+      BASE_TREE: ${{ github.workspace }}/../perf-base-src
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # need history to resolve the ~24h-ago base commit
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: docs/package-lock.json
+      - uses: browser-actions/setup-chrome@v1
+        id: chrome
+        with:
+          chrome-version: stable
+
+      - name: Resolve base commit (~24h ago on main)
+        id: base
+        run: |
+          set -euo pipefail
+          BASE=$(git rev-list -1 --before='24 hours ago' origin/main || true)
+          HEAD_SHA=$(git rev-parse HEAD)
+          if [ -z "$BASE" ] || [ "$BASE" = "$HEAD_SHA" ]; then
+            BASE=$(git rev-parse HEAD~1)
+          fi
+          echo "sha=$BASE" >> "$GITHUB_OUTPUT"
+          echo "Base commit: $BASE (head: $HEAD_SHA)"
+
+      # ---- HEAD (current main) ----
+      - name: Install docs deps (head)
+        run: npm ci
+        working-directory: docs
+      - name: Collect — head
+        run: node scripts/perf-collect.mjs --out "$HEAD_OUT"
+        working-directory: docs
+        env:
+          CHROME_PATH: ${{ steps.chrome.outputs.chrome-path }}
+
+      # ---- BASE (~24h ago), measured with HEAD's tooling ----
+      # The base commit predates these perf scripts, so overlay HEAD's
+      # collect/compare scripts into a worktree of the base SOURCE and measure
+      # it there — identical tooling, base's site. continue-on-error: a broken
+      # historical commit must not fail the watch (compare then runs head-only).
+      - name: Build + collect — base
+        id: basecollect
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          git worktree add --detach "$BASE_TREE" "${{ steps.base.outputs.sha }}"
+          cp docs/scripts/perf-collect.mjs docs/scripts/perf-regression.mjs "$BASE_TREE/docs/scripts/"
+          cd "$BASE_TREE/docs"
+          npm ci
+          node scripts/perf-collect.mjs --out "$BASE_OUT"
+        env:
+          CHROME_PATH: ${{ steps.chrome.outputs.chrome-path }}
+
+      # ---- Compare ----
+      # The compare exits 1 on a regression. We must NOT let that fail the step
+      # silently OR via the trailing command — capture the verdict into an
+      # output and keep the job green, so the artifact + summary always upload
+      # and the issue step keys off `regressed` (not the step's own exit).
+      - name: Compare head vs base
+        id: compare
+        run: |
+          set -uo pipefail
+          if node scripts/perf-regression.mjs --base "$BASE_OUT" --head "$HEAD_OUT" --md "$GITHUB_WORKSPACE/perf-report.md"; then
+            echo "regressed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "regressed=true" >> "$GITHUB_OUTPUT"
+          fi
+        working-directory: docs
+
+      - name: Job summary
+        if: always()
+        run: cat "$GITHUB_WORKSPACE/perf-report.md" >> "$GITHUB_STEP_SUMMARY" || true
+
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: perf-nightly-${{ github.run_id }}
+          path: |
+            .perf-out/**/lhr-*.json
+            perf-report.md
+          if-no-files-found: warn
+          retention-days: 14
+
+      # On a regression, open or append a single rolling tracking issue (found by
+      # a title marker, so no label dependency). Skipped when the compare passed.
+      - name: Open / append regression issue
+        if: steps.compare.outputs.regressed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          MARKER='[perf-nightly]'
+          BODY="$GITHUB_WORKSPACE/perf-report.md"
+          {
+            echo ""
+            echo "_Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} · base \`${{ steps.base.outputs.sha }}\` → head \`${{ github.sha }}\`._"
+          } >> "$BODY"
+          ISSUE=$(gh issue list --state open --search "in:title $MARKER" --json number -q '.[0].number' || true)
+          if [ -n "$ISSUE" ]; then
+            gh issue comment "$ISSUE" --body-file "$BODY"
+            echo "Appended to issue #$ISSUE"
+          else
+            gh issue create \
+              --title "$MARKER docs perf regression detected" \
+              --body-file "$BODY"
+          fi

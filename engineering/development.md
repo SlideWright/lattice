@@ -311,19 +311,27 @@ Workbench) is added.
 
 ### Docs-site quality gates (responsive + web-perf)
 
-Two docs-only gates run in CI (`.github/workflows/lighthouse.yml`, advisory)
-and are runnable locally from `docs/`:
+The docs gates split by **gate species**: a deterministic check (layout width,
+a property of the code) stays per-PR; the runner-coupled web-perf budget moved
+to a nightly relative-regression watch (see
+`engineering/decisions/2026-06-15-docs-perf-gating-policy.md`). All runnable
+locally from `docs/`:
 
-- **`npm run check:overflow`** (`docs/scripts/check-overflow.mjs`) — a
-  horizontal-overflow guard: loads every converted surface at **390 / 820 /
-  1440** (mobile/tablet/desktop), exercises the interaction states (drawer/pane
+- **`npm run check:overflow`** (`docs/scripts/check-overflow.mjs`) — per-PR
+  (`.github/workflows/docs-overflow.yml`, advisory). A horizontal-overflow
+  guard: loads every converted surface at **390 / 820 / 1440**
+  (mobile/tablet/desktop), exercises the interaction states (drawer/pane
   switches, overlay opens), and fails if any page is wider than its viewport (a
   pannable page breaks on touch). Needs a built `dist/` + `CHROME_PATH`.
-- **`npm run perf`** (= build + `perf:desktop` + `perf:mobile`) — Lighthouse CI
-  budgets, median-of-3, desktop (`lighthouserc.cjs`) and mobile
-  (`lighthouserc.mobile.cjs`). The composite perf **score** is the hard gate;
-  brittle absolute LCP/CLS thresholds are `warn`-tracked (they flap on CI
-  runner variance — see issue #327 for the durable-budget decision).
+- **`npm run perf`** (= `perf:collect` to `.perf/local` + a report) — measures
+  the current site, median-of-3, desktop (`lighthouserc.cjs`) + mobile
+  (`lighthouserc.mobile.cjs`), and prints the numbers. **Report-only locally**
+  (no base to diff against). The actual gate is the nightly:
+  `.github/workflows/perf-nightly.yml` builds + measures `main@HEAD` vs the
+  ~24h-ago commit back-to-back on one runner and diffs the medians
+  (`scripts/perf-regression.mjs`) — a **relative** budget, not absolute
+  thresholds (which rotted + flapped — issue #327). On a regression it opens a
+  `[perf-nightly]` tracking issue. Tolerances live in `perf-regression.mjs`.
 
 These live in `docs/package.json` (a separate package), so they are **not** in
 the root capability index that `tools/build-capabilities.js` generates.
