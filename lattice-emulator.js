@@ -1346,6 +1346,10 @@ const puppeteer = loadPuppeteer();
   // (lib/runtime), where the author is actively authoring and can act on it.
   const overflowing = await page.evaluate(() => {
     const TOL = 12; // filter sub-pixel rounding; see lattice-runtime.js
+    // Slide-level detection — content exceeds the 1280×720 frame. (Per-box "which
+    // cell" pinpointing was prototyped and dropped: in a grow-to-fit grid an
+    // oversized card grows and pushes its NEIGHBOURS off-frame, so a geometric
+    // per-box test flags the pushed cards, not the culprit. See lib/runtime.)
     const flagged = [];
     // Scope to Marp's real slide sections only — `<section>` literals
     // authors write inside code blocks parse as nested DOM elements
