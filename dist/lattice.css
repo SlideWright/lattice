@@ -3166,7 +3166,7 @@ section.image {
  * at 50% width holding the heading + body. This keeps cqi resolving
  * correctly inside the section (container-type: size measures the
  * content-box, so percentage padding on the section warps every cqi
- * unit beneath it — see lib/transformers/image-text-panel.js).
+ * unit beneath it — see lib/core/bg-image.js).
  *
  * Mirror flips the flex order so the text panel sits on the right.
  * Background gradient marks the split at 50% in either direction. */
@@ -3225,8 +3225,8 @@ section.image:not(.full):not(.contain):not(.museum) .lattice-bg-left  { left: 0;
 section.image:not(.full):not(.contain):not(.museum).mirror .lattice-bg-right,
 section.image:not(.full):not(.contain):not(.museum).left   .lattice-bg-right { right: auto; left: 0; }
 
-/* Canonical .image-asset element (img inside marpit container or
- * .lattice-bg). Object-fit: cover is the default; .contain modifier
+/* Canonical .image-asset element (img inside the engine's .lattice-bg
+ * wrapper). Object-fit: cover is the default; .contain modifier
  * overrides below. The hairline at the slide-half split is on the
  * image element so it follows the image wherever marpit / emulator
  * positions it. */

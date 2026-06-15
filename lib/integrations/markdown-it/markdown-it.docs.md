@@ -27,12 +27,6 @@ Two related files live elsewhere (intentionally, with reason):
   at the top of the bundle, registering `lattice.css` as a Marp theme.
   Stays at `lib/` root because it's about the bundle's identity rather
   than Marp integration plumbing.
-- **`marp.config.js`** at the repo root — Marp's config file (theme
-  registration, render plugins, html allowlist, math enable, etc.).
-  Marp expects to find it at the repo root by convention. Could in
-  principle move to `lib/integrations/marp/marp.config.js` (Marp
-  accepts a `--config` flag), but the move was deferred from Phase 5
-  to avoid touching CI / build surface beyond docs scope.
 
 ---
 

@@ -14,7 +14,6 @@ on:
       - 'dist/**'
       - 'themes/**'
       - 'lib/**'
-      - 'marp.config.js'
       - '.github/workflows/docs.yml'
   workflow_dispatch:
 

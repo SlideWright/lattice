@@ -54,7 +54,7 @@ edit deck.md  →  npm run lint:deck -- deck.md  →  fix  →  render
 
   ```bash
   CHROME_PATH=$(ls /root/.cache/puppeteer/chrome/linux-*/chrome-linux64/chrome | head -1) \
-    npx marp deck.md --config-file marp.config.js --allow-local-files --pdf -o deck.pdf
+    npx lattice deck.md deck.pdf
   ```
 
 ## The rules agents most often break

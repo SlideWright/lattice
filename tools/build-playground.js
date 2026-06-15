@@ -4,8 +4,8 @@
  *
  *   lib/playground/index.js  →  docs/public/playground/lattice-playground.js
  *
- * This bundles marp-core + the shared Marp plugins (lib/integrations/marp/
- * plugins.js) + the transformer registry into one IIFE that runs the marp-cli
+ * This bundles the shared markdown-it plugins (lib/integrations/markdown-it/
+ * plugins.js) + the transformer registry into one IIFE that runs the engine's
  * render path CLIENT-SIDE for the docs-site playground. It lives under docs/
  * (not dist/) on purpose: it's a documentation-site asset, not part of the
  * npm engine package, so it stays out of the published tarball.

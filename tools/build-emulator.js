@@ -12,7 +12,7 @@
  * (lib/runtime/index.js → dist/lattice-runtime.js).
  *
  * Bundling inlines the local graph — lib/core, lib/transformers,
- * lib/components/**, lib/integrations, marp.config.js, package.json — into
+ * lib/components/**, lib/integrations, package.json — into
  * one file so the published bin doesn't depend on the engine source tree
  * being present. node_modules deps stay EXTERNAL (`packages: 'external'`):
  * the CLI shells out to chromium / mmdc and `require()`s katex,

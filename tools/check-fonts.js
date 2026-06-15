@@ -9,7 +9,7 @@
  *   DEMAND   — the Google-Fonts `@import` in lib/base/base.tokens.css declares
  *              every face the engine asks for on the online/browser path.
  *   SUPPLY 1 — SELF_HOSTED_FACES in lattice-emulator.js + assets/fonts/*.woff2:
- *              what the marp-cli / emulator PDF path base64-injects offline.
+ *              what the emulator PDF path base64-injects offline.
  *   SUPPLY 2 — the FACES table in docs/src/playground/font-embed.js + its
  *              ./fonts/*.woff2: what the Drawing Board PDF/PPTX web-export
  *              path inlines as data: URIs.
@@ -152,7 +152,7 @@ function main() {
     if (list.length) problems.push(`${label}:\n  - ${list.join('\n  - ')}`);
   };
 
-  report('Requested by @import but NOT self-hosted for the marp-cli PDF path (SELF_HOSTED_FACES + assets/fonts/)', diff(demand, emulator));
+  report('Requested by @import but NOT self-hosted for the emulator PDF path (SELF_HOSTED_FACES + assets/fonts/)', diff(demand, emulator));
   report('Self-hosted in lattice-emulator.js but NOT requested by the @import (stale)', diff(emulator, demand));
   report('Requested by @import but NOT vendored for the web-export path (font-embed.js)', diff(demand, webExport));
   report('Vendored in font-embed.js but NOT requested by the @import (stale)', diff(webExport, demand));

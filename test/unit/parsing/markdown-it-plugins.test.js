@@ -20,13 +20,13 @@ const MarkdownIt = require('markdown-it');
 const { installSlidePipeline } = require('../../../lib/engine/slides');
 const plugins = require('../../../lib/integrations/markdown-it/plugins');
 
-describe('marp-plugins', () => {
+describe('markdown-it-plugins', () => {
   // Apply ONE plugin in isolation on the owned slide pipeline (markdown-it +
-  // lib/engine/slides — the same marpit-equivalent slide/directive tokenizer the
-  // engine and marp.config.js both run the plugins on). Render fixture markdown,
+  // lib/engine/slides — the slide/directive tokenizer the
+  // engine runs the plugins on). Render fixture markdown,
   // assert on the HTML. Isolation (not the full engine) keeps each plugin's
   // regression from hiding under another plugin's side effects or the transformer
-  // registry — the property the marp-core host gave us before marp was retired.
+  // registry — isolation the host gives us.
   // NOTE: the owned pipeline defaults to `split: headings`, so a fixture with
   // several headings meant to live on ONE slide must declare `split: rule`.
   function makeMarp(plugin) {

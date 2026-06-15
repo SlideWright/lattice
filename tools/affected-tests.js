@@ -107,7 +107,7 @@ for (const f of process.argv.slice(2)) {
   }
 
   // lib/transformers/* — shared transformer registry consumed by
-  // marp.config.js, lattice-emulator.js, and the runtime bundle.
+  // lattice-emulator.js and the runtime bundle.
   if (rel.startsWith('lib/transformers/') && rel.endsWith('.js')) {
     scripts.add('test:transformers');
     continue;
