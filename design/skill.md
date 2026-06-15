@@ -1,8 +1,8 @@
-# Marp Slide Deck Pipeline — Lattice Skill
+# Lattice Slide Deck Pipeline — Skill
 
 ## What This Skill Covers
 
-Instructions for creating, rendering, and auditing Lattice presentation decks. Marp-flavored Markdown is the single source of truth; output formats are PDF, HTML, PPTX, and PNG sets.
+Instructions for creating, rendering, and auditing Lattice presentation decks. Lattice Markdown is the single source of truth; output formats are PDF, HTML, PPTX, and PNG sets.
 
 **`lattice.css` is the source of truth for visual output.** All rendering modes must produce output faithful to the CSS spec. When output deviates, the CSS wins — not the renderer.
 
@@ -39,34 +39,14 @@ Three modes, same `.md` source file — no source changes needed.
 |-----------|-----|
 | Final PDF / PPTX / PNG for delivery | Mode 3 — the `lattice` CLI (owned engine; **default**) |
 | VS Code live preview | Mode 1 — Marp Extension (marp-vscode) |
-| Bring-your-own marp-cli render | Mode 2 — `npx marp --config-file marp.config.js` (install marp-cli first) |
 | Verifying layout spec compliance | Mode 3 (the owned engine is canonical) |
 
-**Default to the bundled `lattice` CLI (Mode 3)** — the owned engine renders every
-first-party path and needs no marp. Reach for marp-cli only if you've installed it
-yourself (`npm install @marp-team/marp-cli`) and specifically want the marp path:
+**Default to the bundled `lattice` CLI (Mode 3)** — the owned engine renders
+every first-party path and needs no Marp.
 
-```bash
-npx @marp-team/marp-cli --version   # only meaningful AFTER you install marp-cli
-```
-
-**Mode 2 — bring-your-own marp-cli:** Lattice still ships `marp.config.js`, so a deck renders identically under your own marp-cli (install it first). Run from the repo root and the deck's `theme:` front matter selects the palette. [`marp.config.js`](../marp.config.js) registers both `indaco` and `cuoio`; the deck declares which one it wants. Switch only the output flag for different delivery formats.
-```bash
-# Run from repo root — picks up marp.config.js (themeSet + imageScale: 3)
-npx @marp-team/marp-cli deck.md --pdf        --output output.pdf
-npx @marp-team/marp-cli deck.md --html       --output output.html
-npx @marp-team/marp-cli deck.md --pptx       --output output.pptx
-npx @marp-team/marp-cli deck.md --images png --output output/
-```
-
-If you must invoke from outside the repo root, pass both palettes explicitly so front matter still selects:
-```bash
-npx @marp-team/marp-cli deck.md \
-  --theme-set themes/indaco.css themes/cuoio.css lattice.css \
-  --image-scale 3 --pdf --output output.pdf
-```
-
-**Image quality.** PDF and HTML are vector end-to-end (text, SVG-rendered Mermaid, code highlighting) — no DPI knob to turn. PNG export rasterizes through Chromium and is governed by `--image-scale`; the project's [`marp.config.js`](../marp.config.js) sets `imageScale: 3` so invocations from the repo root emit 3840×2160 PNGs (3× the 1280×720 slide). Keep the explicit flag in pipelines that may not run from the repo root.
+**Image quality.** PDF and HTML are vector end-to-end (text, SVG-rendered Mermaid,
+code highlighting) — no DPI knob to turn. PNG export rasterizes through Chromium;
+the `lattice` CLI emits 3840×2160 PNGs (3× the 1280×720 slide) by default.
 
 **Mode 3 — the `lattice` CLI (`lattice-emulator.js`, the default):** the owned
 engine — no marp needed. `lattice.css` is auto-resolved; the deck's `theme:` front
@@ -95,7 +75,7 @@ Full rendering pipeline (Mermaid, PPTX, image conversion): see [pipeline.md](../
 ## Dark canvas (quick reference)
 
 Lattice renders dark canvas via the native CSS `color-scheme` cascade —
-no class-list surgery, no per-renderer logic. Same recipe in marp-cli,
+no class-list surgery, no per-renderer logic. Same recipe in the engine,
 the emulator, and the VS Code preview.
 
 | Goal | Front-matter |
@@ -146,7 +126,7 @@ Five paths can produce a slide screenshot or rebuilt PDF. They have meaningfully
 | **Fast author loop on a deck or component** (default during development) | `npm run preview` (auto-scope from `git diff`) or `npm run preview:watch -- <deck>` for live rebuild | ~2s/deck | scope-detected | PDF (vector) |
 | Inspect **committed baseline** (CSS unchanged)      | `pdftoppm` on `examples/gallery.pdf`              |          0.3s  |              0.1s/slide | 4000×2250   |
 | **Single slide, fastest** (PNG)                     | `lattice-emulator` → `screenshot-slides.js`       |          1.6s  |              0.5s/slide | configurable (use scale 3 → 3840×2160) |
-| **Multi-slide, simplest** (default PNG)             | `marp-cli --images png --image-scale 3`           |          2.4s  |              0.7s/slide | 3840×2160   |
+| **Multi-slide** (one PNG per slide)                 | `lattice-emulator` → `rasterize-for-review.sh --overview` |   2.4s  |              0.7s/slide | 300dpi      |
 | Iterative loop on prebuilt HTML                     | `screenshot-slides.js` against existing HTML      |          1.6s  |              0.5s/slide | configurable |
 | Cross-renderer regression                           | `npm run test:integration`                        |             —  |                  ~30s | full check  |
 
@@ -155,9 +135,9 @@ Five paths can produce a slide screenshot or rebuilt PDF. They have meaningfully
 **Picking the path.**
 
 - **No CSS changes? Just inspecting what's shipped?** → `pdftoppm` on the committed gallery PDF. ~10× faster than any render path because no browser is involved.
-- **Single-slide spot check on current CSS?** → `lattice-emulator` to produce HTML, then `screenshot-slides.js` against that HTML. Skips marp-cli's pipeline overhead — meaningfully faster than `marp-cli --images png` for one slide.
-- **Multi-slide preview, or you don't already have an HTML on disk?** → `marp-cli --images png --image-scale 3`. Single command, picks up `marp.config.js` automatically from the repo root. Per-slide cost amortizes well across a deck.
-- **Iterative inner loop (changing the deck or screenshotting different slides repeatedly)?** → Build HTML once with `lattice-emulator`, then loop `screenshot-slides.js [html] [out] <idx> 3`. Each screenshot is ~1.6s with no Marp re-parse.
+- **Single-slide spot check on current CSS?** → `lattice-emulator` to produce HTML, then `screenshot-slides.js` against that HTML. Skips loading a prebuilt HTML — fastest for one slide.
+- **Multi-slide preview?** → render with `lattice-emulator` then `tools/rasterize-for-review.sh <pdf> --overview` (one PNG per slide). Per-slide cost amortizes well across a deck.
+- **Iterative inner loop (changing the deck or screenshotting different slides repeatedly)?** → Build HTML once with `lattice-emulator`, then loop `screenshot-slides.js [html] [out] <idx> 3`. Each screenshot is ~1.6s with no re-render.
 - **Suspect renderer drift?** → `npm run test:integration` rebuilds both galleries through both renderers and asserts page counts.
 
 **Identifying which slide.** Don't count `---` separators in source — that's fragile during authoring (code fences containing `---`, WIP decks with stray rules, `headingDivider` mode). The reliable way is to identify slides by their *content*. `tools/screenshot-slides.js` accepts a content selector as its 3rd positional arg or `--selector EXPR`:
@@ -190,14 +170,14 @@ node tools/screenshot-slides.js .scratch/peek/deck.html .scratch/peek h2:banner-
 #                                                                    │             │
 #                                                content selector ───┘             └─ deviceScaleFactor (3 = retina)
 
-# 3. Multi-slide, single-step (simplest, no HTML on disk)
+# 3. Multi-slide, single-step (owned engine → one PNG per slide)
 mkdir -p .scratch/peek
-npx @marp-team/marp-cli deck.md --images png --output .scratch/peek/
-# Run from repo root: marp.config.js registers both palettes and sets imageScale:3.
-# Front matter `theme:` selects which palette. Outputs are .scratch/peek.NNN.
+node lattice-emulator.js deck.md .scratch/peek/deck.pdf
+tools/rasterize-for-review.sh .scratch/peek/deck.pdf --overview
+# Front matter `theme:` selects the palette. Outputs are .scratch/peek/p-NN.png.
 ```
 
-`screenshot-slides.js` 4th arg is `scale` — defaults to **3** (retina/projection-quality 3840×2160, matching marp-cli's `--image-scale 3` and `marp.config.js`). Pass `1` for fast smoke-tests where pixel quality doesn't matter. Run `node tools/screenshot-slides.js --help` for all options. Exit codes: `0` success, `1` HTML missing or selector matched no slide, `2` selector syntax error. Named-flag form: `--html PATH --out DIR --selector EXPR --scale N --quiet` — positional still works.
+`screenshot-slides.js` 4th arg is `scale` — defaults to **3** (retina/projection-quality 3840×2160, matching the `lattice` CLI's 3× export). Pass `1` for fast smoke-tests where pixel quality doesn't matter. Run `node tools/screenshot-slides.js --help` for all options. Exit codes: `0` success, `1` HTML missing or selector matched no slide, `2` selector syntax error. Named-flag form: `--html PATH --out DIR --selector EXPR --scale N --quiet` — positional still works.
 
 Numbers benchmarked on this repo with a 4-slide preview deck. Cold-start dominates single-slide cost; per-slide cost on larger decks amortizes the Chromium launch. Loading a large HTML (e.g. the 74-page gallery) into Puppeteer adds ~1s of DOM-parse time on top of Chromium cold-start, even when only one slide is screenshotted — so for repeated single-slide work against the same HTML, a future `--watch` mode that keeps the page hot would drop subsequent screenshots to ~200ms.
 
