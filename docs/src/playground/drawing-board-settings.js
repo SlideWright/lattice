@@ -203,20 +203,51 @@ export function tierLabel(a) {
   return 'Deterministic floor';
 }
 
+// The curated read-aloud voices (the Voice tab). Kept short on purpose — the full
+// Kokoro set is 54 voices across 8 languages; these are the strongest English
+// voices for boardroom narration. [id, display name, descriptor, flagship?].
+const KOKORO_VOICES = [
+  ['af_heart', 'Heart', 'American · female', true],
+  ['af_bella', 'Bella', 'American · female'],
+  ['af_nicole', 'Nicole', 'American · female · soft'],
+  ['af_aoede', 'Aoede', 'American · female'],
+  ['am_michael', 'Michael', 'American · male'],
+  ['am_fenrir', 'Fenrir', 'American · male'],
+  ['bf_emma', 'Emma', 'British · female'],
+  ['bm_george', 'George', 'British · male'],
+];
+// OpenRouter (OpenAI-compatible) TTS voices for the hosted rung.
+const OR_VOICES = [
+  ['nova', 'Nova', 'warm, neutral'],
+  ['alloy', 'Alloy', 'balanced'],
+  ['echo', 'Echo', 'crisp'],
+  ['fable', 'Fable', 'expressive'],
+  ['onyx', 'Onyx', 'deep'],
+  ['shimmer', 'Shimmer', 'bright'],
+];
+
 // Visibility is owned by the drawer controller now (the settings panel lives in a
 // slide-in drawer body): `isOpen()` tells us whether to bother re-rendering on a
 // refresh, and `render()` is called when the drawer opens. The chip label is still
 // driven here via `trigger`.
-export function createModelSettings({ host, trigger, model, onChange, isOpen = () => false }) {
+export function createModelSettings({ host, trigger, model, voice, onChange, isOpen = () => false }) {
   if (!host || !model) return { refresh() {}, render() {}, restore: async () => {}, openTab() {} };
   let abort = null;
   let reconnecting = false;
   let renderToken = 0;
   let lastError = null; // last on-device load error, surfaced in the popover
   let orModelsCache = null; // OpenRouter catalog (id/name/pricing), fetched once per session
-  let activeTab = 'workspace'; // settings tab: 'workspace' | 'cloud' | 'ondevice'
+  let activeTab = 'workspace'; // settings tab: 'workspace' | 'cloud' | 'ondevice' | 'voice'
   // Open Settings to a specific tab — the model chip deep-links to 'cloud'.
   function openTab(tab) { activeTab = tab; if (isOpen()) render(); }
+
+  // The Voice tab renders off the voice model's (sync) availability(), but the
+  // on-disk cache probe resolves async — re-render the open Voice tab when the
+  // voice model announces a change (creation probe, a download, a removal). The
+  // event never fires from render(), so this can't loop.
+  if (typeof window !== 'undefined' && voice) {
+    window.addEventListener('db-voice-changed', () => { if (activeTab === 'voice' && isOpen()) render(); });
+  }
 
   // ── the trigger chip ────────────────────────────────────────────────────────
   // The chip is a settings button that also signals the live tier: gear (::before)
@@ -803,13 +834,201 @@ export function createModelSettings({ host, trigger, model, onChange, isOpen = (
     return panel;
   }
 
-  // The tab strip — Workspace · Cloud AI · On-device. Splits the once-long scroll
-  // into three short panes; the model chip deep-links to the Cloud AI tab.
+  // ── the Voice tab — read-aloud configuration ─────────────────────────────────
+  // Where the voice comes from (Auto · Cloud · On-device · Off), which voice (with
+  // "play sample"), and the on-device download/remove. One shared `voice` model
+  // backs this and Practice, so a pref set here takes effect there immediately.
+  const VOICE_RUNG_PREFS = [['auto', 'Auto'], ['openrouter', 'Cloud'], ['kokoro', 'On‑device'], ['off', 'Off']];
+  function voiceRungLabel(va) {
+    if (va.rung === 'openrouter-tts') return 'Cloud (OpenRouter)';
+    if (va.rung === 'kokoro') return 'On‑device (Kokoro)';
+    if (va.rung === 'speechSynthesis') return 'System voice (dev)';
+    return 'No voice yet';
+  }
+  function rungPrefHint(pref) {
+    if (pref === 'openrouter') return 'Always use the hosted cloud voice (needs a connected account).';
+    if (pref === 'kokoro') return 'Always use the on‑device voice (needs the one‑time download).';
+    if (pref === 'off') return 'Read‑aloud is disabled — Practice stays silent.';
+    // On mobile the on-device voice isn't offered, so Auto means cloud-or-nothing.
+    if (!voice.availability().kokoroSupported) return 'Use the cloud voice when an account is connected (on‑device voice is desktop‑only).';
+    return 'Use the cloud voice when an account is connected, otherwise the on‑device voice once downloaded.';
+  }
+
+  // A pickable voice list with a "play sample" on each row. Sampling needs the rung
+  // ready (cloud connected / Kokoro loaded); otherwise the play buttons are disabled.
+  function voicePicker({ rung, voices, current, set, canSample }) {
+    const wrap = el('div', 'db-voice-picker');
+    const list = el('div', 'db-voice-list');
+    // Surfaces WHY a sample failed (HTTP error, unsupported audio, blocked playback)
+    // right under the picker — the only on-device diagnostic on iOS.
+    const sampleErr = el('p', 'db-settings-error db-voice-sample-err');
+    sampleErr.hidden = true;
+    voices.forEach(([id, name, desc, flag]) => {
+      const row = el('div', 'db-voice-row' + (current === id ? ' is-on' : ''));
+      const pick = el('button', 'db-voice-pick');
+      pick.type = 'button';
+      pick.setAttribute('aria-pressed', String(current === id));
+      const meta = el('span', 'db-voice-meta');
+      const nm = el('span', 'db-voice-name', name);
+      if (flag) nm.append(el('span', 'db-voice-star', ' ★'));
+      meta.append(nm, el('span', 'db-voice-desc', desc));
+      pick.append(meta);
+      pick.addEventListener('click', () => { set(id); refresh(); });
+      const play = el('button', 'db-voice-sample');
+      play.type = 'button';
+      play.disabled = !canSample;
+      play.title = canSample ? 'Play a sample of ' + name : 'Connect or download this voice to hear a sample';
+      play.setAttribute('aria-label', play.title);
+      play.innerHTML = '<span class="ico ico-play" aria-hidden="true"></span>';
+      play.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        if (!canSample) return;
+        voice.unlock?.(); // resume the WebAudio context on the tap (iOS audio policy)
+        play.disabled = true;
+        play.innerHTML = '<span class="ico ico-loader spin" aria-hidden="true"></span>';
+        sampleErr.hidden = true;
+        let res;
+        try { res = await voice.previewVoice({ rung, voice: id }); } catch (err) { res = { ok: false, error: String((err && err.message) || err) }; }
+        if (res && res.ok === false) { sampleErr.textContent = 'Sample failed: ' + (res.error || 'unknown error'); sampleErr.hidden = false; }
+        play.innerHTML = '<span class="ico ico-play" aria-hidden="true"></span>';
+        play.disabled = !canSample;
+      });
+      row.append(pick, play);
+      list.append(row);
+    });
+    wrap.append(list, sampleErr);
+    return wrap;
+  }
+
+  function voiceSection() {
+    const va = voice.availability();
+    const panel = el('section', 'db-settings-voice');
+    panel.append(el('p', 'db-settings-note',
+      'Read‑aloud narrates the current slide’s speaker notes while you rehearse in Practice. Choose where the voice comes from and which voice to use.'));
+
+    // In use — the live rung.
+    const inUse = el('div', va.rung !== 'silent' ? 'db-settings-active on' : 'db-settings-active');
+    inUse.append(el('span', null, 'In use: ' + voiceRungLabel(va)));
+    panel.append(inUse);
+
+    // Voice source — the rung preference, as a segmented control.
+    panel.append(el('h3', 'db-settings-head db-settings-subhead', 'Voice source'));
+    const seg = el('div', 'db-voice-seg');
+    seg.setAttribute('role', 'group');
+    seg.setAttribute('aria-label', 'Voice source');
+    const cur = voice.rungPref();
+    // On-device is desktop-only — drop it from the source choices on mobile so it
+    // isn't an option that silently falls back to cloud/silent.
+    VOICE_RUNG_PREFS.filter(([key]) => key !== 'kokoro' || va.kokoroSupported).forEach(([key, label]) => {
+      const b = el('button', 'db-voice-seg-btn' + (cur === key ? ' is-on' : ''), label);
+      b.type = 'button';
+      b.setAttribute('aria-pressed', String(cur === key));
+      b.addEventListener('click', () => { voice.setRungPref(key); refresh(); });
+      seg.append(b);
+    });
+    panel.append(seg);
+    panel.append(el('p', 'db-settings-note', rungPrefHint(cur)));
+
+    if (cur !== 'off') {
+      // Cloud voice (OpenRouter).
+      panel.append(el('h3', 'db-settings-head db-settings-subhead', 'Cloud voice (OpenRouter)'));
+      if (va.openRouterReady) {
+        panel.append(voicePicker({ rung: 'openrouter', voices: OR_VOICES, current: voice.orVoice(), set: (v) => voice.setOrVoice(v), canSample: true }));
+      } else {
+        panel.append(el('p', 'db-settings-note', 'Cheap, instant, no download — but it sends your notes to the cloud. Connect an account in Cloud AI to use it.'));
+        const link = el('button', 'db-voice-link', 'Open Cloud AI →');
+        link.type = 'button';
+        link.addEventListener('click', () => { activeTab = 'cloud'; render(); });
+        panel.append(link);
+      }
+
+      // On-device voice (Kokoro) — DESKTOP ONLY for now. On phones/tablets the
+      // ~80 MB onnxruntime load is the unreliable, memory-heavy path on Safari/iOS,
+      // so we don't offer it there; mobile uses the cloud voice above.
+      panel.append(el('h3', 'db-settings-head db-settings-subhead', 'On‑device voice (Kokoro)'));
+      if (!va.kokoroSupported) {
+        panel.append(el('p', 'db-settings-note',
+          'On‑device voice is desktop‑only for now — on phones and tablets, use the cloud voice above (no download, nothing to load into memory).'));
+      } else {
+        const stateTxt = va.kokoroReady ? 'Loaded — ready to speak'
+          : va.kokoroCached ? 'Downloaded — loads on first use'
+          : 'Not downloaded (~80 MB)';
+        panel.append(el('div', 'db-voice-state' + (va.kokoroReady || va.kokoroCached ? ' is-on' : ''), stateTxt));
+
+        if (!va.kokoroCached && !va.kokoroReady) {
+          const btn = el('button', 'db-btn db-btn-primary db-settings-summon', 'Download voice (~80 MB)');
+          btn.type = 'button';
+          const prog = el('div', 'db-settings-progress');
+          const bar = el('i');
+          prog.append(bar);
+          prog.hidden = true;
+          btn.addEventListener('click', async () => {
+            btn.disabled = true;
+            prog.hidden = false;
+            try { await navigator.storage?.persist?.(); } catch {}
+            try {
+              await voice.loadKokoro((p) => {
+                const pct = Math.round(Math.max(0, Math.min(1, p?.progress || 0)) * 100);
+                bar.style.width = pct + '%';
+                btn.textContent = pct >= 100 ? 'Preparing voice…' : `Downloading… ${pct}%`;
+              });
+              refresh();
+            } catch {
+              btn.disabled = false;
+              btn.textContent = 'Download failed — retry';
+              prog.hidden = true;
+            }
+          });
+          panel.append(btn, prog);
+          panel.append(el('p', 'db-settings-note',
+            'A one‑time download so the voice runs entirely in your browser — no account, nothing leaves your device. It loads in a background worker.'));
+        }
+
+        panel.append(voicePicker({ rung: 'kokoro', voices: KOKORO_VOICES, current: voice.kokoroVoice(), set: (v) => voice.setKokoroVoice(v), canSample: va.kokoroReady }));
+        if (!va.kokoroReady && va.kokoroCached) {
+          panel.append(el('p', 'db-settings-note', 'Press play on a slide in Practice to load the voice into this tab, then return here to audition the voices.'));
+        }
+
+        if (va.kokoroCached || va.kokoroReady) {
+          const cache = el('div', 'db-settings-cache');
+          cache.append(el('span', 'db-settings-cache-label', 'Kokoro‑82M downloaded on this device'));
+          const rm = el('button', 'db-btn db-settings-remove', 'Remove voice');
+          rm.type = 'button';
+          rm.title = 'Delete the cached voice weights';
+          rm.addEventListener('click', async () => { await removeKokoro(); refresh(); });
+          cache.append(rm);
+          panel.append(cache);
+        }
+      }
+    }
+
+    panel.append(el('p', 'db-settings-note',
+      'Privacy: the on‑device voice never leaves your device. The cloud voice sends the slide’s notes to OpenRouter to synthesize speech.'));
+    return panel;
+  }
+
+  // Delete only the Kokoro voice weights from Cache Storage (leaves any AI model
+  // caches intact), then re-probe so the Voice tab + Practice reflect "removed".
+  async function removeKokoro() {
+    try {
+      for (const cn of await caches.keys()) {
+        if (!/transformers|onnx|hugging|xet|model/i.test(cn)) continue;
+        const cache = await caches.open(cn);
+        for (const req of await cache.keys()) {
+          if (/Kokoro-82M/i.test(req.url)) await cache.delete(req);
+        }
+      }
+    } catch {}
+    try { await voice?.probeKokoroCache?.(); } catch {}
+  }
+
+  // The tab strip — Workspace · Cloud AI · On-device · Voice. Splits the once-long
+  // scroll into short panes; the model chip deep-links to the Cloud AI tab.
   function tabStrip() {
     const tabs = el('div', 'db-settings-tabs');
     tabs.setAttribute('role', 'tablist');
     tabs.setAttribute('aria-label', 'Settings sections');
-    const TABS = [['workspace', 'Workspace'], ['cloud', 'Cloud AI'], ['ondevice', 'On-device']];
+    const TABS = [['workspace', 'Workspace'], ['cloud', 'Cloud AI'], ['ondevice', 'On-device'], ['voice', 'Voice']];
     TABS.forEach(([key, label], i) => {
       const b = el('button', 'db-settings-tab' + (activeTab === key ? ' is-on' : ''), label);
       b.type = 'button';
@@ -843,6 +1062,7 @@ export function createModelSettings({ host, trigger, model, onChange, isOpen = (
     // renderToken guard drops a stale paint if a newer render/tab-switch superseded.
     if (activeTab === 'workspace') { panel.append(workspaceSection()); return; }
     if (activeTab === 'cloud') { panel.append(cloudSection(a)); return; }
+    if (activeTab === 'voice') { if (voice) panel.append(voiceSection()); return; }
     const [webgpu, est, models] = await Promise.all([
       probeWebGPU(),
       (navigator.storage?.estimate ? navigator.storage.estimate().catch(() => null) : Promise.resolve(null)),

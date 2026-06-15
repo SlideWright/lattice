@@ -2491,6 +2491,58 @@ html.db-js #db-editor-ta {
 	color: #ff9d8a;
 }
 
+/* Read-aloud toggle — a round icon button leading the readout. Speaker when idle,
+   accent-filled while reading, a download glyph + spinner while summoning the local
+   voice. Icon-only at every width (the compact, universal HUD control). */
+.db-pv-speak {
+	flex: none;
+	display: inline-grid;
+	place-items: center;
+	width: 2.5rem;
+	height: 2.5rem;
+	border-radius: 50%;
+	color: #f4f4f6;
+	background: rgba(255, 255, 255, 0.08);
+	border: 1px solid rgba(255, 255, 255, 0.2);
+	cursor: pointer;
+	transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+.db-pv-speak .ico {
+	width: 1.15rem;
+	height: 1.15rem;
+}
+.db-pv-speak:hover {
+	border-color: var(--accent);
+	background: rgba(255, 255, 255, 0.14);
+}
+.db-pv-speak.is-on {
+	background: var(--accent);
+	color: var(--on-accent);
+	border-color: var(--accent);
+}
+.db-pv-speak.is-on:hover {
+	filter: brightness(1.06);
+}
+.db-pv-speak.is-loading {
+	cursor: progress;
+}
+.db-pv-speak .ico.spin {
+	animation: db-pv-read-spin 0.9s linear infinite;
+}
+@keyframes db-pv-read-spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+/* Tablet (~820px) — the desktop layout scales cleanly; just ease the nav button
+   min-width so three controls never crowd in portrait. */
+@media (max-width: 860px) {
+	.db-pv-btn {
+		min-width: 84px;
+	}
+}
+
 /* Touch / narrow — the locator row stays one stable line (section + position
    left, AI tag + close right), with the next-section preview dropped to save the
    width. The AI tag SHRINKS to its glyph rather than disappearing. The readout
@@ -2901,6 +2953,142 @@ html.db-js #db-editor-ta {
 .db-settings-remove:hover {
 	border-color: #c0392b;
 	color: #c0392b;
+}
+
+/* ── Voice tab — read-aloud configuration ─────────────────────────────────── */
+/* Segmented control for the voice source (Auto · Cloud · On-device · Off). */
+.db-voice-seg {
+	display: flex;
+	gap: 0.25rem;
+	padding: 0.2rem;
+	margin: 0.2rem 0 0;
+	background: color-mix(in srgb, var(--border) 45%, transparent);
+	border-radius: 999px;
+}
+.db-voice-seg-btn {
+	flex: 1 1 0;
+	font: inherit;
+	font-size: 0.76rem;
+	font-weight: 600;
+	color: var(--text-muted);
+	background: none;
+	border: none;
+	border-radius: 999px;
+	padding: 0.32rem 0.2rem;
+	cursor: pointer;
+	white-space: nowrap;
+	transition: background 0.15s, color 0.15s;
+}
+.db-voice-seg-btn:hover { color: var(--text-body); }
+.db-voice-seg-btn.is-on {
+	color: var(--on-accent);
+	background: var(--accent);
+}
+.db-voice-seg-btn:focus-visible {
+	outline: none;
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 24%, transparent);
+}
+/* Download/loaded state line for the on-device voice. */
+.db-voice-state {
+	font-size: 0.8rem;
+	color: var(--text-muted);
+	margin: 0.1rem 0 0.5rem;
+}
+.db-voice-state.is-on { color: var(--text-body); }
+/* "Open Cloud AI →" text link. */
+.db-voice-link {
+	font: inherit;
+	font-size: 0.78rem;
+	font-weight: 600;
+	color: var(--accent);
+	background: none;
+	border: none;
+	padding: 0.3rem 0;
+	cursor: pointer;
+}
+.db-voice-link:hover { text-decoration: underline; }
+/* The pickable voice list — each row is select + a "play sample" button. */
+.db-voice-list {
+	display: flex;
+	flex-direction: column;
+	gap: 0.3rem;
+	margin: 0.2rem 0 0.4rem;
+}
+.db-voice-row {
+	display: flex;
+	align-items: stretch;
+	gap: 0.4rem;
+	border: 1px solid var(--border);
+	border-radius: var(--radius-sm, 7px);
+	overflow: hidden;
+	transition: border-color 0.15s, background 0.15s;
+}
+.db-voice-row.is-on {
+	border-color: var(--accent);
+	background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+.db-voice-pick {
+	flex: 1 1 auto;
+	display: flex;
+	align-items: center;
+	font: inherit;
+	text-align: left;
+	background: none;
+	border: none;
+	padding: 0.45rem 0.6rem;
+	cursor: pointer;
+	color: var(--text-body);
+}
+.db-voice-meta {
+	display: flex;
+	flex-direction: column;
+	gap: 0.05rem;
+}
+.db-voice-name {
+	font-size: 0.84rem;
+	font-weight: 600;
+	color: var(--text-heading);
+}
+.db-voice-star { color: var(--accent); }
+.db-voice-desc {
+	font-size: 0.72rem;
+	color: var(--text-muted);
+}
+.db-voice-row.is-on .db-voice-name { color: var(--accent); }
+.db-voice-sample {
+	flex: 0 0 auto;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 2.2rem;
+	border: none;
+	border-left: 1px solid var(--border);
+	background: color-mix(in srgb, var(--border) 28%, transparent);
+	color: var(--text-body);
+	cursor: pointer;
+	transition: background 0.15s, color 0.15s;
+}
+.db-voice-sample:hover:not([disabled]) {
+	background: var(--accent);
+	color: var(--on-accent);
+}
+.db-voice-sample[disabled] {
+	opacity: 0.4;
+	cursor: not-allowed;
+}
+.db-voice-sample .ico {
+	width: 0.95rem;
+	height: 0.95rem;
+}
+.db-voice-sample .ico.spin { animation: db-ico-spin 0.7s linear infinite; }
+@media (prefers-reduced-motion: reduce) {
+	.db-voice-sample .ico.spin { animation: none; }
+}
+/* Four tabs now share the strip — tighten so the labels never crowd on mobile. */
+.db-settings-tabs { gap: 0.1rem; }
+.db-settings-tab { padding-left: 0.2rem; padding-right: 0.2rem; }
+@media (max-width: 460px) {
+	.db-settings-tab { font-size: 0.73rem; }
 }
 
 /* Workspace preferences (the "make it yours" section, above On-device AI). */

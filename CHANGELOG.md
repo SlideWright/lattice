@@ -145,6 +145,32 @@ in patch versions.
   with a `docs:spec:check` freshness gate wired into the build), so the site can
   never drift from the canonical spec; repo-relative links are rewritten to site
   routes / GitHub source automatically.
+- **Read-aloud in Practice mode — one consistent neural voice, never the
+  per-device `speechSynthesis` lottery.** The rehearsal HUD gains a play control
+  that narrates each slide's *speaker note* (falling back to the prose snippet),
+  with real pause/resume — and barging in cleanly when you navigate. It runs on
+  a `VoiceModel` voice ladder (twin of the architect model
+  ladder): **OpenRouter audio** (`gpt-audio-mini`, spoken via the
+  chat-completions audio modality — OpenRouter has no `/audio/speech` TTS route)
+  when you've connected OpenRouter — reusing the same browser OAuth key,
+  sub-cent/slide on your own credit, $0 to the project — falling back to
+  **Kokoro-82M** (Apache-2.0, ONNX)
+  summoned in-browser for a free, offline, no-account voice. `speechSynthesis`
+  is a dev-only stand-in, never production. **Settings → Voice** configures it:
+  the voice source (Auto · Cloud · On-device · Off), a curated picker of cloud
+  and Kokoro voices each with a **play-sample** button, and the on-device
+  download/remove. **The on-device (Kokoro) voice is desktop-only** — on a
+  phone/tablet the ~80 MB onnxruntime load is the unreliable, memory-heavy path on
+  Safari/iOS, so it isn't offered there; **mobile uses the cloud voice**, which
+  needs no download. (The Settings Voice tab and the Practice control both reflect
+  this: no download UI or On-device source on a coarse pointer, and a cloud-needed
+  prompt in its place.) Playback uses **WebAudio** (an `AudioContext` resumed on
+  the tap) so **iOS/Safari** permits the audio synthesized/fetched a moment later —
+  it otherwise blocks programmatic playback after the async gap ("downloaded but
+  silent") — and so it ignores the hardware ringer switch; on desktop the Kokoro
+  model loads in a **same-origin worker** (off the main thread). The Practice
+  button also reflects a **cached-but-not-loaded** model instead of a misleading
+  "download" glyph. See `engineering/decisions/2026-06-14-read-aloud-kokoro.md`.
 - **The Drawing Board now shows export progress and an error toast.** A
   one-click PDF/PPTX export rasterizes every slide in the browser — seconds to
   tens of seconds on a phone — but the only feedback was low-contrast text in

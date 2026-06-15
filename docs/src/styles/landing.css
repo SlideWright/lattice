@@ -66,6 +66,9 @@
 	--icon-pencil: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z'/%3e%3cpath d='m15 5 4 4'/%3e%3c/svg%3e");
 	--icon-play: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolygon points='6 3 20 12 6 21 6 3'/%3e%3c/svg%3e");
 	--icon-x: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='M18 6 6 18'/%3e%3cpath d='m6 6 12 12'/%3e%3c/svg%3e");
+	--icon-pause: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3crect x='14' y='4' width='4' height='16' rx='1'/%3e%3crect x='6' y='4' width='4' height='16' rx='1'/%3e%3c/svg%3e");
+	--icon-volume2: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolygon points='11 5 6 9 2 9 2 15 6 15 11 19 11 5'/%3e%3cpath d='M15.54 8.46a5 5 0 0 1 0 7.07'/%3e%3cpath d='M19.07 4.93a10 10 0 0 1 0 14.14'/%3e%3c/svg%3e");
+	--icon-download: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4'/%3e%3cpolyline points='7 10 12 15 17 10'/%3e%3cline x1='12' x2='12' y1='15' y2='3'/%3e%3c/svg%3e");
 	--icon-arrow-right: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='M5 12h14'/%3e%3cpath d='m12 5 7 7-7 7'/%3e%3c/svg%3e");
 	--icon-arrow-left: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='m12 19-7-7 7-7'/%3e%3cpath d='M19 12H5'/%3e%3c/svg%3e");
 	--icon-check: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='M20 6 9 17l-5-5'/%3e%3c/svg%3e");
@@ -112,6 +115,11 @@
 .ico-minus { --ico: var(--icon-minus); }
 .ico-wand { --ico: var(--icon-wand-sparkles); }
 .ico-loader { --ico: var(--icon-loader-circle); }
+.ico-play { --ico: var(--icon-play); }
+.ico-pause { --ico: var(--icon-pause); }
+.ico-volume2 { --ico: var(--icon-volume2); }
+.ico-download { --ico: var(--icon-download); }
+.ico-alert { --ico: var(--icon-triangle-alert); }
 /* Spin the loader glyph for in-flight states (respects reduced-motion). */
 @media (prefers-reduced-motion: no-preference) {
 	.ico-loader { animation: db-ico-spin 0.7s linear infinite; }
