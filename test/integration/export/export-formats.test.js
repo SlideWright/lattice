@@ -68,12 +68,47 @@ describe('export-formats', () => {
     assert.equal(media.length, 3, `expected 3 images, got ${media.length}`);
   });
 
-  test('warns on overflow but keeps the badge out of the exported PDF', { timeout: TIMEOUT }, () => {
-    // The overflow signal (red ring + "OVERFLOWS" tab) is an authoring aid for
-    // the live preview; the deliverable must stay clean — a red box in front of
-    // a board is worse than the silent clip overflow:hidden already applies.
-    // Author a slide that cannot fit the HD frame, render it, and assert the
-    // emulator (a) warns on stderr and (b) bakes no "OVERFLOWS" text into the PDF.
+  // Parse a poppler P6 .ppm (raw RGB) into { w, h, data }.
+  function readPPM(file) {
+    const buf = fs.readFileSync(file);
+    let pos = 0;
+    const ws = (b) => b === 32 || b === 10 || b === 13 || b === 9;
+    const tok = () => {
+      while (ws(buf[pos])) pos++;
+      const s = pos;
+      while (!ws(buf[pos])) pos++;
+      return buf.toString('ascii', s, pos);
+    };
+    assert.equal(tok(), 'P6', `not a P6 ppm: ${file}`);
+    const w = +tok();
+    const h = +tok();
+    tok();      // maxval
+    pos += 1;   // single whitespace separator before the pixel block
+    return { w, h, data: buf.subarray(pos) };
+  }
+
+  // Count pixels near the overflow ring's danger red (#d4351c) along the bottom
+  // and left edges — where the 4px inset ring lands, away from the top spectrum
+  // band. The ring is a colour-only box-shadow (invisible to pdftotext), so this
+  // raster check is what actually guards the strip.
+  function ringRedPixels(ppm) {
+    const { w, h, data } = readPPM(ppm);
+    const red = (i) =>
+      Math.abs(data[i] - 212) < 45 && Math.abs(data[i + 1] - 53) < 45 && Math.abs(data[i + 2] - 28) < 45;
+    let n = 0;
+    for (let y = h - 6; y < h; y++) for (let x = 0; x < w; x++) if (red((y * w + x) * 3)) n++;
+    for (let y = 40; y < h; y++) for (let x = 0; x < 6; x++) if (red((y * w + x) * 3)) n++;
+    return n;
+  }
+
+  test('warns on overflow but keeps the ring out of the exported PDF', { timeout: TIMEOUT }, () => {
+    // The overflow signal (a red inset ring + "OVERFLOWS" tab) is an authoring
+    // aid for the live preview; the deliverable must stay clean — a red box in
+    // front of a board is worse than the silent clip overflow:hidden already
+    // applies. Author a slide that cannot fit the HD frame, render it, and assert
+    // the emulator (a) warns on stderr and (b) strips the ring from the export.
+    // Empirically: a built-in render shows 0 ring pixels; reverting the strip
+    // shows thousands — so this fails if the strip regresses.
     const dir = tmpDir();
     const src = path.join(dir, 'overflow.md');
     const wall = Array.from({ length: 40 }, (_, i) =>
@@ -88,8 +123,10 @@ describe('export-formats', () => {
     assert.equal(r.status, 0, `emulator failed: ${r.stderr}`);
     assert.match(r.stderr, /OVERFLOW/, 'expected the emulator to warn about overflow on stderr');
 
-    const text = execFileSync('pdftotext', [out, '-'], { encoding: 'utf8' });
-    assert.doesNotMatch(text, /OVERFLOWS/, 'the "OVERFLOWS" tab must not be burned into the exported PDF');
+    // Rasterize page 1 at 1:1 (96 dpi → the 4px ring stays 4px) and pixel-check.
+    execFileSync('pdftoppm', ['-r', '96', '-f', '1', '-l', '1', out, path.join(dir, 'page')]);
+    const ring = ringRedPixels(path.join(dir, 'page-1.ppm'));
+    assert.ok(ring < 50, `overflow ring leaked into the export: ${ring} danger-red edge pixels (expected ~0)`);
   });
 
   test('renders one PNG per slide at the 2× raster size', { timeout: TIMEOUT }, () => {
