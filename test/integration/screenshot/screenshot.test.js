@@ -137,7 +137,7 @@ describe('screenshot', () => {
     const { html } = renderFixture();
     const text = fs.readFileSync(html, 'utf8');
     // Count `<section ` (with trailing space, to skip CSS comment hits like "<section>...").
-    const matches = text.match(/<section [^>]*data-marpit-slide=/g) || [];
+    const matches = text.match(/<section [^>]*data-lattice-slide=/g) || [];
     assert.equal(matches.length, 3, `expected 3 slide sections, got ${matches.length}`);
   });
 });

@@ -130,7 +130,7 @@ Decomposed into what we'd have to own:
    reference links, loose/tight lists, HTML blocks). This is the part the
    emulator's regex parser only partially covers.
 2. **Slide splitting.** `---` (and front-matter fencing) → one `<section
-   data-marpit-slide="N">` per slide. Our plugins hook
+   data-lattice-slide="N">` per slide. Our plugins hook
    `markdown.core.ruler.after('marpit_slide_containers', …)` — i.e. they
    depend on Marpit's token-stream slide boundaries.
 3. **Directive parsing.** Global vs spot directives: `theme:`, `paginate:`,
@@ -351,7 +351,7 @@ are the same §2.2-item-8 decisions, surfaced in the browser.
 **Build:** `lattice-engine` (markdown-it host) implementing the §2.2 layer:
 
 1. markdown-it instance (GFM preset) + KaTeX plugin.
-2. Slide-splitting plugin emitting `<section data-marpit-slide>` with the
+2. Slide-splitting plugin emitting `<section data-lattice-slide>` with the
    `marpit_slide_containers`-equivalent ruler boundary our plugins hook.
 3. Directive layer: front-matter + `<!-- _class: -->` comment directives, the
    in-use set (§2.2.3) first; global-vs-spot semantics matching

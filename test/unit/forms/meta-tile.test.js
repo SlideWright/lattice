@@ -13,7 +13,7 @@ const assert = require('node:assert/strict');
 const { JSDOM } = require('jsdom');
 const meta = require('../../../lib/forms/tile/meta/meta.transform');
 
-const sec = (cls, inner = '') => `<section class="${cls}" data-marpit-slide="x">${inner}</section>`;
+const sec = (cls, inner = '') => `<section class="${cls}" data-lattice-slide="x">${inner}</section>`;
 const bay = (cls = 'content form') =>
   sec(cls, '<div class="cell-masthead"><div class="masthead-lede"><h2>T</h2></div><div class="masthead-bay"></div></div>');
 const doc = (html) => new JSDOM(`<!DOCTYPE html><body>${html}</body>`).window.document;

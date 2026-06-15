@@ -432,13 +432,13 @@ describe('word-cloud', () => {
   // ── applyToRenderedHtml — section dispatch ──────────────────────────────
 
   const WC_SECTION = (
-    '<section id="1" class="word-cloud" data-marpit-slide="1"><h2>Q1</h2>' + UL_HTML + '</section>'
+    '<section id="1" class="word-cloud" data-lattice-slide="1"><h2>Q1</h2>' + UL_HTML + '</section>'
   );
   const WC_FOCAL_SECTION = (
-    '<section id="2" class="word-cloud focal" data-marpit-slide="2"><h2>Q1</h2>' + UL_HTML + '</section>'
+    '<section id="2" class="word-cloud focal" data-lattice-slide="2"><h2>Q1</h2>' + UL_HTML + '</section>'
   );
   const NON_WC_SECTION = (
-    '<section id="3" class="roadmap" data-marpit-slide="3"><h2>Q1</h2>' + UL_HTML + '</section>'
+    '<section id="3" class="roadmap" data-lattice-slide="3"><h2>Q1</h2>' + UL_HTML + '</section>'
   );
 
   test('dispatch: transforms default word-cloud sections', () => {

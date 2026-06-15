@@ -24,7 +24,7 @@
  *
  * Coverage: all 53 components carry a layer-3 rule. Each entry maps a label →
  * async `(page, assert, SLIDE) => {}` run against the rendered sample slide
- * (`SLIDE` = `section[data-marpit-slide="1"]`). Keep these about MEANING —
+ * (`SLIDE` = `section[data-lattice-slide="1"]`). Keep these about MEANING —
  * counts, presence of a computed relationship — not pixels.
  */
 

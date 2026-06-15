@@ -930,7 +930,7 @@ in patch versions.
   markers inside inline code (`` `**x**` ``) now stay literal instead of being
   parsed as `<strong>`, matching CommonMark + the marp-cli path. Math (KaTeX) and
   syntax highlighting are handled by the engine; the deck-logo + island injectors
-  still run in the emulator (they key off `data-marpit-slide`, stamped after the
+  still run in the emulator (they key off `data-lattice-slide`, stamped after the
   engine renders). See
   `engineering/decisions/2026-06-11-emulator-on-engine-p2.md` (P2 step d).
 - **The reference trio's chart palettes are re-tuned to the quality bar they
@@ -2795,7 +2795,7 @@ in patch versions.
   layout. Now escapes per standard markdown behaviour.
 - **Overflow watcher scoped to Marp sections.** The watchers in
   `lattice-emulator.js` and `lattice-runtime.js` now select
-  `section[data-marpit-slide]` instead of every `section`, so any
+  `section[data-lattice-slide]` instead of every `section`, so any
   literal `<section>` text that does end up in the DOM no longer
   pollutes the warning indices. Same scope applied to the
   per-section sizing override.

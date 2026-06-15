@@ -194,16 +194,16 @@ describe('marp-plugins', () => {
 
   test('applyFormToggleToHtml: off no-ops; standard/minimal rewrite eligible sections', () => {
     const html =
-      '<section class="content" data-marpit-slide="1"></section>' +
-      '<section class="divider" data-marpit-slide="2"></section>' +
-      '<section data-marpit-slide="3"></section>';
+      '<section class="content" data-lattice-slide="1"></section>' +
+      '<section class="divider" data-lattice-slide="2"></section>' +
+      '<section data-lattice-slide="3"></section>';
     assert.equal(plugins.applyFormToggleToHtml(html, '---\nform: off\n---\n'), html, 'no-op when off');
     const std = plugins.applyFormToggleToHtml(html, '---\nform: standard\n---\n');
-    assert.match(std, /<section class="content form" data-marpit-slide="1">/);
-    assert.match(std, /<section class="divider" data-marpit-slide="2">/, 'divider skipped');
-    assert.match(std, /<section class="form" data-marpit-slide="3">/, 'bare slide gets a class attr');
+    assert.match(std, /<section class="content form" data-lattice-slide="1">/);
+    assert.match(std, /<section class="divider" data-lattice-slide="2">/, 'divider skipped');
+    assert.match(std, /<section class="form" data-lattice-slide="3">/, 'bare slide gets a class attr');
     const min = plugins.applyFormToggleToHtml(html, '---\nform: minimal\n---\n');
-    assert.match(min, /<section class="content form no-progress" data-marpit-slide="1">/);
+    assert.match(min, /<section class="content form no-progress" data-lattice-slide="1">/);
   });
 
   // ── applyDeckLogoToHtml ────────────────────────────────────────────────
@@ -215,9 +215,9 @@ describe('marp-plugins', () => {
 
   test('applyDeckLogoToHtml: `logo:` with default `logo-on: all` injects <img class="deck-logo"> into every section', () => {
     const html = logoFixture([
-      '<section id="1" data-marpit-slide="1"></section>',
-      '<section id="2" class="title" data-marpit-slide="2"></section>',
-      '<section id="3" data-marpit-slide="3"></section>',
+      '<section id="1" data-lattice-slide="1"></section>',
+      '<section id="2" class="title" data-lattice-slide="2"></section>',
+      '<section id="3" data-lattice-slide="3"></section>',
     ].join(''));
     const md = '---\nlogo: ./acme.svg\n---\n';
     const out = plugins.applyDeckLogoToHtml(html, md);
@@ -235,18 +235,18 @@ describe('marp-plugins', () => {
   });
 
   test('applyDeckLogoToHtml: img is the first child of each section (so absolute positioning is predictable)', () => {
-    const html = '<section id="1" data-marpit-slide="1"><h1>Title</h1></section>';
+    const html = '<section id="1" data-lattice-slide="1"><h1>Title</h1></section>';
     const md = '---\nlogo: ./acme.svg\n---\n';
     const out = plugins.applyDeckLogoToHtml(html, md);
-    assert.match(out, /<section id="1" data-marpit-slide="1"><img[^>]*class="deck-logo[^>]*><h1>Title<\/h1><\/section>/);
+    assert.match(out, /<section id="1" data-lattice-slide="1"><img[^>]*class="deck-logo[^>]*><h1>Title<\/h1><\/section>/);
   });
 
-  test('applyDeckLogoToHtml: ignores literal <section> text inside code blocks (no `data-marpit-slide`)', () => {
+  test('applyDeckLogoToHtml: ignores literal <section> text inside code blocks (no `data-lattice-slide`)', () => {
     const html = [
-      '<section id="1" data-marpit-slide="1"><code>&lt;section&gt;</code></section>',
+      '<section id="1" data-lattice-slide="1"><code>&lt;section&gt;</code></section>',
       // Marp parses unescaped `<section>` in source as a real DOM element,
-      // but it won't have `data-marpit-slide`. Make sure we leave it alone.
-      '<section id="2" data-marpit-slide="2"><p>before <code><section><img></code> after</p></section>',
+      // but it won't have `data-lattice-slide`. Make sure we leave it alone.
+      '<section id="2" data-lattice-slide="2"><p>before <code><section><img></code> after</p></section>',
     ].join('');
     const md = '---\nlogo: ./acme.svg\n---\n';
     const out = plugins.applyDeckLogoToHtml(html, md);
@@ -256,9 +256,9 @@ describe('marp-plugins', () => {
 
   test('applyDeckLogoToHtml: `logo-on: title` injects only on the first slide and on `title`-classed slides', () => {
     const html = [
-      '<section id="1" class="title" data-marpit-slide="1"></section>',
-      '<section id="2" data-marpit-slide="2"></section>',
-      '<section id="3" class="title" data-marpit-slide="3"></section>',
+      '<section id="1" class="title" data-lattice-slide="1"></section>',
+      '<section id="2" data-lattice-slide="2"></section>',
+      '<section id="3" class="title" data-lattice-slide="3"></section>',
     ].join('');
     const md = '---\nlogo: ./acme.svg\nlogo-on: title\n---\n';
     const out = plugins.applyDeckLogoToHtml(html, md);
@@ -270,21 +270,21 @@ describe('marp-plugins', () => {
   });
 
   test('applyDeckLogoToHtml: `logo-style: brand` adds `deck-logo-brand` class', () => {
-    const html = '<section id="1" data-marpit-slide="1"></section>';
+    const html = '<section id="1" data-lattice-slide="1"></section>';
     const md = '---\nlogo: ./acme.svg\nlogo-style: brand\n---\n';
     const out = plugins.applyDeckLogoToHtml(html, md);
     assert.match(out, /<img[^>]*class="deck-logo deck-logo-brand"/);
   });
 
   test('applyDeckLogoToHtml: no-op when front matter has no `logo:` directive', () => {
-    const html = '<section id="1" data-marpit-slide="1"></section>';
+    const html = '<section id="1" data-lattice-slide="1"></section>';
     const md = '---\ntheme: indaco\n---\n';
     const out = plugins.applyDeckLogoToHtml(html, md);
     assert.equal(out, html);
   });
 
   test('applyDeckLogoToHtml: tolerates quoted YAML value and paths with spaces', () => {
-    const html = '<section id="1" data-marpit-slide="1"></section>';
+    const html = '<section id="1" data-lattice-slide="1"></section>';
     const md = '---\nlogo: "./assets/with space/acme.svg"\n---\n';
     const out = plugins.applyDeckLogoToHtml(html, md);
     assert.match(out, /<img[^>]*class="deck-logo/);
@@ -292,7 +292,7 @@ describe('marp-plugins', () => {
   });
 
   test('applyDeckLogoToHtml: HTML-escapes src to prevent attribute-injection', () => {
-    const html = '<section id="1" data-marpit-slide="1"></section>';
+    const html = '<section id="1" data-lattice-slide="1"></section>';
     const md = '---\nlogo: "./acme.svg\\"><script>alert(1)</script>"\n---\n';
     const out = plugins.applyDeckLogoToHtml(html, md);
     assert.doesNotMatch(out, /<script>alert\(1\)<\/script>/);

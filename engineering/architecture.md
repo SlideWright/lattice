@@ -30,7 +30,7 @@ active palette (loaded from `themes/<n>.css`), so deck authors write
 plain Mermaid without theme prefixes.
 
 The renderer emulates Marp's HTML structure faithfully — the `<section>`
-wrapper, the `data-marpit-pagination` attribute, the slide chrome
+wrapper, the `data-lattice-pagination` attribute, the slide chrome
 (`<header>`, `<footer>`, pagination via `::after`) — so any CSS written
 for Marp works against Lattice output.
 
