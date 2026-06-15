@@ -191,6 +191,56 @@ paths consume. That two-file split (kernel co-located with its
 component or in `lib/core/`; adapter in `lib/transformers/`) keeps
 component folders free of render-path plumbing.
 
+## CSS owns layout; JS is a bounded post-processing set
+
+The division of labour across the engine is sharp, and worth stating as a
+contract: **CSS owns all layout and appearance; JS exists only for the things
+CSS fundamentally cannot do to the HTML.** No layout is computed in JS — JS only
+produces the right DOM, then CSS lays it out and styles it. (The masthead band,
+the footer zones, the stage region, chart sizing, the fill modifiers — all CSS.)
+
+CSS can't do exactly four things, and those four are the *only* reasons JS
+touches a slide:
+
+1. **Re-parent an element** — move it to a new place in the DOM.
+2. **Generate content from front-matter or deck structure** — text/images/derived
+   numbers that aren't in the slide's own markdown.
+3. **Tag classes from state** — a front-matter mode, or a cross-slide fact.
+4. **Measure the rendered result and react** — overflow.
+
+Because the boundary is principled, the JS surface is small and **fully
+enumerable** — this is the complete register of slide post-processing (the
+`form` composition set + the engine chrome), each entry in a known home and
+exercised by the unit suite:
+
+| Post-process | What it does | Why not CSS | Home (kernel → adapter) |
+|---|---|---|---|
+| masthead lift | moves eyebrow + title into `.cell-masthead` | re-parent | `lib/core/masthead-lift.js` → `lib/transformers/masthead-lift.js` (DOM mirror) |
+| `form:` toggle | adds `form` / `no-progress` per mode; skip-set from `lib/forms` | read front-matter, tag classes | `lib/integrations/marp/plugins.js` (`readFormMode`, `formToggleClass`, `deriveFormToggleSkip`) |
+| meta Tile | inserts `meta:` into the masthead bay | front-matter text | `plugins.js` `applyMastheadMetaToHtml` + `lib/runtime/form-dom.js` `injectMastheadMeta` |
+| logo Tile | inserts the `logo:` image | front-matter image | `plugins.js` `applyDeckLogoToHtml` |
+| progress Tile | counts `divider` sections → dot-rail + `has-progress` | derive from deck structure | `plugins.js` `applyProgressRailToHtml` + `form-dom.js` `injectProgressRail` |
+| watermark Tile | section-number ghost | compute the number | `plugins.js` `applyWatermarkToHtml` + `form-dom.js` `injectWatermark` |
+| footer / paginate / header | front-matter directives → chrome | directive parsing | `lib/engine/directives.js` (owned engine) |
+| overflow signal | measures `scrollHeight > clientHeight` → ring + "OVERFLOWS" tab (preview only) | measure + react | `lib/runtime/index.js` + `lattice-emulator.js` |
+| geometry bridge | sets `--_sec-1cqi` (= section width ÷ 100) so `cqi`/`cqh` sizing resolves in the preview iframe | self-measure for the container-query fallback | `lib/runtime` `patchSectionGeometry` |
+
+Two consequences worth keeping in mind:
+
+- **Maintenance is bounded, not sprawling.** Changing a Tile means editing its
+  CSS (one cohesive place) plus, for the injected Tiles, two mirrored copies (the
+  HTML-string path in `plugins.js` and the live-DOM path in `form-dom.js`) that
+  the three render paths require. That duplication is the real recurring cost —
+  but it is two copies, not N, and the unit suite asserts the paths agree (HARD
+  RULE 1). The list above is the whole surface.
+- **The one descriptive exception is the `lib/forms/` catalog.** It documents the
+  Frame/Cell/Tile model but is read by the engine for only one thing today (the
+  sovereign skip-set). Wiring it to *drive* the CSS/injectors — so adding a Tile
+  is a folder, not edits to the mirrored kernels — would make it load-bearing and
+  shrink the duplication above; trimming it removes a freshness-gated second
+  source of truth. That decision is tracked in **#356**; until then the table
+  above, not the catalog, is the source of truth for what actually runs.
+
 ## Docs-site render bridges
 
 The docs site (`docs/`, a separate Astro + React package) renders live deck

@@ -462,6 +462,11 @@ the two docs from drifting (the §2.5 hazard, stated as a rule).
 
 ## See also
 
+- `engineering/architecture.md` § *CSS owns layout; JS is a bounded
+  post-processing set* — the implementation contract: where each Frame/Cell/Tile
+  construct lives (CSS vs the cataloged JS transforms) and why.
+- `engineering/decisions/2026-06-15-form-implementation.md` — how this model was
+  built in code (the B-now decision; what ships vs. staged).
 - `design/design-system.md` §4 — the twelve forms (the Frame catalog) in the
   component model.
 - `engineering/decisions/2026-06-11-islands.md` — the originating design note
