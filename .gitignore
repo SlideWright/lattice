@@ -46,6 +46,7 @@ __pycache__/
 examples/*.html
 examples/**/*.html
 examples/*.notes.txt
+design/**/*.html
 lib/components/**/*.html
 test/integration/**/*.html
 !examples/*.pdf
