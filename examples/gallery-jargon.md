@@ -967,8 +967,8 @@ Set `header:` and `footer:` in frontmatter. The header always uppercases; the fo
 
 ## Two-card layouts work equally well inverted to dark
 
-- The framework asks one calibration question: what proves your scoring model is improving, and what does a quarter without that proof cost? Every other question in this deck depends on the answer. In practice, the answer is "we'll revisit it in Q3."
-- It's the same shape as any page of written argument — claim, then support. The dark palette changes none of the reading rhythm. What it changes is how the slide looks in the screenshot your VP forwards to their VP with "see, this is what I mean."
+- The framework asks one calibration question: what proves your scoring model is improving, and what does a quarter without that proof cost? Every other question in this deck depends on the answer. In practice the answer is "we'll revisit it in Q3" — which is also the quarter the workshop to define "improving" is scheduled for.
+- It's the same shape as any page of written argument — claim, then support. The dark palette changes none of the reading rhythm or the information density. What it changes is how the slide looks in the screenshot your VP forwards to their VP with "see, this is what I mean." The content is identical to the light version. The forward is the feature.
 
 ---
 
