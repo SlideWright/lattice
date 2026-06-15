@@ -227,6 +227,23 @@ it is load-bearing.
   authorized merge; a green PR may sit behind `main` until then (harmless under
   squash-merge). Merge queue remains the structural fix if cross-session races
   recur. **Status: design-decision.**
+- [2026-06-15-webrtc-av-collaboration.md](2026-06-15-webrtc-av-collaboration.md) —
+  companion to the 2026-06-14 Yjs collaboration doc: what it takes to add
+  *talk-while-you-edit* audio/video to the Drawing Board. Key insight — it isn't
+  a separate "Yjs-for-media", it's the **other half of the same WebRTC pipe**:
+  `y-webrtc`'s document sync (`RTCDataChannel`) and a call (media tracks) ride one
+  `RTCPeerConnection`, one signaling handshake, one STUN/TURN ladder, so the
+  signaling Worker / room / presence / identity from the Yjs plan are reused
+  as-is. The hard part is that media ≠ text: **TURN becomes load-bearing** (a
+  blocked call is just broken, not a retry) and a **P2P mesh tops out ~4** before
+  needing an **SFU** (the media analog of the Yjs Durable-Object relay, but
+  heavier). Recommends a phased path mirroring the Yjs phasing — **Phase A:
+  `simple-peer` mesh, audio-first/cameras-optional, on the shared Yjs room
+  (near-zero infra, depends on Yjs Phase 1); Phase B: SFU for large/corporate
+  rooms + recording (deferred until mesh is outgrown).** Honest caveats: TURN
+  cost, mesh ceiling, `getUserMedia` UX, privacy framing of a camera vs a cursor,
+  and that the cloud sandbox can verify the call *UI* but not end-to-end media.
+  **Status: design / exploration — no code.**
 - [2026-06-14-read-aloud-kokoro.md](2026-06-14-read-aloud-kokoro.md) —
   design model for a free/near-free, boardroom-quality read-aloud voice. Bans
   the browser `speechSynthesis` (per-device lottery, never Siri — kept as a
