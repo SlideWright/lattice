@@ -1,0 +1,10 @@
+{
+  "$schema": "../../schema/tile.schema.json",
+  "id": "canvas",
+  "kind": "surface",
+  "fits": ["stage"],
+  "z": 0,
+  "population": "theme `--bg` token (+ the `dark` modifier)",
+  "hideToken": null,
+  "status": "shipped"
+}

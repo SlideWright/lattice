@@ -1,0 +1,12 @@
+{
+  "$schema": "../../schema/cell.schema.json",
+  "id": "progress-centre",
+  "region": "progress-centre",
+  "z": 3,
+  "accepts": ["chrome"],
+  "capacity": "one",
+  "fill": "center",
+  "gap": "--footer-centre-half",
+  "geometry": { "size": "--footer-centre-w" },
+  "clip": true
+}

@@ -6539,6 +6539,43 @@ section.piechart.cover .piechart-svg {
   max-height: 100%;
   max-width: 100%;
 }
+/* IN-FORM (section.form). Under the Form the masthead/footer Cells are reserved
+   via the section's padding, squeezing the flex column
+   (section → .chart-body flex:1 → .piechart-figure flex:1). The CHART-BODY fills
+   the stage reliably via flex — even in print — but its descendants do NOT: in
+   the print-media Chromium that exports the PDF, a `flex:1` *figure* whose sole
+   content is a replaced <svg> will NOT grow to fill the chart-body
+   (replaced-content intrinsic size wins), and `height:100cqh`/`%`/abs-inset read
+   against the figure all collapse toward 0 — the donut shrank to a ~40px
+   thumbnail. A naive `Ncqi` HEIGHT was the opposite failure: cqi is a WIDTH unit
+   (~589px against the section at HD), far taller than the squeezed band, so the
+   oversized SVG overflowed and `.chart-body{overflow:hidden}` CLIPPED the ring +
+   legend to a fragment (the `max-height:100cqh` guard, read against the section,
+   never engaged). See 2026-06-15-form-chart-clip.md.
+
+   ROBUST FIX — size the SVG off the CHART-BODY's content box:
+     · make `.chart-body` the size-query container (`container-type:size`); its
+       cqh basis is exactly the chart-body fill height MINUS its own padding =
+       the real available figure area, and it tracks every chrome combo (0/1/2
+       -line subtitle ± caption) — verified empirically in print media;
+     · collapse the figure's box out with `display:contents` so the SVG sizes
+       straight off the chart-body container (the `flex:1` figure cannot mediate
+       the height in print);
+     · `height:100cqh` on the SVG → it fills the available area, width follows
+       the unified viewBox aspect, so the WHOLE unit (disc + key) scales and
+       never overflows/clips, HD and 4K alike.
+   Scoped to section.form so non-form pie rendering stays byte-identical. */
+section.form.piechart .chart-body {
+  container-type: size;
+}
+section.form.piechart .piechart-figure {
+  display: contents;
+}
+section.form.piechart .piechart-svg {
+  height: 100cqh;
+  width: auto;
+  max-width: 100%;
+}
 section.piechart .piechart-svg .wedge {
   /* Stroke colour is the slot's --catN-ink (set per nth-child below); the
    * wedge fill is the same hue's --catN-fill. Pale fill + deep border on a
@@ -11601,6 +11638,15 @@ section.chart-frame .chart-subtitle {
   line-height: var(--lh-relaxed);
 }
 
+/* Under the Form, the chart-frame's eyebrow + h2 are lifted into the masthead
+ * Cell, so the in-flow .chart-header holds only the subtitle. Its tall top
+ * padding (--sp-2xl, sized for the full eyebrow+h2+subtitle header) then wastes
+ * ~5cqi directly below the masthead band and STARVES the chart Cell — the donut
+ * collapse on dense slides was this, not the svg sizing. Drop the top padding so
+ * the stage gives its height to the chart. (Scoped to section.form; non-form
+ * chart headers keep their full breathing room.) */
+section.form.chart-frame .chart-header { padding-top: 0; }
+
 section.chart-frame .chart-body {
   /* Pin to slide-internal width (1280 − 2× horizontal padding), same
    * technique as the mermaid container in section.diagram. Without the
@@ -11867,6 +11913,49 @@ section.quadrant:not(.cover) .quadrant-svg--cohort {
   max-width: 100%;
   display: block;
   overflow: visible;   /* radar rim labels / quadrant edge labels paint just outside the plot box */
+}
+
+/* IN-FORM (section.form) — same collapse, same fix as the piechart in-form rule
+   (piechart.styles.css §IN-FORM). Under the Form the masthead/footer Cells are
+   reserved via the section's padding, squeezing the flex column
+   (section → .chart-body flex:1 → figure flex:1). The CHART-BODY itself fills
+   the stage reliably via flex — even in print — but its descendants do NOT:
+   in the print-media Chromium that exports the PDF, a `flex:1` *figure* whose
+   sole content is a replaced <svg> will NOT grow to fill the chart-body
+   (replaced-content intrinsic size wins), and `height:100cqh`/`%`/abs-inset
+   read against the figure all collapse. The earlier `46cqi` height was WORSE:
+   a width-unit (cqi) is far taller than the squeezed band, so the oversized SVG
+   overflowed and `.chart-body{overflow:hidden}` clipped the ring/legend to a
+   fragment (the `max-height:100cqh` guard never engaged — see the decision doc).
+
+   ROBUST FIX — size the SVG off the CHART-BODY's content box:
+     · make `.chart-body` the size-query container (`container-type:size`); its
+       cqh basis is exactly the chart-body fill height MINUS its own padding =
+       the real available figure area, and it tracks every chrome combo
+       (0/1/2-line subtitle ± caption) — verified empirically in print;
+     · collapse the figure's box out with `display:contents` so the SVG sizes
+       straight off the chart-body container (the `flex:1` figure can't mediate
+       the height in print);
+     · `height:100cqh` on the SVG → it fills the available area and width follows
+       the unified viewBox aspect, so the WHOLE unit (diagram + key) scales and
+       never overflows/clips.
+   Scoped to section.form so non-form chart rendering stays byte-identical. */
+section.form.radar:not(.cover) .chart-body,
+section.form.map:not(.cover) .chart-body,
+section.form.quadrant:not(.cover) .chart-body {
+  container-type: size;
+}
+section.form.radar:not(.cover) .radar-figure:not([data-variant="small-multiples"]),
+section.form.map:not(.cover) .map-figure,
+section.form.quadrant:not(.cover) .quadrant-figure[data-variant="cohort"] {
+  display: contents;
+}
+section.form.radar:not(.cover) .radar-svg:not(.radar-svg--mini),
+section.form.map:not(.cover) .map-svg,
+section.form.quadrant:not(.cover) .quadrant-svg--cohort {
+  height: 100cqh;
+  width: auto;
+  max-width: 100%;
 }
 
 
@@ -13367,31 +13456,54 @@ section.confidential::before {
  *   · per-island    — the masthead + bay clip their own overflow, so a long
  *                     title or meta line is cut at its berth, never bled. */
 section.form {
-  /* The masthead band is an absolutely-positioned berth, NOT in content flow,
-   * so the section's content box — and therefore the cqi/cqh basis every
-   * component sizes itself against — equals the REAL body area between the band
-   * and the footer berth. Reserving the band as in-flow margin (the old way)
-   * left it inside the content box, so a component sized to `section − footer`
-   * and overran the body by ~the band's height (the list-criteria/actors/roadmap
-   * pile-ups). See 2026-06-13-islands-sketch-density-collisions.md (Defect 1). */
+  /* THE ROOT CHROME FRAME — masthead Cell · stage Cell · footer Cell.
+   * The masthead and footer Cells are absolutely-positioned bands (NOT in
+   * content flow); the STAGE Cell is the section's content region between them.
+   * Because the masthead/footer are out of flow and the section is a fixed-size
+   * slide, the stage resolves to a DETERMINISTIC px box independent of its
+   * content (design/forms.md §6) — the cqi/cqh basis every component sizes
+   * against equals the real body area. (Reserving the band as in-flow margin —
+   * the old way — left it inside the content box, so a component sized to
+   * `section − footer` overran the body by ~the band's height.) */
   --masthead-h: calc(var(--_sec-1cqi, 1cqi) * 11);
   --frame-x: calc(var(--_sec-1cqi, 1cqi) * 5);
   --frame-y: calc(var(--_sec-1cqi, 1cqi) * 6.875);
+  /* Footer Cell geometry. The reserve is DERIVED from the real footer Cell
+   * height (baseline inset + band height + gap), not a magic number, so the
+   * stage's bottom edge ends exactly where the footer Cell begins. The centre
+   * zone is the progress rail's reserved horizontal budget (see the footer Cell
+   * rules below) — footer-left yields it so the two can never collide. */
+  --footer-h: calc(var(--_sec-1cqi, 1cqi) * 5);
+  --footer-reserve: calc(var(--frame-inset-y) + var(--footer-h) + var(--sp-md));
+  --footer-centre-w: calc(var(--_sec-1cqi, 1cqi) * 30);
+  --footer-centre-half: calc(var(--footer-centre-w) / 2);
   position: relative;
   padding-top: calc(var(--frame-y) + var(--masthead-h) + var(--sp-md));
-  padding-bottom: calc(var(--_sec-1cqi, 1cqi) * 8.75);
-  /* Own stacking context so the z-behind watermark island paints ABOVE the
-   * canvas but BELOW the (non-positioned) body content. */
+  padding-bottom: var(--footer-reserve);
+  /* Own stacking context so the z-behind watermark Tile paints ABOVE the canvas
+   * but BELOW the (non-positioned) stage content. */
   isolation: isolate;
-  /* Clip signal — the hard half. Content that exceeds the body berth is cut by
-   * the section's own clip rather than bleeding across the band/footer islands,
-   * and the runtime overflow ring (section scrollHeight > clientHeight) still
-   * fires because the body flows in-section — so an over-stuffed islands slide
-   * reads "you're doing too much" in authoring. The SOFT half (a fade at the
-   * exact berth edge) needs the `.isl-main` stage wrapper to bound it precisely;
-   * an unbounded ::after scrim dims legitimate content on dense-but-fitting
-   * slides, so it's deferred to M2 with the wrapper. */
+  /* Clip, don't bleed (design/forms.md §6). Stage content that exceeds its box
+   * is cut by the section's clip rather than bleeding across the masthead/footer
+   * Cells; the runtime overflow ring (scrollHeight > clientHeight) still fires
+   * because the stage flows in-section, so an over-stuffed slide reads "too
+   * much" in authoring. (A soft exact-edge fade needs the A-later stage wrapper
+   * — 2026-06-15-form-implementation.md §4/§8; the hard clip ships here.) */
   overflow: hidden;
+}
+
+/* ── STAGE Cell · fill discipline (design/forms.md §5) ──────────────────────
+ * How an underfilling stage distributes its content — the difference between a
+ * "grid of correct boxes" and a board deck. Default is `start` (top-anchored
+ * flow, unchanged). Authors opt a slide into a board-style distribution; each
+ * is a Cell `fill` value made selectable. */
+section.form.fill-center  { justify-content: center; }
+section.form.fill-anchor  { justify-content: flex-end; }
+/* optical-center sits the content slightly above true centre (the eye reads a
+ * geometric centre as low) — a touch less reserve up top. */
+section.form.fill-optical {
+  justify-content: center;
+  padding-top: calc(var(--frame-y) + var(--masthead-h) + var(--sp-md) - var(--sp-lg));
 }
 section.form .cell-masthead {
   position: absolute;
@@ -13475,13 +13587,26 @@ section.form.draft .masthead-bay::after {
   border-color: color-mix(in srgb, var(--warn) 32%, transparent);
 }
 
-/* ── ISLANDS · progress island — section dot-rail (Phase 2b) ─────────────
- * A footer-centre berth injected (across all three render paths) into every
- * `islands` slide that falls within a section. One dot per section, the
- * current one elongated + accented, labelled with the section's divider
- * title. Derives orientation from `divider` slides; absent without them.
- * Opt out with `no-progress`; `silent` suppresses it with the rest of the
- * chrome. */
+/* ── FOOTER Cell — three reserved zones (design/forms.md §6) ─────────────────
+ * The footer band holds three Tiles that historically collided because each was
+ * an independent absolute at the same baseline with no shared budget: footer-
+ * left (the `footer:` text), progress-centre (the section rail), pagination-
+ * right (`::after`). Pagination is a pseudo-element, so the footer Cell is a
+ * TOKEN COORDINATE CONTRACT, not a DOM grid: footer-left yields the reserved
+ * centre zone so it can never run through the rail, and the centre zone ends
+ * before the pagination zone. (Non-form decks keep the full-width footer — this
+ * is scoped to section.form.) */
+section.form > footer {
+  /* Stop before the reserved centre zone (rail), measured from the right edge:
+   * 50% + half the centre zone + a gap. */
+  right: calc(50% + var(--footer-centre-half) + var(--sp-md));
+}
+
+/* ── PROGRESS Tile — section dot-rail in the footer-centre zone ──────────────
+ * Injected (across all three render paths) into every `form` slide within a
+ * section: one dot per section, the current one elongated + accented, labelled
+ * with the section's divider title. Absent without `divider` slides. Opt out
+ * with `no-progress`; `silent` suppresses it with the rest of the chrome. */
 section.form .tile-progress {
   position: absolute;
   bottom: var(--frame-inset-y);
@@ -13490,7 +13615,11 @@ section.form .tile-progress {
   z-index: 3;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: var(--sp-sm);
+  /* The reserved centre zone — the rail lives inside it and never spills into
+   * footer-left or pagination. */
+  max-width: var(--footer-centre-w);
   pointer-events: none;
 }
 .tile-progress .seg {
@@ -13501,9 +13630,9 @@ section.form .tile-progress {
   text-transform: uppercase;
   color: var(--text-label);
   margin-right: var(--sp-xs);
-  /* Truncate a long section label so the rail never overruns the footer
-   * berth / collides with footer-left. */
-  max-width: 24cqi;
+  /* Within the reserved centre zone, a very long label still truncates
+   * gracefully rather than crowding the dots. */
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

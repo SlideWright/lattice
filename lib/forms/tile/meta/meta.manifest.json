@@ -1,0 +1,10 @@
+{
+  "$schema": "../../schema/tile.schema.json",
+  "id": "meta",
+  "kind": "chrome",
+  "fits": ["masthead-bay"],
+  "z": 3,
+  "population": "front-matter `meta:` key (date / owner / classification)",
+  "hideToken": null,
+  "status": "new"
+}

@@ -1,0 +1,10 @@
+{
+  "$schema": "../../schema/tile.schema.json",
+  "id": "rule",
+  "kind": "surface",
+  "fits": ["stage"],
+  "z": 0,
+  "population": "theme `--spectrum` token (top-edge spectrum rule)",
+  "hideToken": "dark",
+  "status": "shipped"
+}

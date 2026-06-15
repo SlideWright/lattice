@@ -51,6 +51,43 @@ section.piechart.cover .piechart-svg {
   max-height: 100%;
   max-width: 100%;
 }
+/* IN-FORM (section.form). Under the Form the masthead/footer Cells are reserved
+   via the section's padding, squeezing the flex column
+   (section → .chart-body flex:1 → .piechart-figure flex:1). The CHART-BODY fills
+   the stage reliably via flex — even in print — but its descendants do NOT: in
+   the print-media Chromium that exports the PDF, a `flex:1` *figure* whose sole
+   content is a replaced <svg> will NOT grow to fill the chart-body
+   (replaced-content intrinsic size wins), and `height:100cqh`/`%`/abs-inset read
+   against the figure all collapse toward 0 — the donut shrank to a ~40px
+   thumbnail. A naive `Ncqi` HEIGHT was the opposite failure: cqi is a WIDTH unit
+   (~589px against the section at HD), far taller than the squeezed band, so the
+   oversized SVG overflowed and `.chart-body{overflow:hidden}` CLIPPED the ring +
+   legend to a fragment (the `max-height:100cqh` guard, read against the section,
+   never engaged). See 2026-06-15-form-chart-clip.md.
+
+   ROBUST FIX — size the SVG off the CHART-BODY's content box:
+     · make `.chart-body` the size-query container (`container-type:size`); its
+       cqh basis is exactly the chart-body fill height MINUS its own padding =
+       the real available figure area, and it tracks every chrome combo (0/1/2
+       -line subtitle ± caption) — verified empirically in print media;
+     · collapse the figure's box out with `display:contents` so the SVG sizes
+       straight off the chart-body container (the `flex:1` figure cannot mediate
+       the height in print);
+     · `height:100cqh` on the SVG → it fills the available area, width follows
+       the unified viewBox aspect, so the WHOLE unit (disc + key) scales and
+       never overflows/clips, HD and 4K alike.
+   Scoped to section.form so non-form pie rendering stays byte-identical. */
+section.form.piechart .chart-body {
+  container-type: size;
+}
+section.form.piechart .piechart-figure {
+  display: contents;
+}
+section.form.piechart .piechart-svg {
+  height: 100cqh;
+  width: auto;
+  max-width: 100%;
+}
 section.piechart .piechart-svg .wedge {
   /* Stroke colour is the slot's --catN-ink (set per nth-child below); the
    * wedge fill is the same hue's --catN-fill. Pale fill + deep border on a

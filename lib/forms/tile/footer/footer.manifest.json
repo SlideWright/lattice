@@ -1,0 +1,10 @@
+{
+  "$schema": "../../schema/tile.schema.json",
+  "id": "footer",
+  "kind": "chrome",
+  "fits": ["footer-left"],
+  "z": 3,
+  "population": "front-matter `footer:` key",
+  "hideToken": "no-footer",
+  "status": "shipped"
+}

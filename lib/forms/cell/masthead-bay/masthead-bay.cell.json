@@ -1,0 +1,12 @@
+{
+  "$schema": "../../schema/cell.schema.json",
+  "id": "masthead-bay",
+  "region": "masthead-bay",
+  "z": 3,
+  "accepts": ["chrome"],
+  "capacity": "stack",
+  "fill": "end",
+  "gap": "--frame-y",
+  "geometry": { "inset": "--frame-x" },
+  "clip": true
+}

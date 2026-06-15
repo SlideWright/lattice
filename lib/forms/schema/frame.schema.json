@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lattice.slidewright.dev/forms/frame.schema.json",
+  "title": "Lattice Form Frame",
+  "description": "A slicer — carves a box into Cells. The root Frame carves the whole slide; a sovereign Frame docked in the stage claims the canvas and suppresses chrome Cells (design/forms.md §5, §8, §9). One folder per Frame: lib/forms/frame/<id>/<id>.manifest.json. Adding a sovereign Frame folder (exemptFromChrome:true) auto-extends the engine's FORM_TOGGLE_SKIP set — see lib/integrations/marp/plugins.js.",
+  "type": "object",
+  "required": ["id", "form", "kind", "exemptFromChrome", "description", "cells", "suppresses"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*$",
+      "description": "Frame identifier, kebab-case. For a sovereign Frame this is the `_class` value the toggle skips."
+    },
+    "form": {
+      "enum": ["bookend", "divider", "canvas", "grid", "stack", "ledger", "panel", "matrix", "scatter", "spatial", "timeline", "split"],
+      "description": "The Form value this Frame realizes (one of the twelve Frame types, design/design-system.md §4 / design/forms.md §8)."
+    },
+    "kind": {
+      "enum": ["root", "framed", "sovereign"],
+      "description": "root carves the slide; framed docks in the main Cell keeping the chrome Frame; sovereign claims the whole canvas and suppresses chrome Cells (design/forms.md §5)."
+    },
+    "exemptFromChrome": {
+      "type": "boolean",
+      "description": "True for sovereign / chrome-skipped Frames. The set of Frames with exemptFromChrome:true IS the engine's FORM_TOGGLE_SKIP set (derived in lib/integrations/marp/plugins.js)."
+    },
+    "description": { "type": "string", "minLength": 1, "description": "One-sentence human description." },
+    "cells": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" },
+      "description": "The Cell ids this Frame produces. Each MUST resolve to a real Cell definition (lib/forms/cell/)."
+    },
+    "suppresses": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" },
+      "description": "Chrome Cell ids a sovereign Frame hides. Each MUST resolve to a real Cell definition."
+    }
+  }
+}
