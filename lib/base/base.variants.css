@@ -232,30 +232,32 @@ section.confidential::before {
 
 
 
-/* ── ISLANDS · masthead band (opt-in via `islands`) ─────────────────────
+/* ── FORM · masthead Cell (opt-in via `form`) ───────────────────────────
  * The mastheadLift transform (lib/core/masthead-lift.js + the registry)
  * wraps the eyebrow + title into `.cell-masthead` so the slide's masthead is
- * a named band with a reserved right bay — `.masthead-bay` is where the meta / logo
- * / status islands land in Phase 2. The slide body stays a DIRECT child of
- * <section>, so every component's `section.X > …` selectors still compose.
- * The eyebrow and title keep their normal element-level styling (the
- * `p:has(>code)+h2` eyebrow rule and `section h2` both still match inside the
- * band). Phase 1 of the islands model — engineering/decisions/2026-06-11-islands.md.
+ * a named band with a reserved right bay — `.masthead-bay` is where the
+ * meta / logo / status Tiles dock. The slide body stays a DIRECT child of
+ * <section>, so every component's `section.X > …` selectors still compose
+ * (the stage Cell is the section content region, NOT a wrapper — see
+ * engineering/decisions/2026-06-15-form-implementation.md §4). The eyebrow and
+ * title keep their normal element-level styling (the `p:has(>code)+h2` eyebrow
+ * rule and `section h2` both still match inside the band). Canonical model:
+ * design/forms.md.
  *
- * `islands` is incompatible with `math` / `compare-code` (they drive their
- * own title grid via `> h2`); don't combine them. */
-/* Island gap + clip contract (berth-overlay phase). Islands must never touch
- * or bleed into one another: each berth keeps a DEFINED gap to its neighbours,
- * and content that overflows a berth is CLIPPED, not allowed to spill across.
- *   · masthead↔body — the band's margin-bottom + hairline rule is the gap.
- *   · body↔footer   — `islands` reserves a footer safe-area (padding-bottom)
- *                     so well-authored content keeps clear of the footer /
- *                     progress berth. (The fully-bounded body clip — a hard
- *                     max-height stage box — lands with the Phase 4 stage
- *                     wrapper; until then the section's own overflow:hidden
- *                     stops anything escaping the slide.)
- *   · per-island    — the masthead + bay clip their own overflow, so a long
- *                     title or meta line is cut at its berth, never bled. */
+ * `form` is incompatible with `math` / `compare-code` (they drive their
+ * own title grid via `> h2`); they're chrome-exempt in the toggle's skip set. */
+/* Cell gap + clip contract (design/forms.md §6). Cells must never touch or
+ * bleed into one another: each Cell keeps a DEFINED gap to its neighbours, and
+ * content that overflows a Cell is CLIPPED, not allowed to spill across.
+ *   · masthead↔stage — the band's margin-bottom + hairline rule is the gap.
+ *   · stage↔footer   — `form` reserves a footer safe-area (padding-bottom,
+ *                     derived from the real footer Cell height) so content
+ *                     keeps clear of the footer / progress Cell. (The fully-
+ *                     bounded soft clip — an exact-edge fade — needs the
+ *                     A-later stage wrapper; until then the section's own
+ *                     overflow:hidden hard-clips anything escaping the slide.)
+ *   · per-Cell       — the masthead + bay clip their own overflow, so a long
+ *                     title or meta line is cut at its Cell, never bled. */
 section.form {
   /* THE ROOT CHROME FRAME — masthead Cell · stage Cell · footer Cell.
    * The masthead and footer Cells are absolutely-positioned bands (NOT in
@@ -324,11 +326,11 @@ section.form .cell-masthead .masthead-bay { overflow: hidden; }
 section.form .cell-masthead .masthead-lede { min-width: 0; grid-column: masthead-lede; }
 section.form .cell-masthead .masthead-bay   { grid-column: masthead-bay; }
 
-/* ── ISLANDS · masthead-bay islands — meta · status (Phase 2) ───────────
- * The reserved bay stacks its islands top-down, right-aligned: the meta
- * island (front-matter `meta:`, injected by applyMastheadMetaToHtml across
- * all three render paths) on top, the status chip beneath. Both are
- * palette-blind. See engineering/decisions/2026-06-11-islands.md. */
+/* ── FORM · masthead-bay Tiles — meta · status ──────────────────────────
+ * The reserved bay stacks its Tiles top-down, right-aligned: the meta Tile
+ * (front-matter `meta:`, injected by applyMastheadMetaToHtml across all three
+ * render paths) on top, the status chip beneath. Both are palette-blind.
+ * See design/forms.md §8. */
 section.form .cell-masthead .masthead-bay {
   display: flex;
   flex-direction: column;
@@ -337,7 +339,7 @@ section.form .cell-masthead .masthead-bay {
   text-align: right;
 }
 
-/* meta island — date · owner · classification */
+/* meta Tile — date · owner · classification */
 .tile-meta {
   font-family: var(--font-label);
   font-size: var(--fs-meta);
@@ -348,7 +350,7 @@ section.form .cell-masthead .masthead-bay {
   color: var(--text-label);
 }
 
-/* status island — under `islands`, the label-type state markers
+/* status Tile — under `form`, the label-type state markers
  * (confidential · wip · draft) dock in the bay as a clean chip, REPLACING
  * their default corner stamp / full-width band / canvas watermark. The
  * more-specific `section.form.<state>` selector wins over the base
@@ -451,8 +453,8 @@ section.form .tile-progress {
   background: var(--accent);
 }
 
-/* ── ISLANDS · watermark island — section-number ghost (Phase 2c) ───────
- * A large z-behind background glyph (the section number) on `islands
+/* ── FORM · watermark Tile — section-number ghost ───────────────────────
+ * A large z-behind background glyph (the section number) on `form
  * watermark` slides. z-index:-1 keeps it ABOVE the canvas but BEHIND the
  * (non-positioned) body content; the section's overflow:hidden clips the
  * overscan. Palette-blind; lifts to the on-dark ghost on dark canvases. */
