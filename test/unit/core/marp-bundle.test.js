@@ -41,10 +41,13 @@ describe('marp-bundle spec', () => {
     assert.doesNotMatch(MARP_CONFIG_CJS, /\bengine\b/);
   });
 
-  test('packageJson pins marp-cli + the engine and scripts reference the deck', () => {
+  test('packageJson pins marp-cli only and scripts reference the deck', () => {
     const pkg = packageJson('My Deck');
     assert.ok(pkg.dependencies['@marp-team/marp-cli']);
-    assert.ok(pkg.dependencies['@slidewright/lattice']);
+    // The engine ships pre-bundled (dist/lattice-emulator.js), so it is NOT an
+    // npm dependency — listing the unpublished @slidewright/lattice would 404
+    // `npm install` and the recipient would never get marp-cli either.
+    assert.strictEqual(pkg.dependencies['@slidewright/lattice'], undefined);
     assert.match(pkg.name, /^My-Deck-marp-export$/);
     assert.match(pkg.scripts.pdf, /My Deck\.md/);
   });

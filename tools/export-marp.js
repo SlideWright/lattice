@@ -6,12 +6,15 @@
  * See engineering/decisions/2026-06-13-export-to-marp.md. The bundle:
  *   <name>/
  *     <name>.md            — splits BAKED into literal `---` (lib/core/bake-splits.js),
- *                            local image paths localized into assets/
- *     themes/              — lattice.css + the deck's palette (+ -dark)
+ *                            local image paths localized into assets/, runtime
+ *                            <script> tags (mermaid + lattice-runtime) appended
+ *     dist/                — lattice.css + lattice-emulator.js (zero-install renderer)
+ *     themes/              — the deck's palette (+ -dark)
  *     assets/              — every local image the deck references
- *     engine/              — dist/lattice-emulator.js + mermaid bundle (zero-install renderer)
- *     marp.config.cjs      — the Lattice engine config for `marp-cli` (full fidelity)
- *     package.json         — pins @marp-team/marp-cli + @slidewright/lattice
+ *     mermaid-v11.min.js,
+ *     lattice-runtime.min.js — render diagrams + components when opened as HTML
+ *     marp.config.cjs      — registers the themeSet for `marp-cli` (splits + themes)
+ *     package.json         — pins @marp-team/marp-cli (engine is bundled, not an npm dep)
  *     README.md            — quick start (two fidelity tiers) + caveats
  *
  * Usage:

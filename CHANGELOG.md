@@ -352,6 +352,14 @@ in patch versions.
   selectors. Renders identically (mono, tracked, uppercase); the authoring is now
   valid markdown that matches what the CSS supports.
 
+- **The export-to-Marp bundle's `npm install` no longer 404s.** The generated
+  `package.json` listed `@slidewright/lattice` as a dependency, but that package
+  is unpublished — so a recipient following the README's marp-cli route
+  (`npm install` → `npm run pdf`) hit `E404` and never even got marp-cli. The
+  engine ships pre-bundled as `dist/lattice-emulator.js` (the README's
+  zero-install primary route), so the dependency was both unnecessary and
+  breaking; the bundle now pins only `@marp-team/marp-cli`.
+
 - **`compare-prose` verdict variants now render — `chosen` / `decision` /
   `vertical` / `rejected` were silent no-ops.** Their CSS targeted a
   `.compare-prose-inner .card` DOM that no render path emits, so they rendered

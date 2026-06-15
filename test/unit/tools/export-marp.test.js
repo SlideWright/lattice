@@ -76,9 +76,11 @@ describe('export-marp bundle (end-to-end)', () => {
     assert.equal(count(baked), count(original), 'baked deck divides identically to the source');
   });
 
-  test('package.json pins marp-cli + the lattice engine', () => {
+  test('package.json pins marp-cli only (engine is bundled, not an npm dep)', () => {
     const pkg = JSON.parse(fs.readFileSync(path.join(dest, 'package.json'), 'utf8'));
     assert.ok(pkg.dependencies['@marp-team/marp-cli']);
-    assert.ok(pkg.dependencies['@slidewright/lattice']);
+    // No @slidewright/lattice dep — it is unpublished, so it would 404 `npm
+    // install`; the engine ships bundled as dist/lattice-emulator.js instead.
+    assert.strictEqual(pkg.dependencies['@slidewright/lattice'], undefined);
   });
 });
