@@ -81,6 +81,7 @@ harness the index can't infer, add it to `FRAMEWORKS` in the generator.
 |---|---|
 | `build:bucket-galleries` | Rebuild per-bucket survey gallery PDFs (light + dark). |
 | `build:bucket-galleries:check` | Freshness gate for the bucket survey galleries. |
+| `build:exemplar-pdfs` | Bulk-regenerate committed PDFs for the worked exemplar decks (on-demand, like bless; not in build). `-- --only <stem>` for one. |
 | `build:galleries` | Rebuild per-component gallery PDFs (light + dark). |
 | `build:galleries:check` | Freshness gate for the per-component galleries. |
 | `build:gallery-jargon` | Rebuild the jargon showcase gallery PDF. |
@@ -106,6 +107,7 @@ harness the index can't infer, add it to `FRAMEWORKS` in the generator.
 | `test:engine` | Unit scope: lattice-engine internals. |
 | `test:export` | Unit scope: the owned export writers (PPTX, …). |
 | `test:integration` | Integration tier: emulator render → PDF page-count + the per-component semantic-invariant suite + screenshot/mermaid smoke. |
+| `test:integration:exemplars` | Integration scope: the 45 worked exemplars render + committed-PDF freshness (page-count gate). |
 | `test:integration:galleries` | Integration scope: gallery render + page-count regression. |
 | `test:integration:mermaid` | Integration scope: mermaid smoke render. |
 | `test:integration:parity` | Integration scope: resolver↔DOM colour parity, deck-class/finish/logo front-matter, chart-family. |
@@ -256,6 +258,7 @@ harness the index can't infer, add it to `FRAMEWORKS` in the generator.
 | Name | What it does |
 |---|---|
 | `tools/ascii-preview.py` | ASCII layout preview helper for engineering/templates.md (and friends). |
+| `tools/build-exemplar-pdfs.js` | Regenerate the committed PDF for every worked exemplar deck |
 | `tools/build-spec-docs.js` | Publish the owned LFM standards (spec/*.md) onto the docs website as |
 | `tools/build-standalone-core.js` | Bundle the standalone chart-SVG export core for the browser. |
 | `tools/check-fonts.js` | Font-embedding parity gate — keep the engine's font demand and offline supplies in sync. |

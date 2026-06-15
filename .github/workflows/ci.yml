@@ -42,6 +42,11 @@ jobs:
               - 'themes/**'
               - 'dist/**'
               - 'examples/**'
+              # Worked exemplar decks ship a committed .pdf each and ride the
+              # integration render gate (test/integration/exemplars/); an
+              # exemplars-only change must run the integration tier so the
+              # render + committed-PDF-freshness gate fires on its primary trigger.
+              - 'exemplars/**'
               - 'marp.config.js'
               - 'lattice-emulator.js'
               - 'mermaid-v11.min.js'
