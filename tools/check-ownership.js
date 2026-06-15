@@ -58,10 +58,12 @@ const {
   UNIVERSAL_VARIANTS, SEMI_UNIVERSAL_VARIANTS, TAGS,
 } = require('../lib/components');
 const { TRANSFORMERS } = require('../lib/transformers/registry');
+const { PAIRS: TOKEN_CROSSWALK } = require('../lib/tokens/crosswalk');
 
 const ROOT = path.join(__dirname, '..');
 const COMPONENTS_DIR = path.join(ROOT, 'lib', 'components');
 const THEMES_DIR = path.join(ROOT, 'themes');
+const LIB_DIR = path.join(ROOT, 'lib');
 // Layout-specific variants are styled in two places: a component's own
 // <name>.styles.css, AND the shared base.modifiers.css (where the cross-
 // cutting modifier block lives — e.g. obligation-matrix .pills/.lanes,
@@ -551,6 +553,55 @@ function checkComponentCss(manifests, errors) {
   }
 }
 
+// Recursively list every .css file under a directory.
+function listCssFiles(dir, out = []) {
+  for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+    const p = path.join(dir, e.name);
+    if (e.isDirectory()) listCssFiles(p, out);
+    else if (e.name.endsWith('.css')) out.push(p);
+  }
+  return out;
+}
+
+// Post-flip token-tier lint (universal-token canonical flip, ADR §11.5).
+// The legacy per-theme vocabulary is retired; this keeps it retired and bans
+// the naming anti-pattern that motivated the flip:
+//   1. No DECLARATION may reuse a retired name (the crosswalk `old` side) —
+//      a regression reintroducing `--c1-light` / `--c-stroke` / `--bg-dark` /
+//      `--scale-500` / `--dark-*` fails the build.
+//   2. No token NAME may end in a color-scheme word `-light` / `-dark` — that
+//      tier-suffix overload (a TIER named like the color-scheme + light-dark())
+//      is exactly what the flip eliminated. Color-scheme lives only inside the
+//      light-dark() VALUE; `--scheme-dark-*` / `--on-dark-*` carry "dark" as a
+//      role PREFIX (they don't end in it), so they pass.
+// Comments are stripped first, so historical "(was --bg-dark)" notes don't trip.
+const RETIRED_TOKEN_NAMES = new Set(TOKEN_CROSSWALK.map((p) => `--${p.old}`));
+
+function checkRetiredTokenNames(errors) {
+  const files = [...listCssFiles(LIB_DIR), ...listCssFiles(THEMES_DIR)];
+  for (const file of files) {
+    const css = stripComments(fs.readFileSync(file, 'utf8'));
+    const rel = path.relative(ROOT, file);
+    const seen = new Set();
+    for (const m of css.matchAll(/(--[a-z0-9-]+)\s*:/g)) {
+      const name = m[1];
+      if (seen.has(name)) continue;
+      seen.add(name);
+      if (RETIRED_TOKEN_NAMES.has(name)) {
+        errors.push(
+          `retired token "${name}" is declared in ${rel} — the canonical flip retired it ` +
+          `(lib/tokens/crosswalk.js). Use its universal name (see the crosswalk / ADR §7).`,
+        );
+      } else if (/-(light|dark)$/.test(name)) {
+        errors.push(
+          `token "${name}" in ${rel} ends in a color-scheme word (-light/-dark) — the retired ` +
+          `tier-suffix anti-pattern. Name it for its ROLE; color-scheme lives in the light-dark() value.`,
+        );
+      }
+    }
+  }
+}
+
 function checkThemeTokenParity(errors) {
   const palettes = listBasePalettes();
   if (!palettes.length) {
@@ -580,6 +631,7 @@ function run() {
   checkVariantDeclaration(manifests, errors);
   checkTagClustering(manifests, errors);
   checkThemeTokenParity(errors);
+  checkRetiredTokenNames(errors);
   return {
     errors,
     counts: {
@@ -622,6 +674,8 @@ module.exports = {
   transformModifierTokens,
   checkVariantDeclaration,
   checkTagClustering,
+  checkRetiredTokenNames,
+  RETIRED_TOKEN_NAMES,
   parseThemeTokens,
   listBasePalettes,
   CO_OWNED_LAYOUTS,

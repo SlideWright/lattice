@@ -25,6 +25,8 @@ const {
   listBasePalettes,
   REQUIRED_THEME_TOKENS,
   checkTagClustering,
+  checkRetiredTokenNames,
+  RETIRED_TOKEN_NAMES,
   SINGLETON_TAGS,
   run,
 } = require('../../../tools/check-ownership');
@@ -85,6 +87,26 @@ describe('check-ownership', () => {
           assert.ok(p.tokens.has(tok), `theme ${p.name} missing ${tok}`);
         }
       }
+    });
+  });
+
+  describe('post-flip token-tier lint (canonical flip, ADR §11.5)', () => {
+    test('RETIRED_TOKEN_NAMES covers the legacy vocabulary (57 names, --prefixed)', () => {
+      assert.equal(RETIRED_TOKEN_NAMES.size, 57);
+      for (const n of ['--c1-light', '--c12-dark', '--c-stroke', '--c-ink-light',
+        '--c-warm-light', '--bg-dark', '--dark-bg', '--scale-500']) {
+        assert.ok(RETIRED_TOKEN_NAMES.has(n), `expected ${n} to be retired`);
+      }
+      // the deliberately-kept names must NOT be retired
+      for (const keep of ['--bg', '--bg-alt', '--border', '--pass', '--accent']) {
+        assert.ok(!RETIRED_TOKEN_NAMES.has(keep), `${keep} must stay`);
+      }
+    });
+
+    test('the live engine + themes carry NO retired or tier-suffix token names', () => {
+      const errors = [];
+      checkRetiredTokenNames(errors);
+      assert.deepEqual(errors, [], `the purge regressed:\n${errors.join('\n')}`);
     });
   });
 
