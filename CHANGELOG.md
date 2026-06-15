@@ -27,6 +27,16 @@ in patch versions.
 
 ### Removed
 
+- **Two phantom variants are removed: `compare-code mirror` and `kpi target`.**
+  Both were declared and fully captioned in their manifests but had no backing
+  CSS — `compare-code mirror` rendered identically to bare (the central mirror
+  block never covered `compare-code`), and `kpi target` fell through to the
+  briefing default. `cards-grid mirror` (a documented no-op on a symmetric grid)
+  is dropped from `variants[]` too. Authoring any of these now lints as an
+  unknown modifier rather than silently doing nothing. Removing `kpi target`
+  also makes the "five layout modifiers" description accurate. Surfaced by the
+  manifest-vs-CSS audit (`engineering/decisions/2026-06-15-manifest-css-audit.md`).
+
 - **The Drawing-Board/Workbench "Token system" toggle and the `tokens:` deck
   directive are removed.** They existed for the universal-token migration A/B
   ("does my deck survive the flip?"); that migration is **complete** — there is
@@ -311,6 +321,38 @@ in patch versions.
   major version. Existing decks keep rendering unchanged in the meantime.
 
 ### Fixed
+
+- **`compare-prose` verdict variants now render — `chosen` / `decision` /
+  `vertical` / `rejected` were silent no-ops.** Their CSS targeted a
+  `.compare-prose-inner .card` DOM that no render path emits, so they rendered
+  identically to plain `compare-prose`. Re-scoped to the live
+  `> :is(ul,ol) > li` structure (the same DOM the working `transition` variant
+  uses): `chosen` tints the winner card, `rejected` dims + strikes the dropped
+  card, `decision` does both plus a labelled **DECISION** chevron, `vertical`
+  stacks the two cards. The cross-cutting `mirror` modifier on `compare-prose`
+  was dead for the same reason and is fixed alongside. Surfaced by the
+  manifest-vs-CSS audit (`engineering/decisions/2026-06-15-manifest-css-audit.md`).
+- **`redline` `split` / `stacked` / `three-col` show their OLD / NEW labels
+  again.** A specificity regression in the central blockquote eyebrow rule had
+  been overriding them with "KEY INSIGHT". The eyebrow rule now excludes
+  `redline` (`:not(.redline)`), so a legal diff never inherits "KEY INSIGHT" and
+  the variants' OLD/NEW labels apply unopposed.
+- **`citation-card` samples no longer render an empty action item.** The
+  `pull-quote` variant hides any gloss line without a bold lead, and the action
+  box only fires on a bold-led item — but the skeleton/samples authored
+  `- What we must do.` plain, so the action vanished (pull-quote) or lost its
+  chrome (default). The samples now bold the action lead per the slot contract.
+- **Component manifest descriptions corrected to match what the CSS actually
+  renders.** A full manifest-vs-CSS audit found ~30 drifted claims; the prose is
+  now aligned. Highlights: `checklist` `[ ]` is a hollow ring (not an "x");
+  `title` eyebrow renders *above* the h1 (CSS reorders it); `kpi` pills are
+  coloured by row position, not by recognised text; `journey` swimlane dots are
+  *coloured* by mood, not sized; `timeline-list` is a horizontal spine with
+  stacked items (not left/middle/right); `split-panel watermark` rubric is an
+  `h3`; `roadmap` `horizons`/`milestones`, `piechart` donut, `obligation-matrix`
+  `asymmetric`, `stats`, and `image museum` captions reworded to the real
+  behaviour; several stale CSS header comments fixed to match. See
+  `engineering/decisions/2026-06-15-manifest-css-audit.md`.
 
 - **Landing page no longer claims "Fifty-eight layouts."** Two marketing
   strings on the landing said 58; the catalog ships 53. Corrected to match the

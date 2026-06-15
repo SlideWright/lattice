@@ -11,7 +11,7 @@ header: "Lattice · timeline-list"
 
 `Evidence · Timeline · Series`
 
-Date-stamped event list — spine with date pills, status pills, and body.
+Date-stamped event list rendered as a horizontal spine — a dot per event with its date pill above and title, status pill, and body stacked below.
 
 ---
 

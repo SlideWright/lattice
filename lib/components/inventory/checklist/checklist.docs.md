@@ -6,7 +6,7 @@
 
 **Tags** `status` · `stoplight` · `process` · `requirements`
 
-Use for completion reports, readiness audits, or pre-flight checks. State markers [x]/[-]/[ ]/[/] produce status-colored circles carrying a distinct mark — check / dash / x / slash — so the shape reads independently of color (colour-blind-safe).
+Use for completion reports, readiness audits, or pre-flight checks. State markers [x]/[-]/[ ]/[/] produce status-colored circles carrying a distinct mark — check / dash / ring / slash — so the shape reads independently of color (colour-blind-safe).
 
 ## When to use
 

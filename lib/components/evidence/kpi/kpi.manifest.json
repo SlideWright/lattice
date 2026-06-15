@@ -13,7 +13,6 @@
   "description": "Executive KPI system — one base, five layout modifiers.",
   "purpose": "Use for KPI dashboards with status framing — current value, target, trend, attention-needed. Bare `kpi` resolves to the briefing layout; the five modifiers tune the visual emphasis for different audiences (ops, compliance, investor, headline).",
   "variants": [
-    "target",
     "attention",
     "ops",
     "compliance",
@@ -57,7 +56,7 @@
   "antiPatterns": [
     {
       "title": "Decorative pills without status semantics",
-      "body": "The pills tint the layout (warn, breach, on-track). Don't use them as freeform tags — `On plan`, `At risk`, `Breaching`, `Compliant`, `Remediating` are the vocabulary the engine recognises."
+      "body": "The pills read as status, not freeform tags. Status colour is assigned by each KPI's row position within the modifier — the engine never reads the pill text — so reserve them for the status vocabulary the position implies (`On plan`, `At risk`, `Breaching`, `Compliant`, `Remediating`). Arbitrary labels land a colour that has nothing to do with the words."
     },
     {
       "title": "More than four KPIs in attention or spotlight",
@@ -91,11 +90,6 @@
     }
   ],
   "variantDocs": {
-    "target": {
-      "label": "Variance-against-target",
-      "caption": "Bare-bones variance dashboard — each KPI shows current value against target with the gap framed plainly. Best for working sessions where the gap, not the status, is the conversation.",
-      "sample": "<!-- _class: kpi target -->\n\n## Where we are against quarter targets.\n\n1. 94%\n   - Signal-classification success\n   - target 99%, gap is \"known issue\"\n2. 18 min\n   - p99 decision close\n   - target 20 min, beating target\n3. 18\n   - Decisions logged\n   - target 340, gap is \"cultural\"\n4. 1\n   - Calibration cycles run\n   - target 6, gap is \"structural\"\n"
-    },
     "attention": {
       "label": "Attention — the slipping metric leads",
       "caption": "Promotes the one KPI in trouble to hero scale, with the supporting three holding their normal rank. Use when one number needs the room and the others provide reassurance.",

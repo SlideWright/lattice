@@ -35,6 +35,14 @@ findings.
 
 ## Headline
 
+> **Resolution (2026-06-15):** all findings below were remediated in the same
+> change. Class B CSS bugs (compare-prose's four dead variants + the dead
+> `mirror`, redline's OLD/NEW labels, citation-card's empty action box) were
+> fixed in CSS/samples and visually verified against the rebuilt galleries.
+> Class C phantoms (`compare-code mirror`, `kpi target`, plus the `cards-grid
+> mirror` no-op) were deleted from their manifests. Class A prose/comment drift
+> was corrected. This document is retained as the evidence record.
+
 **34 findings across 17 components; ~35 components fully clean.**
 
 | Severity | Count |

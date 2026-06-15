@@ -847,7 +847,7 @@ section::after {
  *
  * Roster of responsibilities owned by named actors. Strong = the
  * responsibility (left header). Inline `code` = the actor name,
- * rendered as a filled accent pill, right-aligned. Nested li = body.
+ * rendered as an outlined categorical pill, right-aligned. Nested li = body.
  *
  * Convention: bold is the primary scannable thing; code is the
  * metadata chip. Same convention as everywhere else in Lattice.
@@ -888,7 +888,7 @@ section.actors > ol > li > strong {
   color:var(--text-heading);
   line-height:var(--lh-snug);
 }
-/* Inline code = actor name chip, filled categorical pill, right-aligned.
+/* Inline code = actor name chip, outlined categorical pill, right-aligned.
  * Pill chrome (font, border, bg, color, radius) inherits from the
  * universal pill rule. This block adds grid placement and the actors-
  * specific letter-spacing + slightly wider padding. The categorical
@@ -2298,51 +2298,47 @@ section.compare-prose:not(:has(.compare-prose-inner)) > ol > li > ol > li { font
  * the choice second. Composes with cross-cutting modifiers (compact, dark).
  * ──────────────────────────────────────────────────────────────────────── */
 
-/* chosen: second card is the winner */
-section.compare-prose.chosen .compare-prose-inner .card:nth-child(3),
-section.compare-prose.decision .compare-prose-inner .card:nth-child(3) {
+/* These verdict modifiers target the LIVE DOM — bare `> :is(ul,ol) > li` cards
+ * with the `❯` chevron as the list's `::before`, the same structure the
+ * `transition` / `banner-tag` variants target. (`.compare-prose-inner / .card`
+ * is a retired structure no render path emits — see the base layout's
+ * `:not(:has(.compare-prose-inner))` guard above.) The two cards are
+ * `li:first-child` (considered) and `li:last-child` (the choice). */
+
+/* chosen: the second card is the winner — accent-soft fill + accent edge. */
+section.compare-prose.chosen > :is(ul, ol) > li:last-child,
+section.compare-prose.decision > :is(ul, ol) > li:last-child {
   border-color: var(--on-accent-soft);
   border-left: 4px solid var(--on-accent-soft);
   background: var(--accent-soft);
 }
-section.compare-prose.chosen .compare-prose-inner .card:nth-child(3) > strong,
-section.compare-prose.decision .compare-prose-inner .card:nth-child(3) > strong {
-  color: var(--on-accent-soft);
-}
 
-/* rejected: second card (or, when composed with decision, the first) is the
- * option that was considered then dropped. Muted body + struck title. */
-section.compare-prose.rejected .compare-prose-inner .card:nth-child(3) > strong {
-  text-decoration: line-through;
-  text-decoration-color: var(--text-muted);
-  color: var(--text-muted);
-}
-section.compare-prose.rejected .compare-prose-inner .card:nth-child(3) {
+/* rejected: the second card is the option dropped — dimmed card + struck tag. */
+section.compare-prose.rejected > :is(ul, ol) > li:last-child {
   opacity: 0.72;
 }
-
-/* decision composes chosen (right) with rejected (left). The decision flag
- * adds left-card de-emphasis and a stronger connector with a label. */
-section.compare-prose.decision .compare-prose-inner .card:nth-child(1) > strong {
+section.compare-prose.rejected > :is(ul, ol) > li:last-child > strong:first-child {
   text-decoration: line-through;
-  text-decoration-color: var(--text-muted);
-  color: var(--text-muted);
 }
-section.compare-prose.decision .compare-prose-inner .card:nth-child(1) {
+
+/* decision composes chosen (second card) with a de-emphasised first card and
+ * a chevron amplified into a labelled DECISION connector. */
+section.compare-prose.decision > :is(ul, ol) > li:first-child {
   opacity: 0.72;
 }
-section.compare-prose.decision .compare-prose-inner .connector {
-  font-size: var(--fs-h2);
+section.compare-prose.decision > :is(ul, ol) > li:first-child > strong:first-child {
+  text-decoration: line-through;
+}
+section.compare-prose.decision > :is(ul, ol)::before {
   color: var(--accent);
   font-weight: 700;
-  position: relative;
-  z-index: 2;
+  font-size: var(--fs-h2);
 }
-section.compare-prose.decision .compare-prose-inner .connector::after {
+section.compare-prose.decision > :is(ul, ol)::after {
   content: 'DECISION';
   position: absolute;
-  top: calc(50% + 1.4em);
   left: 50%;
+  top: calc(50% + 1.6em);
   transform: translateX(-50%);
   font-family: var(--font-mono);
   font-size: var(--fs-meta);
@@ -2353,31 +2349,20 @@ section.compare-prose.decision .compare-prose-inner .connector::after {
   background: var(--bg);
   padding: 2px 6px;
   border-radius: var(--radius-sm);
+  z-index: 2;
 }
 
-/* vertical: stack cards. The flex row becomes a column; connector loses its
- * inline padding and rotates 90°. The cards take auto-height so 2 long-body
- * cards fit naturally. */
-section.compare-prose.vertical .compare-prose-inner {
+/* vertical: stack the two cards; rotate the chevron to point down. */
+section.compare-prose.vertical > :is(ul, ol) {
   flex-direction: column;
   align-items: stretch;
   gap: var(--sp-sm);
 }
-section.compare-prose.vertical .compare-prose-inner .card {
+section.compare-prose.vertical > :is(ul, ol) > li {
   flex: 0 1 auto;
 }
-section.compare-prose.vertical .compare-prose-inner .connector {
-  /* In horizontal mode the connector is a fixed-width column; in vertical
-   * mode the parent's `align-items: stretch` would balloon it to the full
-   * row width (≈1152px). After `transform: rotate(90deg)` that wide box
-   * becomes a ~1152px-tall visual block that overflows the frame even
-   * though only the chevron glyph is visible. `align-self:center` opts
-   * out of the cross-axis stretch so the connector shrinks back to its
-   * intrinsic glyph size before being rotated. */
-  align-self: center;
-  padding: 0;
-  transform: rotate(90deg);
-  font-size: var(--fs-h2);
+section.compare-prose.vertical > :is(ul, ol)::before {
+  transform: translate(-50%, -50%) rotate(90deg);
 }
 
 
@@ -3470,7 +3455,7 @@ section.image.museum p:last-of-type {
  *   journey curve        — connected polyline of mood across tasks with
  *                          a y-axis scale and section bands behind.
  *   journey swimlane     — one row per actor; dot at every task the
- *                          actor participates in, sized by that task's mood.
+ *                          actor participates in, coloured by that task's mood.
  *   journey weighted     — task chip widths proportional to `+volume`;
  *                          chip color = mood. Two dimensions at once.
  *
@@ -6323,10 +6308,12 @@ section.matrix-2x2 :is(ul,ol) > li > strong ~ * { font-weight: 400; }
  * <!-- _class: obligation-matrix -->
  * | Regulation | Notice | Consent | Retention | Breach | DSAR |
  * | ---------- | :----: | :-----: | :-------: | :----: | :--: |
- * | CCPA       | ●      | ◐       | ●         | ●      | ●    |
+ * | CCPA       | [x]    | [-]     | [x]       | [x]    | [x]  |
  *
- * The default uses cell glyphs (●/◐/○ or text). Variants: .heat (cell
- * fills), .pills (cell pills), .lanes (row stripes), .asymmetric (cards).
+ * Cells are authored with the state-marker grammar [x]/[-]/[ ]/[/], decoded
+ * into status-coloured state discs (masked SVG via --state-mark). Variants:
+ * .heat (cell fills), .pills (cell pills), .lanes (row stripes),
+ * .asymmetric (cards).
  * ──────────────────────────────────────────────────────────────────── */
 section.obligation-matrix { display:flex; flex-direction:column; }
 section.obligation-matrix h2 { margin-bottom:var(--sp-md); }
@@ -6479,7 +6466,7 @@ section.obligation-matrix.heat thead tr th:last-child {
 
 /* ── PIECHART · donut ──
  * SVG wedges emitted at build time; legend rendered to the right.
- * The donut hole (when modifier `donut` is present) shows a total readout. */
+ * The donut hole (when modifier `donut` is present) is left blank. */
 /* .chart-body inherits the shared width + padding (sp-lg / sp-2xl) so the
  * surface panel matches every other chart's size and inset — no
  * piechart-specific override. */
@@ -7769,18 +7756,14 @@ section.radar.cover .radar-tick {
  * Extracted from lib/_legacy.css in Phase 4 of the destination map.
  * See lib/components/redline/redline.manifest.json for the component contract.
  *
- * SPECIFICITY-BUMP HACK (transitional). Phase 4 of the _legacy.css
- * split moves component CSS EARLIER in the bundle than lib/_modifiers.css.
- * For rules that tie KEY INSIGHT on specificity (0,3,3 for ::before,
- * 0,3,2 for blockquote) — every `.split`, `.stacked`, and `.three-col`
- * variant that overrides blockquote chrome and blockquote::before
- * content (OLD/NEW labels) — the post-extraction cascade would let
- * KEY INSIGHT win by source order and break the variants. Until KEY
- * INSIGHT is redesigned (Phase 5b proper — likely a custom-property
- * gate), each conflicting selector is duplicated (`.split.split`,
- * `.stacked.stacked`, `.three-col.three-col`) to bump specificity to
- * 0,4,X so it beats KEY INSIGHT on specificity, not source order.
- * Pixel-check verified: 0 diff against pre-phase-5b.
+ * KEY-INSIGHT GATE. The central blockquote eyebrow rule in
+ * lib/base/base.modifiers.css excludes redline (`:not(.redline)`), so a
+ * redline never inherits the "KEY INSIGHT" label — bare/annotated redlines
+ * render a clean diff, and the `.split` / `.stacked` / `.three-col` variants'
+ * own OLD / NEW blockquote::before labels apply unopposed (no source-order
+ * race). The doubled-class selectors below (`.split.split`, …) are a legacy
+ * specificity bump from the _legacy.css split; with the gate in place they
+ * are no longer load-bearing, but are retained as harmless.
  */
 
 /* ── REDLINE ──────────────────────────────────────────────────────────
@@ -8340,9 +8323,9 @@ section.regulatory-update.regulatory-update.priority > :is(ol, ul) > li:nth-chil
  *                  phase cards. DOM rewrite in lib/roadmap.js.
  *   .swimlane    — each workstream renders as a horizontal track of
  *                  outlined phase pills on a lane tint.
- *   .milestones  — calendar-aware: header carries a date subtitle
- *                  (write `Phase 01<br>Q1 2026`), and a tick scale
- *                  runs under the phase columns.
+ *   .milestones  — calendar-aware: softly bands the phase columns so the
+ *                  dated headers read as a calendar cadence; the date stays
+ *                  the header's trailing meta pill (no extra chrome).
  * ──────────────────────────────────────────────────────────────────────── */
 /* roadmap is a chart-frame member (folded into the chart family): the
  * dispatcher lifts the h2 into .chart-header, the intro paragraph into the
@@ -8940,7 +8923,7 @@ section.split-compare .verdict blockquote p { font-size:var(--fs-body); font-fam
  * decisions/2026-06-07-split-family-analysis.md):
  *   default     — featured heading + findings (was split-brief)
  *   .metric     — light-left polarity + hero number (was split-metric)
- *   .quote      — pull-quote feature (was split-statement)
+ *   .pullquote  — pull-quote feature (was split-statement)
  *   .steps      — numbered step-timeline right zone (was split-steps)
  *   .watermark  — accent panel + letterform + meta footer (was split-list)
  */
@@ -10354,7 +10337,7 @@ section:not(.quote):not(.featured):not(.math):not(.citation-card):not([class*="l
   margin-top:var(--sp-sm);
   flex-shrink:0;
 }
-section:not(.quote):not(.featured):not(.math):not(.citation-card):not([class*="layout-"]) > blockquote::before {
+section:not(.quote):not(.featured):not(.math):not(.citation-card):not(.redline):not([class*="layout-"]) > blockquote::before {
   content:'KEY INSIGHT';
   font-family:var(--font-label);
   font-size:var(--fs-meta);
@@ -11024,11 +11007,13 @@ section.split-panel.mirror {
   flex-direction: row-reverse;
 }
 
-/* — compare-prose: reverse the two cards (and their connector) —
- * Composes with chosen/rejected/decision: those rules use :nth-child(1|3)
+/* — compare-prose: reverse the two cards (and their chevron) —
+ * Composes with chosen/rejected/decision: those rules use li:first/last-child
  * which in source order remain left-then-right; row-reverse only flips the
- * visual rendering. The chosen card stays the second one in the markdown. */
-section.compare-prose.mirror .compare-prose-inner {
+ * visual rendering. The chosen card stays the second one in the markdown.
+ * Targets the live `> :is(ul,ol)` flex row (the `.compare-prose-inner / .card`
+ * structure is retired and emitted by no render path). */
+section.compare-prose.mirror > :is(ul, ol) {
   flex-direction: row-reverse;
 }
 

@@ -16,12 +16,12 @@
     "eyebrow": {
       "selector": "p > code",
       "required": false,
-      "description": "Optional category label below the h1 (inline-code paragraph)."
+      "description": "Optional category label rendered above the h1 (authored as an inline-code paragraph immediately after the h1; flex `order` lifts it above)."
     },
     "subtitle": {
       "selector": "p",
       "required": false,
-      "description": "Optional plain-paragraph subtitle below the eyebrow."
+      "description": "Optional plain-paragraph subtitle below the h1."
     }
   },
   "skeleton": "<!-- _class: title -->\n<!-- _paginate: false -->\n<!-- _header: '' -->\n<!-- _footer: '' -->\n\n# Deck title goes here\n\n`Category · Date or audience`\n\nOne-line subtitle that frames the deck.\n",

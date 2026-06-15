@@ -37,27 +37,6 @@ Executive KPI system — one base, five layout modifiers.
 
 ---
 
-<!-- _class: kpi target -->
-<!-- _footer: "Variance-against-target · kpi target" -->
-
-## Where we are against quarter targets.
-
-1. 94%
-   - Signal-classification success
-   - target 99%, gap is "known issue"
-2. 18 min
-   - p99 decision close
-   - target 20 min, beating target
-3. 18
-   - Decisions logged
-   - target 340, gap is "cultural"
-4. 1
-   - Calibration cycles run
-   - target 6, gap is "structural"
-
-
----
-
 <!-- _class: kpi attention -->
 <!-- _footer: "Attention — the slipping metric leads · kpi attention" -->
 
@@ -242,7 +221,7 @@ Source · regulatory register · weekly export
 
 ## When NOT to reach for kpi.
 
-- **Decorative pills without status semantics.** The pills tint the layout (warn, breach, on-track). Don't use them as freeform tags — `On plan`, `At risk`, `Breaching`, `Compliant`, `Remediating` are the vocabulary the engine recognises.
+- **Decorative pills without status semantics.** The pills read as status, not freeform tags. Status colour is assigned by each KPI's row position within the modifier — the engine never reads the pill text — so reserve them for the status vocabulary the position implies (`On plan`, `At risk`, `Breaching`, `Compliant`, `Remediating`). Arbitrary labels land a colour that has nothing to do with the words.
 - **More than four KPIs in attention or spotlight.** `attention` highlights the metric that needs the room; `spotlight` monumentalises one number. Past four KPIs the visual hierarchy collapses — split into two slides.
 - **No targets, no trends.** If the KPIs carry only current values, the slide is a stats row, not a kpi dashboard. Use stats and reclaim the room.
 

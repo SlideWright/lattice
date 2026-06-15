@@ -80,12 +80,12 @@
     },
     "curve": {
       "label": "Curve — mood polyline with axis",
-      "caption": "Renders the mood scores as a polyline over the task sequence with a y-axis scale and section bands behind. Use when the trend across the journey is the headline.",
+      "caption": "Renders the mood scores as a polyline over the task sequence with a mood gridline scale and section bands behind. Use when the trend across the journey is the headline.",
       "sample": "<!-- _class: journey curve -->\n\n## Curve · the affect contour.\n\n- Evaluate\n  - Read case study `@prospect` `:5`\n  - Book demo `@prospect` `:4`\n- Trial\n  - Trial signup `@prospect` `:3`\n  - Workspace setup `@user` `:1`\n- Activate\n  - First report `@user` `:3`\n  - Daily use `@user` `:5`\n"
     },
     "swimlane": {
       "label": "Swimlane — per-actor rows",
-      "caption": "One row per actor; a dot marks every task that actor participates in, sized by that task's mood. Use when the question is who carries the journey and where the handoffs land.",
+      "caption": "One row per actor; a dot marks every task that actor participates in, coloured by that task's mood. Use when the question is who carries the journey and where the handoffs land.",
       "sample": "<!-- _class: journey swimlane -->\n\n## Swimlane · who owns each moment.\n\n- Evaluate\n  - Read case study `@prospect` `:5`\n  - Live demo `@prospect` `@sales` `:4`\n- Trial\n  - Trial signup `@prospect` `:3`\n  - Workspace setup `@user` `@onboarding` `:1`\n- Activate\n  - First report `@user` `:3`\n  - Daily use `@user` `:5`\n"
     },
     "weighted": {

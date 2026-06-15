@@ -75,51 +75,47 @@ section.compare-prose:not(:has(.compare-prose-inner)) > ol > li > ol > li { font
  * the choice second. Composes with cross-cutting modifiers (compact, dark).
  * ──────────────────────────────────────────────────────────────────────── */
 
-/* chosen: second card is the winner */
-section.compare-prose.chosen .compare-prose-inner .card:nth-child(3),
-section.compare-prose.decision .compare-prose-inner .card:nth-child(3) {
+/* These verdict modifiers target the LIVE DOM — bare `> :is(ul,ol) > li` cards
+ * with the `❯` chevron as the list's `::before`, the same structure the
+ * `transition` / `banner-tag` variants target. (`.compare-prose-inner / .card`
+ * is a retired structure no render path emits — see the base layout's
+ * `:not(:has(.compare-prose-inner))` guard above.) The two cards are
+ * `li:first-child` (considered) and `li:last-child` (the choice). */
+
+/* chosen: the second card is the winner — accent-soft fill + accent edge. */
+section.compare-prose.chosen > :is(ul, ol) > li:last-child,
+section.compare-prose.decision > :is(ul, ol) > li:last-child {
   border-color: var(--on-accent-soft);
   border-left: 4px solid var(--on-accent-soft);
   background: var(--accent-soft);
 }
-section.compare-prose.chosen .compare-prose-inner .card:nth-child(3) > strong,
-section.compare-prose.decision .compare-prose-inner .card:nth-child(3) > strong {
-  color: var(--on-accent-soft);
-}
 
-/* rejected: second card (or, when composed with decision, the first) is the
- * option that was considered then dropped. Muted body + struck title. */
-section.compare-prose.rejected .compare-prose-inner .card:nth-child(3) > strong {
-  text-decoration: line-through;
-  text-decoration-color: var(--text-muted);
-  color: var(--text-muted);
-}
-section.compare-prose.rejected .compare-prose-inner .card:nth-child(3) {
+/* rejected: the second card is the option dropped — dimmed card + struck tag. */
+section.compare-prose.rejected > :is(ul, ol) > li:last-child {
   opacity: 0.72;
 }
-
-/* decision composes chosen (right) with rejected (left). The decision flag
- * adds left-card de-emphasis and a stronger connector with a label. */
-section.compare-prose.decision .compare-prose-inner .card:nth-child(1) > strong {
+section.compare-prose.rejected > :is(ul, ol) > li:last-child > strong:first-child {
   text-decoration: line-through;
-  text-decoration-color: var(--text-muted);
-  color: var(--text-muted);
 }
-section.compare-prose.decision .compare-prose-inner .card:nth-child(1) {
+
+/* decision composes chosen (second card) with a de-emphasised first card and
+ * a chevron amplified into a labelled DECISION connector. */
+section.compare-prose.decision > :is(ul, ol) > li:first-child {
   opacity: 0.72;
 }
-section.compare-prose.decision .compare-prose-inner .connector {
-  font-size: var(--fs-h2);
+section.compare-prose.decision > :is(ul, ol) > li:first-child > strong:first-child {
+  text-decoration: line-through;
+}
+section.compare-prose.decision > :is(ul, ol)::before {
   color: var(--accent);
   font-weight: 700;
-  position: relative;
-  z-index: 2;
+  font-size: var(--fs-h2);
 }
-section.compare-prose.decision .compare-prose-inner .connector::after {
+section.compare-prose.decision > :is(ul, ol)::after {
   content: 'DECISION';
   position: absolute;
-  top: calc(50% + 1.4em);
   left: 50%;
+  top: calc(50% + 1.6em);
   transform: translateX(-50%);
   font-family: var(--font-mono);
   font-size: var(--fs-meta);
@@ -130,31 +126,20 @@ section.compare-prose.decision .compare-prose-inner .connector::after {
   background: var(--bg);
   padding: 2px 6px;
   border-radius: var(--radius-sm);
+  z-index: 2;
 }
 
-/* vertical: stack cards. The flex row becomes a column; connector loses its
- * inline padding and rotates 90°. The cards take auto-height so 2 long-body
- * cards fit naturally. */
-section.compare-prose.vertical .compare-prose-inner {
+/* vertical: stack the two cards; rotate the chevron to point down. */
+section.compare-prose.vertical > :is(ul, ol) {
   flex-direction: column;
   align-items: stretch;
   gap: var(--sp-sm);
 }
-section.compare-prose.vertical .compare-prose-inner .card {
+section.compare-prose.vertical > :is(ul, ol) > li {
   flex: 0 1 auto;
 }
-section.compare-prose.vertical .compare-prose-inner .connector {
-  /* In horizontal mode the connector is a fixed-width column; in vertical
-   * mode the parent's `align-items: stretch` would balloon it to the full
-   * row width (≈1152px). After `transform: rotate(90deg)` that wide box
-   * becomes a ~1152px-tall visual block that overflows the frame even
-   * though only the chevron glyph is visible. `align-self:center` opts
-   * out of the cross-axis stretch so the connector shrinks back to its
-   * intrinsic glyph size before being rotated. */
-  align-self: center;
-  padding: 0;
-  transform: rotate(90deg);
-  font-size: var(--fs-h2);
+section.compare-prose.vertical > :is(ul, ol)::before {
+  transform: translate(-50%, -50%) rotate(90deg);
 }
 
 

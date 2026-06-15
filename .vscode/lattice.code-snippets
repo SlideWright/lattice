@@ -127,7 +127,7 @@
       "> Verbatim quotation of the cited language.",
       "",
       "- Plain-English interpretation of what the language covers.",
-      "- What we must do.",
+      "- **What we must do.**",
       "  - The concrete action this citation argues for."
     ],
     "description": "Single authoritative reference — heading + citation + verbatim quote + plain-English gloss."
@@ -892,7 +892,7 @@
       "3. `2025 Q3` Third milestone `live`",
       "   - One-sentence description."
     ],
-    "description": "Date-stamped event list — spine with date pills, status pills, and body."
+    "description": "Date-stamped event list rendered as a horizontal spine — a dot per event with its date pill above and title, status pill, and body stacked below."
   },
   "lattice: title": {
     "prefix": "lattice-title",

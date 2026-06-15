@@ -668,8 +668,7 @@
       "variants": [
         "four",
         "three",
-        "numbered",
-        "mirror"
+        "numbered"
       ],
       "effectiveVariants": [
         "accent",
@@ -683,7 +682,6 @@
         "loose",
         "mark-orbit",
         "mark-threads",
-        "mirror",
         "no-footer",
         "no-form",
         "no-header",
@@ -912,7 +910,7 @@
         "requirements"
       ],
       "description": "Items with state markers — done, partial, todo.",
-      "purpose": "Use for completion reports, readiness audits, or pre-flight checks. State markers [x]/[-]/[ ]/[/] produce status-colored circles carrying a distinct mark — check / dash / x / slash — so the shape reads independently of color (colour-blind-safe).",
+      "purpose": "Use for completion reports, readiness audits, or pre-flight checks. State markers [x]/[-]/[ ]/[/] produce status-colored circles carrying a distinct mark — check / dash / ring / slash — so the shape reads independently of color (colour-blind-safe).",
       "variants": [],
       "effectiveVariants": [
         "accent",
@@ -1097,7 +1095,7 @@
           "description": "Optional plain-English interpretation. Use **What we must do** for the actionable item."
         }
       },
-      "skeleton": "<!-- _class: citation-card -->\n\n## Headline framing what this citation establishes.\n\n`Citation reference · short name`\n\n> Verbatim quotation of the cited language.\n\n- Plain-English interpretation of what the language covers.\n- What we must do.\n  - The concrete action this citation argues for.\n",
+      "skeleton": "<!-- _class: citation-card -->\n\n## Headline framing what this citation establishes.\n\n`Citation reference · short name`\n\n> Verbatim quotation of the cited language.\n\n- Plain-English interpretation of what the language covers.\n- **What we must do.**\n  - The concrete action this citation argues for.\n",
       "whenToUse": [
         {
           "title": "One citation carries the slide",
@@ -1391,9 +1389,7 @@
       ],
       "description": "Two fenced code blocks side-by-side, each with a label.",
       "purpose": "Use to contrast a before/after refactor, two API styles, or two configurations. Each side gets an h3 label and one fenced block.",
-      "variants": [
-        "mirror"
-      ],
+      "variants": [],
       "effectiveVariants": [
         "accent",
         "archived",
@@ -1405,7 +1401,6 @@
         "loose",
         "mark-orbit",
         "mark-threads",
-        "mirror",
         "no-footer",
         "no-form",
         "no-header",
@@ -3042,7 +3037,6 @@
       "description": "Executive KPI system — one base, five layout modifiers.",
       "purpose": "Use for KPI dashboards with status framing — current value, target, trend, attention-needed. Bare `kpi` resolves to the briefing layout; the five modifiers tune the visual emphasis for different audiences (ops, compliance, investor, headline).",
       "variants": [
-        "target",
         "attention",
         "ops",
         "compliance",
@@ -3077,7 +3071,6 @@
         "scale-xl",
         "silent",
         "spotlight",
-        "target",
         "tbd",
         "tint-corner at-tl",
         "tint-edge at-right",
@@ -3127,7 +3120,7 @@
       "antiPatterns": [
         {
           "title": "Decorative pills without status semantics",
-          "body": "The pills tint the layout (warn, breach, on-track). Don't use them as freeform tags — `On plan`, `At risk`, `Breaching`, `Compliant`, `Remediating` are the vocabulary the engine recognises."
+          "body": "The pills read as status, not freeform tags. Status colour is assigned by each KPI's row position within the modifier — the engine never reads the pill text — so reserve them for the status vocabulary the position implies (`On plan`, `At risk`, `Breaching`, `Compliant`, `Remediating`). Arbitrary labels land a colour that has nothing to do with the words."
         },
         {
           "title": "More than four KPIs in attention or spotlight",
@@ -4587,7 +4580,7 @@
         "status"
       ],
       "description": "Horizontal progress bars — one row per item, percentage filled.",
-      "purpose": "Use for status-tracking across multiple parallel items (project readiness, OKR progress, capacity utilization). Status colors via on-track/at-risk/blocked.",
+      "purpose": "Use for status-tracking across multiple parallel items (project readiness, OKR progress, capacity utilization). Status colors via the chart-status vocabulary (on-track / done / live, at-risk / warn, blocked / fail, deferred).",
       "variants": [],
       "effectiveVariants": [
         "accent",
@@ -6071,7 +6064,7 @@
         "subtitle": {
           "selector": "p > code",
           "required": false,
-          "description": "Optional subtitle (inline-code paragraph after h2)."
+          "description": "Optional inline-code paragraph (eyebrow before the h2, or caption after it). Styled by the generic `> p`/`> em` rule, not a dedicated `p > code` rule."
         },
         "tiles": {
           "selector": "ol > li",
@@ -6265,8 +6258,8 @@
         "status",
         "retrospective"
       ],
-      "description": "Date-stamped event list — spine with date pills, status pills, and body.",
-      "purpose": "Use for milestone history or annotated timelines. Each item gets a date pill on the left, status pill on the right, body in the middle.",
+      "description": "Date-stamped event list rendered as a horizontal spine — a dot per event with its date pill above and title, status pill, and body stacked below.",
+      "purpose": "Use for milestone history or annotated timelines. Each event sits on a left-to-right spine: a dot with its date pill above it, then the title, an optional status pill, and a short body stacked beneath.",
       "variants": [],
       "effectiveVariants": [
         "accent",
@@ -6433,12 +6426,12 @@
         "eyebrow": {
           "selector": "p > code",
           "required": false,
-          "description": "Optional category label below the h1 (inline-code paragraph)."
+          "description": "Optional category label rendered above the h1 (authored as an inline-code paragraph immediately after the h1; flex `order` lifts it above)."
         },
         "subtitle": {
           "selector": "p",
           "required": false,
-          "description": "Optional plain-paragraph subtitle below the eyebrow."
+          "description": "Optional plain-paragraph subtitle below the h1."
         }
       },
       "skeleton": "<!-- _class: title -->\n<!-- _paginate: false -->\n<!-- _header: '' -->\n<!-- _footer: '' -->\n\n# Deck title goes here\n\n`Category · Date or audience`\n\nOne-line subtitle that frames the deck.\n",

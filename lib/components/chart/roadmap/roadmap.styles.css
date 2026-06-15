@@ -28,9 +28,9 @@
  *                  phase cards. DOM rewrite in lib/roadmap.js.
  *   .swimlane    — each workstream renders as a horizontal track of
  *                  outlined phase pills on a lane tint.
- *   .milestones  — calendar-aware: header carries a date subtitle
- *                  (write `Phase 01<br>Q1 2026`), and a tick scale
- *                  runs under the phase columns.
+ *   .milestones  — calendar-aware: softly bands the phase columns so the
+ *                  dated headers read as a calendar cadence; the date stays
+ *                  the header's trailing meta pill (no extra chrome).
  * ──────────────────────────────────────────────────────────────────────── */
 /* roadmap is a chart-frame member (folded into the chart family): the
  * dispatcher lifts the h2 into .chart-header, the intro paragraph into the

@@ -87,7 +87,7 @@ Red = applies (exposure), green = exempt (relief). Brackets frame the structure.
 
 ### `asymmetric` — Asymmetric — card-per-row layout
 
-Promotes each regulation to its own card with the obligations rendered as inline state pills. Use when row labels need room for a body sentence and the comparison-density of the default grid would crowd them.
+Promotes each regulation to its own card with the obligations rendered as inline state discs. Use when row labels need room for a body sentence and the comparison-density of the default grid would crowd them.
 
 ```markdown
 <!-- _class: obligation-matrix asymmetric -->

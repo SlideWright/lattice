@@ -124,7 +124,7 @@ What the second phase produces before rollout begins.
 
 ### `watermark` — Watermark — accent panel + letterform
 
-An accent left panel with a large letterform watermark (the heading's first letter), an `h5` section rubric, and an optional `Audience · / Intent ·` metadata footer on the right. Use for an overview/showcase panel. Was the standalone `split-list` component before 2026-06-07.
+An accent left panel with a large letterform watermark (the heading's first letter), an `h3` section rubric in the right panel, and an optional `Audience · / Intent ·` metadata footer on the right. Use for an overview/showcase panel. Was the standalone `split-list` component before 2026-06-07.
 
 ```markdown
 <!-- _class: split-panel watermark -->

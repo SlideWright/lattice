@@ -1,12 +1,12 @@
 # timeline-list
 
-> Date-stamped event list — spine with date pills, status pills, and body.
+> Date-stamped event list rendered as a horizontal spine — a dot per event with its date pill above and title, status pill, and body stacked below.
 
 **Function** evidence · **Form** timeline · **Substance** series
 
 **Tags** `changelog` · `milestones` · `status` · `retrospective`
 
-Use for milestone history or annotated timelines. Each item gets a date pill on the left, status pill on the right, body in the middle.
+Use for milestone history or annotated timelines. Each event sits on a left-to-right spine: a dot with its date pill above it, then the title, an optional status pill, and a short body stacked beneath.
 
 ## When to use
 

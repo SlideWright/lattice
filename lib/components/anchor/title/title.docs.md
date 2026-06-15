@@ -40,8 +40,8 @@ One-line subtitle that frames the deck.
 | Slot | Selector | Required | Description |
 |---|---|---|---|
 | `heading` | `h1` | yes | Deck title. |
-| `eyebrow` | `p > code` | no | Optional category label below the h1 (inline-code paragraph). |
-| `subtitle` | `p` | no | Optional plain-paragraph subtitle below the eyebrow. |
+| `eyebrow` | `p > code` | no | Optional category label rendered above the h1 (authored as an inline-code paragraph immediately after the h1; flex `order` lifts it above). |
+| `subtitle` | `p` | no | Optional plain-paragraph subtitle below the h1. |
 
 ## Anatomy
 

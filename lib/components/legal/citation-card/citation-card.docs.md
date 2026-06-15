@@ -33,7 +33,7 @@ Use when one citation IS the slide. The blockquote carries the verbatim language
 > Verbatim quotation of the cited language.
 
 - Plain-English interpretation of what the language covers.
-- What we must do.
+- **What we must do.**
   - The concrete action this citation argues for.
 ```
 
@@ -77,7 +77,7 @@ Promotes the blockquote to a pull-quote scale — the verbatim language reads as
 
 > Information that identifies, relates to, describes, is reasonably capable of being associated with, or could reasonably be linked, directly or indirectly, with a particular consumer or household.
 
-- What we must do.
+- **What we must do.**
   - Audit pixel inventory; treat household IDs as PI in DSAR workflows.
 ```
 
@@ -117,7 +117,7 @@ Sets the quotation as the body with the gloss running as margin notes alongside.
 
 ### `triptych` — Triptych — three panels
 
-Frames the citation, the verbatim text, and the gloss as three panels for a formal presentation of a single authority. Keep the quotation short so it sits comfortably in its panel.
+Frames the verbatim quote and the gloss items as three panels, with the citation spanning above, for a formal presentation of a single authority. Keep the quotation short so it sits comfortably in its panel.
 
 ```markdown
 <!-- _class: citation-card triptych -->
@@ -130,7 +130,7 @@ Frames the citation, the verbatim text, and the gloss as three panels for a form
 
 - In plain English.
   - Any online identifier that can single out a person — IP address, cookie ID, device fingerprint.
-- What we must do.
+- **What we must do.**
   - Scope notice and retention to cover online identifiers, not just named-person records.
 ```
 

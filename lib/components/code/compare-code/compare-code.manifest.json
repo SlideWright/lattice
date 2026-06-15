@@ -8,9 +8,6 @@
   "tags": ["snippet", "contrast", "tradeoff"],
   "description": "Two fenced code blocks side-by-side, each with a label.",
   "purpose": "Use to contrast a before/after refactor, two API styles, or two configurations. Each side gets an h3 label and one fenced block.",
-  "variants": [
-    "mirror"
-  ],
   "slots": {
     "title": {
       "selector": "h2",
@@ -64,12 +61,5 @@
     { "name": "compare-prose", "when": "the comparison is prose-versus-prose" },
     { "name": "redline", "when": "the change is in verbatim text or legal language" },
     { "name": "compare-table", "when": "three or more variants on shared dimensions" }
-  ],
-  "variantDocs": {
-    "mirror": {
-      "label": "Mirror — swap left and right",
-      "caption": "Flips the left and right columns. Useful when the deck's visual rhythm wants the after-state on the left, or when the natural reading order is new-then-old.",
-      "sample": "<!-- _class: compare-code mirror -->\n\n`After & before · Component manifest loading`\n\n## Folder-shape lookup, with the prior approach for reference.\n\n`After · folder shape`\n\n```js\nfunction loadOne(name) {\n  const p = path.join(\n    __dirname, 'lib', 'components',\n    name, 'manifest.json'\n  );\n  return JSON.parse(fs.readFileSync(p, 'utf8'));\n}\n```\n\n`Before · flat file`\n\n```js\nfunction loadOne(name) {\n  const p = path.join(\n    __dirname, 'lib', 'components',\n    `${name}.json`\n  );\n  return JSON.parse(fs.readFileSync(p, 'utf8'));\n}\n```\n"
-    }
-  }
+  ]
 }

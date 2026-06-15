@@ -86,7 +86,7 @@
     },
     "watermark": {
       "label": "Watermark — accent panel + letterform",
-      "caption": "An accent left panel with a large letterform watermark (the heading's first letter), an `h5` section rubric, and an optional `Audience · / Intent ·` metadata footer on the right. Use for an overview/showcase panel. Was the standalone `split-list` component before 2026-06-07.",
+      "caption": "An accent left panel with a large letterform watermark (the heading's first letter), an `h3` section rubric in the right panel, and an optional `Audience · / Intent ·` metadata footer on the right. Use for an overview/showcase panel. Was the standalone `split-list` component before 2026-06-07.",
       "sample": "<!-- _class: split-panel watermark -->\n\n## Scorecard\n\n### What the framework measures\n\n- Signal quality\n  - Whether the inputs are trustworthy enough to act on without re-checking.\n- Decision latency\n  - How long from signal to a logged, owned decision.\n- Reversal rate\n  - How often a logged decision is later overturned, and why.\n"
     },
     "mirror": {

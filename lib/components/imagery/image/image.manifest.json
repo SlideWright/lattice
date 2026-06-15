@@ -96,7 +96,7 @@
     },
     "museum": {
       "label": "Museum — matted and framed",
-      "caption": "Full-bleed variant: image inset on a `--bg-alt` matte (40px top/sides, 100px at the bottom) with a 1px hairline frame. Text reads on the matte at the bottom as a mono eyebrow label + body caption — editorial placard, no scrim. Use for the one hero image in a deck that deserves a wall-piece treatment.",
+      "caption": "Full-bleed variant: image inset on a `--bg-alt` matte (a wider band at the bottom than the top/sides — ≈40px/100px at HD, scaling with the canvas in cqi) with a 1px hairline frame. Text reads on the matte at the bottom as a mono eyebrow label + body caption — editorial placard, no scrim. Use for the one hero image in a deck that deserves a wall-piece treatment.",
       "sample": "<!-- _class: image museum -->\n\n## Museum framing gives one image the wall.\n\nMatte border plus a hairline frame. Reserve for case-study openers, brand moments, archival material — the image that the deck remembers.\n\n![bg](sample-image-landscape.svg)\n"
     },
     "mirror": {

@@ -79,23 +79,6 @@ header: "Lattice · cards-grid"
 
 ---
 
-<!-- _class: cards-grid mirror -->
-<!-- _footer: "Mirror (no-op on symmetric grids) · cards-grid mirror" -->
-
-## Mirror is a no-op here.
-
-- First card.
-  - Same position with or without `mirror`.
-- Second card.
-  - Same position with or without `mirror`.
-- Third card.
-  - Symmetric grids have nothing to flip.
-- Fourth card.
-  - This slide renders identically to the default.
-
-
----
-
 <!-- _class: cards-grid dark -->
 <!-- _footer: "Composition: dark · cards-grid dark" -->
 

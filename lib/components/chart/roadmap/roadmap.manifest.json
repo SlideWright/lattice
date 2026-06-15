@@ -83,7 +83,7 @@
   "variantDocs": {
     "horizons": {
       "label": "Horizons — three-horizon planning framing",
-      "caption": "Tints the phase columns as Horizon 1 / 2 / 3 (now / next / later) per the McKinsey three-horizons framing. Use when the planning frame is strategic-horizon-aware rather than fiscal-quarter-aware.",
+      "caption": "Transposes the phase columns into vertical phase cards — each with a `Phase 01 / 02 / …` eyebrow and a categorical accent — so a three-horizon (now / next / later) read comes from the phase names you write. Use when the planning frame is strategic-horizon-aware rather than fiscal-quarter-aware.",
       "sample": "<!-- _class: roadmap horizons -->\n\n`Three-horizon planning`\n\n## Where the framework invests across horizons.\n\n| Workstream    | Horizon 1 `Now`          | Horizon 2 `Next`         | Horizon 3 `Later`         |\n| ------------- | ------------------------ | ------------------------ | ------------------------- |\n| Signal Intake | [x] Connector v1     | [-] Multi-source dedupe    | [ ] Anomaly auto-routing |\n| Scoring       | [x] Equal weights      | [-] Per-team calibration   | [ ] Per-decision profiles |\n| Decision Log  | [x] Append-only schema   | [x] Outcome auto-pairing | [ ] Auditor export        |\n| Adoption      | [x] One pilot team       | [/] Second team          | [ ] Org-wide enablement   |\n"
     },
     "status": {
@@ -98,7 +98,7 @@
     },
     "milestones": {
       "label": "Milestones — calendar-aware",
-      "caption": "Treats the phase headers as dated milestones, carrying their date pill as a subtitle. Use when the cadence of the dates is part of the story, not just the sequence.",
+      "caption": "Softly bands the phase columns so the dated headers read as a calendar cadence; the date stays the header's trailing meta pill (no extra chrome). Use when the cadence of the dates is part of the story, not just the sequence.",
       "sample": "<!-- _class: roadmap milestones -->\n\n`Layout · roadmap milestones`\n\n## The dated path to GA, dates subject to the usual revision.\n\n| Workstream    | Beta `Q2 2026`       | RC `Q3 2026`           | GA `Q4 2026`              |\n| ------------- | -------------------- | ---------------------- | ------------------------- |\n| Signal Intake | Connector v1     | Multi-source dedupe        | Anomaly auto-routing  |\n| Scoring       | Equal weights        | Per-team calibration   | Per-decision profiles    |\n| Decision Log  | Append schema        | Outcome pairing        | Auditor export            |\n"
     }
   },
