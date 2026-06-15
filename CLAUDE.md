@@ -28,7 +28,7 @@ choice:
 | When… | Do, automatically |
 |---|---|
 | a branch's meaty work is complete, verified, pushed — a design/decision doc counts, the doc *is* the deliverable | **open the PR** via the template (§6) |
-| a PR is open | **subscribe + drive CI green**, arm the drift watch (§7) |
+| a PR is open | **subscribe + drive CI green**; rebase before each push (§7) |
 | the PR is green and rebased | **ask to merge** — the *one* user gate in this flow |
 | merge confirmed + local `main` synced | **post the standup** |
 
@@ -47,16 +47,15 @@ decision the workflow already made.
 2. **Don't settle.** "Builds" and "tests pass" is the floor. Self-critique
    the result and raise it before returning it. For visual work, the bar is
    §Quality Bar below.
-3. **Stay *mergeable* — check, don't ask.** Before you push, before you call
-   anything done, and **while an open PR waits**, `git fetch origin main` and
-   rebase if the branch has drifted *and it matters* — a conflict, or behind at a
-   merge-time checkpoint. Never ship from a stale branch; never let an open PR
-   *merge* conflicted or stale; never wait to be told to rebase. But don't chase
-   every `main` movement: a `clean`-but-behind PR mid-flight is fine, and
-   rebasing on every drift thrashes CI against a merge train (HARD RULE #16). (A
-   Stop hook nudges you if you forget — see `.claude/hooks/stop-rebase-check.sh`;
-   HARD RULE #16 makes the open-PR case blocking, because webhooks never deliver
-   the drift/conflict trigger.)
+3. **Stay *mergeable* — rebase right before you push.** Before every push (and
+   before you call anything done), `git fetch origin main` and rebase if the
+   branch has drifted — behind or conflicted. Folding the check into the push you
+   were already doing keeps an open PR current at the one moment it costs nothing;
+   you do **not** run a background watch or chase every `main` movement (that
+   thrashes CI and floods the chat — HARD RULE #16). Re-check once more right
+   before an authorized merge. Never ship from a stale branch; never let an open
+   PR *merge* conflicted, stale, or CI-red. (A Stop hook nudges you if you forget
+   — see `.claude/hooks/stop-rebase-check.sh`.)
 4. **Run the gates yourself, proactively.** `npm run lint`, the unit suite,
    `npm run build:check` (the CI/stale-artifact gate), and the integration
    tier — run them *before* declaring done, so "done" is true when you say
@@ -74,8 +73,10 @@ decision the workflow already made.
 7. **Auto-watch the PR and drive it green — then ASK to merge; never merge
    unasked.** Immediately after creating a PR, subscribe to its activity and
    drive CI green / address review comments — never ask "should I watch the
-   PR?", the answer is always yes. When it's green and review-ready, **stop and
-   ask me for merge authorization.** A human stays in the loop to review and
+   PR?", the answer is always yes. ("Watch" = subscribe to PR activity for
+   CI/review events. Keep the branch mergeable by **rebasing before each push**,
+   NOT by arming a background drift poller — HARD RULE #16.) When it's green and
+   review-ready, **stop and ask me for merge authorization.** A human stays in the loop to review and
    approve every merge: **never merge without my explicit, current go-ahead.**
    Prior authorization does NOT carry forward — "merge it" on one PR authorizes
    that merge only, never the next. (`doneMeansMerged` means keep working until
@@ -218,31 +219,23 @@ independent set of eyes earns its latency.
     tools/` are the live source). We almost certainly already have it — extend it,
     don't rebuild it. New tools/scripts must be described there (the
     `capabilities:check` gate enforces it).
-16. **Keep an open PR *mergeable* — which is NOT "zero commits behind." Detect
-    drift/conflict yourself (webhooks won't), but rebase only when it matters.**
-    GitHub never pushes "`main` moved", "now conflicted", or "CI passed", so a
-    watched PR goes stale or blocked **silently** — run a continuous **lock-free**
-    drift watch (arm `Monitor` the moment the PR goes green; poll `git ls-remote`,
-    never a background `git fetch`; on merge `TaskStop` it *first*, before any
-    local git). **But a drift event is NOT an automatic force-push.** Rebasing on
-    *every* `main` movement thrashes against a merge train — N rebases, N
-    cancelled CI runs, a spurious red gate (see
-    `engineering/decisions/2026-06-14-drift-watch-rebase-thrash.md`). Under
-    squash-merge, a branch that is merely *behind* (`mergeable_state: clean`) is
-    harmless until merge. So **rebase only at the moments that matter**: (a) the
-    PR is genuinely blocked — `mergeable_state` is `dirty`/conflicting; (b)
-    immediately before you ask for merge authorization; (c) immediately before an
-    authorized merge executes. On a bare "main moved" event, read `mergeable_state`
-    (`pull_request_read`) and rebase **only if conflicted** — otherwise let a
-    burst settle and absorb it in one rebase at merge time, never one-per-tick.
-    (GitHub computes `mergeable_state` async: treat `unknown`/null as *not yet
-    computed* — re-poll until it settles, never read it as `clean`.)
-    When you do rebase, resolve the recurring `CHANGELOG`/`dist` conflicts
-    mechanically, then `git push --force-with-lease`, silently (surface only a
-    real code conflict needing my judgment). (`send_later` is an equivalent timer;
-    neither it nor `Monitor` survives the container being reclaimed.) Never let an
-    open PR **merge** while conflicted, stale-at-merge, or CI-red — but do not
-    chase every drift. See `engineering/workflow.md`.
+16. **Keep an open PR mergeable by rebasing right before you push — NOT with a
+    background watch.** GitHub never delivers "`main` moved", "now conflicted", or
+    "CI passed", so there is no cheap event that tells you a parked PR has drifted.
+    **Don't try to watch for it.** A continuous drift watch — a polling loop that
+    auto-rebases on every `main` movement — thrashes CI against a merge train (N
+    rebases, N cancelled runs, a spurious red gate) *and* floods the chat with
+    poll/timer/force-push churn. Both failures are documented:
+    `engineering/decisions/2026-06-14-drift-watch-rebase-thrash.md` and
+    `2026-06-15-retire-drift-watch.md`. Instead, fold the check into the moment you
+    already touch the remote: **before every push, `git fetch origin main` and
+    rebase if behind or conflicted**, then push. Re-check once more immediately
+    before an authorized merge executes (re-fetch; rebase if behind/conflicted, let
+    CI re-confirm). Under squash-merge a `clean`-but-behind parked PR is harmless
+    until then — let it sit, don't poll it. Resolve the recurring `CHANGELOG`/`dist`
+    conflicts mechanically, then `git push --force-with-lease`, silently (surface
+    only a real code conflict needing my judgment). Never let an open PR **merge**
+    while conflicted, stale-at-merge, or CI-red. See `engineering/workflow.md`.
 
 ---
 

@@ -216,7 +216,17 @@ it is load-bearing.
   *must-rebase-now*; and the `ci` aggregate gate mapped a supersession
   `cancelled` → failure. Fix: rebase only at the moments that matter (conflict +
   the two merge-time checkpoints), keeping the watch as a detector; and treat a
-  `cancelled` tier as non-failing. **Status: design-decision.**
+  `cancelled` tier as non-failing. **Status: superseded-in-part** by
+  `2026-06-15-retire-drift-watch.md` (the watch is dropped entirely; root-cause
+  analysis still holds).
+- [2026-06-15-retire-drift-watch.md](2026-06-15-retire-drift-watch.md) —
+  retires the continuous background drift watch altogether. Even debounced, the
+  poller + its self-check-in timers flooded the chat, and the async
+  `mergeable_state` triage was brittle. Replaced with **rebase-before-push**: fetch
+  + rebase-if-behind right before every push, plus one re-check before an
+  authorized merge; a green PR may sit behind `main` until then (harmless under
+  squash-merge). Merge queue remains the structural fix if cross-session races
+  recur. **Status: design-decision.**
 - [2026-06-14-read-aloud-kokoro.md](2026-06-14-read-aloud-kokoro.md) —
   design model for a free/near-free, boardroom-quality read-aloud voice. Bans
   the browser `speechSynthesis` (per-device lottery, never Siri — kept as a
