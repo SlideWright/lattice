@@ -27,7 +27,7 @@ const SEEN_PREFIX = 'lattice-tour-seen-';
 // main-branch Cloudflare deploy) and "off" for local dev and the Cloudflare
 // *.pages.dev PR previews (see docs/src/lib/deploy-env.mjs). Fail closed: only
 // an explicit "on" runs them.
-function toursAllowedHere() {
+export function toursAllowedHere() {
 	try {
 		return document.documentElement.dataset.tours === 'on';
 	} catch {
@@ -67,7 +67,10 @@ function isStepLive(step) {
  * @param {string} [opts.buttonTitle='Take a guided tour of this page']
  * @param {boolean}[opts.autoStart=true]  Auto-run once on a first visit.
  * @param {number} [opts.autoStartDelay=550]  ms to let controllers mount first.
- * @returns {{ start: () => void }}
+ * @param {string|Element|null} [opts.mountTarget='.topbar-actions']  Where to
+ *        place the replay "?" button. Pass `null` for a tour the caller drives
+ *        itself (e.g. an overlay that owns its own trigger) — no button is mounted.
+ * @returns {{ start: () => void, seen: () => boolean, markSeen: () => void }}
  */
 export function initGuidedTour(opts) {
 	const {
@@ -78,11 +81,13 @@ export function initGuidedTour(opts) {
 		buttonTitle = 'Take a guided tour of this page',
 		autoStart = true,
 		autoStartDelay = 550,
+		mountTarget = '.topbar-actions',
 	} = opts || {};
 
-	if (!key || !Array.isArray(steps) || steps.length === 0) return { start() {} };
+	const noop = { start() {}, seen: () => true, markSeen() {} };
+	if (!key || !Array.isArray(steps) || steps.length === 0) return noop;
 	// Production-only: no button, no auto-run on dev / preview deploys.
-	if (!toursAllowedHere()) return { start() {} };
+	if (!toursAllowedHere()) return noop;
 
 	const seenKey = SEEN_PREFIX + key;
 	const seen = () => {
@@ -138,8 +143,14 @@ export function initGuidedTour(opts) {
 	};
 
 	// Topbar button — created and torn down on demand so the Drawing Board's
-	// "Guided tours" setting can flip it without a reload.
-	const actions = document.querySelector('.topbar-actions');
+	// "Guided tours" setting can flip it without a reload. `mountTarget: null`
+	// skips it entirely for a caller-driven tour (the overlay owns its trigger).
+	const actions =
+		mountTarget == null
+			? null
+			: typeof mountTarget === 'string'
+				? document.querySelector(mountTarget)
+				: mountTarget;
 	let btn = null;
 	const mountButton = () => {
 		if (!actions || btn) return;
@@ -183,5 +194,5 @@ export function initGuidedTour(opts) {
 		}
 	}
 
-	return { start };
+	return { start, seen, markSeen };
 }
