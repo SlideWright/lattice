@@ -15,7 +15,7 @@ const assert = require('node:assert/strict');
 const path   = require('path');
 const fs     = require('fs');
 const os     = require('os');
-const { spawnSync } = require('child_process');
+const { spawnSync, execFileSync } = require('child_process');
 
 describe('export-formats', () => {
   const ROOT     = path.join(__dirname, '..', '..', '..');
@@ -66,6 +66,30 @@ describe('export-formats', () => {
     const media  = names.filter((n) => /^ppt\/media\/.+\.png$/i.test(n));
     assert.equal(slides.length, 3, `expected 3 slides, got ${slides.length}`);
     assert.equal(media.length, 3, `expected 3 images, got ${media.length}`);
+  });
+
+  test('warns on overflow but keeps the badge out of the exported PDF', { timeout: TIMEOUT }, () => {
+    // The overflow signal (red ring + "OVERFLOWS" tab) is an authoring aid for
+    // the live preview; the deliverable must stay clean — a red box in front of
+    // a board is worse than the silent clip overflow:hidden already applies.
+    // Author a slide that cannot fit the HD frame, render it, and assert the
+    // emulator (a) warns on stderr and (b) bakes no "OVERFLOWS" text into the PDF.
+    const dir = tmpDir();
+    const src = path.join(dir, 'overflow.md');
+    const wall = Array.from({ length: 40 }, (_, i) =>
+      `- Point ${i + 1}: a deliberately long line of body copy engineered to push this slide's content well past the bottom of the frame so the overflow watcher fires.`,
+    ).join('\n');
+    fs.writeFileSync(src, `<!-- _class: content -->\n\n## A slide that cannot possibly fit\n\n${wall}\n`);
+
+    const out = path.join(dir, 'overflow.pdf');
+    const r = spawnSync(process.execPath, [EMULATOR, src, out, '--quiet'], {
+      cwd: ROOT, encoding: 'utf8', env: { ...process.env }, timeout: TIMEOUT,
+    });
+    assert.equal(r.status, 0, `emulator failed: ${r.stderr}`);
+    assert.match(r.stderr, /OVERFLOW/, 'expected the emulator to warn about overflow on stderr');
+
+    const text = execFileSync('pdftotext', [out, '-'], { encoding: 'utf8' });
+    assert.doesNotMatch(text, /OVERFLOWS/, 'the "OVERFLOWS" tab must not be burned into the exported PDF');
   });
 
   test('renders one PNG per slide at the 2× raster size', { timeout: TIMEOUT }, () => {

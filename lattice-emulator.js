@@ -1367,6 +1367,17 @@ const puppeteer = loadPuppeteer();
     console.warn(`  ⚠ OVERFLOW — ${n} slide${n > 1 ? 's' : ''} exceed the frame and ${n > 1 ? 'are' : 'is'} CLIPPED in this export: page${n > 1 ? 's' : ''} ${overflowing.join(', ')}.`);
     console.warn(`    Fix ${n > 1 ? 'them' : 'it'} before delivering (trim content, or use a layout/fill that fits). The export stays clean — no overflow marker is printed.`);
   }
+  // Strip the authoring-only overflow signal before exporting. The injected
+  // watcher (and base.modifiers.css) draw a loud red ring + "OVERFLOWS" tab on
+  // any `.overflow` section — invaluable while authoring in the live preview,
+  // but a red box in front of a board is worse than the silent clip that
+  // overflow:hidden already applies. The author was warned on stderr above; the
+  // PDF / PNG / PPTX deliverable stays clean, matching the contract documented
+  // at the detection pass. (Removing the class also hides the .overflow-tab via
+  // `section:not(.overflow) > .overflow-tab { display:none }`.)
+  await page.evaluate(() => {
+    for (const s of document.querySelectorAll('section.overflow')) s.classList.remove('overflow');
+  });
   if (OUT_FORMAT === 'pdf') {
     // Render to a buffer (no `path`) so we can post-process before writing: the
     // speaker notes are attached as per-page PDF text annotations.
