@@ -102,6 +102,22 @@ in patch versions.
   53-layout field-native catalog (by bucket), Theming & brand, Output &
   rendering, Deck-as-code, AI authoring, and Ownership. Marketing prose stays on
   the landing; this page is the reference. Linked from the primary nav and footer.
+
+- **Practice mode is now touch-first, with a guided intro, swipe navigation, and
+  autoplay.** Opening a rehearsal lands on a calm **ready** pre-roll — the clock
+  holds at 0:00 behind a Start button until you begin — and a first-time
+  **walkthrough** (the shared `driver.js` guided tour, remembered after one view)
+  introduces the controls; replay it from the **?**. The stage advances by
+  horizontal **swipe** (touch/pen) and by auto-hiding overlay arrows that reveal
+  on pointer-move / tap / keyboard-focus and fade while presenting — one gesture
+  language on mobile, tablet, and desktop. **Autoplay** is a top-bar **Auto**
+  toggle: once you start, it dwells each slide for the planner's per-slide target
+  (reading-pace + role-weighted, AI-refined when a model is wired) then advances,
+  stopping cleanly at the last slide. Keyboard rehearsal is unchanged, with `p`
+  to toggle Auto. A **full-screen** toggle (auto-entered on Start, `Esc` to leave)
+  reclaims the browser chrome, and on phones held **landscape** the bar + HUD
+  compact so the 16:9 stage fills the freed height instead of a letterboxed sliver.
+
 - **A public comparison page (`/comparison`).** An honest, sourced read on how
   Lattice stacks up against the field: AI generators (Gamma, Beautiful.ai,
   Decktopus, Presentations.ai, Plus AI, MagicSlides, SlidesAI), office suites
@@ -174,6 +190,15 @@ in patch versions.
   viewport as a proxy. Plus a `preconnect` to the Google Fonts hosts on every
   page so the webfont round-trip doesn't wait on the render-blocking `@import`.
   No change to what renders — purely a perceived-latency optimization.
+
+- **Practice mode's per-slide time is promoted, and the Prev/Next buttons are
+  gone.** The bottom HUD used to bury the slide's budget in a ~0.72rem grey
+  "target 0:45" footnote behind two nav buttons. It's now a calm three-zone
+  readout — **elapsed** (dominant) · **this slide** · **pace** — where "this
+  slide" is a near-clock-weight countdown of the time *left* on the slide that
+  flips warm the moment you run over. Navigation moved to swipe + the overlay
+  arrows + keys (see Added), so the strip is one legible readout, not a crowd.
+  The sliding section spine up top is unchanged.
 
 - **Chart spine tokens (`--chart-spine` / `-w` / `-h`) moved to
   `section.word-cloud`.** They lived on the shared `section.chart-frame` block,
