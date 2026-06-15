@@ -1,30 +1,22 @@
 /**
- * Unit: the universal-token crosswalk transforms + the safety guarantee that
- * flipping to the new system resolves every bridge token to the IDENTICAL value
- * as the current system. This is the automated proof behind the Drawing Board's
- * "Token system: Current / Universal" toggle — the flip is byte-identical.
+ * Unit: the universal-token crosswalk transforms (flipTheme / flip).
+ *
+ * The canonical flip is COMPLETE (groups 1–5, ADR §11): the engine + themes now
+ * declare only the new names, so the legacy names exist nowhere in the live
+ * source. The crosswalk map is kept as the historical SoT + a forward shim to
+ * migrate a *legacy-authored* deck to the universal vocabulary; these tests
+ * pin the rename mechanics.
+ *
+ * The former "flip safety — universal resolves identically to current" suite was
+ * the ALIAS-ERA byte-identical proof (it read both old and new names from the
+ * live source). It is retired with the alias era: post-flip the source has no
+ * old names to resolve, and the byte-identical guarantee is now proven at flip
+ * time by the zero-diff pixel-check (ADR §11.4) against the pre-flip baseline.
  */
 
 const { test, describe } = require('node:test');
 const assert = require('node:assert/strict');
-const fs = require('node:fs');
-const path = require('node:path');
 const { PAIRS, flipTheme, flip } = require('../../../lib/tokens/crosswalk');
-const { resolveTokenExpr } = require('../../../lib/core/resolve-token-expr');
-
-const ROOT = path.join(__dirname, '..', '..', '..');
-
-function rawRootVars(css) {
-  const stripped = css.replace(/\/\*[\s\S]*?\*\//g, '');
-  const vars = {};
-  for (const block of stripped.match(/:root\s*\{[^}]*\}/g) || []) {
-    for (const d of block.match(/--[a-z0-9-]+\s*:\s*[^;]+/gi) || []) {
-      const m = d.match(/--([a-z0-9-]+)\s*:\s*(.+)$/i);
-      if (m) vars[m[1]] = m[2].trim();
-    }
-  }
-  return vars;
-}
 
 describe('crosswalk transforms', () => {
   test('flipTheme renames a definition and a reference', () => {
@@ -51,28 +43,16 @@ describe('crosswalk transforms', () => {
     assert.match(out, /--x:\s*var\(--cat-1-fill\)/);                 // consumer renamed
     assert.match(out, /--cat-1-fill:\s*light-dark\(#a,#b\)/);        // canonical def renamed
   });
-});
 
-describe('flip safety — universal resolves identically to current (bridge tokens)', () => {
-  const lattice = fs.readFileSync(path.join(ROOT, 'dist', 'lattice.css'), 'utf8');
-  const uniLattice = flip(lattice);
-
-  for (const theme of ['indaco', 'cuoio']) {
-    const themeCss = fs.readFileSync(path.join(ROOT, 'themes', `${theme}.css`), 'utf8');
-    const legacy = rawRootVars(`${lattice}\n${themeCss}`);
-    const universal = rawRootVars(`${uniLattice}\n${flip(themeCss)}`);
-
-    for (const isDark of [false, true]) {
-      test(`${theme}/${isDark ? 'dark' : 'light'}: every flipped token resolves to its current value`, () => {
-        const drift = [];
-        for (const { old, new: nu } of PAIRS) {
-          // current system resolves the OLD name; universal resolves the NEW name.
-          const cur = resolveTokenExpr(legacy[old], legacy, isDark);
-          const uni = resolveTokenExpr(universal[nu], universal, isDark);
-          if (cur !== uni) drift.push(`--${old}→--${nu}: current ${cur} vs universal ${uni}`);
-        }
-        assert.deepEqual(drift, [], `flip changed a resolved value (${theme}/${isDark ? 'dark' : 'light'}):\n${drift.join('\n')}`);
-      });
-    }
-  }
+  test('PAIRS is the complete historical map (every group present, no dupes)', () => {
+    const olds = PAIRS.map((p) => p.old);
+    const news = PAIRS.map((p) => p.new);
+    // 26 categorical + 3 diagram-structural + 8 lifecycle + 10 surfaces + 10 seq
+    assert.equal(PAIRS.length, 57);
+    assert.equal(new Set(olds).size, 57, 'no duplicate old name');
+    assert.equal(new Set(news).size, 57, 'no duplicate new name');
+    // spot-check one from each group
+    assert.ok(olds.includes('c1-light') && olds.includes('c-stroke'));
+    assert.ok(olds.includes('c-warm-light') && olds.includes('bg-dark') && olds.includes('scale-500'));
+  });
 });

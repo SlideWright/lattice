@@ -72,14 +72,14 @@ section.actors > ol > li > code {
  * Sets --pill-border on the <li>; both the universal pill rule
  * (border on the <code>) and the actors row marker (border-left on
  * the <li>) consume the same variable. */
-section.actors > :is(ul, ol) > li:nth-child(8n+1) { --pill-border:var(--c1-dark); }
-section.actors > :is(ul, ol) > li:nth-child(8n+2) { --pill-border:var(--c2-dark); }
-section.actors > :is(ul, ol) > li:nth-child(8n+3) { --pill-border:var(--c3-dark); }
-section.actors > :is(ul, ol) > li:nth-child(8n+4) { --pill-border:var(--c4-dark); }
-section.actors > :is(ul, ol) > li:nth-child(8n+5) { --pill-border:var(--c5-dark); }
-section.actors > :is(ul, ol) > li:nth-child(8n+6) { --pill-border:var(--c6-dark); }
-section.actors > :is(ul, ol) > li:nth-child(8n+7) { --pill-border:var(--c7-dark); }
-section.actors > :is(ul, ol) > li:nth-child(8n)   { --pill-border:var(--c8-dark); }
+section.actors > :is(ul, ol) > li:nth-child(8n+1) { --pill-border:var(--cat-1-mark); }
+section.actors > :is(ul, ol) > li:nth-child(8n+2) { --pill-border:var(--cat-2-mark); }
+section.actors > :is(ul, ol) > li:nth-child(8n+3) { --pill-border:var(--cat-3-mark); }
+section.actors > :is(ul, ol) > li:nth-child(8n+4) { --pill-border:var(--cat-4-mark); }
+section.actors > :is(ul, ol) > li:nth-child(8n+5) { --pill-border:var(--cat-5-mark); }
+section.actors > :is(ul, ol) > li:nth-child(8n+6) { --pill-border:var(--cat-6-mark); }
+section.actors > :is(ul, ol) > li:nth-child(8n+7) { --pill-border:var(--cat-7-mark); }
+section.actors > :is(ul, ol) > li:nth-child(8n)   { --pill-border:var(--cat-8-mark); }
 /* The accent left-border picks up the same hue as the chip. */
 section.actors > :is(ul, ol) > li {
   border-left-color:var(--pill-border, var(--accent));

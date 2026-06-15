@@ -2,15 +2,14 @@
  * Self-policing gate for the universal token system (the "no magic, enforced
  * by CI" promise of engineering/decisions/2026-06-11-universal-token-system.md).
  *
- * Each migrated phase introduced a self-describing vocabulary aliased to the
- * existing values. This test asserts every one of those names is DEFINED and
- * RESOLVES to a non-empty value in the shipped engine + a representative theme,
- * so a dropped alias (or a half-done flip) fails the build instead of silently
- * regressing a render path that reads the new name.
+ * Each group introduced a self-describing vocabulary. This test asserts every
+ * one of those names is DEFINED and RESOLVES to a non-empty value in the
+ * shipped engine + a representative theme, so a dropped name (or a half-done
+ * flip) fails the build instead of silently regressing a render path.
  *
- * It deliberately checks the NEW vocabulary only — the old names remain the
- * source during the alias era and are covered by the existing contrast /
- * token-parity / mermaid-var-map gates.
+ * Since the canonical flip (groups 1–5) this IS the only vocabulary the engine
+ * + themes declare — the old names are retired. This gate guards the new names;
+ * contrast / token-parity / mermaid-var-map cover their values + AA.
  */
 
 const { test, describe } = require('node:test');

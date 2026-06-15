@@ -55,7 +55,7 @@ const FIELD_GROUPS = [
 
 // A compact specimen deck spanning the contract: a dark title canvas, light
 // surfaces + accent + ink tiers, the semantic signals, a categorical chart, a
-// code block (hljs), and a diagram (the --c-* tokens). One screen of proof.
+// code block (hljs), and a diagram (the --diagram-* / --cat-* tokens). One screen of proof.
 // Built from single-quoted lines (which hold backticks / ``` fences without
 // escaping) joined by newlines — no String.raw needed.
 const SPECIMEN = [

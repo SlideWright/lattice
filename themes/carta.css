@@ -39,24 +39,24 @@
   --brand-alt:     #B08D57;  /* decorative spectrum endpoint — sepia      */
 
   /* ── Surfaces — warm paper ─────────────────────────────────────────── */
-  --bg:       light-dark(#FAF7F0, var(--dark-bg));      /* paper canvas   */
-  --bg-alt:   light-dark(#F1EBDF, var(--dark-bg-alt));  /* card sheet     */
-  --bg-dark:  var(--brand-canvas);
-  --border:   light-dark(#E4DBC9, var(--dark-border));  /* warm hairline  */
+  --bg:       light-dark(#FAF7F0, var(--scheme-dark-bg));      /* paper canvas   */
+  --bg-alt:   light-dark(#F1EBDF, var(--scheme-dark-bg-alt));  /* card sheet     */
+  --surface-inverse:  var(--brand-canvas);
+  --border:   light-dark(#E4DBC9, var(--scheme-dark-border));  /* warm hairline  */
 
   /* ── Ink ramp — warm near-black → sepia-grey ───────────────────────── */
   --text-display: #FFFFFF;
-  --text-heading: light-dark(#211C15, var(--dark-text-heading)); /* ~16:1 on paper */
-  --text-body:    light-dark(#3A3127, var(--dark-text-body));    /* ~9:1 on paper  */
-  --text-label:   light-dark(var(--brand-accent), var(--dark-text-label));
-  --text-secondary: light-dark(#574C3D, var(--dark-text-secondary)); /* AA both */
-  --text-muted:   light-dark(#897C68, var(--dark-text-muted));   /* decorative */
+  --text-heading: light-dark(#211C15, var(--scheme-dark-text-heading)); /* ~16:1 on paper */
+  --text-body:    light-dark(#3A3127, var(--scheme-dark-text-body));    /* ~9:1 on paper  */
+  --text-label:   light-dark(var(--brand-accent), var(--scheme-dark-text-label));
+  --text-secondary: light-dark(#574C3D, var(--scheme-dark-text-secondary)); /* AA both */
+  --text-muted:   light-dark(#897C68, var(--scheme-dark-text-muted));   /* decorative */
 
   /* ── Accent — fountain-pen ink blue ────────────────────────────────── */
   --accent:      light-dark(var(--brand-accent), #9DB8DC);
   --accent-soft: light-dark(#E9E7F0, #1F2C3D);
   --code-inline-fg: light-dark(#34507E, var(--accent));
-  --on-accent:   light-dark(#FFFFFF, var(--bg-dark));
+  --on-accent:   light-dark(#FFFFFF, var(--surface-inverse));
 
   /* ── Semantic signals ──────────────────────────────────────────────── */
   --pass: light-dark(#3C6B1E, #7FC85A);
@@ -64,7 +64,7 @@
   --fail-bg: color-mix(in srgb, var(--fail) 10%, transparent);
   --warn-bg: color-mix(in srgb, var(--warn) 10%, transparent);
 
-  --scale-500: var(--brand-accent);
+  --seq-500: var(--brand-accent);
 
   /* ── Dark-panel ramp — warm ────────────────────────────────────────── */
   --bg-warm-mid:   #211C15;
@@ -88,15 +88,15 @@
 
 /* ── Dark-variant tokens — warm dark canvas ──────────────────────────── */
 :root {
-  --dark-bg:           #1E1A14;
-  --dark-bg-alt:       #2A241B;
-  --dark-border:       #3C3328;
-  --dark-text-heading: #FBF6EC;
-  --dark-text-body:    #E7DDC9;
-  --dark-text-muted:   #897C68;
-  --dark-text-secondary: #B2A78F;
-  --dark-text-label:   #C9B68E;
-  --dark-text-display: #FFFFFF;
+  --scheme-dark-bg:           #1E1A14;
+  --scheme-dark-bg-alt:       #2A241B;
+  --scheme-dark-border:       #3C3328;
+  --scheme-dark-text-heading: #FBF6EC;
+  --scheme-dark-text-body:    #E7DDC9;
+  --scheme-dark-text-muted:   #897C68;
+  --scheme-dark-text-secondary: #B2A78F;
+  --scheme-dark-text-label:   #C9B68E;
+  --scheme-dark-text-display: #FFFFFF;
 }
 
 /* ── highlight.js syntax tokens (Night Owl, on the warm code panel) ──── */
@@ -118,51 +118,51 @@
 /* ── Diagram tokens ──────────────────────────────────────────────────── */
 :root {
   /* Warm ink stroke that reads on every pale fill including white. */
-  --c-stroke: #4A3D29;
-  --c-line:   light-dark(#241D14, var(--dark-text-body));
-  --c-accent-warm: #BD5000;
+  --diagram-stroke: #4A3D29;
+  --diagram-line:   light-dark(#241D14, var(--scheme-dark-text-body));
+  --diagram-accent-warm: #BD5000;
 }
 
 :root {
   /* Categorical fills — inherited verbatim from indaco (contrast-proven).
    * Warming these to the paper is tracked as polish; see the decisions doc. */
-  --c1-light:  light-dark(#BCD5EC, #006398);
-  --c2-light:  light-dark(#EBE2B8, #993D00);
-  --c3-light:  light-dark(#E7BEBE, #2E6F00);
-  --c4-light:  light-dark(#C1E4D5, #953170);
-  --c5-light:  light-dark(#D1C5DC, #7142A0);
-  --c6-light:  light-dark(#EDD1B8, #006D60);
-  --c7-light:  light-dark(#C8CFDA, #835100);
-  --c8-light:  light-dark(#E6C1C8, #006A79);
-  --c9-light:  light-dark(#C0D5C6, #A02E41);
-  --c10-light: light-dark(#D9C7DC, #715C00);
-  --c11-light: light-dark(#BCE3E1, #3057B1);
-  --c12-light: light-dark(#DAC8D1, #5C6400);
+  --cat-1-fill:  light-dark(#BCD5EC, #006398);
+  --cat-2-fill:  light-dark(#EBE2B8, #993D00);
+  --cat-3-fill:  light-dark(#E7BEBE, #2E6F00);
+  --cat-4-fill:  light-dark(#C1E4D5, #953170);
+  --cat-5-fill:  light-dark(#D1C5DC, #7142A0);
+  --cat-6-fill:  light-dark(#EDD1B8, #006D60);
+  --cat-7-fill:  light-dark(#C8CFDA, #835100);
+  --cat-8-fill:  light-dark(#E6C1C8, #006A79);
+  --cat-9-fill:  light-dark(#C0D5C6, #A02E41);
+  --cat-10-fill: light-dark(#D9C7DC, #715C00);
+  --cat-11-fill: light-dark(#BCE3E1, #3057B1);
+  --cat-12-fill: light-dark(#DAC8D1, #5C6400);
 
-  --c1-dark:   light-dark(#2E608A, #D4DFE8);
-  --c2-dark:   light-dark(#863236, #E7D5D6);
-  --c3-dark:   light-dark(#7B772D, #E7E6D5);
-  --c4-dark:   light-dark(#323686, #D5D6E7);
-  --c5-dark:   light-dark(#30827E, #D5E7E6);
-  --c6-dark:   light-dark(#865832, #E7DDD5);
-  --c7-dark:   light-dark(#583880, #DDD6E6);
-  --c8-dark:   light-dark(#80385F, #E6D6DF);
-  --c9-dark:   light-dark(#5F8038, #DFE6D6);
-  --c10-dark:  light-dark(#388058, #D6E6DD);
-  --c11-dark:  light-dark(#3057B1, #BCE3E1);
-  --c12-dark:  light-dark(#5C6400, #DAC8D1);
+  --cat-1-mark:   light-dark(#2E608A, #D4DFE8);
+  --cat-2-mark:   light-dark(#863236, #E7D5D6);
+  --cat-3-mark:   light-dark(#7B772D, #E7E6D5);
+  --cat-4-mark:   light-dark(#323686, #D5D6E7);
+  --cat-5-mark:   light-dark(#30827E, #D5E7E6);
+  --cat-6-mark:   light-dark(#865832, #E7DDD5);
+  --cat-7-mark:   light-dark(#583880, #DDD6E6);
+  --cat-8-mark:   light-dark(#80385F, #E6D6DF);
+  --cat-9-mark:   light-dark(#5F8038, #DFE6D6);
+  --cat-10-mark:  light-dark(#388058, #D6E6DD);
+  --cat-11-mark:  light-dark(#3057B1, #BCE3E1);
+  --cat-12-mark:  light-dark(#5C6400, #DAC8D1);
 
-  --c-ink-light: var(--text-heading);
-  --c-ink-dark:  light-dark(#FFFFFF, #0A1628);
+  --cat-on-fill: var(--text-heading);
+  --cat-on-mark:  light-dark(#FFFFFF, #0A1628);
 
-  --c-warm-light:  light-dark(#ECC0A8, #91450E);
-  --c-warm-dark:   var(--c-stroke);
-  --c-cool-light:  light-dark(#B0CFE9, #146397);
-  --c-cool-dark:   var(--c-stroke);
-  --c-alarm:       light-dark(#A91C2A, #F87171);
-  --c-alarm-dark:  var(--c-stroke);
-  --c-mark:        light-dark(#D8BE1E, #796900);
-  --c-note:        light-dark(#D7D2B1, #71640B);
+  --diagram-active:  light-dark(#ECC0A8, #91450E);
+  --diagram-active-mark:   var(--diagram-stroke);
+  --diagram-done:  light-dark(#B0CFE9, #146397);
+  --diagram-done-mark:   var(--diagram-stroke);
+  --diagram-critical:       light-dark(#A91C2A, #F87171);
+  --diagram-critical-mark:  var(--diagram-stroke);
+  --diagram-today:        light-dark(#D8BE1E, #796900);
+  --diagram-note:        light-dark(#D7D2B1, #71640B);
 
   --c-container:     light-dark(#F2ECE0, #2C2A24);
   --c-subcontainer:  light-dark(#E6DDCB, #3B362C);

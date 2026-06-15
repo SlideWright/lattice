@@ -210,8 +210,8 @@ section.compare-prose .compare-prose-inner .card:has(> strong:first-child) > str
 section.decision > :is(ul, ol) > li:has(> strong:first-child) > strong:first-child {
   background: var(--decision-accent-deep, var(--accent));
   /* --decision-accent-deep resolves to --cN-dark (categorical fill); text on
-   * a --cN-dark fill uses --c-ink-dark (white on light, near-black on dark). */
-  color: var(--c-ink-dark);
+   * a --cN-dark fill uses --cat-on-mark (white on light, near-black on dark). */
+  color: var(--cat-on-mark);
 }
 
 /* ── corner tag, banner variant (.banner-tag modifier) ────────────────────
@@ -275,7 +275,7 @@ section.banner-tag.compare-prose .compare-prose-inner .card:has(> strong:first-c
 section.banner-tag.decision > :is(ul, ol) > li:has(> strong:first-child) > strong:first-child {
   background: var(--decision-accent-deep, var(--accent));
   /* --decision-accent-deep resolves to --cN-dark; see flush-corner rule above. */
-  color: var(--c-ink-dark);
+  color: var(--cat-on-mark);
 }
 
 

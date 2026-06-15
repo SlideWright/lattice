@@ -101,26 +101,26 @@ describe('contrast', () => {
   // use 3:1 but we hold all diagram text to the stricter bar.
   //
   // Two tiers per slot in the new categorical contract:
-  //   --cN-light pairs with --c-ink-light (non-flipping dark ink, AA against fill)
-  //   --cN-dark  pairs with --c-ink-dark  (white-ish, AA against deep fill)
+  //   --cat-N-fill pairs with --cat-on-fill (non-flipping dark ink, AA against fill)
+  //   --cat-N-mark pairs with --cat-on-mark  (white-ish, AA against deep fill)
   //
-  // --text-heading is NOT used for cN-light pairs because it flips via
+  // --text-heading is NOT used for cat-N-fill pairs because it flips via
   // light-dark() — in dark-canvas mode it resolves to white, which would
   // give white-on-pale and break AA. The bands stay pale in both canvas
   // modes (bands are "figure windows" with their own ink/paper contract,
   // not panels that flip with the surrounding canvas), so their text
   // must stay dark in both modes too.
   const LIGHT_PAIRS = Array.from({ length: 12 }, (_, i) => [
-    `c${i + 1}-light`,
-    'c-ink-light',
+    `cat-${i + 1}-fill`,
+    'cat-on-fill',
   ]);
   const DEEP_PAIRS = Array.from({ length: 12 }, (_, i) => [
-    `c${i + 1}-dark`,
-    'c-ink-dark',
+    `cat-${i + 1}-mark`,
+    'cat-on-mark',
   ]);
 
-  // (Quadrant charts read the cN palette directly now — fills are cN-light
-  // region tints, data marks are cN-dark graphical objects, and ALL text is
+  // (Quadrant charts read the cat palette directly now — fills are cat-N-fill
+  // region tints, data marks are cat-N-mark graphical objects, and ALL text is
   // neutral --text-heading, which is covered by the --text-heading/bg test
   // below. No quadrant-specific text-contrast pair remains.)
 
@@ -128,7 +128,7 @@ describe('contrast', () => {
 
   for (const name of ['indaco', 'cuoio']) {
     for (const mode of ['light', 'dark']) {
-      test(`contrast: ${name} (${mode}) every --cN-light / --c-ink-light pair clears AA`, () => {
+      test(`contrast: ${name} (${mode}) every --cN-light / --cat-on-fill pair clears AA`, () => {
         const vars = loadPaletteWithImports(name, mode);
         const failures = [];
         for (const [fillKey, textKey] of LIGHT_PAIRS) {
@@ -150,7 +150,7 @@ describe('contrast', () => {
         assert.deepEqual(failures, [], `WCAG AA failures in ${name} (${mode}):\n  ${failures.join('\n  ')}`);
       });
 
-      test(`contrast: ${name} (${mode}) every --cN-dark / --c-ink-dark pair clears AA`, () => {
+      test(`contrast: ${name} (${mode}) every --cN-dark / --cat-on-mark pair clears AA`, () => {
         const vars = loadPaletteWithImports(name, mode);
         const failures = [];
         for (const [fillKey, textKey] of DEEP_PAIRS) {
@@ -191,15 +191,15 @@ describe('contrast', () => {
         assert.deepEqual(failures, [], `WCAG AA failures in ${name} (${mode}):\n  ${failures.join('\n  ')}`);
       });
 
-      test(`contrast: ${name} (${mode}) --c-ink-dark clears AA on --c-alarm`, () => {
+      test(`contrast: ${name} (${mode}) --cat-on-mark clears AA on --diagram-critical`, () => {
         const vars = loadPaletteWithImports(name, mode);
-        const fill = vars['c-alarm'];
-        const text = vars['c-ink-dark'];
-        assert.ok(fill && text, 'c-alarm + c-ink-dark defined');
+        const fill = vars['diagram-critical'];
+        const text = vars['cat-on-mark'];
+        assert.ok(fill && text, 'diagram-critical + cat-on-mark defined');
         const ratio = contrastRatio(fill, text);
         assert.ok(
           ratio >= AA_THRESHOLD,
-          `--c-ink-dark (${text}) on --c-alarm (${fill}) = ${ratio.toFixed(2)}:1 (< ${AA_THRESHOLD})`,
+          `--cat-on-mark (${text}) on --diagram-critical (${fill}) = ${ratio.toFixed(2)}:1 (< ${AA_THRESHOLD})`,
         );
       });
     }

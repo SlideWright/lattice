@@ -74,7 +74,7 @@ const PORTAL_URL = 'https://slidewright.github.io/lattice/components/';
 const PORTAL_TOKENS = [
   'bg', 'bg-alt', 'border',
   'text-heading', 'text-body', 'text-muted',
-  'accent', 'accent-soft', 'on-accent', 'bg-dark',
+  'accent', 'accent-soft', 'on-accent', 'surface-inverse',
   // The per-palette categorical series (each tuned per palette AND light/dark),
   // so the docs chrome can use distinct-but-on-palette colours — e.g. the Card
   // icon tiles cycle through these instead of Starlight's fixed rainbow.

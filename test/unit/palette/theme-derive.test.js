@@ -61,7 +61,7 @@ describe('theme-derive', () => {
     const headingLight = t['text-heading'].match(/light-dark\(\s*([^,]+)/)[1].trim();
     const bgLight = t['bg'].match(/light-dark\(\s*([^,]+)/)[1].trim();
     assert.ok(contrastRatio(headingLight, bgLight) >= 4.5);
-    assert.ok(contrastRatio(t['c1-dark'], t['c-ink-dark']) >= 4.5);
-    assert.ok(contrastRatio(t['c1-light'], t['c-ink-light']) >= 4.5);
+    assert.ok(contrastRatio(t['cat-1-mark'], t['cat-on-mark']) >= 4.5);
+    assert.ok(contrastRatio(t['cat-1-fill'], t['cat-on-fill']) >= 4.5);
   });
 });

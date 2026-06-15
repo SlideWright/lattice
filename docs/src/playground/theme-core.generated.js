@@ -241,34 +241,35 @@ var require_derive = __commonJS({
     var PALE_C = 0.04;
     var DEEP_C = 0.13;
     var REQUIRED_TOKENS2 = Object.freeze({
-      surfaces: ["bg", "bg-alt", "bg-dark", "border"],
+      surfaces: ["bg", "bg-alt", "surface-inverse", "border"],
       ink: ["text-display", "text-heading", "text-body", "text-secondary", "text-label", "text-muted"],
       accent: ["accent", "accent-soft", "on-accent", "on-accent-soft", "accent-soft-body"],
       semantic: ["pass", "fail", "warn", "pass-bg", "fail-bg", "warn-bg"],
       dark: [
-        "dark-bg",
-        "dark-bg-alt",
-        "dark-border",
-        "dark-text-heading",
-        "dark-text-body",
-        "dark-text-display",
-        "dark-text-secondary",
-        "dark-text-label",
-        "dark-text-muted"
+        "scheme-dark-bg",
+        "scheme-dark-bg-alt",
+        "scheme-dark-border",
+        "scheme-dark-text-heading",
+        "scheme-dark-text-body",
+        "scheme-dark-text-display",
+        "scheme-dark-text-secondary",
+        "scheme-dark-text-label",
+        "scheme-dark-text-muted"
       ],
       categorical: [
-        ...Array.from({ length: 12 }, (_, i) => `c${i + 1}-light`),
-        ...Array.from({ length: 12 }, (_, i) => `c${i + 1}-dark`),
-        "c-ink-light",
-        "c-ink-dark",
-        "c-stroke",
-        "c-line",
-        "c-accent-warm"
+        ...Array.from({ length: 12 }, (_, i) => `cat-${i + 1}-fill`),
+        ...Array.from({ length: 12 }, (_, i) => `cat-${i + 1}-mark`),
+        "cat-on-fill",
+        "cat-on-mark",
+        // diagram-structural (flipped to canonical, group 2 — ADR §11.3)
+        "diagram-stroke",
+        "diagram-line",
+        "diagram-accent-warm"
       ],
       // Universal semantic — the others (c-warm/cool/mark/note) default in
       // lattice.css; the alarm fill is gate-checked (c-ink-dark on c-alarm) so a
       // generated theme must define it explicitly.
-      universal: ["c-alarm"],
+      universal: ["diagram-critical"],
       hljs: [
         "hljs-comment",
         "hljs-keyword",
@@ -325,7 +326,7 @@ var require_derive = __commonJS({
       const darkBorder = mix2(darkBg, darkBody, 0.22);
       t["bg"] = ld(e.bg, darkBgDeeper);
       t["bg-alt"] = ld(e.bgAlt, darkBgAlt);
-      t["bg-dark"] = darkBg;
+      t["surface-inverse"] = darkBg;
       t["border"] = ld(mix2(e.bg, e.textBody, 0.18), darkBorder);
       t["text-display"] = mix2(e.bg, "#ffffff", 0.6);
       const headingLight = ensureContrast2(ensureContrast2(e.textHeading, e.bg, AA2, "darken"), e.bgAlt, AA2, "darken");
@@ -362,30 +363,30 @@ var require_derive = __commonJS({
       t["pass-bg"] = tint("pass", 10);
       t["fail-bg"] = tint("fail", 10);
       t["warn-bg"] = tint("warn", 10);
-      t["dark-bg"] = darkBgDeeper;
-      t["dark-bg-alt"] = darkBgAlt;
-      t["dark-border"] = darkBorder;
-      t["dark-text-heading"] = darkHeading;
-      t["dark-text-body"] = darkBody;
-      t["dark-text-display"] = mix2(e.bg, "#ffffff", 0.6);
-      t["dark-text-secondary"] = darkSecondary;
-      t["dark-text-label"] = darkLabel;
-      t["dark-text-muted"] = darkMuted;
+      t["scheme-dark-bg"] = darkBgDeeper;
+      t["scheme-dark-bg-alt"] = darkBgAlt;
+      t["scheme-dark-border"] = darkBorder;
+      t["scheme-dark-text-heading"] = darkHeading;
+      t["scheme-dark-text-body"] = darkBody;
+      t["scheme-dark-text-display"] = mix2(e.bg, "#ffffff", 0.6);
+      t["scheme-dark-text-secondary"] = darkSecondary;
+      t["scheme-dark-text-label"] = darkLabel;
+      t["scheme-dark-text-muted"] = darkMuted;
       const inkLight = ensureContrast2(headingLight, "#ffffff", AA2, "darken");
       const inkDark = "#ffffff";
-      t["c-ink-light"] = inkLight;
-      t["c-ink-dark"] = inkDark;
+      t["cat-on-fill"] = inkLight;
+      t["cat-on-mark"] = inkDark;
       for (let i = 0; i < 12; i++) {
         const h = ((accentHue + i * 30) % 360 + 360) % 360;
         const paleRaw = oklchToHex2({ L: PALE_L2, C: PALE_C, h });
         const deepRaw = oklchToHex2({ L: DEEP_L2, C: DEEP_C, h });
-        t[`c${i + 1}-light`] = ensureContrast2(paleRaw, inkLight, AA2, "lighten");
-        t[`c${i + 1}-dark`] = ensureContrast2(deepRaw, inkDark, AA2, "darken");
+        t[`cat-${i + 1}-fill`] = ensureContrast2(paleRaw, inkLight, AA2, "lighten");
+        t[`cat-${i + 1}-mark`] = ensureContrast2(deepRaw, inkDark, AA2, "darken");
       }
-      t["c-stroke"] = withChroma2(withLightness2(e.accent, 0.5), 0.09);
-      t["c-line"] = ld(withLightness2(e.textBody, 0.32), withLightness2(darkBody, 0.78));
-      t["c-accent-warm"] = "var(--accent)";
-      t["c-alarm"] = ensureContrast2("#c20000", inkDark, AA2, "darken");
+      t["diagram-stroke"] = withChroma2(withLightness2(e.accent, 0.5), 0.09);
+      t["diagram-line"] = ld(withLightness2(e.textBody, 0.32), withLightness2(darkBody, 0.78));
+      t["diagram-accent-warm"] = "var(--accent)";
+      t["diagram-critical"] = ensureContrast2("#c20000", inkDark, AA2, "darken");
       const onCode = darkBg;
       const synth = (rot, L = 0.72, C = 0.11) => ensureContrast2(oklchToHex2({ L, C, h: ((accentHue + rot) % 360 + 360) % 360 }), onCode, 3, "lighten");
       t["hljs-comment"] = ensureContrast2(mix2(e.textMuted, onCode, 0.2), onCode, 3, "lighten");
@@ -448,11 +449,11 @@ var require_contrast = __commonJS({
     var isHex = (v) => typeof v === "string" && /^#?[0-9a-f]{3}([0-9a-f]{3})?$/i.test(v.trim());
     function contractPairs2() {
       const pairs = [];
-      for (let i = 1; i <= 12; i++) pairs.push([`c${i}-light`, "c-ink-light", AA2, "categorical-pale"]);
-      for (let i = 1; i <= 12; i++) pairs.push([`c${i}-dark`, "c-ink-dark", AA2, "categorical-deep"]);
+      for (let i = 1; i <= 12; i++) pairs.push([`cat-${i}-fill`, "cat-on-fill", AA2, "categorical-pale"]);
+      for (let i = 1; i <= 12; i++) pairs.push([`cat-${i}-mark`, "cat-on-mark", AA2, "categorical-deep"]);
       pairs.push(["bg", "text-heading", AA2, "heading"]);
       pairs.push(["bg-alt", "text-heading", AA2, "heading"]);
-      pairs.push(["c-alarm", "c-ink-dark", AA2, "alarm"]);
+      pairs.push(["diagram-critical", "cat-on-mark", AA2, "alarm"]);
       return pairs;
     }
     function contentPairs2() {

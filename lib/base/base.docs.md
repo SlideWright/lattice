@@ -283,8 +283,8 @@ Authors don't carry presentational markup.
 - `compare-prose` uses the unified accent fill (its slots have semantic
   ordering — before/after via `transition`, or A/B). `decision` is the
   categorical case: each slot is an independent reason, so the tag and
-  the bottom border cycle through the categorical palette (`--c1-dark`,
-  `--c2-dark`, `--c3-dark`, …) — same palette and cycle as
+  the bottom border cycle through the categorical palette (`--cat-1-mark`,
+  `--cat-2-mark`, `--cat-3-mark`, …) — same palette and cycle as
   `kpi.trajectory`, inverted to the bottom edge so the two layouts read
   as siblings (kpi.trajectory = top accent, decision = bottom accent).
 - Composes with `compare-prose` modifiers `chosen` / `decision` — the
@@ -769,18 +769,19 @@ tokens: universal   # current (default, omit) | universal
 ---
 ```
 
-- `current` (the default — omit it) renders against the legacy token
-  names (`--c1-light`, `--c-stroke`, `--bg-dark`, `--scale-*`, …).
-- `universal` renders against the new role-based names
-  (`--cat-*`, `--diagram-*`, `--surface-*`, `--seq-*`, …). Output is
-  **identical** — the flip is byte-identical, asserted by
-  `test/unit/tokens/crosswalk.test.js` — so this is an A/B to confirm a
-  deck survives the in-flight universal-token migration, viewable in the
-  deck-setup drawer with editor autocomplete.
+The canonical flip is **complete** (groups 1–5): the engine and all 14 themes
+now declare only the new role-based names (`--cat-*`, `--diagram-*`,
+`--surface-inverse`, `--scheme-dark-*`, `--seq-*`); the legacy
+`--c1-light` / `--c-stroke` / `--bg-dark` / `--scale-*` names are retired.
 
-**Scope:** Drawing Board only. `marp-cli` and the emulator ignore it, so a
-deck stays portable. It will be **retired once the canonical flip lands**
-(see `engineering/decisions/2026-06-11-universal-token-system.md` §10).
+- `universal` renders against the canonical names — the engine as shipped.
+- `current` is retained for a **legacy-authored** deck (one written against the
+  old names). The closeout wires it to a reverse (new→old) shim driven by
+  `lib/tokens/crosswalk.js`; until then both options render identically.
+
+**Scope:** Drawing Board only. `marp-cli` and the emulator ignore the directive,
+so a deck stays portable. See
+`engineering/decisions/2026-06-11-universal-token-system.md` §11.
 
 ---
 

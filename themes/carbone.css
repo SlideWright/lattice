@@ -68,7 +68,7 @@
   /* ── Surfaces — pinned dark (no light-dark wrapping) ──────────────── */
   --bg:       #1A1A1C;
   --bg-alt:   #26262A;
-  --bg-dark:  #0E0E10;
+  --surface-inverse:  #0E0E10;
   --border:   #3A3A3F;
 
   /* ── Ink ramp ──────────────────────────────────────────────────────── */
@@ -86,7 +86,7 @@
    * derive from it (base.tokens.css). See 2026-06-08-inline-code-contrast.md. */
   --code-inline-fg: var(--accent); /* electric green accent — chip reads AAA (8.85/7.53 on chip) */
   /* Accent is always bright; corner-tag text needs dark bg-tinted ink. */
-  --on-accent:   var(--bg-dark);             /* D:10.95:1 on accent AAA */
+  --on-accent:   var(--surface-inverse);             /* D:10.95:1 on accent AAA */
 
   /* ── Semantic signals ─────────────────────────────────────────────────
    * Carbone's industrial-grey trio. Each is a light-dark() pair: light
@@ -103,7 +103,7 @@
   --fail-bg: color-mix(in srgb, var(--fail) 18%, transparent);
   --warn-bg: color-mix(in srgb, var(--warn) 18%, transparent);
 
-  --scale-500: var(--brand-accent);
+  --seq-500: var(--brand-accent);
 
   /* Tag uses --chart-2 (amber) — the lime/amber duotone gives carbone's
    * status badges a cyber-warm pop against the cold graphite. */
@@ -120,46 +120,46 @@
   /* ── Dark-variant tokens — kept for any explicit consumer (Marp chrome,
    * theming code paths). Carbone resolves to these whether color-scheme is
    * light or dark, since surface tokens above don't switch. ─────────── */
-  --dark-bg:           #0E0E10;
-  --dark-bg-alt:       #1A1A1C;
-  --dark-border:       #3A3A3F;
-  --dark-text-heading: #F5F5F2;
-  --dark-text-body:    #DCDCD7;
-  --dark-text-muted:   #757A82;
-  --dark-text-secondary: #A5A5A2;
-  --dark-text-label:   var(--brand-accent);
-  --dark-text-display: #F5F5F2;
+  --scheme-dark-bg:           #0E0E10;
+  --scheme-dark-bg-alt:       #1A1A1C;
+  --scheme-dark-border:       #3A3A3F;
+  --scheme-dark-text-heading: #F5F5F2;
+  --scheme-dark-text-body:    #DCDCD7;
+  --scheme-dark-text-muted:   #757A82;
+  --scheme-dark-text-secondary: #A5A5A2;
+  --scheme-dark-text-label:   var(--brand-accent);
+  --scheme-dark-text-display: #F5F5F2;
 
   /* ── Mermaid extensions ────────────────────────────────────────────── */
-  --c-stroke:          var(--brand-accent);
-  --c-accent-warm:     #FFD166;
+  --diagram-stroke:          var(--brand-accent);
+  --diagram-accent-warm:     #FFD166;
 
   /* ── Numbered band scale (--c1..12) — Mermaid cScale / gitgraph, the
-   * corner --tag-bg (var(--c2-dark)), and the actors-pill ladder all
+   * corner --tag-bg (var(--cat-2-mark)), and the actors-pill ladder all
    * consume these. Carbone is single-canvas dark, so each slot is a pair
    * of plain values (no light-dark()): -dark is the vivid stroke/mark
    * pigment (>=3:1 on the #1A1A1C canvas) and -light is a deep graphite
    * fill tinted with that hue (light --c-ink clears it >=8:1). Twelve hues
    * spread across the wheel, anchored at carbone's electric green. */
-  --c1-light:  #304936; --c1-dark:  #5BC878;  /* green   */
-  --c2-light:  #2B4B41; --c2-dark:  #34D3A6;  /* emerald */
-  --c3-light:  #2C4950; --c3-dark:  #3BC8E0;  /* cyan    */
-  --c4-light:  #293A59; --c4-dark:  #4A8CFF;  /* blue    */
-  --c5-light:  #303455; --c5-dark:  #6E72F0;  /* indigo  */
-  --c6-light:  #3C3356; --c6-dark:  #9A6EF5;  /* violet  */
-  --c7-light:  #47324B; --c7-dark:  #C06ECC;  /* purple  */
-  --c8-light:  #522F3A; --c8-dark:  #E85A8A;  /* magenta */
-  --c9-light:  #553130; --c9-dark:  #F2655F;  /* coral   */
-  --c10-light: #54352A; --c10-dark: #F07840;  /* orange  */
-  --c11-light: #54452B; --c11-dark: #F5B832;  /* amber   */
-  --c12-light: #444D2F; --c12-dark: #B8D84A;  /* lime    */
+  --cat-1-fill:  #304936; --cat-1-mark:  #5BC878;  /* green   */
+  --cat-2-fill:  #2B4B41; --cat-2-mark:  #34D3A6;  /* emerald */
+  --cat-3-fill:  #2C4950; --cat-3-mark:  #3BC8E0;  /* cyan    */
+  --cat-4-fill:  #293A59; --cat-4-mark:  #4A8CFF;  /* blue    */
+  --cat-5-fill:  #303455; --cat-5-mark:  #6E72F0;  /* indigo  */
+  --cat-6-fill:  #3C3356; --cat-6-mark:  #9A6EF5;  /* violet  */
+  --cat-7-fill:  #47324B; --cat-7-mark:  #C06ECC;  /* purple  */
+  --cat-8-fill:  #522F3A; --cat-8-mark:  #E85A8A;  /* magenta */
+  --cat-9-fill:  #553130; --cat-9-mark:  #F2655F;  /* coral   */
+  --cat-10-fill: #54352A; --cat-10-mark: #F07840;  /* orange  */
+  --cat-11-fill: #54452B; --cat-11-mark: #F5B832;  /* amber   */
+  --cat-12-fill: #444D2F; --cat-12-mark: #B8D84A;  /* lime    */
 }
 /* Completion tokens — band-text pairs, line, gantt state, note, error.
  * References earlier palette tokens so this block stays a single
  * source of truth per palette. */
 :root {
 
-  --c-line:                  var(--text-heading);
+  --diagram-line:                  var(--text-heading);
 }
 
 section pre.hljs {
@@ -167,21 +167,21 @@ section pre.hljs {
 }
 
 :root {
-  --c-ink-light: var(--text-heading);
-  --c-ink-dark:  var(--text-heading);
+  --cat-on-fill: var(--text-heading);
+  --cat-on-mark:  var(--text-heading);
 
   /* Semantic palette — 5 roles, each a flipping fill. Curated per
    * theme: hue nudged toward the brand within its meaning band,
    * AA-verified both canvas modes, chroma-capped for restraint.
-   * The -dark companions are strokes → universal --c-stroke. */
-  --c-warm-light:  light-dark(#91450E, #91450E);
-  --c-warm-dark:   var(--c-stroke);
-  --c-cool-light:  light-dark(#2A5F9A, #2A5F9A);
-  --c-cool-dark:   var(--c-stroke);
-  --c-alarm:       light-dark(#9A2735, #9A2735);
-  --c-alarm-dark:  var(--c-stroke);
-  --c-mark:        light-dark(#856300, #856300);
-  --c-note:        light-dark(#7B5F06, #7B5F06);
+   * The -dark companions are strokes → universal --diagram-stroke. */
+  --diagram-active:  light-dark(#91450E, #91450E);
+  --diagram-active-mark:   var(--diagram-stroke);
+  --diagram-done:  light-dark(#2A5F9A, #2A5F9A);
+  --diagram-done-mark:   var(--diagram-stroke);
+  --diagram-critical:       light-dark(#9A2735, #9A2735);
+  --diagram-critical-mark:  var(--diagram-stroke);
+  --diagram-today:        light-dark(#856300, #856300);
+  --diagram-note:        light-dark(#7B5F06, #7B5F06);
 
   /* Containment tier — two nested structural surfaces. A monotonic
    * luminance ladder away from the canvas: light deck steps down,
@@ -196,7 +196,7 @@ section pre.hljs {
 
 /* ── highlight.js syntax tokens ────────────────────────────────────────
  * Cool terminal palette adapted for Carbone's dark code block background
- * (--bg-dark: #0E0E10, near-black graphite + lime/graphite spectrum ribbon
+ * (--surface-inverse: #0E0E10, near-black graphite + lime/graphite spectrum ribbon
  * at bottom). Greens, cyans, and cool blues anchor the electric-green
  * identity; a restrained steel and violet for structural roles; warm amber
  * kept to a single accent so the terminal register never feels warm.

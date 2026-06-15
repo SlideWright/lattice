@@ -331,10 +331,10 @@ section.kpi.trajectory > ol > li {
   position: relative;
   border-top: 4px solid var(--accent);
 }
-section.kpi.trajectory > ol > li:nth-child(1) { border-top-color: var(--c1-dark); }
-section.kpi.trajectory > ol > li:nth-child(2) { border-top-color: var(--c2-dark); }
-section.kpi.trajectory > ol > li:nth-child(3) { border-top-color: var(--c3-dark); }
-section.kpi.trajectory > ol > li:nth-child(4) { border-top-color: var(--c4-dark); }
+section.kpi.trajectory > ol > li:nth-child(1) { border-top-color: var(--cat-1-mark); }
+section.kpi.trajectory > ol > li:nth-child(2) { border-top-color: var(--cat-2-mark); }
+section.kpi.trajectory > ol > li:nth-child(3) { border-top-color: var(--cat-3-mark); }
+section.kpi.trajectory > ol > li:nth-child(4) { border-top-color: var(--cat-4-mark); }
 section.kpi.trajectory > ol > li > strong {
   font-size: var(--fs-h1);
   line-height: 1;

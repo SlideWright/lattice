@@ -91,18 +91,18 @@
   /* ── Surfaces ──────────────────────────────────────────────────────────
    * light-dark() makes every descendant lookup follow the active
    * color-scheme — at :root, on a section, or anywhere in between. */
-  --bg:       light-dark(#FFFFFF, var(--dark-bg));      /* canvas         */
-  --bg-alt:   light-dark(#F2F5FA, var(--dark-bg-alt));  /* card fill      */
-  --bg-dark:  var(--brand-canvas); /* dark panels / title / divider   */
-  --border:   light-dark(#E4EAF2, var(--dark-border));  /* hairline rule  */
+  --bg:       light-dark(#FFFFFF, var(--scheme-dark-bg));      /* canvas         */
+  --bg-alt:   light-dark(#F2F5FA, var(--scheme-dark-bg-alt));  /* card fill      */
+  --surface-inverse:  var(--brand-canvas); /* dark panels / title / divider   */
+  --border:   light-dark(#E4EAF2, var(--scheme-dark-border));  /* hairline rule  */
 
   /* ── Ink ramp ──────────────────────────────────────────────────────── */
   --text-display: #FFFFFF;      /* on dark surfaces — 11.29:1 on bg-dark  */
-  --text-heading: light-dark(#0A1628, var(--dark-text-heading)); /* 18.13:1 / 17.12:1 */
-  --text-body:    light-dark(#1E3A5F, var(--dark-text-body));    /* 11.50:1 / 9.04:1  */
-  --text-label:   light-dark(var(--brand-accent), var(--dark-text-label)); /* 5.47:1 / 6.95:1 AA */
-  --text-secondary: light-dark(#455C7A, var(--dark-text-secondary)); /* secondary prose / subtitle / caption — AA both sides */
-  --text-muted:   light-dark(#6B7F9A, var(--dark-text-muted));      /* decorative / de-emphasized — chrome, empty/skipped marks, glyphs; WCAG-exempt */
+  --text-heading: light-dark(#0A1628, var(--scheme-dark-text-heading)); /* 18.13:1 / 17.12:1 */
+  --text-body:    light-dark(#1E3A5F, var(--scheme-dark-text-body));    /* 11.50:1 / 9.04:1  */
+  --text-label:   light-dark(var(--brand-accent), var(--scheme-dark-text-label)); /* 5.47:1 / 6.95:1 AA */
+  --text-secondary: light-dark(#455C7A, var(--scheme-dark-text-secondary)); /* secondary prose / subtitle / caption — AA both sides */
+  --text-muted:   light-dark(#6B7F9A, var(--scheme-dark-text-muted));      /* decorative / de-emphasized — chrome, empty/skipped marks, glyphs; WCAG-exempt */
 
   /* ── Brand accent ──────────────────────────────────────────────────────
    * The accent is text-bearing on multiple surfaces (inline code chips,
@@ -118,7 +118,7 @@
   /* Text on top of --accent. Light: white on brand mid-blue (5.83:1).
    * Dark: deep navy on sky blue (~9:1) — fixes corner-tag contrast
    * which would otherwise be white on sky blue (~1.7:1, fails AA). */
-  --on-accent:   light-dark(#FFFFFF, var(--bg-dark));
+  --on-accent:   light-dark(#FFFFFF, var(--surface-inverse));
 
   /* ── Semantic signals ─────────────────────────────────────────────────
    * --warn and --fail come from lattice.css :root (universal status
@@ -128,7 +128,7 @@
    * to a brighter forest variant for AA contrast on dark canvas. */
   --pass: light-dark(#2F6B12, #6FCC4D);
   /* Self-curated semantic trio — cool green/amber/red, AA>=4.5 on
-   * both canvases (light value vs --bg, dark value vs --dark-bg). */
+   * both canvases (light value vs --bg, dark value vs --scheme-dark-bg). */
   --warn: light-dark(#996800, #E6B255);
   --fail: light-dark(#A81E38, #F07F92);
   --pass-bg: color-mix(in srgb, var(--pass) 10%, transparent);
@@ -137,7 +137,7 @@
 
   /* Sequential ramp anchor — indaco's brand mid-blue. The 9 derivative
    * stops auto-derive in lattice.css :root via OKLab color-mix. */
-  --scale-500: var(--brand-accent);
+  --seq-500: var(--brand-accent);
 
   /* Tag (status badge) defaults to --chart-2 (warm vermilion) via
    * lattice.css; indaco doesn't need to override. */
@@ -168,15 +168,15 @@
  * The slide rule remaps the main tokens to these dark values, so the
  * same layout structure works on either canvas. */
 :root {
-  --dark-bg:           #001D33;
-  --dark-bg-alt:       #002847;
-  --dark-border:       #0F3A5F;
-  --dark-text-heading: #FFFFFF;
-  --dark-text-body:    #CBD9E8;
-  --dark-text-muted:   #6B7F9A;
-  --dark-text-secondary: #96A8B9;
-  --dark-text-label:   #A0B8D0;
-  --dark-text-display: #FFFFFF;
+  --scheme-dark-bg:           #001D33;
+  --scheme-dark-bg-alt:       #002847;
+  --scheme-dark-border:       #0F3A5F;
+  --scheme-dark-text-heading: #FFFFFF;
+  --scheme-dark-text-body:    #CBD9E8;
+  --scheme-dark-text-muted:   #6B7F9A;
+  --scheme-dark-text-secondary: #96A8B9;
+  --scheme-dark-text-label:   #A0B8D0;
+  --scheme-dark-text-display: #FFFFFF;
 }
 
 /* ── highlight.js syntax tokens ────────────────────────────────────────
@@ -209,13 +209,13 @@
    * Universal stroke for any band fill; reads on every pale tint
    * including white. Line is for edges/arrows; light-dark() picks
    * near-black on light canvas and muted light on dark. */
-  --c-stroke: #1F4A6E;  /* saturated brand navy */
-  --c-line:   light-dark(#1A1A1A, var(--dark-text-body));
+  --diagram-stroke: #1F4A6E;  /* saturated brand navy */
+  --diagram-line:   light-dark(#1A1A1A, var(--scheme-dark-text-body));
 
   /* Cross-deck contrast accent — radar's second curve, where a single
    * warm hue against the pale-blue band reads better than a second
    * pale tint. */
-  --c-accent-warm: #BD5000;
+  --diagram-accent-warm: #BD5000;
 }
 
 :root {
@@ -223,50 +223,50 @@
    * light = pale tint (for diagram band fills); dark = deep hue (for
    * chart fills on dark canvas). Used by Mermaid cScale and XY plots.
    * NOT suitable as foreground/stroke — use --cN-dark for that. */
-  --c1-light:  light-dark(#BCD5EC, #006398);
-  --c2-light:  light-dark(#EBE2B8, #993D00);
-  --c3-light:  light-dark(#E7BEBE, #2E6F00);
-  --c4-light:  light-dark(#C1E4D5, #953170);
-  --c5-light:  light-dark(#D1C5DC, #7142A0);
-  --c6-light:  light-dark(#EDD1B8, #006D60);
-  --c7-light:  light-dark(#C8CFDA, #835100);
-  --c8-light:  light-dark(#E6C1C8, #006A79);
-  --c9-light:  light-dark(#C0D5C6, #A02E41);
-  --c10-light: light-dark(#D9C7DC, #715C00);
-  --c11-light: light-dark(#BCE3E1, #3057B1);
-  --c12-light: light-dark(#DAC8D1, #5C6400);
+  --cat-1-fill:  light-dark(#BCD5EC, #006398);
+  --cat-2-fill:  light-dark(#EBE2B8, #993D00);
+  --cat-3-fill:  light-dark(#E7BEBE, #2E6F00);
+  --cat-4-fill:  light-dark(#C1E4D5, #953170);
+  --cat-5-fill:  light-dark(#D1C5DC, #7142A0);
+  --cat-6-fill:  light-dark(#EDD1B8, #006D60);
+  --cat-7-fill:  light-dark(#C8CFDA, #835100);
+  --cat-8-fill:  light-dark(#E6C1C8, #006A79);
+  --cat-9-fill:  light-dark(#C0D5C6, #A02E41);
+  --cat-10-fill: light-dark(#D9C7DC, #715C00);
+  --cat-11-fill: light-dark(#BCE3E1, #3057B1);
+  --cat-12-fill: light-dark(#DAC8D1, #5C6400);
 
   /* Categorical foreground/stroke — rich mid-tone on light canvas,
    * pale tint on dark canvas. Used by kanban lane stripes, gantt bars,
    * and any layout that needs the categorical hue as a visible color. */
-  --c1-dark:   light-dark(#2E608A, #D4DFE8);
-  --c2-dark:   light-dark(#863236, #E7D5D6);
-  --c3-dark:   light-dark(#7B772D, #E7E6D5);
-  --c4-dark:   light-dark(#323686, #D5D6E7);
-  --c5-dark:   light-dark(#30827E, #D5E7E6);
-  --c6-dark:   light-dark(#865832, #E7DDD5);
-  --c7-dark:   light-dark(#583880, #DDD6E6);
-  --c8-dark:   light-dark(#80385F, #E6D6DF);
-  --c9-dark:   light-dark(#5F8038, #DFE6D6);
-  --c10-dark:  light-dark(#388058, #D6E6DD);
-  --c11-dark:  light-dark(#3057B1, #BCE3E1);
-  --c12-dark:  light-dark(#5C6400, #DAC8D1);
+  --cat-1-mark:   light-dark(#2E608A, #D4DFE8);
+  --cat-2-mark:   light-dark(#863236, #E7D5D6);
+  --cat-3-mark:   light-dark(#7B772D, #E7E6D5);
+  --cat-4-mark:   light-dark(#323686, #D5D6E7);
+  --cat-5-mark:   light-dark(#30827E, #D5E7E6);
+  --cat-6-mark:   light-dark(#865832, #E7DDD5);
+  --cat-7-mark:   light-dark(#583880, #DDD6E6);
+  --cat-8-mark:   light-dark(#80385F, #E6D6DF);
+  --cat-9-mark:   light-dark(#5F8038, #DFE6D6);
+  --cat-10-mark:  light-dark(#388058, #D6E6DD);
+  --cat-11-mark:  light-dark(#3057B1, #BCE3E1);
+  --cat-12-mark:  light-dark(#5C6400, #DAC8D1);
 
-  --c-ink-light: var(--text-heading);
-  --c-ink-dark:  light-dark(#FFFFFF, #0A1628);
+  --cat-on-fill: var(--text-heading);
+  --cat-on-mark:  light-dark(#FFFFFF, #0A1628);
 
   /* Semantic palette — 5 roles, each a flipping fill. Curated per
    * theme: hue nudged toward the brand within its meaning band,
    * AA-verified both canvas modes, chroma-capped for restraint.
-   * The -dark companions are strokes → universal --c-stroke. */
-  --c-warm-light:  light-dark(#ECC0A8, #91450E);
-  --c-warm-dark:   var(--c-stroke);
-  --c-cool-light:  light-dark(#B0CFE9, #146397);
-  --c-cool-dark:   var(--c-stroke);
-  --c-alarm:       light-dark(#A91C2A, #F87171);
-  --c-alarm-dark:  var(--c-stroke);
-  --c-mark:        light-dark(#D8BE1E, #796900);
-  --c-note:        light-dark(#D7D2B1, #71640B);
+   * The -dark companions are strokes → universal --diagram-stroke. */
+  --diagram-active:  light-dark(#ECC0A8, #91450E);
+  --diagram-active-mark:   var(--diagram-stroke);
+  --diagram-done:  light-dark(#B0CFE9, #146397);
+  --diagram-done-mark:   var(--diagram-stroke);
+  --diagram-critical:       light-dark(#A91C2A, #F87171);
+  --diagram-critical-mark:  var(--diagram-stroke);
+  --diagram-today:        light-dark(#D8BE1E, #796900);
+  --diagram-note:        light-dark(#D7D2B1, #71640B);
 
   /* Containment tier — two nested structural surfaces. A monotonic
    * luminance ladder away from the canvas: light deck steps down,

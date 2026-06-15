@@ -124,7 +124,7 @@ How a draft moves from author to archive.
 
 ## Why a native state chart.
 
-Mermaid's `stateDiagram-v2` works, but theming it cleanly requires a CSS override cascade with `!important` (see `docs/theming.md`). The native chart uses palette tokens directly — `var(--c1-light)`, `var(--c-stroke)`, `var(--c-line)`, `var(--c-ink-light)` — and inherits dark / light, every theme, automatically. No mmdc subprocess, no opaque SVG class names, no version coupling. The trade-off: no hierarchical states, no parallel regions, no guards in v1. When you need those, `<!-- _class: diagram -->` is the Mermaid escape hatch.
+Mermaid's `stateDiagram-v2` works, but theming it cleanly requires a CSS override cascade with `!important` (see `docs/theming.md`). The native chart uses palette tokens directly — `var(--cat-1-fill)`, `var(--diagram-stroke)`, `var(--diagram-line)`, `var(--cat-on-fill)` — and inherits dark / light, every theme, automatically. No mmdc subprocess, no opaque SVG class names, no version coupling. The trade-off: no hierarchical states, no parallel regions, no guards in v1. When you need those, `<!-- _class: diagram -->` is the Mermaid escape hatch.
 
 ---
 

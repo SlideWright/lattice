@@ -41,7 +41,7 @@
 	--accent: #006fa8;
 	--accent-soft: #eff6fc;
 	--on-accent: #ffffff;
-	--bg-dark: #003d66;
+	--surface-inverse: #003d66;
 }
 
 /* ── Remap Starlight's colour surface onto the site palette tokens ──────────
