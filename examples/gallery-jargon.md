@@ -14,7 +14,7 @@ header: "Lattice · Decision Framework Gallery"
 
 `Decision Framework · Q3 2025`
 
-A 64-slide answer to the question "have you considered writing things down"
+A 59-slide answer to the question "have you considered writing things down"
 
 ---
 
@@ -27,7 +27,7 @@ A 64-slide answer to the question "have you considered writing things down"
 2. The Framework — slide 7
 3. The Evaluation — slide 23
 4. The Build — slide 33
-5. The Results — slide 51
+5. The Results — slide 48
 
 ---
 
@@ -160,11 +160,11 @@ flowchart LR
 ## The three things the framework connects
 
 - Signal
-  - The observed input — a verbatim, a metric move, a competitor's announcement. The unit of intake. Frequently confused with "things the VP heard at a conference."
+  - The observed input — a verbatim, a metric move, a competitor's announcement. The unit of intake. Frequently confused with "things the VP heard at a conference," which enter the pipeline already scored.
 - Decision
-  - A signal plus a deadline, logged with its rationale. Every decision is meant to trace to a signal. In practice the signal is "we discussed it at the offsite."
+  - A signal plus a deadline, logged with its rationale. Every decision is meant to trace to a signal. In practice the signal is "we discussed it at the offsite," reconstructed for the log the following week.
 - Outcome
-  - The result, measured against the prediction at retrospective. The unit of calibration. 18 have been logged. Roughly 340 have occurred.
+  - The result, measured against the prediction at retrospective. The unit of calibration. 18 have been logged. Roughly 340 have occurred; the other 322 are filed under "context."
 
 ---
 
@@ -232,9 +232,9 @@ The most configurable component — a feature or a warning sign, depending on yo
 ## Scoring model: before and after the calibration loop
 
 - Before Calibration
-  - Equal weights — confidence, recency, and relevance each contribute 33%. Simple, and at least honest that we are basically guessing.
+  - Equal weights — confidence, recency, and relevance each contribute 33%. Simple, and at least honest that we are basically guessing. In eighteen months no team has changed them from 33.
 - After Calibration
-  - Weights reflect your team's historical accuracy — except the team keeps changing, and the history is three months of data from a quarter everyone agrees was atypical.
+  - Weights reflect your team's historical accuracy — except the team keeps changing, and the history is three months of data from a quarter everyone agrees was atypical. So most teams keep the 33s and call them calibrated.
 
 The shift from equal to calibrated weights takes two retrospective cycles — 60 days from adoption, or 14 months, depending on who you ask.
 
@@ -246,9 +246,9 @@ The shift from equal to calibrated weights takes two retrospective cycles — 60
 ## Two intake modes for different signal types
 
 - Structured Intake
-  - Clear-schema signals — NPS verbatims, support tickets, win/loss notes. Ingested and scored automatically, with zero manual handling. Produces 94% of the data and 12% of the roadmap decisions.
+  - Clear-schema signals — NPS verbatims, support tickets, win/loss notes. Ingested and scored automatically, with zero manual handling. Produces 94% of the data and 12% of the roadmap decisions — the part of the pipeline that works, which is why no one discusses it.
 - Unstructured Intake
-  - No-schema signals — field notes, conference hallway talk, a board member who had thoughts at a dinner. Routed to the owner for manual classification. Produces 6% of the data and 88% of the roadmap decisions.
+  - No-schema signals — field notes, conference hallway talk, a board member who had thoughts at a dinner. Routed to the owner for manual classification. Produces 6% of the data and 88% of the roadmap decisions, every one of them urgent.
 
 ---
 
@@ -482,7 +482,7 @@ The left card is struck through; the DECISION connector is bold. The conclusion 
 - Why not buy
   - Three vendors, none exposing calibration weights. The weights are the product; you cannot buy the product without them. That was the finding.
 - Why not delay
-  - The window closes in 18 months — a sentence that has been in this deck, unchanged, since Q1 2025.
+  - The window closes in 18 months — a sentence that has been in this deck, unchanged, since Q1 2025. Each quarter we update the deck, not the window.
 
 ---
 
@@ -542,7 +542,7 @@ Phase 3 holds org-wide enablement. In the roadmap since 2024. Phase 2 is ongoing
 
 - Signal Intake
   - Connector v1 `Q1 → Q2` `done`
-  - Multi-source dedupe `Q2 → Q4` `live`
+  - Multi-source dedupe `Q2 → Q4` `at-risk`
 - Scoring
   - Equal-weights model `Q1 → Q2` `done`
   - Per-team calibration `Q2 → Q4` `at-risk`
@@ -600,11 +600,11 @@ Phase 3 holds org-wide enablement. In the roadmap since 2024. Phase 2 is ongoing
 ## Three phases get us from decision to org-wide adoption
 
 1. Architecture
-   - Scopes what we build, what we buy, and what we defer. The output is an architecture decision record — which will itself need an architecture phase before it can be approved.
+   - Scopes what we build, what we buy, and what we defer. The output is an architecture decision record — which will itself need an architecture phase before it can be approved, and a workshop to define "decision."
 2. Pilot
-   - One team, one decision type, one quarter. The phase ends at production cadence — meaning the retrospective happened at least once.
+   - One team, one decision type, one quarter. The phase ends at production cadence — meaning the retrospective happened at least once, and someone screenshotted it for the board.
 3. Rollout
-   - Five teams in two months, ending above 90% adoption. Planned for Q2 — as it has been for three consecutive years.
+   - Five teams in two months, ending above 90% adoption. Planned for Q2 — as it has been for three consecutive years. Q2 is load-bearing.
 
 ---
 
@@ -614,11 +614,11 @@ Phase 3 holds org-wide enablement. In the roadmap since 2024. Phase 2 is ongoing
 ## Three milestones mark Phase 01 complete
 
 1. Scoring policy in production
-   - The signed policy runs end-to-end and the first calibrated brief lands in leadership's inbox. Their first reply asks whether the weights can be adjusted. They can.
+   - The signed policy runs end-to-end and the first calibrated brief lands in leadership's inbox. Their first reply asks whether the weights can be adjusted. They can — and did, that afternoon.
 2. Per-team weights
-   - One framework carries distinct weights per team without forks; recalibration is a single update. Each team will still want its own.
+   - One framework carries distinct weights per team without forks; recalibration is a single update. Each team will still want its own, and three will fork it anyway.
 3. Per-decision-class profiles
-   - Authoring a profile for one decision class takes minutes. Agreeing what counts as a decision class takes a workshop series. See slide 8.
+   - Authoring a profile for one decision class takes minutes. Agreeing what counts as a decision class takes a workshop series. See slide 8, which has not moved.
 
 ---
 
@@ -649,48 +649,6 @@ Phase 3 holds org-wide enablement. In the roadmap since 2024. Phase 2 is ongoing
   - Resolved against logged weights. Close: 18 minutes. Outcome: what the model says — once the weights match the senior person.
 
 The architecture change is the calibration loop. The culture change is still in Phase 02.
-
----
-
-<!-- _class: compare-prose transition banner-tag -->
-<!-- _footer: "Same comparison, banner-tag chrome · compare-prose transition banner-tag" -->
-
-## The same transition for the board deck
-
-`Before and after · banner-tag modifier`
-
-- Before
-  - Every prioritization debate from first principles. Average close: 4 hours, p99 an entire offsite. No audit trail, no calibration — decisions were made, outcomes happened, nobody connected them. We called it "moving fast."
-- After
-  - Decisions log their rationale; scoring is weighted and calibrated; an audit trail exists. It has 18 entries. We are moving slower now. We are calling this "moving thoughtfully."
-
----
-
-<!-- _class: decision banner-tag -->
-<!-- _footer: "Same decision, banner-tag chrome · decision banner-tag" -->
-
-## The same build decision in banner-tag chrome
-
-`Decision · banner-tag modifier`
-
-- Build
-  - Owns the scoring policy, the calibration loop, and every responsibility the evaluation said "a vendor would own" in the path we rejected.
-- Why not buy
-  - Three vendors, none exposing calibration weights — the criterion set by the evaluation team. The evaluation team builds frameworks.
-- Why not delay
-  - The window closes in 18 months. We are in month 7. Phase 02 is planned for month 6. We are aware of this.
-
----
-
-<!-- _class: compare-prose vertical -->
-<!-- _footer: "Stacked before/after · compare-prose vertical" -->
-
-## Recalibration used to require a coordinated freeze
-
-- Before — manual recalibration
-  - Operators schedule a window, freeze new decisions, swap the weights, verify, then lift the freeze. Average review pause: 18 working hours. Also known as the way we did it last year, which everyone agreed was fine until this deck was written.
-- After — version-floor recalibration
-  - The loop emits a new policy with an incremented version; teams pick it up on next refresh. No freeze, no coordinated cutover. This is the good path. It is also the one that has not shipped yet.
 
 ---
 
@@ -830,7 +788,7 @@ The pilot team measured what the pilot team built.
 
 `Recap · Sections 01 through 03`
 
-## Before the results, what you should have learned in the first 50 slides
+## Before the results, what you should have learned in the first 47 slides
 
 - Four components. Two used regularly. → Section 01
 - The evaluation team recommended the tool the evaluation team built. → Section 02
@@ -879,42 +837,6 @@ Source: Linear · "blocked" means blocked, we are working on the wording
 
 ---
 
-<!-- _class: progress dark -->
-<!-- _footer: "Same bars, dark canvas · progress dark" -->
-
-`H1 2026 · Phase 01 readiness`
-
-## The same data, dark canvas
-
-Same bars, same numbers. Dark makes the 12% adoption bar feel intentional, not alarming. That is not why we have a dark modifier. It is why this slide uses it.
-
-- Signal Intake `92%` `on-track`
-- Scoring policy `68%` `at-risk`
-- Decision Log `81%` `on-track`
-- Calibration cadence `34%` `deferred`
-- Adoption `12%` `blocked`
-
----
-
-<!-- _class: progress minimal -->
-<!-- _footer: "Same bars, minimal chrome · progress minimal" -->
-
-`H1 2026 · Phase 01 readiness`
-
-## Same data, minimal treatment
-
-The lucent strip is gone, so the adoption number is louder. An argument for the non-minimal treatment.
-
-- Signal Intake `92%` `on-track`
-- Scoring policy `68%` `at-risk`
-- Decision Log `81%` `on-track`
-- Calibration cadence `34%` `deferred`
-- Adoption `12%` `blocked`
-
-_Source: Linear · refreshed 2026-05-07_
-
----
-
 <!-- _class: piechart donut -->
 <!-- _footer: "SVG donut with legend · piechart donut" -->
 
@@ -935,7 +857,7 @@ Last updated 2026-05-07 · the 9% is probably higher
 ---
 
 <!-- _class: timeline-list -->
-<!-- _footer: "Vertical timeline with date pills · timeline-list" -->
+<!-- _footer: "Horizontal timeline spine · timeline-list" -->
 
 `Framework arc`
 
@@ -998,10 +920,10 @@ Cross-functional sign-off · "cross-functional" means two teams instead of one
   - Picked the vendor `1, 6`
   - Killed the connector rewrite `4, 8`
 - Predicted
-  - Cut the onboarding step `7, 5`
-  - Renamed the tier labels `8, 3`
+  - Cut the onboarding step `7, 7`
+  - Renamed the tier labels `8, 8`
 - Calibrated
-  - Adjusted recency weight `9, 2`
+  - Adjusted recency weight `3, 2`
 
 ---
 
