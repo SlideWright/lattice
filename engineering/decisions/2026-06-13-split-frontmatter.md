@@ -78,7 +78,7 @@ Measured over all 42 committed decks (555 slides):
 
 `split:` resolves via the pure `lib/core/resolve-split.js` (mirrors
 `resolve-finish.js`). The divider is **one markdown-it plugin** —
-`headingSplit` in `lib/integrations/marp/plugins.js` — that injects top-level
+`headingSplit` in `lib/integrations/markdown-it/plugins.js` — that injects top-level
 `hr` tokens `.before('marpit_slide')`. Both render paths already split on
 top-level `hr` (marp-core's `marpit_slide` ruler; `lib/engine/slides.js`
 `splitOnHr`), so injecting `hr` makes them split **identically** with no

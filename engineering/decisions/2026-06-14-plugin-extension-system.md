@@ -482,7 +482,7 @@ answered by the `order.phase` ladder — `deck` runs after `section`; the
   manifest contract, and the four-integration comparative profile (this
   session). Key anchors: `lib/transformers/registry.js`,
   `lib/components/chart/_chart-family/chart-family.js:26-735`,
-  `lib/components/index.js`, `lib/integrations/marp/plugins.js`,
+  `lib/components/index.js`, `lib/integrations/markdown-it/plugins.js`,
   `lib/engine/math.js`, `lib/runtime/index.js`.
 - Sibling standard: [`LFM 1.0`](../../spec/LFM-1.0.md) and its decision note
   [`2026-06-13-lfm-standard.md`](2026-06-13-lfm-standard.md) — same "profile,

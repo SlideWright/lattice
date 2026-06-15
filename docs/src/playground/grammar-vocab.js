@@ -19,7 +19,7 @@ export const PAGINATE_VALUES = ['true', 'false', 'skip', 'hold'];
 // Value vocabulary for the deck-level `islands:` front-matter toggle — the
 // islands composition model. 'on' = masthead band + bay + progress rail;
 // 'minimal' = band + bay, no rail; 'off' = disabled. Mirrors ISLANDS_MODES in
-// lib/integrations/marp/plugins.js.
+// lib/integrations/markdown-it/plugins.js.
 export const ISLANDS_VALUES = ['off', 'on', 'minimal'];
 
 // Value vocabulary for the Lattice `split:` front-matter directive, which picks

@@ -378,6 +378,6 @@ has a viable replacement.** Two things are easy to conflate:
   `lattice-engine`-powered VS Code preview/extension exists to replace it
   (**Scope 2** in `2026-06-10-marp-replacement-proposal.md` §6 — a separate, larger
   effort not yet started). P2–P4 deliberately keep marp-vscode and its
-  compatibility shims (`marp.scaffold.css`, the `data-marpit-*` attributes). **Do
+  compatibility shims (`scaffold.css`, the `data-marpit-*` attributes). **Do
   not plan or imply a full marp removal until that replacement lands.**
 

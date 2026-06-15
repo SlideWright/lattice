@@ -5,7 +5,7 @@
  * directive, verdict-grid / obligation-matrix / checklist state markers,
  * slot-label lift, glossary table + range, heading-period adjustment,
  * functionplot fences, Mermaid hljs registration) now live
- * in lib/integrations/marp/plugins.js so the browser playground bundle can run
+ * in lib/integrations/markdown-it/plugins.js so the browser playground bundle can run
  * the SAME engine for render parity. This file wires them into marp-cli and
  * adds the HTML-stage transformer registry + deck-logo injection.
  */
@@ -31,7 +31,7 @@ const {
   glossaryRange,
   registerMermaidHljs,
   functionPlotFences,
-} = require('./lib/integrations/marp/plugins');
+} = require('./lib/integrations/markdown-it/plugins');
 const watermarkTile = require('./lib/forms/tile/watermark/watermark.transform');
 const metaTile = require('./lib/forms/tile/meta/meta.transform');
 const progressTile = require('./lib/forms/tile/progress/progress.transform');
@@ -140,7 +140,7 @@ module.exports = {
 // Plugin functions exposed for unit tests. Marp-cli reads only the
 // known config keys above and ignores the rest, so attaching this is
 // safe; consumers should treat it as test-internal API. Re-exported from
-// the shared module (lib/integrations/marp/plugins.js) — single source.
+// the shared module (lib/integrations/markdown-it/plugins.js) — single source.
 module.exports.plugins = {
   headingSplit,
   deckClassPropagate,

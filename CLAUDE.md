@@ -167,7 +167,7 @@ independent set of eyes earns its latency.
 ## HARD RULES (these override convenience; a violation is a defect)
 
 1. **The render paths share one source of truth — land transforms in the shared
-   kernel, not one path.** Authoring transforms live in `lib/integrations/marp/plugins.js`,
+   kernel, not one path.** Authoring transforms live in `lib/integrations/markdown-it/plugins.js`,
    `lib/transformers/*`, and `lib/core/*` so every path stays in step: the owned
    `lib/engine` (the `lattice` CLI **and** the docs playground), the shipped
    `marp.config.js` (BYO marp-cli — same plugins), and `dist/lattice-runtime.js`

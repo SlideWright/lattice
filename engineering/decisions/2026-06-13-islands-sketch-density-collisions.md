@@ -40,7 +40,7 @@ Compare any content-dense banded slide (e.g. `actors`, `roadmap`,
 
 With `islands: on`, every **eligible** section (the toggle skips
 title/divider/closing/math/compare-code/split-panel/split-compare/image/
-featured — see `ISLANDS_TOGGLE_SKIP` in `lib/integrations/marp/plugins.js`)
+featured — see `ISLANDS_TOGGLE_SKIP` in `lib/integrations/markdown-it/plugins.js`)
 gains a top **masthead band** and a bottom-centre **status bay + progress
 rail**. The content box is not inset by their heights, so:
 

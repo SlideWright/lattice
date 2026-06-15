@@ -91,7 +91,7 @@ export const CONFIG_PROFILES = Object.freeze({
 const TRUEY = /^(true|yes|on|1)$/i;
 
 // Canonicalise an `islands:` value to one of the three modes. Mirrors
-// readIslandsMode in lib/integrations/marp/plugins.js.
+// readIslandsMode in lib/integrations/markdown-it/plugins.js.
 function islandsMode(raw) {
   const v = (raw == null ? '' : String(raw)).trim().toLowerCase();
   if (TRUEY.test(v)) return 'on';

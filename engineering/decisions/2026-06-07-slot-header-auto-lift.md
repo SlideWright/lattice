@@ -2,7 +2,7 @@
 
 **Date:** 2026-06-07
 **Status:** implemented (PR #72)
-**Scope:** `lib/core/slot-label-lift.js`, `lib/integrations/marp/plugins.js`,
+**Scope:** `lib/core/slot-label-lift.js`, `lib/integrations/markdown-it/plugins.js`,
 `lib/runtime/index.js`, `lattice-emulator.js`, `lib/components/index.js`,
 `lib/authoring/lint.js`, plus the `timeline` / `list-criteria` / `actors` /
 `split-brief` / `split-metric` / `split-statement` manifests.
@@ -47,7 +47,7 @@ nothing says where the title ends, so it cannot be auto-resolved.
 1. **Auto-lift the layouts that were forcing bold.** Added `timeline`,
    `list-criteria`, `actors`, `split-brief`, `split-metric`, `split-statement`
    to the `slotLabelLift` allowlist (the `SLOT_LAYOUTS` regex in
-   `lib/integrations/marp/plugins.js`, plus the emulator and runtime mirrors).
+   `lib/integrations/markdown-it/plugins.js`, plus the emulator and runtime mirrors).
    Their shipped samples / galleries / docs drop the bold and use the nested
    `- Title` / `  - body` shape. Existing decks that still type `**…**` render
    identically.

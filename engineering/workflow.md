@@ -272,7 +272,7 @@ stays in step — don't patch one path:
 
 1. the owned `lib/engine` (the `lattice` CLI **and** the docs playground)
 2. `marp.config.js` (shipped for BYO marp-cli authors — runs the same
-   `lib/integrations/marp/plugins.js` + `lib/transformers/*`)
+   `lib/integrations/markdown-it/plugins.js` + `lib/transformers/*`)
 3. `lattice-runtime.js` (vscode preview)
 
 The owned engine is canonical (the marp-parity gate was retired in P4). Do not

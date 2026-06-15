@@ -18,7 +18,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 
 const forms = require('../../../lib/forms');
-const plugins = require('../../../lib/integrations/marp/plugins');
+const plugins = require('../../../lib/integrations/markdown-it/plugins');
 const { renderJson, JSON_FILE } = require('../../../tools/build-forms');
 
 // The historical hardcoded skip list (the behaviour the manifests must preserve).

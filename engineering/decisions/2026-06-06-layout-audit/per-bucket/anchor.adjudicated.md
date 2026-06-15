@@ -4,7 +4,7 @@ Checker: CHECKER agent
 Date: 2026-06-06
 Source galleries independently rasterized: closing light (7pp) + dark (7pp), title light (6pp) + dark (6pp), divider light (7pp), subtopic light (8pp).
 Detail crops taken: closing-d p1 top, closing-l p2 center.
-Source files read: all four *.styles.css, *.manifest.json, *.docs.md, *.gallery.md; lib/base/base.elements.css:13-29, base.modifiers.css:32-158, lib/integrations/marp/marp.scaffold.css; dist/lattice.css (border-top lines).
+Source files read: all four *.styles.css, *.manifest.json, *.docs.md, *.gallery.md; lib/base/base.elements.css:13-29, base.modifiers.css:32-158, lib/integrations/markdown-it/scaffold.css; dist/lattice.css (border-top lines).
 
 ---
 

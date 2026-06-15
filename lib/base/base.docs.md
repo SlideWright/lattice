@@ -508,7 +508,7 @@ The default `headings` divider is **eyebrow-aware**: a slide's lead-in — its
 the one before. It is **hybrid**: a literal `---` still forces a break (use it
 for a heading-less image slide, or two slides under one idea). It is
 implemented as one shared `hr`-injection ruler
-(`headingSplit` in `lib/integrations/marp/plugins.js`, run `.before('marpit_slide')`)
+(`headingSplit` in `lib/integrations/markdown-it/plugins.js`, run `.before('marpit_slide')`)
 so the emulator, marp-cli, and the playground produce identical boundaries —
 and it is **slide-count-identical to `rule` on every classic `---`-separated
 deck** (pinned by `test/unit/parsing/heading-split.test.js`), which is why the
@@ -678,7 +678,7 @@ tokens meet WCAG AA on body backgrounds. The `.heat` modifier remaps
 
 **Implementation contract:** the marker is processed in three channels
 that must stay in lockstep — Marp build (`marp.config.js` →
-`lib/integrations/marp/plugins.js`), emulator (`lattice-emulator.js`),
+`lib/integrations/markdown-it/plugins.js`), emulator (`lattice-emulator.js`),
 and VS Code preview (`lattice-runtime.js`). Each strips the marker and
 adds `class="state {pass|warn|fail|skip|todo} {state-full|state-half|state-empty|state-slashed|state-todo}"`
 to the carrier element — a **layout-aware** decoder emits `state todo

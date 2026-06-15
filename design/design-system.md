@@ -798,7 +798,7 @@ discovery story that markdown alone can't provide.
   regardless of specificity, so wrapping components but not shared
   files makes components silently lose to whatever generic shared
   rule exists. The full coordinated activation is blocked by the
-  `!important` competition between `lib/integrations/marp/marp.scaffold.css`
+  `!important` competition between `lib/integrations/markdown-it/scaffold.css`
   and `lib/base/base.variants.css`. Both must stay unlayered for the
   source-order cascade to keep working. See `engineering/cascade.md`
   for the full investigation and what would unblock it.

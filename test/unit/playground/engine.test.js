@@ -6,7 +6,7 @@
  * the build path does — so the playground can't silently drift from the PDF:
  *
  *   1. verdict-grid badges (a marp.config token plugin) appear in the render,
- *      proving the shared plugins (lib/integrations/marp/plugins.js) are wired.
+ *      proving the shared plugins (lib/integrations/markdown-it/plugins.js) are wired.
  *   2. slide count matches the number of `---`-separated slides.
  *   3. render() returns { html, css } for the requested theme.
  *

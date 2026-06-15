@@ -24,7 +24,7 @@ AND must stay unlayered for the cascade to keep working post-`@layer`.
 | `lib/components/progression/timeline/timeline.styles.css` | 25 | Mermaid `.timeline-node` SVG nodes (timeline component uses Mermaid) |
 | `lib/components/chart/kanban/kanban.styles.css` | 24 | Mermaid `.cluster` SVG nodes (kanban uses Mermaid) |
 | `lib/components/chart/radar/radar.styles.css` | 22 | SVG element fill/stroke on the radar polygons |
-| `lib/integrations/marp/marp.scaffold.css` | 16 | Marpit `<section>` / `<header>` / `<footer>` defaults |
+| `lib/integrations/markdown-it/scaffold.css` | 16 | Marpit `<section>` / `<header>` / `<footer>` defaults |
 | `lib/components/evidence/math/math.styles.css` | 16 | KaTeX SVG inline-style attributes |
 | `lib/integrations/highlight-js/highlight-js.css` | 2 | highlight.js inline styles |
 | `lib/components/imagery/featured/featured.styles.css` | 2 | image overrides |
@@ -73,7 +73,7 @@ Layer-to-source mapping:
 |---|---|
 | `base` | `lib/base/base.tokens.css` (lower in source: tokens defined first) |
 | `root` | `lib/base/base.elements.css` (semantic HTML defaults) |
-| `scaffold` | `lib/integrations/marp/marp.scaffold.css` — **STAY UNLAYERED** (library override) |
+| `scaffold` | `lib/integrations/markdown-it/scaffold.css` — **STAY UNLAYERED** (library override) |
 | `components` | every `lib/components/<bucket>/<name>/<name>.styles.css` EXCEPT the 5 with library-override !importants (image, featured, math, timeline, kanban, radar) which stay unlayered |
 | `components` | `lib/chart-family/chart-family.css` |
 | `components` | `lib/shared/shared.styles.css` |
@@ -154,9 +154,9 @@ specific override?" The first stays shared; the second migrates.
    shared file (`base.variants.css`?) — pushing them into each
    component would scope them to that component only. Per-rule audit
    needed before any token-set rule moves into a component file.
-3. **`marp.scaffold.css` staying unlayered.** Its !importants
+3. **`scaffold.css` staying unlayered.** Its !importants
    override Marpit defaults at the inline-style tier. Should the
-   non-!important rules in `marp.scaffold.css` get wrapped in
+   non-!important rules in `scaffold.css` get wrapped in
    `@layer scaffold`? Mixed layering within one source file is
    syntactically fine but auditing the cascade outcome is the work.
 

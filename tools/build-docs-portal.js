@@ -368,14 +368,14 @@ function renderPortalJson(manifests) {
 
 // ── LFM grammar projection ───────────────────────────────────────────────
 // The shared cross-component grammars. These mirror the canonical handlers in
-// lib/integrations/marp/plugins.js (stateClassesFor + the verdict-grid /
+// lib/integrations/markdown-it/plugins.js (stateClassesFor + the verdict-grid /
 // obligation-matrix / checklist / roadmap state plugins, and functionPlotFences)
 // and the chart-family Mermaid registration. They are declared here — as
 // lib/authoring/lint.js declares its own modifier lists — because the plugin
 // module exports the behaviour, not these vocabularies. Keep in sync if the
 // plugin set changes; the grammar.json --check gate makes drift loud.
 
-// The universal state-token marker grammar (lib/integrations/marp/plugins.js
+// The universal state-token marker grammar (lib/integrations/markdown-it/plugins.js
 // `stateClassesFor`). The `semantic` is universal across every state-marker
 // component; the `shape` is the canonical state-token CSS recipe used by
 // checklist / verdict-grid / obligation-matrix / pricing. The chart-family
@@ -394,7 +394,7 @@ const STATE_MARKERS = {
 const STATE_MARKERS_NOTE = 'semantic is universal; shape is the canonical state-token recipe (checklist/verdict-grid/obligation-matrix/pricing). The chart-family roadmap maps the same markers/semantics to its own shape classes (state-shipped/state-wip/state-planned/state-skipped).';
 
 // Components that read the shared state-marker grammar — the markdown-it state
-// plugins keyed on these class names in lib/integrations/marp/plugins.js
+// plugins keyed on these class names in lib/integrations/markdown-it/plugins.js
 // (verdict-grid + pricing share one plugin; checklist and obligation-matrix
 // each have their own), plus the chart-family `roadmap`, which reads the same
 // markers via its own transform.

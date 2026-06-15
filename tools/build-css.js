@@ -54,7 +54,7 @@ const HEAD_SOURCES = [
   'lib/_theme.css',
   'lib/base/base.tokens.css',
   'lib/base/base.elements.css',
-  'lib/integrations/marp/marp.scaffold.css',
+  'lib/integrations/markdown-it/scaffold.css',
 ];
 
 // Bundle order = cascade order — later sources beat earlier ones at

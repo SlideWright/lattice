@@ -19,7 +19,7 @@ it). Install it yourself to render via `marp.config.js`; the owned engine
 
 | File | What it implements |
 |---|---|
-| `marp.scaffold.css` | Marp Core override layer. Two rules using `!important` to win the cascade fight against Marp's scaffold defaults that load after the theme. Lives in `@layer scaffold`. |
+| `scaffold.css` | Marp Core override layer. Two rules using `!important` to win the cascade fight against Marp's scaffold defaults that load after the theme. Lives in `@layer scaffold`. |
 
 Two related files live elsewhere (intentionally, with reason):
 
@@ -36,7 +36,7 @@ Two related files live elsewhere (intentionally, with reason):
 
 ---
 
-## `marp.scaffold.css` — the override layer
+## `scaffold.css` — the override layer
 
 Two CSS rules, both using `!important`:
 

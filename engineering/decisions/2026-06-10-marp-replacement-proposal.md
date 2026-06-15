@@ -86,7 +86,7 @@ much *consolidation* as it is *replacement*.
   `marp-cli` build/test/CI path via `marp.config.js`, and the browser
   playground that powers the entire docs site).
 - Everything that gives Lattice its *identity* — the markdown-it plugins
-  (`lib/integrations/marp/plugins.js`), the shared transformer registry
+  (`lib/integrations/markdown-it/plugins.js`), the shared transformer registry
   (`lib/transformers/`), `lattice.css`, the 25 palettes — is **already ours**.
   Marp/Marpit contributes a comparatively thin layer: GFM markdown parsing,
   `---` slide splitting, front-matter/comment directive parsing, `@theme` /
@@ -144,7 +144,7 @@ Decomposed into what we'd have to own:
    standard sizes; each palette re-declares its own). `themeSet` in
    `marp.config.js` registers all 25 palettes.
 5. **Section chrome.** Pagination (`section::after`), header/footer paragraph
-   emission, `data-marpit-*` attributes. `marp.scaffold.css` is the *only*
+   emission, `data-marpit-*` attributes. `scaffold.css` is the *only*
    `!important` file in the engine, written specifically to win the cascade
    fight against marp-core's scaffold defaults (see `marp.docs.md`).
 6. **Background-image grammar.** `![bg]`, `![bg right]`, `![bg left]`,
@@ -167,7 +167,7 @@ Decomposed into what we'd have to own:
 
 ### 2.3 What is already ours (carries over unchanged)
 
-- **`lib/integrations/marp/plugins.js`** — every Lattice-specific transform
+- **`lib/integrations/markdown-it/plugins.js`** — every Lattice-specific transform
   (deck-class propagation, `logo:`, verdict-grid / obligation-matrix /
   checklist state badges, slot-label lift, glossary table + range,
   heading-period adjustment, latticeplot fences, Mermaid hljs registration).
@@ -200,7 +200,7 @@ The **cross-renderer parity gate** (`test/integration/parity/parity.test.js`)
 asserts paths #1 and #2 agree on `gallery.md` page count (±1 for Chromium's
 trailing blank). **It does not invoke marp-vscode** — no test does
 (`grep marp-vscode test/` → none). Path #3/#4 parity is *by construction*:
-they share `lib/transformers/` and (for #4) `lib/integrations/marp/plugins.js`.
+they share `lib/transformers/` and (for #4) `lib/integrations/markdown-it/plugins.js`.
 
 So today's reality: **path #2 is the authoritative reference** the emulator is
 checked *against*. The replacement's core structural move is to **invert that**
@@ -262,7 +262,7 @@ Two honest options for the engine's parser:
 This is the Tauri note's plan. Use `markdown-it` directly (the same library
 Marpit wraps), add our own thin slide layer (splitting, directives, `<section>`
 emission, `![bg]`, `@theme`/`@size` reads, KaTeX, pagination chrome) as
-markdown-it plugins, and keep `lib/integrations/marp/plugins.js` essentially
+markdown-it plugins, and keep `lib/integrations/markdown-it/plugins.js` essentially
 **as-is** — they already speak markdown-it tokens.
 
 - **+** GFM correctness for free; we stop chasing CommonMark edge cases.
@@ -302,7 +302,7 @@ This means **"replace Marp" has two very different scopes**:
 
 - **Scope 1 (engine ownership):** retire `@marp-team/marp-cli` and
   `@marp-team/marp-core` from *our* dependency tree (paths #1, #2, #4). VS Code
-  authors keep using marp-vscode; we keep `marp.scaffold.css`, the
+  authors keep using marp-vscode; we keep `scaffold.css`, the
   `:is(pre, marp-pre)` carve-outs, and the twemoji `:not(.emoji)` rules as
   "marp-vscode compatibility shims." **Fully achievable in-repo.**
 - **Scope 2 (preview ownership):** stop depending on marp-vscode for the live
@@ -334,7 +334,7 @@ render markdown.
 
 So the website migration is mechanical: **reimplement `LatticePlayground.render`
 on `lattice-engine` instead of `marp.render`.** Because the playground already
-composes "marp-core + `lib/integrations/marp/plugins.js` + `lib/transformers/`"
+composes "marp-core + `lib/integrations/markdown-it/plugins.js` + `lib/transformers/`"
 specifically for render parity with path #2, and Option A keeps the plugins and
 registry, the swap is core-for-core. Nothing in the Astro/CodeMirror/Drawing-
 Board layer changes — they only know `render()`.
@@ -360,11 +360,11 @@ are the same §2.2-item-8 decisions, surfaced in the browser.
    `marp.config.js`).
 5. `![bg …]` background-image grammar.
 6. Pagination / header / footer chrome emitter to match what
-   `marp.scaffold.css` currently corrects — ideally emit it *correctly* so we
+   `scaffold.css` currently corrects — ideally emit it *correctly* so we
    can **delete** the `!important` scaffold file (a real cleanup win).
 7. Decisions on twemoji / auto-scaling / `<marp-pre>` element name.
 
-**Reuse unchanged:** `lib/integrations/marp/plugins.js`,
+**Reuse unchanged:** `lib/integrations/markdown-it/plugins.js`,
 `lib/transformers/registry.js`, `lattice.css`, all palettes, the KaTeX
 extraction, the Mermaid pipeline.
 
@@ -405,7 +405,7 @@ extraction, the Mermaid pipeline.
    collapse `marp.config.js` into the engine config, and rewrite
    `parity.test.js` to assert engine-internal invariants (or engine-vs-emulator
    if they remain separate processes).
-6. **P5 — cleanup + docs.** Try to delete `marp.scaffold.css` (if P1's chrome
+6. **P5 — cleanup + docs.** Try to delete `scaffold.css` (if P1's chrome
    emitter is correct), keep the marp-vscode compat shims with a comment
    pointing here, and update `CLAUDE.md` / `marp.docs.md` / the "three render
    paths" framing. Update `CHANGELOG.md` (`### Removed` for the dep →

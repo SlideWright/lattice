@@ -780,7 +780,7 @@ section ul { list-style:none; padding:0; margin:0; }
 section ol { padding:0; margin:0; }
 section blockquote { margin:0; padding:0; border:none; }
 
-/* === lib/integrations/marp/marp.scaffold.css === */
+/* === lib/integrations/markdown-it/scaffold.css === */
 /* Scaffold rules — section chrome that beats Marp Core's runtime CSS.
  *
  * These rules use !important to override Marp's scaffold defaults that
