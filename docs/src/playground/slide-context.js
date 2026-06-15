@@ -198,17 +198,8 @@ export function islandsValuePosition(before) {
 	return { from: m[1].length, typed: m[2] };
 }
 
-// The cursor's position on a `tokens:` front-matter line, for the token-vocabulary
-// completion (`current` / `universal`): `tokens:` then an optional partial value.
-// Returns `{ from, typed }` (from = where the value starts) or null.
-export function tokensValuePosition(before) {
-	const m = before.match(/^(\s*tokens:\s*)([\w-]*)$/);
-	if (!m) return null;
-	return { from: m[1].length, typed: m[2] };
-}
-
 // The cursor's position on a `split:` front-matter line, for split-mode
-// completion (`rule` / `headings`). Mirrors tokensValuePosition.
+// completion (`rule` / `headings`).
 export function splitValuePosition(before) {
 	const m = before.match(/^(\s*split:\s*)([\w-]*)$/);
 	if (!m) return null;

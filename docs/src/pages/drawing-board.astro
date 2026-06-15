@@ -137,13 +137,8 @@ const starter =
 // Engine + build provenance stamped into PDF/PPTX exports (drawing-board-export.js).
 const pkgVersion = require(join(repoRoot, 'package.json')).version;
 
-// Universal-token crosswalk (the SoT old→new pairs) for the "Token system"
-// toggle — the board flips fetched CSS client-side via token-flip.js.
-const { PAIRS: tokenCrosswalk } = require(join(repoRoot, 'lib/tokens/crosswalk.js'));
-
 const dbData = JSON.stringify({
 	themeBase: url(pg + 'themes/'),
-	crosswalk: tokenCrosswalk,
 	runtimeUrl: url(pg + 'lattice-runtime.js'),
 	// The marp render engine bundle — loaded ON DEMAND (load-engine.ts) after the
 	// chrome paints, not eagerly in <head>. See the engine <script> near the body

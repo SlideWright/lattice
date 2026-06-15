@@ -14,7 +14,7 @@
 //
 // `fields` (optional) is an allow-list of which managed keys to render — the
 // surface's PROFILE. Omitted = every field (the Drawing Board's full author
-// set). A preview surface passes the render-register subset (finish, tokens,
+// set). A preview surface passes the render-register subset (finish,
 // size, paginate, islands) so deck chrome (header/footer/lang/…) stays out of a
 // theme/component preview. The parse/serialize layer is field-agnostic; only the
 // rendered rows are filtered.
@@ -41,13 +41,8 @@ const FIELD_DEFAULTS = {
   // `finish` is the deck-wide finish register (lib/core/resolve-finish.js):
   // '' / 'boardroom' is the baseline (omitted), 'sketch' / 'sketch-clean' opt in.
   finish: '',
-  // Token vocabulary the Drawing Board renders the deck against: 'universal' (the
-  // new --cat-*/--diagram-*/--seq-* names, the default → omitted) or 'current' (the
-  // legacy names). Both render identically — a migration-safety A/B. Drawing-Board-
-  // only: marp-cli ignores it, so a deck stays portable. Default is 'universal' as
-  // the canonical flip lands group-by-group (universal-token ADR §11); 'current' is
-  // the opt-in legacy path, kept available until the flip completes.
-  tokens: 'universal',
+  // (The `tokens:` directive + its Drawing-Board A/B toggle were retired once the
+  // universal-token canonical flip completed — there is one vocabulary now.)
   // `split` is how the body divides into slides (lib/core/resolve-split.js):
   // 'headings' (the default → omitted) splits on each h1/h2 (eyebrow-aware, `---`
   // still honoured) so the deck needs no separators; 'rule' opts back to `---`-only.
@@ -77,7 +72,7 @@ const FINISH_LABELS = {
 
 // Emit order for known keys; any unmanaged keys we preserved trail in their
 // original order. `marp` leads (it's what tells marp-cli to render the deck).
-const EMIT_ORDER = ['marp', 'theme', 'finish', 'tokens', 'split', 'size', 'paginate', 'header', 'footer', 'class', 'islands', 'math', 'lang'];
+const EMIT_ORDER = ['marp', 'theme', 'finish', 'split', 'size', 'paginate', 'header', 'footer', 'class', 'islands', 'math', 'lang'];
 
 // Field PROFILES per surface — the `fields` allow-list createConfigPanel takes.
 //   author  — every field (the Drawing Board: full set, theme three-way synced).
@@ -85,12 +80,12 @@ const EMIT_ORDER = ['marp', 'theme', 'finish', 'tokens', 'split', 'size', 'pagin
 //             is the theme control, and there's no source-theme sync there, so a
 //             drawer theme row would be a confusing no-op).
 //   preview — the render registers only (the Workbench: knobs that change how a
-//             theme/component PREVIEWS — finish/tokens/size/paginate/islands —
+//             theme/component PREVIEWS — finish/size/paginate/islands —
 //             with no deck chrome and no theme, which the studio itself owns).
 export const CONFIG_PROFILES = Object.freeze({
   author: null,
-  noTheme: ['finish', 'tokens', 'split', 'size', 'paginate', 'header', 'footer', 'class', 'islands', 'math', 'lang'],
-  preview: ['finish', 'tokens', 'size', 'paginate', 'islands'],
+  noTheme: ['finish', 'split', 'size', 'paginate', 'header', 'footer', 'class', 'islands', 'math', 'lang'],
+  preview: ['finish', 'size', 'paginate', 'islands'],
 });
 
 const TRUEY = /^(true|yes|on|1)$/i;
@@ -137,7 +132,6 @@ export function readFrontMatter(source) {
   return {
     theme: map.theme || '',
     finish: map.finish || '',
-    tokens: map.tokens || 'universal',
     split: (map.split || 'headings').trim().toLowerCase() === 'rule' ? 'rule' : 'headings',
     size: map.size || '16:9',
     paginate: TRUEY.test(map.paginate || ''),
@@ -371,15 +365,6 @@ export function createConfigPanel({ host, trigger, getSource, setSource, palette
       host.append(selectRow('finish', 'Finish',
         'Hand-drawn or clean — applies to the whole deck',
         finishes.map((f) => [f, FINISH_LABELS[f] || titleCase(f)]), current));
-    }
-
-    // Token system — the deck's token vocabulary. Universal (the default) renders
-    // against the new --cat-*/--diagram-* names (identical output); 'current' is the
-    // opt-in legacy path. A migration-safety A/B; the default option leads.
-    if (show('tokens')) {
-      host.append(selectRow('tokens', 'Token system',
-        'universal = the new --cat-*/--diagram-* names (the default; renders identically)',
-        [['universal', 'Universal (new names)'], ['current', 'Current (legacy names)']], fm.tokens));
     }
 
     // Slide splitting — how the body divides into slides. 'headings' (the
