@@ -91,9 +91,17 @@ in patch versions.
   *Donor pitch*. Each is authored once as the full deck and trimmed to **short /
   standard / full** length variants by a pure, DRY tier filter
   (`lib/exemplars/tier-filter.js`), so a single source models both a lightning
-  talk and a full 20–30-minute presentation. Wiring the "Open a worked example"
-  path into the Drawing Board UI follows in a separate change.
+  talk and a full 20–30-minute presentation.
   Design: `engineering/decisions/2026-06-14-worked-exemplar-decks.md`.
+- **"Open a worked example" in the Drawing Board's Drafting picker.** Picking an
+  archetype now offers the matching worked exemplar deck — a **Short · Standard ·
+  Full** length chooser (with live slide counts) and an *Open the example* button
+  that loads the real, finished deck into the editor — alongside the existing
+  empty-structure scaffold (now the secondary path). The decks are staged as
+  content-hashed assets and fetched on demand, then trimmed to the chosen length
+  in the browser by the shared tier filter (`exemplar-core` bundle). This is the
+  UI half of the worked-exemplars work above: the 45 decks are now reachable from
+  the app, not just the repo.
 
 - **A features page (`/features`).** A scannable, segmented capability catalog —
   the comparison page covers "vs. them"; this is the "just us" reference. Built

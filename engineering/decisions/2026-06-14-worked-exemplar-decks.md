@@ -85,14 +85,17 @@ implementation. An untagged slide defaults to `standard` (safe middle).
 - **Source:** `exemplars/<group-slug>/<archetype-slug>.md` — one complete Lattice
   deck per archetype (full frontmatter + slides + tier markers), authored to the
   boardroom rubric (`engineering/decisions/2026-06-06-layout-audit/`).
-- **Island metadata (build-time):** `drawing-board.astro` already assembles
-  `dbData` from the manifests. Add an `exemplars` array: per archetype just the
-  light metadata — `{ archetype, group, slug, tierCounts: {short,standard,full} }`
-  — **not** the deck bodies (45 full decks inlined would bloat the island by
-  ~200 KB).
+- **Island metadata (build-time):** *(as built — leaner than first sketched.)*
+  `drawing-board.astro` passes the island **just one new field, `exemplarBase`** (the
+  hashed `exemplars/` asset URL) — **no** per-archetype metadata is inlined at all.
+  The archetype→deck mapping lives with the picker (`ARCHETYPES[*].exemplar`), and
+  the per-tier slide counts are computed **client-side** from the fetched deck
+  (`tierCounts(full)`), so there's no metadata-vs-file drift surface and zero island
+  bloat. (The original sketch inlined `{ archetype, group, slug, tierCounts }`;
+  computing counts post-fetch made that unnecessary.)
 - **Deck body (on demand):** when the author taps **Open a worked example**, the
-  full `.md` is **fetched** from the deployed `exemplars/` path (the same
-  load-on-demand pattern as the engine bundle / Puter), then the tier filter
+  full `.md` is **fetched** from the deployed (content-hashed) `exemplars/` path
+  (the same load-on-demand pattern as the engine bundle), then the tier filter
   trims it to the chosen tier and loads it into the editor. Lean island, real
   deck only when asked.
 - **Render to PDF:** each exemplar renders to a committed `.pdf` (external
@@ -142,19 +145,24 @@ authoring standard* above and given the flagship as the gold reference, then
 render-verified slide-by-slide (incl. the fragile layouts: radar, Mermaid
 `diagram`, `gantt`, `obligation-matrix`, `journey`, `verdict-grid`).
 
-**Phase 1b — wire it into Drafting (next PR).** Stage the `exemplars/` decks as
-hashed playground assets (`sync-playground-assets.mjs`), add the per-archetype
-metadata + `exemplarBase` URL to the Drawing Board island (`drawing-board.astro`),
-expose `filterToTier` to the browser bundle, and add the **Open a worked
-example** path + tier chooser + on-demand fetch to `proposeArchetype`
-(`drawing-board-architect.js`). Verified with `tools/screenshot.js` at desktop /
-tablet / mobile (the website-UI bar). Held separate because it touches the asset
-pipeline + a browser bundle + onboarding UX and must be screenshot-verified at
-all three breakpoints — a distinct review surface from the content.
+**Phase 1b — wired into Drafting (shipped).** The `exemplars/` decks are staged
+as content-hashed playground assets (`sync-playground-assets.mjs`); the Drawing
+Board island (`drawing-board.astro`) passes an `exemplarBase` URL to onboarding;
+`filterToTier` / `tierCounts` are exposed to the browser via a new
+`exemplar-core` bundle (`tools/build-exemplar-core.js` →
+`exemplar-core.generated.js`, freshness-gated by `build:check`); and
+`proposeArchetype` (`drawing-board-architect.js`) now fetches the worked deck on
+demand, computes live per-tier slide counts, and offers the **Open a worked
+example** path with a **Short · Standard · Full** chooser above the (secondary)
+empty-structure scaffold. Each `ARCHETYPES` entry carries its `exemplar:
+'<bucket>/<slug>'` join key; `docs/src/playground/exemplar-archetypes.test.ts`
+gates that all 45 resolve to real files, so the mapping can't silently drift.
+Verified end-to-end (the picker loads the trimmed deck into the editor and the
+preview renders it) and screenshot-checked at desktop / tablet / mobile.
 
-This ships "all 45" as the content destination while honoring the quality bar
-(every exemplar visually verified) and the isolation rule; only the UI wiring
-remains.
+This ships "all 45" as the content destination AND the reachable surface, while
+honoring the quality bar (every exemplar visually verified) and the isolation
+rule.
 
 ## Maintenance / honest caveats
 

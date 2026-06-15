@@ -70,6 +70,24 @@ const { STATIC_ASSETS } = createRequire(import.meta.url)(join(repoRoot, 'lib', '
 for (const { from } of STATIC_ASSETS) {
   assets.push([`export/${basename(from)}`, join(repoRoot, from)]);
 }
+// The worked exemplar decks (exemplars/<bucket>/<slug>.md) — fetched on demand by
+// the Drawing Board's Drafting picker, trimmed to the chosen tier in the browser
+// (lib/exemplars/tier-filter.js). Staged hashed like every other fetched asset so
+// a redeploy can't serve a stale deck. Only the authored .md sources ship; the
+// committed .pdf renders are review artifacts, not loaded by the app.
+const exemplarsDir = join(repoRoot, 'exemplars');
+for (const bucket of readdirSync(exemplarsDir)) {
+  const bucketDir = join(exemplarsDir, bucket);
+  let entries;
+  try {
+    entries = readdirSync(bucketDir);
+  } catch {
+    continue; // a stray file at exemplars/ root, not a bucket dir
+  }
+  for (const file of entries) {
+    if (file.endsWith('.md')) assets.push([`exemplars/${bucket}/${file}`, join(bucketDir, file)]);
+  }
+}
 
 for (const [, src] of assets) {
   if (!existsSync(src)) {

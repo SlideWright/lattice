@@ -76,6 +76,7 @@ const STEPS = [
   { label: 'theme-core bundle (docs site)', script: 'build-theme-core.js' },
   { label: 'layout-core bundle (docs site)', script: 'build-layout-core.js' },
   { label: 'authoring-core bundle (docs site)', script: 'build-authoring-core.js' },
+  { label: 'exemplar-core bundle (docs site)', script: 'build-exemplar-core.js' },
   { label: 'standalone-core bundle (docs site)', script: 'build-standalone-core.js' },
   // Capability index — reads package.json scripts + tools/ headers (source,
   // not built artifacts), so order-independent; grouped with the generators.

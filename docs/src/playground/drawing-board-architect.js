@@ -21,6 +21,9 @@ import { cosineRank } from './architect-retrieval.js';
 import { lintCore, reviewCore, scorecard } from './authoring-core.generated.js';
 import { isCapableTier } from './drawing-board-chat.js';
 import { budgetStatus, readBudgetCap, readBudgetMode, readCachingEnabled, readSpend, recordSpend } from './drawing-board-settings.js';
+// The pure exemplar tier-filter (lib/exemplars/tier-filter.js), bundled for the
+// browser so the Drafting picker can trim a worked deck to the chosen length.
+import { filterToTier, tierCounts } from './exemplar-core.generated.js';
 
 // 1-based source line where each REAL slide begins, indexed by the HUMAN slide
 // number (front matter skipped) — so `starts[finding.slide]` maps a finding to
@@ -439,73 +442,107 @@ export function createArchitect({ vocab, catalog, mount, reveal, applyFix, model
 // live review runs and (Phase 2) conversational help arrives on request. Spec +
 // the spine table: engineering/decisions/2026-06-08-architect-modes.md (App. A).
 
+// Each archetype carries its structural `spine` (the empty scaffold) AND the path
+// to its worked `exemplar` deck under exemplars/<bucket>/<slug> — the filled-in,
+// boardroom-grade example the Drafting picker offers alongside the bare structure
+// (fetched on demand, trimmed to the chosen tier). The exemplar path is the join
+// key to the staged asset; docs/test/exemplar-archetypes.test.js gates that every
+// one resolves to a real file, so the mapping can't silently drift.
 const ARCHETYPES = {
 	'General / Team': {
-		'Status update': ['title', 'kpi', 'roadmap', 'decision', 'closing'],
-		'Project kickoff': ['title', 'content', 'roadmap', 'actors', 'decision', 'closing'],
-		'Project status': ['title', 'kpi', 'roadmap', 'matrix-2x2', 'closing'],
-		'Retrospective / post-mortem': ['title', 'timeline-list', 'matrix-2x2', 'list-steps', 'closing'],
-		'All-hands': ['title', 'big-number', 'kpi', 'roadmap', 'quote', 'closing'],
-		'Team meeting': ['title', 'agenda', 'content', 'decision', 'closing'],
-		'Training / onboarding': ['title', 'agenda', 'list-steps', 'checklist', 'closing'],
-		'Workshop': ['title', 'agenda', 'content', 'cards-grid', 'list-steps', 'closing'],
-		'Decision memo': ['title', 'content', 'compare-table', 'matrix-2x2', 'decision', 'closing'],
-		'Proposal': ['title', 'content', 'list-criteria', 'kpi', 'decision', 'closing'],
-		'Roadmap review': ['title', 'roadmap', 'kpi', 'matrix-2x2', 'closing'],
+		'Status update': { spine: ['title', 'kpi', 'roadmap', 'decision', 'closing'], exemplar: 'general-team/status-update' },
+		'Project kickoff': { spine: ['title', 'content', 'roadmap', 'actors', 'decision', 'closing'], exemplar: 'general-team/project-kickoff' },
+		'Project status': { spine: ['title', 'kpi', 'roadmap', 'matrix-2x2', 'closing'], exemplar: 'general-team/project-status' },
+		'Retrospective / post-mortem': { spine: ['title', 'timeline-list', 'matrix-2x2', 'list-steps', 'closing'], exemplar: 'general-team/retrospective' },
+		'All-hands': { spine: ['title', 'big-number', 'kpi', 'roadmap', 'quote', 'closing'], exemplar: 'general-team/all-hands' },
+		'Team meeting': { spine: ['title', 'agenda', 'content', 'decision', 'closing'], exemplar: 'general-team/team-meeting' },
+		'Training / onboarding': { spine: ['title', 'agenda', 'list-steps', 'checklist', 'closing'], exemplar: 'general-team/training-onboarding' },
+		'Workshop': { spine: ['title', 'agenda', 'content', 'cards-grid', 'list-steps', 'closing'], exemplar: 'general-team/workshop' },
+		'Decision memo': { spine: ['title', 'content', 'compare-table', 'matrix-2x2', 'decision', 'closing'], exemplar: 'general-team/decision-memo' },
+		'Proposal': { spine: ['title', 'content', 'list-criteria', 'kpi', 'decision', 'closing'], exemplar: 'general-team/proposal' },
+		'Roadmap review': { spine: ['title', 'roadmap', 'kpi', 'matrix-2x2', 'closing'], exemplar: 'general-team/roadmap-review' },
 	},
 	Corporate: {
-		'Board update': ['title', 'kpi', 'roadmap', 'decision', 'matrix-2x2', 'closing'],
-		'Investor pitch': ['title', 'content', 'content', 'big-number', 'kpi', 'roadmap', 'actors', 'decision', 'closing'],
-		'Sales deck': ['title', 'content', 'content', 'verdict-grid', 'kpi', 'decision', 'closing'],
-		'Quarterly business review': ['title', 'kpi', 'roadmap', 'matrix-2x2', 'decision', 'closing'],
-		'Strategy proposal': ['title', 'content', 'verdict-grid', 'matrix-2x2', 'decision', 'roadmap', 'closing'],
-		'Product launch': ['title', 'content', 'featured', 'cards-grid', 'kpi', 'roadmap', 'closing'],
-		'Customer case study': ['title', 'content', 'split-compare', 'kpi', 'quote', 'closing'],
-		'Budget request': ['title', 'big-number', 'content', 'list-tabular', 'kpi', 'decision', 'closing'],
-		'OKR / goals review': ['title', 'kpi', 'progress', 'roadmap', 'closing'],
+		'Board update': { spine: ['title', 'kpi', 'roadmap', 'decision', 'matrix-2x2', 'closing'], exemplar: 'corporate/board-update' },
+		'Investor pitch': { spine: ['title', 'content', 'content', 'big-number', 'kpi', 'roadmap', 'actors', 'decision', 'closing'], exemplar: 'corporate/investor-pitch' },
+		'Sales deck': { spine: ['title', 'content', 'content', 'verdict-grid', 'kpi', 'decision', 'closing'], exemplar: 'corporate/sales-deck' },
+		'Quarterly business review': { spine: ['title', 'kpi', 'roadmap', 'matrix-2x2', 'decision', 'closing'], exemplar: 'corporate/quarterly-business-review' },
+		'Strategy proposal': { spine: ['title', 'content', 'verdict-grid', 'matrix-2x2', 'decision', 'roadmap', 'closing'], exemplar: 'corporate/strategy-proposal' },
+		'Product launch': { spine: ['title', 'content', 'featured', 'cards-grid', 'kpi', 'roadmap', 'closing'], exemplar: 'corporate/product-launch' },
+		'Customer case study': { spine: ['title', 'content', 'split-compare', 'kpi', 'quote', 'closing'], exemplar: 'corporate/customer-case-study' },
+		'Budget request': { spine: ['title', 'big-number', 'content', 'list-tabular', 'kpi', 'decision', 'closing'], exemplar: 'corporate/budget-request' },
+		'OKR / goals review': { spine: ['title', 'kpi', 'progress', 'roadmap', 'closing'], exemplar: 'corporate/okr-goals-review' },
 	},
 	Academic: {
-		Lecture: ['title', 'agenda', 'content', 'diagram', 'list-criteria', 'closing'],
-		'Conference talk': ['title', 'content', 'content', 'radar', 'content', 'closing'],
-		'Thesis / dissertation defense': ['title', 'content', 'content', 'stats', 'content', 'roadmap', 'closing'],
-		'Research findings': ['title', 'content', 'content', 'stats', 'content', 'closing'],
-		'Journal club': ['title', 'citation-card', 'content', 'stats', 'matrix-2x2', 'closing'],
-		'Grant proposal': ['title', 'content', 'list-criteria', 'roadmap', 'kpi', 'closing'],
-		Seminar: ['title', 'agenda', 'content', 'diagram', 'list-steps', 'closing'],
-		'Poster walkthrough': ['title', 'content', 'diagram', 'stats', 'content', 'closing'],
-		'Literature review': ['title', 'content', 'timeline-list', 'compare-table', 'content', 'closing'],
-		'Course overview': ['title', 'agenda', 'roadmap', 'list-criteria', 'checklist', 'closing'],
+		Lecture: { spine: ['title', 'agenda', 'content', 'diagram', 'list-criteria', 'closing'], exemplar: 'academic/lecture' },
+		'Conference talk': { spine: ['title', 'content', 'content', 'radar', 'content', 'closing'], exemplar: 'academic/conference-talk' },
+		'Thesis / dissertation defense': { spine: ['title', 'content', 'content', 'stats', 'content', 'roadmap', 'closing'], exemplar: 'academic/thesis-defense' },
+		'Research findings': { spine: ['title', 'content', 'content', 'stats', 'content', 'closing'], exemplar: 'academic/research-findings' },
+		'Journal club': { spine: ['title', 'citation-card', 'content', 'stats', 'matrix-2x2', 'closing'], exemplar: 'academic/journal-club' },
+		'Grant proposal': { spine: ['title', 'content', 'list-criteria', 'roadmap', 'kpi', 'closing'], exemplar: 'academic/grant-proposal' },
+		Seminar: { spine: ['title', 'agenda', 'content', 'diagram', 'list-steps', 'closing'], exemplar: 'academic/seminar' },
+		'Poster walkthrough': { spine: ['title', 'content', 'diagram', 'stats', 'content', 'closing'], exemplar: 'academic/poster-walkthrough' },
+		'Literature review': { spine: ['title', 'content', 'timeline-list', 'compare-table', 'content', 'closing'], exemplar: 'academic/literature-review' },
+		'Course overview': { spine: ['title', 'agenda', 'roadmap', 'list-criteria', 'checklist', 'closing'], exemplar: 'academic/course-overview' },
 	},
 	'Government / Public': {
-		'Policy briefing': ['title', 'content', 'content', 'verdict-grid', 'matrix-2x2', 'decision', 'closing'],
-		'Budget proposal': ['title', 'big-number', 'list-tabular', 'kpi', 'matrix-2x2', 'decision', 'closing'],
-		'Public hearing / testimony': ['title', 'content', 'list-criteria', 'stats', 'quote', 'closing'],
-		'Agency / program update': ['title', 'kpi', 'roadmap', 'matrix-2x2', 'closing'],
-		'Inter-agency briefing': ['title', 'content', 'actors', 'roadmap', 'decision', 'closing'],
-		'RFP / proposal response': ['title', 'content', 'list-criteria', 'gantt', 'actors', 'kpi', 'closing'],
-		'Town hall': ['title', 'big-number', 'content', 'kpi', 'content', 'closing'],
-		'Compliance / audit report': ['title', 'content', 'obligation-matrix', 'matrix-2x2', 'list-steps', 'closing'],
+		'Policy briefing': { spine: ['title', 'content', 'content', 'verdict-grid', 'matrix-2x2', 'decision', 'closing'], exemplar: 'government-public/policy-briefing' },
+		'Budget proposal': { spine: ['title', 'big-number', 'list-tabular', 'kpi', 'matrix-2x2', 'decision', 'closing'], exemplar: 'government-public/budget-proposal' },
+		'Public hearing / testimony': { spine: ['title', 'content', 'list-criteria', 'stats', 'quote', 'closing'], exemplar: 'government-public/public-hearing' },
+		'Agency / program update': { spine: ['title', 'kpi', 'roadmap', 'matrix-2x2', 'closing'], exemplar: 'government-public/agency-program-update' },
+		'Inter-agency briefing': { spine: ['title', 'content', 'actors', 'roadmap', 'decision', 'closing'], exemplar: 'government-public/inter-agency-briefing' },
+		'RFP / proposal response': { spine: ['title', 'content', 'list-criteria', 'gantt', 'actors', 'kpi', 'closing'], exemplar: 'government-public/rfp-response' },
+		'Town hall': { spine: ['title', 'big-number', 'content', 'kpi', 'content', 'closing'], exemplar: 'government-public/town-hall' },
+		'Compliance / audit report': { spine: ['title', 'content', 'obligation-matrix', 'matrix-2x2', 'list-steps', 'closing'], exemplar: 'government-public/compliance-audit-report' },
 	},
 	'Nonprofit / Mission-driven': {
-		'Donor pitch': ['title', 'content', 'quote', 'big-number', 'roadmap', 'decision', 'closing'],
-		'Fundraising / capital campaign': ['title', 'content', 'big-number', 'progress', 'cards-grid', 'decision', 'closing'],
-		'Impact / annual report': ['title', 'kpi', 'journey', 'quote', 'stats', 'roadmap', 'closing'],
-		'Grant report': ['title', 'content', 'kpi', 'list-criteria', 'stats', 'closing'],
-		'Nonprofit board meeting': ['title', 'kpi', 'stats', 'roadmap', 'decision', 'closing'],
-		'Program overview': ['title', 'content', 'diagram', 'kpi', 'actors', 'closing'],
-		'Volunteer onboarding': ['title', 'agenda', 'content', 'list-steps', 'checklist', 'closing'],
+		'Donor pitch': { spine: ['title', 'content', 'quote', 'big-number', 'roadmap', 'decision', 'closing'], exemplar: 'nonprofit/donor-pitch' },
+		'Fundraising / capital campaign': { spine: ['title', 'content', 'big-number', 'progress', 'cards-grid', 'decision', 'closing'], exemplar: 'nonprofit/fundraising-capital-campaign' },
+		'Impact / annual report': { spine: ['title', 'kpi', 'journey', 'quote', 'stats', 'roadmap', 'closing'], exemplar: 'nonprofit/impact-annual-report' },
+		'Grant report': { spine: ['title', 'content', 'kpi', 'list-criteria', 'stats', 'closing'], exemplar: 'nonprofit/grant-report' },
+		'Nonprofit board meeting': { spine: ['title', 'kpi', 'stats', 'roadmap', 'decision', 'closing'], exemplar: 'nonprofit/nonprofit-board-meeting' },
+		'Program overview': { spine: ['title', 'content', 'diagram', 'kpi', 'actors', 'closing'], exemplar: 'nonprofit/program-overview' },
+		'Volunteer onboarding': { spine: ['title', 'agenda', 'content', 'list-steps', 'checklist', 'closing'], exemplar: 'nonprofit/volunteer-onboarding' },
 	},
 };
 
 // Flat list for fuzzy search (fuse.js) — preserves group order for grouping.
 const ARCHETYPE_LIST = [];
 for (const [group, items] of Object.entries(ARCHETYPES)) {
-	for (const name of Object.keys(items)) ARCHETYPE_LIST.push({ name, group, spine: items[name] });
+	for (const [name, entry] of Object.entries(items)) {
+		ARCHETYPE_LIST.push({ name, group, spine: entry.spine, exemplar: entry.exemplar });
+	}
 }
 
-export function createOnboarding({ catalog, mount, onBuild, model, say }) {
+// Exposed for the docs test that gates the archetype→exemplar mapping against the
+// files on disk (no second source of truth).
+export { ARCHETYPE_LIST };
+
+export function createOnboarding({ catalog, mount, onBuild, model, say, exemplarBase }) {
 	if (!mount) return { reset() {} };
 	const byName = new Map((catalog || []).map((c) => [c.name, c]));
+
+	// Fetch + cache the full worked exemplar deck for an archetype (the authored
+	// `full` deck; the browser trims it to the chosen tier). Returns null when no
+	// exemplar base is configured or the fetch fails, so the picker degrades to the
+	// structure-only scaffold rather than breaking.
+	const exemplarCache = new Map(); // 'bucket/slug' -> Promise<string|null>
+	function fetchExemplar(path) {
+		if (!exemplarBase || !path) return Promise.resolve(null);
+		if (!exemplarCache.has(path)) {
+			const p = fetch(`${exemplarBase}${path}.md`)
+				.then((r) => (r.ok ? r.text() : null))
+				.catch(() => null)
+				// Don't pin a transient failure for the session — drop the cache entry on
+				// a miss so a later re-pick retries (a hit caches the deck text for reuse).
+				.then((text) => {
+					if (text == null) exemplarCache.delete(path);
+					return text;
+				});
+			exemplarCache.set(path, p);
+		}
+		return exemplarCache.get(path);
+	}
 
 	const el = (tag, cls, text) => {
 		const e = document.createElement(tag);
@@ -635,7 +672,7 @@ export function createOnboarding({ catalog, mount, onBuild, model, say }) {
 				for (const it of arr) {
 					const item = el('button', 'db-draft-item', it.name);
 					item.type = 'button';
-					item.addEventListener('click', () => proposeArchetype(it.name, it.spine));
+					item.addEventListener('click', () => proposeArchetype(it));
 					list.appendChild(item);
 				}
 			}
@@ -654,24 +691,38 @@ export function createOnboarding({ catalog, mount, onBuild, model, say }) {
 		setTimeout(() => search.focus(), 0);
 	}
 
-	function proposeArchetype(name, spine) {
+	function proposeArchetype(it) {
+		const name = it.name;
+		const spine = it.spine;
 		mount.innerHTML = '';
 		const back = el('button', 'db-ob-cancel'); back.innerHTML = '<span class="ico ico-arrow-left" aria-hidden="true"></span> Types';
 		back.type = 'button';
 		back.addEventListener('click', startDrafting);
 		mount.appendChild(back);
-		mount.appendChild(el('p', 'db-draft-say', `${name} — here’s the structure I’d build.`));
+		mount.appendChild(el('p', 'db-draft-say', `${name} — start from a worked example, or just the structure.`));
+
+		// ── Worked example (primary) — the filled-in, boardroom-grade deck, trimmed
+		// to a chosen length. Rendered as a placeholder, then populated once the deck
+		// is fetched (and removed entirely if there's no exemplar / the fetch fails,
+		// so the structure path below always stands).
+		const exBox = el('div', 'db-ex');
+		exBox.appendChild(el('div', 'db-ex-loading', 'Loading the worked example…'));
+		mount.appendChild(exBox);
+
+		// ── Structure (secondary) — the empty scaffold the Architect would lay out.
+		const structWrap = el('div', 'db-struct');
+		structWrap.appendChild(el('p', 'db-struct-label', 'Or just the structure'));
 		const ol = el('ol', 'db-ob-outline');
 		for (const comp of spine) {
 			const item = el('li');
 			item.appendChild(el('strong', null, comp));
 			ol.appendChild(item);
 		}
-		mount.appendChild(ol);
-		const row = el('div', 'db-ob-chips');
-		const build = el('button', 'db-btn db-btn-primary'); build.innerHTML = 'Build this <span class="ico ico-arrow-right" aria-hidden="true"></span>';
-		build.type = 'button';
-		build.addEventListener('click', async () => {
+		structWrap.appendChild(ol);
+		const buildStruct = el('button', 'db-btn db-btn-ghost db-ex-build');
+		buildStruct.type = 'button';
+		buildStruct.innerHTML = 'Build the structure <span class="ico ico-arrow-right" aria-hidden="true"></span>';
+		buildStruct.addEventListener('click', async () => {
 			everChose = true;
 			inFlow = false;
 			rememberMode('Drafting');
@@ -682,11 +733,91 @@ export function createOnboarding({ catalog, mount, onBuild, model, say }) {
 				'Tap the chips for top fixes or pacing; switch to Converse to talk it through.');
 			compactView();
 		});
+		structWrap.appendChild(buildStruct);
+		mount.appendChild(structWrap);
+
+		const row = el('div', 'db-ob-chips');
 		const other = el('button', 'db-ob-chip', 'Pick another');
 		other.type = 'button';
 		other.addEventListener('click', startDrafting);
-		row.append(build, other);
+		row.append(other);
 		mount.appendChild(row);
+
+		// Fetch the worked deck and, once it lands, replace the placeholder with the
+		// tier chooser + Open button. If it's gone (the user navigated on) or the deck
+		// is unavailable, leave only the structure path.
+		fetchExemplar(it.exemplar).then((full) => {
+			if (!exBox.isConnected) return; // navigated away mid-fetch
+			if (full) { renderExemplar(exBox, name, full); return; }
+			if (exemplarBase && it.exemplar) {
+				// The archetype HAS a worked example but it didn't load (offline /
+				// transient) — say so rather than silently hiding it, so the author
+				// knows it exists; the structure path below still stands.
+				exBox.innerHTML = '';
+				exBox.appendChild(el('p', 'db-ex-loading', 'Couldn’t load the worked example — start from the structure below, or pick another.'));
+			} else {
+				exBox.remove(); // no exemplar configured at all → structure-only
+			}
+		});
+	}
+
+	// Build the worked-example block: a Short · Standard · Full chooser (with live
+	// slide counts) and an Open button that loads the deck trimmed to the choice.
+	function renderExemplar(box, name, full) {
+		box.innerHTML = '';
+		box.appendChild(el('p', 'db-ex-label', 'A worked example — fill in your own, or learn from it.'));
+		const counts = tierCounts(full); // { short, standard, full }
+		const TIER_DEFS = [
+			['short', 'Short', 'the essentials'],
+			['standard', 'Standard', 'the full arc'],
+			['full', 'Full', 'every slide'],
+		];
+		let chosen = 'standard';
+		const seg = el('div', 'db-ex-tiers');
+		seg.setAttribute('role', 'radiogroup');
+		seg.setAttribute('aria-label', 'Example length');
+		const segBtns = {};
+		for (const [tier, label, hint] of TIER_DEFS) {
+			const b = el('button', 'db-ex-tier');
+			b.type = 'button';
+			b.setAttribute('role', 'radio');
+			b.dataset.tier = tier;
+			b.title = hint;
+			b.append(
+				el('span', 'db-ex-tier-name', label),
+				el('span', 'db-ex-tier-count', `${counts[tier]} slide${counts[tier] === 1 ? '' : 's'}`),
+			);
+			b.addEventListener('click', () => setTier(tier));
+			segBtns[tier] = b;
+			seg.appendChild(b);
+		}
+		function setTier(tier) {
+			chosen = tier;
+			for (const [t, b] of Object.entries(segBtns)) {
+				const on = t === tier;
+				b.classList.toggle('is-active', on);
+				b.setAttribute('aria-checked', on ? 'true' : 'false');
+			}
+		}
+		setTier(chosen);
+		box.appendChild(seg);
+
+		const open = el('button', 'db-btn db-btn-primary db-ex-open');
+		open.type = 'button';
+		open.innerHTML = 'Open the example <span class="ico ico-arrow-right" aria-hidden="true"></span>';
+		open.addEventListener('click', async () => {
+			everChose = true;
+			inFlow = false;
+			rememberMode('Drafting');
+			const deck = filterToTier(full, chosen);
+			if (onBuild) await onBuild(deck, name);
+			if (say) await say(
+				`Loaded a worked ${name} — the ${chosen} cut, ${counts[chosen]} slides. ` +
+				'It’s a real, finished example: read how it’s built, then make it yours. ' +
+				'I review every edit; switch to Converse to talk it through.');
+			compactView();
+		});
+		box.appendChild(open);
 	}
 
 	// Scaffold the deck from the spine, using each component's catalog skeleton.
