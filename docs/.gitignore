@@ -28,3 +28,5 @@ pnpm-debug.log*
 # macOS-specific files
 .DS_Store
 .lighthouseci
+# perf-collect / perf-regression working dirs (scripts/perf-collect.mjs)
+.perf/
