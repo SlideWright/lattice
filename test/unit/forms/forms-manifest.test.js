@@ -85,6 +85,13 @@ test('(c) manifest-derived skip set equals the historical FORM_TOGGLE_SKIP', () 
   assert.deepEqual([...derived].sort(), [...HISTORICAL_SKIP].sort());
 });
 
+test('(c) the browser-baked FORM_TOGGLE_SKIP_FALLBACK matches the manifest-derived set', () => {
+  // The fallback literal is what the fs-free browser bundle uses; it must never
+  // drift from the manifests (the Node-derived set). This guards that claim.
+  assert.deepEqual([...plugins.FORM_TOGGLE_SKIP_FALLBACK].sort(), [...forms.frameToggleSkip()].sort());
+  assert.deepEqual([...plugins.FORM_TOGGLE_SKIP].sort(), [...forms.frameToggleSkip()].sort());
+});
+
 test('(c) plugins.formToggleClass skips every historical sovereign Frame', () => {
   for (const skip of HISTORICAL_SKIP) {
     assert.equal(plugins.formToggleClass(skip, 'standard'), skip, `should skip ${skip}`);

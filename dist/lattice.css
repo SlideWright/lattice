@@ -6552,13 +6552,13 @@ section.piechart.cover .piechart-svg {
        the unified viewBox aspect, so the WHOLE unit (disc + key) scales and
        never overflows/clips, HD and 4K alike.
    Scoped to section.form so non-form pie rendering stays byte-identical. */
-section.form.piechart .chart-body {
+section.form.piechart:not(.cover) .chart-body {
   container-type: size;
 }
-section.form.piechart .piechart-figure {
+section.form.piechart:not(.cover) .piechart-figure {
   display: contents;
 }
-section.form.piechart .piechart-svg {
+section.form.piechart:not(.cover) .piechart-svg {
   height: 100cqh;
   width: auto;
   max-width: 100%;
@@ -13583,9 +13583,10 @@ section.form.draft .masthead-bay::after {
  * centre zone so it can never run through the rail, and the centre zone ends
  * before the pagination zone. (Non-form decks keep the full-width footer — this
  * is scoped to section.form.) */
-section.form > footer {
-  /* Stop before the reserved centre zone (rail), measured from the right edge:
-   * 50% + half the centre zone + a gap. */
+section.form.has-progress > footer {
+  /* Yield to the reserved centre zone ONLY when a progress rail is present
+   * (the injectors add `has-progress`); a rail-less form slide keeps the
+   * default full-width footer. Right edge = 50% + half the centre zone + gap. */
   right: calc(50% + var(--footer-centre-half) + var(--sp-md));
 }
 

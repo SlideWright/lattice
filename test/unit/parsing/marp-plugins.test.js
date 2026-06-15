@@ -210,6 +210,19 @@ describe('marp-plugins', () => {
     assert.match(rails[1][1], /<span class="dot"><\/span><span class="dot on"><\/span>/);
   });
 
+  test('applyProgressRailToHtml: marks rail-bearing sections has-progress (footer Cell yields the centre zone)', () => {
+    const html = deck([
+      sec('divider', '<h2>S1</h2>'),
+      sec('content form'),              // gets a rail → has-progress
+      sec('content form no-progress'),  // no rail → no has-progress
+    ]);
+    const out = plugins.applyProgressRailToHtml(html);
+    const opens = [...out.matchAll(/<section class="([^"]*)"/g)].map((m) => m[1]);
+    // the rail-bearing form slide is marked; the no-progress one is not
+    assert.ok(opens.some((c) => /\bform\b/.test(c) && /\bhas-progress\b/.test(c)), 'rail slide marked');
+    assert.ok(opens.some((c) => /\bno-progress\b/.test(c) && !/\bhas-progress\b/.test(c)), 'no-progress slide unmarked');
+  });
+
   test('applyProgressRailToHtml: rail label prefers the divider eyebrow over its heading', () => {
     const html = deck([
       sec('divider', '<p><code>Section 01</code></p><h2>A very long editorial heading sentence</h2>'),

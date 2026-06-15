@@ -117,10 +117,23 @@ lib/forms/
   schema/cell.schema.json               # the shared slot definition
 ```
 
-This is what makes the value real: **author once; consumers select a Frame and
-the same authored Tiles re-flow into it.** It is the OCP fix (adding a Frame is
-a folder, not edits to three kernels) and the precondition for designer- and
-AI-authored Frames (`design/forms.md` §7). [Status: see §8.]
+**What the manifest drives TODAY (load-bearing):** the engine derives
+`FORM_TOGGLE_SKIP` from the frame manifests (`exemptFromChrome:true`), so adding
+a chrome-exempt sovereign Frame is a folder, not a code edit — proven
+byte-identical to the prior hardcoded set. It also validates the catalog
+(schema + `accepts`/`fits` referential integrity) and generates
+`dist/docs/forms.json`.
+
+**What it does NOT drive yet (honest scope):** the `--frame-*`/`--cell-*`
+geometry, the masthead/stage/footer grid, the `fill-*` classes, and the Tile
+injectors (`masthead-lift`, meta/progress/watermark) are still hand-coded in
+`base.variants.css` and the kernels. The manifest's per-Cell
+`geometry`/`fill`/`accepts`/`z` are catalog data, not yet the CSS/injector
+source. So the full OCP win — "adding a Tile is a folder, not edits to three
+kernels" (`design/forms.md` §11) — is **set up, not delivered**: the catalog and
+the skip-derivation ship; manifest-driven grid + injectors are **staged**
+alongside A-later (§8). The vocabulary, schema, and the one load-bearing
+consumer are the foundation that makes the rest mechanical.
 
 ## 7. The rename (retiring island-jargon)
 
@@ -142,6 +155,10 @@ from real Cell heights; per-Cell `fill` discipline; the `lib/forms/` manifest
 (`design-system.md` §2.5, CLAUDE.md row, CHANGELOG).
 
 **Staged (documented, not in this PR):**
+- **Manifest-driven geometry + Tile injectors** (§6): make the `--frame-*` grid,
+  the `fill-*` set, and the meta/progress/watermark injectors read from
+  `lib/forms/` instead of being hand-coded — the full OCP win. The catalog +
+  schema + skip-derivation that ship here are its foundation.
 - **A — section-as-grid**: the 242-child-selector migration + flex→grid audit
   (§4). The B-now content Cell is its prerequisite and is now in place.
 - **`@layer` activation** (#283/#284) — blocked, untouched.
@@ -151,5 +168,9 @@ from real Cell heights; per-Cell `fill` discipline; the `lib/forms/` manifest
 
 Three-renderer parity; per-component galleries (light + dark page-counts);
 `tools/pixel-check.js` before/after on the baseline deck; **non-`form` decks
-byte-identical** (every Form rule is `section.form`-scoped); visual review of
-the gallery at HD light + dark, with the donut verified at HD **and** 4K.
+byte-identical** — the Form *behaviour* is `section.form`-scoped; the
+`--isl-*`→`--frame-*` token rename does touch shared chrome rules
+(`section header/footer`, `img.deck-logo`) but carries the identical literal
+values, so output is unchanged (verified AE=0 on the control deck). Visual
+review of the gallery at HD light + dark, with the donut verified at HD **and**
+4K.

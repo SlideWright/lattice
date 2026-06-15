@@ -134,7 +134,16 @@ in patch versions.
   to the historical one). See `design/forms.md` §11 and
   `engineering/decisions/2026-06-15-form-implementation.md` §6.
 
-- **A public comparison page (`/comparison`).** An honest, sourced read on how
+- **A value-demonstrating Form gallery (`design/forms.gallery.md` + committed
+  PDF) and a per-feature demo deck (`examples/form.md`).** The gallery makes the
+  case for the model — author one block of Tiles, let a consumer select a Frame
+  and the same Tiles re-flow — and proves the chart-collapse fix (a full-size
+  `piechart donut` and `radar` inside the chrome), the footer-Cell contract (the
+  rail no longer collides with the footer text), the masthead bay (`meta:` + a
+  `confidential` status chip), the watermark Tile, and per-Cell `fill` discipline
+  (`fill-center` vs `fill-anchor` on the same Tile). The payoff sequence carries
+  one block of content under `form: standard`, `form: minimal`, and a sovereign
+  `split-panel` Frame. See `design/forms.md`. An honest, sourced read on how
   Lattice stacks up against the field: AI generators (Gamma, Beautiful.ai,
   Decktopus, Presentations.ai, Plus AI, MagicSlides, SlidesAI), office suites
   (PowerPoint + Copilot, Google Slides + Gemini, Keynote), code engines (Marp,

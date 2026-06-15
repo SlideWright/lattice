@@ -106,6 +106,4 @@ The progress Tile reads the deck's `divider` slides as sections and stamps a dot
 
 # One flag, the whole model.
 
-`Next · Phase 4 — the concrete stage wrapper`
-
-Inspect this deck against the model in engineering/decisions/2026-06-11-islands.md.
+The Frame · Cell · Tile model, enabled across a whole deck from one front-matter flag.

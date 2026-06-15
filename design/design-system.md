@@ -107,6 +107,19 @@ is never a canonical term; resolving "make it look different" into *Layout* vs
 outside these two columns is a convenience term, not a concept, and is scoped
 or retired rather than allowed to drift.
 
+**Form is now the composition *system*, axis included.** `design/forms.md`
+ratified the slide-scale model (Form = Frame + Cell + Tile) and *promotes* the
+word: **Form** is the system that answers "how is this composed?", and the axis
+of a component is one part of it. Its human word stays **Layout**. The twelve
+values (`split`, `panel`, `grid`, …) are a Form's **Frame types** — "Frame" is
+the system word for *a Form value acting as a slicer* (the object that carves a
+box into Cells). It is **not** a third synonym for "Form": "Form" names the
+system, "Frame" names the slicer. A component therefore *selects a Frame* and
+binds Substance into the Cells it produces. `design/forms.md` owns the Form
+vocabulary; this doc owns how a *component* selects a Form. (No human word is
+coined for "Frame" — it is a structural, designer-facing system word; an author
+selects one via `form: <name>`.)
+
 The human register is **generated from** the system register, never coined
 independently — so the surfaces can't drift apart.
 
