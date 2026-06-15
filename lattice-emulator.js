@@ -1266,7 +1266,19 @@ ${stateChartScript}
 </body></html>`;
 
 const outHtml = outFile.replace(/\.(pdf|pptx|png)$/i, '') + '.html';
-fs.writeFileSync(outHtml, htmlDoc);
+// Strip the live-preview runtime (lattice-runtime.js) from the export HTML.
+// A deck may embed `<script src="…/lattice-runtime.js">` for the VS Code / web
+// preview; that runtime runs the overflow watcher, which CREATES the red
+// ".overflow-tab" and re-marks sections on a MutationObserver/ResizeObserver/rAF
+// loop — re-painting the authoring badge during print and defeating the
+// export-stays-clean contract. Mermaid is pre-rendered to SVG at build time and
+// styling is the embedded lattice.css, so the runtime is a documented no-op for
+// the deliverable. We drop the tag rather than intercept the request per render:
+// request interception adds latency to every page load (it slows the 53-component
+// invariants suite enough to time out in CI). The class-strip below still clears
+// the emulator's own inline-watcher ring.
+const RUNTIME_SCRIPT = /[ \t]*<script\b[^>]*\blattice-runtime(?:\.min)?\.js[^>]*><\/script>\s*/gi;
+fs.writeFileSync(outHtml, htmlDoc.replace(RUNTIME_SCRIPT, ''));
 if (!QUIET) console.log(`HTML: ${slides.length} slides → ${outHtml}`);
 
 // ── PDF via Puppeteer ─────────────────────────────────────────────────────────
@@ -1367,6 +1379,17 @@ const puppeteer = loadPuppeteer();
     console.warn(`  ⚠ OVERFLOW — ${n} slide${n > 1 ? 's' : ''} exceed the frame and ${n > 1 ? 'are' : 'is'} CLIPPED in this export: page${n > 1 ? 's' : ''} ${overflowing.join(', ')}.`);
     console.warn(`    Fix ${n > 1 ? 'them' : 'it'} before delivering (trim content, or use a layout/fill that fits). The export stays clean — no overflow marker is printed.`);
   }
+  // Strip the authoring-only overflow signal before exporting. The injected
+  // watcher (and base.modifiers.css) draw a loud red ring + "OVERFLOWS" tab on
+  // any `.overflow` section — invaluable while authoring in the live preview,
+  // but a red box in front of a board is worse than the silent clip that
+  // overflow:hidden already applies. The author was warned on stderr above; the
+  // PDF / PNG / PPTX deliverable stays clean, matching the contract documented
+  // at the detection pass. (Removing the class also hides the .overflow-tab via
+  // `section:not(.overflow) > .overflow-tab { display:none }`.)
+  await page.evaluate(() => {
+    for (const s of document.querySelectorAll('section.overflow')) s.classList.remove('overflow');
+  });
   if (OUT_FORMAT === 'pdf') {
     // Render to a buffer (no `path`) so we can post-process before writing: the
     // speaker notes are attached as per-page PDF text annotations.
