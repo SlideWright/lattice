@@ -27,6 +27,19 @@ in patch versions.
 
 ### Added
 
+- **Declared portrait/landscape support per component, with a lint warning.**
+  Every component manifest can now declare an `orientation` array — `["landscape",
+  "portrait"]` (both, the default), `["landscape"]` (landscape-only), or
+  `["portrait"]` (social-only, none yet). A full-catalog audit (every gallery
+  rendered at 9:16 and judged on real output) classified all 54: **8 are
+  landscape-only** — `gantt`, `journey`, `kanban`, `roadmap`, `state-chart`
+  (horizontal-axis charts), `compare-code`, `redline` (side-by-side diffs), and
+  `image` — the rest work in portrait. The field surfaces in
+  `dist/docs/components.json`, and **`lint:deck` warns** (`orientation-mismatch`)
+  when a portrait/mobile deck uses a landscape-only layout (or a landscape deck a
+  portrait-only one). The lint set is kept in step with the manifests by a unit
+  test. See `engineering/decisions/2026-06-16-orientation-in-the-form-model.md`.
+
 - **Portrait grid reflow for the data-dense layouts.** Building on the
   social/mobile `@size` work, the grid-based layouts now reflow on a
   portrait/square canvas instead of holding their landscape composition: `kpi`

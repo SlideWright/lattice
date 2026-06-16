@@ -65,25 +65,33 @@ renderer, per the manifest-contract decision.
 
 ### B — Contract: a declared `orientation` support field (the honest catalog)
 
-Because adaptation is hand-written, "does layout X work in portrait?" is a
-*fact to declare*, not derive. Add an **`orientation` support field to each
-component (and Tile) manifest**, surfaced into `dist/docs/components.json`:
+Because adaptation is hand-written, the orientations a layout is *designed for*
+are a **fact to declare**, not derive — and the contract is **bidirectional**
+(a component can be landscape-only, portrait-only, or both). Add an
+**`orientation` support array** to each component manifest, surfaced into
+`dist/docs/components.json`:
 
 ```jsonc
-"orientation": "native" | "reflow" | "landscape-only"
+"orientation": ["landscape", "portrait"]   // both — the default
+"orientation": ["landscape"]               // landscape-only — e.g. redline
+"orientation": ["portrait"]                // portrait/social-only (future)
 ```
 
-- **`native`** — correct in portrait from `--canvas-scale` alone (centred
-  flex-column layouts: title, statement, quote, content, stats, …).
-- **`reflow`** — has explicit portrait adaptation (the PR #407 set; diagrams
-  reorient; charts aspect-preserve).
-- **`landscape-only`** — portrait is not appropriate (e.g. `redline` — the
-  side-by-side diff is load-bearing).
+- **both** — works in either orientation, whether *natively* (correct from
+  `--canvas-scale` alone — centred flex-column layouts: title, quote, content,
+  stats…) or via *reflow* (explicit portrait adaptation — the PR #407 set;
+  diagrams reorient; SVG charts aspect-preserve). The native-vs-reflow nuance is
+  an audit note, not a separate field.
+- **landscape-only** (`["landscape"]`) — portrait is not appropriate (e.g.
+  `redline`, whose side-by-side before/after diff is load-bearing; wide tables).
+- **portrait-only** (`["portrait"]`) — built for the vertical feed and *not*
+  meant for a 16:9 deck. None ship today, but the model must allow a
+  social-native chart; the array makes that first-class.
 
 Verified by a **portrait audit** (render each component's gallery at 9:16,
 classify with real renders — a full-catalog maker-checker sweep), and enforced
-by `lint:deck`: a portrait/mobile deck that uses a `landscape-only` layout gets a
-warning.
+**both ways** by `lint:deck`: a portrait/mobile deck that uses a landscape-only
+layout warns, and a landscape deck that uses a portrait-only layout warns.
 
 ## Why this split
 
@@ -113,3 +121,33 @@ warning.
 - Not reviving `section-as-grid` — the bands stay in-flow and content-height.
 - Not making the manifest generate layout (no Medium/Heavy coupling here).
 - Not decomposing components into Cells — the content layout stays component CSS.
+
+## Audit result (2026-06-16)
+
+Full-catalog portrait audit: every component's gallery rendered at `size: story`
+(9:16) and judged on real output (parallel maker-checker review for the
+wide/horizontal candidates). **8 of 54 are landscape-only**; the rest are `both`
+(work in portrait, natively via `--canvas-scale` or via the PR #407 reflow).
+No component is portrait-only today (the model allows it for a future
+social-native chart).
+
+**`orientation: ["landscape"]`** — horizontal-axis or side-by-side layouts whose
+content clips/squishes in portrait (verified by render):
+
+| component | bucket | why landscape-only |
+|---|---|---|
+| `gantt` | chart | time axis squishes; bar labels truncate |
+| `journey` | chart | horizontal stage axis; stage chips bleed off the right |
+| `kanban` | chart | 4 columns crammed; card text clipped |
+| `roadmap` | chart | multi-column horizon board; headers/cells collide |
+| `state-chart` | chart | horizontal lifecycle flow runs off the right edge |
+| `compare-code` | code | side-by-side before/after diff; the AFTER panel clips |
+| `image` | imagery | full-bleed caption clips; split squeezes text to a sliver |
+| `redline` | comparison | side-by-side before/after diff is load-bearing (per #407) |
+
+The set is mirrored in `lib/authoring/lint-core.js` (`LANDSCAPE_ONLY_LAYOUTS`)
+and kept in step with the manifests by `test/unit/authoring/orientation-sync.test.js`.
+`lint:deck` warns (`orientation-mismatch`) when a portrait/mobile deck uses one.
+Notes: a few `both` layouts have a single landscape-favoured *variant*
+(`redline.split`, `state-chart` default vs `inline`, `q-and-a.spine`) — classified
+by their primary/default behaviour, since the contract is per-component.

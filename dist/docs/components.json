@@ -174,6 +174,10 @@
       "function": "inventory",
       "form": "ledger",
       "substance": "structure",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "ownership",
         "onboarding",
@@ -286,6 +290,10 @@
       "function": "inventory",
       "form": "stack",
       "substance": "structure",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "agenda-setting",
         "overview",
@@ -427,6 +435,10 @@
       "function": "progression",
       "form": "timeline",
       "substance": "structure",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "regulation",
         "citation",
@@ -544,6 +556,10 @@
       "function": "statement",
       "form": "canvas",
       "substance": "prose",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "hero-number",
         "metric",
@@ -661,6 +677,10 @@
       "function": "inventory",
       "form": "grid",
       "substance": "structure",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "overview",
         "showcase",
@@ -796,6 +816,10 @@
       "function": "inventory",
       "form": "stack",
       "substance": "structure",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "overview",
         "summary",
@@ -912,6 +936,10 @@
       "function": "inventory",
       "form": "stack",
       "substance": "structure",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "status",
         "stoplight",
@@ -1031,6 +1059,10 @@
       "function": "evidence",
       "form": "canvas",
       "substance": "prose",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "citation",
         "quotation",
@@ -1166,6 +1198,10 @@
       "function": "anchor",
       "form": "bookend",
       "substance": "prose",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "summary",
         "takeaway",
@@ -1282,6 +1318,10 @@
       "function": "evidence",
       "form": "canvas",
       "substance": "prose",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "snippet",
         "walkthrough",
@@ -1397,6 +1437,9 @@
       "function": "comparison",
       "form": "split",
       "substance": "structure",
+      "orientation": [
+        "landscape"
+      ],
       "tags": [
         "snippet",
         "contrast",
@@ -1517,6 +1560,10 @@
       "function": "comparison",
       "form": "split",
       "substance": "structure",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "tradeoff",
         "contrast",
@@ -1646,6 +1693,10 @@
       "function": "comparison",
       "form": "ledger",
       "substance": "prose",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "tradeoff",
         "ranking",
@@ -1763,6 +1814,10 @@
       "function": "statement",
       "form": "canvas",
       "substance": "prose",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "walkthrough",
         "overview",
@@ -1879,6 +1934,10 @@
       "function": "comparison",
       "form": "canvas",
       "substance": "structure",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "recommendation",
         "tradeoff",
@@ -1994,6 +2053,10 @@
       "function": "evidence",
       "form": "canvas",
       "substance": "graph",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "flowchart",
         "org-chart",
@@ -2116,6 +2179,10 @@
       "function": "anchor",
       "form": "divider",
       "substance": "prose",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "section-break",
         "agenda-setting",
@@ -2229,6 +2296,10 @@
       "function": "imagery",
       "form": "panel",
       "substance": "mixed",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "showcase",
         "pitch",
@@ -2345,6 +2416,10 @@
       "function": "evidence",
       "form": "canvas",
       "substance": "series",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "percentage",
         "sequence",
@@ -2463,6 +2538,9 @@
       "function": "progression",
       "form": "timeline",
       "substance": "series",
+      "orientation": [
+        "landscape"
+      ],
       "tags": [
         "swimlane",
         "planning",
@@ -2574,6 +2652,10 @@
       "function": "inventory",
       "form": "ledger",
       "substance": "structure",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "definition",
         "reference",
@@ -2689,6 +2771,9 @@
       "function": "imagery",
       "form": "canvas",
       "substance": "prose",
+      "orientation": [
+        "landscape"
+      ],
       "tags": [
         "visual",
         "showcase",
@@ -2819,6 +2904,9 @@
       "function": "progression",
       "form": "timeline",
       "substance": "structure",
+      "orientation": [
+        "landscape"
+      ],
       "tags": [
         "process",
         "assessment",
@@ -2938,6 +3026,9 @@
       "function": "progression",
       "form": "timeline",
       "substance": "series",
+      "orientation": [
+        "landscape"
+      ],
       "tags": [
         "swimlane",
         "workflow",
@@ -3054,6 +3145,10 @@
       "function": "evidence",
       "form": "ledger",
       "substance": "structure",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "dashboard",
         "scorecard",
@@ -3187,6 +3282,10 @@
       "function": "inventory",
       "form": "stack",
       "substance": "prose",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "overview",
         "summary",
@@ -3320,6 +3419,10 @@
       "function": "progression",
       "form": "ledger",
       "substance": "structure",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "requirements",
         "assessment",
@@ -3439,6 +3542,10 @@
       "function": "progression",
       "form": "timeline",
       "substance": "structure",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "process",
         "walkthrough",
@@ -3573,6 +3680,10 @@
       "function": "inventory",
       "form": "ledger",
       "substance": "structure",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "reference",
         "overview",
@@ -3702,6 +3813,10 @@
       "function": "inventory",
       "form": "grid",
       "substance": "prose",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "visual",
         "showcase",
@@ -3827,6 +3942,10 @@
       "function": "evidence",
       "form": "spatial",
       "substance": "series",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "metric",
         "proportion",
@@ -3972,6 +4091,10 @@
       "function": "evidence",
       "form": "canvas",
       "substance": "prose",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "formula",
         "assessment",
@@ -4111,6 +4234,10 @@
       "function": "comparison",
       "form": "matrix",
       "substance": "structure",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "two-by-two",
         "prioritize",
@@ -4224,6 +4351,10 @@
       "function": "comparison",
       "form": "matrix",
       "substance": "structure",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "compliance",
         "regulation",
@@ -4362,6 +4493,10 @@
       "function": "evidence",
       "form": "canvas",
       "substance": "series",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "donut",
         "proportion",
@@ -4481,6 +4616,10 @@
       "function": "comparison",
       "form": "grid",
       "substance": "structure",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "pitch",
         "tradeoff",
@@ -4614,6 +4753,10 @@
       "function": "evidence",
       "form": "canvas",
       "substance": "series",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "percentage",
         "stoplight",
@@ -4742,6 +4885,10 @@
       "function": "inventory",
       "form": "stack",
       "substance": "structure",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "pitch",
         "board-deck",
@@ -4881,6 +5028,10 @@
       "function": "evidence",
       "form": "scatter",
       "substance": "series",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "two-by-two",
         "positioning",
@@ -5018,6 +5169,10 @@
       "function": "statement",
       "form": "canvas",
       "substance": "prose",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "pull-quote",
         "quotation",
@@ -5126,6 +5281,10 @@
       "function": "evidence",
       "form": "scatter",
       "substance": "series",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "spider",
         "assessment",
@@ -5264,6 +5423,9 @@
       "function": "comparison",
       "form": "canvas",
       "substance": "prose",
+      "orientation": [
+        "landscape"
+      ],
       "tags": [
         "contract",
         "contrast",
@@ -5396,6 +5558,10 @@
       "function": "progression",
       "form": "ledger",
       "substance": "structure",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "changelog",
         "compliance",
@@ -5522,6 +5688,9 @@
       "function": "progression",
       "form": "matrix",
       "substance": "structure",
+      "orientation": [
+        "landscape"
+      ],
       "tags": [
         "planning",
         "swimlane",
@@ -5656,6 +5825,10 @@
       "function": "comparison",
       "form": "split",
       "substance": "structure",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "tradeoff",
         "recommendation",
@@ -5783,6 +5956,10 @@
       "function": "statement",
       "form": "panel",
       "substance": "structure",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "summary",
         "board-deck",
@@ -5918,6 +6095,9 @@
       "function": "progression",
       "form": "timeline",
       "substance": "graph",
+      "orientation": [
+        "landscape"
+      ],
       "tags": [
         "flowchart",
         "states",
@@ -6053,6 +6233,10 @@
       "function": "evidence",
       "form": "stack",
       "substance": "structure",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "dashboard",
         "metric",
@@ -6174,6 +6358,10 @@
       "function": "inventory",
       "form": "ledger",
       "substance": "structure",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "citation",
         "reference",
@@ -6295,6 +6483,10 @@
       "function": "evidence",
       "form": "timeline",
       "substance": "series",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "changelog",
         "milestones",
@@ -6414,6 +6606,10 @@
       "function": "anchor",
       "form": "bookend",
       "substance": "prose",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "pitch",
         "board-deck",
@@ -6524,6 +6720,10 @@
       "function": "comparison",
       "form": "grid",
       "substance": "structure",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "scorecard",
         "ranking",
@@ -6661,6 +6861,10 @@
       "function": "evidence",
       "form": "canvas",
       "substance": "series",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "tag-cloud",
         "themes",

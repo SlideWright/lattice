@@ -5,6 +5,7 @@
   "bucket": "chart",
   "form": "timeline",
   "substance": "graph",
+  "orientation": ["landscape"],
   "tags": ["flowchart", "states", "workflow"],
   "anatomyBlock": "state-chart",
   "description": "Native state machine diagram — states as a numbered list, transitions as nested inline-code refs.",
