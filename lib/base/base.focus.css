@@ -72,6 +72,30 @@ section[data-focus-style="blur"] li.lat-focus {
   z-index: 2;
 }
 
+/* ── pop — lift the target forward, leave the rest legible ─────────────────────
+ * The optical opposite of blur: instead of pushing the rest *back* (defocus),
+ * pop pulls the target *forward*. Promote-only — nothing is dimmed or blurred,
+ * so every other card/row stays fully readable (its edge over ring/list-fill is
+ * dimensionality). Uses the same hard, zero-blur lift shadow (`--focus-lift`),
+ * so it holds up in Apple PDFKit where a blurred shadow renders as a grey block
+ * (engineering/gotchas.md). */
+section[data-focus-style="pop"] li.lat-focus {
+  transform: scale(var(--focus-pop));
+  box-shadow: var(--focus-pop-shadow) var(--focus-pop-shadow) 0 var(--focus-lift);
+  border-radius: 0.6cqi;
+  position: relative;
+  z-index: 2;
+  font-weight: 600;
+}
+/* table row: a <tr> doesn't scale cleanly, so it lifts by reading as a raised
+ * band — an accent-soft fill out of the ruled rows + a hard drop line below. */
+section[data-focus-style="pop"] tr.lat-focus { position: relative; z-index: 2; }
+section[data-focus-style="pop"] tr.lat-focus > :is(td, th) {
+  background: var(--focus-fill);
+  box-shadow: 0 var(--focus-pop-shadow) 0 var(--focus-lift);
+  font-weight: 600;
+}
+
 /* ── ring — accent outline, zero layout shift ─────────────────────────────── */
 /* list / grid item: a plain outline rings the card without reflowing it. */
 section[data-focus-style="ring"] li.lat-focus {

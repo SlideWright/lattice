@@ -119,6 +119,22 @@ const entry = await framework.decisions.log(decision, { signals });
 
 ---
 
+<!-- _class: compare-table -->
+<!-- _focus: row 4 -->
+<!-- _focusStyle: pop -->
+
+## `_focusStyle: pop` — lift the row; every cell stays readable.
+
+| Criterion    | Chorus | Productboard | Notion    | Sprig + Log |
+| ------------ | ------ | ------------ | --------- | ----------- |
+| Speed        | ✓      | ✗            | ✓         | ✓           |
+| Auditability | ✗      | ✓            | ✓         | ✓           |
+| Adoption     | ✓      | ✓            | ✗         | ✓           |
+| Calibration  | ✗      | ✗            | ✗         | ✓           |
+| Setup time   | 1 day  | 3–4 weeks    | 40+ hours | Same day    |
+
+---
+
 <!-- _class: cards-grid -->
 <!-- _focusSteps: item 1 | item 2 | item 3 | item 4 -->
 
