@@ -5032,7 +5032,7 @@
           "description": "Attribution line below the quote."
         }
       },
-      "skeleton": "<!-- _class: quote -->\n\n> The quoted sentence sits here, kept short enough to read in one breath.\n\nAttribution — Person, Role\n",
+      "skeleton": "<!-- _class: quote -->\n\n> The quoted sentence sits here, kept short enough to read in one breath.\n\n— Person, Role\n",
       "whenToUse": [
         {
           "title": "Verbatim language matters",

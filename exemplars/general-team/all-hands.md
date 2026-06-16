@@ -51,7 +51,8 @@ Last summer one in five new teams left within a month. Instead of more retention
 <!-- _class: kpi -->
 <!-- tier: short -->
 
-### Trajectory · FY26 vs FY25
+`Trajectory · FY26 vs FY25`
+
 ## Every number that mattered moved the right way this year.
 
 1. $14.2M
@@ -126,7 +127,7 @@ Last summer one in five new teams left within a month. Instead of more retention
 
 > Meridian went from a tool we tolerated to the system our whole team plans around. The new onboarding made it stick.
 
-Attribution — Operations Lead, Brightwave Studios
+— Operations Lead, Brightwave Studios
 
 ---
 

@@ -41,7 +41,8 @@ The current hybrid app crashes at three times the industry rate and can't use th
 <!-- _class: kpi -->
 <!-- tier: short -->
 
-### Atlas · June 2026
+`Atlas · June 2026`
+
 ## On schedule and on budget; one workstream amber on a vendor dependency.
 
 1. 64%

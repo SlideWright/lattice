@@ -41,7 +41,8 @@ The vendor pulls security patches for the legacy stack at the end of July. Migra
 <!-- _class: kpi -->
 <!-- tier: short -->
 
-### Migration · Week of 8 June 2026
+`Migration · Week of 8 June 2026`
+
 ## Eleven of fourteen services live; latency and error budget both inside target.
 
 1. 78%

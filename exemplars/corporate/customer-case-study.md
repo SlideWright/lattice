@@ -106,7 +106,8 @@ Pinewood didn't lay anyone off. The finishers who couldn't be fully staffed beca
 <!-- _class: kpi -->
 <!-- tier: short -->
 
-### Impact · Year one
+`Impact · Year one`
+
 ## Pinewood doubled output, cut lead time two-thirds, and grew revenue 44%.
 
 1. 190
@@ -124,7 +125,8 @@ Pinewood didn't lay anyone off. The finishers who couldn't be fully staffed beca
 <!-- _class: kpi -->
 <!-- tier: full -->
 
-### Payback · Year one
+`Payback · Year one`
+
 ## The Atlas cell paid for itself in under eight months.
 
 1. 7.4 mo
@@ -144,7 +146,7 @@ Pinewood didn't lay anyone off. The finishers who couldn't be fully staffed beca
 
 > We didn't lose a single person — we doubled what we make and moved our best people to the work that matters. Atlas paid for itself before the year was out.
 
-Attribution — Daniel Pinewood, Owner & CEO, Pinewood Furniture
+— Daniel Pinewood, Owner & CEO, Pinewood Furniture
 
 ---
 

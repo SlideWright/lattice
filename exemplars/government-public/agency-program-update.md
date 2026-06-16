@@ -29,7 +29,8 @@ Two years in, the modernised platform processes seven of every ten initial claim
 <!-- _class: kpi -->
 <!-- tier: short -->
 
-### Delivery · Q2 FY2027
+`Delivery · Q2 FY2027`
+
 ## The program is ahead on adoption and inside its cost and quality targets.
 
 1. 70%
@@ -67,7 +68,8 @@ Two years in, the modernised platform processes seven of every ten initial claim
 <!-- _class: kpi -->
 <!-- tier: standard -->
 
-### Reliability · Q2 FY2027
+`Reliability · Q2 FY2027`
+
 ## The platform is meeting its availability and accuracy service levels.
 
 1. 99.94%

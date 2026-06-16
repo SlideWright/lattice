@@ -32,7 +32,8 @@ Patient visits and new clinic signups both beat plan this quarter. The single nu
 <!-- _class: kpi -->
 <!-- tier: short -->
 
-### Performance · Q2 2026
+`Performance · Q2 2026`
+
 ## Growth metrics beat plan; provider retention slipped below target.
 
 1. 412K
@@ -141,7 +142,8 @@ Retention didn't slide evenly. Churn is clustered among providers in their first
 <!-- _class: kpi -->
 <!-- tier: full -->
 
-### Targets · Q3 2026
+`Targets · Q3 2026`
+
 ## What success looks like next quarter, with the retention fix in flight.
 
 1. 92%

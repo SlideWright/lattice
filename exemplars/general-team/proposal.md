@@ -79,7 +79,8 @@ Three CS managers can each own about twenty-five large accounts — enough to co
 <!-- _class: kpi -->
 <!-- tier: short -->
 
-### Proposal · year-one targets
+`Proposal · year-one targets`
+
 ## What $400K in CS would return in the first year.
 
 1. −60%
@@ -119,10 +120,14 @@ Three CS managers can each own about twenty-five large accounts — enough to co
 
 ## How we'd stand the team up in ninety days.
 
-1. Hire the lead — Recruit an experienced CS lead first; they shape the playbook and hire the other two.
-2. Segment the accounts — Rank the top seventy-five by churn risk so coverage starts where it matters.
-3. Launch QBRs — Begin quarterly business reviews with the highest-risk accounts immediately.
-4. Stand up the health score — Wire usage and support data into one dashboard by the end of the quarter.
+1. Hire the lead
+   - Recruit an experienced CS lead first; they shape the playbook and hire the other two.
+2. Segment the accounts
+   - Rank the top seventy-five by churn risk so coverage starts where it matters.
+3. Launch QBRs
+   - Begin quarterly business reviews with the highest-risk accounts immediately.
+4. Stand up the health score
+   - Wire usage and support data into one dashboard by the end of the quarter.
 
 ---
 

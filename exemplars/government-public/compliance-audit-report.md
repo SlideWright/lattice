@@ -108,10 +108,14 @@ Filled = high exposure, half = moderate, empty = controlled.
 
 ## The remediation plan, sequenced by exposure.
 
-1. Risk-assess subrecipients — Complete a documented risk assessment for all 18 subrecipients and a monitoring schedule for the four highest-risk within 60 days.
-2. Fix certification cadence — Move time-and-effort certification to a monthly automated workflow, eliminating the 47-day lag, within 90 days.
-3. Close disclosure gaps — Collect outstanding conflict-of-interest disclosures and add a pre-award gate that blocks decisions without one, within 30 days.
-4. Verify and re-test — The OIG re-tests the three controls at the close of the fiscal year and reports residual risk.
+1. Risk-assess subrecipients
+   - Complete a documented risk assessment for all 18 subrecipients and a monitoring schedule for the four highest-risk within 60 days.
+2. Fix certification cadence
+   - Move time-and-effort certification to a monthly automated workflow, eliminating the 47-day lag, within 90 days.
+3. Close disclosure gaps
+   - Collect outstanding conflict-of-interest disclosures and add a pre-award gate that blocks decisions without one, within 30 days.
+4. Verify and re-test
+   - The OIG re-tests the three controls at the close of the fiscal year and reports residual risk.
 
 ---
 

@@ -118,7 +118,8 @@ Our lab built the modular chassis; our co-investigator runs the regional phage b
 <!-- _class: kpi -->
 <!-- tier: short -->
 
-### Expected outcomes · end of award
+`Expected outcomes · end of award`
+
 ## What a funded program delivers in five years.
 
 1. <48 h

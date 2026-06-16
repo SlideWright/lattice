@@ -32,7 +32,8 @@ Bottom line up front: Q2 revenue landed 11% ahead of plan and contribution margi
 <!-- _class: kpi -->
 <!-- tier: short -->
 
-### Performance · Q2 2026
+`Performance · Q2 2026`
+
 ## Revenue, margin, and cash all came in ahead of plan.
 
 1. $58.4M
@@ -138,7 +139,8 @@ Carriers will commit Q4 capacity at today's rates in exchange for a guaranteed m
 <!-- _class: kpi -->
 <!-- tier: full -->
 
-### Outlook · FY2026
+`Outlook · FY2026`
+
 ## Full-year guidance holds, with upside if peak demand lands as forecast.
 
 1. $238M

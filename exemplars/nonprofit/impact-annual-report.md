@@ -32,7 +32,8 @@ Harvest Table closes that gap. We recover surplus food from grocers and farms, c
 <!-- _class: kpi -->
 <!-- tier: short -->
 
-### HARVEST TABLE · 2025
+`HARVEST TABLE · 2025`
+
 ## A record year — more meals served, more food rescued, more of every dollar reaching the table.
 
 1. 412,000
@@ -91,7 +92,7 @@ We opened our Eastside kitchen in March, grew our volunteer corps to 340, and ad
 
 > I came for the meal. I stayed because someone learned my name and saved me a seat every night.
 
-Attribution — Theresa M., guest at the Eastside table
+— Theresa M., guest at the Eastside table
 
 ---
 
@@ -194,7 +195,8 @@ After a layoff, Theresa skipped dinners so her kids could eat. A neighbor brough
 <!-- _class: kpi -->
 <!-- tier: full -->
 
-### THE PLAN · 2026
+`THE PLAN · 2026`
+
 ## By 2026 we aim to feed half again as many neighbors — without giving up an ounce of trust.
 
 1. 600,000

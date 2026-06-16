@@ -127,7 +127,8 @@ A big-bang cutover concentrates all risk on one date — the failure mode of the
 <!-- _class: kpi -->
 <!-- tier: short -->
 
-### Value · Committed outcomes
+`Value · Committed outcomes`
+
 ## What we commit to deliver, with the numbers we will be held to.
 
 1. 6 days
@@ -145,7 +146,8 @@ A big-bang cutover concentrates all risk on one date — the failure mode of the
 <!-- _class: kpi -->
 <!-- tier: full -->
 
-### Value · Year-one impact
+`Value · Year-one impact`
+
 ## The return the county sees inside the first twelve months.
 
 1. −58%

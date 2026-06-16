@@ -396,6 +396,26 @@ in patch versions.
   `asymmetric`, `stats`, and `image museum` captions reworded to the real
   behaviour; several stale CSS header comments fixed to match. See
   `engineering/decisions/2026-06-15-manifest-css-audit.md`.
+- **Worked exemplar decks: corrected four copy-paste authoring bugs.** The 45
+  worked exemplars (`exemplars/**`) carried authoring forms that lint cannot
+  catch but that degrade the render: (1) `list-steps` slides wrote each step as
+  an inline `N. Title — body` line, which collapses the title/body typographic
+  split into one bold blob — converted to the canonical `N. Title` / nested
+  `- body` form; (2) `list-tabular` slides buried the headline figure in the
+  description prose, leaving the right-hand meta column empty — lifted the figure
+  to the inline-code meta on the name line; (3) `quote` slides printed a literal
+  "Attribution" label because the attribution line read `Attribution — Name` —
+  the component renders that verbatim, so it now reads `— Name` to match the
+  gallery; (4) `kpi` slides authored the eyebrow as an `### ` h3 — #362 retired
+  that in favour of the lint-safe inline-code paragraph, so all 38 are now
+  `` `Eyebrow` `` paragraphs matching the corrected component. Also removed
+  unsupported `` `Owner:` `` pills from a `list-steps` slide (the component has
+  no pill slot).
+- **`quote` component docs: the copyable example showed the wrong attribution
+  form.** `quote.docs.md` demonstrated `Attribution — Person, Role`; the
+  component renders that literally (no label is injected), so the example is now
+  `— Person, Role`, matching the gallery. This was the source of the exemplar
+  bug above.
 
 - **Landing page no longer claims "Fifty-eight layouts."** Two marketing
   strings on the landing said 58; the catalog ships 53. Corrected to match the

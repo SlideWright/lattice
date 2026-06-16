@@ -83,10 +83,14 @@ flowchart LR
 
 ## The reconstruction pipeline, step by step.
 
-1. Catalogue — measure the shape of every background galaxy in the survey field, correcting for the telescope's own blur.
-2. Bin — average shapes across the sky to estimate the shear field, trading resolution for signal.
-3. Invert — solve the lensing equation to turn the shear field into a projected mass map.
-4. Validate — overlay the mass map on the visible light to check where dark and luminous matter agree and where they diverge.
+1. Catalogue
+   - Measure the shape of every background galaxy in the survey field, correcting for the telescope's own blur.
+2. Bin
+   - Average shapes across the sky to estimate the shear field, trading resolution for signal.
+3. Invert
+   - Solve the lensing equation to turn the shear field into a projected mass map.
+4. Validate
+   - Overlay the mass map on the visible light to check where dark and luminous matter agree and where they diverge.
 
 ---
 

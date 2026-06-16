@@ -119,10 +119,14 @@ The routing rule was changed through a console that writes straight to productio
 
 ## The four changes we are making, with owners.
 
-1. Retire the console — Direct production writes are disabled this week; all changes route through the pipeline. `Owner: SRE`
-2. Require staging — No config change reaches production without a staging deploy and a second reviewer. `Owner: Platform`
-3. Alert the routing layer — Error-rate alerts now cover routing, paging on-call within 60 seconds. `Owner: SRE`
-4. Rehearse rollback — A monthly game-day drills the rollback path so it stays fast. `Owner: Eng leads`
+1. Retire the console
+   - Direct production writes are disabled this week; all changes route through the pipeline. Owner: SRE.
+2. Require staging
+   - No config change reaches production without a staging deploy and a second reviewer. Owner: Platform.
+3. Alert the routing layer
+   - Error-rate alerts now cover routing, paging on-call within 60 seconds. Owner: SRE.
+4. Rehearse rollback
+   - A monthly game-day drills the rollback path so it stays fast. Owner: Eng leads.
 
 ---
 

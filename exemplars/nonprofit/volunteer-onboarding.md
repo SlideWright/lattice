@@ -114,7 +114,7 @@ The shelter opens at 7 a.m. for morning care and closes after the evening clean.
 
 > I came to walk one dog on a Saturday. Two years later it's the best part of my week, every week.
 
-Attribution — Renata Voss, weekend volunteer since 2024
+— Renata Voss, weekend volunteer since 2024
 
 ---
 
@@ -123,9 +123,12 @@ Attribution — Renata Voss, weekend volunteer since 2024
 
 ## Three steps to your first shift.
 
-1. Orientation — complete this session and sign the volunteer agreement and liability waiver.
-2. Shadow shift — pair with an experienced volunteer for one two-hour shift to learn the routine.
-3. Solo ready — pick up your badge and start booking your own shifts in the volunteer portal.
+1. Orientation
+   - Complete this session and sign the volunteer agreement and liability waiver.
+2. Shadow shift
+   - Pair with an experienced volunteer for one two-hour shift to learn the routine.
+3. Solo ready
+   - Pick up your badge and start booking your own shifts in the volunteer portal.
 
 ---
 

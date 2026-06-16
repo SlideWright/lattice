@@ -115,7 +115,8 @@ Lumen Trace correlates every log, metric, and trace into a causal graph. You ask
 <!-- _class: kpi -->
 <!-- tier: short -->
 
-### Beta results · 2026
+`Beta results · 2026`
+
 ## Beta teams cut diagnosis time by two-thirds and resolved far faster.
 
 1. 9 min
