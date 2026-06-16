@@ -103,6 +103,23 @@ const entry = await framework.decisions.log(decision, { signals });
 ---
 
 <!-- _class: cards-grid -->
+<!-- _focus: item 3 -->
+<!-- _focusStyle: blur -->
+
+## `_focusStyle: blur` — defocus the rest, the camera way.
+
+- Signal Intake
+  - Weekly structured collection across customer conversations, market data, and competitive moves.
+- Scoring Model
+  - Each signal scored on confidence, recency, and strategic relevance, reviewed quarterly.
+- Decision Log
+  - Every decision recorded with the signals that informed it and the criteria applied.
+- Calibration Loop
+  - Monthly retrospective comparing predicted outcomes to actual outcomes.
+
+---
+
+<!-- _class: cards-grid -->
 <!-- _focusSteps: item 1 | item 2 | item 3 | item 4 -->
 
 ## `_focusSteps` — walk the slide, one card at a time.

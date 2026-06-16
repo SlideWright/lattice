@@ -27,15 +27,26 @@ section[data-focus-resolved] {
   --focus-dim: 0.24;
   --focus-ring: var(--accent);
   --focus-fill: var(--accent-soft);
+  --focus-blur: 0.3cqi;
 }
 
 /* ── spotlight — recede the rest ──────────────────────────────────────────── */
 section[data-focus-style="spotlight"] .lat-recede { opacity: var(--focus-dim); }
 /* promote the target (works whether it's an <li> or a table row) */
 section[data-focus-style="spotlight"] .lat-focus,
+section[data-focus-style="blur"] .lat-focus,
 section[data-focus-style="spotlight"] .lat-focus > td,
 section[data-focus-style="spotlight"] .lat-focus > th { font-weight: 600; }
 section[data-focus-style="spotlight"] tr.lat-focus > td { color: var(--text-heading); }
+
+/* ── blur — defocus the rest (the literal camera-focus) ───────────────────────
+ * A recede mechanism like spotlight, but it blurs `.lat-recede` instead of
+ * dimming it — the target stays sharp, everything else goes soft. A `cqi` radius
+ * scales with the slide; a touch of opacity adds depth. Survives PDF (verified)
+ * and PPTX (rasterised render). Not a content-aware default — opt-in only, since
+ * like spotlight it removes the legibility blurred rows/cells would otherwise
+ * carry. */
+section[data-focus-style="blur"] .lat-recede { filter: blur(var(--focus-blur)); opacity: 0.82; }
 
 /* ── ring — accent outline, zero layout shift ─────────────────────────────── */
 /* list / grid item: a plain outline rings the card without reflowing it. */

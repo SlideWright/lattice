@@ -188,7 +188,7 @@ describe('lint-core: focus directive grammar (rule 11)', () => {
   });
   test('unknown _focusStyle is flagged, valid ones pass', () => {
     assert.match(ruleFor(slide('<!-- _focusStyle: glow -->'), 'focus-style').message, /spotlight \| ring \| list-fill/);
-    for (const s of ['spotlight', 'ring', 'list-fill']) {
+    for (const s of ['spotlight', 'ring', 'list-fill', 'blur']) {
       assert.equal(ruleFor(slide(`<!-- _focusStyle: ${s} -->`), 'focus-style'), undefined, s);
     }
   });

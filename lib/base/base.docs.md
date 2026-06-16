@@ -734,10 +734,14 @@ and code get **spotlight** (the rest recedes, the target stays full).
 Override per slide with `_focusStyle`:
 
 ```markdown
-<!-- _focusStyle: spotlight -->   <!-- recede the rest -->
+<!-- _focusStyle: spotlight -->   <!-- recede the rest (dim) -->
+<!-- _focusStyle: blur -->        <!-- recede the rest (defocus — the camera-focus look) -->
 <!-- _focusStyle: ring -->        <!-- outline the target, no dimming -->
 <!-- _focusStyle: list-fill -->   <!-- accent-soft fill on the target -->
 ```
+
+`blur` survives PDF and PPTX (the rest is rasterised soft, the target stays
+sharp); tune the radius per deck via `--focus-blur` (default `0.3cqi`).
 
 **Walk the slide — `_focusSteps`.** One authored slide expands into N
 rendered slides, each focusing the next target — the static-format
