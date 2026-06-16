@@ -25,6 +25,16 @@ in patch versions.
 
 ## Unreleased
 
+### Changed
+
+- **Docs site: the header/footer logo and browser-tab favicon now use the
+  existing adaptive SVG mark instead of a 512² PNG.** The header/footer `<img>`
+  points at `lattice-mark-min.svg` and the favicon at `favicon.svg` — both
+  already shipped in `docs/public/` and both light/dark adaptive via
+  `prefers-color-scheme`. Pixel-verified identical to the retired raster, but
+  crisp at any DPR and ~25KB lighter on the first load of every page. The
+  now-unused `docs/public/lattice-logo.png` was deleted.
+
 ### Removed
 
 - **Breaking: the BYO marp-cli render path is retired — `marp.config.js` is

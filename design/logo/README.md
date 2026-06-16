@@ -20,10 +20,12 @@ core. The rule the whole mark obeys: **structure is ink, colour is signal.**
 | `generate.py` | Source of truth — regenerates all four | `python3 generate.py` |
 
 Web copies live in `docs/public/` (`favicon.svg`, `lattice-mark*.svg`,
-`lattice-lockup*.svg`). `docs/public/lattice-logo.png` is a **raster** of the
-min-mark for the Starlight header / PNG favicon; because a PNG can't be
-theme-adaptive, its bonds use a mid-blue (`#2E80B6`) that reads on both light
-and dark headers.
+`lattice-lockup*.svg`). The site uses the adaptive SVGs everywhere: the
+browser-tab favicon is `favicon.svg` and the in-page header/footer logo is an
+`<img>` pointing at `lattice-mark-min.svg`. Both adapt to light/dark via
+`@media (prefers-color-scheme: dark)`. (The former `docs/public/lattice-logo.png`
+— a 512² raster downscaled to a ~30px header logo, ~20× the bytes of the vector
+and unable to theme — was retired.)
 
 ## Palette (brand axis)
 
