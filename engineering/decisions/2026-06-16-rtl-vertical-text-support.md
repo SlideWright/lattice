@@ -145,31 +145,47 @@ Vertical is genuinely harder than RTL and must be scoped honestly:
   content, quote) where vertical CJK is most idiomatic and least likely to break
   — but they render vertical from day one, not after graduation.
 
-### E. Fonts — **self-host Noto per script, `:lang()`-gated**
+### E. Fonts — **register-matched boardroom pairs per script, `:lang()`-gated**
 
 Direction and *script* are separate problems: a script can share Latin's LTR
 direction yet still need its own font and complex shaping (Devanagari reorders
-matras and forms conjuncts; Arabic joins cursively). So the font set is keyed to
-the **test-language matrix below**, not just to direction:
+matras and forms conjuncts; Arabic joins cursively). And **Noto is a *coverage*
+font, not a boardroom one** — defaulting every script to one Noto weight
+collapses the display/body contrast that carries a 10/10 slide's hierarchy.
 
-| Script | Noto family | Covers |
-|---|---|---|
-| Arabic | Noto Sans / Naskh Arabic | Arabic, Persian, Urdu |
-| Han SC / TC | Noto Sans / Serif SC, TC | Chinese (Simplified, Traditional) |
-| Japanese | Noto Sans / Serif JP | Japanese (kanji + kana) |
-| Korean | Noto Sans / Serif KR | Korean (Hangul) |
-| Devanagari | Noto Sans / Serif Devanagari | Hindi (+ Marathi, Nepali) |
+So the rule is **match the register, not the letterforms.** Lattice's Latin
+identity is Playfair Display (high-contrast *editorial serif*) for `--font-display`
++ Outfit (clean *geometric sans*) for `--font-body`. Each script gets its
+editorial face in the display slot and its clean workhorse in the body slot.
+All picks are **OFL/open** — mandatory, since they must self-host and embed in
+PDF export (CDN fonts are banned, below):
+
+| Script (lang) | Display — *Playfair register* (editorial) | Body — *Outfit register* (clean sans) | Notes |
+|---|---|---|---|
+| Arabic | **Amiri** (classical Naskh) | **IBM Plex Sans Arabic** | Amiri = the editorial-Naskh analog to a contrast serif; Plex Arabic is corporate-grade. Covers Persian/Urdu too |
+| Devanagari (Hindi) | **Tiro Devanagari Hindi** (Tiro Typeworks) | **Mukta** (or IBM Plex Sans Devanagari) | Tiro is a refined text serif beside Playfair; Mukta a clean geometric workhorse. Covers Marathi/Nepali |
+| Chinese Simplified | **Noto Serif SC** (Source Han Serif, Songti) | **Noto Sans SC** (Source Han Sans) | Source Han **is** the boardroom-grade open CJK — no better open option exists |
+| Chinese Traditional | **Noto Serif TC** | **Noto Sans TC** | Same superfamily, correct TC glyph set |
+| Japanese | **Shippori Mincho** (editorial Mincho) | **Noto Sans JP** (Source Han Sans) | Shippori Mincho steps above generic Noto Serif for display; Sans JP for body |
+| Korean | **Noto Serif KR** (Myeongjo) | **Pretendard** | Pretendard is the de-facto premium Korean UI sans (ships harmonized Latin); Serif KR carries the editorial display register |
+
+**Two register caveats (cultural, not compromise):** Arabic and CJK have no
+true didone/high-contrast-serif tradition — Naskh (Amiri) and Mincho/Songti
+(Noto Serif, Shippori) are the correct *editorial-register* analogs. The picks
+above map register, not contrast mechanics.
 
 Wire these into `--font-display` / `--font-body` in `base.tokens.css`, each
 gated behind `:lang()` so a Latin deck downloads none of them. **Decision
 (owner, 2026-06-16): ship all three CJK scripts (SC/TC/JP) in the first cut**,
 not one-then-expand — and Korean + Devanagari join them, so the first cut covers
-the full named matrix. The cost is several large fonts and a wider verification
-surface (see open question below).
+the full named matrix.
 - **Self-host**, do not CDN: `engineering/gotchas.md` documents that the sandbox
   TLS proxy MITMs Google Fonts and silently falls back to serif. Self-hosting is
   also the only way PDF export embeds the glyphs reliably. CJK fonts are large
   (~10MB+ subsetted) — subset aggressively and load per-`:lang()`.
+- **These pairings are a recommendation, not yet verified** — the sandbox can't
+  render the real webfonts, so they need the owner's eyes on a true render
+  before they're locked (the §F honesty gate applies).
 
 ### F. Verification — **a named test-language matrix, each earning its slot**
 
@@ -222,7 +238,7 @@ suite stays meaningful rather than exhaustive.
 | B. Granularity | Global + spot `_dir:`/`_lang:`; per-element via `dir: auto` + bidi algorithm |
 | C. RTL layout | Logical-CSS refactor (189 decls / 48 files), + a lint guard against new physical inline props |
 | D. Vertical | `writing-mode` on the section; **attempt-all + `verticalBlocked` blocklist**; text buckets reviewed first |
-| E. Fonts | Self-hosted, `:lang()`-gated Noto per script — Arabic, **CJK SC/TC/JP, Korean, Devanagari** — subset |
+| E. Fonts | Self-hosted, `:lang()`-gated **register-matched OFL pairs** — Amiri/Plex Arabic · Tiro/Mukta (Hindi) · Source Han Serif+Sans (CJK) · Shippori Mincho/Noto Sans JP · Noto Serif KR/Pretendard — subset |
 | F. Verify | **6-language test matrix** (Arabic·Hindi·Chinese SC/TC·Japanese·Korean) spanning RTL/vertical/shaping; demo deck + per-language invariant tests; **owner inspection** for glyph fidelity |
 
 ### Why this order

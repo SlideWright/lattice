@@ -275,8 +275,11 @@ it is load-bearing.
   foundation vertical needs — paid once, serves both — guarded by a new
   physical-property lint; **vertical attempt-all + `verticalBlocked` blocklist**
   (render vertical by default, blocklist on reviewer-confirmed breakage; text
-  buckets reviewed first); **self-hosted `:lang()`-gated Noto** Arabic +
-  **all three CJK (SC/TC/JP)**, Korean, Devanagari (CDN MITM'd in-sandbox).
+  buckets reviewed first); **self-hosted `:lang()`-gated, register-matched OFL
+  font pairs** (display=editorial / body=clean-sans, *not* one flat Noto weight)
+  — Amiri + IBM Plex Arabic, Tiro + Mukta (Hindi), Source Han Serif/Sans (CJK),
+  Shippori Mincho + Noto Sans JP, Noto Serif KR + Pretendard (CDN MITM'd
+  in-sandbox).
   Verification mirrors layouts here but **glyph/export fidelity needs owner
   inspection** (sandbox can't load the webfonts). Pins a **6-language test
   matrix** — Arabic · Hindi · Chinese (SC/TC) · Japanese · Korean — each
