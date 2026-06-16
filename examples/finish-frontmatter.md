@@ -43,8 +43,8 @@ markup.
   - `finish: sketch` + `_class: cards-grid` becomes `cards-grid sketch`.
 - Palette-blind
   - The finish wobbles type and geometry; the theme still colours it.
-- Three render paths
-  - The emulator, marp-cli, and the live preview all read the same key.
+- Two render paths
+  - The owned engine and the live preview both read the same key.
 
 ---
 
