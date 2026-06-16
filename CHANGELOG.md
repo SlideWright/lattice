@@ -25,6 +25,17 @@ in patch versions.
 
 ## Unreleased
 
+### Added
+
+- **Docs site: a live Core-Web-Vitals overlay, gated behind a `?perf` query
+  param.** Open any page with `?perf` (sticky for the tab; `?perf=off` clears
+  it) and a small overlay renders the live LCP / CLS / INP / FCP / TTFB,
+  colour-rated by Google's thresholds, measured by the device's own browser —
+  the zero-tooling way to check landing CLS / mobile LCP on a real phone, which
+  the CI/sandbox can't (it blocks the CDN fonts). Numbers come from the
+  `web-vitals` library, dynamically imported ONLY when the overlay is active, so
+  a normal page view pays nothing. See `docs/src/components/site/PerfOverlay.astro`.
+
 ### Changed
 
 - **Docs site: the header/footer logo and browser-tab favicon now use the

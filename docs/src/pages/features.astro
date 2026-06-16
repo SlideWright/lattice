@@ -12,6 +12,7 @@
 // 29 treatments (18 tint + 11 mark), 12-token type scale, 25 Mermaid types.
 import '../styles/landing.css';
 import PaletteControls from '../components/site/PaletteControls.tsx';
+import PerfOverlay from '../components/site/PerfOverlay.astro';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { joinBase } from '../lib/base-url.mjs';
@@ -300,5 +301,7 @@ const CATALOG = [
 				}
 			})();
 		</script>
+		{/* Live Core-Web-Vitals overlay, gated behind ?perf. */}
+		<PerfOverlay />
 	</body>
 </html>
