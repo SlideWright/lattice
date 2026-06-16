@@ -30,6 +30,14 @@ section[data-focus-resolved] {
   --focus-blur: 0.15cqi;
   --focus-pop: 1.02;        /* blur target lift — subtle, won't overlap neighbours */
   --focus-pop-shadow: 0.28cqi;
+  /* The lift edge — a curated role token (HARD RULE 11): a theme overrides this
+   * one name to tune the lift. Default = the brand accent softened toward the
+   * page so it reads on-brand without the harsh saturated edge. OPAQUE (mixed
+   * toward --bg, not transparent) so it stays a solid vector fill — bulletproof
+   * in Apple PDFKit. Per-mode variance is automatic: both --accent and --bg are
+   * light-dark(), so the lift adapts to the colour scheme with no -light/-dark
+   * tokens. */
+  --focus-lift: color-mix(in srgb, var(--accent) 32%, var(--bg));
 }
 
 /* ── spotlight — recede the rest ──────────────────────────────────────────── */
@@ -58,7 +66,7 @@ section[data-focus-style="blur"] .lat-recede { filter: blur(var(--focus-blur)); 
  * never bleeds into its neighbour. */
 section[data-focus-style="blur"] li.lat-focus {
   transform: scale(var(--focus-pop));
-  box-shadow: var(--focus-pop-shadow) var(--focus-pop-shadow) 0 var(--accent);
+  box-shadow: var(--focus-pop-shadow) var(--focus-pop-shadow) 0 var(--focus-lift);
   border-radius: 0.6cqi;
   position: relative;
   z-index: 2;

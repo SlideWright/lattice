@@ -112,6 +112,23 @@ in patch versions.
 
 ### Added
 
+- **Focus & highlighting — tell a dense slide to focus the room on one thing.**
+  A new `_focus:` directive names an ordinal target with one universal grammar —
+  `<!-- _focus: row 4 -->`, `item 3`, ranges (`item 2-4`) and multiples
+  (`row 2, row 5`). The focus resolver tags the target `.lat-focus` and its
+  siblings `.lat-recede`; the treatment is pure CSS, palette-blind, and survives
+  PDF **and** PPTX (no masks). Content-aware default — tables get a **ring**
+  (keeps every cell legible), lists/grids get **spotlight** (recede the rest) —
+  overridable with `<!-- _focusStyle: spotlight | blur | ring | list-fill -->`
+  (`blur` defocuses the rest and gives a list/grid target a subtle lift — the
+  literal camera-focus; survives PDF + PPTX, using only hard-edged shapes so it
+  holds up in Apple PDFKit). Axes:
+  `item` (list/grid), `row` / `col` / `cell` (table), and `line` (code).
+  `<!-- _focusSteps: A | B | C -->` expands one slide into N, walking the focus
+  one step at a time (the static-format equivalent of a live build). The
+  grammar is linted; worked deck in `examples/focus.md`. Design:
+  `engineering/decisions/2026-06-16-focus-highlighting.md`.
+
 - **Present mode — a live presentation player on the Drawing Board, beside
   Practice.** A new **Present** button (in the Slides panel header, before
   Practice) opens a full-screen player meant for presenting *to an audience*,
