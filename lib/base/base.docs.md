@@ -832,6 +832,40 @@ conflict.
 
 ---
 
+## Accessibility — colour-vision deficiency (`accessibility:`)
+
+A deck opts into colour-vision-deficiency (CVD) accommodation with a
+front-matter key:
+
+```yaml
+---
+theme: indaco
+accessibility: deuteranopia   # or protanopia | tritanopia | achromatopsia
+---
+```
+
+This **overrides the theme** (`accessibility` always wins), swapping in the
+curated `a11y-<type>` palette and stamping `data-a11y` on every section. A
+viewer can also force it regardless of the deck via the `LATTICE_ACCESSIBILITY`
+environment variable (the workspace tier, which beats front matter) — so the
+person who needs the accommodation gets it.
+
+Because colour alone distinguishes only ~1–2 categories under dichromacy, the
+mode does **not** rely on recolouring. It pairs CVD-tuned **status colours**
+(`pass`/`warn`/`fail` moved off the deficiency's confusion axis) with two
+redundant, non-colour channels that carry meaning when colour collapses:
+
+- **Status glyphs** — `✓` / `!` / `✗` prefix the status-pill vocabulary.
+- **Categorical textures** — a distinct pattern (diagonal, dots, grid, chevron,
+  rings, checker, …) per categorical slot on diagram and chart fills.
+
+Authors write decks normally — no per-slide markup. `achromatopsia` leans
+entirely on glyphs + textures (its status trio is luminance-separated greys).
+Design + rationale: `engineering/decisions/2026-06-16-colour-blindness-accessibility.md`
+and `…-cvd-redundant-encoding.md`.
+
+---
+
 ## Related
 
 - `design/design-system.md §6.5` — the variant tier system (universal,
