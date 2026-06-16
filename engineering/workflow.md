@@ -195,7 +195,7 @@ reviewers can open the live build:
 **Only include it when the diff actually changes the site.** Cloudflare
 rebuilds a preview for every PR, but it only differs from production when
 the PR touches a path the docs deploy rebuilds from — `docs/`, `dist/`,
-`themes/`, `lib/`, or `marp.config.js` (the same trigger set as
+`themes/`, or `lib/` (the same trigger set as
 `.github/workflows/docs.yml`). A PR that touches none of those (tests,
 `engineering/` docs, CI config) doesn't change the rendered site, so the
 link is noise — omit it.
@@ -258,26 +258,30 @@ graduates from "new" to "documented". Treat them like
    - **`CHANGELOG.md` `## Unreleased`** conflicts every time (everyone
      appends) — resolve by **keeping both** entries, never picking a side.
    - Binary `examples/*.pdf` conflicts: resolve the `.md` first, re-render
-     (`npx marp … --pdf`, with `CHROME_PATH` set), `git add` both, continue.
+     with the owned engine (`node dist/lattice-emulator.js <deck> <out.pdf>`,
+     with `CHROME_PATH` set), `git add` both, continue.
 
    Force-push the rebased branch with `git push --force-with-lease` — never
    plain `--force`.
 
 For inner-loop iteration, scoped test scripts (`test:palette`, `test:components`, …), `test:watch`, the pre-commit / pre-push / commit-msg hooks, coverage, and the integration-test cache all live in `engineering/development.md`. That file is the tooling reference; this one is the process reference.
 
-## Three-renderer rule
+## Two-renderer rule
 
 Any authoring transform must land in the shared kernels so every render path
 stays in step — don't patch one path:
 
-1. the owned `lib/engine` (the `lattice` CLI **and** the docs playground)
-2. `marp.config.js` (shipped for BYO marp-cli authors — runs the same
-   `lib/integrations/marp/plugins.js` + `lib/transformers/*`)
-3. `lattice-runtime.js` (vscode preview)
+1. the owned `lib/engine` (the `lattice` CLI/emulator **and** the docs playground)
+2. `lattice-runtime.js` (the vscode Marp preview **and** the published-HTML runtime)
 
-The owned engine is canonical (the marp-parity gate was retired in P4). Do not
-close a feature branch until the shared kernels carry the transform and the
-integration tier — including the per-component semantic-invariant suite — passes.
+Both consume the same `lib/integrations/markdown-it/plugins.js` +
+`lib/transformers/*` kernels, so a transform that lands there reaches both. The
+owned engine is canonical (the marp-parity gate was retired in P4; Marp is no
+longer a render path). The one remaining Marp surface is **Export to Marp**
+(`lib/core/marp-bundle.js`) — a one-way bundle for recipients, NOT a Lattice
+render path, so it isn't a third renderer to keep in parity. Do not close a
+feature branch until the shared kernels carry the transform and the integration
+tier — including the per-component semantic-invariant suite — passes.
 
 ## Keeping an open PR mergeable while it waits
 

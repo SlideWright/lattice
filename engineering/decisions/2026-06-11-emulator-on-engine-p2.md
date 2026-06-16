@@ -63,7 +63,7 @@ what the shared plugins already produce," not "re-implement features."
    delete the emulator's. Risk: the `$`-delimiter guards must match (currency
    prose like `$400M`), which the engine already handles per the parity sweep.
 3. **Page chrome / pagination.** `parseSlide` emits per-slide header/footer +
-   `data-marpit-pagination` + `bgColor`; the engine emits the same via its
+   `data-lattice-pagination` + `bgColor`; the engine emits the same via its
    plugins. Verify the engine's section attributes match what the emulator's
    page-assembly + `marpSystemCss` + `dist/lattice.css` expect.
 4. **Non-modular binary.** `parseSlide` is mid-script, not exported. The swap
@@ -98,7 +98,7 @@ shipped `bin`/`main` stays on `parseSlide`). The engine path:
 `engine.render(rawMd, paletteName)` (rawMd = the mermaid-preprocessed source
 *with* front matter, so the engine's directive layer resolves the globals) →
 `splitTopLevelSections` (depth-counted, nested split-panels stay nested) →
-re-tag each `<section>` with `data-marpit-slide="N"` (the **one** attribute the
+re-tag each `<section>` with `data-lattice-slide="N"` (the **one** attribute the
 engine omits that the page template's sizing / overflow watcher / PDF pagination
 key off) → downstream `applyDeckLogoToHtml` is **skipped** (the engine already
 injected the logo). `parseSlide` is untouched and still default.
@@ -378,6 +378,6 @@ has a viable replacement.** Two things are easy to conflate:
   `lattice-engine`-powered VS Code preview/extension exists to replace it
   (**Scope 2** in `2026-06-10-marp-replacement-proposal.md` §6 — a separate, larger
   effort not yet started). P2–P4 deliberately keep marp-vscode and its
-  compatibility shims (`marp.scaffold.css`, the `data-marpit-*` attributes). **Do
+  compatibility shims (`scaffold.css`, the `data-marpit-*` attributes). **Do
   not plan or imply a full marp removal until that replacement lands.**
 

@@ -223,7 +223,7 @@ answer "is it good," only "did it change" — that split is the point.
   the before/after-PDF comment job. **No bless-on-approval / bot-commit job** —
   bless is local.
 - `marp.config.js` **stays** (shipped for marp-vscode + BYO-marp-cli authors).
-  The marp-vscode compatibility shims in CSS (`marp.scaffold.css`, the
+  The marp-vscode compatibility shims in CSS (`scaffold.css`, the
   `:is(pre, marp-pre)` carve-outs, twemoji `:not(.emoji)`) **stay** — the
   documented Scope-1 tax.
 
@@ -473,7 +473,7 @@ an artifact, post a summary comment ("N slides drifted in {decks}"). Keep the ma
   `test/unit/engine/engine.test.js`, `test/unit/parsing/marp-plugins.test.js`.
   Remove the marp `engine-parity` CI job.
 - **KEEP:** `marp.config.js` (shipped for marp-vscode + BYO-marp-cli authors) and
-  the marp-vscode CSS shims (`marp.scaffold.css`, `:is(pre, marp-pre)`, twemoji
+  the marp-vscode CSS shims (`scaffold.css`, `:is(pre, marp-pre)`, twemoji
   `:not(.emoji)`) — the documented Scope-1 tax.
 - Update CHANGELOG (lead `**Breaking:**` — consumers rendering via our marp.config
   now bring their own marp-cli), `engineering/capabilities.md`, and §A here.

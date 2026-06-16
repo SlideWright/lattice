@@ -21,7 +21,7 @@
  * Output: release/lattice-v<version>.zip (release/ is gitignored — the zip
  * is uploaded to the GitHub Release, never committed).
  *
- * Caveat worth knowing: PDF *export* (emulator / marp-cli) shells out to
+ * Caveat worth knowing: PDF *export* (the emulator) shells out to
  * Chromium + mmdc, which a zip can't carry. The genuinely standalone
  * surface is the CSS/runtime drop-in and the offline HTML/PDF reference.
  *
@@ -43,14 +43,13 @@ const OUT_FILE = path.join(OUT_DIR, `lattice-v${VERSION}.zip`);
 
 // Curated full-showcase set, repo-relative. `git archive` includes only
 // tracked files under each path, so untracked HTML / *.tmp.md renders are
-// excluded for free. lib/ carries both the marp.config.js runtime deps
+// excluded for free. lib/ carries both the engine runtime deps
 // (lib/transformers, lib/core, lib/components/**/*.transform.js,
 // lib/integrations) and the 142 gallery PDFs the component reference links.
 const PATHSPECS = [
   'dist',                  // css bundles, runtime, emulator, README, docs/components.*
-  'lib',                   // marp.config deps + per-component css/docs/manifests + gallery PDFs
+  'lib',                   // engine deps + per-component css/docs/manifests + gallery PDFs
   'themes',                // all palette files
-  'marp.config.js',        // the marp-cli config
   'examples',              // showcase decks + their PDFs
   'design/skill.md',       // authoring contract
   'design/design-system.md',

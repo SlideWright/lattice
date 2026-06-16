@@ -97,7 +97,7 @@ function download(blob, filename) {
 // ── Markdown ────────────────────────────────────────────────────────────────
 // Self-contained embed for a Workbench *library* theme (export bridge — see
 // engineering/decisions/2026-06-11-workbench-export-bridge.md). A library theme
-// isn't registered in marp.config.js themeSet, so a bare `theme:<name>` directive
+// isn't a registered theme, so a bare `theme:<name>` directive
 // renders palette-less for a CLI consumer. We keep the directive (a Drawing Board
 // re-import resolves the theme by name) AND inline the saved CSS — which already
 // carries `@import 'lattice';` — as a Marp global <style> right after the front
@@ -136,7 +136,7 @@ export function exportMarkdown(source, name, theme, components) {
 
 // Export to Marp — the SAME self-contained bundle as `npm run export:marp`,
 // assembled in the browser: bake the slide splits into literal `---`, fetch the
-// staged static assets (minified engine / stylesheet / runtime / mermaid) + the
+// staged static assets (minified stylesheet / runtime / mermaid) + the
 // palette CSS, then zip + download. The bundle spec (templates + the asset
 // manifest) and the split baker come from the playground engine
 // (window.LatticePlayground.marp), shared with the CLI so the two can't drift.
@@ -146,7 +146,7 @@ export async function exportMarp(source, name, palette, themeBase) {
 	const PG = typeof window !== 'undefined' ? window.LatticePlayground : undefined;
 	const marp = PG?.marp;
 	if (!marp) throw new Error('engine not ready — try again in a moment');
-	const { bakeSplits, STATIC_ASSETS, MARP_CONFIG_CJS, withRuntimeScripts, packageJson, readme } = marp;
+	const { bakeSplits, STATIC_ASSETS, MARP_CONFIG_CJS, withRuntimeScripts, packageJson, vscodeSettings, readme } = marp;
 	const slug = safeName(name);
 	const baseName = (p) => p.split('/').pop();
 
@@ -172,16 +172,18 @@ export async function exportMarp(source, name, palette, themeBase) {
 		if (bundledThemes.length) { chosen = cand; break; }
 	}
 
-	// static assets — minified engine, stylesheet, runtime, mermaid.
+	// static assets — minified stylesheet (→ lattice.css), runtime, mermaid.
 	await Promise.all(STATIC_ASSETS.map(async ({ from, to }) => {
 		const r = await fetch(exportBase + baseName(from)).catch(() => null);
 		if (r?.ok) dir.file(to, await r.blob());
 	}));
 
 	// generated text files (the shared bundle spec).
+	const themesList = ['lattice.css', ...bundledThemes];
 	dir.file('marp.config.cjs', MARP_CONFIG_CJS);
 	dir.file('package.json', `${JSON.stringify(packageJson(slug), null, 2)}\n`);
-	dir.file('README.md', readme({ name: slug, palette: chosen, themes: ['dist/lattice.css', ...bundledThemes] }));
+	dir.file('.vscode/settings.json', vscodeSettings(themesList));
+	dir.file('README.md', readme({ name: slug, palette: chosen, themes: themesList }));
 
 	const blob = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE' });
 	download(blob, `${slug}.zip`);

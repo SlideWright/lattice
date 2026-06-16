@@ -953,7 +953,7 @@ section:not(.overflow) > .overflow-tab { display: none; }
 /* ════════════════════════════════════════════════════════════════════════
  * CUSTOM LOGO — discreet author-supplied brand mark, top-right corner.
  * Author contract, gotchas, and full rationale at lib/base/_logo/logo.docs.md.
- * Implementation: applyDeckLogoToHtml (marp.config.js), inline copy in
+ * Implementation: applyDeckLogoToHtml (lib/engine), inline copy in
  * lattice-emulator.js, applyDeckLogoFromFrontMatter (lattice-runtime.js).
  * ──────────────────────────────────────────────────────────────────── */
 img.deck-logo {

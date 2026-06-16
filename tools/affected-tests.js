@@ -54,7 +54,6 @@ const SCRIPT_FOR_LIB = {
 const FULL_SUITE_TRIGGER = new Set([
   'lattice-emulator.js',
   'dist/lattice.css',
-  'marp.config.js',
   'mermaid-v11.min.js',
   'package.json',
   'package-lock.json',
@@ -108,7 +107,7 @@ for (const f of process.argv.slice(2)) {
   }
 
   // lib/transformers/* — shared transformer registry consumed by
-  // marp.config.js, lattice-emulator.js, and the runtime bundle.
+  // lattice-emulator.js and the runtime bundle.
   if (rel.startsWith('lib/transformers/') && rel.endsWith('.js')) {
     scripts.add('test:transformers');
     continue;

@@ -12,6 +12,23 @@
 > components render client-side from the exported HTML via the injected runtime
 > (chosen over server-side SVG pre-bake); **Q3** — the deck's palette + dark
 > only. **P3** (Drawing-Board button) remains.
+
+> **Update (2026-06-15) — the bundle is now MARP-NATIVE; Q1 reversed.** The
+> original Q1 shipped BOTH a zero-install bundled emulator AND a marp-cli config.
+> The bundle no longer ships the emulator: its use case is rendering with **Marp**
+> (marp-cli or the VS Code extension), and Lattice's role is to provide the deck,
+> the minified palette CSS (`lattice.css` + `themes/`), the browser runtime, and
+> Mermaid. Rationale: bundling our whole Node CLI to render a *Marp* artifact was
+> off-axis and heavy; a recipient who wants Marp should get a clean Marp bundle.
+> Changes: (a) `STATIC_ASSETS` drops `dist/lattice-emulator.js`; `lattice.css`
+> moves to the bundle root. (b) Themes ship **minified** (`dist/themes/*.min.css`,
+> built by `tools/build-css.js`); the playground serves the same minified bytes,
+> so the CLI and Drawing-Board producers stay identical. (c) A `.vscode/settings.json`
+> registers the palette via `markdown.marp.themes` for the VS Code preview. (d) The
+> README documents the VS Code + marp-cli routes; full-fidelity Mermaid/components
+> render when the exported **HTML is opened in a browser** (the runtime `<script>`
+> tags) — there is no longer a full-fidelity PDF path inside the bundle, the
+> accepted trade for a lean, Marp-native artifact.
 **Related:** `2026-06-13-split-frontmatter.md` (the heading divider + the
 "Marp is an export target" reframe), `2026-06-10-marp-replacement-proposal.md`
 (engine ownership / P4 retire-marp-cli).

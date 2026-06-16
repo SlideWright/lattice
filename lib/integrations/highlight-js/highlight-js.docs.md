@@ -19,7 +19,7 @@ fences).
 
 A `\`\`\`<lang>` code fence is processed in this order:
 
-1. **Marp Core path** (`marp.config.js`): Marp's built-in
+1. **Owned engine path** (`lib/engine`): the engine's built-in
    highlight.js integration runs at render time. Each fence becomes a
    `<pre class="hljs language-<lang>"><code>…</code></pre>` block with
    token spans inside.
@@ -40,7 +40,7 @@ Lattice extends highlight.js with one custom language:
   language definition lives next to the rest of the Mermaid
   integration (subject over means — see that doc for the rationale).
 
-Registration happens in `marp.config.js`:
+Registration happens in the engine plugin (`registerMermaidHljs`):
 
 ```js
 const mermaidLanguage = require("./lib/integrations/mermaid/mermaid.hljs");
@@ -54,7 +54,7 @@ init block.
 `lib/integrations/<subject>/<subject>.hljs.js` next to the rest of
 that subject's integration files. Add a one-line entry to this doc's
 "Custom language definitions" list. Register it in
-`marp.config.js` and `lattice-emulator.js`.
+`lib/engine` and `lattice-emulator.js`.
 
 ---
 

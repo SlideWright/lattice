@@ -141,7 +141,7 @@ consumer are the foundation that makes the rest mechanical.
 
 The honest gap above ("the Tile injectors are hand-coded") had a second cost
 beyond not-yet-manifest-driven: each Tile's logic was **hand-copied across the
-render paths** — the HTML-string injector in `lib/integrations/marp/plugins.js`
+render paths** — the HTML-string injector in `lib/integrations/markdown-it/plugins.js`
 AND a DOM mirror in `lib/runtime/form-dom.js` — and its CSS lived far away in
 `base.variants.css`. That is exactly the duplication our **components** don't
 have: a component owns its CSS + kernel + manifest + gallery in one folder, and

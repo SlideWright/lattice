@@ -31,7 +31,7 @@
  * Sibling implementations:
  *   - lib/quadrant.js       transform module (canonical)
  *   - lattice-emulator.js   per-slide HTML-string transform
- *   - marp.config.js        marp-cli render hook
+ *   - lib/engine           the engine render path
  *   - lattice-runtime.js    DOM transform for marp-vscode preview
  */
 

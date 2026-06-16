@@ -2,7 +2,7 @@
 
 How the project is built, tested, linted, and shipped — every tool, every
 script, every hook in one place. For *workflow* (branching, feature decks,
-PR process, the three-renderer rule, the share-the-PDF rule), see
+PR process, the two-renderer rule, the share-the-PDF rule), see
 `workflow.md`. This file is the *tooling* counterpart.
 
 Source-of-truth lives in the config files (`biome.json`, `lefthook.yml`,
@@ -73,7 +73,7 @@ gallery builds, release and docs-portal scripts — lives in `capabilities.md`.
 test/unit/palette/      palette, palette-resolution, contrast
 test/unit/mermaid/      mermaid-var-map
 test/unit/parsing/      source-parse, match-section, splitter,
-                        slot-label-lift, marp-plugins
+                        slot-label-lift, markdown-it-plugins
 test/unit/components/   component-manifest, journey, roadmap,
                         word-cloud, quadrant, radar
 test/unit/cli/          cli
@@ -199,7 +199,7 @@ integration tests, not unit tests.
   succeeds and the test tiers passed or were skipped, so the conditional
   jobs never leave a PR stuck on a pending required check.
 
-Integration runs once because the Marp/Puppeteer/emulator pipeline
+Integration runs once because the emulator/Puppeteer pipeline
 doesn't vary with Node version; matrix-testing the slow tier is paranoia,
 not insurance. Only `integration` needs Chromium — `lint` and `unit` skip
 the download (~150 MB) since neither renders.
@@ -207,13 +207,13 @@ the download (~150 MB) since neither renders.
 ## Integration test cache
 
 `test/helpers/render.js` hashes all renderer inputs and reuses
-`.scratch/test-cache/{emu,marp}-<hash>.{pdf,html}` when the hash matches.
+`.scratch/test-cache/emu-<hash>.pdf` when the hash matches.
 Cold cache: 30s. Warm: 0.17s (170× speedup for re-runs against unchanged
 inputs).
 
 **Hash inputs** (any change invalidates):
 - source `.md` content
-- `lattice-emulator.js` or `marp.config.js`
+- `lattice-emulator.js`
 - `lattice.css` + every `themes/*.css`
 - every `lib/*.js`
 - `mermaid-v11.min.js`
@@ -365,7 +365,7 @@ gotchas.md → "Editing a manifest `sample` staled the bucket survey."
    pre-commit falls back to the full suite for every edit to that file).
 2. Add a unit test at `test/unit/<scope>/<name>.test.js`.
 3. If it's a renderer transform, document its siblings in
-   `marp.config.js` + `lattice-runtime.js` (per the three-renderer rule
+   `lib/engine` + `lattice-runtime.js` (per the two-renderer rule
    in `workflow.md`).
 
 ### Editing deck-lint rules

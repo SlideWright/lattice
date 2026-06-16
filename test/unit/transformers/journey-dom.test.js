@@ -3,7 +3,7 @@
  * transformer it was folded into.
  *
  * journey is a chart-frame member: the chart-family transformer's applyToDom
- * dispatches to journey.transformJourneySection (the same kernel marp.config.js
+ * dispatches to journey.transformJourneySection (the same kernel lattice-emulator.js (via lib/engine)
  * and lattice-emulator.js use), rewrites the nested <ul> into a .journey-board,
  * and wraps the section in the chart-frame skeleton. These tests verify the
  * delegation produces the framed DOM and is idempotent.

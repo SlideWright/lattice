@@ -12,14 +12,14 @@ holds Lattice's adapter layer — the small surface where Lattice's
 conventions meet Marp's defaults.
 
 **External dep:** `@marp-team/marp-cli` — **BYO** (no longer bundled; P4 retired
-it). Install it yourself to render via `marp.config.js`; the owned engine
+it). The owned engine
 (`lib/engine` / the `lattice` CLI) needs no marp.
 
 **Files in this folder:**
 
 | File | What it implements |
 |---|---|
-| `marp.scaffold.css` | Marp Core override layer. Two rules using `!important` to win the cascade fight against Marp's scaffold defaults that load after the theme. Lives in `@layer scaffold`. |
+| `scaffold.css` | Marp Core override layer. Two rules using `!important` to win the cascade fight against Marp's scaffold defaults that load after the theme. Lives in `@layer scaffold`. |
 
 Two related files live elsewhere (intentionally, with reason):
 
@@ -27,16 +27,10 @@ Two related files live elsewhere (intentionally, with reason):
   at the top of the bundle, registering `lattice.css` as a Marp theme.
   Stays at `lib/` root because it's about the bundle's identity rather
   than Marp integration plumbing.
-- **`marp.config.js`** at the repo root — Marp's config file (theme
-  registration, render plugins, html allowlist, math enable, etc.).
-  Marp expects to find it at the repo root by convention. Could in
-  principle move to `lib/integrations/marp/marp.config.js` (Marp
-  accepts a `--config` flag), but the move was deferred from Phase 5
-  to avoid touching CI / build surface beyond docs scope.
 
 ---
 
-## `marp.scaffold.css` — the override layer
+## `scaffold.css` — the override layer
 
 Two CSS rules, both using `!important`:
 
@@ -94,12 +88,12 @@ lattice.css         (bundled output) declares @theme lattice via lib/_theme.css
 ```
 
 Marp registers `lattice.css` and all the palette themes via
-`marp.config.js`'s `themeSet` array. Authors pick a palette via
+the engine's theme set. Authors pick a palette via
 front-matter `theme:` directive.
 
 ---
 
-## What stays in `marp.config.js`
+## What the owned engine wires
 
 The config file at the repo root carries:
 
@@ -130,6 +124,6 @@ integration docs.
 - `themes/README.md` — palette authoring contract.
 - `design/theming.md` — how palettes map their tokens onto Lattice's
   structural surface.
-- `marp.config.js` — Marp's runtime config (lives at repo root).
+- (the BYO marp-cli config has been retired — the owned engine is the only render path)
 - Marp upstream: <https://marpit.marp.app/> for the Marpit core spec
   Lattice extends.

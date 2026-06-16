@@ -9,7 +9,7 @@
  *
  * This pins the emulator side (mirrors deck-class-fm.test.js); the marp-cli
  * plugin path applies the identical merge via deckClassPropagate in
- * lib/integrations/marp/plugins.js (unit-covered in parsing/marp-plugins).
+ * lib/integrations/markdown-it/plugins.js (unit-covered in parsing/markdown-it-plugins).
  *
  * Renders the fixture through the cached emulator helper and inspects the HTML
  * sidecar (avoids parsing PDF). Slow tier because the emulator always runs the

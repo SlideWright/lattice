@@ -115,9 +115,8 @@ gate) and verified fresh by \`npm run build:check\`. **Do not hand-edit
 anything in this folder** — including this README; edit the generators in
 \`tools/\` instead.
 
-What decks and consumers actually load lives here: \`marp.config.js\` points
-its theme set at \`dist/lattice.css\`, the README's jsdelivr / raw URLs point
-into \`dist/\`, and the package \`exports\` map most named subpaths to these
+What decks and consumers actually load lives here: the README's jsdelivr / raw
+URLs point into \`dist/\`, and the package \`exports\` map most named subpaths to these
 files. See the repo \`README.md\` for the full entry-point table.
 
 | File | Purpose | Consume via |

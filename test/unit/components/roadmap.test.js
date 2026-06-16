@@ -155,16 +155,16 @@ describe('roadmap', () => {
   // ── applyToRenderedHtml — section dispatch ─────────────────────────────
 
   const STATUS_SECTION = (
-    '<section id="1" class="roadmap status" data-marpit-slide="1">' + STATUS_TABLE + '</section>'
+    '<section id="1" class="roadmap status" data-lattice-slide="1">' + STATUS_TABLE + '</section>'
   );
   const HORIZONS_SECTION = (
-    '<section id="2" class="roadmap horizons" data-marpit-slide="2">' + HORIZONS_TABLE + '</section>'
+    '<section id="2" class="roadmap horizons" data-lattice-slide="2">' + HORIZONS_TABLE + '</section>'
   );
   const PLAIN_ROADMAP_SECTION = (
-    '<section id="3" class="roadmap" data-marpit-slide="3">' + STATUS_TABLE + '</section>'
+    '<section id="3" class="roadmap" data-lattice-slide="3">' + STATUS_TABLE + '</section>'
   );
   const NON_ROADMAP_SECTION = (
-    '<section id="4" class="kpi" data-marpit-slide="4">' + STATUS_TABLE + '</section>'
+    '<section id="4" class="kpi" data-lattice-slide="4">' + STATUS_TABLE + '</section>'
   );
 
   test('dispatch: tags state markers on .status sections', () => {

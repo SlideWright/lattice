@@ -59,7 +59,7 @@ function allComponents() {
   return mans;
 }
 
-const SLIDE = 'section[data-marpit-slide="1"]';
+const SLIDE = 'section[data-lattice-slide="1"]';
 // Mermaid samples (chart + diagram buckets) spawn mmdc per diagram — give them room.
 const MERMAID = new Set(['chart', 'diagram']);
 const renderTimeout = (m) => (MERMAID.has(m.function) || MERMAID.has(m.bucket) ? 240000 : 60000);
@@ -69,7 +69,7 @@ const renderTimeout = (m) => (MERMAID.has(m.function) || MERMAID.has(m.bucket) ?
  *  headings only — body-text contrast (and palette-token resolution) are phase-2
  *  (see decision §0). Headings are the highest contrast-risk surface. */
 function worstHeadingContrast() {
-  const sec = document.querySelector('section[data-marpit-slide="1"]');
+  const sec = document.querySelector('section[data-lattice-slide="1"]');
   if (!sec) return null;
   // Headings + blockquote (the `quote` component's focal text is a <blockquote>,
   // not an h-tag). KNOWN phase-2 gap: components whose focal text is neither —
@@ -144,7 +144,7 @@ describe('component semantic invariants (assert meaning, not pixels)', () => {
         for (const [slot, spec] of Object.entries(m.slots || {}).filter(([, s]) => s.required)) {
           test(`contract: required slot "${slot}" (${spec.selector}) renders`, async () => {
             const n = await page.evaluate((sel) => {
-              const s = document.querySelector('section[data-marpit-slide="1"]');
+              const s = document.querySelector('section[data-lattice-slide="1"]');
               if (!s) return -1;
               // Manifest selectors are written against the slide <section> root: a
               // leading `section` IS this element (→ :scope), a bare selector is a

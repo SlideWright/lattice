@@ -922,7 +922,7 @@ const bgImage            = require('./lib/core/bg-image');
 // + island injectors, so the emulator only has to:
 //   - feed the mermaid-preprocessed source WITH front matter (rawMd), so the
 //     engine's directive layer resolves paginate/header/footer/class/size;
-//   - re-tag each section with `data-marpit-slide` (the engine omits it; the
+//   - re-tag each section with `data-lattice-slide` (the engine omits it; the
 //     page template's sizing / overflow watcher / PDF pagination key off it).
 
 // Depth-counted scan over <section>…</section> so nested split-panel sections
@@ -967,7 +967,7 @@ function engineSlides() {
     // engine's basic-mode render doesn't: wrap half-canvas prose in
     // `.image-text`, and inject the contrast scrim for full/contain image
     // layouts (after the lattice-bg so it darkens the image, not the text).
-    let s = bgImage.wrapImageText(sec.replace(/^<section\b/i, `<section data-marpit-slide="${i + 1}"`));
+    let s = bgImage.wrapImageText(sec.replace(/^<section\b/i, `<section data-lattice-slide="${i + 1}"`));
     const cls = (s.match(/^<section\b[^>]*\bclass="([^"]*)"/i) || ['', ''])[1];
     if (imageScrim.needsScrim(cls) && s.indexOf('class="image-scrim') === -1) {
       s = s.replace(/(<div class="lattice-bg[\s\S]*?<\/div>)/, `$1${imageScrim.SCRIM_HTML}`);
@@ -1005,7 +1005,7 @@ const slidesWithNotes = slides.map((sec, i) => {
 // not running through marp-core.
 //
 // Pagination uses the native Marp mechanism: the section carries a
-// `data-marpit-pagination="N"` attribute, and `section::after` consumes it
+// `data-lattice-pagination="N"` attribute, and `section::after` consumes it
 // as the pseudo-element content. All visual styling (font, color, position)
 // lives in lattice.css on `section::after` — see the !important block there.
 // We only need the `content` rule here so the page number actually renders.
@@ -1016,8 +1016,8 @@ const marpSystemCss = `
 
 section { position: relative; }
 
-section[data-marpit-pagination]::after {
-  content: attr(data-marpit-pagination);
+section[data-lattice-pagination]::after {
+  content: attr(data-lattice-pagination);
 }
 
 /* Speaker-notes channel: a hidden, non-printing per-slide aside. Pinned off
@@ -1157,12 +1157,12 @@ const highlightedSlides = slidesWithNotes.map(s => applyHighlighting(s));
 
 // Deck-logo (`logo:`). The Form toggle + the masthead-meta / progress-rail /
 // watermark injectors already ran inside engine.render (they match on section
-// class). deck-logo is the ONE injector that keys off `data-marpit-slide` — which
+// class). deck-logo is the ONE injector that keys off `data-lattice-slide` — which
 // engineSlides() stamps AFTER engine.render — so the engine's own logo pass
-// no-ops and the emulator runs it here, post-stamp. Same fn as marp.config.js's
-// render hook. Called on the joined HTML (not slide-by-slide) so the "first slide"
-// check in the logo rewriter (`logo-on: title`) sees source order.
-const { applyDeckLogoToHtml } = require('./marp.config').plugins;
+// no-ops and the emulator runs it here, post-stamp. Same fn the owned engine's
+// render hook uses. Called on the joined HTML (not slide-by-slide) so the "first
+// slide" check in the logo rewriter (`logo-on: title`) sees source order.
+const { applyDeckLogoToHtml } = require('./lib/integrations/markdown-it/plugins');
 const slidesWithMeta2 = applyDeckLogoToHtml(highlightedSlides.join('\n'), rawMd);
 
 // ── KaTeX CSS link ────────────────────────────────────────────────────────
@@ -1237,7 +1237,7 @@ ${katexCssLink}
 @page { size: ${slideW}px ${slideH}px; margin: 0; }
 body  { margin: 0; padding: 0; }
 ${css}
-section[data-marpit-slide] { width: ${slideW}px !important; height: ${slideH}px !important; }
+section[data-lattice-slide] { width: ${slideW}px !important; height: ${slideH}px !important; }
 ${marpSystemCss}
 ${globalStyle ? `\n/* Front-matter style: directive */\n${globalStyle}\n` : ''}
 </style></head><body>
@@ -1251,7 +1251,7 @@ ${stateChartScript}
 (function(){
   var TOL = 12;
   function check(){
-    document.querySelectorAll('section[data-marpit-slide]').forEach(function(s){
+    document.querySelectorAll('section[data-lattice-slide]').forEach(function(s){
       var over = s.scrollHeight > s.clientHeight + TOL
               || s.scrollWidth  > s.clientWidth  + TOL;
       s.classList.toggle('overflow', over);
@@ -1367,7 +1367,7 @@ const puppeteer = loadPuppeteer();
     // authors write inside code blocks parse as nested DOM elements
     // (HTML doesn't treat <code> as raw text), which would otherwise
     // pollute both the count and the flagged indices.
-    document.querySelectorAll('section[data-marpit-slide]').forEach((s, i) => {
+    document.querySelectorAll('section[data-lattice-slide]').forEach((s, i) => {
       const over = s.scrollHeight > s.clientHeight + TOL
                 || s.scrollWidth  > s.clientWidth  + TOL;
       if (over) flagged.push(i + 1); // collect to warn; do NOT mark the export
@@ -1408,9 +1408,9 @@ const puppeteer = loadPuppeteer();
     if (NOTES_SIDECAR) writeNotesSidecar(outFile, slideNotes);
   } else {
     // PNG / PPTX: rasterize one image per slide from the SAME rendered page.
-    // Each `section[data-marpit-slide]` is exactly slideW×slideH (fixed-page),
+    // Each `section[data-lattice-slide]` is exactly slideW×slideH (fixed-page),
     // so an element screenshot yields a clean full-bleed slide image.
-    const handles = await page.$$('section[data-marpit-slide]');
+    const handles = await page.$$('section[data-lattice-slide]');
     const pngBuffers = [];
     for (const h of handles) {
       pngBuffers.push(await h.screenshot({ type: 'png' }));

@@ -13,7 +13,7 @@ const { describe, test } = require('node:test');
 const assert = require('node:assert/strict');
 const core = require('../../../lib/authoring/notes-core');
 
-const sec = (inner) => `<section data-marpit-slide="1">${inner}</section>`;
+const sec = (inner) => `<section data-lattice-slide="1">${inner}</section>`;
 
 describe('notes-core: isToolingComment', () => {
   for (const pragma of [

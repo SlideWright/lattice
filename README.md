@@ -7,7 +7,7 @@
 
 # Lattice
 
-A Marp-based slide deck system for boardroom-quality decks — PDF, HTML, PPTX, or PNG sets — from Markdown.
+A Markdown slide-deck engine for boardroom-quality decks — PDF, HTML, PPTX, or PNG sets.
 
 Lattice produces decks where every slide is a deliberate layout — title,
 diagram, compare-prose, split-panel, verdict-grid, and 20+ more —
@@ -92,8 +92,7 @@ finish — and it lives where it should, at [lattice.style](https://lattice.styl
 
 - **A renderer.** The bundled `lattice-emulator.js` emits PDF, PPTX, and PNG
   sets (plus an HTML sidecar) from the same source — the output extension picks
-  the format, and PPTX/PNG rasterize from the same render as the PDF. `marp-cli`
-  remains an alternative path if you already use it. Mermaid diagrams pre-render
+  the format, and PPTX/PNG rasterize from the same render as the PDF. Mermaid diagrams pre-render
   as inline SVG. Code blocks syntax-highlight. Slides are 1280×720.
 - **Fourteen palettes.** `indaco` (cool indigo, the default) and `cuoio`
   (warm leather) are the canonical pair, alongside `ardesia`, `atelier`,
@@ -127,21 +126,20 @@ engine renders every first-party path.
 
 Distributed as `@slidewright/lattice` (npm publishing is pending — see
 [RELEASE.md](RELEASE.md)). The bundled `lattice` bin renders through the owned
-engine; Lattice also remains a **Marp theme set**, so a deck authored for it
-renders identically under your own marp-cli:
+engine — there is no Marp dependency or Marp render path:
 
 ```sh
 npm install @slidewright/lattice
 
-# 1. The emulator, exposed as a bin (the owned engine). Resolves the engine +
-#    every theme relative to the installed package, so it works from any dir.
+# The emulator, exposed as a bin (the owned engine). Resolves the engine +
+# every theme relative to the installed package, so it works from any dir.
 npx lattice deck.md deck.pdf
-
-# 2. Bring-your-own marp-cli with the shipped config, which registers the whole
-#    theme set (engine + palettes). Author decks with `theme: indaco` etc.
-npm install @marp-team/marp-cli   # marp is no longer bundled — install it yourself
-npx marp deck.md --config-file node_modules/@slidewright/lattice/marp.config.js --pdf
 ```
+
+Need a portable bundle for someone who renders with Marp? The Drawing Board's
+**Export to Marp** (and `npm run export:marp`) produces a self-contained `.zip`.
+That bundle is the only Marp interop surface; Lattice itself never renders
+through Marp.
 
 The package also exposes these named entry points:
 
@@ -149,8 +147,7 @@ The package also exposes these named entry points:
 |---|---|---|
 | `@slidewright/lattice/default` | `dist/lattice-default.css` | **zero-config default** — engine + the cuoio palette, flattened into one drop-in stylesheet |
 | `@slidewright/lattice/default/min` | `dist/lattice-default.min.css` | minified zero-config default — the leanest single-file `<link>` for browser use |
-| `@slidewright/lattice/config` | `marp.config.js` | the marp-cli config (registers the theme set) |
-| `@slidewright/lattice/runtime` | `dist/lattice-runtime.js` | the marp-vscode-preview / web-export runtime transforms |
+| `@slidewright/lattice/runtime` | `dist/lattice-runtime.js` | the preview / web-export runtime transforms |
 | `@slidewright/lattice/runtime/min` | `dist/lattice-runtime.min.js` | minified runtime — production / CDN drop-in (no inline source map) |
 | `@slidewright/lattice/css` | `dist/lattice.css` | the engine bundle — **palette-blind** (layouts only, no colour tokens) |
 | `@slidewright/lattice/css/min` | `dist/lattice.min.css` | minified engine bundle (Marp `@theme`/`@size` directives preserved) |
@@ -203,15 +200,7 @@ every format is pixel-identical. Rendering needs Chromium — set `CHROME_PATH`
 if no system Chrome is found.
 
 > **PPTX note.** Slides export as one full-bleed *image* per slide (not editable
-> text/shapes) — the same model marp uses for its default PPTX. Editable export
-> (marp's `--pptx-editable`, which needs LibreOffice) is not included.
-
-Already use marp-cli? It still works against the shipped config:
-
-```sh
-CONFIG=node_modules/@slidewright/lattice/marp.config.js
-npx marp deck.md --config-file $CONFIG --pptx -o deck.pptx   # --pdf, --html, --images png
-```
+> text/shapes). Editable PPTX export (which needs LibreOffice) is not included.
 
 ## Render the example galleries
 
@@ -295,8 +284,7 @@ lattice/
 ├── LICENSE
 ├── package.json
 │
-├── lattice-emulator.js        # build-time renderer (CLI; emulates marp-cli)
-├── marp.config.js             # Marpit plugins consumed by marp-cli
+├── lattice-emulator.js        # build-time renderer (CLI; the owned engine)
 │
 ├── dist/                      # generated, committed build artifacts
 │   ├── lattice.css            # slide layouts; palette-blind
@@ -329,7 +317,7 @@ lattice/
 │
 ├── engineering/               # internal engineering references
 │   ├── architecture.md        # engine internals
-│   ├── workflow.md            # branching, commits, three-renderer gate
+│   ├── workflow.md            # branching, commits, two-renderer gate
 │   ├── development.md         # tooling, tests, lint, CI, hooks
 │   ├── gotchas.md             # symptom-keyed fixes — read first when something breaks
 │   ├── cascade.md, mermaid.md, pipeline.md, typography.md, treatments.md, visual-review.md
@@ -344,7 +332,7 @@ lattice/
 │
 ├── test/
 │   ├── unit/                  # fast (<100 ms); no child processes
-│   ├── integration/           # spawns emulator + marp-cli; rebuilds galleries
+│   ├── integration/           # renders galleries through the owned engine
 │   ├── helpers/               # shared palette / pdf / render plumbing
 │   └── fixtures/              # markdown fixtures for parsing tests
 │
@@ -359,7 +347,7 @@ Two tiers, both built on Node's `node:test`:
 ```sh
 npm test                  # unit tier — palette, var-map contract, source parse
 npm run test:integration  # integration tier — rebuilds both galleries through
-                          # lattice-emulator and marp-cli; cross-renderer parity
+                          # lattice-emulator and the runtime; cross-renderer parity
 npm run test:all          # both tiers
 ```
 
@@ -372,9 +360,9 @@ baseline. Expected page counts are inlined in each test file; the 58
 per-component galleries derive their counts from the manifest itself
 via `expectedGallerySlideCount()`.
 
-`marp-cli` is a runtime dependency, not a dev dependency — the
-integration suite asserts cross-renderer parity, and the browser
-preview path explicitly targets marp-cli output.
+The integration suite asserts cross-renderer parity between the two
+render paths — the owned engine (`lattice-emulator.js`) and the browser
+runtime (`dist/lattice-runtime.js`).
 
 ## The Lattice Style project
 

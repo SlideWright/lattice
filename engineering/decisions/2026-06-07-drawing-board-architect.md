@@ -35,7 +35,7 @@ The hard infrastructure already exists in this repo — the Drawing Board is
 largely an *assembly + persistence + assistant* layer over parts that already run:
 
 - **The engine already renders client-side.** `tools/build-playground.js`
-  bundles marp-core + the shared Marp plugins (`lib/integrations/marp/plugins.js`)
+  bundles marp-core + the shared Marp plugins (`lib/integrations/markdown-it/plugins.js`)
   + the transformer registry into one browser IIFE
   (`docs/public/playground/lattice-playground.js`) that runs **render path #2
   entirely in the browser**. The Drawing Board reuses this; it does **not**

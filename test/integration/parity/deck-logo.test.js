@@ -3,7 +3,7 @@
  * as the first child of every section selected by the `logo-on` rule.
  *
  * Three render paths must agree:
- *   1. marp.config.js's `applyDeckLogoToHtml` (marp-cli path)
+ *   1. the engine's `applyDeckLogoToHtml` (HTML path)
  *   2. lattice-emulator.js's HTML post-process (emulator path)
  *   3. lattice-runtime.js's `applyDeckLogoFromFrontMatter` (browser path)
  *

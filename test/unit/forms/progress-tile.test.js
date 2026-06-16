@@ -12,7 +12,7 @@ const assert = require('node:assert/strict');
 const { JSDOM } = require('jsdom');
 const progress = require('../../../lib/forms/tile/progress/progress.transform');
 
-const sec = (cls, inner = '') => `<section class="${cls}" data-marpit-slide="x">${inner}</section>`;
+const sec = (cls, inner = '') => `<section class="${cls}" data-lattice-slide="x">${inner}</section>`;
 const deckHtml = (sections) => sections.join('');
 const doc = (html) => new JSDOM(`<!DOCTYPE html><body>${html}</body>`).window.document;
 const tilesIn = (html) => [...doc(html).querySelectorAll('.tile-progress')].map((n) => n.outerHTML).sort();

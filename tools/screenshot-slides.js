@@ -19,7 +19,7 @@ ARGUMENTS / FLAGS
   selector,   --selector EXPR   Which slide(s) to screenshot (see below)
                                   (default: all)
   scale,      --scale N         deviceScaleFactor (1 = native 1280×720,
-                                  3 = retina 3840×2160, matches marp.config.js)
+                                  3 = retina 3840×2160)
                                   (default: 3)
 
   -h, --help                    Show this help and exit
@@ -96,7 +96,7 @@ const { flags, positional } = parseArgs(process.argv.slice(2));
 
 // Sensible repo-rooted defaults: drop /tmp (Linux-only); .scratch/peek
 // matches the project's scratch-lifecycle convention. Default scale=3
-// matches marp.config.js's imageScale and is what the recipes recommend.
+// matches the engine's 1× export scale and is what the recipes recommend.
 const DEFAULT_HTML  = path.join(process.cwd(), '.scratch', 'peek', 'deck.html');
 const DEFAULT_OUT   = path.join(process.cwd(), '.scratch', 'peek');
 const DEFAULT_SCALE = 3;

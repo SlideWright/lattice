@@ -24,8 +24,8 @@
 // PDF is stale. Re-bless with `--bless` (delegates to build-galleries.js /
 // build-bucket-galleries.js) and commit the refreshed PDFs in the same PR.
 //
-// Sibling render paths (HARD RULE 1): lattice-emulator.js (this gate's render),
-// marp.config.js → lib/core/* (BYO marp-cli), dist/lattice-runtime.js (vscode).
+// Sibling render paths (HARD RULE 1): lattice-emulator.js (this gate's render,
+// via lib/engine) and dist/lattice-runtime.js (vscode preview / published HTML).
 //
 // Usage:
 //   node tools/regression-gate.mjs                 # full corpus, light + dark

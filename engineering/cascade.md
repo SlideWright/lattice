@@ -12,7 +12,7 @@ concatenate in this order (file-header docstring is canonical):
 1.  lib/_theme.css                              (Marp @theme directive)
 2.  lib/base/base.tokens.css                    (:root tokens)
 3.  lib/base/base.elements.css                  (semantic HTML defaults)
-4.  lib/integrations/marp/marp.scaffold.css     (section, header, footer, pagination)
+4.  lib/integrations/markdown-it/scaffold.css     (section, header, footer, pagination)
 5.  @layer declaration (declared, but no source wraps itself in any layer)
 6.  lib/components/<bucket>/<name>/<name>.styles.css   (alphabetical)
 7.  lib/base/base.modifiers.css                 (cross-cutting modifiers)
@@ -74,12 +74,12 @@ rules and `!important`.
 Rule 3 is the trap. Phase 3.5b of the layer-activation investigation
 wrapped ONLY component CSS in `@layer components` and left shared
 files unlayered. Result: every component rule lost to whatever generic
-rule existed in `base.modifiers.css` or `marp.scaffold.css` at lower
+rule existed in `base.modifiers.css` or `scaffold.css` at lower
 specificity. 100% of canary pages diverged. The change was reverted.
 
 ### What that means for Lattice today
 
-`marp.scaffold.css` has `!important` rules on `section::after`
+`scaffold.css` has `!important` rules on `section::after`
 (pagination chrome — necessary to override Marp's later-loaded
 scaffold defaults). `base.variants.css` has competing `!important`
 rules on `section.silent::after`, `section.archived::after`, etc.
@@ -89,7 +89,7 @@ Today both are unlayered → source order resolves the tie → variants
 wins because it comes later in the bundle. ✓
 
 If we wrapped `base.variants.css` in `@layer universal` while leaving
-`marp.scaffold.css` unlayered (or vice versa):
+`scaffold.css` unlayered (or vice versa):
 - Per rule 3, the unlayered side wins regardless of specificity
 - Variants silently loses → `.silent`, `.archived` etc. stop working
 - Pixel-diff catches the regression, but only on slides exercising
@@ -127,7 +127,7 @@ and learned:
 
 After Phase 3.5c, `lattice.css` carries 345 `!important` declarations
 (down from 352). All 345 remaining are correct: 14 in `base.variants.css`
-defending against `marp.scaffold.css`, and 331 library-override
+defending against `scaffold.css`, and 331 library-override
 declarations defending against inline styles emitted by Mermaid,
 KaTeX, Marpit's emoji catch-all, and own SVG kernels.
 
@@ -167,7 +167,7 @@ Anyone touching the cascade should expect to:
 4. **Treat the 14 `base.variants.css` `!important` rules as
    load-bearing** until the scaffold-vs-variants competition is
    refactored. They're not defensive overkill — they're necessary
-   to defeat `marp.scaffold.css`.
+   to defeat `scaffold.css`.
 5. **Library-override `!important` stays.** Any rule whose selector
    targets a class emitted by Mermaid, KaTeX, or another external
    library needs `!important` to defeat the library's inline styles.

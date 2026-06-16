@@ -3,24 +3,30 @@
  * export-marp — produce a portable, self-contained bundle of a Lattice deck for
  * use outside Lattice ("Marp is an export target, not a live render path").
  *
- * See engineering/decisions/2026-06-13-export-to-marp.md. The bundle:
+ * See engineering/decisions/2026-06-13-export-to-marp.md. The bundle is a
+ * MARP-NATIVE artifact (rendered with marp-cli / the VS Code extension, NOT
+ * Lattice's engine):
  *   <name>/
  *     <name>.md            — splits BAKED into literal `---` (lib/core/bake-splits.js),
- *                            local image paths localized into assets/
- *     themes/              — lattice.css + the deck's palette (+ -dark)
+ *                            local image paths localized into assets/, runtime
+ *                            <script> tags (mermaid + lattice-runtime) appended
+ *     lattice.css          — the palette-blind engine stylesheet (minified)
+ *     themes/<palette>.css — the deck's palette (+ -dark), minified (from dist/themes/)
+ *     lattice-runtime.min.js,
+ *     mermaid-v11.min.js   — render diagrams + components when opened as HTML
+ *     .vscode/settings.json — registers the themes for the Marp VS Code preview
+ *     marp.config.cjs      — registers the themeSet for `marp-cli`
+ *     package.json         — pins @marp-team/marp-cli (the only dep)
  *     assets/              — every local image the deck references
- *     engine/              — dist/lattice-emulator.js + mermaid bundle (zero-install renderer)
- *     marp.config.cjs      — the Lattice engine config for `marp-cli` (full fidelity)
- *     package.json         — pins @marp-team/marp-cli + @slidewright/lattice
- *     README.md            — quick start (two fidelity tiers) + caveats
+ *     README.md            — VS Code + marp-cli quick start + the fidelity note
  *
  * Usage:
  *   node tools/export-marp.js <deck.md> <out-dir-or-zip> [palette]
  *
  * Fidelity: the baked `.md` + themes split + style correctly in ANY Marp tool
- * (incl. the marp-vscode preview); the bundled engine / the marp-cli config
- * reproduce the deck in FULL (charts, islands, structural components). The
- * structural components cannot run in stock marp-core — that's inherent and
+ * (the marp-vscode preview, marp-cli) — palette + CSS layouts. Mermaid + the
+ * JS-driven structural components render when the exported HTML is opened in a
+ * browser (the runtime <script> tags); that's inherent to a Marp render and is
  * documented in the generated README. Exit 0 on success, 1 on usage/IO error.
  */
 
@@ -31,7 +37,7 @@ const path = require('path');
 const { execFileSync } = require('child_process');
 const { bakeSplits } = require('../lib/core/bake-splits');
 const {
-  STATIC_ASSETS, MARP_CONFIG_CJS, withRuntimeScripts, packageJson, readme,
+  STATIC_ASSETS, MARP_CONFIG_CJS, withRuntimeScripts, packageJson, vscodeSettings, readme,
 } = require('../lib/core/marp-bundle');
 
 const ROOT = path.join(__dirname, '..');
@@ -106,26 +112,32 @@ function main(argv) {
   // client-side when the deck is opened as HTML in a browser.
   fs.writeFileSync(path.join(dest, `${name}.md`), withRuntimeScripts(fm + localized.body));
 
-  // 3) the deck's palette (+ -dark) under themes/.
+  // 3) the deck's palette (+ -dark) under themes/, MINIFIED (from dist/themes/),
+  //    under the readable `<palette>.css` name marp/VS Code register by @theme.
   const themeFiles = [`${palette}.css`, `${palette}-dark.css`];
   const bundledThemes = [];
   for (const f of themeFiles) {
-    const abs = path.join(ROOT, 'themes', f);
-    if (fs.existsSync(abs)) { copyInto(abs, path.join(dest, 'themes', f)); bundledThemes.push(`themes/${f}`); }
+    const min = path.join(ROOT, 'dist', 'themes', f.replace(/\.css$/, '.min.css'));
+    if (fs.existsSync(min)) { copyInto(min, path.join(dest, 'themes', f)); bundledThemes.push(`themes/${f}`); }
   }
-  if (!bundledThemes.length) die(`unknown palette '${palette}' — no themes/${palette}.css`);
+  if (!bundledThemes.length) die(`unknown palette '${palette}' — no dist/themes/${palette}.min.css (run \`npm run build\`)`);
+  const themesList = ['lattice.css', ...bundledThemes];
 
-  // 4) the shared static assets — the minified engine, stylesheet, runtime, and
-  // mermaid, shipped under the canonical names the emulator resolves (lean).
+  // 4) the shared static assets — minified stylesheet (→ lattice.css), runtime,
+  //    and mermaid. No engine: the bundle is rendered with Marp, not Lattice.
   for (const { from, to } of STATIC_ASSETS) {
     const abs = path.join(ROOT, from);
     if (fs.existsSync(abs)) copyInto(abs, path.join(dest, to));
   }
 
-  // 5) marp-cli config + manifest + README (from the shared bundle spec).
+  // 5) generated text files (from the shared bundle spec): marp-cli config,
+  //    package.json, .vscode/settings.json (Marp VS Code theme registration),
+  //    and the README.
   fs.writeFileSync(path.join(dest, 'marp.config.cjs'), MARP_CONFIG_CJS);
   fs.writeFileSync(path.join(dest, 'package.json'), JSON.stringify(packageJson(name), null, 2) + '\n');
-  fs.writeFileSync(path.join(dest, 'README.md'), readme({ name, palette, themes: ['dist/lattice.css', ...bundledThemes] }));
+  fs.mkdirSync(path.join(dest, '.vscode'), { recursive: true });
+  fs.writeFileSync(path.join(dest, '.vscode', 'settings.json'), vscodeSettings(themesList));
+  fs.writeFileSync(path.join(dest, 'README.md'), readme({ name, palette, themes: themesList }));
 
   let result = dest;
   if (wantZip) {

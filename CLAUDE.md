@@ -167,14 +167,16 @@ independent set of eyes earns its latency.
 ## HARD RULES (these override convenience; a violation is a defect)
 
 1. **The render paths share one source of truth — land transforms in the shared
-   kernel, not one path.** Authoring transforms live in `lib/integrations/marp/plugins.js`,
-   `lib/transformers/*`, and `lib/core/*` so every path stays in step: the owned
-   `lib/engine` (the `lattice` CLI **and** the docs playground), the shipped
-   `marp.config.js` (BYO marp-cli — same plugins), and `dist/lattice-runtime.js`
-   (vscode preview). The owned engine is now canonical (the marp-parity gate is
-   retired — P4; visual correctness gates via the per-component semantic-invariant
-   suite). Each kernel documents its siblings in a header comment. See
-   `engineering/architecture.md`.
+   kernel, not one path.** Authoring transforms live in `lib/integrations/markdown-it/plugins.js`,
+   `lib/transformers/*`, and `lib/core/*` so both render paths stay in step: the owned
+   `lib/engine` (the `lattice` CLI/emulator **and** the docs playground) and
+   `dist/lattice-runtime.js` (the vscode preview / published-HTML runtime). The
+   owned engine is canonical; Marp is fully retired as a render path (no BYO
+   marp-cli config) — visual correctness gates via the per-component
+   semantic-invariant suite. The one remaining Marp surface is the **export-to-Marp**
+   feature (`lib/core/marp-bundle.js`, the Drawing Board) — a one-way bundle for
+   recipients, not a Lattice render path. Each kernel documents its siblings in a
+   header comment. See `engineering/architecture.md`.
 2. **Never hand-edit `dist/`.** It is generated. Regenerate with
    `npm run build` (behind the collision gate).
 3. **No hex literals in layout CSS — always `var(--token)`.**
@@ -244,7 +246,7 @@ independent set of eyes earns its latency.
 | Working on… | Read first |
 |---|---|
 | What a component/modifier/token *is*, catalog shape | `design/design-system.md` |
-| Branching, feature decks, share-the-PDF, rebase, 3-renderer gate | `engineering/workflow.md` |
+| Branching, feature decks, share-the-PDF, rebase, 2-renderer gate | `engineering/workflow.md` |
 | Node, npm scripts, tests, lint, hooks, CI, "add X also do Y" | `engineering/development.md` |
 | Something behaving strangely (symptom index) | `engineering/gotchas.md` |
 | Engine internals, where transform kernels live | `engineering/architecture.md` |
@@ -301,11 +303,11 @@ them; this block is canonical, the per-topic docs are the deep reference.
 - **Render/test need `CHROME_PATH`** (the hook sets it). If a render says "no
   suitable browser found", re-export:
   `export CHROME_PATH=$(ls /root/.cache/puppeteer/chrome/linux-*/chrome-linux64/chrome | head -1)`.
-- **See a slide without a browser:** `npx marp <deck> --config-file
-  marp.config.js --allow-local-files --images png -o .scratch/x.png` → it writes
-  one `x.NNN.png` per slide → `Read` it (renders inline). Full-quality PDFs →
-  `tools/rasterize-for-review.sh <pdf> --overview --check` (poppler-only;
-  ImageMagick is needed *only* for `--crop`/`--region`).
+- **See a slide without a browser:** render with the owned engine
+  `node dist/lattice-emulator.js <deck> .scratch/x.pdf` then rasterize →
+  `tools/rasterize-for-review.sh .scratch/x.pdf --overview --check` (poppler-only;
+  ImageMagick is needed *only* for `--crop`/`--region`) → it writes one PNG per
+  slide → `Read` it (renders inline).
 - **Lint is `npm run lint`** — never `npx biome` (the registry `biome` is the
   wrong package).
 - **One test file:** `node --test <file>` — the `<dir>` form errors; use

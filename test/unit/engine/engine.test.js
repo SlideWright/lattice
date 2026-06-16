@@ -78,8 +78,8 @@ describe('lattice-engine: contract', () => {
     const md = '<!-- paginate: true -->\n\n# A\n\n---\n\n<!-- _paginate: false -->\n\n# B\n';
     const { html } = makeEngine().render(md, 'lattice');
     const secs = html.match(/<section[^>]*>/g);
-    assert.match(secs[0], /data-marpit-pagination="1"/);
-    assert.doesNotMatch(secs[1], /data-marpit-pagination=/);
+    assert.match(secs[0], /data-lattice-pagination="1"/);
+    assert.doesNotMatch(secs[1], /data-lattice-pagination=/);
     assert.doesNotMatch(secs[1], /--paginate:false/);
   });
 
@@ -130,7 +130,7 @@ describe('lattice-engine: css emission (P1.1)', () => {
     assert.match(s, /width:\s*1280px/);
     assert.match(s, /height:\s*720px/);
     assert.match(s, /container-type:\s*size/);
-    assert.match(s, /content:\s*attr\(data-marpit-pagination\)/);
+    assert.match(s, /content:\s*attr\(data-lattice-pagination\)/);
     assert.match(s, /@page\s*\{[^}]*size:\s*1280px 720px/);
     assert.match(s, /@media print/);
   });
@@ -255,14 +255,14 @@ describe('lattice-engine: css emission (P1.1)', () => {
     const THEME =
       "/* @theme cuoio */\n@import 'lattice';\n" +
       "section.num::after { content: counter(c); color: red; }\n" +
-      "section.page::after { content: attr(data-marpit-pagination); }\n" +
+      "section.page::after { content: attr(data-lattice-pagination); }\n" +
       "section.tag::before { content: 'DRAFT'; }";
     const out = composeCss({ themeCss: THEME, baseLatticeCss: BASE });
     assert.match(out, /\/\* content: counter\(c\); \*\//); // masked: commented, not deleted
     const live = out.replace(/\/\*[\s\S]*?\*\//g, ''); // strip comments → only live decls remain
     assert.doesNotMatch(live, /content:\s*counter\(c\)/); // no live numbered ::after content
     assert.match(out, /color:\s*red/); // sibling decls survive
-    assert.match(out, /content:\s*attr\(data-marpit-pagination\)/); // the page number is kept
+    assert.match(out, /content:\s*attr\(data-lattice-pagination\)/); // the page number is kept
     assert.match(out, /content:\s*'DRAFT'/); // ::before content is untouched (not a pagination target)
   });
 

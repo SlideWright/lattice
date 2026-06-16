@@ -330,10 +330,10 @@ describe('radar', () => {
   });
 
   const RADAR_SECTION = (
-    '<section id="1" class="radar" data-marpit-slide="1"><h2>Skills</h2>' + UL_TWO + '</section>'
+    '<section id="1" class="radar" data-lattice-slide="1"><h2>Skills</h2>' + UL_TWO + '</section>'
   );
   const RADAR_QUAD_SECTION = (
-    '<section id="2" class="radar quadrant" data-marpit-slide="2"><h2>Cap</h2>' + UL_QUADRANT + '</section>'
+    '<section id="2" class="radar quadrant" data-lattice-slide="2"><h2>Cap</h2>' + UL_QUADRANT + '</section>'
   );
 
   test('chart-family: applyToRenderedHtml transforms radar sections', () => {

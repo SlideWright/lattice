@@ -88,7 +88,7 @@ function lineLocalSource(detect, options, validFor = TOKEN) {
 }
 
 // Completes the registered theme names after `theme:` in the deck's front
-// matter. A theme not in marp.config.js's themeSet renders unstyled (white,
+// matter. A theme not in the registered set renders unstyled (white,
 // no tokens) — a documented gotcha this prevents at the keystroke.
 function themeSource(themes) {
 	if (!themes?.length) return () => null;

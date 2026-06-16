@@ -27,6 +27,30 @@ in patch versions.
 
 ### Removed
 
+- **Breaking: the BYO marp-cli render path is retired — `marp.config.js` is
+  deleted**, along with the `@slidewright/lattice/config` and
+  `@slidewright/lattice/marp.config.js` package exports. Lattice's own engine
+  (`lib/engine`, the `lattice` CLI/emulator + docs playground) and the browser
+  runtime (`dist/lattice-runtime.js`) are the only render paths. The shared
+  markdown-it plugin kernel moved from `lib/integrations/marp/` to
+  `lib/integrations/markdown-it/`. Marp now survives only as the one-way
+  **export-to-Marp** bundle (`export:marp`, the Drawing Board). Consumers who
+  rendered Lattice decks via their own marp-cli + our config should switch to
+  the bundled emulator (`node dist/lattice-emulator.js deck.md deck.pdf`).
+
+- **Changed: the export-to-Marp bundle is now a MARP-NATIVE artifact — it ships
+  no Lattice engine.** The bundle is meant to be rendered with **Marp** (the VS
+  Code extension or marp-cli); Lattice supplies the deck (splits baked to `---`),
+  the **minified** palette CSS (`lattice.css` + `themes/`, the latter now built as
+  `dist/themes/*.min.css`), the browser runtime, and Mermaid. New: a
+  `.vscode/settings.json` registers the palette via `markdown.marp.themes`, and
+  `package.json` pins only marp-cli. Rendering with marp-cli / the VS Code preview
+  applies slide splits + palette + CSS layouts; Mermaid diagrams and the
+  JS-driven structural components render when the exported **HTML is opened in a
+  browser** (the deck's trailing `<script>` tags load `lattice-runtime.min.js`).
+  The previously-bundled zero-install emulator (`dist/lattice-emulator.js`) is no
+  longer shipped.
+
 - **Two phantom variants are removed: `compare-code mirror` and `kpi target`.**
   Both were declared and fully captioned in their manifests but had no backing
   CSS — `compare-code mirror` rendered identically to bare (the central mirror
@@ -332,6 +356,14 @@ in patch versions.
   gallery) to `` `Eyebrow` `` paragraphs, and repointed the eyebrow CSS + slot
   selectors. Renders identically (mono, tracked, uppercase); the authoring is now
   valid markdown that matches what the CSS supports.
+
+- **The export-to-Marp bundle's `npm install` no longer 404s.** The generated
+  `package.json` listed `@slidewright/lattice` as a dependency, but that package
+  is unpublished — so a recipient following the README's marp-cli route
+  (`npm install` → `npm run pdf`) hit `E404` and never even got marp-cli. The
+  engine ships pre-bundled as `dist/lattice-emulator.js` (the README's
+  zero-install primary route), so the dependency was both unnecessary and
+  breaking; the bundle now pins only `@marp-team/marp-cli`.
 
 - **`compare-prose` verdict variants now render — `chosen` / `decision` /
   `vertical` / `rejected` were silent no-ops.** Their CSS targeted a
@@ -911,7 +943,7 @@ in patch versions.
   markers inside inline code (`` `**x**` ``) now stay literal instead of being
   parsed as `<strong>`, matching CommonMark + the marp-cli path. Math (KaTeX) and
   syntax highlighting are handled by the engine; the deck-logo + island injectors
-  still run in the emulator (they key off `data-marpit-slide`, stamped after the
+  still run in the emulator (they key off `data-lattice-slide`, stamped after the
   engine renders). See
   `engineering/decisions/2026-06-11-emulator-on-engine-p2.md` (P2 step d).
 - **The reference trio's chart palettes are re-tuned to the quality bar they
@@ -2776,7 +2808,7 @@ in patch versions.
   layout. Now escapes per standard markdown behaviour.
 - **Overflow watcher scoped to Marp sections.** The watchers in
   `lattice-emulator.js` and `lattice-runtime.js` now select
-  `section[data-marpit-slide]` instead of every `section`, so any
+  `section[data-lattice-slide]` instead of every `section`, so any
   literal `<section>` text that does end up in the DOM no longer
   pollutes the warning indices. Same scope applied to the
   per-section sizing override.

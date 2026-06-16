@@ -8,7 +8,7 @@
  * Boardroom-quality math layouts for mathematicians, quants, ML researchers,
  * physicists, statisticians, and economists. KaTeX (server-side via the
  * `katex` npm package in lattice-emulator.js, native via `math: 'katex'` in
- * marp.config.js) renders `$$…$$` (display) and `$…$` (inline). Layouts
+ * the engine) renders `$$…$$` (display) and `$…$` (inline). Layouts
  * surround the math with the structure each persona expects:
  *
  *   math (bare)         — defaults to `feature` (hero equation + legend)

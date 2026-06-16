@@ -1,5 +1,5 @@
 /**
- * Unit: the `split: headings` slide divider (lib/integrations/marp/plugins.js
+ * Unit: the `split: headings` slide divider (lib/integrations/markdown-it/plugins.js
  * `headingSplit` + lib/core/resolve-split.js).
  *
  * `split: headings` lets a deck divide on h1/h2 instead of `---`, the house

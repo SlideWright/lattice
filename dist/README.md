@@ -9,9 +9,8 @@ gate) and verified fresh by `npm run build:check`. **Do not hand-edit
 anything in this folder** — including this README; edit the generators in
 `tools/` instead.
 
-What decks and consumers actually load lives here: `marp.config.js` points
-its theme set at `dist/lattice.css`, the README's jsdelivr / raw URLs point
-into `dist/`, and the package `exports` map most named subpaths to these
+What decks and consumers actually load lives here: the README's jsdelivr / raw
+URLs point into `dist/`, and the package `exports` map most named subpaths to these
 files. See the repo `README.md` for the full entry-point table.
 
 | File | Purpose | Consume via |
@@ -28,6 +27,33 @@ files. See the repo `README.md` for the full entry-point table.
 | `lattice-runtime.min.js` | Minified `lattice-runtime.js` — no inline source map. Production / CDN runtime drop-in. | `@slidewright/lattice/runtime/min` |
 | `lattice.css` | Engine bundle — the palette-blind layout system (layouts + modifiers, no colour tokens). | `@slidewright/lattice/css` |
 | `lattice.min.css` | Minified `lattice.css` — same engine, comments/whitespace stripped (Marp `@theme`/`@size` directives preserved). Production / CDN drop-in. | `@slidewright/lattice/css/min` |
+| `themes/ardesia-dark.min.css` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
+| `themes/ardesia.min.css` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
+| `themes/atelier-dark.min.css` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
+| `themes/atelier.min.css` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
+| `themes/brina-dark.min.css` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
+| `themes/brina.min.css` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
+| `themes/burgundy-dark.min.css` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
+| `themes/burgundy.min.css` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
+| `themes/carbone.min.css` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
+| `themes/carta-dark.min.css` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
+| `themes/carta.min.css` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
+| `themes/concrete-dark.min.css` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
+| `themes/concrete.min.css` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
+| `themes/crepuscolo-dark.min.css` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
+| `themes/crepuscolo.min.css` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
+| `themes/cuoio-dark.min.css` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
+| `themes/cuoio.min.css` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
+| `themes/indaco-dark.min.css` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
+| `themes/indaco.min.css` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
+| `themes/laguna-dark.min.css` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
+| `themes/laguna.min.css` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
+| `themes/magnolia-dark.min.css` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
+| `themes/magnolia.min.css` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
+| `themes/mustard-dark.min.css` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
+| `themes/mustard.min.css` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
+| `themes/onyx-dark.min.css` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
+| `themes/onyx.min.css` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
 
 > Regression-baseline PDFs and `*.gallery.md` files are **not** part of the
 > distribution — they stay in git but are excluded from the npm tarball. See

@@ -324,13 +324,13 @@ describe('journey', () => {
   // ── applyToRenderedHtml — section dispatch ───────────────────────────
 
   const JOURNEY_SECTION = (
-    '<section id="1" class="journey" data-marpit-slide="1">' + SAMPLE_SECTION_INNER + '</section>'
+    '<section id="1" class="journey" data-lattice-slide="1">' + SAMPLE_SECTION_INNER + '</section>'
   );
   const HEATMAP_SECTION = (
-    '<section id="2" class="journey heatmap" data-marpit-slide="2">' + SAMPLE_SECTION_INNER + '</section>'
+    '<section id="2" class="journey heatmap" data-lattice-slide="2">' + SAMPLE_SECTION_INNER + '</section>'
   );
   const NON_JOURNEY_SECTION = (
-    '<section id="3" class="kpi" data-marpit-slide="3">' + SAMPLE_SECTION_INNER + '</section>'
+    '<section id="3" class="kpi" data-lattice-slide="3">' + SAMPLE_SECTION_INNER + '</section>'
   );
 
   test('dispatch: rewrites every journey-classed section', () => {

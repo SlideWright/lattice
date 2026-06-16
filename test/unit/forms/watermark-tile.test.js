@@ -13,7 +13,7 @@ const assert = require('node:assert/strict');
 const { JSDOM } = require('jsdom');
 const wm = require('../../../lib/forms/tile/watermark/watermark.transform');
 
-const sec = (cls, inner = '') => `<section class="${cls}" data-marpit-slide="x">${inner}</section>`;
+const sec = (cls, inner = '') => `<section class="${cls}" data-lattice-slide="x">${inner}</section>`;
 const deck = (sections) => sections.join('');
 const doc = (html) => new JSDOM(`<!DOCTYPE html><body>${html}</body>`).window.document;
 const glyphsHtml = (html) => [...html.matchAll(/<div class="tile-watermark"[^>]*>(\d+)<\/div>/g)].map((m) => m[1]);

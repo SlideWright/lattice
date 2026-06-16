@@ -793,7 +793,7 @@ section ul { list-style:none; padding:0; margin:0; }
 section ol { padding:0; margin:0; }
 section blockquote { margin:0; padding:0; border:none; }
 
-/* === lib/integrations/marp/marp.scaffold.css === */
+/* === lib/integrations/markdown-it/scaffold.css === */
 /* Scaffold rules — section chrome that beats Marp Core's runtime CSS.
  *
  * These rules use !important to override Marp's scaffold defaults that
@@ -2398,7 +2398,7 @@ section.compare-prose :is(ul,ol) > li > strong ~ * { font-weight: 400; }
  * the title line so the body fills the card from the top.
  *
  * The leading <strong> wrapper is produced automatically by the build
- * pipeline (slotLabelLift in marp.config.js, mirrored in
+ * pipeline (slotLabelLift in the engine, mirrored in
  * lattice-emulator.js) — authors write plain `- Label` and the structural
  * lift happens in the Marpit token layer. Wrapping `**Label**` in source
  * still works (idempotent) for authors who prefer to be explicit. */
@@ -3104,7 +3104,7 @@ section .taskTextOutsideLeft, section .taskTextOutsideRight { fill: var(--text-h
  *   - Term
  *     - Definition
  *
- * The runtime (lattice.js + marp.config.js + lattice-runtime.js) transforms
+ * The runtime (lib/engine + lattice-runtime.js) transforms
  * that to a 2-column table, auto-bolds the term, and appends a brand pill
  * to the h2 spanning the alphabetic range — e.g. `A – G`.
  * Term column does not wrap — keep glossary terms short or use a hyphen
@@ -3119,7 +3119,7 @@ section.glossary td:first-child,
 section.glossary td:first-child strong { color:var(--accent); padding-right:var(--sp-md); white-space:nowrap; font-weight:600; }
 section.glossary h2 { display:flex; align-items:baseline; justify-content:space-between; gap:var(--sp-md); }
 /* Auto-derived alphabet range pill, emitted into the h2 by the runtime
- * (lattice.js) and the Marpit plugin (marp.config.js). Matches the
+ * (lib/engine) and the markdown-it plugin. Matches the
  * neutral .badge pill recipe so it sits naturally alongside other
  * categorical chips elsewhere in the deck. */
 section.glossary h2 .range-pill {
@@ -3150,7 +3150,7 @@ section.glossary h2 .range-pill {
  * how the image renders (cover / letterbox / matted). Per docs.
  *
  * Render paths:
- *   Marp CLI: [data-marpit-advanced-background-container] figure
+ *   the .lattice-bg figure fills the slot
  *   Emulator: .lattice-bg, .lattice-bg-right / -left / -full
  *
  * Text sizes are absolute (px). Canvas-scaled (--fs-*) tokens shrink
@@ -3179,7 +3179,7 @@ section.image {
  * at 50% width holding the heading + body. This keeps cqi resolving
  * correctly inside the section (container-type: size measures the
  * content-box, so percentage padding on the section warps every cqi
- * unit beneath it — see lib/transformers/image-text-panel.js).
+ * unit beneath it — see lib/core/bg-image.js).
  *
  * Mirror flips the flex order so the text panel sits on the right.
  * Background gradient marks the split at 50% in either direction. */
@@ -3229,7 +3229,7 @@ section.image:not(.full):not(.contain):not(.museum).left {
 }
 
 /* Emulator wrapper — positions the .lattice-bg div as the half-canvas
- * image slot. Marp CLI uses [data-marpit-advanced-background-container]
+ * image slot. the engine emits .lattice-bg-full
  * which marpit positions natively. */
 section.image .lattice-bg { position: absolute; z-index: -1; overflow: hidden; }
 section.image .lattice-bg img { width: 100%; height: 100%; display: block; }
@@ -3238,8 +3238,8 @@ section.image:not(.full):not(.contain):not(.museum) .lattice-bg-left  { left: 0;
 section.image:not(.full):not(.contain):not(.museum).mirror .lattice-bg-right,
 section.image:not(.full):not(.contain):not(.museum).left   .lattice-bg-right { right: auto; left: 0; }
 
-/* Canonical .image-asset element (img inside marpit container or
- * .lattice-bg). Object-fit: cover is the default; .contain modifier
+/* Canonical .image-asset element (img inside the engine's .lattice-bg
+ * wrapper). Object-fit: cover is the default; .contain modifier
  * overrides below. The hairline at the slide-half split is on the
  * image element so it follows the image wherever marpit / emulator
  * positions it. */
@@ -3252,9 +3252,7 @@ section.image:not(.full):not(.contain):not(.museum) .image-asset {
   box-shadow: -1px 0 0 var(--border);
 }
 
-/* Legacy selectors still in place for parity until iteration 2 of the
- * Marp Adapter refactor — see engineering/decisions/2026-05-19-marp-adapter.md. */
-section.image:not(.full):not(.contain):not(.museum) [data-marpit-advanced-background-container] figure,
+/* Half-canvas image background sizing (the .lattice-bg image fills its half). */
 section.image:not(.full):not(.contain):not(.museum) .lattice-bg img {
   background-size: cover !important;
   background-position: center !important;
@@ -3262,9 +3260,7 @@ section.image:not(.full):not(.contain):not(.museum) .lattice-bg img {
   object-position: center !important;
   box-shadow: -1px 0 0 var(--border) !important;
 }
-section.image:not(.full):not(.contain):not(.museum).mirror [data-marpit-advanced-background-container] figure,
 section.image:not(.full):not(.contain):not(.museum).mirror .lattice-bg img,
-section.image:not(.full):not(.contain):not(.museum).left   [data-marpit-advanced-background-container] figure,
 section.image:not(.full):not(.contain):not(.museum).left   .lattice-bg img {
   box-shadow: 1px 0 0 var(--border) !important;
 }
@@ -3303,9 +3299,6 @@ section.image.museum footer {
 }
 
 /* Image container fills the slide (overlay behind text) */
-section.image.full [data-marpit-advanced-background-container],
-section.image.contain [data-marpit-advanced-background-container],
-section.image.museum [data-marpit-advanced-background-container],
 section.image.full .lattice-bg-full,
 section.image.contain .lattice-bg-full,
 section.image.museum .lattice-bg-full {
@@ -3315,7 +3308,6 @@ section.image.museum .lattice-bg-full {
 }
 
 /* Cover (default for `.full`) — image fills, cropped */
-section.image.full [data-marpit-advanced-background-container] figure,
 section.image.full .lattice-bg-full img {
   width: 100%; height: 100%;
   background-size: cover !important;
@@ -3326,7 +3318,6 @@ section.image.full .lattice-bg-full img {
 }
 
 /* Contain — letterbox; matte fills around */
-section.image.contain [data-marpit-advanced-background-container] figure,
 section.image.contain .lattice-bg-full img {
   width: 100%; height: 100%;
   background-size: contain !important;
@@ -3339,11 +3330,9 @@ section.image.contain .lattice-bg-full img {
 }
 
 /* Museum — image inset 40px with 1px hairline frame */
-section.image.museum [data-marpit-advanced-background-container],
 section.image.museum .lattice-bg-full {
   inset: 40px;
 }
-section.image.museum [data-marpit-advanced-background-container] figure,
 section.image.museum .lattice-bg-full img {
   width: 100%; height: 100%;
   background-size: contain !important;
@@ -3358,9 +3347,7 @@ section.image.museum .lattice-bg-full img {
 
 /* Bottom scrim — dark gradient that fades to transparent. Real DOM
  * element (injected by lib/transformers/image-scrim.js across all
- * three render paths) because marpit core hides `::before` on its
- * advanced-background content sections with `display: none !important`,
- * which would kill any pseudo-element scrim under marp-cli + runtime.
+ * three render paths) so the scrim is a normal, always-rendered node.
  * Museum skips the scrim — its matte plate provides text contrast. */
 section.image.full .image-scrim,
 section.image.contain .image-scrim {
@@ -3410,7 +3397,6 @@ section.image.contain p:last-of-type {
  * editorial label + caption (tighter than the scrim'd variants since
  * the matte itself provides contrast). All offsets in cqi so the plate
  * scales with the canvas. */
-section.image.museum [data-marpit-advanced-background-container],
 section.image.museum .lattice-bg-full {
   inset: 3.125cqi 3.125cqi 7.8125cqi 3.125cqi;
 }
@@ -5583,7 +5569,7 @@ section.map .map-region--hl {
  * Boardroom-quality math layouts for mathematicians, quants, ML researchers,
  * physicists, statisticians, and economists. KaTeX (server-side via the
  * `katex` npm package in lattice-emulator.js, native via `math: 'katex'` in
- * marp.config.js) renders `$$…$$` (display) and `$…$` (inline). Layouts
+ * the engine) renders `$$…$$` (display) and `$…$` (inline). Layouts
  * surround the math with the structure each persona expects:
  *
  *   math (bare)         — defaults to `feature` (hero equation + legend)
@@ -7132,7 +7118,7 @@ section.q-and-a.solo > :is(ul, ol) > li > :is(ul, ol) > li {
  * Sibling implementations:
  *   - lib/quadrant.js       transform module (canonical)
  *   - lattice-emulator.js   per-slide HTML-string transform
- *   - marp.config.js        marp-cli render hook
+ *   - lib/engine           the engine render path
  *   - lattice-runtime.js    DOM transform for marp-vscode preview
  */
 
@@ -7483,7 +7469,7 @@ section.quote > p { padding-top:var(--sp-xl); font-size:var(--fs-meta); line-hei
  * Sibling implementations:
  *   - lib/radar.js          transform module (canonical)
  *   - lattice-emulator.js   per-slide HTML-string transform
- *   - marp.config.js        marp-cli render hook
+ *   - lib/engine           the engine render path
  *   - lattice-runtime.js    DOM transform for marp-vscode preview
  */
 
@@ -9988,7 +9974,7 @@ section.verdict-grid :is(ul,ol) > li > strong ~ * { font-weight: 400; }
  * Sibling implementations:
  *   - lib/word-cloud.js     transform module (shared)
  *   - lattice-emulator.js   per-slide HTML-string transform
- *   - marp.config.js        marp-cli render hook
+ *   - lib/engine           the engine render path
  *   - lattice-runtime.js    DOM transform for marp-vscode preview
  */
 
@@ -11127,7 +11113,7 @@ section:not(.overflow) > .overflow-tab { display: none; }
 /* ════════════════════════════════════════════════════════════════════════
  * CUSTOM LOGO — discreet author-supplied brand mark, top-right corner.
  * Author contract, gotchas, and full rationale at lib/base/_logo/logo.docs.md.
- * Implementation: applyDeckLogoToHtml (marp.config.js), inline copy in
+ * Implementation: applyDeckLogoToHtml (lib/engine), inline copy in
  * lattice-emulator.js, applyDeckLogoFromFrontMatter (lattice-runtime.js).
  * ──────────────────────────────────────────────────────────────────── */
 img.deck-logo {
@@ -11226,7 +11212,7 @@ section .hljs-emphasis { font-style:italic; }
 section .hljs-strong { font-weight:700; }
 
 /* Suppress per-token hljs coloring inside the source <pre>. Marp registers
- * a mermaid hljs grammar in marp.config.js so the rendered HTML wraps the
+ * a mermaid hljs grammar in the engine so the rendered HTML wraps the
  * fence content in <span class="hljs-*"> tokens. Coloring those tokens with
  * the per-theme `section .hljs-*` rules paints a JavaScript-style highlight
  * on what is really our diagram source — visually noisy and semantically
