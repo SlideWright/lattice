@@ -96,7 +96,8 @@ Beyond the run cost, the platform throttles every product launch and depends on 
 <!-- _class: kpi -->
 <!-- tier: short -->
 
-### ROI · FY2027–2029
+`ROI · FY2027–2029`
+
 ## The investment pays back in nine months and compounds from there.
 
 1. 9 mo

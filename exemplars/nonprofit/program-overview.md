@@ -51,17 +51,21 @@ flowchart LR
 
 ## A participant's path through the program.
 
-1. Recruit — outreach through high schools and reentry partners brings youth into a paid four-week orientation.
-2. Train — twelve weeks of field training in habitat restoration, chainsaw and first-aid certs, and job-readiness coaching.
-3. Work — crews complete real restoration contracts across the Cedar River watershed, earning a wage and a portfolio.
-4. Place — case managers match graduates to employer partners or post-secondary programs and check in for a year.
+1. Recruit
+   - Outreach through high schools and reentry partners brings youth into a paid four-week orientation.
+2. Train
+   - Twelve weeks of field training in habitat restoration, chainsaw and first-aid certs, and job-readiness coaching.
+3. Work
+   - Crews complete real restoration contracts across the Cedar River watershed, earning a wage and a portfolio.
+4. Place
+   - Case managers match graduates to employer partners or post-secondary programs and check in for a year.
 
 ---
 
 <!-- _class: kpi -->
 <!-- tier: short -->
 
-### Outcomes · 2025
+`Outcomes · 2025`
 
 ## More youth enrolled, and more left with a job or a school seat.
 
@@ -96,7 +100,7 @@ flowchart LR
 
 > I'd been kicked out of two schools before this. Out here I learned I could lead a crew. Now I run a parks team and I'm back in night classes.
 
-Attribution — Devon Reyes, 2025 graduate, GreenRoots Youth Corps
+— Devon Reyes, 2025 graduate, GreenRoots Youth Corps
 
 ---
 
@@ -155,7 +159,7 @@ Crews spend their days on contracted restoration — removing invasive honeysuck
 <!-- _class: kpi -->
 <!-- tier: full -->
 
-### Equity · 2025
+`Equity · 2025`
 
 ## The program reaches and keeps the youth it sets out to serve.
 

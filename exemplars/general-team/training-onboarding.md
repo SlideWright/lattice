@@ -55,11 +55,16 @@ A ticket arrives, you triage it, you investigate, you resolve it, and you confir
 
 ## Tell: the five steps of resolving a ticket.
 
-1. Triage — Read the ticket, set the category and priority, and check for duplicates before anything else.
-2. Acknowledge — Send the customer a first reply within the SLA so they know a human has it.
-3. Investigate — Use the knowledge base and account history to find the cause; escalate if it's outside your scope.
-4. Resolve — Apply the fix or the answer, and write it in plain language the customer can follow.
-5. Confirm — Close only after the customer confirms it's solved, and tag the ticket for reporting.
+1. Triage
+   - Read the ticket, set the category and priority, and check for duplicates before anything else.
+2. Acknowledge
+   - Send the customer a first reply within the SLA so they know a human has it.
+3. Investigate
+   - Use the knowledge base and account history to find the cause; escalate if it's outside your scope.
+4. Resolve
+   - Apply the fix or the answer, and write it in plain language the customer can follow.
+5. Confirm
+   - Close only after the customer confirms it's solved, and tag the ticket for reporting.
 
 ---
 

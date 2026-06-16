@@ -127,14 +127,14 @@ The interface has carried a *recommended* 30-metre guideline since 2019. Self-re
 
 ## What the standard costs across the three-season phase-in.
 
-1. Year 1 — high-risk zones
-   - 9,200 parcels. $74M, including 1,800 hardship grants.
-2. Year 2 — moderate-risk zones
-   - 18,600 parcels. $121M, including 3,100 grants.
-3. Year 3 — remaining interface
-   - 13,200 parcels. $98M, including 1,500 grants.
-4. Recurring — inspection & renewal
-   - $14M annually from Year 4, absorbed by the resilience fund.
+1. Year 1 — high-risk zones `$74M`
+   - 9,200 parcels, including 1,800 hardship grants.
+2. Year 2 — moderate-risk zones `$121M`
+   - 18,600 parcels, including 3,100 grants.
+3. Year 3 — remaining interface `$98M`
+   - 13,200 parcels, including 1,500 grants.
+4. Recurring — inspection & renewal `$14M`
+   - Annually from Year 4, absorbed by the resilience fund.
 
 ---
 

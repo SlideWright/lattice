@@ -76,7 +76,7 @@ Marisol Reyes brought her son Diego to our bus clinic with a toothache he'd had 
 
 > I shouldn't have to choose between my son's tooth and a day's pay. A clinic down the street changes everything for us.
 
-Attribution — Marisol Reyes, Eastside resident
+— Marisol Reyes, Eastside resident
 
 ---
 
@@ -180,7 +180,8 @@ We hold a 99-year lease on the old Eastside firehouse lot, the architectural pla
 <!-- _class: kpi -->
 <!-- tier: full -->
 
-### Naming opportunities · still open
+`Naming opportunities · still open`
+
 ## A handful of cornerstone gifts close the remaining $2.8M.
 
 1. $1M

@@ -68,7 +68,7 @@ The research on early literacy is settled: consistent, relationship-based tutori
 
 > Marcus didn't just teach my daughter to read. He showed up every single day, so she learned that someone always would.
 
-Attribution — Daniela's mother, Lincoln Elementary
+— Daniela's mother, Lincoln Elementary
 
 ---
 
@@ -153,7 +153,8 @@ Our model is proven, our school partnerships are signed, and our volunteer pipel
 <!-- _class: kpi -->
 <!-- tier: full -->
 
-### The plan · 2026–2029
+`The plan · 2026–2029`
+
 ## By 2029 your gift doubles the children we reach — without diluting results.
 
 1. 2,800

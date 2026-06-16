@@ -118,7 +118,8 @@ Saffron connects to the ERP a manufacturer already runs, learns its approval pol
 <!-- _class: kpi -->
 <!-- tier: short -->
 
-### Traction · Q2 2026
+`Traction · Q2 2026`
+
 ## Revenue tripled in a year as customers expanded fast.
 
 1. $6.4M
@@ -138,7 +139,7 @@ Saffron connects to the ERP a manufacturer already runs, learns its approval pol
 
 > We cut invoice processing time by 80% and moved two full-time clerks to higher-value work. Saffron paid for itself in the first quarter.
 
-Attribution — Controller, Atlas Precision Components
+— Controller, Atlas Precision Components
 
 ---
 
@@ -208,7 +209,8 @@ Attribution — Controller, Atlas Precision Components
 <!-- _class: kpi -->
 <!-- tier: full -->
 
-### Plan · FY2026–2028
+`Plan · FY2026–2028`
+
 ## A clear path from $6.4M to $25M ARR in 24 months.
 
 1. $25M

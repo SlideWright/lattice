@@ -113,10 +113,14 @@ Each of you gets five dots to place across the twenty ideas on the wall. We tall
 
 ## How we get from the grid to a committed roadmap.
 
-1. Pick the quick wins — Everything in the high-impact, low-effort cell goes in first; it's the cheapest value.
-2. Choose one big bet — We commit to exactly one high-impact, high-effort flagship, not two.
-3. Fill remaining slots — We use the leftover capacity on the next-best ideas until six slots are full.
-4. Name what we cut — We write down what didn't make it and why, so the cut is honest and revisitable.
+1. Pick the quick wins
+   - Everything in the high-impact, low-effort cell goes in first; it's the cheapest value.
+2. Choose one big bet
+   - We commit to exactly one high-impact, high-effort flagship, not two.
+3. Fill remaining slots
+   - We use the leftover capacity on the next-best ideas until six slots are full.
+4. Name what we cut
+   - We write down what didn't make it and why, so the cut is honest and revisitable.
 
 ---
 
@@ -125,9 +129,12 @@ Each of you gets five dots to place across the twenty ideas on the wall. We tall
 
 ## Next steps: who does what before Monday.
 
-1. Write the roadmap — The facilitator turns today's six into a one-page roadmap by Friday.
-2. Pressure-test effort — Each squad lead sizes their initiatives and flags any that doubled.
-3. Share and confirm — We circulate to the wider team for a 48-hour objection window before it's locked.
+1. Write the roadmap
+   - The facilitator turns today's six into a one-page roadmap by Friday.
+2. Pressure-test effort
+   - Each squad lead sizes their initiatives and flags any that doubled.
+3. Share and confirm
+   - We circulate to the wider team for a 48-hour objection window before it's locked.
 
 ---
 

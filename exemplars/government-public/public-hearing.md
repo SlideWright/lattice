@@ -97,12 +97,12 @@ The application meets the density and transit goals but proposes only 9% afforda
 
 ## The summary of public comment received during the review period.
 
-1. Comments in support
-   - 214. Cited housing need, jobs, and reuse of vacant land.
-2. Comments opposed
-   - 88. Cited construction traffic and shadow on the adjacent neighbourhood.
-3. Comments conditional
-   - 132. Supported the project if affordability and river access were guaranteed.
+1. Comments in support `214`
+   - Cited housing need, jobs, and reuse of vacant land.
+2. Comments opposed `88`
+   - Cited construction traffic and shadow on the adjacent neighbourhood.
+3. Comments conditional `132`
+   - Supported the project if affordability and river access were guaranteed.
 4. Neighbourhood council
    - Voted 6–1 to support, contingent on the three conditions.
 
@@ -142,7 +142,7 @@ Construction-phase traffic on the residential approach is the most-cited objecti
 
 > We have waited eleven years for something to happen on that land. Build the homes, keep the river public, and fix the intersection. That is a fair trade.
 
-Attribution — Chair, Riverside Neighbourhood Council
+— Chair, Riverside Neighbourhood Council
 
 ---
 

@@ -32,7 +32,7 @@ The Hartwell Foundation's $750,000 grant ran July 2024 through June 2026. It fun
 <!-- _class: kpi -->
 <!-- tier: short -->
 
-### Outcomes · grant period
+`Outcomes · grant period`
 
 ## We met or beat every funded target.
 
@@ -69,7 +69,7 @@ The Hartwell Foundation's $750,000 grant ran July 2024 through June 2026. It fun
 
 > I was cleaning offices at night. Bridgeway got me certified in fourteen weeks. Now I'm a CNA at Miami Valley making twenty-four an hour — with benefits.
 
-Attribution — Renata Avilés, 2025 graduate, Bridgeway Healthcare Career Track
+— Renata Avilés, 2025 graduate, Bridgeway Healthcare Career Track
 
 ---
 
@@ -164,7 +164,7 @@ We spent $742K of the $750K award. The unspent $8K is committed to the final ind
 <!-- _class: kpi -->
 <!-- tier: full -->
 
-### Equity · grant period
+`Equity · grant period`
 
 ## The program reached and retained the populations it set out to serve.
 

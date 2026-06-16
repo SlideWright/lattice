@@ -39,7 +39,8 @@ Public safety, streets and transit, and parks and libraries account for 67% of t
 <!-- _class: kpi -->
 <!-- tier: short -->
 
-### Your budget · FY2027
+`Your budget · FY2027`
+
 ## Where the $142M goes, by service.
 
 1. $52M
@@ -66,7 +67,8 @@ Last November residents approved a five-year street levy. This is the first year
 <!-- _class: kpi -->
 <!-- tier: standard -->
 
-### The levy · Year one
+`The levy · Year one`
+
 ## What the street levy is buying, in its first year.
 
 1. 64 mi

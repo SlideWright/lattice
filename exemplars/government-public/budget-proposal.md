@@ -41,21 +41,22 @@ Mean-distance-between-failures has fallen 38% in four years. Signal faults and s
 
 ## Where the $214M request goes, by asset class.
 
-1. Signal modernisation
-   - $86M. Replaces 14 interlockings past their 40-year design life — the largest single source of faults.
-2. Track & structures
-   - $61M. Eliminates 22 slow-orders and rehabilitates four at-risk bridges.
-3. Rolling stock overhaul
-   - $48M. Mid-life overhaul of 90 rail cars, extending service life 15 years.
-4. Power & substations
-   - $19M. Replaces three substations operating beyond capacity at peak.
+1. Signal modernisation `$86M`
+   - Replaces 14 interlockings past their 40-year design life — the largest single source of faults.
+2. Track & structures `$61M`
+   - Eliminates 22 slow-orders and rehabilitates four at-risk bridges.
+3. Rolling stock overhaul `$48M`
+   - Mid-life overhaul of 90 rail cars, extending service life 15 years.
+4. Power & substations `$19M`
+   - Replaces three substations operating beyond capacity at peak.
 
 ---
 
 <!-- _class: kpi -->
 <!-- tier: short -->
 
-### Performance · Projected FY28–FY30
+`Performance · Projected FY28–FY30`
+
 ## What the investment returns in reliability and cost avoidance.
 
 1. +52%
@@ -95,14 +96,14 @@ Mean-distance-between-failures has fallen 38% in four years. Signal faults and s
 
 ## How the request is funded across three sources.
 
-1. State capital appropriation
-   - $128M. The amount this hearing is being asked to authorise.
-2. Federal formula match
-   - $64M. Drawn at the 2:1 rate the state request unlocks.
-3. Farebox capital reserve
-   - $22M. From the dedicated reserve, already accrued.
-4. Total program
-   - $214M. Fully funded if the state share is approved.
+1. State capital appropriation `$128M`
+   - The amount this hearing is being asked to authorise.
+2. Federal formula match `$64M`
+   - Drawn at the 2:1 rate the state request unlocks.
+3. Farebox capital reserve `$22M`
+   - From the dedicated reserve, already accrued.
+4. Total program `$214M`
+   - Fully funded if the state share is approved.
 
 ---
 
@@ -118,7 +119,8 @@ The $64M federal formula match expires at the close of FY2028. A state appropria
 <!-- _class: kpi -->
 <!-- tier: full -->
 
-### Risk · If unfunded
+`Risk · If unfunded`
+
 ## What the network looks like through FY30 without this appropriation.
 
 1. −22%

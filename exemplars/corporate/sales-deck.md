@@ -118,7 +118,8 @@ Each closed deal teaches the model what real buying signals look like in your bu
 <!-- _class: kpi -->
 <!-- tier: short -->
 
-### Proof · 2026
+`Proof · 2026`
+
 ## Customers cut forecast error to a third and closed more, faster.
 
 1. 4%

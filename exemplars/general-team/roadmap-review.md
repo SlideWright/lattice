@@ -45,7 +45,8 @@ At the start of the year we committed to seven roadmap items. Five shipped on or
 <!-- _class: kpi -->
 <!-- tier: short -->
 
-### Delivery · H1 2026
+`Delivery · H1 2026`
+
 ## How delivery tracked against the plan we set in January.
 
 1. 5 / 7

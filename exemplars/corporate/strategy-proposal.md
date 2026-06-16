@@ -123,7 +123,8 @@ Each route trades capital and control differently. We can build our own plant, a
 <!-- _class: kpi -->
 <!-- tier: full -->
 
-### Plan · 2026–2028
+`Plan · 2026–2028`
+
 ## The JV path to a self-sustaining European business in 24 months.
 
 1. €18M

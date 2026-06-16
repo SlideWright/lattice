@@ -27,7 +27,7 @@ Use to land a phrase verbatim — customer voice, expert claim, mission statemen
 
 > The quoted sentence sits here, kept short enough to read in one breath.
 
-Attribution — Person, Role
+— Person, Role
 ```
 
 ## Slots

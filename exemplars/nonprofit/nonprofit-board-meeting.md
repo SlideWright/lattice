@@ -45,7 +45,8 @@ Bottom line up front: occupancy held at 95% and 73% of guests moved into housing
 <!-- _class: kpi -->
 <!-- tier: short -->
 
-### Where we stand · Q2 2026
+`Where we stand · Q2 2026`
+
 ## Programs ran near capacity and finances stayed on plan.
 
 1. 142
@@ -107,7 +108,7 @@ A shelter running this full has no slack for a cold snap or a family arriving at
 
 > They had no bed, but someone sat with me, made the calls, and found me a couch for the night. That call kept me going.
 
-Attribution — Renata D., guest referred during an April waitlist
+— Renata D., guest referred during an April waitlist
 
 ---
 
@@ -162,7 +163,8 @@ Beds keep people safe tonight; placements end the crisis. We held 73% housing pl
 <!-- _class: kpi -->
 <!-- tier: full -->
 
-### The plan · 2027
+`The plan · 2027`
+
 ## A second building takes us from 150 beds to 280 without diluting outcomes.
 
 1. 280
