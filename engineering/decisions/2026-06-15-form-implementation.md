@@ -308,7 +308,11 @@ revised deliberately later):
   the `fill-*` set, and the meta/progress/watermark injectors read from
   `lib/forms/` instead of being hand-coded — the full OCP win — OR trim the
   manifest to load-bearing-only. The catalog + schema + skip-derivation that ship
-  here are its foundation; the keep-vs-trim decision is #356.
+  here are its foundation. **The keep-vs-trim decision is now made: KEEP (A) —
+  treat the manifest as the medium-independent composition contract, with 2D CSS
+  as its first renderer; see `2026-06-16-form-manifest-medium-independent-contract.md`.
+  The first increment is "light" coupling (a manifest↔CSS consistency gate, no
+  CSS generation); Medium/Heavy code-gen is deferred to its own ADR.**
 - **A — section-as-grid**: the 242-child-selector migration + flex→grid audit
   (§4). The B-now content Cell is its prerequisite and is now in place.
 - **`@layer` activation** (#283/#284) — blocked, untouched.
