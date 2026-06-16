@@ -7,7 +7,7 @@
 
 The live, claimable work queue — a read-only mirror of [open issues](https://github.com/SlideWright/lattice/issues),
 grouped by board column. Design lives in `engineering/decisions/`; this tracks
-only *status*. **32 open** items.
+only *status*. **31 open** items.
 
 ## Backlog (28)
 
@@ -52,9 +52,8 @@ _none_
 
 _none_
 
-## Inbox (no status) (4)
+## Inbox (no status) (3)
 
 - [#180](https://github.com/SlideWright/lattice/issues/180) epic(chart): resolution-independent charts — cqi-first, kill fixed-px, for any-format / 10K export
 - [#198](https://github.com/SlideWright/lattice/issues/198) bug(examples): gallery-jargon.pdf is not reproducible — rebuild draws overflow rings on 6 unrelated slides + reflows text
 - [#356](https://github.com/SlideWright/lattice/issues/356) proposal: make Frame/Cell/Tile self-contained folders (like components)
-- [#368](https://github.com/SlideWright/lattice/issues/368) Workflow incident: a broken window shipped through a merge
