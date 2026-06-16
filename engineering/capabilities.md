@@ -265,6 +265,7 @@ harness the index can't infer, add it to `FRAMEWORKS` in the generator.
 | `tools/build-spec-docs.js` | Publish the owned LFM standards (spec/*.md) onto the docs website as |
 | `tools/build-standalone-core.js` | Bundle the standalone chart-SVG export core for the browser. |
 | `tools/check-fonts.js` | Font-embedding parity gate — keep the engine's font demand and offline supplies in sync. |
+| `tools/cvd-audit.js` | Colour-vision-deficiency (CVD) collapse audit for Lattice themes. |
 | `tools/export-chart-svg.js` | Export a deck's chart(s) as standalone image files — SVG for the vector |
 | `tools/export-marp.js` | export-marp — produce a portable, self-contained bundle of a Lattice deck for |
 | `tools/golden-diff.mjs` | Post a PR comment + before/after montage of the gallery slides whose committed golden moved vs the base branch. |
