@@ -38,17 +38,21 @@ in patch versions.
   guarantee). Reveal-only; the live player driver and per-step overlay export are
   staged follow-ons. See `engineering/decisions/2026-06-16-narrative-step-spec.md`.
 
-- **Docs site: a live, draggable Core-Web-Vitals overlay.** A small overlay
-  renders the live LCP / CLS / INP / FCP / TTFB, colour-rated by Google's
-  thresholds, measured by the device's own browser — the zero-tooling way to
-  check landing CLS / mobile LCP on a real phone, which the CI/sandbox can't (it
-  blocks the CDN fonts). Turn it on two ways: the **"Performance overlay" switch
-  in the Drawing Board settings → Workspace** (a global, cross-surface switch
-  like Guided tours — governs every page), or a **`?perf`** URL param (`?perf`
-  on, `?perf=off` off) for the phone, which writes the same preference. Drag the
-  header to reposition (persisted); tap × to dismiss. Off by default. Numbers
-  come from the `web-vitals` library, dynamically imported ONLY when the overlay
-  is shown, so a normal page view pays nothing. Available in every environment
+- **Docs site: a live, draggable performance overlay.** A small overlay renders
+  two groups: **web vitals** (LCP / CLS / INP / FCP / TTFB, colour-rated by
+  Google's thresholds) and a **runtime** group — **FPS** (frame rate), **MEM**
+  (JS-heap in use), and **CPU≈** (main-thread busy %, a Long-Tasks proxy since
+  browsers expose no true CPU API; the MEM and CPU≈ rows appear only where the
+  browser supports them). All measured by the device's own browser — the
+  zero-tooling way to check landing CLS / mobile LCP / jank on a real phone,
+  which the CI/sandbox can't (it blocks the CDN fonts). Turn it on two ways: the
+  **"Performance overlay" switch in the Drawing Board settings → Workspace** (a
+  global, cross-surface switch like Guided tours — governs every page), or a
+  **`?perf`** URL param (`?perf` on, `?perf=off` off) for the phone, which writes
+  the same preference. A grip (⠿) on the header marks it draggable — drag to
+  reposition (persisted); tap × to dismiss. Off by default. The `web-vitals`
+  library is imported, and the runtime loops run, ONLY while the overlay is
+  shown, so a normal page view pays nothing. Available in every environment
   (incl. production) until GA, then GA-gated via `PERF_OVERLAY_AVAILABLE` in
   `docs/src/playground/perf-overlay-prefs.js`. See
   `docs/src/components/site/PerfOverlay.astro`.
