@@ -10,6 +10,16 @@ companion:
 
 # CVD accommodation needs redundant encoding — colour alone can't carry categories
 
+> **Update (2026-06-16) — activation model superseded (the encoding itself stands).**
+> The redundant-encoding mechanism below — textures / status glyphs / line-styles —
+> is exactly what shipped and is unchanged. What changed is *activation*: the
+> `a11y-*` palettes are now plain, **mode-invariant, first-class themes** (`theme:
+> a11y-deuteranopia`), not an `accessibility:` axis that overrode the theme. So the
+> `data-a11y` scoping, the `accessibility:` / `LATTICE_ACCESSIBILITY` activation, and
+> `resolve-accessibility.js` described in the body are **removed** — the texture
+> `<defs>` simply emit on every render and each a11y theme references them via the
+> shared `themes/a11y-base.css`. See the parent ADR's top-of-file update note.
+
 **Symptom / finding.** The parent decision (`2026-06-16-colour-blindness-accessibility.md`)
 planned curated CVD palettes as v1, with redundant encoding (patterns/markers)
 as a phase-2 *enhancement*. Building the palettes against the new CVD audit
