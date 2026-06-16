@@ -112,6 +112,11 @@ const TREATMENTS_SOURCE = 'lib/base/base.treatments.css';
 // treatments tier so it composes over every component. See
 // engineering/decisions/2026-06-16-focus-highlighting.md.
 const FOCUS_SOURCE = 'lib/base/base.focus.css';
+// Narrative build — the progressive-disclosure reveal contract (`data-build-step`
+// + `.lat-built`, gated on a consumer-set `data-build-at`). Palette-blind; bundled
+// alongside focus (its temporal cousin). 0-pixel without `data-build-at`. See
+// engineering/decisions/2026-06-16-narrative-step-spec.md.
+const BUILD_SOURCE = 'lib/base/base.build.css';
 // The `sketch` finish modifier — hand-drawn skin (handwriting + drawn
 // boxes), palette-blind via var(--…). Tail tier so its section.sketch …
 // selectors compose on top of every component. See lib/base/base.sketch.css.
@@ -327,6 +332,11 @@ function bundle() {
   if (focus) {
     parts.push(`/* === ${FOCUS_SOURCE} === */`);
     parts.push(focus);
+  }
+  const build = readIfExists(BUILD_SOURCE);
+  if (build) {
+    parts.push(`/* === ${BUILD_SOURCE} === */`);
+    parts.push(build);
   }
   const sketch = readIfExists(SKETCH_SOURCE);
   if (sketch) {

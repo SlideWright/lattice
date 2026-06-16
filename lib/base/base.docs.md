@@ -764,6 +764,41 @@ emulator PDF/PPTX/HTML and the docs playground — and in published HTML; the
 live VS Code Marp preview, which doesn't run the Lattice slide pipeline,
 does not resolve `_focus`.)
 
+### Narrative build — `_build`
+
+Walk a slide one beat at a time. `_build` opts a slide into **progressive
+disclosure** — its units appear step by step instead of all at once. It's
+"`_focus` sequenced over time", so the grammar is a strict subset of `_focus`
+(axis + grouping), derived from the slide's own structure — no per-element
+authoring.
+
+```markdown
+<!-- _build -->            one step per item of the primary collection (default axis)
+<!-- _build: rows -->      pick the axis: item (default) · row · col · line
+<!-- _build: 1, 2-3, 4 --> group units into steps (step 2 reveals units 2 AND 3)
+<!-- _build: none -->      opt this slide OUT (e.g. when a deck builds by default)
+```
+
+Axes by surface mirror `_focus`: `item` (lists, card grids), `row` / `col`
+(tables), `line` (code). **Document order is the step order**; ungrouped units in
+a grouped build show from step 1 (context).
+
+**The reveal is pure CSS, and it degrades losslessly.** The engine only *tags*
+each unit (`data-build-step`); a slide shows its full self unless a player is
+actively driving the build, so **every PDF and every non-driven render is
+byte-identical to the same slide with no `_build`** — the build is an enhancement
+for the live walk-through, never the artifact. Live stepping (Present mode) and a
+per-step overlay PDF export are staged follow-ons.
+
+This is progressive disclosure (Beamer overlays / scrollytelling), **not**
+PowerPoint animation: motion is derived, typed, meaning-bearing, and
+print-faithful — there is deliberately no fly-in/spin/easing vocabulary. A build
+is for genuine narrative sequence, not for drip-feeding an overstuffed slide.
+Worked deck: `examples/build.md`. Design: `engineering/decisions/2026-06-16-narrative-step-spec.md`
+(+ the model ADR `…-narrative-step-model.md`). Like `_focus`, `_build` resolves on
+the engine render paths and in published HTML; the live VS Code Marp preview does
+not run the Lattice pipeline, so it does not resolve `_build`.
+
 ### Custom logo
 
 A discreet author-supplied brand mark, top-right corner of every
