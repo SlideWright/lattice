@@ -136,7 +136,9 @@ restraint bar governs motion as much as layout:
 - **Subsumes** the motion appendix that ADR planned; motion becomes a layer *under*
   this spine.
 - **Hosted by** `feat(drawing-board): Present mode` (#373).
-- **Independent of** the gated section-as-grid migration (`2026-06-15` §4).
+- **Independent of** section-as-grid, which is now retired
+  (`2026-06-16-retire-section-as-grid.md`) — the step model sits on B and never
+  needed it.
 
 ## 10. Non-goals
 

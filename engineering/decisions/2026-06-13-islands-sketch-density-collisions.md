@@ -104,10 +104,12 @@ byte-identical; resolution-invariant (all `cqi`, zero fixed px). Verified on the
 jargon gallery `islands: on`: `list-criteria`, `cards-grid` (incl. 2-line
 titles), and `piechart donut` (full ring + legend restored) at HD and 4K.
 
-**Deferred to M2 (the `.isl-main` stage wrapper, Phase 4 of the islands model):**
-the **soft clip** — an *exact-berth* fade on the cut line — needs a bounded body
-box; an unbounded `::after` scrim dims legitimate content on dense-but-fitting
-slides, so it's not shipped here. The **footer↔centred-section-label** column
+**The soft clip — won't ship via a stage wrapper (section-as-grid RETIRED 2026-06-16;
+B is canonical, there is no `.isl-main`/`.cell-stage` wrapper):** an *exact-edge*
+fade on the cut line would need a bounded body box; an unbounded `::after` scrim dims
+legitimate content on dense-but-fitting slides, so it's not shipped. The section's
+`overflow:hidden` hard clip is the accepted behavior; any future soft clip must be
+wrapper-free (e.g. a mask on the section). The **footer↔centred-section-label** column
 (the horizontal twin below) is likewise unaddressed by M1.
 
 ## Defect 2 — sketch ghosts numerals on the split-panel watermark (secondary)
