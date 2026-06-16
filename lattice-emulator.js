@@ -269,6 +269,11 @@ if (a11y.unsupported) {
   console.error(`warning: accessibility: ${a11y.unsupported} is not yet supported — rendering without it`);
 }
 const paletteName = a11y.active ? a11y.palette : resolvePalette({ md, cliArg: paletteArg }).name;
+// Shared categorical texture <defs> (M1) — injected once when accessibility is
+// active, referenced by the [data-a11y] DIAGRAM OVERRIDES in lattice.css.
+const a11yTextureDefs = a11y.active
+  ? require('./lib/core/accessibility-textures').texturePatternDefs()
+  : '';
 const palettePath = path.join(PKG_ROOT, 'themes', `${paletteName}.css`);
 if (!fs.existsSync(palettePath)) {
   console.error(`error: palette not found: ${paletteName}`);
@@ -1250,6 +1255,7 @@ section[data-lattice-slide] { width: ${slideW}px !important; height: ${slideH}px
 ${marpSystemCss}
 ${globalStyle ? `\n/* Front-matter style: directive */\n${globalStyle}\n` : ''}
 </style></head><body>
+${a11yTextureDefs}
 ${slidesWithMeta2}
 ${functionPlotScript}
 ${stateChartScript}

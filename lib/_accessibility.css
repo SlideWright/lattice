@@ -49,3 +49,26 @@ section[data-a11y] .chart-status::before {
   font-weight: 700;
   speak: never;
 }
+
+/* ── Categorical texture patterns (M1) ─────────────────────────────────────
+ * Re-point each categorical diagram fill from the flat `var(--cat-N-fill)`
+ * (mermaid.css DIAGRAM OVERRIDES) to its texture pattern `url(#latt-a11y-tex-N)`
+ * — the pattern paints the same colour THEN overlays a distinct geometry, so a
+ * category reads by texture when its colour collapses. Only the shape fill is
+ * re-pointed; the paired `--cat-on-fill` text rules in mermaid.css are left
+ * intact, so labels stay legible. Bundled last → wins the !important tie.
+ * Mirrors mermaid.css's `.section-0..11` (0-indexed → slot N+1) + `.section--1`. */
+section[data-a11y] .section--1 path,
+section[data-a11y] .section--1 circle { fill: url(#latt-a11y-tex-1) !important; }
+section[data-a11y] .cluster.section-0 rect, section[data-a11y] .section-0 rect, section[data-a11y] .section-0 path, section[data-a11y] .section-0 circle { fill: url(#latt-a11y-tex-1) !important; }
+section[data-a11y] .cluster.section-1 rect, section[data-a11y] .section-1 rect, section[data-a11y] .section-1 path, section[data-a11y] .section-1 circle { fill: url(#latt-a11y-tex-2) !important; }
+section[data-a11y] .cluster.section-2 rect, section[data-a11y] .section-2 rect, section[data-a11y] .section-2 path, section[data-a11y] .section-2 circle { fill: url(#latt-a11y-tex-3) !important; }
+section[data-a11y] .cluster.section-3 rect, section[data-a11y] .section-3 rect, section[data-a11y] .section-3 path, section[data-a11y] .section-3 circle { fill: url(#latt-a11y-tex-4) !important; }
+section[data-a11y] .cluster.section-4 rect, section[data-a11y] .section-4 rect, section[data-a11y] .section-4 path, section[data-a11y] .section-4 circle { fill: url(#latt-a11y-tex-5) !important; }
+section[data-a11y] .cluster.section-5 rect, section[data-a11y] .section-5 rect, section[data-a11y] .section-5 path, section[data-a11y] .section-5 circle { fill: url(#latt-a11y-tex-6) !important; }
+section[data-a11y] .cluster.section-6 rect, section[data-a11y] .section-6 rect, section[data-a11y] .section-6 path, section[data-a11y] .section-6 circle { fill: url(#latt-a11y-tex-7) !important; }
+section[data-a11y] .cluster.section-7 rect, section[data-a11y] .section-7 rect, section[data-a11y] .section-7 path, section[data-a11y] .section-7 circle { fill: url(#latt-a11y-tex-8) !important; }
+section[data-a11y] .cluster.section-8 rect, section[data-a11y] .section-8 rect, section[data-a11y] .section-8 path, section[data-a11y] .section-8 circle { fill: url(#latt-a11y-tex-9) !important; }
+section[data-a11y] .cluster.section-9 rect, section[data-a11y] .section-9 rect, section[data-a11y] .section-9 path, section[data-a11y] .section-9 circle { fill: url(#latt-a11y-tex-10) !important; }
+section[data-a11y] .cluster.section-10 rect, section[data-a11y] .section-10 rect, section[data-a11y] .section-10 path, section[data-a11y] .section-10 circle { fill: url(#latt-a11y-tex-11) !important; }
+section[data-a11y] .cluster.section-11 rect, section[data-a11y] .section-11 rect, section[data-a11y] .section-11 path, section[data-a11y] .section-11 circle { fill: url(#latt-a11y-tex-12) !important; }
