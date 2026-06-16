@@ -2,7 +2,7 @@
  * Self-contained Form Cell (issue #356). Co-located with the Cell manifest
  * (masthead-lede.cell.json) and bundled by tools/build-css.js into the same
  * cascade slot it held inline in base.variants.css. See design/forms.md §5/§6
- * and the ADR engineering/decisions/2026-06-15-form-implementation.md §6.1.
+ * and the ADR engineering/decisions/2026-06-15-form-implementation.md §6.2.
  *
  * The left column of the masthead grid (whose template lives on the masthead
  * Cell, lib/forms/cell/masthead): it holds the kicker + title Tiles and yields

@@ -13429,7 +13429,7 @@ section.confidential::before {
  * the same cascade slot these rules held — immediately after this file, before
  * the Tile sheets — so the cascade is unchanged. Cell-vs-Tile is the ownership
  * line: the Cell is the slot, the Tile is what docks in it. See
- * engineering/decisions/2026-06-15-form-implementation.md §6.1 (#356) and
+ * engineering/decisions/2026-06-15-form-implementation.md §6.2 (#356) and
  * design/forms.md §5/§6. */
 
 /* === lib/forms/cell/footer/footer.css === */
@@ -13437,7 +13437,7 @@ section.confidential::before {
  * Self-contained Form Cell (issue #356). Co-located with the Cell manifest
  * (footer.cell.json) and bundled by tools/build-css.js into the same cascade slot
  * it held inline in base.variants.css. See design/forms.md §5/§6 and the ADR
- * engineering/decisions/2026-06-15-form-implementation.md §6.1.
+ * engineering/decisions/2026-06-15-form-implementation.md §6.2.
  *
  * The footer band holds three Tiles that historically collided because each was
  * an independent absolute at the same baseline with no shared budget: footer-left
@@ -13461,7 +13461,7 @@ section.form.has-progress > footer {
  * Self-contained Form Cell (issue #356). Co-located with the Cell manifest
  * (masthead-bay.cell.json) and bundled by tools/build-css.js into the same
  * cascade slot it held inline in base.variants.css. See design/forms.md §5/§6
- * and the ADR engineering/decisions/2026-06-15-form-implementation.md §6.1.
+ * and the ADR engineering/decisions/2026-06-15-form-implementation.md §6.2.
  *
  * The right column of the masthead grid (template on the masthead Cell). It is a
  * stack Cell: its Tiles dock top-down, right-aligned — the meta Tile
@@ -13485,7 +13485,7 @@ section.form .cell-masthead .masthead-bay {
  * Self-contained Form Cell (issue #356). Co-located with the Cell manifest
  * (masthead-lede.cell.json) and bundled by tools/build-css.js into the same
  * cascade slot it held inline in base.variants.css. See design/forms.md §5/§6
- * and the ADR engineering/decisions/2026-06-15-form-implementation.md §6.1.
+ * and the ADR engineering/decisions/2026-06-15-form-implementation.md §6.2.
  *
  * The left column of the masthead grid (whose template lives on the masthead
  * Cell, lib/forms/cell/masthead): it holds the kicker + title Tiles and yields
@@ -13502,7 +13502,7 @@ section.form .cell-masthead .masthead-lede {
  * (masthead.cell.json) and bundled by tools/build-css.js (the
  * lib/forms/cell/<id>/<id>.css glob) into the same cascade slot it held inline in
  * base.variants.css. See design/forms.md §5/§6 and the ADR
- * engineering/decisions/2026-06-15-form-implementation.md §6.1.
+ * engineering/decisions/2026-06-15-form-implementation.md §6.2.
  *
  * The mastheadLift transform (lib/core/masthead-lift.js + the registry) wraps the
  * eyebrow + title into `.cell-masthead` so the slide's masthead is a named band
@@ -13540,7 +13540,7 @@ section.form .cell-masthead {
  * sheets. Cell-vs-Tile is the ownership line: the Cell is the slot, the Tile is
  * what docks in it (the meta/progress/watermark/status Tiles live under
  * lib/forms/tile/<id>). See design/forms.md §5/§6 and the ADR
- * engineering/decisions/2026-06-15-form-implementation.md §6.1.
+ * engineering/decisions/2026-06-15-form-implementation.md §6.2.
  *
  * `section.form` IS the stage box: the masthead Cell is an in-flow band at the
  * top, the footer Cell is reserved via padding-bottom, and the deterministic

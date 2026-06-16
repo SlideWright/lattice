@@ -7,7 +7,7 @@
  * sheets. Cell-vs-Tile is the ownership line: the Cell is the slot, the Tile is
  * what docks in it (the meta/progress/watermark/status Tiles live under
  * lib/forms/tile/<id>). See design/forms.md §5/§6 and the ADR
- * engineering/decisions/2026-06-15-form-implementation.md §6.1.
+ * engineering/decisions/2026-06-15-form-implementation.md §6.2.
  *
  * `section.form` IS the stage box: the masthead Cell is an in-flow band at the
  * top, the footer Cell is reserved via padding-bottom, and the deterministic

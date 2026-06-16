@@ -238,5 +238,5 @@ section.confidential::before {
  * the same cascade slot these rules held — immediately after this file, before
  * the Tile sheets — so the cascade is unchanged. Cell-vs-Tile is the ownership
  * line: the Cell is the slot, the Tile is what docks in it. See
- * engineering/decisions/2026-06-15-form-implementation.md §6.1 (#356) and
+ * engineering/decisions/2026-06-15-form-implementation.md §6.2 (#356) and
  * design/forms.md §5/§6. */
