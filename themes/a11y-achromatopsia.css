@@ -1,0 +1,34 @@
+/* @theme a11y-achromatopsia
+ * @size hd       1280px 720px
+ * @size HD       1280px 720px
+ * @size 4K       3840px 2160px
+ * @size 4k       3840px 2160px
+ * @size standard 960px  720px
+ * @size 16:9     1280px 720px
+ *
+/* Lattice · Accessibility — Achromatopsia (total colour-blindness)
+ * ────────────────────────────────────────────────────────────────────────
+ * Thin override on indaco; activated by `accessibility: achromatopsia`. Hue
+ * conveys nothing to a fully colour-blind viewer, so meaning rides ENTIRELY on
+ * luminance + the texture patterns + glyphs (lattice.css, scoped to data-a11y)
+ * — this type is the reason redundant encoding is mandatory, not the palette.
+ * The status trio is recoloured to three distinct GREYS (luminance-separated)
+ * so it carries no false hue signal; the ✓/!/✗ glyphs disambiguate. The
+ * categorical cycle stays indaco's (a non-achromat previewing the mode still
+ * sees structure; texture carries the achromat) — there is no colour gain from
+ * greying it, and the patterns do the distinguishing either way. */
+
+@import 'indaco';
+
+:root {
+  /* Status as luminance-separated greys — fail darkest, warn lightest. */
+  --pass: light-dark(#4D4D4D, #9E9E9E);
+  --warn: light-dark(#7A7A7A, #CECECE);
+  --fail: light-dark(#2E2E2E, #717171);
+
+  --chart-state-pass: light-dark(#4D4D4D, #9E9E9E);
+  --chart-state-warn: light-dark(#7A7A7A, #CECECE);
+  --chart-state-fail: light-dark(#2E2E2E, #717171);
+
+  --diagram-critical: light-dark(#2E2E2E, #717171);
+}

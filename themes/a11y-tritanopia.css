@@ -1,0 +1,30 @@
+/* @theme a11y-tritanopia
+ * @size hd       1280px 720px
+ * @size HD       1280px 720px
+ * @size 4K       3840px 2160px
+ * @size 4k       3840px 2160px
+ * @size standard 960px  720px
+ * @size 16:9     1280px 720px
+ *
+/* Lattice · Accessibility — Tritanopia (blue-yellow)
+ * ────────────────────────────────────────────────────────────────────────
+ * Thin override on indaco; activated by `accessibility: tritanopia`.
+ * Tritanopia spares the red-green axis but confuses blue↔green and
+ * yellow↔pink, so the status trio moves to green / orange / magenta (NOT the
+ * yellow a tritanope reads as pink). Verified CVD-distinct under tritanopia +
+ * AA by tools/cvd-audit.js. Texture patterns + glyphs carry the categorical
+ * load. See a11y-deuteranopia.css for the rationale. */
+
+@import 'indaco';
+
+:root {
+  --pass: light-dark(#007131, #62BB78);
+  --warn: light-dark(#BA5A42, #FFCEC1);
+  --fail: light-dark(#6B1667, #C46DBD);
+
+  --chart-state-pass: light-dark(#007131, #62BB78);
+  --chart-state-warn: light-dark(#BA5A42, #FFCEC1);
+  --chart-state-fail: light-dark(#6B1667, #C46DBD);
+
+  --diagram-critical: light-dark(#6B1667, #C46DBD);
+}
