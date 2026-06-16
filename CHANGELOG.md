@@ -136,7 +136,8 @@ in patch versions.
   whatever deck you have open) and fully interactive (a non-blocking spotlight, so
   the real menus stay clickable). Built on the same driver.js engine and
   palette-blind styling as the tour, and governed by the same global **Guided
-  tours** toggle and production gating. New engine
+  tours** toggle and production gating. The launcher shows on tablet/desktop
+  (the cramped mobile topbar keeps just the first-visit tour for now). New engine
   `docs/src/playground/guided-lesson.js` (a reusable `initGuidedLesson` with a
   per-step `waitFor` hook) + content `docs/src/playground/drawing-board-lesson.js`.
   See `engineering/decisions/2026-06-16-hands-on-lessons.md`.

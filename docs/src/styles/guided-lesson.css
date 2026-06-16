@@ -57,6 +57,15 @@ body.lesson-running .driver-popover {
 	/* nudge the play triangle to optical center */
 	padding-left: 1px;
 }
+/* The Drawing Board's mobile topbar (palette + mode + the "?" tour + hamburger)
+ * has no room for a second launcher — a glyph-only "Try it" would push it past
+ * the viewport. Hide the standalone launcher on mobile (it stays on tablet /
+ * desktop); the first-visit tour still owns the narrow help slot. */
+@media (max-width: 720px) {
+	.tour-btn.lesson-btn {
+		display: none;
+	}
+}
 
 /* ---- Waiting pulse on the spotlighted control --------------------------- */
 /* Only when motion is welcome: a soft, breathing ring that says "act here". */
