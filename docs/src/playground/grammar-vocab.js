@@ -9,7 +9,17 @@
 // Slide-scoped Marp directives authored as `<!-- _name: value -->`. `_class` is
 // completed with its full grammar elsewhere (component names + modifiers); it's
 // listed here too so the NAME completes before the colon is typed.
-export const DIRECTIVE_NAMES = ['_class', '_paginate', '_header', '_footer', '_backgroundColor', '_color'];
+export const DIRECTIVE_NAMES = ['_class', '_paginate', '_header', '_footer', '_backgroundColor', '_color', '_focus', '_focusStyle', '_focusSteps'];
+
+// Value vocabulary for `_focusStyle:` — the focus treatment styles. MUST mirror
+// FOCUS_STYLES in lib/authoring/lint-core.js (asserted by the completion test,
+// so a new style can't be lint-valid yet un-completable).
+export const FOCUS_STYLE_VALUES = ['spotlight', 'blur', 'ring', 'list-fill', 'pop'];
+
+// Axis keywords for `_focus:` / `_focusSteps:` (the ordinal that follows — `row
+// 4`, `item 2-4` — isn't completable). MUST mirror the focus resolver's
+// SUPPORTED_AXES (lib/transformers/focus.js), asserted by the completion test.
+export const FOCUS_AXIS_VALUES = ['item', 'row', 'col', 'cell', 'line'];
 
 // Value vocabulary for `_paginate:` (Marp accepts the booleans; `skip`/`hold`
 // are Marp's pagination extensions). The other directives take free strings or

@@ -196,6 +196,11 @@
           "description": "1-based gallery-PDF page to rasterize for the showcase image. Defaults to 2, the manifest `sample` slide."
         }
       }
+    },
+    "focusAxes": {
+      "type": "array",
+      "items": { "type": "string", "enum": ["item", "row", "col", "cell", "line"] },
+      "description": "Optional. Focusable axes this layout supports for per-axis `_focus` highlighting — a subset of the focus resolver's SUPPORTED_AXES (lib/transformers/focus.js): a `<table>` body → row/col/cell, a top-level list/grid → item, a code block → line. Scopes the editor's `_focus:` / `_focusSteps:` axis completion per layout."
     }
   }
 }

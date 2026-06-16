@@ -1,6 +1,7 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "list",
+  "focusAxes": ["item"],
   "function": "inventory",
   "form": "stack",
   "substance": "prose",

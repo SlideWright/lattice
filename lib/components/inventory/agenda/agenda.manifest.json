@@ -1,6 +1,7 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "agenda",
+  "focusAxes": ["item"],
   "function": "inventory",
   "form": "stack",
   "substance": "structure",
