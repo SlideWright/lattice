@@ -30,6 +30,24 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 var require_lint_core = __commonJS({
   "lib/authoring/lint-core.js"(exports, module) {
     var CLASS_DIRECTIVE = /<!--\s*_class:\s*([^>]+?)\s*-->/;
+    var FOCUS_DIRECTIVE = /<!--\s*_focus:\s*([^>]+?)\s*-->/;
+    var FOCUS_STYLE_DIRECTIVE = /<!--\s*_focusStyle:\s*([^>]+?)\s*-->/;
+    var FOCUS_STEPS_DIRECTIVE = /<!--\s*_focusSteps:\s*([^>]+?)\s*-->/;
+    var FOCUS_AXES = /* @__PURE__ */ new Set(["item", "row", "col", "cell", "line"]);
+    var FOCUS_STYLES = /* @__PURE__ */ new Set(["spotlight", "ring", "list-fill", "blur"]);
+    function focusSpecError(spec) {
+      if (!spec || !spec.trim()) return "empty target";
+      const rest = spec.replace(/\bcell\s+\d+\s*,\s*\d+/gi, "");
+      if (/\bcell\b/i.test(rest)) return 'cell needs "R,C" (e.g. cell 4,5)';
+      for (const part of rest.split(",").map((s) => s.trim()).filter(Boolean)) {
+        const m = /^([a-z]+)\s+(.+)$/i.exec(part);
+        if (!m) return `'${part}' is not "<axis> <ordinal>"`;
+        const axis = m[1].toLowerCase();
+        if (!FOCUS_AXES.has(axis)) return `'${axis}' is not a focus axis (item, row, col, cell, line)`;
+        if (!/^\d+(-\d+)?( +\d+(-\d+)?)*$/.test(m[2].trim())) return `'${m[2].trim()}' is not an ordinal or range`;
+      }
+      return null;
+    }
     var MODIFIER_PREFIXES = ["tint-", "mark-", "with-", "at-", "no-", "tone-", "treatment-", "checks-", "fill-"];
     var CARD_STYLE_LAYOUTS = Object.freeze([
       "cards-grid",
@@ -332,6 +350,48 @@ ${indent}  ${bullet} ${body.trim()}`;
               message: "a kpi/stats item with no nested label \u2014 the number won't render in display type (the lift needs a nested body to fire)",
               fix: "Use the nested shape:\n    1. 73%\n       - faster close"
             });
+          }
+        }
+        const fd = slide.match(FOCUS_DIRECTIVE);
+        if (fd) {
+          const err = focusSpecError(fd[1]);
+          if (err) {
+            findings.push({
+              slide: idx - fm + 1,
+              rule: "focus-spec",
+              severity: "warning",
+              line: fd[0],
+              message: `_focus ${err}`,
+              fix: "_focus: <axis> <ordinal> \u2014 e.g. row 4, item 3, col 5, cell 4,5, line 3-4."
+            });
+          }
+        }
+        const fs = slide.match(FOCUS_STYLE_DIRECTIVE);
+        if (fs && !FOCUS_STYLES.has(fs[1].trim())) {
+          findings.push({
+            slide: idx - fm + 1,
+            rule: "focus-style",
+            severity: "warning",
+            line: fs[0],
+            message: `_focusStyle '${fs[1].trim()}' is not spotlight | ring | list-fill`,
+            fix: "Use one of: spotlight, ring, list-fill (or omit for the content-aware default)."
+          });
+        }
+        const fsteps = slide.match(FOCUS_STEPS_DIRECTIVE);
+        if (fsteps) {
+          for (const step of fsteps[1].split("|").map((s) => s.trim()).filter(Boolean)) {
+            const err = focusSpecError(step);
+            if (err) {
+              findings.push({
+                slide: idx - fm + 1,
+                rule: "focus-steps",
+                severity: "warning",
+                line: fsteps[0],
+                message: `_focusSteps step '${step}': ${err}`,
+                fix: "Each step is a _focus spec \u2014 e.g. row 1 | row 2 | row 3."
+              });
+              break;
+            }
           }
         }
       });

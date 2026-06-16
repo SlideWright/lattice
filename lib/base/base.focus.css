@@ -1,0 +1,126 @@
+/* base.focus.css — focus & highlighting treatments.
+ * ─────────────────────────────────────────────────────────────────────────
+ * The visual half of the focus feature. The resolver (lib/transformers/
+ * focus.js) tags the ordinal target of a `_focus:` directive `.lat-focus` and
+ * its siblings `.lat-recede`, stamps `data-focus-axis` (item|row|…), and
+ * resolves the effective `data-focus-style` (the content-aware default, or an
+ * explicit `_focusStyle`). This sheet styles those tags — pure CSS, no engine
+ * knowledge, palette-blind via var(--focus-*) → var(--accent…).
+ *
+ * Three styles (engineering/decisions/2026-06-16-focus-highlighting.md §5):
+ *   spotlight  recede the rest (dim `.lat-recede`), promote the target.
+ *   ring       accent outline on the target — no dimming, no layout shift.
+ *   list-fill  accent-soft fill on the target, rest untouched.
+ * Default by axis: list/grid/code → spotlight; table → ring.
+ *
+ * Cross-format: opacity / box-shadow / background only — never mask-image
+ * (Apple PDFKit drops soft masks; gotchas.md). Survives PDF + PPTX (PPTX
+ * rasterises the Chromium render). No `:has()` / `:not(:has())` — the tags are
+ * explicit, so the banned-in-Marp-Chromium selectors (HARD RULE 12) never
+ * appear here.
+ */
+
+/* Role tokens — a theme MAY retune these; defaults keep the feature
+ * palette-blind. `--focus-dim` is an opacity (a number, not a colour — no hex
+ * rule applies); ring/fill borrow the universal accent tokens. */
+section[data-focus-resolved] {
+  --focus-dim: 0.24;
+  --focus-ring: var(--accent);
+  --focus-fill: var(--accent-soft);
+  --focus-blur: 0.15cqi;
+  --focus-pop: 1.02;        /* blur target lift — subtle, won't overlap neighbours */
+  --focus-pop-shadow: 0.28cqi;
+  /* The lift edge — a curated role token (HARD RULE 11): a theme overrides this
+   * one name to tune the lift. Default = the brand accent softened toward the
+   * page so it reads on-brand without the harsh saturated edge. OPAQUE (mixed
+   * toward --bg, not transparent) so it stays a solid vector fill — bulletproof
+   * in Apple PDFKit. Per-mode variance is automatic: both --accent and --bg are
+   * light-dark(), so the lift adapts to the colour scheme with no -light/-dark
+   * tokens. */
+  --focus-lift: color-mix(in srgb, var(--accent) 32%, var(--bg));
+}
+
+/* ── spotlight — recede the rest ──────────────────────────────────────────── */
+section[data-focus-style="spotlight"] .lat-recede { opacity: var(--focus-dim); }
+/* promote the target (works whether it's an <li> or a table row) */
+section[data-focus-style="spotlight"] .lat-focus,
+section[data-focus-style="blur"] .lat-focus,
+section[data-focus-style="spotlight"] .lat-focus > td,
+section[data-focus-style="spotlight"] .lat-focus > th { font-weight: 600; }
+section[data-focus-style="spotlight"] tr.lat-focus > td { color: var(--text-heading); }
+
+/* ── blur — defocus the rest (the literal camera-focus) ───────────────────────
+ * A recede mechanism like spotlight, but it blurs `.lat-recede` instead of
+ * dimming it — the target stays sharp, everything else goes soft. A `cqi` radius
+ * scales with the slide; a touch of opacity adds depth. Survives PDF (verified)
+ * and PPTX (rasterised render). Not a content-aware default — opt-in only, since
+ * like spotlight it removes the legibility blurred rows/cells would otherwise
+ * carry. */
+section[data-focus-style="blur"] .lat-recede { filter: blur(var(--focus-blur)); opacity: 0.82; }
+/* …and blur LIFTS the target — a subtle scale + a hard (zero-blur) accent offset
+ * shadow. Hard-edged on purpose: a *blurred* shadow renders as a flat grey block
+ * in Apple PDFKit (the soft-compositing weakness behind the mask gotcha), but a
+ * zero-blur offset is a solid vector fill that renders everywhere. Scoped to
+ * block items (`li`) — a table row / code line doesn't scale cleanly — and kept
+ * small (`--focus-pop` scale, `--focus-pop-shadow` offset) so the grown card
+ * never bleeds into its neighbour. */
+section[data-focus-style="blur"] li.lat-focus {
+  transform: scale(var(--focus-pop));
+  box-shadow: var(--focus-pop-shadow) var(--focus-pop-shadow) 0 var(--focus-lift);
+  border-radius: 0.6cqi;
+  position: relative;
+  z-index: 2;
+}
+
+/* ── ring — accent outline, zero layout shift ─────────────────────────────── */
+/* list / grid item: a plain outline rings the card without reflowing it. */
+section[data-focus-style="ring"] li.lat-focus {
+  outline: 0.16cqi solid var(--focus-ring);
+  outline-offset: 0.24cqi;
+  border-radius: var(--radius-sm, 0.4cqi);
+}
+/* table row: outline can't ring a <tr> (border-collapse), so draw the box with
+ * inset box-shadows on the row's cells — top/bottom on every cell, plus the
+ * outer edge on the first/last cell. Takes no layout space. */
+section[data-focus-style="ring"] tr.lat-focus > :is(td, th) {
+  box-shadow: inset 0 0.16cqi 0 var(--focus-ring), inset 0 -0.16cqi 0 var(--focus-ring);
+  background: var(--focus-fill);
+  font-weight: 600;
+}
+section[data-focus-style="ring"] tr.lat-focus > :is(td, th):first-child {
+  box-shadow: inset 0 0.16cqi 0 var(--focus-ring), inset 0 -0.16cqi 0 var(--focus-ring), inset 0.16cqi 0 0 var(--focus-ring);
+}
+section[data-focus-style="ring"] tr.lat-focus > :is(td, th):last-child {
+  box-shadow: inset 0 0.16cqi 0 var(--focus-ring), inset 0 -0.16cqi 0 var(--focus-ring), inset -0.16cqi 0 0 var(--focus-ring);
+}
+
+/* ── column ring — outline the focused column (default for the col axis) ───── */
+/* Left + right edge on every cell of the column; the top/bottom caps land on
+ * the header row and the last body row. Zero layout shift. */
+section[data-focus-axis="col"][data-focus-style="ring"] :is(td, th).lat-focus {
+  box-shadow: inset 0.16cqi 0 0 var(--focus-ring), inset -0.16cqi 0 0 var(--focus-ring);
+  background: var(--focus-fill);
+  font-weight: 600;
+}
+section[data-focus-axis="col"][data-focus-style="ring"] thead tr:first-child > .lat-focus {
+  box-shadow: inset 0.16cqi 0 0 var(--focus-ring), inset -0.16cqi 0 0 var(--focus-ring), inset 0 0.16cqi 0 var(--focus-ring);
+}
+section[data-focus-axis="col"][data-focus-style="ring"] tbody tr:last-child > .lat-focus {
+  box-shadow: inset 0.16cqi 0 0 var(--focus-ring), inset -0.16cqi 0 0 var(--focus-ring), inset 0 -0.16cqi 0 var(--focus-ring);
+}
+/* column spotlight (override): keep the row-label column legible for context. */
+section[data-focus-axis="col"][data-focus-style="spotlight"] tr > :first-child.lat-recede { opacity: 1; }
+
+/* ── cell ring — outline a single cell (default for the cell axis) ─────────── */
+section[data-focus-axis="cell"][data-focus-style="ring"] .lat-focus {
+  box-shadow: inset 0 0 0 0.16cqi var(--focus-ring);
+  background: var(--focus-fill);
+  font-weight: 600;
+}
+
+/* ── list-fill — accent-soft fill on the target ───────────────────────────── */
+section[data-focus-style="list-fill"] li.lat-focus { background: var(--focus-fill); }
+section[data-focus-style="list-fill"] tr.lat-focus > :is(td, th) {
+  background: var(--focus-fill);
+  font-weight: 600;
+}

@@ -704,6 +704,65 @@ so palette swap = treatment colour swap.
 Available classes: `treatment-none`, `tint-corner at-tl`, `mark-orbit`,
 `tint-vignette`, `tint-edge at-right`, `mark-threads`, plus 21 more.
 
+### Focus & highlighting — `_focus:`
+
+Tell a dense slide to focus the room on one thing. `_focus:` names an
+**ordinal target** with one grammar that works on any focusable surface;
+the engine tags the target and the treatment is pure CSS, palette-blind,
+and identical in PDF, PPTX, and HTML (the dim/ring survives because PPTX
+rasterises the rendered slide).
+
+```markdown
+<!-- _class: compare-table -->
+<!-- _focus: row 4 -->        <!-- a table body row -->
+
+<!-- _focus: col 5 -->        <!-- a column -->
+<!-- _focus: cell 4,5 -->     <!-- one cell: row 4, column 5 -->
+<!-- _focus: item 3 -->       <!-- a list / card-grid item -->
+<!-- _focus: line 8-9 -->     <!-- code lines (a range) -->
+<!-- _focus: row 2, row 5 --> <!-- two targets -->
+<!-- _focus: item 2-4 -->     <!-- a range -->
+```
+
+The universal form is **`_focus: <axis> <ordinal>`** (ordinals count from
+1). Axes by surface: `item` (lists, card grids), `row` / `col` / `cell`
+(tables), `line` (code).
+
+**Look — content-aware by default.** Tables get a **ring** (an accent
+outline; nothing is dimmed, so the comparison stays legible). Lists, grids,
+and code get **spotlight** (the rest recedes, the target stays full).
+Override per slide with `_focusStyle`:
+
+```markdown
+<!-- _focusStyle: spotlight -->   <!-- recede the rest (dim) -->
+<!-- _focusStyle: blur -->        <!-- recede the rest (defocus — the camera-focus look) -->
+<!-- _focusStyle: ring -->        <!-- outline the target, no dimming -->
+<!-- _focusStyle: list-fill -->   <!-- accent-soft fill on the target -->
+```
+
+`blur` survives PDF and PPTX (the rest is rasterised soft, the target stays
+sharp). On a list/grid it also gives the target a subtle lift (a slight scale +
+a hard accent edge — hard-edged so it survives Apple PDFKit). Tune the radius
+per deck via `--focus-blur` (default `0.15cqi`) and the lift via `--focus-pop`.
+
+**Walk the slide — `_focusSteps`.** One authored slide expands into N
+rendered slides, each focusing the next target — the static-format
+equivalent of a live build:
+
+```markdown
+<!-- _class: cards-grid -->
+<!-- _focusSteps: item 1 | item 2 | item 3 | item 4 -->
+```
+
+Each step is a `_focus` spec; the steps render as ordinary, separately
+paginated slides. Worked deck: `examples/focus.md`. Design + rationale:
+`engineering/decisions/2026-06-16-focus-highlighting.md`. (The grammar is
+linted — a typo like `_focus: rows 4` or `_focusStyle: glow` is flagged
+before render. Note: focus resolves on the engine render paths — the
+emulator PDF/PPTX/HTML and the docs playground — and in published HTML; the
+live VS Code Marp preview, which doesn't run the Lattice slide pipeline,
+does not resolve `_focus`.)
+
 ### Custom logo
 
 A discreet author-supplied brand mark, top-right corner of every
