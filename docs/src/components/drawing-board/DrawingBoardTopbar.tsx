@@ -1,7 +1,7 @@
 import { Moon, Sun } from 'lucide-react';
 import * as React from 'react';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const titleCase = (s: string) => s.replace(/(^|-)(\w)/g, (_m, sep, c) => (sep ? ' ' : '') + c.toUpperCase());
 
@@ -93,11 +93,28 @@ export default function DrawingBoardTopbar({ palettes: initialPalettes }: { pale
 					<SelectValue placeholder="Theme" />
 				</SelectTrigger>
 				<SelectContent className="max-h-[60vh]">
-					{palettes.map((p) => (
-						<SelectItem key={p} value={p}>
-							{titleCase(p)}
-						</SelectItem>
-					))}
+					{/* Brand themes, then a labelled Accessibility group for the curated
+					 * colour-vision-deficiency themes (a11y-*) — picking one writes
+					 * `theme: a11y-<type>`, the same path as any theme. */}
+					{palettes
+						.filter((p) => !p.startsWith('a11y-'))
+						.map((p) => (
+							<SelectItem key={p} value={p}>
+								{titleCase(p)}
+							</SelectItem>
+						))}
+					{palettes.some((p) => p.startsWith('a11y-')) && (
+						<SelectGroup>
+							<SelectLabel>Accessibility · colour-blindness</SelectLabel>
+							{palettes
+								.filter((p) => p.startsWith('a11y-'))
+								.map((p) => (
+									<SelectItem key={p} value={p}>
+										{titleCase(p.replace(/^a11y-/, ''))}
+									</SelectItem>
+								))}
+						</SelectGroup>
+					)}
 				</SelectContent>
 			</Select>
 			<Button
