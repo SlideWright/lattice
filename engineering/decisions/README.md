@@ -307,3 +307,24 @@ it is load-bearing.
   preview** (gains a native Kokoro rung later). Includes a real cost table.
   **Status: design** — architecture settled; build scope (OpenRouter-first vs.
   full ladder) is the open call.
+- [2026-06-16-colour-blindness-accessibility.md](2026-06-16-colour-blindness-accessibility.md) —
+  design model for **per-viewer colour-blindness accommodation**. Reframes
+  "full theme replacement" as **CVD-curated palettes that win the palette
+  *name-resolution* chain** (the theme doesn't load) rather than a CSS overlay
+  — grounded in a render-path audit showing **every** surface (emulator PDF,
+  Drawing Board, Present, Practice) already selects a palette *by name*, so a
+  `resolve-accessibility.js` sitting above `resolve-palette.js` reaches them
+  all and reuses every existing gate (contrast suite, dark variants, Mermaid
+  collapse). Precedence: **workspace > front-matter `accessibility:` > off**,
+  and accessibility **> `theme:` always** (the live viewer's need beats the
+  author's guess). Surfaces the load-bearing prerequisite — **no CVD
+  simulation exists** and the contrast suite is WCAG-luminance-only, so the
+  build *starts* with a Brettel/Machado simulation in `lib/theme/` + a CVD
+  audit gate that fails adjacent slots that collapse, *then* curates palettes
+  against it. Names the honest limits: the **≤8-distinguishable ceiling** (12
+  categorical + 8 chart slots can't all survive dichromacy by colour alone),
+  **workspace-wins holds only at live render** (a baked PDF carries the
+  author's front-matter type), and raster images stay uncorrected. **v1 = the
+  three dichromacies (deuteranopia/protanopia/tritanopia) × light/dark,
+  palette-only; achromatopsia + redundant encoding (patterns/markers/✓!✗)
+  deferred to phase 2.** **Status: design-decision** (scope aligned 2026-06-16).
