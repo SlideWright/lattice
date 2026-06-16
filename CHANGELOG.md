@@ -112,6 +112,21 @@ in patch versions.
 
 ### Added
 
+- **Present mode — a live presentation player on the Drawing Board, beside
+  Practice.** A new **Present** button (in the Slides panel header, before
+  Practice) opens a full-screen player meant for presenting *to an audience*,
+  where Practice rehearses *your delivery*. It renders the deck through the same
+  engine + slide box as the live preview (pixel parity), and adds: clean
+  navigation (keyboard, swipe, auto-hiding edge arrows, slide counter +
+  progress), three-tier fullscreen (real Fullscreen API on desktop, CSS
+  viewport-fill on mobile), a **universal speaker-notes slide-up sheet** (notes
+  read through the canonical `notes-core` extractor), and a **dual-screen
+  presenter view** (`window.open` + `postMessage`) showing the current + next
+  slide, speaker notes, and an elapsed timer, with Window-Management-API
+  auto-placement on a second screen where granted. It's the in-app ancestor of
+  the player designed for the self-contained `.html` export
+  (`engineering/decisions/2026-06-16-lattice-export-format.md`).
+
 - **Worked exemplar decks — "what good looks like" for Drafting.** A new
   `exemplars/` library of complete, boardroom-grade decks (one concrete fictional
   subject threaded through every slide, declarative takeaway titles, real-looking

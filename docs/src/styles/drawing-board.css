@@ -218,6 +218,7 @@ body.db-page .topbar {
 .db-refine-open::before,
 .db-refine-open::after,
 .db-arch-jump-btn::before,
+.db-present-open::before,
 .db-practice-open::before {
 	content: '';
 	display: inline-block;
@@ -240,6 +241,7 @@ body.db-page .topbar {
 .db-focus-open::before { --db-glyph: var(--icon-scan); margin-right: 0.34em; }
 .db-refine-open::before { --db-glyph: var(--icon-pencil); margin-right: 0.34em; }
 .db-refine-open::after { --db-glyph: var(--icon-chevron-down); margin-left: 0.3em; }
+.db-present-open::before { --db-glyph: var(--icon-presentation); margin-right: 0.34em; }
 .db-practice-open::before { --db-glyph: var(--icon-play); margin-right: 0.34em; }
 .db-arch-jump-btn[data-dir='top']::before { --db-glyph: var(--icon-chevron-up); }
 .db-arch-jump-btn[data-dir='bottom']::before { --db-glyph: var(--icon-chevron-down); }
@@ -1811,6 +1813,277 @@ html.db-js #db-editor-ta {
 		color: var(--text-heading);
 		border-top-color: var(--accent);
 	}
+}
+
+/* ── Present mode ───────────────────────────────────────────────────────────
+   Practice's calmer sibling: a full-screen presentation PLAYER (no coaching
+   scrim, no clock). The stage fills the viewport edge-to-edge; the chrome (top
+   bar + edge arrows) is translucent dark glass that auto-hides while presenting
+   and reveals on intent. A universal speaker-notes slide-up sheet and a bottom
+   progress hairline complete it. The in-app ancestor of the .html export player.
+   `dvh`/`svh` fill so the mobile URL-bar collapse doesn't jolt the stage; iOS
+   safe-area insets keep the chrome clear of the notch + home bar. */
+.db-present {
+	position: fixed;
+	inset: 0;
+	z-index: 2000;
+	height: 100vh;
+	height: 100dvh;
+	background: #0b0b0e;
+	color: #f4f4f6;
+	touch-action: manipulation;
+}
+.db-present[hidden] {
+	display: none;
+}
+
+/* Loading card — shown while the engine render lands. */
+.db-pp-loading {
+	display: grid;
+	place-content: center;
+	justify-items: center;
+	gap: 1rem;
+	height: 100%;
+	color: #b9b9c2;
+}
+.db-pp-spinner {
+	width: 2rem;
+	height: 2rem;
+	border: 3px solid rgba(255, 255, 255, 0.18);
+	border-top-color: #fff;
+	border-radius: 999px;
+}
+@media (prefers-reduced-motion: no-preference) {
+	.db-pp-spinner { animation: db-ico-spin 0.7s linear infinite; }
+}
+
+.db-pp-run {
+	position: relative;
+	height: 100%;
+	width: 100%;
+	overflow: hidden;
+}
+.db-pp-stage {
+	position: absolute;
+	inset: 0;
+}
+.db-pp-frame {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	border: 0;
+	background: transparent;
+}
+
+/* Top HUD — a persistent per-section progress spine over an auto-hiding locator
+   row (counter · icon-only tools). A soft top scrim keeps the spine legible over
+   any deck; only the row fades, so progress is always readable. */
+.db-pp-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	padding: calc(0.55rem + env(safe-area-inset-top)) calc(0.9rem + env(safe-area-inset-right)) 0.55rem calc(0.9rem + env(safe-area-inset-left));
+	background: linear-gradient(to bottom, rgba(0, 0, 0, 0.42), rgba(0, 0, 0, 0));
+	pointer-events: none;
+	z-index: 3;
+}
+/* The progress spine: one segment per SECTION, its width ∝ the section's slide
+   count (set inline via flex-grow). Each fills left-to-right by progress within
+   that section. A clean handful of bars at any deck size; the gaps mark section
+   breaks. Persistent — it does not auto-hide with the controls. */
+.db-pp-spine {
+	display: flex;
+	gap: 3px;
+	min-width: 0;
+}
+.db-pp-seg {
+	position: relative;
+	flex: 1 1 0;
+	min-width: 0;
+	height: 4px;
+	border-radius: 2px;
+	background: rgba(255, 255, 255, 0.22);
+	overflow: hidden;
+}
+.db-pp-seg-fill {
+	position: absolute;
+	inset: 0 auto 0 0;
+	width: 0;
+	border-radius: 2px;
+	background: rgba(255, 255, 255, 0.55);
+	transition: width 0.25s ease;
+}
+.db-pp-seg.cur .db-pp-seg-fill {
+	background: var(--accent);
+}
+/* The locator row — counter (left) · icon-only tools (right). Auto-hides with the
+   edge arrows; icon-only so it stays out of the way on every breakpoint. */
+.db-pp-bar-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.75rem;
+	opacity: 0;
+	transform: translateY(-4px);
+	transition: opacity 0.22s ease, transform 0.22s ease;
+	pointer-events: none;
+}
+.db-pp-run.chrome-show .db-pp-bar-row {
+	opacity: 1;
+	transform: none;
+	pointer-events: auto;
+}
+.db-pp-counter {
+	font-size: 0.85rem;
+	font-variant-numeric: tabular-nums;
+	color: #e7e7ec;
+	background: rgba(0, 0, 0, 0.4);
+	border: 1px solid rgba(255, 255, 255, 0.14);
+	border-radius: 999px;
+	padding: 0.28rem 0.7rem;
+}
+.db-pp-tools {
+	display: flex;
+	align-items: center;
+	gap: 0.4rem;
+}
+.db-pp-tool {
+	display: inline-grid;
+	place-items: center;
+	width: 2.2rem;
+	height: 2.2rem;
+	color: #f4f4f6;
+	background: rgba(0, 0, 0, 0.4);
+	border: 1px solid rgba(255, 255, 255, 0.16);
+	border-radius: 999px;
+	cursor: pointer;
+	transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+.db-pp-tool:hover {
+	background: rgba(255, 255, 255, 0.16);
+	border-color: rgba(255, 255, 255, 0.4);
+}
+.db-pp-tool.is-on {
+	background: var(--accent);
+	border-color: var(--accent);
+	color: #fff;
+}
+.db-pp-tool svg {
+	display: block;
+}
+
+/* Edge arrows — auto-hiding prev/next, big tap targets at the stage sides. */
+.db-pp-layer {
+	position: absolute;
+	inset: 0;
+	z-index: 2;
+}
+.db-pp-edge {
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	display: inline-grid;
+	place-items: center;
+	width: 3rem;
+	height: 3rem;
+	font-size: 1.4rem;
+	color: #fff;
+	background: rgba(0, 0, 0, 0.4);
+	border: 1px solid rgba(255, 255, 255, 0.18);
+	border-radius: 999px;
+	cursor: pointer;
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity 0.22s ease, background 0.15s ease;
+}
+.db-pp-layer.show .db-pp-edge {
+	opacity: 1;
+	pointer-events: auto;
+}
+.db-pp-layer.show .db-pp-edge:disabled {
+	opacity: 0.25;
+	pointer-events: none;
+}
+.db-pp-edge:hover {
+	background: rgba(255, 255, 255, 0.18);
+}
+.db-pp-edge-prev { left: calc(0.8rem + env(safe-area-inset-left)); }
+.db-pp-edge-next { right: calc(0.8rem + env(safe-area-inset-right)); }
+
+/* Speaker-notes slide-up sheet — universal across every tier. */
+.db-pp-sheet {
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: 4;
+	max-height: 42vh;
+	display: grid;
+	grid-template-rows: auto auto 1fr;
+	background: rgba(16, 16, 20, 0.97);
+	border-top: 1px solid rgba(255, 255, 255, 0.14);
+	border-radius: 14px 14px 0 0;
+	box-shadow: 0 -18px 50px rgba(0, 0, 0, 0.5);
+	transform: translateY(101%);
+	transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+	padding-bottom: env(safe-area-inset-bottom);
+}
+.db-pp-sheet.is-open {
+	transform: none;
+}
+.db-pp-sheet-grip {
+	justify-self: center;
+	width: 2.5rem;
+	height: 1.1rem;
+	margin-top: 0.35rem;
+	background: none;
+	border: 0;
+	cursor: pointer;
+	position: relative;
+}
+.db-pp-sheet-grip::before {
+	content: '';
+	position: absolute;
+	top: 0.4rem;
+	left: 50%;
+	transform: translateX(-50%);
+	width: 2.25rem;
+	height: 4px;
+	border-radius: 999px;
+	background: rgba(255, 255, 255, 0.3);
+}
+.db-pp-sheet-head {
+	padding: 0 1.1rem 0.5rem;
+}
+.db-pp-sheet-title {
+	font-size: 0.72rem;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: #8a8a96;
+}
+.db-pp-sheet-body {
+	overflow: auto;
+	padding: 0 1.1rem calc(1rem + env(safe-area-inset-bottom));
+	line-height: 1.55;
+}
+.db-pp-note-p {
+	margin: 0 0 0.7rem;
+	color: #ececf1;
+}
+.db-pp-note-empty {
+	margin: 0;
+	color: #8a8a96;
+	font-style: italic;
+}
+
+@media (max-width: 640px) {
+	.db-pp-sheet { max-height: 55vh; }
+	.db-pp-edge { width: 2.6rem; height: 2.6rem; }
 }
 
 /* ── Practice mode ──────────────────────────────────────────────────────────
