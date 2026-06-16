@@ -131,20 +131,26 @@ Vertical is genuinely harder than RTL and must be scoped honestly:
   for free. That's the strategic reason to do C first.
 - **But** many card/grid layouts assume a horizontal main axis (fixed-height
   rows, `grid-template-rows`, aspect-locked media). These will **not** survive a
-  blind pivot. So vertical is **opt-in per component**: a component declares
-  `verticalReady: true` in its manifest once a reviewer has actually looked at
-  it vertical. Non-ready components under `dir: tb` fall back to horizontal with
-  a build-time warning, rather than rendering broken.
-- Ship vertical support for the **anchor + statement + content + quote** buckets
-  first (the text-forward layouts where vertical CJK is most idiomatic);
-  graduate the rest behind reviewer sign-off, like gallery graduation
-  (HARD RULE #8).
+  blind pivot. **Decision (owner, 2026-06-16): attempt-all + blocklist** — every
+  component renders vertical by default, and a component is added to a
+  `verticalBlocked` list (manifest flag) only once a reviewer confirms it breaks.
+  This trades a faster, broader rollout for the risk that an un-reviewed grid
+  ships pivoted-and-broken — mitigated by the demo deck and per-component
+  invariant tests catching breakage before merge. (The rejected alternative was
+  opt-in `verticalReady`: safer but it gates every component behind a sign-off,
+  stalling coverage.)
+- Review order still leads with the **text-forward buckets** (anchor, statement,
+  content, quote) where vertical CJK is most idiomatic and least likely to break
+  — but they render vertical from day one, not after graduation.
 
 ### E. Fonts — **self-host Noto Sans/Serif Arabic, Hebrew, CJK**
 
-- Add Noto Sans/Serif Arabic, Hebrew, and CJK (SC/TC/JP) to `--font-display` /
+- Add Noto Sans/Serif Arabic, Hebrew, and CJK to `--font-display` /
   `--font-body` stacks in `base.tokens.css`, gated behind `:lang()` so a
-  Latin deck doesn't pay the download.
+  Latin deck doesn't pay the download. **Decision (owner, 2026-06-16): ship all
+  three CJK scripts — Simplified (SC), Traditional (TC), and Japanese (JP) —
+  in the first cut**, not one-then-expand. Complete coverage up front; the cost
+  is ~3 large fonts and a wider verification surface (see open question below).
 - **Self-host**, do not CDN: `engineering/gotchas.md` documents that the sandbox
   TLS proxy MITMs Google Fonts and silently falls back to serif. Self-hosting is
   also the only way PDF export embeds the glyphs reliably. CJK fonts are large
@@ -174,8 +180,8 @@ Vertical is genuinely harder than RTL and must be scoped honestly:
 | A. Control | New `dir:` directive (`auto`/`ltr`/`rtl`/`tb`); start emitting real `lang=` + `dir=` on the section |
 | B. Granularity | Global + spot `_dir:`/`_lang:`; per-element via `dir: auto` + bidi algorithm |
 | C. RTL layout | Logical-CSS refactor (189 decls / 48 files), + a lint guard against new physical inline props |
-| D. Vertical | `writing-mode` on the section; opt-in `verticalReady` per component; text buckets first |
-| E. Fonts | Self-hosted, `:lang()`-gated Noto Arabic/Hebrew/CJK, subset |
+| D. Vertical | `writing-mode` on the section; **attempt-all + `verticalBlocked` blocklist**; text buckets reviewed first |
+| E. Fonts | Self-hosted, `:lang()`-gated Noto Arabic/Hebrew + **all three CJK (SC/TC/JP)**, subset |
 | F. Verify | Demo deck + invariant tests for mirroring; **owner inspection** for glyph/export fidelity |
 
 ### Why this order
@@ -199,12 +205,15 @@ half-pivoted grid never reaches a slide.
 
 ## Open questions for the owner
 
-1. **CJK breadth** — SC + TC + JP all three, or start with one? (Each is a
-   separate large font.)
-2. **`verticalReady` default** — opt-in per component (safe, slower) vs.
-   attempt-all-then-blocklist (faster, riskier). Recommendation: opt-in.
-3. **Font budget** — is a ~10MB+ subset CJK download acceptable for a CJK deck,
-   or do we need a lighter subset / lazy strategy?
+Resolved 2026-06-16: **CJK breadth → all three (SC/TC/JP)**; **vertical default →
+attempt-all + blocklist** (both folded into the sections above). One remains:
 
-These don't block Phase 1 (directives), which is pure plumbing — so the plan is
-to land Phase 1 while these settle.
+1. **Font budget** — with all three CJK scripts in the first cut, a CJK deck's
+   font download is substantial (each Noto CJK weight is multi-MB even
+   subsetted). Is a larger one-time download acceptable, or do we need
+   per-script lazy loading / aggressive `unicode-range` subsetting so a JP deck
+   never fetches SC/TC? This is a Phase 3 (fonts) decision and does not block
+   Phases 1–2.
+
+Phase 1 (directives) is pure plumbing and blocked by nothing — it can start
+while the font-budget question settles.
