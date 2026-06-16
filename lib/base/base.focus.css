@@ -59,6 +59,30 @@ section[data-focus-style="ring"] tr.lat-focus > :is(td, th):last-child {
   box-shadow: inset 0 0.16cqi 0 var(--focus-ring), inset 0 -0.16cqi 0 var(--focus-ring), inset -0.16cqi 0 0 var(--focus-ring);
 }
 
+/* ── column ring — outline the focused column (default for the col axis) ───── */
+/* Left + right edge on every cell of the column; the top/bottom caps land on
+ * the header row and the last body row. Zero layout shift. */
+section[data-focus-axis="col"][data-focus-style="ring"] :is(td, th).lat-focus {
+  box-shadow: inset 0.16cqi 0 0 var(--focus-ring), inset -0.16cqi 0 0 var(--focus-ring);
+  background: var(--focus-fill);
+  font-weight: 600;
+}
+section[data-focus-axis="col"][data-focus-style="ring"] thead tr:first-child > .lat-focus {
+  box-shadow: inset 0.16cqi 0 0 var(--focus-ring), inset -0.16cqi 0 0 var(--focus-ring), inset 0 0.16cqi 0 var(--focus-ring);
+}
+section[data-focus-axis="col"][data-focus-style="ring"] tbody tr:last-child > .lat-focus {
+  box-shadow: inset 0.16cqi 0 0 var(--focus-ring), inset -0.16cqi 0 0 var(--focus-ring), inset 0 -0.16cqi 0 var(--focus-ring);
+}
+/* column spotlight (override): keep the row-label column legible for context. */
+section[data-focus-axis="col"][data-focus-style="spotlight"] tr > :first-child.lat-recede { opacity: 1; }
+
+/* ── cell ring — outline a single cell (default for the cell axis) ─────────── */
+section[data-focus-axis="cell"][data-focus-style="ring"] .lat-focus {
+  box-shadow: inset 0 0 0 0.16cqi var(--focus-ring);
+  background: var(--focus-fill);
+  font-weight: 600;
+}
+
 /* ── list-fill — accent-soft fill on the target ───────────────────────────── */
 section[data-focus-style="list-fill"] li.lat-focus { background: var(--focus-fill); }
 section[data-focus-style="list-fill"] tr.lat-focus > :is(td, th) {

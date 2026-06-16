@@ -71,6 +71,37 @@ describe('focus — HTML kernel (applyToHtml)', () => {
     const plain = '<section class="list"><ul><li>a</li><li>b</li></ul></section>';
     assert.equal(focus.applyToHtml(plain), plain);
   });
+
+  test('col axis tags the Nth cell of every row (header + body), ring default', () => {
+    const out = focus.applyToHtml('<section data-focus="col 2" class="compare-table"><table><thead><tr><th>A</th><th>B</th></tr></thead><tbody><tr><td>1</td><td>2</td></tr></tbody></table></section>');
+    assert.match(out, /<th class="lat-recede">A.*<th class="lat-focus">B/s);
+    assert.match(out, /<td class="lat-recede">1.*<td class="lat-focus">2/s);
+    assert.match(out, /data-focus-axis="col"/);
+    assert.match(out, /data-focus-style="ring"/);
+  });
+
+  test('cell axis tags exactly one body cell at R,C', () => {
+    const out = focus.applyToHtml('<section data-focus="cell 2,3" class="compare-table"><table><tbody><tr><td>1</td><td>2</td><td>3</td></tr><tr><td>4</td><td>5</td><td>6</td></tr></tbody></table></section>');
+    assert.equal((out.match(/lat-focus/g) || []).length, 1);
+    assert.match(out, /<td class="lat-focus">6/);
+    assert.match(out, /data-focus-axis="cell"/);
+  });
+
+  test('line axis wraps code lines and tags the range; hljs spans survive', () => {
+    const out = focus.applyToHtml('<section data-focus="line 2-3" class="code"><pre><code class="language-js"><span class="hljs-keyword">import</span> x;\nconst a=1;\nconst b=2;\nconst c=3;</code></pre></section>');
+    assert.match(out, /<span class="ln lat-recede"><span class="hljs-keyword">import<\/span> x;<\/span>/);
+    assert.match(out, /<span class="ln lat-focus">const a=1;<\/span>/);
+    assert.match(out, /<span class="ln lat-focus">const b=2;<\/span>/);
+    assert.match(out, /<span class="ln lat-recede">const c=3;<\/span>/);
+    assert.match(out, /data-focus-axis="line"/);
+    assert.match(out, /data-focus-style="spotlight"/);
+  });
+
+  test('splitCodeLines keeps a newline inside an hljs span on one line', () => {
+    const lines = focus.splitCodeLines('<span class="hljs-string">"a\nb"</span>\nnext');
+    assert.equal(lines.length, 2);
+    assert.match(lines[0], /"a\nb"/);
+  });
 });
 
 describe('focus — DOM kernel (applyToDom) agrees with the HTML kernel', () => {
