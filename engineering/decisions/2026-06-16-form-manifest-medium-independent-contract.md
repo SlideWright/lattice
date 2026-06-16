@@ -131,9 +131,15 @@ This is the asymmetry, made intentional: **Tile** owns pixels+logic
 
 ## 6. Staged plan (under #356)
 
-1. **Light enforcement** (next increment): the manifest↔CSS consistency gate of §4.
-   Behaviour-preserving, 0-pixel, makes the catalog load-bearing. This is the
-   concrete "A" deliverable.
+1. **Light enforcement** — ✅ **landed.** The manifest↔CSS consistency gate of §4
+   ships: the geometry/gap **token-ref check** (§4.2) is enforced by
+   `tools/build-forms.js` (so it gates via `build:check` / `docs:forms:check`),
+   with the pure checker (`collectGeometryTokenRefs` / `checkManifestCssRefs`) in
+   `lib/forms/index.js` and coverage in `test/unit/forms/manifest-css-gate.test.js`.
+   Behaviour-preserving, 0-pixel — no CSS generated, the catalog is now
+   load-bearing for the token vocabulary. The §4.1/§4.3/§4.4 checks (Cell-CSS
+   presence, `z`↔`z-index`, `suppresses`↔`FORM_TOGGLE_SKIP`) are the remaining
+   light tightening, tracked as follow-ups.
 2. **Docs sync**: `design/forms.md` §11 + the implementation ADR §6/§8 record that
    keep-vs-trim is decided (A), and that Frames are CSS-less in 2D / contract-bearing
    for spatial.
