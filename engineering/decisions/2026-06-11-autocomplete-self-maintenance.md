@@ -30,6 +30,40 @@ memory, with **no gate** asserting the two agree:
 | Data-source registration | hand-edited `data-sources.js` | new map-like component offers no body completion |
 | Universals / base modifiers | central constants | lint accepts a token completion never offers |
 
+## The other tier — static editor-grammar tokens (deliberately NOT manifest-driven)
+
+The tables above are the *catalog* vocabulary (components, modifiers, themes,
+finishes, regions). A second, smaller tier is **intrinsic to the deck grammar
+itself**, not to any component, and lives as closed constants in
+`docs/src/playground/grammar-vocab.js`:
+
+| Static token set | What it completes |
+| --- | --- |
+| `DIRECTIVE_NAMES` | the slide directives `<!-- _class\|_paginate\|_header\|… -->` |
+| `PAGINATE_VALUES`, `ISLANDS_VALUES`, `SPLIT_VALUES` | the enum values of those front-matter / directive keys |
+| `FENCE_LANGS` | fence info-strings worth suggesting (a practical set, not a strict mirror of the highlighter's eager langs) |
+| `MERMAID_KEYWORDS` | the in-`mermaid`-fence keyword grammar |
+
+These can't come from manifests — they're Marp/Lattice grammar, not catalog
+entries — so they're hand-maintained. Where an engine constant is the real
+source, the file is kept in lockstep *by comment + a shared import*, not by a
+gate: `ISLANDS_VALUES` mirrors `ISLANDS_MODES` in `plugins.js`, `SPLIT_VALUES`
+mirrors `resolve-split.js`'s `SPLIT_NAMES`, and `MERMAID_KEYWORDS` is the single
+source of truth shared with the editor's syntax highlighter (`editor.js` builds
+its `KW_DECLARE`/`KW_FLOW` regexes from it). To add a new directive or enum
+value, edit `grammar-vocab.js`; to add a component/variant/modifier, edit the
+manifest (it flows through `buildVocab` for free).
+
+## The trigger is separate from the vocabulary
+
+Proactive "type-ahead" (open the popup on *entering* a context, 2026-06-16) adds
+**no** vocabulary. `typeaheadContext` in `slide-context.js` is pure
+classification — it decides *when* to open, reusing the same detectors; the
+*what* is entirely the catalog + grammar-vocab sources above. The trigger layer
+and the vocabulary layer are orthogonal: a new completable token is surfaced by
+adding it to its source (manifest or `grammar-vocab.js`), and it becomes
+proactive only if its context kind is in the editor's `TYPEAHEAD_KINDS` gate.
+
 ## The principle
 
 A token is autocompletable iff it has a **closed vocabulary**, a **deterministic
