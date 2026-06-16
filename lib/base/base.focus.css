@@ -27,7 +27,7 @@ section[data-focus-resolved] {
   --focus-dim: 0.24;
   --focus-ring: var(--accent);
   --focus-fill: var(--accent-soft);
-  --focus-blur: 0.3cqi;
+  --focus-blur: 0.15cqi;
 }
 
 /* ── spotlight — recede the rest ──────────────────────────────────────────── */

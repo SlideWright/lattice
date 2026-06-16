@@ -741,7 +741,7 @@ Override per slide with `_focusStyle`:
 ```
 
 `blur` survives PDF and PPTX (the rest is rasterised soft, the target stays
-sharp); tune the radius per deck via `--focus-blur` (default `0.3cqi`).
+sharp); tune the radius per deck via `--focus-blur` (default `0.15cqi`).
 
 **Walk the slide — `_focusSteps`.** One authored slide expands into N
 rendered slides, each focusing the next target — the static-format
