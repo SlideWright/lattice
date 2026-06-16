@@ -2,6 +2,10 @@
 /**
  * Generate dist/docs/forms.json — the machine-readable catalog of Lattice's
  * Form composition model (Frame + Cell + Tile), beside dist/docs/components.json.
+ * Also runs the **manifest↔CSS consistency gate** (the "light" coupling of
+ * engineering/decisions/2026-06-16-form-manifest-medium-independent-contract.md
+ * §4.2): every Cell geometry/gap CSS-token ref must be defined in lib CSS, else
+ * the build fails — so a renamed token can't leave a manifest pointing at nothing.
  *
  * Mirrors tools/build-docs-portal.js (HARD RULE 15 — reuse the generator
  * pattern): load the manifests via the shared loader (lib/forms), project them
@@ -19,11 +23,49 @@
 
 const fs = require('node:fs');
 const path = require('node:path');
-const { loadCatalog, frameToggleSkip } = require('../lib/forms');
+const { loadCatalog, frameToggleSkip, checkManifestCssRefs } = require('../lib/forms');
 
 const ROOT = path.join(__dirname, '..');
 const DOCS_DIR = path.join(ROOT, 'dist', 'docs');
 const JSON_FILE = path.join(DOCS_DIR, 'forms.json');
+const LIB_DIR = path.join(ROOT, 'lib');
+
+// Every `--name` custom property DEFINED (name immediately followed by `:`) in
+// any source CSS under lib/. This is the 2D CSS renderer's token vocabulary; the
+// manifest↔CSS gate (below) asserts every Cell geometry/gap ref resolves into it.
+// Definitions only — `var(--x)` usages have `)` not `:` after the name, so they
+// don't match. Scanning source (not dist/) keeps the gate decoupled from the
+// build artifact.
+function collectDefinedCssTokens() {
+  const defined = new Set();
+  const DEF = /(--[a-z0-9-]+)\s*:/gi;
+  const walk = (dir) => {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const abs = path.join(dir, entry.name);
+      if (entry.isDirectory()) walk(abs);
+      else if (entry.name.endsWith('.css')) {
+        // Strip /* … */ comments first so a token name mentioned in a comment
+        // (e.g. `/* No --mark-todo: … */`) can't masquerade as a definition —
+        // keeps the "defined" set honest to its name.
+        const css = fs.readFileSync(abs, 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+        for (const m of css.matchAll(DEF)) defined.add(m[1]);
+      }
+    }
+  };
+  walk(LIB_DIR);
+  return defined;
+}
+
+// The manifest↔CSS consistency gate (the "light" coupling that makes the Form
+// catalog load-bearing — 2026-06-16-form-manifest-medium-independent-contract.md
+// §4). Throws with every drift listed; called before generate AND --check so a
+// broken ref fails loud, like the component ownership guard.
+function assertManifestCssConsistency(cells) {
+  const errors = checkManifestCssRefs(cells, collectDefinedCssTokens());
+  if (errors.length) {
+    throw new Error(`Form manifest↔CSS consistency failed:\n  ${errors.join('\n  ')}`);
+  }
+}
 
 function renderJson() {
   const { cells, frames, tiles } = loadCatalog();
@@ -48,6 +90,8 @@ function isStale(file, content) {
 
 function main(argv) {
   const check = argv.includes('--check');
+  // Gate first: a manifest↔CSS drift fails loud before we touch the catalog.
+  assertManifestCssConsistency(loadCatalog().cells);
   const json = renderJson();
   fs.mkdirSync(DOCS_DIR, { recursive: true });
   const label = 'dist/docs/forms.json';
@@ -68,6 +112,14 @@ function main(argv) {
   return 0;
 }
 
-if (require.main === module) process.exit(main(process.argv.slice(2)));
+if (require.main === module) {
+  try {
+    process.exit(main(process.argv.slice(2)));
+  } catch (e) {
+    // Clean gate failure (e.g. manifest↔CSS drift) — message, not a raw stack.
+    process.stderr.write(`${e.message}\n`);
+    process.exit(1);
+  }
+}
 
-module.exports = { renderJson, JSON_FILE };
+module.exports = { renderJson, JSON_FILE, collectDefinedCssTokens, assertManifestCssConsistency };
