@@ -244,6 +244,26 @@ it is load-bearing.
   cost, mesh ceiling, `getUserMedia` UX, privacy framing of a camera vs a cursor,
   and that the cloud sandbox can verify the call *UI* but not end-to-end media.
   **Status: design / exploration — no code.**
+- [2026-06-16-lattice-export-format.md](2026-06-16-lattice-export-format.md) —
+  the **"Lattice" export format**: the top-of-dropdown, shareable deck. Reframes
+  "package Lattice" as three jobs (recipient / author / dev / LLM) and ships
+  **two layered artifacts** — a single self-contained **`.html`** (the *share*
+  format) and a **`.lattice`** zip (the *project* format). The `.html` is a
+  **portable presentation player**: pre-rendered semantic slides (engine +
+  mermaid + KaTeX dropped, diagrams baked to SVG) with **zero external calls**
+  (fonts/images/CSS inlined), progressive-enhanced by an inlined ~15–30 KB
+  player — three **capability tiers** (desktop dual-screen via `window.open` +
+  `postMessage` / Window Mgmt API · desktop single-screen · mobile degraded =
+  CSS `dvh` viewport-fill + swipe + overlay controls), with a **universal
+  slide-up notes sheet** and dual-screen presenter as a desktop enhancement.
+  Import is a *different door* from foreign PDF/PPTX (`2026-06-14-presentation-import.md`):
+  a **lossless round-trip** via one versioned **manifest envelope** (`lib/core/lattice-doc.js`,
+  base64'd verbatim source — *carry the source, never scrape the render*),
+  one schema across both containers. Hard reuse boundary: **facts not fixtures**
+  — extract pure kernels (`notes-core`, FIT math, transport state machine),
+  never import a live Drawing Board module into the frozen, versioned export
+  player (`lib/export/`). **Status: design-decision** (shape aligned 2026-06-16;
+  size tier + colour mode held).
 - [2026-06-14-read-aloud-kokoro.md](2026-06-14-read-aloud-kokoro.md) —
   design model for a free/near-free, boardroom-quality read-aloud voice. Bans
   the browser `speechSynthesis` (per-device lottery, never Siri — kept as a
