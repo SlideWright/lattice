@@ -49,16 +49,23 @@ drivers, one underlying model:
   **react**, annotation (z4) **overlays**. The reveal reads as *composed* because it
   is keyed to the contract, not free-floating.
 
-## 3. The transformative ceiling — the slide can reconfigure as it assembles
+## 3. Morph — a GATED experiment, not the goal (may be cut)
 
-Because Cells and Tiles carry **stable named identity**, "assemble as you go" is not
-only additive — it can be **transformative**. A bullet list builds → collapses into
-a chart (text morphs to viz) → the chart highlights one series → a callout drops in.
-The slide *rearranges itself* mid-narrative. Named identity + the morph capability
-(Keynote "Magic Move" / Reveal `auto-animate`) is what keeps that coherent instead
-of a cross-fade mess; a flat DOM diff cannot reliably match elements across steps.
-This is the high end of the model, and the composition contract is exactly what
-makes it possible.
+Because Cells and Tiles carry **stable named identity**, "assemble as you go" *could*
+be not only additive but **transformative**: a bullet list collapses into a chart of
+the same data → the chart highlights one series → a callout drops in. Named identity
++ a morph capability (Keynote "Magic Move" / Reveal `auto-animate`) is what would
+keep that coherent rather than a cross-fade mess.
+
+**But morph is exactly where this feature is most at risk of becoming the
+"wizbang" we reject** (§8). Magic Move is squarely in the flashy-presentation
+toolbox — it can be honest (showing a *data transformation*) or pure spectacle
+(sliding boxes around to wow). So morph is **explicitly demoted**: it is NOT the
+"ceiling we're building toward," it is a **gated, opt-in experiment that we may
+reject outright**. It ships last (§11), only if it can be held to *meaning-bearing*
+transforms (the thing genuinely changes — table→chart of the same figures), and it
+is cut the moment it reads as ornament. Treat §3 as "the most-scrutinized, least-
+certain part of the model," not its headline.
 
 ## 4. The layered architecture (where this fits)
 
@@ -116,17 +123,47 @@ ADR's:
   motion-free; the step model is a *runtime + export* concern, not a change to how a
   single slide's pixels are produced.
 
-## 8. Discipline — the quality bar applies to time, too
+## 8. Discipline — the anti-wizbang line (what separates this from PowerPoint)
 
-"Walk the story" must not become "wizbang." The `design/design-principles.md`
-restraint bar governs motion as much as layout:
+"Walk the story" must not become "wizbang." The thing we reject is not *motion* — it
+is **ornamental, hand-authored, fidelity-breaking** motion (the PPTX/Keynote bundle:
+fly-ins, spins, bounces, typewriter, cube transitions, a per-object animation pane,
+effects that don't survive print). Progressive disclosure that carries meaning is a
+*rhetorical/pedagogical* device — the right reference class is **Beamer `\pause`
+overlays** and **scrollytelling** (typeset, structured, print-faithful), NOT
+PowerPoint animations.
 
-- **Derived defaults + a small typed vocabulary** (`build`/`morph`/`hold`), never
-  arbitrary per-element keyframe soup (the PowerPoint trap).
-- **Always degrades to a coherent static state** (the final-state PDF is the source
-  of truth; the build is an enhancement).
+**The rule.** Motion is allowed only when it is **(1) derived from structure**
+(document order + component shape, not hand-placed per element), **(2) drawn from a
+small typed vocabulary** (`build`/`morph`/`hold` — no arbitrary keyframes/easing),
+**(3) meaning-bearing** (pacing / sequence / a real transformation — not ornament),
+and **(4) losslessly degradable** to the canonical static deck. Anything outside that
+is wizbang and stays banned. (This is the same constraint-not-toolbox discipline
+Lattice already applies to colour via palette-blindness and to type via the 12-token
+scale — now on the time axis.)
+
+- **Derived defaults + small typed vocabulary**, never per-element keyframe soup.
+- **Always degrades to a coherent static state** — the final-state PDF is the source
+  of truth; the build is an enhancement, never the artifact.
+- **Builds are for genuine narrative sequence, not drip-feeding a wall of text** —
+  needing a build to survive a 12-bullet slide is a content smell, not a use case.
 - **Accessibility first-class:** honor `prefers-reduced-motion`; the overlay PDF is
   the async/non-animated equivalent of the narrative.
+
+### 8.1 Non-goals — the PowerPoint features that stay BANNED
+
+These are forbidden by construction; if any appears, the feature has failed:
+
+- **No per-element manual animation authoring** / no "animation pane" / no
+  timing-and-easing UI. Steps are derived; you cannot hand-animate one bullet.
+- **No entrance/exit effects** — fly, spin, bounce, zoom, typewriter, dissolve,
+  star-wipe, and the rest of the PPTX catalogue.
+- **No decorative slide transitions** — cube, page-curl, ripple, etc.
+- **No motion that doesn't reduce to a coherent static state** (no build that the
+  PDF can't represent as final-state or per-step overlay).
+- **No audio, no autoplay spectacle.**
+- **Morph (§3) is gated, opt-in, and may be cut** — the one capability closest to
+  the banned bundle; meaning-bearing only, or it goes.
 
 ## 9. Relationships
 
@@ -142,8 +179,12 @@ restraint bar governs motion as much as layout:
 
 ## 10. Non-goals
 
+- **The entire PowerPoint/Keynote wizbang bundle is banned by construction** — see
+  §8.1 for the explicit list (no animation pane, no entrance/exit effects, no
+  decorative transitions, no print-hostile motion, no audio). This is the line that
+  keeps "assemble as you go" from being the thing we reject.
 - Not building the step engine here — this fixes direction + the one canonical fork
-  (PDF policy).
+  (PDF policy) + the anti-wizbang guardrails.
 - Not the motion-vocabulary field spec (its own ADR).
 - Not a new renderer (CSS-3D/WebGL are separate, per #377's taxonomy).
 
@@ -155,7 +196,9 @@ restraint bar governs motion as much as layout:
 3. **Overlay PDF export toggle** (§5) — including the reduced-motion equivalence.
 4. **Motion vocabulary** (`build`/`morph`/`transition`) — the typed, restrained set.
 5. **Scroll driver** on the docs site.
-6. **Morph/identity transforms** (the §3 ceiling) — last, highest-craft.
+6. **Morph/identity transforms (§3)** — GATED experiment, last, and **may be cut**.
+   Ships only if held to meaning-bearing transforms (§3/§8.1); rejected if it reads
+   as ornament. Not a commitment.
 
 ## 12. Open questions (for the impl ADR)
 
