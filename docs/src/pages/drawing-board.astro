@@ -347,6 +347,7 @@ const dbData = JSON.stringify({
 			<section class="db-panel db-preview" id="db-preview">
 				<div class="db-panel-head">
 					<span class="db-panel-title">Slides</span>
+					<button class="db-btn db-present-open" id="db-present-open" title="Present full-screen — navigate, speaker notes, second-screen presenter">Present</button>
 					<button class="db-btn db-practice-open" id="db-practice-open" title="Rehearse full-screen with pacing">Practice</button>
 					<span class="db-spacer"></span>
 					<span class="db-status" id="db-status">Ready.</span>
@@ -424,6 +425,12 @@ const dbData = JSON.stringify({
 				<div class="db-drawer-body" id="db-config-pop"></div>
 			</aside>
 		</div>
+
+		<!-- Present mode — full-screen presentation player (clean navigation,
+		     speaker-notes slide-up sheet, three-tier fullscreen, dual-screen
+		     presenter). Practice's calmer sibling: present, don't rehearse.
+		     Created lazily on first open. -->
+		<div class="db-present" id="db-present" hidden></div>
 
 		<!-- Practice mode — full-screen rehearsal overlay (deterministic pacing +
 		     pause cues). Renders the deck one slide at a time in its own engine
@@ -1160,6 +1167,26 @@ const dbData = JSON.stringify({
 			});
 			const openBtn = document.getElementById('db-practice-open');
 			if (openBtn) openBtn.addEventListener('click', () => practice.open());
+		</script>
+
+		<!-- Present mode (full-screen presentation player). Practice's calmer
+		     sibling — it PRESENTS rather than rehearses: clean navigation, a
+		     universal speaker-notes slide-up sheet, three-tier fullscreen, and a
+		     dual-screen presenter view (window.open + postMessage). It renders the
+		     deck through the same engine + slide box as the preview (parity) and is
+		     the in-app ancestor of the self-contained .html export player
+		     (engineering/decisions/2026-06-16-lattice-export-format.md). -->
+		<script>
+			import { createPresent } from '../playground/drawing-board-present.js';
+			const presentData = JSON.parse(document.getElementById('db-data').textContent);
+			const present = createPresent({
+				host: document.getElementById('db-present'),
+				getSource: () => (window.__dbEditor ? window.__dbEditor.getValue() : ''),
+				runtimeUrl: presentData.runtimeUrl,
+				themeBase: presentData.themeBase,
+			});
+			const presentBtn = document.getElementById('db-present-open');
+			if (presentBtn) presentBtn.addEventListener('click', () => present.open());
 		</script>
 
 		<!-- Bridge: expose the shared filmstrip-preview controller (deck-preview.js)

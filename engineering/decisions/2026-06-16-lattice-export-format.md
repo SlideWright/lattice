@@ -21,7 +21,14 @@ Marp bundle — the dev-render sibling this reframes), [`2026-06-13-lfm-standard
 [`2026-06-12-workbench-export-bridge.md`](2026-06-12-workbench-export-bridge.md)
 + [`2026-06-12-workbench-component-bridge.md`](2026-06-12-workbench-component-bridge.md)
 (the theme/component embed reused by the envelope), `drawing-board-practice.js`
-(the player's behavioural ancestor — extracted, not imported).
+(the player's behavioural ancestor — extracted, not imported), and now
+`drawing-board-present.js` (shipped: the **in-app Present mode**, a live
+presentation player carrying this design's §2c/§2d shape — clean navigation,
+three capability tiers, the universal speaker-notes slide-up sheet, and the
+dual-screen presenter — against the live engine. It is the export player's
+nearest sibling; when the export artifact lands, the pure transport/notes facts
+get extracted into the shared kernel of §4, with Present and the export player
+as two consumers of it).
 
 ---
 
