@@ -243,23 +243,14 @@ body.db-page .topbar {
 .db-refine-open::after { --db-glyph: var(--icon-chevron-down); margin-left: 0.3em; }
 .db-present-open::before { --db-glyph: var(--icon-presentation); margin-right: 0.34em; }
 .db-practice-open::before { --db-glyph: var(--icon-play); margin-right: 0.34em; }
-/* On narrow viewports the Slides panel head carries two labelled actions
-   (Present · Practice) alongside the title + status in a fixed 38px row —
-   collapse both to icon-only there. The glyph already carries the meaning; the
-   label text stays in the a11y tree (font-size:0, not display:none) and each
-   button has a `title`, so screen-reader + tooltip coverage is intact. */
+/* The Slides panel head carries two labelled actions (Present · Practice)
+   alongside the title + status in a fixed 38px row. Both buttons keep their
+   icon AND label at every width; on narrow viewports we instead drop the
+   redundant "Slides" title (the mobile tab already labels this pane "Preview")
+   to buy back the row space. */
 @media (max-width: 680px) {
-	.db-present-open,
-	.db-practice-open {
-		font-size: 0;
-		padding-left: 0.42rem;
-		padding-right: 0.42rem;
-	}
-	.db-present-open::before,
-	.db-practice-open::before {
-		width: 16px;
-		height: 16px;
-		margin-right: 0;
+	.db-preview .db-panel-head .db-panel-title {
+		display: none;
 	}
 }
 .db-arch-jump-btn[data-dir='top']::before { --db-glyph: var(--icon-chevron-up); }
