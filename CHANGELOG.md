@@ -346,6 +346,19 @@ in patch versions.
 
 ### Fixed
 
+- **Slides render fully styled again in the playground, Drawing Board, and every
+  browser-engine surface.** The marp purge switched those surfaces from the
+  unminified palettes to the **minified** `dist/themes/*.min.css`, whose base
+  import is written without a space (`@import"lattice"`). The engine's
+  base-inlining regexes required `\s+` after `@import`, so the minified import
+  never matched — every palette collapsed to scaffold-only CSS (~7 KB) and slides
+  rendered as unstyled raw markup (no theme, no component layouts). Relaxed
+  `THEME_IMPORT_RE` / `URL_IMPORT_RE` (`lib/engine/css.js`) and
+  `THEME_NAME_IMPORT_RE` (`lib/engine/themes.js`) to `\s*` so minified and
+  source palettes inline identically. The CLI/PDF path was unaffected (it
+  registers the source themes); the regression was browser-only. Guarded by a
+  sweep over the real minified dist palettes in `test/unit/engine/engine.test.js`.
+
 - **`kpi` and `math` eyebrows now use the lint-safe inline-code form, not a
   heading.** Both manifests authored the eyebrow as an `### h3` above the `## h2`
   title — a heading-order violation (and, in `kpi`, two adjacent headings with no
