@@ -7,12 +7,17 @@ last-status-update: 2026-06-16
 
 # Deck fact-checking — a two-tier "trust map" for a deck's factual claims
 
-**Date:** 2026-06-16 · **Status:** design-decision (shape aligned with the
-owner; no code yet) · **Owner:** Sharmarke
+**Date:** 2026-06-16 · **Status:** design-decision; **deterministic floor
+shipped** (`lib/authoring/fact-check-core.js`) · **Owner:** Sharmarke
 
-> **Not canonical / no shipped behaviour yet.** This fixes the *shape* of the
-> capability before any code lands. When this note and a shipped surface
-> disagree, the shipped surface wins.
+> **Shape settled; the deterministic floor has landed, no user surface yet.**
+> This note fixes the *shape* of the capability. The **floor** — claim
+> extraction, verifiability triage, the provisional-freshness prior, and the
+> `needs_deeper` derivation — now ships as the pure module
+> `lib/authoring/fact-check-core.js` (§6.1–6.2). The model-driven verdict layer
+> (§3 model fields), the Drawing Board panel (§6.3), and the maker–checker pair
+> (§5) are still design-only. When this note and a shipped surface disagree, the
+> shipped surface wins.
 
 Related: `docs/src/playground/drawing-board-architect.js` (the Architect — the
 review panel this extends), `docs/src/playground/architect-model.js` (the
@@ -98,15 +103,21 @@ CEO is Y" (true at cutoff, changed last month). A single blended score buries it
 two axes surface it. **`needs_deeper` is then *derived*, not a third guess:**
 
 ```
-needs_deeper  =  verdict_conf < τ            // not sure
+needs_deeper  =  verdict_conf == null         // not yet verified (pre-model default)
+              OR verdict_conf < τ            // not sure
               OR staleness_risk == high       // probably moved
               OR high_stakes_figure(claim)    // headline number on a money slide
               OR class == forward-looking      // only the source is checkable
+              // …EXCEPT class ∈ {insider, opinion} → never (deep research can't help)
 ```
 
 That derived flag is the **prioritiser**: it ranks which claims actually justify
 Tier-2 spend, so the author isn't deep-researching 200 bullets to find the 4
-that matter.
+that matter. Two classes are deliberately *never* escalated — `opinion` (nothing
+factual to check) and `insider` (no external record exists, so web research is
+pointless; it gets the "attach your source" affordance instead). The shipped
+`needsDeeper` encodes exactly this, including the `verdict_conf == null` default
+so an unverified external claim ranks for Tier-2 until the model speaks.
 
 ## §3 The per-claim record (the Tier-1 schema)
 
@@ -124,6 +135,16 @@ that matter.
   "suggested_fix":  null          // populated only when verdict == contradicted
 }
 ```
+
+**Shipped-record note:** the floor flattens `location` to top-level `slide` +
+`line`, where `line` is the **source line text** (not a line number) — the exact
+`{ slide, line }` shape `lint-core`/`review-core` findings already use and the
+Architect already renders, so the panel maps a fact-check record to an editor
+position identically to a lint finding. It also adds deterministic `basis`,
+`component`, `kind`, and `high_stakes` fields. `staleness_risk` is filled by a
+date-arithmetic **prior** (`provisionalStaleness`) until the model overwrites it
+with a knowledge-based judgement — a surface must label it provisional, not a
+verified assessment.
 
 `sources[].live: false` is load-bearing: Tier-1 "sources" are the model's
 recollection of where a fact comes from, **explicitly not retrieved**. The UI
@@ -180,15 +201,28 @@ reconcile UX are specified here; wiring waits for a build decision.
 
 Layered, so the headless core is shared and the UI is the first *surface*:
 
-1. **Deterministic extractor** (`lib/authoring/fact-check-core.js`, new — pure,
-   browser-safe). Mirrors `lint-core`'s slide walk: split on `/^---$/m`, index
-   to human 1-based slide numbers, pull headings/bullets/blockquotes/stat
-   tokens, and carry the exact source `line` so every claim maps back to the
-   editor — the same `{ slide, line, … }` finding shape the Architect already
-   renders. Locating a claim needs **no model**.
-2. **Triage + schema** (same module). §1 classification and the §3 record shape,
-   model-driven for the verdict, deterministic for location and class-structure.
-3. **First surface — a Drawing Board fact-check panel**
+1. **Deterministic extractor** — **SHIPPED** (`lib/authoring/fact-check-core.js`,
+   pure, browser-safe). Mirrors `lint-core`'s slide walk: split on `/^---$/m`,
+   index to human 1-based slide numbers, walk each line (skipping front matter,
+   code fences, directives, images), and pull **signal-gated** claims —
+   conservatively, like `review-core`: a line is a candidate only if it carries a
+   checkable signal (a statistic, a date/year, a ranking/superlative, or an
+   attribution), plus every blockquote (a quotation is inherently checkable).
+   Each claim carries `{ slide, line, component, kind, signals }` — the same
+   `{ slide, line, … }` shape the Architect already renders. Locating a claim
+   needs **no model**. *(Known floor limitation: a KPI display fragment like
+   `73%` is extracted without its nested label — stitching nested number+label
+   pairs is a deferred refinement.)*
+2. **Triage + schema** — **SHIPPED** (same module). §1 verifiability triage
+   (`triageClaim` → external | insider | forward | opinion, with a `basis`),
+   `highStakesFigure`, the provisional-freshness prior (`extractAsOf` +
+   `provisionalStaleness`), the §3 record factory (`makeRecord`), and the §2/§4
+   `needsDeeper` derivation — all pure and unit-tested
+   (`test/unit/authoring/fact-check-core.test.js`). The record's model-owned
+   fields (`verdict`, `verdict_conf`, `sources`) stay null until the verifier
+   layer fills them; `makeRecord(..., { overrides })` is the seam it writes
+   through.
+3. **First surface — a Drawing Board fact-check panel** *(design-only)*
    (`docs/src/playground/drawing-board-fact-check.js`, new), a sibling to the
    Architect. Claims list with per-row badges — ✓ supported · ⚠ stale · ✗
    contradicted · 🔒 insider · ? needs-research — each row click-to-escalate to
@@ -239,11 +273,19 @@ quick→deep escalation semantics; maker–checker as **independent+reconcile ov
 two OpenRouter models**; the layered architecture with the **Drawing Board panel
 as first surface**; the metadata channels; the honesty guardrails.
 
-**Deferred (genuine forks for a build phase):** the `needs_deeper` threshold τ
-and what counts as a "high-stakes figure"; the curated peer-pair list and the
+**Shipped (the deterministic floor, §6.1–6.2):** `lib/authoring/fact-check-core.js`
+— signal-gated claim extraction, the four-class verifiability triage with the
+insider fail-safe, the provisional-freshness prior, the §3 record factory, and
+the `needsDeeper` derivation, all unit-tested. Headless; no user surface yet.
+
+**Deferred (genuine forks for a build phase):** the model **verifier layer** that
+fills `verdict`/`verdict_conf`/`sources` (and the Tier-2 `deep-research`
+escalation); the `needs_deeper` threshold τ (defaulted to 0.7 in the floor) and a
+richer "high-stakes figure" test; the curated peer-pair list and the
 different-family rule; whether opinion/puffery is in-scope here or folded into
-the Architect's editorial findings; exact budget-cap UX for the 2× pair; and the
-CLI / annotated-PDF surfaces.
+the Architect's editorial findings; exact budget-cap UX for the 2× pair; nested
+number+label stitching in the extractor; and the Drawing Board panel / CLI /
+annotated-PDF surfaces.
 
 ## Why this shape
 
