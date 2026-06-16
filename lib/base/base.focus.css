@@ -28,6 +28,8 @@ section[data-focus-resolved] {
   --focus-ring: var(--accent);
   --focus-fill: var(--accent-soft);
   --focus-blur: 0.15cqi;
+  --focus-pop: 1.02;        /* blur target lift — subtle, won't overlap neighbours */
+  --focus-pop-shadow: 0.28cqi;
 }
 
 /* ── spotlight — recede the rest ──────────────────────────────────────────── */
@@ -47,6 +49,20 @@ section[data-focus-style="spotlight"] tr.lat-focus > td { color: var(--text-head
  * like spotlight it removes the legibility blurred rows/cells would otherwise
  * carry. */
 section[data-focus-style="blur"] .lat-recede { filter: blur(var(--focus-blur)); opacity: 0.82; }
+/* …and blur LIFTS the target — a subtle scale + a hard (zero-blur) accent offset
+ * shadow. Hard-edged on purpose: a *blurred* shadow renders as a flat grey block
+ * in Apple PDFKit (the soft-compositing weakness behind the mask gotcha), but a
+ * zero-blur offset is a solid vector fill that renders everywhere. Scoped to
+ * block items (`li`) — a table row / code line doesn't scale cleanly — and kept
+ * small (`--focus-pop` scale, `--focus-pop-shadow` offset) so the grown card
+ * never bleeds into its neighbour. */
+section[data-focus-style="blur"] li.lat-focus {
+  transform: scale(var(--focus-pop));
+  box-shadow: var(--focus-pop-shadow) var(--focus-pop-shadow) 0 var(--accent);
+  border-radius: 0.6cqi;
+  position: relative;
+  z-index: 2;
+}
 
 /* ── ring — accent outline, zero layout shift ─────────────────────────────── */
 /* list / grid item: a plain outline rings the card without reflowing it. */
