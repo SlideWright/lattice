@@ -146,8 +146,10 @@ This is the asymmetry, made intentional: **Tile** owns pixels+logic
 3. **(Deferred, own ADR) Medium/Heavy coupling** — generate geometry from the
    manifest — *only* if a second renderer or designer/AI-authored Frames
    (`forms.md` §7) actually demand it.
-4. **(Deferred, separate) section-as-grid (A-later)** — the gated 242-direct-child
-   migration (`2026-06-15` §4) is **orthogonal** to this decision and unaffected.
+4. **(Retired) section-as-grid (A-later)** — the 242-direct-child migration was
+   **rejected on merit** (`2026-06-16-retire-section-as-grid.md`): fixed grid tracks
+   fight the content-height masthead and cost responsiveness. Orthogonal to this
+   decision either way; named here only to record it is no longer a path.
 5. **(Speculative) spatial renderer** — the WebXR/CSS-3D second renderer that would
    first exercise Frame CSS. Out of scope; named only to fix the direction.
 
@@ -156,7 +158,8 @@ This is the asymmetry, made intentional: **Tile** owns pixels+logic
 - **Not building VR.** Oculus is the *thought experiment* that fixed the direction;
   no spatial renderer is scheduled.
 - **Not generating CSS now.** Light rung only — 2D CSS stays hand-authored.
-- **Not touching section-as-grid.** That gate stands; this is a different axis.
+- **Not touching section-as-grid.** It is retired (different axis anyway) —
+  `2026-06-16-retire-section-as-grid.md`.
 - **Not deleting the descriptive manifest fields** — the opposite of trim.
 
 ## 8. Relationships
@@ -165,8 +168,8 @@ This is the asymmetry, made intentional: **Tile** owns pixels+logic
   §6/§8 (resolved: A).
 - **Builds on** `2026-06-15-manifest-css-audit.md` (the audit that surfaced the
   manifest↔CSS drift this gate would catch).
-- **Independent of** #372 (masthead transform co-location, in flight) and the
-  A-later section-as-grid migration.
+- **Independent of** #372 (masthead transform co-location) and the now-retired
+  section-as-grid migration (`2026-06-16-retire-section-as-grid.md`).
 
 ## 9. Gates (for the §6.1 increment when it lands)
 

@@ -74,6 +74,14 @@ Mapped onto the existing three-band structure (the root chrome Frame):
 
 ## 4. The pivotal constraint — 242 child selectors → B-now, not A-now
 
+> **Superseded (2026-06-16): A-later / section-as-grid is RETIRED, not pending.**
+> B (flex `section` + in-flow content-height bands, bodies as direct children) is
+> the canonical end state. A fixed-track grid fights the content-height masthead
+> (the very thing §3 fixed) and costs responsiveness/feasibility, so the
+> 242/373-selector migration will not happen and there is no `.cell-stage` wrapper
+> to reach. The framing below is retained as the record of how the decision was
+> reasoned at the time. See `2026-06-16-retire-section-as-grid.md`.
+
 The principled end-state (`design/forms.md` §10 "A — section-as-grid") makes the
 stage Cell a real element. We **cannot** do that now: component CSS contains
 **242 `section.X > …` direct-child selectors** (e.g. `section.decision > ul >
@@ -313,8 +321,9 @@ revised deliberately later):
   as its first renderer; see `2026-06-16-form-manifest-medium-independent-contract.md`.
   The first increment is "light" coupling (a manifest↔CSS consistency gate, no
   CSS generation); Medium/Heavy code-gen is deferred to its own ADR.**
-- **A — section-as-grid**: the 242-child-selector migration + flex→grid audit
-  (§4). The B-now content Cell is its prerequisite and is now in place.
+- **A — section-as-grid**: ~~the 242-child-selector migration + flex→grid audit~~
+  **RETIRED 2026-06-16** (`2026-06-16-retire-section-as-grid.md`) — rejected on
+  merit; B is the canonical end state, not a stepping stone.
 - **`@layer` activation** (#283/#284) — blocked, untouched.
 - **Workbench Frame studio / AI-assisted Frame generation** (`forms.md` §7).
 

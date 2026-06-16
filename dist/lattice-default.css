@@ -13697,8 +13697,10 @@ section.form .cell-masthead {
  *
  * `section.form` IS the stage box: the masthead Cell is an in-flow band at the
  * top, the footer Cell is reserved via padding-bottom, and the deterministic
- * region that remains is the stage (NOT a wrapper element — see ADR §4, the
- * 242-direct-child-selector constraint that defers section-as-grid). Because
+ * region that remains is the stage (NOT a wrapper element — and permanently so:
+ * section-as-grid / a `.cell-stage` wrapper is RETIRED, so component bodies stay
+ * direct children of `section` by design — see 2026-06-16-retire-section-as-grid.md).
+ * Because
  * `section.form` is the root chrome Frame, this file is also where the shared,
  * resolution-blind frame tokens are defined (--frame-x/-y, --masthead-h,
  * --footer-h/-reserve, --footer-centre-w/-half); the masthead and footer Cells
@@ -13714,10 +13716,11 @@ section.form .cell-masthead {
  *   · masthead↔stage — the band's margin-bottom + hairline rule is the gap.
  *   · stage↔footer   — `form` reserves a footer safe-area (padding-bottom,
  *                     derived from the real footer Cell height) so content keeps
- *                     clear of the footer / progress Cell. (The fully-bounded
- *                     soft clip — an exact-edge fade — needs the A-later stage
- *                     wrapper; until then the section's own overflow:hidden
- *                     hard-clips anything escaping the slide.)
+ *                     clear of the footer / progress Cell. The section's own
+ *                     overflow:hidden hard-clips anything escaping the slide —
+ *                     this is the canonical behavior (the wrapper-based soft fade
+ *                     is retired with section-as-grid; any future soft clip must
+ *                     be wrapper-free, e.g. a mask).
  *   · per-Cell       — the masthead + bay clip their own overflow, so a long
  *                     title or meta line is cut at its Cell, never bled. */
 section.form {
@@ -13756,8 +13759,9 @@ section.form {
    * is cut by the section's clip rather than bleeding across the masthead/footer
    * Cells; the runtime overflow ring (scrollHeight > clientHeight) still fires
    * because the stage flows in-section, so an over-stuffed slide reads "too
-   * much" in authoring. (A soft exact-edge fade needs the A-later stage wrapper
-   * — 2026-06-15-form-implementation.md §4/§8; the hard clip ships here.) */
+   * much" in authoring. The hard clip is canonical — section-as-grid (the
+   * wrapper that a soft exact-edge fade would have needed) is retired; see
+   * 2026-06-16-retire-section-as-grid.md. */
   overflow: hidden;
 }
 

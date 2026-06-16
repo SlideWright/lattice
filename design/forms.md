@@ -402,25 +402,27 @@ lift, the `meta` / `progress` / `watermark` injectors, and the `islands:` toggle
 with its skip-list. The open density defect (§1 reference) is the next behavioural
 fix and is independent of the rename.
 
-### The migration is incremental — never a big-bang
+### The model is realized by B — flex + in-flow bands (section-as-grid retired)
 
-The model above is the **end state**; adopting it is explicitly staged, because
-every component today assumes it is a flex child of `section`, so a wholesale flip
-risks every component at once. Two mechanisms exist (per the originating ADR):
-**B — berth/Cell overlay** (keep `section` flex; Cells are absolutely-positioned
-boxes pinned to one shared token set — *zero component risk*) and **A —
-section-as-grid** (the principled north star; large migration). The locked
-sequence is **B-now → A-later**: ship the contract and the value first with no
-component risk, and treat section-as-grid as the optional end state, taken only
-after the content Cell is a real wrapper.
+Two mechanisms were once weighed (per the originating ADR): **B — berth/Cell
+overlay** (keep `section` flex; Cells are content-height in-flow bands / reserved
+token-contract bands, component bodies stay direct children of `section` —
+*zero component risk*) and **A — section-as-grid** (`section { display:grid }`, the
+body wrapped in a `.cell-stage` element; a large per-component migration).
 
-Every phase is gated, so an unintended visual change fails a gate, not a
-reviewer's eye: the three-renderer parity check, the per-component galleries
-(light + dark page counts asserted), and a `tools/pixel-check.js` before/after on
-the baseline deck. **Reading this doc as canon does not license converting
-components in bulk** — the staged plan in
-`engineering/decisions/2026-06-11-islands.md` §6 is still the live execution
-contract.
+**B is now the canonical end state; A (section-as-grid) is retired — rejected on
+merit, not deferred** (`engineering/decisions/2026-06-16-retire-section-as-grid.md`).
+A fixed-track grid fights content-driven sizing — the masthead Cell was deliberately
+moved *from* a fixed-height box *to* an in-flow content-height band exactly to fix
+the dead-space-under-short-titles / can't-grow-for-two-lines failure, which a grid
+row would reintroduce — and it costs responsiveness (desktop/tablet/mobile) and
+feasibility (~373 `section.X > …` selectors) for a marginal payoff. So component
+bodies staying **direct children of `section`** is correct by design, permanently;
+there is no `.cell-stage` wrapper to migrate toward.
+
+Changes are still gated so an unintended visual change fails a gate, not a
+reviewer's eye: the per-component galleries (light + dark page counts asserted) and
+`tools/pixel-check.js` before/after on the baseline deck.
 
 ---
 
