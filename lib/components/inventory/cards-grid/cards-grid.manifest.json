@@ -1,6 +1,7 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "cards-grid",
+  "focusAxes": ["item"],
   "function": "inventory",
   "form": "grid",
   "substance": "structure",

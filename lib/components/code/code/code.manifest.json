@@ -1,6 +1,7 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "code",
+  "focusAxes": ["line"],
   "function": "evidence",
   "bucket": "code",
   "form": "canvas",

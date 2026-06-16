@@ -1,6 +1,7 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "list-criteria",
+  "focusAxes": ["item"],
   "function": "progression",
   "form": "ledger",
   "substance": "structure",

@@ -1,6 +1,7 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "checklist",
+  "focusAxes": ["item"],
   "families": ["state-markers"],
   "function": "inventory",
   "form": "stack",

@@ -51,7 +51,6 @@ const PAGINATE_OPTIONS = PAGINATE_VALUES.map((v) => ({ label: v, type: 'constant
 const ISLANDS_OPTIONS = ISLANDS_VALUES.map((v) => ({ label: v, type: 'constant', detail: 'islands' }));
 const SPLIT_OPTIONS = SPLIT_VALUES.map((v) => ({ label: v, type: 'constant', detail: 'split' }));
 const FOCUS_STYLE_OPTIONS = FOCUS_STYLE_VALUES.map((v) => ({ label: v, type: 'constant', detail: 'focus style' }));
-const FOCUS_AXIS_OPTIONS = FOCUS_AXIS_VALUES.map((v) => ({ label: v, type: 'keyword', detail: 'focus axis' }));
 const FENCE_OPTIONS = FENCE_LANGS.map((l) => ({ label: l, type: 'constant', detail: 'language' }));
 
 // Mermaid keyword options (declaration openers + flow/block keywords), the
@@ -185,6 +184,31 @@ function skeletonSource(catalog) {
 	};
 }
 
+// Completes the AXIS keyword in a `_focus:` / `_focusSteps:` directive, scoped
+// to the active slide's layout: a layout's manifest `focusAxes` (carried in the
+// catalog) narrows the offered axes — `compare-table` → row/col/cell, a card
+// grid → item, `code` → line. A layout that declares none (or an unclassed
+// slide) falls back to the full axis set, so focus still completes everywhere.
+function focusAxisSource(catalog) {
+	const byName = catalog ? new Map(catalog.map((c) => [c.name, c])) : null;
+	return (context) => {
+		const doc = context.state.doc;
+		const line = doc.lineAt(context.pos);
+		const before = context.state.sliceDoc(line.from, context.pos);
+		const spot = focusAxisPosition(before);
+		if (!spot) return null;
+		if (!spot.typed && !context.explicit) return null;
+		let axes = FOCUS_AXIS_VALUES;
+		if (byName) {
+			const info = slideClassAt((n) => doc.line(n).text, line.number);
+			const comp = info && byName.get(info.name);
+			if (comp && Array.isArray(comp.focusAxes) && comp.focusAxes.length) axes = comp.focusAxes;
+		}
+		const options = axes.map((v) => ({ label: v, type: 'keyword', detail: 'focus axis' }));
+		return { from: line.from + spot.from, options, validFor: TOKEN };
+	};
+}
+
 // Build the editor's autocomplete extension. `vocab` is the Drawing Board's
 // lintVocab ({ names, modifiers, universalModifiers, mapRegions }); `catalog` is
 // the compact component catalog ({ name, bucket, variants, skeleton, … });
@@ -200,7 +224,7 @@ export function latticeAutocomplete({ vocab, catalog, themes, finishes } = {}) {
 			lineLocalSource(directiveNameAt, DIRECTIVE_OPTIONS, DIRECTIVE_TOKEN),
 			lineLocalSource(paginateValuePosition, PAGINATE_OPTIONS),
 			lineLocalSource(focusStyleValuePosition, FOCUS_STYLE_OPTIONS),
-			lineLocalSource(focusAxisPosition, FOCUS_AXIS_OPTIONS),
+			focusAxisSource(catalog),
 			lineLocalSource(islandsValuePosition, ISLANDS_OPTIONS),
 			lineLocalSource(splitValuePosition, SPLIT_OPTIONS),
 			lineLocalSource(fenceLangAt, FENCE_OPTIONS),

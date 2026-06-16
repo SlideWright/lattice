@@ -1,6 +1,7 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "list-steps",
+  "focusAxes": ["item"],
   "function": "progression",
   "form": "timeline",
   "substance": "structure",

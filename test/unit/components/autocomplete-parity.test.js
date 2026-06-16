@@ -15,8 +15,9 @@
 
 const { test, describe } = require('node:test');
 const assert = require('node:assert/strict');
-const { loadAll, familyModifiersFor, FAMILY_MODIFIER_TOKENS, OPT_IN_FAMILY_NAMES, validate } = require('../../../lib/components');
+const { loadAll, familyModifiersFor, FAMILY_MODIFIER_TOKENS, OPT_IN_FAMILY_NAMES, SUPPORTED_AXES, validate } = require('../../../lib/components');
 const { buildVocab } = require('../../../lib/authoring/lint');
+const { FOCUS_AXES } = require('../../../lib/authoring/lint-core');
 
 // A minimal valid manifest to probe field-level validation against.
 const baseManifest = {
@@ -28,7 +29,7 @@ const baseManifest = {
 	skeleton: '<!-- _class: probe -->',
 	tags: ['pull-quote', 'pitch', 'board-deck'],
 };
-const famErrors = (m) => validate(m, 't').filter((e) => /families|dataCompletion/i.test(e));
+const famErrors = (m) => validate(m, 't').filter((e) => /families|dataCompletion|focusAxes/i.test(e));
 
 const split = (s) => String(s).split(/\s+/).filter(Boolean);
 
@@ -65,6 +66,24 @@ describe('autocomplete ⇄ engine parity', () => {
 		const { DATA_SOURCE_COMPONENTS } = await import('../../../docs/src/playground/data-source-components.js');
 		assert.deepEqual(declared, [...DATA_SOURCE_COMPONENTS].sort(), 'manifests declaring dataCompletion must match the editor DATA_SOURCE_COMPONENTS registry');
 	});
+
+	test('4. focusAxes parity: the engine axis sets agree, and every declared axis is supported', () => {
+		// The three constants that must never drift: the manifest validator's
+		// SUPPORTED_AXES, the linter's FOCUS_AXES, and (gated separately in
+		// slide-context.test.js) the completion vocab.
+		assert.deepEqual([...SUPPORTED_AXES].sort(), [...FOCUS_AXES].sort(),
+			'lib/components SUPPORTED_AXES must equal lib/authoring/lint-core FOCUS_AXES');
+		// No manifest may advertise an axis the engine doesn't support.
+		const bad = [];
+		for (const m of manifests) {
+			if (!Array.isArray(m.focusAxes)) continue;
+			for (const a of m.focusAxes) if (!SUPPORTED_AXES.includes(a)) bad.push(`${m.name}: ${a}`);
+		}
+		assert.deepEqual(bad, [], `manifest focusAxes outside SUPPORTED_AXES: ${bad.join(', ')}`);
+		// And the catalog of focusable layouts is non-empty (the feature is wired).
+		assert.ok(manifests.some((m) => Array.isArray(m.focusAxes) && m.focusAxes.length),
+			'at least one layout should declare focusAxes');
+	});
 });
 
 describe('manifest validation of the self-maintenance fields', () => {
@@ -81,5 +100,13 @@ describe('manifest validation of the self-maintenance fields', () => {
 		assert.deepEqual(famErrors({ ...baseManifest, dataCompletion: true }), []);
 		assert.deepEqual(famErrors({ ...baseManifest, dataCompletion: false }), []);
 		assert.equal(famErrors({ ...baseManifest, dataCompletion: 'yes' }).length, 1);
+	});
+
+	test('focusAxes accepts a valid axis subset, rejects unknown axes / non-arrays', () => {
+		assert.deepEqual(famErrors({ ...baseManifest, focusAxes: ['row', 'col', 'cell'] }), []);
+		assert.deepEqual(famErrors({ ...baseManifest, focusAxes: ['item'] }), []);
+		assert.equal(famErrors({ ...baseManifest, focusAxes: ['rows'] }).length, 1); // typo'd axis
+		assert.equal(famErrors({ ...baseManifest, focusAxes: 'row' }).length, 1); // not an array
+		assert.equal(famErrors({ ...baseManifest, focusAxes: [''] }).length, 1); // empty entry
 	});
 });

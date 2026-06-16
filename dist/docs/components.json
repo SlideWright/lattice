@@ -353,6 +353,9 @@
         "with-period"
       ],
       "familyModifiers": [],
+      "focusAxes": [
+        "item"
+      ],
       "slots": {
         "title": {
           "selector": "h2",
@@ -710,6 +713,9 @@
         "with-period"
       ],
       "familyModifiers": [],
+      "focusAxes": [
+        "item"
+      ],
       "slots": {
         "title": {
           "selector": "h2",
@@ -840,6 +846,9 @@
         "with-period"
       ],
       "familyModifiers": [],
+      "focusAxes": [
+        "item"
+      ],
       "slots": {
         "title": {
           "selector": "h2",
@@ -955,6 +964,9 @@
         "checks-outline",
         "checks-tonal",
         "heat"
+      ],
+      "focusAxes": [
+        "item"
       ],
       "slots": {
         "title": {
@@ -1315,6 +1327,9 @@
         "with-period"
       ],
       "familyModifiers": [],
+      "focusAxes": [
+        "line"
+      ],
       "slots": {
         "title": {
           "selector": "h2",
@@ -1427,6 +1442,9 @@
         "with-period"
       ],
       "familyModifiers": [],
+      "focusAxes": [
+        "line"
+      ],
       "slots": {
         "title": {
           "selector": "h2",
@@ -1673,6 +1691,11 @@
         "with-period"
       ],
       "familyModifiers": [],
+      "focusAxes": [
+        "row",
+        "col",
+        "cell"
+      ],
       "slots": {
         "title": {
           "selector": "h2",
@@ -2596,6 +2619,9 @@
         "with-period"
       ],
       "familyModifiers": [],
+      "focusAxes": [
+        "row"
+      ],
       "slots": {
         "title": {
           "selector": "h2",
@@ -3220,6 +3246,9 @@
         "with-period"
       ],
       "familyModifiers": [],
+      "focusAxes": [
+        "item"
+      ],
       "slots": {
         "title": {
           "selector": "h2",
@@ -3336,6 +3365,9 @@
         "with-period"
       ],
       "familyModifiers": [],
+      "focusAxes": [
+        "item"
+      ],
       "slots": {
         "title": {
           "selector": "h2",
@@ -3471,6 +3503,9 @@
         "with-period"
       ],
       "familyModifiers": [],
+      "focusAxes": [
+        "item"
+      ],
       "slots": {
         "title": {
           "selector": "h2",
@@ -4250,6 +4285,11 @@
         "checks-tonal",
         "heat"
       ],
+      "focusAxes": [
+        "row",
+        "col",
+        "cell"
+      ],
       "slots": {
         "heading": {
           "selector": "h2",
@@ -4757,6 +4797,9 @@
         "with-period"
       ],
       "familyModifiers": [],
+      "focusAxes": [
+        "item"
+      ],
       "slots": {
         "eyebrow": {
           "selector": "p > code:only-child",

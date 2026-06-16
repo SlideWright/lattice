@@ -112,6 +112,17 @@ in patch versions.
 
 ### Added
 
+- **Editor autocomplete for focus, with a manifest-declared capability.** The
+  Drawing Board now completes the `_focus` / `_focusStyle` / `_focusSteps`
+  directives, the style values (`spotlight`/`blur`/`ring`/`list-fill`/`pop`), and
+  the focus axes — and axis completion is **layout-aware**: a new manifest field
+  `focusAxes` declares which axes a layout supports (`compare-table` →
+  row/col/cell, a card grid → item, `code` → line), so the editor offers only
+  the valid axes per slide. A parity gate ties the manifest, the lint vocab, and
+  the completion vocab together so none can drift. Follows the
+  `families`/`dataCompletion` self-maintenance pattern
+  (`engineering/decisions/2026-06-11-autocomplete-self-maintenance.md`).
+
 - **Focus & highlighting — tell a dense slide to focus the room on one thing.**
   A new `_focus:` directive names an ordinal target with one universal grammar —
   `<!-- _focus: row 4 -->`, `item 3`, ranges (`item 2-4`) and multiples

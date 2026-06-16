@@ -1,6 +1,7 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "compare-code",
+  "focusAxes": ["line"],
   "function": "comparison",
   "bucket": "code",
   "form": "split",

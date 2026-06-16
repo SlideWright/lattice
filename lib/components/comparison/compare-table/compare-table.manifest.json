@@ -1,6 +1,7 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "compare-table",
+  "focusAxes": ["row", "col", "cell"],
   "function": "comparison",
   "form": "ledger",
   "substance": "prose",
