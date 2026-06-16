@@ -327,7 +327,24 @@ it is load-bearing.
   author's front-matter type), and raster images stay uncorrected. **v1 = the
   three dichromacies (deuteranopia/protanopia/tritanopia) × light/dark,
   palette-only; achromatopsia + redundant encoding (patterns/markers/✓!✗)
-  deferred to phase 2.** **Status: design-decision** (scope aligned 2026-06-16).
+  deferred to phase 2.** **Status: design-decision** (scope aligned 2026-06-16);
+  the palette-only-v1 / patterns-later framing is **superseded** by
+  `2026-06-16-cvd-redundant-encoding.md` (patterns proved mandatory, not phase-2).
+- [2026-06-16-cvd-redundant-encoding.md](2026-06-16-cvd-redundant-encoding.md) —
+  the empirical finding that **overturns palette-only**: measuring the max
+  categories that stay distinct under dichromacy (greedy farthest-point in the
+  *simulated* space, within the contrast contract's lightness bands) gives
+  **1–2 on the pale light-deck fills, 4–5 on the deep marks** — colour alone
+  cannot carry categorical data, because each dichromacy collapses hue to ~one
+  dimension and the contract pins luminance. Decision: **redundant non-colour
+  encoding is mandatory, built WITH the palettes** — per-index **texture
+  patterns** (palette-blind, scoped to `:root[data-a11y]`), **semantic glyphs**
+  (✓/!/✗), and line-style variation; colour becomes one redundant channel.
+  Textures reach inline Mermaid/chart SVGs via **M1 — a kernel-injected
+  `<pattern>` `<defs>` transform** (shared kernel, both render paths). Because
+  texture carries distinction colour-independently, **achromatopsia re-enters
+  v1 → all four types**. **Status: design-decision** (finding verified, mechanism
+  agreed 2026-06-16).
 - [2026-06-16-deck-fact-checking.md](2026-06-16-deck-fact-checking.md) —
   design model for an **LLM fact-check for decks**. Reframes the deliverable
   from a ✓/✗ verdict to an **honest "trust map"** — *what to trust, what's
