@@ -25,17 +25,19 @@ respect).
 
 ## The question
 
-A deck author writes in Arabic, Hebrew, Japanese, or traditional Chinese. Three
+A deck author writes in Arabic, Hindi, Japanese, or traditional Chinese. Three
 things have to be true for the slide to read correctly:
 
-1. **Inline direction** — Arabic/Hebrew run right-to-left; the *layout* (which
-   side the eyebrow, list bullets, KPI labels, redline gutter sit on) must
-   mirror, not just the glyphs.
+1. **Inline direction** — Arabic runs right-to-left; the *layout* (which side
+   the eyebrow, list bullets, KPI labels, redline gutter sit on) must mirror,
+   not just the glyphs.
 2. **Block direction** — traditional CJK runs in vertical columns, top-to-bottom,
    columns flowing right-to-left (`writing-mode: vertical-rl`). This re-pivots
    the whole layout axis, not just text.
-3. **The right glyphs** — none of the bundled fonts cover Arabic, Hebrew, or
-   CJK. Today every such deck silently falls back to serif/`system-ui`.
+3. **The right glyphs (and shaping)** — none of the bundled fonts cover Arabic,
+   CJK, or Devanagari, and scripts like Arabic and Devanagari need *shaping*
+   (cursive joining, conjunct reordering), not just a glyph swap. Today every
+   such deck silently falls back to serif/`system-ui`.
 
 Today Lattice does **none** of this. `lang:` is parsed (`directives.js:34`) but
 inert — it lands as `data-lang`/`--lang` on the section and nothing consumes it.
@@ -153,7 +155,6 @@ the **test-language matrix below**, not just to direction:
 | Script | Noto family | Covers |
 |---|---|---|
 | Arabic | Noto Sans / Naskh Arabic | Arabic, Persian, Urdu |
-| Hebrew | Noto Sans / Serif Hebrew | Hebrew |
 | Han SC / TC | Noto Sans / Serif SC, TC | Chinese (Simplified, Traditional) |
 | Japanese | Noto Sans / Serif JP | Japanese (kanji + kana) |
 | Korean | Noto Sans / Serif KR | Korean (Hangul) |
@@ -182,17 +183,18 @@ just the RTL/CJK cases.
 
 | Language | Script | Direction | What it proves (its reason to be in the set) |
 |---|---|---|---|
-| **Arabic** | Arabic | RTL | Cursive **joining/shaping** + RTL mirroring + bidi (Latin digits, brand names) — the hardest combined case |
-| **Hebrew** | Hebrew | RTL | RTL mirroring + bidi **without** cursive shaping — isolates direction from shaping |
+| **Arabic** | Arabic | RTL | Cursive **joining/shaping** + RTL mirroring + bidi (Latin digits, brand names) — the hardest combined case, and our sole RTL row |
 | **Hindi** | Devanagari | LTR | Complex **shaping in isolation**: matra reordering, conjuncts — proves shaping works with *no* direction change |
 | **Chinese (Simplified)** | Han (SC) | LTR **+ vertical** | CJK metrics + `writing-mode: vertical-rl` |
 | **Chinese (Traditional)** | Han (TC) | LTR **+ vertical** | Same axis, distinct glyph set (TC ≠ SC) |
 | **Japanese** | Kanji + Kana | LTR **+ vertical** | Hardest **vertical** case: mixed scripts, tate-chū-yoko (horizontal runs inside vertical) |
 | **Korean** | Hangul | LTR | Syllable-block composition + word-spacing — proves "CJK" isn't one monolith |
 
-"etc" is deliberately bounded: this seven-language set spans every axis once
-(RTL×2, vertical×3, complex-shaping×2, plus Korean's spacing case). Further
-scripts — Thai (no word boundaries → line-break stress), Urdu (Nastaliq) —
+"etc" is deliberately bounded: this six-language set spans every axis once
+(RTL×1, vertical×3, complex-shaping×2, plus Korean's spacing case) — Arabic
+carries RTL **and** the hardest shaping case, so a second RTL row earns little.
+Further scripts — Hebrew (RTL without shaping, if we ever want to isolate
+direction), Thai (no word boundaries → line-break stress), Urdu (Nastaliq) —
 are **named as future rows**, added only when a real deck needs them, so the
 suite stays meaningful rather than exhaustive.
 
@@ -220,8 +222,8 @@ suite stays meaningful rather than exhaustive.
 | B. Granularity | Global + spot `_dir:`/`_lang:`; per-element via `dir: auto` + bidi algorithm |
 | C. RTL layout | Logical-CSS refactor (189 decls / 48 files), + a lint guard against new physical inline props |
 | D. Vertical | `writing-mode` on the section; **attempt-all + `verticalBlocked` blocklist**; text buckets reviewed first |
-| E. Fonts | Self-hosted, `:lang()`-gated Noto per script — Arabic, Hebrew, **CJK SC/TC/JP, Korean, Devanagari** — subset |
-| F. Verify | **7-language test matrix** (Arabic·Hebrew·Hindi·Chinese SC/TC·Japanese·Korean) spanning RTL/vertical/shaping; demo deck + per-language invariant tests; **owner inspection** for glyph fidelity |
+| E. Fonts | Self-hosted, `:lang()`-gated Noto per script — Arabic, **CJK SC/TC/JP, Korean, Devanagari** — subset |
+| F. Verify | **6-language test matrix** (Arabic·Hindi·Chinese SC/TC·Japanese·Korean) spanning RTL/vertical/shaping; demo deck + per-language invariant tests; **owner inspection** for glyph fidelity |
 
 ### Why this order
 

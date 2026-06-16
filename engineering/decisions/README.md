@@ -265,7 +265,7 @@ it is load-bearing.
   player (`lib/export/`). **Status: design-decision** (shape aligned 2026-06-16;
   size tier + colour mode held).
 - [2026-06-16-rtl-vertical-text-support.md](2026-06-16-rtl-vertical-text-support.md) —
-  design model for **directional text**: right-to-left (Arabic/Hebrew),
+  design model for **directional text**: right-to-left (Arabic),
   left-to-right, and **vertical** (`tb`, traditional CJK). Current state is
   Latin-centric LTR — `lang:` is parsed but inert, no `dir`, every layout uses
   physical `left`/`right` (**189 declarations across 48 CSS files**), Latin-only
@@ -275,12 +275,13 @@ it is load-bearing.
   foundation vertical needs — paid once, serves both — guarded by a new
   physical-property lint; **vertical attempt-all + `verticalBlocked` blocklist**
   (render vertical by default, blocklist on reviewer-confirmed breakage; text
-  buckets reviewed first); **self-hosted `:lang()`-gated Noto** Arabic/Hebrew +
-  **all three CJK (SC/TC/JP)** (CDN MITM'd in-sandbox). Verification mirrors
-  layouts here but **glyph/export fidelity needs owner inspection** (sandbox
-  can't load the webfonts). Pins a **7-language test matrix** — Arabic · Hebrew ·
-  Hindi · Chinese (SC/TC) · Japanese · Korean — each earning its slot by
-  stressing a *distinct* axis (RTL mirroring · bidi · complex shaping ·
+  buckets reviewed first); **self-hosted `:lang()`-gated Noto** Arabic +
+  **all three CJK (SC/TC/JP)**, Korean, Devanagari (CDN MITM'd in-sandbox).
+  Verification mirrors layouts here but **glyph/export fidelity needs owner
+  inspection** (sandbox can't load the webfonts). Pins a **6-language test
+  matrix** — Arabic · Hindi · Chinese (SC/TC) · Japanese · Korean — each
+  earning its slot by stressing a *distinct* axis (RTL mirroring · complex
+  shaping ·
   vertical), so the suite is a coverage checklist, not a sample. Phased:
   directives → CSS refactor → fonts → vertical → demo deck. **Status: design-decision** (scope RTL/LTR + vertical, CJK
   breadth + vertical default aligned 2026-06-16; only the CJK font-budget /
