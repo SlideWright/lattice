@@ -88,7 +88,12 @@ export default function DrawingBoardTopbar({ palettes: initialPalettes }: { pale
 					size="sm"
 					aria-label="Deck theme"
 					title="Deck theme — written into this deck's front matter"
-					className="w-[8.5rem]"
+					// Fixed width (no reflow as names change length) sized for the longest
+					// theme name we surface — the a11y group's "Achromatopsia" (13 chars).
+					// The value is forced to block+truncate because the primitive sets it
+					// display:flex (for optional icons), which defeats its line-clamp — so a
+					// still-longer name degrades to a clean ellipsis instead of a mid-glyph clip.
+					className="w-40 [&_[data-slot=select-value]]:!block [&_[data-slot=select-value]]:min-w-0 [&_[data-slot=select-value]]:truncate"
 				>
 					<SelectValue placeholder="Theme" />
 				</SelectTrigger>
