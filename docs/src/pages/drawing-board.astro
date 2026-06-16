@@ -130,7 +130,13 @@ const isPreviewDeploy = isPreviewDeployEnv({
 });
 
 const tokensCss = readFileSync(join(docsRoot, 'src/styles/lattice-tokens.generated.css'), 'utf8');
-const palettes = [...new Set([...tokensCss.matchAll(/data-palette="([^"]+)"/g)].map((m) => m[1]))];
+// Brand palettes (the landing swatch set) + the curated accessibility themes.
+// The a11y-* themes aren't part of the brand swatch set, but they ARE selectable
+// deck themes (the engine resolves them by @theme name), so surface them in the
+// picker under their own group. Light bases only — dark is the mode toggle.
+const brandPalettes = [...new Set([...tokensCss.matchAll(/data-palette="([^"]+)"/g)].map((m) => m[1]))];
+const a11yPalettes = themeNames.filter((n) => n.startsWith('a11y-') && !n.endsWith('-dark')).sort();
+const palettes = [...brandPalettes, ...a11yPalettes];
 
 // Starter deck = a known-good sample (the hero component's), so the heartbeat
 // renders something real on first load without risking an authoring footgun.

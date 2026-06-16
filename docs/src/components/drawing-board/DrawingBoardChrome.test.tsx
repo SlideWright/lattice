@@ -37,6 +37,23 @@ describe('DrawingBoardTopbar (deck-theme picker island)', () => {
 		expect(applyTheme).toHaveBeenCalledWith('cuoio');
 	});
 
+	it('groups the a11y-* themes under an Accessibility label, stripping the prefix, but applies the full theme name', async () => {
+		const applyTheme = vi.fn();
+		(window as unknown as { __dbChrome: unknown }).__dbChrome = {
+			getPalette: () => 'indaco',
+			getMode: () => 'light' as const,
+			getPalettes: () => ['indaco', 'a11y-deuteranopia'],
+			applyTheme,
+			toggleMode: () => 'dark' as const,
+		};
+		render(<DrawingBoardTopbar palettes={['indaco', 'a11y-deuteranopia']} />);
+		fireEvent.click(screen.getByRole('combobox', { name: /deck theme/i }));
+		expect(await screen.findByText(/accessibility · colour-blindness/i)).toBeInTheDocument();
+		const opt = await screen.findByRole('option', { name: /^Deuteranopia$/ });
+		fireEvent.click(opt);
+		expect(applyTheme).toHaveBeenCalledWith('a11y-deuteranopia');
+	});
+
 	it('reflects a db-chrome-sync event (deck theme changed underneath)', async () => {
 		render(<DrawingBoardTopbar palettes={['indaco', 'cuoio']} />);
 		act(() => {
