@@ -278,8 +278,11 @@ it is load-bearing.
   buckets reviewed first); **self-hosted `:lang()`-gated Noto** Arabic/Hebrew +
   **all three CJK (SC/TC/JP)** (CDN MITM'd in-sandbox). Verification mirrors
   layouts here but **glyph/export fidelity needs owner inspection** (sandbox
-  can't load the webfonts). Phased: directives → CSS refactor → fonts → vertical
-  → demo deck. **Status: design-decision** (scope RTL/LTR + vertical, CJK
+  can't load the webfonts). Pins a **7-language test matrix** — Arabic · Hebrew ·
+  Hindi · Chinese (SC/TC) · Japanese · Korean — each earning its slot by
+  stressing a *distinct* axis (RTL mirroring · bidi · complex shaping ·
+  vertical), so the suite is a coverage checklist, not a sample. Phased:
+  directives → CSS refactor → fonts → vertical → demo deck. **Status: design-decision** (scope RTL/LTR + vertical, CJK
   breadth + vertical default aligned 2026-06-16; only the CJK font-budget /
   lazy-load question held).
 - [2026-06-14-read-aloud-kokoro.md](2026-06-14-read-aloud-kokoro.md) —

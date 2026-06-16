@@ -143,33 +143,72 @@ Vertical is genuinely harder than RTL and must be scoped honestly:
   content, quote) where vertical CJK is most idiomatic and least likely to break
   — but they render vertical from day one, not after graduation.
 
-### E. Fonts — **self-host Noto Sans/Serif Arabic, Hebrew, CJK**
+### E. Fonts — **self-host Noto per script, `:lang()`-gated**
 
-- Add Noto Sans/Serif Arabic, Hebrew, and CJK to `--font-display` /
-  `--font-body` stacks in `base.tokens.css`, gated behind `:lang()` so a
-  Latin deck doesn't pay the download. **Decision (owner, 2026-06-16): ship all
-  three CJK scripts — Simplified (SC), Traditional (TC), and Japanese (JP) —
-  in the first cut**, not one-then-expand. Complete coverage up front; the cost
-  is ~3 large fonts and a wider verification surface (see open question below).
+Direction and *script* are separate problems: a script can share Latin's LTR
+direction yet still need its own font and complex shaping (Devanagari reorders
+matras and forms conjuncts; Arabic joins cursively). So the font set is keyed to
+the **test-language matrix below**, not just to direction:
+
+| Script | Noto family | Covers |
+|---|---|---|
+| Arabic | Noto Sans / Naskh Arabic | Arabic, Persian, Urdu |
+| Hebrew | Noto Sans / Serif Hebrew | Hebrew |
+| Han SC / TC | Noto Sans / Serif SC, TC | Chinese (Simplified, Traditional) |
+| Japanese | Noto Sans / Serif JP | Japanese (kanji + kana) |
+| Korean | Noto Sans / Serif KR | Korean (Hangul) |
+| Devanagari | Noto Sans / Serif Devanagari | Hindi (+ Marathi, Nepali) |
+
+Wire these into `--font-display` / `--font-body` in `base.tokens.css`, each
+gated behind `:lang()` so a Latin deck downloads none of them. **Decision
+(owner, 2026-06-16): ship all three CJK scripts (SC/TC/JP) in the first cut**,
+not one-then-expand — and Korean + Devanagari join them, so the first cut covers
+the full named matrix. The cost is several large fonts and a wider verification
+surface (see open question below).
 - **Self-host**, do not CDN: `engineering/gotchas.md` documents that the sandbox
   TLS proxy MITMs Google Fonts and silently falls back to serif. Self-hosting is
   also the only way PDF export embeds the glyphs reliably. CJK fonts are large
   (~10MB+ subsetted) — subset aggressively and load per-`:lang()`.
 
-### F. Verification — **render real Arabic/Hebrew/CJK decks, view whole slides**
+### F. Verification — **a named test-language matrix, each earning its slot**
 
-- A demo deck per HARD RULE #9: `examples/directional-text.md`, with Arabic
-  (RTL), Hebrew (RTL), and Japanese (vertical-tb) slides + a mixed bidi slide,
-  rendered to committed PDF in both light/dark.
-- Per-component **semantic-invariant** tests asserting the section carries the
-  right `dir`/`lang` and that mirrored layouts keep their structural
-  invariants (the eyebrow is on the inline-start, the redline gutter mirrors).
-- **Honesty gate:** the sandbox can't load the real webfonts (MITM), so glyph
-  *shaping* can't be fully verified here — only layout mirroring (which doesn't
-  need the fonts). This is the one place the §Quality Bar "say so if a tool
-  can't run here" clause applies: **export/glyph fidelity needs the owner's
-  inspection** on a machine with the fonts, exactly like the existing
-  export-changes-require-inspection rule.
+The test set is **not** "a few RTL samples." Each language is chosen because it
+stresses a *distinct* rendering capability — so the matrix doubles as a coverage
+checklist. Three independent axes are in play: **direction** (LTR/RTL/vertical),
+**bidi** (mixing scripts + Latin digits/brand names), and **complex shaping**
+(reordering, conjuncts, cursive joining). A language can be LTR yet still a
+shaping torture test — which is exactly why Hindi and Korean belong here, not
+just the RTL/CJK cases.
+
+| Language | Script | Direction | What it proves (its reason to be in the set) |
+|---|---|---|---|
+| **Arabic** | Arabic | RTL | Cursive **joining/shaping** + RTL mirroring + bidi (Latin digits, brand names) — the hardest combined case |
+| **Hebrew** | Hebrew | RTL | RTL mirroring + bidi **without** cursive shaping — isolates direction from shaping |
+| **Hindi** | Devanagari | LTR | Complex **shaping in isolation**: matra reordering, conjuncts — proves shaping works with *no* direction change |
+| **Chinese (Simplified)** | Han (SC) | LTR **+ vertical** | CJK metrics + `writing-mode: vertical-rl` |
+| **Chinese (Traditional)** | Han (TC) | LTR **+ vertical** | Same axis, distinct glyph set (TC ≠ SC) |
+| **Japanese** | Kanji + Kana | LTR **+ vertical** | Hardest **vertical** case: mixed scripts, tate-chū-yoko (horizontal runs inside vertical) |
+| **Korean** | Hangul | LTR | Syllable-block composition + word-spacing — proves "CJK" isn't one monolith |
+
+"etc" is deliberately bounded: this seven-language set spans every axis once
+(RTL×2, vertical×3, complex-shaping×2, plus Korean's spacing case). Further
+scripts — Thai (no word boundaries → line-break stress), Urdu (Nastaliq) —
+are **named as future rows**, added only when a real deck needs them, so the
+suite stays meaningful rather than exhaustive.
+
+- **Demo deck** per HARD RULE #9: `examples/directional-text.md` carries one
+  slide per matrix row (+ a **mixed-bidi** slide: Arabic prose with an inline
+  English product name and a number), rendered to committed PDF in light + dark.
+- **Per-component semantic-invariant tests** assert the section carries the
+  right `dir`/`lang` and that mirrored layouts keep their structural invariants
+  (eyebrow on the inline-start, redline gutter mirrored). These run **per matrix
+  language** so a regression in any one script is caught.
+- **Honesty gate:** the sandbox can't load the real webfonts (MITM → serif
+  fallback), so glyph **shaping** (Arabic joining, Devanagari conjuncts) can't be
+  verified here — only layout mirroring (which needs no fonts). Per the §Quality
+  Bar "say so if a tool can't run here" clause, **glyph/export fidelity for every
+  matrix language needs the owner's inspection** on a machine with the fonts,
+  exactly like the export-changes-require-inspection rule.
 
 ---
 
@@ -181,15 +220,16 @@ Vertical is genuinely harder than RTL and must be scoped honestly:
 | B. Granularity | Global + spot `_dir:`/`_lang:`; per-element via `dir: auto` + bidi algorithm |
 | C. RTL layout | Logical-CSS refactor (189 decls / 48 files), + a lint guard against new physical inline props |
 | D. Vertical | `writing-mode` on the section; **attempt-all + `verticalBlocked` blocklist**; text buckets reviewed first |
-| E. Fonts | Self-hosted, `:lang()`-gated Noto Arabic/Hebrew + **all three CJK (SC/TC/JP)**, subset |
-| F. Verify | Demo deck + invariant tests for mirroring; **owner inspection** for glyph/export fidelity |
+| E. Fonts | Self-hosted, `:lang()`-gated Noto per script — Arabic, Hebrew, **CJK SC/TC/JP, Korean, Devanagari** — subset |
+| F. Verify | **7-language test matrix** (Arabic·Hebrew·Hindi·Chinese SC/TC·Japanese·Korean) spanning RTL/vertical/shaping; demo deck + per-language invariant tests; **owner inspection** for glyph fidelity |
 
 ### Why this order
 
 RTL is the high-value, tractable win and the logical-CSS refactor it requires is
 *also* the foundation vertical text needs — so the expensive step is paid once
-and serves both. Vertical ships incrementally behind per-component sign-off so a
-half-pivoted grid never reaches a slide.
+and serves both. Vertical renders by default (attempt-all) with breakage caught
+by the per-language invariant tests + demo deck before merge, and a
+`verticalBlocked` entry added only for a reviewer-confirmed broken component.
 
 ### Phasing
 
@@ -197,9 +237,11 @@ half-pivoted grid never reaches a slide.
    (Small, self-contained, unblocks everything.)
 2. **Logical-CSS refactor + lint guard** — the big one; per-bucket, maker-checker
    per HARD RULE's parallel-review.
-3. **Fonts** — self-host + `:lang()` gating.
-4. **Vertical** — `writing-mode` + `verticalReady` manifest flag, text buckets.
-5. **Demo deck + docs** (`base.docs.md`, `CHANGELOG`) + owner glyph inspection.
+3. **Fonts** — self-host + `:lang()` gating, all matrix scripts.
+4. **Vertical** — `writing-mode` + `verticalBlocked` blocklist; CJK/Japanese rows
+   of the matrix are the primary stress.
+5. **Demo deck + docs** (`base.docs.md`, `CHANGELOG`) + owner glyph inspection
+   across the full test-language matrix.
 
 ---
 
