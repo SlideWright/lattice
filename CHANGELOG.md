@@ -127,6 +127,20 @@ in patch versions.
   guarantee). Reveal-only; the live player driver and per-step overlay export are
   staged follow-ons. See `engineering/decisions/2026-06-16-narrative-step-spec.md`.
 
+- **Drawing Board: a hands-on "Try it" lesson — learn by doing.** Alongside the
+  descriptive **?** tour (which *explains* the workspace), a new **Try it**
+  launcher runs a guided walkthrough that has you perform the real actions: write
+  a slide in the editor, switch the deck palette, watch it render, and export it
+  — the lesson spotlights each control, shows a "Your turn" cue, and **waits**
+  until you actually do it before advancing. Non-destructive (it works with
+  whatever deck you have open) and fully interactive (a non-blocking spotlight, so
+  the real menus stay clickable). Built on the same driver.js engine and
+  palette-blind styling as the tour, and governed by the same global **Guided
+  tours** toggle and production gating. New engine
+  `docs/src/playground/guided-lesson.js` (a reusable `initGuidedLesson` with a
+  per-step `waitFor` hook) + content `docs/src/playground/drawing-board-lesson.js`.
+  See `engineering/decisions/2026-06-16-hands-on-lessons.md`.
+
 - **Docs site: a live, draggable performance overlay.** A small overlay renders
   two groups: **web vitals** (LCP / CLS / INP / FCP / TTFB, colour-rated by
   Google's thresholds) and a **runtime** group — **FPS** (frame rate), **MEM**

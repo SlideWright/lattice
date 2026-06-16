@@ -1227,5 +1227,13 @@ const dbData = JSON.stringify({
 			import { initDrawingBoardTour } from '../playground/drawing-board-tour.js';
 			initDrawingBoardTour();
 		</script>
+
+		<!-- Hands-on lesson: a "do it yourself" walkthrough behind a "Try it" button
+		     — the user performs each real action (write → restyle → render → ship)
+		     and the lesson waits for it. Shares the tour's driver.js engine. -->
+		<script>
+			import { initDrawingBoardLesson } from '../playground/drawing-board-lesson.js';
+			initDrawingBoardLesson();
+		</script>
 	</body>
 </html>
