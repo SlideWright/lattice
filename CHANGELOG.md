@@ -122,6 +122,20 @@ in patch versions.
 
 ### Added
 
+- **Colour-blindness accessibility — per-viewer CVD accommodation.** A deck can
+  set `accessibility: deuteranopia` (or `protanopia` / `tritanopia` /
+  `achromatopsia`) in front matter — or a viewer can force it via the
+  `LATTICE_ACCESSIBILITY` env (workspace tier) — and it overrides the theme,
+  always. Because colour alone distinguishes only ~1–2 categories under
+  dichromacy, the accommodation pairs **CVD-tuned status colours** (pass/warn/fail
+  moved off each deficiency's confusion axis, verified distinct + AA) with
+  **redundant non-colour encoding**: ✓/!/✗ **glyphs** on status pills and a
+  distinct **texture pattern** per categorical slot on diagram/chart fills. All
+  scoped to `[data-a11y]`, so normal decks are untouched. New: the four
+  `a11y-*` palettes (+ dark), `lib/core/resolve-accessibility.js`,
+  `lib/theme/cvd.js` (Machado-2009 simulation), and `tools/cvd-audit.js`.
+  See `engineering/decisions/2026-06-16-colour-blindness-accessibility.md` +
+  `…-cvd-redundant-encoding.md`.
 - **Editor autocomplete for focus, with a manifest-declared capability.** The
   Drawing Board now completes the `_focus` / `_focusStyle` / `_focusSteps`
   directives, the style values (`spotlight`/`blur`/`ring`/`list-fill`/`pop`), and

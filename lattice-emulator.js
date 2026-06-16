@@ -259,7 +259,23 @@ const md = readFileOrDie(mdFile, 'source markdown');
 // matter > default). Logic lives in lib/resolve-palette.js so it can
 // be unit-tested in isolation; see test/unit/palette-resolution.test.js.
 const { resolvePalette } = require('./lib/core/resolve-palette');
-const paletteName = resolvePalette({ md, cliArg: paletteArg }).name;
+// Accessibility (CVD) overrides the theme: when active it wins the palette
+// name-resolution, selecting a curated a11y-* theme. Workspace tier = env
+// LATTICE_ACCESSIBILITY; deck tier = front-matter `accessibility:`. The a11y
+// themes carry their own redundant-encoding CSS (themes/a11y-encoding.css).
+const { resolveAccessibility } = require('./lib/core/resolve-accessibility');
+const a11y = resolveAccessibility({ md });
+if (a11y.unsupported) {
+  console.error(`warning: accessibility: ${a11y.unsupported} is not yet supported — rendering without it`);
+}
+const paletteName = a11y.active ? a11y.palette : resolvePalette({ md, cliArg: paletteArg }).name;
+// The one thing the a11y CSS can't hold is the categorical texture <pattern>
+// <defs> (SVG markup) its fills reference — inject them once whenever an a11y-*
+// palette is active, by whichever path selected it (accessibility: key, env, or
+// theme: a11y-* directly).
+const a11yTextureDefs = /^a11y-/.test(paletteName)
+  ? require('./lib/core/accessibility-textures').texturePatternDefs()
+  : '';
 const palettePath = path.join(PKG_ROOT, 'themes', `${paletteName}.css`);
 if (!fs.existsSync(palettePath)) {
   console.error(`error: palette not found: ${paletteName}`);
@@ -1241,6 +1257,7 @@ section[data-lattice-slide] { width: ${slideW}px !important; height: ${slideH}px
 ${marpSystemCss}
 ${globalStyle ? `\n/* Front-matter style: directive */\n${globalStyle}\n` : ''}
 </style></head><body>
+${a11yTextureDefs}
 ${slidesWithMeta2}
 ${functionPlotScript}
 ${stateChartScript}
