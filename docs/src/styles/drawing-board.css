@@ -3432,6 +3432,14 @@ html.db-js #db-editor-ta {
 	font-size: 0.7rem;
 	color: var(--text-muted);
 }
+/* A pref whose effect depends on another being on (e.g. type-ahead needs
+   autocomplete) dims when that dependency is off; the <select> is also disabled. */
+.db-pref-row.is-disabled {
+	opacity: 0.55;
+}
+.db-pref-row.is-disabled .db-pref-select {
+	cursor: default;
+}
 .db-pref-select {
 	flex: 0 0 auto;
 	font: inherit;

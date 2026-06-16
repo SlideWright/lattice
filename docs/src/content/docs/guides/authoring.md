@@ -185,6 +185,17 @@ reference and the linter use. Every suggestion is deterministic and offline;
   basemap resolves, including blocs and categories like `European Union` or
   `Global South`, so the spelling matches on the first try.
 
+### Type-ahead — suggestions open on their own
+
+By default the popup opens **the moment your cursor enters a `<!-- _class: … -->`
+directive**, before you type anything — so the layout list is right there, and
+picking a layout then pressing space cascades straight into its modifiers. Deck
+directives (`theme:`, `finish:`, fence languages, …) stay quiet until you type or
+press `Ctrl-Space`, so front matter doesn't pop a menu in your face. **Settings →
+Workspace → "Open suggestions automatically"** changes the reach: *Components
+only* (the default), *Everywhere* (every context opens on entry), or *Off* (the
+popup opens only on typing / `Ctrl-Space`).
+
 ## Deck setup (front matter without the YAML)
 
 The Drawing Board's **Deck setup** drawer — the sliders button beside the

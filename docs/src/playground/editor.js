@@ -8,6 +8,7 @@
 // Astro/Vite bundles this (imported from playground.astro), so no separate
 // esbuild step — the CodeMirror packages live in docs/package.json.
 
+import { completionStatus, startCompletion } from '@codemirror/autocomplete';
 import { defaultKeymap, history, historyKeymap, indentWithTab } from '@codemirror/commands';
 import { css } from '@codemirror/lang-css';
 import { html } from '@codemirror/lang-html';
@@ -24,6 +25,24 @@ import { drawSelection, EditorView, highlightActiveLine, highlightActiveLineGutt
 import { tags as t } from '@lezer/highlight';
 import { latticeAutocomplete } from './complete.js';
 import { MERMAID_KEYWORDS } from './grammar-vocab.js';
+import { typeaheadContext } from './slide-context.js';
+
+// Proactive "type-ahead" trigger — which grammar context kinds auto-open the
+// completion popup on ENTRY (before a character is typed), per workspace mode.
+// 'class' (the default) limits proactive open to the `_class:` directive — the
+// component name, then its modifiers (so picking a component and hitting space
+// cascades you straight into the modifier list). 'all' extends it to every
+// grammar context with a pure detector (directives, fence languages, the
+// front-matter value lines). 'off' disables proactive open entirely — the popup
+// then opens only on typing / Ctrl-Space, the legacy behaviour. The map/data
+// and Mermaid sources are never proactive (their sources need a typed prefix).
+const TYPEAHEAD_KINDS = {
+	class: new Set(['class', 'modifier']),
+	all: new Set(['class', 'modifier', 'directive', 'paginate', 'fence', 'theme', 'finish', 'islands', 'split']),
+};
+function normalizeTypeahead(mode) {
+	return mode === 'all' || mode === 'off' ? mode : 'class';
+}
 
 // ── Mermaid: StreamLanguage ported from PrismJS's prism-mermaid grammar ──────
 // (prismjs/components/prism-mermaid.js). Prism's regexes are whole-document with
@@ -321,7 +340,12 @@ const autoHeightTheme = EditorView.theme({
 // the playground / Specimen editors keep working unchanged. `autocomplete`
 // (default true) sets the initial state; `setAutocomplete(bool)` toggles it live
 // — the Drawing Board wires both to a workspace preference.
-export function createEditor({ parent, doc = '', onChange, onCursor, autoHeight = false, vocab, catalog, themes, finishes, autocomplete = true }) {
+//
+// `typeahead` ('class' | 'all' | 'off', default 'class') governs whether the
+// popup opens PROACTIVELY on entering a grammar context (vs. only on typing).
+// `setTypeahead(mode)` switches it live; the Drawing Board wires both to a
+// workspace preference. It is inert when autocomplete is off.
+export function createEditor({ parent, doc = '', onChange, onCursor, autoHeight = false, vocab, catalog, themes, finishes, autocomplete = true, typeahead = 'class' }) {
 	ensureTooltipTheme(); // global popup theme (reaches CM's detached tooltip layer)
 	// The autocomplete extension lives in a Compartment so the on/off preference
 	// can reconfigure it live (built once with the vocab; toggled to [] when off).
@@ -332,6 +356,53 @@ export function createEditor({ parent, doc = '', onChange, onCursor, autoHeight 
 		if (onCursor && (u.docChanged || u.selectionSet)) {
 			onCursor(u.state.doc.lineAt(u.state.selection.main.head).number);
 		}
+	});
+
+	// Proactive type-ahead. On entering a completable grammar context, open the
+	// popup without waiting for a keystroke. We fire on a TRANSITION into an
+	// allowed kind (tracking the previous kind) — so it opens once on entry and
+	// again when the kind changes (component → modifier on the space), but stays
+	// quiet while you keep typing within the same kind (CodeMirror keeps the open
+	// popup filtered via validFor) and after Esc (no fresh transition). The popup
+	// itself is opened with startCompletion, which runs an EXPLICIT completion —
+	// the same flag Ctrl-Space sets — so each source's "quiet on a bare position
+	// unless explicit" guard lets the full list through with nothing typed.
+	let typeaheadMode = normalizeTypeahead(typeahead);
+	let prevKind = null;
+	let pending = false;
+	const kindAt = (state) => {
+		const sel = state.selection.main;
+		if (!sel.empty) return null; // a range selection isn't a type-ahead entry point
+		const line = state.doc.lineAt(sel.head);
+		const before = state.sliceDoc(line.from, sel.head);
+		return typeaheadContext((n) => state.doc.line(n).text, line.number, before);
+	};
+	const typeaheadListener = EditorView.updateListener.of((u) => {
+		if (!u.docChanged && !u.selectionSet) return;
+		if (typeaheadMode === 'off') {
+			prevKind = null;
+			return;
+		}
+		const allowed = TYPEAHEAD_KINDS[typeaheadMode] || TYPEAHEAD_KINDS.class;
+		const kind = kindAt(u.state);
+		// Fire only on a fresh transition into an allowed kind, and never on top of
+		// an already-open popup for the same context.
+		if (kind && kind !== prevKind && allowed.has(kind) && !pending && completionStatus(u.state) !== 'active') {
+			pending = true;
+			// Defer past this update — startCompletion dispatches, and a nested
+			// dispatch inside an update listener is illegal. Re-verify the context
+			// still holds on the next microtask (the caret may have moved on).
+			Promise.resolve().then(() => {
+				pending = false;
+				const view = u.view;
+				if (typeaheadMode === 'off') return;
+				const live = kindAt(view.state);
+				if (live && (TYPEAHEAD_KINDS[typeaheadMode] || TYPEAHEAD_KINDS.class).has(live)) {
+					startCompletion(view);
+				}
+			});
+		}
+		prevKind = kind;
 	});
 	const view = new EditorView({
 		parent,
@@ -364,6 +435,7 @@ export function createEditor({ parent, doc = '', onChange, onCursor, autoHeight 
 				...(autoHeight ? [autoHeightTheme] : []),
 				keymap.of([indentWithTab, ...defaultKeymap, ...historyKeymap]),
 				listener,
+				typeaheadListener,
 			],
 		}),
 	});
@@ -388,6 +460,12 @@ export function createEditor({ parent, doc = '', onChange, onCursor, autoHeight 
 		// Toggle deck-grammar autocomplete live (workspace preference). Reconfigures
 		// the compartment to the built extension or nothing.
 		setAutocomplete: (on) => view.dispatch({ effects: autocompleteComp.reconfigure(on ? autocompleteExt : []) }),
+		// Switch the proactive type-ahead mode live ('class' | 'all' | 'off').
+		// Imperative (no state extension) — the listener reads the closure variable.
+		setTypeahead: (mode) => {
+			typeaheadMode = normalizeTypeahead(mode);
+			prevKind = null; // re-arm: the next entry into a context fires fresh
+		},
 		// Move the cursor to (1-based) line `n` and scroll it into view. Clamped
 		// to the document. Used by the Drawing Board's preview->editor sync.
 		goToLine: (n) => {

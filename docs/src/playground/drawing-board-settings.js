@@ -137,8 +137,22 @@ function workspaceSection() {
   ws.append(prefRow('historyCap', 'Auto checkpoints kept per deck', null, ['10', '30', '100', 'All'],
     () => { try { window.__dbStore?.applyHistoryCap?.(); } catch {} }));
   ws.append(prefRow('deleteStyle', 'Deleting a deck', null, ['Asks to confirm', 'Undo toast']));
+  const typeaheadRow = prefRow('typeahead', 'Open suggestions automatically',
+    'Components only opens the popup as you enter a slide’s class directive; Everywhere covers directives, fences, and front matter too.',
+    ['Components only', 'Everywhere', 'Off'],
+    (v) => { try { window.__dbEditor?.setTypeahead?.(v); } catch {} });
+  // Type-ahead has no effect while autocomplete is off — reflect that in the UI
+  // by disabling the control so the dependency is legible (the pref still
+  // persists; it re-applies the moment autocomplete is switched back on).
+  const syncTypeaheadEnabled = (autoOn) => {
+    const sel = typeaheadRow.querySelector('.db-pref-select');
+    if (sel) sel.disabled = !autoOn;
+    typeaheadRow.classList.toggle('is-disabled', !autoOn);
+  };
   ws.append(prefRow('autocomplete', 'Editor autocomplete', null, ['On', 'Off'],
-    (v) => { try { window.__dbEditor?.setAutocomplete?.(v === 'on'); } catch {} }));
+    (v) => { try { window.__dbEditor?.setAutocomplete?.(v === 'on'); } catch {} syncTypeaheadEnabled(v === 'on'); }));
+  ws.append(typeaheadRow);
+  syncTypeaheadEnabled(getPref('autocomplete') === 'on');
   ws.append(guidedToursToggle());
   return ws;
 }

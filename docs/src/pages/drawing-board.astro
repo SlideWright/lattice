@@ -464,6 +464,7 @@ const dbData = JSON.stringify({
 				themes: data.themes,
 				finishes: (data.lintVocab && data.lintVocab.finishNames) || [],
 				autocomplete: getPref('autocomplete') === 'on',
+				typeahead: getPref('typeahead'),
 				onChange: (v) => { if (notify) notify(v); },
 				onCursor: (line) => { for (const f of cursorFns) f(line); },
 			});
@@ -505,6 +506,7 @@ const dbData = JSON.stringify({
 				onChange: (fn) => { notify = fn; },
 				onCursor: (fn) => { cursorFns.push(fn); },
 				setAutocomplete: (on) => ed.setAutocomplete(on),
+				setTypeahead: (mode) => ed.setTypeahead(mode),
 			};
 			window.dispatchEvent(new Event('db-editor-ready'));
 		</script>

@@ -410,3 +410,75 @@ describe('mapBasemapFor — world is the default basemap (regression)', () => {
 		assert.equal(mapBasemapFor(null), null);
 	});
 });
+
+describe('typeaheadContext — proactive popup entry classification', () => {
+	test('a bare `_class:` value position is the class context', async () => {
+		const { typeaheadContext } = await load();
+		const lines = ['<!-- _class: '];
+		assert.equal(typeaheadContext(getter(lines), 1, '<!-- _class: '), 'class');
+	});
+
+	test('a partial component name is still the class context', async () => {
+		const { typeaheadContext } = await load();
+		const lines = ['<!-- _class: big'];
+		assert.equal(typeaheadContext(getter(lines), 1, '<!-- _class: big'), 'class');
+	});
+
+	test('a second token (after the component name + space) is the modifier context', async () => {
+		const { typeaheadContext } = await load();
+		const before = '<!-- _class: bigfact ';
+		assert.equal(typeaheadContext(getter([before]), 1, before), 'modifier');
+	});
+
+	test('past a closed directive (-->), there is no context', async () => {
+		const { typeaheadContext } = await load();
+		const before = '<!-- _class: bigfact --> body text';
+		assert.equal(typeaheadContext(getter([before]), 1, before), null);
+	});
+
+	test('a directive NAME (before the colon) is the directive context', async () => {
+		const { typeaheadContext } = await load();
+		const before = '<!-- _pag';
+		assert.equal(typeaheadContext(getter([before]), 1, before), 'directive');
+	});
+
+	test('a `_paginate:` value is the paginate context', async () => {
+		const { typeaheadContext } = await load();
+		const before = '<!-- _paginate: ';
+		assert.equal(typeaheadContext(getter([before]), 1, before), 'paginate');
+	});
+
+	test('a fence info string is the fence context', async () => {
+		const { typeaheadContext } = await load();
+		const before = '```';
+		assert.equal(typeaheadContext(getter([before]), 1, before), 'fence');
+	});
+
+	test('front-matter value lines classify by key (gated by inFrontMatter)', async () => {
+		const { typeaheadContext } = await load();
+		const lines = ['---', 'theme: ', 'finish: ', 'islands: ', 'split: '];
+		assert.equal(typeaheadContext(getter(lines), 2, 'theme: '), 'theme');
+		assert.equal(typeaheadContext(getter(lines), 3, 'finish: '), 'finish');
+		assert.equal(typeaheadContext(getter(lines), 4, 'islands: '), 'islands');
+		assert.equal(typeaheadContext(getter(lines), 5, 'split: '), 'split');
+	});
+
+	test('a `theme:` line OUTSIDE front matter is not a context (no false open in body)', async () => {
+		const { typeaheadContext } = await load();
+		const lines = ['# Heading', 'theme: foo']; // no opening --- fence → not front matter
+		assert.equal(typeaheadContext(getter(lines), 2, 'theme: '), null);
+	});
+
+	test('plain prose is no context', async () => {
+		const { typeaheadContext } = await load();
+		const before = 'Just some body prose here';
+		assert.equal(typeaheadContext(getter([before]), 1, before), null);
+	});
+
+	test('a Mermaid fence body is NOT proactive (needs a typed identifier)', async () => {
+		const { typeaheadContext } = await load();
+		const lines = ['```mermaid', ''];
+		// inside the fence, nothing typed → no proactive context (mermaid is excluded)
+		assert.equal(typeaheadContext(getter(lines), 2, ''), null);
+	});
+});
