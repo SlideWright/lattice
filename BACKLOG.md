@@ -7,13 +7,14 @@
 
 The live, claimable work queue — a read-only mirror of [open issues](https://github.com/SlideWright/lattice/issues),
 grouped by board column. Design lives in `engineering/decisions/`; this tracks
-only *status*. **33 open** items.
+only *status*. **34 open** items.
 
-## Backlog (28)
+## Backlog (32)
 
 - [#283](https://github.com/SlideWright/lattice/issues/283) refactor(css): audit and reduce `!important` (~490 repo-wide) — high · engine
 - [#284](https://github.com/SlideWright/lattice/issues/284) refactor(css): activate `@layer` for per-component + modifier CSS — high · engine
 - [#287](https://github.com/SlideWright/lattice/issues/287) refactor(engine): LPM Phase 1 — manifest `render` block + `transformSection` adapter; migrate the chart kernels — high · engine
+- [#384](https://github.com/SlideWright/lattice/issues/384) [perf-nightly] docs perf regression detected — high · website
 - [#279](https://github.com/SlideWright/lattice/issues/279) docs: reconcile Mermaid diagram-type count (README "25" vs gallery "26") — medium · diagram
 - [#285](https://github.com/SlideWright/lattice/issues/285) refactor(css): retire the SPECIFICITY-BUMP HACKs (citation-card, redline, regulatory-update) — medium · engine
 - [#286](https://github.com/SlideWright/lattice/issues/286) refactor(css): namespace variant classes that collide with component names — medium · engine
@@ -30,6 +31,9 @@ only *status*. **33 open** items.
 - [#306](https://github.com/SlideWright/lattice/issues/306) docs: refresh (or generate) the decisions/README index (12 of 76 ADRs listed) — medium · docs
 - [#307](https://github.com/SlideWright/lattice/issues/307) docs: prune/flip the treatments-rename ADR (shipped; still "implementation-ready") — medium · docs
 - [#308](https://github.com/SlideWright/lattice/issues/308) docs: resolve the P4 regression-gate ADR status (pivot shipped; still strikethrough "pre-code") — medium · engine
+- [#356](https://github.com/SlideWright/lattice/issues/356) proposal: make Frame/Cell/Tile self-contained folders (like components) — medium · engine
+- [#380](https://github.com/SlideWright/lattice/issues/380) Narrative step model — assemble the slide as you go (implementation) — medium · engine
+- [#381](https://github.com/SlideWright/lattice/issues/381) Form manifest↔CSS gate — remaining checks (§4.1/§4.3/§4.4) — medium · engine
 - [#280](https://github.com/SlideWright/lattice/issues/280) docs: fix phantom `--hljs-name`/`--hljs-meta` token rows in highlight-js.docs.md — low · docs
 - [#281](https://github.com/SlideWright/lattice/issues/281) docs: mark design-system.md "9 buckets" as historical (ships 12) — low · docs
 - [#282](https://github.com/SlideWright/lattice/issues/282) docs: mark design-system.md "58 components / 89 pages" as dated (ships 53) — low · docs
@@ -52,10 +56,7 @@ _none_
 
 _none_
 
-## Inbox (no status) (5)
+## Inbox (no status) (2)
 
 - [#180](https://github.com/SlideWright/lattice/issues/180) epic(chart): resolution-independent charts — cqi-first, kill fixed-px, for any-format / 10K export
 - [#198](https://github.com/SlideWright/lattice/issues/198) bug(examples): gallery-jargon.pdf is not reproducible — rebuild draws overflow rings on 6 unrelated slides + reflows text
-- [#356](https://github.com/SlideWright/lattice/issues/356) proposal: make Frame/Cell/Tile self-contained folders (like components)
-- [#380](https://github.com/SlideWright/lattice/issues/380) Narrative step model — assemble the slide as you go (implementation)
-- [#381](https://github.com/SlideWright/lattice/issues/381) Form manifest↔CSS gate — remaining checks (§4.1/§4.3/§4.4)
