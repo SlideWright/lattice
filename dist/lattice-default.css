@@ -14784,6 +14784,59 @@ section .timeline-node.section-10 text, section .timeline-node.section-10 tspan,
  */
 section .eventWrapper { filter: none !important; }
 
+/* === lib/_accessibility.css === */
+/* lib/_accessibility.css — the colour-vision-deficiency (CVD) redundant-
+ * encoding layer. Palette-blind, scoped ENTIRELY to `[data-a11y]` (stamped on
+ * each <section> when an accessibility palette is active), so none of it
+ * touches a normal deck. Bundled LAST so it wins over every earlier tier.
+ *
+ * Why this exists: colour alone distinguishes only ~1-2 categories under
+ * dichromacy (engineering/decisions/2026-06-16-cvd-redundant-encoding.md), so
+ * meaning must also ride non-colour channels. This file carries:
+ *   1. Status GLYPHS — ✓ / ! / ✗ on the shared status-pill vocabulary, so
+ *      pass/warn/fail never depend on colour alone (the #1 CVD failure).
+ *   (2. Categorical TEXTURE patterns for diagram/chart fills land next, via the
+ *      kernel-injected SVG <defs> transform — M1.)
+ */
+
+/* ── Status glyphs ─────────────────────────────────────────────────────────
+ * The .chart-status pill vocabulary (lib/components/chart/_chart-family) maps
+ * data-s values onto the pass / warn / fail families. Prefix each with a shape
+ * glyph so the status reads without colour. The glyph inherits the pill's ink,
+ * so it works on every palette and in both canvases. */
+
+section[data-a11y] .chart-status[data-s="on-track"]::before,
+section[data-a11y] .chart-status[data-s="done"]::before,
+section[data-a11y] .chart-status[data-s="live"]::before {
+  content: "\2713\00a0"; /* ✓ + nbsp */
+}
+
+section[data-a11y] .chart-status[data-s="at-risk"]::before,
+section[data-a11y] .chart-status[data-s="warn"]::before {
+  content: "\0021\00a0"; /* ! */
+}
+
+section[data-a11y] .chart-status[data-s="blocked"]::before,
+section[data-a11y] .chart-status[data-s="fail"]::before {
+  content: "\2717\00a0"; /* ✗ */
+}
+
+section[data-a11y] .chart-status[data-s="pilot"]::before,
+section[data-a11y] .chart-status[data-s="decision"]::before {
+  content: "\25C6\00a0"; /* ◆ */
+}
+
+section[data-a11y] .chart-status[data-s="deferred"]::before {
+  content: "\2013\00a0"; /* – */
+}
+
+/* The glyph is decorative reinforcement of the adjacent label text, not new
+ * content — hide it from assistive tech to avoid double-announcement. */
+section[data-a11y] .chart-status::before {
+  font-weight: 700;
+  speak: never;
+}
+
 /* === default palette: themes/cuoio.css (engine import resolved) === */
 /* Zero-specificity light default — see the long comment in the next
  * :root block. Author overrides via `style: ":root{color-scheme:dark}"`
