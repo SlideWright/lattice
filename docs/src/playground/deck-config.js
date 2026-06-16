@@ -38,12 +38,9 @@ const FIELD_DEFAULTS = {
   // controller only syncs a registered palette), not here — writeFrontMatter
   // never scrubs a hand-typed value out of the author's source.
   theme: '',
-  // `accessibility` is the deck-level colour-vision-deficiency need
-  // (lib/core/resolve-accessibility.js): '' = off (omitted); 'deuteranopia' /
-  // 'protanopia' / 'tritanopia' / 'achromatopsia' override the theme with the
-  // matching curated palette. NOT a theme — a separate viewer axis; the Settings
-  // → Accessibility control writes it (and a workspace tier overrides it live).
-  accessibility: '',
+  // (Accessibility / colour-vision-deficiency is no longer a separate front-matter
+  // key — the a11y-* palettes are plain themes now, written through `theme:` like
+  // any other. There is no `accessibility:` axis.)
   // `finish` is the deck-wide finish register (lib/core/resolve-finish.js):
   // '' / 'boardroom' is the baseline (omitted), 'sketch' / 'sketch-clean' opt in.
   finish: '',
@@ -78,7 +75,7 @@ const FINISH_LABELS = {
 
 // Emit order for known keys; any unmanaged keys we preserved trail in their
 // original order. `marp` leads (it's what tells marp-cli to render the deck).
-const EMIT_ORDER = ['marp', 'theme', 'accessibility', 'finish', 'split', 'size', 'paginate', 'header', 'footer', 'class', 'islands', 'math', 'lang'];
+const EMIT_ORDER = ['marp', 'theme', 'finish', 'split', 'size', 'paginate', 'header', 'footer', 'class', 'islands', 'math', 'lang'];
 
 // Field PROFILES per surface — the `fields` allow-list createConfigPanel takes.
 //   author  — every field (the Drawing Board: full set, theme three-way synced).

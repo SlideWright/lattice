@@ -28,7 +28,6 @@ import { KATEX_URL, MERMAID_URL, splitSections } from './deck-preview.js';
 // on a divider) + a title — the basis for the per-section progress spine.
 import { metasFromSections } from './drawing-board-rehearsal.js';
 import { slideBox } from './frame-css.js';
-import { resolveRenderInputs } from './resolve-a11y-client.js';
 
 const { notesFromHtml } = notesCore;
 
@@ -56,7 +55,6 @@ export function createPresent({ host, getSource, runtimeUrl, themeBase, a11yDefs
   let geom = { width: 1280, height: 720 };
   let css = '';
   let bg = '#15110d';
-  let a11yActive = false; // an accessibility palette is in effect → inject texture defs
   let hideTimer = null;
   let presenterWin = null; // the dual-screen presenter window handle (held, postMessage-synced)
   let presenterReady = false;
@@ -109,13 +107,9 @@ export function createPresent({ host, getSource, runtimeUrl, themeBase, a11yDefs
   async function prepare() {
     let pg = PG();
     if (!pg) pg = await waitForPG();
-    // Honour an active accessibility need (workspace data-a11y, else the deck's
-    // `accessibility:` key) — it overrides the theme, exactly as in the editor
-    // preview, so presenting an accessible deck stays accessible.
-    const inp = resolveRenderInputs(root, getSource());
-    const palette = inp.palette;
-    const mode = inp.mode;
-    a11yActive = !!inp.a11y;
+    // The deck's theme is the only palette axis — an a11y theme is just a theme.
+    const palette = root.getAttribute('data-palette') || 'indaco';
+    const mode = root.getAttribute('data-mode') === 'dark' ? 'dark' : 'light';
     await ensureTheme(palette);
     if (mode === 'dark') await ensureTheme(palette + '-dark');
     const theme = mode === 'dark' && pg.hasTheme(palette + '-dark') ? palette + '-dark' : palette;
@@ -162,7 +156,7 @@ export function createPresent({ host, getSource, runtimeUrl, themeBase, a11yDefs
       '.marpit{height:100%;display:flex;align-items:center;justify-content:center;visibility:hidden;}' +
       slideBox(sw, sh) +
       '.marpit>section{flex:0 0 auto;}' +
-      css + '</style></head><body>' + (a11yActive ? a11yDefs : '') + allHtml +
+      css + '</style></head><body>' + a11yDefs + allHtml +
       '<scr' + 'ipt src="' + MERMAID_URL + '"></scr' + 'ipt>' +
       '<scr' + 'ipt src="' + runtimeUrl + '"></scr' + 'ipt>' +
       '<scr' + 'ipt>window.__SLIDE_W=' + sw + ';window.__SLIDE_H=' + sh + ';' +

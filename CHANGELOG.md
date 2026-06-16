@@ -177,39 +177,27 @@ in patch versions.
 
 ### Added
 
-- **Colour-blindness accessibility — per-viewer CVD accommodation.** A deck can
-  set `accessibility: deuteranopia` (or `protanopia` / `tritanopia` /
-  `achromatopsia`) in front matter — or a viewer can force it via the
-  `LATTICE_ACCESSIBILITY` env (workspace tier) — and it overrides the theme,
-  always. Because colour alone distinguishes only ~1–2 categories under
-  dichromacy, the accommodation pairs **CVD-tuned status colours** (pass/warn/fail
-  moved off each deficiency's confusion axis, verified distinct + AA) with
+- **Colour-vision-deficiency accessibility — four first-class CVD themes.** Four
+  selectable themes — `a11y-deuteranopia`, `a11y-protanopia`, `a11y-tritanopia`,
+  `a11y-achromatopsia` — chosen exactly like any theme (`theme: a11y-deuteranopia`
+  in front matter, or the Drawing Board theme picker's "Accessibility" group). No
+  separate accessibility axis, directive, or override resolver: an accessibility
+  need is met by picking the theme. Because colour alone distinguishes only ~1–2
+  categories under dichromacy, each pairs **CVD-tuned status colours** (pass/warn/
+  fail moved off the deficiency's confusion axis, verified distinct + AA) with
   **redundant non-colour encoding**: ✓/!/✗ **glyphs** on status pills, a distinct
   **texture pattern** per categorical slot on diagram fills (Mermaid `.section-N`
-  diagrams **and** the Mermaid pie) and native chart fills (pie / funnel), and a
-  per-series **line-style** on radar. All four types ship — the three dichromacies
-  **and achromatopsia** (which needs the encoding to function, so colour-free
-  decks read by texture + glyph + line-style alone, the same channels that survive
-  black-and-white **printing**). The encoding lives inside each curated `a11y-*`
-  theme (no global flag — it applies only when an `a11y-*` palette is active), so
-  normal decks are untouched. New: the four `a11y-*` palettes (+ dark),
-  `lib/core/resolve-accessibility.js`, `lib/theme/cvd.js` (Machado-2009
-  simulation), and `tools/cvd-audit.js`.
-  See `engineering/decisions/2026-06-16-colour-blindness-accessibility.md` +
-  `…-cvd-redundant-encoding.md`.
-- **Drawing Board: accessibility is a workspace control, not a theme.** The
-  colour-vision palettes are no longer listed in the deck-theme picker (they
-  aren't themes — they're a separate viewer axis that overrides the theme).
-  Instead, **Settings → Workspace → "Colour-vision accessibility"** sets your
-  need (Off / Deuteranopia / Protanopia / Tritanopia / Achromatopsia), persisted
-  across the docs workspaces (`lattice-docs-a11y` → `data-a11y`) and applied live;
-  **"Apply to deck"** bakes the choice into the deck's `accessibility:` front
-  matter so it travels with the file. Precedence is workspace > front matter >
-  off. The live preview (and Present / Practice) now inject the categorical
-  texture `<defs>` when an accessibility palette is active, so diagram/chart
-  fills carry their textures in the browser, not only in the PDF export. New:
-  `docs/src/playground/{a11y-prefs,resolve-a11y-client}.js` (the shared client
-  resolver mirroring `resolve-accessibility.js`).
+  and the Mermaid pie) and native chart fills (pie / funnel), and a per-series
+  **line-style** on radar. The four share a `themes/a11y-base.css` foundation (the
+  texture wiring + greyscale categorical ramp + forced light scheme); each theme
+  adds only its status trio. They are **mode-invariant** — a fixed palette that
+  ignores the light/dark toggle, so an accessibility render reads identically for
+  every viewer (and colour-free decks stay readable by texture + glyph + line-style
+  alone, the channels that also survive black-and-white **printing**). The engine
+  emits the texture `<defs>` on every render. New: `themes/a11y-*` (+ `a11y-base`),
+  `lib/theme/cvd.js` (Machado-2009 simulation), `lib/core/accessibility-textures.js`,
+  `tools/cvd-audit.js`. See `engineering/decisions/2026-06-16-colour-blindness-accessibility.md`
+  + `…-cvd-redundant-encoding.md`.
 - **Editor autocomplete for focus, with a manifest-declared capability.** The
   Drawing Board now completes the `_focus` / `_focusStyle` / `_focusSteps`
   directives, the style values (`spotlight`/`blur`/`ring`/`list-fill`/`pop`), and

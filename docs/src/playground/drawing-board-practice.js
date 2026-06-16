@@ -26,7 +26,6 @@ import { createRehearsalPlanner, metasFromSections, metasFromSource, overBeat } 
 import { budgetStatus, readBudgetCap, readBudgetMode, readSpend, recordSpend } from './drawing-board-settings.js';
 import { slideBox } from './frame-css.js';
 import { toursAllowedHere } from './guided-tour.js';
-import { resolveRenderInputs } from './resolve-a11y-client.js';
 import { toursEnabled } from './tour-prefs.js';
 import { createVoiceModel } from './voice-model.js';
 
@@ -68,7 +67,6 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
   const voice = sharedVoice || createVoiceModel({ getOpenRouterKey: () => (model?.openRouterKey ? model.openRouterKey() : null) });
   const fetched = {};
 
-  let a11yActive = false; // an accessibility palette is in effect → inject texture defs
   let plan = null; // the live rehearsal plan (deterministic, possibly AI-refined)
   let idx = 0;
   let startedAt = 0;
@@ -117,12 +115,9 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
     let pg = PG();
     if (!pg) pg = await waitForPG();
     const source = getSource();
-    // Honour an active accessibility need (workspace, else the deck's
-    // `accessibility:` key) — it overrides the theme, as in the editor preview.
-    const inp = resolveRenderInputs(root, source);
-    const palette = inp.palette;
-    const mode = inp.mode;
-    a11yActive = !!inp.a11y;
+    // The deck's theme is the only palette axis — an a11y theme is just a theme.
+    const palette = root.getAttribute('data-palette') || 'indaco';
+    const mode = root.getAttribute('data-mode') === 'dark' ? 'dark' : 'light';
     await ensureTheme(palette);
     if (mode === 'dark') await ensureTheme(palette + '-dark');
     const theme = mode === 'dark' && pg.hasTheme(palette + '-dark') ? palette + '-dark' : palette;
@@ -169,7 +164,7 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
       '.marpit{height:100%;display:flex;align-items:center;justify-content:center;visibility:hidden;}' +
       slideBox(sw, sh) +
       '.marpit>section{flex:0 0 auto;box-shadow:0 18px 60px rgba(0,0,0,.45);border-radius:10px;}' +
-      css + '</style></head><body>' + (a11yActive ? a11yDefs : '') + html +
+      css + '</style></head><body>' + a11yDefs + html +
       '<scr' + 'ipt src="' + MERMAID_URL + '"></scr' + 'ipt>' +
       '<scr' + 'ipt src="' + runtimeUrl + '"></scr' + 'ipt>' +
       '<scr' + 'ipt>window.__SLIDE_W=' + sw + ';window.__SLIDE_H=' + sh + ';' +

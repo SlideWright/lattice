@@ -10,6 +10,21 @@ companion:
 
 # Colour-blindness accessibility — curated CVD palettes that win the name-resolution chain
 
+> **Update (2026-06-16) — superseded by "a11y-* are first-class themes."**
+> This ADR originally shipped CVD accommodation as a *separate axis* that
+> **overrode** the theme: an `accessibility:` front-matter key / `LATTICE_ACCESSIBILITY`
+> env / Drawing Board workspace control, resolved by `lib/core/resolve-accessibility.js`,
+> which won the palette name-resolution chain. **That layer is removed.** The four
+> `a11y-<type>` palettes are now plain, selectable themes (`theme: a11y-deuteranopia`,
+> same chain as any theme; grouped under "Accessibility" in the picker), and
+> **mode-invariant** — fixed palettes that ignore the light/dark toggle — sharing a
+> `themes/a11y-base.css` foundation; the four `a11y-*-dark.css` files and the resolver
+> are deleted. The redundant-encoding mechanism (textures/glyphs/line-styles) is
+> unchanged; only its *activation* changed (pick the theme, no override), and the
+> texture `<defs>` now emit on every render (no `/^a11y-/` gate). An accessibility need
+> is met by choosing the theme — simpler, no precedence magic, one uniform theme model.
+> The sections below describe the original override design, kept for history.
+
 **Context.** Lattice encodes *meaning* in hue. Three token families do it:
 the categorical cycle (`--cat-1-fill`..`--cat-12-fill` / `-mark`), the
 chart-family spectrum (`--chart-cat1`..`--chart-cat8`), and the semantic

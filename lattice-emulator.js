@@ -259,24 +259,13 @@ const md = readFileOrDie(mdFile, 'source markdown');
 // matter > default). Logic lives in lib/resolve-palette.js so it can
 // be unit-tested in isolation; see test/unit/palette-resolution.test.js.
 const { resolvePalette } = require('./lib/core/resolve-palette');
-// Accessibility (CVD) overrides the theme: when active it wins the palette
-// name-resolution, selecting a curated a11y-* theme. Workspace tier = env
-// LATTICE_ACCESSIBILITY; deck tier = front-matter `accessibility:`. Each a11y
-// theme inlines its own redundant-encoding CSS (glyphs + texture/line-style
-// fills); the only engine seam is injecting the texture <pattern> <defs> below.
-const { resolveAccessibility } = require('./lib/core/resolve-accessibility');
-const a11y = resolveAccessibility({ md });
-if (a11y.unsupported) {
-  console.error(`warning: accessibility: ${a11y.unsupported} is not yet supported — rendering without it`);
-}
-const paletteName = a11y.active ? a11y.palette : resolvePalette({ md, cliArg: paletteArg }).name;
-// The one thing the a11y CSS can't hold is the categorical texture <pattern>
-// <defs> (SVG markup) its fills reference — inject them once whenever an a11y-*
-// palette is active, by whichever path selected it (accessibility: key, env, or
-// theme: a11y-* directly).
-const a11yTextureDefs = /^a11y-/.test(paletteName)
-  ? require('./lib/core/accessibility-textures').texturePatternDefs()
-  : '';
+const paletteName = resolvePalette({ md, cliArg: paletteArg }).name;
+// The a11y-* palettes are first-class themes (pick `theme: a11y-deuteranopia`
+// like any theme). Their categorical fills reference texture <pattern> <defs>
+// — SVG markup CSS can't hold — so emit them on every render. They're inert
+// unless an a11y theme's CSS references them, so there's no palette-name gate;
+// this matches the Drawing Board's always-on injection (drawing-board.astro).
+const a11yTextureDefs = require('./lib/core/accessibility-textures').texturePatternDefs();
 const palettePath = path.join(PKG_ROOT, 'themes', `${paletteName}.css`);
 if (!fs.existsSync(palettePath)) {
   console.error(`error: palette not found: ${paletteName}`);

@@ -32,18 +32,16 @@
 // so either ordering is handled.
 
 import { createThemeFetcher } from '../lib/theme-fetch.ts';
-import { onA11yChange, setA11ySetting } from './a11y-prefs.js';
-import { readA11yFrontMatter, resolveRenderInputs } from './resolve-a11y-client.js';
 
 export function createRenderController(data) {
 	var THEME_BASE = data.themeBase;
 	var RUNTIME_URL = data.runtimeUrl;
 	var PREVIEW_FONT_CSS = data.previewFontCss || '';
-	// The categorical texture <pattern> <defs> the a11y palettes reference (built
+	// The categorical texture <pattern> <defs> the a11y themes reference (built
 	// from the shared kernel at page build, lib/core/accessibility-textures.js).
-	// Injected into the preview iframe only when an a11y palette is in effect —
-	// the engine seam that CSS can't carry (the runtime/preview path's equivalent
-	// of the emulator's defs injection).
+	// Injected into the preview iframe ALWAYS — it's inert unless an a11y theme's
+	// fill references a pattern — the engine seam that CSS can't carry (the
+	// runtime/preview path's equivalent of the emulator's always-on defs injection).
 	var A11Y_DEFS = data.a11yTextureDefs || '';
 	// Shared raw theme fetch+cache (fetch <base><name>.css once).
 	var themeFetcher = createThemeFetcher(THEME_BASE);
@@ -167,12 +165,10 @@ export function createRenderController(data) {
 		var PG = window.LatticePlayground;
 		var DP = window.LatticeDeckPreview;
 		if (!PG || !DP) { setStatus('Loading engine…'); return setTimeout(render, 60); }
-		// Resolve the EFFECTIVE palette: an active accessibility need (workspace
-		// data-a11y, else the deck's `accessibility:` key) overrides the theme,
-		// per the shared client resolver (workspace > front matter > off).
-		var inp = resolveRenderInputs(root, getSource());
-		var palette = inp.palette;
-		var mode = inp.mode;
+		// The deck's `theme:` (mirrored onto data-palette by syncThemeControls) is
+		// the only palette axis — an a11y theme is just a theme like any other.
+		var palette = root.getAttribute('data-palette') || 'indaco';
+		var mode = root.getAttribute('data-mode') === 'dark' ? 'dark' : 'light';
 		setStatus('Rendering…');
 		ensureThemes(palette, mode).then(() => {
 			var theme = (mode === 'dark' && PG.hasTheme(palette + '-dark') ? palette + '-dark' : palette);
@@ -200,10 +196,10 @@ export function createRenderController(data) {
 					state: previewState,
 					runtimeUrl: RUNTIME_URL, padding: 22, gap: 22,
 					fontCss: PREVIEW_FONT_CSS,
-					// Inject the texture <defs> only under an a11y palette, so the
-					// diagram/chart `fill: url(#latt-a11y-tex-N)` references resolve in
-					// the iframe instead of dangling (which would paint nothing).
-					a11yDefs: inp.a11y ? A11Y_DEFS : '',
+					// Always inject the texture <defs> so an a11y theme's diagram/chart
+					// `fill: url(#latt-a11y-tex-N)` references resolve in the iframe
+					// instead of dangling (which would paint nothing). Inert otherwise.
+					a11yDefs: A11Y_DEFS,
 					// Single-file library themes resolve light/dark via light-dark();
 					// force the canvas scheme so dark renders dark (built-in paired
 					// -dark themes don't need it).
@@ -369,32 +365,6 @@ export function createRenderController(data) {
 			render();
 		}
 	}
-
-	// ── Accessibility (CVD) — the separate viewer axis, NOT a theme ───────────
-	// Two tiers, mirroring the resolver: the WORKSPACE need (data-a11y +
-	// lattice-docs-a11y, persists across decks/surfaces) and the DECK's
-	// `accessibility:` key (travels with the deck). setA11yWorkspace stamps the
-	// attribute + persists; onA11yChange below re-renders so the effective
-	// palette flips live. bakeA11yIntoDeck writes the front-matter tier.
-	function setA11yWorkspace(type) {
-		setA11ySetting(type); // stamps data-a11y, persists, notifies → re-render
-	}
-	function bakeA11yIntoDeck(type) {
-		if (window.__dbConfig?.writeFrontMatter && window.__dbEditor) {
-			setSource(window.__dbConfig.writeFrontMatter(getSource(), 'accessibility', type || ''));
-		}
-	}
-	// A workspace-need change (Settings control) flips the effective palette —
-	// re-render so the preview follows immediately, like a palette/mode change.
-	onA11yChange(() => { render(); });
-	window.__dbA11y = {
-		types: (data.a11yTypes || []).slice(), // curated CVD types (from the a11y-* themes)
-		getWorkspace: () => root.getAttribute('data-a11y') || '',
-		setWorkspace: setA11yWorkspace,
-		bakeIntoDeck: bakeA11yIntoDeck,
-		getDeck: () => readA11yFrontMatter(getSource()) || '',
-	};
-	window.dispatchEvent(new Event('db-a11y-ready'));
 
 	// ── Palette / mode ────────────────────────────────────────────────────
 	// The legacy native controls (#palette, #mode-toggle) are gone — the

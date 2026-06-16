@@ -315,9 +315,10 @@ it is load-bearing.
   Drawing Board, Present, Practice) already selects a palette *by name*, so a
   `resolve-accessibility.js` sitting above `resolve-palette.js` reaches them
   all and reuses every existing gate (contrast suite, dark variants, Mermaid
-  collapse). Precedence: **workspace > front-matter `accessibility:` > off**,
-  and accessibility **> `theme:` always** (the live viewer's need beats the
-  author's guess). Surfaces the load-bearing prerequisite — **no CVD
+  collapse). _**Superseded (2026-06-16):** the override resolver was removed —
+  the `a11y-*` palettes are now plain, mode-invariant, first-class themes you
+  pick like any theme (`theme: a11y-deuteranopia`). See the ADR's top-of-file
+  update note._ Surfaces the load-bearing prerequisite — **no CVD
   simulation exists** and the contrast suite is WCAG-luminance-only, so the
   build *starts* with a Brettel/Machado simulation in `lib/theme/` + a CVD
   audit gate that fails adjacent slots that collapse, *then* curates palettes

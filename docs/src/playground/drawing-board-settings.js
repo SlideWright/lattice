@@ -158,7 +158,6 @@ function workspaceSection() {
     (v) => { try { window.__dbEditor?.setAutocomplete?.(v === 'on'); } catch {} syncTypeaheadEnabled(v === 'on'); }));
   ws.append(typeaheadRow);
   syncTypeaheadEnabled(getPref('autocomplete') === 'on');
-  ws.append(accessibilityControl());
   ws.append(guidedToursToggle());
   if (PERF_OVERLAY_AVAILABLE) ws.append(perfOverlayToggle());
   return ws;
@@ -205,43 +204,6 @@ function perfOverlayToggle() {
   cb.addEventListener('change', () => setPerfOverlayEnabled(cb.checked));
   sw.append(cb, el('span', 'db-switch-knob'));
   row.append(text, sw);
-  return row;
-}
-
-// Colour-vision accessibility — the two-tier CVD control (the picker no longer
-// carries a11y themes; accessibility is a separate viewer axis). The select sets
-// the WORKSPACE need (persists across surfaces, applies live via __dbA11y →
-// data-a11y); "Apply to deck" bakes the current choice into the deck's
-// `accessibility:` front matter so it travels with the file. The type vocabulary
-// comes from the curated a11y-* themes (window.__dbA11y.types). Reads/writes via
-// the controller bus, so it no-ops gracefully before the controller mounts.
-const a11yTitle = (s) => s.charAt(0).toUpperCase() + s.slice(1);
-function accessibilityControl() {
-  const bus = (typeof window !== 'undefined' && window.__dbA11y) || null;
-  const types = bus && bus.types && bus.types.length ? bus.types : ['deuteranopia', 'protanopia', 'tritanopia', 'achromatopsia'];
-  const row = el('div', 'db-pref-row');
-  const text = el('div', 'db-pref-text');
-  text.append(el('span', 'db-pref-label', 'Colour-vision accessibility'));
-  text.append(el('span', 'db-pref-hint',
-    'Overrides the deck theme with a colour-blind-safe palette plus textures and glyphs, across your workspace. “Apply to deck” writes it into the deck so it travels with the file.'));
-  const ctl = el('div', 'db-pref-ctl');
-  const sel = el('select', 'db-pref-select');
-  sel.setAttribute('aria-label', 'Colour-vision accessibility');
-  const current = bus && bus.getWorkspace ? bus.getWorkspace() : '';
-  for (const [v, label] of [['', 'Off'], ...types.map((t) => [t, a11yTitle(t)])]) {
-    const o = document.createElement('option');
-    o.value = v;
-    o.textContent = label;
-    if (v === current) o.selected = true;
-    sel.append(o);
-  }
-  sel.addEventListener('change', () => { try { window.__dbA11y?.setWorkspace?.(sel.value); } catch {} });
-  const bake = el('button', 'db-btn-ghost', 'Apply to deck');
-  bake.type = 'button';
-  bake.title = 'Write the selected accessibility need into this deck’s front matter';
-  bake.addEventListener('click', () => { try { window.__dbA11y?.bakeIntoDeck?.(sel.value); } catch {} });
-  ctl.append(sel, bake);
-  row.append(text, ctl);
   return row;
 }
 

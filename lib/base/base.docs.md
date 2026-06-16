@@ -867,34 +867,33 @@ conflict.
 
 ---
 
-## Accessibility — colour-vision deficiency (`accessibility:`)
+## Accessibility — colour-vision-deficiency themes (`a11y-*`)
 
-A deck opts into colour-vision-deficiency (CVD) accommodation with a
-front-matter key:
+Colour-vision-deficiency (CVD) accommodation is delivered as four **first-class
+themes** — pick one exactly like any theme:
 
 ```yaml
 ---
-theme: indaco
-accessibility: deuteranopia   # or protanopia | tritanopia | achromatopsia
+theme: a11y-deuteranopia   # or a11y-protanopia | a11y-tritanopia | a11y-achromatopsia
 ---
 ```
 
-This **overrides the theme** (`accessibility` always wins), swapping in the
-curated `a11y-<type>` palette — a self-contained theme that carries its own
-glyph + texture CSS, so nothing accessibility-specific touches the formal
-themes. A viewer can also force it regardless of the deck — the **workspace tier**, which
-beats front matter — via the `LATTICE_ACCESSIBILITY` environment variable (the
-engine) or the Drawing Board's **Settings → Workspace → "Colour-vision
-accessibility"** control (which persists across the docs workspaces and, with
-"Apply to deck", can also write the deck's `accessibility:` key). The a11y
-palettes are deliberately NOT in the theme picker — accessibility is a separate
-viewer axis that overrides the theme, not a theme to choose. So the person who
-needs the accommodation gets it.
+They're selectable in the Drawing Board theme picker too (grouped under
+**Accessibility**). There is no separate accessibility axis, `accessibility:`
+directive, or override resolver — an accessibility need is met by **choosing the
+theme**.
+
+The four are **mode-invariant**: each is a fixed palette that ignores the
+light/dark toggle, so an accessibility render reads identically for every viewer.
+They share `themes/a11y-base.css` (the texture wiring + greyscale categorical
+ramp + the forced light scheme); each theme file adds only its **status trio**
+(`pass`/`warn`/`fail`, moved off that deficiency's confusion axis). The texture
+`<pattern>` `<defs>` the fills reference are emitted by the engine on every
+render (`lib/core/accessibility-textures.js`).
 
 Because colour alone distinguishes only ~1–2 categories under dichromacy, the
-mode does **not** rely on recolouring. It pairs CVD-tuned **status colours**
-(`pass`/`warn`/`fail` moved off the deficiency's confusion axis) with three
-redundant, non-colour channels that carry meaning when colour collapses:
+themes do **not** rely on recolouring. They pair the CVD-tuned **status colours**
+with three redundant, non-colour channels that carry meaning when colour collapses:
 
 - **Status glyphs** — `✓` / `!` / `✗` prefix the status-pill vocabulary.
 - **Categorical textures** — a distinct pattern (diagonal, dots, grid, chevron,

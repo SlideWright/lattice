@@ -36,15 +36,32 @@ describe('DrawingBoardTopbar (deck-theme picker island)', () => {
 		expect(applyTheme).toHaveBeenCalledWith('cuoio');
 	});
 
-	it('excludes a11y-* palettes from the theme picker (accessibility is a separate axis, not a theme)', async () => {
+	it('groups a11y-* palettes under an Accessibility label (they are plain themes, picked here)', async () => {
 		render(<DrawingBoardTopbar palettes={['indaco', 'cuoio', 'a11y-deuteranopia', 'a11y-achromatopsia']} />);
 		fireEvent.click(screen.getByRole('combobox', { name: /deck theme/i }));
 		// Brand themes are offered…
 		expect(await screen.findByRole('option', { name: /^Indaco$/ })).toBeInTheDocument();
 		expect(screen.getByRole('option', { name: /^Cuoio$/ })).toBeInTheDocument();
-		// …but no accessibility palette appears, grouped or otherwise.
-		expect(screen.queryByText(/accessibility/i)).not.toBeInTheDocument();
-		expect(screen.queryByRole('option', { name: /Deuteranopia|Achromatopsia/i })).not.toBeInTheDocument();
+		// …and the accessibility themes appear, prefix-stripped, under an Accessibility label.
+		expect(screen.getByText(/accessibility/i)).toBeInTheDocument();
+		expect(screen.getByRole('option', { name: /^Deuteranopia$/ })).toBeInTheDocument();
+		expect(screen.getByRole('option', { name: /^Achromatopsia$/ })).toBeInTheDocument();
+	});
+
+	it('picking an a11y theme writes theme: a11y-<type> via applyTheme (same path as any theme)', async () => {
+		const applyTheme = vi.fn();
+		(window as unknown as { __dbChrome: unknown }).__dbChrome = {
+			getPalette: () => 'indaco',
+			getMode: () => 'light' as const,
+			getPalettes: () => ['indaco', 'cuoio', 'a11y-deuteranopia'],
+			applyTheme,
+			toggleMode: () => 'dark' as const,
+		};
+		render(<DrawingBoardTopbar palettes={['indaco', 'cuoio', 'a11y-deuteranopia']} />);
+		fireEvent.click(screen.getByRole('combobox', { name: /deck theme/i }));
+		const opt = await screen.findByRole('option', { name: /^Deuteranopia$/ });
+		fireEvent.click(opt);
+		expect(applyTheme).toHaveBeenCalledWith('a11y-deuteranopia');
 	});
 
 	it('reflects a db-chrome-sync event (deck theme changed underneath)', async () => {

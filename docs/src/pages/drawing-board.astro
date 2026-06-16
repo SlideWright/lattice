@@ -32,10 +32,11 @@ const docsRoot = process.cwd();
 const repoRoot = join(docsRoot, '..');
 const require = createRequire(import.meta.url);
 const { loadAll, manifestBucket, familyModifiersFor } = require(join(repoRoot, 'lib/components', 'index.js'));
-// The categorical texture <pattern> <defs> the a11y palettes' fills reference.
-// Built once here (the shared kernel) and handed to the render controller, which
-// injects it into the preview iframe whenever an accessibility palette is active
-// — the runtime/preview path's counterpart to the emulator's defs injection.
+// The categorical texture <pattern> <defs> the a11y themes' fills reference.
+// Built once here (the shared kernel) and handed to every preview surface, which
+// injects it into the iframe ALWAYS (it's inert unless an a11y theme references a
+// pattern) — the runtime/preview path's counterpart to the emulator's always-on
+// defs injection.
 const { texturePatternDefs } = require(join(repoRoot, 'lib/core/accessibility-textures.js'));
 const a11yTextureDefs = texturePatternDefs();
 const manifests = loadAll();
@@ -136,18 +137,17 @@ const isPreviewDeploy = isPreviewDeployEnv({
 });
 
 const tokensCss = readFileSync(join(docsRoot, 'src/styles/lattice-tokens.generated.css'), 'utf8');
-// Brand palettes only — the theme picker's swatch set. The accessibility
-// (colour-vision-deficiency) palettes are NOT themes and never appear here: they
-// are a separate viewer axis (Settings → Accessibility, or the deck's
-// `accessibility:` key) that overrides the theme. See
-// engineering/decisions/2026-06-16-colour-blindness-accessibility.md.
-const palettes = [...new Set([...tokensCss.matchAll(/data-palette="([^"]+)"/g)].map((m) => m[1]))];
-// The accessibility types available to the workspace control (light bases; dark
-// is the mode toggle), prefix-stripped to the bare CVD type the resolver speaks.
-const a11yTypes = themeNames
-	.filter((n) => n.startsWith('a11y-') && !n.endsWith('-dark'))
-	.map((n) => n.replace(/^a11y-/, ''))
-	.sort();
+// The theme picker's vocabulary: the brand palettes (the swatch set declared in
+// the generated tokens CSS) PLUS the curated accessibility (colour-vision-
+// deficiency) themes (`a11y-*`). An a11y palette is just a theme — picking one
+// writes `theme: a11y-<type>` exactly like any theme; the topbar island groups
+// the `a11y-*` names under an "Accessibility" label. The a11y themes are
+// mode-invariant, so the `-dark` variants don't exist (no `-dark` filter needed).
+// `a11y-base` is the shared foundation partial (it carries a @theme directive
+// only so the engine resolves `@import 'a11y-base'`), NOT a pickable palette.
+const brandPalettes = [...new Set([...tokensCss.matchAll(/data-palette="([^"]+)"/g)].map((m) => m[1]))];
+const a11yThemes = themeNames.filter((n) => n.startsWith('a11y-') && n !== 'a11y-base').sort();
+const palettes = [...brandPalettes, ...a11yThemes];
 
 // Starter deck = a known-good sample (the hero component's), so the heartbeat
 // renders something real on first load without risking an authoring footgun.
@@ -180,12 +180,12 @@ const dbData = JSON.stringify({
 	starter,
 	lintVocab,
 	themes: themeNames,
-	// The base palette names the top-bar picker offers — the valid vocabulary for
-	// the Deck setup drawer's theme control + the controller's propagation guard.
+	// The theme names the top-bar picker offers (brand palettes + the a11y-*
+	// accessibility themes) — the valid vocabulary for the Deck setup drawer's
+	// theme control + the controller's propagation guard.
 	palettes,
-	// Accessibility (CVD) types for the Settings → Accessibility workspace control.
-	a11yTypes,
-	// Texture <defs> injected into the preview iframe when an a11y palette is active.
+	// Texture <defs> always injected into the preview iframe — the a11y themes'
+	// diagram/chart fills reference these patterns, so they must always be present.
 	a11yTextureDefs,
 	catalog: obCatalog,
 	version: pkgVersion,
@@ -215,11 +215,6 @@ const dbData = JSON.stringify({
 					var m = localStorage.getItem('lattice-docs-mode');
 					if (m === 'light' || m === 'dark') r.setAttribute('data-mode', m);
 					else if (window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches) r.setAttribute('data-mode', 'dark');
-					// Accessibility (CVD) is a separate viewer axis that overrides the
-					// theme — stamp it pre-paint like palette/mode so the first render
-					// already honours it (consulted before data-palette at render time).
-					var a = localStorage.getItem('lattice-docs-a11y');
-					if (a) r.setAttribute('data-a11y', a);
 				} catch (e) {}
 			})();
 		</script>
