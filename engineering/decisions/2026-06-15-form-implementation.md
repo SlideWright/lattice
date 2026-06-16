@@ -24,8 +24,13 @@ being real: there is no bounded content **Cell**, so chrome reservation is a
 fixed guess and a chart has no concrete box to size into (the §6 LSP violation
 in the flesh).
 
-This ADR makes the model real in code, at the altitude the canonical doc locks:
-**B-now (Cell-as-berth overlay) → A-later (section-as-grid)**.
+This ADR makes the model real in code, at the altitude the canonical doc locked at
+the time: **B-now (Cell-as-berth overlay) → A-later (section-as-grid)**. *(Live fact
+as of 2026-06-16: A-later / section-as-grid is **RETIRED** — rejected on merit
+because a fixed-track grid fights the content-height masthead and costs
+responsiveness/feasibility; **B is the canonical end state**, component bodies stay
+direct children of `section` permanently, and there is no `.cell-stage` wrapper. The
+"→ A-later" arc below is historical record only.)*
 
 ## 2. Verified ground truth (rendered, not assumed)
 
@@ -67,7 +72,7 @@ Mapped onto the existing three-band structure (the root chrome Frame):
 |---|---|
 | **Root Frame** | `section.form` — carries the chrome Frame (masthead · stage · footer bands). Stays `display:flex` (see §4). |
 | **Masthead Cell** | `.cell-masthead` — an **in-flow, content-height band** (the hairline sits directly under the title — no dead space; the band grows for a two-line title), an internal sub-Frame splitting into `.masthead-lede` (kicker + title Tiles) and `.masthead-bay` (meta · logo · status Tiles). |
-| **Stage Cell** | the section's **deterministic content region** below the in-flow masthead and above the absolute footer band. *Not a wrapper element* (see §4) — its box is the fixed-size slide minus the masthead band and the reserved footer. (The masthead is in-flow rather than a fixed-height absolute reserve because charts size against their own `.chart-body`, not the section's cqh, so the band no longer needs to shrink the section's cqh — which is what previously forced a fixed-height reserved band and left dead space under short titles.) |
+| **Stage Cell** | the section's **deterministic content region** below the in-flow masthead and above the absolute footer band. *Not a wrapper element — and permanently so (section-as-grid is RETIRED; see §4).* Its box is the fixed-size slide minus the masthead band and the reserved footer. (The masthead is in-flow rather than a fixed-height absolute reserve because charts size against their own `.chart-body`, not the section's cqh, so the band no longer needs to shrink the section's cqh — which is what previously forced a fixed-height reserved band and left dead space under short titles.) |
 | **Footer Cell** | a three-zone coordinate contract (`footer-left` · `progress-centre` · `pagination-right`) with reserved, non-overlapping horizontal budgets. Pagination is a `::after` pseudo-element, so the footer Cell is a **token contract**, not a DOM grid. |
 | **Tiles** | `.tile-meta`, `.tile-progress`, `.tile-watermark`, plus the chrome `<footer>`/`::after`/`<header>` and the component DOM (the content Tile). |
 | **z-planes** | `isolation` / `z-index` stacking contexts (already in use). **Distinct from CSS `@layer`** (inert; blocked by the `!important` competition — `engineering/cascade.md`, issues #283/#284). The Form does **not** touch `@layer`. |
@@ -99,10 +104,19 @@ contract. The §6 contract ("every Cell resolves to a deterministic px box") is
 band (the masthead its content height, the footer its reserve), so the stage box is
 deterministic without an element.
 
-**A-later is now de-risked and quantified:** the only remaining work to reach
-section-as-grid is the 242-selector migration (+ flex→grid component audit),
-tracked as the staged north star. It pairs with `@layer` activation and stays
-optional.
+**Update 2026-06-16 — A-later (section-as-grid) is RETIRED, not pending or
+optional.** It was rejected on merit, not deferred: a named-area grid sizes rows
+with FIXED tracks, which fight content-driven sizing — the masthead Cell was
+deliberately changed from a fixed-height box to an in-flow content-height band (see
+§3) exactly to kill the dead-space-under-short-titles / can't-grow-for-two-lines
+failure, and a grid row would reintroduce it — and it costs responsiveness
+(desktop/tablet/mobile) and feasibility (~373 `section.X > …` selectors) for a
+marginal payoff. **B is the canonical end state, not a stepping stone:** component
+bodies stay direct children of `section` permanently, there is no `.cell-stage`
+wrapper to build, the 242/373-selector migration will NOT happen, and the section's
+`overflow:hidden` hard clip is the accepted final behavior. (`@layer` activation is
+independently optional, unrelated.) The "B-now → A-later" framing throughout this
+ADR is the historical record of the original plan; the live fact is B-only.
 
 ## 5. Flaw → root-cause fix
 
@@ -142,8 +156,10 @@ hand-authored CSS — now co-located per Cell under `lib/forms/cell/<id>/<id>.cs
 too, see §6.3.) The manifest's per-Cell `geometry`/`fill`/`accepts`/`z` are
 catalog data, not yet the CSS/injector source. So the full OCP win — "adding a Tile is a folder, not edits to three
 kernels" (`design/forms.md` §11) — is **set up, not delivered**: the catalog and
-the skip-derivation ship; manifest-driven grid + injectors are **staged**
-alongside A-later (§8). The vocabulary, schema, and the one load-bearing
+the skip-derivation ship; manifest-driven grid + injectors are **staged** (§8).
+(They were once paired with A-later; A-later / section-as-grid is now RETIRED — B
+is canonical — but the manifest-driven work stands on its own.) The vocabulary,
+schema, and the one load-bearing
 consumer are the foundation that makes the rest mechanical.
 
 ### 6.1 Self-contained Form Tiles (issue #356)
@@ -220,9 +236,9 @@ lib/forms/cell/<id>/
   Cells: the Form chrome is no longer scattered in `base.variants.css`. The
   masthead Cell's **transform** is co-located in the follow-on slice below (§6.3).
   What stays out is the deeper **section-as-grid** structural change (making the
-  stage a real wrapper element), gated by the §4 242-direct-child-selector
-  constraint — that is the A-later north star, NOT a prerequisite for co-locating
-  the existing masthead-lift transform.
+  stage a real wrapper element) — which is now **RETIRED** (rejected on merit; B is
+  canonical, no `.cell-stage` wrapper will be built), and was never a prerequisite
+  for co-locating the existing masthead-lift transform anyway.
 
 ### 6.3 Self-contained masthead Cell — co-locating the transform (issue #356)
 
@@ -253,7 +269,8 @@ the pre-§6.2 baseline; the masthead-lift unit suite (HTML kernel + DOM mirror
 parity) passes against the new path. The footer Cell has no transform (it is a
 pure CSS + token contract), so with this the masthead and footer Cells are fully
 self-contained. Remaining for #356: the Frame chrome, the Form-Tile dispatch list,
-manifest-driven geometry, and the gated section-as-grid migration.
+and manifest-driven geometry. (Section-as-grid is **not** remaining work — it is
+RETIRED; B is canonical.)
 
 **Honest about what this is — and isn't.** This mirrors the **file shape** of the
 component kernel+adapter pattern (logic + both adapters in one folder), and that
@@ -275,8 +292,8 @@ unit + integration + `build:check` + pixel parity green). The Cell **CSS** has
 since followed (§6.2) and the masthead Cell's transform is now co-located too
 (§6.3), leaving the masthead + footer Cells fully self-contained. **Still to
 migrate** for #356: the Frame chrome, then the manifest-driven + dispatch-list
-steps above (the gated section-as-grid migration is the separate A-later north
-star, §4/§8).
+steps above. (Section-as-grid is RETIRED — not a remaining step; B is canonical.
+See §4/§8.)
 
 ## 7. The rename (retiring island-jargon)
 

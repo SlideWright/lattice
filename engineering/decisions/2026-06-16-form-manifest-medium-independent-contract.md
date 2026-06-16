@@ -7,8 +7,9 @@ decision is **A: keep and grow the manifest** — treat `lib/forms/` as the
 medium-independent composition contract, with the 2D CSS as its *first renderer*,
 not as the only home for the model. This note owns the **direction**; the
 execution increments land under #356 referencing it. `design/forms.md` still owns
-the **model**; `2026-06-15-form-implementation.md` owns the **B-now→A-later**
-execution arc this slots into.
+the **model**; `2026-06-15-form-implementation.md` owns the Form **execution arc**
+this slots into. (Note: the "A-later / section-as-grid" end of that arc is RETIRED —
+B is canonical; `2026-06-16-retire-section-as-grid.md`.)
 
 ---
 

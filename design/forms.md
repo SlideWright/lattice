@@ -408,7 +408,8 @@ Two mechanisms were once weighed (per the originating ADR): **B — berth/Cell
 overlay** (keep `section` flex; Cells are content-height in-flow bands / reserved
 token-contract bands, component bodies stay direct children of `section` —
 *zero component risk*) and **A — section-as-grid** (`section { display:grid }`, the
-body wrapped in a `.cell-stage` element; a large per-component migration).
+body wrapped in a `.cell-stage` element; a large per-component migration) — **A is
+RETIRED (see the next paragraph); named here only for the record**.
 
 **B is now the canonical end state; A (section-as-grid) is retired — rejected on
 merit, not deferred** (`engineering/decisions/2026-06-16-retire-section-as-grid.md`).
