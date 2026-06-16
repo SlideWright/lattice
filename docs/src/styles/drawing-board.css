@@ -243,16 +243,6 @@ body.db-page .topbar {
 .db-refine-open::after { --db-glyph: var(--icon-chevron-down); margin-left: 0.3em; }
 .db-present-open::before { --db-glyph: var(--icon-presentation); margin-right: 0.34em; }
 .db-practice-open::before { --db-glyph: var(--icon-play); margin-right: 0.34em; }
-/* The Slides panel head carries two labelled actions (Present · Practice)
-   alongside the title + status in a fixed 38px row. Both buttons keep their
-   icon AND label at every width; on narrow viewports we instead drop the
-   redundant "Slides" title (the mobile tab already labels this pane "Preview")
-   to buy back the row space. */
-@media (max-width: 680px) {
-	.db-preview .db-panel-head .db-panel-title {
-		display: none;
-	}
-}
 .db-arch-jump-btn[data-dir='top']::before { --db-glyph: var(--icon-chevron-up); }
 .db-arch-jump-btn[data-dir='bottom']::before { --db-glyph: var(--icon-chevron-down); }
 
