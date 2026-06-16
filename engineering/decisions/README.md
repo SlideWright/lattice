@@ -264,6 +264,31 @@ it is load-bearing.
   never import a live Drawing Board module into the frozen, versioned export
   player (`lib/export/`). **Status: design-decision** (shape aligned 2026-06-16;
   size tier + colour mode held).
+- [2026-06-16-rtl-vertical-text-support.md](2026-06-16-rtl-vertical-text-support.md) —
+  design model for **directional text**: right-to-left (Arabic),
+  left-to-right, and **vertical** (`tb`, traditional CJK). Current state is
+  Latin-centric LTR — `lang:` is parsed but inert, no `dir`, every layout uses
+  physical `left`/`right` (**189 declarations across 48 CSS files**), Latin-only
+  fonts. Shape: a new **`dir:` directive** (`auto`/`ltr`/`rtl`/`tb`) + emit a
+  **real `lang=`/`dir=`** on the section; a **logical-CSS refactor**
+  (`margin-inline-start`, `text-align: start`, …) that mirrors RTL *and* lays the
+  foundation vertical needs — paid once, serves both — guarded by a new
+  physical-property lint; **vertical attempt-all + `verticalBlocked` blocklist**
+  (render vertical by default, blocklist on reviewer-confirmed breakage; text
+  buckets reviewed first); **self-hosted `:lang()`-gated, register-matched OFL
+  font pairs** (display=editorial / body=clean-sans, *not* one flat Noto weight)
+  — Amiri + IBM Plex Arabic, Tiro + Mukta (Hindi), Source Han Serif/Sans (CJK),
+  Shippori Mincho + Noto Sans JP, Noto Serif KR + Pretendard (CDN MITM'd
+  in-sandbox).
+  Verification mirrors layouts here but **glyph/export fidelity needs owner
+  inspection** (sandbox can't load the webfonts). Pins a **6-language test
+  matrix** — Arabic · Hindi · Chinese (SC/TC) · Japanese · Korean — each
+  earning its slot by stressing a *distinct* axis (RTL mirroring · complex
+  shaping ·
+  vertical), so the suite is a coverage checklist, not a sample. Phased:
+  directives → CSS refactor → fonts → vertical → demo deck. **Status: design-decision** (scope RTL/LTR + vertical, CJK
+  breadth + vertical default aligned 2026-06-16; only the CJK font-budget /
+  lazy-load question held).
 - [2026-06-14-read-aloud-kokoro.md](2026-06-14-read-aloud-kokoro.md) —
   design model for a free/near-free, boardroom-quality read-aloud voice. Bans
   the browser `speechSynthesis` (per-device lottery, never Siri — kept as a
