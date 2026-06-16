@@ -18,7 +18,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const { createEngine } = require('../../../lib/engine');
-const { composeCss, parseSizes, scaffold } = require('../../../lib/engine/css');
+const { composeCss, parseSizes, scaffold, orientationFor, orientationCss } = require('../../../lib/engine/css');
 
 const ROOT = path.join(__dirname, '..', '..', '..');
 
@@ -209,6 +209,68 @@ describe('lattice-engine: css emission (P1.1)', () => {
     assert.deepEqual(eng.geometry('---\nsize: 4K\n---\n# A\n', 'cuoio'), { width: 3840, height: 2160 });
     // Unknown theme / no registered sizes still yields a usable HD divisor.
     assert.deepEqual(createEngine().geometry('# A\n', 'ghost'), { width: 1280, height: 720 });
+  });
+
+  // ── Social / mobile portrait + square @sizes ──────────────────────────────
+  const SOCIAL = '/* @theme lattice\n * @size hd 1280px 720px\n * @size story 1080px 1920px\n * @size square 1080px 1080px\n * @size 9:16 1080px 1920px */\nsection { color: #111; }';
+
+  test('parseSizes reads the social/mobile @size names + aspect aliases', () => {
+    const m = parseSizes(SOCIAL);
+    assert.deepEqual(m.get('story'), { width: '1080px', height: '1920px' });
+    assert.deepEqual(m.get('square'), { width: '1080px', height: '1080px' });
+    assert.deepEqual(m.get('9:16'), { width: '1080px', height: '1920px' });
+  });
+
+  test('orientationFor classifies aspect → name + canvas-scale (landscape stays 1)', () => {
+    assert.deepEqual(orientationFor({ width: 1280, height: 720 }), { name: 'landscape', scale: 1 });
+    assert.deepEqual(orientationFor({ width: 1080, height: 1080 }), { name: 'square', scale: 1.2 });
+    // Portrait scale ramps with how tall the canvas is (4:5 calm → 9:19.5 capped).
+    assert.deepEqual(orientationFor({ width: 1080, height: 1350 }), { name: 'portrait', scale: 1.35 }); // 4:5
+    assert.deepEqual(orientationFor({ width: 1080, height: 1920 }), { name: 'portrait', scale: 1.53 }); // 9:16
+    assert.deepEqual(orientationFor({ width: 1080, height: 2340 }), { name: 'portrait', scale: 1.6 });  // 9:19.5 (capped)
+    // Degenerate geometry falls back to a landscape no-op (never NaN).
+    assert.deepEqual(orientationFor({ width: 'x', height: 0 }), { name: 'landscape', scale: 1 });
+  });
+
+  test('orientationCss is empty for landscape (byte-identical) and scales portrait/square', () => {
+    assert.equal(orientationCss({ width: 1280, height: 720 }), '');
+    const story = orientationCss({ width: 1080, height: 1920 });
+    assert.match(story, /--canvas-scale:\s*1\.53/);
+    assert.match(story, /justify-content:\s*center/);
+    assert.match(orientationCss({ width: 1080, height: 1080 }), /--canvas-scale:\s*1\.2/);
+  });
+
+  test('composeCss bakes portrait geometry into @page and appends the orientation block', () => {
+    const out = composeCss({ themeCss: PALETTE, baseLatticeCss: SOCIAL, sizeName: 'story' });
+    assert.match(out, /@page\s*\{[^}]*size:\s*1080px 1920px/);
+    assert.match(out, /width:\s*1080px/);
+    assert.match(out, /section\s*\{\s*--canvas-scale:\s*1\.53;\s*justify-content:\s*center;\s*\}/);
+    // A landscape deck gets NO orientation block (the scaling never fires).
+    assert.doesNotMatch(composeCss({ themeCss: PALETTE, baseLatticeCss: SOCIAL, sizeName: 'hd' }), /--canvas-scale/);
+  });
+
+  // The browser runtime (lib/runtime/index.js) can't require this Node module, so
+  // it INLINES the same orientation math. Guard the two against silent drift: the
+  // runtime must produce the SAME scale as orientationFor at each orientation.
+  test('runtime injectOrientationStyle scale stays in step with orientationFor', () => {
+    const src = fs.readFileSync(require.resolve('../../../lib/runtime/index.js'), 'utf8');
+    const body = src.slice(src.indexOf('function injectOrientationStyle'));
+    const block = body.slice(0, body.indexOf('\n  }\n'));
+    // Mirror the runtime's literals; fail loudly if they diverge from css.js.
+    const runtimeScale = (aspect) => {
+      if (aspect > 1.05) return 1;
+      return aspect >= 0.95 ? 1.2 : Math.min(1.6, Math.round((1.2 + (1 - aspect) * 0.75) * 100) / 100);
+    };
+    for (const [w, h] of [[1280, 720], [1080, 1080], [1080, 1350], [1080, 1920], [1080, 2340]]) {
+      const expected = orientationFor({ width: w, height: h }).scale;
+      assert.equal(runtimeScale(w / h), expected, `runtime scale diverged at ${w}x${h}`);
+    }
+    // And assert the runtime source actually carries the ramp formula + cap +
+    // thresholds, so editing css.js without the runtime trips this test.
+    assert.match(block, /aspect > 1\.05/);
+    assert.match(block, /aspect >= 0\.95/);
+    assert.match(block, /1\.2 \+ \(1 - aspect\) \* 0\.75/);
+    assert.match(block, /Math\.min\(1\.6/);
   });
 
   // Regression (#192 default-flip broke dark mode): every `*-dark` theme is a

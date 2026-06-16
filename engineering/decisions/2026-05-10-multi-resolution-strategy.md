@@ -6,6 +6,11 @@ supersedes: none
 
 # Multi-resolution strategy
 
+> **Extended (2026-06-16):** portrait + square social/mobile sizes (`square`,
+> `portrait`, `story`, `mobile`) and the orientation-aware `--canvas-scale`
+> mechanism build directly on this `@size` + cqi foundation. See
+> `2026-06-16-social-mobile-portrait-sizes.md`.
+
 ## Decision
 
 Lattice will support multiple output resolutions via Marp's native `@size`

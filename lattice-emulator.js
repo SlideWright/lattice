@@ -891,12 +891,21 @@ function preprocessMermaid(source) {
 const rawMd = preprocessMermaid(md);
 const fmMatch = rawMd.match(/^---([\s\S]*?)---\n/);
 const fm      = fmMatch ? fmMatch[1] : '';
-// Slide geometry — the engine resolves `size:` for its own layout, but the
-// emulator's page template needs the pixel dimensions for the puppeteer PDF.
-const DEFAULT_SIZE   = 'hd';
-const SLIDE_SIZES    = { hd: [1280, 720], HD: [1280, 720], '4K': [3840, 2160], '4k': [3840, 2160], standard: [960, 720] };
-const deckSizeName   = (fm.match(/^\s*size:\s*["']?([\w:/-]+)["']?\s*$/m) || [])[1] || DEFAULT_SIZE;
-const [slideW, slideH] = SLIDE_SIZES[deckSizeName] || SLIDE_SIZES[DEFAULT_SIZE];
+// Slide geometry — ONE registry (HARD RULE #1). The page template needs pixel
+// dimensions for the puppeteer PDF; rather than duplicate a size table (which
+// drifted — it used to omit 16:9 and silently rendered it as hd), resolve the
+// `@size` directive through the engine's own `resolveSize`, the same lookup the
+// scaffold bakes into `@page`. `paletteCSS`/`layoutCSS` carry every theme +
+// base `@size` declaration (theme first, then base — composeCss's source order).
+const { resolveSize, orientationCss } = require('./lib/engine/css');
+const deckSizeName   = (fm.match(/^\s*size:\s*["']?([\w:/-]+)["']?\s*$/m) || [])[1] || 'hd';
+const _geom          = resolveSize(deckSizeName, [paletteCSS, layoutCSS]);
+const slideW         = parseFloat(_geom.width);
+const slideH         = parseFloat(_geom.height);
+// Orientation scaling/fill (social/mobile portrait + square @sizes). Empty for
+// landscape, so the HD/4K PDF is byte-identical. Same helper the engine
+// scaffold + runtime use, so every render path agrees.
+const orientationStyle = orientationCss(_geom);
 // Deck-wide `style:` directive — Marp injects this CSS verbatim into the
 // rendered output. Authors use it for ad-hoc overrides like
 // `style: ":root{color-scheme:dark}"` without needing a custom theme.
@@ -1254,6 +1263,7 @@ ${katexCssLink}
 body  { margin: 0; padding: 0; }
 ${css}
 section[data-lattice-slide] { width: ${slideW}px !important; height: ${slideH}px !important; }
+${orientationStyle}
 ${marpSystemCss}
 ${globalStyle ? `\n/* Front-matter style: directive */\n${globalStyle}\n` : ''}
 </style></head><body>
