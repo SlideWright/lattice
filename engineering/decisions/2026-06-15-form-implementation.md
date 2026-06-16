@@ -126,12 +126,13 @@ byte-identical to the prior hardcoded set. It also validates the catalog
 `dist/docs/forms.json`.
 
 **What it does NOT drive yet (honest scope):** the `--frame-*`/`--cell-*`
-geometry, the masthead/stage/footer grid, and the `fill-*` classes are still
-hand-coded in `base.variants.css`. (The Tile *injectors* — meta/progress/watermark
-— are now self-contained kernels in `lib/forms/tile/<id>`; see §6.1. The
-`masthead-lift` Cell transform is not yet migrated.) The manifest's per-Cell
-`geometry`/`fill`/`accepts`/`z` are catalog data, not yet the CSS/injector
-source. So the full OCP win — "adding a Tile is a folder, not edits to three
+geometry, the masthead/stage/footer grid, and the `fill-*` classes are
+hand-authored CSS — now co-located per Cell under `lib/forms/cell/<id>/<id>.css`
+(§6.2), but still hand-written, not generated from the manifest. (The Tile
+*injectors* — meta/progress/watermark — are self-contained kernels in
+`lib/forms/tile/<id>`, see §6.1; the `masthead-lift` Cell transform is co-located
+too, see §6.3.) The manifest's per-Cell `geometry`/`fill`/`accepts`/`z` are
+catalog data, not yet the CSS/injector source. So the full OCP win — "adding a Tile is a folder, not edits to three
 kernels" (`design/forms.md` §11) — is **set up, not delivered**: the catalog and
 the skip-derivation ship; manifest-driven grid + injectors are **staged**
 alongside A-later (§8). The vocabulary, schema, and the one load-bearing
@@ -208,11 +209,43 @@ lib/forms/cell/<id>/
   before/after (so the bundle is no longer byte-identical, but the *render* is);
   non-`form` decks are untouched (the rules are `section.form`-scoped).
 - **What this is — and isn't.** This finishes the **CSS** half of self-contained
-  Cells: the Form chrome is no longer scattered in `base.variants.css`. It does
-  **not** move the `masthead-lift` *transform* (`lib/core/masthead-lift.js` — the JS
-  that builds `.cell-masthead`); that re-parenting transform stays where it is,
-  gated by the §4 242-direct-child-selector constraint, and is the remaining piece
-  of "self-contained Cells."
+  Cells: the Form chrome is no longer scattered in `base.variants.css`. The
+  masthead Cell's **transform** is co-located in the follow-on slice below (§6.3).
+  What stays out is the deeper **section-as-grid** structural change (making the
+  stage a real wrapper element), gated by the §4 242-direct-child-selector
+  constraint — that is the A-later north star, NOT a prerequisite for co-locating
+  the existing masthead-lift transform.
+
+### 6.3 Self-contained masthead Cell — co-locating the transform (issue #356)
+
+The §6.2 CSS slice put the masthead Cell's layout in `lib/forms/cell/masthead/
+masthead.css`, but its **transform** kernel still lived in `lib/core/
+masthead-lift.js` — the last masthead-Cell artifact outside the Cell's folder.
+That kernel re-parents the eyebrow + title into `.cell-masthead`; it already
+shipped and ran (it does NOT wrap the body, so it is **not** blocked by the §4
+section-as-grid gate — that gate is about a stage wrapper element this transform
+never creates). Co-locating it is a pure relocation, mirroring the established
+**component** pattern exactly:
+
+- A **component** keeps its kernel co-located —
+  `lib/components/<bucket>/<name>/<name>.transform.js` (exports
+  `applyToRenderedHtml`) — and a thin registry adapter `lib/transformers/<name>.js`
+  adds the DOM mirror + the `{name, selector, applyToHtml, applyToDom}` shape
+  (see `featured.js`, `compare-code.js`). The masthead Cell was the one registry
+  transform whose kernel was still stranded in `lib/core/`.
+- The kernel moved to `lib/forms/cell/masthead/masthead.transform.js`; the adapter
+  `lib/transformers/masthead-lift.js` (DOM mirror + registry shape) stays put and
+  now requires the co-located kernel. So the masthead Cell owns **everything** —
+  `masthead.cell.json` + `masthead.css` + `masthead.transform.js` — the way a
+  component owns its three files. The only code dependency was the one adapter
+  `require` (+ the unit test's kernel `require`); every other mention was a comment.
+
+Behaviour-preserving: `examples/form.md` rasterizes to **0 changed pixels** against
+the pre-§6.2 baseline; the masthead-lift unit suite (HTML kernel + DOM mirror
+parity) passes against the new path. The footer Cell has no transform (it is a
+pure CSS + token contract), so with this the masthead and footer Cells are fully
+self-contained. Remaining for #356: the Frame chrome, the Form-Tile dispatch list,
+manifest-driven geometry, and the gated section-as-grid migration.
 
 **Honest about what this is — and isn't.** This mirrors the **file shape** of the
 component kernel+adapter pattern (logic + both adapters in one folder), and that
@@ -231,9 +264,11 @@ paths iterate) is a repeatability step for #356, alongside making the Tiles
 All of it is behaviour-preserving (every Tile renders identically — verified on
 `examples/form.md`: meta bay, status chip, progress rail, watermark ghost; full
 unit + integration + `build:check` + pixel parity green). The Cell **CSS** has
-since followed (§6.2). **Still to migrate** for #356: the `masthead-lift`
-structural transform (gated by the §4 242-direct-child-selector constraint) and
-the Frame chrome, then the manifest-driven + dispatch-list steps above.
+since followed (§6.2) and the masthead Cell's transform is now co-located too
+(§6.3), leaving the masthead + footer Cells fully self-contained. **Still to
+migrate** for #356: the Frame chrome, then the manifest-driven + dispatch-list
+steps above (the gated section-as-grid migration is the separate A-later north
+star, §4/§8).
 
 ## 7. The rename (retiring island-jargon)
 
@@ -257,14 +292,15 @@ from real Cell heights; per-Cell `fill` discipline; the `lib/forms/` manifest
 **Staged (documented, not in this PR).** Tracked as a single follow-up proposal,
 **#356** (manifest revision + maintainability cleanups — kept as-is for now,
 revised deliberately later):
-- **Self-contained Cells + Frames** (§6.1/§6.2): the Tiles are self-contained now
-  (meta · progress · watermark kernels; status CSS), and the Cell **CSS** has
+- **Self-contained Cells + Frames** (§6.1/§6.2/§6.3): the Tiles are self-contained
+  now (meta · progress · watermark kernels; status CSS), the Cell **CSS** has
   followed (§6.2 — `stage` · `masthead` · `masthead-lede` · `masthead-bay` ·
-  `footer` sheets under `lib/forms/cell/<id>`). What remains of "self-contained
-  Cells" is the `masthead-lift` structural *transform* (the JS that builds
-  `.cell-masthead`), gated by the §4 242-direct-child-selector constraint, plus the
-  Frame chrome. (The pure-CSS `status` Tile paints via a `.masthead-bay::after`,
-  keyed off the masthead-bay Cell that now owns that layout.)
+  `footer` sheets under `lib/forms/cell/<id>`), and the masthead Cell's
+  **transform** is now co-located too (§6.3 — `masthead.transform.js` beside its
+  manifest + CSS, mirroring the component kernel→adapter pattern). The masthead and
+  footer Cells are thus fully self-contained. What remains is the **Frame chrome**.
+  (The pure-CSS `status` Tile paints via a `.masthead-bay::after`, keyed off the
+  masthead-bay Cell that now owns that layout.)
 - **Form-Tile dispatch list** (§6.1): collapse the three hand-wired call sites per
   Tile into a single list the three render paths iterate — the component
   *self-registration* half the current kernels don't yet mirror.

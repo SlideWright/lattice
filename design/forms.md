@@ -387,7 +387,7 @@ The **model** is canonical now. The **identifiers** rename in a staged sweep
 | CSS tokens | `--isl-inset-x/-y`, `--isl-page-reserve` | `--frame-*` / `--cell-*` |
 | CSS classes | `.isl-masthead`, `.m-stage`, `.m-bay` | `.frame-*` / `.cell-*` |
 | Deck/section toggle | `islands: on / off / minimal` | **`form: <frame>`** (author selects a Frame) |
-| Transform | `transformMastheadSection` / `lib/core/masthead-lift.js` | (renamed with the sweep) |
+| Transform | `transformMastheadSection` / `lib/core/masthead-lift.js` | `lib/forms/cell/masthead/masthead.transform.js` (kernel, co-located) + `lib/transformers/masthead-lift.js` (adapter) |
 
 Two cautions for the sweep, captured so the rename is a reviewed plan, not a blind
 regex: (1) **`form` is a substring of `transform`** — and the engine is full of
@@ -442,8 +442,9 @@ lib/forms/
   tile/<tile>/<tile>.manifest.json       # fillers — the registry rows, one folder each
     tile/<tile>/<tile>.transform.js      #   …its kernel (applyToHtml + applyToDom), and
     tile/<tile>/<tile>.css               #   …its CSS — co-located, like a component
-  cell/<cell>/<cell>.cell.json           # the shared slot definitions Frames emit, and
-    cell/<cell>/<cell>.css               #   …each Cell's own CSS — co-located too
+  cell/<cell>/<cell>.cell.json           # the shared slot definitions Frames emit,
+    cell/<cell>/<cell>.css               #   …each Cell's own CSS — co-located too, and
+    cell/<cell>/<cell>.transform.js      #   …its kernel, when the Cell has one (masthead)
   schema/cell.schema.json                # the JSON-schema for a Cell
 ```
 
@@ -454,9 +455,11 @@ render-path injectors. Every logic-bearing Tile works this way now (`watermark`,
 The **Cell** CSS is now co-located the same way: the Form chrome (the root Frame
 box, the masthead/stage/footer Cells, the stage fill discipline) lives under
 `cell/<cell>/<cell>.css` (`stage` · `masthead` · `masthead-lede` · `masthead-bay`
-· `footer`), globbed into the same cascade slot. Still to follow: the
-`masthead-lift` structural transform (the JS that builds `.cell-masthead`, gated
-by the §4 242-direct-child-selector constraint) and the Frame chrome.
+· `footer`), globbed into the same cascade slot. The masthead Cell's **transform**
+is co-located too — `cell/masthead/masthead.transform.js` (the kernel) beside its
+manifest + CSS, with the registry adapter in `lib/transformers/masthead-lift.js`,
+mirroring how a component splits kernel↔adapter. The masthead + footer Cells are
+fully self-contained; still to follow: the Frame chrome.
 
 The manifest is **load-bearing, not descriptive**: it drives the `--frame-*` grid
 and the Tile injectors and the `accepts`/`fits` validation, so adding a Frame or a

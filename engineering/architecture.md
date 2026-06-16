@@ -215,7 +215,7 @@ exercised by the unit suite:
 
 | Post-process | What it does | Why not CSS | Home (kernel → adapter) |
 |---|---|---|---|
-| masthead lift | moves eyebrow + title into `.cell-masthead` | re-parent | `lib/core/masthead-lift.js` → `lib/transformers/masthead-lift.js` (DOM mirror) |
+| masthead lift | moves eyebrow + title into `.cell-masthead` | re-parent | `lib/forms/cell/masthead/masthead.transform.js` (kernel, co-located with the Cell) → `lib/transformers/masthead-lift.js` (registry adapter + DOM mirror) — self-contained Cell (#356) |
 | `form:` toggle | adds `form` / `no-progress` per mode; skip-set from `lib/forms` | read front-matter, tag classes | `lib/integrations/markdown-it/plugins.js` (`readFormMode`, `formToggleClass`, `deriveFormToggleSkip`) |
 | meta Tile | inserts `meta:` into the masthead bay | front-matter text | `lib/forms/tile/meta/meta.transform.js` (`applyToHtml` + `applyToDom` + `readFrontMatter`) — self-contained Tile (#356) |
 | logo Tile | inserts the `logo:` image | front-matter image | `plugins.js` `applyDeckLogoToHtml` |
