@@ -264,6 +264,22 @@ it is load-bearing.
   never import a live Drawing Board module into the frozen, versioned export
   player (`lib/export/`). **Status: design-decision** (shape aligned 2026-06-16;
   size tier + colour mode held).
+- [2026-06-16-rtl-vertical-text-support.md](2026-06-16-rtl-vertical-text-support.md) —
+  design model for **directional text**: right-to-left (Arabic/Hebrew),
+  left-to-right, and **vertical** (`tb`, traditional CJK). Current state is
+  Latin-centric LTR — `lang:` is parsed but inert, no `dir`, every layout uses
+  physical `left`/`right` (**189 declarations across 48 CSS files**), Latin-only
+  fonts. Shape: a new **`dir:` directive** (`auto`/`ltr`/`rtl`/`tb`) + emit a
+  **real `lang=`/`dir=`** on the section; a **logical-CSS refactor**
+  (`margin-inline-start`, `text-align: start`, …) that mirrors RTL *and* lays the
+  foundation vertical needs — paid once, serves both — guarded by a new
+  physical-property lint; **vertical opt-in per component** (`verticalReady`
+  manifest flag, text buckets first) so a half-pivoted grid never ships;
+  **self-hosted `:lang()`-gated Noto** Arabic/Hebrew/CJK (CDN MITM'd in-sandbox).
+  Verification mirrors layouts here but **glyph/export fidelity needs owner
+  inspection** (sandbox can't load the webfonts). Phased: directives → CSS
+  refactor → fonts → vertical → demo deck. **Status: design-decision** (scope
+  RTL/LTR + vertical aligned 2026-06-16; CJK breadth + font budget held).
 - [2026-06-14-read-aloud-kokoro.md](2026-06-14-read-aloud-kokoro.md) —
   design model for a free/near-free, boardroom-quality read-aloud voice. Bans
   the browser `speechSynthesis` (per-device lottery, never Siri — kept as a
