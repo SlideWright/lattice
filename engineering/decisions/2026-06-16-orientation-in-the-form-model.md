@@ -11,8 +11,8 @@ Where does portrait/landscape live in the Form model (Frame · Cell · Tile ·
 Component), and how is "this layout supports portrait" *declared* vs *made true*?
 
 A four-figure walkthrough of the model these terms refer to is published on the
-docs site: `/spec/form-model/` (source: `docs/src/content/docs/spec/form-model.md`;
-figures `docs/src/assets/form-model/*.png`). The canonical model is `design/forms.md`.
+docs site: `/spec/form-model/` (source: `docs/src/content/docs/spec/form-model.mdx`;
+figures are the live component `docs/src/components/spec/FormDiagram.astro`). The canonical model is `design/forms.md`.
 
 ## Context
 

@@ -1,0 +1,204 @@
+---
+/**
+ * Live (HTML/CSS) Form-model diagrams for /spec/form-model/.
+ * Replaces the old screenshot PNGs — these scale, adapt to light/dark, and need
+ * no regen step. Drawn from the live manifests (lib/forms/) and kept honest by
+ * the docs-auditor pass; see docs/src/content/docs/spec/form-model.mdx.
+ *
+ *   fig="frame-cell" | "cell-tile" | "tile-component" | "together"
+ */
+const { fig } = Astro.props;
+---
+
+{fig === "frame-cell" && (
+  <div class="fm fm-two" role="img" aria-label="A Frame composes Cells. The standard frame lays a masthead band, a stage, and a footer row of three cells; split-panel keeps only the stage and suppresses the chrome.">
+    <figure>
+      <figcaption>Frame: <code>standard</code> <span>root · full chrome</span></figcaption>
+      <div class="slide std">
+        <div class="cell"><span class="lbl">masthead <small>lede · bay</small></span></div>
+        <div class="cell stage"><span class="lbl">stage <small>content region</small></span></div>
+        <div class="footrow">
+          <div class="cell"><span class="lbl">footer-left</span></div>
+          <div class="cell"><span class="lbl">progress-centre</span></div>
+          <div class="cell"><span class="lbl">pagination-right</span></div>
+        </div>
+      </div>
+    </figure>
+    <figure>
+      <figcaption>Frame: <code>split-panel</code> <span>sovereign</span></figcaption>
+      <div class="slide solo">
+        <div class="cell stage"><span class="lbl">stage <small>claims the whole canvas</small></span></div>
+        <p class="suppressed">suppresses: masthead · footer · progress · pagination</p>
+      </div>
+    </figure>
+  </div>
+)}
+
+{fig === "cell-tile" && (
+  <div class="fm fm-split" role="img" aria-label="Cells are typed slots; Tiles fill them on z-planes. Title and kicker fill the masthead-lede, meta the masthead-bay, content the stage, and footer/progress/pagination the footer-row cells.">
+    <div class="slide ct">
+      <div class="band">
+        <div class="cell"><span class="lbl">masthead-lede</span><span class="tile chrome">kicker</span><span class="tile chrome">title</span></div>
+        <div class="cell"><span class="lbl">masthead-bay</span><span class="tile chrome">meta</span></div>
+      </div>
+      <div class="cell stage"><span class="lbl">stage</span><span class="tile content big">content</span><span class="tile surface ghost">watermark</span></div>
+      <div class="footrow">
+        <div class="cell"><span class="lbl">footer-left</span><span class="tile chrome">footer</span></div>
+        <div class="cell"><span class="lbl">progress-centre</span><span class="tile chrome">progress</span></div>
+        <div class="cell"><span class="lbl">pagination-right</span><span class="tile chrome">pagination</span></div>
+      </div>
+    </div>
+    <ul class="zlegend">
+      <li><span class="zsw surface"></span><b>z0</b> canvas · rule</li>
+      <li><span class="zsw surface ghost"></span><b>z1</b> atmosphere · watermark</li>
+      <li><span class="zsw content"></span><b>z2</b> content</li>
+      <li><span class="zsw chrome"></span><b>z3</b> chrome <small>title · meta · footer · progress · pagination</small></li>
+      <li><span class="zsw annotation"></span><b>z4</b> annotation</li>
+    </ul>
+  </div>
+)}
+
+{fig === "tile-component" && (
+  <div class="fm fm-split" role="img" aria-label="Most Tiles are engine-owned chrome; the content Tile hosts the author's Component (here, kpi), which owns its own internal layout.">
+    <div class="slide ct">
+      <div class="band">
+        <span class="tile chrome">title</span><span class="tile chrome">meta</span>
+      </div>
+      <div class="contenttile">
+        <span class="lbl accent">content tile · z2</span>
+        <div class="kpi">
+          <div class="kpi-h">Ahead of plan</div>
+          <div class="kpi-grid">
+            <div class="hero"><b>$2.4B</b><small>revenue</small></div>
+            <div class="sup"><b>42%</b><small>margin</small></div>
+            <div class="sup"><b>$1.1B</b><small>cash</small></div>
+          </div>
+        </div>
+        <span class="badge">Component: kpi</span>
+      </div>
+      <div class="footrow tiles">
+        <span class="tile chrome">footer</span><span class="tile chrome">progress</span><span class="tile chrome">pagination</span>
+      </div>
+    </div>
+    <ul class="own">
+      <li><span class="zsw chrome"></span><b>Chrome tiles</b> — engine-owned (title, meta, footer, progress, pagination…). The author never touches them.</li>
+      <li><span class="zsw content"></span><b>content tile</b> — the engine-owned slot the author's markdown flows into.</li>
+      <li><span class="zsw accent"></span><b>Component</b> — the author's layout fills it, and in the model is <i>itself a Frame</i>. Portrait reflow lives here.</li>
+    </ul>
+  </div>
+)}
+
+{fig === "together" && (
+  <div class="fm fm-split" role="img" aria-label="Frame composes Cells; each Tile paints into a cell on its z-plane; the content tile holds the Component. Stacking the five planes — canvas, atmosphere, content, chrome, annotation — composites the slide.">
+    <ol class="stack">
+      <li class="annotation"><b>z4</b> annotation</li>
+      <li class="chrome"><b>z3</b> chrome — title · meta · footer · progress · pagination</li>
+      <li class="content"><b>z2</b> content tile → Component</li>
+      <li class="surface ghost"><b>z1</b> atmosphere · watermark</li>
+      <li class="surface"><b>z0</b> canvas · rule</li>
+      <span class="brace" aria-hidden="true">Frame</span>
+    </ol>
+    <div class="arrow" aria-hidden="true">→</div>
+    <div class="composited">
+      <span class="clabel">the composited slide</span>
+      <div class="slide all">
+        <span class="watermark" aria-hidden="true">z1</span>
+        <span class="annot" aria-hidden="true" title="z4 annotation"></span>
+        <div class="band"><span class="tile chrome">title</span><span class="tile chrome">meta</span></div>
+        <div class="cell stage"><span class="tile content big">content → Component (kpi)</span></div>
+        <div class="footrow tiles"><span class="tile chrome">footer</span><span class="tile chrome">progress</span><span class="tile chrome">pagination</span></div>
+        <span class="canvaslbl">z0 canvas</span>
+      </div>
+    </div>
+  </div>
+)}
+
+<style>
+  .fm { margin: 1.25rem 0; font-size: 0.82rem; line-height: 1.3; }
+  .fm code { font-size: 0.85em; }
+  .fm-two { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+  .fm-split { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 1.5rem; align-items: center; }
+  @media (max-width: 640px) { .fm-two, .fm-split { grid-template-columns: 1fr; } }
+
+  figure { margin: 0; }
+  figcaption { font: 600 0.8rem/1.2 var(--sl-font-system-mono, monospace); margin-bottom: 0.45rem; color: var(--sl-color-white); }
+  figcaption span { color: var(--sl-color-gray-3); font-weight: 400; }
+
+  /* slide rectangle = a CSS grid wireframe with rounded corners */
+  .slide {
+    display: grid; gap: 0.4rem; padding: 0.5rem;
+    border: 2px solid var(--sl-color-gray-4); border-radius: 12px;
+    background: var(--sl-color-gray-6); position: relative; overflow: hidden;
+    aspect-ratio: 16 / 9;
+  }
+  .slide.std, .slide.ct { grid-template-rows: auto 1fr auto; }
+  .slide.solo, .slide.all { grid-template-rows: auto 1fr auto; }
+
+  .cell {
+    position: relative; border: 1.5px dashed var(--sl-color-gray-4); border-radius: 8px;
+    background: color-mix(in srgb, var(--sl-color-accent) 7%, transparent);
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: center;
+    gap: 0.3rem; padding: 0.4rem; min-height: 1.8rem;
+  }
+  .cell.stage { background: color-mix(in srgb, var(--sl-color-accent) 12%, transparent); border-color: var(--sl-color-accent); }
+  .lbl { font: 600 0.68rem/1.1 var(--sl-font-system-mono, monospace); color: var(--sl-color-gray-2); position: absolute; top: 0.3rem; left: 0.45rem; }
+  .lbl small { font-weight: 400; opacity: 0.8; }
+  .lbl.accent { color: var(--sl-color-accent); position: static; }
+  .band { display: grid; grid-template-columns: 1.7fr 1fr; gap: 0.4rem; }
+  .footrow { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.4rem; }
+  .footrow.tiles { border: 0; }
+  .footrow.tiles, .band:has(> .tile) { display: flex; justify-content: space-between; padding: 0 0.2rem; }
+
+  /* tiles = solid rounded chips, coloured by z-plane kind */
+  .tile {
+    font: 600 0.6rem/1 var(--sl-font-system-mono, monospace); color: #fff;
+    padding: 0.22rem 0.45rem; border-radius: 6px; white-space: nowrap;
+    background: var(--k, #64748b);
+  }
+  .tile.big { padding: 0.9rem 1.3rem; align-self: center; margin: auto; border-radius: 8px; }
+  .chrome { --k: #b45309; }
+  .content { --k: #2563a8; }
+  .surface { --k: #64748b; }
+  .annotation { --k: #7c5cc4; }
+  .ghost { opacity: 0.5; }
+
+  .suppressed { position: absolute; bottom: 0.4rem; left: 0; right: 0; text-align: center; margin: 0;
+    font: 600 0.62rem/1.3 var(--sl-font-system-mono, monospace); color: var(--sl-color-gray-3); }
+
+  /* z-plane legend / ownership list */
+  .zlegend, .own { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.55rem; }
+  .zlegend li, .own li { display: flex; gap: 0.5rem; align-items: baseline; color: var(--sl-color-gray-2); }
+  .own li { align-items: flex-start; line-height: 1.4; }
+  .zsw { width: 0.85rem; height: 0.85rem; border-radius: 4px; flex: none; background: var(--k, #64748b); position: relative; top: 0.15rem; }
+  .zlegend b, .own b { color: var(--sl-color-white); }
+  .zlegend small { color: var(--sl-color-gray-3); }
+
+  /* fig 3 — content tile + mini kpi component */
+  .contenttile { border: 2px solid var(--sl-color-accent); border-radius: 8px; padding: 1rem 0.7rem 0.7rem; position: relative;
+    background: color-mix(in srgb, var(--sl-color-accent) 8%, transparent); }
+  .kpi-h { font: 700 0.95rem/1.1 var(--sl-font-system, serif); color: var(--sl-color-white); margin: 0.2rem 0 0.5rem; }
+  .kpi-grid { display: grid; grid-template-columns: 1.6fr 1fr; grid-template-rows: 1fr 1fr; gap: 0.4rem; }
+  .kpi-grid .hero { grid-row: 1 / 3; }
+  .kpi-grid .hero, .kpi-grid .sup { background: color-mix(in srgb, var(--sl-color-accent) 14%, transparent); border-radius: 6px; padding: 0.5rem 0.6rem; display: flex; flex-direction: column; justify-content: center; }
+  .kpi-grid b { font: 800 1.15rem/1 var(--sl-font-system, serif); color: var(--sl-color-white); }
+  .kpi-grid .sup b { font-size: 0.9rem; }
+  .kpi-grid small { font: 600 0.55rem/1 var(--sl-font-system-mono, monospace); color: var(--sl-color-gray-3); margin-top: 0.2rem; }
+  .badge { position: absolute; bottom: -0.6rem; right: 0.7rem; background: var(--sl-color-accent); color: var(--sl-color-black, #fff); font: 600 0.6rem/1 var(--sl-font-system-mono, monospace); padding: 0.22rem 0.5rem; border-radius: 5px; }
+
+  /* fig 4 — exploded z-plane stack + composited slide */
+  .stack { list-style: none; margin: 0; padding: 0 0 0 1.6rem; display: flex; flex-direction: column; gap: 0.4rem; position: relative; }
+  .stack li { border: 2px solid; border-radius: 8px; padding: 0.55rem 0.7rem; font: 600 0.68rem/1.2 var(--sl-font-system-mono, monospace); }
+  .stack li b { margin-right: 0.4rem; }
+  .stack li.surface { border-color: var(--sl-color-gray-4); background: var(--sl-color-gray-6); color: var(--sl-color-gray-2); --k: none; }
+  .stack li.content { border-color: #2563a8; background: color-mix(in srgb, #2563a8 14%, transparent); color: var(--sl-color-white); }
+  .stack li.chrome { border-color: #b45309; background: color-mix(in srgb, #b45309 16%, transparent); color: var(--sl-color-white); }
+  .stack li.annotation { border-color: #7c5cc4; background: color-mix(in srgb, #7c5cc4 16%, transparent); color: var(--sl-color-white); }
+  .stack .brace { position: absolute; left: 0; top: 0; bottom: 0; width: 0.7rem; border: 2px solid var(--sl-color-gray-4); border-right: 0; border-radius: 8px 0 0 8px;
+    writing-mode: vertical-rl; transform: rotate(180deg); text-align: center; font: 700 0.62rem/0.7rem var(--sl-font-system-mono, monospace); color: var(--sl-color-accent); letter-spacing: 0.08em; }
+  .arrow { text-align: center; color: var(--sl-color-gray-3); font-size: 1.4rem; }
+  @media (max-width: 640px) { .arrow { transform: rotate(90deg); } }
+  .composited .clabel { display: block; font: 600 0.7rem/1 var(--sl-font-system-mono, monospace); color: var(--sl-color-gray-2); margin-bottom: 0.4rem; }
+  .slide.all .watermark { position: absolute; right: 0.6rem; top: 38%; font: 800 1.4rem/1 var(--sl-font-system, serif); color: var(--sl-color-gray-4); opacity: 0.5; }
+  .slide.all .annot { position: absolute; top: 0.5rem; right: 0.5rem; width: 0.6rem; height: 0.6rem; border-radius: 50%; background: #7c5cc4; }
+  .slide.all .canvaslbl { position: absolute; bottom: 0.3rem; left: 0.45rem; font: 600 0.58rem/1 var(--sl-font-system-mono, monospace); color: var(--sl-color-gray-3); }
+</style>

@@ -3,6 +3,8 @@ title: "The Form model — Frame · Cell · Tile"
 description: "How a Lattice slide is composed: a Frame divides the slide into Cells, each Cell holds a Tile (or a nested Frame), and the author's Component fills the content Tile. Plus the render chain for a single title, and where orientation fits."
 ---
 
+import FormDiagram from '../../../components/spec/FormDiagram.astro';
+
 :::note[Canonical source]
 This page mirrors the in-repo design doc [`design/forms.md`](https://github.com/slidewright/lattice/blob/main/design/forms.md), which owns the model. The diagrams are drawn from the live manifests under [`lib/forms/`](https://github.com/slidewright/lattice/blob/main/lib/forms).
 :::
@@ -26,7 +28,7 @@ There are only two kinds of object — **slicers** (Frames) that make boxes, and
 
 A Frame is, concretely, a `cells: […]` list (plus an optional `suppresses: […]`). The root **`standard`** frame composes the full chrome — a masthead band, the stage, and a footer row. A sovereign frame like **`split-panel`** keeps only the `stage` and suppresses the rest, so it reads as a completely different slide.
 
-![A Frame composes Cells — standard lays the full chrome; split-panel keeps only the stage.](../../../assets/form-model/1-frame-cell.png)
+<FormDiagram fig="frame-cell" />
 
 It is **recursive**: a Cell holds a Tile *or another Frame*. `split-panel` is a sovereign Frame docked in the `stage` Cell.
 
@@ -36,7 +38,7 @@ It is **recursive**: a Cell holds a Tile *or another Frame*. `split-panel` is a 
 
 A **Cell** is a typed slot — a sized, positioned region of the slide (the wireframe). A **Tile** is the leaf that fills one Cell, painted on a **z-plane** (`z0` canvas · `z1` atmosphere · `z2` content · `z3` chrome · `z4` annotation — which flattens to `z-index` in 2D and would become literal depth in a spatial renderer).
 
-![Cells are the typed slots; Tiles fill them on z-planes — title+kicker in the masthead-lede, meta in the masthead-bay, content in the stage, footer/progress/pagination below.](../../../assets/form-model/2-cell-tile.png)
+<FormDiagram fig="cell-tile" />
 
 The author's **title** and **kicker** (eyebrow) lift into the `masthead-lede`; the **meta** tile docks in the `masthead-bay`; the **content** Tile fills the `stage`; the footer-row Cells (`footer-left`, `progress-centre`, `pagination-right`) take the **footer**, **progress**, and **pagination** tiles.
 
@@ -46,7 +48,7 @@ The author's **title** and **kicker** (eyebrow) lift into the `masthead-lede`; t
 
 Almost every Tile is **engine-owned chrome** (title, meta, footer, progress, pagination, watermark…). The one exception is the **content** Tile (z2) — it hosts the author's **Component** (`kpi`, `comparison`, …), which owns its *own internal layout* inside that Tile. In the model the Component is itself a Frame that recurses into Cells and Tiles.
 
-![The content Tile hosts the author's Component, which owns its internal layout; chrome tiles ring it.](../../../assets/form-model/3-tile-component.png)
+<FormDiagram fig="tile-component" />
 
 This is the seam that matters for responsiveness: **orientation/reflow is a Component concern today** (it lives in the component's CSS), which is exactly why "does this layout work in portrait?" is a per-component fact.
 
@@ -54,9 +56,9 @@ This is the seam that matters for responsiveness: **orientation/reflow is a Comp
 
 ## 4 · Putting it together
 
-One Frame selects the Cells; each Tile paints into a Cell on its z-plane; the `content` Tile holds the Component. Stack the planes bottom-to-top → the composited slide.
+One Frame selects the Cells; each Tile paints into a Cell on its z-plane; the `content` Tile holds the Component. Stack the five planes bottom-to-top — `canvas`, `atmosphere`, `content`, `chrome`, `annotation` — and they composite into the slide.
 
-![Frame composes Cells; Cells hold Tiles on z-planes; the content Tile holds the Component.](../../../assets/form-model/4-together.png)
+<FormDiagram fig="together" />
 
 ---
 
