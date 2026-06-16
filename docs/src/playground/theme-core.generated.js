@@ -146,6 +146,11 @@ var require_color = __commonJS({
       const { L, C, h } = hexToOklch2(hex);
       return oklchToHex2({ L, C, h: ((h + deg) % 360 + 360) % 360 });
     }
+    function oklabDistance(hexA, hexB) {
+      const A = hexToOklab(hexA);
+      const B = hexToOklab(hexB);
+      return Math.hypot(A.L - B.L, A.a - B.a, A.b - B.b);
+    }
     function mix2(hexA, hexB, t) {
       const A = hexToOklab(hexA);
       const B = hexToOklab(hexB);
@@ -186,6 +191,7 @@ var require_color = __commonJS({
       rgbToHex: rgbToHex2,
       // WCAG
       srgbChannelToLinear,
+      linearToSrgbChannel,
       relativeLuminance: relativeLuminance2,
       contrastRatio: contrastRatio2,
       AA: AA2,
@@ -199,6 +205,7 @@ var require_color = __commonJS({
       withChroma: withChroma2,
       rotateHue: rotateHue2,
       mix: mix2,
+      oklabDistance,
       // repair
       pickInk: pickInk2,
       ensureContrast: ensureContrast2
