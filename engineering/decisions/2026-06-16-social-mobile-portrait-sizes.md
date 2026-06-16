@@ -122,6 +122,11 @@ same deck-wide CSS for non-landscape decks:
      metric grid to a centred flex column, linearising all variants in one rule.
    - `matrix-2x2`, `pricing`, `verdict-grid` — N-column grids collapse to one.
    - `split-panel`, `split-compare` — the rail stacks above the content panel.
+   - **Mermaid diagrams reorient** — a LR/RL flowchart is rewritten to TB/BT for
+     portrait (`lib/integrations/mermaid/reorient.js`, shared by the emulator PDF
+     pre-process and the runtime preview) so it flows down the tall frame at
+     legible node size instead of shrinking to a thin strip. Only the direction
+     token is touched; non-flowchart diagrams and landscape are untouched.
    - **Charts need no reflow** — SVG charts keep their aspect ratio and centre,
      which is correct (you don't vertically stretch a funnel).
    - **Deferred:** `redline` (the side-by-side before/after diff is semantically

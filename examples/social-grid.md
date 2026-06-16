@@ -67,6 +67,19 @@ The difference is where the next 18 months go.
 
 ---
 
+<!-- _class: diagram -->
+
+## A flow that reads top-to-bottom on a phone.
+
+```mermaid
+flowchart LR
+  A[Raw signals] --> B[Classify] --> C[Score & weight]
+  C --> D[Decision log] --> E[Calibration]
+  E -.adjust weights.-> C
+```
+
+---
+
 <!-- _class: closing -->
 
 `Ship it`

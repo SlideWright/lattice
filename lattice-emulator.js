@@ -868,12 +868,22 @@ function renderMermaid(definition, dark) {
 // Each fence is rendered for the colour-scheme of ITS slide: the nearest
 // preceding `<!-- _class: … -->` decides (a `dark` token => dark bake), falling
 // back to a deck-wide `class:`/`color-scheme:dark` signal in the front matter.
+// (geometry/orientation helpers — used here AND in the page-geometry block below;
+// required up here because preprocessMermaid runs before that block.)
+const { resolveSize, orientationFor, orientationCss } = require('./lib/engine/css');
+const { reorientMermaidForPortrait } = require('./lib/integrations/mermaid/reorient');
 function preprocessMermaid(source) {
   const fmMatch = source.match(/^---\n[\s\S]*?\n---/);
   const fm = fmMatch ? fmMatch[0] : '';
   const globalDark =
     /^\s*class:\s*["']?[^"'\n]*\bdark\b/m.test(fm) ||
     /color-scheme\s*:\s*dark/.test(fm);
+  // Deck-wide orientation, resolved from the `size:` directive the same way the
+  // page geometry below does. A portrait deck reorients LR/RL flowcharts to
+  // TB/BT (lib/integrations/mermaid/reorient.js) so a wide graph flows down the
+  // tall frame instead of shrinking to a thin strip; landscape is untouched.
+  const sizeName = (fm.match(/^\s*size:\s*["']?([\w:/-]+)["']?\s*$/m) || [])[1] || 'hd';
+  const orientation = orientationFor(resolveSize(sizeName, [paletteCSS, layoutCSS])).name;
   return source.replace(/```mermaid\n([\s\S]*?)```/g, (_match, def, offset) => {
     const before = source.slice(0, offset);
     const classDirectives = [...before.matchAll(/<!--\s*_class:\s*([^>]*?)\s*-->/g)];
@@ -881,7 +891,7 @@ function preprocessMermaid(source) {
       ? /\bdark\b/.test(classDirectives[classDirectives.length - 1][1])
       : globalDark;
     if (!QUIET) process.stdout.write(`  Rendering mermaid diagram (${slideDark ? 'dark' : 'light'})...`);
-    const svg = renderMermaid(def.trim(), slideDark);
+    const svg = renderMermaid(reorientMermaidForPortrait(def.trim(), orientation), slideDark);
     if (!QUIET) console.log(' done');
     return svg;
   });
@@ -897,7 +907,7 @@ const fm      = fmMatch ? fmMatch[1] : '';
 // `@size` directive through the engine's own `resolveSize`, the same lookup the
 // scaffold bakes into `@page`. `paletteCSS`/`layoutCSS` carry every theme +
 // base `@size` declaration (theme first, then base — composeCss's source order).
-const { resolveSize, orientationCss } = require('./lib/engine/css');
+// (resolveSize / orientationCss required above, before preprocessMermaid.)
 const deckSizeName   = (fm.match(/^\s*size:\s*["']?([\w:/-]+)["']?\s*$/m) || [])[1] || 'hd';
 const _geom          = resolveSize(deckSizeName, [paletteCSS, layoutCSS]);
 const slideW         = parseFloat(_geom.width);

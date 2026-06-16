@@ -34,10 +34,13 @@ in patch versions.
   metric column), `matrix-2x2`, `pricing` and `verdict-grid` collapse to a
   single column, and `split-panel` / `split-compare` stack their rail above the
   content. Each render path stamps a deck-wide `data-orientation` on the section
-  (engine + runtime); landscape is unstamped → byte-identical. Charts already
-  render correctly (aspect-preserved, centred) and need no reflow. Demo:
-  `examples/social-grid.md`. Remaining: `redline` (side-by-side diff is
-  semantically load-bearing) is deliberately left landscape-composed.
+  (engine + runtime); landscape is unstamped → byte-identical. **Mermaid
+  diagrams reorient** for portrait — a left-to-right flowchart becomes
+  top-to-bottom (LR→TB, RL→BT) so it flows down the tall frame at legible size
+  instead of shrinking to a thin strip (both the PDF and preview paths, via
+  `lib/integrations/mermaid/reorient.js`). Charts (SVG, aspect-preserved) need no
+  reflow. Demo: `examples/social-grid.md`. Remaining: `redline` (side-by-side
+  diff is semantically load-bearing) is deliberately left landscape-composed.
   See `engineering/decisions/2026-06-16-social-mobile-portrait-sizes.md` (phase 3).
 
 - **Narrative build — progressive disclosure via `_build`.** A slide opts into
