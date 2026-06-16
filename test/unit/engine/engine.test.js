@@ -160,6 +160,20 @@ describe('lattice-engine: css emission (P1.1)', () => {
     assert.match(out, /color:\s*#111/); // base rules inlined
   });
 
+  // Regression: a CSS minifier drops the space after `@import`, so the
+  // playground/Drawing Board (which fetch the MINIFIED dist palettes) ship the
+  // base import as `@import"lattice"`. THEME_IMPORT_RE required `\s+`, so the
+  // base never inlined — every palette collapsed to scaffold-only CSS and slides
+  // rendered unstyled everywhere the browser engine runs. See THEME_IMPORT_RE in
+  // lib/engine/css.js.
+  test('composeCss resolves the MINIFIED base import (@import"lattice", no space)', () => {
+    const MIN_PALETTE = `/* @theme cuoio */@import"lattice";:root{--accent:#840}`;
+    const out = composeCss({ themeCss: MIN_PALETTE, baseLatticeCss: BASE });
+    assert.doesNotMatch(out, /@import\s*['"]lattice['"]/); // resolved, not left dangling
+    assert.match(out, /--accent:\s*#840/); // palette tokens present
+    assert.match(out, /color:\s*#111/); // base rules inlined — the load-bearing assertion
+  });
+
   test('size: directive selects the matching @size geometry', () => {
     assert.equal(parseSizes(BASE).get('4K').width, '3840px');
     const out = composeCss({ themeCss: PALETTE, baseLatticeCss: BASE, sizeName: '4K' });
@@ -218,6 +232,27 @@ describe('lattice-engine: css emission (P1.1)', () => {
       assert.match(css, /light-dark\(/, `${name}: light-dark() missing — base not inlined`);
       // No dead theme-name @import left behind (font url() imports are fine).
       assert.doesNotMatch(css, /@import\s+['"][A-Za-z0-9_-]+['"]/, `${name}: unresolved theme-name @import`);
+      assert.ok(css.length > 100000, `${name}: sheet only ${css.length}B — collapsed`);
+    }
+  });
+
+  // Regression (marp purge, #363): the playground / Drawing Board fetch the
+  // MINIFIED dist palettes (dist/themes/<name>.min.css), whose base import has no
+  // space (`@import"lattice"`). When THEME_IMPORT_RE required `\s+`, every palette
+  // collapsed to scaffold-only CSS (~7 KB) and slides rendered unstyled in every
+  // browser surface. Sweep the real minified bytes so this can't regress.
+  test('every minified dist palette inlines the base (the playground fetch path)', () => {
+    const eng = createEngine();
+    const distThemeDir = path.join(ROOT, 'dist', 'themes');
+    const mins = fs.readdirSync(distThemeDir).filter((f) => f.endsWith('.min.css'));
+    assert.ok(mins.length >= 20, `expected the full minified palette set, got ${mins.length}`);
+    eng.addThemes([fs.readFileSync(path.join(ROOT, 'dist', 'lattice.min.css'), 'utf8')]);
+    for (const f of mins) eng.addThemes([fs.readFileSync(path.join(distThemeDir, f), 'utf8')]);
+    for (const f of mins) {
+      const name = f.replace(/\.min\.css$/, '');
+      const css = eng.render('# A\n', name).css;
+      // The load-bearing proof: a real component rule from the base is present.
+      assert.match(css, /verdict-grid/, `${name}: base not inlined — collapsed to scaffold-only`);
       assert.ok(css.length > 100000, `${name}: sheet only ${css.length}B — collapsed`);
     }
   });
