@@ -888,15 +888,19 @@ person who needs the accommodation gets it.
 
 Because colour alone distinguishes only ~1–2 categories under dichromacy, the
 mode does **not** rely on recolouring. It pairs CVD-tuned **status colours**
-(`pass`/`warn`/`fail` moved off the deficiency's confusion axis) with two
+(`pass`/`warn`/`fail` moved off the deficiency's confusion axis) with three
 redundant, non-colour channels that carry meaning when colour collapses:
 
 - **Status glyphs** — `✓` / `!` / `✗` prefix the status-pill vocabulary.
 - **Categorical textures** — a distinct pattern (diagonal, dots, grid, chevron,
-  rings, checker, …) per categorical slot on diagram and chart fills.
+  rings, checker, …) per categorical slot on diagram and chart fills, including
+  the Mermaid pie.
+- **Line-styles** — a per-series `stroke-dasharray` (solid / dashed / dotted / …)
+  on multi-series line charts (radar), where a fill texture doesn't apply.
 
 Authors write decks normally — no per-slide markup. `achromatopsia` leans
-entirely on glyphs + textures (its status trio is luminance-separated greys).
+entirely on glyphs + textures + line-styles (its status trio is
+luminance-separated greys) — the same channels that survive black-and-white print.
 Design + rationale: `engineering/decisions/2026-06-16-colour-blindness-accessibility.md`
 and `…-cvd-redundant-encoding.md`.
 

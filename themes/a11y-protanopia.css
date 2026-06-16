@@ -104,6 +104,22 @@ section .cluster.section-8 rect, section .section-8 rect, section .section-8 pat
 section .cluster.section-9 rect, section .section-9 rect, section .section-9 path, section .section-9 circle { fill: url(#latt-a11y-tex-10) !important; }
 section .cluster.section-10 rect, section .section-10 rect, section .section-10 path, section .section-10 circle { fill: url(#latt-a11y-tex-11) !important; }
 section .cluster.section-11 rect, section .section-11 rect, section .section-11 path, section .section-11 circle { fill: url(#latt-a11y-tex-12) !important; }
+/* Mermaid pie — slices are `path.pieCircle` painted from the --cat ramp (not
+ * the chart-cat set), so map them to the diagram texture set, cycling mod-12
+ * like the colour. A pieOuterCircle <circle> precedes them, so :nth-of-type on
+ * `path` lines up 1:1 with slice order. */
+section .pieCircle:nth-of-type(12n+1) { fill: url(#latt-a11y-tex-1) !important; }
+section .pieCircle:nth-of-type(12n+2) { fill: url(#latt-a11y-tex-2) !important; }
+section .pieCircle:nth-of-type(12n+3) { fill: url(#latt-a11y-tex-3) !important; }
+section .pieCircle:nth-of-type(12n+4) { fill: url(#latt-a11y-tex-4) !important; }
+section .pieCircle:nth-of-type(12n+5) { fill: url(#latt-a11y-tex-5) !important; }
+section .pieCircle:nth-of-type(12n+6) { fill: url(#latt-a11y-tex-6) !important; }
+section .pieCircle:nth-of-type(12n+7) { fill: url(#latt-a11y-tex-7) !important; }
+section .pieCircle:nth-of-type(12n+8) { fill: url(#latt-a11y-tex-8) !important; }
+section .pieCircle:nth-of-type(12n+9) { fill: url(#latt-a11y-tex-9) !important; }
+section .pieCircle:nth-of-type(12n+10) { fill: url(#latt-a11y-tex-10) !important; }
+section .pieCircle:nth-of-type(12n+11) { fill: url(#latt-a11y-tex-11) !important; }
+section .pieCircle:nth-of-type(12n)    { fill: url(#latt-a11y-tex-12) !important; }
 /* Native chart-family (SVG) — texture the categorical fills (chart-cat set,
  * which paints --chart-cat-N-fill so value + legend stay matched). */
 section.piechart .wedge:nth-of-type(6n+1) { fill: url(#latt-a11y-chart-tex-1) !important; }

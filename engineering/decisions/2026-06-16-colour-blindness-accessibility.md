@@ -21,7 +21,9 @@ under tritanomaly, and *all* hue under achromatopsia. This is the same
 "meaning lives in hue" gap the print-styling note
 ([`2026-06-14-deck-print-styling.md`](./2026-06-14-deck-print-styling.md))
 found for grayscale paper — here the surface is the screen and the PDF, and
-the fix is per-viewer, not per-medium.
+the *palette* fix is per-viewer, not per-medium. (The phase-2 **encoding** fix,
+by contrast, *is* medium-independent and closes the print gap too — see the
+[redundant-encoding ADR § Side-benefit](./2026-06-16-cvd-redundant-encoding.md).)
 
 **The ask (owner, 2026-06-16).** Not a per-theme tweak and not an official
 theme. *"In the land of the blind the one-eyed man is king — themes go out
@@ -45,8 +47,8 @@ Because every render surface already resolves a theme *by name* (see
 | Precedence | **workspace > front-matter `accessibility:` > off**; and accessibility > `theme:` always | The live viewer's declared need can't be overridden by an author's guess |
 | Scope | **Full** colour-contract replacement | Owner: "themes go out the window" |
 | v1 deficiencies | **deuteranopia, protanopia, tritanopia** (the three dichromacies), each × light/dark | Palette-only genuinely works for these; covers ~99% of CVD |
-| Achromatopsia | **deferred to phase 2** | Under total colour-blindness hue carries *zero* information; it only works once redundant encoding lands |
-| Redundant encoding | **phase 2** (patterns / markers / shapes / ✓!✗ glyphs) | v1 is palette-only; this is what lifts the ≤8-category ceiling and makes achromatopsia function |
+| Achromatopsia | deferred in v1; **shipped in phase 2** | Under total colour-blindness hue carries *zero* information; it works now that redundant encoding has landed (resolves via the `accessibility:` key like the dichromacies) |
+| Redundant encoding | v1 palette-only; **shipped in phase 2** (textures / line-styles / ✓!✗ glyphs) | Lifts the ≤8-category ceiling, makes achromatopsia function, and — being medium-independent — doubles as a grayscale-**print** accommodation (see [redundant-encoding ADR § Side-benefit](./2026-06-16-cvd-redundant-encoding.md)) |
 
 ## Why this shape
 
@@ -128,8 +130,9 @@ phase-2 redundant encoding exists to break.
    downstream viewer's workspace preference can't retro-apply to a static
    file. The guarantee is "workspace wins wherever the deck renders live
    (playground / Present / Practice / runtime)."
-3. **Achromatopsia is phase 2.** Shipping it palette-only would be a mode that
-   resolves but doesn't function.
+3. **Achromatopsia shipped in phase 2.** It was held back in v1 because
+   palette-only would resolve but not function; with redundant encoding landed it
+   now works and resolves via the `accessibility:` key like the dichromacies.
 4. **Raster images / photos are uncorrected.** The token approach can't touch
    embedded bitmaps — acceptable, noted.
 
@@ -154,6 +157,8 @@ Per-feature deliverables (demo deck `examples/<slug>.md` + committed PDF,
 [`lib/base/base.docs.md`](../../lib/base/base.docs.md)) land with the
 implementation per the workflow contract.
 
-**Status: design-decision** — mechanism, precedence, and v1 scope aligned
-with the owner 2026-06-16 (workspace-wins; full replacement; palette-only v1;
-three dichromacies, achromatopsia + patterns deferred to phase 2). No code yet.
+**Status: shipped** — mechanism, precedence, and scope aligned with the owner
+2026-06-16 (workspace-wins; full replacement). All four types ship (three
+dichromacies + achromatopsia); phase-2 redundant encoding (textures,
+line-styles, glyphs) landed and is detailed in the
+[redundant-encoding ADR](./2026-06-16-cvd-redundant-encoding.md).

@@ -184,11 +184,17 @@ in patch versions.
   always. Because colour alone distinguishes only ~1–2 categories under
   dichromacy, the accommodation pairs **CVD-tuned status colours** (pass/warn/fail
   moved off each deficiency's confusion axis, verified distinct + AA) with
-  **redundant non-colour encoding**: ✓/!/✗ **glyphs** on status pills and a
-  distinct **texture pattern** per categorical slot on diagram/chart fills. All
-  scoped to `[data-a11y]`, so normal decks are untouched. New: the four
-  `a11y-*` palettes (+ dark), `lib/core/resolve-accessibility.js`,
-  `lib/theme/cvd.js` (Machado-2009 simulation), and `tools/cvd-audit.js`.
+  **redundant non-colour encoding**: ✓/!/✗ **glyphs** on status pills, a distinct
+  **texture pattern** per categorical slot on diagram fills (Mermaid `.section-N`
+  diagrams **and** the Mermaid pie) and native chart fills (pie / funnel), and a
+  per-series **line-style** on radar. All four types ship — the three dichromacies
+  **and achromatopsia** (which needs the encoding to function, so colour-free
+  decks read by texture + glyph + line-style alone, the same channels that survive
+  black-and-white **printing**). The encoding lives inside each curated `a11y-*`
+  theme (no global flag — it applies only when an `a11y-*` palette is active), so
+  normal decks are untouched. New: the four `a11y-*` palettes (+ dark),
+  `lib/core/resolve-accessibility.js`, `lib/theme/cvd.js` (Machado-2009
+  simulation), and `tools/cvd-audit.js`.
   See `engineering/decisions/2026-06-16-colour-blindness-accessibility.md` +
   `…-cvd-redundant-encoding.md`.
 - **Editor autocomplete for focus, with a manifest-declared capability.** The

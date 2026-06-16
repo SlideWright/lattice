@@ -60,11 +60,19 @@ describe('accessibility-resolution', () => {
     assert.equal(r.source, 'workspace');
   });
 
-  test('achromatopsia is recognized but deferred → off + unsupported flag', () => {
+  test('achromatopsia activates and maps to a11y-achromatopsia (phase-2 graduated)', () => {
     const r = resolveAccessibility({ md: FM('achromatopsia'), env: {} });
-    assert.equal(r.active, false);
-    assert.equal(r.unsupported, 'achromatopsia');
+    assert.equal(r.active, true);
+    assert.equal(r.palette, 'a11y-achromatopsia');
+    assert.equal(r.unsupported, null);
     assert.equal(r.source, 'front-matter');
+  });
+
+  test('achromatopsia aliases resolve (monochromacy/achromat → a11y-achromatopsia)', () => {
+    for (const alias of ['monochromacy', 'achromat', 'monochrome']) {
+      const r = resolveAccessibility({ md: FM(alias), env: {} });
+      assert.equal(r.palette, 'a11y-achromatopsia', `alias ${alias}`);
+    }
   });
 
   test('an unknown front-matter token is treated as unset (off), not a crash', () => {
@@ -83,7 +91,10 @@ describe('accessibility-resolution', () => {
     assert.equal(readFrontMatterAccessibility('# h\n\naccessibility: deuteranopia'), null);
   });
 
-  test('A11Y_PALETTES are the three shipped dichromacies', () => {
-    assert.deepEqual([...A11Y_PALETTES].sort(), ['a11y-deuteranopia', 'a11y-protanopia', 'a11y-tritanopia']);
+  test('A11Y_PALETTES are the three dichromacies plus achromatopsia', () => {
+    assert.deepEqual(
+      [...A11Y_PALETTES].sort(),
+      ['a11y-achromatopsia', 'a11y-deuteranopia', 'a11y-protanopia', 'a11y-tritanopia'],
+    );
   });
 });

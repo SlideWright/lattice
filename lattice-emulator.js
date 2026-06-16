@@ -261,8 +261,9 @@ const md = readFileOrDie(mdFile, 'source markdown');
 const { resolvePalette } = require('./lib/core/resolve-palette');
 // Accessibility (CVD) overrides the theme: when active it wins the palette
 // name-resolution, selecting a curated a11y-* theme. Workspace tier = env
-// LATTICE_ACCESSIBILITY; deck tier = front-matter `accessibility:`. The a11y
-// themes carry their own redundant-encoding CSS (themes/a11y-encoding.css).
+// LATTICE_ACCESSIBILITY; deck tier = front-matter `accessibility:`. Each a11y
+// theme inlines its own redundant-encoding CSS (glyphs + texture/line-style
+// fills); the only engine seam is injecting the texture <pattern> <defs> below.
 const { resolveAccessibility } = require('./lib/core/resolve-accessibility');
 const a11y = resolveAccessibility({ md });
 if (a11y.unsupported) {

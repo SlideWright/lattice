@@ -80,20 +80,45 @@ The **only** engine seam is injecting the categorical texture `<pattern>`
 whenever the resolved palette name matches `a11y-*`
 (`lib/core/accessibility-textures.js`).
 
-`themes/a11y-encoding.css` carries, applied to the active deck:
+Each `a11y-*` theme inlines, applied to the active deck:
 
 - **Semantic glyphs** — `section .chart-status[data-s="…"]::before { content }`
   (✓ / ! / ✗ / ◆ / –) on the shared status-pill vocabulary.
 - **Categorical textures** — re-points each `.section-0..11` diagram fill
-  (mirroring `mermaid.css`'s DIAGRAM OVERRIDES) to `url(#latt-a11y-tex-N)`. Each
-  pattern paints `var(--cat-N-fill)` then overlays a distinct geometry in
-  `--cat-on-fill`, so colour stays a redundant channel and labels stay legible.
+  (mirroring `mermaid.css`'s DIAGRAM OVERRIDES) **plus the Mermaid pie's
+  `.pieCircle` slices** (which carry the `--cat-N` ramp but live outside the
+  `.section-N` class set, so they need their own `:nth-of-type` mapping) to
+  `url(#latt-a11y-tex-N)`. Each pattern paints `var(--cat-N-fill)` then overlays
+  a distinct geometry in `--cat-on-fill`, so colour stays a redundant channel and
+  labels stay legible.
+- **Native chart fills** — `section.piechart .wedge` / `.funnel .funnel-band`
+  to the paired `--chart-cat-N` texture set, and `section.radar .radar-poly`
+  per-series **line-style** (`stroke-dasharray`), where a fill texture doesn't apply.
 
 The texture `<defs>` reach inline Mermaid/chart SVGs via **M1** — the engine
 injects a shared colour-carrying `<pattern>` `<defs>` once when an `a11y-*`
 palette is active (the alternative, a CSS-only overlay, was rejected as fragile
 across diagram types and the two renderers). M1 is the single engine seam; every
 other part of the accommodation is CSS inside the curated themes.
+
+## Side-benefit — the encoding is medium-independent (grayscale print)
+
+The redundant channels are not specific to a viewer's eyes; they are specific to
+the *absence of usable hue*, wherever that comes from. A texture per categorical
+slot, a line-style per series, and a ✓/!/✗ glyph per status survive **any**
+reduction to luminance — total colour-blindness on screen **and** a deck printed
+or photocopied in black-and-white, faxed, or shown on a monochrome projector.
+
+This is the same "meaning lives in hue" failure the print-styling note
+([`2026-06-14-deck-print-styling.md`](./2026-06-14-deck-print-styling.md)) found
+for grayscale paper. The parent decision framed CVD as *"per-viewer, not
+per-medium"* — true of the **palette** half (a curated palette only helps the
+eyes in front of the screen), but the **encoding** half unifies the two: one
+mechanism (textures + line-styles + glyphs) closes both the achromatopsia case
+*and* the grayscale-print case. Achromatopsia is, in effect, the on-screen
+instance of the print problem — which is why the same fix serves both. The
+encoding is therefore worth keeping legible at print resolution (low-density,
+adequate-contrast geometry), not only at screen zoom.
 
 ## Build sequence (supersedes parent doc steps 3–6)
 
@@ -102,13 +127,18 @@ other part of the accommodation is CSS inside the curated themes.
 2. Categorical texture patterns — CSS components first (tractable, high cover),
    then the M1 SVG-defs transform for diagrams/charts.
 3. Semantic glyphs + line-style variation.
-4. Resolver wiring (engine stamps `data-a11y`) + the `--strict` CVD gate over
-   the palettes (now asserting the *colour* layer's semantic/deep distinctness,
-   with patterns covering the categorical ceiling).
+4. Resolver wiring (selects the `a11y-<type>` palette name — **no `data-a11y`
+   stamp**; the encoding rides inside the active theme) + the `--strict` CVD gate
+   over the palettes (now asserting the *colour* layer's semantic/deep
+   distinctness, with patterns covering the categorical ceiling).
 5. Demo deck (rendered in light + dark for every type) for owner sign-off —
    export-affecting, so it STOPS for inspection per CLAUDE.md.
 6. Drawing Board workspace toggle (parent doc step 4).
 
-**Status: design-decision** — finding verified empirically 2026-06-16. Direction
-agreed: patterns + palettes together; achromatopsia back in v1 (all four types);
-SVG textures via M1 (kernel-injected `<defs>`).
+**Status: shipped** — finding verified empirically 2026-06-16; encoding built
+(textures, line-styles, glyphs) and rendered across all four types. Achromatopsia
+now resolves via the `accessibility:` key, the Mermaid pie is textured alongside
+the `.section-N` diagrams, and the encoding doubles as a grayscale-print
+accommodation (above). Direction agreed: patterns + palettes together;
+achromatopsia in v1 (all four types); SVG textures via M1 (kernel-injected
+`<defs>`).
