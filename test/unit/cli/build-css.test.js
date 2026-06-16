@@ -53,6 +53,36 @@ describe('build-css', () => {
     assert.match(out, /\/\* === lib\/_theme\.css === \*\//);
   });
 
+  test('Form Cell sheets emit after base.variants and before the Tile sheets', () => {
+    // The whole cascade-neutrality argument for the self-contained Form Cells
+    // (ADR 2026-06-15-form-implementation.md §6.2) rests on this emit order:
+    // base.variants.css → cell/<id>/<id>.css → tile/<id>/<id>.css. A future
+    // sort/slot regression would otherwise pass CI and only surface as a pixel
+    // diff. Pin it here.
+    const out = bundle();
+    const at = (rel) => out.indexOf(`/* === ${rel} === */`);
+    const variants = at('lib/base/base.variants.css');
+    const cellStage = at('lib/forms/cell/stage/stage.css');
+    const tileMeta = at('lib/forms/tile/meta/meta.css');
+    assert.ok(variants > 0, 'base.variants.css separator missing');
+    assert.ok(cellStage > 0, 'cell/stage/stage.css separator missing');
+    assert.ok(tileMeta > 0, 'tile/meta/meta.css separator missing');
+    assert.ok(
+      variants < cellStage && cellStage < tileMeta,
+      `expected base.variants < cell < tile (variants ${variants}, cell ${cellStage}, tile ${tileMeta})`
+    );
+    // Every Cell sheet precedes every Tile sheet (disjoint selectors, but the
+    // documented slot keeps the Cell-is-the-slot / Tile-docks-in-it order).
+    const cellIdxs = [...out.matchAll(/\/\* === lib\/forms\/cell\/[^=]+=== \*\//g)].map((m) => m.index);
+    const tileIdxs = [...out.matchAll(/\/\* === lib\/forms\/tile\/[^=]+=== \*\//g)].map((m) => m.index);
+    assert.ok(cellIdxs.length >= 5, `expected ≥5 cell sheets, got ${cellIdxs.length}`);
+    assert.ok(tileIdxs.length >= 4, `expected ≥4 tile sheets, got ${tileIdxs.length}`);
+    assert.ok(
+      Math.max(...cellIdxs) < Math.min(...tileIdxs),
+      'all Form Cell sheets must emit before all Form Tile sheets'
+    );
+  });
+
   test('committed lattice.css matches bundle() output (freshness gate)', () => {
     assert.ok(fs.existsSync(OUTPUT), `expected ${OUTPUT} to exist`);
     const current = fs.readFileSync(OUTPUT, 'utf8');

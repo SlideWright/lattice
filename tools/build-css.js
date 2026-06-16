@@ -123,25 +123,31 @@ const CONTRACT_LAYOUT_SOURCES = (() => {
     .sort();
 })();
 
-// Self-contained Form Tile CSS — every lib/forms/tile/<id>/<id>.css. A Tile that
-// owns its CSS (issue #356, the self-containment reframing) drops a sheet here;
-// the build picks it up by glob, so adding/removing a Tile folder needs no edit
-// to this list. Bundled immediately after base.variants (which defines the Form
-// chrome it styles) and before components — the exact slot these rules held when
-// they lived inline in base.variants.css, so the cascade is unchanged.
-const FORMS_TILE_CSS_SOURCES = (() => {
-  const dir = path.join(ROOT, 'lib', 'forms', 'tile');
+// Self-contained Form CSS — every lib/forms/{cell,tile}/<id>/<id>.css. A Cell or
+// Tile that owns its CSS (issue #356, the self-containment reframing) drops a
+// sheet in its folder; the build picks it up by glob, so adding/removing a Cell
+// or Tile folder needs no edit to this list. Both are bundled immediately after
+// base.variants and before components — the exact slot these rules held when they
+// lived inline in base.variants.css, so the cascade is unchanged. Cells come
+// before Tiles (the order the rules had in base.variants — the Cell is the slot,
+// the Tile docks into it); the two sets target disjoint selectors, so the order
+// is cascade-neutral regardless.
+function formCssSources(noun) {
+  const dir = path.join(ROOT, 'lib', 'forms', noun);
   if (!fs.existsSync(dir)) return [];
   return fs.readdirSync(dir, { withFileTypes: true })
     .filter((d) => d.isDirectory() && !d.name.startsWith('_'))
-    .map((d) => `lib/forms/tile/${d.name}/${d.name}.css`)
+    .map((d) => `lib/forms/${noun}/${d.name}/${d.name}.css`)
     .filter((rel) => fs.existsSync(path.join(ROOT, rel)))
     .sort();
-})();
+}
+const FORMS_CELL_CSS_SOURCES = formCssSources('cell');
+const FORMS_TILE_CSS_SOURCES = formCssSources('tile');
 
 const TAIL_SOURCES = [
   'lib/shared/shared.styles.css',
   'lib/base/base.variants.css',
+  ...FORMS_CELL_CSS_SOURCES,
   ...FORMS_TILE_CSS_SOURCES,
   ...CONTRACT_LAYOUT_SOURCES,
   'lib/integrations/mermaid/mermaid.css',

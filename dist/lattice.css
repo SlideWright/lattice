@@ -13408,32 +13408,150 @@ section.confidential::before {
   pointer-events: none;
 }
 
+/* The Form (`section.form`) chrome — the root Frame box, the masthead / stage /
+ * footer Cells, and the stage fill discipline — used to live here. It is now
+ * self-contained per Cell under lib/forms/cell/<id>/<id>.css (stage · masthead ·
+ * masthead-lede · masthead-bay · footer), the way the Form Tiles already own
+ * theirs under lib/forms/tile/<id>. tools/build-css.js globs the Cell sheets into
+ * the same cascade slot these rules held — immediately after this file, before
+ * the Tile sheets — so the cascade is unchanged. Cell-vs-Tile is the ownership
+ * line: the Cell is the slot, the Tile is what docks in it. See
+ * engineering/decisions/2026-06-15-form-implementation.md §6.2 (#356) and
+ * design/forms.md §5/§6. */
 
+/* === lib/forms/cell/footer/footer.css === */
+/* ── FOOTER Cell — three reserved zones (design/forms.md §6) ─────────────────
+ * Self-contained Form Cell (issue #356). Co-located with the Cell manifest
+ * (footer.cell.json) and bundled by tools/build-css.js into the same cascade slot
+ * it held inline in base.variants.css. See design/forms.md §5/§6 and the ADR
+ * engineering/decisions/2026-06-15-form-implementation.md §6.2.
+ *
+ * The footer band holds three Tiles that historically collided because each was
+ * an independent absolute at the same baseline with no shared budget: footer-left
+ * (the `footer:` text), progress-centre (the section rail — the progress Tile,
+ * lib/forms/tile/progress), pagination-right (`::after`). Pagination is a
+ * pseudo-element, so the footer Cell is a TOKEN COORDINATE CONTRACT, not a DOM
+ * grid: footer-left yields the reserved centre zone so it can never run through
+ * the rail, and the centre zone ends before the pagination zone. The reserved
+ * widths are the --footer-centre-w/-half tokens defined on the root in
+ * lib/forms/cell/stage/stage.css. (Non-form decks keep the full-width footer —
+ * this is scoped to section.form.) */
+section.form.has-progress > footer {
+  /* Yield to the reserved centre zone ONLY when a progress rail is present
+   * (the injectors add `has-progress`); a rail-less form slide keeps the
+   * default full-width footer. Right edge = 50% + half the centre zone + gap. */
+  right: calc(50% + var(--footer-centre-half) + var(--sp-md));
+}
 
-/* ── FORM · masthead Cell (opt-in via `form`) ───────────────────────────
- * The mastheadLift transform (lib/core/masthead-lift.js + the registry)
- * wraps the eyebrow + title into `.cell-masthead` so the slide's masthead is
- * a named band with a reserved right bay — `.masthead-bay` is where the
- * meta / logo / status Tiles dock. The slide body stays a DIRECT child of
- * <section>, so every component's `section.X > …` selectors still compose
- * (the stage Cell is the section content region, NOT a wrapper — see
- * engineering/decisions/2026-06-15-form-implementation.md §4). The eyebrow and
- * title keep their normal element-level styling (the `p:has(>code)+h2` eyebrow
- * rule and `section h2` both still match inside the band). Canonical model:
+/* === lib/forms/cell/masthead-bay/masthead-bay.css === */
+/* ── MASTHEAD-BAY sub-Cell — the reserved right bay (meta · logo · status) ────
+ * Self-contained Form Cell (issue #356). Co-located with the Cell manifest
+ * (masthead-bay.cell.json) and bundled by tools/build-css.js into the same
+ * cascade slot it held inline in base.variants.css. See design/forms.md §5/§6
+ * and the ADR engineering/decisions/2026-06-15-form-implementation.md §6.2.
+ *
+ * The right column of the masthead grid (template on the masthead Cell). It is a
+ * stack Cell: its Tiles dock top-down, right-aligned — the meta Tile
+ * (front-matter `meta:`) on top, the status chip beneath. The bay clips its own
+ * overflow so a long meta line is cut at the Cell, never bled across a neighbour
+ * (the §6 clip guarantee). This is the bay's LAYOUT; the Tiles' own appearance
+ * lives in their folders (lib/forms/tile/{meta,status}) — Cell-vs-Tile is the
+ * ownership line. All occupants are palette-blind. */
+section.form .cell-masthead .masthead-bay {
+  grid-column: masthead-bay;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--sp-sm);
+  text-align: right;
+  overflow: hidden;
+}
+
+/* === lib/forms/cell/masthead-lede/masthead-lede.css === */
+/* ── MASTHEAD-LEDE sub-Cell — the kicker + title column ──────────────────────
+ * Self-contained Form Cell (issue #356). Co-located with the Cell manifest
+ * (masthead-lede.cell.json) and bundled by tools/build-css.js into the same
+ * cascade slot it held inline in base.variants.css. See design/forms.md §5/§6
+ * and the ADR engineering/decisions/2026-06-15-form-implementation.md §6.2.
+ *
+ * The left column of the masthead grid (whose template lives on the masthead
+ * Cell, lib/forms/cell/masthead): it holds the kicker + title Tiles and yields
+ * its width to the reserved right bay. `min-width: 0` lets a long title truncate
+ * within the grid track rather than forcing the bay off-grid. */
+section.form .cell-masthead .masthead-lede {
+  min-width: 0;
+  grid-column: masthead-lede;
+}
+
+/* === lib/forms/cell/masthead/masthead.css === */
+/* ── MASTHEAD Cell — the named top band (opt-in via `form`) ──────────────────
+ * Self-contained Form Cell (issue #356). Co-located with the Cell manifest
+ * (masthead.cell.json) and bundled by tools/build-css.js (the
+ * lib/forms/cell/<id>/<id>.css glob) into the same cascade slot it held inline in
+ * base.variants.css. See design/forms.md §5/§6 and the ADR
+ * engineering/decisions/2026-06-15-form-implementation.md §6.2.
+ *
+ * The mastheadLift transform (lib/core/masthead-lift.js + the registry) wraps the
+ * eyebrow + title into `.cell-masthead` so the slide's masthead is a named band
+ * with a reserved right bay — `.masthead-bay` is where the meta / logo / status
+ * Tiles dock (its layout is the masthead-bay sub-Cell's concern; see
+ * lib/forms/cell/masthead-bay). The slide body stays a DIRECT child of <section>,
+ * so every component's `section.X > …` selectors still compose (the stage Cell is
+ * the section content region, NOT a wrapper — ADR §4). The eyebrow and title keep
+ * their normal element-level styling (the `p:has(>code)+h2` eyebrow rule and
+ * `section h2` both still match inside the band). Shared frame tokens
+ * (--frame-x/-y, --masthead-h) are defined on the root in
+ * lib/forms/cell/stage/stage.css and cascade in here. Canonical model:
+ * design/forms.md. */
+section.form .cell-masthead {
+  /* In-flow, content-height band: the hairline sits directly under the title,
+   * so there is no dead space when the title is one line, and the band grows
+   * naturally for a two-line title. (Was a fixed --masthead-h absolute box,
+   * which left ~4-5cqi of empty band below a one-line title.) */
+  display: grid;
+  grid-template-columns: [masthead-lede] 1fr [masthead-bay] auto;
+  column-gap: var(--sp-lg);
+  align-items: start;
+  margin-bottom: var(--sp-md);
+  padding-bottom: var(--sp-md);
+  border-bottom: 1px solid var(--border);
+}
+
+/* === lib/forms/cell/stage/stage.css === */
+/* ── STAGE Cell — the section content region + the root chrome Frame ─────────
+ * Self-contained Form Cell (issue #356, the Cell slice of the self-containment
+ * reframing that began with the Tiles). Co-located with the Cell manifest
+ * (stage.cell.json) and bundled by tools/build-css.js (the
+ * lib/forms/cell/<id>/<id>.css glob) into the same cascade slot these rules held
+ * inline in base.variants.css — immediately after base.variants, before the Tile
+ * sheets. Cell-vs-Tile is the ownership line: the Cell is the slot, the Tile is
+ * what docks in it (the meta/progress/watermark/status Tiles live under
+ * lib/forms/tile/<id>). See design/forms.md §5/§6 and the ADR
+ * engineering/decisions/2026-06-15-form-implementation.md §6.2.
+ *
+ * `section.form` IS the stage box: the masthead Cell is an in-flow band at the
+ * top, the footer Cell is reserved via padding-bottom, and the deterministic
+ * region that remains is the stage (NOT a wrapper element — see ADR §4, the
+ * 242-direct-child-selector constraint that defers section-as-grid). Because
+ * `section.form` is the root chrome Frame, this file is also where the shared,
+ * resolution-blind frame tokens are defined (--frame-x/-y, --masthead-h,
+ * --footer-h/-reserve, --footer-centre-w/-half); the masthead and footer Cells
+ * consume them by name (they cascade from this root). Canonical model:
  * design/forms.md.
  *
- * `form` is incompatible with `math` / `compare-code` (they drive their
- * own title grid via `> h2`); they're chrome-exempt in the toggle's skip set. */
-/* Cell gap + clip contract (design/forms.md §6). Cells must never touch or
- * bleed into one another: each Cell keeps a DEFINED gap to its neighbours, and
- * content that overflows a Cell is CLIPPED, not allowed to spill across.
+ * `form` is incompatible with `math` / `compare-code` (they drive their own title
+ * grid via `> h2`); they're chrome-exempt in the toggle's skip set.
+ *
+ * Cell gap + clip contract (design/forms.md §6). Cells must never touch or bleed
+ * into one another: each Cell keeps a DEFINED gap to its neighbours, and content
+ * that overflows a Cell is CLIPPED, not allowed to spill across.
  *   · masthead↔stage — the band's margin-bottom + hairline rule is the gap.
  *   · stage↔footer   — `form` reserves a footer safe-area (padding-bottom,
- *                     derived from the real footer Cell height) so content
- *                     keeps clear of the footer / progress Cell. (The fully-
- *                     bounded soft clip — an exact-edge fade — needs the
- *                     A-later stage wrapper; until then the section's own
- *                     overflow:hidden hard-clips anything escaping the slide.)
+ *                     derived from the real footer Cell height) so content keeps
+ *                     clear of the footer / progress Cell. (The fully-bounded
+ *                     soft clip — an exact-edge fade — needs the A-later stage
+ *                     wrapper; until then the section's own overflow:hidden
+ *                     hard-clips anything escaping the slide.)
  *   · per-Cell       — the masthead + bay clip their own overflow, so a long
  *                     title or meta line is cut at its Cell, never bled. */
 section.form {
@@ -13454,7 +13572,7 @@ section.form {
    * height (baseline inset + band height + gap), not a magic number, so the
    * stage's bottom edge ends exactly where the footer Cell begins. The centre
    * zone is the progress rail's reserved horizontal budget (see the footer Cell
-   * rules below) — footer-left yields it so the two can never collide. */
+   * rules) — footer-left yields it so the two can never collide. */
   --footer-h: calc(var(--_sec-1cqi, 1cqi) * 5);
   --footer-reserve: calc(var(--frame-inset-y) + var(--footer-h) + var(--sp-md));
   --footer-centre-w: calc(var(--_sec-1cqi, 1cqi) * 30);
@@ -13490,65 +13608,6 @@ section.form.fill-optical {
   justify-content: center;
   padding-bottom: calc(var(--footer-reserve) + var(--sp-2xl));
 }
-section.form .cell-masthead {
-  /* In-flow, content-height band: the hairline sits directly under the title,
-   * so there is no dead space when the title is one line, and the band grows
-   * naturally for a two-line title. (Was a fixed --masthead-h absolute box,
-   * which left ~4-5cqi of empty band below a one-line title.) */
-  display: grid;
-  grid-template-columns: [masthead-lede] 1fr [masthead-bay] auto;
-  column-gap: var(--sp-lg);
-  align-items: start;
-  margin-bottom: var(--sp-md);
-  padding-bottom: var(--sp-md);
-  border-bottom: 1px solid var(--border);
-}
-section.form .cell-masthead .masthead-bay { overflow: hidden; }
-section.form .cell-masthead .masthead-lede { min-width: 0; grid-column: masthead-lede; }
-section.form .cell-masthead .masthead-bay   { grid-column: masthead-bay; }
-
-/* ── FORM · masthead-bay Tiles — meta · status ──────────────────────────
- * The reserved bay stacks its Tiles top-down, right-aligned: the meta Tile
- * (front-matter `meta:`, injected by the meta Tile kernel across all three
- * render paths) on top, the status chip beneath. Both are palette-blind.
- * This `.masthead-bay` flex layout is the masthead Cell's concern; the Tiles'
- * own appearance lives in lib/forms/tile/{meta,status}. See design/forms.md §8. */
-section.form .cell-masthead .masthead-bay {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: var(--sp-sm);
-  text-align: right;
-}
-
-/* The meta Tile (`.tile-meta`) and the status Tile (the `form` state chip) moved
- * to their self-contained Tile folders (lib/forms/tile/meta/meta.css,
- * lib/forms/tile/status/status.css), bundled by tools/build-css.js immediately
- * after this file — same cascade slot. The `.masthead-bay` flex layout above
- * that stacks them is the masthead Cell's concern and stays here. See #356. */
-
-/* ── FOOTER Cell — three reserved zones (design/forms.md §6) ─────────────────
- * The footer band holds three Tiles that historically collided because each was
- * an independent absolute at the same baseline with no shared budget: footer-
- * left (the `footer:` text), progress-centre (the section rail), pagination-
- * right (`::after`). Pagination is a pseudo-element, so the footer Cell is a
- * TOKEN COORDINATE CONTRACT, not a DOM grid: footer-left yields the reserved
- * centre zone so it can never run through the rail, and the centre zone ends
- * before the pagination zone. (Non-form decks keep the full-width footer — this
- * is scoped to section.form.) */
-section.form.has-progress > footer {
-  /* Yield to the reserved centre zone ONLY when a progress rail is present
-   * (the injectors add `has-progress`); a rail-less form slide keeps the
-   * default full-width footer. Right edge = 50% + half the centre zone + gap. */
-  right: calc(50% + var(--footer-centre-half) + var(--sp-md));
-}
-
-/* The progress Tile (`.tile-progress` dot-rail) and the watermark Tile
- * (`.tile-watermark` section-number ghost) moved to their self-contained Tile
- * folders (lib/forms/tile/progress/progress.css, lib/forms/tile/watermark/
- * watermark.css), bundled by tools/build-css.js immediately after this file —
- * same cascade slot. The footer Cell's `section.form.has-progress > footer`
- * yield rule above stays here (it is the footer Cell's concern). See #356. */
 
 /* === lib/forms/tile/meta/meta.css === */
 /* meta Tile — date · owner · classification.

@@ -1,0 +1,32 @@
+/* ── MASTHEAD Cell — the named top band (opt-in via `form`) ──────────────────
+ * Self-contained Form Cell (issue #356). Co-located with the Cell manifest
+ * (masthead.cell.json) and bundled by tools/build-css.js (the
+ * lib/forms/cell/<id>/<id>.css glob) into the same cascade slot it held inline in
+ * base.variants.css. See design/forms.md §5/§6 and the ADR
+ * engineering/decisions/2026-06-15-form-implementation.md §6.2.
+ *
+ * The mastheadLift transform (lib/core/masthead-lift.js + the registry) wraps the
+ * eyebrow + title into `.cell-masthead` so the slide's masthead is a named band
+ * with a reserved right bay — `.masthead-bay` is where the meta / logo / status
+ * Tiles dock (its layout is the masthead-bay sub-Cell's concern; see
+ * lib/forms/cell/masthead-bay). The slide body stays a DIRECT child of <section>,
+ * so every component's `section.X > …` selectors still compose (the stage Cell is
+ * the section content region, NOT a wrapper — ADR §4). The eyebrow and title keep
+ * their normal element-level styling (the `p:has(>code)+h2` eyebrow rule and
+ * `section h2` both still match inside the band). Shared frame tokens
+ * (--frame-x/-y, --masthead-h) are defined on the root in
+ * lib/forms/cell/stage/stage.css and cascade in here. Canonical model:
+ * design/forms.md. */
+section.form .cell-masthead {
+  /* In-flow, content-height band: the hairline sits directly under the title,
+   * so there is no dead space when the title is one line, and the band grows
+   * naturally for a two-line title. (Was a fixed --masthead-h absolute box,
+   * which left ~4-5cqi of empty band below a one-line title.) */
+  display: grid;
+  grid-template-columns: [masthead-lede] 1fr [masthead-bay] auto;
+  column-gap: var(--sp-lg);
+  align-items: start;
+  margin-bottom: var(--sp-md);
+  padding-bottom: var(--sp-md);
+  border-bottom: 1px solid var(--border);
+}

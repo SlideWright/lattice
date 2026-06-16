@@ -173,9 +173,46 @@ lib/forms/tile/<id>/
   `base.variants.css` — the exact slot the rules held inline — so the cascade is
   unchanged and the emitted rules are byte-identical (the bundle gains only the
   source banner/comment lines). Adding/removing a Tile folder needs no edit to the
-  source list. The **Cell** rules a Tile sits in (the `.masthead-bay` flex layout,
-  the footer Cell's `section.form.has-progress > footer` yield) deliberately STAY
-  in `base.variants.css` — they are Cell concerns, not Tile.
+  source list.
+
+### 6.2 Self-contained Form Cells (issue #356, the Cell slice)
+
+The Tile slice above left the **Cell** rules a Tile sits in (the root `section.form`
+Frame box, the masthead/stage/footer Cell layout, the stage `fill-*` discipline,
+the footer `has-progress` yield) in `base.variants.css` as the documented next
+step. They now move out the same way, so `base.variants.css` returns to being
+*only* the universal variants (chrome · state · tone) its own header describes:
+
+```
+lib/forms/cell/<id>/
+  <id>.cell.json    # the resolution-blind slot definition (unchanged)
+  <id>.css          # co-located, moved out of base.variants.css
+```
+
+- **One sheet per Cell, globbed.** `tools/build-css.js` now globs both
+  `lib/forms/{cell,tile}/<id>/<id>.css` (one `formCssSources(noun)` helper), Cells
+  immediately after `base.variants.css` and before the Tiles — the order the rules
+  had inline. The five Cell sheets that carry CSS are `stage` (the root
+  `section.form` box + the shared frame tokens it defines + fill discipline),
+  `masthead` (the `.cell-masthead` grid container), `masthead-lede` and
+  `masthead-bay` (the two grid columns), and `footer` (the `has-progress` yield).
+  The remaining Cells (`footer-left`, `progress-centre`, `pagination-right`,
+  `overlay`) are pure token/coordinate contracts with no standalone CSS, so they
+  stay manifest-only.
+- **Cascade-neutral, render-identical.** The Cell glob sorts alphabetically, so the
+  emitted order differs from the old inline order — but every Cell sheet targets a
+  *disjoint* selector (`section.form`, `.cell-masthead`, `.masthead-lede`,
+  `.masthead-bay`, `section.form.has-progress > footer`), and Cell selectors don't
+  collide with Tile selectors either, so the reorder is cascade-neutral. Verified:
+  `examples/form.md` and `design/forms.gallery.md` rasterize to **0 changed pixels**
+  before/after (so the bundle is no longer byte-identical, but the *render* is);
+  non-`form` decks are untouched (the rules are `section.form`-scoped).
+- **What this is — and isn't.** This finishes the **CSS** half of self-contained
+  Cells: the Form chrome is no longer scattered in `base.variants.css`. It does
+  **not** move the `masthead-lift` *transform* (`lib/core/masthead-lift.js` — the JS
+  that builds `.cell-masthead`); that re-parenting transform stays where it is,
+  gated by the §4 242-direct-child-selector constraint, and is the remaining piece
+  of "self-contained Cells."
 
 **Honest about what this is — and isn't.** This mirrors the **file shape** of the
 component kernel+adapter pattern (logic + both adapters in one folder), and that
@@ -193,10 +230,10 @@ paths iterate) is a repeatability step for #356, alongside making the Tiles
 
 All of it is behaviour-preserving (every Tile renders identically — verified on
 `examples/form.md`: meta bay, status chip, progress rail, watermark ghost; full
-unit + integration + `build:check` + pixel parity green). **Still to migrate** for
-#356: the masthead/footer **Cells** (the `masthead-lift` structural transform —
-gated by the §4 242-direct-child-selector constraint) and the Frame chrome, then
-the manifest-driven + dispatch-list steps above.
+unit + integration + `build:check` + pixel parity green). The Cell **CSS** has
+since followed (§6.2). **Still to migrate** for #356: the `masthead-lift`
+structural transform (gated by the §4 242-direct-child-selector constraint) and
+the Frame chrome, then the manifest-driven + dispatch-list steps above.
 
 ## 7. The rename (retiring island-jargon)
 
@@ -220,12 +257,14 @@ from real Cell heights; per-Cell `fill` discipline; the `lib/forms/` manifest
 **Staged (documented, not in this PR).** Tracked as a single follow-up proposal,
 **#356** (manifest revision + maintainability cleanups — kept as-is for now,
 revised deliberately later):
-- **Self-contained Cells + Frames** (§6.1): the Tiles are self-contained now
-  (meta · progress · watermark kernels; status CSS); the next slice is the
-  masthead/footer **Cells** — chiefly the `masthead-lift` structural transform,
-  gated by the §4 242-direct-child-selector constraint — and the Frame chrome.
-  (The pure-CSS `status` Tile paints via a `.masthead-bay::after`, so it should
-  move WITH the masthead Cell when that lands, not be orphaned.)
+- **Self-contained Cells + Frames** (§6.1/§6.2): the Tiles are self-contained now
+  (meta · progress · watermark kernels; status CSS), and the Cell **CSS** has
+  followed (§6.2 — `stage` · `masthead` · `masthead-lede` · `masthead-bay` ·
+  `footer` sheets under `lib/forms/cell/<id>`). What remains of "self-contained
+  Cells" is the `masthead-lift` structural *transform* (the JS that builds
+  `.cell-masthead`), gated by the §4 242-direct-child-selector constraint, plus the
+  Frame chrome. (The pure-CSS `status` Tile paints via a `.masthead-bay::after`,
+  keyed off the masthead-bay Cell that now owns that layout.)
 - **Form-Tile dispatch list** (§6.1): collapse the three hand-wired call sites per
   Tile into a single list the three render paths iterate — the component
   *self-registration* half the current kernels don't yet mirror.

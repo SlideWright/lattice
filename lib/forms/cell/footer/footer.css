@@ -1,0 +1,22 @@
+/* ── FOOTER Cell — three reserved zones (design/forms.md §6) ─────────────────
+ * Self-contained Form Cell (issue #356). Co-located with the Cell manifest
+ * (footer.cell.json) and bundled by tools/build-css.js into the same cascade slot
+ * it held inline in base.variants.css. See design/forms.md §5/§6 and the ADR
+ * engineering/decisions/2026-06-15-form-implementation.md §6.2.
+ *
+ * The footer band holds three Tiles that historically collided because each was
+ * an independent absolute at the same baseline with no shared budget: footer-left
+ * (the `footer:` text), progress-centre (the section rail — the progress Tile,
+ * lib/forms/tile/progress), pagination-right (`::after`). Pagination is a
+ * pseudo-element, so the footer Cell is a TOKEN COORDINATE CONTRACT, not a DOM
+ * grid: footer-left yields the reserved centre zone so it can never run through
+ * the rail, and the centre zone ends before the pagination zone. The reserved
+ * widths are the --footer-centre-w/-half tokens defined on the root in
+ * lib/forms/cell/stage/stage.css. (Non-form decks keep the full-width footer —
+ * this is scoped to section.form.) */
+section.form.has-progress > footer {
+  /* Yield to the reserved centre zone ONLY when a progress rail is present
+   * (the injectors add `has-progress`); a rail-less form slide keeps the
+   * default full-width footer. Right edge = 50% + half the centre zone + gap. */
+  right: calc(50% + var(--footer-centre-half) + var(--sp-md));
+}

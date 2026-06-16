@@ -1,0 +1,22 @@
+/* ── MASTHEAD-BAY sub-Cell — the reserved right bay (meta · logo · status) ────
+ * Self-contained Form Cell (issue #356). Co-located with the Cell manifest
+ * (masthead-bay.cell.json) and bundled by tools/build-css.js into the same
+ * cascade slot it held inline in base.variants.css. See design/forms.md §5/§6
+ * and the ADR engineering/decisions/2026-06-15-form-implementation.md §6.2.
+ *
+ * The right column of the masthead grid (template on the masthead Cell). It is a
+ * stack Cell: its Tiles dock top-down, right-aligned — the meta Tile
+ * (front-matter `meta:`) on top, the status chip beneath. The bay clips its own
+ * overflow so a long meta line is cut at the Cell, never bled across a neighbour
+ * (the §6 clip guarantee). This is the bay's LAYOUT; the Tiles' own appearance
+ * lives in their folders (lib/forms/tile/{meta,status}) — Cell-vs-Tile is the
+ * ownership line. All occupants are palette-blind. */
+section.form .cell-masthead .masthead-bay {
+  grid-column: masthead-bay;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--sp-sm);
+  text-align: right;
+  overflow: hidden;
+}
