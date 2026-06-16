@@ -194,7 +194,7 @@ function perfOverlayToggle() {
   const text = el('span', 'db-pref-text');
   text.append(el('span', 'db-pref-label', 'Performance overlay'));
   text.append(el('span', 'db-pref-hint',
-    'A live readout of Core Web Vitals (LCP, CLS, INP, FCP, TTFB) measured by this device, for checking real-world performance. Drag to reposition; shows on every page until turned off.'));
+    'A live readout — web vitals (LCP, CLS, INP, FCP, TTFB) plus runtime FPS, memory and CPU≈ — measured by this device, for checking real-world performance. Drag the grip to reposition; shows on every page until turned off.'));
   const sw = el('span', 'db-switch');
   const cb = el('input');
   cb.type = 'checkbox';

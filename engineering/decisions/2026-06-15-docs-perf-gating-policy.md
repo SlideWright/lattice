@@ -134,8 +134,10 @@ laptop or USB tether. Any page carries a live, draggable Core-Web-Vitals overlay
 (`docs/src/components/site/PerfOverlay.astro`) — open `…/lattice/?perf` on a real
 phone (or flip the "Performance overlay" switch in Drawing Board settings →
 Workspace, a cross-surface toggle like Guided tours) and the device's own browser
-reports LCP / CLS / INP / FCP / TTFB on screen, fonts and all. That is the
-simplest way to settle the landing-CLS / mobile-LCP question on real hardware.
+reports LCP / CLS / INP / FCP / TTFB on screen, fonts and all — plus a runtime
+group (FPS, JS-heap memory, and a CPU≈ main-thread-busy proxy where the browser
+exposes them). That is the simplest way to settle the landing-CLS / mobile-LCP
+question on real hardware.
 Available in every environment until GA, then GA-gated via `PERF_OVERLAY_AVAILABLE`
 in `docs/src/playground/perf-overlay-prefs.js`.
 
