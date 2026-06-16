@@ -73,11 +73,14 @@ same deck-wide CSS for non-landscape decks:
 
 - `--canvas-scale`: a single magnitude multiplier folded into every `--fs-*`
   and `--sp-*` token. **Default `1` → landscape is unchanged (byte-identical).**
-  Square is a calm flat 1.2; portrait *ramps* with how tall the canvas is —
-  `1.2 + (1 − aspect) × 0.75`, capped 1.6 — so 4:5 (≈1.35) stays calm while 9:16
-  (≈1.53) and 9:19.5 (1.6) push type larger to fill the taller frame rather than
-  float in a thin band. Composes multiplicatively with the author's `--fs-scale`
-  (`scale-l` etc.) — orientation sets the baseline, the author still nudges.
+  Square is a flat 1.35; portrait *ramps* with how tall the canvas is —
+  `1.5 + (1 − aspect) × 1.0`, capped 2.0 — so 4:5 (≈1.70) reads large while 9:16
+  (≈1.94) and 9:19.5 (2.0) push type bigger still to fill the taller frame rather
+  than float in a thin band. These are deliberately punchy: social/mobile is
+  viewed on a phone at arm's length with little text per slide (tuned up from the
+  first-pass 1.2/0.75/1.6 ramp after review — it read too small). Composes
+  multiplicatively with the author's `--fs-scale` — a text-dense portrait slide
+  can dial back with `scale-s`.
 
   `--canvas-scale` scales `--fs-h1`/`--fs-h2` too (which `--fs-scale`
   deliberately exempts), because portrait titles *should* grow with the canvas.
