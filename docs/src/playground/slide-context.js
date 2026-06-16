@@ -237,6 +237,28 @@ export function paginateValuePosition(before) {
 	return { from: m[1].length, typed: m[2] };
 }
 
+// The cursor's position on a `_focusStyle:` value inside an HTML comment —
+// `<!-- _focusStyle: ri|`. Returns `{ from, typed }` or null. Distinct from the
+// axis detector below: `_focusStyle:` never matches the `_focus(Steps)?:` axis
+// pattern, so the two sources never both fire.
+export function focusStyleValuePosition(before) {
+	const m = before.match(/^(\s*<!--\s*_focusStyle:\s*)([\w-]*)$/);
+	if (!m) return null;
+	return { from: m[1].length, typed: m[2] };
+}
+
+// The cursor's position on a `_focus:` / `_focusSteps:` AXIS keyword — the word
+// right after the colon or a `,` (focus) / `|` (steps) separator, with only
+// whitespace between: `<!-- _focus: ro|`, `<!-- _focus: row 4, it|`,
+// `<!-- _focusSteps: row 1 | ro|`. Fires only on the axis word, never while an
+// ordinal is being typed (`row 4|`), since the ordinal isn't completable.
+export function focusAxisPosition(before) {
+	if (!/^\s*<!--\s*_focus(?:Steps)?:/.test(before)) return null;
+	const m = before.match(/[:,|]\s*([a-z]*)$/);
+	if (!m) return null;
+	return { from: before.length - m[1].length, typed: m[1] };
+}
+
 // The cursor's position on a fenced-code info string — the language id right
 // after the opening ``` / ~~~ on a fence line. Returns `{ from, typed }` or
 // null.
@@ -303,6 +325,8 @@ export function typeaheadContext(getLine, lineNo, before) {
 	if (cls) return cls.kind; // 'class' | 'modifier'
 	if (directiveNameAt(before)) return 'directive';
 	if (paginateValuePosition(before)) return 'paginate';
+	if (focusStyleValuePosition(before)) return 'focus-style';
+	if (focusAxisPosition(before)) return 'focus';
 	if (fenceLangAt(before)) return 'fence';
 	if (inFrontMatter(getLine, lineNo)) {
 		if (themeValuePosition(before)) return 'theme';

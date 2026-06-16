@@ -439,6 +439,8 @@ ${indent}  ${bullet} ${body.trim()}`;
     module.exports = {
       CLASS_DIRECTIVE,
       MODIFIER_PREFIXES,
+      FOCUS_AXES,
+      FOCUS_STYLES,
       CARD_STYLE_LAYOUTS,
       LEDGER_OL_LAYOUTS,
       STATEMENT_OL_LAYOUTS,

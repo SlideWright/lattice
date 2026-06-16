@@ -482,3 +482,49 @@ describe('typeaheadContext — proactive popup entry classification', () => {
 		assert.equal(typeaheadContext(getter(lines), 2, ''), null);
 	});
 });
+
+describe('focus directives — autocomplete grammar (Tier 2)', () => {
+	test('focusStyleValuePosition captures the value after _focusStyle:', async () => {
+		const { focusStyleValuePosition } = await load();
+		assert.deepEqual(focusStyleValuePosition('<!-- _focusStyle: ri'), { from: '<!-- _focusStyle: '.length, typed: 'ri' });
+		assert.deepEqual(focusStyleValuePosition('<!-- _focusStyle: '), { from: '<!-- _focusStyle: '.length, typed: '' });
+		assert.equal(focusStyleValuePosition('<!-- _focus: row 4'), null); // not the style directive
+		assert.equal(focusStyleValuePosition('<!-- _header: x'), null);
+	});
+
+	test('focusAxisPosition fires on the axis word, not the ordinal', async () => {
+		const { focusAxisPosition } = await load();
+		// first axis, after the colon
+		assert.deepEqual(focusAxisPosition('<!-- _focus: ro'), { from: '<!-- _focus: '.length, typed: 'ro' });
+		assert.deepEqual(focusAxisPosition('<!-- _focus: '), { from: '<!-- _focus: '.length, typed: '' });
+		// after a comma (focus) and a pipe (steps)
+		assert.deepEqual(focusAxisPosition('<!-- _focus: row 4, it'), { from: '<!-- _focus: row 4, '.length, typed: 'it' });
+		assert.deepEqual(focusAxisPosition('<!-- _focusSteps: row 1 | ro'), { from: '<!-- _focusSteps: row 1 | '.length, typed: 'ro' });
+		// does NOT fire while typing an ordinal or after a completed axis+space
+		assert.equal(focusAxisPosition('<!-- _focus: row 4'), null);
+		assert.equal(focusAxisPosition('<!-- _focus: row '), null);
+		assert.equal(focusAxisPosition('<!-- _focusStyle: ring'), null); // style, not axis
+	});
+
+	test('typeaheadContext distinguishes focus-style and focus axis', async () => {
+		const { typeaheadContext } = await load();
+		assert.equal(typeaheadContext(getter(['<!-- _focusStyle: ']), 1, '<!-- _focusStyle: '), 'focus-style');
+		assert.equal(typeaheadContext(getter(['<!-- _focus: ']), 1, '<!-- _focus: '), 'focus');
+	});
+
+	// Drift gate (the self-maintaining-autocomplete contract): the completion
+	// vocab MUST equal the lint source of truth, so a new focus style/axis can't
+	// be lint-valid yet un-completable (or vice versa).
+	test('completion vocab stays locked to the lint source of truth', async () => {
+		const vocab = await import('../../../docs/src/playground/grammar-vocab.js');
+		const lint = require('../../../lib/authoring/lint-core');
+		const sorted = (it) => [...it].sort();
+		assert.deepEqual(sorted(vocab.FOCUS_STYLE_VALUES), sorted(lint.FOCUS_STYLES),
+			'FOCUS_STYLE_VALUES (grammar-vocab) must mirror FOCUS_STYLES (lint-core)');
+		assert.deepEqual(sorted(vocab.FOCUS_AXIS_VALUES), sorted(lint.FOCUS_AXES),
+			'FOCUS_AXIS_VALUES (grammar-vocab) must mirror FOCUS_AXES (lint-core)');
+		for (const d of ['_focus', '_focusStyle', '_focusSteps']) {
+			assert.ok(vocab.DIRECTIVE_NAMES.includes(d), `${d} must be a completable directive name`);
+		}
+	});
+});
