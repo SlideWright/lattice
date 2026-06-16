@@ -1,0 +1,60 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,sans-serif;background:#fff;color:#13293d;padding:46px 56px}
+.eyebrow{font:600 13px/1 ui-monospace,'SF Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:#5b7795}
+h1{font:700 30px/1.15 Georgia,serif;margin:9px 0 6px}
+.sub{font-size:16px;line-height:1.5;color:#48657f;margin-bottom:30px;max-width:78ch}
+.row{display:flex;gap:46px;align-items:flex-start}
+.slide{position:relative;width:560px;height:315px;border:2.5px solid #13293d;border-radius:9px;background:#eef3f8;overflow:hidden;flex:none}
+.cell{position:absolute;border:1.6px dashed #6b8bab;border-radius:5px}
+.berthlabel{position:absolute;font:600 10px/1 ui-monospace,monospace;color:#6b8bab;letter-spacing:.03em;top:3px;left:6px}
+.tile{position:absolute;border-radius:4px;display:flex;align-items:center;justify-content:center;font:600 11px/1.2 ui-monospace,monospace;color:#fff;text-align:center;padding:3px 7px}
+.chrome{background:#b45309}      /* z3 chrome */
+.content{background:#2e6fb0}     /* z2 content */
+.surface{background:#7c8a9c}     /* z0/z1 surface */
+.legend{display:flex;flex-direction:column;gap:11px;padding-top:6px}
+.legend .lt{font:600 13px/1 ui-monospace,monospace;color:#13293d;margin-bottom:2px}
+.zrow{display:flex;align-items:center;gap:10px;font-size:13.5px;color:#3c5a73}
+.dot{width:13px;height:13px;border-radius:3px;flex:none}
+.note{font-size:14px;line-height:1.55;color:#48657f;max-width:80ch;margin-top:28px;border-left:3px solid #b45309;padding-left:14px}
+.note b{color:#13293d}
+code{font-family:ui-monospace,monospace;background:#eef3f8;padding:1px 5px;border-radius:4px}
+</style></head><body>
+<div class="eyebrow">Form model · 2 of 4</div>
+<h1>Cell → Tile</h1>
+<div class="sub">A <b>Cell</b> is a <em>typed slot</em> — a sized, positioned region of the slide (the old word was <i>berth</i>). A <b>Tile</b> is the leaf that fills one Cell, on a <em>z-plane</em>. Cell = <i>where</i>; Tile = <i>what</i>.</div>
+
+<div class="row">
+  <div class="slide">
+    <!-- masthead band = masthead-lede (left) + masthead-bay (right) -->
+    <div class="cell" style="top:10px;left:10px;width:330px;height:62px"><span class="berthlabel" style="left:auto;right:8px">cell: masthead-lede</span></div>
+    <div class="tile chrome" style="top:18px;left:20px">kicker</div>
+    <div class="tile chrome" style="top:42px;left:20px;background:#925106">title</div>
+    <div class="cell" style="top:10px;left:350px;right:10px;height:62px"><span class="berthlabel" style="left:auto;right:8px">masthead-bay</span></div>
+    <div class="tile chrome" style="top:40px;right:18px">meta</div>
+    <!-- stage Cell + content Tile -->
+    <div class="cell" style="top:80px;left:10px;right:10px;height:160px"><span class="berthlabel">cell: stage</span></div>
+    <div class="tile content" style="top:120px;left:50%;transform:translateX(-50%);width:300px;height:78px">content</div>
+    <!-- atmosphere tile (z1) -->
+    <div class="tile surface" style="top:150px;right:24px;opacity:.5">watermark</div>
+    <!-- footer row Cells + chrome tiles stacked under their labels -->
+    <div class="cell" style="bottom:10px;left:10px;width:180px;height:46px"><span class="berthlabel">footer-left</span></div>
+    <div class="tile chrome" style="bottom:15px;left:18px">footer</div>
+    <div class="cell" style="bottom:10px;left:50%;transform:translateX(-50%);width:160px;height:46px"><span class="berthlabel">progress-centre</span></div>
+    <div class="tile chrome" style="bottom:15px;left:50%;transform:translateX(-50%)">progress</div>
+    <div class="cell" style="bottom:10px;right:10px;width:140px;height:46px"><span class="berthlabel" style="left:auto;right:8px">pagination-right</span></div>
+    <div class="tile chrome" style="bottom:15px;right:18px">pagination</div>
+  </div>
+
+  <div class="legend">
+    <div class="lt">z-planes (paint order)</div>
+    <div class="zrow"><span class="dot" style="background:#7c8a9c"></span> z0 · canvas / rule &nbsp;<span style="color:#9aa7b6">surface</span></div>
+    <div class="zrow"><span class="dot" style="background:#7c8a9c;opacity:.6"></span> z1 · atmosphere / watermark</div>
+    <div class="zrow"><span class="dot" style="background:#2e6fb0"></span> z2 · content</div>
+    <div class="zrow"><span class="dot" style="background:#b45309"></span> z3 · chrome &nbsp;<span style="color:#9aa7b6">title·meta·page·progress</span></div>
+    <div class="zrow"><span class="dot" style="background:#6d4ca3"></span> z4 · annotation</div>
+  </div>
+</div>
+
+<div class="note"><b>Read it as:</b> Cells are the typed slots (<code>masthead-lede</code>, <code>masthead-bay</code>, <code>stage</code>, <code>footer-left</code>, <code>progress-centre</code>, <code>pagination-right</code>…); each Tile fills one Cell and stacks by <code>z</code> (flattens to <code>z-index</code> in 2D; literal depth in a spatial renderer). The author's <b>title</b>+<b>kicker</b> lift into the masthead-lede, <b>meta</b> docks in the masthead-bay, the <span style="color:#2e6fb0;font-weight:600">content</span> Tile (z2) fills the <code>stage</code>, and the footer Cells take <b>footer</b>/<b>progress</b>/<b>pagination</b>.</div>
+</body></html>

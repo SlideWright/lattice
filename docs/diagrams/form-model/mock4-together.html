@@ -1,0 +1,66 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,sans-serif;background:#fff;color:#13293d;padding:46px 56px}
+.eyebrow{font:600 13px/1 ui-monospace,'SF Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:#5b7795}
+h1{font:700 30px/1.15 Georgia,serif;margin:9px 0 8px}
+.chain{font:600 14px/1 ui-monospace,monospace;color:#13293d}
+.chain span{color:#9aa7b6;padding:0 5px}
+.sub{font-size:16px;line-height:1.5;color:#48657f;margin:14px 0 30px;max-width:88ch}
+.wrap{display:flex;gap:64px;align-items:center}
+/* layer stack (z4 top → z0 bottom), read as the paint order */
+.stack{display:flex;align-items:stretch;gap:16px;flex:none}
+.brace{width:16px;border:2px solid #9aa7b6;border-right:none;border-radius:10px 0 0 10px;position:relative}
+.brace::after{content:'Frame';position:absolute;left:-64px;top:50%;transform:translateY(-50%) rotate(-90deg);font:700 12px/1 ui-monospace,monospace;color:#0e4d7b;letter-spacing:.08em}
+.layers{display:flex;flex-direction:column;gap:9px}
+.layer{width:330px;height:50px;border:2px solid #13293d;border-radius:7px;display:flex;align-items:center;padding:0 14px;gap:10px;font:600 12px/1.2 ui-monospace,monospace}
+.zb{font-weight:800;font-size:12px;padding:2px 7px;border-radius:4px;background:#13293d;color:#fff;flex:none}
+.l4{background:#e7dff2;border-color:#6d4ca3;color:#5b3f93}
+.l3{background:#f3e2c9;border-color:#b45309;color:#925106}
+.l2{background:#cfe0f0;border-color:#2e6fb0;color:#0e4d7b}
+.l1{background:#dde3ea;color:#5b6b7c}
+.l0{background:#e4e8ec;color:#5b6b7c}
+.l2 .zb{background:#2e6fb0}.l3 .zb{background:#b45309}.l4 .zb{background:#6d4ca3}
+.arrow{font:700 26px/1 sans-serif;color:#9aa7b6;flex:none}
+/* composited slide */
+.resolved{flex:none}
+.rlabel{font:600 13px/1 ui-monospace,monospace;margin-bottom:10px;color:#13293d}
+.slide{position:relative;width:400px;height:225px;border:2.5px solid #13293d;border-radius:9px;background:#eef3f8;overflow:hidden}
+.t{position:absolute;border-radius:4px;font:600 10px/1.1 ui-monospace,monospace;color:#fff;padding:3px 6px;background:#b45309}
+.ct{position:absolute;top:44px;left:16px;right:16px;bottom:40px;border:2px solid #2e6fb0;border-radius:6px;background:rgba(46,111,176,.10);display:flex;align-items:center;justify-content:center;color:#0e4d7b;font:600 12px/1.3 ui-monospace,monospace;text-align:center}
+.note{font-size:14px;line-height:1.6;color:#48657f;max-width:104ch;margin-top:30px;border-left:3px solid #13293d;padding-left:14px}
+.note b{color:#13293d}
+code{font-family:ui-monospace,monospace;background:#eef3f8;padding:1px 5px;border-radius:4px}
+</style></head><body>
+<div class="eyebrow">Form model · 4 of 4</div>
+<h1>Putting it together</h1>
+<div class="chain">Frame <span>▸ composes</span> Cells <span>▸ berth</span> Tiles <span>(z-planes)</span> <span>▸ content tile holds</span> Component</div>
+<div class="sub">One <b>Frame</b> selects the <b>Cells</b>; each <b>Tile</b> paints into a cell on its <b>z-plane</b>; the <code>content</code> tile holds the author's <b>Component</b>. Stack the planes bottom-to-top → the composited slide.</div>
+
+<div class="wrap">
+  <div class="stack">
+    <div class="brace"></div>
+    <div class="layers">
+      <div class="layer l4"><span class="zb">z4</span> annotation</div>
+      <div class="layer l3"><span class="zb">z3</span> chrome — title · meta · page · progress</div>
+      <div class="layer l2"><span class="zb">z2</span> content tile → <b style="color:#0e4d7b">Component</b></div>
+      <div class="layer l1"><span class="zb">z1</span> atmosphere · watermark</div>
+      <div class="layer l0"><span class="zb">z0</span> canvas · rule</div>
+    </div>
+  </div>
+
+  <div class="arrow">→</div>
+
+  <div class="resolved">
+    <div class="rlabel">the composited slide</div>
+    <div class="slide">
+      <div class="t" style="top:14px;left:16px;background:#925106">title</div>
+      <div class="ct">content tile<br>→ Component (kpi)</div>
+      <div class="t" style="bottom:12px;left:16px">meta</div>
+      <div class="t" style="bottom:12px;left:50%;transform:translateX(-50%)">progress</div>
+      <div class="t" style="bottom:12px;right:16px">pagination</div>
+    </div>
+  </div>
+</div>
+
+<div class="note"><b>The whole chain:</b> the <b>Frame</b> (<code>standard</code> / <code>split-panel</code>) names the <b>Cells</b>; the <b>Cells</b> are the berths; the <b>Tiles</b> paint into them by <code>z</code>-plane; the author's <b>Component</b> lives in the one <code>content</code> tile. &nbsp; <b>Where orientation could live:</b> give <b>Cells</b> portrait/landscape geometry (the wireframe reshapes), and have <b>Tiles + Components</b> declare the orientations they support — the seam this model was built for.</div>
+</body></html>

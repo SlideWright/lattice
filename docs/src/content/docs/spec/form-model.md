@@ -1,0 +1,76 @@
+---
+title: "The Form model — Frame · Cell · Tile"
+description: "How a Lattice slide is composed: a Frame divides the slide into Cells, each Cell holds a Tile (or a nested Frame), and the author's Component fills the content Tile. Plus the render chain for a single title, and where orientation fits."
+---
+
+:::note[Canonical source]
+This page mirrors the in-repo design doc [`design/forms.md`](https://github.com/slidewright/lattice/blob/main/design/forms.md), which owns the model. The diagrams are drawn from the live manifests under [`lib/forms/`](https://github.com/slidewright/lattice/blob/main/lib/forms).
+:::
+
+A Lattice slide is **composed**, not just styled. One sentence is the whole system:
+
+> **A Frame divides the slide into Cells; each Cell holds a Tile — or another Frame.** The author's Component fills the content Tile.
+
+There are only two kinds of object — **slicers** (Frames) that make boxes, and **fillers** (Tiles) that fill boxes — joined by a typed slot, the **Cell**.
+
+| Noun | Is | Role |
+|------|----|----|
+| **Frame** | a *slicer* — carves a box into sub-boxes | structure; the slide root *and* every nested division |
+| **Cell** | a *typed slot* — an empty, sized, positioned box | the seam between a slicer and what fills it |
+| **Tile** | a *filler* — a leaf sized to fill one Cell | the terminal content (chrome, surfaces, or the author's content) |
+| **Component** | an authored layout (`kpi`, `comparison`, …) | what fills the **content** Tile; in the model it is *itself a Frame* |
+
+---
+
+## 1 · Frame → Cell
+
+A Frame is, concretely, a `cells: […]` list (plus an optional `suppresses: […]`). The root **`standard`** frame composes the full chrome — a masthead band, the stage, and a footer row. A sovereign frame like **`split-panel`** keeps only the `stage` and suppresses the rest, so it reads as a completely different slide.
+
+![A Frame composes Cells — standard lays the full chrome; split-panel keeps only the stage.](../../../assets/form-model/1-frame-cell.png)
+
+It is **recursive**: a Cell holds a Tile *or another Frame*. `split-panel` is a sovereign Frame docked in the `stage` Cell.
+
+---
+
+## 2 · Cell → Tile
+
+A **Cell** is a typed slot — a sized, positioned region of the slide (the wireframe). A **Tile** is the leaf that fills one Cell, painted on a **z-plane** (`z0` canvas · `z1` atmosphere · `z2` content · `z3` chrome · `z4` annotation — which flattens to `z-index` in 2D and would become literal depth in a spatial renderer).
+
+![Cells are the typed slots; Tiles fill them on z-planes — title+kicker in the masthead-lede, meta in the masthead-bay, content in the stage, footer/progress/pagination below.](../../../assets/form-model/2-cell-tile.png)
+
+The author's **title** and **kicker** (eyebrow) lift into the `masthead-lede`; the **meta** tile docks in the `masthead-bay`; the **content** Tile fills the `stage`; the footer Cells take the **footer**, **progress**, and **pagination** tiles.
+
+---
+
+## 3 · Tile → Component
+
+Almost every Tile is **engine-owned chrome** (title, meta, footer, progress, pagination, watermark…). The one exception is the **content** Tile (z2) — it hosts the author's **Component** (`kpi`, `comparison`, …), which owns its *own internal layout* inside that Tile. In the model the Component is itself a Frame that recurses into Cells and Tiles.
+
+![The content Tile hosts the author's Component, which owns its internal layout; chrome tiles ring it.](../../../assets/form-model/3-tile-component.png)
+
+This is the seam that matters for responsiveness: **orientation/reflow is a Component concern today** (it lives in the component's CSS), which is exactly why "does this layout work in portrait?" is a per-component fact.
+
+---
+
+## 4 · Putting it together
+
+One Frame selects the Cells; each Tile paints into a Cell on its z-plane; the `content` Tile holds the Component. Stack the planes bottom-to-top → the composited slide.
+
+![Frame composes Cells; Cells berth Tiles on z-planes; the content Tile holds the Component.](../../../assets/form-model/4-together.png)
+
+---
+
+## The render chain — one `## title`, traced
+
+The diagrams show the *model*. Here's what the engine actually does with a slide an author writes — `## Revenue ahead of plan` on a `kpi` slide:
+
+1. **Parse** (`lib/engine/slides.js`) — split on `---` into a `<section>`; `_class: kpi` → `class="kpi"`; `## …` → an `<h2>` **as a direct child** of the section; the list → `<ol>`, also a direct child. The DOM is *flat* — no cells yet.
+2. **Transform** (`lib/transformers/registry` → `applyAllToHtml`, then the Tile injectors) — this is where placement happens. The **masthead-lift** transform finds the first `<h2>` (+ eyebrow) and **moves it** into a `.cell-masthead` band (`.masthead-lede` + `.masthead-bay`). The `<ol>` body stays as direct section children (the stage). Tile injectors then add the chrome DOM (`meta`, `progress`, `watermark`).
+3. **CSS layout** — `section` is a flex column at the resolved `@size` box; the masthead/stage/footer Cell CSS positions the bands via the `--frame-*` coordinate tokens; the **Component CSS** (`section.kpi …`) lays out the body; `z` flattens to `z-index`.
+4. **Paint** — the browser (or Puppeteer, for PDF) composites by z-plane → the slide.
+
+**The thing to internalise:** Cells and Tiles don't *place* anything at render time — **transforms + CSS do**, keyed on classes (`form`, `kpi`). The cell/tile **manifests are the contract** (validated by a build gate, surfaced in the catalog), not a layout engine that runs. That is the deliberate "light coupling" of the [Form manifest contract](https://github.com/slidewright/lattice/blob/main/engineering/decisions/2026-06-16-form-manifest-medium-independent-contract.md).
+
+## Where orientation fits
+
+Because placement is transforms + CSS, **orientation is too**. Today a portrait/mobile deck stamps `data-orientation` on the section and the engine scales type (`--canvas-scale`) and reflows the grid layouts via component CSS (see [social/mobile sizes](https://github.com/slidewright/lattice/blob/main/engineering/decisions/2026-06-16-social-mobile-portrait-sizes.md)). The natural next rung — Cells carrying portrait/landscape geometry (the wireframe reshapes), and Tiles + Components *declaring* the orientations they support — is captured in the ADR [orientation in the Form model](https://github.com/slidewright/lattice/blob/main/engineering/decisions/2026-06-16-orientation-in-the-form-model.md). The manifest can *declare* that a layout works in portrait; someone still writes the orientation-aware CSS/transform that makes it true.
