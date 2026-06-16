@@ -8,14 +8,14 @@
  *
 /* Lattice · Accessibility — Tritanopia (blue-yellow)
  * ────────────────────────────────────────────────────────────────────────
- * Thin override on indaco; activated by `accessibility: tritanopia`.
+ * Thin override on onyx; activated by `accessibility: tritanopia`.
  * Tritanopia spares the red-green axis but confuses blue↔green and
  * yellow↔pink, so the status trio moves to green / orange / magenta (NOT the
  * yellow a tritanope reads as pink). Verified CVD-distinct under tritanopia +
  * AA by tools/cvd-audit.js. Texture patterns + glyphs carry the categorical
  * load. See a11y-deuteranopia.css for the rationale. */
 
-@import 'indaco';
+@import 'onyx';
 
 :root {
   --pass: light-dark(#007131, #62BB78);
@@ -30,7 +30,7 @@
 }
 
 /* ── Redundant encoding (self-contained) ───────────────────────────────────
- * The non-colour channels this curated theme adds on top of indaco: status
+ * The non-colour channels this curated theme adds on top of onyx: status
  * GLYPHS + categorical TEXTURE references. Inlined per a11y theme (not a shared
  * import) so each stays a full, standalone palette. The texture <pattern>
  * <defs> these fills reference are injected by the engine when an a11y-* palette

@@ -8,14 +8,14 @@
  *
 /* Lattice · Accessibility — Protanopia (red-green, reds darkened)
  * ────────────────────────────────────────────────────────────────────────
- * Thin override on indaco; activated by `accessibility: protanopia`. Shares
+ * Thin override on onyx; activated by `accessibility: protanopia`. Shares
  * the red-green-safe status trio with deuteranopia (the search that picked it
  * maximised separation under BOTH deficiencies), so the same blue / amber /
  * deep-red survives protanopia too — verified by tools/cvd-audit.js. Texture
  * patterns + glyphs (lattice.css, scoped to data-a11y) carry the categorical
  * distinction colour cannot. See a11y-deuteranopia.css for the rationale. */
 
-@import 'indaco';
+@import 'onyx';
 
 :root {
   --pass: light-dark(#004982, #6AB3FD);
@@ -30,7 +30,7 @@
 }
 
 /* ── Redundant encoding (self-contained) ───────────────────────────────────
- * The non-colour channels this curated theme adds on top of indaco: status
+ * The non-colour channels this curated theme adds on top of onyx: status
  * GLYPHS + categorical TEXTURE references. Inlined per a11y theme (not a shared
  * import) so each stays a full, standalone palette. The texture <pattern>
  * <defs> these fills reference are injected by the engine when an a11y-* palette

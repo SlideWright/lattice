@@ -8,7 +8,7 @@
  *
 /* Lattice · Accessibility — Deuteranopia (red-green, the common case)
  * ────────────────────────────────────────────────────────────────────────
- * A thin override on indaco's neutral base, NOT a brand theme. Activated by
+ * A thin override on onyx's neutral base, NOT a brand theme. Activated by
  * `accessibility: deuteranopia` / the workspace toggle, which also stamps
  * `data-a11y` on each section so the palette-blind texture patterns + glyphs
  * (lattice.css) carry categorical/status meaning that colour cannot.
@@ -22,7 +22,7 @@
  * tools/cvd-audit.js. The categorical cycle stays indaco's (a redundant
  * channel for anomalous trichromats; texture carries the dichromat). */
 
-@import 'indaco';
+@import 'onyx';
 
 :root {
   /* Status trio — off the red-green axis. blue / amber / deep-red, also
@@ -45,7 +45,7 @@
 }
 
 /* ── Redundant encoding (self-contained) ───────────────────────────────────
- * The non-colour channels this curated theme adds on top of indaco: status
+ * The non-colour channels this curated theme adds on top of onyx: status
  * GLYPHS + categorical TEXTURE references. Inlined per a11y theme (not a shared
  * import) so each stays a full, standalone palette. The texture <pattern>
  * <defs> these fills reference are injected by the engine when an a11y-* palette

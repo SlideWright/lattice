@@ -8,7 +8,7 @@
  *
 /* Lattice · Accessibility — Achromatopsia (total colour-blindness)
  * ────────────────────────────────────────────────────────────────────────
- * Thin override on indaco; activated by `accessibility: achromatopsia`. Hue
+ * Thin override on onyx; activated by `accessibility: achromatopsia`. Hue
  * conveys nothing to a fully colour-blind viewer, so meaning rides ENTIRELY on
  * luminance + the texture patterns + glyphs (lattice.css, scoped to data-a11y)
  * — this type is the reason redundant encoding is mandatory, not the palette.
@@ -18,7 +18,7 @@
  * sees structure; texture carries the achromat) — there is no colour gain from
  * greying it, and the patterns do the distinguishing either way. */
 
-@import 'indaco';
+@import 'onyx';
 
 :root {
   /* Status as luminance-separated greys — fail darkest, warn lightest. */
@@ -34,7 +34,7 @@
 }
 
 /* ── Redundant encoding (self-contained) ───────────────────────────────────
- * The non-colour channels this curated theme adds on top of indaco: status
+ * The non-colour channels this curated theme adds on top of onyx: status
  * GLYPHS + categorical TEXTURE references. Inlined per a11y theme (not a shared
  * import) so each stays a full, standalone palette. The texture <pattern>
  * <defs> these fills reference are injected by the engine when an a11y-* palette
