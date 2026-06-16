@@ -13491,7 +13491,8 @@ section.form .cell-masthead .masthead-lede {
  * base.variants.css. See design/forms.md §5/§6 and the ADR
  * engineering/decisions/2026-06-15-form-implementation.md §6.2.
  *
- * The mastheadLift transform (lib/core/masthead-lift.js + the registry) wraps the
+ * The mastheadLift transform (masthead.transform.js, co-located in this folder, +
+ * the registry adapter lib/transformers/masthead-lift.js) wraps the
  * eyebrow + title into `.cell-masthead` so the slide's masthead is a named band
  * with a reserved right bay — `.masthead-bay` is where the meta / logo / status
  * Tiles dock (its layout is the masthead-bay sub-Cell's concern; see
