@@ -23,12 +23,20 @@
 
 const fs = require('node:fs');
 const path = require('node:path');
-const { loadCatalog, frameToggleSkip, checkManifestCssRefs } = require('../lib/forms');
+const {
+  loadCatalog,
+  frameToggleSkip,
+  checkManifestCssRefs,
+  checkCellCssPresence,
+  checkSuppressIntegrity,
+  checkZPlaneZIndex,
+} = require('../lib/forms');
 
 const ROOT = path.join(__dirname, '..');
 const DOCS_DIR = path.join(ROOT, 'dist', 'docs');
 const JSON_FILE = path.join(DOCS_DIR, 'forms.json');
 const LIB_DIR = path.join(ROOT, 'lib');
+const FORMS_DIR = path.join(LIB_DIR, 'forms');
 
 // Every `--name` custom property DEFINED (name immediately followed by `:`) in
 // any source CSS under lib/. This is the 2D CSS renderer's token vocabulary; the
@@ -56,12 +64,57 @@ function collectDefinedCssTokens() {
   return defined;
 }
 
+// The set of Cell ids that actually have a co-located lib/forms/cell/<id>/<id>.css
+// on disk — the filesystem side of the §4.1 Cell-CSS-presence check.
+function collectCellCssPresence() {
+  const dir = path.join(FORMS_DIR, 'cell');
+  const present = new Set();
+  if (!fs.existsSync(dir)) return present;
+  for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+    if (e.isDirectory() && fs.existsSync(path.join(dir, e.name, `${e.name}.css`))) present.add(e.name);
+  }
+  return present;
+}
+
+// Every numeric `z-index` declared in a co-located Cell/Tile sheet, paired with
+// that noun's manifest `z` plane — the filesystem side of the §4.3 z-plane↔z-index
+// check. Comments are stripped first (a z-index mentioned in prose isn't a rule).
+// Returns [{ id, plane, zindex }] (one entry per numeric z-index occurrence).
+function collectZPlaneZIndex({ cells, tiles }) {
+  const planeById = new Map();
+  for (const c of cells) planeById.set(`cell/${c.id}`, c.z);
+  for (const t of tiles) planeById.set(`tile/${t.id}`, t.z);
+  const ZI = /z-index\s*:\s*(-?\d+)/gi;
+  const items = [];
+  for (const noun of ['cell', 'tile']) {
+    const dir = path.join(FORMS_DIR, noun);
+    if (!fs.existsSync(dir)) continue;
+    for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+      if (!e.isDirectory()) continue;
+      const cssPath = path.join(dir, e.name, `${e.name}.css`);
+      if (!fs.existsSync(cssPath)) continue;
+      const plane = planeById.get(`${noun}/${e.name}`);
+      if (plane === undefined) continue; // css without a manifest — caught elsewhere
+      const css = fs.readFileSync(cssPath, 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+      for (const m of css.matchAll(ZI)) items.push({ id: `${noun}/${e.name}`, plane, zindex: Number(m[1]) });
+    }
+  }
+  return items;
+}
+
 // The manifest↔CSS consistency gate (the "light" coupling that makes the Form
 // catalog load-bearing — 2026-06-16-form-manifest-medium-independent-contract.md
-// §4). Throws with every drift listed; called before generate AND --check so a
-// broken ref fails loud, like the component ownership guard.
-function assertManifestCssConsistency(cells) {
-  const errors = checkManifestCssRefs(cells, collectDefinedCssTokens());
+// §4). Runs all four checks: §4.2 geometry/gap token-refs resolve · §4.1 Cell-CSS
+// presence · §4.4 suppresses integrity · §4.3 z-plane↔z-index monotonicity. Throws
+// with every drift listed; called before generate AND --check so a broken contract
+// fails loud, like the component ownership guard.
+function assertManifestCssConsistency({ cells, frames, tiles }) {
+  const errors = [
+    ...checkManifestCssRefs(cells, collectDefinedCssTokens()),
+    ...checkCellCssPresence(cells, collectCellCssPresence()),
+    ...checkSuppressIntegrity(frames),
+    ...checkZPlaneZIndex(collectZPlaneZIndex({ cells, tiles })),
+  ];
   if (errors.length) {
     throw new Error(`Form manifest↔CSS consistency failed:\n  ${errors.join('\n  ')}`);
   }
@@ -91,7 +144,7 @@ function isStale(file, content) {
 function main(argv) {
   const check = argv.includes('--check');
   // Gate first: a manifest↔CSS drift fails loud before we touch the catalog.
-  assertManifestCssConsistency(loadCatalog().cells);
+  assertManifestCssConsistency(loadCatalog());
   const json = renderJson();
   fs.mkdirSync(DOCS_DIR, { recursive: true });
   const label = 'dist/docs/forms.json';
@@ -122,4 +175,11 @@ if (require.main === module) {
   }
 }
 
-module.exports = { renderJson, JSON_FILE, collectDefinedCssTokens, assertManifestCssConsistency };
+module.exports = {
+  renderJson,
+  JSON_FILE,
+  collectDefinedCssTokens,
+  collectCellCssPresence,
+  collectZPlaneZIndex,
+  assertManifestCssConsistency,
+};

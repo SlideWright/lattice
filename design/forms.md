@@ -467,10 +467,12 @@ fully self-contained; still to follow: the Frame chrome.
 The manifest is **load-bearing, not descriptive**: it drives the `--frame-*` grid
 and the Tile injectors and the `accepts`/`fits` validation, so adding a Frame or a
 Tile is *a folder, not edits to three kernels*. As of the "light" coupling
-(`2026-06-16-form-manifest-medium-independent-contract.md` §4.2), a build gate also
-enforces that every Cell's geometry/gap **token reference resolves** to a real CSS
-custom property — so the manifest↔CSS link can't silently drift (the structural
-`z`/`suppresses` couplings stay descriptive until §4.3/§4.4 land). This is what makes designer- and
+(`2026-06-16-form-manifest-medium-independent-contract.md` §4), a build gate enforces
+manifest↔CSS consistency so the contract can't silently drift: geometry/gap
+**token references resolve** to real CSS custom properties (§4.2), every Cell's
+`css` flag matches the filesystem (§4.1), `suppresses` never removes the content
+stage and stays disjoint from a Frame's own cells (§4.4), and co-located `z-index`
+values don't invert the semantic `z` plane order (§4.3). This is what makes designer- and
 AI-authored Frames (§7) possible at all — a Frame defined only in three
 hand-edited kernels cannot be generated; a Frame defined as data can. Reuse the
 component infrastructure (the manifest loader, the portal generator, the schema,

@@ -7,5 +7,6 @@
   "capacity": "one",
   "fill": "start",
   "gap": "--footer-centre-half",
-  "clip": true
+  "clip": true,
+  "css": false
 }

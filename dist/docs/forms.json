@@ -262,7 +262,8 @@
       "capacity": "one",
       "fill": "start",
       "gap": "--footer-centre-half",
-      "clip": true
+      "clip": true,
+      "css": false
     },
     {
       "$schema": "../../schema/cell.schema.json",
@@ -327,7 +328,8 @@
       "geometry": {
         "inset": "--frame-x"
       },
-      "clip": false
+      "clip": false,
+      "css": false
     },
     {
       "$schema": "../../schema/cell.schema.json",
@@ -340,7 +342,8 @@
       "capacity": "one",
       "fill": "end",
       "gap": "--footer-centre-half",
-      "clip": true
+      "clip": true,
+      "css": false
     },
     {
       "$schema": "../../schema/cell.schema.json",
@@ -356,7 +359,8 @@
       "geometry": {
         "size": "--footer-centre-w"
       },
-      "clip": true
+      "clip": true,
+      "css": false
     },
     {
       "$schema": "../../schema/cell.schema.json",

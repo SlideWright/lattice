@@ -105,9 +105,12 @@ manifest and the 2D renderer drift:
    token can no longer leave a manifest pointing at nothing.
 3. **`z` agrees** between a Tile/Cell manifest and any `z-index` its CSS sets (the
    plane is the contract; the 2D `z-index` is one projection of it).
-4. **`suppresses` is honest** — a sovereign Frame's suppressed chrome Cells are the
-   ones the toggle actually skips (`FORM_TOGGLE_SKIP`), closing the loop the ADR
-   already started for `exemptFromChrome`.
+4. **`suppresses` is honest.** *(As implemented:* a Frame can't suppress the content
+   `stage`, and `cells` ∩ `suppresses` = ∅.*)* The originally-imagined invariant —
+   `suppresses` ⟺ `FORM_TOGGLE_SKIP` (i.e. `exemptFromChrome`) — was **investigated
+   and rejected**: `FORM_TOGGLE_SKIP` derives purely from `exemptFromChrome`, and
+   `minimal` is non-exempt yet legitimately suppresses `progress-centre`, so no clean
+   iff exists. The two universally-true invariants above ship instead.
 
 None of this emits or rewrites CSS; it asserts the hand-written CSS and the
 manifest tell the same story. Output stays byte-identical — the same gate the Cell
@@ -132,15 +135,15 @@ This is the asymmetry, made intentional: **Tile** owns pixels+logic
 
 ## 6. Staged plan (under #356)
 
-1. **Light enforcement** — ✅ **landed.** The manifest↔CSS consistency gate of §4
-   ships: the geometry/gap **token-ref check** (§4.2) is enforced by
-   `tools/build-forms.js` (so it gates via `build:check` / `docs:forms:check`),
-   with the pure checker (`collectGeometryTokenRefs` / `checkManifestCssRefs`) in
-   `lib/forms/index.js` and coverage in `test/unit/forms/manifest-css-gate.test.js`.
-   Behaviour-preserving, 0-pixel — no CSS generated, the catalog is now
-   load-bearing for the token vocabulary. The §4.1/§4.3/§4.4 checks (Cell-CSS
-   presence, `z`↔`z-index`, `suppresses`↔`FORM_TOGGLE_SKIP`) are the remaining
-   light tightening, tracked as follow-ups.
+1. **Light enforcement** — ✅ **fully landed (all four §4 checks).** The manifest↔CSS
+   consistency gate is enforced by `tools/build-forms.js` (so it gates via
+   `build:check` / `docs:forms:check`), with pure checkers in `lib/forms/index.js`
+   and coverage in `test/unit/forms/manifest-css-gate.test.js`. Behaviour-preserving,
+   0-pixel — no CSS generated; the catalog is now load-bearing across:
+   - **§4.2 token-refs** — every Cell geometry/gap `--token` resolves to a defined CSS custom property.
+   - **§4.1 Cell-CSS presence** — a Cell's `css` flag (default true) must match the filesystem; token-contract Cells declare `css: false`.
+   - **§4.4 suppresses integrity** — a Frame can't suppress the content `stage`, and `cells` ∩ `suppresses` = ∅. (No `exemptFromChrome`↔`suppresses` iff — `minimal` proves none exists.)
+   - **§4.3 z-plane↔z-index** — co-located z-index values never invert the semantic `z` plane order.
 2. **Docs sync**: `design/forms.md` §11 + the implementation ADR §6/§8 record that
    keep-vs-trim is decided (A), and that Frames are CSS-less in 2D / contract-bearing
    for spatial.
