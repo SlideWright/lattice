@@ -4785,6 +4785,36 @@ section.kpi.spotlight > ol > li:not(:first-child) code {
   font-size: 0.78125cqi;
 }
 
+
+
+
+
+/* ── Portrait / square reflow (social/mobile @sizes) ───────────────────────
+ * Every kpi variant (briefing, ops, spotlight, trajectory) places metric <li>s
+ * on an explicit grid — a hero spanning rows + supports in a side column, or a
+ * 2×2 matrix. On a tall portrait/square canvas that side-by-side composition is
+ * cramped. Switching the metric list from grid to a single flex COLUMN
+ * linearises every variant at once: flex ignores the children's grid-column /
+ * grid-row, so the hero stacks on top and the supports follow, full width — no
+ * per-variant override needed. Keyed on the deck-wide data-orientation stamp
+ * (lib/engine/slides.js); landscape is untouched. See
+ * engineering/decisions/2026-06-16-social-mobile-portrait-sizes.md (phase 3). */
+/* `ol`/`ul` spelled out (not :where) so this matches the per-variant grid rules'
+ * specificity — `section.kpi.spotlight > ol` is (0,2,2) — and wins on source
+ * order (this block is last). :where() would drop us to (0,2,1) and lose. */
+section.kpi[data-orientation="portrait"] > ol,
+section.kpi[data-orientation="portrait"] > ul,
+section.kpi[data-orientation="square"] > ol,
+section.kpi[data-orientation="square"] > ul {
+  display: flex;
+  flex-direction: column;
+  /* The list keeps `flex: 1` (fills the slide below the title), so centre the
+   * metrics WITHIN it — centring the section can't, the list absorbs the slack. */
+  justify-content: center;
+  gap: var(--sp-md);
+  align-content: normal;
+}
+
 /* === lib/components/inventory/list/list.styles.css === */
 /* list — inventory.stack.bullets
  *
@@ -6299,6 +6329,16 @@ section.matrix-2x2 li > ol > li {
  * lint time. See CARD_STYLE_LAYOUTS in lib/components/index.js. */
 section.matrix-2x2 :is(ul,ol) > li > strong ~ * { font-weight: 400; }
 
+/* ── Portrait / square reflow (social/mobile @sizes). Keyed on the deck-wide
+ * data-orientation stamp (lib/engine/slides.js); landscape untouched. See
+ * 2026-06-16-social-mobile-portrait-sizes.md (phase 3). */
+section.matrix-2x2[data-orientation="portrait"] > ul,
+section.matrix-2x2[data-orientation="portrait"] > ol {
+  grid-template-columns: 1fr;
+  grid-template-rows: none;
+  grid-auto-rows: minmax(0, 1fr);
+}
+
 /* === lib/components/legal/obligation-matrix/obligation-matrix.styles.css === */
 /* obligation-matrix — comparison.matrix.structure
  *
@@ -6703,6 +6743,13 @@ section.pricing > ul > li > ul > li:last-child {
   font-size: var(--fs-meta); color: var(--text-muted);
 }
 section.pricing > ul > li:has(> em) > ul > li:last-child { color: var(--on-accent-soft); }
+
+/* ── Portrait / square reflow (social/mobile @sizes). Keyed on the deck-wide
+ * data-orientation stamp (lib/engine/slides.js); landscape untouched. See
+ * 2026-06-16-social-mobile-portrait-sizes.md (phase 3). */  Tiers stack to one column (the standard mobile pricing pattern).
+section.pricing[data-orientation="portrait"] > ul {
+  grid-template-columns: 1fr;
+}
 
 /* === lib/components/chart/progress/progress.styles.css === */
 /* progress — extracted from lib/_legacy.css (batch 9).
@@ -8918,6 +8965,16 @@ section.split-compare .verdict::before { content:'Recommendation'; position:abso
 section.split-compare .verdict blockquote { margin:0; padding:0; border:none; }
 section.split-compare .verdict blockquote p { font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-body); font-weight:400; line-height:var(--lh-snug); margin:0; }
 
+/* ── Portrait / square reflow (social/mobile @sizes). Rail stacks above the
+ * verdict cards; cards go single-column. data-orientation stamp via
+ * lib/engine/slides.js; landscape untouched. 2026-06-16-social-mobile-portrait-sizes.md */
+section.split-compare[data-orientation="portrait"],
+section.split-compare[data-orientation="square"] { flex-direction: column; }
+section.split-compare[data-orientation="portrait"] .compare-left,
+section.split-compare[data-orientation="square"] .compare-left { width: auto; }
+section.split-compare[data-orientation="portrait"] .options,
+section.split-compare[data-orientation="square"] .options { grid-template-columns: 1fr; }
+
 /* === lib/components/statement/split-panel/split-panel.styles.css === */
 /* split-panel — statement.panel.structure
  *
@@ -9022,6 +9079,13 @@ section.split-panel.watermark { --marp-slide-header-color: var(--on-accent-secon
 /* Hardening: element siblings of <strong> in a card li don't inherit
  * the parent's font-weight:700. See CARD_STYLE_LAYOUTS in lib/components/index.js. */
 section.split-panel :is(ul,ol) > li > strong ~ * { font-weight: 400; }
+
+/* ── Portrait / square reflow (social/mobile @sizes). The left rail stacks
+ * above the content panel instead of beside it. Keyed on the deck-wide
+ * data-orientation stamp (lib/engine/slides.js); landscape untouched. See
+ * 2026-06-16-social-mobile-portrait-sizes.md (phase 3). */
+section.split-panel[data-orientation="portrait"] { flex-direction: column; }
+section.split-panel[data-orientation="portrait"] .panel-left { width: auto; }
 
 /* === lib/components/chart/state-chart/state-chart.styles.css === */
 /* state-chart — native state machine diagram, browser-measured layout.
@@ -9938,6 +10002,14 @@ section.verdict-grid > ul > li > ul > li::before { display:none; content:none; }
  * target text nodes); the manifest validator catches that case at
  * lint time. See CARD_STYLE_LAYOUTS in lib/components/index.js. */
 section.verdict-grid :is(ul,ol) > li > strong ~ * { font-weight: 400; }
+
+/* ── Portrait / square reflow (social/mobile @sizes). Keyed on the deck-wide
+ * data-orientation stamp (lib/engine/slides.js); landscape untouched. See
+ * 2026-06-16-social-mobile-portrait-sizes.md (phase 3). */
+section.verdict-grid[data-orientation="portrait"] > ul {
+  grid-template-columns: 1fr;
+  grid-auto-rows: minmax(0, 1fr);
+}
 
 /* === lib/components/chart/word-cloud/word-cloud.styles.css === */
 /* word-cloud — extracted from lib/_legacy.css (batch 8).

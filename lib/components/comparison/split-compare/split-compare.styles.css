@@ -36,3 +36,13 @@ section.split-compare .verdict { background:var(--accent-soft); border:1px solid
 section.split-compare .verdict::before { content:'Recommendation'; position:absolute; top:0; left:0; padding:0.3125cqi 0.9375cqi; border-radius:var(--radius-md) 0 var(--radius-sm) 0; font-family:var(--font-mono); font-size:var(--fs-meta); font-weight:700; text-transform:uppercase; letter-spacing:0.12em; line-height:1; color:var(--on-accent); background:var(--accent); }
 section.split-compare .verdict blockquote { margin:0; padding:0; border:none; }
 section.split-compare .verdict blockquote p { font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-body); font-weight:400; line-height:var(--lh-snug); margin:0; }
+
+/* ── Portrait / square reflow (social/mobile @sizes). Rail stacks above the
+ * verdict cards; cards go single-column. data-orientation stamp via
+ * lib/engine/slides.js; landscape untouched. 2026-06-16-social-mobile-portrait-sizes.md */
+section.split-compare[data-orientation="portrait"],
+section.split-compare[data-orientation="square"] { flex-direction: column; }
+section.split-compare[data-orientation="portrait"] .compare-left,
+section.split-compare[data-orientation="square"] .compare-left { width: auto; }
+section.split-compare[data-orientation="portrait"] .options,
+section.split-compare[data-orientation="square"] .options { grid-template-columns: 1fr; }

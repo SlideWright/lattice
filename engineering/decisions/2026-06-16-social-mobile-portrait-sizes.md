@@ -110,13 +110,32 @@ same deck-wide CSS for non-landscape decks:
    vertical fill. Covers the layouts that are *already* a centred flex column:
    title, statement, section/divider, quote, lead, prose, lists, agenda, cover.
    These are the bulk of social-card use.
-3. **Grid-layout reflow** — kpi, comparison, split, and the chart/diagram
-   buckets get explicit portrait stacking. Higher-touch; the data-dense buckets
-   land first by social value (kpi, quote, statement) and the long tail is
-   documented as landscape-tuned until audited.
+3. **Grid-layout reflow** — ✅ **landed** for the data-dense grids. Each render
+   path now stamps a deck-wide `data-orientation` (portrait|square) on the
+   `<section>` (engine `lib/engine/slides.js`, fed by `index.js` via
+   `orientationFor`; runtime per-section from live aspect), and component CSS
+   keys reflow rules off it:
+   - `kpi` — every variant (briefing/ops/spotlight/trajectory) switches its
+     metric grid to a centred flex column, linearising all variants in one rule.
+   - `matrix-2x2`, `pricing`, `verdict-grid` — N-column grids collapse to one.
+   - `split-panel`, `split-compare` — the rail stacks above the content panel.
+   - **Charts need no reflow** — SVG charts keep their aspect ratio and centre,
+     which is correct (you don't vertically stretch a funnel).
+   - **Deferred:** `redline` (the side-by-side before/after diff is semantically
+     load-bearing — stacking would obscure it) stays landscape-composed.
+
+   **Why per-component CSS, not the Form manifest.** The Form engine is at the
+   *light* coupling rung (`2026-06-16-form-manifest-medium-independent-contract.md`):
+   it owns chrome/`stage`/`z`-plane composition, and `section-as-grid` is retired
+   (`2026-06-16-retire-section-as-grid.md`) — content bodies are direct children
+   of `section`, laid out by component CSS. The Frame governs the arrangement of
+   *cells*, not a component's *internal* content grid, so even at full manifest
+   coupling the kpi metric grid would still be component CSS. Manifest-driven
+   reflow remains the deferred north star for a spatial renderer, not this work.
 
 Each format ships a demo deck (`examples/social-<name>.md` + committed PDF) and
-is screenshot-verified at its native size before it's called done.
+is screenshot-verified at its native size before it's called done. The grid
+reflow ships `examples/social-grid.md`.
 
 ## Impact surface
 

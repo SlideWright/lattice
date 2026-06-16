@@ -27,6 +27,19 @@ in patch versions.
 
 ### Added
 
+- **Portrait grid reflow for the data-dense layouts.** Building on the
+  social/mobile `@size` work, the grid-based layouts now reflow on a
+  portrait/square canvas instead of holding their landscape composition: `kpi`
+  (every variant — briefing/ops/spotlight/trajectory — linearises to a centred
+  metric column), `matrix-2x2`, `pricing` and `verdict-grid` collapse to a
+  single column, and `split-panel` / `split-compare` stack their rail above the
+  content. Each render path stamps a deck-wide `data-orientation` on the section
+  (engine + runtime); landscape is unstamped → byte-identical. Charts already
+  render correctly (aspect-preserved, centred) and need no reflow. Demo:
+  `examples/social-grid.md`. Remaining: `redline` (side-by-side diff is
+  semantically load-bearing) is deliberately left landscape-composed.
+  See `engineering/decisions/2026-06-16-social-mobile-portrait-sizes.md` (phase 3).
+
 - **Narrative build — progressive disclosure via `_build`.** A slide opts into
   "assemble as you go" with a `<!-- _build -->` directive (a subset of the
   `_focus` grammar): bare builds the slide's primary collection one unit per step

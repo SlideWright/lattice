@@ -249,6 +249,15 @@ describe('lattice-engine: css emission (P1.1)', () => {
     assert.doesNotMatch(composeCss({ themeCss: PALETTE, baseLatticeCss: SOCIAL, sizeName: 'hd' }), /--canvas-scale/);
   });
 
+  test('render() stamps data-orientation on sections for portrait, not landscape', () => {
+    const eng = createEngine();
+    eng.addThemes([SOCIAL, PALETTE]); // SOCIAL is `@theme lattice` carrying the story @size
+    const portrait = eng.render('---\nsize: story\n---\n# A\n', 'cuoio');
+    assert.match(portrait.html, /<section[^>]*data-orientation="portrait"/);
+    // Landscape stays unstamped → byte-identical DOM.
+    assert.doesNotMatch(eng.render('# A\n', 'cuoio').html, /data-orientation/);
+  });
+
   // The browser runtime (lib/runtime/index.js) can't require this Node module, so
   // it INLINES the same orientation math. Guard the two against silent drift: the
   // runtime must produce the SAME scale as orientationFor at each orientation.
