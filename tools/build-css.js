@@ -105,6 +105,13 @@ const CHART_FAMILY_SOURCE = 'lib/components/chart/_chart-family/chart-family.css
 // 27 utility classes (12 tints + 11 marks + treatment-none reset) for
 // peripheral atmospheric accents. All palette-blind via var(--accent).
 const TREATMENTS_SOURCE = 'lib/base/base.treatments.css';
+// Focus & highlighting — the `.lat-focus` / `.lat-recede` treatment contract
+// (content-aware default by axis + spotlight/ring/list-fill variants), keyed on
+// the tags the focus resolver (lib/transformers/focus.js) stamps. Palette-blind
+// via var(--focus-*). Cross-cutting universal feature, bundled alongside the
+// treatments tier so it composes over every component. See
+// engineering/decisions/2026-06-16-focus-highlighting.md.
+const FOCUS_SOURCE = 'lib/base/base.focus.css';
 // The `sketch` finish modifier — hand-drawn skin (handwriting + drawn
 // boxes), palette-blind via var(--…). Tail tier so its section.sketch …
 // selectors compose on top of every component. See lib/base/base.sketch.css.
@@ -315,6 +322,11 @@ function bundle() {
   if (treatments) {
     parts.push(`/* === ${TREATMENTS_SOURCE} === */`);
     parts.push(treatments);
+  }
+  const focus = readIfExists(FOCUS_SOURCE);
+  if (focus) {
+    parts.push(`/* === ${FOCUS_SOURCE} === */`);
+    parts.push(focus);
   }
   const sketch = readIfExists(SKETCH_SOURCE);
   if (sketch) {
