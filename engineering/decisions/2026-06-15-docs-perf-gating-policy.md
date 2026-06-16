@@ -129,6 +129,16 @@ original "human inspects real behaviour" intent of #327. It is now **safe to
 defer**: the relative nightly gate no longer flaps on these, so there is no CI
 pressure forcing a blind fix. The sandbox cannot do it (it blocks the fonts).
 
+**On-device path (added 2026-06-16):** the human inspection no longer needs a
+laptop or USB tether. Any page carries a live, draggable Core-Web-Vitals overlay
+(`docs/src/components/site/PerfOverlay.astro`) — open `…/lattice/?perf` on a real
+phone (or flip the "Performance overlay" switch in Drawing Board settings →
+Workspace, a cross-surface toggle like Guided tours) and the device's own browser
+reports LCP / CLS / INP / FCP / TTFB on screen, fonts and all. That is the
+simplest way to settle the landing-CLS / mobile-LCP question on real hardware.
+Available in every environment until GA, then GA-gated via `PERF_OVERLAY_AVAILABLE`
+in `docs/src/playground/perf-overlay-prefs.js`.
+
 ## Files
 
 - `scripts/perf-regression.mjs` — pure parse+compare verdict (unit-tested).

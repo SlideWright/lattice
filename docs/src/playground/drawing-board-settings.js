@@ -9,6 +9,11 @@
 
 import { orSupportsCache } from './architect-model.js';
 import { getPref, PREFS, setPref } from './drawing-board-prefs.js';
+import {
+  PERF_OVERLAY_AVAILABLE,
+  perfOverlayEnabled,
+  setPerfOverlayEnabled,
+} from './perf-overlay-prefs.js';
 import { setToursEnabled, toursEnabled } from './tour-prefs.js';
 
 const MODEL_KEY = 'lattice-db-model'; // master on/off
@@ -154,6 +159,7 @@ function workspaceSection() {
   ws.append(typeaheadRow);
   syncTypeaheadEnabled(getPref('autocomplete') === 'on');
   ws.append(guidedToursToggle());
+  if (PERF_OVERLAY_AVAILABLE) ws.append(perfOverlayToggle());
   return ws;
 }
 
@@ -174,6 +180,28 @@ function guidedToursToggle() {
   cb.setAttribute('aria-label', 'Guided tours');
   cb.checked = toursEnabled();
   cb.addEventListener('change', () => setToursEnabled(cb.checked));
+  sw.append(cb, el('span', 'db-switch-knob'));
+  row.append(text, sw);
+  return row;
+}
+
+// Performance overlay on/off — a global, cross-surface switch (mirrors the
+// Guided-tours one). Reads/writes the shared perf-overlay-prefs flag, so flipping
+// it here also governs the Playground, Workbench, landing and docs. The overlay
+// mounts/unmounts live wherever it's loaded (perf-overlay-prefs notifies it).
+function perfOverlayToggle() {
+  const row = el('label', 'db-or-switch');
+  const text = el('span', 'db-pref-text');
+  text.append(el('span', 'db-pref-label', 'Performance overlay'));
+  text.append(el('span', 'db-pref-hint',
+    'A live readout of Core Web Vitals (LCP, CLS, INP, FCP, TTFB) measured by this device, for checking real-world performance. Drag to reposition; shows on every page until turned off.'));
+  const sw = el('span', 'db-switch');
+  const cb = el('input');
+  cb.type = 'checkbox';
+  cb.className = 'db-switch-input';
+  cb.setAttribute('aria-label', 'Performance overlay');
+  cb.checked = perfOverlayEnabled();
+  cb.addEventListener('change', () => setPerfOverlayEnabled(cb.checked));
   sw.append(cb, el('span', 'db-switch-knob'));
   row.append(text, sw);
   return row;

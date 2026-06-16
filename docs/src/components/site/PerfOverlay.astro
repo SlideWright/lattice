@@ -1,0 +1,239 @@
+---
+// Live Core-Web-Vitals overlay — a draggable on-screen readout of LCP / CLS /
+// INP / FCP / TTFB, measured by the visitor's OWN browser. The point is
+// real-device measurement: the repo's perf gating
+// (engineering/decisions/2026-06-15-docs-perf-gating-policy.md §"Open human
+// step") defers the landing-CLS / mobile-LCP question to real hardware because
+// CI/sandbox can't load the CDN fonts and so never reproduces the font-swap
+// reflow. This closes that gap with zero tooling.
+//
+// On/off is a shared, cross-surface preference (perf-overlay-prefs.js, mirroring
+// tour-prefs.js) so it can be flipped two ways:
+//   • the "Performance overlay" switch in the Drawing Board settings drawer
+//     (governs every page, like the Guided-tours switch), and
+//   • a `?perf` URL param (`?perf` on, `?perf=off` off) — the phone-friendly
+//     entry that doesn't need the settings drawer. The param just writes the
+//     pref. Tap × on the overlay to turn it off; drag the header to reposition.
+//
+// Numbers come from Google's `web-vitals` library, dynamically imported ONLY
+// once the overlay is actually shown, so a normal page view loads neither the
+// library nor the overlay. Availability is GA-gated in perf-overlay-prefs.js.
+//
+// Included once per page via ResourceHints (standalone routes), Header (docs
+// zone) and features.astro (uses neither); a window guard makes a double-include
+// a no-op.
+---
+
+<script>
+	import {
+		PERF_OVERLAY_AVAILABLE,
+		onPerfOverlayEnabledChange,
+		perfOverlayEnabled,
+		setPerfOverlayEnabled,
+	} from '../../playground/perf-overlay-prefs.js';
+
+	if (PERF_OVERLAY_AVAILABLE && !window.__latticePerfOverlay) {
+		window.__latticePerfOverlay = true;
+
+		const POS_KEY = 'lattice-perf-overlay-pos';
+		const RATING_COLOR = { good: '#16a34a', 'needs-improvement': '#d97706', poor: '#dc2626' };
+		// name → value formatter; array order is render order.
+		const METRICS = [
+			['LCP', (v) => `${Math.round(v)} ms`],
+			['CLS', (v) => v.toFixed(3)],
+			['INP', (v) => `${Math.round(v)} ms`],
+			['FCP', (v) => `${Math.round(v)} ms`],
+			['TTFB', (v) => `${Math.round(v)} ms`],
+		];
+
+		let host = null; // the overlay element, or null when hidden
+		const refs = {}; // name → { val, dot }
+		const cache = {}; // name → latest metric (survives unmount/remount)
+		let vitalsStarted = false;
+
+		// `?perf` / `?perf=off` writes the shared pref (no-op if absent).
+		const params = new URLSearchParams(location.search);
+		if (params.has('perf')) setPerfOverlayEnabled(params.get('perf') !== 'off');
+
+		const paint = (m) => {
+			const r = refs[m.name];
+			if (!r) return;
+			r.val.textContent = METRICS.find(([n]) => n === m.name)[1](m.value);
+			r.dot.style.background = RATING_COLOR[m.rating] || '#52525b';
+		};
+
+		const startVitals = () => {
+			if (vitalsStarted) return;
+			vitalsStarted = true;
+			import('web-vitals')
+				.then(({ onLCP, onCLS, onINP, onFCP, onTTFB }) => {
+					const opts = { reportAllChanges: true };
+					const sink = (m) => {
+						cache[m.name] = m;
+						paint(m);
+					};
+					onLCP(sink, opts);
+					onCLS(sink, opts);
+					onINP(sink, opts);
+					onFCP(sink, opts);
+					onTTFB(sink, opts);
+				})
+				.catch(() => {
+					if (host) host.querySelector('.pf-title').textContent = 'web vitals · failed to load';
+				});
+		};
+
+		// Drag the header to reposition; persists across pages. Pointer events
+		// cover touch (touch-action:none on the header stops it scrolling). Move/up
+		// listen on `document` for the duration of the drag, so it keeps tracking
+		// even when the pointer leaves the small header (more reliable than
+		// setPointerCapture across browsers).
+		const makeDraggable = (el, handle) => {
+			let sx = 0, sy = 0, ox = 0, oy = 0;
+			const onMove = (e) => {
+				const nx = Math.max(4, Math.min(ox + e.clientX - sx, innerWidth - el.offsetWidth - 4));
+				const ny = Math.max(4, Math.min(oy + e.clientY - sy, innerHeight - el.offsetHeight - 4));
+				el.style.left = `${nx}px`;
+				el.style.top = `${ny}px`;
+			};
+			const onUp = () => {
+				document.removeEventListener('pointermove', onMove);
+				try {
+					localStorage.setItem(POS_KEY, JSON.stringify({ x: parseFloat(el.style.left), y: parseFloat(el.style.top) }));
+				} catch {}
+			};
+			handle.addEventListener('pointerdown', (e) => {
+				if (e.target.closest('.pf-close')) return;
+				const r = el.getBoundingClientRect();
+				ox = r.left;
+				oy = r.top;
+				sx = e.clientX;
+				sy = e.clientY;
+				el.style.left = `${ox}px`;
+				el.style.top = `${oy}px`;
+				el.style.right = 'auto';
+				el.style.bottom = 'auto';
+				document.addEventListener('pointermove', onMove);
+				document.addEventListener('pointerup', onUp, { once: true });
+				e.preventDefault();
+			});
+		};
+
+		const build = () => {
+			const el = document.createElement('div');
+			el.id = 'lattice-perf-overlay';
+			el.setAttribute('role', 'status');
+			el.innerHTML = `
+				<style>
+					#lattice-perf-overlay {
+						position: fixed;
+						left: max(8px, env(safe-area-inset-left));
+						bottom: max(8px, env(safe-area-inset-bottom));
+						z-index: 2147483647;
+						font: 12px/1.4 ui-monospace, "JetBrains Mono", Menlo, monospace;
+						color: #f4f4f5;
+						background: rgba(15, 17, 21, 0.92);
+						border: 1px solid rgba(255, 255, 255, 0.14);
+						border-radius: 10px;
+						padding: 8px 10px;
+						box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+						backdrop-filter: blur(6px);
+						min-width: 132px;
+						user-select: none;
+					}
+					#lattice-perf-overlay .pf-head {
+						display: flex;
+						align-items: center;
+						justify-content: space-between;
+						gap: 12px;
+						margin-bottom: 5px;
+						cursor: move;
+						touch-action: none;
+					}
+					#lattice-perf-overlay .pf-title {
+						font-size: 10px;
+						letter-spacing: 0.08em;
+						text-transform: uppercase;
+						color: #a1a1aa;
+					}
+					#lattice-perf-overlay .pf-close {
+						cursor: pointer;
+						border: 0;
+						background: transparent;
+						color: #a1a1aa;
+						font-size: 14px;
+						line-height: 1;
+						padding: 0 2px;
+					}
+					#lattice-perf-overlay .pf-row {
+						display: flex;
+						align-items: center;
+						justify-content: space-between;
+						gap: 14px;
+					}
+					#lattice-perf-overlay .pf-name {
+						display: flex;
+						align-items: center;
+						gap: 6px;
+						color: #d4d4d8;
+					}
+					#lattice-perf-overlay .pf-dot {
+						width: 8px;
+						height: 8px;
+						border-radius: 50%;
+						background: #52525b;
+						flex: 0 0 auto;
+					}
+					#lattice-perf-overlay .pf-val {
+						font-variant-numeric: tabular-nums;
+						color: #fafafa;
+					}
+				</style>
+				<div class="pf-head">
+					<span class="pf-title">web vitals · live</span>
+					<button class="pf-close" aria-label="Hide performance overlay">&times;</button>
+				</div>
+			`;
+			for (const [name] of METRICS) {
+				const row = document.createElement('div');
+				row.className = 'pf-row';
+				row.innerHTML = `<span class="pf-name"><span class="pf-dot"></span>${name}</span><span class="pf-val">–</span>`;
+				el.appendChild(row);
+				refs[name] = { val: row.querySelector('.pf-val'), dot: row.querySelector('.pf-dot') };
+			}
+			el.querySelector('.pf-close').addEventListener('click', () => setPerfOverlayEnabled(false));
+			// Restore a dragged position, if any.
+			try {
+				const p = JSON.parse(localStorage.getItem(POS_KEY) || 'null');
+				if (p && Number.isFinite(p.x) && Number.isFinite(p.y)) {
+					el.style.left = `${p.x}px`;
+					el.style.top = `${p.y}px`;
+					el.style.right = 'auto';
+					el.style.bottom = 'auto';
+				}
+			} catch {}
+			makeDraggable(el, el.querySelector('.pf-head'));
+			return el;
+		};
+
+		const mount = () => {
+			if (host || !document.body) return;
+			host = build();
+			document.body.appendChild(host);
+			for (const name in cache) paint(cache[name]); // repaint known values
+			startVitals();
+		};
+		const unmount = () => {
+			if (!host) return;
+			host.remove();
+			host = null;
+			for (const k in refs) delete refs[k];
+		};
+		const sync = () => (perfOverlayEnabled() ? mount() : unmount());
+
+		// Flipping the settings switch (or the × button) mounts/unmounts live.
+		onPerfOverlayEnabledChange(sync);
+		if (document.body) sync();
+		else addEventListener('DOMContentLoaded', sync, { once: true });
+	}
+</script>

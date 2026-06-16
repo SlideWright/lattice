@@ -18,6 +18,7 @@ import Search from 'virtual:starlight/components/Search';
 import config from 'virtual:starlight/user-config';
 import PaletteControls from './site/PaletteControls.tsx';
 import EngineWarm from './site/EngineWarm.astro';
+import PerfOverlay from './site/PerfOverlay.astro';
 import { joinBase } from '../lib/base-url.mjs';
 import { primaryNav, GITHUB_URL, isCurrent } from '../lib/nav.mjs';
 
@@ -69,6 +70,9 @@ const shouldRenderSearch =
     link in the topbar warms the render bundle a beat before the jump.
     See src/lib/prefetch-engine.ts. */}
 <EngineWarm />
+
+{/* Live Core-Web-Vitals overlay on the docs zone, gated behind ?perf. */}
+<PerfOverlay />
 
 
 {/* Palette + light/dark are now the shared <PaletteControls> island
