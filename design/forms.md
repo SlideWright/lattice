@@ -442,14 +442,21 @@ lib/forms/
   tile/<tile>/<tile>.manifest.json       # fillers — the registry rows, one folder each
     tile/<tile>/<tile>.transform.js      #   …its kernel (applyToHtml + applyToDom), and
     tile/<tile>/<tile>.css               #   …its CSS — co-located, like a component
-  schema/cell.schema.json                # the shared slot definition Frames emit
+  cell/<cell>/<cell>.cell.json           # the shared slot definitions Frames emit, and
+    cell/<cell>/<cell>.css               #   …each Cell's own CSS — co-located too
+  schema/cell.schema.json                # the JSON-schema for a Cell
 ```
 
 Like a component, a Tile folder owns **everything** — manifest, kernel, CSS — so
 it is self-contained, not scattered across `base.variants.css` and two hand-copied
 render-path injectors. Every logic-bearing Tile works this way now (`watermark`,
 `meta`, `progress`; the CSS-only `status` co-locates its chip CSS) — issue #356.
-Still to follow: the masthead/footer **Cells** and Frame chrome.
+The **Cell** CSS is now co-located the same way: the Form chrome (the root Frame
+box, the masthead/stage/footer Cells, the stage fill discipline) lives under
+`cell/<cell>/<cell>.css` (`stage` · `masthead` · `masthead-lede` · `masthead-bay`
+· `footer`), globbed into the same cascade slot. Still to follow: the
+`masthead-lift` structural transform (the JS that builds `.cell-masthead`, gated
+by the §4 242-direct-child-selector constraint) and the Frame chrome.
 
 The manifest is **load-bearing, not descriptive**: it drives the `--frame-*` grid
 and the Tile injectors and the `accepts`/`fits` validation, so adding a Frame or a
