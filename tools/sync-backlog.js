@@ -86,6 +86,19 @@ function renderBacklog(issues) {
   const byColumn = new Map([...COLUMNS.map(([, t]) => t), INBOX].map((t) => [t, []]));
   for (const issue of open) byColumn.get(columnFor(issue)).push(issue);
 
+  // Surface the triage queue at the top — PUSH the intake gate's flag into the
+  // committed mirror instead of relying on someone pulling a board filter. The
+  // banner is part of the pure render, so it appears and clears automatically as
+  // `needs:triage` cards come and go (sync-backlog re-runs on every label event).
+  const needTriage = open
+    .filter((i) => labelNames(i).includes('needs:triage'))
+    .sort((a, b) => a.number - b.number);
+  const triageBanner = needTriage.length
+    ? `> ⚠️ **${needTriage.length} card${needTriage.length === 1 ? '' : 's'} need triage** ` +
+      `(missing \`area:\`/\`type:\`/\`priority:\`): ` +
+      `${needTriage.map((i) => `[#${i.number}](${i.url || '#'})`).join(', ')}.\n\n`
+    : '';
+
   const sections = [];
   for (const title of [...COLUMNS.map(([, t]) => t), INBOX]) {
     const rows = byColumn.get(title).sort(sortIssues);
@@ -114,7 +127,7 @@ The live, claimable work queue — a read-only mirror of [open issues](https://g
 grouped by board column. Design lives in \`engineering/decisions/\`; this tracks
 only *status*. **${open.length} open** item${open.length === 1 ? '' : 's'}.
 
-${sections.join('\n').trimEnd()}\n`;
+${triageBanner}${sections.join('\n').trimEnd()}\n`;
 }
 
 // ── CLI ──────────────────────────────────────────────────────────────────

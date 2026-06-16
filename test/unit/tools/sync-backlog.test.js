@@ -74,4 +74,20 @@ describe('sync-backlog renderBacklog', () => {
     assert.match(md, /\*\*0 open\*\* items/);
     assert.match(md, /## Inbox \(no status\) \(0\)/);
   });
+
+  test('surfaces a triage banner listing needs:triage cards', () => {
+    const md = renderBacklog([
+      issue(5, ['status:backlog', 'needs:triage']),
+      issue(9, ['status:backlog', 'needs:triage', 'area:engine']),
+      issue(2, ['status:ready', 'area:docs', 'type:docs', 'priority:low']),
+    ]);
+    assert.match(md, /⚠️ \*\*2 cards need triage\*\*/);
+    assert.match(md, /\[#5\]\(.*?\), \[#9\]\(.*?\)/); // sorted by number, only the flagged ones
+    assert.doesNotMatch(md, /need triage\*\*[^\n]*#2\b/); // the compliant card isn't listed
+  });
+
+  test('no triage banner when the queue is clean', () => {
+    const md = renderBacklog([issue(1, ['status:backlog', 'area:docs', 'type:docs', 'priority:low'])]);
+    assert.doesNotMatch(md, /need triage/);
+  });
 });
