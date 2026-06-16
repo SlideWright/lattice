@@ -18,9 +18,12 @@
 /* Lattice · Accessibility — Deuteranopia (red-green, the common case)
  * ────────────────────────────────────────────────────────────────────────
  * A thin override on onyx's neutral base, NOT a brand theme. Activated by
- * `accessibility: deuteranopia` / the workspace toggle, which also stamps
- * `data-a11y` on each section so the palette-blind texture patterns + glyphs
- * (lattice.css) carry categorical/status meaning that colour cannot.
+ * `accessibility: deuteranopia` / the Drawing Board's workspace control —
+ * any of which selects THIS palette by name. The palette-blind texture patterns
+ * + glyphs below carry the categorical/status meaning colour cannot; they apply
+ * because this palette is active (they are NOT scoped to `data-a11y` — that
+ * attribute is only how the docs client carries a viewer's choice) and they
+ * reference the texture <defs> the engine injects when an a11y-* palette renders.
  *
  * Why so little colour is overridden: colour alone distinguishes only ~1-2
  * categories under dichromacy (engineering/decisions/2026-06-16-cvd-redundant-

@@ -172,6 +172,9 @@ export function buildSrcdoc({
 	clamp = true,
 	sync = false,
 	center = false, // vertically center a short deck instead of pinning it to the top
+	a11yDefs = '', // categorical texture <pattern> <defs> (string) — injected once into
+	// <body> when an accessibility palette is active, so `fill: url(#latt-a11y-tex-N)`
+	// resolves in this browsing context (empty for every normal deck).
 }) {
 	const gw = (geom && geom.w) || 1280;
 	const gh = (geom && geom.h) || 720;
@@ -223,6 +226,7 @@ export function buildSrcdoc({
 		printCss +
 		css +
 		'</style></head><body>' +
+		a11yDefs +
 		html +
 		'<scr' + 'ipt src="' + mermaidUrl + '"></scr' + 'ipt>' +
 		'<scr' + 'ipt src="' + runtimeUrl + '"></scr' + 'ipt>' +

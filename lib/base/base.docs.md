@@ -882,9 +882,14 @@ accessibility: deuteranopia   # or protanopia | tritanopia | achromatopsia
 This **overrides the theme** (`accessibility` always wins), swapping in the
 curated `a11y-<type>` palette — a self-contained theme that carries its own
 glyph + texture CSS, so nothing accessibility-specific touches the formal
-themes. A viewer can also force it regardless of the deck via the `LATTICE_ACCESSIBILITY`
-environment variable (the workspace tier, which beats front matter) — so the
-person who needs the accommodation gets it.
+themes. A viewer can also force it regardless of the deck — the **workspace tier**, which
+beats front matter — via the `LATTICE_ACCESSIBILITY` environment variable (the
+engine) or the Drawing Board's **Settings → Workspace → "Colour-vision
+accessibility"** control (which persists across the docs workspaces and, with
+"Apply to deck", can also write the deck's `accessibility:` key). The a11y
+palettes are deliberately NOT in the theme picker — accessibility is a separate
+viewer axis that overrides the theme, not a theme to choose. So the person who
+needs the accommodation gets it.
 
 Because colour alone distinguishes only ~1–2 categories under dichromacy, the
 mode does **not** rely on recolouring. It pairs CVD-tuned **status colours**

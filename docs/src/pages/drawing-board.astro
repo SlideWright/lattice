@@ -32,6 +32,12 @@ const docsRoot = process.cwd();
 const repoRoot = join(docsRoot, '..');
 const require = createRequire(import.meta.url);
 const { loadAll, manifestBucket, familyModifiersFor } = require(join(repoRoot, 'lib/components', 'index.js'));
+// The categorical texture <pattern> <defs> the a11y palettes' fills reference.
+// Built once here (the shared kernel) and handed to the render controller, which
+// injects it into the preview iframe whenever an accessibility palette is active
+// — the runtime/preview path's counterpart to the emulator's defs injection.
+const { texturePatternDefs } = require(join(repoRoot, 'lib/core/accessibility-textures.js'));
+const a11yTextureDefs = texturePatternDefs();
 const manifests = loadAll();
 
 // Compact catalog for the Architect's onboarding retrieval + scaffolding, and the
@@ -130,13 +136,18 @@ const isPreviewDeploy = isPreviewDeployEnv({
 });
 
 const tokensCss = readFileSync(join(docsRoot, 'src/styles/lattice-tokens.generated.css'), 'utf8');
-// Brand palettes (the landing swatch set) + the curated accessibility themes.
-// The a11y-* themes aren't part of the brand swatch set, but they ARE selectable
-// deck themes (the engine resolves them by @theme name), so surface them in the
-// picker under their own group. Light bases only — dark is the mode toggle.
-const brandPalettes = [...new Set([...tokensCss.matchAll(/data-palette="([^"]+)"/g)].map((m) => m[1]))];
-const a11yPalettes = themeNames.filter((n) => n.startsWith('a11y-') && !n.endsWith('-dark')).sort();
-const palettes = [...brandPalettes, ...a11yPalettes];
+// Brand palettes only — the theme picker's swatch set. The accessibility
+// (colour-vision-deficiency) palettes are NOT themes and never appear here: they
+// are a separate viewer axis (Settings → Accessibility, or the deck's
+// `accessibility:` key) that overrides the theme. See
+// engineering/decisions/2026-06-16-colour-blindness-accessibility.md.
+const palettes = [...new Set([...tokensCss.matchAll(/data-palette="([^"]+)"/g)].map((m) => m[1]))];
+// The accessibility types available to the workspace control (light bases; dark
+// is the mode toggle), prefix-stripped to the bare CVD type the resolver speaks.
+const a11yTypes = themeNames
+	.filter((n) => n.startsWith('a11y-') && !n.endsWith('-dark'))
+	.map((n) => n.replace(/^a11y-/, ''))
+	.sort();
 
 // Starter deck = a known-good sample (the hero component's), so the heartbeat
 // renders something real on first load without risking an authoring footgun.
@@ -172,6 +183,10 @@ const dbData = JSON.stringify({
 	// The base palette names the top-bar picker offers — the valid vocabulary for
 	// the Deck setup drawer's theme control + the controller's propagation guard.
 	palettes,
+	// Accessibility (CVD) types for the Settings → Accessibility workspace control.
+	a11yTypes,
+	// Texture <defs> injected into the preview iframe when an a11y palette is active.
+	a11yTextureDefs,
 	catalog: obCatalog,
 	version: pkgVersion,
 	buildId,
@@ -200,6 +215,11 @@ const dbData = JSON.stringify({
 					var m = localStorage.getItem('lattice-docs-mode');
 					if (m === 'light' || m === 'dark') r.setAttribute('data-mode', m);
 					else if (window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches) r.setAttribute('data-mode', 'dark');
+					// Accessibility (CVD) is a separate viewer axis that overrides the
+					// theme — stamp it pre-paint like palette/mode so the first render
+					// already honours it (consulted before data-palette at render time).
+					var a = localStorage.getItem('lattice-docs-a11y');
+					if (a) r.setAttribute('data-a11y', a);
 				} catch (e) {}
 			})();
 		</script>
@@ -1156,6 +1176,7 @@ const dbData = JSON.stringify({
 				getSource: () => (window.__dbEditor ? window.__dbEditor.getValue() : ''),
 				runtimeUrl: data.runtimeUrl,
 				themeBase: data.themeBase,
+				a11yDefs: data.a11yTextureDefs,
 				bucketOf: (name) => buckets.get(name) || null,
 				// Share the page's model ladder so a connected cloud/local tier tailors
 				// the rehearsal plan; absent one, the deterministic floor still runs.
@@ -1192,6 +1213,7 @@ const dbData = JSON.stringify({
 				getSource: () => (window.__dbEditor ? window.__dbEditor.getValue() : ''),
 				runtimeUrl: presentData.runtimeUrl,
 				themeBase: presentData.themeBase,
+				a11yDefs: presentData.a11yTextureDefs,
 			});
 			const presentBtn = document.getElementById('db-present-open');
 			if (presentBtn) presentBtn.addEventListener('click', () => present.open());

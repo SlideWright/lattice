@@ -3440,6 +3440,14 @@ html.db-js #db-editor-ta {
 .db-pref-row.is-disabled .db-pref-select {
 	cursor: default;
 }
+/* A control cluster on the right of a pref row — e.g. the accessibility select
+   plus its "Apply to deck" action — kept on one line, right-aligned. */
+.db-pref-ctl {
+	display: flex;
+	align-items: center;
+	gap: 0.4rem;
+	flex: 0 0 auto;
+}
 .db-pref-select {
 	flex: 0 0 auto;
 	font: inherit;

@@ -146,7 +146,15 @@ phase-2 redundant encoding exists to break.
 3. Curate the three dichromacy palettes (× light/dark) against the gate; add
    them to the contrast loop.
 4. Extract the shared client resolver; wire the workspace toggle
-   (`data-a11y` + `lattice-docs-a11y`) into the three controllers.
+   (`data-a11y` + `lattice-docs-a11y`) into the three controllers. **Done:**
+   `docs/src/playground/resolve-a11y-client.js` (the shared resolver) +
+   `a11y-prefs.js` (the `lattice-docs-a11y` workspace pref / `data-a11y` stamp),
+   surfaced as **Settings → Workspace → "Colour-vision accessibility"** with an
+   "Apply to deck" action that writes the deck's `accessibility:` key. The
+   `a11y-*` palettes are deliberately **not** in the theme picker — accessibility
+   is a separate axis, not a theme. The client also injects the texture `<defs>`
+   into the preview/Present/Practice iframes when an a11y palette is active (the
+   runtime path's counterpart to the emulator's defs injection).
 5. Verify across all live paths (emulator PDF + playground + Present +
    Practice) and a representative demo deck.
 6. **Phase 2:** redundant non-colour encoding (patterns / markers / shapes /

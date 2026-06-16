@@ -1,7 +1,7 @@
 import { Moon, Sun } from 'lucide-react';
 import * as React from 'react';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const titleCase = (s: string) => s.replace(/(^|-)(\w)/g, (_m, sep, c) => (sep ? ' ' : '') + c.toUpperCase());
 
@@ -88,21 +88,15 @@ export default function DrawingBoardTopbar({ palettes: initialPalettes }: { pale
 					size="sm"
 					aria-label="Deck theme"
 					title="Deck theme — written into this deck's front matter"
-					// Fixed width per breakpoint (no reflow as names change length). From
-					// sm up there's room for the longest name we surface — the a11y group's
-					// "Achromatopsia" (13 chars) — so widen to 10rem; on mobile keep the
-					// original 8.5rem so the topbar can't overflow the viewport (≤390px). The
-					// value is forced to block+truncate because the primitive sets it
-					// display:flex (for optional icons), defeating its line-clamp — so a name
-					// too long for the trigger degrades to a clean ellipsis, not a mid-glyph clip.
-					className="w-[8.5rem] sm:w-40 [&_[data-slot=select-value]]:!block [&_[data-slot=select-value]]:min-w-0 [&_[data-slot=select-value]]:truncate"
+					className="w-[8.5rem]"
 				>
 					<SelectValue placeholder="Theme" />
 				</SelectTrigger>
 				<SelectContent className="max-h-[60vh]">
-					{/* Brand themes, then a labelled Accessibility group for the curated
-					 * colour-vision-deficiency themes (a11y-*) — picking one writes
-					 * `theme: a11y-<type>`, the same path as any theme. */}
+					{/* Brand themes only. The accessibility (colour-vision-deficiency)
+					 * palettes are NOT themes — they are a separate viewer axis that
+					 * overrides the theme, set via the Settings → Accessibility control
+					 * (workspace) or the deck's `accessibility:` key, never picked here. */}
 					{palettes
 						.filter((p) => !p.startsWith('a11y-'))
 						.map((p) => (
@@ -110,18 +104,6 @@ export default function DrawingBoardTopbar({ palettes: initialPalettes }: { pale
 								{titleCase(p)}
 							</SelectItem>
 						))}
-					{palettes.some((p) => p.startsWith('a11y-')) && (
-						<SelectGroup>
-							<SelectLabel>Accessibility · colour-blindness</SelectLabel>
-							{palettes
-								.filter((p) => p.startsWith('a11y-'))
-								.map((p) => (
-									<SelectItem key={p} value={p}>
-										{titleCase(p.replace(/^a11y-/, ''))}
-									</SelectItem>
-								))}
-						</SelectGroup>
-					)}
 				</SelectContent>
 			</Select>
 			<Button

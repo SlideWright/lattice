@@ -7,10 +7,9 @@ afterEach(() => {
 	const r = document.documentElement;
 	r.removeAttribute('data-palette');
 	r.removeAttribute('data-mode');
-	// biome-ignore lint/performance/noDelete: test cleanup of the chrome bus globals.
-	delete (window as unknown as { __dbChrome?: unknown }).__dbChrome;
-	// biome-ignore lint/performance/noDelete: test cleanup of the export bus global.
-	delete (window as unknown as { __dbExport?: unknown }).__dbExport;
+	// Reset the chrome/export bus globals between tests.
+	(window as unknown as { __dbChrome?: unknown }).__dbChrome = undefined;
+	(window as unknown as { __dbExport?: unknown }).__dbExport = undefined;
 });
 
 describe('DrawingBoardTopbar (deck-theme picker island)', () => {
@@ -37,21 +36,15 @@ describe('DrawingBoardTopbar (deck-theme picker island)', () => {
 		expect(applyTheme).toHaveBeenCalledWith('cuoio');
 	});
 
-	it('groups the a11y-* themes under an Accessibility label, stripping the prefix, but applies the full theme name', async () => {
-		const applyTheme = vi.fn();
-		(window as unknown as { __dbChrome: unknown }).__dbChrome = {
-			getPalette: () => 'indaco',
-			getMode: () => 'light' as const,
-			getPalettes: () => ['indaco', 'a11y-deuteranopia'],
-			applyTheme,
-			toggleMode: () => 'dark' as const,
-		};
-		render(<DrawingBoardTopbar palettes={['indaco', 'a11y-deuteranopia']} />);
+	it('excludes a11y-* palettes from the theme picker (accessibility is a separate axis, not a theme)', async () => {
+		render(<DrawingBoardTopbar palettes={['indaco', 'cuoio', 'a11y-deuteranopia', 'a11y-achromatopsia']} />);
 		fireEvent.click(screen.getByRole('combobox', { name: /deck theme/i }));
-		expect(await screen.findByText(/accessibility · colour-blindness/i)).toBeInTheDocument();
-		const opt = await screen.findByRole('option', { name: /^Deuteranopia$/ });
-		fireEvent.click(opt);
-		expect(applyTheme).toHaveBeenCalledWith('a11y-deuteranopia');
+		// Brand themes are offered…
+		expect(await screen.findByRole('option', { name: /^Indaco$/ })).toBeInTheDocument();
+		expect(screen.getByRole('option', { name: /^Cuoio$/ })).toBeInTheDocument();
+		// …but no accessibility palette appears, grouped or otherwise.
+		expect(screen.queryByText(/accessibility/i)).not.toBeInTheDocument();
+		expect(screen.queryByRole('option', { name: /Deuteranopia|Achromatopsia/i })).not.toBeInTheDocument();
 	});
 
 	it('reflects a db-chrome-sync event (deck theme changed underneath)', async () => {

@@ -28,6 +28,7 @@ import { KATEX_URL, MERMAID_URL, splitSections } from './deck-preview.js';
 // on a divider) + a title — the basis for the per-section progress spine.
 import { metasFromSections } from './drawing-board-rehearsal.js';
 import { slideBox } from './frame-css.js';
+import { resolveRenderInputs } from './resolve-a11y-client.js';
 
 const { notesFromHtml } = notesCore;
 
@@ -39,7 +40,7 @@ const FS_EXIT = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" str
 const NOTES_ICON = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v5h5"/><path d="M8 13h8M8 17h6"/></svg>';
 const PRESENTER_ICON = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="14" height="10" rx="2"/><path d="M8 17v4M5 21h6"/><path d="M18 8h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1h-7a1 1 0 0 1-1-1v-2"/></svg>';
 
-export function createPresent({ host, getSource, runtimeUrl, themeBase }) {
+export function createPresent({ host, getSource, runtimeUrl, themeBase, a11yDefs = '' }) {
   if (!host) return { open() {} };
   const PG = () => window.LatticePlayground;
   const root = document.documentElement;
@@ -55,6 +56,7 @@ export function createPresent({ host, getSource, runtimeUrl, themeBase }) {
   let geom = { width: 1280, height: 720 };
   let css = '';
   let bg = '#15110d';
+  let a11yActive = false; // an accessibility palette is in effect → inject texture defs
   let hideTimer = null;
   let presenterWin = null; // the dual-screen presenter window handle (held, postMessage-synced)
   let presenterReady = false;
@@ -107,8 +109,13 @@ export function createPresent({ host, getSource, runtimeUrl, themeBase }) {
   async function prepare() {
     let pg = PG();
     if (!pg) pg = await waitForPG();
-    const palette = root.getAttribute('data-palette') || 'indaco';
-    const mode = root.getAttribute('data-mode') === 'dark' ? 'dark' : 'light';
+    // Honour an active accessibility need (workspace data-a11y, else the deck's
+    // `accessibility:` key) — it overrides the theme, exactly as in the editor
+    // preview, so presenting an accessible deck stays accessible.
+    const inp = resolveRenderInputs(root, getSource());
+    const palette = inp.palette;
+    const mode = inp.mode;
+    a11yActive = !!inp.a11y;
     await ensureTheme(palette);
     if (mode === 'dark') await ensureTheme(palette + '-dark');
     const theme = mode === 'dark' && pg.hasTheme(palette + '-dark') ? palette + '-dark' : palette;
@@ -155,7 +162,7 @@ export function createPresent({ host, getSource, runtimeUrl, themeBase }) {
       '.marpit{height:100%;display:flex;align-items:center;justify-content:center;visibility:hidden;}' +
       slideBox(sw, sh) +
       '.marpit>section{flex:0 0 auto;}' +
-      css + '</style></head><body>' + allHtml +
+      css + '</style></head><body>' + (a11yActive ? a11yDefs : '') + allHtml +
       '<scr' + 'ipt src="' + MERMAID_URL + '"></scr' + 'ipt>' +
       '<scr' + 'ipt src="' + runtimeUrl + '"></scr' + 'ipt>' +
       '<scr' + 'ipt>window.__SLIDE_W=' + sw + ';window.__SLIDE_H=' + sh + ';' +

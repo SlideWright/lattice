@@ -197,6 +197,19 @@ in patch versions.
   simulation), and `tools/cvd-audit.js`.
   See `engineering/decisions/2026-06-16-colour-blindness-accessibility.md` +
   `…-cvd-redundant-encoding.md`.
+- **Drawing Board: accessibility is a workspace control, not a theme.** The
+  colour-vision palettes are no longer listed in the deck-theme picker (they
+  aren't themes — they're a separate viewer axis that overrides the theme).
+  Instead, **Settings → Workspace → "Colour-vision accessibility"** sets your
+  need (Off / Deuteranopia / Protanopia / Tritanopia / Achromatopsia), persisted
+  across the docs workspaces (`lattice-docs-a11y` → `data-a11y`) and applied live;
+  **"Apply to deck"** bakes the choice into the deck's `accessibility:` front
+  matter so it travels with the file. Precedence is workspace > front matter >
+  off. The live preview (and Present / Practice) now inject the categorical
+  texture `<defs>` when an accessibility palette is active, so diagram/chart
+  fills carry their textures in the browser, not only in the PDF export. New:
+  `docs/src/playground/{a11y-prefs,resolve-a11y-client}.js` (the shared client
+  resolver mirroring `resolve-accessibility.js`).
 - **Editor autocomplete for focus, with a manifest-declared capability.** The
   Drawing Board now completes the `_focus` / `_focusStyle` / `_focusSteps`
   directives, the style values (`spotlight`/`blur`/`ring`/`list-fill`/`pop`), and

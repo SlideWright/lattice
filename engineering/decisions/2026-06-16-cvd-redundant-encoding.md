@@ -69,11 +69,20 @@ across the four, but inlined rather than shared via a partial — a `themes/`
 partial would have no `@theme` name to resolve and would trip the "every palette
 is a full sheet" engine contracts). Because that CSS is part of the *palette*
 and only loads when an `a11y-*` theme is the active one, its rules apply to the
-whole deck with no global flag — so there is **no `data-a11y` attribute** and no
-shared-bundle scoping. The resolver (`lib/core/resolve-accessibility.js`) just
-selects the `a11y-<type>` palette name; selecting it any way (the
-`accessibility:` key, the `LATTICE_ACCESSIBILITY` env, or `theme: a11y-*`
-directly) activates the encoding.
+whole deck with no global flag — so **no CSS is scoped to a `data-a11y`
+attribute** (the texture/glyph selectors are `section .section-N` etc., gated
+only by the palette being active). The resolver
+(`lib/core/resolve-accessibility.js`) just selects the `a11y-<type>` palette
+name; selecting it any way (the `accessibility:` key, the
+`LATTICE_ACCESSIBILITY` env, or `theme: a11y-*` directly) activates the encoding.
+
+**Note — `data-a11y` exists, but as a palette *selection* input, not an encoding
+*scope*.** The docs Drawing Board's workspace tier (the Settings control) stamps
+`data-a11y="<type>"` on `<html>` + persists `lattice-docs-a11y`; the shared
+client resolver (`docs/src/playground/resolve-a11y-client.js`) reads it (above
+the deck's `accessibility:` key) to pick which `a11y-<type>` palette to render.
+No CSS selector keys off the attribute — it is purely how the live client
+carries a viewer's choice, the browser counterpart to the engine's env tier.
 
 The **only** engine seam is injecting the categorical texture `<pattern>`
 `<defs>` — SVG markup a CSS file cannot hold — which the engine adds to the page
@@ -127,13 +136,20 @@ adequate-contrast geometry), not only at screen zoom.
 2. Categorical texture patterns — CSS components first (tractable, high cover),
    then the M1 SVG-defs transform for diagrams/charts.
 3. Semantic glyphs + line-style variation.
-4. Resolver wiring (selects the `a11y-<type>` palette name — **no `data-a11y`
-   stamp**; the encoding rides inside the active theme) + the `--strict` CVD gate
-   over the palettes (now asserting the *colour* layer's semantic/deep
+4. Resolver wiring (selects the `a11y-<type>` palette name; no CSS is scoped to
+   `data-a11y` — the encoding rides inside the active theme) + the `--strict` CVD
+   gate over the palettes (now asserting the *colour* layer's semantic/deep
    distinctness, with patterns covering the categorical ceiling).
 5. Demo deck (rendered in light + dark for every type) for owner sign-off —
    export-affecting, so it STOPS for inspection per CLAUDE.md.
-6. Drawing Board workspace toggle (parent doc step 4).
+6. Drawing Board workspace toggle (parent doc step 4) — **done**: a Settings
+   control that stamps `data-a11y`/`lattice-docs-a11y` (a selection input, see
+   Mechanism note) and writes the deck's `accessibility:` key; the client also
+   injects the texture `<defs>` into the preview/Present/Practice iframes.
+   **Runtime parity remains open**: `dist/lattice-runtime.js` (the published-HTML
+   / vscode-preview sibling) does not yet inject the defs, so a11y textures
+   render in the docs preview + emulator PDF but not in a standalone exported
+   HTML — tracked as the runtime follow-up to HARD RULE #1's two-path parity.
 
 **Status: shipped** — finding verified empirically 2026-06-16; encoding built
 (textures, line-styles, glyphs) and rendered across all four types. Achromatopsia

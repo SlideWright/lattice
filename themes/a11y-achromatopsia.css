@@ -18,7 +18,7 @@
  * ────────────────────────────────────────────────────────────────────────
  * Thin override on onyx; activated by `accessibility: achromatopsia`. Hue
  * conveys nothing to a fully colour-blind viewer, so meaning rides ENTIRELY on
- * luminance + the texture patterns + glyphs (lattice.css, scoped to data-a11y)
+ * luminance + the texture patterns + glyphs (inlined in this theme, applied because it is the active palette)
  * — this type is the reason redundant encoding is mandatory, not the palette.
  * The status trio is recoloured to three distinct GREYS (luminance-separated)
  * so it carries no false hue signal; the ✓/!/✗ glyphs disambiguate. The
