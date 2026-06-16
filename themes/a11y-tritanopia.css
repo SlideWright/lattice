@@ -96,3 +96,17 @@ section .cluster.section-8 rect, section .section-8 rect, section .section-8 pat
 section .cluster.section-9 rect, section .section-9 rect, section .section-9 path, section .section-9 circle { fill: url(#latt-a11y-tex-10) !important; }
 section .cluster.section-10 rect, section .section-10 rect, section .section-10 path, section .section-10 circle { fill: url(#latt-a11y-tex-11) !important; }
 section .cluster.section-11 rect, section .section-11 rect, section .section-11 path, section .section-11 circle { fill: url(#latt-a11y-tex-12) !important; }
+/* Native chart-family (SVG) — texture the categorical fills (chart-cat set,
+ * which paints --chart-cat-N-fill so value + legend stay matched). */
+section.piechart .wedge:nth-of-type(6n+1) { fill: url(#latt-a11y-chart-tex-1) !important; }
+section.piechart .wedge:nth-of-type(6n+2) { fill: url(#latt-a11y-chart-tex-2) !important; }
+section.piechart .wedge:nth-of-type(6n+3) { fill: url(#latt-a11y-chart-tex-3) !important; }
+section.piechart .wedge:nth-of-type(6n+4) { fill: url(#latt-a11y-chart-tex-4) !important; }
+section.piechart .wedge:nth-of-type(6n+5) { fill: url(#latt-a11y-chart-tex-5) !important; }
+section.piechart .wedge:nth-of-type(6n)   { fill: url(#latt-a11y-chart-tex-6) !important; }
+section.funnel .funnel-band:nth-of-type(6n+1) { fill: url(#latt-a11y-chart-tex-1) !important; }
+section.funnel .funnel-band:nth-of-type(6n+2) { fill: url(#latt-a11y-chart-tex-2) !important; }
+section.funnel .funnel-band:nth-of-type(6n+3) { fill: url(#latt-a11y-chart-tex-3) !important; }
+section.funnel .funnel-band:nth-of-type(6n+4) { fill: url(#latt-a11y-chart-tex-4) !important; }
+section.funnel .funnel-band:nth-of-type(6n+5) { fill: url(#latt-a11y-chart-tex-5) !important; }
+section.funnel .funnel-band:nth-of-type(6n+6) { fill: url(#latt-a11y-chart-tex-6) !important; }
