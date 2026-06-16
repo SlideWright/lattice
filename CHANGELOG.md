@@ -27,6 +27,17 @@ in patch versions.
 
 ### Added
 
+- **Narrative build — progressive disclosure via `_build`.** A slide opts into
+  "assemble as you go" with a `<!-- _build -->` directive (a subset of the
+  `_focus` grammar): bare builds the slide's primary collection one unit per step
+  in document order; `_build: rows` picks the axis (`item` · `row` · `col` ·
+  `line`); `_build: 1, 2-3, 4` groups units into steps; `_build: none` opts out.
+  The engine only *tags* the steppable units (`data-build-step`); reveal is pure
+  CSS gated on a consumer-set `data-build-at`, so a non-driven render and the
+  final-state PDF are byte-identical to a deck with no build (the 0-pixel
+  guarantee). Reveal-only; the live player driver and per-step overlay export are
+  staged follow-ons. See `engineering/decisions/2026-06-16-narrative-step-spec.md`.
+
 - **Docs site: a live, draggable Core-Web-Vitals overlay.** A small overlay
   renders the live LCP / CLS / INP / FCP / TTFB, colour-rated by Google's
   thresholds, measured by the device's own browser — the zero-tooling way to
