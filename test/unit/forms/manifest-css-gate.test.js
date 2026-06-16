@@ -11,10 +11,19 @@ const { test, describe } = require('node:test');
 const assert = require('node:assert/strict');
 const {
   loadCells,
+  loadCatalog,
   collectGeometryTokenRefs,
   checkManifestCssRefs,
+  checkCellCssPresence,
+  checkSuppressIntegrity,
+  checkZPlaneZIndex,
 } = require('../../../lib/forms');
-const { collectDefinedCssTokens, assertManifestCssConsistency } = require('../../../tools/build-forms');
+const {
+  collectDefinedCssTokens,
+  collectCellCssPresence,
+  collectZPlaneZIndex,
+  assertManifestCssConsistency,
+} = require('../../../tools/build-forms');
 
 describe('Form manifest↔CSS gate — pure helpers', () => {
   test('collectGeometryTokenRefs pulls every geometry/gap token name', () => {
@@ -60,6 +69,61 @@ describe('Form manifest↔CSS gate — live catalog', () => {
   });
 
   test('assertManifestCssConsistency does not throw on the live catalog', () => {
-    assert.doesNotThrow(() => assertManifestCssConsistency(loadCells()));
+    assert.doesNotThrow(() => assertManifestCssConsistency(loadCatalog()));
+  });
+});
+
+describe('§4.1 — Cell-CSS presence', () => {
+  test('clean when css flag matches the files on disk', () => {
+    const cells = [{ id: 'stage' }, { id: 'overlay', css: false }];
+    assert.deepEqual(checkCellCssPresence(cells, new Set(['stage'])), []);
+  });
+  test('flags a layout Cell missing its stylesheet', () => {
+    const errors = checkCellCssPresence([{ id: 'masthead' }], new Set());
+    assert.equal(errors.length, 1);
+    assert.match(errors[0], /cell "masthead" expects a co-located stylesheet/);
+  });
+  test('flags a css:false Cell that still has a stylesheet (orphan/contradiction)', () => {
+    const errors = checkCellCssPresence([{ id: 'overlay', css: false }], new Set(['overlay']));
+    assert.equal(errors.length, 1);
+    assert.match(errors[0], /marked "css": false but a co-located overlay\.css exists/);
+  });
+  test('live: every Cell css flag matches the filesystem', () => {
+    assert.deepEqual(checkCellCssPresence(loadCells(), collectCellCssPresence()), []);
+  });
+});
+
+describe('§4.4 — suppresses integrity', () => {
+  test('clean for a normal sovereign frame', () => {
+    const frames = [{ id: 'title', cells: ['stage'], suppresses: ['masthead', 'footer'] }];
+    assert.deepEqual(checkSuppressIntegrity(frames), []);
+  });
+  test('flags suppressing the content stage', () => {
+    const errors = checkSuppressIntegrity([{ id: 'x', cells: ['stage'], suppresses: ['stage'] }]);
+    assert.ok(errors.some((e) => /suppresses the content "stage" cell/.test(e)));
+  });
+  test('flags produce∩suppress overlap', () => {
+    const errors = checkSuppressIntegrity([{ id: 'x', cells: ['footer'], suppresses: ['footer'] }]);
+    assert.ok(errors.some((e) => /both produces and suppresses cell "footer"/.test(e)));
+  });
+  test('live: the real frames are consistent', () => {
+    assert.deepEqual(checkSuppressIntegrity(loadCatalog().frames), []);
+  });
+});
+
+describe('§4.3 — z-plane ↔ z-index monotonicity', () => {
+  test('clean when z-index rises with the plane', () => {
+    assert.deepEqual(
+      checkZPlaneZIndex([{ id: 'a', plane: 1, zindex: -1 }, { id: 'b', plane: 3, zindex: 3 }]),
+      [],
+    );
+  });
+  test('flags an inversion (lower plane, higher z-index)', () => {
+    const errors = checkZPlaneZIndex([{ id: 'a', plane: 1, zindex: 99 }, { id: 'b', plane: 3, zindex: 3 }]);
+    assert.equal(errors.length, 1);
+    assert.match(errors[0], /z-plane inversion/);
+  });
+  test('live: the real co-located z-index declarations are monotonic', () => {
+    assert.deepEqual(checkZPlaneZIndex(collectZPlaneZIndex(loadCatalog())), []);
   });
 });

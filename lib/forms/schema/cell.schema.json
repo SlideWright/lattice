@@ -65,6 +65,10 @@
     "clip": {
       "type": "boolean",
       "description": "overflow:hidden — content is cut at the Cell, never bled across a neighbour (design/forms.md §6 clip guarantee)."
+    },
+    "css": {
+      "type": "boolean",
+      "description": "Whether this Cell ships a co-located 2D stylesheet lib/forms/cell/<id>/<id>.css (the build asserts presence/absence — manifest↔CSS gate §4.1). Default true; set FALSE for a pure token/coordinate-contract Cell with no CSS of its own (footer-left, pagination-right, progress-centre, overlay)."
     }
   }
 }

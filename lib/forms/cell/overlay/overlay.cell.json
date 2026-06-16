@@ -8,5 +8,6 @@
   "fill": "anchor",
   "gap": "--frame-y",
   "geometry": { "inset": "--frame-x" },
-  "clip": false
+  "clip": false,
+  "css": false
 }
