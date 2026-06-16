@@ -42,7 +42,30 @@ in patch versions.
   `docs/src/playground/perf-overlay-prefs.js`. See
   `docs/src/components/site/PerfOverlay.astro`.
 
+- **Native social-media & mobile slide sizes — portrait and square.** Four new
+  `@size` presets join the landscape set: `square` (1080×1080, 1:1), `portrait`
+  (1080×1350, 4:5), `story` (1080×1920, 9:16) and `mobile` (1080×2340, 9:19.5),
+  each with aspect aliases (`1:1`, `4:5`, `9:16`) and `reel` for `story`. Opt in
+  with one line — `size: story` in the front matter; components, palettes and
+  treatments all work unchanged. The engine is now **orientation-aware**: a
+  `--canvas-scale` magnitude lever (folded into every `--fs-*` / `--sp-*` token)
+  boosts type and spacing so portrait/square decks read at phone distance, and
+  the default flex-column layouts (title, statement, quote, divider, stats,
+  big-number, closing, prose, lists) vertically centre to fill the taller frame.
+  Landscape output is **byte-identical** (`--canvas-scale` is exactly 1; verified
+  pixel-for-pixel against the committed baselines). Demo decks:
+  `examples/social-{square,portrait,story,mobile}.md`. Design:
+  `engineering/decisions/2026-06-16-social-mobile-portrait-sizes.md`.
+  - Data-dense grid layouts (kpi, comparison, split, charts) render true-portrait
+    but keep their landscape composition for now; a portrait reflow is tracked as
+    follow-on. PPTX export remains 16:9-only (PDF export is correct at every size).
+
 ### Changed
+
+- **One slide-size registry (engine source of truth).** The CLI/PDF emulator no
+  longer carries its own hard-coded size table — it resolves `@size` through the
+  engine's `resolveSize`, the same lookup the scaffold bakes into `@page`. Fixes
+  a latent bug where `size: 16:9` silently rendered as `hd` in exported PDFs.
 
 - **Docs site: the header/footer logo and browser-tab favicon now use the
   existing adaptive SVG mark instead of a 512² PNG.** The header/footer `<img>`
