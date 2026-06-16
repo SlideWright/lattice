@@ -58,7 +58,11 @@ export default defineConfig({
 	integrations: [
 		starlight({
 			title: 'Lattice',
-			favicon: '/lattice-logo.png',
+			// Browser-tab icon: the 1.3KB vector mark (replaced a 26KB 512² PNG).
+			// Both this and the in-page header/footer logo (an <img> →
+			// lattice-mark-min.svg) are light/dark adaptive via
+			// @media(prefers-color-scheme:dark). See design/logo/README.md.
+			favicon: '/favicon.svg',
 			// Open the TLS handshake to the Google Fonts hosts up front, so the
 			// webfont round-trip doesn't wait on the render-blocking @import in
 			// lattice.css. gstatic serves the .woff2 over CORS → crossorigin.
@@ -80,7 +84,7 @@ export default defineConfig({
 				Sidebar: './src/components/Sidebar.astro',
 				MobileMenuFooter: './src/components/MobileMenuFooter.astro',
 			},
-			logo: { src: './public/lattice-logo.png', alt: 'Lattice' },
+			logo: { src: './public/favicon.svg', alt: 'Lattice' },
 			description:
 				'A Marp-based slide-deck engine that renders boardroom-quality PDFs from Markdown. Themed layouts, Mermaid diagrams, WCAG AA throughout.',
 			customCss: ['./src/styles/lattice.css'],
