@@ -127,6 +127,20 @@ in patch versions.
   the player designed for the self-contained `.html` export
   (`engineering/decisions/2026-06-16-lattice-export-format.md`).
 
+- **Proactive "type-ahead" completion in the Drawing Board editor.** The
+  completion popup now opens automatically the moment the cursor enters a
+  completable grammar context, before any search character is typed — so picking
+  a component (and pressing space to cascade into its modifiers) needs no
+  keystroke to surface the choices. By default this is scoped to the `_class:`
+  directive (component name → modifiers); deck-level directives (`theme:`,
+  `finish:`, fence languages, …) keep opening on typing / `Ctrl-Space`. A new
+  **"Open suggestions automatically"** workspace preference (Settings →
+  Workspace) extends it to *every* grammar context (`Everywhere`) or disables
+  proactive open entirely (`Off`). Built on `startCompletion` (an explicit
+  completion, so each source's existing "quiet on a bare position" guard yields
+  the full list); the grammar classification is a pure, unit-tested
+  `typeaheadContext` in `slide-context.js`. Inert when autocomplete is off.
+
 - **Worked exemplar decks — "what good looks like" for Drafting.** A new
   `exemplars/` library of complete, boardroom-grade decks (one concrete fictional
   subject threaded through every slide, declarative takeaway titles, real-looking

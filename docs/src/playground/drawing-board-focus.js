@@ -135,7 +135,9 @@ export function createFocus({ host, editor, themeBase, runtimeUrl }) {
     wrap.append(bar, body);
     host.appendChild(wrap);
 
-    sub = createEditor({ parent: editPane, doc: block.body, onChange: schedulePreview });
+    // The focus sub-editor holds one block's body (no catalog/vocab), so proactive
+    // _class: type-ahead has nothing to offer — skip it.
+    sub = createEditor({ parent: editPane, doc: block.body, onChange: schedulePreview, typeahead: 'off' });
     setTimeout(() => sub.focus(), 0);
     renderPreview();
     return true;

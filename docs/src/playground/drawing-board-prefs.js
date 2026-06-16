@@ -27,6 +27,12 @@ export const PREFS = {
   // Deck-grammar autocomplete in the editor (component names, modifiers, theme
   // names, skeletons, map regions, …). On by default; off silences the popup.
   autocomplete: { key: 'lattice-db-autocomplete', def: 'on',      values: ['on', 'off'] },
+  // Proactive "type-ahead": auto-open the completion popup on ENTERING a grammar
+  // context, before a character is typed. 'class' (default) limits it to the
+  // `_class:` directive (component → modifiers); 'all' extends it to every
+  // grammar context (directives, fence language, front-matter values); 'off'
+  // opens the popup only on typing / Ctrl-Space. Inert when autocomplete is off.
+  typeahead:    { key: 'lattice-db-typeahead',    def: 'class',    values: ['class', 'all', 'off'] },
 };
 
 export function getPref(name) {

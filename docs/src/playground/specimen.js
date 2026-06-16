@@ -110,6 +110,8 @@ export function initSpecimen() {
       parent: editorHost,
       doc: state.source,
       autoHeight: true,
+      // No catalog here, so proactive _class: type-ahead would be a no-op — skip it.
+      typeahead: 'off',
       onChange: (v) => {
         state.source = v;
         const dirty = v !== state.base;

@@ -276,3 +276,39 @@ export function identifierBefore(before) {
 	if (!m) return null;
 	return { from: before.length - m[1].length, typed: m[1] };
 }
+
+// ── Proactive type-ahead: which grammar context the cursor sits in ───────────
+
+// Classify the cursor's position into the completable grammar context it sits
+// in — for the editor's proactive "type-ahead" trigger (auto-open the popup on
+// ENTERING a context, before any character is typed). Pure mirror of the source
+// gating in complete.js; returns one of:
+//   'class' | 'modifier'                        — inside `<!-- _class: … -->`
+//   'directive'                                 — a directive NAME `<!-- _pag…`
+//   'paginate'                                  — a `<!-- _paginate: … value
+//   'fence'                                     — a fence info string ` ```…`
+//   'theme' | 'finish' | 'islands' | 'split'    — front-matter value lines
+//   null                                        — none of the above
+// `getLine(n)` is the 1-based line accessor; `lineNo` the cursor's line; `before`
+// the line text up to the cursor. This function only CLASSIFIES — it owns no
+// policy; the caller (editor.js) decides which kinds trigger per the workspace
+// mode. The contexts are mutually exclusive by construction (each keys off a
+// distinct prefix), so order here is for readability, not disambiguation.
+//
+// Mermaid is deliberately ABSENT: its source needs a typed identifier (it
+// returns null on a bare position even when explicit), so it cannot be opened
+// proactively — it stays type-to-fire, the same as the map/data sources.
+export function typeaheadContext(getLine, lineNo, before) {
+	const cls = classDirectiveCompletion(before);
+	if (cls) return cls.kind; // 'class' | 'modifier'
+	if (directiveNameAt(before)) return 'directive';
+	if (paginateValuePosition(before)) return 'paginate';
+	if (fenceLangAt(before)) return 'fence';
+	if (inFrontMatter(getLine, lineNo)) {
+		if (themeValuePosition(before)) return 'theme';
+		if (finishValuePosition(before)) return 'finish';
+		if (islandsValuePosition(before)) return 'islands';
+		if (splitValuePosition(before)) return 'split';
+	}
+	return null;
+}
