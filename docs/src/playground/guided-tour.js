@@ -27,7 +27,29 @@ const SEEN_PREFIX = 'lattice-tour-seen-';
 // main-branch Cloudflare deploy) and "off" for local dev and the Cloudflare
 // *.pages.dev PR previews (see docs/src/lib/deploy-env.mjs). Fail closed: only
 // an explicit "on" runs them.
+//
+// Override for testing: a `?tours=on` URL param forces tours/lessons ON even on
+// a preview/dev deploy (so a branch-preview URL is clickable before merge);
+// `?tours=off` forces them off. The choice sticks for the browser TAB
+// (sessionStorage) so it survives navigation between pages, and clears when the
+// tab closes — it never leaks into a normal visitor's session.
+function toursOverride() {
+	try {
+		const q = new URL(window.location.href).searchParams.get('tours');
+		if (q === 'on' || q === 'off') {
+			sessionStorage.setItem('lattice-tours-override', q);
+			return q;
+		}
+		return sessionStorage.getItem('lattice-tours-override');
+	} catch {
+		return null;
+	}
+}
+
 export function toursAllowedHere() {
+	const override = toursOverride();
+	if (override === 'on') return true;
+	if (override === 'off') return false;
 	try {
 		return document.documentElement.dataset.tours === 'on';
 	} catch {

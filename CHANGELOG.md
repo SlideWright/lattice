@@ -141,6 +141,9 @@ in patch versions.
   `docs/src/playground/guided-lesson.js` (a reusable `initGuidedLesson` with a
   per-step `waitFor` hook) + content `docs/src/playground/drawing-board-lesson.js`.
   See `engineering/decisions/2026-06-16-hands-on-lessons.md`.
+  - Tours and lessons are production-gated (off on dev / preview deploys); a
+    **`?tours=on`** URL override now forces them on so a branch-preview URL is
+    clickable before merge (`?tours=off` forces off), sticky per browser tab.
 
 - **Docs site: a live, draggable performance overlay.** A small overlay renders
   two groups: **web vitals** (LCP / CLS / INP / FCP / TTFB, colour-rated by
