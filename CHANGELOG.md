@@ -119,10 +119,11 @@ in patch versions.
   siblings `.lat-recede`; the treatment is pure CSS, palette-blind, and survives
   PDF **and** PPTX (no masks). Content-aware default — tables get a **ring**
   (keeps every cell legible), lists/grids get **spotlight** (recede the rest) —
-  overridable with `<!-- _focusStyle: spotlight | blur | ring | list-fill -->`
+  overridable with `<!-- _focusStyle: spotlight | blur | ring | list-fill | pop -->`
   (`blur` defocuses the rest and gives a list/grid target a subtle lift — the
-  literal camera-focus; survives PDF + PPTX, using only hard-edged shapes so it
-  holds up in Apple PDFKit). Axes:
+  literal camera-focus; `pop` lifts the target forward while leaving every other
+  row/card fully legible; both survive PDF + PPTX, using only hard-edged shapes
+  so they hold up in Apple PDFKit). Axes:
   `item` (list/grid), `row` / `col` / `cell` (table), and `line` (code).
   `<!-- _focusSteps: A | B | C -->` expands one slide into N, walking the focus
   one step at a time (the static-format equivalent of a live build). The

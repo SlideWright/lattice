@@ -34,7 +34,7 @@ var require_lint_core = __commonJS({
     var FOCUS_STYLE_DIRECTIVE = /<!--\s*_focusStyle:\s*([^>]+?)\s*-->/;
     var FOCUS_STEPS_DIRECTIVE = /<!--\s*_focusSteps:\s*([^>]+?)\s*-->/;
     var FOCUS_AXES = /* @__PURE__ */ new Set(["item", "row", "col", "cell", "line"]);
-    var FOCUS_STYLES = /* @__PURE__ */ new Set(["spotlight", "ring", "list-fill", "blur"]);
+    var FOCUS_STYLES = /* @__PURE__ */ new Set(["spotlight", "ring", "list-fill", "blur", "pop"]);
     function focusSpecError(spec) {
       if (!spec || !spec.trim()) return "empty target";
       const rest = spec.replace(/\bcell\s+\d+\s*,\s*\d+/gi, "");

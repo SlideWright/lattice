@@ -1781,6 +1781,26 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
 - **Don't reintroduce:** never hardcode `1280`/`720` in a preview/export host —
   thread the geometry from the render result through `frame-css.js`.
 
+### A blurred `box-shadow` renders as a flat grey block in Apple PDFKit
+
+- **Symptom:** A soft drop-shadow (any `box-shadow` with a blur radius) that
+  looks fine in Chrome / poppler renders in **Apple PDFKit** (iOS/macOS Preview,
+  the iOS share-sheet viewer) as an opaque grey **rectangle** filling the
+  shadow's footprint — not a soft gradient. Caught on the focus `pop`/`blur`
+  lift: the focused card showed a hard grey box behind it on iPhone while the
+  sandbox raster (poppler) looked correct.
+- **Cause:** PDFKit does not composite the soft transparency group Chromium
+  emits for a blurred shadow — the same soft-compositing weakness that makes it
+  drop SVG `mask-image` (see the mask gotcha). poppler/Chrome composite it, so
+  the sandbox raster hides the bug — **verify shadow-bearing exports on an Apple
+  viewer.**
+- **Fix / don't reintroduce:** for anything that must survive PDF, lift with
+  **hard-edged** shapes only — a crisp border, or a **zero-blur** offset shadow
+  (`box-shadow: Xcqi Ycqi 0 <color>`), which is a solid vector fill. Keep the
+  colour **opaque** (mix toward `--bg`, not `transparent`) to avoid alpha
+  compositing too. This is why `--focus-lift` is an opaque hard offset, not a
+  soft elevation shadow (`lib/base/base.focus.css`).
+
 ## G-gen merge must use non-G file's G-gen block, not the G-file's block
 
 - **Symptom:** After promoting G-files to canonical (merging cuoio-G.css
