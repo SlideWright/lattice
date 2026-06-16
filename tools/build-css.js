@@ -158,11 +158,6 @@ const TAIL_SOURCES = [
   ...FORMS_TILE_CSS_SOURCES,
   ...CONTRACT_LAYOUT_SOURCES,
   'lib/integrations/mermaid/mermaid.css',
-  // Last: the accessibility (CVD) redundant-encoding layer — texture patterns
-  // + status glyphs, all scoped to [data-a11y] so they apply ONLY in
-  // accessibility mode and win over every earlier tier. See
-  // engineering/decisions/2026-06-16-cvd-redundant-encoding.md.
-  'lib/_accessibility.css',
 ];
 
 const LAYER_DECLARATION =

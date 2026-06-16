@@ -845,8 +845,9 @@ accessibility: deuteranopia   # or protanopia | tritanopia | achromatopsia
 ```
 
 This **overrides the theme** (`accessibility` always wins), swapping in the
-curated `a11y-<type>` palette and stamping `data-a11y` on every section. A
-viewer can also force it regardless of the deck via the `LATTICE_ACCESSIBILITY`
+curated `a11y-<type>` palette — a self-contained theme that carries its own
+glyph + texture CSS, so nothing accessibility-specific touches the formal
+themes. A viewer can also force it regardless of the deck via the `LATTICE_ACCESSIBILITY`
 environment variable (the workspace tier, which beats front matter) — so the
 person who needs the accommodation gets it.
 

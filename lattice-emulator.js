@@ -260,18 +260,20 @@ const md = readFileOrDie(mdFile, 'source markdown');
 // be unit-tested in isolation; see test/unit/palette-resolution.test.js.
 const { resolvePalette } = require('./lib/core/resolve-palette');
 // Accessibility (CVD) overrides the theme: when active it wins the palette
-// name-resolution and stamps data-a11y on each section so the palette-blind
-// texture patterns + glyphs (lattice.css) activate. Workspace tier = env
-// LATTICE_ACCESSIBILITY; deck tier = front-matter `accessibility:`.
+// name-resolution, selecting a curated a11y-* theme. Workspace tier = env
+// LATTICE_ACCESSIBILITY; deck tier = front-matter `accessibility:`. The a11y
+// themes carry their own redundant-encoding CSS (themes/a11y-encoding.css).
 const { resolveAccessibility } = require('./lib/core/resolve-accessibility');
 const a11y = resolveAccessibility({ md });
 if (a11y.unsupported) {
   console.error(`warning: accessibility: ${a11y.unsupported} is not yet supported — rendering without it`);
 }
 const paletteName = a11y.active ? a11y.palette : resolvePalette({ md, cliArg: paletteArg }).name;
-// Shared categorical texture <defs> (M1) — injected once when accessibility is
-// active, referenced by the [data-a11y] DIAGRAM OVERRIDES in lattice.css.
-const a11yTextureDefs = a11y.active
+// The one thing the a11y CSS can't hold is the categorical texture <pattern>
+// <defs> (SVG markup) its fills reference — inject them once whenever an a11y-*
+// palette is active, by whichever path selected it (accessibility: key, env, or
+// theme: a11y-* directly).
+const a11yTextureDefs = /^a11y-/.test(paletteName)
   ? require('./lib/core/accessibility-textures').texturePatternDefs()
   : '';
 const palettePath = path.join(PKG_ROOT, 'themes', `${paletteName}.css`);
@@ -981,7 +983,7 @@ function engineSlides() {
     // engine's basic-mode render doesn't: wrap half-canvas prose in
     // `.image-text`, and inject the contrast scrim for full/contain image
     // layouts (after the lattice-bg so it darkens the image, not the text).
-    let s = bgImage.wrapImageText(sec.replace(/^<section\b/i, `<section data-lattice-slide="${i + 1}"${a11y.active ? ` data-a11y="${a11y.type}"` : ''}`));
+    let s = bgImage.wrapImageText(sec.replace(/^<section\b/i, `<section data-lattice-slide="${i + 1}"`));
     const cls = (s.match(/^<section\b[^>]*\bclass="([^"]*)"/i) || ['', ''])[1];
     if (imageScrim.needsScrim(cls) && s.indexOf('class="image-scrim') === -1) {
       s = s.replace(/(<div class="lattice-bg[\s\S]*?<\/div>)/, `$1${imageScrim.SCRIM_HTML}`);

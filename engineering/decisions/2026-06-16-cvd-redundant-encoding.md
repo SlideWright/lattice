@@ -61,34 +61,39 @@ four** types — the three dichromacies (colour + texture) and achromatopsia
 
 ## Mechanism
 
-Activation rides the resolver already built (`lib/core/resolve-accessibility.js`):
-when an accessibility palette is active, the engine stamps **`data-a11y="<type>"`
-on the root**, and the patterns/glyphs are CSS scoped to `:root[data-a11y] …`
-so they apply *only* in accessibility mode and never touch a normal deck.
+**The accessible themes are fully self-contained — nothing accessibility-specific
+ships in the formal `lattice.css`, and no existing theme is touched.** Each
+`a11y-*` palette `@import`s `indaco` for the neutral base, overrides the status
+tokens, and **inlines its own glyph + texture CSS** (the rules are identical
+across the four, but inlined rather than shared via a partial — a `themes/`
+partial would have no `@theme` name to resolve and would trip the "every palette
+is a full sheet" engine contracts). Because that CSS is part of the *palette*
+and only loads when an `a11y-*` theme is the active one, its rules apply to the
+whole deck with no global flag — so there is **no `data-a11y` attribute** and no
+shared-bundle scoping. The resolver (`lib/core/resolve-accessibility.js`) just
+selects the `a11y-<type>` palette name; selecting it any way (the
+`accessibility:` key, the `LATTICE_ACCESSIBILITY` env, or `theme: a11y-*`
+directly) activates the encoding.
 
-- **CSS-rendered categorical** (decision lists, roadmap, kanban cards, actor
-  pills, kpi, comparison cells): a palette-blind block in `lattice.css` —
-  `:root[data-a11y] <cat-cycle>:nth-child(Nn) { background-image: <texture-N>, … }`
-  layered over the existing `var(--cat-N-fill)`. 12 textures, defined once.
-- **Semantic glyphs**: `:root[data-a11y] .status--pass::before { content: "✓" }`
-  etc., reusing the existing status-pill vocabulary.
+The **only** engine seam is injecting the categorical texture `<pattern>`
+`<defs>` — SVG markup a CSS file cannot hold — which the engine adds to the page
+whenever the resolved palette name matches `a11y-*`
+(`lib/core/accessibility-textures.js`).
 
-The open fork is **how the texture reaches inline Mermaid/chart SVGs**, where a
-rect's fill is `var(--cat-N-fill)` and CSS cannot synthesise pattern geometry:
+`themes/a11y-encoding.css` carries, applied to the active deck:
 
-- **M1 — kernel-injected `<defs>`.** A shared transform in `lib/core` injects a
-  colour-neutral `<pattern>` `<defs>` set into each inline diagram SVG when
-  `data-a11y` is set, and the DIAGRAM OVERRIDES layer the texture via
-  `fill: url(#a11y-pat-N)` over the colour. Lands in the shared kernel so BOTH
-  render paths (owned engine + runtime) stay in step (HARD RULE #1). Robust,
-  but new SVG-transform surface.
-- **M2 — CSS-only overlay.** No SVG defs; approximate texture with CSS on the
-  SVG host (e.g. a masked overlay element). Less code, but fragile across
-  diagram types and the two Chromium/owned-engine renderers, and weaker on
-  arbitrary shape paths.
+- **Semantic glyphs** — `section .chart-status[data-s="…"]::before { content }`
+  (✓ / ! / ✗ / ◆ / –) on the shared status-pill vocabulary.
+- **Categorical textures** — re-points each `.section-0..11` diagram fill
+  (mirroring `mermaid.css`'s DIAGRAM OVERRIDES) to `url(#latt-a11y-tex-N)`. Each
+  pattern paints `var(--cat-N-fill)` then overlays a distinct geometry in
+  `--cat-on-fill`, so colour stays a redundant channel and labels stay legible.
 
-**Decision: M1** — it's the only approach that reliably covers every diagram
-type on both render paths, and it keeps colour in tokens (HARD RULE #3).
+The texture `<defs>` reach inline Mermaid/chart SVGs via **M1** — the engine
+injects a shared colour-carrying `<pattern>` `<defs>` once when an `a11y-*`
+palette is active (the alternative, a CSS-only overlay, was rejected as fragile
+across diagram types and the two renderers). M1 is the single engine seam; every
+other part of the accommodation is CSS inside the curated themes.
 
 ## Build sequence (supersedes parent doc steps 3–6)
 
