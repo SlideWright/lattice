@@ -328,3 +328,25 @@ it is load-bearing.
   three dichromacies (deuteranopia/protanopia/tritanopia) × light/dark,
   palette-only; achromatopsia + redundant encoding (patterns/markers/✓!✗)
   deferred to phase 2.** **Status: design-decision** (scope aligned 2026-06-16).
+- [2026-06-16-deck-fact-checking.md](2026-06-16-deck-fact-checking.md) —
+  design model for an **LLM fact-check for decks**. Reframes the deliverable
+  from a ✓/✗ verdict to an **honest "trust map"** — *what to trust, what's
+  stale, what the model can't possibly know, what's worth paying to verify* —
+  because an LLM checking from memory is confidently wrong often enough that a
+  bare checkmark launders a hallucination. Two tiers: a **quick** parametric
+  pass (verdict + **two** confidences — verdict-confidence *and* staleness/age
+  — with a *derived* `needs_deeper` flag that ranks what to escalate) and a
+  **deep** pass on 0..N escalated claims via the `deep-research` harness. The
+  brief's **insider-claim gate** becomes a deterministic **verifiability
+  triage** (external-verifiable / insider-unverifiable / forward-looking /
+  opinion) so budget only lands on claims a public record exists for, and a
+  private company's revenue gets a *"only you can confirm — attach your
+  source"* affordance, never a fake confidence. **Maker–checker** is
+  **independent+reconcile over two different OpenRouter models** (peers-or-
+  better; disagreement is surfaced, not resolved) — no second provider needed,
+  it rides the Drawing Board's existing `ArchitectModel` OpenRouter ladder.
+  Layered architecture: a pure `fact-check-core` extractor (mirrors
+  `lint-core`'s slide walk; locating a claim needs no model) under a **Drawing
+  Board panel** as the first surface (CLI + annotated-PDF later). Honours the
+  Architect's "model never owns correctness" floor. **Status: design-decision**
+  (scope aligned 2026-06-16; maker–checker design-only — wiring deferred).
