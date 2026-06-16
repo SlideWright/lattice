@@ -38,13 +38,18 @@ in patch versions.
   rendered Lattice decks via their own marp-cli + our config should switch to
   the bundled emulator (`node dist/lattice-emulator.js deck.md deck.pdf`).
 
-- **Changed: the export-to-Marp bundle's `marp.config.cjs` no longer wires a
-  render engine.** Rendering the exported deck *with marp-cli* now applies slide
-  splits + the palette only — it does not draw Lattice's structural components
-  (charts, card grids, split panels, badge tables). Every exported bundle still
-  renders at **full fidelity** via the zero-install bundled engine
-  (`node dist/lattice-emulator.js …`, the bundle README's primary route) and,
-  for HTML opened in a browser, the bundled `lattice-runtime.min.js`.
+- **Changed: the export-to-Marp bundle is now a MARP-NATIVE artifact — it ships
+  no Lattice engine.** The bundle is meant to be rendered with **Marp** (the VS
+  Code extension or marp-cli); Lattice supplies the deck (splits baked to `---`),
+  the **minified** palette CSS (`lattice.css` + `themes/`, the latter now built as
+  `dist/themes/*.min.css`), the browser runtime, and Mermaid. New: a
+  `.vscode/settings.json` registers the palette via `markdown.marp.themes`, and
+  `package.json` pins only marp-cli. Rendering with marp-cli / the VS Code preview
+  applies slide splits + palette + CSS layouts; Mermaid diagrams and the
+  JS-driven structural components render when the exported **HTML is opened in a
+  browser** (the deck's trailing `<script>` tags load `lattice-runtime.min.js`).
+  The previously-bundled zero-install emulator (`dist/lattice-emulator.js`) is no
+  longer shipped.
 
 - **Two phantom variants are removed: `compare-code mirror` and `kpi target`.**
   Both were declared and fully captioned in their manifests but had no backing

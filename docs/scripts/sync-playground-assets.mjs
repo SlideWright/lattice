@@ -8,9 +8,11 @@
 //        dist/lattice-runtime.js stays the devtools/debug artifact. ~1.5MB→300KB.)
 //   - dist/lattice.min.css      → public/playground/v/<hash>/themes/lattice.css
 //       (the @theme lattice engine; minified for the same reason. ~727KB→362KB.)
-//   - themes/<name>.css         → public/playground/v/<hash>/themes/<name>.css
+//   - dist/themes/<name>.min.css → public/playground/v/<hash>/themes/<name>.css
 //       (the per-palette token files, fetched + registered by the playground
-//        engine to render in the chosen palette — small, shipped as-authored)
+//        engine to render in the chosen palette. We stage the MINIFIED build —
+//        the same one the Export-to-Marp bundle ships — under the unversioned
+//        <name>.css dest, so the themeBase fetch sites are unchanged.)
 //   - public/playground/lattice-playground.js (committed engine bundle)
 //                               → public/playground/v/<hash>/lattice-playground.js
 //
@@ -44,7 +46,9 @@ import { fileURLToPath } from 'node:url';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const repoRoot = join(here, '..', '..');
-const themesDir = join(repoRoot, 'themes');
+// Per-palette themes: the MINIFIED dist build (same bytes the Export-to-Marp
+// bundle ships), staged under the readable <name>.css dest.
+const distThemesDir = join(repoRoot, 'dist', 'themes');
 // Preview-fetched engine CSS + runtime: stage the MINIFIED builds (the readable
 // dist/lattice.css + dist/lattice-runtime.js remain the debug artifacts).
 const latticeCss = join(repoRoot, 'dist', 'lattice.min.css');
@@ -59,8 +63,11 @@ const assets = [
   ['lattice-playground.js', engineJs],
   ['themes/lattice.css', latticeCss],
 ];
-for (const file of readdirSync(themesDir)) {
-  if (file.endsWith('.css')) assets.push([`themes/${file}`, join(themesDir, file)]);
+for (const file of readdirSync(distThemesDir)) {
+  if (file.endsWith('.min.css')) {
+    const dest = file.replace(/\.min\.css$/, '.css');
+    assets.push([`themes/${dest}`, join(distThemesDir, file)]);
+  }
 }
 // The Export-to-Marp static assets (minified engine / stylesheet / runtime /
 // mermaid), staged under export/ so the Drawing Board's in-browser export can

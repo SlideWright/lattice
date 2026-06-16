@@ -11,16 +11,19 @@ const { test, describe } = require('node:test');
 const assert = require('node:assert/strict');
 const {
   STATIC_ASSETS, RUNTIME_SCRIPTS, MARP_CONFIG_CJS, withRuntimeScripts,
-  safeName, packageJson, readme,
+  safeName, packageJson, vscodeSettings, readme,
 } = require('../../../lib/core/marp-bundle');
 
 describe('marp-bundle spec', () => {
-  test('STATIC_ASSETS ships the minified engine/stylesheet under canonical names', () => {
+  test('STATIC_ASSETS ships the minified stylesheet/runtime/mermaid; NO engine', () => {
     const byTo = Object.fromEntries(STATIC_ASSETS.map((a) => [a.to, a.from]));
-    assert.equal(byTo['dist/lattice.css'], 'dist/lattice.min.css');
-    assert.equal(byTo['dist/lattice-emulator.js'], 'dist/lattice-emulator.min.js');
+    // lattice.css at the bundle root (minified) — it is the Marp themeSet base.
+    assert.equal(byTo['lattice.css'], 'dist/lattice.min.css');
     assert.equal(byTo['lattice-runtime.min.js'], 'dist/lattice-runtime.min.js');
     assert.equal(byTo['mermaid-v11.min.js'], 'mermaid-v11.min.js');
+    // The bundle is Marp-native: no emulator is shipped.
+    assert.ok(!STATIC_ASSETS.some((a) => /emulator/.test(a.from) || /emulator/.test(a.to)));
+    assert.equal(byTo['dist/lattice.css'], undefined);
   });
 
   test('safeName slugs a deck title', () => {
@@ -34,11 +37,20 @@ describe('marp-bundle spec', () => {
     assert.ok(RUNTIME_SCRIPTS.includes('lattice-runtime.min.js'));
   });
 
-  test('marp.config.cjs builds a themeSet and wires no render engine (marp purged)', () => {
+  test('marp.config.cjs builds a themeSet from root lattice.css + themes/, no engine', () => {
     assert.match(MARP_CONFIG_CJS, /themeSet/);
     assert.match(MARP_CONFIG_CJS, /allowLocalFiles/);
+    // lattice.css is registered from the bundle ROOT (not dist/), since the
+    // emulator's dist/ folder is no longer shipped.
+    assert.match(MARP_CONFIG_CJS, /path\.join\(__dirname, 'lattice\.css'\)/);
+    assert.doesNotMatch(MARP_CONFIG_CJS, /'dist'/);
     assert.doesNotMatch(MARP_CONFIG_CJS, /@slidewright\/lattice\/config/);
-    assert.doesNotMatch(MARP_CONFIG_CJS, /\bengine\b/);
+  });
+
+  test('vscodeSettings registers the bundled themes for Marp VS Code', () => {
+    const s = vscodeSettings(['lattice.css', 'themes/indaco.css', 'themes/indaco-dark.css']);
+    const parsed = JSON.parse(s);
+    assert.deepEqual(parsed['markdown.marp.themes'], ['lattice.css', 'themes/indaco.css', 'themes/indaco-dark.css']);
   });
 
   test('packageJson pins marp-cli only and scripts reference the deck', () => {
@@ -52,10 +64,14 @@ describe('marp-bundle spec', () => {
     assert.match(pkg.scripts.pdf, /My Deck\.md/);
   });
 
-  test('readme documents the three render routes', () => {
-    const r = readme({ name: 'demo', palette: 'indaco', themes: ['dist/lattice.css', 'themes/indaco.css'] });
-    assert.match(r, /node dist\/lattice-emulator\.js demo\.md/);
+  test('readme documents the VS Code + marp-cli routes and the browser-HTML fidelity note', () => {
+    const r = readme({ name: 'demo', palette: 'indaco', themes: ['lattice.css', 'themes/indaco.css'] });
+    assert.match(r, /Marp for VS Code/);
+    assert.match(r, /markdown\.marp\.themes/);
     assert.match(r, /npm run pdf/);
-    assert.match(r, /Open the HTML in a browser/);
+    assert.match(r, /--theme-set lattice\.css themes/);
+    assert.match(r, /open the exported HTML|open the HTML|Open the HTML/i);
+    // Marp-native: the README must NOT point at a bundled emulator any more.
+    assert.doesNotMatch(r, /lattice-emulator/);
   });
 });
