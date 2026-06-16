@@ -33,7 +33,7 @@ code{font-family:ui-monospace,monospace;background:#eef3f8;padding:1px 5px;borde
 </style></head><body>
 <div class="eyebrow">Form model · 4 of 4</div>
 <h1>Putting it together</h1>
-<div class="chain">Frame <span>▸ composes</span> Cells <span>▸ berth</span> Tiles <span>(z-planes)</span> <span>▸ content tile holds</span> Component</div>
+<div class="chain">Frame <span>▸ composes</span> Cells <span>▸ hold</span> Tiles <span>(z-planes)</span> <span>▸ content tile holds</span> Component</div>
 <div class="sub">One <b>Frame</b> selects the <b>Cells</b>; each <b>Tile</b> paints into a cell on its <b>z-plane</b>; the <code>content</code> tile holds the author's <b>Component</b>. Stack the planes bottom-to-top → the composited slide.</div>
 
 <div class="wrap">
@@ -54,13 +54,14 @@ code{font-family:ui-monospace,monospace;background:#eef3f8;padding:1px 5px;borde
     <div class="rlabel">the composited slide</div>
     <div class="slide">
       <div class="t" style="top:14px;left:16px;background:#925106">title</div>
+      <div class="t" style="top:14px;right:16px">meta</div>
       <div class="ct">content tile<br>→ Component (kpi)</div>
-      <div class="t" style="bottom:12px;left:16px">meta</div>
+      <div class="t" style="bottom:12px;left:16px">footer</div>
       <div class="t" style="bottom:12px;left:50%;transform:translateX(-50%)">progress</div>
       <div class="t" style="bottom:12px;right:16px">pagination</div>
     </div>
   </div>
 </div>
 
-<div class="note"><b>The whole chain:</b> the <b>Frame</b> (<code>standard</code> / <code>split-panel</code>) names the <b>Cells</b>; the <b>Cells</b> are the berths; the <b>Tiles</b> paint into them by <code>z</code>-plane; the author's <b>Component</b> lives in the one <code>content</code> tile. &nbsp; <b>Where orientation could live:</b> give <b>Cells</b> portrait/landscape geometry (the wireframe reshapes), and have <b>Tiles + Components</b> declare the orientations they support — the seam this model was built for.</div>
+<div class="note"><b>The whole chain:</b> the <b>Frame</b> (<code>standard</code> / <code>split-panel</code>) names the <b>Cells</b>; the <b>Cells</b> are the slots; the <b>Tiles</b> fill them by <code>z</code>-plane; the author's <b>Component</b> lives in the one <code>content</code> tile. &nbsp; <b>Where orientation could live:</b> give <b>Cells</b> portrait/landscape geometry (the wireframe reshapes), and have <b>Tiles + Components</b> declare the orientations they support — the seam this model was built for.</div>
 </body></html>

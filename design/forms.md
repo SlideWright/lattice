@@ -464,9 +464,14 @@ manifest + CSS, with the registry adapter in `lib/transformers/masthead-lift.js`
 mirroring how a component splits kernel↔adapter. The masthead + footer Cells are
 fully self-contained; still to follow: the Frame chrome.
 
-The manifest is **load-bearing, not descriptive**: it drives the `--frame-*` grid
-and the Tile injectors and the `accepts`/`fits` validation, so adding a Frame or a
-Tile is *a folder, not edits to three kernels*. As of the "light" coupling
+The manifest is the **contract**, not loose description — the *intent* is that it
+drives the `--frame-*` grid, the Tile injectors, and the `accepts`/`fits`
+validation, so adding a Frame or a Tile is *a folder, not edits to three kernels*.
+At the **"light" coupling rung shipped today** that contract is *validated*, not yet
+*executed*: the render still places via hand-written transforms + CSS keyed on
+classes (only `id` + `exemptFromChrome` are read at render time), and a build gate
+keeps the manifest and that CSS in step — see `/spec/form-model/` for the render
+chain, and the coupling ADR for the rungs. As of the "light" coupling
 (`2026-06-16-form-manifest-medium-independent-contract.md` §4), a build gate enforces
 manifest↔CSS consistency so the contract can't silently drift: geometry/gap
 **token references resolve** to real CSS custom properties (§4.2), every Cell's

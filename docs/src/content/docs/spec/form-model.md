@@ -38,7 +38,7 @@ A **Cell** is a typed slot — a sized, positioned region of the slide (the wire
 
 ![Cells are the typed slots; Tiles fill them on z-planes — title+kicker in the masthead-lede, meta in the masthead-bay, content in the stage, footer/progress/pagination below.](../../../assets/form-model/2-cell-tile.png)
 
-The author's **title** and **kicker** (eyebrow) lift into the `masthead-lede`; the **meta** tile docks in the `masthead-bay`; the **content** Tile fills the `stage`; the footer Cells take the **footer**, **progress**, and **pagination** tiles.
+The author's **title** and **kicker** (eyebrow) lift into the `masthead-lede`; the **meta** tile docks in the `masthead-bay`; the **content** Tile fills the `stage`; the footer-row Cells (`footer-left`, `progress-centre`, `pagination-right`) take the **footer**, **progress**, and **pagination** tiles.
 
 ---
 
@@ -56,7 +56,7 @@ This is the seam that matters for responsiveness: **orientation/reflow is a Comp
 
 One Frame selects the Cells; each Tile paints into a Cell on its z-plane; the `content` Tile holds the Component. Stack the planes bottom-to-top → the composited slide.
 
-![Frame composes Cells; Cells berth Tiles on z-planes; the content Tile holds the Component.](../../../assets/form-model/4-together.png)
+![Frame composes Cells; Cells hold Tiles on z-planes; the content Tile holds the Component.](../../../assets/form-model/4-together.png)
 
 ---
 
