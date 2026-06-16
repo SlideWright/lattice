@@ -1,0 +1,78 @@
+name: Issue triage gate
+
+# Every card on the board must carry the four-axis taxonomy
+# (area:/type:/priority:/status:). The work-item FORM + the Apply-form-labels
+# workflow cover the web-form path; THIS gate is the universal backstop for
+# every other intake — a blank web issue, `gh issue create`, the REST API, an
+# MCP/app agent — none of which run the form template, so today they land
+# unlabelled (issues #356/#380/#381/#384 were exactly this). On open/edit/
+# transfer it:
+#   • adds `status:backlog` when the card has no status lane, and
+#   • adds `needs:triage` + ONE comment when area/type/priority is missing from
+#     BOTH the labels and the (optional) parsed form — clearing `needs:triage`
+#     automatically once the axes are filled.
+#
+# THE ONE PATH THIS CANNOT CATCH, BY DESIGN: an issue opened by another workflow
+# via the repo GITHUB_TOKEN does not trigger new workflow runs (GitHub's
+# recursion guard), so a bot that files issues must self-label at creation — see
+# perf-nightly.yml. The decision logic is pure + unit-tested in
+# .github/scripts/triage.js; this YAML is only the wiring.
+on:
+  issues:
+    # transferred: an issue moved in from another repo drops the source repo's
+    # labels, so it must be re-evaluated against our taxonomy like a fresh card.
+    types: [opened, edited, labeled, unlabeled, reopened, transferred]
+
+permissions:
+  issues: write
+
+# Serialize per issue; rapid label edits just re-evaluate against latest state.
+concurrency:
+  group: triage-${{ github.event.issue.number }}
+  cancel-in-progress: true
+
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4 # for .github/scripts/*.js
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const { parseForm } = require(`${process.env.GITHUB_WORKSPACE}/.github/scripts/issue-form.js`);
+            const { computeTriage, COMMENT_SENTINEL } = require(`${process.env.GITHUB_WORKSPACE}/.github/scripts/triage.js`);
+
+            const issue = context.payload.issue;
+            const labels = (issue.labels || []).map((l) => (typeof l === 'string' ? l : l.name));
+            const form = parseForm(issue.body || '');
+            const { add, remove, comment } = computeTriage({ labels, form });
+
+            if (add.length) {
+              await github.rest.issues.addLabels({
+                ...context.repo, issue_number: issue.number, labels: add,
+              });
+              core.info(`Added: ${add.join(', ')}`);
+            }
+            for (const name of remove) {
+              await github.rest.issues
+                .removeLabel({ ...context.repo, issue_number: issue.number, name })
+                .catch(() => {}); // tolerate a concurrent removal
+              core.info(`Removed: ${name}`);
+            }
+            if (comment) {
+              // Post the explainer at most once per card — guard against a
+              // concurrent open+edit or a remove-axis → re-flag cycle by checking
+              // for the sentinel in existing comments before posting.
+              const prior = await github.paginate(github.rest.issues.listComments, {
+                ...context.repo, issue_number: issue.number, per_page: 100,
+              });
+              if (prior.some((c) => (c.body || '').includes(COMMENT_SENTINEL))) {
+                core.info('Triage comment already present — skip.');
+              } else {
+                await github.rest.issues.createComment({
+                  ...context.repo, issue_number: issue.number, body: comment,
+                });
+                core.info('Posted needs:triage comment.');
+              }
+            }
+            if (!add.length && !remove.length && !comment) core.info('Card already compliant — no-op.');

@@ -165,6 +165,47 @@ trustworthy**, so we enforce it two ways:
 A template alone only guides; a label gate alone relies on discipline. Together,
 `status:ready` becomes a guarantee an agent can pull against.
 
+### Intake floor gate (added 2026-06-16)
+
+The `status:ready` gate guards *promotion*; it assumed cards arrive labelled. In
+practice the **non-form intake paths** — a blank web issue, `gh issue create`,
+the REST API, an MCP/app agent, a scheduled workflow — bypass the work-item form
+entirely and landed **unlabelled** (the four cards #356/#380/#381/#384). The form
++ Apply-form-labels only ever covered the web-form path.
+
+Closed with a second, *floor*-level gate — the **Issue triage gate**
+(`.github/workflows/triage-gate.yml`, logic in `.github/scripts/triage.js`, unit-
+tested) — that runs on every `issues` open/edit/transfer and, for any path,
+defaults the status lane to `status:backlog` and flags `needs:triage` (with a
+one-time comment, deduped by a hidden sentinel) until `area:`/`type:`/`priority:`
+are present, clearing it automatically when complete. Same philosophy as the DoR
+gate — *make the right thing true* — applied to intake rather than promotion.
+
+**Altitude — what "enforced" means here.** GitHub exposes no pre-create hook for
+issues, so we *cannot* block an unlabelled card from being created. The gate
+therefore guarantees the achievable thing: an unlabelled card is **auto-flagged
+within seconds and surfaced until fixed**, not that it can never momentarily
+exist. "Surfaced" is two-channel: the `needs:triage` label (board filter) **and**
+a ⚠️ banner pushed to the top of `BACKLOG.md` listing every flagged card — so the
+miss can't hide behind a filter nobody opened. This is detection + durable
+visibility, deliberately not punishment (no auto-close): it keeps the ADR's
+add-only, *human-owns-re-triage* contract intact.
+
+**Why only `status:` is auto-defaulted.** `area:`/`type:`/`priority:` are
+un-guessable from an API payload — fabricating them would *hide* the miss and
+corrupt the swimlane/board sort, strictly worse than flagging. `status:` is the
+one safe default (`backlog` is simply "captured, not yet ready"), so it's the
+only axis the gate fills; the other three are flagged for a human.
+
+**The one residual the gate can't catch:** a `GITHUB_TOKEN`-opened issue doesn't
+trigger workflow runs (GitHub's recursion guard), so issue-filing bots
+**self-label at creation** (perf-nightly now does). Agents filing via API/MCP are
+expected to apply the taxonomy directly; the gate is the backstop, not an excuse
+to skip it. (The gate's own label writes fire `sync-backlog.yml`, but its render
+is pure and only commits on a real queue change, so a flag/clear adds at most one
+`BACKLOG.md` commit — bounded, not a loop.) See `engineering/workflow.md`
+§ Work queue → Intake floor.
+
 ## Distributed-but-safe execution (L3 — deferred, design first)
 
 The end goal: a scheduled session pulls a ready issue and works it autonomously.

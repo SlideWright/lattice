@@ -127,7 +127,10 @@ jobs:
           retention-days: 14
 
       # On a regression, open or append a single rolling tracking issue (found by
-      # a title marker, so no label dependency). Skipped when the compare passed.
+      # a title marker). It is SELF-LABELLED at creation: a GITHUB_TOKEN-opened
+      # issue can't trigger the Issue triage gate (GitHub's workflow-recursion
+      # guard), so a bot must carry the four-axis taxonomy itself — otherwise it
+      # lands on the board unlabelled (this was issue #384). Skipped when green.
       - name: Open / append regression issue
         if: steps.compare.outputs.regressed == 'true'
         env:
@@ -147,5 +150,7 @@ jobs:
           else
             gh issue create \
               --title "$MARKER docs perf regression detected" \
+              --label "area:website" --label "type:fix" \
+              --label "priority:high" --label "status:backlog" \
               --body-file "$BODY"
           fi

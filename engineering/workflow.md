@@ -444,11 +444,46 @@ locally with `gh` auth to bootstrap a repo).
 - `priority:*` — `critical | high | medium | low` (words, **not** `pN` — bare
   `P0`–`P4` already mean marp-program *phase*/severity here).
 - `status:*` — the board state machine, below.
+- `needs:triage` — a **process flag**, not a fifth dimension: the intake gate
+  (below) sets it when a required axis is missing and clears it once complete.
+  Filtering the board on a non-empty `needs:triage` is the "unlabelled intake"
+  queue — it should normally be empty.
 
 New cards filed via the work-item form get `status:backlog` from the template;
 the **Apply work-item form labels** workflow then applies the selected
 `area:`/`type:`/`priority:` (a GitHub form doesn't turn dropdown picks into
 labels on its own). It's add-only — re-triage stays a human call.
+
+### Intake floor — enforced on every path
+
+The form is the easy path, not the only one. A card can also arrive as a blank
+web issue, a `gh issue create`, a REST/MCP **agent** call, or a scheduled
+**workflow** — none of which run the form template, so each one used to land
+unlabelled (issues #356/#380/#381/#384 were exactly this miss). The **Issue
+triage gate** workflow is the universal backstop: on open/edit it adds
+`status:backlog` when a card has no lane, and adds `needs:triage` + one comment
+when `area:`/`type:`/`priority:` is missing from *both* the labels and the
+(optional) parsed form — clearing `needs:triage` automatically once the axes are
+filled. So **no card sits on the board unlabelled** — no matter which intake
+path filed it (bar the one bot caveat below). The gate **detects and flags**; it
+can't *prevent* creation (GitHub has no pre-receive hook for issues), so the
+guarantee is "an unlabelled card is auto-flagged within seconds and surfaced
+until fixed," not "an unlabelled card can't exist." The flag is also **pushed**
+into `BACKLOG.md` (a ⚠️ banner lists every `needs:triage` card), so it can't hide
+behind a board filter no one opened. The decision logic is pure and unit-tested
+(`.github/scripts/triage.js`); the YAML is just the wiring.
+
+One gap the gate cannot close *by design*: an issue opened by another workflow
+via the repo `GITHUB_TOKEN` does not trigger workflow runs (GitHub's recursion
+guard), so **a bot that files issues must self-label at creation** — e.g. the
+perf-nightly watch tags its tracking issue
+`area:website type:fix priority:high status:backlog`.
+
+**Filing an issue yourself — agents included — apply all four axes.** Don't lean
+on the gate; it's the backstop, not the front door. When you open an issue via
+the API/MCP/`gh`, set `area:`/`type:`/`priority:`/`status:backlog` (or file
+through the **Work item** form). The gate exists to catch a miss, not to excuse
+skipping the taxonomy.
 
 ### Card lifecycle (the `status:` columns)
 
