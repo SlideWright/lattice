@@ -190,7 +190,10 @@ These are forbidden by construction; if any appears, the feature has failed:
 
 ## 11. Staged plan (each its own increment, under a new tracking issue)
 
-1. **Step-model spec + authoring vocabulary** (field-level; the §6 sketch made real).
+1. **Step-model spec + authoring vocabulary** — ✅ **landed** as
+   `2026-06-16-narrative-step-spec.md`: the `_build` grammar (a subset of `_focus`),
+   the `data-build`/`data-build-steps`/`data-build-at` tag contract, and the
+   "build = focus sequenced over time" reuse of the focus axis-resolution.
 2. **Derive steps from structure** in the runtime / Present mode (document-order
    default; reveal/build only).
 3. **Overlay PDF export toggle** (§5) — including the reduced-motion equivalence.
