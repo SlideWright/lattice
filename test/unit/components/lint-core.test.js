@@ -169,3 +169,31 @@ describe('lint-core: auto-fix', () => {
     assert.equal(core.applyFix('x', f), null);
   });
 });
+
+describe('lint-core: focus directive grammar (rule 11)', () => {
+  const slide = (dirs) => `${FM}<!-- _class: cards-grid -->\n${dirs}\n\n## Head\n\n- A\n  - a\n- B\n  - b\n`;
+  test('valid _focus specs pass clean', () => {
+    for (const spec of ['row 4', 'item 3', 'col 5', 'cell 4,5', 'line 3-4', 'row 2, row 5', 'item 2-4']) {
+      assert.equal(ruleFor(slide(`<!-- _focus: ${spec} -->`), 'focus-spec'), undefined, spec);
+    }
+  });
+  test('unknown axis is flagged', () => {
+    assert.match(ruleFor(slide('<!-- _focus: rows 4 -->'), 'focus-spec').message, /not a focus axis/);
+  });
+  test('malformed cell is flagged', () => {
+    assert.match(ruleFor(slide('<!-- _focus: cell 4 -->'), 'focus-spec').message, /R,C/);
+  });
+  test('non-numeric ordinal is flagged', () => {
+    assert.match(ruleFor(slide('<!-- _focus: row abc -->'), 'focus-spec').message, /ordinal/);
+  });
+  test('unknown _focusStyle is flagged, valid ones pass', () => {
+    assert.match(ruleFor(slide('<!-- _focusStyle: glow -->'), 'focus-style').message, /spotlight \| ring \| list-fill/);
+    for (const s of ['spotlight', 'ring', 'list-fill']) {
+      assert.equal(ruleFor(slide(`<!-- _focusStyle: ${s} -->`), 'focus-style'), undefined, s);
+    }
+  });
+  test('malformed _focusSteps step is flagged', () => {
+    assert.match(ruleFor(slide('<!-- _focusSteps: item 1 | rows 2 -->'), 'focus-steps').message, /not a focus axis/);
+    assert.equal(ruleFor(slide('<!-- _focusSteps: item 1 | item 2 -->'), 'focus-steps'), undefined);
+  });
+});
