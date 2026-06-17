@@ -9,7 +9,7 @@
 // same orders are shipped to the client (component-browser.js) so the "Group
 // by" switch can re-group without a round trip.
 
-// Ordered families. Each component appears in exactly one; every one of the 53
+// Ordered families. Each component appears in exactly one; every one of the 52
 // components is covered (see test below in the page build). Keep split-* whole
 // and let "Charts & diagrams" be the broad data-viz family.
 export const FAMILY_DEFS = [
