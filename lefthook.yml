@@ -46,132 +46,18 @@ pre-commit:
         - 'test/integration/baseline-decks/*.md'
         - 'lib/components/**/*.gallery.md'
       run: node tools/build-staged-pdfs.js
-    - name: runtime-bundle-freshness
-      # Catches the "edited a runtime-bundle source, forgot to rebuild
-      # lattice-runtime.js" failure mode. The esbuild bundle entry is
-      # lib/runtime/index.js; it pulls in lib/transformers/** (the
-      # registry + adapters), their lib/core/** kernels, and the
-      # per-component *.transform.js files. Cheap rebuild-to-tmp +
-      # byte-diff via npm run runtime:check.
-      # Skippable via `git commit --no-verify` only as a last resort.
-      glob:
-        - 'lib/runtime/**/*'
-        - 'lib/transformers/**/*.js'
-        - 'lib/core/**/*.js'
-        - 'lib/components/**/*.transform.js'
-      run: npm run runtime:check --silent
-    - name: emulator-bundle-freshness
-      # Catches the "edited the emulator or a module it inlines, forgot to
-      # rebuild dist/lattice-emulator.js" failure mode. The esbuild bundle
-      # entry is lattice-emulator.js; it inlines the local graph
-      # (lib/core, lib/transformers, lib/components/*.transform, lib/integrations,
-      # marp.config.js). node_modules deps stay external, so dep bumps don't
-      # need a rebuild. Cheap rebuild-to-tmp + byte-diff via emulator:check.
-      # package.json is in the glob because the bundle inlines it
-      # (require('./package.json') for --version), so a version/script edit
-      # restales the bundle.
-      # Skippable via `git commit --no-verify` only as a last resort.
-      glob:
-        - 'lattice-emulator.js'
-        - 'marp.config.js'
-        - 'package.json'
-        - 'lib/core/**/*.js'
-        - 'lib/transformers/**/*.js'
-        - 'lib/components/**/*.transform.js'
-        - 'lib/integrations/**/*.js'
-      run: npm run emulator:check --silent
-    - name: theme-core-bundle-freshness
-      # Catches "edited lib/theme/*, forgot to rebuild the docs-site Theme
-      # Studio bundle docs/src/playground/theme-core.generated.js" (the
-      # Workbench imports it; raw lib/theme can't be browser-imported because
-      # its modules require() each other). Cheap esbuild rebuild-to-buffer +
-      # byte-diff via npm run theme-core:check.
-      # Skippable via `git commit --no-verify` only as a last resort.
-      glob:
-        - 'lib/theme/**/*.js'
-        - 'tools/build-theme-core.js'
-      run: npm run theme-core:check --silent
-    - name: layout-core-bundle-freshness
-      # Form-layer sibling of theme-core-bundle-freshness: catches "edited
-      # lib/layout/*, forgot to rebuild docs/src/playground/layout-core.generated.js"
-      # (the Workbench's Layout Studio imports it). Same cheap esbuild
-      # rebuild-to-buffer + byte-diff via npm run layout-core:check.
-      glob:
-        - 'lib/layout/**/*.js'
-        - 'tools/build-layout-core.js'
-      run: npm run layout-core:check --silent
-    - name: authoring-core-bundle-freshness
-      # Sibling of theme/layout-core-bundle-freshness: catches "edited an
-      # authoring engine (lint-core/review-core/scorecard), forgot to rebuild
-      # docs/src/playground/authoring-core.generated.js" (the Drawing Board's
-      # Architect + Coach import it; raw lib/authoring CJS can't be browser-
-      # imported in `astro dev`). Same cheap esbuild rebuild-to-buffer +
-      # byte-diff via npm run authoring-core:check.
-      glob:
-        - 'lib/authoring/lint-core.js'
-        - 'lib/authoring/review-core.js'
-        - 'lib/authoring/scorecard.js'
-        - 'tools/build-authoring-core.js'
-      run: npm run authoring-core:check --silent
-    - name: standalone-core-bundle-freshness
-      # Sibling of the theme/layout/authoring core gates: catches "edited
-      # lib/components/chart/_chart-family/standalone-svg.js, forgot to rebuild
-      # docs/src/playground/standalone-svg.generated.js" (the Drawing Board's
-      # "download chart as SVG" action imports it; the raw CJS module can't be
-      # browser-imported in `astro dev`). Same cheap esbuild rebuild-to-buffer +
-      # byte-diff via npm run standalone-core:check.
-      glob:
-        - 'lib/components/chart/_chart-family/standalone-svg.js'
-        - 'tools/build-standalone-core.js'
-      run: npm run standalone-core:check --silent
-    - name: dist-readme-freshness
-      # Catches "changed which files dist/ ships (or their descriptions),
-      # forgot to regenerate dist/README.md". The README indexes dist/
-      # structure, so the generator itself is the trigger; structural
-      # additions are otherwise caught by build:check in CI.
-      glob:
-        - 'tools/build-dist-readme.js'
-      run: npm run dist-readme:check --silent
-    - name: capabilities-freshness
-      # Catches "added/renamed an npm script or a tools/ file, forgot to
-      # regenerate engineering/capabilities.md (or describe the new
-      # capability)". Sources are package.json scripts + tools/ headers, so
-      # both are triggers; build:check covers it in CI too.
-      glob:
-        - 'package.json'
-        - 'tools/**'
-      run: npm run capabilities:check --silent
-    - name: fonts-freshness
-      # Catches "added a weight to the @import or a face to one PDF path,
-      # forgot the other" — the silent font-fallback class of bug. Diffs the
-      # @import demand against both offline supplies (emulator SELF_HOSTED_FACES
-      # + assets/fonts/, and the web-export font-embed.js). build:check runs the
-      # same gate in CI (build.js preflight). Any of the four sources is a trigger.
-      glob:
-        - 'lib/base/base.tokens.css'
-        - 'lattice-emulator.js'
-        - 'assets/fonts/**'
-        - 'docs/src/playground/font-embed.js'
-      run: npm run fonts:check --silent
-    - name: component-docs-freshness
-      # Catches the "edited a manifest, forgot to regenerate the
-      # <name>.docs.md and <name>.gallery.md siblings" failure mode.
-      # Compares generated output against the committed files; fails
-      # if any drift. Skippable via --no-verify only as last resort.
-      glob:
-        - 'lib/components/**/*.manifest.json'
-        - 'lib/components/index.js'
-      run: npm run docs:components:check --silent
-    - name: docs-portal-freshness
-      # Catches the "edited a manifest, forgot to regenerate the
-      # aggregated dist/docs/components.html reference portal" failure mode.
-      # Same source of truth as component-docs; fails if the portal
-      # drifts. Skippable via --no-verify only as last resort.
-      glob:
-        - 'lib/components/**/*.manifest.json'
-        - 'lib/components/index.js'
-        - 'tools/build-docs-portal.js'
-      run: npm run docs:portal:check --silent
+
+    # ── Generated-artifact freshness lives in pre-push, not here ──────────────
+    # Eleven per-bundle freshness gates (runtime/emulator/theme-core/layout-core/
+    # authoring-core/standalone-core/dist-readme/capabilities/fonts/component-docs/
+    # docs-portal) used to run here. Every one is a strict SUBSET of `build:check`
+    # (tools/build.js regenerates + byte-diffs all 19 artifacts), which already
+    # runs in pre-push AND CI — so each artifact was being verified up to 3×, and a
+    # cross-cutting edit (lib/core/**, package.json) fired several at once, making
+    # commits heavy for no added safety. They were removed from pre-commit: a stale
+    # generated artifact is now caught by `build:check` at PUSH (the remote
+    # boundary), before anything reaches main. See
+    # engineering/decisions/2026-06-17-workflow-efficiency-review.md §E1.
 
 pre-push-disabled:
   # The per-component / bucket-gallery PDF freshness checks live here
@@ -205,20 +91,25 @@ pre-push:
       # pre-commit's affected-tests ran.
       run: npm test
     - name: integration-tests
-      # Full integration tier (cross-renderer parity + PDF page counts) must
-      # pass before push, not just in CI. Needs pdfinfo (poppler-utils) and a
-      # Chromium for marp-cli; the web SessionStart hook installs both and
-      # exports CHROME_PATH. The inline locate is a fallback so the gate is
-      # self-contained even if the session env didn't propagate. Warm cache
-      # makes repeat runs near-instant; a real source change is ~30s.
+      # Full integration tier (cross-renderer parity + PDF page counts). This is
+      # the SAME job CI runs as the REQUIRED merge gate, and it costs ~4.5 min
+      # warm — so locally it's OPT-IN early-warning, not a gatekeeper: it runs
+      # only when LATTICE_FULL_PUSH=1. The cheap deterministic gates above (lint,
+      # lint:deck:all, build:check, full unit suite) ALWAYS run, so a push is
+      # never unverified — CI still blocks merge on integration regardless. This
+      # is strictly safer than the `--no-verify` an agent reaches for when a gate
+      # is too slow. Set LATTICE_FULL_PUSH=1 to run it locally before pushing.
+      # Needs pdfinfo (poppler-utils) + a Chromium; the web SessionStart hook
+      # installs both and exports CHROME_PATH (inline locate is a fallback).
       #
       # Path guard — mirrors the `code` paths-filter in .github/workflows/ci.yml
-      # exactly (keep the two in sync): the render tier can only be affected by
-      # render-relevant files, so skip it when a push touches none. Fail OPEN —
-      # if the merge-base or the diff can't be resolved, run it. CI re-runs the
-      # full filter on the PR, so a docs/config-only push skipping here is still
-      # covered before anything reaches main.
+      # exactly (keep the two in sync): skip when a push touches no render-
+      # relevant files. Fail OPEN — if the merge-base/diff can't resolve, run it.
       run: |
+        if [ "${LATTICE_FULL_PUSH:-0}" != "1" ]; then
+          echo "integration-tests: skipped — set LATTICE_FULL_PUSH=1 to run the 4.5-min render tier locally (CI runs it as the required merge gate either way)."
+          exit 0
+        fi
         base="$(git merge-base HEAD origin/main 2>/dev/null || true)"
         run_it=1
         if [ -n "$base" ] && files="$(git diff --name-only "$base"...HEAD 2>/dev/null)"; then

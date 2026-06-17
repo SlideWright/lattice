@@ -33,10 +33,14 @@
 
 const fs = require('node:fs');
 const path = require('node:path');
-const { execSync, execFileSync } = require('node:child_process');
+const { execSync, execFileSync, execFile } = require('node:child_process');
 
 const ROOT = path.join(__dirname, '..');
 const EMULATOR = path.join(ROOT, 'lattice-emulator.js');
+
+// Each deck render spawns its own headless Chromium, so cap how many run at
+// once — unbounded parallelism across a many-deck commit would exhaust memory.
+const DECK_CONCURRENCY = 3;
 
 function stagedFiles() {
   const out = execSync('git diff --cached --name-only --diff-filter=ACMR', {
@@ -77,9 +81,29 @@ function classify(file) {
   return null;
 }
 
-function buildDeck(job) {
-  execFileSync('node', [EMULATOR, job.src, job.out], { cwd: ROOT, stdio: 'inherit' });
-  return [job.out];
+// Async single-deck render (one Chromium); resolves to the output path.
+function buildDeckAsync(job) {
+  return new Promise((resolve, reject) => {
+    process.stderr.write(`build-staged-pdfs: rebuilding ${job.out}\n`);
+    execFile('node', [EMULATOR, job.src, job.out], { cwd: ROOT }, (err) => {
+      if (err) reject(new Error(`${job.out}: ${err.message}`));
+      else resolve(job.out);
+    });
+  });
+}
+
+// Render the independent decks concurrently, capped at DECK_CONCURRENCY.
+async function buildDecks(decks) {
+  const out = [];
+  let next = 0;
+  async function worker() {
+    while (next < decks.length) {
+      const job = decks[next++];
+      out.push(await buildDeckAsync(job));
+    }
+  }
+  await Promise.all(Array.from({ length: Math.min(DECK_CONCURRENCY, decks.length) }, worker));
+  return out;
 }
 
 function buildComponent(name) {
@@ -115,7 +139,7 @@ function globGallery(_pattern, name, _bucket) {
   return [];
 }
 
-function main() {
+async function main() {
   const files = stagedFiles();
   const decks = [];
   const components = new Set();
@@ -133,10 +157,10 @@ function main() {
 
   const rebuilt = [];
   try {
-    for (const d of decks) {
-      process.stderr.write(`build-staged-pdfs: rebuilding ${d.out}\n`);
-      rebuilt.push(...buildDeck(d));
-    }
+    // Decks are independent (distinct outputs) → render concurrently. Component
+    // and bucket gallery builds stay serial (the --only tools manage their own
+    // shared output and are the rarer path).
+    rebuilt.push(...(await buildDecks(decks)));
     for (const c of components) {
       process.stderr.write(`build-staged-pdfs: rebuilding component gallery ${c}\n`);
       rebuilt.push(...buildComponent(c));
@@ -153,7 +177,11 @@ function main() {
   const existing = rebuilt.filter((p) => fs.existsSync(path.join(ROOT, p)));
   if (existing.length) {
     execFileSync('git', ['add', '--', ...existing], { cwd: ROOT, stdio: 'inherit' });
-    process.stderr.write(`build-staged-pdfs: staged ${existing.length} rebuilt PDF(s)\n`);
+    // Loud + explicit: this hook adds derived PDFs INTO your commit. Name them.
+    process.stderr.write(
+      `build-staged-pdfs: staged ${existing.length} rebuilt PDF(s) into this commit:\n` +
+        existing.map((p) => `  + ${p}\n`).join(''),
+    );
   }
 }
 
