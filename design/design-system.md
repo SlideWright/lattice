@@ -21,7 +21,7 @@ map on one page — see `design/concepts.md`.
 ## 1. The problem this solves
 
 Lattice grew organically from a small palette and a handful of card
-layouts into 53 layouts, ~18 modifiers, five native chart engines, one
+layouts into 52 layouts, ~18 modifiers, five native chart engines, one
 external diagram pipeline (Mermaid), three rendering paths, and 14
 palettes. Each addition was internally consistent; collectively they
 had no shared vocabulary.
@@ -148,12 +148,12 @@ layouts mapped cleanly into seven.
 
 The audience-function taxonomy organizes the catalog and the docs. On
 **disk**, components are grouped slightly differently: seven function
-buckets plus two substance-defined buckets (`chart`, `diagram`) that
-colocate components sharing a renderer kernel and palette-injection
-pipeline. The `function` field on every manifest is unchanged; the
-disk grouping is reflected in an optional `bucket` field. For 49
-components `bucket === function`; for the 9 chart/diagram components
-the bucket diverges to keep maintenance localized. See §9.
+buckets plus five substance- or domain-defined buckets (`chart`,
+`diagram`, `math`, `code`, `legal`) that colocate components sharing a
+renderer kernel or domain vocabulary. The `function` field on every
+manifest is unchanged; the disk grouping is reflected in an optional
+`bucket` field. For 30 of the 52 components `bucket === function`; for
+the other 22 the bucket diverges to keep maintenance localized. See §9.
 
 ---
 
@@ -554,14 +554,14 @@ exceptions introduced for maintenance colocation:
 | `comparison` | 8     | function = comparison (obligation-matrix → legal, compare-code → code) |
 | `progression`| 2     | function = progression (authority-chain, regulatory-update → legal; journey, roadmap → chart) |
 | `evidence`   | 2     | function = evidence (citation-card → legal, math → math, code → code) |
-| `imagery`    | 2     | function = imagery |
+| `imagery`    | 1     | function = imagery |
 | `chart`      | 13    | substance = data visualizations (function stays evidence/progression); journey, word-cloud + roadmap folded into the chart family |
 | `diagram`    | 1     | substance = topological visuals (function stays evidence) |
 | `math`       | 1     | substance = typeset equations (function stays evidence) |
 | `code`       | 2     | substance = syntax-highlighted source (function stays evidence for code, comparison for compare-code) |
 | `legal`      | 5     | domain = legal (function spans 4 families) |
 
-For 31 of the 53 components `bucket === function`. The 22 divergent
+For 30 of the 52 components `bucket === function`. The 22 divergent
 components declare their `bucket` explicitly in the manifest; their
 `function` field is unchanged in every case. Three reasons for
 divergence:

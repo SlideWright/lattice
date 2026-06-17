@@ -406,7 +406,7 @@ export function createModelSettings({ host, trigger, model, voice, onChange, isO
   }
 
   // ── the OpenRouter model picker (accordion) + its sibling controls ────────────
-  // OpenRouter ships 300+ models — a native <select> made that an unscannable wall
+  // OpenRouter ships 500+ models — a native <select> made that an unscannable wall
   // and printed nonsense pricing. The picker is now an in-place ACCORDION (no nested
   // drawer): collapsed it shows the current model + price with a chevron and a
   // "Tap to change model" hint; expanded it reveals search + a Featured/All toggle +
@@ -463,7 +463,7 @@ export function createModelSettings({ host, trigger, model, voice, onChange, isO
     body.hidden = true;
     const search = el('input', 'db-or-search');
     search.type = 'search';
-    search.placeholder = 'Search 300+ models…';
+    search.placeholder = 'Search 500+ models…';
     search.setAttribute('aria-label', 'Search OpenRouter models');
     const seg = el('div', 'db-or-seg');
     const TABS = [['featured', 'Featured'], ['value', 'Value'], ['free', 'Free'], ['all', 'All']];
