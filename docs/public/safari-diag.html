@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lattice · Safari diagnostic</title>
+<style>
+  :root:root { --probe: #2e2e2e; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 16px/1.5 -apple-system, system-ui, sans-serif; background: #fff; color: #111; padding: 16px; -webkit-text-size-adjust: 100%; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  .sub { color: #666; font-size: 13px; margin: 0 0 16px; }
+  .row { display: flex; gap: 8px; align-items: baseline; padding: 6px 0; border-bottom: 1px solid #eee; font-size: 15px; }
+  .row b { flex: 0 0 auto; }
+  .ok { color: #137333; font-weight: 700; }
+  .no { color: #c5221f; font-weight: 700; }
+  .val { color: #555; font-family: ui-monospace, monospace; font-size: 13px; word-break: break-all; }
+  h2 { font-size: 15px; margin: 22px 0 6px; text-transform: uppercase; letter-spacing: .04em; color: #444; }
+  /* ── Present/Practice STAGE simulation — the exact mechanism ────────────── */
+  .stage { position: relative; height: 46vh; background: #0c0c0c; border-radius: 8px; overflow: hidden; margin: 6px 0; }
+  .stage .marpit { height: 100%; display: flex; align-items: center; justify-content: center; }
+  .stage .marpit > section {
+    flex: 0 0 auto; width: 1280px; height: 720px; background: #14304d; color: #fff;
+    display: flex; align-items: center; justify-content: center; font-size: 64px; border-radius: 10px;
+    transform-origin: center center; /* JS sets transform: scale(sc) */
+  }
+  /* the proposed fix variant: absolute-center */
+  .stage.alt .marpit { display: block; }
+  .stage.alt .marpit > section { position: absolute; left: 50%; top: 50%; }
+  #out { white-space: pre-wrap; font-family: ui-monospace, monospace; font-size: 13px; background: #f6f6f6; padding: 10px; border-radius: 6px; margin-top: 6px; }
+</style>
+</head>
+<body>
+  <h1>Lattice · Safari diagnostic</h1>
+  <p class="sub">Screenshot this whole page (scroll) and send it back. Nothing is uploaded.</p>
+
+  <div id="env"></div>
+
+  <h2>CSS feature support</h2>
+  <div id="feat"></div>
+
+  <h2>SVG paint resolution</h2>
+  <div id="svg"></div>
+  <svg width="0" height="0" aria-hidden="true"><defs>
+    <pattern id="pAttr" patternUnits="userSpaceOnUse" width="8" height="8"><rect width="8" height="8" fill="var(--probe)"/></pattern>
+    <pattern id="pHex" patternUnits="userSpaceOnUse" width="8" height="8"><rect width="8" height="8" fill="#2e2e2e"/></pattern>
+  </defs></svg>
+  <svg style="position:absolute;left:-9999px" width="10" height="10"><rect id="rAttr" width="10" height="10" fill="url(#pAttr)"/><rect id="rHex" width="10" height="10" fill="url(#pHex)"/></svg>
+
+  <h2>Present/Practice stage — current (flex-center + scale)</h2>
+  <div class="stage" id="stageA"><div class="marpit"><section>SLIDE</section></div></div>
+
+  <h2>Present/Practice stage — proposed (absolute-center + scale)</h2>
+  <div class="stage alt" id="stageB"><div class="marpit"><section>SLIDE</section></div></div>
+
+  <h2>Raw</h2>
+  <div id="out"></div>
+
+<script>
+(function () {
+  var lines = [];
+  function rowHTML(label, ok, val) {
+    return '<div class="row"><b>' + label + '</b><span class="' + (ok ? 'ok' : 'no') + '">' + (ok ? 'YES' : 'NO') + '</span>' + (val != null ? '<span class="val">' + val + '</span>' : '') + '</div>';
+  }
+  // ── environment ──
+  var ver = (navigator.userAgent.match(/Version\/[\d.]+/) || [''])[0];
+  var os = (navigator.userAgent.match(/(iPhone|iPad)? OS [\d_]+/) || [''])[0].replace(/_/g, '.');
+  document.getElementById('env').innerHTML =
+    '<div class="row"><b>Safari</b><span class="val">' + (ver || '?') + '</span></div>' +
+    '<div class="row"><b>OS</b><span class="val">' + (os || '?') + '</span></div>' +
+    '<div class="row"><b>UA</b><span class="val">' + navigator.userAgent + '</span></div>';
+  lines.push('ver=' + ver, 'os=' + os);
+
+  // ── feature support ──
+  function sup(prop, val) { try { return CSS.supports(prop, val); } catch (e) { return false; } }
+  function supSel(s) { try { return CSS.supports('selector(' + s + ')'); } catch (e) { return false; } }
+  var feats = [
+    ['container units (1cqi)', sup('width', '1cqi')],
+    ['container-type', sup('container-type', 'size')],
+    ['light-dark()', sup('color', 'light-dark(#000,#fff)')],
+    [':has()', supSel(':has(a)')],
+    ['100dvh', sup('height', '100dvh')],
+    ['100svh', sup('height', '100svh')],
+    ['inset', sup('inset', '0')],
+    ['gap (flex)', sup('gap', '1px')],
+    ['aspect-ratio', sup('aspect-ratio', '16/9')],
+  ];
+  document.getElementById('feat').innerHTML = feats.map(function (f) { return rowHTML(f[0], f[1]); }).join('');
+  feats.forEach(function (f) { lines.push(f[0] + '=' + f[1]); });
+
+  // ── SVG paint resolution (var in attribute vs literal hex) ──
+  function fillOf(id) { try { return getComputedStyle(document.getElementById(id)).fill; } catch (e) { return '?'; } }
+  function isGrey(c) { var m = (c || '').match(/\d+/g); return m && m[0] === '46' && m[1] === '46'; }
+  var attrFill = fillOf('rAttr'), hexFill = fillOf('rHex');
+  document.getElementById('svg').innerHTML =
+    rowHTML('var() in fill="" attribute', isGrey(attrFill), attrFill) +
+    rowHTML('literal hex in fill="" attribute', isGrey(hexFill), hexFill);
+  lines.push('svgAttrVar=' + attrFill, 'svgHex=' + hexFill);
+
+  // ── stage simulation ──
+  function measure(stageId) {
+    var st = document.getElementById(stageId);
+    var sec = st.querySelector('section');
+    var sb = st.getBoundingClientRect(), b = sec.getBoundingClientRect();
+    var W = st.clientWidth, H = st.clientHeight;
+    var pad = Math.max(0, Math.min(W, H) * 0.012);
+    var sc = Math.min((W - pad * 2) / 1280, (H - pad * 2) / 720); if (!(sc > 0)) sc = 1;
+    sec.style.transform = (stageId === 'stageB' ? 'translate(-50%,-50%) ' : '') + 'scale(' + sc + ')';
+    // re-read after transform
+    b = sec.getBoundingClientRect();
+    var gapTop = Math.round(b.top - sb.top), gapBottom = Math.round(sb.bottom - b.bottom);
+    var centered = Math.abs(gapTop - gapBottom) < 12;
+    return { sc: sc.toFixed(3), H: Math.round(H), slideH: Math.round(b.height), gapTop: gapTop, gapBottom: gapBottom, centered: centered };
+  }
+  function runStages() {
+    var a = measure('stageA'), b = measure('stageB');
+    document.getElementById('out').textContent =
+      'CURRENT (flex):  ' + JSON.stringify(a) + '\n' +
+      'PROPOSED (abs):  ' + JSON.stringify(b) + '\n\n' + lines.join('\n');
+  }
+  // run after layout settles (twice, for safety)
+  requestAnimationFrame(function () { setTimeout(runStages, 80); setTimeout(runStages, 400); });
+  window.addEventListener('resize', runStages);
+})();
+</script>
+</body>
+</html>
