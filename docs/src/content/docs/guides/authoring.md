@@ -201,7 +201,8 @@ popup opens only on typing / `Ctrl-Space`).
 The Drawing Board's **Deck setup** drawer — the sliders button beside the
 settings chip — edits the deck's front matter through plain controls, so you
 never hand-write the `---` block and the Markdown body stays content-only. It
-covers the whole-deck settings: **theme**, slide **size** (16:9 / 4K / 4:3),
+covers the whole-deck settings: **theme**, slide **size** (landscape HD / 4K /
+Standard, plus social/mobile Square / Portrait / Story / Mobile),
 **page numbers**, running **header** / **footer**, and a few advanced ones
 (a default slide **class**, **math** renderer, document **language**). The
 controls are pre-filled from whatever front matter the deck already has, and
