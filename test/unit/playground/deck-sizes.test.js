@@ -51,4 +51,18 @@ describe('deck-config size picker ↔ @size registry', () => {
       assert.ok(opt[1].length > 0);
     }
   });
+
+  // The editor autocomplete (grammar-vocab.js SIZE_VALUES) and the deck-config
+  // picker (deck-sizes.js SIZE_OPTIONS) must offer the SAME formats — same
+  // single source, no drift between the two UI surfaces.
+  test('SIZE_VALUES (autocomplete) matches SIZE_OPTIONS (picker), and resolves to @sizes', async () => {
+    const { SIZE_VALUES } = await import(
+      path.join(ROOT, 'docs', 'src', 'playground', 'grammar-vocab.js')
+    );
+    assert.deepEqual(SIZE_VALUES, SIZE_OPTIONS.map(([v]) => v),
+      'grammar-vocab SIZE_VALUES drifted from the deck-config picker SIZE_OPTIONS');
+    for (const v of SIZE_VALUES) {
+      assert.ok(registered.has(v), `autocomplete offers '${v}' but no @size ${v} is registered`);
+    }
+  });
 });

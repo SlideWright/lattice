@@ -206,6 +206,15 @@ export function splitValuePosition(before) {
 	return { from: m[1].length, typed: m[2] };
 }
 
+// The cursor's position on a `size:` front-matter line, for slide-size
+// completion (hd / story / square / …). The value charset includes `:` and `.`
+// so the aspect-alias names (`16:9`, `9:16`, `4:5`, `1:1`) complete too.
+export function sizeValuePosition(before) {
+	const m = before.match(/^(\s*size:\s*)([\w:.-]*)$/);
+	if (!m) return null;
+	return { from: m[1].length, typed: m[2] };
+}
+
 // The cursor's position on a `finish:` front-matter line, for finish-register
 // completion (the deck-wide finish: boardroom / sketch / sketch-clean). Mirrors
 // themeValuePosition — `finish:` then an optional partial value, no trailing
@@ -333,6 +342,7 @@ export function typeaheadContext(getLine, lineNo, before) {
 		if (finishValuePosition(before)) return 'finish';
 		if (islandsValuePosition(before)) return 'islands';
 		if (splitValuePosition(before)) return 'split';
+		if (sizeValuePosition(before)) return 'size';
 	}
 	return null;
 }

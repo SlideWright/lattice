@@ -37,6 +37,14 @@ export const ISLANDS_VALUES = ['off', 'on', 'minimal'];
 // `headings` (split on each h1/h2). Mirrors lib/core/resolve-split.js SPLIT_NAMES.
 export const SPLIT_VALUES = ['rule', 'headings'];
 
+// Value vocabulary for the `size:` front-matter directive — the slide formats.
+// The curated subset of the engine's `@size` registry (lib/_theme.css), one
+// entry per format (aliases like 9:16 / reel omitted). MUST mirror SIZE_OPTIONS
+// in docs/src/playground/deck-sizes.js (the deck-config picker) and resolve
+// against the registry — both asserted by test/unit/playground/deck-sizes.test.js,
+// so the picker, this autocomplete, and the engine can't drift apart.
+export const SIZE_VALUES = ['16:9', '4K', 'standard', 'square', 'portrait', 'story', 'mobile'];
+
 // Fence info-strings worth completing: the Lattice-special focusable fences
 // (`mermaid`, `chart`) plus the languages editor.js highlights, with the common
 // short aliases (`js`/`ts`/`py`) so they resolve too. A practical completion
