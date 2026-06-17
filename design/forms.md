@@ -11,7 +11,10 @@ transition.
 This is the canonical doc for the composition axis. Read it before working on
 slide-level layout, chrome, the masthead/footer bands, the resolution contract,
 or the Form/Frame catalog. It is the slide-scale companion to the component model
-in `design/design-system.md` (§4, *The forms*).
+in `design/design-system.md` (§4, *The forms*). For how the structural nouns
+below (Frame · Cell · Tile) relate to the four axes and to the component — the
+whole concept map on one page — see `design/concepts.md`. This doc **owns the
+structural nouns**.
 
 ---
 

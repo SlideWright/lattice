@@ -12,6 +12,10 @@ references (`skill.md`, `theming.md`, `architecture.md`,
 `lib/base/base.docs.md`, per-component `<name>.docs.md`) become
 specialist references for one layer once you have this model.
 
+This doc **owns the four axes**. For how they relate to the structural nouns
+(Frame · Cell · Tile from `forms.md`) and to the component — the whole concept
+map on one page — see `design/concepts.md`.
+
 ---
 
 ## 1. The problem this solves
