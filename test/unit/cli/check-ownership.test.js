@@ -27,6 +27,11 @@ const {
   checkTagClustering,
   checkRetiredTokenNames,
   RETIRED_TOKEN_NAMES,
+  checkTypographyTokens,
+  checkThemeHasSelectors,
+  nonCanonicalFsTokens,
+  hasNotHasSelector,
+  CANONICAL_FS_TOKENS,
   SINGLETON_TAGS,
   run,
 } = require('../../../tools/check-ownership');
@@ -107,6 +112,51 @@ describe('check-ownership', () => {
       const errors = [];
       checkRetiredTokenNames(errors);
       assert.deepEqual(errors, [], `the purge regressed:\n${errors.join('\n')}`);
+    });
+  });
+
+  describe('typography token gate (HARD RULE #4)', () => {
+    test('CANONICAL_FS_TOKENS is the closed 12-role set + the scale base', () => {
+      assert.equal(CANONICAL_FS_TOKENS.size, 13);
+      for (const n of ['--fs-meta', '--fs-body', '--fs-message', '--fs-emphasis',
+        '--fs-h1', '--fs-h6', '--fs-hero', '--fs-scale']) {
+        assert.ok(CANONICAL_FS_TOKENS.has(n), `expected ${n} canonical`);
+      }
+      // t-shirt sizes and ad-hoc names are NOT canonical
+      for (const bad of ['--fs-md', '--fs-lg', '--fs-sm', '--fs-xl', '--fs-base']) {
+        assert.ok(!CANONICAL_FS_TOKENS.has(bad), `${bad} must not be canonical`);
+      }
+    });
+
+    test('nonCanonicalFsTokens flags a t-shirt-size DECLARATION, ignores usages/canonical', () => {
+      assert.deepEqual(
+        nonCanonicalFsTokens(':root { --fs-md: 1rem; --fs-body: 16px; }'),
+        ['--fs-md'],
+      );
+      // a `var(--fs-h<n>)` usage is not a declaration → not flagged
+      assert.deepEqual(nonCanonicalFsTokens('h2 { font-size: var(--fs-h2); }'), []);
+    });
+
+    test('the live engine + themes declare ONLY canonical --fs-* tokens', () => {
+      const errors = [];
+      checkTypographyTokens(errors);
+      assert.deepEqual(errors, [], `non-canonical --fs-* leaked:\n${errors.join('\n')}`);
+    });
+  });
+
+  describe('theme :has() gate (HARD RULE #12)', () => {
+    test('hasNotHasSelector matches the :not/:is-wrapped forms, not a bare :has()', () => {
+      assert.ok(hasNotHasSelector('section:not(:has(.x)) {}'));
+      assert.ok(hasNotHasSelector('a:is(:has(.x)) {}'));
+      assert.ok(hasNotHasSelector('section:not(.foo:has(.x)) {}'));
+      assert.ok(!hasNotHasSelector('a:has(.x) {}'));
+      assert.ok(!hasNotHasSelector('section:not(.plain) {}'));
+    });
+
+    test('the live themes/ carry NO :not(:has())/:is(:has()) selectors', () => {
+      const errors = [];
+      checkThemeHasSelectors(errors);
+      assert.deepEqual(errors, [], `a theme regressed #12:\n${errors.join('\n')}`);
     });
   });
 

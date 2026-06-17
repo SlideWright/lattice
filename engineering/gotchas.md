@@ -1086,6 +1086,11 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
   ordering / specificity decision: declare overrides AFTER bases so
   source order resolves the conflict, or use explicit comma-separated
   enumeration of the cases that should match.
+- **Gated (HARD RULE #12):** `checkThemeHasSelectors` in
+  `tools/check-ownership.js` fails the build (via `build:check`) if a
+  `themes/*.css` file uses `:not(:has(…))` / `:is(:has(…))`. The ban is
+  scoped to themes — component/base CSS uses the form deliberately with a
+  marp-preview fallback path, so it is not gated there.
 - **Triggered by:** Any rule using `:not(:has(...))` in a theme that
   loads in Marp preview.
 - **Removable when:** Verified across all Marp / Electron versions

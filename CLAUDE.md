@@ -169,15 +169,16 @@ anchors). Both are binding; the split tells you *where the enforcement lives*.
 lint/test catches a violation, *discipline* = no automated gate, so it's on you):
 
 - **#4 — Typography is the 12-token `--fs-*` system**; tokens are named for their
-  ROLE, never a colour scheme. *(discipline — no gate; `engineering/typography.md`,
-  `lib/base/base.docs.md`.)*
+  ROLE, never a colour scheme. *(gated — `checkTypographyTokens` in
+  `tools/check-ownership.js`, via `build:check`; `engineering/typography.md`.)*
 - **#5 — Card-style layouts use nested `- Title` / `  - body`**, never inline
   `- **Title.** body`. *(gated — `deck-authoring.test.js`; see `AGENTS.md`.)*
 - **#11 — Universal role-based token names are canonical**; legacy per-theme names
   are retired. *(gated — `checkRetiredTokenNames` in `tools/check-ownership.js`,
   via `build:check`; `lib/tokens/crosswalk.js`, `lib/base/base.docs.md`.)*
 - **#12 — Avoid `:not(:has(…))` / `:is(:has(…))` in theme CSS** — silently broken
-  in the Marp-preview Chromium. *(discipline — no CSS-selector lint; `engineering/gotchas.md`.)*
+  in the Marp-preview Chromium. *(gated for `themes/` — `checkThemeHasSelectors` in
+  `tools/check-ownership.js`, via `build:check`; `engineering/gotchas.md`.)*
 
 ---
 
