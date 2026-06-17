@@ -56,16 +56,23 @@ var require_accessibility_textures = __commonJS({
       // 12 checker
     ];
     function patternSet(prefix, count, fillVar, inkVar) {
-      return GEOMETRIES.slice(0, count).map(({ mode, svg }, i) => {
+      const patterns = [];
+      const rules = [];
+      GEOMETRIES.slice(0, count).forEach(({ mode, svg }, i) => {
         const n = i + 1;
-        const ink = mode === "fill" ? `fill="var(${inkVar(n)})" fill-opacity="0.40"` : `fill="none" stroke="var(${inkVar(n)})" stroke-opacity="0.45" stroke-width="1" stroke-linecap="square"`;
-        return `<pattern id="${prefix}-${n}" patternUnits="userSpaceOnUse" width="8" height="8"><rect width="8" height="8" fill="var(${fillVar(n)})"/><g ${ink}>${svg}</g></pattern>`;
-      }).join("");
+        const id = `${prefix}-${n}`;
+        patterns.push(
+          `<pattern id="${id}" patternUnits="userSpaceOnUse" width="8" height="8"><rect width="8" height="8"/><g>${svg}</g></pattern>`
+        );
+        const ink = mode === "fill" ? `fill:var(${inkVar(n)});fill-opacity:.40` : `fill:none;stroke:var(${inkVar(n)});stroke-opacity:.45;stroke-width:1;stroke-linecap:square`;
+        rules.push(`#${id}>rect{fill:var(${fillVar(n)})}#${id}>g{${ink}}`);
+      });
+      return { patterns: patterns.join(""), rules: rules.join("") };
     }
     function texturePatternDefs2() {
       const cat = patternSet("latt-a11y-tex", 12, (n) => `--cat-${n}-fill`, () => "--cat-on-fill");
       const chart = patternSet("latt-a11y-chart-tex", 8, (n) => `--chart-cat${n}`, () => "--cat-on-mark");
-      return `<svg width="0" height="0" aria-hidden="true" style="position:absolute" class="latt-a11y-defs"><defs>${cat}${chart}</defs></svg>`;
+      return `<svg width="0" height="0" aria-hidden="true" style="position:absolute" class="latt-a11y-defs"><defs>${cat.patterns}${chart.patterns}</defs><style>${cat.rules}${chart.rules}</style></svg>`;
     }
     module.exports = { texturePatternDefs: texturePatternDefs2 };
   }
