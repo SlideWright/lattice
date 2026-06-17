@@ -49,7 +49,7 @@ const FIELD_DEFAULTS = {
   // 'headings' (the default → omitted) splits on each h1/h2 (eyebrow-aware, `---`
   // still honoured) so the deck needs no separators; 'rule' opts back to `---`-only.
   split: 'headings',
-  size: '16:9', // Marp's default page size (themes also define 4K / standard)
+  size: 'hd', // default landscape (memorable name; 16:9 geometry) (themes also define 4K / standard)
   paginate: 'false',
   header: '',
   footer: '',
@@ -135,7 +135,7 @@ export function readFrontMatter(source) {
     theme: map.theme || '',
     finish: map.finish || '',
     split: (map.split || 'headings').trim().toLowerCase() === 'rule' ? 'rule' : 'headings',
-    size: map.size || '16:9',
+    size: map.size || 'hd',
     paginate: TRUEY.test(map.paginate || ''),
     header: map.header || '',
     footer: map.footer || '',

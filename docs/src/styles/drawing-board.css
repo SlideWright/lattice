@@ -3493,7 +3493,7 @@ html.db-js #db-editor-ta {
 	min-width: 7rem;
 }
 .db-drawer-config .db-pref-select {
-	max-width: 11rem;
+	max-width: 16rem;
 }
 /* Unknown-theme note — the deck declares a `theme:` that isn't a registered
  * palette, so it isn't propagated. Tinted to read as a caution, not an error. */

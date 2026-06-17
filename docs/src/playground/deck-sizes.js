@@ -12,14 +12,17 @@
 //
 // test/unit/playground/deck-sizes.test.js guards this against lib/_theme.css.
 
+// Value = the memorable name written to the markdown (`size: story`); label =
+// name · resolution (ratio) for the picker. Markdown stays human-readable; the
+// UI carries the extra detail.
 export const SIZE_OPTIONS = [
   // Landscape (screen)
-  ['16:9', '16:9 · 1280×720 (default)'],
-  ['4K', '4K · 3840×2160'],
-  ['standard', '4:3 · 960×720'],
+  ['hd', 'HD · 1280×720 (16:9, default)'],
+  ['4K', '4K · 3840×2160 (16:9)'],
+  ['standard', 'Standard · 960×720 (4:3)'],
   // Portrait / square (social & mobile — #399)
-  ['square', 'Square · 1:1 · 1080×1080'],
-  ['portrait', 'Portrait · 4:5 · 1080×1350'],
-  ['story', 'Story · 9:16 · 1080×1920'],
-  ['mobile', 'Mobile · 9:19.5 · 1080×2340'],
+  ['square', 'Square · 1080×1080 (1:1)'],
+  ['portrait', 'Portrait · 1080×1350 (4:5)'],
+  ['story', 'Story · 1080×1920 (9:16)'],
+  ['mobile', 'Mobile · 1080×2340 (9:19.5)'],
 ];
