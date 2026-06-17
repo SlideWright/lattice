@@ -84,9 +84,9 @@ another's.
 
 | Axis (system) | Human word | The question | Owned by | Encoded / enforced by | Canonical doc |
 |---|---|---|---|---|---|
-| **Function** | Purpose | what's the point of this slide? | deck authors | `function` field on every manifest + validator; 7 families | `design-system.md` §3 |
-| **Form** | Layout | how is it composed? | layout designers | `form` field + the `lib/forms/` catalog (Frame/Cell/Tile manifests + gates); 12 Frame types | `forms.md` (model) · `design-system.md` §4 |
-| **Substance** | Content | what fills it? | engine maintainers | `substance` field + the per-substance render kernel; 4 sources — prose · structure · series · graph (plus a `mixed` composite) | `design-system.md` §5 |
+| **Function** | Purpose | what's the point of this slide? | deck authors | `function` field on every manifest + validator (the families live in `components.json`) | `design-system.md` §3 |
+| **Form** | Layout | how is it composed? | layout designers | `form` field + the `lib/forms/` catalog — Frame/Cell/Tile manifests + gates (the Frame types live in `forms.json`) | `forms.md` (model) · `design-system.md` §4 |
+| **Substance** | Content | what fills it? | engine maintainers | `substance` field + the per-substance render kernel (the sources — prose · structure · series · graph, plus `mixed` — live in `components.json`) | `design-system.md` §5 |
 | **Finish** | Style | what should it feel like? | theme designers | palette tokens (`themes/*.css`) + variant tiers (`lib/base/base.variants.css` + per-component `.styles.css`) | `design-system.md` §6.5 · `theming.md` |
 
 **The one word we legislate against is "look"** — it collides between *Layout*
@@ -101,7 +101,7 @@ Form is the only axis that decomposes — because it is the only one whose answe
 is itself a **recursive structure**: composition nests into itself (a Frame's
 Cell can hold another Frame). Function only classifies, Substance *fills* the
 Cells, and Finish styles the whole tree — none of those nests, so none needs a
-noun set of its own (their "level 2" is a flat vocabulary — the 4 substance
+noun set of its own (their "level 2" is a flat vocabulary — the substance
 sources, the variant tiers). The three nouns answer a question only Form asks.
 
 It resolves into a **Composite** tree — slicers that make boxes (Frames), fillers
@@ -216,13 +216,27 @@ Cell / Tile catalogs (manifests + JSON-schemas + integrity gates in
 `bucket` fields + validator), and the variant tiers. The relationships *within*
 a catalog are encoded and gated (a Frame's `cells`, a Tile's `fits`).
 
-What remains **prose** is deliberate:
+**The cross-level relationship graph itself — the §2 lattice, the §7 edge table —
+is now encoded too**, as the concept ontology `lib/concepts/concepts.json`,
+projected to the machine catalog `dist/docs/concepts.json` (beside
+`components.json` / `forms.json`). Its **drift gate** runs two tiers: every
+node's claimed vocabulary must resolve in the live catalogs (and the counts are
+*derived* from them, never hand-typed); and every **structural backbone edge**
+must be honored by the engine — the recursion edge requires a Cell that really
+`accepts: frame`, the join edges require the `function` / `form` / `substance`
+fields they claim, and so on. The axis-orthogonality edges and `component →
+Finish` have no catalog to check against, so they are encoded *assertions*, gated
+only for internal consistency (`Finish` is the one axis with no single encoded
+vocabulary, so it carries no `source`).
 
-- **The cross-level relationship graph itself** — the §2 lattice, the §7 edge
-  table — lives here, in this doc, not as a separate machine artifact. (Note:
-  `Finish` is the one axis with no entry in the encoded `vocabularies` block of
-  `components.json`; it is enforced through the variant tiers and theme tokens,
-  not a single field.)
+What remains **prose** — by necessity, not oversight:
+
+- **The node descriptors** — each concept's human word, question, and one-line
+  definition in the ontology — are hand-authored and paraphrase this doc and
+  `design-system.md`; nothing gates that prose against the docs (there is no
+  structured source to derive it from), so it is a residual, low-churn drift
+  surface.
+
 - **Form's *execution*** is at the "light coupling" rung: the manifests are a
   *validated* contract, but the render still places via hand-written transforms +
   CSS. Moving to manifest-driven placement is staged, not yet implemented — see
@@ -235,13 +249,16 @@ What remains **prose** is deliberate:
 
 ## See also
 
-- `design/design-system.md` — the four-axis model in depth: the 7 Functions, 12
-  Forms, 4 Substances, the Finish tiers, and the component catalog. **Owns the axes.**
+- `design/design-system.md` — the four-axis model in depth: the Functions, Forms,
+  Substances, the Finish tiers, and the component catalog. **Owns the axes.**
 - `design/forms.md` — the Form composition model in depth: Frame / Cell / Tile,
   the Composite pattern, the resolution-blind Cell contract, the manifest.
   **Owns the structural nouns.**
 - `design/theming.md` — Finish at the palette level (role-based tokens).
 - `engineering/architecture.md` — where each construct lives in code (CSS vs the
   cataloged JS transforms) and the three render paths.
+- `dist/docs/concepts.json` — the machine-readable encoding of *this* map (nodes
+  + typed edges), generated from `lib/concepts/concepts.json` and drift-gated
+  against the catalogs below.
 - `dist/docs/components.json`, `dist/docs/forms.json` — the machine catalogs the
   lattice is navigated through.
