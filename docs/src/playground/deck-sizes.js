@@ -17,7 +17,7 @@
 // UI carries the extra detail.
 export const SIZE_OPTIONS = [
   // Landscape (screen)
-  ['hd', 'HD · 1280×720 (16:9, default)'],
+  ['hd', 'HD · 1280×720 (16:9)'],
   ['4K', '4K · 3840×2160 (16:9)'],
   ['standard', 'Standard · 960×720 (4:3)'],
   // Portrait / square (social & mobile — #399)
