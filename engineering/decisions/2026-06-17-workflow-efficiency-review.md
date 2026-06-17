@@ -211,6 +211,11 @@ The CI is already mature (concurrency-cancel, path filters, npm + Chrome caching
    pass the build via `upload-artifact`/`download-artifact`. *(High)*
 2. **Cache or drop the `docs-overflow` Chrome download** — it pulls a full Chrome
    uncached on every docs/lib PR (integration caches it; this doesn't). *(High)*
+   **Shipped: PARTIAL.** Folding overflow into `docs-build` (item 1) eliminated
+   the duplicate *Astro build* — the real win. The Chrome pull was *relocated*,
+   not eliminated: `browser-actions/setup-chrome@v1` has no cache input, so
+   `docs-build` still pulls Chrome uncached on each docs/lib PR (parity with the
+   old workflow, no regression). A genuine cache is a small follow-up.
 3. **Trim the unit matrix** — all tests run on Node 22 *and* 24 (`fail-fast:
    false`). Run the full suite on 22; on 24 a smoke subset (or move 24 to
    nightly). Halves unit compute per code PR. *(Med)*
@@ -255,7 +260,7 @@ redundant insurance that taxes every push 4.5 min — the #1 driver toward
 
 | Option | What you get | What you give up |
 |---|---|---|
-| **Gate behind `LATTICE_FULL_PUSH=1`** *(recommended)* | Default push trusts CI (fast); opt in to the local tier when you want belt-and-suspenders. Removes the 4.5-min tax from every push, keeps the net available. | A push could go up red and be caught by CI 4.5 min later instead of locally before push. |
+| **Gate behind `LATTICE_FULL_PUSH=1`** *(recommended)* | Default push trusts CI (fast); opt in to the local tier when you want belt-and-suspenders. Removes the 4.5-min tax from every push, keeps the net available. | Honest downside: it saves *local* time on the happy path but for an **integration-only breakage** it's a *GitHub-cost increase* — that break used to be caught for free on the laptop; now it reaches CI and burns a full red required run (+ a second run after the fix). The trade holds because such breaks are rare and the `--no-verify` temptation is the bigger cost, but it's a shift onto GitHub, not pure savings. |
 | **Drop entirely (CI-only)** | Leanest local loop. | No local integration catch at all; first signal is CI. |
 | **Keep as-is** | Safest locally — nothing reaches the remote without the integration tier passing. | The 4.5-min duplicate stays on every push; `--no-verify` temptation remains. |
 
@@ -303,20 +308,32 @@ in order.
    `main` after each squash (the queue's run *is* the `main` run).
 
 **The cost/behavior trade.**
-- The queue runs CI on the combined state, so it spends *some* Actions minutes —
-  but it **replaces** the post-merge `main` run rather than adding to it, and
-  under low merge volume (one repo, human-gated) it's near-parity. The big
-  savings come at *high* merge volume / merge trains, which is also exactly when
-  the manual rebase dance thrashes today.
+- The queue runs CI on the combined state, so it spends *some* Actions minutes.
+  It **replaces** the post-merge `main` run *only because we also dropped the
+  `push:[main]` trigger from `ci.yml`* — otherwise it would be a THIRD full run
+  per merge (PR run + queue run + post-merge push run), a ~50% increase, not a
+  saving. With the push trigger gone, it's PR run + queue run = 2, the same count
+  as today's PR run + post-merge push run, but the second run now tests the
+  combined state (more valuable). The docs-site deploy keeps its own
+  `push:[main]` trigger in `docs.yml`, so dropping it from `ci.yml` costs no
+  deploy coverage. *(This was the standout red-team finding — the naive adoption
+  raises cost; the fix is dropping the redundant trigger.)*
 - **You still approve every merge.** A queue does *not* remove the human gate —
   it removes the *button-press after approval*. With `enable_pr_auto_merge`, the
   sequence becomes: you review → approve → (queue rebases, tests, merges). HARD
   RULE #7's "human authorizes every merge" is preserved; only the post-approval
   mechanics are automated.
 - **What changes operationally.** Branch protection gains a "require merge queue"
-  setting; the required check runs in the `merge_group` context (a one-line
-  trigger add to `ci.yml`); squash stays the merge method. HARD RULE #16's
-  pre-merge re-rebase clause can be deleted (the queue owns it).
+  setting; the required check runs in the `merge_group` context (the trigger is
+  added to `ci.yml`, and the redundant `push:[main]` trigger removed); squash
+  stays the merge method. HARD RULE #16's pre-merge re-rebase clause becomes the
+  queue's job once it's on.
+- **Inert until you flip the setting.** All the in-repo changes (trigger added,
+  `push:[main]` removed, docs reworded) are live now, but the queue's *behavior*
+  — and its cost profile — only takes effect once "Require merge queue" is enabled
+  in branch protection. Until then the repo runs PR-only CI (1 run per merged PR;
+  the post-merge push run is already gone) and merges are the manual squash with
+  HARD RULE #16's pre-merge re-confirm.
 
 **Recommendation: adopt it, paired with auto-merge-after-approval.** It is the
 one structural move that lowers GitHub cost *and* the parked-conflict risk *and*

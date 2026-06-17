@@ -366,8 +366,12 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
 - **Cause:** Fonts are embedded into a PDF **at render time**, never
   fetched when viewed. The engine loads its faces from a Google-Fonts
   `<link>`/`@import`, which needs the network. A render with no network
-  — the cloud sandbox, the pre-commit PDF rebuild — silently embeds a
-  system fallback instead. The page-count tests don't catch it (font
+  — the pre-commit PDF rebuild offline — silently embeds a system
+  fallback instead. In the **cloud sandbox** specifically the network is
+  present but a **TLS-intercepting (MITM) proxy** sits in front of CDNs,
+  so the webfont fetch fails the certificate check and falls back the
+  same way — i.e. "the sandbox has network" does not mean CDN webfonts
+  resolve. The page-count tests don't catch it (font
   swaps don't change slide count), so the broken PDF ships green. The
   trap: "open it on a networked device and the fonts resolve" is FALSE
   — a fallback-font PDF is fallback forever.

@@ -165,18 +165,19 @@ anchors). Both are binding; the split tells you *where the enforcement lives*.
   independent → its own branch; one that needs another open PR's branch is not.
   See `engineering/decisions/2026-06-17-stacked-pr-fragmentation.md`.
 
-**Conventions** (binding, but enforced by lint/tests — read the linked doc, don't
-work from memory):
+**Conventions** (binding; the tag says where enforcement lives — *gated* = a
+lint/test catches a violation, *discipline* = no automated gate, so it's on you):
 
 - **#4 — Typography is the 12-token `--fs-*` system**; tokens are named for their
-  ROLE, never a colour scheme. `engineering/typography.md`, `lib/base/base.docs.md`.
+  ROLE, never a colour scheme. *(discipline — no gate; `engineering/typography.md`,
+  `lib/base/base.docs.md`.)*
 - **#5 — Card-style layouts use nested `- Title` / `  - body`**, never inline
-  `- **Title.** body`. Enforced by `deck-authoring.test.js`; see `AGENTS.md`.
+  `- **Title.** body`. *(gated — `deck-authoring.test.js`; see `AGENTS.md`.)*
 - **#11 — Universal role-based token names are canonical**; legacy per-theme names
-  are retired (post-flip lint blocks regressions). `lib/tokens/crosswalk.js`,
-  `lib/base/base.docs.md`.
+  are retired. *(gated — `checkRetiredTokenNames` in `tools/check-ownership.js`,
+  via `build:check`; `lib/tokens/crosswalk.js`, `lib/base/base.docs.md`.)*
 - **#12 — Avoid `:not(:has(…))` / `:is(:has(…))` in theme CSS** — silently broken
-  in the Marp-preview Chromium. `engineering/gotchas.md`.
+  in the Marp-preview Chromium. *(discipline — no CSS-selector lint; `engineering/gotchas.md`.)*
 
 ---
 
