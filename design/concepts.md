@@ -2,9 +2,9 @@
 
 **Function · Form · Substance · Finish, and the Frame / Cell / Tile they
 resolve into.** This is the top-of-stack map: it names *every* concept Lattice
-ships, on *both* levels, and the relationships between them — the lattice the
-product is named for. Read it first; then drop into the canonical doc that owns
-each piece in depth.
+ships, on *both* levels, and the relationships between them — the lattice they
+form. Read it first; then drop into the canonical doc that owns each piece in
+depth.
 
 It joins the two levels rather than re-deriving them. `design/design-system.md`
 owns the four-axis model (Function · Form · Substance · Finish) and the component
@@ -87,7 +87,7 @@ another's.
 | **Function** | Purpose | what's the point of this slide? | deck authors | `function` field on every manifest + validator; 7 families | `design-system.md` §3 |
 | **Form** | Layout | how is it composed? | layout designers | `form` field + the `lib/forms/` catalog (Frame/Cell/Tile manifests + gates); 12 Frame types | `forms.md` (model) · `design-system.md` §4 |
 | **Substance** | Content | what fills it? | engine maintainers | `substance` field + the per-substance render kernel; 4 sources — prose · structure · series · graph (plus a `mixed` composite) | `design-system.md` §5 |
-| **Finish** | Style | what should it feel like? | theme designers | palette tokens (`themes/*.css`) + variant rules (`lib/base/base.variants.css` + per-component `.styles.css`) | `design-system.md` §6.5 · `theming.md` |
+| **Finish** | Style | what should it feel like? | theme designers | palette tokens (`themes/*.css`) + variant tiers (`lib/base/base.variants.css` + per-component `.styles.css`) | `design-system.md` §6.5 · `theming.md` |
 
 **The one word we legislate against is "look"** — it collides between *Layout*
 (Form) and *Style* (Finish). Resolve "make it look different" into one or the
