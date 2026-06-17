@@ -754,9 +754,9 @@ describe('component-manifest', () => {
       assert.ok(!SUBSTANCES.includes(MIXED_SUBSTANCE));
     });
 
-    test('UNIVERSAL_GROUPS has the six documented categories', () => {
+    test('UNIVERSAL_GROUPS has the seven documented categories', () => {
       assert.deepEqual(Object.keys(UNIVERSAL_GROUPS).sort(), [
-        'chrome', 'decoration', 'mood', 'state', 'tone', 'typography',
+        'chrome', 'decoration', 'mood', 'social', 'state', 'tone', 'typography',
       ]);
     });
 

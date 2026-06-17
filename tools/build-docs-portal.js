@@ -372,6 +372,7 @@ function renderPortalJson(manifests) {
     function: m.function,
     form: m.form,
     substance: m.substance,
+    orientation: Array.isArray(m.orientation) ? m.orientation : ['landscape', 'portrait'],
     tags: Array.isArray(m.tags) ? m.tags : [],
     description: m.description,
     purpose: m.purpose || null,

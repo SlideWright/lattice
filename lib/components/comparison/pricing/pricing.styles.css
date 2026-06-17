@@ -111,3 +111,10 @@ section.pricing > ul > li > ul > li:last-child {
   font-size: var(--fs-meta); color: var(--text-muted);
 }
 section.pricing > ul > li:has(> em) > ul > li:last-child { color: var(--on-accent-soft); }
+
+/* ── Portrait / square reflow (social/mobile @sizes). Keyed on the deck-wide
+ * data-orientation stamp (lib/engine/slides.js); landscape untouched. See
+ * 2026-06-16-social-mobile-portrait-sizes.md (phase 3). */  Tiers stack to one column (the standard mobile pricing pattern).
+section.pricing[data-orientation="portrait"] > ul {
+  grid-template-columns: 1fr;
+}

@@ -17,6 +17,26 @@ that any component can opt into.
 
 ---
 
+## Safe-area for vertical feeds — the `safe` modifier
+
+Vertical-video feeds overlay their own UI on a vertical post: a profile row
+across the top and a caption + action rail across the bottom. The **`safe`**
+modifier keeps slide content clear of those bands.
+
+- **Opt-in.** Add `safe` to a slide, or deck-wide via `class: safe` in the front
+  matter. (It's not automatic: a 4:5 / 1:1 *feed* post has no overlay UI, so only
+  add it for story/mobile decks.)
+- **Portrait/square only.** It takes effect when the deck's `@size` is
+  portrait or square (`data-orientation`); on a landscape deck it's inert.
+- **How it works.** The engine emits px safe bands from the geometry —
+  `--safe-top` (12% of height) and `--safe-bottom` (20%, covering the taller
+  caption bar) — and `safe` reserves them as content padding (content stays centred
+  within the reduced area) and lifts the footer chrome above the caption band.
+  The same bands are emitted by the runtime preview, so the Drawing Board matches
+  the export. Tune per deck by overriding `--safe-top` / `--safe-bottom`.
+
+See `engineering/decisions/2026-06-16-social-mobile-portrait-sizes.md`.
+
 ## Auto-detected authoring patterns
 
 These work on any slide without a class modifier. Write the markdown,

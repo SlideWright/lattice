@@ -33,6 +33,13 @@
     "substance": {
       "enum": ["prose", "structure", "series", "graph", "mixed"]
     },
+    "orientation": {
+      "description": "The canvas orientations this component is DESIGNED for — a bidirectional support contract. `[\"landscape\",\"portrait\"]` = both (most layouts: native scaling or explicit reflow); `[\"landscape\"]` = landscape-only (e.g. redline's side-by-side diff); `[\"portrait\"]` = portrait/social-only (built for the vertical feed). lint:deck warns when a deck's @size orientation is NOT in this list — in either direction. Default (omitted) = both. How a 'both' layout adapts to portrait (native vs reflow) is recorded in the audit notes, not here. See engineering/decisions/2026-06-16-orientation-in-the-form-model.md.",
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "enum": ["landscape", "portrait"] }
+    },
     "tags": {
       "type": "array",
       "minItems": 3,

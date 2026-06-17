@@ -425,3 +425,29 @@ section.kpi.spotlight > ol > li:not(:first-child) code {
 
 
 
+
+/* ── Portrait / square reflow (social/mobile @sizes) ───────────────────────
+ * Every kpi variant (briefing, ops, spotlight, trajectory) places metric <li>s
+ * on an explicit grid — a hero spanning rows + supports in a side column, or a
+ * 2×2 matrix. On a tall portrait/square canvas that side-by-side composition is
+ * cramped. Switching the metric list from grid to a single flex COLUMN
+ * linearises every variant at once: flex ignores the children's grid-column /
+ * grid-row, so the hero stacks on top and the supports follow, full width — no
+ * per-variant override needed. Keyed on the deck-wide data-orientation stamp
+ * (lib/engine/slides.js); landscape is untouched. See
+ * engineering/decisions/2026-06-16-social-mobile-portrait-sizes.md (phase 3). */
+/* `ol`/`ul` spelled out (not :where) so this matches the per-variant grid rules'
+ * specificity — `section.kpi.spotlight > ol` is (0,2,2) — and wins on source
+ * order (this block is last). :where() would drop us to (0,2,1) and lose. */
+section.kpi[data-orientation="portrait"] > ol,
+section.kpi[data-orientation="portrait"] > ul,
+section.kpi[data-orientation="square"] > ol,
+section.kpi[data-orientation="square"] > ul {
+  display: flex;
+  flex-direction: column;
+  /* The list keeps `flex: 1` (fills the slide below the title), so centre the
+   * metrics WITHIN it — centring the section can't, the list absorbs the slack. */
+  justify-content: center;
+  gap: var(--sp-md);
+  align-content: normal;
+}

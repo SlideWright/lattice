@@ -313,6 +313,21 @@ describe('finishValuePosition — the finish: register slot (Tier 1)', () => {
 	});
 });
 
+describe('sizeValuePosition — the size: value slot (Tier 1)', () => {
+	test('captures the partial after `size:`, including aspect-alias colons', async () => {
+		const { sizeValuePosition } = await load();
+		assert.deepEqual(sizeValuePosition('size: st'), { from: 'size: '.length, typed: 'st' });
+		assert.deepEqual(sizeValuePosition('size: '), { from: 'size: '.length, typed: '' });
+		assert.deepEqual(sizeValuePosition('size: 16:9'), { from: 'size: '.length, typed: '16:9' });
+	});
+
+	test('null on non-size lines', async () => {
+		const { sizeValuePosition } = await load();
+		assert.equal(sizeValuePosition('theme: indaco'), null);
+		assert.equal(sizeValuePosition('split: rule'), null);
+	});
+});
+
 describe('directiveNameAt / paginateValuePosition / fenceLangAt (Tier 2)', () => {
 	test('directiveNameAt captures a directive name before the colon', async () => {
 		const { directiveNameAt } = await load();

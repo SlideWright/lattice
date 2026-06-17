@@ -32,3 +32,11 @@ section.content :is(ul, ol) :is(ul, ol) { margin:var(--sp-2xs) 0 0 0; }
 section.content :is(ul, ol) :is(ul, ol) > li { font-size:var(--fs-body); line-height:var(--lh-base); }
 
 
+
+/* Portrait / square (social) — cap the running-prose measure so lines don't
+   sprawl the full width; the centred block reads composed. Display lines
+   (statement/quote) are short already, so this targets content prose only. */
+section.content[data-orientation='portrait'] > :is(p,ul,ol),
+section.content[data-orientation='square'] > :is(p,ul,ol) {
+  max-width: 46ch; margin-inline: auto;
+}

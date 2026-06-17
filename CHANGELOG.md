@@ -27,6 +27,46 @@ in patch versions.
 
 ### Added
 
+- **Portrait "great" pass — stats reflow, de-ballooned cards, hero-number emphasis.** Social/mobile decks now command the tall frame instead of merely fitting it: `stats` stacks its numbers vertically and enlarges them (a new per-geometry `--stat-emphasis` param the engine emits alongside `--canvas-scale`); `list` / `cards-grid` / `cards-stack` keep each card content-height and distribute them to fill (no more one-line cards ballooning to ~600px); `content` prose caps its measure so lines don't sprawl; and the `square` canvas-scale rises 1.5 → 1.65 so square body clears the legibility floor. All keyed on `data-orientation` — landscape stays byte-identical. `kpi` already reflowed (#407) and keeps its variant hierarchy, so it is left as-is.
+
+- **Declared portrait/landscape support per component, with a lint warning.**
+  Every component manifest can now declare an `orientation` array — `["landscape",
+  "portrait"]` (both, the default), `["landscape"]` (landscape-only), or
+  `["portrait"]` (social-only, none yet). A full-catalog audit (every gallery
+  rendered at 9:16 and judged on real output) classified all 54: **8 are
+  landscape-only** — `gantt`, `journey`, `kanban`, `roadmap`, `state-chart`
+  (horizontal-axis charts), `compare-code`, `redline` (side-by-side diffs), and
+  `image` — the rest work in portrait. The field surfaces in
+  `dist/docs/components.json`, and **`lint:deck` warns** (`orientation-mismatch`)
+  when a portrait/mobile deck uses a landscape-only layout (or a landscape deck a
+  portrait-only one). The lint set is kept in step with the manifests by a unit
+  test. See `engineering/decisions/2026-06-16-orientation-in-the-form-model.md`.
+
+- **Safe-area for vertical feeds — the `safe` modifier.** Keeps content clear of the platform caption / UI bands that vertical-video feeds overlay on a vertical post (top profile row, bottom caption + action rail). Opt-in (`safe`, or deck-wide `class: safe`); takes effect only on a portrait/square `@size`, where the engine emits px safe bands from the geometry (12% top / 20% bottom) that the modifier reserves as content padding and uses to lift the footer chrome above the caption band. Runtime preview matches the export. See `lib/base/base.docs.md`.
+
+- **PPTX export follows the deck `@size`.** A portrait/square deck now exports a
+  portrait/square `.pptx` instead of letterboxing into a 16:9 slide. The exporter
+  derives the PowerPoint slide layout from the resolved geometry (custom layout at
+  the deck aspect, normalized to a 13.333in longest edge); a 16:9 deck keeps the
+  built-in `LAYOUT_WIDE` (byte-identical). Both the CLI
+  (`lib/export/pptx-export.js`) and the Drawing Board export path are updated.
+
+- **Portrait grid reflow for the data-dense layouts.** Building on the
+  social/mobile `@size` work, the grid-based layouts now reflow on a
+  portrait/square canvas instead of holding their landscape composition: `kpi`
+  (every variant — briefing/ops/spotlight/trajectory — linearises to a centred
+  metric column), `matrix-2x2`, `pricing` and `verdict-grid` collapse to a
+  single column, and `split-panel` / `split-compare` stack their rail above the
+  content. Each render path stamps a deck-wide `data-orientation` on the section
+  (engine + runtime); landscape is unstamped → byte-identical. **Mermaid
+  diagrams reorient** for portrait — a left-to-right flowchart becomes
+  top-to-bottom (LR→TB, RL→BT) so it flows down the tall frame at legible size
+  instead of shrinking to a thin strip (both the PDF and preview paths, via
+  `lib/integrations/mermaid/reorient.js`). Charts (SVG, aspect-preserved) need no
+  reflow. Demo: `examples/social-grid.md`. Remaining: `redline` (side-by-side
+  diff is semantically load-bearing) is deliberately left landscape-composed.
+  See `engineering/decisions/2026-06-16-social-mobile-portrait-sizes.md` (phase 3).
+
 - **Narrative build — progressive disclosure via `_build`.** A slide opts into
   "assemble as you go" with a `<!-- _build -->` directive (a subset of the
   `_focus` grammar): bare builds the slide's primary collection one unit per step
@@ -98,6 +138,15 @@ in patch versions.
   (Mermaid / KaTeX / highlight.js, and the kanban/timeline/radar SVG sheets)
   were intentionally left untouched — `!important` is the correct mechanism
   against inline styles emitted by those tools.
+
+- **The Drawing Board "Slide size" picker now lists the social/mobile formats.**
+  #399 added `square` / `portrait` / `story` / `mobile` to the engine's `@size`
+  registry, but the deck-config drawer's size dropdown was a separate hardcoded
+  list of the three landscape sizes — so the portrait formats never appeared in
+  the UI (you had to type `size: story` by hand). The picker options are now a
+  curated module (`docs/src/playground/deck-sizes.js`) guarded by a unit test
+  against the `@size` registry, so this can't silently drift again. The editor
+  also autocompletes `size:` values from the same source.
 
 - **One slide-size registry (engine source of truth).** The CLI/PDF emulator no
   longer carries its own hard-coded size table — it resolves `@size` through the

@@ -14,7 +14,7 @@ const path   = require('path');
 const fs     = require('fs');
 const os     = require('os');
 
-const { writePptx } = require('../../../lib/export/pptx-export');
+const { writePptx, pptxLayout } = require('../../../lib/export/pptx-export');
 
 // A minimal valid 1×1 PNG — enough for pptxgenjs to embed as slide media.
 const ONE_PX_PNG = Buffer.from(
@@ -54,5 +54,35 @@ describe('pptx-export', () => {
   test('rejects an empty slide set', async () => {
     const out = tmpFile();
     await assert.rejects(() => writePptx(out, []), /no slide images/i);
+  });
+
+  describe('pptxLayout — slide aspect from @size geometry', () => {
+    // Stub just enough of a pptx instance to capture defineLayout.
+    function stub() {
+      const defs = [];
+      return { defs, defineLayout(d) { defs.push(d); } };
+    }
+
+    test('16:9 (HD / 4K) and missing geometry keep the built-in LAYOUT_WIDE (unchanged)', () => {
+      const a = stub();
+      assert.equal(pptxLayout(a, 1280, 720), 'LAYOUT_WIDE');
+      assert.equal(pptxLayout(a, 3840, 2160), 'LAYOUT_WIDE');
+      assert.equal(pptxLayout(a, undefined, undefined), 'LAYOUT_WIDE');
+      assert.equal(a.defs.length, 0, 'no custom layout defined for 16:9 / absent');
+    });
+
+    test('portrait/square define a custom layout at the deck aspect, longest edge 13.333in', () => {
+      const story = stub();
+      assert.equal(pptxLayout(story, 1080, 1920), 'LATTICE'); // 9:16
+      assert.deepEqual(story.defs[0], { name: 'LATTICE', width: 7.5, height: 13.333 });
+
+      const square = stub();
+      pptxLayout(square, 1080, 1080); // 1:1
+      assert.deepEqual(square.defs[0], { name: 'LATTICE', width: 13.333, height: 13.333 });
+
+      const portrait = stub();
+      pptxLayout(portrait, 1080, 1350); // 4:5
+      assert.deepEqual(portrait.defs[0], { name: 'LATTICE', width: 10.666, height: 13.333 });
+    });
   });
 });

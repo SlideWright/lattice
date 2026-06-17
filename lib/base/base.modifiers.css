@@ -967,3 +967,24 @@ img.deck-logo.deck-logo-brand {
   box-sizing: content-box;
 }
 
+
+/* ── Safe area for vertical feeds (`safe` modifier) ──────────────────────────────────
+   Keeps content clear of the platform caption / UI bands that vertical-video
+   feeds overlay on a vertical post — the top profile row and the bottom
+   caption + right-hand action rail. Opt-in (add `safe`, e.g. deck-wide via
+   `class: safe` front-matter); takes effect ONLY on a portrait/square @size,
+   where the engine emits the px `--safe-*` bands from the geometry. Content
+   centres (justify-content:center, from the orientation CSS) within the reduced
+   area, and the footer chrome is lifted above the caption band. See
+   lib/base/base.docs.md and engineering/decisions/2026-06-16-social-mobile-portrait-sizes.md. */
+section.safe[data-orientation='portrait'],
+section.safe[data-orientation='square'] {
+  padding-top: max(var(--safe-top, 0px), calc(var(--_sec-1cqi, 1cqi) * 6.875));
+  padding-bottom: max(var(--safe-bottom, 0px), calc(var(--_sec-1cqi, 1cqi) * 6.875));
+}
+/* Lift the bottom chrome (footer / pagination / progress) above the caption band
+   so it isn't buried under the overlay. */
+section.safe[data-orientation='portrait'] :is(.cell-footer, .tile-meta, [class*='pagination'], [class*='progress']),
+section.safe[data-orientation='square'] :is(.cell-footer, .tile-meta, [class*='pagination'], [class*='progress']) {
+  bottom: calc(var(--frame-inset-y) + var(--safe-bottom, 0px));
+}

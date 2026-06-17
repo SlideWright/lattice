@@ -62,3 +62,13 @@ section.matrix-2x2 li > ol > li {
  * target text nodes); the manifest validator catches that case at
  * lint time. See CARD_STYLE_LAYOUTS in lib/components/index.js. */
 section.matrix-2x2 :is(ul,ol) > li > strong ~ * { font-weight: 400; }
+
+/* ── Portrait / square reflow (social/mobile @sizes). Keyed on the deck-wide
+ * data-orientation stamp (lib/engine/slides.js); landscape untouched. See
+ * 2026-06-16-social-mobile-portrait-sizes.md (phase 3). */
+section.matrix-2x2[data-orientation="portrait"] > ul,
+section.matrix-2x2[data-orientation="portrait"] > ol {
+  grid-template-columns: 1fr;
+  grid-template-rows: none;
+  grid-auto-rows: minmax(0, 1fr);
+}
