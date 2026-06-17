@@ -88,4 +88,10 @@ describe('bg-image — primitives', () => {
     assert.equal(bg.resolveAssetUrl('data:image/svg+xml,abc', '/decks/q'), 'data:image/svg+xml,abc');
     assert.equal(bg.resolveAssetUrl('pic.svg'), 'pic.svg'); // no baseDir → verbatim
   });
+
+  test('resolveAssetUrl does not throw on a literal % in a filename', () => {
+    // decodeURI throws URIError on `100%.svg`; the guard must keep the render alive.
+    assert.doesNotThrow(() => bg.resolveAssetUrl('100%.svg', '/decks/q'));
+    assert.match(bg.resolveAssetUrl('100%.svg', '/decks/q'), /\/decks\/q\/100/);
+  });
 });

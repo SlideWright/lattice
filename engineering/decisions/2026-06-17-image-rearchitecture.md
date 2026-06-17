@@ -4,6 +4,33 @@ Date: 2026-06-17
 Status: Accepted — implemented (best-judgment de-risk: kept lib/core/bg-image.js as the shared kernel and swapped <img>→CSS background + resolved URL, rather than deleting it)
 Branch: `claude/important-usage-audit-67ggrm`
 
+## ⚠️ Implemented vs. planned (scope correction)
+
+The design below describes a full cross-path unification (move the split into
+`lib/engine/background-image.js`, thread `baseUrl` through `render()`, delete
+`bg-image.js` / `image-scrim.js`). **What actually shipped is narrower and
+emulator-only**, by best-judgment de-risk:
+
+- **Done (emulator / CLI path):** `lib/core/bg-image.js` now emits the image as
+  a CSS `background-image` on `.lattice-bg` (no `<img>`, no `!important`), and
+  resolves deck-relative asset URLs to absolute `file://` against the deck dir.
+  This fixes "image totally broken" for `node lattice-emulator.js …` PDF output
+  — the path where it was reported and where decks render to PDF.
+- **NOT done (runtime / playground path):** `lib/engine/background-image.js` was
+  **not** touched. The owned engine still collapses `bg left/right` to a single
+  full-bleed `--background-image` on the `<section>` (the deferred "P1.1" split)
+  and resolves the URL verbatim (no `baseUrl`). So in `dist/lattice-runtime.js`
+  / the docs playground, `image` renders **full-bleed only** (no half-canvas
+  split) and a deck-relative asset still 404s when the origin isn't the deck
+  dir. `image-scrim.js` and `bg-image.js` were **kept**, not deleted.
+- **The semantic-invariant suite renders through the emulator only**, so no
+  existing gate catches the runtime/playground gap.
+
+**Remaining work (follow-up):** implement the `bg left/right` split + `baseUrl`
+threading in `lib/engine/background-image.js` so the runtime/playground reach
+parity, then retire the emulator pre-pass. The "Three moves" / "Decision"
+sections below are the *target*, not the shipped state.
+
 ## Context — what "image is totally broken" actually was
 
 The `image` component renders broken-image placeholders in any deck rendered
