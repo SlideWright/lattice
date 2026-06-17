@@ -43,6 +43,7 @@
 // SYNC scroll math (window.scrollY) and content-visibility virtualization both
 // keep measuring against the document viewport.
 
+import { texturePatternDefs } from './a11y-textures.generated.js';
 import { slideBox } from './frame-css.js';
 import { splitSections } from './preview-virtual.js';
 
@@ -52,6 +53,14 @@ export const KATEX_URL = 'https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.
 // UMD build sets window.mermaid, which lattice-runtime.js polls for and then
 // renders ```mermaid fences (and charts/split-panels via applyAllToDom).
 export const MERMAID_URL = 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js';
+
+// The categorical/chart texture <defs> (the a11y redundant-encoding mechanism),
+// built ONCE from the shared kernel (HARD RULE #1). buildSrcdoc injects this on
+// EVERY render so every surface that uses this controller — Drawing Board,
+// Playground, both Workbench studios — shows a11y textures identically, instead
+// of each caller opting in (the Drawing Board did; the others didn't → wireframe
+// pies). Inert under colour themes: nothing references the patterns there.
+export const A11Y_DEFS = texturePatternDefs();
 
 const DARK_BG = '#0c0c0c';
 const LIGHT_BG = '#e7e7ea';
@@ -172,9 +181,9 @@ export function buildSrcdoc({
 	clamp = true,
 	sync = false,
 	center = false, // vertically center a short deck instead of pinning it to the top
-	a11yDefs = '', // categorical texture <pattern> <defs> (string) — injected once into
-	// <body> when an accessibility palette is active, so `fill: url(#latt-a11y-tex-N)`
-	// resolves in this browsing context (empty for every normal deck).
+	a11yDefs = A11Y_DEFS, // categorical texture <pattern> <defs> — injected into <body>
+	// on every render so `fill: url(#latt-a11y-tex-N)` resolves in this browsing
+	// context under an a11y theme (inert otherwise). Owned here, not per-caller.
 }) {
 	const gw = (geom && geom.w) || 1280;
 	const gh = (geom && geom.h) || 720;

@@ -20,6 +20,7 @@
       "!docs/src/playground/authoring-core.generated.js",
       "!docs/src/playground/exemplar-core.generated.js",
       "!docs/src/playground/standalone-svg.generated.js",
+      "!docs/src/playground/a11y-textures.generated.js",
       "!**/*.min.js",
       "!mermaid-v11.min.js",
       "!examples/**/*.json",

@@ -26,7 +26,7 @@
 // registers fully — the one tested path, not a re-inlined copy.
 import { createThemeFetcher } from '../lib/theme-fetch.ts';
 import { notesCore } from './authoring-core.generated.js';
-import { KATEX_URL, MERMAID_URL, splitSections } from './deck-preview.js';
+import { A11Y_DEFS, KATEX_URL, MERMAID_URL, splitSections } from './deck-preview.js';
 // The same authoritative section read Practice uses (pure, engine-derived): it
 // turns the rendered <section> list into per-slide metas with a `role` ('section'
 // on a divider) + a title — the basis for the per-section progress spine.
@@ -43,7 +43,7 @@ const FS_EXIT = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" str
 const NOTES_ICON = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v5h5"/><path d="M8 13h8M8 17h6"/></svg>';
 const PRESENTER_ICON = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="14" height="10" rx="2"/><path d="M8 17v4M5 21h6"/><path d="M18 8h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1h-7a1 1 0 0 1-1-1v-2"/></svg>';
 
-export function createPresent({ host, getSource, runtimeUrl, themeBase, a11yDefs = '' }) {
+export function createPresent({ host, getSource, runtimeUrl, themeBase }) {
   if (!host) return { open() {} };
   const PG = () => window.LatticePlayground;
   const root = document.documentElement;
@@ -148,7 +148,7 @@ export function createPresent({ host, getSource, runtimeUrl, themeBase, a11yDefs
       '.marpit{height:100%;display:flex;align-items:center;justify-content:center;visibility:hidden;}' +
       slideBox(sw, sh) +
       '.marpit>section{flex:0 0 auto;}' +
-      css + '</style></head><body>' + a11yDefs + allHtml +
+      css + '</style></head><body>' + A11Y_DEFS + allHtml +
       '<scr' + 'ipt src="' + MERMAID_URL + '"></scr' + 'ipt>' +
       '<scr' + 'ipt src="' + runtimeUrl + '"></scr' + 'ipt>' +
       '<scr' + 'ipt>window.__SLIDE_W=' + sw + ';window.__SLIDE_H=' + sh + ';' +

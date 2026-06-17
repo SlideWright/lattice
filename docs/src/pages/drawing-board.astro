@@ -35,10 +35,8 @@ const { loadAll, manifestBucket, familyModifiersFor } = require(join(repoRoot, '
 // The categorical texture <pattern> <defs> the a11y themes' fills reference.
 // Built once here (the shared kernel) and handed to every preview surface, which
 // injects it into the iframe ALWAYS (it's inert unless an a11y theme references a
-// pattern) — the runtime/preview path's counterpart to the emulator's always-on
-// defs injection.
-const { texturePatternDefs } = require(join(repoRoot, 'lib/core/accessibility-textures.js'));
-const a11yTextureDefs = texturePatternDefs();
+// pattern). The a11y texture <defs> are owned + injected by the shared
+// deck-preview renderDeck now — no per-page computation/plumbing needed.
 const manifests = loadAll();
 
 // Compact catalog for the Architect's onboarding retrieval + scaffolding, and the
@@ -180,9 +178,6 @@ const dbData = JSON.stringify({
 	// accessibility themes) — the valid vocabulary for the Deck setup drawer's
 	// theme control + the controller's propagation guard.
 	palettes,
-	// Texture <defs> always injected into the preview iframe — the a11y themes'
-	// diagram/chart fills reference these patterns, so they must always be present.
-	a11yTextureDefs,
 	catalog: obCatalog,
 	version: pkgVersion,
 	buildId,
@@ -1167,7 +1162,6 @@ const dbData = JSON.stringify({
 				getSource: () => (window.__dbEditor ? window.__dbEditor.getValue() : ''),
 				runtimeUrl: data.runtimeUrl,
 				themeBase: data.themeBase,
-				a11yDefs: data.a11yTextureDefs,
 				bucketOf: (name) => buckets.get(name) || null,
 				// Share the page's model ladder so a connected cloud/local tier tailors
 				// the rehearsal plan; absent one, the deterministic floor still runs.
@@ -1204,7 +1198,6 @@ const dbData = JSON.stringify({
 				getSource: () => (window.__dbEditor ? window.__dbEditor.getValue() : ''),
 				runtimeUrl: presentData.runtimeUrl,
 				themeBase: presentData.themeBase,
-				a11yDefs: presentData.a11yTextureDefs,
 			});
 			const presentBtn = document.getElementById('db-present-open');
 			if (presentBtn) presentBtn.addEventListener('click', () => present.open());

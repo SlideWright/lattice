@@ -180,6 +180,14 @@ section.piechart .wedge:nth-of-type(6n+3) { fill: url(#latt-a11y-chart-tex-3) !i
 section.piechart .wedge:nth-of-type(6n+4) { fill: url(#latt-a11y-chart-tex-4) !important; }
 section.piechart .wedge:nth-of-type(6n+5) { fill: url(#latt-a11y-chart-tex-5) !important; }
 section.piechart .wedge:nth-of-type(6n)   { fill: url(#latt-a11y-chart-tex-6) !important; }
+/* Legend swatches carry the SAME texture as their wedge (data-cat = 0-based slot
+ * from the chart-family legend), so the key matches by pattern, not just value. */
+section.piechart .chart-key-swatch[data-cat="0"] { fill: url(#latt-a11y-chart-tex-1) !important; }
+section.piechart .chart-key-swatch[data-cat="1"] { fill: url(#latt-a11y-chart-tex-2) !important; }
+section.piechart .chart-key-swatch[data-cat="2"] { fill: url(#latt-a11y-chart-tex-3) !important; }
+section.piechart .chart-key-swatch[data-cat="3"] { fill: url(#latt-a11y-chart-tex-4) !important; }
+section.piechart .chart-key-swatch[data-cat="4"] { fill: url(#latt-a11y-chart-tex-5) !important; }
+section.piechart .chart-key-swatch[data-cat="5"] { fill: url(#latt-a11y-chart-tex-6) !important; }
 section.funnel .funnel-band:nth-of-type(6n+1) { fill: url(#latt-a11y-chart-tex-1) !important; }
 section.funnel .funnel-band:nth-of-type(6n+2) { fill: url(#latt-a11y-chart-tex-2) !important; }
 section.funnel .funnel-band:nth-of-type(6n+3) { fill: url(#latt-a11y-chart-tex-3) !important; }
