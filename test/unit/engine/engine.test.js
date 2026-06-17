@@ -238,13 +238,17 @@ describe('lattice-engine: css emission (P1.1)', () => {
     assert.match(story, /--canvas-scale:\s*2\.19/);
     assert.match(story, /justify-content:\s*center/);
     assert.match(orientationCss({ width: 1080, height: 1080 }), /--canvas-scale:\s*1\.5/);
+    // Safe-area bands (px) for the `safe` modifier — 12% top / 20% bottom of height.
+    assert.match(story, /--safe-top:\s*230px/);   // 1920 * 0.12
+    assert.match(story, /--safe-bottom:\s*384px/); // 1920 * 0.20
+    assert.equal(/--safe-/.test(orientationCss({ width: 1280, height: 720 })), false); // none for landscape
   });
 
   test('composeCss bakes portrait geometry into @page and appends the orientation block', () => {
     const out = composeCss({ themeCss: PALETTE, baseLatticeCss: SOCIAL, sizeName: 'story' });
     assert.match(out, /@page\s*\{[^}]*size:\s*1080px 1920px/);
     assert.match(out, /width:\s*1080px/);
-    assert.match(out, /section\s*\{\s*--canvas-scale:\s*2\.19;\s*justify-content:\s*center;\s*\}/);
+    assert.match(out, /section\s*\{\s*--canvas-scale:\s*2\.19;\s*justify-content:\s*center;\s*--safe-top:\s*230px;\s*--safe-bottom:\s*384px;\s*\}/);
     // A landscape deck gets NO orientation block (the scaling never fires).
     assert.doesNotMatch(composeCss({ themeCss: PALETTE, baseLatticeCss: SOCIAL, sizeName: 'hd' }), /--canvas-scale/);
   });

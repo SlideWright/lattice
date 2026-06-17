@@ -27,6 +27,8 @@ in patch versions.
 
 ### Added
 
+- **Story/Reel safe-area — the `safe` modifier.** Keeps content clear of the platform caption / UI bands that Stories, Reels, and TikTok overlay on a vertical post (top profile row, bottom caption + action rail). Opt-in (`safe`, or deck-wide `class: safe`); takes effect only on a portrait/square `@size`, where the engine emits px safe bands from the geometry (12% top / 20% bottom) that the modifier reserves as content padding and uses to lift the footer chrome above the caption band. Runtime preview matches the export. See `lib/base/base.docs.md`.
+
 - **Portrait grid reflow for the data-dense layouts.** Building on the
   social/mobile `@size` work, the grid-based layouts now reflow on a
   portrait/square canvas instead of holding their landscape composition: `kpi`
