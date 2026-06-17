@@ -8,13 +8,16 @@ import { createThemeFetcher } from './theme-fetch';
 // the picked theme were registered, so a11y-base/onyx were missing and the
 // @import was dropped — the a11y machinery vanished in the Drawing Board.)
 
-// Minimal theme graph mirroring the real chain.
+// Minimal theme graph mirroring the real chain — in the MINIFIED form the client
+// actually fetches (dist/themes/*.min.css), where the minifier drops the space
+// after @import (`@import"a11y-base"`). The closure recursion must match that, or
+// it silently registers nothing past the picked theme → stripped render.
 const GRAPH: Record<string, string> = {
-	'lattice.css': '/* @theme lattice */ section{}',
-	'a11y-deuteranopia.css': "/* @theme a11y-deuteranopia */ @import 'a11y-base'; :root{--pass:#004982}",
-	'a11y-base.css': "/* @theme a11y-base */ @import 'onyx'; :root{--cat-1-fill:#e8e8e8}",
-	'onyx.css': "/* @theme onyx */ @import 'lattice'; :root{--bg:#fff}",
-	'indaco.css': "/* @theme indaco */ @import 'lattice'; :root{--accent:#36c}",
+	'lattice.css': '/* @theme lattice */section{}',
+	'a11y-deuteranopia.css': '/* @theme a11y-deuteranopia */@import"a11y-base";:root{--pass:#004982}',
+	'a11y-base.css': '/* @theme a11y-base */@import"onyx";:root{--cat-1-fill:#e8e8e8}',
+	'onyx.css': '/* @theme onyx */@import"lattice";:root{--bg:#fff}',
+	'indaco.css': "/* @theme indaco */@import'lattice';:root{--accent:#36c}",
 };
 
 describe('createThemeFetcher — transitive @import closure', () => {

@@ -180,7 +180,7 @@ export async function exportMarp(source, name, palette, themeBase) {
 			const text = await r.text();
 			dir.file(`themes/${tf}`, text);
 			bundledThemes.push(`themes/${tf}`);
-			for (const m of text.matchAll(/@import\s+['"]([A-Za-z0-9_-]+)['"]/g)) {
+			for (const m of text.matchAll(/@import\s*['"]([A-Za-z0-9_-]+)['"]/g)) {
 				if (m[1] !== 'lattice') queue.push(`${m[1]}.css`);
 			}
 		}

@@ -78,7 +78,10 @@ export function createThemeFetcher(themeBase: string) {
 		if (!registering[name]) {
 			registering[name] = fetchTheme(name).then((css) => {
 				if (!PG.hasTheme(name)) PG.addThemes([css]);
-				const deps = [...css.matchAll(/@import\s+['"]([A-Za-z0-9_-]+)['"]/g)].map((m) => m[1]);
+				// `\s*` not `\s+`: the minified dist themes the client fetches drop the
+				// space after @import (`@import"a11y-base"`) — same footgun as the
+				// engine's THEME_IMPORT_RE. url() font imports don't match (no quote-name).
+				const deps = [...css.matchAll(/@import\s*['"]([A-Za-z0-9_-]+)['"]/g)].map((m) => m[1]);
 				return Promise.all([ensureBase(), ...deps.map(register)]).then(() => undefined);
 			});
 		}

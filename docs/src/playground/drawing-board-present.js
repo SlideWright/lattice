@@ -93,7 +93,7 @@ export function createPresent({ host, getSource, runtimeUrl, themeBase, a11yDefs
           // Follow the transitive theme-name @import closure (a11y-* →
           // a11y-base → onyx → lattice) so a multi-level theme doesn't render
           // stripped — the engine only inlines imports whose target is registered.
-          const deps = [...c.matchAll(/@import\s+['"]([A-Za-z0-9_-]+)['"]/g)].map((m) => m[1]).filter((d) => d !== 'lattice');
+          const deps = [...c.matchAll(/@import\s*['"]([A-Za-z0-9_-]+)['"]/g)].map((m) => m[1]).filter((d) => d !== 'lattice');
           await Promise.all(deps.map(ensureTheme));
         }).catch(() => {});
       }
