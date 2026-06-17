@@ -69,6 +69,14 @@ for (const file of readdirSync(distThemesDir)) {
     assets.push([`themes/${dest}`, join(distThemesDir, file)]);
   }
 }
+// Component sample images referenced by manifest `sample` decks — e.g. the image
+// component's `![bg](sample-image-landscape.svg)`. Staged under samples/ so the
+// playground preview can load them; the component render passes this base as
+// `{ baseUrl }` to the engine, which resolves the deck-relative path against it.
+const imageSamplesDir = join(repoRoot, 'lib', 'components', 'imagery', 'image');
+for (const file of readdirSync(imageSamplesDir)) {
+  if (file.endsWith('.svg')) assets.push([`samples/${file}`, join(imageSamplesDir, file)]);
+}
 // The Export-to-Marp static assets (minified engine / stylesheet / runtime /
 // mermaid), staged under export/ so the Drawing Board's in-browser export can
 // fetch them and zip the SAME bundle the CLI produces. Sourced from the shared

@@ -23,12 +23,18 @@ Shipped in two passes:
   bundles into the **browser** playground engine; `render()` gained an optional
   `{ baseUrl }`.
 
-**Remaining (the one web gap):** **asset serving.** The web layout is now
-correct, but a component sample's `![bg](sample-image-landscape.svg)` still
-resolves against the playground origin, where the sample SVGs aren't served —
-so the image panel is correctly laid out but empty until the sample assets are
-staged (`docs/scripts/sync-playground-assets.mjs`) and the playground passes
-their base as `{ baseUrl }` to `render()`. Tracked as the next step.
+- **Pass 3 (web asset serving — done):** the component sample images are now
+  staged under `playground/v/<hash>/samples/`
+  (`docs/scripts/sync-playground-assets.mjs`), and the playground render sites
+  (`single-slide-render.ts`, `component-studio.js`) pass an **absolute**
+  `{ baseUrl }` (themeBase→samples/, resolved against `location.href` — the
+  WHATWG resolver needs an absolute base) so a sample's
+  `![bg](sample-image-landscape.svg)` resolves to the staged URL. The browser
+  API wrapper (`lib/playground/index.js`) was the real blocker — it exposed a
+  2-arg `render` and dropped `opts`; it now forwards the 3rd arg. Verified
+  in-browser: the half-canvas split renders **and** the image loads on the docs
+  component page. Image rendering now reaches parity across CLI, runtime, and
+  playground.
 
 ## Context — what "image is totally broken" actually was
 
