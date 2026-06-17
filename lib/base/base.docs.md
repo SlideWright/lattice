@@ -17,20 +17,20 @@ that any component can opt into.
 
 ---
 
-## Story/Reel safe-area — the `safe` modifier
+## Safe-area for vertical feeds — the `safe` modifier
 
-Stories, Reels, and TikTok overlay their own UI on a vertical post: a profile
-row across the top and a caption + action rail across the bottom. The **`safe`**
+Vertical-video feeds overlay their own UI on a vertical post: a profile row
+across the top and a caption + action rail across the bottom. The **`safe`**
 modifier keeps slide content clear of those bands.
 
 - **Opt-in.** Add `safe` to a slide, or deck-wide via `class: safe` in the front
   matter. (It's not automatic: a 4:5 / 1:1 *feed* post has no overlay UI, so only
-  add it for story/reel/mobile decks.)
+  add it for story/mobile decks.)
 - **Portrait/square only.** It takes effect when the deck's `@size` is
   portrait or square (`data-orientation`); on a landscape deck it's inert.
 - **How it works.** The engine emits px safe bands from the geometry —
-  `--safe-top` (12% of height) and `--safe-bottom` (20%, covering TikTok's taller
-  caption) — and `safe` reserves them as content padding (content stays centred
+  `--safe-top` (12% of height) and `--safe-bottom` (20%, covering the taller
+  caption bar) — and `safe` reserves them as content padding (content stays centred
   within the reduced area) and lifts the footer chrome above the caption band.
   The same bands are emitted by the runtime preview, so the Drawing Board matches
   the export. Tune per deck by overriding `--safe-top` / `--safe-bottom`.
