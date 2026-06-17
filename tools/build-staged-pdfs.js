@@ -33,7 +33,7 @@
 
 const fs = require('node:fs');
 const path = require('node:path');
-const { execSync, execFileSync, execFile } = require('node:child_process');
+const { execSync, execFileSync, spawn } = require('node:child_process');
 
 const ROOT = path.join(__dirname, '..');
 const EMULATOR = path.join(ROOT, 'lattice-emulator.js');
@@ -81,13 +81,18 @@ function classify(file) {
   return null;
 }
 
-// Async single-deck render (one Chromium); resolves to the output path.
+// Async single-deck render (one Chromium); resolves to the output path. Uses
+// spawn + stdio:'inherit' (not execFile): the render streams progress straight
+// to the terminal, and there is no captured-output buffer to overflow — execFile
+// would buffer stdout to a 1 MB default and spuriously fail a chatty render.
 function buildDeckAsync(job) {
   return new Promise((resolve, reject) => {
     process.stderr.write(`build-staged-pdfs: rebuilding ${job.out}\n`);
-    execFile('node', [EMULATOR, job.src, job.out], { cwd: ROOT }, (err) => {
-      if (err) reject(new Error(`${job.out}: ${err.message}`));
-      else resolve(job.out);
+    const child = spawn('node', [EMULATOR, job.src, job.out], { cwd: ROOT, stdio: 'inherit' });
+    child.on('error', (err) => reject(new Error(`${job.out}: ${err.message}`)));
+    child.on('close', (code) => {
+      if (code === 0) resolve(job.out);
+      else reject(new Error(`${job.out}: exited ${code}`));
     });
   });
 }
