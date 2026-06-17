@@ -213,14 +213,23 @@ independent set of eyes earns its latency.
     broken in the Marp preview Chromium. See `engineering/gotchas.md`.
 13. **Commit messages are `area(scope): short summary`.** PRs follow
     `.github/pull_request_template.md` (Problem → What changed → Tests →
-    Caveats), titled the same way.
+    Caveats), titled the same way. **Before a PR merges, the issue(s) it closes
+    must also read true** — the merge freezes the card's text as the permanent
+    record, so reconcile a drifted title/body or point it at the PR. See
+    `engineering/workflow.md` § Merging.
 14. **A hook failure is a root cause to fix, never a `--no-verify` to skip.**
-15. **Don't reinvent tooling — check `engineering/capabilities.md` first.** Before
-    building any script, harness, benchmark, or framework, consult the capability
-    index (generated from every npm script + `tools/` file; `npm run` and `ls
-    tools/` are the live source). We almost certainly already have it — extend it,
-    don't rebuild it. New tools/scripts must be described there (the
-    `capabilities:check` gate enforces it).
+15. **Don't reinvent — reuse, for tooling AND UI.** *Tooling:* before building any
+    script, harness, benchmark, or framework, consult `engineering/capabilities.md`
+    (generated from every npm script + `tools/` file; `npm run` and `ls tools/` are
+    the live source) — extend it, don't rebuild it; new tools must be described
+    there (the `capabilities:check` gate enforces it). *Docs-site UI:* before
+    building any control/widget, check `docs/src/components/ui/` (the shadcn
+    primitives — `select`, `dialog`, `dropdown-menu`, …) AND the shared chrome
+    (`PaletteControls`, `site-chrome.ts`, `theme-fetch.ts`) and extend those. A
+    surface-specific control that re-implements an existing one — a second
+    theme/palette dropdown, say — is a defect: different *behaviour* per surface is
+    fine, but share the presentational component and wire its callback, don't fork
+    the widget. (No gate enforces the UI half — it's on you to look first.)
 16. **Keep an open PR mergeable by rebasing right before you push — NOT with a
     background watch.** GitHub never delivers "`main` moved", "now conflicted", or
     "CI passed", so there is no cheap event that tells you a parked PR has drifted.
