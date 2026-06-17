@@ -8,7 +8,8 @@
 // "just Lattice" (no competitor columns). Static, zero client JS.
 //
 // Honesty bar: every count/name is verified against the repo — 52 components /
-// 12 buckets (the `_chart-family` partial is internal, excluded), 14 palettes,
+// 12 buckets (the `_chart-family` partial is internal, excluded), 14 editorial
+// palettes (+ 4 colour-blind-safe),
 // 29 treatments (18 tint + 11 mark), 12-token type scale, 25 Mermaid types.
 import '../styles/landing.css';
 import PaletteControls from '../components/site/PaletteControls.tsx';
@@ -65,6 +66,7 @@ const CATALOG = [
 			['14 palettes, light + dark', 'Every palette ships a dark variant. Switch the whole deck in one line.'],
 			['Palette-blind layouts', 'Layouts never name a colour — they read var(--token). Restyle a deck by editing one line.'],
 			['WCAG-AA guaranteed', 'Contrast clears AA on every text-bearing surface, in every palette, light and dark.'],
+			['4 colour-blind-safe palettes', 'Beyond the 14 editorial palettes: deuteranopia-, protanopia-, tritanopia-, and achromatopsia-safe palettes, selectable in the picker.'],
 			['12-token type scale', 'A fixed --fs-* scale. No t-shirt sizes, no per-slide drift.'],
 			['29 treatments', '18 tint and 11 mark peripheral accents (glows, washes, geometric marks), composable on any layout.'],
 			['Native dark canvas', 'Driven by the CSS color-scheme cascade, not class-list hacks — one mechanism across every render path.'],

@@ -23,7 +23,7 @@ decompositions; project leads get gantt charts, kanban boards, and
 roadmaps; engineers and architects get all 25 Mermaid diagram types and
 side-by-side code diffs; lawyers and compliance get statute stacks,
 authority chains, and obligation matrices; analysts get radar, quadrant,
-and KPI layouts. Fifty-three layouts, one syntax you already know — no
+and KPI layouts. Fifty-two layouts, one syntax you already know — no
 drawing tools, no boxes, no pasted screenshots.
 
 Lattice is the engine at the heart of **Lattice Style** — a project born
@@ -103,7 +103,7 @@ finish — and it lives where it should, at [lattice.style](https://lattice.styl
   red is reserved for alarm states. WCAG AA verified across every
   text-bearing surface. Preview them all in the
   [component reference](https://slidewright.github.io/lattice/components/).
-- **53 layouts.** Title, divider, content, diagram, cards-grid, compare-prose,
+- **52 layouts.** Title, divider, content, diagram, cards-grid, compare-prose,
   quote, timeline-list, big-number, split-panel, verdict-grid, more.
   Each layout has an authoring contract documented in [design/skill.md](design/skill.md).
 - **Mermaid integration.** All 25 renderable Mermaid diagram types are

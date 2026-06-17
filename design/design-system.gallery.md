@@ -131,7 +131,7 @@ Function · Form · Substance · Finish. Authored in short names, organized in f
   - name, function, form, substance, description, purpose, variants, slots, skeleton. The rendering pipeline is unchanged — manifests are metadata.
 - Consumed everywhere.
   - Scaffolder reads `skeleton`. Snippets read `skeleton` + `name`. The catalog groups by `function`. Editor autocomplete reads `variants`. Docs link from `docs`.
-- 53 components shipped.
+- 52 components shipped.
   - Every layout currently used in the galleries (or supported by chart-family) has one. Validation gate keeps them well-formed.
 
 ---
@@ -154,7 +154,7 @@ Function · Form · Substance · Finish. Authored in short names, organized in f
 - CLI scaffolder
   - `npm run new:slide -- --list` prints the catalog grouped by function. `npm run new:slide -- cards-grid` emits the skeleton. Exit codes: 0 success, 1 unknown, 2 usage.
 - VS Code snippets
-  - Type `lattice-` in any .md file. Autocomplete shows all 53 components by name and description. Tab inserts the canonical skeleton. Generated from manifests; freshness enforced by `npm run snippets:check`.
+  - Type `lattice-` in any .md file. Autocomplete shows all 52 components by name and description. Tab inserts the canonical skeleton. Generated from manifests; freshness enforced by `npm run snippets:check`.
 
 ---
 
@@ -174,7 +174,7 @@ Function · Form · Substance · Finish. Authored in short names, organized in f
 ## What ships on this branch.
 
 - [x] Spec — `design/design-system.md` with the four-layer model and component contract.
-- [x] Manifests — 53 components in `lib/components/<bucket>/<name>/<name>.manifest.json`, schema validator, loader.
+- [x] Manifests — 52 components in `lib/components/<bucket>/<name>/<name>.manifest.json`, schema validator, loader.
 - [x] Scaffolder — `tools/new-slide.js` with `--list` and component-name modes.
 - [x] VS Code snippets — `.vscode/lattice.code-snippets` generated and committed.
 - [x] CLAUDE.md pointer — design-system.md at the top of "Read these first".
