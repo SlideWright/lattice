@@ -2,6 +2,7 @@
   "$schema": "../../manifest.schema.json",
   "name": "cards-stack",
   "focusAxes": ["item"],
+  "capacity": { "axis": "item", "min": 2, "sweet": 3, "soft": 4, "hard": 4, "escalateTo": ["list-tabular", "split across slides"], "note": "past four rows the stack overflows" },
   "function": "inventory",
   "form": "stack",
   "substance": "structure",

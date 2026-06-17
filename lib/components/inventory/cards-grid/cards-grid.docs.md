@@ -6,6 +6,8 @@
 
 **Tags** `overview` · `showcase` · `summary`
 
+**Capacity** ~3 items (crowds past 4, overflows past 4) — past that, list-tabular / split across slides.
+
 Use when the audience needs to compare or scan a small set of options at a glance. Avoid for more than 4 items — split into multiple slides. For ordered/numbered steps, use list-steps instead.
 
 ## When to use

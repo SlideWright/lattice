@@ -6,6 +6,8 @@
 
 **Tags** `scorecard` · `ranking` · `prioritize` · `assessment`
 
+**Capacity** ~3 items (crowds past 4, overflows past 5) — past that, compare-table / split across slides.
+
 Use to evaluate 2–4 options against the same set of criteria, with pass/partial/fail badges. Each card represents one option; badges per criterion.
 
 ## When to use

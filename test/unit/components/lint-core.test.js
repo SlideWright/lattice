@@ -197,3 +197,93 @@ describe('lint-core: focus directive grammar (rule 11)', () => {
     assert.equal(ruleFor(slide('<!-- _focusSteps: item 1 | item 2 -->'), 'focus-steps'), undefined);
   });
 });
+
+describe('lint-core: countPrimaryCollection', () => {
+  test('item axis counts top-level list markers, ignores nested bodies', () => {
+    const s = '<!-- _class: cards-grid -->\n\n## H\n\n- A\n  - body a\n- B\n  - body b\n- C\n';
+    assert.equal(core.countPrimaryCollection(s, 'item'), 3);
+  });
+  test('item axis counts ordered markers too', () => {
+    assert.equal(core.countPrimaryCollection('1. one\n2. two\n3. three\n', 'item'), 3);
+  });
+  test('item axis ignores list lines inside fenced code', () => {
+    const s = '## H\n\n- real\n\n```\n- not a real item\n- nor this\n```\n';
+    assert.equal(core.countPrimaryCollection(s, 'item'), 1);
+  });
+  test('row axis counts table data rows (excludes header + separator)', () => {
+    const t = '| A | B |\n|---|---|\n| 1 | 2 |\n| 3 | 4 |\n| 5 | 6 |\n';
+    assert.equal(core.countPrimaryCollection(t, 'row'), 3);
+  });
+  test('row axis: a dash-placeholder data row is not mistaken for the separator', () => {
+    const t = '| Metric | A | B |\n|---|---|---|\n| Latency | - | - |\n| Cost | 1 | 2 |\n| Uptime | 9 | 9 |\n';
+    assert.equal(core.countPrimaryCollection(t, 'row'), 3);
+  });
+  test('col axis counts header cells', () => {
+    const t = '| A | B | C |\n|---|---|---|\n| 1 | 2 | 3 |\n';
+    assert.equal(core.countPrimaryCollection(t, 'col'), 3);
+  });
+  test('line axis counts the first fenced code block lines', () => {
+    assert.equal(core.countPrimaryCollection('```\nx\ny\nz\n```\n', 'line'), 3);
+  });
+  test('returns 0 when nothing of the axis is present', () => {
+    assert.equal(core.countPrimaryCollection('## just a heading\n', 'item'), 0);
+    assert.equal(core.countPrimaryCollection('- a\n- b\n', 'row'), 0);
+  });
+});
+
+describe('lint-core: axisNoun', () => {
+  test('col reads as column(s), others pluralize plainly', () => {
+    assert.equal(core.axisNoun('col', 1), 'column');
+    assert.equal(core.axisNoun('col', 3), 'columns');
+    assert.equal(core.axisNoun('item', 1), 'item');
+    assert.equal(core.axisNoun('item', 2), 'items');
+    assert.equal(core.axisNoun('row', 4), 'rows');
+  });
+});
+
+describe('lint-core: capacity rule', () => {
+  // A vocab carrying a capacity contract for one layout, plus its name so the
+  // unknown-class rule stays quiet.
+  const capVocab = {
+    names: new Set(['cards-grid', 'compare-table']),
+    modifiers: new Set(),
+    capacity: {
+      'cards-grid': { axis: 'item', min: 2, sweet: 3, soft: 4, hard: 5, escalateTo: ['list-tabular', 'split across slides'], note: 'the grid loses scannability past four cards' },
+      'compare-table': { axis: 'row', sweet: 4, soft: 6, hard: 8, escalateTo: ['split across slides'] },
+    },
+  };
+  const capRule = (src, rule) => core.lintTextWith(src, capVocab).find((f) => f.rule === rule);
+  const itemsSlide = (n) => `${FM}<!-- _class: cards-grid -->\n\n## H\n\n` + Array.from({ length: n }, (_, i) => `- Item ${i + 1}\n  - body ${i + 1}\n`).join('');
+
+  test('within soft → no capacity finding', () => {
+    const out = core.lintTextWith(itemsSlide(4), capVocab);
+    assert.equal(out.filter((f) => f.rule.startsWith('capacity')).length, 0);
+  });
+  test('past soft (but within hard) → crowd warning with escalateTo fix', () => {
+    const f = capRule(itemsSlide(5), 'capacity-crowd');
+    assert.ok(f, 'expected a capacity-crowd finding at 5 items');
+    assert.equal(f.severity, 'warning');
+    assert.equal(f.classToken, 'cards-grid');
+    assert.match(f.message, /this slide has 5/);
+    assert.match(f.fix, /list-tabular/);
+  });
+  test('past hard → overflow warning carrying the note', () => {
+    const f = capRule(itemsSlide(8), 'capacity-overflow');
+    assert.ok(f, 'expected a capacity-overflow finding at 8 items');
+    assert.equal(f.severity, 'warning');
+    assert.match(f.message, /will overflow/);
+    assert.match(f.message, /scannability/);
+    // overflow and crowd are mutually exclusive per slide
+    assert.equal(capRule(itemsSlide(8), 'capacity-crowd'), undefined);
+  });
+  test('table layout counts the row axis', () => {
+    const rows = (n) => `${FM}<!-- _class: compare-table -->\n\n## H\n\n| A | B |\n|---|---|\n` + Array.from({ length: n }, (_, i) => `| ${i} | x |\n`).join('');
+    assert.equal(capRule(rows(6), 'capacity-crowd'), undefined); // 6 == soft, not past
+    assert.ok(capRule(rows(7), 'capacity-crowd'), 'expected crowd at 7 rows');
+    assert.ok(capRule(rows(9), 'capacity-overflow'), 'expected overflow at 9 rows');
+  });
+  test('no capacity data → rule is inert', () => {
+    const out = core.lintTextWith(itemsSlide(20), { names: new Set(['cards-grid']), modifiers: new Set() });
+    assert.equal(out.filter((f) => f.rule.startsWith('capacity')).length, 0);
+  });
+});

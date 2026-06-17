@@ -2,6 +2,7 @@
   "$schema": "../../manifest.schema.json",
   "name": "list-steps",
   "focusAxes": ["item"],
+  "capacity": { "axis": "item", "min": 3, "sweet": 4, "soft": 5, "hard": 6, "escalateTo": ["timeline-list","split across slides"], "note": "past five steps the row begins to crowd" },
   "function": "progression",
   "form": "timeline",
   "substance": "structure",

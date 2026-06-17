@@ -83,6 +83,41 @@ describe('component-manifest', () => {
       assert.deepEqual(validate(m), []);
     });
 
+    test('capacity: accepts a well-formed contract', () => {
+      const m = {
+        ...GOOD,
+        focusAxes: ['item'],
+        sample: '<!-- _class: cards-grid -->\n\n## H\n\n- A\n  - a\n- B\n  - b\n- C\n  - c\n',
+        capacity: { axis: 'item', min: 2, sweet: 3, soft: 4, hard: 5, escalateTo: ['list-tabular', 'split across slides'], note: 'crowds past four' },
+      };
+      assert.deepEqual(validate(m), []);
+    });
+    test('capacity: rejects an inert axis the sample cannot measure', () => {
+      // axis 'col' (pipe-table columns) on a layout whose sample is a list →
+      // the counter always returns 0, so the rule could never fire.
+      const m = { ...GOOD, sample: '<!-- _class: x -->\n\n## H\n\n- A\n- B\n', capacity: { axis: 'col', soft: 4, hard: 6 } };
+      assert.ok(validate(m).some((e) => /is not measurable/.test(e)));
+    });
+    test('capacity: requires soft and hard', () => {
+      assert.ok(validate({ ...GOOD, capacity: { axis: 'item' } }).some((e) => /capacity requires integer soft and hard/.test(e)));
+    });
+    test('capacity: rejects an unknown axis', () => {
+      assert.ok(validate({ ...GOOD, capacity: { axis: 'blob', soft: 4, hard: 6 } }).some((e) => /capacity\.axis/.test(e)));
+    });
+    test('capacity: axis must be one of the layout focusAxes when declared', () => {
+      const m = { ...GOOD, focusAxes: ['item'], capacity: { axis: 'row', soft: 4, hard: 6 } };
+      assert.ok(validate(m).some((e) => /must be one of the layout's focusAxes/.test(e)));
+    });
+    test('capacity: rejects decreasing bounds', () => {
+      assert.ok(validate({ ...GOOD, capacity: { axis: 'item', sweet: 5, soft: 4, hard: 6 } }).some((e) => /non-decreasing/.test(e)));
+    });
+    test('capacity: rejects an unknown key', () => {
+      assert.ok(validate({ ...GOOD, capacity: { axis: 'item', soft: 4, hard: 6, bogus: 1 } }).some((e) => /unknown key 'bogus'/.test(e)));
+    });
+    test('capacity: rejects an empty escalateTo', () => {
+      assert.ok(validate({ ...GOOD, capacity: { axis: 'item', soft: 4, hard: 6, escalateTo: [] } }).some((e) => /escalateTo/.test(e)));
+    });
+
     test('rejects non-object input', () => {
       assert.ok(validate(null).length > 0);
       assert.ok(validate('not an object').length > 0);

@@ -6,6 +6,8 @@
 
 **Tags** `dashboard` · `metric` · `percentage`
 
+**Capacity** ~4 items (crowds past 5, overflows past 6) — past that, kpi / split across slides.
+
 Use for at-a-glance metric rows — quarterly results, headline KPIs. Each tile reads as Big Number + caption.
 
 ## When to use

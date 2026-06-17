@@ -37,6 +37,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { loadAll, manifestBucket } = require('../lib/components');
+const { axisNoun } = require('../lib/authoring/lint-core');
 const { resolveAnatomy } = require('./anatomy-catalog');
 
 const ROOT = path.join(__dirname, '..');
@@ -116,6 +117,13 @@ function renderDocs(m) {
   lines.push('');
   if (Array.isArray(m.tags) && m.tags.length) {
     lines.push(`**Tags** ${m.tags.map((t) => `\`${t}\``).join(' · ')}`);
+    lines.push('');
+  }
+  if (m.capacity) {
+    const c = m.capacity;
+    const sweet = c.sweet != null ? c.sweet : c.soft;
+    const esc = Array.isArray(c.escalateTo) && c.escalateTo.length ? ` — past that, ${c.escalateTo.join(' / ')}` : '';
+    lines.push(`**Capacity** ~${sweet} ${axisNoun(c.axis, sweet)} (crowds past ${c.soft}, overflows past ${c.hard})${esc}.`);
     lines.push('');
   }
   if (m.purpose) {

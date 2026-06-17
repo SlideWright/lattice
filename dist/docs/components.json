@@ -225,6 +225,18 @@
         "with-period"
       ],
       "familyModifiers": [],
+      "capacity": {
+        "axis": "item",
+        "min": 3,
+        "sweet": 4,
+        "soft": 6,
+        "hard": 7,
+        "escalateTo": [
+          "list-tabular",
+          "split across slides"
+        ],
+        "note": "the ledger reads cleanly up to about six rows"
+      },
       "slots": {
         "title": {
           "selector": "h2",
@@ -367,6 +379,17 @@
       "focusAxes": [
         "item"
       ],
+      "capacity": {
+        "axis": "item",
+        "min": 3,
+        "sweet": 4,
+        "soft": 6,
+        "hard": 7,
+        "escalateTo": [
+          "split across slides"
+        ],
+        "note": "past six sections the list crowds"
+      },
       "slots": {
         "title": {
           "selector": "h2",
@@ -742,6 +765,18 @@
       "focusAxes": [
         "item"
       ],
+      "capacity": {
+        "axis": "item",
+        "min": 2,
+        "sweet": 3,
+        "soft": 4,
+        "hard": 4,
+        "escalateTo": [
+          "list-tabular",
+          "split across slides"
+        ],
+        "note": "the grid loses scannability past four cards"
+      },
       "slots": {
         "title": {
           "selector": "h2",
@@ -880,6 +915,18 @@
       "focusAxes": [
         "item"
       ],
+      "capacity": {
+        "axis": "item",
+        "min": 2,
+        "sweet": 3,
+        "soft": 4,
+        "hard": 4,
+        "escalateTo": [
+          "list-tabular",
+          "split across slides"
+        ],
+        "note": "past four rows the stack overflows"
+      },
       "slots": {
         "title": {
           "selector": "h2",
@@ -1004,6 +1051,17 @@
       "focusAxes": [
         "item"
       ],
+      "capacity": {
+        "axis": "item",
+        "min": 4,
+        "sweet": 6,
+        "soft": 8,
+        "hard": 9,
+        "escalateTo": [
+          "split across slides"
+        ],
+        "note": "past eight items the checklist overflows"
+      },
       "slots": {
         "title": {
           "selector": "h2",
@@ -1761,6 +1819,17 @@
         "col",
         "cell"
       ],
+      "capacity": {
+        "axis": "row",
+        "min": 2,
+        "sweet": 4,
+        "soft": 6,
+        "hard": 8,
+        "escalateTo": [
+          "split across slides"
+        ],
+        "note": "the table density crowds past six rows"
+      },
       "slots": {
         "title": {
           "selector": "h2",
@@ -2978,6 +3047,17 @@
       "familyModifiers": [
         "canvas"
       ],
+      "capacity": {
+        "axis": "item",
+        "min": 2,
+        "sweet": 3,
+        "soft": 5,
+        "hard": 6,
+        "escalateTo": [
+          "split across slides"
+        ],
+        "note": "past five lanes the cards compress"
+      },
       "slots": {
         "title": {
           "selector": "h2",
@@ -3517,6 +3597,18 @@
       "focusAxes": [
         "item"
       ],
+      "capacity": {
+        "axis": "item",
+        "min": 3,
+        "sweet": 4,
+        "soft": 5,
+        "hard": 6,
+        "escalateTo": [
+          "timeline-list",
+          "split across slides"
+        ],
+        "note": "past five steps the row begins to crowd"
+      },
       "slots": {
         "title": {
           "selector": "h2",
@@ -6206,6 +6298,18 @@
         "with-period"
       ],
       "familyModifiers": [],
+      "capacity": {
+        "axis": "item",
+        "min": 3,
+        "sweet": 4,
+        "soft": 5,
+        "hard": 6,
+        "escalateTo": [
+          "kpi",
+          "split across slides"
+        ],
+        "note": "the row compresses and numbers shrink past five tiles"
+      },
       "slots": {
         "title": {
           "selector": "h2",
@@ -6705,6 +6809,18 @@
         "checks-tonal",
         "heat"
       ],
+      "capacity": {
+        "axis": "item",
+        "min": 2,
+        "sweet": 3,
+        "soft": 4,
+        "hard": 5,
+        "escalateTo": [
+          "compare-table",
+          "split across slides"
+        ],
+        "note": "the cards crowd and badges lose legibility past four"
+      },
       "slots": {
         "title": {
           "selector": "h2",
