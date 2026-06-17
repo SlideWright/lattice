@@ -8,8 +8,9 @@ superseded-by:
 
 # Workflow efficiency review — red-team of the agent operating model
 
-> **Status: In progress** — red-team complete; D, E, F-CI shipped on the branch.
-> **Roll-up:** ☑ 2 done (D, E) · ◐ 4 in progress (A, B, C, F) · ⏸ 0 awaiting
+> **Status: In progress** — red-team complete; B, C, D, E shipped on the branch.
+> **Roll-up:** ☑ 4 done (B, C, D, E) · ◐ 2 in progress (A: convention done,
+> generator + backfill = next slice · F: in-repo done, owner flips branch protection)
 > **Decisions (2026-06-17):** E3 → gate the pre-push integration tier behind
 > `LATTICE_FULL_PUSH=1`; F → adopt the merge queue with auto-merge-after-approval
 > (in-repo changes here; branch-protection settings handed to the owner).
@@ -65,7 +66,10 @@ workstream A):
 
 ## Workstream A — Documentation status structure (the convention itself)
 
-> **Status:** ☐ Ready · **Serves:** doc maintenance, agent comprehension, GitHub/Claude cost · **Risk:** low
+> **Status:** ◐ In progress — convention + index spec **shipped**; generator tool
+> (`tools/build-decisions-index.js`) + `decisions:index(:check)` gate + 104-doc
+> front-matter backfill = the immediate next slice · **Serves:** doc maintenance,
+> agent comprehension, GitHub/Claude cost · **Risk:** low
 
 **Why first.** The owner's ask — "docs need a banner, overall stats, and
 partitioned work with its own status, structured so parts can be implemented
@@ -109,7 +113,7 @@ agent can answer "what's the current decision on X" from one grouped list.
 
 ## Workstream B — Trim CLAUDE.md & re-tier the hard rules
 
-> **Status:** ☐ Ready · **Serves:** Claude cost (every turn), agent comprehension, doc maintenance · **Risk:** low
+> **Status:** ☑ Done (shipped on branch) · **Serves:** Claude cost (every turn), agent comprehension, doc maintenance · **Risk:** low
 
 **The problem.** `CLAUDE.md` is **~23KB / ~6,000 tokens, loaded every session and
 every turn.** It declares "This file is short on purpose" (line 11) — it is not;
@@ -152,7 +156,7 @@ moved rule has a live pointer; nothing that was machine-enforced is lost.
 
 ## Workstream C — Operating-model defaults (resolve toward cheap, not expensive)
 
-> **Status:** ☐ Ready · **Serves:** Claude cost (per task), GitHub cost, less babysitting · **Risk:** med (behavior change — maker-checker before committing)
+> **Status:** ☑ Done (shipped on branch) · **Serves:** Claude cost (per task), GitHub cost, less babysitting · **Risk:** med (behavior change — maker-checker before committing)
 
 **The problem.** Every ambiguity in `CLAUDE.md` currently resolves toward *more*
 autonomous spend, never less. There is no cost tie-breaker.
@@ -194,7 +198,7 @@ maker-checker has a concrete trigger; the export gate no longer catches plain CS
 
 ## Workstream D — CI efficiency
 
-> **Status:** ☐ Ready · **Serves:** GitHub Actions cost, PR latency · **Risk:** med (CI config — verify on a real PR run)
+> **Status:** ☑ Done (shipped on branch) · **Serves:** GitHub Actions cost, PR latency · **Risk:** med (CI config — verify on a real PR run)
 
 The CI is already mature (concurrency-cancel, path filters, npm + Chrome caching,
 `cancelled`→pass). These are the *remaining* wins.
@@ -228,7 +232,7 @@ The CI is already mature (concurrency-cancel, path filters, npm + Chrome caching
 
 ## Workstream E — Hooks leanness  ⏸ contains an open decision
 
-> **Status:** ◐ In progress — **decided: gate behind `LATTICE_FULL_PUSH=1`** · **Serves:** local loop speed, removes the `--no-verify` temptation · **Risk:** med
+> **Status:** ☑ Done (shipped on branch — E1/E2/E3) · **decided: gate behind `LATTICE_FULL_PUSH=1`** · **Serves:** local loop speed, removes the `--no-verify` temptation · **Risk:** med
 
 The pre-commit/pre-push *split* is sensible (cheap-on-commit, deterministic-on-push).
 Three problems make it feel heavy:
@@ -271,7 +275,7 @@ auto-stage); CI's required gate `ci.yml:348-371`.
 
 ## Workstream F — GitHub merge queue  ⏸ explain-first
 
-> **Status:** ◐ In progress — **decided: adopt** (in-repo changes here; owner flips branch protection) · **Serves:** GitHub cost, less babysitting, closes the parked-conflict gap · **Risk:** med (changes how merges execute)
+> **Status:** ◐ In progress — **decided: adopt**; in-repo half shipped (ci.yml `merge_group`, CLAUDE.md #16, workflow.md §Merging), **owner flips branch protection** (steps below) · **Serves:** GitHub cost, less babysitting, closes the parked-conflict gap · **Risk:** med (changes how merges execute)
 
 Both retired-drift-watch decision docs name a merge queue as *the* structural fix,
 but it was never wired. The owner asked to understand it before adopting.
