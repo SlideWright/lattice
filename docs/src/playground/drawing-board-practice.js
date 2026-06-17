@@ -160,7 +160,7 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
       '<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">' +
       '<link rel="stylesheet" href="' + KATEX_URL + '">' +
       '<style>html,body{margin:0;padding:0;height:100%;background:' + bg + ';overflow:hidden;touch-action:manipulation;-webkit-text-size-adjust:100%;}' +
-      '#latt-stage{position:fixed;left:0;top:0;width:100%;height:100vh;height:100dvh;display:flex;align-items:center;justify-content:center;overflow:hidden;visibility:hidden;}' +
+      '#latt-stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden;visibility:hidden;}' +
       '#latt-fit{overflow:hidden;}' +
       '#latt-fit .marpit{margin:0;padding:0;}' +
       '#latt-fit .marpit>section{transform-origin:top left;box-shadow:0 18px 60px rgba(0,0,0,.45);border-radius:10px;}' +
