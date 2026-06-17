@@ -227,22 +227,33 @@ exercised by the unit suite:
 
 Two consequences worth keeping in mind:
 
-- **Maintenance is bounded, not sprawling.** Changing a Tile means editing its
-  CSS (one cohesive place) plus, for the still-mirrored Tiles (meta, progress),
-  two copies (the HTML-string path in `plugins.js` and the live-DOM path in
-  `form-dom.js`) that the three render paths require. That duplication is the real
-  recurring cost — but it is two copies, not N, and the unit suite asserts the
-  paths agree (HARD RULE 1). The **watermark Tile** is the first to retire that
-  cost: it is self-contained (`lib/forms/tile/watermark/`), with ONE kernel
-  exposing both adapters and its CSS co-located — the pattern the other Tiles
-  follow as #356 lands. The list above is the whole surface.
-- **The one descriptive exception is the `lib/forms/` catalog.** It documents the
-  Frame/Cell/Tile model but is read by the engine for only one thing today (the
-  sovereign skip-set). Wiring it to *drive* the CSS/injectors — so adding a Tile
-  is a folder, not edits to the mirrored kernels — would make it load-bearing and
-  shrink the duplication above; trimming it removes a freshness-gated second
-  source of truth. That decision is tracked in **#356**; until then the table
-  above, not the catalog, is the source of truth for what actually runs.
+- **Maintenance is bounded, not sprawling.** Every logic-bearing Tile is now
+  self-contained (#356): `meta`, `progress`, and `watermark` each live in
+  `lib/forms/tile/<id>/` as ONE kernel exposing both adapters (`applyToHtml` for
+  the string path, `applyToDom` for the live-DOM path) plus co-located CSS, and
+  **both** render paths import that same file — the engine (`lib/engine/index.js`)
+  and the runtime (`lib/runtime/index.js`). The old cost — two hand-copied
+  injectors split across `plugins.js` and a separate DOM-path file — is retired
+  (there is no `form-dom.js`); what remains is the irreducible two *methods* (a
+  string surface and a DOM surface) in one place, with the unit suite asserting
+  they agree (HARD RULE 1). The list above is the whole surface.
+- **The `lib/forms/` catalog is a *validated*, not yet *executed*, contract (#356,
+  the "light" coupling rung — `design/forms.md` §11).** The distinction matters: its
+  co-located Tile *kernels* are real executed code — `meta`/`progress`/`watermark`
+  are imported by both render paths (above) — but the manifest *data* is gate-checked,
+  not interpreted at render. Placement is still hand-written transforms + class-keyed
+  CSS, and the only manifest fields read at render are a Frame's `id` + `exemptFromChrome`
+  (the `form:` skip-set, via `deriveFormToggleSkip`, with a baked fallback for the
+  fs-free browser bundle). The build gate (`tools/build-forms.js`) keeps manifest and
+  CSS in step (token refs resolve, the `css` flag matches the filesystem, z-order
+  isn't inverted, `suppresses` never drops the stage); the loader cross-validates
+  referential integrity (`Tile.fits` → a real Cell; every `Cell.accepts` kind met by
+  ≥1 Tile). What the manifest does **not** do is *generate* CSS — the `--frame-*` grid
+  and each Cell/Tile sheet are hand-authored, co-located files (`lib/forms/cell/<id>/<id>.css`).
+  So "adding a Tile is a folder" is real; "adding a new spatial Frame type" is not —
+  the `form` enum is still closed at twelve (mirrored in `lib/forms/index.js`,
+  `lib/components/index.js`, and `lib/components/manifest.schema.json`), so a thirteenth
+  Frame is a multi-file change.
 
 ## Docs-site render bridges
 
