@@ -186,10 +186,11 @@ coordinate frame holding it.
 Each noun's property-set is the manifest schema. A **Frame** and a **Cell** are
 authored by a *designer*; a **Tile** binds a *source*.
 
-> **Proposed.** This is the model the manifest *will* encode; the `lib/forms/`
-> manifest of §11 is **not yet built**. The authoritative, field-level schema
-> (and its on-disk layout) is owned by the engineering ADR, not this doc — see
-> §11. What follows is the *shape*, so the vocabulary is concrete.
+> This is the model the manifest encodes (shipped under §11 — the `lib/forms/`
+> catalog is built and gate-enforced, a *validated* contract at the "light"
+> coupling rung). The authoritative, field-level schema (and its on-disk layout)
+> is owned by the engineering ADR, not this doc — see §11. What follows is the
+> *shape*, so the vocabulary is concrete.
 
 ### Frame — the slicer
 - **`id` / `form`** — its name and the Form value it realizes (`split`, `panel`,
