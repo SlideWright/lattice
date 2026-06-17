@@ -5,19 +5,21 @@
 // sizes are present — the drift guard that this list missed when #399 added the
 // portrait formats (the engine had them; this picker did not).
 //
-// Aliases (16:9 / 9:16 / 4:5 / 1:1 / reel / HD / 4k) are intentionally omitted —
-// a picker wants one entry per format, by its semantic name.
+// Aliases (16:9 / 9:16 / 4:5 / 1:1 / HD / 4k) are intentionally omitted — a picker
+// wants one entry per format, by its semantic name. Labels are geometry only
+// (name · aspect · dimensions): Lattice describes formats by shape, never by
+// platform/brand — those date fast and aren't ours to borrow.
 //
 // test/unit/playground/deck-sizes.test.js guards this against lib/_theme.css.
 
 export const SIZE_OPTIONS = [
-  // Landscape (boardroom / screen)
+  // Landscape (screen)
   ['16:9', '16:9 · 1280×720 (default)'],
   ['4K', '4K · 3840×2160'],
   ['standard', '4:3 · 960×720'],
   // Portrait / square (social & mobile — #399)
-  ['square', 'Square · 1:1 · 1080² · IG/LinkedIn feed'],
-  ['portrait', 'Portrait · 4:5 · 1080×1350 · IG/FB feed'],
-  ['story', 'Story · 9:16 · 1080×1920 · Reels/TikTok'],
-  ['mobile', 'Mobile · 9:19.5 · 1080×2340 · full phone'],
+  ['square', 'Square · 1:1 · 1080×1080'],
+  ['portrait', 'Portrait · 4:5 · 1080×1350'],
+  ['story', 'Story · 9:16 · 1080×1920'],
+  ['mobile', 'Mobile · 9:19.5 · 1080×2340'],
 ];

@@ -379,7 +379,7 @@ export function createConfigPanel({ host, trigger, getSource, setSource, palette
     }
 
     if (show('size')) {
-      host.append(selectRow('size', 'Slide size', 'Landscape, or a portrait/social format (Story, Reel, feed)', SIZE_OPTIONS, fm.size));
+      host.append(selectRow('size', 'Slide size', 'Landscape, or a portrait / square format for social & mobile', SIZE_OPTIONS, fm.size));
     }
 
     if (show('paginate')) host.append(switchRow('paginate', 'Page numbers', 'Show pagination on every slide', fm.paginate));
