@@ -21,6 +21,10 @@
 // slide in the live preview. notes-core is THE note/non-note boundary (HARD
 // RULE #1) — notes are read through the canonical extractor, never re-derived.
 
+// Shared theme registration (WRAP, DON'T REINVENT): walks the transitive
+// `@import` closure so a multi-level theme (a11y-* → a11y-base → onyx → lattice)
+// registers fully — the one tested path, not a re-inlined copy.
+import { createThemeFetcher } from '../lib/theme-fetch.ts';
 import { notesCore } from './authoring-core.generated.js';
 import { KATEX_URL, MERMAID_URL, splitSections } from './deck-preview.js';
 // The same authoritative section read Practice uses (pure, engine-derived): it
@@ -43,7 +47,7 @@ export function createPresent({ host, getSource, runtimeUrl, themeBase, a11yDefs
   if (!host) return { open() {} };
   const PG = () => window.LatticePlayground;
   const root = document.documentElement;
-  const fetched = {};
+  const themeFetcher = createThemeFetcher(themeBase);
 
   let idx = 0;
   let fullHtml = ''; // the whole rendered marpit (all <section>s) — the stage renders this
@@ -81,26 +85,6 @@ export function createPresent({ host, getSource, runtimeUrl, themeBase, a11yDefs
     return e;
   };
 
-  async function ensureTheme(name) {
-    const pg = PG();
-    if (!pg) return;
-    if (!fetched.lattice) fetched.lattice = fetch(themeBase + 'lattice.css').then((r) => r.text()).then((c) => pg.addThemes([c]));
-    await fetched.lattice;
-    if (name && name !== 'lattice' && !pg.hasTheme(name)) {
-      if (!fetched[name]) {
-        fetched[name] = fetch(themeBase + name + '.css').then((r) => r.text()).then(async (c) => {
-          pg.addThemes([c]);
-          // Follow the transitive theme-name @import closure (a11y-* →
-          // a11y-base → onyx → lattice) so a multi-level theme doesn't render
-          // stripped — the engine only inlines imports whose target is registered.
-          const deps = [...c.replace(/\/\*[\s\S]*?\*\//g, '').matchAll(/@import\s*['"]([A-Za-z0-9_-]+)['"]/g)].map((m) => m[1]).filter((d) => d && d !== 'lattice' && d !== name);
-          await Promise.all(deps.map(ensureTheme));
-        }).catch(() => {});
-      }
-      await fetched[name];
-    }
-  }
-
   function waitForPG(tries = 60) {
     return new Promise((resolve, reject) => {
       const t = setInterval(() => {
@@ -119,8 +103,7 @@ export function createPresent({ host, getSource, runtimeUrl, themeBase, a11yDefs
     // The deck's theme is the only palette axis — an a11y theme is just a theme.
     const palette = root.getAttribute('data-palette') || 'indaco';
     const mode = root.getAttribute('data-mode') === 'dark' ? 'dark' : 'light';
-    await ensureTheme(palette);
-    if (mode === 'dark') await ensureTheme(palette + '-dark');
+    await themeFetcher.ensure(palette, mode);
     const theme = mode === 'dark' && pg.hasTheme(palette + '-dark') ? palette + '-dark' : palette;
     const out = pg.render(getSource(), theme);
     fullHtml = out.html;

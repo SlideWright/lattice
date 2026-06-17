@@ -27,6 +27,7 @@
 //
 // jspdf / pptxgenjs / html-to-image are lazy-imported (own chunks).
 
+import { themeImportNames } from '../lib/theme-fetch.ts';
 import { embedComponentsInMarkdown } from './layout-core.generated.js';
 
 function safeName(name) {
@@ -180,10 +181,11 @@ export async function exportMarp(source, name, palette, themeBase) {
 			const text = await r.text();
 			dir.file(`themes/${tf}`, text);
 			bundledThemes.push(`themes/${tf}`);
-			// Strip comments first so a banner's literal `@import '<self>'` prose
-			// isn't treated as a dependency.
-			for (const m of text.replace(/\/\*[\s\S]*?\*\//g, '').matchAll(/@import\s*['"]([A-Za-z0-9_-]+)['"]/g)) {
-				if (m[1] !== 'lattice') queue.push(`${m[1]}.css`);
+			// Bundle the transitive theme-name @import closure (shared scan helper —
+			// handles the minified no-space form + strips comments so a banner's
+			// literal `@import '<self>'` prose isn't treated as a dep).
+			for (const dep of themeImportNames(text)) {
+				if (dep !== 'lattice') queue.push(`${dep}.css`);
 			}
 		}
 		if (bundledThemes.length) { chosen = cand; break; }

@@ -86,13 +86,12 @@ only by the palette being active). The resolver
 name; selecting it any way (the `accessibility:` key, the
 `LATTICE_ACCESSIBILITY` env, or `theme: a11y-*` directly) activates the encoding.
 
-**Note — `data-a11y` exists, but as a palette *selection* input, not an encoding
-*scope*.** The docs Drawing Board's workspace tier (the Settings control) stamps
-`data-a11y="<type>"` on `<html>` + persists `lattice-docs-a11y`; the shared
-client resolver (`docs/src/playground/resolve-a11y-client.js`) reads it (above
-the deck's `accessibility:` key) to pick which `a11y-<type>` palette to render.
-No CSS selector keys off the attribute — it is purely how the live client
-carries a viewer's choice, the browser counterpart to the engine's env tier.
+**Note (superseded — `data-a11y` was removed; see top banner).** An earlier cut
+stamped `data-a11y="<type>"` + `lattice-docs-a11y` and read it via a client
+resolver (`resolve-a11y-client.js`) to pick the palette. **That whole mechanism
+is gone.** The `a11y-*` palettes are now ordinary picker themes selected via the
+deck's `theme:` (mirrored to `data-palette` like every theme); there is no
+`data-a11y` attribute and no client resolver.
 
 The **only** engine seam is injecting the categorical texture `<pattern>`
 `<defs>` — SVG markup a CSS file cannot hold — which the engine adds to the page
@@ -152,12 +151,13 @@ adequate-contrast geometry), not only at screen zoom.
    distinctness, with patterns covering the categorical ceiling).
 5. Demo deck (rendered in light + dark for every type) for owner sign-off —
    export-affecting, so it STOPS for inspection per CLAUDE.md.
-6. Drawing Board workspace toggle (parent doc step 4) — **done**: a Settings
-   control that stamps `data-a11y`/`lattice-docs-a11y` (a selection input, see
-   Mechanism note) and writes the deck's `accessibility:` key; the client also
-   injects the texture `<defs>` into the preview/Present/Practice iframes.
-   **Runtime parity remains open**: `dist/lattice-runtime.js` (the published-HTML
-   / vscode-preview sibling) does not yet inject the defs, so a11y textures
+6. ~~Drawing Board workspace toggle~~ — **superseded (NOT shipped):** the
+   workspace toggle / `data-a11y` / `accessibility:`-key writer was removed; the
+   `a11y-*` palettes are picker themes. What DID ship from this step: the client
+   injects the texture `<defs>` into the preview/Present/Practice iframes on
+   every render. **Runtime parity remains open**: `dist/lattice-runtime.js` (the
+   published-HTML / vscode-preview sibling) does not yet inject the defs, so a11y
+   textures
    render in the docs preview + emulator PDF but not in a standalone exported
    HTML — tracked as the runtime follow-up to HARD RULE #1's two-path parity.
 

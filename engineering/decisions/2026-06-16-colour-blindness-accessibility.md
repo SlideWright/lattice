@@ -160,16 +160,18 @@ phase-2 redundant encoding exists to break.
    precedence (workspace > front-matter > off; accessibility > theme).
 3. Curate the three dichromacy palettes (× light/dark) against the gate; add
    them to the contrast loop.
-4. Extract the shared client resolver; wire the workspace toggle
-   (`data-a11y` + `lattice-docs-a11y`) into the three controllers. **Done:**
-   `docs/src/playground/resolve-a11y-client.js` (the shared resolver) +
-   `a11y-prefs.js` (the `lattice-docs-a11y` workspace pref / `data-a11y` stamp),
-   surfaced as **Settings → Workspace → "Colour-vision accessibility"** with an
-   "Apply to deck" action that writes the deck's `accessibility:` key. The
-   `a11y-*` palettes are deliberately **not** in the theme picker — accessibility
-   is a separate axis, not a theme. The client also injects the texture `<defs>`
-   into the preview/Present/Practice iframes when an a11y palette is active (the
-   runtime path's counterpart to the emulator's defs injection).
+4. ~~Extract the shared client resolver; wire the workspace toggle
+   (`data-a11y` + `lattice-docs-a11y`) into the three controllers.~~
+   **Superseded — NOT shipped (see top banner).** This step built a client
+   resolver (`resolve-a11y-client.js`), a `lattice-docs-a11y` workspace pref
+   (`a11y-prefs.js`) surfaced as a "Colour-vision accessibility" settings
+   control with an "Apply to deck" action, and kept the `a11y-*` palettes OUT of
+   the theme picker. **All of that was removed.** What actually shipped: the
+   `a11y-*` palettes ARE first-class picker themes (no `data-a11y`, no client
+   resolver, no workspace axis); the texture `<defs>` are injected into the
+   preview/Present/Practice iframes on every render (not gated on an "active a11y
+   palette"). The remaining true statement is the defs-injection as the
+   runtime-path counterpart to the emulator's.
 5. Verify across all live paths (emulator PDF + playground + Present +
    Practice) and a representative demo deck.
 6. **Phase 2:** redundant non-colour encoding (patterns / markers / shapes /

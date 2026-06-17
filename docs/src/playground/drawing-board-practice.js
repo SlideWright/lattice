@@ -14,6 +14,10 @@
 // source of truth and centres a single slide with flex + a uniform scale, so a
 // rehearsal slide looks identical to the same slide in the preview.
 
+// Shared theme registration (WRAP, DON'T REINVENT): walks the transitive
+// `@import` closure so a multi-level theme (a11y-* → a11y-base → onyx → lattice)
+// registers fully — the one tested path, not a re-inlined copy.
+import { createThemeFetcher } from '../lib/theme-fetch.ts';
 // notes-core is THE single source for the note/non-note boundary (HARD RULE #1) —
 // read it through the canonical extractor, never re-derive. It rides the
 // authoring-core bundle (esbuild → browser ESM) because Vite-dev can't serve the
@@ -65,7 +69,7 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
   // prefs, the loaded Kokoro worker, and the download all stay in sync. Falls back
   // to its own instance when none is injected (older callers / tests).
   const voice = sharedVoice || createVoiceModel({ getOpenRouterKey: () => (model?.openRouterKey ? model.openRouterKey() : null) });
-  const fetched = {};
+  const themeFetcher = createThemeFetcher(themeBase);
 
   let plan = null; // the live rehearsal plan (deterministic, possibly AI-refined)
   let idx = 0;
@@ -94,25 +98,6 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
     return e;
   };
 
-  async function ensureTheme(name) {
-    const pg = PG();
-    if (!pg) return;
-    if (!fetched.lattice) fetched.lattice = fetch(themeBase + 'lattice.css').then((r) => r.text()).then((c) => pg.addThemes([c]));
-    await fetched.lattice;
-    if (name && name !== 'lattice' && !pg.hasTheme(name)) {
-      if (!fetched[name]) {
-        fetched[name] = fetch(themeBase + name + '.css').then((r) => r.text()).then(async (c) => {
-          pg.addThemes([c]);
-          // Follow the transitive theme-name @import closure (a11y-* →
-          // a11y-base → onyx → lattice) so a multi-level theme doesn't render
-          // stripped — the engine only inlines imports whose target is registered.
-          const deps = [...c.replace(/\/\*[\s\S]*?\*\//g, '').matchAll(/@import\s*['"]([A-Za-z0-9_-]+)['"]/g)].map((m) => m[1]).filter((d) => d && d !== 'lattice' && d !== name);
-          await Promise.all(deps.map(ensureTheme));
-        }).catch(() => {});
-      }
-      await fetched[name];
-    }
-  }
 
   // Render the deck through the engine ONCE and derive the slide metas from the
   // rendered <section> list — the AUTHORITATIVE segmentation (it honours `---`,
@@ -127,8 +112,7 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
     // The deck's theme is the only palette axis — an a11y theme is just a theme.
     const palette = root.getAttribute('data-palette') || 'indaco';
     const mode = root.getAttribute('data-mode') === 'dark' ? 'dark' : 'light';
-    await ensureTheme(palette);
-    if (mode === 'dark') await ensureTheme(palette + '-dark');
+    await themeFetcher.ensure(palette, mode);
     const theme = mode === 'dark' && pg.hasTheme(palette + '-dark') ? palette + '-dark' : palette;
     const out = pg.render(source, theme);
     const sections = splitSections(out.html);

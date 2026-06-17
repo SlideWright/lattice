@@ -31,6 +31,21 @@ declare global {
 	}
 }
 
+/**
+ * The theme-name `@import` targets a stylesheet declares — the ONE place this
+ * scan lives (every consumer that walks the theme chain uses it, so the footguns
+ * are fixed once). Two footguns it handles:
+ *   - the minified dist themes drop the space after @import (`@import"onyx"`), so
+ *     the pattern is `\s*` not `\s+` (mirrors the engine's THEME_IMPORT_RE);
+ *   - a banner COMMENT can contain literal `@import '<self>'` prose, which would
+ *     self-match and deadlock a closure walk — so comments are stripped first.
+ * `url(...)` font imports don't match (no bare quote-name). `lattice` is included
+ * if present; callers route it to their base-registration path.
+ */
+export function themeImportNames(css: string): string[] {
+	return [...css.replace(/\/\*[\s\S]*?\*\//g, '').matchAll(/@import\s*['"]([A-Za-z0-9_-]+)['"]/g)].map((m) => m[1]);
+}
+
 export function createThemeFetcher(themeBase: string) {
 	const fetched: Record<string, Promise<string>> = {}; // theme name → Promise<cssText>
 	let latticeReady: Promise<void> | null = null;
@@ -78,15 +93,11 @@ export function createThemeFetcher(themeBase: string) {
 		if (!registering[name]) {
 			registering[name] = fetchTheme(name).then((css) => {
 				if (!PG.hasTheme(name)) PG.addThemes([css]);
-				// `\s*` not `\s+`: the minified dist themes the client fetches drop the
-				// space after @import (`@import"a11y-base"`) — same footgun as the
-				// engine's THEME_IMPORT_RE. url() font imports don't match (no quote-name).
-				// Strip CSS comments before scanning — a banner comment can contain a
-				// literal `@import '<self>'` (prose), which would otherwise self-match
-				// and deadlock the recursion. Also guard against a self/0-length ref.
-				const deps = [...css.replace(/\/\*[\s\S]*?\*\//g, '').matchAll(/@import\s*['"]([A-Za-z0-9_-]+)['"]/g)]
-					.map((m) => m[1])
-					.filter((d) => d && d !== name);
+				// Walk the transitive theme-name @import closure — the engine inlines
+				// an import only if its target is already registered, so a multi-level
+				// chain (a11y-deuteranopia → a11y-base → onyx → lattice) renders
+				// STRIPPED unless every link is present. `lattice` routes via ensureBase.
+				const deps = themeImportNames(css).filter((d) => d && d !== name);
 				return Promise.all([ensureBase(), ...deps.map(register)]).then(() => undefined);
 			});
 		}
