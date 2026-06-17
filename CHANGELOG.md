@@ -77,6 +77,14 @@ in patch versions.
 
 ### Changed
 
+- **The Drawing Board "Slide size" picker now lists the social/mobile formats.**
+  #399 added `square` / `portrait` / `story` / `mobile` to the engine's `@size`
+  registry, but the deck-config drawer's size dropdown was a separate hardcoded
+  list of the three landscape sizes — so the portrait formats never appeared in
+  the UI (you had to type `size: story` by hand). The picker options are now a
+  curated module (`docs/src/playground/deck-sizes.js`) guarded by a unit test
+  against the `@size` registry, so this can't silently drift again.
+
 - **One slide-size registry (engine source of truth).** The CLI/PDF emulator no
   longer carries its own hard-coded size table — it resolves `@size` through the
   engine's `resolveSize`, the same lookup the scaffold bakes into `@page`. Fixes

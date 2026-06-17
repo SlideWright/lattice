@@ -1,3 +1,5 @@
+import { SIZE_OPTIONS } from './deck-sizes.js';
+
 // Deck setup — the universal front-matter config panel.
 //
 // A first-class home for a deck's Marp front matter, so the author never
@@ -377,11 +379,7 @@ export function createConfigPanel({ host, trigger, getSource, setSource, palette
     }
 
     if (show('size')) {
-      host.append(selectRow('size', 'Slide size', 'Aspect ratio (16:9 is the default)', [
-        ['16:9', '16:9 · 1280×720'],
-        ['4K', '4K · 3840×2160'],
-        ['standard', '4:3 · 960×720'],
-      ], fm.size));
+      host.append(selectRow('size', 'Slide size', 'Landscape, or a portrait/social format (Story, Reel, feed)', SIZE_OPTIONS, fm.size));
     }
 
     if (show('paginate')) host.append(switchRow('paginate', 'Page numbers', 'Show pagination on every slide', fm.paginate));
