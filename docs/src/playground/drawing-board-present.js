@@ -143,7 +143,12 @@ export function createPresent({ host, getSource, runtimeUrl, themeBase }) {
       'var sc=Math.min((W-pad*2)/' + sw + ',(H-pad*2)/' + sh + ');if(!(sc>0))sc=1;' +
       'fitEl.style.width=(sc*' + sw + ')+"px";fitEl.style.height=(sc*' + sh + ')+"px";' +
       'for(var i=0;i<s.length;i++){var on=i===cur;s[i].style.display=on?"block":"none";' +
-      'if(on){s[i].style.transformOrigin="top left";s[i].style.transform="scale("+sc+")"}}}' +
+      'if(on){s[i].style.transformOrigin="top left";s[i].style.transform="scale("+sc+")"}}' +
+      // TEMP on-device diagnostic readout (removed before merge): localises whether
+      // the shift is the iframe viewport (innerH vs visualViewport), the stage, or
+      // the slide within it — so we fix real Safari sighted, not blind.
+      'var dbg=document.getElementById("latt-dbg");if(dbg){var vv=window.visualViewport||{},sb=stage.getBoundingClientRect(),fb=fitEl.getBoundingClientRect();' +
+      'dbg.textContent="ifrm innerH="+window.innerHeight+" clientH="+document.documentElement.clientHeight+" vv.h="+Math.round(vv.height||0)+" vv.top="+Math.round(vv.offsetTop||0)+"\\nstage top="+Math.round(sb.top)+" h="+Math.round(sb.height)+" | fit top="+Math.round(fb.top)+" h="+Math.round(fb.height)+" sc="+sc.toFixed(3);}}' +
       'function show(n){cur=n|0;fit()}' +
       'window.addEventListener("message",function(e){if(e.data&&e.data.pv!=null)show(e.data.pv)});' +
       'window.addEventListener("resize",fit);window.addEventListener("orientationchange",fit);' +
@@ -163,6 +168,7 @@ export function createPresent({ host, getSource, runtimeUrl, themeBase }) {
       slideBox(sw, sh) +
       css + '</style></head><body>' +
       A11Y_DEFS + '<div id="latt-stage"><div id="latt-fit">' + allHtml + '</div></div>' +
+      '<div id="latt-dbg" style="position:fixed;top:0;left:0;z-index:99999;background:#000;color:#0f0;font:11px ui-monospace,monospace;padding:4px 6px;white-space:pre;pointer-events:none;max-width:100%;"></div>' +
       '<scr' + 'ipt src="' + MERMAID_URL + '"></scr' + 'ipt>' +
       '<scr' + 'ipt src="' + runtimeUrl + '"></scr' + 'ipt>' +
       '<scr' + 'ipt>requestAnimationFrame(function(){var st=document.getElementById("latt-stage");if(st)st.style.visibility="visible"});</scr' + 'ipt>' +
