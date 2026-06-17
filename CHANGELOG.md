@@ -194,7 +194,12 @@ in patch versions.
   ignores the light/dark toggle, so an accessibility render reads identically for
   every viewer (and colour-free decks stay readable by texture + glyph + line-style
   alone, the channels that also survive black-and-white **printing**). The engine
-  emits the texture `<defs>` on every render. New: `themes/a11y-*` (+ `a11y-base`),
+  emits the texture `<defs>` on every render. **The docs site honours them too** —
+  picking an a11y theme (anywhere the palette persists) restyles the whole site
+  (landing, component portal, Drawing Board chrome), not just the deck preview:
+  the portal token generator now flattens each palette's `@import` chain (so a
+  thin `a11y-*` palette resolves the full token contract via onyx) and emits
+  mode-invariant blocks for them. New: `themes/a11y-*` (+ `a11y-base`),
   `lib/theme/cvd.js` (Machado-2009 simulation), `lib/core/accessibility-textures.js`,
   `tools/cvd-audit.js`. See `engineering/decisions/2026-06-16-colour-blindness-accessibility.md`
   + `…-cvd-redundant-encoding.md`.

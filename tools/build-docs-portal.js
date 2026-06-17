@@ -118,6 +118,36 @@ function parseThemeVars(css) {
   return merged;
 }
 
+/** Theme-name @imports a stylesheet declares (comments stripped so a banner's
+ *  literal `@import '<self>'` prose can't self-match; minified no-space form
+ *  handled). `lattice` (the base) is excluded — it carries no tokens. */
+function themeImports(css) {
+  return [...css.replace(/\/\*[\s\S]*?\*\//g, '').matchAll(/@import\s*['"]([A-Za-z0-9_-]+)['"]/g)]
+    .map((m) => m[1])
+    .filter((n) => n !== 'lattice');
+}
+
+/** Flatten a theme's var map across its @import chain (deps first, self last),
+ *  so a thin palette that inherits most tokens (e.g. a11y-deuteranopia →
+ *  a11y-base → onyx) resolves the FULL contract, not just its own overrides. */
+function flattenThemeVars(name, seen = new Set()) {
+  if (seen.has(name)) return new Map();
+  seen.add(name);
+  const css = fs.readFileSync(path.join(THEMES_DIR, `${name}.css`), 'utf8');
+  const merged = new Map();
+  for (const imp of themeImports(css)) {
+    for (const [k, v] of flattenThemeVars(imp, seen)) merged.set(k, v);
+  }
+  for (const [k, v] of parseThemeVars(css)) merged.set(k, v);
+  return merged;
+}
+
+/** Mode-invariant palettes (a11y-*) force `color-scheme: light`, so their site
+ *  tokens must be the LIGHT resolution in BOTH modes (the dark toggle is inert). */
+function isModeInvariant(name) {
+  return name.startsWith('a11y-');
+}
+
 /** Recursively expand var(--x) / var(--x, fallback) references to literals. */
 function expandVars(map, value, depth = 0) {
   if (depth > 24) return value;
@@ -171,8 +201,14 @@ function listBasePalettes() {
   for (const file of fs.readdirSync(THEMES_DIR).sort()) {
     if (!file.endsWith('.css')) continue;
     const css = fs.readFileSync(path.join(THEMES_DIR, file), 'utf8');
-    if (!/@import\s+['"]lattice['"]/.test(css)) continue;
-    names.push(file.replace(/\.css$/, ''));
+    const name = file.replace(/\.css$/, '');
+    // Brand palettes import lattice directly. The a11y palettes import it
+    // transitively (a11y-* → a11y-base → onyx → lattice) and are first-class
+    // selectable themes too — so a deck/site set to one restyles everywhere.
+    // a11y-base is a shared partial (not selectable); -dark isn't a base palette.
+    const a11ySelectable = name.startsWith('a11y-') && name !== 'a11y-base' && !name.endsWith('-dark');
+    if (!/@import\s*['"]lattice['"]/.test(css) && !a11ySelectable) continue;
+    names.push(name);
   }
   const priority = PALETTE_PRIORITY.filter((p) => names.includes(p));
   const rest = names.filter((p) => !priority.includes(p)).sort();
@@ -183,18 +219,22 @@ function listBasePalettes() {
 /** Resolve every palette's portal tokens to {light, dark} sets. */
 function resolvePalettes() {
   return listBasePalettes().map((name) => {
-    const css = fs.readFileSync(path.join(THEMES_DIR, `${name}.css`), 'utf8');
-    const map = parseThemeVars(css);
+    // Flatten the @import chain so a thin palette (a11y-* inheriting onyx)
+    // resolves the full token contract, not just its own overrides.
+    const map = flattenThemeVars(name);
+    const invariant = isModeInvariant(name);
     const light = {};
     const dark = {};
     for (const t of PORTAL_TOKENS) {
       const r = resolveToken(map, t);
       if (!r) throw new Error(`theme "${name}" is missing token --${t}`);
       light[t] = r.light;
-      dark[t] = r.dark;
+      // Mode-invariant palettes (a11y-*) force the light scheme — emit the light
+      // resolution in both modes so the dark toggle is inert on the site too.
+      dark[t] = invariant ? r.light : r.dark;
     }
     // A palette whose light and dark surfaces are identical is single-mode
-    // (e.g. carbone — inherently dark). Flagged for the dropdown label.
+    // (e.g. carbone — inherently dark, or the mode-invariant a11y palettes).
     const singleMode = light.bg === dark.bg && light['text-heading'] === dark['text-heading'];
     return { name, light, dark, singleMode };
   });
