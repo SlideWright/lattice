@@ -11,8 +11,8 @@ extends: 2026-05-10-multi-resolution-strategy.md
 
 Lattice ships five landscape `@size` presets (`hd`, `4K`, `standard`, plus
 the `16:9` alias). Every one is wider-than-tall. Social and mobile surfaces are
-the opposite — **portrait or square**: Stories/Reels/TikTok at 9:16, the
-Instagram feed at 4:5, the universal 1:1 square, edge-to-edge phone mockups at
+the opposite — **portrait or square**: vertical short-form video at 9:16, the
+tall feed at 4:5, the universal 1:1 square, edge-to-edge phone mockups at
 ~9:19.5.
 
 Two things break when you point the current engine at a portrait canvas:
@@ -47,9 +47,9 @@ byte-identical.
 
 | Name       | Dimensions  | Aspect | Use case                                        |
 |------------|-------------|--------|-------------------------------------------------|
-| `square`   | 1080 × 1080 | 1:1    | IG / FB / LinkedIn feed square                  |
-| `portrait` | 1080 × 1350 | 4:5    | IG / FB feed portrait — max feed real estate    |
-| `story`    | 1080 × 1920 | 9:16   | Stories / Reels / TikTok / Shorts / Snap        |
+| `square`   | 1080 × 1080 | 1:1    | Social feed — square                            |
+| `portrait` | 1080 × 1350 | 4:5    | Tall social feed — max feed real estate         |
+| `story`    | 1080 × 1920 | 9:16   | Vertical short-form video — full-screen         |
 | `mobile`   | 1080 × 2340 | 9:19.5 | Edge-to-edge modern-phone mockup                |
 
 Aspect aliases (`9:16`, `4:5`, `1:1`) are registered alongside the semantic
@@ -150,5 +150,6 @@ geometry; the author still tunes with `scale-l` / `scale-xl` on top.
 - **PPTX export is 16:9-only** (`lib/export/pptx-export.js` is hard-wired to
   `LAYOUT_WIDE`). Portrait decks export correct PDFs; PPTX of a portrait deck is
   out of scope here and tracked separately.
-- Story/Reel **platform safe-zones** (the caption/UI band TikTok & IG overlay on
-  the bottom ~15%) are a future authoring affordance, not part of this change.
+- Vertical-feed **platform safe-zones** (the caption/UI band vertical-video
+  platforms overlay on the bottom ~15%) are a future authoring affordance, not
+  part of this change.
