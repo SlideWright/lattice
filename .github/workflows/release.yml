@@ -16,6 +16,14 @@ on:
         type: boolean
         default: false
 
+# A release mutates shared state (version bump, tag, dist rebuild, npm publish).
+# Never run two concurrently — a racing dispatch or retry could double-cut.
+# cancel-in-progress: false so an in-flight release finishes rather than being
+# torn down mid-tag-push.
+concurrency:
+  group: release
+  cancel-in-progress: false
+
 permissions:
   contents: write   # push the release commit + tag, create the GitHub Release
   id-token: write   # npm provenance, when publishing
