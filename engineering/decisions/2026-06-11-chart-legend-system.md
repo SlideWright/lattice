@@ -1,3 +1,8 @@
+---
+status: shipped
+summary: Unified chart legend system — the 70/30 right rail, shared spine and catalog across colour-categorical chart members
+---
+
 # Chart legend system — the 70/30 rail, the spine, the catalog
 
 **Status:** implemented 2026-06-11.

@@ -1,3 +1,8 @@
+---
+status: shipped
+summary: shadcn/React migration of every docs-site surface, website-only inside docs/ with Starlight kept for docs
+---
+
 # shadcn migration — the website (and the shared SlideWright UI layer)
 
 > Status: **LANDED — all surfaces merged to `main` (PRs #319–#325, 2026-06-14).**

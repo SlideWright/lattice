@@ -1,3 +1,8 @@
+---
+status: in-progress
+summary: Islands and sketch chrome paints over content because its height is not subtracted from the content safe-area
+---
+
 # Islands + sketch density collisions — the chrome doesn't reserve its own space
 
 **Status:** **Defect 1 resolved 2026-06-13** via M1 (container-basis

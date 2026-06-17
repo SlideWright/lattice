@@ -1,7 +1,6 @@
 ---
-status: experiment-results
-date: 2026-05-07
-companion: 2026-05-07-chart-family-proposals.md
+status: shipped
+summary: Overnight experiment build of three chart-family layouts behind a shared chart-frame, feature-class gated
 ---
 
 # Chart-family experiment — overnight results

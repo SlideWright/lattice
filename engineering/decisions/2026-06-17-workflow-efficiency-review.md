@@ -1,5 +1,6 @@
 ---
 status: in-progress
+summary: Red-team of the agent operating model — leaner CI/hooks, trimmed CLAUDE.md, a merge queue, and machine-readable doc status structure
 created: 2026-06-17
 updated: 2026-06-17
 supersedes:

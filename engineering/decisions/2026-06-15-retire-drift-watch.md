@@ -1,5 +1,6 @@
 ---
-status: design-decision
+status: shipped
+summary: Retires the continuous background drift watch in favour of rebase-before-push plus one pre-merge re-check
 last-updated: 2026-06-15
 companion:
   - ./2026-06-14-drift-watch-rebase-thrash.md

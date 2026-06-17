@@ -1,3 +1,8 @@
+---
+status: proposed
+summary: Design exploration for adding talk-while-you-edit audio/video to the Drawing Board over the same WebRTC pipe as Yjs document sync
+---
+
 # Audio/video on the Drawing Board — the other half of the WebRTC pipe
 
 **Date:** 2026-06-15

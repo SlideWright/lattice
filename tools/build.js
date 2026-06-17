@@ -84,6 +84,8 @@ const STEPS = [
   // Capability index — reads package.json scripts + tools/ headers (source,
   // not built artifacts), so order-independent; grouped with the generators.
   { label: 'capability index (engineering/capabilities.md)', script: 'build-capabilities.js' },
+  // Decision-doc index — reads each note's front-matter; order-independent.
+  { label: 'decision index (engineering/decisions/README.md)', script: 'build-decisions-index.js' },
   // Last — it indexes the finished dist/ folder, so every other artifact
   // must already be (re)written before it runs.
   { label: 'dist README', script: 'build-dist-readme.js' },

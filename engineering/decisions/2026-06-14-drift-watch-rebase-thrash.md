@@ -1,11 +1,6 @@
 ---
-status: superseded-in-part
-last-updated: 2026-06-15
-companion:
-  - ./2026-06-15-retire-drift-watch.md
-  - ./README.md
-  - ../workflow.md
-  - ../../CLAUDE.md
+status: superseded
+summary: A watched PR thrashing CI on every main movement during a merge train — two root causes in HARD RULE #16 and the ci gate
 ---
 
 # Drift-watch rebase thrash vs. a parallel merge train

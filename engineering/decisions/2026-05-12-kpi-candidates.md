@@ -1,4 +1,6 @@
 ---
+status: proposed
+summary: Candidate exploration deck for the executive KPI system — one cohesive base with five layout modifiers
 marp: true
 theme: indaco
 size: hd

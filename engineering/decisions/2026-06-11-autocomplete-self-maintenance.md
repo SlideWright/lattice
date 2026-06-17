@@ -1,3 +1,8 @@
+---
+status: shipped
+summary: Self-maintaining autocomplete with gates against central-list drift, plus an IDE-agnostic manifest capability surface
+---
+
 # Self-maintaining autocomplete + an IDE-agnostic capability surface (2026-06-11)
 
 > Status: **design + implementation.** This doc fixes the model; the three

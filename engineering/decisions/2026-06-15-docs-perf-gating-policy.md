@@ -1,3 +1,8 @@
+---
+status: shipped
+summary: Durable policy for the docs-site perf gate, treating perf as a non-deterministic species of gate that flaps on runner variance
+---
+
 # Docs-site perf gating — the durable policy
 
 **Status:** decided (2026-06-15). Resolves issue #327 (the umbrella perf-gate

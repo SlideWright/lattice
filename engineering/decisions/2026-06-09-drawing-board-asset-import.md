@@ -1,8 +1,6 @@
 ---
-status: design-speculation
-version: 1
-supersedes: none
-last-status-update: 2026-06-09
+status: proposed
+summary: In-browser asset import for the Drawing Board — import, persistence, and the two consumers of imported assets
 ---
 
 # Asset import in the Drawing Board — in-browser import, persistence, and the two consumers

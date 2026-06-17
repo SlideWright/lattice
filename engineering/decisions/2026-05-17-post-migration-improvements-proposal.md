@@ -1,3 +1,8 @@
+---
+status: proposed
+summary: Pre-implementation proposal for post-migration improvements to the shared transformer registry, including bundle-size recovery
+---
+
 # Proposal: post-migration improvements to the shared transformer registry
 
 Date: 2026-05-17

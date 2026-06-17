@@ -1,3 +1,8 @@
+---
+status: shipped
+summary: Brings the emulator to the runtime's per-section dual-render standard for Mermaid dark mode, then prunes the redundant CSS override layer
+---
+
 # Mermaid dark mode: dual-render + override prune (2026-06-06)
 
 ## Problem

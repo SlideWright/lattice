@@ -1,3 +1,8 @@
+---
+status: shipped
+summary: Wholesale redesign of the kpi layout into one cohesive base with five layout modifiers built around executive needs
+---
+
 # Executive KPI system — shipped
 
 The shipped `kpi` layout (categorical rainbow stripes, bg-alt rounded

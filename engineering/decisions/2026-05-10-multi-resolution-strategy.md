@@ -1,7 +1,6 @@
 ---
-status: design-decision
-version: 1
-supersedes: none
+status: shipped
+summary: Multi-resolution support via native Marp @size, px-to-cqi refactor, and container-type size on section, opt-in by front-matter
 ---
 
 # Multi-resolution strategy

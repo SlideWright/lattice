@@ -1,3 +1,8 @@
+---
+status: shipped
+summary: A split front-matter key driving heading-based slide division, defaulting to headings, with Marp reframed as an export target
+---
+
 # `split:` — a front-matter key for heading-driven slide division
 
 **Date:** 2026-06-13 · **Status:** landed; **default flipped to `headings`** (see Update)

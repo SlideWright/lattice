@@ -1,10 +1,6 @@
 ---
-status: register
-version: 1
-companion:
-  - 2026-05-04-authoring-proposals.md
-  - 2026-05-07-chart-family-proposals.md
-last-updated: 2026-06-09
+status: shipped
+summary: Register of layouts that landed without going through the May 4 / May 7 speculative-proposal catalogues
 ---
 
 # Layouts shipped without a prior proposal note

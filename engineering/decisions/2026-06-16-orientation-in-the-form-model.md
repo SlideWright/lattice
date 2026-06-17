@@ -1,5 +1,6 @@
 ---
-status: design-decision
+status: proposed
+summary: Where portrait/landscape orientation lives in the Form model and how a layout declares vs is made to support portrait
 version: 1
 supersedes: none
 builds-on: 2026-06-16-social-mobile-portrait-sizes.md, 2026-06-16-form-manifest-medium-independent-contract.md, 2026-06-16-retire-section-as-grid.md

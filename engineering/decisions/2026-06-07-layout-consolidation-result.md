@@ -1,4 +1,6 @@
 ---
+status: shipped
+summary: Result deck for the layout consolidation that removed four redundant components (58 to 54), each rendered live through its survivor
 marp: true
 size: 4K
 theme: atelier

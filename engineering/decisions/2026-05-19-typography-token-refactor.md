@@ -1,3 +1,8 @@
+---
+status: proposed
+summary: Proposal to collapse the 16 --fs-* tokens to 10 organized as three role-based scales, migrated in five pixel-gated phases
+---
+
 # Typography token refactor — proposal
 
 **Status:** proposed (not executed). Reviewer can act on this directly or

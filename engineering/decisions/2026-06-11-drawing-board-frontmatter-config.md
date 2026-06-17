@@ -1,8 +1,6 @@
 ---
 status: shipped
-version: 1
-supersedes: none
-last-status-update: 2026-06-11
+summary: The Drawing Board Deck-setup drawer — a config surface that edits and persists deck front-matter behind the scenes
 ---
 
 # Drawing Board — the Deck setup (front-matter config) drawer

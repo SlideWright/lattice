@@ -1,3 +1,8 @@
+---
+status: proposed
+summary: Analysis showing the six split-* components share one transform, with Option B consolidation ratified but execution pending
+---
+
 # Split-* family consolidation — analysis & plan
 
 **Date:** 2026-06-07 · **Branch:** `claude/split-panel-consolidation`

@@ -1,3 +1,8 @@
+---
+status: proposed
+summary: Spec redesigning Architect onboarding into Drafting and Freehand modes — when it leads with structure versus gets out of the way
+---
+
 # The Architect — Drafting & Freehand modes (2026-06-08)
 
 > Status: **spec / design model.** No code yet. Specs a redesign of the Drawing

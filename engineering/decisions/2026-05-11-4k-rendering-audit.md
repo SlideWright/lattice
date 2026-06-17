@@ -1,9 +1,6 @@
 ---
-status: resolved
-version: 2
-companion: 2026-05-10-multi-resolution-strategy.md
-resolved: 2026-05-14
-resolution: commit b3a327c — all 115 px/rem sites converted to cqi
+status: shipped
+summary: Continuation guide for converting remaining component px values to cqi and resolving every reported 4K visual defect
 ---
 
 # 4K rendering audit — post px→cqi refactor

@@ -1,11 +1,6 @@
 ---
-status: decisions-locked, not-yet-implemented
-version: 3
-supersedes: none
-related:
-  - ../references/templates.md (current inline-code semantics)
-  - ../references/gotchas.md ("Marp Core wraps emoji in <img class='emoji'>")
-  - lib/base/base.tokens.css (--mark-* inline-SVG token technique the icon directive mirrors)
+status: proposed
+summary: Design for namespaced inline-code directives (icons, vars) with all five open questions resolved but nothing implemented yet
 ---
 
 # Lattice — namespaced inline-code directives (icons, vars, …)

@@ -1,3 +1,8 @@
+---
+status: shipped
+summary: Slice-by-slice Phase 1 walking-skeleton plan for the Drawing Board, shipped gate-green across all six slices in PR #79
+---
+
 # The Drawing Board — Phase 1 walking-skeleton build plan (2026-06-07)
 
 > Status: **✅ COMPLETE & gate-green** on branch

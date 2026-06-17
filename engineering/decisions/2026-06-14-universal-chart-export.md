@@ -1,3 +1,8 @@
+---
+status: shipped
+summary: Universal chart export with a tiered SVG plus in-browser PNG path, correcting the earlier wrong call that PNG was not viable
+---
+
 # Proposal: Universal chart export — tiered SVG + PNG
 
 **Date:** 2026-06-14 · **Status:** implemented · **Owner:** TBD

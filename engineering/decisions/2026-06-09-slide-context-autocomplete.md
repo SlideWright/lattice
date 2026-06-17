@@ -1,3 +1,8 @@
+---
+status: proposed
+summary: Slide-context-sensitive autocompletion for the Drawing Board editor — class names, modifiers, slot scaffolds, data vocab
+---
+
 # Slide-context autocomplete for the Drawing Board editor (2026-06-09)
 
 > Status: **proposal / design model.** No code yet. This doc fixes direction

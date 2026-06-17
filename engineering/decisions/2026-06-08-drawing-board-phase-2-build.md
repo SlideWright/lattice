@@ -1,3 +1,8 @@
+---
+status: in-progress
+summary: Phase 2 build notes recording the Architect's voice decisions and the verification stance for tiers that can't run in the sandbox
+---
+
 # The Drawing Board — Phase 2 build notes: the Architect's voice (2026-06-08)
 
 > Status: **in progress** on `claude/architect-phase-2`. Companion to the Phase 2

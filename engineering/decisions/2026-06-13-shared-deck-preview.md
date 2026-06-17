@@ -1,3 +1,8 @@
+---
+status: shipped
+summary: One shared filmstrip preview controller for all four docs-site surfaces, ending the per-surface render drift
+---
+
 # One filmstrip preview controller for all four docs-site surfaces
 
 **Date:** 2026-06-13

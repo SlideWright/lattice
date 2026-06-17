@@ -1,3 +1,8 @@
+---
+status: proposed
+summary: Whether every push/PR runs all gates or change-detection plus tiered scheduling can cut cost without losing the floor
+---
+
 # Gate strategy — run everything, or only what changed?
 
 **Status:** proposal (not decided). Drafted 2026-06-13 for the maintainer. A

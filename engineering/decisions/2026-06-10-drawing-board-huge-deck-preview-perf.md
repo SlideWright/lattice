@@ -1,8 +1,6 @@
 ---
 status: in-progress
-version: 3
-supersedes: none
-last-status-update: 2026-06-10
+summary: Scalable live preview for huge decks — incremental-patch path landed, viewport virtualization the remaining layer
 ---
 
 # Drawing Board — scalable live preview (incremental, then virtualized)

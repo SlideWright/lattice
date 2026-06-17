@@ -1,3 +1,8 @@
+---
+status: proposed
+summary: Design spec for the `map` component and the new `spatial` form — geography-placed points/regions in the chart bucket
+---
+
 # `map` — the spatial form (design spec) — 2026-06-09
 
 > Status: **spec / design model. No code.** Deferred deliberately on the

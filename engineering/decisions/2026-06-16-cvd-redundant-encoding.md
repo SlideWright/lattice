@@ -1,5 +1,6 @@
 ---
-status: design-decision
+status: shipped
+summary: Empirical finding that colour alone cannot carry categorical data under dichromacy, making redundant texture/glyph encoding mandatory
 last-updated: 2026-06-16
 companion:
   - ./2026-06-16-colour-blindness-accessibility.md

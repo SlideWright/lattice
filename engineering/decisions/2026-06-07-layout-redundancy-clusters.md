@@ -1,4 +1,6 @@
 ---
+status: shipped
+summary: Decision-aid deck rendering each redundancy cluster's members with parallel content to show keep / merge / drop calls
 marp: true
 size: 4K
 theme: atelier

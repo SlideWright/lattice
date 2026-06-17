@@ -1,11 +1,6 @@
 ---
-status: design-decision
-version: 2
-last-updated: 2026-06-14
-companion:
-  - ./README.md
-  - ../workflow.md
-  - 2026-05-10-tauri-exploration.md
+status: proposed
+summary: Kanban-light project management keeping ADRs in markdown while adding GitHub Issues as a claimable queue mirrored to BACKLOG.md
 ---
 
 # Lightweight GitHub project management for distributed agent work

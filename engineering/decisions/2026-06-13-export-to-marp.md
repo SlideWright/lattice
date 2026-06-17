@@ -1,3 +1,8 @@
+---
+status: shipped
+summary: Export to Marp — a portable, Marp-native deck bundle with baked splits, minified palette CSS, and browser runtime
+---
+
 # Proposal: Export to Marp — the portable deck bundle
 
 **Date:** 2026-06-13 · **Status:** **P1 + P2 + P3 shipped** (`tools/export-marp.js`,

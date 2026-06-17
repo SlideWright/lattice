@@ -1,3 +1,8 @@
+---
+status: shipped
+summary: A shared transformer registry the three render paths consume through one interface, with split-panels as the pilot transformer
+---
+
 # Shared transformer registry — pilot
 
 Date: 2026-05-17

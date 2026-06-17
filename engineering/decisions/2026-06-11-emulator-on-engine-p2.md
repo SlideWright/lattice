@@ -1,3 +1,8 @@
+---
+status: shipped
+summary: P2 of the Marp replacement — put the emulator on lattice-engine, deleting the bespoke regex parser for one markdown impl
+---
+
 # P2 — put the emulator on `lattice-engine`
 
 **Status:** DONE — the emulator renders through `lib/engine`; `parseSlide` is

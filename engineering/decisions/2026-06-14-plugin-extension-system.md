@@ -1,3 +1,8 @@
+---
+status: proposed
+summary: LPM — a unified plugin model promoting Lattice's six ad-hoc extension idioms into one spec'd, shared-kernel system
+---
+
 # LPM — a unified plugin model for Lattice extensions
 
 **Date:** 2026-06-14

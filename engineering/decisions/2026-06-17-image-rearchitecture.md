@@ -1,3 +1,8 @@
+---
+status: shipped
+summary: Re-architecting image rendering to a shared-engine CSS-background split with kernel asset URL resolution across PDF and web paths
+---
+
 # Image re-architecture — engine CSS-background split + kernel asset resolution
 
 Date: 2026-06-17

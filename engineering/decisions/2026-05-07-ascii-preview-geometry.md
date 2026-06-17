@@ -1,3 +1,8 @@
+---
+status: shipped
+summary: Canonical 43-wide pad-2 gap-5 geometry for every ASCII layout preview plus the ascii-preview auditor and builder
+---
+
 # 2026-05-07 — ASCII layout previews in templates.md
 
 ## Convention

@@ -1,3 +1,8 @@
+---
+status: proposed
+summary: Spec extending the Architect from deck builder into a four-stage presentation coach across build, review, annotate, and rehearse
+---
+
 # The Architect as a coach — scorecard, notes, practice, refine (2026-06-08)
 
 > Status: **spec / design model.** No code yet. Extends the Architect from a deck

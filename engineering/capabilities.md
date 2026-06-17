@@ -170,6 +170,8 @@ harness the index can't infer, add it to `FRAMEWORKS` in the generator.
 | `a11y-textures:build` | **TODO: describe `a11y-textures:build` in tools/build-capabilities.js (SCRIPT_META).** |
 | `a11y-textures:check` | **TODO: describe `a11y-textures:check` in tools/build-capabilities.js (SCRIPT_META).** |
 | `clean:scratch` | Delete .scratch/ entries older than 14 days. |
+| `decisions:index` | **TODO: describe `decisions:index` in tools/build-capabilities.js (SCRIPT_META).** |
+| `decisions:index:check` | **TODO: describe `decisions:index:check` in tools/build-capabilities.js (SCRIPT_META).** |
 | `prepare` | npm lifecycle: wire the lefthook git hooks on install. |
 | `prepublishOnly` | npm lifecycle: guard run before publish. |
 
@@ -263,6 +265,7 @@ harness the index can't infer, add it to `FRAMEWORKS` in the generator.
 |---|---|
 | `tools/ascii-preview.py` | ASCII layout preview helper for engineering/templates.md (and friends). |
 | `tools/build-a11y-textures.js` | Bundle the categorical/chart texture-<defs> kernel for the browser. |
+| `tools/build-decisions-index.js` | build-decisions-index.js — regenerate the "Current notes" index in |
 | `tools/build-exemplar-pdfs.js` | Regenerate the committed PDF for every worked exemplar deck |
 | `tools/build-forms.js` | Generate dist/docs/forms.json — the machine-readable catalog of Lattice's |
 | `tools/build-spec-docs.js` | Publish the owned LFM standards (spec/*.md) onto the docs website as |

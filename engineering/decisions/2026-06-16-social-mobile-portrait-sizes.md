@@ -1,5 +1,6 @@
 ---
-status: design-decision
+status: shipped
+summary: Native portrait/square @size support for social and mobile surfaces via a unified size registry and orientation-aware engine reflow
 version: 1
 supersedes: none
 extends: 2026-05-10-multi-resolution-strategy.md

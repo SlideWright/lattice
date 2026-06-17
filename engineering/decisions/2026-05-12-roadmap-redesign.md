@@ -1,3 +1,8 @@
+---
+status: shipped
+summary: Redesign of the visually inert roadmap layout into five table-driven concepts shipped as roadmap plus four modifiers
+---
+
 # 2026-05-12 — Roadmap layout redesign
 
 Investigation note. The shipped `roadmap` layout (workstream × phase grid)

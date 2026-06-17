@@ -1,3 +1,8 @@
+---
+status: proposed
+summary: Design spec for contracts and layout-swapping as the third Workbench leg — same content, swap layout via one class
+---
+
 # Contracts and Layout-swapping — the third Workbench leg
 
 **Status:** design spec, pre-code. Ratified directions (2026-06-12):

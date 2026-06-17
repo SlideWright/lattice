@@ -1,3 +1,8 @@
+---
+status: shipped
+summary: Phase 1 migration of chart-family into the shared transformer registry, covering the HTML and per-section render paths
+---
+
 # chart-family migration to the shared transformer registry — phase 1
 
 Date: 2026-05-17

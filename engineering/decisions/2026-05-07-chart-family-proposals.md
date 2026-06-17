@@ -1,9 +1,6 @@
 ---
-status: design-speculation
-version: 2
-supersedes: none
-companion: 2026-05-04-authoring-proposals.md
-last-status-update: 2026-05-15
+status: proposed
+summary: Chart-family layout proposals turning list/sublist plus inline-code pills into timelines, Gantts, pie and progress views
 ---
 
 # Lattice — Chart-Family Layout Proposals

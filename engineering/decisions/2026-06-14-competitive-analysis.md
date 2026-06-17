@@ -1,3 +1,8 @@
+---
+status: shipped
+summary: Durable, cited source-of-truth backing the public comparison page — Lattice versus AI deck generators and the field
+---
+
 # Competitive analysis — Lattice vs. the field (2026-06-14)
 
 Durable source-of-truth for the public comparison page (`docs/src/pages/comparison.astro`).

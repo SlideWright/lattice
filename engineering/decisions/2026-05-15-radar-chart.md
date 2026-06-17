@@ -1,3 +1,8 @@
+---
+status: shipped
+summary: Design model for the native radar layout — series-major contract, six-variant lineup, shared geometry kernel
+---
+
 # 2026-05-15 — Radar chart
 
 Decision note. Lattice needed a radar / spider chart "like Mermaid's, but

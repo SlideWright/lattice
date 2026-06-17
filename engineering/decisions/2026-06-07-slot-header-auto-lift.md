@@ -1,3 +1,8 @@
+---
+status: shipped
+summary: Makes slotLabelLift auto-generate slot headers so card-style layouts no longer silently break when authors omit bold
+---
+
 # Slot-header auto-lift — bold is optional, never required
 
 **Date:** 2026-06-07

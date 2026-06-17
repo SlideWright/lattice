@@ -1,5 +1,6 @@
 ---
-status: design-decision
+status: proposed
+summary: Design model for an LLM deck fact-check that returns an honest trust map with quick parametric and deep-research tiers
 version: 1
 supersedes: none
 last-status-update: 2026-06-16
