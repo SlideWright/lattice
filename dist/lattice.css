@@ -1606,6 +1606,14 @@ section.cards-grid.four .cards-grid-inner > .card:last-child:nth-child(odd) {
  * lint time. See CARD_STYLE_LAYOUTS in lib/components/index.js. */
 section.cards-grid :is(ul,ol) > li > strong ~ * { font-weight: 400; }
 
+/* Portrait / square (social) — one column, content-height rows distributed to
+   fill, instead of a 2-col grid with grid-auto-rows:1fr ballooning each card on a
+   tall frame. Mirrors the list de-balloon; keyed on data-orientation. */
+section.cards-grid[data-orientation='portrait'] > :is(ul,ol),
+section.cards-grid[data-orientation='square'] > :is(ul,ol) {
+  grid-template-columns: 1fr; grid-auto-rows: auto; align-content: space-evenly;
+}
+
 /* === lib/components/inventory/cards-stack/cards-stack.styles.css === */
 /* cards-stack — vertical (or horizontal) stack of full-width cards.
  * See lib/components/inventory/cards-stack/cards-stack.manifest.json for the
@@ -1748,6 +1756,17 @@ section.cards-stack.compact .card > ul > li, section.cards-stack.compact .card >
  * target text nodes); the manifest validator catches that case at
  * lint time. See CARD_STYLE_LAYOUTS in lib/components/index.js. */
 section.cards-stack :is(ul,ol) > li > strong ~ * { font-weight: 400; }
+
+/* Portrait / square (social) — content-height cards distributed across the frame,
+   not flex:1 balloons. Mirrors the list de-balloon; keyed on data-orientation. */
+section.cards-stack[data-orientation='portrait'] > :is(ul,ol),
+section.cards-stack[data-orientation='square'] > :is(ul,ol) {
+  justify-content: space-evenly;
+}
+section.cards-stack[data-orientation='portrait'] > :is(ul,ol) > li,
+section.cards-stack[data-orientation='square'] > :is(ul,ol) > li {
+  flex: 0 0 auto;
+}
 
 /* === lib/components/inventory/checklist/checklist.styles.css === */
 /* checklist — extracted from lib/_legacy.css (batch 3).
@@ -2569,6 +2588,16 @@ section.content :is(ul, ol) > li::marker { color:var(--accent); }
 /* nested level steps down to body size so sub-points read as support */
 section.content :is(ul, ol) :is(ul, ol) { margin:var(--sp-2xs) 0 0 0; }
 section.content :is(ul, ol) :is(ul, ol) > li { font-size:var(--fs-body); line-height:var(--lh-base); }
+
+
+
+/* Portrait / square (social) — cap the running-prose measure so lines don't
+   sprawl the full width; the centred block reads composed. Display lines
+   (statement/quote) are short already, so this targets content prose only. */
+section.content[data-orientation='portrait'] > :is(p,ul,ol),
+section.content[data-orientation='square'] > :is(p,ul,ol) {
+  max-width: 46ch; margin-inline: auto;
+}
 
 /* === lib/components/comparison/decision/decision.styles.css === */
 /* decision — extracted from lib/_legacy.css (batch 4).
@@ -4675,6 +4704,36 @@ section.kpi.spotlight > ol > li:not(:first-child) code {
   font-size: 0.78125cqi;
 }
 
+
+
+
+
+/* ── Portrait / square reflow (social/mobile @sizes) ───────────────────────
+ * Every kpi variant (briefing, ops, spotlight, trajectory) places metric <li>s
+ * on an explicit grid — a hero spanning rows + supports in a side column, or a
+ * 2×2 matrix. On a tall portrait/square canvas that side-by-side composition is
+ * cramped. Switching the metric list from grid to a single flex COLUMN
+ * linearises every variant at once: flex ignores the children's grid-column /
+ * grid-row, so the hero stacks on top and the supports follow, full width — no
+ * per-variant override needed. Keyed on the deck-wide data-orientation stamp
+ * (lib/engine/slides.js); landscape is untouched. See
+ * engineering/decisions/2026-06-16-social-mobile-portrait-sizes.md (phase 3). */
+/* `ol`/`ul` spelled out (not :where) so this matches the per-variant grid rules'
+ * specificity — `section.kpi.spotlight > ol` is (0,2,2) — and wins on source
+ * order (this block is last). :where() would drop us to (0,2,1) and lose. */
+section.kpi[data-orientation="portrait"] > ol,
+section.kpi[data-orientation="portrait"] > ul,
+section.kpi[data-orientation="square"] > ol,
+section.kpi[data-orientation="square"] > ul {
+  display: flex;
+  flex-direction: column;
+  /* The list keeps `flex: 1` (fills the slide below the title), so centre the
+   * metrics WITHIN it — centring the section can't, the list absorbs the slack. */
+  justify-content: center;
+  gap: var(--sp-md);
+  align-content: normal;
+}
+
 /* === lib/components/inventory/list/list.styles.css === */
 /* list — inventory.stack.bullets
  *
@@ -4779,6 +4838,19 @@ section.list.principles > ol > li::before {
 section.list.principles.lettered > ol > li::before { content:counter(list-principle-counter, upper-alpha); }
 section.list.principles.roman > ol > li::before { content:counter(list-principle-counter, upper-roman); }
 section.list.principles.bullet > ol > li::before { content:'·'; }
+
+/* Portrait / square (social) — keep each card CONTENT-height and distribute the
+   set across the frame, instead of flex:1 1 0 ballooning one line of text into a
+   ~640px box on a tall canvas. Fill comes from rhythm (space-evenly) + the bigger
+   social type, not from inflating boxes. Keyed on data-orientation. */
+section.list[data-orientation='portrait'] > :is(ul,ol),
+section.list[data-orientation='square'] > :is(ul,ol) {
+  justify-content: space-evenly;
+}
+section.list[data-orientation='portrait'] > :is(ul,ol) > li,
+section.list[data-orientation='square'] > :is(ul,ol) > li {
+  flex: 0 0 auto;
+}
 
 /* === lib/components/progression/list-criteria/list-criteria.styles.css === */
 /* list-criteria — extracted from lib/_legacy.css (batch 4).
@@ -6189,6 +6261,16 @@ section.matrix-2x2 li > ol > li {
  * lint time. See CARD_STYLE_LAYOUTS in lib/components/index.js. */
 section.matrix-2x2 :is(ul,ol) > li > strong ~ * { font-weight: 400; }
 
+/* ── Portrait / square reflow (social/mobile @sizes). Keyed on the deck-wide
+ * data-orientation stamp (lib/engine/slides.js); landscape untouched. See
+ * 2026-06-16-social-mobile-portrait-sizes.md (phase 3). */
+section.matrix-2x2[data-orientation="portrait"] > ul,
+section.matrix-2x2[data-orientation="portrait"] > ol {
+  grid-template-columns: 1fr;
+  grid-template-rows: none;
+  grid-auto-rows: minmax(0, 1fr);
+}
+
 /* === lib/components/legal/obligation-matrix/obligation-matrix.styles.css === */
 /* obligation-matrix — comparison.matrix.structure
  *
@@ -6593,6 +6675,13 @@ section.pricing > ul > li > ul > li:last-child {
   font-size: var(--fs-meta); color: var(--text-muted);
 }
 section.pricing > ul > li:has(> em) > ul > li:last-child { color: var(--on-accent-soft); }
+
+/* ── Portrait / square reflow (social/mobile @sizes). Keyed on the deck-wide
+ * data-orientation stamp (lib/engine/slides.js); landscape untouched. See
+ * 2026-06-16-social-mobile-portrait-sizes.md (phase 3). */  Tiers stack to one column (the standard mobile pricing pattern).
+section.pricing[data-orientation="portrait"] > ul {
+  grid-template-columns: 1fr;
+}
 
 /* === lib/components/chart/progress/progress.styles.css === */
 /* progress — extracted from lib/_legacy.css (batch 9).
@@ -8808,6 +8897,16 @@ section.split-compare .verdict::before { content:'Recommendation'; position:abso
 section.split-compare .verdict blockquote { margin:0; padding:0; border:none; }
 section.split-compare .verdict blockquote p { font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-body); font-weight:400; line-height:var(--lh-snug); margin:0; }
 
+/* ── Portrait / square reflow (social/mobile @sizes). Rail stacks above the
+ * verdict cards; cards go single-column. data-orientation stamp via
+ * lib/engine/slides.js; landscape untouched. 2026-06-16-social-mobile-portrait-sizes.md */
+section.split-compare[data-orientation="portrait"],
+section.split-compare[data-orientation="square"] { flex-direction: column; }
+section.split-compare[data-orientation="portrait"] .compare-left,
+section.split-compare[data-orientation="square"] .compare-left { width: auto; }
+section.split-compare[data-orientation="portrait"] .options,
+section.split-compare[data-orientation="square"] .options { grid-template-columns: 1fr; }
+
 /* === lib/components/statement/split-panel/split-panel.styles.css === */
 /* split-panel — statement.panel.structure
  *
@@ -8912,6 +9011,13 @@ section.split-panel.watermark { --marp-slide-header-color: var(--on-accent-secon
 /* Hardening: element siblings of <strong> in a card li don't inherit
  * the parent's font-weight:700. See CARD_STYLE_LAYOUTS in lib/components/index.js. */
 section.split-panel :is(ul,ol) > li > strong ~ * { font-weight: 400; }
+
+/* ── Portrait / square reflow (social/mobile @sizes). The left rail stacks
+ * above the content panel instead of beside it. Keyed on the deck-wide
+ * data-orientation stamp (lib/engine/slides.js); landscape untouched. See
+ * 2026-06-16-social-mobile-portrait-sizes.md (phase 3). */
+section.split-panel[data-orientation="portrait"] { flex-direction: column; }
+section.split-panel[data-orientation="portrait"] .panel-left { width: auto; }
 
 /* === lib/components/chart/state-chart/state-chart.styles.css === */
 /* state-chart — native state machine diagram, browser-measured layout.
@@ -9327,6 +9433,24 @@ section.stats > ol > li > ul {
 section.stats > ol > li > ul > li {
   font-family:var(--font-label); font-size:var(--fs-meta); font-weight:600;
   letter-spacing:0.18em; text-transform:uppercase; color:var(--text-label);
+}
+
+/* Portrait / square (social) — stack the stat tiles vertically and let the hero
+   numbers command the tall frame. A centred horizontal row crams 3–5 numbers
+   small with the whole lower frame empty; stacked + enlarged (the engine's
+   --stat-emphasis param, on top of --canvas-scale) reads from across a room and
+   fills the canvas. Keyed on data-orientation, so landscape is untouched. */
+section.stats[data-orientation='portrait'] > ol,
+section.stats[data-orientation='square'] > ol {
+  flex-direction: column; gap: var(--sp-2xl); width: 100%; justify-content: space-evenly; flex: 1;
+}
+section.stats[data-orientation='portrait'] > ol > li > strong,
+section.stats[data-orientation='square'] > ol > li > strong {
+  font-size: calc(var(--fs-h1) * var(--stat-emphasis, 1));
+}
+section.stats[data-orientation='portrait'] > ol > li > ul > li,
+section.stats[data-orientation='square'] > ol > li > ul > li {
+  font-size: var(--fs-body); /* label legible under the big number (was --fs-meta) */
 }
 
 /* === lib/components/legal/statute-stack/statute-stack.styles.css === */
@@ -9828,6 +9952,14 @@ section.verdict-grid > ul > li > ul > li::before { display:none; content:none; }
  * target text nodes); the manifest validator catches that case at
  * lint time. See CARD_STYLE_LAYOUTS in lib/components/index.js. */
 section.verdict-grid :is(ul,ol) > li > strong ~ * { font-weight: 400; }
+
+/* ── Portrait / square reflow (social/mobile @sizes). Keyed on the deck-wide
+ * data-orientation stamp (lib/engine/slides.js); landscape untouched. See
+ * 2026-06-16-social-mobile-portrait-sizes.md (phase 3). */
+section.verdict-grid[data-orientation="portrait"] > ul {
+  grid-template-columns: 1fr;
+  grid-auto-rows: minmax(0, 1fr);
+}
 
 /* === lib/components/chart/word-cloud/word-cloud.styles.css === */
 /* word-cloud — extracted from lib/_legacy.css (batch 8).
@@ -11024,6 +11156,28 @@ img.deck-logo.deck-logo-brand {
   border-radius: 0.6cqi;
   padding: 0.4cqi;
   box-sizing: content-box;
+}
+
+
+/* ── Safe area for vertical feeds (`safe` modifier) ──────────────────────────────────
+   Keeps content clear of the platform caption / UI bands that vertical-video
+   feeds overlay on a vertical post — the top profile row and the bottom
+   caption + right-hand action rail. Opt-in (add `safe`, e.g. deck-wide via
+   `class: safe` front-matter); takes effect ONLY on a portrait/square @size,
+   where the engine emits the px `--safe-*` bands from the geometry. Content
+   centres (justify-content:center, from the orientation CSS) within the reduced
+   area, and the footer chrome is lifted above the caption band. See
+   lib/base/base.docs.md and engineering/decisions/2026-06-16-social-mobile-portrait-sizes.md. */
+section.safe[data-orientation='portrait'],
+section.safe[data-orientation='square'] {
+  padding-top: max(var(--safe-top, 0px), calc(var(--_sec-1cqi, 1cqi) * 6.875));
+  padding-bottom: max(var(--safe-bottom, 0px), calc(var(--_sec-1cqi, 1cqi) * 6.875));
+}
+/* Lift the bottom chrome (footer / pagination / progress) above the caption band
+   so it isn't buried under the overlay. */
+section.safe[data-orientation='portrait'] :is(.cell-footer, .tile-meta, [class*='pagination'], [class*='progress']),
+section.safe[data-orientation='square'] :is(.cell-footer, .tile-meta, [class*='pagination'], [class*='progress']) {
+  bottom: calc(var(--frame-inset-y) + var(--safe-bottom, 0px));
 }
 
 /* === lib/integrations/highlight-js/highlight-js.css === */

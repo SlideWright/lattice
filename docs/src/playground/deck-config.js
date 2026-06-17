@@ -1,3 +1,5 @@
+import { SIZE_OPTIONS } from './deck-sizes.js';
+
 // Deck setup — the universal front-matter config panel.
 //
 // A first-class home for a deck's Marp front matter, so the author never
@@ -50,7 +52,7 @@ const FIELD_DEFAULTS = {
   // 'headings' (the default → omitted) splits on each h1/h2 (eyebrow-aware, `---`
   // still honoured) so the deck needs no separators; 'rule' opts back to `---`-only.
   split: 'headings',
-  size: '16:9', // Marp's default page size (themes also define 4K / standard)
+  size: 'hd', // default landscape (memorable name; 16:9 geometry) (themes also define 4K / standard)
   paginate: 'false',
   header: '',
   footer: '',
@@ -136,7 +138,7 @@ export function readFrontMatter(source) {
     theme: map.theme || '',
     finish: map.finish || '',
     split: (map.split || 'headings').trim().toLowerCase() === 'rule' ? 'rule' : 'headings',
-    size: map.size || '16:9',
+    size: map.size || 'hd',
     paginate: TRUEY.test(map.paginate || ''),
     header: map.header || '',
     footer: map.footer || '',
@@ -380,11 +382,7 @@ export function createConfigPanel({ host, trigger, getSource, setSource, palette
     }
 
     if (show('size')) {
-      host.append(selectRow('size', 'Slide size', 'Aspect ratio (16:9 is the default)', [
-        ['16:9', '16:9 · 1280×720'],
-        ['4K', '4K · 3840×2160'],
-        ['standard', '4:3 · 960×720'],
-      ], fm.size));
+      host.append(selectRow('size', 'Slide size', 'Landscape, or a portrait / square format for social & mobile', SIZE_OPTIONS, fm.size));
     }
 
     if (show('paginate')) host.append(switchRow('paginate', 'Page numbers', 'Show pagination on every slide', fm.paginate));

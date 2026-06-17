@@ -6,6 +6,7 @@
   "bucket": "chart",
   "form": "matrix",
   "substance": "structure",
+  "orientation": ["landscape"],
   "tags": ["planning", "swimlane", "milestones", "agile"],
   "description": "Phased multi-workstream grid — phases across the top, workstreams down the side.",
   "purpose": "Use to show what ships in each phase across multiple parallel workstreams. Cells render as state-token discs (pass/warn/fail/skip).",

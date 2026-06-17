@@ -20,7 +20,7 @@ describe('readFrontMatter', () => {
   test('a deck with no block → all defaults, not configured', async () => {
     const { readFrontMatter } = await import(MOD);
     const fm = readFrontMatter(CLEAN);
-    assert.equal(fm.size, '16:9');
+    assert.equal(fm.size, 'hd');
     assert.equal(fm.paginate, false);
     assert.equal(fm.header, '');
     assert.equal(fm.footer, '');
@@ -120,7 +120,7 @@ describe('writeFrontMatter', () => {
     const { writeFrontMatter } = await import(MOD);
     let src = writeFrontMatter(CLEAN, 'size', '4K');
     src = writeFrontMatter(src, 'paginate', true);
-    src = writeFrontMatter(src, 'size', '16:9'); // back to default
+    src = writeFrontMatter(src, 'size', 'hd'); // back to default
     assert.ok(!src.includes('size:'));
     assert.ok(src.includes('paginate: true'));
   });

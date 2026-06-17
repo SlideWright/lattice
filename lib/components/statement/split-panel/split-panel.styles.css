@@ -101,3 +101,10 @@ section.split-panel.watermark { --marp-slide-header-color: var(--on-accent-secon
 /* Hardening: element siblings of <strong> in a card li don't inherit
  * the parent's font-weight:700. See CARD_STYLE_LAYOUTS in lib/components/index.js. */
 section.split-panel :is(ul,ol) > li > strong ~ * { font-weight: 400; }
+
+/* ── Portrait / square reflow (social/mobile @sizes). The left rail stacks
+ * above the content panel instead of beside it. Keyed on the deck-wide
+ * data-orientation stamp (lib/engine/slides.js); landscape untouched. See
+ * 2026-06-16-social-mobile-portrait-sizes.md (phase 3). */
+section.split-panel[data-orientation="portrait"] { flex-direction: column; }
+section.split-panel[data-orientation="portrait"] .panel-left { width: auto; }

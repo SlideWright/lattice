@@ -145,6 +145,7 @@ export default defineConfig({
 						{ label: 'Understanding LFM', slug: 'spec/understanding-lfm' },
 						{ label: 'LFM 1.0 (spec)', slug: 'spec/lfm' },
 						{ label: 'Diagnostic Protocol', slug: 'spec/diagnostics' },
+						{ label: 'The Form model', slug: 'spec/form-model' },
 					],
 				},
 			],

@@ -43,3 +43,21 @@ section.stats > ol > li > ul > li {
   font-family:var(--font-label); font-size:var(--fs-meta); font-weight:600;
   letter-spacing:0.18em; text-transform:uppercase; color:var(--text-label);
 }
+
+/* Portrait / square (social) — stack the stat tiles vertically and let the hero
+   numbers command the tall frame. A centred horizontal row crams 3–5 numbers
+   small with the whole lower frame empty; stacked + enlarged (the engine's
+   --stat-emphasis param, on top of --canvas-scale) reads from across a room and
+   fills the canvas. Keyed on data-orientation, so landscape is untouched. */
+section.stats[data-orientation='portrait'] > ol,
+section.stats[data-orientation='square'] > ol {
+  flex-direction: column; gap: var(--sp-2xl); width: 100%; justify-content: space-evenly; flex: 1;
+}
+section.stats[data-orientation='portrait'] > ol > li > strong,
+section.stats[data-orientation='square'] > ol > li > strong {
+  font-size: calc(var(--fs-h1) * var(--stat-emphasis, 1));
+}
+section.stats[data-orientation='portrait'] > ol > li > ul > li,
+section.stats[data-orientation='square'] > ol > li > ul > li {
+  font-size: var(--fs-body); /* label legible under the big number (was --fs-meta) */
+}

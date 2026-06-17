@@ -134,6 +134,7 @@
       "form",
       "no-form",
       "no-progress",
+      "safe",
       "wip",
       "draft",
       "tbd",
@@ -174,6 +175,10 @@
       "function": "inventory",
       "form": "ledger",
       "substance": "structure",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "ownership",
         "onboarding",
@@ -202,6 +207,7 @@
         "pinned",
         "redacted",
         "revised",
+        "safe",
         "scale-2xl",
         "scale-l",
         "scale-xl",
@@ -286,6 +292,10 @@
       "function": "inventory",
       "form": "stack",
       "substance": "structure",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "agenda-setting",
         "overview",
@@ -336,6 +346,7 @@
         "rail",
         "redacted",
         "revised",
+        "safe",
         "scale-2xl",
         "scale-l",
         "scale-xl",
@@ -427,6 +438,10 @@
       "function": "progression",
       "form": "timeline",
       "substance": "structure",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "regulation",
         "citation",
@@ -463,6 +478,7 @@
         "pyramid",
         "redacted",
         "revised",
+        "safe",
         "scale-2xl",
         "scale-l",
         "scale-xl",
@@ -544,6 +560,10 @@
       "function": "statement",
       "form": "canvas",
       "substance": "prose",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "hero-number",
         "metric",
@@ -572,6 +592,7 @@
         "pinned",
         "redacted",
         "revised",
+        "safe",
         "scale-2xl",
         "scale-l",
         "scale-xl",
@@ -661,6 +682,10 @@
       "function": "inventory",
       "form": "grid",
       "substance": "structure",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "overview",
         "showcase",
@@ -695,6 +720,7 @@
         "pinned",
         "redacted",
         "revised",
+        "safe",
         "scale-2xl",
         "scale-l",
         "scale-xl",
@@ -796,6 +822,10 @@
       "function": "inventory",
       "form": "stack",
       "substance": "structure",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "overview",
         "summary",
@@ -829,6 +859,7 @@
         "pinned",
         "redacted",
         "revised",
+        "safe",
         "scale-2xl",
         "scale-l",
         "scale-xl",
@@ -912,6 +943,10 @@
       "function": "inventory",
       "form": "stack",
       "substance": "structure",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "status",
         "stoplight",
@@ -941,6 +976,7 @@
         "pinned",
         "redacted",
         "revised",
+        "safe",
         "scale-2xl",
         "scale-l",
         "scale-xl",
@@ -1031,6 +1067,10 @@
       "function": "evidence",
       "form": "canvas",
       "substance": "prose",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "citation",
         "quotation",
@@ -1066,6 +1106,7 @@
         "pull-quote",
         "redacted",
         "revised",
+        "safe",
         "scale-2xl",
         "scale-l",
         "scale-xl",
@@ -1166,6 +1207,10 @@
       "function": "anchor",
       "form": "bookend",
       "substance": "prose",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "summary",
         "takeaway",
@@ -1197,6 +1242,7 @@
         "pinned",
         "redacted",
         "revised",
+        "safe",
         "scale-2xl",
         "scale-l",
         "scale-xl",
@@ -1282,6 +1328,10 @@
       "function": "evidence",
       "form": "canvas",
       "substance": "prose",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "snippet",
         "walkthrough",
@@ -1310,6 +1360,7 @@
         "pinned",
         "redacted",
         "revised",
+        "safe",
         "scale-2xl",
         "scale-l",
         "scale-xl",
@@ -1397,6 +1448,9 @@
       "function": "comparison",
       "form": "split",
       "substance": "structure",
+      "orientation": [
+        "landscape"
+      ],
       "tags": [
         "snippet",
         "contrast",
@@ -1425,6 +1479,7 @@
         "pinned",
         "redacted",
         "revised",
+        "safe",
         "scale-2xl",
         "scale-l",
         "scale-xl",
@@ -1517,6 +1572,10 @@
       "function": "comparison",
       "form": "split",
       "substance": "structure",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "tradeoff",
         "contrast",
@@ -1560,6 +1619,7 @@
         "redacted",
         "rejected",
         "revised",
+        "safe",
         "scale-2xl",
         "scale-l",
         "scale-xl",
@@ -1646,6 +1706,10 @@
       "function": "comparison",
       "form": "ledger",
       "substance": "prose",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "tradeoff",
         "ranking",
@@ -1674,6 +1738,7 @@
         "pinned",
         "redacted",
         "revised",
+        "safe",
         "scale-2xl",
         "scale-l",
         "scale-xl",
@@ -1763,6 +1828,10 @@
       "function": "statement",
       "form": "canvas",
       "substance": "prose",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "walkthrough",
         "overview",
@@ -1791,6 +1860,7 @@
         "pinned",
         "redacted",
         "revised",
+        "safe",
         "scale-2xl",
         "scale-l",
         "scale-xl",
@@ -1879,6 +1949,10 @@
       "function": "comparison",
       "form": "canvas",
       "substance": "structure",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "recommendation",
         "tradeoff",
@@ -1910,6 +1984,7 @@
         "pinned",
         "redacted",
         "revised",
+        "safe",
         "scale-2xl",
         "scale-l",
         "scale-xl",
@@ -1994,6 +2069,10 @@
       "function": "evidence",
       "form": "canvas",
       "substance": "graph",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "flowchart",
         "org-chart",
@@ -2023,6 +2102,7 @@
         "pinned",
         "redacted",
         "revised",
+        "safe",
         "scale-2xl",
         "scale-l",
         "scale-xl",
@@ -2116,6 +2196,10 @@
       "function": "anchor",
       "form": "divider",
       "substance": "prose",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "section-break",
         "agenda-setting",
@@ -2149,6 +2233,7 @@
         "pinned",
         "redacted",
         "revised",
+        "safe",
         "scale-2xl",
         "scale-l",
         "scale-xl",
@@ -2229,6 +2314,10 @@
       "function": "evidence",
       "form": "canvas",
       "substance": "series",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "percentage",
         "sequence",
@@ -2257,6 +2346,7 @@
         "pinned",
         "redacted",
         "revised",
+        "safe",
         "scale-2xl",
         "scale-l",
         "scale-xl",
@@ -2347,6 +2437,9 @@
       "function": "progression",
       "form": "timeline",
       "substance": "series",
+      "orientation": [
+        "landscape"
+      ],
       "tags": [
         "swimlane",
         "planning",
@@ -2376,6 +2469,7 @@
         "pinned",
         "redacted",
         "revised",
+        "safe",
         "scale-2xl",
         "scale-l",
         "scale-xl",
@@ -2458,6 +2552,10 @@
       "function": "inventory",
       "form": "ledger",
       "substance": "structure",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "definition",
         "reference",
@@ -2486,6 +2584,7 @@
         "pinned",
         "redacted",
         "revised",
+        "safe",
         "scale-2xl",
         "scale-l",
         "scale-xl",
@@ -2573,6 +2672,9 @@
       "function": "imagery",
       "form": "canvas",
       "substance": "prose",
+      "orientation": [
+        "landscape"
+      ],
       "tags": [
         "visual",
         "showcase",
@@ -2610,6 +2712,7 @@
         "pinned",
         "redacted",
         "revised",
+        "safe",
         "scale-2xl",
         "scale-l",
         "scale-xl",
@@ -2699,6 +2802,9 @@
       "function": "progression",
       "form": "timeline",
       "substance": "structure",
+      "orientation": [
+        "landscape"
+      ],
       "tags": [
         "process",
         "assessment",
@@ -2734,6 +2840,7 @@
         "pinned",
         "redacted",
         "revised",
+        "safe",
         "scale-2xl",
         "scale-l",
         "scale-xl",
@@ -2818,6 +2925,9 @@
       "function": "progression",
       "form": "timeline",
       "substance": "series",
+      "orientation": [
+        "landscape"
+      ],
       "tags": [
         "swimlane",
         "workflow",
@@ -2848,6 +2958,7 @@
         "pinned",
         "redacted",
         "revised",
+        "safe",
         "scale-2xl",
         "scale-l",
         "scale-xl",
@@ -2934,6 +3045,10 @@
       "function": "evidence",
       "form": "ledger",
       "substance": "structure",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "dashboard",
         "scorecard",
@@ -2972,6 +3087,7 @@
         "pinned",
         "redacted",
         "revised",
+        "safe",
         "scale-2xl",
         "scale-l",
         "scale-xl",
@@ -3067,6 +3183,10 @@
       "function": "inventory",
       "form": "stack",
       "substance": "prose",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "overview",
         "summary",
@@ -3108,6 +3228,7 @@
         "redacted",
         "revised",
         "roman",
+        "safe",
         "scale-2xl",
         "scale-l",
         "scale-xl",
@@ -3200,6 +3321,10 @@
       "function": "progression",
       "form": "ledger",
       "substance": "structure",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "requirements",
         "assessment",
@@ -3228,6 +3353,7 @@
         "pinned",
         "redacted",
         "revised",
+        "safe",
         "scale-2xl",
         "scale-l",
         "scale-xl",
@@ -3319,6 +3445,10 @@
       "function": "progression",
       "form": "timeline",
       "substance": "structure",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "process",
         "walkthrough",
@@ -3362,6 +3492,7 @@
         "redacted",
         "revised",
         "roman",
+        "safe",
         "scale-2xl",
         "scale-l",
         "scale-xl",
@@ -3453,6 +3584,10 @@
       "function": "inventory",
       "form": "ledger",
       "substance": "structure",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "reference",
         "overview",
@@ -3495,6 +3630,7 @@
         "register",
         "revised",
         "rule",
+        "safe",
         "scale-2xl",
         "scale-l",
         "scale-xl",
@@ -3582,6 +3718,10 @@
       "function": "inventory",
       "form": "grid",
       "substance": "prose",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "visual",
         "showcase",
@@ -3614,6 +3754,7 @@
         "pinned",
         "redacted",
         "revised",
+        "safe",
         "scale-2xl",
         "scale-l",
         "scale-xl",
@@ -3707,6 +3848,10 @@
       "function": "evidence",
       "form": "spatial",
       "substance": "series",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "metric",
         "proportion",
@@ -3764,6 +3909,7 @@
         "redacted",
         "revised",
         "robinson",
+        "safe",
         "scale-2xl",
         "scale-l",
         "scale-xl",
@@ -3852,6 +3998,10 @@
       "function": "evidence",
       "form": "canvas",
       "substance": "prose",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "formula",
         "assessment",
@@ -3895,6 +4045,7 @@
         "pinned",
         "redacted",
         "revised",
+        "safe",
         "scale-2xl",
         "scale-l",
         "scale-xl",
@@ -3991,6 +4142,10 @@
       "function": "comparison",
       "form": "matrix",
       "substance": "structure",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "two-by-two",
         "prioritize",
@@ -4020,6 +4175,7 @@
         "pinned",
         "redacted",
         "revised",
+        "safe",
         "scale-2xl",
         "scale-l",
         "scale-xl",
@@ -4104,6 +4260,10 @@
       "function": "comparison",
       "form": "matrix",
       "substance": "structure",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "compliance",
         "regulation",
@@ -4141,6 +4301,7 @@
         "pinned",
         "redacted",
         "revised",
+        "safe",
         "scale-2xl",
         "scale-l",
         "scale-xl",
@@ -4242,6 +4403,10 @@
       "function": "evidence",
       "form": "canvas",
       "substance": "series",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "donut",
         "proportion",
@@ -4275,6 +4440,7 @@
         "pinned",
         "redacted",
         "revised",
+        "safe",
         "scale-2xl",
         "scale-l",
         "scale-xl",
@@ -4361,6 +4527,10 @@
       "function": "comparison",
       "form": "grid",
       "substance": "structure",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "pitch",
         "tradeoff",
@@ -4392,6 +4562,7 @@
         "pinned",
         "redacted",
         "revised",
+        "safe",
         "scale-2xl",
         "scale-l",
         "scale-xl",
@@ -4494,6 +4665,10 @@
       "function": "evidence",
       "form": "canvas",
       "substance": "series",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "percentage",
         "stoplight",
@@ -4522,6 +4697,7 @@
         "pinned",
         "redacted",
         "revised",
+        "safe",
         "scale-2xl",
         "scale-l",
         "scale-xl",
@@ -4622,6 +4798,10 @@
       "function": "inventory",
       "form": "stack",
       "substance": "structure",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "pitch",
         "board-deck",
@@ -4657,6 +4837,7 @@
         "rail",
         "redacted",
         "revised",
+        "safe",
         "scale-2xl",
         "scale-l",
         "scale-xl",
@@ -4761,6 +4942,10 @@
       "function": "evidence",
       "form": "scatter",
       "substance": "series",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "two-by-two",
         "positioning",
@@ -4801,6 +4986,7 @@
         "pinned",
         "redacted",
         "revised",
+        "safe",
         "scale-2xl",
         "scale-l",
         "scale-xl",
@@ -4898,6 +5084,10 @@
       "function": "statement",
       "form": "canvas",
       "substance": "prose",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "pull-quote",
         "quotation",
@@ -4926,6 +5116,7 @@
         "pinned",
         "redacted",
         "revised",
+        "safe",
         "scale-2xl",
         "scale-l",
         "scale-xl",
@@ -5006,6 +5197,10 @@
       "function": "evidence",
       "form": "scatter",
       "substance": "series",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "spider",
         "assessment",
@@ -5047,6 +5242,7 @@
         "quadrant",
         "redacted",
         "revised",
+        "safe",
         "scale-2xl",
         "scale-l",
         "scale-xl",
@@ -5144,6 +5340,9 @@
       "function": "comparison",
       "form": "canvas",
       "substance": "prose",
+      "orientation": [
+        "landscape"
+      ],
       "tags": [
         "contract",
         "contrast",
@@ -5179,6 +5378,7 @@
         "pinned",
         "redacted",
         "revised",
+        "safe",
         "scale-2xl",
         "scale-l",
         "scale-xl",
@@ -5276,6 +5476,10 @@
       "function": "progression",
       "form": "ledger",
       "substance": "structure",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "changelog",
         "compliance",
@@ -5312,6 +5516,7 @@
         "priority",
         "redacted",
         "revised",
+        "safe",
         "scale-2xl",
         "scale-l",
         "scale-xl",
@@ -5402,6 +5607,9 @@
       "function": "progression",
       "form": "matrix",
       "substance": "structure",
+      "orientation": [
+        "landscape"
+      ],
       "tags": [
         "planning",
         "swimlane",
@@ -5438,6 +5646,7 @@
         "pinned",
         "redacted",
         "revised",
+        "safe",
         "scale-2xl",
         "scale-l",
         "scale-xl",
@@ -5536,6 +5745,10 @@
       "function": "comparison",
       "form": "split",
       "substance": "structure",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "tradeoff",
         "recommendation",
@@ -5564,6 +5777,7 @@
         "pinned",
         "redacted",
         "revised",
+        "safe",
         "scale-2xl",
         "scale-l",
         "scale-xl",
@@ -5663,6 +5877,10 @@
       "function": "statement",
       "form": "panel",
       "substance": "structure",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "summary",
         "board-deck",
@@ -5702,6 +5920,7 @@
         "pullquote",
         "redacted",
         "revised",
+        "safe",
         "scale-2xl",
         "scale-l",
         "scale-xl",
@@ -5798,6 +6017,9 @@
       "function": "progression",
       "form": "timeline",
       "substance": "graph",
+      "orientation": [
+        "landscape"
+      ],
       "tags": [
         "flowchart",
         "states",
@@ -5833,6 +6055,7 @@
         "pinned",
         "redacted",
         "revised",
+        "safe",
         "scale-2xl",
         "scale-l",
         "scale-xl",
@@ -5933,6 +6156,10 @@
       "function": "evidence",
       "form": "stack",
       "substance": "structure",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "dashboard",
         "metric",
@@ -5961,6 +6188,7 @@
         "pinned",
         "redacted",
         "revised",
+        "safe",
         "scale-2xl",
         "scale-l",
         "scale-xl",
@@ -6054,6 +6282,10 @@
       "function": "inventory",
       "form": "ledger",
       "substance": "structure",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "citation",
         "reference",
@@ -6091,6 +6323,7 @@
         "preemption",
         "redacted",
         "revised",
+        "safe",
         "scale-2xl",
         "scale-l",
         "scale-xl",
@@ -6175,6 +6408,10 @@
       "function": "evidence",
       "form": "timeline",
       "substance": "series",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "changelog",
         "milestones",
@@ -6204,6 +6441,7 @@
         "pinned",
         "redacted",
         "revised",
+        "safe",
         "scale-2xl",
         "scale-l",
         "scale-xl",
@@ -6294,6 +6532,10 @@
       "function": "anchor",
       "form": "bookend",
       "substance": "prose",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "pitch",
         "board-deck",
@@ -6323,6 +6565,7 @@
         "pinned",
         "redacted",
         "revised",
+        "safe",
         "scale-2xl",
         "scale-l",
         "scale-xl",
@@ -6404,6 +6647,10 @@
       "function": "comparison",
       "form": "grid",
       "substance": "structure",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "scorecard",
         "ranking",
@@ -6433,6 +6680,7 @@
         "pinned",
         "redacted",
         "revised",
+        "safe",
         "scale-2xl",
         "scale-l",
         "scale-xl",
@@ -6541,6 +6789,10 @@
       "function": "evidence",
       "form": "canvas",
       "substance": "series",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
       "tags": [
         "tag-cloud",
         "themes",
@@ -6577,6 +6829,7 @@
         "pinned",
         "redacted",
         "revised",
+        "safe",
         "scale-2xl",
         "scale-l",
         "scale-xl",

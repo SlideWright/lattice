@@ -11,8 +11,8 @@ extends: 2026-05-10-multi-resolution-strategy.md
 
 Lattice ships five landscape `@size` presets (`hd`, `4K`, `standard`, plus
 the `16:9` alias). Every one is wider-than-tall. Social and mobile surfaces are
-the opposite — **portrait or square**: Stories/Reels/TikTok at 9:16, the
-Instagram feed at 4:5, the universal 1:1 square, edge-to-edge phone mockups at
+the opposite — **portrait or square**: vertical short-form video at 9:16, the
+tall feed at 4:5, the universal 1:1 square, edge-to-edge phone mockups at
 ~9:19.5.
 
 Two things break when you point the current engine at a portrait canvas:
@@ -47,9 +47,9 @@ byte-identical.
 
 | Name       | Dimensions  | Aspect | Use case                                        |
 |------------|-------------|--------|-------------------------------------------------|
-| `square`   | 1080 × 1080 | 1:1    | IG / FB / LinkedIn feed square                  |
-| `portrait` | 1080 × 1350 | 4:5    | IG / FB feed portrait — max feed real estate    |
-| `story`    | 1080 × 1920 | 9:16   | Stories / Reels / TikTok / Shorts / Snap        |
+| `square`   | 1080 × 1080 | 1:1    | Social feed — square                            |
+| `portrait` | 1080 × 1350 | 4:5    | Tall social feed — max feed real estate         |
+| `story`    | 1080 × 1920 | 9:16   | Vertical short-form video — full-screen         |
 | `mobile`   | 1080 × 2340 | 9:19.5 | Edge-to-edge modern-phone mockup                |
 
 Aspect aliases (`9:16`, `4:5`, `1:1`) are registered alongside the semantic
@@ -73,11 +73,14 @@ same deck-wide CSS for non-landscape decks:
 
 - `--canvas-scale`: a single magnitude multiplier folded into every `--fs-*`
   and `--sp-*` token. **Default `1` → landscape is unchanged (byte-identical).**
-  Square is a calm flat 1.2; portrait *ramps* with how tall the canvas is —
-  `1.2 + (1 − aspect) × 0.75`, capped 1.6 — so 4:5 (≈1.35) stays calm while 9:16
-  (≈1.53) and 9:19.5 (1.6) push type larger to fill the taller frame rather than
-  float in a thin band. Composes multiplicatively with the author's `--fs-scale`
-  (`scale-l` etc.) — orientation sets the baseline, the author still nudges.
+  Square is a flat 1.35; portrait *ramps* with how tall the canvas is —
+  `1.5 + (1 − aspect) × 1.0`, capped 2.0 — so 4:5 (≈1.70) reads large while 9:16
+  (≈1.94) and 9:19.5 (2.0) push type bigger still to fill the taller frame rather
+  than float in a thin band. These are deliberately punchy: social/mobile is
+  viewed on a phone at arm's length with little text per slide (tuned up from the
+  first-pass 1.2/0.75/1.6 ramp after review — it read too small). Composes
+  multiplicatively with the author's `--fs-scale` — a text-dense portrait slide
+  can dial back with `scale-s`.
 
   `--canvas-scale` scales `--fs-h1`/`--fs-h2` too (which `--fs-scale`
   deliberately exempts), because portrait titles *should* grow with the canvas.
@@ -110,13 +113,37 @@ same deck-wide CSS for non-landscape decks:
    vertical fill. Covers the layouts that are *already* a centred flex column:
    title, statement, section/divider, quote, lead, prose, lists, agenda, cover.
    These are the bulk of social-card use.
-3. **Grid-layout reflow** — kpi, comparison, split, and the chart/diagram
-   buckets get explicit portrait stacking. Higher-touch; the data-dense buckets
-   land first by social value (kpi, quote, statement) and the long tail is
-   documented as landscape-tuned until audited.
+3. **Grid-layout reflow** — ✅ **landed** for the data-dense grids. Each render
+   path now stamps a deck-wide `data-orientation` (portrait|square) on the
+   `<section>` (engine `lib/engine/slides.js`, fed by `index.js` via
+   `orientationFor`; runtime per-section from live aspect), and component CSS
+   keys reflow rules off it:
+   - `kpi` — every variant (briefing/ops/spotlight/trajectory) switches its
+     metric grid to a centred flex column, linearising all variants in one rule.
+   - `matrix-2x2`, `pricing`, `verdict-grid` — N-column grids collapse to one.
+   - `split-panel`, `split-compare` — the rail stacks above the content panel.
+   - **Mermaid diagrams reorient** — a LR/RL flowchart is rewritten to TB/BT for
+     portrait (`lib/integrations/mermaid/reorient.js`, shared by the emulator PDF
+     pre-process and the runtime preview) so it flows down the tall frame at
+     legible node size instead of shrinking to a thin strip. Only the direction
+     token is touched; non-flowchart diagrams and landscape are untouched.
+   - **Charts need no reflow** — SVG charts keep their aspect ratio and centre,
+     which is correct (you don't vertically stretch a funnel).
+   - **Deferred:** `redline` (the side-by-side before/after diff is semantically
+     load-bearing — stacking would obscure it) stays landscape-composed.
+
+   **Why per-component CSS, not the Form manifest.** The Form engine is at the
+   *light* coupling rung (`2026-06-16-form-manifest-medium-independent-contract.md`):
+   it owns chrome/`stage`/`z`-plane composition, and `section-as-grid` is retired
+   (`2026-06-16-retire-section-as-grid.md`) — content bodies are direct children
+   of `section`, laid out by component CSS. The Frame governs the arrangement of
+   *cells*, not a component's *internal* content grid, so even at full manifest
+   coupling the kpi metric grid would still be component CSS. Manifest-driven
+   reflow remains the deferred north star for a spatial renderer, not this work.
 
 Each format ships a demo deck (`examples/social-<name>.md` + committed PDF) and
-is screenshot-verified at its native size before it's called done.
+is screenshot-verified at its native size before it's called done. The grid
+reflow ships `examples/social-grid.md`.
 
 ## Impact surface
 
@@ -147,8 +174,9 @@ geometry; the author still tunes with `scale-l` / `scale-xl` on top.
 
 ## Caveats
 
-- **PPTX export is 16:9-only** (`lib/export/pptx-export.js` is hard-wired to
-  `LAYOUT_WIDE`). Portrait decks export correct PDFs; PPTX of a portrait deck is
-  out of scope here and tracked separately.
-- Story/Reel **platform safe-zones** (the caption/UI band TikTok & IG overlay on
-  the bottom ~15%) are a future authoring affordance, not part of this change.
+- **PPTX export now follows the deck `@size`:** a portrait/square deck exports a
+  portrait/square `.pptx` (`lib/export/pptx-export.js` `pptxLayout`); landscape
+  unchanged.
+- Vertical-feed **platform safe-zones** (the caption/UI band vertical-video
+  platforms overlay on the bottom ~15%) shipped as the opt-in `safe` modifier
+  (see `lib/base/base.docs.md`).
