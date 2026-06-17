@@ -370,6 +370,16 @@ deliberately, not standing behavior.
   it sees a bare comma-list after a keyword, and `pr-autoclose-issues.yml`
   re-parses the body on merge and closes the whole list as a backstop. Don't
   hand-close the stragglers after the fact — fix the keywords.
+- **Reconcile each closing issue with what shipped — before the merge.** A
+  card's title/body is the upstream *request*; implementation routinely narrows,
+  shifts, or splits it. The merge auto-closes the issue and **freezes its text as
+  the permanent record**, so before you merge, make the card read true: tighten a
+  now-misleading title, strike scope that was dropped or split out, and note
+  anything deferred. If the PR body is the fuller account, a one-line pointer
+  (`superseded by the PR — see #N`) is enough; the card need not restate the PR.
+  The bar is **no closed card describes work that didn't happen.** This is the
+  issue-side analogue of keeping the PR title/body honest (HARD RULE #13) — and
+  nothing automates it, so it's on the agent driving the merge.
 - **Post-merge teardown.** Once the merge is confirmed:
   1. `git fetch origin`
   2. `git reset --hard origin/main` (or cut the next branch straight from

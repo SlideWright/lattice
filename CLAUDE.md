@@ -213,7 +213,10 @@ independent set of eyes earns its latency.
     broken in the Marp preview Chromium. See `engineering/gotchas.md`.
 13. **Commit messages are `area(scope): short summary`.** PRs follow
     `.github/pull_request_template.md` (Problem → What changed → Tests →
-    Caveats), titled the same way.
+    Caveats), titled the same way. **Before a PR merges, the issue(s) it closes
+    must also read true** — the merge freezes the card's text as the permanent
+    record, so reconcile a drifted title/body or point it at the PR. See
+    `engineering/workflow.md` § Merging.
 14. **A hook failure is a root cause to fix, never a `--no-verify` to skip.**
 15. **Don't reinvent tooling — check `engineering/capabilities.md` first.** Before
     building any script, harness, benchmark, or framework, consult the capability
