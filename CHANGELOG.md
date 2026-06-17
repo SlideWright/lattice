@@ -38,6 +38,15 @@ in patch versions.
   landscape, re-fitting on `orientationchange`/`visualViewport`. Verified centered
   in all three orientations in Chrome (desktop/portrait/landscape).
 
+- **Present/Practice — title/closing/divider content no longer sits high.** The
+  slide show/hide loop forced `display:block` on the active `<section>`, which
+  clobbered the flex-centering layouts (`title`/`closing`/`divider` set
+  `section{display:flex;…}` to vertically center their content) — collapsing them
+  to top-of-box flow. Root cause, not the stage geometry: the section box was
+  centered, the *content inside it* was not. Fixed by reverting the show/hide to
+  the stylesheet value (`display:""` instead of `"block"`), so each layout keeps
+  its own `display`. Measured h1 offset from section center: −55px → −1px.
+
 ### Added
 
 - **Content-capacity contract — layouts declare how many elements they hold, and the linter warns before an overflow.** Each component manifest can now carry a `capacity` block (`{ axis, min, sweet, soft, hard, escalateTo, note }`) keyed to the collection it's built on (`item` / `row` / `col` / `cell` / `line` — a `focusAxes` member). The agent/author reads it from `components.json` to **pick a layout by content shape** (count first, then filter by capacity), and `lint:deck` emits an advisory warning — `capacity-crowd` past `soft`, `capacity-overflow` past `hard` — with an `escalateTo` fix, both live in the CLI and the Drawing Board. The count is approximate at authoring time (markdown, `lib/authoring/lint-core.js`), with a render-exact counting primitive (`lib/core/collections.js` `countAxis`) landed and tested for the staged render-time gate. The validator rejects an inert contract whose axis can't be measured in the component's own sample. Each component's generated `.docs.md` now shows a **Capacity** line. Seeded on the ten worst overflow offenders (`cards-grid`, `cards-stack`, `stats`, `list-steps`, `verdict-grid`, `compare-table`, `actors`, `agenda`, `checklist`, `kanban`); the rest backfill incrementally. Advisory only — never blocks, so galleries/`stressSample` stay free to push limits. See `engineering/decisions/2026-06-17-content-capacity-contract.md`.
