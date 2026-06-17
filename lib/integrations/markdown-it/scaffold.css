@@ -1,9 +1,19 @@
-/* Scaffold rules — section chrome that beats Marp Core's runtime CSS.
+/* Scaffold rules — section chrome for the export / published-HTML render path.
  *
- * These rules use !important to override Marp's scaffold defaults that
- * load after the theme. Lives in @layer scaffold so !important cascade
- * (which reverses by layer) keeps these wins regardless of what else
- * the bundle declares in later layers.
+ * These rules style the `<section>` / `<header>` / `<footer>` chrome in the
+ * bundle (dist/lattice.css). They formerly used !important, on the theory they
+ * had to beat Marpit's own scaffold defaults — but Marp is now fully retired as
+ * a render path (see engineering/marp-independence.md), so no marp-core scaffold
+ * loads after the theme in any Lattice-controlled path. The only competitor is
+ * the OWNED engine scaffold (`div.marpit > section::after`, lib/engine/css.js)
+ * at HIGHER specificity (0,1,2 vs 0,0,1) — and where both set a property the
+ * values already MATCH (padding:0, position:absolute); for the properties only
+ * this file sets (bottom/right/font/colour) it is the sole declaration. So the
+ * !important was vestigial. A marp-cli pixel probe (6-page deck w/ header +
+ * footer + pagination, fuzz 25%) confirmed stripping every !important here
+ * renders pixel-identically — see the Track-3 !important cleanup and
+ * engineering/decisions/2026-05-18-important-audit-phase-35-prep.md. Keep these
+ * rules unlayered.
  *
  * See design/design-system.md §10 for layer cascade semantics.
  */
@@ -20,29 +30,28 @@ section footer > p {
   line-height: 1;
   letter-spacing: 0.06em;
   margin: 0;
-  text-align: left !important;
+  text-align: left;
 }
 
-/* section::after — Marp's native pagination pseudo-element.
-   Marp's scaffold CSS sets `section::after { padding: inherit; }`,
-   which inherits the section's bottom padding (~88px) and pushes the
-   page number above where bottom:1.875cqi would otherwise place it.
-   The scaffold loads after our theme in the cascade, so at equal
-   specificity it wins. !important here is the deliberate override.
-   Font properties are also !important because the scaffold sets
-   defaults that don't match our footer. */
+/* section::after — the pagination pseudo-element. Historically Marpit set
+   `section::after { padding: inherit }`, which inherited the section's bottom
+   padding and misplaced the page number; this rule resets padding to 0 and
+   repositions the marker. With Marp retired the only other `section::after`
+   declaration is the owned engine scaffold (0,1,2), which sets matching
+   padding/position; the bottom/right/font/colour here are unopposed. No
+   !important needed — confirmed by the marp-cli pixel probe (file header). */
 section::after {
-  position: absolute !important;
-  bottom: var(--frame-inset-y) !important;
-  right: var(--frame-inset-x) !important;
-  padding: 0 !important;
-  margin: 0 !important;
-  font-family: var(--font-mono) !important;
-  font-size: var(--fs-meta) !important;
-  font-weight: 500 !important;
-  line-height: 1 !important;
-  letter-spacing: 0.06em !important;
-  color: var(--marp-slide-pagination-color, var(--marp-slide-footer-color, var(--text-muted))) !important;
+  position: absolute;
+  bottom: var(--frame-inset-y);
+  right: var(--frame-inset-x);
+  padding: 0;
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--fs-meta);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  color: var(--marp-slide-pagination-color, var(--marp-slide-footer-color, var(--text-muted)));
 }
 
 

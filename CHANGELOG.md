@@ -77,6 +77,28 @@ in patch versions.
 
 ### Changed
 
+- **Internal `!important` cleanup (cascade hygiene).** Removed 22 redundant
+  `!important` declarations that only existed to win Lattice-vs-Lattice cascade
+  races, keeping the cascade outcome pixel-identical (verified by per-cluster
+  marp-cli / emulator pixel-diffs at fuzz 25%). Removed: all 12 in
+  `scaffold.css` (the `section::after` pagination + `section header/footer > p`
+  rules already win on source order over Marpit's equal-specificity scaffold
+  defaults), the 1 pagination-colour `!important` in
+  `chart-family.css` (`section.chart-frame.cover::after`, which now wins on
+  specificity once scaffold's matching `!important` is gone), 2 in
+  `base.variants.css` (the `section.silent/.no-header > header/footer`
+  `display:none`, already specificity-winners), and 7 in `base.sketch.css`
+  (card / blockquote borders + radii that outrank their component rules on
+  specificity). Genuinely load-bearing internal `!important` were kept with a
+  comment explaining what each beats: the `section.archived::after` stamp and
+  `silent/.no-paginate::after { content:none }` (beat the owned engine
+  scaffold's higher-specificity `div.marpit > section::after`), and the two
+  sketch decision/compare-prose lifted-label overrides (the component's
+  `:has(> strong:first-child)` selector outranks them). External-tool overrides
+  (Mermaid / KaTeX / highlight.js, and the kanban/timeline/radar SVG sheets)
+  were intentionally left untouched — `!important` is the correct mechanism
+  against inline styles emitted by those tools.
+
 - **One slide-size registry (engine source of truth).** The CLI/PDF emulator no
   longer carries its own hard-coded size table — it resolves `@size` through the
   engine's `resolveSize`, the same lookup the scaffold bakes into `@page`. Fixes

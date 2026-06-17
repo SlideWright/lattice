@@ -790,12 +790,22 @@ section ol { padding:0; margin:0; }
 section blockquote { margin:0; padding:0; border:none; }
 
 /* === lib/integrations/markdown-it/scaffold.css === */
-/* Scaffold rules — section chrome that beats Marp Core's runtime CSS.
+/* Scaffold rules — section chrome for the export / published-HTML render path.
  *
- * These rules use !important to override Marp's scaffold defaults that
- * load after the theme. Lives in @layer scaffold so !important cascade
- * (which reverses by layer) keeps these wins regardless of what else
- * the bundle declares in later layers.
+ * These rules style the `<section>` / `<header>` / `<footer>` chrome in the
+ * bundle (dist/lattice.css). They formerly used !important, on the theory they
+ * had to beat Marpit's own scaffold defaults — but Marp is now fully retired as
+ * a render path (see engineering/marp-independence.md), so no marp-core scaffold
+ * loads after the theme in any Lattice-controlled path. The only competitor is
+ * the OWNED engine scaffold (`div.marpit > section::after`, lib/engine/css.js)
+ * at HIGHER specificity (0,1,2 vs 0,0,1) — and where both set a property the
+ * values already MATCH (padding:0, position:absolute); for the properties only
+ * this file sets (bottom/right/font/colour) it is the sole declaration. So the
+ * !important was vestigial. A marp-cli pixel probe (6-page deck w/ header +
+ * footer + pagination, fuzz 25%) confirmed stripping every !important here
+ * renders pixel-identically — see the Track-3 !important cleanup and
+ * engineering/decisions/2026-05-18-important-audit-phase-35-prep.md. Keep these
+ * rules unlayered.
  *
  * See design/design-system.md §10 for layer cascade semantics.
  */
@@ -812,29 +822,28 @@ section footer > p {
   line-height: 1;
   letter-spacing: 0.06em;
   margin: 0;
-  text-align: left !important;
+  text-align: left;
 }
 
-/* section::after — Marp's native pagination pseudo-element.
-   Marp's scaffold CSS sets `section::after { padding: inherit; }`,
-   which inherits the section's bottom padding (~88px) and pushes the
-   page number above where bottom:1.875cqi would otherwise place it.
-   The scaffold loads after our theme in the cascade, so at equal
-   specificity it wins. !important here is the deliberate override.
-   Font properties are also !important because the scaffold sets
-   defaults that don't match our footer. */
+/* section::after — the pagination pseudo-element. Historically Marpit set
+   `section::after { padding: inherit }`, which inherited the section's bottom
+   padding and misplaced the page number; this rule resets padding to 0 and
+   repositions the marker. With Marp retired the only other `section::after`
+   declaration is the owned engine scaffold (0,1,2), which sets matching
+   padding/position; the bottom/right/font/colour here are unopposed. No
+   !important needed — confirmed by the marp-cli pixel probe (file header). */
 section::after {
-  position: absolute !important;
-  bottom: var(--frame-inset-y) !important;
-  right: var(--frame-inset-x) !important;
-  padding: 0 !important;
-  margin: 0 !important;
-  font-family: var(--font-mono) !important;
-  font-size: var(--fs-meta) !important;
-  font-weight: 500 !important;
-  line-height: 1 !important;
-  letter-spacing: 0.06em !important;
-  color: var(--marp-slide-pagination-color, var(--marp-slide-footer-color, var(--text-muted))) !important;
+  position: absolute;
+  bottom: var(--frame-inset-y);
+  right: var(--frame-inset-x);
+  padding: 0;
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--fs-meta);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  color: var(--marp-slide-pagination-color, var(--marp-slide-footer-color, var(--text-muted)));
 }
 
 /* === KaTeX base stylesheet — vendored from the katex package, fonts → jsDelivr CDN === */
@@ -11911,7 +11920,7 @@ section.chart-frame.cover > p:last-of-type {
 /* Pagination reads through the band — lifted above it and recoloured. */
 section.chart-frame.cover::after {
   z-index: 3;
-  color: color-mix(in oklab, var(--text-heading) 62%, transparent) !important;
+  color: color-mix(in oklab, var(--text-heading) 62%, transparent);
 }
 
 /* === lib/base/base.treatments.css === */
@@ -12799,12 +12808,12 @@ section.sketch :is(h1, h2, h3, h4, h5, h6) {
   font-weight: 700;
   letter-spacing: 0.005em;
 }
-/* Pagination (Marp's section::after) ships from the scaffold with
- * `font-family: var(--font-mono) !important`, so it needs an !important
- * override at higher specificity (.sketch class) to ride the hand label
- * voice like the header / footer chrome. */
+/* Pagination (Marp's section::after) is set in mono by the scaffold tier.
+ * `section.sketch::after` (0,1,1) outranks the scaffold `section::after`
+ * (0,0,1) on specificity and the engine scaffold never sets font-family, so
+ * no !important is needed to ride the hand label voice. */
 section.sketch::after {
-  font-family: var(--font-label) !important;
+  font-family: var(--font-label);
 }
 
 /* Plain bullet / number lists take a hand-jotted mark in the felt-tip face.
@@ -12874,9 +12883,13 @@ section.sketch.citation-card > blockquote,
  * non-specialised layout — same target as base.modifiers' key-insight chrome)
  * becomes a drawn box too. redline/quote/math/citation-card own their
  * blockquote and are excluded so their borders/spines aren't clobbered. */
+/* The card surfaces (cards-grid/-stack li at 0,2,3, verdict/decision/matrix/
+   pricing li, compare-prose .card) and the generic key-insight blockquote
+   (0,5,2, beating base.modifiers' 0,4,2 chrome) all outrank their component
+   rules on specificity, so no !important is needed here. */
 section.sketch:not(.quote):not(.math):not(.citation-card):not(.redline) > blockquote {
-  border: 2px solid var(--sketch-ink) !important;
-  border-radius: 255px 12px 225px 15px / 15px 225px 15px 255px !important;
+  border: 2px solid var(--sketch-ink);
+  border-radius: 255px 12px 225px 15px / 15px 225px 15px 255px;
   box-shadow: 2px 3px 0 -1px color-mix(in srgb, var(--sketch-ink) 30%, transparent);
 }
 /* Alternate the radius + a slight tilt per card so each grid of cards
@@ -12893,7 +12906,7 @@ section.sketch.decision > ol > li:nth-child(2n),
 section.sketch.matrix-2x2 > ol > li:nth-child(2n),
 section.sketch.matrix-2x2 > ul > li:nth-child(2n),
 section.sketch.pricing > ul > li:nth-child(2n) {
-  border-radius: 15px 225px 15px 255px / 225px 15px 255px 15px !important;
+  border-radius: 15px 225px 15px 255px / 225px 15px 255px 15px;
   transform: rotate(-0.5deg);
 }
 section.sketch.cards-grid > ul > li:nth-child(3n),
@@ -12907,7 +12920,7 @@ section.sketch.decision > ol > li:nth-child(3n),
 section.sketch.matrix-2x2 > ol > li:nth-child(3n),
 section.sketch.matrix-2x2 > ul > li:nth-child(3n),
 section.sketch.pricing > ul > li:nth-child(3n) {
-  border-radius: 225px 15px 255px 18px / 15px 255px 15px 225px !important;
+  border-radius: 225px 15px 255px 18px / 15px 255px 15px 225px;
   transform: rotate(0.4deg);
 }
 
@@ -12927,6 +12940,10 @@ section.sketch.cards-stack .card::before {
   font-family: var(--sketch-font-display);
   border-radius: 15px 2px 12px 3px / 3px 12px 2px 15px;
 }
+/* These two !important are load-bearing (verified by pixel-diff): the
+   decision / compare-prose lifted-label rules use a `:has(> strong:first-child)`
+   selector (0,3,4) that outranks this sketch override (0,3,3) on element count,
+   so without !important the chip reverts to the mono face + clean corners. */
 section.sketch.decision > :is(ul, ol) > li > strong:first-child,
 section.sketch.compare-prose > :is(ul, ol) > li > strong:first-child,
 section.sketch.compare-prose .compare-prose-inner .card > strong:first-child {
@@ -13004,8 +13021,10 @@ section.sketch.list-tabular > ol > li:last-child::after { display: none; }
  * border. actors rows are bordered row-cards: same hand corners, colours
  * (the per-actor left hue) untouched. */
 section.sketch.quote blockquote {
-  border: 2px solid var(--sketch-ink) !important;
-  border-radius: 255px 12px 225px 15px / 15px 225px 15px 255px !important;
+  /* `section.sketch.quote blockquote` (0,2,2) outranks the quote component's
+     `section.quote blockquote` (0,1,2), so no !important is needed. */
+  border: 2px solid var(--sketch-ink);
+  border-radius: 255px 12px 225px 15px / 15px 225px 15px 255px;
   box-shadow: 2px 3px 0 -1px color-mix(in srgb, var(--sketch-ink) 30%, transparent);
 }
 section.sketch.redline > blockquote,
@@ -13262,14 +13281,20 @@ section.accent.dark h2 { color: var(--accent); }
 
 section.silent > header,
 section.no-header > header {
-  display: none !important;
+  /* `section.<chrome> > header` (0,1,1) already beats the base `section header`
+     rule (0,0,1) on specificity + source order; no !important needed. */
+  display: none;
 }
 section.silent > footer,
 section.no-footer > footer {
-  display: none !important;
+  display: none;
 }
 section.silent::after,
 section.no-paginate::after {
+  /* Beats the engine scaffold's higher-specificity pagination pseudo
+     (`div.marpit > section::after { content: attr(data-lattice-pagination) }`,
+     0,1,2). At 0,1,1 this loses on specificity, so !important is load-bearing —
+     dropping it brings the page number back (verified by pixel-diff). */
   content: none !important;
 }
 
@@ -13423,7 +13448,13 @@ section.archived::before {
   z-index: 90;
 }
 section.archived::after {
-  /* Override pagination ::after pseudo for archived slides */
+  /* Replaces the pagination ::after with the ARCHIVED stamp. Every property
+     here is !important because it must beat the engine scaffold's
+     higher-specificity `div.marpit > section::after` (0,1,2) — which sets
+     content/position/padding — and the scaffold-tier `section::after` font/
+     colour rules. At 0,1,1 this selector loses on specificity, so the whole
+     block needs !important (verified by pixel-diff: dropping any of these
+     restores the page number / scaffold geometry). */
   content: 'ARCHIVED' !important;
   font-family: var(--font-mono) !important;
   font-size: 13px !important;

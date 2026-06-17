@@ -31,14 +31,20 @@
 
 section.silent > header,
 section.no-header > header {
-  display: none !important;
+  /* `section.<chrome> > header` (0,1,1) already beats the base `section header`
+     rule (0,0,1) on specificity + source order; no !important needed. */
+  display: none;
 }
 section.silent > footer,
 section.no-footer > footer {
-  display: none !important;
+  display: none;
 }
 section.silent::after,
 section.no-paginate::after {
+  /* Beats the engine scaffold's higher-specificity pagination pseudo
+     (`div.marpit > section::after { content: attr(data-lattice-pagination) }`,
+     0,1,2). At 0,1,1 this loses on specificity, so !important is load-bearing —
+     dropping it brings the page number back (verified by pixel-diff). */
   content: none !important;
 }
 
@@ -192,7 +198,13 @@ section.archived::before {
   z-index: 90;
 }
 section.archived::after {
-  /* Override pagination ::after pseudo for archived slides */
+  /* Replaces the pagination ::after with the ARCHIVED stamp. Every property
+     here is !important because it must beat the engine scaffold's
+     higher-specificity `div.marpit > section::after` (0,1,2) — which sets
+     content/position/padding — and the scaffold-tier `section::after` font/
+     colour rules. At 0,1,1 this selector loses on specificity, so the whole
+     block needs !important (verified by pixel-diff: dropping any of these
+     restores the page number / scaffold geometry). */
   content: 'ARCHIVED' !important;
   font-family: var(--font-mono) !important;
   font-size: 13px !important;
