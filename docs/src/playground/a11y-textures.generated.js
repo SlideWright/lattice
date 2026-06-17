@@ -55,24 +55,34 @@ var require_accessibility_textures = __commonJS({
       { mode: "fill", svg: '<rect x="0" y="0" width="4" height="4"/><rect x="4" y="4" width="4" height="4"/>' }
       // 12 checker
     ];
-    function patternSet(prefix, count, fillVar, inkVar) {
-      const patterns = [];
-      const rules = [];
-      GEOMETRIES.slice(0, count).forEach(({ mode, svg }, i) => {
+    var CAT_FILLS = [
+      "#e8e8e8",
+      "#dedede",
+      "#d5d5d5",
+      "#cccccc",
+      "#c3c3c3",
+      "#bababa",
+      "#b1b1b1",
+      "#a8a8a8",
+      "#a0a0a0",
+      "#979797",
+      "#8e8e8e",
+      "#868686"
+    ];
+    var CHART_FILLS = ["#2e2e2e", "#3b3b3b", "#484848", "#565656", "#656565", "#737373", "#838383", "#929292"];
+    var CAT_INK = "#1a1a1a";
+    var CHART_INK = "#f5f5f5";
+    function patternSet(prefix, fills, ink) {
+      return GEOMETRIES.slice(0, fills.length).map(({ mode, svg }, i) => {
         const n = i + 1;
-        const id = `${prefix}-${n}`;
-        patterns.push(
-          `<pattern id="${id}" patternUnits="userSpaceOnUse" width="8" height="8"><rect width="8" height="8"/><g>${svg}</g></pattern>`
-        );
-        const ink = mode === "fill" ? `fill:var(${inkVar(n)});fill-opacity:.40` : `fill:none;stroke:var(${inkVar(n)});stroke-opacity:.45;stroke-width:1;stroke-linecap:square`;
-        rules.push(`#${id}>rect{fill:var(${fillVar(n)})}#${id}>g{${ink}}`);
-      });
-      return { patterns: patterns.join(""), rules: rules.join("") };
+        const inkAttr = mode === "fill" ? `fill="${ink}" fill-opacity="0.40"` : `fill="none" stroke="${ink}" stroke-opacity="0.45" stroke-width="1" stroke-linecap="square"`;
+        return `<pattern id="${prefix}-${n}" patternUnits="userSpaceOnUse" width="8" height="8"><rect width="8" height="8" fill="${fills[i]}"/><g ${inkAttr}>${svg}</g></pattern>`;
+      }).join("");
     }
     function texturePatternDefs2() {
-      const cat = patternSet("latt-a11y-tex", 12, (n) => `--cat-${n}-fill`, () => "--cat-on-fill");
-      const chart = patternSet("latt-a11y-chart-tex", 8, (n) => `--chart-cat${n}`, () => "--cat-on-mark");
-      return `<svg width="0" height="0" aria-hidden="true" style="position:absolute" class="latt-a11y-defs"><defs>${cat.patterns}${chart.patterns}</defs><style>${cat.rules}${chart.rules}</style></svg>`;
+      const cat = patternSet("latt-a11y-tex", CAT_FILLS, CAT_INK);
+      const chart = patternSet("latt-a11y-chart-tex", CHART_FILLS, CHART_INK);
+      return `<svg width="0" height="0" aria-hidden="true" style="position:absolute" class="latt-a11y-defs"><defs>${cat}${chart}</defs></svg>`;
     }
     module.exports = { texturePatternDefs: texturePatternDefs2 };
   }

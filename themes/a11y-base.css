@@ -92,43 +92,10 @@
   --chart-cat8: #929292;
 }
 
-/* Texture-<defs> resolution anchor — MUST be `:root:root`, not `:root`.
- * The categorical/chart texture patterns (lib/core/accessibility-textures.js)
- * are injected ONCE at PAGE level, OUTSIDE any <section>, and paint
- * `var(--cat-N-fill)` / `var(--chart-catN)` with `var(--cat-on-*)` ink. But the
- * engine relocates a theme's `:root` token block onto `:where(section)` (the
- * mobile-cqi fix in lib/engine/css.js), which a page-level element cannot see —
- * so those vars resolve to nothing and SVG falls back to BLACK (the all-black
- * pie). `:root:root` (0,2,0) is NOT relocated (same anchor the color-scheme rule
- * uses), so mirror exactly the tokens the defs reference here; section consumers
- * still read the (identical) values from the relocated `:root` block above.
- * The inks are CONCRETE — onyx's `--cat-on-*: var(--text-heading)` is itself
- * section-relocated, so it too would be unresolved at the defs. Dark ink reads on
- * the light categorical fills; light ink reads on the deeper chart greys. */
-:root:root {
-  --cat-1-fill:  #e8e8e8;
-  --cat-2-fill:  #dedede;
-  --cat-3-fill:  #d5d5d5;
-  --cat-4-fill:  #cccccc;
-  --cat-5-fill:  #c3c3c3;
-  --cat-6-fill:  #bababa;
-  --cat-7-fill:  #b1b1b1;
-  --cat-8-fill:  #a8a8a8;
-  --cat-9-fill:  #a0a0a0;
-  --cat-10-fill: #979797;
-  --cat-11-fill: #8e8e8e;
-  --cat-12-fill: #868686;
-  --chart-cat1: #2e2e2e;
-  --chart-cat2: #3b3b3b;
-  --chart-cat3: #484848;
-  --chart-cat4: #565656;
-  --chart-cat5: #656565;
-  --chart-cat6: #737373;
-  --chart-cat7: #838383;
-  --chart-cat8: #929292;
-  --cat-on-fill: #1a1a1a; /* dark overlay ink on the light --cat-N-fill greys */
-  --cat-on-mark: #f5f5f5; /* light overlay ink on the deeper --chart-catN greys */
-}
+/* (The texture <defs> no longer read any token — they paint LITERAL greyscale
+ * hex, self-contained, because resolving a var at the page-level defs proved
+ * fragile on real iOS Safari. See lib/core/accessibility-textures.js. The ramps
+ * here remain the source those literals mirror.) */
 
 /* ── Redundant encoding ─────────────────────────────────────────────────────
  * Status GLYPHS + categorical TEXTURE references + per-series LINE-STYLES. */
