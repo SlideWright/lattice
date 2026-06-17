@@ -23,7 +23,7 @@ import { createThemeFetcher } from '../lib/theme-fetch.ts';
 // authoring-core bundle (esbuild → browser ESM) because Vite-dev can't serve the
 // raw CJS module; see tools/build-authoring-core.js.
 import { notesCore } from './authoring-core.generated.js';
-import { KATEX_URL, MERMAID_URL, splitSections } from './deck-preview.js';
+import { A11Y_DEFS, KATEX_URL, MERMAID_URL, splitSections } from './deck-preview.js';
 import { isCapableTier } from './drawing-board-chat.js';
 import { initPracticeTour } from './drawing-board-practice-tour.js';
 import { createRehearsalPlanner, metasFromSections, metasFromSource, overBeat } from './drawing-board-rehearsal.js';
@@ -42,7 +42,7 @@ function fmt(s) {
   return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
 }
 
-export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketOf, model, voice: sharedVoice, openVoiceSettings, a11yDefs = '' }) {
+export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketOf, model, voice: sharedVoice, openVoiceSettings }) {
   if (!host) return { open() {} };
   const PG = () => window.LatticePlayground;
   const root = document.documentElement;
@@ -157,7 +157,7 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
       '.marpit{height:100%;display:flex;align-items:center;justify-content:center;visibility:hidden;}' +
       slideBox(sw, sh) +
       '.marpit>section{flex:0 0 auto;box-shadow:0 18px 60px rgba(0,0,0,.45);border-radius:10px;}' +
-      css + '</style></head><body>' + a11yDefs + html +
+      css + '</style></head><body>' + A11Y_DEFS + html +
       '<scr' + 'ipt src="' + MERMAID_URL + '"></scr' + 'ipt>' +
       '<scr' + 'ipt src="' + runtimeUrl + '"></scr' + 'ipt>' +
       '<scr' + 'ipt>window.__SLIDE_W=' + sw + ';window.__SLIDE_H=' + sh + ';' +

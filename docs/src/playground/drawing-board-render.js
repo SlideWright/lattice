@@ -37,12 +37,8 @@ export function createRenderController(data) {
 	var THEME_BASE = data.themeBase;
 	var RUNTIME_URL = data.runtimeUrl;
 	var PREVIEW_FONT_CSS = data.previewFontCss || '';
-	// The categorical texture <pattern> <defs> the a11y themes reference (built
-	// from the shared kernel at page build, lib/core/accessibility-textures.js).
-	// Injected into the preview iframe ALWAYS — it's inert unless an a11y theme's
-	// fill references a pattern — the engine seam that CSS can't carry (the
-	// runtime/preview path's equivalent of the emulator's always-on defs injection).
-	var A11Y_DEFS = data.a11yTextureDefs || '';
+	// The a11y texture <defs> are now injected by the shared renderDeck itself
+	// (deck-preview.js owns A11Y_DEFS from the kernel) — no per-caller plumbing.
 	// Shared raw theme fetch+cache (fetch <base><name>.css once).
 	var themeFetcher = createThemeFetcher(THEME_BASE);
 	// The deck's live slide box (px), resolved per render from the engine's
@@ -196,10 +192,7 @@ export function createRenderController(data) {
 					state: previewState,
 					runtimeUrl: RUNTIME_URL, padding: 22, gap: 22,
 					fontCss: PREVIEW_FONT_CSS,
-					// Always inject the texture <defs> so an a11y theme's diagram/chart
-					// `fill: url(#latt-a11y-tex-N)` references resolve in the iframe
-					// instead of dangling (which would paint nothing). Inert otherwise.
-					a11yDefs: A11Y_DEFS,
+					// (a11y texture <defs> are injected by renderDeck itself now.)
 					// Single-file library themes resolve light/dark via light-dark();
 					// force the canvas scheme so dark renders dark (built-in paired
 					// -dark themes don't need it).
