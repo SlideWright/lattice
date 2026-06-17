@@ -19,6 +19,8 @@
  *     package.json         — pins @marp-team/marp-cli (the only dep)
  *     assets/              — every local image the deck references
  *     README.md            — VS Code + marp-cli quick start + the fidelity note
+ *     AGENTS.md            — entrypoint for an AI agent (default; --no-agent omits)
+ *     agent/components.json — the Lattice component catalog (capacity included)
  *
  * Usage:
  *   node tools/export-marp.js <deck.md> <out-dir-or-zip> [palette]
@@ -37,7 +39,7 @@ const path = require('path');
 const { execFileSync } = require('child_process');
 const { bakeSplits } = require('../lib/core/bake-splits');
 const {
-  STATIC_ASSETS, MARP_CONFIG_CJS, withRuntimeScripts, packageJson, vscodeSettings, readme,
+  STATIC_ASSETS, AGENT_ASSETS, MARP_CONFIG_CJS, withRuntimeScripts, packageJson, vscodeSettings, readme, agentsMd,
 } = require('../lib/core/marp-bundle');
 
 const ROOT = path.join(__dirname, '..');
@@ -87,11 +89,25 @@ function copyInto(srcAbs, destAbs) {
 }
 
 function main(argv) {
-  const [deckPath, outArg, paletteArg] = argv;
+  // The agent kit (AGENTS.md + the component catalog) ships by DEFAULT so a
+  // recipient's AI agent can extend the deck; `--no-agent` produces a lean,
+  // Marp-only bundle.
+  const includeAgent = !argv.includes('--no-agent');
+  const [deckPath, outArg, paletteArg] = argv.filter((a) => !a.startsWith('--'));
   if (!deckPath || !outArg) {
-    die('usage: node tools/export-marp.js <deck.md> <out-dir-or-zip> [palette]');
+    die('usage: node tools/export-marp.js <deck.md> <out-dir-or-zip> [palette] [--no-agent]');
   }
   if (!fs.existsSync(deckPath)) die(`deck not found: ${deckPath}`);
+  // Validate the agent-kit inputs UP FRONT (before writing anything), so a
+  // missing catalog can't leave an orphaned bundle whose README/AGENTS.md
+  // advertise an `agent/components.json` that was never written.
+  if (includeAgent) {
+    for (const { from } of AGENT_ASSETS) {
+      if (!fs.existsSync(path.join(ROOT, from))) {
+        die(`agent kit needs ${from} — run \`npm run build\` (or pass --no-agent)`);
+      }
+    }
+  }
 
   const src = fs.readFileSync(deckPath, 'utf8');
   const palette = (paletteArg || readTheme(src) || 'indaco').toLowerCase();
@@ -137,7 +153,18 @@ function main(argv) {
   fs.writeFileSync(path.join(dest, 'package.json'), JSON.stringify(packageJson(name), null, 2) + '\n');
   fs.mkdirSync(path.join(dest, '.vscode'), { recursive: true });
   fs.writeFileSync(path.join(dest, '.vscode', 'settings.json'), vscodeSettings(themesList));
-  fs.writeFileSync(path.join(dest, 'README.md'), readme({ name, palette, themes: themesList }));
+  fs.writeFileSync(path.join(dest, 'README.md'), readme({ name, palette, themes: themesList, agent: includeAgent }));
+
+  // 6) the agent kit (default on): a bundle-tailored AGENTS.md at the root +
+  //    the component catalog under agent/, so a recipient's AI agent can extend
+  //    the deck with full Lattice knowledge (capacity included).
+  if (includeAgent) {
+    let version;
+    try { version = require(path.join(ROOT, 'package.json')).version; } catch { version = undefined; }
+    fs.writeFileSync(path.join(dest, 'AGENTS.md'), agentsMd({ name, version }));
+    // Inputs were validated up front, so every entry exists here.
+    for (const { from, to } of AGENT_ASSETS) copyInto(path.join(ROOT, from), path.join(dest, to));
+  }
 
   let result = dest;
   if (wantZip) {

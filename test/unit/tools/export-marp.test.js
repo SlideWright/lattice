@@ -96,4 +96,28 @@ describe('export-marp bundle (end-to-end)', () => {
     // install`; the bundle is rendered with Marp, not a bundled engine.
     assert.strictEqual(pkg.dependencies['@slidewright/lattice'], undefined);
   });
+
+  test('ships the agent kit by default (AGENTS.md + the catalog under agent/)', () => {
+    assert.ok(fs.existsSync(path.join(dest, 'AGENTS.md')), 'AGENTS.md present');
+    const cat = path.join(dest, 'agent', 'components.json');
+    assert.ok(fs.existsSync(cat), 'agent/components.json present');
+    const agents = fs.readFileSync(path.join(dest, 'AGENTS.md'), 'utf8');
+    assert.match(agents, /split-headings\.md/, "AGENTS.md names this bundle's deck");
+    assert.match(agents, /agent\/components\.json/);
+    assert.match(agents, /capacity/i);
+    const catalog = JSON.parse(fs.readFileSync(cat, 'utf8'));
+    assert.ok(Array.isArray(catalog.components) && catalog.components.length > 0, 'catalog has components');
+    assert.match(fs.readFileSync(path.join(dest, 'README.md'), 'utf8'), /Extend it with an AI agent/);
+  });
+
+  test('--no-agent produces a lean Marp-only bundle', () => {
+    const lean = fs.mkdtempSync(path.join(os.tmpdir(), 'exp-lean-'));
+    execFileSync('node', [TOOL, path.join(REPO, 'examples', 'split-headings.md'), lean, 'indaco', '--no-agent'], { stdio: 'pipe' });
+    const d = path.join(lean, 'split-headings');
+    assert.ok(fs.existsSync(path.join(d, 'README.md')), 'still a valid bundle');
+    assert.ok(!fs.existsSync(path.join(d, 'AGENTS.md')), 'no AGENTS.md');
+    assert.ok(!fs.existsSync(path.join(d, 'agent')), 'no agent/ folder');
+    assert.doesNotMatch(fs.readFileSync(path.join(d, 'README.md'), 'utf8'), /Extend it with an AI agent/);
+    fs.rmSync(lean, { recursive: true, force: true });
+  });
 });

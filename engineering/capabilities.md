@@ -61,7 +61,7 @@ harness the index can't infer, add it to `FRAMEWORKS` in the generator.
 | `emulator:check` | Freshness gate for the emulator bundle. |
 | `exemplar-core:build` | Bundle the pure exemplar tier-filter for the browser (Drafting picker length chooser). |
 | `exemplar-core:check` | Freshness gate for the exemplar-core bundle. |
-| `export:marp` | Export a deck as a portable Marp bundle: splits baked to ---, themes, assets, a self-contained engine + marp-cli config, and a README. `<deck.md> <out-dir-or-zip> [palette]`. |
+| `export:marp` | Export a deck as a portable, Marp-native bundle: splits baked to ---, themes, assets, marp-cli config, a README, and (by default) an AI-agent kit (AGENTS.md + component catalog). `<deck.md> <out-dir-or-zip> [palette] [--no-agent]`. |
 | `layout-core:build` | Bundle the pure Layout Studio core for the browser (docs site). |
 | `layout-core:check` | Freshness gate for the layout-core bundle. |
 | `playground:build` | Build docs/public/playground/lattice-playground.js — the in-browser engine bundle. |

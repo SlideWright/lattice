@@ -10,8 +10,8 @@
 const { test, describe } = require('node:test');
 const assert = require('node:assert/strict');
 const {
-  STATIC_ASSETS, RUNTIME_SCRIPTS, MARP_CONFIG_CJS, withRuntimeScripts,
-  safeName, packageJson, vscodeSettings, readme,
+  STATIC_ASSETS, AGENT_ASSETS, RUNTIME_SCRIPTS, MARP_CONFIG_CJS, withRuntimeScripts,
+  safeName, packageJson, vscodeSettings, readme, agentsMd,
 } = require('../../../lib/core/marp-bundle');
 
 describe('marp-bundle spec', () => {
@@ -73,5 +73,44 @@ describe('marp-bundle spec', () => {
     assert.match(r, /open the exported HTML|open the HTML|Open the HTML/i);
     // Marp-native: the README must NOT point at a bundled emulator any more.
     assert.doesNotMatch(r, /lattice-emulator/);
+  });
+
+  describe('agent kit', () => {
+    test('AGENT_ASSETS carries the component catalog into agent/', () => {
+      const byTo = Object.fromEntries(AGENT_ASSETS.map((a) => [a.to, a.from]));
+      assert.equal(byTo['agent/components.json'], 'dist/docs/components.json');
+      // The kit is catalog data only — no engine, no heavy runtime.
+      assert.ok(!AGENT_ASSETS.some((a) => /emulator|runtime|\.js$/.test(a.from)));
+    });
+
+    test('agentsMd is bundle-tailored: names the deck, the catalog path, capacity, and the frozen snapshot', () => {
+      const a = agentsMd({ name: 'q3-review', version: '1.2.3' });
+      assert.match(a, /AGENTS\.md/);
+      assert.match(a, /q3-review\.md/);            // points at THIS bundle's deck
+      assert.match(a, /agent\/components\.json/);   // and its own catalog path
+      assert.match(a, /capacity/i);                 // teaches pick-by-capacity
+      assert.match(a, /count first/i);
+      assert.match(a, /frozen snapshot/i);
+      assert.match(a, /Lattice 1\.2\.3/);           // provenance stamp
+      // Bundle-tailored, NOT the repo's AGENTS.md: no repo-only tooling paths.
+      assert.doesNotMatch(a, /npm run lint:deck|dist\/docs\/components\.json/);
+    });
+
+    test('agentsMd omits the version stamp gracefully when unknown', () => {
+      const a = agentsMd({ name: 'demo' });
+      assert.match(a, /frozen snapshot[\s\S]*Lattice\)/);
+      assert.doesNotMatch(a, /Lattice undefined/);
+    });
+
+    test('readme adds the agent section + rows only when agent:true', () => {
+      const base = { name: 'demo', palette: 'indaco', themes: ['lattice.css'] };
+      const on = readme({ ...base, agent: true });
+      assert.match(on, /Extend it with an AI agent/);
+      assert.match(on, /`AGENTS\.md`/);
+      assert.match(on, /`agent\/components\.json`/);
+      const off = readme({ ...base, agent: false });
+      assert.doesNotMatch(off, /Extend it with an AI agent/);
+      assert.doesNotMatch(off, /agent\/components\.json/);
+    });
   });
 });

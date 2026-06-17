@@ -1032,7 +1032,7 @@ const dbData = JSON.stringify({
 					else if (kind === 'charts-svg') { onStatus('Exporting chart…'); await exportChart(frame, deckName(), onStatus); }
 					else if (kind === 'marp') {
 						onStatus('Building Marp bundle…');
-						await exportMarp(source, deckName(), meta.palette, dbd.themeBase);
+						await exportMarp(source, deckName(), meta.palette, dbd.themeBase, { version: meta.version });
 						status('Marp bundle exported (.zip).');
 					}
 					hideProgress();

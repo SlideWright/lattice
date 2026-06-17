@@ -206,3 +206,48 @@ a representative deck.
 This is downstream of the merged heading-divider work. Suggested order: settle
 Q1 (config delivery) → build P1 → P2 → P3. None of it blocks current decks; it's
 purely additive.
+
+## 10. The agent kit — ship Lattice knowledge with the deck (decided 2026-06-17)
+
+**Status: shipped (P5).** The bundle was render-complete but **author-blind**: a
+recipient could render in Marp and hand-edit `deck.md`, but an AI agent dropped
+into the folder to *extend* the deck had zero Lattice knowledge — it invented
+`_class` names and overflowed layouts (the exact failure the content-capacity
+contract, `2026-06-17-content-capacity-contract.md`, fixes *inside* Lattice). The
+moment the deck leaves, that knowledge was lost.
+
+**Decision: carry a minimal agent kit, on by default.** The bundle ships:
+
+- a generated, **bundle-tailored `AGENTS.md`** at the root (where agents
+  auto-discover it) — `agentsMd()` in the shared spec. It is NOT the repo's
+  `AGENTS.md`: it points at the bundle's own paths (`deck.md`, `agent/components.json`),
+  teaches *count-first / pick-by-capacity*, and is honest that the catalog is a
+  **frozen snapshot** at the exporting Lattice version.
+- `agent/components.json` — the machine-readable component catalog (axes, slots,
+  skeletons, `whenToUse`/`antiPatterns`, **and `capacity`**), via a new
+  `AGENT_ASSETS` manifest beside `STATIC_ASSETS`.
+
+**Why this doesn't reopen the 2026-06-15 lean-bundle reframe.** That reframe
+dropped the bundled *emulator* because shipping a whole Node CLI to render a Marp
+artifact was off-axis and heavy. The agent kit is **text/data, not a runtime**,
+and it's an *authoring* aid — recipients still render with Marp; it is not a
+second render path. It slots into seams that already exist: the spec owns
+generated text files (README/config/package) + an asset manifest, so the kit is
+*one more generated file + one more asset*, shared across both producers
+(`tools/export-marp.js`, the Drawing Board) so they can't drift.
+
+**Scope (locked with the user):** the **Minimal** tier — `AGENTS.md` +
+`components.json` only (the authoring-contract prose `skill.md` and a *runnable*
+linter were considered and deferred; the catalog knowledge alone fixes blind
+authoring, and a runnable `lint:deck` re-adds the Node weight the reframe removed).
+**Default-on with an opt-out:** CLI `--no-agent`. The browser producer ships the
+kit by default and the function is opt-out-*ready* (`includeAgent`), but **there
+is no Drawing Board toggle yet — every Drawing Board bundle currently carries the
+kit.** That UI is the one deferred piece of "with an opt-out" (see below); it's a
+small fast-follow, and over-shipping harmless text/data is the safe default
+meanwhile. The browser fetches the catalog from the same staged `export/` dir as
+the static assets (`sync-playground-assets.mjs`).
+
+**Deferred:** a Drawing Board opt-out toggle in the export menu; optionally a
+heavier tier shipping a zero-dep browser linter (the bundled `lint-core` already
+exists) so the recipient can validate edits without a Node dependency.
