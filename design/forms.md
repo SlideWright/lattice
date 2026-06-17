@@ -11,7 +11,10 @@ transition.
 This is the canonical doc for the composition axis. Read it before working on
 slide-level layout, chrome, the masthead/footer bands, the resolution contract,
 or the Form/Frame catalog. It is the slide-scale companion to the component model
-in `design/design-system.md` (§4, *The forms*).
+in `design/design-system.md` (§4, *The forms*). For how the structural nouns
+below (Frame · Cell · Tile) relate to the four axes and to the component — the
+whole concept map on one page — see `design/concepts.md`. This doc **owns the
+structural nouns**.
 
 ---
 
@@ -471,7 +474,7 @@ validation, so adding a Frame or a Tile is *a folder, not edits to three kernels
 At the **"light" coupling rung shipped today** that contract is *validated*, not yet
 *executed*: the render still places via hand-written transforms + CSS keyed on
 classes (only `id` + `exemptFromChrome` are read at render time), and a build gate
-keeps the manifest and that CSS in step — see `/spec/form-model/` for the render
+keeps the manifest and that CSS in step — see `/model/form-model/` for the render
 chain, and the coupling ADR for the rungs. As of the "light" coupling
 (`2026-06-16-form-manifest-medium-independent-contract.md` §4), a build gate enforces
 manifest↔CSS consistency so the contract can't silently drift: geometry/gap
