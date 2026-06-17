@@ -24,7 +24,7 @@ import { joinBase } from '../lib/base-url.mjs';
 import { primaryNav, GITHUB_URL, isCurrent } from '../lib/nav.mjs';
 import { isPreviewDeploy as isPreviewDeployEnv } from '../lib/deploy-env.mjs';
 import { pickGrammarVariants } from '../playground/architect-knowledge.js';
-import DrawingBoardTopbar from '../components/drawing-board/DrawingBoardTopbar.tsx';
+import PaletteControls from '../components/site/PaletteControls.tsx';
 import DrawingBoardExportMenu from '../components/drawing-board/DrawingBoardExportMenu.tsx';
 import ResourceHints from '../components/site/ResourceHints.astro';
 
@@ -229,14 +229,14 @@ const dbData = JSON.stringify({
 					<a class="navlink" href={GITHUB_URL}>GitHub</a>
 				</nav>
 				<div class="topbar-actions">
-					<!-- The deck-theme palette picker + light/dark toggle — a React + shadcn
-					     island (DrawingBoardTopbar). UNLIKE the chrome-only site picker, this
-					     WRITES the deck's `theme:` front matter via the render controller's
-					     window.__dbChrome bus (applyTheme → writeFrontMatter) and mirrors the
-					     deck's theme back onto data-palette — the authoring semantics this
-					     surface needs. client:idle so the chrome paints first. -->
-					<div class="controls">
-						<DrawingBoardTopbar client:idle palettes={palettes} />
+					<!-- The ONE global theme dropdown + light/dark toggle (PaletteControls,
+					     the same component every surface mounts). On this route it detects
+					     the render controller's window.__dbChrome bus and WRITES the deck's
+					     `theme:` front matter (applyTheme → writeFrontMatter), mirroring it
+					     back onto data-palette — the authoring semantics this surface needs.
+					     lx-ui scopes the shadcn island; client:idle so the chrome paints first. -->
+					<div class="controls lx-ui">
+						<PaletteControls client:idle palettes={palettes} />
 					</div>
 					<button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-controls="topnav" aria-expanded="false"></button>
 				</div>

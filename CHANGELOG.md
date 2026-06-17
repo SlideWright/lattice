@@ -199,7 +199,13 @@ in patch versions.
   (landing, component portal, Drawing Board chrome), not just the deck preview:
   the portal token generator now flattens each palette's `@import` chain (so a
   thin `a11y-*` palette resolves the full token contract via onyx) and emits
-  mode-invariant blocks for them. New: `themes/a11y-*` (+ `a11y-base`),
+  mode-invariant blocks for them. The theme dropdown is now **one global
+  component** (the shared `PaletteControls`, replacing the separate Drawing Board
+  topbar) mounted on every surface — landing, playground, workbench, component
+  pages, and the Drawing Board — listing the identical grouped set (brand
+  palettes, then an "Accessibility · colour-blindness" group); it writes the
+  deck's `theme:` on the Drawing Board and sets the site palette elsewhere. New:
+  `themes/a11y-*` (+ `a11y-base`),
   `lib/theme/cvd.js` (Machado-2009 simulation), `lib/core/accessibility-textures.js`,
   `tools/cvd-audit.js`. See `engineering/decisions/2026-06-16-colour-blindness-accessibility.md`
   + `…-cvd-redundant-encoding.md`.

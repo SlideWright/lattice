@@ -367,10 +367,11 @@ export function createRenderController(data) {
 	}
 
 	// ── Palette / mode ────────────────────────────────────────────────────
-	// The legacy native controls (#palette, #mode-toggle) are gone — the
-	// React topbar island (DrawingBoardTopbar) owns them now. It drives this
-	// controller through window.__dbChrome (below), preserving the exact
-	// deck-theme-writing semantics: a palette pick WRITES the deck's `theme:`
+	// The legacy native controls (#palette, #mode-toggle) are gone — the shared
+	// React PaletteControls island owns them now (the same global theme dropdown
+	// every surface mounts). It drives this controller through window.__dbChrome
+	// (below), preserving the exact deck-theme-writing semantics on this route: a
+	// palette pick WRITES the deck's `theme:`
 	// front matter (applyTheme → writeFrontMatter), and the chrome mirrors
 	// the deck's theme back onto data-palette (syncThemeControls). The
 	// guarded references keep this working even before the island hydrates.
