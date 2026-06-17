@@ -25,6 +25,18 @@ in patch versions.
 
 ## Unreleased
 
+### Fixed
+
+- **Present/Practice mobile stage — maximise + robust centering.** The
+  single-slide stage now centers the slide with explicit `position:fixed` +
+  JS-computed `left/top` (instead of flex-centering the oversized
+  `transform:scale` box, which mobile Safari mis-centered and pushed up), uses
+  `100dvh` (tracks the URL bar so nothing falls below the fold), and re-fits on
+  `orientationchange` + `visualViewport` resize — so the slide fills the
+  available space and stays centered in portrait AND landscape. *(Needs
+  on-device iOS Safari confirmation — the headless sandbox can't render the
+  fullscreen mobile present stage representatively.)*
+
 ### Added
 
 - **Content-capacity contract — layouts declare how many elements they hold, and the linter warns before an overflow.** Each component manifest can now carry a `capacity` block (`{ axis, min, sweet, soft, hard, escalateTo, note }`) keyed to the collection it's built on (`item` / `row` / `col` / `cell` / `line` — a `focusAxes` member). The agent/author reads it from `components.json` to **pick a layout by content shape** (count first, then filter by capacity), and `lint:deck` emits an advisory warning — `capacity-crowd` past `soft`, `capacity-overflow` past `hard` — with an `escalateTo` fix, both live in the CLI and the Drawing Board. The count is approximate at authoring time (markdown, `lib/authoring/lint-core.js`), with a render-exact counting primitive (`lib/core/collections.js` `countAxis`) landed and tested for the staged render-time gate. The validator rejects an inert contract whose axis can't be measured in the component's own sample. Each component's generated `.docs.md` now shows a **Capacity** line. Seeded on the ten worst overflow offenders (`cards-grid`, `cards-stack`, `stats`, `list-steps`, `verdict-grid`, `compare-table`, `actors`, `agenda`, `checklist`, `kanban`); the rest backfill incrementally. Advisory only — never blocks, so galleries/`stressSample` stay free to push limits. See `engineering/decisions/2026-06-17-content-capacity-contract.md`.
