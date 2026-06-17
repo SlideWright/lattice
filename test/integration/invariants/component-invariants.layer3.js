@@ -191,8 +191,16 @@ const LAYER3 = {
 
   // ── imagery ──
   image: {
-    'renders an image asset (img)':
-      present('img', 1, 'image did not render an <img>'),
+    // The image rides as a CSS background-image on .lattice-bg (no <img>) —
+    // see engineering/decisions/2026-06-17-image-rearchitecture.md.
+    'renders a CSS-background image panel (.lattice-bg with background-image)':
+      async (page, assert, SLIDE) => {
+        const bg = await page.$$eval(`${SLIDE} .lattice-bg`, (els) =>
+          els.map((el) => getComputedStyle(el).backgroundImage));
+        assert.ok(bg.length >= 1, `image did not render a .lattice-bg panel (got ${bg.length})`);
+        assert.ok(bg.some((b) => b && b !== 'none'),
+          `image .lattice-bg has no background-image (${bg.join(', ')})`);
+      },
   },
 
   // ── inventory ──

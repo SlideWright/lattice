@@ -972,10 +972,14 @@ function engineSlides() {
   // ring), matching the emulator's own `output:'html'` KaTeX call.
   const engine = latticeEngine.createEngine({ mathOutput: 'html' });
   engine.addThemes([readFileOrDie(cssFile, 'layout CSS'), fs.readFileSync(palettePath, 'utf8')]);
-  // Rewrite `![bg side](url)` to the lattice-bg/image-asset div BEFORE render so
-  // the engine's basic-mode background ruler never collapses the split (lib/engine
+  // Rewrite `![bg side](url)` to the lattice-bg div (CSS background) BEFORE render
+  // so the engine's basic-mode background ruler never collapses the split (lib/engine
   // matches marp WEB mode; the emulator's PDF path wants the half-canvas panel).
-  const { html } = engine.render(bgImage.liftBgImages(rawMd), paletteName);
+  // The deck's directory resolves deck-relative asset URLs to absolute file:// URLs
+  // so they render regardless of the output directory (the path-bug fix —
+  // engineering/decisions/2026-06-17-image-rearchitecture.md).
+  const deckDir = path.dirname(path.resolve(mdFile));
+  const { html } = engine.render(bgImage.liftBgImages(rawMd, deckDir), paletteName);
   const imageScrim = require('./lib/transformers/image-scrim');
   return splitTopLevelSections(html).map((sec, i) => {
     // Re-tag the slide index, then apply the per-section image fixups the

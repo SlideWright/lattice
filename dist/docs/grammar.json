@@ -1364,9 +1364,9 @@
       "skeleton": "<!-- _class: image -->\n\n## Image right is the default — text leads, evidence follows.\n\nReplace the bg image below with your own asset. The image fills its half-canvas slot edge-to-edge; a 1px hairline marks the join between text and image.\n\n![bg right](your-image.jpg)\n",
       "slots": {
         "image": {
-          "selector": "img",
+          "selector": ".lattice-bg",
           "required": true,
-          "description": "Marp background image syntax: `![bg](path)` or `![bg right](path)`."
+          "description": "Marp background image syntax: `![bg](path)` or `![bg right](path)` — rendered as a CSS background-image on the `.lattice-bg` panel (no `<img>`)."
         },
         "heading": {
           "selector": "h2",

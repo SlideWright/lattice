@@ -184,6 +184,19 @@ in patch versions.
   favour of the per-component semantic-invariant suite. See
   `engineering/decisions/2026-06-12-p4-regression-gate-retire-marp.md`.
 
+### Fixed
+
+- **`image` slides now render their asset regardless of the output directory.**
+  The half-canvas/full-bleed image rode in an `<img>` whose deck-relative `src`
+  resolved against the *output* directory, so any deck rendered to a PDF outside
+  its own folder showed a broken-image placeholder. The image is now a CSS
+  `background-image` on the `.lattice-bg` panel, with the asset URL resolved to
+  an absolute `file://` URL against the deck directory. Moving off `<img>` also
+  retires the 22 `!important` overrides `image.styles.css` carried to beat
+  Marpit's `section img` catch-all. Visual output is unchanged (pixel-parity with
+  the prior baseline). See
+  `engineering/decisions/2026-06-17-image-rearchitecture.md`.
+
 ### Added
 
 - **Colour-vision-deficiency accessibility — four first-class CVD themes.** Four

@@ -3661,7 +3661,7 @@ Replace the bg image below with your own asset. The image fills its half-canvas 
 
 | Slot | Selector | Required | Description |
 |---|---|---|---|
-| `image` | `img` | yes | Marp background image syntax: `![bg](path)` or `![bg right](path)`. |
+| `image` | `.lattice-bg` | yes | Marp background image syntax: `![bg](path)` or `![bg right](path)` — rendered as a CSS background-image on the `.lattice-bg` panel (no `<img>`). |
 | `heading` | `h2` | no | Optional heading in the text slot. |
 | `body` | `p` | no | Optional caption or body text. |
 
