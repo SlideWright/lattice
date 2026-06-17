@@ -26,6 +26,7 @@
 
 const fs            = require('fs');
 const path          = require('path');
+const { pathToFileURL } = require('node:url');
 const os            = require('os');
 const { execSync }  = require('child_process');
 
@@ -975,11 +976,12 @@ function engineSlides() {
   // Rewrite `![bg side](url)` to the lattice-bg div (CSS background) BEFORE render
   // so the engine's basic-mode background ruler never collapses the split (lib/engine
   // matches marp WEB mode; the emulator's PDF path wants the half-canvas panel).
-  // The deck's directory resolves deck-relative asset URLs to absolute file:// URLs
-  // so they render regardless of the output directory (the path-bug fix —
+  // The deck's directory (as a file:// URL with a trailing slash) resolves
+  // deck-relative asset URLs to absolute file:// URLs so they render regardless of
+  // the output directory (the path-bug fix —
   // engineering/decisions/2026-06-17-image-rearchitecture.md).
-  const deckDir = path.dirname(path.resolve(mdFile));
-  const { html } = engine.render(bgImage.liftBgImages(rawMd, deckDir), paletteName);
+  const deckBaseUrl = pathToFileURL(path.dirname(path.resolve(mdFile)) + path.sep).href;
+  const { html } = engine.render(bgImage.liftBgImages(rawMd, deckBaseUrl), paletteName);
   const imageScrim = require('./lib/transformers/image-scrim');
   return splitTopLevelSections(html).map((sec, i) => {
     // Re-tag the slide index, then apply the per-section image fixups the

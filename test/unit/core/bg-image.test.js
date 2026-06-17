@@ -17,8 +17,8 @@ describe('bg-image — liftBgImages (markdown pre-pass)', () => {
     assert.doesNotMatch(out, /!\[bg/);
   });
 
-  test('resolves deck-relative URLs to absolute file:// against the deck dir', () => {
-    const out = bg.liftBgImages('![bg right](pic.svg)', '/decks/q');
+  test('resolves deck-relative URLs against a file:// base', () => {
+    const out = bg.liftBgImages('![bg right](pic.svg)', 'file:///decks/q/');
     assert.match(out, /background-image:url\('file:\/\/\/decks\/q\/pic\.svg'\)/);
   });
 
@@ -83,15 +83,17 @@ describe('bg-image — primitives', () => {
   });
 
   test('resolveAssetUrl rebases deck-relative URLs, passes remote/data through', () => {
-    assert.match(bg.resolveAssetUrl('pic.svg', '/decks/q'), /^file:\/\/\/decks\/q\/pic\.svg$/);
-    assert.equal(bg.resolveAssetUrl('https://x/y.png', '/decks/q'), 'https://x/y.png');
-    assert.equal(bg.resolveAssetUrl('data:image/svg+xml,abc', '/decks/q'), 'data:image/svg+xml,abc');
-    assert.equal(bg.resolveAssetUrl('pic.svg'), 'pic.svg'); // no baseDir → verbatim
+    assert.match(bg.resolveAssetUrl('pic.svg', 'file:///decks/q/'), /^file:\/\/\/decks\/q\/pic\.svg$/);
+    // an http(s) base (the web playground) resolves the same way
+    assert.equal(bg.resolveAssetUrl('pic.svg', 'https://o/assets/'), 'https://o/assets/pic.svg');
+    assert.equal(bg.resolveAssetUrl('https://x/y.png', 'file:///decks/q/'), 'https://x/y.png');
+    assert.equal(bg.resolveAssetUrl('data:image/svg+xml,abc', 'file:///decks/q/'), 'data:image/svg+xml,abc');
+    assert.equal(bg.resolveAssetUrl('pic.svg'), 'pic.svg'); // no base → verbatim
   });
 
   test('resolveAssetUrl does not throw on a literal % in a filename', () => {
-    // decodeURI throws URIError on `100%.svg`; the guard must keep the render alive.
-    assert.doesNotThrow(() => bg.resolveAssetUrl('100%.svg', '/decks/q'));
-    assert.match(bg.resolveAssetUrl('100%.svg', '/decks/q'), /\/decks\/q\/100/);
+    // WHATWG URL must not throw on `100%.svg` (decodeURI would) — keep the render alive.
+    assert.doesNotThrow(() => bg.resolveAssetUrl('100%.svg', 'file:///decks/q/'));
+    assert.match(bg.resolveAssetUrl('100%.svg', 'file:///decks/q/'), /\/decks\/q\/100/);
   });
 });

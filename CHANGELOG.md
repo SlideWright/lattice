@@ -216,8 +216,10 @@ in patch versions.
   an absolute `file://` URL against the deck directory. Moving off `<img>` also
   retires the 22 `!important` overrides `image.styles.css` carried to beat
   Marpit's `section img` catch-all. Visual output is unchanged (pixel-parity with
-  the prior baseline). See
-  `engineering/decisions/2026-06-17-image-rearchitecture.md`.
+  the prior baseline). The half-canvas split now lives in the shared engine
+  (class-aware + idempotent), so the docs playground / web runtime render the
+  same split layout as the PDF path instead of collapsing it to a broken
+  full-bleed. See `engineering/decisions/2026-06-17-image-rearchitecture.md`.
 
 ### Added
 

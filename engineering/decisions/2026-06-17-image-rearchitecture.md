@@ -6,30 +6,29 @@ Branch: `claude/important-usage-audit-67ggrm`
 
 ## ⚠️ Implemented vs. planned (scope correction)
 
-The design below describes a full cross-path unification (move the split into
-`lib/engine/background-image.js`, thread `baseUrl` through `render()`, delete
-`bg-image.js` / `image-scrim.js`). **What actually shipped is narrower and
-emulator-only**, by best-judgment de-risk:
+Shipped in two passes:
 
-- **Done (emulator / CLI path):** `lib/core/bg-image.js` now emits the image as
-  a CSS `background-image` on `.lattice-bg` (no `<img>`, no `!important`), and
-  resolves deck-relative asset URLs to absolute `file://` against the deck dir.
-  This fixes "image totally broken" for `node lattice-emulator.js …` PDF output
-  — the path where it was reported and where decks render to PDF.
-- **NOT done (runtime / playground path):** `lib/engine/background-image.js` was
-  **not** touched. The owned engine still collapses `bg left/right` to a single
-  full-bleed `--background-image` on the `<section>` (the deferred "P1.1" split)
-  and resolves the URL verbatim (no `baseUrl`). So in `dist/lattice-runtime.js`
-  / the docs playground, `image` renders **full-bleed only** (no half-canvas
-  split) and a deck-relative asset still 404s when the origin isn't the deck
-  dir. `image-scrim.js` and `bg-image.js` were **kept**, not deleted.
-- **The semantic-invariant suite renders through the emulator only**, so no
-  existing gate catches the runtime/playground gap.
+- **Pass 1 (emulator / CLI):** `lib/core/bg-image.js` emits the image as a CSS
+  `background-image` on `.lattice-bg` (no `<img>`, no `!important`), resolving
+  deck-relative URLs to absolute `file://` against the deck dir. Fixed the PDF
+  path where "totally broken" was reported.
+- **Pass 2 (web layout — this update):** the half-canvas split now lives in the
+  **shared engine**, not just the emulator. `lib/engine/index.js` runs a
+  class-aware `liftImageBgImages` + `wrapImageText` + scrim in `renderHtml`, so
+  the docs playground / runtime produce the SAME split DOM (`.lattice-bg` +
+  `.image-text`) as the PDF path. It is idempotent (the emulator pre-lifts, so
+  the engine pass no-ops there — emulator PDFs stay pixel-identical) and
+  class-aware (a non-image `![bg]` keeps the marp-web section background). The
+  URL resolver is now WHATWG-`URL`-based (no `node:path`/`node:url`) so it
+  bundles into the **browser** playground engine; `render()` gained an optional
+  `{ baseUrl }`.
 
-**Remaining work (follow-up):** implement the `bg left/right` split + `baseUrl`
-threading in `lib/engine/background-image.js` so the runtime/playground reach
-parity, then retire the emulator pre-pass. The "Three moves" / "Decision"
-sections below are the *target*, not the shipped state.
+**Remaining (the one web gap):** **asset serving.** The web layout is now
+correct, but a component sample's `![bg](sample-image-landscape.svg)` still
+resolves against the playground origin, where the sample SVGs aren't served —
+so the image panel is correctly laid out but empty until the sample assets are
+staged (`docs/scripts/sync-playground-assets.mjs`) and the playground passes
+their base as `{ baseUrl }` to `render()`. Tracked as the next step.
 
 ## Context — what "image is totally broken" actually was
 
