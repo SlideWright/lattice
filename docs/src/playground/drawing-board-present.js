@@ -142,7 +142,10 @@ export function createPresent({ host, getSource, runtimeUrl, themeBase }) {
       'var pad=Math.max(0,Math.min(W,H)*0.012);' +
       'var sc=Math.min((W-pad*2)/' + sw + ',(H-pad*2)/' + sh + ');if(!(sc>0))sc=1;' +
       'fitEl.style.width=(sc*' + sw + ')+"px";fitEl.style.height=(sc*' + sh + ')+"px";' +
-      'for(var i=0;i<s.length;i++){var on=i===cur;s[i].style.display=on?"block":"none";' +
+      // Show/hide WITHOUT forcing display:block — that clobbers the section's
+      // CSS display:flex (which title/closing/divider use to vertically center
+      // their content), pushing content to the top. "" reverts to the stylesheet.
+      'for(var i=0;i<s.length;i++){var on=i===cur;s[i].style.display=on?"":"none";' +
       'if(on){s[i].style.transformOrigin="top left";s[i].style.transform="scale("+sc+")"}}}' +
       'function show(n){cur=n|0;fit()}' +
       'window.addEventListener("message",function(e){if(e.data&&e.data.pv!=null)show(e.data.pv)});' +
