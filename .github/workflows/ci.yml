@@ -1,10 +1,20 @@
 name: CI
 
 on:
-  push:
-    branches: [main]
   pull_request:
     branches: [main]
+  # The merge queue runs CI on the PR tentatively rebased onto current main
+  # (plus any PRs ahead of it). THIS aggregate `ci` check is the required gate
+  # the queue waits on, so it must fire on merge_group. See
+  # engineering/decisions/2026-06-17-workflow-efficiency-review.md §F.
+  merge_group:
+  # NOTE: there is deliberately NO `push: [main]` trigger. Post-merge validation
+  # of main comes from the merge_group run (the queue tests the exact tree it
+  # then squashes) — re-running full CI on the post-squash push would be a third
+  # redundant pipeline per merge. The docs-site DEPLOY runs on push:[main] in its
+  # own workflow (docs.yml), so dropping it here costs no deploy coverage. Until
+  # the queue is enabled in branch protection, the PR's own run + HARD RULE #16's
+  # pre-merge CI re-confirm cover the merge.
 
 # Cancel superseded runs on the same ref — rapid pushes to a PR no longer
 # pile up full pipelines.
@@ -27,12 +37,16 @@ jobs:
   changes:
     runs-on: ubuntu-latest
     outputs:
-      code: ${{ steps.filter.outputs.code }}
-      docs: ${{ steps.filter.outputs.docs }}
+      # On merge_group (the merge queue's combined-state run) run EVERYTHING:
+      # it's the final pre-merge gate, so path-skipping is the wrong economy,
+      # and paths-filter has no PR base to diff against there.
+      code: ${{ steps.filter.outputs.code == 'true' || github.event_name == 'merge_group' }}
+      docs: ${{ steps.filter.outputs.docs == 'true' || github.event_name == 'merge_group' }}
     steps:
       - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v3
         id: filter
+        if: github.event_name != 'merge_group'
         with:
           filters: |
             code:
@@ -87,10 +101,14 @@ jobs:
         run: npm run lint:deck:all
 
   # ── Unit + artifact-freshness — code changes only ──────────────────────
-  # Matrix verifies the engines claim. Unit tests don't render, so the
-  # browser download is skipped here too. build:check (regen + byte-diff of
-  # every generated artifact: css, default bundle, runtime/emulator bundles,
-  # component docs, portal, dist README — render-free) runs once, on 22.
+  # The engines claim is `>=22`. The FULL unit suite runs on 22; on 24 a
+  # representative engine smoke subset (core/engine/parsing/contracts/
+  # transformers) confirms cross-version compat without paying 2× the whole
+  # suite — pure-JS Node-version risk is low and concentrated in the engine
+  # paths. See engineering/decisions/2026-06-17-workflow-efficiency-review.md §D.
+  # build:check (regen + byte-diff of every generated artifact: css, default
+  # bundle, runtime/emulator bundles, component docs, portal, dist README —
+  # render-free) runs once, on 22.
   unit:
     needs: changes
     if: needs.changes.outputs.code == 'true'
@@ -119,8 +137,15 @@ jobs:
         # so an engine/plugin change can't ship a stale bundle to the live site.
         if: matrix.node-version == 22
         run: npm run playground:check
-      - name: Unit tests
+      - name: Unit tests (full suite)
+        if: matrix.node-version == 22
         run: npm test
+      - name: Unit tests (engine + export smoke subset)
+        if: matrix.node-version != 22
+        # core/engine/parsing/contracts/transformers cover the render kernels;
+        # export/ is added because PPTX/PDF export leans on Node stream/buffer/
+        # zip/child-process APIs — the most Node-version-sensitive non-engine area.
+        run: node --test 'test/unit/core/*.test.js' 'test/unit/engine/*.test.js' 'test/unit/parsing/*.test.js' 'test/unit/contracts/*.test.js' 'test/unit/transformers/*.test.js' 'test/unit/export/*.test.js'
 
   # ── Integration — code changes only ────────────────────────────────────
   # The only tier that renders, so the only one that needs Chromium — cached
@@ -309,17 +334,25 @@ jobs:
               await github.rest.issues.createComment({ ...context.repo, issue_number: context.issue.number, body });
             }
 
-  # ── Docs site build — docs (or engine) changes only ────────────────────
+  # ── Docs site build (+ overflow guard) — docs (or engine) changes only ──
   # The deploy workflow (docs.yml) only builds on push to main, so PRs got no
   # docs-build validation. This builds the Astro site (same `npm run build` the
   # deploy uses) so a docs/engine change that breaks the site fails the PR.
-  # No rendering here, so Chromium is skipped.
+  #
+  # The horizontal-overflow guard runs HERE, reusing this one build, instead of
+  # in a separate workflow that rebuilt the whole Astro site a second time (the
+  # old docs-overflow.yml). check-overflow.mjs serves the prebuilt docs/dist —
+  # it doesn't rebuild — so it just needs a Chrome. It stays ADVISORY via
+  # continue-on-error (not a merge blocker until promoted); a real overflow
+  # still surfaces as a failed (red ✗) step in the job's log. See
+  # engineering/decisions/2026-06-17-workflow-efficiency-review.md §D and
+  # engineering/decisions/2026-06-15-docs-perf-gating-policy.md.
   docs-build:
     needs: changes
     if: needs.changes.outputs.docs == 'true'
     runs-on: ubuntu-latest
     env:
-      PUPPETEER_SKIP_DOWNLOAD: '1'
+      PUPPETEER_SKIP_DOWNLOAD: '1' # the build is render-free; overflow uses a system Chrome
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -327,6 +360,10 @@ jobs:
           node-version: 22
           cache: npm
           cache-dependency-path: docs/package-lock.json
+      - uses: browser-actions/setup-chrome@v1
+        id: chrome
+        with:
+          chrome-version: stable
       - name: Install docs deps
         run: npm ci
         working-directory: docs
@@ -336,6 +373,14 @@ jobs:
       - name: Build docs site
         run: npm run build
         working-directory: docs
+      # Responsive guard (advisory): no page may exceed its viewport width at
+      # 390/820/1440 — a pannable page breaks on touch. Reuses the build above.
+      - name: Horizontal-overflow guard (mobile/tablet/desktop)
+        continue-on-error: true
+        run: npm run check:overflow
+        working-directory: docs
+        env:
+          CHROME_PATH: ${{ steps.chrome.outputs.chrome-path }}
 
   # ── Single required check ──────────────────────────────────────────────
   # Set THIS as the only required status check in branch protection. It

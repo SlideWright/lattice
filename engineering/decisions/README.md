@@ -21,6 +21,45 @@ later, it lives here.
 - When a note is fully absorbed into the canonical docs and adds
   nothing further, delete it. This folder is not an archive.
 
+### Status lifecycle — a closed vocabulary the index reads
+
+Every note carries a YAML front-matter block so its lifecycle is
+machine-readable (and so the "Current notes" list below can be
+**generated**, not hand-maintained — hand-maintained indexes drift):
+
+```yaml
+---
+status: proposed        # proposed | in-progress | blocked | shipped | superseded
+created: 2026-06-17
+updated: 2026-06-17      # optional; bump when materially revised
+supersedes:              # optional: filename(s) this note replaces
+superseded-by:           # optional: filename that replaced this note
+---
+```
+
+| `status` | Glyph | Meaning | Index group |
+|---|---|---|---|
+| `proposed` | ☐ | A design/decision written, not yet built | **Active** |
+| `in-progress` | ◐ | Being built now | **Active** |
+| `blocked` | ⏸ | Needs an owner decision or a dependency | **Active** |
+| `shipped` | ☑ | Built + verified; *absorb into canon, then delete* | **Shipped — pending teardown** |
+| `superseded` | ⊘ | Replaced by `superseded-by` | **Historical** |
+
+A **multi-part** initiative (several independently-shippable workstreams in one
+note — e.g. `2026-06-17-workflow-efficiency-review.md`) adds a **roll-up banner**
+under the title (overall status + a stats line) and a per-section
+`**Status:**` line, so each partition tracks itself. The banner's stats are a
+human roll-up of the section statuses.
+
+**The index is generated.** `npm run decisions:index` reads every note's
+front-matter and regenerates the "Current notes" list below (grouped Active /
+Shipped-pending-teardown / Historical); `npm run decisions:index:check` is the
+freshness gate (same pattern as `docs:portal:check`). Don't hand-edit the
+generated list — edit a note's front-matter and regenerate. `shipped` and
+`superseded` notes are candidates for the "absorb-then-delete" rule above; the
+grouping makes the ~70% that are historical skippable at a glance. See
+`2026-06-17-workflow-efficiency-review.md` §A.
+
 ## What does **not** belong here
 
 - Session-scoped TODOs, scratch experiments, half-finished thoughts.

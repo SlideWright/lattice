@@ -11,9 +11,15 @@ name: Sync backlog mirror
 # engineering/workflow.md § Work queue.
 on:
   issues:
-    types: [opened, edited, deleted, closed, reopened, labeled, unlabeled, assigned, unassigned, transferred]
+    # State-change events only. Label/assignee churn is deliberately EXCLUDED:
+    # the triage/apply-label workflows add labels themselves, so a single new
+    # issue used to fan out several near-no-op backlog syncs all contending to
+    # push main. BACKLOG.md mirrors title/state/labels/assignees, so the daily
+    # cron picks up any label/assignee drift within 24h. See
+    # engineering/decisions/2026-06-17-workflow-efficiency-review.md §D.
+    types: [opened, edited, deleted, closed, reopened, transferred]
   schedule:
-    - cron: '17 6 * * *' # daily 06:17 UTC safety net
+    - cron: '17 6 * * *' # daily 06:17 UTC safety net — also reconciles label/assignee drift
   workflow_dispatch:
 
 permissions:

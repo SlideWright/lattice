@@ -366,8 +366,12 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
 - **Cause:** Fonts are embedded into a PDF **at render time**, never
   fetched when viewed. The engine loads its faces from a Google-Fonts
   `<link>`/`@import`, which needs the network. A render with no network
-  — the cloud sandbox, the pre-commit PDF rebuild — silently embeds a
-  system fallback instead. The page-count tests don't catch it (font
+  — the pre-commit PDF rebuild offline — silently embeds a system
+  fallback instead. In the **cloud sandbox** specifically the network is
+  present but a **TLS-intercepting (MITM) proxy** sits in front of CDNs,
+  so the webfont fetch fails the certificate check and falls back the
+  same way — i.e. "the sandbox has network" does not mean CDN webfonts
+  resolve. The page-count tests don't catch it (font
   swaps don't change slide count), so the broken PDF ships green. The
   trap: "open it on a networked device and the fonts resolve" is FALSE
   — a fallback-font PDF is fallback forever.
@@ -1082,6 +1086,11 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
   ordering / specificity decision: declare overrides AFTER bases so
   source order resolves the conflict, or use explicit comma-separated
   enumeration of the cases that should match.
+- **Gated (HARD RULE #12):** `checkThemeHasSelectors` in
+  `tools/check-ownership.js` fails the build (via `build:check`) if a
+  `themes/*.css` file uses `:not(:has(…))` / `:is(:has(…))`. The ban is
+  scoped to themes — component/base CSS uses the form deliberately with a
+  marp-preview fallback path, so it is not gated there.
 - **Triggered by:** Any rule using `:not(:has(...))` in a theme that
   loads in Marp preview.
 - **Removable when:** Verified across all Marp / Electron versions

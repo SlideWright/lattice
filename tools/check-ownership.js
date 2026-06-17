@@ -138,6 +138,18 @@ const REQUIRED_THEME_TOKENS = Object.freeze([
   '--accent', '--accent-soft', '--surface-inverse',
 ]);
 
+// HARD RULE #4: typography is a CLOSED 12-token, role-named `--fs-*` system
+// (engineering/typography.md §1) — never t-shirt sizes (`--fs-md`/`--fs-lg`) or
+// any ad-hoc name. `--fs-scale` is the cqi scale base the 12 derive from. A new
+// `--fs-*` DECLARATION outside this set is the regression this gate blocks;
+// adding a 13th role token is a deliberate act that updates this list + the doc.
+const CANONICAL_FS_TOKENS = Object.freeze(new Set([
+  '--fs-meta', '--fs-body-compact', '--fs-body', '--fs-message', '--fs-emphasis',
+  '--fs-h1', '--fs-h2', '--fs-h3', '--fs-h4', '--fs-h5', '--fs-h6',
+  '--fs-hero',
+  '--fs-scale',
+]));
+
 // ── Selector parsing (paren-aware) ────────────────────────────────────────
 
 /** Strip /* *​/ comments. */
@@ -602,6 +614,61 @@ function checkRetiredTokenNames(errors) {
   }
 }
 
+// Pure core for HARD RULE #4: the non-canonical `--fs-*` names DECLARED in a CSS
+// string (declarations only — `--fs-x:` — so `var(--fs-h${n})` usages and prose
+// never trip it). Comments must already be stripped by the caller.
+function nonCanonicalFsTokens(css) {
+  const out = [];
+  const seen = new Set();
+  for (const m of css.matchAll(/(--fs-[a-z0-9-]+)\s*:/g)) {
+    const name = m[1];
+    if (seen.has(name)) continue;
+    seen.add(name);
+    if (!CANONICAL_FS_TOKENS.has(name)) out.push(name);
+  }
+  return out;
+}
+
+// Pure core for HARD RULE #12: does this CSS use `:not(…:has(…))` / `:is(…:has(…))`?
+// Matches `:not(`/`:is(` whose argument (up to the next rule boundary) contains
+// `:has(` — `:not(:has(`, `:is(:has(`, `:not(.foo:has(`. A bare `:has()` does not
+// match (the breakage is specifically the :not/:is-wrapped form). Strip comments first.
+function hasNotHasSelector(css) {
+  return /:(?:not|is)\([^{}]*?:has\(/.test(css);
+}
+
+// HARD RULE #4 gate — no non-canonical `--fs-*` token may be DECLARED anywhere
+// in the engine CSS (engineering/typography.md §1).
+function checkTypographyTokens(errors) {
+  for (const file of [...listCssFiles(LIB_DIR), ...listCssFiles(THEMES_DIR)]) {
+    const css = stripComments(fs.readFileSync(file, 'utf8'));
+    const rel = path.relative(ROOT, file);
+    for (const name of nonCanonicalFsTokens(css)) {
+      errors.push(
+        `non-canonical typography token "${name}" declared in ${rel} — HARD RULE #4: ` +
+        `the 12-token role-named --fs-* system is closed (engineering/typography.md §1). ` +
+        `Map it to a role token (e.g. --fs-message / --fs-body-compact), not a t-shirt size.`,
+      );
+    }
+  }
+}
+
+// HARD RULE #12 gate — theme CSS (themes/*.css) must not use `:not(:has(…))` /
+// `:is(:has(…))`: silently broken in the Marp-preview Chromium. Component/base
+// CSS uses these deliberately with fallbacks, so the ban is scoped to themes/.
+function checkThemeHasSelectors(errors) {
+  for (const file of listCssFiles(THEMES_DIR)) {
+    const css = stripComments(fs.readFileSync(file, 'utf8'));
+    if (hasNotHasSelector(css)) {
+      errors.push(
+        `theme "${path.relative(ROOT, file)}" uses :not(:has(…)) / :is(:has(…)) — HARD RULE #12: ` +
+        `that form is silently broken in the Marp-preview Chromium. Drive the variant from an ` +
+        `explicit class/attribute on the element instead (see engineering/gotchas.md).`,
+      );
+    }
+  }
+}
+
 function checkThemeTokenParity(errors) {
   const palettes = listBasePalettes();
   if (!palettes.length) {
@@ -632,6 +699,8 @@ function run() {
   checkTagClustering(manifests, errors);
   checkThemeTokenParity(errors);
   checkRetiredTokenNames(errors);
+  checkTypographyTokens(errors);
+  checkThemeHasSelectors(errors);
   return {
     errors,
     counts: {
@@ -676,6 +745,11 @@ module.exports = {
   checkTagClustering,
   checkRetiredTokenNames,
   RETIRED_TOKEN_NAMES,
+  checkTypographyTokens,
+  checkThemeHasSelectors,
+  nonCanonicalFsTokens,
+  hasNotHasSelector,
+  CANONICAL_FS_TOKENS,
   parseThemeTokens,
   listBasePalettes,
   CO_OWNED_LAYOUTS,

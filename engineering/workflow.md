@@ -358,15 +358,18 @@ under squash-merge — but a real conflict always needs the local rebase above.
 After any rebase, re-run the gates (the content under you changed) and re-confirm
 CI before you ask to merge.
 
-The honest limit of this model: if `main` moves while your PR sits green and you
-take no action, you won't *notice* until your next push or the pre-merge check —
-and a conflict that lands in that window sits silently until then. That's an
-accepted trade: under squash-merge a clean-behind PR is fine, and a real conflict
-is caught at the pre-merge checkpoint before anything merges. The structural fix
-for cross-session races, *if they recur*, is a GitHub **merge queue** (it rebases
-+ tests once at the front of the queue) or a `push`-to-`main` Action that runs
-`update_pull_request_branch` on open PRs — both architectural adoptions to raise
-deliberately, not standing behavior.
+The honest limit of *manual* rebase-before-push: if `main` moves while your PR
+sits green and you take no action, you won't *notice* until your next push or the
+pre-merge check — and a conflict that lands in that window sits silently until
+then. Under squash-merge a clean-behind PR is fine, and a real conflict is caught
+at the pre-merge checkpoint before anything merges — but the checkpoint is manual.
+
+**The structural fix — a GitHub merge queue — is adopted** (see §Merging →
+*Merge queue*). When it's enabled in branch protection, the queue rebases + tests
+each PR once at the front of the line, so the manual pre-merge re-rebase (step 2
+above) becomes the queue's job and the silent-parked-conflict window closes:
+nothing merges except on a freshly-rebased, freshly-green state. Rebase-*before-
+push* (step 1) still holds — it keeps the PR current and the queue fast.
 
 ## Merging
 
@@ -387,6 +390,18 @@ deliberately, not standing behavior.
   before its own merge. One squash (or a tight curated series behind a single
   merge) is one drift event. See
   `decisions/2026-06-14-drift-watch-rebase-thrash.md`.
+- **Merge queue (adopted).** Authorization stays human (above); the queue
+  automates only what happens *after* you approve. With the queue enabled in
+  branch protection, the flow is: you review → approve → **enable auto-merge
+  (squash)** → the queue rebases the PR onto current `main` (plus any PRs ahead),
+  re-runs the required `ci` check on that combined state, and merges only if
+  green. This is the structural fix for the parked-conflict window (§Keeping an
+  open PR mergeable) and it retires the *manual* pre-merge re-rebase dance — the
+  queue owns it. `ci.yml` already carries the `merge_group` trigger; **enabling
+  it is a one-time branch-protection change (owner-driven) — the exact settings
+  are in `decisions/2026-06-17-workflow-efficiency-review.md` §F.** Until it's
+  flipped on, the manual pre-merge re-check (step 2 of §Keeping mergeable) still
+  applies.
 - **Bind a closing keyword to *every* issue the PR resolves.** GitHub
   auto-closes only the issues whose number carries its own keyword, so
   `Closes #1, #2, #3` closes **only #1** and silently leaves the rest open.

@@ -15,10 +15,12 @@ Source-of-truth lives in the config files (`biome.json`, `lefthook.yml`,
 | --- | --- |
 | Inner-loop watch | `npm run test:watch` |
 | Run one scope | `npm run test:<scope>` |
+| Run one file | `node --test <file>` (the `<dir>` form errors — use a scope or `npm test`) |
 | Lint | `npm run lint` (`lint:fix` to auto-fix) |
 | Full check | `npm test && npm run test:integration` |
 | Coverage | `npm run test:coverage` → `.scratch/coverage/index.html` |
 | Force integration rebuild | `LATTICE_TEST_NO_CACHE=1 npm run test:integration` |
+| Run the integration tier at push | `LATTICE_FULL_PUSH=1 git push` (else pre-push skips it; CI always runs it) |
 
 Test scopes: `palette`, `mermaid`, `parsing`, `layouts`, `cli`. Integration
 scopes: `galleries`, `parity`, `mermaid`, `screenshot`. Run via
@@ -30,7 +32,10 @@ Three numbers, one purpose each:
 
 - **`.nvmrc` = 22** — current active LTS, what `nvm use` puts devs on.
 - **`engines.node` = `>=22.0.0`** — declared supported minimum.
-- **CI matrix = `[22, 24]`** — verifies the engines claim on every push.
+- **CI matrix = `[22, 24]`** — verifies the engines claim. The FULL unit suite
+  runs on 22; on 24 a representative smoke subset (core/engine/parsing/contracts/
+  transformers/export) confirms cross-version compat without paying 2× the whole
+  suite. Widen the 24 subset if a Node-version-sensitive area grows.
 
 Drop a version from the matrix iff you also bump `engines`. Bump `engines`
 iff you drop a version from the matrix. The original cause of the
@@ -318,7 +323,7 @@ to a nightly relative-regression watch (see
 locally from `docs/`:
 
 - **`npm run check:overflow`** (`docs/scripts/check-overflow.mjs`) — per-PR
-  (`.github/workflows/docs-overflow.yml`, advisory). A horizontal-overflow
+  (runs in `ci.yml` `docs-build`, advisory via `continue-on-error`). A horizontal-overflow
   guard: loads every converted surface at **390 / 820 / 1440**
   (mobile/tablet/desktop), exercises the interaction states (drawer/pane
   switches, overlay opens), and fails if any page is wider than its viewport (a

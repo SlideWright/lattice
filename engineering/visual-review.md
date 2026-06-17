@@ -68,7 +68,8 @@ Spawn the makers (then the checkers) **concurrently**: one message, multiple
 - **Deck → per-slide PNG (no PDF in hand yet):** render with the owned engine,
   `node dist/lattice-emulator.js <deck> .scratch/x.pdf`, then rasterize as above
   (`tools/rasterize-for-review.sh .scratch/x.pdf --overview`) for one PNG per
-  slide. Needs `CHROME_PATH` for the render; see `CLAUDE.md` § Cloud sandbox.
+  slide. Needs `CHROME_PATH` for the render; see `engineering/development.md`
+  (cloud-sandbox tooling) and `engineering/gotchas.md` (the "no browser" symptom).
 - **Web UI:** `tools/screenshot.js <url> <png> --width …` at the three
   breakpoints. See `engineering/development.md` § Previewing the docs site.
 - **Drift:** `tools/pixel-check.js`, to catch unintended changes vs. the last
