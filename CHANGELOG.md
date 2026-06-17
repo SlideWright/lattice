@@ -27,15 +27,16 @@ in patch versions.
 
 ### Fixed
 
-- **Present/Practice mobile stage — maximise + robust centering.** The
-  single-slide stage now centers the slide with explicit `position:fixed` +
-  JS-computed `left/top` (instead of flex-centering the oversized
-  `transform:scale` box, which mobile Safari mis-centered and pushed up), uses
-  `100dvh` (tracks the URL bar so nothing falls below the fold), and re-fits on
-  `orientationchange` + `visualViewport` resize — so the slide fills the
-  available space and stays centered in portrait AND landscape. *(Needs
-  on-device iOS Safari confirmation — the headless sandbox can't render the
-  fullscreen mobile present stage representatively.)*
+- **Present/Practice mobile stage — maximise + robust centering (CSS isolation).**
+  The stage layout was sharing one cascade with the engine `out.css`, which
+  clobbered the centering rules (`body`/`.marpit`/`section`) — so the slide fell
+  to the engine's default flow and pushed up on mobile Safari. The slide is now
+  wrapped in our own `#latt-stage`/`#latt-fit` elements (ID selectors `out.css`
+  can't clobber, and *outside* `.marpit` so the slide's `transform` can't trap the
+  fixed stage); `#latt-stage` fills `100dvh` and flex-centers `#latt-fit` (sized to
+  the scaled slide box) — so the slide maximises + stays centered in portrait AND
+  landscape, re-fitting on `orientationchange`/`visualViewport`. Verified centered
+  in all three orientations in Chrome (desktop/portrait/landscape).
 
 ### Added
 

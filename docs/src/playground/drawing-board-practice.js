@@ -133,41 +133,43 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
   function frameDoc(html, css, bg, geom) {
     const sw = geom?.width || 1280;
     const sh = geom?.height || 720;
+    // Isolated stage (see Present): #latt-stage/#latt-fit (ID-scoped, out.css can't
+    // clobber; wraps .marpit so the slide's transform can't trap our fixed box);
+    // 100dvh flex-center → visual center on mobile Safari.
     const FIT =
       '(function(){' +
+      'var stage=document.getElementById("latt-stage"),fitEl=document.getElementById("latt-fit");' +
       'function secs(){var m=document.querySelector(".marpit");return m?m.querySelectorAll(":scope>section"):[]}' +
       'var cur=0;' +
-      'function fit(){var s=secs();if(!s.length)return;' +
-      'var W=window.innerWidth||document.documentElement.clientWidth,H=window.innerHeight||document.documentElement.clientHeight;' +
+      'function fit(){var s=secs();if(!s.length||!stage||!fitEl)return;' +
+      'var W=stage.clientWidth||window.innerWidth,H=stage.clientHeight||window.innerHeight;' +
       'var pad=Math.max(14,Math.min(W,H)*0.04);' +
       'var sc=Math.min((W-pad*2)/' + sw + ',(H-pad*2)/' + sh + ');if(!(sc>0))sc=1;' +
-      // Center via explicit position:fixed + computed left/top (see Present — inline
-      // beats engine CSS; robust on mobile Safari).
-      'var L=Math.round((W-sc*' + sw + ')/2),T=Math.round((H-sc*' + sh + ')/2);' +
+      'fitEl.style.width=(sc*' + sw + ')+"px";fitEl.style.height=(sc*' + sh + ')+"px";' +
       'for(var i=0;i<s.length;i++){var on=i===cur;s[i].style.display=on?"block":"none";' +
-      'if(on){s[i].style.position="fixed";s[i].style.left=L+"px";s[i].style.top=T+"px";s[i].style.transform="scale("+sc+")"}}}' +
+      'if(on){s[i].style.transformOrigin="top left";s[i].style.transform="scale("+sc+")"}}}' +
       'function show(n){cur=n|0;fit()}' +
       'window.addEventListener("message",function(e){if(e.data&&e.data.pv!=null)show(e.data.pv)});' +
       'window.addEventListener("resize",fit);window.addEventListener("orientationchange",fit);' +
       'if(window.visualViewport){try{window.visualViewport.addEventListener("resize",fit)}catch(e){}}' +
-      'if(typeof ResizeObserver!=="undefined"){try{new ResizeObserver(fit).observe(document.documentElement)}catch(e){}}' +
+      'if(typeof ResizeObserver!=="undefined"){try{new ResizeObserver(fit).observe(stage)}catch(e){}}' +
       '[60,300,1200].forEach(function(t){setTimeout(fit,t)});show(0);' +
       '})();';
     return (
       '<!doctype html><html><head><meta charset="utf-8">' +
-      '<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">' +
+      '<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">' +
       '<link rel="stylesheet" href="' + KATEX_URL + '">' +
-      '<style>html,body{margin:0;padding:0;height:100vh;height:100dvh;background:' + bg + ';overflow:hidden;touch-action:manipulation;-webkit-text-size-adjust:100%;}' +
-      // Grid-center the scaled slide box in the dynamic viewport (see Present —
-      // robust on mobile Safari; 100dvh tracks the URL bar).
-      '.marpit{visibility:hidden;}' +
+      '<style>html,body{margin:0;padding:0;height:100%;background:' + bg + ';overflow:hidden;touch-action:manipulation;-webkit-text-size-adjust:100%;}' +
+      '#latt-stage{position:fixed;left:0;top:0;width:100%;height:100vh;height:100dvh;display:flex;align-items:center;justify-content:center;overflow:hidden;visibility:hidden;}' +
+      '#latt-fit{overflow:hidden;}' +
+      '#latt-fit .marpit{margin:0;padding:0;}' +
+      '#latt-fit .marpit>section{transform-origin:top left;box-shadow:0 18px 60px rgba(0,0,0,.45);border-radius:10px;}' +
       slideBox(sw, sh) +
-      '.marpit>section{transform-origin:top left;box-shadow:0 18px 60px rgba(0,0,0,.45);border-radius:10px;}' +
-      css + '</style></head><body>' + A11Y_DEFS + html +
+      css + '</style></head><body>' +
+      A11Y_DEFS + '<div id="latt-stage"><div id="latt-fit">' + html + '</div></div>' +
       '<scr' + 'ipt src="' + MERMAID_URL + '"></scr' + 'ipt>' +
       '<scr' + 'ipt src="' + runtimeUrl + '"></scr' + 'ipt>' +
-      '<scr' + 'ipt>window.__SLIDE_W=' + sw + ';window.__SLIDE_H=' + sh + ';' +
-      'requestAnimationFrame(function(){var m=document.querySelector(".marpit");if(m)m.style.visibility="visible"});</scr' + 'ipt>' +
+      '<scr' + 'ipt>requestAnimationFrame(function(){var st=document.getElementById("latt-stage");if(st)st.style.visibility="visible"});</scr' + 'ipt>' +
       '<scr' + 'ipt>' + FIT + '</scr' + 'ipt></body></html>'
     );
   }
