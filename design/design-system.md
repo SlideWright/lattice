@@ -135,7 +135,7 @@ independently — so the surfaces can't drift apart.
 | **Comparison** | how two or more options differ                    | `compare-prose`, `compare-code`, `compare-table`, `verdict-grid`, `decision`, `matrix-2x2` |
 | **Progression**| an ordered movement through stages or time        | `list-steps`, `list-criteria`, `roadmap`, `gantt`, `kanban` |
 | **Evidence**   | data that supports the argument                    | `stats`, `kpi`, `chart-family` (progress, piechart, timeline-list), `radar`, `quadrant`, `word-cloud`, `diagram`, `code` |
-| **Imagery**    | a visual that carries its own meaning              | `image`, `featured` |
+| **Imagery**    | a visual that carries its own meaning              | `image` |
 
 Test: an author opens a blank slide. The question "what is this slide
 *for*?" must have an answer that is one of these seven. If a real
@@ -163,7 +163,7 @@ the bucket diverges to keep maintenance localized. See §9.
 | **grid**     | N cells in M columns × K rows, each cell parallel           | Inventory, Comparison |
 | **stack**    | N cells stacked vertically (or horizontally), each parallel | Inventory |
 | **ledger**   | Row-per-item table with consistent columns                  | Inventory, Comparison, Progression, Evidence |
-| **panel**    | Two zones: featured content + supporting context            | Statement, Imagery |
+| **panel**    | Two zones: prominent content + supporting context           | Statement |
 | **matrix**   | Cells indexed by two axes (categorical × categorical)       | Comparison, Progression, Evidence |
 | **scatter**  | Points in a 2-D plane (continuous × continuous)             | Evidence |
 | **spatial**  | Points or regions placed by real-world geography (a basemap)| Evidence (map) |
@@ -171,7 +171,7 @@ the bucket diverges to keep maintenance localized. See §9.
 | **split**    | Two co-equal zones, side-by-side or top-bottom              | Comparison |
 
 (Twelve entries. `split` is comparison's co-equal halves where `panel`
-has a featured side; `spatial` is the newest — positions fixed by an
+has a prominent side; `spatial` is the newest — positions fixed by an
 external geographic coordinate system, not chosen by a grid or axis,
 which is what `scatter` and `matrix` can't express. See the `map`
 component.)
@@ -205,14 +205,15 @@ a pure-CSS layout plugs into **prose**.
 
 ### The `mixed` escape hatch
 
-Some boardroom-pitch components combine prose and structure in one
-slot — e.g. `featured` (one prominent recommendation + supporting
-cards). For these, the manifest declares `substance: "mixed"`. The
-loader allows this **only when `form === 'panel'`**: the panel form
-is what makes combining substances coherent (one prominent item
-beside supporting structure). `mixed` is not a fifth plugin contract;
-it's a declaration that the component composes two existing
-contracts. The four-substance plugin point is unchanged.
+A boardroom-pitch component may combine prose and structure in one
+slot — one prominent recommendation beside supporting cards. For such a
+component, the manifest declares `substance: "mixed"`. The loader allows
+this **only when `form === 'panel'`**: the panel form is what makes
+combining substances coherent (one prominent item beside supporting
+structure). `mixed` is not a fifth plugin contract; it's a declaration
+that the component composes two existing contracts. The four-substance
+plugin point is unchanged. (No component declares `mixed` today — the
+hatch stays dormant but remains a general capability.)
 
 ---
 
@@ -831,12 +832,13 @@ discovery story that markdown alone can't provide.
   inventing a `dataShape` field before we know we need one. Revisit
   if review judgement starts drifting.
 - **Multi-substance components — `substance: "mixed"` on panel
-  forms.** The four-substance plugin contract stays at four. Panel-
-  form components that legitimately combine prose + structure
-  (`featured` today) declare `substance: "mixed"` in their manifest.
-  The loader allows this only when `form === 'panel'`. `mixed` is
-  not a fifth plugin; it's a declaration that the component composes
-  two existing contracts. See §5.
+  forms.** The four-substance plugin contract stays at four. A panel-
+  form component that legitimately combines prose + structure may
+  declare `substance: "mixed"` in its manifest. The loader allows
+  this only when `form === 'panel'`. `mixed` is not a fifth plugin;
+  it's a declaration that the component composes two existing
+  contracts. No component declares `mixed` today — the hatch stays
+  dormant. See §5.
 
 **Deferred (open questions):**
 

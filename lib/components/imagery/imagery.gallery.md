@@ -2,25 +2,10 @@
 
 # imagery
 
-`2 components`
+`1 component`
 
 Imagery — visuals that carry their own meaning.
 
-
----
-
-<!-- _class: featured -->
-
-## Where the next quarter of effort goes.
-
-- The scoring-model rewrite.
-  - The flagship bet. Replaces the spreadsheet everyone quietly keeps a private copy of with one model the steering committee can argue over in a single place. Two quarters, and the source of at least four future retrospectives.
-- Weekly signal review.
-  - Thirty minutes that retire three Slack threads and a hallway debate. One quarter.
-- The decision log.
-  - Every call recorded with the bet it made. Eighteen entries so far, against roughly 340 decisions. One quarter.
-- Calibration cadence.
-  - A monthly look at predicted outcomes versus actual ones. The meeting exists.
 
 ---
 

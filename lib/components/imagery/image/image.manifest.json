@@ -15,9 +15,9 @@
   ],
   "slots": {
     "image": {
-      "selector": "img",
+      "selector": ".lattice-bg",
       "required": true,
-      "description": "Marp background image syntax: `![bg](path)` or `![bg right](path)`."
+      "description": "Marp background image syntax: `![bg](path)` or `![bg right](path)` — rendered as a CSS background-image on the `.lattice-bg` panel (no `<img>`)."
     },
     "heading": {
       "selector": "h2",
@@ -62,10 +62,6 @@
     }
   ],
   "related": [
-    {
-      "name": "featured",
-      "when": "the recommendation is a card, not an image"
-    },
     {
       "name": "diagram",
       "when": "the visual is a Mermaid graph, not a photo or screenshot"

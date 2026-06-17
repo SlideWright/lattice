@@ -214,7 +214,7 @@ def panel_right(panel_text: str, right_text: str) -> tuple:
     return ('raw', panel_text + ' ' * PANEL_GAP + right)
 
 
-# ----- wide-card primitives (cards-stack, decision, code, citation, featured) -
+# ----- wide-card primitives (cards-stack, decision, code, citation) -
 
 def wide_card_top() -> str:
     return '┌' + '─' * (CONTENT - 2) + '┐'
@@ -1020,19 +1020,6 @@ def demo_blocks() -> dict[str, str]:
     ])
 
     # ----- IMAGERY family ---------------------------------------------------
-
-    blocks['featured'] = frame([
-        ('left', 'header'),
-        ('left', 'Featured hero heading.'),
-        ('raw', wide_card_top()),
-        ('raw', wide_card_row('HERO — featured item')),
-        ('raw', wide_card_row('body text and detail')),
-        ('raw', wide_card_bot()),
-        ('raw', three_card_top() + '  ' + three_card_top() + '  ' + three_card_top()),
-        three_cells('Support 1', 'Support 2', 'Support 3'),
-        ('raw', three_card_bot() + '  ' + three_card_bot() + '  ' + three_card_bot()),
-        ('split', 'footer', '1/19'),
-    ])
 
     blocks['image-canvas'] = frame([
         ('left', 'header'),

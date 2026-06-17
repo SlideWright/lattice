@@ -77,6 +77,28 @@ in patch versions.
 
 ### Changed
 
+- **Internal `!important` cleanup (cascade hygiene).** Removed 22 redundant
+  `!important` declarations that only existed to win Lattice-vs-Lattice cascade
+  races, keeping the cascade outcome pixel-identical (verified by per-cluster
+  marp-cli / emulator pixel-diffs at fuzz 25%). Removed: all 12 in
+  `scaffold.css` (the `section::after` pagination + `section header/footer > p`
+  rules already win on source order over Marpit's equal-specificity scaffold
+  defaults), the 1 pagination-colour `!important` in
+  `chart-family.css` (`section.chart-frame.cover::after`, which now wins on
+  specificity once scaffold's matching `!important` is gone), 2 in
+  `base.variants.css` (the `section.silent/.no-header > header/footer`
+  `display:none`, already specificity-winners), and 7 in `base.sketch.css`
+  (card / blockquote borders + radii that outrank their component rules on
+  specificity). Genuinely load-bearing internal `!important` were kept with a
+  comment explaining what each beats: the `section.archived::after` stamp and
+  `silent/.no-paginate::after { content:none }` (beat the owned engine
+  scaffold's higher-specificity `div.marpit > section::after`), and the two
+  sketch decision/compare-prose lifted-label overrides (the component's
+  `:has(> strong:first-child)` selector outranks them). External-tool overrides
+  (Mermaid / KaTeX / highlight.js, and the kanban/timeline/radar SVG sheets)
+  were intentionally left untouched — `!important` is the correct mechanism
+  against inline styles emitted by those tools.
+
 - **One slide-size registry (engine source of truth).** The CLI/PDF emulator no
   longer carries its own hard-coded size table — it resolves `@size` through the
   engine's `resolveSize`, the same lookup the scaffold bakes into `@page`. Fixes
@@ -91,6 +113,15 @@ in patch versions.
   now-unused `docs/public/lattice-logo.png` was deleted.
 
 ### Removed
+
+- **Breaking: the `featured` component is removed, superseded by the `focus`
+  directive.** The `imagery/featured` layout (its `<!-- _class: featured -->`
+  slides, the `feat-layout` / `feat-card` DOM, the `featured.mirror` swap, and
+  the `featured` Form Frame) is gone; decks that authored a `featured`
+  recommendation card should use a card-style layout (`cards-stack` /
+  `cards-grid`) with `_focus` to spotlight the lead item. The Imagery bucket now
+  holds a single component, `image`. See
+  `engineering/decisions/2026-06-16-focus-highlighting.md`.
 
 - **Breaking: the BYO marp-cli render path is retired — `marp.config.js` is
   deleted**, along with the `@slidewright/lattice/config` and
@@ -174,6 +205,21 @@ in patch versions.
   engine is the sole renderer). The marp-vs-engine parity CI gate is retired in
   favour of the per-component semantic-invariant suite. See
   `engineering/decisions/2026-06-12-p4-regression-gate-retire-marp.md`.
+
+### Fixed
+
+- **`image` slides now render their asset regardless of the output directory.**
+  The half-canvas/full-bleed image rode in an `<img>` whose deck-relative `src`
+  resolved against the *output* directory, so any deck rendered to a PDF outside
+  its own folder showed a broken-image placeholder. The image is now a CSS
+  `background-image` on the `.lattice-bg` panel, with the asset URL resolved to
+  an absolute `file://` URL against the deck directory. Moving off `<img>` also
+  retires the 22 `!important` overrides `image.styles.css` carried to beat
+  Marpit's `section img` catch-all. Visual output is unchanged (pixel-parity with
+  the prior baseline). The half-canvas split now lives in the shared engine
+  (class-aware + idempotent), so the docs playground / web runtime render the
+  same split layout as the PDF path instead of collapsing it to a broken
+  full-bleed. See `engineering/decisions/2026-06-17-image-rearchitecture.md`.
 
 ### Added
 

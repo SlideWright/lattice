@@ -128,7 +128,6 @@ Two-thirds of trials that reach the first generated report convert to paid; the 
 
 `Related components`
 
-- `featured` — the recommendation is a card, not an image
 - `diagram` — the visual is a Mermaid graph, not a photo or screenshot
 - `content` — the slide is mostly prose with one inline visual
 - `title` — the image is a bookend hero, not the body of a slide

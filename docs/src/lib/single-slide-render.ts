@@ -30,7 +30,7 @@ import { createThemeFetcher } from './theme-fetch';
 const MERMAID = 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js';
 
 type PG = {
-	render: (source: string, theme: string) => { html: string; css: string; width?: number; height?: number };
+	render: (source: string, theme: string, opts?: { baseUrl?: string }) => { html: string; css: string; width?: number; height?: number };
 	addThemes: (css: string[]) => void;
 	hasTheme: (name: string) => boolean;
 };
@@ -163,7 +163,12 @@ export function createSingleSlideRenderer(opts: SingleSlideOptions) {
 				const theme = mode === 'dark' && PG.hasTheme(palette + '-dark') ? palette + '-dark' : palette;
 				let out: { html: string; css: string; width?: number; height?: number };
 				try {
-					out = PG.render(markdown, theme);
+					// Resolve a sample deck's `![bg](sample-image-*.svg)` against the
+					// staged samples/ dir (sibling of themes/ under the hashed root).
+					// Make it ABSOLUTE — themeBase is root-relative, and the engine's
+					// WHATWG-URL resolver needs an absolute base.
+					const samplesBase = new URL(themeBase.replace(/themes\/$/, 'samples/'), location.href).href;
+					out = PG.render(markdown, theme, { baseUrl: samplesBase });
 				} catch (e) {
 					console.error('single-slide render failed', e);
 					return { ok: false, slides: 0, error: String((e as Error)?.message || e) };

@@ -735,5 +735,5 @@ section.chart-frame.cover > p:last-of-type {
 /* Pagination reads through the band — lifted above it and recoloured. */
 section.chart-frame.cover::after {
   z-index: 3;
-  color: color-mix(in oklab, var(--text-heading) 62%, transparent) !important;
+  color: color-mix(in oklab, var(--text-heading) 62%, transparent);
 }

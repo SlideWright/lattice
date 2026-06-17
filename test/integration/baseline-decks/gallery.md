@@ -451,20 +451,6 @@ _Evaluated against the same four teams and the same 90-minute weekly budget cons
 
 ---
 
-<!-- _class: featured -->
-<!-- _footer: "Featured + 2 sub-cards · featured" -->
-
-## Applying the criteria to the tools — here is where the evidence points.
-
-- The evidence favors Tool D
-  - Sprig combined with a lightweight Decision Log meets all four criteria within the 90-minute weekly budget, reaches production in the same week it is adopted, and leaves a clean exit ramp if a better native solution emerges.
-- The path is not self-executing
-  - Sprig requires a connector built to your NPS and support platforms. Budget 4–6 hours of engineering time in week one. After that, zero maintenance overhead.
-- The Decision Log is the hardest part
-  - Not technically. Culturally. PMs need to log decisions with predicted outcomes before they close, not after. This is a habit change, not a tool change.
-
----
-
 <!-- _class: compare-prose -->
 <!-- _footer: "Two options + connector · compare-prose" -->
 
@@ -790,7 +776,7 @@ A tall asset on a wide canvas — `contain` replaces the lattice pattern with a 
 - Calibrated weights
   - The decision resolves against logged weights and prior outcomes. Average 18 minutes, and the argument stops cascading into the next quarter — a property we discovered after building the loop, not before.
 
-The right card carries an accent left-edge and accent-tinted background — the same visual contract used by featured cards.
+The right card carries an accent left-edge and accent-tinted background — the same visual contract used by other recommended-option cards.
 
 ---
 
@@ -879,25 +865,11 @@ The left card is struck through to read as the option considered then dropped; t
 
 `Modifier · image mirror`
 
-## Mirror flips the image slot — same vocabulary as featured, split-panel watermark, compare-prose.
+## Mirror flips the image slot — same vocabulary as split-panel watermark, compare-prose.
 
 The half-canvas image moves from the right slot to the left, and the text padding swaps to match. `mirror` is the cross-cutting orientation flag in the Lattice grammar; `image left` is preserved as a backwards-compatible alias for one release.
 
 ![bg left](../../../lib/components/imagery/image/sample-image-landscape.svg)
-
----
-
-<!-- _class: featured mirror -->
-<!-- _footer: "Modifier — featured mirror · featured mirror" -->
-
-## Mirror puts the hero card on the right; sub-cards stack on the left.
-
-- The hero card now reads from the right
-  - The featured layout normally leads with the accented hero card on the left and stacks supporting cards on the right. Mirror swaps the columns without touching the markdown contract.
-- First supporting card on the left
-  - Useful when the rest of the deck reads left-to-right and the editorial weight needs to land on the right edge as the next slide opens.
-- Second supporting card below
-  - Identical structure, identical authoring; only the visual side changes.
 
 ---
 

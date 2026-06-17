@@ -110,12 +110,12 @@ section.sketch :is(h1, h2, h3, h4, h5, h6) {
   font-weight: 700;
   letter-spacing: 0.005em;
 }
-/* Pagination (Marp's section::after) ships from the scaffold with
- * `font-family: var(--font-mono) !important`, so it needs an !important
- * override at higher specificity (.sketch class) to ride the hand label
- * voice like the header / footer chrome. */
+/* Pagination (Marp's section::after) is set in mono by the scaffold tier.
+ * `section.sketch::after` (0,1,1) outranks the scaffold `section::after`
+ * (0,0,1) on specificity and the engine scaffold never sets font-family, so
+ * no !important is needed to ride the hand label voice. */
 section.sketch::after {
-  font-family: var(--font-label) !important;
+  font-family: var(--font-label);
 }
 
 /* Plain bullet / number lists take a hand-jotted mark in the felt-tip face.
@@ -178,18 +178,20 @@ section.sketch.decision > ol > li,
 section.sketch.matrix-2x2 > ol > li,
 section.sketch.matrix-2x2 > ul > li,
 section.sketch.pricing > ul > li,
-section.sketch.featured .feat-card,
-section.sketch.featured .sub-card,
 section.sketch.compare-prose .card,
 section.sketch.compare-prose > ol > li,
 section.sketch.citation-card > blockquote,
 /* The generic "KEY INSIGHT" blockquote (the trailing `> blockquote` on any
  * non-specialised layout — same target as base.modifiers' key-insight chrome)
- * becomes a drawn box too. redline/quote/featured/math/citation-card own their
+ * becomes a drawn box too. redline/quote/math/citation-card own their
  * blockquote and are excluded so their borders/spines aren't clobbered. */
-section.sketch:not(.quote):not(.featured):not(.math):not(.citation-card):not(.redline) > blockquote {
-  border: 2px solid var(--sketch-ink) !important;
-  border-radius: 255px 12px 225px 15px / 15px 225px 15px 255px !important;
+/* The card surfaces (cards-grid/-stack li at 0,2,3, verdict/decision/matrix/
+   pricing li, compare-prose .card) and the generic key-insight blockquote
+   (0,5,2, beating base.modifiers' 0,4,2 chrome) all outrank their component
+   rules on specificity, so no !important is needed here. */
+section.sketch:not(.quote):not(.math):not(.citation-card):not(.redline) > blockquote {
+  border: 2px solid var(--sketch-ink);
+  border-radius: 255px 12px 225px 15px / 15px 225px 15px 255px;
   box-shadow: 2px 3px 0 -1px color-mix(in srgb, var(--sketch-ink) 30%, transparent);
 }
 /* Alternate the radius + a slight tilt per card so each grid of cards
@@ -206,7 +208,7 @@ section.sketch.decision > ol > li:nth-child(2n),
 section.sketch.matrix-2x2 > ol > li:nth-child(2n),
 section.sketch.matrix-2x2 > ul > li:nth-child(2n),
 section.sketch.pricing > ul > li:nth-child(2n) {
-  border-radius: 15px 225px 15px 255px / 225px 15px 255px 15px !important;
+  border-radius: 15px 225px 15px 255px / 225px 15px 255px 15px;
   transform: rotate(-0.5deg);
 }
 section.sketch.cards-grid > ul > li:nth-child(3n),
@@ -220,7 +222,7 @@ section.sketch.decision > ol > li:nth-child(3n),
 section.sketch.matrix-2x2 > ol > li:nth-child(3n),
 section.sketch.matrix-2x2 > ul > li:nth-child(3n),
 section.sketch.pricing > ul > li:nth-child(3n) {
-  border-radius: 225px 15px 255px 18px / 15px 255px 15px 225px !important;
+  border-radius: 225px 15px 255px 18px / 15px 255px 15px 225px;
   transform: rotate(0.4deg);
 }
 
@@ -240,6 +242,10 @@ section.sketch.cards-stack .card::before {
   font-family: var(--sketch-font-display);
   border-radius: 15px 2px 12px 3px / 3px 12px 2px 15px;
 }
+/* These two !important are load-bearing (verified by pixel-diff): the
+   decision / compare-prose lifted-label rules use a `:has(> strong:first-child)`
+   selector (0,3,4) that outranks this sketch override (0,3,3) on element count,
+   so without !important the chip reverts to the mono face + clean corners. */
 section.sketch.decision > :is(ul, ol) > li > strong:first-child,
 section.sketch.compare-prose > :is(ul, ol) > li > strong:first-child,
 section.sketch.compare-prose .compare-prose-inner .card > strong:first-child {
@@ -317,8 +323,10 @@ section.sketch.list-tabular > ol > li:last-child::after { display: none; }
  * border. actors rows are bordered row-cards: same hand corners, colours
  * (the per-actor left hue) untouched. */
 section.sketch.quote blockquote {
-  border: 2px solid var(--sketch-ink) !important;
-  border-radius: 255px 12px 225px 15px / 15px 225px 15px 255px !important;
+  /* `section.sketch.quote blockquote` (0,2,2) outranks the quote component's
+     `section.quote blockquote` (0,1,2), so no !important is needed. */
+  border: 2px solid var(--sketch-ink);
+  border-radius: 255px 12px 225px 15px / 15px 225px 15px 255px;
   box-shadow: 2px 3px 0 -1px color-mix(in srgb, var(--sketch-ink) 30%, transparent);
 }
 section.sketch.redline > blockquote,

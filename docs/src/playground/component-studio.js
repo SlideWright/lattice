@@ -273,7 +273,12 @@ export function initLayoutStudio(config) {
     ensureBaseTheme()
       .then(() => {
         ensurePalette();
-        const out = PG.render(previewConfig.composed(), PREVIEW_PALETTE);
+        // Resolve a sample deck's `![bg](sample-image-*.svg)` against the staged
+        // samples/ dir (sibling of themes/ under the hashed asset root). Absolute
+        // base — themeBase is root-relative, the engine's URL resolver needs an
+        // absolute base.
+        const samplesBase = new URL(themeBase.replace(/themes\/$/, 'samples/'), location.href).href;
+        const out = PG.render(previewConfig.composed(), PREVIEW_PALETTE, { baseUrl: samplesBase });
         // The component CSS is palette-blind; append it after the theme CSS.
         writeFrame(out.html, out.css + '\n/* component */\n' + state.css, { w: out.width || 1280, h: out.height || 720 });
         const n = (out.html.match(/<\/section>/g) || []).length;

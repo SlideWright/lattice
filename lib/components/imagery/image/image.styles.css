@@ -92,41 +92,32 @@ section.image:not(.full):not(.contain):not(.museum).left {
   border-right: 6px solid var(--accent);
 }
 
-/* Emulator wrapper — positions the .lattice-bg div as the half-canvas
- * image slot. the engine emits .lattice-bg-full
- * which marpit positions natively. */
-section.image .lattice-bg { position: absolute; z-index: -1; overflow: hidden; }
-section.image .lattice-bg img { width: 100%; height: 100%; display: block; }
+/* The .lattice-bg div carries the image as a CSS background (bg-image.js emits
+ * an inline `background-image:url(<resolved>)` — no <img>). Because there is no
+ * <img>, none of these rules need `!important` to beat Marpit's `section img`
+ * catch-all: that contract no longer applies (the 22 `!important` overrides this
+ * block used to carry are gone). The engine emits .lattice-bg-full for full-bleed
+ * variants. */
+section.image .lattice-bg {
+  position: absolute;
+  z-index: -1;
+  overflow: hidden;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
 section.image:not(.full):not(.contain):not(.museum) .lattice-bg-right { right: 0; top: 0; bottom: 0; width: 50%; }
 section.image:not(.full):not(.contain):not(.museum) .lattice-bg-left  { left: 0; top: 0; bottom: 0; width: 50%; }
 section.image:not(.full):not(.contain):not(.museum).mirror .lattice-bg-right,
 section.image:not(.full):not(.contain):not(.museum).left   .lattice-bg-right { right: auto; left: 0; }
 
-/* Canonical .image-asset element (img inside the engine's .lattice-bg
- * wrapper). Object-fit: cover is the default; .contain modifier
- * overrides below. The hairline at the slide-half split is on the
- * image element so it follows the image wherever marpit / emulator
- * positions it. */
-section.image:not(.full):not(.contain):not(.museum) .image-asset {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-  display: block;
+/* Hairline at the slide-half split, on the bg panel. */
+section.image:not(.full):not(.contain):not(.museum) .lattice-bg {
   box-shadow: -1px 0 0 var(--border);
 }
-
-/* Half-canvas image background sizing (the .lattice-bg image fills its half). */
-section.image:not(.full):not(.contain):not(.museum) .lattice-bg img {
-  background-size: cover !important;
-  background-position: center !important;
-  object-fit: cover !important;
-  object-position: center !important;
-  box-shadow: -1px 0 0 var(--border) !important;
-}
-section.image:not(.full):not(.contain):not(.museum).mirror .lattice-bg img,
-section.image:not(.full):not(.contain):not(.museum).left   .lattice-bg img {
-  box-shadow: 1px 0 0 var(--border) !important;
+section.image:not(.full):not(.contain):not(.museum).mirror .lattice-bg,
+section.image:not(.full):not(.contain):not(.museum).left   .lattice-bg {
+  box-shadow: 1px 0 0 var(--border);
 }
 
 /* ════════════════════════════════════════════════════════════════════
@@ -171,41 +162,21 @@ section.image.museum .lattice-bg-full {
   z-index: -1;
 }
 
-/* Cover (default for `.full`) — image fills, cropped */
-section.image.full .lattice-bg-full img {
-  width: 100%; height: 100%;
-  background-size: cover !important;
-  background-position: center !important;
-  object-fit: cover !important;
-  object-position: center !important;
-  display: block;
+/* Cover (default for `.full`) — image fills, cropped. The generic
+ * `section.image .lattice-bg` rule above already sets cover / center /
+ * no-repeat, so `.full` needs no extra image rule. */
+
+/* Contain — letterbox; the matte fills around the contained image. */
+section.image.contain .lattice-bg-full {
+  background-size: contain;
+  background-color: var(--image-matte);
 }
 
-/* Contain — letterbox; matte fills around */
-section.image.contain .lattice-bg-full img {
-  width: 100%; height: 100%;
-  background-size: contain !important;
-  background-position: center !important;
-  background-repeat: no-repeat !important;
-  background-color: var(--image-matte) !important;
-  object-fit: contain !important;
-  object-position: center !important;
-  display: block;
-}
-
-/* Museum — image inset 40px with 1px hairline frame */
+/* Museum — image inset with a 1px hairline frame. */
 section.image.museum .lattice-bg-full {
   inset: 40px;
-}
-section.image.museum .lattice-bg-full img {
-  width: 100%; height: 100%;
-  background-size: contain !important;
-  background-position: center !important;
-  background-repeat: no-repeat !important;
-  background-color: var(--image-matte) !important;
-  object-fit: contain !important;
-  object-position: center !important;
-  display: block;
+  background-size: contain;
+  background-color: var(--image-matte);
   box-shadow: 0 0 0 1px var(--border);
 }
 

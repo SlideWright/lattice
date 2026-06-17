@@ -3,6 +3,20 @@
 Date: 2026-05-18
 Branch: `claude/organize-components-AmQcL`
 
+> **Update (2026-06-17, Track-3 internal-`!important` cleanup).** Marp was
+> retired as a render path after this audit, which reclassified
+> `lib/integrations/markdown-it/scaffold.css` from the "library-override"
+> category below (it overrode Marpit's live scaffold) to **internal**: with no
+> marp-core scaffold loading after the theme, those rules compete only with the
+> owned engine scaffold and won without `!important`. A marp-cli pixel probe
+> confirmed it, and all 12 scaffold `!important` were removed, along with 1 in
+> `chart-family.css`, 2 in `base.variants.css`, and 7 in `base.sketch.css` (22
+> total). The genuinely load-bearing internal `!important` — the `archived` /
+> `silent` pagination overrides (beat the engine scaffold's higher-specificity
+> `div.marpit > section::after`) and two sketch lifted-label rules — were kept.
+> The external-tool clusters (mermaid/math/highlight/radar/kanban/timeline)
+> below are unchanged. See `CHANGELOG.md` `## Unreleased`.
+
 ## Headline
 
 The blocker `tools/build-css.js:62-66` names for `@layer` activation —

@@ -166,7 +166,7 @@
       ]
     }
   },
-  "count": 53,
+  "count": 52,
   "components": [
     {
       "name": "actors",
@@ -2224,122 +2224,6 @@
       "galleryHref": "../../lib/components/anchor/divider/divider.gallery.light.pdf"
     },
     {
-      "name": "featured",
-      "bucket": "imagery",
-      "function": "imagery",
-      "form": "panel",
-      "substance": "mixed",
-      "tags": [
-        "showcase",
-        "pitch",
-        "overview",
-        "visual"
-      ],
-      "description": "Featured card + sub-grid — one prominent item with supporting cards.",
-      "purpose": "Use after a comparison or evaluation to land the recommendation: the featured card is the winner; the sub-grid shows the alternatives or context.",
-      "variants": [
-        "mirror"
-      ],
-      "effectiveVariants": [
-        "accent",
-        "archived",
-        "compact",
-        "confidential",
-        "dark",
-        "draft",
-        "form",
-        "loose",
-        "mark-orbit",
-        "mark-threads",
-        "mirror",
-        "no-footer",
-        "no-form",
-        "no-header",
-        "no-paginate",
-        "no-period",
-        "no-progress",
-        "pinned",
-        "redacted",
-        "revised",
-        "scale-2xl",
-        "scale-l",
-        "scale-xl",
-        "silent",
-        "tbd",
-        "tint-corner at-tl",
-        "tint-edge at-right",
-        "tint-vignette",
-        "tone-fail",
-        "tone-pass",
-        "tone-skip",
-        "tone-warn",
-        "treatment-none",
-        "wip",
-        "with-period"
-      ],
-      "familyModifiers": [],
-      "slots": {
-        "title": {
-          "selector": "h2",
-          "required": true,
-          "description": "Slide heading framing the recommendation."
-        },
-        "items": {
-          "selector": "ul > li",
-          "required": true,
-          "description": "First li becomes the featured card; remaining lis form the sub-grid. Authoring contract: a top-level bullet is the card title (renders bold by default); an indented bullet underneath carries the body text."
-        }
-      },
-      "skeleton": "<!-- _class: featured -->\n\n## Slide heading framing the recommendation.\n\n- Featured recommendation\n  - One to two sentences making the case.\n- Supporting card\n  - Short context on a related option.\n- Supporting card\n  - Short context on another option.\n- Supporting card\n  - Short context on another option.\n",
-      "whenToUse": [
-        {
-          "title": "Land the recommendation",
-          "body": "Use featured as the closing slide of a comparison or evaluation arc — the featured card is the verdict; the sub-grid holds the runners-up the audience needs to see weren't overlooked."
-        },
-        {
-          "title": "One hero, three context cards",
-          "body": "The layout reads cleanest with one featured card and three supporting ones. Two supporting cards leave the sub-grid lopsided; four crowd the right side and the hierarchy flattens."
-        },
-        {
-          "title": "Mixed substance is the point",
-          "body": "The featured card earns a longer body paragraph; the sub-grid cards stay one-sentence. Lopsided density between hero and grid is the visual signal — it's what tells the audience which card is the answer."
-        }
-      ],
-      "antiPatterns": [
-        {
-          "title": "Equal-weight options",
-          "body": "If all four items deserve the same weight, use `cards-grid`. featured demands a winner; without one the layout overstates the lead and the audience feels manipulated."
-        },
-        {
-          "title": "Hero card with one-line body",
-          "body": "A one-sentence featured card defeats the asymmetry — the sub-grid bullets out-mass it. Either give the hero the paragraph it needs or move to `cards-grid` where every card holds equal weight."
-        },
-        {
-          "title": "Sub-grid that argues against the hero",
-          "body": "If the supporting cards undermine the recommendation, the slide is a debate, not a verdict. Use `verdict-grid` for criteria-based scoring or `compare-prose` for explicit two-option comparison."
-        }
-      ],
-      "related": [
-        {
-          "name": "cards-grid",
-          "when": "all options carry equal weight; no winner declared"
-        },
-        {
-          "name": "verdict-grid",
-          "when": "options scored against shared criteria, not picked"
-        },
-        {
-          "name": "decision",
-          "when": "the recommendation needs an explicit pro/con frame"
-        },
-        {
-          "name": "split-panel",
-          "when": "the recommendation is a thesis sentence + supporting findings"
-        }
-      ],
-      "galleryHref": "../../lib/components/imagery/featured/featured.gallery.light.pdf"
-    },
-    {
       "name": "funnel",
       "bucket": "chart",
       "function": "evidence",
@@ -2745,9 +2629,9 @@
       "familyModifiers": [],
       "slots": {
         "image": {
-          "selector": "img",
+          "selector": ".lattice-bg",
           "required": true,
-          "description": "Marp background image syntax: `![bg](path)` or `![bg right](path)`."
+          "description": "Marp background image syntax: `![bg](path)` or `![bg right](path)` — rendered as a CSS background-image on the `.lattice-bg` panel (no `<img>`)."
         },
         "heading": {
           "selector": "h2",
@@ -2790,10 +2674,6 @@
         }
       ],
       "related": [
-        {
-          "name": "featured",
-          "when": "the recommendation is a card, not an image"
-        },
         {
           "name": "diagram",
           "when": "the visual is a Mermaid graph, not a photo or screenshot"

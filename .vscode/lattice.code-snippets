@@ -275,24 +275,6 @@
     ],
     "description": "Section boundary slide. Dark canvas with a single heading."
   },
-  "lattice: featured": {
-    "prefix": "lattice-featured",
-    "body": [
-      "<!-- _class: featured -->",
-      "",
-      "## Slide heading framing the recommendation.",
-      "",
-      "- Featured recommendation",
-      "  - One to two sentences making the case.",
-      "- Supporting card",
-      "  - Short context on a related option.",
-      "- Supporting card",
-      "  - Short context on another option.",
-      "- Supporting card",
-      "  - Short context on another option."
-    ],
-    "description": "Featured card + sub-grid — one prominent item with supporting cards."
-  },
   "lattice: funnel": {
     "prefix": "lattice-funnel",
     "body": [

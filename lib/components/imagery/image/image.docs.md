@@ -36,7 +36,7 @@ Replace the bg image below with your own asset. The image fills its half-canvas 
 
 | Slot | Selector | Required | Description |
 |---|---|---|---|
-| `image` | `img` | yes | Marp background image syntax: `![bg](path)` or `![bg right](path)`. |
+| `image` | `.lattice-bg` | yes | Marp background image syntax: `![bg](path)` or `![bg right](path)` — rendered as a CSS background-image on the `.lattice-bg` panel (no `<img>`). |
 | `heading` | `h2` | no | Optional heading in the text slot. |
 | `body` | `p` | no | Optional caption or body text. |
 
@@ -120,7 +120,6 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 ## Related components
 
-- [`featured`](../../imagery/featured/featured.docs.md) — the recommendation is a card, not an image
 - [`diagram`](../../diagram/diagram/diagram.docs.md) — the visual is a Mermaid graph, not a photo or screenshot
 - [`content`](../../statement/content/content.docs.md) — the slide is mostly prose with one inline visual
 - [`title`](../../anchor/title/title.docs.md) — the image is a bookend hero, not the body of a slide
