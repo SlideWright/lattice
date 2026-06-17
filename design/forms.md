@@ -474,7 +474,7 @@ validation, so adding a Frame or a Tile is *a folder, not edits to three kernels
 At the **"light" coupling rung shipped today** that contract is *validated*, not yet
 *executed*: the render still places via hand-written transforms + CSS keyed on
 classes (only `id` + `exemptFromChrome` are read at render time), and a build gate
-keeps the manifest and that CSS in step — see `/spec/form-model/` for the render
+keeps the manifest and that CSS in step — see `/model/form-model/` for the render
 chain, and the coupling ADR for the rungs. As of the "light" coupling
 (`2026-06-16-form-manifest-medium-independent-contract.md` §4), a build gate enforces
 manifest↔CSS consistency so the contract can't silently drift: geometry/gap

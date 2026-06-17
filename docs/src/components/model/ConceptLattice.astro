@@ -1,0 +1,144 @@
+---
+/**
+ * The concept lattice for /model/concepts/ — a live (HTML/CSS) diagram of the
+ * whole Lattice concept model: the four orthogonal axes (Function · Form ·
+ * Substance · Finish), Form decomposing into the Frame · Cell · Tile structural
+ * tree, and the Component as the join that binds them on one slide.
+ *
+ * HTML/CSS, not Mermaid — so it scales, adapts to light/dark, reflows on mobile,
+ * and needs no regen step (the same rationale as FormDiagram.astro). It mirrors
+ * the §2 lattice of design/concepts.md (which owns the model) and is kept honest
+ * by the docs-auditor pass.
+ *
+ *   fig="lattice"  — the whole model (default)
+ */
+const { fig = 'lattice' } = Astro.props;
+---
+
+{fig === 'lattice' && (
+  <div
+    class="cl"
+    role="img"
+    aria-label="The Lattice concept model on two levels. Top: four orthogonal axes — Function (Purpose, what's the point?), Form (Layout, how is it composed?), Substance (Content, what fills it?), Finish (Style, what should it feel like?). Form is the structural axis: it decomposes into a Frame that produces Cells, and each Cell holds a Tile or another Frame (recursion). Bottom: the Component is the join — it is-a Function, selects a Frame, binds Substance into the Cells, and receives Finish."
+  >
+    <div class="tier">
+      <span class="tier-lbl">The four axes <small>orthogonal — swap one, the others hold</small></span>
+      <div class="axes">
+        <div class="axis"><b>Function</b><span>Purpose</span><small>what's the point?</small></div>
+        <div class="axis is-form">
+          <b>Form</b><span>Layout</span><small>how is it composed?</small>
+          <em aria-hidden="true">the structural axis ↓</em>
+        </div>
+        <div class="axis"><b>Substance</b><span>Content</span><small>what fills it?</small></div>
+        <div class="axis"><b>Finish</b><span>Style</span><small>what should it feel like?</small></div>
+      </div>
+    </div>
+
+    <div class="tier">
+      <span class="tier-lbl">Form resolves into structure <small>the Composite tree</small></span>
+      <div class="spine">
+        <div class="node n-frame"><b>Frame</b><small>a slicer — carves a box</small></div>
+        <span class="op" aria-hidden="true">produces</span>
+        <div class="node n-cell"><b>Cell</b><small>a typed slot — sized, positioned</small></div>
+        <span class="op" aria-hidden="true">holds</span>
+        <div class="node n-tile"><b>Tile</b><small>a filler — leaf content</small></div>
+      </div>
+      <p class="recur"><span aria-hidden="true">↺</span> a Cell can hold a Tile <b>or another Frame</b> — that recursion is the whole system</p>
+    </div>
+
+    <div class="tier">
+      <div class="join">
+        <div class="join-head"><b>Component</b><span>the join</span></div>
+        <ul class="edges">
+          <li><i>is-a</i> Function</li>
+          <li><i>selects</i> a Frame</li>
+          <li><i>binds</i> Substance into Cells</li>
+          <li><i>receives</i> Finish</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+)}
+
+<style>
+  .cl { margin: 1.4rem 0; font-size: 0.85rem; line-height: 1.35; display: flex; flex-direction: column; gap: 0.7rem; }
+
+  .tier { display: flex; flex-direction: column; gap: 0.5rem; }
+  .tier-lbl { font: 600 0.72rem/1.2 var(--sl-font-system-mono, monospace); color: var(--sl-color-gray-2); letter-spacing: 0.02em; }
+  .tier-lbl small { font-weight: 400; color: var(--sl-color-gray-3); }
+
+  /* Tier 1 — the four axes */
+  .axes { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.55rem; }
+  .axis {
+    display: flex; flex-direction: column; gap: 0.1rem;
+    border: 1.5px solid var(--sl-color-gray-4); border-radius: 10px; padding: 0.6rem 0.65rem;
+    background: var(--sl-color-gray-6); position: relative;
+  }
+  .axis b { font: 700 0.92rem/1.15 var(--sl-font-system, serif); color: var(--sl-color-white); }
+  .axis span { font: 600 0.62rem/1 var(--sl-font-system-mono, monospace); color: var(--sl-color-gray-3); text-transform: uppercase; letter-spacing: 0.05em; }
+  .axis small { color: var(--sl-color-gray-2); margin-top: 0.15rem; }
+  .axis.is-form {
+    border-color: var(--sl-color-accent); border-width: 2px;
+    background: color-mix(in srgb, var(--sl-color-accent) 12%, transparent);
+  }
+  .axis.is-form em {
+    font: 600 0.6rem/1 var(--sl-font-system-mono, monospace); font-style: normal;
+    color: var(--sl-color-accent); margin-top: 0.3rem;
+  }
+
+  /* Tier 2 — the Frame · Cell · Tile spine */
+  .spine { display: flex; align-items: stretch; gap: 0.5rem; }
+  .node {
+    flex: 1 1 0; min-width: 7.5rem;
+    display: flex; flex-direction: column; gap: 0.2rem;
+    border: 2px solid; border-radius: 10px; padding: 0.6rem 0.7rem;
+  }
+  .node b { font: 700 0.92rem/1.1 var(--sl-font-system, serif); color: var(--sl-color-white); }
+  .node small { color: var(--sl-color-gray-2); }
+  .n-frame { border-color: var(--sl-color-accent); background: color-mix(in srgb, var(--sl-color-accent) 16%, transparent); }
+  .n-cell  { border-color: color-mix(in srgb, var(--sl-color-accent) 60%, var(--sl-color-gray-4)); background: color-mix(in srgb, var(--sl-color-accent) 9%, transparent); }
+  .n-tile  { border-color: var(--sl-color-gray-4); background: var(--sl-color-gray-6); }
+  .op {
+    align-self: center; flex: none;
+    font: 600 0.66rem/1 var(--sl-font-system-mono, monospace); color: var(--sl-color-gray-3); white-space: nowrap;
+  }
+  .op::after { content: ' ▸'; }
+  .recur {
+    margin: 0; font: 500 0.74rem/1.4 var(--sl-font-system, serif); color: var(--sl-color-gray-2);
+    border-left: 2px solid var(--sl-color-accent); padding-left: 0.6rem;
+  }
+  .recur span { color: var(--sl-color-accent); font-weight: 700; }
+  .recur b { color: var(--sl-color-white); }
+
+  /* Tier 3 — the Component join */
+  .join {
+    display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+    border: 2px solid var(--sl-color-accent); border-radius: 12px; padding: 0.7rem 0.85rem;
+    background: color-mix(in srgb, var(--sl-color-accent) 8%, transparent);
+  }
+  .join-head { display: flex; flex-direction: column; gap: 0.1rem; flex: none; }
+  .join-head b { font: 800 1rem/1.1 var(--sl-font-system, serif); color: var(--sl-color-white); }
+  .join-head span { font: 600 0.6rem/1 var(--sl-font-system-mono, monospace); color: var(--sl-color-accent); text-transform: uppercase; letter-spacing: 0.05em; }
+  .edges { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.4rem 0.55rem; }
+  .edges li {
+    font: 600 0.7rem/1 var(--sl-font-system-mono, monospace); color: var(--sl-color-gray-2);
+    border: 1px solid var(--sl-color-gray-4); border-radius: 999px; padding: 0.3rem 0.6rem;
+    background: var(--sl-color-gray-6);
+  }
+  .edges i { font-style: normal; color: var(--sl-color-accent); }
+
+  /* Stack the spine vertically below desktop so it's always a full 3-across row
+     OR a full vertical column — never a half-wrap with a dangling operator. */
+  @media (max-width: 900px) {
+    .spine { flex-direction: column; }
+    .op { align-self: center; margin: 0; }
+    .op::after { content: ' ▾'; }
+  }
+  @media (max-width: 680px) {
+    .axes { grid-template-columns: 1fr 1fr; }
+    .join { align-items: flex-start; flex-direction: column; gap: 0.6rem; }
+  }
+  @media (max-width: 420px) {
+    .axes { grid-template-columns: 1fr; }
+  }
+</style>

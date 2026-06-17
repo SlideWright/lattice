@@ -26,6 +26,13 @@ const onCloudflare = Boolean(process.env.CF_PAGES);
 export default defineConfig({
 	site: process.env.SITE_URL || (onCloudflare ? process.env.CF_PAGES_URL : 'https://slidewright.github.io'),
 	base: onCloudflare ? '/' : '/lattice',
+	// The Form model moved out of /spec/ into the new "The model" group (it is the
+	// engine's design model, not part of the LFM standard) — redirect the old URL
+	// so existing links (forms.md §11, the form-manifest ADR) don't 404. Astro
+	// applies `base` to the redirect SOURCE automatically but NOT the destination,
+	// so the target is base-prefixed by hand (root on Cloudflare, /lattice on
+	// GitHub Pages) to match the per-environment base above.
+	redirects: { '/spec/form-model': `${onCloudflare ? '' : '/lattice'}/model/form-model/` },
 	// HTML navigation is cheap, so warm it everywhere: every internal <a>
 	// prefetches its destination on hover/focus (the `hover` strategy). The one
 	// expensive asset — the ~554KB-gz engine bundle — is NOT covered here; it
@@ -135,6 +142,20 @@ export default defineConfig({
 					],
 				},
 				{
+					// The engine's design MODEL — distinct from the LFM standard below.
+					// The concept map is the umbrella over the whole four-axis system;
+					// the Form model is the structural detail of one axis (Form). Both
+					// mirror in-repo design docs (design/concepts.md, design/forms.md)
+					// with a canonical-source banner, like every authored docs page.
+					// Kept out of "Specification" so that group reads purely as the LFM
+					// standard, not "the standard AND the model".
+					label: 'The model',
+					items: [
+						{ label: 'The concept map', slug: 'model/concepts' },
+						{ label: 'The Form model', slug: 'model/form-model' },
+					],
+				},
+				{
 					// The owned LFM standard, published as its own group so it reads as
 					// a standard, not internal docs. Two registers: the plain-words
 					// front door first (authored prose), then the normative specs
@@ -145,7 +166,6 @@ export default defineConfig({
 						{ label: 'Understanding LFM', slug: 'spec/understanding-lfm' },
 						{ label: 'LFM 1.0 (spec)', slug: 'spec/lfm' },
 						{ label: 'Diagnostic Protocol', slug: 'spec/diagnostics' },
-						{ label: 'The Form model', slug: 'spec/form-model' },
 					],
 				},
 			],

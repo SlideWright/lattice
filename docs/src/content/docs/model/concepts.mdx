@@ -1,0 +1,67 @@
+---
+title: "The concept map — Function · Form · Substance · Finish"
+description: "The one map of every Lattice concept on both levels: the four orthogonal axes (Function, Form, Substance, Finish) and the structural nouns (Frame, Cell, Tile) that Form resolves into — joined by the Component. With the abstract-vs-concrete rungs and what the model is encoded as."
+---
+
+import ConceptLattice from '../../../components/model/ConceptLattice.astro';
+
+:::note[Canonical source]
+This page mirrors the in-repo design doc [`design/concepts.md`](https://github.com/slidewright/lattice/blob/main/design/concepts.md), which owns the model. It joins the [four-axis model](https://github.com/slidewright/lattice/blob/main/design/design-system.md) and the [Form composition model](https://github.com/slidewright/lattice/blob/main/design/forms.md) — the two docs that own the axes and the structural nouns respectively.
+:::
+
+Lattice has concepts on two levels, and they are **one system at two scales**. The four axes say *how a slide is decided*; the structural nouns say *how Form is built*; the **Component** is where they meet.
+
+> **A slide is composed along four orthogonal axes — Function, Form, Substance, Finish.** **Form** is the structural axis, and it resolves into a recursive tree: *a Frame divides a box into Cells; each Cell holds a Tile — or another Frame.*
+
+## The lattice
+
+<ConceptLattice fig="lattice" />
+
+The four axes are mutually **orthogonal** — swap one and the others hold. The structural spine is **containment and selection**. The recursion — a **Cell** holding a **Tile** *or another Frame* — is what makes this a lattice rather than a flat list.
+
+## Level 1 — the four axes
+
+Four independently-swappable decisions, each owned by a different audience and enforced in a different place. That separation is the point: each audience owns exactly one axis without reaching into another's.
+
+| Axis | Human word | The question | Owned by |
+|---|---|---|---|
+| **Function** | Purpose | what's the point of this slide? | deck authors |
+| **Form** | Layout | how is it composed? | layout designers |
+| **Substance** | Content | what fills it? | engine maintainers |
+| **Finish** | Style | what should it feel like? | theme designers |
+
+The one word the model legislates against is **"look"** — it collides between *Layout* (Form) and *Style* (Finish), so "make it look different" is resolved into one or the other before acting.
+
+## Level 2 — why only Form decomposes
+
+Form is the **only** axis that decomposes into structural nouns — because it is the only one whose answer is itself a **recursive structure**: composition nests into itself (a Frame's Cell can hold another Frame). Function only classifies, Substance *fills* the Cells, and Finish styles the whole tree — none of those nests, so none needs a noun set of its own. Their "level 2" is a flat vocabulary: the four Substance sources, the Finish variant tiers.
+
+| Noun | Is | Changes when… |
+|---|---|---|
+| **Frame** | a *slicer* — carves a box into sub-boxes | a composition pattern is added (a new layout) |
+| **Cell** | a *typed slot* — sized, positioned, resolution-blind | the layout/geometry changes (a slot moves) |
+| **Tile** | a *filler* — a leaf sized to fill one Cell | a data source changes |
+
+The full structural model — z-planes, the resolution-blind Cell contract, the manifest — is **[the Form model](/model/form-model/)**.
+
+## The join — Component and Bucket
+
+A **Component is this same grammar one scale down**: its `form:` value is a Frame type, its slots are Cells, and the author's markdown fills them the way a Tile fills a Cell. It **has-a** Frame and binds Substance into the Cells that Frame produces; it carries a Function and receives Finish — the join, on one slide. A **Bucket** is orthogonal bookkeeping: the disk grouping of components (mostly one-to-one with Function; a few — `chart`, `diagram`, `math`, `code`, `legal` — diverge to colocate a shared renderer or authoring vocabulary).
+
+## Abstract vs. concrete — the three rungs
+
+The same concept appears at three levels of concreteness, and the jumps are the whole pipeline: a slide is built by realizing abstract *types* as catalog *data*, then interpreting that data into *pixels*.
+
+| Rung | What it is | Example |
+|---|---|---|
+| **1 — abstract** | a type / axis / kind — vocabulary and schema | the *Form* axis; the *Frame* slicer kind |
+| **2 — concrete-as-data** | a catalog entry — manifest / CSS on disk, validated | the `split-panel` Frame manifest; the `cards-grid` component |
+| **3 — concrete-at-render** | the realized instance — pixels in the PDF | this slide's carved boxes, resolved Cells, populated Tiles |
+
+The four axes live entirely at **rung 1** — they are dimensions of decision, not things. Form's three nouns each span all three rungs. The catch: **rung 2 only looks concrete** — the manifests are inert *data* (an AST), not runtime objects. The sole instantiated rung is render, when the transform kernels + CSS grid interpret that AST.
+
+## What the model is encoded as
+
+The **vocabulary** of every concept is encoded and self-enforcing — the Frame / Cell / Tile catalogs (manifests + JSON-schemas + integrity gates under [`lib/forms/`](https://github.com/slidewright/lattice/blob/main/lib/forms)) and the component catalog (`function` / `form` / `substance` / `bucket` fields + validator), surfaced in the machine catalogs [`components.json`](https://github.com/slidewright/lattice/blob/main/dist/docs/components.json) and [`forms.json`](https://github.com/slidewright/lattice/blob/main/dist/docs/forms.json).
+
+What stays **prose** is deliberate: the cross-level relationship graph itself lives in this map, not as a separate machine artifact; and Form's *execution* is at the **"light coupling"** rung — the manifests are a *validated* contract today, but the render still places via hand-written transforms + CSS (see [the Form model](/model/form-model/)).
