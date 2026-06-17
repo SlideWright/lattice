@@ -223,7 +223,7 @@ describe('lattice-engine: css emission (P1.1)', () => {
 
   test('orientationFor classifies aspect → name + canvas-scale (landscape stays 1)', () => {
     assert.deepEqual(orientationFor({ width: 1280, height: 720 }), { name: 'landscape', scale: 1 });
-    assert.deepEqual(orientationFor({ width: 1080, height: 1080 }), { name: 'square', scale: 1.5 });
+    assert.deepEqual(orientationFor({ width: 1080, height: 1080 }), { name: 'square', scale: 1.65 });
     // Portrait scale ramps with how tall the canvas is (4:5 large → 9:19.5 capped).
     assert.deepEqual(orientationFor({ width: 1080, height: 1350 }), { name: 'portrait', scale: 1.95 }); // 4:5
     assert.deepEqual(orientationFor({ width: 1080, height: 1920 }), { name: 'portrait', scale: 2.19 }); // 9:16
@@ -237,7 +237,7 @@ describe('lattice-engine: css emission (P1.1)', () => {
     const story = orientationCss({ width: 1080, height: 1920 });
     assert.match(story, /--canvas-scale:\s*2\.19/);
     assert.match(story, /justify-content:\s*center/);
-    assert.match(orientationCss({ width: 1080, height: 1080 }), /--canvas-scale:\s*1\.5/);
+    assert.match(orientationCss({ width: 1080, height: 1080 }), /--canvas-scale:\s*1\.65/);
     // Safe-area bands (px) for the `safe` modifier — 12% top / 20% bottom of height.
     assert.match(story, /--safe-top:\s*230px/);   // 1920 * 0.12
     assert.match(story, /--safe-bottom:\s*384px/); // 1920 * 0.20
@@ -248,7 +248,7 @@ describe('lattice-engine: css emission (P1.1)', () => {
     const out = composeCss({ themeCss: PALETTE, baseLatticeCss: SOCIAL, sizeName: 'story' });
     assert.match(out, /@page\s*\{[^}]*size:\s*1080px 1920px/);
     assert.match(out, /width:\s*1080px/);
-    assert.match(out, /section\s*\{\s*--canvas-scale:\s*2\.19;\s*justify-content:\s*center;\s*--safe-top:\s*230px;\s*--safe-bottom:\s*384px;\s*\}/);
+    assert.match(out, /section\s*\{\s*--canvas-scale:\s*2\.19;\s*--stat-emphasis:\s*1\.45;\s*justify-content:\s*center;\s*--safe-top:\s*230px;\s*--safe-bottom:\s*384px;\s*\}/);
     // A landscape deck gets NO orientation block (the scaling never fires).
     assert.doesNotMatch(composeCss({ themeCss: PALETTE, baseLatticeCss: SOCIAL, sizeName: 'hd' }), /--canvas-scale/);
   });
@@ -272,7 +272,7 @@ describe('lattice-engine: css emission (P1.1)', () => {
     // Mirror the runtime's literals; fail loudly if they diverge from css.js.
     const runtimeScale = (aspect) => {
       if (aspect > 1.05) return 1;
-      return aspect >= 0.95 ? 1.5 : Math.min(2.4, Math.round((1.75 + (1 - aspect) * 1.0) * 100) / 100);
+      return aspect >= 0.95 ? 1.65 : Math.min(2.4, Math.round((1.75 + (1 - aspect) * 1.0) * 100) / 100);
     };
     for (const [w, h] of [[1280, 720], [1080, 1080], [1080, 1350], [1080, 1920], [1080, 2340]]) {
       const expected = orientationFor({ width: w, height: h }).scale;

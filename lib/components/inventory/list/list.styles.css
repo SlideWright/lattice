@@ -101,3 +101,16 @@ section.list.principles > ol > li::before {
 section.list.principles.lettered > ol > li::before { content:counter(list-principle-counter, upper-alpha); }
 section.list.principles.roman > ol > li::before { content:counter(list-principle-counter, upper-roman); }
 section.list.principles.bullet > ol > li::before { content:'·'; }
+
+/* Portrait / square (social) — keep each card CONTENT-height and distribute the
+   set across the frame, instead of flex:1 1 0 ballooning one line of text into a
+   ~640px box on a tall canvas. Fill comes from rhythm (space-evenly) + the bigger
+   social type, not from inflating boxes. Keyed on data-orientation. */
+section.list[data-orientation='portrait'] > :is(ul,ol),
+section.list[data-orientation='square'] > :is(ul,ol) {
+  justify-content: space-evenly;
+}
+section.list[data-orientation='portrait'] > :is(ul,ol) > li,
+section.list[data-orientation='square'] > :is(ul,ol) > li {
+  flex: 0 0 auto;
+}
