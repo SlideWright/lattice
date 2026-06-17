@@ -110,7 +110,7 @@ followed by a colon, every item follows the same pattern.
 
 ## Card titles
 
-When using cards-grid, compare-prose, featured, or similar layouts where
+When using cards-grid, compare-prose, or similar layouts where
 each card has a short title, the titles should be **noun phrases of
 similar weight**. Not sentences (the H2 is the sentence). Not a mix of
 noun phrases and verb phrases.

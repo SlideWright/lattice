@@ -178,16 +178,14 @@ section.sketch.decision > ol > li,
 section.sketch.matrix-2x2 > ol > li,
 section.sketch.matrix-2x2 > ul > li,
 section.sketch.pricing > ul > li,
-section.sketch.featured .feat-card,
-section.sketch.featured .sub-card,
 section.sketch.compare-prose .card,
 section.sketch.compare-prose > ol > li,
 section.sketch.citation-card > blockquote,
 /* The generic "KEY INSIGHT" blockquote (the trailing `> blockquote` on any
  * non-specialised layout — same target as base.modifiers' key-insight chrome)
- * becomes a drawn box too. redline/quote/featured/math/citation-card own their
+ * becomes a drawn box too. redline/quote/math/citation-card own their
  * blockquote and are excluded so their borders/spines aren't clobbered. */
-section.sketch:not(.quote):not(.featured):not(.math):not(.citation-card):not(.redline) > blockquote {
+section.sketch:not(.quote):not(.math):not(.citation-card):not(.redline) > blockquote {
   border: 2px solid var(--sketch-ink) !important;
   border-radius: 255px 12px 225px 15px / 15px 225px 15px 255px !important;
   box-shadow: 2px 3px 0 -1px color-mix(in srgb, var(--sketch-ink) 30%, transparent);

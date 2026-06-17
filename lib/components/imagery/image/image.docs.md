@@ -120,7 +120,6 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 ## Related components
 
-- [`featured`](../../imagery/featured/featured.docs.md) — the recommendation is a card, not an image
 - [`diagram`](../../diagram/diagram/diagram.docs.md) — the visual is a Mermaid graph, not a photo or screenshot
 - [`content`](../../statement/content/content.docs.md) — the slide is mostly prose with one inline visual
 - [`title`](../../anchor/title/title.docs.md) — the image is a bookend hero, not the body of a slide

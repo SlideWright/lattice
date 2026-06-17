@@ -86,7 +86,7 @@ Function · Form · Substance · Finish. Authored in short names, organized in f
 6. Evidence
    - Data into picture — stats, kpi, quadrant, radar, diagram, code.
 7. Imagery
-   - Visual that carries meaning — image, featured.
+   - Visual that carries meaning — image.
 
 ---
 

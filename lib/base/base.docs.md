@@ -151,7 +151,7 @@ audience should remember from a card-grid slide.
 ```
 
 **Supported layouts:** `cards-grid`, `cards-stack`, `compare-prose`, `compare-table`, `verdict-grid`,
-`featured`, `list`, `list-criteria`, `list-steps`, `list-tabular`,
+`list`, `list-criteria`, `list-steps`, `list-tabular`,
 `timeline`, `principles`, `matrix-2x2`, `decision`,
 `actors`, `kpi`, `agenda`. Other layouts render
 blockquote as default blockquote chrome.
@@ -175,7 +175,7 @@ shouldn't get card weight.
 ```
 
 **Supported layouts:** same set as Key Insight Panel above —
-`cards-grid`, `cards-stack`, `compare-prose`, `compare-table`, `verdict-grid`, `featured`, `list`,
+`cards-grid`, `cards-stack`, `compare-prose`, `compare-table`, `verdict-grid`, `list`,
 `list-criteria`, `list-steps`, `list-tabular`, `timeline`,
 `principles`, `matrix-2x2`, `decision`, `actors`, `kpi`, `agenda`.
 
@@ -229,7 +229,7 @@ rather than extending its argument.
 
 **Supported layouts:** same set as Below-Note —
 `cards-grid`, `cards-stack`, `compare-prose`,
-`compare-table`, `verdict-grid`, `featured`, `list`, `list-criteria`,
+`compare-table`, `verdict-grid`, `list`, `list-criteria`,
 `list-steps`, `list-tabular`, `timeline`, `principles`, `matrix-2x2`, `decision`, `actors`, `kpi`, `agenda`.
 
 ### The three trailing-paragraph registers — comparison
@@ -376,8 +376,7 @@ ignore it.
 | Layout | Effect |
 |---|---|
 | `image` | image slot flips from right (default) to left. Alias of legacy `image left`. |
-| `featured` | hero card moves from the left column to the right column. |
-| `split-panel` (all variants) | featured panel and supporting zone swap sides. |
+| `split-panel` (all variants) | accent panel and supporting zone swap sides. |
 | `compare-prose` | left and right cards swap; chosen/decision read from the left. |
 
 ```markdown
@@ -430,7 +429,7 @@ hand-drawn register: felt-tip headings (`--sketch-font-display`, Caveat),
 a legible hand-sans for prose (`--sketch-font-body`, Shantell Sans), a
 wobbly accent underline on the slide heading, and the card surface of
 **every card-style layout** (`cards-grid`, `cards-stack`, `verdict-grid`,
-`decision`, `matrix-2x2`, `pricing`, `featured`, `compare-prose`,
+`decision`, `matrix-2x2`, `pricing`, `compare-prose`,
 `citation-card`) redrawn as a sketched box — an asymmetric corner radius,
 an offset "ink" stroke, and a fractional per-card tilt on the multi-card
 grids. The same hand treatment reaches **every other structure that draws

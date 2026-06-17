@@ -74,7 +74,7 @@ else: a fill never carries text in a fixed colour — it carries text in its
 | Container | Fill | Ink / border | Use |
 |---|---|---|---|
 | **Bold** | `--accent` | `--on-accent` (primary), `--on-accent-secondary` (eyebrow/caption), `--on-accent-ghost` (chrome / divider), `--on-accent-watermark` (backdrop glyph) | Loud, attention-pulling — verdict bar, corner tags, timeline nodes, the split-panel rail |
-| **Soft** | `--accent-soft` | `--on-accent-soft` (emphasis + border); `--accent-soft-body` (body prose, = canvas `--text-body`) | Quiet, recommended-option surfaces — verdict-grid winner, compare-prose transition & matrix outcome cells, featured card |
+| **Soft** | `--accent-soft` | `--on-accent-soft` (emphasis + border); `--accent-soft-body` (body prose, = canvas `--text-body`) | Quiet, recommended-option surfaces — verdict-grid winner, compare-prose transition & matrix outcome cells |
 
 The **bold** ink is the single curated value `--on-accent`: each theme tunes it
 for AAA contrast against *its* `--accent` in both modes, and the three muted

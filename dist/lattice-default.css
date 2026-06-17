@@ -2723,83 +2723,6 @@ section.divider.light::before { content:none; }
 section.divider.light h2 { font-size:var(--fs-h2); color:var(--text-body); max-width:none; margin-bottom:var(--sp-sm); text-align:center; line-height:var(--lh-tight); }
 section.divider.light p  { font-size:var(--fs-message); max-width:46.875cqi; line-height:var(--lh-relaxed); margin:0 auto; text-align:center; }
 
-/* === lib/components/imagery/featured/featured.styles.css === */
-/* featured — extracted from lib/_legacy.css (batch 5).
- * See lib/components/featured/featured.manifest.json for the component contract.
- */
-
-/* ── FEATURED ──
- * ## heading  ul: first li = .feat-card hero (50%), rest = .sub-row > .sub-card (50%)
- * Titles emit as <strong>; container sets fs-body base — same model as cards-grid/compare-prose.
- */
-section.featured h2 { font-size:var(--fs-emphasis); margin-bottom:var(--sp-sm); }
-section.featured .feat-layout { display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr; flex:1; gap:var(--sp-sm); }
-section.featured .feat-card { flex:0 0 50%; background:var(--accent-soft); border:1px solid var(--on-accent-soft); border-radius:var(--radius-md); padding:var(--sp-sm) 2.03125cqi; position:relative; overflow:hidden; font-size:var(--fs-body); color:var(--accent-soft-body); }
-section.featured .feat-card::after {
-  content:'✧'; position:absolute; top:0.625cqi; right:0.625cqi;
-  font-size:2.75cqi; line-height:1; color:var(--accent); opacity:0.35;
-  font-family:var(--font-body); font-weight:400; letter-spacing:0;
-  pointer-events:none;
-}
-section.featured .feat-card strong { display:block; font-weight:700; color:var(--accent); margin-bottom:var(--sp-xs); padding-right:3.125cqi; }
-section.featured .feat-card p { color:var(--text-body); line-height:var(--lh-relaxed); margin:0; font-style:normal; padding-right:3.125cqi; }
-section.featured .sub-row { display:grid; grid-auto-rows:1fr; gap:var(--sp-sm); }
-section.featured .sub-card { background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:1.40625cqi 1.71875cqi; font-size:var(--fs-body); color:var(--text-body); }
-section.featured .sub-card strong { display:block; font-weight:700; color:var(--text-heading); margin-bottom:var(--sp-xs); }
-section.featured .sub-card p  { color:var(--text-body); line-height:var(--lh-base); margin:0; }
-
-/* ── FEATURED ────────────────────────────────────────────────────────────────
- * First li → hero col (50%); rest → column of sub-cards (50%).
- *
- * Styles the RAW markdown form (marp-cli + runtime/preview, which don't run
- * the featured transform — only the emulator emits .feat-layout). NOT guarded
- * with :not(:has(.feat-layout)): the transformed and raw forms are mutually
- * exclusive per render (the emulator replaces the <ul>; the other paths keep
- * it), so the .feat-layout rules above and the > ul rules below target
- * disjoint elements. The old :not(:has()) guard silently broke in the Marp
- * preview Chromium → the layout collapsed. See engineering/gotchas.md
- * "`:not(:has(...))` is unreliable".                                       */
-section.featured > ul {
-  display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr; gap:var(--sp-sm);
-  flex:1; min-height:0; list-style:none; padding:0; margin:0;
-}
-/* First item — featured hero card, spans both rows (full column height) */
-section.featured > ul > li:first-child {
-  grid-row:1 / -1; background:var(--accent-soft); border:1px solid var(--accent);
-  border-radius:var(--radius-md); padding:var(--sp-sm) 2.03125cqi;
-  display:flex; flex-direction:column; justify-content:start;
-  font-weight:700; letter-spacing:0.12em; color:var(--accent);
-  position:relative; overflow:hidden;
-}
-section.featured > ul > li:first-child::after {
-  content:'✧'; position:absolute; top:0.625cqi; right:0.625cqi;
-  font-size:2.75cqi; line-height:1; color:var(--accent); opacity:0.35;
-  font-family:var(--font-body); font-weight:400; letter-spacing:0;
-  pointer-events:none;
-}
-section.featured > ul > li:first-child > strong { display:block; padding-right:3.125cqi; }
-section.featured > ul > li:first-child > ul { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; }
-section.featured > ul > li:first-child > ul > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-relaxed); font-weight:400; letter-spacing:0; padding-right:3.125cqi; }
-/* Sub-card items — column 2, each row */
-section.featured > ul > li:not(:first-child) {
-  background:var(--bg-alt); border:1px solid var(--border);
-  border-radius:var(--radius-md); padding:1.40625cqi 1.71875cqi; display:flex; flex-direction:column; gap:var(--sp-xs);
-  font-size:var(--fs-body); font-weight:700; color:var(--text-heading);
-}
-section.featured > ul > li:not(:first-child) > strong { display:block; }
-section.featured > ul > li:not(:first-child) > ul { list-style:none; padding:0; margin:0; flex:1; }
-section.featured > ul > li:not(:first-child) > ul > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
-/* Suppress list markers */
-section.featured > ul > li::before { display:none !important; content:none !important; }
-section.featured > ul > li > ul > li::before { display:none !important; content:none !important; }
-
-/* Hardening: element siblings of <strong> in a card li don't inherit
- * the parent's font-weight:700. Covers cases like `<strong>Title.</strong>
- * <em>italic body</em>`. Text-node siblings still inherit (CSS can't
- * target text nodes); the manifest validator catches that case at
- * lint time. See CARD_STYLE_LAYOUTS in lib/components/index.js. */
-section.featured :is(ul,ol) > li > strong ~ * { font-weight: 400; }
-
 /* === lib/components/chart/funnel/funnel.styles.css === */
 /* funnel — tapering stage chart (chart-family series member).
  * See lib/components/chart/funnel/funnel.manifest.json for the contract.
@@ -5847,7 +5770,7 @@ section.math.theorem blockquote {
   color: var(--text-body);
 }
 /* Suppress the default "KEY INSIGHT" eyebrow that lattice.css emits on every
- * blockquote outside .quote/.featured — the bold inline label (Definition.,
+ * blockquote outside .quote — the bold inline label (Definition.,
  * Theorem., Proof.) carries the type, and a second label clutters the card. */
 section.math.theorem blockquote::before { content: none; }
 section.math.theorem blockquote p {
@@ -10331,9 +10254,9 @@ section.dark p:has(> code:only-child):has(+ pre) > code { color: var(--on-dark-s
  * Any trailing > blockquote on a content-bearing layout renders
  * as a warm filled panel — Option C styling.
  * Excluded layouts handle blockquote themselves:
- *   quote, featured (primary content)
+ *   quote (primary content)
  */
-section:not(.quote):not(.featured):not(.math):not(.citation-card):not([class*="layout-"]) > blockquote {
+section:not(.quote):not(.math):not(.citation-card):not([class*="layout-"]) > blockquote {
   background:var(--accent-soft);
   border:1px solid var(--accent);
   border-radius:var(--radius-md);
@@ -10341,7 +10264,7 @@ section:not(.quote):not(.featured):not(.math):not(.citation-card):not([class*="l
   margin-top:var(--sp-sm);
   flex-shrink:0;
 }
-section:not(.quote):not(.featured):not(.math):not(.citation-card):not(.redline):not([class*="layout-"]) > blockquote::before {
+section:not(.quote):not(.math):not(.citation-card):not(.redline):not([class*="layout-"]) > blockquote::before {
   content:'KEY INSIGHT';
   font-family:var(--font-label);
   font-size:var(--fs-meta);
@@ -10352,19 +10275,19 @@ section:not(.quote):not(.featured):not(.math):not(.citation-card):not(.redline):
   display:block;
   margin-bottom:0.46875cqi;
 }
-section:not(.quote):not(.featured):not(.math):not(.citation-card):not([class*="layout-"]) > blockquote p {
+section:not(.quote):not(.math):not(.citation-card):not([class*="layout-"]) > blockquote p {
   font-family:var(--font-body);
   font-size:var(--fs-message);
   color:var(--text-heading);
   line-height:var(--lh-snug);
   margin:0;
 }
-section:not(.quote):not(.featured):not(.math):not(.citation-card):not([class*="layout-"]) > blockquote ul {
+section:not(.quote):not(.math):not(.citation-card):not([class*="layout-"]) > blockquote ul {
   list-style:none;
   padding:0; margin:0;
   display:flex; flex-direction:column; gap:0.46875cqi;
 }
-section:not(.quote):not(.featured):not(.math):not(.citation-card):not([class*="layout-"]) > blockquote li {
+section:not(.quote):not(.math):not(.citation-card):not([class*="layout-"]) > blockquote li {
   font-family:var(--font-body);
   font-size:var(--fs-message);
   color:var(--text-heading);
@@ -10372,7 +10295,7 @@ section:not(.quote):not(.featured):not(.math):not(.citation-card):not([class*="l
   padding-left:var(--sp-md);
   position:relative;
 }
-section:not(.quote):not(.featured):not(.math):not(.citation-card):not([class*="layout-"]) > blockquote li::before {
+section:not(.quote):not(.math):not(.citation-card):not([class*="layout-"]) > blockquote li::before {
   content:'—';
   position:absolute; left:0;
   color:var(--accent);
@@ -10440,7 +10363,7 @@ section footer {
  * OR where the row container is grid/scaffold and the pill needs a
  * per-layout placement override before it can join the allow list:
  *   bookends/openers     title, divider, closing, split-panel
- *   single-message       featured, big-number, kpi, stats, quote
+ *   single-message       big-number, kpi, stats, quote
  *   own metadata channel glossary (range-pill), agenda (page pointer),
  *                        list-steps (counter), list (own line),
  *                        verdict-grid/decision/matrix-2x2 (chrome),
@@ -10456,7 +10379,7 @@ section footer {
  * full-chrome pill rule (the emulator `.card` path is not inside a ul/ol,
  * so the universal selector can't reach it); the rest rely on this rule.
  * Plus any future layout whose `> li` is `display:flex`. */
-section:where(:not(.title):not(.divider):not(.closing):not(.split-panel):not(.featured):not(.big-number):not(.kpi):not(.stats):not(.quote):not(.glossary):not(.compare-table):not(.roadmap):not(.agenda):not(.matrix-2x2):not(.decision):not(.verdict-grid):not(.compare-prose):not(.code):not(.compare-code):not(.image):not(.diagram):not(.content):not(.timeline):not(.list-steps):not(.principles):not(.list):not(.list-criteria):not(.list-tabular):not(.math):not(.pricing))
+section:where(:not(.title):not(.divider):not(.closing):not(.split-panel):not(.big-number):not(.kpi):not(.stats):not(.quote):not(.glossary):not(.compare-table):not(.roadmap):not(.agenda):not(.matrix-2x2):not(.decision):not(.verdict-grid):not(.compare-prose):not(.code):not(.compare-code):not(.image):not(.diagram):not(.content):not(.timeline):not(.list-steps):not(.principles):not(.list):not(.list-criteria):not(.list-tabular):not(.math):not(.pricing))
   > :where(ul, ol) > li > code:where(:last-child, .lat-pill) {
   margin-left:auto;
   align-self:center;
@@ -10553,7 +10476,6 @@ section.scale-2xl { --fs-scale: 1.5;  }
 section.cards-grid:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
 section.compare-prose:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
 section.verdict-grid:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
-section.featured:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
 section.list-criteria:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
 section.cards-stack:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
 section.list:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
@@ -10573,7 +10495,6 @@ section.agenda:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p {
 section.cards-grid:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
 section.compare-prose:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
 section.verdict-grid:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
-section.featured:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
 section.list-criteria:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
 section.cards-stack:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
 section.list:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
@@ -10609,7 +10530,6 @@ section.agenda:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::befo
 section.cards-grid .below-note:has(> p > em:only-child)::before,
 section.compare-prose .below-note:has(> p > em:only-child)::before,
 section.verdict-grid .below-note:has(> p > em:only-child)::before,
-section.featured .below-note:has(> p > em:only-child)::before,
 section.list-criteria .below-note:has(> p > em:only-child)::before,
 section.cards-stack .below-note:has(> p > em:only-child)::before,
 section.list .below-note:has(> p > em:only-child)::before,
@@ -10632,7 +10552,6 @@ section.compare-table .below-note:has(> p > em:only-child)::before {
 section.cards-grid .below-note > p:has(> em:only-child),
 section.compare-prose .below-note > p:has(> em:only-child),
 section.verdict-grid .below-note > p:has(> em:only-child),
-section.featured .below-note > p:has(> em:only-child),
 section.list-criteria .below-note > p:has(> em:only-child),
 section.cards-stack .below-note > p:has(> em:only-child),
 section.list .below-note > p:has(> em:only-child),
@@ -10649,7 +10568,6 @@ section.compare-table .below-note > p:has(> em:only-child),
 section.cards-grid > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.compare-prose > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.verdict-grid > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
-section.featured > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.list-criteria > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.cards-stack > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.list > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
@@ -10671,7 +10589,6 @@ section.compare-table > :is(ul, ol, blockquote, table) + p:has(> em:only-child) 
 section.cards-grid > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.compare-prose > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.verdict-grid > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
-section.featured > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.list-criteria > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.cards-stack > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.list > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
@@ -10693,7 +10610,6 @@ section.compare-table > :is(ul, ol, blockquote, table) + p:has(> em:only-child) 
 section.cards-grid .below-note > p:has(> em:only-child)::before,
 section.compare-prose .below-note > p:has(> em:only-child)::before,
 section.verdict-grid .below-note > p:has(> em:only-child)::before,
-section.featured .below-note > p:has(> em:only-child)::before,
 section.list-criteria .below-note > p:has(> em:only-child)::before,
 section.cards-stack .below-note > p:has(> em:only-child)::before,
 section.list .below-note > p:has(> em:only-child)::before,
@@ -10710,7 +10626,6 @@ section.compare-table .below-note > p:has(> em:only-child)::before,
 section.cards-grid > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
 section.compare-prose > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
 section.verdict-grid > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
-section.featured > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
 section.list-criteria > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
 section.cards-stack > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
 section.list > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
@@ -10977,7 +10892,6 @@ section.obligation-matrix.asymmetric td:first-child {
  *
  * Flips the asymmetric half of a layout:
  *   image          — image side flips left/right (alias of legacy `.left`)
- *   featured       — hero card moves from left col to right col
  *   split-panel    — accent panel moves from left to right (watermark)
  *   compare-prose  — left and right cards swap (also reverses chosen/decision)
  *
@@ -10986,24 +10900,6 @@ section.obligation-matrix.asymmetric td:first-child {
  * ──────────────────────────────────────────────────────────────────────── */
 
 /* — image: .mirror and .left are handled in the main IMAGE block above — */
-
-/* — featured: swap hero (first child) and sub-row (rest) columns —
- * Marp CLI / runtime path: section.featured > ul > li (first vs not-first)
- * emulator path: .feat-layout > .feat-card + .sub-row.
- * No :not(:has(.feat-layout)) guard — the raw <ul> and the .feat-layout form
- * are mutually exclusive per render, and :not(:has()) silently breaks in the
- * Marp preview Chromium (see engineering/gotchas.md). */
-section.featured.mirror > ul > li:first-child {
-  grid-column: 2;
-}
-section.featured.mirror > ul > li:not(:first-child) {
-  grid-column: 1;
-}
-section.featured.mirror .feat-layout {
-  grid-template-columns: 1fr 1fr;
-}
-section.featured.mirror .feat-layout .feat-card { grid-column: 2; grid-row: 1; }
-section.featured.mirror .feat-layout .sub-row    { grid-column: 1; grid-row: 1; }
 
 /* — split-panel: reverse the row so panel-left renders on the right —
  * Watermark / eyebrow positions stay anchored to .panel-left's own box. */
@@ -13013,16 +12909,14 @@ section.sketch.decision > ol > li,
 section.sketch.matrix-2x2 > ol > li,
 section.sketch.matrix-2x2 > ul > li,
 section.sketch.pricing > ul > li,
-section.sketch.featured .feat-card,
-section.sketch.featured .sub-card,
 section.sketch.compare-prose .card,
 section.sketch.compare-prose > ol > li,
 section.sketch.citation-card > blockquote,
 /* The generic "KEY INSIGHT" blockquote (the trailing `> blockquote` on any
  * non-specialised layout — same target as base.modifiers' key-insight chrome)
- * becomes a drawn box too. redline/quote/featured/math/citation-card own their
+ * becomes a drawn box too. redline/quote/math/citation-card own their
  * blockquote and are excluded so their borders/spines aren't clobbered. */
-section.sketch:not(.quote):not(.featured):not(.math):not(.citation-card):not(.redline) > blockquote {
+section.sketch:not(.quote):not(.math):not(.citation-card):not(.redline) > blockquote {
   border: 2px solid var(--sketch-ink) !important;
   border-radius: 255px 12px 225px 15px / 15px 225px 15px 255px !important;
   box-shadow: 2px 3px 0 -1px color-mix(in srgb, var(--sketch-ink) 30%, transparent);

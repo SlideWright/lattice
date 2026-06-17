@@ -175,7 +175,7 @@ describe('markdown-it-plugins', () => {
     assert.equal(plugins.formToggleClass('content', 'standard'), 'content form');
     assert.equal(plugins.formToggleClass('cards-grid compact', 'standard'), 'cards-grid compact form');
     assert.equal(plugins.formToggleClass('', 'standard'), 'form'); // bare slide
-    for (const skip of ['title', 'divider', 'closing', 'math', 'compare-code', 'split-panel', 'image', 'featured']) {
+    for (const skip of ['title', 'divider', 'closing', 'math', 'compare-code', 'split-panel', 'image']) {
       assert.equal(plugins.formToggleClass(skip, 'standard'), skip, `should skip ${skip}`);
     }
   });

@@ -26,7 +26,7 @@ const HISTORICAL_SKIP = [
   'title', 'divider', 'closing',
   'math', 'compare-code',
   'split-panel', 'split-compare',
-  'image', 'featured',
+  'image',
 ];
 
 test('(a) every Cell manifest validates', () => {
@@ -39,7 +39,7 @@ test('(a) every Cell manifest validates', () => {
 
 test('(a) every Frame manifest validates', () => {
   const frames = forms.loadFrames();
-  assert.ok(frames.length >= 11, `expected ≥11 frames, got ${frames.length}`);
+  assert.ok(frames.length >= 10, `expected ≥10 frames, got ${frames.length}`);
   for (const f of frames) {
     assert.deepEqual(forms.validateFrame(f, f.id), [], `frame ${f.id} should validate`);
   }

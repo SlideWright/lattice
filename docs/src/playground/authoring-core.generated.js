@@ -52,7 +52,6 @@ var require_lint_core = __commonJS({
     var CARD_STYLE_LAYOUTS = Object.freeze([
       "cards-grid",
       "cards-stack",
-      "featured",
       "compare-prose",
       "matrix-2x2",
       "verdict-grid",

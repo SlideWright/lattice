@@ -65,7 +65,7 @@ any Lattice palette. The same content is also available as a single
 
 ## The card-style nesting rule
 
-Card-style layouts (`cards-grid`, `cards-stack`, `featured`,
+Card-style layouts (`cards-grid`, `cards-stack`,
 `decision`, `verdict-grid`, and others) expect **nested** list items,
 not inline bold titles:
 

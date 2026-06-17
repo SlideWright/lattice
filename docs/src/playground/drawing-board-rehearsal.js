@@ -94,7 +94,7 @@ function roleOf(comp, idx, total, chunk, bucketOf) {
   if (comp === 'decision') return 'decision';
   if (comp === 'big-number' || comp === 'kpi' || comp === 'stats') return 'data';
   if (comp === 'quote') return 'quote';
-  if (comp === 'featured' || comp === 'image') return 'visual';
+  if (comp === 'image') return 'visual';
   if (comp && TABLE_COMPS.has(comp)) return 'table';
   const b = bucketOf && comp ? bucketOf(comp) : null;
   if (b === 'evidence') return 'data';
@@ -181,7 +181,7 @@ export function metasFromSource(source, { bucketOf } = {}) {
 
 // The component for a rendered <section>: its `_class` becomes a class token. Pick
 // a known special role-class, else a catalog-known component, else the first class.
-const ROLE_CLASSES = new Set(['title', 'divider', 'decision', 'closing', 'big-number', 'kpi', 'stats', 'quote', 'featured', 'image']);
+const ROLE_CLASSES = new Set(['title', 'divider', 'decision', 'closing', 'big-number', 'kpi', 'stats', 'quote', 'image']);
 function sectionComp(html, bucketOf) {
   const m = html.match(/<section[^>]*\sclass="([^"]*)"/i);
   if (!m) return null;

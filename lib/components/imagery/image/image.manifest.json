@@ -63,10 +63,6 @@
   ],
   "related": [
     {
-      "name": "featured",
-      "when": "the recommendation is a card, not an image"
-    },
-    {
       "name": "diagram",
       "when": "the visual is a Mermaid graph, not a photo or screenshot"
     },

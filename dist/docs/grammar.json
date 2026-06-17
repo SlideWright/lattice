@@ -55,7 +55,7 @@
       "degradesTo": "code-block"
     }
   },
-  "count": 53,
+  "count": 52,
   "components": [
     {
       "name": "actors",
@@ -1147,68 +1147,6 @@
         "no-period",
         "no-progress",
         "numbered",
-        "pinned",
-        "redacted",
-        "revised",
-        "scale-2xl",
-        "scale-l",
-        "scale-xl",
-        "silent",
-        "tbd",
-        "tint-corner at-tl",
-        "tint-edge at-right",
-        "tint-vignette",
-        "tone-fail",
-        "tone-pass",
-        "tone-skip",
-        "tone-warn",
-        "treatment-none",
-        "wip",
-        "with-period"
-      ],
-      "familyModifiers": [],
-      "readsStateMarkers": false
-    },
-    {
-      "name": "featured",
-      "classToken": "featured",
-      "bucket": "imagery",
-      "substance": "mixed",
-      "skeleton": "<!-- _class: featured -->\n\n## Slide heading framing the recommendation.\n\n- Featured recommendation\n  - One to two sentences making the case.\n- Supporting card\n  - Short context on a related option.\n- Supporting card\n  - Short context on another option.\n- Supporting card\n  - Short context on another option.\n",
-      "slots": {
-        "title": {
-          "selector": "h2",
-          "required": true,
-          "description": "Slide heading framing the recommendation."
-        },
-        "items": {
-          "selector": "ul > li",
-          "required": true,
-          "description": "First li becomes the featured card; remaining lis form the sub-grid. Authoring contract: a top-level bullet is the card title (renders bold by default); an indented bullet underneath carries the body text."
-        }
-      },
-      "requiredSlots": [
-        "title",
-        "items"
-      ],
-      "modifiers": [
-        "accent",
-        "archived",
-        "compact",
-        "confidential",
-        "dark",
-        "draft",
-        "form",
-        "loose",
-        "mark-orbit",
-        "mark-threads",
-        "mirror",
-        "no-footer",
-        "no-form",
-        "no-header",
-        "no-paginate",
-        "no-period",
-        "no-progress",
         "pinned",
         "redacted",
         "revised",

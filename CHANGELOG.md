@@ -92,6 +92,15 @@ in patch versions.
 
 ### Removed
 
+- **Breaking: the `featured` component is removed, superseded by the `focus`
+  directive.** The `imagery/featured` layout (its `<!-- _class: featured -->`
+  slides, the `feat-layout` / `feat-card` DOM, the `featured.mirror` swap, and
+  the `featured` Form Frame) is gone; decks that authored a `featured`
+  recommendation card should use a card-style layout (`cards-stack` /
+  `cards-grid`) with `_focus` to spotlight the lead item. The Imagery bucket now
+  holds a single component, `image`. See
+  `engineering/decisions/2026-06-16-focus-highlighting.md`.
+
 - **Breaking: the BYO marp-cli render path is retired — `marp.config.js` is
   deleted**, along with the `@slidewright/lattice/config` and
   `@slidewright/lattice/marp.config.js` package exports. Lattice's own engine

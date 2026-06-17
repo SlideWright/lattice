@@ -162,9 +162,9 @@ section.dark p:has(> code:only-child):has(+ pre) > code { color: var(--on-dark-s
  * Any trailing > blockquote on a content-bearing layout renders
  * as a warm filled panel — Option C styling.
  * Excluded layouts handle blockquote themselves:
- *   quote, featured (primary content)
+ *   quote (primary content)
  */
-section:not(.quote):not(.featured):not(.math):not(.citation-card):not([class*="layout-"]) > blockquote {
+section:not(.quote):not(.math):not(.citation-card):not([class*="layout-"]) > blockquote {
   background:var(--accent-soft);
   border:1px solid var(--accent);
   border-radius:var(--radius-md);
@@ -172,7 +172,7 @@ section:not(.quote):not(.featured):not(.math):not(.citation-card):not([class*="l
   margin-top:var(--sp-sm);
   flex-shrink:0;
 }
-section:not(.quote):not(.featured):not(.math):not(.citation-card):not(.redline):not([class*="layout-"]) > blockquote::before {
+section:not(.quote):not(.math):not(.citation-card):not(.redline):not([class*="layout-"]) > blockquote::before {
   content:'KEY INSIGHT';
   font-family:var(--font-label);
   font-size:var(--fs-meta);
@@ -183,19 +183,19 @@ section:not(.quote):not(.featured):not(.math):not(.citation-card):not(.redline):
   display:block;
   margin-bottom:0.46875cqi;
 }
-section:not(.quote):not(.featured):not(.math):not(.citation-card):not([class*="layout-"]) > blockquote p {
+section:not(.quote):not(.math):not(.citation-card):not([class*="layout-"]) > blockquote p {
   font-family:var(--font-body);
   font-size:var(--fs-message);
   color:var(--text-heading);
   line-height:var(--lh-snug);
   margin:0;
 }
-section:not(.quote):not(.featured):not(.math):not(.citation-card):not([class*="layout-"]) > blockquote ul {
+section:not(.quote):not(.math):not(.citation-card):not([class*="layout-"]) > blockquote ul {
   list-style:none;
   padding:0; margin:0;
   display:flex; flex-direction:column; gap:0.46875cqi;
 }
-section:not(.quote):not(.featured):not(.math):not(.citation-card):not([class*="layout-"]) > blockquote li {
+section:not(.quote):not(.math):not(.citation-card):not([class*="layout-"]) > blockquote li {
   font-family:var(--font-body);
   font-size:var(--fs-message);
   color:var(--text-heading);
@@ -203,7 +203,7 @@ section:not(.quote):not(.featured):not(.math):not(.citation-card):not([class*="l
   padding-left:var(--sp-md);
   position:relative;
 }
-section:not(.quote):not(.featured):not(.math):not(.citation-card):not([class*="layout-"]) > blockquote li::before {
+section:not(.quote):not(.math):not(.citation-card):not([class*="layout-"]) > blockquote li::before {
   content:'—';
   position:absolute; left:0;
   color:var(--accent);
@@ -271,7 +271,7 @@ section footer {
  * OR where the row container is grid/scaffold and the pill needs a
  * per-layout placement override before it can join the allow list:
  *   bookends/openers     title, divider, closing, split-panel
- *   single-message       featured, big-number, kpi, stats, quote
+ *   single-message       big-number, kpi, stats, quote
  *   own metadata channel glossary (range-pill), agenda (page pointer),
  *                        list-steps (counter), list (own line),
  *                        verdict-grid/decision/matrix-2x2 (chrome),
@@ -287,7 +287,7 @@ section footer {
  * full-chrome pill rule (the emulator `.card` path is not inside a ul/ol,
  * so the universal selector can't reach it); the rest rely on this rule.
  * Plus any future layout whose `> li` is `display:flex`. */
-section:where(:not(.title):not(.divider):not(.closing):not(.split-panel):not(.featured):not(.big-number):not(.kpi):not(.stats):not(.quote):not(.glossary):not(.compare-table):not(.roadmap):not(.agenda):not(.matrix-2x2):not(.decision):not(.verdict-grid):not(.compare-prose):not(.code):not(.compare-code):not(.image):not(.diagram):not(.content):not(.timeline):not(.list-steps):not(.principles):not(.list):not(.list-criteria):not(.list-tabular):not(.math):not(.pricing))
+section:where(:not(.title):not(.divider):not(.closing):not(.split-panel):not(.big-number):not(.kpi):not(.stats):not(.quote):not(.glossary):not(.compare-table):not(.roadmap):not(.agenda):not(.matrix-2x2):not(.decision):not(.verdict-grid):not(.compare-prose):not(.code):not(.compare-code):not(.image):not(.diagram):not(.content):not(.timeline):not(.list-steps):not(.principles):not(.list):not(.list-criteria):not(.list-tabular):not(.math):not(.pricing))
   > :where(ul, ol) > li > code:where(:last-child, .lat-pill) {
   margin-left:auto;
   align-self:center;
@@ -384,7 +384,6 @@ section.scale-2xl { --fs-scale: 1.5;  }
 section.cards-grid:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
 section.compare-prose:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
 section.verdict-grid:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
-section.featured:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
 section.list-criteria:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
 section.cards-stack:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
 section.list:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
@@ -404,7 +403,6 @@ section.agenda:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p {
 section.cards-grid:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
 section.compare-prose:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
 section.verdict-grid:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
-section.featured:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
 section.list-criteria:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
 section.cards-stack:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
 section.list:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
@@ -440,7 +438,6 @@ section.agenda:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::befo
 section.cards-grid .below-note:has(> p > em:only-child)::before,
 section.compare-prose .below-note:has(> p > em:only-child)::before,
 section.verdict-grid .below-note:has(> p > em:only-child)::before,
-section.featured .below-note:has(> p > em:only-child)::before,
 section.list-criteria .below-note:has(> p > em:only-child)::before,
 section.cards-stack .below-note:has(> p > em:only-child)::before,
 section.list .below-note:has(> p > em:only-child)::before,
@@ -463,7 +460,6 @@ section.compare-table .below-note:has(> p > em:only-child)::before {
 section.cards-grid .below-note > p:has(> em:only-child),
 section.compare-prose .below-note > p:has(> em:only-child),
 section.verdict-grid .below-note > p:has(> em:only-child),
-section.featured .below-note > p:has(> em:only-child),
 section.list-criteria .below-note > p:has(> em:only-child),
 section.cards-stack .below-note > p:has(> em:only-child),
 section.list .below-note > p:has(> em:only-child),
@@ -480,7 +476,6 @@ section.compare-table .below-note > p:has(> em:only-child),
 section.cards-grid > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.compare-prose > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.verdict-grid > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
-section.featured > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.list-criteria > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.cards-stack > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.list > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
@@ -502,7 +497,6 @@ section.compare-table > :is(ul, ol, blockquote, table) + p:has(> em:only-child) 
 section.cards-grid > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.compare-prose > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.verdict-grid > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
-section.featured > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.list-criteria > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.cards-stack > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.list > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
@@ -524,7 +518,6 @@ section.compare-table > :is(ul, ol, blockquote, table) + p:has(> em:only-child) 
 section.cards-grid .below-note > p:has(> em:only-child)::before,
 section.compare-prose .below-note > p:has(> em:only-child)::before,
 section.verdict-grid .below-note > p:has(> em:only-child)::before,
-section.featured .below-note > p:has(> em:only-child)::before,
 section.list-criteria .below-note > p:has(> em:only-child)::before,
 section.cards-stack .below-note > p:has(> em:only-child)::before,
 section.list .below-note > p:has(> em:only-child)::before,
@@ -541,7 +534,6 @@ section.compare-table .below-note > p:has(> em:only-child)::before,
 section.cards-grid > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
 section.compare-prose > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
 section.verdict-grid > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
-section.featured > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
 section.list-criteria > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
 section.cards-stack > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
 section.list > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
@@ -808,7 +800,6 @@ section.obligation-matrix.asymmetric td:first-child {
  *
  * Flips the asymmetric half of a layout:
  *   image          — image side flips left/right (alias of legacy `.left`)
- *   featured       — hero card moves from left col to right col
  *   split-panel    — accent panel moves from left to right (watermark)
  *   compare-prose  — left and right cards swap (also reverses chosen/decision)
  *
@@ -817,24 +808,6 @@ section.obligation-matrix.asymmetric td:first-child {
  * ──────────────────────────────────────────────────────────────────────── */
 
 /* — image: .mirror and .left are handled in the main IMAGE block above — */
-
-/* — featured: swap hero (first child) and sub-row (rest) columns —
- * Marp CLI / runtime path: section.featured > ul > li (first vs not-first)
- * emulator path: .feat-layout > .feat-card + .sub-row.
- * No :not(:has(.feat-layout)) guard — the raw <ul> and the .feat-layout form
- * are mutually exclusive per render, and :not(:has()) silently breaks in the
- * Marp preview Chromium (see engineering/gotchas.md). */
-section.featured.mirror > ul > li:first-child {
-  grid-column: 2;
-}
-section.featured.mirror > ul > li:not(:first-child) {
-  grid-column: 1;
-}
-section.featured.mirror .feat-layout {
-  grid-template-columns: 1fr 1fr;
-}
-section.featured.mirror .feat-layout .feat-card { grid-column: 2; grid-row: 1; }
-section.featured.mirror .feat-layout .sub-row    { grid-column: 1; grid-row: 1; }
 
 /* — split-panel: reverse the row so panel-left renders on the right —
  * Watermark / eyebrow positions stay anchored to .panel-left's own box. */

@@ -468,7 +468,7 @@ const ARCHETYPES = {
 		'Sales deck': { spine: ['title', 'content', 'content', 'verdict-grid', 'kpi', 'decision', 'closing'], exemplar: 'corporate/sales-deck' },
 		'Quarterly business review': { spine: ['title', 'kpi', 'roadmap', 'matrix-2x2', 'decision', 'closing'], exemplar: 'corporate/quarterly-business-review' },
 		'Strategy proposal': { spine: ['title', 'content', 'verdict-grid', 'matrix-2x2', 'decision', 'roadmap', 'closing'], exemplar: 'corporate/strategy-proposal' },
-		'Product launch': { spine: ['title', 'content', 'featured', 'cards-grid', 'kpi', 'roadmap', 'closing'], exemplar: 'corporate/product-launch' },
+		'Product launch': { spine: ['title', 'content', 'cards-stack', 'cards-grid', 'kpi', 'roadmap', 'closing'], exemplar: 'corporate/product-launch' },
 		'Customer case study': { spine: ['title', 'content', 'split-compare', 'kpi', 'quote', 'closing'], exemplar: 'corporate/customer-case-study' },
 		'Budget request': { spine: ['title', 'big-number', 'content', 'list-tabular', 'kpi', 'decision', 'closing'], exemplar: 'corporate/budget-request' },
 		'OKR / goals review': { spine: ['title', 'kpi', 'progress', 'roadmap', 'closing'], exemplar: 'corporate/okr-goals-review' },

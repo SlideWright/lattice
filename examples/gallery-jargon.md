@@ -442,20 +442,6 @@ _Criteria defined by the team building Sprig + Log. We're transparent about it. 
 
 ---
 
-<!-- _class: featured -->
-<!-- _footer: "Featured + 2 sub-cards · featured" -->
-
-## Applying the criteria to the tools — here is where the evidence points
-
-- The evidence favors Tool D
-  - Sprig plus a lightweight Decision Log meets all four criteria inside the 90-minute weekly budget, reaches production the week it's adopted, and was recommended before the evaluation began. The evaluation confirmed this.
-- The path is not self-executing
-  - Sprig needs a connector to your NPS and support platforms — budget 4–6 hours in week one. The connector has been in review for 11 weeks. We still call it "week one."
-- The Decision Log is the hardest part
-  - Not technically — culturally. PMs have to log decisions before they close, not after. It's been described as a habit change in every deck since Q3 2023. It remains one.
-
----
-
 <!-- _class: compare-prose decision -->
 <!-- _footer: "Build vs buy, DECISION chrome · compare-prose decision" -->
 

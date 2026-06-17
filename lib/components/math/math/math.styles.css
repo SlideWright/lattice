@@ -277,7 +277,7 @@ section.math.theorem blockquote {
   color: var(--text-body);
 }
 /* Suppress the default "KEY INSIGHT" eyebrow that lattice.css emits on every
- * blockquote outside .quote/.featured — the bold inline label (Definition.,
+ * blockquote outside .quote — the bold inline label (Definition.,
  * Theorem., Proof.) carries the type, and a second label clutters the card. */
 section.math.theorem blockquote::before { content: none; }
 section.math.theorem blockquote p {

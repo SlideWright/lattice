@@ -448,8 +448,8 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
   CSS-styled components the authored markup survives (`cards-grid`'s `ul > li`
   becomes the cards), so the selector matches the rendered DOM. But **transforming
   components consume their input**: a chart's `ul > li` becomes a `.chart-body`
-  SVG/HTML frame, `glossary`'s list becomes a `<table>`, `featured`'s list becomes
-  `.feat-card`s. The authored selector is gone from the render.
+  SVG/HTML frame, `glossary`'s list becomes a `<table>`, `compare-code`'s fences
+  become code panels. The authored selector is gone from the render.
 - **Fix:** those components live in the `TRANSFORM` set
   (`component-invariants.layer3.js`); layer-1's slot check is skipped for them and
   layer-3 asserts the **rendered** contract instead. Add a new transforming

@@ -60,7 +60,7 @@ Lumen Trace correlates every log, metric, and trace into a causal graph. You ask
 
 ---
 
-<!-- _class: featured -->
+<!-- _class: cards-stack -->
 <!-- tier: standard -->
 
 ## Lumen Trace answers the question; the rest of the platform keeps you ahead of it.

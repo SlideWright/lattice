@@ -7,8 +7,8 @@
  *
  *   • TRANSFORM components rewrite their authored markup — a chart's `ul > li`
  *     source list is consumed into an SVG/HTML chart frame, glossary's list
- *     becomes a `<table>`, compare-code's fences become code panels, featured's
- *     list becomes a feature layout. For those the manifest slot selector
+ *     becomes a `<table>`, compare-code's fences become code panels. For those
+ *     the manifest slot selector
  *     describes the AUTHORING input (gone from the rendered DOM), so layer 1's
  *     "slot resolves" check is skipped (TRANSFORM set) and the RENDERED-output
  *     contract is asserted here.
@@ -110,12 +110,6 @@ const LAYER3 = {
     },
   },
 
-  featured: {
-    'renders the featured layout (.feat-card)': async (page, assert, SLIDE) => {
-      const n = await page.$$eval(`${SLIDE} .feat-card`, (els) => els.length);
-      assert.ok(n >= 1, 'featured did not render a .feat-card (authored list not transformed)');
-    },
-  },
 
   // ── anchor ──
   title: anchorMinimal('h1'),
@@ -345,6 +339,6 @@ const LAYER3 = {
 // Components whose authored slot markup is consumed by a transform — layer 1's
 // "slot selector resolves" is meaningless for them, so it's skipped and the
 // rendered contract above stands in.
-const TRANSFORM = new Set([...CHARTS, 'glossary', 'compare-code', 'featured']);
+const TRANSFORM = new Set([...CHARTS, 'glossary', 'compare-code']);
 
 module.exports = { LAYER3, TRANSFORM };

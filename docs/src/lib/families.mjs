@@ -24,7 +24,7 @@ export const FAMILY_DEFS = [
 	{ key: 'splits', label: 'Split layouts', members: ['split-panel', 'split-compare'] },
 	{ key: 'codemath', label: 'Code & math', members: ['code', 'compare-code', 'math'] },
 	{ key: 'legal', label: 'Legal', members: ['authority-chain', 'citation-card', 'obligation-matrix', 'regulatory-update', 'statute-stack'] },
-	{ key: 'images', label: 'Images', members: ['featured', 'image'] },
+	{ key: 'images', label: 'Images', members: ['image'] },
 ];
 
 const NAME_TO_FAMILY = new Map();
