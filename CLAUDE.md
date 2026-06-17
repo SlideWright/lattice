@@ -119,64 +119,64 @@ The list splits into **invariants** (architectural / merge-gating) and
 **conventions** (style rules enforced by lint or tests, kept here as numbered
 anchors). Both are binding; the split tells you *where the enforcement lives*.
 
-**Invariants**
+**Invariants** (numbers are literal IDs — `-` bullets, so renderers can't renumber):
 
-1. **Render paths share one source of truth** — land transforms in the shared
-   kernel (`lib/integrations/markdown-it/plugins.js`, `lib/transformers/*`,
-   `lib/core/*`), not one path. The owned `lib/engine` is canonical; Marp is
-   retired as a render path (the one Marp surface left is export-to-Marp,
-   `lib/core/marp-bundle.js`). See `engineering/architecture.md`.
-2. **Never hand-edit `dist/`** — it's generated; regenerate with `npm run build`.
-3. **No hex literals in layout CSS — always `var(--token)`.**
-6. **Before authoring any `<!-- _class: X -->` slide**, in the SAME turn open
-   `lib/components/<bucket>/X/X.docs.md` AND grep
-   `test/integration/baseline-decks/gallery.md` for a live example (base
-   modifiers → `lib/base/base.docs.md`).
-7. **Edit lint rules in `lib/authoring/lint-core.js` only** — pure, fs-free,
-   shared by CLI / `validate()` / browser. Never duplicate.
-8. **Isolate feature/fix content from the six long-running galleries** — layouts
-   graduate in a separate post-review commit. See `engineering/workflow.md`.
-9. **Ship a per-feature demo deck** `examples/<slug>.md` (+ committed `.pdf`),
-   6–10 slides. Contract in `engineering/workflow.md`.
-10. **Record every user-visible change in `CHANGELOG.md` `## Unreleased`** as it
-    lands; lead with `**Breaking:**` for anything that breaks a deck/consumer.
-13. **Commit messages are `area(scope): short summary`**; PRs follow
-    `.github/pull_request_template.md`, and the issue(s) they close must read true
-    before merge. See `engineering/workflow.md` § Merging.
-14. **A hook failure is a root cause to fix, never a `--no-verify` to skip.**
-15. **Don't reinvent — reuse, for tooling AND UI.** Tooling: consult
-    `engineering/capabilities.md` before building any script/harness (the
-    `capabilities:check` gate enforces it). Docs-site UI: extend the shadcn
-    primitives in `docs/src/components/ui/` and the shared chrome
-    (`PaletteControls`, `site-chrome.ts`) — don't fork a widget per surface.
-16. **Keep an open PR mergeable by rebasing right before you push — NOT with a
-    background watch.** GitHub never delivers "`main` moved / now conflicted / CI
-    passed", and a polling auto-rebase thrashes the merge train and floods chat
-    (`engineering/decisions/2026-06-14-drift-watch-rebase-thrash.md`,
-    `2026-06-15-retire-drift-watch.md`). Fold the check into the push:
-    `git fetch origin main`, rebase if behind/conflicted, push. *Once the merge
-    queue is enabled (`workflow.md` §Merging), the queue performs the final
-    pre-merge rebase + retest — until then, re-check manually before an authorized
-    merge.* Resolve recurring `CHANGELOG`/`dist` conflicts mechanically and
-    `--force-with-lease` silently. Never let an open PR **merge** conflicted,
-    stale, or CI-red.
-17. **One feature = one branch → one PR; never a stacked PR chain.** Increment in
-    place (many commits, one PR). A slice that builds/tests with only `main` is
-    independent → its own branch; one that needs another open PR's branch is not.
-    See `engineering/decisions/2026-06-17-stacked-pr-fragmentation.md`.
+- **#1 — Render paths share one source of truth.** Land transforms in the shared
+  kernel (`lib/integrations/markdown-it/plugins.js`, `lib/transformers/*`,
+  `lib/core/*`), not one path. The owned `lib/engine` is canonical; Marp is
+  retired as a render path (the one Marp surface left is export-to-Marp,
+  `lib/core/marp-bundle.js`). See `engineering/architecture.md`.
+- **#2 — Never hand-edit `dist/`** — it's generated; regenerate with `npm run build`.
+- **#3 — No hex literals in layout CSS — always `var(--token)`.**
+- **#6 — Before authoring any `<!-- _class: X -->` slide**, in the SAME turn open
+  `lib/components/<bucket>/X/X.docs.md` AND grep
+  `test/integration/baseline-decks/gallery.md` for a live example (base
+  modifiers → `lib/base/base.docs.md`).
+- **#7 — Edit lint rules in `lib/authoring/lint-core.js` only** — pure, fs-free,
+  shared by CLI / `validate()` / browser. Never duplicate.
+- **#8 — Isolate feature/fix content from the six long-running galleries** —
+  layouts graduate in a separate post-review commit. See `engineering/workflow.md`.
+- **#9 — Ship a per-feature demo deck** `examples/<slug>.md` (+ committed `.pdf`),
+  6–10 slides. Contract in `engineering/workflow.md`.
+- **#10 — Record every user-visible change in `CHANGELOG.md` `## Unreleased`** as
+  it lands; lead with `**Breaking:**` for anything that breaks a deck/consumer.
+- **#13 — Commit messages are `area(scope): short summary`**; PRs follow
+  `.github/pull_request_template.md`, and the issue(s) they close must read true
+  before merge. See `engineering/workflow.md` § Merging.
+- **#14 — A hook failure is a root cause to fix, never a `--no-verify` to skip.**
+- **#15 — Don't reinvent — reuse, for tooling AND UI.** Tooling: consult
+  `engineering/capabilities.md` before building any script/harness (the
+  `capabilities:check` gate enforces it). Docs-site UI: extend the shadcn
+  primitives in `docs/src/components/ui/` and the shared chrome
+  (`PaletteControls`, `site-chrome.ts`) — don't fork a widget per surface.
+- **#16 — Keep an open PR mergeable by rebasing right before you push — NOT with a
+  background watch.** GitHub never delivers "`main` moved / now conflicted / CI
+  passed", and a polling auto-rebase thrashes the merge train and floods chat
+  (`engineering/decisions/2026-06-14-drift-watch-rebase-thrash.md`,
+  `2026-06-15-retire-drift-watch.md`). Fold the check into the push:
+  `git fetch origin main`, rebase if behind/conflicted, push. *Once the merge
+  queue is enabled (`workflow.md` §Merging), the queue performs the final
+  pre-merge rebase + retest — until then, re-check manually before an authorized
+  merge.* Resolve recurring `CHANGELOG`/`dist` conflicts mechanically and
+  `--force-with-lease` silently. Never let an open PR **merge** conflicted,
+  stale, or CI-red.
+- **#17 — One feature = one branch → one PR; never a stacked PR chain.** Increment
+  in place (many commits, one PR). A slice that builds/tests with only `main` is
+  independent → its own branch; one that needs another open PR's branch is not.
+  See `engineering/decisions/2026-06-17-stacked-pr-fragmentation.md`.
 
 **Conventions** (binding, but enforced by lint/tests — read the linked doc, don't
 work from memory):
 
-4. **Typography is the 12-token `--fs-*` system**; tokens are named for their
-   ROLE, never a colour scheme. `engineering/typography.md`, `lib/base/base.docs.md`.
-5. **Card-style layouts use nested `- Title` / `  - body`**, never inline
-   `- **Title.** body`. Enforced by `deck-authoring.test.js`; see `AGENTS.md`.
-11. **Universal role-based token names are canonical**; legacy per-theme names are
-    retired (post-flip lint blocks regressions). `lib/tokens/crosswalk.js`,
-    `lib/base/base.docs.md`.
-12. **Avoid `:not(:has(…))` / `:is(:has(…))` in theme CSS** — silently broken in
-    the Marp-preview Chromium. `engineering/gotchas.md`.
+- **#4 — Typography is the 12-token `--fs-*` system**; tokens are named for their
+  ROLE, never a colour scheme. `engineering/typography.md`, `lib/base/base.docs.md`.
+- **#5 — Card-style layouts use nested `- Title` / `  - body`**, never inline
+  `- **Title.** body`. Enforced by `deck-authoring.test.js`; see `AGENTS.md`.
+- **#11 — Universal role-based token names are canonical**; legacy per-theme names
+  are retired (post-flip lint blocks regressions). `lib/tokens/crosswalk.js`,
+  `lib/base/base.docs.md`.
+- **#12 — Avoid `:not(:has(…))` / `:is(:has(…))` in theme CSS** — silently broken
+  in the Marp-preview Chromium. `engineering/gotchas.md`.
 
 ---
 

@@ -318,7 +318,7 @@ to a nightly relative-regression watch (see
 locally from `docs/`:
 
 - **`npm run check:overflow`** (`docs/scripts/check-overflow.mjs`) — per-PR
-  (`.github/workflows/docs-overflow.yml`, advisory). A horizontal-overflow
+  (runs in `ci.yml` `docs-build`, advisory via `continue-on-error`). A horizontal-overflow
   guard: loads every converted surface at **390 / 820 / 1440**
   (mobile/tablet/desktop), exercises the interaction states (drawer/pane
   switches, overlay opens), and fails if any page is wider than its viewport (a

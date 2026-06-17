@@ -10,7 +10,7 @@
 // every converted surface, after each interaction step. Requires a built
 // `dist/` (the perf step / `astro build` produces it) and CHROME_PATH.
 //
-// Run: `npm run check:overflow` (after a build). CI: .github/workflows/docs-overflow.yml.
+// Run: `npm run check:overflow` (after a build). CI: ci.yml `docs-build` job (advisory).
 
 import { execSync } from 'node:child_process';
 import fs from 'node:fs';
