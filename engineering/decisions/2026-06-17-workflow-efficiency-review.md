@@ -8,8 +8,8 @@ superseded-by:
 
 # Workflow efficiency review — red-team of the agent operating model
 
-> **Status: In progress** — red-team complete, fixes partitioned into 6 workstreams.
-> **Roll-up:** ◐ 6 in progress · ⏸ 0 awaiting decision · ☑ 0 shipped
+> **Status: In progress** — red-team complete; D, E, F-CI shipped on the branch.
+> **Roll-up:** ☑ 2 done (D, E) · ◐ 4 in progress (A, B, C, F) · ⏸ 0 awaiting
 > **Decisions (2026-06-17):** E3 → gate the pre-push integration tier behind
 > `LATTICE_FULL_PUSH=1`; F → adopt the merge queue with auto-merge-after-approval
 > (in-repo changes here; branch-protection settings handed to the owner).
@@ -317,10 +317,29 @@ in order.
 **Recommendation: adopt it, paired with auto-merge-after-approval.** It is the
 one structural move that lowers GitHub cost *and* the parked-conflict risk *and*
 your per-merge interrupt load simultaneously — i.e. it's the single biggest lever
-on "I don't want to keep looking behind my back." The honest caveat: it's a
-branch-protection/repo-settings change (not just files in the repo), so it needs
-your hand on the GitHub settings (or an explicit OK for me to script via the API
-where permitted). Hence: explain-first, your call.
+on "I don't want to keep looking behind my back."
+
+**In-repo half (done on this branch):** `ci.yml` carries the `merge_group`
+trigger; the `changes` classifier runs the full pipeline on `merge_group`; the
+required `ci` aggregate gates the queue; `CLAUDE.md` #16 and `workflow.md`
+§Merging describe the queue owning the pre-merge rebase.
+
+**Owner half — one-time GitHub settings (the part only you can do):**
+
+1. **Repo → Settings → General → Pull Requests:** ensure **Allow squash merging**
+   is on; turn **Allow merge commits** off; enable **Allow auto-merge**.
+2. **Repo → Settings → Branches → branch protection rule for `main`:**
+   - Tick **Require merge queue**. Set *Merge method* = **Squash**; *Build
+     concurrency* = a small number (e.g. 2–3) — the queue's parallelism, not a
+     worry at this repo's volume.
+   - Under **Require status checks to pass**, keep **`ci`** as the (only) required
+     check — it now also runs in the `merge_group` context.
+3. **Per PR thereafter:** review → approve → click **Merge when ready** (auto-
+   merge). The queue rebases, re-runs `ci`, and squash-merges on green. You're no
+   longer the button-press after CI; you're just the approval.
+
+(If you'd rather I script steps 1–2 via the GitHub API, say so and I'll do it —
+it's gated repo-admin access, hence offered, not assumed.)
 
 **Evidence.** `2026-06-14-drift-watch-rebase-thrash.md`,
 `2026-06-15-retire-drift-watch.md` (both name the merge queue as the fix);
