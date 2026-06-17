@@ -138,10 +138,10 @@ export function createRenderController(data) {
 		if (LIB[palette]) {
 			return engineReady.then(() => { if (!PG.hasTheme(palette)) PG.addThemes([LIB[palette]]); });
 		}
-		if (!PG.hasTheme(palette)) jobs.push(fetchTheme(palette).then((css) => { PG.addThemes([css]); }));
-		if (mode === 'dark' && !PG.hasTheme(palette + '-dark')) {
-			jobs.push(fetchTheme(palette + '-dark').then((css) => { PG.addThemes([css]); }).catch(() => {}));
-		}
+		// Register the palette + its transitive theme-name @import closure
+		// (a11y-* → a11y-base → onyx → lattice) via the shared fetcher, so a
+		// multi-level theme isn't left with a dead @import → stripped render.
+		jobs.push(themeFetcher.ensure(palette, mode));
 		return Promise.all(jobs);
 	}
 

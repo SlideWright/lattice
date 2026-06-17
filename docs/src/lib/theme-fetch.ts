@@ -64,18 +64,32 @@ export function createThemeFetcher(themeBase: string) {
 	 * dark mode), each fetched/registered at most once. Mirrors the inline
 	 * ensureThemes every single-slide host used.
 	 */
+	// Register a theme AND the transitive theme-name `@import` closure it needs.
+	// The engine's resolveThemeImports only inlines an import whose target is
+	// already registered, so a multi-level chain (e.g. a11y-deuteranopia →
+	// a11y-base → onyx → lattice) renders STRIPPED unless every link is present.
+	// Follows bare `@import 'name'` directives (url() font imports are ignored);
+	// `lattice` routes through ensureBase(). Each name registered at most once.
+	const registering: Record<string, Promise<void>> = {};
+	function register(name: string): Promise<void> {
+		const PG = window.LatticePlayground;
+		if (!PG) return Promise.reject(new Error('engine not ready'));
+		if (name === 'lattice') return ensureBase();
+		if (!registering[name]) {
+			registering[name] = fetchTheme(name).then((css) => {
+				if (!PG.hasTheme(name)) PG.addThemes([css]);
+				const deps = [...css.matchAll(/@import\s+['"]([A-Za-z0-9_-]+)['"]/g)].map((m) => m[1]);
+				return Promise.all([ensureBase(), ...deps.map(register)]).then(() => undefined);
+			});
+		}
+		return registering[name];
+	}
+
 	function ensure(palette: string, mode: 'light' | 'dark'): Promise<void> {
 		const PG = window.LatticePlayground;
 		if (!PG) return Promise.reject(new Error('engine not ready'));
-		const jobs: Promise<void>[] = [ensureBase()];
-		if (!PG.hasTheme(palette)) jobs.push(fetchTheme(palette).then((css) => PG.addThemes([css])));
-		if (mode === 'dark') {
-			jobs.push(
-				fetchTheme(palette + '-dark')
-					.then((css) => PG.addThemes([css]))
-					.catch(() => {}),
-			);
-		}
+		const jobs: Promise<void>[] = [register(palette)];
+		if (mode === 'dark') jobs.push(register(palette + '-dark').catch(() => {}));
 		return Promise.all(jobs).then(() => undefined);
 	}
 

@@ -86,8 +86,17 @@ export function createPresent({ host, getSource, runtimeUrl, themeBase, a11yDefs
     if (!pg) return;
     if (!fetched.lattice) fetched.lattice = fetch(themeBase + 'lattice.css').then((r) => r.text()).then((c) => pg.addThemes([c]));
     await fetched.lattice;
-    if (!pg.hasTheme(name)) {
-      if (!fetched[name]) fetched[name] = fetch(themeBase + name + '.css').then((r) => r.text()).then((c) => pg.addThemes([c])).catch(() => {});
+    if (name && name !== 'lattice' && !pg.hasTheme(name)) {
+      if (!fetched[name]) {
+        fetched[name] = fetch(themeBase + name + '.css').then((r) => r.text()).then(async (c) => {
+          pg.addThemes([c]);
+          // Follow the transitive theme-name @import closure (a11y-* →
+          // a11y-base → onyx → lattice) so a multi-level theme doesn't render
+          // stripped — the engine only inlines imports whose target is registered.
+          const deps = [...c.matchAll(/@import\s+['"]([A-Za-z0-9_-]+)['"]/g)].map((m) => m[1]).filter((d) => d !== 'lattice');
+          await Promise.all(deps.map(ensureTheme));
+        }).catch(() => {});
+      }
       await fetched[name];
     }
   }

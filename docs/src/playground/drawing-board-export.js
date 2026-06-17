@@ -165,9 +165,24 @@ export async function exportMarp(source, name, palette, themeBase) {
 	let bundledThemes = [];
 	for (const cand of [chosen, 'indaco']) {
 		bundledThemes = [];
-		for (const tf of [`${cand}.css`, `${cand}-dark.css`]) {
+		// Bundle the palette, its -dark companion, AND the transitive theme-name
+		// @import closure (a11y-* → a11y-base → onyx), so the recipient's marp-cli
+		// can resolve every link. `lattice` ships via STATIC_ASSETS, so its
+		// imports need nothing extra.
+		const seen = new Set();
+		const queue = [`${cand}.css`, `${cand}-dark.css`];
+		while (queue.length) {
+			const tf = queue.shift();
+			if (seen.has(tf)) continue;
+			seen.add(tf);
 			const r = await fetch(themeBase + tf).catch(() => null);
-			if (r?.ok) { dir.file(`themes/${tf}`, await r.blob()); bundledThemes.push(`themes/${tf}`); }
+			if (!r?.ok) continue;
+			const text = await r.text();
+			dir.file(`themes/${tf}`, text);
+			bundledThemes.push(`themes/${tf}`);
+			for (const m of text.matchAll(/@import\s+['"]([A-Za-z0-9_-]+)['"]/g)) {
+				if (m[1] !== 'lattice') queue.push(`${m[1]}.css`);
+			}
 		}
 		if (bundledThemes.length) { chosen = cand; break; }
 	}
