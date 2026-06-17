@@ -27,6 +27,13 @@ in patch versions.
 
 ### Added
 
+- **PPTX export follows the deck `@size`.** A portrait/square deck now exports a
+  portrait/square `.pptx` instead of letterboxing into a 16:9 slide. The exporter
+  derives the PowerPoint slide layout from the resolved geometry (custom layout at
+  the deck aspect, normalized to a 13.333in longest edge); a 16:9 deck keeps the
+  built-in `LAYOUT_WIDE` (byte-identical). Both the CLI
+  (`lib/export/pptx-export.js`) and the Drawing Board export path are updated.
+
 - **Portrait grid reflow for the data-dense layouts.** Building on the
   social/mobile `@size` work, the grid-based layouts now reflow on a
   portrait/square canvas instead of holding their landscape composition: `kpi`

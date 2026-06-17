@@ -1469,6 +1469,8 @@ const puppeteer = loadPuppeteer();
       const count = await writePptx(outFile, pngBuffers, {
         title: path.basename(outFile).replace(/\.pptx$/i, ''),
         company: `Lattice · ${paletteName}`,
+        width: slideW,
+        height: slideH,
       });
       if (!QUIET) console.log(`PPTX: ${count} slides → ${outFile}`);
     }

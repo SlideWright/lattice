@@ -174,8 +174,6 @@ geometry; the author still tunes with `scale-l` / `scale-xl` on top.
 
 ## Caveats
 
-- **PPTX export is 16:9-only** (`lib/export/pptx-export.js` is hard-wired to
-  `LAYOUT_WIDE`). Portrait decks export correct PDFs; PPTX of a portrait deck is
-  out of scope here and tracked separately.
+- **PPTX export now follows the deck `@size`: a portrait/square deck exports a portrait/square .pptx (lib/export/pptx-export.js `pptxLayout`), landscape unchanged.
 - Story/Reel **platform safe-zones** (the caption/UI band TikTok & IG overlay on
   the bottom ~15%) are a future authoring affordance, not part of this change.

@@ -340,7 +340,19 @@ export async function exportPptx(frame, name, onStatus, meta) {
 	pptx.subject = summary;
 	pptx.author = 'Lattice Drawing Board';
 	pptx.company = `Lattice · ${eng}`;
-	pptx.layout = 'LAYOUT_WIDE'; // 13.333 x 7.5in, 16:9 — matches any 16:9 @size (HD/4K); the PNG full-bleeds it
+	// Slide aspect from the deck's @size geometry (mirrors lib/export/pptx-export.js
+	// pptxLayout). 16:9 keeps the built-in LAYOUT_WIDE; portrait/square get a custom
+	// layout at the same aspect, normalized to a 13.333in longest edge so the PNG
+	// full-bleeds without a ~20in sheet. Without this a portrait deck letterboxed.
+	const { w: boxW, h: boxH } = slideGeom(sections[0]);
+	if (boxW > 0 && boxH > 0 && Math.abs(boxW / boxH - 16 / 9) >= 0.01) {
+		const longest = Math.max(boxW, boxH);
+		const r = (n) => Math.round((n / longest) * 13.333 * 1000) / 1000;
+		pptx.defineLayout({ name: 'LATTICE', width: r(boxW), height: r(boxH) });
+		pptx.layout = 'LATTICE';
+	} else {
+		pptx.layout = 'LAYOUT_WIDE'; // 13.333 x 7.5in, 16:9 — the PNG full-bleeds it
+	}
 	for (let i = 0; i < sections.length; i++) {
 		if (onStatus) onStatus('Rendering slide ' + (i + 1) + ' of ' + sections.length + '…', { current: i, total: sections.length });
 		const png = await rasterizeSection(sections[i], fontEmbedCSS);
