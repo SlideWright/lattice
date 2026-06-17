@@ -6,6 +6,8 @@
 
 **Tags** `swimlane` · `workflow` · `status` · `agile` · `ownership`
 
+**Capacity** ~3 items (crowds past 5, overflows past 6) — past that, split across slides.
+
 Use for status snapshots: what's in each lane (todo/doing/done or similar). Each column is a stage; each card is a work item.
 
 ## When to use

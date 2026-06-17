@@ -208,6 +208,29 @@
       "type": "array",
       "items": { "type": "string", "enum": ["item", "row", "col", "cell", "line"] },
       "description": "Optional. Focusable axes this layout supports for per-axis `_focus` highlighting — a subset of the focus resolver's SUPPORTED_AXES (lib/transformers/focus.js): a `<table>` body → row/col/cell, a top-level list/grid → item, a code block → line. Scopes the editor's `_focus:` / `_focusSteps:` axis completion per layout."
+    },
+    "capacity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["axis", "soft", "hard"],
+      "description": "Optional content-capacity contract: how many elements the layout holds along the axis it is built on, so the author/agent picks by content SHAPE and the linter can warn before an overflow. `soft`/`hard` are element counts on `axis` (a focusAxes member): past `soft` the layout begins to crowd (soft warning); past `hard` it overflows / loses legibility (overflow warning). Advisory only — never blocks. Counted approximately at authoring time (lib/authoring/lint-core.js `countPrimaryCollection`) and exactly at render time (lib/core/collections.js). See engineering/decisions/2026-06-17-content-capacity-contract.md.",
+      "properties": {
+        "axis": {
+          "enum": ["item", "row", "col", "cell", "line"],
+          "description": "The collection that drives crowding — MUST be a focusAxes member when focusAxes is declared. `item` = top-level list/grid entries, `row`/`col`/`cell` = table, `line` = code lines."
+        },
+        "min": { "type": "integer", "minimum": 1, "description": "Below this the layout looks starved (advisory; not warned)." },
+        "sweet": { "type": "integer", "minimum": 1, "description": "The ideal count surfaced to the author/agent." },
+        "soft": { "type": "integer", "minimum": 1, "description": "Past this the layout begins to crowd → soft warning." },
+        "hard": { "type": "integer", "minimum": 1, "description": "Past this the layout overflows / loses legibility → overflow warning." },
+        "escalateTo": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 },
+          "description": "Actionable fix the warning prints — sibling component names and/or 'split across slides'."
+        },
+        "note": { "type": "string", "minLength": 1, "description": "One-line human consequence of overflowing (reused in the generated docs line)." }
+      }
     }
   }
 }

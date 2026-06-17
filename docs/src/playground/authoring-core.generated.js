@@ -137,6 +137,43 @@ var require_lint_core = __commonJS({
       }
       return null;
     }
+    function countPrimaryCollection(slide, axis) {
+      if (!slide || !axis) return 0;
+      if (axis === "line") {
+        const m = slide.match(/^[ \t]*```[^\n]*\n([\s\S]*?)\n[ \t]*```/m);
+        return m ? m[1].split("\n").length : 0;
+      }
+      const body = slide.replace(/^[ \t]*```[\s\S]*?^[ \t]*```/gm, "");
+      if (axis === "item") {
+        let n = 0;
+        for (const line of body.split("\n")) {
+          if (/^(?:[-*]|\d+\.)\s+\S/.test(line)) n++;
+        }
+        return n;
+      }
+      if (axis === "row" || axis === "col") {
+        const pipeRows = body.split("\n").filter((l) => /^\s*\|.*\|\s*$/.test(l));
+        if (pipeRows.length < 2) return 0;
+        if (axis === "col") {
+          const cells = pipeRows[0].trim().replace(/^\|/, "").replace(/\|$/, "").split("|");
+          return cells.length;
+        }
+        const sepIsSecond = /-/.test(pipeRows[1]) && /^\s*\|?[\s:|-]+\|?\s*$/.test(pipeRows[1]);
+        return Math.max(0, pipeRows.length - 1 - (sepIsSecond ? 1 : 0));
+      }
+      return 0;
+    }
+    var AXIS_NOUN = Object.freeze({ item: "item", row: "row", col: "column", cell: "cell", line: "line" });
+    function axisNoun(axis, n) {
+      const base = AXIS_NOUN[axis] || String(axis);
+      return n === 1 ? base : `${base}s`;
+    }
+    function capacityFix(cap) {
+      const all = Array.isArray(cap.escalateTo) ? cap.escalateTo.filter(Boolean) : [];
+      const comps = all.filter((t) => !/split/i.test(t));
+      if (!comps.length) return "Split the content across multiple slides.";
+      return `Switch to ${comps.join(" / ")}, or split across slides.`;
+    }
     function isKnownModifier(token, vocab) {
       if (vocab.modifiers.has(token)) return true;
       return MODIFIER_PREFIXES.some((p) => token.startsWith(p));
@@ -292,6 +329,37 @@ ${indent}  ${bullet} ${body.trim()}`;
             message: `'${t}' is not a known component or modifier`,
             fix: "Check the spelling against dist/docs/components.json (component names) or design/design-system.md \xA76.5 (modifiers)."
           });
+        }
+        if (vocab.capacity) {
+          for (const t of tokens) {
+            const cap = vocab.capacity[t];
+            if (!cap) continue;
+            const n = countPrimaryCollection(slide, cap.axis);
+            if (!n) break;
+            const comfort = cap.sweet != null ? cap.sweet : cap.soft;
+            if (cap.hard != null && n > cap.hard) {
+              findings.push({
+                slide: idx - fm + 1,
+                rule: "capacity-overflow",
+                severity: "warning",
+                classToken: t,
+                line: m[0],
+                message: `'${t}' holds about ${comfort} ${axisNoun(cap.axis, comfort)} comfortably (max ~${cap.hard}); this slide has ${n} \u2014 it will overflow` + (cap.note ? ` (${cap.note})` : ""),
+                fix: capacityFix(cap)
+              });
+            } else if (cap.soft != null && n > cap.soft) {
+              findings.push({
+                slide: idx - fm + 1,
+                rule: "capacity-crowd",
+                severity: "warning",
+                classToken: t,
+                line: m[0],
+                message: `'${t}' reads best with ${comfort} or fewer ${axisNoun(cap.axis, comfort)}; this slide has ${n} \u2014 past ${cap.soft} it begins to crowd`,
+                fix: capacityFix(cap)
+              });
+            }
+            break;
+          }
         }
         if (tokens.some((t) => cardStyle.has(t))) {
           const offending = findInlineTitleBodyLine(slide) || findOrderedInlineTitleBodyLine(slide);
@@ -504,6 +572,9 @@ ${indent}  ${bullet} ${body.trim()}`;
       findOrderedInlineTitleBodyLine,
       findBoldOrderedStatement,
       findSplitBodylessItem,
+      countPrimaryCollection,
+      axisNoun,
+      capacityFix,
       findUnknownMapRegions,
       findUnknownFinish,
       nearestRegion,

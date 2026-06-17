@@ -4,6 +4,7 @@
   "function": "evidence",
   "form": "stack",
   "substance": "structure",
+  "capacity": { "axis": "item", "min": 3, "sweet": 4, "soft": 5, "hard": 6, "escalateTo": ["kpi","split across slides"], "note": "the row compresses and numbers shrink past five tiles" },
   "tags": [
     "dashboard",
     "metric",

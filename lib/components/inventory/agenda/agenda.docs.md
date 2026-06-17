@@ -6,6 +6,8 @@
 
 **Tags** `agenda-setting` · `overview` · `onboarding` · `kickoff`
 
+**Capacity** ~4 items (crowds past 6, overflows past 7) — past that, split across slides.
+
 Use as the second slide of any multi-section deck. Numbers are generated; authors just write the section titles. Five interchangeable styles — the default `ledger` (a contents page with optional page references), plus `circles`, `rail`, `cards`, and `checks` — all compose with the `progress-N` 'you are here' modifier.
 
 ## When to use

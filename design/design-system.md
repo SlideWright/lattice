@@ -428,10 +428,19 @@ chips + a live filter facet on the docs-site component pages.
 AI agents authoring decks get a discovery surface and a validation loop:
 
 - **`dist/docs/components.json`** — a machine-readable catalog: every
-  component's axes, tags, slots, skeleton, and when/anti/related prose,
-  plus the controlled vocabularies, in one deterministic document an agent
-  loads in a single read. Generated alongside `components.md/.html` by
-  `tools/build-docs-portal.js`.
+  component's axes, tags, slots, skeleton, **`capacity`**, and
+  when/anti/related prose, plus the controlled vocabularies, in one
+  deterministic document an agent loads in a single read. Generated alongside
+  `components.md/.html` by `tools/build-docs-portal.js`.
+- **Capacity — pick by content shape.** A layout overflows when it holds more
+  elements than it's built for — the most common authoring slip. A component's
+  optional `capacity` block (`{ axis, sweet, soft, hard, escalateTo }`) declares
+  how many elements (along the `item`/`row`/`col`/`cell`/`line` axis it's built
+  on) it holds: `sweet` is ideal, past `soft` it crowds, past `hard` it
+  overflows. **Count the content first, then filter by capacity**; over `hard`,
+  take an `escalateTo` target or split across slides. `lint:deck` warns
+  (`capacity-crowd` / `capacity-overflow`) as a backstop. See
+  `engineering/decisions/2026-06-17-content-capacity-contract.md`.
 - **`npm run lint:deck -- <file>`** (`tools/lint-deck.js` →
   `lib/authoring/lint.js`) — runs the markdown footgun checks against a
   *draft* deck and emits structured, fix-oriented diagnostics with no

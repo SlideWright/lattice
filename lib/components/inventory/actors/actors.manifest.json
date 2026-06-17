@@ -4,6 +4,7 @@
   "function": "inventory",
   "form": "ledger",
   "substance": "structure",
+  "capacity": { "axis": "item", "min": 3, "sweet": 4, "soft": 6, "hard": 7, "escalateTo": ["list-tabular","split across slides"], "note": "the ledger reads cleanly up to about six rows" },
   "tags": ["ownership", "onboarding", "reference"],
   "description": "Roster of responsibilities owned by named actors.",
   "purpose": "Use to show 'who owns what' across a process, scoring policy, or org chart. Two-column layout: actor on left, responsibilities on right.",

@@ -5,6 +5,7 @@
   "bucket": "chart",
   "form": "timeline",
   "substance": "series",
+  "capacity": { "axis": "item", "min": 2, "sweet": 3, "soft": 5, "hard": 6, "escalateTo": ["split across slides"], "note": "past five lanes the cards compress" },
   "orientation": ["landscape"],
   "tags": ["swimlane", "workflow", "status", "agile", "ownership"],
   "description": "Kanban board — columns of cards by stage.",

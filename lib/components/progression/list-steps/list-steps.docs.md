@@ -6,6 +6,8 @@
 
 **Tags** `process` · `walkthrough` · `planning`
 
+**Capacity** ~4 items (crowds past 5, overflows past 6) — past that, timeline-list / split across slides.
+
 Use for richer sequential processes where each step needs a paragraph rather than a label. More verbose than timeline; more structured than a plain ordered list.
 
 ## When to use

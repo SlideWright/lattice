@@ -89,6 +89,9 @@ export function createArchitect({ vocab, catalog, mount, reveal, applyFix, model
 	if (vocab?.finishNames) vocabSets.finishNames = vocab.finishNames;
 	// Split mode names — the deck-wide `split:` front-matter validator.
 	if (vocab?.splitNames) vocabSets.splitNames = vocab.splitNames;
+	// Content-capacity contract — plain data (name → bounds); feeds the live
+	// capacity lint rule so an overflow-prone slide warns as you type.
+	if (vocab?.capacity) vocabSets.capacity = vocab.capacity;
 	const bucketByName = new Map((catalog || []).map((c) => [c.name, c.bucket]));
 	const bucketOf = (n) => bucketByName.get(n) || null;
 	let lastSource = '';

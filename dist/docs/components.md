@@ -737,6 +737,8 @@ See [split-panel.gallery.light.pdf](../../lib/components/statement/split-panel/s
 
 **Tags** `ownership` · `onboarding` · `reference`
 
+**Capacity** ~4 items (crowds past 6, overflows past 7) — past that, list-tabular / split across slides.
+
 Use to show 'who owns what' across a process, scoring policy, or org chart. Two-column layout: actor on left, responsibilities on right.
 
 #### When to use
@@ -811,6 +813,8 @@ See [actors.gallery.light.pdf](../../lib/components/inventory/actors/actors.gall
 **Function** inventory · **Form** stack · **Substance** structure
 
 **Tags** `agenda-setting` · `overview` · `onboarding` · `kickoff`
+
+**Capacity** ~4 items (crowds past 6, overflows past 7) — past that, split across slides.
 
 Use as the second slide of any multi-section deck. Numbers are generated; authors just write the section titles. Five interchangeable styles — the default `ledger` (a contents page with optional page references), plus `circles`, `rail`, `cards`, and `checks` — all compose with the `progress-N` 'you are here' modifier.
 
@@ -1049,6 +1053,8 @@ See [agenda.gallery.light.pdf](../../lib/components/inventory/agenda/agenda.gall
 
 **Tags** `overview` · `showcase` · `summary`
 
+**Capacity** ~3 items (crowds past 4, overflows past 4) — past that, list-tabular / split across slides.
+
 Use when the audience needs to compare or scan a small set of options at a glance. Avoid for more than 4 items — split into multiple slides. For ordered/numbered steps, use list-steps instead.
 
 #### When to use
@@ -1188,6 +1194,8 @@ See [cards-grid.gallery.light.pdf](../../lib/components/inventory/cards-grid/car
 
 **Tags** `overview` · `summary` · `reference`
 
+**Capacity** ~3 items (crowds past 4, overflows past 4) — past that, list-tabular / split across slides.
+
 Use when the items want vertical reading order — sequential exploration rather than a-glance comparison. 2–4 items work best (a fourth fits with the `compact` modifier).
 
 #### When to use
@@ -1299,6 +1307,8 @@ See [cards-stack.gallery.light.pdf](../../lib/components/inventory/cards-stack/c
 **Function** inventory · **Form** stack · **Substance** structure
 
 **Tags** `status` · `stoplight` · `process` · `requirements`
+
+**Capacity** ~6 items (crowds past 8, overflows past 9) — past that, split across slides.
 
 Use for completion reports, readiness audits, or pre-flight checks. State markers [x]/[-]/[ ]/[/] produce status-colored circles carrying a distinct mark — check / dash / ring / slash — so the shape reads independently of color (colour-blind-safe).
 
@@ -2304,6 +2314,8 @@ See [compare-prose.gallery.light.pdf](../../lib/components/comparison/compare-pr
 
 **Tags** `tradeoff` · `ranking` · `assessment`
 
+**Capacity** ~4 rows (crowds past 6, overflows past 8) — past that, split across slides.
+
 Use when you have 3+ options or 4+ rows of criteria. Wider data than compare-prose can hold legibly.
 
 #### When to use
@@ -2927,6 +2939,8 @@ See [split-compare.gallery.light.pdf](../../lib/components/comparison/split-comp
 
 **Tags** `scorecard` · `ranking` · `prioritize` · `assessment`
 
+**Capacity** ~3 items (crowds past 4, overflows past 5) — past that, compare-table / split across slides.
+
 Use to evaluate 2–4 options against the same set of criteria, with pass/partial/fail badges. Each card represents one option; badges per criterion.
 
 #### When to use
@@ -3098,6 +3112,8 @@ See [list-criteria.gallery.light.pdf](../../lib/components/progression/list-crit
 **Function** progression · **Form** timeline · **Substance** structure
 
 **Tags** `process` · `walkthrough` · `planning`
+
+**Capacity** ~4 items (crowds past 5, overflows past 6) — past that, timeline-list / split across slides.
 
 Use for richer sequential processes where each step needs a paragraph rather than a label. More verbose than timeline; more structured than a plain ordered list.
 
@@ -3544,6 +3560,8 @@ See [kpi.gallery.light.pdf](../../lib/components/evidence/kpi/kpi.gallery.light.
 **Function** evidence · **Form** stack · **Substance** structure
 
 **Tags** `dashboard` · `metric` · `percentage`
+
+**Capacity** ~4 items (crowds past 5, overflows past 6) — past that, kpi / split across slides.
 
 Use for at-a-glance metric rows — quarterly results, headline KPIs. Each tile reads as Big Number + caption.
 
@@ -4075,6 +4093,8 @@ See [journey.gallery.light.pdf](../../lib/components/chart/journey/journey.galle
 **Function** progression · **Form** timeline · **Substance** series
 
 **Tags** `swimlane` · `workflow` · `status` · `agile` · `ownership`
+
+**Capacity** ~3 items (crowds past 5, overflows past 6) — past that, split across slides.
 
 Use for status snapshots: what's in each lane (todo/doing/done or similar). Each column is a stage; each card is a work item.
 

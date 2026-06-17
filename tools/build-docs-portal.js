@@ -381,6 +381,7 @@ function renderPortalJson(manifests) {
     effectiveVariants: effectiveVariants(m),
     familyModifiers: familyModifiersFor(m),
     ...(Array.isArray(m.focusAxes) && m.focusAxes.length ? { focusAxes: m.focusAxes } : {}),
+    ...(m.capacity ? { capacity: m.capacity } : {}),
     slots: m.slots || {},
     skeleton: m.skeleton,
     whenToUse: Array.isArray(m.whenToUse) ? m.whenToUse : [],
