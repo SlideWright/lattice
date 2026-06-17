@@ -39,6 +39,31 @@ git worktree remove ../Lattice-contrast-audit
 
 Each worktree is fully independent — you can run `npm test` in both simultaneously. The `.git` metadata is shared; branches see each other.
 
+## One feature, one branch — never a stacked PR chain
+
+A worktree-per-feature (above) is for **different** features in parallel, each
+off `main`. It is **not** licence to split **one** feature across many PRs.
+
+**One feature = one branch, incremented in place → one PR.** Many commits on that
+branch is good — review it commit-by-commit if it's large (PR #272, the shadcn
+migration, is the model: one branch, six phases, one PR). What's forbidden is
+**a PR per increment** and, worse, **basing a PR on another unmerged branch**
+(a *stacked* PR). A stacked chain:
+
+- only the author can hold — no single diff is "the feature";
+- never CI-tests as a unit (each PR runs against its *parent branch*, not `main`);
+- forces retarget + rebase as each link merges — the thrash **HARD RULE #16**
+  forbids, now at PR granularity.
+
+If a slice is **genuinely independent** — it compiles and tests with only `main`,
+not some other unmerged branch — give it its own branch off `main` and let it
+merge on its own. That's *parallel off `main`*, which is fine. The test for
+"independent": if it needs another open PR's branch to build, it is **not**
+independent — keep it on that branch and grow the one PR. This is the §Merging
+rule *"land a large migration as one squash, not N separately-merged commits"*
+moved upstream to PR *creation*. See
+`engineering/decisions/2026-06-17-stacked-pr-fragmentation.md`.
+
 ## The gallery decks
 
 Three top-level decks survive in `examples/` after the docs refactor.

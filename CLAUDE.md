@@ -247,6 +247,16 @@ independent set of eyes earns its latency.
     conflicts mechanically, then `git push --force-with-lease`, silently (surface
     only a real code conflict needing my judgment). Never let an open PR **merge**
     while conflicted, stale-at-merge, or CI-red. See `engineering/workflow.md`.
+17. **One feature = one branch → one PR; never a stacked PR chain.** Increment a
+    feature in place (many commits, one PR — review commit-by-commit if large, the
+    way PR #272 phased the shadcn migration). Do **not** open a PR per slice, and
+    do **not** base a PR on another unmerged branch: a stacked chain only composes
+    in the author's head, never CI-tests as a unit (each PR runs against its
+    *parent branch*, not `main`), and forces retarget/rebase as each link merges —
+    HARD RULE #16's thrash at PR granularity. A slice that builds/tests with only
+    `main` is independent → its own branch off `main`, merged on its own (parallel,
+    not stacked); a slice that needs another open PR's branch is **not** — keep it
+    on that branch. See `engineering/decisions/2026-06-17-stacked-pr-fragmentation.md`.
 
 ---
 
