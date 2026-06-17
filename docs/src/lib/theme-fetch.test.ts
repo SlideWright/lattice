@@ -15,7 +15,10 @@ import { createThemeFetcher } from './theme-fetch';
 const GRAPH: Record<string, string> = {
 	'lattice.css': '/* @theme lattice */section{}',
 	'a11y-deuteranopia.css': '/* @theme a11y-deuteranopia */@import"a11y-base";:root{--pass:#004982}',
-	'a11y-base.css': '/* @theme a11y-base */@import"onyx";:root{--cat-1-fill:#e8e8e8}',
+	// Banner comment deliberately contains a literal `@import 'a11y-base'` (prose
+	// describing itself) — the real trap that deadlocked the recursion. The scan
+	// must strip comments, so the only real dep here is onyx.
+	'a11y-base.css': "/* @theme a11y-base — carries @theme only so the engine resolves @import 'a11y-base' */@import\"onyx\";:root{--cat-1-fill:#e8e8e8}",
 	'onyx.css': '/* @theme onyx */@import"lattice";:root{--bg:#fff}',
 	'indaco.css': "/* @theme indaco */@import'lattice';:root{--accent:#36c}",
 };

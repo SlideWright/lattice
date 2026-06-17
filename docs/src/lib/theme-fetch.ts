@@ -81,7 +81,12 @@ export function createThemeFetcher(themeBase: string) {
 				// `\s*` not `\s+`: the minified dist themes the client fetches drop the
 				// space after @import (`@import"a11y-base"`) — same footgun as the
 				// engine's THEME_IMPORT_RE. url() font imports don't match (no quote-name).
-				const deps = [...css.matchAll(/@import\s*['"]([A-Za-z0-9_-]+)['"]/g)].map((m) => m[1]);
+				// Strip CSS comments before scanning — a banner comment can contain a
+				// literal `@import '<self>'` (prose), which would otherwise self-match
+				// and deadlock the recursion. Also guard against a self/0-length ref.
+				const deps = [...css.replace(/\/\*[\s\S]*?\*\//g, '').matchAll(/@import\s*['"]([A-Za-z0-9_-]+)['"]/g)]
+					.map((m) => m[1])
+					.filter((d) => d && d !== name);
 				return Promise.all([ensureBase(), ...deps.map(register)]).then(() => undefined);
 			});
 		}

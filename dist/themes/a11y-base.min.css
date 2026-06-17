@@ -17,10 +17,10 @@
  *
  * Lattice · Accessibility base — shared foundation for the a11y-* CVD themes
  * ════════════════════════════════════════════════════════════════════════════
- * Carries a `@theme a11y-base` directive ONLY so the engine can register it and
- * resolve `@import 'a11y-base'` (lib/engine/themes.js keys themes by @theme
- * name) — it is NOT meant to be picked directly and is excluded from the theme
- * picker. A shared partial the four
+ * Carries a `@theme a11y-base` directive ONLY so the engine can register it as
+ * an import target (lib/engine/themes.js keys themes by @theme name) — it is NOT
+ * meant to be picked directly and is excluded from the theme picker. A shared
+ * partial the four
  * colour-vision-deficiency palettes @import. It carries everything identical
  * across them so each a11y-<type>.css is just its @theme header + the one bit
  * that genuinely differs — the status trio (pass/warn/fail), recoloured off the
