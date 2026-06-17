@@ -105,11 +105,10 @@ noun set of its own (their "level 2" is a flat vocabulary — the 4 substance
 sources, the variant tiers). The three nouns answer a question only Form asks.
 
 It resolves into a **Composite** tree — slicers that make boxes (Frames), fillers
-that fill them (Tiles), and the typed slot between (Cells). Three, not two,
-because each has an independent axis of change (`forms.md` §3, the SOLID
-reading). (`forms.md` §2 counts *four* nouns — Form itself, plus these three
-structural ones; this map owns the join, so it lists the three that do the
-carving.)
+that fill them (Tiles), and the typed slot between (Cells); each row of the table
+below changes for an independent reason (`forms.md` §3, the SOLID reading).
+(`forms.md` §2 counts *four* nouns — Form itself, plus these three structural
+ones; this map owns the join, so it lists the three that do the carving.)
 
 | Noun | Is | One axis of change | Replaces (pre-rename) | Canonical doc |
 |---|---|---|---|---|
@@ -157,13 +156,15 @@ then interpreting that data into *pixels*.
 | Rung | What it is | Example |
 |---|---|---|
 | **1 — abstract** | a type / axis / kind — vocabulary and schema | the *Form* axis; the *Frame* slicer kind; the Form values |
-| **2 — concrete-as-data** | a catalog entry — manifest / definition / CSS on disk, validated | the `grid` Frame manifest; the `cards-grid` component; a theme |
+| **2 — concrete-as-data** | a catalog entry — manifest / definition / CSS on disk, validated | the `split-panel` Frame manifest; the `cards-grid` component; a theme |
 | **3 — concrete-at-render** | the realized instance — pixels in the PDF | this slide's carved boxes, resolved Cells, populated Tiles |
 
-The four axes (Function · Form · Substance · Finish) live entirely at **rung 1** —
-they are dimensions of decision, not things. Form's three nouns each span all
-three rungs: **Frame** and **Tile** are *interfaces* and **Cell** is a *class* at
-rung 1 (`forms.md` §3); a manifest at rung 2; a box or content at rung 3. The
+The four axes (Function · Form · Substance · Finish) all live at **rung 1** — they
+are dimensions of decision, not things. Form is no exception *here* (it is still
+an abstraction); what makes it special in §4 is that its *values* form a tree,
+which is why only its nouns descend into rungs 2 and 3. **Frame** and **Tile** are
+*interfaces* and **Cell** is a *class* at rung 1 (`forms.md` §3); a manifest at
+rung 2; a box or content at rung 3. The
 catch is that **rung 2 only looks concrete** — the manifests are inert *data (an
 AST), not runtime objects*. The sole instantiated rung is render, when the
 transform kernels + CSS grid interpret that AST; the three render paths are three
