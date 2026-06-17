@@ -97,12 +97,19 @@ other before acting (`design-system.md` §2.5).
 
 ## 4. Level 2 — Form's three nouns
 
-Form is the one axis with internal structure. It resolves into a **Composite**
-tree — slicers that make boxes (Frames), fillers that fill them (Tiles), and the
-typed slot between (Cells). Three, not two, because each has an independent axis
-of change (`forms.md` §3, the SOLID reading). (`forms.md` §2 counts *four* nouns
-— Form itself, plus these three structural ones; this map owns the join, so it
-lists the three that do the carving.)
+Form is the only axis that decomposes — because it is the only one whose answer
+is itself a **recursive structure**: composition nests into itself (a Frame's
+Cell can hold another Frame). Function only classifies, Substance *fills* the
+Cells, and Finish styles the whole tree — none of those nests, so none needs a
+noun set of its own (their "level 2" is a flat vocabulary — the 4 substance
+sources, the variant tiers). The three nouns answer a question only Form asks.
+
+It resolves into a **Composite** tree — slicers that make boxes (Frames), fillers
+that fill them (Tiles), and the typed slot between (Cells). Three, not two,
+because each has an independent axis of change (`forms.md` §3, the SOLID
+reading). (`forms.md` §2 counts *four* nouns — Form itself, plus these three
+structural ones; this map owns the join, so it lists the three that do the
+carving.)
 
 | Noun | Is | One axis of change | Replaces (pre-rename) | Canonical doc |
 |---|---|---|---|---|
