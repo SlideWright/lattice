@@ -9,9 +9,10 @@ superseded-by:
 
 # Workflow efficiency review — red-team of the agent operating model
 
-> **Status: In progress** — red-team complete; B, C, D, E shipped on the branch.
-> **Roll-up:** ☑ 4 done (B, C, D, E) · ◐ 2 in progress (A: convention done,
-> generator + backfill = next slice · F: in-repo done, owner flips branch protection)
+> **Status: In progress** — only F's owner action remains; A–E shipped.
+> **Roll-up:** ☑ 5 done (A, B, C, D, E) · ◐ 1 in progress (F: in-repo done,
+> owner flips branch protection). A's generator + 105-note backfill shipped in a
+> follow-up PR (with the K1 Chrome cache); the convention landed in the first PR.
 > **Decisions (2026-06-17):** E3 → gate the pre-push integration tier behind
 > `LATTICE_FULL_PUSH=1`; F → adopt the merge queue with auto-merge-after-approval
 > (in-repo changes here; branch-protection settings handed to the owner).
@@ -67,10 +68,10 @@ workstream A):
 
 ## Workstream A — Documentation status structure (the convention itself)
 
-> **Status:** ◐ In progress — convention + index spec **shipped**; generator tool
-> (`tools/build-decisions-index.js`) + `decisions:index(:check)` gate + 104-doc
-> front-matter backfill = the immediate next slice · **Serves:** doc maintenance,
-> agent comprehension, GitHub/Claude cost · **Risk:** low
+> **Status:** ☑ Done — convention (first PR) + the generator
+> (`tools/build-decisions-index.js`), `decisions:index(:check)` gate wired into
+> `build.js`, and the 105-note front-matter backfill (follow-up PR) all shipped ·
+> **Serves:** doc maintenance, agent comprehension, GitHub/Claude cost · **Risk:** low
 
 **Why first.** The owner's ask — "docs need a banner, overall stats, and
 partitioned work with its own status, structured so parts can be implemented
@@ -212,11 +213,12 @@ The CI is already mature (concurrency-cancel, path filters, npm + Chrome caching
    pass the build via `upload-artifact`/`download-artifact`. *(High)*
 2. **Cache or drop the `docs-overflow` Chrome download** — it pulls a full Chrome
    uncached on every docs/lib PR (integration caches it; this doesn't). *(High)*
-   **Shipped: PARTIAL.** Folding overflow into `docs-build` (item 1) eliminated
-   the duplicate *Astro build* — the real win. The Chrome pull was *relocated*,
-   not eliminated: `browser-actions/setup-chrome@v1` has no cache input, so
-   `docs-build` still pulls Chrome uncached on each docs/lib PR (parity with the
-   old workflow, no regression). A genuine cache is a small follow-up.
+   **Shipped: DONE (follow-up PR).** Folding overflow into `docs-build` (item 1)
+   eliminated the duplicate *Astro build* — the real win. `setup-chrome` has no
+   cache input, so the follow-up wraps its `~/.cache/setup-chrome` install dir in
+   `actions/cache`: a hit lets the action reuse the binary instead of pulling
+   Chrome each docs/lib PR. (Effectiveness depends on setup-chrome reusing that
+   dir on a hit; confirm via CI cache hit-rates and bump the key suffix to refresh.)
 3. **Trim the unit matrix** — all tests run on Node 22 *and* 24 (`fail-fast:
    false`). Run the full suite on 22; on 24 a smoke subset (or move 24 to
    nightly). Halves unit compute per code PR. *(Med)*
