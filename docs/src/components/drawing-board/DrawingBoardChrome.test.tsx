@@ -1,23 +1,22 @@
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import PaletteControls from '../site/PaletteControls';
 import DrawingBoardExportMenu from './DrawingBoardExportMenu';
-import DrawingBoardTopbar from './DrawingBoardTopbar';
 
 afterEach(() => {
 	const r = document.documentElement;
 	r.removeAttribute('data-palette');
 	r.removeAttribute('data-mode');
-	// biome-ignore lint/performance/noDelete: test cleanup of the chrome bus globals.
-	delete (window as unknown as { __dbChrome?: unknown }).__dbChrome;
-	// biome-ignore lint/performance/noDelete: test cleanup of the export bus global.
-	delete (window as unknown as { __dbExport?: unknown }).__dbExport;
+	// Reset the chrome/export bus globals between tests.
+	(window as unknown as { __dbChrome?: unknown }).__dbChrome = undefined;
+	(window as unknown as { __dbExport?: unknown }).__dbExport = undefined;
 });
 
-describe('DrawingBoardTopbar (deck-theme picker island)', () => {
+describe('PaletteControls on the Drawing Board (deck-theme picker via __dbChrome)', () => {
 	it('renders the deck-theme select + mode toggle', () => {
-		render(<DrawingBoardTopbar palettes={['indaco', 'cuoio']} />);
+		render(<PaletteControls palettes={['indaco', 'cuoio']} />);
 		expect(screen.getByRole('button', { name: /toggle light \/ dark/i })).toBeInTheDocument();
-		expect(screen.getByRole('combobox', { name: /deck theme/i })).toBeInTheDocument();
+		expect(screen.getByRole('combobox', { name: /theme/i })).toBeInTheDocument();
 	});
 
 	it('a palette pick drives the chrome bus applyTheme (writes the deck theme, not page chrome)', async () => {
@@ -29,39 +28,50 @@ describe('DrawingBoardTopbar (deck-theme picker island)', () => {
 			applyTheme,
 			toggleMode: () => 'dark' as const,
 		};
-		render(<DrawingBoardTopbar palettes={['indaco', 'cuoio']} />);
+		render(<PaletteControls palettes={['indaco', 'cuoio']} />);
 		// Open the radix select and choose cuoio.
-		fireEvent.click(screen.getByRole('combobox', { name: /deck theme/i }));
+		fireEvent.click(screen.getByRole('combobox', { name: /theme/i }));
 		const opt = await screen.findByRole('option', { name: /cuoio/i });
 		fireEvent.click(opt);
 		expect(applyTheme).toHaveBeenCalledWith('cuoio');
 	});
 
-	it('groups the a11y-* themes under an Accessibility label, stripping the prefix, but applies the full theme name', async () => {
+	it('groups a11y-* palettes under an Accessibility label (they are plain themes, picked here)', async () => {
+		render(<PaletteControls palettes={['indaco', 'cuoio', 'a11y-deuteranopia', 'a11y-achromatopsia']} />);
+		fireEvent.click(screen.getByRole('combobox', { name: /theme/i }));
+		// Brand themes are offered…
+		expect(await screen.findByRole('option', { name: /^Indaco$/ })).toBeInTheDocument();
+		expect(screen.getByRole('option', { name: /^Cuoio$/ })).toBeInTheDocument();
+		// …and the accessibility themes appear, prefix-stripped, under an Accessibility label.
+		expect(screen.getByText(/accessibility/i)).toBeInTheDocument();
+		expect(screen.getByRole('option', { name: /^Deuteranopia$/ })).toBeInTheDocument();
+		expect(screen.getByRole('option', { name: /^Achromatopsia$/ })).toBeInTheDocument();
+	});
+
+	it('picking an a11y theme writes theme: a11y-<type> via applyTheme (same path as any theme)', async () => {
 		const applyTheme = vi.fn();
 		(window as unknown as { __dbChrome: unknown }).__dbChrome = {
 			getPalette: () => 'indaco',
 			getMode: () => 'light' as const,
-			getPalettes: () => ['indaco', 'a11y-deuteranopia'],
+			getPalettes: () => ['indaco', 'cuoio', 'a11y-deuteranopia'],
 			applyTheme,
 			toggleMode: () => 'dark' as const,
 		};
-		render(<DrawingBoardTopbar palettes={['indaco', 'a11y-deuteranopia']} />);
-		fireEvent.click(screen.getByRole('combobox', { name: /deck theme/i }));
-		expect(await screen.findByText(/accessibility · colour-blindness/i)).toBeInTheDocument();
+		render(<PaletteControls palettes={['indaco', 'cuoio', 'a11y-deuteranopia']} />);
+		fireEvent.click(screen.getByRole('combobox', { name: /theme/i }));
 		const opt = await screen.findByRole('option', { name: /^Deuteranopia$/ });
 		fireEvent.click(opt);
 		expect(applyTheme).toHaveBeenCalledWith('a11y-deuteranopia');
 	});
 
 	it('reflects a db-chrome-sync event (deck theme changed underneath)', async () => {
-		render(<DrawingBoardTopbar palettes={['indaco', 'cuoio']} />);
+		render(<PaletteControls palettes={['indaco', 'cuoio']} />);
 		act(() => {
 			window.dispatchEvent(
 				new CustomEvent('db-chrome-sync', { detail: { palette: 'cuoio', mode: 'dark', palettes: ['indaco', 'cuoio'] } }),
 			);
 		});
-		await waitFor(() => expect(screen.getByRole('combobox', { name: /deck theme/i })).toHaveTextContent(/cuoio/i));
+		await waitFor(() => expect(screen.getByRole('combobox', { name: /theme/i })).toHaveTextContent(/cuoio/i));
 	});
 
 	it('the mode toggle drives the chrome bus toggleMode', () => {
@@ -73,7 +83,7 @@ describe('DrawingBoardTopbar (deck-theme picker island)', () => {
 			applyTheme: vi.fn(),
 			toggleMode,
 		};
-		render(<DrawingBoardTopbar palettes={['indaco']} />);
+		render(<PaletteControls palettes={['indaco']} />);
 		fireEvent.click(screen.getByRole('button', { name: /toggle light \/ dark/i }));
 		expect(toggleMode).toHaveBeenCalled();
 	});

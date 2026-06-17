@@ -24,7 +24,7 @@ import { joinBase } from '../lib/base-url.mjs';
 import { primaryNav, GITHUB_URL, isCurrent } from '../lib/nav.mjs';
 import { isPreviewDeploy as isPreviewDeployEnv } from '../lib/deploy-env.mjs';
 import { pickGrammarVariants } from '../playground/architect-knowledge.js';
-import DrawingBoardTopbar from '../components/drawing-board/DrawingBoardTopbar.tsx';
+import PaletteControls from '../components/site/PaletteControls.tsx';
 import DrawingBoardExportMenu from '../components/drawing-board/DrawingBoardExportMenu.tsx';
 import ResourceHints from '../components/site/ResourceHints.astro';
 
@@ -32,6 +32,13 @@ const docsRoot = process.cwd();
 const repoRoot = join(docsRoot, '..');
 const require = createRequire(import.meta.url);
 const { loadAll, manifestBucket, familyModifiersFor } = require(join(repoRoot, 'lib/components', 'index.js'));
+// The categorical texture <pattern> <defs> the a11y themes' fills reference.
+// Built once here (the shared kernel) and handed to every preview surface, which
+// injects it into the iframe ALWAYS (it's inert unless an a11y theme references a
+// pattern) — the runtime/preview path's counterpart to the emulator's always-on
+// defs injection.
+const { texturePatternDefs } = require(join(repoRoot, 'lib/core/accessibility-textures.js'));
+const a11yTextureDefs = texturePatternDefs();
 const manifests = loadAll();
 
 // Compact catalog for the Architect's onboarding retrieval + scaffolding, and the
@@ -130,13 +137,13 @@ const isPreviewDeploy = isPreviewDeployEnv({
 });
 
 const tokensCss = readFileSync(join(docsRoot, 'src/styles/lattice-tokens.generated.css'), 'utf8');
-// Brand palettes (the landing swatch set) + the curated accessibility themes.
-// The a11y-* themes aren't part of the brand swatch set, but they ARE selectable
-// deck themes (the engine resolves them by @theme name), so surface them in the
-// picker under their own group. Light bases only — dark is the mode toggle.
-const brandPalettes = [...new Set([...tokensCss.matchAll(/data-palette="([^"]+)"/g)].map((m) => m[1]))];
-const a11yPalettes = themeNames.filter((n) => n.startsWith('a11y-') && !n.endsWith('-dark')).sort();
-const palettes = [...brandPalettes, ...a11yPalettes];
+// The theme picker's vocabulary — every selectable palette, read from the
+// generated tokens CSS. That set now includes the a11y-* palettes (the partial
+// `a11y-base` is excluded there), so an a11y theme is just a theme: picking one
+// writes `theme: a11y-<type>` like any theme, and the topbar island groups the
+// `a11y-*` names under an "Accessibility" label. Same source every site picker
+// uses, so the Drawing Board and the rest stay in lockstep.
+const palettes = [...new Set([...tokensCss.matchAll(/data-palette="([^"]+)"/g)].map((m) => m[1]))];
 
 // Starter deck = a known-good sample (the hero component's), so the heartbeat
 // renders something real on first load without risking an authoring footgun.
@@ -169,9 +176,13 @@ const dbData = JSON.stringify({
 	starter,
 	lintVocab,
 	themes: themeNames,
-	// The base palette names the top-bar picker offers — the valid vocabulary for
-	// the Deck setup drawer's theme control + the controller's propagation guard.
+	// The theme names the top-bar picker offers (brand palettes + the a11y-*
+	// accessibility themes) — the valid vocabulary for the Deck setup drawer's
+	// theme control + the controller's propagation guard.
 	palettes,
+	// Texture <defs> always injected into the preview iframe — the a11y themes'
+	// diagram/chart fills reference these patterns, so they must always be present.
+	a11yTextureDefs,
 	catalog: obCatalog,
 	version: pkgVersion,
 	buildId,
@@ -218,14 +229,14 @@ const dbData = JSON.stringify({
 					<a class="navlink" href={GITHUB_URL}>GitHub</a>
 				</nav>
 				<div class="topbar-actions">
-					<!-- The deck-theme palette picker + light/dark toggle — a React + shadcn
-					     island (DrawingBoardTopbar). UNLIKE the chrome-only site picker, this
-					     WRITES the deck's `theme:` front matter via the render controller's
-					     window.__dbChrome bus (applyTheme → writeFrontMatter) and mirrors the
-					     deck's theme back onto data-palette — the authoring semantics this
-					     surface needs. client:idle so the chrome paints first. -->
-					<div class="controls">
-						<DrawingBoardTopbar client:idle palettes={palettes} />
+					<!-- The ONE global theme dropdown + light/dark toggle (PaletteControls,
+					     the same component every surface mounts). On this route it detects
+					     the render controller's window.__dbChrome bus and WRITES the deck's
+					     `theme:` front matter (applyTheme → writeFrontMatter), mirroring it
+					     back onto data-palette — the authoring semantics this surface needs.
+					     lx-ui scopes the shadcn island; client:idle so the chrome paints first. -->
+					<div class="controls lx-ui">
+						<PaletteControls client:idle palettes={palettes} />
 					</div>
 					<button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-controls="topnav" aria-expanded="false"></button>
 				</div>
@@ -1156,6 +1167,7 @@ const dbData = JSON.stringify({
 				getSource: () => (window.__dbEditor ? window.__dbEditor.getValue() : ''),
 				runtimeUrl: data.runtimeUrl,
 				themeBase: data.themeBase,
+				a11yDefs: data.a11yTextureDefs,
 				bucketOf: (name) => buckets.get(name) || null,
 				// Share the page's model ladder so a connected cloud/local tier tailors
 				// the rehearsal plan; absent one, the deterministic floor still runs.
@@ -1192,6 +1204,7 @@ const dbData = JSON.stringify({
 				getSource: () => (window.__dbEditor ? window.__dbEditor.getValue() : ''),
 				runtimeUrl: presentData.runtimeUrl,
 				themeBase: presentData.themeBase,
+				a11yDefs: presentData.a11yTextureDefs,
 			});
 			const presentBtn = document.getElementById('db-present-open');
 			if (presentBtn) presentBtn.addEventListener('click', () => present.open());

@@ -37,6 +37,12 @@ export function createRenderController(data) {
 	var THEME_BASE = data.themeBase;
 	var RUNTIME_URL = data.runtimeUrl;
 	var PREVIEW_FONT_CSS = data.previewFontCss || '';
+	// The categorical texture <pattern> <defs> the a11y themes reference (built
+	// from the shared kernel at page build, lib/core/accessibility-textures.js).
+	// Injected into the preview iframe ALWAYS — it's inert unless an a11y theme's
+	// fill references a pattern — the engine seam that CSS can't carry (the
+	// runtime/preview path's equivalent of the emulator's always-on defs injection).
+	var A11Y_DEFS = data.a11yTextureDefs || '';
 	// Shared raw theme fetch+cache (fetch <base><name>.css once).
 	var themeFetcher = createThemeFetcher(THEME_BASE);
 	// The deck's live slide box (px), resolved per render from the engine's
@@ -132,10 +138,10 @@ export function createRenderController(data) {
 		if (LIB[palette]) {
 			return engineReady.then(() => { if (!PG.hasTheme(palette)) PG.addThemes([LIB[palette]]); });
 		}
-		if (!PG.hasTheme(palette)) jobs.push(fetchTheme(palette).then((css) => { PG.addThemes([css]); }));
-		if (mode === 'dark' && !PG.hasTheme(palette + '-dark')) {
-			jobs.push(fetchTheme(palette + '-dark').then((css) => { PG.addThemes([css]); }).catch(() => {}));
-		}
+		// Register the palette + its transitive theme-name @import closure
+		// (a11y-* → a11y-base → onyx → lattice) via the shared fetcher, so a
+		// multi-level theme isn't left with a dead @import → stripped render.
+		jobs.push(themeFetcher.ensure(palette, mode));
 		return Promise.all(jobs);
 	}
 
@@ -159,6 +165,8 @@ export function createRenderController(data) {
 		var PG = window.LatticePlayground;
 		var DP = window.LatticeDeckPreview;
 		if (!PG || !DP) { setStatus('Loading engine…'); return setTimeout(render, 60); }
+		// The deck's `theme:` (mirrored onto data-palette by syncThemeControls) is
+		// the only palette axis — an a11y theme is just a theme like any other.
 		var palette = root.getAttribute('data-palette') || 'indaco';
 		var mode = root.getAttribute('data-mode') === 'dark' ? 'dark' : 'light';
 		setStatus('Rendering…');
@@ -188,6 +196,10 @@ export function createRenderController(data) {
 					state: previewState,
 					runtimeUrl: RUNTIME_URL, padding: 22, gap: 22,
 					fontCss: PREVIEW_FONT_CSS,
+					// Always inject the texture <defs> so an a11y theme's diagram/chart
+					// `fill: url(#latt-a11y-tex-N)` references resolve in the iframe
+					// instead of dangling (which would paint nothing). Inert otherwise.
+					a11yDefs: A11Y_DEFS,
 					// Single-file library themes resolve light/dark via light-dark();
 					// force the canvas scheme so dark renders dark (built-in paired
 					// -dark themes don't need it).
@@ -355,10 +367,11 @@ export function createRenderController(data) {
 	}
 
 	// ── Palette / mode ────────────────────────────────────────────────────
-	// The legacy native controls (#palette, #mode-toggle) are gone — the
-	// React topbar island (DrawingBoardTopbar) owns them now. It drives this
-	// controller through window.__dbChrome (below), preserving the exact
-	// deck-theme-writing semantics: a palette pick WRITES the deck's `theme:`
+	// The legacy native controls (#palette, #mode-toggle) are gone — the shared
+	// React PaletteControls island owns them now (the same global theme dropdown
+	// every surface mounts). It drives this controller through window.__dbChrome
+	// (below), preserving the exact deck-theme-writing semantics on this route: a
+	// palette pick WRITES the deck's `theme:`
 	// front matter (applyTheme → writeFrontMatter), and the chrome mirrors
 	// the deck's theme back onto data-palette (syncThemeControls). The
 	// guarded references keep this working even before the island hydrates.

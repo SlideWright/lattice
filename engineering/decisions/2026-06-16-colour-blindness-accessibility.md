@@ -10,6 +10,21 @@ companion:
 
 # Colour-blindness accessibility — curated CVD palettes that win the name-resolution chain
 
+> **Update (2026-06-16) — superseded by "a11y-* are first-class themes."**
+> This ADR originally shipped CVD accommodation as a *separate axis* that
+> **overrode** the theme: an `accessibility:` front-matter key / `LATTICE_ACCESSIBILITY`
+> env / Drawing Board workspace control, resolved by `lib/core/resolve-accessibility.js`,
+> which won the palette name-resolution chain. **That layer is removed.** The four
+> `a11y-<type>` palettes are now plain, selectable themes (`theme: a11y-deuteranopia`,
+> same chain as any theme; grouped under "Accessibility" in the picker), and
+> **mode-invariant** — fixed palettes that ignore the light/dark toggle — sharing a
+> `themes/a11y-base.css` foundation; the four `a11y-*-dark.css` files and the resolver
+> are deleted. The redundant-encoding mechanism (textures/glyphs/line-styles) is
+> unchanged; only its *activation* changed (pick the theme, no override), and the
+> texture `<defs>` now emit on every render (no `/^a11y-/` gate). An accessibility need
+> is met by choosing the theme — simpler, no precedence magic, one uniform theme model.
+> The sections below describe the original override design, kept for history.
+
 **Context.** Lattice encodes *meaning* in hue. Three token families do it:
 the categorical cycle (`--cat-1-fill`..`--cat-12-fill` / `-mark`), the
 chart-family spectrum (`--chart-cat1`..`--chart-cat8`), and the semantic
@@ -21,7 +36,9 @@ under tritanomaly, and *all* hue under achromatopsia. This is the same
 "meaning lives in hue" gap the print-styling note
 ([`2026-06-14-deck-print-styling.md`](./2026-06-14-deck-print-styling.md))
 found for grayscale paper — here the surface is the screen and the PDF, and
-the fix is per-viewer, not per-medium.
+the *palette* fix is per-viewer, not per-medium. (The phase-2 **encoding** fix,
+by contrast, *is* medium-independent and closes the print gap too — see the
+[redundant-encoding ADR § Side-benefit](./2026-06-16-cvd-redundant-encoding.md).)
 
 **The ask (owner, 2026-06-16).** Not a per-theme tweak and not an official
 theme. *"In the land of the blind the one-eyed man is king — themes go out
@@ -45,8 +62,8 @@ Because every render surface already resolves a theme *by name* (see
 | Precedence | **workspace > front-matter `accessibility:` > off**; and accessibility > `theme:` always | The live viewer's declared need can't be overridden by an author's guess |
 | Scope | **Full** colour-contract replacement | Owner: "themes go out the window" |
 | v1 deficiencies | **deuteranopia, protanopia, tritanopia** (the three dichromacies), each × light/dark | Palette-only genuinely works for these; covers ~99% of CVD |
-| Achromatopsia | **deferred to phase 2** | Under total colour-blindness hue carries *zero* information; it only works once redundant encoding lands |
-| Redundant encoding | **phase 2** (patterns / markers / shapes / ✓!✗ glyphs) | v1 is palette-only; this is what lifts the ≤8-category ceiling and makes achromatopsia function |
+| Achromatopsia | deferred in v1; **shipped in phase 2** | Under total colour-blindness hue carries *zero* information; it works now that redundant encoding has landed (resolves via the `accessibility:` key like the dichromacies) |
+| Redundant encoding | v1 palette-only; **shipped in phase 2** (textures / line-styles / ✓!✗ glyphs) | Lifts the ≤8-category ceiling, makes achromatopsia function, and — being medium-independent — doubles as a grayscale-**print** accommodation (see [redundant-encoding ADR § Side-benefit](./2026-06-16-cvd-redundant-encoding.md)) |
 
 ## Why this shape
 
@@ -128,8 +145,9 @@ phase-2 redundant encoding exists to break.
    downstream viewer's workspace preference can't retro-apply to a static
    file. The guarantee is "workspace wins wherever the deck renders live
    (playground / Present / Practice / runtime)."
-3. **Achromatopsia is phase 2.** Shipping it palette-only would be a mode that
-   resolves but doesn't function.
+3. **Achromatopsia shipped in phase 2.** It was held back in v1 because
+   palette-only would resolve but not function; with redundant encoding landed it
+   now works and resolves via the `accessibility:` key like the dichromacies.
 4. **Raster images / photos are uncorrected.** The token approach can't touch
    embedded bitmaps — acceptable, noted.
 
@@ -142,8 +160,18 @@ phase-2 redundant encoding exists to break.
    precedence (workspace > front-matter > off; accessibility > theme).
 3. Curate the three dichromacy palettes (× light/dark) against the gate; add
    them to the contrast loop.
-4. Extract the shared client resolver; wire the workspace toggle
-   (`data-a11y` + `lattice-docs-a11y`) into the three controllers.
+4. ~~Extract the shared client resolver; wire the workspace toggle
+   (`data-a11y` + `lattice-docs-a11y`) into the three controllers.~~
+   **Superseded — NOT shipped (see top banner).** This step built a client
+   resolver (`resolve-a11y-client.js`), a `lattice-docs-a11y` workspace pref
+   (`a11y-prefs.js`) surfaced as a "Colour-vision accessibility" settings
+   control with an "Apply to deck" action, and kept the `a11y-*` palettes OUT of
+   the theme picker. **All of that was removed.** What actually shipped: the
+   `a11y-*` palettes ARE first-class picker themes (no `data-a11y`, no client
+   resolver, no workspace axis); the texture `<defs>` are injected into the
+   preview/Present/Practice iframes on every render (not gated on an "active a11y
+   palette"). The remaining true statement is the defs-injection as the
+   runtime-path counterpart to the emulator's.
 5. Verify across all live paths (emulator PDF + playground + Present +
    Practice) and a representative demo deck.
 6. **Phase 2:** redundant non-colour encoding (patterns / markers / shapes /
@@ -154,6 +182,8 @@ Per-feature deliverables (demo deck `examples/<slug>.md` + committed PDF,
 [`lib/base/base.docs.md`](../../lib/base/base.docs.md)) land with the
 implementation per the workflow contract.
 
-**Status: design-decision** — mechanism, precedence, and v1 scope aligned
-with the owner 2026-06-16 (workspace-wins; full replacement; palette-only v1;
-three dichromacies, achromatopsia + patterns deferred to phase 2). No code yet.
+**Status: shipped** — mechanism, precedence, and scope aligned with the owner
+2026-06-16 (workspace-wins; full replacement). All four types ship (three
+dichromacies + achromatopsia); phase-2 redundant encoding (textures,
+line-styles, glyphs) landed and is detailed in the
+[redundant-encoding ADR](./2026-06-16-cvd-redundant-encoding.md).

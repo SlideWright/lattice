@@ -31,6 +31,21 @@ declare global {
 	}
 }
 
+/**
+ * The theme-name `@import` targets a stylesheet declares — the ONE place this
+ * scan lives (every consumer that walks the theme chain uses it, so the footguns
+ * are fixed once). Two footguns it handles:
+ *   - the minified dist themes drop the space after @import (`@import"onyx"`), so
+ *     the pattern is `\s*` not `\s+` (mirrors the engine's THEME_IMPORT_RE);
+ *   - a banner COMMENT can contain literal `@import '<self>'` prose, which would
+ *     self-match and deadlock a closure walk — so comments are stripped first.
+ * `url(...)` font imports don't match (no bare quote-name). `lattice` is included
+ * if present; callers route it to their base-registration path.
+ */
+export function themeImportNames(css: string): string[] {
+	return [...css.replace(/\/\*[\s\S]*?\*\//g, '').matchAll(/@import\s*['"]([A-Za-z0-9_-]+)['"]/g)].map((m) => m[1]);
+}
+
 export function createThemeFetcher(themeBase: string) {
 	const fetched: Record<string, Promise<string>> = {}; // theme name → Promise<cssText>
 	let latticeReady: Promise<void> | null = null;
@@ -64,18 +79,36 @@ export function createThemeFetcher(themeBase: string) {
 	 * dark mode), each fetched/registered at most once. Mirrors the inline
 	 * ensureThemes every single-slide host used.
 	 */
+	// Register a theme AND the transitive theme-name `@import` closure it needs.
+	// The engine's resolveThemeImports only inlines an import whose target is
+	// already registered, so a multi-level chain (e.g. a11y-deuteranopia →
+	// a11y-base → onyx → lattice) renders STRIPPED unless every link is present.
+	// Follows bare `@import 'name'` directives (url() font imports are ignored);
+	// `lattice` routes through ensureBase(). Each name registered at most once.
+	const registering: Record<string, Promise<void>> = {};
+	function register(name: string): Promise<void> {
+		const PG = window.LatticePlayground;
+		if (!PG) return Promise.reject(new Error('engine not ready'));
+		if (name === 'lattice') return ensureBase();
+		if (!registering[name]) {
+			registering[name] = fetchTheme(name).then((css) => {
+				if (!PG.hasTheme(name)) PG.addThemes([css]);
+				// Walk the transitive theme-name @import closure — the engine inlines
+				// an import only if its target is already registered, so a multi-level
+				// chain (a11y-deuteranopia → a11y-base → onyx → lattice) renders
+				// STRIPPED unless every link is present. `lattice` routes via ensureBase.
+				const deps = themeImportNames(css).filter((d) => d && d !== name);
+				return Promise.all([ensureBase(), ...deps.map(register)]).then(() => undefined);
+			});
+		}
+		return registering[name];
+	}
+
 	function ensure(palette: string, mode: 'light' | 'dark'): Promise<void> {
 		const PG = window.LatticePlayground;
 		if (!PG) return Promise.reject(new Error('engine not ready'));
-		const jobs: Promise<void>[] = [ensureBase()];
-		if (!PG.hasTheme(palette)) jobs.push(fetchTheme(palette).then((css) => PG.addThemes([css])));
-		if (mode === 'dark') {
-			jobs.push(
-				fetchTheme(palette + '-dark')
-					.then((css) => PG.addThemes([css]))
-					.catch(() => {}),
-			);
-		}
+		const jobs: Promise<void>[] = [register(palette)];
+		if (mode === 'dark') jobs.push(register(palette + '-dark').catch(() => {}));
 		return Promise.all(jobs).then(() => undefined);
 	}
 

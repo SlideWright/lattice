@@ -27,13 +27,10 @@ files. See the repo `README.md` for the full entry-point table.
 | `lattice-runtime.min.js` | Minified `lattice-runtime.js` — no inline source map. Production / CDN runtime drop-in. | `@slidewright/lattice/runtime/min` |
 | `lattice.css` | Engine bundle — the palette-blind layout system (layouts + modifiers, no colour tokens). | `@slidewright/lattice/css` |
 | `lattice.min.css` | Minified `lattice.css` — same engine, comments/whitespace stripped (Marp `@theme`/`@size` directives preserved). Production / CDN drop-in. | `@slidewright/lattice/css/min` |
-| `themes/a11y-achromatopsia-dark.min.css` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
 | `themes/a11y-achromatopsia.min.css` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
-| `themes/a11y-deuteranopia-dark.min.css` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
+| `themes/a11y-base.min.css` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
 | `themes/a11y-deuteranopia.min.css` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
-| `themes/a11y-protanopia-dark.min.css` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
 | `themes/a11y-protanopia.min.css` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
-| `themes/a11y-tritanopia-dark.min.css` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
 | `themes/a11y-tritanopia.min.css` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
 | `themes/ardesia-dark.min.css` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
 | `themes/ardesia.min.css` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |

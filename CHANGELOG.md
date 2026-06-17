@@ -177,20 +177,38 @@ in patch versions.
 
 ### Added
 
-- **Colour-blindness accessibility — per-viewer CVD accommodation.** A deck can
-  set `accessibility: deuteranopia` (or `protanopia` / `tritanopia` /
-  `achromatopsia`) in front matter — or a viewer can force it via the
-  `LATTICE_ACCESSIBILITY` env (workspace tier) — and it overrides the theme,
-  always. Because colour alone distinguishes only ~1–2 categories under
-  dichromacy, the accommodation pairs **CVD-tuned status colours** (pass/warn/fail
-  moved off each deficiency's confusion axis, verified distinct + AA) with
-  **redundant non-colour encoding**: ✓/!/✗ **glyphs** on status pills and a
-  distinct **texture pattern** per categorical slot on diagram/chart fills. All
-  scoped to `[data-a11y]`, so normal decks are untouched. New: the four
-  `a11y-*` palettes (+ dark), `lib/core/resolve-accessibility.js`,
-  `lib/theme/cvd.js` (Machado-2009 simulation), and `tools/cvd-audit.js`.
-  See `engineering/decisions/2026-06-16-colour-blindness-accessibility.md` +
-  `…-cvd-redundant-encoding.md`.
+- **Colour-vision-deficiency accessibility — four first-class CVD themes.** Four
+  selectable themes — `a11y-deuteranopia`, `a11y-protanopia`, `a11y-tritanopia`,
+  `a11y-achromatopsia` — chosen exactly like any theme (`theme: a11y-deuteranopia`
+  in front matter, or the Drawing Board theme picker's "Accessibility" group). No
+  separate accessibility axis, directive, or override resolver: an accessibility
+  need is met by picking the theme. Because colour alone distinguishes only ~1–2
+  categories under dichromacy, each pairs **CVD-tuned status colours** (pass/warn/
+  fail moved off the deficiency's confusion axis, verified distinct + AA) with
+  **redundant non-colour encoding**: ✓/!/✗ **glyphs** on status pills, a distinct
+  **texture pattern** per categorical slot on diagram fills (Mermaid `.section-N`
+  and the Mermaid pie) and native chart fills (pie / funnel), and a per-series
+  **line-style** on radar. The four share a `themes/a11y-base.css` foundation (the
+  texture wiring + greyscale categorical ramp + forced light scheme); each theme
+  adds only its status trio. They are **mode-invariant** — a fixed palette that
+  ignores the light/dark toggle, so an accessibility render reads identically for
+  every viewer (and colour-free decks stay readable by texture + glyph + line-style
+  alone, the channels that also survive black-and-white **printing**). The engine
+  emits the texture `<defs>` on every render. **The docs site honours them too** —
+  picking an a11y theme (anywhere the palette persists) restyles the whole site
+  (landing, component portal, Drawing Board chrome), not just the deck preview:
+  the portal token generator now flattens each palette's `@import` chain (so a
+  thin `a11y-*` palette resolves the full token contract via onyx) and emits
+  mode-invariant blocks for them. The theme dropdown is now **one global
+  component** (the shared `PaletteControls`, replacing the separate Drawing Board
+  topbar) mounted on every surface — landing, playground, workbench, component
+  pages, and the Drawing Board — listing the identical grouped set (brand
+  palettes, then an "Accessibility · colour-blindness" group); it writes the
+  deck's `theme:` on the Drawing Board and sets the site palette elsewhere. New:
+  `themes/a11y-*` (+ `a11y-base`),
+  `lib/theme/cvd.js` (Machado-2009 simulation), `lib/core/accessibility-textures.js`,
+  `tools/cvd-audit.js`. See `engineering/decisions/2026-06-16-colour-blindness-accessibility.md`
+  + `…-cvd-redundant-encoding.md`.
 - **Editor autocomplete for focus, with a manifest-declared capability.** The
   Drawing Board now completes the `_focus` / `_focusStyle` / `_focusSteps`
   directives, the style values (`spotlight`/`blur`/`ring`/`list-fill`/`pop`), and

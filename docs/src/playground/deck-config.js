@@ -38,6 +38,9 @@ const FIELD_DEFAULTS = {
   // controller only syncs a registered palette), not here — writeFrontMatter
   // never scrubs a hand-typed value out of the author's source.
   theme: '',
+  // (Accessibility / colour-vision-deficiency is no longer a separate front-matter
+  // key — the a11y-* palettes are plain themes now, written through `theme:` like
+  // any other. There is no `accessibility:` axis.)
   // `finish` is the deck-wide finish register (lib/core/resolve-finish.js):
   // '' / 'boardroom' is the baseline (omitted), 'sketch' / 'sketch-clean' opt in.
   finish: '',

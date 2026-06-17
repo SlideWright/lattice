@@ -11,6 +11,7 @@
 // WRAPPING the irreducible engine pieces (theme-studio.js, component-studio.js,
 // deck-config.js, deck-preview.js, the engine bundle, the driver.js tour) rather
 // than reimplementing them. See engineering/decisions/2026-06-09-shadcn-migration.md §0.
+import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { join } from 'node:path';
 import '../styles/landing.css';
@@ -54,6 +55,13 @@ const wbData = {
 	finishes: FINISH_NAMES,
 };
 
+// The same palette vocabulary every site picker uses (incl. the a11y themes) —
+// so the Workbench topbar offers the identical theme dropdown as everywhere
+// else. It restyles the page chrome; the Theme Studio's specimen still previews
+// the theme you're crafting.
+const tokensCss = readFileSync(join(process.cwd(), 'src/styles/lattice-tokens.generated.css'), 'utf8');
+const palettes = [...new Set([...tokensCss.matchAll(/data-palette="([^"]+)"/g)].map((m) => m[1]))];
+
 const links = primaryNav(url); // shared primary nav — src/lib/nav.mjs
 const here = Astro.url.pathname;
 ---
@@ -95,7 +103,7 @@ const here = Astro.url.pathname;
 				</nav>
 				<div class="topbar-actions">
 					<div class="lx-ui" style="display:inline-flex">
-						<PaletteControls client:idle palettes={[]} />
+						<PaletteControls client:idle palettes={palettes} />
 					</div>
 					<button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-controls="topnav" aria-expanded="false"></button>
 				</div>
@@ -113,10 +121,11 @@ const here = Astro.url.pathname;
 		     chrome paints), not eagerly here — so the faculty Tabs + controls paint
 		     without the ~554KB-gz bundle blocking. The studios poll for the global. -->
 
-		<!-- Topbar chrome: mobile nav. The light/dark toggle is the shared
-		     <PaletteControls> island (mode-only here — the Workbench has no global
-		     palette picker), which owns the data-mode write + localStorage + bfcache
-		     pageshow re-sync via site-chrome.ts. -->
+		<!-- Topbar chrome: mobile nav. The palette + light/dark controls are the
+		     shared <PaletteControls> island (the same theme dropdown as every other
+		     surface — it restyles the page chrome; the Theme Studio specimen still
+		     previews the theme being crafted), owning the data-palette/data-mode
+		     writes + localStorage + bfcache pageshow re-sync via site-chrome.ts. -->
 		<script is:inline>
 			(function () {
 				var navToggle = document.getElementById('nav-toggle');

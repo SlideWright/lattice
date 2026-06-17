@@ -15,7 +15,7 @@ describe('PaletteControls island', () => {
 		render(<PaletteControls palettes={['indaco', 'cuoio']} />);
 		expect(screen.getByRole('button', { name: /toggle light \/ dark/i })).toBeInTheDocument();
 		// shadcn/radix SelectTrigger exposes role="combobox" with the aria-label.
-		expect(screen.getByRole('combobox', { name: /palette/i })).toBeInTheDocument();
+		expect(screen.getByRole('combobox', { name: /theme/i })).toBeInTheDocument();
 	});
 
 	it('renders only the mode toggle when palettes is empty (Workbench case)', () => {

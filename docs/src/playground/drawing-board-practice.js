@@ -14,6 +14,10 @@
 // source of truth and centres a single slide with flex + a uniform scale, so a
 // rehearsal slide looks identical to the same slide in the preview.
 
+// Shared theme registration (WRAP, DON'T REINVENT): walks the transitive
+// `@import` closure so a multi-level theme (a11y-* → a11y-base → onyx → lattice)
+// registers fully — the one tested path, not a re-inlined copy.
+import { createThemeFetcher } from '../lib/theme-fetch.ts';
 // notes-core is THE single source for the note/non-note boundary (HARD RULE #1) —
 // read it through the canonical extractor, never re-derive. It rides the
 // authoring-core bundle (esbuild → browser ESM) because Vite-dev can't serve the
@@ -38,7 +42,7 @@ function fmt(s) {
   return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
 }
 
-export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketOf, model, voice: sharedVoice, openVoiceSettings }) {
+export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketOf, model, voice: sharedVoice, openVoiceSettings, a11yDefs = '' }) {
   if (!host) return { open() {} };
   const PG = () => window.LatticePlayground;
   const root = document.documentElement;
@@ -65,7 +69,7 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
   // prefs, the loaded Kokoro worker, and the download all stay in sync. Falls back
   // to its own instance when none is injected (older callers / tests).
   const voice = sharedVoice || createVoiceModel({ getOpenRouterKey: () => (model?.openRouterKey ? model.openRouterKey() : null) });
-  const fetched = {};
+  const themeFetcher = createThemeFetcher(themeBase);
 
   let plan = null; // the live rehearsal plan (deterministic, possibly AI-refined)
   let idx = 0;
@@ -94,16 +98,6 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
     return e;
   };
 
-  async function ensureTheme(name) {
-    const pg = PG();
-    if (!pg) return;
-    if (!fetched.lattice) fetched.lattice = fetch(themeBase + 'lattice.css').then((r) => r.text()).then((c) => pg.addThemes([c]));
-    await fetched.lattice;
-    if (!pg.hasTheme(name)) {
-      if (!fetched[name]) fetched[name] = fetch(themeBase + name + '.css').then((r) => r.text()).then((c) => pg.addThemes([c])).catch(() => {});
-      await fetched[name];
-    }
-  }
 
   // Render the deck through the engine ONCE and derive the slide metas from the
   // rendered <section> list — the AUTHORITATIVE segmentation (it honours `---`,
@@ -114,12 +108,12 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
   async function prepare() {
     let pg = PG();
     if (!pg) pg = await waitForPG();
+    const source = getSource();
+    // The deck's theme is the only palette axis — an a11y theme is just a theme.
     const palette = root.getAttribute('data-palette') || 'indaco';
     const mode = root.getAttribute('data-mode') === 'dark' ? 'dark' : 'light';
-    await ensureTheme(palette);
-    if (mode === 'dark') await ensureTheme(palette + '-dark');
+    await themeFetcher.ensure(palette, mode);
     const theme = mode === 'dark' && pg.hasTheme(palette + '-dark') ? palette + '-dark' : palette;
-    const source = getSource();
     const out = pg.render(source, theme);
     const sections = splitSections(out.html);
     const metas = sections.length ? metasFromSections(sections, { bucketOf }) : metasFromSource(source, { bucketOf });
@@ -163,7 +157,7 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
       '.marpit{height:100%;display:flex;align-items:center;justify-content:center;visibility:hidden;}' +
       slideBox(sw, sh) +
       '.marpit>section{flex:0 0 auto;box-shadow:0 18px 60px rgba(0,0,0,.45);border-radius:10px;}' +
-      css + '</style></head><body>' + html +
+      css + '</style></head><body>' + a11yDefs + html +
       '<scr' + 'ipt src="' + MERMAID_URL + '"></scr' + 'ipt>' +
       '<scr' + 'ipt src="' + runtimeUrl + '"></scr' + 'ipt>' +
       '<scr' + 'ipt>window.__SLIDE_W=' + sw + ';window.__SLIDE_H=' + sh + ';' +

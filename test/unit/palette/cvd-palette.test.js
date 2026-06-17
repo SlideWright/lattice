@@ -2,7 +2,9 @@
  * Unit: the accessibility (CVD) palettes' status trio survives its target
  * deficiency. The categorical cycle CANNOT be separated by colour under CVD
  * (~1-2 distinct — that's what the texture patterns carry); what colour DOES
- * carry is pass/warn/fail, so this gate asserts exactly that, in both canvases.
+ * carry is pass/warn/fail, so this gate asserts exactly that. The a11y themes
+ * are mode-invariant (a single fixed value per token, no light-dark() pair), so
+ * there is one canvas to check.
  * Regression guard for engineering/decisions/2026-06-16-cvd-redundant-encoding.md.
  */
 
@@ -26,17 +28,16 @@ const CASES = [
   ['a11y-tritanopia', 'tritanopia'],
 ];
 
-/** Pull the light & dark sides of --pass/--warn/--fail from a palette file. */
+/** Pull the fixed --pass/--warn/--fail values from a mode-invariant palette. */
 function statusTrio(palette) {
   const css = fs.readFileSync(path.join(THEMES, `${palette}.css`), 'utf8');
-  const sides = { light: [], dark: [] };
+  const trio = [];
   for (const tok of ['pass', 'warn', 'fail']) {
-    const m = css.match(new RegExp(`--${tok}:\\s*light-dark\\(\\s*([^,]+?)\\s*,\\s*([^)]+?)\\s*\\)`, 'i'));
-    assert.ok(m, `${palette} must define --${tok} as a light-dark() pair`);
-    sides.light.push(normalizeHex(m[1]));
-    sides.dark.push(normalizeHex(m[2]));
+    const m = css.match(new RegExp(`--${tok}:\\s*(#[0-9a-f]{3,6})\\s*;`, 'i'));
+    assert.ok(m, `${palette} must define --${tok} as a fixed hex (mode-invariant, no light-dark())`);
+    trio.push(normalizeHex(m[1]));
   }
-  return sides;
+  return trio;
 }
 
 function minPairwiseUnder(hexes, type) {
@@ -49,19 +50,17 @@ function minPairwiseUnder(hexes, type) {
 
 describe('cvd-palette status distinctness', () => {
   for (const [palette, type] of CASES) {
-    test(`${palette}: pass/warn/fail stay distinct under ${type} (both canvases)`, () => {
-      const { light, dark } = statusTrio(palette);
-      const dl = minPairwiseUnder(light, type);
-      const dd = minPairwiseUnder(dark, type);
-      assert.ok(dl >= FLOOR, `light min ΔE ${dl.toFixed(3)} < ${FLOOR}`);
-      assert.ok(dd >= FLOOR, `dark min ΔE ${dd.toFixed(3)} < ${FLOOR}`);
+    test(`${palette}: pass/warn/fail stay distinct under ${type}`, () => {
+      const trio = statusTrio(palette);
+      const d = minPairwiseUnder(trio, type);
+      assert.ok(d >= FLOOR, `min ΔE ${d.toFixed(3)} < ${FLOOR}`);
     });
   }
 
   test('achromatopsia status trio is luminance-separated greys', () => {
-    const { light } = statusTrio('a11y-achromatopsia');
+    const trio = statusTrio('a11y-achromatopsia');
     // All three are achromatic (R=G=B) and span a real luminance range.
-    for (const hex of light) {
+    for (const hex of trio) {
       const [r, g, b] = [hex.slice(1, 3), hex.slice(3, 5), hex.slice(5, 7)];
       assert.equal(r, g, `${hex} should be grey`);
       assert.equal(g, b, `${hex} should be grey`);
