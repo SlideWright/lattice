@@ -8,7 +8,9 @@
  * and the per-mode palette for free. Stroke pixels are opaque, so a
  * `fill:none` outline masks correctly.
  *
- * Scope is deliberately the chrome controls only (menu / moon / sun). The
+ * Scope is deliberately the chrome controls only. Today that's just the menu
+ * glyph (the component-reference drawer toggle, .cnav-toggle-bars) — the site
+ * header's own icons are lucide-react inside the <NavActions> island. The
  * larger inline-icon set (the `.ico` system, Drawing-Board glyphs) stays in
  * landing.css — it's used in standalone-page markup the docs zone doesn't
  * render. To add a chrome icon, drop its Lucide children into a new
@@ -16,6 +18,4 @@
 
 :root {
 	--icon-menu: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='M4 6h16'/%3e%3cpath d='M4 12h16'/%3e%3cpath d='M4 18h16'/%3e%3c/svg%3e");
-	--icon-moon: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z'/%3e%3c/svg%3e");
-	--icon-sun: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3ccircle cx='12' cy='12' r='4'/%3e%3cpath d='M12 2v2'/%3e%3cpath d='M12 20v2'/%3e%3cpath d='m4.93 4.93 1.41 1.41'/%3e%3cpath d='m17.66 17.66 1.41 1.41'/%3e%3cpath d='M2 12h2'/%3e%3cpath d='M20 12h2'/%3e%3cpath d='m6.34 17.66-1.41 1.41'/%3e%3cpath d='m19.07 4.93-1.41 1.41'/%3e%3c/svg%3e");
 }

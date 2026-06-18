@@ -47,8 +47,8 @@
 	 * colour / --accent hover and the per-mode palette for free. Stroke pixels
 	 * are opaque, so a fill:none outline masks correctly. To add an icon, drop
 	 * its Lucide <path>/<circle> children into a new --icon-<name> here.
-	 * The topbar trio (--icon-menu / -moon / -sun) lives in chrome-icons.css,
-	 * shared with the docs skin; the Drawing-Board glyphs below stay here. */
+	 * The chrome menu glyph (--icon-menu) lives in chrome-icons.css, shared with
+	 * the docs skin; the Drawing-Board glyphs below stay here. */
 
 	/* Drawing Board glyphs — Lucide (ISC), same mask technique as above. */
 	--icon-volume-2: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolygon points='11 5 6 9 2 9 2 15 6 15 11 19 11 5'/%3e%3cpath d='M15.54 8.46a5 5 0 0 1 0 7.07'/%3e%3cpath d='M19.07 4.93a10 10 0 0 1 0 14.14'/%3e%3c/svg%3e");
