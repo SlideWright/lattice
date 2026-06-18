@@ -49,6 +49,8 @@ harness the index can't infer, add it to `FRAMEWORKS` in the generator.
 | `dist-readme:check` | Freshness gate for dist/README.md. |
 | `docs:components` | Generate per-component docs.md + gallery.md siblings from each manifest. |
 | `docs:components:check` | Freshness gate for the per-component docs. |
+| `docs:concepts` | Project the concept ontology (lib/concepts) into dist/docs/concepts.json — the machine catalog of the four axes, the Frame/Cell/Tile nouns, the Component join, and the typed relationships between them; counts derive live from the component + form catalogs. |
+| `docs:concepts:check` | Freshness + drift gate for the concept catalog (dist/docs/concepts.json) — fails if the ontology references a vocabulary the live catalogs no longer ship. |
 | `docs:forms` | Aggregate the Form manifests (lib/forms/{frame,tile,cell}) into dist/docs/forms.json — the machine catalog of the Frame + Cell + Tile composition model. |
 | `docs:forms:check` | Freshness gate for the Form catalog (dist/docs/forms.json). |
 | `docs:landing-tokens` | Emit per-palette CSS token blocks for the docs landing page. |
@@ -188,6 +190,7 @@ harness the index can't infer, add it to `FRAMEWORKS` in the generator.
 | `tools/build-bucket-galleries.js` | Build per-bucket survey gallery PDFs in light and dark themes. |
 | `tools/build-capabilities.js` | Generate engineering/capabilities.md — the single index of what this repo |
 | `tools/build-component-docs.js` | Generate per-component documentation + gallery decks from manifests. |
+| `tools/build-concepts.js` | Generate dist/docs/concepts.json — the machine-readable catalog of Lattice's |
 | `tools/build-css.js` | CSS bundler. Concatenates lib/_*.css + lib/components/<name>/styles.css |
 | `tools/build-default-bundle.js` | Builds dist/lattice-default.css — the flattened, zero-config default. |
 | `tools/build-dist-readme.js` | Generate dist/README.md — the index for the distribution folder. |

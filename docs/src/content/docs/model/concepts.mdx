@@ -58,10 +58,8 @@ The same concept appears at three levels of concreteness, and the jumps are the 
 | **2 — concrete-as-data** | a catalog entry — manifest / CSS on disk, validated | the `split-panel` Frame manifest; the `cards-grid` component |
 | **3 — concrete-at-render** | the realized instance — pixels in the PDF | this slide's carved boxes, resolved Cells, populated Tiles |
 
-The four axes live entirely at **rung 1** — they are dimensions of decision, not things. Form's three nouns each span all three rungs. The catch: **rung 2 only looks concrete** — the manifests are inert *data* (an AST), not runtime objects. The sole instantiated rung is render, when the transform kernels + CSS grid interpret that AST.
+The four axes live entirely at **rung 1** — they are dimensions of decision, not things. Form's three nouns each span all three rungs. The catch: **rung 2 only looks concrete** — the data is inert until render; the only rung that is truly *instantiated* is the slide itself.
 
-## What the model is encoded as
+## Encoded, and kept honest
 
-The **vocabulary** of every concept is encoded and self-enforcing — the Frame / Cell / Tile catalogs (manifests + JSON-schemas + integrity gates under [`lib/forms/`](https://github.com/slidewright/lattice/blob/main/lib/forms)) and the component catalog (`function` / `form` / `substance` / `bucket` fields + validator), surfaced in the machine catalogs [`components.json`](https://github.com/slidewright/lattice/blob/main/dist/docs/components.json) and [`forms.json`](https://github.com/slidewright/lattice/blob/main/dist/docs/forms.json).
-
-What stays **prose** is deliberate: the cross-level relationship graph itself lives in this map, not as a separate machine artifact; and Form's *execution* is at the **"light coupling"** rung — the manifests are a *validated* contract today, but the render still places via hand-written transforms + CSS (see [the Form model](/model/form-model/)).
+This map isn't only prose. The vocabulary of every concept **and** the structural relationships between them are encoded as machine-readable catalogs the engine reads, and a **drift gate** keeps them in step with what Lattice actually ships — so the map can't claim a concept, count, or relationship the engine doesn't have. How each piece is encoded and enforced — the field, catalog, and gate behind it — is the engine's concern, and lives in [the concept model in code](https://github.com/slidewright/lattice/blob/main/engineering/architecture.md) (`engineering/architecture.md`).

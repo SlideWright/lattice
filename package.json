@@ -106,6 +106,8 @@
     "docs:portal:check": "node tools/build-docs-portal.js --check",
     "docs:forms": "node tools/build-forms.js",
     "docs:forms:check": "node tools/build-forms.js --check",
+    "docs:concepts": "node tools/build-concepts.js",
+    "docs:concepts:check": "node tools/build-concepts.js --check",
     "docs:landing-tokens": "node tools/build-landing-tokens.js",
     "docs:landing-tokens:check": "node tools/build-landing-tokens.js --check",
     "docs:spec": "node tools/build-spec-docs.js",

@@ -23,6 +23,7 @@
  *   6. per-component docs      tools/build-component-docs.js
  *   7. canonical doc portal    tools/build-docs-portal.js (components.md/.json)
  *   7b. forms catalog          tools/build-forms.js       (dist/docs/forms.json)
+ *   7c. concepts catalog       tools/build-concepts.js    (dist/docs/concepts.json)
  *   8. landing tokens          tools/build-landing-tokens.js  (docs site palette CSS)
  *   9. playground bundle       tools/build-playground.js      (docs site browser engine)
  *  10. theme-core bundle       tools/build-theme-core.js      (docs site Theme Studio core)
@@ -72,6 +73,7 @@ const STEPS = [
   { label: 'per-component docs', script: 'build-component-docs.js' },
   { label: 'doc portal (components.md/.json)', script: 'build-docs-portal.js' },
   { label: 'forms catalog (dist/docs/forms.json)', script: 'build-forms.js' },
+  { label: 'concepts catalog (dist/docs/concepts.json)', script: 'build-concepts.js' },
   { label: 'landing tokens (docs site)', script: 'build-landing-tokens.js' },
   { label: 'spec pages (docs site)', script: 'build-spec-docs.js' },
   { label: 'playground bundle (docs site)', script: 'build-playground.js' },
