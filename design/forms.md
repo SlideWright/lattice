@@ -140,16 +140,19 @@ goes. Each letter answers a question this design was interrogated against:
   it admits Tiles that did not exist when it was authored. (Today, adding a slide
   Tile means editing three render kernels — an OCP *violation*. A manifest the
   engine reads restores it. See §11.)
-- **L — Liskov → why recursion is sound, and why the current bug is a bug.** A
-  Frame must be substitutable wherever a Cell expects an Occupant: a Cell holding
-  a Frame behaves like one holding a Tile (both resolve to a box and render
-  within it). The contract every Occupant honors is *render inside your box —
-  clip, do not bleed*. The open chrome-over-content defect is precisely an LSP
-  violation: a Tile rendering outside its box.
+- **L — Liskov → why the recursive branch *seemed* sound (it is the rejected
+  one).** The argument at the time: a Frame is substitutable wherever a Cell
+  expects an Occupant — a Cell holding a Frame behaves like one holding a Tile
+  (both resolve to a box and render within it). We rejected the recursion, so
+  this no longer applies to content cells; what survives is the universal
+  contract every Occupant honors — *render inside your box — clip, do not bleed* —
+  and the open chrome-over-content defect is precisely an LSP violation: a Tile
+  rendering outside its box.
 - **I — Interface Segregation.** A leaf Tile implements only `Occupant` +
-  `populate`; it is never forced to implement `subdivide`. A Frame implements
-  both faces — it `render`s into its parent's Cell *and* `subdivide`s into child
-  Cells. That dual role is the Composite.
+  `populate`; it is never forced to implement `subdivide`. In the rejected
+  recursive branch a Frame implemented both faces — `render` into its parent's
+  Cell *and* `subdivide` into child Cells (the Composite's dual role). With
+  recursion gone, only the *fixed* chrome-band Frames (masthead, footer) subdivide.
 - **D — Dependency Inversion → why the designer/author split works.** A Frame
   declares a Cell that `accepts: [chrome]`; a Tile declares it `fits` that Cell.
   Both depend on the **Cell abstraction**, neither on the other's concrete. That
@@ -212,10 +215,11 @@ authored by a *designer*; a **Tile** binds a *source*.
 ### Frame — the slicer
 - **`id` / `form`** — its name and the Form value it realizes (`split`, `panel`,
   `grid`, …).
-- **`kind`** — `root` (carves the slide) · `framed` (docks in the main Cell,
-  keeps the chrome Frame) · `sovereign` (claims the whole canvas and
-  **suppresses** chrome Cells — this is why a `split-panel` reads as "distinct
-  from everything else": it *replaces* the frame).
+- **`kind`** — `root` (carves the slide, keeps the chrome) · `sovereign` (claims
+  the whole canvas and **suppresses** chrome Cells — this is why a `split-panel`
+  reads as "distinct from everything else": it *replaces* the frame). (A `framed`
+  kind — a Frame nested in a content Cell — was considered and rejected; see
+  `engineering/decisions/2026-06-18-frame-recursion-cells.md`.)
 - **`subGrid`** — the internal grid template + ratios.
 - **`cells`** — the Cells it produces (each a full Cell definition).
 - **`suppresses`** — chrome Cells a sovereign Frame hides.
