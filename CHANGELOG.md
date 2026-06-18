@@ -27,6 +27,18 @@ in patch versions.
 
 ### Changed
 
+- **The concept page’s “The lattice” section is now an explorable 3D-CSS graph.**
+  Below the scroll hero, `/model/concepts/` renders the concept lattice as a live,
+  manually-driven 3D constellation (the nine concepts + their typed edges): drag to
+  orbit, a **Drill** control pushes into the **Form** node (the other axes fall
+  away, Frame · Cell · Tile fan into depth — the same move the hero plays on
+  scroll), an **Orbit** toggle pauses the gentle auto-turn, and **Reset** returns
+  to the resting view. Pure CSS 3D (no WebGL, no dependency), themed on the live
+  palette tokens, and self-centring so every node stays legible at any width;
+  `prefers-reduced-motion` / no-JS fall back to the static `ConceptLattice`
+  diagram. The graph reflects the shipped ontology — no recursive Frame-in-Cell
+  edge. (`docs/src/components/model/ConceptGraph.astro`.)
+
 - **The concept page opens with a scroll-driven 3D walkthrough — the lattice
   drills into Form and becomes a slide.** The `/model/concepts/` hero is now a
   single sticky CSS-3D stage (no WebGL, no dependency — real themed DOM) driven by

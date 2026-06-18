@@ -1,0 +1,208 @@
+---
+/**
+ * The concept lattice as an interactive 3D-CSS graph for /model/concepts/ — the
+ * explorable companion to the scroll-driven ConceptWalkthrough hero. Same nine
+ * concepts and typed edges, but driven by controls instead of scroll: a **Drill**
+ * slider pushes the camera into the Form node (the other axes fall away, Frame ·
+ * Cell · Tile fan into depth), an **Orbit** toggle pauses the gentle auto-turn,
+ * **Reset** returns to the level resting view, and the stage is drag-to-orbit.
+ *
+ * Pure CSS 3D — no WebGL, no dependency; real themed DOM (crisp, selectable),
+ * tracking the live palette tokens. GPU: nodes/edges are their own compositing
+ * layers (will-change + translate3d/rotate3d), transform/opacity only.
+ *
+ * The graph reflects the shipped ontology (lib/concepts/concepts.json): no
+ * recursive Frame-in-Cell edge — that recursion was rejected
+ * (engineering/decisions/2026-06-18-frame-recursion-cells.md).
+ *
+ * Nodes are built in JS, so the static 2D ConceptLattice is rendered inside as
+ * the no-JS / prefers-reduced-motion fallback — shown by default, swapped for the
+ * live stage only once JS initialises with motion allowed.
+ */
+import ConceptLattice from './ConceptLattice.astro';
+---
+
+<div class="cg" data-cg>
+  <!-- interactive stage (revealed by JS when motion is allowed) -->
+  <div class="cg-live" data-live hidden>
+    <div class="cg-stage" data-stage
+      aria-label="Interactive 3D graph of the Lattice concept model: the four axes Function, Form, Substance and Finish, the structural nouns Frame, Cell and Tile, the Component join and the Bucket grouping, with their typed relationships. Drag to orbit; use the Drill control to push into the Form node.">
+      <div class="cg-scene"><div class="cg-graph" data-graph></div></div>
+    </div>
+    <div class="cg-controls">
+      <p class="cg-cap">
+        <span class="cg-lead">Drill into Form →</span> the axes fall away and <b>Frame · Cell · Tile</b> fan out into the slide’s depth layers. Drag to orbit.
+      </p>
+      <div class="cg-bar">
+        <label class="cg-ctl">Drill
+          <input type="range" min="0" max="100" value="0" step="1" data-drill aria-label="Drill into the Form node — fan Frame, Cell and Tile into depth" />
+        </label>
+        <button type="button" class="cg-btn" data-orbit aria-pressed="true">⏸ Orbit</button>
+        <button type="button" class="cg-btn primary" data-reset>Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- no-JS / reduced-motion fallback -->
+  <div class="cg-fallback" data-fallback>
+    <ConceptLattice fig="lattice" />
+  </div>
+</div>
+
+<style>
+  .cg { margin: 0 0 1rem; }
+
+  .cg-stage { position: relative; height: clamp(560px, 62vh, 620px); display: grid; place-items: center;
+    overflow: hidden; perspective: 3200px; perspective-origin: 50% 50%; touch-action: none; cursor: grab;
+    border-radius: 14px; background: radial-gradient(120% 84% at 50% 30%, var(--bg-alt) 0%, transparent 70%); }
+  .cg-stage:active { cursor: grabbing; }
+  .cg-scene { transform-style: preserve-3d; }
+  .cg-graph { position: relative; width: 1px; height: 1px; transform-style: preserve-3d; will-change: transform; }
+
+  .cg-gnode { position: absolute; top: 0; left: 0; transform-style: preserve-3d; white-space: nowrap;
+    will-change: transform, opacity; display: flex; flex-direction: column; align-items: center; gap: 1px;
+    padding: 8px 13px; border-radius: 11px; background: var(--bg); border: 1.5px solid var(--border);
+    box-shadow: 0 14px 34px -20px color-mix(in srgb, var(--text-heading) 50%, transparent); }
+  .cg-gnode b { font: 700 14px/1.1 var(--sl-font-system, serif); color: var(--text-heading); }
+  .cg-gnode span { font: 600 8.5px/1 var(--sl-font-system-mono, monospace); color: var(--text-muted); text-transform: uppercase; letter-spacing: .07em; }
+  .cg-gnode.axis b { color: var(--text-body); }
+  .cg-gnode.form { border-color: var(--accent); border-width: 2.5px; background: var(--accent-soft);
+    box-shadow: 0 18px 40px -18px color-mix(in srgb, var(--accent) 55%, transparent); }
+  .cg-gnode.form b { color: var(--accent); }
+  .cg-gnode.join { background: var(--accent); border-color: var(--accent); }
+  .cg-gnode.join b { color: var(--on-accent); } .cg-gnode.join span { color: color-mix(in srgb, var(--on-accent) 75%, transparent); }
+  .cg-gnode.noun { border-style: dashed; }
+
+  .cg-gedge { position: absolute; top: 0; left: 0; height: 2px; transform-origin: 0 50%; border-radius: 2px;
+    will-change: transform, opacity;
+    background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 55%, transparent), color-mix(in srgb, var(--accent) 18%, transparent)); }
+  .cg-gedge.struct { background: linear-gradient(90deg, color-mix(in srgb, var(--text-muted) 60%, transparent), color-mix(in srgb, var(--text-muted) 15%, transparent)); }
+  .cg-gedge.ortho { height: 1px; background: repeating-linear-gradient(90deg, var(--text-muted) 0 5px, transparent 5px 11px); }
+
+  .cg-controls { margin-top: 14px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+  .cg-cap { margin: 0; text-align: center; max-width: 54ch; font: 400 14px/1.5 var(--sl-font-system, serif); color: var(--text-body); }
+  .cg-cap b { color: var(--text-heading); }
+  .cg-lead { font: 700 12px/1 var(--sl-font-system-mono, monospace); color: var(--accent); text-transform: uppercase; letter-spacing: .05em; }
+  .cg-bar { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; justify-content: center;
+    background: color-mix(in srgb, var(--bg-alt) 90%, transparent); border: 1px solid var(--border); border-radius: 999px; padding: 8px 14px; }
+  .cg-ctl { display: flex; align-items: center; gap: 10px; font: 600 11px/1 var(--sl-font-system-mono, monospace);
+    text-transform: uppercase; letter-spacing: .06em; color: var(--text-muted); }
+  .cg-ctl input[type=range] { width: 200px; accent-color: var(--accent); cursor: pointer; }
+  .cg-btn { font: 600 11px/1 var(--sl-font-system-mono, monospace); text-transform: uppercase; letter-spacing: .06em;
+    border-radius: 999px; padding: 7px 13px; cursor: pointer; border: 1px solid var(--border); background: var(--bg); color: var(--text-body); }
+  .cg-btn.primary { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+  .cg-btn:hover { filter: brightness(1.04); }
+  .cg-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+</style>
+
+<script>
+  function initConceptGraph() {
+    const root = document.querySelector('[data-cg]') as HTMLElement | null;
+    if (!root || root.dataset.cgInit) return;
+    // No-JS shows the fallback; reduced-motion keeps it too (no orbit/animation).
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    root.dataset.cgInit = '1';
+
+    const live = root.querySelector('[data-live]') as HTMLElement | null;
+    const fallback = root.querySelector('[data-fallback]') as HTMLElement | null;
+    const stage = root.querySelector('[data-stage]') as HTMLElement | null;
+    const graph = root.querySelector('[data-graph]') as HTMLElement | null;
+    const drill = root.querySelector('[data-drill]') as HTMLInputElement | null;
+    const orbitBtn = root.querySelector('[data-orbit]') as HTMLButtonElement | null;
+    const resetBtn = root.querySelector('[data-reset]') as HTMLButtonElement | null;
+    if (!live || !fallback || !stage || !graph || !drill || !orbitBtn || !resetBtn) return;
+
+    // reveal the interactive stage, retire the static fallback
+    live.hidden = false;
+    fallback.hidden = true;
+
+    // base position (x,y,z) + drill target (dx,dy,dz); `keep` nodes survive the
+    // drill (Form + the structural nouns + Component), the rest fade out.
+    type N = { l: string; s: string; c: string; keep: boolean; x: number; y: number; z: number; dx: number; dy: number; dz: number; el?: HTMLElement };
+    const NODES: Record<string, N> = {
+      function:  { l: 'Function', s: 'Purpose', c: 'axis', keep: false, x: -250, y: -150, z: -10, dx: -360, dy: -230, dz: -40 },
+      form:      { l: 'Form', s: 'Layout', c: 'form', keep: true, x: -80, y: -158, z: 40, dx: 0, dy: -130, dz: 60 },
+      substance: { l: 'Substance', s: 'Content', c: 'axis', keep: false, x: 95, y: -150, z: -10, dx: 300, dy: -220, dz: -40 },
+      finish:    { l: 'Finish', s: 'Style', c: 'axis', keep: false, x: 255, y: -145, z: -35, dx: 430, dy: -150, dz: -60 },
+      frame:     { l: 'Frame', s: 'slicer', c: 'noun', keep: true, x: -165, y: 35, z: -140, dx: 0, dy: -15, dz: -150 },
+      cell:      { l: 'Cell', s: 'slot', c: 'noun', keep: true, x: -35, y: 100, z: -25, dx: 0, dy: 45, dz: -15 },
+      tile:      { l: 'Tile', s: 'filler', c: 'noun', keep: true, x: 80, y: 155, z: 85, dx: 0, dy: 105, dz: 120 },
+      component: { l: 'Component', s: 'the join', c: 'join', keep: true, x: 80, y: -30, z: 130, dx: 0, dy: 175, dz: 50 },
+      bucket:    { l: 'Bucket', s: 'grouping', c: 'group', keep: false, x: 255, y: 80, z: -75, dx: 430, dy: 140, dz: -90 },
+    };
+    // The 14 typed edges of the shipped ontology (no cell→frame recursion).
+    const EDGES: [string, string, string][] = [
+      ['function', 'form', 'ortho'], ['form', 'substance', 'ortho'], ['substance', 'finish', 'ortho'],
+      ['form', 'frame', 'struct'], ['form', 'cell', 'struct'], ['form', 'tile', 'struct'],
+      ['frame', 'cell', 'struct'], ['cell', 'tile', 'struct'], ['tile', 'cell', 'struct'],
+      ['component', 'function', 'join'], ['component', 'form', 'join'], ['component', 'substance', 'join'],
+      ['component', 'finish', 'join'], ['component', 'bucket', 'join'],
+    ];
+
+    // The base coordinates were tuned for a full-viewport mock; compress the
+    // spread (x/y/z) so the cloud fits this embedded stage at any orbit angle.
+    const SX = 0.84, SY = 0.74, SZ = 0.66;
+    for (const id in NODES) { const n = NODES[id]; n.x *= SX; n.dx *= SX; n.y *= SY; n.dy *= SY; n.z *= SZ; n.dz *= SZ; }
+
+    const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+    const gpos = (n: N, p: number) => ({ x: lerp(n.x, n.dx, p), y: lerp(n.y, n.dy, p), z: lerp(n.z, n.dz, p) });
+
+    for (const id in NODES) { const n = NODES[id]; const d = document.createElement('div');
+      d.className = 'cg-gnode ' + n.c; d.innerHTML = `<b>${n.l}</b><span>${n.s}</span>`; n.el = d; graph.appendChild(d); }
+    const edgeEls = EDGES.map(([a, b, kind]) => { const e = document.createElement('div'); e.className = 'cg-gedge ' + kind; graph.appendChild(e); return { a, b, kind, el: e }; });
+
+    const scene = stage.querySelector('.cg-scene') as HTMLElement;
+    let p = 0, rx = -3, ry = 20, auto = true, down = false, lx = 0, ly = 0;
+    let scaleBase = 1;
+    const measure = () => { scaleBase = Math.max(0.55, Math.min(0.92, stage.clientWidth / 700)); };
+
+    // Perspective shifts the projected cloud off the geometric origin in ways
+    // that are hard to predict, so measure the resting cloud and shift the scene
+    // to centre it in the stage (re-run on resize). Keeps every node clear of the
+    // overflow-clip edges regardless of width/scale.
+    const recenter = () => {
+      scene.style.transform = 'translateY(0px)';
+      render();
+      let top = Infinity, bot = -Infinity;
+      for (const id in NODES) { const r = NODES[id].el!.getBoundingClientRect(); top = Math.min(top, r.top); bot = Math.max(bot, r.bottom); }
+      const sr = stage.getBoundingClientRect();
+      const shift = (sr.top + sr.height / 2) - (top + bot) / 2;
+      scene.style.transform = `translateY(${shift.toFixed(1)}px)`;
+    };
+
+    function render() {
+      const zoom = scaleBase * (1 + p * 0.5);
+      graph!.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg) scale(${zoom})`;
+      for (const id in NODES) { const n = NODES[id], q = gpos(n, p);
+        n.el!.style.opacity = String(n.keep ? 1 : (1 - p) * (1 - p));
+        n.el!.style.transform = `translate3d(${q.x}px,${q.y}px,${q.z}px) translate(-50%,-50%) scale(${id === 'form' ? 1 + p * 0.15 : 1})`; }
+      for (const e of edgeEls) { const A = gpos(NODES[e.a], p), B = gpos(NODES[e.b], p);
+        const dx = B.x - A.x, dy = B.y - A.y, dz = B.z - A.z, len = Math.hypot(dx, dy, dz), lenXZ = Math.hypot(dx, dz);
+        e.el.style.width = len + 'px';
+        e.el.style.transform = `translate3d(${A.x}px,${A.y}px,${A.z}px) rotateY(${Math.atan2(-dz, dx) * 180 / Math.PI}deg) rotateZ(${Math.atan2(dy, lenXZ) * 180 / Math.PI}deg)`;
+        e.el.style.opacity = String(e.kind === 'struct' ? (0.5 + 0.5 * p) : (1 - p)); }
+    }
+
+    // gentle auto-orbit at the resting (un-drilled) view, paused on drag or toggle
+    function tick() { if (auto && p < 0.04 && !down) { ry += 0.12; render(); } requestAnimationFrame(tick); }
+    measure();
+    render();
+    recenter();
+    requestAnimationFrame(tick);
+
+    addEventListener('resize', () => { measure(); render(); recenter(); }, { passive: true });
+
+    // drag to orbit — suspend page scroll while dragging on touch
+    stage.addEventListener('pointerdown', (e: PointerEvent) => { down = true; lx = e.clientX; ly = e.clientY; stage.setPointerCapture(e.pointerId); });
+    stage.addEventListener('pointermove', (e: PointerEvent) => { if (!down) return; ry += (e.clientX - lx) * 0.4; rx += (e.clientY - ly) * 0.4; lx = e.clientX; ly = e.clientY; render(); });
+    const up = () => { down = false; };
+    stage.addEventListener('pointerup', up); stage.addEventListener('pointercancel', up);
+    stage.addEventListener('touchmove', (e: TouchEvent) => { if (down) e.preventDefault(); }, { passive: false });
+
+    drill.addEventListener('input', () => { p = +drill.value / 100; render(); });
+    orbitBtn.addEventListener('click', () => { auto = !auto; orbitBtn.textContent = (auto ? '⏸' : '▶') + ' Orbit'; orbitBtn.setAttribute('aria-pressed', String(auto)); });
+    resetBtn.addEventListener('click', () => { p = 0; drill.value = '0'; rx = -3; ry = 20; auto = true; orbitBtn.textContent = '⏸ Orbit'; orbitBtn.setAttribute('aria-pressed', 'true'); render(); });
+  }
+  initConceptGraph();
+  document.addEventListener('astro:page-load', initConceptGraph);
+</script>
