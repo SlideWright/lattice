@@ -67,9 +67,10 @@ function isStepLive(step) {
  * @param {string} [opts.buttonTitle='Take a guided tour of this page']
  * @param {boolean}[opts.autoStart=true]  Auto-run once on a first visit.
  * @param {number} [opts.autoStartDelay=550]  ms to let controllers mount first.
- * @param {string|Element|null} [opts.mountTarget='.topbar-actions']  Where to
- *        place the replay "?" button. Pass `null` for a tour the caller drives
- *        itself (e.g. an overlay that owns its own trigger) — no button is mounted.
+ * @param {string|Element|null} [opts.mountTarget='.sh-actions']  Where to
+ *        place the replay "?" button (the shared <SiteHeader> action cluster).
+ *        Pass `null` for a tour the caller drives itself (e.g. an overlay that
+ *        owns its own trigger) — no button is mounted.
  * @returns {{ start: () => void, seen: () => boolean, markSeen: () => void }}
  */
 export function initGuidedTour(opts) {
@@ -81,7 +82,7 @@ export function initGuidedTour(opts) {
 		buttonTitle = 'Take a guided tour of this page',
 		autoStart = true,
 		autoStartDelay = 550,
-		mountTarget = '.topbar-actions',
+		mountTarget = '.sh-actions',
 	} = opts || {};
 
 	const noop = { start() {}, seen: () => true, markSeen() {} };

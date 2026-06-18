@@ -15,7 +15,7 @@
 //   current     string|null  — active component name (null on the index)
 import '../styles/landing.css';
 import '../styles/components.css';
-import TopBar from '../components/TopBar.astro';
+import SiteHeader from '../components/site/SiteHeader.astro';
 import ComponentNav from '../components/ComponentNav.astro';
 import ResourceHints from '../components/site/ResourceHints.astro';
 import EngineWarm from '../components/site/EngineWarm.astro';
@@ -53,7 +53,7 @@ const url = (p) => joinBase(base, p);
 		</script>
 	</head>
 	<body class="cbody">
-		<TopBar palettes={palettes} current="components" wide={true} />
+		<SiteHeader palettes={palettes} wide={true} />
 
 		<div class="csub">
 			<button class="cnav-toggle" id="cnav-toggle" type="button" aria-controls="cnav-aside" aria-expanded="false">
@@ -72,21 +72,12 @@ const url = (p) => joinBase(base, p);
 			</main>
 		</div>
 
-		<!-- Nav wiring. The palette + light/dark controls are the shared
-		     <PaletteControls> island (in TopBar), which owns the data-palette/
-		     data-mode writes + localStorage + bfcache pageshow re-sync via
-		     site-chrome.ts; the Specimen's own observer re-renders the preview
-		     when those attributes change. This block keeps only the nav toggles. -->
+		<!-- Nav wiring. The site nav + palette/light-dark controls + mobile menu
+		     all live in the shared <SiteHeader> island now. This block keeps only
+		     the component-reference left-nav drawer (the .csub "Components"
+		     toggle), which is specific to this layout. -->
 		<script is:inline>
 			(function () {
-				var navToggle = document.getElementById('nav-toggle');
-				var topbar = document.querySelector('.topbar');
-				if (navToggle && topbar) {
-					navToggle.addEventListener('click', function () {
-						var open = topbar.classList.toggle('nav-open');
-						navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-					});
-				}
 				// Mobile left-nav drawer.
 				var cnavToggle = document.getElementById('cnav-toggle');
 				var scrim = document.getElementById('cnav-scrim');

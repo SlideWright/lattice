@@ -1,0 +1,268 @@
+---
+// THE one site header — the single source of truth for the top bar on every
+// surface. Both the standalone routes (landing, playground, drawing board,
+// workbench, features, comparison, the component reference) and the Starlight
+// docs zone render this exact component, so the chrome can no longer drift
+// (it used to be copy-pasted into 8 places across two class systems).
+//
+// Shape:  [brand] [Docs · Components · Features · Comparison · Tools ▾]
+//                            …flex spacer…
+//         [Search ⌘K] [theme select] [light/dark] [GitHub] [☰ on mobile]
+//
+// The inline content links + the Tools disclosure are static HTML (SSR, no-JS,
+// crawlable). Everything interactive — the ⌘K command palette, the theme
+// controls, the mobile menu — is the single <NavActions> island. The Tools
+// disclosure is a native <details> (no island) with a tiny shared script to
+// close it on outside-click / Escape.
+//
+// Props:
+//   palettes    string[]  — selectable palette names (titleCased for display)
+//   wide        boolean   — full-bleed inner (apps/reference) vs centred (landing)
+//   standalone  boolean   — render the sticky <header> wrapper (standalone routes);
+//                           false inside Starlight, whose .header already wraps us
+//   mobileMenu  boolean   — render our hamburger+Sheet (standalone). False in the
+//                           docs zone, where Starlight owns the mobile menu (it
+//                           also carries the page TOC).
+import NavActions from './NavActions.tsx';
+import { joinBase } from '../../lib/base-url.mjs';
+import { contentNav, toolsNav, primaryNav, GITHUB_URL, isCurrent, toolsActive } from '../../lib/nav.mjs';
+
+const { palettes = [], wide = false, standalone = true, mobileMenu = true } = Astro.props;
+
+const base = import.meta.env.BASE_URL;
+const url = (p) => joinBase(base, p);
+const here = Astro.url.pathname;
+
+const annotate = (items) => items.map((l) => ({ ...l, current: isCurrent(l, here) }));
+const content = annotate(contentNav(url));
+const tools = annotate(toolsNav(url));
+const links = annotate(primaryNav(url)); // flat, for the command palette + sheet
+const toolsOn = toolsActive(here, url);
+const pagefindUrl = url('pagefind/pagefind.js');
+const homeHref = url('');
+
+const Wrapper = standalone ? 'header' : 'div';
+---
+
+<Wrapper class:list={['site-header', { 'is-standalone': standalone }]}>
+	<div class:list={['site-header-inner', { wide }]}>
+		<a class="sh-brand" href={homeHref} aria-label="Lattice — home">
+			<img class="sh-brand-logo" src={url('lattice-mark-min.svg')} alt="" width="30" height="30" />
+			<span class="sh-brand-mark">Lattice</span>
+		</a>
+
+		<nav class="sh-nav" aria-label="Primary">
+			{content.map((l) => (
+				<a class="sh-link" href={l.href} aria-current={l.current ? 'page' : undefined}>{l.label}</a>
+			))}
+			<details class="sh-tools">
+				<summary class="sh-link sh-tools-summary" data-active={toolsOn ? '' : undefined} aria-current={toolsOn ? 'true' : undefined}>
+					Tools
+					<svg class="sh-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+						<path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+					</svg>
+				</summary>
+				<div class="sh-tools-menu" role="menu">
+					{tools.map((l) => (
+						<a class="sh-tools-item" href={l.href} role="menuitem" aria-current={l.current ? 'page' : undefined}>
+							<span class="sh-tools-item-label">{l.label}</span>
+							{l.desc && <span class="sh-tools-item-desc">{l.desc}</span>}
+						</a>
+					))}
+				</div>
+			</details>
+		</nav>
+
+		<div class="sh-spacer"></div>
+
+		<div class="sh-actions lx-ui">
+			<NavActions
+				client:idle
+				palettes={palettes}
+				links={links}
+				content={content}
+				tools={tools}
+				githubUrl={GITHUB_URL}
+				pagefindUrl={pagefindUrl}
+				homeHref={homeHref}
+				mobileMenu={mobileMenu}
+			/>
+		</div>
+	</div>
+</Wrapper>
+
+<script>
+	// Close the Tools disclosure on outside-click / Escape (native <details>
+	// doesn't). One listener for every <details.sh-tools> on the page; runs once
+	// per page because Astro hoists + dedupes this module script.
+	const closeTools = (except?: EventTarget | null) => {
+		for (const d of document.querySelectorAll<HTMLDetailsElement>('details.sh-tools[open]')) {
+			if (except && d.contains(except as Node)) continue;
+			d.open = false;
+		}
+	};
+	document.addEventListener('click', (e) => closeTools(e.target));
+	document.addEventListener('keydown', (e) => {
+		if (e.key === 'Escape') closeTools();
+	});
+</script>
+
+<style>
+	/* The component owns its styles, so Astro bundles them into BOTH worlds —
+	   the standalone routes (which import landing.css) and the Starlight docs
+	   zone (customCss: lattice.css). All colour goes through palette tokens. */
+	.site-header.is-standalone {
+		position: sticky;
+		top: 0;
+		z-index: 50;
+		background: color-mix(in srgb, var(--bg) 86%, transparent);
+		backdrop-filter: saturate(180%) blur(12px);
+		border-bottom: 1px solid var(--border);
+	}
+	.site-header-inner {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		height: 3.75rem;
+		width: 100%;
+		max-width: var(--maxw, 1180px);
+		margin: 0 auto;
+		padding: 0 24px;
+	}
+	.site-header-inner.wide {
+		max-width: none;
+	}
+
+	.sh-brand {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.55rem;
+		flex: 0 0 auto;
+		text-decoration: none;
+	}
+	.sh-brand-logo {
+		display: block;
+		height: 30px;
+		width: auto;
+	}
+	.sh-brand-mark {
+		font-family: var(--font-display, 'Playfair Display', Georgia, serif);
+		font-weight: 700;
+		font-size: 1.375rem;
+		line-height: 1;
+		letter-spacing: -0.01em;
+		color: var(--text-heading);
+	}
+
+	.sh-nav {
+		display: none;
+		align-items: center;
+		gap: 0.35rem;
+		margin-left: 1.25rem;
+	}
+	/* The inline nav + the full action cluster (search pill, theme select,
+	 * GitHub) appear together at lg; below that the bar is compact (search +
+	 * light/dark + menu) and the Sheet / ⌘K palette carry everything. One
+	 * breakpoint keeps the bar from overflowing in the tablet band. */
+	@media (min-width: 64rem) {
+		.sh-nav {
+			display: flex;
+		}
+	}
+
+	.sh-link {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.25rem;
+		padding: 0.4rem 0.6rem;
+		border-radius: var(--radius-sm, 8px);
+		font-size: 0.875rem;
+		font-weight: 500;
+		line-height: 1;
+		color: var(--text-body);
+		text-decoration: none;
+		white-space: nowrap;
+		cursor: pointer;
+		transition: color 0.12s ease, background-color 0.12s ease;
+	}
+	.sh-link:hover {
+		color: var(--accent);
+		background: color-mix(in srgb, var(--accent) 8%, transparent);
+	}
+	.sh-link[aria-current='page'],
+	.sh-tools-summary[data-active] {
+		color: var(--accent);
+		font-weight: 600;
+	}
+
+	/* Tools disclosure */
+	.sh-tools {
+		position: relative;
+	}
+	.sh-tools-summary {
+		list-style: none;
+	}
+	.sh-tools-summary::-webkit-details-marker {
+		display: none;
+	}
+	.sh-chevron {
+		transition: transform 0.15s ease;
+	}
+	.sh-tools[open] .sh-chevron {
+		transform: rotate(180deg);
+	}
+	.sh-tools-menu {
+		position: absolute;
+		top: calc(100% + 0.4rem);
+		left: 0;
+		min-width: 15rem;
+		display: flex;
+		flex-direction: column;
+		gap: 0.125rem;
+		padding: 0.4rem;
+		border: 1px solid var(--border);
+		border-radius: var(--radius-md, 14px);
+		background: var(--bg);
+		box-shadow: var(--shadow-lg, 0 24px 60px rgba(10, 22, 40, 0.14));
+		z-index: 60;
+	}
+	.sh-tools-item {
+		display: flex;
+		flex-direction: column;
+		gap: 0.1rem;
+		padding: 0.5rem 0.6rem;
+		border-radius: var(--radius-sm, 8px);
+		text-decoration: none;
+		color: var(--text-body);
+	}
+	.sh-tools-item:hover {
+		background: color-mix(in srgb, var(--accent) 10%, transparent);
+	}
+	.sh-tools-item[aria-current='page'] .sh-tools-item-label {
+		color: var(--accent);
+	}
+	.sh-tools-item-label {
+		font-size: 0.9rem;
+		font-weight: 600;
+		color: var(--text-heading);
+	}
+	.sh-tools-item-desc {
+		font-size: 0.78rem;
+		color: var(--text-muted);
+	}
+
+	.sh-spacer {
+		flex: 1 1 auto;
+	}
+	.sh-actions {
+		display: flex;
+		align-items: center;
+		flex: 0 0 auto;
+	}
+
+	@media print {
+		.site-header {
+			display: none;
+		}
+	}
+</style>

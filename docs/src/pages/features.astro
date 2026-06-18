@@ -12,17 +12,14 @@
 // palettes (+ 4 colour-blind-safe),
 // 29 treatments (18 tint + 11 mark), 12-token type scale, 25 Mermaid types.
 import '../styles/landing.css';
-import PaletteControls from '../components/site/PaletteControls.tsx';
+import SiteHeader from '../components/site/SiteHeader.astro';
 import PerfOverlay from '../components/site/PerfOverlay.astro';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { joinBase } from '../lib/base-url.mjs';
-import { primaryNav, GITHUB_URL, isCurrent } from '../lib/nav.mjs';
 
 const base = import.meta.env.BASE_URL;
 const url = (p) => joinBase(base, p);
-const navLinks = primaryNav(url);
-const here = Astro.url.pathname;
 
 const docsRoot = process.cwd();
 const tokensCss = readFileSync(join(docsRoot, 'src/styles/lattice-tokens.generated.css'), 'utf8');
@@ -164,26 +161,7 @@ const CATALOG = [
 		</style>
 	</head>
 	<body>
-		<header class="topbar">
-			<div class="wrap topbar-inner">
-				<a class="brand" href={url('')}>
-					<img class="brand-logo" src={url('lattice-mark-min.svg')} alt="" width="30" height="30" />
-					<span class="brand-mark">Lattice</span>
-				</a>
-				<nav class="topnav" id="topnav">
-					{navLinks.map((l) => (
-						<a class="navlink" href={l.href} aria-current={isCurrent(l, here) ? 'page' : undefined}>{l.label}</a>
-					))}
-					<a class="navlink" href={GITHUB_URL}>GitHub</a>
-				</nav>
-				<div class="topbar-actions">
-					<div class="controls lx-ui">
-						<PaletteControls client:idle palettes={palettes} />
-					</div>
-					<button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-controls="topnav" aria-expanded="false"></button>
-				</div>
-			</div>
-		</header>
+		<SiteHeader palettes={palettes} />
 
 		<main>
 			<!-- Hero — kept short on purpose; this page is a reference, not a pitch. -->
@@ -291,18 +269,6 @@ const CATALOG = [
 			</div>
 		</footer>
 
-		<script is:inline>
-			(function () {
-				var navToggle = document.getElementById('nav-toggle');
-				var topbar = document.querySelector('.topbar');
-				if (navToggle && topbar) {
-					navToggle.addEventListener('click', function () {
-						var open = topbar.classList.toggle('nav-open');
-						navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-					});
-				}
-			})();
-		</script>
 		{/* Live Core-Web-Vitals overlay, gated behind ?perf. */}
 		<PerfOverlay />
 	</body>

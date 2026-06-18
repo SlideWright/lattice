@@ -17,11 +17,10 @@ import { join } from 'node:path';
 import '../styles/landing.css';
 import '../styles/workbench.css';
 import '../styles/deck-config.css';
-import PaletteControls from '../components/site/PaletteControls.tsx';
+import SiteHeader from '../components/site/SiteHeader.astro';
 import ResourceHints from '../components/site/ResourceHints.astro';
 import WorkbenchApp from '../components/workbench/WorkbenchApp.tsx';
 import { joinBase } from '../lib/base-url.mjs';
-import { primaryNav, GITHUB_URL, isCurrent } from '../lib/nav.mjs';
 import { isPreviewDeploy } from '../lib/deploy-env.mjs';
 import { assetBase } from '../playground/asset-version.mjs';
 
@@ -61,9 +60,6 @@ const wbData = {
 // the theme you're crafting.
 const tokensCss = readFileSync(join(process.cwd(), 'src/styles/lattice-tokens.generated.css'), 'utf8');
 const palettes = [...new Set([...tokensCss.matchAll(/data-palette="([^"]+)"/g)].map((m) => m[1]))];
-
-const links = primaryNav(url); // shared primary nav — src/lib/nav.mjs
-const here = Astro.url.pathname;
 ---
 
 <!doctype html>
@@ -89,26 +85,7 @@ const here = Astro.url.pathname;
 		</script>
 	</head>
 	<body class="wb-page">
-		<header class="topbar">
-			<div class="wrap topbar-inner" style="max-width:none">
-				<a class="brand" href={url('')}>
-					<img class="brand-logo" src={url('lattice-mark-min.svg')} alt="" width="30" height="30" />
-					<span class="brand-mark">Lattice</span>
-				</a>
-				<nav class="topnav" id="topnav">
-					{links.map((l) => (
-						<a class="navlink" href={l.href} aria-current={isCurrent(l, here) ? 'page' : undefined}>{l.label}</a>
-					))}
-					<a class="navlink" href={GITHUB_URL}>GitHub</a>
-				</nav>
-				<div class="topbar-actions">
-					<div class="lx-ui" style="display:inline-flex">
-						<PaletteControls client:idle palettes={palettes} />
-					</div>
-					<button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-controls="topnav" aria-expanded="false"></button>
-				</div>
-			</div>
-		</header>
+		<SiteHeader palettes={palettes} wide={true} />
 
 		<!-- The Workbench surface: one React + shadcn island owning the faculty
 		     Tabs, the chrome controls, the theme-CSS Collapsible, the faculty
@@ -120,24 +97,6 @@ const here = Astro.url.pathname;
 		     DEMAND by load-engine.ts (WorkbenchApp triggers it on idle, after the
 		     chrome paints), not eagerly here — so the faculty Tabs + controls paint
 		     without the ~554KB-gz bundle blocking. The studios poll for the global. -->
-
-		<!-- Topbar chrome: mobile nav. The palette + light/dark controls are the
-		     shared <PaletteControls> island (the same theme dropdown as every other
-		     surface — it restyles the page chrome; the Theme Studio specimen still
-		     previews the theme being crafted), owning the data-palette/data-mode
-		     writes + localStorage + bfcache pageshow re-sync via site-chrome.ts. -->
-		<script is:inline>
-			(function () {
-				var navToggle = document.getElementById('nav-toggle');
-				var topbar = document.querySelector('.topbar');
-				if (navToggle && topbar) {
-					navToggle.addEventListener('click', function () {
-						var open = topbar.classList.toggle('nav-open');
-						navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-					});
-				}
-			})();
-		</script>
 
 		<!-- Guided tour: first-visit walkthrough + replay button (driver.js). It
 		     targets the live DOM by selector, so it runs after the island hydrates

@@ -25,7 +25,9 @@ body.db-page {
 	color: var(--text-body);
 	font-family: var(--font-body);
 }
-body.db-page .topbar {
+/* Pin the shared header so the fixed-height (overflow:hidden) db column can't
+ * compress it; .db-workspace below takes the remaining space. */
+body.db-page > .site-header {
 	flex: 0 0 auto;
 }
 
