@@ -34,7 +34,7 @@ import { onToursEnabledChange, toursEnabled } from './tour-prefs.js';
 const SEEN_PREFIX = 'lattice-demo-seen-';
 const READ_DWELL = 2600; // ms a narration beat stays before auto-advancing
 const POST_ACTION_DWELL = 1000; // ms to let an action's result land before moving on
-const STEP_TIMEOUT = 14000; // safety net: never strand on a step whose perform stalls
+const STEP_TIMEOUT = 20000; // safety net: never strand on a step whose perform stalls (fits the ~10s typing beat)
 
 function prefersReducedMotion() {
 	try {

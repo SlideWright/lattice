@@ -495,6 +495,7 @@ const dbData = JSON.stringify({
 				replaceLines: (a, b, t) => ed.replaceLines(a, b, t),
 				getSelection: () => ed.getSelection(),
 				replaceSelection: (t) => ed.replaceSelection(t),
+					insertAtCursor: (t) => ed.insertAtCursor(t),
 				onChange: (fn) => { notify = fn; },
 				onCursor: (fn) => { cursorFns.push(fn); },
 				setAutocomplete: (on) => ed.setAutocomplete(on),

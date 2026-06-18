@@ -484,10 +484,21 @@ export function createEditor({ parent, doc = '', onChange, onCursor, autoHeight 
 			return { text: view.state.sliceDoc(s.from, s.to), from: s.from, to: s.to, empty: s.empty };
 		},
 		// Replace the current selection (one undoable transaction → re-render +
-		// re-lint). Used by refine actions to apply a model rewrite.
+		// re-lint). Used by refine actions to apply a model rewrite. NOTE: this
+		// SELECTS the inserted text (so the user sees what changed) — for sequential
+		// typing where the caret must advance, use `insertAtCursor` instead.
 		replaceSelection: (text) => {
 			const s = view.state.selection.main;
 			view.dispatch({ changes: { from: s.from, to: s.to, insert: text }, selection: { anchor: s.from, head: s.from + text.length } });
+			view.focus();
+		},
+		// Insert `text` at the caret and leave a COLLAPSED cursor after it — i.e. a
+		// real keystroke. `state.replaceSelection` builds the transaction (replaces
+		// any selection, advances the caret), so calling it per character types the
+		// text in with the cursor marching, instead of re-selecting each insert
+		// (which `replaceSelection` does). Used by the auto-demo's live typing.
+		insertAtCursor: (text) => {
+			view.dispatch(view.state.replaceSelection(text));
 			view.focus();
 		},
 		// Replace an inclusive 1-based line range with `text`, as one undoable

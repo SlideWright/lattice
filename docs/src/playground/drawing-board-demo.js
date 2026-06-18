@@ -34,10 +34,16 @@ function sendEscape() {
 // Each drives a real control through its window bus and calls `next()` when the
 // action is done. Returns a cleanup fn so a mid-action close cancels its timers.
 
-// Type a slide into the editor. We drive `__dbEditor.setValue` with a growing
-// slice for a live typing effect (each write re-renders the preview); reduced
-// motion writes it in one shot. We must NOT touch `__dbEditor.onChange` — that's
-// a single-subscriber slot owned by the render controller.
+// Type a slide into the editor — for real, one keystroke at a time. We insert
+// each character at the caret via `__dbEditor.replaceSelection`, which advances
+// the cursor exactly as a keypress would, so the caret marches across and down
+// the document while you watch (NOT a whole-doc `setValue` rewrite, which just
+// flashes the finished text in). The cadence is human: a short randomized beat
+// per key, a longer pause at line breaks and sentence ends — and because the
+// live preview is 220ms-debounced, those pauses let it redraw, so the slide
+// builds up line by line beside the typing. Reduced motion writes it in one shot.
+// We must NOT touch `__dbEditor.onChange` — that's a single-subscriber slot owned
+// by the render controller; `replaceSelection` already fires it per keystroke.
 function performType({ next, reduced }) {
 	const ed = window.__dbEditor;
 	if (!ed || typeof ed.setValue !== 'function') {
@@ -45,21 +51,35 @@ function performType({ next, reduced }) {
 		return null;
 	}
 	ed.focus?.();
-	if (reduced) {
+	// Type into a clean buffer: clear the borrowed deck, park the caret at the top.
+	ed.setValue('');
+	ed.goToLine?.(1);
+	if (reduced || typeof ed.insertAtCursor !== 'function') {
 		ed.setValue(DEMO_SLIDE);
 		next();
 		return null;
 	}
 	let i = 0;
-	const id = window.setInterval(() => {
-		i = Math.min(DEMO_SLIDE.length, i + 3);
-		ed.setValue(DEMO_SLIDE.slice(0, i));
+	let timer = null;
+	const typeNext = () => {
 		if (i >= DEMO_SLIDE.length) {
-			window.clearInterval(id);
 			next();
+			return;
 		}
-	}, 42);
-	return () => window.clearInterval(id);
+		const ch = DEMO_SLIDE[i++];
+		ed.insertAtCursor(ch); // insert at caret, advance the cursor — a real keystroke
+		// Pace it like a person: ~26ms/char with jitter, a beat at sentence ends, and
+		// a longer breath at line breaks (which also lets the preview catch up).
+		let delay = 24 + Math.random() * 26;
+		if (ch === '\n') delay = 230;
+		else if (ch === '.' || ch === ',') delay = 150;
+		timer = window.setTimeout(typeNext, delay);
+	};
+	// A short lead-in so the spotlight + caption settle before the first keystroke.
+	timer = window.setTimeout(typeNext, 420);
+	return () => {
+		if (timer) window.clearTimeout(timer);
+	};
 }
 
 // Switch the deck palette. Open the real theme menu (a visible button click),

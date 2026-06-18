@@ -90,10 +90,21 @@ a separate `tourAutoStartAllowed()` keeps the auto-start production-only.
 
 2. **Drive through the existing window buses** — clean semantic control, not DOM
    scraping:
-   - **Type:** drive `__dbEditor.setValue` with a growing slice for a live typing
-     effect (each write re-renders the preview); reduced motion writes it in one
-     shot. We must NOT touch `__dbEditor.onChange` — a single-subscriber slot owned
-     by the render controller.
+   - **Type:** insert the slide ONE CHARACTER at a time at the caret via a new
+     `__dbEditor.insertAtCursor(ch)`, so the cursor marches and the text appears
+     keystroke by keystroke — at a human cadence (a randomized ~24–50ms per key, a
+     longer breath at line breaks, which also lets the 220ms-debounced preview
+     redraw, so the slide builds up line by line). Reduced motion writes it in one
+     shot. **Gotcha (why the first cut looked "magic"):** the original drove
+     `setValue` with a growing slice, which rewrites the whole document each tick —
+     no caret, repaints coalesce, so it just flashed the finished text in. The
+     obvious fix, the existing `replaceSelection`, was wrong too: it *selects* the
+     inserted text (built for refine's "show what changed"), so each keystroke's
+     selection covered the previous char and **overwrote** it — the buffer froze at
+     one character. `insertAtCursor` uses CodeMirror's `state.replaceSelection`,
+     which leaves a COLLAPSED caret after the insert — a real keystroke. We must
+     NOT touch `__dbEditor.onChange` — a single-subscriber slot owned by the render
+     controller (`insertAtCursor` already fires it per keystroke).
    - **Restyle:** click the real theme trigger (a visible button press), then apply
      a different palette via `__dbChrome.applyTheme(name)` (data-driven: the first
      palette that isn't the current), then Escape to dismiss.
