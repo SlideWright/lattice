@@ -35,7 +35,7 @@
       "human": "Layout",
       "question": "how is it composed?",
       "owner": "layout designers",
-      "definition": "The spatial composition that holds the answer. The one axis whose answer is itself a recursive structure, so the only one that decomposes into structural nouns.",
+      "definition": "The spatial composition that holds the answer. The one axis whose answer is itself a composed structure, so the only one that decomposes into structural nouns.",
       "source": {
         "catalog": "components",
         "vocab": "FORMS"
@@ -162,12 +162,6 @@
       "from": "cell",
       "to": "tile",
       "relation": "holds"
-    },
-    {
-      "from": "cell",
-      "to": "frame",
-      "relation": "holds",
-      "note": "recursion — a Cell can hold another Frame"
     },
     {
       "from": "tile",

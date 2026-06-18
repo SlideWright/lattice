@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://lattice.slidewright.dev/forms/cell.schema.json",
   "title": "Lattice Form Cell",
-  "description": "A typed slot — an empty, sized, positioned box — produced by a Frame and occupied by a Tile or a nested Frame. The connective tissue of the Form composition model (design/forms.md §3, §5, §6). Cells are RESOLUTION-BLIND: geometry references CSS token names (e.g. --masthead-h, --frame-x) defined in lib/base, never px literals. See design/forms.md §6.",
+  "description": "A typed slot — an empty, sized, positioned box — produced by a Frame and occupied by a Tile. The connective tissue of the Form composition model (design/forms.md §3, §5, §6). Cells are RESOLUTION-BLIND: geometry references CSS token names (e.g. --masthead-h, --frame-x) defined in lib/base, never px literals. See design/forms.md §6.",
   "type": "object",
   "required": ["id", "region", "z", "accepts", "capacity", "fill"],
   "additionalProperties": false,
@@ -39,7 +39,7 @@
       "type": "array",
       "minItems": 1,
       "items": { "enum": ["surface", "chrome", "content", "review", "frame"] },
-      "description": "Tile/Frame kinds that may dock in this Cell (the containment contract, design/forms.md §7). A Cell accepts by KIND, never by name (Open/Closed). 'frame' admits a nested Frame (the recursion)."
+      "description": "Tile kinds that may dock in this Cell (the containment contract, design/forms.md §7). A Cell accepts by KIND, never by name (Open/Closed). NOTE: 'frame' is NOT general recursion — it marks a chrome band whose interior is a FIXED sub-layout of cells (masthead→lede/bay, footer→zones); content cells never hold nested Frames. Recursive frames-in-cells were considered and rejected — see engineering/decisions/2026-06-18-frame-recursion-cells.md."
     },
     "capacity": {
       "enum": ["one", "stack"],

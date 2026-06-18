@@ -19,7 +19,7 @@ const { fig = 'lattice' } = Astro.props;
   <div
     class="cl"
     role="img"
-    aria-label="The Lattice concept model on two levels. Top: four orthogonal axes — Function (Purpose, what's the point?), Form (Layout, how is it composed?), Substance (Content, what fills it?), Finish (Style, what should it feel like?). Form is the structural axis: it decomposes into a Frame that produces Cells, and each Cell holds a Tile or another Frame (recursion). Bottom: the Component is the join — it is-a Function, selects a Frame, binds Substance into the Cells, and receives Finish."
+    aria-label="The Lattice concept model on two levels. Top: four orthogonal axes — Function (Purpose, what's the point?), Form (Layout, how is it composed?), Substance (Content, what fills it?), Finish (Style, what should it feel like?). Form is the structural axis: it decomposes into a Frame that produces Cells, and each Cell holds a Tile. Bottom: the Component is the join — it is-a Function, selects a Frame, binds Substance into the Cells, and receives Finish."
   >
     <div class="tier">
       <span class="tier-lbl">The four axes <small>orthogonal — swap one, the others hold</small></span>
@@ -43,7 +43,7 @@ const { fig = 'lattice' } = Astro.props;
         <span class="op" aria-hidden="true">holds</span>
         <div class="node n-tile"><b>Tile</b><small>a filler — leaf content</small></div>
       </div>
-      <p class="recur"><span aria-hidden="true">↺</span> a Cell can hold a Tile <b>or another Frame</b> — that recursion is the whole system</p>
+      <p class="recur"><span aria-hidden="true">▸</span> a Frame carves the slide into Cells, and each Cell <b>holds a Tile</b> — that containment seam is the whole system</p>
     </div>
 
     <div class="tier">

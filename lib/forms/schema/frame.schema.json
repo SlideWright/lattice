@@ -18,8 +18,8 @@
       "description": "The Form value this Frame realizes (one of the twelve Frame types, design/design-system.md §4 / design/forms.md §8)."
     },
     "kind": {
-      "enum": ["root", "framed", "sovereign"],
-      "description": "root carves the slide; framed docks in the main Cell keeping the chrome Frame; sovereign claims the whole canvas and suppresses chrome Cells (design/forms.md §5)."
+      "enum": ["root", "sovereign"],
+      "description": "root carves the slide keeping the chrome; sovereign claims the whole canvas and suppresses chrome Cells (design/forms.md §5). (A 'framed' kind — a Frame nested inside a content Cell — was considered and rejected: engineering/decisions/2026-06-18-frame-recursion-cells.md.)"
     },
     "exemptFromChrome": {
       "type": "boolean",

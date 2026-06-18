@@ -69,7 +69,13 @@ lifecycle; reproduced by the committed gallery.)
 
 ## 3. The architecture — model → code
 
-> **A Frame divides a box into Cells; each Cell holds a Tile — or a Frame.**
+> **A Frame divides a box into Cells; each Cell holds a Tile.**
+
+> **Update (2026-06-18):** the "— or a Frame" recursive branch this ADR originally
+> carried was **considered and rejected** — content cells hold Tiles, never nested
+> Frames. The only sub-Frame that survives is the *fixed* chrome-band split below
+> (masthead→lede/bay, footer→zones), which is a fixed layout, not recursion. See
+> `engineering/decisions/2026-06-18-frame-recursion-cells.md`.
 
 Mapped onto the existing three-band structure (the root chrome Frame):
 

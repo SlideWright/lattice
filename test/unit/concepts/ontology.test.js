@@ -10,7 +10,7 @@
  *   (c) the NODE drift gate — validateAgainstCatalogs — fires when a node's
  *       `source` points at a vocabulary the live catalogs don't ship;
  *   (d) the EDGE-reality gate — validateEdgesAgainstEngine — fires when the live
- *       catalogs stop honoring a structural relationship (e.g. the recursion);
+ *       catalogs stop honoring a structural relationship (e.g. frame→cell produces);
  *   (e) counts are derived from the live catalogs (not stored in the ontology);
  *   (f) dist/docs/concepts.json is fresh (regenerating produces no diff) —
  *       mirrors the forms.json / components.json freshness gates.
@@ -41,8 +41,11 @@ test('the shipped ontology loads and is internally consistent', () => {
   for (const noun of ['frame', 'cell', 'tile']) {
     assert.ok(edges.some((e) => e.from === 'form' && e.to === noun && e.relation === 'resolves-into'));
   }
-  // The recursion edge (a Cell can hold a Frame) is what makes it a lattice.
-  assert.ok(edges.some((e) => e.from === 'cell' && e.to === 'frame' && e.relation === 'holds'));
+  // A Cell holds a Tile (the content Tile hosts the author's Component).
+  assert.ok(edges.some((e) => e.from === 'cell' && e.to === 'tile' && e.relation === 'holds'));
+  // Recursive frames-in-cells were rejected — the cell→frame "holds" edge must NOT
+  // exist (engineering/decisions/2026-06-18-frame-recursion-cells.md).
+  assert.ok(!edges.some((e) => e.from === 'cell' && e.to === 'frame' && e.relation === 'holds'));
   // counts are derived and positive for every node that claims a catalog.
   assert.ok(counts.function > 0 && counts.form > 0 && counts.frame > 0 && counts.component > 0);
 });
@@ -100,20 +103,20 @@ test('the drift gate fires when a node points at a vocabulary the catalogs do no
 });
 
 test('the edge-reality gate fires when the engine stops honoring a structural relationship', () => {
-  // A live catalog where NO cell accepts a frame → the recursion edge is broken.
+  // A live catalog where NO frame produces any cell → the frame→cell edge is broken.
   const brokenRaw = {
-    frames: [{ id: 'f', cells: ['c'] }],
+    frames: [{ id: 'f', cells: [] }],
     cells: [{ id: 'c', accepts: ['content'] }],
     tiles: [{ id: 't', fits: ['c'] }],
     components: [{ name: 'x', function: 'inventory', form: 'grid', substance: 'prose' }],
   };
   const errs = [];
   concepts.validateEdgesAgainstEngine(
-    { edges: [{ from: 'cell', to: 'frame', relation: 'holds' }] },
+    { edges: [{ from: 'frame', to: 'cell', relation: 'produces' }] },
     brokenRaw,
     errs,
   );
-  assert.ok(errs.some((e) => /cell→frame \(holds\) is not honored/.test(e)), 'recursion edge should be gated');
+  assert.ok(errs.some((e) => /frame→cell \(produces\) is not honored/.test(e)), 'produces edge should be gated');
 
   // A component missing its `form` field → the "selects a Frame" join edge breaks.
   const errs2 = [];
