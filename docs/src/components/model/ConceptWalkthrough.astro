@@ -1,48 +1,61 @@
 ---
 /**
  * The scroll-driven 3D "walkthrough" hero for /model/concepts/. Pure CSS 3D
- * (no WebGL, no dependency) — real DOM, so it is crisp, selectable, accessible,
- * and themed by the live palette tokens for free. As you scroll the hero, a flat
- * kpi slide pulls apart into its Frame · Cell · Tile composition across the five
- * z-planes (z0 canvas → z4 annotation), then re-composites — the depth that
- * `z-index` flattens away, made literal (design/forms.md: z "would become literal
- * depth in a spatial renderer").
+ * (no WebGL, no dependency) — real DOM, crisp, accessible, themed by the live
+ * palette tokens. Two acts share one sticky stage, driven by a single scroll
+ * progress:
  *
- * GPU acceleration is explicit: every animated node is promoted to its own
- * compositing layer (will-change: transform + translate3d/rotate3d), only
- * transforms animate, and scroll progress is written once per frame to a single
- * custom property (--p) that all transforms read via calc() — so the morph runs
- * on the compositor, off the main thread. Honours prefers-reduced-motion (static
- * exploded view, no scroll coupling). The static 2D ConceptLattice below remains
- * the no-JS / fallback reference.
+ *   Act 1 — the concept lattice as a 3D constellation; scrolling drills INTO the
+ *           Form node (the axes fall away, Frame · Cell · Tile fan into depth).
+ *   handoff — a crossfade: the drilled structural fan becomes the slide's
+ *           exploded z-planes (the layered-depth rhyme makes it continuous).
+ *   Act 2 — the slide recomposes from exploded → one clean slide (the depth
+ *           z-index flattens away, made literal — forms.md: z "would become
+ *           literal depth in a spatial renderer").
+ *
+ * Manual controls (Explode slider · Reset · drag-to-orbit) drive Act 2 directly.
+ * GPU: animated nodes are their own compositing layers (will-change +
+ * translate3d/rotate3d); only transforms/opacity animate; scroll progress is
+ * written once per rAF. prefers-reduced-motion → static slide, graph skipped.
+ * The 2D ConceptLattice below remains the no-JS fallback.
  */
 ---
 
-<section class="cw" aria-label="A flat slide exploding into its Frame, Cell, and Tile composition across five depth planes, then re-composing, driven by scroll." data-cw>
+<section class="cw" aria-label="The concept lattice as a 3D graph that, on scroll, drills into the Form node and becomes a slide exploding into its Frame, Cell, and Tile composition across five depth planes." data-cw>
   <div class="cw-sticky">
-    <div class="cw-scene">
-      <div class="cw-stack" data-stack>
-        <div class="cw-layer l0" style="--z:-2"><span class="cw-tag"><b>z0</b> canvas</span></div>
-        <div class="cw-layer l1" style="--z:-1"><span class="cw-tag"><b>z1</b> atmosphere</span><div class="cw-wm">✦</div></div>
-        <div class="cw-layer l2" style="--z:0"><span class="cw-tag"><b>z2</b> content → component</span>
-          <div class="cw-kpi">
-            <div class="cw-grid">
-              <div class="cw-hero"><b>$2.4B</b><small>revenue</small></div>
-              <div class="cw-sup"><b>42%</b><small>margin</small></div>
-              <div class="cw-sup"><b>$1.1B</b><small>cash</small></div>
+    <div class="cw-stage" data-stage>
+
+      <!-- Act 1: the concept-lattice constellation (nodes + edges built in JS) -->
+      <div class="cw-gscene" data-gscene>
+        <div class="cw-graph" data-graph></div>
+      </div>
+
+      <!-- Act 2: the slide -->
+      <div class="cw-scene" data-scene>
+        <div class="cw-stack" data-stack>
+          <div class="cw-layer l0" style="--z:-2"><span class="cw-tag"><b>z0</b> canvas</span></div>
+          <div class="cw-layer l1" style="--z:-1"><span class="cw-tag"><b>z1</b> atmosphere</span><div class="cw-wm">✦</div></div>
+          <div class="cw-layer l2" style="--z:0"><span class="cw-tag"><b>z2</b> content → component</span>
+            <div class="cw-kpi">
+              <div class="cw-grid">
+                <div class="cw-hero"><b>$2.4B</b><small>revenue</small></div>
+                <div class="cw-sup"><b>42%</b><small>margin</small></div>
+                <div class="cw-sup"><b>$1.1B</b><small>cash</small></div>
+              </div>
             </div>
           </div>
+          <div class="cw-layer l3" style="--z:1"><span class="cw-tag"><b>z3</b> chrome</span>
+            <div class="cw-mast"><span class="cw-k">Q3 RESULTS</span><span class="cw-t">Revenue ahead of plan</span></div>
+            <div class="cw-foot"><span>SlideWright</span><span>● ● ● ○ ○</span><span>04 / 12</span></div>
+          </div>
+          <div class="cw-layer l4" style="--z:2"><span class="cw-tag"><b>z4</b> annotation</span><div class="cw-annot"></div></div>
         </div>
-        <div class="cw-layer l3" style="--z:1"><span class="cw-tag"><b>z3</b> chrome</span>
-          <div class="cw-mast"><span class="cw-k">Q3 RESULTS</span><span class="cw-t">Revenue ahead of plan</span></div>
-          <div class="cw-foot"><span>SlideWright</span><span>● ● ● ○ ○</span><span>04 / 12</span></div>
-        </div>
-        <div class="cw-layer l4" style="--z:2"><span class="cw-tag"><b>z4</b> annotation</span><div class="cw-annot"></div></div>
       </div>
+
     </div>
     <div class="cw-controls">
-      <p class="cw-cap">
-        <span class="cw-cap-lead">Scroll</span> or drag the slider — one slide, pulled apart into <b>Frame · Cell · Tile</b> across five z-planes, then re-composed.
+      <p class="cw-cap" data-cap>
+        <span class="cw-cap-lead">Scroll</span> — the concept lattice drills into <b>Form</b>, which becomes the slide.
       </p>
       <div class="cw-bar">
         <label class="cw-ctl">
@@ -50,39 +63,53 @@
           <input type="range" min="0" max="100" value="0" step="1" data-slider aria-label="Explode the slide into its z-plane layers" />
         </label>
         <button type="button" class="cw-reset" data-reset>Reset</button>
-        <span class="cw-hint">drag the slide to orbit</span>
+        <span class="cw-hint">drag to orbit</span>
       </div>
     </div>
   </div>
 </section>
 
 <style>
-  /* Tall scroll track; the stage sticks while you scroll its height. */
-  .cw { position: relative; height: 240vh; margin: 0 0 1rem; }
+  .cw { position: relative; height: 340vh; margin: 0 0 1rem; }
   .cw-sticky { position: sticky; top: 0; height: 100vh; box-sizing: border-box;
     padding-top: clamp(20px, 7vh, 84px); padding-bottom: 24px;
     display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
-    /* generous gap so the exploded / orbited 3D model has clear room below it —
-       its layers spill past the scene box, and the controls must not crowd them. */
-    gap: clamp(16px, 3vh, 40px);
-    overflow: hidden;
+    gap: clamp(16px, 3vh, 40px); overflow: hidden;
     background: radial-gradient(120% 78% at 50% 32%, var(--bg-alt) 0%, transparent 68%); }
 
-  /* font-size tracks the slide width so all slide content scales in em, no media
-     queries; container for nothing else. */
-  /* The scene reserves room BELOW the 16:9 slide so the exploded / orbited model
-     (whose layers spill past the slide) has clear space to live and be grabbed,
-     without crowding the controls. The slide pins to the top; the reserve is the
-     bottom interaction zone. */
-  .cw-scene { perspective: 1400px; perspective-origin: 50% 38%; width: min(460px, 74vw);
+  /* Shared stage: both acts overlay here and crossfade. Reserves room below the
+     16:9 slide for the exploded model + graph spread. font-size tracks width so
+     all slide content scales in em. */
+  .cw-stage { position: relative; width: min(460px, 74vw);
     height: calc(min(460px, 74vw) * 0.5625 + clamp(90px, 16vh, 160px));
-    position: relative; flex: none; font-size: min(11px, 1.78vw);
-    /* touches on the model orbit it, they do not scroll the page (re-enabled the
-       moment the touch ends — a new touch elsewhere scrolls normally). */
-    touch-action: none; }
+    font-size: min(11px, 1.78vw); touch-action: none; }
 
-  /* The stack carries the scroll progress (--p, 0→1) and the derived orbit.
-     translate3d/rotate3d force a GPU compositing layer; will-change keeps it warm. */
+  .cw-gscene, .cw-scene { position: absolute; inset: 0; will-change: opacity; }
+  .cw-gscene { display: grid; place-items: center; perspective: 1600px; perspective-origin: 50% 44%; }
+  .cw-scene { perspective: 1400px; perspective-origin: 50% 38%; }
+
+  /* ---- Act 1: the graph constellation ---- */
+  .cw-graph { position: relative; width: 1px; height: 1px; transform-style: preserve-3d; will-change: transform; }
+  .cw-gnode { position: absolute; top: 0; left: 0; transform-style: preserve-3d; white-space: nowrap;
+    will-change: transform, opacity; display: flex; flex-direction: column; align-items: center; gap: 1px;
+    padding: 7px 12px; border-radius: 10px; background: var(--bg); border: 1.5px solid var(--border);
+    box-shadow: 0 14px 34px -20px color-mix(in srgb, var(--text-heading) 50%, transparent); }
+  .cw-gnode b { font: 700 13px/1.1 var(--sl-font-system, serif); color: var(--text-heading); }
+  .cw-gnode span { font: 600 8px/1 var(--sl-font-system-mono, monospace); color: var(--text-muted); text-transform: uppercase; letter-spacing: .07em; }
+  .cw-gnode.axis b { color: var(--text-body); }
+  .cw-gnode.form { border-color: var(--accent); border-width: 2.5px; background: var(--accent-soft);
+    box-shadow: 0 18px 40px -18px color-mix(in srgb, var(--accent) 55%, transparent); }
+  .cw-gnode.form b { color: var(--accent); }
+  .cw-gnode.join { background: var(--accent); border-color: var(--accent); }
+  .cw-gnode.join b { color: var(--on-accent); } .cw-gnode.join span { color: color-mix(in srgb, var(--on-accent) 75%, transparent); }
+  .cw-gnode.noun { border-style: dashed; }
+  .cw-gedge { position: absolute; top: 0; left: 0; height: 2px; transform-origin: 0 50%; border-radius: 2px;
+    will-change: transform, opacity;
+    background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 55%, transparent), color-mix(in srgb, var(--accent) 16%, transparent)); }
+  .cw-gedge.struct { background: linear-gradient(90deg, color-mix(in srgb, var(--text-muted) 60%, transparent), color-mix(in srgb, var(--text-muted) 14%, transparent)); }
+  .cw-gedge.ortho { height: 1px; background: repeating-linear-gradient(90deg, var(--text-muted) 0 5px, transparent 5px 11px); }
+
+  /* ---- Act 2: the slide (z-plane stack) ---- */
   .cw-stack { position: absolute; top: 0; left: 0; width: 100%; aspect-ratio: 16 / 9; transform-style: preserve-3d;
     --p: 0; --rx: -13deg; --ry: 20deg; --spread: 104px;
     transform: rotate3d(1,0,0, var(--rx)) rotate3d(0,1,0, var(--ry));
@@ -90,12 +117,9 @@
   .cw-stack:active { cursor: grabbing; }
   @media (max-width: 600px) { .cw-stack { --spread: 66px; } }
 
-  /* Each layer floats to its z-plane by --z, scaled by the explode progress (--p).
-     Only transform animates → composited, no layout/paint. */
   .cw-layer { position: absolute; inset: 0; transform-style: preserve-3d;
     backface-visibility: hidden; will-change: transform; border-radius: 12px;
     transform: translate3d(0, 0, calc(var(--z) * var(--p) * var(--spread))); }
-  /* z0 — the canvas: a real themed slide surface. */
   .l0 { background: var(--bg); border: 1px solid var(--border);
     box-shadow: 0 30px 70px -36px color-mix(in srgb, var(--text-heading) 40%, transparent); }
   .cw-tag { position: absolute; left: -1em; top: 0.9em; transform: translateX(-100%);
@@ -103,16 +127,11 @@
     font: 600 0.85em/1.35 var(--sl-font-system-mono, monospace); color: var(--text-muted); }
   .cw-tag b { display: block; color: var(--text-heading); font-size: 0.95em; }
 
-  /* z1 — atmosphere: a faint watermark, sits behind the content. */
   .cw-wm { position: absolute; inset: 0; display: grid; place-items: center;
-    color: color-mix(in srgb, var(--accent) 14%, transparent);
-    font: 800 10em/1 var(--sl-font-system, serif); }
+    color: color-mix(in srgb, var(--accent) 14%, transparent); font: 800 10em/1 var(--sl-font-system, serif); }
 
-  /* z2 — content: occupies only the STAGE region (below masthead, above footer),
-     so the composited (flat) slide reads as one clean slide, not overlapping layers. */
   .cw-kpi { position: absolute; top: 25%; bottom: 17%; left: 7%; right: 7%; }
-  .cw-grid { display: grid; grid-template-columns: 1.55fr 1fr; grid-template-rows: 1fr 1fr;
-    gap: 0.55em; width: 100%; height: 100%; }
+  .cw-grid { display: grid; grid-template-columns: 1.55fr 1fr; grid-template-rows: 1fr 1fr; gap: 0.55em; width: 100%; height: 100%; }
   .cw-hero { grid-row: 1 / 3; background: var(--accent-soft);
     border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
     border-radius: 0.7em; padding: 0.7em 0.9em; display: flex; flex-direction: column; justify-content: center; }
@@ -123,34 +142,27 @@
   .cw-kpi small { display: block; margin-top: 0.45em; font: 600 0.78em/1 var(--sl-font-system-mono, monospace);
     color: var(--text-muted); text-transform: uppercase; letter-spacing: .05em; }
 
-  /* z3 — chrome: masthead band at the top, footer row at the bottom. */
   .cw-mast { position: absolute; left: 7%; right: 7%; top: 7.5%; display: flex;
-    justify-content: space-between; align-items: baseline; padding-bottom: 0.5em;
-    border-bottom: 2px solid var(--accent); }
+    justify-content: space-between; align-items: baseline; padding-bottom: 0.5em; border-bottom: 2px solid var(--accent); }
   .cw-k { font: 700 0.82em/1 var(--sl-font-system-mono, monospace); color: var(--accent); text-transform: uppercase; letter-spacing: .12em; }
   .cw-t { font: 700 1.15em/1 var(--sl-font-system, serif); color: var(--text-heading); }
   .cw-foot { position: absolute; left: 7%; right: 7%; bottom: 6.5%; display: flex; justify-content: space-between;
     font: 600 0.78em/1 var(--sl-font-system-mono, monospace); color: var(--text-muted); }
-
-  /* z4 — annotation overlay. */
   .cw-annot { position: absolute; top: 7%; right: 7%; width: 1.1em; height: 1.1em; border-radius: 50%;
     background: var(--accent); box-shadow: 0 0 0 0.35em color-mix(in srgb, var(--accent) 22%, transparent); }
 
   .cw-controls { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 12px; }
-  .cw-cap { margin: 0; text-align: center; max-width: 52ch;
+  .cw-cap { margin: 0; text-align: center; max-width: 54ch; min-height: 2.6em;
     font: 400 14px/1.5 var(--sl-font-system, serif); color: var(--text-body); }
   .cw-cap-lead { font-weight: 700; color: var(--accent); letter-spacing: .04em; text-transform: uppercase; font-size: 12px; }
   .cw-cap b { color: var(--text-heading); }
-
   .cw-bar { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; justify-content: center;
-    background: color-mix(in srgb, var(--bg-alt) 88%, transparent);
-    border: 1px solid var(--border); border-radius: 999px; padding: 8px 14px; }
+    background: color-mix(in srgb, var(--bg-alt) 88%, transparent); border: 1px solid var(--border); border-radius: 999px; padding: 8px 14px; }
   .cw-ctl { display: flex; align-items: center; gap: 10px;
     font: 600 11px/1 var(--sl-font-system-mono, monospace); text-transform: uppercase; letter-spacing: .06em; color: var(--text-muted); }
   .cw-ctl input[type=range] { width: 200px; accent-color: var(--accent); cursor: pointer; }
   .cw-reset { font: 600 11px/1 var(--sl-font-system-mono, monospace); text-transform: uppercase; letter-spacing: .06em;
-    color: var(--on-accent); background: var(--accent); border: 0; border-radius: 999px;
-    padding: 7px 14px; cursor: pointer; }
+    color: var(--on-accent); background: var(--accent); border: 0; border-radius: 999px; padding: 7px 14px; cursor: pointer; }
   .cw-reset:hover { filter: brightness(1.08); }
   .cw-reset:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   .cw-hint { font: 600 10px/1 var(--sl-font-system-mono, monospace); color: var(--text-muted); opacity: .8; }
@@ -159,76 +171,143 @@
   @media (prefers-reduced-motion: reduce) {
     .cw { height: auto; }
     .cw-sticky { position: static; height: auto; padding: 2rem 0; }
+    .cw-gscene { display: none; }
     .cw-layer, .cw-stack { will-change: auto; }
   }
 </style>
 
 <script>
-  // Drive the explode (--p) and orbit (--rx/--ry) — all transform-only, written
-  // to custom props the CSS reads, so the morph stays on the compositor. Three
-  // inputs: scroll (default), the Explode slider (manual), drag-to-orbit; Reset
-  // returns to scroll + level orbit. prefers-reduced-motion → static + manual.
   function initWalkthrough() {
     const root = document.querySelector('[data-cw]') as HTMLElement | null;
     if (!root || root.dataset.cwInit) return;
     root.dataset.cwInit = '1';
+    const gscene = root.querySelector('[data-gscene]') as HTMLElement | null;
+    const graph = root.querySelector('[data-graph]') as HTMLElement | null;
+    const scene = root.querySelector('[data-scene]') as HTMLElement | null;
     const stack = root.querySelector('[data-stack]') as HTMLElement | null;
-    const scene = root.querySelector('.cw-scene') as HTMLElement | null;
+    const stage = root.querySelector('[data-stage]') as HTMLElement | null;
     const slider = root.querySelector('[data-slider]') as HTMLInputElement | null;
     const reset = root.querySelector('[data-reset]') as HTMLButtonElement | null;
-    if (!stack || !scene || !slider || !reset) return;
+    const cap = root.querySelector('[data-cap]') as HTMLElement | null;
+    if (!gscene || !graph || !scene || !stack || !stage || !slider || !reset || !cap) return;
+
+    // --- the concept lattice (base position + drill target; `keep` survives the drill) ---
+    type N = { l: string; s: string; c: string; keep: boolean; x: number; y: number; z: number; dx: number; dy: number; dz: number; el?: HTMLElement };
+    const NODES: Record<string, N> = {
+      function:  { l: 'Function', s: 'Purpose', c: 'axis', keep: false, x: -250, y: -150, z: -10, dx: -380, dy: -240, dz: -40 },
+      form:      { l: 'Form', s: 'Layout', c: 'form', keep: true, x: -80, y: -158, z: 40, dx: 0, dy: -150, dz: 60 },
+      substance: { l: 'Substance', s: 'Content', c: 'axis', keep: false, x: 95, y: -150, z: -10, dx: 320, dy: -230, dz: -40 },
+      finish:    { l: 'Finish', s: 'Style', c: 'axis', keep: false, x: 255, y: -145, z: -35, dx: 450, dy: -150, dz: -60 },
+      frame:     { l: 'Frame', s: 'slicer', c: 'noun', keep: true, x: -165, y: 35, z: -140, dx: 0, dy: -20, dz: -150 },
+      cell:      { l: 'Cell', s: 'slot', c: 'noun', keep: true, x: -35, y: 100, z: -25, dx: 0, dy: 40, dz: -15 },
+      tile:      { l: 'Tile', s: 'filler', c: 'noun', keep: true, x: 80, y: 155, z: 85, dx: 0, dy: 100, dz: 120 },
+      component: { l: 'Component', s: 'the join', c: 'join', keep: true, x: 80, y: -30, z: 130, dx: 0, dy: 165, dz: 40 },
+      bucket:    { l: 'Bucket', s: 'grouping', c: 'group', keep: false, x: 255, y: 80, z: -75, dx: 450, dy: 150, dz: -90 },
+    };
+    const EDGES: [string, string, string][] = [
+      ['function', 'form', 'ortho'], ['form', 'substance', 'ortho'], ['substance', 'finish', 'ortho'],
+      ['form', 'frame', 'struct'], ['form', 'cell', 'struct'], ['form', 'tile', 'struct'],
+      ['frame', 'cell', 'struct'], ['cell', 'tile', 'struct'], ['tile', 'cell', 'struct'],
+      ['component', 'function', 'join'], ['component', 'form', 'join'], ['component', 'substance', 'join'],
+      ['component', 'finish', 'join'], ['component', 'bucket', 'join'],
+    ];
+    for (const id in NODES) {
+      const n = NODES[id]; const d = document.createElement('div');
+      d.className = 'cw-gnode ' + n.c; d.innerHTML = `<b>${n.l}</b><span>${n.s}</span>`; n.el = d; graph.appendChild(d);
+    }
+    const edgeEls = EDGES.map(([a, b, kind]) => { const e = document.createElement('div'); e.className = 'cw-gedge ' + kind; graph.appendChild(e); return { a, b, kind, el: e }; });
 
     const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
     let mode: 'scroll' | 'manual' = reduce ? 'manual' : 'scroll';
-    let pManual = reduce ? 0.7 : 0;
-    let yaw = 0, pitch = 0; // drag-orbit offsets (deg)
-    if (reduce) slider.value = '70';
+    let pManual = reduce ? 0.55 : 0;
+    let yaw = 0, pitch = 0;     // drag-orbit offsets
+    let idle = 0;               // gentle idle turn of the graph at the top
+    let gscaleBase = 0.74;      // graph fit-scale, tracks the stage width (set in measure)
+    const measure = () => { gscaleBase = Math.max(0.4, Math.min(0.8, stage!.clientWidth / 620)); };
+    if (reduce) slider.value = '55';
 
-    const ease = (a: number) => (a < 0.5 ? 2 * a * a : 1 - Math.pow(-2 * a + 2, 2) / 2);
     const clamp = (v: number) => Math.min(1, Math.max(0, v));
-    function scrollP() {
+    const ss = (a: number, b: number, x: number) => { const t = clamp((x - a) / (b - a)); return t * t * (3 - 2 * t); };
+    const ease = (a: number) => (a < 0.5 ? 2 * a * a : 1 - Math.pow(-2 * a + 2, 2) / 2);
+    const gpos = (n: N, d: number) => ({ x: n.x + (n.dx - n.x) * d, y: n.y + (n.dy - n.y) * d, z: n.z + (n.dz - n.z) * d });
+
+    function scrollS() {
       const r = root!.getBoundingClientRect();
       const track = r.height - innerHeight;
-      const raw = track > 0 ? -r.top / track : 0;
-      return ease(1 - Math.abs(clamp(raw) * 2 - 1)); // explode, then recompose
+      return clamp(track > 0 ? -r.top / track : 0);
     }
+
+    let phase = -1;
+    const CAPS = [
+      '<span class="cw-cap-lead">Scroll</span> — the concept lattice, a 3D map of the model. Keep scrolling to drill into <b>Form</b>.',
+      '<span class="cw-cap-lead">Drilling in</span> — the other axes fall away; <b>Form</b> opens into <b>Frame · Cell · Tile</b>.',
+      '<span class="cw-cap-lead">The slide</span> — those layers are a real slide’s z-planes, assembling into one composed slide.',
+    ];
+    function setCap(i: number) { if (i !== phase) { phase = i; cap!.innerHTML = CAPS[i]; } }
+
     function render() {
-      const p = mode === 'scroll' ? scrollP() : pManual;
+      let gd: number, gop: number, sop: number, p: number;
+      if (mode === 'manual') {
+        gd = 1; gop = 0; sop = 1; p = pManual;
+        setCap(2);
+      } else {
+        const s = reduce ? 0 : scrollS();
+        gd = ss(0.02, 0.46, s);                 // drill the graph
+        gop = 1 - ss(0.40, 0.54, s);            // graph fades out at the handoff
+        sop = reduce ? 1 : ss(0.44, 0.56, s);   // slide fades in
+        // slide arrives exploded (matching the fan), then recomposes to a clean slide
+        p = reduce ? 0.55 : 0.92 * (1 - ease(clamp((s - 0.54) / 0.46)));
+        if (s < 0.5) p = 0.92;
+        setCap(s < 0.34 ? 0 : s < 0.56 ? 1 : 2);
+        if (mode === 'scroll') slider!.value = String(Math.round(p * 100));
+      }
+
+      // Act 1 — graph
+      gscene!.style.opacity = String(gop);
+      gscene!.style.pointerEvents = gop > 0.5 ? 'auto' : 'none';
+      const gz = gscaleBase * (1 + gd * 0.5);   // zoom in while drilling (fit-scaled to stage)
+      graph!.style.transform = `rotateX(${-8 + pitch}deg) rotateY(${18 + gd * 30 + yaw + idle}deg) scale(${gz})`;
+      if (gop > 0.001) {
+        for (const id in NODES) { const n = NODES[id], q = gpos(n, gd);
+          n.el!.style.opacity = String(n.keep ? 1 : (1 - gd) * (1 - gd));
+          n.el!.style.transform = `translate3d(${q.x}px,${q.y}px,${q.z}px) translate(-50%,-50%)`; }
+        for (const e of edgeEls) { const A = gpos(NODES[e.a], gd), B = gpos(NODES[e.b], gd);
+          const dx = B.x - A.x, dy = B.y - A.y, dz = B.z - A.z, len = Math.hypot(dx, dy, dz), lenXZ = Math.hypot(dx, dz);
+          e.el.style.width = len + 'px';
+          e.el.style.transform = `translate3d(${A.x}px,${A.y}px,${A.z}px) rotateY(${Math.atan2(-dz, dx) * 180 / Math.PI}deg) rotateZ(${Math.atan2(dy, lenXZ) * 180 / Math.PI}deg)`;
+          e.el.style.opacity = String(e.kind === 'struct' ? (0.45 + 0.55 * gd) : (1 - gd)); }
+      }
+
+      // Act 2 — slide
+      scene!.style.opacity = String(sop);
+      scene!.style.pointerEvents = sop > 0.5 ? 'auto' : 'none';
       stack!.style.setProperty('--p', p.toFixed(4));
       stack!.style.setProperty('--ry', (20 + p * 26 + yaw).toFixed(2) + 'deg');
       stack!.style.setProperty('--rx', (-13 + pitch).toFixed(2) + 'deg');
-      if (mode === 'scroll') slider!.value = String(Math.round(p * 100));
     }
-    let ticking = false;
-    const schedule = () => {
-      if (ticking) return;
-      ticking = true;
-      requestAnimationFrame(() => { ticking = false; render(); });
-    };
 
+    let ticking = false;
+    const schedule = () => { if (ticking) return; ticking = true; requestAnimationFrame(() => { ticking = false; render(); }); };
     if (!reduce) addEventListener('scroll', () => { if (mode === 'scroll') schedule(); }, { passive: true });
-    addEventListener('resize', schedule, { passive: true });
+    addEventListener('resize', () => { measure(); schedule(); }, { passive: true });
+    measure();
+
+    // gentle idle turn of the graph while parked near the top
+    if (!reduce) {
+      const tick = () => { if (mode === 'scroll' && !down && scrollS() < 0.06) { idle += 0.06; render(); } requestAnimationFrame(tick); };
+      requestAnimationFrame(tick);
+    }
 
     slider.addEventListener('input', () => { mode = 'manual'; pManual = +slider.value / 100; schedule(); });
-    reset.addEventListener('click', () => {
-      yaw = 0; pitch = 0;
-      if (reduce) { pManual = 0.7; slider.value = '70'; } else { mode = 'scroll'; }
-      schedule();
-    });
+    reset.addEventListener('click', () => { yaw = 0; pitch = 0; if (reduce) { pManual = 0.55; slider.value = '55'; } else { mode = 'scroll'; } schedule(); });
 
-    // drag to orbit — changes the view only, not the explode mode
+    // drag to orbit — both acts share the offsets
     let down = false, lx = 0, ly = 0;
-    scene.addEventListener('pointerdown', (e: PointerEvent) => { down = true; lx = e.clientX; ly = e.clientY; scene.setPointerCapture(e.pointerId); });
-    scene.addEventListener('pointermove', (e: PointerEvent) => {
-      if (!down) return;
-      yaw += (e.clientX - lx) * 0.4; pitch += (e.clientY - ly) * 0.4; lx = e.clientX; ly = e.clientY; schedule();
-    });
+    stage.addEventListener('pointerdown', (e: PointerEvent) => { down = true; lx = e.clientX; ly = e.clientY; stage.setPointerCapture(e.pointerId); });
+    stage.addEventListener('pointermove', (e: PointerEvent) => { if (!down) return; yaw += (e.clientX - lx) * 0.4; pitch += (e.clientY - ly) * 0.4; lx = e.clientX; ly = e.clientY; schedule(); });
     const up = () => { down = false; };
-    scene.addEventListener('pointerup', up);
-    scene.addEventListener('pointercancel', up);
-    // Belt-and-suspenders for touch: while a drag is active, swallow touchmove so
-    // the page can't scroll out from under the gesture; it resumes on release.
-    scene.addEventListener('touchmove', (e: TouchEvent) => { if (down) e.preventDefault(); }, { passive: false });
+    stage.addEventListener('pointerup', up); stage.addEventListener('pointercancel', up);
+    stage.addEventListener('touchmove', (e: TouchEvent) => { if (down) e.preventDefault(); }, { passive: false });
 
     render();
   }
