@@ -25,6 +25,28 @@ in patch versions.
 
 ## Unreleased
 
+### Fixed
+
+- **Present/Practice mobile stage — maximise + robust centering (CSS isolation).**
+  The stage layout was sharing one cascade with the engine `out.css`, which
+  clobbered the centering rules (`body`/`.marpit`/`section`) — so the slide fell
+  to the engine's default flow and pushed up on mobile Safari. The slide is now
+  wrapped in our own `#latt-stage`/`#latt-fit` elements (ID selectors `out.css`
+  can't clobber, and *outside* `.marpit` so the slide's `transform` can't trap the
+  fixed stage); `#latt-stage` fills `100dvh` and flex-centers `#latt-fit` (sized to
+  the scaled slide box) — so the slide maximises + stays centered in portrait AND
+  landscape, re-fitting on `orientationchange`/`visualViewport`. Verified centered
+  in all three orientations in Chrome (desktop/portrait/landscape).
+
+- **Present/Practice — title/closing/divider content no longer sits high.** The
+  slide show/hide loop forced `display:block` on the active `<section>`, which
+  clobbered the flex-centering layouts (`title`/`closing`/`divider` set
+  `section{display:flex;…}` to vertically center their content) — collapsing them
+  to top-of-box flow. Root cause, not the stage geometry: the section box was
+  centered, the *content inside it* was not. Fixed by reverting the show/hide to
+  the stylesheet value (`display:""` instead of `"block"`), so each layout keeps
+  its own `display`. Measured h1 offset from section center: −55px → −1px.
+
 ### Added
 
 - **Export-to-Marp bundles now carry an AI-agent kit, so recipients can keep authoring the deck.** Every Marp bundle (CLI `npm run export:marp` and the Drawing Board export) now ships a bundle-tailored `AGENTS.md` at the root + the machine-readable component catalog at `agent/components.json` — so an AI agent (Claude, Copilot, Cursor, …) dropped into the exported folder can extend the deck with full Lattice knowledge: pick the right component, honour its slots, and stay within each layout's **content capacity** instead of inventing `_class` names and overflowing slides. The catalog is a frozen snapshot stamped with the exporting Lattice version. On by default; opt out for a lean Marp-only bundle with `--no-agent` (CLI). Built on the shared bundle spec (`lib/core/marp-bundle.js` — `AGENT_ASSETS` + `agentsMd`) so the CLI and browser producers can't drift. See `engineering/decisions/2026-06-13-export-to-marp.md` §10.
