@@ -40,6 +40,25 @@ Pixel-parity AE=0 across the owned kanban + gantt galleries (light + dark) and
 the Mermaid `diagram` gallery (all 31 pages) — the relocated rules fire from
 `mermaid.css`, the deleted rules were inert/duplicate. lint + build:check green.
 
+## Mermaid `!important` is load-bearing — NOT a removal target
+
+A prior audit flagged the radar block's ~30 `!important` as "redundant /
+removable." **Render-verified false (2026-06-18).** Stripping them regresses the
+override badly:
+
+| Stripped | AE vs baseline (8-curve radar) |
+|---|---|
+| All radar `!important` | 289,922 |
+| Curve + legend-box fills only | 229,714 |
+| Axis + graticule + legend-text only | 270,496 |
+
+`!important` in `mermaid.css` is **correct by design**: Mermaid auto-emits inline
+`style=` on its SVG elements, which only `!important` can beat — specificity
+cannot. So the `!important` density in `mermaid.css` is the *expected* pattern
+for third-party overrides, not a smell. Do not re-chase it. (This is the
+opposite of owned chart-family CSS, where `!important` usually *is* removable —
+those files style only our own DOM with no competing inline styles.)
+
 ## Residual (not addressed — name collision, not a rule leak)
 
 Owned `journey` uses a `.journey-section` `<li>` class whose string collides

@@ -134,6 +134,10 @@ section [class$="TitleText"] { display: none; }
  * Moved here from radar.styles.css (the NATIVE radar component): this is
  * Mermaid output and belongs with the diagram overrides. `!important` beats
  * Mermaid's auto-emitted inline CSS. (`.radarTitle` is suppressed above.)
+ * LOAD-BEARING — render-verified 2026-06-18: stripping ANY radar `!important`
+ * group regresses the override (curve fills AE≈230k, axis/graticule AE≈270k vs
+ * baseline). These are NOT a removal target; Mermaid's inline styles only yield
+ * to `!important`. See engineering/decisions/2026-06-18-chart-mermaid-style-separation.md.
  */
 section .radarGraticule {
   fill: var(--cat-1-fill) !important;
