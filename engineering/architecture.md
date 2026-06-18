@@ -255,6 +255,66 @@ Two consequences worth keeping in mind:
   `lib/components/index.js`, and `lib/components/manifest.schema.json`), so a thirteenth
   Frame is a multi-file change.
 
+## The concept model in code
+
+The conceptual map — the four axes (Function · Form · Substance · Finish), the
+structural nouns (Frame · Cell · Tile), and the typed relationships between them —
+lives in `design/concepts.md`, which is deliberately implementation-free. This
+section is its **implementation view**: the field, catalog, and gate behind each
+concept and edge, so a reader can go from "what is Form" to "where Form is
+enforced" without the concept map itself turning into engineering prose.
+
+**Each axis — encoded and enforced by:**
+
+| Axis | Encoded / enforced by |
+|---|---|
+| **Function** | `function` field on every component manifest + the validator; the families live in `dist/docs/components.json`. |
+| **Form** | `form` field + the `lib/forms/` catalog (Frame/Cell/Tile manifests + integrity gates); the Frame types live in `dist/docs/forms.json`. |
+| **Substance** | `substance` field + the per-substance render kernel; the sources (prose · structure · series · graph, plus `mixed`) live in `components.json`. |
+| **Finish** | palette tokens (`themes/*.css`) + the variant tiers (`lib/base/base.variants.css` + per-component `.styles.css`). |
+
+(`design-system.md` §3/§4/§5/§6.5 own these axes; the table is the cross-cutting index.)
+
+**Each relationship — encoded where** (the Form-internal ones are detailed in the
+*CSS owns layout* section just above):
+
+| From → To | Relationship | Encoded where |
+|---|---|---|
+| Function ⟂ Form ⟂ Substance ⟂ Finish | orthogonal | four separate manifest fields, separately owned |
+| Form → Frame / Cell / Tile | resolves into | `lib/forms/` manifests + `forms.json` |
+| Frame → Cell | produces (1:N) | a Frame manifest lists its `cells`; an integrity gate checks they exist |
+| Cell → Tile \| Frame | holds (recursion) | `Cell.accepts` kinds incl. `frame` |
+| Tile → Cell | fits | `Tile.fits`, the dual of `Cell.accepts`; validated |
+| Component → Function | is-a | `function` field |
+| Component → Frame | selects | `form` field |
+| Component → Substance | binds | `substance` field + kernel |
+| Component → Finish | receives | variant tiers + theme tokens |
+| Component → Bucket | grouped by | `bucket` field (defaults to Function) |
+
+**The concept ontology + drift gate.** The cross-level relationship graph itself
+is encoded as `lib/concepts/concepts.json` (nodes + typed edges) and projected to
+`dist/docs/concepts.json` by `tools/build-concepts.js` (`npm run docs:concepts`),
+beside `components.json` / `forms.json`. A **two-tier drift gate**
+(`docs:concepts:check`, run by `build:check` at pre-push + CI) keeps it honest:
+
+- **Nodes** — every concept's claimed catalog vocabulary must resolve in the live
+  `lib/components` / `lib/forms`, and the model's **counts are derived** from those
+  catalogs (never hand-typed), so the map can't claim a vocabulary or count the
+  engine doesn't ship.
+- **Structural backbone edges** — every load-bearing relationship must be honored
+  by the engine: the recursion edge requires a Cell that really `accepts: frame`;
+  the join edges require the `function` / `form` / `substance` fields they claim.
+  The axis-orthogonality edges and `component → Finish` have no catalog to check
+  against, so they are encoded assertions, gated for internal consistency only
+  (`Finish` carries no single vocabulary).
+
+What stays prose, by necessity: the node **descriptors** (each concept's human
+word, question, one-line definition) are hand-authored — there is no structured
+source to derive them from — and **Form's *execution*** is still at the "light
+coupling" rung (the manifests are a validated contract, but render places via the
+hand-written transforms + CSS above, not manifest-driven placement; see `forms.md`
+§11 and `engineering/decisions/2026-06-16-form-manifest-medium-independent-contract.md`).
+
 ## Docs-site render bridges
 
 The docs site (`docs/`, a separate Astro + React package) renders live deck
