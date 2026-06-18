@@ -127,22 +127,23 @@ in patch versions.
   guarantee). Reveal-only; the live player driver and per-step overlay export are
   staged follow-ons. See `engineering/decisions/2026-06-16-narrative-step-spec.md`.
 
-- **Drawing Board: a hands-on "Try it" lesson — learn by doing.** Alongside the
-  descriptive **?** tour (which *explains* the workspace), a new **Try it**
-  launcher runs a guided walkthrough that has you perform the real actions: write
-  a slide in the editor, switch the deck palette, watch it render, and export it
-  — the lesson spotlights each control, shows a "Your turn" cue, and **waits**
-  until you actually do it before advancing. Non-destructive (it works with
-  whatever deck you have open) and fully interactive (a non-blocking spotlight, so
-  the real menus stay clickable). Built on the same driver.js engine and
-  palette-blind styling as the tour, and governed by the same global **Guided
-  tours** toggle and production gating. The launcher shows on tablet/desktop
-  (the cramped mobile topbar keeps just the first-visit tour for now). New engine
-  `docs/src/playground/guided-lesson.js` (a reusable `initGuidedLesson` with a
-  per-step `waitFor` hook) + content `docs/src/playground/drawing-board-lesson.js`.
-  See `engineering/decisions/2026-06-16-hands-on-lessons.md`.
-  - Tours and lessons are production-gated (off on dev / preview deploys); a
-    **`?tours=on`** URL override now forces them on so a branch-preview URL is
+- **Drawing Board: a "Demo" auto-walkthrough — watch it build a deck.** Alongside
+  the descriptive **?** tour (which *explains* the workspace), a new **Demo**
+  launcher runs a self-driving walkthrough that performs the authoring loop itself,
+  in the real workspace: it **types** a slide into the editor keystroke by
+  keystroke, **opens the theme menu and switches palette**, and **opens Export** —
+  each action spotlighted with an "Auto" badge and a caption, advancing on its own.
+  Non-destructive: it borrows the open deck and **restores it exactly** when the
+  demo ends or you close it. Built on the same driver.js engine and palette-blind
+  styling as the tour, and governed by the same global **Guided tours** toggle and
+  production gating. The launcher shows on tablet/desktop (the cramped mobile
+  topbar keeps just the first-visit tour for now). New engine
+  `docs/src/playground/guided-demo.js` (a reusable `initGuidedDemo` with a per-step
+  `perform` hook + snapshot/restore) + content
+  `docs/src/playground/drawing-board-demo.js`.
+  See `engineering/decisions/2026-06-16-auto-demo-walkthrough.md`.
+  - Tours and the demo are production-gated (off on dev / preview deploys); a
+    **`?tours=on`** URL override forces them on so a branch-preview URL is
     clickable before merge (`?tours=off` forces off), sticky per browser tab.
 
 - **Docs site: a live, draggable performance overlay.** A small overlay renders

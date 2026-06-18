@@ -1228,12 +1228,13 @@ const dbData = JSON.stringify({
 			initDrawingBoardTour();
 		</script>
 
-		<!-- Hands-on lesson: a "do it yourself" walkthrough behind a "Try it" button
-		     — the user performs each real action (write → restyle → render → ship)
-		     and the lesson waits for it. Shares the tour's driver.js engine. -->
+		<!-- Auto-demo: a self-driving walkthrough behind a "Demo" button — it builds
+		     a slide in the real workspace (write → restyle → render → ship) on
+		     autoplay, then restores the open deck. Shares the tour's driver.js
+		     engine; production-gated and toggled by the same "Guided tours" setting. -->
 		<script>
-			import { initDrawingBoardLesson } from '../playground/drawing-board-lesson.js';
-			initDrawingBoardLesson();
+			import { initDrawingBoardDemo } from '../playground/drawing-board-demo.js';
+			initDrawingBoardDemo();
 		</script>
 	</body>
 </html>

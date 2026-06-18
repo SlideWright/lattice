@@ -28,7 +28,7 @@ const SEEN_PREFIX = 'lattice-tour-seen-';
 // *.pages.dev PR previews (see docs/src/lib/deploy-env.mjs). Fail closed: only
 // an explicit "on" runs them.
 //
-// Override for testing: a `?tours=on` URL param forces tours/lessons ON even on
+// Override for testing: a `?tours=on` URL param forces the tour + demo ON even on
 // a preview/dev deploy (so a branch-preview URL is clickable before merge);
 // `?tours=off` forces them off. The choice sticks for the browser TAB
 // (sessionStorage) so it survives navigation between pages, and clears when the

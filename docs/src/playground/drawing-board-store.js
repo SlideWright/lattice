@@ -96,6 +96,7 @@ export function createStore({ getSource, onLoadDeck, starter = '' }) {
 	let activeId = null;
 	let saveTimer = null;
 	let loading = false; // suppress autosave while we programmatically load a deck
+	let suspended = false; // suppress autosave while a demo borrows the live editor
 	let confirmingId = null; // deck row showing the inline "Delete?" confirm
 	let renamingId = null; // deck row showing the inline rename input
 
@@ -487,7 +488,7 @@ export function createStore({ getSource, onLoadDeck, starter = '' }) {
 
 	// Debounced autosave of the live editor into the active deck.
 	function saveActive(source) {
-		if (!db || !activeId || loading) return;
+		if (!db || !activeId || loading || suspended) return;
 		clearTimeout(saveTimer);
 		saveTimer = setTimeout(async () => {
 			const d = await get('decks', activeId);
@@ -652,6 +653,11 @@ export function createStore({ getSource, onLoadDeck, starter = '' }) {
 
 	return {
 		init, saveActive, checkpoint, autoCheckpoint, create,
+		// Pause/resume autosave while the auto-demo borrows the live editor, so the
+		// demo's transient slide is never persisted, auto-titled, or checkpointed —
+		// even if the user closes the tab mid-demo (nothing is written; the durable
+		// deck stays exactly as it was). The demo restores the editor buffer on exit.
+		setSuspended: (on) => { suspended = !!on; },
 		applyHistoryCap, // re-prune when the retention preference changes
 		// Chat (Phase 2): the Architect's per-deck conversation thread.
 		getActiveId: () => activeId,

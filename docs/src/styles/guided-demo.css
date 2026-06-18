@@ -1,0 +1,98 @@
+/* Auto-demo — the self-driving layer over the guided tour. Demo popovers reuse
+ * the palette-blind .lattice-tour skin (guided-tour.css); this file adds only the
+ * demo-specific pieces: a non-blocking overlay (the demo drives real controls and
+ * menus), the "Auto" playing badge, the launcher tint, and a gentle pulse on the
+ * control the demo is acting on. Loaded by src/playground/guided-demo.js. */
+
+/* The demo drives real controls — including shadcn menus (theme, export) that
+ * portal OUTSIDE driver's cutout — so the overlay keeps the spotlight's dimming
+ * but must NOT trap pointer events. Let them fall through; keep the popover live
+ * so its Skip / × still work. */
+body.demo-running .driver-overlay {
+	pointer-events: none;
+}
+body.demo-running .driver-popover {
+	pointer-events: auto;
+}
+
+/* ---- "Auto" playing badge (act steps only) ----------------------------- */
+.driver-popover.lattice-demo .demo-badge {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.45em;
+	margin-bottom: 8px;
+	padding: 2px 9px;
+	border-radius: 999px;
+	background: var(--accent);
+	color: var(--on-accent);
+	font-family: var(--font-body, inherit);
+	font-size: 11px;
+	font-weight: 600;
+	letter-spacing: 0.05em;
+	text-transform: uppercase;
+	line-height: 1.4;
+}
+/* A small play triangle that pulses, so the badge reads as "running". */
+.driver-popover.lattice-demo .demo-badge::before {
+	content: '▶';
+	font-size: 0.7em;
+	line-height: 1;
+}
+@media (prefers-reduced-motion: no-preference) {
+	.driver-popover.lattice-demo .demo-badge::before {
+		animation: demo-blink 1.4s ease-in-out infinite;
+	}
+}
+@keyframes demo-blink {
+	0%,
+	100% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 0.35;
+	}
+}
+
+/* ---- Launcher: "Demo" --------------------------------------------------- */
+/* Reuses .tour-btn; tinted with the accent so it reads as the active, watch-it-
+ * run sibling of the "?" tour button, with a play glyph instead of a chip. */
+.tour-btn.demo-btn {
+	border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+	color: var(--accent);
+}
+.tour-btn.demo-btn:hover,
+.tour-btn.demo-btn:focus-visible {
+	border-color: var(--accent);
+	background: color-mix(in srgb, var(--accent) 12%, transparent);
+}
+.tour-btn.demo-btn .tour-btn-glyph {
+	font-size: 8px;
+	/* nudge the play triangle to optical center */
+	padding-left: 1px;
+}
+/* The Drawing Board's mobile topbar (palette + mode + the "?" tour + hamburger)
+ * has no room for a second launcher — a glyph-only "Demo" would push it past the
+ * viewport. Hide the standalone launcher on mobile (it stays on tablet /
+ * desktop); the first-visit tour still owns the narrow help slot. */
+@media (max-width: 720px) {
+	.tour-btn.demo-btn {
+		display: none;
+	}
+}
+
+/* ---- Acting pulse on the spotlighted control --------------------------- */
+/* Only when motion is welcome: a soft, breathing ring that says "happening here". */
+@media (prefers-reduced-motion: no-preference) {
+	body.demo-acting .driver-active-element {
+		animation: demo-pulse 1.7s ease-in-out infinite;
+	}
+}
+@keyframes demo-pulse {
+	0%,
+	100% {
+		box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 55%, transparent);
+	}
+	50% {
+		box-shadow: 0 0 0 8px color-mix(in srgb, var(--accent) 0%, transparent);
+	}
+}
