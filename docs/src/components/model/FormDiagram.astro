@@ -83,7 +83,7 @@ const { fig } = Astro.props;
     <ul class="own">
       <li><span class="zsw chrome"></span><span><b>Chrome tiles</b> — engine-owned (title, meta, footer, progress, pagination…). The author never touches them.</span></li>
       <li><span class="zsw content"></span><span><b>content tile</b> — the engine-owned slot the author's markdown flows into.</span></li>
-      <li><span class="zsw accent"></span><span><b>Component</b> — the author's layout fills it, and in the model is <i>itself a Frame</i>. Portrait reflow lives here.</span></li>
+      <li><span class="zsw accent"></span><span><b>Component</b> — the author's layout fills it, and owns its <i>own internal layout</i>. Portrait reflow lives here.</span></li>
     </ul>
   </div>
 )}

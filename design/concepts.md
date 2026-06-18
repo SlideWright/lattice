@@ -19,9 +19,9 @@ one-line restatement that links down.
 ## 1. The whole system in two sentences
 
 > **A slide is composed along four orthogonal axes — Function, Form, Substance,
-> Finish.** **Form** is the structural axis, and it resolves into a recursive
-> tree: *a Frame divides a box into Cells; each Cell holds a Tile — or another
-> Frame.*
+> Finish.** **Form** is the structural axis, and it resolves into a tree:
+> *a Frame divides a box into Cells; each Cell holds a Tile* (the content Cell
+> hosts the author's Component).
 
 Everything else is which concept owns which decision, and how the two sentences
 connect. The connector is the **component**: a component *is-a* Function, it
@@ -53,7 +53,6 @@ graph TD
   FORM -->|"resolves into"| FRAME
   FRAME -->|"produces (1:N)"| CELL
   CELL -->|"holds"| TILE
-  CELL -->|"holds (recursion)"| FRAME
   TILE -.->|"fits / accepts (dual contract)"| CELL
 
   COMP -->|"is-a"| FUNC
@@ -69,8 +68,10 @@ graph TD
 
 Solid edges are containment / selection (the structural spine); dashed edges are
 the orthogonality of the axes and the `accepts` / `fits` containment contract.
-The recursion is the `Cell --holds--> Frame` edge: a Cell can hold a Tile (leaf)
-*or* another Frame (composite), and that uniform treatment is the whole system.
+A Cell holds a Tile; the content Cell's Tile hosts the author's Component. (A Cell
+holding *another Frame* — making the tree recurse without limit — was considered
+and **rejected**: cool but useless for a slide. See `design/forms.md` §1 and
+`engineering/decisions/2026-06-18-frame-recursion-cells.md`.)
 
 ---
 
@@ -98,11 +99,12 @@ other before acting.
 ## 4. Level 2 — Form's three nouns
 
 Form is the only axis that decomposes — because it is the only one whose answer
-is itself a **recursive structure**: composition nests into itself (a Frame's
-Cell can hold another Frame). Function only classifies, Substance *fills* the
-Cells, and Finish styles the whole tree — none of those nests, so none needs a
-noun set of its own (their "level 2" is a flat vocabulary — the substance
-sources, the variant tiers). The three nouns answer a question only Form asks.
+is itself a **composed structure**: a Frame carves the slide into Cells, and each
+Cell holds a Tile (the content Cell's Tile hosts a Component with its own internal
+layout). Function only classifies, Substance *fills* the Cells, and Finish styles
+the whole — none of those has a structure of its own, so none needs a noun set
+(their "level 2" is a flat vocabulary — the substance sources, the variant tiers).
+The three nouns answer a question only Form asks.
 
 It resolves into a **Composite** tree — slicers that make boxes (Frames), fillers
 that fill them (Tiles), and the typed slot between (Cells). There are three nouns,
@@ -115,7 +117,7 @@ not two, because each changes for an independent reason.
 | **Tile** | a **filler** — leaf content sized to fill one Cell, bound to a source | a data source changes |
 
 The connective tissue is a **typed contract**: a Cell declares which kinds it
-*accepts*; a Tile (or Frame) declares which Cells it *fits*. That dual is what
+*accepts*; a Tile declares which Cells it *fits*. That dual is what
 keeps a footer out of a masthead. Each Cell is also **resolution-blind**: it
 resolves to a deterministic box independent of its content, and clips rather than
 bleeds.
@@ -168,7 +170,7 @@ explicit.
 | Function ⟂ Form ⟂ Substance ⟂ Finish | **orthogonal** — independently swappable |
 | Form → Frame / Cell / Tile | **resolves into** (Composite) |
 | Frame → Cell | **produces** (one to many) |
-| Cell → Tile *or* Frame | **holds** (the recursion) |
+| Cell → Tile | **holds** |
 | Tile → Cell | **fits / occupies** |
 | Component → Function | **is-a** |
 | Component → Frame | **selects** |

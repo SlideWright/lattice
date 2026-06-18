@@ -1,6 +1,6 @@
 ---
 title: "The Form model — Frame · Cell · Tile"
-description: "How a Lattice slide is composed: a Frame divides the slide into Cells, each Cell holds a Tile (or a nested Frame), and the author's Component fills the content Tile. Plus the render chain for a single title, and where orientation fits."
+description: "How a Lattice slide is composed: a Frame divides the slide into Cells, each Cell holds a Tile, and the author's Component fills the content Tile. Plus the render chain for a single title, and where orientation fits."
 ---
 
 import FormDiagram from '../../../components/model/FormDiagram.astro';
@@ -11,16 +11,16 @@ This page mirrors the in-repo design doc [`design/forms.md`](https://github.com/
 
 A Lattice slide is **composed**, not just styled. One sentence is the whole system:
 
-> **A Frame divides the slide into Cells; each Cell holds a Tile — or another Frame.** The author's Component fills the content Tile.
+> **A Frame divides the slide into Cells; each Cell holds a Tile.** The author's Component fills the content Tile.
 
 There are only two kinds of object — **slicers** (Frames) that make boxes, and **fillers** (Tiles) that fill boxes — joined by a typed slot, the **Cell**.
 
 | Noun | Is | Role |
 |------|----|----|
-| **Frame** | a *slicer* — carves a box into sub-boxes | structure; the slide root *and* every nested division |
+| **Frame** | a *slicer* — carves a box into sub-boxes | structure; the slide root *and* the fixed chrome-band sub-divisions |
 | **Cell** | a *typed slot* — an empty, sized, positioned box | the seam between a slicer and what fills it |
 | **Tile** | a *filler* — a leaf sized to fill one Cell | the terminal content (chrome, surfaces, or the author's content) |
-| **Component** | an authored layout (`kpi`, `comparison`, …) | what fills the **content** Tile; in the model it is *itself a Frame* |
+| **Component** | an authored layout (`kpi`, `comparison`, …) | what fills the **content** Tile; it owns its own internal layout |
 
 ---
 
@@ -30,7 +30,7 @@ A Frame is, concretely, a `cells: […]` list (plus an optional `suppresses: [�
 
 <FormDiagram fig="frame-cell" />
 
-It is **recursive**: a Cell holds a Tile *or another Frame*. `split-panel` is a sovereign Frame docked in the `stage` Cell.
+A slide has exactly **one** Frame — the root chrome frame, or a **sovereign** frame (like `split-panel`) that claims the whole canvas and suppresses the chrome. Cells hold Tiles; **Frames do not nest inside content cells** — that recursion was considered and [rejected](https://github.com/slidewright/lattice/blob/main/engineering/decisions/2026-06-18-frame-recursion-cells.md).
 
 ---
 
@@ -46,7 +46,7 @@ The author's **title** and **kicker** (eyebrow) lift into the `masthead-lede`; t
 
 ## 3 · Tile → Component
 
-Almost every Tile is **engine-owned chrome** (title, meta, footer, progress, pagination, watermark…). The one exception is the **content** Tile (z2) — it hosts the author's **Component** (`kpi`, `comparison`, …), which owns its *own internal layout* inside that Tile. In the model the Component is itself a Frame that recurses into Cells and Tiles.
+Almost every Tile is **engine-owned chrome** (title, meta, footer, progress, pagination, watermark…). The one exception is the **content** Tile (z2) — it hosts the author's **Component** (`kpi`, `comparison`, …). The Component owns its own internal layout inside that Tile.
 
 <FormDiagram fig="tile-component" />
 

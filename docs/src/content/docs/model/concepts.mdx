@@ -14,13 +14,13 @@ This page mirrors the in-repo design doc [`design/concepts.md`](https://github.c
 
 Lattice has concepts on two levels, and they are **one system at two scales**. The four axes say *how a slide is decided*; the structural nouns say *how Form is built*; the **Component** is where they meet.
 
-> **A slide is composed along four orthogonal axes — Function, Form, Substance, Finish.** **Form** is the structural axis, and it resolves into a recursive tree: *a Frame divides a box into Cells; each Cell holds a Tile — or another Frame.*
+> **A slide is composed along four orthogonal axes — Function, Form, Substance, Finish.** **Form** is the structural axis, and it resolves into a containment tree: *a Frame divides the slide into Cells; each Cell holds a Tile.*
 
 ## The lattice
 
 <ConceptLattice fig="lattice" />
 
-The four axes are mutually **orthogonal** — swap one and the others hold. The structural spine is **containment and selection**. The recursion — a **Cell** holding a **Tile** *or another Frame* — is what makes this a lattice rather than a flat list.
+The four axes are mutually **orthogonal** — swap one and the others hold. The structural spine is **containment and selection**: a **Frame** carves the slide into **Cells**, and each **Cell** holds a **Tile** — the seam between a slicer and what fills it is what makes this a lattice rather than a flat list.
 
 ## Level 1 — the four axes
 
@@ -37,7 +37,7 @@ The one word the model legislates against is **"look"** — it collides between 
 
 ## Level 2 — why only Form decomposes
 
-Form is the **only** axis that decomposes into structural nouns — because it is the only one whose answer is itself a **recursive structure**: composition nests into itself (a Frame's Cell can hold another Frame). Function only classifies, Substance *fills* the Cells, and Finish styles the whole tree — none of those nests, so none needs a noun set of its own. Their "level 2" is a flat vocabulary: the four Substance sources, the Finish variant tiers.
+Form is the **only** axis that decomposes into structural nouns — because it is the only one whose answer is itself a **composed structure**: a Frame carves the slide into Cells, and each Cell holds a Tile. Function only classifies, Substance *fills* the Cells, and Finish styles the whole tree — none of those has a structure of its own, so none needs a noun set. Their "level 2" is a flat vocabulary: the four Substance sources, the Finish variant tiers.
 
 | Noun | Is | Changes when… |
 |---|---|---|
@@ -49,7 +49,7 @@ The full structural model — z-planes, the resolution-blind Cell contract, the 
 
 ## The join — Component and Bucket
 
-A **Component is this same grammar one scale down**: its `form:` value is a Frame type, its slots are Cells, and the author's markdown fills them the way a Tile fills a Cell. It **has-a** Frame and binds Substance into the Cells that Frame produces; it carries a Function and receives Finish — the join, on one slide. A **Bucket** is orthogonal bookkeeping: the disk grouping of components (mostly one-to-one with Function; a few — `chart`, `diagram`, `math`, `code`, `legal` — diverge to colocate a shared renderer or authoring vocabulary).
+A **Component fills the content Tile and owns its own internal layout** there. It **selects** a Frame for the slide and binds Substance into the Cells that Frame produces; it carries a Function and receives Finish — the join, on one slide. A **Bucket** is orthogonal bookkeeping: the disk grouping of components (mostly one-to-one with Function; a few — `chart`, `diagram`, `math`, `code`, `legal` — diverge to colocate a shared renderer or authoring vocabulary).
 
 ## Abstract vs. concrete — the three rungs
 

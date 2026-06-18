@@ -31,14 +31,25 @@ it is the direct cause of the chrome-over-content collisions catalogued in
 
 **Form** is the fix, and it is not a new concept — it is the **composition axis
 Lattice already ships** (`design/design-system.md`: Function · **Form** ·
-Substance), finally given a complete, recursive model instead of a frozen
+Substance), finally given a complete model instead of a frozen
 twelve-value enum. Form answers one question: *how is this slide composed?* The
 answer is a tree of three things:
 
-> **A Frame divides a box into Cells; each Cell holds a Tile — or another
-> Frame.** The slide's root is a Frame.
+> **A Frame divides a box into Cells; each Cell holds a Tile.** The slide's root
+> is a Frame; the content Cell hosts the author's Component.
 
 That single sentence is the whole system. Everything else is detail.
+
+> **Rejected — recursive frames in cells.** An earlier framing let a Cell hold
+> *another Frame* (composition nesting into itself, without limit). We considered
+> it and **rejected it** — cool but useless for a slide: a rectangle viewed for
+> seconds can't be usefully subdivided more than ~twice, and a slide's content
+> isn't recursive in real life (a chart isn't "made of slides"). **Frame stays;
+> frames do not nest inside content cells.** The reasoning, and the better
+> solution for "two components side by side" (a flat split layout — itself a
+> Frame — whose cells host components), are in
+> `engineering/decisions/2026-06-18-frame-recursion-cells.md`. Where the text
+> below still says "or a Frame," read it as that rejected branch.
 
 The name is exact, not decorative: in letterpress a *forme* is the type locked
 into a *frame* so every pull prints in identical, fixed position. A Lattice Form
@@ -110,9 +121,12 @@ class Cell {                  // the typed slot ("socket")
 }
 ```
 
-A **Cell holds a Tile or a Frame**, and the client treats both uniformly — that
-uniform treatment *is* the recursion. The pattern earns each of the SOLID
-letters, and each answers a question this design was interrogated against:
+A **Cell holds a Tile** — and, in the originally-proposed model, *a Frame* too,
+treated uniformly. That uniform treatment *was* the recursion, and it is the
+branch we **rejected** (§1): the SOLID reasoning below records how the Composite
+case was argued at the time, but a content Cell holds a Tile, full stop. The
+three nouns (Frame · Cell · Tile) survive the rejection — only the nesting edge
+goes. Each letter answers a question this design was interrogated against:
 
 - **S — Single Responsibility → why we need three nouns.** Each has exactly one
   axis of change. A **Cell** changes when the *layout/geometry* changes (a
@@ -126,16 +140,19 @@ letters, and each answers a question this design was interrogated against:
   it admits Tiles that did not exist when it was authored. (Today, adding a slide
   Tile means editing three render kernels — an OCP *violation*. A manifest the
   engine reads restores it. See §11.)
-- **L — Liskov → why recursion is sound, and why the current bug is a bug.** A
-  Frame must be substitutable wherever a Cell expects an Occupant: a Cell holding
-  a Frame behaves like one holding a Tile (both resolve to a box and render
-  within it). The contract every Occupant honors is *render inside your box —
-  clip, do not bleed*. The open chrome-over-content defect is precisely an LSP
-  violation: a Tile rendering outside its box.
+- **L — Liskov → why the recursive branch *seemed* sound (it is the rejected
+  one).** The argument at the time: a Frame is substitutable wherever a Cell
+  expects an Occupant — a Cell holding a Frame behaves like one holding a Tile
+  (both resolve to a box and render within it). We rejected the recursion, so
+  this no longer applies to content cells; what survives is the universal
+  contract every Occupant honors — *render inside your box — clip, do not bleed* —
+  and the open chrome-over-content defect is precisely an LSP violation: a Tile
+  rendering outside its box.
 - **I — Interface Segregation.** A leaf Tile implements only `Occupant` +
-  `populate`; it is never forced to implement `subdivide`. A Frame implements
-  both faces — it `render`s into its parent's Cell *and* `subdivide`s into child
-  Cells. That dual role is the Composite.
+  `populate`; it is never forced to implement `subdivide`. In the rejected
+  recursive branch a Frame implemented both faces — `render` into its parent's
+  Cell *and* `subdivide` into child Cells (the Composite's dual role). With
+  recursion gone, only the *fixed* chrome-band Frames (masthead, footer) subdivide.
 - **D — Dependency Inversion → why the designer/author split works.** A Frame
   declares a Cell that `accepts: [chrome]`; a Tile declares it `fits` that Cell.
   Both depend on the **Cell abstraction**, neither on the other's concrete. That
@@ -198,13 +215,13 @@ authored by a *designer*; a **Tile** binds a *source*.
 ### Frame — the slicer
 - **`id` / `form`** — its name and the Form value it realizes (`split`, `panel`,
   `grid`, …).
-- **`kind`** — `root` (carves the slide) · `framed` (docks in the main Cell,
-  keeps the chrome Frame) · `sovereign` (claims the whole canvas and
-  **suppresses** chrome Cells — this is why a `split-panel` reads as "distinct
-  from everything else": it *replaces* the frame).
+- **`kind`** — `root` (carves the slide, keeps the chrome) · `sovereign` (claims
+  the whole canvas and **suppresses** chrome Cells — this is why a `split-panel`
+  reads as "distinct from everything else": it *replaces* the frame). (A `framed`
+  kind — a Frame nested in a content Cell — was considered and rejected; see
+  `engineering/decisions/2026-06-18-frame-recursion-cells.md`.)
 - **`subGrid`** — the internal grid template + ratios.
-- **`cells`** — the Cells it produces (each a full Cell definition — the
-  recursion).
+- **`cells`** — the Cells it produces (each a full Cell definition).
 - **`suppresses`** — chrome Cells a sovereign Frame hides.
 
 ### Cell — the typed slot
@@ -359,19 +376,21 @@ instead of cramming into the footer or eyebrow.
 
 ---
 
-## 9. The recursion, in one place
+## 9. The composition, in one place
 
 ```
-SLIDE  ──is a──▶  root Frame
+SLIDE  ──is a──▶  one Frame (the root chrome frame, or a sovereign frame)
   └─ divides into Cells ─┬─ Cell (masthead) ─▶ holds chrome Tiles (kicker, title, logo, meta…)
-                         ├─ Cell (stage)    ─▶ holds the content Tile (a component)…
-                         │                       └─ which is itself a Frame ─▶ Cells ─▶ Tiles…
+                         ├─ Cell (stage)    ─▶ holds the content Tile (the author's Component)
                          └─ Cell (footer)   ─▶ holds chrome Tiles (footer, progress, pagination)
 ```
 
-A sovereign Frame docked in the stage Cell suppresses the masthead/footer Cells
-and re-carves the whole canvas — that is the entire mechanism behind "this slide
-looks completely different." Recurse until every Cell holds a Tile.
+A **sovereign** Frame (e.g. `split-panel`) *replaces* the root frame: it claims the
+whole canvas and suppresses the masthead/footer Cells — that is the entire
+mechanism behind "this slide looks completely different." Every Cell holds a Tile;
+**Frames do not nest inside content cells** (§1 — considered and rejected; see the
+decision note). The masthead's `lede · bay` and the footer's three zones are
+**fixed** band splits, not the rejected recursion.
 
 ---
 

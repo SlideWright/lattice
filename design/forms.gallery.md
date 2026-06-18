@@ -46,7 +46,7 @@ A slide is no longer content with chrome bolted on. It is a Frame that divides t
 - Masthead Tiles
   - Kicker, title, meta, logo, and a status chip. A Tile knows where its content comes from: the title from your `## heading`, the meta from front matter, the status from a class.
 - Stage Tile
-  - The single `content` Tile — your component. It is itself a Frame, so the recursion bottoms out wherever a Cell finally holds a leaf.
+  - The single `content` Tile — your component, which owns its own internal layout inside that Cell.
 - Footer Tiles
   - Footer text, the progress rail, and pagination — all derived. Dividers become sections; `paginate` becomes the page number.
 

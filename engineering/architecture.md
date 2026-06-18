@@ -283,7 +283,7 @@ enforced" without the concept map itself turning into engineering prose.
 | Function ⟂ Form ⟂ Substance ⟂ Finish | orthogonal | four separate manifest fields, separately owned |
 | Form → Frame / Cell / Tile | resolves into | `lib/forms/` manifests + `forms.json` |
 | Frame → Cell | produces (1:N) | a Frame manifest lists its `cells`; an integrity gate checks they exist |
-| Cell → Tile \| Frame | holds (recursion) | `Cell.accepts` kinds incl. `frame` |
+| Cell → Tile | holds | `Cell.accepts` kinds; the `frame` kind is a **fixed** band split (masthead→lede/bay, footer→zones) only — content cells hold Tiles, never nested Frames (recursion rejected: `engineering/decisions/2026-06-18-frame-recursion-cells.md`) |
 | Tile → Cell | fits | `Tile.fits`, the dual of `Cell.accepts`; validated |
 | Component → Function | is-a | `function` field |
 | Component → Frame | selects | `form` field |
@@ -302,8 +302,8 @@ beside `components.json` / `forms.json`. A **two-tier drift gate**
   catalogs (never hand-typed), so the map can't claim a vocabulary or count the
   engine doesn't ship.
 - **Structural backbone edges** — every load-bearing relationship must be honored
-  by the engine: the recursion edge requires a Cell that really `accepts: frame`;
-  the join edges require the `function` / `form` / `substance` fields they claim.
+  by the engine: the `produces` edge requires a Frame whose `cells` resolve; the
+  join edges require the `function` / `form` / `substance` fields they claim.
   The axis-orthogonality edges and `component → Finish` have no catalog to check
   against, so they are encoded assertions, gated for internal consistency only
   (`Finish` carries no single vocabulary).
