@@ -744,3 +744,23 @@ section .timeline-node.section-10 text, section .timeline-node.section-10 tspan,
  * header above it) is enough to keep the visual hierarchy.
  */
 section .eventWrapper { filter: none !important; }
+
+/* ════════════════════════════════════════════════════════════════════════
+ * RELOCATED FROM OWNED COMPONENT FILES (owned chart stylesheets carry zero
+ * Mermaid selectors — all third-party CSS lives here). See
+ * engineering/decisions/2026-06-18-chart-mermaid-style-separation.md.
+ * ════════════════════════════════════════════════════════════════════════ */
+
+/* Mermaid kanban ticket nodes — the ticket card takes the subcontainer rung
+ * (was kanban.styles.css). Wins on specificity over the .node fill above. */
+section .cluster .items .node rect.basic.label-container,
+section .cluster .items .node .label-container,
+section .items .node rect.basic.label-container,
+section .items .node .label-container {
+  fill: var(--c-subcontainer) !important;
+  stroke: var(--diagram-stroke) !important;
+}
+
+/* Mermaid gantt — taskTextOutsideLeft/Right ignore taskTextOutsideColor for some
+ * bar widths; force dark text in the outside-the-bar margin (was gantt.styles.css). */
+section .taskTextOutsideLeft, section .taskTextOutsideRight { fill: var(--text-heading) !important; }

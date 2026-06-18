@@ -135,21 +135,6 @@ section.diagram > .mermaid-error-label,
   max-height:12.5cqi;
 }
 
-/* Diagram title suppression — the slide's `## heading` is the canonical title.
-   Mermaid renders its own title (from frontmatter `title:` or in-body `title`)
-   inside the SVG, which doubles up with the slide heading. Class names below
-   are verified from rendered output (Mermaid 11.14), not guessed.
-   Known gap: sequence, journey, C4, quadrant, timeline, xy-chart render bare
-   <text> titles with no class — those cannot be class-targeted and remain
-   visible. See references/mermaid.md §5.3 for the diagnostic recipe. */
-section.diagram .mermaid-svg svg .titleText,
-section.diagram > .mermaid svg .titleText,
-section.diagram .mermaid-svg svg .pieTitleText,
-section.diagram > .mermaid svg .pieTitleText,
-section.diagram .mermaid-svg svg .radarTitle,
-section.diagram > .mermaid svg .radarTitle,
-section.diagram .mermaid-svg svg .packetTitle,
-section.diagram > .mermaid svg .packetTitle,
-section.diagram .mermaid-svg svg [class$="TitleText"],
-section.diagram > .mermaid svg [class$="TitleText"] { display:none; }
+/* (Mermaid diagram title suppression moved to mermaid.css — all Mermaid CSS
+   lives there; this integration file styles only highlight.js code tokens.) */
 
