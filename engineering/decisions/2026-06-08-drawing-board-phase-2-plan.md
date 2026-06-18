@@ -1,3 +1,8 @@
+---
+status: proposed
+summary: Phase 2 build plan for the Drawing Board Architect's voice — the ArchitectModel tier ladder behind the deterministic floor
+---
+
 # The Drawing Board — Phase 2 build plan: the Architect's voice (2026-06-08)
 
 > Status: **build plan, not started.** Companion to the proposal

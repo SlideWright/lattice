@@ -1,3 +1,8 @@
+---
+status: proposed
+summary: Design model for a universal, CSS-driven, cross-format per-element focus/highlight capability splitting targeting from treatment
+---
+
 # Focus & highlighting — a universal, CSS-driven, cross-format model
 
 **Status:** design ratified 2026-06-16 (rendered mockups reviewed and the

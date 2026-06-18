@@ -1,3 +1,8 @@
+---
+status: shipped
+summary: Sketch finish — a palette-blind hand-drawn Finish modifier plus the curated carta palette, PDF-fidelity-safe
+---
+
 # Sketch finish — a hand-drawn skin for Lattice
 
 **Date:** 2026-06-11

@@ -1,3 +1,8 @@
+---
+status: shipped
+summary: Consolidating the docs-site deck-preview render bridges behind shared modules so a render fix lands once, not eight times
+---
+
 # Deck-preview consolidation — shared render bridges
 
 **Status:** Tier 1 landed (`#327` follow-up, c91f4c2c); Tier 2 (drawing-board

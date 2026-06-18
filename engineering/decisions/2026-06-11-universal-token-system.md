@@ -1,3 +1,8 @@
+---
+status: shipped
+summary: Universal role-based token system — design, crosswalk, and the phased alias-then-flip migration, phases 1–7 implemented
+---
+
 # Universal token system — design, crosswalk, and migration strategy
 
 **Date:** 2026-06-11 · **flip plan added 2026-06-14**

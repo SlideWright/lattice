@@ -1,3 +1,8 @@
+---
+status: shipped
+summary: lattice-runtime.js becomes an esbuild bundle output that inlines the shared transformer registry, preserving the public path
+---
+
 # Runtime bundler — esbuild
 
 Date: 2026-05-17 (follow-up to the shared-transformer-registry pilot)

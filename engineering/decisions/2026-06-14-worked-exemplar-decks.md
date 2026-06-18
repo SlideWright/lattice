@@ -1,3 +1,8 @@
+---
+status: in-progress
+summary: Worked exemplar decks that show what good looks like, replacing placeholder skeleton spines with finished real-content decks
+---
+
 # Worked exemplar decks — "show what good looks like" (2026-06-14)
 
 > Status: **design — approved direction (one `AskUserQuestion` round), build in

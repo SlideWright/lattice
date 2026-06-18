@@ -1,3 +1,8 @@
+---
+status: shipped
+summary: SVG-native chart legend and spine via a shared builder, replacing the fixed HTML legend across all four keyed charts
+---
+
 # SVG-native chart legend + spine — design model & spike plan
 
 **Date:** 2026-06-13

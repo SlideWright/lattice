@@ -1,9 +1,6 @@
 ---
-status: design-speculation
-version: 2
-supersedes: none
-companion: 2026-05-07-chart-family-proposals.md
-last-status-update: 2026-05-15
+status: proposed
+summary: Forward-looking authoring RFC covering the component model, modifier catalogue, new layout proposals, and rollout plan
 ---
 
 # Lattice — Authoring Enhancement Proposals

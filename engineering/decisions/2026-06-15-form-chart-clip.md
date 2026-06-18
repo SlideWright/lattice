@@ -1,3 +1,8 @@
+---
+status: shipped
+summary: Root-cause and fix for form-chart collapse-then-clip in dense PDF slides via robust content-box sizing
+---
+
 # Form chart: collapse → clip → robust content-box sizing (2026-06-15)
 
 ## Symptom

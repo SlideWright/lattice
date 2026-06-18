@@ -1,3 +1,8 @@
+---
+status: shipped
+summary: Marp :root variable scoping root cause, Mermaid theming contract, and CDN-to-local bundle migration
+---
+
 # 2025 — Mermaid Theming Fixes
 
 > Investigation note. Was previously `AgentNote.md` at the repo root;

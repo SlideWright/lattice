@@ -1,8 +1,6 @@
 ---
-status: design-speculation
-version: 2
-supersedes: none
-last-status-update: 2026-06-14
+status: proposed
+summary: Importing across board + bench — brand-faithful themes (Workbench) and Lattice-native content (Drawing Board)
 ---
 
 # Importing — board + bench, two personas: brand-faithful themes (Workbench) and Lattice-native content (Drawing Board)

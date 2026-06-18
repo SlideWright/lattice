@@ -1,3 +1,8 @@
+---
+status: proposed
+summary: Decision to keep and grow the lib/forms manifest as a medium-independent composition contract with 2D CSS as its first renderer
+---
+
 # Form — the manifest as a medium-independent contract (A, not trim)
 
 **Status:** decided 2026-06-16. Resolves the open **keep-vs-trim** question the

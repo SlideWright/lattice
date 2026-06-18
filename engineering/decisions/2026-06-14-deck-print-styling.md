@@ -1,8 +1,6 @@
 ---
-status: design-decision
-version: 2
-supersedes: none
-last-status-update: 2026-06-14
+status: proposed
+summary: Print support that survives the boardroom on paper, in colour and B&W, via a per-theme print token band and auto-paper-fit
 ---
 
 # Print styling — a deck that survives the trip to the boardroom, on paper, in colour *and* black-and-white

@@ -1,3 +1,8 @@
+---
+status: proposed
+summary: P4 retire marp-cli — pivoted from a flaky pixel-regression gate to per-component semantic invariant testing
+---
+
 # P4 — retire marp-cli: parity → ~~regression~~ → component-invariant testing
 
 **Status:** ~~design (pre-code), de-risked. The 2026-06-13 spike resolved the one

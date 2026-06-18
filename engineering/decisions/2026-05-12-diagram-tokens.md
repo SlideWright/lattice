@@ -1,3 +1,8 @@
+---
+status: shipped
+summary: Migration from --mermaid-* to --diagram-* tokens with palette-blind role naming and contrast assertions
+---
+
 # Diagram tokens — eliminate Mermaid nomenclature, AA-test the brand
 
 **Date:** 2026-05-12

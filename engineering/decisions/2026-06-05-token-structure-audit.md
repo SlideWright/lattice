@@ -1,3 +1,8 @@
+---
+status: shipped
+summary: Splits the overloaded decorative --text-muted token into independent contrast-graded structural-text roles per theme
+---
+
 # Token-structure audit — independent structural-text tokens
 
 **Date:** 2026-06-05

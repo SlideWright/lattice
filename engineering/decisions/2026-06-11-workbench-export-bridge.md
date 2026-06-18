@@ -1,3 +1,8 @@
+---
+status: shipped
+summary: Export bridge carrying Workbench library themes into the Drawing Board and through every export; components deferred
+---
+
 # Workbench export bridge — library themes reach the Drawing Board (themes slice)
 
 **Date:** 2026-06-11

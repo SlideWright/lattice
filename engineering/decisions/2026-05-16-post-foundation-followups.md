@@ -1,10 +1,6 @@
 ---
-status: proposal
-version: 1
-companion:
-  - 2026-05-15-shipped-without-proposal.md
-  - ../design-system.md
-last-updated: 2026-05-16
+status: proposed
+summary: Captures every workitem deferred or discovered late during the design-system-foundation branch, tracked as next
 ---
 
 # Post-foundation follow-ups

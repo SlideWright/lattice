@@ -1,3 +1,8 @@
+---
+status: shipped
+summary: Making inner diagram elements read as cards on a categorical band, with band-tonality follow-up shipped in the same branch
+---
+
 # Diagram elevation — inner elements should read as cards on a band
 
 **Date:** 2026-05-12

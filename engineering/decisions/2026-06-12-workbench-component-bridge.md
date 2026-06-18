@@ -1,3 +1,8 @@
+---
+status: shipped
+summary: Bridge that carries CSS-only local Workbench components into live render and every export path on the Drawing Board
+---
+
 # Workbench component bridge — local components reach the Drawing Board (components slice)
 
 **Date:** 2026-06-12

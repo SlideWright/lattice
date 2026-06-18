@@ -1,3 +1,8 @@
+---
+status: shipped
+summary: Phase 1 migration of roadmap, journey, and word-cloud into the shared transformer registry, bringing the dispatch to five
+---
+
 # roadmap / journey / word-cloud migrations to the shared transformer registry — phase 1
 
 Date: 2026-05-17

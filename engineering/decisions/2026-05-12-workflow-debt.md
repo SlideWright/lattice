@@ -1,3 +1,8 @@
+---
+status: proposed
+summary: Analysis of residual workflow friction after the 2026-05-12 reconciliation plus three concrete proposals for the next round
+---
+
 # Workflow debt — analysis and proposals
 
 After the 2026-05-12 workflow reconciliation (commits `0f7d67b` and

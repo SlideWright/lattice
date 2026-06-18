@@ -1,8 +1,6 @@
 ---
-status: design-proposal
-version: 1
-supersedes: none
-last-status-update: 2026-05-16
+status: proposed
+summary: Proposal to replace regex-on-HTML test assertions with parsed-DOM queries across chart-family and seven other test files
 ---
 
 # Proposal — replace regex-on-HTML assertions with parsed-DOM queries

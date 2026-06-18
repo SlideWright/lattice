@@ -1,3 +1,8 @@
+---
+status: shipped
+summary: Cross-checking all 52 component manifests against the CSS/transforms that render them; 34 findings across 17 components, all remediated
+---
+
 # Manifest-vs-CSS audit — do the manifest claims match what the CSS does?
 
 **Date:** 2026-06-15

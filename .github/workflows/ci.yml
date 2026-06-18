@@ -360,6 +360,16 @@ jobs:
           node-version: 22
           cache: npm
           cache-dependency-path: docs/package-lock.json
+      # setup-chrome has no built-in cache and pulls a full Chrome each run; its
+      # Linux install dir is ~/.cache/setup-chrome, so cache that — a hit lets
+      # the action reuse the binary instead of downloading. Keyed loosely (the
+      # overflow check just needs *a* Chrome to measure layout widths, not a
+      # pinned version); bump the suffix to force a refresh.
+      - name: Cache setup-chrome download
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/setup-chrome
+          key: setup-chrome-${{ runner.os }}-stable-v1
       - uses: browser-actions/setup-chrome@v1
         id: chrome
         with:

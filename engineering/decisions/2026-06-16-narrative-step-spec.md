@@ -1,3 +1,8 @@
+---
+status: proposed
+summary: Field-level spec for the narrative step model — authoring grammar and step data contract reusing the focus feature substrate
+---
+
 # Narrative step model — the field-level spec (increment 1)
 
 **Status:** spec decided 2026-06-16. Makes the §6 authoring sketch of

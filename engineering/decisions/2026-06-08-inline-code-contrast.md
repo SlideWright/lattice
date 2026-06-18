@@ -1,3 +1,8 @@
+---
+status: shipped
+summary: Surface-aware contrast contract for the inline-code chip, plus the cross-path pill over-match fix
+---
+
 # Inline-code chip — surface-aware contrast contract
 
 **Date:** 2026-06-08

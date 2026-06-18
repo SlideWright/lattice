@@ -1,5 +1,6 @@
 ---
-status: design-decision
+status: shipped
+summary: Per-viewer colour-blindness accommodation via CVD-curated first-class a11y palettes plus a Brettel/Machado CVD simulation and audit gate
 last-updated: 2026-06-16
 companion:
   - ../../design/theming.md

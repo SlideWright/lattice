@@ -1,3 +1,8 @@
+---
+status: shipped
+summary: Retires the section-as-grid north star on merit; flex section with in-flow content-height bands is the canonical Form architecture
+---
+
 # Retire section-as-grid — B (flex + in-flow bands) is the canonical end state
 
 **Status:** decided 2026-06-16. **Rejects** the "A-later — section-as-grid"

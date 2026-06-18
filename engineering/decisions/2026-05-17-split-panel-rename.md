@@ -1,3 +1,8 @@
+---
+status: shipped
+summary: Renames split-panel to split-list so each split-* suffix uniformly names what the right panel contains
+---
+
 # 2026-05-17 — split-panel → split-list rename (shipped)
 
 **Status:** Shipped. This note captures the design decision + executed

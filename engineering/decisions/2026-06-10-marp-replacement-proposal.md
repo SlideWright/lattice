@@ -1,3 +1,9 @@
+---
+status: superseded
+summary: Full proposal to replace Marp with the owned lattice-engine — Marp now fully retired as dependency and render path
+superseded-by: ../marp-independence.md
+---
+
 # Replacing Marp — full proposal
 
 **Status:** shipped / superseded. Marp is fully retired — gone as both a

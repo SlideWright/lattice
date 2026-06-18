@@ -1,3 +1,8 @@
+---
+status: shipped
+summary: Re-opens the layout audit's no-cuts verdict and consolidates components that share form and slot grammar into one component plus variants
+---
+
 # Layout Redundancy Analysis — prune & consolidate
 
 **Date:** 2026-06-07 · **Branch:** `claude/layout-redundancy-analysis-CUOBY`

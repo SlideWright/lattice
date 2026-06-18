@@ -1,3 +1,8 @@
+---
+status: proposed
+summary: A free, boardroom-quality read-aloud voice via a VoiceModel ladder (OpenRouter TTS then Kokoro WASM), banning speechSynthesis
+---
+
 # Read-aloud — one consistent voice, never the per-device lottery (2026-06-14)
 
 > **Status: design.** Decides *how* Lattice speaks a deck aloud at near-zero

@@ -1,3 +1,8 @@
+---
+status: proposed
+summary: Organizing idea making the narrative step, not the slide, the unit of navigation so a slide assembles element by element
+---
+
 # The narrative step model — "assemble the slide as you go"
 
 **Status:** direction decided 2026-06-16 (the static-PDF policy is settled; the

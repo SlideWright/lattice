@@ -1,9 +1,6 @@
 ---
-status: design-speculation
-version: 1
-supersedes: none
-extends: 2026-06-09-drawing-board-asset-import.md
-last-status-update: 2026-06-10
+status: proposed
+summary: The Workbench — crafting themes live and AI-authored layouts as local assets
 ---
 
 # The Workbench — crafting themes (live) and AI-authored layouts, as local assets

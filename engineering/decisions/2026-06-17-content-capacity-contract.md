@@ -1,3 +1,8 @@
+---
+status: proposed
+summary: Decision to make each layout's content capacity a structured manifest fact and lint-enforced contract rather than buried prose
+---
+
 # Content-capacity contract — make layout size a manifest fact, not buried prose
 
 **Status:** decided 2026-06-17. Owns the **direction**; the execution lands on

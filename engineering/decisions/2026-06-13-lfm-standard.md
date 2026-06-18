@@ -1,3 +1,8 @@
+---
+status: shipped
+summary: Naming and owning Lattice's Markdown dialect as LFM, a versioned standard over CommonMark and markdown-it
+---
+
 # LFM — naming and owning Lattice's Markdown dialect
 
 **Date:** 2026-06-13

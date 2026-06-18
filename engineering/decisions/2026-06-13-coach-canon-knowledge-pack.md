@@ -1,3 +1,8 @@
+---
+status: shipped
+summary: Distilled principle-card pack injecting the presentation canon's qualitative judgement into the cloud-tier Coach prompt
+---
+
 # A presentation-canon knowledge pack for the Coach (2026-06-13)
 
 > Status: **v1 shipped** (was: design / spec). Decides *how* to give the

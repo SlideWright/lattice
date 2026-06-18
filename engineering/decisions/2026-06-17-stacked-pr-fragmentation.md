@@ -1,5 +1,6 @@
 ---
-status: incident
+status: shipped
+summary: Process incident — one portrait feature shipped as a 7-PR stacked chain, codified into HARD RULE #17 (one feature = one branch = one PR)
 last-updated: 2026-06-17
 companion:
   - ../workflow.md

@@ -1,3 +1,8 @@
+---
+status: shipped
+summary: Groups the flat lib/components tree into design-system buckets and moves component-specific rules into per-component CSS
+---
+
 # Component reorganization and modular CSS — refactor plan
 
 Date: 2026-05-18

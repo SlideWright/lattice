@@ -1,3 +1,8 @@
+---
+status: shipped
+summary: Drawing Board export embeds all web fonts, fixing the lazy-load race that dropped off-screen faces to fallbacks
+---
+
 # Drawing Board export embeds all web fonts — the lazy-load race fix
 
 **Date:** 2026-06-12

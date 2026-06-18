@@ -29,13 +29,17 @@ machine-readable (and so the "Current notes" list below can be
 
 ```yaml
 ---
-status: proposed        # proposed | in-progress | blocked | shipped | superseded
-created: 2026-06-17
-updated: 2026-06-17      # optional; bump when materially revised
-supersedes:              # optional: filename(s) this note replaces
-superseded-by:           # optional: filename that replaced this note
+# status is one of: proposed | in-progress | blocked | shipped | superseded
+status: proposed
+summary: one line describing what this note covers
+# optional, only for status: superseded — the filename that replaced this note:
+superseded-by: 2026-06-18-foo.md
 ---
 ```
+
+`status` and `summary` are required; `created` is derived from the filename
+date (don't duplicate it). Keep each value on one line — the index parser reads
+flat `key: value`, so put any note on its OWN `#` line, never trailing a value.
 
 | `status` | Glyph | Meaning | Index group |
 |---|---|---|---|
@@ -83,328 +87,122 @@ it is load-bearing.
 
 ## Current notes
 
-- [2026-04-30-mermaid-theming.md](2026-04-30-mermaid-theming.md) — Marp's `:root`
-  CSS variable scoping, Mermaid theming contract, CDN-to-local bundle
-  migration. Was previously the repo-root `AgentNote.md`.
-- [2026-05-04-authoring-proposals.md](2026-05-04-authoring-proposals.md) —
-  forward-looking design RFC for the authoring system: component
-  model, modifier catalogue, new layout proposals (§3.1–§3.14),
-  authoring DX & rollout plan. Explicitly non-canonical; ground
-  truth lives in per-component `lib/components/<name>/<name>.docs.md`
-  and `examples/gallery.md`. **Status (2026-05-15):** 11/14 Part 3
-  proposals Shipped; §3.11 / §3.13 / §3.14 Open. Each proposal
-  carries an inline status tag.
-- [2026-05-07-chart-family-proposals.md](2026-05-07-chart-family-proposals.md) —
-  companion to the May 4 RFC: chart-family layouts that turn
-  list/sublist + inline-code pills into timelines, Gantts, pie /
-  progress / kanban, plus adjacent candidates. Same component-model
-  frame; same non-canonical status. **Status (2026-05-15):** 5/5
-  core layouts Shipped (§1 – §3.3); 0/5 adjacent candidates Shipped
-  (§4.1 – §4.5). Each proposal carries an inline status tag.
-- [2026-05-07-ascii-preview-geometry.md](2026-05-07-ascii-preview-geometry.md) —
-  canonical 43-wide / pad-2 / gap-5 geometry for every `` ```text ``
-  ASCII layout preview (now in per-component `<name>.docs.md` files
-  via `anatomyBlock` manifest references), plus the
-  [`tools/ascii-preview.py`](../../tools/ascii-preview.py) auditor
-  and builder library.
-- [2026-05-10-multi-resolution-strategy.md](2026-05-10-multi-resolution-strategy.md) —
-  decision note for multi-resolution support (HD + 4K, candidate 4:3):
-  native Marp `@size` + px→cqi refactor + `container-type:size` on section.
-  No theme changes; authors opt in via front-matter `size:` key.
-- [2026-05-10-tauri-exploration.md](2026-05-10-tauri-exploration.md) —
-  v1 architectural shape for the SlideWright desktop app on Tauri.
-  Names the personas (primary: Maya, the engineering leader;
-  secondaries: Naveen the consultant, Jessamine the solo founder,
-  Theo the DevRel/OSS maintainer, Camila the brand-conscious PM,
-  Khoa the OSS maintainer; explicit anti-persona Diana, the visual
-  designer — we don't compete with Figma/Keynote/Canva).
-  **Project positioning: open-source first (MIT, matching Lattice),
-  no consumer sales motion, potential enterprise tier later via
-  three small v1.0 seams (policy tier in Settings, audit-event
-  emission, identity capability hub).** Telemetry flipped to
-  opt-in; viral "made with SlideWright" PDF badge; GitHub Sponsors
-  funding before any paid tier. Captures
-  the product vision (markdown authoring, focused/split/PiP editor
-  layouts, collapsible workspace sidebar, multi-format export,
-  cloud storage, collaboration, AI, brand theming, extensions &
-  connectors) and the load-bearing decisions: no Node in v1, **own
-  the engine** (`lattice-engine` replaces the runtime dependency on
-  `@marp-team/marp-core`; marp-core stays as a bootstrap until
-  gallery parity, then is dropped), Yjs document model, `EditorHost`
-  facade over CodeMirror 6, `DiagramService` for Mermaid (with
-  render cache), `SlideSegmenter` + `RenderCache` + `PreviewPane`
-  for incremental rendering keyed by slide content hash,
-  `LayoutShell` for focused/split/PiP modes, `WorkspaceView` for the
-  file tree (storage-adapter-blind, opens with a file/folder/last-
-  session), UI surfaces via a central command registry (palette ⌘K
-  + quick switcher ⌘P + native menu + right-click + status bar;
-  toolbar off by default; `when`-clause DSL hides irrelevant items),
-  `Settings` (layered defaults → user → workspace; user
-  tier in the OS app-config dir, workspace tier in
-  `.slidewright/settings.json` parallel to `.vscode/`; extensions
-  install at user scope only; secrets stay in keychain),
-  `Onboarding` (welcome screen + welcome deck authored as a real
-  Lattice deck + spotlight tour engine; extension-contributable),
-  provider-agnostic AI (capability hub for any LLM — Claude in v1,
-  bundled local model as suggested default in v1.x, Ollama / OpenAI
-  / etc. via connectors; `DocsIndex` for RAG grounding over our own
-  docs; `ChatPanel` with tool use; `Suggestions` for ambient hints;
-  privacy mode forces local-only), `ThemeStudio` for brand palettes,
-  worker-sandboxed
-  extension runtime with capability hubs (the
-  export/storage/AI/diagram/layout adapter interfaces become the
-  public plugin API; first-party features dogfood the same API).
-  v1-load-bearing probes (live preview parity, single-slide render,
-  PDF, PNG, engine retirement) named as the next step, plus a
-  Gaps section covering critical pre-v1 decisions (speaker notes
-  + presentation mode, save semantics + crash recovery,
-  operational infrastructure for auto-update / crash reporting /
-  telemetry, code signing lead time, import strategy with PPTX as
-  the lever, math rendering, app accessibility, table-stakes
-  editor features, performance budgets, document format
-  versioning). Authoritative six-release plan (v1.0 → v1.5)
-  with three impactful capabilities per release and a cost
-  constraint — no dependency on runtime costs we can't control,
-  so cloud AI arrives at v1.5 as user-supplied keys only; local
-  AI lands at v1.2 instead. Honest plan evaluation: 73/100
-  (up from 60 when v1 was monolithic), with named remaining risks
-  and probe-style mitigations (H5b / H6b for cross-platform
-  WebView parity, H9 for local-AI quality, H10 for doc-drift CI;
-  plus operational adds: public ROADMAP.md, Plan B shell of
-  Electron + Puppeteer, extension-API semver policy, v1.0 framed
-  as abandonment-tolerant). Closes with a development-leverage
-  analysis: disciplined use of Claude Code realistically
-  compresses v1 from ~18 months to ~10, with the architecture
-  doc itself as the high-fidelity prompt. No desktop code yet.
-- [2026-05-11-4k-rendering-audit.md](2026-05-11-4k-rendering-audit.md) —
-  continuation guide: 65 remaining component-level px values to convert,
-  root cause analysis for every reported 4K visual defect, section-level cqi
-  ambiguity (padding bleed into header/footer), Mermaid sizing investigation,
-  and step-by-step implementation order for the next session.
-- [2026-05-15-radar-chart.md](2026-05-15-radar-chart.md) — decision note
-  for the native `radar` layout: series-major authoring contract,
-  auto-fit/eyebrow scale resolution, the six-variant lineup (each variant
-  framed as one boardroom question), the shared geometry kernel, and the
-  finding that `--fg` is an undefined token repo-wide.
-- [2026-05-15-shipped-without-proposal.md](2026-05-15-shipped-without-proposal.md) —
-  register of layouts that landed (in what was then `templates.md`,
-  now per-component `<name>.docs.md`) without going through the May 4
-  / May 7 speculative-proposals catalogues. Covers
-  `word-cloud`, the Split family (Templates 30–34), `quadrant`,
-  `radar`, the seven `math*` layouts, and the six legal-family
-  layouts. Housekeeping, not history: when a layout ships outside
-  the catalogues, add an entry here.
-- [2026-06-10-marp-replacement-proposal.md](2026-06-10-marp-replacement-proposal.md) —
-  full proposal to replace Marp. Audits exactly what Marp/Marpit does
-  for Lattice today (one dep, `@marp-team/marp-cli`; the thin slide
-  layer: GFM parse, `---` splitting, directives, `@theme`/`@size`,
-  `<section>` chrome, `![bg]`, KaTeX, twemoji/auto-scaling) versus
-  what's already ours (the markdown-it plugins, the transformer
-  registry, `lattice.css`). Maps the four render paths (emulator +
-  runtime already Marp-free; marp-cli + the docs playground still
-  coupled), the emulator's hand-rolled-regex parser gaps vs GFM, the
-  VS Code question (marp-vscode *is* Marp Core — Scope 1 keeps it),
-  and the website's single render seam. Recommends building
-  `lattice-engine` on `markdown-it` and a five-phase plan that keeps
-  the baselines green. Expands the "Own the engine" section of the
-  Tauri note. **Status: shipped / superseded** — Marp is fully retired;
-  see [`engineering/marp-independence.md`](../marp-independence.md).
-- [2026-06-13-coach-canon-knowledge-pack.md](2026-06-13-coach-canon-knowledge-pack.md) —
-  design model for giving the cloud-tier Coach the presentation canon's
-  *qualitative* judgement (Minto / Duarte / Knaflic / *Pitfalls* / Zen)
-  via a distilled **principle-card pack** injected into the Converse prompt
-  — not OpenRouter file upload (which re-bills a book per call and is
-  copyright-exposed). Reuses the shipped `architect-knowledge.js` cloud-only
-  injection pattern, retrieval-gating (`architect-retrieval.js`), prompt
-  caching (`cache_control`), and the `usage.cost` budget tally; degrades to
-  the deterministic floor. Cloud-tier-only by design. **Status: spec / open.**
-- [2026-06-14-github-project-management.md](2026-06-14-github-project-management.md) —
-  lightweight, kanban-light project management that keeps durable design knowledge
-  in markdown ADRs (vendor-neutral) while adding GitHub Issues as a claimable work
-  queue + a per-repo Project board, mirrored back to a generated `BACKLOG.md`. Flat
-  cards grouped into swimlanes by label (decision doc = swimlane; no
-  sub-issue trees), an `area/type/priority(critical–low)/status` taxonomy, an enforced
-  Definition-of-Ready (template + label-gate Action), and the atomic-claim primitive
-  that lets agents pick up work distributed-but-safe (L3, deferred — race-free lock
-  designed then). Ship L1+L2 first. **Status: design-decision** (open questions
-  resolved 2026-06-14).
-- [2026-06-14-deck-print-styling.md](2026-06-14-deck-print-styling.md) —
-  print support that survives the trip to the boardroom, on paper, in colour
-  *and* black-and-white. Separates the two surfaces (the CLI/puppeteer colour
-  PDF is already landscape/full-bleed/exact-colour and stays; the web "Print"
-  button = bare `window.print()` into the browser's portrait dialog is the "ugly
-  as sin"). Core gap: nothing survives grayscale (every palette encodes meaning
-  in hue). Decision (paper-first; dedicated print theme mode; design-doc-first):
-  a `--print-*` **token band** per theme selected by an explicit `print` mode —
-  the same move as the existing `--dark-*` band, *not* plain `@media print`
-  (which would also strip the colour PDF). B&W survivability via border + stepped
-  lightness + SVG pattern fills, gated by extending `contrast.test.js` to white.
-  Orientation prefill answered two ways: landscape PDF MediaBox + `/PrintScaling
-  /None` (the strong, dialog-free path), and `@page { size: A4 landscape }`
-  keyword to prefill the `window.print()` dialog. Resolves paper-fit
-  (scale-to-fit-center, paper-blind; auto-pick closest sheet — 16:9→Legal,
-  4:3→Letter/A4), grayscale ramp (borders + stepped grays + SVG pattern fills),
-  the `mode: print` trigger (export option + front-matter), and CLI parity
-  (engine `--print` flag). Recommends Build A (fix the web path) now + Build B
-  (print band + auto-paper-fit PDF export) as the real deliverable.
-  **Status: design-decision** (open questions resolved 2026-06-14).
-- [2026-06-14-drift-watch-rebase-thrash.md](2026-06-14-drift-watch-rebase-thrash.md) —
-  a watched PR rebased on *every* `main` movement during a parallel merge train,
-  thrashing CI (~6 force-pushes, ~5 cancelled runs, a spurious red `ci` gate).
-  Two root causes: HARD RULE #16 had no debounce and conflated *behind* with
-  *must-rebase-now*; and the `ci` aggregate gate mapped a supersession
-  `cancelled` → failure. Fix: rebase only at the moments that matter (conflict +
-  the two merge-time checkpoints), keeping the watch as a detector; and treat a
-  `cancelled` tier as non-failing. **Status: superseded-in-part** by
-  `2026-06-15-retire-drift-watch.md` (the watch is dropped entirely; root-cause
-  analysis still holds).
-- [2026-06-15-retire-drift-watch.md](2026-06-15-retire-drift-watch.md) —
-  retires the continuous background drift watch altogether. Even debounced, the
-  poller + its self-check-in timers flooded the chat, and the async
-  `mergeable_state` triage was brittle. Replaced with **rebase-before-push**: fetch
-  + rebase-if-behind right before every push, plus one re-check before an
-  authorized merge; a green PR may sit behind `main` until then (harmless under
-  squash-merge). Merge queue remains the structural fix if cross-session races
-  recur. **Status: design-decision.**
-- [2026-06-15-webrtc-av-collaboration.md](2026-06-15-webrtc-av-collaboration.md) —
-  companion to the 2026-06-14 Yjs collaboration doc: what it takes to add
-  *talk-while-you-edit* audio/video to the Drawing Board. Key insight — it isn't
-  a separate "Yjs-for-media", it's the **other half of the same WebRTC pipe**:
-  `y-webrtc`'s document sync (`RTCDataChannel`) and a call (media tracks) ride one
-  `RTCPeerConnection`, one signaling handshake, one STUN/TURN ladder, so the
-  signaling Worker / room / presence / identity from the Yjs plan are reused
-  as-is. The hard part is that media ≠ text: **TURN becomes load-bearing** (a
-  blocked call is just broken, not a retry) and a **P2P mesh tops out ~4** before
-  needing an **SFU** (the media analog of the Yjs Durable-Object relay, but
-  heavier). Recommends a phased path mirroring the Yjs phasing — **Phase A:
-  `simple-peer` mesh, audio-first/cameras-optional, on the shared Yjs room
-  (near-zero infra, depends on Yjs Phase 1); Phase B: SFU for large/corporate
-  rooms + recording (deferred until mesh is outgrown).** Honest caveats: TURN
-  cost, mesh ceiling, `getUserMedia` UX, privacy framing of a camera vs a cursor,
-  and that the cloud sandbox can verify the call *UI* but not end-to-end media.
-  **Status: design / exploration — no code.**
-- [2026-06-16-lattice-export-format.md](2026-06-16-lattice-export-format.md) —
-  the **"Lattice" export format**: the top-of-dropdown, shareable deck. Reframes
-  "package Lattice" as three jobs (recipient / author / dev / LLM) and ships
-  **two layered artifacts** — a single self-contained **`.html`** (the *share*
-  format) and a **`.lattice`** zip (the *project* format). The `.html` is a
-  **portable presentation player**: pre-rendered semantic slides (engine +
-  mermaid + KaTeX dropped, diagrams baked to SVG) with **zero external calls**
-  (fonts/images/CSS inlined), progressive-enhanced by an inlined ~15–30 KB
-  player — three **capability tiers** (desktop dual-screen via `window.open` +
-  `postMessage` / Window Mgmt API · desktop single-screen · mobile degraded =
-  CSS `dvh` viewport-fill + swipe + overlay controls), with a **universal
-  slide-up notes sheet** and dual-screen presenter as a desktop enhancement.
-  Import is a *different door* from foreign PDF/PPTX (`2026-06-14-presentation-import.md`):
-  a **lossless round-trip** via one versioned **manifest envelope** (`lib/core/lattice-doc.js`,
-  base64'd verbatim source — *carry the source, never scrape the render*),
-  one schema across both containers. Hard reuse boundary: **facts not fixtures**
-  — extract pure kernels (`notes-core`, FIT math, transport state machine),
-  never import a live Drawing Board module into the frozen, versioned export
-  player (`lib/export/`). **Status: design-decision** (shape aligned 2026-06-16;
-  size tier + colour mode held).
-- [2026-06-16-rtl-vertical-text-support.md](2026-06-16-rtl-vertical-text-support.md) —
-  design model for **directional text**: right-to-left (Arabic),
-  left-to-right, and **vertical** (`tb`, traditional CJK). Current state is
-  Latin-centric LTR — `lang:` is parsed but inert, no `dir`, every layout uses
-  physical `left`/`right` (**189 declarations across 48 CSS files**), Latin-only
-  fonts. Shape: a new **`dir:` directive** (`auto`/`ltr`/`rtl`/`tb`) + emit a
-  **real `lang=`/`dir=`** on the section; a **logical-CSS refactor**
-  (`margin-inline-start`, `text-align: start`, …) that mirrors RTL *and* lays the
-  foundation vertical needs — paid once, serves both — guarded by a new
-  physical-property lint; **vertical attempt-all + `verticalBlocked` blocklist**
-  (render vertical by default, blocklist on reviewer-confirmed breakage; text
-  buckets reviewed first); **self-hosted `:lang()`-gated, register-matched OFL
-  font pairs** (display=editorial / body=clean-sans, *not* one flat Noto weight)
-  — Amiri + IBM Plex Arabic, Tiro + Mukta (Hindi), Source Han Serif/Sans (CJK),
-  Shippori Mincho + Noto Sans JP, Noto Serif KR + Pretendard (CDN MITM'd
-  in-sandbox).
-  Verification mirrors layouts here but **glyph/export fidelity needs owner
-  inspection** (sandbox can't load the webfonts). Pins a **6-language test
-  matrix** — Arabic · Hindi · Chinese (SC/TC) · Japanese · Korean — each
-  earning its slot by stressing a *distinct* axis (RTL mirroring · complex
-  shaping ·
-  vertical), so the suite is a coverage checklist, not a sample. Phased:
-  directives → CSS refactor → fonts → vertical → demo deck. **Status: design-decision** (scope RTL/LTR + vertical, CJK
-  breadth + vertical default aligned 2026-06-16; only the CJK font-budget /
-  lazy-load question held).
-- [2026-06-14-read-aloud-kokoro.md](2026-06-14-read-aloud-kokoro.md) —
-  design model for a free/near-free, boardroom-quality read-aloud voice. Bans
-  the browser `speechSynthesis` (per-device lottery, never Siri — kept as a
-  dev/test stand-in only) in favor of **one consistent voice** via a `VoiceModel`
-  **voice ladder** (twin of `architect-model.js`). Two complementary production
-  rungs: **`openrouter-tts`** (primary — OpenRouter shipped a real
-  `POST /api/v1/audio/speech` endpoint in 2026 with gpt-4o-mini-tts / Gemini
-  Flash TTS; reuses the app's existing **browser OAuth key + CORS**, so no new
-  infra, **$0 to the project**, ~0.6¢/slide on the user's own credit) →
-  **`kokoro-wasm`** (Kokoro-82M ONNX in-browser for the no-account/offline/
-  privacy-max case — $0, ships ~80–330 MB weights) → `speechSynthesis` (test
-  only) → `silent` floor. Corrects an earlier draft that wrongly called
-  OpenRouter a dead end (it had no TTS *then*). First surface: **Practice/
-  Rehearsal mode**, speaking the slide's speaker note (`notes-core.js`) synced to
-  the existing dwell targets + pause beats; second: the **Tauri authoring
-  preview** (gains a native Kokoro rung later). Includes a real cost table.
-  **Status: design** — architecture settled; build scope (OpenRouter-first vs.
-  full ladder) is the open call.
-- [2026-06-16-colour-blindness-accessibility.md](2026-06-16-colour-blindness-accessibility.md) —
-  design model for **per-viewer colour-blindness accommodation**. Reframes
-  "full theme replacement" as **CVD-curated palettes that win the palette
-  *name-resolution* chain** (the theme doesn't load) rather than a CSS overlay
-  — grounded in a render-path audit showing **every** surface (emulator PDF,
-  Drawing Board, Present, Practice) already selects a palette *by name*, so a
-  `resolve-accessibility.js` sitting above `resolve-palette.js` reaches them
-  all and reuses every existing gate (contrast suite, dark variants, Mermaid
-  collapse). _**Superseded (2026-06-16):** the override resolver was removed —
-  the `a11y-*` palettes are now plain, mode-invariant, first-class themes you
-  pick like any theme (`theme: a11y-deuteranopia`). See the ADR's top-of-file
-  update note._ Surfaces the load-bearing prerequisite — **no CVD
-  simulation exists** and the contrast suite is WCAG-luminance-only, so the
-  build *starts* with a Brettel/Machado simulation in `lib/theme/` + a CVD
-  audit gate that fails adjacent slots that collapse, *then* curates palettes
-  against it. Names the honest limits: the **≤8-distinguishable ceiling** (12
-  categorical + 8 chart slots can't all survive dichromacy by colour alone),
-  **workspace-wins holds only at live render** (a baked PDF carries the
-  author's front-matter type), and raster images stay uncorrected. **v1 = the
-  three dichromacies (deuteranopia/protanopia/tritanopia) × light/dark,
-  palette-only; achromatopsia + redundant encoding (patterns/markers/✓!✗)
-  deferred to phase 2.** **Status: shipped** (scope aligned 2026-06-16; all four
-  types now ship); the palette-only-v1 / patterns-later framing is **superseded**
-  by `2026-06-16-cvd-redundant-encoding.md` (patterns proved mandatory, not phase-2).
-- [2026-06-16-cvd-redundant-encoding.md](2026-06-16-cvd-redundant-encoding.md) —
-  the empirical finding that **overturns palette-only**: measuring the max
-  categories that stay distinct under dichromacy (greedy farthest-point in the
-  *simulated* space, within the contrast contract's lightness bands) gives
-  **1–2 on the pale light-deck fills, 4–5 on the deep marks** — colour alone
-  cannot carry categorical data, because each dichromacy collapses hue to ~one
-  dimension and the contract pins luminance. Decision: **redundant non-colour
-  encoding is mandatory, built WITH the palettes** — per-index **texture
-  patterns** (palette-blind, inlined in each `a11y-*` theme — no `data-a11y`
-  stamp), **semantic glyphs** (✓/!/✗), and line-style variation; colour becomes
-  one redundant channel. Textures reach inline Mermaid/chart SVGs (incl. the
-  Mermaid pie) via **M1 — a kernel-injected `<pattern>` `<defs>` transform**
-  (shared kernel, both render paths). Because texture carries distinction
-  colour-independently, **achromatopsia re-enters v1 → all four types**, and the
-  encoding doubles as a grayscale-print accommodation. **Status: shipped**
-  (finding verified, encoding built + rendered 2026-06-16).
-- [2026-06-16-deck-fact-checking.md](2026-06-16-deck-fact-checking.md) —
-  design model for an **LLM fact-check for decks**. Reframes the deliverable
-  from a ✓/✗ verdict to an **honest "trust map"** — *what to trust, what's
-  stale, what the model can't possibly know, what's worth paying to verify* —
-  because an LLM checking from memory is confidently wrong often enough that a
-  bare checkmark launders a hallucination. Two tiers: a **quick** parametric
-  pass (verdict + **two** confidences — verdict-confidence *and* staleness/age
-  — with a *derived* `needs_deeper` flag that ranks what to escalate) and a
-  **deep** pass on 0..N escalated claims via the `deep-research` harness. The
-  brief's **insider-claim gate** becomes a deterministic **verifiability
-  triage** (external-verifiable / insider-unverifiable / forward-looking /
-  opinion) so budget only lands on claims a public record exists for, and a
-  private company's revenue gets a *"only you can confirm — attach your
-  source"* affordance, never a fake confidence. **Maker–checker** is
-  **independent+reconcile over two different OpenRouter models** (peers-or-
-  better; disagreement is surfaced, not resolved) — no second provider needed,
-  it rides the Drawing Board's existing `ArchitectModel` OpenRouter ladder.
-  Layered architecture: a pure `fact-check-core` extractor (mirrors
-  `lint-core`'s slide walk; locating a claim needs no model) under a **Drawing
-  Board panel** as the first surface (CLI + annotated-PDF later). Honours the
-  Architect's "model never owns correctness" floor. **Status: design-decision**
-  (scope aligned 2026-06-16; maker–checker design-only — wiring deferred).
+<!-- decisions-index:begin -->
+
+### Active — proposed · in-progress · blocked
+
+- ☐ [2026-06-17-content-capacity-contract.md](2026-06-17-content-capacity-contract.md) — Decision to make each layout's content capacity a structured manifest fact and lint-enforced contract rather than buried prose
+- ◐ [2026-06-17-workflow-efficiency-review.md](2026-06-17-workflow-efficiency-review.md) — Red-team of the agent operating model — leaner CI/hooks, trimmed CLAUDE.md, a merge queue, and machine-readable doc status structure
+- ☐ [2026-06-16-deck-fact-checking.md](2026-06-16-deck-fact-checking.md) — Design model for an LLM deck fact-check that returns an honest trust map with quick parametric and deep-research tiers
+- ☐ [2026-06-16-focus-highlighting.md](2026-06-16-focus-highlighting.md) — Design model for a universal, CSS-driven, cross-format per-element focus/highlight capability splitting targeting from treatment
+- ☐ [2026-06-16-form-manifest-medium-independent-contract.md](2026-06-16-form-manifest-medium-independent-contract.md) — Decision to keep and grow the lib/forms manifest as a medium-independent composition contract with 2D CSS as its first renderer
+- ☐ [2026-06-16-lattice-export-format.md](2026-06-16-lattice-export-format.md) — The Lattice export format — a portable self-contained .html player plus a lossless .lattice project zip sharing one manifest envelope
+- ☐ [2026-06-16-narrative-step-model.md](2026-06-16-narrative-step-model.md) — Organizing idea making the narrative step, not the slide, the unit of navigation so a slide assembles element by element
+- ☐ [2026-06-16-narrative-step-spec.md](2026-06-16-narrative-step-spec.md) — Field-level spec for the narrative step model — authoring grammar and step data contract reusing the focus feature substrate
+- ☐ [2026-06-16-orientation-in-the-form-model.md](2026-06-16-orientation-in-the-form-model.md) — Where portrait/landscape orientation lives in the Form model and how a layout declares vs is made to support portrait
+- ☐ [2026-06-16-rtl-vertical-text-support.md](2026-06-16-rtl-vertical-text-support.md) — Design model for directional text — RTL, LTR, and vertical CJK via a dir directive, a logical-CSS refactor, and self-hosted OFL fonts
+- ☐ [2026-06-15-webrtc-av-collaboration.md](2026-06-15-webrtc-av-collaboration.md) — Design exploration for adding talk-while-you-edit audio/video to the Drawing Board over the same WebRTC pipe as Yjs document sync
+- ☐ [2026-06-14-deck-print-styling.md](2026-06-14-deck-print-styling.md) — Print support that survives the boardroom on paper, in colour and B&W, via a per-theme print token band and auto-paper-fit
+- ☐ [2026-06-14-github-project-management.md](2026-06-14-github-project-management.md) — Kanban-light project management keeping ADRs in markdown while adding GitHub Issues as a claimable queue mirrored to BACKLOG.md
+- ☐ [2026-06-14-plugin-extension-system.md](2026-06-14-plugin-extension-system.md) — LPM — a unified plugin model promoting Lattice's six ad-hoc extension idioms into one spec'd, shared-kernel system
+- ☐ [2026-06-14-presentation-import.md](2026-06-14-presentation-import.md) — Importing across board + bench — brand-faithful themes (Workbench) and Lattice-native content (Drawing Board)
+- ☐ [2026-06-14-read-aloud-kokoro.md](2026-06-14-read-aloud-kokoro.md) — A free, boardroom-quality read-aloud voice via a VoiceModel ladder (OpenRouter TTS then Kokoro WASM), banning speechSynthesis
+- ◐ [2026-06-14-worked-exemplar-decks.md](2026-06-14-worked-exemplar-decks.md) — Worked exemplar decks that show what good looks like, replacing placeholder skeleton spines with finished real-content decks
+- ☐ [2026-06-14-yjs-collaboration-exploration.md](2026-06-14-yjs-collaboration-exploration.md) — A zero-hosting-cost Yjs model for Google-Docs-style real-time collaboration on the static-hosted Drawing Board
+- ☐ [2026-06-13-gate-strategy-change-detection.md](2026-06-13-gate-strategy-change-detection.md) — Whether every push/PR runs all gates or change-detection plus tiered scheduling can cut cost without losing the floor
+- ◐ [2026-06-13-islands-sketch-density-collisions.md](2026-06-13-islands-sketch-density-collisions.md) — Islands and sketch chrome paints over content because its height is not subtracted from the content safe-area
+- ☐ [2026-06-12-contracts-layout-swapping.md](2026-06-12-contracts-layout-swapping.md) — Design spec for contracts and layout-swapping as the third Workbench leg — same content, swap layout via one class
+- ☐ [2026-06-12-p4-regression-gate-retire-marp.md](2026-06-12-p4-regression-gate-retire-marp.md) — P4 retire marp-cli — pivoted from a flaky pixel-regression gate to per-component semantic invariant testing
+- ☐ [2026-06-10-design-studio-themes-layouts.md](2026-06-10-design-studio-themes-layouts.md) — The Workbench — crafting themes live and AI-authored layouts as local assets
+- ◐ [2026-06-10-drawing-board-huge-deck-preview-perf.md](2026-06-10-drawing-board-huge-deck-preview-perf.md) — Scalable live preview for huge decks — incremental-patch path landed, viewport virtualization the remaining layer
+- ☐ [2026-06-09-drawing-board-asset-import.md](2026-06-09-drawing-board-asset-import.md) — In-browser asset import for the Drawing Board — import, persistence, and the two consumers of imported assets
+- ☐ [2026-06-09-map-spatial-form-spec.md](2026-06-09-map-spatial-form-spec.md) — Design spec for the `map` component and the new `spatial` form — geography-placed points/regions in the chart bucket
+- ☐ [2026-06-09-slide-context-autocomplete.md](2026-06-09-slide-context-autocomplete.md) — Slide-context-sensitive autocompletion for the Drawing Board editor — class names, modifiers, slot scaffolds, data vocab
+- ☐ [2026-06-08-architect-coach-features.md](2026-06-08-architect-coach-features.md) — Spec extending the Architect from deck builder into a four-stage presentation coach across build, review, annotate, and rehearse
+- ☐ [2026-06-08-architect-modes.md](2026-06-08-architect-modes.md) — Spec redesigning Architect onboarding into Drafting and Freehand modes — when it leads with structure versus gets out of the way
+- ☐ [2026-06-08-drawing-board-coach-vs-converse.md](2026-06-08-drawing-board-coach-vs-converse.md) — Reframes the Architect as a Coach (deterministic, no composer) versus Converse (real-model chat) toggle, replacing the chat framing
+- ◐ [2026-06-08-drawing-board-phase-2-build.md](2026-06-08-drawing-board-phase-2-build.md) — Phase 2 build notes recording the Architect's voice decisions and the verification stance for tiers that can't run in the sandbox
+- ☐ [2026-06-08-drawing-board-phase-2-plan.md](2026-06-08-drawing-board-phase-2-plan.md) — Phase 2 build plan for the Drawing Board Architect's voice — the ArchitectModel tier ladder behind the deterministic floor
+- ☐ [2026-06-07-drawing-board-architect.md](2026-06-07-drawing-board-architect.md) — Design model for the Drawing Board browser-only deck studio and its on-device AI assistant, the Architect
+- ☐ [2026-06-07-split-family-analysis.md](2026-06-07-split-family-analysis.md) — Analysis showing the six split-* components share one transform, with Option B consolidation ratified but execution pending
+- ☐ [2026-05-19-typography-token-refactor.md](2026-05-19-typography-token-refactor.md) — Proposal to collapse the 16 --fs-* tokens to 10 organized as three role-based scales, migrated in five pixel-gated phases
+- ☐ [2026-05-17-chart-family-refactor.md](2026-05-17-chart-family-refactor.md) — Deferred proposal to distribute chart-family internals into per-component folders to match the convention
+- ☐ [2026-05-17-post-migration-improvements-proposal.md](2026-05-17-post-migration-improvements-proposal.md) — Pre-implementation proposal for post-migration improvements to the shared transformer registry, including bundle-size recovery
+- ☐ [2026-05-17-treatments-rename.md](2026-05-17-treatments-rename.md) — Proposal to rename the bg-* treatment family to tint-* / mark-* split across orthogonal category, treatment, and placement axes
+- ☐ [2026-05-16-html-assertion-refactor.md](2026-05-16-html-assertion-refactor.md) — Proposal to replace regex-on-HTML test assertions with parsed-DOM queries across chart-family and seven other test files
+- ☐ [2026-05-16-post-foundation-followups.md](2026-05-16-post-foundation-followups.md) — Captures every workitem deferred or discovered late during the design-system-foundation branch, tracked as next
+- ☐ [2026-05-12-kpi-candidates.md](2026-05-12-kpi-candidates.md) — Candidate exploration deck for the executive KPI system — one cohesive base with five layout modifiers
+- ☐ [2026-05-12-workflow-debt.md](2026-05-12-workflow-debt.md) — Analysis of residual workflow friction after the 2026-05-12 reconciliation plus three concrete proposals for the next round
+- ☐ [2026-05-11-inline-code-directives.md](2026-05-11-inline-code-directives.md) — Design for namespaced inline-code directives (icons, vars) with all five open questions resolved but nothing implemented yet
+- ☐ [2026-05-10-tauri-exploration.md](2026-05-10-tauri-exploration.md) — v1 architectural shape for the SlideWright desktop app on Tauri, with personas, six-release plan, and engine-ownership decisions
+- ☐ [2026-05-07-chart-family-proposals.md](2026-05-07-chart-family-proposals.md) — Chart-family layout proposals turning list/sublist plus inline-code pills into timelines, Gantts, pie and progress views
+- ☐ [2026-05-04-authoring-proposals.md](2026-05-04-authoring-proposals.md) — Forward-looking authoring RFC covering the component model, modifier catalogue, new layout proposals, and rollout plan
+
+### Shipped — pending teardown (absorb into canon, then delete)
+
+- ☑ [2026-06-17-image-rearchitecture.md](2026-06-17-image-rearchitecture.md) — Re-architecting image rendering to a shared-engine CSS-background split with kernel asset URL resolution across PDF and web paths
+- ☑ [2026-06-17-stacked-pr-fragmentation.md](2026-06-17-stacked-pr-fragmentation.md) — Process incident — one portrait feature shipped as a 7-PR stacked chain, codified into HARD RULE #17 (one feature = one branch = one PR)
+- ☑ [2026-06-16-colour-blindness-accessibility.md](2026-06-16-colour-blindness-accessibility.md) — Per-viewer colour-blindness accommodation via CVD-curated first-class a11y palettes plus a Brettel/Machado CVD simulation and audit gate
+- ☑ [2026-06-16-cvd-redundant-encoding.md](2026-06-16-cvd-redundant-encoding.md) — Empirical finding that colour alone cannot carry categorical data under dichromacy, making redundant texture/glyph encoding mandatory
+- ☑ [2026-06-16-retire-section-as-grid.md](2026-06-16-retire-section-as-grid.md) — Retires the section-as-grid north star on merit; flex section with in-flow content-height bands is the canonical Form architecture
+- ☑ [2026-06-16-social-mobile-portrait-sizes.md](2026-06-16-social-mobile-portrait-sizes.md) — Native portrait/square @size support for social and mobile surfaces via a unified size registry and orientation-aware engine reflow
+- ☑ [2026-06-15-docs-perf-gating-policy.md](2026-06-15-docs-perf-gating-policy.md) — Durable policy for the docs-site perf gate, treating perf as a non-deterministic species of gate that flaps on runner variance
+- ☑ [2026-06-15-form-chart-clip.md](2026-06-15-form-chart-clip.md) — Root-cause and fix for form-chart collapse-then-clip in dense PDF slides via robust content-box sizing
+- ☑ [2026-06-15-form-implementation.md](2026-06-15-form-implementation.md) — Engineering ADR implementing the Form composition model (Frame/Cell/Tile) in engine + CSS, retiring islands and fixing chrome-over-content
+- ☑ [2026-06-15-manifest-css-audit.md](2026-06-15-manifest-css-audit.md) — Cross-checking all 52 component manifests against the CSS/transforms that render them; 34 findings across 17 components, all remediated
+- ☑ [2026-06-15-retire-drift-watch.md](2026-06-15-retire-drift-watch.md) — Retires the continuous background drift watch in favour of rebase-before-push plus one pre-merge re-check
+- ☑ [2026-06-14-competitive-analysis.md](2026-06-14-competitive-analysis.md) — Durable, cited source-of-truth backing the public comparison page — Lattice versus AI deck generators and the field
+- ☑ [2026-06-14-deck-preview-consolidation.md](2026-06-14-deck-preview-consolidation.md) — Consolidating the docs-site deck-preview render bridges behind shared modules so a render fix lands once, not eight times
+- ☑ [2026-06-14-universal-chart-export.md](2026-06-14-universal-chart-export.md) — Universal chart export with a tiered SVG plus in-browser PNG path, correcting the earlier wrong call that PNG was not viable
+- ☑ [2026-06-13-coach-canon-knowledge-pack.md](2026-06-13-coach-canon-knowledge-pack.md) — Distilled principle-card pack injecting the presentation canon's qualitative judgement into the cloud-tier Coach prompt
+- ☑ [2026-06-13-export-to-marp.md](2026-06-13-export-to-marp.md) — Export to Marp — a portable, Marp-native deck bundle with baked splits, minified palette CSS, and browser runtime
+- ☑ [2026-06-13-lfm-standard.md](2026-06-13-lfm-standard.md) — Naming and owning Lattice's Markdown dialect as LFM, a versioned standard over CommonMark and markdown-it
+- ☑ [2026-06-13-shared-deck-preview.md](2026-06-13-shared-deck-preview.md) — One shared filmstrip preview controller for all four docs-site surfaces, ending the per-surface render drift
+- ☑ [2026-06-13-split-frontmatter.md](2026-06-13-split-frontmatter.md) — A split front-matter key driving heading-based slide division, defaulting to headings, with Marp reframed as an export target
+- ☑ [2026-06-13-svg-native-legend.md](2026-06-13-svg-native-legend.md) — SVG-native chart legend and spine via a shared builder, replacing the fixed HTML legend across all four keyed charts
+- ☑ [2026-06-12-export-font-embedding.md](2026-06-12-export-font-embedding.md) — Drawing Board export embeds all web fonts, fixing the lazy-load race that dropped off-screen faces to fallbacks
+- ☑ [2026-06-12-workbench-component-bridge.md](2026-06-12-workbench-component-bridge.md) — Bridge that carries CSS-only local Workbench components into live render and every export path on the Drawing Board
+- ☑ [2026-06-11-autocomplete-self-maintenance.md](2026-06-11-autocomplete-self-maintenance.md) — Self-maintaining autocomplete with gates against central-list drift, plus an IDE-agnostic manifest capability surface
+- ☑ [2026-06-11-chart-legend-system.md](2026-06-11-chart-legend-system.md) — Unified chart legend system — the 70/30 right rail, shared spine and catalog across colour-categorical chart members
+- ☑ [2026-06-11-drawing-board-frontmatter-config.md](2026-06-11-drawing-board-frontmatter-config.md) — The Drawing Board Deck-setup drawer — a config surface that edits and persists deck front-matter behind the scenes
+- ☑ [2026-06-11-emulator-on-engine-p2.md](2026-06-11-emulator-on-engine-p2.md) — P2 of the Marp replacement — put the emulator on lattice-engine, deleting the bespoke regex parser for one markdown impl
+- ☑ [2026-06-11-sketch-finish.md](2026-06-11-sketch-finish.md) — Sketch finish — a palette-blind hand-drawn Finish modifier plus the curated carta palette, PDF-fidelity-safe
+- ☑ [2026-06-11-universal-token-system.md](2026-06-11-universal-token-system.md) — Universal role-based token system — design, crosswalk, and the phased alias-then-flip migration, phases 1–7 implemented
+- ☑ [2026-06-11-workbench-export-bridge.md](2026-06-11-workbench-export-bridge.md) — Export bridge carrying Workbench library themes into the Drawing Board and through every export; components deferred
+- ☑ [2026-06-09-shadcn-migration.md](2026-06-09-shadcn-migration.md) — shadcn/React migration of every docs-site surface, website-only inside docs/ with Starlight kept for docs
+- ☑ [2026-06-08-inline-code-contrast.md](2026-06-08-inline-code-contrast.md) — Surface-aware contrast contract for the inline-code chip, plus the cross-path pill over-match fix
+- ☑ [2026-06-07-drawing-board-phase-1-plan.md](2026-06-07-drawing-board-phase-1-plan.md) — Slice-by-slice Phase 1 walking-skeleton plan for the Drawing Board, shipped gate-green across all six slices in PR #79
+- ☑ [2026-06-07-layout-consolidation-result.md](2026-06-07-layout-consolidation-result.md) — Result deck for the layout consolidation that removed four redundant components (58 to 54), each rendered live through its survivor
+- ☑ [2026-06-07-layout-redundancy-analysis.md](2026-06-07-layout-redundancy-analysis.md) — Re-opens the layout audit's no-cuts verdict and consolidates components that share form and slot grammar into one component plus variants
+- ☑ [2026-06-07-layout-redundancy-clusters.md](2026-06-07-layout-redundancy-clusters.md) — Decision-aid deck rendering each redundancy cluster's members with parallel content to show keep / merge / drop calls
+- ☑ [2026-06-07-slot-header-auto-lift.md](2026-06-07-slot-header-auto-lift.md) — Makes slotLabelLift auto-generate slot headers so card-style layouts no longer silently break when authors omit bold
+- ☑ [2026-06-06-mermaid-dual-render-prune.md](2026-06-06-mermaid-dual-render-prune.md) — Brings the emulator to the runtime's per-section dual-render standard for Mermaid dark mode, then prunes the redundant CSS override layer
+- ☑ [2026-06-05-token-structure-audit.md](2026-06-05-token-structure-audit.md) — Splits the overloaded decorative --text-muted token into independent contrast-graded structural-text roles per theme
+- ☑ [2026-05-18-component-reorg-and-modular-css.md](2026-05-18-component-reorg-and-modular-css.md) — Groups the flat lib/components tree into design-system buckets and moves component-specific rules into per-component CSS
+- ☑ [2026-05-18-important-audit-phase-35-prep.md](2026-05-18-important-audit-phase-35-prep.md) — Audit of lattice.css !important declarations for @layer activation, separating 21 cascade-workarounds from 331 legitimate library overrides
+- ☑ [2026-05-17-chart-family-registry-migration.md](2026-05-17-chart-family-registry-migration.md) — Phase 1 migration of chart-family into the shared transformer registry, covering the HTML and per-section render paths
+- ☑ [2026-05-17-roadmap-journey-word-cloud-registry-migration.md](2026-05-17-roadmap-journey-word-cloud-registry-migration.md) — Phase 1 migration of roadmap, journey, and word-cloud into the shared transformer registry, bringing the dispatch to five
+- ☑ [2026-05-17-runtime-bundler-esbuild.md](2026-05-17-runtime-bundler-esbuild.md) — lattice-runtime.js becomes an esbuild bundle output that inlines the shared transformer registry, preserving the public path
+- ☑ [2026-05-17-shared-transformer-registry.md](2026-05-17-shared-transformer-registry.md) — A shared transformer registry the three render paths consume through one interface, with split-panels as the pilot transformer
+- ☑ [2026-05-17-split-panel-rename.md](2026-05-17-split-panel-rename.md) — Renames split-panel to split-list so each split-* suffix uniformly names what the right panel contains
+- ☑ [2026-05-15-radar-chart.md](2026-05-15-radar-chart.md) — Design model for the native radar layout — series-major contract, six-variant lineup, shared geometry kernel
+- ☑ [2026-05-15-shipped-without-proposal.md](2026-05-15-shipped-without-proposal.md) — Register of layouts that landed without going through the May 4 / May 7 speculative-proposal catalogues
+- ☑ [2026-05-12-diagram-elevation.md](2026-05-12-diagram-elevation.md) — Making inner diagram elements read as cards on a categorical band, with band-tonality follow-up shipped in the same branch
+- ☑ [2026-05-12-diagram-tokens.md](2026-05-12-diagram-tokens.md) — Migration from --mermaid-* to --diagram-* tokens with palette-blind role naming and contrast assertions
+- ☑ [2026-05-12-kpi-redesign.md](2026-05-12-kpi-redesign.md) — Wholesale redesign of the kpi layout into one cohesive base with five layout modifiers built around executive needs
+- ☑ [2026-05-12-roadmap-redesign.md](2026-05-12-roadmap-redesign.md) — Redesign of the visually inert roadmap layout into five table-driven concepts shipped as roadmap plus four modifiers
+- ☑ [2026-05-11-4k-rendering-audit.md](2026-05-11-4k-rendering-audit.md) — Continuation guide for converting remaining component px values to cqi and resolving every reported 4K visual defect
+- ☑ [2026-05-10-multi-resolution-strategy.md](2026-05-10-multi-resolution-strategy.md) — Multi-resolution support via native Marp @size, px-to-cqi refactor, and container-type size on section, opt-in by front-matter
+- ☑ [2026-05-07-ascii-preview-geometry.md](2026-05-07-ascii-preview-geometry.md) — Canonical 43-wide pad-2 gap-5 geometry for every ASCII layout preview plus the ascii-preview auditor and builder
+- ☑ [2026-05-07-chart-family-experiment-results.md](2026-05-07-chart-family-experiment-results.md) — Overnight experiment build of three chart-family layouts behind a shared chart-frame, feature-class gated
+- ☑ [2026-04-30-mermaid-theming.md](2026-04-30-mermaid-theming.md) — Marp :root variable scoping root cause, Mermaid theming contract, and CDN-to-local bundle migration
+
+### Historical — superseded
+
+- ⊘ [2026-06-14-drift-watch-rebase-thrash.md](2026-06-14-drift-watch-rebase-thrash.md) — A watched PR thrashing CI on every main movement during a merge train — two root causes in HARD RULE #16 and the ci gate → [2026-06-15-retire-drift-watch.md](2026-06-15-retire-drift-watch.md)
+- ⊘ [2026-06-11-islands.md](2026-06-11-islands.md) — The islands slide-composition model — inset tokens and masthead lift shipped; the canonical vocabulary moved to forms.md → [../../design/forms.md](../../design/forms.md)
+- ⊘ [2026-06-10-marp-replacement-proposal.md](2026-06-10-marp-replacement-proposal.md) — Full proposal to replace Marp with the owned lattice-engine — Marp now fully retired as dependency and render path → [../marp-independence.md](../marp-independence.md)
+
+_105 notes — 46 active, 56 shipped (pending teardown), 3 historical. Generated by `npm run decisions:index`; edit a note's front-matter, not this list._
+
+<!-- decisions-index:end -->

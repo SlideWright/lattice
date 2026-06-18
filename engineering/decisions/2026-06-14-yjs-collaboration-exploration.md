@@ -1,3 +1,8 @@
+---
+status: proposed
+summary: A zero-hosting-cost Yjs model for Google-Docs-style real-time collaboration on the static-hosted Drawing Board
+---
+
 # Real-time collaboration on the Drawing Board — a zero-cost Yjs model
 
 **Date:** 2026-06-14

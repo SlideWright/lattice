@@ -1,3 +1,8 @@
+---
+status: proposed
+summary: Deferred proposal to distribute chart-family internals into per-component folders to match the convention
+---
+
 # 2026-05-17 — chart-family refactor proposal
 
 **Status:** Deferred — proposal captured here for a future cleanup

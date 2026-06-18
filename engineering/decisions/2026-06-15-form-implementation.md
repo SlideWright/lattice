@@ -1,3 +1,8 @@
+---
+status: shipped
+summary: Engineering ADR implementing the Form composition model (Frame/Cell/Tile) in engine + CSS, retiring islands and fixing chrome-over-content
+---
+
 # Form — implementing the composition model in code
 
 **Status:** in progress 2026-06-15. Implements the canonical model in

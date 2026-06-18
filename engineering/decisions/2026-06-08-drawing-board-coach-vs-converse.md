@@ -1,3 +1,8 @@
+---
+status: proposed
+summary: Reframes the Architect as a Coach (deterministic, no composer) versus Converse (real-model chat) toggle, replacing the chat framing
+---
+
 # The Architect, reframed: Coach vs Converse (2026-06-08)
 
 > Status: **design — approved direction, not yet built.** Supersedes the "the

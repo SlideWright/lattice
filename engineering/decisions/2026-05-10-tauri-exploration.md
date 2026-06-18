@@ -1,3 +1,8 @@
+---
+status: proposed
+summary: v1 architectural shape for the SlideWright desktop app on Tauri, with personas, six-release plan, and engine-ownership decisions
+---
+
 # Tauri exploration — desktop authoring app for Lattice
 
 **Status:** in progress. Strategy discussion 2026-05-11 narrowed the

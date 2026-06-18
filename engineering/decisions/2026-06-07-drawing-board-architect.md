@@ -1,3 +1,8 @@
+---
+status: proposed
+summary: Design model for the Drawing Board browser-only deck studio and its on-device AI assistant, the Architect
+---
+
 # The Drawing Board — browser deck studio + the Architect (2026-06-07)
 
 > Status: **proposal / design model.** No code yet. This doc fixes direction

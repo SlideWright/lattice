@@ -1,9 +1,6 @@
 ---
-status: implementation-ready
-version: 2
-supersedes: v1 (in-place revision, same date)
-companion: none
-last-status-update: 2026-05-17
+status: proposed
+summary: Proposal to rename the bg-* treatment family to tint-* / mark-* split across orthogonal category, treatment, and placement axes
 ---
 
 # Treatments — rename `bg-*` to `tint-*` / `mark-*` with orthogonal placement

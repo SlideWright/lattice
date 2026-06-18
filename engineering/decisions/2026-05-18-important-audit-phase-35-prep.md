@@ -1,3 +1,8 @@
+---
+status: shipped
+summary: Audit of lattice.css !important declarations for @layer activation, separating 21 cascade-workarounds from 331 legitimate library overrides
+---
+
 # `!important` audit — Phase 3.5 (@layer activation) prep
 
 Date: 2026-05-18
