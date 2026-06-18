@@ -50,21 +50,16 @@
 	background: var(--accent);
 	color: var(--on-accent);
 }
-/* On the narrow topbar the label folds away, leaving the glyph as a chip. */
+/* On the narrow header the label folds away, leaving the glyph as a chip — so
+ * both launchers (Tour + Demo) stay reachable on a phone. The site header
+ * (SiteHeader.astro) already drops its palette select + inline nav at this size,
+ * so two glyph chips fit beside the compact search / light-dark / menu cluster. */
 @media (max-width: 720px) {
 	.tour-btn-label {
 		display: none;
 	}
 	.tour-btn {
 		padding: 0 8px;
-	}
-	/* Reclaim the room for the glyph launcher(s): on a workspace topbar that
-	 * carries a launcher (Tour / Demo), collapse the wordmark to the logo so two
-	 * chips + the palette/mode controls fit a phone. Scoped via :has() so the
-	 * landing topbar (no launcher) keeps its wordmark. (:has() is fine here — the
-	 * HARD-RULE ban is only for themes/ Marp-preview CSS, not the docs site.) */
-	.topbar:has(.tour-btn) .brand-mark {
-		display: none;
 	}
 }
 

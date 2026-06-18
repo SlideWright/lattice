@@ -71,7 +71,7 @@ function isStepLive(step) {
  *        target on screen (e.g. switch the active mobile tab) before the spotlight.
  * @param {string} [opts.buttonLabel='Demo']
  * @param {string} [opts.buttonTitle]
- * @param {string|Element|null} [opts.mountTarget='.topbar-actions']  Where to put
+ * @param {string|Element|null} [opts.mountTarget='.sh-actions']  Where to put
  *        the launcher; `null` for a caller-driven demo with no button.
  * @returns {{ start: () => void, seen: () => boolean, markSeen: () => void }}
  */
@@ -84,7 +84,7 @@ export function initGuidedDemo(opts) {
 		onReveal,
 		buttonLabel = 'Demo',
 		buttonTitle = 'Watch an auto-demo build a deck',
-		mountTarget = '.topbar-actions',
+		mountTarget = '.sh-actions',
 	} = opts || {};
 
 	const noop = { start() {}, seen: () => true, markSeen() {} };

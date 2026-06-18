@@ -153,6 +153,7 @@ a separate `tourAutoStartAllowed()` keeps the auto-start production-only.
   without forcing a download).
 - The launcher is **opt-in** via the **Demo** button; we deliberately do **not**
   auto-start it — the tour already owns first-visit. It is **first-class on
-  mobile**: both launchers fold to glyph-only on the narrow topbar and the brand
-  wordmark collapses to its logo (`:has(.tour-btn)`-scoped, so the landing topbar
-  keeps its wordmark) to make room.
+  mobile**: both launchers (Tour + Demo) fold to glyph-only chips on the narrow
+  header, mounted into the shared `SiteHeader` action cluster (`.sh-actions`)
+  beside the compact search / light-dark / menu controls — the header drops its
+  palette select + inline nav at that width, so two chips fit a phone.

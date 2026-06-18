@@ -138,7 +138,7 @@ in patch versions.
   transient slide is never persisted or the deck renamed). Built on the same
   driver.js engine and palette-blind styling as the tour, and governed by the same
   global **Guided tours** toggle. **First-class on mobile** — both launchers fold
-  to glyph-only and the brand wordmark collapses to its logo to make room. New
+  to glyph-only chips on the narrow header, so they stay reachable on a phone. New
   engine `docs/src/playground/guided-demo.js` (a reusable `initGuidedDemo` with a
   per-step `perform` hook + snapshot/restore) + content
   `docs/src/playground/drawing-board-demo.js`.
