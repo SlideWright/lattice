@@ -143,11 +143,11 @@ export function exportMarkdown(source, name, theme, components) {
 // (window.LatticePlayground.marp), shared with the CLI so the two can't drift.
 // `themeBase` is the hashed `…/playground/v/<hash>/themes/` URL the Drawing Board
 // already fetches palettes from; the static assets sit beside it under export/.
-export async function exportMarp(source, name, palette, themeBase, { includeAgent = true, version } = {}) {
+export async function exportMarp(source, name, palette, themeBase, { includeAgent = true, version, lintVocab } = {}) {
 	const PG = typeof window !== 'undefined' ? window.LatticePlayground : undefined;
 	const marp = PG?.marp;
 	if (!marp) throw new Error('engine not ready — try again in a moment');
-	const { bakeSplits, STATIC_ASSETS, AGENT_ASSETS, MARP_CONFIG_CJS, withRuntimeScripts, packageJson, vscodeSettings, readme, agentsMd } = marp;
+	const { bakeSplits, STATIC_ASSETS, AGENT_ASSETS, MARP_CONFIG_CJS, LINT_JS, withRuntimeScripts, packageJson, vscodeSettings, readme, agentsMd, lintVocabJson } = marp;
 	const slug = safeName(name);
 	const baseName = (p) => p.split('/').pop();
 
@@ -204,6 +204,7 @@ export async function exportMarp(source, name, palette, themeBase, { includeAgen
 	// components.json there too). If the catalog can't be fetched, the bundle is
 	// still emitted without the kit rather than failing the whole export.
 	let agentOk = false;
+	let agentLint = false;
 	if (includeAgent && Array.isArray(AGENT_ASSETS) && agentsMd) {
 		// All-or-nothing: fetch every kit asset FIRST, then add them only if all
 		// succeeded — so a partial fetch never yields an AGENTS.md referencing a
@@ -214,7 +215,17 @@ export async function exportMarp(source, name, palette, themeBase, { includeAgen
 		}));
 		if (fetched.length && fetched.every(Boolean)) {
 			for (const f of fetched) dir.file(f.to, f.blob);
-			dir.file('AGENTS.md', agentsMd({ name: slug, version }));
+			// The zero-dependency linter: the wrapper + the vocabulary snapshot
+			// (lint-core.js rode along in AGENT_ASSETS above). Present only when the
+			// playground bundle exposes them AND the page passed a lintVocab — an
+			// older cached bundle ships the kit WITHOUT the linter. `lint` keeps
+			// AGENTS.md/README honest so they never reference a missing lint.js.
+			agentLint = Boolean(LINT_JS && lintVocabJson && lintVocab);
+			if (agentLint) {
+				dir.file('agent/lint.js', LINT_JS);
+				dir.file('agent/lint-vocab.json', lintVocabJson(lintVocab));
+			}
+			dir.file('AGENTS.md', agentsMd({ name: slug, version, lint: agentLint }));
 			agentOk = true;
 		}
 	}
@@ -224,7 +235,7 @@ export async function exportMarp(source, name, palette, themeBase, { includeAgen
 	dir.file('marp.config.cjs', MARP_CONFIG_CJS);
 	dir.file('package.json', `${JSON.stringify(packageJson(slug), null, 2)}\n`);
 	dir.file('.vscode/settings.json', vscodeSettings(themesList));
-	dir.file('README.md', readme({ name: slug, palette: chosen, themes: themesList, agent: agentOk }));
+	dir.file('README.md', readme({ name: slug, palette: chosen, themes: themesList, agent: agentOk, lint: agentLint }));
 
 	const blob = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE' });
 	download(blob, `${slug}.zip`);

@@ -1032,7 +1032,14 @@ const dbData = JSON.stringify({
 					else if (kind === 'charts-svg') { onStatus('Exporting chart…'); await exportChart(frame, deckName(), onStatus); }
 					else if (kind === 'marp') {
 						onStatus('Building Marp bundle…');
-						await exportMarp(source, deckName(), meta.palette, dbd.themeBase, { version: meta.version });
+						// The AI-agent kit ships by default; the opt-out is the persistent
+						// Settings → Workspace preference (`exportAgentKit`). Read the stored
+						// key directly (this script block has no prefs import); absent = on.
+						const includeAgent = localStorage.getItem('lattice-db-export-agent-kit') !== 'off';
+						// lintVocab (for the bundled zero-dep linter) rides in the db-data blob.
+						let lintVocab;
+						try { lintVocab = JSON.parse(document.getElementById('db-data').textContent).lintVocab; } catch {}
+						await exportMarp(source, deckName(), meta.palette, dbd.themeBase, { version: meta.version, includeAgent, lintVocab });
 						status('Marp bundle exported (.zip).');
 					}
 					hideProgress();

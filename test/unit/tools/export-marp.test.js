@@ -110,6 +110,27 @@ describe('export-marp bundle (end-to-end)', () => {
     assert.match(fs.readFileSync(path.join(dest, 'README.md'), 'utf8'), /Extend it with an AI agent/);
   });
 
+  test('ships a runnable zero-dependency linter, and it actually runs', () => {
+    for (const f of ['agent/lint.js', 'agent/lint-core.js', 'agent/lint-vocab.json']) {
+      assert.ok(fs.existsSync(path.join(dest, f)), `bundle is missing ${f}`);
+    }
+    // The vocab is a valid, populated snapshot.
+    const vocab = JSON.parse(fs.readFileSync(path.join(dest, 'agent', 'lint-vocab.json'), 'utf8'));
+    assert.ok(Array.isArray(vocab.names) && vocab.names.length > 0, 'vocab carries component names');
+    assert.ok(vocab.capacity && Object.keys(vocab.capacity).length > 0, 'vocab carries the capacity contract');
+    // Run the bundled linter on the bundle's own deck with ONLY node — no install.
+    const clean = execFileSync('node', ['agent/lint.js', 'split-headings.md'], { cwd: dest, encoding: 'utf8' });
+    assert.match(clean, /no issues/);
+    // And on an over-capacity deck → the capacity rule (shipped in the snapshot) fires.
+    fs.writeFileSync(path.join(dest, 'overflow.md'),
+      '<!-- _class: cards-grid -->\n\n## Too many.\n\n- A\n  - x\n- B\n  - x\n- C\n  - x\n- D\n  - x\n- E\n  - x\n- F\n  - x\n');
+    let out = '';
+    try { out = execFileSync('node', ['agent/lint.js', 'overflow.md'], { cwd: dest, encoding: 'utf8' }); }
+    catch (e) { out = (e.stdout || '') + (e.stderr || ''); } // non-zero exit on errors; warnings exit 0
+    assert.match(out, /capacity-overflow/);
+    assert.match(out, /fix:/);
+  });
+
   test('--no-agent produces a lean Marp-only bundle', () => {
     const lean = fs.mkdtempSync(path.join(os.tmpdir(), 'exp-lean-'));
     execFileSync('node', [TOOL, path.join(REPO, 'examples', 'split-headings.md'), lean, 'indaco', '--no-agent'], { stdio: 'pipe' });

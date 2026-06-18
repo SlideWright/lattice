@@ -33,6 +33,11 @@ export const PREFS = {
   // grammar context (directives, fence language, front-matter values); 'off'
   // opens the popup only on typing / Ctrl-Space. Inert when autocomplete is off.
   typeahead:    { key: 'lattice-db-typeahead',    def: 'class',    values: ['class', 'all', 'off'] },
+  // Marp export: bundle the AI-agent kit (AGENTS.md + the component catalog + a
+  // zero-dependency linter) so a recipient's agent can extend the deck. On by
+  // default; 'off' produces a lean Marp-only bundle (mirrors the CLI `--no-agent`).
+  // Read directly by the export controller via this key (lattice-db-export-agent-kit).
+  exportAgentKit: { key: 'lattice-db-export-agent-kit', def: 'on', values: ['on', 'off'] },
 };
 
 export function getPref(name) {
