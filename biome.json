@@ -15,7 +15,6 @@
       "!docs/.astro",
       "!docs/src/components/ui",
       "!docs/public/playground/lattice-playground.js",
-      "!docs/public/bakeoff/all.js",
       "!docs/src/playground/theme-core.generated.js",
       "!docs/src/playground/layout-core.generated.js",
       "!docs/src/playground/authoring-core.generated.js",
