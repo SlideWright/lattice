@@ -1,16 +1,17 @@
 ---
-status: in-progress
-summary: Multi-stage plan to activate CSS @layer. Stage 1 SHIPPED — the 12 cascade-workaround !important in base.variants.css removed via a path-agnostic doubled-class (0,2,2); .marpit> was tried first and caught breaking the emulator path. Stages 1.5-3 (path reconciliation + full layering) remain.
+status: blocked
+summary: Stage 1 SHIPPED (#435) — the 12 cascade-workaround !important in base.variants.css removed via a path-agnostic doubled-class (0,2,2). Stage 1.5 spike DONE: resolved the content-mask unknown (it runs only on the engine path, never the emulator) but found Stage 2 VETOED by R-PATH — the export-to-Marp / marp-vscode consumer styles decks with marp-core's own unlayered scaffold that Lattice cannot wrap, so full @layer activation is not achievable. Recommendation: stop at Stage 1.
 ---
 
 # Scope — activating `@layer` across the Lattice cascade
 
-> **Stage 1 shipped; Stages 1.5–3 not yet built.** This is the scoping plan for
-> the work `cascade.md` defers as "full coordinated rewrite … no near-term
-> action." Read `engineering/cascade.md` first — it is the canonical statement of
-> *why partial activation is a trap*. This doc says *how* a full activation would
-> be staged and verified; Stage 1 (de-`!important` via specificity, no layering)
-> is done — the remaining stages flag the open questions still to be spiked.
+> **Stage 1 shipped (#435); Stage 1.5 spike done; Stage 2 VETOED — see
+> Recommendation.** This scoped the work `cascade.md` defers as "full coordinated
+> rewrite … no near-term action." Outcome: Stage 1 (de-`!important` via
+> specificity, no layering) shipped; the Stage 1.5 spike then proved full
+> activation cannot cover the export-to-Marp / marp-vscode consumer (R-PATH). The
+> inert `@layer` declaration stays inert by design. Read `engineering/cascade.md`
+> first — it is the canonical statement of *why partial activation is a trap*.
 
 ## Goal
 
@@ -44,7 +45,8 @@ any layer (any author `!important` beats normal inline regardless of layering).
 
 This scoping pass adds three findings from `lib/engine/css.js`:
 
-1. **The engine scaffold and the bundle compose into ONE stylesheet.**
+1. **The engine scaffold and the bundle compose into ONE stylesheet.** *(⚠ Path 1
+   only — the emulator/runtime do NOT share `composeCss`; corrected by Stage 1.5.)*
    `composeCss()` emits `scaffold(geometry)` + `resolvedTheme` (theme with
    `@import 'lattice'` inlined) + `orientationCss`, in that order. So scaffold
    and bundle share one cascade context — a coordinated layering **can** wrap the
@@ -69,6 +71,8 @@ This scoping pass adds three findings from `lib/engine/css.js`:
    **This validated finding #3 / R2: the render paths really do diverge.**
 
 3. **A content-mask transform straddles the render paths — THE #1 UNKNOWN.**
+   *(⚠ RESOLVED by Stage 1.5: the mask runs only on Path 1; the emulator never
+   masks, which is why the stamp survives there.)*
    `packTheme()` runs `maskNonPaginationContent()`, commenting out every
    `content:` in a `section…::after` that isn't `attr(data-lattice-pagination)`
    (mirroring Marpit's pagination plugin for baseline parity). Its regex
@@ -123,18 +127,42 @@ chosen *after* `.marpit >` failed pixel-diff on the emulator path (finding #2).
 Verified AE=0 light+dark across the Stage-0 state-marker set; unit (2210),
 integration (452), lint, build:check all green.
 
-**Stage 1.5 — reconcile the content-mask across the three render paths.** Resolve
-finding #3: prove the `.marpit>` selectors behave identically (mask-escape +
-specificity win) in composeCss, the emulator, and the runtime preview. If a path
-diverges, fix the path (or the transform) before proceeding. Gate: the Stage-0
-set is identical across all three paths.
+**Stage 1.5 — reconcile the render paths. ✅ DONE (spike) — and it resolved the
+#1 unknown AND surfaced a Stage-2 veto.** The spike traced the actual CSS
+assembly of all three paths and corrected this doc's framing:
 
-**Stage 2 — coordinated full layering (all-or-nothing).** Wrap *every* source —
-including the engine `scaffold()` block — in its target layer in one pass.
-Audit every remaining `!important` for cross-layer inversion (rule 2): a
-library-override `!important` landing in an earlier-declared layer than a rule it
-must NOT beat is now a latent bug. Gate: AE=0 across the full gallery sweep,
-both modes, all three paths.
+- **The content-mask runs on ONE path only.** `composeCss`/`packTheme`/
+  `maskNonPaginationContent` is called *only* by `lib/engine.render()` (Path 1,
+  used by marp.config + the docs playground). The **emulator** (Path 2,
+  `lattice-emulator.js` — which renders the galleries / golden-diff) does **not**
+  call `composeCss`; it hand-assembles its own `<style>` from raw `dist/lattice.css`
+  + an appended `marpSystemCss` (`lattice-emulator.js:1043-1057`, whose
+  `section[data-lattice-pagination]::after` is the emulator's pagination, 0,1,2).
+  The **runtime** (Path 3) injects *no* page stylesheet — only `#lattice-orientation`.
+  ⇒ Finding #1 ("scaffold + bundle compose into one sheet") is **Path-1-only**;
+  finding #3's "#1 unknown" is **resolved** — the emulator never masks, which is
+  why the ARCHIVED stamp survives there. (Stage 1's parity holds on Path 1 too:
+  the doubled class matches the mask regex identically to the old single class, so
+  mask behaviour is unchanged — confirmed by the maker-checker.)
+- **Stage-2 must-wrap-together list (every unlayered string reaching a browser):**
+  (1) `dist/lattice.css` (build-css); (2) `scaffold()` `css.js:86`; (3)
+  `orientationCss()` — emitted by THREE sites (`css.js:393`, `lattice-emulator.js:1272`,
+  `runtime:1074`); (4) the emulator `@page`/`body`/sizing literals
+  (`lattice-emulator.js:1268-1271`); (5) `marpSystemCss` `:1043-1057` (note its
+  `aside.lattice-notes{display:none !important}` — another `!important` outside
+  base.variants); (6) palette `themes/*.css` (injected raw); (7) author
+  `style:` `globalStyle` (`:1274`, unlayered by nature).
+
+**Stage 2 — coordinated full layering. ⛔ BLOCKED by R-PATH (see risk register).**
+The export-to-Marp consumer (`marp-bundle.js` + the marp-vscode preview the
+runtime serves) styles decks with **marp-core's own scaffold CSS, which Lattice
+does not emit and cannot wrap.** Layering `lattice.css` while marp-core's scaffold
+stays unlayered re-creates the exact rule-3 trap with **marp-core winning** — a
+broken preview for every exported deck. Since export-to-Marp is a first-class,
+supported feature (not a retired render path), all-or-nothing layering is **not
+achievable across all consumers from Lattice's side.** Stage 2 cannot proceed
+until this is resolved (exclude-by-design + prove safe, or abandon). *This is the
+honest end of the line: Stage 1 banked the practical win; Stage 2 is vetoed.*
 
 **Stage 3 — make it load-bearing + document.** Flip `build-css.js` to emit the
 layer wrappers, delete the "broad activation is blocked" comments scattered
@@ -162,20 +190,34 @@ cascade, and add a lint/test guard that fails if a source file is unlayered.
   early layer could newly beat a later-layer override. Mitigation: Stage 2
   importance audit; keeping all library-overrides in the *latest* layer
   (`diagram-overrides`) so they can't out-`!important` earlier layers.
-- **R4 — marp-bundle export.** `lattice.css` ships as the export themeSet; layered
-  CSS is valid CSS so it carries over, but confirm the exported bundle still
-  parses in a downstream Marp consumer (cheap smoke test, not a visual gate).
-- **R5 — marginal payoff.** Honest call: the end state removes 14 `!important` and
-  makes the cascade legible, but it is architectural hygiene, not a user-visible
-  fix. Stage 1 captures most of the practical value (the fragility) at a fraction
-  of the risk — **if appetite runs out, ship Stage 1 and stop.**
+- **R-PATH — marp-core scaffold we don't control (BLOCKING, confirmed by the
+  Stage 1.5 spike).** Originally filed as a "cheap smoke test"; the spike upgraded
+  it to a **veto**. Export-to-Marp (`marp-bundle.js`, CLI + Drawing Board) and the
+  marp-vscode preview (which the runtime, Path 3, serves) style decks with
+  **marp-core's own unlayered scaffold CSS**. `lattice.css` ships as that consumer's
+  themeSet; layering it while marp-core's scaffold stays unlayered makes the
+  unlayered marp-core win (rule 3) → broken exported/preview decks. Lattice cannot
+  wrap marp-core's CSS. ⇒ all-or-nothing layering is **not achievable** for this
+  first-class consumer. No mitigation from our side short of excluding the path by
+  design and proving the exclusion safe.
+- **R3 — cross-layer `!important` inversion (rule 2), now wider.** Beyond
+  `mermaid.css`, the spike found `marpSystemCss` carries
+  `aside.lattice-notes{display:none !important}` (`lattice-emulator.js:1056`) — an
+  `!important` outside `base.variants.css` the original inventory missed.
+- **R5 — marginal payoff.** The end state removes 12 `!important` and makes the
+  cascade legible, but it is architectural hygiene, not a user-visible fix. Stage 1
+  captured that practical value at a fraction of the risk.
 
-## Recommendation
+## Recommendation (UPDATED post-Stage-1.5)
 
-Execute **Stage 1 first as its own PR** — it banks the real win (the 14 fragile
-`!important` gone) with no rule-3 exposure. Treat Stages 2–3 as a follow-on only
-if explicit `@layer` legibility is independently wanted; they carry most of the
-risk for the least incremental user value.
+**Stop at Stage 1.** Stage 1 shipped (PR #435) — the 12 fragile `!important` are
+gone with no rule-3 exposure, the practical win banked. **Stage 2 is vetoed by
+R-PATH:** full `@layer` activation cannot cover the export-to-Marp / marp-vscode
+consumer, whose marp-core scaffold Lattice does not emit and cannot wrap. Revisit
+only if (a) export-to-Marp is retired or (b) someone proves the marp consumer can
+be safely excluded from layering. Until then, the inert `@layer` declaration
+stays inert by design, and `cascade.md`'s "status quo" verdict stands —
+**now with a concrete, traced reason, not just caution.**
 
 ## Related
 
