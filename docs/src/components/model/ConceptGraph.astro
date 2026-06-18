@@ -16,14 +16,15 @@
  * (engineering/decisions/2026-06-18-frame-recursion-cells.md).
  *
  * Nodes are built in JS, so the static 2D ConceptLattice is rendered inside as
- * the no-JS / prefers-reduced-motion fallback — shown by default, swapped for the
- * live stage only once JS initialises with motion allowed.
+ * the no-JS fallback — shown by default, swapped for the live stage once JS runs.
+ * Reduced-motion still gets the interactive graph (drag + Drill are user-driven);
+ * only the gentle auto-orbit is suppressed.
  */
 import ConceptLattice from './ConceptLattice.astro';
 ---
 
 <div class="cg" data-cg>
-  <!-- interactive stage (revealed by JS when motion is allowed) -->
+  <!-- interactive stage (revealed once JS runs) -->
   <div class="cg-live" data-live hidden>
     <div class="cg-stage" data-stage
       aria-label="Interactive 3D graph of the Lattice concept model: the four axes Function, Form, Substance and Finish, the structural nouns Frame, Cell and Tile, the Component join and the Bucket grouping, with their typed relationships. Drag to orbit; use the Drill control to push into the Form node.">
@@ -43,7 +44,7 @@ import ConceptLattice from './ConceptLattice.astro';
     </div>
   </div>
 
-  <!-- no-JS / reduced-motion fallback -->
+  <!-- no-JS fallback -->
   <div class="cg-fallback" data-fallback>
     <ConceptLattice fig="lattice" />
   </div>
@@ -99,9 +100,11 @@ import ConceptLattice from './ConceptLattice.astro';
   function initConceptGraph() {
     const root = document.querySelector('[data-cg]') as HTMLElement | null;
     if (!root || root.dataset.cgInit) return;
-    // No-JS shows the fallback; reduced-motion keeps it too (no orbit/animation).
-    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     root.dataset.cgInit = '1';
+    // The static ConceptLattice fallback is for no-JS only. Reduced-motion still
+    // gets the interactive graph — drag-orbit and the Drill slider are
+    // user-driven; only the gentle auto-orbit is suppressed (see `auto` below).
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     const live = root.querySelector('[data-live]') as HTMLElement | null;
     const fallback = root.querySelector('[data-fallback]') as HTMLElement | null;
@@ -115,6 +118,8 @@ import ConceptLattice from './ConceptLattice.astro';
     // reveal the interactive stage, retire the static fallback
     live.hidden = false;
     fallback.hidden = true;
+    // reflect the resting auto-orbit state on the toggle (paused under reduce-motion)
+    if (reduce) { orbitBtn.textContent = '▶ Orbit'; orbitBtn.setAttribute('aria-pressed', 'false'); }
 
     // base position (x,y,z) + drill target (dx,dy,dz); `keep` nodes survive the
     // drill (Form + the structural nouns + Component), the rest fade out.
@@ -152,7 +157,7 @@ import ConceptLattice from './ConceptLattice.astro';
     const edgeEls = EDGES.map(([a, b, kind]) => { const e = document.createElement('div'); e.className = 'cg-gedge ' + kind; graph.appendChild(e); return { a, b, kind, el: e }; });
 
     const scene = stage.querySelector('.cg-scene') as HTMLElement;
-    let p = 0, rx = -3, ry = 20, auto = true, down = false, lx = 0, ly = 0;
+    let p = 0, rx = -3, ry = 20, auto = !reduce, down = false, lx = 0, ly = 0;
     let scaleBase = 1;
     const measure = () => { scaleBase = Math.max(0.55, Math.min(0.92, stage.clientWidth / 700)); };
 
@@ -201,7 +206,7 @@ import ConceptLattice from './ConceptLattice.astro';
 
     drill.addEventListener('input', () => { p = +drill.value / 100; render(); });
     orbitBtn.addEventListener('click', () => { auto = !auto; orbitBtn.textContent = (auto ? '⏸' : '▶') + ' Orbit'; orbitBtn.setAttribute('aria-pressed', String(auto)); });
-    resetBtn.addEventListener('click', () => { p = 0; drill.value = '0'; rx = -3; ry = 20; auto = true; orbitBtn.textContent = '⏸ Orbit'; orbitBtn.setAttribute('aria-pressed', 'true'); render(); });
+    resetBtn.addEventListener('click', () => { p = 0; drill.value = '0'; rx = -3; ry = 20; auto = !reduce; orbitBtn.textContent = (auto ? '⏸' : '▶') + ' Orbit'; orbitBtn.setAttribute('aria-pressed', String(auto)); render(); });
   }
   initConceptGraph();
   document.addEventListener('astro:page-load', initConceptGraph);
