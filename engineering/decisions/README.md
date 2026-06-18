@@ -91,7 +91,7 @@ it is load-bearing.
 
 ### Active — proposed · in-progress · blocked
 
-- ☐ [2026-06-18-layer-activation-scope.md](2026-06-18-layer-activation-scope.md) — Multi-stage plan to activate CSS @layer across the bundle — eliminate the 14 cascade-workaround !important first (via .marpit> specificity), reconcile the three engine render paths, then layer the whole composed sheet in one coordinated pass
+- ◐ [2026-06-18-layer-activation-scope.md](2026-06-18-layer-activation-scope.md) — Multi-stage plan to activate CSS @layer. Stage 1 SHIPPED — the 12 cascade-workaround !important in base.variants.css removed via a path-agnostic doubled-class (0,2,2); .marpit> was tried first and caught breaking the emulator path. Stages 1.5-3 (path reconciliation + full layering) remain.
 - ☐ [2026-06-17-content-capacity-contract.md](2026-06-17-content-capacity-contract.md) — Decision to make each layout's content capacity a structured manifest fact and lint-enforced contract rather than buried prose
 - ◐ [2026-06-17-workflow-efficiency-review.md](2026-06-17-workflow-efficiency-review.md) — Red-team of the agent operating model — leaner CI/hooks, trimmed CLAUDE.md, a merge queue, and machine-readable doc status structure
 - ☐ [2026-06-16-deck-fact-checking.md](2026-06-16-deck-fact-checking.md) — Design model for an LLM deck fact-check that returns an honest trust map with quick parametric and deep-research tiers

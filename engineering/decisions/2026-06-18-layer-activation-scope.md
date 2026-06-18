@@ -1,15 +1,16 @@
 ---
-status: proposed
-summary: Multi-stage plan to activate CSS @layer across the bundle — eliminate the 14 cascade-workaround !important first (via .marpit> specificity), reconcile the three engine render paths, then layer the whole composed sheet in one coordinated pass
+status: in-progress
+summary: Multi-stage plan to activate CSS @layer. Stage 1 SHIPPED — the 12 cascade-workaround !important in base.variants.css removed via a path-agnostic doubled-class (0,2,2); .marpit> was tried first and caught breaking the emulator path. Stages 1.5-3 (path reconciliation + full layering) remain.
 ---
 
 # Scope — activating `@layer` across the Lattice cascade
 
-> **Not yet built.** This is the scoping plan for the work `cascade.md` defers
-> as "full coordinated rewrite … no near-term action." Read `engineering/cascade.md`
-> first — it is the canonical statement of *why partial activation is a trap*.
-> This doc says *how* a full activation would be staged and verified, and flags
-> the open questions that must be spiked before any rule changes.
+> **Stage 1 shipped; Stages 1.5–3 not yet built.** This is the scoping plan for
+> the work `cascade.md` defers as "full coordinated rewrite … no near-term
+> action." Read `engineering/cascade.md` first — it is the canonical statement of
+> *why partial activation is a trap*. This doc says *how* a full activation would
+> be staged and verified; Stage 1 (de-`!important` via specificity, no layering)
+> is done — the remaining stages flag the open questions still to be spiked.
 
 ## Goal
 
@@ -51,16 +52,21 @@ This scoping pass adds three findings from `lib/engine/css.js`:
    Rule 3 therefore demands the scaffold block also move into `@layer scaffold`
    in the same pass.
 
-2. **The 14 cascade-`!important` have a clean de-`!important` path: `.marpit>`.**
-   They exist only because the engine pagination pseudo
-   `div.marpit > section::after` is **(0,1,3)** while the state markers
-   (`section.archived::after`, `section.silent::after`) are **(0,1,2)** — they
-   lose on specificity, so `!important` lifts them. Prefixing with the engine's
-   own wrapper — `.marpit > section.archived::after` → **(0,2,2)** — wins on
-   specificity (class-count 2 > 1) **without** `!important`. (`.marpit` is an
+2. **The 12 cascade-`!important` have a de-`!important` path — but NOT `.marpit>`
+   (SHIPPED as Stage 1, see below).** They exist only because the engine
+   pagination pseudo `div.marpit > section::after` is **(0,1,3)** while the state
+   markers (`section.archived::after`, `section.silent::after`) are **(0,1,2)** —
+   they lose on specificity, so `!important` lifts them. The fix raises the marker
+   to **(0,2,2)** (class-count 2 > 1 beats the engine pseudo without `!important`).
+   The *first* attempt prefixed the engine wrapper — `.marpit > section.archived`
+   — but pixel-diff **caught a regression**: the **emulator** render path wraps no
+   `.marpit`, so the ancestor selector matched nothing and the ARCHIVED stamp
+   *vanished*. The path-agnostic fix is a **doubled class** —
+   `section.archived.archived::after` (0,2,2), no ancestor dependency — verified
+   AE=0 light+dark on both engine and emulator paths. (`.marpit` is an
    owned-engine DOM vestige, not Marp — Marp is purged as a render path; only
-   export-to-Marp via `marp-bundle.js` remains, and it is a *format*, not a
-   renderer we verify.)
+   export-to-Marp via `marp-bundle.js` remains, a *format*, not a renderer.)
+   **This validated finding #3 / R2: the render paths really do diverge.**
 
 3. **A content-mask transform straddles the render paths — THE #1 UNKNOWN.**
    `packTheme()` runs `maskNonPaginationContent()`, commenting out every
@@ -108,12 +114,14 @@ no-paginate, confidential, redacted, draft, tbd, wip, pinned, revised, tone-\*)
 in light + dark, plus a broad gallery sweep. This is the regression oracle for
 every later stage.
 
-**Stage 1 — kill the 14 cascade-`!important` via specificity (NO layering yet).**
-Rewrite the ~3 state-marker `::after` selectors to `.marpit > …` and drop the 14
-`!important`. Still fully unlayered, so no rule-3 exposure. **Independently
-shippable** and valuable on its own (−14 `!important`, removes the fragility).
-Gate: AE=0 across the Stage-0 set on all three engine paths. *This is the
-recommended first PR even if full activation stalls.*
+**Stage 1 — kill the cascade-`!important` via specificity (NO layering yet). ✅ SHIPPED.**
+Rewrote the two state-marker `::after` blocks in `base.variants.css` (`silent` /
+`no-paginate` content-suppression + the `archived` stamp) to a **doubled class**
+(`section.archived.archived::after`, 0,2,2) and dropped all **12** `!important`.
+Still fully unlayered → no rule-3 exposure. Path-agnostic doubled-class was
+chosen *after* `.marpit >` failed pixel-diff on the emulator path (finding #2).
+Verified AE=0 light+dark across the Stage-0 state-marker set; unit (2210),
+integration (452), lint, build:check all green.
 
 **Stage 1.5 — reconcile the content-mask across the three render paths.** Resolve
 finding #3: prove the `.marpit>` selectors behave identically (mask-escape +
