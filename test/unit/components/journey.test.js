@@ -206,7 +206,7 @@ describe('journey', () => {
     assert.match(html, /--actor-count:2/);
     assert.match(html, /<ol class="journey-legend">/);
     assert.match(html, /<ol class="journey-mood-legend"/);
-    assert.match(html, /<ol class="journey-sections">/);
+    assert.match(html, /<ol class="journey-stages">/);
     assert.match(html, /<ol class="journey-tasks">/);
     assert.match(html, /<div class="journey-timeline"/);
     assert.match(html, /<ol class="journey-moods">/);

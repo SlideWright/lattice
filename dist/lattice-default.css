@@ -2918,12 +2918,6 @@ section.gantt.chart-frame .chart-body {
 .gantt-legend-item[data-s="decision"] .gantt-legend-swatch { --fill-hue: var(--state-info-hue); --fill-ink: var(--state-info-ink); }
 .gantt-legend-item[data-s="deferred"] .gantt-legend-swatch { --fill-hue: var(--state-mute-hue); --fill-ink: var(--state-mute-ink); }
 
-/* ── GANTT ──
- * Mermaid bug: taskTextOutsideLeft/Right ignore taskTextOutsideColor for
- * some bar widths. Force dark text in the outside-the-bar margin.
- */
-section .taskTextOutsideLeft, section .taskTextOutsideRight { fill: var(--text-heading) !important; }
-
 /* ── Axis row, lane rows, and bar chrome — appended Phase 4 ──
  * Originally lived in lib/_legacy.css under the CHART FAMILY section.
  * The CHART FAMILY shared infrastructure (.chart-frame, .chart-header,
@@ -3420,12 +3414,12 @@ section.image.museum p:last-of-type {
   --journey-mood-1-deep: var(--cat-6-mark);
 
   /* Surfaces */
-  --journey-section-bg:   color-mix(in oklab, var(--bg-alt) 70%, var(--surface-inverse));
+  --journey-stage-bg:   color-mix(in oklab, var(--bg-alt) 70%, var(--surface-inverse));
   /* Section bar bg mixes toward --surface-inverse on BOTH canvases → always a dark
    * surface. --on-accent flips to --surface-inverse in dark mode (same value) giving
    * near-zero contrast (~2.5:1). Use --on-dark-primary (always-light token)
    * so section labels remain legible in both light and dark themes. */
-  --journey-section-fg:   var(--on-dark-primary);
+  --journey-stage-fg:   var(--on-dark-primary);
   --journey-task-bg:      color-mix(in oklab, var(--bg-alt) 80%, var(--bg));
   --journey-task-fg:      var(--text-body);
   --journey-timeline:     color-mix(in srgb, var(--text-body) 55%, transparent);
@@ -3583,7 +3577,7 @@ section.journey .journey-mood-legend {
 }
 
 /* ── Section ribbon ─────────────────────────────────────────────────── */
-section.journey .journey-sections {
+section.journey .journey-stages {
   display: grid;
   grid-template-columns: repeat(var(--task-count), 1fr);
   gap: var(--sp-xs);
@@ -3591,10 +3585,10 @@ section.journey .journey-sections {
   margin: 0;
   padding: 0;
 }
-section.journey .journey-section {
+section.journey .journey-stage {
   grid-column: span var(--span);
-  background: var(--journey-section-bg);
-  color: var(--journey-section-fg);
+  background: var(--journey-stage-bg);
+  color: var(--journey-stage-fg);
   padding: var(--sp-sm) var(--sp-md);
   border-radius: var(--radius-sm);
   font-weight: 600;
@@ -3608,15 +3602,15 @@ section.journey .journey-section {
 }
 /* Categorical accent rotation across sections — same 8-step palette
  * used by roadmap and chart-family for cross-deck consistency. */
-section.journey .journey-section[data-section="0"] { --section-accent: var(--cat-1-mark); }
-section.journey .journey-section[data-section="1"] { --section-accent: var(--cat-2-mark); }
-section.journey .journey-section[data-section="2"] { --section-accent: var(--cat-3-mark); }
-section.journey .journey-section[data-section="3"] { --section-accent: var(--cat-4-mark); }
-section.journey .journey-section[data-section="4"] { --section-accent: var(--cat-5-mark); }
-section.journey .journey-section[data-section="5"] { --section-accent: var(--cat-6-mark); }
-section.journey .journey-section[data-section="6"] { --section-accent: var(--cat-7-mark); }
-section.journey .journey-section[data-section="7"] { --section-accent: var(--cat-8-mark); }
-section.journey .journey-section::before {
+section.journey .journey-stage[data-section="0"] { --section-accent: var(--cat-1-mark); }
+section.journey .journey-stage[data-section="1"] { --section-accent: var(--cat-2-mark); }
+section.journey .journey-stage[data-section="2"] { --section-accent: var(--cat-3-mark); }
+section.journey .journey-stage[data-section="3"] { --section-accent: var(--cat-4-mark); }
+section.journey .journey-stage[data-section="4"] { --section-accent: var(--cat-5-mark); }
+section.journey .journey-stage[data-section="5"] { --section-accent: var(--cat-6-mark); }
+section.journey .journey-stage[data-section="6"] { --section-accent: var(--cat-7-mark); }
+section.journey .journey-stage[data-section="7"] { --section-accent: var(--cat-8-mark); }
+section.journey .journey-stage::before {
   content: "";
   position: absolute;
   inset: 0 0 auto 0;
@@ -3968,11 +3962,11 @@ section.journey.weighted .journey-lanes {
  * tracks the chip row beneath. Discover (45+18=63%) dominates Convert
  * (12+10=22%) at both the section and task level — the volume story
  * reads at both granularities. */
-section.journey.weighted .journey-sections {
+section.journey.weighted .journey-stages {
   display: flex;
   gap: 0.3125cqi;
 }
-section.journey.weighted .journey-section {
+section.journey.weighted .journey-stage {
   flex-grow: var(--section-volume);
   flex-basis: 0;
   flex-shrink: 1;
@@ -4225,71 +4219,6 @@ section.kanban.chart-frame .chart-body {
  * rides --state-pass-ink (canvas-aware), so no explicit dark override. */
 section.kanban.dark .kanban-size {
   background: color-mix(in oklab, var(--bg-alt) 60%, var(--border));
-}
-
-
-/* ── KANBAN BAND CYCLE (shifted) ──
- * Mermaid's kanban renderer one-indexes its swim-lane clusters: the FIRST
- * lane gets `<g class="cluster section-1">`, the second `section-2`, and
- * so on (no `section-0` ever appears). The general `.section-N` rules
- * above are zero-indexed (matching mindmap), so kanban's first lane
- * picks up `band-2` instead of `band-1` — and every other diagram type
- * in the deck (quadrant Q1, journey section-type-0, timeline section--1)
- * is anchored to `band-1` for its first slot. The mismatch shows up as
- * "first kanban lane reads the wrong colour" relative to every other
- * first-slot in the gallery.
- *
- * Re-pin the cycle one band DOWN for `.cluster.section-N` (kanban's
- * scope) so lane-1 → band-1, lane-2 → band-2, …, lane-11 → band-11.
- * Higher specificity than the bare `.section-N` rule wins automatically.
- * Mindmap (`.mindmap-node[…]`) and timeline (`.timeline-node.section-N`)
- * keep their own scoped mappings; this rule only catches `<g class="cluster section-N">`
- * which is unique to kanban among shipped diagram types.
- */
-section .cluster.section-1 rect, section .cluster.section-1 path, section .cluster.section-1 circle { fill: var(--cat-1-fill) !important; stroke: var(--diagram-stroke) !important; }
-section .cluster.section-1 text, section .cluster.section-1 tspan, section .cluster.section-1 span { fill: var(--cat-on-fill) !important; color: var(--cat-on-fill) !important; }
-section .cluster.section-2 rect, section .cluster.section-2 path, section .cluster.section-2 circle { fill: var(--cat-2-fill) !important; stroke: var(--diagram-stroke) !important; }
-section .cluster.section-2 text, section .cluster.section-2 tspan, section .cluster.section-2 span { fill: var(--cat-on-fill) !important; color: var(--cat-on-fill) !important; }
-section .cluster.section-3 rect, section .cluster.section-3 path, section .cluster.section-3 circle { fill: var(--cat-3-fill) !important; stroke: var(--diagram-stroke) !important; }
-section .cluster.section-3 text, section .cluster.section-3 tspan, section .cluster.section-3 span { fill: var(--cat-on-fill) !important; color: var(--cat-on-fill) !important; }
-section .cluster.section-4 rect, section .cluster.section-4 path, section .cluster.section-4 circle { fill: var(--cat-4-fill) !important; stroke: var(--diagram-stroke) !important; }
-section .cluster.section-4 text, section .cluster.section-4 tspan, section .cluster.section-4 span { fill: var(--cat-on-fill) !important; color: var(--cat-on-fill) !important; }
-section .cluster.section-5 rect, section .cluster.section-5 path, section .cluster.section-5 circle { fill: var(--cat-5-fill) !important; stroke: var(--diagram-stroke) !important; }
-section .cluster.section-5 text, section .cluster.section-5 tspan, section .cluster.section-5 span { fill: var(--cat-on-fill) !important; color: var(--cat-on-fill) !important; }
-section .cluster.section-6 rect, section .cluster.section-6 path, section .cluster.section-6 circle { fill: var(--cat-6-fill) !important; stroke: var(--diagram-stroke) !important; }
-section .cluster.section-6 text, section .cluster.section-6 tspan, section .cluster.section-6 span { fill: var(--cat-on-fill) !important; color: var(--cat-on-fill) !important; }
-section .cluster.section-7 rect, section .cluster.section-7 path, section .cluster.section-7 circle { fill: var(--cat-7-fill) !important; stroke: var(--diagram-stroke) !important; }
-section .cluster.section-7 text, section .cluster.section-7 tspan, section .cluster.section-7 span { fill: var(--cat-on-fill) !important; color: var(--cat-on-fill) !important; }
-section .cluster.section-8 rect, section .cluster.section-8 path, section .cluster.section-8 circle { fill: var(--cat-8-fill) !important; stroke: var(--diagram-stroke) !important; }
-section .cluster.section-8 text, section .cluster.section-8 tspan, section .cluster.section-8 span { fill: var(--cat-on-fill) !important; color: var(--cat-on-fill) !important; }
-section .cluster.section-9 rect, section .cluster.section-9 path, section .cluster.section-9 circle { fill: var(--cat-9-fill) !important; stroke: var(--diagram-stroke) !important; }
-section .cluster.section-9 text, section .cluster.section-9 tspan, section .cluster.section-9 span { fill: var(--cat-on-fill) !important; color: var(--cat-on-fill) !important; }
-section .cluster.section-10 rect, section .cluster.section-10 path, section .cluster.section-10 circle { fill: var(--cat-10-fill) !important; stroke: var(--diagram-stroke) !important; }
-section .cluster.section-10 text, section .cluster.section-10 tspan, section .cluster.section-10 span { fill: var(--cat-on-fill) !important; color: var(--cat-on-fill) !important; }
-section .cluster.section-11 rect, section .cluster.section-11 path, section .cluster.section-11 circle { fill: var(--cat-11-fill) !important; stroke: var(--diagram-stroke) !important; }
-section .cluster.section-11 text, section .cluster.section-11 tspan, section .cluster.section-11 span { fill: var(--cat-on-fill) !important; color: var(--cat-on-fill) !important; }
-
-/* ── KANBAN TICKETS ──
- * Card-on-band: the ticket sits inside a band-tinted lane, so the inner
- * card is the deepest-nested surface — the containment tier's
- * --c-subcontainer. The lane keeps its categorical band fill (it reads
- * as a data column, not a containment surface); the ticket nests one
- * level deeper, so it takes the subcontainer rung of the ladder. The
- * .items selector is unique to kanban and won't affect flowchart nodes
- * (which sit directly under the SVG root, not under .items).
- *
- * This is the ONLY diagram type where the rule applies cleanly.
- * Timeline and journey were investigated as candidates but their inner
- * cards stack on the slide canvas, not on a band — see
- * engineering/decisions/2026-05-12-diagram-elevation.md for the audit. They keep
- * their band-N fills from the .section-N rule above.
- */
-section .cluster .items .node rect.basic.label-container,
-section .cluster .items .node .label-container,
-section .items .node rect.basic.label-container,
-section .items .node .label-container {
-  fill: var(--c-subcontainer) !important;
-  stroke: var(--diagram-stroke) !important;
 }
 
 /* === lib/components/evidence/kpi/kpi.styles.css === */
@@ -11331,23 +11260,8 @@ section.diagram > .mermaid-error-label,
   max-height:12.5cqi;
 }
 
-/* Diagram title suppression — the slide's `## heading` is the canonical title.
-   Mermaid renders its own title (from frontmatter `title:` or in-body `title`)
-   inside the SVG, which doubles up with the slide heading. Class names below
-   are verified from rendered output (Mermaid 11.14), not guessed.
-   Known gap: sequence, journey, C4, quadrant, timeline, xy-chart render bare
-   <text> titles with no class — those cannot be class-targeted and remain
-   visible. See references/mermaid.md §5.3 for the diagnostic recipe. */
-section.diagram .mermaid-svg svg .titleText,
-section.diagram > .mermaid svg .titleText,
-section.diagram .mermaid-svg svg .pieTitleText,
-section.diagram > .mermaid svg .pieTitleText,
-section.diagram .mermaid-svg svg .radarTitle,
-section.diagram > .mermaid svg .radarTitle,
-section.diagram .mermaid-svg svg .packetTitle,
-section.diagram > .mermaid svg .packetTitle,
-section.diagram .mermaid-svg svg [class$="TitleText"],
-section.diagram > .mermaid svg [class$="TitleText"] { display:none; }
+/* (Mermaid diagram title suppression moved to mermaid.css — all Mermaid CSS
+   lives there; this integration file styles only highlight.js code tokens.) */
 
 /* === lib/components/chart/_chart-family/chart-family.css === */
 /* _chart-family.css — shared chart frame for list-and-pill chart layouts.
@@ -14259,6 +14173,10 @@ section [class$="TitleText"] { display: none; }
  * Moved here from radar.styles.css (the NATIVE radar component): this is
  * Mermaid output and belongs with the diagram overrides. `!important` beats
  * Mermaid's auto-emitted inline CSS. (`.radarTitle` is suppressed above.)
+ * LOAD-BEARING — render-verified 2026-06-18: stripping ANY radar `!important`
+ * group regresses the override (curve fills AE≈230k, axis/graticule AE≈270k vs
+ * baseline). These are NOT a removal target; Mermaid's inline styles only yield
+ * to `!important`. See engineering/decisions/2026-06-18-chart-mermaid-style-separation.md.
  */
 section .radarGraticule {
   fill: var(--cat-1-fill) !important;
@@ -14869,6 +14787,26 @@ section .timeline-node.section-10 text, section .timeline-node.section-10 tspan,
  * header above it) is enough to keep the visual hierarchy.
  */
 section .eventWrapper { filter: none !important; }
+
+/* ════════════════════════════════════════════════════════════════════════
+ * RELOCATED FROM OWNED COMPONENT FILES (owned chart stylesheets carry zero
+ * Mermaid selectors — all third-party CSS lives here). See
+ * engineering/decisions/2026-06-18-chart-mermaid-style-separation.md.
+ * ════════════════════════════════════════════════════════════════════════ */
+
+/* Mermaid kanban ticket nodes — the ticket card takes the subcontainer rung
+ * (was kanban.styles.css). Wins on specificity over the .node fill above. */
+section .cluster .items .node rect.basic.label-container,
+section .cluster .items .node .label-container,
+section .items .node rect.basic.label-container,
+section .items .node .label-container {
+  fill: var(--c-subcontainer) !important;
+  stroke: var(--diagram-stroke) !important;
+}
+
+/* Mermaid gantt — taskTextOutsideLeft/Right ignore taskTextOutsideColor for some
+ * bar widths; force dark text in the outside-the-bar margin (was gantt.styles.css). */
+section .taskTextOutsideLeft, section .taskTextOutsideRight { fill: var(--text-heading) !important; }
 
 /* === default palette: themes/cuoio.css (engine import resolved) === */
 /* Zero-specificity light default — see the long comment in the next

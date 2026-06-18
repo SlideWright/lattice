@@ -77,12 +77,6 @@ section.gantt.chart-frame .chart-body {
 .gantt-legend-item[data-s="decision"] .gantt-legend-swatch { --fill-hue: var(--state-info-hue); --fill-ink: var(--state-info-ink); }
 .gantt-legend-item[data-s="deferred"] .gantt-legend-swatch { --fill-hue: var(--state-mute-hue); --fill-ink: var(--state-mute-ink); }
 
-/* ── GANTT ──
- * Mermaid bug: taskTextOutsideLeft/Right ignore taskTextOutsideColor for
- * some bar widths. Force dark text in the outside-the-bar margin.
- */
-section .taskTextOutsideLeft, section .taskTextOutsideRight { fill: var(--text-heading) !important; }
-
 /* ── Axis row, lane rows, and bar chrome — appended Phase 4 ──
  * Originally lived in lib/_legacy.css under the CHART FAMILY section.
  * The CHART FAMILY shared infrastructure (.chart-frame, .chart-header,

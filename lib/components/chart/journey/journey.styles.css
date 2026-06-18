@@ -52,12 +52,12 @@
   --journey-mood-1-deep: var(--cat-6-mark);
 
   /* Surfaces */
-  --journey-section-bg:   color-mix(in oklab, var(--bg-alt) 70%, var(--surface-inverse));
+  --journey-stage-bg:   color-mix(in oklab, var(--bg-alt) 70%, var(--surface-inverse));
   /* Section bar bg mixes toward --surface-inverse on BOTH canvases → always a dark
    * surface. --on-accent flips to --surface-inverse in dark mode (same value) giving
    * near-zero contrast (~2.5:1). Use --on-dark-primary (always-light token)
    * so section labels remain legible in both light and dark themes. */
-  --journey-section-fg:   var(--on-dark-primary);
+  --journey-stage-fg:   var(--on-dark-primary);
   --journey-task-bg:      color-mix(in oklab, var(--bg-alt) 80%, var(--bg));
   --journey-task-fg:      var(--text-body);
   --journey-timeline:     color-mix(in srgb, var(--text-body) 55%, transparent);
@@ -215,7 +215,7 @@ section.journey .journey-mood-legend {
 }
 
 /* ── Section ribbon ─────────────────────────────────────────────────── */
-section.journey .journey-sections {
+section.journey .journey-stages {
   display: grid;
   grid-template-columns: repeat(var(--task-count), 1fr);
   gap: var(--sp-xs);
@@ -223,10 +223,10 @@ section.journey .journey-sections {
   margin: 0;
   padding: 0;
 }
-section.journey .journey-section {
+section.journey .journey-stage {
   grid-column: span var(--span);
-  background: var(--journey-section-bg);
-  color: var(--journey-section-fg);
+  background: var(--journey-stage-bg);
+  color: var(--journey-stage-fg);
   padding: var(--sp-sm) var(--sp-md);
   border-radius: var(--radius-sm);
   font-weight: 600;
@@ -240,15 +240,15 @@ section.journey .journey-section {
 }
 /* Categorical accent rotation across sections — same 8-step palette
  * used by roadmap and chart-family for cross-deck consistency. */
-section.journey .journey-section[data-section="0"] { --section-accent: var(--cat-1-mark); }
-section.journey .journey-section[data-section="1"] { --section-accent: var(--cat-2-mark); }
-section.journey .journey-section[data-section="2"] { --section-accent: var(--cat-3-mark); }
-section.journey .journey-section[data-section="3"] { --section-accent: var(--cat-4-mark); }
-section.journey .journey-section[data-section="4"] { --section-accent: var(--cat-5-mark); }
-section.journey .journey-section[data-section="5"] { --section-accent: var(--cat-6-mark); }
-section.journey .journey-section[data-section="6"] { --section-accent: var(--cat-7-mark); }
-section.journey .journey-section[data-section="7"] { --section-accent: var(--cat-8-mark); }
-section.journey .journey-section::before {
+section.journey .journey-stage[data-section="0"] { --section-accent: var(--cat-1-mark); }
+section.journey .journey-stage[data-section="1"] { --section-accent: var(--cat-2-mark); }
+section.journey .journey-stage[data-section="2"] { --section-accent: var(--cat-3-mark); }
+section.journey .journey-stage[data-section="3"] { --section-accent: var(--cat-4-mark); }
+section.journey .journey-stage[data-section="4"] { --section-accent: var(--cat-5-mark); }
+section.journey .journey-stage[data-section="5"] { --section-accent: var(--cat-6-mark); }
+section.journey .journey-stage[data-section="6"] { --section-accent: var(--cat-7-mark); }
+section.journey .journey-stage[data-section="7"] { --section-accent: var(--cat-8-mark); }
+section.journey .journey-stage::before {
   content: "";
   position: absolute;
   inset: 0 0 auto 0;
@@ -600,11 +600,11 @@ section.journey.weighted .journey-lanes {
  * tracks the chip row beneath. Discover (45+18=63%) dominates Convert
  * (12+10=22%) at both the section and task level — the volume story
  * reads at both granularities. */
-section.journey.weighted .journey-sections {
+section.journey.weighted .journey-stages {
   display: flex;
   gap: 0.3125cqi;
 }
-section.journey.weighted .journey-section {
+section.journey.weighted .journey-stage {
   flex-grow: var(--section-volume);
   flex-basis: 0;
   flex-shrink: 1;
