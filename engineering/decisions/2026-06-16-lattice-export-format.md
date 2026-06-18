@@ -1,6 +1,6 @@
 ---
 status: proposed
-summary: Design for the Lattice export format — a self-contained portable .html player plus a lossless .lattice project zip sharing one manifest envelope
+summary: The Lattice export format — a portable self-contained .html player plus a lossless .lattice project zip sharing one manifest envelope
 version: 1
 supersedes: none
 last-status-update: 2026-06-16

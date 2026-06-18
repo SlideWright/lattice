@@ -50,8 +50,9 @@ const GROUPS = [
 const NAME_RE = /^(\d{4}-\d{2}-\d{2})-.*\.md$/;
 
 // Minimal front-matter reader: the leading `---\n…\n---` block, parsed as flat
-// `key: value` lines (no nested YAML needed here). Returns {} if absent.
-function frontMatter(text) {
+// `key: value` lines (no nested YAML needed here). Returns null if absent.
+function frontMatter(raw) {
+  const text = raw.replace(/\r\n/g, '\n'); // tolerate CRLF-saved notes
   if (!text.startsWith('---\n')) return null;
   const end = text.indexOf('\n---', 4);
   if (end === -1) return null;
@@ -86,6 +87,10 @@ function collect() {
     }
     if (!fm.summary) {
       errors.push(`${file}: missing summary:`);
+      continue;
+    }
+    if (fm.summary.includes(BEGIN) || fm.summary.includes(END)) {
+      errors.push(`${file}: summary must not contain the index marker comment`);
       continue;
     }
     notes.push({ file, created: nm[1], status: fm.status, summary: fm.summary, supersededBy: fm['superseded-by'] });
@@ -123,8 +128,8 @@ function render(notes) {
 function splice(readme, block) {
   const b = readme.indexOf(BEGIN);
   const e = readme.indexOf(END);
-  if (b === -1 || e === -1) {
-    throw new Error(`README.md is missing the ${BEGIN} / ${END} markers — add them under "## Current notes".`);
+  if (b === -1 || e === -1 || e < b) {
+    throw new Error(`README.md is missing or has out-of-order ${BEGIN} / ${END} markers — add them, in order, under "## Current notes".`);
   }
   return readme.slice(0, b) + block + readme.slice(e + END.length);
 }

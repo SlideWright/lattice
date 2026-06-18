@@ -29,13 +29,17 @@ machine-readable (and so the "Current notes" list below can be
 
 ```yaml
 ---
-status: proposed        # proposed | in-progress | blocked | shipped | superseded
-created: 2026-06-17
-updated: 2026-06-17      # optional; bump when materially revised
-supersedes:              # optional: filename(s) this note replaces
-superseded-by:           # optional: filename that replaced this note
+# status is one of: proposed | in-progress | blocked | shipped | superseded
+status: proposed
+summary: one line describing what this note covers
+# optional, only for status: superseded — the filename that replaced this note:
+superseded-by: 2026-06-18-foo.md
 ---
 ```
+
+`status` and `summary` are required; `created` is derived from the filename
+date (don't duplicate it). Keep each value on one line — the index parser reads
+flat `key: value`, so put any note on its OWN `#` line, never trailing a value.
 
 | `status` | Glyph | Meaning | Index group |
 |---|---|---|---|
@@ -92,11 +96,11 @@ it is load-bearing.
 - ☐ [2026-06-16-deck-fact-checking.md](2026-06-16-deck-fact-checking.md) — Design model for an LLM deck fact-check that returns an honest trust map with quick parametric and deep-research tiers
 - ☐ [2026-06-16-focus-highlighting.md](2026-06-16-focus-highlighting.md) — Design model for a universal, CSS-driven, cross-format per-element focus/highlight capability splitting targeting from treatment
 - ☐ [2026-06-16-form-manifest-medium-independent-contract.md](2026-06-16-form-manifest-medium-independent-contract.md) — Decision to keep and grow the lib/forms manifest as a medium-independent composition contract with 2D CSS as its first renderer
-- ☐ [2026-06-16-lattice-export-format.md](2026-06-16-lattice-export-format.md) — Design for the Lattice export format — a self-contained portable .html player plus a lossless .lattice project zip sharing one manifest envelope
+- ☐ [2026-06-16-lattice-export-format.md](2026-06-16-lattice-export-format.md) — The Lattice export format — a portable self-contained .html player plus a lossless .lattice project zip sharing one manifest envelope
 - ☐ [2026-06-16-narrative-step-model.md](2026-06-16-narrative-step-model.md) — Organizing idea making the narrative step, not the slide, the unit of navigation so a slide assembles element by element
 - ☐ [2026-06-16-narrative-step-spec.md](2026-06-16-narrative-step-spec.md) — Field-level spec for the narrative step model — authoring grammar and step data contract reusing the focus feature substrate
 - ☐ [2026-06-16-orientation-in-the-form-model.md](2026-06-16-orientation-in-the-form-model.md) — Where portrait/landscape orientation lives in the Form model and how a layout declares vs is made to support portrait
-- ☐ [2026-06-16-rtl-vertical-text-support.md](2026-06-16-rtl-vertical-text-support.md) — Design model for directional text — RTL, LTR, and vertical CJK — via a dir directive, a logical-CSS refactor, and self-hosted OFL font pairs
+- ☐ [2026-06-16-rtl-vertical-text-support.md](2026-06-16-rtl-vertical-text-support.md) — Design model for directional text — RTL, LTR, and vertical CJK via a dir directive, a logical-CSS refactor, and self-hosted OFL fonts
 - ☐ [2026-06-15-webrtc-av-collaboration.md](2026-06-15-webrtc-av-collaboration.md) — Design exploration for adding talk-while-you-edit audio/video to the Drawing Board over the same WebRTC pipe as Yjs document sync
 - ☐ [2026-06-14-deck-print-styling.md](2026-06-14-deck-print-styling.md) — Print support that survives the boardroom on paper, in colour and B&W, via a per-theme print token band and auto-paper-fit
 - ☐ [2026-06-14-github-project-management.md](2026-06-14-github-project-management.md) — Kanban-light project management keeping ADRs in markdown while adding GitHub Issues as a claimable queue mirrored to BACKLOG.md
@@ -195,7 +199,7 @@ it is load-bearing.
 
 ### Historical — superseded
 
-- ⊘ [2026-06-14-drift-watch-rebase-thrash.md](2026-06-14-drift-watch-rebase-thrash.md) — A watched PR thrashing CI on every main movement during a merge train — two root causes in HARD RULE #16 and the ci gate
+- ⊘ [2026-06-14-drift-watch-rebase-thrash.md](2026-06-14-drift-watch-rebase-thrash.md) — A watched PR thrashing CI on every main movement during a merge train — two root causes in HARD RULE #16 and the ci gate → [2026-06-15-retire-drift-watch.md](2026-06-15-retire-drift-watch.md)
 - ⊘ [2026-06-11-islands.md](2026-06-11-islands.md) — The islands slide-composition model — inset tokens and masthead lift shipped; the canonical vocabulary moved to forms.md → [../../design/forms.md](../../design/forms.md)
 - ⊘ [2026-06-10-marp-replacement-proposal.md](2026-06-10-marp-replacement-proposal.md) — Full proposal to replace Marp with the owned lattice-engine — Marp now fully retired as dependency and render path → [../marp-independence.md](../marp-independence.md)
 

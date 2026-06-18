@@ -1,6 +1,6 @@
 ---
 status: proposed
-summary: Design model for directional text — RTL, LTR, and vertical CJK — via a dir directive, a logical-CSS refactor, and self-hosted OFL font pairs
+summary: Design model for directional text — RTL, LTR, and vertical CJK via a dir directive, a logical-CSS refactor, and self-hosted OFL fonts
 version: 1
 supersedes: none
 last-status-update: 2026-06-16
