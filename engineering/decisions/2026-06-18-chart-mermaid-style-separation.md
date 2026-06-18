@@ -1,7 +1,9 @@
-# Owned chart-family vs Mermaid — style separation
+---
+status: shipped
+summary: Owned chart-family CSS and third-party Mermaid CSS share tokens but zero selectors/names — all Mermaid CSS in mermaid.css, the journey-section name split, radar !important confirmed load-bearing
+---
 
-Date: 2026-06-18
-Status: Done
+# Owned chart-family vs Mermaid — style separation
 
 ## Principle
 
@@ -59,11 +61,22 @@ for third-party overrides, not a smell. Do not re-chase it. (This is the
 opposite of owned chart-family CSS, where `!important` usually *is* removable —
 those files style only our own DOM with no competing inline styles.)
 
-## Residual (not addressed — name collision, not a rule leak)
+## journey-section name collision — RESOLVED (split the name)
 
-Owned `journey` uses a `.journey-section` `<li>` class whose string collides
-with Mermaid's `.journey-section` `<g>`. Distinct elements + distinct rules
-(`section.journey .journey-section` vs `mermaid.css`'s bare `.journey-section`),
-so no rule double-styles both — but the shared name is a latent hazard. A
-stricter pass could rename the owned class or scope every Mermaid rule under
-`section.diagram`.
+Owned `journey` used a `.journey-section` `<li>` class whose string collided
+with Mermaid's `.journey-section` (`<rect>`/`<text>`). No rule double-styled
+both (distinct elements), but the shared *name* was a latent hazard.
+
+**Rule applied (the operator's directive):** Mermaid CSS lives in `mermaid.css`;
+component CSS lives with the component; **when both use the same name, split it.**
+Mermaid's name is fixed (third-party), so the owned class was renamed:
+`journey-section` → `journey-stage` (a clean substring swap preserving every
+suffix: `journey-sections`→`journey-stages`, `journey-section-name`→
+`journey-stage-name`, `--journey-section-bg/fg`→`--journey-stage-bg/fg`). The
+`data-section` attribute and `--section-accent` var stay — Mermaid uses neither,
+so they aren't shared. `mermaid.css` is untouched; it keeps `journey-section`.
+
+Render-verified pixel-identical (AE=0 across all 11 gallery pages × light/dark,
+all five variants); 39/39 journey unit tests pass. journey-section was the only
+literal class-name both sides used — the owned charts otherwise key off
+`[data-section]` + `.cat-N`, never Mermaid's `.section-N`/`.node`/`.cluster`.

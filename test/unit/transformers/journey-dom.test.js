@@ -43,8 +43,8 @@ describe('journey.applyToDom (via chart-family)', () => {
     assert.ok(section.classList.contains('chart-frame'), 'section tagged chart-frame');
     const board = section.querySelector('.chart-body > .journey-board');
     assert.ok(board, 'journey-board nested in chart-body');
-    // The board carries a journey-sections row (one entry per top-level li).
-    const sections = board.querySelectorAll('.journey-sections > li');
+    // The board carries a journey-stages row (one entry per top-level li).
+    const sections = board.querySelectorAll('.journey-stages > li');
     assert.ok(sections.length >= 1, 'at least one section ribbon');
   });
 
