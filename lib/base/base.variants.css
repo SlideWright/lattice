@@ -39,13 +39,18 @@ section.silent > footer,
 section.no-footer > footer {
   display: none;
 }
-section.silent::after,
-section.no-paginate::after {
-  /* Beats the engine scaffold's higher-specificity pagination pseudo
-     (`div.marpit > section::after { content: attr(data-lattice-pagination) }`,
-     0,1,2). At 0,1,1 this loses on specificity, so !important is load-bearing —
-     dropping it brings the page number back (verified by pixel-diff). */
-  content: none !important;
+section.silent.silent::after,
+section.no-paginate.no-paginate::after {
+  /* Suppress the pagination pseudo. The class is DOUBLED (`.silent.silent`)
+     purely to reach specificity (0,2,2), which beats the engine pagination
+     pseudo `div.marpit > section::after` (0,1,3) on class-count (2 > 1) — so no
+     !important is needed. Doubling (rather than a `.marpit >` ancestor) keeps it
+     PATH-AGNOSTIC — it depends on no ancestor structure, which differs across the
+     engine and emulator render paths (a `.marpit >` form was caught dropping the
+     marker in the emulator by pixel-diff: that bundle carries no
+     `div.marpit > section::after` rule). Verified pixel-identical to the prior
+     !important form across light + dark. */
+  content: none;
 }
 
 /* `cover` is NOT a universal modifier — it is scoped to the chart family.
@@ -197,25 +202,30 @@ section.archived::before {
   pointer-events: none;
   z-index: 90;
 }
-section.archived::after {
-  /* Replaces the pagination ::after with the ARCHIVED stamp. Every property
-     here is !important because it must beat the engine scaffold's
-     higher-specificity `div.marpit > section::after` (0,1,2) — which sets
-     content/position/padding — and the scaffold-tier `section::after` font/
-     colour rules. At 0,1,1 this selector loses on specificity, so the whole
-     block needs !important (verified by pixel-diff: dropping any of these
-     restores the page number / scaffold geometry). */
-  content: 'ARCHIVED' !important;
-  font-family: var(--font-mono) !important;
-  font-size: 13px !important;
-  letter-spacing: 0.18em !important;
-  font-weight: 700 !important;
-  color: var(--text-muted) !important;
-  background: rgba(255, 255, 255, 0.85) !important;
-  padding: 4px 10px !important;
-  border-radius: 4px !important;
-  bottom: 24px !important;
-  right: 30px !important;
+section.archived.archived::after {
+  /* Replaces the pagination pseudo with the ARCHIVED stamp. The class is DOUBLED
+     (`.archived.archived`) to reach specificity (0,2,2), beating the engine
+     pagination pseudo `div.marpit > section::after` (0,1,3) on class-count — so
+     the stamp wins WITHOUT !important. Doubling (rather than a `.marpit >`
+     ancestor) is PATH-AGNOSTIC — it depends on no ancestor structure, which
+     differs across render paths: a `.marpit >` form was caught dropping the stamp
+     in the emulator by pixel-diff (that bundle carries no
+     `div.marpit > section::after` rule, and a combinator selector would also
+     change content-mask matching). Parity with the prior !important block is
+     verified pixel-identical, light + dark, engine + emulator. NB the doubled
+     class still matches the pagination content-mask regex, exactly as the prior
+     `section.archived::after` did — so mask behaviour is unchanged. */
+  content: 'ARCHIVED';
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.18em;
+  font-weight: 700;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.85);
+  padding: 4px 10px;
+  border-radius: 4px;
+  bottom: 24px;
+  right: 30px;
 }
 
 /* Header bands (confidential). Sits above any existing header content,
