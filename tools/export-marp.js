@@ -21,6 +21,7 @@
  *     README.md            — VS Code + marp-cli quick start + the fidelity note
  *     AGENTS.md            — entrypoint for an AI agent (default; --no-agent omits)
  *     agent/components.json — the Lattice component catalog (capacity included)
+ *     agent/lint.js + lint-core.js + lint-vocab.json — zero-dep deck linter
  *
  * Usage:
  *   node tools/export-marp.js <deck.md> <out-dir-or-zip> [palette]
@@ -39,7 +40,7 @@ const path = require('path');
 const { execFileSync } = require('child_process');
 const { bakeSplits } = require('../lib/core/bake-splits');
 const {
-  STATIC_ASSETS, AGENT_ASSETS, MARP_CONFIG_CJS, withRuntimeScripts, packageJson, vscodeSettings, readme, agentsMd,
+  STATIC_ASSETS, AGENT_ASSETS, MARP_CONFIG_CJS, LINT_JS, withRuntimeScripts, packageJson, vscodeSettings, readme, agentsMd, lintVocabJson,
 } = require('../lib/core/marp-bundle');
 
 const ROOT = path.join(__dirname, '..');
@@ -153,7 +154,7 @@ function main(argv) {
   fs.writeFileSync(path.join(dest, 'package.json'), JSON.stringify(packageJson(name), null, 2) + '\n');
   fs.mkdirSync(path.join(dest, '.vscode'), { recursive: true });
   fs.writeFileSync(path.join(dest, '.vscode', 'settings.json'), vscodeSettings(themesList));
-  fs.writeFileSync(path.join(dest, 'README.md'), readme({ name, palette, themes: themesList, agent: includeAgent }));
+  fs.writeFileSync(path.join(dest, 'README.md'), readme({ name, palette, themes: themesList, agent: includeAgent, lint: includeAgent }));
 
   // 6) the agent kit (default on): a bundle-tailored AGENTS.md at the root +
   //    the component catalog under agent/, so a recipient's AI agent can extend
@@ -164,6 +165,11 @@ function main(argv) {
     fs.writeFileSync(path.join(dest, 'AGENTS.md'), agentsMd({ name, version }));
     // Inputs were validated up front, so every entry exists here.
     for (const { from, to } of AGENT_ASSETS) copyInto(path.join(ROOT, from), path.join(dest, to));
+    // The zero-dependency linter: the wrapper + the deck-agnostic vocabulary
+    // snapshot (lint-core.js rides along in AGENT_ASSETS). `agent/` exists now.
+    const { buildVocab } = require('../lib/authoring/lint');
+    fs.writeFileSync(path.join(dest, 'agent', 'lint.js'), LINT_JS);
+    fs.writeFileSync(path.join(dest, 'agent', 'lint-vocab.json'), lintVocabJson(buildVocab()));
   }
 
   let result = dest;

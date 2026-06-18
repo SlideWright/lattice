@@ -142,6 +142,9 @@ function workspaceSection() {
   ws.append(prefRow('historyCap', 'Auto checkpoints kept per deck', null, ['10', '30', '100', 'All'],
     () => { try { window.__dbStore?.applyHistoryCap?.(); } catch {} }));
   ws.append(prefRow('deleteStyle', 'Deleting a deck', null, ['Asks to confirm', 'Undo toast']));
+  ws.append(prefRow('exportAgentKit', 'Marp export bundles the AI-agent kit',
+    'Adds AGENTS.md, the component catalog, and a zero-dependency linter to the Marp bundle so a recipient’s AI agent can extend the deck. Off makes a lean Marp-only bundle.',
+    ['On', 'Off']));
   const typeaheadRow = prefRow('typeahead', 'Open suggestions automatically',
     'Components only opens the popup as you enter a slide’s class directive; Everywhere covers directives, fences, and front matter too.',
     ['Components only', 'Everywhere', 'Off'],

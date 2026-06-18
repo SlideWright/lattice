@@ -10,8 +10,8 @@
 const { test, describe } = require('node:test');
 const assert = require('node:assert/strict');
 const {
-  STATIC_ASSETS, AGENT_ASSETS, RUNTIME_SCRIPTS, MARP_CONFIG_CJS, withRuntimeScripts,
-  safeName, packageJson, vscodeSettings, readme, agentsMd,
+  STATIC_ASSETS, AGENT_ASSETS, RUNTIME_SCRIPTS, MARP_CONFIG_CJS, LINT_JS, withRuntimeScripts,
+  safeName, packageJson, vscodeSettings, readme, agentsMd, lintVocabJson,
 } = require('../../../lib/core/marp-bundle');
 
 describe('marp-bundle spec', () => {
@@ -76,11 +76,40 @@ describe('marp-bundle spec', () => {
   });
 
   describe('agent kit', () => {
-    test('AGENT_ASSETS carries the component catalog into agent/', () => {
+    test('AGENT_ASSETS carries the catalog + the pure lint engine into agent/', () => {
       const byTo = Object.fromEntries(AGENT_ASSETS.map((a) => [a.to, a.from]));
       assert.equal(byTo['agent/components.json'], 'dist/docs/components.json');
-      // The kit is catalog data only — no engine, no heavy runtime.
-      assert.ok(!AGENT_ASSETS.some((a) => /emulator|runtime|\.js$/.test(a.from)));
+      assert.equal(byTo['agent/lint-core.js'], 'lib/authoring/lint-core.js');
+      // No engine/emulator/runtime — the only .js is the dependency-free linter.
+      assert.ok(!AGENT_ASSETS.some((a) => /emulator|runtime/.test(a.from)));
+    });
+
+    test('lintVocabJson normalizes Sets AND arrays to the same JSON shape', () => {
+      const fromSets = JSON.parse(lintVocabJson({
+        names: new Set(['a', 'b']), modifiers: new Set(['x']), capacity: { a: { axis: 'item' } },
+        finishNames: ['boardroom'], splitNames: ['rule'], mapRegions: { us: { valid: new Set(['ca']), names: ['California'] } },
+      }));
+      const fromArrays = JSON.parse(lintVocabJson({
+        names: ['a', 'b'], modifiers: ['x'], capacity: { a: { axis: 'item' } },
+        finishNames: ['boardroom'], splitNames: ['rule'], mapRegions: { us: { valid: ['ca'], names: ['California'] } },
+      }));
+      assert.deepEqual(fromSets, fromArrays);
+      assert.deepEqual(fromSets.names, ['a', 'b']);
+      assert.deepEqual(fromSets.mapRegions.us.valid, ['ca']);
+      assert.equal(fromSets.capacity.a.axis, 'item');
+    });
+
+    test('LINT_JS is a zero-dep wrapper: requires lint-core, loads the vocab, runs lintTextWith', () => {
+      assert.match(LINT_JS, /require\('\.\/lint-core\.js'\)/);
+      assert.match(LINT_JS, /lint-vocab\.json/);
+      assert.match(LINT_JS, /lintTextWith/);
+      assert.match(LINT_JS, /process\.argv\[2\]/);
+      assert.doesNotMatch(LINT_JS, /require\('(?!\.\/lint-core|fs|path)/); // no third-party deps
+    });
+
+    test('agentsMd documents the linter when present, omits it when absent', () => {
+      assert.match(agentsMd({ name: 'deck' }), /node agent\/lint\.js deck\.md/); // lint defaults true
+      assert.doesNotMatch(agentsMd({ name: 'deck', lint: false }), /agent\/lint\.js/);
     });
 
     test('agentsMd is bundle-tailored: names the deck, the catalog path, capacity, and the frozen snapshot', () => {
@@ -104,10 +133,15 @@ describe('marp-bundle spec', () => {
 
     test('readme adds the agent section + rows only when agent:true', () => {
       const base = { name: 'demo', palette: 'indaco', themes: ['lattice.css'] };
-      const on = readme({ ...base, agent: true });
+      const on = readme({ ...base, agent: true, lint: true });
       assert.match(on, /Extend it with an AI agent/);
       assert.match(on, /`AGENTS\.md`/);
       assert.match(on, /`agent\/components\.json`/);
+      assert.match(on, /`agent\/lint\.js`/);
+      // agent kit without the linter (older bundle) — no lint rows, but the kit rows stay.
+      const noLint = readme({ ...base, agent: true, lint: false });
+      assert.match(noLint, /`agent\/components\.json`/);
+      assert.doesNotMatch(noLint, /agent\/lint\.js/);
       const off = readme({ ...base, agent: false });
       assert.doesNotMatch(off, /Extend it with an AI agent/);
       assert.doesNotMatch(off, /agent\/components\.json/);

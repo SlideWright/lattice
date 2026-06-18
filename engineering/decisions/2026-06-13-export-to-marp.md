@@ -241,18 +241,32 @@ generated text files (README/config/package) + an asset manifest, so the kit is
 *one more generated file + one more asset*, shared across both producers
 (`tools/export-marp.js`, the Drawing Board) so they can't drift.
 
-**Scope (locked with the user):** the **Minimal** tier — `AGENTS.md` +
-`components.json` only (the authoring-contract prose `skill.md` and a *runnable*
-linter were considered and deferred; the catalog knowledge alone fixes blind
-authoring, and a runnable `lint:deck` re-adds the Node weight the reframe removed).
-**Default-on with an opt-out:** CLI `--no-agent`. The browser producer ships the
-kit by default and the function is opt-out-*ready* (`includeAgent`), but **there
-is no Drawing Board toggle yet — every Drawing Board bundle currently carries the
-kit.** That UI is the one deferred piece of "with an opt-out" (see below); it's a
-small fast-follow, and over-shipping harmless text/data is the safe default
-meanwhile. The browser fetches the catalog from the same staged `export/` dir as
-the static assets (`sync-playground-assets.mjs`).
+**Scope.** Shipped as the **Minimal** tier first (`AGENTS.md` + `components.json`);
+a follow-up (authorized by the user — "do both") added a **zero-dependency linter**
+and the **browser opt-out**, completing the kit:
 
-**Deferred:** a Drawing Board opt-out toggle in the export menu; optionally a
-heavier tier shipping a zero-dep browser linter (the bundled `lint-core` already
-exists) so the recipient can validate edits without a Node dependency.
+- **Zero-dep linter.** The bundle ships `agent/lint-core.js` (the pure, fs-free
+  lint engine, verbatim), a generated `agent/lint.js` wrapper, and a frozen
+  `agent/lint-vocab.json` snapshot. `node agent/lint.js <deck>.md` runs the same
+  checks Lattice does — unknown `_class`, card-style footguns, **and the capacity
+  rule** — with **only Node, no `npm install`** (lint-core has zero deps). This is
+  NOT the lean-bundle regression the reframe guarded against: that was about a
+  *render* runtime; this is a tiny pure linter, and rendering is still Marp's job.
+  The vocab serializer (`lintVocabJson`) lives in the shared spec so the CLI
+  (`buildVocab()`) and browser (its `lintVocab`) emit the same shape.
+- **`skill.md`** stays out — the catalog + the runnable linter cover authoring;
+  the prose contract would be redundant weight.
+
+**Default-on with an opt-out — now on BOTH producers.** CLI `--no-agent`; the
+Drawing Board exposes a persistent **Settings → Workspace** preference
+(`exportAgentKit`, on by default) rather than a per-export checkbox in the action
+menu — a persistent preference belongs with the other workspace switches
+(autocomplete, tours, perf overlay), keeping the Export dropdown action-only. The
+export controller reads the stored key; absent = on. The browser fetches the kit
+assets from the same staged `export/` dir as the static assets
+(`sync-playground-assets.mjs`).
+
+**Deferred:** nothing material remains for the kit. A future heavier tier could
+add an in-browser lint *panel* (the bundled `lint-core` already powers the live
+Drawing Board lint), but the Node-only `agent/lint.js` already gives recipients a
+zero-install check.
