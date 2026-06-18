@@ -52,7 +52,7 @@
       "kind": "noun",
       "level": 2,
       "system": "Frame",
-      "definition": "A slicer — carves a box into sub-boxes; the slide root and every nested division.",
+      "definition": "A slicer — carves a box into sub-boxes; the slide root and the fixed chrome-band sub-divisions (masthead, footer). Content cells hold Tiles, never nested Frames (recursion rejected).",
       "source": { "catalog": "forms", "vocab": "frames" }
     },
     {
