@@ -21,16 +21,18 @@ import SiteHeader from '../components/site/SiteHeader.astro';
 import ResourceHints from '../components/site/ResourceHints.astro';
 import WorkbenchApp from '../components/workbench/WorkbenchApp.tsx';
 import { joinBase } from '../lib/base-url.mjs';
-import { isPreviewDeploy } from '../lib/deploy-env.mjs';
+import { toursMode } from '../lib/deploy-env.mjs';
 import { assetBase } from '../playground/asset-version.mjs';
 
 const base = import.meta.env.BASE_URL;
 const url = (p) => joinBase(base, p);
 const pg = assetBase();
 
-// Guided tours run on the production site only — never local dev or the
-// Cloudflare PR previews. Baked into the HTML so the client gate is build-time.
-const previewDeploy = isPreviewDeploy({
+// Tours gate, baked into the HTML so the client check is build-time: 'on' on the
+// production site (launchers + first-visit auto-start), 'preview' on Cloudflare PR
+// previews (launchers show for review, no auto-start popup), 'off' on local dev
+// (opt in with ?tours=on). See lib/deploy-env.mjs.
+const toursAttr = toursMode({
 	dev: import.meta.env.DEV,
 	cfPages: process.env.CF_PAGES,
 	cfBranch: process.env.CF_PAGES_BRANCH,
@@ -63,7 +65,7 @@ const palettes = [...new Set([...tokensCss.matchAll(/data-palette="([^"]+)"/g)].
 ---
 
 <!doctype html>
-<html lang="en" data-palette="indaco" data-mode="light" data-tours={previewDeploy ? 'off' : 'on'}>
+<html lang="en" data-palette="indaco" data-mode="light" data-tours={toursAttr}>
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />

@@ -22,17 +22,18 @@ import { onToursEnabledChange, toursEnabled } from './tour-prefs.js';
 
 const SEEN_PREFIX = 'lattice-tour-seen-';
 
-// Tours ship to every build but only ACTIVATE on the production site. The page
-// build stamps `data-tours="on"` on <html> for production (GitHub Pages / a
-// main-branch Cloudflare deploy) and "off" for local dev and the Cloudflare
-// *.pages.dev PR previews (see docs/src/lib/deploy-env.mjs). Fail closed: only
-// an explicit "on" runs them.
+// The page build stamps `data-tours` on <html> (see docs/src/lib/deploy-env.mjs):
+//   'on'      production — launchers (Tour / Demo) AND the first-visit auto-start.
+//   'preview' Cloudflare PR previews — launchers SHOW so the feature is reviewable,
+//             but the auto-start tour does NOT fire (no popup over a reviewer).
+//   'off'     local dev — nothing, unless the override below opts in.
+// Fail closed: an unknown/missing value reads as off.
 //
-// Override for testing: a `?tours=on` URL param forces the tour + demo ON even on
-// a preview/dev deploy (so a branch-preview URL is clickable before merge);
-// `?tours=off` forces them off. The choice sticks for the browser TAB
-// (sessionStorage) so it survives navigation between pages, and clears when the
-// tab closes — it never leaks into a normal visitor's session.
+// Override for testing: a `?tours=on` URL param forces the tour + demo fully ON
+// (launchers + auto-start) even on a dev/preview deploy — so a branch-preview URL
+// is exercisable before merge; `?tours=off` forces everything off. The choice
+// sticks for the browser TAB (sessionStorage) so it survives navigation between
+// pages, and clears when the tab closes — it never leaks into a normal session.
 function toursOverride() {
 	try {
 		const q = new URL(window.location.href).searchParams.get('tours');
@@ -46,15 +47,32 @@ function toursOverride() {
 	}
 }
 
+function toursModeAttr() {
+	try {
+		return document.documentElement.dataset.tours || 'off';
+	} catch {
+		return 'off';
+	}
+}
+
+// Are the launcher buttons allowed here? Yes on production AND preview deploys
+// (so a PR preview is reviewable), or when the override forces on.
 export function toursAllowedHere() {
 	const override = toursOverride();
 	if (override === 'on') return true;
 	if (override === 'off') return false;
-	try {
-		return document.documentElement.dataset.tours === 'on';
-	} catch {
-		return false;
-	}
+	const mode = toursModeAttr();
+	return mode === 'on' || mode === 'preview';
+}
+
+// May the tour AUTO-START on first visit? Production only — never on a preview
+// deploy, where an unbidden popup would cover a reviewer's screen (the launcher
+// is enough there). The override forces it on for testing.
+export function tourAutoStartAllowed() {
+	const override = toursOverride();
+	if (override === 'on') return true;
+	if (override === 'off') return false;
+	return toursModeAttr() === 'on';
 }
 
 function prefersReducedMotion() {
@@ -206,9 +224,10 @@ export function initGuidedTour(opts) {
 
 	if (toursEnabled()) {
 		mountButton();
-		// First-visit auto-run. Marked seen the moment it fires so a reload or an
-		// early close never re-interrupts the same visitor.
-		if (autoStart && !seen()) {
+		// First-visit auto-run — production only (tourAutoStartAllowed): on a preview
+		// deploy the launcher shows but nothing pops up. Marked seen the moment it
+		// fires so a reload or an early close never re-interrupts the same visitor.
+		if (autoStart && tourAutoStartAllowed() && !seen()) {
 			window.setTimeout(() => {
 				if (seen() || !toursEnabled()) return;
 				markSeen();

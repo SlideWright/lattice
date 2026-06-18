@@ -58,6 +58,14 @@
 	.tour-btn {
 		padding: 0 8px;
 	}
+	/* Reclaim the room for the glyph launcher(s): on a workspace topbar that
+	 * carries a launcher (Tour / Demo), collapse the wordmark to the logo so two
+	 * chips + the palette/mode controls fit a phone. Scoped via :has() so the
+	 * landing topbar (no launcher) keeps its wordmark. (:has() is fine here — the
+	 * HARD-RULE ban is only for themes/ Marp-preview CSS, not the docs site.) */
+	.topbar:has(.tour-btn) .brand-mark {
+		display: none;
+	}
 }
 
 /* ---- driver.js popover -------------------------------------------------- */

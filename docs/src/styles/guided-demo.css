@@ -70,15 +70,9 @@ body.demo-running .driver-popover {
 	/* nudge the play triangle to optical center */
 	padding-left: 1px;
 }
-/* The Drawing Board's mobile topbar (palette + mode + the "?" tour + hamburger)
- * has no room for a second launcher — a glyph-only "Demo" would push it past the
- * viewport. Hide the standalone launcher on mobile (it stays on tablet /
- * desktop); the first-visit tour still owns the narrow help slot. */
-@media (max-width: 720px) {
-	.tour-btn.demo-btn {
-		display: none;
-	}
-}
+/* On the narrow topbar both launchers fold to glyph-only (the shared `.tour-btn`
+ * rule in guided-tour.css hides `.tour-btn-label` ≤720px), so the Demo button
+ * stays reachable on mobile — first-class, per the responsive bar. */
 
 /* ---- Acting pulse on the spotlighted control --------------------------- */
 /* Only when motion is welcome: a soft, breathing ring that says "happening here". */

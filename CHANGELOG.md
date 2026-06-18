@@ -134,17 +134,21 @@ in patch versions.
   keystroke, **opens the theme menu and switches palette**, and **opens Export** —
   each action spotlighted with an "Auto" badge and a caption, advancing on its own.
   Non-destructive: it borrows the open deck and **restores it exactly** when the
-  demo ends or you close it. Built on the same driver.js engine and palette-blind
-  styling as the tour, and governed by the same global **Guided tours** toggle and
-  production gating. The launcher shows on tablet/desktop (the cramped mobile
-  topbar keeps just the first-visit tour for now). New engine
-  `docs/src/playground/guided-demo.js` (a reusable `initGuidedDemo` with a per-step
-  `perform` hook + snapshot/restore) + content
+  demo ends or you close it (and suspends autosave for its duration, so the
+  transient slide is never persisted or the deck renamed). Built on the same
+  driver.js engine and palette-blind styling as the tour, and governed by the same
+  global **Guided tours** toggle. **First-class on mobile** — both launchers fold
+  to glyph-only and the brand wordmark collapses to its logo to make room. New
+  engine `docs/src/playground/guided-demo.js` (a reusable `initGuidedDemo` with a
+  per-step `perform` hook + snapshot/restore) + content
   `docs/src/playground/drawing-board-demo.js`.
   See `engineering/decisions/2026-06-16-auto-demo-walkthrough.md`.
-  - Tours and the demo are production-gated (off on dev / preview deploys); a
-    **`?tours=on`** URL override forces them on so a branch-preview URL is
-    clickable before merge (`?tours=off` forces off), sticky per browser tab.
+  - **The tour + demo launchers now show on PR previews**, so the feature is
+    reviewable on a `*.pages.dev` deploy without a magic param — the gate is
+    three-way (`toursMode`): `on` (production: launchers + first-visit auto-start),
+    `preview` (launchers show, but no auto-start popup over a reviewer), `off`
+    (local dev — opt in with the **`?tours=on`** override; `?tours=off` forces off,
+    sticky per browser tab).
 
 - **Docs site: a live, draggable performance overlay.** A small overlay renders
   two groups: **web vitals** (LCP / CLS / INP / FCP / TTFB, colour-rated by

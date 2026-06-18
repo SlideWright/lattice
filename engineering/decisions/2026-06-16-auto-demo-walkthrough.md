@@ -64,9 +64,19 @@ never strands the demo).
 The engine (`guided-demo.js`) is built on the **same driver.js instance and the
 same palette-blind popover skin** as the tour (`guided-tour.css`). Demo popovers
 carry `popoverClass: 'lattice-tour lattice-demo'`, inheriting all tour styling;
-`guided-demo.css` adds only the demo-specific pieces. Production gating and the
-global on/off are reused verbatim (`toursAllowedHere()` + `tour-prefs`), so the
-Drawing Board's one **"Guided tours"** setting silences both the tour and the demo.
+`guided-demo.css` adds only the demo-specific pieces. The gating and the global
+on/off are reused verbatim (`toursAllowedHere()` + `tour-prefs`), so the Drawing
+Board's one **"Guided tours"** setting silences both the tour and the demo.
+
+### Reviewable on previews (the gating is three-way)
+
+So a PR preview is actually usable for review, `data-tours` is **three-way**
+(`lib/deploy-env.mjs` → `toursMode`): `on` (production — launchers + first-visit
+auto-start), `preview` (Cloudflare `*.pages.dev` PR deploys — the **launchers
+show** so a reviewer can click Demo, but the tour does **not** auto-start, so no
+popup covers their screen), and `off` (local dev — opt in with the `?tours=on`
+override). `toursAllowedHere()` (the launcher gate) is true for `on` or `preview`;
+a separate `tourAutoStartAllowed()` keeps the auto-start production-only.
 
 ## Three engineering decisions that matter
 
@@ -131,5 +141,7 @@ Drawing Board's one **"Guided tours"** setting silences both the tour and the de
 - An optional "actually export" finale (currently the export step opens the menu
   without forcing a download).
 - The launcher is **opt-in** via the **Demo** button; we deliberately do **not**
-  auto-start it — the tour already owns first-visit — and it is hidden on the
-  cramped mobile topbar (tablet/desktop only).
+  auto-start it — the tour already owns first-visit. It is **first-class on
+  mobile**: both launchers fold to glyph-only on the narrow topbar and the brand
+  wordmark collapses to its logo (`:has(.tour-btn)`-scoped, so the landing topbar
+  keeps its wordmark) to make room.

@@ -21,7 +21,7 @@ import '../styles/drawing-board.css';
 import { previewFontFaceCss } from '../playground/font-embed.js';
 import { assetBase } from '../playground/asset-version.mjs';
 import { joinBase } from '../lib/base-url.mjs';
-import { isPreviewDeploy as isPreviewDeployEnv } from '../lib/deploy-env.mjs';
+import { isPreviewDeploy as isPreviewDeployEnv, toursMode } from '../lib/deploy-env.mjs';
 import { pickGrammarVariants } from '../playground/architect-knowledge.js';
 import SiteHeader from '../components/site/SiteHeader.astro';
 import DrawingBoardExportMenu from '../components/drawing-board/DrawingBoardExportMenu.tsx';
@@ -126,11 +126,13 @@ const buildId = (pg.match(/v\/([0-9a-f]{6,})/)?.[1] || 'dev').slice(0, 8);
 // without CF_PAGES; Cloudflare `*.pages.dev` branch deploys ARE the PR previews —
 // excluding a `main`-branch Cloudflare deploy keeps it off any future production
 // custom-domain build too.
-const isPreviewDeploy = isPreviewDeployEnv({
+const deployEnv = {
 	dev: import.meta.env.DEV,
 	cfPages: process.env.CF_PAGES,
 	cfBranch: process.env.CF_PAGES_BRANCH,
-});
+};
+const isPreviewDeploy = isPreviewDeployEnv(deployEnv);
+const toursAttr = toursMode(deployEnv);
 
 const tokensCss = readFileSync(join(docsRoot, 'src/styles/lattice-tokens.generated.css'), 'utf8');
 // The theme picker's vocabulary — every selectable palette, read from the
@@ -183,7 +185,7 @@ const dbData = JSON.stringify({
 ---
 
 <!doctype html>
-<html lang="en" data-palette="indaco" data-mode="light" data-tours={isPreviewDeploy ? 'off' : 'on'}>
+<html lang="en" data-palette="indaco" data-mode="light" data-tours={toursAttr}>
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />

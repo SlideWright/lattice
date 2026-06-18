@@ -108,6 +108,7 @@ harness the index can't infer, add it to `FRAMEWORKS` in the generator.
 | `test:core` | Unit scope: lib/core/* (token resolver, splits, marp bundle, …). |
 | `test:coverage` | c8 coverage over the unit suite (→ .scratch/coverage/). |
 | `test:coverage:all` | c8 coverage over unit + integration. |
+| `test:docs` | Unit scope: docs-site lib helpers (e.g. deploy-env tours gating). |
 | `test:engine` | Unit scope: lattice-engine internals. |
 | `test:export` | Unit scope: the owned export writers (PPTX, …). |
 | `test:integration` | Integration tier: emulator render → PDF page-count + the per-component semantic-invariant suite + screenshot/mermaid smoke. |

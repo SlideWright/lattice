@@ -122,6 +122,7 @@ const SCRIPT_META = {
   'test:parsing':             ['Test & verify', 'Unit scope: source-parse, splitter, slot-label-lift, marp plugins.'],
   'test:components':          ['Test & verify', 'Unit scope: component manifests + per-component logic.'],
   'test:cli':                 ['Test & verify', 'Unit scope: the CLI.'],
+  'test:docs':                ['Test & verify', 'Unit scope: docs-site lib helpers (e.g. deploy-env tours gating).'],
   'test:playground':          ['Test & verify', 'Unit scope: the playground bundle/core.'],
   'test:engine':              ['Test & verify', 'Unit scope: lattice-engine internals.'],
   'test:layout':              ['Test & verify', 'Unit scope: the layout system.'],
