@@ -1,0 +1,237 @@
+---
+/**
+ * The scroll-driven 3D "walkthrough" hero for /model/concepts/. Pure CSS 3D
+ * (no WebGL, no dependency) — real DOM, so it is crisp, selectable, accessible,
+ * and themed by the live palette tokens for free. As you scroll the hero, a flat
+ * kpi slide pulls apart into its Frame · Cell · Tile composition across the five
+ * z-planes (z0 canvas → z4 annotation), then re-composites — the depth that
+ * `z-index` flattens away, made literal (design/forms.md: z "would become literal
+ * depth in a spatial renderer").
+ *
+ * GPU acceleration is explicit: every animated node is promoted to its own
+ * compositing layer (will-change: transform + translate3d/rotate3d), only
+ * transforms animate, and scroll progress is written once per frame to a single
+ * custom property (--p) that all transforms read via calc() — so the morph runs
+ * on the compositor, off the main thread. Honours prefers-reduced-motion (static
+ * exploded view, no scroll coupling). The static 2D ConceptLattice below remains
+ * the no-JS / fallback reference.
+ */
+---
+
+<section class="cw" aria-label="A flat slide exploding into its Frame, Cell, and Tile composition across five depth planes, then re-composing, driven by scroll." data-cw>
+  <div class="cw-sticky">
+    <div class="cw-scene">
+      <div class="cw-stack" data-stack>
+        <div class="cw-layer l0" style="--z:-2"><span class="cw-tag"><b>z0</b> canvas</span></div>
+        <div class="cw-layer l1" style="--z:-1"><span class="cw-tag"><b>z1</b> atmosphere</span><div class="cw-wm">✦</div></div>
+        <div class="cw-layer l2" style="--z:0"><span class="cw-tag"><b>z2</b> content → component</span>
+          <div class="cw-kpi">
+            <div class="cw-grid">
+              <div class="cw-hero"><b>$2.4B</b><small>revenue</small></div>
+              <div class="cw-sup"><b>42%</b><small>margin</small></div>
+              <div class="cw-sup"><b>$1.1B</b><small>cash</small></div>
+            </div>
+          </div>
+        </div>
+        <div class="cw-layer l3" style="--z:1"><span class="cw-tag"><b>z3</b> chrome</span>
+          <div class="cw-mast"><span class="cw-k">Q3 RESULTS</span><span class="cw-t">Revenue ahead of plan</span></div>
+          <div class="cw-foot"><span>SlideWright</span><span>● ● ● ○ ○</span><span>04 / 12</span></div>
+        </div>
+        <div class="cw-layer l4" style="--z:2"><span class="cw-tag"><b>z4</b> annotation</span><div class="cw-annot"></div></div>
+      </div>
+    </div>
+    <div class="cw-controls">
+      <p class="cw-cap">
+        <span class="cw-cap-lead">Scroll</span> or drag the slider — one slide, pulled apart into <b>Frame · Cell · Tile</b> across five z-planes, then re-composed.
+      </p>
+      <div class="cw-bar">
+        <label class="cw-ctl">
+          <span>Explode</span>
+          <input type="range" min="0" max="100" value="0" step="1" data-slider aria-label="Explode the slide into its z-plane layers" />
+        </label>
+        <button type="button" class="cw-reset" data-reset>Reset</button>
+        <span class="cw-hint">drag the slide to orbit</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Tall scroll track; the stage sticks while you scroll its height. */
+  .cw { position: relative; height: 240vh; margin: 0 0 1rem; }
+  .cw-sticky { position: sticky; top: 0; height: 100vh; box-sizing: border-box;
+    padding-top: clamp(20px, 7vh, 84px); padding-bottom: 24px;
+    display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+    /* generous gap so the exploded / orbited 3D model has clear room below it —
+       its layers spill past the scene box, and the controls must not crowd them. */
+    gap: clamp(16px, 3vh, 40px);
+    overflow: hidden;
+    background: radial-gradient(120% 78% at 50% 32%, var(--bg-alt) 0%, transparent 68%); }
+
+  /* font-size tracks the slide width so all slide content scales in em, no media
+     queries; container for nothing else. */
+  /* The scene reserves room BELOW the 16:9 slide so the exploded / orbited model
+     (whose layers spill past the slide) has clear space to live and be grabbed,
+     without crowding the controls. The slide pins to the top; the reserve is the
+     bottom interaction zone. */
+  .cw-scene { perspective: 1400px; perspective-origin: 50% 38%; width: min(460px, 74vw);
+    height: calc(min(460px, 74vw) * 0.5625 + clamp(90px, 16vh, 160px));
+    position: relative; flex: none; font-size: min(11px, 1.78vw);
+    /* touches on the model orbit it, they do not scroll the page (re-enabled the
+       moment the touch ends — a new touch elsewhere scrolls normally). */
+    touch-action: none; }
+
+  /* The stack carries the scroll progress (--p, 0→1) and the derived orbit.
+     translate3d/rotate3d force a GPU compositing layer; will-change keeps it warm. */
+  .cw-stack { position: absolute; top: 0; left: 0; width: 100%; aspect-ratio: 16 / 9; transform-style: preserve-3d;
+    --p: 0; --rx: -13deg; --ry: 20deg; --spread: 104px;
+    transform: rotate3d(1,0,0, var(--rx)) rotate3d(0,1,0, var(--ry));
+    will-change: transform; cursor: grab; }
+  .cw-stack:active { cursor: grabbing; }
+  @media (max-width: 600px) { .cw-stack { --spread: 66px; } }
+
+  /* Each layer floats to its z-plane by --z, scaled by the explode progress (--p).
+     Only transform animates → composited, no layout/paint. */
+  .cw-layer { position: absolute; inset: 0; transform-style: preserve-3d;
+    backface-visibility: hidden; will-change: transform; border-radius: 12px;
+    transform: translate3d(0, 0, calc(var(--z) * var(--p) * var(--spread))); }
+  /* z0 — the canvas: a real themed slide surface. */
+  .l0 { background: var(--bg); border: 1px solid var(--border);
+    box-shadow: 0 30px 70px -36px color-mix(in srgb, var(--text-heading) 40%, transparent); }
+  .cw-tag { position: absolute; left: -1em; top: 0.9em; transform: translateX(-100%);
+    text-align: right; white-space: nowrap; opacity: calc(var(--p) * var(--p));
+    font: 600 0.85em/1.35 var(--sl-font-system-mono, monospace); color: var(--text-muted); }
+  .cw-tag b { display: block; color: var(--text-heading); font-size: 0.95em; }
+
+  /* z1 — atmosphere: a faint watermark, sits behind the content. */
+  .cw-wm { position: absolute; inset: 0; display: grid; place-items: center;
+    color: color-mix(in srgb, var(--accent) 14%, transparent);
+    font: 800 10em/1 var(--sl-font-system, serif); }
+
+  /* z2 — content: occupies only the STAGE region (below masthead, above footer),
+     so the composited (flat) slide reads as one clean slide, not overlapping layers. */
+  .cw-kpi { position: absolute; top: 25%; bottom: 17%; left: 7%; right: 7%; }
+  .cw-grid { display: grid; grid-template-columns: 1.55fr 1fr; grid-template-rows: 1fr 1fr;
+    gap: 0.55em; width: 100%; height: 100%; }
+  .cw-hero { grid-row: 1 / 3; background: var(--accent-soft);
+    border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
+    border-radius: 0.7em; padding: 0.7em 0.9em; display: flex; flex-direction: column; justify-content: center; }
+  .cw-sup { background: color-mix(in srgb, var(--accent) 6%, var(--bg)); border: 1px solid var(--border);
+    border-radius: 0.7em; padding: 0.5em 0.8em; display: flex; flex-direction: column; justify-content: center; }
+  .cw-hero b { font: 800 3.2em/1 var(--sl-font-system, serif); color: var(--accent); letter-spacing: -.01em; }
+  .cw-sup b { font: 800 1.85em/1 var(--sl-font-system, serif); color: var(--text-heading); }
+  .cw-kpi small { display: block; margin-top: 0.45em; font: 600 0.78em/1 var(--sl-font-system-mono, monospace);
+    color: var(--text-muted); text-transform: uppercase; letter-spacing: .05em; }
+
+  /* z3 — chrome: masthead band at the top, footer row at the bottom. */
+  .cw-mast { position: absolute; left: 7%; right: 7%; top: 7.5%; display: flex;
+    justify-content: space-between; align-items: baseline; padding-bottom: 0.5em;
+    border-bottom: 2px solid var(--accent); }
+  .cw-k { font: 700 0.82em/1 var(--sl-font-system-mono, monospace); color: var(--accent); text-transform: uppercase; letter-spacing: .12em; }
+  .cw-t { font: 700 1.15em/1 var(--sl-font-system, serif); color: var(--text-heading); }
+  .cw-foot { position: absolute; left: 7%; right: 7%; bottom: 6.5%; display: flex; justify-content: space-between;
+    font: 600 0.78em/1 var(--sl-font-system-mono, monospace); color: var(--text-muted); }
+
+  /* z4 — annotation overlay. */
+  .cw-annot { position: absolute; top: 7%; right: 7%; width: 1.1em; height: 1.1em; border-radius: 50%;
+    background: var(--accent); box-shadow: 0 0 0 0.35em color-mix(in srgb, var(--accent) 22%, transparent); }
+
+  .cw-controls { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+  .cw-cap { margin: 0; text-align: center; max-width: 52ch;
+    font: 400 14px/1.5 var(--sl-font-system, serif); color: var(--text-body); }
+  .cw-cap-lead { font-weight: 700; color: var(--accent); letter-spacing: .04em; text-transform: uppercase; font-size: 12px; }
+  .cw-cap b { color: var(--text-heading); }
+
+  .cw-bar { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; justify-content: center;
+    background: color-mix(in srgb, var(--bg-alt) 88%, transparent);
+    border: 1px solid var(--border); border-radius: 999px; padding: 8px 14px; }
+  .cw-ctl { display: flex; align-items: center; gap: 10px;
+    font: 600 11px/1 var(--sl-font-system-mono, monospace); text-transform: uppercase; letter-spacing: .06em; color: var(--text-muted); }
+  .cw-ctl input[type=range] { width: 200px; accent-color: var(--accent); cursor: pointer; }
+  .cw-reset { font: 600 11px/1 var(--sl-font-system-mono, monospace); text-transform: uppercase; letter-spacing: .06em;
+    color: var(--on-accent); background: var(--accent); border: 0; border-radius: 999px;
+    padding: 7px 14px; cursor: pointer; }
+  .cw-reset:hover { filter: brightness(1.08); }
+  .cw-reset:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .cw-hint { font: 600 10px/1 var(--sl-font-system-mono, monospace); color: var(--text-muted); opacity: .8; }
+  @media (max-width: 520px) { .cw-hint { display: none; } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cw { height: auto; }
+    .cw-sticky { position: static; height: auto; padding: 2rem 0; }
+    .cw-layer, .cw-stack { will-change: auto; }
+  }
+</style>
+
+<script>
+  // Drive the explode (--p) and orbit (--rx/--ry) — all transform-only, written
+  // to custom props the CSS reads, so the morph stays on the compositor. Three
+  // inputs: scroll (default), the Explode slider (manual), drag-to-orbit; Reset
+  // returns to scroll + level orbit. prefers-reduced-motion → static + manual.
+  function initWalkthrough() {
+    const root = document.querySelector('[data-cw]') as HTMLElement | null;
+    if (!root || root.dataset.cwInit) return;
+    root.dataset.cwInit = '1';
+    const stack = root.querySelector('[data-stack]') as HTMLElement | null;
+    const scene = root.querySelector('.cw-scene') as HTMLElement | null;
+    const slider = root.querySelector('[data-slider]') as HTMLInputElement | null;
+    const reset = root.querySelector('[data-reset]') as HTMLButtonElement | null;
+    if (!stack || !scene || !slider || !reset) return;
+
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let mode: 'scroll' | 'manual' = reduce ? 'manual' : 'scroll';
+    let pManual = reduce ? 0.7 : 0;
+    let yaw = 0, pitch = 0; // drag-orbit offsets (deg)
+    if (reduce) slider.value = '70';
+
+    const ease = (a: number) => (a < 0.5 ? 2 * a * a : 1 - Math.pow(-2 * a + 2, 2) / 2);
+    const clamp = (v: number) => Math.min(1, Math.max(0, v));
+    function scrollP() {
+      const r = root!.getBoundingClientRect();
+      const track = r.height - innerHeight;
+      const raw = track > 0 ? -r.top / track : 0;
+      return ease(1 - Math.abs(clamp(raw) * 2 - 1)); // explode, then recompose
+    }
+    function render() {
+      const p = mode === 'scroll' ? scrollP() : pManual;
+      stack!.style.setProperty('--p', p.toFixed(4));
+      stack!.style.setProperty('--ry', (20 + p * 26 + yaw).toFixed(2) + 'deg');
+      stack!.style.setProperty('--rx', (-13 + pitch).toFixed(2) + 'deg');
+      if (mode === 'scroll') slider!.value = String(Math.round(p * 100));
+    }
+    let ticking = false;
+    const schedule = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => { ticking = false; render(); });
+    };
+
+    if (!reduce) addEventListener('scroll', () => { if (mode === 'scroll') schedule(); }, { passive: true });
+    addEventListener('resize', schedule, { passive: true });
+
+    slider.addEventListener('input', () => { mode = 'manual'; pManual = +slider.value / 100; schedule(); });
+    reset.addEventListener('click', () => {
+      yaw = 0; pitch = 0;
+      if (reduce) { pManual = 0.7; slider.value = '70'; } else { mode = 'scroll'; }
+      schedule();
+    });
+
+    // drag to orbit — changes the view only, not the explode mode
+    let down = false, lx = 0, ly = 0;
+    scene.addEventListener('pointerdown', (e: PointerEvent) => { down = true; lx = e.clientX; ly = e.clientY; scene.setPointerCapture(e.pointerId); });
+    scene.addEventListener('pointermove', (e: PointerEvent) => {
+      if (!down) return;
+      yaw += (e.clientX - lx) * 0.4; pitch += (e.clientY - ly) * 0.4; lx = e.clientX; ly = e.clientY; schedule();
+    });
+    const up = () => { down = false; };
+    scene.addEventListener('pointerup', up);
+    scene.addEventListener('pointercancel', up);
+    // Belt-and-suspenders for touch: while a drag is active, swallow touchmove so
+    // the page can't scroll out from under the gesture; it resumes on release.
+    scene.addEventListener('touchmove', (e: TouchEvent) => { if (down) e.preventDefault(); }, { passive: false });
+
+    render();
+  }
+  initWalkthrough();
+  document.addEventListener('astro:page-load', initWalkthrough);
+</script>
