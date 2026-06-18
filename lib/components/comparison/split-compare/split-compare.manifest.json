@@ -4,6 +4,45 @@
   "function": "comparison",
   "form": "split",
   "substance": "structure",
+  "adapt": {
+    "families": [
+      "wide",
+      "square",
+      "tall",
+      "strip"
+    ],
+    "priority": [
+      "title",
+      "options",
+      "verdict"
+    ],
+    "keepTogether": [
+      "option"
+    ],
+    "capacity": {
+      "axis": "item",
+      "wide": {
+        "sweet": 2,
+        "soft": 2,
+        "hard": 2
+      },
+      "square": {
+        "sweet": 2,
+        "soft": 2,
+        "hard": 2
+      },
+      "tall": {
+        "sweet": 2,
+        "soft": 2,
+        "hard": 2
+      },
+      "strip": {
+        "sweet": 2,
+        "soft": 2,
+        "hard": 2
+      }
+    }
+  },
   "tags": [
     "tradeoff",
     "recommendation",

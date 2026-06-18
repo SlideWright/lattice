@@ -742,6 +742,13 @@
 
 section {
   container-type:size;
+  /* Name the slide query-container `lattice` so components reflow box-locally via
+   * `@container lattice (aspect-ratio …)`. A split/grid Cell can name ITSELF
+   * `lattice` to shadow this, so a nested component resolves against its cell.
+   * Geometry-independent, so it lives here (every render path loads dist) rather
+   * than the per-geometry engine emitter. See engineering/decisions/
+   * 2026-06-18-component-adaptive-sizing.md. */
+  container-name:lattice;
   box-sizing:border-box; overflow:hidden; position:relative;
   display:flex; flex-direction:column;
   padding: calc(var(--_sec-1cqi,1cqi)*6.875) calc(var(--_sec-1cqi,1cqi)*5);
@@ -1606,12 +1613,19 @@ section.cards-grid.four .cards-grid-inner > .card:last-child:nth-child(odd) {
  * lint time. See CARD_STYLE_LAYOUTS in lib/components/index.js. */
 section.cards-grid :is(ul,ol) > li > strong ~ * { font-weight: 400; }
 
-/* Portrait / square (social) — one column, content-height rows distributed to
-   fill, instead of a 2-col grid with grid-auto-rows:1fr ballooning each card on a
-   tall frame. Mirrors the list de-balloon; keyed on data-orientation. */
-section.cards-grid[data-orientation='portrait'] > :is(ul,ol),
-section.cards-grid[data-orientation='square'] > :is(ul,ol) {
-  grid-template-columns: 1fr; grid-auto-rows: auto; align-content: space-evenly;
+/* ── Box-local family reflow (2026-06-18-component-adaptive-sizing.md). Wide keeps
+   the 2-col grid; square and narrower go single-column, content-height rows
+   distributed to fill (instead of grid-auto-rows:1fr ballooning each card on a tall
+   frame). Keyed on the nearest `lattice` container's aspect — fires on a portrait
+   deck AND inside a narrow nested cell, replacing the data-orientation stamp. */
+/* `.cards-grid.cards-grid` (class doubled) reaches (0,2,2) so it matches the
+ * `:not(:has(.cards-grid-inner))` base grid rule and wins on source order — the
+ * role the old `[data-orientation]` attribute played. */
+@container lattice (aspect-ratio <= 1.05) {
+  section.cards-grid.cards-grid > ul,
+  section.cards-grid.cards-grid > ol {
+    grid-template-columns: 1fr; grid-auto-rows: auto; align-content: space-evenly;
+  }
 }
 
 /* === lib/components/inventory/cards-stack/cards-stack.styles.css === */
@@ -4637,30 +4651,35 @@ section.kpi.spotlight > ol > li:not(:first-child) code {
 
 
 
-/* ── Portrait / square reflow (social/mobile @sizes) ───────────────────────
+/* ── Box-local family reflow (2026-06-18-component-adaptive-sizing.md) ──────
  * Every kpi variant (briefing, ops, spotlight, trajectory) places metric <li>s
  * on an explicit grid — a hero spanning rows + supports in a side column, or a
- * 2×2 matrix. On a tall portrait/square canvas that side-by-side composition is
- * cramped. Switching the metric list from grid to a single flex COLUMN
- * linearises every variant at once: flex ignores the children's grid-column /
- * grid-row, so the hero stacks on top and the supports follow, full width — no
- * per-variant override needed. Keyed on the deck-wide data-orientation stamp
- * (lib/engine/slides.js); landscape is untouched. See
- * engineering/decisions/2026-06-16-social-mobile-portrait-sizes.md (phase 3). */
-/* `ol`/`ul` spelled out (not :where) so this matches the per-variant grid rules'
- * specificity — `section.kpi.spotlight > ol` is (0,2,2) — and wins on source
- * order (this block is last). :where() would drop us to (0,2,1) and lose. */
-section.kpi[data-orientation="portrait"] > ol,
-section.kpi[data-orientation="portrait"] > ul,
-section.kpi[data-orientation="square"] > ol,
-section.kpi[data-orientation="square"] > ul {
-  display: flex;
-  flex-direction: column;
-  /* The list keeps `flex: 1` (fills the slide below the title), so centre the
-   * metrics WITHIN it — centring the section can't, the list absorbs the slack. */
-  justify-content: center;
-  gap: var(--sp-md);
-  align-content: normal;
+ * 2×2 matrix. In a square-or-narrower box that side-by-side composition is
+ * cramped. Switching the metric list to a single flex COLUMN linearises every
+ * variant at once: flex ignores the children's grid-column / grid-row, so the
+ * hero stacks on top and the supports follow, full width — no per-variant
+ * override. Keyed on the nearest `lattice` container's aspect, so it fires on a
+ * portrait deck AND inside a narrow nested cell, replacing the data-orientation
+ * stamp. `.kpi.kpi` (class doubled) lifts the selector to (0,2,2) so it matches
+ * the per-variant grid rules' specificity (`section.kpi.spotlight > ol`) and wins
+ * on source order — the role the old `[data-orientation]` attribute played. */
+@container lattice (aspect-ratio <= 1.05) {
+  section.kpi.kpi > ol,
+  section.kpi.kpi > ul {
+    display: flex;
+    flex-direction: column;
+    /* The list keeps `flex: 1` (fills the slide below the title), so centre the
+     * metrics WITHIN it — centring the section can't, the list absorbs the slack. */
+    justify-content: center;
+    gap: var(--sp-md);
+    align-content: normal;
+  }
+}
+/* Strip — the tallest/narrowest box (mobile @size; a nested strip cell): shed the
+ * status pills, the lowest-priority unit (manifest `adapt.droppable`), so the
+ * numbers and their labels own the narrow frame instead of crowding it. */
+@container lattice (aspect-ratio <= 0.5) {
+  section.kpi.kpi > :is(ol,ul) li code { display: none; }
 }
 
 /* === lib/components/inventory/list/list.styles.css === */
@@ -4768,17 +4787,23 @@ section.list.principles.lettered > ol > li::before { content:counter(list-princi
 section.list.principles.roman > ol > li::before { content:counter(list-principle-counter, upper-roman); }
 section.list.principles.bullet > ol > li::before { content:'·'; }
 
-/* Portrait / square (social) — keep each card CONTENT-height and distribute the
-   set across the frame, instead of flex:1 1 0 ballooning one line of text into a
-   ~640px box on a tall canvas. Fill comes from rhythm (space-evenly) + the bigger
-   social type, not from inflating boxes. Keyed on data-orientation. */
-section.list[data-orientation='portrait'] > :is(ul,ol),
-section.list[data-orientation='square'] > :is(ul,ol) {
-  justify-content: space-evenly;
+/* ── Box-local family reflow (engineering/decisions/2026-06-18-component-adaptive-sizing.md).
+   Keyed on the nearest `lattice` container's aspect, so it fires on a portrait deck
+   (the section is tall) AND inside a narrow nested cell — replacing the deck-wide
+   data-orientation stamp. Square and narrower de-balloon: keep each row CONTENT-height
+   and distribute the set by rhythm, instead of flex:1 1 0 inflating one line of text
+   into a ~640px band on a tall frame. Fill comes from space-evenly + the social type. */
+/* `.list.list` (class doubled) reaches (0,2,2) to match the original
+   `[data-orientation]` reflow's specificity, so the takeaway/principles registers
+   (whose variant rules are (0,2,N)) still de-balloon — the role the attribute played. */
+@container lattice (aspect-ratio <= 1.05) {
+  section.list.list > :is(ul,ol) { justify-content: space-evenly; }
+  section.list.list > :is(ul,ol) > li { flex: 0 0 auto; }
 }
-section.list[data-orientation='portrait'] > :is(ul,ol) > li,
-section.list[data-orientation='square'] > :is(ul,ol) > li {
-  flex: 0 0 auto;
+/* Strip — the tallest/narrowest box (mobile @size; a nested strip cell): open the
+   rhythm so the de-ballooned rows breathe down the long frame instead of clustering. */
+@container lattice (aspect-ratio <= 0.5) {
+  section.list.list > :is(ul,ol) { gap: var(--sp-md); }
 }
 
 /* === lib/components/progression/list-criteria/list-criteria.styles.css === */
@@ -6190,14 +6215,21 @@ section.matrix-2x2 li > ol > li {
  * lint time. See CARD_STYLE_LAYOUTS in lib/components/index.js. */
 section.matrix-2x2 :is(ul,ol) > li > strong ~ * { font-weight: 400; }
 
-/* ── Portrait / square reflow (social/mobile @sizes). Keyed on the deck-wide
- * data-orientation stamp (lib/engine/slides.js); landscape untouched. See
- * 2026-06-16-social-mobile-portrait-sizes.md (phase 3). */
-section.matrix-2x2[data-orientation="portrait"] > ul,
-section.matrix-2x2[data-orientation="portrait"] > ol {
-  grid-template-columns: 1fr;
-  grid-template-rows: none;
-  grid-auto-rows: minmax(0, 1fr);
+/* ── Box-local family reflow (2026-06-18-component-adaptive-sizing.md). Wide and
+ * square keep the 2×2 (a square box reads the quadrants fine); tall and strip
+ * collapse to a single column. Keyed on the nearest `lattice` container's aspect,
+ * so it fires on a portrait deck AND inside a narrow nested cell — replacing the
+ * deck-wide data-orientation stamp. */
+/* `.matrix-2x2.matrix-2x2` (class doubled) reaches (0,2,2) to match the original
+ * `[data-orientation]` reflow's specificity and stay robust to future variant
+ * grid rules — the role the attribute played. */
+@container lattice (aspect-ratio <= 0.9) {
+  section.matrix-2x2.matrix-2x2 > ul,
+  section.matrix-2x2.matrix-2x2 > ol {
+    grid-template-columns: 1fr;
+    grid-template-rows: none;
+    grid-auto-rows: minmax(0, 1fr);
+  }
 }
 
 /* === lib/components/legal/obligation-matrix/obligation-matrix.styles.css === */
@@ -8826,15 +8858,30 @@ section.split-compare .verdict::before { content:'Recommendation'; position:abso
 section.split-compare .verdict blockquote { margin:0; padding:0; border:none; }
 section.split-compare .verdict blockquote p { font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-body); font-weight:400; line-height:var(--lh-snug); margin:0; }
 
-/* ── Portrait / square reflow (social/mobile @sizes). Rail stacks above the
- * verdict cards; cards go single-column. data-orientation stamp via
- * lib/engine/slides.js; landscape untouched. 2026-06-16-social-mobile-portrait-sizes.md */
+/* ── Reflow. Two seats, by what each targets:
+ *
+ *  · The section element's OWN flex-direction (rail beside vs above the options)
+ *    can't be container-queried — a `@container lattice` rule on the section would
+ *    be querying the very box it's trying to restyle, and silently no-ops. For a
+ *    FULL-SLIDE layout the deck orientation IS the component's box, so the stack
+ *    stays on the deck-wide data-orientation stamp. Correct, not a fallback.
+ *  · The DESCENDANTS (rail width, the options grid) reflow box-locally against the
+ *    nearest `lattice` container (the slide), so they're future-proof for nesting.
+ *
+ * NOTE: the option CELLS are deliberately NOT made `container-type: size` here. A
+ * nested size container re-bases every `cqi`-based token inside it to the cell
+ * (CSS resolves `cqi` at the use site), which shrinks the option type — and the
+ * only correct fix, a non-cqi `--_sec-1cqi` stamped on `section` by the engine in
+ * every render path, alters exported PDF bytes and is staged behind sign-off
+ * (2026-06-18-component-adaptive-sizing.md §11). So the genuinely-nested reflow
+ * (a component tracking its CELL's aspect, not the deck's) is NOT yet shipped in
+ * a real component; the foundation enables it. */
 section.split-compare[data-orientation="portrait"],
 section.split-compare[data-orientation="square"] { flex-direction: column; }
-section.split-compare[data-orientation="portrait"] .compare-left,
-section.split-compare[data-orientation="square"] .compare-left { width: auto; }
-section.split-compare[data-orientation="portrait"] .options,
-section.split-compare[data-orientation="square"] .options { grid-template-columns: 1fr; }
+@container lattice (aspect-ratio <= 1.05) {
+  section.split-compare .compare-left { width: auto; }
+  section.split-compare .options { grid-template-columns: 1fr; }
+}
 
 /* === lib/components/statement/split-panel/split-panel.styles.css === */
 /* split-panel — statement.panel.structure

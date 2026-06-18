@@ -40,6 +40,56 @@
       "uniqueItems": true,
       "items": { "enum": ["landscape", "portrait"] }
     },
+    "adapt": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Box-local adaptivity contract (engineering/decisions/2026-06-18-component-adaptive-sizing.md). `families` is the honest support list; the rest is declared layout INTENT the authored per-family CSS honors — and the data a future resolver would consume without re-authoring. The CSS is hand-written (#2 'authored per family'); this block does NOT generate layout. NOTE: distinct from the top-level `families` field, which names opt-in modifier groups (e.g. state-markers).",
+      "properties": {
+        "families": {
+          "description": "The box-FAMILIES this component ships authored layouts for — the finer, box-local successor to `orientation`. A component reflows box-locally via `@container lattice (aspect-ratio …)`, so it adapts to the box it OCCUPIES (a portrait deck, OR a narrow nested cell), not just the deck. Four families by container aspect: `wide` (>1.05) · `square` (0.9–1.05) · `tall` (0.5–0.9) · `strip` (<0.5). Omitted = derived from `orientation` (landscape→[wide,square], portrait→[tall,strip]) so unmigrated components stay honest. Render-backed: set it only once the authored layouts are verified.",
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "enum": ["wide", "square", "tall", "strip"] }
+        },
+        "priority": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "description": "Slots / content roles in importance order, highest first — what leads and what sheds first when the box can't hold everything. Slot names SHOULD be keys of `slots`; sub-part role names are free-form (documented in the component's docs)."
+        },
+        "droppable": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "description": "Sub-parts the layout may SHED in the narrowest (strip) family — tightest last. Each is a role the authored strip CSS hides (e.g. kpi `status-pills`). Declares intent; the CSS makes it true."
+        },
+        "keepTogether": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "description": "Pairs/groups that must never split across a reflow (e.g. a number and its label)."
+        },
+        "capacity": {
+          "type": "object",
+          "description": "Per-family content capacity — the box-aware generalization of the top-level `capacity`. `axis` names the collection (a focusAxes member); each family key carries soft/hard (and optional min/sweet) element counts for THAT box, plus optional escalateTo. A Strip honestly holds fewer than a Wide.",
+          "properties": {
+            "axis": { "enum": ["item", "row", "col", "cell", "line"] }
+          },
+          "patternProperties": {
+            "^(wide|square|tall|strip)$": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "min": { "type": "integer", "minimum": 1 },
+                "sweet": { "type": "integer", "minimum": 1 },
+                "soft": { "type": "integer", "minimum": 1 },
+                "hard": { "type": "integer", "minimum": 1 },
+                "escalateTo": { "type": "array", "items": { "type": "string", "minLength": 1 }, "minItems": 1 }
+              }
+            }
+          },
+          "additionalProperties": false
+        }
+      }
+    },
     "tags": {
       "type": "array",
       "minItems": 3,

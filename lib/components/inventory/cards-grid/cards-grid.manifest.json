@@ -1,12 +1,64 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "cards-grid",
-  "focusAxes": ["item"],
-  "capacity": { "axis": "item", "min": 2, "sweet": 3, "soft": 4, "hard": 4, "escalateTo": ["list-tabular", "split across slides"], "note": "the grid loses scannability past four cards" },
+  "focusAxes": [
+    "item"
+  ],
+  "capacity": {
+    "axis": "item",
+    "min": 2,
+    "sweet": 3,
+    "soft": 4,
+    "hard": 4,
+    "escalateTo": [
+      "list-tabular",
+      "split across slides"
+    ],
+    "note": "the grid loses scannability past four cards"
+  },
   "function": "inventory",
   "form": "grid",
   "substance": "structure",
-  "tags": ["overview", "showcase", "summary"],
+  "adapt": {
+    "families": [
+      "wide",
+      "square",
+      "tall",
+      "strip"
+    ],
+    "priority": [
+      "title",
+      "cards"
+    ],
+    "capacity": {
+      "axis": "item",
+      "wide": {
+        "sweet": 4,
+        "soft": 4,
+        "hard": 6
+      },
+      "square": {
+        "sweet": 3,
+        "soft": 4,
+        "hard": 6
+      },
+      "tall": {
+        "sweet": 3,
+        "soft": 4,
+        "hard": 6
+      },
+      "strip": {
+        "sweet": 3,
+        "soft": 3,
+        "hard": 5
+      }
+    }
+  },
+  "tags": [
+    "overview",
+    "showcase",
+    "summary"
+  ],
   "description": "2–4 parallel items, similar weight, scannable in a grid.",
   "purpose": "Use when the audience needs to compare or scan a small set of options at a glance. Avoid for more than 4 items — split into multiple slides. For ordered/numbered steps, use list-steps instead.",
   "variants": [
@@ -105,5 +157,7 @@
       "sample": "<!-- _class: cards-grid -->\n\n## Signal Intake produces three outputs.\n\n1. Weekly Signal Brief\n   - A ranked list of the top 10 signals from the prior week, with confidence scores and source attribution. Distributed to product leads every Monday.\n2. Anomaly Alerts\n   - Real-time flags when a signal exceeds the 2σ threshold on any dimension. Routed to the accountable PM with a 4-hour response SLA.\n3. Monthly Signal Index\n   - The source of truth for the calibration loop. Required reading before each retrospective.\n"
     }
   },
-  "showcase": { "featured": true }
+  "showcase": {
+    "featured": true
+  }
 }

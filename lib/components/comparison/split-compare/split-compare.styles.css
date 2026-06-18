@@ -37,12 +37,27 @@ section.split-compare .verdict::before { content:'Recommendation'; position:abso
 section.split-compare .verdict blockquote { margin:0; padding:0; border:none; }
 section.split-compare .verdict blockquote p { font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-body); font-weight:400; line-height:var(--lh-snug); margin:0; }
 
-/* ── Portrait / square reflow (social/mobile @sizes). Rail stacks above the
- * verdict cards; cards go single-column. data-orientation stamp via
- * lib/engine/slides.js; landscape untouched. 2026-06-16-social-mobile-portrait-sizes.md */
+/* ── Reflow. Two seats, by what each targets:
+ *
+ *  · The section element's OWN flex-direction (rail beside vs above the options)
+ *    can't be container-queried — a `@container lattice` rule on the section would
+ *    be querying the very box it's trying to restyle, and silently no-ops. For a
+ *    FULL-SLIDE layout the deck orientation IS the component's box, so the stack
+ *    stays on the deck-wide data-orientation stamp. Correct, not a fallback.
+ *  · The DESCENDANTS (rail width, the options grid) reflow box-locally against the
+ *    nearest `lattice` container (the slide), so they're future-proof for nesting.
+ *
+ * NOTE: the option CELLS are deliberately NOT made `container-type: size` here. A
+ * nested size container re-bases every `cqi`-based token inside it to the cell
+ * (CSS resolves `cqi` at the use site), which shrinks the option type — and the
+ * only correct fix, a non-cqi `--_sec-1cqi` stamped on `section` by the engine in
+ * every render path, alters exported PDF bytes and is staged behind sign-off
+ * (2026-06-18-component-adaptive-sizing.md §11). So the genuinely-nested reflow
+ * (a component tracking its CELL's aspect, not the deck's) is NOT yet shipped in
+ * a real component; the foundation enables it. */
 section.split-compare[data-orientation="portrait"],
 section.split-compare[data-orientation="square"] { flex-direction: column; }
-section.split-compare[data-orientation="portrait"] .compare-left,
-section.split-compare[data-orientation="square"] .compare-left { width: auto; }
-section.split-compare[data-orientation="portrait"] .options,
-section.split-compare[data-orientation="square"] .options { grid-template-columns: 1fr; }
+@container lattice (aspect-ratio <= 1.05) {
+  section.split-compare .compare-left { width: auto; }
+  section.split-compare .options { grid-template-columns: 1fr; }
+}

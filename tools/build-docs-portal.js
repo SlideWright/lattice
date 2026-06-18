@@ -56,6 +56,19 @@ const {
 } = require('../lib/components');
 const { BUCKET_BLURBS } = require('./build-bucket-galleries');
 const { renderDocs } = require('./build-component-docs');
+const { ORIENTATION_TO_FAMILIES, FAMILY_NAMES } = require('../lib/adaptive/families');
+
+// Box-families a component supports: explicit `adapt.families`, else derived from
+// the legacy `orientation` so the catalog stays honest for unmigrated components.
+// See engineering/decisions/2026-06-18-component-adaptive-sizing.md.
+function familiesFor(m) {
+  if (m.adapt && Array.isArray(m.adapt.families) && m.adapt.families.length) {
+    return FAMILY_NAMES.filter((f) => m.adapt.families.includes(f));
+  }
+  const orientation = Array.isArray(m.orientation) ? m.orientation : ['landscape', 'portrait'];
+  const set = new Set(orientation.flatMap((o) => ORIENTATION_TO_FAMILIES[o] || []));
+  return FAMILY_NAMES.filter((f) => set.has(f));
+}
 
 const ROOT = path.join(__dirname, '..');
 const COMPONENTS_DIR = path.join(ROOT, 'lib', 'components');
@@ -373,6 +386,8 @@ function renderPortalJson(manifests) {
     form: m.form,
     substance: m.substance,
     orientation: Array.isArray(m.orientation) ? m.orientation : ['landscape', 'portrait'],
+    families: familiesFor(m),
+    ...(m.adapt ? { adapt: m.adapt } : {}),
     tags: Array.isArray(m.tags) ? m.tags : [],
     description: m.description,
     purpose: m.purpose || null,
