@@ -21,10 +21,9 @@ import '../styles/drawing-board.css';
 import { previewFontFaceCss } from '../playground/font-embed.js';
 import { assetBase } from '../playground/asset-version.mjs';
 import { joinBase } from '../lib/base-url.mjs';
-import { primaryNav, GITHUB_URL, isCurrent } from '../lib/nav.mjs';
 import { isPreviewDeploy as isPreviewDeployEnv } from '../lib/deploy-env.mjs';
 import { pickGrammarVariants } from '../playground/architect-knowledge.js';
-import PaletteControls from '../components/site/PaletteControls.tsx';
+import SiteHeader from '../components/site/SiteHeader.astro';
 import DrawingBoardExportMenu from '../components/drawing-board/DrawingBoardExportMenu.tsx';
 import ResourceHints from '../components/site/ResourceHints.astro';
 
@@ -113,8 +112,6 @@ const themeNames = [
 
 const base = import.meta.env.BASE_URL;
 const url = (p) => joinBase(base, p);
-const navLinks = primaryNav(url); // shared primary nav — src/lib/nav.mjs
-const here = Astro.url.pathname;
 // Cache-busted prefix for the playground's runtime-fetched assets (see
 // asset-version.mjs); the bare `playground/` route is unchanged.
 const pg = assetBase();
@@ -212,32 +209,12 @@ const dbData = JSON.stringify({
 		</script>
 	</head>
 	<body class="db-page" data-pane="editor">
-		<header class="topbar">
-			<div class="wrap topbar-inner" style="max-width:none">
-				<a class="brand" href={url('')}>
-					<img class="brand-logo" src={url('lattice-mark-min.svg')} alt="" width="30" height="30" />
-					<span class="brand-mark">Lattice</span>
-				</a>
-				<nav class="topnav" id="topnav">
-					{navLinks.map((l) => (
-						<a class="navlink" href={l.href} aria-current={isCurrent(l, here) ? 'page' : undefined}>{l.label}</a>
-					))}
-					<a class="navlink" href={GITHUB_URL}>GitHub</a>
-				</nav>
-				<div class="topbar-actions">
-					<!-- The ONE global theme dropdown + light/dark toggle (PaletteControls,
-					     the same component every surface mounts). On this route it detects
-					     the render controller's window.__dbChrome bus and WRITES the deck's
-					     `theme:` front matter (applyTheme → writeFrontMatter), mirroring it
-					     back onto data-palette — the authoring semantics this surface needs.
-					     lx-ui scopes the shadcn island; client:idle so the chrome paints first. -->
-					<div class="controls lx-ui">
-						<PaletteControls client:idle palettes={palettes} />
-					</div>
-					<button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-controls="topnav" aria-expanded="false"></button>
-				</div>
-			</div>
-		</header>
+		<!-- The ONE shared site header. The theme dropdown inside it (PaletteControls,
+		     via <NavActions>) detects this route's window.__dbChrome bus and WRITES
+		     the deck's `theme:` front matter (applyTheme → writeFrontMatter),
+		     mirroring it back onto data-palette — the authoring semantics this
+		     surface needs. Same component, context-aware. -->
+		<SiteHeader palettes={palettes} wide={true} />
 
 		<div class="db-workspace" id="db-workspace">
 			<!-- The Architect — deterministic onboarding + live review (Slice 5). The

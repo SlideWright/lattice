@@ -16,12 +16,11 @@ import { join } from 'node:path';
 import '../styles/landing.css';
 import '../styles/playground.css';
 import '../styles/deck-config.css';
-import PaletteControls from '../components/site/PaletteControls.tsx';
+import SiteHeader from '../components/site/SiteHeader.astro';
 import ResourceHints from '../components/site/ResourceHints.astro';
 import PlaygroundApp from '../components/playground/PlaygroundApp.tsx';
 import { buildCatalog, buildLenses } from '../lib/families.mjs';
 import { joinBase } from '../lib/base-url.mjs';
-import { primaryNav, GITHUB_URL, isCurrent } from '../lib/nav.mjs';
 import { isPreviewDeploy } from '../lib/deploy-env.mjs';
 import { assetBase } from '../playground/asset-version.mjs';
 import { loadGalleries, GALLERY_GROUPS } from '../playground/galleries.mjs';
@@ -35,8 +34,6 @@ const manifests = loadAll();
 
 const base = import.meta.env.BASE_URL;
 const url = (p) => joinBase(base, p);
-const navLinks = primaryNav(url); // shared primary nav — src/lib/nav.mjs
-const here = Astro.url.pathname;
 // Cache-busted prefix for the playground's runtime-fetched assets (see
 // asset-version.mjs); the bare `playground/` route is unchanged.
 const pg = assetBase();
@@ -130,26 +127,7 @@ const pgData = {
 		</script>
 	</head>
 	<body class="pg-page">
-		<header class="topbar">
-			<div class="wrap topbar-inner" style="max-width:none">
-				<a class="brand" href={url('')}>
-					<img class="brand-logo" src={url('lattice-mark-min.svg')} alt="" width="30" height="30" />
-					<span class="brand-mark">Lattice</span>
-				</a>
-				<nav class="topnav" id="topnav">
-					{navLinks.map((l) => (
-						<a class="navlink" href={l.href} aria-current={isCurrent(l, here) ? 'page' : undefined}>{l.label}</a>
-					))}
-					<a class="navlink" href={GITHUB_URL}>GitHub</a>
-				</nav>
-				<div class="topbar-actions">
-					<div class="controls lx-ui">
-						<PaletteControls client:idle palettes={palettes} />
-					</div>
-					<button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-controls="topnav" aria-expanded="false"></button>
-				</div>
-			</div>
-		</header>
+		<SiteHeader palettes={palettes} wide={true} />
 
 		<!-- The playground surface: one React + shadcn island owning the toolbar
 		     (component Popover+Command picker, variant Select, mobile Edit/Preview
@@ -180,20 +158,5 @@ const pgData = {
 		     paints), not eagerly here — so the toolbar + editor host paint without
 		     the ~554KB-gz bundle blocking. The render loop polls for the global. -->
 
-		<!-- Mobile nav-toggle (the topbar hamburger) — the one bit of surrounding
-		     chrome still wired imperatively, identical to the other standalone
-		     routes (landing, drawing board). -->
-		<script is:inline>
-			(function () {
-				var navToggle = document.getElementById('nav-toggle');
-				var topbar = document.querySelector('.topbar');
-				if (navToggle && topbar) {
-					navToggle.addEventListener('click', function () {
-						var open = topbar.classList.toggle('nav-open');
-						navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-					});
-				}
-			})();
-		</script>
 	</body>
 </html>

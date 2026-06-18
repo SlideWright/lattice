@@ -411,16 +411,6 @@ export function createRenderController(data) {
 		} catch (_e) {}
 	});
 
-	// ── Top-nav mobile toggle ─────────────────────────────────────────────
-	var navToggle = document.getElementById('nav-toggle');
-	var topbar = document.querySelector('.topbar');
-	if (navToggle && topbar) {
-		navToggle.addEventListener('click', () => {
-			var open = topbar.classList.toggle('nav-open');
-			navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-		});
-	}
-
 	// ── Resizers: drag to set the Architect + preview column widths ───────
 	var workspace = document.getElementById('db-workspace');
 	function loadWidth(key, prop) {

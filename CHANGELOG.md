@@ -25,6 +25,25 @@ in patch versions.
 
 ## Unreleased
 
+### Changed
+
+- **One unified site header + a universal ⌘K command palette (docs site).** The
+  top bar was eight copy-pasted topbars across two CSS systems (`TopBar.astro`,
+  inline copies in six standalone pages, and the Starlight `Header.astro`); the
+  docs zone and the standalone routes drifted apart and read as two apps. All of
+  it collapses into ONE shared `SiteHeader.astro` rendered everywhere — identical
+  brand, nav, theme controls, and search on every surface. The seven top-level
+  links become a calmer set: Docs · Components · Features · Comparison inline, the
+  three apps (Playground, Drawing Board, Workbench) under a **Tools** disclosure.
+  Search is now a **universal ⌘K command palette** (the same on every page):
+  navigate anywhere, switch theme/light-dark, and full-text-search the docs via
+  Pagefind — replacing the docs-only search pill. One responsive rule (`lg`)
+  governs the whole bar: a rich bar on desktop, a compact search-+-menu bar with a
+  full Sheet below it. The component-reference toolbars (the page sub-bar, the
+  specimen Preview/Edit toggle, the variant switcher) were realigned to the same
+  button/segmented-control vocabulary so every bar in the app reads as one piece.
+  Nav is one source of truth (`docs/src/lib/nav.mjs`); `TopBar.astro` is retired.
+
 ### Fixed
 
 - **Present/Practice mobile stage — maximise + robust centering (CSS isolation).**

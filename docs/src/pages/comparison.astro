@@ -12,19 +12,17 @@
 // zero JS). The page shell (head, topbar, footer, nav toggle) mirrors
 // index.astro; SectionHead is reused from the landing for heading consistency.
 import '../styles/landing.css';
-import PaletteControls from '../components/site/PaletteControls.tsx';
+import SiteHeader from '../components/site/SiteHeader.astro';
 import ResourceHints from '../components/site/ResourceHints.astro';
 import EngineWarm from '../components/site/EngineWarm.astro';
 import { SectionHead } from '../components/landing/sections.tsx';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { joinBase } from '../lib/base-url.mjs';
-import { primaryNav, GITHUB_URL, isCurrent } from '../lib/nav.mjs';
+import { GITHUB_URL } from '../lib/nav.mjs';
 
 const base = import.meta.env.BASE_URL;
 const url = (p) => joinBase(base, p);
-const navLinks = primaryNav(url);
-const here = Astro.url.pathname;
 
 // Palette list = the distinct names baked into the generated token CSS — one
 // source of truth, same as the landing topbar selector.
@@ -226,26 +224,7 @@ const WEAKNESSES = [
 		</style>
 	</head>
 	<body>
-		<header class="topbar">
-			<div class="wrap topbar-inner">
-				<a class="brand" href={url('')}>
-					<img class="brand-logo" src={url('lattice-mark-min.svg')} alt="" width="30" height="30" />
-					<span class="brand-mark">Lattice</span>
-				</a>
-				<nav class="topnav" id="topnav">
-					{navLinks.map((l) => (
-						<a class="navlink" href={l.href} aria-current={isCurrent(l, here) ? 'page' : undefined}>{l.label}</a>
-					))}
-					<a class="navlink" href={GITHUB_URL}>GitHub</a>
-				</nav>
-				<div class="topbar-actions">
-					<div class="controls lx-ui">
-						<PaletteControls client:idle palettes={palettes} />
-					</div>
-					<button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-controls="topnav" aria-expanded="false"></button>
-				</div>
-			</div>
-		</header>
+		<SiteHeader palettes={palettes} />
 
 		<main>
 			<!-- Hero -->
@@ -682,19 +661,6 @@ const WEAKNESSES = [
 				<span class="legal">Designed by humans. Refined with Claude. · Part of Lattice Style · MIT-licensed</span>
 			</div>
 		</footer>
-
-		<script is:inline>
-			(function () {
-				var navToggle = document.getElementById('nav-toggle');
-				var topbar = document.querySelector('.topbar');
-				if (navToggle && topbar) {
-					navToggle.addEventListener('click', function () {
-						var open = topbar.classList.toggle('nav-open');
-						navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-					});
-				}
-			})();
-		</script>
 
 		<!-- Intent-gated engine warming: hovering/focusing an app link warms the
 		     render bundle a beat before the jump. See src/lib/prefetch-engine.ts. -->

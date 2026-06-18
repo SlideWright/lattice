@@ -1,70 +1,31 @@
 ---
-// Override of Starlight's header. Replaces the default Starlight chrome
-// (site-title + centred search + theme dropdown + social icons) with the SAME
-// topbar the landing/playground/components pages carry — brand, global nav,
-// search, palette <select>, and a light/dark moon toggle — so the docs zone
-// reads as part of one website rather than a bolted-on subsite.
+// Override of Starlight's header. Renders the ONE shared <SiteHeader> — the
+// exact same top bar the standalone routes carry — so the docs zone reads as
+// part of one website, not a bolted-on subsite. The header is no longer
+// re-implemented here; SiteHeader owns the brand, nav, Tools disclosure, the
+// universal ⌘K command palette (which replaced the standalone Starlight search
+// pill — search is now uniform everywhere via Pagefind), and the theme
+// controls.
 //
-// Search is Starlight's own <site-search> (Pagefind), kept and restyled.
-// The palette + mode controls write the shared localStorage keys
-// (lattice-docs-palette / -mode) and set data-palette / data-mode / data-theme,
-// so a choice made here carries to the landing/playground and vice-versa.
-// The mobile sidebar toggle is rendered by PageFrame; the global nav also
-// lives at the top of the mobile sidebar (Sidebar.astro) so narrow viewports
-// never dead-end at the logo. Styling: docs/src/styles/lattice.css.
+// standalone={false}: Starlight's own .header already provides the sticky
+// wrapper, so SiteHeader renders just the inner bar into it.
+// mobileMenu={false}: Starlight owns the mobile menu here because it also
+// carries the page TOC; the global nav still lives at the top of that menu
+// (Sidebar.astro) so narrow viewports never dead-end at the logo.
+// Styling: SiteHeader's co-located styles + docs/src/styles/lattice.css.
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import Search from 'virtual:starlight/components/Search';
-import config from 'virtual:starlight/user-config';
-import PaletteControls from './site/PaletteControls.tsx';
+import SiteHeader from './site/SiteHeader.astro';
 import EngineWarm from './site/EngineWarm.astro';
 import PerfOverlay from './site/PerfOverlay.astro';
-import { joinBase } from '../lib/base-url.mjs';
-import { primaryNav, GITHUB_URL, isCurrent } from '../lib/nav.mjs';
-
-const base = import.meta.env.BASE_URL;
-const url = (p) => joinBase(base, p);
 
 // Same derivation the component portal uses: the palette names ARE the
 // data-palette keys in the generated token file (indaco first → default).
 const tokensCss = readFileSync(join(process.cwd(), 'src/styles/lattice-tokens.generated.css'), 'utf8');
 const palettes = [...new Set([...tokensCss.matchAll(/data-palette="([^"]+)"/g)].map((x) => x[1]))];
-
-const here = Astro.url.pathname;
-const links = primaryNav(url); // single source of truth — src/lib/nav.mjs
-const shouldRenderSearch =
-	config.pagefind || config.components.Search !== '@astrojs/starlight/components/Search.astro';
 ---
 
-<div class="lx-topbar">
-	<a class="lx-brand" href={url('')}>
-		<img src={url('lattice-mark-min.svg')} alt="" width="30" height="30" />
-		<span class="lx-mark">Lattice</span>
-	</a>
-
-	<nav class="lx-nav" aria-label="Site">
-		{
-			links.map((l) => (
-				<a href={l.href} aria-current={isCurrent(l, here) ? 'page' : undefined}>
-					{l.label}
-				</a>
-			))
-		}
-		<a href={GITHUB_URL}>GitHub</a>
-	</nav>
-
-	{
-		shouldRenderSearch && (
-			<div class="lx-search print:hidden">
-				<Search />
-			</div>
-		)
-	}
-
-	<div class="lx-controls print:hidden lx-ui">
-		<PaletteControls client:idle palettes={palettes} />
-	</div>
-</div>
+<SiteHeader palettes={palettes} wide={true} standalone={false} mobileMenu={false} />
 
 {/* Intent-gated engine warming on the docs pages: hovering/focusing an app
     link in the topbar warms the render bundle a beat before the jump.
@@ -73,10 +34,3 @@ const shouldRenderSearch =
 
 {/* Live Core-Web-Vitals overlay on the docs zone, gated behind ?perf. */}
 <PerfOverlay />
-
-
-{/* Palette + light/dark are now the shared <PaletteControls> island
-    (src/components/site/), which owns the data-palette/data-mode writes,
-    localStorage, the data-theme/starlight-theme lockstep, and the bfcache
-    pageshow re-sync — all via site-chrome.ts. The pre-paint StarlightThemeProvider
-    still sets the attributes before first paint. */}

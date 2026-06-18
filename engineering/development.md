@@ -298,9 +298,15 @@ cache). Flags: `--width`/`--height`, `--full` (full-page), `--wait <css>`
 | Playground | `…/lattice/playground/` |
 | Components index | `…/lattice/components/` |
 
-Nav links are defined in `docs/src/components/TopBar.astro` (+ injected via
-`SocialIcons.astro`) — that's where a new top-level entry (e.g. the
-Workbench) is added.
+The whole site chrome is ONE shared component — `docs/src/components/site/SiteHeader.astro`
+(brand · nav · Tools disclosure · ⌘K command palette · theme controls), rendered by
+every standalone route AND the Starlight docs zone (`Header.astro`). Nav links are the
+single source of truth in `docs/src/lib/nav.mjs` (`contentNav` = inline; `toolsNav` =
+the Tools group) — add a new top-level entry there. The interactive bits live in the
+`NavActions.tsx` island (search/command palette via `CommandMenu.tsx`, the mobile Sheet).
+The universal search is the ⌘K command palette: it navigates anywhere, switches theme,
+and full-text-searches the docs via Starlight's Pagefind index (built site only — in
+`npm run dev` the palette still navigates/themes, just without doc-text results).
 
 ### Traps (full entries in `gotchas.md`)
 

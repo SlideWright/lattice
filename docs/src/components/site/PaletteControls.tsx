@@ -36,9 +36,12 @@ declare global {
  *   - Everywhere else: picking sets the site palette (data-palette + localStorage)
  *     via site-chrome.ts; state syncs from storage + cross-tab `storage` events.
  *
- * Pass an empty `palettes` to render the mode toggle only.
+ * Pass an empty `palettes` to render the mode toggle only. `compact` hides the
+ * theme <select> below the `lg` breakpoint (the light/dark toggle stays), so the
+ * header bar stays uncluttered in the compact (tablet/phone) band — theme
+ * picking there moves to the command palette and the mobile menu.
  */
-export default function PaletteControls({ palettes }: { palettes: string[] }) {
+export default function PaletteControls({ palettes, compact = false }: { palettes: string[]; compact?: boolean }) {
 	const [palette, setPaletteState] = React.useState(palettes[0] ?? 'indaco');
 	const [mode, setModeState] = React.useState<Mode>('light');
 	// The Drawing Board bus can push a richer list (e.g. saved Workbench library
@@ -114,7 +117,9 @@ export default function PaletteControls({ palettes }: { palettes: string[] }) {
 						// Room for the a11y group's longest name ("Achromatopsia") from sm up;
 						// 8.5rem on mobile so the topbar can't overflow ≤390px; truncate (not
 						// clip) a long name — the primitive's display:flex defeats line-clamp.
-						className="w-[8.5rem] sm:w-40 [&_[data-slot=select-value]]:!block [&_[data-slot=select-value]]:min-w-0 [&_[data-slot=select-value]]:truncate"
+						// `compact` drops it below lg (the header's compact band); the
+						// command palette + mobile menu carry theme-picking there.
+						className={`w-[8.5rem] sm:w-40 [&_[data-slot=select-value]]:!block [&_[data-slot=select-value]]:min-w-0 [&_[data-slot=select-value]]:truncate${compact ? ' hidden lg:flex' : ''}`}
 					>
 						<SelectValue placeholder="Theme" />
 					</SelectTrigger>

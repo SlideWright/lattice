@@ -206,21 +206,7 @@ code {
 	padding: 0 24px;
 }
 
-/* ── Top bar ─────────────────────────────────────────────────────────── */
-.topbar {
-	position: sticky;
-	top: 0;
-	z-index: 50;
-	background: color-mix(in srgb, var(--bg) 86%, transparent);
-	backdrop-filter: saturate(180%) blur(12px);
-	border-bottom: 1px solid var(--border);
-}
-.topbar-inner {
-	display: flex;
-	align-items: center;
-	gap: 20px;
-	height: 62px;
-}
+/* ── Brand mark (shared by the footer; the top bar lives in SiteHeader) ─── */
 .brand {
 	display: inline-flex;
 	align-items: center;
@@ -242,101 +228,6 @@ code {
 	font-size: 22px;
 	color: var(--text-heading);
 	letter-spacing: -0.01em;
-}
-.topnav {
-	display: flex;
-	align-items: center;
-	gap: 22px;
-	margin-left: auto;
-}
-.topnav a.navlink {
-	font-size: 14px;
-	font-weight: 500;
-	color: var(--text-body);
-}
-.topnav a.navlink:hover,
-.topnav a.navlink[aria-current='page'] {
-	color: var(--accent);
-}
-.topbar-actions {
-	display: flex;
-	align-items: center;
-	gap: 10px;
-}
-.controls {
-	display: flex;
-	align-items: center;
-	gap: 8px;
-}
-/* Hamburger — desktop-hidden; the mobile breakpoint reveals it and turns
- * .topnav into a dropdown so nav links survive on phones (they used to
- * vanish, leaving only the palette/mode controls). */
-.nav-toggle {
-	display: none;
-	flex: 0 0 auto;
-	width: 34px;
-	height: 34px;
-	align-items: center;
-	justify-content: center;
-	border-radius: var(--radius-sm);
-	border: 1px solid var(--border);
-	background: var(--bg);
-	color: var(--text-body);
-	cursor: pointer;
-}
-.nav-toggle::before {
-	content: '';
-	width: 18px;
-	height: 18px;
-	background: currentColor;
-	-webkit-mask: var(--icon-menu) center / contain no-repeat;
-	mask: var(--icon-menu) center / contain no-repeat;
-}
-.nav-toggle:hover {
-	border-color: var(--accent);
-	color: var(--accent);
-}
-.palette-select {
-	padding: 6px 9px;
-	border: 1px solid var(--border);
-	border-radius: var(--radius-sm);
-	background: var(--bg);
-	color: var(--text-body);
-	font-family: var(--font-body);
-	font-size: 13px;
-	cursor: pointer;
-}
-.palette-select:focus {
-	outline: none;
-	border-color: var(--accent);
-}
-.mode-toggle {
-	flex: 0 0 auto;
-	display: inline-grid;
-	place-items: center;
-	width: 34px;
-	height: 34px;
-	border-radius: var(--radius-sm);
-	border: 1px solid var(--border);
-	background: var(--bg);
-	color: var(--text-body);
-	cursor: pointer;
-}
-.mode-toggle:hover {
-	border-color: var(--accent);
-	color: var(--accent);
-}
-.mode-toggle::before {
-	content: '';
-	width: 16px;
-	height: 16px;
-	background: currentColor;
-	-webkit-mask: var(--icon-moon) center / contain no-repeat;
-	mask: var(--icon-moon) center / contain no-repeat;
-}
-html[data-mode='dark'] .mode-toggle::before {
-	-webkit-mask-image: var(--icon-sun);
-	mask-image: var(--icon-sun);
 }
 
 /* ── Footer ──────────────────────────────────────────────────────────── */
@@ -372,49 +263,10 @@ html[data-mode='dark'] .mode-toggle::before {
 	color: var(--text-muted);
 }
 
-/* ── Responsive (shared topbar chrome) ───────────────────────────────────
- * Landing-section responsiveness now lives in the React components' Tailwind
- * utilities (grid-cols-* breakpoints). What remains here is the SHARED topbar
- * chrome — the same bar renders on the playground / drawing-board / workbench /
- * components surfaces (TopBar.astro), so these rules must stay. */
-/* Tablet / phone: collapse the nav links behind the hamburger. The links
- * become a full-width dropdown panel under the bar; palette + mode controls
- * stay visible at all sizes. */
-/* Raised 760 → 960: the widest topbar (the playground/drawing-board — full nav +
- * the Tour button + the palette Select, whose width grows with longer palette
- * names like "crepuscolo") overflowed in the 760–960 tablet band. Hamburger
- * through that band on every standalone page so the topbar never overflows;
- * the inline nav returns at ≥960 where it comfortably fits. */
-@media (max-width: 960px) {
-	.nav-toggle {
-		display: inline-flex;
-	}
-	.topbar-actions {
-		margin-left: auto; /* .topnav is now absolute, so push controls right */
-	}
-	.topnav {
-		position: absolute;
-		top: 100%;
-		left: 0;
-		right: 0;
-		display: none;
-		flex-direction: column;
-		align-items: stretch;
-		gap: 0;
-		margin: 0;
-		padding: 6px 0;
-		background: var(--bg);
-		border-bottom: 1px solid var(--border);
-		box-shadow: var(--shadow-lg);
-	}
-	.topbar.nav-open .topnav {
-		display: flex;
-	}
-	.topnav a.navlink {
-		font-size: 16px;
-		padding: 12px 24px;
-	}
-}
+/* ── Responsive ──────────────────────────────────────────────────────────
+ * Landing-section responsiveness lives in the React components' Tailwind
+ * utilities (grid-cols-* breakpoints); the top bar is the shared <SiteHeader>,
+ * which carries its own responsive rules. Only the footer needs a tweak here. */
 @media (max-width: 620px) {
 	.foot .legal {
 		margin-left: 0;

@@ -121,105 +121,32 @@ h1#_top {
 .sl-markdown-content .card:nth-child(8n + 7) .icon { --lx-cat: var(--chart-cat7); }
 .sl-markdown-content .card:nth-child(8n + 8) .icon { --lx-cat: var(--chart-cat8); }
 
-/* ── Header → site topbar ───────────────────────────────────────────────────
- * Starlight's PageFrame supplies the fixed bar (.header) with the right
- * border + background (now themed via the remapped tokens) and reserves space
- * for the mobile sidebar toggle. We lay out the topbar content inside it. */
-.lx-topbar {
-	display: flex;
-	align-items: center;
-	gap: 1.25rem;
-	width: 100%;
+/* ── Header → the shared SiteHeader ─────────────────────────────────────────
+ * Starlight's PageFrame supplies the fixed bar (.header) with the border +
+ * background (themed via the remapped tokens) and reserves space for the mobile
+ * sidebar toggle. The docs zone now renders the ONE shared <SiteHeader> inside
+ * it (Header.astro, standalone={false}) — the exact same bar the standalone
+ * routes carry. SiteHeader brings its own co-located styles; here we only HOST
+ * it: match the standalone bar height (so both zones read identically) and let
+ * the inner fill Starlight's .header (which already supplies the side padding). */
+:root {
+	--sl-nav-height: 3.75rem;
+}
+.header .site-header-inner {
 	height: 100%;
+	max-width: none;
+	padding: 0;
 }
-.lx-brand {
-	display: inline-flex;
-	align-items: center;
-	gap: 0.5rem;
-	text-decoration: none;
-	flex: 0 0 auto;
-}
-.lx-brand img {
-	display: block;
-	height: 1.875rem;
-	width: auto;
-}
-.lx-brand .lx-mark {
-	font-family: 'Playfair Display', Georgia, serif;
-	font-weight: 700;
-	font-size: 1.375rem;
-	line-height: 1;
-	color: var(--text-heading);
-	letter-spacing: -0.01em;
-}
-
-/* Global nav — desktop only; the mobile sidebar carries the same links (the
- * .lx-sitenav group injected into Sidebar.astro), so navigation never
- * dead-ends at the logo. */
-.lx-nav {
-	display: none;
-}
-.lx-nav a {
-	font-size: var(--sl-text-sm);
-	font-weight: 500;
-	color: var(--sl-color-text);
-	text-decoration: none;
-	white-space: nowrap;
-}
-.lx-nav a:hover {
-	color: var(--sl-color-text-accent);
-}
-.lx-nav a[aria-current='page'] {
-	color: var(--sl-color-text-accent);
-	font-weight: 600;
-}
-
-/* Mobile: search is just its magnifier button, parked with the controls as a
- * tidy right-hand cluster (margin-auto eats the slack after the brand). Keeping
- * it shrink-wrapped — not a flex-grow that collapses to 0 and clips against the
- * wordmark on a 360px phone — is what makes the narrow topbar sit right. */
-.lx-search {
-	flex: 0 0 auto;
-	display: flex;
-	justify-content: flex-end;
-	min-width: 0;
-	margin-inline-start: auto;
-}
-.lx-search site-search {
-	width: auto;
-}
-/* Desktop: search flexes to fill the slack between nav and controls and opens
- * into the full "Search ⌘K" pill. */
-@media (min-width: 50rem) {
-	.lx-search {
-		flex: 1 1 auto;
-		margin-inline-start: 0;
-	}
-	.lx-search site-search {
-		width: 100%;
-		max-width: 22rem;
-	}
-}
-
-.lx-controls {
-	display: flex;
-	align-items: center;
-	gap: 0.5rem;
-	flex: 0 0 auto;
-}
-/* The palette <select> + light/dark toggle that lived here are now the shared
- * React <PaletteControls> island (src/components/site/), styled by shadcn +
- * the token bridge. The .lx-controls flex container above still wraps it. */
 
 /* Mobile sidebar toggle (Starlight's <starlight-menu-button>). Restyle the
- * default floating white circle into the same bordered square the site's own
- * nav-toggle uses (landing/components), palette-bound, so the docs hamburger
- * matches the rest of the site instead of reading as Starlight chrome. Keeps
- * Starlight's fixed positioning + its bars/close glyphs; only the chip
- * appearance changes. Unlayered → beats Starlight's @layer starlight.core. */
+ * default floating white circle into the same bordered square <SiteHeader>'s
+ * own controls use, palette-bound, so the docs hamburger matches the rest of
+ * the site instead of reading as Starlight chrome. Keeps Starlight's fixed
+ * positioning + its bars/close glyphs; only the chip appearance changes.
+ * Unlayered → beats Starlight's @layer starlight.core. */
 starlight-menu-button button {
-	width: 2.125rem;
-	height: 2.125rem;
+	width: 2rem;
+	height: 2rem;
 	border-radius: 8px;
 	border: 1px solid var(--border);
 	background: var(--bg);
@@ -231,29 +158,6 @@ starlight-menu-button[aria-expanded='true'] button {
 	border-color: var(--accent);
 	color: var(--accent);
 	background: var(--bg);
-}
-
-/* Narrowest screens: keep the "Lattice" wordmark (the landing topbar shows it
- * on mobile too — the docs zone should match, not drop to a lonely logo).
- * Tighten the row gap and cap the palette select so the wordmark, the compact
- * search icon, the controls, and the fixed sidebar toggle all fit one line. */
-@media (max-width: 30rem) {
-	.lx-topbar {
-		gap: 0.6rem;
-	}
-}
-
-/* Wide desktop: reveal the global nav; the topbar then reads exactly like the
- * landing topbar (brand · nav · search · palette · mode). We wait for 72rem —
- * below that the brand + 7 links + search + controls can't fit on one row
- * (they overflowed at the ~50rem sidebar breakpoint), so in the 50–72rem band
- * the left sidebar's .lx-sitenav group carries the global nav instead. */
-@media (min-width: 72rem) {
-	.lx-nav {
-		display: flex;
-		align-items: center;
-		gap: 1.15rem;
-	}
 }
 
 /* ── Code blocks (Expressive Code) — accent-bound chrome ────────────────────
@@ -306,11 +210,11 @@ starlight-menu-button[aria-expanded='true'] button {
 .lx-sitenav a[aria-current='page'] {
 	color: var(--sl-color-text-accent);
 }
-/* Hidden only once the header nav appears (72rem). Below that it shows in
- * BOTH the mobile hamburger menu (<50rem) and the inline left sidebar
- * (50–72rem) — the band where the header nav doesn't fit — so global
- * navigation (Home, Workbench, …) is always one tap away. */
-@media (min-width: 72rem) {
+/* Hidden once the shared header's inline nav appears (64rem / 1024px, the same
+ * breakpoint SiteHeader uses). Below that it carries the site destinations in
+ * Starlight's mobile menu + left sidebar so navigation never dead-ends at the
+ * logo; at/above it the header nav takes over and this would duplicate it. */
+@media (min-width: 64rem) {
 	.lx-sitenav {
 		display: none;
 	}
