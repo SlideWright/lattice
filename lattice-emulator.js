@@ -1000,11 +1000,17 @@ function engineSlides() {
     // `.image-text`, and inject the contrast scrim for full/contain image
     // layouts (after the lattice-bg so it darkens the image, not the text).
     let s = bgImage.wrapImageText(sec.replace(/^<section\b/i, `<section data-lattice-slide="${i + 1}"`));
-    // Adaptive image: stamp the photo's intrinsic aspect bucket so CSS can
-    // resolve the composition from `[data-img-bucket] × [data-orientation]`.
+    // Adaptive image: stamp the photo's intrinsic aspect bucket, then resolve the
+    // composition (bucket × data-orientation, or an explicit author class) so CSS
+    // keys the whole layout off a single `[data-img-composition]` attribute.
     s = imageDimensions.stampImageBucket(s);
+    s = imageDimensions.stampImageComposition(s);
+    // The `statement` composition (text on a scrim over a full-bleed photo) is the
+    // one that needs a contrast scrim node; every other composition carries its
+    // own contrast (solid card / matte / panel). Legacy full/contain keep theirs.
     const cls = (s.match(/^<section\b[^>]*\bclass="([^"]*)"/i) || ['', ''])[1];
-    if (imageScrim.needsScrim(cls) && s.indexOf('class="image-scrim') === -1) {
+    const isStatement = /\bdata-img-composition="statement"/.test(s);
+    if ((isStatement || imageScrim.needsScrim(cls)) && s.indexOf('class="image-scrim') === -1) {
       s = s.replace(/(<div class="lattice-bg[\s\S]*?<\/div>)/, `$1${imageScrim.SCRIM_HTML}`);
     }
     return s;

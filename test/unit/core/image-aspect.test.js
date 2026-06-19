@@ -32,33 +32,48 @@ test('every bucket name is one of the five', () => {
   assert.deepEqual([...BUCKET_NAMES].sort(), ['column', 'pano', 'square', 'tall', 'wide']);
 });
 
-const { resolveComposition } = require('../../../lib/core/image-aspect');
+const { resolveComposition, compositionFromClass } = require('../../../lib/core/image-aspect');
 
-test('resolveComposition: risk-gated — only content-safe treatments auto-fire', () => {
-  // landscape deck
-  assert.equal(resolveComposition('wide',  'landscape'), 'spotlight'); // full-bleed + SOLID card (legible), not scrim
-  assert.equal(resolveComposition('pano',  'landscape'), 'spotlight');
+test('resolveComposition: risk-gated — Clean is the default; only content-safe treatments auto-fire', () => {
+  // landscape deck — Clean for moderate shapes; spotlight/split only for extremes
+  assert.equal(resolveComposition('square','landscape'), 'clean');     // squarish → adaptive card
+  assert.equal(resolveComposition('wide',  'landscape'), 'clean');     // 16:10 → adaptive card (no crop gamble)
+  assert.equal(resolveComposition('pano',  'landscape'), 'spotlight'); // matches the canvas → full-bleed + SOLID card
   assert.equal(resolveComposition('tall',  'landscape'), 'split');     // tall → full-height column, ~zero crop
   assert.equal(resolveComposition('column','landscape'), 'split');
-  assert.equal(resolveComposition('square','landscape'), 'gallery');   // contained, zero crop
   // portrait deck
+  assert.equal(resolveComposition('square','portrait'),  'clean');
   assert.equal(resolveComposition('wide',  'portrait'),  'split');     // wide → full-width top band
   assert.equal(resolveComposition('pano',  'portrait'),  'split');
   assert.equal(resolveComposition('tall',  'portrait'),  'spotlight'); // tall fills the tall canvas
-  assert.equal(resolveComposition('square','portrait'),  'gallery');
+  assert.equal(resolveComposition('column','portrait'),  'spotlight');
   // square deck + undefined behave as landscape
-  assert.equal(resolveComposition('wide',  'square'),    'spotlight');
+  assert.equal(resolveComposition('pano',  'square'),    'spotlight');
   assert.equal(resolveComposition('tall',  undefined),   'split');
 });
 
-test('resolveComposition: statement (scrim) is NEVER auto-resolved — opt-in only', () => {
+test('resolveComposition: gallery + statement are NEVER auto-resolved — opt-in only', () => {
   const all = ['pano','wide','square','tall','column'];
   for (const o of ['landscape','portrait','square',undefined]) {
-    for (const b of all) assert.notEqual(resolveComposition(b, o), 'statement');
+    for (const b of all) {
+      assert.notEqual(resolveComposition(b, o), 'statement'); // scrim over an unknown photo
+      assert.notEqual(resolveComposition(b, o), 'gallery');   // matte frame — for diagrams we can't detect
+    }
   }
 });
 
 test('resolveComposition: no bucket → Clean floor (safe for any rectangle)', () => {
   assert.equal(resolveComposition(null, 'landscape'), 'clean');
   assert.equal(resolveComposition(null, 'portrait'), 'clean');
+});
+
+test('compositionFromClass: explicit author class wins; legacy aliases map', () => {
+  assert.equal(compositionFromClass('image statement'), 'statement');
+  assert.equal(compositionFromClass('image gallery'), 'gallery');
+  assert.equal(compositionFromClass('image spotlight mirror'), 'spotlight');
+  assert.equal(compositionFromClass('image full'), 'spotlight');   // legacy alias
+  assert.equal(compositionFromClass('image contain'), 'gallery');  // legacy alias
+  assert.equal(compositionFromClass('image museum'), 'gallery');   // legacy alias
+  assert.equal(compositionFromClass('image'), null);               // no override → auto-resolve
+  assert.equal(compositionFromClass('image mirror'), null);        // side hint, not a composition
 });
