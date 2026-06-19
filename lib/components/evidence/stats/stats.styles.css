@@ -61,3 +61,19 @@ section.stats[data-orientation='portrait'] > ol > li > ul > li,
 section.stats[data-orientation='square'] > ol > li > ul > li {
   font-size: var(--fs-body); /* label legible under the big number (was --fs-meta) */
 }
+/* Box-local family reflow (2026-06-18-component-adaptive-sizing.md): square+tall+
+ * strip (≤1.05) stack the numbers into a tall column and enlarge them, keyed on the
+ * nearest `lattice` container so it fires on a portrait/square deck AND inside a
+ * narrow nested cell. Doubled class matches the [data-orientation] reflow's
+ * specificity. */
+@container lattice (aspect-ratio <= 1.05) {
+  section.stats.stats > ol {
+    flex-direction: column; gap: var(--sp-2xl); width: 100%; justify-content: space-evenly; flex: 1;
+  }
+  section.stats.stats > ol > li > strong {
+    font-size: calc(var(--fs-h1) * var(--stat-emphasis, 1));
+  }
+  section.stats.stats > ol > li > ul > li {
+    font-size: var(--fs-body);
+  }
+}

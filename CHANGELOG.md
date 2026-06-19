@@ -48,6 +48,19 @@ in patch versions.
   live once in `lib/adaptive/families.js` (drift-guarded by a unit test). Demo:
   `examples/adaptive-sizing.md`. Landscape output is byte-identical. See
   `engineering/decisions/2026-06-18-component-adaptive-sizing.md`.
+- **Box-local adaptive sizing — sweep batch 1 (5 more components).** `pricing`,
+  `verdict-grid`, `stats`, `cards-stack`, and `content` now reflow box-locally via
+  `@container lattice (aspect-ratio …)` — pricing/verdict-grid collapse to one
+  column at `tall`/`strip`; stats/cards-stack/content reflow from `square` down
+  (numbers stack and enlarge, cards de-balloon, prose measure caps). Each mirrors
+  the component's existing `[data-orientation]` reflow (kept as fallback) at matched
+  specificity, so a portrait deck is visually unchanged and **landscape output stays
+  byte-identical** (the query is inert above 1.05 aspect); the win is that the reflow
+  now also fires inside a narrow nested cell. `split-panel` is intentionally *not*
+  converted — it reflows the section itself, which an `@container` rule cannot style
+  (it can only style descendants), so it stays on `data-orientation` until the staged
+  nested-cell foundation lands. Manifests gain an `adapt` block.
+  See `engineering/decisions/2026-06-18-component-adaptive-sizing.md`.
 
 ### Fixed
 

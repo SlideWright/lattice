@@ -6,6 +6,11 @@
   "form": "grid",
   "substance": "structure",
   "capacity": { "axis": "item", "min": 2, "sweet": 3, "soft": 4, "hard": 5, "escalateTo": ["compare-table","split across slides"], "note": "the cards crowd and badges lose legibility past four" },
+  "adapt": {
+    "families": ["wide", "square", "tall", "strip"],
+    "priority": ["title", "options"],
+    "keepTogether": ["option"]
+  },
   "tags": ["scorecard", "ranking", "prioritize", "assessment"],
   "description": "Options scored against criteria as a verdict matrix.",
   "purpose": "Use to evaluate 2–4 options against the same set of criteria, with pass/partial/fail badges. Each card represents one option; badges per criterion.",
