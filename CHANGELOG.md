@@ -57,6 +57,17 @@ in patch versions.
   `engineering/decisions/2026-06-19-chart-adaptive-sizing.md` §10 and
   `examples/portrait-roadmap.md`.
 
+- **`piechart` slices can carry per-slice detail for a present-mode popover.** A slice
+  may now nest a sublist (`- Slice \`46%\`` then an indented `  - …`); the kernel keeps
+  the label/value exactly as before and emits the sublist as an **inert
+  `<template class="piechart-detail" data-slice="i">`** alongside the figure, and tags
+  every wedge `<path>` with `data-slice="i"`. Both are zero-footprint in print — the
+  exported PDF/SVG is **byte-identical**, and a deck without sublists is unchanged. The
+  templates are the payload a present-mode layer reads to show a popover on hover/tap.
+  Authoring + the (still-open, export-gated) print-fallback question:
+  `lib/components/chart/piechart/piechart.docs.md` › "Per-slice detail". A working
+  prototype lives at the docs route `/proto/css3d-pie/`.
+
 - **`journey` adapts to a portrait box with a vertical board (Phase 4 — completes it).**
   On a tall deck the landscape journey (horizontal stages, dangling mood faces)
   letterboxed into a band. Portrait now emits a purpose-built vertical board: stages
