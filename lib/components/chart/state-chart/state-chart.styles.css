@@ -186,6 +186,24 @@ section.state-chart .state-edge {
   stroke-linecap: round;
 }
 
+/* ── Box-local portrait fill (tall/narrow box) ───────────────────────────────
+ * The default machine is ALREADY vertical (top-to-bottom column), so a tall box
+ * needs no reflow — but the inter-node gap is `cqi` (a share of WIDTH), so on a
+ * narrow portrait box it shrinks and the chain strands itself in the middle with
+ * dead space above and below. Let the node column take the full height and
+ * distribute the states down it; the browser edge-pass re-measures the laid-out
+ * positions, so the arrows follow. (An `lr` machine is already flipped back to
+ * this vertical default at build time — see state-chart.transform.js.) Keyed on
+ * the nearest `lattice` container; landscape untouched. ≤0.9 = tall+strip.
+ * 2026-06-19-chart-adaptive-sizing.md §10. */
+@container lattice (aspect-ratio <= 0.9) {
+  section.state-chart .state-chart-figure { height: 100%; }
+  section.state-chart .state-nodes {
+    height: 100%;
+    justify-content: space-evenly;
+  }
+}
+
 section.state-chart .state-edge[data-dir="back"] {
   stroke: var(--state-edge-back);
   stroke-dasharray: 4 3;

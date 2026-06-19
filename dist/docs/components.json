@@ -2675,11 +2675,14 @@
       "form": "timeline",
       "substance": "series",
       "orientation": [
-        "landscape"
+        "landscape",
+        "portrait"
       ],
       "families": [
         "wide",
-        "square"
+        "square",
+        "tall",
+        "strip"
       ],
       "tags": [
         "swimlane",
@@ -6600,11 +6603,14 @@
       "form": "timeline",
       "substance": "graph",
       "orientation": [
-        "landscape"
+        "landscape",
+        "portrait"
       ],
       "families": [
         "wide",
-        "square"
+        "square",
+        "tall",
+        "strip"
       ],
       "tags": [
         "flowchart",

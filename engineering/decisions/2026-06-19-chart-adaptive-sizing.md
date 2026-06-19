@@ -1,6 +1,6 @@
 ---
 status: in-progress
-summary: Charts restructure to the box they occupy, not just scale — own-renderers (11/13) re-lay-out per box family via box-local @container (sequential charts go vertical, radial stack-over-legend, square fill); Mermaid (gantt, journey) re-renders LR→TB. Phase 1 landed timeline-list as the proven vertical-rail pattern; phases 2–4 sequenced.
+summary: Charts restructure to the box they occupy, not just scale — all 13 are own renderers (HTML/CSS or native SVG; none are Mermaid — §10 corrects an earlier mislabel) that re-lay-out per box family (sequential charts go vertical, radial stack-over-legend, square fill, gantt label-over-bars, state-chart fills + lr→tb, journey vertical reflow). Phase 1 landed timeline-list as the proven vertical-rail pattern; phases 2–4 sequenced.
 version: 1
 supersedes: none
 builds-on: 2026-06-18-component-adaptive-sizing.md, 2026-06-13-svg-native-legend.md
@@ -30,22 +30,31 @@ component should adapt to the **box it occupies**, not just scale.
 
 ## 2. Why it's tractable
 
-11 of 13 charts are **own CSS/HTML renderers** — the `_chart-family` kernel pulls
+**All 13 charts are own CSS/HTML/SVG renderers** — the `_chart-family` kernel pulls
 the list out of the section and emits reflow-able markup wrapped in `.chart-frame`
-(`.chart-header` / `.chart-body` / `.chart-caption`). Only **gantt** and
-**journey** are opaque Mermaid SVG. So most charts can restructure with the *same*
-box-local `@container lattice (aspect-ratio …)` mechanism the component sweep uses
-— and because the rules gate to tall/square aspects, **landscape output stays
-byte-identical** (normal visual review, not the export-gated path).
+(`.chart-header` / `.chart-body` / `.chart-caption`). **(Correction — see §10: an
+earlier draft of this doc called `gantt`/`journey` "Mermaid SVG". They are NOT —
+`gantt` is an HTML/CSS grid, `journey` and `state-chart` are hand-rolled native
+SVG. The only true Mermaid surface is the separate `diagram` component, which
+already reorients flowchart/graph `LR↔TB` and is out of this chart scope.)** So the
+HTML/CSS charts restructure with the *same* box-local
+`@container lattice (aspect-ratio …)` mechanism the component sweep uses; the
+native-SVG charts restyle in their kernel. Because the rules gate to tall/square
+aspects, **landscape output stays byte-identical** (normal visual review, not the
+export-gated path).
 
 ## 3. The decision (confirmed)
 
 - **Own-renderers (11): CSS box-local restructure.** Not "fill/center better" —
   genuinely re-lay-out per box family. Keyed on the nearest `lattice` container,
   so it fires on a portrait deck AND inside a narrow nested cell.
-- **Mermaid (gantt, journey): re-render in the box's natural direction.** Switch
-  the Mermaid direction (LR → TB) so the diagram is authored vertical for a tall
-  box, rather than an opaque landscape SVG scaled down. Keyed on the deck-wide
+- **Native timeline/graph charts (gantt, journey, state-chart): restyle in the
+  kernel.** *(Corrected from the original "switch the Mermaid LR→TB direction" —
+  these are native, not Mermaid, and `gantt`/`journey` have no "direction" to flip:
+  a Gantt is a horizontal time axis, a journey is horizontal stages. §10.)* `gantt`
+  reflows box-local in CSS (label-over-bars, full-width); `state-chart` is already
+  vertical by default (fill + `lr`→`tb` fallback); `journey` gets a true vertical
+  reflow in its kernel. Keyed on the deck-wide
   orientation stamp (the pragmatic limit for opaque SVG — it's baked at render
   time, before the final box is known; the nested-cell case is out of reach for
   Mermaid and that's acceptable).
@@ -62,8 +71,8 @@ the cheaper path that also composes with nesting.
 | **Sequential / 1-D** | `timeline-list`, `progress`, `kanban`, `roadmap`, `funnel`* | **go vertical** — stack the sequence down the page, each item a full-width row on a left rail |
 | **Radial / fixed-aspect** | `piechart`, `radar` | **stack chart-over-legend + enlarge** the dial to fill the width, centered |
 | **Square / matrix** | `quadrant` | **fill width + center**; reflow axis labels / caption into the freed vertical space |
-| **Spatial / graph** | `map`, `state-chart`, `word-cloud` | `word-cloud` already fills; `map` / `state-chart` = **tune / graceful letterbox**, no clean reflow |
-| **Mermaid** | `gantt`, `journey` | **direction-switch** (§3) |
+| **Spatial / graph** | `map`, `state-chart`, `word-cloud` | `word-cloud` already fills; `map` = **graceful letterbox**; `state-chart` is already vertical → **fill the height + `lr`→`tb` fallback** (§10) |
+| **Native timeline** (NOT Mermaid — §10) | `gantt`, `journey` | `gantt` = **label-over-bars, full-width, fill height** (CSS box-local); `journey` = **vertical reflow** in the kernel. Neither has a "direction" to switch — a Gantt is a horizontal time axis, a journey horizontal stages |
 
 \* `funnel` is already vertical; it needs to *fill*, not restructure.
 
@@ -104,8 +113,13 @@ other sequential charts reuse.
   *tall* viewBox (legend below the dial). Same class as `funnel`. **(This corrects
   the original Phase 3 plan, which assumed a CSS-reflowable HTML legend.)** Built as the
   portrait **legend-below** layout in `svg-legend.js` (§9).
-- **`gantt` / `journey`** ⏭ *(Phase 4)* — Mermaid LR → TB direction-switch.
-- **`state-chart`** ⏭ *(Phase 4)* — SVG graph; graceful center + fill, revisit if a
+- **`gantt`** ✅ *(Phase 4 — see §10)* — native HTML/CSS grid (NOT Mermaid), so it
+  reflows box-local: on a tall box the lane label rides ABOVE full-width bars and the
+  lanes distribute down the canvas. No "direction" to switch.
+- **`journey`** ⏭ *(Phase 4 — next slice)* — native SVG (NOT Mermaid); needs a true
+  vertical reflow (stages stacked, mood as a vertical rail), not a direction flip.
+- **`state-chart`** ✅ *(Phase 4 — see §10)* — native SVG graph; default is already
+  vertical, so it fills the height and an `lr` machine falls back to `tb` on portrait.
   real reflow emerges. **`word-cloud`** already fills any aspect (no change).
 
 `adapt.families` is set on each chart manifest only once its layouts are
@@ -129,7 +143,10 @@ render-verified (the schema's render-backed rule).
    - **`funnel`** — portrait viewBox from `funnel.transform.js` (`0 0 320 180` →
      tall).
    - **`roadmap`** — kernel picks the transposed `.horizons` form for tall boxes.
-   - **`gantt` / `journey`** — Mermaid LR → TB direction-switch.
+   - **`gantt`** — *(done, §10)* native HTML/CSS, so it's actually a box-local CSS
+     reflow (label-over-bars), not a render-time bake. **`state-chart`** — *(done,
+     §10)* native, fill + `lr`→`tb`. **`journey`** — native SVG vertical reflow (next
+     slice). *(None are Mermaid; the original "LR→TB" framing was wrong — §10.)*
 
    These are deck-orientation-keyed (render-time can't see a nested cell) — the
    pragmatic limit for baked-SVG/Mermaid, and acceptable since CSS can't reach them.
@@ -228,3 +245,57 @@ the keystone diff (blast radius across four charts). Demo deck:
 
 Sequencing followed: `svg-legend` below-mode + `piechart` as the proof → sign-off →
 `radar`/`quadrant`/`map`.
+
+## 10. Native timeline/graph charts — `gantt` + `state-chart` portrait (✅ built)
+
+**Correction first (this is the important part).** Earlier sections called `gantt`
+and `journey` "Mermaid" and proposed an "LR → TB direction-switch." Both claims are
+wrong, and the wrongness is load-bearing — it would have sent the work down a path
+that can't exist:
+
+- **None of these are Mermaid.** `gantt` is an HTML/CSS grid (`buildGanttChart` in
+  `chart-family.js`); `journey` and `state-chart` are hand-rolled native SVG. The
+  *only* Mermaid surface in the repo is the separate `diagram` component (fenced
+  ` ```mermaid `), which already reorients flowchart/graph `LR↔TB` via
+  `lib/integrations/mermaid/reorient.js` and passes non-switchable types through. It
+  is out of this chart-adaptivity scope.
+- **A Gantt / journey has no "direction" to flip.** Even Mermaid's own `gantt` and
+  `journey` are fixed horizontal layouts (time axis / stage row) with no vertical
+  mode. So "switch LR→TB" was never available. The honest move is a **restyle**, per
+  the chart's structure — which is exactly what being native lets us do.
+
+**`gantt` — CSS box-local reflow (it was misfiled as render-time).** Because it's
+HTML/CSS, it reflows with the same `@container lattice (aspect-ratio <= 0.9)`
+mechanism as `timeline-list`/`kanban`/`progress` — no kernel change, landscape
+untouched. On a tall box: the lane label moves ABOVE its bars (freeing the 14cqi
+label column), the axis spacer collapses so the Q-ticks span the full width and stay
+aligned, the bars run full-width and grow taller, and lanes distribute down the
+canvas. Bar labels stay **left-aligned** (the base): adjacent tasks that share a
+boundary quarter overlap by a column (span is inclusive) with the later bar drawn on
+top, so a left-aligned label sits in the visible left portion — a *centred* one
+slides under the neighbour and clips (caught in render review; the cause was
+self-inflicted by an initial centre-align experiment). Residual: a *sandwiched*
+mid-window bar has a narrow visible window and can clip a long label by a char or
+two — the same inherent behaviour as landscape, just tighter; accepted, not a
+regression.
+
+**`state-chart` — fill + `lr`→`tb` fallback (native SVG, browser-measured edges).**
+The default machine is already a vertical top-to-bottom column, so a tall box needs
+no reflow — but the inter-node gap is `cqi` (a share of *width*), so on a narrow box
+it shrinks and the chain strands in the middle. Fix: the node column takes the full
+height and distributes the states (`justify-content: space-evenly`); the browser
+edge-pass re-measures the laid-out positions, so the arrows follow. An `lr` (or
+`horizontal`) machine can't fit a tall box, so on a portrait deck the direction is
+forced back to `tb` — and crucially **at the transform**, not in CSS, because the
+edge router keys off `data-sc-dir`: CSS and the router must agree or the arrows
+desync from the nodes. `orientation` is threaded `chart-family → buildStateChart`.
+
+**Contract.** Both relax `orientation` to `["landscape", "portrait"]` and drop out of
+`LANDSCAPE_ONLY_LAYOUTS` (matching the `timeline-list`/`progress` precedent;
+`adapt.families` stays unset like the other reflow charts). Verified at `size: story`
+in dark + light; landscape byte-identical (full suite green); maker-checker over the
+diff. Demo deck: `examples/portrait-gantt-statechart.md` (+ committed `.pdf`).
+
+**Still open (next slice): `journey`.** Native SVG, horizontal stages — the one that
+genuinely needs a *deep* vertical reflow (stages stacked top→bottom, mood as a
+vertical rail), confirmed with the user as "full vertical reflow." Its own branch/PR.
