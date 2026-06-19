@@ -179,6 +179,12 @@
         "landscape",
         "portrait"
       ],
+      "families": [
+        "wide",
+        "square",
+        "tall",
+        "strip"
+      ],
       "tags": [
         "ownership",
         "onboarding",
@@ -307,6 +313,12 @@
       "orientation": [
         "landscape",
         "portrait"
+      ],
+      "families": [
+        "wide",
+        "square",
+        "tall",
+        "strip"
       ],
       "tags": [
         "agenda-setting",
@@ -465,6 +477,12 @@
         "landscape",
         "portrait"
       ],
+      "families": [
+        "wide",
+        "square",
+        "tall",
+        "strip"
+      ],
       "tags": [
         "regulation",
         "citation",
@@ -586,6 +604,12 @@
       "orientation": [
         "landscape",
         "portrait"
+      ],
+      "families": [
+        "wide",
+        "square",
+        "tall",
+        "strip"
       ],
       "tags": [
         "hero-number",
@@ -709,6 +733,47 @@
         "landscape",
         "portrait"
       ],
+      "families": [
+        "wide",
+        "square",
+        "tall",
+        "strip"
+      ],
+      "adapt": {
+        "families": [
+          "wide",
+          "square",
+          "tall",
+          "strip"
+        ],
+        "priority": [
+          "title",
+          "cards"
+        ],
+        "capacity": {
+          "axis": "item",
+          "wide": {
+            "sweet": 4,
+            "soft": 4,
+            "hard": 6
+          },
+          "square": {
+            "sweet": 3,
+            "soft": 4,
+            "hard": 6
+          },
+          "tall": {
+            "sweet": 3,
+            "soft": 4,
+            "hard": 6
+          },
+          "strip": {
+            "sweet": 3,
+            "soft": 3,
+            "hard": 5
+          }
+        }
+      },
       "tags": [
         "overview",
         "showcase",
@@ -861,6 +926,12 @@
         "landscape",
         "portrait"
       ],
+      "families": [
+        "wide",
+        "square",
+        "tall",
+        "strip"
+      ],
       "tags": [
         "overview",
         "summary",
@@ -993,6 +1064,12 @@
       "orientation": [
         "landscape",
         "portrait"
+      ],
+      "families": [
+        "wide",
+        "square",
+        "tall",
+        "strip"
       ],
       "tags": [
         "status",
@@ -1128,6 +1205,12 @@
       "orientation": [
         "landscape",
         "portrait"
+      ],
+      "families": [
+        "wide",
+        "square",
+        "tall",
+        "strip"
       ],
       "tags": [
         "citation",
@@ -1269,6 +1352,12 @@
         "landscape",
         "portrait"
       ],
+      "families": [
+        "wide",
+        "square",
+        "tall",
+        "strip"
+      ],
       "tags": [
         "summary",
         "takeaway",
@@ -1390,6 +1479,12 @@
         "landscape",
         "portrait"
       ],
+      "families": [
+        "wide",
+        "square",
+        "tall",
+        "strip"
+      ],
       "tags": [
         "snippet",
         "walkthrough",
@@ -1508,6 +1603,10 @@
       "substance": "structure",
       "orientation": [
         "landscape"
+      ],
+      "families": [
+        "wide",
+        "square"
       ],
       "tags": [
         "snippet",
@@ -1633,6 +1732,12 @@
       "orientation": [
         "landscape",
         "portrait"
+      ],
+      "families": [
+        "wide",
+        "square",
+        "tall",
+        "strip"
       ],
       "tags": [
         "tradeoff",
@@ -1768,6 +1873,12 @@
         "landscape",
         "portrait"
       ],
+      "families": [
+        "wide",
+        "square",
+        "tall",
+        "strip"
+      ],
       "tags": [
         "tradeoff",
         "ranking",
@@ -1901,6 +2012,12 @@
         "landscape",
         "portrait"
       ],
+      "families": [
+        "wide",
+        "square",
+        "tall",
+        "strip"
+      ],
       "tags": [
         "walkthrough",
         "overview",
@@ -2022,6 +2139,12 @@
         "landscape",
         "portrait"
       ],
+      "families": [
+        "wide",
+        "square",
+        "tall",
+        "strip"
+      ],
       "tags": [
         "recommendation",
         "tradeoff",
@@ -2141,6 +2264,12 @@
       "orientation": [
         "landscape",
         "portrait"
+      ],
+      "families": [
+        "wide",
+        "square",
+        "tall",
+        "strip"
       ],
       "tags": [
         "flowchart",
@@ -2269,6 +2398,12 @@
         "landscape",
         "portrait"
       ],
+      "families": [
+        "wide",
+        "square",
+        "tall",
+        "strip"
+      ],
       "tags": [
         "section-break",
         "agenda-setting",
@@ -2386,6 +2521,12 @@
       "orientation": [
         "landscape",
         "portrait"
+      ],
+      "families": [
+        "wide",
+        "square",
+        "tall",
+        "strip"
       ],
       "tags": [
         "percentage",
@@ -2509,6 +2650,10 @@
       "orientation": [
         "landscape"
       ],
+      "families": [
+        "wide",
+        "square"
+      ],
       "tags": [
         "swimlane",
         "planning",
@@ -2624,6 +2769,12 @@
       "orientation": [
         "landscape",
         "portrait"
+      ],
+      "families": [
+        "wide",
+        "square",
+        "tall",
+        "strip"
       ],
       "tags": [
         "definition",
@@ -2743,6 +2894,10 @@
       "substance": "prose",
       "orientation": [
         "landscape"
+      ],
+      "families": [
+        "wide",
+        "square"
       ],
       "tags": [
         "visual",
@@ -2874,6 +3029,10 @@
       "orientation": [
         "landscape"
       ],
+      "families": [
+        "wide",
+        "square"
+      ],
       "tags": [
         "process",
         "assessment",
@@ -2996,6 +3155,10 @@
       "substance": "series",
       "orientation": [
         "landscape"
+      ],
+      "families": [
+        "wide",
+        "square"
       ],
       "tags": [
         "swimlane",
@@ -3129,6 +3292,57 @@
         "landscape",
         "portrait"
       ],
+      "families": [
+        "wide",
+        "square",
+        "tall",
+        "strip"
+      ],
+      "adapt": {
+        "families": [
+          "wide",
+          "square",
+          "tall",
+          "strip"
+        ],
+        "priority": [
+          "title",
+          "kpis"
+        ],
+        "droppable": [
+          "status-pills"
+        ],
+        "keepTogether": [
+          "value+label"
+        ],
+        "capacity": {
+          "axis": "item",
+          "wide": {
+            "sweet": 4,
+            "soft": 4,
+            "hard": 5
+          },
+          "square": {
+            "sweet": 4,
+            "soft": 4,
+            "hard": 4
+          },
+          "tall": {
+            "sweet": 3,
+            "soft": 4,
+            "hard": 5
+          },
+          "strip": {
+            "sweet": 2,
+            "soft": 3,
+            "hard": 3,
+            "escalateTo": [
+              "stats",
+              "split across slides"
+            ]
+          }
+        }
+      },
       "tags": [
         "dashboard",
         "scorecard",
@@ -3267,6 +3481,47 @@
         "landscape",
         "portrait"
       ],
+      "families": [
+        "wide",
+        "square",
+        "tall",
+        "strip"
+      ],
+      "adapt": {
+        "families": [
+          "wide",
+          "square",
+          "tall",
+          "strip"
+        ],
+        "priority": [
+          "title",
+          "items"
+        ],
+        "capacity": {
+          "axis": "item",
+          "wide": {
+            "sweet": 5,
+            "soft": 6,
+            "hard": 8
+          },
+          "square": {
+            "sweet": 4,
+            "soft": 5,
+            "hard": 7
+          },
+          "tall": {
+            "sweet": 4,
+            "soft": 5,
+            "hard": 7
+          },
+          "strip": {
+            "sweet": 3,
+            "soft": 4,
+            "hard": 6
+          }
+        }
+      },
       "tags": [
         "overview",
         "summary",
@@ -3405,6 +3660,12 @@
         "landscape",
         "portrait"
       ],
+      "families": [
+        "wide",
+        "square",
+        "tall",
+        "strip"
+      ],
       "tags": [
         "requirements",
         "assessment",
@@ -3528,6 +3789,12 @@
       "orientation": [
         "landscape",
         "portrait"
+      ],
+      "families": [
+        "wide",
+        "square",
+        "tall",
+        "strip"
       ],
       "tags": [
         "process",
@@ -3680,6 +3947,12 @@
         "landscape",
         "portrait"
       ],
+      "families": [
+        "wide",
+        "square",
+        "tall",
+        "strip"
+      ],
       "tags": [
         "reference",
         "overview",
@@ -3814,6 +4087,12 @@
         "landscape",
         "portrait"
       ],
+      "families": [
+        "wide",
+        "square",
+        "tall",
+        "strip"
+      ],
       "tags": [
         "visual",
         "showcase",
@@ -3943,6 +4222,12 @@
       "orientation": [
         "landscape",
         "portrait"
+      ],
+      "families": [
+        "wide",
+        "square",
+        "tall",
+        "strip"
       ],
       "tags": [
         "metric",
@@ -4094,6 +4379,12 @@
         "landscape",
         "portrait"
       ],
+      "families": [
+        "wide",
+        "square",
+        "tall",
+        "strip"
+      ],
       "tags": [
         "formula",
         "assessment",
@@ -4238,6 +4529,50 @@
         "landscape",
         "portrait"
       ],
+      "families": [
+        "wide",
+        "square",
+        "tall",
+        "strip"
+      ],
+      "adapt": {
+        "families": [
+          "wide",
+          "square",
+          "tall",
+          "strip"
+        ],
+        "priority": [
+          "title",
+          "quadrants"
+        ],
+        "keepTogether": [
+          "quadrant"
+        ],
+        "capacity": {
+          "axis": "item",
+          "wide": {
+            "sweet": 4,
+            "soft": 4,
+            "hard": 4
+          },
+          "square": {
+            "sweet": 4,
+            "soft": 4,
+            "hard": 4
+          },
+          "tall": {
+            "sweet": 4,
+            "soft": 4,
+            "hard": 4
+          },
+          "strip": {
+            "sweet": 4,
+            "soft": 4,
+            "hard": 4
+          }
+        }
+      },
       "tags": [
         "two-by-two",
         "prioritize",
@@ -4355,6 +4690,12 @@
       "orientation": [
         "landscape",
         "portrait"
+      ],
+      "families": [
+        "wide",
+        "square",
+        "tall",
+        "strip"
       ],
       "tags": [
         "compliance",
@@ -4499,6 +4840,12 @@
         "landscape",
         "portrait"
       ],
+      "families": [
+        "wide",
+        "square",
+        "tall",
+        "strip"
+      ],
       "tags": [
         "donut",
         "proportion",
@@ -4622,6 +4969,12 @@
       "orientation": [
         "landscape",
         "portrait"
+      ],
+      "families": [
+        "wide",
+        "square",
+        "tall",
+        "strip"
       ],
       "tags": [
         "pitch",
@@ -4761,6 +5114,12 @@
         "landscape",
         "portrait"
       ],
+      "families": [
+        "wide",
+        "square",
+        "tall",
+        "strip"
+      ],
       "tags": [
         "percentage",
         "stoplight",
@@ -4893,6 +5252,12 @@
       "orientation": [
         "landscape",
         "portrait"
+      ],
+      "families": [
+        "wide",
+        "square",
+        "tall",
+        "strip"
       ],
       "tags": [
         "pitch",
@@ -5038,6 +5403,12 @@
         "landscape",
         "portrait"
       ],
+      "families": [
+        "wide",
+        "square",
+        "tall",
+        "strip"
+      ],
       "tags": [
         "two-by-two",
         "positioning",
@@ -5180,6 +5551,12 @@
         "landscape",
         "portrait"
       ],
+      "families": [
+        "wide",
+        "square",
+        "tall",
+        "strip"
+      ],
       "tags": [
         "pull-quote",
         "quotation",
@@ -5292,6 +5669,12 @@
       "orientation": [
         "landscape",
         "portrait"
+      ],
+      "families": [
+        "wide",
+        "square",
+        "tall",
+        "strip"
       ],
       "tags": [
         "spider",
@@ -5435,6 +5818,10 @@
       "orientation": [
         "landscape"
       ],
+      "families": [
+        "wide",
+        "square"
+      ],
       "tags": [
         "contract",
         "contrast",
@@ -5572,6 +5959,12 @@
         "landscape",
         "portrait"
       ],
+      "families": [
+        "wide",
+        "square",
+        "tall",
+        "strip"
+      ],
       "tags": [
         "changelog",
         "compliance",
@@ -5701,6 +6094,10 @@
       "substance": "structure",
       "orientation": [
         "landscape"
+      ],
+      "families": [
+        "wide",
+        "square"
       ],
       "tags": [
         "planning",
@@ -5841,6 +6238,51 @@
         "landscape",
         "portrait"
       ],
+      "families": [
+        "wide",
+        "square",
+        "tall",
+        "strip"
+      ],
+      "adapt": {
+        "families": [
+          "wide",
+          "square",
+          "tall",
+          "strip"
+        ],
+        "priority": [
+          "title",
+          "options",
+          "verdict"
+        ],
+        "keepTogether": [
+          "option"
+        ],
+        "capacity": {
+          "axis": "item",
+          "wide": {
+            "sweet": 2,
+            "soft": 2,
+            "hard": 2
+          },
+          "square": {
+            "sweet": 2,
+            "soft": 2,
+            "hard": 2
+          },
+          "tall": {
+            "sweet": 2,
+            "soft": 2,
+            "hard": 2
+          },
+          "strip": {
+            "sweet": 2,
+            "soft": 2,
+            "hard": 2
+          }
+        }
+      },
       "tags": [
         "tradeoff",
         "recommendation",
@@ -5972,6 +6414,12 @@
       "orientation": [
         "landscape",
         "portrait"
+      ],
+      "families": [
+        "wide",
+        "square",
+        "tall",
+        "strip"
       ],
       "tags": [
         "summary",
@@ -6111,6 +6559,10 @@
       "substance": "graph",
       "orientation": [
         "landscape"
+      ],
+      "families": [
+        "wide",
+        "square"
       ],
       "tags": [
         "flowchart",
@@ -6252,6 +6704,12 @@
         "landscape",
         "portrait"
       ],
+      "families": [
+        "wide",
+        "square",
+        "tall",
+        "strip"
+      ],
       "tags": [
         "dashboard",
         "metric",
@@ -6390,6 +6848,12 @@
         "landscape",
         "portrait"
       ],
+      "families": [
+        "wide",
+        "square",
+        "tall",
+        "strip"
+      ],
       "tags": [
         "citation",
         "reference",
@@ -6516,6 +6980,12 @@
         "landscape",
         "portrait"
       ],
+      "families": [
+        "wide",
+        "square",
+        "tall",
+        "strip"
+      ],
       "tags": [
         "changelog",
         "milestones",
@@ -6640,6 +7110,12 @@
         "landscape",
         "portrait"
       ],
+      "families": [
+        "wide",
+        "square",
+        "tall",
+        "strip"
+      ],
       "tags": [
         "pitch",
         "board-deck",
@@ -6754,6 +7230,12 @@
       "orientation": [
         "landscape",
         "portrait"
+      ],
+      "families": [
+        "wide",
+        "square",
+        "tall",
+        "strip"
       ],
       "tags": [
         "scorecard",
@@ -6908,6 +7390,12 @@
       "orientation": [
         "landscape",
         "portrait"
+      ],
+      "families": [
+        "wide",
+        "square",
+        "tall",
+        "strip"
       ],
       "tags": [
         "tag-cloud",

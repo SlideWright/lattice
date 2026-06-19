@@ -4,7 +4,50 @@
   "function": "comparison",
   "form": "matrix",
   "substance": "structure",
-  "tags": ["two-by-two", "prioritize", "strategy", "risk"],
+  "adapt": {
+    "families": [
+      "wide",
+      "square",
+      "tall",
+      "strip"
+    ],
+    "priority": [
+      "title",
+      "quadrants"
+    ],
+    "keepTogether": [
+      "quadrant"
+    ],
+    "capacity": {
+      "axis": "item",
+      "wide": {
+        "sweet": 4,
+        "soft": 4,
+        "hard": 4
+      },
+      "square": {
+        "sweet": 4,
+        "soft": 4,
+        "hard": 4
+      },
+      "tall": {
+        "sweet": 4,
+        "soft": 4,
+        "hard": 4
+      },
+      "strip": {
+        "sweet": 4,
+        "soft": 4,
+        "hard": 4
+      }
+    }
+  },
+  "tags": [
+    "two-by-two",
+    "prioritize",
+    "strategy",
+    "risk"
+  ],
   "description": "Static 2×2 quadrant grid with author-placed items per cell.",
   "purpose": "Use for categorical 2×2 reasoning when the items are fixed and you control which cell each lands in. For data-plotted scatter on continuous axes, use quadrant instead.",
   "slots": {
@@ -51,9 +94,21 @@
     }
   ],
   "related": [
-    { "name": "quadrant", "when": "items have continuous x/y coordinates rather than discrete quadrant labels" },
-    { "name": "verdict-grid", "when": "options scored across more than two dimensions" },
-    { "name": "obligation-matrix", "when": "many rows × many columns of state-marker cells" },
-    { "name": "cards-grid", "when": "the items don't divide along two axes" }
+    {
+      "name": "quadrant",
+      "when": "items have continuous x/y coordinates rather than discrete quadrant labels"
+    },
+    {
+      "name": "verdict-grid",
+      "when": "options scored across more than two dimensions"
+    },
+    {
+      "name": "obligation-matrix",
+      "when": "many rows × many columns of state-marker cells"
+    },
+    {
+      "name": "cards-grid",
+      "when": "the items don't divide along two axes"
+    }
   ]
 }

@@ -25,6 +25,30 @@ in patch versions.
 
 ## Unreleased
 
+### Added
+
+- **Box-local adaptive sizing — components reflow to the box they occupy
+  (pilot: 5 components).** Components now adapt their *structure* via CSS
+  `@container lattice (aspect-ratio …)` queries over four box-families — `wide`
+  (>1.05) · `square` (0.9–1.05) · `tall` (0.5–0.9) · `strip` (<0.5) — instead of
+  the deck-wide `data-orientation` stamp. The query reads the nearest `lattice`
+  container, so one rule handles a portrait deck today and (once a Cell names
+  itself `lattice`) a narrow nested cell. Scale stays continuous (slide-anchored
+  `cqi`); only structure steps between families. `kpi`, `list`, `matrix-2x2`,
+  `cards-grid`, and `split-compare` are converted; `kpi`'s `strip` family
+  additionally sheds its status pills (the declared `adapt.droppable`). The
+  fully-nested case (a component tracking its *cell's* aspect, not the deck's)
+  needs the engine to stamp a non-`cqi` `--_sec-1cqi` in every render path so
+  cell type stays slide-anchored — that alters exported bytes, so it is staged
+  behind sign-off (the foundation enables it). Manifests gain an `adapt`
+  block (`adapt.families` support list + `priority` / `droppable` /
+  `keepTogether` / per-family `capacity`) — declared intent the authored CSS
+  honours and a future resolver can consume. Foundation: `section` is named the
+  `lattice` query-container (`lib/base/base.elements.css`); the four thresholds
+  live once in `lib/adaptive/families.js` (drift-guarded by a unit test). Demo:
+  `examples/adaptive-sizing.md`. Landscape output is byte-identical. See
+  `engineering/decisions/2026-06-18-component-adaptive-sizing.md`.
+
 ### Changed
 
 - **The concept page’s “The lattice” section is now an explorable 3D-CSS graph.**

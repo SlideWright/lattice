@@ -4,6 +4,51 @@
   "function": "evidence",
   "form": "ledger",
   "substance": "structure",
+  "adapt": {
+    "families": [
+      "wide",
+      "square",
+      "tall",
+      "strip"
+    ],
+    "priority": [
+      "title",
+      "kpis"
+    ],
+    "droppable": [
+      "status-pills"
+    ],
+    "keepTogether": [
+      "value+label"
+    ],
+    "capacity": {
+      "axis": "item",
+      "wide": {
+        "sweet": 4,
+        "soft": 4,
+        "hard": 5
+      },
+      "square": {
+        "sweet": 4,
+        "soft": 4,
+        "hard": 4
+      },
+      "tall": {
+        "sweet": 3,
+        "soft": 4,
+        "hard": 5
+      },
+      "strip": {
+        "sweet": 2,
+        "soft": 3,
+        "hard": 3,
+        "escalateTo": [
+          "stats",
+          "split across slides"
+        ]
+      }
+    }
+  },
   "tags": [
     "dashboard",
     "scorecard",
