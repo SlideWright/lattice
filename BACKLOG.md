@@ -7,14 +7,13 @@
 
 The live, claimable work queue — a read-only mirror of [open issues](https://github.com/SlideWright/lattice/issues),
 grouped by board column. Design lives in `engineering/decisions/`; this tracks
-only *status*. **34 open** items.
+only *status*. **33 open** items.
 
-## Backlog (32)
+## Backlog (31)
 
 - [#283](https://github.com/SlideWright/lattice/issues/283) refactor(css): audit and reduce `!important` (~490 repo-wide) — high · engine
 - [#284](https://github.com/SlideWright/lattice/issues/284) refactor(css): activate `@layer` for per-component + modifier CSS — high · engine
 - [#287](https://github.com/SlideWright/lattice/issues/287) refactor(engine): LPM Phase 1 — manifest `render` block + `transformSection` adapter; migrate the chart kernels — high · engine
-- [#384](https://github.com/SlideWright/lattice/issues/384) [perf-nightly] docs perf regression detected — high · website
 - [#279](https://github.com/SlideWright/lattice/issues/279) docs: reconcile Mermaid diagram-type count (README "25" vs gallery "26") — medium · diagram
 - [#285](https://github.com/SlideWright/lattice/issues/285) refactor(css): retire the SPECIFICITY-BUMP HACKs (citation-card, redline, regulatory-update) — medium · engine
 - [#286](https://github.com/SlideWright/lattice/issues/286) refactor(css): namespace variant classes that collide with component names — medium · engine
