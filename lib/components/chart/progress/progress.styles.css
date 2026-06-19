@@ -122,3 +122,18 @@ section.progress .progress-note {
   color: var(--text-secondary);
   font-style: italic;
 }
+
+/* ── Box-local FILL (square + tall + strip, ≤1.05): the bars already stack, but
+ * on a tall/square box they crowd the top and leave the canvas empty. Distribute
+ * the rows down the full height and thicken the tracks so the bars read big.
+ * Keyed on the nearest `lattice` container; landscape untouched. See
+ * engineering/decisions/2026-06-19-chart-adaptive-sizing.md. */
+@container lattice (aspect-ratio <= 1.05) {
+  section.progress .progress-bars {
+    height: 100%;
+    justify-content: space-evenly;
+    row-gap: var(--sp-md);
+  }
+  section.progress .progress-track { height: 4cqi; }
+  section.progress .progress-label { font-size: var(--fs-message); }
+}
