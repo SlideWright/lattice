@@ -27,6 +27,15 @@ in patch versions.
 
 ### Added
 
+- **Charts restructure to a tall box — funnel fills the portrait canvas (Phase 4, render-time).**
+  Charts whose layout is baked into an SVG viewBox can't be reflowed in CSS, so they
+  restructure at *render time*: `funnel` now emits a tall portrait viewBox on a
+  portrait deck (it filled only a short landscape band before), reading the deck's
+  `data-orientation` stamp the slide pipeline already writes — no engine plumbing.
+  Landscape output is byte-identical. This threading is the reusable foundation for
+  the remaining render-time charts (the keyed radial/square charts via `svg-legend`,
+  `roadmap`, and the Mermaid `gantt`/`journey` direction-switch). See
+  `engineering/decisions/2026-06-19-chart-adaptive-sizing.md` §7.
 - **Charts restructure to a tall box — sequential charts go vertical (Phases 1–2).**
   Charts previously kept their landscape internal layout and shrank into a tiny
   band on a portrait/tall slide. They now *restructure* box-locally via
