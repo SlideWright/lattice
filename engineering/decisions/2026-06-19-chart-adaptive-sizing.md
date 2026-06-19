@@ -174,3 +174,37 @@ axis for this problem.
 stays side-by-side on a 9:19.5 mobile (text-left / image-right both ~540px wide),
 crushing the text panel. The fix is a portrait box-local *reflow* — stack the image
 over the text — not a padding tweak; tracked here for a later pass.
+
+## 9. Legend-below for the keyed charts — design (next slice, not yet built)
+
+`piechart` / `radar` / `quadrant` / `map` bake the diagram **and** a right-rail
+legend into ONE wide viewBox via `buildSvgLegend` (`svg-legend.js`). On a portrait
+deck that wide unit letterboxes. The fix is a portrait **legend-below** layout —
+diagram on top, legend stacked beneath, both centered — emitted at render time
+(the orientation thread from §7 is already merged and read by the kernel).
+
+**Why it's the biggest slice (and warrants a focused pass, not an end-of-session
+rush):** it's a redesign of the shared legend keystone plus a caller-contract change.
+
+Design:
+- `buildSvgLegend({ …, orientation })`. **Landscape path stays byte-identical** —
+  branch so the existing code runs untouched when `orientation !== 'portrait'`
+  (golden-diff + the `funnel.test.js`-style byte-identical assertions guard this).
+- **Contract change:** the builder returns a new **`diagramDx`** (horizontal
+  offset). All four callers change `transform="translate(0 ${dy})"` →
+  `translate(${dx} ${dy})` (`buildPieChart` in `chart-family.js` + the
+  `radar`/`quadrant`/`map` `.transform.js` kernels). `dx` defaults to 0, so
+  landscape is unchanged.
+- **Portrait geometry:** the wrap budget (`maxChars`) widens (the label can use the
+  full width below, not a narrow rail), so even the *measurement* branches.
+  `viewW = max(diagramRight, legendBlockW)`; `diagramDx = (viewW − diagramRight)/2`;
+  `diagramDy =` small top margin; legend block centered at
+  `(viewW − legendBlockW)/2`, rows starting at `y = diagramHeight + diagramDy + gap`;
+  `viewH = diagramHeight + diagramDy + gap + stackH + margins`; the spine rotates
+  **horizontal** (a rule between diagram and legend) — or is dropped in portrait.
+- **Verify:** all four at `size: story`/`mobile` in dark + light (export-gated,
+  alters portrait bytes) + landscape byte-identical; then `adapt.families`.
+  Maker-checker (keystone blast radius across four charts).
+
+Sequencing: `svg-legend` below-mode + one caller (`piechart`) as the proof, sign-off,
+then extend to `radar`/`quadrant`/`map`.
