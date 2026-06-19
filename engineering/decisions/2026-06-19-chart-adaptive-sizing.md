@@ -145,8 +145,9 @@ render-verified (the schema's render-backed rule).
    - **`roadmap`** — kernel picks the transposed `.horizons` form for tall boxes.
    - **`gantt`** — *(done, §10)* native HTML/CSS, so it's actually a box-local CSS
      reflow (label-over-bars), not a render-time bake. **`state-chart`** — *(done,
-     §10)* native, fill + `lr`→`tb`. **`journey`** — native SVG vertical reflow (next
-     slice). *(None are Mermaid; the original "LR→TB" framing was wrong — §10.)*
+     §10)* native, fill + `lr`→`tb`. **`journey`** — *(done, §10)* native SVG, its own
+     vertical board (stages stacked, tasks as rows, mood washed + plotted). *(None
+     are Mermaid; the original "LR→TB" framing was wrong — §10.)*
 
    These are deck-orientation-keyed (render-time can't see a nested cell) — the
    pragmatic limit for baked-SVG/Mermaid, and acceptable since CSS can't reach them.
@@ -296,6 +297,34 @@ desync from the nodes. `orientation` is threaded `chart-family → buildStateCha
 in dark + light; landscape byte-identical (full suite green); maker-checker over the
 diff. Demo deck: `examples/portrait-gantt-statechart.md` (+ committed `.pdf`).
 
-**Still open (next slice): `journey`.** Native SVG, horizontal stages — the one that
-genuinely needs a *deep* vertical reflow (stages stacked top→bottom, mood as a
-vertical rail), confirmed with the user as "full vertical reflow." Its own branch/PR.
+**`journey` — vertical reflow (✅ built, the deepest of the three).** Native SVG,
+horizontal stages — it genuinely needed a restructure, not a transpose: the
+landscape board is three *parallel* column-grids (stages / tasks / moods aligned by
+a shared column count), which can't express "a stage label grouping its task ROWS"
+in CSS. So portrait gets its own emission (`emitJourneyBoardVertical`, behind the
+`orientation` thread): stage groups that physically contain their task rows, each
+row = actor dots + label + a mood marker. Mood treatment (chosen with the user from
+three rendered prototypes — face-offset, row-wash, gridded-axis) is the **A+B
+blend**: the row is *washed* by mood (pain warm → delight cool, the instant arc) AND
+the face is *plotted* by mood with a dashed reach to the spine (the exact value) — so
+a dip like a `:1` task reads twice (pink row + sad face pulled to the pain edge).
+Stages grow proportional to their task count (`--span`) so a busy stage doesn't
+overflow; rows are natural height (no ballooning on sparse decks). The five variants
+(heatmap/curve/swimlane/weighted) fall back to this unified vertical view in
+portrait — coherent, not broken; their distinct landscape reads are a follow-up.
+
+**Two threading findings (journey):**
+- **The class must stay EXACTLY `journey-board`.** The chart-frame body matcher
+  (`chart-family.js` `bodyRE`) keys on `class="journey-board"`; emitting a second
+  class (`journey-board--vertical`) made the wrap silently reject the board and
+  revert to the raw markdown list. The vertical flag moved to `data-orient`.
+- **Both render paths thread orientation.** Build/HTML goes through
+  `journey.applyToRenderedHtml` (now reads `data-orientation` per section);
+  runtime/preview goes through `chart-family.applyToDom` → `transformChartSection`
+  (already passes it). Verified both emit the vertical board, so preview matches
+  export (the §7 stamp-ordering footgun).
+
+With this, **Phase 4 is complete**: funnel, the four keyed charts, gantt,
+state-chart, and journey all adapt to a tall box; only `roadmap` (the transposed
+`.horizons` table) remains from the original queue. Demo:
+`examples/portrait-journey.md` (+ committed `.pdf`).

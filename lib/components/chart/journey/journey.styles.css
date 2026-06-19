@@ -665,3 +665,147 @@ section.journey.weighted .journey-task-actors {
 }
 
 
+
+/* ════════════════════════════════════════════════════════════════════════════
+ * VERTICAL BOARD (portrait) — the journey rotated 90°. Emitted by
+ * journey.transform.js only on a portrait deck (`.journey-board[data-orient="vertical"]`), so
+ * this whole block self-gates: landscape never sees it. Stages stack down the
+ * page; each task is a row; mood reads along the cross-axis. §10 (journey).
+ * ════════════════════════════════════════════════════════════════════════════ */
+
+section.journey .journey-board[data-orient="vertical"] {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  height: 100%;
+  width: 100%;
+}
+
+/* Stage stack — sections distribute down the canvas to fill the height. */
+section.journey .journey-vstack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-md);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+section.journey .journey-vstage {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-xs);
+  /* Grow proportional to the stage's task count (--span) so a 3-task stage gets
+   * more height than a 2-task one — equal flex would overflow the busier stage. */
+  flex: var(--span, 1) 1 0;
+  min-height: 0;
+}
+/* Stage label — a slim band with the categorical top-accent, like the
+ * landscape stage ribbon but spanning its rows vertically. */
+section.journey .journey-vstage-name {
+  font-weight: 600;
+  font-size: var(--fs-meta);
+  letter-spacing: 0.02em;
+  color: var(--journey-stage-fg);
+  background: var(--journey-stage-bg);
+  padding: var(--sp-xs) var(--sp-sm);
+  border-radius: var(--radius-sm);
+  border-top: 3px solid var(--section-accent, var(--accent));  /* sanctioned: top accent rule, resolution-stable hairline */
+  text-align: center;
+}
+section.journey .journey-vstage[data-section="0"] { --section-accent: var(--cat-1-mark); }
+section.journey .journey-vstage[data-section="1"] { --section-accent: var(--cat-2-mark); }
+section.journey .journey-vstage[data-section="2"] { --section-accent: var(--cat-3-mark); }
+section.journey .journey-vstage[data-section="3"] { --section-accent: var(--cat-4-mark); }
+section.journey .journey-vstage[data-section="4"] { --section-accent: var(--cat-5-mark); }
+section.journey .journey-vstage[data-section="5"] { --section-accent: var(--cat-6-mark); }
+
+section.journey .journey-vrows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-sm);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  flex: 1 1 auto;
+  min-height: 0;
+  justify-content: center;   /* centre the rows in the stage band; few tasks → whitespace, not ballooned rows */
+}
+
+/* Task row — actor dots + label on the left, mood marker on the right. */
+section.journey .journey-vtask {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr) 46cqi;  /* dots | label | mood track */
+  align-items: center;
+  gap: var(--sp-sm);
+  flex: 0 0 auto;
+  min-height: 7cqi;          /* natural, comfortable row — does not stretch to fill */
+  background: var(--journey-task-bg);
+  border-radius: var(--radius-sm);
+  padding: var(--sp-xs) var(--sp-sm);
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--text-body) 8%, transparent);
+}
+section.journey .journey-board[data-orient="vertical"] .journey-task-actors {
+  position: static;
+  display: inline-flex;
+  gap: 2px;  /* sanctioned: hairline-scale gap between actor dots */
+  margin-right: var(--sp-xs);
+}
+section.journey .journey-vtask .journey-task-label {
+  font-weight: 500;
+  font-size: var(--fs-meta);
+  line-height: 1.25;
+}
+
+/* ── Treatment A+B blend: row WASHED by mood (instant arc) AND the face PLOTTED
+ * by mood with a reach to the spine (precision). Colour gives the at-a-glance
+ * read; position gives the exact value. §10 (journey). */
+/* Row wash: pain (1) warm → delight (5) cool, off the semantic state hues. */
+section.journey .journey-vtask[data-mood="1"] { background: color-mix(in oklab, var(--state-fail-hue) 15%, var(--journey-task-bg)); }
+section.journey .journey-vtask[data-mood="2"] { background: color-mix(in oklab, var(--state-warn-hue) 13%, var(--journey-task-bg)); }
+section.journey .journey-vtask[data-mood="3"] { background: var(--journey-task-bg); }
+section.journey .journey-vtask[data-mood="4"] { background: color-mix(in oklab, var(--state-pass-hue) 10%, var(--journey-task-bg)); }
+section.journey .journey-vtask[data-mood="5"] { background: color-mix(in oklab, var(--state-pass-hue) 17%, var(--journey-task-bg)); }
+
+/* The mood track: a faint pain→delight rail with the face plotted at x = mood
+ * and a dashed reach from the pain (left) edge. */
+section.journey .journey-vmood {
+  position: relative;
+  height: 100%;
+  display: block;
+}
+/* Faint gridlines frame the pain→delight rail. The mood scale is 1–5, so the
+ * track has FOUR equal segments (`100% / 4`) → five gridlines, one per mood
+ * level — do not "correct" the divisor to /5. */
+section.journey .journey-vmood::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: repeating-linear-gradient(
+    to right,
+    color-mix(in oklab, var(--border) 50%, transparent) 0 1px,
+    transparent 1px calc(100% / 4));
+  opacity: 0.5;
+}
+/* Dashed reach from the pain (left) edge to the face. */
+section.journey .journey-vmood-line {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: calc((var(--mood) - 1) / 4 * 100%);
+  height: 0;
+  border-top: 2px dashed color-mix(in oklab, var(--journey-timeline) 55%, transparent);
+  transform: translateY(-50%);
+}
+/* Face plotted at x = mood (1 = pain/left, 5 = delight/right). */
+section.journey .journey-vmood .journey-face {
+  position: absolute;
+  top: 50%;
+  left: calc((var(--mood) - 1) / 4 * 100%);
+  width: 6.5cqi;
+  height: 6.5cqi;
+  transform: translate(-50%, -50%);
+  background: var(--bg);
+  border-radius: 50%;
+}

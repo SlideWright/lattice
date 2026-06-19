@@ -27,6 +27,20 @@ in patch versions.
 
 ### Added
 
+- **`journey` adapts to a portrait box with a vertical board (Phase 4 — completes it).**
+  On a tall deck the landscape journey (horizontal stages, dangling mood faces)
+  letterboxed into a band. Portrait now emits a purpose-built vertical board: stages
+  stack down the page as grouped sections, each task is a row (actor dots + label),
+  and mood reads two ways at once — the row is **washed** by mood (pain warm →
+  delight cool) and the face is **plotted** by mood along a pain→delight track with a
+  dashed reach to the spine, so a dip like a `:1` task pops as a pink row with the
+  sad face pulled to the edge. Stages grow proportional to their task count; the five
+  variants fall back to this unified vertical view in portrait. Keyed on the deck's
+  `data-orientation`; **landscape is unchanged**. With this, every chart adapts to a
+  tall box (only `roadmap` remains from the Phase 4 queue). See
+  `engineering/decisions/2026-06-19-chart-adaptive-sizing.md` §10 and
+  `examples/portrait-journey.md`.
+
 - **`gantt` and `state-chart` adapt to a portrait box (Phase 4, native charts).**
   Both used to letterbox into a short band on a tall deck. `gantt` is an HTML/CSS
   grid, so it reflows box-local (`@container`): the lane label moves above its bars,

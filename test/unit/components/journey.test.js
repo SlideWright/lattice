@@ -255,6 +255,41 @@ describe('journey', () => {
     assert.match(html, /--span:2/);
   });
 
+  // ── Vertical board (portrait) ─────────────────────────────────────────
+  const PORTRAIT_INNER = '<h2>X</h2><ul><li>Eval<ul>' +
+    '<li>Read <code>@me</code> <code>:5</code></li>' +
+    '<li>Setup <code>@me</code> <code>:1</code></li></ul></li></ul>';
+
+  test('portrait: transformJourneySection emits the vertical board', () => {
+    const html = transformJourneySection(PORTRAIT_INNER, 'journey', 'portrait');
+    assert.match(html, /data-orient="vertical"/);
+    assert.match(html, /<ol class="journey-vstack">/);
+    assert.match(html, /journey-vtask[^>]*--mood:5/);
+  });
+
+  test('portrait: the vertical board class is EXACTLY journey-board (chart-frame wrap matches)', () => {
+    // Regression guard: a second class (journey-board--vertical) made the
+    // chart-frame body matcher reject the board and revert to the raw list.
+    const html = transformJourneySection(PORTRAIT_INNER, 'journey', 'portrait');
+    assert.match(html, /<div class="journey-board" data-orient="vertical"/);
+    assert.doesNotMatch(html, /class="journey-board[^"]+"/);
+  });
+
+  test('landscape (orientation absent / "landscape") keeps the horizontal board', () => {
+    for (const o of [undefined, 'landscape', 'square']) {
+      const html = transformJourneySection(PORTRAIT_INNER, 'journey', o);
+      assert.doesNotMatch(html, /data-orient="vertical"/);
+      assert.match(html, /class="journey-board"/);
+    }
+  });
+
+  test('dispatch: applyToRenderedHtml reads data-orientation off the section', () => {
+    const sec = '<section class="journey" data-orientation="portrait">' + PORTRAIT_INNER + '</section>';
+    assert.match(applyToRenderedHtml(sec), /data-orient="vertical"/);
+    const land = '<section class="journey">' + PORTRAIT_INNER + '</section>';
+    assert.doesNotMatch(applyToRenderedHtml(land), /data-orient="vertical"/);
+  });
+
   test('emit: task elements carry data-mood and sequential --col', () => {
     const m = parseJourney(SAMPLE_UL_INNER);
     const html = emitJourneyBoard(m);
