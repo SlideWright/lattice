@@ -96,12 +96,16 @@ other sequential charts reuse.
   `funnel.transform.js`.
 - **`roadmap`** ⏭ *(Phase 4, render-time)* — table / `.horizons` hybrid; the
   kernel should select the transposed `.horizons` form for tall boxes.
-- **`piechart` / `radar`** — `.chart-body` reflows chart-beside-legend → chart
-  **above** legend; the SVG `max-width` lifts so the dial fills the width.
-- **`quadrant`** — fill width, center; push axis labels into the vertical margin.
-- **`gantt` / `journey`** — Mermaid direction-switch (Phase 4).
-- **`map` / `state-chart`** — graceful center + fill; revisit if a real reflow
-  emerges. **`word-cloud`** already fills any aspect (no change).
+- **`piechart` / `radar` / `quadrant` / `map`** ⏭ *(Phase 4, render-time)* — **CSS
+  cannot reflow these.** Per `2026-06-13-svg-native-legend.md`, the dial/plot **and
+  its legend share ONE `<svg>` viewBox** and scale as a single unit (pie `0 0 viewW
+  viewH`, radar `300×300`, quadrant `420×320`) — the legend is SVG geometry, not an
+  HTML sibling, so "chart-above-legend" can only be done by the kernel emitting a
+  *tall* viewBox (legend below the dial). Same class as `funnel`. **(This corrects
+  the original Phase 3 plan, which assumed a CSS-reflowable HTML legend.)**
+- **`gantt` / `journey`** ⏭ *(Phase 4)* — Mermaid LR → TB direction-switch.
+- **`state-chart`** ⏭ *(Phase 4)* — SVG graph; graceful center + fill, revisit if a
+  real reflow emerges. **`word-cloud`** already fills any aspect (no change).
 
 `adapt.families` is set on each chart manifest only once its layouts are
 render-verified (the schema's render-backed rule).
@@ -112,17 +116,22 @@ render-verified (the schema's render-backed rule).
 2. **Phase 2 (landed):** `kanban` (board `row → column`, lanes distribute, cards
    wrap as a row) + `progress` (rows fill the height, tracks thicken). Verified
    portrait + landscape; landscape byte-identical.
-3. **Phase 3:** radial (`piechart`, `radar`) + square (`quadrant`) — frame
-   chart-over-legend + enlarge.
-4. **Phase 4 — render-time (kernel) work; touches exported bytes → sign-off +
-   maker-checker:**
-   - **`funnel`** — its SVG viewBox is baked landscape (`0 0 320 180`,
-     `preserveAspectRatio=meet`), so CSS can only letterbox it. A tall funnel needs
-     `funnel.transform.js` to emit a *portrait* viewBox per orientation. Same class
-     as Mermaid: render-time, deck-orientation-keyed.
-   - **`roadmap`** — table / `.horizons` hybrid; a clean reflow needs the kernel to
-     pick the transposed `.horizons` form for tall boxes. Deferred with `funnel`.
+3. **CSS box-local work is COMPLETE.** Verifying Phase 3 before writing CSS showed
+   the radial/square charts can't be reflowed in CSS (single-SVG, §6) — so the only
+   CSS-figure charts (`timeline-list`, `kanban`, `progress`) are all done in Phases
+   1–2. Everything else bakes its composition into an SVG/table/Mermaid render.
+4. **Phase 4 — render-time (kernel) work; ONE effort; touches exported bytes →
+   explicit sign-off + maker-checker.** All the remaining charts converge here
+   because they all bake layout at render time:
+   - **`piechart` / `radar` / `quadrant` / `map`** — emit a *tall* viewBox with the
+     legend below the dial (via `svg-legend.js`), keyed on deck orientation.
+   - **`funnel`** — portrait viewBox from `funnel.transform.js` (`0 0 320 180` →
+     tall).
+   - **`roadmap`** — kernel picks the transposed `.horizons` form for tall boxes.
    - **`gantt` / `journey`** — Mermaid LR → TB direction-switch.
+
+   These are deck-orientation-keyed (render-time can't see a nested cell) — the
+   pragmatic limit for baked-SVG/Mermaid, and acceptable since CSS can't reach them.
 
 Each phase: render at portrait + landscape, confirm reflow fires and landscape is
 byte-identical, before setting `adapt.families`. The four-family thresholds stay
