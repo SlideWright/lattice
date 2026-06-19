@@ -162,6 +162,31 @@ describe('chart-family.applyToDom', () => {
       '0 0 320 180', 'landscape → original viewBox (byte-identical)');
   });
 
+  test('roadmap: portrait auto-selects the horizons card form (section class + .horizons grid)', () => {
+    const table = `<table><thead><tr><th>WS</th><th>Q1</th><th>Q2</th></tr></thead>` +
+      `<tbody><tr><td>Intake</td><td>Taxonomy [x]</td><td>Scoring [/]</td></tr></tbody></table>`;
+    const doc = makeDoc(`<section class="roadmap" data-orientation="portrait"><h2>Plan</h2>${table}</section>`);
+    chartFamily.applyToDom(doc);
+    const sec = doc.querySelector('section.roadmap');
+    assert.ok(sec.classList.contains('horizons'), 'section gains the horizons class (so the card CSS applies)');
+    assert.ok(sec.querySelector('.horizons'), 'table transposed to the .horizons card grid');
+    assert.ok(sec.querySelector('.horizon-card'), 'phase cards emitted');
+  });
+
+  test('roadmap: landscape / square / no-stamp keep the table (only portrait transposes)', () => {
+    const table = `<table><thead><tr><th>WS</th><th>Q1</th><th>Q2</th></tr></thead>` +
+      `<tbody><tr><td>Intake</td><td>Taxonomy [x]</td><td>Scoring [/]</td></tr></tbody></table>`;
+    // 'square' is a non-portrait orientation (1:1-ish) — it must NOT trigger horizons.
+    for (const o of [undefined, 'landscape', 'square']) {
+      const doc = makeDoc(`<section class="roadmap"${o ? ` data-orientation="${o}"` : ''}><h2>Plan</h2>${table}</section>`);
+      chartFamily.applyToDom(doc);
+      const sec = doc.querySelector('section.roadmap');
+      assert.ok(!sec.classList.contains('horizons'), `${o ?? 'none'}: stays the table form`);
+      assert.ok(!sec.querySelector('.horizons'), `${o ?? 'none'}: no horizons transpose`);
+      assert.ok(sec.querySelector('table'), `${o ?? 'none'}: table preserved`);
+    }
+  });
+
   test('passes through non-chart sections', () => {
     const doc = makeDoc(`
       <section class="content"><h2>plain</h2><p>nothing.</p></section>

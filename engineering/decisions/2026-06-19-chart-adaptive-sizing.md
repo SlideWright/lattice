@@ -103,8 +103,9 @@ other sequential charts reuse.
 - **`funnel`** ⏭ *(Phase 4, render-time)* — SVG viewBox is baked landscape
   (`0 0 320 180`); CSS can only letterbox. Needs a portrait viewBox from
   `funnel.transform.js`.
-- **`roadmap`** ⏭ *(Phase 4, render-time)* — table / `.horizons` hybrid; the
-  kernel should select the transposed `.horizons` form for tall boxes.
+- **`roadmap`** ✅ *(Phase 4, render-time — see §10)* — the kernel auto-selects the
+  transposed `.horizons` card form on a portrait deck and the cards stack to one
+  column (box-local), compacted to fit a tall box.
 - **`piechart` / `radar` / `quadrant` / `map`** ✅ *(Phase 4, render-time — see §9)* —
   **CSS cannot reflow these.** Per `2026-06-13-svg-native-legend.md`, the dial/plot
   **and its legend share ONE `<svg>` viewBox** and scale as a single unit (pie `0 0
@@ -142,7 +143,8 @@ render-verified (the schema's render-backed rule).
      legend below the dial (via `svg-legend.js`), keyed on deck orientation.
    - **`funnel`** — portrait viewBox from `funnel.transform.js` (`0 0 320 180` →
      tall).
-   - **`roadmap`** — kernel picks the transposed `.horizons` form for tall boxes.
+   - **`roadmap`** — *(done, §10)* kernel auto-selects the transposed `.horizons`
+     card form for tall boxes; the cards stack box-local.
    - **`gantt`** — *(done, §10)* native HTML/CSS, so it's actually a box-local CSS
      reflow (label-over-bars), not a render-time bake. **`state-chart`** — *(done,
      §10)* native, fill + `lr`→`tb`. **`journey`** — *(done, §10)* native SVG, its own
@@ -324,7 +326,23 @@ portrait — coherent, not broken; their distinct landscape reads are a follow-u
   (already passes it). Verified both emit the vertical board, so preview matches
   export (the §7 stamp-ordering footgun).
 
+**`roadmap` — auto-select the horizons card form (✅ built, the cheapest).** The
+default roadmap is a wide workstream × phase table that letterboxes in a tall box
+(columns crushed, header collisions). It already ships a `horizons` modifier that
+transposes the table into phase cards — so portrait just **auto-selects it**: the
+chart-family dispatch appends `horizons` to the section class on a portrait deck,
+which drives BOTH the transpose (`transformRoadmapSection` reads the token) AND the
+section-class-gated card CSS (it rides into `newCls`, so the live section carries
+the class). The cards then **stack to one column** box-locally (`@container`), and
+the card chrome compacts for the tall box: the phase header collapses to one row
+(eyebrow · title) and each workstream row goes single-line (`LABEL · value`) so a
+3–4 phase roadmap fits without overflow. All roadmap treatments (`status`,
+`swimlane`, `milestones`) unify to the horizons stack in portrait — coherent, like
+the journey variants. A CSS source-order trap surfaced: the portrait `@container`
+block had to sit **after** the base horizon-card rules (equal specificity) or they
+override it. Landscape (N-across) untouched.
+
 With this, **Phase 4 is complete**: funnel, the four keyed charts, gantt,
-state-chart, and journey all adapt to a tall box; only `roadmap` (the transposed
-`.horizons` table) remains from the original queue. Demo:
-`examples/portrait-journey.md` (+ committed `.pdf`).
+state-chart, journey, and roadmap all adapt to a tall box — the whole chart family
+now restructures to the box it occupies. Demos: `examples/portrait-journey.md`,
+`examples/portrait-roadmap.md` (+ committed `.pdf`s).

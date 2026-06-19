@@ -27,6 +27,19 @@ in patch versions.
 
 ### Added
 
+- **`roadmap` adapts to a portrait box — and Phase 4 chart adaptivity is complete.**
+  The wide workstream × phase table letterboxes on a tall deck (columns crushed,
+  header collisions). On a portrait deck the kernel now **auto-selects the
+  `horizons` card form** — the phase cards **stack into a single column** down the
+  page, the header collapses to one row (eyebrow · title) and each workstream row
+  goes single-line so a 3–4 phase roadmap fits. All roadmap treatments (status /
+  swimlane / milestones) unify to the horizons stack in portrait. Keyed on the
+  deck's `data-orientation`; **landscape is unchanged**. This completes the chart
+  family's portrait adaptivity — every chart that used to letterbox now restructures
+  to the box it occupies. See
+  `engineering/decisions/2026-06-19-chart-adaptive-sizing.md` §10 and
+  `examples/portrait-roadmap.md`.
+
 - **`journey` adapts to a portrait box with a vertical board (Phase 4 — completes it).**
   On a tall deck the landscape journey (horizontal stages, dangling mood faces)
   letterboxed into a band. Portrait now emits a purpose-built vertical board: stages
