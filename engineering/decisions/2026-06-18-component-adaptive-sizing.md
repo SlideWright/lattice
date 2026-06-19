@@ -337,3 +337,32 @@ The four thresholds live once in `lib/adaptive/families.js` (CSS `@container`
 can't read `var()`, so the numbers are literal in each component's CSS);
 `test/unit/adaptive/families.test.js` scans every component stylesheet and fails
 if a `@container lattice (aspect-ratio …)` uses a non-canonical boundary.
+
+## 12. Sweep — batch 1 (2026-06-19)
+
+Step 4 of §8, continued from the pilot. Five more components converted to box-local
+reflow, each by mirroring its existing `[data-orientation]` reflow into an
+`@container lattice (aspect-ratio …)` block at **matched specificity** (the doubled
+class `section.X.X` reaches the same `(0,2,N)` the attribute selector had) and
+keeping the `[data-orientation]` rule as the documented fallback:
+
+- **`pricing`, `verdict-grid`** — `≤ 0.9` (tall+strip): tiers / verdict cards
+  collapse to one column.
+- **`stats`, `cards-stack`, `content`** — `≤ 1.05` (square+tall+strip, matching
+  their old portrait+square reflow): numbers stack and enlarge, cards de-balloon to
+  content height, prose measure caps at 46ch.
+
+Verified by rendering all five at `size: story` (reflow fires) and landscape (default
+multi-column, **byte-identical** — the query is inert above 1.05 aspect). Manifests
+gained an `adapt` block (`families` + `priority` + structural `keepTogether` /
+`droppable`); `families` is set because the layouts are render-verified.
+
+**`split-panel` deferred.** It reflows the *section itself*
+(`section.split-panel { flex-direction: column }`), and an `@container` rule cannot
+style its own container element — only descendants (the §11 constraint). Converting
+it needs the flex axis moved onto a descendant wrapper (a markup change) or the
+staged nested-cell foundation; until then it stays on `data-orientation`.
+
+**Still on `data-orientation` only** after this batch: `split-panel` (above). The
+six long-running galleries and the `data-orientation` retirement (§8 step 5) wait on
+broader coverage + the engine `--_sec-1cqi` stamp (§11, behind export sign-off).

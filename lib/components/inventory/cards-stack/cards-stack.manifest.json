@@ -6,6 +6,11 @@
   "function": "inventory",
   "form": "stack",
   "substance": "structure",
+  "adapt": {
+    "families": ["wide", "square", "tall", "strip"],
+    "priority": ["title", "cards"],
+    "keepTogether": ["card"]
+  },
   "tags": ["overview", "summary", "reference"],
   "description": "Parallel items stacked vertically, full-width cards.",
   "purpose": "Use when the items want vertical reading order — sequential exploration rather than a-glance comparison. 2–4 items work best (a fourth fits with the `compact` modifier).",

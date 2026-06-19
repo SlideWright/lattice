@@ -1794,6 +1794,19 @@ section.cards-stack[data-orientation='portrait'] > :is(ul,ol) > li,
 section.cards-stack[data-orientation='square'] > :is(ul,ol) > li {
   flex: 0 0 auto;
 }
+/* Box-local family reflow (2026-06-18-component-adaptive-sizing.md): square+tall+
+ * strip (≤1.05) de-balloon the cards to content height and distribute them, keyed
+ * on the nearest `lattice` container so it fires on a portrait/square deck AND
+ * inside a narrow nested cell. Doubled class matches the [data-orientation]
+ * reflow's specificity. */
+@container lattice (aspect-ratio <= 1.05) {
+  section.cards-stack.cards-stack > :is(ul,ol) {
+    justify-content: space-evenly;
+  }
+  section.cards-stack.cards-stack > :is(ul,ol) > li {
+    flex: 0 0 auto;
+  }
+}
 
 /* === lib/components/inventory/checklist/checklist.styles.css === */
 /* checklist — extracted from lib/_legacy.css (batch 3).
@@ -2624,6 +2637,15 @@ section.content :is(ul, ol) :is(ul, ol) > li { font-size:var(--fs-body); line-he
 section.content[data-orientation='portrait'] > :is(p,ul,ol),
 section.content[data-orientation='square'] > :is(p,ul,ol) {
   max-width: 46ch; margin-inline: auto;
+}
+/* Box-local family reflow (2026-06-18-component-adaptive-sizing.md): square+tall+
+ * strip (≤1.05) cap the prose measure and centre the block, keyed on the nearest
+ * `lattice` container so it fires on a portrait/square deck AND inside a narrow
+ * nested cell. Doubled class matches the [data-orientation] reflow's specificity. */
+@container lattice (aspect-ratio <= 1.05) {
+  section.content.content > :is(p,ul,ol) {
+    max-width: 46ch; margin-inline: auto;
+  }
 }
 
 /* === lib/components/comparison/decision/decision.styles.css === */
@@ -6681,6 +6703,16 @@ section.pricing > ul > li:has(> em) > ul > li:last-child { color: var(--on-accen
 section.pricing[data-orientation="portrait"] > ul {
   grid-template-columns: 1fr;
 }
+/* Box-local family reflow (2026-06-18-component-adaptive-sizing.md): tall+strip
+ * (≤0.9) stack the tiers to one column, keyed on the nearest `lattice` container
+ * so it fires on a portrait deck AND inside a narrow nested cell — replacing the
+ * deck-wide data-orientation stamp. Doubled class reaches (0,2,2) to match the
+ * [data-orientation] reflow it mirrors. */
+@container lattice (aspect-ratio <= 0.9) {
+  section.pricing.pricing > ul {
+    grid-template-columns: 1fr;
+  }
+}
 
 /* === lib/components/chart/progress/progress.styles.css === */
 /* progress — extracted from lib/_legacy.css (batch 9).
@@ -9466,6 +9498,22 @@ section.stats[data-orientation='portrait'] > ol > li > ul > li,
 section.stats[data-orientation='square'] > ol > li > ul > li {
   font-size: var(--fs-body); /* label legible under the big number (was --fs-meta) */
 }
+/* Box-local family reflow (2026-06-18-component-adaptive-sizing.md): square+tall+
+ * strip (≤1.05) stack the numbers into a tall column and enlarge them, keyed on the
+ * nearest `lattice` container so it fires on a portrait/square deck AND inside a
+ * narrow nested cell. Doubled class matches the [data-orientation] reflow's
+ * specificity. */
+@container lattice (aspect-ratio <= 1.05) {
+  section.stats.stats > ol {
+    flex-direction: column; gap: var(--sp-2xl); width: 100%; justify-content: space-evenly; flex: 1;
+  }
+  section.stats.stats > ol > li > strong {
+    font-size: calc(var(--fs-h1) * var(--stat-emphasis, 1));
+  }
+  section.stats.stats > ol > li > ul > li {
+    font-size: var(--fs-body);
+  }
+}
 
 /* === lib/components/legal/statute-stack/statute-stack.styles.css === */
 /* statute-stack — inventory.ledger.structure
@@ -9973,6 +10021,16 @@ section.verdict-grid :is(ul,ol) > li > strong ~ * { font-weight: 400; }
 section.verdict-grid[data-orientation="portrait"] > ul {
   grid-template-columns: 1fr;
   grid-auto-rows: minmax(0, 1fr);
+}
+/* Box-local family reflow (2026-06-18-component-adaptive-sizing.md): tall+strip
+ * (≤0.9) collapse the verdict grid to one column, keyed on the nearest `lattice`
+ * container so it fires on a portrait deck AND inside a narrow nested cell. Doubled
+ * class reaches (0,2,2) to match the [data-orientation] reflow it mirrors. */
+@container lattice (aspect-ratio <= 0.9) {
+  section.verdict-grid.verdict-grid > ul {
+    grid-template-columns: 1fr;
+    grid-auto-rows: minmax(0, 1fr);
+  }
 }
 
 /* === lib/components/chart/word-cloud/word-cloud.styles.css === */

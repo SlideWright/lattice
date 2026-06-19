@@ -932,6 +932,21 @@
         "tall",
         "strip"
       ],
+      "adapt": {
+        "families": [
+          "wide",
+          "square",
+          "tall",
+          "strip"
+        ],
+        "priority": [
+          "title",
+          "cards"
+        ],
+        "keepTogether": [
+          "card"
+        ]
+      },
       "tags": [
         "overview",
         "summary",
@@ -2018,6 +2033,18 @@
         "tall",
         "strip"
       ],
+      "adapt": {
+        "families": [
+          "wide",
+          "square",
+          "tall",
+          "strip"
+        ],
+        "priority": [
+          "heading",
+          "body"
+        ]
+      },
       "tags": [
         "walkthrough",
         "overview",
@@ -4976,6 +5003,21 @@
         "tall",
         "strip"
       ],
+      "adapt": {
+        "families": [
+          "wide",
+          "square",
+          "tall",
+          "strip"
+        ],
+        "priority": [
+          "title",
+          "tiers"
+        ],
+        "keepTogether": [
+          "tier"
+        ]
+      },
       "tags": [
         "pitch",
         "tradeoff",
@@ -6710,6 +6752,25 @@
         "tall",
         "strip"
       ],
+      "adapt": {
+        "families": [
+          "wide",
+          "square",
+          "tall",
+          "strip"
+        ],
+        "priority": [
+          "title",
+          "subtitle",
+          "stats"
+        ],
+        "droppable": [
+          "subtitle"
+        ],
+        "keepTogether": [
+          "stat"
+        ]
+      },
       "tags": [
         "dashboard",
         "metric",
@@ -7237,6 +7298,21 @@
         "tall",
         "strip"
       ],
+      "adapt": {
+        "families": [
+          "wide",
+          "square",
+          "tall",
+          "strip"
+        ],
+        "priority": [
+          "title",
+          "options"
+        ],
+        "keepTogether": [
+          "option"
+        ]
+      },
       "tags": [
         "scorecard",
         "ranking",
