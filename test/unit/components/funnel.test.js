@@ -94,6 +94,26 @@ describe('funnel kernel', () => {
     });
   });
 
+  describe('buildFunnel — portrait box (render-time orientation)', () => {
+    const model = parseFunnel(ul([['A', '100'], ['B', '50'], ['C', '25']]));
+
+    test('portrait emits a TALL viewBox so the funnel fills a portrait box', () => {
+      assert.match(buildFunnel(model, 'portrait'), /viewBox="0 0 320 420"/);
+    });
+
+    test('landscape output is BYTE-IDENTICAL for no-arg / undefined / landscape / square', () => {
+      const base = buildFunnel(model);
+      assert.equal(buildFunnel(model, undefined), base, 'undefined === no-arg');
+      assert.equal(buildFunnel(model, 'landscape'), base, 'landscape === no-arg');
+      assert.equal(buildFunnel(model, 'square'), base, 'square stays landscape geom');
+      assert.match(base, new RegExp(`viewBox="${GEOM.viewBox}"`));
+    });
+
+    test('ONLY portrait diverges from the landscape geometry', () => {
+      assert.notEqual(buildFunnel(model, 'portrait'), buildFunnel(model));
+    });
+  });
+
   describe('buildFunnel — band geometry', () => {
     // Pull each polygon's top-edge width (x of second point − x of first).
     const topWidths = (html) =>

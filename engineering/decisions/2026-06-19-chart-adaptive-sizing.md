@@ -133,6 +133,44 @@ render-verified (the schema's render-backed rule).
    These are deck-orientation-keyed (render-time can't see a nested cell) — the
    pragmatic limit for baked-SVG/Mermaid, and acceptable since CSS can't reach them.
 
+**Runtime ordering (the footgun a JS geometry-baking transform introduces).** A
+chart transform that bakes orientation into geometry must see `data-orientation`
+on its FIRST build — the `chart-frame` idempotency guard means a late stamp never
+triggers a rebuild. On the export/engine path this is free (the slide pipeline
+stamps during `md.render`, before `applyAllToHtml`). On the **runtime** path the
+stamp lived in `patchSectionGeometry()`, which ran *after* the content transforms —
+so the live preview rendered a landscape funnel on a portrait deck while the export
+rendered the tall one (caught in maker-checker review). Fixed by hoisting a
+lightweight `stampOrientation()` pass ahead of `runAllContentTransforms()` in the
+runtime bootstrap; verified in a real browser that the preview now matches the
+export. (CSS-reflow consumers are immune — a late attribute just flips a rule;
+geometry-baking transforms are the first to need the early stamp.)
+
 Each phase: render at portrait + landscape, confirm reflow fires and landscape is
 byte-identical, before setting `adapt.families`. The four-family thresholds stay
 the single source in `lib/adaptive/families.js` (drift-guarded).
+
+## 8. Mobile padding — chart-frame width reclaim (landed with funnel)
+
+A portrait/mobile chart read squeezed and its labels/numbers were hard to read.
+Root cause is general, not funnel-specific: `--canvas-scale` reaches **2.29× on
+9:19.5 mobile** and multiplies every `--sp-*` token, so a component with a large
+horizontal inset (`.chart-body` used `--sp-2xl` in both its width calc and its
+padding) balloons that inset on a narrow canvas and starves the figure. The outer
+`section` gutter (5cqi, raw — NOT canvas-scaled) is fine; the gap is internal
+horizontal insets scaling up where width is most precious.
+
+Fix is **box-local, not systemic** (chosen after rendering both): a
+`@container lattice (aspect-ratio <= 0.9)` rule pulls `.chart-body`'s side inset in
+(`width: 100cqi − 2·--sp-sm`, `padding: --sp-md --sp-sm`). This is the right axis —
+the squeeze is a *centered-figure* problem (the SVG sits centered in the body), so
+it bites charts (incl. the SVG-baked `quadrant`/`radar`/`piechart`, all chart-frame
+members) but NOT stacked-text components, which reflow full-width on mobile and were
+visually unchanged by either option. A systemic `--canvas-scale` dampen was tried
+and rejected: huge blast radius, and it mostly retunes *vertical* rhythm — the wrong
+axis for this problem.
+
+**Follow-up (separate — a reflow, not padding): `image`.** Its half-canvas split
+stays side-by-side on a 9:19.5 mobile (text-left / image-right both ~540px wide),
+crushing the text panel. The fix is a portrait box-local *reflow* — stack the image
+over the text — not a padding tweak; tracked here for a later pass.

@@ -348,6 +348,20 @@ section.chart-frame .chart-body {
   overflow: hidden;
 }
 
+/* ── Box-local: reclaim horizontal room for the figure on a tall/narrow box. The
+ * default body reserves --sp-2xl on EACH side in both the width calc and the
+ * padding (≈4× --sp-2xl total) — right for a wide slide, but in portrait that eats
+ * precious width and shrinks every chart and its labels/numbers. Pull the side
+ * inset right in so the figure (and its text) reads as large as possible. Keyed on
+ * the nearest `lattice` container; landscape untouched. ≤0.9 = tall+strip.
+ * 2026-06-19-chart-adaptive-sizing.md. */
+@container lattice (aspect-ratio <= 0.9) {
+  section.chart-frame .chart-body {
+    width: calc(100cqi - 2 * var(--sp-sm));
+    padding: var(--sp-md) var(--sp-sm);
+  }
+}
+
 /* Chart surface panel — every chart sits on its own quiet glass surface,
  * Apple "Liquid Glass" inspired at editorial-whisper intensity: a faint
  * top-glow tint over a translucent base, a specular top gloss, a bright
