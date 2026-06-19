@@ -30,14 +30,14 @@ export function GalleriesSheet({
 	const close = () => setOpen(false);
 
 	return (
-		<Sheet open={open} onOpenChange={setOpen}>
+		<Sheet open={open} onOpenChange={setOpen} modal={false}>
 			<SheetTrigger asChild>
 				<Button id="pg-galleries-trigger" variant="outline" size="sm" aria-label="Galleries" title="Galleries — load a showcase or family deck">
 					<LayoutGrid />
 					<span className="hidden sm:inline">Galleries</span>
 				</Button>
 			</SheetTrigger>
-			<SheetContent className="w-[360px] max-w-[88vw] gap-0 overflow-y-auto">
+			<SheetContent overlay={false} className="w-[360px] max-w-[88vw] gap-0 overflow-y-auto">
 				<SheetHeader>
 					<SheetTitle className="font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground">
 						Load a deck

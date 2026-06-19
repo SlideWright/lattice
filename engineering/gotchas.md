@@ -1790,6 +1790,33 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
 - **Don't reintroduce:** never hardcode `1280`/`720` in a preview/export host —
   thread the geometry from the render result through `frame-css.js`.
 
+### Playground preview won't scroll on iOS after opening a settings sheet
+
+- **Symptom:** On the **/playground** (Workbench) — NOT the Drawing Board — load a
+  deck (e.g. the jargon gallery), scroll the preview (fine), open **Galleries** or
+  **Deck setup**, change something (e.g. slide size), close the sheet → the preview
+  is now frozen. It scrolls again only once focus leaves it (tap elsewhere) or after
+  a prolonged delay (10s+). iOS Safari only; desktop Chromium never shows it (faster
+  + off-main-thread scrolling), which is why headless wheel tests can't repro it.
+- **Cause:** The playground is the React/shadcn surface; its panels are shadcn
+  **Sheets** (Radix Dialog), which default to `modal`. A modal Radix dialog engages
+  `react-remove-scroll` — it sets `body[data-scroll-locked]` and, crucially on iOS,
+  adds non-passive `touchmove` `preventDefault` listeners to block background scroll
+  (iOS ignores `overflow:hidden` for touch). On iOS Safari that touch-block lingers
+  after the dialog closes until a focus change or a long timeout, freezing the
+  preview. The vanilla **Drawing Board** uses no Radix dialog, so it's immune — the
+  tell that distinguished the two surfaces. Confirmed in Playwright WebKit:
+  `body[data-scroll-locked]` was `"1"` while the modal Deck-setup sheet was open.
+- **Fix:** Make the playground's preview-side sheets **non-modal** — `modal={false}`
+  on the `<Sheet>` Root + `overlay={false}` on `<SheetContent>` (a new opt-out prop
+  on the shared `ui/sheet.tsx` primitive; default keeps the modal behaviour for
+  every other sheet). A live-tool side panel shouldn't lock the page anyway, and
+  non-modal lets you watch the preview update as you change front matter. Files:
+  `docs/src/components/playground/{DeckSetupSheet,GalleriesSheet}.tsx`,
+  `docs/src/components/ui/sheet.tsx`.
+- **Don't reintroduce:** any sheet/dialog that overlays a surface the user still
+  needs to scroll (the live preview) must be non-modal, or it will scroll-lock iOS.
+
 ### A blurred `box-shadow` renders as a flat grey block in Apple PDFKit
 
 - **Symptom:** A soft drop-shadow (any `box-shadow` with a blur radius) that

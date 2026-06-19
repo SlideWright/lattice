@@ -47,14 +47,19 @@ function SheetContent({
   children,
   side = "right",
   showCloseButton = true,
+  overlay = true,
   ...props
 }: React.ComponentProps<typeof SheetPrimitive.Content> & {
   side?: "top" | "right" | "bottom" | "left"
   showCloseButton?: boolean
+  /** Render the dimming backdrop. Set false for a non-modal sheet (`modal={false}`
+   * on the Root) so the page behind stays interactive and is NOT scroll-locked —
+   * a modal scroll-lock lingers on iOS Safari and freezes the surface behind. */
+  overlay?: boolean
 }) {
   return (
     <SheetPortal>
-      <SheetOverlay />
+      {overlay && <SheetOverlay />}
       <SheetPrimitive.Content
         data-slot="sheet-content"
         className={cn(
