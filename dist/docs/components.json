@@ -3057,11 +3057,14 @@
       "form": "timeline",
       "substance": "structure",
       "orientation": [
-        "landscape"
+        "landscape",
+        "portrait"
       ],
       "families": [
         "wide",
-        "square"
+        "square",
+        "tall",
+        "strip"
       ],
       "tags": [
         "process",
