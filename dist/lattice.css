@@ -3227,9 +3227,13 @@ section.image {
   border: none;
   background: var(--bg);
   --img-matte: var(--bg-alt);
-  /* Card-lift shadow, derived from the heading ink so it tracks the palette
-   * (no hex — HARD RULE #3). Soft, far-throw, grounded. */
-  --img-lift: 0 1.4cqi 3.4cqi -1.6cqi color-mix(in oklab, var(--text-heading) 42%, transparent);
+  /* Card-lift shadow. ZERO BLUR on purpose: a blurred box-shadow renders as a
+   * flat grey block in Apple PDFKit (Preview / iOS) and Skia — see
+   * engineering/gotchas.md + base.focus.css. A hard, offset, low-opacity shadow
+   * derived from the heading ink reads as a lifted card and survives every PDF
+   * viewer. Paired with the hairline border below for crisp definition. */
+  --img-lift: 0.6cqi 0.8cqi 0 -0.1cqi color-mix(in oklab, var(--text-heading) 13%, transparent);
+  --img-hairline: inset 0 0 0 1px color-mix(in oklab, var(--text-heading) 9%, transparent);
   /* Representative aspect per bucket — the floated `clean` card takes this shape
    * so a real photo of that bucket cover-fills it with almost no crop. */
   --img-aspect: 4 / 3;
@@ -3314,7 +3318,7 @@ section.image[data-img-composition="clean"] .lattice-bg {
   width: auto;
   max-width: 90%;
   border-radius: 1cqi;
-  box-shadow: var(--img-lift), inset 0 0 0 1px color-mix(in oklab, var(--text-heading) 7%, transparent);
+  box-shadow: var(--img-lift), var(--img-hairline);
 }
 section.image[data-img-composition="clean"][data-img-bucket="wide"] .lattice-bg {
   height: auto;
@@ -3447,7 +3451,7 @@ section.image[data-img-composition="spotlight"] .image-text {
   padding: 4.4cqi 4.6cqi;
   background: var(--bg);
   border-radius: 1cqi;
-  box-shadow: var(--img-lift);
+  box-shadow: var(--img-lift), var(--img-hairline);
   align-items: flex-start;
 }
 section.image[data-img-composition="spotlight"] .image-text::before {
@@ -3542,14 +3546,14 @@ section.image[data-img-composition="statement"] .image-text h2 {
   font-size: var(--fs-h1);
   line-height: var(--lh-tight);
   color: rgba(255, 255, 255, 0.98);
-  text-shadow: 0 0.15cqi 0.5cqi rgba(0, 0, 0, 0.45);
+  text-shadow: 0 0.12cqi 0 rgba(0, 0, 0, 0.5);
   max-width: 16ch;
 }
 section.image[data-img-composition="statement"] .image-text p {
   color: rgba(255, 255, 255, 0.9);
   font-size: var(--fs-message);
   max-width: 40ch;
-  text-shadow: 0 0.15cqi 0.5cqi rgba(0, 0, 0, 0.45);
+  text-shadow: 0 0.12cqi 0 rgba(0, 0, 0, 0.5);
 }
 section.image[data-img-composition="statement"] .image-text h2 + p { margin-top: var(--sp-sm); }
 
