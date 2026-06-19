@@ -27,15 +27,17 @@ in patch versions.
 
 ### Added
 
-- **Charts restructure to a tall box — `timeline-list` goes vertical (Phase 1).**
+- **Charts restructure to a tall box — sequential charts go vertical (Phases 1–2).**
   Charts previously kept their landscape internal layout and shrank into a tiny
-  band on a portrait/tall slide. They now *restructure* box-locally: the first
-  conversion, `timeline-list`, turns its left-to-right spine into a true vertical
-  timeline (dots on a left rail, date/title/body filling the width, items
-  distributed down the page) via `@container lattice (aspect-ratio …)`. Landscape
-  output is byte-identical. This establishes the `auto 1fr` rail pattern for the
-  remaining sequential charts; radial/square charts and the Mermaid
-  direction-switch (gantt, journey) follow in phases 2–4. See
+  band on a portrait/tall slide. They now *restructure* box-locally via
+  `@container lattice (aspect-ratio …)`, landscape byte-identical: `timeline-list`
+  turns its left-to-right spine into a true vertical timeline (dots on a left rail,
+  content filling the width); `kanban`'s side-by-side board stacks into full-width
+  lanes (cards wrapping as a row within each); and `progress` distributes its bars
+  down the full height with thicker tracks. This establishes the `auto 1fr` rail
+  pattern; radial/square charts (`piechart`, `radar`, `quadrant`) and the
+  render-time work (`funnel`/`roadmap` viewBox + Mermaid `gantt`/`journey`
+  LR→TB) follow in phases 3–4. See
   `engineering/decisions/2026-06-19-chart-adaptive-sizing.md`.
 - **Box-local adaptive sizing — components reflow to the box they occupy
   (pilot: 5 components).** Components now adapt their *structure* via CSS

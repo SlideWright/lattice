@@ -87,14 +87,15 @@ other sequential charts reuse.
 
 ## 6. Per-chart plan (the queue)
 
-- **`progress`** — already a vertical stack of bars; it just doesn't *fill*. Tall
-  box: rows flex to distribute, bar height + label/value type step up. (Fill, not
-  restructure.)
-- **`funnel`** — already vertical; enlarge to fill the tall body, stage labels +
-  values stay flanking or move below each band at `strip`.
-- **`kanban`** — column board → stack the columns vertically (each column a
-  full-width band) at `tall`/`strip`.
-- **`roadmap`** — horizon grid → single-column horizons.
+- **`progress`** ✅ *(Phase 2)* — bars already stack but crowd the top; rows now
+  fill the height (`space-evenly`) and tracks thicken. (Fill, not restructure.)
+- **`kanban`** ✅ *(Phase 2)* — `.kanban-board` `row → column`, lanes distribute
+  down the canvas, cards within a lane wrap as a row.
+- **`funnel`** ⏭ *(Phase 4, render-time)* — SVG viewBox is baked landscape
+  (`0 0 320 180`); CSS can only letterbox. Needs a portrait viewBox from
+  `funnel.transform.js`.
+- **`roadmap`** ⏭ *(Phase 4, render-time)* — table / `.horizons` hybrid; the
+  kernel should select the transposed `.horizons` form for tall boxes.
 - **`piechart` / `radar`** — `.chart-body` reflows chart-beside-legend → chart
   **above** legend; the SVG `max-width` lifts so the dial fills the width.
 - **`quadrant`** — fill width, center; push axis labels into the vertical margin.
@@ -108,12 +109,20 @@ render-verified (the schema's render-backed rule).
 ## 7. Sequencing
 
 1. **Phase 1 (landed):** diagnosis + `timeline-list` vertical (the pattern).
-2. **Phase 2:** the rest of the sequential charts (`progress`, `funnel`,
-   `kanban`, `roadmap`) + the shared `.chart-body` fill lever.
+2. **Phase 2 (landed):** `kanban` (board `row → column`, lanes distribute, cards
+   wrap as a row) + `progress` (rows fill the height, tracks thicken). Verified
+   portrait + landscape; landscape byte-identical.
 3. **Phase 3:** radial (`piechart`, `radar`) + square (`quadrant`) — frame
    chart-over-legend + enlarge.
-4. **Phase 4:** Mermaid direction-switch (`gantt`, `journey`) — touches the
-   Mermaid render path; maker-checker (it's render-path blast radius).
+4. **Phase 4 — render-time (kernel) work; touches exported bytes → sign-off +
+   maker-checker:**
+   - **`funnel`** — its SVG viewBox is baked landscape (`0 0 320 180`,
+     `preserveAspectRatio=meet`), so CSS can only letterbox it. A tall funnel needs
+     `funnel.transform.js` to emit a *portrait* viewBox per orientation. Same class
+     as Mermaid: render-time, deck-orientation-keyed.
+   - **`roadmap`** — table / `.horizons` hybrid; a clean reflow needs the kernel to
+     pick the transposed `.horizons` form for tall boxes. Deferred with `funnel`.
+   - **`gantt` / `journey`** — Mermaid LR → TB direction-switch.
 
 Each phase: render at portrait + landscape, confirm reflow fires and landscape is
 byte-identical, before setting `adapt.families`. The four-family thresholds stay

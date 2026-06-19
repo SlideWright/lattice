@@ -4257,6 +4257,21 @@ section.kanban.dark .kanban-size {
   background: color-mix(in oklab, var(--bg-alt) 60%, var(--border));
 }
 
+/* ── Box-local RESTRUCTURE (tall + strip, ≤0.9): the side-by-side board becomes
+ * a vertical stack — each lane is now a full-width band, and its cards flow as a
+ * wrapping row so the width is used instead of running off the bottom. Keyed on
+ * the nearest `lattice` container; landscape (side-by-side board) untouched. See
+ * engineering/decisions/2026-06-19-chart-adaptive-sizing.md. */
+@container lattice (aspect-ratio <= 0.9) {
+  section.kanban .kanban-board {
+    flex-direction: column;
+    height: 100%;
+    justify-content: space-evenly;
+  }
+  section.kanban .kanban-cards { flex-direction: row; flex-wrap: wrap; }
+  section.kanban .kanban-card { flex: 1 1 14cqi; min-width: 0; }
+}
+
 /* === lib/components/evidence/kpi/kpi.styles.css === */
 /* kpi — extracted from lib/_legacy.css (batch 7).
  * See lib/components/kpi/kpi.manifest.json for the component contract.
@@ -6838,6 +6853,21 @@ section.progress .progress-note {
   font-size: var(--fs-meta);
   color: var(--text-secondary);
   font-style: italic;
+}
+
+/* ── Box-local FILL (square + tall + strip, ≤1.05): the bars already stack, but
+ * on a tall/square box they crowd the top and leave the canvas empty. Distribute
+ * the rows down the full height and thicken the tracks so the bars read big.
+ * Keyed on the nearest `lattice` container; landscape untouched. See
+ * engineering/decisions/2026-06-19-chart-adaptive-sizing.md. */
+@container lattice (aspect-ratio <= 1.05) {
+  section.progress .progress-bars {
+    height: 100%;
+    justify-content: space-evenly;
+    row-gap: var(--sp-md);
+  }
+  section.progress .progress-track { height: 4cqi; }
+  section.progress .progress-label { font-size: var(--fs-message); }
 }
 
 /* === lib/components/inventory/q-and-a/q-and-a.styles.css === */
