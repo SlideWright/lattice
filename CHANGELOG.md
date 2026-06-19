@@ -27,6 +27,18 @@ in patch versions.
 
 ### Added
 
+- **`gantt` and `state-chart` adapt to a portrait box (Phase 4, native charts).**
+  Both used to letterbox into a short band on a tall deck. `gantt` is an HTML/CSS
+  grid, so it reflows box-local (`@container`): the lane label moves above its bars,
+  the bars run full-width and the lanes distribute down the canvas. `state-chart` is
+  native SVG whose default is already vertical, so it now fills the height (states
+  distribute, browser-measured edges follow), and an `lr` (horizontal) machine falls
+  back to the vertical `tb` default on a portrait deck. Both relax their
+  `orientation` contract to include `portrait`; **landscape output is unchanged**.
+  This also corrects a doc-level mislabel — `gantt`/`journey`/`state-chart` are
+  native renderers, NOT Mermaid, and have no "LR→TB direction" to switch. See
+  `engineering/decisions/2026-06-19-chart-adaptive-sizing.md` §10 and
+  `examples/portrait-gantt-statechart.md`.
 - **The four keyed charts get a portrait legend-below layout (Phase 4, render-time).**
   `piechart`, `radar`, cohort `quadrant`, and `map` bake their diagram **and** their
   legend into one wide SVG viewBox (`svg-legend.js`), so on a portrait deck the whole

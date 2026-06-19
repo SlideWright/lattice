@@ -79,11 +79,13 @@ var require_lint_core = __commonJS({
     ]);
     var NUMBER_SLOT_LAYOUTS = Object.freeze(["kpi", "stats"]);
     var LANDSCAPE_ONLY_LAYOUTS = Object.freeze([
-      "gantt",
+      // gantt + state-chart now reflow box-local for a tall box (gantt: CSS @container
+      // label-over-bars; state-chart: the vertical default + lr→tb fallback) — see
+      // 2026-06-19-chart-adaptive-sizing.md §10. journey stays here until its
+      // vertical reflow lands (the next slice).
       "journey",
       "kanban",
       "roadmap",
-      "state-chart",
       "compare-code",
       "image",
       "redline"

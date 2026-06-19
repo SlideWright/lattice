@@ -3078,6 +3078,70 @@ section.gantt.chart-frame .chart-body {
 .gantt-bar[data-s="decision"] { --fill-hue: var(--state-info-hue); --fill-ink: var(--state-info-ink); }
 .gantt-bar[data-s="deferred"] { --fill-hue: var(--state-mute-hue); --fill-ink: var(--state-mute-ink); }
 
+/* ── Box-local portrait reflow (tall/narrow box) ─────────────────────────────
+ * A gantt is a horizontal time axis, so it can't "switch direction" — but it IS
+ * HTML/CSS (not a baked SVG), so it reflows box-locally. On a tall box the
+ * landscape row layout (a fixed left label column + bars sharing the rest)
+ * letterboxes into a thin band AND starves both the lane label and the bar
+ * labels of width (they ellipsis-truncate). The reflow:
+ *   1. Lane becomes a vertical block — the label sits ABOVE its bars, which now
+ *      span the FULL width (no 14cqi label column stealing room).
+ *   2. The axis spacer collapses so the Q-ticks span the same full width as the
+ *      bars and stay aligned above them.
+ *   3. Lanes distribute down the canvas (space-between) to fill the height
+ *      instead of stranding the chart in a band — the kanban/progress idiom.
+ *   4. Bars grow taller and their labels WRAP (a narrow time-span bar trades the
+ *      width it can't have for the height it now can), so "Signal taxonomy" reads
+ *      in full instead of clipping to "Signal taxonom".
+ * Keyed on the nearest `lattice` container; landscape untouched. ≤0.9 = tall+strip.
+ * 2026-06-19-chart-adaptive-sizing.md §10. */
+@container lattice (aspect-ratio <= 0.9) {
+  section.gantt.chart-frame .gantt-chart { height: 100%; }
+
+  /* Ticks span the full width — no left label column in portrait. */
+  section.gantt .gantt-axis-row { flex: 0 0 auto; }
+  section.gantt .gantt-axis-spacer { flex-basis: 0; width: 0; padding: 0; }
+
+  /* Lanes distribute down the canvas; each is a label-over-bars block. */
+  section.gantt .gantt-lane {
+    flex: 1 1 0;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: center;
+    gap: var(--sp-sm);
+    min-height: 0;
+    /* a quiet separator between stacked lanes, since they no longer sit in a row */
+    border-bottom: var(--chart-hairline) solid color-mix(in oklab, var(--border) 50%, transparent);
+    padding: var(--sp-sm) 0;
+  }
+  /* The portrait lane border (above) out-specifies the base last-child reset, so
+   * re-drop it here or the bottom stacked lane keeps a trailing hairline. */
+  section.gantt .gantt-lane:last-child { border-bottom: none; }
+
+  /* Label rides above its bars — full width, left-aligned, no ellipsis. */
+  section.gantt .gantt-lane-label {
+    flex: 0 0 auto;
+    width: auto;
+    text-align: left;
+    padding-right: 0;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+  }
+
+  /* Bars are a substantial fixed height (presence in the tall box) but NOT the
+   * full lane height — the lane's slack becomes breathing room, not a giant block.
+   * The bar label stays LEFT-aligned (the base): a task's bar starts at its
+   * window's left edge, and adjacent tasks that share a boundary quarter overlap
+   * by a column (span is inclusive) with the later bar drawn on top — so a
+   * left-aligned label sits in the visible left portion, while a centred one
+   * would slide under the neighbouring bar and clip. */
+  section.gantt .gantt-bars {
+    flex: 0 0 auto;
+    height: 9.5cqi;
+  }
+}
+
 /* === lib/components/inventory/glossary/glossary.styles.css === */
 /* glossary — extracted from lib/_legacy.css (batch 5).
  * See lib/components/glossary/glossary.manifest.json for the component contract.
@@ -9269,6 +9333,24 @@ section.state-chart .state-edge {
   stroke: var(--state-edge);
   stroke-width: 0.109375cqi;
   stroke-linecap: round;
+}
+
+/* ── Box-local portrait fill (tall/narrow box) ───────────────────────────────
+ * The default machine is ALREADY vertical (top-to-bottom column), so a tall box
+ * needs no reflow — but the inter-node gap is `cqi` (a share of WIDTH), so on a
+ * narrow portrait box it shrinks and the chain strands itself in the middle with
+ * dead space above and below. Let the node column take the full height and
+ * distribute the states down it; the browser edge-pass re-measures the laid-out
+ * positions, so the arrows follow. (An `lr` machine is already flipped back to
+ * this vertical default at build time — see state-chart.transform.js.) Keyed on
+ * the nearest `lattice` container; landscape untouched. ≤0.9 = tall+strip.
+ * 2026-06-19-chart-adaptive-sizing.md §10. */
+@container lattice (aspect-ratio <= 0.9) {
+  section.state-chart .state-chart-figure { height: 100%; }
+  section.state-chart .state-nodes {
+    height: 100%;
+    justify-content: space-evenly;
+  }
 }
 
 section.state-chart .state-edge[data-dir="back"] {

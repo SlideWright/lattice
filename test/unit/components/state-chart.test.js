@@ -281,6 +281,30 @@ describe('variant dispatch', () => {
     assert.match(html, /class="state-chart-edges"/);
   });
 
+  test('portrait forces tb even when lr is requested (a row cannot fit a tall box)', () => {
+    // The deck-wide orientation overrides the lr token: CSS reflow AND the
+    // browser edge-router both key off data-sc-dir, so the flip must happen here
+    // (see state-chart.transform.js §buildStateChart, decision doc §10).
+    const html = buildStateChart(MODEL, ['state-chart', 'lr'], 'portrait');
+    assert.match(html, /data-sc-dir="tb"/);
+    assert.doesNotMatch(html, /data-sc-dir="lr"/);
+  });
+
+  test('portrait leaves the default tb untouched; landscape/square keep lr', () => {
+    assert.match(buildStateChart(MODEL, ['state-chart'], 'portrait'), /data-sc-dir="tb"/);
+    assert.match(buildStateChart(MODEL, ['state-chart', 'lr'], 'landscape'), /data-sc-dir="lr"/);
+    // 'square' is a non-portrait orientation (1:1-ish): only 'portrait' flips, so
+    // a square lr machine stays lr (and the @container fill doesn't fire either).
+    assert.match(buildStateChart(MODEL, ['state-chart', 'lr'], 'square'), /data-sc-dir="lr"/);
+    assert.match(buildStateChart(MODEL, ['state-chart', 'lr']), /data-sc-dir="lr"/);
+  });
+
+  test('portrait flips the horizontal (lr inline) alias back to a tb inline list', () => {
+    const html = buildStateChart(MODEL, ['state-chart', 'horizontal'], 'portrait');
+    assert.match(html, /data-variant="inline"/);
+    assert.match(html, /data-sc-dir="tb"/);
+  });
+
   test('curved sets the Bézier edge style on the SVG canvas', () => {
     const html = buildStateChart(MODEL, ['state-chart', 'curved']);
     assert.match(html, /data-variant="default"/);
