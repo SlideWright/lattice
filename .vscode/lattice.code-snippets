@@ -329,13 +329,13 @@
     "body": [
       "<!-- _class: image -->",
       "",
-      "## Image right is the default — text leads, evidence follows.",
+      "## Text leads; the image earns its place.",
       "",
-      "Replace the bg image below with your own asset. The image fills its half-canvas slot edge-to-edge; a 1px hairline marks the join between text and image.",
+      "Replace the bg image below with your own asset — any aspect. The layout reads its shape and resolves the composition for you (a floated card, a full-height column, a full-bleed cover). Name a composition (`image spotlight`, `image gallery`, …) only to override.",
       "",
-      "![bg right](your-image.jpg)"
+      "![bg](your-image.jpg)"
     ],
-    "description": "Image as the slide's anchor, with optional text alongside."
+    "description": "Image as the slide's anchor, with optional text alongside — composition adapts to the asset and the deck."
   },
   "lattice: journey": {
     "prefix": "lattice-journey",

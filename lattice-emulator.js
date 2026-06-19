@@ -1006,11 +1006,11 @@ function engineSlides() {
     s = imageDimensions.stampImageBucket(s);
     s = imageDimensions.stampImageComposition(s);
     // The `statement` composition (text on a scrim over a full-bleed photo) is the
-    // one that needs a contrast scrim node; every other composition carries its
-    // own contrast (solid card / matte / panel). Legacy full/contain keep theirs.
+    // only one that needs a contrast scrim node; every other composition carries
+    // its own contrast (solid card / matte / panel). statement is opt-in, so it's
+    // always the author's `statement` class — needsScrim keys off that.
     const cls = (s.match(/^<section\b[^>]*\bclass="([^"]*)"/i) || ['', ''])[1];
-    const isStatement = /\bdata-img-composition="statement"/.test(s);
-    if ((isStatement || imageScrim.needsScrim(cls)) && s.indexOf('class="image-scrim') === -1) {
+    if (imageScrim.needsScrim(cls) && s.indexOf('class="image-scrim') === -1) {
       s = s.replace(/(<div class="lattice-bg[\s\S]*?<\/div>)/, `$1${imageScrim.SCRIM_HTML}`);
     }
     return s;

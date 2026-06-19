@@ -49,6 +49,7 @@ var require_lint_core = __commonJS({
       return null;
     }
     var MODIFIER_PREFIXES = ["tint-", "mark-", "with-", "at-", "no-", "tone-", "treatment-", "checks-", "fill-"];
+    var DEPRECATED_CLASSES = Object.freeze(/* @__PURE__ */ new Set(["full", "contain", "museum"]));
     var CARD_STYLE_LAYOUTS = Object.freeze([
       "cards-grid",
       "cards-stack",
@@ -86,7 +87,6 @@ var require_lint_core = __commonJS({
       // 2026-06-19-chart-adaptive-sizing.md §10.
       "kanban",
       "compare-code",
-      "image",
       "redline"
     ]);
     var PORTRAIT_ONLY_LAYOUTS = Object.freeze([]);
@@ -321,6 +321,7 @@ ${indent}  ${bullet} ${body.trim()}`;
         for (const t of tokens) {
           if (vocab.names.has(t)) continue;
           if (isKnownModifier(t, vocab)) continue;
+          if (DEPRECATED_CLASSES.has(t)) continue;
           findings.push({
             slide: idx - fm + 1,
             rule: "unknown-class",

@@ -3198,265 +3198,382 @@ section.glossary h2 .range-pill {
 }
 
 /* === lib/components/imagery/image/image.styles.css === */
-/* image — half-canvas and full-bleed image layouts.
- * See lib/components/imagery/image/image.manifest.json for the contract.
+/* image — the adaptive image layout.
+ * See lib/components/imagery/image/image.manifest.json for the contract and
+ * engineering/decisions/2026-06-19-adaptive-image.md for the model.
  *
- * Modifier model:
- *   image             half-canvas: text left, image right (anchor border)
- *   image mirror      half-canvas mirrored: image left, text right
- *   image full        full-bleed: image fills the slide (cover)
- *   image contain     full-bleed: image fills the slide (contain, matte)
- *   image museum      full-bleed: image inset on matte with hairline frame
- *   image dark        dark color-scheme (token cascade)
+ * Unlike every other layout, we don't control the content's SHAPE: an author
+ * hands us an arbitrary rectangle (phone crop, portrait photo, panorama). So the
+ * COMPOSITION is resolved, not authored, from two axes —
+ *   • the photo's intrinsic aspect  → `data-img-bucket`  (lib/core/image-aspect)
+ *   • the deck size in use          → `data-orientation` (lib/engine/slides)
+ * — and stamped as `data-img-composition` (lib/core/image-dimensions), the one
+ * attribute this sheet keys off. An explicit author class wins over the resolver.
  *
- * full / contain / museum are image-treatment modifiers — they all use
- * the same full-bleed text-overlay-on-scrim pattern; the modifier picks
- * how the image renders (cover / letterbox / matted). Per docs.
+ * The five compositions (all orientation-aware):
+ *   clean      the DEFAULT — a floated card whose ASPECT adapts to the photo, so
+ *              the crop is ≈ zero for any moderate shape. Text panel alongside.
+ *   split      an extreme-aspect photo shown WHOLE — full-height column
+ *              (landscape) / full-width band (portrait). Zero crop; fills the canvas.
+ *   spotlight  full-bleed cover where the photo already MATCHES the canvas, with a
+ *              SOLID text card (legibility guaranteed).
+ *   gallery    opt-in — contain on a matte with a placard (diagrams/screenshots).
+ *   statement  opt-in — full-bleed + scrim + editorial title (a deliberate gamble).
  *
- * Render paths:
- *   the .lattice-bg figure fills the slot
- *   Emulator: .lattice-bg, .lattice-bg-right / -left / -full
- *
- * Text sizes are absolute (px). Canvas-scaled (--fs-*) tokens shrink
- * reading area at 4K relative to the slide; absolute units keep
- * reading size stable across canvas variants. */
-
-section.image {
-  isolation: isolate;
-  --image-matte: var(--bg-alt);
-  --image-scrim: linear-gradient(to top,
-    rgba(0, 0, 0, 0.92) 0%,
-    rgba(0, 0, 0, 0.65) 50%,
-    rgba(0, 0, 0, 0.00) 100%);
-}
+ * The render kernel emits one composition-agnostic DOM (lib/core/bg-image.js):
+ *   <section class="image" data-img-bucket data-orientation data-img-composition>
+ *     <div class="lattice-bg" style="background-image:url(…)"></div>
+ *     <div class="image-text"><h2>…</h2><p>…</p></div>
+ *   </section>
+ * This sheet reshapes that one DOM per composition. The image rides as a CSS
+ * background (no <img>), so none of these rules need `!important`. */
 
 /* ════════════════════════════════════════════════════════════════════
- * HALF-CANVAS (default `image`, with mirror)
- *
- * Text in the solid left half, image in the right half. The `.contain`
- * and `.museum` modifiers do NOT belong to this layout — they switch
- * the slide into the full-bleed pattern below.
+ * BASE — shared scaffolding + the per-bucket card aspect
  * ═══════════════════════════════════════════════════════════════════ */
 
-/* Half-canvas image uses the canonical split-* pattern: section is a
- * flex row with normal padding, and a child `.image-text` panel sits
- * at 50% width holding the heading + body. This keeps cqi resolving
- * correctly inside the section (container-type: size measures the
- * content-box, so percentage padding on the section warps every cqi
- * unit beneath it — see lib/core/bg-image.js).
- *
- * Mirror flips the flex order so the text panel sits on the right.
- * Background gradient marks the split at 50% in either direction. */
-section.image:not(.full):not(.contain):not(.museum) {
+section.image {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   padding: 0;
-  flex-direction: row;
-  background: linear-gradient(to right, var(--bg) 50%, transparent 50%);
+  border: none;
+  background: var(--bg);
+  --img-matte: var(--bg-alt);
+  /* Card-lift shadow. ZERO BLUR on purpose: a blurred box-shadow renders as a
+   * flat grey block in Apple PDFKit (Preview / iOS) and Skia — see
+   * engineering/gotchas.md + base.focus.css. A hard, offset, low-opacity shadow
+   * derived from the heading ink reads as a lifted card and survives every PDF
+   * viewer. Paired with the hairline border below for crisp definition. */
+  --img-lift: 0.6cqi 0.8cqi 0 -0.1cqi color-mix(in oklab, var(--text-heading) 13%, transparent);
+  --img-hairline: inset 0 0 0 1px color-mix(in oklab, var(--text-heading) 9%, transparent);
+  /* Representative aspect per bucket — the floated `clean` card takes this shape
+   * so a real photo of that bucket cover-fills it with almost no crop. */
+  --img-aspect: 4 / 3;
 }
-section.image:not(.full):not(.contain):not(.museum).mirror,
-section.image:not(.full):not(.contain):not(.museum).left {
-  flex-direction: row-reverse;
-  background: linear-gradient(to left, var(--bg) 50%, transparent 50%);
-}
+section.image[data-img-bucket="pano"]   { --img-aspect: 24 / 9; }
+section.image[data-img-bucket="wide"]   { --img-aspect: 16 / 10; }
+section.image[data-img-bucket="square"] { --img-aspect: 1 / 1; }
+section.image[data-img-bucket="tall"]   { --img-aspect: 3 / 4; }
+section.image[data-img-bucket="column"] { --img-aspect: 2 / 5; }
 
-/* The text panel: 50% width, flex column, padding from the slide edge
- * and from the split centerline so the text never crashes into either. */
-section.image:not(.full):not(.contain):not(.museum) > .image-text {
-  width: 50%;
-  flex-shrink: 0;
-  padding: var(--sp-2xl);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  box-sizing: border-box;
-}
+/* Image chrome (page number / footer) would fight a full-bleed photo — hide it;
+ * the image IS the slide. */
+section.image > header,
+section.image > footer { display: none; }
 
-/* Canvas-proportional typography — same tokens as base section. cqi
- * resolves correctly now that the section is no longer using
- * percentage padding. */
-section.image:not(.full):not(.contain):not(.museum) .image-text h2 {
-  font-size: var(--fs-h3);
-  margin-bottom: var(--sp-md);
-}
-section.image:not(.full):not(.contain):not(.museum) .image-text p {
-  font-size: var(--fs-body);
-  line-height: var(--lh-relaxed);
-}
-
-/* Accent border on the slide's text-side edge. */
-section.image:not(.full):not(.contain):not(.museum) {
-  border-left: 6px solid var(--accent);
-}
-section.image:not(.full):not(.contain):not(.museum).mirror,
-section.image:not(.full):not(.contain):not(.museum).left {
-  border-left: none;
-  border-right: 6px solid var(--accent);
-}
-
-/* The .lattice-bg div carries the image as a CSS background (bg-image.js emits
- * an inline `background-image:url(<resolved>)` — no <img>). Because there is no
- * <img>, none of these rules need `!important` to beat Marpit's `section img`
- * catch-all: that contract no longer applies (the 22 `!important` overrides this
- * block used to carry are gone). The engine emits .lattice-bg-full for full-bleed
- * variants. */
+/* The photo. Base = full-bleed cover layer behind everything; each composition
+ * repositions/resizes it. No <img>, so no Marpit `section img` override needed. */
 section.image .lattice-bg {
   position: absolute;
-  z-index: -1;
-  overflow: hidden;
+  inset: 0;
+  z-index: 0;
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
 }
-section.image:not(.full):not(.contain):not(.museum) .lattice-bg-right { right: 0; top: 0; bottom: 0; width: 50%; }
-section.image:not(.full):not(.contain):not(.museum) .lattice-bg-left  { left: 0; top: 0; bottom: 0; width: 50%; }
-section.image:not(.full):not(.contain):not(.museum).mirror .lattice-bg-right,
-section.image:not(.full):not(.contain):not(.museum).left   .lattice-bg-right { right: auto; left: 0; }
 
-/* Hairline at the slide-half split, on the bg panel. */
-section.image:not(.full):not(.contain):not(.museum) .lattice-bg {
-  box-shadow: -1px 0 0 var(--border);
+/* The prose panel. Base = a centered flex column; each composition places it. */
+section.image .image-text {
+  position: relative;
+  z-index: 2;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
-section.image:not(.full):not(.contain):not(.museum).mirror .lattice-bg,
-section.image:not(.full):not(.contain):not(.museum).left   .lattice-bg {
-  box-shadow: 1px 0 0 var(--border);
+section.image .image-text > :first-child { margin-top: 0; }
+section.image .image-text > :last-child { margin-bottom: 0; }
+section.image .image-text h2 {
+  font-family: var(--font-display);
+  font-size: var(--fs-h3);
+  line-height: var(--lh-tight);
+  color: var(--text-heading);
+  margin: 0 0 var(--sp-md);
+  text-wrap: balance;
+}
+section.image .image-text p {
+  font-size: var(--fs-body);
+  line-height: var(--lh-relaxed);
+  color: var(--text-muted);
+  margin: 0;
+  max-width: 34ch;
 }
 
 /* ════════════════════════════════════════════════════════════════════
- * FULL-BLEED (image full / image contain / image museum)
- *
- * Image fills the slide; text overlays the lower portion on a dark
- * scrim for readability. The modifier picks the image treatment:
- *
- *   full     — cover (image crops to fill)
- *   contain  — letterbox (preserves aspect, matte fills around)
- *   museum   — inset 40px on matte with 1px hairline frame
- *
- * Heading + body sit on a bottom gradient scrim that fades to
- * transparent at the top, so the image stays the visual subject
- * while the text remains readable over any tone.
+ * CLEAN — the default. Text panel + a floated card that takes the photo's
+ * aspect. Landscape: panel left, card right. Portrait: card top, panel below.
  * ═══════════════════════════════════════════════════════════════════ */
 
-section.image.full,
-section.image.contain,
-section.image.museum {
-  position: relative;
-  padding: 0;
-  background: var(--image-matte);
-  box-sizing: border-box;
-  border: none;
+section.image[data-img-composition="clean"] {
+  display: grid;
+  grid-template-columns: 1.04fr 1fr;
+  grid-template-areas: "text card";
+  align-items: center;
+  justify-items: center;
 }
-section.image.full header,
-section.image.full footer,
-section.image.contain header,
-section.image.contain footer,
-section.image.museum header,
-section.image.museum footer {
-  display: none;
+section.image[data-img-composition="clean"] .image-text {
+  grid-area: text;
+  justify-self: stretch;
+  padding: 8cqi 6cqi 8cqi 8cqi;
+}
+/* The card: a STABLE rectangle of the photo's own aspect, centered in its cell,
+ * matted by the slide. cover-fill means a real photo barely crops. aspect-ratio
+ * needs ONE definite axis to size against — height-bound by default (tall/square/
+ * column read as upright cards), width-bound for the wide buckets (a tall wide
+ * card would be absurd). The max-* on the derived axis is the overflow backstop. */
+section.image[data-img-composition="clean"] .lattice-bg {
+  grid-area: card;
+  position: relative;
+  inset: auto;
+  aspect-ratio: var(--img-aspect);
+  height: 70cqh;
+  width: auto;
+  max-width: 90%;
+  border-radius: 1cqi;
+  box-shadow: var(--img-lift), var(--img-hairline);
+}
+section.image[data-img-composition="clean"][data-img-bucket="wide"] .lattice-bg {
+  height: auto;
+  width: 88%;
+  max-height: 76cqh;
+}
+section.image[data-img-composition="clean"][data-img-bucket="pano"] .lattice-bg {
+  height: auto;
+  width: 92%;
+  max-height: 68cqh;
 }
 
-/* Image container fills the slide (overlay behind text) */
-section.image.full .lattice-bg-full,
-section.image.contain .lattice-bg-full,
-section.image.museum .lattice-bg-full {
+/* Mirror / bg-left → card on the left, panel on the right. */
+section.image[data-img-composition="clean"].mirror,
+section.image[data-img-composition="clean"]:has(> .lattice-bg-left) { grid-template-areas: "card text"; }
+section.image[data-img-composition="clean"].mirror .image-text,
+section.image[data-img-composition="clean"]:has(> .lattice-bg-left) .image-text { padding: 8cqi 8cqi 8cqi 6cqi; }
+
+/* Portrait: stack — card on top (its adaptive aspect), panel beneath. */
+section.image[data-img-composition="clean"][data-orientation="portrait"],
+section.image[data-img-composition="clean"][data-orientation="square"] {
+  grid-template-columns: 1fr;
+  grid-template-rows: auto auto;
+  grid-template-areas: "card" "text";
+  align-content: center;
+  gap: 5cqh;
+  padding: 7cqh 0;
+}
+section.image[data-img-composition="clean"][data-orientation="portrait"] .lattice-bg,
+section.image[data-img-composition="clean"][data-orientation="square"] .lattice-bg {
+  height: auto; width: 84%;
+  max-width: 84%; max-height: 50cqh;
+}
+section.image[data-img-composition="clean"][data-orientation="portrait"] .image-text,
+section.image[data-img-composition="clean"][data-orientation="square"] .image-text {
+  justify-self: stretch;
+  padding: 0 9cqi;
+  align-items: flex-start;
+}
+section.image[data-img-composition="clean"][data-orientation="portrait"] .image-text p,
+section.image[data-img-composition="clean"][data-orientation="square"] .image-text p { max-width: 44ch; }
+
+/* ════════════════════════════════════════════════════════════════════
+ * SPLIT — an extreme-aspect photo shown WHOLE. Landscape: full-height image
+ * column + text column. Portrait: full-width image band + text below.
+ * ═══════════════════════════════════════════════════════════════════ */
+
+section.image[data-img-composition="split"] {
+  display: grid;
+  grid-template-columns: 1fr 41%;
+  grid-template-areas: "text photo";
+}
+section.image[data-img-composition="split"] .lattice-bg {
+  grid-area: photo;
+  position: relative;
+  inset: auto;
+  height: 100%;
+  width: 100%;
+}
+section.image[data-img-composition="split"] .image-text {
+  grid-area: text;
+  padding: 9cqi 7cqi 9cqi 8cqi;
+  align-items: flex-start;
+}
+/* Accent rule on the seam, set in from the edges. */
+section.image[data-img-composition="split"] .image-text::after {
+  content: "";
+  position: absolute;
+  right: 0; top: 14cqh; bottom: 14cqh;
+  width: 0.4cqi;
+  background: var(--accent);
+}
+section.image[data-img-composition="split"] .image-text h2 { font-size: var(--fs-h2); }
+
+/* A `column` strip is too extreme to cover-fill the column without cropping the
+ * very top/bottom we promised to keep — narrow the column and contain it on a
+ * matte so every pixel survives. */
+section.image[data-img-composition="split"][data-img-bucket="column"] {
+  grid-template-columns: 1fr 32%;
+}
+section.image[data-img-composition="split"][data-img-bucket="column"].mirror,
+section.image[data-img-composition="split"][data-img-bucket="column"]:has(> .lattice-bg-left) {
+  grid-template-columns: 32% 1fr;
+}
+section.image[data-img-composition="split"][data-img-bucket="column"] .lattice-bg {
+  background-size: contain;
+  background-color: var(--img-matte);
+  box-shadow: inset 1px 0 0 var(--border);
+}
+
+section.image[data-img-composition="split"].mirror,
+section.image[data-img-composition="split"]:has(> .lattice-bg-left) {
+  grid-template-columns: 41% 1fr;
+  grid-template-areas: "photo text";
+}
+section.image[data-img-composition="split"].mirror .image-text::after,
+section.image[data-img-composition="split"]:has(> .lattice-bg-left) .image-text::after { right: auto; left: 0; }
+
+/* Portrait: image band on top, text beneath (full-width). The band shows a
+ * landscape photo whole across the narrow canvas. */
+section.image[data-img-composition="split"][data-orientation="portrait"],
+section.image[data-img-composition="split"][data-orientation="square"] {
+  grid-template-columns: 1fr;
+  grid-template-rows: 44cqh 1fr;
+  grid-template-areas: "photo" "text";
+}
+section.image[data-img-composition="split"][data-orientation="portrait"] .image-text,
+section.image[data-img-composition="split"][data-orientation="square"] .image-text {
+  justify-content: flex-start;
+  padding: 6cqh 9cqi;
+}
+section.image[data-img-composition="split"][data-orientation="portrait"] .image-text::after,
+section.image[data-img-composition="split"][data-orientation="square"] .image-text::after {
+  right: 9cqi; left: 9cqi; top: 0; bottom: auto;
+  width: auto; height: 0.4cqi;
+}
+section.image[data-img-composition="split"][data-orientation="portrait"] .image-text p,
+section.image[data-img-composition="split"][data-orientation="square"] .image-text p { max-width: 46ch; }
+
+/* ════════════════════════════════════════════════════════════════════
+ * SPOTLIGHT — full-bleed cover (the photo matches the canvas), text in a SOLID
+ * card so it stays legible over any photo. Landscape: card bottom-left.
+ * ═══════════════════════════════════════════════════════════════════ */
+
+section.image[data-img-composition="spotlight"] .lattice-bg { inset: 0; }
+section.image[data-img-composition="spotlight"] .image-text {
+  position: absolute;
+  left: 5cqi; bottom: 6cqh;
+  width: min(46cqi, 50%);
+  padding: 4.4cqi 4.6cqi;
+  background: var(--bg);
+  border-radius: 1cqi;
+  box-shadow: var(--img-lift), var(--img-hairline);
+  align-items: flex-start;
+}
+section.image[data-img-composition="spotlight"] .image-text::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 4.4cqi; bottom: 4.4cqi;
+  width: 0.4cqi;
+  background: var(--accent);
+}
+section.image[data-img-composition="spotlight"] .image-text h2 { font-size: var(--fs-h3); }
+section.image[data-img-composition="spotlight"] .image-text p { max-width: 38ch; }
+section.image[data-img-composition="spotlight"].mirror .image-text,
+section.image[data-img-composition="spotlight"]:has(> .lattice-bg-left) .image-text { left: auto; right: 5cqi; }
+
+/* Portrait: the card spans the lower width so the tall photo carries the top. */
+section.image[data-img-composition="spotlight"][data-orientation="portrait"] .image-text,
+section.image[data-img-composition="spotlight"][data-orientation="square"] .image-text {
+  left: 5cqi; right: 5cqi; bottom: 5cqh;
+  width: auto;
+  padding: 6cqi 6cqi;
+}
+
+/* ════════════════════════════════════════════════════════════════════
+ * GALLERY (opt-in) — contain the WHOLE image on a matte, with a placard.
+ * For diagrams / screenshots / assets with meaningful whitespace.
+ * ═══════════════════════════════════════════════════════════════════ */
+
+section.image[data-img-composition="gallery"] {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4cqh;
+  padding: 8cqh 8cqi;
+  background: var(--img-matte);
+}
+section.image[data-img-composition="gallery"] .lattice-bg {
+  position: relative;
+  inset: auto;
+  width: min(72cqi, 88%);
+  flex: 1 1 auto;
+  min-height: 0;
+  background-size: contain;
+  background-color: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 0.6cqi;
+  box-shadow: var(--img-lift);
+}
+section.image[data-img-composition="gallery"] .image-text {
+  flex: 0 0 auto;
+  align-items: center;
+  text-align: center;
+}
+section.image[data-img-composition="gallery"] .image-text h2 {
+  font-size: var(--fs-h4);
+  margin-bottom: var(--sp-xs);
+}
+section.image[data-img-composition="gallery"] .image-text p {
+  font-size: var(--fs-message);
+  max-width: 64ch;
+  text-align: center;
+}
+
+/* ════════════════════════════════════════════════════════════════════
+ * STATEMENT (opt-in) — full-bleed photo, diagonal scrim, editorial title.
+ * The text rides directly on the image (white on a dark scrim) — a deliberate
+ * choice the author makes when the photo is known to carry it.
+ * ═══════════════════════════════════════════════════════════════════ */
+
+section.image[data-img-composition="statement"] .lattice-bg { inset: 0; }
+/* The scrim node (injected by image-scrim across all render paths) darkens the
+ * lower-left where the text sits and fades out toward the bright upper-right.
+ * rgba (not a token) on purpose: this is an overlay on an unknown photo, not a
+ * palette surface — the text is always white over it. */
+section.image[data-img-composition="statement"] .image-scrim {
   position: absolute;
   inset: 0;
-  z-index: -1;
-}
-
-/* Cover (default for `.full`) — image fills, cropped. The generic
- * `section.image .lattice-bg` rule above already sets cover / center /
- * no-repeat, so `.full` needs no extra image rule. */
-
-/* Contain — letterbox; the matte fills around the contained image. */
-section.image.contain .lattice-bg-full {
-  background-size: contain;
-  background-color: var(--image-matte);
-}
-
-/* Museum — image inset with a 1px hairline frame. */
-section.image.museum .lattice-bg-full {
-  inset: 40px;
-  background-size: contain;
-  background-color: var(--image-matte);
-  box-shadow: 0 0 0 1px var(--border);
-}
-
-/* Bottom scrim — dark gradient that fades to transparent. Real DOM
- * element (injected by lib/transformers/image-scrim.js across all
- * three render paths) so the scrim is a normal, always-rendered node.
- * Museum skips the scrim — its matte plate provides text contrast. */
-section.image.full .image-scrim,
-section.image.contain .image-scrim {
-  position: absolute;
-  left: 0; right: 0; bottom: 0;
-  height: 17.1875cqi;
-  background: var(--image-scrim);
-  z-index: 0;
+  z-index: 1;
   pointer-events: none;
+  background:
+    linear-gradient(108deg, rgba(8, 14, 24, 0.86) 0%, rgba(8, 14, 24, 0.5) 34%, rgba(8, 14, 24, 0) 64%),
+    linear-gradient(to top, rgba(8, 14, 24, 0.72) 0%, rgba(8, 14, 24, 0) 42%);
 }
-
-/* Text overlay — title sits just above body with a tight 4px gap.
- * Body is clipped to ~2 lines (max-height) so a long caption can't
- * push into or under the title. */
-/* Full-bleed text overlay — canvas-proportional sizes match base
- * typography. Positioning (left/right/bottom insets, scrim height,
- * max-height clamp) uses cqi so the layout scales as a unit with the
- * canvas; switching from px → cqi was the last seesaw correction. */
-section.image.full h2,
-section.image.contain h2 {
+section.image[data-img-composition="statement"] .image-text {
   position: absolute;
-  left: 6.25cqi; right: 6.25cqi;
-  bottom: 7.1875cqi; margin: 0;
-  color: rgba(255, 255, 255, 0.98);
+  left: 6cqi; bottom: 8cqh; right: 6cqi;
+  width: min(62cqi, 64%);
+  align-items: flex-start;
+}
+section.image[data-img-composition="statement"] .image-text h2 {
   font-family: var(--font-display);
-  font-size: var(--fs-h2);
-  font-weight: 700;
+  font-size: var(--fs-h1);
   line-height: var(--lh-tight);
-  z-index: 2;
-  text-shadow: 0 0.078125cqi 0.15625cqi rgba(0, 0, 0, 0.4);
+  color: rgba(255, 255, 255, 0.98);
+  text-shadow: 0 0.12cqi 0 rgba(0, 0, 0, 0.5);
+  max-width: 16ch;
 }
-section.image.full p:last-of-type,
-section.image.contain p:last-of-type {
-  position: absolute;
-  left: 6.25cqi; right: 6.25cqi;
-  bottom: 2.1875cqi; margin: 0;
-  max-height: 4.6875cqi;
-  overflow: hidden;
-  color: rgba(255, 255, 255, 0.92);
+section.image[data-img-composition="statement"] .image-text p {
+  color: rgba(255, 255, 255, 0.9);
   font-size: var(--fs-message);
-  line-height: var(--lh-snug);
-  z-index: 2;
-  text-shadow: 0 0.078125cqi 0.15625cqi rgba(0, 0, 0, 0.4);
+  max-width: 40ch;
+  text-shadow: 0 0.12cqi 0 rgba(0, 0, 0, 0.5);
 }
+section.image[data-img-composition="statement"] .image-text h2 + p { margin-top: var(--sp-sm); }
 
-/* Museum — image inset leaves a matte plate at the bottom for the
- * editorial label + caption (tighter than the scrim'd variants since
- * the matte itself provides contrast). All offsets in cqi so the plate
- * scales with the canvas. */
-section.image.museum .lattice-bg-full {
-  inset: 3.125cqi 3.125cqi 7.8125cqi 3.125cqi;
-}
-section.image.museum h2 {
-  position: absolute;
-  left: 6.25cqi; right: 6.25cqi;
-  bottom: 4.6875cqi; margin: 0;
-  color: var(--text-label);
-  font-family: var(--font-mono);
-  font-size: var(--fs-meta);
-  font-weight: 400;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  z-index: 2;
-}
-section.image.museum p:last-of-type {
-  position: absolute;
-  left: 6.25cqi; right: 6.25cqi;
-  bottom: 1.875cqi; margin: 0;
-  max-height: 2.1875cqi;
-  overflow: hidden;
-  color: var(--text-body);
-  font-size: var(--fs-meta);
-  line-height: var(--lh-snug);
-  z-index: 2;
+/* Portrait: text sits in the lower third, full width. */
+section.image[data-img-composition="statement"][data-orientation="portrait"] .image-text,
+section.image[data-img-composition="statement"][data-orientation="square"] .image-text {
+  width: auto; right: 6cqi; bottom: 6cqh;
 }
 
 /* === lib/components/chart/journey/journey.styles.css === */
