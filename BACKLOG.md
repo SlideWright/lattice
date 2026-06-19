@@ -7,7 +7,7 @@
 
 The live, claimable work queue — a read-only mirror of [open issues](https://github.com/SlideWright/lattice/issues),
 grouped by board column. Design lives in `engineering/decisions/`; this tracks
-only *status*. **34 open** items.
+only *status*. **35 open** items.
 
 ## Backlog (32)
 
@@ -56,7 +56,8 @@ _none_
 
 _none_
 
-## Inbox (no status) (2)
+## Inbox (no status) (3)
 
+- [#445](https://github.com/SlideWright/lattice/issues/445) feat(chart): legend-below portrait layout for the keyed charts (piechart/radar/quadrant/map) — medium · chart
 - [#180](https://github.com/SlideWright/lattice/issues/180) epic(chart): resolution-independent charts — cqi-first, kill fixed-px, for any-format / 10K export
 - [#198](https://github.com/SlideWright/lattice/issues/198) bug(examples): gallery-jargon.pdf is not reproducible — rebuild draws overflow rings on 6 unrelated slides + reflows text
