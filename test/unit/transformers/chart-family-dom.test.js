@@ -108,6 +108,31 @@ describe('chart-family.applyToDom', () => {
     }
   });
 
+  test('funnel: reads the section data-orientation → portrait emits the TALL viewBox', () => {
+    const doc = makeDoc(`
+      <section class="funnel" data-orientation="portrait">
+        <h2>Drop-off</h2>
+        <ul><li>A <code>1000</code></li><li>B <code>600</code></li><li>C <code>200</code></li></ul>
+      </section>
+    `);
+    chartFamily.applyToDom(doc);
+    const svg = doc.querySelector('section.funnel .funnel-svg');
+    assert.ok(svg, 'funnel SVG emitted');
+    assert.equal(svg.getAttribute('viewBox'), '0 0 320 420', 'portrait → tall viewBox');
+  });
+
+  test('funnel: a landscape section (no data-orientation) keeps the original viewBox', () => {
+    const doc = makeDoc(`
+      <section class="funnel">
+        <h2>Drop-off</h2>
+        <ul><li>A <code>1000</code></li><li>B <code>600</code></li><li>C <code>200</code></li></ul>
+      </section>
+    `);
+    chartFamily.applyToDom(doc);
+    assert.equal(doc.querySelector('section.funnel .funnel-svg').getAttribute('viewBox'),
+      '0 0 320 180', 'landscape → original viewBox (byte-identical)');
+  });
+
   test('passes through non-chart sections', () => {
     const doc = makeDoc(`
       <section class="content"><h2>plain</h2><p>nothing.</p></section>

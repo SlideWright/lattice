@@ -133,6 +133,19 @@ render-verified (the schema's render-backed rule).
    These are deck-orientation-keyed (render-time can't see a nested cell) — the
    pragmatic limit for baked-SVG/Mermaid, and acceptable since CSS can't reach them.
 
+**Runtime ordering (the footgun a JS geometry-baking transform introduces).** A
+chart transform that bakes orientation into geometry must see `data-orientation`
+on its FIRST build — the `chart-frame` idempotency guard means a late stamp never
+triggers a rebuild. On the export/engine path this is free (the slide pipeline
+stamps during `md.render`, before `applyAllToHtml`). On the **runtime** path the
+stamp lived in `patchSectionGeometry()`, which ran *after* the content transforms —
+so the live preview rendered a landscape funnel on a portrait deck while the export
+rendered the tall one (caught in maker-checker review). Fixed by hoisting a
+lightweight `stampOrientation()` pass ahead of `runAllContentTransforms()` in the
+runtime bootstrap; verified in a real browser that the preview now matches the
+export. (CSS-reflow consumers are immune — a late attribute just flips a rule;
+geometry-baking transforms are the first to need the early stamp.)
+
 Each phase: render at portrait + landscape, confirm reflow fires and landscape is
 byte-identical, before setting `adapt.families`. The four-family thresholds stay
 the single source in `lib/adaptive/families.js` (drift-guarded).

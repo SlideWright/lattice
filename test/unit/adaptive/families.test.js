@@ -58,7 +58,11 @@ test('component @container aspect queries use only canonical boundaries', () => 
     for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
       const p = path.join(dir, e.name);
       if (e.isDirectory()) walk(p);
-      else if (e.name.endsWith('.styles.css')) cssFiles.push(p);
+      // Any component CSS (not only `*.styles.css`): the shared chart-frame rules
+      // live in `_chart-family/chart-family.css`, which carries `@container`
+      // queries too — the guard must walk it or a non-canonical boundary there
+      // would slip past (gap caught in maker-checker review, 2026-06-19).
+      else if (e.name.endsWith('.css')) cssFiles.push(p);
     }
   };
   walk(path.join(ROOT, 'lib', 'components'));
