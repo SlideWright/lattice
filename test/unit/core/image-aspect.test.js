@@ -34,20 +34,28 @@ test('every bucket name is one of the five', () => {
 
 const { resolveComposition } = require('../../../lib/core/image-aspect');
 
-test('resolveComposition: image goes where its aspect wants', () => {
+test('resolveComposition: risk-gated — only content-safe treatments auto-fire', () => {
   // landscape deck
-  assert.equal(resolveComposition('wide',  'landscape'), 'statement'); // wide fills the wide canvas
-  assert.equal(resolveComposition('pano',  'landscape'), 'statement');
-  assert.equal(resolveComposition('tall',  'landscape'), 'split');     // tall → full-height column
+  assert.equal(resolveComposition('wide',  'landscape'), 'spotlight'); // full-bleed + SOLID card (legible), not scrim
+  assert.equal(resolveComposition('pano',  'landscape'), 'spotlight');
+  assert.equal(resolveComposition('tall',  'landscape'), 'split');     // tall → full-height column, ~zero crop
   assert.equal(resolveComposition('column','landscape'), 'split');
-  assert.equal(resolveComposition('square','landscape'), 'gallery');
+  assert.equal(resolveComposition('square','landscape'), 'gallery');   // contained, zero crop
   // portrait deck
   assert.equal(resolveComposition('wide',  'portrait'),  'split');     // wide → full-width top band
-  assert.equal(resolveComposition('tall',  'portrait'),  'statement'); // tall fills the tall canvas
+  assert.equal(resolveComposition('pano',  'portrait'),  'split');
+  assert.equal(resolveComposition('tall',  'portrait'),  'spotlight'); // tall fills the tall canvas
   assert.equal(resolveComposition('square','portrait'),  'gallery');
   // square deck + undefined behave as landscape
-  assert.equal(resolveComposition('wide',  'square'),    'statement');
+  assert.equal(resolveComposition('wide',  'square'),    'spotlight');
   assert.equal(resolveComposition('tall',  undefined),   'split');
+});
+
+test('resolveComposition: statement (scrim) is NEVER auto-resolved — opt-in only', () => {
+  const all = ['pano','wide','square','tall','column'];
+  for (const o of ['landscape','portrait','square',undefined]) {
+    for (const b of all) assert.notEqual(resolveComposition(b, o), 'statement');
+  }
 });
 
 test('resolveComposition: no bucket → Clean floor (safe for any rectangle)', () => {
