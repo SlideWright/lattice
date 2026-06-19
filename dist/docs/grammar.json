@@ -1381,7 +1381,7 @@
       "classToken": "image",
       "bucket": "imagery",
       "substance": "prose",
-      "skeleton": "<!-- _class: image -->\n\n## Text leads; the image earns its place.\n\nReplace the bg image below with your own asset — any aspect. The layout reads its shape and resolves the composition for you (a floated card, a full-height column, a full-bleed cover). Name a composition (`image spotlight`, `image gallery`, …) only to override.\n\n![bg](your-image.jpg)\n",
+      "skeleton": "<!-- _class: image -->\n\n## Text leads; the image earns its place.\n\nSwap the bg image below for your own asset — any aspect. The layout reads its shape and resolves the composition for you (a floated card, a full-height column, a full-bleed cover). Name a composition (`image spotlight`, `image gallery`, …) only to override.\n\n![bg](sample-photo-wide.svg)\n",
       "slots": {
         "image": {
           "selector": ".lattice-bg",

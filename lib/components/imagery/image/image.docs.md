@@ -27,9 +27,9 @@ Use when a visual carries meaning on its own. You hand it any rectangle; the lay
 
 ## Text leads; the image earns its place.
 
-Replace the bg image below with your own asset — any aspect. The layout reads its shape and resolves the composition for you (a floated card, a full-height column, a full-bleed cover). Name a composition (`image spotlight`, `image gallery`, …) only to override.
+Swap the bg image below for your own asset — any aspect. The layout reads its shape and resolves the composition for you (a floated card, a full-height column, a full-bleed cover). Name a composition (`image spotlight`, `image gallery`, …) only to override.
 
-![bg](your-image.jpg)
+![bg](sample-photo-wide.svg)
 ```
 
 ## Slots
