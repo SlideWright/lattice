@@ -49,6 +49,18 @@ in patch versions.
   `examples/adaptive-sizing.md`. Landscape output is byte-identical. See
   `engineering/decisions/2026-06-18-component-adaptive-sizing.md`.
 
+### Fixed
+
+- **Playground preview no longer freezes on iOS after opening a settings sheet.**
+  On the /playground (Workbench), opening **Galleries** or **Deck setup** and then
+  closing it left the live preview unscrollable on iOS Safari until focus changed
+  or ~10s passed. The panels are shadcn **Sheets** (Radix Dialog) and defaulted to
+  `modal`, which engages `react-remove-scroll`'s body scroll-lock — its non-passive
+  `touchmove` blocker lingers on iOS after close. Both sheets are now non-modal
+  (`modal={false}` + a new opt-out `overlay` prop on `ui/sheet.tsx`), so the page is
+  never scroll-locked and the preview stays live while you edit. The Drawing Board
+  (vanilla, no Radix) was never affected. See `engineering/gotchas.md`.
+
 ### Changed
 
 - **The concept page’s “The lattice” section is now an explorable 3D-CSS graph.**

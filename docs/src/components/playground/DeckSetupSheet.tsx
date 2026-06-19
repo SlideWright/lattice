@@ -58,15 +58,20 @@ export function DeckSetupSheet({
 		[palettes, finishes],
 	);
 
+	// modal={false} + overlay={false}: a non-modal side sheet over a LIVE preview.
+	// A modal sheet engages react-remove-scroll's body scroll-lock, which lingers on
+	// iOS Safari after close and freezes the preview until focus changes (see
+	// engineering/gotchas.md). Non-modal keeps the preview scrollable and lets you
+	// watch it update as you change front matter.
 	return (
-		<Sheet open={open} onOpenChange={setOpen}>
+		<Sheet open={open} onOpenChange={setOpen} modal={false}>
 			<SheetTrigger asChild>
 				<Button variant="outline" size="sm" aria-label="Deck setup" title="Deck setup — front matter for this deck">
 					<Settings className={configured ? 'text-primary' : undefined} />
 					<span className="hidden sm:inline">Deck setup</span>
 				</Button>
 			</SheetTrigger>
-			<SheetContent className="w-[360px] max-w-[88vw] gap-0 overflow-y-auto">
+			<SheetContent overlay={false} className="w-[360px] max-w-[88vw] gap-0 overflow-y-auto">
 				<SheetHeader>
 					<SheetTitle className="font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground">
 						Deck setup
