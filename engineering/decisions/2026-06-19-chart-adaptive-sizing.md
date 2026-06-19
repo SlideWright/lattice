@@ -96,13 +96,14 @@ other sequential charts reuse.
   `funnel.transform.js`.
 - **`roadmap`** ⏭ *(Phase 4, render-time)* — table / `.horizons` hybrid; the
   kernel should select the transposed `.horizons` form for tall boxes.
-- **`piechart` / `radar` / `quadrant` / `map`** ⏭ *(Phase 4, render-time)* — **CSS
-  cannot reflow these.** Per `2026-06-13-svg-native-legend.md`, the dial/plot **and
-  its legend share ONE `<svg>` viewBox** and scale as a single unit (pie `0 0 viewW
-  viewH`, radar `300×300`, quadrant `420×320`) — the legend is SVG geometry, not an
-  HTML sibling, so "chart-above-legend" can only be done by the kernel emitting a
+- **`piechart` / `radar` / `quadrant` / `map`** ✅ *(Phase 4, render-time — see §9)* —
+  **CSS cannot reflow these.** Per `2026-06-13-svg-native-legend.md`, the dial/plot
+  **and its legend share ONE `<svg>` viewBox** and scale as a single unit (pie `0 0
+  viewW viewH`, radar `300×300`, quadrant `420×320`) — the legend is SVG geometry, not
+  an HTML sibling, so "chart-above-legend" can only be done by the kernel emitting a
   *tall* viewBox (legend below the dial). Same class as `funnel`. **(This corrects
-  the original Phase 3 plan, which assumed a CSS-reflowable HTML legend.)**
+  the original Phase 3 plan, which assumed a CSS-reflowable HTML legend.)** Built as the
+  portrait **legend-below** layout in `svg-legend.js` (§9).
 - **`gantt` / `journey`** ⏭ *(Phase 4)* — Mermaid LR → TB direction-switch.
 - **`state-chart`** ⏭ *(Phase 4)* — SVG graph; graceful center + fill, revisit if a
   real reflow emerges. **`word-cloud`** already fills any aspect (no change).
@@ -174,3 +175,56 @@ axis for this problem.
 stays side-by-side on a 9:19.5 mobile (text-left / image-right both ~540px wide),
 crushing the text panel. The fix is a portrait box-local *reflow* — stack the image
 over the text — not a padding tweak; tracked here for a later pass.
+
+## 9. Legend-below for the keyed charts — ✅ built (#445)
+
+`piechart` / `radar` / `quadrant` / `map` bake the diagram **and** a right-rail
+legend into ONE wide viewBox via `buildSvgLegend` (`svg-legend.js`). On a portrait
+deck that wide unit letterboxes. The fix is a portrait **legend-below** layout —
+diagram on top, legend stacked beneath, both centered — emitted at render time
+(the orientation thread from §7 is already merged and read by the kernel).
+
+**Why it was the biggest slice (a focused pass, not an end-of-session rush):** it's
+a redesign of the shared legend keystone plus a caller-contract change.
+
+What shipped:
+- `buildSvgLegend({ …, orientation })`. **Landscape path stays byte-identical** —
+  a branch so the existing right-rail code runs untouched when `orientation !==
+  'portrait'` (guarded by golden-diff + `svg-legend.test.js` byte-identity assertions
+  with the per-call spine id normalized).
+- **Contract change:** the builder returns a new **`diagramDx`** (horizontal offset).
+  All four callers changed `transform="translate(0 ${dy})"` → `translate(${dx} ${dy})`
+  (`buildPieChart` in `chart-family.js` + the `radar`/`quadrant`(cohort)/`map`
+  `.transform.js` kernels). `dx` defaults to `0`, so landscape is unchanged.
+- **Portrait geometry** (`buildPortrait`): the wrap budget (`PORTRAIT_LABEL_COL_R`)
+  widens — the label uses the full width below, not a narrow rail, so the measurement
+  branches too. `viewW = max(diagramRight + 2·diagramPadX, legendBlockW)`;
+  `diagramDx = (viewW − diagramRight)/2`; `diagramDy` = a small top margin; the legend
+  block is centered below at `y = diagramHeight + diagramDy + gap`;
+  `viewH = diagramDy + diagramHeight + gap + stackH + margin`; the spine rotates to a
+  **horizontal** accent rule between the diagram and the key. The row-emit + a11y
+  `<desc>` are shared (`emitRows` / `buildDesc`) so a row reads identically in either
+  orientation — only the anchors and start-y differ.
+- **`diagramPadX` (a real-implementation finding).** Radar's axis labels are anchored
+  at `R + labelGap` and spill PAST its 300-wide box; the landscape right rail absorbs
+  that overflow, but portrait has no rail, so "Geometry" clipped at the viewBox edge.
+  Added an optional portrait-only `diagramPadX` that reserves symmetric side room and
+  re-centers the diagram; radar passes `PORTRAIT_LABEL_PAD = 64`, the other three pass
+  `0` (their content fits `[0, diagramRight]`). Caught by looking at the render, fixed
+  before extending past the piechart proof.
+- **`adapt.families` — deliberately NOT set** on these four. That field is the
+  box-local `@container` CSS contract (adapts to the *occupied* box, incl. a nested
+  cell). These charts are render-time, **deck-orientation keyed** — exactly like
+  `funnel`, which carries no `adapt.families`. Their manifests already omit an
+  `orientation` restriction (= "both"), and that is now genuinely honored. Setting a
+  box-family list would over-claim a nested-cell reflow they can't do.
+
+Verified: all four at `size: story` (portrait) in dark (`indaco-dark`) + light
+(`indaco`) — diagram on top, key stacked below — and landscape byte-identical (unit
+byte-identity assertions + the full suite green). Export sign-off taken on the
+piechart proof before extending to `radar`/`quadrant`/`map`. Maker-checker run over
+the keystone diff (blast radius across four charts). Demo deck:
+`examples/legend-below-portrait.md` (+ committed `.pdf`).
+
+Sequencing followed: `svg-legend` below-mode + `piechart` as the proof → sign-off →
+`radar`/`quadrant`/`map`.

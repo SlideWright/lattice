@@ -65,6 +65,35 @@ describe('chart-family.applyToDom', () => {
       'three legend swatches');
   });
 
+  test('piechart: portrait section → legend-below (diagram offset by a non-zero dx, taller viewBox)', () => {
+    // The preview/export parity guard for §9: applyToDom is the runtime/preview
+    // path, and it must read data-orientation and emit the SAME portrait
+    // composition the export path bakes (the §7 runtime-ordering footgun). A
+    // landscape pie centers its diagram at translate(0 …); portrait shifts it.
+    const make = (orientation) => {
+      const doc = makeDoc(`
+        <section class="piechart"${orientation ? ` data-orientation="${orientation}"` : ''}>
+          <h2>Mix</h2>
+          <ul><li>A <code>40</code></li><li>B <code>35</code></li><li>C <code>25</code></li></ul>
+        </section>
+      `);
+      chartFamily.applyToDom(doc);
+      return doc.querySelector('section.piechart .piechart-svg');
+    };
+    const land = make();
+    const port = make('portrait');
+    const vb = (svg) => svg.getAttribute('viewBox').split(/\s+/).map(Number);
+    const [, , lW, lH] = vb(land);
+    const [, , pW, pH] = vb(port);
+    assert.ok(lW > lH, `landscape pie is wide (${lW}×${lH})`);
+    assert.ok(pH > pW, `portrait pie is tall (${pW}×${pH})`);
+    // Landscape diagram group sits at the left (dx 0); portrait centers it (dx > 0).
+    assert.match(land.querySelector('g').getAttribute('transform'), /^translate\(0 /,
+      'landscape diagram group at translate(0 …)');
+    const pdx = +port.querySelector('g').getAttribute('transform').match(/translate\(([\d.]+) /)[1];
+    assert.ok(pdx > 0, `portrait diagram group is centered (dx=${pdx})`);
+  });
+
   test('radar: builds polygons with per-series colours from the chart spectrum (--catN-hue)', () => {
     const doc = makeDoc(`
       <section class="radar">

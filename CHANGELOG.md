@@ -27,6 +27,18 @@ in patch versions.
 
 ### Added
 
+- **The four keyed charts get a portrait legend-below layout (Phase 4, render-time).**
+  `piechart`, `radar`, cohort `quadrant`, and `map` bake their diagram **and** their
+  legend into one wide SVG viewBox (`svg-legend.js`), so on a portrait deck the whole
+  unit used to letterbox into a short band. The shared legend builder now has a
+  portrait branch — the diagram sits on top, the key stacks centered beneath it with a
+  horizontal accent rule between — keyed on the deck's `data-orientation` stamp. The
+  builder returns a new `diagramDx` (horizontal centering offset) that the four kernels
+  thread into their diagram transform; `radar` reserves extra side room so its axis
+  labels don't clip. **Landscape output is byte-identical** (the right-rail path runs
+  untouched when the deck isn't portrait). See
+  `engineering/decisions/2026-06-19-chart-adaptive-sizing.md` §9 and
+  `examples/legend-below-portrait.md`.
 - **Charts restructure to a tall box — funnel fills the portrait canvas (Phase 4, render-time).**
   Charts whose layout is baked into an SVG viewBox can't be reflowed in CSS, so they
   restructure at *render time*: `funnel` now emits a tall portrait viewBox on a
