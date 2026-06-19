@@ -9048,6 +9048,40 @@ section.roadmap.horizons .row-text.row-empty {
   font-family:var(--font-mono);
 }
 
+/* ── Box-local portrait (placed AFTER the base horizon rules so it wins on
+ * source order at equal specificity) ────────────────────────────────────────
+ * A wide table letterboxes, so on a tall box the kernel auto-selects horizons
+ * (chart-family.js) and the phase cards STACK into a single column down the
+ * page, filling the height. The header collapses to one row (eyebrow · title)
+ * and the workstream rows tighten so a 3–4 phase roadmap fits without overflow.
+ * Keyed on the nearest `lattice` container; landscape (N-across) untouched.
+ * ≤0.9 = tall+strip. 2026-06-19-chart-adaptive-sizing.md §10. */
+@container lattice (aspect-ratio <= 0.9) {
+  section.roadmap.horizons .horizons {
+    grid-template-columns: 1fr;
+    gap: var(--sp-sm);
+    flex: 1 1 auto;
+  }
+  section.roadmap.horizons .horizon-card { padding: var(--sp-sm) var(--sp-md); }
+  section.roadmap.horizons .horizon-head {
+    flex-direction: row;
+    align-items: baseline;
+    gap: var(--sp-sm);
+    margin-bottom: var(--sp-xs);
+    padding-bottom: var(--sp-xs);
+  }
+  section.roadmap.horizons .horizon-title { font-size: var(--fs-body-compact); }
+  section.roadmap.horizons .horizon-rows { gap: var(--sp-xs); }
+  /* Each workstream row collapses to ONE line (LABEL · value) — halves the card
+   * body so 4+ phases stack without overflow. */
+  section.roadmap.horizons .horizon-rows > li {
+    flex-direction: row;
+    align-items: baseline;
+    gap: var(--sp-sm);
+  }
+  section.roadmap.horizons .row-label { flex: 0 0 auto; }
+}
+
 /* ── ROADMAP SWIMLANE — per-workstream track of phase pills ──────────
  * Same source as the default; visual shifts so each row reads as a
  * track. Workstream cell carries a strong lane label on a tinted lane

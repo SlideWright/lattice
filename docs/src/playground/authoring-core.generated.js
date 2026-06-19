@@ -79,12 +79,12 @@ var require_lint_core = __commonJS({
     ]);
     var NUMBER_SLOT_LAYOUTS = Object.freeze(["kpi", "stats"]);
     var LANDSCAPE_ONLY_LAYOUTS = Object.freeze([
-      // gantt, state-chart, and journey all adapt to a tall box now (gantt: CSS
-      // @container label-over-bars; state-chart: vertical default + lr→tb; journey:
-      // a render-time vertical board — stages stacked, tasks as rows, mood washed +
-      // plotted) — see 2026-06-19-chart-adaptive-sizing.md §10.
+      // gantt, state-chart, journey, and roadmap all adapt to a tall box now (gantt:
+      // CSS @container label-over-bars; state-chart: vertical default + lr→tb;
+      // journey: a render-time vertical board; roadmap: the kernel auto-selects the
+      // horizons card form and the cards stack) — see
+      // 2026-06-19-chart-adaptive-sizing.md §10.
       "kanban",
-      "roadmap",
       "compare-code",
       "image",
       "redline"
