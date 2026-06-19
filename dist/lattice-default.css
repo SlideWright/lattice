@@ -4687,6 +4687,31 @@ section.kpi.spotlight > ol > li:not(:first-child) code {
     gap: var(--sp-md);
     align-content: normal;
   }
+  /* Demote the hero CARD to the lead row of a uniform ledger. The wide-grid
+   * briefing hero is a full-width accent box with the supports in its right
+   * column; linearised, that box keeps a dead right half AND eats the vertical
+   * room a short square/portrait frame needs — so the 4th metric clipped. As a
+   * hairline lead row (bigger number, no box) all four metrics read as one ledger
+   * and fit. Scoped away from ops/compliance/trajectory, which are already uniform
+   * grids/cards. (0,3,3) ties the briefing hero rules and wins on source order. */
+  section.kpi.kpi:where(:not(.ops):not(.compliance):not(.trajectory)) > ol > li:nth-child(1) {
+    background: none;
+    border-left: none;
+    border-top: 1.5px solid var(--text-heading);
+    padding: var(--sp-sm) 0;
+  }
+  section.kpi.kpi:where(:not(.ops):not(.compliance):not(.trajectory)) > ol > li:nth-child(1)::after {
+    content: none;
+  }
+  section.kpi.kpi:where(:not(.ops):not(.compliance):not(.trajectory)) > ol > li:nth-child(1) > strong {
+    font-size: var(--fs-h1);
+    line-height: 1;
+  }
+  section.kpi.kpi:where(:not(.ops):not(.compliance):not(.trajectory)) > ol > li:nth-child(1) > ul > li:first-child {
+    font-family: var(--font-body);
+    font-size: var(--fs-body);
+    margin-top: var(--sp-3xs);
+  }
 }
 /* Strip — the tallest/narrowest box (mobile @size; a nested strip cell): shed the
  * status pills, the lowest-priority unit (manifest `adapt.droppable`), so the
