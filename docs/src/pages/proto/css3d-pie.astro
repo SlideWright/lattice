@@ -1,0 +1,289 @@
+---
+// ISOLATED PROTOTYPE — css-3d-on-svg interactive pie (present-mode feel).
+// Self-contained, no site imports → delete this one file to revert.
+// Route: /lattice/proto/css3d-pie/
+//
+// The popover detail is rendered by the REAL chart kernel: we run the same
+// authoring (a slice with a nested sublist) through transformChartSection and
+// inject the emitted <template class="piechart-detail"> blocks. The client
+// script reads them by data-slice — exactly the contract present mode would use.
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+const kernel = require('../../../../lib/components/chart/_chart-family/chart-family.js');
+
+const authoring = `<h2>Where the planning quarter actually went.</h2><ul>
+<li>Deck production <code>46%</code><ul><li>Mostly Figma and slide assembly — the actual deck-tooling work was about a third of this.</li><li>412 hrs · 7 people</li></ul></li>
+<li>Meetings about meetings <code>22%</code><ul><li>The recurring “sync” nobody had the authority to cancel.</li><li>198 hrs</li></ul></li>
+<li>Realigning on priorities <code>18%</code><ul><li>Three reshuffles of the same backlog, each rebranded as a reset.</li><li>162 hrs</li></ul></li>
+<li>Stakeholder management <code>9%</code><ul><li>Explaining the framework to the same five people, again.</li><li>81 hrs</li></ul></li>
+<li>Actually deciding <code>5%</code><ul><li>One offsite. The thing we are, allegedly, here to do.</li><li>45 hrs</li></ul></li>
+</ul>`;
+const rendered = kernel.transformChartSection(authoring, 'piechart', '').html;
+const detailsHtml = (rendered.match(/<div class="piechart-details"[^>]*>[\s\S]*?<\/div>/) || [''])[0];
+---
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Prototype · CSS-3D pie</title>
+<style is:global>
+  :root{
+    --bg:#0a1a2b; --ink:#eef3f8; --muted:#92a4b6;
+    --line:#1d364f; --glass:#0e2138;
+    --serif:"Spectral","Georgia",serif;
+    --mono:ui-monospace,"SF Mono","JetBrains Mono",monospace;
+    --sans:"Outfit",ui-sans-serif,system-ui,"Segoe UI",sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%}
+  body{background:radial-gradient(150% 100% at 50% -20%,#0e2746 0%,var(--bg) 58%);
+    color:var(--ink);font-family:var(--sans);min-height:100vh;display:flex;flex-direction:column}
+
+  .stage-wrap{flex:1;display:flex;flex-direction:column;padding:clamp(20px,4vw,52px)}
+  header{text-align:center;margin-bottom:8px}
+  .eyebrow{font:600 12px/1 var(--mono);letter-spacing:.22em;color:var(--muted);text-transform:uppercase}
+  h1{font:700 clamp(24px,3.4vw,38px)/1.1 var(--serif);margin:12px 0 8px}
+  .sub{font:italic 400 clamp(14px,1.5vw,18px)/1.35 var(--serif);color:#aebfcf;max-width:60ch;margin:0 auto}
+
+  .layout{flex:1;display:flex;align-items:center;justify-content:center;gap:clamp(16px,4vw,52px);
+    flex-wrap:wrap}
+
+  /* the 3D scene — only the perspective + envelope live here */
+  .scene{perspective:1300px;perspective-origin:50% 42%;
+    width:min(46vw,440px);aspect-ratio:1;min-width:280px;
+    display:flex;align-items:center;justify-content:center;touch-action:none;cursor:grab}
+  .scene:active{cursor:grabbing}
+  .disc-svg{width:86%;height:86%;overflow:visible;
+    transform:rotateX(var(--rx,0deg)) rotateZ(var(--rz,0deg));
+    transition:transform .45s cubic-bezier(.22,.61,.36,1);
+    filter:drop-shadow(0 26px 40px rgba(0,0,0,.5))}
+  .scene.live .disc-svg{transition:transform .08s linear}   /* responsive while pointer-driven */
+
+  .wedge{cursor:pointer;transition:transform .32s cubic-bezier(.22,.61,.36,1),opacity .25s ease;
+    transform-box:fill-box;transform-origin:center}
+  .wedge:focus{outline:none}
+  .chart.dim .wedge{opacity:.42}
+  .chart.dim .wedge.active{opacity:1}
+  .wedge.active{filter:brightness(1.12)}
+  .wedge:focus-visible{filter:brightness(1.2);stroke:#eaf2fb;stroke-width:2.6}
+
+  /* legend — plain HTML, mirrors the family; rows cross-light with slices */
+  .legend{display:flex;flex-direction:column;gap:clamp(8px,1.4vw,15px);width:clamp(252px,26vw,330px)}
+  .lrow{display:flex;align-items:center;gap:11px;
+    padding:7px 12px;border-radius:9px;cursor:pointer;transition:background .2s ease;background:transparent}
+  .lrow:hover,.lrow.active{background:#12274180}
+  .sw{width:14px;height:14px;border-radius:4px;flex:none;box-shadow:0 0 0 1px rgba(255,255,255,.14) inset}
+  .llabel{flex:1;font:400 15px/1.2 var(--mono);color:#dde6ef}
+  .lval{margin-left:auto;font:700 16px/1.2 var(--mono);color:#fff;font-variant-numeric:tabular-nums}
+
+  /* the popover — authored detail */
+  .pop{position:fixed;z-index:40;max-width:300px;pointer-events:none;
+    background:linear-gradient(180deg,#102640,#0b1c30);
+    border:1px solid #27466a;border-radius:13px;
+    box-shadow:0 24px 60px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.03) inset;
+    padding:15px 17px;opacity:0;transform:translateY(6px) scale(.98);
+    transition:opacity .18s ease,transform .18s ease}
+  .pop.show{opacity:1;transform:translateY(0) scale(1)}
+  .pop .ptitle{display:flex;align-items:center;gap:9px;font:700 15px/1.2 var(--sans);margin-bottom:2px}
+  .pop .pdot{width:11px;height:11px;border-radius:3px;flex:none;box-shadow:0 0 0 1px rgba(255,255,255,.18) inset}
+  .pop .pval{margin-left:auto;font:700 14px/1 var(--mono);color:#cfe0f2}
+  .pop p{font:400 13.5px/1.45 var(--sans);color:#b9c8d8;margin-top:7px}
+  .pop .pmeta{margin-top:9px;font:600 11px/1 var(--mono);letter-spacing:.05em;color:#7f93a8;text-transform:uppercase}
+
+  .hint{text-align:center;font:500 12px/1 var(--mono);color:#5f7790;padding-bottom:22px}
+  @media (prefers-reduced-motion:reduce){
+    .disc-svg{transition:none!important}
+    .wedge{transition:opacity .2s ease}
+  }
+  @media (max-width:760px){ .legend{min-width:0;width:100%;max-width:360px} }
+</style>
+</head>
+<body>
+  <div class="stage-wrap">
+    <header>
+      <p class="eyebrow">H1 2026 · 1,840 person-hours · present mode</p>
+      <h1>Where the planning quarter actually went.</h1>
+      <p class="sub">Hover or tap a slice for the story behind the number.</p>
+    </header>
+
+    <div class="layout">
+      <div class="scene" id="scene">
+        <svg class="disc-svg" id="disc" viewBox="0 0 200 200" aria-label="Time allocation pie chart"></svg>
+      </div>
+      <div class="legend" id="legend"></div>
+    </div>
+
+    <p class="hint" id="hint">drag / move to tilt · hover a slice for detail — starts flat, snaps back</p>
+  </div>
+
+  <div class="pop" id="pop" role="status" aria-live="polite"></div>
+
+  <!-- REAL kernel output: the per-slice detail <template>s, emitted by
+       transformChartSection. The script reads them by data-slice. -->
+  <div id="kernel-details" hidden set:html={detailsHtml}></div>
+
+<script>
+  // ---- "authored" data: label · value · the sublist detail (kernel would emit this) ----
+  const SLICES = [
+    { label:'Deck production',          value:46, hue:'#2E8BFF',
+      body:'Mostly Figma and slide assembly — the actual deck-tooling work was about a third of this.', meta:'412 hrs · 7 people' },
+    { label:'Meetings about meetings',  value:22, hue:'#FFA630',
+      body:'The recurring “sync” nobody had the authority to cancel.', meta:'198 hrs' },
+    { label:'Realigning on priorities', value:18, hue:'#34D058',
+      body:'Three reshuffles of the same backlog, each rebranded as a reset.', meta:'162 hrs' },
+    { label:'Stakeholder management',   value:9,  hue:'#FF4D6A',
+      body:'Explaining the framework to the same five people, again.', meta:'81 hrs' },
+    { label:'Actually deciding',        value:5,  hue:'#BE5AF2',
+      body:'One offsite. The thing we are, allegedly, here to do.', meta:'45 hrs' },
+  ];
+
+  const NS='http://www.w3.org/2000/svg';
+  const cx=100, cy=100, R=90;
+  const total = SLICES.reduce((s,d)=>s+d.value,0);
+  const disc = document.getElementById('disc');
+  const legend = document.getElementById('legend');
+  const pop = document.getElementById('pop');
+  const scene = document.getElementById('scene');
+  const chart = disc; chart.classList.add('chart');
+
+  // defs: per-wedge radial dome (hub→rim), matching the family's solid-area finish
+  const defs = document.createElementNS(NS,'defs');
+  SLICES.forEach((d,i)=>{
+    const g=document.createElementNS(NS,'radialGradient');
+    g.setAttribute('id',`w${i}`); g.setAttribute('gradientUnits','userSpaceOnUse');
+    g.setAttribute('cx',cx); g.setAttribute('cy',cy); g.setAttribute('r',R);
+    g.innerHTML =
+      `<stop offset="0%"  stop-color="${mix(d.hue,42)}"/>`+
+      `<stop offset="62%" stop-color="${mix(d.hue,72)}"/>`+
+      `<stop offset="100%" stop-color="${mix(d.hue,90)}"/>`;
+    defs.appendChild(g);
+  });
+  disc.appendChild(defs);
+  function mix(hue,pct){ return `color-mix(in oklab, ${hue} ${pct}%, #0a1a2b)`; }
+
+  // build wedges + remember each slice's bisector (for the lift) and centroid (for the popover)
+  let cumul=0;
+  const meta=[];
+  SLICES.forEach((d,i)=>{
+    const a0=(cumul/total)*2*Math.PI; cumul+=d.value; const a1=(cumul/total)*2*Math.PI;
+    const large=(a1-a0)>Math.PI?1:0;
+    const p1=[cx+R*Math.sin(a0), cy-R*Math.cos(a0)];
+    const p2=[cx+R*Math.sin(a1), cy-R*Math.cos(a1)];
+    const path=document.createElementNS(NS,'path');
+    path.setAttribute('d',`M${cx},${cy} L${p1[0].toFixed(2)},${p1[1].toFixed(2)} A${R},${R} 0 ${large},1 ${p2[0].toFixed(2)},${p2[1].toFixed(2)} Z`);
+    path.setAttribute('fill',`url(#w${i})`);
+    path.setAttribute('stroke','#0a1a2b'); path.setAttribute('stroke-width','1.4'); path.setAttribute('stroke-linejoin','round');
+    path.setAttribute('class','wedge'); path.setAttribute('tabindex','0');
+    path.setAttribute('role','button');
+    path.setAttribute('aria-label',`${d.label}, ${d.value} percent. ${d.body}`);
+    path.dataset.slice=i;
+    disc.appendChild(path);
+    const mid=(a0+a1)/2;
+    meta.push({ bis:[Math.sin(mid),-Math.cos(mid)] });
+  });
+  // shared dome sheen on top
+  const sheen=document.createElementNS(NS,'circle');
+  sheen.setAttribute('cx',cx); sheen.setAttribute('cy',cy); sheen.setAttribute('r',R);
+  sheen.setAttribute('fill','url(#sheen)'); sheen.setAttribute('pointer-events','none');
+  const sg=document.createElementNS(NS,'radialGradient'); sg.setAttribute('id','sheen');
+  sg.setAttribute('cx','50%'); sg.setAttribute('cy','42%'); sg.setAttribute('r','62%');
+  sg.innerHTML=`<stop offset="0%" stop-color="#fff" stop-opacity=".16"/><stop offset="38%" stop-color="#fff" stop-opacity=".03"/><stop offset="60%" stop-color="#000" stop-opacity="0"/><stop offset="100%" stop-color="#000" stop-opacity=".28"/>`;
+  defs.appendChild(sg); disc.appendChild(sheen);
+
+  // legend rows
+  SLICES.forEach((d,i)=>{
+    const row=document.createElement('div'); row.className='lrow'; row.dataset.slice=i; row.tabIndex=0;
+    row.innerHTML=`<span class="sw" style="background:${mix(d.hue,80)}"></span><span class="llabel">${d.label}</span><span class="lval">${d.value}%</span>`;
+    legend.appendChild(row);
+  });
+
+  // ---- per-slice activation: lift the wedge, dim the rest, show the popover ----
+  const wedges=[...disc.querySelectorAll('.wedge')];
+  const rows=[...legend.querySelectorAll('.lrow')];
+  let active=-1;
+  function activate(i, evt){
+    active=i; chart.classList.add('dim');
+    wedges.forEach((w,j)=>{
+      const on=j===i; w.classList.toggle('active',on);
+      const [bx,by]=meta[j].bis;
+      w.style.transform= on ? `translate(${bx*7}px,${by*7}px)` : 'translate(0,0)';
+    });
+    rows.forEach((r,j)=>r.classList.toggle('active',j===i));
+    showPop(i);
+  }
+  function clearActive(){
+    active=-1; chart.classList.remove('dim');
+    wedges.forEach(w=>{w.classList.remove('active'); w.style.transform='translate(0,0)';});
+    rows.forEach(r=>r.classList.remove('active'));
+    pop.classList.remove('show');
+  }
+  // detail comes from the REAL kernel output: <template class="piechart-detail"
+  // data-slice="i"> holds the authored sublist's <li>s. First li → body, rest → meta.
+  function kernelDetail(i){
+    const t=document.querySelector(`#kernel-details template.piechart-detail[data-slice="${i}"]`);
+    if(!t) return {body:'',meta:''};
+    const lis=[...t.content.querySelectorAll('li')].map(li=>li.innerHTML.trim());
+    return { body: lis[0]||'', meta: lis.slice(1).join(' · ') };
+  }
+  function showPop(i){
+    const d=SLICES[i]; const det=kernelDetail(i);
+    pop.innerHTML=`<div class="ptitle"><span class="pdot" style="background:${mix(d.hue,80)}"></span>${d.label}<span class="pval">${d.value}%</span></div>`+
+      (det.body?`<p>${det.body}</p>`:'')+(det.meta?`<div class="pmeta">${det.meta}</div>`:'');
+    pop.classList.add('show');
+    if(innerWidth<=760){                                      // mobile: pin as a bottom sheet
+      pop.style.left='12px'; pop.style.right='12px'; pop.style.width='auto';
+      pop.style.top='auto'; pop.style.bottom='16px'; pop.style.maxWidth='none';
+      return;
+    }
+    pop.style.right='auto'; pop.style.bottom='auto'; pop.style.width=''; pop.style.maxWidth='';
+    const r=wedges[i].getBoundingClientRect();
+    let x=r.left+r.width/2 - pop.offsetWidth/2;
+    let y=r.top - pop.offsetHeight - 14;
+    if(y<70) y=r.bottom+14;                                   // flip below if it would hit the header
+    y=Math.max(70,Math.min(y, innerHeight-pop.offsetHeight-12)); // keep below header, inside viewport
+    x=Math.max(12,Math.min(x, innerWidth-pop.offsetWidth-12));   // clamp to viewport
+    pop.style.left=x+'px'; pop.style.top=y+'px';
+  }
+
+  wedges.forEach(w=>{
+    const i=+w.dataset.slice;
+    w.addEventListener('pointerenter',()=>activate(i));
+    w.addEventListener('focus',()=>activate(i));
+    w.addEventListener('keydown',e=>{ if(e.key==='Escape'){ clearActive(); w.blur(); } });
+  });
+  rows.forEach(r=>{
+    const i=+r.dataset.slice;
+    r.addEventListener('pointerenter',()=>activate(i));
+    r.addEventListener('focus',()=>activate(i));
+  });
+  scene.addEventListener('pointerleave',()=> { if(active>=0 && !pointerDown) clearActive(); });
+  legend.addEventListener('pointerleave',()=> { if(active>=0 && !pointerDown) clearActive(); });
+
+  // ---- restrained tilt: clamped pointer-follow, damped, snaps back to flat ----
+  const reduce = matchMedia('(prefers-reduced-motion:reduce)').matches;
+  const MAXX=11, MAXZ=8;          // the envelope — small on purpose
+  let tx=0,tz=0,curx=0,curz=0,pointerDown=false;
+  function setTarget(e){
+    const r=scene.getBoundingClientRect();
+    const nx=((e.clientX-r.left)/r.width-0.5);
+    const ny=((e.clientY-r.top)/r.height-0.5);
+    tx=Math.max(-MAXX,Math.min(MAXX,-ny*2*MAXX));
+    tz=Math.max(-MAXZ,Math.min(MAXZ, nx*2*MAXZ));
+  }
+  scene.addEventListener('pointerdown',e=>{ pointerDown=true; scene.classList.add('live'); scene.setPointerCapture?.(e.pointerId); setTarget(e); });
+  scene.addEventListener('pointermove',e=>{ if(pointerDown||e.pointerType==='mouse'){ scene.classList.add('live'); setTarget(e); } });
+  function release(){ pointerDown=false; scene.classList.remove('live'); tx=0; tz=0; if(active>=0) clearActive(); }
+  scene.addEventListener('pointerup',release);
+  scene.addEventListener('pointerleave',()=>{ if(!pointerDown){ tx=0; tz=0; } });
+  if(!reduce){
+    (function loop(){
+      curx+=(tx-curx)*0.12; curz+=(tz-curz)*0.12;
+      disc.style.setProperty('--rx',curx.toFixed(2)+'deg');
+      disc.style.setProperty('--rz',curz.toFixed(2)+'deg');
+      requestAnimationFrame(loop);
+    })();
+  }
+</script>
+</body>
+</html>

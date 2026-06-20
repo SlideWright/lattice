@@ -65,6 +65,34 @@ describe('chart-family.applyToDom', () => {
       'three legend swatches');
   });
 
+  test('piechart: wedges carry data-slice; a nested sublist becomes an inert detail template', () => {
+    const doc = makeDoc(`
+      <section class="piechart">
+        <h2>Mix</h2>
+        <ul>
+          <li>A <code>60</code>
+            <ul><li>The bulk of it.</li><li>120 hrs</li></ul>
+          </li>
+          <li>B <code>40</code></li>
+        </ul>
+      </section>
+    `);
+    chartFamily.applyToDom(doc);
+    const sec = doc.querySelector('section.piechart');
+    // every wedge is index-tagged for present-mode binding
+    const wedges = sec.querySelectorAll('.piechart-svg .wedge[data-slice]');
+    assert.equal(wedges.length, 2, 'both wedges tagged with data-slice');
+    // the label is clean — the nested sublist did NOT pollute it
+    const labels = [...sec.querySelectorAll('.chart-key-label')].map(n => n.textContent.trim());
+    assert.ok(labels.includes('A') && labels.includes('B'), `clean labels, got ${labels.join('|')}`);
+    // detail payload rides an inert <template> (renders nothing → PDF byte-identical)
+    const tpl = sec.querySelector('.piechart-details[hidden] template.piechart-detail[data-slice="0"]');
+    assert.ok(tpl, 'detail template emitted for the slice with a sublist');
+    assert.match(tpl.innerHTML, /120 hrs/, 'sublist content captured in the template');
+    assert.equal(sec.querySelectorAll('template.piechart-detail').length, 1,
+      'only the slice with a sublist gets a detail template');
+  });
+
   test('piechart: portrait section → legend-below (diagram offset by a non-zero dx, taller viewBox)', () => {
     // The preview/export parity guard for §9: applyToDom is the runtime/preview
     // path, and it must read data-orientation and emit the SAME portrait

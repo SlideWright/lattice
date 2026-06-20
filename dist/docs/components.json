@@ -4949,6 +4949,11 @@
           "selector": "ul > li",
           "required": true,
           "description": "One li per slice: label text then a trailing inline-code value pill, e.g. - Marketing `40%` (slices are drawn proportionally to the values)."
+        },
+        "detail": {
+          "selector": "li > ul",
+          "required": false,
+          "description": "Optional nested sublist under a slice → present-mode popover. The kernel keeps the label/value as-is, tags each wedge `<path>` with `data-slice`, and emits the sublist as an inert `<template class=\"piechart-detail\">` — zero-footprint in print, so the exported PDF/SVG is byte-identical and a pie without sublists is unchanged. Rendering the detail IN the static PDF is a separate, export-gated decision (see the css-3d-charts decision note)."
         }
       },
       "skeleton": "<!-- _class: piechart donut -->\n\n`Eyebrow · context`\n\n## What the breakdown shows.\n\n- First slice `40%`\n- Second slice `30%`\n- Third slice `20%`\n- Fourth slice `10%`\n",

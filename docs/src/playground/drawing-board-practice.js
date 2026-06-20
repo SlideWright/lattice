@@ -24,6 +24,7 @@ import { createThemeFetcher } from '../lib/theme-fetch.ts';
 // raw CJS module; see tools/build-authoring-core.js.
 import { notesCore } from './authoring-core.generated.js';
 import { A11Y_DEFS, KATEX_URL, MERMAID_URL, splitSections } from './deck-preview.js';
+import { createChartInteract } from './drawing-board-chart-interact.js';
 import { isCapableTier } from './drawing-board-chat.js';
 import { initPracticeTour } from './drawing-board-practice-tour.js';
 import { createRehearsalPlanner, metasFromSections, metasFromSource, overBeat } from './drawing-board-rehearsal.js';
@@ -191,6 +192,7 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
   let elCoach; // the single coaching pill (ambient guidance OR a timed beat)
   let runEl; // the .db-pv-run container — carries `chrome-show` so the top bar auto-hides in immersive
   let layer; // pointer-capture overlay over the stage — swipe, tap-to-reveal, and the edge arrows
+  let chartInteract = null; // parent-hosted per-slice chart detail (interactive charts only)
   let elEdgePrev; // overlay prev arrow (auto-hiding)
   let elEdgeNext; // overlay next arrow (auto-hiding)
   let elAuto; // the top-bar Autoplay toggle (replaces the old centre play button)
@@ -210,6 +212,7 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
     // before open() rebuilds the chooser), and the handles below now point at
     // detached nodes — null them so nothing stale is touched.
     plan = null;
+    if (chartInteract) { chartInteract.destroy(); chartInteract = null; }
     layer = elAuto = elFs = elReady = frame = runEl = null;
     elRead = null;
     exitFs();
@@ -229,6 +232,9 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
     // tour, arrows step it) — don't also exit practice or move the deck underneath.
     // driver.js flags an active tour with `driver-active` on <body> (not <html>).
     if (document.body.classList.contains('driver-active')) return;
+    // A chart detail popover catches Esc first (parity with present); handleKey
+    // only consumes Esc when one is open, so a bare Esc still steps out below.
+    if (e.key === 'Escape' && chartInteract?.handleKey(e)) { e.preventDefault(); return; }
     // Esc steps out one level: leave full screen first, then (next press) exit.
     if (e.key === 'Escape') { if (fsElement()) { e.preventDefault(); exitFs(); } else { close(); } return; }
     if (!plan) return; // chooser screen: only Esc is live
@@ -237,6 +243,8 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
       if (e.key === ' ' || e.key === 'Enter' || e.key === 'ArrowRight') { e.preventDefault(); beginRun(); }
       return;
     }
+    // Interactive charts get first crack at number keys (reveal slice) / 0 (clear).
+    if (chartInteract?.handleKey(e)) { e.preventDefault(); showControls(); return; }
     if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); go(idx + 1); }
     else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(idx - 1); }
     else if (e.key === 'p' || e.key === 'P' || e.key === 'k') { e.preventDefault(); togglePlay(); }
@@ -470,6 +478,7 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
     refreshChrome();
     refreshTick();
     showControls(); // surface where you are on every move (re-arms the auto-hide while playing)
+    if (chartInteract) chartInteract.onSlide(idx);
     // Read-aloud rides navigation: when armed, narrate the new slide (aborting the
     // old one); otherwise make sure no audio bleeds across the transition.
     if (reading) speakSlide();
@@ -684,7 +693,10 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
     frame.setAttribute('title', 'Practice slide');
     // Re-assert the current slide once the iframe's message listener is live — a
     // fast early Next/Arrow before load would otherwise leave the stage on slide 0.
-    frame.addEventListener('load', () => { try { frame.contentWindow.postMessage({ pv: idx }, '*'); } catch { /* cross-origin guard */ } });
+    frame.addEventListener('load', () => {
+      try { frame.contentWindow.postMessage({ pv: idx }, '*'); } catch { /* cross-origin guard */ }
+      if (chartInteract) chartInteract.onSlide(idx);
+    });
     const coach = el('div', 'db-pv-coach');
     elCoach = el('div', 'db-pv-coach-pill'); elCoach.hidden = true;
     coach.append(elCoach);
@@ -716,6 +728,11 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
     );
     elReady.append(readyCard);
     stage.append(frame, coach, layer, elReady);
+    // Exploring a chart pauses autoplay so it doesn't advance off the detail.
+    chartInteract = createChartInteract({
+      stage, getFrame: () => frame,
+      onReveal: () => { if (playing) togglePlay(); },
+    });
 
     // The bottom HUD: a calm, legible readout in three zones — elapsed (dominant) ·
     // this slide's countdown · pace. No nav buttons live here anymore; advancing is

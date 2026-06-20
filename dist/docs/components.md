@@ -4368,6 +4368,7 @@ Use for part-to-whole breakdowns with three to six slices. Add the `donut` modif
 |---|---|---|---|
 | `title` | `h2` | yes | Slide heading framing the breakdown. |
 | `slices` | `ul > li` | yes | One li per slice: label text then a trailing inline-code value pill, e.g. - Marketing `40%` (slices are drawn proportionally to the values). |
+| `detail` | `li > ul` | no | Optional nested sublist under a slice → present-mode popover. The kernel keeps the label/value as-is, tags each wedge `<path>` with `data-slice`, and emits the sublist as an inert `<template class="piechart-detail">` — zero-footprint in print, so the exported PDF/SVG is byte-identical and a pie without sublists is unchanged. Rendering the detail IN the static PDF is a separate, export-gated decision (see the css-3d-charts decision note). |
 
 #### Anatomy
 

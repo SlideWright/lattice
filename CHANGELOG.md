@@ -57,6 +57,27 @@ in patch versions.
   `engineering/decisions/2026-06-19-chart-adaptive-sizing.md` §10 and
   `examples/portrait-roadmap.md`.
 
+- **`piechart` slices can carry per-slice detail for a present-mode popover.** A slice
+  may now nest a sublist (`- Slice \`46%\`` then an indented `  - …`); the kernel keeps
+  the label/value exactly as before and emits the sublist as an **inert
+  `<template class="piechart-detail" data-slice="i">`** alongside the figure, and tags
+  every wedge `<path>` with `data-slice="i"`. Both are zero-footprint in print — the
+  exported PDF/SVG is **byte-identical**, and a deck without sublists is unchanged.
+  Authoring + the (still-open, export-gated) print-fallback question:
+  `lib/components/chart/piechart/piechart.docs.md` › "Per-slice detail".
+
+- **Present & Practice reveal per-slice chart detail interactively.** In the Drawing
+  Board's present and practice modes, an interactive chart slice now lets you reveal a
+  slice's detail in a floating popover — by **hovering it** (mouse), **tapping it**
+  (touch), or pressing its **number key** (1–9 → slice n, 0/Esc clears); the active
+  wedge lifts, the rest dim, with a restrained interaction-coupled tilt that settles
+  flat. It's parent-hosted so the slide iframe stays a pure paint surface (the exported
+  PDF is untouched): the chart owns only its own rectangle, while swipe / edge-arrows /
+  keyboard keep driving navigation. Practice pauses autoplay while you explore. New
+  module `docs/src/playground/drawing-board-chart-interact.js`; the architecture +
+  why-iframe rationale live in
+  `engineering/decisions/2026-06-19-css-3d-charts-feasibility.md`.
+
 - **`journey` adapts to a portrait box with a vertical board (Phase 4 — completes it).**
   On a tall deck the landscape journey (horizontal stages, dangling mood faces)
   letterboxed into a band. Portrait now emits a purpose-built vertical board: stages
