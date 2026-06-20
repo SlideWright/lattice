@@ -3248,14 +3248,17 @@ section.image {
   --img-lift: 0.6cqi 0.8cqi 0 -0.1cqi color-mix(in oklab, var(--text-heading) 13%, transparent);
   --img-hairline: inset 0 0 0 1px color-mix(in oklab, var(--text-heading) 9%, transparent);
   /* Representative aspect per bucket — the floated `clean` card takes this shape
-   * so a real photo of that bucket cover-fills it with almost no crop. */
+   * so a real photo of that bucket cover-fills it with almost no crop.
+   * `--img-aspect-n` is the same ratio as a unitless NUMBER, for the `gallery`
+   * frame's fit-to-aspect calc (a length can't be divided by a ratio token). */
   --img-aspect: 4 / 3;
+  --img-aspect-n: 1.333;
 }
-section.image[data-img-bucket="pano"]   { --img-aspect: 24 / 9; }
-section.image[data-img-bucket="wide"]   { --img-aspect: 16 / 10; }
-section.image[data-img-bucket="square"] { --img-aspect: 1 / 1; }
-section.image[data-img-bucket="tall"]   { --img-aspect: 3 / 4; }
-section.image[data-img-bucket="column"] { --img-aspect: 2 / 5; }
+section.image[data-img-bucket="pano"]   { --img-aspect: 24 / 9;  --img-aspect-n: 2.667; }
+section.image[data-img-bucket="wide"]   { --img-aspect: 16 / 10; --img-aspect-n: 1.6; }
+section.image[data-img-bucket="square"] { --img-aspect: 1 / 1;   --img-aspect-n: 1; }
+section.image[data-img-bucket="tall"]   { --img-aspect: 3 / 4;   --img-aspect-n: 0.75; }
+section.image[data-img-bucket="column"] { --img-aspect: 2 / 5;   --img-aspect-n: 0.4; }
 
 /* Image chrome (page number / footer) would fight a full-bleed photo — hide it;
  * the image IS the slide. */
@@ -3507,37 +3510,29 @@ section.image[data-img-composition="gallery"] {
   padding: 6cqh 6cqi;
   background: var(--img-matte);
 }
-/* Height-bound by default (square / tall read upright); width-bound for the wide
- * buckets so a panorama doesn't overrun the wall. */
+/* The PHOTO box is the largest box of the image's EXACT aspect that fits the
+ * wall: width = min(wall width, wall height × aspect), height from aspect-ratio.
+ * `box-sizing: content-box` makes aspect-ratio govern the PHOTO box, and the mat
+ * is a uniform `border` added OUTSIDE it — so the photo fills its box edge to
+ * edge (no side-bars, ever) and the mat stays even on all four sides.
+ * box-shadow stack: inner bevel at the photo edge · frame line outside the mat ·
+ * hard PDF-safe lift. */
 section.image[data-img-composition="gallery"] .lattice-bg {
   position: relative;
   inset: auto;
+  box-sizing: content-box;
+  width: min(76cqi, 52cqh * var(--img-aspect-n));
   aspect-ratio: var(--img-aspect);
-  height: 60cqh;
-  width: auto;
-  max-width: 78cqi;
-  box-sizing: border-box;
-  padding: 3cqi;
-  background-origin: content-box;
-  background-clip: content-box;
+  height: auto;
+  border: 2.8cqi solid var(--bg);
+  background-origin: padding-box;
+  background-clip: padding-box;
   background-size: contain;
   background-color: var(--bg);
-  border: 1px solid var(--text-heading);
-  box-shadow: 0.7cqi 0.9cqi 0 -0.15cqi color-mix(in oklab, var(--text-heading) 17%, transparent);
-}
-section.image[data-img-composition="gallery"][data-img-bucket="wide"] .lattice-bg,
-section.image[data-img-composition="gallery"][data-img-bucket="pano"] .lattice-bg {
-  height: auto;
-  width: 78cqi;
-  max-height: 64cqh;
-}
-/* The bevel hairline, just inside the mat. */
-section.image[data-img-composition="gallery"] .lattice-bg::before {
-  content: "";
-  position: absolute;
-  inset: 2cqi;
-  border: 1px solid var(--border);
-  pointer-events: none;
+  box-shadow:
+    inset 0 0 0 1px var(--border),
+    0 0 0 1px var(--text-heading),
+    0.7cqi 0.9cqi 0 -0.15cqi color-mix(in oklab, var(--text-heading) 17%, transparent);
 }
 section.image[data-img-composition="gallery"] .image-text {
   flex: 0 0 auto;
