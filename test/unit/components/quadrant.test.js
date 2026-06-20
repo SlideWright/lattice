@@ -459,3 +459,44 @@ describe('quadrant', () => {
     assert.match(html, /class="chart-eyebrow"/);
   });
 });
+
+describe('quadrant — per-item detail (interactive reveal substrate)', () => {
+  // An item may carry an optional 3rd-level nested sublist (the x,y are inline
+  // pills, so this level is free) — captured as present-mode detail (inert
+  // <template>) + a speaker-note fallback, byte-identical export.
+  const UL_DETAIL = (
+    '<ul>' +
+      '<li>Strategic Bets<ul>' +
+        '<li>Scoring model v2 <code>3, 70</code><ul><li>Owner: Platform</li><li>Q3 bet</li></ul></li>' +
+        '<li>Per-team calibration <code>5, 85</code></li>' +
+      '</ul></li>' +
+      '<li>Quick Wins<ul>' +
+        '<li>Weekly brief <code>8, 80</code><ul><li>Already scoped</li></ul></li>' +
+      '</ul></li>' +
+    '</ul>'
+  );
+  const build = (variant) =>
+    buildQuadrant(parseQuadrant(UL_DETAIL), variant, resolveScale(parseQuadrant(UL_DETAIL), 'Effort 0-10 → Reach 0-100'));
+
+  test('a plain quadrant emits no detail payload and no note', () => {
+    const html = buildQuadrant(parseQuadrant(UL_FOUR), 'default', resolveScale(parseQuadrant(UL_FOUR), ''));
+    assert.doesNotMatch(html, /chart-details/);
+    assert.doesNotMatch(html, /<!--/);
+  });
+
+  for (const variant of ['default', 'bubble', 'trail', 'cohort', 'threshold', 'magic']) {
+    test(`${variant}: dot data-mark aligns with the detail templates`, () => {
+      const html = build(variant);
+      const dotMarks = [...html.matchAll(/class="quadrant-(?:dot|bubble|trail-after)"[^>]*data-mark="(\d+)"/g)].map((x) => +x[1]).sort();
+      const tplMarks = [...html.matchAll(/class="chart-detail" data-mark="(\d+)"/g)].map((x) => +x[1]).sort();
+      assert.deepEqual(dotMarks, [0, 1, 2], 'every item dot carries its global mark index');
+      assert.deepEqual(tplMarks, [0, 2], 'only the two detailed items emit a template');
+      assert.match(html, /<!-- /);
+    });
+  }
+
+  test('the detail sublist does not leak into the dot label', () => {
+    const html = build('default');
+    assert.doesNotMatch(html, /<text[^>]*>Owner: Platform</);
+  });
+});

@@ -258,10 +258,12 @@ ${indent}  ${bullet} ${body.trim()}`;
         const which = tokens.includes("us") || tokens.includes("usa") ? "us" : "world";
         const vocab = mapVocab[which];
         if (!vocab) return;
-        for (const raw of slide.split("\n")) {
-          const li = raw.match(/^\s*[-*]\s+(.+)$/);
-          if (!li) continue;
-          const name = li[1].replace(/`[^`]*`\s*$/, "").replace(/[*_]/g, "").trim();
+        const bulletLines = slide.split("\n").map((raw) => ({ raw, m: raw.match(/^(\s*)[-*]\s+(.+)$/) })).filter((x) => x.m);
+        if (!bulletLines.length) return;
+        const baseIndent = Math.min(...bulletLines.map((x) => x.m[1].length));
+        for (const { raw, m: li } of bulletLines) {
+          if (li[1].length > baseIndent) continue;
+          const name = li[2].replace(/`[^`]*`\s*$/, "").replace(/[*_]/g, "").trim();
           if (!name) continue;
           if (vocab.valid.has(norm(name))) continue;
           const suggestion = nearestRegion(name, vocab.names);

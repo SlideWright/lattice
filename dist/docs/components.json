@@ -2661,6 +2661,11 @@
           "selector": "ul > li",
           "required": true,
           "description": "One li per stage, in flow order (widest first). Lead with the stage label, then a trailing inline-code value — `Signups \\`4,800\\``. Commas and units are tolerated; the largest value sets full width. Three to seven stages read best."
+        },
+        "detail": {
+          "selector": "li > ul",
+          "required": false,
+          "description": "Optional nested sublist under a stage. Drives two surfaces from one source (shared with pie/map/quadrant via the chart-family mark-detail substrate): (1) Present/Practice — the kernel tags the stage `<polygon>` with `data-mark` and emits the sublist as an inert `<template class=\"chart-detail\">` the reveal layer reads; (2) the static PDF — the same detail is folded into the slide's speaker note (`Label (value): item · item`) as a Marp-faithful comment that notes-core lifts into the per-slide note channel. The note rides the existing channel, so the chart pixels stay byte-identical. A funnel with no sublists emits no note and is unchanged."
         }
       },
       "skeleton": "<!-- _class: funnel -->\n\n## Where the flow drops off.\n\n- First stage `1000`\n- Second stage `600`\n- Third stage `320`\n- Fourth stage `140`\n",
@@ -4438,6 +4443,11 @@
           "selector": "ul > li",
           "required": true,
           "description": "One li per region (or group). Lead with the name — world (default): full (`Brazil`), ISO (`BR`), alias (`Burma`), or a group (`European Union`, `Sub-Saharan Africa`, `Global South`) that expands to its members; US (`map us`): full (`California`), postal (`CA`), or abbreviation (`Calif.`) — then a trailing inline-code value: `Brazil \\`4.2\\``. In choropleth the value drives the ramp; in highlight it's an optional legend label. Names the basemap can't resolve surface as muted ‘?’ legend rows."
+        },
+        "detail": {
+          "selector": "li > ul",
+          "required": false,
+          "description": "Optional nested sublist under a region. Drives two surfaces from one source (shared with pie/funnel/quadrant via the chart-family mark-detail substrate): (1) Present/Practice — the kernel tags the region `<path>`(s) with `data-mark` (a group shares one index across all its regions) and emits the sublist as an inert `<template class=\"chart-detail\">` the reveal layer reads; (2) the static PDF — the same detail is folded into the slide's speaker note (`Region (value): item · item`) as a Marp-faithful comment that notes-core lifts into the per-slide note channel. The note rides the existing channel, so the chart pixels stay byte-identical. A map with no sublists emits no note and is unchanged."
         }
       },
       "skeleton": "<!-- _class: map -->\n\n## Where the program runs.\n\n- Kenya `4.2`\n- Nigeria `3.1`\n- India `2.8`\n- Brazil `2.2`\n",
@@ -5646,6 +5656,11 @@
           "selector": "ul > li",
           "required": true,
           "description": "One li per item. Format: `Label — x, y[, size]`."
+        },
+        "detail": {
+          "selector": "li > ul > li > ul",
+          "required": false,
+          "description": "Optional 3rd-level nested sublist under an item (the x,y are inline pills, so this level is free). Drives two surfaces from one source (shared with pie/funnel/map via the chart-family mark-detail substrate): (1) Present/Practice — the kernel tags the item's `<circle>`/bubble with `data-mark` (a stable global index across all variants) and emits the sublist as an inert `<template class=\"chart-detail\">` the reveal layer reads; (2) the static PDF — the same detail is folded into the slide's speaker note (`Label: item · item`) as a Marp-faithful comment that notes-core lifts into the per-slide note channel. The note rides the existing channel, so the chart pixels stay byte-identical. A quadrant with no sublists emits no note and is unchanged."
         }
       },
       "skeleton": "<!-- _class: quadrant -->\n\n`Effort 0–10 → Reach 0–100`\n\n## Where to put the next dollar, having spent the last one on a workshop.\n\nEffort estimated in story-points; reach as percent of addressable teams.\n\n- Strategic Bets\n  - Scoring model v2 `3, 70`\n  - Per-team calibration `5, 85`\n- Quick Wins\n  - Weekly signal brief `8, 80`\n  - Snapshot exports `9, 55`\n- Defer\n  - Vendor scoping `2, 30`\n  - Manual recalibration `1, 22`\n- Time Sinks\n  - Custom audit log UI `7, 18`\n  - Bespoke board export `9, 28`\n",
@@ -5920,6 +5935,11 @@
           "selector": "ul > li",
           "required": true,
           "description": "One li per series (option). Format: `Label — v1, v2, v3, v4, …` one number per axis."
+        },
+        "detail": {
+          "selector": "li > ul > li > ul",
+          "required": false,
+          "description": "Optional nested sublist under an AXIS in the first series (radar reveals per-axis — the mark is the axis). For the `quadrant` variant, one level deeper (under each axis within a group). Drives two surfaces from one source (shared with pie/funnel/map/quadrant via the chart-family mark-detail substrate): (1) Present/Practice — the kernel tags the axis label `<text>` with `data-mark` and emits the sublist as an inert `<template class=\"chart-detail\">` the reveal layer reads; (2) the static PDF — the same detail folds into the slide's speaker note (`Axis: item · item`) as a Marp-faithful comment that notes-core lifts into the per-slide note channel. The note rides the existing channel, so the chart pixels stay byte-identical. Detail sublists must use `-`/`*` bullets, not a numbered (`1.`) list. A radar with no sublists emits no note and is unchanged."
         }
       },
       "skeleton": "<!-- _class: radar -->\n\n`Scale · 0–10`\n\n## How we stack up across the buying criteria.\n\n- Lattice\n  - Performance `9`\n  - Pricing `7`\n  - Support `8`\n  - Ecosystem `6`\n  - Security `9`\n- Rival North\n  - Performance `7`\n  - Pricing `8`\n  - Support `6`\n  - Ecosystem `9`\n  - Security `7`\n- Rival West\n  - Performance `6`\n  - Pricing `9`\n  - Support `7`\n  - Ecosystem `8`\n  - Security `8`\n",

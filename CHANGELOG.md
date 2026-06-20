@@ -25,6 +25,19 @@ in patch versions.
 
 ## Unreleased
 
+### Added
+
+- **Per-mark detail on funnel, map, and quadrant charts** — the pie's authored
+  detail pattern, generalized into a shared chart-family substrate
+  (`mark-detail.js`). Author an optional nested sublist under a funnel stage, a
+  map region, or a quadrant item and it drives two surfaces from one source: the
+  mark element is tagged `data-mark` and the detail is emitted as an inert
+  `<template class="chart-detail">` (for the present/practice reveal layer), and
+  the same detail folds into the slide's speaker note as the static-PDF fallback
+  (a PDF text annotation; the chart pixels stay byte-identical). A chart with no
+  sublists is unchanged. See
+  `engineering/decisions/2026-06-20-chart-detail-reveal-family.md`.
+
 ### Changed
 
 - **Adaptivity is now a required, gated manifest declaration.** Every component

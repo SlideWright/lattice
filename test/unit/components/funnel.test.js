@@ -81,8 +81,48 @@ describe('funnel kernel', () => {
 
     test('emits one band per stage, each tagged with its palette index', () => {
       const html = buildFunnel(parseFunnel(ul([['A', '100'], ['B', '50'], ['C', '25']])));
-      const idx = [...html.matchAll(/funnel-band" style="--i:(\d+)"/g)].map((x) => +x[1]);
+      const idx = [...html.matchAll(/funnel-band" data-mark="\d+" style="--i:(\d+)"/g)].map((x) => +x[1]);
       assert.deepEqual(idx, [0, 1, 2]);
+    });
+
+    test('each band carries data-mark aligned with its stage index', () => {
+      const html = buildFunnel(parseFunnel(ul([['A', '100'], ['B', '50'], ['C', '25']])));
+      const marks = [...html.matchAll(/funnel-band" data-mark="(\d+)"/g)].map((x) => +x[1]);
+      assert.deepEqual(marks, [0, 1, 2]);
+    });
+  });
+
+  describe('buildFunnel — per-mark detail (interactive reveal substrate)', () => {
+    // A stage may carry an optional nested sublist — captured as present-mode
+    // detail (inert <template>) + a speaker-note fallback, byte-identical export.
+    const withDetail =
+      '<li>Visitors <code>12000</code><ul><li>Top of funnel</li><li>Organic <code>60%</code></li></ul></li>' +
+      '<li>Paid <code>864</code></li>';
+
+    test('a plain funnel emits no detail payload and no note (byte-identical)', () => {
+      const html = buildFunnel(parseFunnel(ul([['A', '100'], ['B', '50']])));
+      assert.doesNotMatch(html, /chart-details/);
+      assert.doesNotMatch(html, /<!--/);
+    });
+
+    test('a detailed stage emits an inert template keyed by data-mark', () => {
+      const html = buildFunnel(parseFunnel(withDetail));
+      assert.match(html, /<div class="chart-details" hidden>/);
+      assert.match(html, /<template class="chart-detail" data-mark="0">/);
+      // Only the detailed stage gets a template (stage 1 has none).
+      assert.equal((html.match(/class="chart-detail"/g) || []).length, 1);
+    });
+
+    test('the same detail folds into a Marp-faithful speaker-note comment', () => {
+      const html = buildFunnel(parseFunnel(withDetail));
+      assert.match(html, /<!-- Visitors \(12000\): Top of funnel · Organic 60% -->/);
+    });
+
+    test('the nested detail sublist does not leak into a visible text node', () => {
+      const html = buildFunnel(parseFunnel(withDetail));
+      assert.match(html, /<text class="funnel-label" [^>]*>Visitors</);
+      // The detail rides the inert <template> only — never a painted SVG <text>.
+      assert.doesNotMatch(html, /<text[^>]*>Top of funnel</);
     });
 
     test('emits a label and a value text node per stage', () => {

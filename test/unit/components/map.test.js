@@ -282,6 +282,26 @@ describe('map kernel', () => {
     test('non-map slides are never touched', () => {
       assert.equal(findUnknownMapRegions('<!-- _class: list -->\n\n- Brasil\n', vocab).length, 0);
     });
+
+    test('nested per-region detail bullets are NOT linted as regions', () => {
+      // The mark-detail feature lets a region carry an indented sublist; those
+      // bullets are prose, not country names, and must not trip the linter.
+      const deck = '<!-- _class: map world -->\n\n## x\n\n' +
+        '- Kenya `4.2`\n' +
+        '  - Anchor market, 3 hubs\n' +
+        '  - Up 28% YoY\n' +
+        '- Brazil `2.2`\n';
+      assert.equal(findUnknownMapRegions(deck, vocab).length, 0);
+    });
+
+    test('a genuinely wrong top-level region is still caught alongside detail', () => {
+      const deck = '<!-- _class: map world -->\n\n## x\n\n' +
+        '- Wakanda `9`\n' +
+        '  - fictional nation\n';
+      const f = findUnknownMapRegions(deck, vocab);
+      assert.equal(f.length, 1);
+      assert.match(f[0].message, /Wakanda/);
+    });
   });
 
   describe('editDistance + nearestRegion', () => {
@@ -292,6 +312,32 @@ describe('map kernel', () => {
     test('nearest only suggests a genuinely close name', () => {
       assert.equal(nearestRegion('Brazil', ['Brazil', 'Bolivia']), 'Brazil');
       assert.equal(nearestRegion('Zorptania', ['Brazil', 'Japan', 'Kenya']), null);
+    });
+  });
+
+  describe('per-region detail (interactive reveal substrate)', () => {
+    // A row may carry an optional nested sublist — captured as present-mode
+    // detail (inert <template> + speaker-note), byte-identical export.
+    const withDetail =
+      '<li>California <code>4.2</code><ul><li>West coast</li><li>Tech hub <code>hi</code></li></ul></li>' +
+      '<li>Texas <code>3.1</code></li>';
+
+    test('a plain map emits no detail payload and no note', () => {
+      const html = buildMap(parseMap(ul([['California', '4.2'], ['Texas', '3.1']]), BASEMAP), 'choropleth', ['us']);
+      assert.doesNotMatch(html, /chart-details/);
+      assert.doesNotMatch(html, /<!--/);
+    });
+
+    test('the region path carries data-mark and an inert template by index', () => {
+      const html = buildMap(parseMap(withDetail, BASEMAP), 'choropleth', ['us']);
+      assert.match(html, /<path class="map-region[^"]*"[^>]*data-mark="0"/);
+      assert.match(html, /<template class="chart-detail" data-mark="0">/);
+      assert.equal((html.match(/class="chart-detail"/g) || []).length, 1);
+    });
+
+    test('the same detail folds into a Marp-faithful speaker-note comment', () => {
+      const html = buildMap(parseMap(withDetail, BASEMAP), 'choropleth', ['us']);
+      assert.match(html, /<!-- California \(4\.2\): West coast · Tech hub hi -->/);
     });
   });
 });
