@@ -11,7 +11,7 @@ header: "Lattice · image"
 
 `Imagery · Canvas · Prose`
 
-Image as the slide's anchor, with optional text alongside.
+Image as the slide's anchor, with optional text alongside — composition adapts to the asset and the deck.
 
 ---
 
@@ -20,57 +20,81 @@ Image as the slide's anchor, with optional text alongside.
 
 ## Activation is where the trial is won or lost.
 
-Two-thirds of trials that reach the first generated report convert to paid; the ones that stall at workspace setup almost never do. The funnel on the right shows where the drop-off concentrates — in the week-one setup step, not at the price page.
+Two-thirds of trials that reach the first generated report convert to paid; the ones that stall at workspace setup almost never do. Hand the layout any photo — it resolves the composition from the asset's shape.
 
-![bg right](sample-image-landscape.svg)
-
-
----
-
-<!-- _class: image full -->
-<!-- _footer: "Full — image fills the canvas edge to edge · image full" -->
-
-## Full bleed makes the photo the slide.
-
-Text overlays the lower portion on a contrast scrim. Use for openers, closers, or any moment when the image deserves the whole canvas.
-
-![bg](sample-image-landscape.svg)
+![bg](sample-photo-wide.svg)
 
 
 ---
 
-<!-- _class: image contain -->
-<!-- _footer: "Contain — letterboxed for plots and screenshots · image contain" -->
+<!-- _class: image clean -->
+<!-- _footer: "Clean — the default floated card (auto) · image clean" -->
 
-## Contain preserves the asset's own framing.
+## Activation is where the trial is won or lost.
 
-Letterboxed against the slide background — useful for plots, dashboards, and screenshots where every pixel of the image matters.
+Two-thirds of trials that reach the first generated report convert; the ones that stall almost never do.
 
-![bg](sample-image-landscape.svg)
+![bg](sample-photo-wide.svg)
 
 
 ---
 
-<!-- _class: image museum -->
-<!-- _footer: "Museum — matted and framed · image museum" -->
+<!-- _class: image split -->
+<!-- _footer: "Split — an extreme-aspect photo, shown whole (auto) · image split" -->
 
-## Museum framing gives one image the wall.
+## Built for the long climb.
 
-Matte border plus a hairline frame. Reserve for case-study openers, brand moments, archival material — the image that the deck remembers.
+A portrait photo wants its full height. We give it a column and let the argument run alongside.
 
-![bg](sample-image-landscape.svg)
+![bg](sample-photo-tall.svg)
+
+
+---
+
+<!-- _class: image spotlight -->
+<!-- _footer: "Spotlight — full-bleed cover + a solid card (auto) · image spotlight" -->
+
+## A panorama earns the full frame.
+
+When the photo already matches the canvas, let it carry the slide — the message rides in a solid card so it never fights the image.
+
+![bg](sample-photo-pano.svg)
+
+
+---
+
+<!-- _class: image gallery -->
+<!-- _footer: "Gallery — contain on a matte + placard (opt-in) · image gallery" -->
+
+## Exhibit 1 — the network, contained.
+
+The whole asset on a matte with a placard. For diagrams and screenshots where the whitespace is the point.
+
+![bg](sample-photo-square.svg)
+
+
+---
+
+<!-- _class: image statement -->
+<!-- _footer: "Statement — full-bleed + scrim + editorial title (opt-in) · image statement" -->
+
+## The setup step is the real funnel.
+
+The title rides the photo on a scrim — a deliberate, editorial choice.
+
+![bg](sample-photo-wide.svg)
 
 
 ---
 
 <!-- _class: image mirror -->
-<!-- _footer: "Mirror — text right, image left · image mirror" -->
+<!-- _footer: "Mirror — flip the image to the other side · image mirror" -->
 
 ## Mirror lands the image on the left.
 
-Text leads from the right; image anchors from the left. Use when the surrounding spread reads right-to-left or when the page-turn cue lands on the image side.
+Text leads from the right; image anchors from the left.
 
-![bg left](sample-image-landscape.svg)
+![bg left](sample-photo-wide.svg)
 
 
 ---
@@ -80,9 +104,9 @@ Text leads from the right; image anchors from the left. Use when the surrounding
 
 ## Activation is where the trial is won or lost.
 
-Two-thirds of trials that reach the first generated report convert to paid; the ones that stall at workspace setup almost never do. The funnel on the right shows where the drop-off concentrates — in the week-one setup step, not at the price page.
+Two-thirds of trials that reach the first generated report convert to paid; the ones that stall at workspace setup almost never do. Hand the layout any photo — it resolves the composition from the asset's shape.
 
-![bg right](sample-image-landscape.svg)
+![bg](sample-photo-wide.svg)
 
 
 ---
@@ -92,9 +116,9 @@ Two-thirds of trials that reach the first generated report convert to paid; the 
 
 ## Activation is where the trial is won or lost.
 
-Two-thirds of trials that reach the first generated report convert to paid; the ones that stall at workspace setup almost never do. The funnel on the right shows where the drop-off concentrates — in the week-one setup step, not at the price page.
+Two-thirds of trials that reach the first generated report convert to paid; the ones that stall at workspace setup almost never do. Hand the layout any photo — it resolves the composition from the asset's shape.
 
-![bg right](sample-image-landscape.svg)
+![bg](sample-photo-wide.svg)
 
 
 ---
@@ -104,9 +128,9 @@ Two-thirds of trials that reach the first generated report convert to paid; the 
 
 ## Activation is where the trial is won or lost.
 
-Two-thirds of trials that reach the first generated report convert to paid; the ones that stall at workspace setup almost never do. The funnel on the right shows where the drop-off concentrates — in the week-one setup step, not at the price page.
+Two-thirds of trials that reach the first generated report convert to paid; the ones that stall at workspace setup almost never do. Hand the layout any photo — it resolves the composition from the asset's shape.
 
-![bg right](sample-image-landscape.svg)
+![bg](sample-photo-wide.svg)
 
 
 ---
@@ -117,7 +141,7 @@ Two-thirds of trials that reach the first generated report convert to paid; the 
 ## When NOT to reach for image.
 
 - **Decorative stock photo.** A generic photograph of 'people in a meeting' next to a content slide is filler. Use `content` and trust the prose; reserve image for visuals that argue for themselves.
-- **Image too small to read.** A diagram or screenshot small enough to fit inside a half-canvas text slot is unreadable from the back of the room. Reach for `image full` or `image contain`, or move the diagram to its own `diagram` slide.
+- **Image too small to read.** A diagram or screenshot small enough to fit inside a half-canvas text slot is unreadable from the back of the room. Reach for `image gallery` (contains it whole) or `image spotlight`, or move the diagram to its own `diagram` slide.
 - **Image with five paragraphs of caption.** If the prose dominates and the image is a sidebar, you have a `content` slide that happens to have a photo. Either trust the image (drop the prose) or trust the prose (drop the image).
 
 ---

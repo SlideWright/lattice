@@ -27,6 +27,23 @@ in patch versions.
 
 ### Added
 
+- **`image` is now content- AND orientation-adaptive — it resolves its own
+  composition.** The author hands `image` an arbitrary rectangle (phone crop,
+  portrait photo, panorama); the layout reads the asset's intrinsic aspect at
+  build time and, with the deck orientation, **resolves one of five
+  compositions** rather than making the author pick a modifier per asset:
+  **clean** (the default — a floated card whose *aspect adapts to the photo*, so
+  the crop is ≈ zero), **split** (an extreme-aspect photo shown whole — a
+  full-height column or full-width band), **spotlight** (full-bleed cover with a
+  solid text card, when the photo already matches the canvas), plus opt-in
+  **gallery** (contain-on-matte for diagrams) and **statement** (full-bleed +
+  scrim + editorial title). The resolver is **risk-gated** — it only auto-fires
+  treatments that can't lose or obscure an unseen photo — and an explicit
+  composition class always wins, so an author can force `image spotlight` (cover
+  + crop) on any asset. Legacy `full` / `contain` / `museum` map onto
+  spotlight / gallery / gallery for back-compat. See
+  `engineering/decisions/2026-06-19-adaptive-image.md`.
+
 - **`roadmap` adapts to a portrait box — and Phase 4 chart adaptivity is complete.**
   The wide workstream × phase table letterboxes on a tall deck (columns crushed,
   header collisions). On a portrait deck the kernel now **auto-selects the

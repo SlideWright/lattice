@@ -936,6 +936,7 @@ const globalStyle = readGlobalStyle(fm);
 // lattice-bg/image-text panel, since lib/engine matches marp WEB mode (which
 // collapses bg left/right to a full-bleed background). See engineSlides().
 const bgImage            = require('./lib/core/bg-image');
+const imageDimensions    = require('./lib/core/image-dimensions');
 
 // ── P2: the markdown→slide engine (lib/engine) is the emulator's parser ─────
 // Lattice converges on ONE markdown implementation: the owned lib/engine, the
@@ -999,6 +1000,15 @@ function engineSlides() {
     // `.image-text`, and inject the contrast scrim for full/contain image
     // layouts (after the lattice-bg so it darkens the image, not the text).
     let s = bgImage.wrapImageText(sec.replace(/^<section\b/i, `<section data-lattice-slide="${i + 1}"`));
+    // Adaptive image: stamp the photo's intrinsic aspect bucket, then resolve the
+    // composition (bucket × data-orientation, or an explicit author class) so CSS
+    // keys the whole layout off a single `[data-img-composition]` attribute.
+    s = imageDimensions.stampImageBucket(s);
+    s = imageDimensions.stampImageComposition(s);
+    // The `statement` composition (text on a scrim over a full-bleed photo) is the
+    // only one that needs a contrast scrim node; every other composition carries
+    // its own contrast (solid card / matte / panel). statement is opt-in, so it's
+    // always the author's `statement` class — needsScrim keys off that.
     const cls = (s.match(/^<section\b[^>]*\bclass="([^"]*)"/i) || ['', ''])[1];
     if (imageScrim.needsScrim(cls) && s.indexOf('class="image-scrim') === -1) {
       s = s.replace(/(<div class="lattice-bg[\s\S]*?<\/div>)/, `$1${imageScrim.SCRIM_HTML}`);

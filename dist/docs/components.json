@@ -2923,40 +2923,44 @@
       "form": "canvas",
       "substance": "prose",
       "orientation": [
-        "landscape"
+        "landscape",
+        "portrait"
       ],
       "families": [
         "wide",
-        "square"
+        "square",
+        "tall",
+        "strip"
       ],
       "tags": [
         "visual",
         "showcase",
         "pitch"
       ],
-      "description": "Image as the slide's anchor, with optional text alongside.",
-      "purpose": "Use when a visual carries meaning on its own. Modifiers control how the image fills the slide: `full` for edge-to-edge, `contain` for letterboxed, `museum` for a matted/framed treatment.",
+      "description": "Image as the slide's anchor, with optional text alongside — composition adapts to the asset and the deck.",
+      "purpose": "Use when a visual carries meaning on its own. You hand it any rectangle; the layout reads the asset's aspect at build time and, with the deck orientation, RESOLVES the composition for you — no modifier needed. The default is `clean` (a floated card shaped to the photo, ≈ zero crop); extreme aspects auto-pick `split` (shown whole) or `spotlight` (full-bleed cover). Name a composition to override: `clean` · `split` · `spotlight` · `gallery` (contain-on-matte, for diagrams) · `statement` (full-bleed + scrim + title). `mirror` flips the image side. Legacy `full`/`contain`/`museum` still work (→ spotlight/gallery/gallery).",
       "variants": [
-        "full",
-        "contain",
-        "museum",
+        "clean",
+        "split",
+        "spotlight",
+        "gallery",
+        "statement",
         "mirror"
       ],
       "effectiveVariants": [
         "accent",
         "archived",
+        "clean",
         "compact",
         "confidential",
-        "contain",
         "dark",
         "draft",
         "form",
-        "full",
+        "gallery",
         "loose",
         "mark-orbit",
         "mark-threads",
         "mirror",
-        "museum",
         "no-footer",
         "no-form",
         "no-header",
@@ -2971,6 +2975,9 @@
         "scale-l",
         "scale-xl",
         "silent",
+        "split",
+        "spotlight",
+        "statement",
         "tbd",
         "tint-corner at-tl",
         "tint-edge at-right",
@@ -3001,15 +3008,15 @@
           "description": "Optional caption or body text."
         }
       },
-      "skeleton": "<!-- _class: image -->\n\n## Image right is the default — text leads, evidence follows.\n\nReplace the bg image below with your own asset. The image fills its half-canvas slot edge-to-edge; a 1px hairline marks the join between text and image.\n\n![bg right](your-image.jpg)\n",
+      "skeleton": "<!-- _class: image -->\n\n## Text leads; the image earns its place.\n\nSwap the bg image below for your own asset — any aspect. The layout reads its shape and resolves the composition for you (a floated card, a full-height column, a full-bleed cover). Name a composition (`image spotlight`, `image gallery`, …) only to override.\n\n![bg](sample-photo-wide.svg)\n",
       "whenToUse": [
         {
           "title": "The visual carries meaning",
           "body": "Product screenshots, architectural photographs, plots, satellite imagery — anywhere the image makes the argument and the prose is annotation. If the visual is decorative, drop it and use `content` instead."
         },
         {
-          "title": "Pick the modifier from the asset",
-          "body": "Photographs with subject-to-edge bleed → `full`. Plots, screenshots, or assets with whitespace that should be preserved → `contain`. Single hero images that deserve gallery framing → `museum`. The default (image right) is the working pick for talking-head slides."
+          "title": "Let the layout resolve it — override only with intent",
+          "body": "Drop in any aspect and the layout reads it: a moderate photo gets the `clean` floated card, a tall/wide one gets `split` (shown whole), a canvas-matching one gets `spotlight` (full-bleed). Override only when you mean it: `image gallery` to contain a diagram zero-crop, `image statement` for a scrim-and-title hero, `image spotlight` to force a full-bleed cover (accepting the crop)."
         },
         {
           "title": "Caption earns its line",
@@ -3023,7 +3030,7 @@
         },
         {
           "title": "Image too small to read",
-          "body": "A diagram or screenshot small enough to fit inside a half-canvas text slot is unreadable from the back of the room. Reach for `image full` or `image contain`, or move the diagram to its own `diagram` slide."
+          "body": "A diagram or screenshot small enough to fit inside a half-canvas text slot is unreadable from the back of the room. Reach for `image gallery` (contains it whole) or `image spotlight`, or move the diagram to its own `diagram` slide."
         },
         {
           "title": "Image with five paragraphs of caption",

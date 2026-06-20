@@ -48,11 +48,16 @@ describe('bg-image — wrapImageText (HTML post-pass)', () => {
     assert.match(out, /<header>H<\/header><div class="lattice-bg[\s\S]*?<\/div><div class="image-text"><h2>Title<\/h2><p>Body<\/p><\/div><footer>F<\/footer>/);
   });
 
-  test('skips full-bleed variants (full / contain / museum have no text panel)', () => {
-    for (const cls of ['image full', 'image contain', 'image museum']) {
+  test('wraps EVERY image variant — the adaptive layout picks its composition after authoring', () => {
+    for (const cls of ['image full', 'image contain', 'image museum', 'image statement']) {
       const html = sec(cls, `${bgDiv}<h2>T</h2><p>B</p>`);
-      assert.equal(bg.wrapImageText(html), html, `should skip ${cls}`);
+      assert.match(bg.wrapImageText(html), /<div class="image-text"><h2>T<\/h2><p>B<\/p><\/div>/, `should wrap ${cls}`);
     }
+  });
+
+  test('skips an image section with no prose (image-only slide)', () => {
+    const html = sec('image full', bgDiv);
+    assert.equal(bg.wrapImageText(html), html);
   });
 
   test('skips non-image sections', () => {
