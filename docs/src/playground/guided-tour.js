@@ -18,6 +18,7 @@
 import { driver } from 'driver.js';
 import 'driver.js/dist/driver.css';
 import '../styles/guided-tour.css';
+import { isPreviewHost } from './preview-host.js';
 import { onToursEnabledChange, toursEnabled } from './tour-prefs.js';
 
 const SEEN_PREFIX = 'lattice-tour-seen-';
@@ -27,8 +28,16 @@ const SEEN_PREFIX = 'lattice-tour-seen-';
 // main-branch Cloudflare deploy) and "off" for local dev and the Cloudflare
 // *.pages.dev PR previews (see docs/src/lib/deploy-env.mjs). Fail closed: only
 // an explicit "on" runs them.
+//
+// The build-time stamp depends on `CF_PAGES` reaching the build; when a preview
+// is built without it the stamp wrongly reads "on", and the tour's full-screen
+// overlay then TRAPS POINTER EVENTS over the whole workspace — blocking the
+// editor, preview, present AND practice, so no interactive feature can be
+// reviewed on the PR preview. Belt-and-suspenders: also fail closed at RUNTIME on
+// any preview host, regardless of the build stamp.
 export function toursAllowedHere() {
 	try {
+		if (isPreviewHost(location.hostname)) return false;
 		return document.documentElement.dataset.tours === 'on';
 	} catch {
 		return false;

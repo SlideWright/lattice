@@ -225,6 +225,16 @@ in patch versions.
   regardless of what the preview is doing. The capture host is a 0×0
   `position:fixed; overflow:hidden` box, so it never adds a page scrollbar. See
   `engineering/decisions/2026-06-20-export-dedicated-capture-host.md`.
+- **The guided tour no longer hijacks the docs workspaces on PR previews.** The
+  onboarding tour (driver.js) only auto-runs in production, gated by a build-time
+  `data-tours` stamp derived from `CF_PAGES`. When a preview is built without that
+  env the stamp wrongly reads `on`, and the tour's full-screen overlay then **traps
+  pointer events over the entire workspace** — silently blocking the editor,
+  preview, present, and practice, so no interactive feature can be reviewed on the
+  preview. Added a **runtime backstop** (`isPreviewHost`): the tour now refuses to
+  run on any `*.pages.dev` (Cloudflare preview) or localhost host regardless of the
+  build stamp. Pure + unit-tested. (`docs/src/playground/preview-host.js`,
+  `guided-tour.js`.)
 - **`progress` bar percentage readouts are now legible on every bar.** The readout
   rides the fill's leading edge — exactly where the gradient ramps to its most
   saturated head (up to 72%) — so on the light canvas the dark number lost contrast
