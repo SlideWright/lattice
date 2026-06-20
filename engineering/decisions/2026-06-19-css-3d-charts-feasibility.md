@@ -1,7 +1,7 @@
 ---
 status: shipped
-summary: CSS-3D can't replace SVG for the chart family (PDF zoom rasterizes CSS, vector SVG stays crisp; preserve-3d is inert inside SVG). Decision — SVG stays canonical; CSS 3D is a present-mode-only tilt of the whole SVG. Shipped a kernel substrate — piechart captures an optional per-slice sublist as an inert data-slice/<template> detail payload (byte-identical export) — plus a dispatch depth-aware fix; present-mode wiring + print fallback deferred.
-last-updated: 2026-06-19
+summary: CSS-3D can't replace SVG for the chart family (PDF zoom rasterizes CSS, vector SVG stays crisp; preserve-3d is inert inside SVG). Decision — SVG stays canonical; CSS 3D is a present-mode-only tilt of the whole SVG. Shipped — piechart per-slice detail as an inert data-slice/<template> payload (byte-identical export) + a dispatch depth-aware fix, AND a parent-hosted present/practice interaction layer (hover/tap/number-key reveal, autoplay-pause) keeping the iframe a pure paint surface. Print fallback deferred (export-gated).
+last-updated: 2026-06-20
 companion:
   - ../../lib/components/chart/piechart/piechart.docs.md
   - ../../lib/components/chart/_chart-family/chart-family.docs.md
@@ -67,16 +67,104 @@ dataviz anti-pattern). The interactive value worth shipping is **per-slice detai
   popover fed by the **real kernel templates** (rendered through `transformChartSection`
   in frontmatter), responsive (desktop/tablet/mobile bottom-sheet), a11y + reduced-motion.
 
+## Present/practice interactive integration — the architecture (designed, not yet built)
+
+Without an interactive **present AND practice** mode the per-slice detail has no
+value (it's a presenter's reveal). The integration is non-trivial because both modes
+render the slide in a **scaled `srcdoc` iframe** with a full-stage **pointer-capture
+overlay** (`db-pp-layer`) that owns swipe / tap-to-reveal / edge-arrows. As-is, an
+in-slide popover is intercepted by that overlay and a `position:fixed` popover inside
+the scaled iframe mis-positions. So the proto's "in-slide hydration" model does NOT
+survive contact with present/practice.
+
+### Why the iframe stays (do not re-litigate)
+
+It is **not** legacy cruft. Two documented reasons
+(`2026-06-13-shared-deck-preview.md`, `2026-06-10-drawing-board-huge-deck-preview-perf.md`):
+
+1. **Cascade isolation = the screen===PDF promise.** The deck theme CSS uses global
+   selectors (`section`, headings, `:root` tokens); sharing a document with the app
+   chrome collides both ways, and the chrome's `position:fixed` can't share a cascade
+   with the slide's `transform:scale`. The iframe is a real document (own `@page`,
+   `:root`, viewport units) → on-screen === exported.
+2. **The runtime `MutationObserver` model.** The runtime observes `document.body` and
+   idempotently re-applies every transform to inserted `<section>`s — in an iframe that
+   works for free. **Shadow DOM** can't be pierced by `document.querySelectorAll` and
+   the observer doesn't watch shadow roots → it would force a root-aware refactor of the
+   runtime *across all three render paths*, plus a PDF-parity risk (`@page` gone,
+   `:root`→`:host`, `position:fixed` semantics differ). Two serious costs to fix an
+   interaction problem we can fix on the parent side. An earlier draft recommended Shadow
+   DOM and withdrew it. Revisit Shadow DOM only as a deliberate future project if the app
+   needs seamless slide↔chrome animation or charts that break the slide bounds everywhere.
+
+### The principle that dissolves the conflict
+
+**The iframe is a paint surface, not an interaction wall.** `srcdoc` is same-origin, so
+the parent has full reach into the slide (today it talks via `postMessage` by
+convention — the door is open). **Interaction lives on the parent side of the
+boundary**, not inside the iframe.
+
+### Verified input facts (read from the present/practice source)
+
+- **No click-to-advance** — advance = keyboard / edge-arrows / swipe; a flat *tap* only
+  toggles chrome. (So "I hate accidental click-advance" is already mostly honored.)
+- **Keyboard already pierces the iframe** — the slide doc forwards arrows/space/PageDown
+  via `postMessage`, so the clicker/keyboard always advances even if the chart holds the
+  pointer. This is the safety net that makes ceding the chart's surface safe.
+- **Wheel/scroll is unwired** — a free channel (advance, or scrub slices).
+- **The edge-arrow overlay** (`elEdgePrev`/`elEdgeNext`, auto-hiding) is a pointer-free
+  nav lifeline on the margins.
+
+### The model
+
+- On an interactive chart slide, the capture layer becomes a **frame**: punch a hole
+  (`pointer-events:none`) over the chart's rectangle so the chart owns its surface; the
+  margins keep swipe + tap-to-reveal. (This *is* the settled "hit-test zones" tap call.)
+- One `revealSlice(i)` command, bound to: **pointer** (in the hole), **number keys**
+  (1–6 → slice n, 0/Esc clears), and a **presenter-window** control.
+- The popover renders as **parent present-chrome** in stage coordinates (reads the
+  slice's `<template>` by `data-slice`) so it stacks above the iframe and positions
+  correctly.
+- Navigation never leaves keyboard / edge-arrows / wheel — all pointer-free — so freeing
+  the chart's center is safe; there's no click-advance to lose.
+
+### Present vs practice — diverge the primary trigger
+
+- **Present** (audience-facing, lectern): number-keys + presenter-window-driven reveals
+  primary; pointer optional. The audience screen shows the result.
+- **Practice** (solo): direct pointer manipulation primary; **autoplay pauses** while a
+  chart is being explored, resumes on advance.
+
+### Open (decide before build)
+
+- **Tilt in present/practice** — leaning **interaction-coupled**: the tilt fires only
+  while a slice's detail is open, then settles flat (resting chart stays
+  proportion-true; the same reason we refused to extrude). Alternatives: none-in-present,
+  or a one-time entrance tilt. Not locked.
+- Presenter-window trigger detail (a slice list / mini-chart in the private view).
+- "Enter interactive on first click" vs always-on; number-key collision check.
+
+### Built (this branch)
+
+The model above shipped as `docs/src/playground/drawing-board-chart-interact.js`,
+wired into **both** present (`drawing-board-present.js`) and practice
+(`drawing-board-practice.js`): hit-surface over the chart rect, `revealSlice`
+bound to pointer (hover/tap) + number keys, popover anchored to the active wedge
+within the chart band, interaction-coupled wedge-lift + tilt, autoplay-pause on
+reveal (practice). Verified in-browser in the real Drawing Board for both modes
+(`.scratch/css3d/present-2-reveal.png`, `practice-reveal.png`). Tilt landed as
+interaction-coupled (the recommended synthesis).
+
 ## Open / deferred
 
 - **Print fallback (export-gated):** how the authored sublist renders *in the static
   PDF* so the detail isn't lost off-screen — changes exported bytes, so it needs export
-  sign-off. Until then detail is present-mode only.
-- **Production present-mode wiring:** the proto's hydration must become a real module the
-  drawing-board present mode calls; legend cross-lighting needs `data-slice` on the
-  SVG-native legend rows (`svg-legend.js`), not added here.
-- **Demo deck (#9):** deferred until the present-mode layer lands — the static PDF of a
-  detail-pie is identical to a normal pie, so a demo deck adds nothing until interactive.
+  sign-off. Until then detail is present/practice only.
+- **Presenter-window trigger + legend cross-light:** the dual-screen presenter view
+  could drive reveals on the audience screen; legend cross-lighting needs `data-slice`
+  on the SVG-native legend rows (`svg-legend.js`). Both additive, not yet built.
+- **Demo deck (#9):** the static PDF of a detail-pie is identical to a normal pie, so a
+  demo deck adds nothing to the export; the interactive value lives in present/practice.
 
 ## Discovered, out of scope (separate ticket)
 

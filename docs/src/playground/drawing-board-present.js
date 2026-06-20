@@ -27,6 +27,7 @@
 import { createThemeFetcher } from '../lib/theme-fetch.ts';
 import { notesCore } from './authoring-core.generated.js';
 import { A11Y_DEFS, KATEX_URL, MERMAID_URL, splitSections } from './deck-preview.js';
+import { createChartInteract } from './drawing-board-chart-interact.js';
 // The same authoritative section read Practice uses (pure, engine-derived): it
 // turns the rendered <section> list into per-slide metas with a `role` ('section'
 // on a divider) + a title — the basis for the per-section progress spine.
@@ -67,6 +68,7 @@ export function createPresent({ host, getSource, runtimeUrl, themeBase }) {
   let frame; // the single-slide stage iframe
   let runEl;
   let layer; // pointer-capture overlay (swipe + tap-to-reveal + edge arrows)
+  let chartInteract = null; // parent-hosted per-slice chart detail (interactive charts only)
   let elCounter; // "n / N"
   let elSpine; // the per-section progress spine (one segment per section)
   let elEdgePrev;
@@ -202,6 +204,7 @@ export function createPresent({ host, getSource, runtimeUrl, themeBase }) {
     refreshChrome();
     syncPresenter();
     showControls();
+    if (chartInteract) chartInteract.onSlide(idx);
   }
 
   function refreshChrome() {
@@ -470,6 +473,10 @@ export function createPresent({ host, getSource, runtimeUrl, themeBase }) {
   }
 
   function onKey(e) {
+    // Interactive charts get first crack: number keys reveal a slice, 0/Esc
+    // clear. handleKey only consumes Esc when a detail is actually open, so a
+    // bare Esc still exits present.
+    if (chartInteract?.handleKey(e)) { e.preventDefault(); showControls(); return; }
     if (e.key === 'Escape') {
       if (notesOpen) { setNotes(false); return; }
       if (fsElement()) { e.preventDefault(); exitFs(); return; }
@@ -495,7 +502,12 @@ export function createPresent({ host, getSource, runtimeUrl, themeBase }) {
     const stage = el('div', 'db-pp-stage');
     frame = el('iframe', 'db-pp-frame');
     frame.setAttribute('title', 'Presented slide');
-    frame.addEventListener('load', () => { try { frame.contentWindow.postMessage({ pv: idx }, '*'); } catch { /* cross-origin */ } });
+    frame.addEventListener('load', () => {
+      try { frame.contentWindow.postMessage({ pv: idx }, '*'); } catch { /* cross-origin */ }
+      // Re-detect the interactive chart after a (re)load — covers initial render
+      // and full srcdoc rewrites (palette/mode change).
+      if (chartInteract) chartInteract.onSlide(idx);
+    });
 
     // Pointer-capture overlay above the iframe (cross-document touch never reaches
     // the parent) — swipe, tap-to-reveal, and the auto-hiding edge arrows.
@@ -563,6 +575,7 @@ export function createPresent({ host, getSource, runtimeUrl, themeBase }) {
     bar.append(elSpine, row);
 
     stage.append(frame, layer, bar);
+    chartInteract = createChartInteract({ stage, getFrame: () => frame });
 
     // The slide-up speaker-notes sheet — universal across tiers. Drag handle +
     // swipe-down dismiss; scrollable body.
@@ -639,6 +652,7 @@ export function createPresent({ host, getSource, runtimeUrl, themeBase }) {
     if (presenterWin && !presenterWin.closed) { try { presenterWin.close(); } catch {} }
     teardownPresenter();
     exitFs();
+    if (chartInteract) { chartInteract.destroy(); chartInteract = null; }
     document.removeEventListener('keydown', onKey);
     document.removeEventListener('fullscreenchange', onFsChange);
     document.removeEventListener('webkitfullscreenchange', onFsChange);
