@@ -142,7 +142,7 @@ section.state-chart .state-node .state-index {
   position: absolute;
   top: 0.15625cqi;
   right: 0.390625cqi;
-  font-size: 0.703125cqi;
+  font-size: 0.703125cqi; /* cqi-ok: index numeral inside a cqi-sized state node */
   font-variant-numeric: tabular-nums;
   color: var(--state-index-ink);
   pointer-events: none;
@@ -228,7 +228,7 @@ section.state-chart .state-edge-arrow[data-dir="back"] {
  * the label with a clear gap on each side. */
 section.state-chart .state-edge-label {
   fill: var(--state-node-ink);
-  font-size: 0.859375cqi;
+  font-size: 0.859375cqi; /* cqi-ok: edge label on a cqi-sized transition arrow */
   font-family: var(--font-mono);
   paint-order: stroke;
   stroke: var(--state-label-bg);
@@ -316,7 +316,7 @@ section.state-chart.horizontal .state-node-row .state-index {
   position: absolute;
   top: 0.15625cqi;
   right: 0.46875cqi;
-  font-size: 0.703125cqi;
+  font-size: 0.703125cqi; /* cqi-ok: index numeral inside a cqi-sized state node */
   color: var(--state-index-ink);
 }
 

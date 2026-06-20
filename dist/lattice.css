@@ -525,7 +525,10 @@
   --pill-pad-y:    0.3em;
   --pill-pad-x:    0.75em;
   --pill-font:     var(--font-body);
-  --pill-fs:       var(--fs-meta);
+  /* --pill-fs (= the meta role) is emitted on `:root, section` by the typography
+   * generator (lib/typography/emit.js), NOT here: a `:root`-only alias would bake
+   * in the landscape --fs-meta and never pick up the per-section orientation
+   * override, so pills rendered fine-print on every portrait/square slide. */
   --pill-weight:   600;
   --pill-tracking: 0.04em;
 
@@ -637,52 +640,18 @@
   --sp-2xl: calc(5       * var(--_sec-1cqi, 1cqi) * var(--canvas-scale, 1));
 }
 
-/* ── The 12 typography tokens, scaled ──────────────────────────────────
- * Each scaling token is `<base> * var(--_sec-1cqi, 1cqi) * var(--fs-scale)`.
- * --fs-h1 and --fs-h2 are EXEMPT from --fs-scale — held at their designed
- * display size so the dominant tier (slide titles + the KPI/stats numbers and
- * table/chart headers that reuse those two tokens) stays put while the readable
- * sizes grow (§7) — but they STILL route through --_sec-1cqi (see below).
- * Computed on BOTH :root and section so the multiplier re-resolves
- * wherever --fs-scale is overridden:
- *   - :root copy  → base×1 by default; a frontmatter `:root{--fs-scale}`
- *     or all-slides `class:` directive moves the whole deck, and keeps the
- *     tokens defined at :root for the Marp chrome bridges below.
- *   - section copy → re-runs the calc against each slide's own --fs-scale,
- *     so a spot `_class: scale-xl` scales one slide (and its ::after
- *     pagination / header / footer chrome, which inherit from the section).
- *
- * WHY `var(--_sec-1cqi, 1cqi)` and not a bare `cqi`: section has
- * `container-type:size`, so a `cqi` consumed by the section's OWN font-size
- * (`section{font-size:var(--fs-body)}`, which every gfm body element inherits)
- * cannot query the section itself and falls back to the ICB. That is the slide
- * ONLY when the viewport == the slide (the canonical emulator/print path); in a
- * preview iframe the ICB is the editor pane, so body copy collapsed to ~10px on
- * every @size (egregious at 4K). The runtime sets `--_sec-1cqi` =
- * section.offsetWidth/100px per slide (lib/runtime patchSectionGeometry), the
- * same hook the section's padding + border-top already use; the `1cqi` fallback
- * fires only where --_sec-1cqi is unset (the @page/print path), so the canonical
- * render is byte-identical. Child consumers (`h2{font-size:var(--fs-h2)}`, …)
- * inherit the section's already-substituted value, so they resolve identically.
- * The base multipliers are the single source of truth — the pt @ HD footprint
- * documented in engineering/typography.md §1. Do not also pin these on :root
- * above; CSS substitutes var(--fs-scale) at the element a custom property is
- * *declared* on, so a :root-only calc would bake in ×1 and never see a per-slide
- * override. */
-:root, section {
-  --fs-meta:     calc(1.17    * var(--_sec-1cqi, 1cqi) * var(--fs-scale) * var(--canvas-scale, 1)); /* 11.25pt — chrome */
-  --fs-body-compact: calc(1.40 * var(--_sec-1cqi, 1cqi) * var(--fs-scale) * var(--canvas-scale, 1)); /* 13.5pt — dense reference cells */
-  --fs-body:     calc(1.67    * var(--_sec-1cqi, 1cqi) * var(--fs-scale) * var(--canvas-scale, 1)); /* 16pt — container default */
-  --fs-message:  calc(2.1875  * var(--_sec-1cqi, 1cqi) * var(--fs-scale) * var(--canvas-scale, 1)); /* 21pt — slide-level statement */
-  --fs-emphasis: calc(3.125   * var(--_sec-1cqi, 1cqi) * var(--fs-scale) * var(--canvas-scale, 1)); /* 30pt — lead callout */
-  --fs-h1:       calc(5.0     * var(--_sec-1cqi, 1cqi) * var(--canvas-scale, 1));                   /* 48pt — dominant slide title; NOT --fs-scaled (§7), but follows orientation */
-  --fs-h2:       calc(2.9167  * var(--_sec-1cqi, 1cqi) * var(--canvas-scale, 1));                   /* 28pt — standard slide title; NOT --fs-scaled (§7), but follows orientation */
-  --fs-h3:       calc(2.3958  * var(--_sec-1cqi, 1cqi) * var(--fs-scale) * var(--canvas-scale, 1)); /* 23pt — subheading / column header */
-  --fs-h4:       calc(2.1875  * var(--_sec-1cqi, 1cqi) * var(--fs-scale) * var(--canvas-scale, 1)); /* 21pt — = --fs-message, weight-differentiated */
-  --fs-h5:       calc(1.67    * var(--_sec-1cqi, 1cqi) * var(--fs-scale) * var(--canvas-scale, 1)); /* 16pt — = --fs-body, weight-differentiated */
-  --fs-h6:       calc(1.17    * var(--_sec-1cqi, 1cqi) * var(--fs-scale) * var(--canvas-scale, 1)); /* 11.25pt — = --fs-meta, weight-differentiated */
-  --fs-hero:     calc(8.9583  * var(--_sec-1cqi, 1cqi) * var(--fs-scale) * var(--canvas-scale, 1)); /* 86pt — KPI / watermark; class-driven */
-}
+/* ── The 12 typography tokens — GENERATED, not hand-written here ────────
+ * The `--fs-*` scale moved to the lib/typography/scale.js manifest + emitter
+ * (lib/typography/emit.js), which tools/build-css.js bundles in right after this
+ * file. One source of truth, three CURATED categories (landscape/square/portrait)
+ * selected per slide off `data-orientation` — orientation changes the COEFFICIENT,
+ * not a uniform `--canvas-scale` multiplier (retired for type; --sp-* still uses
+ * it). Each token is `coeff × var(--_sec-1cqi, 1cqi)` (× `var(--fs-scale)` except
+ * the §7-exempt h1/h2), so the runtime-stamped section 1cqi + per-slide size knob
+ * keep working unchanged, and landscape stays byte-identical. The chrome alias
+ * `--pill-fs` (= the meta role) is emitted alongside so it follows the per-section
+ * override. See engineering/decisions/2026-06-20-typography-categories.md and
+ * engineering/typography.md §1. Do NOT re-add a hand-written --fs-* block here. */
 
 /* ── Universal theme defaults (any palette :root override wins via source order) ─
  * on-dark-* : opacity ramp for text on dark panel surfaces.
@@ -725,6 +694,56 @@
   --hljs-params:     #7fdbca;
   --hljs-tag:        #7fdbca;
   --hljs-punctuation:#d6deeb;
+}
+
+/* === GENERATED lib/typography/scale.js (--fs-* tokens) === */
+/* GENERATED from lib/typography/scale.js by lib/typography/emit.js — do not
+ * hand-edit. Curated landscape/square/portrait type scales; orientation picks
+ * the coefficient (no --canvas-scale type multiplier). Landscape is the default
+ * (unstamped → byte-identical). See
+ * engineering/decisions/2026-06-20-typography-categories.md. */
+:root, section {
+  --fs-meta: calc(1.17 * var(--_sec-1cqi, 1cqi) * var(--fs-scale));
+  --fs-body-compact: calc(1.4 * var(--_sec-1cqi, 1cqi) * var(--fs-scale));
+  --fs-body: calc(1.67 * var(--_sec-1cqi, 1cqi) * var(--fs-scale));
+  --fs-message: calc(2.1875 * var(--_sec-1cqi, 1cqi) * var(--fs-scale));
+  --fs-emphasis: calc(3.125 * var(--_sec-1cqi, 1cqi) * var(--fs-scale));
+  --fs-h6: calc(1.17 * var(--_sec-1cqi, 1cqi) * var(--fs-scale));
+  --fs-h5: calc(1.67 * var(--_sec-1cqi, 1cqi) * var(--fs-scale));
+  --fs-h4: calc(2.1875 * var(--_sec-1cqi, 1cqi) * var(--fs-scale));
+  --fs-h3: calc(2.3958 * var(--_sec-1cqi, 1cqi) * var(--fs-scale));
+  --fs-h2: calc(2.9167 * var(--_sec-1cqi, 1cqi));
+  --fs-h1: calc(5 * var(--_sec-1cqi, 1cqi));
+  --fs-hero: calc(8.9583 * var(--_sec-1cqi, 1cqi) * var(--fs-scale));
+  --pill-fs: var(--fs-meta);
+}
+section[data-orientation="square"] {
+  --fs-meta: calc(2.05 * var(--_sec-1cqi, 1cqi) * var(--fs-scale));
+  --fs-body-compact: calc(2.4 * var(--_sec-1cqi, 1cqi) * var(--fs-scale));
+  --fs-body: calc(2.8 * var(--_sec-1cqi, 1cqi) * var(--fs-scale));
+  --fs-message: calc(3.5 * var(--_sec-1cqi, 1cqi) * var(--fs-scale));
+  --fs-emphasis: calc(4.45 * var(--_sec-1cqi, 1cqi) * var(--fs-scale));
+  --fs-h6: calc(2.05 * var(--_sec-1cqi, 1cqi) * var(--fs-scale));
+  --fs-h5: calc(2.8 * var(--_sec-1cqi, 1cqi) * var(--fs-scale));
+  --fs-h4: calc(3.35 * var(--_sec-1cqi, 1cqi) * var(--fs-scale));
+  --fs-h3: calc(3.8 * var(--_sec-1cqi, 1cqi) * var(--fs-scale));
+  --fs-h2: calc(4.45 * var(--_sec-1cqi, 1cqi));
+  --fs-h1: calc(6.3 * var(--_sec-1cqi, 1cqi));
+  --fs-hero: calc(10.2 * var(--_sec-1cqi, 1cqi) * var(--fs-scale));
+}
+section[data-orientation="portrait"] {
+  --fs-meta: calc(2.4 * var(--_sec-1cqi, 1cqi) * var(--fs-scale));
+  --fs-body-compact: calc(2.75 * var(--_sec-1cqi, 1cqi) * var(--fs-scale));
+  --fs-body: calc(3.3 * var(--_sec-1cqi, 1cqi) * var(--fs-scale));
+  --fs-message: calc(4.25 * var(--_sec-1cqi, 1cqi) * var(--fs-scale));
+  --fs-emphasis: calc(5.35 * var(--_sec-1cqi, 1cqi) * var(--fs-scale));
+  --fs-h6: calc(2.4 * var(--_sec-1cqi, 1cqi) * var(--fs-scale));
+  --fs-h5: calc(3.3 * var(--_sec-1cqi, 1cqi) * var(--fs-scale));
+  --fs-h4: calc(4.05 * var(--_sec-1cqi, 1cqi) * var(--fs-scale));
+  --fs-h3: calc(4.6 * var(--_sec-1cqi, 1cqi) * var(--fs-scale));
+  --fs-h2: calc(5.55 * var(--_sec-1cqi, 1cqi));
+  --fs-h1: calc(8.15 * var(--_sec-1cqi, 1cqi));
+  --fs-hero: calc(13 * var(--_sec-1cqi, 1cqi) * var(--fs-scale));
 }
 
 /* === lib/base/base.elements.css === */
@@ -1506,7 +1525,7 @@ section.cards-grid > ol > li::before {
   content:counter(card);
   position:absolute; top:0; left:0;
   padding:0.46875cqi 1.09375cqi; border-radius:var(--radius-md) 0 var(--radius-sm) 0;
-  font-family:var(--font-mono); font-size:1.25cqi; font-weight:700; line-height:1;
+  font-family:var(--font-mono); font-size:var(--fs-meta); font-weight:700; line-height:1;
   color:var(--on-accent, var(--on-dark-primary)); background:var(--accent);
 }
 section.cards-grid .cards-grid-inner--ordered { counter-reset:card; }
@@ -1518,7 +1537,7 @@ section.cards-grid .cards-grid-inner--ordered > .card::before {
   content:counter(card);
   position:absolute; top:0; left:0;
   padding:0.46875cqi 1.09375cqi; border-radius:var(--radius-md) 0 var(--radius-sm) 0;
-  font-family:var(--font-mono); font-size:1.25cqi; font-weight:700; line-height:1;
+  font-family:var(--font-mono); font-size:var(--fs-meta); font-weight:700; line-height:1;
   color:var(--on-accent, var(--on-dark-primary)); background:var(--accent);
 }
 
@@ -1562,7 +1581,7 @@ section.cards-grid:not(:has(.cards-grid-inner)) > ol > li::before {
   content:counter(card);
   position:absolute; top:0; left:0;
   padding:0.46875cqi 1.09375cqi; border-radius:var(--radius-md) 0 var(--radius-sm) 0;
-  font-family:var(--font-mono); font-size:1.25cqi; font-weight:700; line-height:1;
+  font-family:var(--font-mono); font-size:var(--fs-meta); font-weight:700; line-height:1;
   color:var(--on-accent, var(--on-dark-primary)); background:var(--accent);
 }
 
@@ -1720,7 +1739,7 @@ section.cards-stack > ol > li::before {
   content:counter(stack);
   position:absolute; top:0; left:0;
   padding:0.46875cqi 1.09375cqi; border-radius:var(--radius-md) 0 var(--radius-sm) 0;
-  font-family:var(--font-mono); font-size:1.25cqi; font-weight:700; line-height:1;
+  font-family:var(--font-mono); font-size:var(--fs-meta); font-weight:700; line-height:1;
   color:var(--on-accent, var(--on-dark-primary)); background:var(--accent);
 }
 section.cards-stack .cards-stack-inner--ordered { counter-reset:stack; }
@@ -1732,7 +1751,7 @@ section.cards-stack .cards-stack-inner--ordered > .card::before {
   content:counter(stack);
   position:absolute; top:0; left:0;
   padding:0.46875cqi 1.09375cqi; border-radius:var(--radius-md) 0 var(--radius-sm) 0;
-  font-family:var(--font-mono); font-size:1.25cqi; font-weight:700; line-height:1;
+  font-family:var(--font-mono); font-size:var(--fs-meta); font-weight:700; line-height:1;
   color:var(--on-accent, var(--on-dark-primary)); background:var(--accent);
 }
 
@@ -2470,7 +2489,7 @@ section.compare-prose .compare-prose-inner .card:has(> strong:first-child) > str
   background: var(--accent);
   color: var(--on-accent, var(--on-dark-primary));
   font-family: var(--font-mono);
-  font-size: 1.171875cqi;
+  font-size: var(--fs-meta);
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -2524,7 +2543,7 @@ section.banner-tag.compare-prose .compare-prose-inner .card:has(> strong:first-c
   background: var(--accent);
   color: var(--on-accent, var(--on-dark-primary));
   font-family: var(--font-mono);
-  font-size: 1.09375cqi;
+  font-size: var(--fs-meta);
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -3720,14 +3739,14 @@ section.journey .journey-actor-dot {
   border-radius: 50%;
   background: var(--actor-color);
   color: var(--on-accent, var(--on-dark-primary));
-  font-size: 0.85cqi;
+  font-size: 0.85cqi; /* cqi-ok: actor initials fit inside a fixed 1.45cqi disc */
   font-weight: 700;
   line-height: 1;
   letter-spacing: 0.02em;
   flex-shrink: 0;
 }
 section.journey .journey-actor-dot[data-label-len="2"] {
-  font-size: 0.7cqi;
+  font-size: 0.7cqi; /* cqi-ok: 2-char actor initials fit inside a fixed 1.45cqi disc */
   letter-spacing: 0;
 }
 section.journey .journey-actor-name {
@@ -4804,7 +4823,7 @@ section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) 
  * tier — the briefing grid can't fit three h1-sized rows beside the hero. */
 section.kpi.briefing > ol > li:not(:first-child) > strong,
 section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) > ol > li:not(:first-child) > strong {
-  font-size: calc(3.9583cqi * var(--fs-scale));
+  font-size: calc(3.9583cqi * var(--fs-scale)); /* cqi-ok: briefing hero support — designed display size between h2 and h1 */
 }
 section.kpi.briefing > ol > li,
 section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) > ol > li {
@@ -5024,12 +5043,12 @@ section.kpi.spotlight > ol > li:not(:first-child) > ul > li:first-child {
   font-size: var(--fs-body);
 }
 section.kpi.spotlight > ol > li:not(:first-child) > ul > li + li {
-  font-size: 0.859375cqi;
+  font-size: var(--fs-meta);
   margin-top: 0.15625cqi;
 }
 section.kpi.spotlight > ol > li:not(:first-child) code {
   padding: 0.15625cqi 0.625cqi;
-  font-size: 0.78125cqi;
+  font-size: var(--fs-meta);
 }
 
 
@@ -8832,7 +8851,7 @@ section.roadmap thead th:not(:first-child) > code {
   display:inline-flex; align-items:center; justify-content:center;
   text-align:center; line-height:1;
   font-family:var(--pill-font);
-  font-size:0.859375cqi;              /* deliberate: small corner tag on a dense header cell */
+  font-size:0.859375cqi; /* cqi-ok: corner tag sized to the cqi-proportional roadmap grid cell (awaits chart portrait reflow) */
   font-weight:var(--pill-weight);
   letter-spacing:var(--pill-tracking);
   color:var(--cat-on-mark);              /* white on the saturated light-canvas fill, near-black on the pale dark-canvas fill */
@@ -9138,7 +9157,7 @@ section.roadmap.horizons .horizon-meta {
   display:inline-flex; align-items:center; justify-content:center;
   text-align:center; line-height:1;
   font-family:var(--pill-font);
-  font-size:0.859375cqi;              /* deliberate: small corner tag, matches the trailing-code pill */
+  font-size:0.859375cqi; /* cqi-ok: corner tag sized to the cqi-proportional roadmap grid cell (awaits chart portrait reflow) */
   font-weight:var(--pill-weight);
   letter-spacing:var(--pill-tracking);
   color:var(--cat-on-mark);              /* white on the saturated light-canvas fill, near-black on the pale dark-canvas fill */
@@ -9409,9 +9428,9 @@ section.split-panel.metric .panel-right > ul > li > :is(ul,ol) > li { color:var(
 
 /* ── .quote — pull-quote feature (former split-statement) ────────────────── */
 section.split-panel.pullquote .panel-left { width:50%; }
-section.split-panel.pullquote .panel-left::before { content:'\201C'; top:-2.1875cqi; left:1.09375cqi; right:auto; height:auto; width:auto; font-size:17.1875cqi; font-family:var(--font-display); font-weight:700; color:var(--on-dark-watermark); line-height:1; pointer-events:none; background:none; }
+section.split-panel.pullquote .panel-left::before { content:'\201C'; top:-2.1875cqi; left:1.09375cqi; right:auto; height:auto; width:auto; font-size:17.1875cqi /* cqi-ok: oversized decorative open-quote glyph */; font-family:var(--font-display); font-weight:700; color:var(--on-dark-watermark); line-height:1; pointer-events:none; background:none; }
 section.split-panel.pullquote .panel-left blockquote,
-section.split-panel.pullquote .panel-left blockquote p { font-size:calc(3.9583cqi * var(--fs-scale)); font-family:var(--font-display); font-weight:700; font-style:italic; color:var(--on-dark-primary); line-height:var(--lh-tight); position:relative; z-index:1; }
+section.split-panel.pullquote .panel-left blockquote p { font-size:calc(3.9583cqi * var(--fs-scale)) /* cqi-ok: designed pull-quote display size */; font-family:var(--font-display); font-weight:700; font-style:italic; color:var(--on-dark-primary); line-height:var(--lh-tight); position:relative; z-index:1; }
 section.split-panel.pullquote .panel-left blockquote { margin:0 0 var(--sp-md); }
 section.split-panel.pullquote .panel-left blockquote p { margin:0; }
 section.split-panel.pullquote .panel-left cite { font-size:var(--fs-message); font-family:var(--font-body); font-style:normal; color:var(--on-dark-secondary); position:relative; z-index:1; display:block; }
@@ -9439,7 +9458,7 @@ section.split-panel.steps .panel-right > :is(ul,ol) > li > :is(ul,ol) > li { fon
 section.split-panel.watermark .panel-left { width:34%; background:var(--accent); justify-content:flex-end; }
 section.split-panel.watermark .panel-left::before { background:var(--on-accent-watermark); height:4px; }
 section.split-panel.watermark .panel-left h2 { font-size:var(--fs-emphasis); color:var(--on-accent); margin:0; font-weight:800; }
-section.split-panel.watermark .panel-left .watermark { position:absolute; font-family:var(--font-display); font-size:calc(11.46cqi * var(--fs-scale)); font-weight:700; color:var(--on-accent-watermark); top:3.125cqi; left:1.5625cqi; line-height:1; pointer-events:none; }
+section.split-panel.watermark .panel-left .watermark { position:absolute; font-family:var(--font-display); font-size:calc(11.46cqi * var(--fs-scale)) /* cqi-ok: decorative watermark numeral */; font-weight:700; color:var(--on-accent-watermark); top:3.125cqi; left:1.5625cqi; line-height:1; pointer-events:none; }
 section.split-panel.watermark .panel-left > p:has(> code:only-child) { position:absolute; top:50%; transform:translateY(-50%); padding:0; margin:0; color:var(--on-accent-secondary); }
 section.split-panel.watermark .panel-left > p:has(> code:only-child) > code { color:var(--on-accent-secondary); background:none; border:none; padding:0; border-radius:0; }
 section.split-panel.watermark .panel-left > h5 { position:absolute; top:var(--sp-xl); margin:0; color:var(--on-accent-secondary); }
@@ -9450,7 +9469,7 @@ section.split-panel.watermark .panel-right > :is(ul,ol) { display:flex; flex-dir
 section.split-panel.watermark .panel-right > ol { counter-reset:panel-counter; }
 section.split-panel.watermark .panel-right > :is(ul,ol) > li { display:grid; align-content:start; justify-items:start; background:var(--bg-alt); border:1px solid var(--border); border-left:1px solid var(--border); border-radius:var(--radius-md); padding:1.09375cqi 1.40625cqi; font-size:var(--fs-body); color:var(--text-heading); font-weight:700; line-height:var(--lh-snug); }
 section.split-panel.watermark .panel-right > ol > li { counter-increment:panel-counter; grid-template-columns:3.59375cqi 1fr; grid-auto-rows:auto; column-gap:0.78125cqi; justify-items:stretch; padding:0; overflow:hidden; border:none; }
-section.split-panel.watermark .panel-right > ol > li::before { content:counter(panel-counter); grid-column:1; grid-row:1 / span 10; align-self:stretch; display:flex; align-items:center; justify-content:center; background:var(--accent); color:var(--on-accent, var(--on-dark-primary)); font-family:var(--font-mono); font-size:1.875cqi; font-weight:800; }
+section.split-panel.watermark .panel-right > ol > li::before { content:counter(panel-counter); grid-column:1; grid-row:1 / span 10; align-self:stretch; display:flex; align-items:center; justify-content:center; background:var(--accent); color:var(--on-accent, var(--on-dark-primary)); font-family:var(--font-mono); font-size:1.875cqi /* cqi-ok: counter numeral inside a fixed accent disc */; font-weight:800; }
 section.split-panel.watermark .panel-right > ol > li > :is(strong,span,p,em) { grid-column:2; padding:0.703125cqi 1.25cqi 0.234375cqi; margin:0; font-size:var(--fs-body); color:var(--text-heading); font-weight:700; line-height:var(--lh-snug); }
 section.split-panel.watermark .panel-right > ol > li > :is(strong,span,p,em):last-child { padding-bottom:0.703125cqi; }
 section.split-panel.watermark .panel-right > ol > li > :is(ul,ol) { grid-column:2; margin:0; padding:0 1.25cqi 0.703125cqi; }
@@ -9622,7 +9641,7 @@ section.state-chart .state-node .state-index {
   position: absolute;
   top: 0.15625cqi;
   right: 0.390625cqi;
-  font-size: 0.703125cqi;
+  font-size: 0.703125cqi; /* cqi-ok: index numeral inside a cqi-sized state node */
   font-variant-numeric: tabular-nums;
   color: var(--state-index-ink);
   pointer-events: none;
@@ -9708,7 +9727,7 @@ section.state-chart .state-edge-arrow[data-dir="back"] {
  * the label with a clear gap on each side. */
 section.state-chart .state-edge-label {
   fill: var(--state-node-ink);
-  font-size: 0.859375cqi;
+  font-size: 0.859375cqi; /* cqi-ok: edge label on a cqi-sized transition arrow */
   font-family: var(--font-mono);
   paint-order: stroke;
   stroke: var(--state-label-bg);
@@ -9796,7 +9815,7 @@ section.state-chart.horizontal .state-node-row .state-index {
   position: absolute;
   top: 0.15625cqi;
   right: 0.46875cqi;
-  font-size: 0.703125cqi;
+  font-size: 0.703125cqi; /* cqi-ok: index numeral inside a cqi-sized state node */
   color: var(--state-index-ink);
 }
 
@@ -10488,7 +10507,7 @@ section.verdict-grid > ul > li {
 section.verdict-grid > ul > li:last-child { background:var(--accent-soft); border-color:var(--on-accent-soft); color:var(--on-accent-soft); position:relative; overflow:hidden; padding-right:3.125cqi; }
 section.verdict-grid > ul > li:last-child::after {
   content:'✧'; position:absolute; top:0.625cqi; right:0.625cqi;
-  font-size:2.75cqi; line-height:1; color:var(--on-accent-soft); opacity:0.35;
+  font-size:2.75cqi; line-height:1; color:var(--on-accent-soft); opacity:0.35; /* cqi-ok: decorative ✧ glyph, 0.35 opacity — not read */
   font-family:var(--font-body); font-weight:400; letter-spacing:0;
   pointer-events:none;
 }
@@ -14562,7 +14581,7 @@ section.form .tile-watermark {
   z-index: -1;
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 44cqi;
+  font-size: 44cqi; /* cqi-ok: full-tile decorative watermark glyph */
   line-height: 0.8;
   letter-spacing: -0.03em;
   color: color-mix(in srgb, var(--accent) 14%, transparent);

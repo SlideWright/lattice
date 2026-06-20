@@ -145,7 +145,7 @@ section.roadmap thead th:not(:first-child) > code {
   display:inline-flex; align-items:center; justify-content:center;
   text-align:center; line-height:1;
   font-family:var(--pill-font);
-  font-size:0.859375cqi;              /* deliberate: small corner tag on a dense header cell */
+  font-size:0.859375cqi; /* cqi-ok: corner tag sized to the cqi-proportional roadmap grid cell (awaits chart portrait reflow) */
   font-weight:var(--pill-weight);
   letter-spacing:var(--pill-tracking);
   color:var(--cat-on-mark);              /* white on the saturated light-canvas fill, near-black on the pale dark-canvas fill */
@@ -451,7 +451,7 @@ section.roadmap.horizons .horizon-meta {
   display:inline-flex; align-items:center; justify-content:center;
   text-align:center; line-height:1;
   font-family:var(--pill-font);
-  font-size:0.859375cqi;              /* deliberate: small corner tag, matches the trailing-code pill */
+  font-size:0.859375cqi; /* cqi-ok: corner tag sized to the cqi-proportional roadmap grid cell (awaits chart portrait reflow) */
   font-weight:var(--pill-weight);
   letter-spacing:var(--pill-tracking);
   color:var(--cat-on-mark);              /* white on the saturated light-canvas fill, near-black on the pale dark-canvas fill */

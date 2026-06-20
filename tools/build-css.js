@@ -44,6 +44,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { minifyCss } = require('./minify-css');
+const { typographyTokensCss } = require('../lib/typography/emit');
 
 const ROOT = path.join(__dirname, '..');
 const OUTPUT = path.join(ROOT, 'dist', 'lattice.css');
@@ -282,6 +283,14 @@ function bundle() {
     if (text) {
       parts.push(`/* === ${rel} === */`);
       parts.push(text);
+    }
+    // The --fs-* typography tokens are GENERATED from the lib/typography/scale.js
+    // manifest (curated landscape/square/portrait scales) — emitted right after
+    // base.tokens.css so they sit in the HEAD token tier, before components, the
+    // same cascade slot the hand-written block held.
+    if (rel === 'lib/base/base.tokens.css') {
+      parts.push('/* === GENERATED lib/typography/scale.js (--fs-* tokens) === */');
+      parts.push(`${typographyTokensCss()}\n`);
     }
   }
   // KaTeX base layout sheet (vendored from the package). Early, before

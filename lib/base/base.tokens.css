@@ -477,7 +477,10 @@
   --pill-pad-y:    0.3em;
   --pill-pad-x:    0.75em;
   --pill-font:     var(--font-body);
-  --pill-fs:       var(--fs-meta);
+  /* --pill-fs (= the meta role) is emitted on `:root, section` by the typography
+   * generator (lib/typography/emit.js), NOT here: a `:root`-only alias would bake
+   * in the landscape --fs-meta and never pick up the per-section orientation
+   * override, so pills rendered fine-print on every portrait/square slide. */
   --pill-weight:   600;
   --pill-tracking: 0.04em;
 
@@ -589,52 +592,18 @@
   --sp-2xl: calc(5       * var(--_sec-1cqi, 1cqi) * var(--canvas-scale, 1));
 }
 
-/* ── The 12 typography tokens, scaled ──────────────────────────────────
- * Each scaling token is `<base> * var(--_sec-1cqi, 1cqi) * var(--fs-scale)`.
- * --fs-h1 and --fs-h2 are EXEMPT from --fs-scale — held at their designed
- * display size so the dominant tier (slide titles + the KPI/stats numbers and
- * table/chart headers that reuse those two tokens) stays put while the readable
- * sizes grow (§7) — but they STILL route through --_sec-1cqi (see below).
- * Computed on BOTH :root and section so the multiplier re-resolves
- * wherever --fs-scale is overridden:
- *   - :root copy  → base×1 by default; a frontmatter `:root{--fs-scale}`
- *     or all-slides `class:` directive moves the whole deck, and keeps the
- *     tokens defined at :root for the Marp chrome bridges below.
- *   - section copy → re-runs the calc against each slide's own --fs-scale,
- *     so a spot `_class: scale-xl` scales one slide (and its ::after
- *     pagination / header / footer chrome, which inherit from the section).
- *
- * WHY `var(--_sec-1cqi, 1cqi)` and not a bare `cqi`: section has
- * `container-type:size`, so a `cqi` consumed by the section's OWN font-size
- * (`section{font-size:var(--fs-body)}`, which every gfm body element inherits)
- * cannot query the section itself and falls back to the ICB. That is the slide
- * ONLY when the viewport == the slide (the canonical emulator/print path); in a
- * preview iframe the ICB is the editor pane, so body copy collapsed to ~10px on
- * every @size (egregious at 4K). The runtime sets `--_sec-1cqi` =
- * section.offsetWidth/100px per slide (lib/runtime patchSectionGeometry), the
- * same hook the section's padding + border-top already use; the `1cqi` fallback
- * fires only where --_sec-1cqi is unset (the @page/print path), so the canonical
- * render is byte-identical. Child consumers (`h2{font-size:var(--fs-h2)}`, …)
- * inherit the section's already-substituted value, so they resolve identically.
- * The base multipliers are the single source of truth — the pt @ HD footprint
- * documented in engineering/typography.md §1. Do not also pin these on :root
- * above; CSS substitutes var(--fs-scale) at the element a custom property is
- * *declared* on, so a :root-only calc would bake in ×1 and never see a per-slide
- * override. */
-:root, section {
-  --fs-meta:     calc(1.17    * var(--_sec-1cqi, 1cqi) * var(--fs-scale) * var(--canvas-scale, 1)); /* 11.25pt — chrome */
-  --fs-body-compact: calc(1.40 * var(--_sec-1cqi, 1cqi) * var(--fs-scale) * var(--canvas-scale, 1)); /* 13.5pt — dense reference cells */
-  --fs-body:     calc(1.67    * var(--_sec-1cqi, 1cqi) * var(--fs-scale) * var(--canvas-scale, 1)); /* 16pt — container default */
-  --fs-message:  calc(2.1875  * var(--_sec-1cqi, 1cqi) * var(--fs-scale) * var(--canvas-scale, 1)); /* 21pt — slide-level statement */
-  --fs-emphasis: calc(3.125   * var(--_sec-1cqi, 1cqi) * var(--fs-scale) * var(--canvas-scale, 1)); /* 30pt — lead callout */
-  --fs-h1:       calc(5.0     * var(--_sec-1cqi, 1cqi) * var(--canvas-scale, 1));                   /* 48pt — dominant slide title; NOT --fs-scaled (§7), but follows orientation */
-  --fs-h2:       calc(2.9167  * var(--_sec-1cqi, 1cqi) * var(--canvas-scale, 1));                   /* 28pt — standard slide title; NOT --fs-scaled (§7), but follows orientation */
-  --fs-h3:       calc(2.3958  * var(--_sec-1cqi, 1cqi) * var(--fs-scale) * var(--canvas-scale, 1)); /* 23pt — subheading / column header */
-  --fs-h4:       calc(2.1875  * var(--_sec-1cqi, 1cqi) * var(--fs-scale) * var(--canvas-scale, 1)); /* 21pt — = --fs-message, weight-differentiated */
-  --fs-h5:       calc(1.67    * var(--_sec-1cqi, 1cqi) * var(--fs-scale) * var(--canvas-scale, 1)); /* 16pt — = --fs-body, weight-differentiated */
-  --fs-h6:       calc(1.17    * var(--_sec-1cqi, 1cqi) * var(--fs-scale) * var(--canvas-scale, 1)); /* 11.25pt — = --fs-meta, weight-differentiated */
-  --fs-hero:     calc(8.9583  * var(--_sec-1cqi, 1cqi) * var(--fs-scale) * var(--canvas-scale, 1)); /* 86pt — KPI / watermark; class-driven */
-}
+/* ── The 12 typography tokens — GENERATED, not hand-written here ────────
+ * The `--fs-*` scale moved to the lib/typography/scale.js manifest + emitter
+ * (lib/typography/emit.js), which tools/build-css.js bundles in right after this
+ * file. One source of truth, three CURATED categories (landscape/square/portrait)
+ * selected per slide off `data-orientation` — orientation changes the COEFFICIENT,
+ * not a uniform `--canvas-scale` multiplier (retired for type; --sp-* still uses
+ * it). Each token is `coeff × var(--_sec-1cqi, 1cqi)` (× `var(--fs-scale)` except
+ * the §7-exempt h1/h2), so the runtime-stamped section 1cqi + per-slide size knob
+ * keep working unchanged, and landscape stays byte-identical. The chrome alias
+ * `--pill-fs` (= the meta role) is emitted alongside so it follows the per-section
+ * override. See engineering/decisions/2026-06-20-typography-categories.md and
+ * engineering/typography.md §1. Do NOT re-add a hand-written --fs-* block here. */
 
 /* ── Universal theme defaults (any palette :root override wins via source order) ─
  * on-dark-* : opacity ramp for text on dark panel surfaces.

@@ -133,14 +133,14 @@ section.journey .journey-actor-dot {
   border-radius: 50%;
   background: var(--actor-color);
   color: var(--on-accent, var(--on-dark-primary));
-  font-size: 0.85cqi;
+  font-size: 0.85cqi; /* cqi-ok: actor initials fit inside a fixed 1.45cqi disc */
   font-weight: 700;
   line-height: 1;
   letter-spacing: 0.02em;
   flex-shrink: 0;
 }
 section.journey .journey-actor-dot[data-label-len="2"] {
-  font-size: 0.7cqi;
+  font-size: 0.7cqi; /* cqi-ok: 2-char actor initials fit inside a fixed 1.45cqi disc */
   letter-spacing: 0;
 }
 section.journey .journey-actor-name {

@@ -183,7 +183,7 @@ section.compare-prose .compare-prose-inner .card:has(> strong:first-child) > str
   background: var(--accent);
   color: var(--on-accent, var(--on-dark-primary));
   font-family: var(--font-mono);
-  font-size: 1.171875cqi;
+  font-size: var(--fs-meta);
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -237,7 +237,7 @@ section.banner-tag.compare-prose .compare-prose-inner .card:has(> strong:first-c
   background: var(--accent);
   color: var(--on-accent, var(--on-dark-primary));
   font-family: var(--font-mono);
-  font-size: 1.09375cqi;
+  font-size: var(--fs-meta);
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;

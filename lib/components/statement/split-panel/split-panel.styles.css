@@ -41,9 +41,9 @@ section.split-panel.metric .panel-right > ul > li > :is(ul,ol) > li { color:var(
 
 /* ── .quote — pull-quote feature (former split-statement) ────────────────── */
 section.split-panel.pullquote .panel-left { width:50%; }
-section.split-panel.pullquote .panel-left::before { content:'\201C'; top:-2.1875cqi; left:1.09375cqi; right:auto; height:auto; width:auto; font-size:17.1875cqi; font-family:var(--font-display); font-weight:700; color:var(--on-dark-watermark); line-height:1; pointer-events:none; background:none; }
+section.split-panel.pullquote .panel-left::before { content:'\201C'; top:-2.1875cqi; left:1.09375cqi; right:auto; height:auto; width:auto; font-size:17.1875cqi /* cqi-ok: oversized decorative open-quote glyph */; font-family:var(--font-display); font-weight:700; color:var(--on-dark-watermark); line-height:1; pointer-events:none; background:none; }
 section.split-panel.pullquote .panel-left blockquote,
-section.split-panel.pullquote .panel-left blockquote p { font-size:calc(3.9583cqi * var(--fs-scale)); font-family:var(--font-display); font-weight:700; font-style:italic; color:var(--on-dark-primary); line-height:var(--lh-tight); position:relative; z-index:1; }
+section.split-panel.pullquote .panel-left blockquote p { font-size:calc(3.9583cqi * var(--fs-scale)) /* cqi-ok: designed pull-quote display size */; font-family:var(--font-display); font-weight:700; font-style:italic; color:var(--on-dark-primary); line-height:var(--lh-tight); position:relative; z-index:1; }
 section.split-panel.pullquote .panel-left blockquote { margin:0 0 var(--sp-md); }
 section.split-panel.pullquote .panel-left blockquote p { margin:0; }
 section.split-panel.pullquote .panel-left cite { font-size:var(--fs-message); font-family:var(--font-body); font-style:normal; color:var(--on-dark-secondary); position:relative; z-index:1; display:block; }
@@ -71,7 +71,7 @@ section.split-panel.steps .panel-right > :is(ul,ol) > li > :is(ul,ol) > li { fon
 section.split-panel.watermark .panel-left { width:34%; background:var(--accent); justify-content:flex-end; }
 section.split-panel.watermark .panel-left::before { background:var(--on-accent-watermark); height:4px; }
 section.split-panel.watermark .panel-left h2 { font-size:var(--fs-emphasis); color:var(--on-accent); margin:0; font-weight:800; }
-section.split-panel.watermark .panel-left .watermark { position:absolute; font-family:var(--font-display); font-size:calc(11.46cqi * var(--fs-scale)); font-weight:700; color:var(--on-accent-watermark); top:3.125cqi; left:1.5625cqi; line-height:1; pointer-events:none; }
+section.split-panel.watermark .panel-left .watermark { position:absolute; font-family:var(--font-display); font-size:calc(11.46cqi * var(--fs-scale)) /* cqi-ok: decorative watermark numeral */; font-weight:700; color:var(--on-accent-watermark); top:3.125cqi; left:1.5625cqi; line-height:1; pointer-events:none; }
 section.split-panel.watermark .panel-left > p:has(> code:only-child) { position:absolute; top:50%; transform:translateY(-50%); padding:0; margin:0; color:var(--on-accent-secondary); }
 section.split-panel.watermark .panel-left > p:has(> code:only-child) > code { color:var(--on-accent-secondary); background:none; border:none; padding:0; border-radius:0; }
 section.split-panel.watermark .panel-left > h5 { position:absolute; top:var(--sp-xl); margin:0; color:var(--on-accent-secondary); }
@@ -82,7 +82,7 @@ section.split-panel.watermark .panel-right > :is(ul,ol) { display:flex; flex-dir
 section.split-panel.watermark .panel-right > ol { counter-reset:panel-counter; }
 section.split-panel.watermark .panel-right > :is(ul,ol) > li { display:grid; align-content:start; justify-items:start; background:var(--bg-alt); border:1px solid var(--border); border-left:1px solid var(--border); border-radius:var(--radius-md); padding:1.09375cqi 1.40625cqi; font-size:var(--fs-body); color:var(--text-heading); font-weight:700; line-height:var(--lh-snug); }
 section.split-panel.watermark .panel-right > ol > li { counter-increment:panel-counter; grid-template-columns:3.59375cqi 1fr; grid-auto-rows:auto; column-gap:0.78125cqi; justify-items:stretch; padding:0; overflow:hidden; border:none; }
-section.split-panel.watermark .panel-right > ol > li::before { content:counter(panel-counter); grid-column:1; grid-row:1 / span 10; align-self:stretch; display:flex; align-items:center; justify-content:center; background:var(--accent); color:var(--on-accent, var(--on-dark-primary)); font-family:var(--font-mono); font-size:1.875cqi; font-weight:800; }
+section.split-panel.watermark .panel-right > ol > li::before { content:counter(panel-counter); grid-column:1; grid-row:1 / span 10; align-self:stretch; display:flex; align-items:center; justify-content:center; background:var(--accent); color:var(--on-accent, var(--on-dark-primary)); font-family:var(--font-mono); font-size:1.875cqi /* cqi-ok: counter numeral inside a fixed accent disc */; font-weight:800; }
 section.split-panel.watermark .panel-right > ol > li > :is(strong,span,p,em) { grid-column:2; padding:0.703125cqi 1.25cqi 0.234375cqi; margin:0; font-size:var(--fs-body); color:var(--text-heading); font-weight:700; line-height:var(--lh-snug); }
 section.split-panel.watermark .panel-right > ol > li > :is(strong,span,p,em):last-child { padding-bottom:0.703125cqi; }
 section.split-panel.watermark .panel-right > ol > li > :is(ul,ol) { grid-column:2; margin:0; padding:0 1.25cqi 0.703125cqi; }
