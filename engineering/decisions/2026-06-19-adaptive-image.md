@@ -64,7 +64,7 @@ path and the browser-measure path — no second source of truth.
 | **clean** *(default)* | a floated card whose **aspect adapts to the photo** — a square photo gets a square card, a wide one a wide card — beside a text panel (landscape) or stacked (portrait) | ≈ zero |
 | **split** | an extreme-aspect photo shown **whole**: full-height column (landscape) or full-width band (portrait) | ≈ zero |
 | **spotlight** | full-bleed cover where the photo already **matches** the canvas, text in a **solid** card | fills (matched) |
-| **gallery** *(opt-in)* | contain on a matte + placard — for diagrams / screenshots with meaningful whitespace | zero (letterboxed) |
+| **gallery** *(opt-in)* | a passe-partout picture frame that HUGS the asset's aspect (mat + bevel + frame line + lift), Title + body placard below — for diagrams / screenshots with meaningful whitespace | zero |
 | **statement** *(opt-in)* | full-bleed + scrim + editorial title | fills |
 
 ### The resolution tables
