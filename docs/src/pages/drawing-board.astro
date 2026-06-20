@@ -1018,6 +1018,10 @@ const dbData = JSON.stringify({
 						onStatus('Exporting chart…');
 						// The cursor's slide index comes from the LIVE preview (the capture
 						// host has no cursor); the chart is then exported from the capture host.
+						// The "Export chart" menu entry is itself gated on the live frame's
+						// `.db-active` chart (hasActiveChart), so when this runs an active
+						// chart slide exists; a -1 here (none active) yields a sensible
+						// "put the cursor in a slide that has a chart" error downstream.
 						const live = frame.contentDocument ? [...frame.contentDocument.querySelectorAll('.marpit>section')] : [];
 						const activeIndex = live.findIndex((s) => s.classList.contains('db-active'));
 						await exportChart(await exportRender(), activeIndex, deckName(), onStatus);

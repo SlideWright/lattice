@@ -248,6 +248,12 @@ export async function exportMarp(source, name, palette, themeBase, { includeAgen
 // or intercept input; the iframe inside still lays out at the full slide width
 // (a parent's overflow clip does not change an iframe's internal layout), which is
 // all the capture needs.
+// Resolve when `p` settles OR after `ms`, whichever is first — so a capture-prelude
+// await can never hang the whole export on a wedged load/font promise.
+function withTimeout(p, ms) {
+	return Promise.race([Promise.resolve(p), new Promise((res) => setTimeout(res, ms))]);
+}
+
 async function createCaptureFrame({ html, css, mode, geom, runtimeUrl, fontCss }) {
 	const gw = geom?.w || 1280;
 	const gh = geom?.h || 720;
@@ -267,16 +273,21 @@ async function createCaptureFrame({ html, css, mode, geom, runtimeUrl, fontCss }
 		// the real width; rasterizeSection undoes the scale (transform:none) per slide.
 		const srcdoc = buildSrcdoc({ html, css, mode, geom: { w: gw, h: gh }, runtimeUrl, fontCss,
 			contentVisibility: false, cursor: false, sync: false, printRules: false });
-		await new Promise((res) => { frame.addEventListener('load', () => res(), { once: true }); frame.srcdoc = srcdoc; });
+		// Every settle await below is BOUNDED — an unbounded wait could hang the
+		// export forever (a srcdoc whose load never fires, or a `fonts.ready` that
+		// stalls on a slow/failed face), leaving the mobile progress card stuck with
+		// no error and no Retry. A slightly-early capture is safe: sectionsOf →
+		// ensureFontsLoaded re-waits afterward with the embedded data-URI faces.
+		await withTimeout(new Promise((res) => { frame.addEventListener('load', () => res(), { once: true }); frame.srcdoc = srcdoc; }), 10000);
 		const win = frame.contentWindow;
 		const doc = frame.contentDocument;
 		if (!doc) throw new Error('Could not prepare the export render.');
-		if (win && win.__latticeFit) win.__latticeFit();
+		if (win?.__latticeFit) win.__latticeFit();
 		// Let fonts, layout, and any async diagrams (Mermaid) settle before capture.
-		try { if (doc.fonts && doc.fonts.ready) await doc.fonts.ready; } catch (_e) {}
+		try { if (doc.fonts?.ready) await withTimeout(doc.fonts.ready, 8000); } catch (_e) {}
 		await new Promise((res) => requestAnimationFrame(() => requestAnimationFrame(res)));
 		await waitForDiagrams(doc);
-		if (win && win.__latticeFit) win.__latticeFit();
+		if (win?.__latticeFit) win.__latticeFit();
 	} catch (e) {
 		dispose();
 		throw e;
