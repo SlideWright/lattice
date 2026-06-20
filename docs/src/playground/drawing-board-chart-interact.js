@@ -70,17 +70,10 @@ export function createChartInteract({ stage, getFrame, tilt = true, onReveal }) 
     chartBox = { left: fr.left + cr.left - sr.left, top: fr.top + cr.top - sr.top, width: cr.width, height: cr.height };
     hit.style.cssText =
       `display:block;left:${chartBox.left}px;top:${chartBox.top}px;width:${chartBox.width}px;height:${chartBox.height}px`;
-    if (openSlice >= 0) positionPop(openSlice);
+    if (openSlice >= 0) positionPop();
   }
 
   function hide() { hit.style.display = 'none'; }
-
-  // Anchor the popover to the active wedge, kept within the chart's vertical band
-  // so it never rides up over the slide title.
-  function rectInStage(node) {
-    const fr = getFrame().getBoundingClientRect(), sr = stage.getBoundingClientRect(), r = node.getBoundingClientRect();
-    return { left: fr.left + r.left - sr.left, top: fr.top + r.top - sr.top, width: r.width, height: r.height };
-  }
 
   // ── lifecycle: called after every slide change ──────────────────────────────
   function onSlide(idx) {
@@ -151,22 +144,34 @@ export function createChartInteract({ stage, getFrame, tilt = true, onReveal }) 
   function textOf(d, sel, i) {
     if (!d) return '';
     const n = d.querySelectorAll(sel)[i];
-    return n ? n.textContent.trim() : '';
+    if (!n) return '';
+    // A wrapped legend label is split across <tspan> lines; textContent would glue
+    // them ("Actuallydeciding") — join the tspans with a space instead.
+    const spans = n.querySelectorAll('tspan');
+    return (spans.length ? [...spans].map((s) => s.textContent.trim()).join(' ') : n.textContent).trim();
   }
 
-  function positionPop(i) {
+  // Anchor the popover to a STABLE spot — centred under the pie disc, just below it
+  // — rather than chasing each wedge's box (which jumps for thin/edge slices and can
+  // ride up over the title). The active slice is already identified by the lift, the
+  // dim, and the popover's colour dot + label, so a calm fixed position reads better.
+  // The disc = the union of the wedge boxes (orientation-agnostic).
+  function positionPop() {
     const d = doc(); if (!d || !chartBox) return;
-    const w = d.querySelectorAll('.wedge[data-slice]')[i];
-    if (!w) return;
-    let wb; try { wb = rectInStage(w); } catch { return; }
+    const wedges = d.querySelectorAll('.wedge[data-slice]');
+    if (!wedges.length) return;
+    let fr, sr;
+    try { fr = getFrame().getBoundingClientRect(); sr = stage.getBoundingClientRect(); } catch { return; }
+    let minX = Infinity, maxX = -Infinity, maxY = -Infinity;
+    wedges.forEach((w) => {
+      const r = w.getBoundingClientRect();
+      const l = fr.left + r.left - sr.left, t = fr.top + r.top - sr.top;
+      minX = Math.min(minX, l); maxX = Math.max(maxX, l + r.width); maxY = Math.max(maxY, t + r.height);
+    });
     pop.style.visibility = 'hidden'; pop.style.display = 'block';
     const pw = pop.offsetWidth, ph = pop.offsetHeight;
-    const sr = stage.getBoundingClientRect();
-    // Horizontally centred on the wedge; vertically ABOVE it, but never above the
-    // chart's own top (→ would cover the title), in which case drop below the wedge.
-    let x = wb.left + wb.width / 2 - pw / 2;
-    let y = wb.top - ph - 12;
-    if (y < chartBox.top) y = wb.top + wb.height + 12;
+    let x = (minX + maxX) / 2 - pw / 2;       // centred under the disc
+    let y = maxY + 12;                         // just below the disc
     x = Math.max(8, Math.min(x, sr.width - pw - 8));
     y = Math.max(chartBox.top, Math.min(y, sr.height - ph - 8));
     pop.style.left = `${x}px`; pop.style.top = `${y}px`; pop.style.visibility = '';
