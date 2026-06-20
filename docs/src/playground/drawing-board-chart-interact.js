@@ -213,6 +213,12 @@ export function createChartInteract({ stage, getFrame, tilt = true, onReveal, ho
   const virtualRef = { getBoundingClientRect: discRect };
 
   function placePop() {
+    // Skip a frame where the disc reports a degenerate box (mid-patch, detached,
+    // or scrolled off): the continuous autoUpdate loop would otherwise anchor to
+    // EMPTY_RECT at (0,0) and flash the popover to the corner. reflow()/scroll
+    // clear() the stale popover shortly after; until then, just hold position.
+    const r = discRect();
+    if (!r.width || !r.height) return;
     computePosition(virtualRef, pop, {
       placement: 'bottom',
       strategy: 'absolute',
@@ -266,7 +272,6 @@ export function createChartInteract({ stage, getFrame, tilt = true, onReveal, ho
   }
 
   function clear() {
-    if (openSlice < 0 && !pop.classList.contains('show')) { /* nothing open */ }
     openSlice = -1;
     stopPop();
     pop.classList.remove('show');
