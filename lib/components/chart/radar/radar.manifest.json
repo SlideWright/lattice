@@ -33,7 +33,7 @@
   },
   "skeleton": "<!-- _class: radar -->\n\n`Scale · 0–10`\n\n## How we stack up across the buying criteria.\n\n- Lattice\n  - Performance `9`\n  - Pricing `7`\n  - Support `8`\n  - Ecosystem `6`\n  - Security `9`\n- Rival North\n  - Performance `7`\n  - Pricing `8`\n  - Support `6`\n  - Ecosystem `9`\n  - Security `7`\n- Rival West\n  - Performance `6`\n  - Pricing `9`\n  - Support `7`\n  - Ecosystem `8`\n  - Security `8`\n",
   "anatomyBlock": "radar-canvas",
-  "sample": "<!-- _class: radar -->\n\n`Scale · 0–10`\n\n## How we stack up across the buying criteria.\n\n- Meridian\n  - Performance `9`\n  - Pricing `7`\n  - Support `8`\n  - Ecosystem `6`\n  - Security `9`\n- Vantage\n  - Performance `7`\n  - Pricing `8`\n  - Support `6`\n  - Ecosystem `9`\n  - Security `7`\n- Helios\n  - Performance `6`\n  - Pricing `9`\n  - Support `7`\n  - Ecosystem `8`\n  - Security `8`\n",
+  "sample": "<!-- _class: radar -->\n\n`Scale · 0–10`\n\n## How we stack up across the buying criteria.\n\n- Meridian\n  - Performance `9`\n    - Measured as p95 latency; lower is better\n    - Our strongest axis against the field\n  - Pricing `7`\n  - Support `8`\n  - Ecosystem `6`\n  - Security `9`\n- Vantage\n  - Performance `7`\n  - Pricing `8`\n  - Support `6`\n  - Ecosystem `9`\n  - Security `7`\n- Helios\n  - Performance `6`\n  - Pricing `9`\n  - Support `7`\n  - Ecosystem `8`\n  - Security `8`\n",
   "whenToUse": [
     {
       "title": "Same criteria, multiple options",

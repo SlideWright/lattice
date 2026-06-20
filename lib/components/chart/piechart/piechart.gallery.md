@@ -25,6 +25,8 @@ Pie or donut chart with legend — proportional wedges.
 Nearly half went to producing decks; the deciding itself was the smallest slice.
 
 - Deck production `46%`
+  - 92 decks, averaging 18 slides each
+  - Most of it review-cycle churn
 - Meetings about meetings `22%`
 - Realigning on priorities `18%`
 - Stakeholder management `9%`
@@ -103,6 +105,8 @@ Nearly half went to producing decks; the deciding itself was the smallest slice.
 Nearly half went to producing decks; the deciding itself was the smallest slice.
 
 - Deck production `46%`
+  - 92 decks, averaging 18 slides each
+  - Most of it review-cycle churn
 - Meetings about meetings `22%`
 - Realigning on priorities `18%`
 - Stakeholder management `9%`
@@ -121,6 +125,8 @@ Nearly half went to producing decks; the deciding itself was the smallest slice.
 Nearly half went to producing decks; the deciding itself was the smallest slice.
 
 - Deck production `46%`
+  - 92 decks, averaging 18 slides each
+  - Most of it review-cycle churn
 - Meetings about meetings `22%`
 - Realigning on priorities `18%`
 - Stakeholder management `9%`
@@ -139,6 +145,8 @@ Nearly half went to producing decks; the deciding itself was the smallest slice.
 Nearly half went to producing decks; the deciding itself was the smallest slice.
 
 - Deck production `46%`
+  - 92 decks, averaging 18 slides each
+  - Most of it review-cycle churn
 - Meetings about meetings `22%`
 - Realigning on priorities `18%`
 - Stakeholder management `9%`

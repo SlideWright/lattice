@@ -24,6 +24,8 @@ Native radar / spider chart — items rated across multiple axes.
 
 - Meridian
   - Performance `9`
+    - Measured as p95 latency; lower is better
+    - Our strongest axis against the field
   - Pricing `7`
   - Support `8`
   - Ecosystem `6`
@@ -293,6 +295,8 @@ Meridian leads on performance and support; Helios is the value pick across prici
 
 - Meridian
   - Performance `9`
+    - Measured as p95 latency; lower is better
+    - Our strongest axis against the field
   - Pricing `7`
   - Support `8`
   - Ecosystem `6`
@@ -322,6 +326,8 @@ Meridian leads on performance and support; Helios is the value pick across prici
 
 - Meridian
   - Performance `9`
+    - Measured as p95 latency; lower is better
+    - Our strongest axis against the field
   - Pricing `7`
   - Support `8`
   - Ecosystem `6`
@@ -351,6 +357,8 @@ Meridian leads on performance and support; Helios is the value pick across prici
 
 - Meridian
   - Performance `9`
+    - Measured as p95 latency; lower is better
+    - Our strongest axis against the field
   - Pricing `7`
   - Support `8`
   - Ecosystem `6`

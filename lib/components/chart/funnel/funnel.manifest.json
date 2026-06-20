@@ -28,7 +28,7 @@
   },
   "skeleton": "<!-- _class: funnel -->\n\n## Where the flow drops off.\n\n- First stage `1000`\n- Second stage `600`\n- Third stage `320`\n- Fourth stage `140`\n",
   "anatomyBlock": "funnel",
-  "sample": "<!-- _class: funnel -->\n\n## Where the signup pipeline leaks.\n\n- Visitors `12,000`\n- Signups `4,800`\n- Activated `2,160`\n- Paid `864`\n- Renewed `670`\n",
+  "sample": "<!-- _class: funnel -->\n\n## Where the signup pipeline leaks.\n\n- Visitors `12,000`\n  - Two-thirds arrive from inbound, not outbound\n  - Paid search makes up the rest\n- Signups `4,800`\n- Activated `2,160`\n- Paid `864`\n- Renewed `670`\n",
   "stressSample": "<!-- _class: funnel -->\n\n## Seven stages, a steep early drop.\n\n- Impressions `240,000`\n- Clicks `38,400`\n- Visits `21,600`\n- Signups `5,400`\n- Activated `2,160`\n- Paid `648`\n- Renewed `512`\n",
   "whenToUse": [
     {
