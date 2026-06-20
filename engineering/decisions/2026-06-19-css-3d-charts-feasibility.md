@@ -157,6 +157,18 @@ interaction-coupled (the recommended synthesis).
 
 ## Open / deferred
 
+- **In-editor preview reveal — SHIPPED (#452.2).** Hovering a pie wedge in the Drawing
+  Board's live preview now reveals the slice detail *as you author*, so you don't enter
+  Present and page to the slide to check it. The same `createChartInteract` module gained
+  a `hoverAny` mode: instead of a hit-surface pinned over one `onSlide()`-designated chart,
+  it listens on the same-origin preview iframe document and reveals whichever chart is
+  under the pointer (wedge/legend queries scoped to that section — fixing a latent
+  whole-doc-query bug that would have mixed up multiple charts). Re-bound on every srcdoc
+  rewrite (`db-frame-ready`). No hit-surface is mounted (it would eat the iframe's own
+  pointer events); the popover stays a parent overlay, so the exported SVG/PDF is
+  untouched. The earlier "filmstrip thumbnails are awkward for a popover" worry is moot —
+  the editing preview shows full-size slides, so the reveal lands on the chart directly.
+  Verified at 1440/820/390px. Wired in `drawing-board-render.js`.
 - **Print fallback — SHIPPED (#452.1) as the speaker-notes channel.** Decision: the
   authored detail is folded into the slide's **speaker note** (`Label (value): item ·
   item`, one line per detailed slice) as a Marp-faithful `<!-- … -->` comment that

@@ -32,6 +32,7 @@
 // so either ordering is handled.
 
 import { createThemeFetcher } from '../lib/theme-fetch.ts';
+import { createChartInteract } from './drawing-board-chart-interact.js';
 
 export function createRenderController(data) {
 	var THEME_BASE = data.themeBase;
@@ -61,6 +62,16 @@ export function createRenderController(data) {
 	// machinery are retired now that there is a single vocabulary.
 	var root = document.documentElement;
 	var frame = document.getElementById('db-frame');
+	// Live in-preview chart interaction: hover a pie slice in the editing preview
+	// to reveal its authored detail, AS YOU EDIT — no entering Present + paging to
+	// the slide. Parent-hosted (the iframe stays a paint surface); preview-only, so
+	// the exported SVG/PDF is untouched. Re-bound on every srcdoc rewrite below.
+	// Stage = the preview's panel body (position:relative; wraps the iframe), so the
+	// parent overlay maps to the iframe's box and the popover stays within the preview.
+	var previewStage = document.querySelector('#db-preview .db-panel-body');
+	var chartInteract = (previewStage && frame)
+		? createChartInteract({ stage: previewStage, getFrame: () => frame, hoverAny: true })
+		: null;
 	var statusEl = document.getElementById('db-status');
 	var paletteSel = document.getElementById('palette');
 	var modeBtn = document.getElementById('mode-toggle');
@@ -305,6 +316,9 @@ export function createRenderController(data) {
 			setSlideStatus();
 		} else if (d.type === 'db-frame-ready') {
 			postToFrame({ type: 'db-scroll-to', idx: activeIdx, smooth: false });
+			// A srcdoc rewrite replaced the iframe document — re-bind the hover layer
+			// to the new doc (its old listeners + section refs died with the old one).
+			if (chartInteract) chartInteract.rebind();
 		}
 	});
 	function wireEditor() {
