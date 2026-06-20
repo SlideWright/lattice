@@ -949,6 +949,14 @@ const dbData = JSON.stringify({
 			async function runExport(kind) {
 				const frame = document.getElementById('db-frame');
 				const source = window.__dbEditor ? window.__dbEditor.getValue() : '';
+				// The image exports (PDF/PPTX/chart) rasterize a DEDICATED capture host,
+				// not the live preview — so they never go blank/collapsed when exported
+				// from the phone Edit tab. The controller hands over the deck's engine
+				// render (html/css/geom/runtime/fonts) for that host to mount.
+				const exportRender = () => {
+					if (!window.__dbExportRender) throw new Error('Engine not ready — try again in a moment.');
+					return window.__dbExportRender();
+				};
 				// Provenance for the export stamp: which engine + build + theme rendered
 				// these slides (drawing-board-export.js packs it into document properties).
 				const root = document.documentElement;
@@ -965,8 +973,8 @@ const dbData = JSON.stringify({
 				};
 				// Export bridge: if the deck's active theme is a Workbench *library*
 				// theme (not a built-in palette), resolve its saved CSS so the Markdown
-				// export can embed it self-contained. PDF/PPTX/Print rasterize the live
-				// DOM, which already carries the theme — only Markdown needs the embed.
+				// export can embed it self-contained. PDF/PPTX render the engine's themed
+				// output (the library theme is registered) — only Markdown needs the embed.
 				async function activeLibraryTheme() {
 					const pal = root.getAttribute('data-palette') || '';
 					if (!pal) return null;
@@ -1003,10 +1011,17 @@ const dbData = JSON.stringify({
 						if (comps.length) bits.push(comps.length + ' component' + (comps.length === 1 ? '' : 's'));
 						status(bits.length ? `Markdown exported (${bits.join(' + ')} embedded).` : 'Markdown exported.');
 					}
-					else if (kind === 'pdf') { onStatus('Exporting PDF…'); await exportPdf(frame, deckName(), onStatus, meta); status('PDF exported.'); }
-					else if (kind === 'pptx') { onStatus('Exporting PowerPoint…'); await exportPptx(frame, deckName(), onStatus, meta); status('PowerPoint exported.'); }
+					else if (kind === 'pdf') { onStatus('Exporting PDF…'); await exportPdf(await exportRender(), deckName(), onStatus, meta); status('PDF exported.'); }
+					else if (kind === 'pptx') { onStatus('Exporting PowerPoint…'); await exportPptx(await exportRender(), deckName(), onStatus, meta); status('PowerPoint exported.'); }
 					else if (kind === 'print') { exportPrint(frame, meta); status('Opening print dialog…'); }
-					else if (kind === 'charts-svg') { onStatus('Exporting chart…'); await exportChart(frame, deckName(), onStatus); }
+					else if (kind === 'charts-svg') {
+						onStatus('Exporting chart…');
+						// The cursor's slide index comes from the LIVE preview (the capture
+						// host has no cursor); the chart is then exported from the capture host.
+						const live = frame.contentDocument ? [...frame.contentDocument.querySelectorAll('.marpit>section')] : [];
+						const activeIndex = live.findIndex((s) => s.classList.contains('db-active'));
+						await exportChart(await exportRender(), activeIndex, deckName(), onStatus);
+					}
 					else if (kind === 'marp') {
 						onStatus('Building Marp bundle…');
 						await exportMarp(source, deckName(), meta.palette, dbd.themeBase, { version: meta.version });

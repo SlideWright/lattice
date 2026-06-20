@@ -28,6 +28,7 @@
 // jspdf / pptxgenjs / html-to-image are lazy-imported (own chunks).
 
 import { themeImportNames } from '../lib/theme-fetch.ts';
+import { buildSrcdoc } from './deck-preview.js';
 import { embedComponentsInMarkdown } from './layout-core.generated.js';
 
 function safeName(name) {
@@ -230,6 +231,73 @@ export async function exportMarp(source, name, palette, themeBase, { includeAgen
 	download(blob, `${slug}.zip`);
 }
 
+// ── Dedicated capture host ─────────────────────────────────────────────────────
+// Export does NOT rasterize the live preview iframe. That iframe is tuned for
+// on-screen performance: it virtualizes off-screen slides (`content-visibility`),
+// gates the deck behind `.marpit{visibility:hidden}` until the in-iframe FIT agent
+// reveals it, and on a phone its pane is `display:none` in the Edit tab. A slide
+// read straight out of it rasterizes blank (hidden → transparent) or collapsed
+// (no layout box → container-query `cqi/cqh` typography resolves to 0). So the
+// export REUSES the engine render (html + css — identical to the preview, produced
+// by the controller's `__dbExportRender`) and pours it into its OWN throwaway
+// iframe that is fully laid out and ungated, making every capture correct no
+// matter what the preview is doing. See the export-render design note.
+//
+// Scroll-safety: the host is a 0×0, `position:fixed`, `overflow:hidden`, behind-
+// everything box, so it can never grow the page's scroll area / show a scrollbar
+// or intercept input; the iframe inside still lays out at the full slide width
+// (a parent's overflow clip does not change an iframe's internal layout), which is
+// all the capture needs.
+async function createCaptureFrame({ html, css, mode, geom, runtimeUrl, fontCss }) {
+	const gw = geom?.w || 1280;
+	const gh = geom?.h || 720;
+	const host = document.createElement('div');
+	host.setAttribute('aria-hidden', 'true');
+	host.dataset.latticeExport = 'capture';
+	host.style.cssText = 'position:fixed;left:0;top:0;width:0;height:0;overflow:hidden;opacity:0;pointer-events:none;z-index:-1;';
+	const frame = document.createElement('iframe');
+	frame.title = 'Export render';
+	frame.style.cssText = `width:${gw}px;height:${gh}px;border:0;`;
+	host.appendChild(frame);
+	document.body.appendChild(host);
+	const dispose = () => host.remove();
+	try {
+		// contentVisibility:false → no virtualization (every slide is laid out); no
+		// cursor / sync / print chrome. The FIT agent still scales + reveals against
+		// the real width; rasterizeSection undoes the scale (transform:none) per slide.
+		const srcdoc = buildSrcdoc({ html, css, mode, geom: { w: gw, h: gh }, runtimeUrl, fontCss,
+			contentVisibility: false, cursor: false, sync: false, printRules: false });
+		await new Promise((res) => { frame.addEventListener('load', () => res(), { once: true }); frame.srcdoc = srcdoc; });
+		const win = frame.contentWindow;
+		const doc = frame.contentDocument;
+		if (!doc) throw new Error('Could not prepare the export render.');
+		if (win && win.__latticeFit) win.__latticeFit();
+		// Let fonts, layout, and any async diagrams (Mermaid) settle before capture.
+		try { if (doc.fonts && doc.fonts.ready) await doc.fonts.ready; } catch (_e) {}
+		await new Promise((res) => requestAnimationFrame(() => requestAnimationFrame(res)));
+		await waitForDiagrams(doc);
+		if (win && win.__latticeFit) win.__latticeFit();
+	} catch (e) {
+		dispose();
+		throw e;
+	}
+	return { frame, dispose };
+}
+
+// Bounded wait for runtime-rendered diagrams (Mermaid) to finish in the capture
+// host, so a diagram deck doesn't rasterize mid-render. Charts are server-rendered
+// SVG (already in the html); only Mermaid streams in async. No-op when absent.
+async function waitForDiagrams(doc) {
+	if (!doc.querySelector('.mermaid, pre.mermaid, code.language-mermaid')) return;
+	const start = Date.now();
+	while (Date.now() - start < 4000) {
+		let pending = 0;
+		doc.querySelectorAll('.mermaid, pre.mermaid').forEach((c) => { if (!c.querySelector('svg')) pending++; });
+		if (!pending) break;
+		await new Promise((r) => setTimeout(r, 120));
+	}
+}
+
 async function sectionsOf(frame) {
 	const doc = frame?.contentDocument;
 	if (!doc) throw new Error('Preview not ready yet.');
@@ -254,6 +322,34 @@ function slideGeom(section) {
 	const w = section?.offsetWidth || 1280;
 	const h = section?.offsetHeight || 720;
 	return { w, h };
+}
+
+// Open BOTH preview-performance gates on a slide for the duration of a capture,
+// returning a thunk that restores the prior inline values.
+//
+// The filmstrip preview is deliberately lazy: off-screen slides get
+// `content-visibility:auto` (subtree rendering skipped) and the whole `.marpit`
+// starts `visibility:hidden`, revealed by the in-iframe FIT agent only once the
+// preview has a non-zero width — i.e. once it has actually been SHOWN. Neither
+// state survives an export: html-to-image clones the section and copies its
+// COMPUTED styles, so a skipped or hidden slide rasterizes to a blank page. That
+// is exactly what happens when you export straight from the Drawing Board's Edit
+// tab on a phone — the preview pane is `display:none`, FIT never runs, every
+// section inherits `visibility:hidden`, and every exported page comes out blank
+// (visiting Preview once is the user-visible workaround). Force both gates open
+// for the capture so an export never depends on whether the preview was shown.
+// DOM-only + pure (no html-to-image) → unit-tested directly under jsdom.
+export function forceSectionVisibleForCapture(section) {
+	const prev = {
+		contentVisibility: section.style.contentVisibility,
+		visibility: section.style.visibility,
+	};
+	section.style.contentVisibility = 'visible';
+	section.style.visibility = 'visible';
+	return function restore() {
+		section.style.contentVisibility = prev.contentVisibility;
+		section.style.visibility = prev.visibility;
+	};
 }
 
 // Rasterize one rendered slide to a PNG data URL at its native box. `fontEmbedCSS`
@@ -300,11 +396,10 @@ async function rasterizeSection(section, fontEmbedCSS) {
 		section.style.borderImageSource = 'none';
 		section.style.borderTopColor = 'transparent';
 	}
-	// The preview sets content-visibility:auto on slides (virtualization), which
-	// leaves off-screen sections unrendered. Force this one visible so
-	// html-to-image rasterizes a laid-out slide, then restore.
-	const prevCV = section.style.contentVisibility;
-	section.style.contentVisibility = 'visible';
+	// Defeat the preview's lazy-render gates (content-visibility virtualization +
+	// the `.marpit` visibility reveal) so html-to-image rasterizes a laid-out,
+	// painted slide even when the preview was never shown (phone Edit-tab export).
+	const restoreVisibility = forceSectionVisibleForCapture(section);
 	const { w, h } = slideGeom(section);
 	// Cap the device-pixel multiplier so a 4K box (3840) rasterizes near its
 	// native 3840 rather than a 7680 canvas that risks an OOM in the browser;
@@ -328,14 +423,19 @@ async function rasterizeSection(section, fontEmbedCSS) {
 		section.style.backgroundRepeat = prev.backgroundRepeat;
 		section.style.backgroundPosition = prev.backgroundPosition;
 		section.style.backgroundSize = prev.backgroundSize;
-		section.style.contentVisibility = prevCV;
+		restoreVisibility();
 	}
 }
 
 // ── PDF (one-click image PDF) ─────────────────────────────────────────────────
-export async function exportPdf(frame, name, onStatus, meta) {
-	const { sections, fontEmbedCSS } = await sectionsOf(frame);
+// `render` is the engine result for the deck ({ html, css, mode, geom, runtimeUrl,
+// fontCss }) — see the controller's `__dbExportRender`. We rasterize a dedicated
+// capture host built from it, never the live preview.
+export async function exportPdf(render, name, onStatus, meta) {
 	if (onStatus) onStatus('Preparing PDF…');
+	const { frame, dispose } = await createCaptureFrame(render);
+	try {
+	const { sections, fontEmbedCSS } = await sectionsOf(frame);
 	const { jsPDF } = await import('jspdf');
 	// The PAGE is a fixed physical size — the deck's aspect ratio at a canonical
 	// 720pt height — NOT the pixel box. `@size` changes the RASTER resolution (a
@@ -368,12 +468,15 @@ export async function exportPdf(frame, name, onStatus, meta) {
 	}
 	if (onStatus) onStatus('Saving PDF…', { current: sections.length, total: sections.length });
 	pdf.save(safeName(name) + '.pdf');
+	} finally { dispose(); }
 }
 
 // ── PPTX (image-slides) ───────────────────────────────────────────────────────
-export async function exportPptx(frame, name, onStatus, meta) {
-	const { sections, fontEmbedCSS } = await sectionsOf(frame);
+export async function exportPptx(render, name, onStatus, meta) {
 	if (onStatus) onStatus('Preparing PowerPoint…');
+	const { frame, dispose } = await createCaptureFrame(render);
+	try {
+	const { sections, fontEmbedCSS } = await sectionsOf(frame);
 	const { default: PptxGenJS } = await import('pptxgenjs');
 	const pptx = new PptxGenJS();
 	const { eng, summary } = provenance(meta, sections.length);
@@ -401,6 +504,7 @@ export async function exportPptx(frame, name, onStatus, meta) {
 	}
 	if (onStatus) onStatus('Building .pptx…', { current: sections.length, total: sections.length });
 	await pptx.writeFile({ fileName: safeName(name) + '.pptx' });
+	} finally { dispose(); }
 }
 
 // ── Print (vector, selectable — the browser's own PDF engine) ─────────────────
@@ -473,46 +577,44 @@ function dataUrlToBlob(dataUrl) {
 	return new Blob([arr], { type: mime });
 }
 
-// Export the cursor's chart. SVG tier: a single self-contained <svg>
-// (piechart/radar/map/quadrant/funnel) flattens to a standalone, theme-free
-// vector. PNG tier: every other chart-frame slide rasterizes in-browser via the
-// shared html-to-image path (2× scale, fonts embedded) — the same one the
-// one-click PDF uses, which renders these HTML/CSS charts faithfully.
-export async function exportChart(frame, name, onStatus) {
-	const sec = activeChartSection(frame);
-	if (!sec) throw new Error('Put the cursor in a slide that has a chart.');
-	const doc = frame?.contentDocument;
-	const win = frame?.contentWindow;
-	const svg = activeChartSvg(frame);
-	if (svg && win && doc) {
-		const [core, fontMod] = await Promise.all([
-			import('./standalone-svg.generated.js'),
-			import('./font-embed.js'),
-		]);
-		const { flattenSvgStyles, collectFontFamilies, finalizeStandaloneSvg } = core;
-		const { buildFontEmbedCss, ensureFontsLoaded } = fontMod;
-		// Embed the faces + wait for them, so the live nodes lay out with the real
-		// font before we read computed styles (mirrors the PDF/PPTX path).
-		const fontCssAll = await buildFontEmbedCss();
-		await ensureFontsLoaded(doc, fontCssAll);
-		const markup = new XMLSerializer().serializeToString(flattenSvgStyles(svg, win));
-		const fontFaceCss = subsetFontFaceCss(fontCssAll, collectFontFamilies(markup));
-		const out = finalizeStandaloneSvg(markup, { fontFaceCss });
-		download(new Blob([out], { type: 'image/svg+xml;charset=utf-8' }), `${safeName(name)}-chart.svg`);
-		if (onStatus) onStatus('Chart downloaded as SVG.');
-		return;
-	}
-	// PNG tier — rasterize the chart slide. Drop `db-active` during capture: it
-	// carries the cursor-slide selection outline (unwanted in the export).
-	if (onStatus) onStatus('Rasterizing chart…');
-	const { fontEmbedCSS } = await sectionsOf(frame);
-	sec.classList.remove('db-active');
-	let dataUrl;
+// Export the chart on slide `activeIndex` (the cursor's slide — its index is read
+// from the live preview by the caller, since the capture host has no cursor). SVG
+// tier: a single self-contained <svg> (piechart/radar/map/quadrant/funnel) flattens
+// to a standalone, theme-free vector. PNG tier: every other chart-frame slide
+// rasterizes via the shared html-to-image path. Both run against the dedicated
+// capture host (laid out + ungated), so a chart exports correctly even from the
+// phone Edit tab. `render` is the engine result (see exportPdf).
+export async function exportChart(render, activeIndex, name, onStatus) {
+	const { frame, dispose } = await createCaptureFrame(render);
 	try {
-		dataUrl = await rasterizeSection(sec, fontEmbedCSS);
-	} finally {
-		sec.classList.add('db-active');
-	}
-	download(dataUrlToBlob(dataUrl), `${safeName(name)}-chart.png`);
-	if (onStatus) onStatus('Chart downloaded as PNG.');
+		const doc = frame.contentDocument;
+		const win = frame.contentWindow;
+		const sec = doc.querySelectorAll('.marpit>section')[activeIndex];
+		if (!sec || !sec.classList.contains('chart-frame')) throw new Error('Put the cursor in a slide that has a chart.');
+		const svg = CLEAN_SVG_LAYOUTS.some((c) => sec.classList.contains(c)) ? sec.querySelector('svg[viewBox]') : null;
+		if (svg) {
+			const [core, fontMod] = await Promise.all([
+				import('./standalone-svg.generated.js'),
+				import('./font-embed.js'),
+			]);
+			const { flattenSvgStyles, collectFontFamilies, finalizeStandaloneSvg } = core;
+			const { buildFontEmbedCss, ensureFontsLoaded } = fontMod;
+			// Embed the faces + wait for them, so the nodes lay out with the real font
+			// before we read computed styles (mirrors the PDF/PPTX path).
+			const fontCssAll = await buildFontEmbedCss();
+			await ensureFontsLoaded(doc, fontCssAll);
+			const markup = new XMLSerializer().serializeToString(flattenSvgStyles(svg, win));
+			const fontFaceCss = subsetFontFaceCss(fontCssAll, collectFontFamilies(markup));
+			const out = finalizeStandaloneSvg(markup, { fontFaceCss });
+			download(new Blob([out], { type: 'image/svg+xml;charset=utf-8' }), `${safeName(name)}-chart.svg`);
+			if (onStatus) onStatus('Chart downloaded as SVG.');
+			return;
+		}
+		// PNG tier — rasterize the chart slide via the shared html-to-image path.
+		if (onStatus) onStatus('Rasterizing chart…');
+		const { fontEmbedCSS } = await sectionsOf(frame);
+		const dataUrl = await rasterizeSection(sec, fontEmbedCSS);
+		download(dataUrlToBlob(dataUrl), `${safeName(name)}-chart.png`);
+		if (onStatus) onStatus('Chart downloaded as PNG.');
+	} finally { dispose(); }
 }

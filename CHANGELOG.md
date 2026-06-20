@@ -199,6 +199,21 @@ in patch versions.
 
 ### Fixed
 
+- **Drawing Board export no longer produces a blank (or collapsed) PDF/PPTX.**
+  Exporting straight from the Edit tab — the default path on a phone, where the
+  preview pane is `display:none` and is never shown — yielded an all-white PDF.
+  The one-click PDF/PPTX/chart exports rasterized the *live preview* iframe, which
+  is tuned for on-screen performance: it gates the deck behind
+  `.marpit{visibility:hidden}` until its in-iframe FIT agent reveals it (only once
+  the preview has a width), virtualizes off-screen slides (`content-visibility`),
+  and has no layout box at all when its pane is hidden — so `html-to-image`
+  captured hidden (→ transparent) or unlaid-out slides (container-query `cqi/cqh`
+  typography collapsing to `0`). Export now **renders into its own dedicated,
+  fully-laid-out, ungated capture host** (reusing the engine's render via the
+  controller's `__dbExportRender`) instead of the preview, so an export is correct
+  regardless of what the preview is doing. The capture host is a 0×0
+  `position:fixed; overflow:hidden` box, so it never adds a page scrollbar. See
+  `engineering/decisions/2026-06-20-export-dedicated-capture-host.md`.
 - **`progress` bar percentage readouts are now legible on every bar.** The readout
   rides the fill's leading edge — exactly where the gradient ramps to its most
   saturated head (up to 72%) — so on the light canvas the dark number lost contrast

@@ -218,6 +218,31 @@ export function createRenderController(data) {
 		}).catch((e) => { setStatus(String(e.message || e), true); });
 	}
 
+	// Export render: hand the export its OWN engine result so it can rasterize a
+	// dedicated, fully-laid-out capture host instead of the on-screen preview iframe
+	// (which virtualizes + visibility-gates slides and is display:none in the phone
+	// Edit tab — sources of blank / collapsed exports). Mirrors render()'s engine
+	// path (component bridge + theme resolution) but RETURNS the result instead of
+	// painting the preview. Consumed by drawing-board-export.js via createCaptureFrame.
+	window.__dbExportRender = function exportRender() {
+		var PG = window.LatticePlayground;
+		if (!PG) return Promise.reject(new Error('engine not ready — try again in a moment'));
+		var palette = root.getAttribute('data-palette') || 'indaco';
+		var mode = root.getAttribute('data-mode') === 'dark' ? 'dark' : 'light';
+		return ensureThemes(palette, mode).then(() => {
+			var theme = (mode === 'dark' && PG.hasTheme(palette + '-dark') ? palette + '-dark' : palette);
+			var raw = getSource();
+			var DBC = window.__dbComponents;
+			var src = DBC ? DBC.embed(raw) : raw;
+			var out = PG.render(src, theme, { baseUrl: SAMPLES_BASE });
+			return {
+				html: out.html, css: out.css, mode: mode,
+				geom: { w: out.width || 1280, h: out.height || 720 },
+				runtimeUrl: RUNTIME_URL, fontCss: PREVIEW_FONT_CSS,
+			};
+		});
+	};
+
 	function onEdit() {
 		recomputeStarts();
 		syncThemeControls(); // a valid `theme:` edit drives the picker + page chrome
