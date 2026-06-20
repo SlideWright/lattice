@@ -7185,6 +7185,19 @@ section.progress .progress-pct {
   font-size: var(--fs-meta);
   font-weight: 700;
   color: var(--text-heading);
+  /* The readout rides the fill's LEADING EDGE — exactly where the gradient ramps
+   * to its most saturated head (calc(20% + --pct*0.52%), up to 72%), so a high-%
+   * bar's dark --text-heading lost contrast on the LIGHT canvas (gantt sidesteps
+   * this by capping its flat fill at 38%; progress can't — its vivid head IS the
+   * magnitude signal, and on the DARK canvas it reads great). Rather than flatten
+   * the fill, the number sits on a small READOUT PLATE: the bar's own hue mixed
+   * hard toward the canvas (pale on light, deep on dark) so --text-heading always
+   * clears it, on either canvas, at any --pct. Stays in-family (hue-tinted, not a
+   * jarring white box) and reads as an intentional data badge. */
+  background: light-dark(color-mix(in oklab, var(--fill-hue) 16%, var(--bg)),
+                         color-mix(in oklab, var(--fill-hue) 22%, black));
+  padding: 0.16cqi 0.55cqi;
+  border-radius: 0.55cqi;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
   line-height: 1;

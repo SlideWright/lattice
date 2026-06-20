@@ -185,6 +185,16 @@ in patch versions.
 
 ### Fixed
 
+- **`progress` bar percentage readouts are now legible on every bar.** The readout
+  rides the fill's leading edge — exactly where the gradient ramps to its most
+  saturated head (up to 72%) — so on the light canvas the dark number lost contrast
+  on a high-percentage bar (dark-on-saturated-green). The number now sits on a small
+  hue-tinted **readout plate** (the bar's own hue mixed hard toward the canvas — pale
+  on light, deep on dark) so `--text-heading` clears it at any percentage, on either
+  canvas, **without flattening the magnitude-encoding fill** (gantt avoids this by
+  capping its flat fill at 38%; progress keeps its vivid head). Verified light + dark
+  across the 6–100% range. See #452.
+
 - **`progress` and `timeline-list` no longer render empty when an item carries a
   nested sublist.** Both layouts pulled their list out of the section with a naive
   non-greedy regex (`/<ul>…<\/ul>/`, resp. `/<ol>…<\/ol>/`) that stopped at an
