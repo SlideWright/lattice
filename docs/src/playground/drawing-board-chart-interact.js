@@ -50,6 +50,22 @@ function el(cls) { const d = document.createElement('div'); if (cls) d.className
 export function createChartInteract({ stage, getFrame, tilt = true, onReveal, hoverAny = false }) {
   const useTilt = tilt && !REDUCED;
 
+  // Chart-family vocabulary. The pie shipped this with its own selectors
+  // (.piechart-svg / .wedge[data-slice] / template.piechart-detail); the other
+  // SVG charts (funnel/map/quadrant/radar) emit the shared mark-detail substrate
+  // (data-mark / .chart-details / template.chart-detail). Recognize BOTH so one
+  // reveal layer drives every chart — see
+  // engineering/decisions/2026-06-20-chart-detail-reveal-family.md.
+  const CHART_SVG_SEL = '.piechart-svg, .funnel-svg, .map-svg, .quadrant-svg, .radar-svg';
+  const DETAILS_SEL = '.piechart-details, .chart-details';
+  const TPL_SEL = 'template.piechart-detail, template.chart-detail';
+  const MARK_SEL = '[data-slice], [data-mark]';
+  const markIndex = (elm) => {
+    if (!elm) return -1;
+    const v = elm.dataset.slice ?? elm.dataset.mark;
+    return v == null ? -1 : Number(v);
+  };
+
   // Parent chrome: a transparent container (pointer-events:none — lets the
   // capture layer/HUD through) holding the hit-surface and the popover, which
   // opt back into pointer-events as needed.
@@ -76,6 +92,55 @@ export function createChartInteract({ stage, getFrame, tilt = true, onReveal, ho
   const timers = [];     // pending reflow re-pins (cleared on slide change / destroy)
 
   const doc = () => { try { return getFrame().contentDocument; } catch { return null; } };
+
+  // ── generic mark access (one code path for every chart kind) ────────────────
+  // Marks are the addressable data elements INSIDE the chart <svg> (pie wedges,
+  // funnel bands, map regions, quadrant dots, radar axis labels). Scoping to
+  // chartEl excludes the inert <template> payloads (they live in a sibling
+  // .chart-details div) and legend swatches (no data-mark).
+  const markEls = () => (chartEl ? [...chartEl.querySelectorAll(MARK_SEL)] : []);
+  const marksFor = (i) => markEls().filter((m) => markIndex(m) === i);
+  // Distinct mark indices present (a map group shares one index across regions),
+  // so number keys / range checks count data points, not DOM nodes.
+  const markCount = () => {
+    const s = new Set(markEls().map(markIndex).filter((n) => n >= 0));
+    return s.size;
+  };
+
+  // Title / value / colour for mark i, from whichever source the kind provides:
+  //   label  — the mark's data-label (funnel/map/quadrant) · its own text node
+  //            (radar axis label) · the legend row (pie has no text on a wedge).
+  //   value  — data-value · the legend value column (pie).
+  //   colour — the legend swatch's computed fill (pie/map gradients are URL refs,
+  //            meaningless in the parent) · else the mark's own computed fill.
+  function infoFor(i) {
+    const el = marksFor(i)[0] || null;
+    let label = '';
+    let value = '';
+    if (el && el.dataset.label != null) {
+      // substrate marks self-describe (funnel/map/quadrant)
+      label = el.dataset.label;
+      value = el.dataset.value || '';
+    } else if (el && !el.querySelector?.('*') && el.textContent.trim()) {
+      // radar axis label IS the text node
+      label = el.textContent.trim();
+    } else {
+      // pie — the wedge has no text, so read the SVG legend row by index
+      label = textOf('.chart-key-label', i);
+      value = textOf('.chart-key-value', i);
+    }
+    const swatch = curSection?.querySelectorAll('.chart-key-swatch')[i];
+    let dot = 'currentColor';
+    try {
+      if (swatch) {
+        dot = (swatch.ownerDocument?.defaultView || window).getComputedStyle(swatch).fill;
+      } else if (el) {
+        const cs = (el.ownerDocument?.defaultView || window).getComputedStyle(el);
+        dot = cs.fill && cs.fill !== 'none' ? cs.fill : (cs.stroke || 'currentColor');
+      }
+    } catch { /* cross-doc / detached */ }
+    return { label, value, dot };
+  }
 
   // ── geometry ──────────────────────────────────────────────────────────────
   // Map the chart's box (measured inside the iframe) into stage coordinates and
@@ -110,12 +175,15 @@ export function createChartInteract({ stage, getFrame, tilt = true, onReveal, ho
     clear();
     while (timers.length) clearTimeout(timers.pop());
     curSection = sec || null;
-    chartEl = sec ? sec.querySelector('.piechart-svg') : null;
-    detailsEl = sec ? sec.querySelector('.piechart-details') : null;
+    chartEl = sec ? sec.querySelector(CHART_SVG_SEL) : null;
+    detailsEl = sec ? sec.querySelector(DETAILS_SEL) : null;
     // Only "interactive" when the authored detail is actually present.
     if (chartEl && detailsEl) {
-      sliceN = detailsEl.querySelectorAll('template.piechart-detail').length
-        || sec.querySelectorAll('.wedge[data-slice]').length;
+      // Gate on the MARK count, not the template count — detail is optional per
+      // mark, so every mark is revealable (label/value with an empty body), and
+      // a chart with non-contiguous detail (e.g. only marks 0 and 2) must not cap
+      // reveal at the template count. Falls back to templates if no marks query.
+      sliceN = markCount() || detailsEl.querySelectorAll(TPL_SEL).length;
       reflow();
     } else {
       curSection = chartEl = detailsEl = null; sliceN = 0; hide();
@@ -140,8 +208,7 @@ export function createChartInteract({ stage, getFrame, tilt = true, onReveal, ho
     const d = doc(); if (!d) return -1;
     const fr = getFrame().getBoundingClientRect();
     const t = d.elementFromPoint(clientX - fr.left, clientY - fr.top);
-    const w = t?.closest('[data-slice]');
-    return w ? +w.dataset.slice : -1;
+    return markIndex(t?.closest(MARK_SEL));
   }
 
   // ── reveal command (pointer / keys / presenter window all route here) ───────
@@ -151,19 +218,13 @@ export function createChartInteract({ stage, getFrame, tilt = true, onReveal, ho
     if (i === openSlice) return;
     if (openSlice < 0 && onReveal) { try { onReveal(); } catch { /* host hook */ } }
     openSlice = i;
-    // Title parts come from the SVG legend (index-aligned); body/meta from the
-    // authored <template>. All scoped to curSection so a multi-chart preview
-    // reads the HOVERED chart's legend/detail, not the first chart in the doc.
-    const label = textOf('.chart-key-label', i);
-    const value = textOf('.chart-key-value', i);
-    // The wedge fill is an SVG gradient ref (url(#…)), which is meaningless in the
-    // parent doc — read the legend swatch's COMPUTED fill instead: its
-    // color-mix(var(--chart-cat-N-hue)…) resolves (against the iframe's theme) to a
-    // concrete colour the parent can paint.
-    const swatch = curSection?.querySelectorAll('.chart-key-swatch')[i];
-    const win = swatch?.ownerDocument?.defaultView || window;
-    const dot = swatch ? win.getComputedStyle(swatch).fill : 'currentColor';
-    const tpl = detailsEl?.querySelector(`template.piechart-detail[data-slice="${i}"]`);
+    // Title/value/colour come from the mark (data-label/value, or the legend for
+    // the pie); body/meta from the authored <template>. All scoped to curSection
+    // so a multi-chart preview reads the HOVERED chart's detail, not the first
+    // chart in the doc. See infoFor().
+    const { label, value, dot } = infoFor(i);
+    const tpl = detailsEl?.querySelector(
+      `template.piechart-detail[data-slice="${i}"], template.chart-detail[data-mark="${i}"]`);
     const lis = tpl ? [...tpl.content.querySelectorAll('li')].map((n) => n.innerHTML.trim()) : [];
     const body = lis[0] || '';
     const meta = lis.slice(1).join(' · ');
@@ -198,7 +259,7 @@ export function createChartInteract({ stage, getFrame, tilt = true, onReveal, ho
   const EMPTY_RECT = { x: 0, y: 0, width: 0, height: 0, top: 0, left: 0, right: 0, bottom: 0 };
   const discRect = () => {
     if (!curSection) return EMPTY_RECT;
-    const wedges = curSection.querySelectorAll('.wedge[data-slice]');
+    const wedges = markEls();
     if (!wedges.length) return EMPTY_RECT;
     let fr;
     try { fr = getFrame().getBoundingClientRect(); } catch { return EMPTY_RECT; }
@@ -243,11 +304,14 @@ export function createChartInteract({ stage, getFrame, tilt = true, onReveal, ho
   // ── interaction-coupled tilt (settles flat; resting chart stays proportion-true) ──
   function liftAndTilt(i) {
     if (!chartEl || !curSection) return;
-    const wedges = curSection.querySelectorAll('.wedge[data-slice]');
-    wedges.forEach((w, n) => {
+    const wedges = markEls();
+    // Compare by MARK index, not DOM order — a map group shares one index across
+    // several region paths, and quadrant/radar DOM order ≠ data index.
+    wedges.forEach((w) => {
+      const active = markIndex(w) === i;
       w.style.transition = 'transform .22s cubic-bezier(.2,.7,.3,1), opacity .22s';
-      w.style.opacity = n === i ? '1' : '0.45';
-      w.style.transform = n === i ? liftVec(w, wedges) : '';
+      w.style.opacity = active ? '1' : '0.45';
+      w.style.transform = active ? liftVec(w, wedges) : '';
     });
     if (useTilt) {
       chartEl.style.transition = 'transform .3s cubic-bezier(.2,.7,.3,1)';
@@ -275,7 +339,7 @@ export function createChartInteract({ stage, getFrame, tilt = true, onReveal, ho
     openSlice = -1;
     stopPop();
     pop.classList.remove('show');
-    if (curSection) curSection.querySelectorAll('.wedge[data-slice]').forEach((w) => { w.style.opacity = ''; w.style.transform = ''; });
+    markEls().forEach((w) => { w.style.opacity = ''; w.style.transform = ''; });
     if (chartEl) chartEl.style.transform = '';
   }
 
@@ -310,10 +374,10 @@ export function createChartInteract({ stage, getFrame, tilt = true, onReveal, ho
   // ── PREVIEW (hoverAny): listen on the iframe document; reveal the chart under
   // the pointer. No hit-surface, so the author can still scroll/select the slide.
   function resolveAt(target) {
-    const w = target?.closest?.('[data-slice]');
+    const w = target?.closest?.(MARK_SEL);
     if (!w) return -1;
     setChart(w.closest('.marpit > section') || w.closest('section'));
-    return interactive() ? +w.dataset.slice : -1;
+    return interactive() ? markIndex(w) : -1;
   }
   function onDocMove(e) {
     const s = resolveAt(e.target);

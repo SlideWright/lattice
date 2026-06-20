@@ -27,15 +27,16 @@ in patch versions.
 
 ### Added
 
-- **Per-mark detail on funnel, map, and quadrant charts** — the pie's authored
-  detail pattern, generalized into a shared chart-family substrate
-  (`mark-detail.js`). Author an optional nested sublist under a funnel stage, a
-  map region, or a quadrant item and it drives two surfaces from one source: the
-  mark element is tagged `data-mark` and the detail is emitted as an inert
-  `<template class="chart-detail">` (for the present/practice reveal layer), and
-  the same detail folds into the slide's speaker note as the static-PDF fallback
-  (a PDF text annotation; the chart pixels stay byte-identical). A chart with no
-  sublists is unchanged. See
+- **Per-mark interactive detail on funnel, map, quadrant, and radar charts** —
+  the pie's authored-detail pattern, generalized into a shared chart-family
+  substrate (`mark-detail.js`) and a chart-agnostic reveal layer. Author an
+  optional nested sublist under a funnel stage, a map region, a quadrant item, or
+  a radar **axis** and it drives two surfaces from one source: on screen
+  (Drawing Board present/practice/preview) the mark reveals its detail in a
+  popover on hover/tap/number-key, with an interaction-coupled tilt; in the
+  exported PDF the same detail folds into the slide's speaker note (a text
+  annotation — the chart pixels stay byte-identical). A chart with no sublists is
+  unchanged. Radar reveals per-axis. See
   `engineering/decisions/2026-06-20-chart-detail-reveal-family.md`.
 
 ### Changed

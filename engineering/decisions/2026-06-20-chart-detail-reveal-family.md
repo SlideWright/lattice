@@ -180,9 +180,18 @@ detail per labelled data point*. Per-series reveal is recorded as a future optio
   payload, and the speaker-note PDF fallback (byte-identical when no detail is
   authored). Radar reveals per-axis (decided). Unit + parity + invariant tests
   green; maker-checker passed.
-- **On-screen reveal: in progress** — generalize `createChartInteract`
-  (descriptor per chart) so funnel/map/quadrant/radar get the present/practice/
-  preview hover-tap reveal + tilt; verify in-browser.
+- **On-screen reveal: shipped** — `createChartInteract` is now chart-agnostic:
+  generic mark access (`[data-slice], [data-mark]` scoped to the chart `<svg>`),
+  a per-mark `infoFor()` (label/value/colour from `data-label`/`data-value`, the
+  axis text node, or the pie legend), generic disc/lift geometry, and a dual
+  template selector — so funnel/map/quadrant/radar AND the pie all drive one
+  reveal layer (hover/tap/number-key + interaction-coupled tilt). The new charts
+  carry an invisible `data-label`/`data-value` on each mark as the uniform title
+  source (byte-identical export, like `data-mark`). Verified in the running
+  playground for all five charts (correct label/value/body; pie regression-safe).
+  Fixed a latent pie bug along the way: the reveal gate counted templates, so a
+  chart with non-contiguous detail capped reveal short — it now gates on the mark
+  count.
 - Each chart's own gallery demonstrates the feature and carries every variant;
   per-feature demo deck (#9) `examples/chart-detail-reveal.md`. One branch / one
   PR (#17).

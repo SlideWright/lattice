@@ -81,7 +81,7 @@ describe('funnel kernel', () => {
 
     test('emits one band per stage, each tagged with its palette index', () => {
       const html = buildFunnel(parseFunnel(ul([['A', '100'], ['B', '50'], ['C', '25']])));
-      const idx = [...html.matchAll(/funnel-band" data-mark="\d+" style="--i:(\d+)"/g)].map((x) => +x[1]);
+      const idx = [...html.matchAll(/funnel-band" data-mark="\d+"[^>]*style="--i:(\d+)"/g)].map((x) => +x[1]);
       assert.deepEqual(idx, [0, 1, 2]);
     });
 
