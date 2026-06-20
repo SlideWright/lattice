@@ -312,15 +312,27 @@ export function createChartInteract({ stage, getFrame, tilt = true, onReveal, ho
     boundDoc = null;
   }
   // A srcdoc rewrite replaces the document (listeners + section refs die with it).
-  // The render controller calls this on `db-frame-ready` to bind the new doc.
-  // unbindDoc() first so a re-bind to the SAME live doc (a duplicated ready
-  // message) can't double-attach — bindDoc's own d===boundDoc guard is then moot.
+  // Hosts may call this (the Drawing Board does, on `db-frame-ready`); it's also
+  // wired to the iframe's own `load` below. unbindDoc() first so a re-bind to the
+  // SAME live doc can't double-attach — bindDoc's own d===boundDoc guard is moot.
   function rebind() {
     unbindDoc();
     curSection = null; chartEl = detailsEl = null; openSlice = -1;
     if (hoverAny) bindDoc();
   }
-  if (hoverAny) bindDoc();
+  // Self-sufficient re-bind: the iframe ELEMENT persists across srcdoc rewrites,
+  // but its DOCUMENT is replaced and fires `load` once it's parseable. Binding to
+  // that is more robust than relying on the host to call rebind() at the right
+  // moment — the React playground's render() can return "done" before the new
+  // doc is ready, so a host-timed rebind() would no-op (doc() still null) and the
+  // listeners would never attach. A document patch (no srcdoc rewrite) keeps the
+  // same doc, so `load` doesn't fire and the surviving listeners are reused.
+  let frameEl = null;
+  if (hoverAny) {
+    frameEl = getFrame();
+    if (frameEl) frameEl.addEventListener('load', rebind);
+    bindDoc();
+  }
 
   let ro = null;
   try { ro = new ResizeObserver(reflow); ro.observe(stage); } catch { /* older browser */ }
@@ -329,6 +341,7 @@ export function createChartInteract({ stage, getFrame, tilt = true, onReveal, ho
   function destroy() {
     clear();
     while (timers.length) clearTimeout(timers.pop());
+    if (frameEl) { try { frameEl.removeEventListener('load', rebind); } catch { /* gone */ } }
     unbindDoc();
     curSection = chartEl = detailsEl = null;
     try { ro?.disconnect(); } catch { /* noop */ }

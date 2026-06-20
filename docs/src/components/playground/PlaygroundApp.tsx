@@ -17,6 +17,7 @@ import {
 } from '@/lib/playground-controller';
 import { createEngineBridge, type PreviewState } from '@/lib/playground-engine';
 import { readFrontMatter } from '@/playground/deck-config.js';
+import { createChartInteract } from '@/playground/drawing-board-chart-interact.js';
 import { ComponentPicker } from './ComponentPicker';
 import { DeckSetupSheet } from './DeckSetupSheet';
 import { type EditorAdapter, EditorHost } from './EditorHost';
@@ -57,6 +58,11 @@ export function PlaygroundApp({ data }: { data: PlaygroundData }) {
 	const [sourceVersion, setSourceVersion] = React.useState(0); // drives DeckSetup cue
 
 	const frameRef = React.useRef<HTMLIFrameElement>(null);
+	// Live in-preview chart interaction: hover/tap a pie wedge in the rendered
+	// preview to reveal its authored detail, as you edit — same parent-hosted
+	// module + behaviour as the Drawing Board. Created on mount, re-bound after
+	// each render (a srcdoc rewrite replaces the iframe doc). Export untouched.
+	const chartInteractRef = React.useRef<{ rebind: () => void; destroy: () => void } | null>(null);
 	const editorRef = React.useRef<EditorAdapter | null>(null);
 	const engineRef = React.useRef(createEngineBridge(themeBase, runtimeUrl, engineUrl));
 	const previewStateRef = React.useRef<PreviewState>({ frameSig: '', lastSections: null });
@@ -117,6 +123,8 @@ export function PlaygroundApp({ data }: { data: PlaygroundData }) {
 				// Drop the loading skeleton once real slides have painted (the iframe
 				// is opaque and covers the host; this removes the placeholder behind it).
 				frame.parentElement?.classList.add('is-live');
+				// Re-bind the hover layer to the (possibly new) iframe document.
+				chartInteractRef.current?.rebind();
 			}
 		},
 		[getSource, setStatusLine],
@@ -132,6 +140,20 @@ export function PlaygroundApp({ data }: { data: PlaygroundData }) {
 		previewStateRef.current = { ...previewStateRef.current, frameSig: '' };
 		render(true);
 	}, [render]);
+
+	// Mount the parent-hosted chart-interact layer over the preview iframe once,
+	// for the component's lifetime (render() calls rebind() after each paint).
+	React.useEffect(() => {
+		const frame = frameRef.current;
+		const stage = frame?.parentElement;
+		if (!frame || !stage) return;
+		const ci = createChartInteract({ stage, getFrame: () => frameRef.current, hoverAny: true });
+		chartInteractRef.current = ci;
+		return () => {
+			ci.destroy();
+			chartInteractRef.current = null;
+		};
+	}, []);
 
 	// ── Picker sync (reflect what the editor holds) ─────────────────────────────
 	const syncPickers = React.useCallback(() => {

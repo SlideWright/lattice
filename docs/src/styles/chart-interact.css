@@ -1,0 +1,73 @@
+/* Chart interaction popover — SHARED across every surface that mounts
+   createChartInteract (drawing-board-chart-interact.js): the Drawing Board
+   (present/practice + live preview) AND the Playground live preview. It lived in
+   drawing-board.css, so the Playground rendered the popover UNSTYLED (a
+   full-width block off-screen). Keep it here and import it from every page that
+   hosts the interaction so the popover looks the same everywhere.
+
+   Parent-hosted so the slide iframe stays a pure paint surface: the container is
+   transparent + pointer-transparent; the hit-surface and popover opt back in. */
+.db-pp-chartlayer {
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+}
+/* Present/practice hit-surface: sits over the chart's rectangle, ABOVE the
+   capture layer (z2) but below the HUD (z3). Not mounted in preview (hoverAny). */
+.db-pp-charthit {
+	position: absolute;
+	display: none;
+	z-index: 2;
+	pointer-events: auto;
+	cursor: pointer;
+}
+/* The popover — floats above the chart; never traps the pointer. */
+.db-pp-chartpop {
+	position: absolute;
+	z-index: 3;
+	max-width: min(20rem, 64vw);
+	padding: 0.6rem 0.75rem 0.7rem;
+	background: rgba(18, 18, 22, 0.92);
+	border: 1px solid rgba(255, 255, 255, 0.14);
+	border-radius: 12px;
+	box-shadow: 0 12px 34px rgba(0, 0, 0, 0.45);
+	backdrop-filter: blur(8px);
+	color: #f2f2f5;
+	font-size: 0.82rem;
+	line-height: 1.4;
+	opacity: 0;
+	transform: translateY(4px) scale(0.98);
+	transition: opacity 0.18s ease, transform 0.18s cubic-bezier(0.2, 0.7, 0.3, 1);
+	pointer-events: none;
+}
+.db-pp-chartpop.show {
+	opacity: 1;
+	transform: none;
+}
+.db-pp-chartpop-h {
+	display: flex;
+	align-items: center;
+	gap: 0.4rem;
+	font-weight: 600;
+}
+.db-pp-chartpop-dot {
+	width: 0.6rem;
+	height: 0.6rem;
+	border-radius: 999px;
+	flex: 0 0 auto;
+}
+.db-pp-chartpop-v {
+	margin-left: auto;
+	font-variant-numeric: tabular-nums;
+	opacity: 0.85;
+}
+.db-pp-chartpop p {
+	margin: 0.4rem 0 0;
+}
+.db-pp-chartpop-m {
+	margin-top: 0.4rem;
+	font-size: 0.72rem;
+	letter-spacing: 0.02em;
+	text-transform: uppercase;
+	opacity: 0.6;
+}
