@@ -185,6 +185,18 @@ in patch versions.
 
 ### Fixed
 
+- **`progress` and `timeline-list` no longer render empty when an item carries a
+  nested sublist.** Both layouts pulled their list out of the section with a naive
+  non-greedy regex (`/<ul>…<\/ul>/`, resp. `/<ol>…<\/ol>/`) that stopped at an
+  item's **nested** close tag — so a `progress` row with a `progress-note` sublist
+  truncated the whole list to **zero bars**, and a `timeline-list` item with a
+  nested ordered sublist truncated the spine to **zero items**. Both now use the
+  same depth-aware `extractFirstList` the rest of the chart family
+  (pie/gantt/kanban/radar/state-chart) already uses, so the outer list is matched
+  by depth. The intended per-row note / timeline body (a bullet sublist) renders
+  as documented. Shared kernel — fixed for all three render paths
+  (export, preview, runtime). See #452.
+
 - **Playground preview no longer freezes on iOS after opening a settings sheet.**
   On the /playground (Workbench), opening **Galleries** or **Deck setup** and then
   closing it left the live preview unscrollable on iOS Safari until focus changed
