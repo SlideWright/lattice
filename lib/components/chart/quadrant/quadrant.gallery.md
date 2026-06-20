@@ -29,6 +29,8 @@ Effort in analyst-weeks; reach as the percent of teams that would adopt it, opti
   - Slack intake bot `3, 72`
 - Strategic Bets
   - Scoring model v2 `8, 88`
+    - Owner: Platform team
+    - A 3-week spike de-risks the roadmap
   - Decision-log API `7, 74`
 - Defer
   - Per-team weighting UI `2, 28`
@@ -206,6 +208,8 @@ Effort in analyst-weeks; reach as the percent of teams that would adopt it, opti
   - Slack intake bot `3, 72`
 - Strategic Bets
   - Scoring model v2 `8, 88`
+    - Owner: Platform team
+    - A 3-week spike de-risks the roadmap
   - Decision-log API `7, 74`
 - Defer
   - Per-team weighting UI `2, 28`
@@ -231,6 +235,8 @@ Effort in analyst-weeks; reach as the percent of teams that would adopt it, opti
   - Slack intake bot `3, 72`
 - Strategic Bets
   - Scoring model v2 `8, 88`
+    - Owner: Platform team
+    - A 3-week spike de-risks the roadmap
   - Decision-log API `7, 74`
 - Defer
   - Per-team weighting UI `2, 28`
@@ -256,6 +262,8 @@ Effort in analyst-weeks; reach as the percent of teams that would adopt it, opti
   - Slack intake bot `3, 72`
 - Strategic Bets
   - Scoring model v2 `8, 88`
+    - Owner: Platform team
+    - A 3-week spike de-risks the roadmap
   - Decision-log API `7, 74`
 - Defer
   - Per-team weighting UI `2, 28`

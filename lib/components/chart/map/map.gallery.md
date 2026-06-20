@@ -21,6 +21,8 @@ A world-countries (or US-states) basemap that fills regions by value (choropleth
 ## Where our programs reached — unevenly.
 
 - India `48.2`
+  - Largest by volume, thinnest by margin
+  - Two new state hubs this year
 - Nigeria `36.4`
 - Kenya `31.0`
 - Brazil `27.5`
@@ -122,6 +124,8 @@ A world-countries (or US-states) basemap that fills regions by value (choropleth
 ## Where our programs reached — unevenly.
 
 - India `48.2`
+  - Largest by volume, thinnest by margin
+  - Two new state hubs this year
 - Nigeria `36.4`
 - Kenya `31.0`
 - Brazil `27.5`
@@ -139,6 +143,8 @@ A world-countries (or US-states) basemap that fills regions by value (choropleth
 ## Where our programs reached — unevenly.
 
 - India `48.2`
+  - Largest by volume, thinnest by margin
+  - Two new state hubs this year
 - Nigeria `36.4`
 - Kenya `31.0`
 - Brazil `27.5`
@@ -156,6 +162,8 @@ A world-countries (or US-states) basemap that fills regions by value (choropleth
 ## Where our programs reached — unevenly.
 
 - India `48.2`
+  - Largest by volume, thinnest by margin
+  - Two new state hubs this year
 - Nigeria `36.4`
 - Kenya `31.0`
 - Brazil `27.5`

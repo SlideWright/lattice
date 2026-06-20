@@ -32,7 +32,7 @@
   },
   "skeleton": "<!-- _class: piechart donut -->\n\n`Eyebrow · context`\n\n## What the breakdown shows.\n\n- First slice `40%`\n- Second slice `30%`\n- Third slice `20%`\n- Fourth slice `10%`\n",
   "anatomyBlock": "piechart-canvas",
-  "sample": "<!-- _class: piechart -->\n\n`H1 2026 · 1,840 person-hours`\n\n## Where the planning quarter actually went.\n\nNearly half went to producing decks; the deciding itself was the smallest slice.\n\n- Deck production `46%`\n- Meetings about meetings `22%`\n- Realigning on priorities `18%`\n- Stakeholder management `9%`\n- Actually deciding `5%`\n",
+  "sample": "<!-- _class: piechart -->\n\n`H1 2026 · 1,840 person-hours`\n\n## Where the planning quarter actually went.\n\nNearly half went to producing decks; the deciding itself was the smallest slice.\n\n- Deck production `46%`\n  - 92 decks, averaging 18 slides each\n  - Most of it review-cycle churn\n- Meetings about meetings `22%`\n- Realigning on priorities `18%`\n- Stakeholder management `9%`\n- Actually deciding `5%`\n",
   "whenToUse": [
     {
       "title": "Three to six parts of a whole",

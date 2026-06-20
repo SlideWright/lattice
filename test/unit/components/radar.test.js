@@ -69,15 +69,20 @@ const UL_QUADRANT = (
 // ── parseAxisItem ───────────────────────────────────────────────────────
 
 test('parseAxisItem: extracts trailing <code> as the value', () => {
-  assert.deepEqual(parseAxisItem('Calculus <code>85</code>'), { label: 'Calculus', value: 85 });
+  assert.deepEqual(parseAxisItem('Calculus <code>85</code>'), { label: 'Calculus', value: 85, detail: '' });
 });
 
 test('parseAxisItem: accepts floats', () => {
-  assert.deepEqual(parseAxisItem('Latency <code>2.5</code>'), { label: 'Latency', value: 2.5 });
+  assert.deepEqual(parseAxisItem('Latency <code>2.5</code>'), { label: 'Latency', value: 2.5, detail: '' });
 });
 
 test('parseAxisItem: defaults value to 0 when no <code>', () => {
-  assert.deepEqual(parseAxisItem('Calculus'), { label: 'Calculus', value: 0 });
+  assert.deepEqual(parseAxisItem('Calculus'), { label: 'Calculus', value: 0, detail: '' });
+});
+
+test('parseAxisItem: captures an optional nested detail sublist', () => {
+  const r = parseAxisItem('Calculus <code>85</code><ul><li>Strongest dimension</li></ul>');
+  assert.deepEqual(r, { label: 'Calculus', value: 85, detail: '<li>Strongest dimension</li>' });
 });
 
 // ── parseSeries ─────────────────────────────────────────────────────────
@@ -87,14 +92,14 @@ test('parseSeries: 2-level — name plus axis points', () => {
   const s = parseSeries(li, false);
   assert.equal(s.name, 'Teacher');
   assert.equal(s.points.length, 2);
-  assert.deepEqual(s.points[0], { axis: 'Calculus', group: null, value: 85 });
+  assert.deepEqual(s.points[0], { axis: 'Calculus', group: null, value: 85, detail: '' });
 });
 
 test('parseSeries: quadrant — 3-level carries group on each point', () => {
   const li = 'Cap<ul><li>People<ul><li>Hiring <code>4</code></li></ul></li></ul>';
   const s = parseSeries(li, true);
   assert.equal(s.points.length, 1);
-  assert.deepEqual(s.points[0], { axis: 'Hiring', group: 'People', value: 4 });
+  assert.deepEqual(s.points[0], { axis: 'Hiring', group: 'People', value: 4, detail: '' });
 });
 
 // ── parseRadar ──────────────────────────────────────────────────────────
@@ -352,5 +357,50 @@ describe('radar', () => {
     const once  = applyToRenderedHtml(RADAR_SECTION);
     const twice = applyToRenderedHtml(once);
     assert.equal(once, twice);
+  });
+});
+
+describe('radar — per-axis detail (interactive reveal substrate)', () => {
+  // Radar reveals PER-AXIS: detail authored as a sublist under each axis in the
+  // first series → the axis label carries data-mark, the sublist becomes an
+  // inert <template> + a speaker-note fallback. Byte-identical export.
+  const UL_DETAIL = (
+    '<ul>' +
+      '<li>Teacher<ul>' +
+        '<li>Calculus <code>85</code><ul><li>Strongest dimension</li><li>Mentors two TAs</li></ul></li>' +
+        '<li>Geometry <code>70</code></li>' +
+        '<li>Algebra <code>90</code><ul><li>Curriculum lead</li></ul></li>' +
+      '</ul></li>' +
+      '<li>Student<ul>' +
+        '<li>Calculus <code>75</code></li><li>Geometry <code>80</code></li><li>Algebra <code>85</code></li>' +
+      '</ul></li>' +
+    '</ul>'
+  );
+  const build = (variant) => {
+    const model = parseRadar(UL_DETAIL, variant === 'quadrant');
+    return buildRadar(model, variant, resolveScale(model, '0–100'), false);
+  };
+
+  test('a plain radar emits no detail payload and no note', () => {
+    const model = parseRadar(UL_TWO, false);
+    const html = buildRadar(model, 'default', resolveScale(model, '0–100'), false);
+    assert.doesNotMatch(html, /chart-details/);
+    assert.doesNotMatch(html, /<!--/);
+  });
+
+  for (const variant of ['default', 'target', 'delta', 'benchmark', 'small-multiples']) {
+    test(`${variant}: axis-label data-mark aligns with the detail templates`, () => {
+      const html = build(variant);
+      const axisMarks = [...html.matchAll(/radar-axis-label" data-mark="(\d+)"/g)].map((x) => +x[1]);
+      const tplMarks = [...html.matchAll(/class="chart-detail" data-mark="(\d+)"/g)].map((x) => +x[1]).sort();
+      assert.deepEqual([...new Set(axisMarks)].sort(), [0, 1, 2], 'every axis label carries its index');
+      assert.deepEqual(tplMarks, [0, 2], 'only the two detailed axes emit a template');
+      assert.match(html, /<!-- /);
+    });
+  }
+
+  test('the detail sublist does not leak into the axis label text', () => {
+    const html = build('default');
+    assert.doesNotMatch(html, /<text[^>]*radar-axis-label[^>]*>[^<]*Strongest/);
   });
 });

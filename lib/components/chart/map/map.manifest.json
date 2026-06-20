@@ -20,6 +20,11 @@
       "selector": "ul > li",
       "required": true,
       "description": "One li per region (or group). Lead with the name — world (default): full (`Brazil`), ISO (`BR`), alias (`Burma`), or a group (`European Union`, `Sub-Saharan Africa`, `Global South`) that expands to its members; US (`map us`): full (`California`), postal (`CA`), or abbreviation (`Calif.`) — then a trailing inline-code value: `Brazil \\`4.2\\``. In choropleth the value drives the ramp; in highlight it's an optional legend label. Names the basemap can't resolve surface as muted ‘?’ legend rows."
+    },
+    "detail": {
+      "selector": "li > ul",
+      "required": false,
+      "description": "Optional nested sublist under a region. Drives two surfaces from one source (shared with pie/funnel/quadrant via the chart-family mark-detail substrate): (1) Present/Practice — the kernel tags the region `<path>`(s) with `data-mark` (a group shares one index across all its regions) and emits the sublist as an inert `<template class=\"chart-detail\">` the reveal layer reads; (2) the static PDF — the same detail is folded into the slide's speaker note (`Region (value): item · item`) as a Marp-faithful comment that notes-core lifts into the per-slide note channel. The note rides the existing channel, so the chart pixels stay byte-identical. A map with no sublists emits no note and is unchanged."
     }
   },
   "variants": ["us", "world", "highlight", "robinson", "grouped"],
@@ -50,7 +55,7 @@
     }
   },
   "skeleton": "<!-- _class: map -->\n\n## Where the program runs.\n\n- Kenya `4.2`\n- Nigeria `3.1`\n- India `2.8`\n- Brazil `2.2`\n",
-  "sample": "<!-- _class: map -->\n\n## Where our programs reached — unevenly.\n\n- India `48.2`\n- Nigeria `36.4`\n- Kenya `31.0`\n- Brazil `27.5`\n- Indonesia `19.3`\n- Ethiopia `14.1`\n- Bangladesh `11.8`\n- Peru `9.6`\n",
+  "sample": "<!-- _class: map -->\n\n## Where our programs reached — unevenly.\n\n- India `48.2`\n  - Largest by volume, thinnest by margin\n  - Two new state hubs this year\n- Nigeria `36.4`\n- Kenya `31.0`\n- Brazil `27.5`\n- Indonesia `19.3`\n- Ethiopia `14.1`\n- Bangladesh `11.8`\n- Peru `9.6`\n",
   "stressSample": "<!-- _class: map us -->\n\n## A wide spread across fifteen states.\n\n- California `512`\n- Texas `438`\n- New York `390`\n- Florida `301`\n- Pennsylvania `188`\n- Illinois `164`\n- Ohio `142`\n- Georgia `121`\n- North Carolina `98`\n- Michigan `76`\n- Arizona `54`\n- Tennessee `41`\n- Colorado `33`\n- Oregon `22`\n- Maine `9`\n",
   "whenToUse": [
     {

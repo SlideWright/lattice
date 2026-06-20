@@ -21,6 +21,8 @@ Tapering stages that show where a flow drops off, with the conversion rate betwe
 ## Where the signup pipeline leaks.
 
 - Visitors `12,000`
+  - Two-thirds arrive from inbound, not outbound
+  - Paid search makes up the rest
 - Signups `4,800`
 - Activated `2,160`
 - Paid `864`
@@ -51,6 +53,8 @@ Tapering stages that show where a flow drops off, with the conversion rate betwe
 ## Where the signup pipeline leaks.
 
 - Visitors `12,000`
+  - Two-thirds arrive from inbound, not outbound
+  - Paid search makes up the rest
 - Signups `4,800`
 - Activated `2,160`
 - Paid `864`
@@ -65,6 +69,8 @@ Tapering stages that show where a flow drops off, with the conversion rate betwe
 ## Where the signup pipeline leaks.
 
 - Visitors `12,000`
+  - Two-thirds arrive from inbound, not outbound
+  - Paid search makes up the rest
 - Signups `4,800`
 - Activated `2,160`
 - Paid `864`
@@ -79,6 +85,8 @@ Tapering stages that show where a flow drops off, with the conversion rate betwe
 ## Where the signup pipeline leaks.
 
 - Visitors `12,000`
+  - Two-thirds arrive from inbound, not outbound
+  - Paid search makes up the rest
 - Signups `4,800`
 - Activated `2,160`
 - Paid `864`
