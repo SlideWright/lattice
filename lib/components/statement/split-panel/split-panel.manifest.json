@@ -1,6 +1,7 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "split-panel",
+  "adapt": { "mode": "native" },
   "function": "statement",
   "form": "panel",
   "substance": "structure",

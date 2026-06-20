@@ -1,6 +1,7 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "glossary",
+  "adapt": { "mode": "native" },
   "focusAxes": ["row"],
   "function": "inventory",
   "form": "ledger",

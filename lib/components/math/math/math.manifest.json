@@ -1,6 +1,7 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "math",
+  "adapt": { "mode": "native" },
   "function": "evidence",
   "bucket": "math",
   "form": "canvas",

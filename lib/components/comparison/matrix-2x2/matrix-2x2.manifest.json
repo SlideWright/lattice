@@ -5,6 +5,7 @@
   "form": "matrix",
   "substance": "structure",
   "adapt": {
+    "mode": "reflow",
     "families": [
       "wide",
       "square",

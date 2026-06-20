@@ -1,6 +1,7 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "funnel",
+  "adapt": { "mode": "reflow" },
   "function": "evidence",
   "form": "canvas",
   "substance": "series",

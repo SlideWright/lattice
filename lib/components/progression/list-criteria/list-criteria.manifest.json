@@ -1,6 +1,7 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "list-criteria",
+  "adapt": { "mode": "native" },
   "focusAxes": ["item"],
   "function": "progression",
   "form": "ledger",

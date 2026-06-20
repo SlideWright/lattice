@@ -1,6 +1,7 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "journey",
+  "adapt": { "mode": "reflow" },
   "function": "progression",
   "bucket": "chart",
   "form": "timeline",

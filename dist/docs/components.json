@@ -185,6 +185,9 @@
         "tall",
         "strip"
       ],
+      "adapt": {
+        "mode": "native"
+      },
       "tags": [
         "ownership",
         "onboarding",
@@ -320,6 +323,9 @@
         "tall",
         "strip"
       ],
+      "adapt": {
+        "mode": "native"
+      },
       "tags": [
         "agenda-setting",
         "overview",
@@ -483,6 +489,9 @@
         "tall",
         "strip"
       ],
+      "adapt": {
+        "mode": "native"
+      },
       "tags": [
         "regulation",
         "citation",
@@ -611,6 +620,9 @@
         "tall",
         "strip"
       ],
+      "adapt": {
+        "mode": "native"
+      },
       "tags": [
         "hero-number",
         "metric",
@@ -740,6 +752,7 @@
         "strip"
       ],
       "adapt": {
+        "mode": "reflow",
         "families": [
           "wide",
           "square",
@@ -933,6 +946,7 @@
         "strip"
       ],
       "adapt": {
+        "mode": "reflow",
         "families": [
           "wide",
           "square",
@@ -1086,6 +1100,9 @@
         "tall",
         "strip"
       ],
+      "adapt": {
+        "mode": "native"
+      },
       "tags": [
         "status",
         "stoplight",
@@ -1227,6 +1244,9 @@
         "tall",
         "strip"
       ],
+      "adapt": {
+        "mode": "native"
+      },
       "tags": [
         "citation",
         "quotation",
@@ -1373,6 +1393,9 @@
         "tall",
         "strip"
       ],
+      "adapt": {
+        "mode": "native"
+      },
       "tags": [
         "summary",
         "takeaway",
@@ -1500,6 +1523,9 @@
         "tall",
         "strip"
       ],
+      "adapt": {
+        "mode": "native"
+      },
       "tags": [
         "snippet",
         "walkthrough",
@@ -1623,6 +1649,9 @@
         "wide",
         "square"
       ],
+      "adapt": {
+        "mode": "single-orientation"
+      },
       "tags": [
         "snippet",
         "contrast",
@@ -1754,6 +1783,9 @@
         "tall",
         "strip"
       ],
+      "adapt": {
+        "mode": "native"
+      },
       "tags": [
         "tradeoff",
         "contrast",
@@ -1894,6 +1926,9 @@
         "tall",
         "strip"
       ],
+      "adapt": {
+        "mode": "native"
+      },
       "tags": [
         "tradeoff",
         "ranking",
@@ -2034,6 +2069,7 @@
         "strip"
       ],
       "adapt": {
+        "mode": "reflow",
         "families": [
           "wide",
           "square",
@@ -2172,6 +2208,9 @@
         "tall",
         "strip"
       ],
+      "adapt": {
+        "mode": "native"
+      },
       "tags": [
         "recommendation",
         "tradeoff",
@@ -2298,6 +2337,9 @@
         "tall",
         "strip"
       ],
+      "adapt": {
+        "mode": "reflow"
+      },
       "tags": [
         "flowchart",
         "org-chart",
@@ -2431,6 +2473,9 @@
         "tall",
         "strip"
       ],
+      "adapt": {
+        "mode": "native"
+      },
       "tags": [
         "section-break",
         "agenda-setting",
@@ -2555,6 +2600,9 @@
         "tall",
         "strip"
       ],
+      "adapt": {
+        "mode": "reflow"
+      },
       "tags": [
         "percentage",
         "sequence",
@@ -2684,6 +2732,9 @@
         "tall",
         "strip"
       ],
+      "adapt": {
+        "mode": "reflow"
+      },
       "tags": [
         "swimlane",
         "planning",
@@ -2806,6 +2857,9 @@
         "tall",
         "strip"
       ],
+      "adapt": {
+        "mode": "native"
+      },
       "tags": [
         "definition",
         "reference",
@@ -2932,6 +2986,9 @@
         "tall",
         "strip"
       ],
+      "adapt": {
+        "mode": "reflow"
+      },
       "tags": [
         "visual",
         "showcase",
@@ -3073,6 +3130,9 @@
         "tall",
         "strip"
       ],
+      "adapt": {
+        "mode": "reflow"
+      },
       "tags": [
         "process",
         "assessment",
@@ -3200,6 +3260,9 @@
         "wide",
         "square"
       ],
+      "adapt": {
+        "mode": "reflow"
+      },
       "tags": [
         "swimlane",
         "workflow",
@@ -3339,6 +3402,7 @@
         "strip"
       ],
       "adapt": {
+        "mode": "reflow",
         "families": [
           "wide",
           "square",
@@ -3528,6 +3592,7 @@
         "strip"
       ],
       "adapt": {
+        "mode": "reflow",
         "families": [
           "wide",
           "square",
@@ -3706,6 +3771,9 @@
         "tall",
         "strip"
       ],
+      "adapt": {
+        "mode": "native"
+      },
       "tags": [
         "requirements",
         "assessment",
@@ -3836,6 +3904,9 @@
         "tall",
         "strip"
       ],
+      "adapt": {
+        "mode": "native"
+      },
       "tags": [
         "process",
         "walkthrough",
@@ -3993,6 +4064,9 @@
         "tall",
         "strip"
       ],
+      "adapt": {
+        "mode": "native"
+      },
       "tags": [
         "reference",
         "overview",
@@ -4133,6 +4207,9 @@
         "tall",
         "strip"
       ],
+      "adapt": {
+        "mode": "native"
+      },
       "tags": [
         "visual",
         "showcase",
@@ -4269,6 +4346,9 @@
         "tall",
         "strip"
       ],
+      "adapt": {
+        "mode": "reflow"
+      },
       "tags": [
         "metric",
         "proportion",
@@ -4425,6 +4505,9 @@
         "tall",
         "strip"
       ],
+      "adapt": {
+        "mode": "native"
+      },
       "tags": [
         "formula",
         "assessment",
@@ -4576,6 +4659,7 @@
         "strip"
       ],
       "adapt": {
+        "mode": "reflow",
         "families": [
           "wide",
           "square",
@@ -4737,6 +4821,9 @@
         "tall",
         "strip"
       ],
+      "adapt": {
+        "mode": "native"
+      },
       "tags": [
         "compliance",
         "regulation",
@@ -4886,6 +4973,9 @@
         "tall",
         "strip"
       ],
+      "adapt": {
+        "mode": "reflow"
+      },
       "tags": [
         "donut",
         "proportion",
@@ -5022,6 +5112,7 @@
         "strip"
       ],
       "adapt": {
+        "mode": "reflow",
         "families": [
           "wide",
           "square",
@@ -5180,6 +5271,9 @@
         "tall",
         "strip"
       ],
+      "adapt": {
+        "mode": "reflow"
+      },
       "tags": [
         "percentage",
         "stoplight",
@@ -5319,6 +5413,9 @@
         "tall",
         "strip"
       ],
+      "adapt": {
+        "mode": "native"
+      },
       "tags": [
         "pitch",
         "board-deck",
@@ -5469,6 +5566,9 @@
         "tall",
         "strip"
       ],
+      "adapt": {
+        "mode": "reflow"
+      },
       "tags": [
         "two-by-two",
         "positioning",
@@ -5617,6 +5717,9 @@
         "tall",
         "strip"
       ],
+      "adapt": {
+        "mode": "native"
+      },
       "tags": [
         "pull-quote",
         "quotation",
@@ -5736,6 +5839,9 @@
         "tall",
         "strip"
       ],
+      "adapt": {
+        "mode": "reflow"
+      },
       "tags": [
         "spider",
         "assessment",
@@ -5882,6 +5988,9 @@
         "wide",
         "square"
       ],
+      "adapt": {
+        "mode": "single-orientation"
+      },
       "tags": [
         "contract",
         "contrast",
@@ -6025,6 +6134,9 @@
         "tall",
         "strip"
       ],
+      "adapt": {
+        "mode": "native"
+      },
       "tags": [
         "changelog",
         "compliance",
@@ -6162,6 +6274,9 @@
         "tall",
         "strip"
       ],
+      "adapt": {
+        "mode": "reflow"
+      },
       "tags": [
         "planning",
         "swimlane",
@@ -6308,6 +6423,7 @@
         "strip"
       ],
       "adapt": {
+        "mode": "reflow",
         "families": [
           "wide",
           "square",
@@ -6484,6 +6600,9 @@
         "tall",
         "strip"
       ],
+      "adapt": {
+        "mode": "native"
+      },
       "tags": [
         "summary",
         "board-deck",
@@ -6630,6 +6749,9 @@
         "tall",
         "strip"
       ],
+      "adapt": {
+        "mode": "reflow"
+      },
       "tags": [
         "flowchart",
         "states",
@@ -6777,6 +6899,7 @@
         "strip"
       ],
       "adapt": {
+        "mode": "reflow",
         "families": [
           "wide",
           "square",
@@ -6939,6 +7062,9 @@
         "tall",
         "strip"
       ],
+      "adapt": {
+        "mode": "native"
+      },
       "tags": [
         "citation",
         "reference",
@@ -7071,6 +7197,9 @@
         "tall",
         "strip"
       ],
+      "adapt": {
+        "mode": "reflow"
+      },
       "tags": [
         "changelog",
         "milestones",
@@ -7201,6 +7330,9 @@
         "tall",
         "strip"
       ],
+      "adapt": {
+        "mode": "native"
+      },
       "tags": [
         "pitch",
         "board-deck",
@@ -7323,6 +7455,7 @@
         "strip"
       ],
       "adapt": {
+        "mode": "reflow",
         "families": [
           "wide",
           "square",
@@ -7497,6 +7630,9 @@
         "tall",
         "strip"
       ],
+      "adapt": {
+        "mode": "reflow"
+      },
       "tags": [
         "tag-cloud",
         "themes",

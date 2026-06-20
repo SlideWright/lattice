@@ -1,6 +1,7 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "citation-card",
+  "adapt": { "mode": "native" },
   "function": "evidence",
   "bucket": "legal",
   "form": "canvas",

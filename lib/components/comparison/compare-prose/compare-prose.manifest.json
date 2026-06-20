@@ -1,6 +1,7 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "compare-prose",
+  "adapt": { "mode": "native" },
   "function": "comparison",
   "form": "split",
   "substance": "structure",

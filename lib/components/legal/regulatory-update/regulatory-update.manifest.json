@@ -1,6 +1,7 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "regulatory-update",
+  "adapt": { "mode": "native" },
   "function": "progression",
   "bucket": "legal",
   "form": "ledger",

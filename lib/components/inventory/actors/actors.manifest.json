@@ -1,6 +1,7 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "actors",
+  "adapt": { "mode": "native" },
   "function": "inventory",
   "form": "ledger",
   "substance": "structure",

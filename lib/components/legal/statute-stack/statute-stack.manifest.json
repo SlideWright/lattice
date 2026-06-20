@@ -1,6 +1,7 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "statute-stack",
+  "adapt": { "mode": "native" },
   "function": "inventory",
   "bucket": "legal",
   "form": "ledger",

@@ -5,6 +5,7 @@
   "form": "grid",
   "substance": "structure",
   "adapt": {
+    "mode": "reflow",
     "families": ["wide", "square", "tall", "strip"],
     "priority": ["title", "tiers"],
     "keepTogether": ["tier"]

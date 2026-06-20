@@ -1,6 +1,7 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "quote",
+  "adapt": { "mode": "native" },
   "function": "statement",
   "form": "canvas",
   "substance": "prose",

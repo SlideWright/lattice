@@ -27,6 +27,16 @@ in patch versions.
 
 ### Changed
 
+- **Adaptivity is now a required, gated manifest declaration.** Every component
+  carries `adapt.mode` ∈ `reflow` (ships per-family structural layouts) ·
+  `native` (adapts by cqi scaling + orientation-aware type) · `single-orientation`
+  (deliberately one orientation). A CI gate (`check-ownership` +
+  `adapt-contract.test.js`) cross-checks the declaration against reality — any
+  component whose CSS uses `@container … aspect-ratio` MUST be `reflow` — so the
+  manifest can never silently drift from the code again. Fixes the prior gap (10
+  declared adaptivity, 25 actually adapt, nothing caught it). Backfilled all 52
+  (25 reflow / 25 native / 2 single-orientation); `components.json` now surfaces
+  the mode. See `engineering/decisions/2026-06-20-adaptive-manifest-contract.md`.
 - **The `image gallery` composition is now a passe-partout picture frame.** It
   was a contain-on-a-matte panel that pillarboxed non-landscape assets (dead
   space left/right) with little padding. The frame now **hugs the asset's
