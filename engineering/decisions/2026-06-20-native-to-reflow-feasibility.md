@@ -1,7 +1,7 @@
 ---
 status: proposed
-summary: Feasibility study for converting the 25 `native` components to box-local `reflow` for portrait/tall boxes. Verdict — highly feasible and mostly cheap, BUT "lots of layouts are native" is partly a misframing: 8 of 25 are correctly native (centred single-column — reflow is a literal no-op), ~13 are cheap descendant-collapse reflows that copy the proven §12 sweep recipe (no export sign-off needed), 2 are wide tables needing a markup restructure, 1 (split-panel) already flips via `data-orientation` but the `@container` migration is the known §11 section-element blocker, and 1 (compare-table) is likely MISCLASSIFIED — it should be landscape-only, not a reflow target. Two contract findings flagged for the maintainer.
-version: 1
+summary: Feasibility study for converting the 25 `native` components to box-local `reflow` for portrait/tall boxes. Verdict — highly feasible and mostly cheap, BUT "lots of layouts are native" is partly a misframing: 8 of 25 are correctly native (centred single-column — reflow is a literal no-op), ~13 are cheap descendant-collapse reflows that copy the proven §12 sweep recipe (no export sign-off needed), 2 are wide tables needing a markup restructure, 1 (split-panel) already flips via `data-orientation` but the `@container` migration is the known §11 section-element blocker, and 1 (compare-table) is likely MISCLASSIFIED — it should be landscape-only, not a reflow target. Two contract findings flagged for the maintainer. **Part II (v2)** lifts the question one layer — from "are the components reflow-capable?" to "what does an end-to-end responsive *viewing* experience for the reader (the emailed-link-on-a-phone persona) require?" — and finds the responsive runtime is ~80% already built (the runtime already re-derives orientation from *measured* aspect on every resize); the missing pieces are a fluid-box viewer mode, a content-autofit actuator on the existing overflow watcher (with a legibility floor), and — now in scope — engine-owned re-pagination, which the capacity model already anticipates (`escalateTo: "split across slides"`).
+version: 2
 supersedes: none
 builds-on: 2026-06-20-adaptive-manifest-contract.md, 2026-06-18-component-adaptive-sizing.md, 2026-06-16-orientation-in-the-form-model.md
 ---
@@ -18,6 +18,16 @@ and explicitly parked "reflow IMPLEMENTATION for components that still need it"
 as a tracked follow-up. This note IS that follow-up's feasibility pass: for each
 of the 25 `native` components, *would* a portrait/tall structural reflow help,
 and *what would it cost*?
+
+> **Two layers, two parts.** **Part I** (below, unchanged) answers the
+> *component* question: are the layouts structurally reflow-*capable*? **Part II**
+> (appended v2) answers the *capability* question that motivated it — what an
+> end-to-end responsive **viewing** experience for the reader requires (fluid-box
+> reflow, content autofit, and engine-owned re-pagination). Part II **stands on**
+> Part I (a responsive viewer is only as good as the components it reflows) but
+> deliberately steps past Part I's "structure axis only" scope: it also touches
+> scale (autofit) and slide count (re-pagination). Read Part I for the cheap,
+> shippable backlog; read Part II for the bigger capability and its phasing.
 
 ## TL;DR verdict
 
@@ -194,15 +204,179 @@ at matched specificity, set `adapt.mode: reflow` + `adapt.families`, render at
 deck + committed PDF (HARD #9), and let `families.test.js` + `checkAdaptDeclarations`
 gate it.
 
+---
+
+# Part II — the responsive *viewing* capability (v2)
+
+Part I asks whether the components are reflow-*capable*. This part asks the
+layer-up question that prompted it: **what does an end-to-end responsive viewing
+experience for the reader actually require, and is it feasible?** It surfaced
+while working through *who portrait is for* — so it starts there.
+
+## Who portrait serves (the personas)
+
+Portrait/social sizes serve four readers, not one. Naming them is what tells us
+how big the type must be and who controls density:
+
+| Persona | Where/how they view | Controls density? | Type need |
+|---|---|---|---|
+| **Publisher** — crafts a LinkedIn/IG carousel | phone, in-feed | **yes** (authors *for* portrait, keeps it sparse) | big, punchy |
+| **Feed viewer** — scrolls past the publisher's carousel | phone, glance, sound-off, small in-feed preview first | n/a (consumes) | big enough to survive the shrunk feed thumbnail |
+| **Distance presenter** — holds a phone up / vertical kiosk / mobile video share | phone at >arm's length | yes | biggest (distance dominates) |
+| **Mobile reader (Persona 2)** — gets an emailed link, reads on a phone | phone, as a document | **NO** — reads whatever density the author shipped | device-native, legible |
+
+**The anchor is the device, not the genre.** A 1080-wide frame shown full-screen
+on a typical phone maps ~1080px → ~390 CSS px (scale ≈0.36). So today's 32px body
+renders at **≈11.6px on the phone** — below iOS caption size. Hitting the iOS body
+default (17px) needs **≈47–50px in-frame**. "Social-friendly ~50px" isn't *punchy*;
+it's just *readable on the device portrait is consumed on*. Three of the four
+personas want big and *expect* sparse; only Persona 2 can receive **uncontrolled**
+density — and that is precisely what this capability must absorb.
+
+**Why Persona 2 is the hard one — a structural fact.** Orientation is
+**author-declared and fixed**: the `@size` directive emits a fixed `size: W H`
+page box, and `orientationFor()` (`lib/engine/css.js`) derives the category from
+that geometry. Nothing reads the viewer's screen. So Persona 2 splits in two:
+
+- **2a — reads an author-made *portrait* deck on a phone:** portrait coefficients
+  apply and density was the author's call (≈ the Publisher's output). Already well
+  served by a bigger portrait ramp.
+- **2b — reads a *landscape* deck on a phone:** it stays 16:9, letterboxed and
+  small; the portrait type scale never fires. Untouched by any type decision.
+
+Capabilities 1–3 below are what convert case **2b** from "pinch-zoom a tiny
+16:9 deck" into a first-class portrait read — *without* compromising the big
+global portrait target, because reflow handles the aspect and autofit floors the
+density.
+
+## Finding: the responsive runtime is ~80% already built
+
+The runtime does **not** read a fixed geometry — it *measures* the live section
+and already re-runs on every `resize` and DOM mutation:
+
+- `stampOrientation()` (`lib/runtime/index.js`) sets `data-orientation` purely
+  from the measured aspect (`offsetWidth/offsetHeight` → `>1.05` landscape /
+  `≥0.95` square / else portrait).
+- `patchSectionGeometry()` re-runs that **plus** the portrait canvas-scale
+  (`injectOrientationStyle`) **plus** the cqi font stamp (`--_sec-1cqi`) on every
+  resize.
+- The Part-I `@container (aspect-ratio …)` reflows fire off the **box's own
+  measured aspect** directly — they need no stamp at all.
+
+So why is there no reflow today? **The slide box is pinned to the authored `@size`
+aspect**, so `offsetWidth/offsetHeight` always reports the authored aspect no
+matter the device. *Unpin the box and the existing machinery does the rest.*
+
+A precision nuance that ties straight back to Part I's tiers: a fluid box gives
+**Tier-A `@container` components the full four-family resolution**
+(`wide/square/tall/strip`, `lib/adaptive/families.js`) for free, because their
+queries read the box aspect. The **Tier-C `[data-orientation]` holdouts**
+(`split-panel`, `citation-card`) ride the runtime's coarser three-bucket stamp
+(`portrait/square/landscape`) until migrated — they still reflow, just at coarser
+granularity. The Part-I backlog is therefore also the *quality* backlog for this
+capability.
+
+## Capability 1 — fluid-box responsive reflow  ·  *feasible; depends on Part I*
+
+**Build:** a viewer/published-HTML mode where the section takes the *viewport's*
+aspect (e.g. `100dvw × 100dvh`, or fit-width with natural height) instead of the
+locked `size: W H` box. **Free on arrival:** `stampOrientation` flips a
+phone-narrow section to portrait, the portrait canvas-scale applies, cqi type
+re-fits, and every Tier-A `@container` component restyles to its tall/strip
+family. **Cost:** (a) the fluid-box mode itself (CSS + the viewer entry point);
+(b) finishing the Part-I Tier-A backlog so *every* bucket reflows cleanly, and
+migrating the Tier-C holdouts off the coarse stamp for four-family fidelity.
+**Out of its reach:** re-pagination — a fluid box reflows *one* slide's content
+into a portrait layout; it does not split a too-dense slide. That's Capability 3;
+until then, Capability 2 absorbs the overflow.
+
+## Capability 2 — content autofit  ·  *feasible; detector exists, needs an actuator + a floor*
+
+The detector already ships: `startOverflowWatcher()` (`lib/runtime/index.js`)
+measures per-slide overflow (`scrollHeight > clientHeight + TOL`) on every
+resize/mutation, idempotently and settled — today it only *warns* (an `.overflow`
+class + an "Overflows" tab). **Autofit = give that watcher an actuator:** when a
+slide overflows, step the type ramp down (reuse the existing `scale-*` /
+`--canvas-scale` lever) until it fits — **but only to a legibility floor** (≈ the
+device-17px-equivalent established above). If it still overflows at the floor,
+*stop shrinking and keep the warning tab* — never shrink into illegibility. This
+preserves the "portrait = sparse" contract and the Quality Bar while giving
+Persona 2 a graceful cushion instead of a hard clip. The one risk — a stable
+measure→shrink→re-measure loop — inherits the watcher's proven settle pattern
+(tolerance + change-only writes). **This deliberately extends past Part I's
+"structure axis only" scope: autofit touches scale, by design and with a floor.**
+
+## Capability 3 — engine-owned re-pagination  ·  *in scope; the genuine deep end*
+
+Splitting one too-dense slide into several portrait slides. **The data model
+already anticipates it:** `adapt.capacity` declares both the trigger and the
+intent — e.g. `cards-stack` ships
+`"capacity": { …, "hard": 4, "escalateTo": ["list-tabular", "split across slides"] }`.
+The *when* (count > hard) and the *what* ("split across slides") are already
+authored per component. The missing pieces:
+
+1. **A shared partition kernel (HARD RULE #1).** A pure
+   `(content, per-component split-policy, target geometry) → slide partition`
+   function in the shared kernel (`lib/core`/`lib/transformers`), consumed by
+   **both** the build-time exporter (deterministic page counts) **and** the
+   runtime viewer (client-side) — one source of truth, never two
+   implementations.
+2. **Per-component split policy.** Where a component may break: a list/stack
+   splits *between items*; an atomic card, a 2×2 matrix, or a read-across
+   `<table>` does **not** — it escalates via autofit or the manifest's other
+   `escalateTo` (`list-tabular`), never mid-figure. Keyed on the existing
+   `capacity.axis` + `hard` count, so no new contract — just a consumer of it.
+3. **Continuation rendering.** Carried-over title + a `(cont.)` eyebrow, repeated
+   masthead, continued numbering — editorial, but real.
+4. **Test impact.** The PDF-page-count integration tier becomes
+   **orientation-conditional** (one deck → different counts per `@size`).
+   Rebaseline those assertions as orientation-aware rather than fixed.
+5. **Blast radius.** High — engine now owns slide count, which it never has
+   (slides are author-delimited by `---`). This is **maker–checker** work when
+   built, with an independent checker on the partition kernel.
+
+**The sub-fork inside re-pagination:** *build-time* splitting (the exporter
+partitions at render time, knowing the target `@size`) is deterministic and
+tractable; ***runtime* splitting (the viewer re-paginates live as the phone
+rotates) is the hard part** — navigation, deep-link anchors, and progress all
+shift as slides multiply. Recommendation captured below: **ship build-time
+re-pagination first** (it already serves Persona 2 whenever the emailed link is a
+per-device export), and treat *live* runtime re-pagination as a guarded stretch.
+
+## Recommended phasing (Part II)
+
+Each phase is one branch → one PR (HARD #17), gated by the same `families.test.js`
++ `checkAdaptDeclarations` machinery, with landscape held byte-identical.
+
+- **P0 — fluid-box viewer mode** + finish the Part-I Tier-A backlog. Unlocks
+  reflow for every `@container` component *for free* once the box is fluid; the
+  single highest-leverage step.
+- **P1 — autofit actuator + legibility floor** on the existing overflow watcher.
+  Small, self-contained, immediately protects Persona 2 from clipping.
+- **P2 — build-time re-pagination** via the shared partition kernel keyed on
+  `adapt.capacity`. Deterministic, testable, maker–checker.
+- **P3 — live runtime re-pagination** (stretch; the genuinely hard one). Only if
+  the responsive-viewer demand justifies the navigation/anchor complexity.
+
+**Export sign-off:** P2/P3 change the *bytes of exported artifacts* (page counts,
+pagination) → both require the CLAUDE.md export-sign-off gate (render a
+representative deck in dark + light, send for inspection) before merge. P0/P1 are
+viewer/CSS behaviour and go through the normal visual-review path.
+
 ## Non-goals
 
 - **Not converting the Tier-0 eight.** Centred single-column layouts are
   *correctly* native; adding inert reflow CSS is noise.
-- **Not the nested-cell capability.** This is full-slide portrait reflow against
-  the *section* container; it needs none of the export-sign-off `--_sec-1cqi`
+- **Not the nested-cell capability.** Part-I full-slide portrait reflow queries
+  the *section* container and needs none of the export-sign-off `--_sec-1cqi`
   scale anchor (§11). Keep the two separate.
 - **Not reviving `section-as-grid`** or making the manifest *generate* layout —
   the same boundaries the prior ADRs drew (`2026-06-16-retire-section-as-grid.md`)
   hold here.
-- **Not touching scale.** Type/spacing stays continuous on `cqi` /
-  orientation-aware `--fs-*`; this is purely the *structure* axis.
+- **Part I touches structure only.** Type/spacing stays continuous on `cqi` /
+  orientation-aware `--fs-*` for the component-reflow backlog. **Part II Capability
+  2 (autofit) is the one deliberate exception** — it steps the scale down to a
+  legibility floor to absorb uncontrolled density; that is scoped, floored, and
+  viewer-only.
+- **Not *live* runtime re-pagination in the first build.** P3 is a guarded
+  stretch; build-time re-pagination (P2) is the committed path.
