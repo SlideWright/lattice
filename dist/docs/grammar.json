@@ -2299,7 +2299,7 @@
         "detail": {
           "selector": "li > ul",
           "required": false,
-          "description": "Optional nested sublist under a slice → present-mode popover. The kernel keeps the label/value as-is, tags each wedge `<path>` with `data-slice`, and emits the sublist as an inert `<template class=\"piechart-detail\">` — zero-footprint in print, so the exported PDF/SVG is byte-identical and a pie without sublists is unchanged. Rendering the detail IN the static PDF is a separate, export-gated decision (see the css-3d-charts decision note)."
+          "description": "Optional nested sublist under a slice. Drives two surfaces from one source: (1) Present/Practice — the kernel keeps the label/value as-is, tags each wedge `<path>` with `data-slice`, and emits the sublist as an inert `<template class=\"piechart-detail\">` the reveal layer reads; (2) the static PDF — the same detail is folded into the slide's speaker note (`Label (value): item · item`) as a Marp-faithful comment, which notes-core lifts into the per-slide note channel (a PDF text annotation + the hidden `aside`). The note rides the existing channel, so the chart pixels stay byte-identical. A pie with no sublists emits no note and is unchanged."
         }
       },
       "requiredSlots": [

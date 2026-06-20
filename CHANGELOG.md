@@ -38,6 +38,18 @@ in patch versions.
 
 ### Added
 
+- **`piechart` per-slice detail now reaches the static PDF — as the slide's speaker
+  note.** A slice's optional nested sublist already powered the Present/Practice reveal
+  popover but rendered nothing in the exported PDF, so a cold-open / emailed reader lost
+  it. The same authored detail is now folded into the slide's **speaker note**
+  (`Label (value): item · item`, one line per detailed slice) as a Marp-faithful comment,
+  which `notes-core` lifts into the per-slide note channel (a PDF text annotation + the
+  hidden `aside`). Because the note rides the existing channel and the comment is stripped
+  before render, the **chart pixels stay byte-identical** (verified: 0-px diff vs a plain
+  pie) — the detail surfaces off the slide face, not on it. Always-on for any pie with a
+  detail sublist; a plain pie emits no note and is unchanged. See
+  `engineering/decisions/2026-06-19-css-3d-charts-feasibility.md` and `examples/pie-detail-notes.md`.
+
 - **`image` is now content- AND orientation-adaptive — it resolves its own
   composition.** The author hands `image` an arbitrary rectangle (phone crop,
   portrait photo, panorama); the layout reads the asset's intrinsic aspect at
@@ -72,10 +84,12 @@ in patch versions.
   may now nest a sublist (`- Slice \`46%\`` then an indented `  - …`); the kernel keeps
   the label/value exactly as before and emits the sublist as an **inert
   `<template class="piechart-detail" data-slice="i">`** alongside the figure, and tags
-  every wedge `<path>` with `data-slice="i"`. Both are zero-footprint in print — the
-  exported PDF/SVG is **byte-identical**, and a deck without sublists is unchanged.
-  Authoring + the (still-open, export-gated) print-fallback question:
-  `lib/components/chart/piechart/piechart.docs.md` › "Per-slice detail".
+  every wedge `<path>` with `data-slice="i"`. The `<template>` is zero-footprint on the
+  slide face, so the **chart pixels are byte-identical** and a deck without sublists is
+  unchanged. (The static-PDF surfacing of the detail then shipped as the speaker-notes
+  channel — see the `### Added` entry above; that adds a PDF note annotation without
+  touching the pixels.) Authoring: `lib/components/chart/piechart/piechart.docs.md`
+  › "Per-slice detail".
 
 - **Present & Practice reveal per-slice chart detail interactively.** In the Drawing
   Board's present and practice modes, an interactive chart slice now lets you reveal a

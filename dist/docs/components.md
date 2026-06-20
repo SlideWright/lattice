@@ -4368,7 +4368,7 @@ Use for part-to-whole breakdowns with three to six slices. Add the `donut` modif
 |---|---|---|---|
 | `title` | `h2` | yes | Slide heading framing the breakdown. |
 | `slices` | `ul > li` | yes | One li per slice: label text then a trailing inline-code value pill, e.g. - Marketing `40%` (slices are drawn proportionally to the values). |
-| `detail` | `li > ul` | no | Optional nested sublist under a slice → present-mode popover. The kernel keeps the label/value as-is, tags each wedge `<path>` with `data-slice`, and emits the sublist as an inert `<template class="piechart-detail">` — zero-footprint in print, so the exported PDF/SVG is byte-identical and a pie without sublists is unchanged. Rendering the detail IN the static PDF is a separate, export-gated decision (see the css-3d-charts decision note). |
+| `detail` | `li > ul` | no | Optional nested sublist under a slice. Drives two surfaces from one source: (1) Present/Practice — the kernel keeps the label/value as-is, tags each wedge `<path>` with `data-slice`, and emits the sublist as an inert `<template class="piechart-detail">` the reveal layer reads; (2) the static PDF — the same detail is folded into the slide's speaker note (`Label (value): item · item`) as a Marp-faithful comment, which notes-core lifts into the per-slide note channel (a PDF text annotation + the hidden `aside`). The note rides the existing channel, so the chart pixels stay byte-identical. A pie with no sublists emits no note and is unchanged. |
 
 #### Anatomy
 
