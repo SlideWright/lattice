@@ -25,6 +25,17 @@ in patch versions.
 
 ## Unreleased
 
+### Changed
+
+- **The `image gallery` composition is now a passe-partout picture frame.** It
+  was a contain-on-a-matte panel that pillarboxed non-landscape assets (dead
+  space left/right) with little padding. The frame now **hugs the asset's
+  aspect** — square, wide, or tall — so there's no dead space, and the padding is
+  a deliberate **mat** (the photo sits inside, the surface shows around it) with
+  an inner bevel hairline, a slim frame line, and a hard, PDF-safe lift shadow.
+  Caption is a centred Title + body placard below the frame. Palette-blind
+  (works light + dark). See `engineering/decisions/2026-06-19-adaptive-image.md`.
+
 ### Added
 
 - **`image` is now content- AND orientation-adaptive — it resolves its own

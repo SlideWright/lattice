@@ -3488,8 +3488,14 @@ section.image[data-img-composition="spotlight"][data-orientation="square"] .imag
 }
 
 /* ════════════════════════════════════════════════════════════════════
- * GALLERY (opt-in) — contain the WHOLE image on a matte, with a placard.
+ * GALLERY (opt-in) — the WHOLE image in a passe-partout picture frame.
  * For diagrams / screenshots / assets with meaningful whitespace.
+ *
+ * The frame HUGS the image's aspect (no pillarbox dead-space): the panel takes
+ * `--img-aspect`, the photo is `contain`ed into the content box, and the padding
+ * IS the mat — the `--bg` surface shows around the photo (background-clip:
+ * content-box). A hairline bevel sits just inside the mat; a slim frame line +
+ * a hard, PDF-safe shadow lift it off the matte wall. Title + body placard below.
  * ═══════════════════════════════════════════════════════════════════ */
 
 section.image[data-img-composition="gallery"] {
@@ -3497,21 +3503,41 @@ section.image[data-img-composition="gallery"] {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4cqh;
-  padding: 8cqh 8cqi;
+  gap: 3.6cqh;
+  padding: 6cqh 6cqi;
   background: var(--img-matte);
 }
+/* Height-bound by default (square / tall read upright); width-bound for the wide
+ * buckets so a panorama doesn't overrun the wall. */
 section.image[data-img-composition="gallery"] .lattice-bg {
   position: relative;
   inset: auto;
-  width: min(72cqi, 88%);
-  flex: 1 1 auto;
-  min-height: 0;
+  aspect-ratio: var(--img-aspect);
+  height: 60cqh;
+  width: auto;
+  max-width: 78cqi;
+  box-sizing: border-box;
+  padding: 3cqi;
+  background-origin: content-box;
+  background-clip: content-box;
   background-size: contain;
   background-color: var(--bg);
+  border: 1px solid var(--text-heading);
+  box-shadow: 0.7cqi 0.9cqi 0 -0.15cqi color-mix(in oklab, var(--text-heading) 17%, transparent);
+}
+section.image[data-img-composition="gallery"][data-img-bucket="wide"] .lattice-bg,
+section.image[data-img-composition="gallery"][data-img-bucket="pano"] .lattice-bg {
+  height: auto;
+  width: 78cqi;
+  max-height: 64cqh;
+}
+/* The bevel hairline, just inside the mat. */
+section.image[data-img-composition="gallery"] .lattice-bg::before {
+  content: "";
+  position: absolute;
+  inset: 2cqi;
   border: 1px solid var(--border);
-  border-radius: 0.6cqi;
-  box-shadow: var(--img-lift);
+  pointer-events: none;
 }
 section.image[data-img-composition="gallery"] .image-text {
   flex: 0 0 auto;
@@ -3520,11 +3546,11 @@ section.image[data-img-composition="gallery"] .image-text {
 }
 section.image[data-img-composition="gallery"] .image-text h2 {
   font-size: var(--fs-h4);
-  margin-bottom: var(--sp-xs);
+  margin: 0 0 var(--sp-xs);
 }
 section.image[data-img-composition="gallery"] .image-text p {
   font-size: var(--fs-message);
-  max-width: 64ch;
+  max-width: 60ch;
   text-align: center;
 }
 
