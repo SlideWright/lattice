@@ -194,7 +194,7 @@ section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) 
  * tier — the briefing grid can't fit three h1-sized rows beside the hero. */
 section.kpi.briefing > ol > li:not(:first-child) > strong,
 section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) > ol > li:not(:first-child) > strong {
-  font-size: calc(3.9583cqi * var(--fs-scale));
+  font-size: calc(3.9583cqi * var(--fs-scale)); /* cqi-ok: briefing hero support — designed display size between h2 and h1 */
 }
 section.kpi.briefing > ol > li,
 section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) > ol > li {
@@ -414,12 +414,12 @@ section.kpi.spotlight > ol > li:not(:first-child) > ul > li:first-child {
   font-size: var(--fs-body);
 }
 section.kpi.spotlight > ol > li:not(:first-child) > ul > li + li {
-  font-size: 0.859375cqi;
+  font-size: var(--fs-meta);
   margin-top: 0.15625cqi;
 }
 section.kpi.spotlight > ol > li:not(:first-child) code {
   padding: 0.15625cqi 0.625cqi;
-  font-size: 0.78125cqi;
+  font-size: var(--fs-meta);
 }
 
 

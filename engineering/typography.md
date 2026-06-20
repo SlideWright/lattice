@@ -63,6 +63,31 @@ message/body/meta content tiers (same size, weight-differentiated).
 |---|---|---|---|
 | `--fs-hero` | 8.9583 | 86 | The ONE big number on a slide — big-number, kpi.spotlight/briefing primary, watermark backdrops. **Class-driven only — never bound to an h-element.** "This number IS the slide." Rows of comparable metrics (kpi.ops/compliance/trajectory, stats) use `--fs-h1` (48 pt), not hero. |
 
+### 1.4 Three orientation categories (generated)
+
+The coefficients above are the **landscape** scale. They are not hand-written in
+`base.tokens.css` — they live in the manifest `lib/typography/scale.js` and are
+emitted into `dist/lattice.css` by `lib/typography/emit.js`. The manifest carries
+**three curated coefficient sets**, one per orientation, selected per slide off
+the `data-orientation` stamp:
+
+| Category | Aspect | Sizes | Reference width |
+|---|---|---|---|
+| `landscape` | `> 1.05` | hd · standard · 4k | 1280 (1cqi = 12.8 px) |
+| `square` | `0.95–1.05` | 1:1 social | 1080 (1cqi = 10.8 px) |
+| `portrait` | `< 0.95` | portrait · story · mobile | 1080 (1cqi = 10.8 px) |
+
+(Boundaries are the `data-orientation` stamp's — `orientationFor` in
+`lib/engine/css.js`.) Each is a *curated* hierarchy, NOT the landscape scale times a constant: portrait
+pulls the title ramp down (so a 2-line `h1` fits a tall frame) while keeping body
+generous; square stays punchier than landscape but smaller-titled than portrait
+(a 1:1 box is height-limited). `landscape` is the unstamped default and is
+byte-identical to the historical scale. To change a size, edit the manifest — one
+source of truth, three scales that cannot drift apart. **Readable text always
+uses a `--fs-*` token** (a drift-guard test bans raw `cqi` font-sizes), so it
+follows its slide's orientation automatically. Full rationale + the §11 selection
+mechanism: `engineering/decisions/2026-06-20-typography-categories.md`.
+
 ## 2 — Author's mental model
 
 > **HTML heading**: use `--fs-h<level>`. `h1` → `fs-h1`. `h2` → `fs-h2`. …

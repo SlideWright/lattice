@@ -37,6 +37,20 @@ in patch versions.
   declared adaptivity, 25 actually adapt, nothing caught it). Backfilled all 52
   (25 reflow / 25 native / 2 single-orientation); `components.json` now surfaces
   the mode. See `engineering/decisions/2026-06-20-adaptive-manifest-contract.md`.
+- **Typography is now three curated per-orientation scales, not one scale × a
+  multiplier.** Font size was `landscape_coefficient × cqi × --canvas-scale`,
+  where `--canvas-scale` was a single uniform multiplier that *stretched* the
+  landscape hierarchy to fake portrait (and which raw-`cqi` sizes like pills and
+  corner tags never saw, so they collapsed to fine print on a tall box). The
+  `--fs-*` tokens now come from a single manifest (`lib/typography/scale.js` +
+  `emit.js`) carrying **curated `landscape` / `square` / `portrait` coefficient
+  sets**, selected per slide off `data-orientation`. Landscape coefficients are
+  unchanged and landscape renders stay byte-identical; `square`/`portrait` are
+  tuned for legibility at presentation distance and to fill a tall frame.
+  `--pill-fs` now follows the per-slide orientation (was baking in the landscape
+  size). `--canvas-scale` is retired for type (spacing still uses it). A
+  drift-guard test bans new raw-`cqi` font-sizes. See
+  `engineering/decisions/2026-06-20-typography-categories.md`.
 - **The `image gallery` composition is now a passe-partout picture frame.** It
   was a contain-on-a-matte panel that pillarboxed non-landscape assets (dead
   space left/right) with little padding. The frame now **hugs the asset's

@@ -16,7 +16,7 @@ section.form .tile-watermark {
   z-index: -1;
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 44cqi;
+  font-size: 44cqi; /* cqi-ok: full-tile decorative watermark glyph */
   line-height: 0.8;
   letter-spacing: -0.03em;
   color: color-mix(in srgb, var(--accent) 14%, transparent);
