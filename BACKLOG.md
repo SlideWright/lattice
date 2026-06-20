@@ -7,9 +7,11 @@
 
 The live, claimable work queue — a read-only mirror of [open issues](https://github.com/SlideWright/lattice/issues),
 grouped by board column. Design lives in `engineering/decisions/`; this tracks
-only *status*. **34 open** items.
+only *status*. **35 open** items.
 
-## Backlog (32)
+> ⚠️ **1 card need triage** (missing `area:`/`type:`/`priority:`): [#452](https://github.com/SlideWright/lattice/issues/452).
+
+## Backlog (33)
 
 - [#283](https://github.com/SlideWright/lattice/issues/283) refactor(css): audit and reduce `!important` (~490 repo-wide) — high · engine
 - [#284](https://github.com/SlideWright/lattice/issues/284) refactor(css): activate `@layer` for per-component + modifier CSS — high · engine
@@ -43,6 +45,7 @@ only *status*. **34 open** items.
 - [#300](https://github.com/SlideWright/lattice/issues/300) docs: assess `examples/gallery-jargon.md` for retirement — low · docs
 - [#309](https://github.com/SlideWright/lattice/issues/309) docs: pick a single canonical home for the Mermaid contract (currently in 3 docs) — low · theming
 - [#310](https://github.com/SlideWright/lattice/issues/310) docs: drop/re-anchor the legacy "Part 1–11" doc numbering — low · docs
+- [#452](https://github.com/SlideWright/lattice/issues/452) Pie per-slice detail — three follow-ups (print fallback · preview interactivity · progress/timeline regex fix)
 
 ## Ready (0)
 
