@@ -580,78 +580,78 @@ for signal in calibrator.intake.unscored():
 ---
 
 <!-- _class: image -->
-<!-- _footer: "Image · default cover · image" -->
+<!-- _footer: "Image · auto → clean floated card · image" -->
 
 `Layout · Image`
 
-## Image right is the default — text leads, evidence follows.
+## Hand it any photo — the layout resolves the composition.
 
-The image fills its half-canvas slot edge-to-edge. A 1px hairline marks the join between text and image — boardroom polish, no placeholder pattern visible behind a real photo.
+A moderate-aspect photo lands in the clean default: a floated card shaped to the asset, beside the argument. No modifier, no crop — the engine reads the asset's shape and the deck size and decides.
 
-![bg right](../../../lib/components/imagery/image/sample-image-landscape.svg)
+![bg](../../../lib/components/imagery/image/sample-photo-wide.svg)
 
 ---
 
 <!-- _class: image mirror -->
-<!-- _footer: "Image · cover, mirrored · image mirror" -->
+<!-- _footer: "Image · clean, mirrored · image mirror" -->
 
 `Layout · Image Mirror`
 
-## Mirror flips the slot — image left, text right.
+## Mirror flips the card — image left, text right.
 
-`mirror` is the cross-cutting orientation modifier; `image left` is preserved as a deprecated alias for one release.
+`mirror` is the cross-cutting side modifier; `![bg left]` is preserved as a deprecated alias. The composition is unchanged — only the side flips.
 
-![bg left](../../../lib/components/imagery/image/sample-image-landscape.svg)
-
----
-
-<!-- _class: image contain -->
-<!-- _footer: "Image · contain (no crop) · image contain" -->
-
-`Layout · Image Contain`
-
-## When a chart or screenshot must show in full, opt into `contain`.
-
-The image is centred at native aspect on a clean `--bg-alt` matte — an editorial plate, not a placeholder. Use this for diagrams, schematics, and any asset where cropping would destroy meaning.
-
-![bg](../../../lib/components/imagery/image/sample-image-portrait.svg)
+![bg left](../../../lib/components/imagery/image/sample-photo-wide.svg)
 
 ---
 
-<!-- _class: image full -->
-<!-- _footer: "Image full · cover · image full" -->
+<!-- _class: image gallery -->
+<!-- _footer: "Image · opt-in gallery (contain, no crop) · image gallery" -->
+
+`Layout · Image Gallery`
+
+## When a chart or screenshot must show in full, opt into `gallery`.
+
+The whole asset is contained at native aspect on a clean `--bg-alt` matte with a placard caption — an editorial plate, not a placeholder. Use it for diagrams, schematics, and any asset where cropping would destroy meaning.
+
+![bg](../../../lib/components/imagery/image/sample-photo-square.svg)
+
+---
+
+<!-- _class: image spotlight -->
+<!-- _footer: "Image · auto → spotlight (full-bleed + solid card) · image spotlight" -->
 <!-- _paginate: false -->
 
 ## Signal Pipeline · Reference Visualization
 
-Weekly Signal Brief — the primary output of the intake pipeline, distributed every Monday
+A panorama matches the canvas, so it goes full-bleed — and the message rides a solid card, so it stays legible over any photo.
 
-![bg](../../../lib/components/imagery/image/sample-image-landscape.svg)
-
----
-
-<!-- _class: image museum -->
-<!-- _footer: "Image museum · editorial plate · image museum" -->
-
-`Image Layout · Museum Modifier`
-
-## Museum modifier — editorial plate
-
-Add `museum` alongside `image`. The image gets a `--bg-alt` matte border with a 1px hairline frame; a 100px matte plate at the bottom carries the editorial label + caption. Framed like a mounted print.
-
-![bg](../../../lib/components/imagery/image/sample-image-landscape.svg)
+![bg](../../../lib/components/imagery/image/sample-photo-pano.svg)
 
 ---
 
-<!-- _class: image museum full -->
-<!-- _footer: "Image museum full · full bleed · image museum full" -->
+<!-- _class: image split -->
+<!-- _footer: "Image · auto → split (extreme aspect, shown whole) · image split" -->
+
+`Image Layout · Split`
+
+## A tall photo keeps every pixel.
+
+An extreme aspect would waste a card, so the layout shows it whole in a full-height column with the argument alongside — zero crop, the canvas filled.
+
+![bg](../../../lib/components/imagery/image/sample-photo-tall.svg)
+
+---
+
+<!-- _class: image statement -->
+<!-- _footer: "Image · opt-in statement (scrim + editorial title) · image statement" -->
 <!-- _paginate: false -->
 
-## Architecture dependencies — every node visible
+## Architecture dependencies — the editorial frame
 
-Full-bleed museum centres the asset on a generous `--bg-alt` matte with uniform 40px inset on all four sides. The border frames it as an object, not a wallpaper. No text overlaid on the image.
+`statement` rides the title on the photo over a scrim — a deliberate, editorial moment for an opener or a closer, taken when the photo is known to carry it.
 
-![bg](../../../lib/components/imagery/image/sample-image-landscape.svg)
+![bg](../../../lib/components/imagery/image/sample-photo-wide.svg)
 
 ---
 
@@ -679,15 +679,15 @@ All colours reference CSS variables — `--bg`, `--text-heading`, `--text-body`,
 
 ---
 
-<!-- _class: image full contain dark -->
-<!-- _footer: "Image full contain dark · image full contain dark" -->
+<!-- _class: image spotlight dark -->
+<!-- _footer: "Image · spotlight, dark · image spotlight dark" -->
 <!-- _paginate: false -->
 
-## Signal Pipeline · Portrait Asset
+## Signal Pipeline · Reference Visualization
 
-A tall asset on a wide canvas — `contain` replaces the lattice pattern with a quiet `--bg-alt` matte, so the image reads as a museum plate rather than a placeholder.
+Every composition is palette-blind — add `dark` and the solid card, scrim, and matte all track the theme through the same tokens. The photo carries; the message stays legible.
 
-![bg](../../../lib/components/imagery/image/sample-image-portrait.svg)
+![bg](../../../lib/components/imagery/image/sample-photo-pano.svg)
 
 ---
 
@@ -865,11 +865,11 @@ The left card is struck through to read as the option considered then dropped; t
 
 `Modifier · image mirror`
 
-## Mirror flips the image slot — same vocabulary as split-panel watermark, compare-prose.
+## Mirror flips the image side — same vocabulary as split-panel watermark, compare-prose.
 
-The half-canvas image moves from the right slot to the left, and the text padding swaps to match. `mirror` is the cross-cutting orientation flag in the Lattice grammar; `image left` is preserved as a backwards-compatible alias for one release.
+The image card moves from the right to the left, and the text padding swaps to match. `mirror` is the cross-cutting side flag in the Lattice grammar; `![bg left]` is preserved as a backwards-compatible alias.
 
-![bg left](../../../lib/components/imagery/image/sample-image-landscape.svg)
+![bg left](../../../lib/components/imagery/image/sample-photo-wide.svg)
 
 ---
 
