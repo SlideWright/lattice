@@ -1,6 +1,6 @@
 ---
 status: shipped
-summary: CSS-3D can't replace SVG for the chart family (PDF zoom rasterizes CSS, vector SVG stays crisp; preserve-3d is inert inside SVG). Decision — SVG stays canonical; CSS 3D is a present-mode-only tilt of the whole SVG. Shipped — piechart per-slice detail as an inert data-slice/<template> payload (byte-identical export) + a dispatch depth-aware fix, AND a parent-hosted present/practice interaction layer (hover/tap/number-key reveal, autoplay-pause) keeping the iframe a pure paint surface. Print fallback deferred (export-gated).
+summary: CSS-3D can't replace SVG for the chart family (PDF zoom rasterizes CSS, vector SVG stays crisp; preserve-3d is inert inside SVG). Decision — SVG stays canonical; CSS 3D is a present-mode-only tilt of the whole SVG. Shipped — piechart per-slice detail as an inert data-slice/<template> payload (byte-identical chart pixels) + a dispatch depth-aware fix, AND a parent-hosted present/practice interaction layer (hover/tap/number-key reveal, autoplay-pause) keeping the iframe a pure paint surface. Print fallback shipped (#452.1) as the speaker-notes channel (detail → slide note → PDF annotation, chart pixels byte-identical).
 last-updated: 2026-06-20
 companion:
   - ../../lib/components/chart/piechart/piechart.docs.md
@@ -10,7 +10,7 @@ companion:
 # CSS-3D charts — feasibility, and the per-slice-detail slice it produced
 
 **Date:** 2026-06-19 · **Status:** investigation settled; one kernel slice landed,
-present-mode wiring + print-fallback deferred.
+present-mode wiring deferred; print fallback shipped as the speaker-notes channel.
 
 ## Question
 
@@ -157,9 +157,17 @@ interaction-coupled (the recommended synthesis).
 
 ## Open / deferred
 
-- **Print fallback (export-gated):** how the authored sublist renders *in the static
-  PDF* so the detail isn't lost off-screen — changes exported bytes, so it needs export
-  sign-off. Until then detail is present/practice only.
+- **Print fallback — SHIPPED (#452.1) as the speaker-notes channel.** Decision: the
+  authored detail is folded into the slide's **speaker note** (`Label (value): item ·
+  item`, one line per detailed slice) as a Marp-faithful `<!-- … -->` comment that
+  `buildPieChart` emits; `notes-core` lifts it into the per-slide note channel (a PDF
+  text annotation + the hidden `aside`) and strips the comment before render. So the
+  detail surfaces *off the slide face* — the **chart pixels stay byte-identical**
+  (verified: 0-px diff vs a plain pie), and a PDF reader gets the context a presenter
+  would reveal. Always-on (any pie with detail); a plain pie emits no note. Chosen over
+  a visible on-slide note block / footnotes / appendix slide because it reuses the
+  existing notes pipeline and keeps the boardroom slide clean. The Present/Practice
+  `<template>` reveal is unchanged — same source, two surfaces.
 - **Presenter-window trigger + legend cross-light:** the dual-screen presenter view
   could drive reveals on the audience screen; legend cross-lighting needs `data-slice`
   on the SVG-native legend rows (`svg-legend.js`). Both additive, not yet built.

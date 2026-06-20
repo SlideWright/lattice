@@ -12,6 +12,8 @@ const { test, describe } = require('node:test');
 const assert = require('node:assert/strict');
 const { JSDOM } = require('jsdom');
 const chartFamily = require('../../../lib/transformers/chart-family');
+const engine = require('../../../lib/components/chart/_chart-family/chart-family');
+const notesCore = require('../../../lib/authoring/notes-core');
 
 function makeDoc(bodyHtml) {
   const dom = new JSDOM(`<!doctype html><html><body>${bodyHtml}</body></html>`);
@@ -325,5 +327,50 @@ describe('chart-family.applyToDom', () => {
     assert.doesNotThrow(() => chartFamily.applyToDom(null));
     assert.doesNotThrow(() => chartFamily.applyToDom(undefined));
     assert.doesNotThrow(() => chartFamily.applyToDom({}));
+  });
+});
+
+// Per-slice pie detail → speaker note in the static PDF (#452.1). The same
+// authored sublist powers the Present-mode <template> popover AND, folded into a
+// Marp-faithful comment, the slide's speaker note (PDF annotation + hidden aside)
+// — so a PDF reader gets the detail without the chart pixels changing.
+describe('piechart per-slice detail → speaker-note comment', () => {
+  test('buildPieDetailNote: one line per detailed slice, "Label (value): item · item"', () => {
+    const note = engine.buildPieDetailNote([
+      { label: 'Cloud', valueRaw: '46%', detail: '<li>Mostly AWS.</li><li>120 hrs</li>' },
+      { label: 'On-prem', valueRaw: '30%', detail: '' },
+    ]);
+    assert.equal(note, '<!-- Cloud (46%): Mostly AWS. · 120 hrs -->');
+  });
+
+  test('a pie with NO detail emits no comment (byte-identical export preserved)', () => {
+    assert.equal(engine.buildPieDetailNote([{ label: 'A', valueRaw: '50%', detail: '' }]), '');
+    const html = engine.transformChartSection(
+      '<h2>Mix</h2><ul><li>A <code>60%</code></li><li>B <code>40%</code></li></ul>', 'piechart').html;
+    assert.ok(!/<!--/.test(html), 'plain pie stays comment-free');
+  });
+
+  test('transformChartSection emits the note comment AND keeps the figure + templates', () => {
+    const html = engine.transformChartSection(
+      '<h2>Mix</h2><ul><li>A <code>60%</code><ul><li>the bulk</li></ul></li><li>B <code>40%</code></li></ul>',
+      'piechart').html;
+    assert.match(html, /<!-- A \(60%\): the bulk -->/);
+    assert.match(html, /class="piechart-figure"/, 'figure still rendered');
+    assert.match(html, /template class="piechart-detail" data-slice="0"/, 'present-mode template intact');
+  });
+
+  test('comment-safe: a stray "-->" in the detail cannot terminate the note early', () => {
+    const note = engine.buildPieDetailNote([{ label: 'X', valueRaw: '10%', detail: '<li>a --> b</li>' }]);
+    assert.match(note, /^<!--[\s\S]*-->$/);
+    assert.ok(!/--+>/.test(note.slice(4, -3)), 'no comment terminator survives inside the body');
+  });
+
+  test('notes-core lifts the synthesized comment as the slide note (the boundary that ships it)', () => {
+    const section = engine.transformChartSection(
+      '<h2>Mix</h2><ul><li>A <code>60%</code><ul><li>the detail</li></ul></li></ul>', 'piechart').html;
+    const note = notesCore.notesFromHtml(`<section>${section}</section>`);
+    assert.match(note, /A \(60%\): the detail/);
+    // and the comment is removed from the visible HTML once lifted
+    assert.ok(!/<!--/.test(notesCore.stripCommentNodes(section)), 'comment stripped after lift');
   });
 });
