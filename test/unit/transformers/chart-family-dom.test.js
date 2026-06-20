@@ -38,6 +38,85 @@ describe('chart-family.applyToDom', () => {
       'progress-bars container in chart-body');
   });
 
+  test('progress: a row with a nested sublist still renders every bar (depth-aware extraction)', () => {
+    // Regression for #452.3 — the old naive /<ul>…<\/ul>/ stopped at the row's
+    // NESTED </ul>, truncating the outer list to ZERO parseable bars. With the
+    // depth-aware extractFirstList both rows survive and the sublist becomes the
+    // row's progress-note.
+    const doc = makeDoc(`
+      <section class="progress">
+        <h2>Q3 status</h2>
+        <ul>
+          <li>API <code>72</code> <code>on-track</code>
+            <ul><li>Shipped the v2 gateway.</li></ul>
+          </li>
+          <li>UI <code>40</code> <code>at-risk</code></li>
+        </ul>
+      </section>
+    `);
+    chartFamily.applyToDom(doc);
+    const sec = doc.querySelector('section.progress');
+    const rows = sec.querySelectorAll('.progress-bars .progress-row');
+    assert.equal(rows.length, 2, 'both rows render despite the nested sublist');
+    const labels = [...sec.querySelectorAll('.progress-label')].map(n => n.textContent.trim());
+    assert.deepEqual(labels, ['API', 'UI'], `clean labels, got ${labels.join('|')}`);
+    const note = sec.querySelector('.progress-row .progress-note');
+    assert.ok(note, 'the sublist surfaces as a progress-note');
+    assert.match(note.textContent, /Shipped the v2 gateway\./, 'note content captured');
+  });
+
+  test('timeline-list: a nested <ul> body renders cleanly (already-correct path stays correct)', () => {
+    // The intended authoring — a bullet sublist as the item body — was never
+    // broken by the old /<ol>…<\/ol>/ regex (a nested </ul> does not terminate
+    // an </ol> match). This guards that the extractFirstList switch keeps it
+    // byte-equivalent: both items, clean titles, and the sublist as timeline-body.
+    const doc = makeDoc(`
+      <section class="timeline-list">
+        <h2>Roadmap</h2>
+        <ol>
+          <li><code>2026 Q1</code> Discovery <code>done</code>
+            <ul><li>Interviewed 30 teams.</li></ul>
+          </li>
+          <li><code>2026 Q2</code> Build</li>
+        </ol>
+      </section>
+    `);
+    chartFamily.applyToDom(doc);
+    const sec = doc.querySelector('section.timeline-list');
+    const items = sec.querySelectorAll('.timeline-spine .timeline-item');
+    assert.equal(items.length, 2, 'both timeline items render');
+    const titles = [...sec.querySelectorAll('.timeline-title')].map(n => n.textContent.trim());
+    assert.deepEqual(titles, ['Discovery', 'Build'], `clean titles, got ${titles.join('|')}`);
+    const body = sec.querySelector('.timeline-item .timeline-body');
+    assert.ok(body, 'the bullet sublist surfaces as a timeline-body');
+    assert.match(body.textContent, /Interviewed 30 teams\./, 'body content captured');
+  });
+
+  test('timeline-list: a nested <ol> no longer truncates the whole spine (depth-aware extraction)', () => {
+    // Regression for #452.3 — the old naive /<ol>…<\/ol>/ stopped at an item's
+    // NESTED </ol>, truncating the spine to ZERO items. The depth-aware
+    // extractFirstList matches the outer list by depth, so both items survive.
+    // (A nested <ol> is not a recognised body type, so it doesn't become a clean
+    // timeline-body — the fix is about not losing the whole list, not styling it.)
+    const doc = makeDoc(`
+      <section class="timeline-list">
+        <h2>Roadmap</h2>
+        <ol>
+          <li><code>2026 Q1</code> Discovery
+            <ol><li>Sub-step.</li></ol>
+          </li>
+          <li><code>2026 Q2</code> Build</li>
+        </ol>
+      </section>
+    `);
+    chartFamily.applyToDom(doc);
+    const sec = doc.querySelector('section.timeline-list');
+    const items = sec.querySelectorAll('.timeline-spine .timeline-item');
+    assert.equal(items.length, 2, 'both items survive the nested <ol> (was 0 before the fix)');
+    const pills = [...sec.querySelectorAll('.timeline-pill')].map(n => n.textContent.trim());
+    assert.deepEqual(pills, ['2026 Q1', '2026 Q2'], `both date pills parsed, got ${pills.join('|')}`);
+  });
+
   test('piechart: builds SVG wedges + legend', () => {
     const doc = makeDoc(`
       <section class="piechart">
