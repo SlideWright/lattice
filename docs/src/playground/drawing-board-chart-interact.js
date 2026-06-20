@@ -17,6 +17,13 @@
 //
 // Cross-iframe is fine because `srcdoc` is same-origin: we read the chart's
 // geometry + `elementFromPoint` hit + the legend/template content directly.
+//
+// Popover POSITIONING is delegated to Floating UI (@floating-ui/dom — the same
+// engine shadcn/Radix popovers run on), driven by a VIRTUAL REFERENCE built from
+// the chart's geometry. This is the right tool for a cross-iframe anchor (no DOM
+// node to point at) and gives real flip/shift/collision handling instead of a
+// hand-rolled clamp. A direct dependency (not borrowed transitively from Radix).
+import { autoUpdate, computePosition, flip, offset, shift } from '@floating-ui/dom';
 
 const REDUCED = (() => {
   try { return window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch { return false; }
@@ -33,27 +40,39 @@ function el(cls) { const d = document.createElement('div'); if (cls) d.className
  * @param {() => HTMLIFrameElement} o.getFrame  the live slide iframe
  * @param {boolean} [o.tilt=true]  interaction-coupled tilt (lifts/tips toward the open slice, settles flat)
  * @param {() => void} [o.onReveal]  fired when a slice opens (practice uses it to pause autoplay)
+ * @param {boolean} [o.hoverAny=false]  PREVIEW mode — instead of a parent hit-surface
+ *   pinned over one onSlide()-designated chart (Present/Practice), listen on the
+ *   same-origin iframe document and reveal whichever chart is under the pointer, so
+ *   an author scrolling a multi-slide deck gets the detail in place AS THEY EDIT.
+ *   No hit-surface is pinned (it would eat the iframe's own pointer events); the
+ *   popover stays a parent overlay. Re-bind to the doc on every srcdoc rewrite.
  */
-export function createChartInteract({ stage, getFrame, tilt = true, onReveal }) {
+export function createChartInteract({ stage, getFrame, tilt = true, onReveal, hoverAny = false }) {
   const useTilt = tilt && !REDUCED;
 
   // Parent chrome: a transparent container (pointer-events:none — lets the
   // capture layer/HUD through) holding the hit-surface and the popover, which
   // opt back into pointer-events as needed.
   const root = el('db-pp-chartlayer');
+  if (hoverAny) root.classList.add('db-pp-chartlayer--preview');
   const hit = el('db-pp-charthit');
   const pop = el('db-pp-chartpop');
   pop.setAttribute('role', 'status');
   pop.setAttribute('aria-live', 'polite');
-  root.append(hit, pop);
+  // In preview mode the hit-surface is never pinned (we listen on the iframe doc
+  // directly), so don't even mount it — it must never cover the live preview.
+  if (hoverAny) root.append(pop); else root.append(hit, pop);
   stage.append(root);
 
   let curIdx = -1;       // current slide index
+  let curSection = null; // the <section> whose chart is active (scopes all wedge/legend queries)
   let chartEl = null;    // the <svg class="piechart-svg"> in the current section (same-origin)
   let detailsEl = null;  // its sibling .piechart-details (the <template> payload)
   let sliceN = 0;        // slice count on the current chart
   let openSlice = -1;    // which slice's detail is showing (-1 = none)
-  let chartBox = null;   // current chart rect in stage coords (for popover anchoring)
+  let chartBox = null;   // current chart rect in stage coords (Present hit-surface)
+  let boundDoc = null;   // iframe document we've bound hover listeners to (preview mode)
+  let stopAutoUpdate = null; // Floating UI autoUpdate teardown (while a popover is open)
   const timers = [];     // pending reflow re-pins (cleared on slide change / destroy)
 
   const doc = () => { try { return getFrame().contentDocument; } catch { return null; } };
@@ -66,34 +85,51 @@ export function createChartInteract({ stage, getFrame, tilt = true, onReveal }) 
     let fr, sr, cr;
     try { fr = getFrame().getBoundingClientRect(); sr = stage.getBoundingClientRect(); cr = chartEl.getBoundingClientRect(); }
     catch { hide(); return; }
-    if (!cr.width || !cr.height) { hide(); return; }
+    // A zero box means the chart node is detached (a section PATCH replaced it
+    // without a db-frame-ready, so curSection is now orphaned) or scrolled
+    // off-screen (content-visibility). Either way an open preview popover is stale
+    // — dismiss it (it re-resolves on the next hover). hide() only clears the
+    // Present hit-surface, so in hoverAny we clear() explicitly.
+    if (!cr.width || !cr.height) { if (hoverAny && openSlice >= 0) clear(); hide(); return; }
     chartBox = { left: fr.left + cr.left - sr.left, top: fr.top + cr.top - sr.top, width: cr.width, height: cr.height };
-    hit.style.cssText =
-      `display:block;left:${chartBox.left}px;top:${chartBox.top}px;width:${chartBox.width}px;height:${chartBox.height}px`;
-    if (openSlice >= 0) positionPop();
+    if (!hoverAny) {
+      hit.style.cssText =
+        `display:block;left:${chartBox.left}px;top:${chartBox.top}px;width:${chartBox.width}px;height:${chartBox.height}px`;
+    }
+    // Popover position is owned by Floating UI's autoUpdate (started on reveal),
+    // so reflow only pins the Present hit-surface here.
   }
 
-  function hide() { hit.style.display = 'none'; }
+  function hide() { if (!hoverAny) hit.style.display = 'none'; }
 
-  // ── lifecycle: called after every slide change ──────────────────────────────
-  function onSlide(idx) {
+  // Point the interaction at a specific <section>'s chart (the active Present
+  // slide, or the hovered preview chart). Idempotent — re-selecting the same
+  // section is a no-op so a hover stream doesn't thrash the open popover.
+  function setChart(sec) {
+    if (sec === curSection) return;
     clear();
     while (timers.length) clearTimeout(timers.pop());
-    curIdx = idx | 0;
-    const d = doc();
-    const sec = d ? d.querySelectorAll('.marpit > section')[curIdx] : null;
+    curSection = sec || null;
     chartEl = sec ? sec.querySelector('.piechart-svg') : null;
     detailsEl = sec ? sec.querySelector('.piechart-details') : null;
     // Only "interactive" when the authored detail is actually present.
     if (chartEl && detailsEl) {
       sliceN = detailsEl.querySelectorAll('template.piechart-detail').length
         || sec.querySelectorAll('.wedge[data-slice]').length;
-      // The iframe re-fits on a few beats after navigation; re-pin to match.
       reflow();
+    } else {
+      curSection = chartEl = detailsEl = null; sliceN = 0; hide();
+    }
+  }
+
+  // ── lifecycle: called after every slide change (Present/Practice) ───────────
+  function onSlide(idx) {
+    curIdx = idx | 0;
+    const d = doc();
+    setChart(d ? d.querySelectorAll('.marpit > section')[curIdx] : null);
+    if (interactive()) {
       // The iframe re-fits at [60, 300, 1200]ms after a pv message; re-pin just after.
       [80, 360, 1240].forEach((t) => { timers.push(setTimeout(reflow, t)); });
-    } else {
-      chartEl = detailsEl = null; sliceN = 0; hide();
     }
   }
 
@@ -115,19 +151,19 @@ export function createChartInteract({ stage, getFrame, tilt = true, onReveal }) 
     if (i === openSlice) return;
     if (openSlice < 0 && onReveal) { try { onReveal(); } catch { /* host hook */ } }
     openSlice = i;
-    const d = doc();
     // Title parts come from the SVG legend (index-aligned); body/meta from the
-    // authored <template>.
-    const label = textOf(d, '.chart-key-label', i);
-    const value = textOf(d, '.chart-key-value', i);
+    // authored <template>. All scoped to curSection so a multi-chart preview
+    // reads the HOVERED chart's legend/detail, not the first chart in the doc.
+    const label = textOf('.chart-key-label', i);
+    const value = textOf('.chart-key-value', i);
     // The wedge fill is an SVG gradient ref (url(#…)), which is meaningless in the
     // parent doc — read the legend swatch's COMPUTED fill instead: its
     // color-mix(var(--chart-cat-N-hue)…) resolves (against the iframe's theme) to a
     // concrete colour the parent can paint.
-    const swatch = d?.querySelectorAll('.chart-key-swatch')[i];
+    const swatch = curSection?.querySelectorAll('.chart-key-swatch')[i];
     const win = swatch?.ownerDocument?.defaultView || window;
     const dot = swatch ? win.getComputedStyle(swatch).fill : 'currentColor';
-    const tpl = d?.querySelector(`template.piechart-detail[data-slice="${i}"]`);
+    const tpl = detailsEl?.querySelector(`template.piechart-detail[data-slice="${i}"]`);
     const lis = tpl ? [...tpl.content.querySelectorAll('li')].map((n) => n.innerHTML.trim()) : [];
     const body = lis[0] || '';
     const meta = lis.slice(1).join(' · ');
@@ -138,12 +174,13 @@ export function createChartInteract({ stage, getFrame, tilt = true, onReveal }) 
       (body ? `<p>${body}</p>` : '') + (meta ? `<div class="db-pp-chartpop-m">${meta}</div>` : '');
     pop.classList.add('show');
     liftAndTilt(i);
-    reflow();
+    reflow();   // re-pin the Present hit-surface
+    startPop(); // Floating UI owns the popover position from here
   }
 
-  function textOf(d, sel, i) {
-    if (!d) return '';
-    const n = d.querySelectorAll(sel)[i];
+  function textOf(sel, i) {
+    if (!curSection) return '';
+    const n = curSection.querySelectorAll(sel)[i];
     if (!n) return '';
     // A wrapped legend label is split across <tspan> lines; textContent would glue
     // them ("Actuallydeciding") — join the tspans with a space instead.
@@ -151,37 +188,62 @@ export function createChartInteract({ stage, getFrame, tilt = true, onReveal }) 
     return (spans.length ? [...spans].map((s) => s.textContent.trim()).join(' ') : n.textContent).trim();
   }
 
-  // Anchor the popover to a STABLE spot — centred under the pie disc, just below it
-  // — rather than chasing each wedge's box (which jumps for thin/edge slices and can
-  // ride up over the title). The active slice is already identified by the lift, the
-  // dim, and the popover's colour dot + label, so a calm fixed position reads better.
-  // The disc = the union of the wedge boxes (orientation-agnostic).
-  function positionPop() {
-    const d = doc(); if (!d || !chartBox) return;
-    const wedges = d.querySelectorAll('.wedge[data-slice]');
-    if (!wedges.length) return;
-    let fr, sr;
-    try { fr = getFrame().getBoundingClientRect(); sr = stage.getBoundingClientRect(); } catch { return; }
-    let minX = Infinity, maxX = -Infinity, maxY = -Infinity;
+  // The popover anchors to the pie DISC (the union of the current chart's wedge
+  // boxes), not an individual wedge — a calm, stable spot; the active slice is
+  // already identified by the lift, the dim, and the popover's colour dot + label.
+  // Floating UI anchors to a VIRTUAL REFERENCE: an object exposing the disc's box
+  // in viewport coords, mapped from the iframe's own geometry through its offset.
+  // That sidesteps the cross-iframe problem (no DOM node to point at) and lets the
+  // engine do the hard part — flip below↔above, shift to stay in view.
+  const EMPTY_RECT = { x: 0, y: 0, width: 0, height: 0, top: 0, left: 0, right: 0, bottom: 0 };
+  const discRect = () => {
+    if (!curSection) return EMPTY_RECT;
+    const wedges = curSection.querySelectorAll('.wedge[data-slice]');
+    if (!wedges.length) return EMPTY_RECT;
+    let fr;
+    try { fr = getFrame().getBoundingClientRect(); } catch { return EMPTY_RECT; }
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
     wedges.forEach((w) => {
       const r = w.getBoundingClientRect();
-      const l = fr.left + r.left - sr.left, t = fr.top + r.top - sr.top;
-      minX = Math.min(minX, l); maxX = Math.max(maxX, l + r.width); maxY = Math.max(maxY, t + r.height);
+      minX = Math.min(minX, fr.left + r.left); minY = Math.min(minY, fr.top + r.top);
+      maxX = Math.max(maxX, fr.left + r.right); maxY = Math.max(maxY, fr.top + r.bottom);
     });
-    pop.style.visibility = 'hidden'; pop.style.display = 'block';
-    const pw = pop.offsetWidth, ph = pop.offsetHeight;
-    let x = (minX + maxX) / 2 - pw / 2;       // centred under the disc
-    let y = maxY + 12;                         // just below the disc
-    x = Math.max(8, Math.min(x, sr.width - pw - 8));
-    y = Math.max(chartBox.top, Math.min(y, sr.height - ph - 8));
-    pop.style.left = `${x}px`; pop.style.top = `${y}px`; pop.style.visibility = '';
+    return { x: minX, y: minY, left: minX, top: minY, right: maxX, bottom: maxY, width: maxX - minX, height: maxY - minY };
+  };
+  const virtualRef = { getBoundingClientRect: discRect };
+
+  function placePop() {
+    // Skip a frame where the disc reports a degenerate box (mid-patch, detached,
+    // or scrolled off): the continuous autoUpdate loop would otherwise anchor to
+    // EMPTY_RECT at (0,0) and flash the popover to the corner. reflow()/scroll
+    // clear() the stale popover shortly after; until then, just hold position.
+    const r = discRect();
+    if (!r.width || !r.height) return;
+    computePosition(virtualRef, pop, {
+      placement: 'bottom',
+      strategy: 'absolute',
+      middleware: [offset(12), flip({ padding: 8 }), shift({ padding: 8 })],
+    }).then(({ x, y }) => {
+      pop.style.left = `${Math.round(x)}px`;
+      pop.style.top = `${Math.round(y)}px`;
+    }).catch(() => { /* frame torn down mid-measure */ });
+  }
+
+  // Keep the popover pinned to the disc while it's open — autoUpdate re-runs
+  // placePop on scroll/resize/layout shift (animationFrame:true also catches the
+  // iframe's OWN internal scroll, which ancestor listeners would miss).
+  function startPop() {
+    stopPop();
+    stopAutoUpdate = autoUpdate(virtualRef, pop, placePop, { animationFrame: true });
+  }
+  function stopPop() {
+    if (stopAutoUpdate) { stopAutoUpdate(); stopAutoUpdate = null; }
   }
 
   // ── interaction-coupled tilt (settles flat; resting chart stays proportion-true) ──
   function liftAndTilt(i) {
-    if (!chartEl) return;
-    const d = doc();
-    const wedges = d ? d.querySelectorAll('.wedge[data-slice]') : [];
+    if (!chartEl || !curSection) return;
+    const wedges = curSection.querySelectorAll('.wedge[data-slice]');
     wedges.forEach((w, n) => {
       w.style.transition = 'transform .22s cubic-bezier(.2,.7,.3,1), opacity .22s';
       w.style.opacity = n === i ? '1' : '0.45';
@@ -210,11 +272,10 @@ export function createChartInteract({ stage, getFrame, tilt = true, onReveal }) 
   }
 
   function clear() {
-    if (openSlice < 0 && !pop.classList.contains('show')) { /* nothing open */ }
     openSlice = -1;
+    stopPop();
     pop.classList.remove('show');
-    const d = doc();
-    if (d) d.querySelectorAll('.wedge[data-slice]').forEach((w) => { w.style.opacity = ''; w.style.transform = ''; });
+    if (curSection) curSection.querySelectorAll('.wedge[data-slice]').forEach((w) => { w.style.opacity = ''; w.style.transform = ''; });
     if (chartEl) chartEl.style.transform = '';
   }
 
@@ -230,18 +291,83 @@ export function createChartInteract({ stage, getFrame, tilt = true, onReveal }) 
     return false;
   }
 
-  // ── pointer wiring on the hit-surface ───────────────────────────────────────
+  // ── PRESENT/PRACTICE: pointer wiring on the pinned hit-surface ───────────────
   // Fine pointer (mouse): hover-follow. Coarse (touch): tap a slice to reveal,
   // tap again / off-slice to clear.
-  if (!COARSE) {
-    hit.addEventListener('pointermove', (e) => { const s = sliceAt(e.clientX, e.clientY); if (s >= 0) reveal(s); });
-    hit.addEventListener('pointerleave', () => clear());
-  } else {
-    hit.addEventListener('pointerdown', (e) => {
-      const s = sliceAt(e.clientX, e.clientY);
-      if (s < 0 || s === openSlice) clear(); else reveal(s);
-      e.stopPropagation(); // don't let the tap fall through to the capture layer
-    });
+  if (!hoverAny) {
+    if (!COARSE) {
+      hit.addEventListener('pointermove', (e) => { const s = sliceAt(e.clientX, e.clientY); if (s >= 0) reveal(s); });
+      hit.addEventListener('pointerleave', () => clear());
+    } else {
+      hit.addEventListener('pointerdown', (e) => {
+        const s = sliceAt(e.clientX, e.clientY);
+        if (s < 0 || s === openSlice) clear(); else reveal(s);
+        e.stopPropagation(); // don't let the tap fall through to the capture layer
+      });
+    }
+  }
+
+  // ── PREVIEW (hoverAny): listen on the iframe document; reveal the chart under
+  // the pointer. No hit-surface, so the author can still scroll/select the slide.
+  function resolveAt(target) {
+    const w = target?.closest?.('[data-slice]');
+    if (!w) return -1;
+    setChart(w.closest('.marpit > section') || w.closest('section'));
+    return interactive() ? +w.dataset.slice : -1;
+  }
+  function onDocMove(e) {
+    const s = resolveAt(e.target);
+    if (s >= 0) reveal(s); else if (openSlice >= 0) clear();
+  }
+  function onDocTap(e) {
+    const s = resolveAt(e.target);
+    if (s < 0 || s === openSlice) clear(); else reveal(s);
+  }
+  const onDocLeave = () => clear();
+  const onDocScroll = () => { if (openSlice >= 0) reflow(); };
+  function bindDoc() {
+    const d = doc();
+    if (!d || d === boundDoc) return;
+    boundDoc = d;
+    if (!COARSE) {
+      d.addEventListener('pointermove', onDocMove, { passive: true });
+      d.addEventListener('pointerleave', onDocLeave);
+    } else {
+      d.addEventListener('pointerdown', onDocTap, { passive: true });
+    }
+    d.addEventListener('scroll', onDocScroll, { passive: true, capture: true });
+  }
+  function unbindDoc() {
+    if (!boundDoc) return;
+    try {
+      boundDoc.removeEventListener('pointermove', onDocMove);
+      boundDoc.removeEventListener('pointerleave', onDocLeave);
+      boundDoc.removeEventListener('pointerdown', onDocTap);
+      boundDoc.removeEventListener('scroll', onDocScroll, { capture: true });
+    } catch { /* doc already torn down */ }
+    boundDoc = null;
+  }
+  // A srcdoc rewrite replaces the document (listeners + section refs die with it).
+  // Hosts may call this (the Drawing Board does, on `db-frame-ready`); it's also
+  // wired to the iframe's own `load` below. unbindDoc() first so a re-bind to the
+  // SAME live doc can't double-attach — bindDoc's own d===boundDoc guard is moot.
+  function rebind() {
+    unbindDoc();
+    curSection = null; chartEl = detailsEl = null; openSlice = -1;
+    if (hoverAny) bindDoc();
+  }
+  // Self-sufficient re-bind: the iframe ELEMENT persists across srcdoc rewrites,
+  // but its DOCUMENT is replaced and fires `load` once it's parseable. Binding to
+  // that is more robust than relying on the host to call rebind() at the right
+  // moment — the React playground's render() can return "done" before the new
+  // doc is ready, so a host-timed rebind() would no-op (doc() still null) and the
+  // listeners would never attach. A document patch (no srcdoc rewrite) keeps the
+  // same doc, so `load` doesn't fire and the surviving listeners are reused.
+  let frameEl = null;
+  if (hoverAny) {
+    frameEl = getFrame();
+    if (frameEl) frameEl.addEventListener('load', rebind);
+    bindDoc();
   }
 
   let ro = null;
@@ -251,11 +377,13 @@ export function createChartInteract({ stage, getFrame, tilt = true, onReveal }) 
   function destroy() {
     clear();
     while (timers.length) clearTimeout(timers.pop());
-    chartEl = detailsEl = null;
+    if (frameEl) { try { frameEl.removeEventListener('load', rebind); } catch { /* gone */ } }
+    unbindDoc();
+    curSection = chartEl = detailsEl = null;
     try { ro?.disconnect(); } catch { /* noop */ }
     window.removeEventListener('resize', reflow);
     root.remove();
   }
 
-  return { onSlide, reflow, handleKey, reveal, clear, interactive, destroy };
+  return { onSlide, reflow, handleKey, reveal, clear, interactive, rebind, destroy };
 }

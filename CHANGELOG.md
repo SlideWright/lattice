@@ -38,6 +38,21 @@ in patch versions.
 
 ### Added
 
+- **Reveal a pie slice's detail in the live editing preview — as you author.** Hovering
+  (or tapping, on touch) a pie wedge in the **Drawing Board AND Playground** previews now
+  pops the slice's authored detail (label · value · notes), so you can verify it without
+  entering Present and paging to the slide. Reuses the parent-hosted Present/Practice
+  interaction layer, extended with a hover mode that listens on the (same-origin) preview
+  iframe and reveals whichever chart is under the pointer — scoped to that chart's own
+  legend/detail. The popover is positioned by **Floating UI** (`@floating-ui/dom`, the
+  engine shadcn/Radix use) via a virtual reference built from the chart geometry — real
+  flip/shift/collision handling across the iframe boundary, not a hand-rolled clamp — and
+  its chrome uses the **site palette tokens** (flips light/dark). Parent-overlay only:
+  **the exported SVG/PDF is untouched**. Fine pointer reveals on hover, coarse on tap;
+  number keys still work. Verified on both surfaces, light + dark, at 1440/820/390px.
+  Completes the pie per-slice detail trio (Present reveal · PDF speaker note · in-editor
+  preview). See `engineering/decisions/2026-06-19-css-3d-charts-feasibility.md`.
+
 - **`piechart` per-slice detail now reaches the static PDF — as the slide's speaker
   note.** A slice's optional nested sublist already powered the Present/Practice reveal
   popover but rendered nothing in the exported PDF, so a cold-open / emailed reader lost
@@ -214,6 +229,16 @@ in patch versions.
   regardless of what the preview is doing. The capture host is a 0×0
   `position:fixed; overflow:hidden` box, so it never adds a page scrollbar. See
   `engineering/decisions/2026-06-20-export-dedicated-capture-host.md`.
+- **The guided tour no longer hijacks the docs workspaces on PR previews.** The
+  onboarding tour (driver.js) only auto-runs in production, gated by a build-time
+  `data-tours` stamp derived from `CF_PAGES`. When a preview is built without that
+  env the stamp wrongly reads `on`, and the tour's full-screen overlay then **traps
+  pointer events over the entire workspace** — silently blocking the editor,
+  preview, present, and practice, so no interactive feature can be reviewed on the
+  preview. Added a **runtime backstop** (`isPreviewHost`): the tour now refuses to
+  run on any `*.pages.dev` (Cloudflare preview) or localhost host regardless of the
+  build stamp. Pure + unit-tested. (`docs/src/playground/preview-host.js`,
+  `guided-tour.js`.)
 - **`progress` bar percentage readouts are now legible on every bar.** The readout
   rides the fill's leading edge — exactly where the gradient ramps to its most
   saturated head (up to 72%) — so on the light canvas the dark number lost contrast
