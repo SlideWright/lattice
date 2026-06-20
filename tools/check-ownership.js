@@ -686,6 +686,77 @@ function checkThemeTokenParity(errors) {
   }
 }
 
+const ADAPT_MODES = new Set(['reflow', 'native', 'single-orientation']);
+
+/**
+ * Cross-check the adaptivity DECLARATION (manifest `adapt.mode`) against reality,
+ * so the manifest can never silently drift from the code (the jank this replaces —
+ * 7 charts that reflowed but declared nothing, with no gate to catch it). See
+ * engineering/decisions/2026-06-20-adaptive-manifest-contract.md. Deterministic —
+ * no rendering. Four rules:
+ *
+ *   1. COMPLETE   — every component declares a valid `adapt.mode`.
+ *   2. ANTI-DRIFT — a component whose own CSS carries `@container … aspect-ratio`
+ *      (the canonical box-local reflow signal) MUST be `reflow`. This is the
+ *      enforceable core: CSS reflow can't masquerade as native. (JS/transform/
+ *      mermaid reflowers have no such marker; they are author-declared `reflow`
+ *      and render-backed by their transforms — out of this static gate's reach by
+ *      design, documented in the decision doc.)
+ *   3. CONSISTENT — `single-orientation` ⟺ the `orientation` field lists exactly
+ *      one orientation; `native` must support BOTH (it adapts by scaling, so it
+ *      can't be orientation-restricted).
+ *   4. SANE       — `native` must NOT carry `@container … aspect-ratio` (the
+ *      contrapositive of rule 2, stated for a clear message).
+ */
+function checkAdaptDeclarations(manifests, errors) {
+  const CONTAINER_ASPECT = /@container[^{]*aspect-ratio/;
+  // The shared chart-frame CSS carries a box-local `@container … aspect-ratio`
+  // rule that restructures `.chart-body` on tall boxes for EVERY chart-frame
+  // member — so a chart's reflow can live there, not in its own styles.css. The
+  // anti-drift rule must see it, or a chart could declare `native` while inheriting
+  // box-local reflow (the false-negative the maker-checker caught). Union it in for
+  // chart-bucket components, the way checkVariantDeclaration unions base.modifiers.
+  const chartFamilyCss = (() => {
+    const p = path.join(COMPONENTS_DIR, 'chart', '_chart-family', 'chart-family.css');
+    return fs.existsSync(p) ? fs.readFileSync(p, 'utf8') : '';
+  })();
+  for (const m of manifests) {
+    const mode = m.adapt?.mode;
+    if (!mode || !ADAPT_MODES.has(mode)) {
+      errors.push(
+        `${m.name}: missing/invalid adapt.mode (got ${JSON.stringify(mode)}). ` +
+        `Declare one of: ${[...ADAPT_MODES].join(', ')}. See engineering/decisions/2026-06-20-adaptive-manifest-contract.md.`,
+      );
+      continue;
+    }
+    const cssPath = componentStylesPath(m);
+    let css = cssPath ? fs.readFileSync(cssPath, 'utf8') : '';
+    if (manifestBucket(m) === 'chart') css += `\n${chartFamilyCss}`;
+    const hasContainerReflow = CONTAINER_ASPECT.test(css);
+    // orientation defaults to BOTH when omitted (the manifest's documented default).
+    const orientation = Array.isArray(m.orientation) ? m.orientation : ['landscape', 'portrait'];
+
+    if (hasContainerReflow && mode !== 'reflow') {
+      errors.push(
+        `${m.name}: declares adapt.mode "${mode}" but its CSS uses \`@container … aspect-ratio\` ` +
+        `(box-local reflow) — must be "reflow". Fix the manifest or remove the @container rule.`,
+      );
+    }
+    if (mode === 'single-orientation' && orientation.length !== 1) {
+      errors.push(
+        `${m.name}: adapt.mode "single-orientation" requires the \`orientation\` field to list ` +
+        `exactly one orientation (got [${orientation.join(', ')}]).`,
+      );
+    }
+    if (mode === 'native' && orientation.length !== 2) {
+      errors.push(
+        `${m.name}: adapt.mode "native" must support BOTH orientations (it adapts by scaling), ` +
+        `but \`orientation\` is [${orientation.join(', ')}]. Use "single-orientation" if it is deliberately one.`,
+      );
+    }
+  }
+}
+
 // ── Runner ────────────────────────────────────────────────────────────────
 
 function run() {
@@ -701,6 +772,7 @@ function run() {
   checkRetiredTokenNames(errors);
   checkTypographyTokens(errors);
   checkThemeHasSelectors(errors);
+  checkAdaptDeclarations(manifests, errors);
   return {
     errors,
     counts: {
@@ -742,6 +814,7 @@ module.exports = {
   cssRootModifierTokens,
   transformModifierTokens,
   checkVariantDeclaration,
+  checkAdaptDeclarations,
   checkTagClustering,
   checkRetiredTokenNames,
   RETIRED_TOKEN_NAMES,

@@ -1,6 +1,7 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "redline",
+  "adapt": { "mode": "single-orientation" },
   "function": "comparison",
   "form": "canvas",
   "substance": "prose",

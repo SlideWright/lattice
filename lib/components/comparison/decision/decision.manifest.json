@@ -1,6 +1,7 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "decision",
+  "adapt": { "mode": "native" },
   "function": "comparison",
   "form": "canvas",
   "substance": "structure",

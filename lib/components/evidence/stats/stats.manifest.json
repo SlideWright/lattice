@@ -6,6 +6,7 @@
   "substance": "structure",
   "capacity": { "axis": "item", "min": 3, "sweet": 4, "soft": 5, "hard": 6, "escalateTo": ["kpi","split across slides"], "note": "the row compresses and numbers shrink past five tiles" },
   "adapt": {
+    "mode": "reflow",
     "families": ["wide", "square", "tall", "strip"],
     "priority": ["title", "subtitle", "stats"],
     "droppable": ["subtitle"],

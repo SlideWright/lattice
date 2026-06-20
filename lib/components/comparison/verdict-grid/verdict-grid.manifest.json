@@ -7,6 +7,7 @@
   "substance": "structure",
   "capacity": { "axis": "item", "min": 2, "sweet": 3, "soft": 4, "hard": 5, "escalateTo": ["compare-table","split across slides"], "note": "the cards crowd and badges lose legibility past four" },
   "adapt": {
+    "mode": "reflow",
     "families": ["wide", "square", "tall", "strip"],
     "priority": ["title", "options"],
     "keepTogether": ["option"]

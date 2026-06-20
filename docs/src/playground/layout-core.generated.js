@@ -234,6 +234,7 @@ var require_scaffold = __commonJS({
       "bucket",
       "form",
       "substance",
+      "adapt",
       "tags",
       "description",
       "purpose",
@@ -255,6 +256,8 @@ var require_scaffold = __commonJS({
         out[key] = v;
       }
       if (out.bucket == null && out.function != null) out.bucket = out.function;
+      if (out.adapt == null) out.adapt = { mode: "native" };
+      else if (out.adapt.mode == null) out.adapt = { mode: "native", ...out.adapt };
       return out;
     }
     function manifestJson2(manifest, opts) {

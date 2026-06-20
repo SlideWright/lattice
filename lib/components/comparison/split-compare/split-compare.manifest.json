@@ -5,6 +5,7 @@
   "form": "split",
   "substance": "structure",
   "adapt": {
+    "mode": "reflow",
     "families": [
       "wide",
       "square",

@@ -1,6 +1,7 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "logo-wall",
+  "adapt": { "mode": "native" },
   "function": "inventory",
   "form": "grid",
   "substance": "prose",

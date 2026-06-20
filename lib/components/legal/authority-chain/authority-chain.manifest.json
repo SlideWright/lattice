@@ -1,6 +1,7 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "authority-chain",
+  "adapt": { "mode": "native" },
   "function": "progression",
   "bucket": "legal",
   "form": "timeline",

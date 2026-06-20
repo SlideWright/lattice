@@ -1,6 +1,7 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "title",
+  "adapt": { "mode": "native" },
   "function": "anchor",
   "form": "bookend",
   "substance": "prose",

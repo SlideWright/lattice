@@ -1,6 +1,7 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "q-and-a",
+  "adapt": { "mode": "native" },
   "focusAxes": ["item"],
   "function": "inventory",
   "form": "stack",

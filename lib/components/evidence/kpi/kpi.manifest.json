@@ -5,6 +5,7 @@
   "form": "ledger",
   "substance": "structure",
   "adapt": {
+    "mode": "reflow",
     "families": [
       "wide",
       "square",

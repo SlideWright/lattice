@@ -43,8 +43,14 @@
     "adapt": {
       "type": "object",
       "additionalProperties": false,
-      "description": "Box-local adaptivity contract (engineering/decisions/2026-06-18-component-adaptive-sizing.md). `families` is the honest support list; the rest is declared layout INTENT the authored per-family CSS honors — and the data a future resolver would consume without re-authoring. The CSS is hand-written (#2 'authored per family'); this block does NOT generate layout. NOTE: distinct from the top-level `families` field, which names opt-in modifier groups (e.g. state-markers).",
+      "required": ["mode"],
+      "description": "Adaptivity declaration (engineering/decisions/2026-06-20-adaptive-manifest-contract.md). `mode` is the REQUIRED, deterministic statement of how the layout handles non-landscape boxes; every component declares one. `families` and the rest are the box-local reflow CONTRACT — the honest support list + declared layout INTENT the authored per-family CSS honors (the data a future resolver would consume without re-authoring). The CSS is hand-written (#2 'authored per family'); this block does NOT generate layout. NOTE: distinct from the top-level `families` field, which names opt-in modifier groups (e.g. state-markers).",
       "properties": {
+        "mode": {
+          "enum": ["reflow", "native", "single-orientation"],
+          "description": "How the component adapts to the box/orientation it occupies. `reflow` = ships DISTINCT per-family structural layouts (via `@container lattice (aspect-ratio …)` CSS, a `*.transform.js` that branches geometry on orientation, or the mermaid reorient) — the box is restructured, not just scaled. `native` = adapts by the universal cqi scaling + orientation-aware type alone, no structural change needed (most prose/figure layouts). `single-orientation` = deliberately ONE orientation (its `orientation` field has one entry), e.g. redline's side-by-side diff. A CI gate (tools/check-ownership.js checkAdaptDeclarations) cross-checks the declaration against reality: any component whose CSS carries `@container … aspect-ratio` MUST be `reflow`, so the declaration can never silently drift from the code.",
+          "type": "string"
+        },
         "families": {
           "description": "The box-FAMILIES this component ships authored layouts for — the finer, box-local successor to `orientation`. A component reflows box-locally via `@container lattice (aspect-ratio …)`, so it adapts to the box it OCCUPIES (a portrait deck, OR a narrow nested cell), not just the deck. Four families by container aspect: `wide` (>1.05) · `square` (0.9–1.05) · `tall` (0.5–0.9) · `strip` (<0.5). Omitted = derived from `orientation` (landscape→[wide,square], portrait→[tall,strip]) so unmigrated components stay honest. Render-backed: set it only once the authored layouts are verified.",
           "type": "array",

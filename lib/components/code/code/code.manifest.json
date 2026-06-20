@@ -1,6 +1,7 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "code",
+  "adapt": { "mode": "native" },
   "focusAxes": ["line"],
   "function": "evidence",
   "bucket": "code",

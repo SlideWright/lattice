@@ -20,6 +20,7 @@
   "form": "grid",
   "substance": "structure",
   "adapt": {
+    "mode": "reflow",
     "families": [
       "wide",
       "square",

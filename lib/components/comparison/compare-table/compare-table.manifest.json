@@ -1,6 +1,7 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "compare-table",
+  "adapt": { "mode": "native" },
   "focusAxes": ["row", "col", "cell"],
   "capacity": { "axis": "row", "min": 2, "sweet": 4, "soft": 6, "hard": 8, "escalateTo": ["split across slides"], "note": "the table density crowds past six rows" },
   "function": "comparison",

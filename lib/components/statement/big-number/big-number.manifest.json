@@ -1,6 +1,7 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "big-number",
+  "adapt": { "mode": "native" },
   "function": "statement",
   "form": "canvas",
   "substance": "prose",

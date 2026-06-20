@@ -5,6 +5,7 @@
   "form": "canvas",
   "substance": "prose",
   "adapt": {
+    "mode": "reflow",
     "families": ["wide", "square", "tall", "strip"],
     "priority": ["heading", "body"]
   },

@@ -1,6 +1,7 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "roadmap",
+  "adapt": { "mode": "reflow" },
   "families": ["state-markers"],
   "function": "progression",
   "bucket": "chart",

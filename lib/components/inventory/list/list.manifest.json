@@ -8,6 +8,7 @@
   "form": "stack",
   "substance": "prose",
   "adapt": {
+    "mode": "reflow",
     "families": [
       "wide",
       "square",
