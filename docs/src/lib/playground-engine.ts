@@ -14,7 +14,7 @@ import { renderSig, resolveThemeName } from './playground-controller';
 import { createThemeFetcher } from './theme-fetch';
 
 type PG = {
-	render: (source: string, theme: string) => { html: string; css: string; width?: number; height?: number };
+	render: (source: string, theme: string, opts?: { baseUrl?: string }) => { html: string; css: string; width?: number; height?: number };
 	addThemes: (css: string[]) => void;
 	hasTheme: (name: string) => boolean;
 };
@@ -40,6 +40,13 @@ export function createEngineBridge(themeBase: string, runtimeUrl: string, engine
 	// Theme fetch + addThemes (the "ensureThemes" pattern) is shared — see
 	// theme-fetch.ts. The bridge only orchestrates render around it.
 	const themes = createThemeFetcher(themeBase);
+	// Resolve a deck's relative image refs (a loaded gallery deck's
+	// `![bg](image/sample-photo-wide.svg)`, the inventory logo-wall) against the
+	// staged samples/ base — the same base the component studio uses. Absolute,
+	// since the engine's WHATWG-URL resolver needs one. themeBase ends in `themes/`.
+	let samplesBase: string | undefined;
+	try { samplesBase = new URL(themeBase.replace(/themes\/$/, 'samples/'), location.href).href; }
+	catch { samplesBase = undefined; }
 
 	/** True once both irreducible globals are present (engine bundle + bridge). */
 	function ready(): boolean {
@@ -75,7 +82,7 @@ export function createEngineBridge(themeBase: string, runtimeUrl: string, engine
 		try {
 			await themes.ensure(palette, mode);
 			const theme = resolveThemeName(palette, mode, PGref.hasTheme(palette + '-dark'));
-			const out = PGref.render(source, theme);
+			const out = PGref.render(source, theme, { baseUrl: samplesBase });
 			const geom = { w: out.width || 1280, h: out.height || 720 };
 			const r = DPref.renderDeck({
 				frame,

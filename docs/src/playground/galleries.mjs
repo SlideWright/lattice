@@ -52,28 +52,25 @@ const FAMILIES = [
 // `)` so a replacement only swaps the target. Alt text can't contain `]`.
 const IMG_RE = /(!\[[^\]]*\]\()\s*([^)\s]+)\s*(\))/g;
 const IMG_EXT = /\.(svg|png|jpe?g|webp|gif)$/i;
-const MIME = {
-  svg: 'image/svg+xml',
-  png: 'image/png',
-  jpg: 'image/jpeg',
-  jpeg: 'image/jpeg',
-  webp: 'image/webp',
-  gif: 'image/gif',
-};
 
-// Rewrite every LOCAL image target to a base64 data URI resolved against the
-// deck's own directory. Remote (http) + already-inlined (data:) targets and
-// non-image links are left untouched; a missing file is left as-is so the
-// broken-link is visible rather than silently swallowed.
-function inlineAssets(src, galleryDir) {
-  return src.replace(IMG_RE, (whole, pre, target, post) => {
-    if (/^(https?:|data:)/i.test(target) || !IMG_EXT.test(target)) return whole;
+// Collect every LOCAL image a gallery deck references, as a [stagedDest, absSrc]
+// pair. The deck keeps its clean, deck-relative `![bg](image/foo.svg)` ref in the
+// source (no base64 eyesore in the editor); the preview resolves it against the
+// staged `samples/` base, so the staged dest mirrors the ref path:
+//   ref `image/sample-photo-wide.svg` (in lib/components/imagery/) →
+//   samples/image/sample-photo-wide.svg.
+// Remote (http) + data: + non-image targets and missing files are skipped.
+function galleryAssetRefs(src, galleryDir) {
+  const out = [];
+  let m;
+  IMG_RE.lastIndex = 0;
+  while ((m = IMG_RE.exec(src))) {
+    const target = m[2];
+    if (/^(https?:|data:|\/)/i.test(target) || !IMG_EXT.test(target)) continue;
     const abs = resolve(galleryDir, target);
-    if (!existsSync(abs)) return whole;
-    const ext = target.match(IMG_EXT)[1].toLowerCase();
-    const b64 = readFileSync(abs).toString('base64');
-    return `${pre}data:${MIME[ext]};base64,${b64}${post}`;
-  });
+    if (existsSync(abs)) out.push([`samples/${target}`, abs]);
+  }
+  return out;
 }
 
 // Slide count = horizontal-rule fences minus the one that closes front matter
@@ -89,13 +86,42 @@ function loadOne(repoRoot, { id, label, file, group }) {
   const abs = join(repoRoot, file);
   if (!existsSync(abs)) return null;
   const raw = readFileSync(abs, 'utf8');
-  return {
-    id,
-    label,
-    group,
-    slides: slideCount(raw),
-    source: inlineAssets(raw, dirname(abs)),
-  };
+  // Keep the deck's source verbatim — clean, deck-relative image refs. The
+  // referenced assets are staged under samples/ (collectGalleryAssets, consumed
+  // by sync-playground-assets) and the preview render resolves them against the
+  // samples/ base, so no base64 inlining is needed.
+  return { id, label, group, slides: slideCount(raw), source: raw };
+}
+
+// Every gallery deck that exists, as { id, label, file } — the single source of
+// truth for both loadGalleries and collectGalleryAssets.
+function galleryDecks() {
+  return [
+    ...SHOWCASES.map((s) => ({ ...s, group: 'Showcases' })),
+    ...FAMILIES.map(([bucket, label]) => ({
+      id: `fam-${bucket}`, label, group: 'By family',
+      file: `lib/components/${bucket}/${bucket}.gallery.md`,
+    })),
+  ];
+}
+
+/**
+ * The local image assets every gallery deck references, deduped, as
+ * [stagedDestRelativePath, absoluteSource] pairs — staged under samples/ by
+ * sync-playground-assets so the preview can fetch them by their deck-relative
+ * path (the same samples/ base the component studio uses).
+ * @param {string} repoRoot absolute path to the lattice repo root
+ */
+export function collectGalleryAssets(repoRoot) {
+  const seen = new Map();
+  for (const { file } of galleryDecks()) {
+    const abs = join(repoRoot, file);
+    if (!existsSync(abs)) continue;
+    for (const [dest, src] of galleryAssetRefs(readFileSync(abs, 'utf8'), dirname(abs))) {
+      if (!seen.has(dest)) seen.set(dest, src);
+    }
+  }
+  return [...seen.entries()];
 }
 
 /**
@@ -105,17 +131,8 @@ function loadOne(repoRoot, { id, label, file, group }) {
  */
 export function loadGalleries(repoRoot) {
   const out = [];
-  for (const s of SHOWCASES) {
-    const g = loadOne(repoRoot, { ...s, group: 'Showcases' });
-    if (g) out.push(g);
-  }
-  for (const [bucket, label] of FAMILIES) {
-    const g = loadOne(repoRoot, {
-      id: `fam-${bucket}`,
-      label,
-      file: `lib/components/${bucket}/${bucket}.gallery.md`,
-      group: 'By family',
-    });
+  for (const deck of galleryDecks()) {
+    const g = loadOne(repoRoot, deck);
     if (g) out.push(g);
   }
   return out;

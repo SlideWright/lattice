@@ -36,6 +36,14 @@ import { createThemeFetcher } from '../lib/theme-fetch.ts';
 export function createRenderController(data) {
 	var THEME_BASE = data.themeBase;
 	var RUNTIME_URL = data.runtimeUrl;
+	// Resolve a deck's relative image refs (e.g. a gallery deck's
+	// `![bg](image/sample-photo-wide.svg)`) against the staged samples/ base —
+	// the same base the component studio uses. Absolute, since the engine's
+	// WHATWG-URL resolver needs one. THEME_BASE ends in `themes/`.
+	var SAMPLES_BASE = (() => {
+		try { return new URL(String(THEME_BASE).replace(/themes\/$/, 'samples/'), location.href).href; }
+		catch { return undefined; }
+	})();
 	var PREVIEW_FONT_CSS = data.previewFontCss || '';
 	// The a11y texture <defs> are now injected by the shared renderDeck itself
 	// (deck-preview.js owns A11Y_DEFS from the kernel) — no per-caller plumbing.
@@ -178,7 +186,7 @@ export function createRenderController(data) {
 				const DBC = window.__dbComponents;
 				const src = DBC ? DBC.embed(raw) : raw;
 				const ckey = DBC ? DBC.key(raw) : '';
-				const out = PG.render(src, theme);
+				const out = PG.render(src, theme, { baseUrl: SAMPLES_BASE });
 				// The resolved `@size` box rides on the render; fold it into sig so a
 				// `size:` edit (which changes the baked box) forces a full srcdoc
 				// rewrite rather than a section-only patch with stale geometry.

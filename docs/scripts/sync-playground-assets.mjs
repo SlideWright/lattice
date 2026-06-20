@@ -43,6 +43,7 @@ import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync 
 import { createRequire } from 'node:module';
 import { basename, dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { collectGalleryAssets } from '../src/playground/galleries.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const repoRoot = join(here, '..', '..');
@@ -77,6 +78,12 @@ const imageSamplesDir = join(repoRoot, 'lib', 'components', 'imagery', 'image');
 for (const file of readdirSync(imageSamplesDir)) {
   if (file.endsWith('.svg')) assets.push([`samples/${file}`, join(imageSamplesDir, file)]);
 }
+// Images the "Load a deck" gallery decks reference (e.g. the imagery survey's
+// `![bg](image/sample-photo-wide.svg)`, the inventory logo-wall). Staged under
+// samples/ mirroring each deck-relative ref so the preview resolves them against
+// the same samples/ base — no base64 inlining (see galleries.mjs). The decks
+// keep clean relative refs in source.
+for (const [dest, src] of collectGalleryAssets(repoRoot)) assets.push([dest, src]);
 // The Export-to-Marp static assets (minified engine / stylesheet / runtime /
 // mermaid), staged under export/ so the Drawing Board's in-browser export can
 // fetch them and zip the SAME bundle the CLI produces. Sourced from the shared
