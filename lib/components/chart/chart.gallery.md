@@ -14,6 +14,8 @@ Chart — series-substance data visualizations (SVG kernel).
 ## Where the signup pipeline leaks.
 
 - Visitors `12,000`
+  - Two-thirds arrive from inbound, not outbound
+  - Paid search makes up the rest
 - Signups `4,800`
 - Activated `2,160`
 - Paid `864`
@@ -97,6 +99,8 @@ Eight items across four stages; the scoring-model rewrite is the only card flagg
 ## Where our programs reached — unevenly.
 
 - India `48.2`
+  - Largest by volume, thinnest by margin
+  - Two new state hubs this year
 - Nigeria `36.4`
 - Kenya `31.0`
 - Brazil `27.5`
@@ -116,6 +120,8 @@ Eight items across four stages; the scoring-model rewrite is the only card flagg
 Nearly half went to producing decks; the deciding itself was the smallest slice.
 
 - Deck production `46%`
+  - 92 decks, averaging 18 slides each
+  - Most of it review-cycle churn
 - Meetings about meetings `22%`
 - Realigning on priorities `18%`
 - Stakeholder management `9%`
@@ -152,6 +158,8 @@ Effort in analyst-weeks; reach as the percent of teams that would adopt it, opti
   - Slack intake bot `3, 72`
 - Strategic Bets
   - Scoring model v2 `8, 88`
+    - Owner: Platform team
+    - A 3-week spike de-risks the roadmap
   - Decision-log API `7, 74`
 - Defer
   - Per-team weighting UI `2, 28`
@@ -170,6 +178,8 @@ Effort in analyst-weeks; reach as the percent of teams that would adopt it, opti
 
 - Meridian
   - Performance `9`
+    - Measured as p95 latency; lower is better
+    - Our strongest axis against the field
   - Pricing `7`
   - Support `8`
   - Ecosystem `6`
