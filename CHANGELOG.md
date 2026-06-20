@@ -39,15 +39,19 @@ in patch versions.
 ### Added
 
 - **Reveal a pie slice's detail in the live editing preview — as you author.** Hovering
-  a pie wedge in the Drawing Board's slide preview now pops the slice's authored detail
-  (label · value · notes), so you can verify it without entering Present and paging to the
-  slide. Reuses the parent-hosted Present/Practice interaction layer, extended with a
-  hover mode that listens on the (same-origin) preview iframe and reveals whichever chart
-  is under the pointer — scoped to that chart's own legend/detail. Parent-overlay only:
-  **the exported SVG/PDF is untouched**. Fine pointer (desktop/tablet) reveals on hover;
-  coarse (touch) on tap; number keys still work. Verified at 1440/820/390px. Completes the
-  pie per-slice detail trio (Present reveal · PDF speaker note · in-editor preview). See
-  `engineering/decisions/2026-06-19-css-3d-charts-feasibility.md`.
+  (or tapping, on touch) a pie wedge in the **Drawing Board AND Playground** previews now
+  pops the slice's authored detail (label · value · notes), so you can verify it without
+  entering Present and paging to the slide. Reuses the parent-hosted Present/Practice
+  interaction layer, extended with a hover mode that listens on the (same-origin) preview
+  iframe and reveals whichever chart is under the pointer — scoped to that chart's own
+  legend/detail. The popover is positioned by **Floating UI** (`@floating-ui/dom`, the
+  engine shadcn/Radix use) via a virtual reference built from the chart geometry — real
+  flip/shift/collision handling across the iframe boundary, not a hand-rolled clamp — and
+  its chrome uses the **site palette tokens** (flips light/dark). Parent-overlay only:
+  **the exported SVG/PDF is untouched**. Fine pointer reveals on hover, coarse on tap;
+  number keys still work. Verified on both surfaces, light + dark, at 1440/820/390px.
+  Completes the pie per-slice detail trio (Present reveal · PDF speaker note · in-editor
+  preview). See `engineering/decisions/2026-06-19-css-3d-charts-feasibility.md`.
 
 - **`piechart` per-slice detail now reaches the static PDF — as the slide's speaker
   note.** A slice's optional nested sublist already powered the Present/Practice reveal

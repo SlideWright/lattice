@@ -21,18 +21,22 @@
 	pointer-events: auto;
 	cursor: pointer;
 }
-/* The popover — floats above the chart; never traps the pointer. */
+/* The popover — floats above the chart; never traps the pointer. Position is
+   owned by Floating UI (drawing-board-chart-interact.js); this is appearance
+   only. Docs-site chrome → uses the SITE palette tokens so it flips with
+   light/dark and matches the shadcn surface aesthetic, not a hardcoded dark
+   glass. (`--bg` / `--text-*` / `--border` are set on html[data-palette].) */
 .db-pp-chartpop {
 	position: absolute;
 	z-index: 3;
 	max-width: min(20rem, 64vw);
 	padding: 0.6rem 0.75rem 0.7rem;
-	background: rgba(18, 18, 22, 0.92);
-	border: 1px solid rgba(255, 255, 255, 0.14);
+	background: color-mix(in oklab, var(--bg) 92%, transparent);
+	border: 1px solid var(--border);
 	border-radius: 12px;
-	box-shadow: 0 12px 34px rgba(0, 0, 0, 0.45);
-	backdrop-filter: blur(8px);
-	color: #f2f2f5;
+	box-shadow: 0 12px 34px rgba(0, 0, 0, 0.28);
+	backdrop-filter: blur(10px);
+	color: var(--text-body);
 	font-size: 0.82rem;
 	line-height: 1.4;
 	opacity: 0;
@@ -49,6 +53,7 @@
 	align-items: center;
 	gap: 0.4rem;
 	font-weight: 600;
+	color: var(--text-heading);
 }
 .db-pp-chartpop-dot {
 	width: 0.6rem;
@@ -59,7 +64,7 @@
 .db-pp-chartpop-v {
 	margin-left: auto;
 	font-variant-numeric: tabular-nums;
-	opacity: 0.85;
+	color: var(--text-body);
 }
 .db-pp-chartpop p {
 	margin: 0.4rem 0 0;
@@ -69,5 +74,5 @@
 	font-size: 0.72rem;
 	letter-spacing: 0.02em;
 	text-transform: uppercase;
-	opacity: 0.6;
+	color: var(--text-muted);
 }

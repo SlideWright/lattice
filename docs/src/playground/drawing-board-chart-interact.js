@@ -17,6 +17,13 @@
 //
 // Cross-iframe is fine because `srcdoc` is same-origin: we read the chart's
 // geometry + `elementFromPoint` hit + the legend/template content directly.
+//
+// Popover POSITIONING is delegated to Floating UI (@floating-ui/dom — the same
+// engine shadcn/Radix popovers run on), driven by a VIRTUAL REFERENCE built from
+// the chart's geometry. This is the right tool for a cross-iframe anchor (no DOM
+// node to point at) and gives real flip/shift/collision handling instead of a
+// hand-rolled clamp. A direct dependency (not borrowed transitively from Radix).
+import { autoUpdate, computePosition, flip, offset, shift } from '@floating-ui/dom';
 
 const REDUCED = (() => {
   try { return window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch { return false; }
@@ -63,8 +70,9 @@ export function createChartInteract({ stage, getFrame, tilt = true, onReveal, ho
   let detailsEl = null;  // its sibling .piechart-details (the <template> payload)
   let sliceN = 0;        // slice count on the current chart
   let openSlice = -1;    // which slice's detail is showing (-1 = none)
-  let chartBox = null;   // current chart rect in stage coords (for popover anchoring)
+  let chartBox = null;   // current chart rect in stage coords (Present hit-surface)
   let boundDoc = null;   // iframe document we've bound hover listeners to (preview mode)
+  let stopAutoUpdate = null; // Floating UI autoUpdate teardown (while a popover is open)
   const timers = [];     // pending reflow re-pins (cleared on slide change / destroy)
 
   const doc = () => { try { return getFrame().contentDocument; } catch { return null; } };
@@ -88,7 +96,8 @@ export function createChartInteract({ stage, getFrame, tilt = true, onReveal, ho
       hit.style.cssText =
         `display:block;left:${chartBox.left}px;top:${chartBox.top}px;width:${chartBox.width}px;height:${chartBox.height}px`;
     }
-    if (openSlice >= 0) positionPop();
+    // Popover position is owned by Floating UI's autoUpdate (started on reveal),
+    // so reflow only pins the Present hit-surface here.
   }
 
   function hide() { if (!hoverAny) hit.style.display = 'none'; }
@@ -165,7 +174,8 @@ export function createChartInteract({ stage, getFrame, tilt = true, onReveal, ho
       (body ? `<p>${body}</p>` : '') + (meta ? `<div class="db-pp-chartpop-m">${meta}</div>` : '');
     pop.classList.add('show');
     liftAndTilt(i);
-    reflow();
+    reflow();   // re-pin the Present hit-surface
+    startPop(); // Floating UI owns the popover position from here
   }
 
   function textOf(sel, i) {
@@ -178,30 +188,50 @@ export function createChartInteract({ stage, getFrame, tilt = true, onReveal, ho
     return (spans.length ? [...spans].map((s) => s.textContent.trim()).join(' ') : n.textContent).trim();
   }
 
-  // Anchor the popover to a STABLE spot — centred under the pie disc, just below it
-  // — rather than chasing each wedge's box (which jumps for thin/edge slices and can
-  // ride up over the title). The active slice is already identified by the lift, the
-  // dim, and the popover's colour dot + label, so a calm fixed position reads better.
-  // The disc = the union of the wedge boxes (orientation-agnostic).
-  function positionPop() {
-    if (!curSection || !chartBox) return;
+  // The popover anchors to the pie DISC (the union of the current chart's wedge
+  // boxes), not an individual wedge — a calm, stable spot; the active slice is
+  // already identified by the lift, the dim, and the popover's colour dot + label.
+  // Floating UI anchors to a VIRTUAL REFERENCE: an object exposing the disc's box
+  // in viewport coords, mapped from the iframe's own geometry through its offset.
+  // That sidesteps the cross-iframe problem (no DOM node to point at) and lets the
+  // engine do the hard part — flip below↔above, shift to stay in view.
+  const EMPTY_RECT = { x: 0, y: 0, width: 0, height: 0, top: 0, left: 0, right: 0, bottom: 0 };
+  const discRect = () => {
+    if (!curSection) return EMPTY_RECT;
     const wedges = curSection.querySelectorAll('.wedge[data-slice]');
-    if (!wedges.length) return;
-    let fr, sr;
-    try { fr = getFrame().getBoundingClientRect(); sr = stage.getBoundingClientRect(); } catch { return; }
-    let minX = Infinity, maxX = -Infinity, maxY = -Infinity;
+    if (!wedges.length) return EMPTY_RECT;
+    let fr;
+    try { fr = getFrame().getBoundingClientRect(); } catch { return EMPTY_RECT; }
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
     wedges.forEach((w) => {
       const r = w.getBoundingClientRect();
-      const l = fr.left + r.left - sr.left, t = fr.top + r.top - sr.top;
-      minX = Math.min(minX, l); maxX = Math.max(maxX, l + r.width); maxY = Math.max(maxY, t + r.height);
+      minX = Math.min(minX, fr.left + r.left); minY = Math.min(minY, fr.top + r.top);
+      maxX = Math.max(maxX, fr.left + r.right); maxY = Math.max(maxY, fr.top + r.bottom);
     });
-    pop.style.visibility = 'hidden'; pop.style.display = 'block';
-    const pw = pop.offsetWidth, ph = pop.offsetHeight;
-    let x = (minX + maxX) / 2 - pw / 2;       // centred under the disc
-    let y = maxY + 12;                         // just below the disc
-    x = Math.max(8, Math.min(x, sr.width - pw - 8));
-    y = Math.max(chartBox.top, Math.min(y, sr.height - ph - 8));
-    pop.style.left = `${x}px`; pop.style.top = `${y}px`; pop.style.visibility = '';
+    return { x: minX, y: minY, left: minX, top: minY, right: maxX, bottom: maxY, width: maxX - minX, height: maxY - minY };
+  };
+  const virtualRef = { getBoundingClientRect: discRect };
+
+  function placePop() {
+    computePosition(virtualRef, pop, {
+      placement: 'bottom',
+      strategy: 'absolute',
+      middleware: [offset(12), flip({ padding: 8 }), shift({ padding: 8 })],
+    }).then(({ x, y }) => {
+      pop.style.left = `${Math.round(x)}px`;
+      pop.style.top = `${Math.round(y)}px`;
+    }).catch(() => { /* frame torn down mid-measure */ });
+  }
+
+  // Keep the popover pinned to the disc while it's open — autoUpdate re-runs
+  // placePop on scroll/resize/layout shift (animationFrame:true also catches the
+  // iframe's OWN internal scroll, which ancestor listeners would miss).
+  function startPop() {
+    stopPop();
+    stopAutoUpdate = autoUpdate(virtualRef, pop, placePop, { animationFrame: true });
+  }
+  function stopPop() {
+    if (stopAutoUpdate) { stopAutoUpdate(); stopAutoUpdate = null; }
   }
 
   // ── interaction-coupled tilt (settles flat; resting chart stays proportion-true) ──
@@ -238,6 +268,7 @@ export function createChartInteract({ stage, getFrame, tilt = true, onReveal, ho
   function clear() {
     if (openSlice < 0 && !pop.classList.contains('show')) { /* nothing open */ }
     openSlice = -1;
+    stopPop();
     pop.classList.remove('show');
     if (curSection) curSection.querySelectorAll('.wedge[data-slice]').forEach((w) => { w.style.opacity = ''; w.style.transform = ''; });
     if (chartEl) chartEl.style.transform = '';
