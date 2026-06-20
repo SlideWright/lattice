@@ -332,8 +332,82 @@ async function rasterizeSection(section, fontEmbedCSS) {
 	}
 }
 
+// Is this an iOS/iPadOS browser? Every browser on iOS is WebKit under the hood
+// (Chrome/Firefox/Edge on iOS included), and WebKit cannot reliably rasterize an
+// SVG `<foreignObject>` loaded as an `<img>` — the exact step html-to-image relies
+// on. So the one-click *image* PDF/PPTX silently produces BLANK pages on iOS (jsPDF
+// faithfully embeds the empty canvas). We can't fix WebKit, so we route iOS to the
+// native vector Print engine instead. Target the OS, not the browser brand: classic
+// iPhone/iPad UAs, plus iPadOS 13+ which masquerades as a desktop Mac (platform
+// `MacIntel`) but is touch-capable.
+function isIosWebkit() {
+	if (typeof navigator === 'undefined') return false;
+	const ua = navigator.userAgent || '';
+	const classicIos = /iPad|iPhone|iPod/.test(ua);
+	const iPadOs = navigator.platform === 'MacIntel' && (navigator.maxTouchPoints || 0) > 1;
+	return classicIos || iPadOs;
+}
+
+// Did a capture come back empty? html-to-image can return a transparent (→ white on
+// the page) frame when the canvas draw races the serialized-SVG decode, or wholesale
+// on a browser that can't render the foreignObject. A REAL slide is never one flat
+// colour — it always carries a title/chart/ribbon — so downscale to a small tile and
+// flag "blank" only when every pixel is identical OR fully transparent. False-positive
+// free even for a near-white light slide; detection failure errs toward "not blank".
+async function isBlankCapture(dataUrl) {
+	try {
+		const img = new Image();
+		img.src = dataUrl;
+		await img.decode();
+		const W = 64, H = 36;
+		const c = document.createElement('canvas');
+		c.width = W;
+		c.height = H;
+		const cx = c.getContext('2d', { willReadFrequently: true });
+		cx.drawImage(img, 0, 0, W, H);
+		const d = cx.getImageData(0, 0, W, H).data;
+		let maxA = 0;
+		const r0 = d[0], g0 = d[1], b0 = d[2];
+		let varied = false;
+		for (let i = 0; i < d.length; i += 4) {
+			if (d[i + 3] > maxA) maxA = d[i + 3];
+			if (d[i] !== r0 || d[i + 1] !== g0 || d[i + 2] !== b0) varied = true;
+		}
+		return maxA === 0 || !varied;
+	} catch {
+		return false;
+	}
+}
+
+// Rasterize a slide, re-shooting a blank frame up to three times (two animation frames
+// between tries) to ride out html-to-image's decode race on browsers that CAN render —
+// then report whether it is still blank so the caller can refuse to ship an empty page.
+async function captureNonBlank(section, fontEmbedCSS) {
+	let png = await rasterizeSection(section, fontEmbedCSS);
+	let blank = await isBlankCapture(png);
+	for (let attempt = 0; attempt < 3 && blank; attempt++) {
+		await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+		png = await rasterizeSection(section, fontEmbedCSS);
+		blank = await isBlankCapture(png);
+	}
+	return { png, blank };
+}
+
+const RASTER_UNSUPPORTED_MSG =
+	'This browser couldn’t render the image export (a known iOS Safari / WebKit limitation). ' +
+	'Use “Print” for a vector PDF, or export from a desktop browser.';
+
 // ── PDF (one-click image PDF) ─────────────────────────────────────────────────
 export async function exportPdf(frame, name, onStatus, meta) {
+	// iOS/iPadOS can't rasterize the slide (see isIosWebkit) — it would save a blank
+	// PDF. Route to the native Print engine instead. This runs synchronously before
+	// any `await`, so `print()` stays inside the click's user-gesture window (Safari
+	// blocks a print dialog opened after async work).
+	if (isIosWebkit()) {
+		if (onStatus) onStatus('Image PDF isn’t supported on iOS — opening Print for a vector PDF…');
+		exportPrint(frame, { deck: name, engine: meta?.engine });
+		return 'printed'; // tells the caller to report "Opening print dialog…", not "PDF exported."
+	}
 	const { sections, fontEmbedCSS } = await sectionsOf(frame);
 	if (onStatus) onStatus('Preparing PDF…');
 	const { jsPDF } = await import('jspdf');
@@ -362,7 +436,11 @@ export async function exportPdf(frame, name, onStatus, meta) {
 		// drive a determinate progress bar — the rasterizing loop is the slow part
 		// (seconds-to-tens-of-seconds on a phone), and the only feedback worth a bar.
 		if (onStatus) onStatus('Rendering slide ' + (i + 1) + ' of ' + sections.length + '…', { current: i, total: sections.length });
-		const png = await rasterizeSection(sections[i], fontEmbedCSS);
+		const { png, blank } = await captureNonBlank(sections[i], fontEmbedCSS);
+		// Never hand back a silently-blank PDF: if a non-iOS browser still can't
+		// rasterize, abort with an actionable message (the click gesture is long gone,
+		// so we can't auto-open Print here — the user picks Print from the menu).
+		if (blank) throw new Error(RASTER_UNSUPPORTED_MSG);
 		if (i > 0) pdf.addPage([pageW, pageH], 'landscape');
 		pdf.addImage(png, 'PNG', 0, 0, pageW, pageH);
 	}
@@ -372,6 +450,10 @@ export async function exportPdf(frame, name, onStatus, meta) {
 
 // ── PPTX (image-slides) ───────────────────────────────────────────────────────
 export async function exportPptx(frame, name, onStatus, meta) {
+	// PPTX is image-slides through the same rasterizer, so iOS/WebKit would build a
+	// deck of blank slides — and there's no Print equivalent to fall back to. Refuse
+	// up front with an actionable message rather than emit an empty .pptx.
+	if (isIosWebkit()) throw new Error(RASTER_UNSUPPORTED_MSG);
 	const { sections, fontEmbedCSS } = await sectionsOf(frame);
 	if (onStatus) onStatus('Preparing PowerPoint…');
 	const { default: PptxGenJS } = await import('pptxgenjs');
@@ -396,7 +478,8 @@ export async function exportPptx(frame, name, onStatus, meta) {
 	}
 	for (let i = 0; i < sections.length; i++) {
 		if (onStatus) onStatus('Rendering slide ' + (i + 1) + ' of ' + sections.length + '…', { current: i, total: sections.length });
-		const png = await rasterizeSection(sections[i], fontEmbedCSS);
+		const { png, blank } = await captureNonBlank(sections[i], fontEmbedCSS);
+		if (blank) throw new Error(RASTER_UNSUPPORTED_MSG);
 		pptx.addSlide().addImage({ data: png, x: 0, y: 0, w: '100%', h: '100%' });
 	}
 	if (onStatus) onStatus('Building .pptx…', { current: sections.length, total: sections.length });
@@ -502,17 +585,22 @@ export async function exportChart(frame, name, onStatus) {
 		if (onStatus) onStatus('Chart downloaded as SVG.');
 		return;
 	}
-	// PNG tier — rasterize the chart slide. Drop `db-active` during capture: it
-	// carries the cursor-slide selection outline (unwanted in the export).
+	// PNG tier — rasterize the chart slide. (The clean-SVG charts above never reach
+	// here; this is gantt/kanban/word-cloud etc.) iOS/WebKit can't rasterize, so
+	// refuse rather than download a blank PNG.
+	if (isIosWebkit()) throw new Error(RASTER_UNSUPPORTED_MSG);
+	// Drop `db-active` during capture: it carries the cursor-slide selection outline
+	// (unwanted in the export).
 	if (onStatus) onStatus('Rasterizing chart…');
 	const { fontEmbedCSS } = await sectionsOf(frame);
 	sec.classList.remove('db-active');
-	let dataUrl;
+	let png, blank;
 	try {
-		dataUrl = await rasterizeSection(sec, fontEmbedCSS);
+		({ png, blank } = await captureNonBlank(sec, fontEmbedCSS));
 	} finally {
 		sec.classList.add('db-active');
 	}
-	download(dataUrlToBlob(dataUrl), `${safeName(name)}-chart.png`);
+	if (blank) throw new Error(RASTER_UNSUPPORTED_MSG);
+	download(dataUrlToBlob(png), `${safeName(name)}-chart.png`);
 	if (onStatus) onStatus('Chart downloaded as PNG.');
 }

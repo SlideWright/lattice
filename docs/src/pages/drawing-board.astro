@@ -1003,7 +1003,7 @@ const dbData = JSON.stringify({
 						if (comps.length) bits.push(comps.length + ' component' + (comps.length === 1 ? '' : 's'));
 						status(bits.length ? `Markdown exported (${bits.join(' + ')} embedded).` : 'Markdown exported.');
 					}
-					else if (kind === 'pdf') { onStatus('Exporting PDF…'); await exportPdf(frame, deckName(), onStatus, meta); status('PDF exported.'); }
+					else if (kind === 'pdf') { onStatus('Exporting PDF…'); const r = await exportPdf(frame, deckName(), onStatus, meta); status(r === 'printed' ? 'Opening print dialog…' : 'PDF exported.'); }
 					else if (kind === 'pptx') { onStatus('Exporting PowerPoint…'); await exportPptx(frame, deckName(), onStatus, meta); status('PowerPoint exported.'); }
 					else if (kind === 'print') { exportPrint(frame, meta); status('Opening print dialog…'); }
 					else if (kind === 'charts-svg') { onStatus('Exporting chart…'); await exportChart(frame, deckName(), onStatus); }
