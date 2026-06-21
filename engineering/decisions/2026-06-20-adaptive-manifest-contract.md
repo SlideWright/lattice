@@ -100,3 +100,15 @@ field and adds the `@container`/transform layouts — never a silent drift again
 | `reflow` | 25 | cards-grid, cards-stack, content, diagram, funnel, gantt, image, journey, kanban, kpi, list, map, matrix-2x2, piechart, pricing, progress, quadrant, radar, roadmap, split-compare, state-chart, stats, timeline-list, verdict-grid, word-cloud |
 | `native` | 25 | actors, agenda, authority-chain, big-number, checklist, citation-card, closing, code, compare-prose, compare-table, decision, divider, glossary, list-criteria, list-steps, list-tabular, logo-wall, math, obligation-matrix, q-and-a, quote, regulatory-update, split-panel, statute-stack, title |
 | `single-orientation` | 2 | compare-code, redline |
+
+> **Update (2026-06-20):** two reclassifications from the native→reflow feasibility
+> study (`2026-06-20-native-to-reflow-feasibility.md` § Findings):
+> - `split-panel` `native → reflow` — it structurally flips its section axis
+>   (`flex-direction: row → column`) via `[data-orientation]`, the §11-sanctioned
+>   section-element reflow signal, so `native` understated it. The static gate
+>   stays satisfied (`reflow` carries no `@container` requirement).
+> - `compare-table` `native → single-orientation` (`orientation: ["landscape"]`,
+>   added to `LANDSCAPE_ONLY_LAYOUTS`) — render-verified as below-bar in portrait
+>   (survives but ballooned/cramped); joins its sibling `compare-code`.
+>
+> Current counts: **26 reflow / 23 native / 3 single-orientation**.
