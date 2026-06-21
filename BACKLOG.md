@@ -7,9 +7,9 @@
 
 The live, claimable work queue — a read-only mirror of [open issues](https://github.com/SlideWright/lattice/issues),
 grouped by board column. Design lives in `engineering/decisions/`; this tracks
-only *status*. **35 open** items.
+only *status*. **38 open** items.
 
-## Backlog (33)
+## Backlog (36)
 
 - [#283](https://github.com/SlideWright/lattice/issues/283) refactor(css): audit and reduce `!important` (~490 repo-wide) — high · engine
 - [#284](https://github.com/SlideWright/lattice/issues/284) refactor(css): activate `@layer` for per-component + modifier CSS — high · engine
@@ -35,6 +35,8 @@ only *status*. **35 open** items.
 - [#380](https://github.com/SlideWright/lattice/issues/380) Narrative step model — assemble the slide as you go (implementation) — medium · engine
 - [#414](https://github.com/SlideWright/lattice/issues/414) refactor(website): consolidate the per-surface theme/palette dropdowns onto one shared control — medium · website
 - [#466](https://github.com/SlideWright/lattice/issues/466) chart(detail): Tier-2 per-mark detail — state-chart, gantt, kanban — medium · chart
+- [#475](https://github.com/SlideWright/lattice/issues/475) chart(gantt): per-bar detail reveal (Tier-2, on the HTML-mark path) — medium · chart
+- [#476](https://github.com/SlideWright/lattice/issues/476) chart(kanban): per-card detail reveal (Tier-2, on the HTML-mark path) — medium · chart
 - [#280](https://github.com/SlideWright/lattice/issues/280) docs: fix phantom `--hljs-name`/`--hljs-meta` token rows in highlight-js.docs.md — low · docs
 - [#281](https://github.com/SlideWright/lattice/issues/281) docs: mark design-system.md "9 buckets" as historical (ships 12) — low · docs
 - [#282](https://github.com/SlideWright/lattice/issues/282) docs: mark design-system.md "58 components / 89 pages" as dated (ships 53) — low · docs
@@ -44,6 +46,7 @@ only *status*. **35 open** items.
 - [#300](https://github.com/SlideWright/lattice/issues/300) docs: assess `examples/gallery-jargon.md` for retirement — low · docs
 - [#309](https://github.com/SlideWright/lattice/issues/309) docs: pick a single canonical home for the Mermaid contract (currently in 3 docs) — low · theming
 - [#310](https://github.com/SlideWright/lattice/issues/310) docs: drop/re-anchor the legacy "Part 1–11" doc numbering — low · docs
+- [#477](https://github.com/SlideWright/lattice/issues/477) chart(state-chart): tune the `tb` reveal-lift magnitude — low · chart
 
 ## Ready (0)
 
