@@ -1,0 +1,189 @@
+/**
+ * Unit tests for the redesigned gantt — the continuous-time renderer
+ * (lib/components/chart/_chart-family/chart-family.js buildGanttChart) and the
+ * authoring linter (lib/authoring/lint-core.js findGanttIssues, via lintTextWith).
+ *
+ * Contract: a task is a nested bullet with trailing inline-code tokens — a span
+ * `START..END` (a bar) or a single time point (a milestone diamond), an optional
+ * status, an optional `after: Task name` dependency, an optional `milestone`
+ * keyword. `..` is the only delimiter. Time points are ISO dates, quarters
+ * (Q1 / 2026 Q1), or months (Jan); a chart is date-mode or ordinal-mode. The
+ * axis auto-derives; the eyebrow may override it and add a `today` line.
+ *
+ * Several cases below are regression locks for maker-checker findings on the
+ * redesign (2026-06-21-gantt-component-redesign.md): a label word matching a
+ * 3-letter month prefix (C1), a solitary date milestone rendering off-screen
+ * (S1), lint label extraction diverging from the renderer (S3), lint mode
+ * detection ignoring the eyebrow window (S5), and rolled-over invalid dates (N1).
+ */
+
+const { test, describe } = require('node:test');
+const assert = require('node:assert/strict');
+const engine = require('../../../lib/components/chart/_chart-family/chart-family');
+const core = require('../../../lib/authoring/lint-core');
+
+const { buildGanttChart, extractFirstList } = engine;
+const inner = (ul) => extractFirstList(ul).inner;
+
+// Pull the numeric --gantt-x / --gantt-w off a matched element's style attr.
+const xOf = (html, re) => {
+  const m = html.match(re);
+  return m ? Number(m[1]) : null;
+};
+
+const GANTT_VOCAB = { names: new Set(['gantt', 'list']), modifiers: new Set() };
+const lintGantt = (deck) =>
+  core.lintTextWith(deck, GANTT_VOCAB).filter((f) => f.classToken === 'gantt');
+const deck = (body) => `---\nmarp: true\n---\n\n<!-- _class: gantt -->\n\n${body}\n`;
+
+describe('gantt renderer — continuous time scale', () => {
+  test('inclusive ordinal span: Q1..Q2 covers two of four quarters', () => {
+    const ul = `<ul><li>Lane<ul>
+      <li>A <code>Q1..Q2</code> <code>done</code></li>
+    </ul></li></ul>`;
+    const out = buildGanttChart(inner(ul), '<p><code>2026 Q1 .. 2026 Q4</code></p>');
+    // 4-quarter window → Q1..Q2 starts at 0 and spans 50%.
+    assert.equal(xOf(out, /gantt-bar"[^>]*--gantt-x:([\d.]+)/), 0);
+    assert.equal(xOf(out, /gantt-bar"[^>]*--gantt-w:([\d.]+)/), 50);
+  });
+
+  test('a single time point renders a milestone diamond, not a bar', () => {
+    const ul = `<ul><li>Lane<ul>
+      <li>GA <code>Q4</code></li>
+    </ul></li></ul>`;
+    const out = buildGanttChart(inner(ul), '<p><code>2026 Q1 .. 2026 Q4</code></p>');
+    assert.match(out, /gantt-milestone/);
+    assert.doesNotMatch(out, /class="gantt-bar"/);
+    // Q4 starts at 75% of a four-quarter axis.
+    assert.equal(xOf(out, /gantt-milestone[^>]*--gantt-x:([\d.]+)/), 75);
+  });
+
+  test('date mode places bars on a day-accurate scale + derives the axis', () => {
+    const ul = `<ul><li>Build<ul>
+      <li>Alpha <code>2026-01-01..2026-04-01</code></li>
+    </ul></li></ul>`;
+    const out = buildGanttChart(inner(ul), '');
+    // Axis auto-derives to [Jan 1, Apr 1] → the only bar fills the whole width.
+    assert.equal(xOf(out, /gantt-bar"[^>]*--gantt-x:([\d.]+)/), 0);
+    assert.equal(xOf(out, /gantt-bar"[^>]*--gantt-w:([\d.]+)/), 100);
+  });
+
+  test('opt-in today line is emitted only when the eyebrow asks for it', () => {
+    const ul = `<ul><li>L<ul><li>A <code>Q1..Q4</code></li></ul></li></ul>`;
+    const withToday = buildGanttChart(inner(ul), '<p><code>2026 Q1 .. 2026 Q4</code> <code>today Q3</code></p>');
+    assert.match(withToday, /gantt-today/);
+    assert.equal(xOf(withToday, /gantt-today"[^>]*--gantt-x:([\d.]+)/), 50); // Q3 start of 4
+    const without = buildGanttChart(inner(ul), '<p><code>2026 Q1 .. 2026 Q4</code></p>');
+    assert.doesNotMatch(without, /gantt-today/);
+  });
+
+  test('status tints the bar + emits a legend chip', () => {
+    const ul = `<ul><li>L<ul><li>A <code>Q1..Q2</code> <code>at-risk</code></li></ul></li></ul>`;
+    const out = buildGanttChart(inner(ul), '<p><code>2026 Q1 .. 2026 Q4</code></p>');
+    assert.match(out, /gantt-bar"[^>]*data-s="at-risk"/);
+    assert.match(out, /gantt-legend-item[^>]*data-s="at-risk"/);
+  });
+
+  // S1 regression — a solitary date milestone used to land at left:513175% (axis
+  // fell back to 0..4 in ordinal units against an epoch-day value).
+  test('regression(S1): a lone date milestone stays on-screen', () => {
+    const ul = `<ul><li>L<ul><li>Launch <code>2026-07-15</code></li></ul></li></ul>`;
+    const out = buildGanttChart(inner(ul), '');
+    const x = xOf(out, /gantt-milestone[^>]*--gantt-x:([\d.]+)/);
+    assert.ok(x >= 0 && x <= 100, `milestone x=${x} should be within [0,100]`);
+    assert.equal(x, 50); // padded window centres a solitary point
+  });
+
+  // S2 regression — a task reaching beyond an explicit eyebrow window must clip
+  // at the frame, not overflow with a negative / >100 offset.
+  test('regression(S2): bars clamp to an explicit window', () => {
+    const ul = `<ul><li>L<ul><li>A <code>Q1..Q4</code></li></ul></li></ul>`;
+    // Window is only Q2..Q3, but the task spans Q1..Q4.
+    const out = buildGanttChart(inner(ul), '<p><code>2026 Q2 .. 2026 Q3</code></p>');
+    const x = xOf(out, /gantt-bar"[^>]*--gantt-x:([\d.]+)/);
+    const w = xOf(out, /gantt-bar"[^>]*--gantt-w:([\d.]+)/);
+    assert.ok(x >= 0 && x + w <= 100.001, `x=${x} w=${w} should stay within frame`);
+  });
+
+  // C1 regression — a label word with a valid 3-letter month prefix must NOT be
+  // read as a time point (would silently become a milestone/span endpoint).
+  test('regression(C1): a label word is not mistaken for a month', () => {
+    const ul = `<ul><li>L<ul><li>Marketing push <code>done</code></li></ul></li></ul>`;
+    const out = buildGanttChart(inner(ul), '');
+    // No valid span → unscaled placeholder, never a milestone.
+    assert.match(out, /gantt-bar--unscaled/);
+    assert.doesNotMatch(out, /gantt-milestone/);
+  });
+});
+
+describe('gantt linter — typed-token validation', () => {
+  test('a clean deck (chained boundary spans + milestone) has no findings', () => {
+    const clean = deck(`## Plan
+
+- Framework
+  - Signal taxonomy \`Q1..Q2\` \`done\`
+  - Scoring model v2 \`Q2..Q3\` \`live\` \`after: Signal taxonomy\`
+  - GA \`Q4\` \`milestone\` \`after: Scoring model v2\``);
+    assert.deepEqual(lintGantt(clean), []);
+  });
+
+  test('retired delimiter is an error with a `..` fix', () => {
+    const f = lintGantt(deck('## P\n\n- L\n  - A `Q1 → Q2` `done`'));
+    const hit = f.find((x) => x.rule === 'gantt-retired-delimiter');
+    assert.ok(hit, 'expected gantt-retired-delimiter');
+    assert.equal(hit.severity, 'error');
+    assert.match(hit.fix, /Q1\.\.Q2/);
+  });
+
+  test('a malformed span is flagged', () => {
+    const f = lintGantt(deck('## P\n\n- L\n  - A `Q9..Zz`'));
+    assert.ok(f.some((x) => x.rule === 'gantt-bad-span' && x.severity === 'error'));
+  });
+
+  test('an unrecognized token warns', () => {
+    const f = lintGantt(deck('## P\n\n- L\n  - A `Q1..Q2` `dnoe`'));
+    assert.ok(f.some((x) => x.rule === 'gantt-unknown-token' && x.severity === 'warning'));
+  });
+
+  test('a dangling after: (names no task) is an error', () => {
+    const f = lintGantt(deck('## P\n\n- L\n  - A `Q1..Q2` `after: Ghost`'));
+    assert.ok(f.some((x) => x.rule === 'gantt-dangling-after'));
+  });
+
+  test('an inverted dependency warns, but a boundary overlap does not', () => {
+    const inverted = deck('## P\n\n- L\n  - A `Q3..Q4`\n  - B `Q1..Q2` `after: A`');
+    assert.ok(lintGantt(inverted).some((x) => x.rule === 'gantt-inverted-dependency'));
+    // B follows A sharing the Q2 boundary — idiomatic phasing, NOT inverted.
+    const ok = deck('## P\n\n- L\n  - A `Q1..Q2`\n  - B `Q2..Q3` `after: A`');
+    assert.ok(!lintGantt(ok).some((x) => x.rule === 'gantt-inverted-dependency'));
+  });
+
+  // C1 regression — the linter must flag a month-prefix label word as unknown,
+  // not silently accept it as a valid time point.
+  test('regression(C1): a month-prefix word is flagged, not accepted', () => {
+    const f = lintGantt(deck('## P\n\n- L\n  - A `Marketing`'));
+    assert.ok(f.some((x) => x.rule === 'gantt-unknown-token'),
+      'a word like "Marketing" must not pass as the month "mar"');
+  });
+
+  // S3 regression — inline code inside a label must stay part of the label, so
+  // the trailing tokens (and after: resolution) read correctly.
+  test('regression(S3): inline code in a label is not mis-tokenized', () => {
+    const f = lintGantt(deck('## P\n\n- L\n  - Deploy `v2` service `Q1..Q2`'));
+    // `v2` is part of the label, so no unknown-token and no bad after: resolution.
+    assert.ok(!f.some((x) => x.rule === 'gantt-unknown-token'), `unexpected: ${JSON.stringify(f)}`);
+  });
+
+  // S5 regression — a date-only eyebrow window over ordinal tasks is a genuine
+  // mix; lint must fold the eyebrow into mode detection to catch it.
+  test('regression(S5): date window over ordinal tasks is flagged mixed', () => {
+    const mixed = deck('`2026-01-01 .. 2026-12-31`\n\n## P\n\n- L\n  - A `Q1..Q2`');
+    assert.ok(lintGantt(mixed).some((x) => x.rule === 'gantt-mixed-time'));
+  });
+
+  // N1 regression — a rolled-over invalid ISO date must be rejected, not parsed.
+  test('regression(N1): an invalid ISO date is flagged', () => {
+    const f = lintGantt(deck('## P\n\n- L\n  - A `2026-13-01..2026-12-01`'));
+    assert.ok(f.some((x) => x.rule === 'gantt-bad-span'));
+  });
+});
