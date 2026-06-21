@@ -13,7 +13,7 @@ const head = (title, mode, viewport) => `<!doctype html>
 <title>${title}</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="studio.css"/>
 ${viewport ? `<style>html,body{width:${viewport}px}</style>` : ''}
 </head>

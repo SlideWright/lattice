@@ -1,25 +1,23 @@
 <!--mode:light-->
-<div class="shell">
-  <nav class="rail">
-    <div class="rail-brand">L</div>
-    <button class="rail-item"><svg class="icon"><use href="#i-compose"/></svg><span class="lbl">Compose</span></button>
-    <button class="rail-item"><svg class="icon"><use href="#i-present"/></svg><span class="lbl">Present</span></button>
-    <button class="rail-item"><svg class="icon"><use href="#i-fabricate"/></svg><span class="lbl">Build</span></button>
-    <button class="rail-item"><svg class="icon"><use href="#i-library"/></svg><span class="lbl">Decks</span></button>
-    <div class="rail-spacer"></div>
-    <button class="rail-item active"><svg class="icon"><use href="#i-settings"/></svg><span class="lbl">Setup</span></button>
-  </nav>
-  <div class="col">
-    <header class="appbar">
-      <button class="deck-switch"><span class="dot"></span><span class="name">Q3 Board Review</span><span class="meta">14 slides</span></button>
-      <div class="appbar-spacer"></div>
-      <div class="appbar-right">
-        <button class="btn icon-only ghost"><svg class="icon"><use href="#i-palette"/></svg></button>
-        <button class="btn primary"><svg class="icon sm"><use href="#i-share"/></svg>Share</button>
-      </div>
-    </header>
-    <div class="work no-inspector"><div class="preview"></div></div>
+<div class="sframe">
+  <header class="topbar">
+    <a class="brand2"><span class="logo">L</span><span class="wm">Lattice</span></a>
+    <nav class="itabs">
+      <button class="itab on"><svg class="icon sm"><use href="#i-compose"/></svg>Compose</button>
+      <button class="itab"><svg class="icon sm"><use href="#i-present"/></svg>Present</button>
+      <button class="itab"><svg class="icon sm"><use href="#i-fabricate"/></svg>Fabricate</button>
+    </nav>
+    <div class="spacer"></div>
+    <button class="btn icon-only ghost"><svg class="icon"><use href="#i-palette"/></svg></button>
+    <button class="btn primary"><svg class="icon sm"><use href="#i-share"/></svg>Share</button>
+    <button class="btn icon-only ghost" style="border:2px solid var(--accent);border-radius:9px"><svg class="icon"><use href="#i-settings"/></svg></button>
+    <div class="avatar">SA</div>
+  </header>
+  <div class="ctxbar">
+    <button class="deck-switch"><span class="dot"></span><span class="name">Q3 Board Review</span><span class="meta">14 slides</span></button>
+    <div class="grow"></div>
   </div>
+  <div class="workrow no-inspector"><div class="preview"></div></div>
 </div>
 
 <div class="scrim"></div>
@@ -27,20 +25,14 @@
   <div class="sheet-head"><svg class="icon" style="color:var(--accent)"><use href="#i-settings"/></svg><span class="h">Workspace</span><span class="scope" style="margin-left:8px">your setup</span><svg class="icon x"><use href="#i-x"/></svg></div>
   <div class="sheet-body">
     <div class="set-tabs">
-      <button class="on">AI model</button>
-      <button>Cloud</button>
-      <button>Spend</button>
-      <button>Instructions</button>
-      <button>Storage</button>
+      <button class="on">AI model</button><button>Cloud</button><button>Spend</button><button>Instructions</button><button>Storage</button>
     </div>
-
     <div class="insp-group" style="padding-top:0">
       <div class="gh"><svg class="icon xs"><use href="#i-sparkles"/></svg>Generation tier</div>
       <div class="tier"><span class="ti"><svg class="icon sm"><use href="#i-check"/></svg></span><span><div class="tn">Floor — deterministic</div><div class="td">No model · fully private &amp; offline</div></span><span class="rad"></span></div>
       <div class="tier"><span class="ti"><svg class="icon sm"><use href="#i-eye"/></svg></span><span><div class="tn">On-device · Transformers.js</div><div class="td">CPU · cached weights</div></span><span class="rad"></span></div>
       <div class="tier on"><span class="ti"><svg class="icon sm"><use href="#i-cloud"/></svg></span><span><div class="tn">OpenRouter — connected</div><div class="td">Cloud · sharmarke@…</div></span><span class="rad"></span></div>
     </div>
-
     <div class="insp-group">
       <div class="gh"><svg class="icon xs"><use href="#i-wallet"/></svg>Spend this session</div>
       <div class="spend">

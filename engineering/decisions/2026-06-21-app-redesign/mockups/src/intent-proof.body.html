@@ -1,0 +1,24 @@
+<!--mode:light;w:900-->
+<div style="min-height:100vh;display:grid;place-items:center;background:var(--bg-alt);font-family:var(--font-sans)">
+  <div style="background:var(--bg);border:1px solid var(--border);border-radius:18px;box-shadow:var(--shadow-lg);padding:34px 38px;max-width:760px">
+    <div style="font-family:var(--font-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px">Accessibility · WCAG 1.4.1 Use of Colour</div>
+    <h1 style="font-family:var(--font-sans);font-weight:800;font-size:24px;color:var(--text-heading);margin:0 0 6px;letter-spacing:-.01em">Intent never rides on colour alone</h1>
+    <p style="font-size:14px;color:var(--text-body);margin:0 0 24px;line-height:1.6">Each status tag pairs colour with a <b>shape-distinct icon</b> (circle ✓ · triangle ! · octagon × · circle i) and a text label. Remove colour entirely and the meaning survives.</p>
+
+    <div style="font-family:var(--font-mono);font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px">Full colour</div>
+    <div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:26px">
+      <span class="intent-tag pass" style="position:static;font-size:13px;padding:6px 13px 6px 10px"><svg class="icon" style="width:17px;height:17px"><use href="#i-check-circle"/></svg>READY</span>
+      <span class="intent-tag warn" style="position:static;font-size:13px;padding:6px 13px 6px 10px"><svg class="icon" style="width:17px;height:17px"><use href="#i-alert-triangle"/></svg>REVIEW</span>
+      <span class="intent-tag fix" style="position:static;font-size:13px;padding:6px 13px 6px 10px"><svg class="icon" style="width:17px;height:17px"><use href="#i-octagon-x"/></svg>FIX</span>
+      <span class="intent-tag info" style="position:static;font-size:13px;padding:6px 13px 6px 10px"><svg class="icon" style="width:17px;height:17px"><use href="#i-info-circle"/></svg>INFO</span>
+    </div>
+
+    <div style="font-family:var(--font-mono);font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px">Greyscale — colour-blind / monochrome worst case</div>
+    <div style="display:flex;gap:14px;flex-wrap:wrap;filter:grayscale(1)">
+      <span class="intent-tag pass" style="position:static;font-size:13px;padding:6px 13px 6px 10px"><svg class="icon" style="width:17px;height:17px"><use href="#i-check-circle"/></svg>READY</span>
+      <span class="intent-tag warn" style="position:static;font-size:13px;padding:6px 13px 6px 10px"><svg class="icon" style="width:17px;height:17px"><use href="#i-alert-triangle"/></svg>REVIEW</span>
+      <span class="intent-tag fix" style="position:static;font-size:13px;padding:6px 13px 6px 10px"><svg class="icon" style="width:17px;height:17px"><use href="#i-octagon-x"/></svg>FIX</span>
+      <span class="intent-tag info" style="position:static;font-size:13px;padding:6px 13px 6px 10px"><svg class="icon" style="width:17px;height:17px"><use href="#i-info-circle"/></svg>INFO</span>
+    </div>
+  </div>
+</div>

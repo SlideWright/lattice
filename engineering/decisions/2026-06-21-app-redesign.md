@@ -266,23 +266,29 @@ click-minimizer: power users never touch a toolbar.
 
 ## 2.4 Mockups (high-fidelity — real tokens, real type)
 
-Five clickable-looking mockups render the model with the **actual** indaco
-palette tokens (from `lattice-tokens.generated.css`), the real Outfit /
-JetBrains Mono type, and lucide-style icons — so the palette, hierarchy, and
-density are faithful, not approximated. Source + builder live in
-[`2026-06-21-app-redesign/mockups/`](./2026-06-21-app-redesign/mockups/);
-rendered PNGs in `mockups/shots/`.
+High-fidelity mockups render the model with the **actual** indaco palette tokens
+(from `lattice-tokens.generated.css`) and the real type stack (Outfit · Playfair
+Display wordmark · JetBrains Mono) + lucide-style icons — faithful, not
+approximated. They come in **two shell options** for the intent switch (fork
+PM-5): **v1 — activity rail** ([`mockups/v1-rail/`](./2026-06-21-app-redesign/mockups/v1-rail/))
+and **v2 — top tabs** ([`mockups/v2-tabs/`](./2026-06-21-app-redesign/mockups/v2-tabs/),
+**recommended**). Only the intent-switch/brand chrome differs; every work surface
+is identical. The annotated diff:
+[`compare/compare-compose.png`](./2026-06-21-app-redesign/mockups/compare/compare-compose.png).
+Full index + rebuild steps: [`mockups/README.md`](./2026-06-21-app-redesign/mockups/README.md).
 
-| Mockup | Shows | Width / mode |
+| Mockup (v2-tabs) | Shows | Width / mode |
 |---|---|---|
-| [`compose.png`](./2026-06-21-app-redesign/mockups/shots/compose.png) | Compose: rail · slotted AppBar · Architect aside · editor + preview · Deck Inspector (Look / Read / **Lenses**) | 1440 · light |
-| [`present.png`](./2026-06-21-app-redesign/mockups/shots/present.png) | Present: the reader — **read-aloud with synchronized highlight**, reader-facing **lens switch**, the play/scrub dock | 1440 · dark |
-| [`share.png`](./2026-06-21-app-redesign/mockups/shots/share.png) | The Share sheet: **hand off the deck** (Present link · PDF · PPTX · Print deck) vs **hand off the source** (Markdown · Marp bundle · **Print source**) | 1440 · light |
-| [`settings.png`](./2026-06-21-app-redesign/mockups/shots/settings.png) | Workspace Settings ("your setup"): generation tier · OpenRouter connect · spend + budget — distinct from the deck Inspector ("this deck") | 1440 · light |
-| [`mobile.png`](./2026-06-21-app-redesign/mockups/shots/mobile.png) | Mobile Compose: bottom intent bar · Edit/Preview pane tabs · icon-only chrome | 390 · light |
+| [`compose.png`](./2026-06-21-app-redesign/mockups/v2-tabs/compose.png) | Compose: top-tab intents · context bar · Architect aside · editor + preview · Deck Inspector (Look / Read / **Lenses**) | 1440 · light |
+| [`fabricate.png`](./2026-06-21-app-redesign/mockups/v2-tabs/fabricate.png) | Fabricate (Workbench): Theme Studio — 4 core colours → 18-token derived contract → live WCAG audit → live specimen + auto dark | 1440 · light |
+| [`present.png`](./2026-06-21-app-redesign/mockups/v2-tabs/present.png) | Present: the reader — **read-aloud with synchronized highlight**, reader-facing **lens switch**, the play/scrub dock | 1440 · dark |
+| [`share.png`](./2026-06-21-app-redesign/mockups/v2-tabs/share.png) | The Share sheet: **hand off the deck** (Present link · PDF · PPTX · Print deck) vs **hand off the source** (Markdown · Marp bundle · **Print source**) | 1440 · light |
+| [`settings.png`](./2026-06-21-app-redesign/mockups/v2-tabs/settings.png) | Workspace Settings ("your setup"): generation tier · OpenRouter connect · spend + budget — distinct from the deck Inspector ("this deck") | 1440 · light |
+| [`mobile-compose.png`](./2026-06-21-app-redesign/mockups/v2-tabs/mobile-compose.png) | Full mobile Compose (Preview + Edit + Present in `mobile-*`): bottom intent bar · pane tabs · read-aloud dock. v1's mobile uses a hamburger→drawer instead — see `v1-rail/mobile-*.png` | 390 · light/dark |
 
-These are *visual specs*, not shipped code — but they are built from the real
-token bridge, so Win 1 inherits the exact palette + type the mockups show.
+These are *visual specs* (zero behavior, PM-12), not shipped code — but they are
+built from the real token bridge, so Win 1 inherits the exact palette + type they
+show.
 
 ## 3. The chrome contract — the `StudioShell`
 
@@ -499,20 +505,35 @@ not introduce a second language (HARD RULES 3, 11, 15).
 - **Motion:** restrained and purposeful only — Inspector collapse, intent
   crossfade, sheet slide. No decorative animation. Respect
   `prefers-reduced-motion`.
+- **Accessibility — colour is never the only channel (PM-13).** Status, severity,
+  and intent use the shape-coded **intent-tag** system: a corner tag carrying a
+  silhouette-distinct icon + text label (circle-✓ `READY` · triangle-! `REVIEW` ·
+  octagon-× `FIX` · circle-i `INFO`). The engine already ships CVD palettes
+  (deuteranopia, protanopia, tritanopia, achromatopsia); the chrome holds the same
+  bar — every status cue is verified to read in greyscale (WCAG 1.4.1), and the
+  coloured text itself stays ≥ AA. See the mockups' `intent-proof.png`.
 
 ## 9. Responsive contract (all three first-class)
 
 Every Studio win ships verified at **390 / 820 / 1440** (CLAUDE.md: no website
 change is done without `tools/screenshot.js` evidence at all three widths).
 
-- **Desktop (~1440):** rail (icon+label on hover) · AppBar · work surface ·
-  Inspector all visible.
-- **Tablet (~820):** rail icon-only; Inspector becomes an AppBar toggle (slides
-  over); work surface is primary; AppBar center favours icon-only controls.
-- **Mobile (~390):** rail → bottom intent bar (or AppBar menu); Inspector +
-  Architect + Share → `Sheet`s; work surface = single pane with the existing
-  Edit/Preview `Tabs`. Icon-only controls throughout; no horizontal overflow
-  (the `check:overflow` gate covers this).
+- **Desktop (~1440):** intent switch · AppBar · work surface · Inspector all
+  visible; up to three panes (Architect · Editor · Preview).
+- **Tablet (~768–1180): a hybrid, not a third design — it *leans by orientation*.**
+  It takes its **chrome from desktop** (the top-tab / rail header stays — *never*
+  the mobile bottom bar) and its **density + side-panel behaviour from mobile**
+  (touch targets, icon-only secondary controls; Architect and the Inspector are
+  **summoned slide-overs, never resident** — protects the preview, PM-4). Panes are
+  orientation-gated: **landscape (~1180) ≈ desktop** (two panes, Editor + Preview);
+  **portrait (~820) ≈ a roomy mobile** (one primary pane + an Edit/Preview
+  segmented toggle). *Tablet is also a quiet argument for v2/tabs (PM-5): a 66px
+  rail costs proportionally more at ~800px, while tabs degrade to icon-only
+  cleanly.*
+- **Mobile (~390):** the intent switch becomes a **bottom intent bar** (v2) or a
+  **hamburger → drawer** (v1); Inspector + Architect + Share → `Sheet`s; work
+  surface = single pane with the Edit/Preview `Tabs`. Icon-only throughout; no
+  horizontal overflow (the `check:overflow` gate covers this).
 
 ## 10. Reuse map (HARD RULE 15 — don't reinvent)
 
@@ -618,6 +639,7 @@ what the author chose, PM-# records what the red-team proved we must constrain).
 | PM-10 | **Per-surface graceful degradation** — a shell/Workbench fault can't blank Compose; surfaces stay independently loadable. | adds a Win-1 requirement |
 | PM-11 | **Optimize per-persona, not uniformly** — density for the author, low-load for the recipient; "minimize clicks" is a *reader* goal, not universal. | scopes the headline goal |
 | PM-12 | **Mockups are zero-behavior specs** — they never set the schedule; each is paired with its integration cost. | framing |
+| PM-13 | **Never signal status / severity / intent by colour alone (WCAG 1.4.1).** Pair every such cue with a **shape-distinct icon + text** corner tag — circle-✓ `READY` · triangle-! `REVIEW` · octagon-× `FIX` · circle-i `INFO` — verified to read in greyscale and across the CVD palettes. Colour reinforces; it never carries the meaning. | author-raised; new convention |
 
 **Net:** inversion does not kill the plan; it demotes "merge → start Win 1" to
 "merge as *direction* → buy evidence first" (PM-2). The load-bearing risk
@@ -734,4 +756,25 @@ merge-authorization gate (CLAUDE.md), then post the standup.
   reference moved in-PR) + honoring what past decisions/names encoded; the OAuth
   callback path (PM-8) stays immovable. §0 gains a pre-GA context note; PM-9 / RD3 /
   PM-I / Win 1 / §13-4 reworded.
-- _pending_ — Author approval (per PM-2, of **Win 0 only**).
+- 2026-06-21 — **Mockups v2 + v1/v2 organisation (author: "I love it").** Refreshed
+  the set to the recommended **top-tab** shell (Playfair wordmark + avatar; PM-5),
+  added the missing **Fabricate / Theme Studio** screen, and kept the **v1 rail**
+  set for the open fork. Reorganised `mockups/` into `v1-rail/`, `v2-tabs/`,
+  `compare/` (annotated side-by-side), and `src/` (rebuildable); §2.4 repointed.
+- 2026-06-21 — **Full mobile mockups (v1 + v2).** Added complete 390×844 mobile
+  screens (Compose-Preview, Compose-Edit, Present) for both shells, making the
+  mobile intent switch explicit: v2 = thumb-friendly **bottom intent bar**, v1 =
+  the rail collapses into a top **hamburger → drawer**. In `v1-rail/mobile-*.png`
+  and `v2-tabs/mobile-*.png`.
+- 2026-06-21 — **Tablet mockups + §9 sharpened.** Added tablet Compose
+  (landscape 1180 + portrait 820) and reframed §9's tablet row as an explicit
+  *hybrid leaning by orientation* — desktop chrome, mobile density/overlays, panes
+  orientation-gated. In `v2-tabs/tablet-compose-*.png`. Now mocked at all three
+  widths (390 / 820 / 1440).
+- 2026-06-21 — **Colour-independent status signalling (author-raised → PM-13).**
+  Status/severity no longer relies on colour (WCAG 1.4.1): the Architect cards gain
+  a shape-coded **intent tag** (circle-✓ READY · triangle-! REVIEW · octagon-× FIX
+  · circle-i INFO) with a text label; titles de-coloured. Added PM-13, a §8 a11y
+  rule, and `intent-proof.png` (full-colour vs greyscale). Compose v1+v2 updated.
+- _pending_ — Author approval (per PM-2, of **Win 0 only**); intent-switch shell
+  (v1 rail vs v2 tabs, fork PM-5) still to confirm.
