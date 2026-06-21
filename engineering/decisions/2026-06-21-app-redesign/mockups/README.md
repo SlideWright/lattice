@@ -1,4 +1,11 @@
-# Studio redesign — mockups (v1 + v2)
+# Studio redesign — mockups (v3 current · v2/v1 superseded)
+
+> **Current shell: `v3/`** (the lean shell — one ~54px top bar, compact
+> Compose⇄Present toggle, Fabricate in the ⚙ Workspace menu, collapsed Inspector).
+> It resulted from the §16 red-team of v2. **`v2-tabs/` and `v1-rail/` are
+> superseded** and kept only as the decision trail (plan §15 scored v1↔v2; §16
+> hardened v2→v3). v3 at all three widths: `v3/v3-compose.png` (1440),
+> `v3/v3-tablet.png` (1180), `v3/v3-mobile.png` (390).
 
 High-fidelity visual specs for [`../../2026-06-21-app-redesign.md`](../../2026-06-21-app-redesign.md).
 Built from the **real** Lattice indaco tokens (mirrored from

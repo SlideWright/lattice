@@ -453,3 +453,31 @@ body {
 .intent-tag.info  { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 45%, transparent); }
 [data-mode="dark"] .intent-tag.fix { color: #F97066; }
 .arch-card .t { padding-right: 72px; }
+
+/* ===== v3 — single lean top bar + collapsed inspector (red-team VR-1…VR-7) ===== */
+.topbar.v3 { gap: 12px; }
+.topbar.v3 .barspacer { flex: 1; }
+.intent2 { display: inline-flex; background: var(--bg-alt); border: 1px solid var(--border);
+  border-radius: 9px; padding: 3px; gap: 2px; }
+.intent2 button { border: none; background: transparent; color: var(--text-muted);
+  font-family: var(--font-sans); font-size: 13px; font-weight: 650; padding: 5px 13px; border-radius: 6px;
+  cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+.intent2 button.on { background: var(--bg); color: var(--accent); box-shadow: var(--shadow-sm); }
+.bar-sep { width: 1px; height: 22px; background: var(--border); }
+/* collapsed inspector → a thin rail; preview reclaims the width (VR-4) */
+.workrow.insp-min { grid-template-columns: 1fr 46px; }
+.insp-rail { border-left: 1px solid var(--border); background: var(--bg); display: flex; flex-direction: column;
+  align-items: center; gap: 8px; padding: 10px 0; }
+.insp-rail .exp { width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center;
+  color: var(--text-body); border: 1px solid var(--border); background: var(--bg); }
+.insp-rail .ic { width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; color: var(--text-muted); }
+.insp-rail .vlabel { writing-mode: vertical-rl; rotate: 180deg; font-family: var(--font-mono); font-size: 10px;
+  letter-spacing: .12em; text-transform: uppercase; color: var(--text-muted); margin-top: 6px; }
+/* bigger preview slide in the reclaimed space */
+.preview.big .slide { max-width: 760px; }
+/* mobile v3: present is reached by the same Compose|Present toggle (VR-5) */
+.m-intent2 { display: inline-flex; background: var(--bg-alt); border: 1px solid var(--border);
+  border-radius: 9px; padding: 3px; gap: 2px; }
+.m-intent2 button { border: none; background: transparent; color: var(--text-muted); font-family: var(--font-sans);
+  font-size: 12px; font-weight: 650; padding: 5px 11px; border-radius: 6px; display: inline-flex; align-items: center; gap: 5px; }
+.m-intent2 button.on { background: var(--bg); color: var(--accent); box-shadow: var(--shadow-sm); }
