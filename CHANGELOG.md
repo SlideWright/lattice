@@ -58,6 +58,18 @@ in patch versions.
 
 ### Added
 
+- **Per-task interactive detail on the gantt chart (Tier-2 detail reveal).** A
+  nested bullet under a task (one level below the task — plain prose: the owner,
+  the blocker, the why) is now captured as that bar/milestone's reveal detail
+  (previously a deeper bullet had no meaning). On screen (Drawing Board
+  present/practice/preview) the bar/milestone reveals it in a popover on
+  hover/tap, with the active bar lifted + glowing and the rest dimmed
+  (reveal-only — no 3D tilt, which would skew the time axis); in the exported PDF
+  the same detail folds into the slide's speaker note. A chart with no detail
+  bullets is unchanged. Reuses the shared HTML-mark reveal path the state-chart
+  laid down (the tilt is now scoped to SVG sheets + the state-chart graph, so
+  HTML grids never tilt). See
+  `engineering/decisions/2026-06-20-chart-detail-reveal-family.md`.
 - **Per-state interactive detail on the state-chart (Tier-2 detail reveal).** A
   nested bullet under a state that is *not* a transition (plain prose — the
   entry/exit action, the rule, the "why") is now captured as that state's reveal

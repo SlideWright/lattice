@@ -187,3 +187,65 @@ describe('gantt linter — typed-token validation', () => {
     assert.ok(f.some((x) => x.rule === 'gantt-bad-span'));
   });
 });
+
+describe('gantt detail reveal — per-task HTML-mark path (#475)', () => {
+  // A task lane with two bars; only the first carries a nested prose bullet.
+  const ulDetail = `<ul><li>Engineering<ul>` +
+    `<li>API design <code>Q1..Q2</code> <code>done</code><ul><li>Owner: Platform team. Blocked on the schema RFC.</li></ul></li>` +
+    `<li>Build <code>Q2..Q3</code> <code>at-risk</code></li>` +
+    `</ul></li></ul>`;
+  const ulNone = `<ul><li>Engineering<ul>` +
+    `<li>API design <code>Q1..Q2</code> <code>done</code></li>` +
+    `<li>Build <code>Q2..Q3</code> <code>at-risk</code></li>` +
+    `</ul></li></ul>`;
+
+  test('every bar is tagged with a chart-wide 0-based data-mark', () => {
+    const out = buildGanttChart(inner(ulDetail), '');
+    const marks = [...out.matchAll(/class="gantt-bar"[^>]*\sdata-mark="(\d+)"/g)].map((m) => m[1]);
+    assert.deepEqual(marks, ['0', '1']);
+  });
+
+  test('a nested prose bullet becomes an inert detail template keyed to the bar mark', () => {
+    const out = buildGanttChart(inner(ulDetail), '');
+    // The detailed bar (mark 0) carries data-mark + an invisible data-label.
+    assert.match(out, /class="gantt-bar"[^>]*data-mark="0"[^>]*data-label="API design"/);
+    // Exactly one template, keyed to mark 0, in the sibling payload (not the figure).
+    const tpls = [...out.matchAll(/<template class="chart-detail" data-mark="(\d+)">/g)].map((m) => m[1]);
+    assert.deepEqual(tpls, ['0']);
+    assert.match(out, /<div class="chart-details" hidden><template[^>]*>.*Platform team/);
+  });
+
+  test('the payload is a SIBLING of .gantt-chart (not miscounted as a mark)', () => {
+    const out = buildGanttChart(inner(ulDetail), '');
+    // .chart-details opens AFTER .gantt-chart closes.
+    assert.ok(out.indexOf('class="chart-details"') > out.indexOf('</div>'));
+    assert.ok(/<\/div>(<!--[\s\S]*?-->)?$|chart-details/.test(out));
+  });
+
+  test('detail folds into a Marp-faithful speaker-note comment', () => {
+    const out = buildGanttChart(inner(ulDetail), '');
+    assert.match(out, /<!--[\s\S]*API design \(Q1–Q2\): Owner: Platform team[\s\S]*-->/);
+  });
+
+  test('byte-identical (no payload, no note) when no task carries detail', () => {
+    const out = buildGanttChart(inner(ulNone), '');
+    assert.ok(!out.includes('chart-details'));
+    assert.ok(!out.includes('<!--'));
+    // Marks are still tagged (invisible attrs) so the chart enumerates if any
+    // sibling slide authors detail — the attrs don't paint.
+    assert.equal([...out.matchAll(/\sdata-mark="\d+"/g)].length, 2);
+  });
+
+  test('a milestone is a mark too (data-mark on the diamond container)', () => {
+    const ul = `<ul><li>L<ul><li>Launch <code>Q4</code> <code>milestone</code><ul><li>Go/no-go gate.</li></ul></li></ul></li></ul>`;
+    const out = buildGanttChart(inner(ul), '');
+    assert.match(out, /class="gantt-milestone"[^>]*data-mark="0"/);
+    assert.match(out, /<template class="chart-detail" data-mark="0">/);
+  });
+
+  test('linter does not flag a detail bullet that ends in inline code', () => {
+    const d = deck('## P\n\n- Engineering\n  - API design `Q1..Q2` `done`\n    - Tracked in `PR #481`.');
+    const f = lintGantt(d);
+    assert.ok(!f.some((x) => x.rule === 'gantt-unknown-token'), `unexpected: ${JSON.stringify(f)}`);
+  });
+});

@@ -318,6 +318,27 @@ section.gantt.chart-frame .chart-body {
 }
 .gantt-milestone--end .gantt-diamond { transform: translateX(50%) rotate(45deg); }
 
+/* ── Active mark (reveal hover/tap) ──────────────────────────────────────────
+ * The shared HTML-mark reveal layer toggles .chart-mark-active on the focused
+ * bar / milestone (it dims the rest via inline opacity). gantt is reveal-only —
+ * NO 3D tilt (that would skew the time axis) — so the focus cue is a subtle lift
+ * + a hue glow drawn from the mark's OWN --fill-ink, so the cue reads as the same
+ * family as the mark it lifts. Bars position via left/width so transform is free;
+ * the milestone glow rides the DIAMOND so the container's positioning transform
+ * (incl. --end's translateX) is never disturbed. */
+.gantt-bar.chart-mark-active {
+  transform: translateY(-1.5px) scale(1.012);  /* sanctioned: small fixed focus lift, hairline-scale */
+  box-shadow: 0 0.4cqi 1.4cqi color-mix(in oklab, var(--fill-ink) 36%, transparent);
+  z-index: 3;
+}
+.gantt-milestone.chart-mark-active .gantt-diamond {
+  transform: translateX(-50%) rotate(45deg) scale(1.22);
+  box-shadow: 0 0 0 0.4cqi color-mix(in oklab, var(--fill-ink) 26%, transparent);
+}
+.gantt-milestone--end.chart-mark-active .gantt-diamond {
+  transform: translateX(50%) rotate(45deg) scale(1.22);
+}
+
 /* ── Box-local portrait reflow (tall/narrow box) ─────────────────────────────
  * A gantt is a horizontal time axis, so it can't "switch direction" — but it IS
  * HTML/CSS (not a baked SVG), so it reflows box-locally. On a tall box the

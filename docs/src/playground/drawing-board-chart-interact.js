@@ -63,7 +63,7 @@ export function createChartInteract({ stage, getFrame, tilt = true, onReveal, ho
   // payload, or its <template data-mark> would be miscounted as a mark — the
   // kernels emit the payload as a sibling). See
   // engineering/decisions/2026-06-20-chart-detail-reveal-family.md.
-  const CHART_SVG_SEL = '.piechart-svg, .funnel-svg, .map-svg, .quadrant-svg, .radar-svg, .state-chart-figure';
+  const CHART_SVG_SEL = '.piechart-svg, .funnel-svg, .map-svg, .quadrant-svg, .radar-svg, .state-chart-figure, .gantt-chart';
   const DETAILS_SEL = '.chart-details';
   const TPL_SEL = 'template.chart-detail';
   const MARK_SEL = '[data-mark]';
@@ -137,13 +137,28 @@ export function createChartInteract({ stage, getFrame, tilt = true, onReveal, ho
       value = textOf('.chart-key-value', i);
     }
     const swatch = curSection?.querySelectorAll('.chart-key-swatch')[i];
-    let dot = 'currentColor';
+    // A usable swatch colour — reject the SVG `fill` INITIAL (black) that an HTML
+    // box computes to, plus transparents, so an HTML mark never shows a stray
+    // black dot. Returns null when there's no real colour (→ the dot is hidden).
+    const usable = (c) => (c && c !== 'none' && c !== 'transparent' && c !== 'rgba(0, 0, 0, 0)') ? c : null;
+    let dot = null;
     try {
       if (swatch) {
-        dot = (swatch.ownerDocument?.defaultView || window).getComputedStyle(swatch).fill;
+        dot = usable((swatch.ownerDocument?.defaultView || window).getComputedStyle(swatch).fill) || 'currentColor';
       } else if (el) {
         const cs = (el.ownerDocument?.defaultView || window).getComputedStyle(el);
-        dot = cs.fill && cs.fill !== 'none' ? cs.fill : (cs.stroke || 'currentColor');
+        dot = typeof el.getBBox === 'function'
+          // SVG mark — fill (or stroke) IS the wedge colour.
+          ? (usable(cs.fill) || usable(cs.stroke) || 'currentColor')
+          // HTML mark (gantt bar, state node): `fill` is the SVG initial (black)
+          // on an HTML box — useless. These paint their status via the canonical
+          // chart fill, whose --fill-ink shows as the left ACCENT BORDER; read
+          // that resolved colour — but only when a left border actually exists
+          // (borderLeftColor otherwise computes to currentColor, never
+          // transparent). A mark with no accent (e.g. a milestone diamond
+          // container) returns null → the dot is hidden, not a dark blob.
+          : (cs.borderLeftStyle !== 'none' && parseFloat(cs.borderLeftWidth) > 0
+              ? usable(cs.borderLeftColor) : null);
       }
     } catch { /* cross-doc / detached */ }
     return { label, value, dot };
@@ -243,7 +258,8 @@ export function createChartInteract({ stage, getFrame, tilt = true, onReveal, ho
     // engineering/decisions/2026-06-21-chart-reveal-lean-tooltip.md.
     pop.classList.toggle('db-pp-chartpop--lean', !body && !meta);
     pop.innerHTML =
-      `<div class="db-pp-chartpop-h"><span class="db-pp-chartpop-dot" style="background:${dot}"></span>` +
+      `<div class="db-pp-chartpop-h">` +
+      (dot ? `<span class="db-pp-chartpop-dot" style="background:${dot}"></span>` : '') +
       `<span class="db-pp-chartpop-l">${label}</span>` +
       (value ? `<span class="db-pp-chartpop-v">${value}</span>` : '') + `</div>` +
       (body ? `<p>${body}</p>` : '') + (meta ? `<div class="db-pp-chartpop-m">${meta}</div>` : '');
@@ -326,13 +342,18 @@ export function createChartInteract({ stage, getFrame, tilt = true, onReveal, ho
       w.style.transition = 'transform .22s cubic-bezier(.2,.7,.3,1), opacity .22s';
       w.style.opacity = active ? '1' : '0.45';
       w.style.transform = active ? liftVec(w, wedges) : '';
+      // CSS emphasis hook — lets a chart style its active mark (the gantt bar
+      // lift/glow) without the reveal layer hard-coding per-chart visuals.
+      w.classList?.toggle('chart-mark-active', active);
     });
-    // Skip the 3D tilt on a flat HTML chip strip (state-chart inline/horizontal):
-    // a rotateX on a flat row reads as a skew, not a deliberate tip. SVG sheets
-    // and the node+edge graph (state-chart default variant) tilt as intended —
-    // the edge-router skips re-measuring while this transform is live (see
-    // state-chart.transform.js draw()), so the edges tilt rigidly and stay aligned.
-    if (useTilt && chartEl.getAttribute?.('data-variant') !== 'inline') {
+    // 3D tilt: SVG sheets (pie/funnel/…) + the state-chart node+edge graph only.
+    // HTML grids (gantt/kanban) must NOT tilt — a rotateX would skew the time axis —
+    // and the flat state-chart inline strip skips it (a rotateX on a flat row reads
+    // as skew). The state-chart edge-router skips re-measuring while the transform
+    // is live (state-chart.transform.js draw()), so its edges tilt rigidly + aligned.
+    const tiltable = typeof chartEl.getBBox === 'function'
+      || (chartEl.classList?.contains('state-chart-figure') && chartEl.getAttribute('data-variant') !== 'inline');
+    if (useTilt && tiltable) {
       chartEl.style.transition = 'transform .3s cubic-bezier(.2,.7,.3,1)';
       chartEl.style.transformOrigin = '50% 55%';
       chartEl.style.transform = 'perspective(900px) rotateX(7deg)';
@@ -340,18 +361,21 @@ export function createChartInteract({ stage, getFrame, tilt = true, onReveal, ho
   }
 
   // Nudge the active wedge a few px along its centroid→hub vector (its "out").
-  // HTML marks (Tier-2: state-chart nodes) have no getBBox and no meaningful
-  // centroid-out. A scale() would swell the node ALONG the flow into its
-  // neighbours + edge labels, so instead lift it PERPENDICULAR to the flow — the
-  // node steps off the wire cleanly. lr (horizontal flow) → up; tb (vertical
-  // flow) → right. offsetHeight is the node's slide-space height (immune to the
-  // Drawing Board's fit-scale), so the lift stays proportional on a scaled-down
-  // mobile slide. The edges don't re-route while tilted (router guard), so a
-  // small gap opens under the lifted node — reads as "stepping out".
+  // HTML marks: the state-chart node lifts PERPENDICULAR to the flow (it carries
+  // data-sc-dir) — lr → up, tb → right — so it steps off its wire cleanly instead
+  // of a scale() swelling it into its neighbours/edge labels. offsetHeight is the
+  // node's slide-space height (immune to the Drawing Board's fit-scale), so the
+  // lift stays proportional on a scaled-down mobile slide; the edges don't
+  // re-route while tilted (router guard), so a small gap reads as "stepping out".
+  // Other HTML charts (gantt bars) get NO inline transform here — their active-mark
+  // emphasis is a CSS class (.chart-mark-active), so the bar's --gantt-x/--gantt-w
+  // positioning is never disturbed.
   function liftVec(w, wedges) {
     if (typeof w.getBBox !== 'function') {
+      const dir = chartEl?.getAttribute?.('data-sc-dir');
+      if (!dir) return '';
       const d = (w.offsetHeight || 28) * 0.4;
-      return chartEl?.getAttribute('data-sc-dir') === 'lr'
+      return dir === 'lr'
         ? `translateY(${(-d).toFixed(1)}px)`
         : `translateX(${d.toFixed(1)}px)`;
     }
@@ -372,7 +396,7 @@ export function createChartInteract({ stage, getFrame, tilt = true, onReveal, ho
     openSlice = -1;
     stopPop();
     pop.classList.remove('show');
-    markEls().forEach((w) => { w.style.opacity = ''; w.style.transform = ''; });
+    markEls().forEach((w) => { w.style.opacity = ''; w.style.transform = ''; w.classList?.remove('chart-mark-active'); });
     if (chartEl) chartEl.style.transform = '';
   }
 
