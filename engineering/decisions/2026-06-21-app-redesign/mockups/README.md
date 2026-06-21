@@ -1,24 +1,53 @@
-# Studio redesign — mockups
+# Studio redesign — mockups (v1 + v2)
 
-High-fidelity visual specs for `../../2026-06-21-app-redesign.md`. Built from the
-**real** Lattice indaco tokens (mirrored from
-`docs/src/styles/lattice-tokens.generated.css`) + Outfit / JetBrains Mono +
-lucide-style icons, so palette, type, and density are faithful — not shipped code.
+High-fidelity visual specs for [`../../2026-06-21-app-redesign.md`](../../2026-06-21-app-redesign.md).
+Built from the **real** Lattice indaco tokens (mirrored from
+`docs/src/styles/lattice-tokens.generated.css`) + the real type stack — Outfit
+(body), Playfair Display (wordmark), JetBrains Mono (code) — and lucide-style
+icons, so palette, type, and density are faithful. **These are zero-behavior
+visual specs, not shipped code** (PM-12) — the real surfaces carry ~30 modules of
+state behind these pictures.
 
-## Rebuild
+## v1 vs v2 — what differs (it's only the shell chrome)
+
+Two options for the intent switch (the open fork **PM-5**). **Only the chrome that
+switches intents and carries the brand differs** — the editor, live preview, Deck
+Inspector, Architect, and every other surface are identical between the two.
+
+| | **v1 — Activity rail** (`v1-rail/`) | **v2 — Top tabs** (`v2-tabs/`, recommended) |
+|---|---|---|
+| Intent switch | Left vertical rail, 66px, icon + label (VS Code-like) | Horizontal top tabs with an underline (lighter, web-like) |
+| Header | One bar (rail + a single AppBar) | Two rows: global topbar (brand · tabs · chrome) + a context bar (deck switcher · intent actions) |
+| Brand | Small “L” tile on the rail | Playfair “Lattice” wordmark + an account avatar |
+| Left-edge cost | Permanent 66px rail | 0px — the work area reaches the edge |
+| Scales to more intents | Better (holds 6+) | Fine for 3; crowds past ~5 |
+| Everything else | — identical — | — identical — |
+
+See [`compare/compare-compose.png`](./compare/compare-compose.png) for the
+annotated side-by-side. **The red-team (PM-5) recommends v2 / top-tabs**: for three
+intents a rail copies the VS Code *look* without the load that justifies its tax.
+Keep v1 / the rail only if a 4th/5th intent is foreseen.
+
+## The screens (v2-tabs is the current recommendation)
+
+| File | Shows |
+|---|---|
+| `compose` | Architect aside · editor + live preview · Deck Inspector (Look / Read / **Lenses**) |
+| `fabricate` | **Workbench / Theme Studio** — pick 4 core colours → engine-derived 18-token contract → live WCAG audit → live specimen + auto dark *(v2 only)* |
+| `present` | the reader — **read-aloud with synchronized highlight**, reader-facing **lens switch**, play/scrub dock (dark) |
+| `share` | the Share sheet — hand off the **deck** vs hand off the **source** (both print targets) |
+| `settings` | **Workspace Settings** (“your setup”) — tier · OpenRouter · spend/budget — distinct from the deck Inspector (“this deck”) |
+| `mobile` | mobile Compose — bottom intent bar · pane tabs · icon-only chrome (390px) |
+
+## Rebuild (`src/`)
 
 ```bash
-node build.js            # assembles *.body.html → *.html (inlines the shared sprite + head)
-# then screenshot from the repo root:
-node tools/screenshot.js "file://$PWD/engineering/decisions/2026-06-21-app-redesign/mockups/compose.html" out.png --width 1440 --height 900 --delay 1300
+cd src
+node build.js   # assembles *.body.html → *.html (inlines the shared sprite + head)
+# then screenshot from the repo root, e.g. the v2 Compose:
+node tools/screenshot.js "file://$PWD/engineering/decisions/2026-06-21-app-redesign/mockups/src/compose.html" out.png --width 1440 --height 900 --delay 1500
 ```
 
-| Page | Shows |
-|---|---|
-| `compose` | rail · slotted AppBar · Architect aside · editor + preview · Deck Inspector (Look / Read / Lenses) |
-| `present` | reader: read-aloud with synchronized highlight · reader-facing lens switch · play/scrub dock (dark) |
-| `share`   | Share sheet — hand off the deck vs hand off the source (both print targets) |
-| `settings`| Workspace Settings ("your setup") — tier · OpenRouter · spend/budget |
-| `mobile`  | mobile Compose — bottom intent bar · pane tabs · icon-only chrome (390px) |
-
-Pre-rendered PNGs in `shots/`.
+`src/` produces **both** shells: `compose.body.html` is the v2 top-tabs version;
+`compose-rail.body.html` is the v1 rail version. The v1 `present/share/settings`
+shots predate the tab refactor and are kept as the rail reference.

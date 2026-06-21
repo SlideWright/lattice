@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en" data-mode="light">
+<head>
+<meta charset="utf-8"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Playfair+Display:wght@800&display=swap" rel="stylesheet"/>
+<style>
+  :root{--bg:#FFFFFF;--alt:#F2F5FA;--bd:#E4EAF2;--h:#0A1628;--b:#1E3A5F;--m:#6B7F9A;--ac:#006FA8;--soft:#EFF6FC;--cat2:#9C3F00}
+  *{box-sizing:border-box} body{margin:0;background:var(--alt);font-family:'Outfit',sans-serif;color:var(--b);padding:34px 38px}
+  .wm{font-family:'Playfair Display',serif;font-weight:800;color:var(--ac)}
+  h1{font-size:30px;color:var(--h);margin:0 0 4px;letter-spacing:-.01em}
+  .sub{font-size:15px;color:var(--m);margin:0 0 26px;max-width:90ch}
+  .row{display:flex;gap:28px;align-items:flex-start}
+  .card{flex:1;background:var(--bg);border:1px solid var(--bd);border-radius:16px;padding:16px;box-shadow:0 8px 24px rgba(10,22,40,.08)}
+  .badge{display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:14px;margin-bottom:12px;padding:5px 12px;border-radius:999px}
+  .badge.v1{background:var(--soft);color:var(--ac);border:1px solid #cfe4f2}
+  .badge.v2{background:var(--ac);color:#fff}
+  .badge .tag{font-family:'JetBrains Mono',monospace;font-size:11px;opacity:.8}
+  .shot{position:relative;width:680px;max-width:100%;border-radius:10px;overflow:hidden;border:1px solid var(--bd)}
+  .shot img{display:block;width:100%;height:auto}
+  .hl{position:absolute;border:3px solid var(--cat2);border-radius:8px;box-shadow:0 0 0 3px rgba(255,255,255,.6)}
+  .hl .pin{position:absolute;top:-12px;left:-12px;width:24px;height:24px;border-radius:50%;background:var(--cat2);color:#fff;font-weight:800;font-size:13px;display:grid;place-items:center;font-family:'Outfit'}
+  .cap{font-size:12.5px;color:var(--m);margin-top:10px;font-family:'JetBrains Mono',monospace}
+  .cap b{color:var(--cat2)}
+  table{width:100%;border-collapse:collapse;margin-top:30px;background:var(--bg);border:1px solid var(--bd);border-radius:14px;overflow:hidden}
+  th,td{text-align:left;padding:13px 16px;font-size:14px;border-bottom:1px solid var(--bd);vertical-align:top}
+  th{background:var(--alt);font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--m);font-family:'JetBrains Mono',monospace}
+  td:first-child{font-weight:700;color:var(--h);width:200px}
+  td .v1c{color:var(--ac);font-weight:600}
+  td .v2c{color:var(--cat2);font-weight:600}
+  tr:last-child td{border-bottom:none}
+  .note{margin-top:22px;padding:14px 18px;background:var(--soft);border:1px solid #cfe4f2;border-radius:12px;font-size:14px;color:var(--b)}
+  .note b{color:var(--h)}
+</style>
+</head>
+<body>
+  <h1><span class="wm">Lattice</span> Studio mockups — v1 vs v2: what changed</h1>
+  <p class="sub">Same screen (Compose), two shell options for the open fork (PM-5). <b>Only the chrome that switches intents and carries the brand differs</b> — the editor, live preview, Deck Inspector, and every other surface are identical between v1 and v2.</p>
+
+  <div class="row">
+    <div class="card">
+      <span class="badge v1">v1 — Activity rail <span class="tag">first pass</span></span>
+      <div class="shot">
+        <img src="./shots/compose-rail.png" alt="v1 rail"/>
+        <div class="hl" style="left:0;top:0;width:33px;height:437px"><span class="pin">1</span></div>
+      </div>
+      <div class="cap"><b>1</b> Intent switch = vertical <b>left rail</b> (66px, icon + label). One top bar.</div>
+    </div>
+
+    <div class="card">
+      <span class="badge v2">v2 — Top tabs <span class="tag">recommended</span></span>
+      <div class="shot">
+        <img src="./shots/compose.png" alt="v2 tabs"/>
+        <div class="hl" style="left:46px;top:2px;width:196px;height:46px"><span class="pin">1</span></div>
+        <div class="hl" style="left:0;top:50px;width:680px;height:33px;border-color:var(--ac)"><span class="pin" style="background:var(--ac)">2</span></div>
+      </div>
+      <div class="cap"><b>1</b> Intent switch = horizontal <b>top tabs</b> · <span style="color:var(--ac)"><b>2</b> a second “context” row</span> for the deck + its actions.</div>
+    </div>
+  </div>
+
+  <table>
+    <tr><th>Aspect</th><th>v1 — Activity rail</th><th>v2 — Top tabs (recommended)</th></tr>
+    <tr><td>Intent switch</td><td><span class="v1c">Left vertical rail</span>, 66px, icon + label (VS Code-like)</td><td><span class="v2c">Horizontal tabs</span> with an underline (lighter, web-like)</td></tr>
+    <tr><td>Header structure</td><td>One bar: rail + a single AppBar holding everything</td><td>Two rows: a global topbar (brand · tabs · chrome) + a context bar (deck switcher · intent actions)</td></tr>
+    <tr><td>Brand</td><td>Small <span class="v1c">“L” tile</span> at the rail top</td><td><span class="v2c">Playfair “Lattice” wordmark</span> + an account avatar</td></tr>
+    <tr><td>Left-edge cost</td><td>Permanent <span class="v1c">66px</span> rail tax</td><td><span class="v2c">0px</span> — work area reaches the left edge</td></tr>
+    <tr><td>Scales to more intents</td><td>Better (a rail can hold 6+)</td><td>Fine for 3; crowds past ~5</td></tr>
+    <tr><td>Everything else</td><td colspan="2" style="text-align:center;color:var(--m)">Identical — editor · live preview · Deck Inspector · Architect · Present · Share · Workspace Settings · mobile</td></tr>
+  </table>
+
+  <div class="note"><b>The decision (fork PM-5):</b> the red-team recommends <b>v2 / top-tabs</b> — for three intents a rail copies the VS Code <i>look</i> without the load that justifies its 66px tax. Keep v1 / the rail only if you foresee a 4th/5th intent. Your call.</div>
+</body>
+</html>

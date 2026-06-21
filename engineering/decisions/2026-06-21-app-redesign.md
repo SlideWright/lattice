@@ -266,23 +266,29 @@ click-minimizer: power users never touch a toolbar.
 
 ## 2.4 Mockups (high-fidelity — real tokens, real type)
 
-Five clickable-looking mockups render the model with the **actual** indaco
-palette tokens (from `lattice-tokens.generated.css`), the real Outfit /
-JetBrains Mono type, and lucide-style icons — so the palette, hierarchy, and
-density are faithful, not approximated. Source + builder live in
-[`2026-06-21-app-redesign/mockups/`](./2026-06-21-app-redesign/mockups/);
-rendered PNGs in `mockups/shots/`.
+High-fidelity mockups render the model with the **actual** indaco palette tokens
+(from `lattice-tokens.generated.css`) and the real type stack (Outfit · Playfair
+Display wordmark · JetBrains Mono) + lucide-style icons — faithful, not
+approximated. They come in **two shell options** for the intent switch (fork
+PM-5): **v1 — activity rail** ([`mockups/v1-rail/`](./2026-06-21-app-redesign/mockups/v1-rail/))
+and **v2 — top tabs** ([`mockups/v2-tabs/`](./2026-06-21-app-redesign/mockups/v2-tabs/),
+**recommended**). Only the intent-switch/brand chrome differs; every work surface
+is identical. The annotated diff:
+[`compare/compare-compose.png`](./2026-06-21-app-redesign/mockups/compare/compare-compose.png).
+Full index + rebuild steps: [`mockups/README.md`](./2026-06-21-app-redesign/mockups/README.md).
 
-| Mockup | Shows | Width / mode |
+| Mockup (v2-tabs) | Shows | Width / mode |
 |---|---|---|
-| [`compose.png`](./2026-06-21-app-redesign/mockups/shots/compose.png) | Compose: rail · slotted AppBar · Architect aside · editor + preview · Deck Inspector (Look / Read / **Lenses**) | 1440 · light |
-| [`present.png`](./2026-06-21-app-redesign/mockups/shots/present.png) | Present: the reader — **read-aloud with synchronized highlight**, reader-facing **lens switch**, the play/scrub dock | 1440 · dark |
-| [`share.png`](./2026-06-21-app-redesign/mockups/shots/share.png) | The Share sheet: **hand off the deck** (Present link · PDF · PPTX · Print deck) vs **hand off the source** (Markdown · Marp bundle · **Print source**) | 1440 · light |
-| [`settings.png`](./2026-06-21-app-redesign/mockups/shots/settings.png) | Workspace Settings ("your setup"): generation tier · OpenRouter connect · spend + budget — distinct from the deck Inspector ("this deck") | 1440 · light |
-| [`mobile.png`](./2026-06-21-app-redesign/mockups/shots/mobile.png) | Mobile Compose: bottom intent bar · Edit/Preview pane tabs · icon-only chrome | 390 · light |
+| [`compose.png`](./2026-06-21-app-redesign/mockups/v2-tabs/compose.png) | Compose: top-tab intents · context bar · Architect aside · editor + preview · Deck Inspector (Look / Read / **Lenses**) | 1440 · light |
+| [`fabricate.png`](./2026-06-21-app-redesign/mockups/v2-tabs/fabricate.png) | Fabricate (Workbench): Theme Studio — 4 core colours → 18-token derived contract → live WCAG audit → live specimen + auto dark | 1440 · light |
+| [`present.png`](./2026-06-21-app-redesign/mockups/v2-tabs/present.png) | Present: the reader — **read-aloud with synchronized highlight**, reader-facing **lens switch**, the play/scrub dock | 1440 · dark |
+| [`share.png`](./2026-06-21-app-redesign/mockups/v2-tabs/share.png) | The Share sheet: **hand off the deck** (Present link · PDF · PPTX · Print deck) vs **hand off the source** (Markdown · Marp bundle · **Print source**) | 1440 · light |
+| [`settings.png`](./2026-06-21-app-redesign/mockups/v2-tabs/settings.png) | Workspace Settings ("your setup"): generation tier · OpenRouter connect · spend + budget — distinct from the deck Inspector ("this deck") | 1440 · light |
+| [`mobile.png`](./2026-06-21-app-redesign/mockups/v2-tabs/mobile.png) | Mobile Compose: bottom intent bar · Edit/Preview pane tabs · icon-only chrome | 390 · light |
 
-These are *visual specs*, not shipped code — but they are built from the real
-token bridge, so Win 1 inherits the exact palette + type the mockups show.
+These are *visual specs* (zero behavior, PM-12), not shipped code — but they are
+built from the real token bridge, so Win 1 inherits the exact palette + type they
+show.
 
 ## 3. The chrome contract — the `StudioShell`
 
@@ -734,4 +740,10 @@ merge-authorization gate (CLAUDE.md), then post the standup.
   reference moved in-PR) + honoring what past decisions/names encoded; the OAuth
   callback path (PM-8) stays immovable. §0 gains a pre-GA context note; PM-9 / RD3 /
   PM-I / Win 1 / §13-4 reworded.
-- _pending_ — Author approval (per PM-2, of **Win 0 only**).
+- 2026-06-21 — **Mockups v2 + v1/v2 organisation (author: "I love it").** Refreshed
+  the set to the recommended **top-tab** shell (Playfair wordmark + avatar; PM-5),
+  added the missing **Fabricate / Theme Studio** screen, and kept the **v1 rail**
+  set for the open fork. Reorganised `mockups/` into `v1-rail/`, `v2-tabs/`,
+  `compare/` (annotated side-by-side), and `src/` (rebuildable); §2.4 repointed.
+- _pending_ — Author approval (per PM-2, of **Win 0 only**); intent-switch shell
+  (v1 rail vs v2 tabs, fork PM-5) still to confirm.

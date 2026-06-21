@@ -326,3 +326,55 @@ body {
 .m-bottom .mi { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
   color: var(--text-muted); font-size: 10px; font-weight: 600; }
 .m-bottom .mi.on { color: var(--accent); }
+
+/* ===== Recommended shell: two-row top-tab header (no rail) — PM-5 ===== */
+.sframe { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+.topbar { height: 52px; flex: 0 0 auto; display: flex; align-items: center; gap: 16px;
+  padding: 0 18px; border-bottom: 1px solid var(--border);
+  background: color-mix(in srgb, var(--bg) 92%, transparent); }
+.brand2 { display: inline-flex; align-items: center; gap: 9px; text-decoration: none; }
+.brand2 .logo { width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center;
+  background: var(--accent); color: var(--on-accent); font-weight: 800; font-size: 16px; font-family: var(--font-sans); }
+.brand2 .wm { font-family: 'Playfair Display', Georgia, serif; font-weight: 800; font-size: 20px;
+  color: var(--text-heading); letter-spacing: -.01em; }
+.itabs { display: flex; align-items: stretch; gap: 2px; height: 100%; margin-left: 6px; }
+.itab { position: relative; border: none; background: transparent; cursor: pointer;
+  font-family: var(--font-sans); font-weight: 650; font-size: 14px; color: var(--text-muted);
+  padding: 0 15px; display: inline-flex; align-items: center; gap: 7px; }
+.itab:hover { color: var(--text-body); }
+.itab.on { color: var(--accent); }
+.itab.on::after { content: ""; position: absolute; left: 11px; right: 11px; bottom: -1px;
+  height: 2.5px; border-radius: 3px 3px 0 0; background: var(--accent); }
+.avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--surface-inverse);
+  color: #fff; display: grid; place-items: center; font-weight: 700; font-size: 12px; font-family: var(--font-sans); }
+.ctxbar { height: 50px; flex: 0 0 auto; display: flex; align-items: center; gap: 12px;
+  padding: 0 16px; border-bottom: 1px solid var(--border); background: var(--bg-alt); }
+.ctxbar .grow { flex: 1; }
+.workrow { flex: 1; display: grid; grid-template-columns: 1fr var(--inspector-w); min-height: 0; min-width: 0; }
+.workrow.no-inspector { grid-template-columns: 1fr; }
+.insp-toggle { display: inline-flex; align-items: center; gap: 6px; }
+
+/* ===== Fabricate (Workbench) — Theme Studio ===== */
+.fab { display: grid; grid-template-columns: 340px 1fr; min-height: 0; min-width: 0; }
+.fab-panel { border-right: 1px solid var(--border); overflow: auto; background: var(--bg); }
+.fab-panel .pane-head { position: sticky; top: 0; background: var(--bg); z-index: 1; }
+.fab-sec { padding: 14px 16px; border-bottom: 1px solid var(--border); }
+.fab-sec .gh { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em;
+  color: var(--text-muted); font-family: var(--font-mono); margin-bottom: 12px; display: flex; align-items: center; gap: 7px; }
+.color-row { display: flex; align-items: center; gap: 11px; margin: 10px 0; }
+.color-row .chip { width: 30px; height: 30px; border-radius: 8px; border: 1px solid var(--border); flex: 0 0 auto; }
+.color-row .cl { font-size: 12.5px; color: var(--text-heading); font-weight: 600; flex: 1; }
+.color-row .hex { font-family: var(--font-mono); font-size: 12px; color: var(--text-muted);
+  border: 1px solid var(--border); border-radius: 6px; padding: 3px 8px; }
+.derived { display: flex; flex-wrap: wrap; gap: 6px; }
+.derived .d { width: 26px; height: 26px; border-radius: 6px; border: 1px solid var(--border); }
+.audit-row { display: flex; align-items: center; gap: 9px; margin: 8px 0; font-size: 12.5px; color: var(--text-body); }
+.audit-row .ic { width: 18px; height: 18px; border-radius: 5px; display: grid; place-items: center;
+  background: color-mix(in srgb, var(--cat3) 18%, transparent); color: var(--cat3); flex: 0 0 auto; }
+.audit-row .ratio { margin-left: auto; font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); }
+.audit-row .pill { font-family: var(--font-mono); font-size: 10px; font-weight: 700; color: var(--cat3);
+  border: 1px solid color-mix(in srgb, var(--cat3) 35%, transparent); border-radius: 999px; padding: 1px 7px; }
+.fab-preview { padding: 26px; background: var(--bg-alt); overflow: auto; display: flex; flex-direction: column;
+  align-items: center; gap: 16px; }
+.fab-preview .cap { font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--text-muted); align-self: flex-start; }
