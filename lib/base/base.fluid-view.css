@@ -1,0 +1,92 @@
+/* Fluid-box viewer mode — opt-in responsive *viewing* of a fixed deck.
+ *
+ * INERT BY DEFAULT. Every rule is gated on `:root[data-lattice-view="fluid"]`,
+ * a marker that ONLY the fluid viewer sets (lattice-emulator `--fluid` flags the
+ * page capable; the runtime's fluid controller sets the attribute). No normal
+ * deck, gallery, or export render ever sets it, so this block never matches and
+ * cannot regress an existing render. Design + decisions:
+ * engineering/decisions/2026-06-21-fluid-box-viewer-design.md.
+ *
+ * Mechanism: unpin the section from the authored fixed px box — the emulator
+ * emits `section[data-lattice-slide]{width/height:<px> !important}` — to a
+ * viewport-filling, vertical scroll-snap box. That box change is the WHOLE
+ * trigger: the runtime then re-derives orientation from the measured box (now
+ * portrait on a phone) and every `@container` reflow + the portrait type scale
+ * fire from the already-shipped machinery (lib/runtime/index.js). No engine
+ * transform changes.
+ *
+ * Cascade: per engineering/cascade.md the entire bundle is UNLAYERED, so the
+ * `@layer` declaration is inert and specificity alone decides. These selectors
+ * (`:root[…] section[data-lattice-slide]`, 0,3,1) outrank the emulator's inline
+ * `section[data-lattice-slide]` (0,1,1) and carry `!important` to match its
+ * importance — exactly the resolution the throwaway prototype confirmed on a
+ * real render. Do NOT wrap this file in `@layer` (the documented trap). */
+
+/* The deck root becomes a vertical scroll-snap scroller: one slide per screen,
+ * swipe/snap down to the next (reading model locked in the design). */
+:root[data-lattice-view="fluid"] body {
+  margin: 0 !important;
+  height: 100dvh;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scroll-snap-type: y mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Each slide fills the viewport and is a snap stop. `dvh`/`svh` ride the mobile
+ * browser's disappearing URL bar so a slide neither clips nor jumps as it hides. */
+:root[data-lattice-view="fluid"] section[data-lattice-slide] {
+  width: 100dvw !important;
+  height: 100dvh !important;
+  min-height: 100svh;
+  margin: 0 !important;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  /* Sparse content sits as a centred block rather than stretched edge-to-edge in
+   * the tall box (the "airy" finding from the prototype — design §8). Over-dense
+   * content overflows and clips: the documented keystone limitation that the
+   * later autofit / re-pagination capabilities address. */
+  justify-content: center;
+}
+
+/* Stop the slide's own content blocks (grids, lists, stat rows) from growing to
+ * fill the over-tall box, so a light slide stays compact and centred. Full-bleed
+ * media (figures/images) opts back in to filling, just below. */
+:root[data-lattice-view="fluid"] section[data-lattice-slide]
+  > :not(header):not(footer):not(figure):not(img):not(picture):not(svg) {
+  flex-grow: 0 !important;
+}
+
+/* Full-bleed media should still fill the fluid box. */
+:root[data-lattice-view="fluid"] section[data-lattice-slide]
+  > :is(figure, img, picture, svg) {
+  flex-grow: 1 !important;
+}
+
+/* The fixed-page background canvas is sized to the px box; hide it so each
+ * section's own themed background fills the fluid box edge to edge. */
+:root[data-lattice-view="fluid"] .lattice-bg { display: none !important; }
+
+/* The opt-in toggle the runtime injects on a fluid-capable page (lib/runtime/
+ * index.js → initFluidView). Ungated: it shows in both fixed and fluid states so
+ * the reader can switch back. It only exists on a fluid viewer, so the id never
+ * matches elsewhere. Palette-blind via tokens (HARD #3 — no hex). */
+#lattice-fluid-toggle {
+  position: fixed;
+  top: max(0.5rem, env(safe-area-inset-top));
+  right: max(0.5rem, env(safe-area-inset-right));
+  z-index: 2147483000;
+  padding: 0.5rem 0.85rem;
+  border: 0;
+  border-radius: 999px;
+  font: 600 0.8rem/1 var(--font-body, system-ui, sans-serif);
+  color: var(--bg);
+  background: var(--text-body);
+  box-shadow: 0 0.125rem 0.5rem rgb(0 0 0 / 0.35);
+  opacity: 0.82;
+  cursor: pointer;
+  -webkit-backdrop-filter: blur(0.375rem);
+  backdrop-filter: blur(0.375rem);
+}
+#lattice-fluid-toggle:hover,
+#lattice-fluid-toggle:focus-visible { opacity: 1; }

@@ -53,6 +53,22 @@ in patch versions.
   while the tilt is live, so the routed edges stay aligned even when the Drawing
   Board scales the slide to fit). See
   `engineering/decisions/2026-06-20-chart-detail-reveal-family.md`.
+
+- **Fluid-box viewer mode — read a fixed deck responsively on a phone.** A new
+  `lattice-emulator … --fluid` flag emits the deck's `.html` as an opt-in
+  *viewer*: each slide sizes to the viewport instead of the authored fixed box,
+  so on a phone it reflows to portrait — one slide per screen, vertical
+  swipe/snap, the recurated portrait type scale and every component's tall layout
+  firing from the already-shipped runtime. A pill toggles back to the authored
+  fixed deck (the default on a laptop; `?view=fluid`/`#fluid` forces it). The
+  mode is **additive and export-safe**: the PDF and the canonical (non-`--fluid`)
+  export HTML are byte-unchanged, and the fluid CSS (`lib/base/base.fluid-view.css`)
+  is inert until the viewer sets `:root[data-lattice-view="fluid"]`. Known limit
+  for this first slice: a slide that overpacks a phone screen can still overflow
+  (autofit / re-pagination are sequenced follow-ups). Demo: `examples/fluid-box.md`
+  (generate the viewer with `--fluid`). See
+  `engineering/decisions/2026-06-21-fluid-box-viewer-design.md`.
+
 - **Per-mark interactive detail on funnel, map, quadrant, and radar charts** —
   the pie's authored-detail pattern, generalized into a shared chart-family
   substrate (`mark-detail.js`) and a chart-agnostic reveal layer. Author an

@@ -107,6 +107,10 @@ OPTIONS
                           (<output>.notes.txt), one block per slide
       --notes-icon        Show a clickable sticky-note icon on each slide with
                           a note (default: notes are embedded but hidden)
+      --fluid             Emit the .html as the opt-in fluid-box VIEWER: each
+                          slide fills the viewport and reflows to portrait on a
+                          phone (swipe between slides), with a toggle back to the
+                          fixed deck. PDF/PPTX/PNG outputs are unchanged.
 
   Both --flag value and --flag=value syntax accepted. Positional args still
   work; named flags take precedence when both are supplied.
@@ -174,6 +178,7 @@ function parseArgs(argv) {
     if (a === '-q' || a === '--quiet') { flags.quiet = true; continue; }
     if (a === '--notes') { flags.notes = true; continue; }
     if (a === '--notes-icon') { flags['notes-icon'] = true; continue; }
+    if (a === '--fluid') { flags.fluid = true; continue; }
     // --flag=value form
     const eq = a.match(/^(--?[A-Za-z][\w-]*)=(.*)$/);
     if (eq && opts[eq[1]]) { flags[opts[eq[1]]] = eq[2]; continue; }
@@ -221,6 +226,11 @@ if (flags.palette) paletteArg = flags.palette;
 const QUIET = flags.quiet;
 const NOTES_SIDECAR = !!flags.notes;
 const NOTES_ICON = !!flags['notes-icon'];
+// --fluid: emit the .html as the opt-in fluid-box VIEWER (keeps + inlines the
+// runtime, flags the page fluid-capable) instead of the print-clean static
+// export. The PDF/PPTX/PNG outputs are unchanged — fluid is HTML-viewer only.
+// Design: engineering/decisions/2026-06-21-fluid-box-viewer-design.md.
+const FLUID_VIEW = !!flags.fluid;
 
 if (!mdFile || !outFile) {
   console.error('Usage:');
@@ -1270,7 +1280,7 @@ if (hasStateChart) {
 
 // ── HTML document ─────────────────────────────────────────────────────────────
 const htmlDoc = `<!DOCTYPE html>
-<html><head><meta charset="utf-8">
+<html${FLUID_VIEW ? ' data-lattice-fluid-capable' : ''}><head><meta charset="utf-8">
 ${googleFonts}
 ${embeddedFonts}
 ${katexCssLink}
@@ -1321,8 +1331,33 @@ const outHtml = outFile.replace(/\.(pdf|pptx|png)$/i, '') + '.html';
 // invariants suite enough to time out in CI). The class-strip below still clears
 // the emulator's own inline-watcher ring.
 const RUNTIME_SCRIPT = /[ \t]*<script\b[^>]*\blattice-runtime(?:\.min)?\.js[^>]*><\/script>\s*/gi;
-fs.writeFileSync(outHtml, htmlDoc.replace(RUNTIME_SCRIPT, ''));
-if (!QUIET) console.log(`HTML: ${slides.length} slides → ${outHtml}`);
+// Always drop any deck-embedded <script src=…runtime…> tag (the relative/file://
+// path won't resolve in a shared HTML, and we control runtime inclusion below).
+let outDocHtml = htmlDoc.replace(RUNTIME_SCRIPT, '');
+if (FLUID_VIEW) {
+  // The fluid viewer NEEDS the runtime (stampOrientation re-derives orientation
+  // from the measured box; the fluid controller wires the toggle). Inline the
+  // minified bundle so the .html stays a single self-contained, emailable file.
+  // The fluid CSS rides in the embedded lattice.css, inert until the controller
+  // sets :root[data-lattice-view="fluid"].
+  const runtimePath = path.join(PKG_ROOT, 'dist', 'lattice-runtime.min.js');
+  if (fs.existsSync(runtimePath)) {
+    // The bundle builds HTML strings that contain `</script>`, `<script`, and
+    // `<!--`; inlined raw they prematurely close this <script> element and the
+    // whole runtime fails to parse. Escape the `<` of just those sequences with
+    // \x3C — valid only inside the string/regex literals where they occur, so
+    // the JS is unchanged when executed. (See HTML spec, script-data states.)
+    const runtimeJs = fs.readFileSync(runtimePath, 'utf8')
+      .replace(/<(?=!--|\/?script)/gi, '\\x3C');
+    // Function replacement (not a string) so `$&`, `$1`, `$$` etc. inside the
+    // minified runtime are inserted literally, not interpreted as replace patterns.
+    outDocHtml = outDocHtml.replace(/<\/body>/i, () => `<script>\n${runtimeJs}\n</script>\n</body>`);
+  } else if (!QUIET) {
+    console.warn(`warning: --fluid set but ${path.relative(PKG_ROOT, runtimePath)} is missing — run \`npm run runtime:build\`; the viewer will not reflow.`);
+  }
+}
+fs.writeFileSync(outHtml, outDocHtml);
+if (!QUIET) console.log(`HTML: ${slides.length} slides → ${outHtml}${FLUID_VIEW ? ' (fluid viewer)' : ''}`);
 
 // ── PDF via Puppeteer ─────────────────────────────────────────────────────────
 // Locate puppeteer in either: a local node_modules (preferred), the project

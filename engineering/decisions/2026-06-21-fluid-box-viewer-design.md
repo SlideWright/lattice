@@ -1,5 +1,5 @@
 ---
-status: proposed
+status: shipped
 summary: Design for the fluid-box viewer mode — the keystone that makes Lattice's already-built responsive runtime fire for the emailed-link-on-a-phone reader. Today every deck is a fixed-size artifact pinned to its authored aspect, so a phone gets a tiny letterboxed 16:9 rectangle; meanwhile the runtime already measures the live section and re-derives orientation/type/reflow on every resize — it just always measures the bolted-down authored box. Fluid mode unbolts the box for a *viewing* mode: the section sizes to the viewport, the phone makes it portrait, and the existing machinery fires reflow + the portrait type scale for free. Locked decisions — (1) reading model is one-slide-per-screen vertical scroll-snap (swipe), (2) opt-in only (off by default; a toggle / URL flag turns it on — NOT auto-on for shared HTML), (3) first slice is the keystone only (fluid box + reflow; no auto-shrink, no re-pagination). Additive and export-safe: the PDF and the canonical export HTML are untouched; fluid is a separate viewer output that keeps the runtime instead of stripping it.
 version: 1
 supersedes: none
@@ -9,7 +9,7 @@ builds-on: 2026-06-20-native-to-reflow-feasibility.md
 # Fluid-box viewer mode — design
 
 **Date:** 2026-06-21
-**Status:** Proposed (design; no engine code changed yet)
+**Status:** Shipped — keystone implemented in the same PR (§9)
 **Decision owner:** maintainer (three forks locked 2026-06-21 — see § Decisions)
 
 This is the design that the Part II feasibility study
@@ -183,10 +183,35 @@ keystone needs a rule for **how sparse content sits in a tall box** (tight-centr
 vs. distribute), distinct from the Capability-2 autofit that handles *over*-dense
 slides. Captured here so the build doesn't rediscover it.
 
-## 9. Out of scope / sequence after this
+## 9. Implementation (landed in this PR)
 
-1. **This PR:** the design doc (this file).
-2. **Next:** the keystone build above.
-3. **Then (separate PRs):** auto-shrink actuator (Cap. 2) → re-pagination
+The keystone is built — the design and the build ship together. What landed:
+
+- **`lib/base/base.fluid-view.css`** — the gated fluid-box CSS (viewport box +
+  vertical scroll-snap + the sparse-slide centring + the toggle styling). Added
+  to the `tools/build-css.js` bundle order; unlayered, so it wins on specificity
+  per §5. Inert until `:root[data-lattice-view="fluid"]` is set.
+- **`lib/runtime/index.js`** — `initFluidView()`, inert unless the page is flagged
+  `data-lattice-fluid-capable`. On a fluid-capable page `boot()` takes a minimal
+  path: it runs the controller + `patchSectionGeometry()` only, deliberately
+  **skipping the live-preview content transforms** (the export DOM is already
+  transformed; re-running them throws — the reason a normal export strips this
+  runtime).
+- **`lattice-emulator.js`** — the `--fluid` flag: marks `<html>` capable and
+  inlines the (escaped) runtime instead of stripping it. Two footguns fixed in
+  the build: the inlined bundle's `</script>`/`<script`/`<!--` are escaped, and
+  the `</body>` injection uses a *function* replacement so the bundle's `$&`/`$1`
+  sequences aren't mangled by `String.replace`.
+
+**Verified** (sandbox, `tools/screenshot.js` + a Puppeteer probe): phone 390×844
+→ box goes portrait, `data-orientation="portrait"` stamps, `stats`/`kpi` reflow
+to a single column, portrait type fires; desktop 1440×900 → toggle defaults off,
+the authored fixed 16:9 deck is unchanged; the non-`--fluid` export carries no
+capability marker and strips the runtime (canonical export unaffected).
+
+## 10. Out of scope / sequence after this
+
+1. **This PR:** the design doc + the keystone build above.
+2. **Then (separate PRs):** auto-shrink actuator (Cap. 2) → re-pagination
    (Cap. 3) → Tier-C four-family migration → the eventual "fluid-as-default on a
    phone" promotion.
