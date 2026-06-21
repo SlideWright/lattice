@@ -64,7 +64,7 @@ Every candidate is scored on:
 | **quadrant** | SVG | `<circle class="quadrant-dot">` | ✅ coords are inline pills; L3 sublist free | high — "why is this item here" | **1** |
 | **radar** | SVG | axes (spokes) / `<polygon class="radar-poly" data-series>` | ✅ L3 sublist under an axis is free | high — what each axis measures | **1** |
 | **map** | SVG | `<path class="map-region">` | ✅ flat list, free | high — region context / the number | **1** |
-| state-chart | SVG | `<li class="state-node" data-index>` | ⚠️ nested `<ul>` already = transitions (collision) | med — entry/exit actions | 2 |
+| state-chart | HTML node + SVG edges | `<li class="state-node" data-mark>` | ✅ a non-transition prose bullet (was dropped) | high — entry/exit actions, the "why" | **2 ✓ (#466.1)** |
 | gantt | HTML grid | `.gantt-bar` | ⚠️ lane→bars consumes the level; needs L3 | med-high — owner / dependencies | 2 |
 | kanban | HTML | `.kanban-card` | ⚠️ already 3 levels deep | med | 2 |
 | progress | HTML | `.progress-row` | ❌ nested note rendered **inline** already | low — nothing new to reveal | 3 |
@@ -135,13 +135,37 @@ detail per labelled data point*. Per-series reveal is recorded as a future optio
 
 ## Tier 2 / Tier 3 — why deferred
 
-- **state-chart (T2):** the nested `<ul>` is already the transition list, so detail
-  needs a *separate* channel (a second sublist marker, or transition-level
-  detail). Feasible, but it's a grammar design task, not a mechanical transfer.
-- **gantt / kanban (T2):** HTML substrate — they'd get A (real value: a bar's
-  owner/dependencies, a card's detail) but not the SVG tilt, and both need a
-  deeper authored nesting level. The per-element DOM-3D depth that HTML *can* do
-  (genuinely impossible inside SVG) is a separate, deliberate project.
+- **state-chart (T2) — SHIPPED (#466.1).** The nested `<ul>` is the transition
+  list, so detail needed a *separate* channel. Resolved with **zero new syntax**:
+  a nested bullet that is *not* an inline-code transition (plain prose) was
+  already parsed and then **silently dropped** (`annotations`) — it is now
+  captured as the state's reveal detail. The state node carries `data-mark` +
+  `data-label`/`data-value`; the detail rides the shared `mark-detail` substrate.
+  **Reveal-layer extension (shared, benefits all Tier-2):** the marks are HTML
+  (the SVG is only the edge overlay), so the reveal layer gained an HTML-mark
+  path — the chart *root* selector now includes the HTML figure, and `liftVec`
+  falls back to a CSS `scale()` when a mark has no `getBBox`. **Tilt — kept, with
+  a router guard.** The whole `.state-chart-figure` tilts on reveal (nodes + edge
+  overlay together, in sync). The trap: the default variant positions its edges
+  and event labels by a *browser-measurement* pass (`draw()` reads
+  `getBoundingClientRect`) that re-runs on mutations/resize — and the Drawing
+  Board **scales the slide to fit** (especially on mobile). A reveal-triggered
+  redraw that re-measures under the combined fit-scale **and** tilt recomputes the
+  node gap in scaled space and re-applies it in slide space → the spacing
+  double-scales and the nodes/labels collapse into an overlap (the "super janky"
+  bug; reproduced + fixed under `.scratch/sc-tier2/`). Fix: `draw()` **bails while
+  the figure carries a live transform** (`getComputedStyle(fig).transform !==
+  'none'`) — the edges already drawn (flat) tilt rigidly *with* the figure and
+  stay aligned, and they're still correct once it settles back to none, so no
+  redraw is owed. The flat `inline`/`horizontal` chip strip still skips the tilt
+  (a `rotateX` on a flat row reads as skew). The detail `<template>` payload is
+  emitted as a **sibling** of the figure so it isn't miscounted as a mark.
+- **gantt / kanban (T2) — next, on the HTML-mark path state-chart just laid
+  down.** HTML substrate — they get the reveal (a bar's owner/dependencies, a
+  card's detail) via the same HTML-mark reveal layer, but each still needs a
+  *deeper authored nesting level* (the lane→bars / column→cards levels are
+  already consumed). The per-element DOM-3D depth that HTML *can* do (genuinely
+  impossible inside SVG) is a separate, deliberate project.
 - **progress / timeline-list (T3):** they already render their nested sublist
   **inline** on the slide, so there is no hidden detail to *reveal* — A adds
   nothing.
@@ -205,5 +229,3 @@ detail per labelled data point*. Per-series reveal is recorded as a future optio
 - Each chart's own gallery demonstrates the feature and carries every variant;
   per-feature demo deck (#9) `examples/chart-detail-reveal.md`. One branch / one
   PR (#17).
-</content>
-</invoke>

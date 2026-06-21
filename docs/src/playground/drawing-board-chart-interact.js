@@ -55,7 +55,15 @@ export function createChartInteract({ stage, getFrame, tilt = true, onReveal, ho
   // data-mark; the inert payload is .chart-details holding template.chart-detail.
   // (.piechart-svg etc. are just the per-chart figure classes the reveal layer
   // scopes to.) See engineering/decisions/2026-06-20-chart-detail-reveal-family.md.
-  const CHART_SVG_SEL = '.piechart-svg, .funnel-svg, .map-svg, .quadrant-svg, .radar-svg';
+  // The chart ROOT the interaction scopes to. Tier-1 roots are the SVG sheet
+  // itself (the marks are SVG elements, the tilt rotates the whole sheet).
+  // Tier-2 roots are HTML containers (the marks are HTML elements — state-chart
+  // nodes today): the root is the figure so the tilt rotates nodes AND the edge
+  // overlay together (the figure must NOT contain the inert .chart-details
+  // payload, or its <template data-mark> would be miscounted as a mark — the
+  // kernels emit the payload as a sibling). See
+  // engineering/decisions/2026-06-20-chart-detail-reveal-family.md.
+  const CHART_SVG_SEL = '.piechart-svg, .funnel-svg, .map-svg, .quadrant-svg, .radar-svg, .state-chart-figure';
   const DETAILS_SEL = '.chart-details';
   const TPL_SEL = 'template.chart-detail';
   const MARK_SEL = '[data-mark]';
@@ -319,7 +327,12 @@ export function createChartInteract({ stage, getFrame, tilt = true, onReveal, ho
       w.style.opacity = active ? '1' : '0.45';
       w.style.transform = active ? liftVec(w, wedges) : '';
     });
-    if (useTilt) {
+    // Skip the 3D tilt on a flat HTML chip strip (state-chart inline/horizontal):
+    // a rotateX on a flat row reads as a skew, not a deliberate tip. SVG sheets
+    // and the node+edge graph (state-chart default variant) tilt as intended —
+    // the edge-router skips re-measuring while this transform is live (see
+    // state-chart.transform.js draw()), so the edges tilt rigidly and stay aligned.
+    if (useTilt && chartEl.getAttribute?.('data-variant') !== 'inline') {
       chartEl.style.transition = 'transform .3s cubic-bezier(.2,.7,.3,1)';
       chartEl.style.transformOrigin = '50% 55%';
       chartEl.style.transform = 'perspective(900px) rotateX(7deg)';
@@ -327,7 +340,21 @@ export function createChartInteract({ stage, getFrame, tilt = true, onReveal, ho
   }
 
   // Nudge the active wedge a few px along its centroid→hub vector (its "out").
+  // HTML marks (Tier-2: state-chart nodes) have no getBBox and no meaningful
+  // centroid-out. A scale() would swell the node ALONG the flow into its
+  // neighbours + edge labels, so instead lift it PERPENDICULAR to the flow — the
+  // node steps off the wire cleanly. lr (horizontal flow) → up; tb (vertical
+  // flow) → right. offsetHeight is the node's slide-space height (immune to the
+  // Drawing Board's fit-scale), so the lift stays proportional on a scaled-down
+  // mobile slide. The edges don't re-route while tilted (router guard), so a
+  // small gap opens under the lifted node — reads as "stepping out".
   function liftVec(w, wedges) {
+    if (typeof w.getBBox !== 'function') {
+      const d = (w.offsetHeight || 28) * 0.4;
+      return chartEl?.getAttribute('data-sc-dir') === 'lr'
+        ? `translateY(${(-d).toFixed(1)}px)`
+        : `translateX(${d.toFixed(1)}px)`;
+    }
     try {
       const box = w.getBBox();
       const cx = box.x + box.width / 2, cy = box.y + box.height / 2;
