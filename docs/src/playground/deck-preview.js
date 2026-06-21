@@ -181,6 +181,20 @@ export function buildSrcdoc({
 	clamp = true,
 	sync = false,
 	center = false, // vertically center a short deck instead of pinning it to the top
+	// Phone-view (fluid-box viewer mode). When true the srcdoc opts out of the
+	// scaled filmstrip and into the engine's fluid viewer: flag <html> fluid-capable
+	// + tag sections with data-lattice-slide (the engine render omits it; the fluid
+	// CSS keys on it) so the runtime's initFluidView sizes each slide to the iframe
+	// viewport and reflows it to portrait. FIT scaling is skipped (the fluid CSS owns
+	// sizing) and .marpit is shown directly (no FIT reveal). See lib/base/
+	// base.fluid-view.css + lib/runtime/index.js initFluidView.
+	fluidCapable = false,
+	// URL of the UNSCOPED lattice.css. The playground scopes deck CSS per-slide
+	// (lib/engine/css.js rewrites `:root` → `:where(section)`), which breaks the
+	// fluid CSS's root-level signal (`:root[data-lattice-view]` + the `body` scroll
+	// container). The phone-view iframe is isolated, so it links the unscoped sheet
+	// to deliver those root/body rules intact. Only used when fluidCapable.
+	fluidCssUrl = null,
 	a11yDefs = A11Y_DEFS, // categorical texture <pattern> <defs> — injected into <body>
 	// on every render so `fill: url(#latt-a11y-tex-N)` resolves in this browsing
 	// context under an a11y theme (inert otherwise). Owned here, not per-caller.
@@ -205,27 +219,34 @@ export function buildSrcdoc({
 			'.marpit>section:last-child{break-after:auto;}}'
 		: '';
 	const GEOM_GLOBALS = 'window.__SLIDE_W=' + gw + ';window.__SLIDE_H=' + gh + ';';
+	// Phone-view wiring (all inert unless fluidCapable). The engine render omits
+	// data-lattice-slide, so tag each top-level slide for the fluid CSS to match.
+	let _slideIdx = 0;
+	const bodyHtml = fluidCapable
+		? html.replace(/<section\b/g, () => '<section data-lattice-slide="' + _slideIdx++ + '"')
+		: html;
 	// srcdoc (a fresh browsing context per write), NOT doc.open()/write()/close():
 	// the latter keeps the iframe window, so lattice-runtime.js's one-shot Mermaid
 	// bootstrap guard survives and every later render short-circuits the runtime —
 	// Mermaid/charts added after the first edit never render. A fresh srcdoc resets
 	// the guard. See engineering/gotchas.md "Playground: Mermaid stops rendering".
 	return (
-		'<!doctype html><html><head><meta charset="utf-8">' +
+		'<!doctype html><html' + (fluidCapable ? ' data-lattice-fluid-capable' : '') + '><head><meta charset="utf-8">' +
 		'<link rel="stylesheet" href="' + katexUrl + '">' +
 		(fontCss ? '<style>' + fontCss + '</style>' : '') +
-		'<style>html,body{margin:0;padding:' + padding + 'px;background:' + bg + ';}' +
+		'<style>html,body{margin:0;padding:' + (fluidCapable ? 0 : padding) + 'px;background:' + bg + ';}' +
 		// Center a short deck in the viewport instead of pinning it to the top with a
 		// large void below (a single-component preview should sit centered, like the
 		// component-page specimens). `safe center` falls back to top-alignment the
 		// moment the deck is taller than the viewport, so it never clips or fights the
 		// scroll. Off for the cursor-sync filmstrip (Drawing Board), whose scroll math
 		// assumes slide 0 sits at the top.
-		(center ? 'body{box-sizing:border-box;min-height:100vh;display:flex;flex-direction:column;justify-content:safe center;}' : '') +
+		(center && !fluidCapable ? 'body{box-sizing:border-box;min-height:100vh;display:flex;flex-direction:column;justify-content:safe center;}' : '') +
 		scheme +
 		// Hidden until the FIT agent scales the 1280px sections to the container
 		// width (it flips this to visible). Prevents the full-size first-paint flash.
-		'.marpit{visibility:hidden;}' +
+		// Phone-view skips the FIT agent, so .marpit must NOT be gated hidden there.
+		(fluidCapable ? '' : '.marpit{visibility:hidden;}') +
 		// Pins each slide to its intrinsic `@size` box BEFORE FIT scales it. Without
 		// it, `section{container-type:size}` collapses and cqi/cqh layouts render
 		// tiny + jitter. See frame-css.js + engineering/gotchas.md.
@@ -234,14 +255,20 @@ export function buildSrcdoc({
 		activeRule +
 		printCss +
 		css +
-		'</style></head><body>' +
+		'</style>' +
+		// Phone-view only: the unscoped lattice.css, so the root-level fluid rules
+		// (which the per-slide scoping mangles) apply. Loaded AFTER the scoped
+		// <style> so it also wins on source order; the box rules carry !important.
+		(fluidCapable && fluidCssUrl ? '<link rel="stylesheet" href="' + fluidCssUrl + '">' : '') +
+		'</head><body>' +
 		a11yDefs +
-		html +
+		bodyHtml +
 		'<scr' + 'ipt src="' + mermaidUrl + '"></scr' + 'ipt>' +
 		'<scr' + 'ipt src="' + runtimeUrl + '"></scr' + 'ipt>' +
 		'<scr' + 'ipt>' + GEOM_GLOBALS + '</scr' + 'ipt>' +
-		'<scr' + 'ipt>' + fitAgent(gap, clamp) + '</scr' + 'ipt>' +
-		(sync ? '<scr' + 'ipt>' + syncAgent(gap) + '</scr' + 'ipt>' : '') +
+		// Phone-view: skip FIT (the fluid CSS owns sizing) and SYNC (no filmstrip).
+		(fluidCapable ? '' : '<scr' + 'ipt>' + fitAgent(gap, clamp) + '</scr' + 'ipt>') +
+		(sync && !fluidCapable ? '<scr' + 'ipt>' + syncAgent(gap) + '</scr' + 'ipt>' : '') +
 		'</body></html>'
 	);
 }
