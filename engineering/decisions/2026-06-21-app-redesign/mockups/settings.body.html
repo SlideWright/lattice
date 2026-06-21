@@ -1,0 +1,56 @@
+<!--mode:light-->
+<div class="shell">
+  <nav class="rail">
+    <div class="rail-brand">L</div>
+    <button class="rail-item"><svg class="icon"><use href="#i-compose"/></svg><span class="lbl">Compose</span></button>
+    <button class="rail-item"><svg class="icon"><use href="#i-present"/></svg><span class="lbl">Present</span></button>
+    <button class="rail-item"><svg class="icon"><use href="#i-fabricate"/></svg><span class="lbl">Build</span></button>
+    <button class="rail-item"><svg class="icon"><use href="#i-library"/></svg><span class="lbl">Decks</span></button>
+    <div class="rail-spacer"></div>
+    <button class="rail-item active"><svg class="icon"><use href="#i-settings"/></svg><span class="lbl">Setup</span></button>
+  </nav>
+  <div class="col">
+    <header class="appbar">
+      <button class="deck-switch"><span class="dot"></span><span class="name">Q3 Board Review</span><span class="meta">14 slides</span></button>
+      <div class="appbar-spacer"></div>
+      <div class="appbar-right">
+        <button class="btn icon-only ghost"><svg class="icon"><use href="#i-palette"/></svg></button>
+        <button class="btn primary"><svg class="icon sm"><use href="#i-share"/></svg>Share</button>
+      </div>
+    </header>
+    <div class="work no-inspector"><div class="preview"></div></div>
+  </div>
+</div>
+
+<div class="scrim"></div>
+<aside class="sheet">
+  <div class="sheet-head"><svg class="icon" style="color:var(--accent)"><use href="#i-settings"/></svg><span class="h">Workspace</span><span class="scope" style="margin-left:8px">your setup</span><svg class="icon x"><use href="#i-x"/></svg></div>
+  <div class="sheet-body">
+    <div class="set-tabs">
+      <button class="on">AI model</button>
+      <button>Cloud</button>
+      <button>Spend</button>
+      <button>Instructions</button>
+      <button>Storage</button>
+    </div>
+
+    <div class="insp-group" style="padding-top:0">
+      <div class="gh"><svg class="icon xs"><use href="#i-sparkles"/></svg>Generation tier</div>
+      <div class="tier"><span class="ti"><svg class="icon sm"><use href="#i-check"/></svg></span><span><div class="tn">Floor — deterministic</div><div class="td">No model · fully private &amp; offline</div></span><span class="rad"></span></div>
+      <div class="tier"><span class="ti"><svg class="icon sm"><use href="#i-eye"/></svg></span><span><div class="tn">On-device · Transformers.js</div><div class="td">CPU · cached weights</div></span><span class="rad"></span></div>
+      <div class="tier on"><span class="ti"><svg class="icon sm"><use href="#i-cloud"/></svg></span><span><div class="tn">OpenRouter — connected</div><div class="td">Cloud · sharmarke@…</div></span><span class="rad"></span></div>
+    </div>
+
+    <div class="insp-group">
+      <div class="gh"><svg class="icon xs"><use href="#i-wallet"/></svg>Spend this session</div>
+      <div class="spend">
+        <div class="box"><div class="v">$0.42</div><div class="l">session</div></div>
+        <div class="box"><div class="v">$11.80</div><div class="l">all-time</div></div>
+      </div>
+      <div class="field" style="margin-top:2px"><span class="fl">Session budget cap</span><span class="control">$1.00 <svg class="icon xs"><use href="#i-chevron-down"/></svg></span></div>
+      <div class="bar"><span></span></div>
+      <div class="field"><span class="fl">Warn at 80% · stop at cap</span><span class="toggle"></span></div>
+      <div class="field"><span class="fl">Prompt caching</span><span class="toggle"></span></div>
+    </div>
+  </div>
+</aside>
