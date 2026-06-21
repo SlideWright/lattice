@@ -59,6 +59,17 @@ in patch versions.
     render-verified as below-bar in portrait (survives but ballooned/cramped); it
     now warns when used in a portrait deck, like its sibling `compare-code`.
   See `engineering/decisions/2026-06-20-native-to-reflow-feasibility.md`.
+- **Legal-bucket layouts now reflow to a single column in portrait** (native →
+  reflow, Batch A1 of the feasibility study). `statute-stack`, `authority-chain`,
+  and `regulatory-update` collapse their multi-column grids to one full-width
+  column on a square/tall/strip box via `@container lattice (aspect-ratio …)`, so
+  they also reflow inside a narrow nested cell — not just a portrait deck.
+  `citation-card`'s multi-column variants (`split`, `triptych`, `margin`) collapse
+  on a portrait/square deck via the `[data-orientation]` stamp (their grids live
+  on the section element, which a container query can't restyle — the same §11
+  boundary `split-panel` rides). Landscape renders byte-identically. Demo:
+  `examples/reflow-legal.md`. See
+  `engineering/decisions/2026-06-20-native-to-reflow-feasibility.md`.
 - **Typography is now three curated per-orientation scales, not one scale × a
   multiplier.** Font size was `landscape_coefficient × cqi × --canvas-scale`,
   where `--canvas-scale` was a single uniform multiplier that *stretched* the

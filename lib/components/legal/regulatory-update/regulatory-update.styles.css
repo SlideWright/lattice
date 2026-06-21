@@ -248,3 +248,31 @@ section.regulatory-update.regulatory-update.priority > :is(ol, ul) > li:nth-chil
 section.regulatory-update.regulatory-update.priority > :is(ol, ul) > li:nth-child(2)::before { background:var(--warn); }
 section.regulatory-update.regulatory-update.priority > :is(ol, ul) > li:nth-child(3) { border-left-color:var(--pass); }
 section.regulatory-update.regulatory-update.priority > :is(ol, ul) > li:nth-child(3)::before { background:var(--pass); }
+
+/* ── Box-local family reflow (2026-06-20-native-to-reflow-feasibility.md, Batch
+   A1). The DEFAULT changelog row is a five-column `auto auto auto 1fr auto` grid
+   (counter · name · cite · prose · pill) — five tracks crush in a square/tall/
+   strip box. Collapse each row to a hanging counter + a single stacked content
+   column (name → cite → prose → pill), keeping the leading-zero number in the
+   gutter. Scoped off the named variants — the excluded variants (timeline is the
+   horizontal spine; cards/diff-bands/priority) keep their landscape shape for
+   now; portrait handling for the variants is out of Batch A1 scope (tracked
+   follow-up). The nested list uses `display:contents`, so its <li> children are
+   direct grid items — re-anchor each to column 2 and let them auto-flow down the
+   rows. */
+@container lattice (aspect-ratio <= 1.05) {
+  section.regulatory-update.regulatory-update:not(.cards):not(.timeline):not(.diff-bands):not(.priority) > :is(ol, ul) > li {
+    grid-template-columns: auto 1fr;
+    grid-template-rows: none;
+    grid-auto-flow: row;
+    row-gap: var(--sp-xs);
+    align-items: baseline;
+  }
+  section.regulatory-update.regulatory-update:not(.cards):not(.timeline):not(.diff-bands):not(.priority) > :is(ol, ul) > li > :is(ul, ol) > li:first-child:has(> code:only-child),
+  section.regulatory-update.regulatory-update:not(.cards):not(.timeline):not(.diff-bands):not(.priority) > :is(ol, ul) > li > :is(ul, ol) > li:not(:first-child):not(:last-child),
+  section.regulatory-update.regulatory-update:not(.cards):not(.timeline):not(.diff-bands):not(.priority) > :is(ol, ul) > li > :is(ul, ol) > li:last-child:has(> code:only-child) {
+    grid-column: 2;
+    grid-row: auto;
+    justify-self: start;
+  }
+}

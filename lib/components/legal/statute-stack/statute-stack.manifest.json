@@ -1,7 +1,12 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "statute-stack",
-  "adapt": { "mode": "native" },
+  "adapt": {
+    "mode": "reflow",
+    "families": ["wide", "square", "tall", "strip"],
+    "priority": ["heading", "rows"],
+    "keepTogether": ["row"]
+  },
   "function": "inventory",
   "bucket": "legal",
   "form": "ledger",

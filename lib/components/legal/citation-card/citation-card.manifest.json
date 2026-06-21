@@ -1,7 +1,11 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "citation-card",
-  "adapt": { "mode": "native" },
+  "adapt": {
+    "mode": "reflow",
+    "families": ["wide", "square", "tall", "strip"],
+    "priority": ["heading", "citation", "quotation", "gloss"]
+  },
   "function": "evidence",
   "bucket": "legal",
   "form": "canvas",

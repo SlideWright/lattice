@@ -186,3 +186,23 @@ section.authority-chain.trail > :is(ol, ul) > li::before {
   line-height:1;
   margin-bottom:var(--sp-xs);
 }
+
+/* ── Box-local family reflow (2026-06-20-native-to-reflow-feasibility.md, Batch
+   A1). The DEFAULT chain row is a `14cqi 1fr` tier-label | body grid; in a
+   square/tall/strip box the 14cqi rail squeezes the label, so collapse each row
+   to a single column — tier label over body. Scoped off the named variants
+   (pyramid/branching/bracket also use the base row grid; trail is the horizontal
+   one). The excluded variants keep their landscape shape for now — portrait
+   handling for the variants is out of Batch A1 scope (tracked follow-up). Doubled
+   class + the variant guards win on specificity. */
+@container lattice (aspect-ratio <= 1.05) {
+  section.authority-chain.authority-chain:not(.trail):not(.pyramid):not(.branching):not(.bracket) > :is(ol, ul) > li {
+    grid-template-columns: 1fr;
+    row-gap: var(--sp-xs);
+    align-items: start;
+  }
+  section.authority-chain.authority-chain:not(.trail):not(.pyramid):not(.branching):not(.bracket) > :is(ol, ul) > li > strong:first-child,
+  section.authority-chain.authority-chain:not(.trail):not(.pyramid):not(.branching):not(.bracket) > :is(ol, ul) > li > :is(ul, ol) {
+    grid-column: 1;
+  }
+}

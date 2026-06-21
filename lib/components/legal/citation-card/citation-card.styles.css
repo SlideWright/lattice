@@ -211,3 +211,67 @@ section.citation-card.triptych > :is(ul, ol) > li:has(> strong:first-child) {
  * target text nodes); the manifest validator catches that case at
  * lint time. See CARD_STYLE_LAYOUTS in lib/components/index.js. */
 section.citation-card :is(ul,ol) > li > strong ~ * { font-weight: 400; }
+
+/* ── Orientation reflow (2026-06-20-native-to-reflow-feasibility.md, Batch A1).
+   The DEFAULT canvas is already a single vertical stack (citation → quote →
+   gloss), so it is portrait-clean unchanged. The reflow targets the multi-column
+   VARIANTS — .split (quote | gloss), .triptych (three panels), .margin (annotated
+   margins) — collapsing each to one stacked column on a portrait/square frame.
+
+   These variants put `display:grid` on the SECTION element itself, so the
+   box-local `@container lattice` recipe cannot reach them — a container query
+   styles a descendant against its ANCESTOR container, never the container
+   element itself (§11). This is the same section-element boundary split-panel
+   rides, so we use the same gate-sanctioned signal: the deck-level
+   `[data-orientation]` stamp (lib/engine/slides.js), which CAN restyle the
+   section. Landscape is untouched. */
+section.citation-card.split:is([data-orientation="portrait"], [data-orientation="square"]),
+section.citation-card.triptych:is([data-orientation="portrait"], [data-orientation="square"]),
+section.citation-card.margin:is([data-orientation="portrait"], [data-orientation="square"]) {
+  grid-template-columns: 1fr;
+  grid-template-rows: none;
+  grid-auto-flow: row;
+  /* auto rows pack to content at the top — without this, grid's default
+     align-content:stretch inflates each row to fill the tall frame. */
+  align-content: start;
+  row-gap: var(--sp-sm);
+}
+section.citation-card.split:is([data-orientation="portrait"], [data-orientation="square"]) > h2,
+section.citation-card.split:is([data-orientation="portrait"], [data-orientation="square"]) > p:has(> code:only-child),
+section.citation-card.split:is([data-orientation="portrait"], [data-orientation="square"]) > blockquote,
+section.citation-card.split:is([data-orientation="portrait"], [data-orientation="square"]) > :is(ul, ol),
+section.citation-card.triptych:is([data-orientation="portrait"], [data-orientation="square"]) > h2,
+section.citation-card.triptych:is([data-orientation="portrait"], [data-orientation="square"]) > p:has(> code:only-child),
+section.citation-card.triptych:is([data-orientation="portrait"], [data-orientation="square"]) > blockquote,
+section.citation-card.triptych:is([data-orientation="portrait"], [data-orientation="square"]) > :is(ul, ol),
+section.citation-card.margin:is([data-orientation="portrait"], [data-orientation="square"]) > h2,
+section.citation-card.margin:is([data-orientation="portrait"], [data-orientation="square"]) > p:has(> code:only-child),
+section.citation-card.margin:is([data-orientation="portrait"], [data-orientation="square"]) > blockquote,
+section.citation-card.margin:is([data-orientation="portrait"], [data-orientation="square"]) > :is(ul, ol) {
+  grid-column: 1;
+  grid-row: auto;
+}
+/* triptych's inner two-up gloss grid also folds to one column; tighten the
+   card chrome so three stacked panels fit a tall frame without clipping. */
+section.citation-card.triptych:is([data-orientation="portrait"], [data-orientation="square"]) > :is(ul, ol) {
+  grid-template-columns: 1fr;
+  gap: var(--sp-sm);
+}
+section.citation-card.triptych:is([data-orientation="portrait"], [data-orientation="square"]) > blockquote,
+section.citation-card.triptych:is([data-orientation="portrait"], [data-orientation="square"]) > :is(ul, ol) > li {
+  padding: var(--sp-sm) var(--sp-md);
+}
+/* margin: restore the default left-rail quote + flush gloss when stacked */
+section.citation-card.margin:is([data-orientation="portrait"], [data-orientation="square"]) > blockquote {
+  text-align: left;
+  align-self: stretch;
+  border-top: none;
+  border-bottom: none;
+  border-left: 4px solid var(--accent);
+  padding: var(--sp-md) var(--sp-lg);
+  font-size: var(--fs-body);
+}
+section.citation-card.margin:is([data-orientation="portrait"], [data-orientation="square"]) > p:has(> code:only-child) {
+  text-align: left;
+  padding-top: 0;
+}
