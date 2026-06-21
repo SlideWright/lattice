@@ -110,7 +110,7 @@ axis. Listed with the structure that collapses:
 | `statute-stack` | legal | `> ul > li` `repeat(3, 1fr)` 3-col cards → 1-col (variants already collapse — design clearly anticipated it) |
 | `authority-chain` | legal | `> ol > li` `grid-template-columns: 14cqi 1fr` tier-label + body → stack |
 | `regulatory-update` | legal | 5-col grid (`.cards` 2-col, `.timeline` horizontal flow) → 1-col |
-| `citation-card` | legal | `.split`/`.margin`/`.triptych` 2–3-col grids → 1-col (default is single-col, already native) |
+| `citation-card` | legal | `.split`/`.margin`/`.triptych` 2–3-col grids → 1-col (default is single-col, already native). **NB (shipped):** these grids sit on the SECTION element, so `@container` can't reach them — shipped via `[data-orientation]` like `split-panel`, not the descendant `@container` recipe. See sequencing §Batch A1. |
 | `actors` | inventory | per-item `grid-template-columns: 1fr auto` (body + actor-pill) → stack pill below |
 | `list-tabular` | inventory | per-item 4-track grid (counter/name/desc/meta) → stacked rows |
 | `logo-wall` | inventory | `> ul` `repeat(var(--logo-cols,4),1fr)` → fewer cols / 1-col (already a `--logo-cols` lever) |
@@ -195,7 +195,16 @@ batch by cost tier so each PR is reviewable:
 
 1. **Batch A1 — legal bucket** (`statute-stack`, `authority-chain`,
    `regulatory-update`, `citation-card`): highest visible payoff (3-col → 1-col is
-   dramatic in portrait), self-contained bucket.
+   dramatic in portrait), self-contained bucket. ✅ **Shipped 2026-06-20** —
+   render-verified at `size: story`; landscape byte-identical; demo
+   `examples/reflow-legal.md`. **Correction to the Tier table above:** the first
+   three collapse a grid on a DESCENDANT (`> ul` / `> li`), so the cheap
+   `@container` recipe applies as classified. `citation-card` does NOT — its
+   `.split`/`.margin`/`.triptych` variants put `display:grid` on the SECTION
+   element itself, which a container query cannot restyle (§11). It was therefore
+   shipped via the deck-level `[data-orientation]` stamp (the `split-panel`
+   mechanism), reflowing on a portrait/square deck rather than box-locally. Net: 3
+   Tier-A + 1 quasi-Tier-C, not 4 Tier-A.
 2. **Batch A2 — inventory + comparison + progression** (`actors`, `list-tabular`,
    `logo-wall`, `q-and-a`, `compare-prose`, `decision`, `list-criteria`,
    `list-steps`): the remaining descendant collapses; `list-steps`/`compare-prose`

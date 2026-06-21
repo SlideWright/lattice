@@ -1,7 +1,12 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "authority-chain",
-  "adapt": { "mode": "native" },
+  "adapt": {
+    "mode": "reflow",
+    "families": ["wide", "square", "tall", "strip"],
+    "priority": ["heading", "tiers"],
+    "keepTogether": ["tier"]
+  },
   "function": "progression",
   "bucket": "legal",
   "form": "timeline",

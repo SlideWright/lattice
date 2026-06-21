@@ -490,7 +490,20 @@
         "strip"
       ],
       "adapt": {
-        "mode": "native"
+        "mode": "reflow",
+        "families": [
+          "wide",
+          "square",
+          "tall",
+          "strip"
+        ],
+        "priority": [
+          "heading",
+          "tiers"
+        ],
+        "keepTogether": [
+          "tier"
+        ]
       },
       "tags": [
         "regulation",
@@ -1245,7 +1258,19 @@
         "strip"
       ],
       "adapt": {
-        "mode": "native"
+        "mode": "reflow",
+        "families": [
+          "wide",
+          "square",
+          "tall",
+          "strip"
+        ],
+        "priority": [
+          "heading",
+          "citation",
+          "quotation",
+          "gloss"
+        ]
       },
       "tags": [
         "citation",
@@ -6152,7 +6177,21 @@
         "strip"
       ],
       "adapt": {
-        "mode": "native"
+        "mode": "reflow",
+        "families": [
+          "wide",
+          "square",
+          "tall",
+          "strip"
+        ],
+        "priority": [
+          "heading",
+          "scope",
+          "items"
+        ],
+        "keepTogether": [
+          "item"
+        ]
       },
       "tags": [
         "changelog",
@@ -7080,7 +7119,20 @@
         "strip"
       ],
       "adapt": {
-        "mode": "native"
+        "mode": "reflow",
+        "families": [
+          "wide",
+          "square",
+          "tall",
+          "strip"
+        ],
+        "priority": [
+          "heading",
+          "rows"
+        ],
+        "keepTogether": [
+          "row"
+        ]
       },
       "tags": [
         "citation",

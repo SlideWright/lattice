@@ -262,3 +262,20 @@ section.statute-stack.lane td:last-child {
   white-space:nowrap;
 }
 
+/* ── Box-local family reflow (2026-06-20-native-to-reflow-feasibility.md, Batch
+   A1). Wide keeps the three-rail grid; square/tall/strip collapse the DEFAULT
+   layout to a single full-width column of jurisdiction cards, content-height rows
+   distributed to fill. Scoped off the named variants (hierarchy/bands/preemption/
+   lane), which already author their own single-column / table portrait shape.
+   Doubled class reaches (0,2,N) to beat the base grid on specificity — the role
+   the old [data-orientation] stamp played; keyed on the nearest `lattice`
+   container's aspect so it fires on a portrait deck AND a narrow nested cell. */
+@container lattice (aspect-ratio <= 1.05) {
+  section.statute-stack.statute-stack:not(.hierarchy):not(.bands):not(.preemption):not(.lane) > ul,
+  section.statute-stack.statute-stack:not(.hierarchy):not(.bands):not(.preemption):not(.lane) > ol {
+    grid-template-columns: 1fr;
+    grid-auto-rows: auto;
+    align-content: space-evenly;
+  }
+}
+
