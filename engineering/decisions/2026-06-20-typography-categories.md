@@ -149,3 +149,39 @@ apart by the section padding ratio, reintroducing the very inconsistency this
 work removes. Until a cell opts in, **the section IS the box** and the
 attribute path covers every real deck, so Phase 2 lands when there is a consumer
 for it.
+
+---
+
+## Addendum — portrait recuration for on-device legibility (2026-06-21)
+
+Phase 1 shipped the three-category machinery, but the **portrait** coefficients
+were still curated for *presentation distance* (boardroom/projector), not for the
+device portrait is actually consumed on. On a phone the 1080-wide frame maps
+≈×0.36, so the old `body` (≈36px in-frame) rendered at **≈13px** — below the iOS
+caption size. The emailed-link reader (the persona the reflow work serves) could
+not comfortably read body prose.
+
+The portrait set was **recurated as one ramp** (not patched token-by-token —
+cherry-picking is how the "inconsistent across layouts" smell crept in):
+
+- **Anchor `body` on the device** — `body` = ~47px in-frame ⇒ **≈17px on a phone**
+  (the iOS body floor). Every readable tier (`meta`, `body-compact`, `body`,
+  `h5`/`h6`) rises with it.
+- **Compress the title ramp** — display tiers (`message`…`hero`) rise *less* than
+  body, so the `body→h1` span tightens 2.44×→2.08×; a two-line `h1` still fits a
+  9:16 frame. This generalises the existing "portrait `h1` pulled down" rule to
+  the whole upper ramp.
+- **Re-lock the role aliases** — `h6=meta`, `h5=body`, `h4=message`, matching the
+  landscape/square scales and the base contract. The old portrait set had drifted
+  (`h4` 44 < `message` 46) — the exact inconsistency this system exists to kill.
+
+`landscape` and `square` are untouched (byte-identical exports). The full
+coefficient table lives in `lib/typography/scale.js` (the single source of truth).
+
+**Consequence — device-legible type means sparser slides.** Three of the four
+portrait personas already author sparse; the recuration makes that the default
+rather than a workaround. A handful of content-dense demo slides authored against
+the old ~36px body overflowed the frame at ~47px and were trimmed to fit. The
+engine-owned **content-autofit / re-pagination** that would absorb over-dense
+decks automatically is the Part-II P2/P3 work
+(`2026-06-20-native-to-reflow-feasibility.md`), still ahead.

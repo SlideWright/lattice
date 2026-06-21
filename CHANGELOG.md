@@ -63,6 +63,19 @@ in patch versions.
   family-wide (pie/funnel/map/quadrant/radar — the shared reveal layer). No
   change to the interaction model or any exported artifact. See
   `engineering/decisions/2026-06-21-chart-reveal-lean-tooltip.md`.
+- **The portrait font scale is recurated for on-device legibility.** All 12
+  portrait `--fs-*` tokens were re-derived as one coherent ramp anchored on
+  `body` = ~47px in-frame — which maps to ~17px on a phone (the iOS body floor),
+  so an emailed-link reader can actually read body prose instead of ~13px
+  fine-print. The title ramp is *compressed* (display tiers rise less than body,
+  so the body→h1 span tightens 2.44×→2.08×) so a two-line `h1` still fits a 9:16
+  frame, and the role aliases are re-locked (`h6=meta`, `h5=body`, `h4=message`)
+  to match the landscape/square scales — the old portrait set had drifted (`h4`
+  below `message`). **Landscape and square are unchanged** (byte-identical
+  exports). Bigger type means less fits per slide: a few content-dense portrait
+  decks were trimmed to stay within the frame. See `lib/typography/scale.js` and
+  `engineering/decisions/2026-06-20-typography-categories.md`.
+
 - **Adaptivity is now a required, gated manifest declaration.** Every component
   carries `adapt.mode` ∈ `reflow` (ships per-family structural layouts) ·
   `native` (adapts by cqi scaling + orientation-aware type) · `single-orientation`
