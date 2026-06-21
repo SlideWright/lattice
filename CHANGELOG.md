@@ -41,6 +41,15 @@ in patch versions.
 
 ### Changed
 
+- **Interactive chart reveal now has two depths.** In the Drawing Board
+  (present / practice / live preview), hovering/tapping a mark on an interactive
+  chart still reveals *every* mark (the data-viz "details-on-demand" standard),
+  but a mark with **no authored detail** now shows a compact value-on-hover
+  **tooltip chip** (dot · label · value) instead of the full detail card; marks
+  that authored a detail sublist still show the rich card (body + meta). Applies
+  family-wide (pie/funnel/map/quadrant/radar — the shared reveal layer). No
+  change to the interaction model or any exported artifact. See
+  `engineering/decisions/2026-06-21-chart-reveal-lean-tooltip.md`.
 - **Adaptivity is now a required, gated manifest declaration.** Every component
   carries `adapt.mode` ∈ `reflow` (ships per-family structural layouts) ·
   `native` (adapts by cqi scaling + orientation-aware type) · `single-orientation`
