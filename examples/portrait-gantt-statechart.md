@@ -31,20 +31,20 @@ A Gantt is a horizontal time axis and a state machine is a graph — neither is 
 <!-- _class: gantt -->
 <!-- _footer: "gantt · lane label over full-width bars, lanes fill the height" -->
 
-`2026 Q1 → 2026 Q4`
+`2026 Q1 .. 2026 Q4`
 
 ## What ships in each phase, by workstream.
 
 - Framework
-  - Signal taxonomy `Q1 → Q2` `done`
-  - Scoring model v2 `Q2 → Q3` `live`
-  - Per-team weighting `Q3 → Q4` `at-risk`
+  - Signal taxonomy `Q1..Q2` `done`
+  - Scoring model v2 `Q2..Q3` `live`
+  - Per-team weighting `Q3..Q4` `at-risk`
 - Adoption
-  - Pilot onboarding `Q1 → Q2` `done`
-  - Org-wide rollout `Q3 → Q4`
+  - Pilot onboarding `Q1..Q2` `done`
+  - Org-wide rollout `Q3..Q4`
 - Governance
-  - Decision log `Q1 → Q2` `done`
-  - Board reporting `Q3 → Q4`
+  - Decision log `Q1..Q2` `done`
+  - Board reporting `Q3..Q4`
 
 ---
 

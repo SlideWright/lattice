@@ -1213,21 +1213,21 @@ The SVG mark patterns follow the same rule: their atmospheric haze writes to its
 <!-- _class: gantt -->
 <!-- _footer: "Chart — gantt · gantt" -->
 
-`2026 Q1 → 2026 Q4`
+`2026 Q1 .. 2026 Q4`
 
 ## Feature delivery by workstream
 
 - Design
-  - Foundations `Q1` `done`
-  - Component audit `Q2` `done`
-  - Token refresh `Q3`
+  - Foundations `Q1..Q1` `done`
+  - Component audit `Q2..Q2` `done`
+  - Token refresh `Q3..Q3`
 - Engineering
-  - API v2 `Q1` `done`
-  - SDK release `Q2 → Q3` `in-progress`
-  - Migration guide `Q4`
+  - API v2 `Q1..Q1` `done`
+  - SDK release `Q2..Q3` `live`
+  - Migration guide `Q4` `milestone`
 - Growth
-  - Onboarding v2 `Q2` `done`
-  - Referral flow `Q3 → Q4`
+  - Onboarding v2 `Q2..Q2` `done`
+  - Referral flow `Q3..Q4`
 
 ---
 

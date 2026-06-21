@@ -294,17 +294,17 @@
     "body": [
       "<!-- _class: gantt -->",
       "",
-      "`2026 Q1 → 2026 Q4`",
+      "`2026 Q1 .. 2026 Q4` `today Q3`",
       "",
       "## What ships in each phase, by workstream.",
       "",
       "- First workstream",
-      "  - First task `Q1 → Q2` `done`",
-      "  - Second task `Q2 → Q3` `live`",
-      "  - Third task `Q3 → Q4` `at-risk`",
+      "  - First task `Q1..Q2` `done`",
+      "  - Second task `Q2..Q3` `live` `after: First task`",
+      "  - Milestone `Q4` `milestone` `after: Second task`",
       "- Second workstream",
-      "  - First task `Q1 → Q2` `done`",
-      "  - Second task `Q2 → Q3`"
+      "  - First task `Q1..Q2` `done`",
+      "  - Second task `Q2..Q3`"
     ],
     "description": "Gantt chart — task bars across a date axis."
   },

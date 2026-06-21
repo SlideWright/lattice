@@ -63,23 +63,23 @@ We deliver the highest-volume permit types first, run them in parallel with the 
 <!-- _class: gantt -->
 <!-- tier: short -->
 
-`2027 Q3 → 2028 Q4`
+`2027 Q3 .. 2028 Q4`
 
 ## The 18-month delivery plan, by workstream.
 
 - Discovery & design
-  - Process mapping `Q3 → Q4` `done`
-  - Solution design `Q4 → Q1` `live`
+  - Process mapping `2027 Q3..2027 Q4` `done`
+  - Solution design `2027 Q4..2028 Q1` `live`
 - Core platform
-  - Residential permits `Q1 → Q2` `live`
-  - Commercial permits `Q2 → Q3` `at-risk`
-  - Inspections module `Q3 → Q4`
+  - Residential permits `2028 Q1..2028 Q2` `live`
+  - Commercial permits `2028 Q2..2028 Q3` `at-risk`
+  - Inspections module `2028 Q3..2028 Q4`
 - Migration & cutover
-  - Parallel run `Q2 → Q4`
-  - Legacy retirement `Q4`
+  - Parallel run `2028 Q2..2028 Q4`
+  - Legacy retirement `2028 Q4` `milestone`
 - Enablement
-  - Staff training `Q1 → Q3`
-  - Public launch `Q3 → Q4`
+  - Staff training `2028 Q1..2028 Q3`
+  - Public launch `2028 Q3..2028 Q4`
 
 ---
 

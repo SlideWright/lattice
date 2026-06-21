@@ -3174,19 +3174,61 @@ section.gantt.chart-frame .chart-body {
   width: 14.0625cqi;
 }
 
+/* Ticks are positioned by PERCENT now (continuous scale), not an equal CSS
+ * grid — a date axis has unequal calendar steps and an ordinal axis is just the
+ * even case of the same math. Each tick is absolutely placed at its period
+ * MIDPOINT (--gantt-x, a 0–100 number) and centred on it. */
 .gantt-ticks {
   flex: 1;
-  display: grid;
-  grid-template-columns: repeat(var(--gantt-cols), 1fr);
+  position: relative;
+  height: 1.4em;
 }
 
 .gantt-tick {
-  text-align: center;
+  position: absolute;
+  left: calc(var(--gantt-x) * 1%);
+  transform: translateX(-50%);
+  white-space: nowrap;
   font-family: var(--font-mono);
   font-size: var(--fs-meta);
   font-weight: 600;
   letter-spacing: 0.12em;
   color: var(--text-label);
+}
+
+/* ── Lanes wrapper — the positioning context for the optional "today" line,
+ * which must span every lane row but align to the BARS region (right of the
+ * fixed label column). ── */
+.gantt-lanes {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* The "today" / now line — opt-in (eyebrow `today <point>` only). A thin
+ * info-toned rule from the top of the first lane to the bottom of the last,
+ * offset by the label column so it lands in the bars region; --gantt-x is its
+ * 0–100 position across that region. A small downward cap marks "now". */
+.gantt-today {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(14.0625cqi + (100% - 14.0625cqi) * var(--gantt-x) / 100);
+  width: 0;
+  border-left: 0.18cqi solid var(--state-info-ink);
+  pointer-events: none;
+  z-index: 2;
+}
+.gantt-today::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -100%);
+  border-left: 0.7cqi solid transparent;
+  border-right: 0.7cqi solid transparent;
+  border-top: 0.8cqi solid var(--state-info-ink);
 }
 
 /* ── Lane rows: label + bar container ── */
@@ -3239,8 +3281,8 @@ section.gantt.chart-frame .chart-body {
    * track and a thin inter-bar gutter that stays hairline-scale, not a widening
    * band at 4K. */
   top: 5px; bottom: 5px;  /* sanctioned: constant vertical inset within the %-based row track */
-  left:  calc((var(--gantt-col-start) - 1) / var(--gantt-cols) * 100% + 3px); /* sanctioned: thin inter-bar gutter (hairline-scale) */
-  width: calc( var(--gantt-col-span)       / var(--gantt-cols) * 100% - 6px); /* sanctioned: thin inter-bar gutter (hairline-scale) */
+  left:  calc(var(--gantt-x) * 1% + 3px); /* sanctioned: thin inter-bar gutter (hairline-scale) */
+  width: calc(var(--gantt-w) * 1% - 6px); /* sanctioned: thin inter-bar gutter (hairline-scale) */
   border-radius: 0.46875cqi;
   /* Match the pie / quadrant / radar depth-gradient language. Those three read
    * rich because they fill with a hue-into-bg gradient (~42–82%), NOT the flat
@@ -3288,6 +3330,68 @@ section.gantt.chart-frame .chart-body {
 .gantt-bar[data-s="pilot"],
 .gantt-bar[data-s="decision"] { --fill-hue: var(--state-info-hue); --fill-ink: var(--state-info-ink); }
 .gantt-bar[data-s="deferred"] { --fill-hue: var(--state-mute-hue); --fill-ink: var(--state-mute-ink); }
+
+/* Unparseable / missing span — a muted full-width placeholder so the task stays
+ * visible (lint-core flags the cause); never a silent drop. */
+.gantt-bar--unscaled {
+  --fill-hue: var(--state-mute-hue);
+  --fill-ink: var(--state-mute-ink);
+  opacity: 0.5;
+}
+
+/* ── Milestone — a zero-duration marker (single time point or `milestone`).
+ * A diamond sits ON its point (--gantt-x); the label rides to its right. The
+ * diamond reuses the canonical chart fill so a milestone reads as the same
+ * family as the bars, and it picks up status via [data-s] exactly like a bar. */
+.gantt-milestone {
+  position: absolute;
+  top: 5px;   /* sanctioned: match the bar's vertical inset within the row track */
+  bottom: 5px; /* sanctioned: see top */
+  left: calc(var(--gantt-x) * 1%);
+  display: flex;
+  align-items: center;
+  gap: var(--sp-xs);
+  white-space: nowrap;
+  font-family: var(--font-body);
+  font-size: var(--fs-meta);
+  font-weight: 600;
+  color: var(--text-heading);
+  --fill-hue: var(--state-info-hue);
+  --fill-ink: var(--state-info-ink);
+}
+.gantt-milestone[data-s="on-track"],
+.gantt-milestone[data-s="done"],
+.gantt-milestone[data-s="live"]     { --fill-hue: var(--state-pass-hue); --fill-ink: var(--state-pass-ink); }
+.gantt-milestone[data-s="at-risk"],
+.gantt-milestone[data-s="warn"]     { --fill-hue: var(--state-warn-hue); --fill-ink: var(--state-warn-ink); }
+.gantt-milestone[data-s="blocked"],
+.gantt-milestone[data-s="fail"]     { --fill-hue: var(--state-fail-hue); --fill-ink: var(--state-fail-ink); }
+.gantt-milestone[data-s="pilot"],
+.gantt-milestone[data-s="decision"] { --fill-hue: var(--state-info-hue); --fill-ink: var(--state-info-ink); }
+.gantt-milestone[data-s="deferred"] { --fill-hue: var(--state-mute-hue); --fill-ink: var(--state-mute-ink); }
+.gantt-diamond {
+  flex: 0 0 auto;
+  width: 1.9cqi;
+  height: 1.9cqi;
+  transform: translateX(-50%) rotate(45deg);
+  border-radius: 0.18cqi;
+  background: linear-gradient(180deg,
+    light-dark(color-mix(in oklab, var(--fill-hue) var(--chart-fill-top-l),    var(--bg)),
+               color-mix(in oklab, var(--fill-hue) var(--chart-fill-top-d),    black)) 0%,
+    light-dark(color-mix(in oklab, var(--fill-hue) var(--chart-fill-bottom-l), var(--bg)),
+               color-mix(in oklab, var(--fill-hue) var(--chart-fill-bottom-d), black)) 100%);
+  border: var(--chart-hairline) solid var(--fill-ink);
+}
+.gantt-mlabel { line-height: var(--lh-tight); }
+/* End-anchored milestone — diamond stays centred on its point, but the label
+ * rides to its LEFT so it can't run off the right frame edge. The container's
+ * right edge sits on the point; the diamond (now the right-most child) nudges
+ * back half its width to re-centre. */
+.gantt-milestone--end {
+  flex-direction: row-reverse;
+  transform: translateX(-100%);
+}
+.gantt-milestone--end .gantt-diamond { transform: translateX(50%) rotate(45deg); }
 
 /* ── Box-local portrait reflow (tall/narrow box) ─────────────────────────────
  * A gantt is a horizontal time axis, so it can't "switch direction" — but it IS
@@ -3351,6 +3455,14 @@ section.gantt.chart-frame .chart-body {
     flex: 0 0 auto;
     height: 9.5cqi;
   }
+
+  /* No label column in portrait — the today line spans the full bars width, so
+   * drop the 14cqi offset and place it directly at its percent. */
+  section.gantt .gantt-today {
+    left: calc(var(--gantt-x) * 1%);
+  }
+  /* A milestone label can wrap in the tall box rather than clip. */
+  section.gantt .gantt-milestone { white-space: normal; }
 }
 
 /* === lib/components/inventory/glossary/glossary.styles.css === */
