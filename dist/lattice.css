@@ -981,6 +981,27 @@ section.actors > ol > li > ol > li {
   line-height:var(--lh-base);
 }
 
+/* ── Box-local family reflow (engineering/decisions/2026-06-18-component-adaptive-sizing.md).
+   Each row pairs a responsibility (left) with the actor chip (right) on one line.
+   In a tall box a long responsibility and the right-anchored chip collide, so drop
+   the chip onto its own line beneath the responsibility and let the body follow.
+   Keyed on the nearest `lattice` container's aspect (portrait deck OR narrow nested
+   cell). The doubled class `.actors.actors` clears the base `> :is(ul,ol) > li`
+   grid placement. */
+@container lattice (aspect-ratio <= 0.9) {
+  section.actors.actors > :is(ul, ol) > li { grid-template-columns: 1fr; }
+  /* Drop the chip onto its own line, hanging at the LEFT under the responsibility.
+     The universal pill rule (base.modifiers) sets `margin-left: auto` to right-anchor
+     the chip on one line; cancel it so `justify-self: start` can take effect (an auto
+     margin otherwise beats justify-self in grid). */
+  section.actors.actors > ul > li > code,
+  section.actors.actors > ol > li > code {
+    grid-column: 1; grid-row: 2; justify-self: start;
+    margin-left: 0; margin-top: var(--sp-2xs);
+  }
+  section.actors.actors > :is(ul, ol) > li > :is(ul, ol) { grid-row: 3; }
+}
+
 /* === lib/components/inventory/agenda/agenda.styles.css === */
 /* agenda — auto-numbered table of contents for the deck.
  * See lib/components/inventory/agenda/agenda.manifest.json for the contract.
@@ -2589,6 +2610,25 @@ section.decision > :is(ul, ol) > li:has(> strong:first-child) > strong:first-chi
   color: var(--cat-on-mark);
 }
 
+/* ── Box-local corner-tag legibility (2026-06-20).
+   The corner tag's font already rides --fs-meta (scale-aware), but its padding is
+   raw `cqi` (see the base rule above), so the PADDING bypasses the --canvas-scale
+   magnitude the --sp-* / --fs-* tokens carry — in a tall/portrait box the badge's
+   box doesn't grow with the frame and the label crowds it. Re-peg the padding to
+   --sp-* and reserve matching top space on the card so the badge scales with the
+   frame. Keyed on `<= 1.05` (square + tall + strip); landscape keeps the raw value,
+   so its export stays byte-identical. */
+@container lattice (aspect-ratio <= 1.05) {
+  section.decision > :is(ul, ol) > li:has(> strong:first-child),
+  section.compare-prose:not(:has(.compare-prose-inner)) > :is(ul, ol) > li:has(> strong:first-child) {
+    padding-top: calc(var(--sp-md) + var(--fs-meta));
+  }
+  section.decision > :is(ul, ol) > li:has(> strong:first-child) > strong:first-child,
+  section.compare-prose:not(:has(.compare-prose-inner)) > :is(ul, ol) > li:has(> strong:first-child) > strong:first-child {
+    padding: var(--sp-2xs) var(--sp-sm);
+  }
+}
+
 /* ── corner tag, banner variant (.banner-tag modifier) ────────────────────
  * Opt-in modifier on decision / compare-prose (incl. transition). Converts the
  * flush-corner labeled tag into a full-width header strip — the card becomes
@@ -2668,6 +2708,40 @@ section.compare-prose.transition:not(:has(.compare-prose-inner)) > :is(ul, ol)::
 section.compare-prose.transition .compare-prose-inner .card:nth-child(3),
 section.compare-prose.transition:not(:has(.compare-prose-inner)) > :is(ul, ol) > li:last-child {
   border-color: var(--on-accent-soft); background: var(--accent-soft);
+}
+
+/* ── Box-local family reflow (engineering/decisions/2026-06-18-component-adaptive-sizing.md).
+   Two side-by-side cards with a chevron between them become unreadable slivers in a
+   tall box. Apply the existing `vertical` treatment automatically — stack the cards
+   and rotate the chevron to point down — so a portrait deck (or a narrow nested
+   cell) reads the pair top-to-bottom. Keyed on the nearest `lattice` container's
+   aspect. Targets the live DOM (`:not(:has(.compare-prose-inner))`), matching the
+   base layout; the doubled class `.compare-prose.compare-prose` holds specificity
+   over the base flex-row rule. */
+@container lattice (aspect-ratio <= 0.9) {
+  section.compare-prose.compare-prose:not(:has(.compare-prose-inner)) > :is(ul, ol) {
+    flex-direction: column;
+    align-items: stretch;
+    /* a generous gap gives the centred chevron room in the divide, clear of the
+       second card's (now larger) top-left corner tag. */
+    gap: var(--sp-2xl);
+  }
+  /* Keep the cards filling (base `li { flex: 1 }`) so the two split the frame and
+     the chevron — anchored at the list's 50% — lands on the divide. Centre each
+     card's statement vertically (the corner tag is an absolute top-left badge, so it
+     stays put) so the body owns the card's optical middle instead of a short line
+     stranded at the top over empty space. */
+  section.compare-prose.compare-prose:not(:has(.compare-prose-inner)) > :is(ul, ol) > li {
+    align-content: center;
+  }
+  /* one side per full-width card — its statement carries message weight, not body. */
+  section.compare-prose.compare-prose:not(:has(.compare-prose-inner)) > :is(ul, ol) > li > :is(ul, ol) > li {
+    font-size: var(--fs-message);
+    line-height: var(--lh-snug);
+  }
+  section.compare-prose.compare-prose:not(:has(.compare-prose-inner)) > :is(ul, ol)::before {
+    transform: translate(-50%, -50%) rotate(90deg);
+  }
 }
 
 /* === lib/components/comparison/compare-table/compare-table.styles.css === */
@@ -2821,6 +2895,27 @@ section.decision > ol > li > ul {
  * target text nodes); the manifest validator catches that case at
  * lint time. See CARD_STYLE_LAYOUTS in lib/components/index.js. */
 section.decision :is(ul,ol) > li > strong ~ * { font-weight: 400; }
+
+/* ── Box-local family reflow (engineering/decisions/2026-06-18-component-adaptive-sizing.md).
+   The cards are a horizontal strip; in a square-or-narrower box four side-by-side
+   panels become unreadable slivers. Stack them into a single column so each
+   justification card takes the full width, and `flex:1` distributes them down the
+   frame so the set still fills the canvas. Keyed on the nearest `lattice` container's
+   aspect (a portrait deck OR a narrow nested cell). The doubled class
+   `.decision.decision` reaches (0,2,1) — clearing the base `> :is(ul,ol)` (0,1,1). */
+@container lattice (aspect-ratio <= 1.05) {
+  section.decision.decision > :is(ul, ol) { flex-direction: column; }
+  /* Each card fills a share of the tall frame; centre the justification so it sits
+     in the card's optical middle (the corner tag stays pinned top-left) instead of
+     orphaning at the top over empty space. */
+  section.decision.decision > :is(ul, ol) > li { justify-content: center; }
+  /* One option per full-width card — the justification is the card's hero, so it
+     carries statement weight (--fs-message), not body weight. */
+  section.decision.decision > :is(ul, ol) > li > :is(p, ul, ol) {
+    font-size: var(--fs-message);
+    line-height: var(--lh-snug);
+  }
+}
 
 /* === lib/components/diagram/diagram/diagram.styles.css === */
 /* diagram — evidence.canvas.graph
@@ -3285,6 +3380,24 @@ section.glossary h2 .range-pill {
   background:var(--accent-soft); border:1px solid var(--on-accent-soft);
   color:var(--on-accent-soft); white-space:nowrap;
   vertical-align:middle;
+}
+
+/* ── Box-local family reflow (engineering/decisions/2026-06-18-component-adaptive-sizing.md).
+   The term | definition table holds up as a narrow two-column read down to a tall
+   box, but on the tightest strip (mobile 9:19.5, a narrow nested cell) the term
+   column starves the definition. There, stack each entry — term as an accent label
+   above its definition — and drop the now-redundant header row. Keyed on the
+   nearest `lattice` container's aspect; the doubled class `.glossary.glossary`
+   clears the base table rules. */
+@container lattice (aspect-ratio <= 0.5) {
+  section.glossary.glossary thead { display: none; }
+  section.glossary.glossary table,
+  section.glossary.glossary tbody,
+  section.glossary.glossary tr,
+  section.glossary.glossary td { display: block; }
+  section.glossary.glossary tbody tr { padding: var(--sp-2xs) var(--sp-sm); }
+  section.glossary.glossary td { padding: 0; }
+  section.glossary.glossary td:first-child { white-space: normal; padding: 0 0 0.15em; }
 }
 
 /* === lib/components/imagery/image/image.styles.css === */
@@ -5523,6 +5636,30 @@ section.list-steps.timeline > :is(ol,ul) > li > :is(ul,ol) { list-style:none; pa
 section.list-steps.timeline > :is(ol,ul) > li > :is(ul,ol) > li { font-weight:400; }
 section.list-steps.timeline > :is(ol,ul) > li > :is(ul,ol) > li em { font-size:var(--fs-meta); color:var(--text-body); line-height:var(--lh-snug); font-style:normal; }
 
+/* ── Box-local family reflow (engineering/decisions/2026-06-18-component-adaptive-sizing.md).
+   The default strip is a horizontal flex row of step cards with right-pointing
+   connectors; in a tall box those columns crush. Apply the existing `vertical`
+   treatment automatically — stack the cards down the frame, content-height, with a
+   down-pointing connector on the bottom edge. Keyed on the nearest `lattice`
+   container's aspect (a portrait deck OR a narrow nested cell). `:not(.timeline)`
+   spares the dots-on-a-spine variant (its own layout); the `:not()` also lifts the
+   selector to (0,3,2) so it clears the equal-weight variant rules cleanly. Boundary
+   is `≤ 0.9` (tall + strip): a square box fits neither the horizontal row (it
+   overflows) nor 3–4 full cards stacked (also overflows), so `square` is left out of
+   `adapt.families` and the vertical stack fires only on the taller frames. */
+@container lattice (aspect-ratio <= 0.9) {
+  section.list-steps.list-steps:not(.timeline) ol {
+    flex-direction: column; gap: var(--sp-md); align-items: stretch; flex: 0 1 auto;
+  }
+  section.list-steps.list-steps:not(.timeline) ol > li { flex: 0 0 auto; }
+  section.list-steps.list-steps:not(.timeline) ol > li:not(:last-child)::after {
+    right: 50%; top: auto; bottom: calc(-1 * var(--sp-md) / 2);
+    transform: translate(50%, 50%);
+    border-top: 10px solid var(--border); border-bottom: none;
+    border-left: 10px solid transparent; border-right: 10px solid transparent;
+  }
+}
+
 /* === lib/components/inventory/list-tabular/list-tabular.styles.css === */
 /* list-tabular — extracted from lib/_legacy.css (batch 6).
  * See lib/components/list-tabular/list-tabular.manifest.json for the component contract.
@@ -5830,6 +5967,45 @@ section.list-tabular.register.outline ol > li > code {
 /* ── Universal modifier: compact ──────────────────────────────────────── */
 section.list-tabular.compact ol > li { padding:var(--sp-xs) 0; }
 
+/* ── Box-local family reflow (engineering/decisions/2026-06-18-component-adaptive-sizing.md).
+   The row is a four-track grid (counter · name · description · meta); in a tall box
+   those tracks crush to slivers and the meta wraps badly. Collapse the row to a
+   block flow — the counter and name lead the line, the meta sits inline after the
+   name, and the description drops to its own line beneath. (Block flow, not a grid
+   re-track, because the name is a bare text node the grid can place only by source
+   order — a block flow lays them out in that order without fighting it.) Keyed on
+   the nearest `lattice` container's aspect; the doubled class `.list-tabular.list-
+   tabular` reaches the variants' (0,2,N) weight and source order keeps it last. */
+@container lattice (aspect-ratio <= 0.9) {
+  section.list-tabular.list-tabular ol > li {
+    display: block;
+    grid-template-columns: none;
+  }
+  section.list-tabular.list-tabular ol > li::before {
+    margin-right: var(--sp-sm);
+  }
+  /* meta code → inline after the name (no longer a right-aligned column). */
+  section.list-tabular.list-tabular ol > li > code {
+    display: inline-block;
+    margin-left: var(--sp-sm);
+    text-align: left;
+  }
+  /* description (nested list) → its own line below the name. */
+  section.list-tabular.list-tabular ol > li > ul { display: block; }
+  section.list-tabular.list-tabular ol > li > ul > li:first-child {
+    display: block;
+    margin-top: var(--sp-2xs);
+  }
+  /* the 3-line authoring contract carries meta as a second nested li (not inline
+     `<code>`); in block flow its base `grid-column:4; text-align:right` would orphan
+     it right-aligned, so left-align it onto its own line like the inline-code meta. */
+  section.list-tabular.list-tabular ol > li > ul > li:nth-child(2) {
+    display: block;
+    text-align: left;
+    margin-top: var(--sp-2xs);
+  }
+}
+
 /* === lib/components/inventory/logo-wall/logo-wall.styles.css === */
 /* logo-wall — a grid of brand / partner / funder marks as social proof.
  * See lib/components/inventory/logo-wall/logo-wall.manifest.json for the contract.
@@ -5920,6 +6096,26 @@ section.logo-wall.dark > ul > li img {
 section.logo-wall.dark.color > ul > li img {
   filter: none;
   opacity: 1;
+}
+
+/* ── Box-local family reflow (engineering/decisions/2026-06-18-component-adaptive-sizing.md).
+   A wide wall of marks letterboxes into a short band in a tall box — every mark
+   shrinks and the canvas reads empty. Halve the column count so each mark keeps
+   presence and the rows fill down the frame. Keyed on the nearest `lattice`
+   container's aspect, so it fires on a portrait deck AND inside a narrow nested
+   cell. NOTE: the column count must be set on the `> ul` GRID (a descendant) —
+   a `@container` rule cannot restyle its own container element (the section), so
+   overriding `--logo-cols` on the section is a silent no-op (the §11 constraint). */
+@container lattice (aspect-ratio <= 0.9) {
+  section.logo-wall.logo-wall > ul {
+    grid-template-columns: repeat(2, 1fr);
+    /* Cohesive centred cluster — the marks read as one wall held in the slide's
+       middle, rather than scattered the full height of the frame. */
+    align-content: center;
+    gap: var(--sp-2xl) var(--sp-xl);
+  }
+  /* dense carries twice the roster — keep it denser than the default wall. */
+  section.logo-wall.dense > ul { grid-template-columns: repeat(3, 1fr); }
 }
 
 /* === lib/components/chart/map/map.styles.css === */
@@ -6599,6 +6795,61 @@ section.math.stats > p:not(:has(> .katex-display)):not(:first-of-type) {
   color: var(--text-body);
   font-size: var(--fs-body);
   line-height: var(--lh-base);
+}
+
+/* ── Box-local family reflow (engineering/decisions/2026-06-18-component-adaptive-sizing.md).
+   The hero+legend (`feature`/bare) and matrix+properties (`matrix`) layouts put the
+   equation and its annotations in two columns; in a tall box those crush. Collapse
+   each by spanning BOTH children full-width (`grid-column: 1 / -1`) and stacking the
+   legend/properties beneath the equation. IMPORTANT: the columns can't be removed by
+   restyling the section's own `grid-template-columns` — a `@container` rule cannot
+   style its own container element (§11). Spanning the descendants 1/-1 takes the full
+   width regardless of the section's column tracks, which a container query CAN do.
+   `derivation`/`theorem`/`stats` are already single-column. (`compare` uses CSS
+   multi-`column-count` and `canvas` uses `grid-template-areas` — both are section-
+   element properties a container query can't reach, so they stay landscape; see the
+   manifest `adapt.families` note.) Keyed on the nearest `lattice` container's aspect;
+   the doubled class `.math.math` matches the variant rules' weight (and beats the
+   zero-specificity `:where()` bare-math selector). */
+@container lattice (aspect-ratio <= 0.9) {
+  /* feature (+ bare): equation full-width, legend full-width beneath it. */
+  section.math.math:where(:not(.derivation):not(.theorem):not(.compare):not(.canvas):not(.matrix):not(.stats)) > p:has(> .katex-display),
+  section.math.math.feature > p:has(> .katex-display) {
+    grid-column: 1 / -1; grid-row: 3;
+    align-self: start; padding-top: var(--sp-xl);
+    border-right: none; padding-right: 0; padding-bottom: var(--sp-md);
+  }
+  section.math.math:where(:not(.derivation):not(.theorem):not(.compare):not(.canvas):not(.matrix):not(.stats)) > :is(ul, ol),
+  section.math.math.feature > :is(ul, ol) {
+    grid-column: 1 / -1; grid-row: 4; align-self: start;
+  }
+  /* Tall frame = room for a monumental hero equation; scale it up so it owns the
+     canvas instead of floating small in a void. */
+  section.math.math:where(:not(.derivation):not(.theorem):not(.compare):not(.canvas):not(.matrix):not(.stats)) > p:has(> .katex-display) .katex-display > .katex,
+  section.math.math.feature > p:has(> .katex-display) .katex-display > .katex {
+    font-size: 2.7em;
+  }
+  /* matrix: equation full-width over properties; left rule → top rule. */
+  section.math.math.matrix > p:has(> .katex-display) { grid-column: 1 / -1; grid-row: 3; align-self: start; padding-top: var(--sp-xl); }
+  section.math.math.matrix > p:has(> .katex-display) .katex-display > .katex { font-size: 2.4em; }
+  section.math.math.matrix > :is(ul, ol) {
+    grid-column: 1 / -1; grid-row: 4; align-self: start;
+    padding-left: 0; border-left: none;
+    padding-top: var(--sp-md); border-top: 1px solid var(--border);
+  }
+}
+
+/* `compare` (CSS multi-`column-count`) and `canvas` (`grid-template-areas`) put their
+   layout on the SECTION — section-element properties a `@container` query can't reach
+   (§11). They key on the deck-wide `data-orientation` stamp instead (the sanctioned
+   path; cf. split-compare): on a portrait deck `compare` reads as one column and
+   `canvas` stacks the equation over the plot. */
+section.math.compare[data-orientation="portrait"] { column-count: 1; }
+section.math.compare[data-orientation="portrait"] > h3 { break-before: avoid; }
+section.math.canvas[data-orientation="portrait"] {
+  grid-template-columns: 1fr;
+  grid-template-rows: auto auto auto auto 1fr;
+  grid-template-areas: "eyebrow" "title" "eq" "cap" "plot";
 }
 
 /* ── function-plot SVG styling ──
@@ -7582,6 +7833,45 @@ section.q-and-a.solo > :is(ul, ol) > li > :is(ul, ol) {
 section.q-and-a.solo > :is(ul, ol) > li > :is(ul, ol) > li {
   font-size: var(--fs-message);
   line-height: var(--lh-snug);
+}
+
+/* ── Box-local family reflow (engineering/decisions/2026-06-18-component-adaptive-sizing.md).
+   The default ledger, spine, and tab looks are already single-column streams and
+   need no reflow. Two looks pack horizontally and crush in a tall box: `grid`
+   (2×2 quadrant) and `rail` (number | question | answer columns). Collapse both to
+   a single vertical column — grid drops its cross rules, rail falls back to the
+   ledger's hanging-index form — so a portrait deck (or a narrow nested cell) reads
+   one pair per band. Keyed on the nearest `lattice` container's aspect. */
+@container lattice (aspect-ratio <= 0.9) {
+  /* grid 2×2 → one column; retire the dividing cross. The container is a flex/grid
+     descendant (`> ul`) so the container query CAN restyle it: drop to a flex column
+     so the pairs pack by content height + gap (the grid's stretched auto-rows left
+     huge gaps), and reset each pair's reserved two-line header to natural height. */
+  section.q-and-a.grid > :is(ul, ol) {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: stretch;
+    gap: var(--sp-lg);
+  }
+  section.q-and-a.grid > :is(ul, ol) > li { grid-template-rows: auto auto; }
+  section.q-and-a.grid > :is(ul, ol)::before,
+  section.q-and-a.grid > :is(ul, ol)::after { display: none; }
+  /* rail columns → the ledger's hanging-index block so Q and A stack legibly. */
+  section.q-and-a.rail > :is(ul, ol) > li {
+    display: block;
+    position: relative; /* self-contained context for the absolute index ::before */
+    padding-left: var(--qa-gutter);
+    padding-bottom: var(--sp-lg);
+    border-left: 2px solid var(--accent);
+  }
+  section.q-and-a.rail > :is(ul, ol) > li::before {
+    content: "0" counter(qa);
+    position: absolute;
+    left: var(--sp-md);
+    top: 0;
+  }
+  section.q-and-a.rail > :is(ul, ol) > li > :is(ul, ol) { margin-top: var(--sp-xs); }
 }
 
 /* === lib/components/chart/quadrant/quadrant.styles.css === */

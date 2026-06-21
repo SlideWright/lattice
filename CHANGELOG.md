@@ -109,6 +109,22 @@ in patch versions.
   number keys still work. Verified on both surfaces, light + dark, at 1440/820/390px.
   Completes the pie per-slice detail trio (Present reveal · PDF speaker note · in-editor
   preview). See `engineering/decisions/2026-06-19-css-3d-charts-feasibility.md`.
+- **Nine more components now reflow to a tall box (component adaptive-sizing
+  sweep, batch 2 / Tier-A).** `logo-wall`, `list-tabular`, `glossary`, `q-and-a`,
+  `actors`, `decision`, `compare-prose`, `list-steps`, and `math` each restructure
+  when rendered in a portrait/tall box instead of crushing a wide layout into a band:
+  multi-column walls and grids collapse to fewer columns, horizontal card strips stack
+  vertically, side-by-side panels go single-column, and the two-column math
+  hero/legend stacks. Authored once — no per-size variant — the reflow fires
+  purely from the box's aspect crossing a family boundary (`wide · square · tall
+  · strip`); **landscape output is unchanged** (the `@container` query is inert
+  above 1.05 aspect, and the section-element variants key on `[data-orientation]`).
+  Each component's manifest gains an `adapt` block (`families` + `priority`).
+  `obligation-matrix` is deferred — a true 2-D matrix whose column semantics
+  can't survive a CSS-only stack. (Legal-bucket layouts reflowed separately in
+  batch A1, #464.) See
+  `engineering/decisions/2026-06-18-component-adaptive-sizing.md` §13 and
+  `examples/adaptive-sweep.md`.
 
 - **`piechart` per-slice detail now reaches the static PDF — as the slide's speaker
   note.** A slice's optional nested sublist already powered the Present/Practice reveal

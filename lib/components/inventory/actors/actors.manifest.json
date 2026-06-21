@@ -1,10 +1,25 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "actors",
-  "adapt": { "mode": "native" },
   "function": "inventory",
   "form": "ledger",
   "substance": "structure",
+  "adapt": {
+    "mode": "reflow",
+    "families": [
+      "wide",
+      "square",
+      "tall",
+      "strip"
+    ],
+    "priority": [
+      "title",
+      "actors"
+    ],
+    "droppable": [
+      "body"
+    ]
+  },
   "capacity": { "axis": "item", "min": 3, "sweet": 4, "soft": 6, "hard": 7, "escalateTo": ["list-tabular","split across slides"], "note": "the ledger reads cleanly up to about six rows" },
   "tags": ["ownership", "onboarding", "reference"],
   "description": "Roster of responsibilities owned by named actors.",

@@ -1,6 +1,6 @@
 ---
 status: in-progress
-summary: Make components adaptive to the box they occupy (not the deck's named size) via box-local @container queries over four structural families — Wide · Square · Tall · Strip. Pilot landed for 5 components; full-catalog sweep remains.
+summary: Make components adaptive to the box they occupy (not the deck's named size) via box-local @container queries over four structural families — Wide · Square · Tall · Strip. Pilot (5) + batch 1 (5) + batch 2 (12) landed; obligation-matrix deferred.
 version: 1
 supersedes: none
 builds-on: 2026-05-10-multi-resolution-strategy.md, 2026-06-16-social-mobile-portrait-sizes.md, 2026-06-16-orientation-in-the-form-model.md, 2026-06-16-retire-section-as-grid.md
@@ -366,3 +366,62 @@ staged nested-cell foundation; until then it stays on `data-orientation`.
 **Still on `data-orientation` only** after this batch: `split-panel` (above). The
 six long-running galleries and the `data-orientation` retirement (§8 step 5) wait on
 broader coverage + the engine `--_sec-1cqi` stamp (§11, behind export sign-off).
+
+## 13. Sweep — batch 2 (2026-06-20)
+
+Twelve more components converted, taking the catalog's non-adaptive remainder
+(audited in the `which components are not adaptive` review) to box-aware. Each was
+render-verified at `size: story` (reflow fires) and landscape (byte-unchanged —
+the query is inert above 1.05 aspect / the stamp is `landscape`), then given an
+`adapt` block (`families` + `priority`). Demo: `examples/adaptive-sweep.md`
+(+ committed `.pdf`).
+
+**Box-local via `@container` on descendants (the bulk):**
+
+- **`statute-stack`, `decision`, `list-steps`, `compare-prose`, `q-and-a` (grid /
+  rail), `actors`, `list-tabular`, `regulatory-update`** — grids / horizontal card
+  strips / multi-column rows collapse to a single column on `≤ 0.9` (`list-steps`
+  reuses its `vertical` connector; `decision` on `≤ 1.05`). All target a
+  *descendant* (`> ul` / `> li`), so the container query reaches them.
+- **`logo-wall`** — the column count moves to the `> ul` grid, **not** the section
+  `--logo-cols` variable: a `@container` rule on the section is a no-op (§11). 2-up
+  on `≤ 0.9`, distributed `space-evenly`.
+- **`glossary`** — the term/definition table holds as a narrow two-column read down
+  to `tall`; only on the tightest `strip` (`≤ 0.5`) does it stack term-over-definition.
+- **`math`** — `feature`/bare and `matrix` collapse by spanning the equation and its
+  legend/properties **full-width** (`grid-column: 1 / -1`) rather than re-tracking the
+  section grid (which §11 forbids). `derivation`/`theorem`/`stats` are already one
+  column.
+
+**Section-element layouts via `[data-orientation]` (the §11 path, cf. `split-compare`):**
+
+- **`citation-card`** (`split`/`triptych`/`margin`) and **`math`** (`compare`'s
+  `column-count`, `canvas`'s `grid-template-areas`) put their layout on the *section*,
+  which a container query can't restyle. They key on the deck-wide
+  `[data-orientation="portrait"]` stamp instead — unifying the variants to the
+  default single-column flow. Deck-orientation-keyed (no nested-cell reach), which is
+  acceptable for full-slide layouts and is the same seam `split-compare` draws.
+
+**Two findings worth keeping (so the next batch doesn't relearn them):**
+
+- **A descendant reflow can still be beaten by an auto margin.** `actors`' chip is a
+  `.lat-pill`, and the universal pill rule (`base.modifiers`) sets `margin-left: auto`
+  to right-anchor it. An auto margin beats `justify-self` in grid, so the chip stayed
+  right until the reflow also set `margin-left: 0`. Check for `margin: auto` before
+  trusting `justify-self`/`justify-items` in a reflow.
+- **`data-orientation` IS stamped on every section** (engine + emulator), so the §11
+  "section-element layout stays on the stamp" path is real and cross-renderer-safe —
+  not a fallback to avoid.
+
+**Deferred (documented, not done):**
+
+- **`obligation-matrix`** — a true regulations × obligations matrix. A CSS-only stack
+  drops the column semantics (the obligation labels aren't on the cells), so it needs a
+  transform that injects per-cell labels — out of scope for a CSS sweep, and it touches
+  the render path. Same category as `compare-table`.
+
+**Genuinely not adaptive-by-structure (scale-only, correctly left alone):** the anchor
+trio (`title`/`divider`/`closing`), `big-number`, `quote`, `code`, `diagram` — centred
+heroes / single streams / Mermaid-owned SVG with no structure to reflow; and
+`compare-code` / `redline`, whose side-by-side diff is load-bearing (their
+`orientation: ["landscape"]` lock is correct).
