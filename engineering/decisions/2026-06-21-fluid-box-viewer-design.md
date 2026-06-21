@@ -161,7 +161,29 @@ Per the Quality Bar — *it renders* is the floor:
 - Demo deck `examples/<slug>.md` (+ committed PDF) per HARD #9; `CHANGELOG.md`
   `## Unreleased` per HARD #10.
 
-## 8. Out of scope / sequence after this
+## 8. Prototype validation (2026-06-21)
+
+Before committing to the build, a throwaway `.scratch/` prototype rendered a
+landscape deck (`examples/kpi-stats-lift.md`), re-inlined the runtime, and
+overrode the pinned `section{width/height:<px> !important}` box with a
+viewport-filling scroll-snap box. Confirmed on real renders (phone 390×844,
+desktop 1440×900):
+
+- **The core claim holds.** Unbolting the box is the whole trigger — the KPI row
+  collapsed 4-across → a vertical stack, the stats ledger stacked, the portrait
+  type scale fired, all from the *existing* runtime + `@container` queries. No
+  engine change was needed to get reflow.
+- **Desktop is genuinely untouched** — the toggle defaults off in landscape and
+  the deck renders in its normal fixed 16:9 box.
+
+One design refinement surfaced, now **in the keystone's scope** (it is placement,
+not autofit): a *light* slide (e.g. 4 KPIs) forced to a full portrait screenful
+spreads its content across the height with large gaps — airy, if legible. The
+keystone needs a rule for **how sparse content sits in a tall box** (tight-centre
+vs. distribute), distinct from the Capability-2 autofit that handles *over*-dense
+slides. Captured here so the build doesn't rediscover it.
+
+## 9. Out of scope / sequence after this
 
 1. **This PR:** the design doc (this file).
 2. **Next:** the keystone build above.
