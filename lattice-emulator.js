@@ -107,6 +107,11 @@ OPTIONS
                           (<output>.notes.txt), one block per slide
       --notes-icon        Show a clickable sticky-note icon on each slide with
                           a note (default: notes are embedded but hidden)
+      --fluid             Emit the .html as the opt-in fluid-box VIEWER: each
+                          slide fills the viewport and reflows to portrait on a
+                          phone (swipe between slides), with a toggle back to the
+                          fixed deck. PDF/PPTX/PNG outputs are unchanged. Can also
+                          be enabled per-deck with a 'fluid: true' front-matter key.
 
   Both --flag value and --flag=value syntax accepted. Positional args still
   work; named flags take precedence when both are supplied.
@@ -174,6 +179,7 @@ function parseArgs(argv) {
     if (a === '-q' || a === '--quiet') { flags.quiet = true; continue; }
     if (a === '--notes') { flags.notes = true; continue; }
     if (a === '--notes-icon') { flags['notes-icon'] = true; continue; }
+    if (a === '--fluid') { flags.fluid = true; continue; }
     // --flag=value form
     const eq = a.match(/^(--?[A-Za-z][\w-]*)=(.*)$/);
     if (eq && opts[eq[1]]) { flags[opts[eq[1]]] = eq[2]; continue; }
@@ -221,6 +227,8 @@ if (flags.palette) paletteArg = flags.palette;
 const QUIET = flags.quiet;
 const NOTES_SIDECAR = !!flags.notes;
 const NOTES_ICON = !!flags['notes-icon'];
+// FLUID_VIEW is resolved below, once the deck front matter is parsed (it can be
+// enabled by `--fluid` OR a `fluid: true` front-matter key).
 
 if (!mdFile || !outFile) {
   console.error('Usage:');
@@ -892,6 +900,12 @@ function preprocessMermaid(source) {
 const rawMd = preprocessMermaid(md);
 const fmMatch = rawMd.match(/^---([\s\S]*?)---\n/);
 const fm      = fmMatch ? fmMatch[1] : '';
+// Fluid-box viewer: emit the .html as the opt-in responsive viewer (keeps +
+// inlines the runtime, flags the page fluid-capable). Enabled by the `--fluid`
+// flag OR a `fluid: true` front-matter key. The PDF/PPTX/PNG outputs are
+// UNCHANGED either way — fluid only affects the written .html, after raster.
+// Design: engineering/decisions/2026-06-21-fluid-box-viewer-design.md.
+const FLUID_VIEW = !!flags.fluid || /^\s*fluid:\s*(?:true|yes|on)\s*$/im.test(fm);
 // Slide geometry — ONE registry (HARD RULE #1). The page template needs pixel
 // dimensions for the puppeteer PDF; rather than duplicate a size table (which
 // drifted — it used to omit 16:9 and silently rendered it as hd), resolve the
@@ -1321,7 +1335,41 @@ const outHtml = outFile.replace(/\.(pdf|pptx|png)$/i, '') + '.html';
 // invariants suite enough to time out in CI). The class-strip below still clears
 // the emulator's own inline-watcher ring.
 const RUNTIME_SCRIPT = /[ \t]*<script\b[^>]*\blattice-runtime(?:\.min)?\.js[^>]*><\/script>\s*/gi;
-fs.writeFileSync(outHtml, htmlDoc.replace(RUNTIME_SCRIPT, ''));
+// The CLEAN export HTML: drop any deck-embedded <script src=…runtime…> tag (the
+// relative/file:// path won't resolve in a shared HTML, and the runtime is a
+// no-op on already-rendered export DOM). This is what the PDF/PPTX/PNG raster
+// loads below — so those outputs are byte-identical whether or not --fluid is
+// set. The fluid VIEWER is derived from this clean HTML and written over outHtml
+// ONLY after rasterization (see toFluidViewer / the post-raster rewrite).
+const cleanDocHtml = htmlDoc.replace(RUNTIME_SCRIPT, '');
+
+// Build the opt-in fluid viewer from the clean export HTML: flag the page
+// fluid-capable and inline the runtime (the controller re-derives orientation
+// and wires the toggle). Self-contained so the .html stays a single emailable
+// file. Returns the clean HTML unchanged if the runtime bundle is missing.
+function toFluidViewer(cleanHtml) {
+  const runtimePath = path.join(PKG_ROOT, 'dist', 'lattice-runtime.min.js');
+  if (!fs.existsSync(runtimePath)) {
+    if (!QUIET) console.warn(`warning: --fluid set but ${path.relative(PKG_ROOT, runtimePath)} is missing — run \`npm run runtime:build\`; the viewer will not reflow.`);
+    return cleanHtml;
+  }
+  // The bundle builds HTML strings containing `</script>`, `<script`, and `<!--`;
+  // inlined raw they prematurely close this <script> element and the whole
+  // runtime fails to parse. Escape the `<` of just those sequences with \x3C —
+  // valid only inside the string/regex literals where they occur, so the executed
+  // JS is unchanged. (See HTML spec, script-data states.)
+  const runtimeJs = fs.readFileSync(runtimePath, 'utf8')
+    .replace(/<(?=!--|\/?script)/gi, '\\x3C');
+  return cleanHtml
+    .replace(/<html\b/i, '<html data-lattice-fluid-capable')
+    // Function replacement (not a string) so `$&`/`$1`/`$$` inside the minified
+    // runtime are inserted literally, not interpreted as replace patterns.
+    .replace(/<\/body>/i, () => `<script>\n${runtimeJs}\n</script>\n</body>`);
+}
+
+// Write the clean export HTML now; the raster path below loads it. If --fluid,
+// the post-raster rewrite replaces it with the viewer once raster is done.
+fs.writeFileSync(outHtml, cleanDocHtml);
 if (!QUIET) console.log(`HTML: ${slides.length} slides → ${outHtml}`);
 
 // ── PDF via Puppeteer ─────────────────────────────────────────────────────────
@@ -1480,6 +1528,13 @@ const puppeteer = loadPuppeteer();
       });
       if (!QUIET) console.log(`PPTX: ${count} slides → ${outFile}`);
     }
+  }
+  // Fluid viewer: now that the raster (which loaded the CLEAN outHtml) is done,
+  // overwrite outHtml with the responsive viewer. The exported PDF/PPTX/PNG bytes
+  // above are unaffected — they never saw the marker or the inlined runtime.
+  if (FLUID_VIEW) {
+    fs.writeFileSync(outHtml, toFluidViewer(cleanDocHtml));
+    if (!QUIET) console.log(`Fluid viewer: ${outHtml}`);
   }
 })().catch((e) => {
   // Surface render/export failures as a one-line error (matching readFileOrDie),

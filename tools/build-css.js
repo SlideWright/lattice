@@ -164,6 +164,10 @@ const TAIL_SOURCES = [
   ...FORMS_TILE_CSS_SOURCES,
   ...CONTRACT_LAYOUT_SOURCES,
   'lib/integrations/mermaid/mermaid.css',
+  // Fluid-box viewer mode — inert unless :root[data-lattice-view="fluid"] is set
+  // (lattice-emulator --fluid + the runtime fluid controller). Last so its
+  // viewport-box override also wins on source order, not just specificity.
+  'lib/base/base.fluid-view.css',
 ];
 
 const LAYER_DECLARATION =
