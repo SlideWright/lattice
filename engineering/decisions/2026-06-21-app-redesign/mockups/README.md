@@ -21,7 +21,20 @@ Inspector, Architect, and every other surface are identical between the two.
 | Brand | Small “L” tile on the rail | Playfair “Lattice” wordmark + an account avatar |
 | Left-edge cost | Permanent 66px rail | 0px — the work area reaches the edge |
 | Scales to more intents | Better (holds 6+) | Fine for 3; crowds past ~5 |
+| **Mobile intent switch** | rail collapses into a top **hamburger → drawer** | a thumb-friendly **bottom intent bar** |
 | Everything else | — identical — | — identical — |
+
+### Full mobile (390×844)
+
+Each version has a complete mobile set (Present is identical across both):
+
+| File | v1-rail | v2-tabs |
+|---|---|---|
+| `mobile-compose.png` | Preview + hamburger/drawer (drawer shown open) | Preview + bottom intent bar |
+| `mobile-edit.png` | Markdown editor + Architect bar (hamburger) | Markdown editor + Architect bar (bottom bar) |
+| `mobile-present.png` | reader: read-aloud highlight · lens chip · play/scrub dock | (identical) |
+
+(`mobile.png` is the earlier short single-screen Compose, kept for history.)
 
 See [`compare/compare-compose.png`](./compare/compare-compose.png) for the
 annotated side-by-side. **The red-team (PM-5) recommends v2 / top-tabs**: for three

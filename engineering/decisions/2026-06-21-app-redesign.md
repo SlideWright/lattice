@@ -284,7 +284,7 @@ Full index + rebuild steps: [`mockups/README.md`](./2026-06-21-app-redesign/mock
 | [`present.png`](./2026-06-21-app-redesign/mockups/v2-tabs/present.png) | Present: the reader — **read-aloud with synchronized highlight**, reader-facing **lens switch**, the play/scrub dock | 1440 · dark |
 | [`share.png`](./2026-06-21-app-redesign/mockups/v2-tabs/share.png) | The Share sheet: **hand off the deck** (Present link · PDF · PPTX · Print deck) vs **hand off the source** (Markdown · Marp bundle · **Print source**) | 1440 · light |
 | [`settings.png`](./2026-06-21-app-redesign/mockups/v2-tabs/settings.png) | Workspace Settings ("your setup"): generation tier · OpenRouter connect · spend + budget — distinct from the deck Inspector ("this deck") | 1440 · light |
-| [`mobile.png`](./2026-06-21-app-redesign/mockups/v2-tabs/mobile.png) | Mobile Compose: bottom intent bar · Edit/Preview pane tabs · icon-only chrome | 390 · light |
+| [`mobile-compose.png`](./2026-06-21-app-redesign/mockups/v2-tabs/mobile-compose.png) | Full mobile Compose (Preview + Edit + Present in `mobile-*`): bottom intent bar · pane tabs · read-aloud dock. v1's mobile uses a hamburger→drawer instead — see `v1-rail/mobile-*.png` | 390 · light/dark |
 
 These are *visual specs* (zero behavior, PM-12), not shipped code — but they are
 built from the real token bridge, so Win 1 inherits the exact palette + type they
@@ -745,5 +745,10 @@ merge-authorization gate (CLAUDE.md), then post the standup.
   added the missing **Fabricate / Theme Studio** screen, and kept the **v1 rail**
   set for the open fork. Reorganised `mockups/` into `v1-rail/`, `v2-tabs/`,
   `compare/` (annotated side-by-side), and `src/` (rebuildable); §2.4 repointed.
+- 2026-06-21 — **Full mobile mockups (v1 + v2).** Added complete 390×844 mobile
+  screens (Compose-Preview, Compose-Edit, Present) for both shells, making the
+  mobile intent switch explicit: v2 = thumb-friendly **bottom intent bar**, v1 =
+  the rail collapses into a top **hamburger → drawer**. In `v1-rail/mobile-*.png`
+  and `v2-tabs/mobile-*.png`.
 - _pending_ — Author approval (per PM-2, of **Win 0 only**); intent-switch shell
   (v1 rail vs v2 tabs, fork PM-5) still to confirm.
