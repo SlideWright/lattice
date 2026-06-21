@@ -186,7 +186,20 @@
         "strip"
       ],
       "adapt": {
-        "mode": "native"
+        "mode": "reflow",
+        "families": [
+          "wide",
+          "square",
+          "tall",
+          "strip"
+        ],
+        "priority": [
+          "title",
+          "actors"
+        ],
+        "droppable": [
+          "body"
+        ]
       },
       "tags": [
         "ownership",
@@ -1809,7 +1822,20 @@
         "strip"
       ],
       "adapt": {
-        "mode": "native"
+        "mode": "reflow",
+        "families": [
+          "wide",
+          "square",
+          "tall",
+          "strip"
+        ],
+        "priority": [
+          "title",
+          "sides"
+        ],
+        "keepTogether": [
+          "sides"
+        ]
       },
       "tags": [
         "tradeoff",
@@ -2231,7 +2257,17 @@
         "strip"
       ],
       "adapt": {
-        "mode": "native"
+        "mode": "reflow",
+        "families": [
+          "wide",
+          "square",
+          "tall",
+          "strip"
+        ],
+        "priority": [
+          "verdict",
+          "options"
+        ]
       },
       "tags": [
         "recommendation",
@@ -2885,7 +2921,17 @@
         "strip"
       ],
       "adapt": {
-        "mode": "native"
+        "mode": "reflow",
+        "families": [
+          "wide",
+          "square",
+          "tall",
+          "strip"
+        ],
+        "priority": [
+          "title",
+          "entries"
+        ]
       },
       "tags": [
         "definition",
@@ -3927,12 +3973,20 @@
       ],
       "families": [
         "wide",
-        "square",
         "tall",
         "strip"
       ],
       "adapt": {
-        "mode": "native"
+        "mode": "reflow",
+        "families": [
+          "wide",
+          "tall",
+          "strip"
+        ],
+        "priority": [
+          "title",
+          "steps"
+        ]
       },
       "tags": [
         "process",
@@ -4092,7 +4146,20 @@
         "strip"
       ],
       "adapt": {
-        "mode": "native"
+        "mode": "reflow",
+        "families": [
+          "wide",
+          "square",
+          "tall",
+          "strip"
+        ],
+        "priority": [
+          "title",
+          "rows"
+        ],
+        "droppable": [
+          "meta"
+        ]
       },
       "tags": [
         "reference",
@@ -4235,7 +4302,17 @@
         "strip"
       ],
       "adapt": {
-        "mode": "native"
+        "mode": "reflow",
+        "families": [
+          "wide",
+          "square",
+          "tall",
+          "strip"
+        ],
+        "priority": [
+          "headline",
+          "logos"
+        ]
       },
       "tags": [
         "visual",
@@ -4538,7 +4615,21 @@
         "strip"
       ],
       "adapt": {
-        "mode": "native"
+        "mode": "reflow",
+        "families": [
+          "wide",
+          "square",
+          "tall",
+          "strip"
+        ],
+        "priority": [
+          "title",
+          "equation",
+          "annotations"
+        ],
+        "droppable": [
+          "annotations"
+        ]
       },
       "tags": [
         "formula",
@@ -5446,7 +5537,17 @@
         "strip"
       ],
       "adapt": {
-        "mode": "native"
+        "mode": "reflow",
+        "families": [
+          "wide",
+          "square",
+          "tall",
+          "strip"
+        ],
+        "priority": [
+          "title",
+          "pairs"
+        ]
       },
       "tags": [
         "pitch",

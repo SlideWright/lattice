@@ -1,10 +1,22 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "logo-wall",
-  "adapt": { "mode": "native" },
   "function": "inventory",
   "form": "grid",
   "substance": "prose",
+  "adapt": {
+    "mode": "reflow",
+    "families": [
+      "wide",
+      "square",
+      "tall",
+      "strip"
+    ],
+    "priority": [
+      "headline",
+      "logos"
+    ]
+  },
   "tags": ["visual", "showcase", "pitch"],
   "description": "A grid of customer, partner, or funder logos as social proof.",
   "purpose": "Use for the credibility slide — the 'trusted by' / 'our funders' / 'participating agencies' wall. Marks render desaturated and uniform so mismatched brand colours don't fight each other; the `color` variant keeps them branded when the hues carry meaning.",

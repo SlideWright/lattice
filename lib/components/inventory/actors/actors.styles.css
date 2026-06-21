@@ -100,3 +100,24 @@ section.actors > ol > li > ol > li {
   color:var(--text-body);
   line-height:var(--lh-base);
 }
+
+/* ── Box-local family reflow (engineering/decisions/2026-06-18-component-adaptive-sizing.md).
+   Each row pairs a responsibility (left) with the actor chip (right) on one line.
+   In a tall box a long responsibility and the right-anchored chip collide, so drop
+   the chip onto its own line beneath the responsibility and let the body follow.
+   Keyed on the nearest `lattice` container's aspect (portrait deck OR narrow nested
+   cell). The doubled class `.actors.actors` clears the base `> :is(ul,ol) > li`
+   grid placement. */
+@container lattice (aspect-ratio <= 0.9) {
+  section.actors.actors > :is(ul, ol) > li { grid-template-columns: 1fr; }
+  /* Drop the chip onto its own line, hanging at the LEFT under the responsibility.
+     The universal pill rule (base.modifiers) sets `margin-left: auto` to right-anchor
+     the chip on one line; cancel it so `justify-self: start` can take effect (an auto
+     margin otherwise beats justify-self in grid). */
+  section.actors.actors > ul > li > code,
+  section.actors.actors > ol > li > code {
+    grid-column: 1; grid-row: 2; justify-self: start;
+    margin-left: 0; margin-top: var(--sp-2xs);
+  }
+  section.actors.actors > :is(ul, ol) > li > :is(ul, ol) { grid-row: 3; }
+}

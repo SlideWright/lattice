@@ -88,3 +88,23 @@ section.logo-wall.dark.color > ul > li img {
   filter: none;
   opacity: 1;
 }
+
+/* ── Box-local family reflow (engineering/decisions/2026-06-18-component-adaptive-sizing.md).
+   A wide wall of marks letterboxes into a short band in a tall box — every mark
+   shrinks and the canvas reads empty. Halve the column count so each mark keeps
+   presence and the rows fill down the frame. Keyed on the nearest `lattice`
+   container's aspect, so it fires on a portrait deck AND inside a narrow nested
+   cell. NOTE: the column count must be set on the `> ul` GRID (a descendant) —
+   a `@container` rule cannot restyle its own container element (the section), so
+   overriding `--logo-cols` on the section is a silent no-op (the §11 constraint). */
+@container lattice (aspect-ratio <= 0.9) {
+  section.logo-wall.logo-wall > ul {
+    grid-template-columns: repeat(2, 1fr);
+    /* Cohesive centred cluster — the marks read as one wall held in the slide's
+       middle, rather than scattered the full height of the frame. */
+    align-content: center;
+    gap: var(--sp-2xl) var(--sp-xl);
+  }
+  /* dense carries twice the roster — keep it denser than the default wall. */
+  section.logo-wall.dense > ul { grid-template-columns: repeat(3, 1fr); }
+}
