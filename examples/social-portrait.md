@@ -34,7 +34,7 @@ Set the `size:` directive in the front matter and the layouts adapt to the talle
 
 ---
 
-<!-- _class: stats -->
+<!-- _class: stats compact -->
 
 `Formats shipped`
 

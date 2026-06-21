@@ -732,18 +732,18 @@ section[data-orientation="square"] {
   --fs-hero: calc(10.2 * var(--_sec-1cqi, 1cqi) * var(--fs-scale));
 }
 section[data-orientation="portrait"] {
-  --fs-meta: calc(2.4 * var(--_sec-1cqi, 1cqi) * var(--fs-scale));
-  --fs-body-compact: calc(2.75 * var(--_sec-1cqi, 1cqi) * var(--fs-scale));
-  --fs-body: calc(3.3 * var(--_sec-1cqi, 1cqi) * var(--fs-scale));
-  --fs-message: calc(4.25 * var(--_sec-1cqi, 1cqi) * var(--fs-scale));
-  --fs-emphasis: calc(5.35 * var(--_sec-1cqi, 1cqi) * var(--fs-scale));
-  --fs-h6: calc(2.4 * var(--_sec-1cqi, 1cqi) * var(--fs-scale));
-  --fs-h5: calc(3.3 * var(--_sec-1cqi, 1cqi) * var(--fs-scale));
-  --fs-h4: calc(4.05 * var(--_sec-1cqi, 1cqi) * var(--fs-scale));
-  --fs-h3: calc(4.6 * var(--_sec-1cqi, 1cqi) * var(--fs-scale));
-  --fs-h2: calc(5.55 * var(--_sec-1cqi, 1cqi));
-  --fs-h1: calc(8.15 * var(--_sec-1cqi, 1cqi));
-  --fs-hero: calc(13 * var(--_sec-1cqi, 1cqi) * var(--fs-scale));
+  --fs-meta: calc(2.78 * var(--_sec-1cqi, 1cqi) * var(--fs-scale));
+  --fs-body-compact: calc(3.7 * var(--_sec-1cqi, 1cqi) * var(--fs-scale));
+  --fs-body: calc(4.35 * var(--_sec-1cqi, 1cqi) * var(--fs-scale));
+  --fs-message: calc(5.2 * var(--_sec-1cqi, 1cqi) * var(--fs-scale));
+  --fs-emphasis: calc(6.3 * var(--_sec-1cqi, 1cqi) * var(--fs-scale));
+  --fs-h6: calc(2.78 * var(--_sec-1cqi, 1cqi) * var(--fs-scale));
+  --fs-h5: calc(4.35 * var(--_sec-1cqi, 1cqi) * var(--fs-scale));
+  --fs-h4: calc(5.2 * var(--_sec-1cqi, 1cqi) * var(--fs-scale));
+  --fs-h3: calc(5.75 * var(--_sec-1cqi, 1cqi) * var(--fs-scale));
+  --fs-h2: calc(7.05 * var(--_sec-1cqi, 1cqi));
+  --fs-h1: calc(9.05 * var(--_sec-1cqi, 1cqi));
+  --fs-hero: calc(13.9 * var(--_sec-1cqi, 1cqi) * var(--fs-scale));
 }
 
 /* === lib/base/base.elements.css === */

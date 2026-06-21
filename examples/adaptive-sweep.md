@@ -50,18 +50,15 @@ Twelve more components, each rendered on a 9:16 frame. Every one reflows to the 
 
 - Federal
   - `15 U.S.C. §6501 · COPPA`
-  - Verifiable parental consent for under-13 personal data.
-  - Operators must post a clear notice and a deletion route.
+  - Verifiable parental consent for under-13 data.
   - `In effect since 2000`
 - State
   - `Cal. Civ. Code §1798.120 · CCPA/CPRA`
-  - Opt-in for selling or sharing under-16 data; opt-out for over-16.
-  - DSAR handling within 45 days; deletion verified.
+  - Opt-in to sell or share under-16 data; opt-out over-16.
   - `Enforced 2023`
 - Local
   - `NYC Admin Code §22-1201`
-  - Bias-audit obligation for AEDTs used in employment decisions.
-  - Annual audit + candidate notice + public summary.
+  - Bias-audit obligation for employment AEDTs.
   - `Effective 2023`
 
 ---
@@ -84,13 +81,13 @@ Twelve more components, each rendered on a 9:16 frame. Every one reflows to the 
 ## What happens in the first hour of an incident.
 
 1. Declare and page
-   - Whoever notices opens the incident channel and pages on-call. Declaring is cheap; a missed page is the line item in the post-mortem.
+   - Whoever notices opens the channel and pages on-call. Declaring is cheap.
 2. Assign a commander
-   - One person owns coordination and communication. They direct the response — they do not debug it.
+   - One owner for coordination — directing the response, not debugging it.
 3. Stop the bleeding
-   - Mitigate before diagnosing. Roll back, fail over, or shed load first; find the root cause once customers are safe.
+   - Mitigate before diagnosing; root-cause once customers are safe.
 4. Communicate on a clock
-   - A status update every 30 minutes, even when it is "still investigating." Silence is what the retrospective remembers.
+   - A status update every 30 minutes — silence is what the retro remembers.
 
 ---
 

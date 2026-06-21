@@ -24,18 +24,15 @@ deck. Landscape renders byte-identically.
 
 - Federal
   - `15 U.S.C. §6501 · COPPA`
-  - Verifiable parental consent for under-13 personal data.
-  - Operators must post a clear notice and a deletion route.
+  - Verifiable parental consent for under-13 data.
   - `In effect since 2000`
 - State
   - `Cal. Civ. Code §1798.120 · CCPA/CPRA`
-  - Opt-in for selling or sharing under-16 data; opt-out for over-16.
-  - DSAR handling within 45 days; deletion verified.
+  - Opt-in to sell or share under-16 data; opt-out over-16.
   - `Enforced 2023`
 - Local
   - `NYC Admin Code §22-1201`
-  - Bias-audit obligation for AEDTs used in employment decisions.
-  - Annual audit + candidate notice + public summary.
+  - Bias-audit obligation for employment AEDTs.
   - `Effective 2023`
 
 ---
