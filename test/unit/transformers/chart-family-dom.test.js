@@ -146,7 +146,7 @@ describe('chart-family.applyToDom', () => {
       'three legend swatches');
   });
 
-  test('piechart: wedges carry data-slice; a nested sublist becomes an inert detail template', () => {
+  test('piechart: wedges carry data-mark; a nested sublist becomes an inert detail template (shared substrate)', () => {
     const doc = makeDoc(`
       <section class="piechart">
         <h2>Mix</h2>
@@ -160,17 +160,18 @@ describe('chart-family.applyToDom', () => {
     `);
     chartFamily.applyToDom(doc);
     const sec = doc.querySelector('section.piechart');
-    // every wedge is index-tagged for present-mode binding
-    const wedges = sec.querySelectorAll('.piechart-svg .wedge[data-slice]');
-    assert.equal(wedges.length, 2, 'both wedges tagged with data-slice');
+    // every wedge is index-tagged for present-mode binding — the SAME data-mark
+    // vocabulary as funnel/map/quadrant/radar (no more bespoke data-slice).
+    const wedges = sec.querySelectorAll('.piechart-svg .wedge[data-mark]');
+    assert.equal(wedges.length, 2, 'both wedges tagged with data-mark');
     // the label is clean — the nested sublist did NOT pollute it
     const labels = [...sec.querySelectorAll('.chart-key-label')].map(n => n.textContent.trim());
     assert.ok(labels.includes('A') && labels.includes('B'), `clean labels, got ${labels.join('|')}`);
-    // detail payload rides an inert <template> (renders nothing → PDF byte-identical)
-    const tpl = sec.querySelector('.piechart-details[hidden] template.piechart-detail[data-slice="0"]');
+    // detail payload rides the shared inert substrate (renders nothing → PDF byte-identical)
+    const tpl = sec.querySelector('.chart-details[hidden] template.chart-detail[data-mark="0"]');
     assert.ok(tpl, 'detail template emitted for the slice with a sublist');
     assert.match(tpl.innerHTML, /120 hrs/, 'sublist content captured in the template');
-    assert.equal(sec.querySelectorAll('template.piechart-detail').length, 1,
+    assert.equal(sec.querySelectorAll('template.chart-detail').length, 1,
       'only the slice with a sublist gets a detail template');
   });
 
@@ -333,18 +334,12 @@ describe('chart-family.applyToDom', () => {
 // Per-slice pie detail → speaker note in the static PDF (#452.1). The same
 // authored sublist powers the Present-mode <template> popover AND, folded into a
 // Marp-faithful comment, the slide's speaker note (PDF annotation + hidden aside)
-// — so a PDF reader gets the detail without the chart pixels changing.
+// — so a PDF reader gets the detail without the chart pixels changing. The note
+// builder itself (detailNote) is unit-tested in mark-detail.test.js; here we
+// assert the pie wires it through transformChartSection on the SHARED substrate
+// (chart-detail / data-mark), the same as the other SVG charts.
 describe('piechart per-slice detail → speaker-note comment', () => {
-  test('buildPieDetailNote: one line per detailed slice, "Label (value): item · item"', () => {
-    const note = engine.buildPieDetailNote([
-      { label: 'Cloud', valueRaw: '46%', detail: '<li>Mostly AWS.</li><li>120 hrs</li>' },
-      { label: 'On-prem', valueRaw: '30%', detail: '' },
-    ]);
-    assert.equal(note, '<!-- Cloud (46%): Mostly AWS. · 120 hrs -->');
-  });
-
   test('a pie with NO detail emits no comment (byte-identical export preserved)', () => {
-    assert.equal(engine.buildPieDetailNote([{ label: 'A', valueRaw: '50%', detail: '' }]), '');
     const html = engine.transformChartSection(
       '<h2>Mix</h2><ul><li>A <code>60%</code></li><li>B <code>40%</code></li></ul>', 'piechart').html;
     assert.ok(!/<!--/.test(html), 'plain pie stays comment-free');
@@ -356,13 +351,7 @@ describe('piechart per-slice detail → speaker-note comment', () => {
       'piechart').html;
     assert.match(html, /<!-- A \(60%\): the bulk -->/);
     assert.match(html, /class="piechart-figure"/, 'figure still rendered');
-    assert.match(html, /template class="piechart-detail" data-slice="0"/, 'present-mode template intact');
-  });
-
-  test('comment-safe: a stray "-->" in the detail cannot terminate the note early', () => {
-    const note = engine.buildPieDetailNote([{ label: 'X', valueRaw: '10%', detail: '<li>a --> b</li>' }]);
-    assert.match(note, /^<!--[\s\S]*-->$/);
-    assert.ok(!/--+>/.test(note.slice(4, -3)), 'no comment terminator survives inside the body');
+    assert.match(html, /template class="chart-detail" data-mark="0"/, 'present-mode template intact');
   });
 
   test('notes-core lifts the synthesized comment as the slide note (the boundary that ships it)', () => {

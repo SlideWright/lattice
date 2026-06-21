@@ -1,7 +1,7 @@
 ---
 status: in-progress
 summary: Which charts beyond the pie can take the per-mark interactive detail-reveal + present-mode CSS-3D tilt, and how to generalize the kernel + reveal layer so they're cheap to add. Decision — the treatment is TWO separable capabilities (A reveal, substrate-agnostic; B tilt, SVG-only); Tier 1 = funnel, quadrant, radar, map (clean SVG transfers, get A+B); generalize the pie's bespoke kernel + createChartInteract into a chart-family substrate, then opt each in. Radar reveals per-axis.
-last-updated: 2026-06-20
+last-updated: 2026-06-21
 companion:
   - 2026-06-19-css-3d-charts-feasibility.md
   - ../../lib/components/chart/_chart-family/chart-family.js
@@ -167,10 +167,11 @@ detail per labelled data point*. Per-series reveal is recorded as a future optio
   pie precedent); a nested `<ol>` is not split off and its text would leak into
   the label. Broadening to `<ol>` would also need quadrant's `<ul>`-only depth
   scanner widened, so it's deferred — documented in each chart's `detail` slot.
-- **Two emit vocabularies during the interim.** The new charts emit
-  `class="chart-detail"` / `data-mark`; the pie still emits its bespoke
-  `piechart-detail` / `data-slice`. The generalized `createChartInteract` must
-  recognise **both** until the pie is migrated onto the substrate (a follow-up).
+- **Two emit vocabularies during the interim — now resolved.** The interim had
+  the new charts emit `class="chart-detail"` / `data-mark` while the pie kept its
+  bespoke `piechart-detail` / `data-slice`, with `createChartInteract` recognising
+  **both**. The follow-up below migrated the pie onto the shared substrate, so the
+  dual-vocabulary path is gone — there is now one vocabulary across the family.
 
 ## Status
 
@@ -181,17 +182,26 @@ detail per labelled data point*. Per-series reveal is recorded as a future optio
   authored). Radar reveals per-axis (decided). Unit + parity + invariant tests
   green; maker-checker passed.
 - **On-screen reveal: shipped** — `createChartInteract` is now chart-agnostic:
-  generic mark access (`[data-slice], [data-mark]` scoped to the chart `<svg>`),
-  a per-mark `infoFor()` (label/value/colour from `data-label`/`data-value`, the
-  axis text node, or the pie legend), generic disc/lift geometry, and a dual
-  template selector — so funnel/map/quadrant/radar AND the pie all drive one
-  reveal layer (hover/tap/number-key + interaction-coupled tilt). The new charts
-  carry an invisible `data-label`/`data-value` on each mark as the uniform title
-  source (byte-identical export, like `data-mark`). Verified in the running
-  playground for all five charts (correct label/value/body; pie regression-safe).
-  Fixed a latent pie bug along the way: the reveal gate counted templates, so a
-  chart with non-contiguous detail capped reveal short — it now gates on the mark
-  count.
+  generic mark access (`[data-mark]` scoped to the chart `<svg>`), a per-mark
+  `infoFor()` (label/value/colour from `data-label`/`data-value`, the axis text
+  node, or the pie legend), generic disc/lift geometry, and a single
+  `template.chart-detail` selector — so funnel/map/quadrant/radar AND the pie all
+  drive one reveal layer (hover/tap/number-key + interaction-coupled tilt). The
+  new charts carry an invisible `data-label`/`data-value` on each mark as the
+  uniform title source (byte-identical export, like `data-mark`); the pie keeps
+  reading its SVG legend for label/value. Verified in the running playground for
+  all five charts (correct label/value/body; pie regression-safe). Fixed a latent
+  pie bug along the way: the reveal gate counted templates, so a chart with
+  non-contiguous detail capped reveal short — it now gates on the mark count.
+- **Pie migration onto the substrate: shipped (the deferred follow-up).** The
+  pie's bespoke kernel emission (`buildPieChart`'s inline `splitDetail`, the
+  `piechart-detail` / `piechart-details` / `data-slice` markup, and
+  `buildPieDetailNote`) is retired in favour of `mark-detail.js`'s shared
+  `splitDetail` / `detailPayload` / `detailNote`; wedges now carry `data-mark`.
+  `createChartInteract` drops its dual-vocabulary recognition (one selector set).
+  Author-facing markdown and exported pixels are unchanged. Unit + parity tests
+  green; the `proto/css3d-pie` page (which reads the real kernel output) updated
+  to the shared vocabulary.
 - Each chart's own gallery demonstrates the feature and carries every variant;
   per-feature demo deck (#9) `examples/chart-detail-reveal.md`. One branch / one
   PR (#17).

@@ -155,13 +155,14 @@ in patch versions.
 - **`piechart` slices can carry per-slice detail for a present-mode popover.** A slice
   may now nest a sublist (`- Slice \`46%\`` then an indented `  - …`); the kernel keeps
   the label/value exactly as before and emits the sublist as an **inert
-  `<template class="piechart-detail" data-slice="i">`** alongside the figure, and tags
-  every wedge `<path>` with `data-slice="i"`. The `<template>` is zero-footprint on the
-  slide face, so the **chart pixels are byte-identical** and a deck without sublists is
-  unchanged. (The static-PDF surfacing of the detail then shipped as the speaker-notes
-  channel — see the `### Added` entry above; that adds a PDF note annotation without
-  touching the pixels.) Authoring: `lib/components/chart/piechart/piechart.docs.md`
-  › "Per-slice detail".
+  `<template class="chart-detail" data-mark="i">`** (inside a `.chart-details` wrapper)
+  alongside the figure, and tags every wedge `<path>` with `data-mark="i"` — the same
+  shared chart-family detail substrate funnel/map/quadrant/radar use. The `<template>`
+  is zero-footprint on the slide face, so the **chart pixels are byte-identical** and a
+  deck without sublists is unchanged. (The static-PDF surfacing of the detail then
+  shipped as the speaker-notes channel — see the `### Added` entry above; that adds a
+  PDF note annotation without touching the pixels.) Authoring:
+  `lib/components/chart/piechart/piechart.docs.md` › "Per-slice detail".
 
 - **Present & Practice reveal per-slice chart detail interactively.** In the Drawing
   Board's present and practice modes, an interactive chart slice now lets you reveal a
