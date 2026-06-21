@@ -43,6 +43,15 @@ the contract; everything else in this doc serves them.**
    win is one branch → one PR (HARD RULE 17), independently builds/tests on
    `main`, and is independently revertible. §12 is the order.
 
+**Pre-GA context (author, 2026-06-21):** nothing has shipped publicly — we are in
+final polish before GA. So **renaming and route changes carry no external cost**
+(no public URLs, bookmarks, or SEO to break); the author is comfortable renaming
+*carefully*. The remaining cost is internal: every reference moves in the same PR,
+and a rename must **honor the reasoning past decisions encoded** (a name is often a
+decision in disguise). The one immovable internal coupling is the OAuth callback
+path (PM-8). This relaxes PM-9 / RD3 / PM-I from "forever-URLs" to "disciplined
+internal migration."
+
 **Carry-over constraints from the shadcn migration (still binding):**
 
 - **No engine touch.** No PR under this effort edits `lib/`, `themes/`, or
@@ -530,7 +539,7 @@ or composes existing primitives.
 |---|---|---|
 | RD1 | **The three surfaces have three *different* orchestration buses — the shell must bridge all three, not one.** Drawing Board → `window.__db*` (`__dbChrome`/`__dbExport`/`__dbEditor`/`__dbStore`/`__dbConfig`/`__dbModel`/`__dbSetPane`/… ~12 globals, over an `is:inline` controller on the 1251-line page + 15 `drawing-board-*.js` modules); Playground → `window.LatticePlayground` + `window.LatticeDeckPreview` (a *different* convention); Workbench → no page-level global of this family (the React `WorkbenchApp` boots the vanilla studios directly). | Win 1 *slots each existing surface into the shell as `{children}`* and the shell's AppBar/rail drive each surface through a thin **per-surface adapter** that maps shell intents → that surface's native bus. The buses, controllers, and modules are untouched; only the chrome around them changes. This is the real cost of Win 1 — it is **not** "chrome-only," it is "one shell + three adapters." Strangler-fig, never a rewrite. |
 | RD2 | **Inspector palette vs right-chrome palette confusion** (one writes deck `theme:`, one restyles the app). | Make the two objects legible by label + placement (§4.1); keep the existing dual-bus behavior; never silently merge them. |
-| RD3 | **Route collapse breaks deep links / bookmarks** to `/playground/` etc. | Win 8 keeps the old routes as redirects into `/studio/[intent]`; nav updates in the same PR. |
+| RD3 | **Route collapse leaves stale *internal* references** (not public bookmarks — pre-GA, nothing has shipped) — `nav.mjs`, the landing CTAs, docs, tests, tours still point at `/playground/` etc. | Win 8 updates **every internal reference in the same PR** (a `grep` gate proves none remain); old paths get a dev-time redirect only as a convenience, not a forever-contract (PM-9). |
 | RD9 | **Route collapse silently breaks the OpenRouter OAuth callback.** Auth is PKCE: `beginOpenRouterAuth` uses `location.origin + location.pathname` as the callback, and the `?code=` return is handled on load by the Drawing Board page. A redirect that drops the query or moves auth off a stable path breaks cloud-connect (OpenRouter also validates the registered callback). | Win 3 (Workspace Settings) **pins the OAuth callback to one stable Studio path** and the Win 8 redirects **preserve `?code=`** (and any PKCE state) end-to-end; an integration check completes a real connect after the route change. The PKCE primitives live in `architect-model.js`; the UI wiring moves with Settings. |
 | RD4 | **Reshape/lenses tempt a destructive rewrite of `source`.** | The data model forbids it — lenses are *derived* with a `generatedFrom` source hash; source is append-only from the user's edits. |
 | RD5 | **Read-aloud highlight drifts into the engine/export path.** | Highlight is a preview-host overlay reading TTS timing marks; it never changes render or export bytes. Export-byte STOP gate stands. |
@@ -579,9 +588,14 @@ what the author chose, PM-# records what the red-team proved we must constrain).
 - **PM-H — The rail was cargo-culted from VS Code.** A left activity rail earns its
   66px tax and indirection at 6+ activities; for *three* intents a top segmented
   control does the same job with less chrome and no left-edge cost.
-- **PM-I — We broke muscle memory, URLs, and our own funnel.** Renaming Drawing
-  Board → Compose and collapsing routes breaks bookmarks, docs, SEO, and the
-  landing CTAs; the OAuth callback (RD9) is a money/security bug, not cosmetic.
+- **PM-I — A rename left the codebase internally inconsistent.** *(Pre-GA, so the
+  external half of this risk — public bookmarks, SEO, third-party links — does not
+  apply: nothing has shipped, and the author is comfortable renaming carefully.)*
+  What remains is real: a half-applied rename leaves stale references in docs,
+  tests, `nav.mjs`, examples, tours, and the decision docs — and silently discards
+  the *reasoning a name encoded* (e.g. "Drawing Board" vs "Playground" marked a
+  deliberate try-it/author split). The OAuth callback path (RD9/PM-8) is the one
+  coupling that is immovable regardless of GA — it is a correctness bug, not SEO.
 - **PM-J — One app, one blast radius.** Behind one shell, a single bad deploy blanks
   all three tools at once (today a Drawing Board bug leaves the other two standing).
 - **PM-K — Thin ratification + confident mockups.** Four forks approved in one
@@ -600,7 +614,7 @@ what the author chose, PM-# records what the red-team proved we must constrain).
 | PM-6 | **Lenses never silently mutate or silently stale** — explicit regenerate, loud staleness badge, never auto-regenerate before Present. | strengthens RD4 / §6.2 |
 | PM-7 | **Read-aloud is feasibility-spiked before roadmapped** — no word-level promise until timing-mark emission is proven; else sentence-level via duration estimate, or cut. | gates Win 6 / §6.1 |
 | PM-8 | **Auth path is immovable infra** — pinned + a real-connect integration test before any route work. | strengthens RD9 |
-| PM-9 | **URLs + known names are forever** (redirects + aliases); rename = migration with a comms note, not a cleanup PR. | strengthens RD3 / Win 8 |
+| PM-9 | **Renaming is allowed (pre-GA — no public URLs/SEO at stake), but disciplined.** Every reference moves in the *same* PR (docs, tests, `nav.mjs`, examples, tours, decision docs); the rename honors the *reasoning a name encoded*. The OAuth callback path is the one immovable internal coupling (PM-8). | reframed by author (pre-GA); folds into Win 8 |
 | PM-10 | **Per-surface graceful degradation** — a shell/Workbench fault can't blank Compose; surfaces stay independently loadable. | adds a Win-1 requirement |
 | PM-11 | **Optimize per-persona, not uniformly** — density for the author, low-load for the recipient; "minimize clicks" is a *reader* goal, not universal. | scopes the headline goal |
 | PM-12 | **Mockups are zero-behavior specs** — they never set the schedule; each is paired with its integration cost. | framing |
@@ -637,8 +651,9 @@ win re-gates.**
   mapping shell intents → that surface's native bus (`__db*` / `LatticePlayground`
   / the Workbench boot) — see RD1. Surfaces stay **independently loadable** so one
   fault can't blank the others (PM-10). `nav.mjs` "Tools" disclosure → single "Open
-  Studio" entry, **old routes kept as aliases** (PM-9). *Maker-checker (high blast
-  radius).*
+  Studio" entry; pre-GA we may **rename freely**, updating every internal reference
+  in the same PR and honoring what the old names encoded (PM-9). *Maker-checker
+  (high blast radius).*
 - **Win 2 — Deck Inspector.** Re-house `deck-config.js` from its modal drawer
   into the persistent right Inspector. Theme/size/pagination/header/footer +
   checkpoints.
@@ -674,8 +689,10 @@ merge-authorization gate (CLAUDE.md), then post the standup.
    default (it overrides the "persistent" wording in §0-2 / §4.1).
 3. **Library as a switcher-only affordance vs also a rail/tab destination.** If
    redundant, keep only the AppBar deck switcher.
-4. **Route collapse timing.** Plan does it *last* (Win 8) to de-risk; pull it
-   earlier only if the dual-route phase confuses — and only with PM-9 aliases.
+4. **Route collapse timing.** Plan does it *last* (Win 8) to de-risk. Pre-GA there
+   is no external-URL cost, so it *could* move earlier; the only gates are
+   updating internal references in-PR (PM-9) and pinning the OAuth path first
+   (PM-8). Say if you'd rather pull it forward.
 5. **Does the right-chrome (app) palette stay, given the Inspector owns deck
    theme?** Plan keeps both (app chrome vs deck theme are different objects); say
    if you'd rather the Studio chrome simply follow the deck theme.
@@ -711,4 +728,10 @@ merge-authorization gate (CLAUDE.md), then post the standup.
   lenses must never silently stale (PM-6), read-aloud is feasibility-spiked before
   it is promised (PM-7), and the goal is scoped per-persona, not uniform (PM-11).
   Net: "merge → start Win 1" demoted to "merge as direction → buy evidence first."
+- 2026-06-21 — **Pre-GA reframe (author).** Nothing has shipped, so the *external*
+  half of PM-9 / RD3 / PM-I (public URLs, SEO, bookmarks) is dropped — renaming is
+  permitted, done carefully. The surviving cost is internal consistency (every
+  reference moved in-PR) + honoring what past decisions/names encoded; the OAuth
+  callback path (PM-8) stays immovable. §0 gains a pre-GA context note; PM-9 / RD3 /
+  PM-I / Win 1 / §13-4 reworded.
 - _pending_ — Author approval (per PM-2, of **Win 0 only**).
