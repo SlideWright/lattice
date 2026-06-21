@@ -201,26 +201,30 @@ identity, chrome, and the deck under the cursor.
 
 ```
 ┌──────────────────────────────────────────────────────────────────────┐
-│  AppBar:  [◧ Deck title ▾]   …context actions for the intent…   [palette · Share · Settings · acct] │
-├────┬─────────────────────────────────────────────────────────┬─────────┤
-│ ▤  │                                                         │         │
-│ ▶  │                                                         │  Deck   │
-│ ✶  │                    work surface                         │ Inspector│
-│    │      (Compose: editor+preview · Present: reader ·       │ (this   │
-│ ⚙  │       Fabricate: theme/layout studio)                   │  deck)  │
-└────┴─────────────────────────────────────────────────────────┴─────────┘
-  ↑ activity rail (intent switch)                                  ↑ collapsible
+│  Lattice   [ Compose · Present · Fabricate ]    search · palette · Share · ⚙ · acct │  ← global bar (intent TABS)
+├──────────────────────────────────────────────────────────────────────┤
+│  [◧ Deck title ▾]   …context actions for the active intent…      [ Deck ▸] │  ← deck-context bar
+├─────────────────────────────────────────────────────────┬─────────┤
+│                                                         │  Deck   │
+│                    work surface                         │ Inspector│
+│      (Compose: editor+preview · Present: reader ·       │ (this   │
+│       Fabricate: theme/layout studio)                   │  deck)  │
+└─────────────────────────────────────────────────────────┴─────────┘
+   ↑ top tabs = intent switch (PM-5: DECIDED v2)     ↑ collapsed by default (PM-4)
 ```
 
 ### 2.1 The four shell elements
 
-- **Activity rail (left, slim, icon-only).** The click-minimizer and the
-  "where am I" anchor. Switches the primary intent — **Compose · Present ·
-  Fabricate** — plus a Library affordance (your decks) and Workspace Settings
-  pinned at the bottom. Icon-only with tooltips; expands to labels on hover and
-  at wide widths. This *replaces* the nav "Tools" disclosure and every per-app
-  navigation idiom with one consistent control. (Precedent: the VS Code activity
-  bar — a proven low-load intent switch.)
+- **Top-tab intent bar (PM-5 — DECIDED: v2 / tabs; see §15).** The click-minimizer
+  and the "where am I" anchor. A horizontal tab strip in the global top bar
+  switches the primary intent — **Compose · Present · Fabricate** (a future
+  **Library** would join as a 4th tab) — with Workspace Settings + account in the
+  same bar's right cluster. On **mobile** it becomes a thumb-reach **bottom intent
+  bar**; on **tablet** it stays top (icon+label, degrading to icon-only). This
+  *replaces* the nav "Tools" disclosure and every per-app navigation idiom with one
+  consistent control. (The rejected alternative — a left VS-Code-style activity
+  rail, `mockups/v1-rail/` — scored lower on every device lens except future
+  scalability; §15.)
 - **AppBar (top, slotted, context-sensitive).** *One* bar, three slots:
   - **Left = deck identity + switcher.** The current deck's title; click to
     switch / new / rename (replaces the Drawing Board's Decks-drawer gateway).
@@ -258,7 +262,7 @@ click-minimizer: power users never touch a toolbar.
 | Playground | **Compose, zero-setup entry state** | No deck saved yet; fast, no commitment. Save/name → it joins your Library and is just "a deck in Compose." Kills the Playground-vs-Drawing-Board fork. |
 | Drawing Board | **Compose, full state** (+ feeds Present) | Its 3-pane editor/preview is the Compose work surface; Architect → left aside; Present/Practice → the Present intent. |
 | Workbench | **Fabricate** intent | Theme Studio + Layout Studio become the Fabricate work surface, faculty switch in the AppBar center. |
-| Decks drawer | **Library** (rail affordance + AppBar deck switcher) | Space axis (switch/new) in the switcher; time axis (checkpoints) in the Inspector's history. |
+| Decks drawer | **Library** (a future 4th tab + AppBar deck switcher) | Space axis (switch/new) in the switcher; time axis (checkpoints) in the Inspector's history. |
 | Deck-Setup drawer | **Deck Inspector** | Non-modal, persistent. |
 | Settings drawer (AI/cloud/spend) | **Workspace Settings** | One global surface (§4). |
 | Export dropdown | **Share** surface (§5) | Two intents, both print targets. |
@@ -272,7 +276,7 @@ Display wordmark · JetBrains Mono) + lucide-style icons — faithful, not
 approximated. They come in **two shell options** for the intent switch (fork
 PM-5): **v1 — activity rail** ([`mockups/v1-rail/`](./2026-06-21-app-redesign/mockups/v1-rail/))
 and **v2 — top tabs** ([`mockups/v2-tabs/`](./2026-06-21-app-redesign/mockups/v2-tabs/),
-**recommended**). Only the intent-switch/brand chrome differs; every work surface
+**chosen — PM-5 / §15**). Only the intent-switch/brand chrome differs; every work surface
 is identical. The annotated diff:
 [`compare/compare-compose.png`](./2026-06-21-app-redesign/mockups/compare/compare-compose.png).
 Full index + rebuild steps: [`mockups/README.md`](./2026-06-21-app-redesign/mockups/README.md).
@@ -292,14 +296,14 @@ show.
 
 ## 3. The chrome contract — the `StudioShell`
 
-One component, `StudioShell`, owns the rail + slotted AppBar + collapsible
-Inspector and renders `{children}` as the work surface. Every intent mounts
-inside it; the irreducible engine pieces are *wrapped*, slotted into the surface,
-never reimplemented (carry-over rule).
+One component, `StudioShell`, owns the top-tab intent bar + slotted AppBar +
+collapsible Inspector and renders `{children}` as the work surface. Every intent
+mounts inside it; the irreducible engine pieces are *wrapped*, slotted into the
+surface, never reimplemented (carry-over rule).
 
 ```
 StudioShell
-  ├─ <ActivityRail intent= onIntent= />          // Compose · Present · Fabricate · Library · Settings
+  ├─ <IntentTabs intent= onIntent= />            // Compose · Present · Fabricate (+ Library?) — top bar; bottom bar on mobile
   ├─ <AppBar>
   │     left:   <DeckSwitcher deck= />            // title ▾ → switch/new/rename
   │     center: {intentActions}                   // the context-sensitive slot
@@ -320,7 +324,7 @@ Contract rules:
   Share surface and Workspace Settings are `Sheet`s; transient confirmations are
   `Dialog`s. No bespoke overlay is introduced.
 - **Keyboard-first parity.** Every AppBar action registers a ⌘K command (§2.2)
-  and a documented shortcut; the rail intents get `g c` / `g p` / `g f`
+  and a documented shortcut; the intent tabs get `g c` / `g p` / `g f`
   (go-Compose/Present/Fabricate) style chords later.
 - **Couplings the shell must preserve (not fight).** The Drawing Board page
   hard-codes bespoke pieces beyond the editor/preview: two **panel resizers**
@@ -363,7 +367,7 @@ theme field restyles the *deck*.)
 ### 4.2 Workspace Settings (one global surface)
 
 Consolidates today's AI/cloud Settings drawer into a single `Sheet` opened from
-the rail bottom (and ⌘K). Sections:
+the top-bar Settings (and ⌘K). Sections:
 
 - **AI model** — on/off (force deterministic Floor for privacy/offline), tier
   (Floor · Transformers.js · WebLLM · OpenRouter), on-device weight management.
@@ -521,7 +525,7 @@ change is done without `tools/screenshot.js` evidence at all three widths).
 - **Desktop (~1440):** intent switch · AppBar · work surface · Inspector all
   visible; up to three panes (Architect · Editor · Preview).
 - **Tablet (~768–1180): a hybrid, not a third design — it *leans by orientation*.**
-  It takes its **chrome from desktop** (the top-tab / rail header stays — *never*
+  It takes its **chrome from desktop** (the top-tab header stays — *never*
   the mobile bottom bar) and its **density + side-panel behaviour from mobile**
   (touch targets, icon-only secondary controls; Architect and the Inspector are
   **summoned slide-overs, never resident** — protects the preview, PM-4). Panes are
@@ -540,7 +544,7 @@ change is done without `tools/screenshot.js` evidence at all three widths).
 | Redesign piece | Built from (reuse) | Net-new |
 |---|---|---|
 | StudioShell | layout CSS + `.lx-ui` scope | the shell component (slots) |
-| Activity rail | `Button` + lucide + tooltip | the rail layout |
+| Intent tabs (top; bottom bar on mobile) | `Tabs`/`Button` + lucide | the tab strip + mobile bottom bar |
 | AppBar (slotted) | `Button`/`DropdownMenu`/`Tabs` | the 3-slot contract |
 | Deck switcher | `Popover` + `Command` | — |
 | Deck Inspector | `deck-config.js` logic, `Collapsible`, `Select`, `Input` | non-modal host |
@@ -558,7 +562,7 @@ or composes existing primitives.
 
 | # | Risk | Mitigation |
 |---|---|---|
-| RD1 | **The three surfaces have three *different* orchestration buses — the shell must bridge all three, not one.** Drawing Board → `window.__db*` (`__dbChrome`/`__dbExport`/`__dbEditor`/`__dbStore`/`__dbConfig`/`__dbModel`/`__dbSetPane`/… ~12 globals, over an `is:inline` controller on the 1251-line page + 15 `drawing-board-*.js` modules); Playground → `window.LatticePlayground` + `window.LatticeDeckPreview` (a *different* convention); Workbench → no page-level global of this family (the React `WorkbenchApp` boots the vanilla studios directly). | Win 1 *slots each existing surface into the shell as `{children}`* and the shell's AppBar/rail drive each surface through a thin **per-surface adapter** that maps shell intents → that surface's native bus. The buses, controllers, and modules are untouched; only the chrome around them changes. This is the real cost of Win 1 — it is **not** "chrome-only," it is "one shell + three adapters." Strangler-fig, never a rewrite. |
+| RD1 | **The three surfaces have three *different* orchestration buses — the shell must bridge all three, not one.** Drawing Board → `window.__db*` (`__dbChrome`/`__dbExport`/`__dbEditor`/`__dbStore`/`__dbConfig`/`__dbModel`/`__dbSetPane`/… ~12 globals, over an `is:inline` controller on the 1251-line page + 15 `drawing-board-*.js` modules); Playground → `window.LatticePlayground` + `window.LatticeDeckPreview` (a *different* convention); Workbench → no page-level global of this family (the React `WorkbenchApp` boots the vanilla studios directly). | Win 1 *slots each existing surface into the shell as `{children}`* and the shell's AppBar + tabs drive each surface through a thin **per-surface adapter** that maps shell intents → that surface's native bus. The buses, controllers, and modules are untouched; only the chrome around them changes. This is the real cost of Win 1 — it is **not** "chrome-only," it is "one shell + three adapters." Strangler-fig, never a rewrite. |
 | RD2 | **Inspector palette vs right-chrome palette confusion** (one writes deck `theme:`, one restyles the app). | Make the two objects legible by label + placement (§4.1); keep the existing dual-bus behavior; never silently merge them. |
 | RD3 | **Route collapse leaves stale *internal* references** (not public bookmarks — pre-GA, nothing has shipped) — `nav.mjs`, the landing CTAs, docs, tests, tours still point at `/playground/` etc. | Win 8 updates **every internal reference in the same PR** (a `grep` gate proves none remain); old paths get a dev-time redirect only as a convenience, not a forever-contract (PM-9). |
 | RD9 | **Route collapse silently breaks the OpenRouter OAuth callback.** Auth is PKCE: `beginOpenRouterAuth` uses `location.origin + location.pathname` as the callback, and the `?code=` return is handled on load by the Drawing Board page. A redirect that drops the query or moves auth off a stable path breaks cloud-connect (OpenRouter also validates the registered callback). | Win 3 (Workspace Settings) **pins the OAuth callback to one stable Studio path** and the Win 8 redirects **preserve `?code=`** (and any PKCE state) end-to-end; an integration check completes a real connect after the route change. The PKCE primitives live in `architect-model.js`; the UI wiring moves with Settings. |
@@ -631,7 +635,7 @@ what the author chose, PM-# records what the red-team proved we must constrain).
 | PM-2 | **Plan-approval authorizes only a de-risking *spike*, not Wins 1–8.** Prove the three-bus adapter on the *simplest* surface (Playground) against a written kill-criterion before committing the program. | **new Win 0; re-scopes §0-4** |
 | PM-3 | **Wins 1–3 stand alone; pause & *measure* before 4–8.** Stop after 3 = strictly ahead, never mid-rewrite. | sequencing gate |
 | PM-4 | **The preview is sacred — Inspector collapsed-by-default**, summoned not resident; gate that the preview never drops below a legible threshold. | **flips §0-2 / §4.1 default** |
-| PM-5 | **Default to top-tabs, not a rail**, unless a 4th/5th intent is named today. | **flips §13-1 default** |
+| PM-5 | **Intent switch = top-tabs, not a rail. RATIFIED (author, 2026-06-21): v2 / tabs** — it wins the desktop, tablet, and mobile lenses (§15); the rail's only edge (scaling past ~5 intents) doesn't bind at three (+ a possible Library = 4). | **resolved → §15** |
 | PM-6 | **Lenses never silently mutate or silently stale** — explicit regenerate, loud staleness badge, never auto-regenerate before Present. | strengthens RD4 / §6.2 |
 | PM-7 | **Read-aloud is feasibility-spiked before roadmapped** — no word-level promise until timing-mark emission is proven; else sentence-level via duration estimate, or cut. | gates Win 6 / §6.1 |
 | PM-8 | **Auth path is immovable infra** — pinned + a real-connect integration test before any route work. | strengthens RD9 |
@@ -680,7 +684,7 @@ win re-gates.**
   into the persistent right Inspector. Theme/size/pagination/header/footer +
   checkpoints.
 - **Win 3 — Workspace Settings.** Consolidate the AI/cloud/spend/instructions/
-  storage drawer into one global `Sheet` from the rail. Pure re-housing.
+  storage drawer into one global `Sheet` opened from the top-bar Settings (and ⌘K). Pure re-housing.
 - **Win 4 — Compose unification.** Playground becomes Compose's zero-setup entry
   state; Architect demotes to a left aside within Compose; one editor+preview
   core. Strangler-fig the Drawing Board panels into the shell. *Maker-checker.*
@@ -702,14 +706,14 @@ merge-authorization gate (CLAUDE.md), then post the standup.
 
 ## 13. Open decisions for the author
 
-1. **Intent switch: top-tabs (now the recommended default, per PM-5) vs a left
-   activity rail.** The mockups show a rail; the red-team flips the *default* to a
-   top segmented control for three intents (less chrome, no left-edge tax). Keep
-   the rail only if you can name a 4th/5th intent today. **Pick one.**
+1. **Intent switch — RESOLVED (author, 2026-06-21): v2 / top tabs.** Scored across
+   all three device lenses in §15; tabs win desktop, tablet, and mobile, and the
+   rail's only edge (scaling past ~5 intents) doesn't bind at three (+ a possible
+   Library = a 4th tab). Implementation uses the top-tab shell.
 2. **Inspector default: collapsed (recommended, per PM-4) vs resident.** The
    preview is sacred; the Inspector should summon, not sit. Confirm collapsed-by-
    default (it overrides the "persistent" wording in §0-2 / §4.1).
-3. **Library as a switcher-only affordance vs also a rail/tab destination.** If
+3. **Library as a switcher-only affordance vs also a top-level tab.** If
    redundant, keep only the AppBar deck switcher.
 4. **Route collapse timing.** Plan does it *last* (Win 8) to de-risk. Pre-GA there
    is no external-URL cost, so it *could* move earlier; the only gates are
@@ -776,5 +780,40 @@ merge-authorization gate (CLAUDE.md), then post the standup.
   a shape-coded **intent tag** (circle-✓ READY · triangle-! REVIEW · octagon-× FIX
   · circle-i INFO) with a text label; titles de-coloured. Added PM-13, a §8 a11y
   rule, and `intent-proof.png` (full-colour vs greyscale). Compose v1+v2 updated.
-- _pending_ — Author approval (per PM-2, of **Win 0 only**); intent-switch shell
-  (v1 rail vs v2 tabs, fork PM-5) still to confirm.
+- 2026-06-21 — **PM-5 ratified: v2 / top tabs (author).** Scored the intent-switch
+  fork across the desktop/tablet/mobile lenses (new **§15** appendix); tabs win all
+  three. §13-1 marked resolved, PM-5 updated, §2.1 + the shell diagram rewritten to
+  the top-tab shell, the `StudioShell` contract de-railed. v2 is the implementation
+  shell; v1/rail retained as the documented rejected alternative.
+- _pending_ — Author approval (per PM-2, of **Win 0 only**). Intent-switch shell
+  **resolved → v2 tabs** (§15). Still open: Inspector default (PM-4, leans
+  collapsed), Library placement, route-collapse timing, app-palette-vs-deck-theme.
+
+## 15. Appendix — intent-switch decision (PM-5), scored
+
+v1 and v2 differ **only** in the shell chrome (every work surface is identical →
+delta 0, unscored). The decision reduced to six chrome choices, scored for UX fit
+per device (**1 = poor · 3 = acceptable · 5 = excellent**); device columns read
+**v1 / v2**.
+
+| # | Design choice (the delta) | v1 — Activity rail | v2 — Top tabs | Desktop v1/v2 | Tablet v1/v2 | Mobile v1/v2 |
+|---|---|---|---|:---:|:---:|:---:|
+| 1 | Intent switch pattern | Left vertical rail (66px, icon+label) | Horizontal top tabs + underline | 4 / 5 | 3 / 5 | — / — |
+| 2 | Header structure | One bar (rail + single AppBar) | Two rows (global topbar + deck-context bar) | 4 / 5 | 4 / 4 | 4 / 4 |
+| 3 | Brand & account identity | Small “L” tile on rail | Playfair “Lattice” wordmark + avatar | 3 / 5 | 3 / 5 | 3 / 4 |
+| 4 | Mobile intent nav | Hamburger → slide-in drawer | Thumb-reach bottom intent bar | — / — | 3 / 4 | 3 / 5 |
+| 5 | Horizontal space economy | Permanent 66px rail tax | 0px — work area to the edge | 4 / 5 | 3 / 5 | — / — |
+| 6 | Scalability to a 4th/5th intent | Rail holds 6+ comfortably | Tabs/bottom-bar crowd past ~5 | 5 / 3 | 4 / 3 | 5 / 3 |
+| | **Average (applicable rows)** | | | **4.0 / 4.6** | **3.3 / 4.3** | **3.75 / 4.0** |
+
+(— = not applicable on that device: the rail/tabs pattern and the 66px tax don't
+exist on mobile; the mobile-nav choice doesn't exist on desktop.)
+
+**Verdict.** v2 / top tabs wins every lens — modestly on desktop (4.6 vs 4.0),
+**decisively on tablet** (4.3 vs 3.3, where the 66px rail costs ~8% of an 800px
+width and an icon-only rail hides its labels), and narrowly on mobile (4.0 vs
+3.75, bottom bar > hamburger on reach + discoverability). v1's *only* lead is
+choice 6 (future intents); at three intents — plus a possible **Library** as a
+4th tab — that edge doesn't bind. **Ratified: v2 / top tabs is the implementation
+shell.** The v1-rail mockups are retained under `mockups/v1-rail/` as the rejected
+alternative.
