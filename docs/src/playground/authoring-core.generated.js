@@ -588,11 +588,16 @@ ${indent}  ${bullet} ${body.trim()}`;
         if (!cm[1].split(/\s+/).filter(Boolean).includes("gantt")) return;
         const slideNo = idx - fm + 1;
         const tasks = [];
+        let lastTaskIndent = -1;
         for (const raw of slide.split("\n")) {
           const lm = raw.match(/^(\s*)[-*]\s+(.*\S)\s*$/);
           if (!lm) continue;
           const indent = lm[1].replace(/\t/g, "    ").length;
-          if (indent < 2) continue;
+          if (indent < 2) {
+            lastTaskIndent = -1;
+            continue;
+          }
+          if (lastTaskIndent >= 0 && indent > lastTaskIndent) continue;
           const content = lm[2];
           let rest = content;
           const codeTokens = [];
@@ -663,6 +668,7 @@ ${indent}  ${bullet} ${body.trim()}`;
               fix: `Status must be one of: ${[...GANTT_STATUS].join(", ")}. A span is \`START..END\`; a single point is a milestone.`
             });
           }
+          lastTaskIndent = indent;
           tasks.push(task);
         }
         if (!tasks.length) return;

@@ -160,12 +160,23 @@ detail per labelled data point*. Per-series reveal is recorded as a future optio
   redraw is owed. The flat `inline`/`horizontal` chip strip still skips the tilt
   (a `rotateX` on a flat row reads as skew). The detail `<template>` payload is
   emitted as a **sibling** of the figure so it isn't miscounted as a mark.
-- **gantt / kanban (T2) — next, on the HTML-mark path state-chart just laid
-  down.** HTML substrate — they get the reveal (a bar's owner/dependencies, a
-  card's detail) via the same HTML-mark reveal layer, but each still needs a
-  *deeper authored nesting level* (the lane→bars / column→cards levels are
-  already consumed). The per-element DOM-3D depth that HTML *can* do (genuinely
-  impossible inside SVG) is a separate, deliberate project.
+- **gantt (T2) — SHIPPED (#475).** On the HTML-mark path state-chart laid down.
+  Grammar (zero new syntax): a nested bullet under a TASK (one level below the
+  task — the lane→task levels were already consumed) is the task's reveal detail;
+  every bar/milestone is tagged `data-mark` + invisible `data-label`/`data-value`,
+  the detail rides the shared `mark-detail` substrate, payload emitted as a
+  **sibling** of `.gantt-chart`. **Reveal-only** (per the HTML-grid plan): popover
+  + dim + a subtle bar lift/**glow** via a `.chart-mark-active` class the reveal
+  layer toggles (themed from the mark's own `--fill-ink`), **no 3D tilt** — a
+  `rotateX` would skew the time axis. Reveal-layer generalization (benefits
+  kanban): the tilt is now scoped to SVG sheets + the state-chart graph only
+  (HTML grids never tilt), and the perpendicular HTML lift is state-chart-scoped
+  (gantt uses the CSS class). Lint made nesting-aware so a detail bullet ending in
+  inline code isn't mis-tokenized.
+- **kanban (T2) — next (#476), on the same HTML-mark path.** Cards are already
+  ~3 levels deep, so a card's detail needs a deeper authored level. The
+  per-element DOM-3D depth that HTML *can* do (genuinely impossible inside SVG)
+  is a separate, deliberate project.
 - **progress / timeline-list (T3):** they already render their nested sublist
   **inline** on the slide, so there is no hidden detail to *reveal* — A adds
   nothing.

@@ -28,10 +28,12 @@ Three workstreams across four quarters; the one at-risk bar quietly gates the ro
   - Signal taxonomy `Q1..Q2` `done`
   - Scoring model v2 `Q2..Q3` `live` `after: Signal taxonomy`
   - Per-team weighting `Q3..Q4` `at-risk` `after: Scoring model v2`
+    - Two teams contest the weighting; the Q3 review decides it, and the rollout waits on the outcome.
 - Adoption
   - Pilot onboarding `Q1..Q2` `done`
   - Org-wide rollout `Q3..Q4` `after: Per-team weighting`
   - GA `Q4` `milestone` `after: Org-wide rollout`
+    - Go/no-go gate: needs SOC2 sign-off and the weighting decision landed.
 
 
 ---
@@ -76,10 +78,12 @@ Three workstreams across four quarters; the one at-risk bar quietly gates the ro
   - Signal taxonomy `Q1..Q2` `done`
   - Scoring model v2 `Q2..Q3` `live` `after: Signal taxonomy`
   - Per-team weighting `Q3..Q4` `at-risk` `after: Scoring model v2`
+    - Two teams contest the weighting; the Q3 review decides it, and the rollout waits on the outcome.
 - Adoption
   - Pilot onboarding `Q1..Q2` `done`
   - Org-wide rollout `Q3..Q4` `after: Per-team weighting`
   - GA `Q4` `milestone` `after: Org-wide rollout`
+    - Go/no-go gate: needs SOC2 sign-off and the weighting decision landed.
 
 
 ---
@@ -97,10 +101,12 @@ Three workstreams across four quarters; the one at-risk bar quietly gates the ro
   - Signal taxonomy `Q1..Q2` `done`
   - Scoring model v2 `Q2..Q3` `live` `after: Signal taxonomy`
   - Per-team weighting `Q3..Q4` `at-risk` `after: Scoring model v2`
+    - Two teams contest the weighting; the Q3 review decides it, and the rollout waits on the outcome.
 - Adoption
   - Pilot onboarding `Q1..Q2` `done`
   - Org-wide rollout `Q3..Q4` `after: Per-team weighting`
   - GA `Q4` `milestone` `after: Org-wide rollout`
+    - Go/no-go gate: needs SOC2 sign-off and the weighting decision landed.
 
 
 ---
@@ -118,10 +124,12 @@ Three workstreams across four quarters; the one at-risk bar quietly gates the ro
   - Signal taxonomy `Q1..Q2` `done`
   - Scoring model v2 `Q2..Q3` `live` `after: Signal taxonomy`
   - Per-team weighting `Q3..Q4` `at-risk` `after: Scoring model v2`
+    - Two teams contest the weighting; the Q3 review decides it, and the rollout waits on the outcome.
 - Adoption
   - Pilot onboarding `Q1..Q2` `done`
   - Org-wide rollout `Q3..Q4` `after: Per-team weighting`
   - GA `Q4` `milestone` `after: Org-wide rollout`
+    - Go/no-go gate: needs SOC2 sign-off and the weighting decision landed.
 
 
 ---
