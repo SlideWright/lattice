@@ -81,6 +81,17 @@ in patch versions.
   laid down (the tilt is now scoped to SVG sheets + the state-chart graph, so
   HTML grids never tilt). See
   `engineering/decisions/2026-06-20-chart-detail-reveal-family.md`.
+- **Responsive-Frame slicing — the `standard` Form re-slices its masthead per
+  aspect family (first slice).** Form Frames gain a `slicing` block (per-family
+  cell-placement; `lib/forms/schema/frame.schema.json`): the `standard` frame's
+  masthead collapses to a single column (lede over bay) at `tall`/`strip`. The
+  build generates the `[data-family]` rules from each Frame's manifest; the runtime
+  stamps `data-family` from the live box (`lib/adaptive/families.js`). **Runtime
+  only** (fluid viewer + playground) — a fixed, runtime-less export is byte-
+  unchanged (the `wide` default is unstamped). Cross-band cell *relocation* and the
+  `slicing` validation gate are follow-up slices; see
+  `engineering/decisions/2026-06-21-reflow-as-form-capability.md`.
+
 - **Per-state interactive detail on the state-chart (Tier-2 detail reveal).** A
   nested bullet under a state that is *not* a transition (plain prose — the
   entry/exit action, the rule, the "why") is now captured as that state's reveal

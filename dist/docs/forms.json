@@ -203,9 +203,6 @@
             "tokens": {
               "--masthead-cols": "[masthead-lede masthead-bay] 1fr"
             }
-          },
-          "masthead-bay": {
-            "region": "footer-left"
           }
         }
       }

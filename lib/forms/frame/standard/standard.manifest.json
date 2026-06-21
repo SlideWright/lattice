@@ -22,8 +22,7 @@
       "masthead": { "tokens": { "--masthead-cols": "[masthead-lede masthead-bay] 1fr" } }
     },
     "strip": {
-      "masthead": { "tokens": { "--masthead-cols": "[masthead-lede masthead-bay] 1fr" } },
-      "masthead-bay": { "region": "footer-left" }
+      "masthead": { "tokens": { "--masthead-cols": "[masthead-lede masthead-bay] 1fr" } }
     }
   }
 }

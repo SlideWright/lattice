@@ -58,7 +58,7 @@
                 "tokens": {
                   "type": "object",
                   "additionalProperties": false,
-                  "description": "Per-family CSS token overrides (same-band), e.g. { \"--masthead-cols\": \"1fr\" }. Each token NAME must be referenced via var() in the Cell's co-located CSS (the manifest↔CSS light-coupling gate); the build generates the [data-family] rule that sets the value.",
+                  "description": "Per-family CSS token overrides (same-band). The build GENERATES the [data-family] rule that sets these; each token NAME must be referenced via var() in the Cell's co-located CSS (gated). WARNING: if the Cell's grid places children on NAMED lines (e.g. masthead-lede/-bay), an override of the track template MUST re-declare those names on its track, or the children orphan into implicit tracks — so the single-column masthead value is { \"--masthead-cols\": \"[masthead-lede masthead-bay] 1fr\" }, NOT a bare \"1fr\".",
                   "patternProperties": {
                     "^--[a-z][a-z0-9-]*$": { "type": "string" }
                   }

@@ -15106,8 +15106,11 @@ section.form .cell-masthead {
   /* Per-family slicing hook: the `standard` Frame's manifest re-slices this band
    * to a single column (lede over bay) at `tall`/`strip` by setting --masthead-cols
    * via the generated [data-family] rule. Default (unset / `wide`) = the authored
-   * lede ∥ bay split. See standard.manifest.json `slicing` + 2026-06-21-reflow-as-
-   * form-capability.md §7. */
+   * lede ∥ bay split. WARNING: the children (.masthead-lede/.masthead-bay) place on
+   * the NAMED lines below, so any --masthead-cols override MUST re-declare both
+   * names on its track ([masthead-lede masthead-bay] 1fr) — a bare `1fr` orphans
+   * them into implicit tracks. See standard.manifest.json `slicing` + 2026-06-21-
+   * reflow-as-form-capability.md §7. */
   grid-template-columns: var(--masthead-cols, [masthead-lede] 1fr [masthead-bay] auto);
   column-gap: var(--sp-lg);
   align-items: start;
