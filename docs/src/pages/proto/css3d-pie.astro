@@ -5,8 +5,9 @@
 //
 // The popover detail is rendered by the REAL chart kernel: we run the same
 // authoring (a slice with a nested sublist) through transformChartSection and
-// inject the emitted <template class="piechart-detail"> blocks. The client
-// script reads them by data-slice — exactly the contract present mode would use.
+// inject the emitted <template class="chart-detail"> blocks. The client script
+// reads them by data-mark — exactly the contract present mode would use (the pie
+// now rides the shared chart-family detail substrate).
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 const kernel = require('../../../../lib/components/chart/_chart-family/chart-family.js');
@@ -19,7 +20,7 @@ const authoring = `<h2>Where the planning quarter actually went.</h2><ul>
 <li>Actually deciding <code>5%</code><ul><li>One offsite. The thing we are, allegedly, here to do.</li><li>45 hrs</li></ul></li>
 </ul>`;
 const rendered = kernel.transformChartSection(authoring, 'piechart', '').html;
-const detailsHtml = (rendered.match(/<div class="piechart-details"[^>]*>[\s\S]*?<\/div>/) || [''])[0];
+const detailsHtml = (rendered.match(/<div class="chart-details"[^>]*>[\s\S]*?<\/div>/) || [''])[0];
 ---
 <!doctype html>
 <html lang="en">
@@ -120,7 +121,7 @@ const detailsHtml = (rendered.match(/<div class="piechart-details"[^>]*>[\s\S]*?
   <div class="pop" id="pop" role="status" aria-live="polite"></div>
 
   <!-- REAL kernel output: the per-slice detail <template>s, emitted by
-       transformChartSection. The script reads them by data-slice. -->
+       transformChartSection. The script reads them by data-mark. -->
   <div id="kernel-details" hidden set:html={detailsHtml}></div>
 
 <script>
@@ -218,10 +219,10 @@ const detailsHtml = (rendered.match(/<div class="piechart-details"[^>]*>[\s\S]*?
     rows.forEach(r=>r.classList.remove('active'));
     pop.classList.remove('show');
   }
-  // detail comes from the REAL kernel output: <template class="piechart-detail"
-  // data-slice="i"> holds the authored sublist's <li>s. First li → body, rest → meta.
+  // detail comes from the REAL kernel output: <template class="chart-detail"
+  // data-mark="i"> holds the authored sublist's <li>s. First li → body, rest → meta.
   function kernelDetail(i){
-    const t=document.querySelector(`#kernel-details template.piechart-detail[data-slice="${i}"]`);
+    const t=document.querySelector(`#kernel-details template.chart-detail[data-mark="${i}"]`);
     if(!t) return {body:'',meta:''};
     const lis=[...t.content.querySelectorAll('li')].map(li=>li.innerHTML.trim());
     return { body: lis[0]||'', meta: lis.slice(1).join(' · ') };

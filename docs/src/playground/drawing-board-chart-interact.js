@@ -9,7 +9,7 @@
 //   - a thin hit-surface sits ABOVE the capture layer, but only over the chart's
 //     rectangle (the rest of the stage keeps swipe / tap-to-reveal / edge-arrows);
 //   - the popover renders as parent present-chrome in stage coordinates, reading
-//     the slice's inert <template class="piechart-detail" data-slice> by index;
+//     the mark's inert <template class="chart-detail" data-mark> by index;
 //   - reveal is one command bound to pointer (in the hit-surface), number keys
 //     (1–9 → slice n, 0/Esc clears), and (later) a presenter-window control.
 // Navigation never leaves keyboard / edge-arrows / wheel, so ceding the chart's
@@ -50,19 +50,18 @@ function el(cls) { const d = document.createElement('div'); if (cls) d.className
 export function createChartInteract({ stage, getFrame, tilt = true, onReveal, hoverAny = false }) {
   const useTilt = tilt && !REDUCED;
 
-  // Chart-family vocabulary. The pie shipped this with its own selectors
-  // (.piechart-svg / .wedge[data-slice] / template.piechart-detail); the other
-  // SVG charts (funnel/map/quadrant/radar) emit the shared mark-detail substrate
-  // (data-mark / .chart-details / template.chart-detail). Recognize BOTH so one
-  // reveal layer drives every chart — see
-  // engineering/decisions/2026-06-20-chart-detail-reveal-family.md.
+  // Chart-family vocabulary. Every SVG chart — pie included, now that it rides
+  // the shared mark-detail substrate — emits ONE vocabulary: each mark carries
+  // data-mark; the inert payload is .chart-details holding template.chart-detail.
+  // (.piechart-svg etc. are just the per-chart figure classes the reveal layer
+  // scopes to.) See engineering/decisions/2026-06-20-chart-detail-reveal-family.md.
   const CHART_SVG_SEL = '.piechart-svg, .funnel-svg, .map-svg, .quadrant-svg, .radar-svg';
-  const DETAILS_SEL = '.piechart-details, .chart-details';
-  const TPL_SEL = 'template.piechart-detail, template.chart-detail';
-  const MARK_SEL = '[data-slice], [data-mark]';
+  const DETAILS_SEL = '.chart-details';
+  const TPL_SEL = 'template.chart-detail';
+  const MARK_SEL = '[data-mark]';
   const markIndex = (elm) => {
     if (!elm) return -1;
-    const v = elm.dataset.slice ?? elm.dataset.mark;
+    const v = elm.dataset.mark;
     return v == null ? -1 : Number(v);
   };
 
@@ -83,7 +82,7 @@ export function createChartInteract({ stage, getFrame, tilt = true, onReveal, ho
   let curIdx = -1;       // current slide index
   let curSection = null; // the <section> whose chart is active (scopes all wedge/legend queries)
   let chartEl = null;    // the <svg class="piechart-svg"> in the current section (same-origin)
-  let detailsEl = null;  // its sibling .piechart-details (the <template> payload)
+  let detailsEl = null;  // its sibling .chart-details (the <template> payload)
   let sliceN = 0;        // slice count on the current chart
   let openSlice = -1;    // which slice's detail is showing (-1 = none)
   let chartBox = null;   // current chart rect in stage coords (Present hit-surface)
@@ -223,8 +222,7 @@ export function createChartInteract({ stage, getFrame, tilt = true, onReveal, ho
     // so a multi-chart preview reads the HOVERED chart's detail, not the first
     // chart in the doc. See infoFor().
     const { label, value, dot } = infoFor(i);
-    const tpl = detailsEl?.querySelector(
-      `template.piechart-detail[data-slice="${i}"], template.chart-detail[data-mark="${i}"]`);
+    const tpl = detailsEl?.querySelector(`template.chart-detail[data-mark="${i}"]`);
     const lis = tpl ? [...tpl.content.querySelectorAll('li')].map((n) => n.innerHTML.trim()) : [];
     const body = lis[0] || '';
     const meta = lis.slice(1).join(' · ');
