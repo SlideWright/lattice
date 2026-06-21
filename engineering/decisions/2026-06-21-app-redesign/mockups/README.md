@@ -16,11 +16,14 @@ total colour loss (WCAG 1.4.1), matching the engine's CVD palettes.
 
 ## v1 vs v2 — what differs (it's only the shell chrome)
 
-Two options for the intent switch (the open fork **PM-5**). **Only the chrome that
-switches intents and carries the brand differs** — the editor, live preview, Deck
-Inspector, Architect, and every other surface are identical between the two.
+> **Decided (PM-5, author 2026-06-21): v2 / top tabs is the implementation shell.**
+> v1-rail is retained below as the documented rejected alternative. Scoring: plan §15.
 
-| | **v1 — Activity rail** (`v1-rail/`) | **v2 — Top tabs** (`v2-tabs/`, recommended) |
+Two options for the intent switch. **Only the chrome that switches intents and
+carries the brand differs** — the editor, live preview, Deck Inspector, Architect,
+and every other surface are identical between the two.
+
+| | **v1 — Activity rail** (`v1-rail/`, rejected) | **v2 — Top tabs** (`v2-tabs/`, chosen) |
 |---|---|---|
 | Intent switch | Left vertical rail, 66px, icon + label (VS Code-like) | Horizontal top tabs with an underline (lighter, web-like) |
 | Header | One bar (rail + a single AppBar) | Two rows: global topbar (brand · tabs · chrome) + a context bar (deck switcher · intent actions) |
