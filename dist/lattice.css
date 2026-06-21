@@ -16029,18 +16029,15 @@ section .taskTextOutsideLeft, section .taskTextOutsideRight { fill: var(--text-h
   justify-content: center;
 }
 
-/* Stop the slide's own content blocks (grids, lists, stat rows) from growing to
- * fill the over-tall box, so a light slide stays compact and centred. Full-bleed
- * media (figures/images) opts back in to filling, just below. */
+/* Stop the slide's own TEXT / figure-row content blocks (grids, lists, stat rows)
+ * from growing to fill the over-tall box, so a light slide stays compact and
+ * centred. Visual/media blocks that are MEANT to fill — images and the diagram /
+ * chart bodies that set their own flex:1 (mermaid, chart-body, function-plot) —
+ * are exempted so they still fill the fluid box rather than collapsing. */
 :root[data-lattice-view="fluid"] section[data-lattice-slide]
-  > :not(header):not(footer):not(figure):not(img):not(picture):not(svg) {
+  > :not(:is(header, footer, figure, img, picture, svg, canvas, video,
+             .mermaid, .mermaid-svg, .chart-body, .functionplot)) {
   flex-grow: 0 !important;
-}
-
-/* Full-bleed media should still fill the fluid box. */
-:root[data-lattice-view="fluid"] section[data-lattice-slide]
-  > :is(figure, img, picture, svg) {
-  flex-grow: 1 !important;
 }
 
 /* The fixed-page background canvas is sized to the px box; hide it so each
@@ -16062,11 +16059,9 @@ section .taskTextOutsideLeft, section .taskTextOutsideRight { fill: var(--text-h
   font: 600 0.8rem/1 var(--font-body, system-ui, sans-serif);
   color: var(--bg);
   background: var(--text-body);
-  box-shadow: 0 0.125rem 0.5rem rgb(0 0 0 / 0.35);
+  box-shadow: 0 0.125rem 0.5rem rgb(0 0 0 / 0.35); /* neutral drop shadow (HTML viewer only, never in PDF) */
   opacity: 0.82;
   cursor: pointer;
-  -webkit-backdrop-filter: blur(0.375rem);
-  backdrop-filter: blur(0.375rem);
 }
 #lattice-fluid-toggle:hover,
 #lattice-fluid-toggle:focus-visible { opacity: 1; }

@@ -197,17 +197,29 @@ The keystone is built — the design and the build ship together. What landed:
   **skipping the live-preview content transforms** (the export DOM is already
   transformed; re-running them throws — the reason a normal export strips this
   runtime).
-- **`lattice-emulator.js`** — the `--fluid` flag: marks `<html>` capable and
-  inlines the (escaped) runtime instead of stripping it. Two footguns fixed in
-  the build: the inlined bundle's `</script>`/`<script`/`<!--` are escaped, and
-  the `</body>` injection uses a *function* replacement so the bundle's `$&`/`$1`
-  sequences aren't mangled by `String.replace`.
+- **`lattice-emulator.js`** — `--fluid` (or a `fluid: true` front-matter key)
+  emits the `.html` as the viewer. **Export-safety is structural:** the PDF/PPTX/
+  PNG raster loads the *clean* HTML (runtime stripped, no marker); the viewer
+  (marker + inlined runtime) is written over the `.html` **only after**
+  rasterization (`toFluidViewer` + the post-raster rewrite), so the exported
+  bytes never see it. Two inlining footguns fixed: the bundle's `</script>`/
+  `<script`/`<!--` are escaped, and the `</body>` injection uses a *function*
+  replacement so the bundle's `$&`/`$1` aren't mangled by `String.replace`.
+
+A maker-checker pass (independent agent) hardened four issues before merge: the
+raster/viewer share-a-file export-byte leak above (now byte-identical); the
+sparse-slide `flex-grow:0` collapsing mermaid/chart bodies (now exempted, so
+media still fills); the one-shot orientation style going stale across a
+fluid↔fixed toggle (now cleared on toggle); and the `#fixed`/`#fluid` hint
+loosened to exact-match.
 
 **Verified** (sandbox, `tools/screenshot.js` + a Puppeteer probe): phone 390×844
 → box goes portrait, `data-orientation="portrait"` stamps, `stats`/`kpi` reflow
-to a single column, portrait type fires; desktop 1440×900 → toggle defaults off,
-the authored fixed 16:9 deck is unchanged; the non-`--fluid` export carries no
-capability marker and strips the runtime (canonical export unaffected).
+to a single column, portrait type fires, a `diagram` chart still fills (not
+collapsed); desktop 1440×900 → toggle defaults off, the authored fixed 16:9 deck
+is unchanged; the `--fluid` PDF is **byte-identical** to the plain PDF (only the
+`/CreationDate` timestamp differs, exactly as plain-vs-plain does); the
+non-`--fluid` export carries no capability marker and strips the runtime.
 
 ## 10. Out of scope / sequence after this
 

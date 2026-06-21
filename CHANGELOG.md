@@ -60,10 +60,13 @@ in patch versions.
   so on a phone it reflows to portrait — one slide per screen, vertical
   swipe/snap, the recurated portrait type scale and every component's tall layout
   firing from the already-shipped runtime. A pill toggles back to the authored
-  fixed deck (the default on a laptop; `?view=fluid`/`#fluid` forces it). The
-  mode is **additive and export-safe**: the PDF and the canonical (non-`--fluid`)
-  export HTML are byte-unchanged, and the fluid CSS (`lib/base/base.fluid-view.css`)
-  is inert until the viewer sets `:root[data-lattice-view="fluid"]`. Known limit
+  fixed deck (the default on a laptop; `?view=fluid`/`#fluid` forces it). Enable
+  it per-render with `--fluid` or per-deck with a `fluid: true` front-matter key.
+  The mode is **additive and export-safe**: the PDF/PPTX/PNG and the canonical
+  export HTML are byte-unchanged (the raster path renders the clean HTML; the
+  viewer is written over the `.html` only after rasterization), and the fluid CSS
+  (`lib/base/base.fluid-view.css`) is inert until the viewer sets
+  `:root[data-lattice-view="fluid"]`. Known limit
   for this first slice: a slide that overpacks a phone screen can still overflow
   (autofit / re-pagination are sequenced follow-ups). Demo: `examples/fluid-box.md`
   (generate the viewer with `--fluid`). See
