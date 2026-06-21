@@ -427,3 +427,15 @@ body {
 .m-dock .scrub::after { content:""; position:absolute; left:0; top:0; bottom:0; width:42%; border-radius:999px; background:var(--accent); }
 .m-dock .scrub::before { content:""; position:absolute; left:42%; top:-4px; width:13px; height:13px; border-radius:50%; background:var(--accent); box-shadow:var(--shadow-sm); }
 .m-dock .t { font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); flex: 0 0 auto; }
+
+/* ===== Tablet ===== */
+.tbadge { position: fixed; bottom: 46px; right: 14px; z-index: 99; font-family: var(--font-mono);
+  font-size: 11px; color: var(--text-muted); background: color-mix(in srgb,var(--bg) 85%,transparent);
+  border: 1px solid var(--border); border-radius: 999px; padding: 3px 10px; }
+.t-toggle { display: inline-flex; align-items: center; gap: 7px; padding: 7px 12px; border-radius: var(--radius-sm);
+  border: 1px solid var(--border); background: var(--bg); color: var(--text-body); font-family: var(--font-sans);
+  font-weight: 600; font-size: 13px; cursor: pointer; }
+.t-toggle.on { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+/* portrait single-pane preview fills */
+.t-single { display: flex; flex-direction: column; min-height: 0; min-width: 0; }
+.t-single .preview { gap: 16px; }

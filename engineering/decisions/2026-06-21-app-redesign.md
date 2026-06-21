@@ -511,14 +511,22 @@ not introduce a second language (HARD RULES 3, 11, 15).
 Every Studio win ships verified at **390 / 820 / 1440** (CLAUDE.md: no website
 change is done without `tools/screenshot.js` evidence at all three widths).
 
-- **Desktop (~1440):** rail (icon+label on hover) · AppBar · work surface ·
-  Inspector all visible.
-- **Tablet (~820):** rail icon-only; Inspector becomes an AppBar toggle (slides
-  over); work surface is primary; AppBar center favours icon-only controls.
-- **Mobile (~390):** rail → bottom intent bar (or AppBar menu); Inspector +
-  Architect + Share → `Sheet`s; work surface = single pane with the existing
-  Edit/Preview `Tabs`. Icon-only controls throughout; no horizontal overflow
-  (the `check:overflow` gate covers this).
+- **Desktop (~1440):** intent switch · AppBar · work surface · Inspector all
+  visible; up to three panes (Architect · Editor · Preview).
+- **Tablet (~768–1180): a hybrid, not a third design — it *leans by orientation*.**
+  It takes its **chrome from desktop** (the top-tab / rail header stays — *never*
+  the mobile bottom bar) and its **density + side-panel behaviour from mobile**
+  (touch targets, icon-only secondary controls; Architect and the Inspector are
+  **summoned slide-overs, never resident** — protects the preview, PM-4). Panes are
+  orientation-gated: **landscape (~1180) ≈ desktop** (two panes, Editor + Preview);
+  **portrait (~820) ≈ a roomy mobile** (one primary pane + an Edit/Preview
+  segmented toggle). *Tablet is also a quiet argument for v2/tabs (PM-5): a 66px
+  rail costs proportionally more at ~800px, while tabs degrade to icon-only
+  cleanly.*
+- **Mobile (~390):** the intent switch becomes a **bottom intent bar** (v2) or a
+  **hamburger → drawer** (v1); Inspector + Architect + Share → `Sheet`s; work
+  surface = single pane with the Edit/Preview `Tabs`. Icon-only throughout; no
+  horizontal overflow (the `check:overflow` gate covers this).
 
 ## 10. Reuse map (HARD RULE 15 — don't reinvent)
 
@@ -750,5 +758,10 @@ merge-authorization gate (CLAUDE.md), then post the standup.
   mobile intent switch explicit: v2 = thumb-friendly **bottom intent bar**, v1 =
   the rail collapses into a top **hamburger → drawer**. In `v1-rail/mobile-*.png`
   and `v2-tabs/mobile-*.png`.
+- 2026-06-21 — **Tablet mockups + §9 sharpened.** Added tablet Compose
+  (landscape 1180 + portrait 820) and reframed §9's tablet row as an explicit
+  *hybrid leaning by orientation* — desktop chrome, mobile density/overlays, panes
+  orientation-gated. In `v2-tabs/tablet-compose-*.png`. Now mocked at all three
+  widths (390 / 820 / 1440).
 - _pending_ — Author approval (per PM-2, of **Win 0 only**); intent-switch shell
   (v1 rail vs v2 tabs, fork PM-5) still to confirm.

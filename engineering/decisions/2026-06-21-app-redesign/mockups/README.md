@@ -36,6 +36,19 @@ Each version has a complete mobile set (Present is identical across both):
 
 (`mobile.png` is the earlier short single-screen Compose, kept for history.)
 
+### Tablet (a hybrid, leaning by orientation)
+
+Tablet is the swing breakpoint — desktop chrome, mobile density, panes gated by
+orientation (see plan §9). v2-tabs shell:
+
+| File | Shows |
+|---|---|
+| `tablet-compose-landscape.png` (1180×820) | near-desktop: top tabs · two panes (Edit + Preview) · Architect/Deck as summoned toggles |
+| `tablet-compose-portrait.png` (820×1180) | roomy-mobile: top tabs · single pane + Edit/Preview segmented toggle · overlays for Architect/Deck |
+
+(v1/rail tablet would be identical but with the rail icon-only; not separately
+mocked — at ~800px the rail's cost is exactly why §9/PM-5 lean to tabs.)
+
 See [`compare/compare-compose.png`](./compare/compare-compose.png) for the
 annotated side-by-side. **The red-team (PM-5) recommends v2 / top-tabs**: for three
 intents a rail copies the VS Code *look* without the load that justifies its tax.
