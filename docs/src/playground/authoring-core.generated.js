@@ -522,6 +522,223 @@ ${indent}  ${bullet} ${body.trim()}`;
       if (vocab.mapRegions) findings.push(...findUnknownMapRegions(source, vocab.mapRegions));
       if (vocab.finishNames) findings.push(...findUnknownFinish(source, vocab.finishNames));
       if (vocab.splitNames) findings.push(...findUnknownSplit(source, vocab.splitNames));
+      findings.push(...findGanttIssues(source));
+      return findings;
+    }
+    var GANTT_STATUS = Object.freeze(/* @__PURE__ */ new Set([
+      "on-track",
+      "done",
+      "live",
+      "at-risk",
+      "warn",
+      "blocked",
+      "fail",
+      "pilot",
+      "decision",
+      "deferred"
+    ]));
+    var GANTT_MONTHS_LINT = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
+    var GANTT_MONTHS_FULL_LINT = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"];
+    function ganttTimePoint(raw) {
+      const s = String(raw == null ? "" : raw).trim();
+      if (!s) return null;
+      const d = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+      if (d) {
+        const y = +d[1], mo = +d[2] - 1, dd = +d[3];
+        const t = Date.UTC(y, mo, dd);
+        const dt = new Date(t);
+        if (dt.getUTCFullYear() !== y || dt.getUTCMonth() !== mo || dt.getUTCDate() !== dd) return null;
+        return { kind: "date", day: Math.round(t / 864e5) };
+      }
+      const q = s.match(/^(?:(\d{4})\s*)?Q([1-4])$/i);
+      if (q) return { kind: "q", year: q[1] ? +q[1] : null, idx: +q[2] - 1 };
+      const m = s.match(/^(?:(\d{4})\s*)?([A-Za-z]+)$/);
+      if (m) {
+        const w = m[2].toLowerCase();
+        let mi = w.length === 3 ? GANTT_MONTHS_LINT.indexOf(w) : -1;
+        if (mi < 0) mi = GANTT_MONTHS_FULL_LINT.indexOf(w);
+        if (mi >= 0) return { kind: "m", year: m[1] ? +m[1] : null, idx: mi };
+      }
+      return null;
+    }
+    function ganttSpanVals(pt, mode, baseYear) {
+      const dayOf = (y2, mo, dd) => Math.round(Date.UTC(y2, mo, dd) / 864e5);
+      if (mode === "date") {
+        if (pt.kind === "date") return [pt.day, pt.day];
+        const y2 = pt.year != null ? pt.year : baseYear;
+        if (pt.kind === "q") return [dayOf(y2, pt.idx * 3, 1), dayOf(y2, pt.idx * 3 + 3, 1)];
+        return [dayOf(y2, pt.idx, 1), dayOf(y2, pt.idx + 1, 1)];
+      }
+      if (pt.kind === "date") {
+        const dt = new Date(pt.day * 864e5);
+        const ym = dt.getUTCFullYear() * 12 + dt.getUTCMonth();
+        return [ym, ym + 1];
+      }
+      const y = pt.year != null ? pt.year : baseYear;
+      if (pt.kind === "q") return [y * 12 + pt.idx * 3, y * 12 + pt.idx * 3 + 3];
+      return [y * 12 + pt.idx, y * 12 + pt.idx + 1];
+    }
+    function findGanttIssues(source) {
+      const findings = [];
+      const slides = source.split(/^---$/m);
+      const fm = fmChunks(source);
+      slides.forEach((slide, idx) => {
+        const cm = slide.match(CLASS_DIRECTIVE);
+        if (!cm) return;
+        if (!cm[1].split(/\s+/).filter(Boolean).includes("gantt")) return;
+        const slideNo = idx - fm + 1;
+        const tasks = [];
+        for (const raw of slide.split("\n")) {
+          const lm = raw.match(/^(\s*)[-*]\s+(.*\S)\s*$/);
+          if (!lm) continue;
+          const indent = lm[1].replace(/\t/g, "    ").length;
+          if (indent < 2) continue;
+          const content = lm[2];
+          let rest = content;
+          const codeTokens = [];
+          let mt;
+          while (mt = rest.match(/\s*`([^`]+)`\s*$/)) {
+            codeTokens.unshift(mt[1].trim());
+            rest = rest.slice(0, mt.index);
+          }
+          if (!codeTokens.length) continue;
+          const label = rest.trim();
+          const task = { label, line: raw.trim(), span: null, afters: [], hasMilestone: false };
+          for (const tok of codeTokens) {
+            if (/^after\s*:/i.test(tok)) {
+              task.afters.push(...tok.replace(/^after\s*:/i, "").split(",").map((a) => a.trim()).filter(Boolean));
+              continue;
+            }
+            if (/^milestone$/i.test(tok)) {
+              task.hasMilestone = true;
+              continue;
+            }
+            if (GANTT_STATUS.has(tok.toLowerCase())) continue;
+            if (/(?:→|–|—|->)/.test(tok) && !tok.includes("..")) {
+              findings.push({
+                slide: slideNo,
+                rule: "gantt-retired-delimiter",
+                severity: "error",
+                classToken: "gantt",
+                line: raw.trim(),
+                message: `gantt span \`${tok}\` uses a retired delimiter \u2014 the only span delimiter is now \`..\``,
+                fix: `Write the span as \`${tok.replace(/\s*(?:→|–|—|->)\s*/, "..")}\` (e.g. \`Q1..Q2\` or \`2026-01-01..2026-03-15\`).`
+              });
+              task.span = { bad: true };
+              continue;
+            }
+            if (tok.includes("..")) {
+              const parts = tok.split("..").map((p) => p.trim());
+              const [a, b] = parts;
+              const pa = parts.length === 2 ? ganttTimePoint(a) : null;
+              const pb = parts.length === 2 ? ganttTimePoint(b) : null;
+              if (!pa || !pb) {
+                findings.push({
+                  slide: slideNo,
+                  rule: "gantt-bad-span",
+                  severity: "error",
+                  classToken: "gantt",
+                  line: raw.trim(),
+                  message: `gantt span \`${tok}\` is not a valid time range \u2014 each side must be a date (2026-03-15), a quarter (Q1 / 2026 Q1), or a month (Jan)`,
+                  fix: "Use two parseable time points around `..`, e.g. `Q1..Q3` or `Jan..Mar`."
+                });
+                task.span = { bad: true };
+              } else {
+                task.span = { startPt: pa, endPt: pb };
+              }
+              continue;
+            }
+            const lone = ganttTimePoint(tok);
+            if (lone) {
+              task.span = { startPt: lone, endPt: lone, point: true };
+              continue;
+            }
+            findings.push({
+              slide: slideNo,
+              rule: "gantt-unknown-token",
+              severity: "warning",
+              classToken: "gantt",
+              line: raw.trim(),
+              message: `gantt token \`${tok}\` is not recognized \u2014 expected a \`..\` span, a status, \`after: \u2026\`, or \`milestone\``,
+              fix: `Status must be one of: ${[...GANTT_STATUS].join(", ")}. A span is \`START..END\`; a single point is a milestone.`
+            });
+          }
+          tasks.push(task);
+        }
+        if (!tasks.length) return;
+        const pts = [];
+        for (const t of tasks) if (t.span?.startPt) {
+          pts.push(t.span.startPt);
+          if (t.span.endPt) pts.push(t.span.endPt);
+        }
+        for (const raw of slide.split("\n")) {
+          if (/^\s*[-*]\s/.test(raw)) continue;
+          for (const cm2 of raw.matchAll(/`([^`]+)`/g)) {
+            const tok = cm2[1].trim();
+            if (!tok.includes("..") || /^today\b/i.test(tok)) continue;
+            const parts = tok.split("..").map((p) => p.trim());
+            if (parts.length !== 2) continue;
+            const wa = ganttTimePoint(parts[0]), wb = ganttTimePoint(parts[1]);
+            if (wa && wb) {
+              pts.push(wa, wb);
+            }
+          }
+        }
+        if (!pts.length) return;
+        const hasDate = pts.some((p) => p.kind === "date");
+        const hasOrdinal = pts.some((p) => p.kind === "q" || p.kind === "m");
+        if (hasDate && hasOrdinal) {
+          findings.push({
+            slide: slideNo,
+            rule: "gantt-mixed-time",
+            severity: "warning",
+            classToken: "gantt",
+            line: cm[0],
+            message: "gantt mixes real dates with ordinal periods (Q/month) on one chart \u2014 they cannot share a continuous axis",
+            fix: "Use either ISO dates everywhere or ordinal periods everywhere, not both."
+          });
+        }
+        const mode = hasDate ? "date" : "ordinal";
+        const years = pts.map((p) => p.year).filter((y) => y != null);
+        const baseYear = years.length ? Math.min(...years) : mode === "date" ? 2e3 : 0;
+        const byLabel = /* @__PURE__ */ new Map();
+        for (const t of tasks) {
+          if (!t.span?.startPt) continue;
+          const [s] = ganttSpanVals(t.span.startPt, mode, baseYear);
+          const e = t.span.point ? s : ganttSpanVals(t.span.endPt, mode, baseYear)[1];
+          t._start = s;
+          t._end = e;
+          byLabel.set(t.label.toLowerCase(), t);
+        }
+        for (const t of tasks) {
+          for (const dep of t.afters) {
+            const pred = byLabel.get(dep.toLowerCase());
+            if (!pred) {
+              findings.push({
+                slide: slideNo,
+                rule: "gantt-dangling-after",
+                severity: "error",
+                classToken: "gantt",
+                line: t.line,
+                message: `gantt task "${t.label}" depends on "${dep}" via \`after:\`, but no task named "${dep}" is on this slide`,
+                fix: "Reference a task by its exact visible label, or remove the `after:` token."
+              });
+              continue;
+            }
+            if (t._start != null && pred._start != null && t._start < pred._start) {
+              findings.push({
+                slide: slideNo,
+                rule: "gantt-inverted-dependency",
+                severity: "warning",
+                classToken: "gantt",
+                line: t.line,
+                message: `gantt task "${t.label}" begins before its dependency "${pred.label}" even starts \u2014 the \`after:\` is inverted`,
+                fix: `Schedule "${t.label}" to start at or after "${pred.label}", or fix the \`after:\` direction.`
+              });
+            }
+          }
+        }
+      });
       return findings;
     }
     function findUnknownFinish(source, finishNames) {

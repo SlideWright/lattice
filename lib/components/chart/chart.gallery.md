@@ -25,24 +25,20 @@ Chart — series-substance data visualizations (SVG kernel).
 
 <!-- _class: gantt -->
 
-`2026 Q1 → 2026 Q4`
+`2026 Q1 .. 2026 Q4` `today Q3`
 
 ## What ships in each phase, by workstream.
 
-Three workstreams across four quarters; the one at-risk bar quietly gates the entire rollout.
+Three workstreams across four quarters; the one at-risk bar quietly gates the rollout, GA is a milestone, and the today line marks where the plan stands.
 
 - Framework
-  - Signal taxonomy `Q1 → Q2` `done`
-  - Scoring model v2 `Q2 → Q3` `live`
-  - Per-team weighting `Q3 → Q4` `at-risk`
+  - Signal taxonomy `Q1..Q2` `done`
+  - Scoring model v2 `Q2..Q3` `live` `after: Signal taxonomy`
+  - Per-team weighting `Q3..Q4` `at-risk` `after: Scoring model v2`
 - Adoption
-  - Pilot onboarding `Q1 → Q2` `done`
-  - Weekly signal review `Q2 → Q3` `live`
-  - Org-wide rollout `Q3 → Q4`
-- Governance
-  - Decision log `Q1 → Q2` `done`
-  - Calibration cadence `Q2 → Q3`
-  - Board reporting `Q3 → Q4`
+  - Pilot onboarding `Q1..Q2` `done`
+  - Org-wide rollout `Q3..Q4` `after: Per-team weighting`
+  - GA `Q4` `milestone` `after: Org-wide rollout`
 
 ---
 

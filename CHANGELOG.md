@@ -27,6 +27,24 @@ in patch versions.
 
 ### Changed
 
+- **Breaking: the `gantt` authoring contract is redesigned — typed tokens, a
+  continuous time axis, milestones, and dependencies.** The nested-list shape is
+  unchanged (lane → task), but the inline-code tokens are now *typed and
+  validated* instead of sniffed: a span is `START..END` (a bar) or a single time
+  point (a milestone diamond), `..` is the **only** delimiter (the old
+  `→ / – / ->` are retired and flagged with a "use `..`" lint error), and a task
+  may carry a status, an `after: Task name` dependency (validated, not drawn),
+  and an optional `milestone` keyword. Time points are real **ISO dates**
+  (`2026-03-15`), quarters (`Q1` / `2026 Q1`), or months (`Jan`) on one
+  *continuous* scale — bars are now day-accurate, not snapped to columns — and a
+  chart uses dates **or** ordinals, not both. The axis auto-derives from the
+  data; the eyebrow may override it (`START..END`) and add an opt-in
+  `today <point>` line. The linter gained gantt checks (retired delimiter, bad
+  span/status, dangling or inverted `after:`, mixed time vocabularies).
+  **Migration:** replace the span delimiter with `..`, and where a lone `Q1` was
+  a one-quarter *bar* write `Q1..Q1` (a lone point is now a milestone). See
+  `engineering/decisions/2026-06-21-gantt-component-redesign.md`.
+
 - **state-chart is simpler: status folds into the index badge, not a pill per
   node.** A state machine should read as *flow*, so the wide per-node
   `on-track`/`live` text pills (which widened the column and collided the spine

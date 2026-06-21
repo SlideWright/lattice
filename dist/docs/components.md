@@ -3900,24 +3900,24 @@ Use for project plans with overlapping or staggered tasks. Each task is a bar on
 
 - **Single workstream.** One lane of bars is a timeline, not a gantt. Use `timeline` or `list-steps` when there is no parallel work to coordinate.
 - **More than five lanes.** Past five workstreams the bars compress and the labels crowd. Group lanes (collapse 'SDK' subdomains into 'SDK') or split into two slides.
-- **No spans.** If tasks are point-in-time milestones rather than durations, use `timeline` or `roadmap milestones`. gantt earns its chrome only when bars have meaningful length.
+- **No spans at all.** A gantt mixes bars with the odd milestone — but if every task is a point-in-time event with no durations, use `timeline` or `roadmap milestones`. gantt earns its chrome only when bars carry meaningful length.
 
 #### Authoring
 
 ```markdown
 <!-- _class: gantt -->
 
-`2026 Q1 → 2026 Q4`
+`2026 Q1 .. 2026 Q4` `today Q3`
 
 ## What ships in each phase, by workstream.
 
 - First workstream
-  - First task `Q1 → Q2` `done`
-  - Second task `Q2 → Q3` `live`
-  - Third task `Q3 → Q4` `at-risk`
+  - First task `Q1..Q2` `done`
+  - Second task `Q2..Q3` `live` `after: First task`
+  - Milestone `Q4` `milestone` `after: Second task`
 - Second workstream
-  - First task `Q1 → Q2` `done`
-  - Second task `Q2 → Q3`
+  - First task `Q1..Q2` `done`
+  - Second task `Q2..Q3`
 ```
 
 #### Slots
@@ -3925,7 +3925,7 @@ Use for project plans with overlapping or staggered tasks. Each task is a bar on
 | Slot | Selector | Required | Description |
 |---|---|---|---|
 | `title` | `h2` | yes | Slide heading naming the plan. |
-| `tasks` | `ul > li` | yes | Outer li per workstream lane; nested bullets per task. Each task carries inline-code tokens for span (`Q1 → Q2`, or an en-dash / -> delimiter) and an optional status pill; the two pills may appear in any order. Status vocabulary: on-track / done / live / at-risk / warn / blocked / fail / deferred / pilot / decision. The range axis recognises quarters (Q1–Q4) or months (Jan–Dec); other vocabularies fall back to a four-column axis with no ticks. |
+| `tasks` | `ul > li` | yes | Outer li per workstream lane; nested bullets per task. Each task carries trailing inline-code tokens, in any order: a span `START..END` (a bar) or a single time point (a milestone diamond); an optional status; an optional `after: Task name` dependency; an optional `milestone` keyword. `..` is the only span delimiter. Time points are ISO dates (2026-03-15), quarters (Q1 or 2026 Q1), or months (Jan); a chart uses dates OR ordinals, not both. Status vocabulary: on-track / done / live / at-risk / warn / blocked / fail / deferred / pilot / decision. The axis derives from the data; the eyebrow may override it with a `START..END` window and add a `today <point>` marker. Tokens are validated by the linter (retired delimiter, bad span/status, dangling or inverted `after:`). |
 
 #### Anatomy
 

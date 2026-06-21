@@ -522,22 +522,22 @@ Phase 3 holds org-wide enablement. In the roadmap since 2024. Phase 2 is ongoing
 <!-- _class: gantt -->
 <!-- _footer: "Schedule by workstream · gantt" -->
 
-`2026 Q1 → 2026 Q4`
+`2026 Q1 .. 2026 Q4`
 
 ## The build schedule — Phase 3 is the big red bar, as it was last year
 
 - Signal Intake
-  - Connector v1 `Q1 → Q2` `done`
-  - Multi-source dedupe `Q2 → Q4` `at-risk`
+  - Connector v1 `Q1..Q2` `done`
+  - Multi-source dedupe `Q2..Q4` `at-risk`
 - Scoring
-  - Equal-weights model `Q1 → Q2` `done`
-  - Per-team calibration `Q2 → Q4` `at-risk`
+  - Equal-weights model `Q1..Q2` `done`
+  - Per-team calibration `Q2..Q4` `at-risk`
 - Decision Log
-  - Append-only schema `Q1 → Q2` `done`
-  - Outcome auto-pairing `Q3 → Q4` `blocked`
+  - Append-only schema `Q1..Q2` `done`
+  - Outcome auto-pairing `Q3..Q4` `blocked`
 - Adoption
-  - One pilot team `Q1 → Q2` `done`
-  - Org-wide enablement `Q3 → Q4` `blocked`
+  - One pilot team `Q1..Q2` `done`
+  - Org-wide enablement `Q3..Q4` `blocked`
 
 ---
 
