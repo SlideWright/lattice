@@ -1917,17 +1917,14 @@
       "form": "ledger",
       "substance": "prose",
       "orientation": [
-        "landscape",
-        "portrait"
+        "landscape"
       ],
       "families": [
         "wide",
-        "square",
-        "tall",
-        "strip"
+        "square"
       ],
       "adapt": {
-        "mode": "native"
+        "mode": "single-orientation"
       },
       "tags": [
         "tradeoff",
@@ -6621,7 +6618,7 @@
         "strip"
       ],
       "adapt": {
-        "mode": "native"
+        "mode": "reflow"
       },
       "tags": [
         "summary",

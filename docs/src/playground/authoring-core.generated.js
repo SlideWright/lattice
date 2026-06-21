@@ -87,6 +87,7 @@ var require_lint_core = __commonJS({
       // 2026-06-19-chart-adaptive-sizing.md §10.
       "kanban",
       "compare-code",
+      "compare-table",
       "redline"
     ]);
     var PORTRAIT_ONLY_LAYOUTS = Object.freeze([]);

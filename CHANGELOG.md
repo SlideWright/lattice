@@ -49,8 +49,16 @@ in patch versions.
   component whose CSS uses `@container … aspect-ratio` MUST be `reflow` — so the
   manifest can never silently drift from the code again. Fixes the prior gap (10
   declared adaptivity, 25 actually adapt, nothing caught it). Backfilled all 52
-  (25 reflow / 25 native / 2 single-orientation); `components.json` now surfaces
+  (26 reflow / 23 native / 3 single-orientation); `components.json` now surfaces
   the mode. See `engineering/decisions/2026-06-20-adaptive-manifest-contract.md`.
+- **Two `adapt.mode` reclassifications** (native→reflow feasibility study):
+  - `split-panel` `native → reflow` — it structurally flips its section axis
+    (`flex-direction: row → column`) in portrait via `[data-orientation]`, so
+    `native` understated it; the catalog now reports `reflow`. No render change.
+  - `compare-table` `native → single-orientation` (`orientation: ["landscape"]`) —
+    render-verified as below-bar in portrait (survives but ballooned/cramped); it
+    now warns when used in a portrait deck, like its sibling `compare-code`.
+  See `engineering/decisions/2026-06-20-native-to-reflow-feasibility.md`.
 - **Typography is now three curated per-orientation scales, not one scale × a
   multiplier.** Font size was `landscape_coefficient × cqi × --canvas-scale`,
   where `--canvas-scale` was a single uniform multiplier that *stretched* the

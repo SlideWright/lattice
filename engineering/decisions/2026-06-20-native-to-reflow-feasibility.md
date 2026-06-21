@@ -1,6 +1,6 @@
 ---
 status: proposed
-summary: Feasibility study for converting the 25 `native` components to box-local `reflow` for portrait/tall boxes. Verdict — highly feasible and mostly cheap, BUT "lots of layouts are native" is partly a misframing: 8 of 25 are correctly native (centred single-column — reflow is a literal no-op), ~13 are cheap descendant-collapse reflows that copy the proven §12 sweep recipe (no export sign-off needed), 2 are wide tables needing a markup restructure, 1 (split-panel) already flips via `data-orientation` but the `@container` migration is the known §11 section-element blocker, and 1 (compare-table) is likely MISCLASSIFIED — it should be landscape-only, not a reflow target. Two contract findings flagged for the maintainer. **Part II (v2)** lifts the question one layer — from "are the components reflow-capable?" to "what does an end-to-end responsive *viewing* experience for the reader (the emailed-link-on-a-phone persona) require?" — and finds the responsive runtime is ~80% already built (the runtime already re-derives orientation from *measured* aspect on every resize); the missing pieces are a fluid-box viewer mode, a content-autofit actuator on the existing overflow watcher (with a legibility floor), and — now in scope — engine-owned re-pagination, which the capacity model already anticipates (`escalateTo: "split across slides"`).
+summary: Feasibility study for converting the 25 `native` components to box-local `reflow` for portrait/tall boxes. Verdict — highly feasible and mostly cheap, BUT "lots of layouts are native" is partly a misframing: 8 of 25 are correctly native (centred single-column — reflow is a literal no-op), ~13 are cheap descendant-collapse reflows that copy the proven §12 sweep recipe (no export sign-off needed), 2 are wide tables needing a markup restructure, 1 (split-panel) already flips via `data-orientation` but the `@container` migration is the known §11 section-element blocker, and 1 (compare-table) flagged as a possible landscape-only reclassification. Two contract findings flagged for the maintainer; resolved 2026-06-20 — split-panel reclassified `reflow`, compare-table render-verified and reclassified landscape-only. **Part II (v2)** lifts the question one layer — from "are the components reflow-capable?" to "what does an end-to-end responsive *viewing* experience for the reader (the emailed-link-on-a-phone persona) require?" — and finds the responsive runtime is ~80% already built (the runtime already re-derives orientation from *measured* aspect on every resize); the missing pieces are a fluid-box viewer mode, a content-autofit actuator on the existing overflow watcher (with a legibility floor), and — now in scope — engine-owned re-pagination, which the capacity model already anticipates (`escalateTo: "split across slides"`).
 version: 2
 supersedes: none
 builds-on: 2026-06-20-adaptive-manifest-contract.md, 2026-06-18-component-adaptive-sizing.md, 2026-06-16-orientation-in-the-form-model.md
@@ -164,17 +164,28 @@ backed by "honest declaration + code review," not the static gate.
    `[data-orientation]` flips *are* structural reflow) or accept that `native`
    silently tolerates `[data-orientation]` axis flips and say so in the contract.
    *Recommendation: reclassify `reflow`; it reflows, the gate just can't see how.*
-2. **`compare-table` is declared `native` but is probably landscape-only.** It's a
+   **Actioned (2026-06-20):** reclassified `reflow` — gate stays green (`reflow`
+   carries no `@container` requirement; §11 sanctions `[data-orientation]` as the
+   section-element reflow signal). Tier C below still tracks the optional
+   `@container` *mechanism* migration; it is not a prerequisite for the label.
+2. **`compare-table` is declared `native` — is it really landscape-only?** It's a
    wide ledger (`capacity.axis: row`, sweet 4 / hard 8) whose read-across is
    load-bearing — the same rationale the 2026-06-16 portrait audit used to mark
    `compare-code` (its sibling) `single-orientation: ["landscape"]`. `native`
-   asserts it "must support both orientations," but a 4-column table scaled into a
-   9:16 box crowds hard. *Recommendation: render its gallery at `size: story` and,
-   if it crowds, move it to `orientation: ["landscape"]` + the
-   `LANDSCAPE_ONLY_LAYOUTS` lint list — NOT onto the reflow backlog.*
+   asserts it "must support both orientations." *Recommendation: render its gallery
+   at `size: story` before flipping anything.*
+   **Resolved (2026-06-20) → `single-orientation: ["landscape"]`.** Render-verified
+   at `size: story`: at sweet-spot content (3 rows × 4 cols) it *survives* portrait
+   — read-across holds, nothing clips — but ballooned and cramped (squeezed columns,
+   rows floating with large vertical gaps), and it degrades fast as rows/columns
+   grow. The maintainer's call is that "survives but cramped" is below the boardroom
+   bar for a load-bearing ledger, so `compare-table` joins its sibling `compare-code`
+   as landscape-only (`adapt.mode: single-orientation`, `orientation: ["landscape"]`,
+   added to `LANDSCAPE_ONLY_LAYOUTS`). Portrait decks using it now get a lint nudge.
 
-(Both are render-verifiable in one pass; I've flagged rather than flipped them so
-the call stays the maintainer's.)
+(Both were render-verifiable in one pass; flagged rather than auto-flipped so the
+call stayed the maintainer's — `split-panel` reclassified `reflow`, `compare-table`
+reclassified `single-orientation: ["landscape"]`.)
 
 ## Recommended sequencing (if we proceed)
 
@@ -190,9 +201,9 @@ batch by cost tier so each PR is reviewable:
    `list-steps`): the remaining descendant collapses; `list-steps`/`compare-prose`
    reuse their existing `.vertical` CSS.
 3. **Batch A3 — `math` variants**: scoped to the 2-col variants only.
-4. **Contract cleanup** (cheap, do alongside A1): the two findings above —
-   reclassify `split-panel → reflow`, render-verify and likely
-   `compare-table → landscape-only`.
+4. **Contract cleanup** — ✅ **done (2026-06-20):** `split-panel` reclassified
+   `reflow`; `compare-table` render-verified and reclassified
+   `single-orientation: ["landscape"]` (see Findings).
 5. **Tier B (later)** — `glossary`, `obligation-matrix` table restructures, only
    if portrait demand justifies the transform work.
 6. **Tier C** — `split-panel` `@container` migration rides the §11 markup-wrapper
