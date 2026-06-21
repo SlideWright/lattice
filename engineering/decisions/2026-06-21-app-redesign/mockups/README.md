@@ -8,6 +8,12 @@ icons, so palette, type, and density are faithful. **These are zero-behavior
 visual specs, not shipped code** (PM-12) — the real surfaces carry ~30 modules of
 state behind these pictures.
 
+**Accessibility (PM-13).** Status/severity never rides on colour alone. The
+Architect cards carry a shape-coded **intent tag** (circle-✓ `READY` · triangle-!
+`REVIEW` · octagon-× `FIX` · circle-i `INFO`); [`intent-proof.png`](./intent-proof.png)
+shows the tags in full colour and greyscale — the silhouettes + labels survive
+total colour loss (WCAG 1.4.1), matching the engine's CVD palettes.
+
 ## v1 vs v2 — what differs (it's only the shell chrome)
 
 Two options for the intent switch (the open fork **PM-5**). **Only the chrome that

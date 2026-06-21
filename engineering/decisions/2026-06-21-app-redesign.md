@@ -505,6 +505,13 @@ not introduce a second language (HARD RULES 3, 11, 15).
 - **Motion:** restrained and purposeful only — Inspector collapse, intent
   crossfade, sheet slide. No decorative animation. Respect
   `prefers-reduced-motion`.
+- **Accessibility — colour is never the only channel (PM-13).** Status, severity,
+  and intent use the shape-coded **intent-tag** system: a corner tag carrying a
+  silhouette-distinct icon + text label (circle-✓ `READY` · triangle-! `REVIEW` ·
+  octagon-× `FIX` · circle-i `INFO`). The engine already ships CVD palettes
+  (deuteranopia, protanopia, tritanopia, achromatopsia); the chrome holds the same
+  bar — every status cue is verified to read in greyscale (WCAG 1.4.1), and the
+  coloured text itself stays ≥ AA. See the mockups' `intent-proof.png`.
 
 ## 9. Responsive contract (all three first-class)
 
@@ -632,6 +639,7 @@ what the author chose, PM-# records what the red-team proved we must constrain).
 | PM-10 | **Per-surface graceful degradation** — a shell/Workbench fault can't blank Compose; surfaces stay independently loadable. | adds a Win-1 requirement |
 | PM-11 | **Optimize per-persona, not uniformly** — density for the author, low-load for the recipient; "minimize clicks" is a *reader* goal, not universal. | scopes the headline goal |
 | PM-12 | **Mockups are zero-behavior specs** — they never set the schedule; each is paired with its integration cost. | framing |
+| PM-13 | **Never signal status / severity / intent by colour alone (WCAG 1.4.1).** Pair every such cue with a **shape-distinct icon + text** corner tag — circle-✓ `READY` · triangle-! `REVIEW` · octagon-× `FIX` · circle-i `INFO` — verified to read in greyscale and across the CVD palettes. Colour reinforces; it never carries the meaning. | author-raised; new convention |
 
 **Net:** inversion does not kill the plan; it demotes "merge → start Win 1" to
 "merge as *direction* → buy evidence first" (PM-2). The load-bearing risk
@@ -763,5 +771,10 @@ merge-authorization gate (CLAUDE.md), then post the standup.
   *hybrid leaning by orientation* — desktop chrome, mobile density/overlays, panes
   orientation-gated. In `v2-tabs/tablet-compose-*.png`. Now mocked at all three
   widths (390 / 820 / 1440).
+- 2026-06-21 — **Colour-independent status signalling (author-raised → PM-13).**
+  Status/severity no longer relies on colour (WCAG 1.4.1): the Architect cards gain
+  a shape-coded **intent tag** (circle-✓ READY · triangle-! REVIEW · octagon-× FIX
+  · circle-i INFO) with a text label; titles de-coloured. Added PM-13, a §8 a11y
+  rule, and `intent-proof.png` (full-colour vs greyscale). Compose v1+v2 updated.
 - _pending_ — Author approval (per PM-2, of **Win 0 only**); intent-switch shell
   (v1 rail vs v2 tabs, fork PM-5) still to confirm.
