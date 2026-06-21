@@ -39,7 +39,7 @@
     }
   },
   "skeleton": "<!-- _class: state-chart -->\n\n`Submission lifecycle`\n\n## Document approval flow.\n\nHow a draft moves from author to archive.\n\n1. Draft `start`\n   - `submit => 2`\n   - `discard => 6`\n2. Submitted `on-track`\n   - `review => 3`\n3. In Review\n   - `approve => 4`\n   - `reject => 1`\n   - `revise => self`\n4. Approved `done`\n   - `publish => 5`\n5. Published `live`\n   - `archive => 6`\n6. Archived `end`\n\n*Rejected drafts return to the author; revisions stay in review.*\n",
-  "sample": "<!-- _class: state-chart lr -->\n\n`Submission lifecycle`\n\n## Document approval flow.\n\nHow a draft moves from author to publication.\n\n1. Draft `start`\n   - `submit => 2`\n2. Submitted `on-track`\n   - `review => 3`\n3. In Review\n   - `approve => 4`\n   - `reject => 1`\n   - `revise => self`\n4. Approved `done`\n   - `publish => 5`\n5. Published `end`\n\n*Rejected drafts return to the author; revisions stay in review.*\n",
+  "sample": "<!-- _class: state-chart lr -->\n\n`Submission lifecycle`\n\n## Document approval flow.\n\nHow a draft moves from author to publication.\n\n1. Draft `start`\n   - `submit => 2`\n2. Submitted `on-track`\n   - `review => 3`\n3. In Review `at-risk`\n   - `approve => 4`\n   - `reject => 1`\n   - `revise => self`\n4. Approved\n   - `publish => 5`\n5. Published `end`\n\n*Rejected drafts return to the author; revisions stay in review.*\n",
   "whenToUse": [
     {
       "title": "Finite, named states with discrete events",
@@ -104,7 +104,7 @@
     "curved": {
       "label": "Curved",
       "caption": "Routes skip and back edges as single Bézier arcs instead of the default orthogonal racetracks (round-out, straight run, round-in). Each curve's peak is solved so its arc still clears the widest node in its span. Orthogonal to direction — compose with `lr`.",
-      "sample": "<!-- _class: state-chart curved -->\n\n## Document approval (curved).\n\n1. Draft `start`\n   - `submit => 2`\n   - `discard => 5`\n2. In Review `on-track`\n   - `approve => 3`\n   - `revise => self`\n   - `reject => 1`\n3. Approved\n   - `publish => 4`\n4. Published `live`\n   - `archive => 5`\n5. Archived `end`\n"
+      "sample": "<!-- _class: state-chart curved -->\n\n## Document approval (curved).\n\n1. Draft `start`\n   - `submit => 2`\n   - `discard => 5`\n2. In Review `at-risk`\n   - `approve => 3`\n   - `revise => self`\n   - `reject => 1`\n3. Approved\n   - `publish => 4`\n4. Published `live`\n   - `archive => 5`\n5. Archived `end`\n"
     }
   },
   "stressSample": "<!-- _class: state-chart -->\n\n`Submission lifecycle`\n\n## Stress test — back-edges, skips, self-loop.\n\n1. Draft `start`\n   - `submit => 2`\n   - `discard => 5`\n2. Submitted `on-track`\n   - `review => 3`\n   - `withdraw => 1`\n3. In Review\n   - `approve => 4`\n   - `reject => 1`\n   - `revise => self`\n4. Approved `done`\n   - `recall => 3`\n   - `publish => 5`\n5. Published `end`\n   - `amend => 3`\n"

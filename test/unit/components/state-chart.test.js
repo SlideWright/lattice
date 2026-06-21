@@ -376,10 +376,23 @@ describe('buildStateChart (default)', () => {
     assert.doesNotMatch(html, /class="state-edge-arrow"/);
   });
 
-  test('status renders as a chart-family .chart-status pill', () => {
-    assert.match(html, /class="chart-status" data-s="on-track"/);
-    assert.match(html, /class="chart-status" data-s="done"/);
-    assert.match(html, /class="chart-status" data-s="live"/);
+  test('status folds into the top-right index badge (no pill, no inline dot)', () => {
+    assert.match(html, /class="state-index" data-s="on-track" aria-label="on-track">\d+</);
+    assert.match(html, /class="state-index" data-s="done"/);
+    assert.match(html, /class="state-index" data-s="live"/);
+    assert.doesNotMatch(html, /class="chart-status"/);
+    // The only .state-dot occurrences are the legend swatches (one per legend item).
+    const dots = (html.match(/class="state-dot"/g) || []).length;
+    const legendItems = (html.match(/class="state-legend-item"/g) || []).length;
+    assert.equal(dots, legendItems, 'no inline node dot — dots live only in the legend');
+  });
+
+  test('distinct statuses are decoded by a legend band below the chart', () => {
+    assert.match(html, /<ol class="state-legend">/);
+    assert.match(html, /class="state-legend-item" data-s="on-track"><span class="state-dot" data-s="on-track"[^>]*><\/span><span class="state-legend-label">on-track<\/span>/);
+    // One legend entry per DISTINCT status (no duplicates).
+    const seen = [...html.matchAll(/class="state-legend-item" data-s="([^"]+)"/g)].map((m) => m[1]);
+    assert.deepEqual(seen, [...new Set(seen)], 'legend lists each status once');
   });
 
   test('serialises the resolved transition list into data-sc-transitions', () => {
