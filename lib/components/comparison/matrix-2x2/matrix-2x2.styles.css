@@ -34,7 +34,7 @@ section.matrix-2x2 > ol > li {
   padding:var(--sp-md);
   display:flex; flex-direction:column; gap:var(--sp-xs);
   font-weight:700; color:var(--text-heading);
-  font-size:var(--fs-body);
+  font-size:calc(var(--fs-body) * var(--prose-deboost, 1));
   position:relative; overflow:hidden;
 }
 /* Convention: the fourth (bottom-right) quadrant is the "outcome" cell. */
@@ -50,7 +50,7 @@ section.matrix-2x2 li > ol {
 }
 section.matrix-2x2 li > ul > li,
 section.matrix-2x2 li > ol > li {
-  font-size:var(--fs-body-compact);
+  font-size:calc(var(--fs-body-compact) * var(--prose-deboost, 1));
   font-weight:400;
   color:var(--text-body);
   line-height:var(--lh-base);

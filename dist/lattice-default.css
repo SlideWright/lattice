@@ -940,7 +940,7 @@ section.actors > ol > li::marker { content:''; }
 section.actors > ul > li > strong,
 section.actors > ol > li > strong {
   grid-column:1; grid-row:1;
-  font-size:var(--fs-body);
+  font-size:calc(var(--fs-body) * var(--prose-deboost, 1)); /* dense-prose de-boost: fits the tall frame in portrait/square; landscape fallback 1 = byte-identical */
   font-weight:700;
   color:var(--text-heading);
   line-height:var(--lh-snug);
@@ -989,7 +989,7 @@ section.actors > ul > li > ul > li,
 section.actors > ol > li > ul > li,
 section.actors > ul > li > ol > li,
 section.actors > ol > li > ol > li {
-  font-size:var(--fs-body-compact);
+  font-size:calc(var(--fs-body-compact) * var(--prose-deboost, 1)); /* dense-prose de-boost (see card title above) */
   color:var(--text-body);
   line-height:var(--lh-base);
 }
@@ -1742,7 +1742,7 @@ section.cards-stack .card {
   margin:0; flex:1; list-style:none;
   display:flex; flex-wrap:wrap; align-items:baseline; align-content:flex-start;
   column-gap:var(--sp-sm); row-gap:var(--sp-xs);
-  font-size:var(--fs-body); line-height:var(--lh-snug);
+  font-size:calc(var(--fs-body) * var(--prose-deboost, 1)); line-height:var(--lh-snug);
   font-weight:700; color:var(--text-heading);
 }
 section.cards-stack > ul > li::marker, section.cards-stack > ol > li::marker { content:''; }
@@ -1780,7 +1780,7 @@ section.cards-stack .card > ul, section.cards-stack .card > ol {
 section.cards-stack > ul > li > ul > li, section.cards-stack > ul > li > ol > li,
 section.cards-stack > ol > li > ul > li, section.cards-stack > ol > li > ol > li,
 section.cards-stack .card > ul > li, section.cards-stack .card > ol > li {
-  font-size:var(--fs-body);
+  font-size:calc(var(--fs-body) * var(--prose-deboost, 1));
 }
 
 /* ── numbered cards (ol): flush corner tag — same recipe as cards-grid.
@@ -2451,12 +2451,12 @@ section.compare-prose .compare-prose-inner .card > strong { display:block; }
 section.compare-prose .compare-prose-inner .card > ul,
 section.compare-prose .compare-prose-inner .card > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; }
 section.compare-prose .compare-prose-inner .card > ul > li,
-section.compare-prose .compare-prose-inner .card > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
+section.compare-prose .compare-prose-inner .card > ol > li { font-size:calc(var(--fs-body) * var(--prose-deboost, 1)); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
 section.compare-prose .connector { display:flex; align-items:center; justify-content:center; font-size:var(--fs-h3); color:var(--text-secondary); padding:0 var(--sp-sm); flex-shrink:0; }
 .below-note { margin-top:var(--sp-sm); padding-top:var(--sp-xs); flex-shrink:0; position:relative; }
 .below-note::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(to right, var(--accent), transparent); }
-.below-note p { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-relaxed); margin:0; }
-section.compare-prose > :is(ul, ol) + p { margin-top:var(--sp-sm); padding-top:var(--sp-xs); flex-shrink:0; font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-relaxed); }
+.below-note p { font-size:calc(var(--fs-body) * var(--prose-deboost, 1)); color:var(--text-body); line-height:var(--lh-relaxed); margin:0; }
+section.compare-prose > :is(ul, ol) + p { margin-top:var(--sp-sm); padding-top:var(--sp-xs); flex-shrink:0; font-size:calc(var(--fs-body) * var(--prose-deboost, 1)); color:var(--text-body); line-height:var(--lh-relaxed); }
 
 
 /* ── COMPARISON ──────────────────────────────────────────────────────────────
@@ -2489,7 +2489,7 @@ section.compare-prose:not(:has(.compare-prose-inner)) > ol > li > ol { list-styl
 section.compare-prose:not(:has(.compare-prose-inner)) > ul > li > ul > li,
 section.compare-prose:not(:has(.compare-prose-inner)) > ul > li > ol > li,
 section.compare-prose:not(:has(.compare-prose-inner)) > ol > li > ul > li,
-section.compare-prose:not(:has(.compare-prose-inner)) > ol > li > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
+section.compare-prose:not(:has(.compare-prose-inner)) > ol > li > ol > li { font-size:calc(var(--fs-body) * var(--prose-deboost, 1)); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
 
 /* ── Compare-prose family modifiers — appended Phase 7 ──
  */
@@ -2902,7 +2902,7 @@ section.decision > ul > li > p,
 section.decision > ol > li > p,
 section.decision > ul > li > ul,
 section.decision > ol > li > ul {
-  font-size:var(--fs-body);
+  font-size:calc(var(--fs-body) * var(--prose-deboost, 1));
   line-height:var(--lh-base);
   color:var(--text-body);
   font-weight:400;
@@ -2934,7 +2934,7 @@ section.decision :is(ul,ol) > li > strong ~ * { font-weight: 400; }
   /* One option per full-width card — the justification is the card's hero, so it
      carries statement weight (--fs-message), not body weight. */
   section.decision.decision > :is(ul, ol) > li > :is(p, ul, ol) {
-    font-size: var(--fs-message);
+    font-size:calc(var(--fs-message) * var(--prose-deboost, 1));
     line-height: var(--lh-snug);
   }
 }
@@ -7231,7 +7231,7 @@ section.matrix-2x2 > ol > li {
   padding:var(--sp-md);
   display:flex; flex-direction:column; gap:var(--sp-xs);
   font-weight:700; color:var(--text-heading);
-  font-size:var(--fs-body);
+  font-size:calc(var(--fs-body) * var(--prose-deboost, 1));
   position:relative; overflow:hidden;
 }
 /* Convention: the fourth (bottom-right) quadrant is the "outcome" cell. */
@@ -7247,7 +7247,7 @@ section.matrix-2x2 li > ol {
 }
 section.matrix-2x2 li > ul > li,
 section.matrix-2x2 li > ol > li {
-  font-size:var(--fs-body-compact);
+  font-size:calc(var(--fs-body-compact) * var(--prose-deboost, 1));
   font-weight:400;
   color:var(--text-body);
   line-height:var(--lh-base);
@@ -10018,7 +10018,7 @@ section.split-compare .compare-left { width:30%; flex-shrink:0; background:var(-
 section.split-compare .compare-left::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:var(--accent); }
 section.split-compare .compare-left .frame-label { display:block; font-size:var(--fs-meta); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--on-dark-secondary); margin-bottom:var(--sp-sm); }
 section.split-compare .compare-left h2 { font-size:var(--fs-h3); color:var(--on-dark-primary); font-weight:800; line-height:var(--lh-tight); margin:0 0 var(--sp-md); }
-section.split-compare .compare-left p { font-size:var(--fs-body); font-family:var(--font-body); color:var(--on-dark-secondary); line-height:var(--lh-snug); margin:0; }
+section.split-compare .compare-left p { font-size:calc(var(--fs-body) * var(--prose-deboost, 1)); font-family:var(--font-body); color:var(--on-dark-secondary); line-height:var(--lh-snug); margin:0; }
 /* Bottom padding clears the footer / pagination chrome (section::after sits at
  * bottom:1.875cqi and rises ~1.2cqi) so the verdict card never bleeds into it. */
 section.split-compare .compare-right { flex:1; min-height:0; background:var(--bg); display:flex; flex-direction:column; padding:var(--sp-lg) var(--sp-xl) var(--sp-xl) var(--sp-lg); gap:var(--sp-sm); }
@@ -10030,7 +10030,7 @@ section.split-compare .option.preferred::after { content:'✧'; position:absolut
 section.split-compare .option ul { list-style:disc; padding:0 0 0 var(--sp-md); margin:0; }
 section.split-compare .option ol { list-style:decimal; padding:0 0 0 var(--sp-md); margin:0; }
 section.split-compare .option ul > li,
-section.split-compare .option ol > li { font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-body); line-height:var(--lh-snug); margin-bottom:0.46875cqi; }
+section.split-compare .option ol > li { font-size:calc(var(--fs-body) * var(--prose-deboost, 1)); font-family:var(--font-body); color:var(--text-body); line-height:var(--lh-snug); margin-bottom:0.46875cqi; }
 section.split-compare .option ul > li:last-child,
 section.split-compare .option ol > li:last-child { margin-bottom:0; }
 /* The verdict is the recommended-option CARD: accent-soft fill + accent
@@ -10040,7 +10040,7 @@ section.split-compare .option ol > li:last-child { margin-bottom:0; }
 section.split-compare .verdict { background:var(--accent-soft); border:1px solid var(--on-accent-soft); border-radius:var(--radius-md); padding:calc(var(--sp-xs) + 1.5625cqi) var(--sp-md) var(--sp-sm); position:relative; overflow:hidden; flex-shrink:0; }
 section.split-compare .verdict::before { content:'Recommendation'; position:absolute; top:0; left:0; padding:0.3125cqi 0.9375cqi; border-radius:var(--radius-md) 0 var(--radius-sm) 0; font-family:var(--font-mono); font-size:var(--fs-meta); font-weight:700; text-transform:uppercase; letter-spacing:0.12em; line-height:1; color:var(--on-accent); background:var(--accent); }
 section.split-compare .verdict blockquote { margin:0; padding:0; border:none; }
-section.split-compare .verdict blockquote p { font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-body); font-weight:400; line-height:var(--lh-snug); margin:0; }
+section.split-compare .verdict blockquote p { font-size:calc(var(--fs-body) * var(--prose-deboost, 1)); font-family:var(--font-body); color:var(--text-body); font-weight:400; line-height:var(--lh-snug); margin:0; }
 
 /* ── Reflow. Two seats, by what each targets:
  *
