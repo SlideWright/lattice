@@ -179,14 +179,15 @@ describe('parseStateLi', () => {
     assert.deepEqual(s.transitions[1], { event: 'discard', to: 6 });
   });
 
-  test('non-transition nested bullets fall through to annotations', () => {
+  test('non-transition nested bullets become the state detail (the reveal payload)', () => {
     const s = parseStateLi(
       'Draft<ul><li>just a note about this state</li><li><code>submit =&gt; 2</code></li></ul>',
       1
     );
     assert.equal(s.transitions.length, 1);
-    assert.equal(s.annotations.length, 1);
-    assert.match(s.annotations[0], /just a note/);
+    // Prose bullets are no longer dropped — they are captured as per-node detail.
+    assert.equal(s.detail.length, 1);
+    assert.match(s.detail[0], /just a note/);
   });
 });
 
@@ -790,5 +791,57 @@ describe('browser layout (fake DOM)', () => {
       assert.ok(skips.length > 0, 'has a skip edge');
       assert.ok(skips.every((p) => !/L/.test(p.d)), 'curved skips are pure cubics, no L run');
     });
+  });
+});
+
+// ── Tier-2 per-node detail reveal (chart-detail substrate) ───────────────
+// A non-transition (prose) bullet under a state becomes that state's reveal
+// detail: the node is tagged data-mark + data-label, the detail rides an inert
+// <template class="chart-detail"> payload (a sibling of the figure so it isn't
+// miscounted as a mark) and folds into a speaker-note comment. A deck that
+// authors no prose bullet is unaffected (no payload, no note).
+// See engineering/decisions/2026-06-20-chart-detail-reveal-family.md.
+describe('Tier-2 per-node detail reveal', () => {
+  const MODEL_DETAIL = parseStateChart(
+    '<li>Draft <code>start</code><ul><li><code>submit =&gt; 2</code></li></ul></li>' +
+    '<li>Review <code>at-risk</code><ul><li><code>approve =&gt; 3</code></li><li>Needs two approvers before sign-off.</li></ul></li>' +
+    '<li>Done <code>end</code></li>'
+  );
+  const MODEL_PLAIN = parseStateChart(
+    '<li>A <code>start</code><ul><li><code>go =&gt; 2</code></li></ul></li><li>B <code>end</code></li>'
+  );
+
+  test('nodes are index-tagged (data-mark 0-based + data-label) for the reveal layer', () => {
+    const html = buildStateChart(MODEL_DETAIL, ['state-chart']);
+    assert.match(html, /class="state-node" data-index="1" data-mark="0" data-label="Draft"/);
+    assert.match(html, /data-mark="1" data-label="Review" data-value="[^"]*"/);
+  });
+
+  test('a prose bullet becomes an inert detail template keyed to the state mark index', () => {
+    const html = buildStateChart(MODEL_DETAIL, ['state-chart']);
+    assert.match(html, /<template class="chart-detail" data-mark="1">[\s\S]*Needs two approvers[\s\S]*<\/template>/);
+    // …and folds into a Marp-faithful speaker-note comment (static-PDF fallback)
+    assert.match(html, /<!--[\s\S]*Needs two approvers[\s\S]*-->/);
+  });
+
+  test('the detail payload is a sibling AFTER the figure, not a descendant of it', () => {
+    const html = buildStateChart(MODEL_DETAIL, ['state-chart']);
+    // The figure's last child is the edge <svg>; the payload must come after it
+    // (so chartEl=figure.querySelectorAll([data-mark]) never matches a template).
+    assert.ok(html.indexOf('chart-details') > html.indexOf('state-chart-edges'),
+      'chart-details follows the figure');
+  });
+
+  test('inline variant also tags rows and emits the detail', () => {
+    const html = buildStateChart(MODEL_DETAIL, ['state-chart', 'inline']);
+    assert.match(html, /class="state-node-row" data-index="2" data-mark="1" data-label="Review"/);
+    assert.match(html, /<template class="chart-detail" data-mark="1">/);
+  });
+
+  test('no prose bullet → no payload, no note (nodes still tagged)', () => {
+    const html = buildStateChart(MODEL_PLAIN, ['state-chart']);
+    assert.ok(!/chart-details/.test(html), 'no detail wrapper emitted');
+    assert.ok(!/<!--/.test(html), 'no speaker-note comment emitted');
+    assert.match(html, /data-mark="0"/, 'nodes are still index-tagged');
   });
 });

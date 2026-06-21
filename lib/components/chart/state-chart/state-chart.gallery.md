@@ -32,6 +32,7 @@ How a draft moves from author to publication.
    - `approve => 4`
    - `reject => 1`
    - `revise => self`
+   - Two reviewers must sign off before approval.
 4. Approved
    - `publish => 5`
 5. Published `end`
@@ -138,6 +139,7 @@ How a draft moves from author to publication.
    - `approve => 4`
    - `reject => 1`
    - `revise => self`
+   - Two reviewers must sign off before approval.
 4. Approved
    - `publish => 5`
 5. Published `end`
@@ -164,6 +166,7 @@ How a draft moves from author to publication.
    - `approve => 4`
    - `reject => 1`
    - `revise => self`
+   - Two reviewers must sign off before approval.
 4. Approved
    - `publish => 5`
 5. Published `end`
@@ -190,6 +193,7 @@ How a draft moves from author to publication.
    - `approve => 4`
    - `reject => 1`
    - `revise => self`
+   - Two reviewers must sign off before approval.
 4. Approved
    - `publish => 5`
 5. Published `end`

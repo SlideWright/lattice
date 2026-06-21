@@ -40,6 +40,19 @@ in patch versions.
 
 ### Added
 
+- **Per-state interactive detail on the state-chart (Tier-2 detail reveal).** A
+  nested bullet under a state that is *not* a transition (plain prose — the
+  entry/exit action, the rule, the "why") is now captured as that state's reveal
+  detail (previously such bullets were silently dropped). On screen (Drawing
+  Board present/practice/preview) the state node reveals it in a popover on
+  hover/tap, with the active node lifted, the rest dimmed, and the whole figure
+  tilting; in the exported PDF the same detail folds into the slide's speaker
+  note. A machine with no prose bullets is unchanged. Extends the shared
+  chart-family detail substrate to **HTML marks** (the reveal layer gained an
+  HTML-mark path that gantt/kanban will reuse; the edge-router skips re-measuring
+  while the tilt is live, so the routed edges stay aligned even when the Drawing
+  Board scales the slide to fit). See
+  `engineering/decisions/2026-06-20-chart-detail-reveal-family.md`.
 - **Per-mark interactive detail on funnel, map, quadrant, and radar charts** —
   the pie's authored-detail pattern, generalized into a shared chart-family
   substrate (`mark-detail.js`) and a chart-agnostic reveal layer. Author an
