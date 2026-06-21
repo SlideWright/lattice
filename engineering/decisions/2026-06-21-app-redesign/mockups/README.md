@@ -1,8 +1,11 @@
 # Studio redesign — mockups (v3 current · v2/v1 superseded)
 
-> **Current shell: `v3/`** (the lean shell — one ~54px top bar, compact
-> Compose⇄Present toggle, Fabricate in the ⚙ Workspace menu, collapsed Inspector).
-> It resulted from the §16 red-team of v2. **`v2-tabs/` and `v1-rail/` are
+> **Current shell: `v3/`** (the lean shell — one ~54px top bar, **Present-as-a-verb**
+> `▶ Present` button, **Fabricate in the brand launcher**, collapsed Inspector). It
+> came from the §16 red-team of v2, then the §17 red-team refined it (Present-as-Play
+> + launcher) and **froze it — no v4 (PM-14)**. `v3-compose.png` is reconciled to
+> that; `v3-tablet/mobile.png` inherit the same pattern (the `▶ Present` button
+> replaces the earlier toggle) and were deliberately not re-cut. **`v2-tabs/` and `v1-rail/` are
 > superseded** and kept only as the decision trail (plan §15 scored v1↔v2; §16
 > hardened v2→v3). v3 at all three widths: `v3/v3-compose.png` (1440),
 > `v3/v3-tablet.png` (1180), `v3/v3-mobile.png` (390).
