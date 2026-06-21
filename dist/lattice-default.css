@@ -15126,7 +15126,12 @@ section.form .cell-masthead {
    * reflow-as-form-capability.md §7. */
   grid-template-columns: var(--masthead-cols, [masthead-lede] 1fr [masthead-bay] auto);
   column-gap: var(--sp-lg);
-  align-items: start;
+  /* Baseline, not start: the bay's meta and the lede's first line (the kicker, or
+   * the title when there's no kicker) read as ONE top rail and must share a
+   * baseline. `start` aligned the columns' top EDGES, so the differing kicker/meta
+   * metrics left the meta floating above the kicker — a visible misalignment,
+   * worst in portrait. Picked over start/end/center after a 5-variant review. */
+  align-items: baseline;
   margin-bottom: var(--sp-md);
   padding-bottom: var(--sp-md);
   border-bottom: 1px solid var(--border);
