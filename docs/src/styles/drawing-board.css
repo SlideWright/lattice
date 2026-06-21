@@ -1748,6 +1748,34 @@ html.db-js #db-editor-ta {
 	display: block;
 	background: var(--bg-alt);
 }
+/* Phone view (fluid-box viewer). The toggle's active state + a plain portrait
+   frame the fluid iframe reflows inside. Each slide fills the frame (100dvh) and
+   the deck scroll-snaps within it; the frame keeps a phone aspect and shrinks to
+   fit a short panel. See drawing-board-render.js phoneView + deck-preview.js. */
+.db-phone-toggle.is-on {
+	border-color: var(--accent);
+	background: var(--accent);
+	color: var(--bg);
+}
+.db-preview-phone .db-panel-body {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	overflow: auto;
+	padding: 1rem;
+}
+.db-preview-phone .db-filmstrip {
+	width: 390px;
+	max-width: 100%;
+	aspect-ratio: 390 / 844;
+	height: auto;
+	max-height: 100%;
+	flex: none;
+	border: 1px solid var(--border);
+	border-radius: 18px;
+	box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18);
+	background: var(--bg);
+}
 .db-status {
 	font-size: 0.74rem;
 	color: var(--text-muted);

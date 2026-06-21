@@ -55,6 +55,10 @@ export function createRenderController(data) {
 	// the first render; a `size:` edit refreshes it (and forces a full srcdoc
 	// rewrite, since the box bakes into the frame — see render()).
 	var curGeom = { w: 1280, h: 720 };
+	// Phone-view: render the preview as the fluid-box viewer (each slide reflows to
+	// a portrait phone frame) instead of the scaled filmstrip. Folded into the
+	// render sig so toggling forces a full srcdoc rewrite (the marker bakes in).
+	var phoneView = false;
 	// The token vocabulary is universal everywhere (the canonical flip is
 	// complete — the engine + themes declare only the new role-based names), so
 	// the deck always renders against the engine as shipped. The former
@@ -207,9 +211,11 @@ export function createRenderController(data) {
 				const r = DP.renderDeck({
 					frame: frame,
 					html: out.html, css: out.css, mode: mode, geom: curGeom,
-					sig: theme + '|' + mode + '|' + ckey + '|' + curGeom.w + 'x' + curGeom.h,
+					sig: theme + '|' + mode + '|' + ckey + '|' + curGeom.w + 'x' + curGeom.h + (phoneView ? '|phone' : ''),
 					state: previewState,
 					runtimeUrl: RUNTIME_URL, padding: 22, gap: 22,
+					fluidCapable: phoneView,
+					fluidCssUrl: phoneView ? THEME_BASE + 'lattice.css' : null,
 					fontCss: PREVIEW_FONT_CSS,
 					// (a11y texture <defs> are injected by renderDeck itself now.)
 					// Single-file library themes resolve light/dark via light-dark();
@@ -424,6 +430,19 @@ export function createRenderController(data) {
 		return next;
 	}
 	if (modeBtn) modeBtn.addEventListener('click', toggleMode);
+	// Phone-view toggle: flip the preview between the scaled filmstrip and the
+	// fluid-box viewer (a portrait phone frame). The class reframes the iframe
+	// (drawing-board.css); phoneView rides the render sig so render() does a full
+	// srcdoc rewrite, baking in / removing the fluid-capable marker.
+	var phoneBtn = document.getElementById('db-phone-view');
+	var previewPanel = document.getElementById('db-preview');
+	if (phoneBtn) phoneBtn.addEventListener('click', () => {
+		phoneView = !phoneView;
+		phoneBtn.setAttribute('aria-pressed', String(phoneView));
+		phoneBtn.classList.toggle('is-on', phoneView);
+		if (previewPanel) previewPanel.classList.toggle('db-preview-phone', phoneView);
+		render();
+	});
 	// The chrome bus the React topbar island drives. Mirrors the deck-theme
 	// authoring semantics 1:1 — applyTheme writes the deck's front matter,
 	// syncThemeControls (run on every edit/load) reflects the deck's theme

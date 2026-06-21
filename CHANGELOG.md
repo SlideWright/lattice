@@ -40,6 +40,18 @@ in patch versions.
 
 ### Added
 
+- **Drawing Board "Phone view" toggle — preview a deck as the fluid-box viewer.**
+  A toggle in the preview panel reframes the live preview into a portrait phone
+  frame and renders the deck through the merged fluid-box viewer (each slide fills
+  the frame and reflows to portrait, one-per-swipe) instead of the scaled
+  filmstrip — so authors can see how a deck reads on a phone without exporting.
+  Default (off) is the unchanged filmstrip. The playground scopes deck CSS
+  per-slide (which mangles the fluid CSS's root-level `:root[data-lattice-view]`
+  signal), so the isolated phone-view iframe links the unscoped `lattice.css` to
+  deliver those rules intact; sections are tagged `data-lattice-slide` (the
+  engine render omits it) and the FIT scaling is bypassed. Drawing Board only for
+  now (component/theme studios unaffected — the new `buildSrcdoc` path is gated).
+
 - **Per-state interactive detail on the state-chart (Tier-2 detail reveal).** A
   nested bullet under a state that is *not* a transition (plain prose — the
   entry/exit action, the rule, the "why") is now captured as that state's reveal
