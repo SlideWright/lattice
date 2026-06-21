@@ -9910,19 +9910,22 @@ section.split-panel[data-orientation="portrait"] .panel-left { width: auto; }
  *
  *   <div class="state-chart-figure" data-variant="default" data-sc-transitions="[…]">
  *     <ol class="state-nodes">
- *       <li class="state-node" data-index="N" [data-kind="start|terminal"]>
- *         <span class="state-index">N</span>
+ *       <li class="state-node" data-index="N" [data-kind="start|terminal"] [data-s="…"]>
+ *         <span class="state-index" [data-s="…"]>N</span>   (status colours the badge)
  *         <span class="state-label">…</span>
- *         <span class="chart-status" data-s="…">…</span>   (reuses chart-family)
  *       </li>
  *     </ol>
  *     <svg class="state-chart-edges">…filled by the browser pass…</svg>
  *   </div>
+ *   <ol class="state-legend">…swatch + label per distinct status…</ol>
  *
- * Nodes are NEUTRAL (--bg-alt) so colour is reserved for meaning: the
- * status pill is the only hue on a node, and it reuses chart-family's
- * AA-vetted .chart-status vocabulary directly. Palette-blind throughout —
- * no hex literals, no !important, no :has() chains.
+ * Nodes are NEUTRAL (--bg-alt) so colour is reserved for meaning: status is NOT
+ * a wide text pill (a state machine shows flow, not a dashboard) — it folds into
+ * the top-right index numeral, which becomes a colour-coded badge (number = the
+ * state ID, colour = the status), using the same AA-vetted tone vocabulary
+ * chart-family's .chart-status uses (pass/warn/fail/info/mute) and decoded by the
+ * legend band below. Mirrors journey's glyph-in-a-disc + legend. Palette-blind
+ * throughout — no hex literals, no !important, no :has() chains.
  *
  * Sibling implementations (three-renderer parity via the shared registry):
  *   - lib/components/chart/state-chart/state-chart.transform.js  kernel + browser fn
@@ -9946,7 +9949,10 @@ section.state-chart.chart-frame .chart-body {
   width: 100%;
   padding: var(--sp-md) var(--sp-2xl);
   display: flex;
+  flex-direction: column;       /* figure stacks above the status legend band */
+  align-items: center;
   justify-content: center;
+  gap: var(--sp-sm);
 }
 
 /* Figure shell — a positioning context for the absolutely-placed SVG
@@ -10008,11 +10014,10 @@ section.state-chart .state-node {
   gap: var(--sp-sm);
   max-width: 25cqi;
   padding: 0.78125cqi 1.25cqi;
-  /* THE CANONICAL CHART FILL (chart-family.css): every node is a tile, exactly
-   * like a kanban card. A node WITHOUT a status is a quiet neutral slate tile;
-   * a node WITH a status (the [data-s] rules below) re-points the --fill-* pair
-   * at that status's semantic hue — so colour reads as meaning while every node
-   * shares the one material. */
+  /* THE CANONICAL CHART FILL (chart-family.css): every node is a quiet neutral
+   * slate tile, exactly like a kanban card with no lane. The node fill is ALWAYS
+   * neutral — status colour lives only in the index badge (see below), never the
+   * node fill, so a green "on-track" node can't blend into a green wash. */
   --fill-hue: var(--text-muted);
   --fill-ink: var(--diagram-stroke);
   background: linear-gradient(180deg,
@@ -10029,16 +10034,21 @@ section.state-chart .state-node {
 }
 
 /* Nodes stay NEUTRAL — a kanban card with no lane. Status is deliberately NOT
- * painted onto the node: a green "on-track" node behind its green pill would
- * blend, and would overload green's fixed semantic. Colour lives in the
- * .chart-status pill — the one loud chip that pops against the neutral tile,
- * exactly the kanban card ↔ pill relationship. (data-s is kept on the node for
- * the pill and the start/terminal cues.) */
+ * painted onto the node fill: a green "on-track" node would overload green's
+ * fixed semantic and widen the column. Colour lives in the small .state-dot
+ * (decoded by the legend band) — the one hue on an otherwise quiet tile.
+ * (data-s is kept on the node for the dot and the start/terminal cues.) */
 
 section.state-chart .state-node .state-label {
   min-width: 0;
 }
 
+/* The index numeral doubles as the status badge: a status-LESS node keeps a
+ * quiet top-right ref numeral; a status node turns that numeral into a small
+ * coloured badge (index + status in ONE element — no separate dot, no widening
+ * the node). The badge and the legend swatch share the .chart-status pill fill
+ * recipe (AA-vetted: --text-heading on a hue-into-bg tint + a vivid --pill-ink
+ * edge), so a node's badge reads identically to its legend key. */
 section.state-chart .state-node .state-index {
   position: absolute;
   top: 0.15625cqi;
@@ -10049,10 +10059,80 @@ section.state-chart .state-node .state-index {
   pointer-events: none;
 }
 
-/* Status pill reuses chart-family's .chart-status[data-s=…] vocabulary
- * verbatim — same AA-vetted token mapping, no duplication here. */
-section.state-chart .state-node .chart-status {
+/* Shared status-tone swatch recipe (badge + legend dot). */
+section.state-chart .state-index[data-s],
+section.state-chart .state-dot {
+  --pill-hue: var(--state-info-hue);
+  --pill-ink: var(--state-info-ink);
+  background: linear-gradient(180deg,
+    light-dark(color-mix(in oklab, var(--pill-hue) 33%, var(--bg)), color-mix(in oklab, var(--pill-hue) 48%, black)) 0%,
+    light-dark(color-mix(in oklab, var(--pill-hue) 54%, var(--bg)), color-mix(in oklab, var(--pill-hue) 64%, black)) 100%);
+  border: var(--chart-hairline) solid var(--pill-ink);
+}
+section.state-chart .state-index[data-s="on-track"], section.state-chart .state-dot[data-s="on-track"],
+section.state-chart .state-index[data-s="done"],     section.state-chart .state-dot[data-s="done"],
+section.state-chart .state-index[data-s="live"],     section.state-chart .state-dot[data-s="live"]
+  { --pill-hue: var(--state-pass-hue); --pill-ink: var(--state-pass-ink); }
+section.state-chart .state-index[data-s="at-risk"],  section.state-chart .state-dot[data-s="at-risk"],
+section.state-chart .state-index[data-s="warn"],     section.state-chart .state-dot[data-s="warn"]
+  { --pill-hue: var(--state-warn-hue); --pill-ink: var(--state-warn-ink); }
+section.state-chart .state-index[data-s="blocked"],  section.state-chart .state-dot[data-s="blocked"],
+section.state-chart .state-index[data-s="fail"],     section.state-chart .state-dot[data-s="fail"]
+  { --pill-hue: var(--state-fail-hue); --pill-ink: var(--state-fail-ink); }
+section.state-chart .state-index[data-s="pilot"],    section.state-chart .state-dot[data-s="pilot"],
+section.state-chart .state-index[data-s="decision"], section.state-chart .state-dot[data-s="decision"]
+  { --pill-hue: var(--state-info-hue); --pill-ink: var(--state-info-ink); }
+section.state-chart .state-index[data-s="deferred"], section.state-chart .state-dot[data-s="deferred"]
+  { --pill-hue: var(--state-mute-hue); --pill-ink: var(--state-mute-ink); }
+
+/* Status badge — the numeral inside a coloured disc, overhanging the top-right
+ * corner (so it never overlaps the label). The wide horizontal node gutter
+ * absorbs the overhang without clipping. */
+section.state-chart .state-index[data-s] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  top: -0.55cqi;
+  right: -0.55cqi;
+  min-width: 1.65cqi;
+  height: 1.65cqi;
+  padding: 0 0.32cqi;
+  border-radius: 0.825cqi;
+  color: var(--text-heading);
+  font-size: 0.78125cqi; /* cqi-ok: index numeral inside a cqi-sized badge */
+  font-weight: 600;
+  line-height: 1;
+}
+
+/* Legend swatch — same recipe as the badge, a plain disc (no numeral). */
+section.state-chart .state-dot {
   flex: 0 0 auto;
+  width: 1.1cqi;
+  height: 1.1cqi;
+  border-radius: 50%;
+}
+
+/* Status legend band — a centred row of dot + label, decoding the node dots.
+ * Same shape as journey's .journey-legend (flex-wrap key band). */
+section.state-chart .state-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--sp-xs) var(--sp-lg);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: var(--fs-body-compact);
+  color: var(--text-secondary, var(--text-body));
+}
+section.state-chart .state-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-xs);
+}
+section.state-chart .state-legend-label {
+  font-family: var(--pill-font);
+  letter-spacing: var(--pill-tracking);
 }
 
 /* Start / terminal redundancy cues alongside the SVG ●/◎ glyphs. Every node now

@@ -124,7 +124,7 @@ Routes skip and back edges as single Bézier arcs instead of the default orthogo
 1. Draft `start`
    - `submit => 2`
    - `discard => 5`
-2. In Review `on-track`
+2. In Review `at-risk`
    - `approve => 3`
    - `revise => self`
    - `reject => 1`

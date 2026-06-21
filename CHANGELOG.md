@@ -25,6 +25,19 @@ in patch versions.
 
 ## Unreleased
 
+### Changed
+
+- **state-chart is simpler: status folds into the index badge, not a pill per
+  node.** A state machine should read as *flow*, so the wide per-node
+  `on-track`/`live` text pills (which widened the column and collided the spine
+  labels with the nodes, especially in the vertical `curved` variant) are gone.
+  The top-right **index numeral now doubles as the status badge** — the number is
+  the state's ID, its colour is the status — decoded by a compact **legend** band
+  below the chart (mirroring journey's glyph-in-a-disc + legend). Status-less
+  states keep a quiet plain numeral. Same status keyword vocabulary, same
+  AA-vetted tones; authoring is unchanged and the D3-style edge router is
+  untouched. See `engineering/decisions/2026-06-20-state-chart-simplify.md`.
+
 ### Added
 
 - **Per-mark interactive detail on funnel, map, quadrant, and radar charts** —

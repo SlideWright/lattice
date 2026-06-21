@@ -28,11 +28,11 @@ How a draft moves from author to publication.
    - `submit => 2`
 2. Submitted `on-track`
    - `review => 3`
-3. In Review
+3. In Review `at-risk`
    - `approve => 4`
    - `reject => 1`
    - `revise => self`
-4. Approved `done`
+4. Approved
    - `publish => 5`
 5. Published `end`
 
@@ -82,7 +82,7 @@ How a draft moves from author to publication.
 1. Draft `start`
    - `submit => 2`
    - `discard => 5`
-2. In Review `on-track`
+2. In Review `at-risk`
    - `approve => 3`
    - `revise => self`
    - `reject => 1`
@@ -134,11 +134,11 @@ How a draft moves from author to publication.
    - `submit => 2`
 2. Submitted `on-track`
    - `review => 3`
-3. In Review
+3. In Review `at-risk`
    - `approve => 4`
    - `reject => 1`
    - `revise => self`
-4. Approved `done`
+4. Approved
    - `publish => 5`
 5. Published `end`
 
@@ -160,11 +160,11 @@ How a draft moves from author to publication.
    - `submit => 2`
 2. Submitted `on-track`
    - `review => 3`
-3. In Review
+3. In Review `at-risk`
    - `approve => 4`
    - `reject => 1`
    - `revise => self`
-4. Approved `done`
+4. Approved
    - `publish => 5`
 5. Published `end`
 
@@ -186,11 +186,11 @@ How a draft moves from author to publication.
    - `submit => 2`
 2. Submitted `on-track`
    - `review => 3`
-3. In Review
+3. In Review `at-risk`
    - `approve => 4`
    - `reject => 1`
    - `revise => self`
-4. Approved `done`
+4. Approved
    - `publish => 5`
 5. Published `end`
 
