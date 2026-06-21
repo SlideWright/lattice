@@ -5,9 +5,10 @@ summary: Unify Playground + Drawing Board + Workbench into one Studio — one ap
 
 # The Studio redesign — one workspace, three intents, one chrome
 
-> Status: **PLAN — awaiting author approval.** No production code has moved.
-> Read **§0 (ratified forks)** first — it is the contract; the rest is the
-> reasoning and the build order. This continues the work in
+> Status: **PLAN — awaiting author approval (of Win 0 only; see §11.5 PM-2).** No
+> production code has moved. Read **§0 (ratified forks)** for what the author
+> chose, then **§11.5 (pre-mortem)** for the kill-criteria that constrain it — a
+> few PM-# override the §0 defaults. The rest is reasoning and build order. This continues the work in
 > `2026-06-09-shadcn-migration.md` (now landed): that effort gave us the
 > *component spine* (React + Tailwind v4 + shadcn, the token bridge, the shared
 > `SiteHeader`). This effort fixes the *information architecture* the spine
@@ -25,12 +26,13 @@ the contract; everything else in this doc serves them.**
    workspace that shares identity, chrome, and the deck under the cursor.
    Playground becomes the **zero-setup entry state of Compose** (no deck saved
    yet), so "try it" and "build it" stop being a fork.
-2. **Settings split by scope: deck vs workspace.** A persistent, non-modal
-   **Deck Inspector** (right side) owns *this deck* (theme, size, pagination,
-   header/footer, reader/voice prefs, lenses). One global **Workspace Settings**
-   surface owns *your setup* (AI model + tier, cloud auth, spend/budget, standing
-   instructions, prompt caching, deck storage). Location encodes scope — the user
-   never wonders "is this per-deck or global?"
+2. **Settings split by scope: deck vs workspace.** A non-modal **Deck Inspector**
+   (right side, **collapsed-by-default — the preview is sacred, see PM-4**) owns
+   *this deck* (theme, size, pagination, header/footer, reader/voice prefs,
+   lenses). One global **Workspace Settings** surface owns *your setup* (AI model +
+   tier, cloud auth, spend/budget, standing instructions, prompt caching, deck
+   storage). Location encodes scope — the user never wonders "is this per-deck or
+   global?"
 3. **Share belongs to the deck and lives in the global chrome** (reachable in
    both Compose and Present). Print **offers both targets**: *Print deck*
    (rendered, vector — default) and *Print source* (the Markdown, for
@@ -320,7 +322,7 @@ Contract rules:
 The scope spine, stated as one line the UI must make obvious:
 **the Inspector is about *this deck*; Workspace Settings is about *your setup*.**
 
-### 4.1 Deck Inspector (right, persistent, non-modal)
+### 4.1 Deck Inspector (right, non-modal, collapsed-by-default — PM-4)
 
 Owns everything that lives in the deck's front matter or per-deck prefs. Reuses
 the **pure parse/serialize core** of the existing `deck-config.js` (it already
@@ -536,22 +538,107 @@ or composes existing primitives.
 | RD7 | **Unlayered legacy CSS silently beats new shell utilities** (the shadcn-migration P3 trap). | Delete each migrated surface's bespoke chrome CSS in the *same* PR; per-win integration check that the shell's styles win. |
 | RD8 | **No screenshot evidence → unverified "10/10" claim.** | Every win ships `tools/screenshot.js` at 390/820/1440 × ≥3 palettes × light/dark; `check:overflow` green; for large sweeps, fan out reviewer agents (`visual-review.md`). |
 
+## 11.5 Pre-mortem & kill-criteria (red-team via inversion)
+
+Munger's inversion applied to this plan: instead of "how do we make the Studio
+succeed," assume **it is 12 months on and the redesign was a clear mistake** —
+then enumerate how we got there and convert each death into a precondition. The
+checker pass (§14) verified the plan's *facts*; this pass attacks its *judgment*.
+**Several kill-criteria below override defaults stated earlier — where they
+conflict, the earlier text yields to PM-#** (including the §0 forks: §0 records
+what the author chose, PM-# records what the red-team proved we must constrain).
+
+**How it becomes a mistake**
+
+- **PM-A — We unified navigation while the real pain was elsewhere.** The premise
+  (Playground-vs-Drawing-Board is the load) rests on N=1. If the true churn driver
+  was deck *quality*, AI *cost*, or a *broken export*, we rearranged toolbars while
+  the value-loser went untouched. "Minimize cognitive load" is *unfalsifiable as
+  written* — it can retroactively justify any change.
+- **PM-B — We optimized for the first-timer and nerfed the pro.** Dense pro tools
+  (Figma, VS Code, Bloomberg) are high-load *by design*. "Minimize clicks" is right
+  for the recipient (Lena) and possibly *wrong* for the daily author (Devin/Marcus);
+  applied uniformly it makes the power user slower inside a calmer shell — an
+  invisible regression.
+- **PM-C — The app became permanently under construction.** shadcn *just* landed on
+  these surfaces; Win 4 strangler-figs the 1251-line Drawing Board *again*. Two
+  back-to-back rewrites of the same code is a treadmill that erodes trust.
+- **PM-D — Win 1 was a tar pit that held everything hostage.** "One shell + three
+  buses" (RD1) is canonical integration glue that looks small and becomes a
+  multi-week swamp of subtle state bugs — and *every* win stacks on it.
+- **PM-E — The always-on Inspector ate the preview.** On a 13″ screen,
+  rail+editor+preview+inspector shrinks the rendered deck below a judgeable size.
+  The product's entire value *is* seeing the deck at boardroom scale.
+- **PM-F — Lenses silently diverged from the source in a boardroom.** Edit source →
+  the exec lens is stale. Auto-regenerate = silent content change before a board
+  meeting (and cost); don't = outdated numbers shown. Either is credibility-fatal.
+- **PM-G — Read-aloud over-promised.** No timing marks exist today; TTS speaks
+  *speaker notes* not slide text; the models may not emit word boundaries at all.
+  "Word-level sync highlight" can burn weeks and ship a drifting, broken-looking
+  demo that taints trust in everything else.
+- **PM-H — The rail was cargo-culted from VS Code.** A left activity rail earns its
+  66px tax and indirection at 6+ activities; for *three* intents a top segmented
+  control does the same job with less chrome and no left-edge cost.
+- **PM-I — We broke muscle memory, URLs, and our own funnel.** Renaming Drawing
+  Board → Compose and collapsing routes breaks bookmarks, docs, SEO, and the
+  landing CTAs; the OAuth callback (RD9) is a money/security bug, not cosmetic.
+- **PM-J — One app, one blast radius.** Behind one shell, a single bad deploy blanks
+  all three tools at once (today a Drawing Board bug leaves the other two standing).
+- **PM-K — Thin ratification + confident mockups.** Four forks approved in one
+  question round became an 8-PR mandate; zero-behavior mockups manufactured an
+  "almost done" feeling none of the 30 real modules justify.
+
+**Therefore — kill-criteria & invariants** (binding; later defaults yield to these)
+
+| # | Invariant the plan must hold | Changes the plan? |
+|---|---|---|
+| PM-1 | **Symptom-first or cut it.** Every win names a measurable symptom + target (clicks-to-first-render, time-to-export, preview legible-size). No symptom → decoration → drop. | adds a gate to every win |
+| PM-2 | **Plan-approval authorizes only a de-risking *spike*, not Wins 1–8.** Prove the three-bus adapter on the *simplest* surface (Playground) against a written kill-criterion before committing the program. | **new Win 0; re-scopes §0-4** |
+| PM-3 | **Wins 1–3 stand alone; pause & *measure* before 4–8.** Stop after 3 = strictly ahead, never mid-rewrite. | sequencing gate |
+| PM-4 | **The preview is sacred — Inspector collapsed-by-default**, summoned not resident; gate that the preview never drops below a legible threshold. | **flips §0-2 / §4.1 default** |
+| PM-5 | **Default to top-tabs, not a rail**, unless a 4th/5th intent is named today. | **flips §13-1 default** |
+| PM-6 | **Lenses never silently mutate or silently stale** — explicit regenerate, loud staleness badge, never auto-regenerate before Present. | strengthens RD4 / §6.2 |
+| PM-7 | **Read-aloud is feasibility-spiked before roadmapped** — no word-level promise until timing-mark emission is proven; else sentence-level via duration estimate, or cut. | gates Win 6 / §6.1 |
+| PM-8 | **Auth path is immovable infra** — pinned + a real-connect integration test before any route work. | strengthens RD9 |
+| PM-9 | **URLs + known names are forever** (redirects + aliases); rename = migration with a comms note, not a cleanup PR. | strengthens RD3 / Win 8 |
+| PM-10 | **Per-surface graceful degradation** — a shell/Workbench fault can't blank Compose; surfaces stay independently loadable. | adds a Win-1 requirement |
+| PM-11 | **Optimize per-persona, not uniformly** — density for the author, low-load for the recipient; "minimize clicks" is a *reader* goal, not universal. | scopes the headline goal |
+| PM-12 | **Mockups are zero-behavior specs** — they never set the schedule; each is paired with its integration cost. | framing |
+
+**Net:** inversion does not kill the plan; it demotes "merge → start Win 1" to
+"merge as *direction* → buy evidence first" (PM-2). The load-bearing risk
+(RD1/PM-D) and the highest-regret items (PM-E/F/G/H) are exactly what a Win 0
+spike plus the default-flips (PM-4/5) retire cheaply, before the program is
+committed.
+
 ## 12. The stack of wins (build order)
 
 Each win is **one branch → one PR**, builds/tests on `main` alone (HARD RULE 17),
 ships responsive screenshot evidence (§9), and is independently revertible. Order
 = cheapest-high-leverage first; the reader vision (6–7) after the shell carries
-it; cleanup last.
+it; cleanup last. **Per PM-1, every win names a measurable symptom + target before
+it starts; per PM-2, approving this plan authorizes only Win 0 — each subsequent
+win re-gates.**
 
+- **Win 0 — The de-risking spike (buy evidence, not a shell).** Prove the
+  *hardest* assumption cheaply: wrap the **simplest** surface (Playground, the
+  `LatticePlayground` bus) in a throwaway `StudioShell` + adapter, behind a
+  **written kill-criterion** (e.g. "the adapter drives render + theme + export
+  without forking the bus, in < N days; preview stays legible at 1280px"). Also
+  spike PM-7 (can Kokoro/OpenRouter emit timing marks?) on paper. **Exit:** either
+  a green light to start Win 1 with the adapter pattern proven, or a documented
+  "stop — the three-bus glue is a tar pit" that saved the program. No user-facing
+  change ships from Win 0.
 - **Win 1 — `StudioShell` chrome + three surface adapters (the foundation).** One
-  shared shell (activity rail + slotted AppBar + collapsible Inspector skeleton)
-  rendered by the three existing routes, replacing the per-surface toolbars with
-  the slotted command bar. **Not chrome-only:** the AppBar/rail drive each surface
-  through a thin per-surface adapter mapping shell intents → that surface's native
-  bus (`__db*` / `LatticePlayground` / the Workbench boot) — see RD1. `nav.mjs`
-  "Tools" disclosure → single "Open Studio" entry. No behavior change to
-  editor/preview/studios — they slot in as `{children}` behind their adapter.
-  Everything else stacks on this. *Maker-checker (high blast radius).*
+  shared shell (top-tab intent switch [PM-5] + slotted AppBar + **collapsed-by-
+  default** Inspector skeleton [PM-4]) rendered by the three existing routes,
+  replacing the per-surface toolbars with the slotted command bar. **Not
+  chrome-only:** the AppBar drives each surface through a thin per-surface adapter
+  mapping shell intents → that surface's native bus (`__db*` / `LatticePlayground`
+  / the Workbench boot) — see RD1. Surfaces stay **independently loadable** so one
+  fault can't blank the others (PM-10). `nav.mjs` "Tools" disclosure → single "Open
+  Studio" entry, **old routes kept as aliases** (PM-9). *Maker-checker (high blast
+  radius).*
 - **Win 2 — Deck Inspector.** Re-house `deck-config.js` from its modal drawer
   into the persistent right Inspector. Theme/size/pagination/header/footer +
   checkpoints.
@@ -578,18 +665,22 @@ merge-authorization gate (CLAUDE.md), then post the standup.
 
 ## 13. Open decisions for the author
 
-1. **Activity-rail vs top-tabs for the intent switch.** Plan defaults to a left
-   activity rail (lowest-load, scales to more intents, desktop-class). A top
-   tab-strip is the alternative if a lighter, more web-like feel is preferred.
-2. **Library as a rail destination vs only the AppBar switcher.** Plan gives both
-   a rail Library affordance and an AppBar deck switcher; if that's redundant,
-   drop the rail Library and keep only the switcher.
-3. **Route collapse timing.** Plan does it *last* (Win 8) to de-risk; pull it
-   earlier if the dual-route phase feels confusing.
-4. **Does the right-chrome (app) palette stay, given the Inspector owns deck
+1. **Intent switch: top-tabs (now the recommended default, per PM-5) vs a left
+   activity rail.** The mockups show a rail; the red-team flips the *default* to a
+   top segmented control for three intents (less chrome, no left-edge tax). Keep
+   the rail only if you can name a 4th/5th intent today. **Pick one.**
+2. **Inspector default: collapsed (recommended, per PM-4) vs resident.** The
+   preview is sacred; the Inspector should summon, not sit. Confirm collapsed-by-
+   default (it overrides the "persistent" wording in §0-2 / §4.1).
+3. **Library as a switcher-only affordance vs also a rail/tab destination.** If
+   redundant, keep only the AppBar deck switcher.
+4. **Route collapse timing.** Plan does it *last* (Win 8) to de-risk; pull it
+   earlier only if the dual-route phase confuses — and only with PM-9 aliases.
+5. **Does the right-chrome (app) palette stay, given the Inspector owns deck
    theme?** Plan keeps both (app chrome vs deck theme are different objects); say
-   if you'd rather the Studio chrome simply follow the deck theme and drop the
-   separate app-palette control.
+   if you'd rather the Studio chrome simply follow the deck theme.
+6. **Scope of approval (PM-2).** Confirm that merging this plan authorizes only
+   **Win 0 (the spike)**, with each later win re-gated — not the full 8-win program.
 
 ## 14. Changelog of this plan
 
@@ -612,4 +703,12 @@ merge-authorization gate (CLAUDE.md), then post the standup.
   and **§2.4 high-fidelity mockups** (Compose / Present / Share / Workspace
   Settings / mobile) built from the real token bridge — committed under
   `2026-06-21-app-redesign/mockups/`.
-- _pending_ — Author approval.
+- 2026-06-21 — **Red-team via Munger inversion → §11.5 pre-mortem.** Twelve
+  kill-criteria (PM-1…PM-12), several overriding earlier defaults: approval now
+  buys only a **Win 0 de-risking spike** (PM-2; new in §12), the **intent switch
+  defaults to top-tabs** not a rail (PM-5; §13-1 flipped), the **Inspector is
+  collapsed-by-default** to protect the preview (PM-4; §0-2 / §4.1 reworded),
+  lenses must never silently stale (PM-6), read-aloud is feasibility-spiked before
+  it is promised (PM-7), and the goal is scoped per-persona, not uniform (PM-11).
+  Net: "merge → start Win 1" demoted to "merge as direction → buy evidence first."
+- _pending_ — Author approval (per PM-2, of **Win 0 only**).
