@@ -226,6 +226,14 @@ export function createChartInteract({ stage, getFrame, tilt = true, onReveal, ho
     const lis = tpl ? [...tpl.content.querySelectorAll('li')].map((n) => n.innerHTML.trim()) : [];
     const body = lis[0] || '';
     const meta = lis.slice(1).join(' · ');
+    // Two reveal depths (the data-viz "details-on-demand" model). Every mark is
+    // revealable, but a mark with NO authored body/meta (e.g. a pie slice that
+    // didn't author a detail sublist) gets a COMPACT value-on-hover tooltip chip,
+    // not the full detail-card chrome — so the lean readout reads as an
+    // intentional tooltip and the richer card stays the signal of authored
+    // detail. CSS keys off the --lean modifier. See
+    // engineering/decisions/2026-06-21-chart-reveal-lean-tooltip.md.
+    pop.classList.toggle('db-pp-chartpop--lean', !body && !meta);
     pop.innerHTML =
       `<div class="db-pp-chartpop-h"><span class="db-pp-chartpop-dot" style="background:${dot}"></span>` +
       `<span class="db-pp-chartpop-l">${label}</span>` +

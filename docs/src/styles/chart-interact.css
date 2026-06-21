@@ -48,6 +48,22 @@
 	opacity: 1;
 	transform: none;
 }
+/* Lean reveal — a mark with no authored body/meta (a pie slice / funnel stage /
+   etc. that didn't author a detail sublist) is shown as a compact value-on-hover
+   TOOLTIP chip rather than the full detail-card chrome: tighter padding, a
+   smaller radius and a lighter shadow. This keeps the data-viz-standard
+   value-on-hover for every mark (Shneiderman details-on-demand) while letting the
+   richer card stay the signal of authored detail. Family-wide (the reveal layer
+   is shared across pie/funnel/map/quadrant/radar). */
+.db-pp-chartpop--lean {
+	padding: 0.32rem 0.55rem;
+	border-radius: 8px;
+	box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+/* In the chip the value hugs the label (no card-width span). */
+.db-pp-chartpop--lean .db-pp-chartpop-v {
+	margin-left: 0.5rem;
+}
 .db-pp-chartpop-h {
 	display: flex;
 	align-items: center;
