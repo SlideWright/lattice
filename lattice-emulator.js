@@ -906,6 +906,24 @@ const fm      = fmMatch ? fmMatch[1] : '';
 // UNCHANGED either way — fluid only affects the written .html, after raster.
 // Design: engineering/decisions/2026-06-21-fluid-box-viewer-design.md.
 const FLUID_VIEW = !!flags.fluid || /^\s*fluid:\s*(?:true|yes|on)\s*$/im.test(fm);
+// Auto-split (the Fit Ladder SPLIT move) — opt-in per deck. The flag + the capacity
+// map are hoisted to module scope so BOTH passes see them: the cheap STATIC pre-pass
+// in engineSlides() (count > capacity.hard), and the MEASURED loop in the export IIFE
+// (split what a real render found to OVERFLOW, by how much — the only pass that
+// catches density overflow in a tall box). The map carries each layout's split AXIS
+// from the top-level `capacity` OR the per-family `adapt.capacity`, so a layout whose
+// budget lives only in adapt is still splittable by measurement. See lib/core/auto-split.js
+// + engineering/decisions/2026-06-22-the-fit-spine.md §3.
+const AUTOSPLIT = /^\s*autosplit:\s*(?:on|true|yes)\s*$/im.test(fm);
+const SPLIT_CAP = (() => {
+  if (!AUTOSPLIT) return {};
+  const map = {};
+  for (const m of require('./lib/components').loadAll()) {
+    const axis = m.capacity?.axis ?? m.adapt?.capacity?.axis;
+    if (axis) map[m.name] = { axis, hard: m.capacity?.hard ?? null, sweet: m.capacity?.sweet ?? null, soft: m.capacity?.soft ?? null };
+  }
+  return map;
+})();
 // Slide geometry — ONE registry (HARD RULE #1). The page template needs pixel
 // dimensions for the puppeteer PDF; rather than duplicate a size table (which
 // drifted — it used to omit 16:9 and silently rendered it as hd), resolve the
@@ -1014,15 +1032,12 @@ function engineSlides() {
   // curated galleries — whose stress slides demonstrate overflow on PURPOSE — stay
   // byte-unchanged. Default-on is a later decision, once the catalog is audited.
   let html = renderedHtml;
-  // Scope the flag to the FRONT-MATTER (`fm`), not the whole doc — the same `fm`
-  // the `fluid:` check uses (a body line starting `autosplit:` must not enable it).
-  if (/^\s*autosplit:\s*(?:on|true|yes)\s*$/im.test(fm)) {
-    const { autoSplitDeck } = require('./lib/core/auto-split');
-    const capacityMap = {};
-    for (const m of require('./lib/components').loadAll()) if (m.capacity) capacityMap[m.name] = m.capacity;
-    const r = autoSplitDeck(renderedHtml, capacityMap);
+  if (AUTOSPLIT) {
+    // Cheap STATIC first cut (count > capacity.hard); the MEASURED loop in the
+    // export IIFE then catches whatever still overflows once it is really rendered.
+    const r = require('./lib/core/auto-split').autoSplitDeck(renderedHtml, SPLIT_CAP);
     html = r.html;
-    if (r.splits) console.log(`  auto-split: ${r.splits} over-capacity slide(s) divided to fit`);
+    if (r.splits) console.log(`  auto-split (static): ${r.splits} over-capacity slide(s) divided`);
   }
   const imageScrim = require('./lib/transformers/image-scrim');
   return splitTopLevelSections(html).map((sec, i) => {
@@ -1358,7 +1373,7 @@ const RUNTIME_SCRIPT = /[ \t]*<script\b[^>]*\blattice-runtime(?:\.min)?\.js[^>]*
 // loads below — so those outputs are byte-identical whether or not --fluid is
 // set. The fluid VIEWER is derived from this clean HTML and written over outHtml
 // ONLY after rasterization (see toFluidViewer / the post-raster rewrite).
-const cleanDocHtml = htmlDoc.replace(RUNTIME_SCRIPT, '');
+let cleanDocHtml = htmlDoc.replace(RUNTIME_SCRIPT, '');
 
 // Build the opt-in fluid viewer from the clean export HTML: flag the page
 // fluid-capable and inline the runtime (the controller re-derives orientation
@@ -1464,24 +1479,62 @@ const puppeteer = loadPuppeteer();
   // overflow:hidden already does, so the export clips and the author is warned
   // below to fix it. The loud ring+tab signal lives in the live preview
   // (lib/runtime), where the author is actively authoring and can act on it.
-  const overflowing = await page.evaluate(() => {
+  // Measure which sections overflow the frame, and BY HOW MUCH (scrollHeight /
+  // clientHeight) — the signal both the author warning and the measured auto-split
+  // pass below read. Scope to real slide sections only — `<section>` literals inside
+  // code blocks parse as nested DOM and would pollute the indices.
+  const measureOverflow = () => page.evaluate(() => {
     const TOL = 12; // filter sub-pixel rounding; see lattice-runtime.js
-    // Slide-level detection — content exceeds the 1280×720 frame. (Per-box "which
-    // cell" pinpointing was prototyped and dropped: in a grow-to-fit grid an
-    // oversized card grows and pushes its NEIGHBOURS off-frame, so a geometric
-    // per-box test flags the pushed cards, not the culprit. See lib/runtime.)
-    const flagged = [];
-    // Scope to Marp's real slide sections only — `<section>` literals
-    // authors write inside code blocks parse as nested DOM elements
-    // (HTML doesn't treat <code> as raw text), which would otherwise
-    // pollute both the count and the flagged indices.
+    const out = [];
     document.querySelectorAll('section[data-lattice-slide]').forEach((s, i) => {
-      const over = s.scrollHeight > s.clientHeight + TOL
-                || s.scrollWidth  > s.clientWidth  + TOL;
-      if (over) flagged.push(i + 1); // collect to warn; do NOT mark the export
+      const vOver = s.scrollHeight > s.clientHeight + TOL;
+      const over = vOver || s.scrollWidth > s.clientWidth + TOL;
+      if (!over) return;
+      const C = s.clientHeight;
+      const ratio = C > 0 ? s.scrollHeight / C : 2;
+      // The auto-splitter only divides a list (ul/ol) or table — so a split can only
+      // make the slide fit if THAT collection is the height driver. Measure the tallest
+      // such collection and the headroom the surrounding content leaves: if the
+      // non-collection content alone already fills the box (a tall <p>/figure/code with
+      // an incidental list), splitting just copies that block onto every piece and never
+      // fits — leave it for the ring. `canSplit` gates the measured pass; `splitRatio`
+      // sizes it from the collection's own height, not the whole slide's.
+      let collH = 0;
+      s.querySelectorAll('ul, ol, table').forEach((el) => { collH = Math.max(collH, el.offsetHeight); });
+      const headroom = C - (s.scrollHeight - collH); // box space left for the collection
+      const canSplit = vOver && collH > 0 && headroom > C * 0.2;
+      const splitRatio = canSplit ? Math.max(2, collH / headroom) : ratio;
+      out.push({ slide: i + 1, ratio, canSplit, splitRatio });
     });
-    return flagged;
+    return out;
   });
+  let overflow = await measureOverflow();
+  // MEASURED auto-split — the loop that makes "split" fit REAL boxes. Divide every
+  // overflowing SPLITTABLE slide by how much it overflows, re-render, re-measure,
+  // until the deck fits or only un-splittable overflow remains (read-across / atomic /
+  // a single item taller than the page — those stay for the ring). This catches the
+  // DENSITY overflow a count threshold can't see — dominant in a tall/portrait box.
+  // Opt-in (`autosplit: on`). See lib/core/auto-split.js + the-fit-spine.md §3.
+  if (AUTOSPLIT) {
+    const { resplitDoc } = require('./lib/core/auto-split');
+    for (let pass = 1; pass <= 5 && overflow.some((o) => o.canSplit); pass++) {
+      // Only the slides whose OWN collection drives the overflow (canSplit); size each
+      // split from its collection-relative ratio so the loop converges instead of
+      // re-splitting a slide a tall non-list block keeps over the box.
+      const splittable = overflow.filter((o) => o.canSplit).map((o) => ({ slide: o.slide, ratio: o.splitRatio }));
+      const r = resplitDoc(cleanDocHtml, splittable, SPLIT_CAP);
+      if (!r.changed) break;
+      cleanDocHtml = r.html;
+      fs.writeFileSync(outHtml, cleanDocHtml);
+      await page.goto(`file://${path.resolve(outHtml)}`, { waitUntil: 'networkidle0', timeout: 60000 });
+      await page.evaluate(async () => {
+        try { await Promise.all([...document.fonts].map((f) => f.load().catch(() => {}))); await document.fonts.ready; } catch (_e) { /* fonts API unavailable */ }
+      });
+      overflow = await measureOverflow();
+      if (!QUIET) console.log(`  auto-split (measured) pass ${pass}: ${r.changed} slide(s) divided to fit`);
+    }
+  }
+  const overflowing = overflow.map((o) => o.slide);
   if (overflowing.length) {
     const n = overflowing.length;
     console.warn(`  ⚠ OVERFLOW — ${n} slide${n > 1 ? 's' : ''} exceed the frame and ${n > 1 ? 'are' : 'is'} CLIPPED in this export: page${n > 1 ? 's' : ''} ${overflowing.join(', ')}.`);

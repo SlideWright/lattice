@@ -148,11 +148,17 @@ Three properties make this the spine and not just a list:
   fluid box with zero churn, because they restyle, they don't re-paginate. This is
   what makes a live preview viable.
 - **Move 3 is discrete and build-time.** Splitting changes slide *count*, which
-  the engine has never owned. It runs once at render time against a known target
-  geometry (the per-device export the emailed-link reader receives). **Live
-  runtime re-pagination is rejected** — re-breaking and re-numbering slides as a
-  phone rotates is churn and a navigation/anchor maintenance nightmare (the
-  inversion in §4 derives this).
+  the engine has never owned. It runs at render time against a known target
+  geometry (the per-device export the emailed-link reader receives), in two passes
+  over one kernel (`lib/core/auto-split.js`): a cheap **count-based** pre-cut splits
+  a slide past its layout's `capacity.hard`, then a **measured** loop renders the
+  deck headless, finds the slides that *actually* clip (by their
+  `scrollHeight/clientHeight` ratio), divides each by that ratio, and re-renders +
+  re-measures until the deck fits. The measured pass is what catches **density**
+  overflow — few but tall items that no count threshold sees — the dominant cause
+  in a tall/portrait box. **Live runtime re-pagination is rejected** — re-breaking
+  and re-numbering slides as a phone rotates is churn and a navigation/anchor
+  maintenance nightmare (the inversion in §4 derives this).
 - **Move 4 is a hard stop, by design.** The floor is the curated per-orientation
   type scale (already shipped — `2026-06-20-typography-categories.md`). Below it,
   the engine does **not** have a smaller size to reach for. The overflow ring is

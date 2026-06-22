@@ -9,11 +9,13 @@
 
 const { describe, test } = require('node:test');
 const assert = require('node:assert/strict');
-const { autoSplitDeck, capacityForClass } = require('../../../lib/core/auto-split');
+const { autoSplitDeck, resplitDoc, capacityForClass } = require('../../../lib/core/auto-split');
 
 const sec = (cls, inner) => `<section class="${cls}">${inner}</section>`;
+const docSec = (n, cls, inner) => `<section data-lattice-slide="${n}" class="${cls}">${inner}</section>`;
 const list = (n) => `<ul>${Array.from({ length: n }, (_, i) => `<li>item ${i + 1}</li>`).join('')}</ul>`;
 const cap = { cards: { axis: 'item', hard: 4 }, redline: { axis: 'col', hard: 2 } };
+const nums = (html) => [...html.matchAll(/data-lattice-slide="(\d+)"/g)].map((m) => Number(m[1]));
 
 describe('core: autoSplitDeck', () => {
   test('splits an over-capacity slide, heading on each, (cont.) on continuations', () => {
@@ -79,5 +81,38 @@ describe('core: autoSplitDeck', () => {
     assert.deepEqual(capacityForClass('cards compact', cap), { axis: 'item', hard: 4 });
     assert.equal(capacityForClass('quote big', cap), null);
     assert.equal(capacityForClass('', cap), null);
+  });
+});
+
+describe('core: resplitDoc (measured pass)', () => {
+  test('splits a measured-overflowing slide by its ratio and renumbers, regardless of count', () => {
+    // 8 cards but ratio only 1.9 — count alone (<= no static trigger here) wouldn't matter;
+    // the measured ratio drives a 2-way split. The 2nd quote slide is untouched.
+    const doc = docSec(1, 'cards', `<h2>T</h2>${list(8)}`) + docSec(2, 'quote', '<p>x</p>');
+    const { html, changed } = resplitDoc(doc, [{ slide: 1, ratio: 1.9 }], cap);
+    assert.equal(changed, 1);
+    assert.deepEqual(nums(html), [1, 2, 3]); // cards → 1,2 ; quote → 3
+    assert.equal((html.match(/lat-cont/g) || []).length, 1); // continuation marked
+  });
+
+  test('a steeper ratio yields more pieces (ratio 2.8 → 3 slides)', () => {
+    const { html, changed } = resplitDoc(docSec(1, 'cards', list(9)), [{ slide: 1, ratio: 2.8 }], cap);
+    assert.equal(changed, 1);
+    assert.equal((html.match(/<section/g) || []).length, 3); // 9 / ceil(2.8) → 3 each
+  });
+
+  test('a slide NOT in the measured-overflow list is untouched', () => {
+    assert.equal(resplitDoc(docSec(1, 'cards', list(8)), [{ slide: 2, ratio: 2 }], cap).changed, 0);
+  });
+
+  test('a non-splittable (col read-across) overflow is left for the ring', () => {
+    const doc = docSec(1, 'redline', '<table><tbody><tr><td>a</td><td>b</td></tr></tbody></table>');
+    assert.equal(resplitDoc(doc, [{ slide: 1, ratio: 2 }], cap).changed, 0);
+  });
+
+  test('renumbers every section after a mid-deck split', () => {
+    const doc = docSec(1, 'quote', '<p>a</p>') + docSec(2, 'cards', list(8)) + docSec(3, 'quote', '<p>b</p>');
+    const { html } = resplitDoc(doc, [{ slide: 2, ratio: 1.9 }], cap);
+    assert.deepEqual(nums(html), [1, 2, 3, 4]); // quote, cards×2, quote
   });
 });
