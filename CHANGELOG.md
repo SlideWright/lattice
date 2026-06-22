@@ -27,21 +27,6 @@ in patch versions.
 
 ### Fixed
 
-- **Portrait/square decks no longer clip content in dense layouts.** The tall-frame
-  body type scale (curated generous, for sparse hero slides) overflowed
-  content-dense layouts, clipping the slide title and the last item: cards-grid,
-  actors, cards-stack, matrix-2x2, decision, compare-prose, split-compare, and the
-  list family (list, list-steps, checklist, list-criteria, list-tabular) were
-  affected. A new deck-wide `--prose-deboost` token (0.66 portrait, 0.8 square)
-  shrinks **only** the dense body prose in those families; hero elements (the slide
-  title, stat numbers) keep full size. The de-boost is applied **once, centrally** —
-  three derived dense-content roles (`--dense-body` / `--dense-body-compact` /
-  `--dense-message` in `base.tokens.css`) that families reference, not a per-component
-  patch. Landscape leaves the token unset, so every
-  landscape export stays byte-identical. `pricing` is a known exception — its three
-  stacked tiers overflow on spacing, not type, and need a separate compact-reflow
-  pass. See `engineering/decisions/2026-06-21-portrait-prose-deboost.md`.
-
 - **A 4th stat no longer clips off a portrait `stats` slide.** Portrait stats stacks
   and *enlarges* the hero numbers; the stack's `gap` was `--sp-2xl`, but with
   `space-evenly` the gap is only a floor — an over-large floor pushed a 4th enlarged
@@ -50,6 +35,17 @@ in patch versions.
   4-stat case now packs to fit. Layout-only; landscape byte-identical.
 
 ### Changed
+
+- **Every component now declares its layout-solver intent** — `adapt.priority` is
+  complete across all 52 components (was 23/52), with `keepTogether` on the atomic
+  members/pairs (26/52). These are the inputs the Fit Spine's solver reads to choose
+  collapse / shed / split instead of guessing — the §6 backfill, applied per a written
+  rubric (`engineering/decisions/2026-06-22-solver-intent-backfill.md`) and
+  checker-verified against each component's real structure (which caught and reverted
+  a `logo-wall` shed the strip CSS doesn't honor). Metadata only — no render change
+  yet; the catalog (`dist/docs/components.json`) carries the new fields. A new
+  `build:check` gate (`checkSolverIntentDeclared`) keeps coverage from regressing —
+  a component can't land without declaring `adapt.priority`.
 
 - **The `kanban` board is redesigned to spend colour on STATUS, not category.**
   The default board is now a calm grid of uniform, elevated, neutral cards

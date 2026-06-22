@@ -16,6 +16,9 @@
     "priority": [
       "title",
       "pairs"
+    ],
+    "keepTogether": [
+      "question+answer"
     ]
   },
   "tags": ["pitch", "board-deck", "recommendation"],

@@ -18,6 +18,9 @@
     ],
     "droppable": [
       "meta"
+    ],
+    "keepTogether": [
+      "row"
     ]
   },
   "tags": ["reference", "overview", "status"],

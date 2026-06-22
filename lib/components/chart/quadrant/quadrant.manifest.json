@@ -1,7 +1,7 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "quadrant",
-  "adapt": { "mode": "reflow" },
+  "adapt": { "mode": "reflow", "priority": ["title", "axes", "items", "detail"] },
   "function": "evidence",
   "bucket": "chart",
   "form": "scatter",

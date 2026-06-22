@@ -65,7 +65,7 @@ section.decision > ul > li > p,
 section.decision > ol > li > p,
 section.decision > ul > li > ul,
 section.decision > ol > li > ul {
-  font-size:var(--dense-body);
+  font-size:var(--fs-body);
   line-height:var(--lh-base);
   color:var(--text-body);
   font-weight:400;
@@ -97,7 +97,7 @@ section.decision :is(ul,ol) > li > strong ~ * { font-weight: 400; }
   /* One option per full-width card — the justification is the card's hero, so it
      carries statement weight (--fs-message), not body weight. */
   section.decision.decision > :is(ul, ol) > li > :is(p, ul, ol) {
-    font-size:var(--dense-message);
+    font-size:var(--fs-message);
     line-height: var(--lh-snug);
   }
 }

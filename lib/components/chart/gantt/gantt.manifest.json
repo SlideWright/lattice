@@ -1,7 +1,7 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "gantt",
-  "adapt": { "mode": "reflow" },
+  "adapt": { "mode": "reflow", "priority": ["title", "tasks", "detail"] },
   "function": "progression",
   "bucket": "chart",
   "form": "timeline",

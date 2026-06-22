@@ -1,12 +1,22 @@
 ---
-status: shipped
-summary: Portrait/square decks select generous body type coefficients (tuned for sparse hero slides), which overflow content-dense layouts — the engine clips the slide title and last item. A deck-wide --prose-deboost token (sibling to --stat-emphasis; 0.66 portrait, 0.8 square, UNSET landscape) lets dense families multiply just their card/item body+title font by var(--prose-deboost, 1); hero elements keep full size and landscape stays byte-identical. Applied to cards-grid, actors, cards-stack, matrix-2x2, decision, compare-prose, split-compare. pricing is excluded — its overflow is spacing-driven, a separate follow-up.
+status: superseded
+superseded-by: 2026-06-22-the-fit-spine.md
+summary: PURGED 2026-06-22. A deck-wide --prose-deboost token (0.66 portrait, 0.8 square, UNSET landscape) had dense families multiply their body+title font by var(--prose-deboost, 1) to fit the tall frame. The Fit Spine (2026-06-22-the-fit-spine.md) rejects this — it is shrink-to-fit, and readability is a hard floor; density is absorbed by collapse/shed/split, never by lowering the type. Removed from engine, runtime, and all component stylesheets. Kept as the record of why shrink was tried and rejected, so it is not re-introduced.
 version: 1
 supersedes: none
 builds-on: 2026-06-20-typography-categories.md, 2026-06-18-component-adaptive-sizing.md
 ---
 
 # Portrait prose de-boost — dense layouts stop clipping
+
+> **SUPERSEDED / PURGED (2026-06-22).** The `--prose-deboost` token and the
+> `--dense-*` roles were removed from the engine, runtime, and every component
+> stylesheet. The mechanism is **shrink-to-fit**, which
+> `2026-06-22-the-fit-spine.md` rejects on principle: readability is a hard floor,
+> and density is absorbed by the Fit Ladder (collapse → shed → split → honest
+> overflow), never by lowering the type bar. This note is retained only as the
+> record of why shrinking was tried and deliberately rejected — do not
+> re-introduce it. The original rationale follows, unedited.
 
 **Status:** landed. **Scope:** `lib/engine/css.js`, `lib/runtime/index.js`, seven
 component stylesheets. **Companion:** `2026-06-20-typography-categories.md` (the

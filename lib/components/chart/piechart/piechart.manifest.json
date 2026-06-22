@@ -1,7 +1,7 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "piechart",
-  "adapt": { "mode": "reflow" },
+  "adapt": { "mode": "reflow", "priority": ["title", "slices", "detail"] },
   "function": "evidence",
   "bucket": "chart",
   "form": "canvas",

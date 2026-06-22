@@ -1,7 +1,7 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "compare-table",
-  "adapt": { "mode": "single-orientation" },
+  "adapt": { "mode": "single-orientation", "priority": ["title", "table"], "keepTogether": ["row"] },
   "focusAxes": ["row", "col", "cell"],
   "capacity": { "axis": "row", "min": 2, "sweet": 4, "soft": 6, "hard": 8, "escalateTo": ["split across slides"], "note": "the table density crowds past six rows" },
   "function": "comparison",

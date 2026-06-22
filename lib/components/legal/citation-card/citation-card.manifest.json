@@ -4,7 +4,8 @@
   "adapt": {
     "mode": "reflow",
     "families": ["wide", "square", "tall", "strip"],
-    "priority": ["heading", "citation", "quotation", "gloss"]
+    "priority": ["heading", "citation", "quotation", "gloss"],
+    "keepTogether": ["citation+quotation"]
   },
   "function": "evidence",
   "bucket": "legal",

@@ -605,24 +605,6 @@
  * override. See engineering/decisions/2026-06-20-typography-categories.md and
  * engineering/typography.md §1. Do NOT re-add a hand-written --fs-* block here. */
 
-/* ── Dense-content type roles (derived) ─────────────────────────────────────────
- * Content-DENSE layouts (cards-grid, actors, cards-stack, matrix-2x2, decision,
- * compare-prose, split-compare) shed the generous portrait/square body so 4+ text
- * cells fit the tall frame instead of clipping. The de-boost policy lives HERE,
- * once — a named role per base size — NOT copied into each component's CSS. A new
- * dense layout uses `var(--dense-*)`; it never re-derives the multiply.
- * `--prose-deboost` is set deck-wide by the orientation block (lib/engine/css.js +
- * runtime sibling): <1 in portrait/square, UNSET in landscape → fallback 1 →
- * `calc(X * 1)` = exactly X, so every landscape export stays byte-identical.
- * Lazy var() resolution: these reference the generated --fs-* (emitted right after
- * this file) and resolve at the component use-site, where both are on the section.
- * See engineering/decisions/2026-06-21-portrait-prose-deboost.md. */
-:root, section {
-  --dense-body:         calc(var(--fs-body)         * var(--prose-deboost, 1));
-  --dense-body-compact: calc(var(--fs-body-compact) * var(--prose-deboost, 1));
-  --dense-message:      calc(var(--fs-message)      * var(--prose-deboost, 1));
-}
-
 /* ── Universal theme defaults (any palette :root override wins via source order) ─
  * on-dark-* : opacity ramp for text on dark panel surfaces.
  * hljs-*    : fallback syntax palette; themes supply curated overrides.

@@ -16,6 +16,9 @@
     "priority": [
       "title",
       "steps"
+    ],
+    "keepTogether": [
+      "step"
     ]
   },
   "tags": [

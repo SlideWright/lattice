@@ -1,7 +1,7 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "radar",
-  "adapt": { "mode": "reflow" },
+  "adapt": { "mode": "reflow", "priority": ["title", "axes", "series", "detail"] },
   "function": "evidence",
   "bucket": "chart",
   "form": "scatter",

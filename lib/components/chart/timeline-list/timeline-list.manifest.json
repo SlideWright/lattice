@@ -1,7 +1,7 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "timeline-list",
-  "adapt": { "mode": "reflow" },
+  "adapt": { "mode": "reflow", "priority": ["title", "events"] },
   "function": "evidence",
   "bucket": "chart",
   "form": "timeline",

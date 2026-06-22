@@ -18,6 +18,9 @@
     ],
     "droppable": [
       "body"
+    ],
+    "keepTogether": [
+      "actor"
     ]
   },
   "capacity": { "axis": "item", "min": 3, "sweet": 4, "soft": 6, "hard": 7, "escalateTo": ["list-tabular","split across slides"], "note": "the ledger reads cleanly up to about six rows" },

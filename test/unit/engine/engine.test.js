@@ -238,10 +238,6 @@ describe('lattice-engine: css emission (P1.1)', () => {
     assert.match(story, /--canvas-scale:\s*2\.19/);
     assert.match(story, /justify-content:\s*center/);
     assert.match(orientationCss({ width: 1080, height: 1080 }), /--canvas-scale:\s*1\.65/);
-    // Dense-prose de-boost — 0.66 portrait, 0.8 square, never emitted for landscape.
-    assert.match(story, /--prose-deboost:\s*0\.66/);
-    assert.match(orientationCss({ width: 1080, height: 1080 }), /--prose-deboost:\s*0\.8/);
-    assert.equal(/--prose-deboost/.test(orientationCss({ width: 1280, height: 720 })), false);
     // Safe-area bands (px) for the `safe` modifier — 12% top / 20% bottom of height.
     assert.match(story, /--safe-top:\s*230px/);   // 1920 * 0.12
     assert.match(story, /--safe-bottom:\s*384px/); // 1920 * 0.20
@@ -252,7 +248,7 @@ describe('lattice-engine: css emission (P1.1)', () => {
     const out = composeCss({ themeCss: PALETTE, baseLatticeCss: SOCIAL, sizeName: 'story' });
     assert.match(out, /@page\s*\{[^}]*size:\s*1080px 1920px/);
     assert.match(out, /width:\s*1080px/);
-    assert.match(out, /section\s*\{\s*--canvas-scale:\s*2\.19;\s*--stat-emphasis:\s*1\.45;\s*--prose-deboost:\s*0\.66;\s*justify-content:\s*center;\s*--safe-top:\s*230px;\s*--safe-bottom:\s*384px;\s*\}/);
+    assert.match(out, /section\s*\{\s*--canvas-scale:\s*2\.19;\s*--stat-emphasis:\s*1\.45;\s*justify-content:\s*center;\s*--safe-top:\s*230px;\s*--safe-bottom:\s*384px;\s*\}/);
     // A landscape deck gets NO orientation block (the scaling never fires).
     assert.doesNotMatch(composeCss({ themeCss: PALETTE, baseLatticeCss: SOCIAL, sizeName: 'hd' }), /--canvas-scale/);
   });

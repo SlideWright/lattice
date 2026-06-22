@@ -1,7 +1,7 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "word-cloud",
-  "adapt": { "mode": "reflow" },
+  "adapt": { "mode": "reflow", "priority": ["title", "words"] },
   "function": "evidence",
   "bucket": "chart",
   "form": "canvas",
