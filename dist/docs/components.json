@@ -199,6 +199,9 @@
         ],
         "droppable": [
           "body"
+        ],
+        "keepTogether": [
+          "actor"
         ]
       },
       "tags": [
@@ -337,7 +340,14 @@
         "strip"
       ],
       "adapt": {
-        "mode": "native"
+        "mode": "native",
+        "priority": [
+          "title",
+          "items"
+        ],
+        "keepTogether": [
+          "item"
+        ]
       },
       "tags": [
         "agenda-setting",
@@ -789,6 +799,9 @@
           "title",
           "cards"
         ],
+        "keepTogether": [
+          "card"
+        ],
         "capacity": {
           "axis": "item",
           "wide": {
@@ -1127,7 +1140,14 @@
         "strip"
       ],
       "adapt": {
-        "mode": "native"
+        "mode": "native",
+        "priority": [
+          "title",
+          "items"
+        ],
+        "keepTogether": [
+          "item"
+        ]
       },
       "tags": [
         "status",
@@ -2936,6 +2956,9 @@
         "priority": [
           "title",
           "entries"
+        ],
+        "keepTogether": [
+          "term+definition"
         ]
       },
       "tags": [
@@ -4178,6 +4201,9 @@
         ],
         "droppable": [
           "meta"
+        ],
+        "keepTogether": [
+          "row"
         ]
       },
       "tags": [
@@ -5566,6 +5592,9 @@
         "priority": [
           "title",
           "pairs"
+        ],
+        "keepTogether": [
+          "question+answer"
         ]
       },
       "tags": [

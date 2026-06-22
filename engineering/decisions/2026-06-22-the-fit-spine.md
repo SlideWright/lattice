@@ -288,7 +288,12 @@ throughout. Ordered by the inversion: **unmask first, unify second, build third.
   `capacity`/`keepTogether` + continuation adornment, consumed by the exporter —
   **maker–checker + export sign-off** (it changes exported page counts).
 - **P5 — backfill solver data** (§6) across the catalog; turn on the
-  undeclared-intent lint.
+  undeclared-intent lint. ◐ **In progress.** Rubric ratified +
+  **inventory bucket landed** as the worked exemplar (`2026-06-22-solver-intent-backfill.md`):
+  every inventory component now declares `priority` (incl. the native `agenda` /
+  `checklist` that had none) and `keepTogether`; maker-checker caught + reverted a
+  `logo-wall` `droppable` the strip CSS doesn't honor. `priority` 23→25 / 52; the
+  lint flips to error only at 52/52. Remaining buckets follow the rubric.
 - **P6 — retire per-component `@container` reflow** as components graduate to
   Tiles; re-aim the `adapt` gate (§5).
 

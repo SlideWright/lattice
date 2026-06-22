@@ -1,7 +1,7 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "agenda",
-  "adapt": { "mode": "native" },
+  "adapt": { "mode": "native", "priority": ["title", "items"], "keepTogether": ["item"] },
   "focusAxes": ["item"],
   "capacity": { "axis": "item", "min": 3, "sweet": 4, "soft": 6, "hard": 7, "escalateTo": ["split across slides"], "note": "past six sections the list crowds" },
   "function": "inventory",

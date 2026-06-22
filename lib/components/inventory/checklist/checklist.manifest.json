@@ -1,7 +1,7 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "checklist",
-  "adapt": { "mode": "native" },
+  "adapt": { "mode": "native", "priority": ["title", "items"], "keepTogether": ["item"] },
   "focusAxes": ["item"],
   "capacity": { "axis": "item", "min": 4, "sweet": 6, "soft": 8, "hard": 9, "escalateTo": ["split across slides"], "note": "past eight items the checklist overflows" },
   "families": ["state-markers"],

@@ -31,6 +31,9 @@
       "title",
       "cards"
     ],
+    "keepTogether": [
+      "card"
+    ],
     "capacity": {
       "axis": "item",
       "wide": {

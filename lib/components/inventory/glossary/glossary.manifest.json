@@ -16,6 +16,9 @@
     "priority": [
       "title",
       "entries"
+    ],
+    "keepTogether": [
+      "term+definition"
     ]
   },
   "tags": ["definition", "reference", "onboarding"],
