@@ -1,0 +1,92 @@
+---
+status: shipped
+summary: Portrait/square decks select generous body type coefficients (tuned for sparse hero slides), which overflow content-dense layouts — the engine clips the slide title and last item. A deck-wide --prose-deboost token (sibling to --stat-emphasis; 0.66 portrait, 0.8 square, UNSET landscape) lets dense families multiply just their card/item body+title font by var(--prose-deboost, 1); hero elements keep full size and landscape stays byte-identical. Applied to cards-grid, actors, cards-stack, matrix-2x2, decision, compare-prose, split-compare. pricing is excluded — its overflow is spacing-driven, a separate follow-up.
+version: 1
+supersedes: none
+builds-on: 2026-06-20-typography-categories.md, 2026-06-18-component-adaptive-sizing.md
+---
+
+# Portrait prose de-boost — dense layouts stop clipping
+
+**Status:** landed. **Scope:** `lib/engine/css.js`, `lib/runtime/index.js`, seven
+component stylesheets. **Companion:** `2026-06-20-typography-categories.md` (the
+per-orientation type scale this tunes), `2026-06-18-component-adaptive-sizing.md`
+(the box-local reflows it rides on).
+
+## The problem
+
+Portrait and square decks select their own curated `--fs-*` coefficient set (not a
+uniform stretch of landscape — see typography-categories). The `body` coefficient
+there is deliberately **generous**: social/mobile decks are sparse and read at
+arm's length, so prose wants to be large. That is right for a statement slide and
+wrong for a *content-dense* one: a slide with four text cards (cards-grid, actors)
+or stacked comparison panels overflows the tall frame — the engine clips the slide
+**title** off the top and the **last item** off the bottom. Content is lost, not
+just ugly. Neither single-column nor two-column reflow fixes it; the type itself is
+too big for the content.
+
+## The model considered
+
+Three options were weighed (and the choice confirmed with the owner):
+
+- **A — systemic de-boost (chosen).** Dense families keep their reflow and serve
+  *body* prose at a readable, non-hero size; hero elements (slide title, stat
+  numbers) keep the full boost. One coherent rule, applied per family.
+- **B — patch cards-grid only.** Smallest, but the same overflow recurs on every
+  other dense family → N inconsistent patches (the drift HARD RULE #1 forbids).
+- **C — auto-scale-to-fit.** A general overflow→shrink loop. Most general, but the
+  largest engine change and it makes a component's type size content-dependent,
+  undermining the fixed token scale (HARD RULE #4).
+
+## The mechanism
+
+A deck-wide token, sibling to `--stat-emphasis`, emitted by **both** orientation
+emitters (engine `orientationCss`, runtime `injectOrientationStyle` — HARD RULE #1
+siblings):
+
+```
+section { … --prose-deboost: <0.66 portrait | 0.8 square>; … }
+```
+
+Landscape emits **nothing** (the orientation block is empty), so consumers reading
+`var(--prose-deboost, 1)` fall back to `1` and every landscape export is
+byte-identical. Dense families multiply their card/item **title + body** font by
+the token:
+
+```css
+font-size: calc(var(--fs-body) * var(--prose-deboost, 1));
+```
+
+The values are curated flat-per-orientation (like `--stat-emphasis`), tuned against
+the worst case (4:5, the shortest portrait); taller frames (story, mobile) get more
+margin. 0.66 brings the generous portrait body back to ~1.25× the landscape base —
+readable, and four dense cards fit.
+
+## Where it applies (and a cascade footgun)
+
+Consumers: **cards-grid** (reference, via a local `--_fs-card`), **actors**,
+**cards-stack**, **matrix-2x2**, **decision**, **compare-prose**, **split-compare**
+(the last also de-boosts its hero-band *intro* line so the verdict clears; the
+display `h2` stays hero-sized). `q-and-a` already fit and is untouched.
+
+**Footgun:** a family with a portrait `@container` body override must de-boost
+**that** rule, not just the base body — the override wins in portrait and the base
+de-boost is inert there. This bit `decision` (line ~100) and `compare-prose` (line
+~328), both of which raise the body to `--fs-message` weight in portrait; both
+overrides are now de-boosted.
+
+## The pricing exception
+
+`pricing` clips too, but its overflow is **spacing-driven** — three tall tiers
+stacked, each with its own padding and inter-row gaps — not type-driven. A type
+de-boost shrinks the text without reclaiming the dominant (spacing) height, so it
+is intentionally **excluded** here. Pricing needs a compact portrait reflow
+(spacing de-boost or a denser tier layout) — a separate follow-up.
+
+## Verification
+
+Rendered each consumer at portrait (4:5), square, and story (9:16) with realistic
+two-line bodies: slide title, every item, and footnotes fit with no overflow
+warning. Landscape: no gallery PDF regenerated (byte-identical). `engine.test.js`
+locks the token values (0.66 / 0.8 / unset). A maker-checker pass caught the
+`compare-prose` override miss before merge.

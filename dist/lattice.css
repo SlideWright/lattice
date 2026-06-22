@@ -2745,7 +2745,10 @@ section.compare-prose.transition:not(:has(.compare-prose-inner)) > :is(ul, ol) >
   }
   /* one side per full-width card — its statement carries message weight, not body. */
   section.compare-prose.compare-prose:not(:has(.compare-prose-inner)) > :is(ul, ol) > li > :is(ul, ol) > li {
-    font-size: var(--fs-message);
+    /* This portrait @container override (--fs-message, statement weight) WINS over the
+     * base body rule, so the dense-prose de-boost must live here too — the base de-boost
+     * is inert in portrait. (Parallels decision.styles.css line 100.) */
+    font-size: calc(var(--fs-message) * var(--prose-deboost, 1));
     line-height: var(--lh-snug);
   }
   section.compare-prose.compare-prose:not(:has(.compare-prose-inner)) > :is(ul, ol)::before {
