@@ -51,6 +51,27 @@ describe('lint-core: isKnownModifier', () => {
   });
 });
 
+describe('lint-core: capacity-overflow ↔ autosplit', () => {
+  const capVocab = {
+    names: new Set(['checklist']),
+    modifiers: new Set(),
+    capacity: { checklist: { axis: 'item', sweet: 6, soft: 8, hard: 9 } },
+  };
+  const overflowDeck = (fmExtra = '') =>
+    `---\nmarp: true\ntheme: indaco\n${fmExtra}---\n\n<!-- _class: checklist -->\n\n## H\n\n` +
+    `${Array.from({ length: 14 }, (_, i) => `- [ ] item ${i + 1}`).join('\n')}\n`;
+
+  test('a 14-item checklist over hard=9 warns capacity-overflow', () => {
+    const f = core.lintTextWith(overflowDeck(), capVocab).find((x) => x.rule === 'capacity-overflow');
+    assert.ok(f, 'expected a capacity-overflow finding');
+  });
+
+  test('autosplit: on suppresses capacity-overflow (auto-split divides it at export)', () => {
+    const f = core.lintTextWith(overflowDeck('autosplit: on\n'), capVocab).find((x) => x.rule === 'capacity-overflow');
+    assert.equal(f, undefined);
+  });
+});
+
 describe('lint-core: lintTextWith rules', () => {
   test('returns an array and skips front matter (slide 0)', () => {
     const out = core.lintTextWith(`${FM}<!-- _class: cards-grid -->\n\n## H\n\n- A\n  - b\n`, vocab);
