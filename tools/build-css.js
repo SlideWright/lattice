@@ -211,12 +211,21 @@ function formsSlicingCss() {
     for (const fam of ['square', 'tall', 'strip']) {
       const famSlice = slicing[fam];
       if (!famSlice) continue;
+      // Merge every Cell's per-family tokens into ONE section-scoped rule. Custom
+      // properties INHERIT, so a token set on the section is read by each Cell's
+      // element via its own `var(--token)` — `.cell-masthead`, but ALSO the footer
+      // Cells whose elements are `.tile-progress` / `<footer>` / `::after` and have
+      // no `.cell-<id>` wrapper to target. (Was `.cell-${cellId}`, which only
+      // reached Cells that ARE a real `.cell-` element — masthead — and silently
+      // missed the footer zones.) Token names are Cell-unique, so the merge can't
+      // collide. See engineering/decisions/2026-06-21-reflow-as-form-capability.md §7.
+      const decls = [];
       for (const cellId of Object.keys(famSlice).sort()) {
-        const tokens = famSlice[cellId] && famSlice[cellId].tokens;
+        const tokens = famSlice[cellId]?.tokens;
         if (!tokens) continue; // region-only entries are the runtime's job
-        const decls = Object.keys(tokens).sort().map((t) => `${t}: ${tokens[t]};`).join(' ');
-        rules.push(`section.form[data-family="${fam}"] .cell-${cellId} { ${decls} }`);
+        for (const t of Object.keys(tokens).sort()) decls.push(`${t}: ${tokens[t]};`);
       }
+      if (decls.length) rules.push(`section.form[data-family="${fam}"] { ${decls.join(' ')} }`);
     }
   }
   return rules.length ? rules.join('\n') + '\n' : null;
@@ -452,4 +461,4 @@ function main(argv) {
 
 if (require.main === module) process.exit(main(process.argv.slice(2)));
 
-module.exports = { bundle, buildThemes, main, OUTPUT, MIN_OUTPUT };
+module.exports = { bundle, buildThemes, main, OUTPUT, MIN_OUTPUT, formsSlicingCss };

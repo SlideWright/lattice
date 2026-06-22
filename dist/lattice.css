@@ -16416,5 +16416,5 @@ section .taskTextOutsideLeft, section .taskTextOutsideRight { fill: var(--text-h
 #lattice-fluid-toggle:focus-visible { opacity: 1; }
 
 /* === generated: Form per-family slicing (frame manifests `slicing`) === */
-section.form[data-family="tall"] .cell-masthead { --masthead-cols: [masthead-lede masthead-bay] 1fr; }
-section.form[data-family="strip"] .cell-masthead { --masthead-cols: [masthead-lede masthead-bay] 1fr; }
+section.form[data-family="tall"] { --masthead-cols: [masthead-lede masthead-bay] 1fr; }
+section.form[data-family="strip"] { --masthead-cols: [masthead-lede masthead-bay] 1fr; }

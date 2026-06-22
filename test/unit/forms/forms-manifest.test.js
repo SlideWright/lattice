@@ -159,3 +159,18 @@ test('(e) a slicing token no Cell CSS reads via var() is caught (dead generated 
   const errs = checkSlicingTokenRefs(frames);
   assert.ok(errs.some((e) => /never reads it via var/.test(e)), 'dead token caught');
 });
+
+// (e) The slicing generator sets tokens at SECTION scope, not on a `.cell-<id>`
+// element. Custom properties inherit, so this is what lets the footer Cells —
+// whose elements are `.tile-progress` / `<footer>` / `::after` and have no
+// `.cell-<id>` wrapper — be sliced per-family at all (not just the masthead band).
+// Regression guard for the Cell-class-vs-Tile-class trap. See
+// engineering/decisions/2026-06-21-reflow-as-form-capability.md §7.
+test('(e) formsSlicingCss emits SECTION-scoped rules (so footer Cells inherit their tokens)', () => {
+  const { formsSlicingCss } = require('../../../tools/build-css');
+  const css = formsSlicingCss() || '';
+  // the standard frame's masthead slicing is present and section-scoped…
+  assert.match(css, /section\.form\[data-family="tall"\]\s*\{[^}]*--masthead-cols/);
+  // …and NOT scoped to a `.cell-` element (which would miss the wrapper-less footer Cells).
+  assert.doesNotMatch(css, /\[data-family="[^"]*"\]\s+\.cell-/);
+});
