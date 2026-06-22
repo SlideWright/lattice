@@ -3349,8 +3349,20 @@
         "ownership"
       ],
       "description": "Kanban board — columns of cards by stage.",
-      "purpose": "Use for status snapshots: what's in each lane (todo/doing/done or similar). Each column is a stage; each card is a work item.",
-      "variants": [],
+      "purpose": "Use for status snapshots: what's in each lane (todo/doing/done or similar). Each column is a stage; each card is a work item. By default the board is a calm grid of neutral cards and spends colour only on STATUS, so a flagged card is the focal point; opt into `keyline` (colour-code cards by category) or `tinted` (colour-code columns by stage) when colour coding earns its keep.",
+      "variants": [
+        "keyline",
+        "tinted"
+      ],
+      "variantAxes": [
+        {
+          "label": "Colour coding",
+          "members": [
+            "keyline",
+            "tinted"
+          ]
+        }
+      ],
       "effectiveVariants": [
         "accent",
         "archived",
@@ -3359,6 +3371,7 @@
         "dark",
         "draft",
         "form",
+        "keyline",
         "loose",
         "mark-orbit",
         "mark-threads",
@@ -3380,6 +3393,7 @@
         "tint-corner at-tl",
         "tint-edge at-right",
         "tint-vignette",
+        "tinted",
         "tone-fail",
         "tone-pass",
         "tone-skip",

@@ -9,8 +9,12 @@
   "capacity": { "axis": "item", "min": 2, "sweet": 3, "soft": 5, "hard": 6, "escalateTo": ["split across slides"], "note": "past five lanes the cards compress" },
   "orientation": ["landscape"],
   "tags": ["swimlane", "workflow", "status", "agile", "ownership"],
+  "variants": ["keyline", "tinted"],
+  "variantAxes": [
+    { "label": "Colour coding", "members": ["keyline", "tinted"] }
+  ],
   "description": "Kanban board — columns of cards by stage.",
-  "purpose": "Use for status snapshots: what's in each lane (todo/doing/done or similar). Each column is a stage; each card is a work item.",
+  "purpose": "Use for status snapshots: what's in each lane (todo/doing/done or similar). Each column is a stage; each card is a work item. By default the board is a calm grid of neutral cards and spends colour only on STATUS, so a flagged card is the focal point; opt into `keyline` (colour-code cards by category) or `tinted` (colour-code columns by stage) when colour coding earns its keep.",
   "slots": {
     "title": {
       "selector": "h2",
@@ -26,6 +30,18 @@
   "skeleton": "<!-- _class: kanban -->\n\n`Eyebrow · context`\n\n## Board status today.\n\n- Backlog\n  - First card `S`\n    - team-a\n  - Second card `M`\n    - team-b `at-risk`\n- In progress\n  - Third card `M`\n    - team-a\n- Done\n  - Fourth card `S`\n    - team-b\n",
   "anatomyBlock": "kanban",
   "sample": "<!-- _class: kanban -->\n\n`Phase 2 · Sprint 14`\n\n## Where Phase 2 work stands today.\n\nEight items across four stages; the scoring-model rewrite is the only card flagged at-risk, which is the polite way of saying it is the only one anyone has looked at.\n\n- Backlog\n  - Per-team weighting `S`\n    - framework\n  - Calibration playbook `M`\n    - governance\n  - Adoption dashboard `S`\n    - adoption\n- In progress\n  - Scoring model v2 `M`\n    - framework `at-risk`\n  - Board reporting pack `L`\n    - governance\n- Review\n  - Weekly signal review `S`\n    - adoption\n- Done\n  - Signal taxonomy `M`\n    - framework\n  - Pilot onboarding `S`\n    - adoption\n",
+  "variantDocs": {
+    "keyline": {
+      "label": "Keyline — colour by category",
+      "caption": "Restores category coding as ONE disciplined cue: every card is the same neutral tile marked by a single crisp coloured left edge, so a reader can scan one workstream's load down a column without the old per-card paint-swatch. Status stays on the chip.",
+      "sample": "<!-- _class: kanban keyline -->\n\n`Delivery · week 30`\n\n## Same board, now you can see who owns what.\n\nThe left edge colour-codes each card by workstream, so one team's load reads down a column at a glance — without the surface turning into a patchwork.\n\n- Backlog\n  - Per-team weighting `S`\n    - framework\n  - Calibration playbook `M`\n    - governance\n  - Adoption dashboard `S`\n    - adoption\n- In progress\n  - Scoring model v2 `M`\n    - framework `at-risk`\n  - Board reporting pack `L`\n    - governance\n- Review\n  - Weekly signal review `S`\n    - adoption\n- Done\n  - Signal taxonomy `M`\n    - framework\n  - Pilot onboarding `S`\n    - adoption\n"
+    },
+    "tinted": {
+      "label": "Tinted — colour by stage",
+      "caption": "Moves colour off the cards and onto the COLUMNS: each lane is whisper-tinted by pipeline stage with a hue-keyed header underline, while cards stay uniformly neutral and lift off the lane. Reinforces the left-to-right flow; status stays the one accent chip.",
+      "sample": "<!-- _class: kanban tinted -->\n\n`Delivery · week 30`\n\n## Colour tracks the pipeline, so the eye reads left to right.\n\nEach lane is tinted by stage — backlog through done — so the shape of the flow registers before any single card does.\n\n- Backlog\n  - Per-team weighting `S`\n    - framework\n  - Calibration playbook `M`\n    - governance\n  - Adoption dashboard `S`\n    - adoption\n- In progress\n  - Scoring model v2 `M`\n    - framework `at-risk`\n  - Board reporting pack `L`\n    - governance\n- Review\n  - Weekly signal review `S`\n    - adoption\n- Done\n  - Signal taxonomy `M`\n    - framework\n  - Pilot onboarding `S`\n    - adoption\n"
+    }
+  },
   "whenToUse": [
     {
       "title": "Status snapshot by stage",

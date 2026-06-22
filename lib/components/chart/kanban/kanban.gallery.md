@@ -48,6 +48,72 @@ Eight items across four stages; the scoring-model rewrite is the only card flagg
 
 ---
 
+<!-- _class: kanban keyline -->
+<!-- _footer: "Keyline — colour by category · kanban keyline" -->
+
+`Delivery · week 30`
+
+## Same board, now you can see who owns what.
+
+The left edge colour-codes each card by workstream, so one team's load reads down a column at a glance — without the surface turning into a patchwork.
+
+- Backlog
+  - Per-team weighting `S`
+    - framework
+  - Calibration playbook `M`
+    - governance
+  - Adoption dashboard `S`
+    - adoption
+- In progress
+  - Scoring model v2 `M`
+    - framework `at-risk`
+  - Board reporting pack `L`
+    - governance
+- Review
+  - Weekly signal review `S`
+    - adoption
+- Done
+  - Signal taxonomy `M`
+    - framework
+  - Pilot onboarding `S`
+    - adoption
+
+
+---
+
+<!-- _class: kanban tinted -->
+<!-- _footer: "Tinted — colour by stage · kanban tinted" -->
+
+`Delivery · week 30`
+
+## Colour tracks the pipeline, so the eye reads left to right.
+
+Each lane is tinted by stage — backlog through done — so the shape of the flow registers before any single card does.
+
+- Backlog
+  - Per-team weighting `S`
+    - framework
+  - Calibration playbook `M`
+    - governance
+  - Adoption dashboard `S`
+    - adoption
+- In progress
+  - Scoring model v2 `M`
+    - framework `at-risk`
+  - Board reporting pack `L`
+    - governance
+- Review
+  - Weekly signal review `S`
+    - adoption
+- Done
+  - Signal taxonomy `M`
+    - framework
+  - Pilot onboarding `S`
+    - adoption
+
+
+---
+
 <!-- _class: kanban -->
 <!-- _footer: "Stress test · kanban" -->
 
