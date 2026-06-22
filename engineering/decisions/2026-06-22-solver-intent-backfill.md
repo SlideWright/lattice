@@ -89,10 +89,10 @@ error. It **cannot flip to error until coverage is complete** — 29 components 
 
 ## Coverage burn-down
 
-| Field | Start | After inventory | Target |
+| Field | Start | Now (inventory + progression + legal) | Target |
 |---|---|---|---|
-| `priority` | 23/52 | 25/52 | 52/52 (gated) |
-| `keepTogether` | 11/52 | 18/52 | declared-or-justified-empty |
+| `priority` | 23/52 | 27/52 | 52/52 (gated) |
+| `keepTogether` | 11/52 | 22/52 | declared-or-justified-empty |
 | `droppable` | 5/52 | 5/52 | declared-or-justified-empty |
 | `capacity` (per-family) | 14/52 | 14/52 | dense families — a separate render-verified pass |
 
@@ -106,6 +106,14 @@ exists to catch: `droppable` names what the **strip CSS provably drops**, not wh
 merely *looks* secondary. `logo-wall` stays `priority`-only — its members (logos)
 are atomic and nothing yet sheds.
 
-Buckets remaining after inventory: anchor, statement, comparison, progression,
-evidence (partial), imagery, chart, diagram, math, code, legal — each a separate
-reviewed pass on this branch (one feature = one branch, HARD #17).
+Buckets done: **inventory · progression · legal** (evidence/kpi+stats were the
+pre-existing exemplars). The `progression`/`legal` pass added intent to the native
+`list-criteria` + matrix `obligation-matrix` (the biggest gaps — they had none),
+`keepTogether` to `list-steps` (`step`) and `citation-card` (`citation+quotation`);
+the rest of legal was already complete.
+
+Buckets remaining: anchor, statement, comparison, imagery, chart, diagram, math,
+code — then flip the lint. Each a reviewed pass on this branch (one feature = one
+branch, HARD #17). **Working principle (post-`logo-wall`):** backfill `priority`
+(always) + `keepTogether` (the atomic member/pair) now; **defer `droppable` to the
+strip-CSS pass** (P3) — declare a shed only where the CSS provably drops it.

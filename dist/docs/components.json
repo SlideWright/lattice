@@ -1303,6 +1303,9 @@
           "citation",
           "quotation",
           "gloss"
+        ],
+        "keepTogether": [
+          "citation+quotation"
         ]
       },
       "tags": [
@@ -3887,7 +3890,14 @@
         "strip"
       ],
       "adapt": {
-        "mode": "native"
+        "mode": "native",
+        "priority": [
+          "title",
+          "criteria"
+        ],
+        "keepTogether": [
+          "criterion"
+        ]
       },
       "tags": [
         "requirements",
@@ -4028,6 +4038,9 @@
         "priority": [
           "title",
           "steps"
+        ],
+        "keepTogether": [
+          "step"
         ]
       },
       "tags": [
@@ -4990,7 +5003,15 @@
         "strip"
       ],
       "adapt": {
-        "mode": "native"
+        "mode": "native",
+        "priority": [
+          "heading",
+          "matrix",
+          "legend"
+        ],
+        "keepTogether": [
+          "row"
+        ]
       },
       "tags": [
         "compliance",

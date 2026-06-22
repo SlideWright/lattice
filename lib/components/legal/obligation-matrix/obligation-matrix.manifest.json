@@ -1,7 +1,7 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "obligation-matrix",
-  "adapt": { "mode": "native" },
+  "adapt": { "mode": "native", "priority": ["heading", "matrix", "legend"], "keepTogether": ["row"] },
   "focusAxes": ["row", "col", "cell"],
   "families": ["state-markers"],
   "function": "comparison",
