@@ -188,6 +188,40 @@ function readIfExists(rel) {
   return fs.readFileSync(abs, 'utf8').replace(/\s+$/, '') + '\n';
 }
 
+// Per-family slicing CSS, GENERATED from each Frame manifest's `slicing` block
+// (the responsive-Frame contract, 2026-06-21-reflow-as-form-capability.md §7).
+// Only the SAME-BAND half is CSS: a family's per-Cell `tokens` become a
+// `[data-family]`-keyed rule that re-slices the band (e.g. --masthead-cols:1fr
+// → masthead lede-over-bay at tall/strip). CROSS-BAND relocation (a `region`
+// override) is NOT emitted here — the runtime moves the node (it can't be done
+// in pure CSS without reviving section-as-grid). The runtime stamps data-family;
+// an absent family = the default (wide/authored) look, so this is purely additive.
+function formsSlicingCss() {
+  const dir = path.join(ROOT, 'lib', 'forms', 'frame');
+  if (!fs.existsSync(dir)) return null;
+  const rules = [];
+  const frames = fs.readdirSync(dir, { withFileTypes: true })
+    .filter((e) => e.isDirectory())
+    .map((e) => e.name)
+    .sort();
+  for (const name of frames) {
+    const mf = path.join(dir, name, `${name}.manifest.json`);
+    if (!fs.existsSync(mf)) continue;
+    const slicing = (JSON.parse(fs.readFileSync(mf, 'utf8')).slicing) || {};
+    for (const fam of ['square', 'tall', 'strip']) {
+      const famSlice = slicing[fam];
+      if (!famSlice) continue;
+      for (const cellId of Object.keys(famSlice).sort()) {
+        const tokens = famSlice[cellId] && famSlice[cellId].tokens;
+        if (!tokens) continue; // region-only entries are the runtime's job
+        const decls = Object.keys(tokens).sort().map((t) => `${t}: ${tokens[t]};`).join(' ');
+        rules.push(`section.form[data-family="${fam}"] .cell-${cellId} { ${decls} }`);
+      }
+    }
+  }
+  return rules.length ? rules.join('\n') + '\n' : null;
+}
+
 // KaTeX base stylesheet — the math-glyph layout engine CSS. Unlike the other
 // integrations (highlight-js, mermaid), whose lib/integrations/<name>/<name>.css
 // is a hand-authored token map, KaTeX's base is the package's own ~720-selector
@@ -364,6 +398,13 @@ function bundle() {
       parts.push(`/* === ${rel} === */`);
       parts.push(text);
     }
+  }
+  // Generated last: the per-family slicing rules win on source order over the
+  // Cell's own base rule (they also out-specify it via [data-family]).
+  const slicing = formsSlicingCss();
+  if (slicing) {
+    parts.push('/* === generated: Form per-family slicing (frame manifests `slicing`) === */');
+    parts.push(slicing);
   }
   return parts.join('\n');
 }

@@ -50,7 +50,7 @@ section.checklist > ol > li {
   background:var(--bg-alt);
   border-left:3px solid var(--border);
   border-radius:0 var(--radius-sm) var(--radius-sm) 0;
-  font-size:var(--fs-body);
+  font-size:var(--dense-body);
   font-weight:500;
   line-height:var(--lh-snug);
   color:var(--text-heading);

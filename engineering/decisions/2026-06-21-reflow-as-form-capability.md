@@ -1,5 +1,5 @@
 ---
-status: proposed
+status: in-progress
 summary: Design model for making reflow a *Form* capability rather than 25 per-component @container solutions. The Form model (design/forms.md) already gives a slide a coordinate system — a Frame slices the box into Cells; Cells are resolution-blind (relative units → px at any scale). But that scale-invariance is NOT aspect-awareness: a Frame's slicing is rigid across box shapes. Reflow is the missing axis — the same Form evaluated at a different box. The four-family taxonomy (lib/adaptive/families.js: wide/square/tall/strip, each with an intent) already encodes the aspect axis; the missing middle is the RESPONSIVE-FRAME CONTRACT: a Frame declares its slicing per aspect-family, so the masthead band stacks, the stage goes single-column, and the progress rail repositions/sheds — top-down — while the component (Tile) only fills whatever Cell it's handed. This subsumes the per-component reflow (demoted to the Tile-in-its-Cell leaf behaviour) and composes with the fluid-box viewer (#472 supplies the live box). "Infinite looks" = Frame × family-slicing × resolution × theme. Proposes the contract, how it layers on Mechanism B (flex + in-flow bands), and a staged path (one Frame proven in phone-view, then the catalog, then graduate the sovereign frames).
 version: 1
 supersedes: none
@@ -9,8 +9,10 @@ builds-on: 2026-06-21-fluid-box-viewer-design.md, 2026-06-20-native-to-reflow-fe
 # Reflow as a Form capability — the responsive-Frame contract
 
 **Date:** 2026-06-21
-**Status:** Proposed (design model; no code changed)
-**Decision owner:** maintainer
+**Status:** Partial — model ratified; the **same-band** spike has landed for the
+`standard` Frame (manifest `slicing` → generated `[data-family]` CSS → runtime
+`data-family` stamp). Cross-band relocation and the slicing gate are follow-up
+slices (§8). **Decision owner:** maintainer
 
 This lifts the responsive question one final level. The native→reflow study and
 the fluid-box keystone (#472) made *components* reflow and gave the deck a live
@@ -129,8 +131,10 @@ costs responsiveness**. That is a gift here: **flex re-slices naturally** — a 
 that is `flex-direction:row` in `wide` becomes `column` in `strip` with one
 `@container` rule, no per-component DOM migration. The responsive-Frame contract
 is therefore *additive* to B: per-family rules keyed on the runtime-stamped
-`[data-family]`, compiled from each Frame's manifest (§7) — authored once per
-Frame, not across 373 component selectors.
+`[data-family]`, **generated from each Frame's manifest** into the bundle (the
+Cell's CSS keeps a `var()` hook the generated rule sets); cross-band relocation is
+a runtime follow-up (§7), not yet built. Authored once per Frame, not across 373
+component selectors.
 
 ## 7. Decisions (the forks for the build)
 
@@ -140,17 +144,44 @@ Frame, not across 373 component selectors.
    fluid viewer + the live playground), not a fixed-export one — by design. Pure
    CSS `@container` was considered and not chosen (it splits the family definition
    from the shared `families.js` classifier).
-2. **Where per-family slicing is authored — DECIDED: manifest-declared.** Each
-   Frame manifest carries a `slicing: { wide, square, tall, strip }` block; the
-   build compiles it to the `[data-family]`-keyed CSS. Single-source and
-   machine-readable like the rest of Form (§11) — not hand-authored CSS per Frame
-   folder. The default (unstamped) slicing is the `wide`/authored look.
-3. **Strip-family content policy** — "shed tertiary" (the family intent) implies
-   Cells/Tiles can be *dropped* at the narrowest box (e.g. the meta line, the
-   rail). Does shedding live on the **Tile** (`visibility.condition` per family)
-   or the **Frame** (suppress a Cell per family)? Recommendation: Cell-suppression
-   on the Frame (it already has `suppresses` for sovereign frames — generalise it
-   to per-family).
+2. **Where per-family slicing is authored — DECIDED: manifest-declared, realized
+   by GENERATION (as built).** Each Frame manifest carries a `slicing` block
+   (per-family cell-placement — see (3)). The two halves split by genuine need:
+   **same-band** changes (per-family token values) are **GENERATED** from the
+   manifest into `dist/lattice.css` (`tools/build-css.js formsSlicingCss()` →
+   `section.form[data-family="…"] .cell-X { … }`); the Cell's co-located CSS keeps
+   a `var(--token, default)` **hook** the generated rule sets, and the
+   manifest↔CSS gate asserts every `slicing` token NAME is `var()`-read in that
+   Cell (so the manifest and CSS can't drift). **Cross-band relocation** would be
+   **generated into a table the runtime reads** (the runtime can't read manifests)
+   — *not yet built; a follow-up slice.* The default (unstamped) slicing is the
+   `wide`/authored look. *(This supersedes an earlier draft that described
+   same-band as "co-authored + gated" — the build GENERATES it; see
+   `tools/build-css.js`.)*
+3. **Slicing is a per-family cell-PLACEMENT map — relocation, not suppression
+   (supersedes the original §7.3).** `slicing.<family>` maps a Cell →
+   `{ region, geometry-tokens }` (or `region: null` *only* when content is
+   genuinely redundant at that box). The three apparent features — geometry tweak,
+   reorder, relocate — are one mechanism: **a Cell's region + geometry are a
+   function of family.** Suppression is the degenerate `region: null` escape hatch
+   for redundant content, **not** the default — dropping authored content silently
+   is the fade decision `forms.md` §6 already rejects (clip+ring over fade: a
+   delivered slide must not lose content). So when `strip` "sheds tertiary," the
+   masthead bay **relocates to the footer**; it does not vanish. Slicing lives on
+   the **Frame** (the slicer), never the Cell — a Cell's region can differ between
+   Frames.
+
+   *Freedom of movement, bounded — but not by a whitelist.* Reflow needs cells to
+   move freely; the bound is the **existing kind-contract** (`forms.md` §7 — a
+   Cell `accepts` by KIND, a Tile `fits` by KIND, *never by name*). A chrome Tile
+   relocates freely to any region that accepts chrome; it cannot land in a slot of
+   the wrong kind (a content component in the rail is a category error, not a
+   reflow). The only invariants held under all that movement are the **box
+   guarantees** (`forms.md` §6 — every Cell still resolves to a real box, keeps its
+   gap, clips not bleeds). The designer composes the movement (Form is a structural
+   theme — judgement, not an enum); the engine enforces only kind-fit + the box
+   guarantee. A per-cell placement *whitelist* was considered and **rejected**: it
+   caps "infinite looks" and re-couples by name — the very thing §7 forbids.
 4. **Scope vs the per-component Tier work** — does this *replace* the remaining
    per-component reflow backlog, or layer above the parts already done?
    Recommendation: layer above — the Tier-A component reflows become the leaf
@@ -159,15 +190,25 @@ Frame, not across 373 component selectors.
 ## 8. Staged path (prove one Frame, then the catalog)
 
 1. **This PR:** this design model.
-2. **Spike:** the `standard` root Frame, end-to-end, reflowing wide→tall→strip in
-   phone-view (#479) — masthead band stacks, stage single-column, rail sheds —
-   proving the contract on the chrome Cells + one content component.
-3. **Catalog:** roll the per-family slicing across the Frame catalog (the 12 Form
+2. **Spike — same-band (LANDED).** The `standard` root Frame re-slices its masthead
+   to a single column (lede over bay) at `tall`/`strip`, verified on the #472 fluid
+   export at wide/tall/strip. *At this slice `tall` and `strip` produce the same
+   single-column masthead* — they diverge once strip's extra shedding (3) lands;
+   until then the duplicate `tall` entry is intentional, not a typo.
+3. **Spike — the gate + cross-band relocation (NEXT).** (a) Gate `slicing` in the
+   forms validator (`lib/forms/index.js` + `build-forms.js`): family ∈
+   {square,tall,strip}, cell id ∈ the Frame's `cells`, region ∈ the region enum,
+   relocation target `accepts` the cell's kind AND is capacity-compatible, and
+   every `slicing` token is `var()`-read in the Cell. (b) Then the runtime applies
+   the generated relocation table (masthead bay → footer in strip) — content moves,
+   never vanishes. The relocation target needs a real home first (`footer-left` is
+   `capacity:one` + `css:false` — give it a stylesheet or pick a `stack` cell).
+4. **Catalog:** roll the per-family slicing across the Frame catalog (the 12 Form
    values), manifest-declared.
-4. **Graduate the sovereigns:** `split-panel` already flips via `data-orientation`
+5. **Graduate the sovereigns:** `split-panel` already flips via `data-orientation`
    — fold it into the contract (it becomes a Frame with a `tall`/`strip` slicing),
    retiring the coarse stamp.
-5. **Then** the islands→Form rename sweep (`forms.md` §10) lands on a model that is
+6. **Then** the islands→Form rename sweep (`forms.md` §10) lands on a model that is
    now also responsive.
 
 ## 9. Why this is the right altitude

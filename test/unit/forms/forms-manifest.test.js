@@ -104,3 +104,58 @@ test('(d) dist/docs/forms.json is fresh (regenerating produces no diff)', () => 
   const current = fs.existsSync(JSON_FILE) ? fs.readFileSync(JSON_FILE, 'utf8') : null;
   assert.equal(current, renderJson(), 'dist/docs/forms.json is stale — run `node tools/build-forms.js`');
 });
+
+// ── (e) the per-family `slicing` gate (responsive-Frame contract, §7) ─────────
+// Regression guard: before this gate, a slicing block with a forbidden family,
+// a ghost cell, a bad region, or a kind/capacity-violating relocation produced
+// ZERO errors (the JSON-schema was never run). See
+// engineering/decisions/2026-06-21-reflow-as-form-capability.md §7 red-team H1/M2.
+
+test('(e) valid slicing on the standard frame passes both gates', () => {
+  const { cells, frames, tiles } = forms.loadCatalog();
+  const std = frames.find((f) => f.id === 'standard');
+  assert.ok(std.slicing, 'standard frame declares slicing');
+  assert.deepEqual(forms.validateFrame(std, 'standard'), []);
+  assert.deepEqual(forms.checkIntegrity({ cells, frames: [std], tiles }), []);
+});
+
+test('(e) the gate catches forbidden family / ghost cell / bad region / kind violation', () => {
+  const { cells, tiles } = forms.loadCatalog();
+  const bad = {
+    id: 'evil', form: 'bookend', kind: 'root', exemptFromChrome: false,
+    description: 'x', cells: ['masthead', 'stage'], suppresses: [],
+    slicing: {
+      WIDE: { masthead: { tokens: { '--x': '1fr' } } },     // forbidden family key
+      strip: {
+        ghostcell: { tokens: { '--y': '1' } },              // not in cells
+        stage: { region: 'nowhere' },                       // bad region
+        masthead: { region: 'masthead-bay' },               // relocate "frame"-kind into a chrome-only slot
+      },
+    },
+  };
+  const errs = [...forms.validateFrame(bad, 'evil'), ...forms.checkIntegrity({ cells, frames: [bad], tiles })];
+  assert.ok(errs.some((e) => /family "WIDE"/.test(e)), 'forbidden family caught');
+  assert.ok(errs.some((e) => /region.*nowhere/.test(e)), 'bad region caught');
+  assert.ok(errs.some((e) => /ghostcell.*not in its cells/.test(e)), 'ghost cell caught');
+  assert.ok(errs.some((e) => /does not accept "frame"/.test(e)), 'kind violation caught');
+});
+
+test('(e) the gate catches a stack→single-capacity relocation (would overflow)', () => {
+  const { cells, tiles } = forms.loadCatalog();
+  // masthead-bay is capacity:stack; pagination-right is capacity:one — both chrome,
+  // so kind-fit passes but capacity must not.
+  const bad = {
+    id: 'overflow', form: 'bookend', kind: 'root', exemptFromChrome: false,
+    description: 'x', cells: ['masthead-bay', 'pagination-right'], suppresses: [],
+    slicing: { strip: { 'masthead-bay': { region: 'pagination-right' } } },
+  };
+  const errs = forms.checkIntegrity({ cells, frames: [bad], tiles });
+  assert.ok(errs.some((e) => /relocates stack cell.*into single-capacity/.test(e)), 'capacity violation caught');
+});
+
+test('(e) a slicing token no Cell CSS reads via var() is caught (dead generated rule)', () => {
+  const { checkSlicingTokenRefs } = require('../../../tools/build-forms');
+  const frames = [{ id: 'dead', slicing: { tall: { masthead: { tokens: { '--never-read-xyz': '1fr' } } } } }];
+  const errs = checkSlicingTokenRefs(frames);
+  assert.ok(errs.some((e) => /never reads it via var/.test(e)), 'dead token caught');
+});

@@ -114,10 +114,45 @@ function assertManifestCssConsistency({ cells, frames, tiles }) {
     ...checkCellCssPresence(cells, collectCellCssPresence()),
     ...checkSuppressIntegrity(frames),
     ...checkZPlaneZIndex(collectZPlaneZIndex({ cells, tiles })),
+    ...checkSlicingTokenRefs(frames),
   ];
   if (errors.length) {
     throw new Error(`Form manifest↔CSS consistency failed:\n  ${errors.join('\n  ')}`);
   }
+}
+
+// Every same-band `slicing` token (the build GENERATES the [data-family] rule
+// that SETS it) must be READ via var() in its target Cell's co-located CSS —
+// otherwise the generated rule is dead (sets a custom property nothing consumes).
+// The dual of checkManifestCssRefs: that gate asserts a token is DEFINED; this one
+// asserts a slicing token is USED. See 2026-06-21-reflow-as-form-capability.md §7.
+function checkSlicingTokenRefs(frames) {
+  const errors = [];
+  const cellDir = path.join(FORMS_DIR, 'cell');
+  const cssCache = new Map();
+  const cellCss = (cellId) => {
+    if (cssCache.has(cellId)) return cssCache.get(cellId);
+    const file = path.join(cellDir, cellId, `${cellId}.css`);
+    const css = fs.existsSync(file) ? fs.readFileSync(file, 'utf8').replace(/\/\*[\s\S]*?\*\//g, '') : '';
+    cssCache.set(cellId, css);
+    return css;
+  };
+  for (const f of frames) {
+    if (!f.slicing) continue;
+    for (const fam of Object.keys(f.slicing)) {
+      for (const cellId of Object.keys(f.slicing[fam])) {
+        const tokens = f.slicing[fam][cellId] && f.slicing[fam][cellId].tokens;
+        if (!tokens) continue;
+        const css = cellCss(cellId);
+        for (const name of Object.keys(tokens)) {
+          if (!css.includes(`var(${name}`)) {
+            errors.push(`frame "${f.id}" slicing.${fam}.${cellId} sets ${name} but lib/forms/cell/${cellId}/${cellId}.css never reads it via var(${name}, …) — dead generated rule`);
+          }
+        }
+      }
+    }
+  }
+  return errors;
 }
 
 function renderJson() {
@@ -182,4 +217,5 @@ module.exports = {
   collectCellCssPresence,
   collectZPlaneZIndex,
   assertManifestCssConsistency,
+  checkSlicingTokenRefs,
 };

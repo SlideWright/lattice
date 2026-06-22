@@ -35,6 +35,39 @@
       "type": "array",
       "items": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" },
       "description": "Chrome Cell ids a sovereign Frame hides. Each MUST resolve to a real Cell definition."
+    },
+    "slicing": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Per-family cell-PLACEMENT — how this Frame re-slices the box for each aspect family (lib/adaptive/families.js). An absent family = the default ('wide'/authored) slicing, so a runtime-less render is byte-unchanged. The runtime stamps data-family; same-band entries (tokens) generate [data-family]-keyed CSS, cross-band entries (a region differing from the Cell's default) generate the relocation table the runtime applies. See engineering/decisions/2026-06-21-reflow-as-form-capability.md §7.",
+      "patternProperties": {
+        "^(square|tall|strip)$": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Cell id → its placement at this aspect family. Cells not listed keep their default placement.",
+          "patternProperties": {
+            "^[a-z][a-z0-9-]*$": {
+              "type": "object",
+              "additionalProperties": false,
+              "description": "A Cell's placement override at this family. Bounded by the kind-contract (forms.md §7): a relocation target region must accept the Cell's Tile kind.",
+              "properties": {
+                "region": {
+                  "enum": ["masthead", "masthead-lede", "masthead-bay", "stage", "footer", "footer-left", "progress-centre", "pagination-right", "overlay", null],
+                  "description": "The band this Cell occupies at this family. Differs from the Cell's default region → a CROSS-BAND relocation, applied by the runtime (content moves, never vanishes). null = drop — reserved for genuinely redundant content, NOT the default (dropping authored content silently is the fade decision forms.md §6 rejects)."
+                },
+                "tokens": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "description": "Per-family CSS token overrides (same-band). The build GENERATES the [data-family] rule that sets these; each token NAME must be referenced via var() in the Cell's co-located CSS (gated). WARNING: if the Cell's grid places children on NAMED lines (e.g. masthead-lede/-bay), an override of the track template MUST re-declare those names on its track, or the children orphan into implicit tracks — so the single-column masthead value is { \"--masthead-cols\": \"[masthead-lede masthead-bay] 1fr\" }, NOT a bare \"1fr\".",
+                  "patternProperties": {
+                    "^--[a-z][a-z0-9-]*$": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }
 }

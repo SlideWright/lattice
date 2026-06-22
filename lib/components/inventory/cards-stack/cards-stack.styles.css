@@ -33,7 +33,7 @@ section.cards-stack .card {
   margin:0; flex:1; list-style:none;
   display:flex; flex-wrap:wrap; align-items:baseline; align-content:flex-start;
   column-gap:var(--sp-sm); row-gap:var(--sp-xs);
-  font-size:var(--fs-body); line-height:var(--lh-snug);
+  font-size:var(--dense-body); line-height:var(--lh-snug);
   font-weight:700; color:var(--text-heading);
 }
 section.cards-stack > ul > li::marker, section.cards-stack > ol > li::marker { content:''; }
@@ -71,7 +71,7 @@ section.cards-stack .card > ul, section.cards-stack .card > ol {
 section.cards-stack > ul > li > ul > li, section.cards-stack > ul > li > ol > li,
 section.cards-stack > ol > li > ul > li, section.cards-stack > ol > li > ol > li,
 section.cards-stack .card > ul > li, section.cards-stack .card > ol > li {
-  font-size:var(--fs-body);
+  font-size:var(--dense-body);
 }
 
 /* ── numbered cards (ol): flush corner tag — same recipe as cards-grid.

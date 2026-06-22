@@ -16,5 +16,13 @@
     "pagination-right",
     "overlay"
   ],
-  "suppresses": []
+  "suppresses": [],
+  "slicing": {
+    "tall": {
+      "masthead": { "tokens": { "--masthead-cols": "[masthead-lede masthead-bay] 1fr" } }
+    },
+    "strip": {
+      "masthead": { "tokens": { "--masthead-cols": "[masthead-lede masthead-bay] 1fr" } }
+    }
+  }
 }

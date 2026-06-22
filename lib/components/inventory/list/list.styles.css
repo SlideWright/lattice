@@ -26,7 +26,7 @@ section.list > :is(ul,ol) {
 section.list > :is(ul,ol) > li {
   flex:1 1 0; min-height:0;
   display:flex; align-items:center;
-  font-size:var(--fs-message);
+  font-size:var(--dense-message);
   color:var(--text-body); line-height:var(--lh-snug);
 }
 
@@ -40,7 +40,7 @@ section.list > ul > li {
 /* Optional second-line detail under a point. */
 section.list > ul > li > ul { list-style:none; margin:0; padding:0; }
 section.list > ul > li > ul > li {
-  font-size:var(--fs-body-compact); color:var(--text-label);
+  font-size:var(--dense-body-compact); color:var(--text-label);
   line-height:var(--lh-snug); background:none; border:none; padding:0;
 }
 /* Default ordered: leading accent counter, content centred. */
@@ -64,7 +64,7 @@ section.list.takeaway > :is(ul,ol) > li {
   background:none; border:none; border-radius:0;
   border-bottom:1px solid var(--border);
   padding:0 var(--sp-xs);
-  font-size:var(--fs-message); font-weight:500; color:var(--text-heading);
+  font-size:var(--dense-message); font-weight:500; color:var(--text-heading);
 }
 section.list.takeaway > :is(ul,ol) > li::before { content:none; }
 section.list.takeaway > :is(ul,ol) > li::marker { content:''; }

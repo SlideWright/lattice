@@ -666,6 +666,24 @@
  * override. See engineering/decisions/2026-06-20-typography-categories.md and
  * engineering/typography.md §1. Do NOT re-add a hand-written --fs-* block here. */
 
+/* ── Dense-content type roles (derived) ─────────────────────────────────────────
+ * Content-DENSE layouts (cards-grid, actors, cards-stack, matrix-2x2, decision,
+ * compare-prose, split-compare) shed the generous portrait/square body so 4+ text
+ * cells fit the tall frame instead of clipping. The de-boost policy lives HERE,
+ * once — a named role per base size — NOT copied into each component's CSS. A new
+ * dense layout uses `var(--dense-*)`; it never re-derives the multiply.
+ * `--prose-deboost` is set deck-wide by the orientation block (lib/engine/css.js +
+ * runtime sibling): <1 in portrait/square, UNSET in landscape → fallback 1 →
+ * `calc(X * 1)` = exactly X, so every landscape export stays byte-identical.
+ * Lazy var() resolution: these reference the generated --fs-* (emitted right after
+ * this file) and resolve at the component use-site, where both are on the section.
+ * See engineering/decisions/2026-06-21-portrait-prose-deboost.md. */
+:root, section {
+  --dense-body:         calc(var(--fs-body)         * var(--prose-deboost, 1));
+  --dense-body-compact: calc(var(--fs-body-compact) * var(--prose-deboost, 1));
+  --dense-message:      calc(var(--fs-message)      * var(--prose-deboost, 1));
+}
+
 /* ── Universal theme defaults (any palette :root override wins via source order) ─
  * on-dark-* : opacity ramp for text on dark panel surfaces.
  * hljs-*    : fallback syntax palette; themes supply curated overrides.
@@ -940,7 +958,7 @@ section.actors > ol > li::marker { content:''; }
 section.actors > ul > li > strong,
 section.actors > ol > li > strong {
   grid-column:1; grid-row:1;
-  font-size:var(--fs-body);
+  font-size:var(--dense-body);
   font-weight:700;
   color:var(--text-heading);
   line-height:var(--lh-snug);
@@ -989,7 +1007,7 @@ section.actors > ul > li > ul > li,
 section.actors > ol > li > ul > li,
 section.actors > ul > li > ol > li,
 section.actors > ol > li > ol > li {
-  font-size:var(--fs-body-compact);
+  font-size:var(--dense-body-compact);
   color:var(--text-body);
   line-height:var(--lh-base);
 }
@@ -1517,6 +1535,8 @@ section.big-number > ul > li > ul > li { font-family:var(--font-body); font-size
  */
 section.cards-grid h2 { margin-bottom:var(--sp-sm); }
 section.cards-grid { display:flex; flex-direction:column; }
+/* Card title + body use the shared --dense-body role (defined once in
+ * base.tokens.css) so dense cards fit the tall frame; landscape = byte-identical. */
 /* — Marp CLI native path — */
 section.cards-grid > ul, section.cards-grid > ol {
   display:grid; grid-template-columns:1fr 1fr;
@@ -1528,7 +1548,7 @@ section.cards-grid > ul > li, section.cards-grid > ol > li {
   background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
   display:grid; grid-template-columns:1fr auto; align-content:start;
-  font-size:var(--fs-body); line-height:var(--lh-snug); font-weight:700; color:var(--text-heading);
+  font-size:var(--dense-body); line-height:var(--lh-snug); font-weight:700; color:var(--text-heading);
 }
 section.cards-grid > ul > li:last-child:nth-child(odd),
 section.cards-grid > ol > li:last-child:nth-child(odd) { grid-column:1 / -1; }
@@ -1548,7 +1568,7 @@ section.cards-grid > ol > li > code { grid-column:2; grid-row:1; align-self:base
 section.cards-grid > ul > li > ul, section.cards-grid > ul > li > ol,
 section.cards-grid > ol > li > ul, section.cards-grid > ol > li > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; grid-column:1 / -1; }
 section.cards-grid > ul > li > ul > li, section.cards-grid > ul > li > ol > li,
-section.cards-grid > ol > li > ul > li, section.cards-grid > ol > li > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
+section.cards-grid > ol > li > ul > li, section.cards-grid > ol > li > ol > li { font-size:var(--dense-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
 /* — lattice.js post-processed path — */
 section.cards-grid .cards-grid-inner,
 section.cards-grid .cards-grid-inner--ordered {
@@ -1559,7 +1579,7 @@ section.cards-grid .card {
   background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
   display:grid; grid-template-columns:1fr auto; align-content:start;
-  font-size:var(--fs-body); line-height:var(--lh-snug); font-weight:700; color:var(--text-heading);
+  font-size:var(--dense-body); line-height:var(--lh-snug); font-weight:700; color:var(--text-heading);
 }
 section.cards-grid .cards-grid-inner > .card:last-child:nth-child(odd) { grid-column:1 / -1; }
 section.cards-grid .card > strong { display:block; grid-column:1 / -1; }
@@ -1568,7 +1588,7 @@ section.cards-grid .card > code { grid-column:2; grid-row:1; align-self:baseline
   font-family:var(--pill-font); font-size:var(--pill-fs); font-weight:var(--pill-weight); letter-spacing:var(--pill-tracking); border-radius:var(--pill-radius); padding:var(--pill-pad-y) var(--pill-pad-x); white-space:nowrap;
   background:var(--bg); border-color:var(--text-muted); color:var(--text-body); }
 section.cards-grid .card > ul, section.cards-grid .card > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; grid-column:1 / -1; }
-section.cards-grid .card > ul > li, section.cards-grid .card > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
+section.cards-grid .card > ul > li, section.cards-grid .card > ol > li { font-size:var(--dense-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
 /* — numbered cards (ol): flush corner tag via absolute ::before — */
 section.cards-grid > ol { counter-reset:card; }
 section.cards-grid > ol > li {
@@ -1624,7 +1644,7 @@ section.cards-grid:not(:has(.cards-grid-inner)) > ol > li > ol { list-style:none
 section.cards-grid:not(:has(.cards-grid-inner)) > ul > li > ul > li,
 section.cards-grid:not(:has(.cards-grid-inner)) > ul > li > ol > li,
 section.cards-grid:not(:has(.cards-grid-inner)) > ol > li > ul > li,
-section.cards-grid:not(:has(.cards-grid-inner)) > ol > li > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
+section.cards-grid:not(:has(.cards-grid-inner)) > ol > li > ol > li { font-size:var(--dense-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
 /* — numbered cards (ol source, VS Code fallback) — */
 section.cards-grid:not(:has(.cards-grid-inner)) > ol { counter-reset:card; }
 section.cards-grid:not(:has(.cards-grid-inner)) > ol > li {
@@ -1737,7 +1757,7 @@ section.cards-stack .card {
   margin:0; flex:1; list-style:none;
   display:flex; flex-wrap:wrap; align-items:baseline; align-content:flex-start;
   column-gap:var(--sp-sm); row-gap:var(--sp-xs);
-  font-size:var(--fs-body); line-height:var(--lh-snug);
+  font-size:var(--dense-body); line-height:var(--lh-snug);
   font-weight:700; color:var(--text-heading);
 }
 section.cards-stack > ul > li::marker, section.cards-stack > ol > li::marker { content:''; }
@@ -1775,7 +1795,7 @@ section.cards-stack .card > ul, section.cards-stack .card > ol {
 section.cards-stack > ul > li > ul > li, section.cards-stack > ul > li > ol > li,
 section.cards-stack > ol > li > ul > li, section.cards-stack > ol > li > ol > li,
 section.cards-stack .card > ul > li, section.cards-stack .card > ol > li {
-  font-size:var(--fs-body);
+  font-size:var(--dense-body);
 }
 
 /* ── numbered cards (ol): flush corner tag — same recipe as cards-grid.
@@ -1921,7 +1941,7 @@ section.checklist > ol > li {
   background:var(--bg-alt);
   border-left:3px solid var(--border);
   border-radius:0 var(--radius-sm) var(--radius-sm) 0;
-  font-size:var(--fs-body);
+  font-size:var(--dense-body);
   font-weight:500;
   line-height:var(--lh-snug);
   color:var(--text-heading);
@@ -2310,8 +2330,12 @@ section.closing p  { color:var(--on-dark-secondary); font-size:var(--fs-message)
 /* Mirror of title: the inline-code paragraph after the heading is the
  * eyebrow, rendered visually ABOVE the heading via flex order (overriding
  * the italic subtitle rule). The heading slot is h2 — closing is a section
- * of the deck, not its document title; the lone h1 belongs to `title`. */
-section.closing h2 + p:has(> code:only-child) { order:-1; margin:0 0 0.3125cqi 0; }
+ * of the deck, not its document title; the lone h1 belongs to `title`.
+ * max-width:none — the eyebrow is a single-line label and must NOT inherit the
+ * subtitle's readable-width cap (42cqi), which the portrait type-boost overflows
+ * into a two-line wrap with a dangling separator. (title's subtitle has no cap,
+ * so its eyebrow never wrapped — this restores parity.) */
+section.closing h2 + p:has(> code:only-child) { order:-1; margin:0 0 0.3125cqi 0; max-width:none; }
 section.closing h2 + p:has(> code:only-child) > code {
   font-family: var(--font-mono);
   font-size: var(--fs-meta);
@@ -2442,12 +2466,12 @@ section.compare-prose .compare-prose-inner .card > strong { display:block; }
 section.compare-prose .compare-prose-inner .card > ul,
 section.compare-prose .compare-prose-inner .card > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; }
 section.compare-prose .compare-prose-inner .card > ul > li,
-section.compare-prose .compare-prose-inner .card > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
+section.compare-prose .compare-prose-inner .card > ol > li { font-size:var(--dense-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
 section.compare-prose .connector { display:flex; align-items:center; justify-content:center; font-size:var(--fs-h3); color:var(--text-secondary); padding:0 var(--sp-sm); flex-shrink:0; }
 .below-note { margin-top:var(--sp-sm); padding-top:var(--sp-xs); flex-shrink:0; position:relative; }
 .below-note::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(to right, var(--accent), transparent); }
-.below-note p { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-relaxed); margin:0; }
-section.compare-prose > :is(ul, ol) + p { margin-top:var(--sp-sm); padding-top:var(--sp-xs); flex-shrink:0; font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-relaxed); }
+.below-note p { font-size:var(--dense-body); color:var(--text-body); line-height:var(--lh-relaxed); margin:0; }
+section.compare-prose > :is(ul, ol) + p { margin-top:var(--sp-sm); padding-top:var(--sp-xs); flex-shrink:0; font-size:var(--dense-body); color:var(--text-body); line-height:var(--lh-relaxed); }
 
 
 /* ── COMPARISON ──────────────────────────────────────────────────────────────
@@ -2480,7 +2504,7 @@ section.compare-prose:not(:has(.compare-prose-inner)) > ol > li > ol { list-styl
 section.compare-prose:not(:has(.compare-prose-inner)) > ul > li > ul > li,
 section.compare-prose:not(:has(.compare-prose-inner)) > ul > li > ol > li,
 section.compare-prose:not(:has(.compare-prose-inner)) > ol > li > ul > li,
-section.compare-prose:not(:has(.compare-prose-inner)) > ol > li > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
+section.compare-prose:not(:has(.compare-prose-inner)) > ol > li > ol > li { font-size:var(--dense-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
 
 /* ── Compare-prose family modifiers — appended Phase 7 ──
  */
@@ -2749,7 +2773,10 @@ section.compare-prose.transition:not(:has(.compare-prose-inner)) > :is(ul, ol) >
   }
   /* one side per full-width card — its statement carries message weight, not body. */
   section.compare-prose.compare-prose:not(:has(.compare-prose-inner)) > :is(ul, ol) > li > :is(ul, ol) > li {
-    font-size: var(--fs-message);
+    /* This portrait @container override (--fs-message, statement weight) WINS over the
+     * base body rule, so the dense-prose de-boost must live here too — the base de-boost
+     * is inert in portrait. (Parallels decision.styles.css line 100.) */
+    font-size: var(--dense-message);
     line-height: var(--lh-snug);
   }
   section.compare-prose.compare-prose:not(:has(.compare-prose-inner)) > :is(ul, ol)::before {
@@ -2893,7 +2920,7 @@ section.decision > ul > li > p,
 section.decision > ol > li > p,
 section.decision > ul > li > ul,
 section.decision > ol > li > ul {
-  font-size:var(--fs-body);
+  font-size:var(--dense-body);
   line-height:var(--lh-base);
   color:var(--text-body);
   font-weight:400;
@@ -2925,7 +2952,7 @@ section.decision :is(ul,ol) > li > strong ~ * { font-weight: 400; }
   /* One option per full-width card — the justification is the card's hero, so it
      carries statement weight (--fs-message), not body weight. */
   section.decision.decision > :is(ul, ol) > li > :is(p, ul, ol) {
-    font-size: var(--fs-message);
+    font-size:var(--dense-message);
     line-height: var(--lh-snug);
   }
 }
@@ -5609,7 +5636,7 @@ section.list > :is(ul,ol) {
 section.list > :is(ul,ol) > li {
   flex:1 1 0; min-height:0;
   display:flex; align-items:center;
-  font-size:var(--fs-message);
+  font-size:var(--dense-message);
   color:var(--text-body); line-height:var(--lh-snug);
 }
 
@@ -5623,7 +5650,7 @@ section.list > ul > li {
 /* Optional second-line detail under a point. */
 section.list > ul > li > ul { list-style:none; margin:0; padding:0; }
 section.list > ul > li > ul > li {
-  font-size:var(--fs-body-compact); color:var(--text-label);
+  font-size:var(--dense-body-compact); color:var(--text-label);
   line-height:var(--lh-snug); background:none; border:none; padding:0;
 }
 /* Default ordered: leading accent counter, content centred. */
@@ -5647,7 +5674,7 @@ section.list.takeaway > :is(ul,ol) > li {
   background:none; border:none; border-radius:0;
   border-bottom:1px solid var(--border);
   padding:0 var(--sp-xs);
-  font-size:var(--fs-message); font-weight:500; color:var(--text-heading);
+  font-size:var(--dense-message); font-weight:500; color:var(--text-heading);
 }
 section.list.takeaway > :is(ul,ol) > li::before { content:none; }
 section.list.takeaway > :is(ul,ol) > li::marker { content:''; }
@@ -5735,12 +5762,12 @@ section.list-criteria > :is(ol, ul) > li::before {
 }
 section.list-criteria .crit-body {
   flex:1; display:flex; flex-direction:column; justify-content:center;
-  font-size:var(--fs-body); font-weight:700; color:var(--text-heading);
+  font-size:var(--dense-body); font-weight:700; color:var(--text-heading);
 }
 section.list-criteria .crit-body > strong { font-weight:inherit; color:inherit; }
 section.list-criteria .crit-body ul {
   list-style:none; padding:0; margin:4px 0 0 0;
-  font-size:var(--fs-body); font-weight:400; color:var(--text-body);
+  font-size:var(--dense-body); font-weight:400; color:var(--text-body);
 }
 section.list-criteria .crit-body ul li {
   font-size:inherit; font-weight:inherit; color:inherit; line-height:var(--lh-base);
@@ -5757,7 +5784,7 @@ section.list-criteria:not(:has(.crit-body)) > :is(ol, ul) > li {
 }
 section.list-criteria:not(:has(.crit-body)) > :is(ol, ul) > li::before { grid-column:1; grid-row:1 / 3; align-self:stretch; display:flex; align-items:center; justify-content:center; font-size:55cqh; }
 section.list-criteria:not(:has(.crit-body)) > :is(ol, ul) > li {
-  font-size:var(--fs-body); font-weight:700; color:var(--text-heading);
+  font-size:var(--dense-body); font-weight:700; color:var(--text-heading);
 }
 section.list-criteria:not(:has(.crit-body)) > :is(ol, ul) > li > strong {
   grid-column:2; grid-row:1; display:block;
@@ -5765,7 +5792,7 @@ section.list-criteria:not(:has(.crit-body)) > :is(ol, ul) > li > strong {
 }
 section.list-criteria:not(:has(.crit-body)) > :is(ol, ul) > li > ul {
   grid-column:2; grid-row:2; list-style:none; padding:0; margin:0;
-  font-size:var(--fs-body); font-weight:400; color:var(--text-body);
+  font-size:var(--dense-body); font-weight:400; color:var(--text-body);
 }
 section.list-criteria:not(:has(.crit-body)) > :is(ol, ul) > li > ul li { font-size:inherit; font-weight:inherit; color:inherit; line-height:var(--lh-base); }
 section.list-criteria:not(:has(.crit-body)) > :is(ol, ul) > li > ul li::before { display:none; content:none; }
@@ -5780,7 +5807,7 @@ section.list-criteria:not(:has(.crit-body)) > :is(ol, ul) > li > ul li::before {
  */
 section.list-steps h2 { margin-bottom:var(--sp-md); }
 section.list-steps ol { list-style:none; counter-reset:step-counter; display:flex; gap:var(--sp-xl); flex:1; padding:0; margin:0; align-items:stretch; }
-section.list-steps ol > li { counter-increment:step-counter; flex:1; background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:var(--sp-md); display:flex; flex-direction:column; gap:var(--sp-xs); position:relative; font-size:var(--fs-body); line-height:var(--lh-snug); font-weight:700; color:var(--text-heading); }
+section.list-steps ol > li { counter-increment:step-counter; flex:1; background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:var(--sp-md); display:flex; flex-direction:column; gap:var(--sp-xs); position:relative; font-size:var(--dense-body); line-height:var(--lh-snug); font-weight:700; color:var(--text-heading); }
 section.list-steps ol > li:not(:last-child)::after {
   content:'';
   position:absolute;
@@ -5794,11 +5821,11 @@ section.list-steps ol > li:not(:last-child)::after {
 }
 section.list-steps ol > li::before { content:'STEP ' counter(step-counter, decimal-leading-zero); font-family:var(--font-label); font-size:var(--fs-meta); font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-label); }
 section.list-steps ol > li strong { display:block; }
-section.list-steps ol > li p { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); margin:0; }
+section.list-steps ol > li p { font-size:var(--dense-body); color:var(--text-body); line-height:var(--lh-base); margin:0; }
 section.list-steps ol > li:not(:has(> ul)) > p { flex:1; }
 /* Nested list format: - body text under each step */
 section.list-steps ol > li > ul { list-style:none; padding:0; margin:0; flex:1; }
-section.list-steps ol > li > ul > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
+section.list-steps ol > li > ul > li { font-size:var(--dense-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
 section.list-steps ol > li > ul > li::before { display:none; content:none; }
 
 
@@ -5990,7 +6017,7 @@ section.list-tabular ol > li {
   padding:var(--sp-sm) 0;
   border-bottom:1px solid var(--border);
   font-family:var(--font-display);
-  font-size:var(--fs-body-compact);
+  font-size:var(--dense-body-compact);
   font-weight:700;
   color:var(--text-heading);
   letter-spacing:-0.01em;
@@ -6000,7 +6027,7 @@ section.list-tabular ol > li:first-child { border-top:1px solid var(--border); }
 section.list-tabular ol > li::before {
   content:counter(tabular-counter, decimal-leading-zero);
   font-family:var(--font-mono);
-  font-size:var(--fs-body-compact);
+  font-size:var(--dense-body-compact);
   font-weight:700;
   color:var(--accent);
   letter-spacing:0.06em;
@@ -6011,7 +6038,7 @@ section.list-tabular ol > li > ul > li::marker { content:''; }
 section.list-tabular ol > li > ul > li:first-child {
   grid-column:3; grid-row:1;
   font-family:var(--font-body);
-  font-size:var(--fs-body-compact);
+  font-size:var(--dense-body-compact);
   font-weight:400;
   color:var(--text-body);
   letter-spacing:0;
@@ -6101,7 +6128,7 @@ section.list-tabular.def ol > li > code {
 section.list-tabular.def ol > li > ul > li {
   grid-column:3; grid-row:1 / span 2;
   font-family:var(--font-body);
-  font-size:var(--fs-body-compact);
+  font-size:var(--dense-body-compact);
   font-weight:400;
   color:var(--text-body);
   line-height:var(--lh-base);
@@ -6119,7 +6146,7 @@ section.list-tabular.def.rule ol {
 section.list-tabular.metric ol > li {
   align-items:center;
   font-family:var(--font-body);
-  font-size:var(--fs-body-compact);
+  font-size:var(--dense-body-compact);
   font-weight:600;
   color:var(--text-heading);
   letter-spacing:-0.01em;
@@ -6130,7 +6157,7 @@ section.list-tabular.metric ol > li > code {
   border-radius:var(--radius-md);
   padding:0.46875cqi 1.09375cqi;
   font-family:var(--font-mono);
-  font-size:var(--fs-body-compact);
+  font-size:var(--dense-body-compact);
   font-weight:700;
   color:var(--accent);
   letter-spacing:-0.01em;
@@ -6156,7 +6183,7 @@ section.list-tabular.metric.solid ol > li > code {
 section.list-tabular.spec ol > li {
   grid-template-columns:3.4375cqi minmax(0, 20.3125cqi) minmax(0, 1fr) minmax(0, 15.625cqi);
   font-family:var(--font-mono);
-  font-size:var(--fs-body-compact);
+  font-size:var(--dense-body-compact);
   font-weight:600;
   color:var(--text-heading);
   letter-spacing:0;
@@ -6179,7 +6206,7 @@ section.list-tabular.spec.stacked ol > li {
   grid-template-columns:3.4375cqi minmax(0, 1fr) minmax(0, 15.625cqi);
   grid-template-rows:auto auto;
   row-gap:var(--sp-xs);
-  font-size:var(--fs-body-compact);
+  font-size:var(--dense-body-compact);
 }
 section.list-tabular.spec.stacked ol > li::before {
   grid-row:1 / span 2;
@@ -6204,7 +6231,7 @@ section.list-tabular.spec.stacked ol > li > code:nth-of-type(2) { grid-column:3;
 section.list-tabular.register ol > li {
   align-items:center;
   font-family:var(--font-body);
-  font-size:var(--fs-body-compact);
+  font-size:var(--dense-body-compact);
   font-weight:600;
   color:var(--text-heading);
 }
@@ -7222,7 +7249,7 @@ section.matrix-2x2 > ol > li {
   padding:var(--sp-md);
   display:flex; flex-direction:column; gap:var(--sp-xs);
   font-weight:700; color:var(--text-heading);
-  font-size:var(--fs-body);
+  font-size:var(--dense-body);
   position:relative; overflow:hidden;
 }
 /* Convention: the fourth (bottom-right) quadrant is the "outcome" cell. */
@@ -7238,7 +7265,7 @@ section.matrix-2x2 li > ol {
 }
 section.matrix-2x2 li > ul > li,
 section.matrix-2x2 li > ol > li {
-  font-size:var(--fs-body-compact);
+  font-size:var(--dense-body-compact);
   font-weight:400;
   color:var(--text-body);
   line-height:var(--lh-base);
@@ -10009,7 +10036,7 @@ section.split-compare .compare-left { width:30%; flex-shrink:0; background:var(-
 section.split-compare .compare-left::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:var(--accent); }
 section.split-compare .compare-left .frame-label { display:block; font-size:var(--fs-meta); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--on-dark-secondary); margin-bottom:var(--sp-sm); }
 section.split-compare .compare-left h2 { font-size:var(--fs-h3); color:var(--on-dark-primary); font-weight:800; line-height:var(--lh-tight); margin:0 0 var(--sp-md); }
-section.split-compare .compare-left p { font-size:var(--fs-body); font-family:var(--font-body); color:var(--on-dark-secondary); line-height:var(--lh-snug); margin:0; }
+section.split-compare .compare-left p { font-size:var(--dense-body); font-family:var(--font-body); color:var(--on-dark-secondary); line-height:var(--lh-snug); margin:0; }
 /* Bottom padding clears the footer / pagination chrome (section::after sits at
  * bottom:1.875cqi and rises ~1.2cqi) so the verdict card never bleeds into it. */
 section.split-compare .compare-right { flex:1; min-height:0; background:var(--bg); display:flex; flex-direction:column; padding:var(--sp-lg) var(--sp-xl) var(--sp-xl) var(--sp-lg); gap:var(--sp-sm); }
@@ -10021,7 +10048,7 @@ section.split-compare .option.preferred::after { content:'✧'; position:absolut
 section.split-compare .option ul { list-style:disc; padding:0 0 0 var(--sp-md); margin:0; }
 section.split-compare .option ol { list-style:decimal; padding:0 0 0 var(--sp-md); margin:0; }
 section.split-compare .option ul > li,
-section.split-compare .option ol > li { font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-body); line-height:var(--lh-snug); margin-bottom:0.46875cqi; }
+section.split-compare .option ol > li { font-size:var(--dense-body); font-family:var(--font-body); color:var(--text-body); line-height:var(--lh-snug); margin-bottom:0.46875cqi; }
 section.split-compare .option ul > li:last-child,
 section.split-compare .option ol > li:last-child { margin-bottom:0; }
 /* The verdict is the recommended-option CARD: accent-soft fill + accent
@@ -10031,7 +10058,7 @@ section.split-compare .option ol > li:last-child { margin-bottom:0; }
 section.split-compare .verdict { background:var(--accent-soft); border:1px solid var(--on-accent-soft); border-radius:var(--radius-md); padding:calc(var(--sp-xs) + 1.5625cqi) var(--sp-md) var(--sp-sm); position:relative; overflow:hidden; flex-shrink:0; }
 section.split-compare .verdict::before { content:'Recommendation'; position:absolute; top:0; left:0; padding:0.3125cqi 0.9375cqi; border-radius:var(--radius-md) 0 var(--radius-sm) 0; font-family:var(--font-mono); font-size:var(--fs-meta); font-weight:700; text-transform:uppercase; letter-spacing:0.12em; line-height:1; color:var(--on-accent); background:var(--accent); }
 section.split-compare .verdict blockquote { margin:0; padding:0; border:none; }
-section.split-compare .verdict blockquote p { font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-body); font-weight:400; line-height:var(--lh-snug); margin:0; }
+section.split-compare .verdict blockquote p { font-size:var(--dense-body); font-family:var(--font-body); color:var(--text-body); font-weight:400; line-height:var(--lh-snug); margin:0; }
 
 /* ── Reflow. Two seats, by what each targets:
  *
@@ -10688,10 +10715,15 @@ section.stats > ol > li > ul > li {
    numbers command the tall frame. A centred horizontal row crams 3–5 numbers
    small with the whole lower frame empty; stacked + enlarged (the engine's
    --stat-emphasis param, on top of --canvas-scale) reads from across a room and
-   fills the canvas. Keyed on data-orientation, so landscape is untouched. */
+   fills the canvas. `space-evenly` does the FILLING (it spreads the surplus), so
+   `gap` is only a tight FLOOR: a small floor leaves the sparse 3-stat case
+   luxuriously spread (surplus redistributed) yet lets the dense 4-stat case pack
+   to fit instead of clipping — a big floor (was --sp-2xl) overflowed 4 numbers +
+   a 2-line title at the shortest portrait (4:5). Keyed on data-orientation, so
+   landscape is untouched. */
 section.stats[data-orientation='portrait'] > ol,
 section.stats[data-orientation='square'] > ol {
-  flex-direction: column; gap: var(--sp-2xl); width: 100%; justify-content: space-evenly; flex: 1;
+  flex-direction: column; gap: var(--sp-sm); width: 100%; justify-content: space-evenly; flex: 1;
 }
 section.stats[data-orientation='portrait'] > ol > li > strong,
 section.stats[data-orientation='square'] > ol > li > strong {
@@ -10708,7 +10740,7 @@ section.stats[data-orientation='square'] > ol > li > ul > li {
  * specificity. */
 @container lattice (aspect-ratio <= 1.05) {
   section.stats.stats > ol {
-    flex-direction: column; gap: var(--sp-2xl); width: 100%; justify-content: space-evenly; flex: 1;
+    flex-direction: column; gap: var(--sp-sm); width: 100%; justify-content: space-evenly; flex: 1;
   }
   section.stats.stats > ol > li > strong {
     font-size: calc(var(--fs-h1) * var(--stat-emphasis, 1));
@@ -11309,6 +11341,11 @@ section.verdict-grid[data-orientation="portrait"] > ul {
   grid-template-columns: 1fr;
   grid-auto-rows: minmax(0, 1fr);
 }
+/* fill:center — with few cards the 1fr rows stretch tall; top-anchored content
+ * then leaves dead space at the card bottom ("a grid of boxes", forms.md §6). Centre
+ * the content block so the full-height cards read as a board deck. Portrait only;
+ * the wide 2×2 is untouched. */
+section.verdict-grid[data-orientation="portrait"] > ul > li { justify-content: center; }
 /* Box-local family reflow (2026-06-18-component-adaptive-sizing.md): tall+strip
  * (≤0.9) collapse the verdict grid to one column, keyed on the nearest `lattice`
  * container so it fires on a portrait deck AND inside a narrow nested cell. Doubled
@@ -11318,6 +11355,7 @@ section.verdict-grid[data-orientation="portrait"] > ul {
     grid-template-columns: 1fr;
     grid-auto-rows: minmax(0, 1fr);
   }
+  section.verdict-grid.verdict-grid > ul > li { justify-content: center; }
 }
 
 /* === lib/components/chart/word-cloud/word-cloud.styles.css === */
@@ -11679,6 +11717,11 @@ section p:has(> code:only-child):has(+ pre) > code {
   font-family: var(--font-label);
   font-size: var(--fs-meta);
   font-weight: 600;
+  /* Pin upright: the before-heading eyebrow is the mono-caps kicker, never the
+   * italic after-heading subtitle. Without this it inherits the host paragraph's
+   * font-style, so a component that italicises its `> p` (e.g. stats' framing
+   * line) leaked italic onto the eyebrow. */
+  font-style: normal;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--text-secondary);
@@ -15116,9 +15159,22 @@ section.form .cell-masthead {
    * naturally for a two-line title. (Was a fixed --masthead-h absolute box,
    * which left ~4-5cqi of empty band below a one-line title.) */
   display: grid;
-  grid-template-columns: [masthead-lede] 1fr [masthead-bay] auto;
+  /* Per-family slicing hook: the `standard` Frame's manifest re-slices this band
+   * to a single column (lede over bay) at `tall`/`strip` by setting --masthead-cols
+   * via the generated [data-family] rule. Default (unset / `wide`) = the authored
+   * lede ∥ bay split. WARNING: the children (.masthead-lede/.masthead-bay) place on
+   * the NAMED lines below, so any --masthead-cols override MUST re-declare both
+   * names on its track ([masthead-lede masthead-bay] 1fr) — a bare `1fr` orphans
+   * them into implicit tracks. See standard.manifest.json `slicing` + 2026-06-21-
+   * reflow-as-form-capability.md §7. */
+  grid-template-columns: var(--masthead-cols, [masthead-lede] 1fr [masthead-bay] auto);
   column-gap: var(--sp-lg);
-  align-items: start;
+  /* Baseline, not start: the bay's meta and the lede's first line (the kicker, or
+   * the title when there's no kicker) read as ONE top rail and must share a
+   * baseline. `start` aligned the columns' top EDGES, so the differing kicker/meta
+   * metrics left the meta floating above the kicker — a visible misalignment,
+   * worst in portrait. Picked over start/end/center after a 5-variant review. */
+  align-items: baseline;
   margin-bottom: var(--sp-md);
   padding-bottom: var(--sp-md);
   border-bottom: 1px solid var(--border);
@@ -16337,6 +16393,10 @@ section .taskTextOutsideLeft, section .taskTextOutsideRight { fill: var(--text-h
 }
 #lattice-fluid-toggle:hover,
 #lattice-fluid-toggle:focus-visible { opacity: 1; }
+
+/* === generated: Form per-family slicing (frame manifests `slicing`) === */
+section.form[data-family="tall"] .cell-masthead { --masthead-cols: [masthead-lede masthead-bay] 1fr; }
+section.form[data-family="strip"] .cell-masthead { --masthead-cols: [masthead-lede masthead-bay] 1fr; }
 
 /* === default palette: themes/cuoio.css (engine import resolved) === */
 /* Zero-specificity light default — see the long comment in the next
