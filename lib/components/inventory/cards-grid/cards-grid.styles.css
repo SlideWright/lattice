@@ -10,8 +10,6 @@
  */
 section.cards-grid h2 { margin-bottom:var(--sp-sm); }
 section.cards-grid { display:flex; flex-direction:column; }
-/* Card title + body use the shared --dense-body role (defined once in
- * base.tokens.css) so dense cards fit the tall frame; landscape = byte-identical. */
 /* — Marp CLI native path — */
 section.cards-grid > ul, section.cards-grid > ol {
   display:grid; grid-template-columns:1fr 1fr;
@@ -23,7 +21,7 @@ section.cards-grid > ul > li, section.cards-grid > ol > li {
   background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
   display:grid; grid-template-columns:1fr auto; align-content:start;
-  font-size:var(--dense-body); line-height:var(--lh-snug); font-weight:700; color:var(--text-heading);
+  font-size:var(--fs-body); line-height:var(--lh-snug); font-weight:700; color:var(--text-heading);
 }
 section.cards-grid > ul > li:last-child:nth-child(odd),
 section.cards-grid > ol > li:last-child:nth-child(odd) { grid-column:1 / -1; }
@@ -43,7 +41,7 @@ section.cards-grid > ol > li > code { grid-column:2; grid-row:1; align-self:base
 section.cards-grid > ul > li > ul, section.cards-grid > ul > li > ol,
 section.cards-grid > ol > li > ul, section.cards-grid > ol > li > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; grid-column:1 / -1; }
 section.cards-grid > ul > li > ul > li, section.cards-grid > ul > li > ol > li,
-section.cards-grid > ol > li > ul > li, section.cards-grid > ol > li > ol > li { font-size:var(--dense-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
+section.cards-grid > ol > li > ul > li, section.cards-grid > ol > li > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
 /* — lattice.js post-processed path — */
 section.cards-grid .cards-grid-inner,
 section.cards-grid .cards-grid-inner--ordered {
@@ -54,7 +52,7 @@ section.cards-grid .card {
   background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
   display:grid; grid-template-columns:1fr auto; align-content:start;
-  font-size:var(--dense-body); line-height:var(--lh-snug); font-weight:700; color:var(--text-heading);
+  font-size:var(--fs-body); line-height:var(--lh-snug); font-weight:700; color:var(--text-heading);
 }
 section.cards-grid .cards-grid-inner > .card:last-child:nth-child(odd) { grid-column:1 / -1; }
 section.cards-grid .card > strong { display:block; grid-column:1 / -1; }
@@ -63,7 +61,7 @@ section.cards-grid .card > code { grid-column:2; grid-row:1; align-self:baseline
   font-family:var(--pill-font); font-size:var(--pill-fs); font-weight:var(--pill-weight); letter-spacing:var(--pill-tracking); border-radius:var(--pill-radius); padding:var(--pill-pad-y) var(--pill-pad-x); white-space:nowrap;
   background:var(--bg); border-color:var(--text-muted); color:var(--text-body); }
 section.cards-grid .card > ul, section.cards-grid .card > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; grid-column:1 / -1; }
-section.cards-grid .card > ul > li, section.cards-grid .card > ol > li { font-size:var(--dense-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
+section.cards-grid .card > ul > li, section.cards-grid .card > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
 /* — numbered cards (ol): flush corner tag via absolute ::before — */
 section.cards-grid > ol { counter-reset:card; }
 section.cards-grid > ol > li {
@@ -119,7 +117,7 @@ section.cards-grid:not(:has(.cards-grid-inner)) > ol > li > ol { list-style:none
 section.cards-grid:not(:has(.cards-grid-inner)) > ul > li > ul > li,
 section.cards-grid:not(:has(.cards-grid-inner)) > ul > li > ol > li,
 section.cards-grid:not(:has(.cards-grid-inner)) > ol > li > ul > li,
-section.cards-grid:not(:has(.cards-grid-inner)) > ol > li > ol > li { font-size:var(--dense-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
+section.cards-grid:not(:has(.cards-grid-inner)) > ol > li > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
 /* — numbered cards (ol source, VS Code fallback) — */
 section.cards-grid:not(:has(.cards-grid-inner)) > ol { counter-reset:card; }
 section.cards-grid:not(:has(.cards-grid-inner)) > ol > li {

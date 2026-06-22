@@ -27,21 +27,6 @@ in patch versions.
 
 ### Fixed
 
-- **Portrait/square decks no longer clip content in dense layouts.** The tall-frame
-  body type scale (curated generous, for sparse hero slides) overflowed
-  content-dense layouts, clipping the slide title and the last item: cards-grid,
-  actors, cards-stack, matrix-2x2, decision, compare-prose, split-compare, and the
-  list family (list, list-steps, checklist, list-criteria, list-tabular) were
-  affected. A new deck-wide `--prose-deboost` token (0.66 portrait, 0.8 square)
-  shrinks **only** the dense body prose in those families; hero elements (the slide
-  title, stat numbers) keep full size. The de-boost is applied **once, centrally** —
-  three derived dense-content roles (`--dense-body` / `--dense-body-compact` /
-  `--dense-message` in `base.tokens.css`) that families reference, not a per-component
-  patch. Landscape leaves the token unset, so every
-  landscape export stays byte-identical. `pricing` is a known exception — its three
-  stacked tiers overflow on spacing, not type, and need a separate compact-reflow
-  pass. See `engineering/decisions/2026-06-21-portrait-prose-deboost.md`.
-
 - **A 4th stat no longer clips off a portrait `stats` slide.** Portrait stats stacks
   and *enlarges* the hero numbers; the stack's `gap` was `--sp-2xl`, but with
   `space-evenly` the gap is only a floor — an over-large floor pushed a 4th enlarged
