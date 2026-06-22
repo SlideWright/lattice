@@ -47,7 +47,7 @@ section.actors > ol > li::marker { content:''; }
 section.actors > ul > li > strong,
 section.actors > ol > li > strong {
   grid-column:1; grid-row:1;
-  font-size:calc(var(--fs-body) * var(--prose-deboost, 1)); /* dense-prose de-boost: fits the tall frame in portrait/square; landscape fallback 1 = byte-identical */
+  font-size:var(--dense-body);
   font-weight:700;
   color:var(--text-heading);
   line-height:var(--lh-snug);
@@ -96,7 +96,7 @@ section.actors > ul > li > ul > li,
 section.actors > ol > li > ul > li,
 section.actors > ul > li > ol > li,
 section.actors > ol > li > ol > li {
-  font-size:calc(var(--fs-body-compact) * var(--prose-deboost, 1)); /* dense-prose de-boost (see card title above) */
+  font-size:var(--dense-body-compact);
   color:var(--text-body);
   line-height:var(--lh-base);
 }

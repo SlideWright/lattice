@@ -50,24 +50,38 @@ section { … --prose-deboost: <0.66 portrait | 0.8 square>; … }
 
 Landscape emits **nothing** (the orientation block is empty), so consumers reading
 `var(--prose-deboost, 1)` fall back to `1` and every landscape export is
-byte-identical. Dense families multiply their card/item **title + body** font by
-the token:
+byte-identical. The values are curated flat-per-orientation (like `--stat-emphasis`),
+tuned against the worst case (4:5, the shortest portrait); taller frames (story,
+mobile) get more margin. 0.66 brings the generous portrait body back to ~1.25× the
+landscape base — readable, and four dense cards fit.
+
+**The de-boost is applied ONCE, centrally — not per component** (this is the
+resolution of the red-team's per-family-patch finding). `base.tokens.css` defines
+three derived **dense-content roles** off the canonical `--fs-*` set:
 
 ```css
-font-size: calc(var(--fs-body) * var(--prose-deboost, 1));
+:root, section {
+  --dense-body:         calc(var(--fs-body)         * var(--prose-deboost, 1));
+  --dense-body-compact: calc(var(--fs-body-compact) * var(--prose-deboost, 1));
+  --dense-message:      calc(var(--fs-message)      * var(--prose-deboost, 1));
+}
 ```
 
-The values are curated flat-per-orientation (like `--stat-emphasis`), tuned against
-the worst case (4:5, the shortest portrait); taller frames (story, mobile) get more
-margin. 0.66 brings the generous portrait body back to ~1.25× the landscape base —
-readable, and four dense cards fit.
+Dense families reference the matching role (`font-size: var(--dense-body)`); they
+never re-derive the multiply. Naming is *outside* the closed `--fs-*` namespace
+(HARD RULE #4 — the 12 type roles are sealed); these are a **derived adjustment** of
+existing roles, not new roles. A new dense layout opts in by using `var(--dense-*)`
+— no new CSS logic, and the de-boost factor is tuned in one place. Each family keeps
+its own base size in landscape (cards → body, actors → body-compact, statement
+overrides → message), so the cross-family size differences that pre-exist in
+landscape are preserved (intentional: dense-compact vs dense-prose), now *named*.
 
 ## Where it applies (and a cascade footgun)
 
-Consumers: **cards-grid** (reference, via a local `--_fs-card`), **actors**,
-**cards-stack**, **matrix-2x2**, **decision**, **compare-prose**, **split-compare**
-(the last also de-boosts its hero-band *intro* line so the verdict clears; the
-display `h2` stays hero-sized). `q-and-a` already fit and is untouched.
+Consumers: **cards-grid** (reference), **actors**, **cards-stack**, **matrix-2x2**,
+**decision**, **compare-prose**, **split-compare** (the last also de-boosts its
+hero-band *intro* line so the verdict clears; the display `h2` stays hero-sized).
+`q-and-a` already fit and is untouched.
 
 **Footgun:** a family with a portrait `@container` body override must de-boost
 **that** rule, not just the base body — the override wins in portrait and the base
