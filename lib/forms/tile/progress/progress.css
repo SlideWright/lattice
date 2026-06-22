@@ -4,20 +4,14 @@
  * same cascade slot these rules held in base.variants.css. The footer Cell's
  * `section.form.has-progress > footer` yield rule (how the footer makes room for
  * this rail) is the footer Cell's concern and stays in base.variants.css. */
+/* Appearance only — the progress-centre Cell (lib/forms/cell/progress-centre)
+ * owns POSITION (so the rail is an independently-movable Cell). The dots + label
+ * lay out right-aligned, so the group hugs the page number to its right. */
 section.form .tile-progress {
-  position: absolute;
-  bottom: var(--frame-inset-y);
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 3;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
   gap: var(--sp-sm);
-  /* The reserved centre zone — the rail lives inside it and never spills into
-     footer-left or pagination. */
-  max-width: var(--footer-centre-w);
-  pointer-events: none;
 }
 .tile-progress .seg {
   font-family: var(--font-label);

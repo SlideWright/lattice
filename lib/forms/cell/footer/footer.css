@@ -14,9 +14,9 @@
  * widths are the --footer-centre-w/-half tokens defined on the root in
  * lib/forms/cell/stage/stage.css. (Non-form decks keep the full-width footer —
  * this is scoped to section.form.) */
-section.form.has-progress > footer {
-  /* Yield to the reserved centre zone ONLY when a progress rail is present
-   * (the injectors add `has-progress`); a rail-less form slide keeps the
-   * default full-width footer. Right edge = 50% + half the centre zone + gap. */
-  right: calc(50% + var(--footer-centre-half) + var(--sp-md));
-}
+/* The footer band's three zones are now INDEPENDENTLY-positioned Cells
+ * (footer-left · progress-centre · pagination-right), each token-driven for free
+ * relocation (design/forms.md §7.3) — so the old magic-number "yield" that made
+ * the left text dodge a centred rail is retired: the rail no longer sits in the
+ * centre, and footer-left is width-bounded on its own side
+ * (lib/forms/cell/footer-left). No shared-band rule remains here. */

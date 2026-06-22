@@ -8,5 +8,5 @@
   "fill": "end",
   "gap": "--footer-centre-half",
   "clip": true,
-  "css": false
+  "css": true
 }
