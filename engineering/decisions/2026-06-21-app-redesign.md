@@ -7,7 +7,7 @@ summary: Unify Playground + Drawing Board + Workbench into one Studio — one ap
 
 > Status: **PLAN — awaiting author approval (of Win 0 only; see §11.5 PM-2).** No
 > production code has moved. Read **§0 (ratified forks)** for what the author
-> chose, then **§11.5 (pre-mortem)** for the kill-criteria that constrain it — a
+> chose, then **§11.5 (pre-mortem)** + the **§16 amendment** (v2→v3 shell) for the kill-criteria that constrain it — a
 > few PM-# override the §0 defaults. The rest is reasoning and build order. This continues the work in
 > `2026-06-09-shadcn-migration.md` (now landed): that effort gave us the
 > *component spine* (React + Tailwind v4 + shadcn, the token bridge, the shared
@@ -200,31 +200,27 @@ three routes; the redesign makes them three *intents* of one workspace, sharing
 identity, chrome, and the deck under the cursor.
 
 ```
-┌──────────────────────────────────────────────────────────────────────┐
-│  Lattice   [ Compose · Present · Fabricate ]    search · palette · Share · ⚙ · acct │  ← global bar (intent TABS)
-├──────────────────────────────────────────────────────────────────────┤
-│  [◧ Deck title ▾]   …context actions for the active intent…      [ Deck ▸] │  ← deck-context bar
-├─────────────────────────────────────────────────────────┬─────────┤
-│                                                         │  Deck   │
-│                    work surface                         │ Inspector│
-│      (Compose: editor+preview · Present: reader ·       │ (this   │
-│       Fabricate: theme/layout studio)                   │  deck)  │
-└─────────────────────────────────────────────────────────┴─────────┘
-   ↑ top tabs = intent switch (PM-5: DECIDED v2)     ↑ collapsed by default (PM-4)
+┌──────────────────────────────────────────────────────────────────────────┐
+│ L Lattice ▾   Deck ▾   …   ⌘K · 🎨 · ▶Present · Share · ▤ ▥ · ⚙ · acct │  ← ONE ~54px bar (v3, §17)
+├──────────────────────────────────────────────────────────────────┬─────┤
+│  Architect │  Edit (+Insert ✶Reshape)  │   Preview (16:9, big)    │ Deck│
+│  (toggle)  │                           │                          │ ▕rail│  ← Inspector collapsed (PM-4/VR-4)
+└────────────┴───────────────────────────┴──────────────────────────┴─────┘
+   ↑ brand = launcher (Decks · Fabricate · New)     ▶ Present = a verb, not a tab (§17 W-4)
 ```
 
 ### 2.1 The four shell elements
 
-- **Top-tab intent bar (PM-5 — DECIDED: v2 / tabs; see §15).** The click-minimizer
-  and the "where am I" anchor. A horizontal tab strip in the global top bar
-  switches the primary intent — **Compose · Present · Fabricate** (a future
-  **Library** would join as a 4th tab) — with Workspace Settings + account in the
-  same bar's right cluster. On **mobile** it becomes a thumb-reach **bottom intent
-  bar**; on **tablet** it stays top (icon+label, degrading to icon-only). This
-  *replaces* the nav "Tools" disclosure and every per-app navigation idiom with one
-  consistent control. (The rejected alternative — a left VS-Code-style activity
-  rail, `mockups/v1-rail/` — scored lower on every device lens except future
-  scalability; §15.)
+- **One lean top bar (PM-5 → v3 / §16, refined by the §17 red-team).** **Compose
+  is home; `▶ Present` is a verb** — a button that enters the full-screen
+  reader/presentation and exits (not a persistent toggle, §17 W-4). The **brand is
+  a launcher** opening Decks · **Fabricate (Theme & Layout Studio)** · New — so
+  Fabricate stays discoverable without being a false deck-mode peer (§17 W-2). One
+  ~54px bar, same on desktop/tablet/mobile (no top↔bottom relocation). This
+  *replaces* the nav "Tools" disclosure and every per-app navigation idiom.
+  (History: v2 = two-row tab header → §16 red-team → v3 lean bar → §17 red-team →
+  Present-as-Play + launcher. Superseded mockups: `v2-tabs/`, `v1-rail/`; the
+  canonical shell is `v3/`.)
 - **AppBar (top, slotted, context-sensitive).** *One* bar, three slots:
   - **Left = deck identity + switcher.** The current deck's title; click to
     switch / new / rename (replaces the Drawing Board's Decks-drawer gateway).
@@ -635,7 +631,7 @@ what the author chose, PM-# records what the red-team proved we must constrain).
 | PM-2 | **Plan-approval authorizes only a de-risking *spike*, not Wins 1–8.** Prove the three-bus adapter on the *simplest* surface (Playground) against a written kill-criterion before committing the program. | **new Win 0; re-scopes §0-4** |
 | PM-3 | **Wins 1–3 stand alone; pause & *measure* before 4–8.** Stop after 3 = strictly ahead, never mid-rewrite. | sequencing gate |
 | PM-4 | **The preview is sacred — Inspector collapsed-by-default**, summoned not resident; gate that the preview never drops below a legible threshold. | **flips §0-2 / §4.1 default** |
-| PM-5 | **Intent switch = top-tabs, not a rail. RATIFIED (author, 2026-06-21): v2 / tabs** — it wins the desktop, tablet, and mobile lenses (§15); the rail's only edge (scaling past ~5 intents) doesn't bind at three (+ a possible Library = 4). | **resolved → §15** |
+| PM-5 | **Intent switch = top-tabs, not a rail (ratified v2); then hardened to the v3 lean shell** — one ~54px bar, a compact Compose⇄Present toggle, Fabricate re-housed (§16). Tabs beat the rail on every §15 lens; the v2 red-team then beat v2's *two-row* form on vertical budget. | **resolved → §15 + §16** |
 | PM-6 | **Lenses never silently mutate or silently stale** — explicit regenerate, loud staleness badge, never auto-regenerate before Present. | strengthens RD4 / §6.2 |
 | PM-7 | **Read-aloud is feasibility-spiked before roadmapped** — no word-level promise until timing-mark emission is proven; else sentence-level via duration estimate, or cut. | gates Win 6 / §6.1 |
 | PM-8 | **Auth path is immovable infra** — pinned + a real-connect integration test before any route work. | strengthens RD9 |
@@ -644,6 +640,7 @@ what the author chose, PM-# records what the red-team proved we must constrain).
 | PM-11 | **Optimize per-persona, not uniformly** — density for the author, low-load for the recipient; "minimize clicks" is a *reader* goal, not universal. | scopes the headline goal |
 | PM-12 | **Mockups are zero-behavior specs** — they never set the schedule; each is paired with its integration cost. | framing |
 | PM-13 | **Never signal status / severity / intent by colour alone (WCAG 1.4.1).** Pair every such cue with a **shape-distinct icon + text** corner tag — circle-✓ `READY` · triangle-! `REVIEW` · octagon-× `FIX` · circle-i `INFO` — verified to read in greyscale and across the CVD palettes. Colour reinforces; it never carries the meaning. | author-raised; new convention |
+| PM-14 | **Stop refining mockups — the next dollar buys evidence, not v4.** The v1→v2→v3 inversion loop hit negative returns once critiques became "needs a user to know" (§17 W-8). Freeze v3 as the *starting hypothesis*; carry the unresolved v3 critiques (W-1/3/5/6/7) as **Win-0 acceptance checks**, not redesigns. The next artifact is running code. | author-requested red-team; stop rule |
 
 **Net:** inversion does not kill the plan; it demotes "merge → start Win 1" to
 "merge as *direction* → buy evidence first" (PM-2). The load-bearing risk
@@ -709,7 +706,7 @@ merge-authorization gate (CLAUDE.md), then post the standup.
 1. **Intent switch — RESOLVED (author, 2026-06-21): v2 / top tabs.** Scored across
    all three device lenses in §15; tabs win desktop, tablet, and mobile, and the
    rail's only edge (scaling past ~5 intents) doesn't bind at three (+ a possible
-   Library = a 4th tab). Implementation uses the top-tab shell.
+   Library = a 4th tab). Implementation uses the v3 lean shell (a compact Compose⇄Present toggle in one top bar; Fabricate in the ⚙ Workspace menu) — the v2 two-row tab header was hardened by the §16 red-team.
 2. **Inspector default: collapsed (recommended, per PM-4) vs resident.** The
    preview is sacred; the Inspector should summon, not sit. Confirm collapsed-by-
    default (it overrides the "persistent" wording in §0-2 / §4.1).
@@ -785,9 +782,24 @@ merge-authorization gate (CLAUDE.md), then post the standup.
   three. §13-1 marked resolved, PM-5 updated, §2.1 + the shell diagram rewritten to
   the top-tab shell, the `StudioShell` contract de-railed. v2 is the implementation
   shell; v1/rail retained as the documented rejected alternative.
-- _pending_ — Author approval (per PM-2, of **Win 0 only**). Intent-switch shell
-  **resolved → v2 tabs** (§15). Still open: Inspector default (PM-4, leans
-  collapsed), Library placement, route-collapse timing, app-palette-vs-deck-theme.
+- 2026-06-21 — **v2 red-team → v3 lean shell (author-requested, §16).** Munger
+  inversion of the *ratified v2* exposed V-1…V-9 (the two-row header spends the
+  scarce vertical budget; Fabricate is a false peer tab; §15's rigor was thin).
+  Amended via VR-1…VR-7: **one ~54px top bar**, a compact **Compose⇄Present**
+  toggle, **Fabricate re-housed** to the ⚙ Workspace menu, Inspector **collapsed to
+  a rail** (bigger preview), one metaphor across devices. v3 mocked at all three
+  widths (`mockups/v3/`); §2.1 + the shell diagram + PM-5 + §13-1 repointed. v3
+  supersedes v2 as the implementation shell.
+- 2026-06-21 — **v3 red-team → §17 + PM-14 (stop rule).** Inverting v3 surfaced
+  W-1…W-8; the meta-finding (W-8) is that the mockup-inversion loop hit negative
+  returns. Resolved two model forks by judgment — **Present-as-Play** (W-4; Present
+  is a verb, the `Compose|Present` toggle retired) and **Fabricate in a discoverable
+  brand-launcher menu** (W-2) — reconciled the canonical `v3/v3-compose.png` once,
+  and **froze the shell (PM-14): no v4**; W-1/3/5/6/7 become Win-0 acceptance
+  checks. §2.1 + diagram updated.
+- _pending_ — Author approval (per PM-2, of **Win 0 only**). Shell **frozen at v3**
+  (Present-as-Play + launcher; §17/PM-14). Still open: Library placement,
+  route-collapse timing, app-palette-vs-deck-theme — all decidable in-build.
 
 ## 15. Appendix — intent-switch decision (PM-5), scored
 
@@ -817,3 +829,109 @@ choice 6 (future intents); at three intents — plus a possible **Library** as a
 4th tab — that edge doesn't bind. **Ratified: v2 / top tabs is the implementation
 shell.** The v1-rail mockups are retained under `mockups/v1-rail/` as the rejected
 alternative.
+
+## 16. Amendment — red-team of v2 → v3 (the lean shell)
+
+Munger inversion applied to the *just-ratified v2 shell* (author-requested). v2
+won the §15 lenses, but those lenses were generic; inverting v2 specifically
+("12 months on, the **top-tab** shell is what we're ripping out — why?") exposed
+that **v2 is the *heavy* tabs design**. The findings and the guardrails that
+amend it:
+
+**How v2 specifically fails**
+
+- **V-1 — Wrong axis.** v2's two-row header spends ~100px of *vertical* on a tool
+  whose job is a 16:9 preview; the rail spent *horizontal* (cheap on wide screens).
+  v2 has ~46px more top chrome than v1 before the slide. §15 never weighted preview
+  budget — the variable that should dominate a slide tool.
+- **V-2 — Prominence ≠ frequency.** Intent-switching is rare (you pick Compose and
+  stay), yet tabs give it the loudest slot while the constantly-used deck actions
+  drop to row two.
+- **V-3 — Tabs imply peers; the intents are a pipeline.** Compose→Present→Fabricate
+  is a lifecycle, not parallel sections you bounce between.
+- **V-4 — Fabricate isn't a deck mode.** Compose/Present are about *a deck*;
+  Fabricate is about *themes/components* (no deck). v2's deck-context row sits,
+  contradictorily, under a non-deck tab.
+- **V-5 — Two metaphors for one control:** top tabs on desktop, bottom bar on
+  mobile — the switch relocates top↔bottom across devices.
+- **V-6 — Re-created the multi-bar problem** (§1.2) we set out to kill, stacked
+  vertically (row 1 + row 2 + ⌘K + pane headers).
+- **V-7 — Closer scalability cliff** than admitted: 4 icon+label tabs (~440px)
+  share the bar with brand + ⌘K + chrome → icon-only tabs at laptop widths.
+- **V-8 — Brochure signal:** Playfair wordmark + avatar read marketing-site, not
+  pro instrument; eat bar width.
+- **V-9 — False rigor:** §15's uniform weights manufactured a mandate from a
+  ~0.3-pt gap on invented 1–5 scores, and omitted V-1 (preview budget).
+
+**Guardrails that amend v2 → v3** (binding):
+
+| # | Guardrail | Fixes |
+|---|---|---|
+| VR-1 | **One top row in the steady state**, ~54px; deck-context actions move to the pane header / appear contextually. | V-1, V-6 |
+| VR-2 | **Intent switch = a compact segmented control**, not a full-width tab strip; deck actions stay most prominent. | V-2, V-7 |
+| VR-3 | **Re-house Fabricate** out of the deck-lifecycle set: the switch is **Compose ⇄ Present** (the deck's two modes); Fabricate is launched from the Workspace (⚙) menu. | V-3, V-4 |
+| VR-4 | **Preview-size is a scored gate** — the 16:9 preview must hold ≥ a legible threshold at 1280×800; Inspector **collapses to a rail** by default to honour it. | V-1, V-9 |
+| VR-5 | **One intent-switch metaphor across devices** — the Compose⇄Present segmented control sits in the top bar on desktop, tablet, *and* mobile (no bottom bar). | V-5 |
+| VR-6 | **Density over flourish** in the bar — brand mark-only at narrow widths; avatar earns space only with accounts. | V-8 |
+| VR-7 | **§15 is directional, not decisive** — the tie-breaker is VR-4 (preview budget), which the lean shell wins. | V-9 |
+
+**v3 — the resolved shell.** A single ~54px top bar: brand mark · **`Compose |
+Present`** compact toggle · deck switcher · ⌘K · palette · Share · Architect/Inspector
+panel toggles · ⚙ Workspace (holds Fabricate + Settings) · avatar. Insert/Reshape
+live in the editor pane header; the **Deck Inspector is collapsed to a rail** so the
+preview reclaims the width. Mocked at all three widths:
+[`mockups/v3/`](./2026-06-21-app-redesign/mockups/v3/) — `v3-compose.png` (1440),
+`v3-tablet.png` (1180), `v3-mobile.png` (390). **v3 supersedes v2 as the
+implementation shell; v2-tabs/v1-rail are retained as superseded references.**
+
+## 17. Red-team of v3 + the stop rule (PM-14)
+
+Munger inversion of v3 ("12 months on, the lean shell is what we regret — why?").
+It found real but mostly *second-order* issues — and, more importantly, that the
+inversion loop itself had become the risk.
+
+**How v3 fails**
+
+- **W-1 — Fixed vertical by overcrowding horizontal.** ~10 controls in one ~54px
+  bar overflow at 1280px + a long deck title → forced icon-only (the V-7
+  discoverability loss, self-inflicted).
+- **W-2 — Burying Fabricate in a ⚙ menu** hides a flagship and demotes a ratified
+  intent; the brand-steward persona never discovers it. **→ resolved (see below).**
+- **W-3 — Inspector-collapsed-by-default punishes the daily author** (constant
+  theme/size changes) and hides **Lenses** behind a click.
+- **W-4 — v3 only half-fixed the pipeline problem:** a persistent `Compose|Present`
+  toggle still implies Present is a place you *dwell*, when it's a *verb* (enter a
+  takeover, exit). **→ resolved (see below).**
+- **W-5 / W-6 — Density bit back:** unlabeled panel-toggle icons (guess-the-glyph);
+  Insert/Reshape demoted into a low-salience pane header.
+- **W-7 — Cross-device sameness (VR-5) cost mobile thumb-reach** (toggle moved to
+  the hardest-to-reach top).
+- **W-8 — The meta-failure (the one that matters):** v1→v2→v3, each inversion
+  overturning the last, **all on static mockups with zero user contact**. The real
+  unknowns (three-bus adapter, TTS timing marks, whether users feel the hypothesised
+  load) don't move on paper. Inverting the *process*: we fail **by never shipping
+  anything to learn from.**
+
+**Two forks resolved now (best judgment), the rest deferred to the build:**
+
+- **W-4 → Present-as-Play (adopted).** Compose is *home*; **Present is a verb** — a
+  `▶ Present` action that enters the full-screen reader/presentation and exits.
+  Removes the false-sibling toggle and a bar element. (Refines §16's
+  `Compose|Present` toggle.)
+- **W-2 → Fabricate gets a discoverable, labelled home in the brand *launcher*
+  menu** (Decks · **Fabricate — Theme & Layout Studio** · New), *not* the settings
+  gear. Discoverable for the brand steward; still not a false deck-mode peer.
+- **W-1, W-3, W-5, W-6, W-7 → Win-0 / early-build validation gates, not redesigns:**
+  bar must not overflow at 1280px + 40-char title (W-1); Inspector default +
+  Lenses access tested per-persona and likely *remembered per user* (W-3); label
+  the panel toggles (W-5); keep Insert top-level/prominent (W-6); re-test mobile
+  one-handed reach on a real device (W-7). These need a prototype and a user — they
+  are *unresolvable on paper.*
+
+**PM-14 — STOP refining mockups; the next dollar buys evidence, not v4.** The
+inversion's returns went negative once v3 critiques became "needs a user to know."
+v3 (with the two resolutions above) is **frozen as the starting hypothesis.** The
+canonical desktop mockup (`v3/v3-compose.png`) is reconciled to it once; tablet +
+mobile inherit the same pattern (Present button + launcher) and are **not** re-cut.
+**No v4.** The next artifact is running code — **Win 0** (the de-risking spike,
+PM-2), whose acceptance checks now also carry W-1/3/5/6/7.
