@@ -27,6 +27,17 @@ in patch versions.
 
 ### Changed
 
+- **The `kanban` board is redesigned to spend colour on STATUS, not category.**
+  The default board is now a calm grid of uniform, elevated, neutral cards
+  ("premium card"): the per-card lane gradient, the 3px coloured left stripe, the
+  colour dot, and the bordered size chip are gone, and colour on the card surface
+  is reserved for the status vocabulary — so a flagged card is the focal point
+  instead of a paint-swatch patchwork. Category colour coding is retained as **two
+  opt-in variants** (a new "Colour coding" axis): `keyline` colour-codes each card
+  by category with a single crisp left edge, and `tinted` colour-codes the columns
+  by pipeline stage. Pure CSS + manifest change — no DOM/authoring change, so every
+  existing kanban deck re-renders into the calm default with no edits. See
+  `engineering/decisions/2026-06-22-kanban-chart-redesign.md`.
 - **Breaking: the `gantt` authoring contract is redesigned — typed tokens, a
   continuous time axis, milestones, and dependencies.** The nested-list shape is
   unchanged (lane → task), but the inline-code tokens are now *typed and
