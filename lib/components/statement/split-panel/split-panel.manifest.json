@@ -1,7 +1,7 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "split-panel",
-  "adapt": { "mode": "reflow" },
+  "adapt": { "mode": "reflow", "priority": ["heading", "lede", "points", "eyebrow"] },
   "function": "statement",
   "form": "panel",
   "substance": "structure",

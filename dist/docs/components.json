@@ -657,7 +657,15 @@
         "strip"
       ],
       "adapt": {
-        "mode": "native"
+        "mode": "native",
+        "priority": [
+          "number",
+          "caption",
+          "eyebrow"
+        ],
+        "keepTogether": [
+          "number+caption"
+        ]
       },
       "tags": [
         "hero-number",
@@ -1455,7 +1463,12 @@
         "strip"
       ],
       "adapt": {
-        "mode": "native"
+        "mode": "native",
+        "priority": [
+          "heading",
+          "subtitle",
+          "eyebrow"
+        ]
       },
       "tags": [
         "summary",
@@ -1585,7 +1598,11 @@
         "strip"
       ],
       "adapt": {
-        "mode": "native"
+        "mode": "native",
+        "priority": [
+          "title",
+          "code"
+        ]
       },
       "tags": [
         "snippet",
@@ -1711,7 +1728,15 @@
         "square"
       ],
       "adapt": {
-        "mode": "single-orientation"
+        "mode": "single-orientation",
+        "priority": [
+          "title",
+          "left",
+          "right"
+        ],
+        "keepTogether": [
+          "left+right"
+        ]
       },
       "tags": [
         "snippet",
@@ -1998,7 +2023,14 @@
         "square"
       ],
       "adapt": {
-        "mode": "single-orientation"
+        "mode": "single-orientation",
+        "priority": [
+          "title",
+          "table"
+        ],
+        "keepTogether": [
+          "row"
+        ]
       },
       "tags": [
         "tradeoff",
@@ -2419,7 +2451,12 @@
         "strip"
       ],
       "adapt": {
-        "mode": "reflow"
+        "mode": "reflow",
+        "priority": [
+          "title",
+          "mermaid",
+          "subtitle"
+        ]
       },
       "tags": [
         "flowchart",
@@ -2555,7 +2592,11 @@
         "strip"
       ],
       "adapt": {
-        "mode": "native"
+        "mode": "native",
+        "priority": [
+          "heading",
+          "eyebrow"
+        ]
       },
       "tags": [
         "section-break",
@@ -2682,7 +2723,12 @@
         "strip"
       ],
       "adapt": {
-        "mode": "reflow"
+        "mode": "reflow",
+        "priority": [
+          "title",
+          "stages",
+          "detail"
+        ]
       },
       "tags": [
         "percentage",
@@ -2819,7 +2865,12 @@
         "strip"
       ],
       "adapt": {
-        "mode": "reflow"
+        "mode": "reflow",
+        "priority": [
+          "title",
+          "tasks",
+          "detail"
+        ]
       },
       "tags": [
         "swimlane",
@@ -3091,7 +3142,12 @@
         "strip"
       ],
       "adapt": {
-        "mode": "reflow"
+        "mode": "reflow",
+        "priority": [
+          "image",
+          "heading",
+          "body"
+        ]
       },
       "tags": [
         "visual",
@@ -3235,7 +3291,11 @@
         "strip"
       ],
       "adapt": {
-        "mode": "reflow"
+        "mode": "reflow",
+        "priority": [
+          "heading",
+          "sections"
+        ]
       },
       "tags": [
         "process",
@@ -3365,7 +3425,11 @@
         "square"
       ],
       "adapt": {
-        "mode": "reflow"
+        "mode": "reflow",
+        "priority": [
+          "title",
+          "lanes"
+        ]
       },
       "tags": [
         "swimlane",
@@ -4509,7 +4573,12 @@
         "strip"
       ],
       "adapt": {
-        "mode": "reflow"
+        "mode": "reflow",
+        "priority": [
+          "title",
+          "regions",
+          "detail"
+        ]
       },
       "tags": [
         "metric",
@@ -5163,7 +5232,12 @@
         "strip"
       ],
       "adapt": {
-        "mode": "reflow"
+        "mode": "reflow",
+        "priority": [
+          "title",
+          "slices",
+          "detail"
+        ]
       },
       "tags": [
         "donut",
@@ -5461,7 +5535,13 @@
         "strip"
       ],
       "adapt": {
-        "mode": "reflow"
+        "mode": "reflow",
+        "priority": [
+          "title",
+          "rows",
+          "subtitle",
+          "eyebrow"
+        ]
       },
       "tags": [
         "percentage",
@@ -5769,7 +5849,13 @@
         "strip"
       ],
       "adapt": {
-        "mode": "reflow"
+        "mode": "reflow",
+        "priority": [
+          "title",
+          "axes",
+          "items",
+          "detail"
+        ]
       },
       "tags": [
         "two-by-two",
@@ -5925,7 +6011,14 @@
         "strip"
       ],
       "adapt": {
-        "mode": "native"
+        "mode": "native",
+        "priority": [
+          "quotation",
+          "attribution"
+        ],
+        "keepTogether": [
+          "quotation+attribution"
+        ]
       },
       "tags": [
         "pull-quote",
@@ -6047,7 +6140,13 @@
         "strip"
       ],
       "adapt": {
-        "mode": "reflow"
+        "mode": "reflow",
+        "priority": [
+          "title",
+          "axes",
+          "series",
+          "detail"
+        ]
       },
       "tags": [
         "spider",
@@ -6201,7 +6300,13 @@
         "square"
       ],
       "adapt": {
-        "mode": "single-orientation"
+        "mode": "single-orientation",
+        "priority": [
+          "heading",
+          "redline",
+          "citation",
+          "implications"
+        ]
       },
       "tags": [
         "contract",
@@ -6501,7 +6606,11 @@
         "strip"
       ],
       "adapt": {
-        "mode": "reflow"
+        "mode": "reflow",
+        "priority": [
+          "title",
+          "rows"
+        ]
       },
       "tags": [
         "planning",
@@ -6827,7 +6936,13 @@
         "strip"
       ],
       "adapt": {
-        "mode": "reflow"
+        "mode": "reflow",
+        "priority": [
+          "heading",
+          "lede",
+          "points",
+          "eyebrow"
+        ]
       },
       "tags": [
         "summary",
@@ -6976,7 +7091,14 @@
         "strip"
       ],
       "adapt": {
-        "mode": "reflow"
+        "mode": "reflow",
+        "priority": [
+          "title",
+          "states",
+          "transitions",
+          "detail",
+          "eyebrow"
+        ]
       },
       "tags": [
         "flowchart",
@@ -7442,7 +7564,11 @@
         "strip"
       ],
       "adapt": {
-        "mode": "reflow"
+        "mode": "reflow",
+        "priority": [
+          "title",
+          "events"
+        ]
       },
       "tags": [
         "changelog",
@@ -7575,7 +7701,12 @@
         "strip"
       ],
       "adapt": {
-        "mode": "native"
+        "mode": "native",
+        "priority": [
+          "heading",
+          "subtitle",
+          "eyebrow"
+        ]
       },
       "tags": [
         "pitch",
@@ -7875,7 +8006,11 @@
         "strip"
       ],
       "adapt": {
-        "mode": "reflow"
+        "mode": "reflow",
+        "priority": [
+          "title",
+          "words"
+        ]
       },
       "tags": [
         "tag-cloud",

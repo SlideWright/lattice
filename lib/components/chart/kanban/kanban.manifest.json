@@ -1,7 +1,7 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "kanban",
-  "adapt": { "mode": "reflow" },
+  "adapt": { "mode": "reflow", "priority": ["title", "lanes"] },
   "function": "progression",
   "bucket": "chart",
   "form": "timeline",

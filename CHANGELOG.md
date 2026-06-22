@@ -36,13 +36,14 @@ in patch versions.
 
 ### Changed
 
-- **The `inventory` components now declare their layout-solver intent** (`adapt.priority`
-  / `keepTogether`, and `priority` for the previously-undeclared native `agenda` /
-  `checklist`). These are the inputs the Fit Spine's solver reads to choose
-  collapse / shed / split instead of guessing — the first bucket of the §6 backfill,
-  applied per a written rubric (`engineering/decisions/2026-06-22-solver-intent-backfill.md`)
-  and checker-verified against each component's real structure. Metadata only — no
-  render change yet; the catalog (`dist/docs/components.json`) carries the new fields.
+- **Every component now declares its layout-solver intent** — `adapt.priority` is
+  complete across all 52 components (was 23/52), with `keepTogether` on the atomic
+  members/pairs (26/52). These are the inputs the Fit Spine's solver reads to choose
+  collapse / shed / split instead of guessing — the §6 backfill, applied per a written
+  rubric (`engineering/decisions/2026-06-22-solver-intent-backfill.md`) and
+  checker-verified against each component's real structure (which caught and reverted
+  a `logo-wall` shed the strip CSS doesn't honor). Metadata only — no render change
+  yet; the catalog (`dist/docs/components.json`) carries the new fields.
 
 - **The `kanban` board is redesigned to spend colour on STATUS, not category.**
   The default board is now a calm grid of uniform, elevated, neutral cards

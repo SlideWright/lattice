@@ -1,7 +1,7 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "big-number",
-  "adapt": { "mode": "native" },
+  "adapt": { "mode": "native", "priority": ["number", "caption", "eyebrow"], "keepTogether": ["number+caption"] },
   "function": "statement",
   "form": "canvas",
   "substance": "prose",

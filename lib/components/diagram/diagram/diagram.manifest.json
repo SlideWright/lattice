@@ -1,7 +1,7 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "diagram",
-  "adapt": { "mode": "reflow" },
+  "adapt": { "mode": "reflow", "priority": ["title", "mermaid", "subtitle"] },
   "function": "evidence",
   "bucket": "diagram",
   "galleryAuthored": true,

@@ -1,7 +1,7 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "progress",
-  "adapt": { "mode": "reflow" },
+  "adapt": { "mode": "reflow", "priority": ["title", "rows", "subtitle", "eyebrow"] },
   "function": "evidence",
   "bucket": "chart",
   "form": "canvas",

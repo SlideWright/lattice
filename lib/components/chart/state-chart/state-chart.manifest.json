@@ -1,7 +1,7 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "state-chart",
-  "adapt": { "mode": "reflow" },
+  "adapt": { "mode": "reflow", "priority": ["title", "states", "transitions", "detail", "eyebrow"] },
   "function": "progression",
   "bucket": "chart",
   "form": "timeline",

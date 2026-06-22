@@ -1,7 +1,7 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "compare-code",
-  "adapt": { "mode": "single-orientation" },
+  "adapt": { "mode": "single-orientation", "priority": ["title", "left", "right"], "keepTogether": ["left+right"] },
   "focusAxes": ["line"],
   "function": "comparison",
   "bucket": "code",

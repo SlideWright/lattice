@@ -89,10 +89,10 @@ error. It **cannot flip to error until coverage is complete** — 29 components 
 
 ## Coverage burn-down
 
-| Field | Start | Now (inventory + progression + legal) | Target |
+| Field | Start | Now (all buckets) | Target |
 |---|---|---|---|
-| `priority` | 23/52 | 27/52 | 52/52 (gated) |
-| `keepTogether` | 11/52 | 22/52 | declared-or-justified-empty |
+| `priority` | 23/52 | **52/52** ✅ | 52/52 (gated) |
+| `keepTogether` | 11/52 | 26/52 | declared-or-justified-empty |
 | `droppable` | 5/52 | 5/52 | declared-or-justified-empty |
 | `capacity` (per-family) | 14/52 | 14/52 | dense families — a separate render-verified pass |
 
@@ -106,14 +106,21 @@ exists to catch: `droppable` names what the **strip CSS provably drops**, not wh
 merely *looks* secondary. `logo-wall` stays `priority`-only — its members (logos)
 are atomic and nothing yet sheds.
 
-Buckets done: **inventory · progression · legal** (evidence/kpi+stats were the
-pre-existing exemplars). The `progression`/`legal` pass added intent to the native
-`list-criteria` + matrix `obligation-matrix` (the biggest gaps — they had none),
-`keepTogether` to `list-steps` (`step`) and `citation-card` (`citation+quotation`);
-the rest of legal was already complete.
+**All 52 components now declare `priority`** — the gate threshold is met. Buckets,
+in landing order:
+- **inventory · progression · legal** — the splittable narrative families; the
+  partition kernel's `item`/`row` consumers. Native `agenda`/`checklist`/
+  `list-criteria` and matrix `obligation-matrix` had *no* intent (the biggest gap).
+- **anchor · statement · imagery · comparison-remainder · code · diagram** — the
+  atomic / escalate figures and messages: `priority` orders the message + its
+  chrome; `keepTogether` binds the inseparable pairs (`number+caption`,
+  `quotation+attribution`, `left+right`, table `row`). No member splits — they
+  escalate or ring.
+- **chart ×13** — every chart has `focusAxes: null` (no splittable axis), so it is
+  inherently escalate-only; `priority` orders title → figure → detail and that is
+  the complete, justified declaration (the figure is atomic).
 
-Buckets remaining: anchor, statement, comparison, imagery, chart, diagram, math,
-code — then flip the lint. Each a reviewed pass on this branch (one feature = one
-branch, HARD #17). **Working principle (post-`logo-wall`):** backfill `priority`
-(always) + `keepTogether` (the atomic member/pair) now; **defer `droppable` to the
-strip-CSS pass** (P3) — declare a shed only where the CSS provably drops it.
+**Working principle (post-`logo-wall`):** `priority` always; `keepTogether` for the
+atomic member/pair; **`droppable` deferred to the strip-CSS pass** (P3) — declare a
+shed only where the CSS provably drops it. `keepTogether`/`droppable` are now
+declared-or-justified-empty across the catalog; the final step is the lint flip.

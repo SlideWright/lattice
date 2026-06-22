@@ -1,7 +1,7 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "image",
-  "adapt": { "mode": "reflow" },
+  "adapt": { "mode": "reflow", "priority": ["image", "heading", "body"] },
   "function": "imagery",
   "form": "canvas",
   "substance": "prose",

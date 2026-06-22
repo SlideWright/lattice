@@ -1,7 +1,7 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "divider",
-  "adapt": { "mode": "native" },
+  "adapt": { "mode": "native", "priority": ["heading", "eyebrow"] },
   "function": "anchor",
   "form": "divider",
   "substance": "prose",

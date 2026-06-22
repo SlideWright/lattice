@@ -1,7 +1,7 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "quote",
-  "adapt": { "mode": "native" },
+  "adapt": { "mode": "native", "priority": ["quotation", "attribution"], "keepTogether": ["quotation+attribution"] },
   "function": "statement",
   "form": "canvas",
   "substance": "prose",
