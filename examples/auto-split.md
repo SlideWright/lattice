@@ -66,7 +66,7 @@ When a slide holds more than it can show, it becomes several — automatically, 
 ## What you just saw
 
 - The fourteen-item checklist exceeded the layout's comfortable budget
-- Rather than clip, it split into **two clean slides** — the heading carried onto both
+- Rather than clip, it split into **several comfortable slides** — the heading carried onto each, marked `(cont.)`
 - The author wrote one slide; the export produced the right number
 - No deck without `autosplit: on` is affected — existing decks render unchanged
 

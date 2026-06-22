@@ -16,12 +16,20 @@ const list = (n) => `<ul>${Array.from({ length: n }, (_, i) => `<li>item ${i + 1
 const cap = { cards: { axis: 'item', hard: 4 }, redline: { axis: 'col', hard: 2 } };
 
 describe('core: autoSplitDeck', () => {
-  test('splits an over-capacity slide into ceil(n/hard) slides, heading repeated', () => {
-    const html = sec('cards', `<h2>T</h2>${list(9)}`); // 9 items, hard 4 → 3 slides
+  test('splits an over-capacity slide, heading on each, (cont.) on continuations', () => {
+    const html = sec('cards', `<h2>T</h2>${list(9)}`); // hard 4, no sweet → chunk 4 → 3 slides
     const { html: out, splits } = autoSplitDeck(html, cap);
     assert.equal(splits, 1);
     assert.equal((out.match(/<section/g) || []).length, 3);
-    assert.equal((out.match(/<h2>T<\/h2>/g) || []).length, 3); // heading on every slide
+    assert.equal((out.match(/<h2>/g) || []).length, 3); // heading on every slide
+    assert.equal((out.match(/lat-cont/g) || []).length, 2); // (cont.) on slides 2 & 3 only
+    assert.match(out, /<h2>T<\/h2>/); // first slide keeps the plain title
+  });
+
+  test('splits into SWEET-sized chunks, not the hard max', () => {
+    const capSweet = { wide: { axis: 'item', sweet: 3, soft: 5, hard: 8 } };
+    const html = sec('wide', list(10)); // 10 > hard 8 → split, chunk by sweet 3 → 4 slides
+    assert.equal((autoSplitDeck(html, capSweet).html.match(/<section/g) || []).length, 4);
   });
 
   test('a slide AT capacity is untouched (byte-identical)', () => {
