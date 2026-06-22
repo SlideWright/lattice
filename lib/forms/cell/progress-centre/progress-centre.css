@@ -1,0 +1,22 @@
+/* ── PROGRESS-CENTRE Cell — the section dot-rail's slot ──────────────────────
+ * Real Form Cell (was css:false). The Cell owns the rail's POSITION; the progress
+ * Tile (lib/forms/tile/progress) owns its appearance (dots, label, font). Default:
+ * bottom-right, just left of the pagination — so the two wayfinding marks (rail +
+ * page number) read as ONE group at the same baseline and the same --fs-meta size.
+ * A single `--progress-inset` var() hook lets a Frame relocate the rail
+ * INDEPENDENTLY (e.g. to the right-middle) for infinite layouts (forms.md §7.3).
+ * The region id stays `progress-centre` for compatibility; its default geometry is
+ * now right-grouped, not centred. */
+section.form .tile-progress {
+  position: absolute;
+  /* default: parked just left of the page number (--footer-pag-reserve), bottom
+   * baseline shared with it. Override the single --progress-inset token to move
+   * the rail ANYWHERE — e.g. a Frame's slicing sets it to `50% … auto auto` to
+   * drop the rail to the right-middle (independent movability, forms.md §7.3). */
+  inset: var(--progress-inset, auto var(--footer-pag-reserve) var(--frame-inset-y) auto);
+  z-index: 3;
+  /* Reserved width (the manifest geometry token) — a long section label truncates
+   * inside it rather than crowding the page number. */
+  max-width: var(--footer-centre-w);
+  pointer-events: none;
+}

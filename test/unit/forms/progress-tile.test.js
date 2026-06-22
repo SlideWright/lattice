@@ -34,10 +34,12 @@ describe('progress Tile — applyToHtml (HTML-string path)', () => {
     assert.equal((out.match(/class="tile-progress"/g) || []).length, 2);
   });
 
-  test('marks rail-bearing sections has-progress (footer Cell yields the centre zone)', () => {
+  test('injects the rail without a vestigial class (footer zones are independent Cells)', () => {
     const html = deckHtml([sec('divider', '<h2>S</h2>'), sec('content form')]);
     const out = progress.applyToHtml(html);
-    assert.match(out, /class="content form has-progress"/);
+    assert.match(out, /class="content form"/);   // class untouched — no has-progress
+    assert.doesNotMatch(out, /has-progress/);
+    assert.match(out, /class="tile-progress"/);   // the rail itself is present
   });
 
   test('rail label prefers the divider eyebrow over its heading', () => {

@@ -9,5 +9,5 @@
   "gap": "--footer-centre-half",
   "geometry": { "size": "--footer-centre-w" },
   "clip": true,
-  "css": false
+  "css": true
 }

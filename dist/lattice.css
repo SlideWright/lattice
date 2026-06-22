@@ -15035,6 +15035,24 @@ section.confidential::before {
  * engineering/decisions/2026-06-15-form-implementation.md §6.2 (#356) and
  * design/forms.md §5/§6. */
 
+/* === lib/forms/cell/footer-left/footer-left.css === */
+/* ── FOOTER-LEFT Cell — the running `footer:` text ───────────────────────────
+ * Real Form Cell (was a css:false token-contract). Its POSITION is a single
+ * `--footerleft-inset` var() hook, so a Frame's `slicing` can relocate it
+ * INDEPENDENTLY — the infinite-layouts contract (design/forms.md §7.3: freedom of
+ * movement bounded only by kind-fit + the box guarantee, not a whitelist). The
+ * default is the authored bottom-left. Scoped to `section.form`; non-form decks
+ * keep the legacy base footer (lib/base/base.modifiers.css). */
+section.form > footer {
+  /* inset: top right bottom left — default anchors bottom-left. A Frame override
+   * (e.g. relocate to the right, or vertically centre) just sets this one token. */
+  inset: var(--footerleft-inset, auto auto var(--frame-inset-y) var(--frame-inset-x));
+  /* Stay clear of the right-hand wayfinding group (rail + pagination) — the band
+   * no longer dodges a centred rail with a magic-number calc; it is simply
+   * width-bounded on its own side. */
+  max-width: var(--footerleft-w, 52cqi);
+}
+
 /* === lib/forms/cell/footer/footer.css === */
 /* ── FOOTER Cell — three reserved zones (design/forms.md §6) ─────────────────
  * Self-contained Form Cell (issue #356). Co-located with the Cell manifest
@@ -15052,12 +15070,12 @@ section.confidential::before {
  * widths are the --footer-centre-w/-half tokens defined on the root in
  * lib/forms/cell/stage/stage.css. (Non-form decks keep the full-width footer —
  * this is scoped to section.form.) */
-section.form.has-progress > footer {
-  /* Yield to the reserved centre zone ONLY when a progress rail is present
-   * (the injectors add `has-progress`); a rail-less form slide keeps the
-   * default full-width footer. Right edge = 50% + half the centre zone + gap. */
-  right: calc(50% + var(--footer-centre-half) + var(--sp-md));
-}
+/* The footer band's three zones are now INDEPENDENTLY-positioned Cells
+ * (footer-left · progress-centre · pagination-right), each token-driven for free
+ * relocation (design/forms.md §7.3) — so the old magic-number "yield" that made
+ * the left text dodge a centred rail is retired: the rail no longer sits in the
+ * centre, and footer-left is width-bounded on its own side
+ * (lib/forms/cell/footer-left). No shared-band rule remains here. */
 
 /* === lib/forms/cell/masthead-bay/masthead-bay.css === */
 /* ── MASTHEAD-BAY sub-Cell — the reserved right bay (meta · logo · status) ────
@@ -15147,6 +15165,43 @@ section.form .cell-masthead {
   border-bottom: 1px solid var(--border);
 }
 
+/* === lib/forms/cell/pagination-right/pagination-right.css === */
+/* ── PAGINATION-RIGHT Cell — the page-number's slot ──────────────────────────
+ * Real Form Cell (was css:false). The page number is Marp's `section::after`
+ * pseudo-element; this Cell token-drives its POSITION so it is INDEPENDENTLY
+ * movable (design/forms.md §7.3) WITHOUT converting the pseudo to injected DOM —
+ * which would change exported bytes and touch all three render paths. The pseudo's
+ * appearance (mono, --fs-meta, colour) stays in the engine scaffold
+ * (lib/integrations/markdown-it/scaffold.css + lib/engine/css.js); this form-scoped
+ * rule wins on specificity and only re-anchors it. Default: bottom-right, unchanged. */
+section.form::after {
+  inset: var(--pagination-inset, auto var(--frame-inset-x) var(--frame-inset-y) auto);
+}
+
+/* === lib/forms/cell/progress-centre/progress-centre.css === */
+/* ── PROGRESS-CENTRE Cell — the section dot-rail's slot ──────────────────────
+ * Real Form Cell (was css:false). The Cell owns the rail's POSITION; the progress
+ * Tile (lib/forms/tile/progress) owns its appearance (dots, label, font). Default:
+ * bottom-right, just left of the pagination — so the two wayfinding marks (rail +
+ * page number) read as ONE group at the same baseline and the same --fs-meta size.
+ * A single `--progress-inset` var() hook lets a Frame relocate the rail
+ * INDEPENDENTLY (e.g. to the right-middle) for infinite layouts (forms.md §7.3).
+ * The region id stays `progress-centre` for compatibility; its default geometry is
+ * now right-grouped, not centred. */
+section.form .tile-progress {
+  position: absolute;
+  /* default: parked just left of the page number (--footer-pag-reserve), bottom
+   * baseline shared with it. Override the single --progress-inset token to move
+   * the rail ANYWHERE — e.g. a Frame's slicing sets it to `50% … auto auto` to
+   * drop the rail to the right-middle (independent movability, forms.md §7.3). */
+  inset: var(--progress-inset, auto var(--footer-pag-reserve) var(--frame-inset-y) auto);
+  z-index: 3;
+  /* Reserved width (the manifest geometry token) — a long section label truncates
+   * inside it rather than crowding the page number. */
+  max-width: var(--footer-centre-w);
+  pointer-events: none;
+}
+
 /* === lib/forms/cell/stage/stage.css === */
 /* ── STAGE Cell — the section content region + the root chrome Frame ─────────
  * Self-contained Form Cell (issue #356, the Cell slice of the self-containment
@@ -15210,6 +15265,11 @@ section.form {
   --footer-reserve: calc(var(--frame-inset-y) + var(--footer-h) + var(--sp-md));
   --footer-centre-w: calc(var(--_sec-1cqi, 1cqi) * 30);
   --footer-centre-half: calc(var(--footer-centre-w) / 2);
+  /* The progress rail's default right offset — it parks just left of the page
+   * number so the two wayfinding marks read as one group. Sized for the page
+   * number's own width (≈ up to two digits) plus a hair of gap, tighter than the
+   * legacy --frame-page-reserve (6.25cqi) the centred rail used to clear. */
+  --footer-pag-reserve: calc(var(--frame-inset-x) + var(--_sec-1cqi, 1cqi) * 3.25);
   position: relative;
   /* Explicit frame inset on every side so the in-flow masthead + stage clear the
    * deck header (top) and keep their side margins EVEN on components that zero
@@ -15261,26 +15321,20 @@ section.form.fill-optical {
 }
 
 /* === lib/forms/tile/progress/progress.css === */
-/* progress Tile — section dot-rail in the footer-centre zone.
+/* progress Tile — the section dot-rail, parked beside the page number.
  * Self-contained Form Tile (issue #356): co-located with its kernel
  * (progress.transform.js) + manifest, bundled by tools/build-css.js into the
- * same cascade slot these rules held in base.variants.css. The footer Cell's
- * `section.form.has-progress > footer` yield rule (how the footer makes room for
- * this rail) is the footer Cell's concern and stays in base.variants.css. */
+ * same cascade slot these rules held in base.variants.css. POSITION belongs to
+ * the progress-centre Cell (lib/forms/cell/progress-centre) — these rules are
+ * appearance only. The legacy `has-progress` footer-yield is retired. */
+/* Appearance only — the progress-centre Cell (lib/forms/cell/progress-centre)
+ * owns POSITION (so the rail is an independently-movable Cell). The dots + label
+ * lay out right-aligned, so the group hugs the page number to its right. */
 section.form .tile-progress {
-  position: absolute;
-  bottom: var(--frame-inset-y);
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 3;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
   gap: var(--sp-sm);
-  /* The reserved centre zone — the rail lives inside it and never spills into
-     footer-left or pagination. */
-  max-width: var(--footer-centre-w);
-  pointer-events: none;
 }
 .tile-progress .seg {
   font-family: var(--font-label);
@@ -16362,5 +16416,5 @@ section .taskTextOutsideLeft, section .taskTextOutsideRight { fill: var(--text-h
 #lattice-fluid-toggle:focus-visible { opacity: 1; }
 
 /* === generated: Form per-family slicing (frame manifests `slicing`) === */
-section.form[data-family="tall"] .cell-masthead { --masthead-cols: [masthead-lede masthead-bay] 1fr; }
-section.form[data-family="strip"] .cell-masthead { --masthead-cols: [masthead-lede masthead-bay] 1fr; }
+section.form[data-family="tall"] { --masthead-cols: [masthead-lede masthead-bay] 1fr; }
+section.form[data-family="strip"] { --masthead-cols: [masthead-lede masthead-bay] 1fr; }

@@ -1,0 +1,16 @@
+/* ── FOOTER-LEFT Cell — the running `footer:` text ───────────────────────────
+ * Real Form Cell (was a css:false token-contract). Its POSITION is a single
+ * `--footerleft-inset` var() hook, so a Frame's `slicing` can relocate it
+ * INDEPENDENTLY — the infinite-layouts contract (design/forms.md §7.3: freedom of
+ * movement bounded only by kind-fit + the box guarantee, not a whitelist). The
+ * default is the authored bottom-left. Scoped to `section.form`; non-form decks
+ * keep the legacy base footer (lib/base/base.modifiers.css). */
+section.form > footer {
+  /* inset: top right bottom left — default anchors bottom-left. A Frame override
+   * (e.g. relocate to the right, or vertically centre) just sets this one token. */
+  inset: var(--footerleft-inset, auto auto var(--frame-inset-y) var(--frame-inset-x));
+  /* Stay clear of the right-hand wayfinding group (rail + pagination) — the band
+   * no longer dodges a centred rail with a magic-number calc; it is simply
+   * width-bounded on its own side. */
+  max-width: var(--footerleft-w, 52cqi);
+}

@@ -258,7 +258,7 @@
       "fill": "start",
       "gap": "--footer-centre-half",
       "clip": true,
-      "css": false
+      "css": true
     },
     {
       "$schema": "../../schema/cell.schema.json",
@@ -338,7 +338,7 @@
       "fill": "end",
       "gap": "--footer-centre-half",
       "clip": true,
-      "css": false
+      "css": true
     },
     {
       "$schema": "../../schema/cell.schema.json",
@@ -355,7 +355,7 @@
         "size": "--footer-centre-w"
       },
       "clip": true,
-      "css": false
+      "css": true
     },
     {
       "$schema": "../../schema/cell.schema.json",
