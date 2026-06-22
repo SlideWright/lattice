@@ -4,7 +4,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const { loadAll, manifestBucket } = require('../../../lib/components');
-const { checkAdaptDeclarations } = require('../../../tools/check-ownership');
+const { checkAdaptDeclarations, checkSolverIntentDeclared } = require('../../../tools/check-ownership');
 
 const ROOT = path.join(__dirname, '..', '..', '..');
 const COMPONENTS = path.join(ROOT, 'lib', 'components');
@@ -69,4 +69,36 @@ test('checkAdaptDeclarations accepts valid declarations', () => {
     checkAdaptDeclarations([m], errors);
     assert.deepStrictEqual(errors, [], `expected no error for ${JSON.stringify(m)}`);
   }
+});
+
+// The solver-intent gate is COMPLETE across the real tree: every component
+// declares adapt.priority, so the solver never has to guess (Fit Spine §4/§6;
+// engineering/decisions/2026-06-22-solver-intent-backfill.md).
+test('every component declares a non-empty adapt.priority', () => {
+  const errors = [];
+  checkSolverIntentDeclared(loadAll(), errors);
+  assert.deepStrictEqual(errors, [], `undeclared solver intent:\n${errors.join('\n')}`);
+});
+
+// The gate rejects undeclared / malformed intent…
+test('checkSolverIntentDeclared flags missing or empty adapt.priority', () => {
+  const cases = [
+    { name: '__x', adapt: { mode: 'native' } },                       // no priority
+    { name: '__x', adapt: { mode: 'native', priority: [] } },         // empty
+    { name: '__x', adapt: { mode: 'native', priority: ['', 'a'] } },  // empty member
+    { name: '__x', adapt: { mode: 'native', priority: 'title' } },    // not an array
+    { name: '__x' },                                                  // no adapt at all
+  ];
+  for (const m of cases) {
+    const errors = [];
+    checkSolverIntentDeclared([m], errors);
+    assert.ok(errors.length > 0, `expected an error for ${JSON.stringify(m.adapt || null)}`);
+  }
+});
+
+// …and accepts a real priority declaration.
+test('checkSolverIntentDeclared accepts a non-empty string array', () => {
+  const errors = [];
+  checkSolverIntentDeclared([{ name: '__x', adapt: { mode: 'native', priority: ['title', 'items'] } }], errors);
+  assert.deepStrictEqual(errors, []);
 });

@@ -288,12 +288,15 @@ throughout. Ordered by the inversion: **unmask first, unify second, build third.
   `capacity`/`keepTogether` + continuation adornment, consumed by the exporter —
   **maker–checker + export sign-off** (it changes exported page counts).
 - **P5 — backfill solver data** (§6) across the catalog; turn on the
-  undeclared-intent lint. ◐ **In progress.** Rubric ratified +
-  **inventory bucket landed** as the worked exemplar (`2026-06-22-solver-intent-backfill.md`):
-  every inventory component now declares `priority` (incl. the native `agenda` /
-  `checklist` that had none) and `keepTogether`; maker-checker caught + reverted a
-  `logo-wall` `droppable` the strip CSS doesn't honor. `priority` 23→25 / 52; the
-  lint flips to error only at 52/52. Remaining buckets follow the rubric.
+  undeclared-intent lint. ☑ **Done** (`2026-06-22-solver-intent-backfill.md`).
+  All 52 components declare `adapt.priority` (was 23/52) and `keepTogether` on the
+  atomic members/pairs (26/52); the native `agenda`/`checklist`/`list-criteria` and
+  matrix `obligation-matrix` that had *no* intent are covered. Maker-checker caught +
+  reverted a `logo-wall` `droppable` the strip CSS doesn't honor (recorded as the
+  rubric's discipline). `droppable` is deferred to the strip-CSS pass (P3) — declare
+  a shed only where the CSS provably drops it. **The undeclared-intent gate is live**
+  (`checkSolverIntentDeclared`, via `build:check`): a new component can't land without
+  declaring its solver intent.
 - **P6 — retire per-component `@container` reflow** as components graduate to
   Tiles; re-aim the `adapt` gate (§5).
 

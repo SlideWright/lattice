@@ -1,13 +1,13 @@
 ---
-status: in-progress
+status: shipped
 summary: The execution rubric for Fit Spine §6 — backfilling the solver's four declared inputs (priority, keepTogether, droppable, capacity) across 52 component manifests so collapse/shed/split is read, never guessed. Defines each field's assignment principle, the native-mode trap (native lists still split, so still declare intent), per-bucket archetypes, and the lint plan (flip the undeclared-intent gate to error only once priority hits 52/52). Inventory landed as the worked exemplar.
 ---
 
 # Solver-intent backfill — the rubric that makes 52 manifests safe
 
-**Date:** 2026-06-22 · **Status:** In progress — rubric ratified; inventory bucket
-landed as the worked exemplar · **Decision owner:** maintainer · **Parent:**
-`2026-06-22-the-fit-spine.md` §6 (this is its execution manual)
+**Date:** 2026-06-22 · **Status:** Accepted — rubric ratified; backfill complete
+(52/52 `priority`); the undeclared-intent gate is **live** · **Decision owner:**
+maintainer · **Parent:** `2026-06-22-the-fit-spine.md` §6 (this is its execution manual)
 
 ---
 
@@ -84,6 +84,11 @@ error. It **cannot flip to error until coverage is complete** — 29 components 
 3. When `priority` hits 52/52, **flip the gate to error** in `tools/check-ownership.js`
    (one commit), so it can never regress. `keepTogether`/`droppable` stay
    *advisory-complete* (declared where meaningful, provably-empty where not).
+
+✅ **Done.** `checkSolverIntentDeclared` (in `tools/check-ownership.js`, run by
+`build:check`) now errors if any component omits `adapt.priority`; covered by
+`test/unit/components/adapt-contract.test.js`. A new component cannot land without
+declaring how the solver should treat it.
 
 ---
 

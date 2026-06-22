@@ -43,7 +43,9 @@ in patch versions.
   rubric (`engineering/decisions/2026-06-22-solver-intent-backfill.md`) and
   checker-verified against each component's real structure (which caught and reverted
   a `logo-wall` shed the strip CSS doesn't honor). Metadata only — no render change
-  yet; the catalog (`dist/docs/components.json`) carries the new fields.
+  yet; the catalog (`dist/docs/components.json`) carries the new fields. A new
+  `build:check` gate (`checkSolverIntentDeclared`) keeps coverage from regressing —
+  a component can't land without declaring `adapt.priority`.
 
 - **The `kanban` board is redesigned to spend colour on STATUS, not category.**
   The default board is now a calm grid of uniform, elevated, neutral cards

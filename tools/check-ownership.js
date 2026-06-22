@@ -757,6 +757,29 @@ function checkAdaptDeclarations(manifests, errors) {
   }
 }
 
+// Every component must declare its layout-solver intent — `adapt.priority`, the
+// slots/roles in importance order (what leads, what sheds first). The Fit Spine's
+// solver chooses collapse / shed / split by READING this, never by inferring from
+// content, so undeclared intent is a build error, not a silent default (the §4
+// Munger inversion: a solver that guesses is worse than the overflow ring). The §6
+// backfill brought all 52 components to coverage; this gate keeps it from
+// regressing. `keepTogether` / `droppable` stay advisory (declared-or-justified-
+// empty) — only `priority` is universally required. See
+// engineering/decisions/2026-06-22-solver-intent-backfill.md.
+function checkSolverIntentDeclared(manifests, errors) {
+  for (const m of manifests) {
+    const p = m.adapt?.priority;
+    const ok = Array.isArray(p) && p.length > 0 && p.every((s) => typeof s === 'string' && s.length > 0);
+    if (!ok) {
+      errors.push(
+        `${m.name}: missing adapt.priority — the layout solver refuses to act on undeclared ` +
+        `intent (Fit Spine §4/§6). Declare slots/roles in importance order, highest first. ` +
+        `See engineering/decisions/2026-06-22-solver-intent-backfill.md.`,
+      );
+    }
+  }
+}
+
 // ── Runner ────────────────────────────────────────────────────────────────
 
 function run() {
@@ -773,6 +796,7 @@ function run() {
   checkTypographyTokens(errors);
   checkThemeHasSelectors(errors);
   checkAdaptDeclarations(manifests, errors);
+  checkSolverIntentDeclared(manifests, errors);
   return {
     errors,
     counts: {
@@ -815,6 +839,7 @@ module.exports = {
   transformModifierTokens,
   checkVariantDeclaration,
   checkAdaptDeclarations,
+  checkSolverIntentDeclared,
   checkTagClustering,
   checkRetiredTokenNames,
   RETIRED_TOKEN_NAMES,
