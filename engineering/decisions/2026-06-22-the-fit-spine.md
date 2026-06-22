@@ -6,8 +6,9 @@ summary: The foundational spine for responsive/dense-slide work — Frames are t
 # The Fit Spine — Frames own box-response; a solver fits without shrinking
 
 **Date:** 2026-06-22 · **Status:** In progress — **P0** ratified · **P1** (de-boost
-purge) shipped · **P2** rescoped to doc-only (§7) · **P3** next ·
-**Decision owner:** maintainer
+purge) shipped · **P2** rescoped to doc-only · **P3** collapse done, relocate
+blocked on islands→Form realization · **P4** split kernel in progress (pulled
+ahead) — see §7 · **Decision owner:** maintainer
 
 This is the **spine**: the load-bearing model that the responsive / dense-slide
 work hangs off, and the acceptance test every future change is measured against.
@@ -263,15 +264,29 @@ throughout. Ordered by the inversion: **unmask first, unify second, build third.
   model (§2.2); the export-adjacent stamp-merge was weighed and rejected as not
   worth its keep. **No code sweep.** The one encoding that still retires —
   per-component `@container` — folds up in P3/P6, not here.
-- **P3 — Frame slicing: collapse + shed (continuous moves).** ◐ **Next.** Generate
-  `data-family`-keyed Cell slicing from Frame manifests (`reflow-as-form-capability.md`
-  §7 same-band landed; build cross-band relocation + `region:null` shed). Fold
-  split-panel / citation-card in as Frames.
-- **P4 — the partition kernel (the split move).** Pure
-  `partitionAxis(content, axis, count, geometry) → [slide…]` in `lib/core`,
-  build-time, per-component split policy from `capacity`/`keepTogether`, plus
-  continuation rendering. **Maker–checker + export sign-off** (it changes exported
-  bytes / page counts).
+- **P3 — Frame slicing: collapse + shed (continuous moves).** ◐ **Partly done /
+  partly blocked.** *Collapse (same-band)* already works — `masthead-lift` builds
+  real `.cell-masthead` / `.masthead-bay` DOM bands and `--masthead-cols` restacks
+  them at `tall`/`strip`; the slicing **gate is fully built** (`validateSlicing` +
+  `checkIntegrity` + `checkSlicingTokenRefs`). *Shed-relocate (cross-band)* is
+  **blocked**: moving the bay to the footer needs a real **footer Cell in the DOM**,
+  but the footer / progress rail / pagination are still the legacy positioned
+  "islands" chrome, not Form Cells (`footer-left` is `css:false`). So cross-band
+  relocation — and the full "Frame owns box-response" thesis — depends on a
+  **prerequisite: finish the islands→Form chrome realization**
+  (`reflow-as-form-capability.md` §10), which this teardown originally under-sequenced.
+  *(Dependency found by grounding, 2026-06-22.)* `region:null` shed (drop) is cheap
+  but has **no consumer yet** and must not ship as a standalone "drop" hammer
+  (it would invite the content loss `forms.md` §6 forbids).
+- **P4 — the partition kernel (the split move).** ◐ **In progress — pulled ahead of
+  P3-relocate** (P4 is unblocked; P3-relocate is not). *Slice 1 (the pure kernel):*
+  `partitionAxis(html, axis, perSlide)` in `lib/core/collections.js` — splits the
+  primary collection (`item`/`row`) into per-slide groups, repeats heading + wrapper
+  + `<thead>`, renumbers `<ol>`; returns `null` for the non-splittable axes
+  (`col`/`cell`/`line`) so the caller escalates. Self-contained, unit-tested, no
+  export impact. *Slice 2 (the build-time wiring):* per-component split policy from
+  `capacity`/`keepTogether` + continuation adornment, consumed by the exporter —
+  **maker–checker + export sign-off** (it changes exported page counts).
 - **P5 — backfill solver data** (§6) across the catalog; turn on the
   undeclared-intent lint.
 - **P6 — retire per-component `@container` reflow** as components graduate to
