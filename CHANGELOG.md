@@ -30,7 +30,8 @@ in patch versions.
 - **Portrait/square decks no longer clip content in dense layouts.** The tall-frame
   body type scale (curated generous, for sparse hero slides) overflowed
   content-dense layouts, clipping the slide title and the last item: cards-grid,
-  actors, cards-stack, matrix-2x2, decision, compare-prose, and split-compare were
+  actors, cards-stack, matrix-2x2, decision, compare-prose, split-compare, and the
+  list family (list, list-steps, checklist, list-criteria, list-tabular) were
   affected. A new deck-wide `--prose-deboost` token (0.66 portrait, 0.8 square)
   shrinks **only** the dense body prose in those families; hero elements (the slide
   title, stat numbers) keep full size. The de-boost is applied **once, centrally** —

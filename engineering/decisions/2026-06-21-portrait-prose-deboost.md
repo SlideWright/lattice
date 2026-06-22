@@ -81,7 +81,11 @@ landscape are preserved (intentional: dense-compact vs dense-prose), now *named*
 Consumers: **cards-grid** (reference), **actors**, **cards-stack**, **matrix-2x2**,
 **decision**, **compare-prose**, **split-compare** (the last also de-boosts its
 hero-band *intro* line so the verdict clears; the display `h2` stays hero-sized).
-`q-and-a` already fit and is untouched.
+Extended to the **list family** after the jargon-gallery portrait stress test (14 →
+8 clips): **list** (spine + `takeaway` registers via `--dense-message`; the
+`principles` *display* register stays full-size — it's sparse declarations, not dense
+prose), **list-steps**, **checklist**, **list-criteria**, and **list-tabular**
+(compact cells via `--dense-body-compact`). `q-and-a` already fit and is untouched.
 
 **Footgun:** a family with a portrait `@container` body override must de-boost
 **that** rule, not just the base body — the override wins in portrait and the base
@@ -122,6 +126,15 @@ NOT, and is not meant to, solve everything:
 - **Case 2b unsolved.** A *landscape* deck opened on a phone stays 16:9 and tiny — the
   portrait scale never fires, so the de-boost can't reach it. That is the actuator's job.
 - **`pricing`** — spacing-driven overflow, excluded here (see above); needs a compact reflow.
+- **Gallery residual (8 of 58 still clip in portrait) — the actuator's territory.** After
+  the list-family extension, the jargon gallery's remaining clips are NOT type-driven:
+  `list-tabular` (row-count/spacing, like `pricing`), one dense `list-steps` (content
+  *just* over the floor — a flat factor can't absorb arbitrary density), `verdict-grid`
+  and `cards-stack horizontal` (in-scope but heavier content than the floor handles),
+  `stats` (hero numbers + running header/footer chrome), `split-panel` ×2 (the §11
+  section-element `@container` blocker), and `compare-code` (code blocks). These are the
+  concrete case for the content-autofit actuator + structural reflow — a curated flat
+  de-boost is a floor, not a fit guarantee.
 - **Threshold jump (accepted).** `--prose-deboost` is keyed on the orientation boundary,
   so dense type steps at the wide↔tall transition in a live-resizing (fluid) view. This
   rides on the *existing* landscape↔portrait coefficient step; not smoothed, accepted.
