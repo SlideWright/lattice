@@ -104,3 +104,37 @@ two-line bodies: slide title, every item, and footnotes fit with no overflow
 warning. Landscape: no gallery PDF regenerated (byte-identical). `engine.test.js`
 locks the token values (0.66 / 0.8 / unset). A maker-checker pass caught the
 `compare-prose` override miss before merge.
+
+## Open & deferred (the honest not-yets)
+
+This de-boost is the **deterministic, curated** layer: it sizes dense body by
+`(role, orientation)`, content-blind, so type is consistent slide-to-slide. It does
+NOT, and is not meant to, solve everything:
+
+- **Content-autofit actuator — designed, deferred.** The general fix for *uncontrolled*
+  density (the Persona-2 mobile reader who reads whatever the author shipped) is the
+  engine measure→shrink→fit actuator + legibility floor + re-pagination scoped in
+  `2026-06-20-native-to-reflow-feasibility.md`. The de-boost **complements** it (a
+  curated default that keeps autofit from engaging on ordinary dense slides), so it is
+  NOT torn down when the actuator lands — no accretion. The actuator is the larger
+  build and is **gated on confirming Persona 2 is a prioritized customer**; the phone
+  preview (#479) is the cheap instrument to gather that evidence first.
+- **Case 2b unsolved.** A *landscape* deck opened on a phone stays 16:9 and tiny — the
+  portrait scale never fires, so the de-boost can't reach it. That is the actuator's job.
+- **`pricing`** — spacing-driven overflow, excluded here (see above); needs a compact reflow.
+- **Threshold jump (accepted).** `--prose-deboost` is keyed on the orientation boundary,
+  so dense type steps at the wide↔tall transition in a live-resizing (fluid) view. This
+  rides on the *existing* landscape↔portrait coefficient step; not smoothed, accepted.
+
+## Red-team note: the Frame does NOT subsume per-component reflow (yet)
+
+A red-team pass flagged a suspected duplication between the responsive-Frame slicing
+and per-component `@container` reflow. Investigation (the generated CSS + `reflow-as-
+form-capability.md` §5–6) showed it was a **misread**: Frame slicing operates at the
+Form **Cell** level (`section.form .cell-masthead`, Form decks only); per-component
+`@container` reflow operates on the **component's internals** (`section.<comp> > ul`,
+any deck). A plain (non-Form) component deck gets no `data-family` slicing, so its
+`@container` rule is load-bearing — deleting it would break plain-deck portrait. They
+are **complementary layers by design** (Frame = placement strategy, component = the
+"Tile-in-its-Cell leaf fill", per §5). Full retirement of per-component reflow is the
+separate components→Tiles migration (#356), not this work.
