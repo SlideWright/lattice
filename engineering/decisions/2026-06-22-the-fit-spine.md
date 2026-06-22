@@ -278,15 +278,19 @@ throughout. Ordered by the inversion: **unmask first, unify second, build third.
   *(Dependency found by grounding, 2026-06-22.)* `region:null` shed (drop) is cheap
   but has **no consumer yet** and must not ship as a standalone "drop" hammer
   (it would invite the content loss `forms.md` §6 forbids).
-- **P4 — the partition kernel (the split move).** ◐ **In progress — pulled ahead of
-  P3-relocate** (P4 is unblocked; P3-relocate is not). *Slice 1 (the pure kernel):*
-  `partitionAxis(html, axis, perSlide)` in `lib/core/collections.js` — splits the
-  primary collection (`item`/`row`) into per-slide groups, repeats heading + wrapper
-  + `<thead>`, renumbers `<ol>`; returns `null` for the non-splittable axes
-  (`col`/`cell`/`line`) so the caller escalates. Self-contained, unit-tested, no
-  export impact. *Slice 2 (the build-time wiring):* per-component split policy from
-  `capacity`/`keepTogether` + continuation adornment, consumed by the exporter —
-  **maker–checker + export sign-off** (it changes exported page counts).
+- **P4 — the partition kernel + the split move.** ☑ **Both slices done.** *Slice 1
+  (the pure kernel):* `partitionAxis(html, axis, perSlide)` in `lib/core/collections.js`
+  — splits the primary collection (`item`/`row`) into per-slide groups, repeats heading
+  + wrapper + `<thead>`, renumbers `<ol>`; returns `null` for the non-splittable axes
+  (`col`/`cell`/`line`) so the caller escalates. *Slice 2 (the build-time wiring):*
+  `lib/core/auto-split.js` drives the kernel from each component's `capacity.hard` at
+  export (in `lattice-emulator.js`, before slide-index re-tagging, so copies renumber
+  for free). **OPT-IN** per deck (`autosplit: on`) so existing decks + galleries are
+  byte-unchanged; capacity-overflow lint is suppressed on those decks. Maker-checker
+  caught + fixed a front-matter-vs-body flag scope bug and a duplicate-`id` on copies.
+  Demo: `examples/auto-split.md`. Member-level `keepTogether` is honoured by
+  construction. *Follow-ups:* a `(cont.)` adornment; CSS-counter components (agenda)
+  restart numbering per copy; default-on once the catalog is audited.
 - **P5 — backfill solver data** (§6) across the catalog; turn on the
   undeclared-intent lint. ☑ **Done** (`2026-06-22-solver-intent-backfill.md`).
   All 52 components declare `adapt.priority` (was 23/52) and `keepTogether` on the

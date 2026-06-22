@@ -1006,7 +1006,24 @@ function engineSlides() {
   // the output directory (the path-bug fix —
   // engineering/decisions/2026-06-17-image-rearchitecture.md).
   const deckBaseUrl = pathToFileURL(path.dirname(path.resolve(mdFile)) + path.sep).href;
-  const { html } = engine.render(bgImage.liftBgImages(rawMd, deckBaseUrl), paletteName);
+  const { html: renderedHtml } = engine.render(bgImage.liftBgImages(rawMd, deckBaseUrl), paletteName);
+  // Auto-split over-capacity slides into several, BEFORE the index-based
+  // `data-lattice-slide` re-tag below renumbers them (the Fit Ladder's SPLIT move
+  // — lib/core/auto-split.js; engineering/decisions/2026-06-22-the-fit-spine.md §3).
+  // OPT-IN per deck (`autosplit: on` in the front-matter): existing decks and the
+  // curated galleries — whose stress slides demonstrate overflow on PURPOSE — stay
+  // byte-unchanged. Default-on is a later decision, once the catalog is audited.
+  let html = renderedHtml;
+  // Scope the flag to the FRONT-MATTER (`fm`), not the whole doc — the same `fm`
+  // the `fluid:` check uses (a body line starting `autosplit:` must not enable it).
+  if (/^\s*autosplit:\s*(?:on|true|yes)\s*$/im.test(fm)) {
+    const { autoSplitDeck } = require('./lib/core/auto-split');
+    const capacityMap = {};
+    for (const m of require('./lib/components').loadAll()) if (m.capacity) capacityMap[m.name] = m.capacity;
+    const r = autoSplitDeck(renderedHtml, capacityMap);
+    html = r.html;
+    if (r.splits) console.log(`  auto-split: ${r.splits} over-capacity slide(s) divided to fit`);
+  }
   const imageScrim = require('./lib/transformers/image-scrim');
   return splitTopLevelSections(html).map((sec, i) => {
     // Re-tag the slide index, then apply the per-section image fixups the

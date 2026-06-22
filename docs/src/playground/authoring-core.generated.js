@@ -283,6 +283,7 @@ ${indent}  ${bullet} ${body.trim()}`;
     }
     function lintTextWith(source, vocab) {
       const findings = [];
+      const autosplitOn = /^\s*autosplit:\s*(?:on|true|yes)\s*$/im.test(source);
       const cardStyle = new Set(CARD_STYLE_LAYOUTS);
       const ledgerOl = new Set(LEDGER_OL_LAYOUTS);
       const statementOl = new Set(STATEMENT_OL_LAYOUTS);
@@ -343,6 +344,7 @@ ${indent}  ${bullet} ${body.trim()}`;
             if (!n) break;
             const comfort = cap.sweet != null ? cap.sweet : cap.soft;
             if (cap.hard != null && n > cap.hard) {
+              if (autosplitOn) continue;
               findings.push({
                 slide: idx - fm + 1,
                 rule: "capacity-overflow",

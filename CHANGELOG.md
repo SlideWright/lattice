@@ -100,6 +100,19 @@ in patch versions.
 
 ### Added
 
+- **Auto-split — an over-capacity slide divides into several, automatically (opt-in).**
+  Add `autosplit: on` to a deck's front-matter and, at export, any slide whose primary
+  collection exceeds its layout's `capacity.hard` is divided into several slides that
+  each fit — the heading repeats, ordered lists renumber, nothing is lost. The honest
+  fix for overflow is more slides, not smaller type (below the readable type floor the
+  engine has nothing smaller to reach for). Read-across content (table columns, code)
+  is never split — it escalates to a sibling layout instead. Drives the `partitionAxis`
+  kernel from each component's capacity contract; build-time only (the spine rejects live
+  re-pagination). Opt-in, so existing decks and the curated galleries render byte-for-byte
+  unchanged. The capacity-overflow lint warning is suppressed on `autosplit` decks (the
+  split resolves it). Demo: `examples/auto-split.md`. See
+  `engineering/decisions/2026-06-22-the-fit-spine.md` §3 and `lib/core/auto-split.js`.
+
 - **Per-task interactive detail on the gantt chart (Tier-2 detail reveal).** A
   nested bullet under a task (one level below the task — plain prose: the owner,
   the blocker, the why) is now captured as that bar/milestone's reveal detail
