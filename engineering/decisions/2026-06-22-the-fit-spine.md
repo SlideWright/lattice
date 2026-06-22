@@ -1,11 +1,12 @@
 ---
-status: proposed
+status: in-progress
 summary: The foundational spine for responsive/dense-slide work — Frames are the single owner of box-response; a solver fits content by COLLAPSE → SHED → SPLIT and stops at a readability FLOOR, never shrinking. Defines the earn-its-keep ledger (keep/refactor/purge for every existing adaptive mechanism), the Munger inversion that produces the design rules, the red-team that attacks them, and a phased clean-canvas teardown that keeps the tree green at every step. Supersedes the de-boost and reframes per-component reflow as a Frame property.
 ---
 
 # The Fit Spine — Frames own box-response; a solver fits without shrinking
 
-**Date:** 2026-06-22 · **Status:** Proposed (the spine; no code changed yet) ·
+**Date:** 2026-06-22 · **Status:** In progress — **P0** ratified · **P1** (de-boost
+purge) shipped · **P2** rescoped to doc-only (§7) · **P3** next ·
 **Decision owner:** maintainer
 
 This is the **spine**: the load-bearing model that the responsive / dense-slide
@@ -33,8 +34,8 @@ Everything below is the justification, the boundaries, and the demolition plan f
 that sentence. Two corollaries fall straight out of it and are the heart of the
 rework:
 
-- **Box-response has exactly one owner: the Frame.** Not 32 components, not three
-  competing signals. (§2)
+- **Box-response has exactly one owner: the Frame**, reading exactly one classifier
+  (`families.js`) — not 32 components each reinventing it. (§2)
 - **Readability is a hard floor, not a soft preference.** There is no
   shrink-to-fit primitive anywhere in the system; "make it smaller until it fits"
   is not a move the engine can make. (§3)
@@ -96,18 +97,33 @@ coherent, buildable, and is exactly `reflow-as-form-capability.md` §9.
 > worse product (no authoring feedback, churn on resize) for a purity that buys
 > nothing. **Rejected branch**, named so it stays rejected.
 
-### 2.2 One signal, not three
+### 2.2 One classifier, two stamps (corrected 2026-06-22)
 
-Today three signals encode "what shape is this box": `data-orientation` (3-bucket,
-runtime), `@container … aspect-ratio` family queries (4-bucket, CSS), and the new
-`data-family` stamp (4-bucket, runtime). Three encodings of one fact is three
-chances to disagree at the seam.
+An earlier draft of this section called for retiring `data-orientation` into
+`data-family` as "one signal." The P2 inventory corrected it: those two attributes
+are **not redundant** — they are the **same classifier (`lib/adaptive/families.js`)
+emitted at two timings**, and the M1 boundary unification already makes them
+provably unable to disagree:
 
-**The spine signal is `data-family` (wide / square / tall / strip), classified by
-the single `lib/adaptive/families.js` boundary set.** `data-orientation` is
-retired into it; `@container` family queries either migrate to `[data-family]`
-selectors or are subsumed when the component becomes a Tile. One classifier, one
-stamp, one set of boundaries `[0.5, 0.9, 1.05]`.
+- **`data-orientation`** — the **authored** orientation, stamped **server-side**
+  (`lib/engine/slides.js`) from the deck's `@size`. Present in **static exports
+  (PDF/HTML, no JS)** — it is what gives an author-made portrait deck its portrait
+  type and reflow in a plain export. 3-value (landscape / square / portrait).
+- **`data-family`** — the **measured** box family, stamped at **runtime**
+  (`lib/runtime/index.js`) from the live box. Drives the responsive-Frame slicing;
+  **absent from a static export** (which correctly shows the authored look).
+  4-value (wide / square / tall / strip), where portrait = tall ∪ strip.
+
+**HARD #1 is satisfied by the one classifier, not by one attribute.** Both derive
+from `families.js` (`familyFor` → `FAMILY_TO_ORIENTATION`), sharing one boundary
+set `[0.5, 0.9, 1.05]`, so the leaf (`@container`) and the Frame (`data-family`)
+can't disagree. The genuinely redundant *third* encoding — per-component
+`@container aspect-ratio` queries — is the one that retires, folding up into Frame
+slicing as components become Tiles (§5, P6). **Merging the two stamps into one
+attribute was considered and rejected**: it would force the engine to stamp the
+4-family server-side, rewrite ~15 component stylesheets + typography + 4 JS
+transforms, and change static-export bytes — all to merge two stamps that serve
+different timings and already share one classifier. It does not earn its keep.
 
 ---
 
@@ -177,7 +193,8 @@ Purge. This is the clean-canvas inventory.
 | Mechanism | Why it earns its keep |
 |---|---|
 | **Form / Frame / Cell / Tile model** (`design/forms.md`, `lib/forms/`) | The spine itself. |
-| **`families.js` four-family classifier** | The single box-shape signal (§2.2). |
+| **`families.js` four-family classifier** | The single box-shape classifier (§2.2) — emitted as `data-orientation` server-side and `data-family` at runtime. |
+| **`data-orientation` stamp (authored / static)** | The server-side stamp that carries the authored orientation into **static exports** (no JS); one classifier with `data-family`, can't drift (§2.2). Kept, not purged. |
 | **Capacity contract** (`adapt.capacity` + `priority` / `droppable` / `keepTogether`) | The solver's decision inputs (§6). Keep the schema; **backfill coverage** is a workstream. |
 | **`countAxis` / `collections.js`** | The solver's render-exact measurement. Extend with `partitionAxis`. |
 | **`startOverflowWatcher`** | The Fit Ladder's trigger (when to act) and its move-4 terminal (the ring). |
@@ -189,7 +206,7 @@ Purge. This is the clean-canvas inventory.
 | Mechanism | Move it to |
 |---|---|
 | **Per-component `@container` reflow** (32 components) | Frame slicing; retire the per-component CSS as each component becomes a Tile. |
-| **`[data-orientation]` flips** (split-panel, citation-card) | Frames with `tall`/`strip` slicing; retire the coarse stamp. |
+| **`[data-orientation]` structural flips** (split-panel, citation-card) | Move the per-component flip into Frame `tall`/`strip` slicing. (The stamp itself is kept — §5 Keep; only the component's *structural use* of it retires.) |
 | **`adapt.mode` manifest field + `checkAdaptDeclarations` gate** | Re-aim: today it gates "CSS has `@container` ⟹ mode `reflow`." When reflow becomes a Frame property the gate's subject changes; keep the *discipline* (a static gate proving box-response is declared, not drifted), retarget the *assertion*. |
 
 ### Purge — does not serve the spine; deletion, not deprecation
@@ -197,7 +214,6 @@ Purge. This is the clean-canvas inventory.
 | Mechanism | Why it goes |
 |---|---|
 | **Prose de-boost** (`--prose-deboost`, `--dense-body`/`-compact`/`-message`) | It is shrink-to-fit by another name; violates the readability floor (§3) and masks the density problem (§4). Hermetic removal — see `2026-06-21-portrait-prose-deboost.md` purge map; landscape stays byte-identical. |
-| **`data-orientation` as a primary signal** | Duplicate of `data-family` (§2.2). |
 
 ### Stays rejected (re-affirm, so it doesn't creep back)
 
@@ -234,14 +250,20 @@ the work and the doc names it so it is planned, not discovered.
 Each phase is one branch → one PR (HARD #17), independently shippable, tree green
 throughout. Ordered by the inversion: **unmask first, unify second, build third.**
 
-- **P0 — ratify this spine** (this doc). The acceptance test for P1–P6.
-- **P1 — purge the de-boost.** Hermetic, low-risk, landscape byte-identical.
+- **P0 — ratify this spine** (this doc). ☑ **Done.** The acceptance test for P1–P6.
+- **P1 — purge the de-boost.** ☑ **Shipped** (`1dd1d46`). Hermetic, low-risk, landscape byte-identical.
   *Effect:* dense portrait slides clip again — the problem becomes **visible and
   honest** (the overflow ring now tells the truth). Precondition for solving it
   well. Restores axiom 1's terminal state as the baseline.
-- **P2 — one signal.** Retire `data-orientation` into `data-family`; align the
-  boundary tests. No behavior change intended — a unification PR.
-- **P3 — Frame slicing: collapse + shed (continuous moves).** Generate
+- **P2 — classifier hygiene (rescoped 2026-06-22; doc-only).** ☑ **Done** (this
+  amendment). The inventory found
+  this phase's premise false: `data-orientation` (authored / static) and
+  `data-family` (measured / runtime) are **one classifier at two timings**, already
+  non-drifting (M1) — not three disagreeing signals. Rescoped to *documenting* that
+  model (§2.2); the export-adjacent stamp-merge was weighed and rejected as not
+  worth its keep. **No code sweep.** The one encoding that still retires —
+  per-component `@container` — folds up in P3/P6, not here.
+- **P3 — Frame slicing: collapse + shed (continuous moves).** ◐ **Next.** Generate
   `data-family`-keyed Cell slicing from Frame manifests (`reflow-as-form-capability.md`
   §7 same-band landed; build cross-band relocation + `region:null` shed). Fold
   split-panel / citation-card in as Frames.
@@ -288,14 +310,16 @@ the build, gated by this spine.
 
 ## 9. What this doc decides (so the next PR is unambiguous)
 
-1. **Box-response has one owner — the Frame — and one signal — `data-family`.**
+1. **Box-response has one owner — the Frame — and one classifier — `families.js`**,
+   emitted as `data-orientation` server-side (static exports) and `data-family` at
+   runtime; the two can't drift (§2.2).
 2. **The Fit Ladder is a closed four-move list: collapse → shed → split → floor.
    There is no shrink move.**
 3. **Continuous moves (collapse, shed) are declarative Frame CSS; the one discrete
    move (split) is a build-time pure kernel. Live runtime re-pagination is
    rejected.**
-4. **The de-boost is purged; `data-orientation` is retired; per-component reflow
-   refactors up into the Frame.**
+4. **The de-boost is purged; per-component `@container` reflow refactors up into the
+   Frame.** `data-orientation` is **kept** as the authored / static stamp (§2.2).
 5. **Solver intent is declared, never inferred; the backfill is a prerequisite.**
 6. **Teardown order is unmask → unify → build, green at every step.**
 
