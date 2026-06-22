@@ -126,15 +126,23 @@ NOT, and is not meant to, solve everything:
 - **Case 2b unsolved.** A *landscape* deck opened on a phone stays 16:9 and tiny — the
   portrait scale never fires, so the de-boost can't reach it. That is the actuator's job.
 - **`pricing`** — spacing-driven overflow, excluded here (see above); needs a compact reflow.
-- **Gallery residual (8 of 58 still clip in portrait) — the actuator's territory.** After
-  the list-family extension, the jargon gallery's remaining clips are NOT type-driven:
-  `list-tabular` (row-count/spacing, like `pricing`), one dense `list-steps` (content
-  *just* over the floor — a flat factor can't absorb arbitrary density), `verdict-grid`
-  and `cards-stack horizontal` (in-scope but heavier content than the floor handles),
-  `stats` (hero numbers + running header/footer chrome), `split-panel` ×2 (the §11
-  section-element `@container` blocker), and `compare-code` (code blocks). These are the
-  concrete case for the content-autofit actuator + structural reflow — a curated flat
-  de-boost is a floor, not a fit guarantee.
+- **`stats` — FIXED via a layout floor (not the de-boost).** Portrait stats stacks the
+  hero numbers and *enlarges* them (`--stat-emphasis` 1.45), the opposite of a de-boost
+  — so the de-boost rightly never touched it. It clipped because the stack's `gap` was
+  `--sp-2xl`: with `justify-content: space-evenly` the gap is only a *floor*, and an
+  over-large floor pushed a 4th enlarged number off the shortest portrait (4:5). Dropped
+  to `--sp-sm`: `space-evenly` still fills the frame for the sparse 3-stat case (surplus
+  redistributed, visually unchanged) while the dense 4-stat case now packs to fit. A
+  layout fix, no type change, landscape byte-identical.
+- **Gallery residual (7 of 58 still clip in portrait) — the actuator's territory.** After
+  the list-family extension + the stats floor, the jargon gallery's remaining clips are
+  NOT type-driven: `list-tabular` (row-count/spacing, like `pricing`), one dense
+  `list-steps` (content *just* over the floor — a flat factor can't absorb arbitrary
+  density), `verdict-grid` and `cards-stack horizontal` (in-scope but heavier content
+  than the floor handles), `split-panel` ×2 (the §11 section-element `@container`
+  blocker), and `compare-code` (code blocks). These are the concrete case for the
+  content-autofit actuator + structural reflow — a curated flat de-boost is a floor, not
+  a fit guarantee.
 - **Threshold jump (accepted).** `--prose-deboost` is keyed on the orientation boundary,
   so dense type steps at the wide↔tall transition in a live-resizing (fluid) view. This
   rides on the *existing* landscape↔portrait coefficient step; not smoothed, accepted.

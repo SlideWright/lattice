@@ -42,6 +42,13 @@ in patch versions.
   stacked tiers overflow on spacing, not type, and need a separate compact-reflow
   pass. See `engineering/decisions/2026-06-21-portrait-prose-deboost.md`.
 
+- **A 4th stat no longer clips off a portrait `stats` slide.** Portrait stats stacks
+  and *enlarges* the hero numbers; the stack's `gap` was `--sp-2xl`, but with
+  `space-evenly` the gap is only a floor — an over-large floor pushed a 4th enlarged
+  number off the shortest portrait (4:5). Dropped to `--sp-sm`: the sparse 3-stat case
+  is visually unchanged (`space-evenly` redistributes the surplus) while the dense
+  4-stat case now packs to fit. Layout-only; landscape byte-identical.
+
 ### Changed
 
 - **The `kanban` board is redesigned to spend colour on STATUS, not category.**

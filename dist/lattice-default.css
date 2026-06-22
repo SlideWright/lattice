@@ -10715,10 +10715,15 @@ section.stats > ol > li > ul > li {
    numbers command the tall frame. A centred horizontal row crams 3–5 numbers
    small with the whole lower frame empty; stacked + enlarged (the engine's
    --stat-emphasis param, on top of --canvas-scale) reads from across a room and
-   fills the canvas. Keyed on data-orientation, so landscape is untouched. */
+   fills the canvas. `space-evenly` does the FILLING (it spreads the surplus), so
+   `gap` is only a tight FLOOR: a small floor leaves the sparse 3-stat case
+   luxuriously spread (surplus redistributed) yet lets the dense 4-stat case pack
+   to fit instead of clipping — a big floor (was --sp-2xl) overflowed 4 numbers +
+   a 2-line title at the shortest portrait (4:5). Keyed on data-orientation, so
+   landscape is untouched. */
 section.stats[data-orientation='portrait'] > ol,
 section.stats[data-orientation='square'] > ol {
-  flex-direction: column; gap: var(--sp-2xl); width: 100%; justify-content: space-evenly; flex: 1;
+  flex-direction: column; gap: var(--sp-sm); width: 100%; justify-content: space-evenly; flex: 1;
 }
 section.stats[data-orientation='portrait'] > ol > li > strong,
 section.stats[data-orientation='square'] > ol > li > strong {
@@ -10735,7 +10740,7 @@ section.stats[data-orientation='square'] > ol > li > ul > li {
  * specificity. */
 @container lattice (aspect-ratio <= 1.05) {
   section.stats.stats > ol {
-    flex-direction: column; gap: var(--sp-2xl); width: 100%; justify-content: space-evenly; flex: 1;
+    flex-direction: column; gap: var(--sp-sm); width: 100%; justify-content: space-evenly; flex: 1;
   }
   section.stats.stats > ol > li > strong {
     font-size: calc(var(--fs-h1) * var(--stat-emphasis, 1));
