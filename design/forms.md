@@ -389,8 +389,14 @@ A **sovereign** Frame (e.g. `split-panel`) *replaces* the root frame: it claims 
 whole canvas and suppresses the masthead/footer Cells — that is the entire
 mechanism behind "this slide looks completely different." Every Cell holds a Tile;
 **Frames do not nest inside content cells** (§1 — considered and rejected; see the
-decision note). The masthead's `lede · bay` and the footer's three zones are
-**fixed** band splits, not the rejected recursion.
+decision note). The masthead's `lede · bay` is a fixed band split; the footer's
+three zones (footer-left · progress · pagination) are **independently-positionable
+Cells** — each is token-driven (`var(--<cell>-inset)`), so a Frame's per-family
+`slicing` can relocate any one freely (§7.3), bounded only by kind-fit + the box
+guarantee. That is the infinite-layouts contract realized for the chrome (the
+footer is no longer a fixed three-up split, and never the rejected recursion). The
+default parks the running text at bottom-left and groups the rail with the page
+number at bottom-right.
 
 ---
 

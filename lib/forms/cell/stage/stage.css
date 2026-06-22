@@ -60,6 +60,11 @@ section.form {
   --footer-reserve: calc(var(--frame-inset-y) + var(--footer-h) + var(--sp-md));
   --footer-centre-w: calc(var(--_sec-1cqi, 1cqi) * 30);
   --footer-centre-half: calc(var(--footer-centre-w) / 2);
+  /* The progress rail's default right offset — it parks just left of the page
+   * number so the two wayfinding marks read as one group. Sized for the page
+   * number's own width (≈ up to two digits) plus a hair of gap, tighter than the
+   * legacy --frame-page-reserve (6.25cqi) the centred rail used to clear. */
+  --footer-pag-reserve: calc(var(--frame-inset-x) + var(--_sec-1cqi, 1cqi) * 3.25);
   position: relative;
   /* Explicit frame inset on every side so the in-flow masthead + stage clear the
    * deck header (top) and keep their side margins EVEN on components that zero

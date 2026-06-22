@@ -9,9 +9,11 @@
  * now right-grouped, not centred. */
 section.form .tile-progress {
   position: absolute;
-  /* default: right edge one pagination-reserve in from the frame, bottom baseline
-   * shared with the page number. Override the token to move it anywhere. */
-  inset: var(--progress-inset, auto var(--frame-page-reserve) var(--frame-inset-y) auto);
+  /* default: parked just left of the page number (--footer-pag-reserve), bottom
+   * baseline shared with it. Override the single --progress-inset token to move
+   * the rail ANYWHERE — e.g. a Frame's slicing sets it to `50% … auto auto` to
+   * drop the rail to the right-middle (independent movability, forms.md §7.3). */
+  inset: var(--progress-inset, auto var(--footer-pag-reserve) var(--frame-inset-y) auto);
   z-index: 3;
   /* Reserved width (the manifest geometry token) — a long section label truncates
    * inside it rather than crowding the page number. */

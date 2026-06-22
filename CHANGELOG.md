@@ -36,6 +36,17 @@ in patch versions.
 
 ### Changed
 
+- **The Form footer is redesigned as independently-positionable Cells.** On
+  `form:` decks the three footer zones (running text · progress rail · page number)
+  are now real Cells, each positioned by its own `var(--<cell>-inset)` token so a
+  Frame's `slicing` can relocate any one freely (the infinite-layouts contract,
+  `design/forms.md §7.3`). The default groups the progress rail with the page
+  number at bottom-right (same size + baseline) instead of floating the rail in
+  dead-centre, and the running text sits bottom-left; the legacy magic-number
+  `has-progress` footer-yield is retired. Non-`form` decks are unchanged. This also
+  makes the footer a real relocation target for the masthead bay, unblocking the
+  Fit Spine's P3 cross-band relocate.
+
 - **Every component now declares its layout-solver intent** — `adapt.priority` is
   complete across all 52 components (was 23/52), with `keepTogether` on the atomic
   members/pairs (26/52). These are the inputs the Fit Spine's solver reads to choose

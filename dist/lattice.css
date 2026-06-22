@@ -15190,9 +15190,11 @@ section.form::after {
  * now right-grouped, not centred. */
 section.form .tile-progress {
   position: absolute;
-  /* default: right edge one pagination-reserve in from the frame, bottom baseline
-   * shared with the page number. Override the token to move it anywhere. */
-  inset: var(--progress-inset, auto var(--frame-page-reserve) var(--frame-inset-y) auto);
+  /* default: parked just left of the page number (--footer-pag-reserve), bottom
+   * baseline shared with it. Override the single --progress-inset token to move
+   * the rail ANYWHERE — e.g. a Frame's slicing sets it to `50% … auto auto` to
+   * drop the rail to the right-middle (independent movability, forms.md §7.3). */
+  inset: var(--progress-inset, auto var(--footer-pag-reserve) var(--frame-inset-y) auto);
   z-index: 3;
   /* Reserved width (the manifest geometry token) — a long section label truncates
    * inside it rather than crowding the page number. */
@@ -15263,6 +15265,11 @@ section.form {
   --footer-reserve: calc(var(--frame-inset-y) + var(--footer-h) + var(--sp-md));
   --footer-centre-w: calc(var(--_sec-1cqi, 1cqi) * 30);
   --footer-centre-half: calc(var(--footer-centre-w) / 2);
+  /* The progress rail's default right offset — it parks just left of the page
+   * number so the two wayfinding marks read as one group. Sized for the page
+   * number's own width (≈ up to two digits) plus a hair of gap, tighter than the
+   * legacy --frame-page-reserve (6.25cqi) the centred rail used to clear. */
+  --footer-pag-reserve: calc(var(--frame-inset-x) + var(--_sec-1cqi, 1cqi) * 3.25);
   position: relative;
   /* Explicit frame inset on every side so the in-flow masthead + stage clear the
    * deck header (top) and keep their side margins EVEN on components that zero
@@ -15314,12 +15321,12 @@ section.form.fill-optical {
 }
 
 /* === lib/forms/tile/progress/progress.css === */
-/* progress Tile — section dot-rail in the footer-centre zone.
+/* progress Tile — the section dot-rail, parked beside the page number.
  * Self-contained Form Tile (issue #356): co-located with its kernel
  * (progress.transform.js) + manifest, bundled by tools/build-css.js into the
- * same cascade slot these rules held in base.variants.css. The footer Cell's
- * `section.form.has-progress > footer` yield rule (how the footer makes room for
- * this rail) is the footer Cell's concern and stays in base.variants.css. */
+ * same cascade slot these rules held in base.variants.css. POSITION belongs to
+ * the progress-centre Cell (lib/forms/cell/progress-centre) — these rules are
+ * appearance only. The legacy `has-progress` footer-yield is retired. */
 /* Appearance only — the progress-centre Cell (lib/forms/cell/progress-centre)
  * owns POSITION (so the rail is an independently-movable Cell). The dots + label
  * lay out right-aligned, so the group hugs the page number to its right. */
