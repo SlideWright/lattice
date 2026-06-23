@@ -116,12 +116,12 @@ The most configurable component — a feature or a warning sign, depending on yo
 
 <!-- _class: content -->
 
-## Two families, one ladder
+## One finish, more slides
 
 - A **comparison** (compare-prose) → a cover, a page per side, a verdict
 - A **feature panel** (split-panel) → the feature gets a cover, its points flow on
-- A **table** (list-tabular, compare-table) → rows paginate, the header repeats
-- Read-across *stages*; tabular *windows* — both opt in with `autosplit: on`, both owned by the layout
+- A **table** (list-tabular) → a cover, then the rows flow on — the same cover finish
+- The split reads as the *same deck*, just more of it — opt in with `autosplit: on`
 
 ---
 

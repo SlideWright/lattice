@@ -12,7 +12,7 @@ const { describe, test } = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
-const { carouselize, readSubjects, readFeature } = require('../../../lib/core/carousel');
+const { carouselize, readSubjects, readFeature, readRows } = require('../../../lib/core/carousel');
 const { splitSections } = require('../../../lib/core/split-sections');
 
 const fixture = fs.readFileSync(path.join(__dirname, 'fixtures/compare-prose.rendered.html'), 'utf8');
@@ -22,6 +22,9 @@ const recipe = { strategy: 'editorial' };
 const spFixture = fs.readFileSync(path.join(__dirname, 'fixtures/split-panel.rendered.html'), 'utf8');
 const [spSection] = splitSections(spFixture).filter((p) => p.type === 'section');
 const clsOf = (sec) => (sec.match(/\sclass="([^"]*)"/) || ['', ''])[1];
+
+const ltFixture = fs.readFileSync(path.join(__dirname, 'fixtures/list-tabular.rendered.html'), 'utf8');
+const [ltSection] = splitSections(ltFixture).filter((p) => p.type === 'section');
 
 describe('core: carousel — readSubjects', () => {
   test('extracts exactly two label/body subjects from the real compare-prose DOM', () => {
@@ -177,5 +180,49 @@ describe('core: carousel — feature-cover (split-panel)', () => {
 
   test('the editorial recipe does not match a split-panel section (strategy-gated)', () => {
     assert.equal(carouselize(spSection.openTag, spSection.inner, { strategy: 'editorial' }), null);
+  });
+});
+
+describe('core: carousel — cover-rows (list-tabular)', () => {
+  const cvRecipe = { strategy: 'cover-rows', perPage: 1 };
+  const clsOfLt = (sec) => (sec.match(/\sclass="([^"]*)"/) || ['', ''])[1];
+
+  test('readRows reads the leading-text label and the nested body of each row', () => {
+    const rows = readRows(ltSection.inner);
+    assert.equal(rows.length, 2);
+    assert.equal(rows[0].title, 'Confidence');
+    assert.match(rows[0].body, /Independent corroborating sources/);
+    assert.match(rows[0].body, /enterprise counts as one/); // both nested bullets joined
+    assert.doesNotMatch(rows[0].body, /<\/?li/);
+  });
+
+  test('emits a title cover then the rows windowed perPage at a time', () => {
+    const parts = carouselize(ltSection.openTag, ltSection.inner, cvRecipe); // 2 rows, perPage 1 → 2 pages
+    assert.equal(parts.length, 3); // cover + 2 row pages
+    assert.match(clsOfLt(parts[0]), /list-tabular-cover/);
+    assert.match(clsOfLt(parts[1]), /list-tabular-points/);
+    assert.match(clsOfLt(parts[2]), /list-tabular-points/);
+  });
+
+  test('the cover carries the table title (no watermark — a table has none)', () => {
+    const [cover] = carouselize(ltSection.openTag, ltSection.inner, cvRecipe);
+    assert.match(cover, /split-feat-h">The six signal dimensions/);
+    assert.doesNotMatch(cover, /split-feat-wm/);
+  });
+
+  test('shares the split-panel row finish (running header + split-pt classes)', () => {
+    const parts = carouselize(ltSection.openTag, ltSection.inner, cvRecipe);
+    assert.match(parts[1], /split-runhead">The six signal dimensions/);
+    assert.match(parts[1], /split-pt-t">Confidence/);
+  });
+
+  test('only the cover keeps the engine id; row pages drop it', () => {
+    const parts = carouselize(ltSection.openTag, ltSection.inner, cvRecipe);
+    assert.match(parts[0], /\sid="/);
+    for (const p of parts.slice(1)) assert.doesNotMatch(p, /\sid="/);
+  });
+
+  test('no rows or no heading → null, left for the ring', () => {
+    assert.equal(carouselize('<section class="list-tabular">', '<h2>only a title</h2>', cvRecipe), null);
   });
 });

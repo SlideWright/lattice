@@ -93,29 +93,41 @@ is `--fs-h1`, not `--fs-hero`, because a split-panel heading can be a full sente
 
 ## Result
 
-On the jargon deck in portrait, overflow fell **27 → 6** (auto-split alone left 10; the
-compare-prose carousels and split-panel covers resolved the narrative read-across). The
-remaining 6 are compare-code / decision / list-tabular — the layouts still on deck.
+On the jargon deck in portrait, overflow fell **27 → 5** (auto-split alone left 10; the
+compare-prose carousels, split-panel covers, and list-tabular covers resolved the
+read-across). The remaining 5 are compare-code / decision and three genuine floor cases
+(a single card/cell taller than the page, one over-long reading) — for the ring.
 
-### Tabular family — windowed, no bespoke transform (confirmed)
+### Tabular family — continuity beat plain pagination
 
-The tabular layouts need **no carousel** — the honest move is to paginate rows and
-repeat the header, which Slice A's `partitionAxis` already does (it repeats everything
-before the collection as `pre`). So this was just a **capacity contract**, not a
-transform:
+First cut shipped plain row-pagination (a `capacity.axis: item` contract — Slice A
+repeats the title, renumbers the `<ol>`). It *worked*, but the maintainer judged the
+PDF **utilitarian, not boardroom** — and, crucially, a different finish from the
+covers. The fidelity lens (a split must read as the *same deck*, just more of it) sent
+it back through the **5-iteration render-off**: cards / **cover→rows** / refined ledger /
+two-up grid / numbered register. The pick was **cover→rows** — the *same* accent
+cover→content finish as split-panel, for continuity.
 
-- **compare-table** already declared `capacity.axis: row` (sweet 4, hard 8) — verified
-  it splits a 12-row table into 3 pages of 4 with the `<thead>` repeated on each. No
-  change needed.
-- **list-tabular** is an `<ol>` of row-`<li>`s (read-across lives *within* a row, which
-  stays intact when split *between* rows), so it gets `capacity.axis: item` — Slice A
-  paginates the rows and repeats the `<h2>` title, renumbering the `<ol>`. One line of
-  manifest; no new code.
+- **list-tabular** → the **`cover-rows`** strategy: a title cover, then the rows windowed
+  (`readRows` reads each row's leading-text label + nested body). It shares the
+  `coverWindow` builder with split-panel's `feature-cover`, so the finish is identical by
+  construction — that is the continuity. CSS in `list-tabular.styles.css`, scoped to
+  `section.list-tabular-{cover,points}`.
+- **compare-table** keeps `capacity.axis: row` — its columns *are* the comparison (A vs
+  B), so it stays a real table that paginates with a repeated `<thead>` (verified a
+  12-row table splits 3×4). Re-authoring it to rows would destroy the read-across; a
+  matching cover is a possible later polish.
+
+**Continuity lesson:** "it fits" is the floor; a split must also wear the deck's finish.
+The `coverWindow` helper is now the shared spine for that finish across layouts.
 
 ## On deck
 
 - **compare-code** — two code blocks; a baseline → variant sequence (code can't drop-cap,
   so a code-native treatment, not the editorial one).
 - **decision** — verdict-native; likely an editorial variant.
+- **compare-prose fidelity revisit** — the editorial finish (drop-caps / pull-quote) reads
+  a step off the deck; re-run it against the fidelity lens (split-panel is the bar).
+- A possible **cover** for compare-table, to match the family.
 - A reading/point page that paginates its *own* over-long prose (still falls to the ring).
 - The agenda CSS-counter continuation fix (carries from Slice A).

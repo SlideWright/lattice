@@ -4346,17 +4346,6 @@
         "with-period"
       ],
       "familyModifiers": [],
-      "capacity": {
-        "axis": "item",
-        "min": 2,
-        "sweet": 5,
-        "soft": 7,
-        "hard": 9,
-        "escalateTo": [
-          "split across slides"
-        ],
-        "note": "row density crowds a tall box; paginate rows, repeat the title"
-      },
       "slots": {
         "title": {
           "selector": "h2",

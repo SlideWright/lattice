@@ -6342,6 +6342,45 @@ section.list-tabular.compact ol > li { padding:var(--sp-xs) 0; }
   }
 }
 
+/* ── Cover-rows carousel — list-tabular's owned SPLIT forms ────────────────────
+   An overflowing tabular list re-authors at export into a title COVER + the rows
+   windowed on clean pages (2026-06-23-read-across-carousel.md; the cover→content
+   finish picked for split-panel, reused for continuity). lib/core/carousel.js emits
+   `content list-tabular-split list-tabular-{cover,points} form`. Palette-blind. */
+
+/* Cover — the table title gets its own accent field (matching split-panel's cover). */
+section.list-tabular-cover {
+  background: var(--accent); color: var(--on-accent);
+  display: flex; flex-direction: column; justify-content: center; position: relative;
+}
+section.list-tabular-cover .split-feat-eye {
+  font-size: var(--fs-meta); letter-spacing: 0.2em; text-transform: uppercase; opacity: 0.85;
+}
+section.list-tabular-cover .split-feat-h {
+  font-size: var(--fs-h1); font-weight: 800; line-height: var(--lh-tight);
+  color: var(--on-accent); margin: var(--sp-xs) 0 var(--sp-md); max-width: 12em;
+}
+section.list-tabular-cover .split-feat-lede {
+  font-size: var(--fs-emphasis); line-height: var(--lh-snug); opacity: 0.92; max-width: 20em;
+}
+
+/* Row pages — the rows flow under a running header of the table title. */
+section.list-tabular-points .split-runhead {
+  font-size: var(--fs-meta); letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--text-muted); border-bottom: 1px solid var(--border);
+  padding-bottom: var(--sp-xs); margin-bottom: var(--sp-xl);
+}
+section.list-tabular-points .split-pts {
+  list-style: none; padding: 0; margin: 0;
+  display: flex; flex-direction: column; gap: var(--sp-lg);
+}
+section.list-tabular-points .split-pts > li { border-left: 3px solid var(--accent); padding-left: var(--sp-md); }
+section.list-tabular-points .split-pt-t {
+  display: block; font-weight: 800; color: var(--text-heading); font-size: var(--fs-h3);
+  margin-bottom: var(--sp-3xs);
+}
+section.list-tabular-points .split-pt-b { color: var(--text-body); font-size: var(--fs-body); line-height: var(--lh-base); }
+
 /* === lib/components/inventory/logo-wall/logo-wall.styles.css === */
 /* logo-wall — a grid of brand / partner / funder marks as social proof.
  * See lib/components/inventory/logo-wall/logo-wall.manifest.json for the contract.

@@ -23,16 +23,15 @@
       "row"
     ]
   },
-  "capacity": {
-    "axis": "item",
-    "min": 2,
-    "sweet": 5,
-    "soft": 7,
-    "hard": 9,
-    "escalateTo": [
-      "split across slides"
+  "split": {
+    "strategy": "cover-rows",
+    "family": "tabular",
+    "perPage": 3,
+    "roles": [
+      "cover",
+      "points"
     ],
-    "note": "row density crowds a tall box; paginate rows, repeat the title"
+    "note": "Overflowing tabular list re-authored as a title cover + the rows windowed (the split-panel cover finish), not clipped. lib/core/carousel.js."
   },
   "tags": [
     "reference",

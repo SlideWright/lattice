@@ -1623,8 +1623,6 @@ See [list.gallery.light.pdf](../../lib/components/inventory/list/list.gallery.li
 
 **Tags** `reference` · `overview` · `status`
 
-**Capacity** ~5 items (crowds past 7, overflows past 9) — past that, split across slides.
-
 Use for compact reference tables: glossary-style entries, key/value pairs, specs. Four primary variants (def, metric, spec, register) tune the visual treatment; secondary modifiers (rule, solid, stacked, outline) refine each.
 
 #### When to use
