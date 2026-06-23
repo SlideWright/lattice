@@ -115,4 +115,24 @@ describe('core: resplitDoc (measured pass)', () => {
     const { html } = resplitDoc(doc, [{ slide: 2, ratio: 1.9 }], cap);
     assert.deepEqual(nums(html), [1, 2, 3, 4]); // quote, cards×2, quote
   });
+
+  test('re-paginates the page-number badge so split copies do not repeat the original', () => {
+    // Two paginated slides; the second (cards) splits in two. The baked pagination
+    // (1, 2) must become 1, 2, 3 across the now-three pages — not 1, 2, 2.
+    const pg = (n, cls, inner) => `<section data-lattice-slide="${n}" data-lattice-pagination="${n}" data-lattice-pagination-total="2" class="${cls}">${inner}</section>`;
+    const doc = pg(1, 'quote', '<p>a</p>') + pg(2, 'cards', list(8));
+    const { html } = resplitDoc(doc, [{ slide: 2, ratio: 1.9 }], cap);
+    const pages = [...html.matchAll(/data-lattice-pagination="(\d+)"/g)].map((m) => Number(m[1]));
+    assert.deepEqual(pages, [1, 2, 3]); // monotonic — no repeated badge
+    assert.ok([...html.matchAll(/data-lattice-pagination-total="(\d+)"/g)].every((m) => m[1] === '3'));
+  });
+
+  test('a paginate:false slide (no pagination attr) does not advance the page counter', () => {
+    const doc =
+      '<section data-lattice-slide="1" class="title"><h1>cover</h1></section>' +
+      `<section data-lattice-slide="2" data-lattice-pagination="1" class="cards">${list(8)}</section>`;
+    const { html } = resplitDoc(doc, [{ slide: 2, ratio: 1.9 }], cap);
+    const pages = [...html.matchAll(/data-lattice-pagination="(\d+)"/g)].map((m) => Number(m[1]));
+    assert.deepEqual(pages, [1, 2]); // the cover carries none; the two cards pages are 1, 2
+  });
 });

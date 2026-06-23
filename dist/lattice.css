@@ -2751,6 +2751,63 @@ section.compare-prose.transition:not(:has(.compare-prose-inner)) > :is(ul, ol) >
   }
 }
 
+/* ── Editorial carousel — compare-prose's owned SPLIT forms ────────────────────
+   When an overflowing compare-prose can't fit two facing columns of prose in the
+   box, the Fit Ladder re-authors it as a short editorial sequence rather than
+   clipping (the "carousel", 2026-06-23-read-across-carousel.md; recipe C4, picked
+   from a 5-candidate render-off). lib/core/carousel.js emits the role sections
+   (`content compare-split compare-split-{lead,read,verdict} form`); these style
+   them. Palette-blind — every colour is a token. */
+section.compare-split { padding: var(--sp-2xl) var(--sp-2xl) calc(var(--sp-2xl) * 2.2); }
+
+/* Running kicker — the comparison title, carried small atop every frame. */
+section.compare-split .split-kicker {
+  font-size: var(--fs-meta); letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--text-muted); border-bottom: 1px solid var(--border);
+  padding-bottom: var(--sp-xs); margin-bottom: var(--sp-xl);
+}
+/* The page mark is the deck's own pagination badge (re-paginated after the split),
+   not a bespoke folio — so the carousel numbers consistently with the rest of the deck. */
+
+/* Lead — the cover: a promise of two readings, set in generous space. */
+section.compare-split-lead { display: flex; flex-direction: column; }
+section.compare-split-lead .split-cover-q {
+  font-size: var(--fs-h1); font-weight: 800; line-height: var(--lh-tight);
+  color: var(--text-heading); max-width: 11em; margin-top: auto;
+}
+section.compare-split-lead .split-cover-more {
+  margin-top: var(--sp-lg); margin-bottom: auto;
+  font-size: var(--fs-emphasis); letter-spacing: 0.02em; color: var(--accent);
+}
+
+/* Reading pages — one subject per article page, prose at an editorial measure. */
+section.compare-split-read .split-art-label {
+  font-size: var(--fs-h1); font-weight: 800; line-height: var(--lh-tight);
+  color: var(--text-heading); margin-bottom: var(--sp-lg);
+}
+section.compare-split-read .split-art-label .split-ord {
+  display: block; font-size: var(--fs-meta); letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--accent); font-weight: 600;
+  margin-bottom: var(--sp-sm);
+}
+section.compare-split-read .split-art {
+  font-size: var(--fs-emphasis); line-height: var(--lh-relaxed);
+  color: var(--text-body); max-width: 17em;
+}
+section.compare-split-read .split-art::first-letter {
+  font-size: 2.4em; font-weight: 800; line-height: 0.7; float: left;
+  padding: 0.08em 0.14em 0 0; color: var(--accent);
+}
+
+/* Verdict — the synthesis line as a pull-quote close. */
+section.compare-split-verdict { display: flex; flex-direction: column; justify-content: center; }
+section.compare-split-verdict .split-pullq {
+  font-size: var(--fs-h2); font-weight: 300; line-height: var(--lh-snug);
+  color: var(--text-heading); max-width: 13em;
+}
+section.compare-split-verdict .split-pullq::before { content: "\201C"; color: var(--accent); }
+section.compare-split-verdict .split-pullq::after { content: "\201D"; color: var(--accent); }
+
 /* === lib/components/comparison/compare-table/compare-table.styles.css === */
 /* compare-table — extracted from lib/_legacy.css (batch 4).
  * See lib/components/compare-table/compare-table.manifest.json for the component contract.

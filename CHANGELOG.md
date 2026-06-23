@@ -100,6 +100,23 @@ in patch versions.
 
 ### Added
 
+- **Read-across carousel — an overflowing comparison becomes a sequence, not a clip
+  (opt-in).** A read-across layout reads *across* its sides (compare-prose's two facing
+  columns), so it can't be divided between members the way a list can — past its box it
+  would clip. With `autosplit: on`, an overflowing **compare-prose** is now re-authored
+  at export as a short editorial **carousel**: a cover that promises "two readings", one
+  drop-cap article page per side, and a pull-quote verdict from the slide's synthesis
+  line. The comparison is *staged*, never sliced; each frame stands alone and reads in
+  order, with no shrinking and no author config. The recipe (`editorial`, the C4
+  treatment picked from a 5-candidate render-off) is **manifest-declared** — the layout
+  owns its split-forms (`split` block) — and applied by a pure transform
+  (`lib/core/carousel.js`) wired into the auto-split measured loop; a section that
+  doesn't parse as the expected shape is left for the overflow ring, never emitted
+  broken. Opt-in, so existing decks render unchanged. On the jargon deck in portrait
+  this took overflow from 27 → 8. Demo: `examples/read-across-carousel.md`. See
+  `engineering/decisions/2026-06-23-read-across-carousel.md`. *(split-panel /
+  compare-code and the tabular family are on deck.)*
+
 - **Auto-split — an over-capacity slide divides into several, automatically (opt-in).**
   Add `autosplit: on` to a deck's front-matter and, at export, any slide that overflows
   its box is divided into several slides that each fit — the heading repeats (marked
