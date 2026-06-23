@@ -9,7 +9,7 @@
 
 const { describe, test } = require('node:test');
 const assert = require('node:assert/strict');
-const { autoSplitDeck, resplitDoc, capacityForClass } = require('../../../lib/core/auto-split');
+const { autoSplitDeck, resplitDoc, capacityForClass, applyRails } = require('../../../lib/core/auto-split');
 
 const sec = (cls, inner) => `<section class="${cls}">${inner}</section>`;
 const docSec = (n, cls, inner) => `<section data-lattice-slide="${n}" class="${cls}">${inner}</section>`;
@@ -73,8 +73,8 @@ describe('core: autoSplitDeck', () => {
     const { html: out } = autoSplitDeck(html, cap);
     assert.equal((out.match(/<section/g) || []).length, 2);
     assert.equal((out.match(/id="2"/g) || []).length, 1); // only the first copy keeps it
-    assert.match(out, /<section class="cards" id="2">/); // first intact
-    assert.match(out, /<section class="cards">/); // continuation has no id
+    assert.match(out, /<section data-split-run="2" class="cards" id="2">/); // first intact, run-tagged
+    assert.match(out, /<section data-split-run="2" class="cards"><ul>/); // continuation: run-tagged, no id
   });
 
   test('capacityForClass: first capacity-bearing token wins; modifiers carry none', () => {
@@ -134,5 +134,50 @@ describe('core: resplitDoc (measured pass)', () => {
     const { html } = resplitDoc(doc, [{ slide: 2, ratio: 1.9 }], cap);
     const pages = [...html.matchAll(/data-lattice-pagination="(\d+)"/g)].map((m) => Number(m[1]));
     assert.deepEqual(pages, [1, 2]); // the cover carries none; the two cards pages are 1, 2
+  });
+});
+
+describe('core: applyRails', () => {
+  const railOf = (sectionHtml) => {
+    const m = sectionHtml.match(/<nav class="lat-split-rail"[\s\S]*?<\/nav>/);
+    if (!m) return null;
+    return { total: (m[0].match(/<span/g) || []).length, on: (m[0].match(/seg on/g) || []).length };
+  };
+  const run = (id, n, cls = 'x') => Array.from({ length: n }, () => `<section data-lattice-slide="0" data-split-run="${id}" class="${cls}"><p>p</p></section>`).join('');
+
+  test('stamps a k-of-N rail across each run, lit through the current page', () => {
+    const html = run('a', 3) + run('b', 2);
+    const out = applyRails(html);
+    const secs = out.match(/<section[\s\S]*?<\/section>/g);
+    assert.deepEqual(secs.map(railOf), [
+      { total: 3, on: 1 }, { total: 3, on: 2 }, { total: 3, on: 3 },
+      { total: 2, on: 1 }, { total: 2, on: 2 },
+    ]);
+  });
+
+  test('a lone section (run of one) and an untagged section get no rail', () => {
+    const html = run('solo', 1) + '<section data-lattice-slide="0" class="plain"><p>p</p></section>';
+    const out = applyRails(html);
+    assert.equal((out.match(/lat-split-rail/g) || []).length, 0);
+  });
+
+  test('idempotent — re-applying strips the prior rails and re-stamps the same result', () => {
+    const html = run('a', 4);
+    const once = applyRails(html);
+    assert.equal(applyRails(once), once);
+  });
+
+  test('whitespace gaps between members do not break a run', () => {
+    const html = run('a', 2).replace('</section><section', '</section>\n  <section');
+    const out = applyRails(html);
+    assert.deepEqual((out.match(/<section[\s\S]*?<\/section>/g)).map(railOf), [{ total: 2, on: 1 }, { total: 2, on: 2 }]);
+  });
+
+  test('ignores literal <section> text in a leading head prefix (CSS/comments)', () => {
+    const head = '<style>section.state{color:red}</style>';
+    const html = head + run('a', 2);
+    const out = applyRails(html);
+    assert.ok(out.startsWith(head)); // prefix untouched
+    assert.equal((out.match(/lat-split-rail/g) || []).length, 2);
   });
 });

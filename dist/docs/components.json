@@ -583,6 +583,18 @@
         "with-period"
       ],
       "familyModifiers": [],
+      "capacity": {
+        "axis": "item",
+        "min": 2,
+        "sweet": 4,
+        "soft": 5,
+        "hard": 6,
+        "escalateTo": [
+          "split across slides (auto with autosplit: on)",
+          "statute-stack"
+        ],
+        "note": "past six tiers the chain overflows a portrait box"
+      },
       "slots": {
         "heading": {
           "selector": "h2",
@@ -5757,6 +5769,17 @@
       "focusAxes": [
         "item"
       ],
+      "capacity": {
+        "axis": "item",
+        "min": 2,
+        "sweet": 4,
+        "soft": 5,
+        "hard": 6,
+        "escalateTo": [
+          "split across slides (auto with autosplit: on)"
+        ],
+        "note": "past six Q/A pairs the column overflows a portrait box"
+      },
       "slots": {
         "eyebrow": {
           "selector": "p > code:only-child",
@@ -6523,6 +6546,18 @@
         "with-period"
       ],
       "familyModifiers": [],
+      "capacity": {
+        "axis": "item",
+        "min": 2,
+        "sweet": 4,
+        "soft": 5,
+        "hard": 6,
+        "escalateTo": [
+          "split across slides (auto with autosplit: on)",
+          "list-tabular"
+        ],
+        "note": "past six changes the vertical list overflows a portrait box"
+      },
       "slots": {
         "heading": {
           "selector": "h2",
@@ -7486,6 +7521,18 @@
         "with-period"
       ],
       "familyModifiers": [],
+      "capacity": {
+        "axis": "item",
+        "min": 2,
+        "sweet": 3,
+        "soft": 4,
+        "hard": 5,
+        "escalateTo": [
+          "split across slides (auto with autosplit: on)",
+          "list-tabular"
+        ],
+        "note": "past four jurisdictions the three-column rail collapses"
+      },
       "slots": {
         "heading": {
           "selector": "h2",

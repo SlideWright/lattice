@@ -11,6 +11,22 @@
   "bucket": "legal",
   "form": "ledger",
   "substance": "structure",
+  "capacity": {
+    "axis": "item",
+    "min": 2,
+    "sweet": 3,
+    "soft": 4,
+    "hard": 5,
+    "escalateTo": ["split across slides (auto with autosplit: on)", "list-tabular"],
+    "note": "past four jurisdictions the three-column rail collapses"
+  },
+  "split": {
+    "strategy": "cover-paginate",
+    "axis": "item",
+    "perPage": 2,
+    "intro": "Jurisdiction by jurisdiction",
+    "note": "Overflowing stack splits as an accent cover → its own native cards paginated (never flattened). lib/core/carousel.js cover-paginate."
+  },
   "tags": ["citation", "reference", "compliance"],
   "description": "Citation hierarchy — federal / state / local rows with citation, headline obligation, and status.",
   "purpose": "Use when three or four parallel jurisdictions need to read at a glance: each row carries the jurisdiction label, the citation, the obligation summary, and an effective-date marker.",

@@ -1530,7 +1530,7 @@ const puppeteer = loadPuppeteer();
   // DENSITY overflow a count threshold can't see — dominant in a tall/portrait box.
   // Opt-in (`autosplit: on`). See lib/core/auto-split.js + the-fit-spine.md §3.
   if (AUTOSPLIT) {
-    const { resplitDoc } = require('./lib/core/auto-split');
+    const { resplitDoc, applyRails } = require('./lib/core/auto-split');
     for (let pass = 1; pass <= 5 && overflow.some((o) => o.canSplit); pass++) {
       // Only the slides whose OWN collection drives the overflow (canSplit); size each
       // split from its collection-relative ratio so the loop converges instead of
@@ -1546,6 +1546,18 @@ const puppeteer = loadPuppeteer();
       });
       overflow = await measureOverflow();
       if (!QUIET) console.log(`  auto-split (measured) pass ${pass}: ${r.changed} slide(s) divided to fit`);
+    }
+    // Splitting has converged — NOW stamp the k-of-N progress rail, run by run (a slide may
+    // have split across several passes; only the final grouping knows each run's true
+    // length). One re-render so the rails land in the exported DOM.
+    const railed = applyRails(cleanDocHtml);
+    if (railed !== cleanDocHtml) {
+      cleanDocHtml = railed;
+      fs.writeFileSync(outHtml, cleanDocHtml);
+      await page.goto(`file://${path.resolve(outHtml)}`, { waitUntil: 'networkidle0', timeout: 60000 });
+      await page.evaluate(async () => {
+        try { await Promise.all([...document.fonts].map((f) => f.load().catch(() => {}))); await document.fonts.ready; } catch (_e) { /* fonts API unavailable */ }
+      });
     }
   }
   const overflowing = overflow.map((o) => o.slide);

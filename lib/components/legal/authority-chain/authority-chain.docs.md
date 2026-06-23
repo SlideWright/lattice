@@ -6,6 +6,8 @@
 
 **Tags** `regulation` · `citation` · `sequence`
 
+**Capacity** ~4 items (crowds past 5, overflows past 6) — past that, split across slides (auto with autosplit: on) / statute-stack.
+
 Use when the audience needs to see how a rule descends: what the statute says, how the agency implemented it, what guidance interpreted it, and what cases have applied it. Ordered list because the order is the argument.
 
 ## When to use

@@ -100,6 +100,19 @@ in patch versions.
 
 ### Added
 
+- **Dense list layouts split with a cover, then their OWN native cards (`cover-paginate`).**
+  Five dense list/register layouts — **statute-stack**, **regulatory-update**,
+  **authority-chain**, **q-and-a** (legal/inventory), and **glossary** — now auto-split
+  instead of clipping, with `autosplit: on`. Unlike the read-across carousels (which
+  re-author the body into generic rows), `cover-paginate` keeps the layout's *own* finish:
+  an accent **cover** (heading hero + the manifest `split.intro` lead-in + any eyebrow)
+  leads into the layout's native cards paginated across clean pages — the bordered statute
+  cards, the numbered regulatory rows, the authority chain's connectors, the Q/A counters,
+  the glossary's term/definition table (its `<thead>` repeats per page). The cover is one
+  shared accent field for the whole batch; the bodies stay byte-for-byte native. The body
+  cut is sized from the measured overflow so it lands in balanced pages, and a re-split
+  guard lets a still-dense page paginate further without growing a second cover. Demo:
+  `examples/cover-paginate.md`. See `engineering/decisions/2026-06-23-read-across-carousel.md`.
 - **Auto-split connective chrome — a cover lead-in and a progress rail tie a split
   set together.** Every carousel cover now carries a per-layout, manifest-declared
   lead-in (`split.intro`, e.g. compare-prose "Side by side →", decision "The

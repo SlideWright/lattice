@@ -5,6 +5,8 @@
   "function": "inventory",
   "form": "stack",
   "substance": "structure",
+  "capacity": { "axis": "item", "min": 2, "sweet": 4, "soft": 5, "hard": 6, "escalateTo": ["split across slides (auto with autosplit: on)"], "note": "past six Q/A pairs the column overflows a portrait box" },
+  "split": { "strategy": "cover-paginate", "axis": "item", "perPage": 3, "intro": "Question by question", "note": "Overflowing Q&A splits as an accent cover → its own native pairs paginated (never flattened). lib/core/carousel.js cover-paginate." },
   "adapt": {
     "mode": "reflow",
     "families": [

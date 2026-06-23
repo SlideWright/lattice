@@ -1029,3 +1029,21 @@ section.safe[data-orientation='square'] :is(.cell-footer, .tile-meta, [class*='p
   background: currentColor; opacity: 0.22;
 }
 .lat-split-rail .seg.on { opacity: 0.8; }
+
+/* ── Shared cover-paginate cover (lib/core/carousel.js `cover-paginate`) ──────────
+   The dense list / legal layouts (statute-stack, regulatory-update, glossary, q-and-a,
+   authority-chain, obligation-matrix) split as an accent COVER → their OWN native cards
+   paginated. The read-across family duplicates this accent field per layout; this batch
+   shares ONE cover (HARD RULE #15) since the body stays native — only the cover is new.
+   Matches the read-across covers' finish so a split reads as the same deck. Palette-blind. */
+section.lat-split-cover {
+  background: var(--accent); color: var(--on-accent);
+  display: flex; flex-direction: column; justify-content: center; position: relative;
+}
+section.lat-split-cover .split-feat-eye {
+  font-size: var(--fs-meta); letter-spacing: 0.2em; text-transform: uppercase; opacity: 0.85;
+}
+section.lat-split-cover .split-feat-h {
+  font-size: var(--fs-h1); font-weight: 800; line-height: var(--lh-tight);
+  color: var(--on-accent); margin: var(--sp-xs) 0 var(--sp-md); max-width: 14em;
+}
