@@ -27,6 +27,12 @@ in patch versions.
 
 ### Fixed
 
+- **A split `compare-code` block now wears the standard code frame.** When an overflowing
+  compare-code splits to one block per page (`cover-code`), the block pages rendered the
+  highlighted code *naked* on the slide — the `compare-code-block` class never matched the
+  unsplit layout's `section.compare-code pre` frame rule. The split block now reuses that
+  exact frame (`--code-bg` panel, `--spectrum` accent strip, rounded corners, padding) plus
+  the compact code size and last-resort wrap, so a split reads as the same deck.
 - **`q-and-a`'s index number no longer collides with the question on portrait.** The "01"
   counter is set in `--fs-message`, which grows toward portrait, but the index gutter was a
   fixed step — so the number cleared the question in landscape yet ran straight into it
