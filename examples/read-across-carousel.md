@@ -66,6 +66,40 @@ The conclusion came first; the evaluation was built to hold it. Everyone in the 
 
 ---
 
+<!-- _class: split-panel watermark -->
+
+`Section 01 · Deep dive`
+
+## Scoring Model Deep Dive
+
+The most configurable component — a feature or a warning sign, depending on your team. Six dimensions:
+
+- Confidence
+  - Independent corroborating sources, 1–5. Enterprise customers count as 1, regardless of volume.
+- Recency
+  - Time-decay, configurable half-life. Set to two weeks, then surprised only recent news scores.
+- Strategic Relevance
+  - Owner-scored, 1–5. A 5 correlates with whoever is presenting the roadmap this quarter.
+- Source Diversity
+  - Rewards breadth. In practice rewards whoever subscribes to the most newsletters.
+- Volatility
+  - Penalizes signals that swing. Also penalizes the only signal that caught the last surprise.
+- Owner Bias
+  - The correction nobody applies, scored by the owner it is meant to correct.
+
+---
+
+<!-- _class: content -->
+
+## Two shapes, two treatments
+
+- A **comparison** (compare-prose) → a cover, a page per side, a verdict
+- A **feature panel** (split-panel) → the feature gets a cover, its points flow on
+- Both stage instead of slicing; both opt in with `autosplit: on`
+- The layout *owns* its split-forms — declared in its manifest
+
+---
+
 <!-- _class: closing -->
 
 # More slides, never a clipped comparison

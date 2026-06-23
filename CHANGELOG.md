@@ -100,6 +100,15 @@ in patch versions.
 
 ### Added
 
+- **Read-across carousel — split-panel joins (the `feature-cover` strategy).** An
+  overflowing **split-panel** (a featured panel beside its supporting points) now
+  re-authors at export into a **feature cover** — the watermark/heading/lede get a
+  full accent cover — followed by the supporting points flowed onto clean pages under
+  a running header (`perPage` at a time), rather than clipping. Same opt-in
+  (`autosplit: on`), same manifest-declared `split` recipe and shared `carouselize`
+  kernel as compare-prose; the treatment (SP3) was picked from a 3-candidate render-off.
+  On the jargon deck in portrait, overflow now falls 27 → 6. See
+  `engineering/decisions/2026-06-23-read-across-carousel.md`.
 - **Read-across carousel — an overflowing comparison becomes a sequence, not a clip
   (opt-in).** A read-across layout reads *across* its sides (compare-prose's two facing
   columns), so it can't be divided between members the way a list can — past its box it

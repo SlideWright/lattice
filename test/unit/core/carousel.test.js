@@ -12,12 +12,15 @@ const { describe, test } = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
-const { carouselize, readSubjects } = require('../../../lib/core/carousel');
+const { carouselize, readSubjects, readFeature } = require('../../../lib/core/carousel');
 const { splitSections } = require('../../../lib/core/split-sections');
 
 const fixture = fs.readFileSync(path.join(__dirname, 'fixtures/compare-prose.rendered.html'), 'utf8');
 const [section] = splitSections(fixture).filter((p) => p.type === 'section');
 const recipe = { strategy: 'editorial' };
+
+const spFixture = fs.readFileSync(path.join(__dirname, 'fixtures/split-panel.rendered.html'), 'utf8');
+const [spSection] = splitSections(spFixture).filter((p) => p.type === 'section');
 const clsOf = (sec) => (sec.match(/\sclass="([^"]*)"/) || ['', ''])[1];
 
 describe('core: carousel — readSubjects', () => {
@@ -110,5 +113,69 @@ describe('core: carousel — carouselize (editorial)', () => {
     for (const p of carouselize(section.openTag, section.inner, recipe)) {
       assert.doesNotMatch(p, /split-folio/);
     }
+  });
+});
+
+describe('core: carousel — feature-cover (split-panel)', () => {
+  const cvRecipe = { strategy: 'feature-cover', perPage: 2 };
+  const clsOfSp = (sec) => (sec.match(/\sclass="([^"]*)"/) || ['', ''])[1];
+
+  test('readFeature extracts watermark, eyebrow, heading, lede, and points from the real DOM', () => {
+    const f = readFeature(spSection.inner);
+    assert.equal(f.watermark, 'S');
+    assert.equal(f.heading, 'Scoring Model Deep Dive');
+    assert.match(f.eyebrow, /Section 01/);
+    assert.match(f.lede, /most configurable component/);
+    assert.equal(f.points.length, 3);
+    assert.equal(f.points[0].title, 'Confidence');
+    assert.doesNotMatch(f.points[0].body, /<\/?li/); // multi-bullet join is clean
+  });
+
+  test('emits a feature cover then the points paginated perPage at a time', () => {
+    const parts = carouselize(spSection.openTag, spSection.inner, cvRecipe); // 3 points, perPage 2 → 1+1 pages? 2+1
+    assert.equal(parts.length, 3); // cover + ceil(3/2)=2 point pages
+    assert.match(clsOfSp(parts[0]), /split-panel-cover/);
+    assert.match(clsOfSp(parts[1]), /split-panel-points/);
+    assert.match(clsOfSp(parts[2]), /split-panel-points/);
+  });
+
+  test('the cover carries the feature; the watermark sits in a bleed container', () => {
+    const [cover] = carouselize(spSection.openTag, spSection.inner, cvRecipe);
+    assert.match(cover, /split-feat-h">Scoring Model Deep Dive</);
+    assert.match(cover, /split-feat-bleed"[^>]*><div class="split-feat-wm">S</);
+  });
+
+  test('every point page repeats the feature heading as a running header', () => {
+    const parts = carouselize(spSection.openTag, spSection.inner, cvRecipe);
+    for (const p of parts.slice(1)) assert.match(p, /split-runhead">Scoring Model Deep Dive</);
+  });
+
+  test('only the cover keeps the engine id; point pages drop it', () => {
+    const parts = carouselize(spSection.openTag, spSection.inner, cvRecipe);
+    assert.match(parts[0], /\sid="/);
+    for (const p of parts.slice(1)) assert.doesNotMatch(p, /\sid="/);
+  });
+
+  test('default variant: eyebrow (span.panel-eyebrow) + lede (panel-LEFT <p>) survive on the cover', () => {
+    // The default/metric/steps variants render the eyebrow as <span class="panel-eyebrow">
+    // and move the lede <p> into panel-left — not the <code>/right-panel shape of watermark.
+    const inner =
+      '<div class="panel-left"><span class="panel-eyebrow">Q2 board review</span><h2>Renewals held.</h2><p>The quarter closed on plan.</p></div>' +
+      '<div class="panel-right"><ul><li><strong>One</strong><ul><li>Body one.</li></ul></li><li><strong>Two</strong><ul><li>Body two.</li></ul></li></ul></div>';
+    const f = readFeature(inner);
+    assert.equal(f.eyebrow, 'Q2 board review');
+    assert.equal(f.lede, 'The quarter closed on plan.');
+    assert.equal(f.heading, 'Renewals held.');
+    const [cover] = carouselize('<section data-lattice-slide="1" class="split-panel form">', inner, cvRecipe);
+    assert.match(cover, /split-feat-eye">Q2 board review</);
+    assert.match(cover, /split-feat-lede">The quarter closed on plan.</);
+  });
+
+  test('no points (or no panel-right) → null, left for the ring', () => {
+    assert.equal(carouselize('<section class="split-panel">', '<div class="panel-left"><h2>x</h2></div>', cvRecipe), null);
+  });
+
+  test('the editorial recipe does not match a split-panel section (strategy-gated)', () => {
+    assert.equal(carouselize(spSection.openTag, spSection.inner, { strategy: 'editorial' }), null);
   });
 });

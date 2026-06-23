@@ -10221,6 +10221,60 @@ section.split-panel :is(ul,ol) > li > strong ~ * { font-weight: 400; }
 section.split-panel[data-orientation="portrait"] { flex-direction: column; }
 section.split-panel[data-orientation="portrait"] .panel-left { width: auto; }
 
+/* ── Feature-cover carousel — split-panel's owned SPLIT forms ──────────────────
+   When an overflowing split-panel can't fit its heavy feature panel beside its
+   supporting points in a tall box, the Fit Ladder re-authors it as a sequence
+   (2026-06-23-read-across-carousel.md; recipe SP3): the feature gets a full cover,
+   then the points flow on clean pages. lib/core/carousel.js emits the role sections
+   (`content split-panel-split split-panel-{cover,points} form`). Palette-blind. */
+
+/* Cover — the feature gets its moment: accent field, watermark, hero heading. */
+section.split-panel-cover {
+  background: var(--accent); color: var(--on-accent);
+  display: flex; flex-direction: column; justify-content: center;
+  position: relative;
+}
+/* The watermark bleeds off the corner — but a positioned descendant overflowing the
+   section inflates its scrollWidth/Height (which the overflow measure reads as a clip),
+   so contain it in a box that fills the section and is the scroll container for the
+   bleed. The section's own overflow is left to the `content` layer. */
+section.split-panel-cover .split-feat-bleed {
+  position: absolute; inset: 0; overflow: hidden; pointer-events: none;
+}
+section.split-panel-cover .split-feat-wm {
+  position: absolute; right: -0.08em; bottom: -0.28em; line-height: 0.8;
+  font-size: 20em; font-weight: 800; opacity: 0.13; pointer-events: none;
+}
+section.split-panel-cover .split-feat-eye {
+  font-size: var(--fs-meta); letter-spacing: 0.2em; text-transform: uppercase; opacity: 0.85;
+}
+section.split-panel-cover .split-feat-h {
+  /* h1, not hero — a split-panel heading can be a full sentence, and hero overflows
+     the cover past ~10 words. h1 keeps a short title dramatic and a long one fitting. */
+  font-size: var(--fs-h1); font-weight: 800; line-height: var(--lh-tight);
+  color: var(--on-accent); margin: var(--sp-xs) 0 var(--sp-md); max-width: 12em;
+}
+section.split-panel-cover .split-feat-lede {
+  font-size: var(--fs-emphasis); line-height: var(--lh-snug); opacity: 0.92; max-width: 20em;
+}
+
+/* Point pages — the supporting points flow under a running header of the feature. */
+section.split-panel-points .split-runhead {
+  font-size: var(--fs-meta); letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--text-muted); border-bottom: 1px solid var(--border);
+  padding-bottom: var(--sp-xs); margin-bottom: var(--sp-xl);
+}
+section.split-panel-points .split-pts {
+  list-style: none; padding: 0; margin: 0;
+  display: flex; flex-direction: column; gap: var(--sp-lg);
+}
+section.split-panel-points .split-pts > li { border-left: 3px solid var(--accent); padding-left: var(--sp-md); }
+section.split-panel-points .split-pt-t {
+  display: block; font-weight: 800; color: var(--text-heading); font-size: var(--fs-h3);
+  margin-bottom: var(--sp-3xs);
+}
+section.split-panel-points .split-pt-b { color: var(--text-body); font-size: var(--fs-body); line-height: var(--lh-base); }
+
 /* === lib/components/chart/state-chart/state-chart.styles.css === */
 /* state-chart — native state machine diagram, browser-measured layout.
  *

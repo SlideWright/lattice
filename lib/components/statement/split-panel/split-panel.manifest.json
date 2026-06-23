@@ -1,15 +1,45 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "split-panel",
-  "adapt": { "mode": "reflow", "priority": ["heading", "lede", "points", "eyebrow"] },
+  "adapt": {
+    "mode": "reflow",
+    "priority": [
+      "heading",
+      "lede",
+      "points",
+      "eyebrow"
+    ]
+  },
+  "split": {
+    "strategy": "feature-cover",
+    "family": "narrative",
+    "perPage": 3,
+    "roles": [
+      "cover",
+      "points"
+    ],
+    "note": "Read-across (asymmetric): an overflowing feature+points panel is re-authored as a feature cover followed by the supporting points flowed onto clean pages, rather than clipped. lib/core/carousel.js."
+  },
   "function": "statement",
   "form": "panel",
   "substance": "structure",
   "bucket": "statement",
-  "tags": ["summary", "board-deck", "hero-number", "pull-quote", "takeaway"],
+  "tags": [
+    "summary",
+    "board-deck",
+    "hero-number",
+    "pull-quote",
+    "takeaway"
+  ],
   "description": "Featured left panel + supporting right zone — one prominent claim beside the points that substantiate it.",
   "purpose": "Use when one prominent element (a heading, a hero number, a pull-quote, a phase) deserves a dedicated panel and the right side carries the supporting points. The default anchors a heading; variants reshape what the panel features: `metric` (hero number, light-left), `pullquote` (pull-quote), `steps` (numbered step-timeline), `watermark` (accent panel + letterform + meta footer). For a binary decision with a verdict, reach for `split-compare`.",
-  "variants": ["metric", "pullquote", "steps", "watermark", "mirror"],
+  "variants": [
+    "metric",
+    "pullquote",
+    "steps",
+    "watermark",
+    "mirror"
+  ],
   "slots": {
     "eyebrow": {
       "selector": "p:first-of-type > code",
@@ -64,10 +94,22 @@
     }
   ],
   "related": [
-    { "name": "split-compare", "when": "a binary decision with a recommendation card" },
-    { "name": "compare-prose", "when": "two co-equal options side by side" },
-    { "name": "big-number", "when": "the hero number is the whole slide, with no supporting list" },
-    { "name": "list-steps", "when": "an ordered process without a left anchor panel" }
+    {
+      "name": "split-compare",
+      "when": "a binary decision with a recommendation card"
+    },
+    {
+      "name": "compare-prose",
+      "when": "two co-equal options side by side"
+    },
+    {
+      "name": "big-number",
+      "when": "the hero number is the whole slide, with no supporting list"
+    },
+    {
+      "name": "list-steps",
+      "when": "an ordered process without a left anchor panel"
+    }
   ],
   "variantDocs": {
     "metric": {
