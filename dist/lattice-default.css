@@ -2445,12 +2445,23 @@ section.compare-code-block .split-runhead {
   color: var(--accent); border-bottom: 1px solid var(--border);
   padding-bottom: var(--sp-xs); margin-bottom: var(--sp-lg);
 }
-section.compare-code-block pre { max-width: 100%; margin: 0; }
-/* A single code block gets the full width (vs the side-by-side original), but a very
-   wide line can still overrun a portrait box — code can't reflow. Use the compact code
-   size and wrap as a last resort so the block fits without dropping below readable. */
-section.compare-code-block pre { font-size: var(--fs-body-compact); }
-section.compare-code-block pre code { white-space: pre-wrap; overflow-wrap: anywhere; }
+/* The block page reuses the SAME code frame as the unsplit layout (`section.compare-code
+   pre`): the `--code-bg` panel, the `--spectrum` accent strip, rounded corners and
+   padding — so a split code block reads as the same deck. Highlighting (hljs spans) is
+   carried verbatim. A single block gets the full width; a very wide line wraps as a last
+   resort so it fits without dropping the type below readable. */
+section.compare-code-block pre {
+  margin: 0; max-width: 100%; box-sizing: border-box;
+  border-radius: var(--radius-md); overflow: hidden;
+  background: var(--spectrum) bottom / 100% 3px no-repeat, var(--code-bg);
+  padding: var(--sp-md) var(--sp-lg);
+  padding-bottom: calc(var(--sp-md) + 0.234375cqi);
+}
+section.compare-code-block pre > code {
+  font-family: var(--font-mono); font-size: var(--fs-body-compact); line-height: var(--lh-base);
+  color: var(--code-text); background: none; padding: 0; display: block;
+  white-space: pre-wrap; overflow-wrap: anywhere;
+}
 
 /* === lib/components/comparison/compare-prose/compare-prose.styles.css === */
 /* compare-prose — extracted from lib/_legacy.css (batch 5).
