@@ -920,10 +920,15 @@ const SPLIT_CAP = (() => {
   const map = {};
   for (const m of require('./lib/components').loadAll()) {
     const axis = m.capacity?.axis ?? m.adapt?.capacity?.axis;
-    if (axis) map[m.name] = { axis, hard: m.capacity?.hard ?? null, sweet: m.capacity?.sweet ?? null, soft: m.capacity?.soft ?? null };
+    // A layout joins the split registry if it can paginate (has a capacity axis) OR
+    // declares a carousel `split` recipe (read-across re-authored as a sequence).
+    if (axis || m.split) map[m.name] = { axis: axis ?? null, hard: m.capacity?.hard ?? null, sweet: m.capacity?.sweet ?? null, soft: m.capacity?.soft ?? null, split: m.split ?? null };
   }
   return map;
 })();
+// The layout class tokens that carouselize owns (read-across re-authored as a
+// sequence) — handed to the browser overflow measure so it marks them splittable.
+const CAROUSEL_NAMES = Object.keys(SPLIT_CAP).filter((n) => SPLIT_CAP[n].split);
 // Slide geometry — ONE registry (HARD RULE #1). The page template needs pixel
 // dimensions for the puppeteer PDF; rather than duplicate a size table (which
 // drifted — it used to omit 16:9 and silently rendered it as hd), resolve the
@@ -1483,7 +1488,7 @@ const puppeteer = loadPuppeteer();
   // clientHeight) — the signal both the author warning and the measured auto-split
   // pass below read. Scope to real slide sections only — `<section>` literals inside
   // code blocks parse as nested DOM and would pollute the indices.
-  const measureOverflow = () => page.evaluate(() => {
+  const measureOverflow = () => page.evaluate((carouselClasses) => {
     const TOL = 12; // filter sub-pixel rounding; see lattice-runtime.js
     const out = [];
     document.querySelectorAll('section[data-lattice-slide]').forEach((s, i) => {
@@ -1492,6 +1497,14 @@ const puppeteer = loadPuppeteer();
       if (!over) return;
       const C = s.clientHeight;
       const ratio = C > 0 ? s.scrollHeight / C : 2;
+      // A read-across layout with a carousel `split` recipe (compare-prose) is
+      // re-authored as a sequence, not divided by collection — so a vertical overflow
+      // is always actionable; mark it splittable and let resplitDoc's carousel branch
+      // own it (ratio is irrelevant to a structural re-author).
+      if (vOver && carouselClasses.some((c) => s.classList.contains(c))) {
+        out.push({ slide: i + 1, ratio, canSplit: true, splitRatio: ratio });
+        return;
+      }
       // The auto-splitter only divides a list (ul/ol) or table — so a split can only
       // make the slide fit if THAT collection is the height driver. Measure the tallest
       // such collection and the headroom the surrounding content leaves: if the
@@ -1507,7 +1520,7 @@ const puppeteer = loadPuppeteer();
       out.push({ slide: i + 1, ratio, canSplit, splitRatio });
     });
     return out;
-  });
+  }, CAROUSEL_NAMES);
   let overflow = await measureOverflow();
   // MEASURED auto-split — the loop that makes "split" fit REAL boxes. Divide every
   // overflowing SPLITTABLE slide by how much it overflows, re-render, re-measure,

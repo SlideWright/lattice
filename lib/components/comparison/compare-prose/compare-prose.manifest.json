@@ -20,7 +20,23 @@
       "sides"
     ]
   },
-  "tags": ["tradeoff", "contrast", "recommendation", "transformation", "retrospective"],
+  "split": {
+    "strategy": "editorial",
+    "family": "narrative",
+    "roles": [
+      "lead",
+      "read",
+      "verdict"
+    ],
+    "note": "Read-across: an overflowing two-up is re-authored as an editorial carousel (cover → one article page per subject → optional pull-quote verdict) rather than clipped. lib/core/carousel.js."
+  },
+  "tags": [
+    "tradeoff",
+    "contrast",
+    "recommendation",
+    "transformation",
+    "retrospective"
+  ],
   "description": "Two prose options side-by-side with a labeled corner tag on each.",
   "purpose": "Use to weigh two approaches against each other in body text. Add the `chosen` or `decision` modifier to mark the verdict; add `vertical` to stack top/bottom instead of side-by-side.",
   "variants": [
