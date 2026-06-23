@@ -21,14 +21,14 @@
     ]
   },
   "split": {
-    "strategy": "editorial",
+    "strategy": "cover-sides",
     "family": "narrative",
     "roles": [
-      "lead",
-      "read",
+      "cover",
+      "points",
       "verdict"
     ],
-    "note": "Read-across: an overflowing two-up is re-authored as an editorial carousel (cover → one article page per subject → optional pull-quote verdict) rather than clipped. lib/core/carousel.js."
+    "note": "FIDELITY: cover (the question) → one subject per page → verdict, on the shared cover finish (was editorial). lib/core/carousel.js."
   },
   "tags": [
     "tradeoff",

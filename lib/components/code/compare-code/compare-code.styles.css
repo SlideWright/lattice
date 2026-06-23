@@ -76,3 +76,30 @@ section.compare-code:not(:has(.code-cols)):has(> p ~ h2) > p:nth-of-type(3) { gr
 section.compare-code:not(:has(.code-cols)):has(> p ~ h2) > pre:nth-of-type(1) { grid-column:1; grid-row:4; margin:0; }
 section.compare-code:not(:has(.code-cols)):has(> p ~ h2) > pre:nth-of-type(2) { grid-column:2; grid-row:4; margin:0; }
 section.compare-code:not(:has(.code-cols)):has(> p ~ h2) > blockquote         { grid-column:1 / -1; grid-row:5; margin-top:var(--sp-xs); }
+
+/* ── Cover-code carousel — compare-code's owned SPLIT forms ────────────────────
+   Two labelled code blocks read across; code can't reflow into a row, so an overflowing
+   compare-code re-authors into a title COVER then ONE code block per page at full width
+   under its label (2026-06-23-read-across-carousel.md). lib/core/carousel.js emits
+   `content compare-code-split compare-code-{cover,block} form`. Palette-blind. */
+section.compare-code-cover {
+  background: var(--accent); color: var(--on-accent);
+  display: flex; flex-direction: column; justify-content: center; position: relative;
+}
+section.compare-code-cover .split-feat-eye { font-size: var(--fs-meta); letter-spacing: 0.2em; text-transform: uppercase; opacity: 0.85; }
+section.compare-code-cover .split-feat-h {
+  font-size: var(--fs-h1); font-weight: 800; line-height: var(--lh-tight);
+  color: var(--on-accent); margin: var(--sp-xs) 0 var(--sp-md); max-width: 13em;
+}
+section.compare-code-cover .split-feat-lede { font-size: var(--fs-emphasis); opacity: 0.92; }
+section.compare-code-block .split-runhead {
+  font-size: var(--fs-meta); letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--accent); border-bottom: 1px solid var(--border);
+  padding-bottom: var(--sp-xs); margin-bottom: var(--sp-lg);
+}
+section.compare-code-block pre { max-width: 100%; margin: 0; }
+/* A single code block gets the full width (vs the side-by-side original), but a very
+   wide line can still overrun a portrait box — code can't reflow. Use the compact code
+   size and wrap as a last resort so the block fits without dropping below readable. */
+section.compare-code-block pre { font-size: var(--fs-body-compact); }
+section.compare-code-block pre code { white-space: pre-wrap; overflow-wrap: anywhere; }

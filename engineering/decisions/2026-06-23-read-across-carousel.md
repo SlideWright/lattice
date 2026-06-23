@@ -5,7 +5,15 @@ summary: The Fit Ladder's SPLIT move, extended to READ-ACROSS layouts that can't
 
 # Read-across carousel — split what can't paginate
 
-**Date:** 2026-06-23 · **Status:** In progress — compare-prose `editorial`, split-panel `feature-cover`, and the tabular family (list-tabular / compare-table) shipped; compare-code / decision on deck.
+**Date:** 2026-06-23 · **Status:** Shipped — all five read-across layouts (compare-prose, split-panel, list-tabular, decision, compare-code) split on **one shared accent cover finish**. Jargon portrait overflow **27 → 2** (the last two are genuine floor cases — a single card taller than the page).
+
+> **Fidelity correction (the through-line).** The first compare-prose cut shipped an
+> *editorial* finish (drop-caps, pull-quote, magazine cover). The maintainer judged it
+> a step off the deck — "a split shouldn't look like an entirely different finish than
+> the non-split." split-panel's accent **cover→content** was named the bar. So the whole
+> family was **unified on that one finish**: compare-prose's editorial was retired for
+> `cover-sides`, and decision / compare-code were built to match. "It fits" is the floor;
+> a split must also wear the deck's finish. The shared `coverWindow` builder is that spine.
 
 ## The problem
 
@@ -93,10 +101,10 @@ is `--fs-h1`, not `--fs-hero`, because a split-panel heading can be a full sente
 
 ## Result
 
-On the jargon deck in portrait, overflow fell **27 → 5** (auto-split alone left 10; the
-compare-prose carousels, split-panel covers, and list-tabular covers resolved the
-read-across). The remaining 5 are compare-code / decision and three genuine floor cases
-(a single card/cell taller than the page, one over-long reading) — for the ring.
+On the jargon deck in portrait, overflow fell **27 → 2** — every read-across layout now
+covers→windows instead of clipping (auto-split alone left 10; the five cover strategies
+resolved the rest). The remaining **2** are genuine floor cases: a single `cards-stack` /
+`cards-grid` card taller than the page — for the ring, not the splitter.
 
 ### Tabular family — continuity beat plain pagination
 
@@ -121,13 +129,28 @@ cover→content finish as split-panel, for continuity.
 **Continuity lesson:** "it fits" is the floor; a split must also wear the deck's finish.
 The `coverWindow` helper is now the shared spine for that finish across layouts.
 
+### Completing the family — five strategies, one finish
+
+All five read-across layouts now share `coverWindow`'s accent cover→content finish; the
+strategies differ only in what they parse:
+
+- **compare-prose → `cover-sides`** (fidelity fix, replaces `editorial`): cover (the
+  question) → one subject per page → a verdict. The editorial CSS/strategy/tests were
+  retired.
+- **split-panel → `feature-cover`** · **list-tabular → `cover-rows`** (already shipped).
+- **decision → `cover-decision`**: the verdict heading is the cover (hero size — the
+  decision lands), its justifications (a post-masthead list) window beneath.
+- **compare-code → `cover-code`**: title cover → ONE code block per page at full width
+  under its label (two blocks side-by-side never fit a portrait box; one-per-page does).
+  The measure now treats **horizontal** overflow as carousel-actionable too (wide code).
+  A very wide line falls back to the compact code size + wrap, never below readable.
+
+`compare-table` is the one tabular layout that stays a real table (its columns are the
+comparison) — it paginates rows with a repeated `<thead>`.
+
 ## On deck
 
-- **compare-code** — two code blocks; a baseline → variant sequence (code can't drop-cap,
-  so a code-native treatment, not the editorial one).
-- **decision** — verdict-native; likely an editorial variant.
-- **compare-prose fidelity revisit** — the editorial finish (drop-caps / pull-quote) reads
-  a step off the deck; re-run it against the fidelity lens (split-panel is the bar).
 - A possible **cover** for compare-table, to match the family.
-- A reading/point page that paginates its *own* over-long prose (still falls to the ring).
+- A reading/point/code page that paginates its *own* over-long content (still falls to
+  the ring — e.g. a single code block longer than a page).
 - The agenda CSS-counter continuation fix (carries from Slice A).
