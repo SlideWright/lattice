@@ -5,7 +5,7 @@ summary: The Fit Ladder's SPLIT move, extended to READ-ACROSS layouts that can't
 
 # Read-across carousel — split what can't paginate
 
-**Date:** 2026-06-23 · **Status:** In progress — compare-prose `editorial` shipped; split-panel / compare-code / the tabular family on deck.
+**Date:** 2026-06-23 · **Status:** In progress — compare-prose `editorial` and split-panel `feature-cover` shipped; compare-code / decision / the tabular family on deck.
 
 ## The problem
 
@@ -75,16 +75,35 @@ its split-forms).
 
 Build-time only; opt-in via `autosplit: on`; existing decks unchanged.
 
+### split-panel — the `feature-cover` strategy (the second layout)
+
+split-panel is **asymmetric** — a featured left panel (watermark / eyebrow / heading +
+lede) beside a right-side list of supporting *points*. So C5's symmetric ghost-reveal
+doesn't apply; from a 3-candidate render-off (persistent feature / feature demotes /
+**feature cover → points**) the maintainer picked **SP3, the cover**: in a tall box the
+heavy feature panel can't sit beside its points, so the feature gets its own accent
+cover (watermark and all), then the points flow onto clean pages under a running header,
+`perPage` at a time. Same kernel (`carouselize`, strategy `feature-cover`;
+`readFeature` parses `.panel-left`/`.panel-right`), same manifest-`split` wiring; CSS in
+`split-panel.styles.css` scoped to `section.split-panel-{cover,points}`. Two render
+lessons: the bleeding watermark must be contained in an `inset:0; overflow:hidden`
+layer or it inflates the section's `scrollHeight` (read as a clip — `overflow:clip` on
+the section does **not** stop a positioned descendant counting); and the cover heading
+is `--fs-h1`, not `--fs-hero`, because a split-panel heading can be a full sentence.
+
 ## Result
 
-On the jargon deck in portrait, overflow fell **27 → 8** (auto-split alone left 10;
-the compare-prose carousels resolved the rest of the narrative read-across). The
-remaining 8 are split-panel / compare-code / decision / list-tabular — the layouts
-still on deck.
+On the jargon deck in portrait, overflow fell **27 → 6** (auto-split alone left 10; the
+compare-prose carousels and split-panel covers resolved the narrative read-across). The
+remaining 6 are compare-code / decision / list-tabular — the layouts still on deck.
 
 ## On deck
 
-- **split-panel + compare-code** — port the C5 ghost-reveal (preserve both panes).
-- **Tabular family** — windowed row-pagination with a repeated header.
+- **compare-code** — two code blocks; a baseline → variant sequence (code can't drop-cap,
+  so a code-native treatment, not the editorial one).
+- **Tabular family** (list-tabular, compare-table) — windowed row-pagination with a
+  repeated `<thead>` (Slice A's `row` axis already repeats the header — likely a capacity
+  contract, not a bespoke transform).
 - **decision** — verdict-native; likely an editorial variant.
+- A reading/point page that paginates its *own* over-long prose (still falls to the ring).
 - The agenda CSS-counter continuation fix (carries from Slice A).
