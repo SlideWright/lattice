@@ -7,9 +7,9 @@
 
 The live, claimable work queue — a read-only mirror of [open issues](https://github.com/SlideWright/lattice/issues),
 grouped by board column. Design lives in `engineering/decisions/`; this tracks
-only *status*. **38 open** items.
+only *status*. **40 open** items.
 
-## Backlog (36)
+## Backlog (37)
 
 - [#283](https://github.com/SlideWright/lattice/issues/283) refactor(css): audit and reduce `!important` (~490 repo-wide) — high · engine
 - [#284](https://github.com/SlideWright/lattice/issues/284) refactor(css): activate `@layer` for per-component + modifier CSS — high · engine
@@ -36,6 +36,7 @@ only *status*. **38 open** items.
 - [#414](https://github.com/SlideWright/lattice/issues/414) refactor(website): consolidate the per-surface theme/palette dropdowns onto one shared control — medium · website
 - [#466](https://github.com/SlideWright/lattice/issues/466) chart(detail): Tier-2 per-mark detail — state-chart, gantt, kanban — medium · chart
 - [#476](https://github.com/SlideWright/lattice/issues/476) chart(kanban): per-card detail reveal (Tier-2, on the HTML-mark path) — medium · chart
+- [#500](https://github.com/SlideWright/lattice/issues/500) feat(legal): obligation-matrix cover-paginate — a split that survives a wide matrix — medium · legal
 - [#280](https://github.com/SlideWright/lattice/issues/280) docs: fix phantom `--hljs-name`/`--hljs-meta` token rows in highlight-js.docs.md — low · docs
 - [#281](https://github.com/SlideWright/lattice/issues/281) docs: mark design-system.md "9 buckets" as historical (ships 12) — low · docs
 - [#282](https://github.com/SlideWright/lattice/issues/282) docs: mark design-system.md "58 components / 89 pages" as dated (ships 53) — low · docs
@@ -48,9 +49,9 @@ only *status*. **38 open** items.
 - [#477](https://github.com/SlideWright/lattice/issues/477) chart(state-chart): tune the `tb` reveal-lift magnitude — low · chart
 - [#478](https://github.com/SlideWright/lattice/issues/478) chart(state-chart): tighten `inline`/`horizontal` variant label spacing — low · chart
 
-## Ready (0)
+## Ready (1)
 
-_none_
+- [#499](https://github.com/SlideWright/lattice/issues/499) feat(comparison): compare-table cover-paginate split — cover design + render verify — high · comparison
 
 ## In progress (0)
 
