@@ -180,4 +180,14 @@ describe('core: applyRails', () => {
     assert.ok(out.startsWith(head)); // prefix untouched
     assert.equal((out.match(/lat-split-rail/g) || []).length, 2);
   });
+
+  test('sets --lat-split-offset on cover-paginate body pages so a counter can continue', () => {
+    const cover = '<section data-lattice-slide="0" data-split-run="r" class="lat-split-cover" style="--x:1;"><p>c</p></section>';
+    const body = (n) => `<section data-lattice-slide="0" data-split-run="r" class="q-and-a lat-split-native" style="--x:1;"><ul>${'<li>q</li>'.repeat(n)}</ul></section>`;
+    const out = applyRails(cover + body(2) + body(1) + body(3));
+    // first body starts at 0 (no offset stamped); next two carry the cumulative item count
+    assert.deepEqual([...out.matchAll(/--lat-split-offset:(\d+)/g)].map((m) => Number(m[1])), [2, 3]);
+    // the cover (not lat-split-native) is never given an offset
+    assert.ok(!/--lat-split-offset/.test(out.match(/<section[^>]*lat-split-cover[^>]*>/)[0]));
+  });
 });
