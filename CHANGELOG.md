@@ -100,6 +100,20 @@ in patch versions.
 
 ### Added
 
+- **Read-across carousel — the family is complete, on one cover finish (decision,
+  compare-code, + a compare-prose fidelity fix).** With `autosplit: on`, the last
+  read-across layouts now split instead of clipping, all wearing the *same* accent
+  cover→content finish so a split reads as the same deck, just more of it:
+  **decision** → the verdict is the cover, its justifications window beneath;
+  **compare-code** → a title cover, then one code block per page at full width (two
+  blocks never fit a portrait box). And **compare-prose's** earlier *editorial* finish
+  (drop-caps, pull-quote) — judged a step off the deck — is **retired for `cover-sides`**
+  (cover → one subject per page → verdict) to match split-panel, the fidelity bar. A
+  shared `coverWindow` builder backs the family. On the jargon deck in portrait, overflow
+  now falls **27 → 2** (the last two are genuine floor cases — a single card taller than
+  the page). **Breaking:** an `autosplit: on` deck's overflowing compare-prose now renders
+  as cover→sides, not the editorial drop-cap sequence. See
+  `engineering/decisions/2026-06-23-read-across-carousel.md`.
 - **Read-across carousel — list-tabular joins (the `cover-rows` strategy).** With
   `autosplit: on`, an overflowing **list-tabular** re-authors at export into a title
   **cover** followed by its rows windowed onto clean pages — the *same* accent

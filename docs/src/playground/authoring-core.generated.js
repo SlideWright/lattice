@@ -91,6 +91,7 @@ var require_lint_core = __commonJS({
       "redline"
     ]);
     var PORTRAIT_ONLY_LAYOUTS = Object.freeze([]);
+    var AUTOSPLIT_ADAPTS = Object.freeze(["compare-code", "compare-table"]);
     var PORTRAIT_SIZES = Object.freeze([
       "square",
       "portrait",
@@ -301,6 +302,7 @@ ${indent}  ${bullet} ${body.trim()}`;
         const tokens = m[1].split(/\s+/).filter(Boolean);
         for (const t of tokens) {
           if (orientation === "portrait" && landscapeOnly.has(t)) {
+            if (autosplitOn && AUTOSPLIT_ADAPTS.includes(t)) continue;
             findings.push({
               slide: idx - fm + 1,
               rule: "orientation-mismatch",

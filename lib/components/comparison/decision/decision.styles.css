@@ -101,3 +101,28 @@ section.decision :is(ul,ol) > li > strong ~ * { font-weight: 400; }
     line-height: var(--lh-snug);
   }
 }
+
+/* ── Cover-decision carousel — decision's owned SPLIT forms ────────────────────
+   An overflowing decision (verdict + justifications) re-authors into the verdict on an
+   accent COVER, then its justifications windowed beneath — the same cover finish as
+   split-panel (2026-06-23-read-across-carousel.md). lib/core/carousel.js emits
+   `content decision-split decision-{cover,points} form`. Palette-blind. */
+section.decision-cover {
+  background: var(--accent); color: var(--on-accent);
+  display: flex; flex-direction: column; justify-content: center; position: relative;
+}
+section.decision-cover .split-feat-eye { font-size: var(--fs-meta); letter-spacing: 0.2em; text-transform: uppercase; opacity: 0.85; }
+section.decision-cover .split-feat-h {
+  font-size: var(--fs-hero); font-weight: 800; line-height: var(--lh-tight);
+  color: var(--on-accent); margin: var(--sp-xs) 0 var(--sp-md); max-width: 11em;
+}
+section.decision-cover .split-feat-lede { font-size: var(--fs-emphasis); line-height: var(--lh-snug); opacity: 0.92; max-width: 20em; }
+section.decision-points .split-runhead {
+  font-size: var(--fs-meta); letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--text-muted); border-bottom: 1px solid var(--border);
+  padding-bottom: var(--sp-xs); margin-bottom: var(--sp-xl);
+}
+section.decision-points .split-pts { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: var(--sp-lg); }
+section.decision-points .split-pts > li { border-left: 3px solid var(--accent); padding-left: var(--sp-md); }
+section.decision-points .split-pt-t { display: block; font-weight: 800; color: var(--text-heading); font-size: var(--fs-h3); margin-bottom: var(--sp-3xs); }
+section.decision-points .split-pt-b { color: var(--text-body); font-size: var(--fs-body); line-height: var(--lh-base); max-width: 22em; }

@@ -1,14 +1,41 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "compare-code",
-  "adapt": { "mode": "single-orientation", "priority": ["title", "left", "right"], "keepTogether": ["left+right"] },
-  "focusAxes": ["line"],
+  "adapt": {
+    "mode": "single-orientation",
+    "priority": [
+      "title",
+      "left",
+      "right"
+    ],
+    "keepTogether": [
+      "left+right"
+    ]
+  },
+  "split": {
+    "strategy": "cover-code",
+    "family": "narrative",
+    "roles": [
+      "cover",
+      "block"
+    ],
+    "note": "Title cover → one code block per page at full width. lib/core/carousel.js."
+  },
+  "focusAxes": [
+    "line"
+  ],
   "function": "comparison",
   "bucket": "code",
   "form": "split",
   "substance": "structure",
-  "orientation": ["landscape"],
-  "tags": ["snippet", "contrast", "tradeoff"],
+  "orientation": [
+    "landscape"
+  ],
+  "tags": [
+    "snippet",
+    "contrast",
+    "tradeoff"
+  ],
   "description": "Two fenced code blocks side-by-side, each with a label.",
   "purpose": "Use to contrast a before/after refactor, two API styles, or two configurations. Each side gets an h3 label and one fenced block.",
   "slots": {
@@ -60,9 +87,21 @@
     }
   ],
   "related": [
-    { "name": "compare-prose", "when": "the change is state, not code" },
-    { "name": "compare-prose", "when": "the comparison is prose-versus-prose" },
-    { "name": "redline", "when": "the change is in verbatim text or legal language" },
-    { "name": "compare-table", "when": "three or more variants on shared dimensions" }
+    {
+      "name": "compare-prose",
+      "when": "the change is state, not code"
+    },
+    {
+      "name": "compare-prose",
+      "when": "the comparison is prose-versus-prose"
+    },
+    {
+      "name": "redline",
+      "when": "the change is in verbatim text or legal language"
+    },
+    {
+      "name": "compare-table",
+      "when": "three or more variants on shared dimensions"
+    }
   ]
 }

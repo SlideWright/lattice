@@ -114,14 +114,60 @@ The most configurable component — a feature or a warning sign, depending on yo
 
 ---
 
+<!-- _class: decision -->
+
+`Decision · 2026 Q1`
+
+## We are building, not buying
+
+- Build
+  - Owns the scoring policy, the calibration loop, and the timeline — plus the maintenance, the on-call, and every future explanation of why the framework scored the wrong thing.
+- Why not buy
+  - Three vendors, none exposing calibration weights. The weights are the product; you cannot buy the product without them. That was the finding.
+- Why not delay
+  - The window closes in eighteen months — a sentence that has been in this deck, unchanged, since Q1 2025.
+
+---
+
+<!-- _class: compare-code -->
+
+`Before & After · Scoring Mechanics`
+
+## Spreadsheet-driven scoring versus a framework that is basically also a spreadsheet
+
+`Before · The Honest Spreadsheet`
+
+```python
+import pandas as pd
+
+signals = pd.read_csv("signals.csv")
+signals["score"] = signals.apply(
+    lambda r: 0.33 * r.confidence + 0.33 * r.recency + 0.33 * r.relevance,
+    axis=1,
+)
+signals.to_csv("scored.csv")
+```
+
+`After · The Framework`
+
+```python
+from decision_framework import Calibrator
+
+cal = Calibrator.load("weights.json")
+signals["score"] = cal.score(signals)
+cal.decisions.log_if_changed(signals)
+```
+
+---
+
 <!-- _class: content -->
 
 ## One finish, more slides
 
-- A **comparison** (compare-prose) → a cover, a page per side, a verdict
-- A **feature panel** (split-panel) → the feature gets a cover, its points flow on
-- A **table** (list-tabular) → a cover, then the rows flow on — the same cover finish
-- The split reads as the *same deck*, just more of it — opt in with `autosplit: on`
+- **compare-prose / split-panel / list-tabular** → a cover, then the content flows on
+- **decision** → the verdict is the cover; its reasons flow on
+- **compare-code** → a cover, then one code block per page
+- Every split wears the *same* cover finish — the deck, just more of it (`autosplit: on`)
 
 ---
 
@@ -129,4 +175,4 @@ The most configurable component — a feature or a warning sign, depending on yo
 
 # More slides, never a clipped comparison
 
-`Read-across stages, tabular windows — neither shrinks`
+`One cover finish across the family — nothing shrinks`

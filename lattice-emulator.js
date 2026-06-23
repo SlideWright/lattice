@@ -1497,11 +1497,12 @@ const puppeteer = loadPuppeteer();
       if (!over) return;
       const C = s.clientHeight;
       const ratio = C > 0 ? s.scrollHeight / C : 2;
-      // A read-across layout with a carousel `split` recipe (compare-prose) is
-      // re-authored as a sequence, not divided by collection — so a vertical overflow
-      // is always actionable; mark it splittable and let resplitDoc's carousel branch
-      // own it (ratio is irrelevant to a structural re-author).
-      if (vOver && carouselClasses.some((c) => s.classList.contains(c))) {
+      // A read-across layout with a carousel `split` recipe is re-authored as a sequence,
+      // not divided by collection — so ANY overflow is actionable (compare-code overflows
+      // HORIZONTALLY: two code blocks too wide for a portrait box; one-block-per-page fixes
+      // it). Mark it splittable and let resplitDoc's carousel branch own it (the ratio is
+      // irrelevant to a structural re-author).
+      if (carouselClasses.some((c) => s.classList.contains(c))) {
         out.push({ slide: i + 1, ratio, canSplit: true, splitRatio: ratio });
         return;
       }
