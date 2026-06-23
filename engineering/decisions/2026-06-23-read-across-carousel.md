@@ -148,6 +148,26 @@ strategies differ only in what they parse:
 `compare-table` is the one tabular layout that stays a real table (its columns are the
 comparison) — it paginates rows with a repeated `<thead>`.
 
+### Connective chrome — the cover leads in, the rail keeps the count
+
+A split should not just be *more slides*; it should read as a sequence. Two pieces of
+chrome carry that, both palette-blind (`currentColor`, so they sit on the accent cover and
+the body pages alike):
+
+- **A per-layout cover lead-in** (`split.intro` in the manifest, rendered as
+  `"{intro} →"` under the lede). Each read-across layout declares its own semantically
+  accurate intro — what the *next* slide is — so the cover introduces rather than merely
+  titles: compare-prose "Side by side", split-panel "The supporting detail", list-tabular
+  "Entry by entry", decision "The reasoning", compare-code "Both implementations". The
+  arrow gives the forward pull a good auto-split has. `{n}` substitutes the part count.
+- **A k-of-N progress rail** (`withRail` in `auto-split.js`) stamped into *every* split
+  set with ≥2 parts — carousel or plain `partitionAxis` pagination alike — that lights its
+  segments through the current page. It rides the deck pagination's baseline in the
+  bottom-right but stands clear of the page number (`right: 12cqi`): a segmented
+  sub-sequence-progress indicator and a numeric deck-position count are two different
+  "where am I" signals, so they get real air between them rather than reading as one
+  widget.
+
 ## On deck
 
 - A possible **cover** for compare-table, to match the family.

@@ -5,7 +5,7 @@ paginate: true
 form: standard
 autosplit: on
 header: "Lattice · Read-across carousel"
-footer: "Carousel — split what can't paginate"
+footer: "Read-across carousel"
 ---
 
 <!-- _class: title -->

@@ -100,6 +100,18 @@ in patch versions.
 
 ### Added
 
+- **Auto-split connective chrome — a cover lead-in and a progress rail tie a split
+  set together.** Every carousel cover now carries a per-layout, manifest-declared
+  lead-in (`split.intro`, e.g. compare-prose "Side by side →", decision "The
+  reasoning →") so the cover *introduces* the pages that follow rather than just
+  titling them — the forward pull a good auto-split has. And every split slide (carousel
+  or plain pagination, ≥2 parts) gets a small **k-of-N progress rail** that lights through
+  the current page, so a reader can see they are inside a sequence and how far along.
+  The rail rides the deck pagination's baseline in the bottom-right but stands well clear
+  of the page number, so sub-sequence progress and deck position read as two distinct
+  signals. Both the lead-in and the rail use `currentColor`, so they sit correctly on the
+  accent cover and the body pages alike. Layout chrome only; opt-in via `autosplit: on`.
+  See `engineering/decisions/2026-06-23-read-across-carousel.md`.
 - **Read-across carousel — the family is complete, on one cover finish (decision,
   compare-code, + a compare-prose fidelity fix).** With `autosplit: on`, the last
   read-across layouts now split instead of clipping, all wearing the *same* accent
