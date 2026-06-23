@@ -100,6 +100,13 @@ in patch versions.
 
 ### Added
 
+- **Auto-split — the tabular family paginates (list-tabular).** With `autosplit: on`,
+  an overflowing **list-tabular** now paginates its rows across slides — the `<h2>`
+  title repeats and the ordered list renumbers — instead of clipping, via a `row`-style
+  `item` capacity contract (no bespoke transform; Slice A's `partitionAxis` repeats the
+  header). **compare-table** already paginated rows with a repeated `<thead>`; this
+  completes the tabular half of the read-across initiative. On the jargon deck in
+  portrait, overflow falls 6 → 5. See `engineering/decisions/2026-06-23-read-across-carousel.md`.
 - **Read-across carousel — split-panel joins (the `feature-cover` strategy).** An
   overflowing **split-panel** (a featured panel beside its supporting points) now
   re-authors at export into a **feature cover** — the watermark/heading/lede get a

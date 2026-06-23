@@ -89,14 +89,39 @@ The most configurable component — a feature or a warning sign, depending on yo
 
 ---
 
+<!-- _class: list-tabular -->
+
+## The six signal dimensions, what they measure, and how they score
+
+- Confidence
+  - Independent corroborating sources
+  - 1–5, enterprise counts as one
+- Recency
+  - Time-decay on a configurable half-life
+  - Two-week default surprises everyone
+- Strategic Relevance
+  - Owner-scored against the roadmap
+  - 1–5, and a 5 is whoever presents
+- Source Diversity
+  - Rewards breadth of corroboration
+  - Counts newsletters as sources
+- Volatility
+  - Penalizes signals that swing
+  - Also penalizes the early-warning ones
+- Owner Bias
+  - The correction nobody applies
+  - Scored by the owner it corrects
+
+---
+
 <!-- _class: content -->
 
-## Two shapes, two treatments
+## Two families, one ladder
 
 - A **comparison** (compare-prose) → a cover, a page per side, a verdict
 - A **feature panel** (split-panel) → the feature gets a cover, its points flow on
-- Both stage instead of slicing; both opt in with `autosplit: on`
-- The layout *owns* its split-forms — declared in its manifest
+- A **table** (list-tabular, compare-table) → rows paginate, the header repeats
+- Read-across *stages*; tabular *windows* — both opt in with `autosplit: on`, both owned by the layout
 
 ---
 
@@ -104,4 +129,4 @@ The most configurable component — a feature or a warning sign, depending on yo
 
 # More slides, never a clipped comparison
 
-`Read-across splits by staging, not slicing`
+`Read-across stages, tabular windows — neither shrinks`

@@ -5,7 +5,7 @@ summary: The Fit Ladder's SPLIT move, extended to READ-ACROSS layouts that can't
 
 # Read-across carousel — split what can't paginate
 
-**Date:** 2026-06-23 · **Status:** In progress — compare-prose `editorial` and split-panel `feature-cover` shipped; compare-code / decision / the tabular family on deck.
+**Date:** 2026-06-23 · **Status:** In progress — compare-prose `editorial`, split-panel `feature-cover`, and the tabular family (list-tabular / compare-table) shipped; compare-code / decision on deck.
 
 ## The problem
 
@@ -97,13 +97,25 @@ On the jargon deck in portrait, overflow fell **27 → 6** (auto-split alone lef
 compare-prose carousels and split-panel covers resolved the narrative read-across). The
 remaining 6 are compare-code / decision / list-tabular — the layouts still on deck.
 
+### Tabular family — windowed, no bespoke transform (confirmed)
+
+The tabular layouts need **no carousel** — the honest move is to paginate rows and
+repeat the header, which Slice A's `partitionAxis` already does (it repeats everything
+before the collection as `pre`). So this was just a **capacity contract**, not a
+transform:
+
+- **compare-table** already declared `capacity.axis: row` (sweet 4, hard 8) — verified
+  it splits a 12-row table into 3 pages of 4 with the `<thead>` repeated on each. No
+  change needed.
+- **list-tabular** is an `<ol>` of row-`<li>`s (read-across lives *within* a row, which
+  stays intact when split *between* rows), so it gets `capacity.axis: item` — Slice A
+  paginates the rows and repeats the `<h2>` title, renumbering the `<ol>`. One line of
+  manifest; no new code.
+
 ## On deck
 
 - **compare-code** — two code blocks; a baseline → variant sequence (code can't drop-cap,
   so a code-native treatment, not the editorial one).
-- **Tabular family** (list-tabular, compare-table) — windowed row-pagination with a
-  repeated `<thead>` (Slice A's `row` axis already repeats the header — likely a capacity
-  contract, not a bespoke transform).
 - **decision** — verdict-native; likely an editorial variant.
 - A reading/point page that paginates its *own* over-long prose (still falls to the ring).
 - The agenda CSS-counter continuation fix (carries from Slice A).

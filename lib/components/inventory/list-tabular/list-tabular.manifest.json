@@ -23,7 +23,22 @@
       "row"
     ]
   },
-  "tags": ["reference", "overview", "status"],
+  "capacity": {
+    "axis": "item",
+    "min": 2,
+    "sweet": 5,
+    "soft": 7,
+    "hard": 9,
+    "escalateTo": [
+      "split across slides"
+    ],
+    "note": "row density crowds a tall box; paginate rows, repeat the title"
+  },
+  "tags": [
+    "reference",
+    "overview",
+    "status"
+  ],
   "description": "Hairline-ruled ledger of items — name on the left, body on the right.",
   "purpose": "Use for compact reference tables: glossary-style entries, key/value pairs, specs. Four primary variants (def, metric, spec, register) tune the visual treatment; secondary modifiers (rule, solid, stacked, outline) refine each.",
   "variants": [
@@ -92,7 +107,6 @@
       "name": "actors",
       "when": "the left column is a named person, not a key"
     },
-    
     {
       "name": "list",
       "when": "rows are bullets without a label-plus-description shape"
