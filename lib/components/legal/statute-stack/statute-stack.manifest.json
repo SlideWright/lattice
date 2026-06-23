@@ -24,7 +24,7 @@
     "strategy": "cover-paginate",
     "axis": "item",
     "perPage": 2,
-    "intro": "Jurisdiction by jurisdiction",
+    "intro": "What each jurisdiction requires",
     "note": "Overflowing stack splits as an accent cover → its own native cards paginated (never flattened). lib/core/carousel.js cover-paginate."
   },
   "tags": ["citation", "reference", "compliance"],

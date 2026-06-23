@@ -277,5 +277,23 @@ section.statute-stack.lane td:last-child {
     grid-auto-rows: auto;
     align-content: space-evenly;
   }
+  /* Portrait/single-column cards size to content, so lift the status pill to the card's
+     top-right corner (on the jurisdiction-label row) to reclaim the row it held at the
+     foot — denser cards, more per page. Scoped to portrait + the default card: landscape
+     keeps the foot-anchored pill (its equal-height grid would leave an empty bottom). */
+  section.statute-stack:not(.hierarchy):not(.bands):not(.preemption):not(.lane) > :is(ul, ol) > li { position:relative; }
+  /* The pill rides the label's MIDLINE (centre-to-centre, not top-to-top) — `top` lands on
+     the label's vertical centre and translateY recentres the taller pill box on it. */
+  section.statute-stack:not(.hierarchy):not(.bands):not(.preemption):not(.lane) > :is(ul, ol) > li > :is(ul, ol) > li:last-child:has(> code:only-child) {
+    position:absolute; top:calc(var(--sp-md) + 0.8 * var(--fs-meta)); right:var(--sp-md);
+    transform:translateY(-50%); margin:0; max-width:48%;
+  }
+  section.statute-stack:not(.hierarchy):not(.bands):not(.preemption):not(.lane) > :is(ul, ol) > li > strong:first-child {
+    padding-right:30cqi; /* keep the label clear of the lifted pill on the shared top row */
+  }
+  /* Breathing room between the label/pill row and the citation+obligation below. */
+  section.statute-stack:not(.hierarchy):not(.bands):not(.preemption):not(.lane) > :is(ul, ol) > li > :is(ul, ol) {
+    margin-top:var(--sp-md);
+  }
 }
 

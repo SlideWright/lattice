@@ -27,6 +27,20 @@ in patch versions.
 
 ### Fixed
 
+- **`q-and-a`'s index number no longer collides with the question on portrait.** The "01"
+  counter is set in `--fs-message`, which grows toward portrait, but the index gutter was a
+  fixed step — so the number cleared the question in landscape yet ran straight into it
+  ("01Why…") on a portrait/mobile slide. The gutter is now proportional to the index, and
+  the index reads as a label (`--fs-message * 0.8`) rather than a second headline, so it
+  keeps a constant gap in every orientation and every variant (the `solo` variant re-bases
+  the same token so its larger number clears too). Body type is unchanged — still the shared
+  role sizes, consistent with every other layout.
+- **`statute-stack` cards are denser on portrait — the status pill lifts to the corner.** On
+  single-column (portrait/mobile) cards the status pill now rides the card's top-right
+  corner, centred on the jurisdiction label's midline with breathing room above the body,
+  reclaiming the full row it used to hold at the card's foot (more cards per page, fewer
+  split slides). Landscape's equal-height grid keeps the foot-anchored pill (lifting it
+  there would leave an empty card bottom).
 - **A 4th stat no longer clips off a portrait `stats` slide.** Portrait stats stacks
   and *enlarges* the hero numbers; the stack's `gap` was `--sp-2xl`, but with
   `space-evenly` the gap is only a floor — an over-large floor pushed a 4th enlarged

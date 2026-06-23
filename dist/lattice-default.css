@@ -8015,7 +8015,13 @@ section.progress .progress-note {
  * of specificity. */
 
 section.q-and-a {
-  --qa-gutter: var(--sp-2xl); /* left padding that opens the index gutter */
+  /* Index gutter — proportional to the number's own size, NOT a fixed step. The "01"
+   * counter is sized off --fs-message, which grows from landscape to portrait; a fixed
+   * gutter cleared the number in landscape but the portrait number overran it (the
+   * "01Why" collision). Sizing the gutter off the counter keeps a constant gap in
+   * every orientation without over-widening (which would crush the text column). */
+  --qa-index: calc(var(--fs-message) * 0.8); /* the index number reads as a label, not a 2nd headline */
+  --qa-gutter: calc(var(--sp-xs) + var(--qa-index) * 2.1);
   --qa-gap: var(--sp-md); /* vertical gap between pairs */
 }
 
@@ -8051,10 +8057,10 @@ section.q-and-a > :is(ul, ol) > li {
 section.q-and-a > :is(ul, ol) > li::before {
   content: "0" counter(qa);
   position: absolute;
-  left: var(--sp-md);
+  left: var(--sp-xs);
   top: 0;
   font-family: var(--font-mono);
-  font-size: var(--fs-message);
+  font-size: var(--qa-index);
   font-weight: 600;
   line-height: var(--lh-snug);
   color: var(--accent);
@@ -8225,6 +8231,12 @@ section.q-and-a.compact > :is(ul, ol) > li > :is(ul, ol) > li {
 }
 
 /* ── solo — one question, one answer, the whole slide ─────────────────── */
+/* Solo sizes the question (and its index) off --fs-emphasis, so it re-bases --qa-index
+ * to that scale — the gutter (calc'd from --qa-index) then clears the larger number too,
+ * rather than overrunning a gutter sized for the default index. */
+section.q-and-a.solo {
+  --qa-index: calc(var(--fs-emphasis) * 0.8);
+}
 section.q-and-a.solo > :is(ul, ol) {
   gap: 0;
 }
@@ -8233,7 +8245,7 @@ section.q-and-a.solo > :is(ul, ol) > li {
   line-height: var(--lh-tight);
 }
 section.q-and-a.solo > :is(ul, ol) > li::before {
-  font-size: var(--fs-emphasis);
+  font-size: var(--qa-index);
   line-height: var(--lh-tight);
 }
 section.q-and-a.solo > :is(ul, ol) > li > :is(ul, ol) {
@@ -11193,6 +11205,24 @@ section.statute-stack.lane td:last-child {
     grid-template-columns: 1fr;
     grid-auto-rows: auto;
     align-content: space-evenly;
+  }
+  /* Portrait/single-column cards size to content, so lift the status pill to the card's
+     top-right corner (on the jurisdiction-label row) to reclaim the row it held at the
+     foot — denser cards, more per page. Scoped to portrait + the default card: landscape
+     keeps the foot-anchored pill (its equal-height grid would leave an empty bottom). */
+  section.statute-stack:not(.hierarchy):not(.bands):not(.preemption):not(.lane) > :is(ul, ol) > li { position:relative; }
+  /* The pill rides the label's MIDLINE (centre-to-centre, not top-to-top) — `top` lands on
+     the label's vertical centre and translateY recentres the taller pill box on it. */
+  section.statute-stack:not(.hierarchy):not(.bands):not(.preemption):not(.lane) > :is(ul, ol) > li > :is(ul, ol) > li:last-child:has(> code:only-child) {
+    position:absolute; top:calc(var(--sp-md) + 0.8 * var(--fs-meta)); right:var(--sp-md);
+    transform:translateY(-50%); margin:0; max-width:48%;
+  }
+  section.statute-stack:not(.hierarchy):not(.bands):not(.preemption):not(.lane) > :is(ul, ol) > li > strong:first-child {
+    padding-right:30cqi; /* keep the label clear of the lifted pill on the shared top row */
+  }
+  /* Breathing room between the label/pill row and the citation+obligation below. */
+  section.statute-stack:not(.hierarchy):not(.bands):not(.preemption):not(.lane) > :is(ul, ol) > li > :is(ul, ol) {
+    margin-top:var(--sp-md);
   }
 }
 
