@@ -261,3 +261,47 @@ describe('core: carousel — cover-code (compare-code)', () => {
     assert.equal(carouselize('<section class="compare-code">', '<h2>t</h2><div class="code-cols"><div class="code-col"><pre>x</pre></div></div>', r), null);
   });
 });
+
+describe('core: carousel — cover-paginate (dense lists / legal batch)', () => {
+  const cls = (sec) => (sec.match(/\sclass="([^"]*)"/) || ['', ''])[1];
+  // A statute-stack-shaped section: heading + a leading <code> eyebrow + a native item list.
+  const openTag = '<section data-lattice-slide="1" id="s1" class="statute-stack form">';
+  const item = (label) => `<li><strong>${label}</strong><ul><li><code>cite</code></li><li>obligation prose</li></ul></li>`;
+  const inner = `<header>H</header><h2>Heading</h2><p><code>Scope eyebrow</code></p><ul>${item('A')}${item('B')}${item('C')}${item('D')}</ul><footer>F</footer>`;
+  const recipe = { strategy: 'cover-paginate', axis: 'item', perPage: 2, intro: 'Item by item' };
+
+  test('emits an accent cover then the layout\'s OWN native pages (never flattened)', () => {
+    const parts = carouselize(openTag, inner, recipe);
+    assert.equal(parts.length, 3); // cover + [2,2]
+    assert.match(cls(parts[0]), /lat-split-cover/);
+    // body pages keep the NATIVE class + the re-split guard marker, and the native <ul>
+    assert.match(cls(parts[1]), /statute-stack/);
+    assert.match(cls(parts[1]), /lat-split-native/);
+    assert.match(parts[1], /<strong>A<\/strong>/);
+    assert.match(parts[2], /<strong>C<\/strong>/);
+  });
+
+  test('the cover carries the heading hero, the eyebrow, and the intro lead-in', () => {
+    const [cover] = carouselize(openTag, inner, recipe);
+    assert.match(cover, /split-feat-h">Heading/);
+    assert.match(cover, /split-feat-eye">Scope eyebrow/);
+    assert.match(cover, /split-cover-lead">Item by item/);
+  });
+
+  test('only the cover keeps the engine id — body pages never duplicate it', () => {
+    const parts = carouselize(openTag, inner, recipe);
+    assert.equal(parts[0].match(/\sid="s1"/) ? 1 : 0, 1);
+    assert.equal(parts.filter((p) => /\sid="s1"/.test(p)).length, 1);
+  });
+
+  test('the measured ratio cuts denser than perPage, never looser', () => {
+    // ratio 3 over 4 items → floor(4/3*0.82)=1 per page → cover + 4 pages
+    const parts = carouselize(openTag, inner, recipe, 3);
+    assert.equal(parts.length, 5);
+  });
+
+  test('a single member (can\'t split) → null, left for the ring', () => {
+    const one = `<header>H</header><h2>Heading</h2><ul>${item('Solo')}</ul><footer>F</footer>`;
+    assert.equal(carouselize(openTag, one, recipe), null);
+  });
+});

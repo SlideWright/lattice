@@ -31,7 +31,8 @@
       "cover",
       "points"
     ],
-    "note": "Overflowing tabular list re-authored as a title cover + the rows windowed (the split-panel cover finish), not clipped. lib/core/carousel.js."
+    "note": "Overflowing tabular list re-authored as a title cover + the rows windowed (the split-panel cover finish), not clipped. lib/core/carousel.js.",
+    "intro": "Entry by entry"
   },
   "tags": [
     "reference",

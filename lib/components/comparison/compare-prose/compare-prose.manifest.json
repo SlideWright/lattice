@@ -28,7 +28,8 @@
       "points",
       "verdict"
     ],
-    "note": "FIDELITY: cover (the question) → one subject per page → verdict, on the shared cover finish (was editorial). lib/core/carousel.js."
+    "note": "FIDELITY: cover (the question) → one subject per page → verdict, on the shared cover finish (was editorial). lib/core/carousel.js.",
+    "intro": "Side by side"
   },
   "tags": [
     "tradeoff",

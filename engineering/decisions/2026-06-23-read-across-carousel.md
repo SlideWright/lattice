@@ -148,9 +148,67 @@ strategies differ only in what they parse:
 `compare-table` is the one tabular layout that stays a real table (its columns are the
 comparison) — it paginates rows with a repeated `<thead>`.
 
+### Connective chrome — the cover leads in, the rail keeps the count
+
+A split should not just be *more slides*; it should read as a sequence. Two pieces of
+chrome carry that, both palette-blind (`currentColor`, so they sit on the accent cover and
+the body pages alike):
+
+- **A per-layout cover lead-in** (`split.intro` in the manifest, rendered as
+  `"{intro} →"` under the lede). Each read-across layout declares its own semantically
+  accurate intro — what the *next* slide is — so the cover introduces rather than merely
+  titles: compare-prose "Side by side", split-panel "The supporting detail", list-tabular
+  "Entry by entry", decision "The reasoning", compare-code "Both implementations". The
+  arrow gives the forward pull a good auto-split has. `{n}` substitutes the part count.
+- **A k-of-N progress rail** stamped into *every* split set with ≥2 parts — carousel or
+  plain `partitionAxis` pagination alike — that lights its segments through the current
+  page. It rides the deck pagination's baseline in the bottom-right but stands clear of the
+  page number (`right: 12cqi`): a segmented sub-sequence-progress indicator and a numeric
+  deck-position count are two different "where am I" signals, so they get real air between
+  them rather than reading as one widget. Because a slide can split across *several*
+  measured passes, the rail can't be stamped per-call — only the converged deck knows a
+  run's true length. So each split set is tagged with a stable `data-split-run` id (the
+  original slide's engine id, propagated onto every continuation), and `applyRails`
+  (`auto-split.js`) stamps the rails once at the end (`lattice-emulator.js`), grouping
+  consecutive sections by that id. A run of one gets no rail.
+
+### cover-paginate — the dense list / register family
+
+The read-across strategies *re-author* the body (compare-prose's two sides become
+one-subject-per-page rows). A dense **list** doesn't need re-authoring — it already
+paginates between its members — it just shouldn't drop the reader in cold. `cover-paginate`
+(`carousel.js`) gives five list/register layouts the same accent **cover** lead-in, then
+flows the layout's **own native cards** on body pages, never flattened:
+
+- **statute-stack · regulatory-update · authority-chain** (legal, `item`) ·
+  **q-and-a** (inventory, `item`) · **glossary** (inventory, `row` — it renders as a
+  table). `partitionAxis` does the body cut (the native heading and a table's `<thead>`
+  repeat per page, an `<ol>` is renumbered); the cover is one **shared** accent field
+  (`lat-split-cover` in `base.modifiers.css`, not a per-layout copy) carrying the heading
+  hero, any leading `<code>` eyebrow, and the `split.intro`.
+- Each body page carries a `lat-split-native` marker so a page that *still* overflows
+  paginates **further** (the re-split guard in `resplitDoc`) rather than growing a second
+  cover; its re-split uses the recipe's `split.axis` (glossary authors as a list but
+  renders as a table, so its render-time axis differs from any authoring-time capacity).
+- The body cut is sized from the **measured overflow ratio**, used only to cut *denser*
+  than the manifest `perPage`, never looser — a reflowing multi-column layout (statute-stack
+  in portrait) packs the original tighter than the single-column split, so the raw ratio
+  under-counts the pages the split needs. The cover keeps the engine id; every body drops
+  it (never a duplicate id).
+- A layout with a `split` recipe is owned by the *measured* pass, so the static count pass
+  (`autoSplitDeck`) skips it — otherwise it would pre-paginate the list and drop the cover.
+
+**Not in this family:** **obligation-matrix** overflows *horizontally* in portrait (a
+six-column matrix is too wide), which row-splitting can't fix — it needs a column-aware
+move, not cover-paginate. glossary's per-page range pill still shows the *whole* glossary's
+range on each split page (the pill is computed once, pre-split).
+
 ## On deck
 
 - A possible **cover** for compare-table, to match the family.
+- **obligation-matrix** — a column-aware split (or the `asymmetric` card-per-row variant)
+  so a wide matrix can cover-paginate without futile row-splitting.
+- glossary's split-aware **range pill** (recompute per page instead of once pre-split).
 - A reading/point/code page that paginates its *own* over-long content (still falls to
   the ring — e.g. a single code block longer than a page).
 - The agenda CSS-counter continuation fix (carries from Slice A).

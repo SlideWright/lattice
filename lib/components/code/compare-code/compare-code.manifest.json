@@ -19,7 +19,8 @@
       "cover",
       "block"
     ],
-    "note": "Title cover → one code block per page at full width. lib/core/carousel.js."
+    "note": "Title cover → one code block per page at full width. lib/core/carousel.js.",
+    "intro": "Both implementations"
   },
   "focusAxes": [
     "line"

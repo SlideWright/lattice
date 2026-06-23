@@ -27,6 +27,26 @@ in patch versions.
 
 ### Fixed
 
+- **A split `compare-code` block now wears the standard code frame.** When an overflowing
+  compare-code splits to one block per page (`cover-code`), the block pages rendered the
+  highlighted code *naked* on the slide — the `compare-code-block` class never matched the
+  unsplit layout's `section.compare-code pre` frame rule. The split block now reuses that
+  exact frame (`--code-bg` panel, `--spectrum` accent strip, rounded corners, padding) plus
+  the compact code size and last-resort wrap, so a split reads as the same deck.
+- **`q-and-a`'s index number no longer collides with the question on portrait.** The "01"
+  counter is set in `--fs-message`, which grows toward portrait, but the index gutter was a
+  fixed step — so the number cleared the question in landscape yet ran straight into it
+  ("01Why…") on a portrait/mobile slide. The gutter is now proportional to the index, and
+  the index reads as a label (`--fs-message * 0.8`) rather than a second headline, so it
+  keeps a constant gap in every orientation and every variant (the `solo` variant re-bases
+  the same token so its larger number clears too). Body type is unchanged — still the shared
+  role sizes, consistent with every other layout.
+- **`statute-stack` cards are denser on portrait — the status pill lifts to the corner.** On
+  single-column (portrait/mobile) cards the status pill now rides the card's top-right
+  corner, centred on the jurisdiction label's midline with breathing room above the body,
+  reclaiming the full row it used to hold at the card's foot (more cards per page, fewer
+  split slides). Landscape's equal-height grid keeps the foot-anchored pill (lifting it
+  there would leave an empty card bottom).
 - **A 4th stat no longer clips off a portrait `stats` slide.** Portrait stats stacks
   and *enlarges* the hero numbers; the stack's `gap` was `--sp-2xl`, but with
   `space-evenly` the gap is only a floor — an over-large floor pushed a 4th enlarged
@@ -100,6 +120,31 @@ in patch versions.
 
 ### Added
 
+- **Dense list layouts split with a cover, then their OWN native cards (`cover-paginate`).**
+  Five dense list/register layouts — **statute-stack**, **regulatory-update**,
+  **authority-chain**, **q-and-a** (legal/inventory), and **glossary** — now auto-split
+  instead of clipping, with `autosplit: on`. Unlike the read-across carousels (which
+  re-author the body into generic rows), `cover-paginate` keeps the layout's *own* finish:
+  an accent **cover** (heading hero + the manifest `split.intro` lead-in + any eyebrow)
+  leads into the layout's native cards paginated across clean pages — the bordered statute
+  cards, the numbered regulatory rows, the authority chain's connectors, the Q/A counters,
+  the glossary's term/definition table (its `<thead>` repeats per page). The cover is one
+  shared accent field for the whole batch; the bodies stay byte-for-byte native. The body
+  cut is sized from the measured overflow so it lands in balanced pages, and a re-split
+  guard lets a still-dense page paginate further without growing a second cover. Demo:
+  `examples/cover-paginate.md`. See `engineering/decisions/2026-06-23-read-across-carousel.md`.
+- **Auto-split connective chrome — a cover lead-in and a progress rail tie a split
+  set together.** Every carousel cover now carries a per-layout, manifest-declared
+  lead-in (`split.intro`, e.g. compare-prose "Side by side →", decision "The
+  reasoning →") so the cover *introduces* the pages that follow rather than just
+  titling them — the forward pull a good auto-split has. And every split slide (carousel
+  or plain pagination, ≥2 parts) gets a small **k-of-N progress rail** that lights through
+  the current page, so a reader can see they are inside a sequence and how far along.
+  The rail rides the deck pagination's baseline in the bottom-right but stands well clear
+  of the page number, so sub-sequence progress and deck position read as two distinct
+  signals. Both the lead-in and the rail use `currentColor`, so they sit correctly on the
+  accent cover and the body pages alike. Layout chrome only; opt-in via `autosplit: on`.
+  See `engineering/decisions/2026-06-23-read-across-carousel.md`.
 - **Read-across carousel — the family is complete, on one cover finish (decision,
   compare-code, + a compare-prose fidelity fix).** With `autosplit: on`, the last
   read-across layouts now split instead of clipping, all wearing the *same* accent

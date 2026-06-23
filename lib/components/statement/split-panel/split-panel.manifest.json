@@ -18,7 +18,8 @@
       "cover",
       "points"
     ],
-    "note": "Read-across (asymmetric): an overflowing feature+points panel is re-authored as a feature cover followed by the supporting points flowed onto clean pages, rather than clipped. lib/core/carousel.js."
+    "note": "Read-across (asymmetric): an overflowing feature+points panel is re-authored as a feature cover followed by the supporting points flowed onto clean pages, rather than clipped. lib/core/carousel.js.",
+    "intro": "The supporting detail"
   },
   "function": "statement",
   "form": "panel",

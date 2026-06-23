@@ -25,7 +25,8 @@
       "cover",
       "points"
     ],
-    "note": "Verdict on an accent cover → justifications windowed. lib/core/carousel.js."
+    "note": "Verdict on an accent cover → justifications windowed. lib/core/carousel.js.",
+    "intro": "The reasoning"
   },
   "tags": [
     "recommendation",

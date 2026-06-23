@@ -1007,3 +1007,43 @@ section.safe[data-orientation='square'] :is(.cell-footer, .tile-meta, [class*='p
   vertical-align: middle;
   white-space: nowrap;
 }
+
+/* ── Auto-split connective chrome (lib/core/auto-split.js, lib/core/carousel.js) ──
+   A split slide gets a small k-of-N progress rail; a carousel cover gets the layout's
+   manifest-declared "→" lead-in (split.intro). Both read the slide's currentColor, so
+   they sit correctly on the accent cover AND the body pages. Palette-blind. */
+.split-cover-lead {
+  margin-top: var(--sp-lg); font-size: var(--fs-emphasis); letter-spacing: 0.02em; opacity: 0.9;
+}
+/* Shares the deck pagination's baseline (bottom-right, vertically centred on the page
+   number) but stands well clear of it horizontally — the rail and the page count are two
+   different "where am I" signals (sub-sequence progress vs. deck position), so they get
+   real air between them rather than reading as one widget. `right` leaves room for the
+   number plus the gap. */
+.lat-split-rail {
+  position: absolute; right: 12cqi; bottom: 2.35cqi; left: auto;
+  display: flex; align-items: center; gap: 0.55cqi; pointer-events: none;
+}
+.lat-split-rail .seg {
+  width: 2.2cqi; height: 0.5cqi; border-radius: 1cqi;
+  background: currentColor; opacity: 0.22;
+}
+.lat-split-rail .seg.on { opacity: 0.8; }
+
+/* ── Shared cover-paginate cover (lib/core/carousel.js `cover-paginate`) ──────────
+   The dense list / register layouts (statute-stack, regulatory-update, authority-chain,
+   q-and-a, glossary) split as an accent COVER → their OWN native cards paginated. The
+   read-across family duplicates this accent field per layout; this batch
+   shares ONE cover (HARD RULE #15) since the body stays native — only the cover is new.
+   Matches the read-across covers' finish so a split reads as the same deck. Palette-blind. */
+section.lat-split-cover {
+  background: var(--accent); color: var(--on-accent);
+  display: flex; flex-direction: column; justify-content: center; position: relative;
+}
+section.lat-split-cover .split-feat-eye {
+  font-size: var(--fs-meta); letter-spacing: 0.2em; text-transform: uppercase; opacity: 0.85;
+}
+section.lat-split-cover .split-feat-h {
+  font-size: var(--fs-h1); font-weight: 800; line-height: var(--lh-tight);
+  color: var(--on-accent); margin: var(--sp-xs) 0 var(--sp-md); max-width: 14em;
+}

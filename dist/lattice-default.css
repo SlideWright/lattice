@@ -2445,12 +2445,23 @@ section.compare-code-block .split-runhead {
   color: var(--accent); border-bottom: 1px solid var(--border);
   padding-bottom: var(--sp-xs); margin-bottom: var(--sp-lg);
 }
-section.compare-code-block pre { max-width: 100%; margin: 0; }
-/* A single code block gets the full width (vs the side-by-side original), but a very
-   wide line can still overrun a portrait box — code can't reflow. Use the compact code
-   size and wrap as a last resort so the block fits without dropping below readable. */
-section.compare-code-block pre { font-size: var(--fs-body-compact); }
-section.compare-code-block pre code { white-space: pre-wrap; overflow-wrap: anywhere; }
+/* The block page reuses the SAME code frame as the unsplit layout (`section.compare-code
+   pre`): the `--code-bg` panel, the `--spectrum` accent strip, rounded corners and
+   padding — so a split code block reads as the same deck. Highlighting (hljs spans) is
+   carried verbatim. A single block gets the full width; a very wide line wraps as a last
+   resort so it fits without dropping the type below readable. */
+section.compare-code-block pre {
+  margin: 0; max-width: 100%; box-sizing: border-box;
+  border-radius: var(--radius-md); overflow: hidden;
+  background: var(--spectrum) bottom / 100% 3px no-repeat, var(--code-bg);
+  padding: var(--sp-md) var(--sp-lg);
+  padding-bottom: calc(var(--sp-md) + 0.234375cqi);
+}
+section.compare-code-block pre > code {
+  font-family: var(--font-mono); font-size: var(--fs-body-compact); line-height: var(--lh-base);
+  color: var(--code-text); background: none; padding: 0; display: block;
+  white-space: pre-wrap; overflow-wrap: anywhere;
+}
 
 /* === lib/components/comparison/compare-prose/compare-prose.styles.css === */
 /* compare-prose — extracted from lib/_legacy.css (batch 5).
@@ -8015,7 +8026,13 @@ section.progress .progress-note {
  * of specificity. */
 
 section.q-and-a {
-  --qa-gutter: var(--sp-2xl); /* left padding that opens the index gutter */
+  /* Index gutter — proportional to the number's own size, NOT a fixed step. The "01"
+   * counter is sized off --fs-message, which grows from landscape to portrait; a fixed
+   * gutter cleared the number in landscape but the portrait number overran it (the
+   * "01Why" collision). Sizing the gutter off the counter keeps a constant gap in
+   * every orientation without over-widening (which would crush the text column). */
+  --qa-index: calc(var(--fs-message) * 0.8); /* the index number reads as a label, not a 2nd headline */
+  --qa-gutter: calc(var(--sp-xs) + var(--qa-index) * 2.1);
   --qa-gap: var(--sp-md); /* vertical gap between pairs */
 }
 
@@ -8051,10 +8068,10 @@ section.q-and-a > :is(ul, ol) > li {
 section.q-and-a > :is(ul, ol) > li::before {
   content: "0" counter(qa);
   position: absolute;
-  left: var(--sp-md);
+  left: var(--sp-xs);
   top: 0;
   font-family: var(--font-mono);
-  font-size: var(--fs-message);
+  font-size: var(--qa-index);
   font-weight: 600;
   line-height: var(--lh-snug);
   color: var(--accent);
@@ -8225,6 +8242,12 @@ section.q-and-a.compact > :is(ul, ol) > li > :is(ul, ol) > li {
 }
 
 /* ── solo — one question, one answer, the whole slide ─────────────────── */
+/* Solo sizes the question (and its index) off --fs-emphasis, so it re-bases --qa-index
+ * to that scale — the gutter (calc'd from --qa-index) then clears the larger number too,
+ * rather than overrunning a gutter sized for the default index. */
+section.q-and-a.solo {
+  --qa-index: calc(var(--fs-emphasis) * 0.8);
+}
 section.q-and-a.solo > :is(ul, ol) {
   gap: 0;
 }
@@ -8233,7 +8256,7 @@ section.q-and-a.solo > :is(ul, ol) > li {
   line-height: var(--lh-tight);
 }
 section.q-and-a.solo > :is(ul, ol) > li::before {
-  font-size: var(--fs-emphasis);
+  font-size: var(--qa-index);
   line-height: var(--lh-tight);
 }
 section.q-and-a.solo > :is(ul, ol) > li > :is(ul, ol) {
@@ -11194,6 +11217,24 @@ section.statute-stack.lane td:last-child {
     grid-auto-rows: auto;
     align-content: space-evenly;
   }
+  /* Portrait/single-column cards size to content, so lift the status pill to the card's
+     top-right corner (on the jurisdiction-label row) to reclaim the row it held at the
+     foot — denser cards, more per page. Scoped to portrait + the default card: landscape
+     keeps the foot-anchored pill (its equal-height grid would leave an empty bottom). */
+  section.statute-stack:not(.hierarchy):not(.bands):not(.preemption):not(.lane) > :is(ul, ol) > li { position:relative; }
+  /* The pill rides the label's MIDLINE (centre-to-centre, not top-to-top) — `top` lands on
+     the label's vertical centre and translateY recentres the taller pill box on it. */
+  section.statute-stack:not(.hierarchy):not(.bands):not(.preemption):not(.lane) > :is(ul, ol) > li > :is(ul, ol) > li:last-child:has(> code:only-child) {
+    position:absolute; top:calc(var(--sp-md) + 0.8 * var(--fs-meta)); right:var(--sp-md);
+    transform:translateY(-50%); margin:0; max-width:48%;
+  }
+  section.statute-stack:not(.hierarchy):not(.bands):not(.preemption):not(.lane) > :is(ul, ol) > li > strong:first-child {
+    padding-right:30cqi; /* keep the label clear of the lifted pill on the shared top row */
+  }
+  /* Breathing room between the label/pill row and the citation+obligation below. */
+  section.statute-stack:not(.hierarchy):not(.bands):not(.preemption):not(.lane) > :is(ul, ol) > li > :is(ul, ol) {
+    margin-top:var(--sp-md);
+  }
 }
 
 /* === lib/components/chart/timeline-list/timeline-list.styles.css === */
@@ -12758,6 +12799,46 @@ section.safe[data-orientation='square'] :is(.cell-footer, .tile-meta, [class*='p
   letter-spacing: 0.04em;
   vertical-align: middle;
   white-space: nowrap;
+}
+
+/* ── Auto-split connective chrome (lib/core/auto-split.js, lib/core/carousel.js) ──
+   A split slide gets a small k-of-N progress rail; a carousel cover gets the layout's
+   manifest-declared "→" lead-in (split.intro). Both read the slide's currentColor, so
+   they sit correctly on the accent cover AND the body pages. Palette-blind. */
+.split-cover-lead {
+  margin-top: var(--sp-lg); font-size: var(--fs-emphasis); letter-spacing: 0.02em; opacity: 0.9;
+}
+/* Shares the deck pagination's baseline (bottom-right, vertically centred on the page
+   number) but stands well clear of it horizontally — the rail and the page count are two
+   different "where am I" signals (sub-sequence progress vs. deck position), so they get
+   real air between them rather than reading as one widget. `right` leaves room for the
+   number plus the gap. */
+.lat-split-rail {
+  position: absolute; right: 12cqi; bottom: 2.35cqi; left: auto;
+  display: flex; align-items: center; gap: 0.55cqi; pointer-events: none;
+}
+.lat-split-rail .seg {
+  width: 2.2cqi; height: 0.5cqi; border-radius: 1cqi;
+  background: currentColor; opacity: 0.22;
+}
+.lat-split-rail .seg.on { opacity: 0.8; }
+
+/* ── Shared cover-paginate cover (lib/core/carousel.js `cover-paginate`) ──────────
+   The dense list / register layouts (statute-stack, regulatory-update, authority-chain,
+   q-and-a, glossary) split as an accent COVER → their OWN native cards paginated. The
+   read-across family duplicates this accent field per layout; this batch
+   shares ONE cover (HARD RULE #15) since the body stays native — only the cover is new.
+   Matches the read-across covers' finish so a split reads as the same deck. Palette-blind. */
+section.lat-split-cover {
+  background: var(--accent); color: var(--on-accent);
+  display: flex; flex-direction: column; justify-content: center; position: relative;
+}
+section.lat-split-cover .split-feat-eye {
+  font-size: var(--fs-meta); letter-spacing: 0.2em; text-transform: uppercase; opacity: 0.85;
+}
+section.lat-split-cover .split-feat-h {
+  font-size: var(--fs-h1); font-weight: 800; line-height: var(--lh-tight);
+  color: var(--on-accent); margin: var(--sp-xs) 0 var(--sp-md); max-width: 14em;
 }
 
 /* === lib/integrations/highlight-js/highlight-js.css === */

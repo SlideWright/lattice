@@ -1962,6 +1962,8 @@ See [logo-wall.gallery.light.pdf](../../lib/components/inventory/logo-wall/logo-
 
 **Tags** `pitch` · `board-deck` · `recommendation`
 
+**Capacity** ~4 items (crowds past 5, overflows past 6) — past that, split across slides (auto with autosplit: on).
+
 Use to pre-empt the room: line up the three or four hardest questions the audience will raise and answer each one before it is asked. The question reads as a prompt; the prepared answer carries the substance. Distinct from a reference FAQ (many terse look-up pairs) — this is a few weighty defenses of a recommendation.
 
 #### When to use
@@ -6180,6 +6182,8 @@ See [compare-code.gallery.light.pdf](../../lib/components/code/compare-code/comp
 
 **Tags** `regulation` · `citation` · `sequence`
 
+**Capacity** ~4 items (crowds past 5, overflows past 6) — past that, split across slides (auto with autosplit: on) / statute-stack.
+
 Use when the audience needs to see how a rule descends: what the statute says, how the agency implemented it, what guidance interpreted it, and what cases have applied it. Ordered list because the order is the argument.
 
 #### When to use
@@ -6661,6 +6665,8 @@ See [obligation-matrix.gallery.light.pdf](../../lib/components/legal/obligation-
 
 **Tags** `changelog` · `compliance` · `regulation`
 
+**Capacity** ~4 items (crowds past 5, overflows past 6) — past that, split across slides (auto with autosplit: on) / list-tabular.
+
 Use when a quarter's regulatory motion needs a single-slide digest. Each row carries the change name, the citation (inline code), the summary, and the effective-date marker (inline code).
 
 #### When to use
@@ -6862,6 +6868,8 @@ See [regulatory-update.gallery.light.pdf](../../lib/components/legal/regulatory-
 **Function** inventory · **Form** ledger · **Substance** structure
 
 **Tags** `citation` · `reference` · `compliance`
+
+**Capacity** ~3 items (crowds past 4, overflows past 5) — past that, split across slides (auto with autosplit: on) / list-tabular.
 
 Use when three or four parallel jurisdictions need to read at a glance: each row carries the jurisdiction label, the citation, the obligation summary, and an effective-date marker.
 
