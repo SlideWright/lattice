@@ -23,7 +23,21 @@
       "row"
     ]
   },
-  "tags": ["reference", "overview", "status"],
+  "split": {
+    "strategy": "cover-rows",
+    "family": "tabular",
+    "perPage": 3,
+    "roles": [
+      "cover",
+      "points"
+    ],
+    "note": "Overflowing tabular list re-authored as a title cover + the rows windowed (the split-panel cover finish), not clipped. lib/core/carousel.js."
+  },
+  "tags": [
+    "reference",
+    "overview",
+    "status"
+  ],
   "description": "Hairline-ruled ledger of items — name on the left, body on the right.",
   "purpose": "Use for compact reference tables: glossary-style entries, key/value pairs, specs. Four primary variants (def, metric, spec, register) tune the visual treatment; secondary modifiers (rule, solid, stacked, outline) refine each.",
   "variants": [
@@ -92,7 +106,6 @@
       "name": "actors",
       "when": "the left column is a named person, not a key"
     },
-    
     {
       "name": "list",
       "when": "rows are bullets without a label-plus-description shape"

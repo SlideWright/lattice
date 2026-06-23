@@ -100,6 +100,16 @@ in patch versions.
 
 ### Added
 
+- **Read-across carousel — list-tabular joins (the `cover-rows` strategy).** With
+  `autosplit: on`, an overflowing **list-tabular** re-authors at export into a title
+  **cover** followed by its rows windowed onto clean pages — the *same* accent
+  cover→content finish approved for split-panel, so a split table reads as the same deck,
+  not a different one. Chosen from a 5-variant render-off (cards / cover→rows / refined
+  ledger / two-up grid / numbered register). Shares the `coverWindow` builder with
+  split-panel's `feature-cover`. **compare-table** continues to paginate its rows with a
+  repeated `<thead>` (its columns are the comparison — they stay a table). On the jargon
+  deck in portrait, overflow falls 6 → 5. See
+  `engineering/decisions/2026-06-23-read-across-carousel.md`.
 - **Read-across carousel — split-panel joins (the `feature-cover` strategy).** An
   overflowing **split-panel** (a featured panel beside its supporting points) now
   re-authors at export into a **feature cover** — the watermark/heading/lede get a
