@@ -12783,9 +12783,9 @@ section.safe[data-orientation='square'] :is(.cell-footer, .tile-meta, [class*='p
 .lat-split-rail .seg.on { opacity: 0.8; }
 
 /* ── Shared cover-paginate cover (lib/core/carousel.js `cover-paginate`) ──────────
-   The dense list / legal layouts (statute-stack, regulatory-update, glossary, q-and-a,
-   authority-chain, obligation-matrix) split as an accent COVER → their OWN native cards
-   paginated. The read-across family duplicates this accent field per layout; this batch
+   The dense list / register layouts (statute-stack, regulatory-update, authority-chain,
+   q-and-a, glossary) split as an accent COVER → their OWN native cards paginated. The
+   read-across family duplicates this accent field per layout; this batch
    shares ONE cover (HARD RULE #15) since the body stays native — only the cover is new.
    Matches the read-across covers' finish so a split reads as the same deck. Palette-blind. */
 section.lat-split-cover {
