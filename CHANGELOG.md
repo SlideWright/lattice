@@ -27,6 +27,14 @@ in patch versions.
 
 ### Fixed
 
+- **A split `q-and-a` continues its index instead of restarting at "01".** When an
+  overflowing q-and-a paginates (cover-paginate), each body page's list reset the `qa`
+  CSS counter, so page 2 began again at "01". The auto-splitter now stamps
+  `--lat-split-offset` (the count of pairs on prior body pages) on each body page, and
+  `counter-reset: qa var(--lat-split-offset, 0)` carries the numbering across the split
+  (…03, 04). Computed post-convergence, so it stays correct even when a page splits
+  across several measured passes. An unsplit slide is unchanged (offset 0).
+
 - **A split `compare-code` block now wears the standard code frame.** When an overflowing
   compare-code splits to one block per page (`cover-code`), the block pages rendered the
   highlighted code *naked* on the slide — the `compare-code-block` class never matched the

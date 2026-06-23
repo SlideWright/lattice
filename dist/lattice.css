@@ -8034,7 +8034,10 @@ section.q-and-a > :is(ul, ol) {
   flex-direction: column;
   justify-content: center;
   gap: var(--qa-gap);
-  counter-reset: qa;
+  /* `--lat-split-offset` is set by the auto-splitter on a cover-paginate body page (the
+     count of pairs on prior pages), so a split q-and-a continues its index (…03, 04) rather
+     than restarting at 01 on every page. 0 (the default) on an unsplit slide. */
+  counter-reset: qa var(--lat-split-offset, 0);
 }
 
 /* ── default · editorial ledger ───────────────────────────────────────── */
