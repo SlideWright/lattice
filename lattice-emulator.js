@@ -313,6 +313,27 @@ const paletteCSS = loadPaletteWithImports(palettePath);
 const layoutCSS  = loadPaletteWithImports(cssFile, new Set(), 'layout CSS');
 const css = paletteCSS + '\n' + layoutCSS;
 
+// ── Fail fast on an unknown `size:` directive (#502) ──────────────────────
+// A typo'd size name (`size: storyy`) otherwise resolves SILENTLY to the first
+// declared @size: the deck renders at the wrong geometry with no signal, and a
+// degenerate value can wedge the render. Validate the EXPLICIT directive against
+// the registered @size names (theme first, then base) and error at config time —
+// before any Chrome work — listing the valid names. No directive → hd default,
+// unchanged. Front-matter-scoped so a `size:` in prose / a code block can't trip it.
+const { parseSizes } = require('./lib/engine/css');
+const _mdFmMatch  = md.match(/^---\n[\s\S]*?\n---/);
+const _mdFm       = _mdFmMatch ? _mdFmMatch[0] : '';
+const explicitSize = (_mdFm.match(/^\s*size:\s*["']?([\w:/-]+)["']?\s*$/m) || [])[1];
+if (explicitSize) {
+  const knownSizes = new Set();
+  for (const src of [paletteCSS, layoutCSS]) for (const k of parseSizes(src).keys()) knownSizes.add(k);
+  if (knownSizes.size && !knownSizes.has(explicitSize)) {
+    console.error(`error: unknown size: ${explicitSize}`);
+    console.error(`available sizes: ${[...knownSizes].sort().join(', ')}`);
+    process.exit(1);
+  }
+}
+
 // ── Mermaid renderer ─────────────────────────────────────────────────────────
 // Two surfaces wire the rendered SVG to the active palette:
 //
@@ -1437,14 +1458,64 @@ function loadPuppeteer() {
   process.exit(1);
 }
 const puppeteer = loadPuppeteer();
-(async () => {
+const { guard, isTargetGone } = require('./lib/engine/render-guard');
+// Per-call watchdog: shorter than any sane outer CI timeout, longer than any
+// legit single render op (goto/evaluate/pdf). A true crash is caught by the
+// `disconnected` race in ms; this only backstops a SILENT wedge. Override with
+// LATTICE_RENDER_WATCHDOG_MS for very large decks on slow hardware. See #502.
+const RENDER_WATCHDOG_MS = Number(process.env.LATTICE_RENDER_WATCHDOG_MS) || 90000;
+// Snapshot the pre-split deck HTML so a hardened RETRY starts from a clean slate
+// (the autosplit loop below mutates cleanDocHtml + rewrites outHtml in place).
+const initialDocHtml = cleanDocHtml;
+
+// One render+export attempt. `hardened` adds the flags that fix the classic
+// swiftshader "Target closed" GPU-process crash (--disable-gpu) and the
+// /dev/shm exhaustion crash in small containers (--disable-dev-shm-usage).
+async function renderExport({ hardened }) {
   const launchOpts = {
-    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      ...(hardened ? ['--disable-dev-shm-usage', '--disable-gpu'] : []),
+    ],
     headless: 'new',
   };
   if (CHROME_EXEC) launchOpts.executablePath = CHROME_EXEC;
-  const browser = await puppeteer.launch(launchOpts);
-  const page = await browser.newPage();
+  // Reset to the pre-split baseline so each attempt renders from clean HTML.
+  cleanDocHtml = initialDocHtml;
+  fs.writeFileSync(outHtml, cleanDocHtml);
+
+  // Guard launch itself with the watchdog (no browser to listen on yet). If
+  // launch ITSELF wedges, the watchdog rejects but `browser` is never bound, so a
+  // half-spawned Chrome can be orphaned — unavoidable without a PID hook into
+  // puppeteer's launch, and the process exits non-zero right after anyway.
+  const browser = await guard(null, () => puppeteer.launch(launchOpts), 'browser launch', RENDER_WATCHDOG_MS);
+  // Every CDP call below goes through `g`: it races the call against the
+  // browser's `disconnected` event (crash → reject in ms) AND the watchdog
+  // (silent wedge → reject in seconds), so a wedged Chrome NEVER hangs to the
+  // outer timeout. A guarded, idempotent close (with a SIGKILL fallback) tears
+  // the browser down even when it is itself wedged.
+  const g = (op, label) => guard(browser, op, label, RENDER_WATCHDOG_MS);
+  let closed = false;
+  const closeBrowser = async () => {
+    if (closed) return;
+    closed = true;
+    try {
+      await guard(null, () => browser.close(), 'browser close', 15000);
+    } catch (_e) {
+      try { browser.process()?.kill('SIGKILL'); } catch (_e2) { /* already gone */ }
+    }
+  };
+
+  try {
+    return await renderBody(browser, g, closeBrowser);
+  } finally {
+    await closeBrowser();
+  }
+}
+
+async function renderBody(browser, g, closeBrowser) {
+  const page = await g(() => browser.newPage(), 'new page');
   // Set viewport to slide dimensions so section's own cqi properties (padding,
   // border-top) resolve against the correct ICB in screen mode.  Without this,
   // Puppeteer's default 800×600 viewport causes section's cqi fallback to
@@ -1461,22 +1532,22 @@ const puppeteer = loadPuppeteer();
   const rasterScale = RASTER
     ? Math.max(1, Math.min(2, Math.floor(3840 / Math.max(slideW, slideH))))
     : 1;
-  await page.setViewport({ width: slideW, height: slideH, deviceScaleFactor: rasterScale });
-  await page.goto('file://' + path.resolve(outHtml), {
+  await g(() => page.setViewport({ width: slideW, height: slideH, deviceScaleFactor: rasterScale }), 'set viewport');
+  await g(() => page.goto('file://' + path.resolve(outHtml), {
     waitUntil: 'networkidle0',
     timeout: 60000
-  });
+  }), 'navigate');
   // Force every declared @font-face to load (incl. the base64 self-hosted
   // faces) and settle before measuring/printing. Marp's template lazy-loads
   // fonts per active slide, so document.fonts.ready alone resolves without
   // faces used only on later slides; explicitly load() them all. Without this
   // the overflow pass and the PDF can be laid out in the fallback metrics.
-  await page.evaluate(async () => {
+  await g(() => page.evaluate(async () => {
     try {
       await Promise.all([...document.fonts].map((f) => f.load().catch(() => {})));
       await document.fonts.ready;
     } catch (_e) { /* fonts API unavailable — proceed with whatever loaded */ }
-  });
+  }), 'load fonts');
   // Detect sections whose content exceeds the 1280×720 frame, to WARN the
   // author (with exact pages) — but keep the EXPORT itself clean: the red ring
   // + "OVERFLOWS" tab are NOT burned into the deliverable PDF. A loud red box in
@@ -1488,7 +1559,7 @@ const puppeteer = loadPuppeteer();
   // clientHeight) — the signal both the author warning and the measured auto-split
   // pass below read. Scope to real slide sections only — `<section>` literals inside
   // code blocks parse as nested DOM and would pollute the indices.
-  const measureOverflow = () => page.evaluate((carouselClasses) => {
+  const measureOverflow = () => g(() => page.evaluate((carouselClasses) => {
     const TOL = 12; // filter sub-pixel rounding; see lattice-runtime.js
     const out = [];
     document.querySelectorAll('section[data-lattice-slide]').forEach((s, i) => {
@@ -1521,7 +1592,7 @@ const puppeteer = loadPuppeteer();
       out.push({ slide: i + 1, ratio, canSplit, splitRatio });
     });
     return out;
-  }, CAROUSEL_NAMES);
+  }, CAROUSEL_NAMES), 'measure overflow');
   let overflow = await measureOverflow();
   // MEASURED auto-split — the loop that makes "split" fit REAL boxes. Divide every
   // overflowing SPLITTABLE slide by how much it overflows, re-render, re-measure,
@@ -1540,10 +1611,10 @@ const puppeteer = loadPuppeteer();
       if (!r.changed) break;
       cleanDocHtml = r.html;
       fs.writeFileSync(outHtml, cleanDocHtml);
-      await page.goto(`file://${path.resolve(outHtml)}`, { waitUntil: 'networkidle0', timeout: 60000 });
-      await page.evaluate(async () => {
+      await g(() => page.goto(`file://${path.resolve(outHtml)}`, { waitUntil: 'networkidle0', timeout: 60000 }), 'navigate (autosplit)');
+      await g(() => page.evaluate(async () => {
         try { await Promise.all([...document.fonts].map((f) => f.load().catch(() => {}))); await document.fonts.ready; } catch (_e) { /* fonts API unavailable */ }
-      });
+      }), 'load fonts (autosplit)');
       overflow = await measureOverflow();
       if (!QUIET) console.log(`  auto-split (measured) pass ${pass}: ${r.changed} slide(s) divided to fit`);
     }
@@ -1554,10 +1625,10 @@ const puppeteer = loadPuppeteer();
     if (railed !== cleanDocHtml) {
       cleanDocHtml = railed;
       fs.writeFileSync(outHtml, cleanDocHtml);
-      await page.goto(`file://${path.resolve(outHtml)}`, { waitUntil: 'networkidle0', timeout: 60000 });
-      await page.evaluate(async () => {
+      await g(() => page.goto(`file://${path.resolve(outHtml)}`, { waitUntil: 'networkidle0', timeout: 60000 }), 'navigate (rails)');
+      await g(() => page.evaluate(async () => {
         try { await Promise.all([...document.fonts].map((f) => f.load().catch(() => {}))); await document.fonts.ready; } catch (_e) { /* fonts API unavailable */ }
-      });
+      }), 'load fonts (rails)');
     }
   }
   const overflowing = overflow.map((o) => o.slide);
@@ -1574,18 +1645,18 @@ const puppeteer = loadPuppeteer();
   // PDF / PNG / PPTX deliverable stays clean, matching the contract documented
   // at the detection pass. (Removing the class also hides the .overflow-tab via
   // `section:not(.overflow) > .overflow-tab { display:none }`.)
-  await page.evaluate(() => {
+  await g(() => page.evaluate(() => {
     for (const s of document.querySelectorAll('section.overflow')) s.classList.remove('overflow');
-  });
+  }), 'strip overflow marker');
   if (OUT_FORMAT === 'pdf') {
     // Render to a buffer (no `path`) so we can post-process before writing: the
     // speaker notes are attached as per-page PDF text annotations.
-    const pdfBytes = await page.pdf({
+    const pdfBytes = await g(() => page.pdf({
       width: `${slideW}px`, height: `${slideH}px`,
       printBackground: true,
       preferCSSPageSize: true
-    });
-    await browser.close();
+    }), 'print pdf');
+    await closeBrowser();
     const finalBytes = await embedNotesInPdf(pdfBytes, slideNotes);
     fs.writeFileSync(outFile, finalBytes);
     const noteCount = slideNotes.filter(Boolean).length;
@@ -1597,12 +1668,12 @@ const puppeteer = loadPuppeteer();
     // PNG / PPTX: rasterize one image per slide from the SAME rendered page.
     // Each `section[data-lattice-slide]` is exactly slideW×slideH (fixed-page),
     // so an element screenshot yields a clean full-bleed slide image.
-    const handles = await page.$$('section[data-lattice-slide]');
+    const handles = await g(() => page.$$('section[data-lattice-slide]'), 'collect slide handles');
     const pngBuffers = [];
     for (const h of handles) {
-      pngBuffers.push(await h.screenshot({ type: 'png' }));
+      pngBuffers.push(await g(() => h.screenshot({ type: 'png' }), 'screenshot slide'));
     }
-    await browser.close();
+    await closeBrowser();
 
     if (OUT_FORMAT === 'png') {
       // `deck.png` → `deck.001.png`, `deck.002.png`, … (a per-slide set, the
@@ -1632,10 +1703,27 @@ const puppeteer = loadPuppeteer();
     fs.writeFileSync(outHtml, toFluidViewer(cleanDocHtml));
     if (!QUIET) console.log(`Fluid viewer: ${outHtml}`);
   }
+}
+
+// Driver: render once; on a Chrome target crash / wedge (NOT an author-fixable
+// layout error) retry exactly once with hardening flags before giving up loud
+// and non-zero. This turns a transient, environmental Chrome failure into a
+// few-seconds-then-retry instead of a multi-minute hang to the outer timeout (#502).
+(async () => {
+  try {
+    await renderExport({ hardened: false });
+  } catch (e) {
+    if (isTargetGone(e)) {
+      console.warn(`  ⚠ render failed (${(e.message || String(e)).split('\n')[0]}) — retrying once with hardening flags (--disable-dev-shm-usage --disable-gpu)…`);
+      await renderExport({ hardened: true });
+    } else {
+      throw e;
+    }
+  }
 })().catch((e) => {
   // Surface render/export failures as a one-line error (matching readFileOrDie),
   // not a raw unhandled-rejection stack trace that reads like a crash.
-  console.error(`error: ${e && e.message ? e.message : e}`);
+  console.error(`error: ${e?.message ? e.message : e}`);
   process.exit(1);
 });
 

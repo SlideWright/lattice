@@ -27,6 +27,21 @@ in patch versions.
 
 ### Fixed
 
+- **A crashed Chrome render fails fast instead of hanging to the outer timeout.** When the
+  headless-Chrome renderer/GPU process crashes mid-render (`Protocol error … Target closed`),
+  the emulator's awaited CDP calls (`page.goto` / `page.evaluate` / `page.pdf`) could be left
+  waiting on a protocol response that never arrived — turning a transient, environmental Chrome
+  crash into a multi-minute stall that masked the real signal. Every render call now races
+  against the browser's `disconnected` event (a crash rejects in ms) **and** a per-call watchdog
+  (`LATTICE_RENDER_WATCHDOG_MS`, default 90 s — a silent wedge with no disconnect event), and a
+  wedged render is retried **once** with hardening flags (`--disable-dev-shm-usage --disable-gpu`,
+  the classic swiftshader/`/dev/shm` crash fix) before exiting non-zero with a clear message. New
+  shared kernel `lib/engine/render-guard.js` (pure, unit-tested in isolation). (#502)
+- **A typo'd `size:` directive errors at config time instead of silently rendering wrong.** An
+  unregistered size name (e.g. `size: storyy`) used to resolve silently to the first declared
+  `@size` — the deck rendered at the wrong geometry with no signal, and a degenerate value could
+  wedge the render. The emulator now validates the explicit `size:` against the registered `@size`
+  names before any Chrome work and exits non-zero listing the valid sizes. (#502)
 - **A split `q-and-a` continues its index instead of restarting at "01".** When an
   overflowing q-and-a paginates (cover-paginate), each body page's list reset the `qa`
   CSS counter, so page 2 began again at "01". The auto-splitter now stamps
