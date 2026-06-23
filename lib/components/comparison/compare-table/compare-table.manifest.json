@@ -4,6 +4,7 @@
   "adapt": { "mode": "single-orientation", "priority": ["title", "table"], "keepTogether": ["row"] },
   "focusAxes": ["row", "col", "cell"],
   "capacity": { "axis": "row", "min": 2, "sweet": 4, "soft": 6, "hard": 8, "escalateTo": ["split across slides"], "note": "the table density crowds past six rows" },
+  "split": { "strategy": "cover-paginate", "axis": "row", "perPage": 5, "intro": "The full comparison", "note": "Overflowing comparison splits as an accent cover → its own native rows paginated (rows split, thead repeats; columns are the read-across, never split). lib/core/carousel.js cover-paginate." },
   "function": "comparison",
   "form": "ledger",
   "substance": "prose",
