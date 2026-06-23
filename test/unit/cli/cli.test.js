@@ -15,6 +15,8 @@
 const { test, describe } = require('node:test');
 const assert = require('node:assert/strict');
 const path   = require('path');
+const os     = require('os');
+const fs     = require('fs');
 const { spawn } = require('child_process');
 
 describe('cli', { concurrency: true }, () => {
@@ -113,6 +115,21 @@ describe('cli', { concurrency: true }, () => {
     assert.equal(r.status, 1);
     assert.match(r.stderr, /palette not found: nonesuch/);
     assert.match(r.stderr, /available palettes:.*indaco/);
+  });
+
+  test('emulator: unknown size: directive exits 1 and lists valid sizes (fails fast, no Chrome) [#502]', async () => {
+    // A typo'd size must error at CONFIG time with the valid set — not resolve
+    // silently to the first declared @size (a deck rendered at the wrong
+    // geometry) nor wedge the render. Exits before any puppeteer work.
+    const dir  = fs.mkdtempSync(path.join(os.tmpdir(), 'lat-size-'));
+    const deck = path.join(dir, 'deck.md');
+    fs.writeFileSync(deck, '---\nsize: storyy\n---\n\n# Hello\n');
+    const r = await run(EMULATOR, [deck, path.join(dir, 'out.pdf')]);
+    assert.equal(r.status, 1, `expected 1, got ${r.status}; stderr: ${r.stderr}`);
+    assert.match(r.stderr, /unknown size: storyy/);
+    assert.match(r.stderr, /available sizes:.*\bstory\b/);
+    assert.doesNotMatch(r.stderr, /at .+\.js:\d+/, 'no stack trace — friendly error');
+    fs.rmSync(dir, { recursive: true, force: true });
   });
 
   // ── screenshot-slides ─────────────────────────────────────────────────────

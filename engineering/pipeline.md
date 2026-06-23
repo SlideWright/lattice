@@ -400,6 +400,8 @@ CSS themes use positional selectors (`p:first-of-type`, `p:nth-of-type(2)`, `ul 
 | Double bullets in PPTX | Never use unicode `•` — use `bullet: true` |
 | Content overflows into page number | Increase bottom padding or reduce content |
 | Cards touching slide edges | Add minimum 48px padding from all edges |
+| Render exits `render watchdog … wedged` / `Chrome disconnected` | Chrome's renderer crashed mid-render — the emulator now fails fast (after one hardened retry with `--disable-gpu --disable-dev-shm-usage`) instead of hanging. Usually environmental; a fresh sandbox renders cleanly. Bump `LATTICE_RENDER_WATCHDOG_MS` (default 90000) only for genuinely huge decks on slow hardware. See `lib/engine/render-guard.js` (#502) |
+| `error: unknown size: <name>` | The `size:` directive isn't a registered `@size` — the error lists the valid names. Fix the typo (the deck no longer renders silently at the wrong geometry) (#502) |
 
 ---
 
