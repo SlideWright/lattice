@@ -77,7 +77,7 @@ Multi-row comparison table with consistent columns.
 ## When NOT to reach for compare-table.
 
 - **Cells full of prose.** Long sentences in a table cell wrap awkwardly and force the column wider. Move to `verdict-grid` for criteria with body text, or `cards-stack` for full prose rows.
-- **More than 6 rows.** Past 6 rows the table density crowds the slide. Split into two slides or summarise the rows that don't differentiate.
+- **More than 6 rows.** Past 6 rows the table density crowds the slide. Summarise the rows that don't differentiate, split into two slides — or turn on `autosplit: on` and let it reflow card-per-row (see Overflow).
 - **State-marker rows.** When most cells are pass/fail/partial badges, the right layout is `obligation-matrix` or `verdict-grid`. compare-table is for textual values.
 
 ---

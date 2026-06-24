@@ -131,6 +131,16 @@ function renderDocs(m) {
     lines.push('');
   }
 
+  // Author-facing overflow behaviour, for a layout that declares a carousel `split`
+  // recipe (cover-paginate / cover-cards). `split.docs` is the one-line plain-language
+  // summary; the technical `split.note` stays internal.
+  if (m.split && m.split.docs) {
+    lines.push('## Overflow');
+    lines.push('');
+    lines.push(m.split.docs);
+    lines.push('');
+  }
+
   if (Array.isArray(m.whenToUse) && m.whenToUse.length) {
     lines.push('## When to use');
     lines.push('');

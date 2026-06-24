@@ -4,7 +4,7 @@
   "adapt": { "mode": "single-orientation", "priority": ["title", "table"], "keepTogether": ["row"] },
   "focusAxes": ["row", "col", "cell"],
   "capacity": { "axis": "row", "min": 2, "sweet": 4, "soft": 6, "hard": 8, "escalateTo": ["split across slides"], "note": "the table density crowds past six rows" },
-  "split": { "strategy": "cover-cards", "axis": "row", "bodyAxis": "item", "perPage": 4, "intro": "Row by row", "coverClass": "compare-table", "note": "An overflowing compare-table (autosplit: on) splits as an accent cover → card-per-row: each row becomes a card (first cell = heading; every other column = a label:value pair from the <thead>), so a wide table reflows into a NARROW/portrait frame and paginates DOWN the tall frame — row pagination alone can't fix the horizontal overflow a portrait box creates. Card pages re-split on the item axis (bodyAxis). The cover carries compare-table's design language via coverClass. lib/core/carousel.js cover-cards; cover-cards narrows the body so the measure gate treats it as width-fixable (widthFix=true)." },
+  "split": { "strategy": "cover-cards", "axis": "row", "bodyAxis": "item", "perPage": 2, "intro": "Row by row", "coverClass": "compare-table", "docs": "With `autosplit: on`, a `compare-table` too wide or too tall for the frame (most often a portrait deck) reflows **card-per-row**: an accent cover, then each row as a card — its first cell the heading, every other column a `label: value` pair carrying the `<thead>` label down with the value. You read each row top-to-bottom instead of squinting across columns, and the run is paginated and counted with a k-of-N rail. Authoring is unchanged — a normal Markdown table; the split only fires when it overflows.", "note": "An overflowing compare-table (autosplit: on) splits as an accent cover → card-per-row: each row becomes a card (first cell = heading; every other column = a label:value pair from the <thead>), so a wide table reflows into a NARROW/portrait frame and paginates DOWN the tall frame — row pagination alone can't fix the horizontal overflow a portrait box creates. Card pages re-split on the item axis (bodyAxis). The cover carries compare-table's design language via coverClass. lib/core/carousel.js cover-cards; cover-cards narrows the body so the measure gate treats it as width-fixable (widthFix=true)." },
   "function": "comparison",
   "form": "ledger",
   "substance": "prose",
@@ -48,7 +48,7 @@
     },
     {
       "title": "More than 6 rows",
-      "body": "Past 6 rows the table density crowds the slide. Split into two slides or summarise the rows that don't differentiate."
+      "body": "Past 6 rows the table density crowds the slide. Summarise the rows that don't differentiate, split into two slides — or turn on `autosplit: on` and let it reflow card-per-row (see Overflow)."
     },
     {
       "title": "State-marker rows",

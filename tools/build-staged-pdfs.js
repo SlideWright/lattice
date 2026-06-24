@@ -122,9 +122,14 @@ async function buildDecks(decks) {
 }
 
 function buildComponent(name) {
+  // Same offline-determinism as the deck rebuild above: block remote so an unreachable
+  // CDN fails fast instead of hanging the gallery render behind the proxy. build-galleries
+  // spawns the emulator with inherited env, so the flag propagates through. Scoped to this
+  // local pre-commit rebuild (CI's build:galleries:check is unchanged).
   execFileSync('node', [path.join(ROOT, 'tools', 'build-galleries.js'), '--only', name], {
     cwd: ROOT,
     stdio: 'inherit',
+    env: { ...process.env, LATTICE_BLOCK_REMOTE: '1' },
   });
   return globGallery(`lib/components/**/${name}/${name}.gallery.{light,dark}.pdf`, name, false);
 }
@@ -133,6 +138,7 @@ function buildBucket(name) {
   execFileSync('node', [path.join(ROOT, 'tools', 'build-bucket-galleries.js'), '--only', name], {
     cwd: ROOT,
     stdio: 'inherit',
+    env: { ...process.env, LATTICE_BLOCK_REMOTE: '1' }, // offline-deterministic — see buildComponent
   });
   return [`lib/components/${name}/${name}.gallery.light.pdf`, `lib/components/${name}/${name}.gallery.dark.pdf`];
 }

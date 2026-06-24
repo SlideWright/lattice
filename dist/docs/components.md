@@ -2320,6 +2320,10 @@ See [compare-prose.gallery.light.pdf](../../lib/components/comparison/compare-pr
 
 Use when you have 3+ options or 4+ rows of criteria. Wider data than compare-prose can hold legibly.
 
+#### Overflow
+
+With `autosplit: on`, a `compare-table` too wide or too tall for the frame (most often a portrait deck) reflows **card-per-row**: an accent cover, then each row as a card — its first cell the heading, every other column a `label: value` pair carrying the `<thead>` label down with the value. You read each row top-to-bottom instead of squinting across columns, and the run is paginated and counted with a k-of-N rail. Authoring is unchanged — a normal Markdown table; the split only fires when it overflows.
+
 #### When to use
 
 - **Wider than compare-prose.** Three or more options, or four or more rows of criteria. compare-prose maxes out at two columns and short bodies; compare-table scales further.
@@ -2329,7 +2333,7 @@ Use when you have 3+ options or 4+ rows of criteria. Wider data than compare-pro
 #### When NOT to use
 
 - **Cells full of prose.** Long sentences in a table cell wrap awkwardly and force the column wider. Move to `verdict-grid` for criteria with body text, or `cards-stack` for full prose rows.
-- **More than 6 rows.** Past 6 rows the table density crowds the slide. Split into two slides or summarise the rows that don't differentiate.
+- **More than 6 rows.** Past 6 rows the table density crowds the slide. Summarise the rows that don't differentiate, split into two slides — or turn on `autosplit: on` and let it reflow card-per-row (see Overflow).
 - **State-marker rows.** When most cells are pass/fail/partial badges, the right layout is `obligation-matrix` or `verdict-grid`. compare-table is for textual values.
 
 #### Authoring

@@ -2140,7 +2140,7 @@
         },
         {
           "title": "More than 6 rows",
-          "body": "Past 6 rows the table density crowds the slide. Split into two slides or summarise the rows that don't differentiate."
+          "body": "Past 6 rows the table density crowds the slide. Summarise the rows that don't differentiate, split into two slides — or turn on `autosplit: on` and let it reflow card-per-row (see Overflow)."
         },
         {
           "title": "State-marker rows",
