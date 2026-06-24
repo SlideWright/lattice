@@ -2867,19 +2867,19 @@ section.compare-table.lat-split-cover .split-feat-h {
    read); the card break is stronger + more spaced so card > row in the hierarchy. */
 /* On a card page the slide heading is a QUIET running header (the cover already stated it
    full-size), so the cards get the room — otherwise the hero heading forces one card/page. */
-section.compare-table.lat-split-native h2 { font-size:var(--fs-message); margin:0 0 var(--sp-sm); color:var(--text-secondary); line-height:var(--lh-tight); }
+section.compare-table.lat-split-native h2 { font-family:var(--font-label); font-size:var(--fs-meta); font-weight:600; letter-spacing:0.08em; text-transform:uppercase; margin:0 0 var(--sp-sm); color:var(--text-muted); line-height:var(--lh-snug); }
 section.compare-table .split-cards { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:var(--sp-md); flex:1; }
 section.compare-table .split-card { padding-top:var(--sp-sm); border-top:1px solid var(--border); }
 section.compare-table .split-card:first-child { padding-top:0; border-top:none; }
-section.compare-table .split-card-h { font-size:var(--fs-emphasis); font-weight:600; color:var(--text-heading); margin:0 0 var(--sp-xs); line-height:var(--lh-tight); }
+section.compare-table .split-card-h { font-size:var(--fs-message); font-weight:600; color:var(--text-heading); margin:0 0 var(--sp-xs); line-height:var(--lh-tight); }
 section.compare-table .split-card-pairs { display:grid; grid-template-columns:2fr 3fr; align-items:baseline; margin:0; }
 section.compare-table .split-card-pair { display:contents; }
 section.compare-table .split-card-pair dt,
-section.compare-table .split-card-pair dd { padding:0.45em 0; border-bottom:1px solid color-mix(in srgb, var(--border) 50%, transparent); }
+section.compare-table .split-card-pair dd { padding:0.32em 0; border-bottom:1px solid color-mix(in srgb, var(--border) 50%, transparent); }
 section.compare-table .split-card-pair:last-child dt,
 section.compare-table .split-card-pair:last-child dd { border-bottom:none; }
-section.compare-table .split-card-pair dt { font-family:var(--font-label); font-size:var(--fs-meta); font-weight:600; letter-spacing:0.10em; text-transform:uppercase; color:var(--text-label); padding-right:var(--sp-md); }
-section.compare-table .split-card-pair dd { margin:0; color:var(--text-body); font-size:var(--fs-body-compact); overflow-wrap:break-word; word-break:break-word; }
+section.compare-table .split-card-pair dt { font-family:var(--font-label); font-size:var(--fs-meta); font-weight:500; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-muted); padding-right:var(--sp-md); }
+section.compare-table .split-card-pair dd { margin:0; color:var(--text-heading); font-size:var(--fs-body); line-height:var(--lh-snug); overflow-wrap:break-word; word-break:break-word; }
 
 /* === lib/components/statement/content/content.styles.css === */
 /* content — statement.canvas.content (the catch-all prose slide)
