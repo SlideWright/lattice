@@ -305,3 +305,49 @@ describe('core: carousel — cover-paginate (dense lists / legal batch)', () => 
     assert.equal(carouselize(openTag, one, recipe), null);
   });
 });
+
+describe('core: carousel — cover-cards compare-table (wide <table> → card-per-row) [#499]', () => {
+  const cls = (sec) => (sec.match(/\sclass="([^"]*)"/) || ['', ''])[1];
+  // A rendered compare-table: heading + a <table> with a <thead> (column labels) and rows.
+  const openTag = '<section data-lattice-slide="1" id="s1" class="content compare-table form">';
+  const thead = '<thead><tr><th>Ritual</th><th>Cadence</th><th>Output</th></tr></thead>';
+  const row = (a, b, c) => `<tr><td>${a}</td><td>${b}</td><td>${c}</td></tr>`;
+  const rows = [row('Offsite', 'Yearly', 'A deck'), row('QBR', 'Quarterly', 'A scorecard'), row('Standup', 'Daily', 'Blockers'), row('Retro', 'Biweekly', 'Experiments')].join('');
+  const inner = `<header>H</header><h2>How the rituals compare</h2><table>${thead}<tbody>${rows}</tbody></table><footer>F</footer>`;
+  const recipe = { strategy: 'cover-cards', axis: 'row', bodyAxis: 'item', perPage: 2, intro: 'Row by row', coverClass: 'compare-table' };
+
+  test('emits an accent cover, then each ROW as a CARD with <thead> labels as pairs', () => {
+    const parts = carouselize(openTag, inner, recipe);
+    assert.equal(parts.length, 3); // cover + [2 cards, 2 cards]
+    assert.match(cls(parts[0]), /lat-split-cover/);
+    for (const body of parts.slice(1)) {
+      assert.match(cls(body), /compare-table/);
+      assert.match(cls(body), /lat-split-native/);
+      assert.match(body, /<ul class="split-cards">/); // cards, not a native table
+      assert.doesNotMatch(body, /<table>/);
+    }
+    // The first row → a card: first cell is the heading, the rest are label:value pairs
+    // carrying the column labels DOWN with each value.
+    assert.match(parts[1], /split-card-h">Offsite</);
+    assert.match(parts[1], /<dt>Cadence<\/dt><dd>Yearly<\/dd>/);
+    assert.match(parts[1], /<dt>Output<\/dt><dd>A deck<\/dd>/);
+  });
+
+  test('the cover wears the layout class via coverClass + the intro lead', () => {
+    const [cover] = carouselize(openTag, inner, recipe);
+    assert.match(cls(cover), /\bcompare-table\b/);
+    assert.match(cls(cover), /\blat-split-cover\b/);
+    assert.match(cover, /split-feat-h">How the rituals compare/);
+    assert.match(cover, /split-cover-lead">Row by row/);
+  });
+
+  test('only the cover keeps the engine id — body pages never duplicate it', () => {
+    const parts = carouselize(openTag, inner, recipe);
+    assert.equal(parts.filter((p) => /\sid="s1"/.test(p)).length, 1);
+  });
+
+  test('a single row (can\'t split) → null, left for the ring', () => {
+    const one = `<header>H</header><h2>H</h2><table>${thead}<tbody>${row('Solo', 'x', 'y')}</tbody></table><footer>F</footer>`;
+    assert.equal(carouselize(openTag, one, recipe), null);
+  });
+});

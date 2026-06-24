@@ -4,6 +4,7 @@
   "adapt": { "mode": "single-orientation", "priority": ["title", "table"], "keepTogether": ["row"] },
   "focusAxes": ["row", "col", "cell"],
   "capacity": { "axis": "row", "min": 2, "sweet": 4, "soft": 6, "hard": 8, "escalateTo": ["split across slides"], "note": "the table density crowds past six rows" },
+  "split": { "strategy": "cover-cards", "axis": "row", "bodyAxis": "item", "perPage": 4, "intro": "Row by row", "coverClass": "compare-table", "note": "An overflowing compare-table (autosplit: on) splits as an accent cover → card-per-row: each row becomes a card (first cell = heading; every other column = a label:value pair from the <thead>), so a wide table reflows into a NARROW/portrait frame and paginates DOWN the tall frame — row pagination alone can't fix the horizontal overflow a portrait box creates. Card pages re-split on the item axis (bodyAxis). The cover carries compare-table's design language via coverClass. lib/core/carousel.js cover-cards; cover-cards narrows the body so the measure gate treats it as width-fixable (widthFix=true)." },
   "function": "comparison",
   "form": "ledger",
   "substance": "prose",

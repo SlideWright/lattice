@@ -109,7 +109,12 @@ const VARIANT_DECL_IGNORE = new Map([
 // `chart-frame` is the wrapper the chart family applies to every chart
 // section (section.<chart>.chart-frame); it is engine chrome, present on
 // every chart regardless of variant.
-const STRUCTURAL_ROOT_CLASSES = new Set(['chart-frame']);
+// `lat-split-cover` is the shared auto-split COVER class (lib/core/carousel.js
+// cover-paginate): an overflowing layout's cover wears `section.<layout>.lat-split-cover`
+// so its stylesheet can carry its design language onto the split cover. It is
+// engine-applied at export, never an author modifier — so a component that styles
+// its own split cover (compare-table) is not declaring a new variant.
+const STRUCTURAL_ROOT_CLASSES = new Set(['chart-frame', 'lat-split-cover']);
 
 // Search tags that legitimately apply to exactly ONE component — a
 // genuinely-unique idiom or material with no sibling that shares it

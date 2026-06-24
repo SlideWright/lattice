@@ -25,7 +25,29 @@ in patch versions.
 
 ## Unreleased
 
+### Added
+
+- **`compare-table` cover-cards split (`autosplit: on`) — a wide table in a tall frame.** An
+  overflowing `compare-table` now splits as an accent **cover → card-per-row**: each row
+  becomes a card (the first cell heads it; every other column renders as a `label: value`
+  pair from the `<thead>`), so a table that's too **wide** to read across in a portrait/narrow
+  frame reflows into the column and paginates **down** the tall frame — row pagination alone
+  can't fix a horizontal overflow. The `<thead>` labels travel with each value (read *down*,
+  not across), card pages re-split on the `item` axis (`split.bodyAxis`), and a k-of-N rail
+  ties the run together. The cover carries the table's own design language (a hairline rule
+  echoing the row rules, the mono column-head treatment) via a new opt-in `split.coverClass`
+  recipe field, so a split reads as the same deck. New shared `cover-cards` carousel strategy
+  (`lib/core/carousel.js`). Demo: `examples/compare-table-cover.md`. (#499)
+
 ### Fixed
+
+- **The autosplit measure gate can no longer balloon on a wide table.** A split that only
+  reduces *height* (`cover-paginate`, which keeps a native table/list) can't fix a purely
+  *horizontal* overflow, so a too-wide one of those is now left for the ring instead of being
+  re-split every pass until the render times out — the measure gate marks such layouts
+  splittable on **vertical overflow only** (`widthFix=false`). Strategies that **narrow** the
+  body (`cover-cards` card-per-row, `cover-code` one-block-per-page) stay width-splittable.
+  This is the guard wide-table layouts (obligation-matrix) needed. (#499, #500)
 
 - **A crashed Chrome render fails fast instead of hanging to the outer timeout.** When the
   headless-Chrome renderer/GPU process crashes mid-render (`Protocol error … Target closed`),

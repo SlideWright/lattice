@@ -2843,6 +2843,36 @@ section.compare-table thead th { font-family:var(--font-label); font-size:var(--
 section.compare-table td { padding:0.625cqi var(--sp-xs); border-bottom:1px solid var(--border); color:var(--text-body); vertical-align:top; font-size:var(--fs-body-compact); word-wrap:break-word; overflow-wrap:break-word; }
 section.compare-table td:first-child { font-weight:600; color:var(--text-heading); white-space:nowrap; }
 
+/* ── Cover-cards split (autosplit: on; lib/core/carousel.js `cover-cards`) ──
+ * An overflowing compare-table splits as an accent COVER → card-per-row, so a wide table
+ * fits a NARROW / portrait frame: each row becomes a card (row label = heading, every
+ * other column = a label:value pair from the <thead>) that reflows into the column and
+ * paginates down the tall frame. These rules carry the table's design language onto BOTH
+ * the cover and the cards so a split reads as the SAME deck: the mono/label column-head
+ * treatment (the `--font-label` uppercase heads), and hairline rules. The cover wears the
+ * `compare-table` class via the manifest split.coverClass. Palette-blind. */
+
+/* Cover — a hairline rule under the heading echoes the table's row rules; the eyebrow
+   takes the mono label treatment. Refines the shared accent field in base.modifiers.css. */
+section.compare-table.lat-split-cover .split-feat-eye { font-family:var(--font-label); font-weight:600; letter-spacing:0.16em; }
+section.compare-table.lat-split-cover .split-feat-h {
+  display:inline-block; padding-bottom:var(--sp-sm);
+  border-bottom:2px solid color-mix(in srgb, var(--on-accent) 50%, transparent);
+}
+
+/* Card pages — one card per row, stacked down the frame. The row label heads each card;
+   the compared columns are mono/label `dt` + value `dd` pairs in a 2-column grid, so the
+   <thead> labels travel with each value (read DOWN, not across). Hairline separators echo
+   the table's row rules. */
+section.compare-table .split-cards { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:var(--sp-sm); flex:1; }
+section.compare-table .split-card { padding:var(--sp-sm) 0; border-top:1px solid var(--border); }
+section.compare-table .split-card:first-child { border-top:none; }
+section.compare-table .split-card-h { font-size:var(--fs-emphasis); font-weight:600; color:var(--text-heading); margin:0 0 var(--sp-xs); line-height:var(--lh-tight); }
+section.compare-table .split-card-pairs { display:grid; grid-template-columns:max-content 1fr; gap:0.35em var(--sp-md); margin:0; }
+section.compare-table .split-card-pair { display:contents; }
+section.compare-table .split-card-pair dt { font-family:var(--font-label); font-size:var(--fs-meta); font-weight:600; letter-spacing:0.10em; text-transform:uppercase; color:var(--text-label); }
+section.compare-table .split-card-pair dd { margin:0; color:var(--text-body); font-size:var(--fs-body-compact); }
+
 /* === lib/components/statement/content/content.styles.css === */
 /* content — statement.canvas.content (the catch-all prose slide)
  *

@@ -947,9 +947,18 @@ const SPLIT_CAP = (() => {
   }
   return map;
 })();
-// The layout class tokens that carouselize owns (read-across re-authored as a
-// sequence) — handed to the browser overflow measure so it marks them splittable.
-const CAROUSEL_NAMES = Object.keys(SPLIT_CAP).filter((n) => SPLIT_CAP[n].split);
+// The layout classes carouselize owns (read-across re-authored as a sequence), each
+// tagged with whether its split can fix a HORIZONTAL overflow — handed to the browser
+// overflow measure. A `cover-paginate` split repeats the layout's NATIVE table/list and
+// only reduces HEIGHT, so a too-WIDE table can never be made to fit by row pagination;
+// marking it splittable on horizontal overflow would re-split every pass and BALLOON the
+// deck until the render times out (the wide-table failure mode, #499/#500). Those are
+// splittable on VERTICAL overflow only. The re-authoring strategies (cover-code →
+// one block per page; cover-rows/sides/decision/feature-cover → single-column reflow)
+// DO narrow the body, so they stay actionable on horizontal overflow too.
+const CAROUSEL_INFO = Object.keys(SPLIT_CAP)
+  .filter((n) => SPLIT_CAP[n].split)
+  .map((n) => ({ name: n, widthFix: SPLIT_CAP[n].split.strategy !== 'cover-paginate' }));
 // Slide geometry — ONE registry (HARD RULE #1). The page template needs pixel
 // dimensions for the puppeteer PDF; rather than duplicate a size table (which
 // drifted — it used to omit 16:9 and silently rendered it as hd), resolve the
@@ -1559,7 +1568,7 @@ async function renderBody(browser, g, closeBrowser) {
   // clientHeight) — the signal both the author warning and the measured auto-split
   // pass below read. Scope to real slide sections only — `<section>` literals inside
   // code blocks parse as nested DOM and would pollute the indices.
-  const measureOverflow = () => g(() => page.evaluate((carouselClasses) => {
+  const measureOverflow = () => g(() => page.evaluate((carouselInfo) => {
     const TOL = 12; // filter sub-pixel rounding; see lattice-runtime.js
     const out = [];
     document.querySelectorAll('section[data-lattice-slide]').forEach((s, i) => {
@@ -1569,11 +1578,15 @@ async function renderBody(browser, g, closeBrowser) {
       const C = s.clientHeight;
       const ratio = C > 0 ? s.scrollHeight / C : 2;
       // A read-across layout with a carousel `split` recipe is re-authored as a sequence,
-      // not divided by collection — so ANY overflow is actionable (compare-code overflows
-      // HORIZONTALLY: two code blocks too wide for a portrait box; one-block-per-page fixes
-      // it). Mark it splittable and let resplitDoc's carousel branch own it (the ratio is
-      // irrelevant to a structural re-author).
-      if (carouselClasses.some((c) => s.classList.contains(c))) {
+      // not divided by collection. A VERTICAL overflow is always actionable. A purely
+      // HORIZONTAL overflow is only actionable when the strategy NARROWS the body
+      // (cover-code → one block per page). A cover-paginate(row) split repeats the native
+      // table and only reduces height, so a too-wide table must go to the ring, NEVER
+      // re-split forever — that is the wide-table balloon (#499/#500). `widthFix` carries
+      // that per-strategy fact from the manifest.
+      const carousel = carouselInfo.find((c) => s.classList.contains(c.name));
+      if (carousel) {
+        if (!vOver && !carousel.widthFix) return; // horizontal-only & can't narrow → ring
         out.push({ slide: i + 1, ratio, canSplit: true, splitRatio: ratio });
         return;
       }
@@ -1592,7 +1605,7 @@ async function renderBody(browser, g, closeBrowser) {
       out.push({ slide: i + 1, ratio, canSplit, splitRatio });
     });
     return out;
-  }, CAROUSEL_NAMES), 'measure overflow');
+  }, CAROUSEL_INFO), 'measure overflow');
   let overflow = await measureOverflow();
   // MEASURED auto-split — the loop that makes "split" fit REAL boxes. Divide every
   // overflowing SPLITTABLE slide by how much it overflows, re-render, re-measure,

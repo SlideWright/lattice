@@ -203,11 +203,29 @@ six-column matrix is too wide), which row-splitting can't fix — it needs a col
 move, not cover-paginate. glossary's per-page range pill still shows the *whole* glossary's
 range on each split page (the pill is computed once, pre-split).
 
+## Shipped since
+
+- **compare-table cover-cards (card-per-row)** (#499) — a `compare-table` is read *across*
+  its columns, which a portrait/narrow frame is too tight to hold. So on overflow it splits
+  as an accent **cover → card-per-row**: each row becomes a card (first cell = heading; every
+  other column = a `label: value` pair from the `<thead>`), reflowing the comparison *down*
+  the tall frame. This is the responsive table→cards move — the same `asymmetric` answer
+  obligation-matrix needs, settled here. New `cover-cards` carousel strategy; card pages
+  re-split on the `item` axis (`split.bodyAxis`) since the body form (cards) differs from the
+  source axis (table rows). The cover carries the table's design language via the new opt-in
+  `split.coverClass` (the cover wears `section.compare-table.lat-split-cover`, branded by the
+  component stylesheet — the hairline rule echoing the row rules, the mono column heads).
+  **Wide-table balloon guard:** the measure gate marks a split splittable on *horizontal*
+  overflow only when its strategy NARROWS the body (`widthFix`) — `cover-cards`/`cover-code`
+  do (true); a native-form `cover-paginate` (glossary) does not (false), so a too-wide one of
+  those goes to the ring instead of re-splitting forever.
+
 ## On deck
 
-- A possible **cover** for compare-table, to match the family.
-- **obligation-matrix** — a column-aware split (or the `asymmetric` card-per-row variant)
-  so a wide matrix can cover-paginate without futile row-splitting.
+- **obligation-matrix** — apply the same `cover-cards` card-per-row move (settled in #499) so
+  a wide six-column matrix reflows to fit instead of futile row-splitting. The `widthFix`
+  guard and the `cover-cards` strategy both already exist; obligation-matrix needs the recipe
+  wired + its own cover/card branding.
 - glossary's split-aware **range pill** (recompute per page instead of once pre-split).
 - A reading/point/code page that paginates its *own* over-long content (still falls to
   the ring — e.g. a single code block longer than a page).
