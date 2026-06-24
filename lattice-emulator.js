@@ -1473,6 +1473,16 @@ const { guard, isTargetGone } = require('./lib/engine/render-guard');
 // `disconnected` race in ms; this only backstops a SILENT wedge. Override with
 // LATTICE_RENDER_WATCHDOG_MS for very large decks on slow hardware. See #502.
 const RENDER_WATCHDOG_MS = Number(process.env.LATTICE_RENDER_WATCHDOG_MS) || 90000;
+// Offline/proxied render robustness (opt-in). When set, abort every REMOTE request
+// (anything not file:/data:/blob:) so an unreachable CDN — the Google-Fonts `<link>`
+// the design fonts are ALREADY embedded from, or a math deck's KaTeX faces — fails
+// instantly instead of hanging behind the sandbox's TLS-intercepting proxy and wedging
+// the render (the connections otherwise stall networkidle0 / page.pdf). Default OFF so
+// the per-request handler never adds latency to the component-invariants suite; the
+// offline PDF rebuild (tools/build-staged-pdfs.js) turns it ON for a deterministic,
+// network-free render with the self-hosted design fonts. See engineering/gotchas.md
+// "rendered PDF shows fallback type" + the #502 render-robustness family.
+const BLOCK_REMOTE = process.env.LATTICE_BLOCK_REMOTE === '1';
 // Snapshot the pre-split deck HTML so a hardened RETRY starts from a clean slate
 // (the autosplit loop below mutates cleanDocHtml + rewrites outHtml in place).
 const initialDocHtml = cleanDocHtml;
@@ -1525,6 +1535,18 @@ async function renderExport({ hardened }) {
 
 async function renderBody(browser, g, closeBrowser) {
   const page = await g(() => browser.newPage(), 'new page');
+  // Offline render: abort remote requests so an unreachable CDN fails fast instead of
+  // stalling networkidle0 / page.pdf (the design fonts are already embedded). Local
+  // file:/data:/blob: resources (the deck HTML, the self-hosted woff2, KaTeX's local
+  // CSS) pass through untouched. Opt-in via LATTICE_BLOCK_REMOTE — see the flag above.
+  if (BLOCK_REMOTE) {
+    await g(() => page.setRequestInterception(true), 'enable request interception');
+    page.on('request', (req) => {
+      const u = req.url();
+      if (/^(file|data|blob):/.test(u)) req.continue().catch(() => {});
+      else req.abort().catch(() => {});
+    });
+  }
   // Set viewport to slide dimensions so section's own cqi properties (padding,
   // border-top) resolve against the correct ICB in screen mode.  Without this,
   // Puppeteer's default 800×600 viewport causes section's cqi fallback to
@@ -1551,10 +1573,19 @@ async function renderBody(browser, g, closeBrowser) {
   // fonts per active slide, so document.fonts.ready alone resolves without
   // faces used only on later slides; explicitly load() them all. Without this
   // the overflow pass and the PDF can be laid out in the fallback metrics.
+  // Each load is BOUNDED: the self-hosted faces are data: URIs (instant), but a
+  // deck's external @import faces (the Google/KaTeX CDN links) are fetched here,
+  // and behind the sandbox's TLS-intercepting proxy that fetch can HANG rather
+  // than fail fast — which would wedge the whole render even though the embedded
+  // design fonts are already present. Race each load against a short timeout so a
+  // hung external fetch is skipped (it falls back exactly as a failed one would),
+  // never stalling a render that has its fonts. See engineering/gotchas.md
+  // "rendered PDF shows fallback type" + the #502 render-robustness family.
   await g(() => page.evaluate(async () => {
+    const cap = (p) => Promise.race([p, new Promise((res) => setTimeout(res, 4000))]);
     try {
-      await Promise.all([...document.fonts].map((f) => f.load().catch(() => {})));
-      await document.fonts.ready;
+      await Promise.all([...document.fonts].map((f) => cap(f.load().catch(() => {}))));
+      await cap(document.fonts.ready); // a hung external face leaves .ready pending — bound it
     } catch (_e) { /* fonts API unavailable — proceed with whatever loaded */ }
   }), 'load fonts');
   // Detect sections whose content exceeds the 1280×720 frame, to WARN the
@@ -1626,7 +1657,7 @@ async function renderBody(browser, g, closeBrowser) {
       fs.writeFileSync(outHtml, cleanDocHtml);
       await g(() => page.goto(`file://${path.resolve(outHtml)}`, { waitUntil: 'networkidle0', timeout: 60000 }), 'navigate (autosplit)');
       await g(() => page.evaluate(async () => {
-        try { await Promise.all([...document.fonts].map((f) => f.load().catch(() => {}))); await document.fonts.ready; } catch (_e) { /* fonts API unavailable */ }
+        try { const cap = (p) => Promise.race([p, new Promise((res) => setTimeout(res, 4000))]); await Promise.all([...document.fonts].map((f) => cap(f.load().catch(() => {})))); await cap(document.fonts.ready); } catch (_e) { /* fonts API unavailable */ }
       }), 'load fonts (autosplit)');
       overflow = await measureOverflow();
       if (!QUIET) console.log(`  auto-split (measured) pass ${pass}: ${r.changed} slide(s) divided to fit`);
@@ -1640,7 +1671,7 @@ async function renderBody(browser, g, closeBrowser) {
       fs.writeFileSync(outHtml, cleanDocHtml);
       await g(() => page.goto(`file://${path.resolve(outHtml)}`, { waitUntil: 'networkidle0', timeout: 60000 }), 'navigate (rails)');
       await g(() => page.evaluate(async () => {
-        try { await Promise.all([...document.fonts].map((f) => f.load().catch(() => {}))); await document.fonts.ready; } catch (_e) { /* fonts API unavailable */ }
+        try { const cap = (p) => Promise.race([p, new Promise((res) => setTimeout(res, 4000))]); await Promise.all([...document.fonts].map((f) => cap(f.load().catch(() => {})))); await cap(document.fonts.ready); } catch (_e) { /* fonts API unavailable */ }
       }), 'load fonts (rails)');
     }
   }

@@ -88,7 +88,17 @@ function classify(file) {
 function buildDeckAsync(job) {
   return new Promise((resolve, reject) => {
     process.stderr.write(`build-staged-pdfs: rebuilding ${job.out}\n`);
-    const child = spawn('node', [EMULATOR, job.src, job.out], { cwd: ROOT, stdio: 'inherit' });
+    // The offline PDF rebuild must be NETWORK-FREE and deterministic: the design fonts
+    // are self-hosted/embedded, so block remote requests (LATTICE_BLOCK_REMOTE) — an
+    // unreachable CDN (the redundant Google-Fonts <link>) then fails fast instead of
+    // hanging behind the sandbox's TLS-intercepting proxy and wedging the render. Without
+    // this the rebuild can hang on the proxy until the render watchdog fires. See
+    // engineering/gotchas.md "rendered PDF shows fallback type".
+    const child = spawn('node', [EMULATOR, job.src, job.out], {
+      cwd: ROOT,
+      stdio: 'inherit',
+      env: { ...process.env, LATTICE_BLOCK_REMOTE: '1' },
+    });
     child.on('error', (err) => reject(new Error(`${job.out}: ${err.message}`)));
     child.on('close', (code) => {
       if (code === 0) resolve(job.out);
