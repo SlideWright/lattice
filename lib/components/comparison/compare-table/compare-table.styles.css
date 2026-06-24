@@ -30,14 +30,22 @@ section.compare-table.lat-split-cover .split-feat-h {
 }
 
 /* Card pages — one card per row, stacked down the frame. The row label heads each card;
-   the compared columns are mono/label `dt` + value `dd` pairs in a 2-column grid, so the
-   <thead> labels travel with each value (read DOWN, not across). Hairline separators echo
-   the table's row rules. */
-section.compare-table .split-cards { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:var(--sp-sm); flex:1; }
-section.compare-table .split-card { padding:var(--sp-sm) 0; border-top:1px solid var(--border); }
-section.compare-table .split-card:first-child { border-top:none; }
+   the compared columns are mono/label `dt` + value `dd` pairs in a fixed 40/60 grid, so the
+   <thead> labels travel with each value (read DOWN, not across) and long values WRAP in the
+   60% column instead of forcing it wider. A faint hairline rules each pair (the ledger
+   read); the card break is stronger + more spaced so card > row in the hierarchy. */
+/* On a card page the slide heading is a QUIET running header (the cover already stated it
+   full-size), so the cards get the room — otherwise the hero heading forces one card/page. */
+section.compare-table.lat-split-native h2 { font-size:var(--fs-message); margin:0 0 var(--sp-sm); color:var(--text-secondary); line-height:var(--lh-tight); }
+section.compare-table .split-cards { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:var(--sp-md); flex:1; }
+section.compare-table .split-card { padding-top:var(--sp-sm); border-top:1px solid var(--border); }
+section.compare-table .split-card:first-child { padding-top:0; border-top:none; }
 section.compare-table .split-card-h { font-size:var(--fs-emphasis); font-weight:600; color:var(--text-heading); margin:0 0 var(--sp-xs); line-height:var(--lh-tight); }
-section.compare-table .split-card-pairs { display:grid; grid-template-columns:max-content 1fr; gap:0.35em var(--sp-md); margin:0; }
+section.compare-table .split-card-pairs { display:grid; grid-template-columns:2fr 3fr; align-items:baseline; margin:0; }
 section.compare-table .split-card-pair { display:contents; }
-section.compare-table .split-card-pair dt { font-family:var(--font-label); font-size:var(--fs-meta); font-weight:600; letter-spacing:0.10em; text-transform:uppercase; color:var(--text-label); }
-section.compare-table .split-card-pair dd { margin:0; color:var(--text-body); font-size:var(--fs-body-compact); }
+section.compare-table .split-card-pair dt,
+section.compare-table .split-card-pair dd { padding:0.45em 0; border-bottom:1px solid color-mix(in srgb, var(--border) 50%, transparent); }
+section.compare-table .split-card-pair:last-child dt,
+section.compare-table .split-card-pair:last-child dd { border-bottom:none; }
+section.compare-table .split-card-pair dt { font-family:var(--font-label); font-size:var(--fs-meta); font-weight:600; letter-spacing:0.10em; text-transform:uppercase; color:var(--text-label); padding-right:var(--sp-md); }
+section.compare-table .split-card-pair dd { margin:0; color:var(--text-body); font-size:var(--fs-body-compact); overflow-wrap:break-word; word-break:break-word; }

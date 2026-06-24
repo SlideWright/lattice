@@ -114,7 +114,10 @@ const VARIANT_DECL_IGNORE = new Map([
 // so its stylesheet can carry its design language onto the split cover. It is
 // engine-applied at export, never an author modifier — so a component that styles
 // its own split cover (compare-table) is not declaring a new variant.
-const STRUCTURAL_ROOT_CLASSES = new Set(['chart-frame', 'lat-split-cover']);
+// `lat-split-native` is the shared marker on an auto-split cover-paginate/cover-cards
+// BODY page (lib/core/carousel.js): a layout styling its own split body pages
+// (compare-table demoting the repeated heading on a card page) is not declaring a variant.
+const STRUCTURAL_ROOT_CLASSES = new Set(['chart-frame', 'lat-split-cover', 'lat-split-native']);
 
 // Search tags that legitimately apply to exactly ONE component — a
 // genuinely-unique idiom or material with no sibling that shares it
