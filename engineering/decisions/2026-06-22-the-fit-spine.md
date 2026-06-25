@@ -164,7 +164,12 @@ Three properties make this the spine and not just a list:
   overflow — few but tall items that no count threshold sees — the dominant cause
   in a tall/portrait box. **Live runtime re-pagination is rejected** — re-breaking
   and re-numbering slides as a phone rotates is churn and a navigation/anchor
-  maintenance nightmare (the inversion in §4 derives this).
+  maintenance nightmare (the inversion in §4 derives this). **Narrowed 2026-06-25:**
+only the *unbounded* form stays rejected; a *bounded* runtime split — portrait
+viewing family only, logical (run-id) addressing, eventual-consistency
+placeholders, landscape artifact untouched — is accepted in principle and specced
+in `2026-06-25-runtime-autosplit-eventual-consistency.md`. Shipping code is still
+build-time-only until that is built.
 - **Move 4 is a hard stop, by design.** The floor is the curated per-orientation
   type scale (already shipped — `2026-06-20-typography-categories.md`). Below it,
   the engine does **not** have a smaller size to reach for. The overflow ring is
@@ -231,7 +236,10 @@ Purge. This is the clean-canvas inventory.
 ### Stays rejected (re-affirm, so it doesn't creep back)
 
 - **Frame recursion** (`2026-06-18-frame-recursion-cells.md`).
-- **Live runtime re-pagination** (§3, §4).
+- **Live runtime re-pagination** (§3, §4) — *the UNBOUNDED form. A bounded form
+  (portrait family · logical addressing · eventual-consistency placeholders, with
+  the landscape export artifact untouched) is accepted in principle and specced in
+  `2026-06-25-runtime-autosplit-eventual-consistency.md`; not yet built.*
 - **`section-as-grid`** (`2026-06-16-retire-section-as-grid.md`).
 - **Per-named-size layout variants** (axiom 2).
 
@@ -356,7 +364,9 @@ the build, gated by this spine.
    There is no shrink move.**
 3. **Continuous moves (collapse, shed) are declarative Frame CSS; the one discrete
    move (split) is a build-time pure kernel. Live runtime re-pagination is
-   rejected.**
+   rejected** in its *unbounded* form; a *bounded* runtime split is accepted in
+   principle and specced in `2026-06-25-runtime-autosplit-eventual-consistency.md`
+   (not yet built; shipping code stays build-time-only).
 4. **The de-boost is purged; per-component `@container` reflow refactors up into the
    Frame.** `data-orientation` is **kept** as the authored / static stamp (§2.2).
 5. **Solver intent is declared, never inferred; the backfill is a prerequisite.**
