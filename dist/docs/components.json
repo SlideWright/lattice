@@ -2028,14 +2028,17 @@
       "form": "ledger",
       "substance": "prose",
       "orientation": [
-        "landscape"
+        "landscape",
+        "portrait"
       ],
       "families": [
         "wide",
-        "square"
+        "square",
+        "tall",
+        "strip"
       ],
       "adapt": {
-        "mode": "single-orientation",
+        "mode": "reflow",
         "priority": [
           "title",
           "table"

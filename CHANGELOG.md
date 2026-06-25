@@ -38,6 +38,17 @@ in patch versions.
   autocomplete completes `autosplit:` values too. Mirrors the islands plumbing
   (`docs/src/playground/deck-config.js`).
 
+- **`compare-table` reshapes to cards on a phone — and is no longer landscape-locked.** A
+  wide read-across comparison can't fit a portrait box by paginating rows (its overflow is
+  across the columns), so on a portrait/mobile export `compare-table` now RESHAPES: each row
+  becomes a card and the column headers become its labelled fields, then the cards
+  cover-paginate behind an accent cover (carrying the table's `--spectrum` strip so a split
+  reads as the same deck). Every cell survives the transpose; nothing shrinks. This retires
+  compare-table's landscape-only lock — it supports **both** orientations now — the first
+  step of giving every layout a portrait form for the emailed-link (phone) reader. Page
+  density is sized to the field count so a card page never overflows. See
+  `engineering/decisions/2026-06-25-retire-landscape-locks-portrait-everything.md`.
+
 ### Changed
 
 - **Auto-split is now scoped to portrait/square `@sizes` — a universal, enforced rule.**

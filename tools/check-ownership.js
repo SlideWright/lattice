@@ -109,7 +109,10 @@ const VARIANT_DECL_IGNORE = new Map([
 // `chart-frame` is the wrapper the chart family applies to every chart
 // section (section.<chart>.chart-frame); it is engine chrome, present on
 // every chart regardless of variant.
-const STRUCTURAL_ROOT_CLASSES = new Set(['chart-frame']);
+// `lat-split-cards` is the cover-cards body marker the auto-split kernel stamps on a
+// reshaped (transposed-to-cards) split page — engine chrome, not an author variant, exactly
+// parallel to the `lat-split-native` cover-paginate body marker.
+const STRUCTURAL_ROOT_CLASSES = new Set(['chart-frame', 'lat-split-cards']);
 
 // Search tags that legitimately apply to exactly ONE component — a
 // genuinely-unique idiom or material with no sibling that shares it
