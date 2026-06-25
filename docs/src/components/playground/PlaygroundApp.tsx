@@ -16,8 +16,11 @@ import {
 	variantSource,
 } from '@/lib/playground-controller';
 import { createEngineBridge, type PreviewState } from '@/lib/playground-engine';
+import { applyBbox } from '@/playground/bbox-overlay.js';
+import { bboxEnabled, onBboxEnabledChange } from '@/playground/bbox-prefs.js';
 import { readFrontMatter } from '@/playground/deck-config.js';
 import { createChartInteract } from '@/playground/drawing-board-chart-interact.js';
+import { BoundingBoxToggle } from './BoundingBoxToggle';
 import { ComponentPicker } from './ComponentPicker';
 import { DeckSetupSheet } from './DeckSetupSheet';
 import { type EditorAdapter, EditorHost } from './EditorHost';
@@ -96,6 +99,28 @@ export function PlaygroundApp({ data }: { data: PlaygroundData }) {
 			setConfigured(false);
 		}
 	}, [sourceVersion]);
+
+	// Debug bounding boxes — colour-coded element outlines in the preview. `bboxOn`
+	// is the live (session) state: the toolbar button flips it temporarily, the
+	// deck-setup drawer's switch flips the PERSISTED default (bbox-prefs), and we
+	// seed from / follow that default here. A ref mirrors the live value so the
+	// iframe's onLoad re-applies after each full srcdoc rewrite without a stale
+	// closure. applyBbox no-ops until the iframe has a document.
+	const [bboxOn, setBboxOn] = React.useState(false);
+	const bboxOnRef = React.useRef(bboxOn);
+	bboxOnRef.current = bboxOn;
+	React.useEffect(() => {
+		setBboxOn(bboxEnabled());
+		return onBboxEnabledChange(setBboxOn);
+	}, []);
+	React.useEffect(() => {
+		applyBbox(frameRef.current, bboxOn);
+	}, [bboxOn]);
+	// Re-inject after every full srcdoc rewrite (deck swap / theme / mode / size).
+	// Section patches keep the document — and the injected <style> — alive.
+	const onFrameLoad = React.useCallback(() => {
+		applyBbox(frameRef.current, bboxOnRef.current);
+	}, []);
 
 	// ── The render loop (wraps the engine; never reimplements it) ───────────────
 	const render = React.useCallback(
@@ -326,6 +351,7 @@ export function PlaygroundApp({ data }: { data: PlaygroundData }) {
 					>
 						{status}
 					</span>
+					<BoundingBoxToggle on={bboxOn} onToggle={() => setBboxOn((v) => !v)} />
 					<DeckSetupSheet
 						getSource={getSource}
 						setSource={setSource}
@@ -352,7 +378,7 @@ export function PlaygroundApp({ data }: { data: PlaygroundData }) {
 				<section className="pg-pane preview">
 					<div className="pg-pane-label">Rendered slides</div>
 					<div className="pg-preview-wrap">
-						<iframe id="preview" ref={frameRef} title="Rendered slides preview" />
+						<iframe id="preview" ref={frameRef} title="Rendered slides preview" onLoad={onFrameLoad} />
 					</div>
 				</section>
 			</main>

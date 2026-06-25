@@ -2,6 +2,7 @@ import { Settings } from 'lucide-react';
 import * as React from 'react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { bboxEnabled, onBboxEnabledChange, setBboxEnabled } from '@/playground/bbox-prefs.js';
 import { CONFIG_PROFILES, createConfigPanel } from '@/playground/deck-config.js';
 
 /**
@@ -81,7 +82,46 @@ export function DeckSetupSheet({
 					</SheetDescription>
 				</SheetHeader>
 				<div className="deck-config px-4 pb-4" ref={mountHost} />
+				<div className="deck-config border-t border-border/60 px-4 pb-4 pt-3">
+					<div className="db-settings-head">Preview · debug</div>
+					<BboxPrefRow />
+				</div>
 			</SheetContent>
 		</Sheet>
+	);
+}
+
+/**
+ * The PERMANENT half of the bounding-box debug feature: a switch that persists
+ * the default via bbox-prefs (localStorage), so it survives reloads. It is a
+ * VIEWER preference, not deck front matter — it never writes the Markdown and is
+ * never exported. The toolbar button is the temporary, session-only counterpart;
+ * PlaygroundApp seeds its live state from this flag and follows it (onBboxEnabled-
+ * Change), so flipping this switch updates the preview immediately. Reuses the
+ * shared `.deck-config` switch markup/styling (deck-config.css).
+ */
+function BboxPrefRow() {
+	const [on, setOn] = React.useState(() => bboxEnabled());
+	React.useEffect(() => onBboxEnabledChange(setOn), []);
+	return (
+		<label className="db-or-switch">
+			<span className="db-pref-text">
+				<span className="db-pref-label">Bounding boxes</span>
+				<span className="db-pref-hint">
+					Outline every element in the preview for layout debugging. Stored on this device — not exported with the
+					deck.
+				</span>
+			</span>
+			<span className="db-switch">
+				<input
+					type="checkbox"
+					className="db-switch-input"
+					checked={on}
+					aria-label="Bounding boxes"
+					onChange={(e) => setBboxEnabled(e.target.checked)}
+				/>
+				<span className="db-switch-knob" />
+			</span>
+		</label>
 	);
 }
