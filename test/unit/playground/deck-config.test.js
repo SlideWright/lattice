@@ -63,6 +63,16 @@ describe('readFrontMatter', () => {
     assert.equal(readFrontMatter(CLEAN).islands, 'off');
     assert.equal(readFrontMatter('---\nmarp: true\nislands: on\n---\n').configured, true);
   });
+
+  test('autosplit toggle: on/true/yes → true (boolean); off/absent → false, not configured', async () => {
+    const { readFrontMatter } = await import(MOD);
+    assert.equal(readFrontMatter('---\nmarp: true\nautosplit: on\n---\n').autosplit, true);
+    assert.equal(readFrontMatter('---\nmarp: true\nautosplit: true\n---\n').autosplit, true);
+    assert.equal(readFrontMatter('---\nmarp: true\nautosplit: yes\n---\n').autosplit, true);
+    assert.equal(readFrontMatter('---\nmarp: true\nautosplit: off\n---\n').autosplit, false);
+    assert.equal(readFrontMatter(CLEAN).autosplit, false);
+    assert.equal(readFrontMatter('---\nmarp: true\nautosplit: on\n---\n').configured, true);
+  });
 });
 
 describe('writeFrontMatter', () => {
@@ -102,6 +112,25 @@ describe('writeFrontMatter', () => {
     assert.equal(block, '---\nmarp: true\nclass: dark\nislands: on');
     // off clears it back out
     assert.ok(!writeFrontMatter(on, 'islands', 'off').includes('islands:'));
+  });
+
+  test('autosplit: writes the canonical on; a falsy value omits it; sits after split, before size', async () => {
+    const { writeFrontMatter, readFrontMatter } = await import(MOD);
+    // Boolean true (the switch) and a truthy string both canonicalise to `on`.
+    assert.ok(writeFrontMatter(CLEAN, 'autosplit', true).includes('autosplit: on\n'));
+    assert.ok(writeFrontMatter(CLEAN, 'autosplit', 'yes').includes('autosplit: on\n'));
+    // off / false is the default → no key.
+    assert.equal(writeFrontMatter(CLEAN, 'autosplit', false), CLEAN);
+    assert.equal(writeFrontMatter(CLEAN, 'autosplit', 'off'), CLEAN);
+    // canonical slot: split, then autosplit, then size.
+    let src = writeFrontMatter(CLEAN, 'size', 'portrait');
+    src = writeFrontMatter(src, 'split', 'rule');
+    src = writeFrontMatter(src, 'autosplit', true);
+    const block = src.slice(0, src.indexOf('\n---\n'));
+    assert.equal(block, '---\nmarp: true\nsplit: rule\nautosplit: on\nsize: portrait');
+    // round-trips, and switching it off over an existing on clears it.
+    assert.equal(readFrontMatter(writeFrontMatter(CLEAN, 'autosplit', true)).autosplit, true);
+    assert.ok(!writeFrontMatter(writeFrontMatter(CLEAN, 'autosplit', true), 'autosplit', false).includes('autosplit'));
   });
 
   test('quotes a value containing a colon (would break a flat YAML read)', async () => {
@@ -263,14 +292,16 @@ describe('createConfigPanel (DOM)', () => {
     panel.render();
     const size = host.querySelector('select[aria-label="Slide size"]');
     assert.equal(size.value, '4K', 'size select reflects the deck');
-    const paginate = host.querySelector('.db-switch-input');
+    // The full author set renders two switches (auto-split, page numbers) — target
+    // each by its aria-label rather than the first .db-switch-input.
+    const paginate = host.querySelector('input[aria-label="Page numbers"]');
     assert.equal(paginate.checked, true, 'paginate switch reflects the deck');
   });
 
   test('toggling the paginate switch writes it into the source', async () => {
     const { panel, host, get } = await mount(CLEAN);
     panel.render();
-    const sw = host.querySelector('.db-switch-input');
+    const sw = host.querySelector('input[aria-label="Page numbers"]');
     sw.checked = true;
     sw.dispatchEvent(new dom.window.Event('change'));
     assert.ok(get().includes('paginate: true'), 'source rewritten with the directive');
@@ -281,12 +312,26 @@ describe('createConfigPanel (DOM)', () => {
     const { panel, host, trigger, get } = await mount(CLEAN);
     panel.render();
     assert.equal(trigger.classList.contains('is-set'), false, 'clean deck → quiet chip');
-    const sw = host.querySelector('.db-switch-input');
+    const sw = host.querySelector('input[aria-label="Page numbers"]');
     sw.checked = true;
     sw.dispatchEvent(new dom.window.Event('change'));
     panel.syncTrigger();
     assert.equal(trigger.classList.contains('is-set'), true, 'configured deck → lit chip');
     assert.ok(get().includes('paginate: true'));
+  });
+
+  test('toggling the auto-split switch writes autosplit: on (and clears it back off)', async () => {
+    const { panel, host, get } = await mount(CLEAN);
+    panel.render();
+    const sw = host.querySelector('input[aria-label="Auto-split overflow"]');
+    assert.ok(sw, 'the auto-split switch renders in the full author set');
+    assert.equal(sw.checked, false, 'off by default on a clean deck');
+    sw.checked = true;
+    sw.dispatchEvent(new dom.window.Event('change'));
+    assert.ok(get().includes('autosplit: on'), 'enabling writes the canonical on');
+    sw.checked = false;
+    sw.dispatchEvent(new dom.window.Event('change'));
+    assert.ok(!get().includes('autosplit'), 'disabling clears the key (back to default)');
   });
 
   test('theme select is pre-filled (deck theme, else default) and writes on change', async () => {

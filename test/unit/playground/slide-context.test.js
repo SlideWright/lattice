@@ -471,11 +471,14 @@ describe('typeaheadContext — proactive popup entry classification', () => {
 
 	test('front-matter value lines classify by key (gated by inFrontMatter)', async () => {
 		const { typeaheadContext } = await load();
-		const lines = ['---', 'theme: ', 'finish: ', 'islands: ', 'split: '];
+		const lines = ['---', 'theme: ', 'finish: ', 'islands: ', 'split: ', 'autosplit: '];
 		assert.equal(typeaheadContext(getter(lines), 2, 'theme: '), 'theme');
 		assert.equal(typeaheadContext(getter(lines), 3, 'finish: '), 'finish');
 		assert.equal(typeaheadContext(getter(lines), 4, 'islands: '), 'islands');
 		assert.equal(typeaheadContext(getter(lines), 5, 'split: '), 'split');
+		// `autosplit:` must not be mis-read as `split:` — the split detector is
+		// anchored at ^, so the `auto` prefix keeps the two distinct.
+		assert.equal(typeaheadContext(getter(lines), 6, 'autosplit: '), 'autosplit');
 	});
 
 	test('a `theme:` line OUTSIDE front matter is not a context (no false open in body)', async () => {
