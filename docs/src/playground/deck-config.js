@@ -400,11 +400,14 @@ export function createConfigPanel({ host, trigger, getSource, setSource, palette
     }
 
     // Auto-split — opt the deck into the Fit Ladder's SPLIT move: an over-capacity
-    // slide is divided across extra pages at render. A portrait/square-family
-    // behavior, so the hint names the gate (lint warns on a landscape deck).
+    // slide is divided across extra pages. A portrait/square-family behavior, so the
+    // hint names the gate (lint warns on a landscape deck). It's a build-time pass
+    // (lattice-emulator.js) — UNLIKE islands (a live CSS class), it shows only on
+    // EXPORT, never in this live preview. The hint says so, so the toggle doesn't
+    // read as broken when the preview doesn't visibly change.
     if (show('autosplit')) {
       host.append(switchRow('autosplit', 'Auto-split overflow',
-        'Divide an over-capacity slide across extra pages — portrait & square sizes only', fm.autosplit));
+        'Split an over-capacity slide across extra pages — portrait & square sizes, applied on export (not shown in the live preview)', fm.autosplit));
     }
 
     if (show('size')) {

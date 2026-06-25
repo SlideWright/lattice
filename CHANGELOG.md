@@ -33,8 +33,10 @@ in patch versions.
   deck-wide settings, so authors no longer hand-write the front matter. It writes the
   canonical `autosplit: on` and clears the key when off; the hint names the gate
   (portrait & square sizes only — a landscape deck is a no-op, which `lint:deck` already
-  warns about). The editor autocomplete completes `autosplit:` values too. Mirrors the
-  islands plumbing (`docs/src/playground/deck-config.js`).
+  warns about) and notes that auto-split is a build-time pass, applied **on export** and
+  not reflected in the live preview (unlike islands, a live CSS class). The editor
+  autocomplete completes `autosplit:` values too. Mirrors the islands plumbing
+  (`docs/src/playground/deck-config.js`).
 
 ### Changed
 
