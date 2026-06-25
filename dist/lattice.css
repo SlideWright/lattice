@@ -9263,6 +9263,31 @@ section.redline.three-col > :is(ol, ul)::before {
  * Reference: references/proposals.md §2 (modifier catalogue), §4.5 (rollout).
  * ════════════════════════════════════════════════════════════════════════ */
 
+/* ── PORTRAIT REFLOW — the COLLAPSE move (Fit Ladder) ──────────────────────
+ * The wide read-across variants (.split = old|new, .three-col = old|new|why) can't hold
+ * their columns legibly in a narrow box, so in a PORTRAIT box they COLLAPSE to a single
+ * stacked column — OLD block, NEW block, (WHY list) in reading order. The per-block OLD/NEW
+ * labels + pass/fail tints carry over unchanged (they key off :nth-of-type, not the grid;
+ * grid-column/grid-row go inert under flex). Keyed on the static `data-orientation` stamp,
+ * NOT @container: the section IS the `lattice` query-container, so it can't restyle its OWN
+ * display via a container query (only descendants can) — a layout flipping its own box uses
+ * the [data-orientation] section-flip (spine §2.1, as split-panel / citation-card do). This
+ * is the static stamp, so it holds in the Persona-2 portrait EXPORT (no JS). Doubled classes
+ * + the attribute beat the grid rules' specificity. This is the portrait form that lets
+ * redline retire its landscape lock — the default/.annotated/.stacked variants were already
+ * vertical. See engineering/decisions/2026-06-25-retire-landscape-locks-portrait-everything.md. */
+section.redline.split.split[data-orientation="portrait"],
+section.redline.three-col.three-col[data-orientation="portrait"] {
+  display:flex; flex-direction:column; gap:var(--sp-sm);
+}
+/* size each block to its content (the grid set flex/overflow guards for the columns);
+   a too-long stacked diff then overflows the slide honestly rather than clipping a block. */
+section.redline.split.split[data-orientation="portrait"] > blockquote,
+section.redline.three-col.three-col[data-orientation="portrait"] > blockquote {
+  flex:0 0 auto; overflow:visible;
+}
+section.redline.three-col.three-col[data-orientation="portrait"] > :is(ol, ul) { align-self:stretch; }
+
 /* === lib/components/legal/regulatory-update/regulatory-update.styles.css === */
 /* regulatory-update — progression.ledger.structure
  *
