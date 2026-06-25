@@ -25,6 +25,23 @@ in patch versions.
 
 ## Unreleased
 
+### Changed
+
+- **Auto-split is now scoped to portrait/square `@sizes` — a universal, enforced rule.**
+  The Fit Ladder's SPLIT move (`autosplit: on`) is a portrait-family behavior: in a
+  wide/landscape box, collapse + shed resolve overflow before split is ever reached, so
+  the move only makes sense at a portrait, story, mobile, or square `@size`. This intent
+  lived in the design docs and `lint-core`'s `PORTRAIT_SIZES`, but nothing enforced it —
+  the engine happily split a 4K landscape deck, and the canonical demo (`examples/auto-split.md`)
+  shipped at `size: 4K`, modelling the wrong thing. Now: (1) the emulator **skips both
+  auto-split passes at a landscape `@size`** (with a one-line notice) so the HD/4K PDF stays
+  byte-identical; (2) `lint:deck` warns on `autosplit: on` + a landscape `@size` (new rule
+  `autosplit-landscape-noop`); (3) the capacity-overflow suppression that `autosplit: on`
+  grants is itself gated on portrait, so a landscape autosplit deck still surfaces real
+  overflow; (4) the demo deck moves to `size: portrait`; (5) the rule is documented in the
+  manifest schema's `capacity.escalateTo` contract. See
+  `engineering/decisions/2026-06-22-the-fit-spine.md` §3 and `2026-06-23-read-across-carousel.md`.
+
 ### Fixed
 
 - **A crashed Chrome render fails fast instead of hanging to the outer timeout.** When the

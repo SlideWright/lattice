@@ -961,6 +961,16 @@ const deckSizeName   = (fm.match(/^\s*size:\s*["']?([\w:/-]+)["']?\s*$/m) || [])
 const _geom          = resolveSize(deckSizeName, [paletteCSS, layoutCSS]);
 const slideW         = parseFloat(_geom.width);
 const slideH         = parseFloat(_geom.height);
+// Auto-split is a portrait/square-family behavior — the Fit Ladder's SPLIT move
+// (the-fit-spine.md §3). In a wide/landscape box, collapse + shed resolve overflow
+// before split is ever reached, so the move is scoped to NON-LANDSCAPE @sizes — the
+// universal rule mirrored by lint-core's PORTRAIT_SIZES and the manifest `orientation`
+// contract. A landscape deck with `autosplit: on` is therefore a no-op (lint:deck
+// warns; the HD/4K PDF stays byte-identical).
+const AUTOSPLIT_APPLIES = AUTOSPLIT && orientationFor(_geom).name !== 'landscape';
+if (AUTOSPLIT && !AUTOSPLIT_APPLIES) {
+  console.log(`  auto-split: skipped — '${deckSizeName}' is a landscape @size; autosplit applies only to portrait/square sizes (portrait · story · mobile · square).`);
+}
 // Orientation scaling/fill (social/mobile portrait + square @sizes). Empty for
 // landscape, so the HD/4K PDF is byte-identical. Same helper the engine
 // scaffold + runtime use, so every render path agrees.
@@ -1058,7 +1068,7 @@ function engineSlides() {
   // curated galleries — whose stress slides demonstrate overflow on PURPOSE — stay
   // byte-unchanged. Default-on is a later decision, once the catalog is audited.
   let html = renderedHtml;
-  if (AUTOSPLIT) {
+  if (AUTOSPLIT_APPLIES) {
     // Cheap STATIC first cut (count > capacity.hard); the MEASURED loop in the
     // export IIFE then catches whatever still overflows once it is really rendered.
     const r = require('./lib/core/auto-split').autoSplitDeck(renderedHtml, SPLIT_CAP);
@@ -1600,7 +1610,7 @@ async function renderBody(browser, g, closeBrowser) {
   // a single item taller than the page — those stay for the ring). This catches the
   // DENSITY overflow a count threshold can't see — dominant in a tall/portrait box.
   // Opt-in (`autosplit: on`). See lib/core/auto-split.js + the-fit-spine.md §3.
-  if (AUTOSPLIT) {
+  if (AUTOSPLIT_APPLIES) {
     const { resplitDoc, applyRails } = require('./lib/core/auto-split');
     for (let pass = 1; pass <= 5 && overflow.some((o) => o.canSplit); pass++) {
       // Only the slides whose OWN collection drives the overflow (canSplit); size each

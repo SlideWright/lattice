@@ -66,9 +66,15 @@ describe('lint-core: capacity-overflow ↔ autosplit', () => {
     assert.ok(f, 'expected a capacity-overflow finding');
   });
 
-  test('autosplit: on suppresses capacity-overflow (auto-split divides it at export)', () => {
-    const f = core.lintTextWith(overflowDeck('autosplit: on\n'), capVocab).find((x) => x.rule === 'capacity-overflow');
+  test('autosplit: on at a PORTRAIT @size suppresses capacity-overflow (split divides it at export)', () => {
+    const f = core.lintTextWith(overflowDeck('autosplit: on\nsize: portrait\n'), capVocab).find((x) => x.rule === 'capacity-overflow');
     assert.equal(f, undefined);
+  });
+
+  test('autosplit: on at a LANDSCAPE @size does NOT suppress capacity-overflow (split never fires there)', () => {
+    const out = core.lintTextWith(overflowDeck('autosplit: on\n'), capVocab);
+    assert.ok(out.find((x) => x.rule === 'capacity-overflow'), 'overflow is real in landscape');
+    assert.ok(out.find((x) => x.rule === 'autosplit-landscape-noop'), 'and the no-op flag is warned');
   });
 });
 
