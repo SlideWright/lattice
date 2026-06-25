@@ -7,9 +7,9 @@
 
 The live, claimable work queue — a read-only mirror of [open issues](https://github.com/SlideWright/lattice/issues),
 grouped by board column. Design lives in `engineering/decisions/`; this tracks
-only *status*. **41 open** items.
+only *status*. **42 open** items.
 
-## Backlog (37)
+## Backlog (38)
 
 - [#283](https://github.com/SlideWright/lattice/issues/283) refactor(css): audit and reduce `!important` (~490 repo-wide) — high · engine
 - [#284](https://github.com/SlideWright/lattice/issues/284) refactor(css): activate `@layer` for per-component + modifier CSS — high · engine
@@ -37,6 +37,7 @@ only *status*. **41 open** items.
 - [#466](https://github.com/SlideWright/lattice/issues/466) chart(detail): Tier-2 per-mark detail — state-chart, gantt, kanban — medium · chart
 - [#476](https://github.com/SlideWright/lattice/issues/476) chart(kanban): per-card detail reveal (Tier-2, on the HTML-mark path) — medium · chart
 - [#500](https://github.com/SlideWright/lattice/issues/500) feat(legal): obligation-matrix cover-paginate — a split that survives a wide matrix — medium · legal
+- [#506](https://github.com/SlideWright/lattice/issues/506) feat(runtime): runtime auto-split (Option B) via eventual consistency — medium
 - [#280](https://github.com/SlideWright/lattice/issues/280) docs: fix phantom `--hljs-name`/`--hljs-meta` token rows in highlight-js.docs.md — low · docs
 - [#281](https://github.com/SlideWright/lattice/issues/281) docs: mark design-system.md "9 buckets" as historical (ships 12) — low · docs
 - [#282](https://github.com/SlideWright/lattice/issues/282) docs: mark design-system.md "58 components / 89 pages" as dated (ships 53) — low · docs
