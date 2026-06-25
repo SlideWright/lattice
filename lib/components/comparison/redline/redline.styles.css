@@ -312,3 +312,28 @@ section.redline.three-col.three-col[data-orientation="portrait"] > blockquote {
 }
 section.redline.three-col.three-col[data-orientation="portrait"] > :is(ol, ul) { align-self:stretch; }
 
+/* ── block-split slides (carousel.js redline-blocks) ──
+ * When the collapsed stack is still too tall, the splitter gives OLD and NEW their own slides.
+ * One block per slide means :nth-of-type can't carry the OLD/NEW identity, so it rides an
+ * explicit rl-old / rl-new class — these mirror the .stacked variant's tint + label. The
+ * slide drops .split/.three-col, so there is no nth-of-type rule to fight (no doubled class
+ * needed). Palette-blind (HARD #3). */
+section.redline > blockquote.rl-old {
+  border-left-color:var(--fail);
+  background:color-mix(in srgb, var(--fail) 5%, var(--bg-alt));
+}
+section.redline > blockquote.rl-old::before {
+  content:'OLD — prior text'; display:block;
+  font-family:var(--font-mono); font-size:var(--fs-meta); font-weight:700;
+  letter-spacing:0.12em; color:var(--fail); margin-bottom:var(--sp-xs);
+}
+section.redline > blockquote.rl-new {
+  border-left-color:var(--pass);
+  background:color-mix(in srgb, var(--pass) 5%, var(--bg-alt));
+}
+section.redline > blockquote.rl-new::before {
+  content:'NEW · current'; display:block;
+  font-family:var(--font-mono); font-size:var(--fs-meta); font-weight:700;
+  letter-spacing:0.12em; color:var(--pass); margin-bottom:var(--sp-xs);
+}
+
