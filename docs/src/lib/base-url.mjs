@@ -1,7 +1,8 @@
 // Single source of the base-path-safe URL joiner for the docs site.
 //
-// The docs deploy under different roots: GitHub Pages serves under `/lattice/`,
-// Cloudflare Pages (and a future custom domain) serve at `/`. The naive
+// The docs now serve at the ROOT (`/`) in every environment — GitHub Pages on
+// the lattice.style custom domain and the Cloudflare Pages *.pages.dev PR
+// previews alike. This joiner stays base-aware regardless: the naive
 // `${base}/${p}` breaks on a `/` base — it yields a leading `//path`, which a
 // browser reads as a PROTOCOL-RELATIVE URL (the first path segment becomes the
 // host), silently breaking every internal link and asset. Normalize away a

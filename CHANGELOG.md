@@ -59,6 +59,17 @@ in patch versions.
 
 ### Changed
 
+- **The docs site is moving to its own domain, `lattice.style`, served at the root.**
+  Production is now a GitHub Pages site on the `lattice.style` custom domain (DNS via
+  Cloudflare, registrar Squarespace), so it serves at the ROOT path instead of the old
+  project-page `/lattice/` base. `astro.config.mjs` sets `base: '/'` in every environment
+  and `site` falls back to `https://lattice.style`; a committed `docs/public/CNAME` pins the
+  custom domain across deploys. The `/lattice` project-page base is retired, so the
+  build-time `rehype-base-links` plugin (which prefixed that base onto root-relative
+  Markdown links) is removed. **Cloudflare Pages PR previews are unaffected** — they already
+  served at the root with their own `CF_PAGES_URL`/`SITE_URL` origin, and that branch is
+  unchanged.
+
 - **Auto-split is now scoped to portrait/square `@sizes` — a universal, enforced rule.**
   The Fit Ladder's SPLIT move (`autosplit: on`) is a portrait-family behavior: in a
   wide/landscape box, collapse + shed resolve overflow before split is ever reached, so
