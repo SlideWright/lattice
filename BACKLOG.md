@@ -7,7 +7,9 @@
 
 The live, claimable work queue — a read-only mirror of [open issues](https://github.com/SlideWright/lattice/issues),
 grouped by board column. Design lives in `engineering/decisions/`; this tracks
-only *status*. **42 open** items.
+only *status*. **41 open** items.
+
+> ⚠️ **1 card need triage** (missing `area:`/`type:`/`priority:`): [#506](https://github.com/SlideWright/lattice/issues/506).
 
 ## Backlog (38)
 
@@ -50,9 +52,8 @@ only *status*. **42 open** items.
 - [#477](https://github.com/SlideWright/lattice/issues/477) chart(state-chart): tune the `tb` reveal-lift magnitude — low · chart
 - [#478](https://github.com/SlideWright/lattice/issues/478) chart(state-chart): tighten `inline`/`horizontal` variant label spacing — low · chart
 
-## Ready (2)
+## Ready (1)
 
-- [#499](https://github.com/SlideWright/lattice/issues/499) feat(comparison): compare-table cover-paginate split — cover design + render verify — high · comparison
 - [#501](https://github.com/SlideWright/lattice/issues/501) fix(inventory): glossary range pill is stale on cover-paginate split pages — low · inventory
 
 ## In progress (0)
