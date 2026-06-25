@@ -27,6 +27,14 @@ in patch versions.
 
 ### Added
 
+- **Debug bounding boxes in the Playground preview.** A toolbar toggle next to
+  Deck setup outlines every element in the live preview with colour-coded,
+  outline-only boxes (zero layout impact — they can't reflow a slide) for
+  eyeballing layout, nesting, and spacing while you edit. The button is a
+  temporary, session-only flip; a matching switch in the deck-setup drawer
+  (Preview · debug) persists the default per device. It's a viewer preference —
+  never written to the deck's front matter, never exported.
+
 - **The deck-setup drawer gains an "Auto-split overflow" toggle.** Enabling the Fit
   Ladder's SPLIT move (`autosplit: on`) is now a first-class switch in the deck-config
   drawer — on the Drawing Board and the Playground — alongside Islands and the other
