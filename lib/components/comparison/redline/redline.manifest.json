@@ -1,11 +1,11 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "redline",
-  "adapt": { "mode": "single-orientation", "priority": ["heading", "redline", "citation", "implications"] },
+  "adapt": { "mode": "reflow", "priority": ["heading", "redline", "citation", "implications"] },
+  "split": { "strategy": "redline-blocks", "note": "Portrait SPLIT after the CSS collapse: when the stacked .split/.three-col still overflows, OLD gets its own slide and NEW (with the note/why list riding) gets the next — heading + citation repeat; OLD/NEW identity rides rl-old/rl-new. Needs >=2 blockquotes (a single-passage redline rings, never splits a passage mid-sentence). lib/core/carousel.js redline-blocks; 2026-06-25-retire-landscape-locks-portrait-everything.md." },
   "function": "comparison",
   "form": "canvas",
   "substance": "prose",
-  "orientation": ["landscape"],
   "tags": ["contract", "contrast", "compliance", "transformation"],
   "description": "Clause-by-clause comparison — verbatim language with inline <ins>/<del> tracking the amendment.",
   "purpose": "Use when an amendment's diff is the slide. The blockquote carries the redlined text with ins/del markers; the trailing list explains why the diff matters operationally.",

@@ -365,3 +365,52 @@ describe('core: carousel — cover-cards (compare-table portrait RESHAPE)', () =
     assert.equal(carouselize(ctTag, one, ctRecipe, 2, 'compare-table'), null);
   });
 });
+
+describe('core: carousel — redline-blocks (redline portrait SPLIT)', () => {
+  // When a collapsed redline still overflows, each block gets its own slide: OLD on one, NEW
+  // (with the note riding) on the next, heading + citation repeated, OLD/NEW identity on
+  // explicit rl-old/rl-new classes.
+  const rlTag = '<section id="r1" class="redline split" data-orientation="portrait" data-lattice-slide="2">';
+  const rlInner =
+    '<header>H</header>' +
+    '<h2>SB-362 rewrote the rule.</h2>' +
+    '<p><code>Cal. Civ. Code §1798.135</code></p>' +
+    '<blockquote><p>Provide two or more methods to opt out of the sale.</p></blockquote>' +
+    '<blockquote><p>Provide at least one method, including a homepage link.</p></blockquote>' +
+    '<ul><li><strong>Why this matters.</strong> One duty now.</li></ul>' +
+    '<footer>F</footer>';
+  const rlRecipe = { strategy: 'redline-blocks' };
+  const parts = carouselize(rlTag, rlInner, rlRecipe);
+
+  test('OLD → its own slide, NEW (+ note) → the next', () => {
+    assert.equal(parts.length, 2);
+    assert.match(parts[0], /blockquote class="rl-old"/);
+    assert.match(parts[0], /two or more methods/);
+    assert.doesNotMatch(parts[0], /<ul\b/); // the note rides NEW, not OLD
+    assert.match(parts[1], /blockquote class="rl-new"/);
+    assert.match(parts[1], /at least one method/);
+    assert.match(parts[1], /Why this matters/); // note rides the NEW slide
+  });
+
+  test('the heading + citation repeat on both slides; the 2nd is marked (cont.)', () => {
+    assert.ok(parts.every((p) => /SB-362 rewrote the rule\./.test(p) && /Cal\. Civ\. Code/.test(p)));
+    assert.doesNotMatch(parts[0], /lat-cont/);
+    assert.match(parts[1], /lat-cont/);
+  });
+
+  test('only the first slide keeps the engine id; the wide variant class is dropped', () => {
+    assert.equal(parts.filter((p) => /\sid="r1"/.test(p)).length, 1);
+    const tokens = (p) => p.match(/class="([^"]*)"/)[1].split(/\s+/);
+    assert.ok(parts.every((p) => !tokens(p).includes('split') && tokens(p).includes('redline')));
+    assert.ok(parts.every((p) => tokens(p).includes('lat-split-native')));
+  });
+
+  test('every frame carries the Form chrome (header + footer)', () => {
+    assert.ok(parts.every((p) => /<header>H<\/header>/.test(p) && /<footer>F<\/footer>/.test(p)));
+  });
+
+  test('a single-passage redline (1 blockquote) → null, left for the ring', () => {
+    const one = '<h2>X</h2><p><code>cite</code></p><blockquote><p>one passage</p></blockquote>';
+    assert.equal(carouselize(rlTag, one, rlRecipe), null);
+  });
+});
