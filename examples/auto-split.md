@@ -1,8 +1,7 @@
 ---
-size: 4K
+size: portrait
 theme: indaco
 paginate: true
-header: "Lattice · Auto-split"
 footer: "Auto-split — the Fit Ladder's split move"
 autosplit: on
 ---
@@ -32,11 +31,12 @@ When a slide holds more than it can show, it becomes several — automatically, 
 
 ## How it works
 
-- At export, a slide past its `capacity.hard` is **divided into several** that each fit
-- The **heading repeats** on every part; ordered lists **renumber** across the break
+- A slide past its `capacity.hard` is **divided into several** that each fit
+- The **heading repeats**; ordered lists **renumber** across the break
 - **Nothing is lost** — every item survives, in order
-- **Read-across** content (table columns, code) is **never split** — it escalates to a sibling layout instead
-- Opt in per deck with `autosplit: on` in the front-matter
+- **Read-across** content (columns, code) is **never split** — it escalates instead
+- A **portrait-family** behavior — landscape resolves overflow another way
+- Opt in per deck with `autosplit: on`
 
 ---
 

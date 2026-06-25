@@ -148,7 +148,13 @@ Three properties make this the spine and not just a list:
   fluid box with zero churn, because they restyle, they don't re-paginate. This is
   what makes a live preview viable.
 - **Move 3 is discrete and build-time.** Splitting changes slide *count*, which
-  the engine has never owned. It runs at render time against a known target
+  the engine has never owned. **It is scoped to portrait/square `@sizes`** (portrait,
+  story, mobile, square) — in a wide/landscape box, moves 1–2 (collapse + shed) resolve
+  overflow before split is reached, so the engine *skips* both auto-split passes at a
+  landscape `@size` (a no-op + notice; `lint:deck` flags `autosplit: on` there via
+  `autosplit-landscape-noop`). This is the universal rule, mirrored by `PORTRAIT_SIZES`
+  in `lib/authoring/lint-core.js` and the manifest `capacity.escalateTo` contract. It runs
+  at render time against a known target
   geometry (the per-device export the emailed-link reader receives), in two passes
   over one kernel (`lib/core/auto-split.js`): a cheap **count-based** pre-cut splits
   a slide past its layout's `capacity.hard`, then a **measured** loop renders the

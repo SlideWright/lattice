@@ -107,6 +107,23 @@ var require_lint_core = __commonJS({
       const size = m && m[1];
       return size && PORTRAIT_SIZES.includes(size) ? "portrait" : "landscape";
     }
+    function findAutosplitOrientationMismatch(source) {
+      const fmMatch = String(source || "").match(/^---\n[\s\S]*?\n---/);
+      if (!fmMatch) return [];
+      const fm = fmMatch[0];
+      const flag = fm.match(/^\s*autosplit:\s*(?:on|true|yes)\s*$/im);
+      if (!flag) return [];
+      if (deckOrientation(fm) !== "landscape") return [];
+      return [{
+        slide: 1,
+        rule: "autosplit-landscape-noop",
+        severity: "warning",
+        classToken: "autosplit",
+        line: flag[0].trim(),
+        message: "autosplit: on has no effect at a landscape @size \u2014 the split move is a portrait/square-family behavior (portrait \xB7 story \xB7 mobile \xB7 square).",
+        fix: "Use a portrait @size (size: portrait | story | mobile | square) to enable autosplit, or drop autosplit: on for a landscape deck."
+      }];
+    }
     function findInlineTitleBodyLine(sample) {
       if (!sample) return null;
       for (const line of sample.split("\n")) {
@@ -346,7 +363,7 @@ ${indent}  ${bullet} ${body.trim()}`;
             if (!n) break;
             const comfort = cap.sweet != null ? cap.sweet : cap.soft;
             if (cap.hard != null && n > cap.hard) {
-              if (autosplitOn) continue;
+              if (autosplitOn && orientation === "portrait") continue;
               findings.push({
                 slide: idx - fm + 1,
                 rule: "capacity-overflow",
@@ -527,6 +544,7 @@ ${indent}  ${bullet} ${body.trim()}`;
       if (vocab.finishNames) findings.push(...findUnknownFinish(source, vocab.finishNames));
       if (vocab.splitNames) findings.push(...findUnknownSplit(source, vocab.splitNames));
       findings.push(...findGanttIssues(source));
+      findings.push(...findAutosplitOrientationMismatch(source));
       return findings;
     }
     var GANTT_STATUS = Object.freeze(/* @__PURE__ */ new Set([
@@ -808,6 +826,7 @@ ${indent}  ${bullet} ${body.trim()}`;
       axisNoun,
       capacityFix,
       findUnknownMapRegions,
+      findAutosplitOrientationMismatch,
       findUnknownFinish,
       nearestRegion,
       editDistance,
