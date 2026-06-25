@@ -305,3 +305,63 @@ describe('core: carousel — cover-paginate (dense lists / legal batch)', () => 
     assert.equal(carouselize(openTag, one, recipe), null);
   });
 });
+
+describe('core: carousel — cover-cards (compare-table portrait RESHAPE)', () => {
+  // The engine renders compare-table as <h2> + a <table> (thead/tbody). In a portrait box the
+  // table can't paginate out of horizontal overflow, so cover-cards TRANSPOSES each row to a
+  // card (column headers → field labels) and cover-paginates the cards.
+  const ctTag = '<section id="s1" class="content compare-table form" data-lattice-slide="1">';
+  const ctInner =
+    '<header>H</header>' +
+    '<h2>Build versus buy versus delay.</h2>' +
+    '<table><thead><tr><th></th><th>Build</th><th>Buy</th><th>Delay</th></tr></thead>' +
+    '<tbody>' +
+    '<tr><td>Up-front cost</td><td>$1.2M</td><td>$400k</td><td>$0</td></tr>' +
+    '<tr><td>Time to value</td><td>9 months</td><td>6 weeks</td><td>None</td></tr>' +
+    '<tr><td>Switching risk</td><td>Low</td><td>High</td><td>Rising</td></tr>' +
+    '<tr><td>Fit to need</td><td>Exact</td><td>Approximate</td><td>Unknown</td></tr>' +
+    '</tbody></table>' +
+    '<footer>F</footer>';
+  const ctRecipe = { strategy: 'cover-cards', axis: 'row', perPage: 2, intro: 'The full comparison' };
+  const parts = carouselize(ctTag, ctInner, ctRecipe, 2, 'compare-table');
+
+  test('emits an accent cover → card pages (perPage groups the rows)', () => {
+    assert.equal(parts.length, 3); // 4 rows, perPage 2 → cover + 2 card pages
+    assert.match(parts[0], /lat-split-cover/);
+    assert.ok(parts.slice(1).every((p) => /lat-split-cards/.test(p)));
+  });
+
+  test('the cover carries the compare-table tell marker + heading + intro lead', () => {
+    assert.match(parts[0], /split-cover-compare-table/);
+    assert.match(parts[0], /split-feat-h">Build versus buy versus delay\./);
+    assert.match(parts[0], /split-cover-lead">The full comparison/);
+  });
+
+  test('each ROW becomes a card: first cell is the title, columns are labelled fields', () => {
+    assert.match(parts[1], /ct-card-title">Up-front cost</);
+    assert.match(parts[1], /<dt>Build<\/dt><dd>\$1\.2M<\/dd>/);
+    assert.match(parts[1], /<dt>Buy<\/dt><dd>\$400k<\/dd>/);
+    assert.match(parts[1], /<dt>Delay<\/dt><dd>\$0<\/dd>/);
+  });
+
+  test('no datum is dropped — every cell survives the transpose (axiom 4)', () => {
+    const all = parts.join('');
+    for (const v of ['$1.2M', '$400k', '$0', '9 months', '6 weeks', 'Rising', 'Approximate', 'Unknown']) {
+      assert.ok(all.includes(v), `transpose dropped ${v}`);
+    }
+  });
+
+  test('only the cover keeps the engine id; card pages drop it (no duplicate ids)', () => {
+    assert.equal(parts.filter((p) => /\sid="s1"/.test(p)).length, 1);
+    assert.match(parts[0], /\sid="s1"/);
+  });
+
+  test('every frame carries the Form chrome (header + footer)', () => {
+    assert.ok(parts.every((p) => /<header>H<\/header>/.test(p) && /<footer>F<\/footer>/.test(p)));
+  });
+
+  test('a table with <2 rows → null, left for the ring', () => {
+    const one = '<h2>X</h2><table><thead><tr><th></th><th>A</th></tr></thead><tbody><tr><td>r</td><td>v</td></tr></tbody></table>';
+    assert.equal(carouselize(ctTag, one, ctRecipe, 2, 'compare-table'), null);
+  });
+});

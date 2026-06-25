@@ -1047,3 +1047,12 @@ section.lat-split-cover .split-feat-h {
   font-size: var(--fs-h1); font-weight: 800; line-height: var(--lh-tight);
   color: var(--on-accent); margin: var(--sp-xs) 0 var(--sp-md); max-width: 14em;
 }
+/* compare-table's split cover carries ONE signature from the live layout — the --spectrum
+   strip that underlines its <thead> (compare-table.styles.css) — so a split reads as the
+   same deck. Scoped via the `split-cover-compare-table` marker the carousel stamps, NOT
+   `section.compare-table`, so none of the table's base CSS activates on the cover. The
+   shared cover is otherwise untouched (the family fidelity bar). Palette-blind (HARD #3). */
+section.lat-split-cover.split-cover-compare-table .split-feat-h::after {
+  content: ""; display: block; height: 2px; width: 42%; min-width: 7em;
+  margin-top: var(--sp-sm); background: var(--spectrum);
+}

@@ -950,6 +950,17 @@ const SPLIT_CAP = (() => {
 // The layout class tokens that carouselize owns (read-across re-authored as a
 // sequence) — handed to the browser overflow measure so it marks them splittable.
 const CAROUSEL_NAMES = Object.keys(SPLIT_CAP).filter((n) => SPLIT_CAP[n].split);
+// A carousel split either REDUCES HORIZONTAL extent — re-authoring a side-by-side layout to
+// one panel per page (cover-code, cover-sides) — or PAGINATES A VERTICAL COLLECTION
+// (cover-paginate & friends: rows/items divided, the read-across columns repeating on every
+// page). Only the former can fix HORIZONTAL overflow; row/item pagination never narrows a
+// wide table. So a vertical paginator is marked splittable on VERTICAL overflow ONLY — a
+// too-wide table (compare-table, obligation-matrix) falls to the ring instead of being
+// row-split futilely, which would balloon the deck pass after pass (#499/#500). The
+// width-reducing strategies keep the any-overflow behavior they need. See the-fit-spine.md §3.
+const WIDTH_REDUCING_STRATEGIES = new Set(['cover-code', 'cover-sides', 'cover-cards']);
+const STRUCTURAL_CAROUSEL_NAMES = CAROUSEL_NAMES.filter((n) => WIDTH_REDUCING_STRATEGIES.has(SPLIT_CAP[n].split.strategy));
+const PAGINATOR_CAROUSEL_NAMES  = CAROUSEL_NAMES.filter((n) => !WIDTH_REDUCING_STRATEGIES.has(SPLIT_CAP[n].split.strategy));
 // Slide geometry — ONE registry (HARD RULE #1). The page template needs pixel
 // dimensions for the puppeteer PDF; rather than duplicate a size table (which
 // drifted — it used to omit 16:9 and silently rendered it as hd), resolve the
@@ -1569,7 +1580,7 @@ async function renderBody(browser, g, closeBrowser) {
   // clientHeight) — the signal both the author warning and the measured auto-split
   // pass below read. Scope to real slide sections only — `<section>` literals inside
   // code blocks parse as nested DOM and would pollute the indices.
-  const measureOverflow = () => g(() => page.evaluate((carouselClasses) => {
+  const measureOverflow = () => g(() => page.evaluate(({ structuralCarousel, paginatorCarousel }) => {
     const TOL = 12; // filter sub-pixel rounding; see lattice-runtime.js
     const out = [];
     document.querySelectorAll('section[data-lattice-slide]').forEach((s, i) => {
@@ -1578,13 +1589,22 @@ async function renderBody(browser, g, closeBrowser) {
       if (!over) return;
       const C = s.clientHeight;
       const ratio = C > 0 ? s.scrollHeight / C : 2;
-      // A read-across layout with a carousel `split` recipe is re-authored as a sequence,
-      // not divided by collection — so ANY overflow is actionable (compare-code overflows
-      // HORIZONTALLY: two code blocks too wide for a portrait box; one-block-per-page fixes
+      // A STRUCTURAL carousel (cover-code/cover-sides) re-authors a side-by-side layout to
+      // one panel per page, so ANY overflow is actionable — compare-code overflows
+      // HORIZONTALLY (two code blocks too wide for a portrait box; one-block-per-page fixes
       // it). Mark it splittable and let resplitDoc's carousel branch own it (the ratio is
       // irrelevant to a structural re-author).
-      if (carouselClasses.some((c) => s.classList.contains(c))) {
+      if (structuralCarousel.some((c) => s.classList.contains(c))) {
         out.push({ slide: i + 1, ratio, canSplit: true, splitRatio: ratio });
+        return;
+      }
+      // A VERTICAL PAGINATOR (cover-paginate) divides a row/item collection; it can only fix
+      // VERTICAL overflow. A too-wide table overflows HORIZONTALLY — row-splitting it is
+      // futile and balloons the deck — so gate canSplit on vOver and leave a width-overflow
+      // for the ring (this is the guard that lets a wide compare-table / obligation-matrix
+      // carry a split recipe without ever ballooning).
+      if (paginatorCarousel.some((c) => s.classList.contains(c))) {
+        out.push({ slide: i + 1, ratio, canSplit: vOver, splitRatio: ratio });
         return;
       }
       // The auto-splitter only divides a list (ul/ol) or table — so a split can only
@@ -1602,7 +1622,7 @@ async function renderBody(browser, g, closeBrowser) {
       out.push({ slide: i + 1, ratio, canSplit, splitRatio });
     });
     return out;
-  }, CAROUSEL_NAMES), 'measure overflow');
+  }, { structuralCarousel: STRUCTURAL_CAROUSEL_NAMES, paginatorCarousel: PAGINATOR_CAROUSEL_NAMES }), 'measure overflow');
   let overflow = await measureOverflow();
   // MEASURED auto-split — the loop that makes "split" fit REAL boxes. Divide every
   // overflowing SPLITTABLE slide by how much it overflows, re-render, re-measure,

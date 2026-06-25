@@ -2856,6 +2856,22 @@ section.compare-table thead th { font-family:var(--font-label); font-size:var(--
 section.compare-table td { padding:0.625cqi var(--sp-xs); border-bottom:1px solid var(--border); color:var(--text-body); vertical-align:top; font-size:var(--fs-body-compact); word-wrap:break-word; overflow-wrap:break-word; }
 section.compare-table td:first-child { font-weight:600; color:var(--text-heading); white-space:nowrap; }
 
+/* ── portrait RESHAPE — card-per-row (carousel.js cover-cards) ──
+ * In a portrait box a wide read-across table can't paginate out of HORIZONTAL overflow, so
+ * each ROW becomes a card and the column headers become labelled fields. The card carries
+ * the native table's language so a reshaped split reads as the same deck: mono/label field
+ * names (the thead look), the --spectrum strip (the thead rule, now per-card), hairline
+ * rules (the row borders), first-cell emphasis as the card title. Palette-blind (HARD #3).
+ * See engineering/decisions/2026-06-25-retire-landscape-locks-portrait-everything.md. */
+section.compare-table.lat-split-cards .ct-cards { display:flex; flex-direction:column; gap:var(--sp-sm); flex:1; justify-content:center; }
+section.compare-table.lat-split-cards .ct-card { border:1px solid var(--border); border-radius:var(--radius-sm); padding:var(--sp-sm) var(--sp-md); }
+section.compare-table.lat-split-cards .ct-card-title { font-size:var(--fs-emphasis); font-weight:600; color:var(--text-heading); margin-bottom:var(--sp-xs); padding-bottom:var(--sp-xs); background:var(--spectrum) bottom / 100% 2px no-repeat; }
+section.compare-table.lat-split-cards .ct-card-fields { display:grid; grid-template-columns:max-content 1fr; gap:0.4em var(--sp-md); margin:0; }
+section.compare-table.lat-split-cards .ct-field { display:contents; }
+section.compare-table.lat-split-cards .ct-field dt { font-family:var(--font-label); font-size:var(--fs-meta); font-weight:600; letter-spacing:0.10em; text-transform:uppercase; color:var(--text-label); }
+section.compare-table.lat-split-cards .ct-field dd { margin:0; font-size:var(--fs-body-compact); color:var(--text-body); }
+section.compare-table.lat-split-cards .split-runhead { font-family:var(--font-label); font-size:var(--fs-meta); letter-spacing:0.10em; text-transform:uppercase; color:var(--text-label); margin-bottom:var(--sp-sm); opacity:0.85; }
+
 /* === lib/components/statement/content/content.styles.css === */
 /* content — statement.canvas.content (the catch-all prose slide)
  *
@@ -12842,6 +12858,15 @@ section.lat-split-cover .split-feat-eye {
 section.lat-split-cover .split-feat-h {
   font-size: var(--fs-h1); font-weight: 800; line-height: var(--lh-tight);
   color: var(--on-accent); margin: var(--sp-xs) 0 var(--sp-md); max-width: 14em;
+}
+/* compare-table's split cover carries ONE signature from the live layout — the --spectrum
+   strip that underlines its <thead> (compare-table.styles.css) — so a split reads as the
+   same deck. Scoped via the `split-cover-compare-table` marker the carousel stamps, NOT
+   `section.compare-table`, so none of the table's base CSS activates on the cover. The
+   shared cover is otherwise untouched (the family fidelity bar). Palette-blind (HARD #3). */
+section.lat-split-cover.split-cover-compare-table .split-feat-h::after {
+  content: ""; display: block; height: 2px; width: 42%; min-width: 7em;
+  margin-top: var(--sp-sm); background: var(--spectrum);
 }
 
 /* === lib/integrations/highlight-js/highlight-js.css === */
