@@ -414,3 +414,48 @@ describe('core: carousel — redline-blocks (redline portrait SPLIT)', () => {
     assert.equal(carouselize(rlTag, one, rlRecipe), null);
   });
 });
+
+describe('core: carousel — kanban-lanes (kanban portrait, one lane per slide)', () => {
+  // The chart family renders kanban as chart-header → chart-body → .kanban-board with one
+  // .kanban-column per lane. In portrait each lane gets its own slide: the board re-emits
+  // holding a single column, the chart-header repeats.
+  const kbTag = '<section id="k1" class="kanban" data-lattice-slide="2">';
+  const col = (name, ...cards) =>
+    `<div class="kanban-column"><div class="kanban-column-header">${name}</div>` +
+    `<div class="kanban-cards">${cards.map((c) => `<div class="kanban-card"><div class="kanban-card-title">${c}</div></div>`).join('')}</div></div>`;
+  const kbInner =
+    '<div class="chart-header"><p class="chart-eyebrow"><code>Sprint 14</code></p><h2>Where work stands.</h2></div>' +
+    '<div class="chart-body"><div class="kanban-board">' +
+    col('Backlog', 'A', 'B') + col('In progress', 'C') + col('Done', 'D', 'E') +
+    '</div></div>' +
+    '<footer>F</footer>';
+  const parts = carouselize(kbTag, kbInner, { strategy: 'kanban-lanes' });
+
+  test('one slide per lane, each holding a single column', () => {
+    assert.equal(parts.length, 3);
+    assert.ok(parts.every((p) => (p.match(/kanban-column"/g) || []).length === 1));
+    assert.match(parts[0], /kanban-column-header">Backlog</);
+    assert.match(parts[1], /kanban-column-header">In progress</);
+    assert.match(parts[2], /kanban-column-header">Done</);
+  });
+
+  test('each lane keeps only its own cards', () => {
+    assert.equal((parts[0].match(/kanban-card"/g) || []).length, 2); // Backlog: A, B
+    assert.equal((parts[1].match(/kanban-card"/g) || []).length, 1); // In progress: C
+    assert.equal((parts[2].match(/kanban-card"/g) || []).length, 2); // Done: D, E
+    assert.doesNotMatch(parts[0], />C</); // no cross-lane bleed
+  });
+
+  test('the chart-header repeats; the first keeps the id, later slides are (cont.) + id-less', () => {
+    assert.ok(parts.every((p) => /Where work stands\./.test(p)));
+    assert.equal(parts.filter((p) => /\sid="k1"/.test(p)).length, 1);
+    assert.match(parts[0], /\sid="k1"/);
+    assert.doesNotMatch(parts[0], /lat-cont/);
+    assert.ok(parts.slice(1).every((p) => /lat-cont/.test(p) && /lat-split-native/.test(p)));
+  });
+
+  test('a single-lane board → null (nothing to split between)', () => {
+    const one = '<div class="chart-header"><h2>X</h2></div><div class="chart-body"><div class="kanban-board">' + col('Only', 'A', 'B') + '</div></div>';
+    assert.equal(carouselize(kbTag, one, { strategy: 'kanban-lanes' }), null);
+  });
+});

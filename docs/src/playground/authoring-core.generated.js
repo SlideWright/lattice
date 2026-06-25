@@ -79,19 +79,7 @@ var require_lint_core = __commonJS({
       "split-compare"
     ]);
     var NUMBER_SLOT_LAYOUTS = Object.freeze(["kpi", "stats"]);
-    var LANDSCAPE_ONLY_LAYOUTS = Object.freeze([
-      // gantt, state-chart, journey, and roadmap all adapt to a tall box now (gantt:
-      // CSS @container label-over-bars; state-chart: vertical default + lr→tb;
-      // journey: a render-time vertical board; roadmap: the kernel auto-selects the
-      // horizons card form and the cards stack) — see
-      // 2026-06-19-chart-adaptive-sizing.md §10.
-      // compare-table, compare-code, redline retired the lock (2026-06-25): compare-table
-      // RESHAPES to card-per-row (cover-cards), compare-code re-authors to one block per page
-      // (cover-code), and redline COLLAPSES its .split/.three-col grids to a stacked single
-      // column in a portrait box (@container) — all support both orientations now.
-      // 2026-06-25-retire-landscape-locks-portrait-everything.md. (kanban is last — pending.)
-      "kanban"
-    ]);
+    var LANDSCAPE_ONLY_LAYOUTS = Object.freeze([]);
     var PORTRAIT_ONLY_LAYOUTS = Object.freeze([]);
     var AUTOSPLIT_ADAPTS = Object.freeze([]);
     var PORTRAIT_SIZES = Object.freeze([

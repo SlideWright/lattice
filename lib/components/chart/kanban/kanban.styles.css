@@ -331,4 +331,12 @@ section.kanban.tinted .kanban-lane::before { display: none; }
   }
   section.kanban .kanban-cards { flex-direction: row; flex-wrap: wrap; }
   section.kanban .kanban-card { flex: 1 1 14cqi; min-width: 0; }
+
+  /* Auto-split lane slides (carousel.js kanban-lanes): one lane has the WHOLE slide, so its
+   * cards stack as a full-width column instead of wrapping into a cramped row (which clipped
+   * the titles). More specific than the all-lanes reflow above, so it wins for split bodies. */
+  section.kanban.lat-split-native .kanban-board { justify-content: flex-start; }
+  section.kanban.lat-split-native .kanban-column { width: 100%; }
+  section.kanban.lat-split-native .kanban-cards { flex-direction: column; flex-wrap: nowrap; align-items: stretch; }
+  section.kanban.lat-split-native .kanban-card { flex: 0 0 auto; width: 100%; max-width: none; }
 }
