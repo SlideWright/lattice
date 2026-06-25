@@ -112,7 +112,7 @@ const VARIANT_DECL_IGNORE = new Map([
 // `lat-split-cards` is the cover-cards body marker the auto-split kernel stamps on a
 // reshaped (transposed-to-cards) split page — engine chrome, not an author variant, exactly
 // parallel to the `lat-split-native` cover-paginate body marker.
-const STRUCTURAL_ROOT_CLASSES = new Set(['chart-frame', 'lat-split-cards']);
+const STRUCTURAL_ROOT_CLASSES = new Set(['chart-frame', 'lat-split-cards', 'lat-split-native']);
 
 // Search tags that legitimately apply to exactly ONE component — a
 // genuinely-unique idiom or material with no sibling that shares it

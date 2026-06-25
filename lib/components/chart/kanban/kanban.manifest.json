@@ -7,7 +7,7 @@
   "form": "timeline",
   "substance": "series",
   "capacity": { "axis": "item", "min": 2, "sweet": 3, "soft": 5, "hard": 6, "escalateTo": ["split across slides"], "note": "past five lanes the cards compress" },
-  "orientation": ["landscape"],
+  "split": { "strategy": "kanban-lanes", "note": "In a portrait box the side-by-side lanes can't fit, so each LANE gets its own slide — the chart-header repeats and the board re-emits holding one .kanban-column, giving that lane the whole slide for its cards. Needs >=2 lanes; a single lane taller than the slide rings (card-level pagination is a future pass). lib/core/carousel.js kanban-lanes; 2026-06-25-retire-landscape-locks-portrait-everything.md." },
   "tags": ["swimlane", "workflow", "status", "agile", "ownership"],
   "variants": ["keyline", "tinted"],
   "variantAxes": [

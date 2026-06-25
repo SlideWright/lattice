@@ -3436,11 +3436,14 @@
       "form": "timeline",
       "substance": "series",
       "orientation": [
-        "landscape"
+        "landscape",
+        "portrait"
       ],
       "families": [
         "wide",
-        "square"
+        "square",
+        "tall",
+        "strip"
       ],
       "adapt": {
         "mode": "reflow",
