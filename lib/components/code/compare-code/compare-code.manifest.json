@@ -2,7 +2,7 @@
   "$schema": "../../manifest.schema.json",
   "name": "compare-code",
   "adapt": {
-    "mode": "single-orientation",
+    "mode": "reflow",
     "priority": [
       "title",
       "left",
@@ -29,9 +29,6 @@
   "bucket": "code",
   "form": "split",
   "substance": "structure",
-  "orientation": [
-    "landscape"
-  ],
   "tags": [
     "snippet",
     "contrast",

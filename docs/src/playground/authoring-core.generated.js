@@ -85,14 +85,15 @@ var require_lint_core = __commonJS({
       // journey: a render-time vertical board; roadmap: the kernel auto-selects the
       // horizons card form and the cards stack) — see
       // 2026-06-19-chart-adaptive-sizing.md §10.
-      // compare-table retired the lock (2026-06-25): it now RESHAPES to card-per-row in a
-      // portrait box (carousel.js cover-cards), so it supports both orientations.
+      // compare-table + compare-code retired the lock (2026-06-25): compare-table RESHAPES to
+      // card-per-row (carousel.js cover-cards) and compare-code re-authors to one block per page
+      // (cover-code) in a portrait box, so both support both orientations now.
+      // 2026-06-25-retire-landscape-locks-portrait-everything.md.
       "kanban",
-      "compare-code",
       "redline"
     ]);
     var PORTRAIT_ONLY_LAYOUTS = Object.freeze([]);
-    var AUTOSPLIT_ADAPTS = Object.freeze(["compare-code"]);
+    var AUTOSPLIT_ADAPTS = Object.freeze([]);
     var PORTRAIT_SIZES = Object.freeze([
       "square",
       "portrait",
