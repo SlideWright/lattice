@@ -52,6 +52,13 @@ const FIELD_DEFAULTS = {
   // 'headings' (the default → omitted) splits on each h1/h2 (eyebrow-aware, `---`
   // still honoured) so the deck needs no separators; 'rule' opts back to `---`-only.
   split: 'headings',
+  // `autosplit` opts the deck into the Fit Ladder's SPLIT move: an over-capacity
+  // slide is divided across extra pages at render (lib/core/auto-split.js). Off
+  // (default → omitted) / on; `true`/`yes` are read as on, the canonical written
+  // value is `on`. A portrait/square-family behavior — a no-op at a landscape
+  // @size, where collapse + shed resolve overflow first (lint warns via
+  // `autosplit-landscape-noop`). Surfaced as a boolean, like `paginate`.
+  autosplit: 'off',
   size: 'hd', // default landscape (memorable name; 16:9 geometry) (themes also define 4K / standard)
   paginate: 'false',
   header: '',
@@ -77,7 +84,7 @@ const FINISH_LABELS = {
 
 // Emit order for known keys; any unmanaged keys we preserved trail in their
 // original order. `marp` leads (it's what tells marp-cli to render the deck).
-const EMIT_ORDER = ['marp', 'theme', 'finish', 'split', 'size', 'paginate', 'header', 'footer', 'class', 'islands', 'math', 'lang'];
+const EMIT_ORDER = ['marp', 'theme', 'finish', 'split', 'autosplit', 'size', 'paginate', 'header', 'footer', 'class', 'islands', 'math', 'lang'];
 
 // Field PROFILES per surface — the `fields` allow-list createConfigPanel takes.
 //   author  — every field (the Drawing Board: full set, theme three-way synced).
@@ -89,7 +96,11 @@ const EMIT_ORDER = ['marp', 'theme', 'finish', 'split', 'size', 'paginate', 'hea
 //             with no deck chrome and no theme, which the studio itself owns).
 export const CONFIG_PROFILES = Object.freeze({
   author: null,
-  noTheme: ['finish', 'split', 'size', 'paginate', 'header', 'footer', 'class', 'islands', 'math', 'lang'],
+  noTheme: ['finish', 'split', 'autosplit', 'size', 'paginate', 'header', 'footer', 'class', 'islands', 'math', 'lang'],
+  // `autosplit` is a deck-AUTHORING concern (does my over-capacity content
+  // divide?), not a theme/component PREVIEW register — so it's deliberately out
+  // of the preview profile (a fixed specimen never overflows). It rides the full
+  // author set + the Playground (noTheme) only.
   preview: ['finish', 'size', 'paginate', 'islands'],
 });
 
@@ -138,6 +149,8 @@ export function readFrontMatter(source) {
     theme: map.theme || '',
     finish: map.finish || '',
     split: (map.split || 'headings').trim().toLowerCase() === 'rule' ? 'rule' : 'headings',
+    // `autosplit` is binary — surfaced as a boolean (like paginate) for the switch.
+    autosplit: TRUEY.test(map.autosplit || ''),
     size: map.size || 'hd',
     paginate: TRUEY.test(map.paginate || ''),
     header: map.header || '',
@@ -155,6 +168,8 @@ export function readFrontMatter(source) {
 
 function isDefault(key, value) {
   if (key === 'paginate') return !TRUEY.test(value);
+  // `autosplit` is binary — off (any non-truthy) is the omitted default.
+  if (key === 'autosplit') return !TRUEY.test(value);
   if (key === 'math') return value === '' || value === 'katex';
   if (key === 'islands') return islandsMode(value) === 'off';
   // 'boardroom' is the named baseline — the same no-class result as omitting
@@ -171,6 +186,9 @@ function isDefault(key, value) {
 // paginate, a string otherwise.
 function normalize(key, value) {
   if (key === 'paginate') return value === true || TRUEY.test(value || '') ? 'true' : null;
+  // `autosplit` writes the canonical `on` when enabled; off omits the key. The
+  // engine reads on/true/yes — we always emit `on` (matches the example decks).
+  if (key === 'autosplit') return value === true || TRUEY.test(value || '') ? 'on' : null;
   const v = (value == null ? '' : String(value)).trim();
   if (key === 'math') return v === '' || v === 'katex' ? null : v;
   if (key === 'islands') { const m = islandsMode(v); return m === 'off' ? null : m; }
@@ -379,6 +397,14 @@ export function createConfigPanel({ host, trigger, getSource, setSource, palette
       host.append(selectRow('split', 'Slide splitting',
         'Start a new slide on each ## heading (default) or only on ---',
         [['headings', 'On ## headings'], ['rule', 'On --- dividers']], fm.split));
+    }
+
+    // Auto-split — opt the deck into the Fit Ladder's SPLIT move: an over-capacity
+    // slide is divided across extra pages at render. A portrait/square-family
+    // behavior, so the hint names the gate (lint warns on a landscape deck).
+    if (show('autosplit')) {
+      host.append(switchRow('autosplit', 'Auto-split overflow',
+        'Divide an over-capacity slide across extra pages — portrait & square sizes only', fm.autosplit));
     }
 
     if (show('size')) {

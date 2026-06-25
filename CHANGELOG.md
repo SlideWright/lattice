@@ -25,6 +25,17 @@ in patch versions.
 
 ## Unreleased
 
+### Added
+
+- **The deck-setup drawer gains an "Auto-split overflow" toggle.** Enabling the Fit
+  Ladder's SPLIT move (`autosplit: on`) is now a first-class switch in the deck-config
+  drawer — on the Drawing Board and the Playground — alongside Islands and the other
+  deck-wide settings, so authors no longer hand-write the front matter. It writes the
+  canonical `autosplit: on` and clears the key when off; the hint names the gate
+  (portrait & square sizes only — a landscape deck is a no-op, which `lint:deck` already
+  warns about). The editor autocomplete completes `autosplit:` values too. Mirrors the
+  islands plumbing (`docs/src/playground/deck-config.js`).
+
 ### Changed
 
 - **Auto-split is now scoped to portrait/square `@sizes` — a universal, enforced rule.**
