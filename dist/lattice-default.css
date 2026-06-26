@@ -15707,58 +15707,57 @@ section.form > .cell-stage {
   overflow: clip;
 }
 
-/* ── FOOTER Cell — the frame's third row (flex cell-tree §6) ─────────────────
- * A real in-flow flex row at the bottom of the section flex column: the running
- * `footer:` text at the left, the page number (a REAL `<span class="lat-pagination">`,
- * not the `section::after` pseudo) at the right. Because it's in-flow, the stage
- * above auto-sizes to its top — retiring the magic `--footer-reserve` padding
- * guess. The progress rail docks in here too (progress.transform.js).
+/* ── FOOTER Cell — the frame's third chrome band (flex cell-tree §6) ──────────
+ * The footer Cell MIRRORS the running <header>: an absolutely-positioned chrome
+ * band in the SAME edge berth (left/right: --frame-inset-x) at the bottom inset
+ * that mirrors the header's top inset (bottom: --frame-inset-y). Identical
+ * position properties + the same containing block (the section padding box) make
+ * header↔footer symmetric BY CONSTRUCTION — the top/left padding of the header
+ * equals the bottom/left padding of the footer, exactly. (An in-flow band can't
+ * guarantee this: `left: X` and `padding-inline: X` resolve against different
+ * reference edges once the section's own padding is in play.)
  *
- * POSITION: by DEFAULT the band HUGS the bottom edge — it's content-height and the
- * section's bottom padding is just the frame inset, so the running text lands on
- * the same `bottom: var(--frame-inset-y)` line the legacy absolute footer sat on
- * (visually near-identical to the old footer). The `.footer-inset` universal
- * modifier lifts it off the edge into the frame for a symmetric top/bottom inset.
- * Hug is the default because a board footer conventionally sits at the page edge. */
-section.form:has(> .cell-footer) {
-  /* The footer Cell IS the bottom band, so the section's bottom padding drops to
-   * just the frame inset (was --footer-reserve); the content-height band then hugs
-   * that inset. */
-  padding-bottom: var(--frame-inset-y);
-}
+ * It holds the running `footer:` text (left), the section progress rail, and the
+ * page number (right) — a REAL `<span class="lat-pagination">`, not the
+ * `section::after` pseudo. The stage above clips its own overflow and the section
+ * reserves this band via `padding-bottom`, so the body stays bounded (the cell-tree
+ * guarantee) while the footer chrome floats in the reserved berth. The rail docks
+ * in here too (progress.transform.js).
+ *
+ * POSITION: by DEFAULT the band HUGS the bottom edge (bottom: --frame-inset-y,
+ * mirroring the header). The `.footer-inset` universal modifier lifts it into the
+ * frame. Hug is the default because a board footer conventionally sits at the edge. */
 section.form > .cell-footer {
-  flex: 0 0 auto;
+  position: absolute;
+  left: var(--frame-inset-x);
+  right: var(--frame-inset-x);
+  bottom: var(--frame-inset-y);   /* hug — mirrors `section header { top: --frame-inset-y }` */
   display: flex;
-  align-items: baseline;
-  justify-content: flex-end;   /* wayfinding group (rail · page no.) sits right */
+  align-items: center;            /* footer text · rail · page no. share a vertical centre */
+  justify-content: flex-end;      /* wayfinding group (rail · page no.) sits right */
   gap: var(--sp-md);
-  margin-top: var(--sp-md);
-  /* Pull the band out of the content column (--frame-x) into the running-chrome
-   * edge berth (--frame-inset-x), so footer-left + the page number align with the
-   * running <header> and the legacy footer/pagination, not the body column —
-   * keeps header↔footer symmetry. */
-  margin-left: calc(var(--frame-inset-x) - var(--frame-x));
-  margin-right: calc(var(--frame-inset-x) - var(--frame-x));
 }
 /* Universal modifier (#527 family) — lift the footer band off the bottom edge into
- * the frame, so the bottom inset mirrors the top instead of hugging the page edge.
- * Adds the band's own nominal height below it; opt in per slide or per deck (the
- * default is hug). */
-section.form.footer-inset:has(> .cell-footer) {
-  padding-bottom: calc(var(--frame-inset-y) + var(--footer-h));
+ * the frame (so the bottom inset mirrors the top by a full band height) instead of
+ * hugging the page edge. Opt in per slide or per deck; the default is hug. */
+section.form.footer-inset > .cell-footer {
+  bottom: calc(var(--frame-inset-y) + var(--footer-h));
 }
-/* The running footer text — was a bottom-left absolute; now in-flow at the left.
- * margin-right:auto shoves the wayfinding group to the right edge; absent footer
- * text just leaves the group right-aligned. Appearance (colour, size) still
- * comes from the Marp footer tier. */
+section.form.footer-inset:has(> .cell-footer) {
+  padding-bottom: calc(var(--footer-reserve) + var(--footer-h));
+}
+/* The running footer text — a flex item at the left of the band (the band itself
+ * is the absolute cell above). margin-right:auto shoves the wayfinding group to the
+ * right edge; absent footer text just leaves the group right-aligned. Appearance
+ * (colour, size) still comes from the Marp footer tier. */
 section.form > .cell-footer > footer {
   position: static;
   inset: auto;
   margin: 0 auto 0 0;
   max-width: var(--footerleft-w, 52cqi);
 }
-/* The page number as a real element — mono, --fs-meta, on the shared baseline,
- * matching the retired pseudo exactly. */
+/* The page number as a real element — mono, --fs-meta, vertically centred with the
+ * footer text + rail, matching the retired pseudo's appearance. */
 section.form > .cell-footer > .lat-pagination {
   font-family: var(--font-mono);
   font-size: var(--fs-meta);

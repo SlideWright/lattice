@@ -394,16 +394,17 @@ whole canvas and suppresses the masthead/footer Cells — that is the entire
 mechanism behind "this slide looks completely different." Every Cell holds a Tile;
 **Frames do not nest inside content cells** (§1 — considered and rejected; see the
 decision note). The masthead's `lede · bay` is a fixed band split. On a migrated
-frame the footer is a real `.cell-footer` — an **in-flow flex row** (the frame's
-third cell) holding the running footer text (left), the section progress rail, and
-the page number (right). Because it flows in the section column, the stage above
-ends exactly where the footer begins, so the `--footer-reserve` padding guess is
-retired. By **default the band hugs the bottom edge** — content-height, in the
-running-chrome edge berth, on the same baseline the legacy absolute footer sat on
-(near-identical to before). The **`footer-inset`** universal modifier lifts it off
-the edge into the frame, so the bottom inset mirrors the top. The page number is a
-real `<span class="lat-pagination">`, not a `section::after` pseudo — a page number
-is content, not decoration (the decorative numbered-divider numeral stays a pseudo).
+frame the footer is a real `.cell-footer` band (the frame's third cell) holding the
+running footer text (left), the section progress rail, and the page number (right),
+the three marks **vertically centred** with each other. The band **mirrors the running
+`<header>`**: same edge berth (`left`/`right: var(--frame-inset-x)`) at the inset that
+mirrors the header's top (`bottom: var(--frame-inset-y)`), so header↔footer are
+symmetric by construction — the header's top/left padding equals the footer's
+bottom/left padding. By **default the band hugs the bottom edge**; the **`footer-inset`**
+universal modifier lifts it into the frame so the bottom inset mirrors the top. The
+page number is a real `<span class="lat-pagination">`, not a `section::after` pseudo —
+a page number is content, not decoration (the decorative numbered-divider numeral stays
+a pseudo).
 An un-migrated frame still uses the legacy model: three **independently-positionable
 Cells** (footer-left · progress · pagination), each token-driven
 (`var(--<cell>-inset)`), so per-family `slicing` can relocate any one (§7.3). Either
