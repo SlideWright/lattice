@@ -27,6 +27,13 @@ in patch versions.
 
 ### Added
 
+- **Five more components adopt the frame's stage cell.** `agenda`, `logo-wall`,
+  `regulatory-update`, `compare-table`, and `list-tabular` migrate to the `.cell-stage`
+  body cell, so their bodies are bounded by the frame. The centering components (`agenda`)
+  now pin their masthead to the top like every other Form frame and distribute the body in
+  the stage — the same frame-conform shift `content` adopted; body content is unchanged.
+  Continues the per-component cell-tree migration (`2026-06-26-frames-as-flex-cell-trees.md` §6).
+
 - **More components adopt the frame's stage cell.** `list`, `glossary`, `matrix-2x2`, and
   `pricing` migrate to the `.cell-stage` body cell (all pixel-identical), so their bodies
   are bounded by the frame and can't bleed past the stage edge. The universal pill chrome
