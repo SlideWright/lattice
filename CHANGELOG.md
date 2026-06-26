@@ -27,6 +27,14 @@ in patch versions.
 
 ### Added
 
+- **The centering statement/evidence components adopt the stage cell.** `quote`, `stats`,
+  `big-number`, `decision`, and `q-and-a` migrate to `.cell-stage`. These components
+  centre their content; the centring is re-established on the cell (a moved
+  `justify-content`/`align-items` block now also carries `display:flex` so it composes —
+  Marpit's section was implicitly flex, the cell must be too), so a pull-quote / hero
+  number sits centred in the stage with the masthead pinned top (frame-conform).
+  Continues the per-component cell-tree migration (`2026-06-26-frames-as-flex-cell-trees.md` §6).
+
 - **Five more components adopt the frame's stage cell.** `agenda`, `logo-wall`,
   `regulatory-update`, `compare-table`, and `list-tabular` migrate to the `.cell-stage`
   body cell, so their bodies are bounded by the frame. The centering components (`agenda`)

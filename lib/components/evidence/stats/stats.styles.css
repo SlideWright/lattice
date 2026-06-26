@@ -16,30 +16,30 @@
  * See lib/components/evidence/stats/stats.manifest.json for the contract.
  */
 
-section.stats { justify-content:center; align-items:center; }
+section.stats > .cell-stage { display:flex; flex-direction:column; justify-content:center; align-items:center; }
 section.stats h2 { margin-bottom:var(--sp-xs); text-align:center; }
 section.stats h3 { margin-bottom:0.3125cqi; }
-section.stats > p, section.stats > em { font-size:var(--fs-body); line-height:var(--lh-relaxed); margin-bottom:var(--sp-lg); color:var(--text-label); font-style:italic; display:block; text-align:center; }
+section.stats > .cell-stage > p, section.stats > .cell-stage > em { font-size:var(--fs-body); line-height:var(--lh-relaxed); margin-bottom:var(--sp-lg); color:var(--text-label); font-style:italic; display:block; text-align:center; }
 
 /* The stat strip: the top-level list laid out as a centered flex row. */
-section.stats > ol {
+section.stats > .cell-stage > ol {
   display:flex; justify-content:center; gap:var(--sp-2xl);
   list-style:none; padding:0; margin:0;
 }
-section.stats > ol > li {
+section.stats > .cell-stage > ol > li {
   display:flex; flex-direction:column; align-items:center; gap:0.46875cqi; text-align:center;
 }
 /* The number — the lifted parent-li lead. */
-section.stats > ol > li > strong {
+section.stats > .cell-stage > ol > li > strong {
   font-family:var(--font-display); font-size:var(--fs-h1); font-weight:700;
   color:var(--accent); line-height:1; display:block;
   letter-spacing:0; text-transform:none; font-variant-numeric:tabular-nums;
 }
 /* The label — the nested sublist. */
-section.stats > ol > li > ul {
+section.stats > .cell-stage > ol > li > ul {
   list-style:none; padding:0; margin:0;
 }
-section.stats > ol > li > ul > li {
+section.stats > .cell-stage > ol > li > ul > li {
   font-family:var(--font-label); font-size:var(--fs-meta); font-weight:600;
   letter-spacing:0.18em; text-transform:uppercase; color:var(--text-label);
 }
@@ -54,16 +54,16 @@ section.stats > ol > li > ul > li {
    to fit instead of clipping — a big floor (was --sp-2xl) overflowed 4 numbers +
    a 2-line title at the shortest portrait (4:5). Keyed on data-orientation, so
    landscape is untouched. */
-section.stats[data-orientation='portrait'] > ol,
-section.stats[data-orientation='square'] > ol {
+section.stats[data-orientation='portrait'] > .cell-stage > ol,
+section.stats[data-orientation='square'] > .cell-stage > ol { display:flex; flex-direction:column;
   flex-direction: column; gap: var(--sp-sm); width: 100%; justify-content: space-evenly; flex: 1;
 }
-section.stats[data-orientation='portrait'] > ol > li > strong,
-section.stats[data-orientation='square'] > ol > li > strong {
+section.stats[data-orientation='portrait'] > .cell-stage > ol > li > strong,
+section.stats[data-orientation='square'] > .cell-stage > ol > li > strong {
   font-size: calc(var(--fs-h1) * var(--stat-emphasis, 1));
 }
-section.stats[data-orientation='portrait'] > ol > li > ul > li,
-section.stats[data-orientation='square'] > ol > li > ul > li {
+section.stats[data-orientation='portrait'] > .cell-stage > ol > li > ul > li,
+section.stats[data-orientation='square'] > .cell-stage > ol > li > ul > li {
   font-size: var(--fs-body); /* label legible under the big number (was --fs-meta) */
 }
 /* Box-local family reflow (2026-06-18-component-adaptive-sizing.md): square+tall+
@@ -72,13 +72,13 @@ section.stats[data-orientation='square'] > ol > li > ul > li {
  * narrow nested cell. Doubled class matches the [data-orientation] reflow's
  * specificity. */
 @container lattice (aspect-ratio <= 1.05) {
-  section.stats.stats > ol {
+  section.stats.stats > .cell-stage > ol { display:flex; flex-direction:column;
     flex-direction: column; gap: var(--sp-sm); width: 100%; justify-content: space-evenly; flex: 1;
   }
-  section.stats.stats > ol > li > strong {
+  section.stats.stats > .cell-stage > ol > li > strong {
     font-size: calc(var(--fs-h1) * var(--stat-emphasis, 1));
   }
-  section.stats.stats > ol > li > ul > li {
+  section.stats.stats > .cell-stage > ol > li > ul > li {
     font-size: var(--fs-body);
   }
 }
