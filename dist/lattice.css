@@ -12159,7 +12159,9 @@ section footer {
  * so the universal selector can't reach it); the rest rely on this rule.
  * Plus any future layout whose `> li` is `display:flex`. */
 section:where(:not(.title):not(.divider):not(.closing):not(.split-panel):not(.big-number):not(.kpi):not(.stats):not(.quote):not(.glossary):not(.compare-table):not(.roadmap):not(.agenda):not(.matrix-2x2):not(.decision):not(.verdict-grid):not(.compare-prose):not(.code):not(.compare-code):not(.image):not(.diagram):not(.content):not(.timeline):not(.list-steps):not(.principles):not(.list):not(.list-criteria):not(.list-tabular):not(.math):not(.pricing))
-  > :where(ul, ol) > li > code:where(:last-child, .lat-pill) {
+  > :where(ul, ol) > li > code:where(:last-child, .lat-pill),
+section:where(:not(.title):not(.divider):not(.closing):not(.split-panel):not(.big-number):not(.kpi):not(.stats):not(.quote):not(.glossary):not(.compare-table):not(.roadmap):not(.agenda):not(.matrix-2x2):not(.decision):not(.verdict-grid):not(.compare-prose):not(.code):not(.compare-code):not(.image):not(.diagram):not(.content):not(.timeline):not(.list-steps):not(.principles):not(.list):not(.list-criteria):not(.list-tabular):not(.math):not(.pricing))
+  > .cell-stage > :where(ul, ol) > li > code:where(:last-child, .lat-pill) {
   margin-left:auto;
   align-self:center;
   display:inline-flex;
