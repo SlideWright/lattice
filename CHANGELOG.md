@@ -57,6 +57,15 @@ in patch versions.
   density is sized to the field count so a card page never overflows. See
   `engineering/decisions/2026-06-25-retire-landscape-locks-portrait-everything.md`.
 
+- **Every layout now has a portrait form — the last three landscape locks retired.**
+  Following `compare-table`, three more layouts drop their landscape-only locks: `compare-code`
+  re-authors to one code block per page (`cover-code`); `redline` collapses its `.split` /
+  `.three-col` columns to a stacked column in portrait and, when a diff is too long to stack,
+  block-splits OLD and NEW onto their own slides (the note riding NEW); and `kanban` gives each
+  swim lane its own slide with full-width stacked cards. With `kanban` done, **no layout is
+  orientation-locked** — the emailed-link (phone) reader gets a portrait form for the whole
+  catalog. See `engineering/decisions/2026-06-25-retire-landscape-locks-portrait-everything.md`.
+
 ### Changed
 
 - **The docs site is moving to its own domain, `lattice.style`, served at the root.**
@@ -69,6 +78,14 @@ in patch versions.
   Markdown links) is removed. **Cloudflare Pages PR previews are unaffected** — they already
   served at the root with their own `CF_PAGES_URL`/`SITE_URL` origin, and that branch is
   unchanged.
+
+- **The orientation-mismatch deck-lint is retired.** With every layout now carrying a portrait
+  form, no layout declares `orientation: ["landscape"]`, so the warning that fired when a
+  landscape-only layout was used in a portrait deck had nothing left to guard. The rule and its
+  now-empty `LANDSCAPE_ONLY_LAYOUTS` / `PORTRAIT_ONLY_LAYOUTS` / `AUTOSPLIT_ADAPTS` lists are
+  removed (the Fit Spine's earn-its-keep axiom — delete dormant mechanisms, don't park them).
+  The manifest `orientation` contract is still validated at build time by `check-ownership`, so
+  a future lock can't land unnoticed.
 
 - **Auto-split is now scoped to portrait/square `@sizes` — a universal, enforced rule.**
   The Fit Ladder's SPLIT move (`autosplit: on`) is a portrait-family behavior: in a

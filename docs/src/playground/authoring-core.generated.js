@@ -79,9 +79,6 @@ var require_lint_core = __commonJS({
       "split-compare"
     ]);
     var NUMBER_SLOT_LAYOUTS = Object.freeze(["kpi", "stats"]);
-    var LANDSCAPE_ONLY_LAYOUTS = Object.freeze([]);
-    var PORTRAIT_ONLY_LAYOUTS = Object.freeze([]);
-    var AUTOSPLIT_ADAPTS = Object.freeze([]);
     var PORTRAIT_SIZES = Object.freeze([
       "square",
       "portrait",
@@ -301,36 +298,10 @@ ${indent}  ${bullet} ${body.trim()}`;
       const slides = source.split(/^---$/m);
       const fm = fmChunks(source);
       const orientation = deckOrientation(source);
-      const landscapeOnly = new Set(LANDSCAPE_ONLY_LAYOUTS);
-      const portraitOnly = new Set(PORTRAIT_ONLY_LAYOUTS);
       slides.forEach((slide, idx) => {
         const m = slide.match(CLASS_DIRECTIVE);
         if (!m) return;
         const tokens = m[1].split(/\s+/).filter(Boolean);
-        for (const t of tokens) {
-          if (orientation === "portrait" && landscapeOnly.has(t)) {
-            if (autosplitOn && AUTOSPLIT_ADAPTS.includes(t)) continue;
-            findings.push({
-              slide: idx - fm + 1,
-              rule: "orientation-mismatch",
-              severity: "warning",
-              classToken: t,
-              line: m[0],
-              message: `'${t}' is a landscape-only layout \u2014 it does not adapt to a portrait/mobile \`size:\`. Its content needs horizontal width.`,
-              fix: `Use a portrait-friendly layout for social/mobile decks, or render this slide in a landscape \`size:\`. See dist/docs/components.json (\`orientation\`).`
-            });
-          } else if (orientation === "landscape" && portraitOnly.has(t)) {
-            findings.push({
-              slide: idx - fm + 1,
-              rule: "orientation-mismatch",
-              severity: "warning",
-              classToken: t,
-              line: m[0],
-              message: `'${t}' is a portrait/social-only layout \u2014 it is not designed for a landscape \`size:\`.`,
-              fix: `Use it in a portrait \`size:\` (square/portrait/story/mobile), or pick a landscape layout. See dist/docs/components.json (\`orientation\`).`
-            });
-          }
-        }
         for (const t of tokens) {
           if (vocab.names.has(t)) continue;
           if (isKnownModifier(t, vocab)) continue;
@@ -805,8 +776,6 @@ ${indent}  ${bullet} ${body.trim()}`;
       STATEMENT_OL_LAYOUTS,
       SPLIT_SLOT_LAYOUTS,
       NUMBER_SLOT_LAYOUTS,
-      LANDSCAPE_ONLY_LAYOUTS,
-      PORTRAIT_ONLY_LAYOUTS,
       deckOrientation,
       findInlineTitleBodyLine,
       findOrderedInlineTitleBodyLine,
