@@ -12,29 +12,29 @@ header: "Lattice · The story"
 
 # Lattice
 
-`The story of why I built it`
+`Why I built it`
 
-I got tired of slide software that works against the person using it. So I built one that doesn't.
-
----
-
-<!-- _class: content -->
-
-`Where this starts`
-
-## PowerPoint was a breakthrough nobody has questioned since.
-
-Every tool since has copied its shape. A blank canvas. A master slide the whole deck inherits — until your first override sends the rest drifting. You still can't see what changed from one version to the next.
+I can't stand what slide tools do to the people who use them. So I built one that doesn't.
 
 ---
 
 <!-- _class: content -->
 
-`The idea`
+`The problem`
+
+## PowerPoint was revolutionary. Nobody has questioned it since.
+
+Every tool after it copied the shape. A blank canvas. A master slide everything inherits from — until your first override sends the whole deck drifting. You still can't see what changed from one version to the next.
+
+---
+
+<!-- _class: content -->
+
+`The fix`
 
 ## So I made the deck a plain text file.
 
-You write the words in Markdown, the plainest text there is. The engine holds the structure and the finish. Change a line and that is all that moves — poor taste runs out of places to hide.
+You write the words in Markdown. The engine holds the structure; taste is built in, not left to chance. Change a line and that line is all that moves — and poor taste runs out of places to hide.
 
 ---
 
@@ -45,13 +45,13 @@ You write the words in Markdown, the plainest text there is. The engine holds th
 ## Four words, borrowed from people who work with their hands.
 
 - Function
-  - What is this slide for? You decide that.
+  - Does it work? What the slide is for.
 - Form
-  - How is it built? From a fixed set of layouts, never a blank page.
+  - What's its shape? A fixed layout, never a blank page.
 - Substance
-  - What goes inside? The engine fills the slots.
+  - What's it made of? The engine fills the slots.
 - Finish
-  - How should it feel? One line changes the whole look.
+  - How's it finished? One line sets the whole look.
 
 — A tailor talks about form. A shoemaker talks about finish. I borrowed their words on purpose.
 
@@ -59,11 +59,11 @@ You write the words in Markdown, the plainest text there is. The engine holds th
 
 <!-- _class: content -->
 
-`One rule the whole thing rests on`
+`The one rule`
 
 ## No layout ever names a colour.
 
-Every colour comes from a token. Pick a palette and the colours change; the spacing, the type, and the structure do not move an inch. Reskinning an entire deck is one line.
+Every colour comes from a token. Swap the palette and the colours change; the spacing, the type, the structure don't move an inch. Restyle the whole deck in one line.
 
 ---
 
@@ -94,7 +94,7 @@ flowchart LR
 - Forty words a slide
   - Go past it and the engine tells you to split. The font never shrinks to make room.
 - Six bullets, then stop
-  - A slide is not a document. The limit keeps it readable from the back row.
+  - A slide isn't a document. The limit keeps it readable from the back row.
 - One idea per slide
   - When two thoughts are fighting, they each get their own page.
 
@@ -104,7 +104,7 @@ flowchart LR
 
 `How it got built`
 
-## It started as a stylesheet and grew a spine.
+## It started as a stylesheet. It ended up an engine of its own.
 
 1. A handful of layouts
    - _April 2026. A small palette and a few cards, built on top of Marp._
@@ -124,15 +124,15 @@ flowchart LR
 
 ## Lattice stands on the shoulders of Marp.
 
-Yuki Hattori's Marp taught me the method: a slide is just Markdown, the rest is CSS. I fought it and layered over it for years — and I'm grateful for every round. The best foundation there is.
+Yuki Hattori's Marp helped me see the art of the possible. I fought it plenty — layered my own styles over it, dropped to plain CSS to get my way — but it had the best foundation to build on, and the method was the insight. For that, I'm grateful.
 
 ---
 
 <!-- _class: progress -->
 
-`Measured against where I started`
+`Measured against Marp`
 
-## Rebuilt as my own, it renders about five times faster.
+## Rebuilt as my own, it renders five times faster.
 
 - Lattice `100%`
 - Marp `19%`
@@ -147,7 +147,7 @@ Yuki Hattori's Marp taught me the method: a slide is just Markdown, the rest is 
 
 ## I had every layout graded twice, and the first scores stung.
 
-One pass built each layout. A separate pass, blind to the first, tried to tear it down. The first score was a seven out of ten — solid bones, rough finish. So I set the bar at ten and held it there.
+One pass built each layout. A separate pass, blind to the first, tried to tear it down. The first score was a seven out of ten — built well, finished poorly. I set the bar at ten and didn't move it.
 
 ---
 
@@ -155,9 +155,9 @@ One pass built each layout. A separate pass, blind to the first, tried to tear i
 
 `Where it stands`
 
-## What's in the box today.
+## Everything here ships today.
 
-1. 50+
+1. 52
    - layouts, ready to drop in
 2. 14
    - colour palettes, light and dark
@@ -172,9 +172,9 @@ One pass built each layout. A separate pass, blind to the first, tried to tear i
 
 `What's next`
 
-## It is version one, and it is learning to bend.
+## It's version one. Reflow is the next job.
 
-Lattice runs on its own engine now. The work in front of me is reflow: one deck that reads right on a projector, a tablet, or a phone, without rewriting a word.
+One deck that reads right on a projector, a tablet, or a phone — without rewriting a word.
 
 ---
 
@@ -182,7 +182,7 @@ Lattice runs on its own engine now. The work in front of me is reflow: one deck 
 <!-- _header: '' -->
 <!-- _paginate: false -->
 
-`That is the whole idea`
+`That's the whole idea`
 
 ## You write the words. The structure holds.
 
