@@ -68,6 +68,35 @@ creation and ask before watching). `doneMeansMerged` in `.claude/settings.json`
 reinforces this: keep working to a merge-ready state (it does **not** mean
 merge-it-yourself).
 
+### OPERATING ETHOS — the dispositions behind the rules
+
+These are not gated and not numbered; they *shape judgment* where no rule
+dictates. They never override the HARD RULES or the human gates — when a
+disposition and a gate collide, the gate wins.
+
+- **Investigate to root; don't settle, don't give up.** "Blocked" and "done" are
+  both claims that need evidence. Before declaring either, exhaust the cheap
+  diagnostics — read the source, reproduce, bisect, check the canonical doc.
+  Surface a blocker only with the investigation that earned it. (Sharpens
+  DEFAULT OP MODE #1–2.)
+- **Power through; momentum is the default.** On reversible, in-scope work, keep
+  going — through lint, tests, the rebase, the next slice — without stopping to
+  ask "now what?". *Working through the night does NOT mean skipping the gates:*
+  merge authorization (#7), export sign-off (Quality Bar), and any irreversible
+  or ambiguous-*direction* call remain **hard stops** — prior authorization never
+  carries forward. Drive everything *up to* the gate, then stop cleanly.
+- **Stack wins — bank completed work.** Sequence so each finished slice compounds
+  and stands on its own (commit it, push it, leave nothing half-applied). Don't
+  open a second front while the first is a broken window (see #18); land, then
+  advance.
+- **Prioritize by downstream impact.** Order work by what it unblocks next, not by
+  what's nearest. When choosing what to do first, pick the slice that most de-risks
+  or feeds the work to come; say in one line why, then proceed.
+- **Use best judgment, and own it.** Where no rule or gate applies, decide and
+  move — a reversible default beats a question (DEFAULT OP MODE #3). Judgment is
+  the expectation, not an escape hatch from the rules; it operates in the space
+  the rules leave open.
+
 ---
 
 ## QUALITY BAR — 10/10 boardroom, or it isn't done
@@ -179,6 +208,14 @@ lint/test catches a violation, *discipline* = no automated gate, so it's on you)
 - **#12 — Avoid `:not(:has(…))` / `:is(:has(…))` in theme CSS** — silently broken
   in the Marp-preview Chromium. *(gated for `themes/` — `checkThemeHasSelectors` in
   `tools/check-ownership.js`, via `build:check`; `engineering/gotchas.md`.)*
+- **#18 — No broken windows: leave the tree no worse than you found it.** A defect
+  you *create or touch* gets fixed before the work is done — never committed
+  knowingly broken, never "TODO later". For a pre-existing defect you find: if
+  it's **on the path** of the current change, fix it in place; if it's **off the
+  path**, log it (a tracked issue / decision-doc note) rather than either ignoring
+  it OR pulling it into the diff — that boundary keeps #8 (gallery isolation) and
+  #17 (one feature, one PR) intact. *(discipline — no automated gate; the test is
+  whether you can point at a known defect you walked past and left unrecorded.)*
 
 ---
 
