@@ -30,10 +30,10 @@
  *
  * Variants: .split, .pull-quote, .margin, .triptych.
  * ──────────────────────────────────────────────────────────────────── */
-section.citation-card { display:flex; flex-direction:column; gap:var(--sp-sm); }
+section.citation-card > .cell-stage { display:flex; flex-direction:column; gap:var(--sp-sm); justify-content:center; }
 section.citation-card h2 { margin-bottom:var(--sp-xs); }
 /* Hanging citation eyebrow — leading paragraph that is just a `<code>`. */
-section.citation-card > p:has(> code:only-child) {
+section.citation-card > .cell-stage > p:has(> code:only-child) {
   margin:0;
   font-family:var(--font-mono);
   font-size:var(--fs-meta);
@@ -41,12 +41,12 @@ section.citation-card > p:has(> code:only-child) {
   letter-spacing:0.04em;
   color:var(--accent);
 }
-section.citation-card > p:has(> code:only-child) > code {
+section.citation-card > .cell-stage > p:has(> code:only-child) > code {
   background:none; border:none; padding:0;
   color:inherit; font-size:inherit;
 }
 /* Verbatim quote — blockquote, serif italic, accent rule. */
-section.citation-card > blockquote {
+section.citation-card > .cell-stage > blockquote {
   margin:0;
   padding:var(--sp-md) var(--sp-lg);
   background:var(--bg-alt);
@@ -59,23 +59,24 @@ section.citation-card > blockquote {
   line-height:var(--lh-snug);
   color:var(--text-heading);
 }
-section.citation-card > blockquote > p { margin:0; }
-section.citation-card > blockquote > p + p { margin-top:var(--sp-xs); }
+section.citation-card > .cell-stage > blockquote > p { margin:0; }
+section.citation-card > .cell-stage > blockquote > p + p { margin-top:var(--sp-xs); }
 /* Translation — first list, body sans, muted heading. */
-section.citation-card > ul,
-section.citation-card > ol {
+section.citation-card > .cell-stage > ul,
+section.citation-card > .cell-stage > ol {
   list-style:none; padding:0; margin:0;
   display:flex; flex-direction:column; gap:var(--sp-sm);
-  flex:1;
+  /* content-height (was flex:1) — the stage centres the whole quote+list block;
+   * a growing list would absorb the free space and strand its items at the top. */
 }
-section.citation-card > :is(ul, ol) > li {
+section.citation-card > .cell-stage > :is(ul, ol) > li {
   font-size:var(--fs-body);
   line-height:var(--lh-relaxed);
   color:var(--text-body);
 }
-section.citation-card > :is(ul, ol) > li::marker { content:''; }
+section.citation-card > .cell-stage > :is(ul, ol) > li::marker { content:''; }
 /* The "what we must do" item carries a strong label as the eyebrow. */
-section.citation-card > :is(ul, ol) > li:has(> strong:first-child) {
+section.citation-card > .cell-stage > :is(ul, ol) > li:has(> strong:first-child) {
   padding:var(--sp-md) var(--sp-lg);
   background:var(--accent-soft);
   border-radius:var(--radius-md);
@@ -83,7 +84,7 @@ section.citation-card > :is(ul, ol) > li:has(> strong:first-child) {
   color:var(--text-heading);
   font-weight:500;
 }
-section.citation-card > :is(ul, ol) > li > strong:first-child {
+section.citation-card > .cell-stage > :is(ul, ol) > li > strong:first-child {
   display:block;
   font-family:var(--font-mono);
   font-size:var(--fs-meta);
@@ -94,15 +95,21 @@ section.citation-card > :is(ul, ol) > li > strong:first-child {
   margin-bottom:0.234375cqi;
 }
 
-/* .split — verbatim left, translate+do right. */
-section.citation-card.split { display:grid; grid-template-columns:1fr 1fr; column-gap:var(--sp-lg); grid-template-rows:auto auto 1fr; }
-section.citation-card.split h2 { grid-column:1 / -1; grid-row:1; }
-section.citation-card.split > p:has(> code:only-child) { grid-column:1 / -1; grid-row:2; align-self:start; }
-section.citation-card.split > blockquote { grid-column:1; grid-row:3; align-self:stretch; margin-top:0; }
-section.citation-card.split > :is(ul, ol) { grid-column:2; grid-row:3; }
+/* .split — verbatim left, translate+do right. The title + eyebrow lift to the
+ * masthead band (flex cell-tree §6), so the stage is purely the two body columns:
+ * one full-height row that fills the bounded stage. */
+section.citation-card.split > .cell-stage { display:grid; grid-template-columns:1fr 1fr; column-gap:var(--sp-lg); grid-template-rows:1fr; }
+/* Quote fills its column; the verbatim text is CENTRED inside the accent box so the
+ * filled panel reads as deliberate, not a half-empty box. */
+section.citation-card.split > .cell-stage > blockquote {
+  grid-column:1; grid-row:1; align-self:stretch; margin-top:0;
+  display:flex; flex-direction:column; justify-content:center;
+}
+/* Gloss is centred to the quote so the two columns balance across the full height. */
+section.citation-card.split > .cell-stage > :is(ul, ol) { grid-column:2; grid-row:1; align-self:center; }
 
 /* .pull-quote — hero quote dominant. */
-section.citation-card.pull-quote > blockquote {
+section.citation-card.pull-quote > .cell-stage > blockquote {
   font-size:var(--fs-h3);
   line-height:var(--lh-snug);
   padding:var(--sp-lg) var(--sp-xl);
@@ -111,7 +118,7 @@ section.citation-card.pull-quote > blockquote {
   position:relative;
   flex:1; display:flex; align-items:center;
 }
-section.citation-card.pull-quote.pull-quote > blockquote::before {
+section.citation-card.pull-quote.pull-quote > .cell-stage > blockquote::before {
   content:'\201C';
   position:absolute;
   top:-0.78cqi; left:0;
@@ -124,11 +131,11 @@ section.citation-card.pull-quote.pull-quote > blockquote::before {
    * watermark without obscuring the words. */
   z-index:0;
 }
-section.citation-card.pull-quote.pull-quote > blockquote > p { position:relative; z-index:1; }
-section.citation-card.pull-quote > :is(ul, ol) > li:not(:has(> strong:first-child)) { display:none; }
+section.citation-card.pull-quote.pull-quote > .cell-stage > blockquote > p { position:relative; z-index:1; }
+section.citation-card.pull-quote > .cell-stage > :is(ul, ol) > li:not(:has(> strong:first-child)) { display:none; }
 
 /* .margin — quote center, citation in left margin, "what" in right margin. */
-section.citation-card.margin {
+section.citation-card.margin > .cell-stage {
   display:grid;
   /* section-OWN cqi: route through --_sec-1cqi (preview self-reference) */
   grid-template-columns:calc(18 * var(--_sec-1cqi, 1cqi)) 1fr calc(22 * var(--_sec-1cqi, 1cqi));
@@ -136,35 +143,39 @@ section.citation-card.margin {
   grid-template-rows:auto 1fr;
 }
 section.citation-card.margin h2 { grid-column:1 / -1; }
-section.citation-card.margin > p:has(> code:only-child) {
+section.citation-card.margin > .cell-stage > p:has(> code:only-child) {
   grid-column:1; grid-row:2;
   align-self:start;
   text-align:right;
   font-size:var(--fs-meta);
   padding-top:var(--sp-md);
 }
-section.citation-card.margin > blockquote {
+section.citation-card.margin > .cell-stage > blockquote {
   grid-column:2; grid-row:2;
   background:none; padding:var(--sp-md) 0;
   border-left:none;
   border-top:1px solid var(--accent);
   border-bottom:1px solid var(--accent);
   text-align:center; align-self:center;
-  font-size:var(--fs-emphasis);
+  /* Hero quote, sized to FIT the bounded stage (the masthead band + footer reserve
+   * leave less height than the full section the --fs-emphasis size assumed, so the
+   * emphatic step over-ran). --fs-h2 keeps the drama and fits a full clause. */
+  font-size:var(--fs-h2);
+  min-height:0; max-height:100%; overflow:hidden;
 }
-section.citation-card.margin > :is(ul, ol) {
+section.citation-card.margin > .cell-stage > :is(ul, ol) {
   grid-column:3; grid-row:2;
   align-self:center;
   gap:var(--sp-xs);
 }
-section.citation-card.margin > :is(ul, ol) > li {
+section.citation-card.margin > .cell-stage > :is(ul, ol) > li {
   padding:0;
   background:none;
   border-left:3px solid var(--accent);
   padding-left:var(--sp-md);
   font-size:var(--fs-meta);
 }
-section.citation-card.margin > :is(ul, ol) > li:has(> strong:first-child) {
+section.citation-card.margin > .cell-stage > :is(ul, ol) > li:has(> strong:first-child) {
   background:none; padding-left:var(--sp-md);
   border-left:3px solid var(--accent);
 }
@@ -172,15 +183,15 @@ section.citation-card.margin > :is(ul, ol) > li:has(> strong:first-child) {
 /* .triptych — three side-by-side cards: Quote / Translate / Do.
  * Author shape: regular author shape, but the blockquote becomes col 1,
  * the first non-do li becomes col 2, the do li becomes col 3. */
-section.citation-card.triptych {
+section.citation-card.triptych > .cell-stage {
   display:grid;
   grid-template-columns:1fr 1fr 1fr;
   grid-template-rows:auto auto 1fr;
   gap:var(--sp-md);
 }
 section.citation-card.triptych h2 { grid-column:1 / -1; }
-section.citation-card.triptych > p:has(> code:only-child) { grid-column:1 / -1; }
-section.citation-card.triptych > blockquote {
+section.citation-card.triptych > .cell-stage > p:has(> code:only-child) { grid-column:1 / -1; }
+section.citation-card.triptych > .cell-stage > blockquote {
   grid-column:1; grid-row:3;
   font-size:var(--fs-body);
   background:var(--bg-alt);
@@ -188,18 +199,18 @@ section.citation-card.triptych > blockquote {
   border-radius:var(--radius-md);
   padding:var(--sp-md);
 }
-section.citation-card.triptych > :is(ul, ol) {
+section.citation-card.triptych > .cell-stage > :is(ul, ol) {
   grid-column:2 / span 2; grid-row:3;
   display:grid; grid-template-columns:1fr 1fr;
   gap:var(--sp-md);
 }
-section.citation-card.triptych > :is(ul, ol) > li {
+section.citation-card.triptych > .cell-stage > :is(ul, ol) > li {
   background:var(--bg-alt);
   border:1px solid var(--border);
   border-radius:var(--radius-md);
   padding:var(--sp-md);
 }
-section.citation-card.triptych > :is(ul, ol) > li:has(> strong:first-child) {
+section.citation-card.triptych > .cell-stage > :is(ul, ol) > li:has(> strong:first-child) {
   background:var(--accent-soft);
   border-color:var(--accent);
 }
@@ -227,7 +238,7 @@ section.citation-card :is(ul,ol) > li > strong ~ * { font-weight: 400; }
    section. Landscape is untouched. */
 section.citation-card.split:is([data-orientation="portrait"], [data-orientation="square"]),
 section.citation-card.triptych:is([data-orientation="portrait"], [data-orientation="square"]),
-section.citation-card.margin:is([data-orientation="portrait"], [data-orientation="square"]) {
+section.citation-card.margin:is([data-orientation="portrait"], [data-orientation="square"]) > .cell-stage { display:flex; flex-direction:column;
   grid-template-columns: 1fr;
   grid-template-rows: none;
   grid-auto-flow: row;
@@ -236,33 +247,33 @@ section.citation-card.margin:is([data-orientation="portrait"], [data-orientation
   align-content: start;
   row-gap: var(--sp-sm);
 }
-section.citation-card.split:is([data-orientation="portrait"], [data-orientation="square"]) > h2,
-section.citation-card.split:is([data-orientation="portrait"], [data-orientation="square"]) > p:has(> code:only-child),
-section.citation-card.split:is([data-orientation="portrait"], [data-orientation="square"]) > blockquote,
-section.citation-card.split:is([data-orientation="portrait"], [data-orientation="square"]) > :is(ul, ol),
-section.citation-card.triptych:is([data-orientation="portrait"], [data-orientation="square"]) > h2,
-section.citation-card.triptych:is([data-orientation="portrait"], [data-orientation="square"]) > p:has(> code:only-child),
-section.citation-card.triptych:is([data-orientation="portrait"], [data-orientation="square"]) > blockquote,
-section.citation-card.triptych:is([data-orientation="portrait"], [data-orientation="square"]) > :is(ul, ol),
-section.citation-card.margin:is([data-orientation="portrait"], [data-orientation="square"]) > h2,
-section.citation-card.margin:is([data-orientation="portrait"], [data-orientation="square"]) > p:has(> code:only-child),
-section.citation-card.margin:is([data-orientation="portrait"], [data-orientation="square"]) > blockquote,
-section.citation-card.margin:is([data-orientation="portrait"], [data-orientation="square"]) > :is(ul, ol) {
+section.citation-card.split:is([data-orientation="portrait"], [data-orientation="square"]) > .cell-stage > h2,
+section.citation-card.split:is([data-orientation="portrait"], [data-orientation="square"]) > .cell-stage > p:has(> code:only-child),
+section.citation-card.split:is([data-orientation="portrait"], [data-orientation="square"]) > .cell-stage > blockquote,
+section.citation-card.split:is([data-orientation="portrait"], [data-orientation="square"]) > .cell-stage > :is(ul, ol),
+section.citation-card.triptych:is([data-orientation="portrait"], [data-orientation="square"]) > .cell-stage > h2,
+section.citation-card.triptych:is([data-orientation="portrait"], [data-orientation="square"]) > .cell-stage > p:has(> code:only-child),
+section.citation-card.triptych:is([data-orientation="portrait"], [data-orientation="square"]) > .cell-stage > blockquote,
+section.citation-card.triptych:is([data-orientation="portrait"], [data-orientation="square"]) > .cell-stage > :is(ul, ol),
+section.citation-card.margin:is([data-orientation="portrait"], [data-orientation="square"]) > .cell-stage > h2,
+section.citation-card.margin:is([data-orientation="portrait"], [data-orientation="square"]) > .cell-stage > p:has(> code:only-child),
+section.citation-card.margin:is([data-orientation="portrait"], [data-orientation="square"]) > .cell-stage > blockquote,
+section.citation-card.margin:is([data-orientation="portrait"], [data-orientation="square"]) > .cell-stage > :is(ul, ol) {
   grid-column: 1;
   grid-row: auto;
 }
 /* triptych's inner two-up gloss grid also folds to one column; tighten the
    card chrome so three stacked panels fit a tall frame without clipping. */
-section.citation-card.triptych:is([data-orientation="portrait"], [data-orientation="square"]) > :is(ul, ol) {
+section.citation-card.triptych:is([data-orientation="portrait"], [data-orientation="square"]) > .cell-stage > :is(ul, ol) {
   grid-template-columns: 1fr;
   gap: var(--sp-sm);
 }
-section.citation-card.triptych:is([data-orientation="portrait"], [data-orientation="square"]) > blockquote,
-section.citation-card.triptych:is([data-orientation="portrait"], [data-orientation="square"]) > :is(ul, ol) > li {
+section.citation-card.triptych:is([data-orientation="portrait"], [data-orientation="square"]) > .cell-stage > blockquote,
+section.citation-card.triptych:is([data-orientation="portrait"], [data-orientation="square"]) > .cell-stage > :is(ul, ol) > li {
   padding: var(--sp-sm) var(--sp-md);
 }
 /* margin: restore the default left-rail quote + flush gloss when stacked */
-section.citation-card.margin:is([data-orientation="portrait"], [data-orientation="square"]) > blockquote {
+section.citation-card.margin:is([data-orientation="portrait"], [data-orientation="square"]) > .cell-stage > blockquote {
   text-align: left;
   align-self: stretch;
   border-top: none;
@@ -271,7 +282,7 @@ section.citation-card.margin:is([data-orientation="portrait"], [data-orientation
   padding: var(--sp-md) var(--sp-lg);
   font-size: var(--fs-body);
 }
-section.citation-card.margin:is([data-orientation="portrait"], [data-orientation="square"]) > p:has(> code:only-child) {
+section.citation-card.margin:is([data-orientation="portrait"], [data-orientation="square"]) > .cell-stage > p:has(> code:only-child) {
   text-align: left;
   padding-top: 0;
 }

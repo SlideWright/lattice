@@ -27,6 +27,16 @@ in patch versions.
 
 ### Added
 
+- **`citation-card` adopts the stage cell — and every variant now fills it.** The legal
+  citation component migrates to the `.cell-stage` body cell (bounded by the frame), and
+  each variant is tuned to *use* the bounded stage rather than strand content at the top:
+  the **split** centres the verbatim quote in its filled accent panel with the gloss
+  centred to match; the **margin** hero quote is sized to fit (`--fs-h2`) and framed by
+  its accent rules; the **default / pull-quote / dark / compact / accent** document
+  variants centre their quote → plain-English → obligation block in the stage (a stray
+  `flex:1` on the list had been absorbing the height and stranding the content). Continues
+  the per-component cell-tree migration (`2026-06-26-frames-as-flex-cell-trees.md` §6).
+
 - **Three more components adopt the frame's stage cell.** `list-steps`, `list-criteria`,
   and `obligation-matrix` migrate to the `.cell-stage` body cell, so their bodies are
   bounded by the frame and clip at the stage edge instead of bleeding toward the footer.
