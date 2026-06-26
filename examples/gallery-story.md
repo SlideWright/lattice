@@ -107,26 +107,37 @@ flowchart LR
 ## It started as a stylesheet and grew a spine.
 
 1. A handful of layouts
-   - _April 2026. A small palette and a few cards, riding on a borrowed renderer._
+   - _April 2026. A small palette and a few cards, built on top of Marp._
 2. A real catalog
    - _Spring. Native charts, a typography system, a proper component library._
 3. My own engine
-   - _June. I replaced the borrowed renderer with one I own outright._
+   - _June. I rebuilt the foundation as an engine of my own._
 4. Learning to bend
    - _Now. The same deck reflows from boardroom screen to phone._
 
 ---
 
+<!-- _class: content dark -->
+<!-- _header: '' -->
+
+`Credit where it's due`
+
+## Lattice stands on the shoulders of Marp.
+
+Yuki Hattori's Marp taught me the method: a slide is just Markdown, the rest is CSS. I fought it and layered over it for years — and I'm grateful for every round. The best foundation there is.
+
+---
+
 <!-- _class: progress -->
 
-`What changed when I dropped the borrowed renderer`
+`Measured against where I started`
 
-## My own engine draws a deck about five times faster.
+## Rebuilt as my own, it renders about five times faster.
 
-- My engine (Lattice) `100%`
-- The one I replaced `19%`
+- Lattice `100%`
+- Marp `19%`
 
-— A seventy-nine-slide deck went from 208 milliseconds to 39, and the install shed 42 megabytes. I kept no fallback renderer. The new one stands on its own.
+— The same 79-slide deck: Marp at 208 milliseconds, Lattice at 39, and 42 megabytes lighter to install. Same method, my own engine underneath.
 
 ---
 

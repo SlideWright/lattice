@@ -35,14 +35,16 @@ in patch versions.
   (Preview · debug) persists the default per device. It's a viewer preference —
   never written to the deck's front matter, never exported.
 
-- **A new "The Lattice story" showcase deck in the gallery picker.** A 13-slide,
+- **A new "The Lattice story" showcase deck in the gallery picker.** A 14-slide,
   first-person deck on why Lattice was built — the grievance with inherited slide
   tools, the Function · Form · Substance · Finish model, the palette-blind contract,
-  the move off Marp to an owned engine, and where it stands at v1.0. Written for a
-  non-technical audience with one structural gem (a Frame → Cell → Tile Mermaid
-  diagram) for the engineers in the room, plus a render-speed chart. Lives at
-  `examples/gallery-story.md` (+ committed PDF) and is registered as the lead
-  showcase in the Playground's gallery drawer (`docs/src/playground/galleries.mjs`).
+  and the rebuild onto an owned engine. Credits Marp and its creator Yuki Hattori
+  for the method (Markdown in, slides out) and the foundation Lattice was built on,
+  then benchmarks the owned engine against it. Written for a non-technical audience
+  with one structural gem (a Frame → Cell → Tile Mermaid diagram) for the engineers
+  in the room, plus a render-speed chart. Lives at `examples/gallery-story.md`
+  (+ committed PDF) and is registered as the lead showcase in the Playground's
+  gallery drawer (`docs/src/playground/galleries.mjs`).
 - **The deck-setup drawer gains an "Auto-split overflow" toggle.** Enabling the Fit
   Ladder's SPLIT move (`autosplit: on`) is now a first-class switch in the deck-config
   drawer — on the Drawing Board and the Playground — alongside Islands and the other
