@@ -340,7 +340,7 @@ _Source: pilot retrospective, six months across four product teams._
 2. Source concentration
    - Single-customer signals inflating confidence scores. One enterprise customer's verbatims represented 34% of all structured intake in month one. Corrected by adding a source-diversity floor to the scoring model.
 3. Outcome misclassification
-   - PMs logging predicted outcomes that were too vague to score at retrospective. "Improve retention" is not scoreable. "Reduce 30-day churn from 8.2% to below 7%" is.
+   - PMs logging outcomes too vague to score. "Improve retention" is not scoreable. "Reduce 30-day churn from 8.2% to below 7%" is.
 
 ---
 

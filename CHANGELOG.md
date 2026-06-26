@@ -27,6 +27,17 @@ in patch versions.
 
 ### Added
 
+- **The fill-family components adopt the stage cell — and fill it.** `kpi` (all five
+  variants — briefing, ops, compliance, trajectory, spotlight), `cards-stack`, `actors`,
+  and `checklist` migrate their bodies into the frame's bounded `.cell-stage` cell and are
+  tuned to *use* it: metric grids size with `minmax(0,1fr)` rows so they distribute into
+  the stage instead of overrunning it; card/roster/check lists take `flex:1; min-height:0`
+  so rows share the stage height rather than stranding the last item past the clip;
+  `checklist` rows centre their content and state-disc on the row midline. kpi sheds an
+  obsolete `.cell-stage` `padding-top` (header-clearance carryover — the masthead band now
+  owns that), recovering the height its densest layout needs. Continues the per-component
+  cell-tree migration (`2026-06-26-frames-as-flex-cell-trees.md` §6).
+
 - **`citation-card` adopts the stage cell — and every variant now fills it.** The legal
   citation component migrates to the `.cell-stage` body cell (bounded by the frame), and
   each variant is tuned to *use* the bounded stage rather than strand content at the top:
