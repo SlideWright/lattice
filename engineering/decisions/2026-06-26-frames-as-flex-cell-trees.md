@@ -238,13 +238,17 @@ occurs.
 - **Genuine 2-D placement → flex too, UNLESS proven otherwise.** Do **not** assume a
   layout needs grid because it is 2-D. A component keeps `display: grid` only when a
   **committed pixel-diff proves flex cannot match it** (§11) AND the gap is a real
-  capability — variable-count auto-flow / spanning — not "it's a grid". Everything
-  stays `cqi`/`fr` and is tested across the `@size` × orientation matrix.
+  capability. The sweep (§13) found **no such gap in the core component set**: variable
+  card count and spanning are flex-fine, and the one thing flex genuinely can't do —
+  cross-row column alignment — is the job of an HTML `<table>`, which Markdown produces
+  for free (so it's neither flex nor grid). CSS grid survives only in *optional* table
+  *reshaping* (collapse-to-cards on a phone), justified per component. Everything stays
+  `cqi`/`fr` and is tested across the `@size` × orientation matrix.
 
 Worked counter-example: `matrix-2x2` — the hardest case (equal column widths **and**
 equal row heights, `grid-template-columns:1fr 1fr` / `grid-template-rows:1fr 1fr`) —
-converts to flex **pixel-identically** (§11: 160 / 1,210,280 px = 0.013 %, pure edge
-AA). "Grid is better for 2-D" did not survive contact with a diff.
+converts to flex **pixel-identically** in-frame (§13: 359 / 1,000,500 px = 0.036 %,
+pure edge AA). "Grid is better for 2-D" did not survive contact with a diff.
 
 ## 11. Conversion runbook — turn a grid into flex and PROVE it
 
@@ -297,12 +301,21 @@ For the 2×2 (`N = M = 2`, `--gap = var(--sp-md)`) this collapses to
 
 **Quick exploratory A/B** (deck-level `<style>` override, no rebuild — for the spike):
 
+**Test IN-FRAME, not in isolation.** Both decks MUST use `form: standard` with a real
+`header:` / `footer:` / `meta:` — **never `form: off`.** The component renders in the
+**body cell** (height = section − masthead − footer), and the very behaviours under
+test — `grid-auto-rows:1fr`, `flex:1`, equal-fill — resolve against *that* bounded
+height, not the full slide. A `form: off` A/B measures the wrong container and can
+flatter a conversion that breaks in a real deck (the body cell is shorter, so a
+hardcoded-height flex overflows there but not on a bare slide). This was a real
+methodology bug caught in review.
+
 ```sh
 export CHROME_PATH=$(ls /root/.cache/puppeteer/chrome/linux-*/chrome-linux64/chrome | head -1)
+FM='---\nmarp: true\ntheme: cuoio\npaginate: true\nheader: "X"\nfooter: "Y"\nmeta: "Z"\nform: standard\n---'
 # 1. Author ONE deck body with deliberately UNEVEN cell content (1-line vs 3-line) — see C.
-# 2. grid.md  = the body as-is (current grid).
-# 3. flex.md  = the same body + a <style> block applying the §A recipe, with the layout
-#    class DOUBLED for specificity (e.g. section.matrix-2x2.matrix-2x2 > ul { … }).
+# 2. grid.md = FM + body as-is.  3. flex.md = FM + body + a <style> applying the §A recipe,
+#    with the layout class DOUBLED for specificity (e.g. section.matrix-2x2.matrix-2x2 > ul {…}).
 node lattice-emulator.js grid.md grid.pdf
 node lattice-emulator.js flex.md flex.pdf
 pdftoppm -png -r 110 grid.pdf A ; pdftoppm -png -r 110 flex.pdf B
@@ -310,9 +323,12 @@ compare -metric AE A-1.png B-1.png diff.png      # prints the CHANGED-PIXEL COUN
 ```
 
 **Pass bar:** changed pixels are **edge-AA noise only** — empirically **< 0.05 %** of
-total (the matrix-2x2 proof: **160 / 1,210,280 = 0.013 %**). A *structural* mismatch
-is obvious by orders of magnitude (the failed first attempt: **~475 k / 40 %**). A
-large count means **fix the recipe (gotcha 1–3), not conclude "grid wins".**
+total (the in-frame matrix-2x2 proof: **359 / 1,000,500 = 0.036 %**). A *structural*
+mismatch is obvious by orders of magnitude (the failed first attempt: **~475 k /
+40 %**). A large count means **fix the recipe (gotcha 1–4), not conclude "grid wins".**
+The cautionary case: `cards-grid` @6 first showed **20.7 % + overflow** — but that was
+gotcha 4 (a hard-coded `height:50%` ⇒ exactly two rows). Removing the fixed height,
+flex fit six cards with no overflow. The large diff was the *recipe*, not flex.
 
 **For the real conversion commit** (editing the component CSS + `npm run build`), use
 the canonical gate — same rasterize+ImageMagick technique, wired to the build, so we
@@ -349,3 +365,74 @@ the eye can see.
   precisely what GIVES them that deterministic box (the original concrete-dimension
   contract). **Do not "simplify" a chart's explicit `cqi` sizing to `100%`** — that
   reintroduces the zero-at-measure bug.
+
+## 13. Sweep results — the three archetypes, proven (2026-06-26)
+
+Ran the §11 harness across the grid users (30 components use `display:grid`). The
+goal was to *prove*, not assert, where flex matches grid and where it genuinely
+can't — so neither a conversion nor a retention is a settle. **All A/Bs run IN-FRAME
+(`form: standard`, real header/body/footer — §11.B)**; the body cell's bounded height
+is the real context. (An earlier pass used `form: off` and was redone in-frame after
+review flagged the wrong container — the verdicts held, the numbers shifted slightly.)
+Three archetypes emerged, each anchored by a pixel-diff:
+
+| Archetype | Proof (in-frame) | Diff | Flex verdict |
+|---|---|---|---|
+| **Uniform, fixed shape** — `1fr 1fr`/`1fr 1fr`, fixed cell count | `matrix-2x2` (equal widths AND heights) | **359 / 1.0 M = 0.036 %** (edge AA) | **Matches** — convert |
+| **Spanning orphan** — `last-child:nth-child(odd){grid-column:1/-1}` | `cards-grid` @ 3 cards (2+1) | **192 / 1.0 M = 0.019 %** | **Matches** (`width:100%` on the orphan) |
+| **Variable card count** — any N cards (`grid-auto-rows:1fr`) | `cards-grid` @ 6 cards, height NOT hard-coded | **fits, no overflow** | **Flex matches** — convert (see Correction) |
+| **Cross-row column alignment** | a plain Markdown table → a real `<table>` | columns align natively, sits top, **no grid** | **Neither flex nor grid** — it's a `<table>` |
+
+**Correction (2026-06-26, after review).** An earlier version of this table claimed
+variable-count card grids (`grid-auto-rows:1fr`) were a flex-can't. **That was wrong** —
+an artefact of a buggy override that **hard-coded the cell height** (50 % ⇒ exactly two
+rows), so six cards overflowed. With the height *not* hard-coded, **flex fits any card
+count cleanly** (`cards-grid` @6: no overflow, even rows). The *only* thing grid does
+there that flat-DOM flex doesn't is **stretch the cards to fill the stage vertically** —
+and that is explicitly **not wanted**: cards sit at their natural height, and a table
+sits top/centre, never vertically stretched (owner's call). So the variable-count row
+is a **convert**, not a keep. The lesson is the runbook's own (§11.B): a large diff
+means *fix the recipe*, not "grid wins".
+
+**Second correction — even "tables need grid" overstates it.** Cross-row column
+alignment is the textbook job of an HTML `<table>`, and Markdown *produces* a real
+`<table>` for `| a | b |`. Verified in Lattice: a plain Markdown table renders as a
+`<table>`, its columns align natively, and it sits at the **top** with no vertical
+stretch — exactly the wanted behaviour, with **zero CSS layout** (no grid, no flex).
+So a table doesn't "need grid"; **a table is a `<table>`.** CSS grid only enters when a
+component *deliberately reshapes* a table (e.g. collapsing a wide table into one card
+per row on a phone — the `retire-landscape-locks` work). That reshape is an **optional
+feature**, justified per component, and is itself likely flex-able (the reshaped cards
+are independent). Net: **no core component layout requires CSS grid.**
+
+So, restated: **a table stays a table** (it fills width, columns line up via `<table>`;
+it does **not** stretch vertically —
+it sits top or centred, a universal alignment modifier deferred to #527).
+
+### Classification (each CONVERT still gated by its own in-frame §11 A/B)
+
+- **Convert to flex** — per-item grids, fixed-uniform grids, AND variable card grids
+  (natural height, no forced vertical stretch): `matrix-2x2`, `cards-grid`, `pricing`,
+  `logo-wall`, `compare-code` (`code-cols` 1fr 1fr), `split-compare`, `verdict-grid`,
+  `citation-card`, `redline`, `list-criteria`, `agenda`, `list`, `actors`, `q-and-a`,
+  `statute-stack`, `authority-chain`, `kpi`, `compare-prose`, `math`, `split-panel`.
+  Prove each with the in-frame harness before converting.
+- **Is a `<table>`** (native HTML table — fills width, columns align via `<table>`, **no
+  grid, no flex**, **does not stretch vertically**; sits top/centre): `compare-table`,
+  `list-tabular`, `regulatory-update`. Markdown already emits the `<table>`; their
+  vertical placement is a universal alignment modifier, deferred to **#527**. (CSS grid
+  reappears only if one *opts into* a responsive reshape — an optional per-component
+  feature, itself flex-able — never as the table's baseline layout.)
+- **Out of cell-tree scope:** chart-geometry grids (`journey` task-spans, `roadmap`
+  horizons, `radar`, `progress`, `timeline-list`, `chart-family`) — sized media,
+  governed by §12, not the cell-tree.
+
+### Consequence for the migration
+
+The frame/cell flex-tree (§2–6) is unaffected — it's flex regardless. Component
+internals split cleanly two ways: **flex** for every laid-out grid, and a native
+**`<table>`** for real tables (Markdown emits it; columns align for free, no grid, no
+flex). Tables sit top/centre, never vertically filled (#527). CSS grid survives only
+as an *optional* responsive reshape a component may opt into — never a baseline. So
+§10's policy holds with the boundary correctly located: **flex for every layout; a
+`<table>` for tables; CSS grid essentially nowhere in the core component set.**
