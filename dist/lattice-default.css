@@ -1516,39 +1516,39 @@ section.big-number > ul > li > ul > li { font-family:var(--font-body); font-size
  * lattice.js path: section > .cards-grid-inner > .card  (post-processed)
  */
 section.cards-grid h2 { margin-bottom:var(--sp-sm); }
-section.cards-grid { display:flex; flex-direction:column; }
+section.cards-grid > .cell-stage { display:flex; flex-direction:column; }
 /* — Marp CLI native path — */
-section.cards-grid > ul, section.cards-grid > ol {
+section.cards-grid > .cell-stage > ul, section.cards-grid > .cell-stage > ol {
   display:grid; grid-template-columns:1fr 1fr;
   gap:var(--sp-md); flex:1;
   list-style:none; padding:0; margin:0;
 }
-section.cards-grid > ul, section.cards-grid > ol { grid-auto-rows:1fr; }
-section.cards-grid > ul > li, section.cards-grid > ol > li {
+section.cards-grid > .cell-stage > ul, section.cards-grid > .cell-stage > ol { grid-auto-rows:1fr; }
+section.cards-grid > .cell-stage > ul > li, section.cards-grid > .cell-stage > ol > li {
   background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
   display:grid; grid-template-columns:1fr auto; align-content:start;
   font-size:var(--fs-body); line-height:var(--lh-snug); font-weight:700; color:var(--text-heading);
 }
-section.cards-grid > ul > li:last-child:nth-child(odd),
-section.cards-grid > ol > li:last-child:nth-child(odd) { grid-column:1 / -1; }
+section.cards-grid > .cell-stage > ul > li:last-child:nth-child(odd),
+section.cards-grid > .cell-stage > ol > li:last-child:nth-child(odd) { grid-column:1 / -1; }
 /* — strong: backwards-compat shim (**Title** in existing slides renders identically) — */
-section.cards-grid > ul > li > strong { display:block; grid-column:1 / -1; }
+section.cards-grid > .cell-stage > ul > li > strong { display:block; grid-column:1 / -1; }
 /* — inline code badge pinned to title row.
  *   This rule must carry full chrome because the markdown emits
  *   `<li>Title <code>pill</code><ul>nested body</ul></li>` — the
  *   `<code>` is neither :last-child nor preceded by `<ul>`, so the
  *   universal pill rule's :last-child guard does not fire here. — */
-section.cards-grid > ul > li > code,
-section.cards-grid > ol > li > code { grid-column:2; grid-row:1; align-self:baseline; margin-left:var(--sp-xs);
+section.cards-grid > .cell-stage > ul > li > code,
+section.cards-grid > .cell-stage > ol > li > code { grid-column:2; grid-row:1; align-self:baseline; margin-left:var(--sp-xs);
   display:inline-flex; align-items:center; justify-content:center; text-align:center; line-height:1;
   font-family:var(--pill-font); font-size:var(--pill-fs); font-weight:var(--pill-weight); letter-spacing:var(--pill-tracking); border-radius:var(--pill-radius); padding:var(--pill-pad-y) var(--pill-pad-x); white-space:nowrap;
   background:var(--bg); border-color:var(--text-muted); color:var(--text-body); }
 /* — card body (nested list) — */
-section.cards-grid > ul > li > ul, section.cards-grid > ul > li > ol,
-section.cards-grid > ol > li > ul, section.cards-grid > ol > li > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; grid-column:1 / -1; }
-section.cards-grid > ul > li > ul > li, section.cards-grid > ul > li > ol > li,
-section.cards-grid > ol > li > ul > li, section.cards-grid > ol > li > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
+section.cards-grid > .cell-stage > ul > li > ul, section.cards-grid > .cell-stage > ul > li > ol,
+section.cards-grid > .cell-stage > ol > li > ul, section.cards-grid > .cell-stage > ol > li > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; grid-column:1 / -1; }
+section.cards-grid > .cell-stage > ul > li > ul > li, section.cards-grid > .cell-stage > ul > li > ol > li,
+section.cards-grid > .cell-stage > ol > li > ul > li, section.cards-grid > .cell-stage > ol > li > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
 /* — lattice.js post-processed path — */
 section.cards-grid .cards-grid-inner,
 section.cards-grid .cards-grid-inner--ordered {
@@ -1570,12 +1570,12 @@ section.cards-grid .card > code { grid-column:2; grid-row:1; align-self:baseline
 section.cards-grid .card > ul, section.cards-grid .card > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; grid-column:1 / -1; }
 section.cards-grid .card > ul > li, section.cards-grid .card > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
 /* — numbered cards (ol): flush corner tag via absolute ::before — */
-section.cards-grid > ol { counter-reset:card; }
-section.cards-grid > ol > li {
+section.cards-grid > .cell-stage > ol { counter-reset:card; }
+section.cards-grid > .cell-stage > ol > li {
   counter-increment:card;
   position:relative; padding-top:calc(var(--sp-sm) + 2.34375cqi);
 }
-section.cards-grid > ol > li::before {
+section.cards-grid > .cell-stage > ol > li::before {
   content:counter(card);
   position:absolute; top:0; left:0;
   padding:0.46875cqi 1.09375cqi; border-radius:var(--radius-md) 0 var(--radius-sm) 0;
@@ -1597,41 +1597,41 @@ section.cards-grid .cards-grid-inner--ordered > .card::before {
 
 /* ── CARDS-GRID ───────────────────────────────────────────────────────────────
  * ul/ol > li (nested list format) → mimic .cards-grid-inner > .card             */
-section.cards-grid:not(:has(.cards-grid-inner)) > ul,
-section.cards-grid:not(:has(.cards-grid-inner)) > ol {
+section.cards-grid:not(:has(.cards-grid-inner)) > .cell-stage > ul,
+section.cards-grid:not(:has(.cards-grid-inner)) > .cell-stage > ol {
   display:grid; grid-template-columns:1fr 1fr; grid-auto-rows:1fr;
   gap:var(--sp-md); flex:1; list-style:none; padding:0; margin:0;
 }
-section.cards-grid:not(:has(.cards-grid-inner)) > ul > li,
-section.cards-grid:not(:has(.cards-grid-inner)) > ol > li {
+section.cards-grid:not(:has(.cards-grid-inner)) > .cell-stage > ul > li,
+section.cards-grid:not(:has(.cards-grid-inner)) > .cell-stage > ol > li {
   background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
   display:grid; grid-template-columns:1fr auto; align-content:start;
   font-weight:700; color:var(--text-heading);
 }
-section.cards-grid:not(:has(.cards-grid-inner)) > ul > li:last-child:nth-child(odd),
-section.cards-grid:not(:has(.cards-grid-inner)) > ol > li:last-child:nth-child(odd) { grid-column:1 / -1; }
-section.cards-grid:not(:has(.cards-grid-inner)) > ul > li > strong { display:block; grid-column:1 / -1; }
-section.cards-grid:not(:has(.cards-grid-inner)) > ul > li > code,
-section.cards-grid:not(:has(.cards-grid-inner)) > ol > li > code { grid-column:2; grid-row:1; align-self:baseline; margin-left:var(--sp-xs);
+section.cards-grid:not(:has(.cards-grid-inner)) > .cell-stage > ul > li:last-child:nth-child(odd),
+section.cards-grid:not(:has(.cards-grid-inner)) > .cell-stage > ol > li:last-child:nth-child(odd) { grid-column:1 / -1; }
+section.cards-grid:not(:has(.cards-grid-inner)) > .cell-stage > ul > li > strong { display:block; grid-column:1 / -1; }
+section.cards-grid:not(:has(.cards-grid-inner)) > .cell-stage > ul > li > code,
+section.cards-grid:not(:has(.cards-grid-inner)) > .cell-stage > ol > li > code { grid-column:2; grid-row:1; align-self:baseline; margin-left:var(--sp-xs);
   display:inline-flex; align-items:center; justify-content:center; text-align:center; line-height:1;
   font-family:var(--pill-font); font-size:var(--pill-fs); font-weight:var(--pill-weight); letter-spacing:var(--pill-tracking); border-radius:var(--pill-radius); padding:var(--pill-pad-y) var(--pill-pad-x); white-space:nowrap;
   background:var(--bg); border-color:var(--text-muted); color:var(--text-body); }
-section.cards-grid:not(:has(.cards-grid-inner)) > ul > li > ul,
-section.cards-grid:not(:has(.cards-grid-inner)) > ul > li > ol,
-section.cards-grid:not(:has(.cards-grid-inner)) > ol > li > ul,
-section.cards-grid:not(:has(.cards-grid-inner)) > ol > li > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; grid-column:1 / -1; }
-section.cards-grid:not(:has(.cards-grid-inner)) > ul > li > ul > li,
-section.cards-grid:not(:has(.cards-grid-inner)) > ul > li > ol > li,
-section.cards-grid:not(:has(.cards-grid-inner)) > ol > li > ul > li,
-section.cards-grid:not(:has(.cards-grid-inner)) > ol > li > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
+section.cards-grid:not(:has(.cards-grid-inner)) > .cell-stage > ul > li > ul,
+section.cards-grid:not(:has(.cards-grid-inner)) > .cell-stage > ul > li > ol,
+section.cards-grid:not(:has(.cards-grid-inner)) > .cell-stage > ol > li > ul,
+section.cards-grid:not(:has(.cards-grid-inner)) > .cell-stage > ol > li > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; grid-column:1 / -1; }
+section.cards-grid:not(:has(.cards-grid-inner)) > .cell-stage > ul > li > ul > li,
+section.cards-grid:not(:has(.cards-grid-inner)) > .cell-stage > ul > li > ol > li,
+section.cards-grid:not(:has(.cards-grid-inner)) > .cell-stage > ol > li > ul > li,
+section.cards-grid:not(:has(.cards-grid-inner)) > .cell-stage > ol > li > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
 /* — numbered cards (ol source, VS Code fallback) — */
-section.cards-grid:not(:has(.cards-grid-inner)) > ol { counter-reset:card; }
-section.cards-grid:not(:has(.cards-grid-inner)) > ol > li {
+section.cards-grid:not(:has(.cards-grid-inner)) > .cell-stage > ol { counter-reset:card; }
+section.cards-grid:not(:has(.cards-grid-inner)) > .cell-stage > ol > li {
   counter-increment:card;
   position:relative; padding-top:calc(var(--sp-sm) + 2.34375cqi);
 }
-section.cards-grid:not(:has(.cards-grid-inner)) > ol > li::before {
+section.cards-grid:not(:has(.cards-grid-inner)) > .cell-stage > ol > li::before {
   content:counter(card);
   position:absolute; top:0; left:0;
   padding:0.46875cqi 1.09375cqi; border-radius:var(--radius-md) 0 var(--radius-sm) 0;
@@ -1648,32 +1648,32 @@ section.cards-grid:not(:has(.cards-grid-inner)) > ol > li::before {
  *   three — three columns instead of two
  *   four  — four columns instead of two
  *
- * Both selectors target both the marp-cli path (section.cards-grid > ul/ol)
+ * Both selectors target both the marp-cli path (section.cards-grid > .cell-stage > ul/ol)
  * and the lattice.js path (.cards-grid-inner). The 2+1 last-child rule
  * (`:last-child:nth-child(odd)` spanning all columns) is reset to auto so
  * three-card decks render as 3 cards in 1 row, not 2 + 1 spanning.
  * ──────────────────────────────────────────────────────────────────────── */
 
-section.cards-grid.three > ul,
-section.cards-grid.three > ol,
+section.cards-grid.three > .cell-stage > ul,
+section.cards-grid.three > .cell-stage > ol,
 section.cards-grid.three .cards-grid-inner,
 section.cards-grid.three .cards-grid-inner--ordered {
   grid-template-columns: repeat(3, 1fr);
 }
-section.cards-grid.three > ul > li:last-child:nth-child(odd),
-section.cards-grid.three > ol > li:last-child:nth-child(odd),
+section.cards-grid.three > .cell-stage > ul > li:last-child:nth-child(odd),
+section.cards-grid.three > .cell-stage > ol > li:last-child:nth-child(odd),
 section.cards-grid.three .cards-grid-inner > .card:last-child:nth-child(odd) {
   grid-column: auto;
 }
 
-section.cards-grid.four > ul,
-section.cards-grid.four > ol,
+section.cards-grid.four > .cell-stage > ul,
+section.cards-grid.four > .cell-stage > ol,
 section.cards-grid.four .cards-grid-inner,
 section.cards-grid.four .cards-grid-inner--ordered {
   grid-template-columns: repeat(4, 1fr);
 }
-section.cards-grid.four > ul > li:last-child:nth-child(odd),
-section.cards-grid.four > ol > li:last-child:nth-child(odd),
+section.cards-grid.four > .cell-stage > ul > li:last-child:nth-child(odd),
+section.cards-grid.four > .cell-stage > ol > li:last-child:nth-child(odd),
 section.cards-grid.four .cards-grid-inner > .card:last-child:nth-child(odd) {
   grid-column: auto;
 }
@@ -1695,8 +1695,8 @@ section.cards-grid :is(ul,ol) > li > strong ~ * { font-weight: 400; }
  * `:not(:has(.cards-grid-inner))` base grid rule and wins on source order — the
  * role the old `[data-orientation]` attribute played. */
 @container lattice (aspect-ratio <= 1.05) {
-  section.cards-grid.cards-grid > ul,
-  section.cards-grid.cards-grid > ol {
+  section.cards-grid.cards-grid > .cell-stage > ul,
+  section.cards-grid.cards-grid > .cell-stage > ol {
     grid-template-columns: 1fr; grid-auto-rows: auto; align-content: space-evenly;
   }
 }
@@ -2886,9 +2886,11 @@ section.content h2 { margin-bottom:var(--sp-sm); }
  * past the comfortable maximum. 72cqi ≈ 65–75 chars. */
 section.content h2 { max-width:72cqi; }
 section.content p  { font-size:var(--fs-message); line-height:var(--lh-relaxed); max-width:72cqi; }
-/* Center the heading+body block vertically so a short slide does not leave a
- * dead lower half (the only canvas-statement component that top-aligned). */
-section.content { justify-content:center; }
+/* Vertical placement is no longer baked here — it's the author's call via the
+ * universal alignment modifiers (align-top default · align-middle · align-bottom,
+ * #527). content defaults to top like every frame; a deck that wants the old
+ * centred look writes `align-middle`. (Was `section.content { justify-content:
+ * center }` — a per-component bake that the modifier system supersedes.) */
 
 /* content is "heading + paragraphs OR a short list" (see content.docs.md),
  * but the layout previously styled only <p>. base.elements.css strips list
@@ -2911,8 +2913,8 @@ section.content :is(ul, ol) :is(ul, ol) > li { font-size:var(--fs-body); line-he
 /* Portrait / square (social) — cap the running-prose measure so lines don't
    sprawl the full width; the centred block reads composed. Display lines
    (statement/quote) are short already, so this targets content prose only. */
-section.content[data-orientation='portrait'] > :is(p,ul,ol),
-section.content[data-orientation='square'] > :is(p,ul,ol) {
+section.content[data-orientation='portrait'] > .cell-stage > :is(p,ul,ol),
+section.content[data-orientation='square'] > .cell-stage > :is(p,ul,ol) {
   max-width: 46ch; margin-inline: auto;
 }
 /* Box-local family reflow (2026-06-18-component-adaptive-sizing.md): square+tall+
@@ -2920,7 +2922,7 @@ section.content[data-orientation='square'] > :is(p,ul,ol) {
  * `lattice` container so it fires on a portrait/square deck AND inside a narrow
  * nested cell. Doubled class matches the [data-orientation] reflow's specificity. */
 @container lattice (aspect-ratio <= 1.05) {
-  section.content.content > :is(p,ul,ol) {
+  section.content.content > .cell-stage > :is(p,ul,ol) {
     max-width: 46ch; margin-inline: auto;
   }
 }
@@ -15599,11 +15601,19 @@ section.form .tile-progress {
  * lib/forms/tile/<id>). See design/forms.md §5/§6 and the ADR
  * engineering/decisions/2026-06-15-form-implementation.md §6.2.
  *
- * `section.form` IS the stage box: the masthead Cell is an in-flow band at the
- * top, the footer Cell is reserved via padding-bottom, and the deterministic
- * region that remains is the stage (NOT a wrapper element — and permanently so:
- * section-as-grid / a `.cell-stage` wrapper is RETIRED, so component bodies stay
- * direct children of `section` by design — see 2026-06-16-retire-section-as-grid.md).
+ * `section.form` is the root chrome Frame: the masthead Cell is a content-height
+ * band at the top, the stage Cell holds the body, and the footer Cell is reserved
+ * via padding-bottom. The stage is now a REAL element — `<div class="cell-stage">`,
+ * built by the masthead kernel — turning the frame into a flex column so the body
+ * is a bounded clipping cell (flex:1; min-height:0; overflow:clip) and can't bleed
+ * past the stage edge into the footer/rail band. This REVIVES the `.cell-stage`
+ * wrapper that section-as-grid retired in 2026-06-16: that decision rejected a
+ * GRID track (a fixed row fights the content-height masthead); FLEX auto-rows are
+ * content-height by construction, so the objection doesn't apply — the wrapper is
+ * reopened on merit (engineering/decisions/2026-06-26-frames-as-flex-cell-trees.md
+ * §7; the 2026-06-16 note records the reopening). The wrap is per-layout: generic
+ * prose + migrated components carry the cell; an un-migrated component keeps its
+ * direct-child body until codemodded.
  * Because
  * `section.form` is the root chrome Frame, this file is also where the shared,
  * resolution-blind frame tokens are defined (--frame-x/-y, --masthead-h,
@@ -15620,11 +15630,10 @@ section.form .tile-progress {
  *   · masthead↔stage — the band's margin-bottom + hairline rule is the gap.
  *   · stage↔footer   — `form` reserves a footer safe-area (padding-bottom,
  *                     derived from the real footer Cell height) so content keeps
- *                     clear of the footer / progress Cell. The section's own
- *                     overflow:hidden hard-clips anything escaping the slide —
- *                     this is the canonical behavior (the wrapper-based soft fade
- *                     is retired with section-as-grid; any future soft clip must
- *                     be wrapper-free, e.g. a mask).
+ *                     clear of the footer / progress Cell. The stage Cell's own
+ *                     `overflow:clip` walls the body at the stage edge; the
+ *                     section's `overflow:hidden` is the outer backstop at the
+ *                     slide edge.
  *   · per-Cell       — the masthead + bay clip their own overflow, so a long
  *                     title or meta line is cut at its Cell, never bled. */
 section.form {
@@ -15673,6 +15682,51 @@ section.form {
    * 2026-06-16-retire-section-as-grid.md. */
   overflow: hidden;
 }
+
+/* ── STAGE Cell · the bounded body wall (flex cell-tree, 2026-06-26) ─────────
+ * Generic-prose Form slides wrap their flow body in `.cell-stage` (masthead
+ * kernel). The section becomes a flex COLUMN — the masthead band is a
+ * content-height header row, the stage cell fills the rest and CLIPS, and the
+ * footer band stays reserved by the section's own `padding-bottom`. This makes
+ * the bounding-box guarantee true for flowing text: an over-stuffed prose body
+ * is walled at the stage edge instead of bleeding through the footer/rail/
+ * pagination band (the bug this closes). `:has(> .cell-stage)` keys the flex on
+ * the wrap so STANDARD components (no `.cell-stage`, still direct-child bodies)
+ * are completely untouched until they migrate. `min-height:0` is load-bearing —
+ * a flex item defaults to min-height:auto and refuses to shrink, so without it
+ * the clip silently no-ops (forms doc §4b). */
+section.form:has(> .cell-stage) {
+  display: flex;
+  flex-direction: column;
+}
+section.form > .cell-stage {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: clip;
+}
+/* ── Universal ALIGNMENT modifiers (#527) — the author's call ────────────────
+ * Two independent axes act on the stage cell, so they read the same on EVERY
+ * frame. Default is top-left (the natural reading origin); a component never
+ * bakes its own centering — the author opts in per slide. The stage is plain
+ * block flow by default (so paragraph margins collapse exactly as before); ANY
+ * alignment modifier promotes it to a flex column so justify/align resolve.
+ *   vertical   — align-top (default) · align-middle · align-bottom   (justify-content)
+ *   horizontal — align-left (default) · align-center · align-right    (align-items, the BLOCK)
+ * `middle` vs `center` disambiguates the axis (middle = vertical). Horizontal
+ * moves the content BLOCK, never `text-align` (centred prose lines rag badly).
+ * `fill-center`/`fill-anchor` are retained as legacy aliases of align-middle/
+ * align-bottom (consolidation tracked in #527). */
+section.form:is(.align-top, .align-middle, .align-bottom, .align-left, .align-center, .align-right,
+                .fill-center, .fill-anchor) > .cell-stage {
+  display: flex;
+  flex-direction: column;
+}
+section.form:is(.align-middle, .fill-center) > .cell-stage { justify-content: center; }
+section.form:is(.align-bottom, .fill-anchor) > .cell-stage { justify-content: flex-end; }
+section.form.align-top    > .cell-stage { justify-content: flex-start; }
+section.form.align-center > .cell-stage { align-items: center; }
+section.form.align-right  > .cell-stage { align-items: flex-end; }
+section.form.align-left   > .cell-stage { align-items: flex-start; }
 
 /* ── STAGE Cell · fill discipline (design/forms.md §5) ──────────────────────
  * How an underfilling stage distributes its content — the difference between a

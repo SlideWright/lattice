@@ -16,18 +16,31 @@ function dom(html) {
 }
 
 describe('masthead-lift — HTML-string kernel', () => {
-  test('lifts eyebrow + h2 into .cell-masthead; body stays a section child', () => {
+  test('lifts eyebrow + h2 into .cell-masthead; generic body goes in .cell-stage', () => {
     const inner = '<p><code>Kicker</code></p><h2>Title</h2><ul><li>body</li></ul>';
     const out = kernel.transformMastheadSection(inner, 'content form');
     assert.match(out, /<div class="cell-masthead"><div class="masthead-lede"><p><code>Kicker<\/code><\/p><h2>Title<\/h2><\/div><div class="masthead-bay"><\/div><\/div>/);
-    // the list is NOT wrapped — it remains after the band, a direct child
-    assert.match(out, /<\/div><ul><li>body<\/li><\/ul>$/);
+    // generic prose (content) → body wrapped into the frame's stage cell (flex cell-tree)
+    assert.match(out, /<\/div><div class="cell-stage"><ul><li>body<\/li><\/ul><\/div>$/);
   });
 
-  test('works without an eyebrow (title only)', () => {
+  test('works without an eyebrow (title only); body in the stage cell', () => {
     const out = kernel.transformMastheadSection('<h2>Just a title</h2><p>Body.</p>', 'form');
     assert.match(out, /<div class="masthead-lede"><h2>Just a title<\/h2><\/div>/);
-    assert.match(out, /<p>Body\.<\/p>$/);
+    assert.match(out, /<div class="cell-stage"><p>Body\.<\/p><\/div>$/);
+  });
+
+  test('an UN-migrated component body is NOT wrapped (keeps direct-child selectors)', () => {
+    const inner = '<h2>T</h2><ul><li>x</li></ul>';
+    const out = kernel.transformMastheadSection(inner, 'kpi form'); // kpi not yet migrated
+    assert.match(out, /<\/div><ul><li>x<\/li><\/ul>$/); // no .cell-stage
+    assert.doesNotMatch(out, /cell-stage/);
+  });
+
+  test('a MIGRATED component body IS wrapped into the stage cell', () => {
+    const inner = '<h2>T</h2><ul><li>x</li></ul>';
+    const out = kernel.transformMastheadSection(inner, 'cards-grid form'); // migrated
+    assert.match(out, /<div class="cell-stage"><ul><li>x<\/li><\/ul><\/div>$/);
   });
 
   test('no-op when the section does not opt in', () => {
@@ -35,9 +48,16 @@ describe('masthead-lift — HTML-string kernel', () => {
     assert.equal(kernel.transformMastheadSection(inner, 'content'), inner);
   });
 
-  test('no-op when there is no title to anchor the band', () => {
+  test('a titleless generic slide still gets a stage cell (no band)', () => {
     const inner = '<p>Just prose, no heading.</p>';
-    assert.equal(kernel.transformMastheadSection(inner, 'form'), inner);
+    const out = kernel.transformMastheadSection(inner, 'form');
+    assert.equal(out, '<div class="cell-stage"><p>Just prose, no heading.</p></div>');
+  });
+
+  test('a trailing Marp <footer> stays OUT of the stage cell (footer band)', () => {
+    const inner = '<h2>T</h2><p>Body.</p><footer>Confidential</footer>';
+    const out = kernel.transformMastheadSection(inner, 'form');
+    assert.match(out, /<div class="cell-stage"><p>Body\.<\/p><\/div><footer>Confidential<\/footer>$/);
   });
 
   test('idempotent — a second pass does not double-wrap', () => {
@@ -73,9 +93,10 @@ describe('masthead-lift — DOM mirror agrees with the kernel', () => {
     assert.ok(band.querySelector('.masthead-lede > p > code'), 'eyebrow in masthead-lede');
     assert.ok(band.querySelector('.masthead-lede > h2'), 'title in masthead-lede');
     assert.ok(band.querySelector('.masthead-bay'), 'bay reserved');
-    // body list stayed a direct child of section, after the band
-    assert.ok(sec.querySelector(':scope > ul > li'), 'list still a section child');
+    // generic body is wrapped into the stage cell, after the band
+    assert.ok(sec.querySelector(':scope > .cell-stage > ul > li'), 'list lives in the stage cell');
     assert.equal(sec.children[0], band, 'band is first');
+    assert.ok(sec.querySelector(':scope > .cell-masthead') && sec.querySelector(':scope > .cell-stage'), 'masthead + stage cells');
   });
 
   test('DOM path is idempotent', () => {
@@ -89,5 +110,30 @@ describe('masthead-lift — DOM mirror agrees with the kernel', () => {
     const doc = dom('<section class="content"><h2>T</h2></section>');
     adapter.applyToDom(doc);
     assert.equal(doc.querySelector('.cell-masthead'), null);
+  });
+});
+
+describe('masthead-lift — stage-wrap eligibility', () => {
+  test('generic prose + MIGRATED components wrap; an un-migrated component does not', () => {
+    assert.equal(kernel.wrapsStageBody('content form'), true);   // generic
+    assert.equal(kernel.wrapsStageBody('form'), true);           // bare
+    assert.equal(kernel.wrapsStageBody('form dark'), true);      // bare + modifier
+    assert.equal(kernel.wrapsStageBody('cards-grid form'), true); // migrated
+    assert.equal(kernel.wrapsStageBody('kpi form'), false);      // un-migrated
+    assert.equal(kernel.wrapsStageBody('split-panel'), false);   // sovereign (own structure)
+  });
+
+  test('ALL_LAYOUTS matches the manifests; STAGE_MIGRATED ⊆ ALL_LAYOUTS', () => {
+    // ALL_LAYOUTS is browser-bundle-safe; this Node test asserts it can't drift
+    // from the manifest source of truth (so a new component is classified, never
+    // silently wrapped). STAGE_MIGRATED only grows within that set as components
+    // are codemodded — it never contains a name that isn't a real layout.
+    const { loadAll } = require('../../../lib/components');
+    const manifest = new Set(loadAll().map((m) => m.name));
+    const all = kernel.ALL_LAYOUTS;
+    assert.deepEqual([...manifest].filter((n) => !all.has(n)), [], 'ALL_LAYOUTS missing a manifest layout');
+    assert.deepEqual([...all].filter((n) => !manifest.has(n)), [], 'ALL_LAYOUTS has a stale layout');
+    assert.deepEqual([...kernel.STAGE_MIGRATED].filter((n) => !all.has(n)), [], 'STAGE_MIGRATED has a non-layout');
+    assert.ok(!kernel.STAGE_MIGRATED.has('title'), 'a sovereign frame must never be in STAGE_MIGRATED');
   });
 });

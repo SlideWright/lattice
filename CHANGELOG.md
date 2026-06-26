@@ -27,6 +27,25 @@ in patch versions.
 
 ### Added
 
+- **The frame's body is now a real bounded cell — prose can't bleed into the footer.**
+  The Form frame gains its third cell: a `<div class="cell-stage">` the masthead kernel
+  builds around the body (alongside the existing `.cell-masthead` band). `section.form`
+  becomes a flex column (masthead / stage / footer-reserve) and the stage cell is
+  `flex:1; min-height:0; overflow:clip` — so an over-stuffed generic-prose body is walled
+  at the stage edge instead of painting through the footer / rail / pagination band (the
+  long-standing bleed). This revives the `.cell-stage` wrapper that section-as-*grid*
+  retired in 2026-06-16: flex auto-rows are content-height by construction, so the
+  objection that retired the grid version (a fixed row fights the content-height masthead)
+  doesn't apply (`engineering/decisions/2026-06-26-frames-as-flex-cell-trees.md` §7). The
+  migration is per-layout and fail-safe: generic prose (`content` / bare `form`) and
+  `cards-grid` carry the cell today; every other component keeps its direct-child body
+  untouched until it is individually migrated and visually verified (tracked by
+  `STAGE_MIGRATED` in the masthead kernel), so nothing is silently broken.
+- **Universal alignment modifiers for Form slides** — `align-top` (default), `align-middle`,
+  `align-bottom` (vertical) and `align-left` (default), `align-center`, `align-right`
+  (horizontal) govern how the stage cell distributes its content. `fill-center` / `fill-anchor`
+  are retained as legacy aliases of `align-middle` / `align-bottom` (#527).
+
 - **Debug bounding boxes in the Playground preview.** A toolbar toggle next to
   Deck setup outlines every element in the live preview with colour-coded,
   outline-only boxes (zero layout impact — they can't reflow a slide) for

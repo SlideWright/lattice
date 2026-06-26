@@ -9,11 +9,19 @@
  * lib/forms/tile/<id>). See design/forms.md §5/§6 and the ADR
  * engineering/decisions/2026-06-15-form-implementation.md §6.2.
  *
- * `section.form` IS the stage box: the masthead Cell is an in-flow band at the
- * top, the footer Cell is reserved via padding-bottom, and the deterministic
- * region that remains is the stage (NOT a wrapper element — and permanently so:
- * section-as-grid / a `.cell-stage` wrapper is RETIRED, so component bodies stay
- * direct children of `section` by design — see 2026-06-16-retire-section-as-grid.md).
+ * `section.form` is the root chrome Frame: the masthead Cell is a content-height
+ * band at the top, the stage Cell holds the body, and the footer Cell is reserved
+ * via padding-bottom. The stage is now a REAL element — `<div class="cell-stage">`,
+ * built by the masthead kernel — turning the frame into a flex column so the body
+ * is a bounded clipping cell (flex:1; min-height:0; overflow:clip) and can't bleed
+ * past the stage edge into the footer/rail band. This REVIVES the `.cell-stage`
+ * wrapper that section-as-grid retired in 2026-06-16: that decision rejected a
+ * GRID track (a fixed row fights the content-height masthead); FLEX auto-rows are
+ * content-height by construction, so the objection doesn't apply — the wrapper is
+ * reopened on merit (engineering/decisions/2026-06-26-frames-as-flex-cell-trees.md
+ * §7; the 2026-06-16 note records the reopening). The wrap is per-layout: generic
+ * prose + migrated components carry the cell; an un-migrated component keeps its
+ * direct-child body until codemodded.
  * Because
  * `section.form` is the root chrome Frame, this file is also where the shared,
  * resolution-blind frame tokens are defined (--frame-x/-y, --masthead-h,
@@ -30,11 +38,10 @@
  *   · masthead↔stage — the band's margin-bottom + hairline rule is the gap.
  *   · stage↔footer   — `form` reserves a footer safe-area (padding-bottom,
  *                     derived from the real footer Cell height) so content keeps
- *                     clear of the footer / progress Cell. The section's own
- *                     overflow:hidden hard-clips anything escaping the slide —
- *                     this is the canonical behavior (the wrapper-based soft fade
- *                     is retired with section-as-grid; any future soft clip must
- *                     be wrapper-free, e.g. a mask).
+ *                     clear of the footer / progress Cell. The stage Cell's own
+ *                     `overflow:clip` walls the body at the stage edge; the
+ *                     section's `overflow:hidden` is the outer backstop at the
+ *                     slide edge.
  *   · per-Cell       — the masthead + bay clip their own overflow, so a long
  *                     title or meta line is cut at its Cell, never bled. */
 section.form {
@@ -83,6 +90,51 @@ section.form {
    * 2026-06-16-retire-section-as-grid.md. */
   overflow: hidden;
 }
+
+/* ── STAGE Cell · the bounded body wall (flex cell-tree, 2026-06-26) ─────────
+ * Generic-prose Form slides wrap their flow body in `.cell-stage` (masthead
+ * kernel). The section becomes a flex COLUMN — the masthead band is a
+ * content-height header row, the stage cell fills the rest and CLIPS, and the
+ * footer band stays reserved by the section's own `padding-bottom`. This makes
+ * the bounding-box guarantee true for flowing text: an over-stuffed prose body
+ * is walled at the stage edge instead of bleeding through the footer/rail/
+ * pagination band (the bug this closes). `:has(> .cell-stage)` keys the flex on
+ * the wrap so STANDARD components (no `.cell-stage`, still direct-child bodies)
+ * are completely untouched until they migrate. `min-height:0` is load-bearing —
+ * a flex item defaults to min-height:auto and refuses to shrink, so without it
+ * the clip silently no-ops (forms doc §4b). */
+section.form:has(> .cell-stage) {
+  display: flex;
+  flex-direction: column;
+}
+section.form > .cell-stage {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: clip;
+}
+/* ── Universal ALIGNMENT modifiers (#527) — the author's call ────────────────
+ * Two independent axes act on the stage cell, so they read the same on EVERY
+ * frame. Default is top-left (the natural reading origin); a component never
+ * bakes its own centering — the author opts in per slide. The stage is plain
+ * block flow by default (so paragraph margins collapse exactly as before); ANY
+ * alignment modifier promotes it to a flex column so justify/align resolve.
+ *   vertical   — align-top (default) · align-middle · align-bottom   (justify-content)
+ *   horizontal — align-left (default) · align-center · align-right    (align-items, the BLOCK)
+ * `middle` vs `center` disambiguates the axis (middle = vertical). Horizontal
+ * moves the content BLOCK, never `text-align` (centred prose lines rag badly).
+ * `fill-center`/`fill-anchor` are retained as legacy aliases of align-middle/
+ * align-bottom (consolidation tracked in #527). */
+section.form:is(.align-top, .align-middle, .align-bottom, .align-left, .align-center, .align-right,
+                .fill-center, .fill-anchor) > .cell-stage {
+  display: flex;
+  flex-direction: column;
+}
+section.form:is(.align-middle, .fill-center) > .cell-stage { justify-content: center; }
+section.form:is(.align-bottom, .fill-anchor) > .cell-stage { justify-content: flex-end; }
+section.form.align-top    > .cell-stage { justify-content: flex-start; }
+section.form.align-center > .cell-stage { align-items: center; }
+section.form.align-right  > .cell-stage { align-items: flex-end; }
+section.form.align-left   > .cell-stage { align-items: flex-start; }
 
 /* ── STAGE Cell · fill discipline (design/forms.md §5) ──────────────────────
  * How an underfilling stage distributes its content — the difference between a
