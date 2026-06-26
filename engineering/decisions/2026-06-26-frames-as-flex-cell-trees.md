@@ -238,8 +238,11 @@ occurs.
 - **Genuine 2-D placement → flex too, UNLESS proven otherwise.** Do **not** assume a
   layout needs grid because it is 2-D. A component keeps `display: grid` only when a
   **committed pixel-diff proves flex cannot match it** (§11) AND the gap is a real
-  capability — variable-count auto-flow / spanning — not "it's a grid". Everything
-  stays `cqi`/`fr` and is tested across the `@size` × orientation matrix.
+  capability. The sweep (§13) found that gap is essentially **one thing: a table's
+  cross-row column alignment** (`max-content` column = the widest label across all
+  rows). Variable card count and spanning are *not* boundaries — flex handles them
+  (§13 Correction). Everything stays `cqi`/`fr` and is tested across the `@size` ×
+  orientation matrix.
 
 Worked counter-example: `matrix-2x2` — the hardest case (equal column widths **and**
 equal row heights, `grid-template-columns:1fr 1fr` / `grid-template-rows:1fr 1fr`) —
@@ -321,8 +324,10 @@ compare -metric AE A-1.png B-1.png diff.png      # prints the CHANGED-PIXEL COUN
 **Pass bar:** changed pixels are **edge-AA noise only** — empirically **< 0.05 %** of
 total (the in-frame matrix-2x2 proof: **359 / 1,000,500 = 0.036 %**). A *structural*
 mismatch is obvious by orders of magnitude (the failed first attempt: **~475 k /
-40 %**; cards-grid @6 in-frame: **20.7 % + overflow**). A large count means **fix the
-recipe (gotcha 1–3), not conclude "grid wins".**
+40 %**). A large count means **fix the recipe (gotcha 1–4), not conclude "grid wins".**
+The cautionary case: `cards-grid` @6 first showed **20.7 % + overflow** — but that was
+gotcha 4 (a hard-coded `height:50%` ⇒ exactly two rows). Removing the fixed height,
+flex fit six cards with no overflow. The large diff was the *recipe*, not flex.
 
 **For the real conversion commit** (editing the component CSS + `npm run build`), use
 the canonical gate — same rasterize+ImageMagick technique, wired to the build, so we
@@ -374,39 +379,44 @@ Three archetypes emerged, each anchored by a pixel-diff:
 |---|---|---|---|
 | **Uniform, fixed shape** — `1fr 1fr`/`1fr 1fr`, fixed cell count | `matrix-2x2` (equal widths AND heights) | **359 / 1.0 M = 0.036 %** (edge AA) | **Matches** — convert |
 | **Spanning orphan** — `last-child:nth-child(odd){grid-column:1/-1}` | `cards-grid` @ 3 cards (2+1) | **192 / 1.0 M = 0.019 %** | **Matches** (`width:100%` on the orphan) |
-| **Variable-count equal-fill** — `grid-auto-rows:1fr` over a dynamic row count | `cards-grid` @ 6 cards (same override) | **20.7 % + overflow** | **Flex can't** (flat DOM) — keep grid |
-| **Cross-row content alignment** — container `max-content 1fr` (label col = max across rows; `display:contents` fields) | synthetic `max-content` vs flex | labels misalign (3,474 px on a small frame) | **Flex can't** — keep grid |
+| **Variable card count** — any N cards (`grid-auto-rows:1fr`) | `cards-grid` @ 6 cards, height NOT hard-coded | **fits, no overflow** | **Flex matches** — convert (see Correction) |
+| **Cross-row column alignment** — container `max-content 1fr` (label col = max across rows; `display:contents` fields) | synthetic `max-content` vs flex | labels misalign | **Flex can't** — stays a table |
 
-The two "matches" rows refute "grid is better for 2-D"; the two "can't" rows refute
-"flex can do everything" — **`grid-auto-rows:1fr` over a dynamic count, and
-`max-content` aligned across rows, are real grid capabilities with no flat-DOM flex
-equivalent** (both need the row/column count or a width baked in, which dynamic
-content doesn't supply). Spanning, notably, is *not* a boundary — it was the thing
-flagged as a worry and it matched.
+**Correction (2026-06-26, after review).** An earlier version of this table claimed
+variable-count card grids (`grid-auto-rows:1fr`) were a flex-can't. **That was wrong** —
+an artefact of a buggy override that **hard-coded the cell height** (50 % ⇒ exactly two
+rows), so six cards overflowed. With the height *not* hard-coded, **flex fits any card
+count cleanly** (`cards-grid` @6: no overflow, even rows). The *only* thing grid does
+there that flat-DOM flex doesn't is **stretch the cards to fill the stage vertically** —
+and that is explicitly **not wanted**: cards sit at their natural height, and a table
+sits top/centre, never vertically stretched (owner's call). So the variable-count row
+is a **convert**, not a keep. The lesson is the runbook's own (§11.B): a large diff
+means *fix the recipe*, not "grid wins".
 
-### Provisional classification (each CONVERT still gated by its own §11 A/B)
+So exactly **one** genuine flex-can't survives: **a table's column alignment** — every
+row's label snapping to one shared (widest) width. That is grid-only, and **a table
+stays a table** (it fills width, columns line up; it does **not** stretch vertically —
+it sits top or centred, a universal alignment modifier deferred to #527).
 
-- **Convert-candidates** (per-item grids — each `li` is its own grid, so rows are
-  independent — or fixed-uniform container grids): `matrix-2x2`, `compare-code`
-  (`code-cols` 1fr 1fr), `split-compare`, `verdict-grid`, `citation-card`, `redline`,
-  `list-criteria`, `agenda`, `list`, `actors`, `q-and-a`, `statute-stack`,
-  `authority-chain`, `kpi`, `compare-prose`, `math`, `split-panel`. Flat-DOM flex is
-  *expected* to match; **prove each with the harness before converting** — do not
-  bulk-convert on the strength of the archetype alone.
-- **Keep grid (proven flex-can't):** `cards-grid`, `pricing`, `logo-wall`
-  (variable-count equal-fill — `grid-auto-rows:1fr` / `repeat(var(--n),1fr)`);
-  `compare-table`, `list-tabular`, `regulatory-update` (table column alignment across
-  rows). Each retention carries its diff (above / by analogy) as the evidence.
-- **Out of cell-tree scope:** the chart-geometry grids (`journey` task-spans,
-  `roadmap` horizons, `radar`, `progress`, `timeline-list`, `chart-family`). Charts
-  are sized media inside a cell; their internal grid is chart rendering, governed by
-  §12, not the cell-tree.
+### Classification (each CONVERT still gated by its own in-frame §11 A/B)
+
+- **Convert to flex** — per-item grids, fixed-uniform grids, AND variable card grids
+  (natural height, no forced vertical stretch): `matrix-2x2`, `cards-grid`, `pricing`,
+  `logo-wall`, `compare-code` (`code-cols` 1fr 1fr), `split-compare`, `verdict-grid`,
+  `citation-card`, `redline`, `list-criteria`, `agenda`, `list`, `actors`, `q-and-a`,
+  `statute-stack`, `authority-chain`, `kpi`, `compare-prose`, `math`, `split-panel`.
+  Prove each with the in-frame harness before converting.
+- **Stays a table** (grid/`<table>` — fills width, columns align, **does not stretch
+  vertically**; sits top/centre): `compare-table`, `list-tabular`, `regulatory-update`.
+  Their vertical placement is a universal alignment modifier, deferred to **#527**.
+- **Out of cell-tree scope:** chart-geometry grids (`journey` task-spans, `roadmap`
+  horizons, `radar`, `progress`, `timeline-list`, `chart-family`) — sized media,
+  governed by §12, not the cell-tree.
 
 ### Consequence for the migration
 
 The frame/cell flex-tree (§2–6) is unaffected — it's flex regardless. Component
-*internals* split: most convert (gated per-component), a real minority keep grid on
-proven merit. So §10's policy stands with evidence behind it: **flex by default;
-grid only where a diff shows it must.** A nested-flex (row-wrapper DOM) *could* close
-the variable-fill gap, but that's a transform change with no visual payoff over grid —
-out of scope unless a separate need arises.
+internals are now almost entirely **flex**; only real **tables** keep grid, and only
+for **horizontal column alignment** — never vertical fill (tables sit top/centre,
+#527). So §10's policy holds with the boundary correctly located: **flex by default;
+grid only for a table's column alignment.**
