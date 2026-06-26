@@ -116,6 +116,20 @@ in patch versions.
 
 ### Fixed
 
+- **Split frames no longer bleed their supporting panel past the wall — and the bleed is
+  still *detected*.** The flex cell-tree's first frames (`2026-06-26-frames-as-flex-cell-trees.md`):
+  `split-panel`'s `.panel-right` and `split-compare`'s `.compare-right` gain the
+  `min-height:0; overflow:clip` clip contract, so an over-stuffed supporting zone is
+  walled at the panel edge instead of painting past it. Critically, clipping a cell
+  HIDES its overflow from the section-level `scrollHeight` watcher — which would have
+  silently killed the red overflow ring, the export "Overflows" warning, **and runtime
+  autosplit** (it sizes splits from the measured ratio). New `lib/core/overflow-probe.js`
+  makes detection **cell-aware** (single-sourced across the preview watcher, the export
+  watcher, and `measureOverflow`): a clipped content cell's internal overflow is surfaced
+  as section-equivalent extent, so every signal keeps firing and autosplit is byte-for-byte
+  unchanged on existing decks. Gallery renders are pixel-identical; only genuinely
+  over-stuffed split slides change (now contained).
+
 - **Loading a gallery in the Playground now actually shows the rendered deck.** On the
   mobile single-pane layout, opening Galleries (or any deck swap that auto-advances to
   Preview) flipped the Edit/Preview tab to "Preview" but left the **layout** on Edit, so

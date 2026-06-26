@@ -108,10 +108,24 @@ full-bleed by design. So:
 `atmosphere` therefore stays on `section` (full bleed behind all cells), never on a
 body cell.
 
-**(d) Overflow detection is unchanged and still correct.** `scrollHeight >
-clientHeight` is reported per cell-bearing section; bounding the body makes the
-signal *more* honest (it fires when a cell genuinely can't hold its content), and
-the export stays clean (no painted marker).
+**(d) Overflow detection must be made CELL-AWARE — this is a prerequisite, not a
+freebie.** The original draft of this section claimed detection was "unchanged."
+**That was wrong, and verified so:** the watcher (and autosplit's `measureOverflow`)
+reads `section.scrollHeight > section.clientHeight`, but a bounded cell with
+`overflow: clip` CONTAINS its overflow — so on an over-stuffed split-panel the
+section reported **110px → 0px** the instant `.panel-right` clipped. Left unfixed
+the clip would *silently swallow* overflow: the red ring goes quiet, the export
+"Overflows" warning stops, and — worst — runtime autosplit never triggers and the
+content is lost off-cell with no signal. So the FIRST move of the migration (landed
+2026-06-26 with the split family) is `lib/core/overflow-probe.js`: a single-sourced,
+cell-aware probe wired into all three measurement sites (preview watcher, export
+watcher, `measureOverflow`). It surfaces a clipped content cell's internal overflow
+as section-equivalent extent, so the ring fires, the export warns, and autosplit
+sizes the split from the real content height. `CLIP_CELL_SELECTOR` lists the bounded
+CONTENT cells; decorative cells (watermark, atmosphere, the split feature bleed) are
+NOT probed, so an intentional decorative bleed never trips the ring (§4c). Once this
+is honoured, bounding the body makes the signal *more* honest — but the probe is the
+load-bearing prerequisite for clipping ANY cell, exactly as `min-height:0` is (§4b).
 
 ## 5. Per-frame mapping — all ten
 
