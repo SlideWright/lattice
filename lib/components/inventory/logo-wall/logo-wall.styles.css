@@ -22,7 +22,7 @@
  * cascade.md), so a wrapped file would lose to unlayered rules regardless
  * of specificity. */
 
-section.logo-wall {
+section.logo-wall > .cell-stage {
   --logo-cols: 4;
   --logo-cell-h: 9cqi;
   --logo-gap: var(--sp-2xl);
@@ -30,7 +30,7 @@ section.logo-wall {
 
 /* The headline block (eyebrow + h2) keeps its natural height at the top;
  * the wall grows to fill the remaining canvas and centres its rows. */
-section.logo-wall > ul {
+section.logo-wall > .cell-stage > ul {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -44,7 +44,7 @@ section.logo-wall > ul {
   align-items: center;
 }
 
-section.logo-wall > ul > li {
+section.logo-wall > .cell-stage > ul > li {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -52,7 +52,7 @@ section.logo-wall > ul > li {
   height: var(--logo-cell-h);
 }
 
-section.logo-wall > ul > li img {
+section.logo-wall > .cell-stage > ul > li img {
   max-width: 100%;
   max-height: 100%;
   width: auto;
@@ -66,25 +66,25 @@ section.logo-wall > ul > li img {
 }
 
 /* Dense — more marks, smaller cells, tighter gaps. */
-section.logo-wall.dense {
+section.logo-wall.dense > .cell-stage {
   --logo-cols: 6;
   --logo-cell-h: 6.5cqi;
   --logo-gap: var(--sp-xl);
 }
 
 /* Color — keep brand colours when the hues carry meaning. */
-section.logo-wall.color > ul > li img {
+section.logo-wall.color > .cell-stage > ul > li img {
   filter: none;
   opacity: 1;
 }
 
 /* Dark canvas — flip the brightness so the marks read as a faint light
  * watermark on the dark ground, mirroring img.deck-logo on `.dark`. */
-section.logo-wall.dark > ul > li img {
+section.logo-wall.dark > .cell-stage > ul > li img {
   filter: grayscale(1) brightness(2.4) contrast(1.05);
   opacity: 0.8;
 }
-section.logo-wall.dark.color > ul > li img {
+section.logo-wall.dark.color > .cell-stage > ul > li img {
   filter: none;
   opacity: 1;
 }
@@ -98,7 +98,7 @@ section.logo-wall.dark.color > ul > li img {
    a `@container` rule cannot restyle its own container element (the section), so
    overriding `--logo-cols` on the section is a silent no-op (the §11 constraint). */
 @container lattice (aspect-ratio <= 0.9) {
-  section.logo-wall.logo-wall > ul {
+  section.logo-wall.logo-wall > .cell-stage > ul {
     grid-template-columns: repeat(2, 1fr);
     /* Cohesive centred cluster — the marks read as one wall held in the slide's
        middle, rather than scattered the full height of the frame. */
@@ -106,5 +106,5 @@ section.logo-wall.dark.color > ul > li img {
     gap: var(--sp-2xl) var(--sp-xl);
   }
   /* dense carries twice the roster — keep it denser than the default wall. */
-  section.logo-wall.dense > ul { grid-template-columns: repeat(3, 1fr); }
+  section.logo-wall.dense > .cell-stage > ul { grid-template-columns: repeat(3, 1fr); }
 }

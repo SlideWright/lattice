@@ -22,7 +22,7 @@
  * up to six sections at a legible row height; group beyond that.
  * ──────────────────────────────────────────────────────────────────────── */
 
-section.agenda {
+section.agenda > .cell-stage {
   display: flex;
   flex-direction: column;
   justify-content: center;
