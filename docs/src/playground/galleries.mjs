@@ -20,6 +20,11 @@ import { dirname, join, resolve } from 'node:path';
 // Editorial showcases — the headline decks, in featured order.
 const SHOWCASES = [
   {
+    id: 'story',
+    label: 'The Lattice story',
+    file: 'examples/gallery-story.md',
+  },
+  {
     id: 'jargon',
     label: 'Jargon',
     file: 'examples/gallery-jargon.md',
