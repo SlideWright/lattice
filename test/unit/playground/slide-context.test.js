@@ -313,6 +313,21 @@ describe('finishValuePosition — the finish: register slot (Tier 1)', () => {
 	});
 });
 
+describe('formValuePosition — the form: composition slot (Tier 1)', () => {
+	test('captures the partial after `form:`', async () => {
+		const { formValuePosition } = await load();
+		assert.deepEqual(formValuePosition('form: st'), { from: 'form: '.length, typed: 'st' });
+		assert.deepEqual(formValuePosition('form: '), { from: 'form: '.length, typed: '' });
+		assert.deepEqual(formValuePosition('form: minimal'), { from: 'form: '.length, typed: 'minimal' });
+	});
+
+	test('null on non-form lines (and not confused by no-form / format)', async () => {
+		const { formValuePosition } = await load();
+		assert.equal(formValuePosition('theme: indaco'), null);
+		assert.equal(formValuePosition('paginate: true'), null);
+	});
+});
+
 describe('sizeValuePosition — the size: value slot (Tier 1)', () => {
 	test('captures the partial after `size:`, including aspect-alias colons', async () => {
 		const { sizeValuePosition } = await load();
@@ -471,10 +486,10 @@ describe('typeaheadContext — proactive popup entry classification', () => {
 
 	test('front-matter value lines classify by key (gated by inFrontMatter)', async () => {
 		const { typeaheadContext } = await load();
-		const lines = ['---', 'theme: ', 'finish: ', 'islands: ', 'split: ', 'autosplit: '];
+		const lines = ['---', 'theme: ', 'finish: ', 'form: ', 'split: ', 'autosplit: '];
 		assert.equal(typeaheadContext(getter(lines), 2, 'theme: '), 'theme');
 		assert.equal(typeaheadContext(getter(lines), 3, 'finish: '), 'finish');
-		assert.equal(typeaheadContext(getter(lines), 4, 'islands: '), 'islands');
+		assert.equal(typeaheadContext(getter(lines), 4, 'form: '), 'form');
 		assert.equal(typeaheadContext(getter(lines), 5, 'split: '), 'split');
 		// `autosplit:` must not be mis-read as `split:` — the split detector is
 		// anchored at ^, so the `auto` prefix keeps the two distinct.

@@ -6,7 +6,7 @@
 // against a VIRTUAL source: `block + body`, where `body` is the fixed preview
 // deck and `block` is a managed front-matter block we hold in state (persisted to
 // localStorage) and apply at render. So an author can preview their theme/
-// component under a finish / size / islands "behind the scenes" — no raw YAML,
+// component under a finish / size / form "behind the scenes" — no raw YAML,
 // and nothing that leaks into the saved theme or component.
 //
 // `composed()` is what the studio renders: `block + body()`. `onChange` fires
@@ -40,7 +40,7 @@ export function mountStudioPreviewConfig({ root, body, onChange, finishes = [], 
     },
     finishes,
     fields: CONFIG_PROFILES.preview,
-    note: note || 'Preview-only — applied to the specimen so you can audit your work under a finish, size, or the islands model. It isn’t saved with your theme/component.',
+    note: note || 'Preview-only — applied to the specimen so you can audit your work under a finish, size, or the Form model. It isn’t saved with your theme/component.',
   });
 
   function open() { panel.render(); host.hidden = false; trigger.setAttribute('aria-expanded', 'true'); }

@@ -384,7 +384,7 @@ function StageHead() {
 				className="studio-mode-btn studio-preview-setup-btn"
 				data-preview-setup
 				aria-expanded="false"
-				title="Preview setup — render this preview under a finish, size, or islands"
+				title="Preview setup — render this preview under a finish, size, or form"
 			>
 				Preview setup
 			</button>

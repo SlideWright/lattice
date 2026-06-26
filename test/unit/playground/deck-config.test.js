@@ -54,14 +54,19 @@ describe('readFrontMatter', () => {
     assert.equal(fm.configured, false, 'theme is ubiquitous under full sync — not a bespoke-setup signal');
   });
 
-  test('islands toggle: canonicalises on/true/minimal/off; absent = off, not configured', async () => {
+  test('form toggle: canonicalises standard/on/minimal/off; absent = standard (default), not configured', async () => {
     const { readFrontMatter } = await import(MOD);
-    assert.equal(readFrontMatter('---\nmarp: true\nislands: on\n---\n').islands, 'on');
-    assert.equal(readFrontMatter('---\nmarp: true\nislands: true\n---\n').islands, 'on');
-    assert.equal(readFrontMatter('---\nmarp: true\nislands: minimal\n---\n').islands, 'minimal');
-    assert.equal(readFrontMatter('---\nmarp: true\nislands: off\n---\n').islands, 'off');
-    assert.equal(readFrontMatter(CLEAN).islands, 'off');
-    assert.equal(readFrontMatter('---\nmarp: true\nislands: on\n---\n').configured, true);
+    assert.equal(readFrontMatter('---\nmarp: true\nform: standard\n---\n').form, 'standard');
+    assert.equal(readFrontMatter('---\nmarp: true\nform: on\n---\n').form, 'standard');
+    assert.equal(readFrontMatter('---\nmarp: true\nform: true\n---\n').form, 'standard');
+    assert.equal(readFrontMatter('---\nmarp: true\nform: minimal\n---\n').form, 'minimal');
+    assert.equal(readFrontMatter('---\nmarp: true\nform: off\n---\n').form, 'off');
+    // Form is ON by default — an absent key reads as standard and is NOT bespoke config.
+    assert.equal(readFrontMatter(CLEAN).form, 'standard');
+    assert.equal(readFrontMatter(CLEAN).configured, false);
+    // The explicit opt-out (off) and minimal ARE bespoke config.
+    assert.equal(readFrontMatter('---\nmarp: true\nform: off\n---\n').configured, true);
+    assert.equal(readFrontMatter('---\nmarp: true\nform: minimal\n---\n').configured, true);
   });
 
   test('autosplit toggle: on/true/yes → true (boolean); off/absent → false, not configured', async () => {
@@ -99,19 +104,19 @@ describe('writeFrontMatter', () => {
     assert.equal(block, '---\nmarp: true\nsize: 4K\npaginate: true\nfooter: Confidential');
   });
 
-  test('islands: writes on/minimal in canonical slot; off (default) omits it', async () => {
+  test('form: writes off/minimal in canonical slot; standard (default) omits it', async () => {
     const { writeFrontMatter } = await import(MOD);
-    const on = writeFrontMatter(CLEAN, 'islands', 'on');
-    assert.ok(/^---\nmarp: true\nislands: on\n---\n/.test(on));
-    const min = writeFrontMatter(CLEAN, 'islands', 'minimal');
-    assert.ok(min.includes('islands: minimal\n'));
-    // `class` precedes `islands` in the canonical order
-    let src = writeFrontMatter(CLEAN, 'islands', 'on');
+    const off = writeFrontMatter(CLEAN, 'form', 'off');
+    assert.ok(/^---\nmarp: true\nform: off\n---\n/.test(off));
+    const min = writeFrontMatter(CLEAN, 'form', 'minimal');
+    assert.ok(min.includes('form: minimal\n'));
+    // `class` precedes `form` in the canonical order
+    let src = writeFrontMatter(CLEAN, 'form', 'off');
     src = writeFrontMatter(src, 'class', 'dark');
     const block = src.slice(0, src.indexOf('\n---\n'));
-    assert.equal(block, '---\nmarp: true\nclass: dark\nislands: on');
-    // off clears it back out
-    assert.ok(!writeFrontMatter(on, 'islands', 'off').includes('islands:'));
+    assert.equal(block, '---\nmarp: true\nclass: dark\nform: off');
+    // standard (the default) clears it back out
+    assert.ok(!writeFrontMatter(off, 'form', 'standard').includes('form:'));
   });
 
   test('autosplit: writes the canonical on; a falsy value omits it; sits after split, before size', async () => {
@@ -380,7 +385,7 @@ describe('createConfigPanel (DOM)', () => {
     const labels = [...host.querySelectorAll('.db-pref-label')].map((n) => n.textContent);
     assert.ok(labels.includes('Finish'), 'finish present');
     assert.ok(labels.includes('Slide size'), 'size present');
-    assert.ok(labels.includes('Islands'), 'islands present');
+    assert.ok(labels.includes('Form'), 'form present');
     assert.ok(!labels.includes('Theme'), 'theme excluded — the studio owns the palette');
     assert.ok(!labels.includes('Header'), 'deck chrome excluded');
     assert.ok(!host.textContent.includes('Advanced'), 'no Advanced section in a preview profile');

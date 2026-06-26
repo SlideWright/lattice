@@ -171,7 +171,7 @@ export function initThemeStudio(config) {
   if (els.name) els.name.value = STARTERS[0].name;
 
   // Preview setup — a state-backed deck-config that applies a finish / size /
-  // islands to the specimen behind the scenes, so the theme can be auditioned
+  // form to the specimen behind the scenes, so the theme can be auditioned
   // under sketch etc. `run` (hoisted below) re-renders on every change.
   const previewConfig = mountStudioPreviewConfig({
     root,

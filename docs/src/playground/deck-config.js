@@ -17,7 +17,7 @@ import { SIZE_OPTIONS } from './deck-sizes.js';
 // `fields` (optional) is an allow-list of which managed keys to render — the
 // surface's PROFILE. Omitted = every field (the Drawing Board's full author
 // set). A preview surface passes the render-register subset (finish,
-// size, paginate, islands) so deck chrome (header/footer/lang/…) stays out of a
+// size, paginate, form) so deck chrome (header/footer/lang/…) stays out of a
 // theme/component preview. The parse/serialize layer is field-agnostic; only the
 // rendered rows are filtered.
 //
@@ -64,10 +64,12 @@ const FIELD_DEFAULTS = {
   header: '',
   footer: '',
   class: '',
-  // `islands` enables the islands model deck-wide: 'off' (default) / 'on'
-  // (masthead band + bay + progress rail) / 'minimal' (band + bay, no rail).
-  // `true`/`yes` are read as 'on'; the canonical written value is on/minimal.
-  islands: 'off',
+  // `form` is the deck-wide Form composition model: 'standard' (masthead band +
+  // bay + progress rail) is the DEFAULT — so it's the omitted value, and a deck
+  // at standard carries no `form:` key. 'minimal' (band + bay, no rail) and 'off'
+  // (the opt-out) are the explicit values written into the block. `on`/`true`/`yes`
+  // read as standard; `false`/`no` read as off. Mirrors readFormMode in plugins.js.
+  form: 'standard',
   math: '', // '' / 'katex' = the default KaTeX renderer; 'mathjax' switches
   lang: '',
 };
@@ -84,7 +86,7 @@ const FINISH_LABELS = {
 
 // Emit order for known keys; any unmanaged keys we preserved trail in their
 // original order. `marp` leads (it's what tells marp-cli to render the deck).
-const EMIT_ORDER = ['marp', 'theme', 'finish', 'split', 'autosplit', 'size', 'paginate', 'header', 'footer', 'class', 'islands', 'math', 'lang'];
+const EMIT_ORDER = ['marp', 'theme', 'finish', 'split', 'autosplit', 'size', 'paginate', 'header', 'footer', 'class', 'form', 'math', 'lang'];
 
 // Field PROFILES per surface — the `fields` allow-list createConfigPanel takes.
 //   author  — every field (the Drawing Board: full set, theme three-way synced).
@@ -92,27 +94,29 @@ const EMIT_ORDER = ['marp', 'theme', 'finish', 'split', 'autosplit', 'size', 'pa
 //             is the theme control, and there's no source-theme sync there, so a
 //             drawer theme row would be a confusing no-op).
 //   preview — the render registers only (the Workbench: knobs that change how a
-//             theme/component PREVIEWS — finish/size/paginate/islands —
+//             theme/component PREVIEWS — finish/size/paginate/form —
 //             with no deck chrome and no theme, which the studio itself owns).
 export const CONFIG_PROFILES = Object.freeze({
   author: null,
-  noTheme: ['finish', 'split', 'autosplit', 'size', 'paginate', 'header', 'footer', 'class', 'islands', 'math', 'lang'],
+  noTheme: ['finish', 'split', 'autosplit', 'size', 'paginate', 'header', 'footer', 'class', 'form', 'math', 'lang'],
   // `autosplit` is a deck-AUTHORING concern (does my over-capacity content
   // divide?), not a theme/component PREVIEW register — so it's deliberately out
   // of the preview profile (a fixed specimen never overflows). It rides the full
   // author set + the Playground (noTheme) only.
-  preview: ['finish', 'size', 'paginate', 'islands'],
+  preview: ['finish', 'size', 'paginate', 'form'],
 });
 
 const TRUEY = /^(true|yes|on|1)$/i;
 
-// Canonicalise an `islands:` value to one of the three modes. Mirrors
-// readIslandsMode in lib/integrations/markdown-it/plugins.js.
-function islandsMode(raw) {
+// Canonicalise a `form:` value to one of the three modes. Mirrors readFormMode
+// in lib/integrations/markdown-it/plugins.js: 'standard' is the DEFAULT, so an
+// absent/empty value (and any `on`/`true`/`yes`) resolves to standard; only the
+// explicit `off`/`false`/`no` opts out, and `minimal` drops the rail.
+function formMode(raw) {
   const v = (raw == null ? '' : String(raw)).trim().toLowerCase();
-  if (TRUEY.test(v)) return 'on';
+  if (/^(off|false|no)$/.test(v)) return 'off';
   if (v === 'minimal') return 'minimal';
-  return 'off';
+  return 'standard';
 }
 
 function stripQuotes(v) {
@@ -156,7 +160,9 @@ export function readFrontMatter(source) {
     header: map.header || '',
     footer: map.footer || '',
     class: map.class || '',
-    islands: islandsMode(map.islands),
+    // Absent `form:` → 'standard' (the default), so the drawer reflects that Form
+    // is on out of the box; an explicit `form: off` / `minimal` pre-fills as typed.
+    form: formMode(map.form),
     math: map.math || '',
     lang: map.lang || '',
     // Whether the deck carries any NON-THEME managed front matter — drives the
@@ -171,7 +177,9 @@ function isDefault(key, value) {
   // `autosplit` is binary — off (any non-truthy) is the omitted default.
   if (key === 'autosplit') return !TRUEY.test(value);
   if (key === 'math') return value === '' || value === 'katex';
-  if (key === 'islands') return islandsMode(value) === 'off';
+  // `form` defaults to 'standard' (on) — that's the omitted value; only `off` /
+  // `minimal` are written into the block.
+  if (key === 'form') return formMode(value) === 'standard';
   // 'boardroom' is the named baseline — the same no-class result as omitting
   // finish, so it's treated as the default and dropped from the block.
   if (key === 'finish') { const f = (value == null ? '' : String(value)).trim().toLowerCase(); return f === '' || f === 'boardroom'; }
@@ -191,7 +199,8 @@ function normalize(key, value) {
   if (key === 'autosplit') return value === true || TRUEY.test(value || '') ? 'on' : null;
   const v = (value == null ? '' : String(value)).trim();
   if (key === 'math') return v === '' || v === 'katex' ? null : v;
-  if (key === 'islands') { const m = islandsMode(v); return m === 'off' ? null : m; }
+  // `form`: standard (the default) omits the key; off / minimal are written.
+  if (key === 'form') { const m = formMode(v); return m === 'standard' ? null : m; }
   // boardroom = baseline → omit (same no-class render as no key at all).
   if (key === 'finish') { const f = v.toLowerCase(); return f === '' || f === 'boardroom' ? null : f; }
   if (key === 'split') { return v.toLowerCase() === 'rule' ? 'rule' : null; }
@@ -402,7 +411,7 @@ export function createConfigPanel({ host, trigger, getSource, setSource, palette
     // Auto-split — opt the deck into the Fit Ladder's SPLIT move: an over-capacity
     // slide is divided across extra pages. A portrait/square-family behavior, so the
     // hint names the gate (lint warns on a landscape deck). It's a build-time pass
-    // (lattice-emulator.js) — UNLIKE islands (a live CSS class), it shows only on
+    // (lattice-emulator.js) — UNLIKE form (a live CSS class), it shows only on
     // EXPORT, never in this live preview. The hint says so, so the toggle doesn't
     // read as broken when the preview doesn't visibly change.
     if (show('autosplit')) {
@@ -418,13 +427,15 @@ export function createConfigPanel({ host, trigger, getSource, setSource, palette
     if (show('header')) host.append(textField('header', 'Header', 'Running header text on every slide', fm.header, 'e.g. Lattice · Q3 Board Review'));
     if (show('footer')) host.append(textField('footer', 'Footer', 'Running footer text on every slide', fm.footer, 'e.g. Confidential'));
 
-    // Islands — the deck-wide composition model (masthead band + bay + rail).
-    if (show('islands')) {
-      host.append(selectRow('islands', 'Islands', 'Masthead band, meta/status bay & progress rail, deck-wide', [
-        ['off', 'Off'],
-        ['on', 'On — band, bay & rail'],
+    // Form — the deck-wide composition model (masthead band + bay + rail). On by
+    // default, so 'standard' leads and carries the "(default)" cue; pick 'off' to
+    // opt out or 'minimal' to drop the rail.
+    if (show('form')) {
+      host.append(selectRow('form', 'Form', 'Masthead band, meta/status bay & progress rail, deck-wide', [
+        ['standard', 'Standard — band, bay & rail (default)'],
         ['minimal', 'Minimal — band & bay, no rail'],
-      ], fm.islands));
+        ['off', 'Off — no deck chrome'],
+      ], fm.form));
     }
 
     // Advanced — the lower-traffic deck-authoring keys. Only shown when the
