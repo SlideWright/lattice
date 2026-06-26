@@ -124,7 +124,7 @@ flowchart LR
 
 ## Lattice stands on the shoulders of Marp.
 
-Yuki Hattori's Marp helped me see the art of the possible. I fought it plenty — layered my own styles over it, dropped to plain CSS to get my way — but it had the best foundation to build on, and the method was the insight. For that, I'm grateful.
+Yuki Hattori's Marp helped me see the art of the possible. I fought it — layered my own styles, dropped to plain CSS — but it had the best foundation there is, and the method was the insight. For that, I'm grateful.
 
 ---
 
