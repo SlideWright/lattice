@@ -299,14 +299,21 @@ export function PlaygroundApp({ data }: { data: PlaygroundData }) {
 
 	const onTab = (which: 'edit' | 'preview') => {
 		setPane(which);
-		document.body.setAttribute('data-pane', which);
 		if (which === 'preview') render(false);
 	};
-	// Seed the body data-pane (mobile pane layout keys off it — playground.css).
+	// `pane` is the SINGLE source of truth for which pane is active; the body
+	// data-pane attribute (the mobile single-pane layout keys off it —
+	// playground.css `body[data-pane='…']`) mirrors it from one effect. Driving it
+	// here — not inside onTab — keeps it in sync no matter HOW the pane changed: a
+	// tab click (onTab) OR a programmatic switch (applyDeck's `toPreview`, fired by
+	// a gallery load). Setting data-pane only in onTab was the bug that left the
+	// body stuck on 'edit' — preview hidden — while the React tab read 'preview'
+	// after loading a gallery (the "flips to preview but the deck isn't shown,
+	// click Edit then Preview to fix it" report).
 	React.useEffect(() => {
-		document.body.setAttribute('data-pane', 'edit');
-		return () => document.body.removeAttribute('data-pane');
-	}, []);
+		document.body.setAttribute('data-pane', pane);
+	}, [pane]);
+	React.useEffect(() => () => document.body.removeAttribute('data-pane'), []);
 
 	return (
 		<div className="lx-ui contents">

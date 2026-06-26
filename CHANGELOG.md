@@ -104,6 +104,25 @@ in patch versions.
 
 ### Fixed
 
+- **Loading a gallery in the Playground now actually shows the rendered deck.** On the
+  mobile single-pane layout, opening Galleries (or any deck swap that auto-advances to
+  Preview) flipped the Edit/Preview tab to "Preview" but left the **layout** on Edit, so
+  the freshly rendered deck sat in a hidden pane — the only way to see it was to toggle
+  Edit→Preview by hand. The cause was two sources of truth for the active pane: the React
+  `pane` state (drives the tab highlight) and `document.body[data-pane]` (drives the CSS
+  that hides the inactive pane). A tab click synced both; a programmatic switch
+  (`applyDeck({ toPreview })`) synced only the first. `pane` is now the single source of
+  truth, with `body[data-pane]` mirrored from one effect, so the layout follows the tab no
+  matter how the pane changed. Guarded by a behavioural + property-based (fast-check
+  model-based, `fc.commands`) test of the toolbar — `PlaygroundApp.test.tsx` — that fuzzes
+  random user journeys and asserts the tab and layout never desync (the bug shrinks to the
+  one-step counterexample "load a gallery from Edit view"). The Drawing Board's mobile pane
+  machine — already correct, but the same divergence class — is hardened the same way: its
+  `setPane` is extracted to a shared, single-source-of-truth module
+  (`drawing-board-pane.js`) and fuzzed by `drawing-board-pane.test.ts`, which asserts the
+  four pane surfaces (`body[data-pane]`, tab `aria-selected`, the persisted pane, the
+  preview render) never drift across random click/programmatic journeys.
+
 - **A crashed Chrome render fails fast instead of hanging to the outer timeout.** When the
   headless-Chrome renderer/GPU process crashes mid-render (`Protocol error … Target closed`),
   the emulator's awaited CDP calls (`page.goto` / `page.evaluate` / `page.pdf`) could be left
