@@ -88,6 +88,7 @@ describe('overflow-probe', () => {
   });
 
   test('CLIP_CELL_SELECTOR names the current bounded content cells', () => {
+    assert.match(CLIP_CELL_SELECTOR, /\.cell-stage/);
     assert.match(CLIP_CELL_SELECTOR, /\.panel-right/);
     assert.match(CLIP_CELL_SELECTOR, /\.compare-right/);
   });
