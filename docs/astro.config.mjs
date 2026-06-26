@@ -4,35 +4,29 @@ import react from '@astrojs/react';
 import starlight from '@astrojs/starlight';
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'astro/config';
-import { rehypeBaseLinks } from './plugins/rehype-base-links.mjs';
 
-// Project Pages site: https://slidewright.github.io/lattice/
-// `site` + `base` must match the GitHub Pages URL so generated links and
-// assets resolve under the /lattice/ path.
-//
-// Cloudflare Pages preview deployments serve at the ROOT of a *.pages.dev host,
-// not under /lattice/, so the base must differ per environment. Cloudflare sets
-// CF_PAGES=1 (and CF_PAGES_URL) in its build environment, so we auto-detect:
-// root base for Cloudflare previews, /lattice for the GitHub Pages production
-// build. The GitHub Pages workflow runs WITHOUT CF_PAGES, so its base is
-// unchanged — this is backward-compatible with the existing production deploy.
+// Production home: https://lattice.style — a GitHub Pages site on a CUSTOM
+// DOMAIN, so it serves at the ROOT (base '/'), not under the old project-page
+// /lattice/ path. Cloudflare Pages PR previews serve at the root of their
+// *.pages.dev host too. So the base is '/' in EVERY environment now — the
+// /lattice project-page base is retired (slidewright.github.io/lattice/ 301-
+// redirects to the custom domain once it's attached in repo Settings → Pages).
 //
 // `site` is the canonical origin used for sitemap / og:url / absolute links.
 // Precedence: an explicit SITE_URL wins (set this in the Cloudflare project's
-// env vars once a CUSTOM DOMAIN is attached, so canonical URLs point at the
-// domain and not the *.pages.dev deployment host); otherwise fall back to the
-// per-deployment CF_PAGES_URL on Cloudflare, or the GitHub Pages origin.
+// env vars so a preview's canonical URLs can point at the domain rather than
+// the *.pages.dev deployment host); otherwise fall back to the per-deployment
+// CF_PAGES_URL on Cloudflare, or the lattice.style production origin.
 const onCloudflare = Boolean(process.env.CF_PAGES);
 export default defineConfig({
-	site: process.env.SITE_URL || (onCloudflare ? process.env.CF_PAGES_URL : 'https://slidewright.github.io'),
-	base: onCloudflare ? '/' : '/lattice',
+	site: process.env.SITE_URL || (onCloudflare ? process.env.CF_PAGES_URL : 'https://lattice.style'),
+	base: '/',
 	// The Form model moved out of /spec/ into the new "The model" group (it is the
 	// engine's design model, not part of the LFM standard) — redirect the old URL
-	// so existing links (forms.md §11, the form-manifest ADR) don't 404. Astro
-	// applies `base` to the redirect SOURCE automatically but NOT the destination,
-	// so the target is base-prefixed by hand (root on Cloudflare, /lattice on
-	// GitHub Pages) to match the per-environment base above.
-	redirects: { '/spec/form-model': `${onCloudflare ? '' : '/lattice'}/model/form-model/` },
+	// so existing links (forms.md §11, the form-manifest ADR) don't 404. The site
+	// serves at the root base in every environment, so the destination is a plain
+	// root-relative path.
+	redirects: { '/spec/form-model': '/model/form-model/' },
 	// HTML navigation is cheap, so warm it everywhere: every internal <a>
 	// prefetches its destination on hover/focus (the `hover` strategy). The one
 	// expensive asset — the ~554KB-gz engine bundle — is NOT covered here; it
@@ -55,12 +49,6 @@ export default defineConfig({
 		// Preflight is OFF on purpose (see that file's header + the migration
 		// decision doc §0). It carries the shadcn ↔ Lattice token bridge.
 		plugins: [tailwindcss()],
-	},
-	// Base-prefix hand-written, root-relative content links so they resolve
-	// under both deploy bases (/lattice on GitHub Pages, / on Cloudflare).
-	// Applies to Starlight's Markdown/MDX content too. See plugins/.
-	markdown: {
-		rehypePlugins: [rehypeBaseLinks],
 	},
 	integrations: [
 		starlight({
