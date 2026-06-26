@@ -243,8 +243,8 @@ occurs.
 
 Worked counter-example: `matrix-2x2` — the hardest case (equal column widths **and**
 equal row heights, `grid-template-columns:1fr 1fr` / `grid-template-rows:1fr 1fr`) —
-converts to flex **pixel-identically** (§11: 160 / 1,210,280 px = 0.013 %, pure edge
-AA). "Grid is better for 2-D" did not survive contact with a diff.
+converts to flex **pixel-identically** in-frame (§13: 359 / 1,000,500 px = 0.036 %,
+pure edge AA). "Grid is better for 2-D" did not survive contact with a diff.
 
 ## 11. Conversion runbook — turn a grid into flex and PROVE it
 
@@ -297,12 +297,21 @@ For the 2×2 (`N = M = 2`, `--gap = var(--sp-md)`) this collapses to
 
 **Quick exploratory A/B** (deck-level `<style>` override, no rebuild — for the spike):
 
+**Test IN-FRAME, not in isolation.** Both decks MUST use `form: standard` with a real
+`header:` / `footer:` / `meta:` — **never `form: off`.** The component renders in the
+**body cell** (height = section − masthead − footer), and the very behaviours under
+test — `grid-auto-rows:1fr`, `flex:1`, equal-fill — resolve against *that* bounded
+height, not the full slide. A `form: off` A/B measures the wrong container and can
+flatter a conversion that breaks in a real deck (the body cell is shorter, so a
+hardcoded-height flex overflows there but not on a bare slide). This was a real
+methodology bug caught in review.
+
 ```sh
 export CHROME_PATH=$(ls /root/.cache/puppeteer/chrome/linux-*/chrome-linux64/chrome | head -1)
+FM='---\nmarp: true\ntheme: cuoio\npaginate: true\nheader: "X"\nfooter: "Y"\nmeta: "Z"\nform: standard\n---'
 # 1. Author ONE deck body with deliberately UNEVEN cell content (1-line vs 3-line) — see C.
-# 2. grid.md  = the body as-is (current grid).
-# 3. flex.md  = the same body + a <style> block applying the §A recipe, with the layout
-#    class DOUBLED for specificity (e.g. section.matrix-2x2.matrix-2x2 > ul { … }).
+# 2. grid.md = FM + body as-is.  3. flex.md = FM + body + a <style> applying the §A recipe,
+#    with the layout class DOUBLED for specificity (e.g. section.matrix-2x2.matrix-2x2 > ul {…}).
 node lattice-emulator.js grid.md grid.pdf
 node lattice-emulator.js flex.md flex.pdf
 pdftoppm -png -r 110 grid.pdf A ; pdftoppm -png -r 110 flex.pdf B
@@ -310,9 +319,10 @@ compare -metric AE A-1.png B-1.png diff.png      # prints the CHANGED-PIXEL COUN
 ```
 
 **Pass bar:** changed pixels are **edge-AA noise only** — empirically **< 0.05 %** of
-total (the matrix-2x2 proof: **160 / 1,210,280 = 0.013 %**). A *structural* mismatch
-is obvious by orders of magnitude (the failed first attempt: **~475 k / 40 %**). A
-large count means **fix the recipe (gotcha 1–3), not conclude "grid wins".**
+total (the in-frame matrix-2x2 proof: **359 / 1,000,500 = 0.036 %**). A *structural*
+mismatch is obvious by orders of magnitude (the failed first attempt: **~475 k /
+40 %**; cards-grid @6 in-frame: **20.7 % + overflow**). A large count means **fix the
+recipe (gotcha 1–3), not conclude "grid wins".**
 
 **For the real conversion commit** (editing the component CSS + `npm run build`), use
 the canonical gate — same rasterize+ImageMagick technique, wired to the build, so we
@@ -349,3 +359,54 @@ the eye can see.
   precisely what GIVES them that deterministic box (the original concrete-dimension
   contract). **Do not "simplify" a chart's explicit `cqi` sizing to `100%`** — that
   reintroduces the zero-at-measure bug.
+
+## 13. Sweep results — the three archetypes, proven (2026-06-26)
+
+Ran the §11 harness across the grid users (30 components use `display:grid`). The
+goal was to *prove*, not assert, where flex matches grid and where it genuinely
+can't — so neither a conversion nor a retention is a settle. **All A/Bs run IN-FRAME
+(`form: standard`, real header/body/footer — §11.B)**; the body cell's bounded height
+is the real context. (An earlier pass used `form: off` and was redone in-frame after
+review flagged the wrong container — the verdicts held, the numbers shifted slightly.)
+Three archetypes emerged, each anchored by a pixel-diff:
+
+| Archetype | Proof (in-frame) | Diff | Flex verdict |
+|---|---|---|---|
+| **Uniform, fixed shape** — `1fr 1fr`/`1fr 1fr`, fixed cell count | `matrix-2x2` (equal widths AND heights) | **359 / 1.0 M = 0.036 %** (edge AA) | **Matches** — convert |
+| **Spanning orphan** — `last-child:nth-child(odd){grid-column:1/-1}` | `cards-grid` @ 3 cards (2+1) | **192 / 1.0 M = 0.019 %** | **Matches** (`width:100%` on the orphan) |
+| **Variable-count equal-fill** — `grid-auto-rows:1fr` over a dynamic row count | `cards-grid` @ 6 cards (same override) | **20.7 % + overflow** | **Flex can't** (flat DOM) — keep grid |
+| **Cross-row content alignment** — container `max-content 1fr` (label col = max across rows; `display:contents` fields) | synthetic `max-content` vs flex | labels misalign (3,474 px on a small frame) | **Flex can't** — keep grid |
+
+The two "matches" rows refute "grid is better for 2-D"; the two "can't" rows refute
+"flex can do everything" — **`grid-auto-rows:1fr` over a dynamic count, and
+`max-content` aligned across rows, are real grid capabilities with no flat-DOM flex
+equivalent** (both need the row/column count or a width baked in, which dynamic
+content doesn't supply). Spanning, notably, is *not* a boundary — it was the thing
+flagged as a worry and it matched.
+
+### Provisional classification (each CONVERT still gated by its own §11 A/B)
+
+- **Convert-candidates** (per-item grids — each `li` is its own grid, so rows are
+  independent — or fixed-uniform container grids): `matrix-2x2`, `compare-code`
+  (`code-cols` 1fr 1fr), `split-compare`, `verdict-grid`, `citation-card`, `redline`,
+  `list-criteria`, `agenda`, `list`, `actors`, `q-and-a`, `statute-stack`,
+  `authority-chain`, `kpi`, `compare-prose`, `math`, `split-panel`. Flat-DOM flex is
+  *expected* to match; **prove each with the harness before converting** — do not
+  bulk-convert on the strength of the archetype alone.
+- **Keep grid (proven flex-can't):** `cards-grid`, `pricing`, `logo-wall`
+  (variable-count equal-fill — `grid-auto-rows:1fr` / `repeat(var(--n),1fr)`);
+  `compare-table`, `list-tabular`, `regulatory-update` (table column alignment across
+  rows). Each retention carries its diff (above / by analogy) as the evidence.
+- **Out of cell-tree scope:** the chart-geometry grids (`journey` task-spans,
+  `roadmap` horizons, `radar`, `progress`, `timeline-list`, `chart-family`). Charts
+  are sized media inside a cell; their internal grid is chart rendering, governed by
+  §12, not the cell-tree.
+
+### Consequence for the migration
+
+The frame/cell flex-tree (§2–6) is unaffected — it's flex regardless. Component
+*internals* split: most convert (gated per-component), a real minority keep grid on
+proven merit. So §10's policy stands with evidence behind it: **flex by default;
+grid only where a diff shows it must.** A nested-flex (row-wrapper DOM) *could* close
+the variable-fill gap, but that's a transform change with no visual payoff over grid —
+out of scope unless a separate need arises.
