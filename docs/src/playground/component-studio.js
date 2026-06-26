@@ -84,7 +84,7 @@ export function initLayoutStudio(config) {
     mode: 'light',
   };
 
-  // Preview setup — apply a finish / size / islands to the skeleton preview
+  // Preview setup — apply a finish / size / form to the skeleton preview
   // behind the scenes (so a component can be auditioned under sketch, etc.),
   // without it leaking into the saved component. `run` (hoisted) re-renders.
   const previewConfig = mountStudioPreviewConfig({

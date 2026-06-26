@@ -26,11 +26,12 @@ export const FOCUS_AXIS_VALUES = ['item', 'row', 'col', 'cell', 'line'];
 // colours — not completable.
 export const PAGINATE_VALUES = ['true', 'false', 'skip', 'hold'];
 
-// Value vocabulary for the deck-level `islands:` front-matter toggle — the
-// islands composition model. 'on' = masthead band + bay + progress rail;
-// 'minimal' = band + bay, no rail; 'off' = disabled. Mirrors ISLANDS_MODES in
+// Value vocabulary for the deck-level `form:` front-matter toggle — the Form
+// composition model. 'standard' = masthead band + bay + progress rail (the
+// DEFAULT, so an absent `form:` key composes as standard); 'minimal' = band +
+// bay, no rail; 'off' = disabled (the opt-out). Mirrors FORM_MODES in
 // lib/integrations/markdown-it/plugins.js.
-export const ISLANDS_VALUES = ['off', 'on', 'minimal'];
+export const FORM_VALUES = ['off', 'standard', 'minimal'];
 
 // Value vocabulary for the deck-level `autosplit:` front-matter toggle — opt the
 // deck into the Fit Ladder's SPLIT move (an over-capacity slide is divided across

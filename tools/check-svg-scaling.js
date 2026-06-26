@@ -41,7 +41,11 @@ function renderHtml(sizeName) {
   const base = path.join(os.tmpdir(), `svgscale-${sizeName}-${process.pid}`);
   const md = `${base}.md`;
   const pdf = `${base}.pdf`;
-  fs.writeFileSync(md, `---\nmarp: true\ntheme: indaco\nsize: ${sizeName}\n---\n\n${body}`);
+  // `form: off` — this gate measures a chart's intrinsic HD→4K scaling in
+  // isolation. Form is on by default deck-wide (2026-06-26), but it composes a
+  // masthead band around the chart that is irrelevant to (and would perturb) the
+  // scale-ratio measurement. Keep the fixture chrome-free so it tests the SVG, not Form.
+  fs.writeFileSync(md, `---\nmarp: true\ntheme: indaco\nsize: ${sizeName}\nform: off\n---\n\n${body}`);
   execFileSync(process.execPath, [EMULATOR, md, pdf, 'indaco', '-q'], {
     cwd: ROOT, stdio: ['ignore', 'pipe', 'pipe'],
   });

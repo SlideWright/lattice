@@ -70,7 +70,9 @@ describe('lattice-engine: contract', () => {
   test('applies `_class:` to the section and `class:` deck-wide (deckClassPropagate)', () => {
     const md = '---\nclass: dark\n---\n\n# A\n\n---\n\n<!-- _class: title -->\n\n# B\n';
     const secs = profile(makeEngine().render(md, 'lattice').html);
-    assert.equal(secs[0].cls, 'dark');
+    // Form is on by default now, so the bare content slide also picks up `form`;
+    // the `title` bookend is in the toggle's skip set, so it does NOT.
+    assert.equal(secs[0].cls, 'dark form');
     assert.equal(secs[1].cls, 'dark title'); // _class title + deck-wide dark, sorted
   });
 

@@ -1,7 +1,11 @@
 # Form — how a slide is composed
 
-**Status:** vocabulary ratified 2026-06-14. Supersedes the *Islands* working
-name and the `berth` / `island` / `island-group` terms in
+**Status:** vocabulary ratified 2026-06-14; **Form is the default composition
+model as of 2026-06-26** — every deck renders with the masthead band, bay, and
+progress rail unless it opts out with `form: off` (or quietens to `form: minimal`).
+The `form:` toggle and per-slide `form` / `no-form` tokens still select per
+deck/slide; only the *default* moved from off to `standard`. Supersedes the
+*Islands* working name and the `berth` / `island` / `island-group` terms in
 `engineering/decisions/2026-06-11-islands.md`. The **model** below is canonical;
 the **rename** of the in-tree identifiers (`isl-*` tokens, `.m-bay` classes, the
 `islands:` toggle, the `island`/`berth` symbols) is staged — see §10. Where this
@@ -426,10 +430,17 @@ unique tokens. (2) The rename must land in **all three render paths** (emulator,
 marp-cli plugins, runtime) in lock-step (HARD RULE 1), with the cross-renderer
 parity gate and the per-component galleries asserting no pixel drift.
 
-What ships **today** (under the old names) is unchanged behaviour: the masthead
-lift, the `meta` / `progress` / `watermark` injectors, and the `islands:` toggle
-with its skip-list. The open density defect (§1 reference) is the next behavioural
-fix and is independent of the rename.
+What ships **today** is the masthead lift, the `meta` / `progress` / `watermark`
+injectors, and the `form:` toggle with its skip-list — **now on by default**
+(2026-06-26): an absent `form:` key resolves to `standard`, so every eligible
+section composes as Form unless it opts out (`form: off`, `form: minimal`, or a
+per-slide `no-form`). Chart-frame components compose with the band (the eyebrow +
+title lift into the masthead Cell; the chart's own subtitle/caption and body are
+untouched — see the chart-family in-form rules). The default flip lands in the
+single shared `readFormMode` kernel, so all three render paths inherit it in
+lock-step (HARD RULE 1); the cross-renderer parity gate and per-component
+galleries hold because page counts are section-count-stable. The identifier
+rename (`isl-*` → `frame-*`/`cell-*`) remains the staged backlog item above.
 
 ### The model is realized by B — flex + in-flow bands (section-as-grid retired)
 

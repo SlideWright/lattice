@@ -20,7 +20,7 @@
 	color: var(--text-heading);
 }
 
-/* Inline select / switch rows (finish, tokens, size, paginate, islands, …). */
+/* Inline select / switch rows (finish, tokens, size, paginate, form, …). */
 .deck-config .db-pref-row {
 	display: flex;
 	align-items: baseline;
