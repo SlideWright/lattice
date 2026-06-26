@@ -1485,11 +1485,11 @@ section.authority-chain.trail > :is(ol, ul) > li::before {
 
 
 
-section.big-number { justify-content:center; align-items:center; }
-section.big-number > ul { list-style:none; padding:0; margin:0; text-align:center; }
-section.big-number > ul > li { font-family:var(--font-display); font-size:var(--fs-hero); font-weight:700; color:var(--accent); line-height:1; }
-section.big-number > ul > li > ul { list-style:none; padding:0; margin:var(--sp-lg) 0 0 0; }
-section.big-number > ul > li > ul > li { font-family:var(--font-body); font-size:var(--fs-message); font-weight:400; color:var(--text-body); line-height:var(--lh-relaxed); max-width:43.75cqi; margin:0 auto; }
+section.big-number > .cell-stage { display:flex; flex-direction:column; justify-content:center; align-items:center; }
+section.big-number > .cell-stage > ul { list-style:none; padding:0; margin:0; text-align:center; }
+section.big-number > .cell-stage > ul > li { font-family:var(--font-display); font-size:var(--fs-hero); font-weight:700; color:var(--accent); line-height:1; }
+section.big-number > .cell-stage > ul > li > ul { list-style:none; padding:0; margin:var(--sp-lg) 0 0 0; }
+section.big-number > .cell-stage > ul > li > ul > li { font-family:var(--font-body); font-size:var(--fs-message); font-weight:400; color:var(--text-body); line-height:var(--lh-relaxed); max-width:43.75cqi; margin:0 auto; }
 
 /* === lib/components/inventory/cards-grid/cards-grid.styles.css === */
 /* cards-grid — extracted from lib/_legacy.css (batch 6).
@@ -2931,22 +2931,22 @@ section.content[data-orientation='square'] > .cell-stage > :is(p,ul,ol) {
  * paragraph. Cards render as a horizontal strip with an accent left
  * edge — visually unified, signalling that they all support the verdict.
  * ──────────────────────────────────────────────────────────────────────── */
-section.decision { display:flex; flex-direction:column; }
+section.decision > .cell-stage { display:flex; flex-direction:column; }
 section.decision h2 {
   font-size:var(--fs-h2);
   margin-bottom:var(--sp-md);
   line-height:var(--lh-tight);
   max-width:70.3125cqi;
 }
-section.decision > ul,
-section.decision > ol {
+section.decision > .cell-stage > ul,
+section.decision > .cell-stage > ol {
   display:flex;
   gap:var(--sp-md);
   flex:1;
   list-style:none; padding:0; margin:0;
 }
-section.decision > ul > li,
-section.decision > ol > li {
+section.decision > .cell-stage > ul > li,
+section.decision > .cell-stage > ol > li {
   flex:1;
   background:var(--bg-alt);
   border:1px solid var(--border);
@@ -2960,16 +2960,16 @@ section.decision > ol > li {
  * mirrors the KPI palette so the two layouts read as siblings (KPI = top
  * accent, decision = bottom accent). Each card's corner-tag fill follows
  * the same variable so the card reads as one colour. */
-section.decision > :is(ul, ol) > li:nth-child(8n+1) { --decision-accent:var(--cat-1-mark);   --decision-accent-deep:var(--cat-1-mark); }
-section.decision > :is(ul, ol) > li:nth-child(8n+2) { --decision-accent:var(--cat-2-mark);  --decision-accent-deep:var(--cat-2-mark); }
-section.decision > :is(ul, ol) > li:nth-child(8n+3) { --decision-accent:var(--cat-3-mark); --decision-accent-deep:var(--cat-3-mark); }
-section.decision > :is(ul, ol) > li:nth-child(8n+4) { --decision-accent:var(--cat-4-mark); --decision-accent-deep:var(--cat-4-mark); }
-section.decision > :is(ul, ol) > li:nth-child(8n+5) { --decision-accent:var(--cat-5-mark);   --decision-accent-deep:var(--cat-5-mark); }
-section.decision > :is(ul, ol) > li:nth-child(8n+6) { --decision-accent:var(--cat-6-mark);   --decision-accent-deep:var(--cat-6-mark); }
-section.decision > :is(ul, ol) > li:nth-child(8n+7) { --decision-accent:var(--cat-7-mark);  --decision-accent-deep:var(--cat-7-mark); }
-section.decision > :is(ul, ol) > li:nth-child(8n)   { --decision-accent:var(--cat-8-mark);  --decision-accent-deep:var(--cat-8-mark); }
-section.decision > ul > li > strong,
-section.decision > ol > li > strong {
+section.decision > .cell-stage > :is(ul, ol) > li:nth-child(8n+1) { --decision-accent:var(--cat-1-mark);   --decision-accent-deep:var(--cat-1-mark); }
+section.decision > .cell-stage > :is(ul, ol) > li:nth-child(8n+2) { --decision-accent:var(--cat-2-mark);  --decision-accent-deep:var(--cat-2-mark); }
+section.decision > .cell-stage > :is(ul, ol) > li:nth-child(8n+3) { --decision-accent:var(--cat-3-mark); --decision-accent-deep:var(--cat-3-mark); }
+section.decision > .cell-stage > :is(ul, ol) > li:nth-child(8n+4) { --decision-accent:var(--cat-4-mark); --decision-accent-deep:var(--cat-4-mark); }
+section.decision > .cell-stage > :is(ul, ol) > li:nth-child(8n+5) { --decision-accent:var(--cat-5-mark);   --decision-accent-deep:var(--cat-5-mark); }
+section.decision > .cell-stage > :is(ul, ol) > li:nth-child(8n+6) { --decision-accent:var(--cat-6-mark);   --decision-accent-deep:var(--cat-6-mark); }
+section.decision > .cell-stage > :is(ul, ol) > li:nth-child(8n+7) { --decision-accent:var(--cat-7-mark);  --decision-accent-deep:var(--cat-7-mark); }
+section.decision > .cell-stage > :is(ul, ol) > li:nth-child(8n)   { --decision-accent:var(--cat-8-mark);  --decision-accent-deep:var(--cat-8-mark); }
+section.decision > .cell-stage > ul > li > strong,
+section.decision > .cell-stage > ol > li > strong {
   display:block;
   font-family:var(--font-mono);
   font-size:var(--fs-meta);
@@ -2978,10 +2978,10 @@ section.decision > ol > li > strong {
   text-transform:uppercase;
   color:var(--accent);
 }
-section.decision > ul > li > p,
-section.decision > ol > li > p,
-section.decision > ul > li > ul,
-section.decision > ol > li > ul {
+section.decision > .cell-stage > ul > li > p,
+section.decision > .cell-stage > ol > li > p,
+section.decision > .cell-stage > ul > li > ul,
+section.decision > .cell-stage > ol > li > ul {
   font-size:var(--fs-body);
   line-height:var(--lh-base);
   color:var(--text-body);
@@ -3006,14 +3006,14 @@ section.decision :is(ul,ol) > li > strong ~ * { font-weight: 400; }
    aspect (a portrait deck OR a narrow nested cell). The doubled class
    `.decision.decision` reaches (0,2,1) — clearing the base `> :is(ul,ol)` (0,1,1). */
 @container lattice (aspect-ratio <= 1.05) {
-  section.decision.decision > :is(ul, ol) { flex-direction: column; }
+  section.decision.decision > .cell-stage > :is(ul, ol) { flex-direction: column; }
   /* Each card fills a share of the tall frame; centre the justification so it sits
      in the card's optical middle (the corner tag stays pinned top-left) instead of
      orphaning at the top over empty space. */
-  section.decision.decision > :is(ul, ol) > li { justify-content: center; }
+  section.decision.decision > .cell-stage > :is(ul, ol) > li { display:flex; flex-direction:column; justify-content: center; }
   /* One option per full-width card — the justification is the card's hero, so it
      carries statement weight (--fs-message), not body weight. */
-  section.decision.decision > :is(ul, ol) > li > :is(p, ul, ol) {
+  section.decision.decision > .cell-stage > :is(ul, ol) > li > :is(p, ul, ol) {
     font-size:var(--fs-message);
     line-height: var(--lh-snug);
   }
@@ -8038,7 +8038,7 @@ section.progress .progress-note {
  * cascade.md), so a wrapped file would lose to unlayered rules regardless
  * of specificity. */
 
-section.q-and-a {
+section.q-and-a > .cell-stage {
   /* Index gutter — proportional to the number's own size, NOT a fixed step. The "01"
    * counter is sized off --fs-message, which grows from landscape to portrait; a fixed
    * gutter cleared the number in landscape but the portrait number overran it (the
@@ -8050,7 +8050,7 @@ section.q-and-a {
 }
 
 /* The pair stack fills the canvas below the headline and centres its rows. */
-section.q-and-a > :is(ul, ol) {
+section.q-and-a > .cell-stage > :is(ul, ol) {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -8070,7 +8070,7 @@ section.q-and-a > :is(ul, ol) {
 /* One Q/A pair. The li's own text is the question; the nested list is the
  * answer. A 2px accent rule runs down the left of each pair and the numbered
  * index hangs in the gutter, baseline-aligned with the question. */
-section.q-and-a > :is(ul, ol) > li {
+section.q-and-a > .cell-stage > :is(ul, ol) > li {
   counter-increment: qa;
   position: relative;
   padding-left: var(--qa-gutter);
@@ -8081,7 +8081,7 @@ section.q-and-a > :is(ul, ol) > li {
   color: var(--text-heading);
   line-height: var(--lh-snug);
 }
-section.q-and-a > :is(ul, ol) > li::before {
+section.q-and-a > .cell-stage > :is(ul, ol) > li::before {
   content: "0" counter(qa);
   position: absolute;
   left: var(--sp-xs);
@@ -8094,12 +8094,12 @@ section.q-and-a > :is(ul, ol) > li::before {
 }
 
 /* Answer — the nested list, reset off the question's weight/size/colour. */
-section.q-and-a > :is(ul, ol) > li > :is(ul, ol) {
+section.q-and-a > .cell-stage > :is(ul, ol) > li > :is(ul, ol) {
   list-style: none;
   margin: var(--sp-xs) 0 0;
   padding: 0;
 }
-section.q-and-a > :is(ul, ol) > li > :is(ul, ol) > li {
+section.q-and-a > .cell-stage > :is(ul, ol) > li > :is(ul, ol) > li {
   font-family: var(--font-body);
   font-size: var(--fs-body);
   font-weight: 400;
@@ -8110,12 +8110,12 @@ section.q-and-a > :is(ul, ol) > li > :is(ul, ol) > li {
 /* ── spine — sequential walkthrough ───────────────────────────────────── */
 /* Drops the ledger rule and index for a vertical spine with accent nodes; the
  * node halo is the canvas colour so it punches cleanly through the line. */
-section.q-and-a.spine > :is(ul, ol) {
+section.q-and-a.spine > .cell-stage > :is(ul, ol) {
   position: relative;
   padding-left: var(--sp-xl);
   gap: var(--sp-lg);
 }
-section.q-and-a.spine > :is(ul, ol)::before {
+section.q-and-a.spine > .cell-stage > :is(ul, ol)::before {
   content: "";
   position: absolute;
   left: 0.4cqi;
@@ -8124,11 +8124,11 @@ section.q-and-a.spine > :is(ul, ol)::before {
   width: 0.16cqi;
   background: var(--border);
 }
-section.q-and-a.spine > :is(ul, ol) > li {
+section.q-and-a.spine > .cell-stage > :is(ul, ol) > li {
   padding-left: 0;
   border-left: none;
 }
-section.q-and-a.spine > :is(ul, ol) > li::before {
+section.q-and-a.spine > .cell-stage > :is(ul, ol) > li::before {
   content: "";
   left: calc(-1 * var(--sp-xl));
   top: 0.42em;
@@ -8142,10 +8142,10 @@ section.q-and-a.spine > :is(ul, ol) > li::before {
 /* ── rail — question / answer columns ─────────────────────────────────── */
 /* The pair becomes a three-column exhibit row: number | question | answer,
  * separated by a hairline. The index drops into the flow as the first cell. */
-section.q-and-a.rail > :is(ul, ol) {
+section.q-and-a.rail > .cell-stage > :is(ul, ol) {
   gap: var(--sp-lg);
 }
-section.q-and-a.rail > :is(ul, ol) > li {
+section.q-and-a.rail > .cell-stage > :is(ul, ol) > li {
   display: grid;
   grid-template-columns: auto minmax(0, 0.46fr) minmax(0, 0.54fr);
   column-gap: var(--sp-2xl);
@@ -8155,38 +8155,38 @@ section.q-and-a.rail > :is(ul, ol) > li {
   border-left: none;
   border-bottom: 1px solid var(--border);
 }
-section.q-and-a.rail > :is(ul, ol) > li:last-child {
+section.q-and-a.rail > .cell-stage > :is(ul, ol) > li:last-child {
   padding-bottom: 0;
   border-bottom: none;
 }
-section.q-and-a.rail > :is(ul, ol) > li::before {
+section.q-and-a.rail > .cell-stage > :is(ul, ol) > li::before {
   content: counter(qa);
   position: static;
   font-weight: 700;
 }
-section.q-and-a.rail > :is(ul, ol) > li > :is(ul, ol) {
+section.q-and-a.rail > .cell-stage > :is(ul, ol) > li > :is(ul, ol) {
   margin: 0;
 }
 
 /* ── tab — underlined prompts ─────────────────────────────────────────── */
 /* No index; a short accent underline sits tight beneath each question, then
  * the answer drops below it with its own breathing room. */
-section.q-and-a.tab > :is(ul, ol) {
+section.q-and-a.tab > .cell-stage > :is(ul, ol) {
   gap: var(--sp-lg);
 }
-section.q-and-a.tab > :is(ul, ol) > li {
+section.q-and-a.tab > .cell-stage > :is(ul, ol) > li {
   padding-left: 0;
   border-left: none;
 }
-section.q-and-a.tab > :is(ul, ol) > li::before {
+section.q-and-a.tab > .cell-stage > :is(ul, ol) > li::before {
   display: none;
 }
-section.q-and-a.tab > :is(ul, ol) > li > :is(ul, ol) {
+section.q-and-a.tab > .cell-stage > :is(ul, ol) > li > :is(ul, ol) {
   position: relative;
   margin-top: var(--sp-2xs);
   padding-top: var(--sp-md);
 }
-section.q-and-a.tab > :is(ul, ol) > li > :is(ul, ol)::before {
+section.q-and-a.tab > .cell-stage > :is(ul, ol) > li > :is(ul, ol)::before {
   content: "";
   position: absolute;
   top: 0;
@@ -8200,7 +8200,7 @@ section.q-and-a.tab > :is(ul, ol) > li > :is(ul, ol)::before {
 /* Four pairs in a 2×2 grid divided by a gradient hairline cross. Each cell's
  * header reserves two lines so question tops and answer baselines align across
  * a row whether or not a question wraps. */
-section.q-and-a.grid > :is(ul, ol) {
+section.q-and-a.grid > .cell-stage > :is(ul, ol) {
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 1fr 1fr;
@@ -8208,7 +8208,7 @@ section.q-and-a.grid > :is(ul, ol) {
   align-items: center;
   position: relative;
 }
-section.q-and-a.grid > :is(ul, ol)::before {
+section.q-and-a.grid > .cell-stage > :is(ul, ol)::before {
   content: "";
   position: absolute;
   left: 50%;
@@ -8218,7 +8218,7 @@ section.q-and-a.grid > :is(ul, ol)::before {
   transform: translateX(-50%);
   background: linear-gradient(to bottom, transparent, var(--border) 18%, var(--border) 82%, transparent);
 }
-section.q-and-a.grid > :is(ul, ol)::after {
+section.q-and-a.grid > .cell-stage > :is(ul, ol)::after {
   content: "";
   position: absolute;
   top: 50%;
@@ -8228,32 +8228,32 @@ section.q-and-a.grid > :is(ul, ol)::after {
   transform: translateY(-50%);
   background: linear-gradient(to right, transparent, var(--border) 18%, var(--border) 82%, transparent);
 }
-section.q-and-a.grid > :is(ul, ol) > li {
+section.q-and-a.grid > .cell-stage > :is(ul, ol) > li {
   display: grid;
   grid-template-rows: minmax(3em, auto) auto;
   row-gap: var(--sp-xs);
   border-left: none;
 }
-section.q-and-a.grid > :is(ul, ol) > li > :is(ul, ol) {
+section.q-and-a.grid > .cell-stage > :is(ul, ol) > li > :is(ul, ol) {
   margin: 0;
 }
 
 /* ── compact — the density escape hatch for five-plus pairs ───────────── */
 /* A pure opt-in on the ledger: the question and its index drop from message to
  * body type, the answer to compact-body, and the gaps close. */
-section.q-and-a.compact {
+section.q-and-a.compact > .cell-stage {
   --qa-gap: var(--sp-sm);
 }
-section.q-and-a.compact > :is(ul, ol) > li {
+section.q-and-a.compact > .cell-stage > :is(ul, ol) > li {
   font-size: var(--fs-body);
 }
-section.q-and-a.compact > :is(ul, ol) > li::before {
+section.q-and-a.compact > .cell-stage > :is(ul, ol) > li::before {
   font-size: var(--fs-body);
 }
-section.q-and-a.compact > :is(ul, ol) > li > :is(ul, ol) {
+section.q-and-a.compact > .cell-stage > :is(ul, ol) > li > :is(ul, ol) {
   margin-top: var(--sp-2xs);
 }
-section.q-and-a.compact > :is(ul, ol) > li > :is(ul, ol) > li {
+section.q-and-a.compact > .cell-stage > :is(ul, ol) > li > :is(ul, ol) > li {
   font-size: var(--fs-body-compact);
 }
 
@@ -8264,21 +8264,21 @@ section.q-and-a.compact > :is(ul, ol) > li > :is(ul, ol) > li {
 section.q-and-a.solo {
   --qa-index: calc(var(--fs-emphasis) * 0.8);
 }
-section.q-and-a.solo > :is(ul, ol) {
+section.q-and-a.solo > .cell-stage > :is(ul, ol) {
   gap: 0;
 }
-section.q-and-a.solo > :is(ul, ol) > li {
+section.q-and-a.solo > .cell-stage > :is(ul, ol) > li {
   font-size: var(--fs-emphasis);
   line-height: var(--lh-tight);
 }
-section.q-and-a.solo > :is(ul, ol) > li::before {
+section.q-and-a.solo > .cell-stage > :is(ul, ol) > li::before {
   font-size: var(--qa-index);
   line-height: var(--lh-tight);
 }
-section.q-and-a.solo > :is(ul, ol) > li > :is(ul, ol) {
+section.q-and-a.solo > .cell-stage > :is(ul, ol) > li > :is(ul, ol) {
   margin-top: var(--sp-md);
 }
-section.q-and-a.solo > :is(ul, ol) > li > :is(ul, ol) > li {
+section.q-and-a.solo > .cell-stage > :is(ul, ol) > li > :is(ul, ol) > li {
   font-size: var(--fs-message);
   line-height: var(--lh-snug);
 }
@@ -8295,31 +8295,31 @@ section.q-and-a.solo > :is(ul, ol) > li > :is(ul, ol) > li {
      descendant (`> ul`) so the container query CAN restyle it: drop to a flex column
      so the pairs pack by content height + gap (the grid's stretched auto-rows left
      huge gaps), and reset each pair's reserved two-line header to natural height. */
-  section.q-and-a.grid > :is(ul, ol) {
+  section.q-and-a.grid > .cell-stage > :is(ul, ol) {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: stretch;
     gap: var(--sp-lg);
   }
-  section.q-and-a.grid > :is(ul, ol) > li { grid-template-rows: auto auto; }
-  section.q-and-a.grid > :is(ul, ol)::before,
-  section.q-and-a.grid > :is(ul, ol)::after { display: none; }
+  section.q-and-a.grid > .cell-stage > :is(ul, ol) > li { grid-template-rows: auto auto; }
+  section.q-and-a.grid > .cell-stage > :is(ul, ol)::before,
+  section.q-and-a.grid > .cell-stage > :is(ul, ol)::after { display: none; }
   /* rail columns → the ledger's hanging-index block so Q and A stack legibly. */
-  section.q-and-a.rail > :is(ul, ol) > li {
+  section.q-and-a.rail > .cell-stage > :is(ul, ol) > li {
     display: block;
     position: relative; /* self-contained context for the absolute index ::before */
     padding-left: var(--qa-gutter);
     padding-bottom: var(--sp-lg);
     border-left: 2px solid var(--accent);
   }
-  section.q-and-a.rail > :is(ul, ol) > li::before {
+  section.q-and-a.rail > .cell-stage > :is(ul, ol) > li::before {
     content: "0" counter(qa);
     position: absolute;
     left: var(--sp-md);
     top: 0;
   }
-  section.q-and-a.rail > :is(ul, ol) > li > :is(ul, ol) { margin-top: var(--sp-xs); }
+  section.q-and-a.rail > .cell-stage > :is(ul, ol) > li > :is(ul, ol) { margin-top: var(--sp-xs); }
 }
 
 /* === lib/components/chart/quadrant/quadrant.styles.css === */
@@ -8656,7 +8656,7 @@ section.quadrant.dark {
 
 
 
-section.quote { justify-content:center; align-items:center; }
+section.quote > .cell-stage { display:flex; flex-direction:column; justify-content:center; align-items:center; }
 section.quote blockquote {
   position:relative;
   background:var(--bg-alt); border:1px solid var(--border);
@@ -8668,7 +8668,7 @@ section.quote blockquote {
 section.quote blockquote::before { content:'\201C'; font-family:var(--font-display); font-size:var(--fs-h1); color:var(--text-muted); line-height:0.8; display:block; margin-bottom:var(--sp-xs); }
 section.quote blockquote::after  { content:'\201D'; font-family:var(--font-display); font-size:var(--fs-h1); color:var(--text-muted); line-height:0.8; display:block; text-align:right; margin-top:var(--sp-xs); }
 section.quote blockquote p { font-family:var(--font-display); font-size:var(--fs-message); font-style:italic; color:var(--text-heading); line-height:var(--lh-snug); margin:0; text-align:center; }
-section.quote > p { padding-top:var(--sp-xl); font-size:var(--fs-meta); line-height:var(--lh-snug); color:var(--text-secondary); text-align:center; }
+section.quote > .cell-stage > p { padding-top:var(--sp-xl); font-size:var(--fs-meta); line-height:var(--lh-snug); color:var(--text-secondary); text-align:center; }
 
 /* === lib/components/chart/radar/radar.styles.css === */
 /* radar — extracted from lib/_legacy.css (batch 8).
@@ -10943,30 +10943,30 @@ section.state-chart.horizontal .state-chip-arrow {
  * See lib/components/evidence/stats/stats.manifest.json for the contract.
  */
 
-section.stats { justify-content:center; align-items:center; }
+section.stats > .cell-stage { display:flex; flex-direction:column; justify-content:center; align-items:center; }
 section.stats h2 { margin-bottom:var(--sp-xs); text-align:center; }
 section.stats h3 { margin-bottom:0.3125cqi; }
-section.stats > p, section.stats > em { font-size:var(--fs-body); line-height:var(--lh-relaxed); margin-bottom:var(--sp-lg); color:var(--text-label); font-style:italic; display:block; text-align:center; }
+section.stats > .cell-stage > p, section.stats > .cell-stage > em { font-size:var(--fs-body); line-height:var(--lh-relaxed); margin-bottom:var(--sp-lg); color:var(--text-label); font-style:italic; display:block; text-align:center; }
 
 /* The stat strip: the top-level list laid out as a centered flex row. */
-section.stats > ol {
+section.stats > .cell-stage > ol {
   display:flex; justify-content:center; gap:var(--sp-2xl);
   list-style:none; padding:0; margin:0;
 }
-section.stats > ol > li {
+section.stats > .cell-stage > ol > li {
   display:flex; flex-direction:column; align-items:center; gap:0.46875cqi; text-align:center;
 }
 /* The number — the lifted parent-li lead. */
-section.stats > ol > li > strong {
+section.stats > .cell-stage > ol > li > strong {
   font-family:var(--font-display); font-size:var(--fs-h1); font-weight:700;
   color:var(--accent); line-height:1; display:block;
   letter-spacing:0; text-transform:none; font-variant-numeric:tabular-nums;
 }
 /* The label — the nested sublist. */
-section.stats > ol > li > ul {
+section.stats > .cell-stage > ol > li > ul {
   list-style:none; padding:0; margin:0;
 }
-section.stats > ol > li > ul > li {
+section.stats > .cell-stage > ol > li > ul > li {
   font-family:var(--font-label); font-size:var(--fs-meta); font-weight:600;
   letter-spacing:0.18em; text-transform:uppercase; color:var(--text-label);
 }
@@ -10981,16 +10981,16 @@ section.stats > ol > li > ul > li {
    to fit instead of clipping — a big floor (was --sp-2xl) overflowed 4 numbers +
    a 2-line title at the shortest portrait (4:5). Keyed on data-orientation, so
    landscape is untouched. */
-section.stats[data-orientation='portrait'] > ol,
-section.stats[data-orientation='square'] > ol {
+section.stats[data-orientation='portrait'] > .cell-stage > ol,
+section.stats[data-orientation='square'] > .cell-stage > ol { display:flex; flex-direction:column;
   flex-direction: column; gap: var(--sp-sm); width: 100%; justify-content: space-evenly; flex: 1;
 }
-section.stats[data-orientation='portrait'] > ol > li > strong,
-section.stats[data-orientation='square'] > ol > li > strong {
+section.stats[data-orientation='portrait'] > .cell-stage > ol > li > strong,
+section.stats[data-orientation='square'] > .cell-stage > ol > li > strong {
   font-size: calc(var(--fs-h1) * var(--stat-emphasis, 1));
 }
-section.stats[data-orientation='portrait'] > ol > li > ul > li,
-section.stats[data-orientation='square'] > ol > li > ul > li {
+section.stats[data-orientation='portrait'] > .cell-stage > ol > li > ul > li,
+section.stats[data-orientation='square'] > .cell-stage > ol > li > ul > li {
   font-size: var(--fs-body); /* label legible under the big number (was --fs-meta) */
 }
 /* Box-local family reflow (2026-06-18-component-adaptive-sizing.md): square+tall+
@@ -10999,13 +10999,13 @@ section.stats[data-orientation='square'] > ol > li > ul > li {
  * narrow nested cell. Doubled class matches the [data-orientation] reflow's
  * specificity. */
 @container lattice (aspect-ratio <= 1.05) {
-  section.stats.stats > ol {
+  section.stats.stats > .cell-stage > ol { display:flex; flex-direction:column;
     flex-direction: column; gap: var(--sp-sm); width: 100%; justify-content: space-evenly; flex: 1;
   }
-  section.stats.stats > ol > li > strong {
+  section.stats.stats > .cell-stage > ol > li > strong {
     font-size: calc(var(--fs-h1) * var(--stat-emphasis, 1));
   }
-  section.stats.stats > ol > li > ul > li {
+  section.stats.stats > .cell-stage > ol > li > ul > li {
     font-size: var(--fs-body);
   }
 }

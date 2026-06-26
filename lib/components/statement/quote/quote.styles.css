@@ -9,7 +9,7 @@
 
 
 
-section.quote { justify-content:center; align-items:center; }
+section.quote > .cell-stage { display:flex; flex-direction:column; justify-content:center; align-items:center; }
 section.quote blockquote {
   position:relative;
   background:var(--bg-alt); border:1px solid var(--border);
@@ -21,6 +21,6 @@ section.quote blockquote {
 section.quote blockquote::before { content:'\201C'; font-family:var(--font-display); font-size:var(--fs-h1); color:var(--text-muted); line-height:0.8; display:block; margin-bottom:var(--sp-xs); }
 section.quote blockquote::after  { content:'\201D'; font-family:var(--font-display); font-size:var(--fs-h1); color:var(--text-muted); line-height:0.8; display:block; text-align:right; margin-top:var(--sp-xs); }
 section.quote blockquote p { font-family:var(--font-display); font-size:var(--fs-message); font-style:italic; color:var(--text-heading); line-height:var(--lh-snug); margin:0; text-align:center; }
-section.quote > p { padding-top:var(--sp-xl); font-size:var(--fs-meta); line-height:var(--lh-snug); color:var(--text-secondary); text-align:center; }
+section.quote > .cell-stage > p { padding-top:var(--sp-xl); font-size:var(--fs-meta); line-height:var(--lh-snug); color:var(--text-secondary); text-align:center; }
 
 
