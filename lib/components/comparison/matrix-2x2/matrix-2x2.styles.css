@@ -16,18 +16,18 @@
  * "high-priority" or "outcome" cell (SWOT: opportunities · Eisenhower: do).
  * Authors who want a different accent cell can swap items in the markdown.
  * ──────────────────────────────────────────────────────────────────────── */
-section.matrix-2x2 { display:flex; flex-direction:column; }
+section.matrix-2x2 > .cell-stage { display:flex; flex-direction:column; }
 section.matrix-2x2 h2 { margin-bottom:var(--sp-sm); }
-section.matrix-2x2 > ul,
-section.matrix-2x2 > ol {
+section.matrix-2x2 > .cell-stage > ul,
+section.matrix-2x2 > .cell-stage > ol {
   display:grid;
   grid-template-columns:1fr 1fr;
   grid-template-rows:1fr 1fr;
   gap:var(--sp-md); flex:1;
   list-style:none; padding:0; margin:0;
 }
-section.matrix-2x2 > ul > li,
-section.matrix-2x2 > ol > li {
+section.matrix-2x2 > .cell-stage > ul > li,
+section.matrix-2x2 > .cell-stage > ol > li {
   background:var(--bg-alt);
   border:1px solid var(--border);
   border-radius:var(--radius-md);
@@ -38,8 +38,8 @@ section.matrix-2x2 > ol > li {
   position:relative; overflow:hidden;
 }
 /* Convention: the fourth (bottom-right) quadrant is the "outcome" cell. */
-section.matrix-2x2 > ul > li:nth-child(4),
-section.matrix-2x2 > ol > li:nth-child(4) {
+section.matrix-2x2 > .cell-stage > ul > li:nth-child(4),
+section.matrix-2x2 > .cell-stage > ol > li:nth-child(4) {
   border-color:var(--on-accent-soft);
   background:var(--accent-soft);
 }
@@ -72,8 +72,8 @@ section.matrix-2x2 :is(ul,ol) > li > strong ~ * { font-weight: 400; }
  * `[data-orientation]` reflow's specificity and stay robust to future variant
  * grid rules — the role the attribute played. */
 @container lattice (aspect-ratio <= 0.9) {
-  section.matrix-2x2.matrix-2x2 > ul,
-  section.matrix-2x2.matrix-2x2 > ol {
+  section.matrix-2x2.matrix-2x2 > .cell-stage > ul,
+  section.matrix-2x2.matrix-2x2 > .cell-stage > ol {
     grid-template-columns: 1fr;
     grid-template-rows: none;
     grid-auto-rows: minmax(0, 1fr);
