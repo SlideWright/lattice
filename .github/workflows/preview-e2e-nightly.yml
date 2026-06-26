@@ -1,0 +1,165 @@
+name: Preview e2e nightly (playground gallery render)
+
+# NIGHTLY real-browser e2e for the docs Playground. The jsdom unit/fuzz tests
+# mock the render engine, so they prove the pane STATE stays coherent but can't
+# prove the deck actually PAINTS — only a browser can. This loads a gallery from
+# Edit view (the reported "tab flips to Preview but the deck never shows" flow)
+# at mobile + desktop and asserts the deck reveals on screen.
+#
+# Per the repo gate strategy, a browser-dependent visual check belongs OFF the PR
+# critical path (it's slow and needs a built site + Chrome) — so it runs nightly
+# on `main`, like perf-nightly. On failure it ALWAYS captures screenshots + a
+# detailed, reproducible report and files them into a single rolling tracking
+# issue (found by a title marker, so it never spams), with the screenshots
+# embedded inline via a dedicated artifacts branch.
+
+on:
+  schedule:
+    - cron: '23 4 * * *' # daily 04:23 UTC (before perf-nightly 05:37 + backlog 06:17)
+  workflow_dispatch:
+
+permissions:
+  contents: write # push screenshots to the artifacts branch for inline embedding
+  issues: write # open / append the rolling tracking issue
+
+concurrency:
+  group: preview-e2e-nightly
+  cancel-in-progress: false
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    env:
+      PUPPETEER_SKIP_DOWNLOAD: '1'
+      PREVIEW_E2E_OUT: ${{ github.workspace }}/.preview-e2e-out
+      SHOT_BRANCH: ci/preview-e2e-screenshots
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # the orphan screenshots branch is fetched/worktree'd below
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: docs/package-lock.json
+      - uses: browser-actions/setup-chrome@v1
+        id: chrome
+        with:
+          chrome-version: stable
+
+      - name: Install docs deps
+        run: npm ci
+        working-directory: docs
+      - name: Build docs site
+        run: npm run build
+        working-directory: docs
+        env:
+          CHROME_PATH: ${{ steps.chrome.outputs.chrome-path }}
+
+      # The check exits 1 on a render failure. Capture the verdict into an output
+      # and keep the job green so the artifact upload + issue steps always run and
+      # key off `failed` (not the step's own exit), mirroring perf-nightly.
+      - name: Run preview e2e
+        id: e2e
+        run: |
+          set -uo pipefail
+          if npm run check:preview; then
+            echo "failed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "failed=true" >> "$GITHUB_OUTPUT"
+          fi
+        working-directory: docs
+        env:
+          CHROME_PATH: ${{ steps.chrome.outputs.chrome-path }}
+
+      - name: Upload screenshots + report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: preview-e2e-${{ github.run_id }}
+          path: .preview-e2e-out/**
+          if-no-files-found: warn
+          retention-days: 14
+
+      # Publish the failure screenshots to a dedicated artifacts branch so they
+      # can be embedded inline in the issue (GitHub has no issue-image upload API).
+      # Reuses the checkout's authenticated origin via a worktree.
+      # continue-on-error: a screenshot-publish failure must NOT abort the job —
+      # the issue MUST still be filed (text + artifact link). When this step fails,
+      # `base` stays empty and the issue step degrades to a no-inline-image report.
+      - name: Publish screenshots to artifacts branch
+        if: steps.e2e.outputs.failed == 'true'
+        id: shots
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          DEST="${{ github.run_id }}"
+          TMP="$(mktemp -d)"
+          git fetch origin "$SHOT_BRANCH" || true
+          if git show-ref --verify --quiet "refs/remotes/origin/$SHOT_BRANCH"; then
+            git worktree add "$TMP" "origin/$SHOT_BRANCH"
+            git -C "$TMP" checkout -B "$SHOT_BRANCH"
+          else
+            git worktree add --detach "$TMP"
+            git -C "$TMP" checkout --orphan "$SHOT_BRANCH"
+            git -C "$TMP" rm -rf . >/dev/null 2>&1 || true
+          fi
+          # Prune to the most recent 10 run dirs so the branch can't grow unbounded
+          # while the playground stays broken.
+          ls -1dt "$TMP"/*/ 2>/dev/null | tail -n +10 | xargs -r rm -rf
+          mkdir -p "$TMP/$DEST"
+          cp "$PREVIEW_E2E_OUT"/*.png "$TMP/$DEST/" 2>/dev/null || true
+          git -C "$TMP" add -A
+          git -C "$TMP" commit -m "preview-e2e screenshots for run $DEST" || true
+          # Survive a branch that moved since the fetch (serialized by concurrency,
+          # but belt-and-braces): rebase onto the remote tip, then push.
+          git -C "$TMP" pull --rebase origin "$SHOT_BRANCH" 2>/dev/null || true
+          git -C "$TMP" push origin "HEAD:$SHOT_BRANCH"
+          echo "base=https://raw.githubusercontent.com/${{ github.repository }}/$SHOT_BRANCH/$DEST" >> "$GITHUB_OUTPUT"
+
+      # Open or append a single rolling tracking issue (found by a title marker),
+      # SELF-LABELLED at creation (a GITHUB_TOKEN-opened issue can't trigger the
+      # triage gate — GitHub's recursion guard — so the bot carries the taxonomy
+      # itself), with the screenshots embedded inline. Skipped when green.
+      - name: Open / append regression issue
+        if: steps.e2e.outputs.failed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BASE: ${{ steps.shots.outputs.base }}
+        run: |
+          set -euo pipefail
+          MARKER='[preview-e2e]'
+          BODY="$PREVIEW_E2E_OUT/report.md"
+          RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          {
+            echo ""
+            echo "### Screenshots"
+            if [ -n "${BASE:-}" ]; then
+              for png in "$PREVIEW_E2E_OUT"/*.png; do
+                [ -e "$png" ] || continue
+                name="$(basename "$png")"
+                echo ""
+                echo "**${name%.png}**"
+                echo ""
+                echo "![${name}](${BASE}/${name})"
+              done
+            else
+              echo ""
+              echo "_(inline screenshots unavailable — see the run artifacts: ${RUN_URL})_"
+            fi
+            echo ""
+            echo "_Run: ${RUN_URL} · commit \`${{ github.sha }}\`._"
+          } >> "$BODY"
+          ISSUE="$(gh issue list --state open --search "in:title $MARKER" --json number -q '.[0].number' || true)"
+          if [ -n "$ISSUE" ]; then
+            gh issue comment "$ISSUE" --body-file "$BODY"
+            echo "Appended to issue #$ISSUE"
+          else
+            gh issue create \
+              --title "$MARKER playground gallery preview fails to render" \
+              --label "area:website" --label "type:fix" \
+              --label "priority:high" --label "status:backlog" \
+              --body-file "$BODY"
+          fi

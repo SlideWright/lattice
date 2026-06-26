@@ -30,3 +30,5 @@ pnpm-debug.log*
 .lighthouseci
 # perf-collect / perf-regression working dirs (scripts/perf-collect.mjs)
 .perf/
+# preview-e2e screenshots + report (scripts/check-preview-render.mjs)
+.preview-e2e-out/

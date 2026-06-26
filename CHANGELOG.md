@@ -135,6 +135,17 @@ in patch versions.
   four pane surfaces (`body[data-pane]`, tab `aria-selected`, the persisted pane, the
   preview render) never drift across random click/programmatic journeys.
 
+- **A Playground deck swap no longer double-writes the preview iframe (slow-network flash).**
+  Setting the editor source programmatically (loading a gallery, picking a component) fires
+  CodeMirror's `onChange` synchronously → a debounced patch render. On a slow connection or a
+  large deck that pending render fired ~mid-load and **re-wrote** the iframe srcdoc, reloading
+  the preview and flashing (and, before the pane-sync fix above, could leave it blank). The
+  authoritative fresh render now cancels that queued debounced render, so a deck swap is a
+  single write. Guarded by a NIGHTLY real-browser e2e (`docs/scripts/check-preview-render.mjs`,
+  `.github/workflows/preview-e2e-nightly.yml`) that loads a gallery at mobile + desktop and
+  asserts the deck actually paints — the jsdom fuzz mocks the engine and can't see the real
+  render. On failure it files a single rolling tracking issue with screenshots + a reproduction.
+
 - **A crashed Chrome render fails fast instead of hanging to the outer timeout.** When the
   headless-Chrome renderer/GPU process crashes mid-render (`Protocol error … Target closed`),
   the emulator's awaited CDP calls (`page.goto` / `page.evaluate` / `page.pdf`) could be left

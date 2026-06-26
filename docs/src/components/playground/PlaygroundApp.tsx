@@ -162,6 +162,15 @@ export function PlaygroundApp({ data }: { data: PlaygroundData }) {
 
 	// freshRender resets the iframe (explicit deck swaps); render(false) patches.
 	const freshRender = React.useCallback(() => {
+		// A deck swap sets the editor source programmatically, and CodeMirror's
+		// setValue dispatches synchronously — firing onChange → onEdit →
+		// scheduleRender, which queues a DEBOUNCED patch render. That pending render
+		// races THIS authoritative fresh render: on a slow connection (or a large
+		// deck) the fresh srcdoc has not finished loading when the debounced render
+		// fires ~220ms later, so it re-writes the iframe — a second full srcdoc write
+		// that reloads the preview and flashes. Cancel it; the fresh render supersedes
+		// any queued patch. (Cheap insurance: with fast loads it would merely patch.)
+		if (timerRef.current) clearTimeout(timerRef.current);
 		previewStateRef.current = { ...previewStateRef.current, frameSig: '' };
 		render(true);
 	}, [render]);
