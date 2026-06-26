@@ -397,10 +397,13 @@ decision note). The masthead's `lede · bay` is a fixed band split. On a migrate
 frame the footer is a real `.cell-footer` — an **in-flow flex row** (the frame's
 third cell) holding the running footer text (left), the section progress rail, and
 the page number (right). Because it flows in the section column, the stage above
-ends exactly where the footer begins: the footer's height *is* the reserve, so the
-`--footer-reserve` padding guess is retired. The page number is a real
-`<span class="lat-pagination">`, not a `section::after` pseudo — a page number is
-content, not decoration (the decorative numbered-divider numeral stays a pseudo).
+ends exactly where the footer begins, so the `--footer-reserve` padding guess is
+retired. By **default the band hugs the bottom edge** — content-height, in the
+running-chrome edge berth, on the same baseline the legacy absolute footer sat on
+(near-identical to before). The **`footer-inset`** universal modifier lifts it off
+the edge into the frame, so the bottom inset mirrors the top. The page number is a
+real `<span class="lat-pagination">`, not a `section::after` pseudo — a page number
+is content, not decoration (the decorative numbered-divider numeral stays a pseudo).
 An un-migrated frame still uses the legacy model: three **independently-positionable
 Cells** (footer-left · progress · pagination), each token-driven
 (`var(--<cell>-inset)`), so per-family `slicing` can relocate any one (§7.3). Either

@@ -31,12 +31,15 @@ in patch versions.
   A migrated frame's running `footer:` text, section progress rail, and page number now
   live in one in-flow `.cell-footer` band — the frame's third cell — instead of three
   separately-positioned overlays. Because the band is in-flow, the stage above ends exactly
-  where it begins: the footer's height *is* the reserve, retiring the `--footer-reserve`
-  padding guess. The page number is **de-pseudo'd** — it was a `section::after` pseudo-element
-  painted over the slide; it is now a real `<span class="lat-pagination">` (a page number is
-  content, not decoration). The decorative numbered-divider numeral stays a pseudo. Frames not
-  yet migrated keep the positioned footer + pseudo, so nothing regresses. Completes the
-  footer row of the flex cell-tree (`2026-06-26-frames-as-flex-cell-trees.md` §6).
+  where it begins, retiring the `--footer-reserve` padding guess. By default the band **hugs
+  the bottom edge** (the running text lands on the same baseline the legacy absolute footer
+  sat on, in the running-chrome edge berth — visually near-identical to before). The new
+  **`footer-inset`** universal modifier lifts the band off the edge into the frame, so the
+  bottom inset mirrors the top. The page number is **de-pseudo'd** — it was a `section::after`
+  pseudo-element painted over the slide; it is now a real `<span class="lat-pagination">` (a
+  page number is content, not decoration). The decorative numbered-divider numeral stays a
+  pseudo. Frames not yet migrated keep the positioned footer + pseudo, so nothing regresses.
+  Completes the footer row of the flex cell-tree (`2026-06-26-frames-as-flex-cell-trees.md` §6).
 
 - **The centering statement/evidence components adopt the stage cell.** `quote`, `stats`,
   `big-number`, `decision`, and `q-and-a` migrate to `.cell-stage`. These components

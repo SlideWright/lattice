@@ -66,6 +66,19 @@ right, and nothing the body does can push into that band.
 
 ---
 
+<!-- _class: footer-inset -->
+
+## Lift it with `footer-inset`
+
+- Hugging the bottom edge is the default — a board footer conventionally sits at
+  the page edge.
+- Add the `footer-inset` universal modifier to lift the band into the frame, so
+  the bottom inset mirrors the top.
+
+This slide carries `footer-inset`; the footer band sits higher, off the edge.
+
+---
+
 <!-- _class: closing -->
 
 `Fin`
