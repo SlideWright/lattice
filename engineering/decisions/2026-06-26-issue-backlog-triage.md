@@ -149,14 +149,36 @@ say **9** diagrams and name one set; `theming.md` enumerates **~12** and names a
 
 ---
 
+## Verification (independent maker–checker pass)
+
+The close/dedupe recommendations carry real blast radius (closing the wrong
+issue loses tracking), so they were put through an independent adversarial
+checker whose mandate was to *refute* each call and default to keep-open on any
+doubt. Result: **zero refutations** — all 6 closes and both dedupes verified
+safe. Two refinements folded in:
+
+- **#285 must close/re-scope *with* #284** — it explicitly rides on the @layer
+  card, and that activation was vetoed (not deferred), so #285's premise is dead
+  too; left alone it is orphaned.
+- **#198 stays OPEN when #300 folds in** — its slide-36 false-positive
+  overflow-detector evidence predates the #528 cell-aware-overflow rewrite, so it
+  needs a fresh `gallery-jargon` rebuild to re-confirm. Do **not** close it on the
+  deck-retirement decision.
+- **#356** is the one "weakened" call (no co-located `.docs.md`/gallery under
+  `lib/forms/`), but #356 itself flagged that gallery as *optional* — still safe
+  to close.
+
 ## Recommended actions (gated — needs your go-ahead)
 
-Triage hygiene that would immediately shrink and clarify the queue:
+Triage hygiene that would immediately shrink and clarify the queue (order
+reflects the verification pass above):
 1. **Close** #284, #356, #295, #296, #306, #441 (with the evidence above as the
-   closing comment).
-2. **Dedupe** #300→#198 and convert #466 to a 2/3 checklist (keep #476).
-3. **Re-scope comments** on #279, #283, #285, #297, #414, #180, #305, #281/#282;
-   tick step 2 on #380.
+   closing comment) — and **re-scope/close #285 in the same motion** (it rides on
+   the vetoed #284).
+2. **Dedupe** #300→#198 (keep #198 OPEN, flagged for a `gallery-jargon` re-verify
+   vs. #528) and convert #466 to a 2/3 checklist (keep #476).
+3. **Re-scope comments** on #279, #283, #297, #414, #180, #305, #281/#282; tick
+   step 2 on #380.
 
 These touch the issue tracker (outward-facing), so I've left them unapplied. The
 single highest-leverage *build* next is **#515** or **#506**; the cheapest
