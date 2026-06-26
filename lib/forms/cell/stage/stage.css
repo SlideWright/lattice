@@ -84,6 +84,51 @@ section.form {
   overflow: hidden;
 }
 
+/* ── STAGE Cell · the bounded body wall (flex cell-tree, 2026-06-26) ─────────
+ * Generic-prose Form slides wrap their flow body in `.cell-stage` (masthead
+ * kernel). The section becomes a flex COLUMN — the masthead band is a
+ * content-height header row, the stage cell fills the rest and CLIPS, and the
+ * footer band stays reserved by the section's own `padding-bottom`. This makes
+ * the bounding-box guarantee true for flowing text: an over-stuffed prose body
+ * is walled at the stage edge instead of bleeding through the footer/rail/
+ * pagination band (the bug this closes). `:has(> .cell-stage)` keys the flex on
+ * the wrap so STANDARD components (no `.cell-stage`, still direct-child bodies)
+ * are completely untouched until they migrate. `min-height:0` is load-bearing —
+ * a flex item defaults to min-height:auto and refuses to shrink, so without it
+ * the clip silently no-ops (forms doc §4b). */
+section.form:has(> .cell-stage) {
+  display: flex;
+  flex-direction: column;
+}
+section.form > .cell-stage {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: clip;
+}
+/* ── Universal ALIGNMENT modifiers (#527) — the author's call ────────────────
+ * Two independent axes act on the stage cell, so they read the same on EVERY
+ * frame. Default is top-left (the natural reading origin); a component never
+ * bakes its own centering — the author opts in per slide. The stage is plain
+ * block flow by default (so paragraph margins collapse exactly as before); ANY
+ * alignment modifier promotes it to a flex column so justify/align resolve.
+ *   vertical   — align-top (default) · align-middle · align-bottom   (justify-content)
+ *   horizontal — align-left (default) · align-center · align-right    (align-items, the BLOCK)
+ * `middle` vs `center` disambiguates the axis (middle = vertical). Horizontal
+ * moves the content BLOCK, never `text-align` (centred prose lines rag badly).
+ * `fill-center`/`fill-anchor` are retained as legacy aliases of align-middle/
+ * align-bottom (consolidation tracked in #527). */
+section.form:is(.align-top, .align-middle, .align-bottom, .align-left, .align-center, .align-right,
+                .fill-center, .fill-anchor) > .cell-stage {
+  display: flex;
+  flex-direction: column;
+}
+section.form:is(.align-middle, .fill-center) > .cell-stage { justify-content: center; }
+section.form:is(.align-bottom, .fill-anchor) > .cell-stage { justify-content: flex-end; }
+section.form.align-top    > .cell-stage { justify-content: flex-start; }
+section.form.align-center > .cell-stage { align-items: center; }
+section.form.align-right  > .cell-stage { align-items: flex-end; }
+section.form.align-left   > .cell-stage { align-items: flex-start; }
+
 /* ── STAGE Cell · fill discipline (design/forms.md §5) ──────────────────────
  * How an underfilling stage distributes its content — the difference between a
  * "grid of correct boxes" and a board deck. Default is `start` (top-anchored
