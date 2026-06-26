@@ -17,7 +17,7 @@
  * .heat (cell fills), .pills (cell pills), .lanes (row stripes),
  * .asymmetric (cards).
  * ──────────────────────────────────────────────────────────────────── */
-section.obligation-matrix { display:flex; flex-direction:column; }
+section.obligation-matrix > .cell-stage { display:flex; flex-direction:column; }
 section.obligation-matrix h2 { margin-bottom:var(--sp-md); }
 section.obligation-matrix table {
   width:100%;

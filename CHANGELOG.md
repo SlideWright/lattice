@@ -27,6 +27,16 @@ in patch versions.
 
 ### Added
 
+- **Three more components adopt the frame's stage cell.** `list-steps`, `list-criteria`,
+  and `obligation-matrix` migrate to the `.cell-stage` body cell, so their bodies are
+  bounded by the frame and clip at the stage edge instead of bleeding toward the footer.
+  Each needed its own flex context: the `list-steps` strip / `list-criteria` per-item
+  list are `flex:1`, so their stage becomes a flex column; the `list-steps timeline`
+  variant's spine and centring re-home onto the cell; `obligation-matrix` (a `<table>`)
+  moves its column layout onto the stage. The `timeline` title now frame-conforms into
+  the masthead band like every migrated frame. Continues the per-component cell-tree
+  migration (`2026-06-26-frames-as-flex-cell-trees.md` §6).
+
 - **The footer is a real `.cell-footer` cell, and the page number is a real element.**
   A migrated frame's running `footer:` text, section progress rail, and page number now
   live in one `.cell-footer` band — the frame's third cell — instead of three separately

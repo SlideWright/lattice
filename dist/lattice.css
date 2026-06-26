@@ -5838,17 +5838,21 @@ section.list.principles.bullet > .cell-stage > ol > li::before { content:'·'; }
  * Use ul when order is semantic-free; ol when order carries meaning.
  */
 section.list-criteria h2 { margin-bottom:var(--sp-md); }
-section.list-criteria > :is(ol, ul) {
+/* Stage cell (flex cell-tree §6): the criteria list is flex:1 per item, so the
+ * stage must be a flex column for the items to fill the bounded cell. */
+section.list-criteria > .cell-stage { display:flex; flex-direction:column; min-height:0; }
+
+section.list-criteria > .cell-stage > :is(ol, ul) {
   list-style:none; counter-reset:crit-counter;
   display:flex; flex-direction:column; gap:var(--sp-sm);
   flex:1; justify-content:space-between; margin:0; padding:0;
 }
-section.list-criteria > :is(ol, ul) > li {
+section.list-criteria > .cell-stage > :is(ol, ul) > li {
   counter-increment:crit-counter;
   display:flex; align-items:center; gap:var(--sp-md); flex:1;
   container-type:size;
 }
-section.list-criteria > :is(ol, ul) > li::before {
+section.list-criteria > .cell-stage > :is(ol, ul) > li::before {
   content:counter(crit-counter, decimal-leading-zero);
   flex-shrink:0; align-self:stretch;
   display:flex; align-items:center; justify-content:center;
@@ -5873,24 +5877,24 @@ section.list-criteria .crit-body ul li::before { display:none; content:none; }
 /* ── CRITERIA ────────────────────────────────────────────────────────────────
  * li > strong + ul siblings (no .crit-body wrapper) — VS Code fallback.
  * li is flex row; ::before is left cell; strong + ul stack in right cell via grid. */
-section.list-criteria:not(:has(.crit-body)) > :is(ol, ul) > li {
+section.list-criteria:not(:has(.crit-body)) > .cell-stage > :is(ol, ul) > li {
   display:grid; grid-template-columns:auto 1fr; grid-template-rows:auto auto;
   column-gap:var(--sp-md); row-gap:0; align-content:center;
 }
-section.list-criteria:not(:has(.crit-body)) > :is(ol, ul) > li::before { grid-column:1; grid-row:1 / 3; align-self:stretch; display:flex; align-items:center; justify-content:center; font-size:55cqh; }
-section.list-criteria:not(:has(.crit-body)) > :is(ol, ul) > li {
+section.list-criteria:not(:has(.crit-body)) > .cell-stage > :is(ol, ul) > li::before { grid-column:1; grid-row:1 / 3; align-self:stretch; display:flex; align-items:center; justify-content:center; font-size:55cqh; }
+section.list-criteria:not(:has(.crit-body)) > .cell-stage > :is(ol, ul) > li {
   font-size:var(--fs-body); font-weight:700; color:var(--text-heading);
 }
-section.list-criteria:not(:has(.crit-body)) > :is(ol, ul) > li > strong {
+section.list-criteria:not(:has(.crit-body)) > .cell-stage > :is(ol, ul) > li > strong {
   grid-column:2; grid-row:1; display:block;
   font-weight:inherit; color:inherit; margin-bottom:4px;
 }
-section.list-criteria:not(:has(.crit-body)) > :is(ol, ul) > li > ul {
+section.list-criteria:not(:has(.crit-body)) > .cell-stage > :is(ol, ul) > li > ul {
   grid-column:2; grid-row:2; list-style:none; padding:0; margin:0;
   font-size:var(--fs-body); font-weight:400; color:var(--text-body);
 }
-section.list-criteria:not(:has(.crit-body)) > :is(ol, ul) > li > ul li { font-size:inherit; font-weight:inherit; color:inherit; line-height:var(--lh-base); }
-section.list-criteria:not(:has(.crit-body)) > :is(ol, ul) > li > ul li::before { display:none; content:none; }
+section.list-criteria:not(:has(.crit-body)) > .cell-stage > :is(ol, ul) > li > ul li { font-size:inherit; font-weight:inherit; color:inherit; line-height:var(--lh-base); }
+section.list-criteria:not(:has(.crit-body)) > .cell-stage > :is(ol, ul) > li > ul li::before { display:none; content:none; }
 
 /* === lib/components/progression/list-steps/list-steps.styles.css === */
 /* list-steps — extracted from lib/_legacy.css (batch 6).
@@ -5901,6 +5905,10 @@ section.list-criteria:not(:has(.crit-body)) > :is(ol, ul) > li > ul li::before {
  * ## heading  ol with: **Step N title** \n body text
  */
 section.list-steps h2 { margin-bottom:var(--sp-md); }
+/* Stage cell (flex cell-tree §6): the body wraps in `.cell-stage`, so the stage
+ * carries the flex-column context the strip `ol` (flex:1) needs to fill the bounded
+ * cell. The `.timeline` variant overrides this with centring (below). */
+section.list-steps > .cell-stage { display:flex; flex-direction:column; min-height:0; }
 section.list-steps ol { list-style:none; counter-reset:step-counter; display:flex; gap:var(--sp-xl); flex:1; padding:0; margin:0; align-items:stretch; }
 section.list-steps ol > li { counter-increment:step-counter; flex:1; background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:var(--sp-md); display:flex; flex-direction:column; gap:var(--sp-xs); position:relative; font-size:var(--fs-body); line-height:var(--lh-snug); font-weight:700; color:var(--text-heading); }
 section.list-steps ol > li:not(:last-child)::after {
@@ -5990,27 +5998,27 @@ section.list-steps.vertical ol > li:not(:last-child)::after {
  * ol → numbered discs; ul → plain dots. Resets the list-steps card + STEP-badge
  * + arrow-connector chrome. Merged from the standalone timeline on 2026-06-07.
  * Lifted to <strong> by the timeline token in the shared slot-label-lift paths. */
-section.list-steps.timeline { justify-content:center; align-items:center; }
+section.list-steps.timeline > .cell-stage { display:flex; flex-direction:column; justify-content:center; align-items:center; }
 section.list-steps.timeline h2 { margin-bottom:var(--sp-xl); text-align:center; }
-section.list-steps.timeline > :is(ol,ul) {
+section.list-steps.timeline > .cell-stage > :is(ol,ul) {
   display:flex; justify-content:space-between; align-items:flex-start;
   width:100%; position:relative; flex:0 1 auto;
   padding:0 var(--sp-xl); gap:0; box-sizing:border-box; margin:0;
 }
-section.list-steps.timeline > :is(ol,ul)::before {
+section.list-steps.timeline > .cell-stage > :is(ol,ul)::before {
   content:''; position:absolute; top:1.015625cqi;
   left:calc(var(--sp-xl) + 7.03125cqi); right:calc(var(--sp-xl) + 7.03125cqi);
   height:3px; background:var(--spectrum); border-radius:2px;
 }
-section.list-steps.timeline > :is(ol,ul) > li {
+section.list-steps.timeline > .cell-stage > :is(ol,ul) > li {
   flex:0 0 auto;
   display:flex; flex-direction:column; align-items:center;
   width:14.0625cqi; text-align:center; position:relative; z-index:1;
   background:none; border:none; border-radius:0; padding:0;
   font-size:var(--fs-meta); line-height:var(--lh-snug); font-weight:700; color:var(--text-heading);
 }
-section.list-steps.timeline > ol { counter-reset:ls-timeline-counter; }
-section.list-steps.timeline > ol > li::before {
+section.list-steps.timeline > .cell-stage > ol { counter-reset:ls-timeline-counter; }
+section.list-steps.timeline > .cell-stage > ol > li::before {
   counter-increment:ls-timeline-counter;
   content:counter(ls-timeline-counter);
   display:flex; align-items:center; justify-content:center;
@@ -6019,16 +6027,16 @@ section.list-steps.timeline > ol > li::before {
   font-family:var(--font-label); font-size:var(--fs-meta); font-weight:700; line-height:1;
   margin-bottom:1.09375cqi; flex-shrink:0;
 }
-section.list-steps.timeline > ul > li::before {
+section.list-steps.timeline > .cell-stage > ul > li::before {
   content:''; display:block; width:2.03125cqi; height:2.03125cqi; border-radius:50%;
   background:var(--accent); border:3px solid var(--bg);
   box-shadow:0 0 0 1px var(--border); margin-bottom:1.09375cqi; flex-shrink:0;
 }
-section.list-steps.timeline > :is(ol,ul) > li:not(:last-child)::after { content:none; }
-section.list-steps.timeline > :is(ol,ul) > li > strong { display:block; margin-bottom:0.3125cqi; }
-section.list-steps.timeline > :is(ol,ul) > li > :is(ul,ol) { list-style:none; padding:0; margin:0; }
-section.list-steps.timeline > :is(ol,ul) > li > :is(ul,ol) > li { font-weight:400; }
-section.list-steps.timeline > :is(ol,ul) > li > :is(ul,ol) > li em { font-size:var(--fs-meta); color:var(--text-body); line-height:var(--lh-snug); font-style:normal; }
+section.list-steps.timeline > .cell-stage > :is(ol,ul) > li:not(:last-child)::after { content:none; }
+section.list-steps.timeline > .cell-stage > :is(ol,ul) > li > strong { display:block; margin-bottom:0.3125cqi; }
+section.list-steps.timeline > .cell-stage > :is(ol,ul) > li > :is(ul,ol) { list-style:none; padding:0; margin:0; }
+section.list-steps.timeline > .cell-stage > :is(ol,ul) > li > :is(ul,ol) > li { font-weight:400; }
+section.list-steps.timeline > .cell-stage > :is(ol,ul) > li > :is(ul,ol) > li em { font-size:var(--fs-meta); color:var(--text-body); line-height:var(--lh-snug); font-style:normal; }
 
 /* ── Box-local family reflow (engineering/decisions/2026-06-18-component-adaptive-sizing.md).
    The default strip is a horizontal flex row of step cards with right-pointing
@@ -7449,7 +7457,7 @@ section.matrix-2x2 :is(ul,ol) > li > strong ~ * { font-weight: 400; }
  * .heat (cell fills), .pills (cell pills), .lanes (row stripes),
  * .asymmetric (cards).
  * ──────────────────────────────────────────────────────────────────── */
-section.obligation-matrix { display:flex; flex-direction:column; }
+section.obligation-matrix > .cell-stage { display:flex; flex-direction:column; }
 section.obligation-matrix h2 { margin-bottom:var(--sp-md); }
 section.obligation-matrix table {
   width:100%;
