@@ -27,6 +27,13 @@ in patch versions.
 
 ### Added
 
+- **More components adopt the frame's stage cell.** `list`, `glossary`, `matrix-2x2`, and
+  `pricing` migrate to the `.cell-stage` body cell (all pixel-identical), so their bodies
+  are bounded by the frame and can't bleed past the stage edge. The universal pill chrome
+  (`base.modifiers.css`) is made stage-aware so an actor-name / criterion chip keeps its
+  outlined-pill styling once its component's body moves into the cell. Continues the
+  per-component cell-tree migration (`2026-06-26-frames-as-flex-cell-trees.md` §6).
+
 - **The frame's body is now a real bounded cell — prose can't bleed into the footer.**
   The Form frame gains its third cell: a `<div class="cell-stage">` the masthead kernel
   builds around the body (alongside the existing `.cell-masthead` band). `section.form`

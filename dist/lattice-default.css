@@ -5732,16 +5732,16 @@ section.kpi.spotlight > ol > li:not(:first-child) code {
  * See lib/components/inventory/list/list.manifest.json for the contract.
  */
 
-section.list { display:flex; flex-direction:column; }
+section.list > .cell-stage { display:flex; flex-direction:column; }
 section.list h2 { margin-bottom:var(--sp-md); }
 
 /* ── Spine: the list fills the canvas; each row an equal, centred band. ── */
-section.list > :is(ul,ol) {
+section.list > .cell-stage > :is(ul,ol) {
   list-style:none; padding:0; margin:0;
   display:flex; flex-direction:column;
   flex:1; gap:var(--sp-sm);
 }
-section.list > :is(ul,ol) > li {
+section.list > .cell-stage > :is(ul,ol) > li {
   flex:1 1 0; min-height:0;
   display:flex; align-items:center;
   font-size:var(--fs-message);
@@ -5749,27 +5749,27 @@ section.list > :is(ul,ol) > li {
 }
 
 /* ── Default register: accent-edged pills. ── */
-section.list > ul > li {
+section.list > .cell-stage > ul > li {
   background:var(--bg-alt);
   border:1px solid var(--border); border-left:3px solid var(--accent);
   border-radius:var(--radius-md);
   padding:var(--sp-sm) var(--sp-md);
 }
 /* Optional second-line detail under a point. */
-section.list > ul > li > ul { list-style:none; margin:0; padding:0; }
-section.list > ul > li > ul > li {
+section.list > .cell-stage > ul > li > ul { list-style:none; margin:0; padding:0; }
+section.list > .cell-stage > ul > li > ul > li {
   font-size:var(--fs-body-compact); color:var(--text-label);
   line-height:var(--lh-snug); background:none; border:none; padding:0;
 }
 /* Default ordered: leading accent counter, content centred. */
-section.list > ol { counter-reset:list-counter; }
-section.list > ol > li {
+section.list > .cell-stage > ol { counter-reset:list-counter; }
+section.list > .cell-stage > ol > li {
   counter-increment:list-counter;
   background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
   display:grid; grid-template-columns:var(--sp-xl) 1fr; align-items:center; gap:var(--sp-md);
 }
-section.list > ol > li::before {
+section.list > .cell-stage > ol > li::before {
   content:counter(list-counter, decimal-leading-zero);
   font-family:var(--font-label); font-size:var(--fs-h4); font-weight:700; color:var(--accent);
 }
@@ -5777,20 +5777,20 @@ section.list > ol > li::before {
 /* ── takeaway register — former `tldr` component (inventory.list.takeaway) ──
  * Hairline-ruled single lines, no pill chrome. `numbered` adds a large
  * accent counter on the same centreline. Merged 2026-06-07. */
-section.list.takeaway > :is(ul,ol) { gap:0; }
-section.list.takeaway > :is(ul,ol) > li {
+section.list.takeaway > .cell-stage > :is(ul,ol) { gap:0; }
+section.list.takeaway > .cell-stage > :is(ul,ol) > li {
   background:none; border:none; border-radius:0;
   border-bottom:1px solid var(--border);
   padding:0 var(--sp-xs);
   font-size:var(--fs-message); font-weight:500; color:var(--text-heading);
 }
-section.list.takeaway > :is(ul,ol) > li::before { content:none; }
-section.list.takeaway > :is(ul,ol) > li::marker { content:''; }
-section.list.takeaway > :is(ul,ol) > li:last-child { border-bottom:none; }
+section.list.takeaway > .cell-stage > :is(ul,ol) > li::before { content:none; }
+section.list.takeaway > .cell-stage > :is(ul,ol) > li::marker { content:''; }
+section.list.takeaway > .cell-stage > :is(ul,ol) > li:last-child { border-bottom:none; }
 /* numbered — accent counter as a fixed leading column, centred with the text. */
-section.list.takeaway.numbered > :is(ul,ol) > li { counter-increment:list-take-counter; gap:var(--sp-md); }
-section.list.takeaway.numbered > :is(ul,ol) { counter-reset:list-take-counter; }
-section.list.takeaway.numbered > :is(ul,ol) > li::before {
+section.list.takeaway.numbered > .cell-stage > :is(ul,ol) > li { counter-increment:list-take-counter; gap:var(--sp-md); }
+section.list.takeaway.numbered > .cell-stage > :is(ul,ol) { counter-reset:list-take-counter; }
+section.list.takeaway.numbered > .cell-stage > :is(ul,ol) > li::before {
   content:counter(list-take-counter, decimal-leading-zero);
   font-family:var(--font-label); font-size:var(--fs-emphasis); font-weight:700;
   letter-spacing:0.02em; color:var(--accent); line-height:1;
@@ -5800,8 +5800,8 @@ section.list.takeaway.numbered > :is(ul,ol) > li::before {
 /* ── principles register — former `principles` component (inventory.list.principles) ──
  * Display-weight declarations with a large accent counter. ol only;
  * lettered/roman/bullet switch the counter format. Merged 2026-06-07. */
-section.list.principles > ol { counter-reset:list-principle-counter; gap:0; }
-section.list.principles > ol > li {
+section.list.principles > .cell-stage > ol { counter-reset:list-principle-counter; gap:0; }
+section.list.principles > .cell-stage > ol > li {
   counter-increment:list-principle-counter;
   display:grid; grid-template-columns:auto 1fr; column-gap:var(--sp-lg); align-items:center;
   background:none; border:none; border-radius:0;
@@ -5810,15 +5810,15 @@ section.list.principles > ol > li {
   font-size:var(--fs-emphasis); font-weight:500; letter-spacing:-0.01em;
   line-height:var(--lh-tight); color:var(--text-heading);
 }
-section.list.principles > ol > li:last-child { border-bottom:none; }
-section.list.principles > ol > li::before {
+section.list.principles > .cell-stage > ol > li:last-child { border-bottom:none; }
+section.list.principles > .cell-stage > ol > li::before {
   content:counter(list-principle-counter, decimal-leading-zero);
   font-family:var(--font-label); font-size:var(--fs-h1); font-weight:700;
   letter-spacing:0.02em; color:var(--accent); line-height:1; align-self:center;
 }
-section.list.principles.lettered > ol > li::before { content:counter(list-principle-counter, upper-alpha); }
-section.list.principles.roman > ol > li::before { content:counter(list-principle-counter, upper-roman); }
-section.list.principles.bullet > ol > li::before { content:'·'; }
+section.list.principles.lettered > .cell-stage > ol > li::before { content:counter(list-principle-counter, upper-alpha); }
+section.list.principles.roman > .cell-stage > ol > li::before { content:counter(list-principle-counter, upper-roman); }
+section.list.principles.bullet > .cell-stage > ol > li::before { content:'·'; }
 
 /* ── Box-local family reflow (engineering/decisions/2026-06-18-component-adaptive-sizing.md).
    Keyed on the nearest `lattice` container's aspect, so it fires on a portrait deck
@@ -5830,13 +5830,13 @@ section.list.principles.bullet > ol > li::before { content:'·'; }
    `[data-orientation]` reflow's specificity, so the takeaway/principles registers
    (whose variant rules are (0,2,N)) still de-balloon — the role the attribute played. */
 @container lattice (aspect-ratio <= 1.05) {
-  section.list.list > :is(ul,ol) { justify-content: space-evenly; }
-  section.list.list > :is(ul,ol) > li { flex: 0 0 auto; }
+  section.list.list > .cell-stage > :is(ul,ol) { justify-content: space-evenly; }
+  section.list.list > .cell-stage > :is(ul,ol) > li { flex: 0 0 auto; }
 }
 /* Strip — the tallest/narrowest box (mobile @size; a nested strip cell): open the
    rhythm so the de-ballooned rows breathe down the long frame instead of clustering. */
 @container lattice (aspect-ratio <= 0.5) {
-  section.list.list > :is(ul,ol) { gap: var(--sp-md); }
+  section.list.list > .cell-stage > :is(ul,ol) { gap: var(--sp-md); }
 }
 
 /* === lib/components/progression/list-criteria/list-criteria.styles.css === */
@@ -7378,18 +7378,18 @@ section .functionplot-error {
  * "high-priority" or "outcome" cell (SWOT: opportunities · Eisenhower: do).
  * Authors who want a different accent cell can swap items in the markdown.
  * ──────────────────────────────────────────────────────────────────────── */
-section.matrix-2x2 { display:flex; flex-direction:column; }
+section.matrix-2x2 > .cell-stage { display:flex; flex-direction:column; }
 section.matrix-2x2 h2 { margin-bottom:var(--sp-sm); }
-section.matrix-2x2 > ul,
-section.matrix-2x2 > ol {
+section.matrix-2x2 > .cell-stage > ul,
+section.matrix-2x2 > .cell-stage > ol {
   display:grid;
   grid-template-columns:1fr 1fr;
   grid-template-rows:1fr 1fr;
   gap:var(--sp-md); flex:1;
   list-style:none; padding:0; margin:0;
 }
-section.matrix-2x2 > ul > li,
-section.matrix-2x2 > ol > li {
+section.matrix-2x2 > .cell-stage > ul > li,
+section.matrix-2x2 > .cell-stage > ol > li {
   background:var(--bg-alt);
   border:1px solid var(--border);
   border-radius:var(--radius-md);
@@ -7400,8 +7400,8 @@ section.matrix-2x2 > ol > li {
   position:relative; overflow:hidden;
 }
 /* Convention: the fourth (bottom-right) quadrant is the "outcome" cell. */
-section.matrix-2x2 > ul > li:nth-child(4),
-section.matrix-2x2 > ol > li:nth-child(4) {
+section.matrix-2x2 > .cell-stage > ul > li:nth-child(4),
+section.matrix-2x2 > .cell-stage > ol > li:nth-child(4) {
   border-color:var(--on-accent-soft);
   background:var(--accent-soft);
 }
@@ -7434,8 +7434,8 @@ section.matrix-2x2 :is(ul,ol) > li > strong ~ * { font-weight: 400; }
  * `[data-orientation]` reflow's specificity and stay robust to future variant
  * grid rules — the role the attribute played. */
 @container lattice (aspect-ratio <= 0.9) {
-  section.matrix-2x2.matrix-2x2 > ul,
-  section.matrix-2x2.matrix-2x2 > ol {
+  section.matrix-2x2.matrix-2x2 > .cell-stage > ul,
+  section.matrix-2x2.matrix-2x2 > .cell-stage > ol {
     grid-template-columns: 1fr;
     grid-template-rows: none;
     grid-auto-rows: minmax(0, 1fr);
@@ -7755,23 +7755,23 @@ section.piechart .wedge:nth-of-type(6n)   { fill: var(--chart-cat-6-fill); strok
  * shared `.badge` chrome regardless of specificity.
  */
 
-section.pricing { display: flex; flex-direction: column; }
+section.pricing > .cell-stage { display: flex; flex-direction: column; }
 section.pricing h2 { margin-bottom: var(--sp-sm); }
 
 /* ── Tier grid ── three columns by default; `two` / `four` adjust. */
-section.pricing > ul {
+section.pricing > .cell-stage > ul {
   display: grid;
   grid-template-columns: repeat(var(--pricing-cols, 3), 1fr);
   grid-auto-rows: 1fr;
   gap: var(--sp-md);
   flex: 1; list-style: none; padding: 0; margin: 0;
 }
-section.pricing.two  > ul { --pricing-cols: 2; }
-section.pricing.four > ul { --pricing-cols: 4; }
+section.pricing.two > .cell-stage > ul { --pricing-cols: 2; }
+section.pricing.four > .cell-stage > ul { --pricing-cols: 4; }
 
 /* ── Tier card ── auto-bold name via the card's own weight (cards-grid
  * pattern); children revert below. */
-section.pricing > ul > li {
+section.pricing > .cell-stage > ul > li {
   position: relative;
   background: var(--bg-alt);
   border: 1px solid var(--border);
@@ -7784,10 +7784,10 @@ section.pricing > ul > li {
   overflow: hidden;
 }
 /* Back-compat: if an author wraps the name in **…**, render it identically. */
-section.pricing > ul > li > strong { font-weight: inherit; color: inherit; }
+section.pricing > .cell-stage > ul > li > strong { font-weight: inherit; color: inherit; }
 
 /* ── Price ── trailing inline code, promoted to a display figure. */
-section.pricing > ul > li > code {
+section.pricing > .cell-stage > ul > li > code {
   display: block;
   margin: var(--sp-2xs) 0 var(--sp-sm) 0;
   font-family: var(--font-display);
@@ -7798,7 +7798,7 @@ section.pricing > ul > li > code {
 }
 
 /* ── Recommendation ribbon ── the author's *marker* renders top-right. */
-section.pricing > ul > li > em {
+section.pricing > .cell-stage > ul > li > em {
   position: absolute; top: 0; right: 0;
   font-style: normal; font-weight: 700;
   font-family: var(--pill-font);
@@ -7810,23 +7810,23 @@ section.pricing > ul > li > em {
 }
 
 /* ── Elevated tier ── any card carrying a marker (standalone :has). */
-section.pricing > ul > li:has(> em) {
+section.pricing > .cell-stage > ul > li:has(> em) {
   background: var(--accent-soft);
   border-color: var(--accent);
   box-shadow: inset 0 0 0 1px var(--accent);
   color: var(--on-accent-soft);
 }
-section.pricing > ul > li:has(> em) > code { color: var(--on-accent-soft); }
+section.pricing > .cell-stage > ul > li:has(> em) > code { color: var(--on-accent-soft); }
 
 /* ── Feature list ── fills the card so the caption can pin to the bottom;
  * weight reverts from the card's 700. */
-section.pricing > ul > li > ul {
+section.pricing > .cell-stage > ul > li > ul {
   list-style: none; padding: 0; margin: var(--sp-sm) 0 0 0;
   width: 100%; flex: 1 1 auto;
   display: flex; flex-direction: column; gap: var(--sp-2xs);
   font-weight: 400;
 }
-section.pricing > ul > li > ul > li {
+section.pricing > .cell-stage > ul > li > ul > li {
   font-size: var(--fs-body-compact);
   font-weight: 400; color: var(--text-body);
   line-height: var(--lh-snug);
@@ -7834,23 +7834,23 @@ section.pricing > ul > li > ul > li {
 /* Badge feature rows — strip verdict-grid's pill chrome, keep the disc +
  * mark (::before/::after) and left-align. Padding is preserved so the
  * absolute ::after mark stays registered over the ::before disc. */
-section.pricing > ul > li > ul > li > .badge {
+section.pricing > .cell-stage > ul > li > ul > li > .badge {
   background: none; border: none;
   justify-content: flex-start;
   font-family: inherit; font-size: inherit; font-weight: 400;
   letter-spacing: 0; color: var(--text-body);
 }
 /* ── "Who it's for" line ── the marker-less last nested li, pinned bottom. */
-section.pricing > ul > li > ul > li:last-child {
+section.pricing > .cell-stage > ul > li > ul > li:last-child {
   margin-top: auto; padding-top: var(--sp-sm);
   font-size: var(--fs-meta); color: var(--text-muted);
 }
-section.pricing > ul > li:has(> em) > ul > li:last-child { color: var(--on-accent-soft); }
+section.pricing > .cell-stage > ul > li:has(> em) > ul > li:last-child { color: var(--on-accent-soft); }
 
 /* ── Portrait / square reflow (social/mobile @sizes). Keyed on the deck-wide
  * data-orientation stamp (lib/engine/slides.js); landscape untouched. See
  * 2026-06-16-social-mobile-portrait-sizes.md (phase 3). */  Tiers stack to one column (the standard mobile pricing pattern).
-section.pricing[data-orientation="portrait"] > ul {
+section.pricing[data-orientation="portrait"] > .cell-stage > ul {
   grid-template-columns: 1fr;
 }
 /* Box-local family reflow (2026-06-18-component-adaptive-sizing.md): tall+strip
@@ -7859,7 +7859,7 @@ section.pricing[data-orientation="portrait"] > ul {
  * deck-wide data-orientation stamp. Doubled class reaches (0,2,2) to match the
  * [data-orientation] reflow it mirrors. */
 @container lattice (aspect-ratio <= 0.9) {
-  section.pricing.pricing > ul {
+  section.pricing.pricing > .cell-stage > ul {
     grid-template-columns: 1fr;
   }
 }
@@ -12172,7 +12172,9 @@ section footer {
  * so the universal selector can't reach it); the rest rely on this rule.
  * Plus any future layout whose `> li` is `display:flex`. */
 section:where(:not(.title):not(.divider):not(.closing):not(.split-panel):not(.big-number):not(.kpi):not(.stats):not(.quote):not(.glossary):not(.compare-table):not(.roadmap):not(.agenda):not(.matrix-2x2):not(.decision):not(.verdict-grid):not(.compare-prose):not(.code):not(.compare-code):not(.image):not(.diagram):not(.content):not(.timeline):not(.list-steps):not(.principles):not(.list):not(.list-criteria):not(.list-tabular):not(.math):not(.pricing))
-  > :where(ul, ol) > li > code:where(:last-child, .lat-pill) {
+  > :where(ul, ol) > li > code:where(:last-child, .lat-pill),
+section:where(:not(.title):not(.divider):not(.closing):not(.split-panel):not(.big-number):not(.kpi):not(.stats):not(.quote):not(.glossary):not(.compare-table):not(.roadmap):not(.agenda):not(.matrix-2x2):not(.decision):not(.verdict-grid):not(.compare-prose):not(.code):not(.compare-code):not(.image):not(.diagram):not(.content):not(.timeline):not(.list-steps):not(.principles):not(.list):not(.list-criteria):not(.list-tabular):not(.math):not(.pricing))
+  > .cell-stage > :where(ul, ol) > li > code:where(:last-child, .lat-pill) {
   margin-left:auto;
   align-self:center;
   display:inline-flex;

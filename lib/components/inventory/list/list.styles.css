@@ -14,16 +14,16 @@
  * See lib/components/inventory/list/list.manifest.json for the contract.
  */
 
-section.list { display:flex; flex-direction:column; }
+section.list > .cell-stage { display:flex; flex-direction:column; }
 section.list h2 { margin-bottom:var(--sp-md); }
 
 /* ── Spine: the list fills the canvas; each row an equal, centred band. ── */
-section.list > :is(ul,ol) {
+section.list > .cell-stage > :is(ul,ol) {
   list-style:none; padding:0; margin:0;
   display:flex; flex-direction:column;
   flex:1; gap:var(--sp-sm);
 }
-section.list > :is(ul,ol) > li {
+section.list > .cell-stage > :is(ul,ol) > li {
   flex:1 1 0; min-height:0;
   display:flex; align-items:center;
   font-size:var(--fs-message);
@@ -31,27 +31,27 @@ section.list > :is(ul,ol) > li {
 }
 
 /* ── Default register: accent-edged pills. ── */
-section.list > ul > li {
+section.list > .cell-stage > ul > li {
   background:var(--bg-alt);
   border:1px solid var(--border); border-left:3px solid var(--accent);
   border-radius:var(--radius-md);
   padding:var(--sp-sm) var(--sp-md);
 }
 /* Optional second-line detail under a point. */
-section.list > ul > li > ul { list-style:none; margin:0; padding:0; }
-section.list > ul > li > ul > li {
+section.list > .cell-stage > ul > li > ul { list-style:none; margin:0; padding:0; }
+section.list > .cell-stage > ul > li > ul > li {
   font-size:var(--fs-body-compact); color:var(--text-label);
   line-height:var(--lh-snug); background:none; border:none; padding:0;
 }
 /* Default ordered: leading accent counter, content centred. */
-section.list > ol { counter-reset:list-counter; }
-section.list > ol > li {
+section.list > .cell-stage > ol { counter-reset:list-counter; }
+section.list > .cell-stage > ol > li {
   counter-increment:list-counter;
   background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
   display:grid; grid-template-columns:var(--sp-xl) 1fr; align-items:center; gap:var(--sp-md);
 }
-section.list > ol > li::before {
+section.list > .cell-stage > ol > li::before {
   content:counter(list-counter, decimal-leading-zero);
   font-family:var(--font-label); font-size:var(--fs-h4); font-weight:700; color:var(--accent);
 }
@@ -59,20 +59,20 @@ section.list > ol > li::before {
 /* ── takeaway register — former `tldr` component (inventory.list.takeaway) ──
  * Hairline-ruled single lines, no pill chrome. `numbered` adds a large
  * accent counter on the same centreline. Merged 2026-06-07. */
-section.list.takeaway > :is(ul,ol) { gap:0; }
-section.list.takeaway > :is(ul,ol) > li {
+section.list.takeaway > .cell-stage > :is(ul,ol) { gap:0; }
+section.list.takeaway > .cell-stage > :is(ul,ol) > li {
   background:none; border:none; border-radius:0;
   border-bottom:1px solid var(--border);
   padding:0 var(--sp-xs);
   font-size:var(--fs-message); font-weight:500; color:var(--text-heading);
 }
-section.list.takeaway > :is(ul,ol) > li::before { content:none; }
-section.list.takeaway > :is(ul,ol) > li::marker { content:''; }
-section.list.takeaway > :is(ul,ol) > li:last-child { border-bottom:none; }
+section.list.takeaway > .cell-stage > :is(ul,ol) > li::before { content:none; }
+section.list.takeaway > .cell-stage > :is(ul,ol) > li::marker { content:''; }
+section.list.takeaway > .cell-stage > :is(ul,ol) > li:last-child { border-bottom:none; }
 /* numbered — accent counter as a fixed leading column, centred with the text. */
-section.list.takeaway.numbered > :is(ul,ol) > li { counter-increment:list-take-counter; gap:var(--sp-md); }
-section.list.takeaway.numbered > :is(ul,ol) { counter-reset:list-take-counter; }
-section.list.takeaway.numbered > :is(ul,ol) > li::before {
+section.list.takeaway.numbered > .cell-stage > :is(ul,ol) > li { counter-increment:list-take-counter; gap:var(--sp-md); }
+section.list.takeaway.numbered > .cell-stage > :is(ul,ol) { counter-reset:list-take-counter; }
+section.list.takeaway.numbered > .cell-stage > :is(ul,ol) > li::before {
   content:counter(list-take-counter, decimal-leading-zero);
   font-family:var(--font-label); font-size:var(--fs-emphasis); font-weight:700;
   letter-spacing:0.02em; color:var(--accent); line-height:1;
@@ -82,8 +82,8 @@ section.list.takeaway.numbered > :is(ul,ol) > li::before {
 /* ── principles register — former `principles` component (inventory.list.principles) ──
  * Display-weight declarations with a large accent counter. ol only;
  * lettered/roman/bullet switch the counter format. Merged 2026-06-07. */
-section.list.principles > ol { counter-reset:list-principle-counter; gap:0; }
-section.list.principles > ol > li {
+section.list.principles > .cell-stage > ol { counter-reset:list-principle-counter; gap:0; }
+section.list.principles > .cell-stage > ol > li {
   counter-increment:list-principle-counter;
   display:grid; grid-template-columns:auto 1fr; column-gap:var(--sp-lg); align-items:center;
   background:none; border:none; border-radius:0;
@@ -92,15 +92,15 @@ section.list.principles > ol > li {
   font-size:var(--fs-emphasis); font-weight:500; letter-spacing:-0.01em;
   line-height:var(--lh-tight); color:var(--text-heading);
 }
-section.list.principles > ol > li:last-child { border-bottom:none; }
-section.list.principles > ol > li::before {
+section.list.principles > .cell-stage > ol > li:last-child { border-bottom:none; }
+section.list.principles > .cell-stage > ol > li::before {
   content:counter(list-principle-counter, decimal-leading-zero);
   font-family:var(--font-label); font-size:var(--fs-h1); font-weight:700;
   letter-spacing:0.02em; color:var(--accent); line-height:1; align-self:center;
 }
-section.list.principles.lettered > ol > li::before { content:counter(list-principle-counter, upper-alpha); }
-section.list.principles.roman > ol > li::before { content:counter(list-principle-counter, upper-roman); }
-section.list.principles.bullet > ol > li::before { content:'·'; }
+section.list.principles.lettered > .cell-stage > ol > li::before { content:counter(list-principle-counter, upper-alpha); }
+section.list.principles.roman > .cell-stage > ol > li::before { content:counter(list-principle-counter, upper-roman); }
+section.list.principles.bullet > .cell-stage > ol > li::before { content:'·'; }
 
 /* ── Box-local family reflow (engineering/decisions/2026-06-18-component-adaptive-sizing.md).
    Keyed on the nearest `lattice` container's aspect, so it fires on a portrait deck
@@ -112,11 +112,11 @@ section.list.principles.bullet > ol > li::before { content:'·'; }
    `[data-orientation]` reflow's specificity, so the takeaway/principles registers
    (whose variant rules are (0,2,N)) still de-balloon — the role the attribute played. */
 @container lattice (aspect-ratio <= 1.05) {
-  section.list.list > :is(ul,ol) { justify-content: space-evenly; }
-  section.list.list > :is(ul,ol) > li { flex: 0 0 auto; }
+  section.list.list > .cell-stage > :is(ul,ol) { justify-content: space-evenly; }
+  section.list.list > .cell-stage > :is(ul,ol) > li { flex: 0 0 auto; }
 }
 /* Strip — the tallest/narrowest box (mobile @size; a nested strip cell): open the
    rhythm so the de-ballooned rows breathe down the long frame instead of clustering. */
 @container lattice (aspect-ratio <= 0.5) {
-  section.list.list > :is(ul,ol) { gap: var(--sp-md); }
+  section.list.list > .cell-stage > :is(ul,ol) { gap: var(--sp-md); }
 }
