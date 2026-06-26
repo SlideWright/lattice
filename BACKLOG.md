@@ -7,15 +7,14 @@
 
 The live, claimable work queue — a read-only mirror of [open issues](https://github.com/SlideWright/lattice/issues),
 grouped by board column. Design lives in `engineering/decisions/`; this tracks
-only *status*. **42 open** items.
+only *status*. **36 open** items.
 
 > ⚠️ **3 cards need triage** (missing `area:`/`type:`/`priority:`): [#506](https://github.com/SlideWright/lattice/issues/506), [#515](https://github.com/SlideWright/lattice/issues/515), [#519](https://github.com/SlideWright/lattice/issues/519).
 
-## Backlog (38)
+## Backlog (32)
 
 - [#283](https://github.com/SlideWright/lattice/issues/283) refactor(css): audit and reduce `!important` (~490 repo-wide) — high · engine
 - [#287](https://github.com/SlideWright/lattice/issues/287) refactor(engine): LPM Phase 1 — manifest `render` block + `transformSection` adapter; migrate the chart kernels — high · engine
-- [#441](https://github.com/SlideWright/lattice/issues/441) [perf-nightly] docs perf regression detected — high · website
 - [#279](https://github.com/SlideWright/lattice/issues/279) docs: reconcile Mermaid diagram-type count (README "25" vs gallery "26") — medium · diagram
 - [#286](https://github.com/SlideWright/lattice/issues/286) refactor(css): namespace variant classes that collide with component names — medium · engine
 - [#288](https://github.com/SlideWright/lattice/issues/288) feat(engine): implement the front-matter deck-config contract (vars, object background/logo, fonts, metadata, sizes) — medium · engine
@@ -24,16 +23,12 @@ only *status*. **42 open** items.
 - [#291](https://github.com/SlideWright/lattice/issues/291) infra: add a per-component pixel-baseline regression tier in CI — medium · infra
 - [#292](https://github.com/SlideWright/lattice/issues/292) infra: adopt a per-feature deck archive policy (`_meta: archived` + examples/MANIFEST.md) — medium · infra
 - [#293](https://github.com/SlideWright/lattice/issues/293) infra: automate the graduation-commit trigger on PR merge — medium · infra
-- [#295](https://github.com/SlideWright/lattice/issues/295) feat(website): Layout Studio — CSS-only `component` asset kind with deterministic gates — medium · website
-- [#296](https://github.com/SlideWright/lattice/issues/296) feat(website): graduation bridge — export a Workbench theme/component as a repo PR scaffold — medium · website
 - [#299](https://github.com/SlideWright/lattice/issues/299) refactor(diagram): give function-plot its own `lib/integrations/function-plot/` home + honest renderPaths — medium · diagram
 - [#305](https://github.com/SlideWright/lattice/issues/305) docs: dedupe the two doc-index tables (CLAUDE.md vs skill.md drift) — medium · docs
-- [#306](https://github.com/SlideWright/lattice/issues/306) docs: refresh (or generate) the decisions/README index (12 of 76 ADRs listed) — medium · docs
 - [#307](https://github.com/SlideWright/lattice/issues/307) docs: prune/flip the treatments-rename ADR (shipped; still "implementation-ready") — medium · docs
 - [#308](https://github.com/SlideWright/lattice/issues/308) docs: resolve the P4 regression-gate ADR status (pivot shipped; still strikethrough "pre-code") — medium · engine
 - [#380](https://github.com/SlideWright/lattice/issues/380) Narrative step model — assemble the slide as you go (implementation) — medium · engine
 - [#414](https://github.com/SlideWright/lattice/issues/414) refactor(website): consolidate the per-surface theme/palette dropdowns onto one shared control — medium · website
-- [#466](https://github.com/SlideWright/lattice/issues/466) chart(detail): Tier-2 per-mark detail — state-chart, gantt, kanban — medium · chart
 - [#476](https://github.com/SlideWright/lattice/issues/476) chart(kanban): per-card detail reveal (Tier-2, on the HTML-mark path) — medium · chart
 - [#500](https://github.com/SlideWright/lattice/issues/500) feat(legal): obligation-matrix cover-paginate — a split that survives a wide matrix — medium · legal
 - [#506](https://github.com/SlideWright/lattice/issues/506) feat(runtime): runtime auto-split (Option B) via eventual consistency — medium
@@ -44,7 +39,6 @@ only *status*. **42 open** items.
 - [#294](https://github.com/SlideWright/lattice/issues/294) docs: document `pixel-check` in development.md and decide on a hook — low · infra
 - [#297](https://github.com/SlideWright/lattice/issues/297) feat(website): build a visual component catalog (thumbnail picker) — low · website
 - [#298](https://github.com/SlideWright/lattice/issues/298) feat(website): implement the `.latticepack` interchange (zip export/import) — low · website
-- [#300](https://github.com/SlideWright/lattice/issues/300) docs: assess `examples/gallery-jargon.md` for retirement — low · docs
 - [#309](https://github.com/SlideWright/lattice/issues/309) docs: pick a single canonical home for the Mermaid contract (currently in 3 docs) — low · theming
 - [#310](https://github.com/SlideWright/lattice/issues/310) docs: drop/re-anchor the legacy "Part 1–11" doc numbering — low · docs
 - [#477](https://github.com/SlideWright/lattice/issues/477) chart(state-chart): tune the `tb` reveal-lift magnitude — low · chart
