@@ -33,6 +33,7 @@
 
 import { createThemeFetcher } from '../lib/theme-fetch.ts';
 import { createChartInteract } from './drawing-board-chart-interact.js';
+import { createPaneTabs, DB_PANE_KEY } from './drawing-board-pane.js';
 
 export function createRenderController(data) {
 	var THEME_BASE = data.themeBase;
@@ -499,24 +500,19 @@ export function createRenderController(data) {
 	makeResizer(document.getElementById('db-resize-right'), 'preview');
 
 	// ── Mobile pane tabs ──────────────────────────────────────────────────
-	var tabs = document.querySelectorAll('.db-mobile-tab');
-	var PANES = { architect: 1, editor: 1, preview: 1 };
-	function setPane(which) {
-		if (!PANES[which]) which = 'editor'; // 'decks' pane retired → land on Edit
-		document.body.setAttribute('data-pane', which);
-		try { localStorage.setItem('lattice-db-pane', which); } catch (_e) {}
-		tabs.forEach((t) => { t.setAttribute('aria-selected', t.getAttribute('data-pane') === which ? 'true' : 'false'); });
-		if (which === 'preview') render();
-	}
+	// The pane state machine is the shared createPaneTabs (drawing-board-pane.js)
+	// — one tested source of truth so body[data-pane], the tab aria-selected
+	// flags, the persisted pane, and the preview render can't drift apart (the
+	// same divergence class the Playground's pane-sync fix closed). It wires the
+	// tab clicks and hands back the single setPane the rest of this controller and
+	// the onboarding use.
+	var setPane = createPaneTabs({ tabs: document.querySelectorAll('.db-mobile-tab'), render }).setPane;
 	// Let the onboarding (a separate module script) drive the pane on a deck start.
 	window.__dbSetPane = setPane;
-	tabs.forEach((t) => {
-		t.addEventListener('click', () => { setPane(t.getAttribute('data-pane')); });
-	});
 	// Restore the last pane on (re)load so a refresh — or an iOS tab discard
 	// during a long model download — returns you where you were, not to Edit.
 	if (window.matchMedia('(max-width: 1024px)').matches) {
-		try { const savedPane = localStorage.getItem('lattice-db-pane'); if (savedPane) setPane(savedPane); } catch (_e) {}
+		try { const savedPane = localStorage.getItem(DB_PANE_KEY); if (savedPane) setPane(savedPane); } catch (_e) {}
 	}
 
 	render();

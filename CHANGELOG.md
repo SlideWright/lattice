@@ -116,7 +116,12 @@ in patch versions.
   matter how the pane changed. Guarded by a behavioural + property-based (fast-check
   model-based, `fc.commands`) test of the toolbar — `PlaygroundApp.test.tsx` — that fuzzes
   random user journeys and asserts the tab and layout never desync (the bug shrinks to the
-  one-step counterexample "load a gallery from Edit view").
+  one-step counterexample "load a gallery from Edit view"). The Drawing Board's mobile pane
+  machine — already correct, but the same divergence class — is hardened the same way: its
+  `setPane` is extracted to a shared, single-source-of-truth module
+  (`drawing-board-pane.js`) and fuzzed by `drawing-board-pane.test.ts`, which asserts the
+  four pane surfaces (`body[data-pane]`, tab `aria-selected`, the persisted pane, the
+  preview render) never drift across random click/programmatic journeys.
 
 - **A crashed Chrome render fails fast instead of hanging to the outer timeout.** When the
   headless-Chrome renderer/GPU process crashes mid-render (`Protocol error … Target closed`),
