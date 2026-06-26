@@ -17,7 +17,8 @@
     "perf": "node scripts/perf-collect.mjs --out .perf/local && node scripts/perf-regression.mjs --report .perf/local",
     "perf:collect": "node scripts/perf-collect.mjs",
     "perf:compare": "node scripts/perf-regression.mjs",
-    "check:overflow": "node scripts/check-overflow.mjs"
+    "check:overflow": "node scripts/check-overflow.mjs",
+    "check:preview": "node scripts/check-preview-render.mjs"
   },
   "dependencies": {
     "@astrojs/react": "^5.0.7",
