@@ -896,36 +896,43 @@ section::after {
  * Convention: bold is the primary scannable thing; code is the
  * metadata chip. Same convention as everywhere else in Lattice.
  * ──────────────────────────────────────────────────────────────────────── */
-section.actors { display:flex; flex-direction:column; }
+section.actors > .cell-stage { display:flex; flex-direction:column; }
 section.actors h2 { font-size:var(--fs-emphasis); margin-bottom:var(--sp-md); }
-section.actors > ul,
-section.actors > ol {
+section.actors > .cell-stage > ul,
+section.actors > .cell-stage > ol {
   list-style:none; padding:0; margin:0;
   display:flex; flex-direction:column;
   gap:var(--sp-xs);
-  flex:1;
-  /* flex-start, not center: at 5+ rows center-justify pushed the last row
-   * off the slide bottom (clipped). Top-aligning keeps every row on-canvas. */
+  /* flex:1 fills the stage; min-height:0 is load-bearing — without it the list's
+   * default min-height:auto floor refuses to shrink below its rows' natural height,
+   * so a 5+-row roster overran the bounded stage (flex cell-tree §6) and clipped the
+   * last card. With it the rows distribute into the stage and every card stays on
+   * canvas. */
+  flex:1; min-height:0;
   justify-content:flex-start;
 }
-section.actors > ul > li,
-section.actors > ol > li {
+section.actors > .cell-stage > ul > li,
+section.actors > .cell-stage > ol > li {
   display:grid;
   grid-template-columns:1fr auto;
   column-gap:var(--sp-md);
   row-gap:var(--sp-xs);
   align-items:center;
+  /* Rows distribute to fill the bounded stage (flex cell-tree §6) — uniform card
+   * heights that fit the shorter stage instead of natural-height rows that overran
+   * it. min-height:0 lets a dense deck compress gracefully rather than clip. */
+  flex:1; min-height:0;
   padding:var(--sp-sm) var(--sp-lg);
   background:var(--bg-alt);
   border:1px solid var(--border);
   border-left:3px solid var(--accent);
   border-radius:var(--radius-md);
 }
-section.actors > ul > li::marker,
-section.actors > ol > li::marker { content:''; }
+section.actors > .cell-stage > ul > li::marker,
+section.actors > .cell-stage > ol > li::marker { content:''; }
 /* Strong = primary header (responsibility / capability), left-aligned. */
-section.actors > ul > li > strong,
-section.actors > ol > li > strong {
+section.actors > .cell-stage > ul > li > strong,
+section.actors > .cell-stage > ol > li > strong {
   grid-column:1; grid-row:1;
   font-size:var(--fs-body);
   font-weight:700;
@@ -940,8 +947,8 @@ section.actors > ol > li > strong {
  * nth-child rotation), which the universal rule consumes directly.
  * The --cN-dark palette is theme-defined; both cuoio (warm earth
  * pigments) and indaco (cool L≈32 deeps) ship balanced sets. */
-section.actors > ul > li > code,
-section.actors > ol > li > code {
+section.actors > .cell-stage > ul > li > code,
+section.actors > .cell-stage > ol > li > code {
   grid-column:2; grid-row:1;
   justify-self:end;
   display:inline-flex; align-items:center;
@@ -952,30 +959,30 @@ section.actors > ol > li > code {
  * Sets --pill-border on the <li>; both the universal pill rule
  * (border on the <code>) and the actors row marker (border-left on
  * the <li>) consume the same variable. */
-section.actors > :is(ul, ol) > li:nth-child(8n+1) { --pill-border:var(--cat-1-mark); }
-section.actors > :is(ul, ol) > li:nth-child(8n+2) { --pill-border:var(--cat-2-mark); }
-section.actors > :is(ul, ol) > li:nth-child(8n+3) { --pill-border:var(--cat-3-mark); }
-section.actors > :is(ul, ol) > li:nth-child(8n+4) { --pill-border:var(--cat-4-mark); }
-section.actors > :is(ul, ol) > li:nth-child(8n+5) { --pill-border:var(--cat-5-mark); }
-section.actors > :is(ul, ol) > li:nth-child(8n+6) { --pill-border:var(--cat-6-mark); }
-section.actors > :is(ul, ol) > li:nth-child(8n+7) { --pill-border:var(--cat-7-mark); }
-section.actors > :is(ul, ol) > li:nth-child(8n)   { --pill-border:var(--cat-8-mark); }
+section.actors > .cell-stage > :is(ul, ol) > li:nth-child(8n+1) { --pill-border:var(--cat-1-mark); }
+section.actors > .cell-stage > :is(ul, ol) > li:nth-child(8n+2) { --pill-border:var(--cat-2-mark); }
+section.actors > .cell-stage > :is(ul, ol) > li:nth-child(8n+3) { --pill-border:var(--cat-3-mark); }
+section.actors > .cell-stage > :is(ul, ol) > li:nth-child(8n+4) { --pill-border:var(--cat-4-mark); }
+section.actors > .cell-stage > :is(ul, ol) > li:nth-child(8n+5) { --pill-border:var(--cat-5-mark); }
+section.actors > .cell-stage > :is(ul, ol) > li:nth-child(8n+6) { --pill-border:var(--cat-6-mark); }
+section.actors > .cell-stage > :is(ul, ol) > li:nth-child(8n+7) { --pill-border:var(--cat-7-mark); }
+section.actors > .cell-stage > :is(ul, ol) > li:nth-child(8n)   { --pill-border:var(--cat-8-mark); }
 /* The accent left-border picks up the same hue as the chip. */
-section.actors > :is(ul, ol) > li {
+section.actors > .cell-stage > :is(ul, ol) > li {
   border-left-color:var(--pill-border, var(--accent));
 }
 /* Body row spans full width below the header. */
-section.actors > ul > li > ul,
-section.actors > ol > li > ul,
-section.actors > ul > li > ol,
-section.actors > ol > li > ol {
+section.actors > .cell-stage > ul > li > ul,
+section.actors > .cell-stage > ol > li > ul,
+section.actors > .cell-stage > ul > li > ol,
+section.actors > .cell-stage > ol > li > ol {
   grid-column:1 / -1; grid-row:2;
   list-style:none; padding:0; margin:0;
 }
-section.actors > ul > li > ul > li,
-section.actors > ol > li > ul > li,
-section.actors > ul > li > ol > li,
-section.actors > ol > li > ol > li {
+section.actors > .cell-stage > ul > li > ul > li,
+section.actors > .cell-stage > ol > li > ul > li,
+section.actors > .cell-stage > ul > li > ol > li,
+section.actors > .cell-stage > ol > li > ol > li {
   font-size:var(--fs-body-compact);
   color:var(--text-body);
   line-height:var(--lh-base);
@@ -989,17 +996,17 @@ section.actors > ol > li > ol > li {
    cell). The doubled class `.actors.actors` clears the base `> :is(ul,ol) > li`
    grid placement. */
 @container lattice (aspect-ratio <= 0.9) {
-  section.actors.actors > :is(ul, ol) > li { grid-template-columns: 1fr; }
+  section.actors.actors > .cell-stage > :is(ul, ol) > li { grid-template-columns: 1fr; }
   /* Drop the chip onto its own line, hanging at the LEFT under the responsibility.
      The universal pill rule (base.modifiers) sets `margin-left: auto` to right-anchor
      the chip on one line; cancel it so `justify-self: start` can take effect (an auto
      margin otherwise beats justify-self in grid). */
-  section.actors.actors > ul > li > code,
-  section.actors.actors > ol > li > code {
+  section.actors.actors > .cell-stage > ul > li > code,
+  section.actors.actors > .cell-stage > ol > li > code {
     grid-column: 1; grid-row: 2; justify-self: start;
     margin-left: 0; margin-top: var(--sp-2xs);
   }
-  section.actors.actors > :is(ul, ol) > li > :is(ul, ol) { grid-row: 3; }
+  section.actors.actors > .cell-stage > :is(ul, ol) > li > :is(ul, ol) { grid-row: 3; }
 }
 
 /* === lib/components/inventory/agenda/agenda.styles.css === */
@@ -1705,33 +1712,38 @@ section.cards-grid :is(ul,ol) > li > strong ~ * { font-weight: 400; }
  * right-anchors next to the title and the body wraps full-width below.
  *
  * Two parallel selector chains, same shape as cards-grid:
- *   marp-cli + runtime path: section.cards-stack > ul/ol > li        (native HTML)
+ *   marp-cli + runtime path: section.cards-stack > .cell-stage > ul/ol > li        (native HTML)
  *   emulator path:           section.cards-stack .cards-stack-inner > .card
  */
-section.cards-stack { display:flex; flex-direction:column; }
+section.cards-stack > .cell-stage { display:flex; flex-direction:column; }
 section.cards-stack h2 { margin-bottom:var(--sp-sm); }
 
 /* shared visual contract — both raw and post-processed */
-section.cards-stack > ul, section.cards-stack > ol,
+section.cards-stack > .cell-stage > ul, section.cards-stack > .cell-stage > ol,
 section.cards-stack .cards-stack-inner {
-  display:flex; flex-direction:column; gap:var(--sp-md);
-  flex:1; list-style:none; margin:0; padding:0;
+  display:flex; flex-direction:column; gap:var(--sp-sm);
+  /* flex:1 fills the stage; min-height:0 lets the stack shrink to the bounded stage
+   * (flex cell-tree §6) instead of overrunning it when several cards carry multi-line
+   * bodies — without it the default min-height:auto floor clipped the last card. */
+  flex:1; min-height:0; list-style:none; margin:0; padding:0;
 }
-section.cards-stack > ul > li, section.cards-stack > ol > li,
+section.cards-stack > .cell-stage > ul > li, section.cards-stack > .cell-stage > ol > li,
 section.cards-stack .card {
   background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
-  margin:0; flex:1; list-style:none;
+  /* flex:1 distributes the cards to fill; min-height:0 lets a card yield its share
+   * rather than forcing its natural height and pushing the stack past the clip. */
+  margin:0; flex:1; min-height:0; list-style:none;
   display:flex; flex-wrap:wrap; align-items:baseline; align-content:flex-start;
   column-gap:var(--sp-sm); row-gap:var(--sp-xs);
   font-size:var(--fs-body); line-height:var(--lh-snug);
   font-weight:700; color:var(--text-heading);
 }
-section.cards-stack > ul > li::marker, section.cards-stack > ol > li::marker { content:''; }
+section.cards-stack > .cell-stage > ul > li::marker, section.cards-stack > .cell-stage > ol > li::marker { content:''; }
 
 /* — title strong: backwards-compat shim. Legacy slides that wrap the title in
  *   `**…**` render identically; the strong simply inherits the li's bold. — */
-section.cards-stack > ul > li > strong, section.cards-stack > ol > li > strong,
+section.cards-stack > .cell-stage > ul > li > strong, section.cards-stack > .cell-stage > ol > li > strong,
 section.cards-stack .card > strong { font-weight:inherit; color:inherit; }
 
 /* — trailing inline code → right-anchored pill on the title row.
@@ -1740,7 +1752,7 @@ section.cards-stack .card > strong { font-weight:inherit; color:inherit; }
  *   `> ul/ol > li > code` selector can't reach it), and the marp-cli path
  *   emits the `<code>` before the nested `<ul>` (so the :last-child guard
  *   would miss it). The :has(+ ul/ol) case is covered here by position. — */
-section.cards-stack > ul > li > code, section.cards-stack > ol > li > code,
+section.cards-stack > .cell-stage > ul > li > code, section.cards-stack > .cell-stage > ol > li > code,
 section.cards-stack .card > code {
   margin-left:auto; align-self:baseline;
   display:inline-flex; align-items:center; justify-content:center; text-align:center; line-height:1;
@@ -1753,14 +1765,14 @@ section.cards-stack .card > code {
 
 /* — card body (nested list) wraps full-width below the title row, reset to
  *   normal weight and body colour so only the title reads bold. — */
-section.cards-stack > ul > li > ul, section.cards-stack > ul > li > ol,
-section.cards-stack > ol > li > ul, section.cards-stack > ol > li > ol,
+section.cards-stack > .cell-stage > ul > li > ul, section.cards-stack > .cell-stage > ul > li > ol,
+section.cards-stack > .cell-stage > ol > li > ul, section.cards-stack > .cell-stage > ol > li > ol,
 section.cards-stack .card > ul, section.cards-stack .card > ol {
   flex-basis:100%; list-style:none; padding:0; margin:var(--sp-xs) 0 0 0;
   font-weight:400; color:var(--text-body); line-height:var(--lh-base);
 }
-section.cards-stack > ul > li > ul > li, section.cards-stack > ul > li > ol > li,
-section.cards-stack > ol > li > ul > li, section.cards-stack > ol > li > ol > li,
+section.cards-stack > .cell-stage > ul > li > ul > li, section.cards-stack > .cell-stage > ul > li > ol > li,
+section.cards-stack > .cell-stage > ol > li > ul > li, section.cards-stack > .cell-stage > ol > li > ol > li,
 section.cards-stack .card > ul > li, section.cards-stack .card > ol > li {
   font-size:var(--fs-body);
 }
@@ -1771,12 +1783,12 @@ section.cards-stack .card > ul > li, section.cards-stack .card > ol > li {
  * on the ordered shape (`> ol` / `--ordered` modifier class). Composes with
  * `horizontal`: the badge sits in the same corner whether cards stack
  * vertically or flow as a row. ── */
-section.cards-stack > ol { counter-reset:stack; }
-section.cards-stack > ol > li {
+section.cards-stack > .cell-stage > ol { counter-reset:stack; }
+section.cards-stack > .cell-stage > ol > li {
   counter-increment:stack;
   position:relative; padding-top:calc(var(--sp-xs) + 1.875cqi);
 }
-section.cards-stack > ol > li::before {
+section.cards-stack > .cell-stage > ol > li::before {
   content:counter(stack);
   position:absolute; top:0; left:0;
   padding:0.46875cqi 1.09375cqi; border-radius:var(--radius-md) 0 var(--radius-sm) 0;
@@ -1801,8 +1813,8 @@ section.cards-stack .cards-stack-inner--ordered > .card::before {
  * Default cards-stack flows the cards as a vertical stack (one per row).
  * `horizontal` flips to a horizontal row, useful when cards are short and
  * the slide reads left-to-right rather than top-to-bottom. ── */
-section.cards-stack.horizontal > ul,
-section.cards-stack.horizontal > ol,
+section.cards-stack.horizontal > .cell-stage > ul,
+section.cards-stack.horizontal > .cell-stage > ol,
 section.cards-stack.horizontal .cards-stack-inner {
   flex-direction: row;
   align-items: stretch;
@@ -1815,10 +1827,10 @@ section.cards-stack.horizontal .cards-stack-inner {
  * applies. cards-stack additionally drops body type to --fs-body-compact so
  * a fourth card fits without crowding. Card padding is left to the generic
  * `--sp-*` shrink so the ordered-badge clearance (padding-top) is preserved. */
-section.cards-stack.compact > ul > li, section.cards-stack.compact > ol > li,
+section.cards-stack.compact > .cell-stage > ul > li, section.cards-stack.compact > .cell-stage > ol > li,
 section.cards-stack.compact .card { font-size:var(--fs-body-compact); }
-section.cards-stack.compact > ul > li > ul > li, section.cards-stack.compact > ul > li > ol > li,
-section.cards-stack.compact > ol > li > ul > li, section.cards-stack.compact > ol > li > ol > li,
+section.cards-stack.compact > .cell-stage > ul > li > ul > li, section.cards-stack.compact > .cell-stage > ul > li > ol > li,
+section.cards-stack.compact > .cell-stage > ol > li > ul > li, section.cards-stack.compact > .cell-stage > ol > li > ol > li,
 section.cards-stack.compact .card > ul > li, section.cards-stack.compact .card > ol > li {
   font-size:var(--fs-body-compact);
 }
@@ -1833,12 +1845,12 @@ section.cards-stack :is(ul,ol) > li > strong ~ * { font-weight: 400; }
 
 /* Portrait / square (social) — content-height cards distributed across the frame,
    not flex:1 balloons. Mirrors the list de-balloon; keyed on data-orientation. */
-section.cards-stack[data-orientation='portrait'] > :is(ul,ol),
-section.cards-stack[data-orientation='square'] > :is(ul,ol) {
+section.cards-stack[data-orientation='portrait'] > .cell-stage > :is(ul,ol),
+section.cards-stack[data-orientation='square'] > .cell-stage > :is(ul,ol) {
   justify-content: space-evenly;
 }
-section.cards-stack[data-orientation='portrait'] > :is(ul,ol) > li,
-section.cards-stack[data-orientation='square'] > :is(ul,ol) > li {
+section.cards-stack[data-orientation='portrait'] > .cell-stage > :is(ul,ol) > li,
+section.cards-stack[data-orientation='square'] > .cell-stage > :is(ul,ol) > li {
   flex: 0 0 auto;
 }
 /* Box-local family reflow (2026-06-18-component-adaptive-sizing.md): square+tall+
@@ -1847,10 +1859,10 @@ section.cards-stack[data-orientation='square'] > :is(ul,ol) > li {
  * inside a narrow nested cell. Doubled class matches the [data-orientation]
  * reflow's specificity. */
 @container lattice (aspect-ratio <= 1.05) {
-  section.cards-stack.cards-stack > :is(ul,ol) {
+  section.cards-stack.cards-stack > .cell-stage > :is(ul,ol) {
     justify-content: space-evenly;
   }
-  section.cards-stack.cards-stack > :is(ul,ol) > li {
+  section.cards-stack.cards-stack > .cell-stage > :is(ul,ol) > li {
     flex: 0 0 auto;
   }
 }
@@ -1888,22 +1900,32 @@ section.cards-stack[data-orientation='square'] > :is(ul,ol) > li {
  * default (Ringed Solid) or a .checks-* variant; see base.modifiers.css.
  * Trailing inline `code` on a row floats right as a status pill
  * (universal pill convention). */
-section.checklist { display:flex; flex-direction:column; }
+section.checklist > .cell-stage { display:flex; flex-direction:column; }
 section.checklist h2 { font-size:var(--fs-emphasis); margin-bottom:var(--sp-md); }
-section.checklist > ul,
-section.checklist > ol {
+section.checklist > .cell-stage > ul,
+section.checklist > .cell-stage > ol {
   list-style:none; padding:0; margin:0;
   display:flex; flex-direction:column;
   gap:var(--sp-sm);
-  flex:1;
+  /* flex:1 fills the stage; min-height:0 lets the list shrink to the bounded stage
+   * (flex cell-tree §6) instead of overrunning it on a dense (8+-item) deck — its
+   * default min-height:auto floor would otherwise clip the last row. */
+  flex:1; min-height:0;
   justify-content:center;
 }
-section.checklist > ul > li,
-section.checklist > ol > li {
+section.checklist > .cell-stage > ul > li,
+section.checklist > .cell-stage > ol > li {
   position:relative;
   display:flex;
-  align-items:baseline;
+  /* center, not baseline: each row stretches to fill its share of the stage, so
+   * its content (and the disc below) sit at the row's vertical midline rather than
+   * stranded at the top of a tall card. */
+  align-items:center;
   gap:var(--sp-md);
+  /* Rows distribute to fill the bounded stage (flex cell-tree §6) — uniform card
+   * heights that fit the shorter stage instead of natural-height rows that overran
+   * it. min-height:0 lets a dense deck compress gracefully rather than clip. */
+  flex:1; min-height:0;
   padding:var(--sp-sm) var(--sp-md) var(--sp-sm) calc(2em + var(--sp-md));
   background:var(--bg-alt);
   border-left:3px solid var(--border);
@@ -1914,26 +1936,26 @@ section.checklist > ol > li {
   color:var(--text-heading);
   break-inside:avoid;
 }
-section.checklist > ul > li::marker,
-section.checklist > ol > li::marker { content:''; }
+section.checklist > .cell-stage > ul > li::marker,
+section.checklist > .cell-stage > ol > li::marker { content:''; }
 
 /* Per-row colour token + chrome — rail and background tint pick up the
  * resolved --state-color via color-mix. The token itself draws via
  * ::before below. */
-section.checklist > ul > li.state.pass,
-section.checklist > ol > li.state.pass {
+section.checklist > .cell-stage > ul > li.state.pass,
+section.checklist > .cell-stage > ol > li.state.pass {
   --state-color:var(--pass);
   border-left-color:var(--state-color);
   background:var(--pass-bg, var(--bg-alt));
 }
-section.checklist > ul > li.state.warn,
-section.checklist > ol > li.state.warn {
+section.checklist > .cell-stage > ul > li.state.warn,
+section.checklist > .cell-stage > ol > li.state.warn {
   --state-color:var(--warn);
   border-left-color:var(--state-color);
   background:var(--warn-bg, var(--bg-alt));
 }
-section.checklist > ul > li.state.fail,
-section.checklist > ol > li.state.fail {
+section.checklist > .cell-stage > ul > li.state.fail,
+section.checklist > .cell-stage > ol > li.state.fail {
   --state-color:var(--fail);
   border-left-color:var(--state-color);
   background:var(--fail-bg, var(--bg-alt));
@@ -1942,14 +1964,14 @@ section.checklist > ol > li.state.fail {
  * hollow ring (empty centre, --state-color edge ring; see `.state.todo` in
  * base.modifiers.css). No red, no strike — it reads "on the list, not done",
  * distinct from the red ✕ that verdict-grid keeps for a "not met" criterion. */
-section.checklist > ul > li.state.todo,
-section.checklist > ol > li.state.todo {
+section.checklist > .cell-stage > ul > li.state.todo,
+section.checklist > .cell-stage > ol > li.state.todo {
   --state-color:var(--text-label);
   border-left-color:var(--state-color);
   background:var(--bg-alt);
 }
-section.checklist > ul > li.state.skip,
-section.checklist > ol > li.state.skip {
+section.checklist > .cell-stage > ul > li.state.skip,
+section.checklist > .cell-stage > ol > li.state.skip {
   --state-color:var(--text-muted);
   border-left-color:var(--state-color);
   background:var(--bg-alt);
@@ -1964,36 +1986,39 @@ section.checklist > ol > li.state.skip {
  * slash) on top. Colours are mixed HERE from --state-color (resolved on
  * the .state row) + the knobs set by the default or a .checks-* variant.
  * Mirror recipe: verdict-grid.styles.css, obligation-matrix.styles.css. */
-section.checklist > ul > li.state::before,
-section.checklist > ol > li.state::before,
-section.checklist > ul > li.state::after,
-section.checklist > ol > li.state::after {
+section.checklist > .cell-stage > ul > li.state::before,
+section.checklist > .cell-stage > ol > li.state::before,
+section.checklist > .cell-stage > ul > li.state::after,
+section.checklist > .cell-stage > ol > li.state::after {
   content:'';
   position:absolute;
   left:var(--sp-md);
-  top:calc(var(--sp-sm) + 0.18em);
+  /* Centre the disc on the row midline — the row now stretches to fill the stage
+   * and its text is centre-aligned, so a top-anchored disc would float above it. */
+  top:50%;
+  transform:translateY(-50%);
   width:calc(1.15em * var(--state-disc-scale));
   height:calc(1.15em * var(--state-disc-scale));
   box-sizing:border-box;
 }
-section.checklist > ul > li.state::before,
-section.checklist > ol > li.state::before {
+section.checklist > .cell-stage > ul > li.state::before,
+section.checklist > .cell-stage > ol > li.state::before {
   border-radius:50%;
   background:color-mix(in srgb, var(--state-color, var(--text-muted)) var(--state-fill-pct), transparent);
   box-shadow:
     0 0 0 var(--state-ring-outer-w) color-mix(in srgb, var(--state-color, var(--text-muted)) var(--state-ring-mix), black),
     inset 0 0 0 var(--state-ring-inner-w) var(--state-color, var(--text-muted));
 }
-section.checklist > ul > li.state::after,
-section.checklist > ol > li.state::after {
+section.checklist > .cell-stage > ul > li.state::after,
+section.checklist > .cell-stage > ol > li.state::after {
   background-color:color-mix(in srgb, var(--state-color, var(--text-muted)) var(--state-mark-pct), var(--bg));
   -webkit-mask:var(--state-mark) center / 100% 100% no-repeat;
           mask:var(--state-mark) center / 100% 100% no-repeat;
 }
 /* Inline _em_ tail inside an item — soft annotation. Renders as muted
  * italic body voice; the eye still reads the label first. */
-section.checklist > ul > li em,
-section.checklist > ol > li em {
+section.checklist > .cell-stage > ul > li em,
+section.checklist > .cell-stage > ol > li em {
   font-style:italic;
   font-weight:400;
   color:var(--text-secondary);
@@ -5262,25 +5287,21 @@ section.kanban.tinted .kanban-lane::before { display: none; }
  * The bare `kpi` class resolves to briefing styling — when authors don't
  * pick a modifier, they get the power-play default.
  * ──────────────────────────────────────────────────────────────────────── */
-section.kpi {
+section.kpi > .cell-stage {
   display: flex; flex-direction: column;
-  /* Clear the absolute running header (top:1.875cqi, ~fs-meta tall). The base
-   * section uses 6.875cqi top padding for this; KPI trims it for density but
-   * must stay below the header band or the eyebrow / h2 overprints the
-   * "LATTICE · KPI" chrome (they shared the same y at the old --sp-md). */
-  padding-top: calc(var(--sp-md) + var(--sp-lg));
-  /* Trim the base 6.875cqi bottom padding — that much is pure reserved
-   * whitespace (the footer is absolutely positioned at bottom:1.875cqi).
-   * KPI is the densest layout (hero + 3 metric rows + title); the extra
-   * ~3cqi lets the briefing supports breathe at metric size without the
-   * third row clipping the slide edge. */
-  padding-bottom: var(--sp-xl);
+  /* No extra stage padding. The old header-clearance padding-top was a SECTION
+   * concern (the body used to sit directly under the running header); the masthead
+   * band now clears the header and supplies the gap above the stage, and the frame
+   * already reserves the footer via the section's padding-bottom. Adding stage
+   * padding here only shortened the bounded stage (flex cell-tree §6) and clipped
+   * the densest variant's last metric. The stage runs full-height; the grids below
+   * distribute into it. */
 }
 /* Eyebrow — an inline-code paragraph above the heading. The central eyebrow
  * rule (base.modifiers.css) supplies the mono/uppercase chrome; kpi only tunes
  * the gap to the headline. Authored as `code`, never an h3, so it never trips
  * a heading-order lint. */
-section.kpi > p:has(> code:only-child) {
+section.kpi > .cell-stage > p:has(> code:only-child) {
   margin: 0 0 var(--sp-xs) 0;
 }
 section.kpi h2 {
@@ -5291,16 +5312,20 @@ section.kpi h2 {
   line-height: var(--lh-tight);
   margin: 0 0 var(--sp-md) 0;
 }
-section.kpi > ol,
-section.kpi > ul {
+section.kpi > .cell-stage > ol,
+section.kpi > .cell-stage > ul {
   list-style: none; padding: 0; margin: 0;
+  /* flex:1 fills the stage. NB: no `min-height:0` here — the grid variants
+   * (briefing/spotlight) size their `1fr` rows against this list's grown height, and
+   * removing the min-height:auto floor collapses the grid to content. The flex
+   * variants that need to yield (compliance) opt into min-height:0 locally. */
   flex: 1;
 }
-section.kpi > :where(ol, ul) > li::marker { content: ''; }
-section.kpi > :where(ol, ul) > li > :where(ul, ol) {
+section.kpi > .cell-stage > :where(ol, ul) > li::marker { content: ''; }
+section.kpi > .cell-stage > :where(ol, ul) > li > :where(ul, ol) {
   list-style: none; padding: 0; margin: 0;
 }
-section.kpi > :where(ol, ul) > li > :where(ul, ol) > li::marker { content: ''; }
+section.kpi > .cell-stage > :where(ol, ul) > li > :where(ul, ol) > li::marker { content: ''; }
 
 /* Pills — any `code` inside a kpi slide renders as a pill. First pill on
  * each row carries the status colour (set per-row by the modifier's
@@ -5325,15 +5350,15 @@ section.kpi code {
   margin-left: 0.46875cqi;
   vertical-align: 1px;
 }
-section.kpi > :where(ol, ul) > li :where(ul, ol) > li code ~ code,
-section.kpi > :where(ol, ul) > li > code ~ code {
+section.kpi > .cell-stage > :where(ol, ul) > li :where(ul, ol) > li code ~ code,
+section.kpi > .cell-stage > :where(ol, ul) > li > code ~ code {
   --pill-border: var(--text-muted);
   --pill-bg: var(--bg);
   --pill-fg: var(--text-muted);
 }
 
 /* Shared number / label / target typography. */
-section.kpi > :where(ol, ul) > li > strong {
+section.kpi > .cell-stage > :where(ol, ul) > li > strong {
   font-family: var(--font-display);
   font-weight: 700;
   color: var(--text-heading);
@@ -5342,14 +5367,14 @@ section.kpi > :where(ol, ul) > li > strong {
   letter-spacing: -0.03em;
   display: block;
 }
-section.kpi > :where(ol, ul) > li > :where(ul, ol) > li:first-child {
+section.kpi > .cell-stage > :where(ol, ul) > li > :where(ul, ol) > li:first-child {
   font-size: var(--fs-body);
   font-weight: 500;
   color: var(--text-heading);
   margin-top: var(--sp-sm);
   line-height: var(--lh-snug);
 }
-section.kpi > :where(ol, ul) > li > :where(ul, ol) > li + li {
+section.kpi > .cell-stage > :where(ol, ul) > li > :where(ul, ol) > li + li {
   font-family: var(--font-mono);
   font-size: var(--fs-meta);
   color: var(--text-secondary);
@@ -5359,15 +5384,19 @@ section.kpi > :where(ol, ul) > li > :where(ul, ol) > li + li {
 }
 
 /* ─ MODIFIER · BRIEFING (also the bare-kpi default) ─────────────────── */
-section.kpi.briefing > ol,
-section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) > ol {
+section.kpi.briefing > .cell-stage > ol,
+section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) > .cell-stage > ol {
   display: grid;
   grid-template-columns: minmax(0, 2.2fr) minmax(0, 1fr);
-  grid-template-rows: 1fr 1fr 1fr;
+  /* minmax(0,1fr), not bare 1fr: bare 1fr is minmax(auto,1fr), whose auto floor
+   * can't shrink below the row's content min-height — against the shorter bounded
+   * stage (flex cell-tree §6) that overran and clipped the last metric. minmax(0,…)
+   * lets the three rows share the stage evenly and fill it without spilling. */
+  grid-template-rows: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
   gap: 0 var(--sp-2xl);
 }
-section.kpi.briefing > ol > li:nth-child(1),
-section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) > ol > li:nth-child(1) {
+section.kpi.briefing > .cell-stage > ol > li:nth-child(1),
+section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) > .cell-stage > ol > li:nth-child(1) {
   grid-column: 1; grid-row: 1 / -1;
   background: var(--accent-soft);
   padding: var(--sp-xl) var(--sp-2xl);
@@ -5376,8 +5405,8 @@ section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) 
   justify-content: center;
   border-left: 4px solid var(--accent);
 }
-section.kpi.briefing > ol > li:nth-child(1)::after,
-section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) > ol > li:nth-child(1)::after {
+section.kpi.briefing > .cell-stage > ol > li:nth-child(1)::after,
+section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) > .cell-stage > ol > li:nth-child(1)::after {
   content: '✦';
   position: absolute;
   top: var(--sp-lg); right: var(--sp-lg);
@@ -5385,36 +5414,36 @@ section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) 
   color: var(--accent);
   line-height: 1;
 }
-section.kpi.briefing > ol > li:nth-child(1) > strong,
-section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) > ol > li:nth-child(1) > strong {
+section.kpi.briefing > .cell-stage > ol > li:nth-child(1) > strong,
+section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) > .cell-stage > ol > li:nth-child(1) > strong {
   font-size: var(--fs-hero);
   line-height: 0.88;
 }
-section.kpi.briefing > ol > li:nth-child(1) > ul > li:first-child,
-section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) > ol > li:nth-child(1) > ul > li:first-child {
+section.kpi.briefing > .cell-stage > ol > li:nth-child(1) > ul > li:first-child,
+section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) > .cell-stage > ol > li:nth-child(1) > ul > li:first-child {
   font-family: var(--font-display);
   font-size: var(--fs-h3);
   margin-top: var(--sp-md);
 }
-section.kpi.briefing > ol > li:not(:first-child),
-section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) > ol > li:not(:first-child) {
+section.kpi.briefing > .cell-stage > ol > li:not(:first-child),
+section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) > .cell-stage > ol > li:not(:first-child) {
   grid-column: 2;
   display: flex; flex-direction: column;
   justify-content: center;
   padding: var(--sp-xs) 0;
 }
-section.kpi.briefing > ol > li:nth-child(2),
-section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) > ol > li:nth-child(2) {
+section.kpi.briefing > .cell-stage > ol > li:nth-child(2),
+section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) > .cell-stage > ol > li:nth-child(2) {
   grid-row: 1;
   border-top: 1.5px solid var(--text-heading);
 }
-section.kpi.briefing > ol > li:nth-child(3),
-section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) > ol > li:nth-child(3) {
+section.kpi.briefing > .cell-stage > ol > li:nth-child(3),
+section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) > .cell-stage > ol > li:nth-child(3) {
   grid-row: 2;
   border-top: 1px solid var(--border);
 }
-section.kpi.briefing > ol > li:nth-child(4),
-section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) > ol > li:nth-child(4) {
+section.kpi.briefing > .cell-stage > ol > li:nth-child(4),
+section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) > .cell-stage > ol > li:nth-child(4) {
   grid-row: 3;
   border-top: 1px solid var(--border);
   border-bottom: 1.5px solid var(--text-heading);
@@ -5423,12 +5452,12 @@ section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) 
  * as a heading, too quiet next to the hero) and --fs-h1 (48pt, which makes
  * 3 stacked supports overflow the right column). Layout-specific metric
  * tier — the briefing grid can't fit three h1-sized rows beside the hero. */
-section.kpi.briefing > ol > li:not(:first-child) > strong,
-section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) > ol > li:not(:first-child) > strong {
+section.kpi.briefing > .cell-stage > ol > li:not(:first-child) > strong,
+section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) > .cell-stage > ol > li:not(:first-child) > strong {
   font-size: calc(3.9583cqi * var(--fs-scale)); /* cqi-ok: briefing hero support — designed display size between h2 and h1 */
 }
-section.kpi.briefing > ol > li,
-section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) > ol > li {
+section.kpi.briefing > .cell-stage > ol > li,
+section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) > .cell-stage > ol > li {
   --pill-border: var(--pass);
   --pill-bg: var(--pass-bg);
   --pill-fg: var(--pass);
@@ -5436,26 +5465,28 @@ section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) 
 /* `attention` modifier — the hero is the one slipping. Hero pill turns
  * warn-coloured and the accent left-border picks up --warn too. Use
  * when the hero metric is below target / off plan. */
-section.kpi.attention > ol > li:nth-child(1) {
+section.kpi.attention > .cell-stage > ol > li:nth-child(1) {
   --pill-border: var(--warn);
   --pill-bg: var(--warn-bg);
   --pill-fg: var(--warn);
 }
-section.kpi.attention > ol > li:nth-child(1) {
+section.kpi.attention > .cell-stage > ol > li:nth-child(1) {
   border-left-color: var(--warn);
 }
-section.kpi.attention > ol > li:nth-child(1)::after {
+section.kpi.attention > .cell-stage > ol > li:nth-child(1)::after {
   color: var(--warn);
 }
 
 /* ─ MODIFIER · OPS (SLO/SLA review) ─────────────────────────────────── */
-section.kpi.ops > ol {
+section.kpi.ops > .cell-stage > ol {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
+  /* minmax(0,1fr): let the 2×2 cells share the bounded stage and shrink to fit
+   * instead of overflowing it (see briefing note above). */
+  grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
   gap: var(--sp-md);
 }
-section.kpi.ops > ol > li {
+section.kpi.ops > .cell-stage > ol > li {
   background: var(--bg-alt);
   padding: var(--sp-md) var(--sp-lg);
   display: flex; flex-direction: column;
@@ -5463,32 +5494,36 @@ section.kpi.ops > ol > li {
   position: relative;
   min-width: 0;
 }
-section.kpi.ops > ol > li > strong {
+section.kpi.ops > .cell-stage > ol > li > strong {
   font-size: var(--fs-h1);
   line-height: 0.92;
 }
-section.kpi.ops > ol > li:nth-child(1),
-section.kpi.ops > ol > li:nth-child(3) {
+section.kpi.ops > .cell-stage > ol > li:nth-child(1),
+section.kpi.ops > .cell-stage > ol > li:nth-child(3) {
   --pill-border: var(--warn);
   --pill-bg: var(--warn-bg);
   --pill-fg: var(--warn);
 }
-section.kpi.ops > ol > li:nth-child(2),
-section.kpi.ops > ol > li:nth-child(4) {
+section.kpi.ops > .cell-stage > ol > li:nth-child(2),
+section.kpi.ops > .cell-stage > ol > li:nth-child(4) {
   --pill-border: var(--pass);
   --pill-bg: var(--pass-bg);
   --pill-fg: var(--pass);
 }
-section.kpi.ops > ol > li:nth-child(1) > strong,
-section.kpi.ops > ol > li:nth-child(3) > strong { color: var(--warn); }
+section.kpi.ops > .cell-stage > ol > li:nth-child(1) > strong,
+section.kpi.ops > .cell-stage > ol > li:nth-child(3) > strong { color: var(--warn); }
 
 /* ─ MODIFIER · COMPLIANCE (legal / regulatory) ──────────────────────── */
-section.kpi.compliance > ol {
+section.kpi.compliance > .cell-stage > ol {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  /* Yield to the bounded stage so the trailing source line (a sibling <p>) stays on
+   * canvas — without it the list's min-height:auto floor pushes the source past the
+   * clip. Safe here because this variant is a flex column, not a 1fr grid. */
+  min-height: 0;
 }
-section.kpi.compliance > ol > li {
+section.kpi.compliance > .cell-stage > ol > li {
   display: grid;
   grid-template-columns: max-content minmax(0, 1fr) max-content;
   grid-template-rows: auto auto;
@@ -5498,43 +5533,43 @@ section.kpi.compliance > ol > li {
   border-bottom: 1px solid var(--border);
   align-items: baseline;
 }
-section.kpi.compliance > ol > li:last-child {
+section.kpi.compliance > .cell-stage > ol > li:last-child {
   border-bottom: 1.5px solid var(--text-heading);
 }
-section.kpi.compliance > ol > li > strong {
+section.kpi.compliance > .cell-stage > ol > li > strong {
   grid-column: 1; grid-row: 1 / 3;
   font-size: var(--fs-h1);
   min-width: 4ch;
   text-align: right;
   align-self: center;
 }
-section.kpi.compliance > ol > li > ul { display: contents; }
-section.kpi.compliance > ol > li > ul > li:first-child {
+section.kpi.compliance > .cell-stage > ol > li > ul { display: contents; }
+section.kpi.compliance > .cell-stage > ol > li > ul > li:first-child {
   grid-column: 2; grid-row: 1;
   margin-top: 0;
 }
-section.kpi.compliance > ol > li > ul > li + li {
+section.kpi.compliance > .cell-stage > ol > li > ul > li + li {
   grid-column: 2; grid-row: 2;
   margin-top: 0;
 }
-section.kpi.compliance > ol > li > ul > li code:first-of-type {
+section.kpi.compliance > .cell-stage > ol > li > ul > li code:first-of-type {
   grid-column: 3; grid-row: 1 / 3;
   align-self: center;
   margin-left: 0;
 }
-section.kpi.compliance > ol > li:nth-child(1),
-section.kpi.compliance > ol > li:nth-child(2),
-section.kpi.compliance > ol > li:nth-child(4) {
+section.kpi.compliance > .cell-stage > ol > li:nth-child(1),
+section.kpi.compliance > .cell-stage > ol > li:nth-child(2),
+section.kpi.compliance > .cell-stage > ol > li:nth-child(4) {
   --pill-border: var(--pass);
   --pill-bg: var(--pass-bg);
   --pill-fg: var(--pass);
 }
-section.kpi.compliance > ol > li:nth-child(3) {
+section.kpi.compliance > .cell-stage > ol > li:nth-child(3) {
   --pill-border: var(--warn);
   --pill-bg: var(--warn-bg);
   --pill-fg: var(--warn);
 }
-section.kpi.compliance > p:last-of-type {
+section.kpi.compliance > .cell-stage > p:last-of-type {
   font-family: var(--font-mono);
   font-size: var(--fs-meta);
   color: var(--text-secondary);
@@ -5544,14 +5579,18 @@ section.kpi.compliance > p:last-of-type {
 }
 
 /* ─ MODIFIER · TRAJECTORY (investor / period-over-period) ───────────── */
-section.kpi.trajectory > ol {
+section.kpi.trajectory > .cell-stage > ol {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  grid-auto-rows: max-content;
-  align-content: center;
+  /* minmax(0,1fr) rows, not max-content + align-content:center — the cards FILL the
+   * bounded stage (flex cell-tree §6) the way the ops 2×2 and spotlight supports do,
+   * instead of huddling at natural height in the top third. Each card centres its own
+   * content (justify-content:center below), so a full-height card reads as a deliberate
+   * tile, not a stretched box. */
+  grid-auto-rows: minmax(0, 1fr);
   gap: var(--sp-md);
 }
-section.kpi.trajectory > ol > li {
+section.kpi.trajectory > .cell-stage > ol > li {
   background: var(--bg-alt);
   padding: var(--sp-lg) var(--sp-md);
   display: flex; flex-direction: column;
@@ -5560,29 +5599,32 @@ section.kpi.trajectory > ol > li {
   position: relative;
   border-top: 4px solid var(--accent);
 }
-section.kpi.trajectory > ol > li:nth-child(1) { border-top-color: var(--cat-1-mark); }
-section.kpi.trajectory > ol > li:nth-child(2) { border-top-color: var(--cat-2-mark); }
-section.kpi.trajectory > ol > li:nth-child(3) { border-top-color: var(--cat-3-mark); }
-section.kpi.trajectory > ol > li:nth-child(4) { border-top-color: var(--cat-4-mark); }
-section.kpi.trajectory > ol > li > strong {
+section.kpi.trajectory > .cell-stage > ol > li:nth-child(1) { border-top-color: var(--cat-1-mark); }
+section.kpi.trajectory > .cell-stage > ol > li:nth-child(2) { border-top-color: var(--cat-2-mark); }
+section.kpi.trajectory > .cell-stage > ol > li:nth-child(3) { border-top-color: var(--cat-3-mark); }
+section.kpi.trajectory > .cell-stage > ol > li:nth-child(4) { border-top-color: var(--cat-4-mark); }
+section.kpi.trajectory > .cell-stage > ol > li > strong {
   font-size: var(--fs-h1);
   line-height: 1;
 }
-section.kpi.trajectory > ol > li {
+section.kpi.trajectory > .cell-stage > ol > li {
   --pill-border: var(--pass);
   --pill-bg: var(--pass-bg);
   --pill-fg: var(--pass);
 }
 
 /* ─ MODIFIER · SPOTLIGHT (single hero metric) ───────────────────────── */
-section.kpi.spotlight > ol {
+section.kpi.spotlight > .cell-stage > ol {
   display: grid;
   grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
-  grid-template-rows: 1fr 1fr 1fr;
+  /* minmax(0,1fr): the hero spans all three rows; bounding the rows lets the side
+   * supports share the stage and fill it without the third row clipping (see
+   * briefing note above). */
+  grid-template-rows: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
   align-items: stretch;
   gap: var(--sp-2xl);
 }
-section.kpi.spotlight > ol > li:nth-child(1) {
+section.kpi.spotlight > .cell-stage > ol > li:nth-child(1) {
   grid-column: 1; grid-row: 1 / -1;
   background: var(--accent-soft);
   padding: var(--sp-lg) var(--sp-xl);
@@ -5591,7 +5633,7 @@ section.kpi.spotlight > ol > li:nth-child(1) {
   justify-content: center;
   border-left: 4px solid var(--accent);
 }
-section.kpi.spotlight > ol > li:nth-child(1)::after {
+section.kpi.spotlight > .cell-stage > ol > li:nth-child(1)::after {
   content: '✦';
   position: absolute;
   top: var(--sp-xl); right: var(--sp-xl);
@@ -5599,16 +5641,16 @@ section.kpi.spotlight > ol > li:nth-child(1)::after {
   color: var(--accent);
   line-height: 1;
 }
-section.kpi.spotlight > ol > li:nth-child(1) > strong {
+section.kpi.spotlight > .cell-stage > ol > li:nth-child(1) > strong {
   font-size: var(--fs-hero);
   line-height: 0.88;
 }
-section.kpi.spotlight > ol > li:nth-child(1) > ul > li:first-child {
+section.kpi.spotlight > .cell-stage > ol > li:nth-child(1) > ul > li:first-child {
   font-family: var(--font-display);
   font-size: var(--fs-h3);
   margin-top: var(--sp-md);
 }
-section.kpi.spotlight > ol > li:nth-child(1) > ul > li + li {
+section.kpi.spotlight > .cell-stage > ol > li:nth-child(1) > ul > li + li {
   font-family: var(--font-display);
   font-style: italic;
   font-size: var(--fs-body);
@@ -5618,37 +5660,37 @@ section.kpi.spotlight > ol > li:nth-child(1) > ul > li + li {
   margin-top: var(--sp-sm);
   line-height: var(--lh-snug);
 }
-section.kpi.spotlight > ol > li:nth-child(1) {
+section.kpi.spotlight > .cell-stage > ol > li:nth-child(1) {
   --pill-border: var(--pass);
   --pill-bg: var(--pass-bg);
   --pill-fg: var(--pass);
 }
-section.kpi.spotlight > ol > li:nth-child(2) { grid-column: 2; grid-row: 1; }
-section.kpi.spotlight > ol > li:nth-child(3) { grid-column: 2; grid-row: 2; }
-section.kpi.spotlight > ol > li:nth-child(4) { grid-column: 2; grid-row: 3; }
-section.kpi.spotlight > ol > li:not(:first-child) {
+section.kpi.spotlight > .cell-stage > ol > li:nth-child(2) { grid-column: 2; grid-row: 1; }
+section.kpi.spotlight > .cell-stage > ol > li:nth-child(3) { grid-column: 2; grid-row: 2; }
+section.kpi.spotlight > .cell-stage > ol > li:nth-child(4) { grid-column: 2; grid-row: 3; }
+section.kpi.spotlight > .cell-stage > ol > li:not(:first-child) {
   display: flex; flex-direction: column;
   justify-content: center;
   padding: 0;
 }
-section.kpi.spotlight > ol > li:nth-child(2) { border-top: 1.5px solid var(--text-heading); }
-section.kpi.spotlight > ol > li:nth-child(3) { border-top: 1px solid var(--border); }
-section.kpi.spotlight > ol > li:nth-child(4) {
+section.kpi.spotlight > .cell-stage > ol > li:nth-child(2) { border-top: 1.5px solid var(--text-heading); }
+section.kpi.spotlight > .cell-stage > ol > li:nth-child(3) { border-top: 1px solid var(--border); }
+section.kpi.spotlight > .cell-stage > ol > li:nth-child(4) {
   border-top: 1px solid var(--border);
   border-bottom: 1.5px solid var(--text-heading);
 }
-section.kpi.spotlight > ol > li:not(:first-child) > strong {
+section.kpi.spotlight > .cell-stage > ol > li:not(:first-child) > strong {
   font-size: var(--fs-emphasis);
 }
-section.kpi.spotlight > ol > li:not(:first-child) > ul > li:first-child {
+section.kpi.spotlight > .cell-stage > ol > li:not(:first-child) > ul > li:first-child {
   margin-top: 0.15625cqi;
   font-size: var(--fs-body);
 }
-section.kpi.spotlight > ol > li:not(:first-child) > ul > li + li {
+section.kpi.spotlight > .cell-stage > ol > li:not(:first-child) > ul > li + li {
   font-size: var(--fs-meta);
   margin-top: 0.15625cqi;
 }
-section.kpi.spotlight > ol > li:not(:first-child) code {
+section.kpi.spotlight > .cell-stage > ol > li:not(:first-child) code {
   padding: 0.15625cqi 0.625cqi;
   font-size: var(--fs-meta);
 }
@@ -5667,11 +5709,11 @@ section.kpi.spotlight > ol > li:not(:first-child) code {
  * override. Keyed on the nearest `lattice` container's aspect, so it fires on a
  * portrait deck AND inside a narrow nested cell, replacing the data-orientation
  * stamp. `.kpi.kpi` (class doubled) lifts the selector to (0,2,2) so it matches
- * the per-variant grid rules' specificity (`section.kpi.spotlight > ol`) and wins
+ * the per-variant grid rules' specificity (`section.kpi.spotlight > .cell-stage > ol`) and wins
  * on source order — the role the old `[data-orientation]` attribute played. */
 @container lattice (aspect-ratio <= 1.05) {
-  section.kpi.kpi > ol,
-  section.kpi.kpi > ul {
+  section.kpi.kpi > .cell-stage > ol,
+  section.kpi.kpi > .cell-stage > ul {
     display: flex;
     flex-direction: column;
     /* The list keeps `flex: 1` (fills the slide below the title), so centre the
@@ -5687,20 +5729,20 @@ section.kpi.spotlight > ol > li:not(:first-child) code {
    * hairline lead row (bigger number, no box) all four metrics read as one ledger
    * and fit. Scoped away from ops/compliance/trajectory, which are already uniform
    * grids/cards. (0,3,3) ties the briefing hero rules and wins on source order. */
-  section.kpi.kpi:where(:not(.ops):not(.compliance):not(.trajectory)) > ol > li:nth-child(1) {
+  section.kpi.kpi:where(:not(.ops):not(.compliance):not(.trajectory)) > .cell-stage > ol > li:nth-child(1) {
     background: none;
     border-left: none;
     border-top: 1.5px solid var(--text-heading);
     padding: var(--sp-sm) 0;
   }
-  section.kpi.kpi:where(:not(.ops):not(.compliance):not(.trajectory)) > ol > li:nth-child(1)::after {
+  section.kpi.kpi:where(:not(.ops):not(.compliance):not(.trajectory)) > .cell-stage > ol > li:nth-child(1)::after {
     content: none;
   }
-  section.kpi.kpi:where(:not(.ops):not(.compliance):not(.trajectory)) > ol > li:nth-child(1) > strong {
+  section.kpi.kpi:where(:not(.ops):not(.compliance):not(.trajectory)) > .cell-stage > ol > li:nth-child(1) > strong {
     font-size: var(--fs-h1);
     line-height: 1;
   }
-  section.kpi.kpi:where(:not(.ops):not(.compliance):not(.trajectory)) > ol > li:nth-child(1) > ul > li:first-child {
+  section.kpi.kpi:where(:not(.ops):not(.compliance):not(.trajectory)) > .cell-stage > ol > li:nth-child(1) > ul > li:first-child {
     font-family: var(--font-body);
     font-size: var(--fs-body);
     margin-top: var(--sp-3xs);
@@ -5710,7 +5752,7 @@ section.kpi.spotlight > ol > li:not(:first-child) code {
  * status pills, the lowest-priority unit (manifest `adapt.droppable`), so the
  * numbers and their labels own the narrow frame instead of crowding it. */
 @container lattice (aspect-ratio <= 0.5) {
-  section.kpi.kpi > :is(ol,ul) li code { display: none; }
+  section.kpi.kpi > .cell-stage > :is(ol,ul) li code { display: none; }
 }
 
 /* === lib/components/inventory/list/list.styles.css === */

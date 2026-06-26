@@ -14,33 +14,38 @@
  * right-anchors next to the title and the body wraps full-width below.
  *
  * Two parallel selector chains, same shape as cards-grid:
- *   marp-cli + runtime path: section.cards-stack > ul/ol > li        (native HTML)
+ *   marp-cli + runtime path: section.cards-stack > .cell-stage > ul/ol > li        (native HTML)
  *   emulator path:           section.cards-stack .cards-stack-inner > .card
  */
-section.cards-stack { display:flex; flex-direction:column; }
+section.cards-stack > .cell-stage { display:flex; flex-direction:column; }
 section.cards-stack h2 { margin-bottom:var(--sp-sm); }
 
 /* shared visual contract — both raw and post-processed */
-section.cards-stack > ul, section.cards-stack > ol,
+section.cards-stack > .cell-stage > ul, section.cards-stack > .cell-stage > ol,
 section.cards-stack .cards-stack-inner {
-  display:flex; flex-direction:column; gap:var(--sp-md);
-  flex:1; list-style:none; margin:0; padding:0;
+  display:flex; flex-direction:column; gap:var(--sp-sm);
+  /* flex:1 fills the stage; min-height:0 lets the stack shrink to the bounded stage
+   * (flex cell-tree §6) instead of overrunning it when several cards carry multi-line
+   * bodies — without it the default min-height:auto floor clipped the last card. */
+  flex:1; min-height:0; list-style:none; margin:0; padding:0;
 }
-section.cards-stack > ul > li, section.cards-stack > ol > li,
+section.cards-stack > .cell-stage > ul > li, section.cards-stack > .cell-stage > ol > li,
 section.cards-stack .card {
   background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
-  margin:0; flex:1; list-style:none;
+  /* flex:1 distributes the cards to fill; min-height:0 lets a card yield its share
+   * rather than forcing its natural height and pushing the stack past the clip. */
+  margin:0; flex:1; min-height:0; list-style:none;
   display:flex; flex-wrap:wrap; align-items:baseline; align-content:flex-start;
   column-gap:var(--sp-sm); row-gap:var(--sp-xs);
   font-size:var(--fs-body); line-height:var(--lh-snug);
   font-weight:700; color:var(--text-heading);
 }
-section.cards-stack > ul > li::marker, section.cards-stack > ol > li::marker { content:''; }
+section.cards-stack > .cell-stage > ul > li::marker, section.cards-stack > .cell-stage > ol > li::marker { content:''; }
 
 /* — title strong: backwards-compat shim. Legacy slides that wrap the title in
  *   `**…**` render identically; the strong simply inherits the li's bold. — */
-section.cards-stack > ul > li > strong, section.cards-stack > ol > li > strong,
+section.cards-stack > .cell-stage > ul > li > strong, section.cards-stack > .cell-stage > ol > li > strong,
 section.cards-stack .card > strong { font-weight:inherit; color:inherit; }
 
 /* — trailing inline code → right-anchored pill on the title row.
@@ -49,7 +54,7 @@ section.cards-stack .card > strong { font-weight:inherit; color:inherit; }
  *   `> ul/ol > li > code` selector can't reach it), and the marp-cli path
  *   emits the `<code>` before the nested `<ul>` (so the :last-child guard
  *   would miss it). The :has(+ ul/ol) case is covered here by position. — */
-section.cards-stack > ul > li > code, section.cards-stack > ol > li > code,
+section.cards-stack > .cell-stage > ul > li > code, section.cards-stack > .cell-stage > ol > li > code,
 section.cards-stack .card > code {
   margin-left:auto; align-self:baseline;
   display:inline-flex; align-items:center; justify-content:center; text-align:center; line-height:1;
@@ -62,14 +67,14 @@ section.cards-stack .card > code {
 
 /* — card body (nested list) wraps full-width below the title row, reset to
  *   normal weight and body colour so only the title reads bold. — */
-section.cards-stack > ul > li > ul, section.cards-stack > ul > li > ol,
-section.cards-stack > ol > li > ul, section.cards-stack > ol > li > ol,
+section.cards-stack > .cell-stage > ul > li > ul, section.cards-stack > .cell-stage > ul > li > ol,
+section.cards-stack > .cell-stage > ol > li > ul, section.cards-stack > .cell-stage > ol > li > ol,
 section.cards-stack .card > ul, section.cards-stack .card > ol {
   flex-basis:100%; list-style:none; padding:0; margin:var(--sp-xs) 0 0 0;
   font-weight:400; color:var(--text-body); line-height:var(--lh-base);
 }
-section.cards-stack > ul > li > ul > li, section.cards-stack > ul > li > ol > li,
-section.cards-stack > ol > li > ul > li, section.cards-stack > ol > li > ol > li,
+section.cards-stack > .cell-stage > ul > li > ul > li, section.cards-stack > .cell-stage > ul > li > ol > li,
+section.cards-stack > .cell-stage > ol > li > ul > li, section.cards-stack > .cell-stage > ol > li > ol > li,
 section.cards-stack .card > ul > li, section.cards-stack .card > ol > li {
   font-size:var(--fs-body);
 }
@@ -80,12 +85,12 @@ section.cards-stack .card > ul > li, section.cards-stack .card > ol > li {
  * on the ordered shape (`> ol` / `--ordered` modifier class). Composes with
  * `horizontal`: the badge sits in the same corner whether cards stack
  * vertically or flow as a row. ── */
-section.cards-stack > ol { counter-reset:stack; }
-section.cards-stack > ol > li {
+section.cards-stack > .cell-stage > ol { counter-reset:stack; }
+section.cards-stack > .cell-stage > ol > li {
   counter-increment:stack;
   position:relative; padding-top:calc(var(--sp-xs) + 1.875cqi);
 }
-section.cards-stack > ol > li::before {
+section.cards-stack > .cell-stage > ol > li::before {
   content:counter(stack);
   position:absolute; top:0; left:0;
   padding:0.46875cqi 1.09375cqi; border-radius:var(--radius-md) 0 var(--radius-sm) 0;
@@ -110,8 +115,8 @@ section.cards-stack .cards-stack-inner--ordered > .card::before {
  * Default cards-stack flows the cards as a vertical stack (one per row).
  * `horizontal` flips to a horizontal row, useful when cards are short and
  * the slide reads left-to-right rather than top-to-bottom. ── */
-section.cards-stack.horizontal > ul,
-section.cards-stack.horizontal > ol,
+section.cards-stack.horizontal > .cell-stage > ul,
+section.cards-stack.horizontal > .cell-stage > ol,
 section.cards-stack.horizontal .cards-stack-inner {
   flex-direction: row;
   align-items: stretch;
@@ -124,10 +129,10 @@ section.cards-stack.horizontal .cards-stack-inner {
  * applies. cards-stack additionally drops body type to --fs-body-compact so
  * a fourth card fits without crowding. Card padding is left to the generic
  * `--sp-*` shrink so the ordered-badge clearance (padding-top) is preserved. */
-section.cards-stack.compact > ul > li, section.cards-stack.compact > ol > li,
+section.cards-stack.compact > .cell-stage > ul > li, section.cards-stack.compact > .cell-stage > ol > li,
 section.cards-stack.compact .card { font-size:var(--fs-body-compact); }
-section.cards-stack.compact > ul > li > ul > li, section.cards-stack.compact > ul > li > ol > li,
-section.cards-stack.compact > ol > li > ul > li, section.cards-stack.compact > ol > li > ol > li,
+section.cards-stack.compact > .cell-stage > ul > li > ul > li, section.cards-stack.compact > .cell-stage > ul > li > ol > li,
+section.cards-stack.compact > .cell-stage > ol > li > ul > li, section.cards-stack.compact > .cell-stage > ol > li > ol > li,
 section.cards-stack.compact .card > ul > li, section.cards-stack.compact .card > ol > li {
   font-size:var(--fs-body-compact);
 }
@@ -142,12 +147,12 @@ section.cards-stack :is(ul,ol) > li > strong ~ * { font-weight: 400; }
 
 /* Portrait / square (social) — content-height cards distributed across the frame,
    not flex:1 balloons. Mirrors the list de-balloon; keyed on data-orientation. */
-section.cards-stack[data-orientation='portrait'] > :is(ul,ol),
-section.cards-stack[data-orientation='square'] > :is(ul,ol) {
+section.cards-stack[data-orientation='portrait'] > .cell-stage > :is(ul,ol),
+section.cards-stack[data-orientation='square'] > .cell-stage > :is(ul,ol) {
   justify-content: space-evenly;
 }
-section.cards-stack[data-orientation='portrait'] > :is(ul,ol) > li,
-section.cards-stack[data-orientation='square'] > :is(ul,ol) > li {
+section.cards-stack[data-orientation='portrait'] > .cell-stage > :is(ul,ol) > li,
+section.cards-stack[data-orientation='square'] > .cell-stage > :is(ul,ol) > li {
   flex: 0 0 auto;
 }
 /* Box-local family reflow (2026-06-18-component-adaptive-sizing.md): square+tall+
@@ -156,10 +161,10 @@ section.cards-stack[data-orientation='square'] > :is(ul,ol) > li {
  * inside a narrow nested cell. Doubled class matches the [data-orientation]
  * reflow's specificity. */
 @container lattice (aspect-ratio <= 1.05) {
-  section.cards-stack.cards-stack > :is(ul,ol) {
+  section.cards-stack.cards-stack > .cell-stage > :is(ul,ol) {
     justify-content: space-evenly;
   }
-  section.cards-stack.cards-stack > :is(ul,ol) > li {
+  section.cards-stack.cards-stack > .cell-stage > :is(ul,ol) > li {
     flex: 0 0 auto;
   }
 }

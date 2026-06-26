@@ -30,22 +30,32 @@
  * default (Ringed Solid) or a .checks-* variant; see base.modifiers.css.
  * Trailing inline `code` on a row floats right as a status pill
  * (universal pill convention). */
-section.checklist { display:flex; flex-direction:column; }
+section.checklist > .cell-stage { display:flex; flex-direction:column; }
 section.checklist h2 { font-size:var(--fs-emphasis); margin-bottom:var(--sp-md); }
-section.checklist > ul,
-section.checklist > ol {
+section.checklist > .cell-stage > ul,
+section.checklist > .cell-stage > ol {
   list-style:none; padding:0; margin:0;
   display:flex; flex-direction:column;
   gap:var(--sp-sm);
-  flex:1;
+  /* flex:1 fills the stage; min-height:0 lets the list shrink to the bounded stage
+   * (flex cell-tree §6) instead of overrunning it on a dense (8+-item) deck — its
+   * default min-height:auto floor would otherwise clip the last row. */
+  flex:1; min-height:0;
   justify-content:center;
 }
-section.checklist > ul > li,
-section.checklist > ol > li {
+section.checklist > .cell-stage > ul > li,
+section.checklist > .cell-stage > ol > li {
   position:relative;
   display:flex;
-  align-items:baseline;
+  /* center, not baseline: each row stretches to fill its share of the stage, so
+   * its content (and the disc below) sit at the row's vertical midline rather than
+   * stranded at the top of a tall card. */
+  align-items:center;
   gap:var(--sp-md);
+  /* Rows distribute to fill the bounded stage (flex cell-tree §6) — uniform card
+   * heights that fit the shorter stage instead of natural-height rows that overran
+   * it. min-height:0 lets a dense deck compress gracefully rather than clip. */
+  flex:1; min-height:0;
   padding:var(--sp-sm) var(--sp-md) var(--sp-sm) calc(2em + var(--sp-md));
   background:var(--bg-alt);
   border-left:3px solid var(--border);
@@ -56,26 +66,26 @@ section.checklist > ol > li {
   color:var(--text-heading);
   break-inside:avoid;
 }
-section.checklist > ul > li::marker,
-section.checklist > ol > li::marker { content:''; }
+section.checklist > .cell-stage > ul > li::marker,
+section.checklist > .cell-stage > ol > li::marker { content:''; }
 
 /* Per-row colour token + chrome — rail and background tint pick up the
  * resolved --state-color via color-mix. The token itself draws via
  * ::before below. */
-section.checklist > ul > li.state.pass,
-section.checklist > ol > li.state.pass {
+section.checklist > .cell-stage > ul > li.state.pass,
+section.checklist > .cell-stage > ol > li.state.pass {
   --state-color:var(--pass);
   border-left-color:var(--state-color);
   background:var(--pass-bg, var(--bg-alt));
 }
-section.checklist > ul > li.state.warn,
-section.checklist > ol > li.state.warn {
+section.checklist > .cell-stage > ul > li.state.warn,
+section.checklist > .cell-stage > ol > li.state.warn {
   --state-color:var(--warn);
   border-left-color:var(--state-color);
   background:var(--warn-bg, var(--bg-alt));
 }
-section.checklist > ul > li.state.fail,
-section.checklist > ol > li.state.fail {
+section.checklist > .cell-stage > ul > li.state.fail,
+section.checklist > .cell-stage > ol > li.state.fail {
   --state-color:var(--fail);
   border-left-color:var(--state-color);
   background:var(--fail-bg, var(--bg-alt));
@@ -84,14 +94,14 @@ section.checklist > ol > li.state.fail {
  * hollow ring (empty centre, --state-color edge ring; see `.state.todo` in
  * base.modifiers.css). No red, no strike — it reads "on the list, not done",
  * distinct from the red ✕ that verdict-grid keeps for a "not met" criterion. */
-section.checklist > ul > li.state.todo,
-section.checklist > ol > li.state.todo {
+section.checklist > .cell-stage > ul > li.state.todo,
+section.checklist > .cell-stage > ol > li.state.todo {
   --state-color:var(--text-label);
   border-left-color:var(--state-color);
   background:var(--bg-alt);
 }
-section.checklist > ul > li.state.skip,
-section.checklist > ol > li.state.skip {
+section.checklist > .cell-stage > ul > li.state.skip,
+section.checklist > .cell-stage > ol > li.state.skip {
   --state-color:var(--text-muted);
   border-left-color:var(--state-color);
   background:var(--bg-alt);
@@ -106,36 +116,39 @@ section.checklist > ol > li.state.skip {
  * slash) on top. Colours are mixed HERE from --state-color (resolved on
  * the .state row) + the knobs set by the default or a .checks-* variant.
  * Mirror recipe: verdict-grid.styles.css, obligation-matrix.styles.css. */
-section.checklist > ul > li.state::before,
-section.checklist > ol > li.state::before,
-section.checklist > ul > li.state::after,
-section.checklist > ol > li.state::after {
+section.checklist > .cell-stage > ul > li.state::before,
+section.checklist > .cell-stage > ol > li.state::before,
+section.checklist > .cell-stage > ul > li.state::after,
+section.checklist > .cell-stage > ol > li.state::after {
   content:'';
   position:absolute;
   left:var(--sp-md);
-  top:calc(var(--sp-sm) + 0.18em);
+  /* Centre the disc on the row midline — the row now stretches to fill the stage
+   * and its text is centre-aligned, so a top-anchored disc would float above it. */
+  top:50%;
+  transform:translateY(-50%);
   width:calc(1.15em * var(--state-disc-scale));
   height:calc(1.15em * var(--state-disc-scale));
   box-sizing:border-box;
 }
-section.checklist > ul > li.state::before,
-section.checklist > ol > li.state::before {
+section.checklist > .cell-stage > ul > li.state::before,
+section.checklist > .cell-stage > ol > li.state::before {
   border-radius:50%;
   background:color-mix(in srgb, var(--state-color, var(--text-muted)) var(--state-fill-pct), transparent);
   box-shadow:
     0 0 0 var(--state-ring-outer-w) color-mix(in srgb, var(--state-color, var(--text-muted)) var(--state-ring-mix), black),
     inset 0 0 0 var(--state-ring-inner-w) var(--state-color, var(--text-muted));
 }
-section.checklist > ul > li.state::after,
-section.checklist > ol > li.state::after {
+section.checklist > .cell-stage > ul > li.state::after,
+section.checklist > .cell-stage > ol > li.state::after {
   background-color:color-mix(in srgb, var(--state-color, var(--text-muted)) var(--state-mark-pct), var(--bg));
   -webkit-mask:var(--state-mark) center / 100% 100% no-repeat;
           mask:var(--state-mark) center / 100% 100% no-repeat;
 }
 /* Inline _em_ tail inside an item — soft annotation. Renders as muted
  * italic body voice; the eye still reads the label first. */
-section.checklist > ul > li em,
-section.checklist > ol > li em {
+section.checklist > .cell-stage > ul > li em,
+section.checklist > .cell-stage > ol > li em {
   font-style:italic;
   font-weight:400;
   color:var(--text-secondary);
