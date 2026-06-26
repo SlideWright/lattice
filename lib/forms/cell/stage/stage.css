@@ -9,11 +9,19 @@
  * lib/forms/tile/<id>). See design/forms.md §5/§6 and the ADR
  * engineering/decisions/2026-06-15-form-implementation.md §6.2.
  *
- * `section.form` IS the stage box: the masthead Cell is an in-flow band at the
- * top, the footer Cell is reserved via padding-bottom, and the deterministic
- * region that remains is the stage (NOT a wrapper element — and permanently so:
- * section-as-grid / a `.cell-stage` wrapper is RETIRED, so component bodies stay
- * direct children of `section` by design — see 2026-06-16-retire-section-as-grid.md).
+ * `section.form` is the root chrome Frame: the masthead Cell is a content-height
+ * band at the top, the stage Cell holds the body, and the footer Cell is reserved
+ * via padding-bottom. The stage is now a REAL element — `<div class="cell-stage">`,
+ * built by the masthead kernel — turning the frame into a flex column so the body
+ * is a bounded clipping cell (flex:1; min-height:0; overflow:clip) and can't bleed
+ * past the stage edge into the footer/rail band. This REVIVES the `.cell-stage`
+ * wrapper that section-as-grid retired in 2026-06-16: that decision rejected a
+ * GRID track (a fixed row fights the content-height masthead); FLEX auto-rows are
+ * content-height by construction, so the objection doesn't apply — the wrapper is
+ * reopened on merit (engineering/decisions/2026-06-26-frames-as-flex-cell-trees.md
+ * §7; the 2026-06-16 note records the reopening). The wrap is per-layout: generic
+ * prose + migrated components carry the cell; an un-migrated component keeps its
+ * direct-child body until codemodded.
  * Because
  * `section.form` is the root chrome Frame, this file is also where the shared,
  * resolution-blind frame tokens are defined (--frame-x/-y, --masthead-h,
@@ -30,11 +38,10 @@
  *   · masthead↔stage — the band's margin-bottom + hairline rule is the gap.
  *   · stage↔footer   — `form` reserves a footer safe-area (padding-bottom,
  *                     derived from the real footer Cell height) so content keeps
- *                     clear of the footer / progress Cell. The section's own
- *                     overflow:hidden hard-clips anything escaping the slide —
- *                     this is the canonical behavior (the wrapper-based soft fade
- *                     is retired with section-as-grid; any future soft clip must
- *                     be wrapper-free, e.g. a mask).
+ *                     clear of the footer / progress Cell. The stage Cell's own
+ *                     `overflow:clip` walls the body at the stage edge; the
+ *                     section's `overflow:hidden` is the outer backstop at the
+ *                     slide edge.
  *   · per-Cell       — the masthead + bay clip their own overflow, so a long
  *                     title or meta line is cut at its Cell, never bled. */
 section.form {
