@@ -27,6 +27,17 @@ in patch versions.
 
 ### Added
 
+- **The footer is a real `.cell-footer` cell, and the page number is a real element.**
+  A migrated frame's running `footer:` text, section progress rail, and page number now
+  live in one in-flow `.cell-footer` band — the frame's third cell — instead of three
+  separately-positioned overlays. Because the band is in-flow, the stage above ends exactly
+  where it begins: the footer's height *is* the reserve, retiring the `--footer-reserve`
+  padding guess. The page number is **de-pseudo'd** — it was a `section::after` pseudo-element
+  painted over the slide; it is now a real `<span class="lat-pagination">` (a page number is
+  content, not decoration). The decorative numbered-divider numeral stays a pseudo. Frames not
+  yet migrated keep the positioned footer + pseudo, so nothing regresses. Completes the
+  footer row of the flex cell-tree (`2026-06-26-frames-as-flex-cell-trees.md` §6).
+
 - **The centering statement/evidence components adopt the stage cell.** `quote`, `stats`,
   `big-number`, `decision`, and `q-and-a` migrate to `.cell-stage`. These components
   centre their content; the centring is re-established on the cell (a moved

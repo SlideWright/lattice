@@ -112,6 +112,57 @@ section.form > .cell-stage {
   min-height: 0;
   overflow: clip;
 }
+
+/* ── FOOTER Cell — the frame's third row (flex cell-tree §6) ─────────────────
+ * A real in-flow flex row at the bottom of the section flex column: the running
+ * `footer:` text at the left, the page number (a REAL `<span class="lat-pagination">`,
+ * not the `section::after` pseudo) at the right. Because it's in-flow, the stage
+ * above auto-sizes to its top — retiring the magic `--footer-reserve` padding
+ * guess (the footer's height IS the reserve, by construction). The progress rail
+ * docks in here too (progress.transform.js). */
+section.form:has(> .cell-footer) {
+  /* The footer Cell provides the bottom band, so the section's bottom padding
+   * drops to just the frame inset (was --footer-reserve). */
+  padding-bottom: var(--frame-inset-y);
+}
+section.form > .cell-footer {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;   /* wayfinding group (rail · page no.) sits right */
+  gap: var(--sp-md);
+  min-height: var(--footer-h);
+  margin-top: var(--sp-md);
+}
+/* The running footer text — was a bottom-left absolute; now in-flow at the left.
+ * margin-right:auto shoves the wayfinding group to the right edge; absent footer
+ * text just leaves the group right-aligned. Appearance (colour, size) still
+ * comes from the Marp footer tier. */
+section.form > .cell-footer > footer {
+  position: static;
+  inset: auto;
+  margin: 0 auto 0 0;
+  max-width: var(--footerleft-w, 52cqi);
+}
+/* The page number as a real element — mono, --fs-meta, on the shared baseline,
+ * matching the retired pseudo exactly. */
+section.form > .cell-footer > .lat-pagination {
+  font-family: var(--font-mono);
+  font-size: var(--fs-meta);
+  color: var(--marp-slide-footer-color, var(--text-muted));
+  white-space: nowrap;
+  pointer-events: none;
+}
+/* The progress rail docks in-flow in the footer row (de-absolute-positioned) when
+ * the frame has a footer Cell — grouped just left of the page number. */
+section.form > .cell-footer > .tile-progress {
+  position: static;
+  inset: auto;
+  max-width: none;
+}
+/* Retire the pagination PSEUDO wherever the real element exists (the decorative
+ * numbered-divider numeral, a different `::after`, is untouched). */
+section.form:has(> .cell-footer)::after { content: none; }
 /* ── Universal ALIGNMENT modifiers (#527) — the author's call ────────────────
  * Two independent axes act on the stage cell, so they read the same on EVERY
  * frame. Default is top-left (the natural reading origin); a component never

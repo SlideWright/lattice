@@ -393,14 +393,19 @@ A **sovereign** Frame (e.g. `split-panel`) *replaces* the root frame: it claims 
 whole canvas and suppresses the masthead/footer Cells — that is the entire
 mechanism behind "this slide looks completely different." Every Cell holds a Tile;
 **Frames do not nest inside content cells** (§1 — considered and rejected; see the
-decision note). The masthead's `lede · bay` is a fixed band split; the footer's
-three zones (footer-left · progress · pagination) are **independently-positionable
-Cells** — each is token-driven (`var(--<cell>-inset)`), so a Frame's per-family
-`slicing` can relocate any one freely (§7.3), bounded only by kind-fit + the box
-guarantee. That is the infinite-layouts contract realized for the chrome (the
-footer is no longer a fixed three-up split, and never the rejected recursion). The
-default parks the running text at bottom-left and groups the rail with the page
-number at bottom-right.
+decision note). The masthead's `lede · bay` is a fixed band split. On a migrated
+frame the footer is a real `.cell-footer` — an **in-flow flex row** (the frame's
+third cell) holding the running footer text (left), the section progress rail, and
+the page number (right). Because it flows in the section column, the stage above
+ends exactly where the footer begins: the footer's height *is* the reserve, so the
+`--footer-reserve` padding guess is retired. The page number is a real
+`<span class="lat-pagination">`, not a `section::after` pseudo — a page number is
+content, not decoration (the decorative numbered-divider numeral stays a pseudo).
+An un-migrated frame still uses the legacy model: three **independently-positionable
+Cells** (footer-left · progress · pagination), each token-driven
+(`var(--<cell>-inset)`), so per-family `slicing` can relocate any one (§7.3). Either
+way the default parks the running text at bottom-left and groups the rail with the
+page number at bottom-right.
 
 ---
 

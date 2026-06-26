@@ -54,10 +54,29 @@ describe('masthead-lift — HTML-string kernel', () => {
     assert.equal(out, '<div class="cell-stage"><p>Just prose, no heading.</p></div>');
   });
 
-  test('a trailing Marp <footer> stays OUT of the stage cell (footer band)', () => {
+  test('a trailing Marp <footer> moves into a real .cell-footer (footer band)', () => {
     const inner = '<h2>T</h2><p>Body.</p><footer>Confidential</footer>';
     const out = kernel.transformMastheadSection(inner, 'form');
-    assert.match(out, /<div class="cell-stage"><p>Body\.<\/p><\/div><footer>Confidential<\/footer>$/);
+    assert.match(out, /<div class="cell-stage"><p>Body\.<\/p><\/div><div class="cell-footer"><footer>Confidential<\/footer><\/div>$/);
+  });
+
+  test('pagination becomes a real .lat-pagination span in the footer cell', () => {
+    const inner = '<h2>T</h2><p>Body.</p><footer>Confidential</footer>';
+    const out = kernel.transformMastheadSection(inner, 'form', '7');
+    assert.match(out, /<div class="cell-footer"><footer>Confidential<\/footer><span class="lat-pagination">7<\/span><\/div>$/);
+  });
+
+  test('pagination alone (no footer text) still builds the footer cell', () => {
+    const inner = '<h2>T</h2><p>Body.</p>';
+    const out = kernel.transformMastheadSection(inner, 'form', '3');
+    assert.match(out, /<div class="cell-stage"><p>Body\.<\/p><\/div><div class="cell-footer"><span class="lat-pagination">3<\/span><\/div>$/);
+  });
+
+  test('no footer text and no pagination ⇒ no footer cell (stage runs to the edge)', () => {
+    const inner = '<h2>T</h2><p>Body.</p>';
+    const out = kernel.transformMastheadSection(inner, 'form');
+    assert.match(out, /<div class="cell-stage"><p>Body\.<\/p><\/div>$/);
+    assert.doesNotMatch(out, /cell-footer/);
   });
 
   test('idempotent — a second pass does not double-wrap', () => {
@@ -97,6 +116,17 @@ describe('masthead-lift — DOM mirror agrees with the kernel', () => {
     assert.ok(sec.querySelector(':scope > .cell-stage > ul > li'), 'list lives in the stage cell');
     assert.equal(sec.children[0], band, 'band is first');
     assert.ok(sec.querySelector(':scope > .cell-masthead') && sec.querySelector(':scope > .cell-stage'), 'masthead + stage cells');
+  });
+
+  test('DOM path builds a .cell-footer with footer text + pagination span', () => {
+    const doc = dom('<section class="content form" data-lattice-pagination="4"><h2>T</h2><p>Body.</p><footer>Confidential</footer></section>');
+    adapter.applyToDom(doc);
+    const sec = doc.querySelector('section.form');
+    const fc = sec.querySelector(':scope > .cell-footer');
+    assert.ok(fc, 'footer cell present');
+    assert.ok(fc.querySelector(':scope > footer'), 'footer text in the cell');
+    assert.equal(fc.querySelector(':scope > .lat-pagination')?.textContent, '4', 'page number is a real span');
+    assert.equal(sec.querySelector(':scope > .cell-stage > footer'), null, 'footer is NOT in the stage');
   });
 
   test('DOM path is idempotent', () => {
