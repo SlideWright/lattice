@@ -36,9 +36,19 @@ const DECK_DIR = path.join(ROOT, '.scratch', 'invariant-decks');
 /**
  * Wrap a component manifest's `sample` (a complete `<!-- _class: X -->` slide) in
  * the minimal marp front-matter the emulator expects → a one-slide deck.
+ *
+ * `form: off` is pinned deliberately. These are COMPONENT-isolation invariants
+ * (slot contract, the component fits the 1280×720 frame, per-component semantics) —
+ * properties of the component itself, independent of deck chrome. Form is ON by
+ * default deck-wide (2026-06-26), but it composes a masthead band / bay / rail
+ * AROUND the component; whether a dense sample + that chrome overflows is a
+ * deck-authoring concern (the overflow ring is the author's signal), not a
+ * component invariant. Pinning it off keeps these assertions measuring the
+ * component's intrinsic size/contract budget. Form composition is covered by the
+ * visual sweep and the dedicated Form decks (examples/form.md, design/forms.gallery.md).
  */
 function deckFromSample(sample, { palette = 'indaco' } = {}) {
-  return `---\nmarp: true\ntheme: ${palette}\n---\n\n${String(sample).trim()}\n`;
+  return `---\nmarp: true\ntheme: ${palette}\nform: off\n---\n\n${String(sample).trim()}\n`;
 }
 
 /**

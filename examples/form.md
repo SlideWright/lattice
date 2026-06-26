@@ -14,7 +14,7 @@ form: standard
 
 `Composition Model · the deck-wide toggle`
 
-A slide is a Frame plus a fixed set of Cells. One front-matter flag — `form: standard` — enables the whole model across the deck: the masthead band, a populated bay, a footer progress rail, and section watermarks. Palette-blind, across every render path.
+A slide is a Frame plus a fixed set of Cells — and as of this release, that composition is the default. The masthead band, a populated bay, a footer progress rail, and section watermarks appear on every deck unless it opts out with `form: off`. Palette-blind, across every render path.
 
 ---
 
@@ -104,6 +104,6 @@ The progress Tile reads the deck's `divider` slides as sections and stamps a dot
 
 <!-- _class: closing silent -->
 
-# One flag, the whole model.
+# Form, by default.
 
-The Frame · Cell · Tile model, enabled across a whole deck from one front-matter flag.
+The Frame · Cell · Tile model now composes every deck out of the box — opt out per deck with `form: off`, per slide with `no-form`.

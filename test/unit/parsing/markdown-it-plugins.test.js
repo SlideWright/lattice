@@ -160,15 +160,21 @@ describe('markdown-it-plugins', () => {
 
   // ── Form deck-wide toggle (`form: off | standard | minimal`) ───────────
 
-  test('readFormMode: standard / on / true / yes → standard; minimal → minimal; off / false / missing → off', () => {
+  test('readFormMode: Form is ON BY DEFAULT — absent form: key → standard; off / false / no opt out', () => {
     for (const v of ['standard', 'true', 'on', 'yes', 'ON', '"standard"']) {
       assert.equal(plugins.readFormMode(`---\nform: ${v}\n---\n`), 'standard', v);
     }
     assert.equal(plugins.readFormMode('---\nform: minimal\n---\n'), 'minimal');
+    // Explicit opt-out — the only way to disable now.
     for (const v of ['false', 'off', 'no']) {
       assert.equal(plugins.readFormMode(`---\nform: ${v}\n---\n`), 'off', v);
     }
-    assert.equal(plugins.readFormMode('---\ntheme: cuoio\n---\n'), 'off');
+    // Default-on: a deck with no `form:` key (or no front matter block) composes
+    // as Form. Only a degenerate empty source stays off.
+    assert.equal(plugins.readFormMode('---\ntheme: cuoio\n---\n'), 'standard');
+    assert.equal(plugins.readFormMode('# just a heading, no front matter\n'), 'standard');
+    assert.equal(plugins.readFormMode(''), 'off');
+    assert.equal(plugins.readFormMode(null), 'off');
   });
 
   test('formToggleClass: `standard` adds form to content; skips bookends / sovereign / incompatible', () => {

@@ -68,6 +68,18 @@ in patch versions.
 
 ### Changed
 
+- **Breaking: the Form composition model is now ON by default.** Every deck
+  renders with the masthead band (lifted eyebrow + title), the meta/status bay,
+  and the footer progress rail unless it opts out — an absent `form:` front-matter
+  key now resolves to `standard` (was `off`). Opt out per deck with `form: off`
+  (or quieten with `form: minimal`); per slide with `no-form`. The sovereign
+  Frames (title, divider, closing, image, math, compare-code, split-panel,
+  split-compare) stay chrome-exempt, and chart-frame components compose with the
+  band (their own subtitle/caption/body are untouched). The flip lives in the
+  single shared `readFormMode` kernel, so the emulator, marp-cli, and runtime
+  paths inherit it in lock-step (HARD RULE 1); page counts are section-count-stable
+  so the gallery gates hold. Decks that want the previous bare-chrome look must add
+  `form: off`. See `design/forms.md` and `engineering/decisions/2026-06-11-islands.md`.
 - **The docs site is moving to its own domain, `lattice.style`, served at the root.**
   Production is now a GitHub Pages site on the `lattice.style` custom domain (DNS via
   Cloudflare, registrar Squarespace), so it serves at the ROOT path instead of the old
