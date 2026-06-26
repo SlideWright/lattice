@@ -238,11 +238,12 @@ occurs.
 - **Genuine 2-D placement → flex too, UNLESS proven otherwise.** Do **not** assume a
   layout needs grid because it is 2-D. A component keeps `display: grid` only when a
   **committed pixel-diff proves flex cannot match it** (§11) AND the gap is a real
-  capability. The sweep (§13) found that gap is essentially **one thing: a table's
-  cross-row column alignment** (`max-content` column = the widest label across all
-  rows). Variable card count and spanning are *not* boundaries — flex handles them
-  (§13 Correction). Everything stays `cqi`/`fr` and is tested across the `@size` ×
-  orientation matrix.
+  capability. The sweep (§13) found **no such gap in the core component set**: variable
+  card count and spanning are flex-fine, and the one thing flex genuinely can't do —
+  cross-row column alignment — is the job of an HTML `<table>`, which Markdown produces
+  for free (so it's neither flex nor grid). CSS grid survives only in *optional* table
+  *reshaping* (collapse-to-cards on a phone), justified per component. Everything stays
+  `cqi`/`fr` and is tested across the `@size` × orientation matrix.
 
 Worked counter-example: `matrix-2x2` — the hardest case (equal column widths **and**
 equal row heights, `grid-template-columns:1fr 1fr` / `grid-template-rows:1fr 1fr`) —
@@ -380,7 +381,7 @@ Three archetypes emerged, each anchored by a pixel-diff:
 | **Uniform, fixed shape** — `1fr 1fr`/`1fr 1fr`, fixed cell count | `matrix-2x2` (equal widths AND heights) | **359 / 1.0 M = 0.036 %** (edge AA) | **Matches** — convert |
 | **Spanning orphan** — `last-child:nth-child(odd){grid-column:1/-1}` | `cards-grid` @ 3 cards (2+1) | **192 / 1.0 M = 0.019 %** | **Matches** (`width:100%` on the orphan) |
 | **Variable card count** — any N cards (`grid-auto-rows:1fr`) | `cards-grid` @ 6 cards, height NOT hard-coded | **fits, no overflow** | **Flex matches** — convert (see Correction) |
-| **Cross-row column alignment** — container `max-content 1fr` (label col = max across rows; `display:contents` fields) | synthetic `max-content` vs flex | labels misalign | **Flex can't** — stays a table |
+| **Cross-row column alignment** | a plain Markdown table → a real `<table>` | columns align natively, sits top, **no grid** | **Neither flex nor grid** — it's a `<table>` |
 
 **Correction (2026-06-26, after review).** An earlier version of this table claimed
 variable-count card grids (`grid-auto-rows:1fr`) were a flex-can't. **That was wrong** —
@@ -393,9 +394,19 @@ sits top/centre, never vertically stretched (owner's call). So the variable-coun
 is a **convert**, not a keep. The lesson is the runbook's own (§11.B): a large diff
 means *fix the recipe*, not "grid wins".
 
-So exactly **one** genuine flex-can't survives: **a table's column alignment** — every
-row's label snapping to one shared (widest) width. That is grid-only, and **a table
-stays a table** (it fills width, columns line up; it does **not** stretch vertically —
+**Second correction — even "tables need grid" overstates it.** Cross-row column
+alignment is the textbook job of an HTML `<table>`, and Markdown *produces* a real
+`<table>` for `| a | b |`. Verified in Lattice: a plain Markdown table renders as a
+`<table>`, its columns align natively, and it sits at the **top** with no vertical
+stretch — exactly the wanted behaviour, with **zero CSS layout** (no grid, no flex).
+So a table doesn't "need grid"; **a table is a `<table>`.** CSS grid only enters when a
+component *deliberately reshapes* a table (e.g. collapsing a wide table into one card
+per row on a phone — the `retire-landscape-locks` work). That reshape is an **optional
+feature**, justified per component, and is itself likely flex-able (the reshaped cards
+are independent). Net: **no core component layout requires CSS grid.**
+
+So, restated: **a table stays a table** (it fills width, columns line up via `<table>`;
+it does **not** stretch vertically —
 it sits top or centred, a universal alignment modifier deferred to #527).
 
 ### Classification (each CONVERT still gated by its own in-frame §11 A/B)
@@ -406,9 +417,12 @@ it sits top or centred, a universal alignment modifier deferred to #527).
   `citation-card`, `redline`, `list-criteria`, `agenda`, `list`, `actors`, `q-and-a`,
   `statute-stack`, `authority-chain`, `kpi`, `compare-prose`, `math`, `split-panel`.
   Prove each with the in-frame harness before converting.
-- **Stays a table** (grid/`<table>` — fills width, columns align, **does not stretch
-  vertically**; sits top/centre): `compare-table`, `list-tabular`, `regulatory-update`.
-  Their vertical placement is a universal alignment modifier, deferred to **#527**.
+- **Is a `<table>`** (native HTML table — fills width, columns align via `<table>`, **no
+  grid, no flex**, **does not stretch vertically**; sits top/centre): `compare-table`,
+  `list-tabular`, `regulatory-update`. Markdown already emits the `<table>`; their
+  vertical placement is a universal alignment modifier, deferred to **#527**. (CSS grid
+  reappears only if one *opts into* a responsive reshape — an optional per-component
+  feature, itself flex-able — never as the table's baseline layout.)
 - **Out of cell-tree scope:** chart-geometry grids (`journey` task-spans, `roadmap`
   horizons, `radar`, `progress`, `timeline-list`, `chart-family`) — sized media,
   governed by §12, not the cell-tree.
@@ -416,7 +430,9 @@ it sits top or centred, a universal alignment modifier deferred to #527).
 ### Consequence for the migration
 
 The frame/cell flex-tree (§2–6) is unaffected — it's flex regardless. Component
-internals are now almost entirely **flex**; only real **tables** keep grid, and only
-for **horizontal column alignment** — never vertical fill (tables sit top/centre,
-#527). So §10's policy holds with the boundary correctly located: **flex by default;
-grid only for a table's column alignment.**
+internals split cleanly two ways: **flex** for every laid-out grid, and a native
+**`<table>`** for real tables (Markdown emits it; columns align for free, no grid, no
+flex). Tables sit top/centre, never vertically filled (#527). CSS grid survives only
+as an *optional* responsive reshape a component may opt into — never a baseline. So
+§10's policy holds with the boundary correctly located: **flex for every layout; a
+`<table>` for tables; CSS grid essentially nowhere in the core component set.**
