@@ -28,16 +28,16 @@
  * .preemption (arrowed cascade), .lane (markdown table — different
  * shape, see below).
  * ──────────────────────────────────────────────────────────────────── */
-section.statute-stack { display:flex; flex-direction:column; }
+section.statute-stack > .cell-stage { display:flex; flex-direction:column; }
 section.statute-stack h2 { margin-bottom:var(--sp-md); }
-section.statute-stack > ul,
-section.statute-stack > ol {
+section.statute-stack > .cell-stage > ul,
+section.statute-stack > .cell-stage > ol {
   list-style:none; padding:0; margin:0;
   display:grid; grid-template-columns:repeat(3, 1fr);
   gap:var(--sp-md); flex:1;
 }
-section.statute-stack > ul > li,
-section.statute-stack > ol > li {
+section.statute-stack > .cell-stage > ul > li,
+section.statute-stack > .cell-stage > ol > li {
   background:var(--bg-alt);
   border:1px solid var(--border);
   border-top:3px solid var(--jur-accent, var(--accent));
@@ -50,16 +50,16 @@ section.statute-stack > ol > li {
   line-height:var(--lh-base);
   font-weight:400;
 }
-section.statute-stack > ul > li::marker,
-section.statute-stack > ol > li::marker { content:''; }
+section.statute-stack > .cell-stage > ul > li::marker,
+section.statute-stack > .cell-stage > ol > li::marker { content:''; }
 /* Three-jurisdiction hue rotation. Federal = warm cobalt, State = warm
  * sienna, Local = warm slate. Cycles after three. */
-section.statute-stack > :is(ul, ol) > li:nth-child(3n+1) { --jur-accent:var(--cat-4-mark); }
-section.statute-stack > :is(ul, ol) > li:nth-child(3n+2) { --jur-accent:var(--cat-6-mark); }
-section.statute-stack > :is(ul, ol) > li:nth-child(3n)   { --jur-accent:var(--cat-1-mark); }
+section.statute-stack > .cell-stage > :is(ul, ol) > li:nth-child(3n+1) { --jur-accent:var(--cat-4-mark); }
+section.statute-stack > .cell-stage > :is(ul, ol) > li:nth-child(3n+2) { --jur-accent:var(--cat-6-mark); }
+section.statute-stack > .cell-stage > :is(ul, ol) > li:nth-child(3n)   { --jur-accent:var(--cat-1-mark); }
 /* Jurisdiction label — eyebrow chrome (auto-bolded by slotLabelLift). */
-section.statute-stack > ul > li > strong:first-child,
-section.statute-stack > ol > li > strong:first-child {
+section.statute-stack > .cell-stage > ul > li > strong:first-child,
+section.statute-stack > .cell-stage > ol > li > strong:first-child {
   display:block;
   font-family:var(--font-mono);
   font-size:var(--fs-meta);
@@ -69,26 +69,26 @@ section.statute-stack > ol > li > strong:first-child {
   color:var(--jur-accent, var(--accent));
 }
 /* Body list. */
-section.statute-stack > ul > li > ul,
-section.statute-stack > ol > li > ul,
-section.statute-stack > ul > li > ol,
-section.statute-stack > ol > li > ol {
+section.statute-stack > .cell-stage > ul > li > ul,
+section.statute-stack > .cell-stage > ol > li > ul,
+section.statute-stack > .cell-stage > ul > li > ol,
+section.statute-stack > .cell-stage > ol > li > ol {
   list-style:none; padding:0; margin:0;
   display:flex; flex-direction:column; gap:var(--sp-xs);
   flex:1;
 }
-section.statute-stack > ul > li > :is(ul, ol) > li,
-section.statute-stack > ol > li > :is(ul, ol) > li {
+section.statute-stack > .cell-stage > ul > li > :is(ul, ol) > li,
+section.statute-stack > .cell-stage > ol > li > :is(ul, ol) > li {
   font-size:var(--fs-body);
   line-height:var(--lh-snug);
   color:var(--text-body);
 }
-section.statute-stack > ul > li > :is(ul, ol) > li::marker,
-section.statute-stack > ol > li > :is(ul, ol) > li::marker { content:''; }
+section.statute-stack > .cell-stage > ul > li > :is(ul, ol) > li::marker,
+section.statute-stack > .cell-stage > ol > li > :is(ul, ol) > li::marker { content:''; }
 /* Citation chip — first body item, only-child <code>. Non-pill hanging
  * cite: mono, body-heading colour, no chrome. */
-section.statute-stack > ul > li > :is(ul, ol) > li:first-child:has(> code:only-child) > code,
-section.statute-stack > ol > li > :is(ul, ol) > li:first-child:has(> code:only-child) > code {
+section.statute-stack > .cell-stage > ul > li > :is(ul, ol) > li:first-child:has(> code:only-child) > code,
+section.statute-stack > .cell-stage > ol > li > :is(ul, ol) > li:first-child:has(> code:only-child) > code {
   display:block;
   font-family:var(--font-mono);
   font-size:var(--fs-meta);
@@ -99,8 +99,8 @@ section.statute-stack > ol > li > :is(ul, ol) > li:first-child:has(> code:only-c
 }
 /* Status pill — last body item, only-child <code>. Pill chrome in the
  * jurisdiction accent colour. */
-section.statute-stack > ul > li > :is(ul, ol) > li:last-child:has(> code:only-child) > code,
-section.statute-stack > ol > li > :is(ul, ol) > li:last-child:has(> code:only-child) > code {
+section.statute-stack > .cell-stage > ul > li > :is(ul, ol) > li:last-child:has(> code:only-child) > code,
+section.statute-stack > .cell-stage > ol > li > :is(ul, ol) > li:last-child:has(> code:only-child) > code {
   display:inline-flex;
   align-items:center;
   justify-content:center;
@@ -120,13 +120,13 @@ section.statute-stack > ol > li > :is(ul, ol) > li:last-child:has(> code:only-ch
 }
 
 /* .hierarchy — vertical stack, Federal full-tall, State mid, Local short. */
-section.statute-stack.hierarchy > ul,
-section.statute-stack.hierarchy > ol {
+section.statute-stack.hierarchy > .cell-stage > ul,
+section.statute-stack.hierarchy > .cell-stage > ol {
   grid-template-columns:1fr;
   grid-auto-rows:1.5fr 1fr 0.7fr;
 }
-section.statute-stack.hierarchy > ul > li,
-section.statute-stack.hierarchy > ol > li {
+section.statute-stack.hierarchy > .cell-stage > ul > li,
+section.statute-stack.hierarchy > .cell-stage > ol > li {
   border-top:1px solid var(--border);
   border-left:4px solid var(--jur-accent, var(--accent));
   display:grid;
@@ -134,17 +134,17 @@ section.statute-stack.hierarchy > ol > li {
   column-gap:var(--sp-lg);
   align-items:start;
 }
-section.statute-stack.hierarchy > :is(ul, ol) > li > strong:first-child { grid-column:1; padding-top:0.234375cqi; }
-section.statute-stack.hierarchy > :is(ul, ol) > li > :is(ul, ol) { grid-column:2; }
+section.statute-stack.hierarchy > .cell-stage > :is(ul, ol) > li > strong:first-child { grid-column:1; padding-top:0.234375cqi; }
+section.statute-stack.hierarchy > .cell-stage > :is(ul, ol) > li > :is(ul, ol) { grid-column:2; }
 
 /* .bands — three horizontal full-width rows: badge | body | status. */
-section.statute-stack.bands > ul,
-section.statute-stack.bands > ol {
+section.statute-stack.bands > .cell-stage > ul,
+section.statute-stack.bands > .cell-stage > ol {
   grid-template-columns:1fr;
   grid-auto-rows:1fr;
 }
-section.statute-stack.bands > ul > li,
-section.statute-stack.bands > ol > li {
+section.statute-stack.bands > .cell-stage > ul > li,
+section.statute-stack.bands > .cell-stage > ol > li {
   border-top:1px solid var(--border);
   border-left:4px solid var(--jur-accent, var(--accent));
   display:grid;
@@ -152,13 +152,13 @@ section.statute-stack.bands > ol > li {
   column-gap:var(--sp-lg);
   align-items:center;
 }
-section.statute-stack.bands > :is(ul, ol) > li > strong:first-child {
+section.statute-stack.bands > .cell-stage > :is(ul, ol) > li > strong:first-child {
   grid-column:1;
   font-size:var(--fs-body);
   letter-spacing:0.08em;
   align-self:center;
 }
-section.statute-stack.bands > :is(ul, ol) > li > :is(ul, ol) {
+section.statute-stack.bands > .cell-stage > :is(ul, ol) > li > :is(ul, ol) {
   grid-column:2;
   align-self:center;
   flex-direction:row;
@@ -168,22 +168,22 @@ section.statute-stack.bands > :is(ul, ol) > li > :is(ul, ol) {
 }
 
 /* .preemption — vertical stack with arrows between cards. */
-section.statute-stack.preemption > ul,
-section.statute-stack.preemption > ol {
+section.statute-stack.preemption > .cell-stage > ul,
+section.statute-stack.preemption > .cell-stage > ol {
   grid-template-columns:1fr;
   grid-auto-rows:auto;
   gap:0;
   align-content:center;
 }
-section.statute-stack.preemption > ul > li,
-section.statute-stack.preemption > ol > li {
+section.statute-stack.preemption > .cell-stage > ul > li,
+section.statute-stack.preemption > .cell-stage > ol > li {
   border:1px solid var(--border);
   border-left:4px solid var(--jur-accent, var(--accent));
   border-top:1px solid var(--border);
   position:relative;
   margin-bottom:var(--sp-lg);
 }
-section.statute-stack.preemption > :is(ul, ol) > li:not(:last-child)::after {
+section.statute-stack.preemption > .cell-stage > :is(ul, ol) > li:not(:last-child)::after {
   content:'↓';
   position:absolute;
   left:50%; bottom:calc(-1 * var(--sp-lg));
@@ -196,7 +196,7 @@ section.statute-stack.preemption > :is(ul, ol) > li:not(:last-child)::after {
   padding:0 var(--sp-xs);
   z-index:1;
 }
-section.statute-stack.preemption > :is(ul, ol) > li:last-child { margin-bottom:0; }
+section.statute-stack.preemption > .cell-stage > :is(ul, ol) > li:last-child { margin-bottom:0; }
 
 /* .lane — markdown table; columns are aspects (cite, obligation, status).
  * Authoring example:
@@ -206,8 +206,8 @@ section.statute-stack.preemption > :is(ul, ol) > li:last-child { margin-bottom:0
  *   | State        | Cal. Civ. Code §1798  | Notice + opt-out + DSAR   | Enforced    |
  *   | Local        | NYC §22-1201          | Annual AEDT bias audit    | Effective   |
  */
-section.statute-stack.lane > ul,
-section.statute-stack.lane > ol { display:none; }
+section.statute-stack.lane > .cell-stage > ul,
+section.statute-stack.lane > .cell-stage > ol { display:none; }
 section.statute-stack.lane table {
   width:100%; border-collapse:collapse;
   flex:1; font-size:var(--fs-body);
@@ -271,8 +271,8 @@ section.statute-stack.lane td:last-child {
    the old [data-orientation] stamp played; keyed on the nearest `lattice`
    container's aspect so it fires on a portrait deck AND a narrow nested cell. */
 @container lattice (aspect-ratio <= 1.05) {
-  section.statute-stack.statute-stack:not(.hierarchy):not(.bands):not(.preemption):not(.lane) > ul,
-  section.statute-stack.statute-stack:not(.hierarchy):not(.bands):not(.preemption):not(.lane) > ol {
+  section.statute-stack.statute-stack:not(.hierarchy):not(.bands):not(.preemption):not(.lane) > .cell-stage > ul,
+  section.statute-stack.statute-stack:not(.hierarchy):not(.bands):not(.preemption):not(.lane) > .cell-stage > ol {
     grid-template-columns: 1fr;
     grid-auto-rows: auto;
     align-content: space-evenly;
@@ -281,18 +281,18 @@ section.statute-stack.lane td:last-child {
      top-right corner (on the jurisdiction-label row) to reclaim the row it held at the
      foot — denser cards, more per page. Scoped to portrait + the default card: landscape
      keeps the foot-anchored pill (its equal-height grid would leave an empty bottom). */
-  section.statute-stack:not(.hierarchy):not(.bands):not(.preemption):not(.lane) > :is(ul, ol) > li { position:relative; }
+  section.statute-stack:not(.hierarchy):not(.bands):not(.preemption):not(.lane) > .cell-stage > :is(ul, ol) > li { position:relative; }
   /* The pill rides the label's MIDLINE (centre-to-centre, not top-to-top) — `top` lands on
      the label's vertical centre and translateY recentres the taller pill box on it. */
-  section.statute-stack:not(.hierarchy):not(.bands):not(.preemption):not(.lane) > :is(ul, ol) > li > :is(ul, ol) > li:last-child:has(> code:only-child) {
+  section.statute-stack:not(.hierarchy):not(.bands):not(.preemption):not(.lane) > .cell-stage > :is(ul, ol) > li > :is(ul, ol) > li:last-child:has(> code:only-child) {
     position:absolute; top:calc(var(--sp-md) + 0.8 * var(--fs-meta)); right:var(--sp-md);
     transform:translateY(-50%); margin:0; max-width:48%;
   }
-  section.statute-stack:not(.hierarchy):not(.bands):not(.preemption):not(.lane) > :is(ul, ol) > li > strong:first-child {
+  section.statute-stack:not(.hierarchy):not(.bands):not(.preemption):not(.lane) > .cell-stage > :is(ul, ol) > li > strong:first-child {
     padding-right:30cqi; /* keep the label clear of the lifted pill on the shared top row */
   }
   /* Breathing room between the label/pill row and the citation+obligation below. */
-  section.statute-stack:not(.hierarchy):not(.bands):not(.preemption):not(.lane) > :is(ul, ol) > li > :is(ul, ol) {
+  section.statute-stack:not(.hierarchy):not(.bands):not(.preemption):not(.lane) > .cell-stage > :is(ul, ol) > li > :is(ul, ol) {
     margin-top:var(--sp-md);
   }
 }

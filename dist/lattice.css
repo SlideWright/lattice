@@ -1298,22 +1298,32 @@ section.agenda.checks.progress-6 ol > li:nth-child(6)::after {
  *   .bracket    bracketed cards with strong connectors
  *   .trail      numbered horizontal trail with arrows
  * ──────────────────────────────────────────────────────────────────── */
-section.authority-chain { display:flex; flex-direction:column; }
+section.authority-chain > .cell-stage { display:flex; flex-direction:column; }
 section.authority-chain h2 { margin-bottom:var(--sp-md); }
-section.authority-chain > ol,
-section.authority-chain > ul {
+section.authority-chain > .cell-stage > ol,
+section.authority-chain > .cell-stage > ul {
   list-style:none; padding:0; margin:0;
   display:flex; flex-direction:column;
-  gap:0; flex:1; justify-content:center;
+  /* flex:1 fills the stage; min-height:0 lets the chain shrink to the bounded stage
+   * (flex cell-tree §6) — without it the list's min-height:auto floor kept the rows at
+   * natural height and clipped the last tier on a 4-tier chain. */
+  gap:0; flex:1; min-height:0; justify-content:center;
   counter-reset:auth;
 }
-section.authority-chain > :is(ol, ul) > li {
+section.authority-chain > .cell-stage > :is(ol, ul) > li {
   counter-increment:auth;
   position:relative;
   display:grid;
   grid-template-columns:14cqi 1fr;
   column-gap:var(--sp-md);
   align-items:center;
+  /* border-box so the pyramid's explicit width:100%/84%/… rows include their border
+   * and don't overflow the stage horizontally. */
+  box-sizing:border-box;
+  /* Rows distribute to fill the bounded stage; align-items:center keeps each tier's
+   * content on the row midline as it grows. min-height:0 lets a dense chain compress
+   * gracefully instead of overrunning the clip. */
+  flex:1; min-height:0;
   padding:var(--sp-md) var(--sp-md);
   background:var(--bg-alt);
   border:1px solid var(--border);
@@ -1324,10 +1334,10 @@ section.authority-chain > :is(ol, ul) > li {
   color:var(--text-body);
   margin-bottom:var(--sp-md);
 }
-section.authority-chain > :is(ol, ul) > li::marker { content:''; }
-section.authority-chain > :is(ol, ul) > li:last-child { margin-bottom:0; }
+section.authority-chain > .cell-stage > :is(ol, ul) > li::marker { content:''; }
+section.authority-chain > .cell-stage > :is(ol, ul) > li:last-child { margin-bottom:0; }
 /* Connector arrow between rows. */
-section.authority-chain > :is(ol, ul) > li:not(:last-child)::after {
+section.authority-chain > .cell-stage > :is(ol, ul) > li:not(:last-child)::after {
   content:'';
   position:absolute;
   left:7cqi; bottom:calc(-1 * var(--sp-md));
@@ -1335,11 +1345,11 @@ section.authority-chain > :is(ol, ul) > li:not(:last-child)::after {
   background:var(--accent);
 }
 /* Tier hue rotation — Statute / Regulation / Guidance / Case. */
-section.authority-chain > :is(ol, ul) > li:nth-child(8n+1) { --tier-hue:var(--cat-4-mark); }
-section.authority-chain > :is(ol, ul) > li:nth-child(8n+2) { --tier-hue:var(--cat-1-mark); }
-section.authority-chain > :is(ol, ul) > li:nth-child(8n+3) { --tier-hue:var(--cat-6-mark); }
-section.authority-chain > :is(ol, ul) > li:nth-child(8n+4) { --tier-hue:var(--cat-3-mark); }
-section.authority-chain > :is(ol, ul) > li > strong:first-child {
+section.authority-chain > .cell-stage > :is(ol, ul) > li:nth-child(8n+1) { --tier-hue:var(--cat-4-mark); }
+section.authority-chain > .cell-stage > :is(ol, ul) > li:nth-child(8n+2) { --tier-hue:var(--cat-1-mark); }
+section.authority-chain > .cell-stage > :is(ol, ul) > li:nth-child(8n+3) { --tier-hue:var(--cat-6-mark); }
+section.authority-chain > .cell-stage > :is(ol, ul) > li:nth-child(8n+4) { --tier-hue:var(--cat-3-mark); }
+section.authority-chain > .cell-stage > :is(ol, ul) > li > strong:first-child {
   grid-column:1;
   font-family:var(--font-mono);
   font-size:var(--fs-body);
@@ -1348,13 +1358,13 @@ section.authority-chain > :is(ol, ul) > li > strong:first-child {
   text-transform:uppercase;
   color:var(--tier-hue, var(--accent));
 }
-section.authority-chain > :is(ol, ul) > li > :is(ul, ol) {
+section.authority-chain > .cell-stage > :is(ol, ul) > li > :is(ul, ol) {
   grid-column:2;
   list-style:none; padding:0; margin:0;
   display:flex; flex-direction:column; gap:var(--sp-xs);
 }
-section.authority-chain > :is(ol, ul) > li > :is(ul, ol) > li::marker { content:''; }
-section.authority-chain > :is(ol, ul) > li > :is(ul, ol) > li:first-child:has(> code:only-child) > code {
+section.authority-chain > .cell-stage > :is(ol, ul) > li > :is(ul, ol) > li::marker { content:''; }
+section.authority-chain > .cell-stage > :is(ol, ul) > li > :is(ul, ol) > li:first-child:has(> code:only-child) > code {
   font-family:var(--font-mono);
   font-size:var(--fs-meta);
   font-weight:600;
@@ -1364,28 +1374,32 @@ section.authority-chain > :is(ol, ul) > li > :is(ul, ol) > li:first-child:has(> 
 }
 
 /* .pyramid — top is widest, each tier narrower. */
-section.authority-chain.pyramid > :is(ol, ul) {
+section.authority-chain.pyramid > .cell-stage > :is(ol, ul) {
   align-items:center;
 }
-section.authority-chain.pyramid > :is(ol, ul) > li {
+section.authority-chain.pyramid > .cell-stage > :is(ol, ul) > li {
   width:100%;
   max-width:none;
   text-align:left;
+  /* The pyramid is a SHAPE (decreasing-width tiers) — its rows stay content-height
+   * and the group centres in the stage (ul justify-content:center), rather than the
+   * base chain's flex:1 stretch which would balloon each tier and break the silhouette. */
+  flex:0 1 auto;
 }
-section.authority-chain.pyramid > :is(ol, ul) > li:nth-child(1) { width:100%; }
-section.authority-chain.pyramid > :is(ol, ul) > li:nth-child(2) { width:84%; }
-section.authority-chain.pyramid > :is(ol, ul) > li:nth-child(3) { width:68%; }
-section.authority-chain.pyramid > :is(ol, ul) > li:nth-child(4) { width:54%; }
-section.authority-chain.pyramid > :is(ol, ul) > li::after { display:none; }
+section.authority-chain.pyramid > .cell-stage > :is(ol, ul) > li:nth-child(1) { width:100%; }
+section.authority-chain.pyramid > .cell-stage > :is(ol, ul) > li:nth-child(2) { width:84%; }
+section.authority-chain.pyramid > .cell-stage > :is(ol, ul) > li:nth-child(3) { width:68%; }
+section.authority-chain.pyramid > .cell-stage > :is(ol, ul) > li:nth-child(4) { width:54%; }
+section.authority-chain.pyramid > .cell-stage > :is(ol, ul) > li::after { display:none; }
 
 /* .branching — statute root, then nested children render as connected branches. */
-section.authority-chain.branching > :is(ol, ul) > li > :is(ul, ol) {
+section.authority-chain.branching > .cell-stage > :is(ol, ul) > li > :is(ul, ol) {
   grid-column:1 / -1;
   list-style:none; margin:var(--sp-sm) 0 0; padding:0 0 0 var(--sp-lg);
   display:flex; flex-direction:column; gap:var(--sp-xs);
   border-left:2px dashed var(--tier-hue, var(--accent));
 }
-section.authority-chain.branching > :is(ol, ul) > li > :is(ul, ol) > li {
+section.authority-chain.branching > .cell-stage > :is(ol, ul) > li > :is(ul, ol) > li {
   padding:var(--sp-xs) var(--sp-md);
   background:var(--bg);
   border:1px solid var(--border);
@@ -1393,32 +1407,32 @@ section.authority-chain.branching > :is(ol, ul) > li > :is(ul, ol) > li {
   font-size:var(--fs-meta);
   position:relative;
 }
-section.authority-chain.branching > :is(ol, ul) > li > :is(ul, ol) > li::before {
+section.authority-chain.branching > .cell-stage > :is(ol, ul) > li > :is(ul, ol) > li::before {
   content:'';
   position:absolute;
   left:calc(-1 * var(--sp-lg)); top:50%;
   width:var(--sp-md); height:2px;
   background:var(--tier-hue, var(--accent));
 }
-section.authority-chain.branching > :is(ol, ul) > li::after { display:none; }
+section.authority-chain.branching > .cell-stage > :is(ol, ul) > li::after { display:none; }
 
 /* .bracket — visual bracket connector tying tiers. */
-section.authority-chain.bracket > :is(ol, ul) > li {
+section.authority-chain.bracket > .cell-stage > :is(ol, ul) > li {
   border-radius:0;
   border:1px solid var(--border);
   border-left:6px double var(--tier-hue, var(--accent));
   margin-bottom:0;
 }
-section.authority-chain.bracket > :is(ol, ul) > li::after { display:none; }
-section.authority-chain.bracket > :is(ol, ul) > li + li { border-top:none; }
+section.authority-chain.bracket > .cell-stage > :is(ol, ul) > li::after { display:none; }
+section.authority-chain.bracket > .cell-stage > :is(ol, ul) > li + li { border-top:none; }
 
 /* .trail — horizontal numbered trail with arrows. */
-section.authority-chain.trail > :is(ol, ul) {
+section.authority-chain.trail > .cell-stage > :is(ol, ul) {
   flex-direction:row;
   gap:0; justify-content:space-between;
   align-items:stretch;
 }
-section.authority-chain.trail > :is(ol, ul) > li {
+section.authority-chain.trail > .cell-stage > :is(ol, ul) > li {
   flex:1;
   margin-bottom:0;
   display:flex; flex-direction:column; gap:var(--sp-xs);
@@ -1429,7 +1443,7 @@ section.authority-chain.trail > :is(ol, ul) > li {
   padding:var(--sp-md);
   position:relative;
 }
-section.authority-chain.trail > :is(ol, ul) > li::after {
+section.authority-chain.trail > .cell-stage > :is(ol, ul) > li::after {
   content:'→';
   display:block;
   position:absolute;
@@ -1441,15 +1455,15 @@ section.authority-chain.trail > :is(ol, ul) > li::after {
   color:var(--accent);
   z-index:1;
 }
-section.authority-chain.trail > :is(ol, ul) > li:last-child::after { display:none; }
-section.authority-chain.trail > :is(ol, ul) > li > strong:first-child {
+section.authority-chain.trail > .cell-stage > :is(ol, ul) > li:last-child::after { display:none; }
+section.authority-chain.trail > .cell-stage > :is(ol, ul) > li > strong:first-child {
   font-size:var(--fs-meta);
   letter-spacing:0.10em;
 }
-section.authority-chain.trail > :is(ol, ul) > li > :is(ul, ol) > li:first-child:has(> code:only-child) > code {
+section.authority-chain.trail > .cell-stage > :is(ol, ul) > li > :is(ul, ol) > li:first-child:has(> code:only-child) > code {
   font-size:var(--fs-meta);
 }
-section.authority-chain.trail > :is(ol, ul) > li::before {
+section.authority-chain.trail > .cell-stage > :is(ol, ul) > li::before {
   content:counter(auth, decimal-leading-zero);
   font-family:var(--font-mono);
   font-size:var(--fs-h2);
@@ -1468,13 +1482,13 @@ section.authority-chain.trail > :is(ol, ul) > li::before {
    handling for the variants is out of Batch A1 scope (tracked follow-up). Doubled
    class + the variant guards win on specificity. */
 @container lattice (aspect-ratio <= 1.05) {
-  section.authority-chain.authority-chain:not(.trail):not(.pyramid):not(.branching):not(.bracket) > :is(ol, ul) > li {
+  section.authority-chain.authority-chain:not(.trail):not(.pyramid):not(.branching):not(.bracket) > .cell-stage > :is(ol, ul) > li {
     grid-template-columns: 1fr;
     row-gap: var(--sp-xs);
     align-items: start;
   }
-  section.authority-chain.authority-chain:not(.trail):not(.pyramid):not(.branching):not(.bracket) > :is(ol, ul) > li > strong:first-child,
-  section.authority-chain.authority-chain:not(.trail):not(.pyramid):not(.branching):not(.bracket) > :is(ol, ul) > li > :is(ul, ol) {
+  section.authority-chain.authority-chain:not(.trail):not(.pyramid):not(.branching):not(.bracket) > .cell-stage > :is(ol, ul) > li > strong:first-child,
+  section.authority-chain.authority-chain:not(.trail):not(.pyramid):not(.branching):not(.bracket) > .cell-stage > :is(ol, ul) > li > :is(ul, ol) {
     grid-column: 1;
   }
 }
@@ -11102,16 +11116,16 @@ section.stats[data-orientation='square'] > .cell-stage > ol > li > ul > li {
  * .preemption (arrowed cascade), .lane (markdown table — different
  * shape, see below).
  * ──────────────────────────────────────────────────────────────────── */
-section.statute-stack { display:flex; flex-direction:column; }
+section.statute-stack > .cell-stage { display:flex; flex-direction:column; }
 section.statute-stack h2 { margin-bottom:var(--sp-md); }
-section.statute-stack > ul,
-section.statute-stack > ol {
+section.statute-stack > .cell-stage > ul,
+section.statute-stack > .cell-stage > ol {
   list-style:none; padding:0; margin:0;
   display:grid; grid-template-columns:repeat(3, 1fr);
   gap:var(--sp-md); flex:1;
 }
-section.statute-stack > ul > li,
-section.statute-stack > ol > li {
+section.statute-stack > .cell-stage > ul > li,
+section.statute-stack > .cell-stage > ol > li {
   background:var(--bg-alt);
   border:1px solid var(--border);
   border-top:3px solid var(--jur-accent, var(--accent));
@@ -11124,16 +11138,16 @@ section.statute-stack > ol > li {
   line-height:var(--lh-base);
   font-weight:400;
 }
-section.statute-stack > ul > li::marker,
-section.statute-stack > ol > li::marker { content:''; }
+section.statute-stack > .cell-stage > ul > li::marker,
+section.statute-stack > .cell-stage > ol > li::marker { content:''; }
 /* Three-jurisdiction hue rotation. Federal = warm cobalt, State = warm
  * sienna, Local = warm slate. Cycles after three. */
-section.statute-stack > :is(ul, ol) > li:nth-child(3n+1) { --jur-accent:var(--cat-4-mark); }
-section.statute-stack > :is(ul, ol) > li:nth-child(3n+2) { --jur-accent:var(--cat-6-mark); }
-section.statute-stack > :is(ul, ol) > li:nth-child(3n)   { --jur-accent:var(--cat-1-mark); }
+section.statute-stack > .cell-stage > :is(ul, ol) > li:nth-child(3n+1) { --jur-accent:var(--cat-4-mark); }
+section.statute-stack > .cell-stage > :is(ul, ol) > li:nth-child(3n+2) { --jur-accent:var(--cat-6-mark); }
+section.statute-stack > .cell-stage > :is(ul, ol) > li:nth-child(3n)   { --jur-accent:var(--cat-1-mark); }
 /* Jurisdiction label — eyebrow chrome (auto-bolded by slotLabelLift). */
-section.statute-stack > ul > li > strong:first-child,
-section.statute-stack > ol > li > strong:first-child {
+section.statute-stack > .cell-stage > ul > li > strong:first-child,
+section.statute-stack > .cell-stage > ol > li > strong:first-child {
   display:block;
   font-family:var(--font-mono);
   font-size:var(--fs-meta);
@@ -11143,26 +11157,26 @@ section.statute-stack > ol > li > strong:first-child {
   color:var(--jur-accent, var(--accent));
 }
 /* Body list. */
-section.statute-stack > ul > li > ul,
-section.statute-stack > ol > li > ul,
-section.statute-stack > ul > li > ol,
-section.statute-stack > ol > li > ol {
+section.statute-stack > .cell-stage > ul > li > ul,
+section.statute-stack > .cell-stage > ol > li > ul,
+section.statute-stack > .cell-stage > ul > li > ol,
+section.statute-stack > .cell-stage > ol > li > ol {
   list-style:none; padding:0; margin:0;
   display:flex; flex-direction:column; gap:var(--sp-xs);
   flex:1;
 }
-section.statute-stack > ul > li > :is(ul, ol) > li,
-section.statute-stack > ol > li > :is(ul, ol) > li {
+section.statute-stack > .cell-stage > ul > li > :is(ul, ol) > li,
+section.statute-stack > .cell-stage > ol > li > :is(ul, ol) > li {
   font-size:var(--fs-body);
   line-height:var(--lh-snug);
   color:var(--text-body);
 }
-section.statute-stack > ul > li > :is(ul, ol) > li::marker,
-section.statute-stack > ol > li > :is(ul, ol) > li::marker { content:''; }
+section.statute-stack > .cell-stage > ul > li > :is(ul, ol) > li::marker,
+section.statute-stack > .cell-stage > ol > li > :is(ul, ol) > li::marker { content:''; }
 /* Citation chip — first body item, only-child <code>. Non-pill hanging
  * cite: mono, body-heading colour, no chrome. */
-section.statute-stack > ul > li > :is(ul, ol) > li:first-child:has(> code:only-child) > code,
-section.statute-stack > ol > li > :is(ul, ol) > li:first-child:has(> code:only-child) > code {
+section.statute-stack > .cell-stage > ul > li > :is(ul, ol) > li:first-child:has(> code:only-child) > code,
+section.statute-stack > .cell-stage > ol > li > :is(ul, ol) > li:first-child:has(> code:only-child) > code {
   display:block;
   font-family:var(--font-mono);
   font-size:var(--fs-meta);
@@ -11173,8 +11187,8 @@ section.statute-stack > ol > li > :is(ul, ol) > li:first-child:has(> code:only-c
 }
 /* Status pill — last body item, only-child <code>. Pill chrome in the
  * jurisdiction accent colour. */
-section.statute-stack > ul > li > :is(ul, ol) > li:last-child:has(> code:only-child) > code,
-section.statute-stack > ol > li > :is(ul, ol) > li:last-child:has(> code:only-child) > code {
+section.statute-stack > .cell-stage > ul > li > :is(ul, ol) > li:last-child:has(> code:only-child) > code,
+section.statute-stack > .cell-stage > ol > li > :is(ul, ol) > li:last-child:has(> code:only-child) > code {
   display:inline-flex;
   align-items:center;
   justify-content:center;
@@ -11194,13 +11208,13 @@ section.statute-stack > ol > li > :is(ul, ol) > li:last-child:has(> code:only-ch
 }
 
 /* .hierarchy — vertical stack, Federal full-tall, State mid, Local short. */
-section.statute-stack.hierarchy > ul,
-section.statute-stack.hierarchy > ol {
+section.statute-stack.hierarchy > .cell-stage > ul,
+section.statute-stack.hierarchy > .cell-stage > ol {
   grid-template-columns:1fr;
   grid-auto-rows:1.5fr 1fr 0.7fr;
 }
-section.statute-stack.hierarchy > ul > li,
-section.statute-stack.hierarchy > ol > li {
+section.statute-stack.hierarchy > .cell-stage > ul > li,
+section.statute-stack.hierarchy > .cell-stage > ol > li {
   border-top:1px solid var(--border);
   border-left:4px solid var(--jur-accent, var(--accent));
   display:grid;
@@ -11208,17 +11222,17 @@ section.statute-stack.hierarchy > ol > li {
   column-gap:var(--sp-lg);
   align-items:start;
 }
-section.statute-stack.hierarchy > :is(ul, ol) > li > strong:first-child { grid-column:1; padding-top:0.234375cqi; }
-section.statute-stack.hierarchy > :is(ul, ol) > li > :is(ul, ol) { grid-column:2; }
+section.statute-stack.hierarchy > .cell-stage > :is(ul, ol) > li > strong:first-child { grid-column:1; padding-top:0.234375cqi; }
+section.statute-stack.hierarchy > .cell-stage > :is(ul, ol) > li > :is(ul, ol) { grid-column:2; }
 
 /* .bands — three horizontal full-width rows: badge | body | status. */
-section.statute-stack.bands > ul,
-section.statute-stack.bands > ol {
+section.statute-stack.bands > .cell-stage > ul,
+section.statute-stack.bands > .cell-stage > ol {
   grid-template-columns:1fr;
   grid-auto-rows:1fr;
 }
-section.statute-stack.bands > ul > li,
-section.statute-stack.bands > ol > li {
+section.statute-stack.bands > .cell-stage > ul > li,
+section.statute-stack.bands > .cell-stage > ol > li {
   border-top:1px solid var(--border);
   border-left:4px solid var(--jur-accent, var(--accent));
   display:grid;
@@ -11226,13 +11240,13 @@ section.statute-stack.bands > ol > li {
   column-gap:var(--sp-lg);
   align-items:center;
 }
-section.statute-stack.bands > :is(ul, ol) > li > strong:first-child {
+section.statute-stack.bands > .cell-stage > :is(ul, ol) > li > strong:first-child {
   grid-column:1;
   font-size:var(--fs-body);
   letter-spacing:0.08em;
   align-self:center;
 }
-section.statute-stack.bands > :is(ul, ol) > li > :is(ul, ol) {
+section.statute-stack.bands > .cell-stage > :is(ul, ol) > li > :is(ul, ol) {
   grid-column:2;
   align-self:center;
   flex-direction:row;
@@ -11242,22 +11256,22 @@ section.statute-stack.bands > :is(ul, ol) > li > :is(ul, ol) {
 }
 
 /* .preemption — vertical stack with arrows between cards. */
-section.statute-stack.preemption > ul,
-section.statute-stack.preemption > ol {
+section.statute-stack.preemption > .cell-stage > ul,
+section.statute-stack.preemption > .cell-stage > ol {
   grid-template-columns:1fr;
   grid-auto-rows:auto;
   gap:0;
   align-content:center;
 }
-section.statute-stack.preemption > ul > li,
-section.statute-stack.preemption > ol > li {
+section.statute-stack.preemption > .cell-stage > ul > li,
+section.statute-stack.preemption > .cell-stage > ol > li {
   border:1px solid var(--border);
   border-left:4px solid var(--jur-accent, var(--accent));
   border-top:1px solid var(--border);
   position:relative;
   margin-bottom:var(--sp-lg);
 }
-section.statute-stack.preemption > :is(ul, ol) > li:not(:last-child)::after {
+section.statute-stack.preemption > .cell-stage > :is(ul, ol) > li:not(:last-child)::after {
   content:'↓';
   position:absolute;
   left:50%; bottom:calc(-1 * var(--sp-lg));
@@ -11270,7 +11284,7 @@ section.statute-stack.preemption > :is(ul, ol) > li:not(:last-child)::after {
   padding:0 var(--sp-xs);
   z-index:1;
 }
-section.statute-stack.preemption > :is(ul, ol) > li:last-child { margin-bottom:0; }
+section.statute-stack.preemption > .cell-stage > :is(ul, ol) > li:last-child { margin-bottom:0; }
 
 /* .lane — markdown table; columns are aspects (cite, obligation, status).
  * Authoring example:
@@ -11280,8 +11294,8 @@ section.statute-stack.preemption > :is(ul, ol) > li:last-child { margin-bottom:0
  *   | State        | Cal. Civ. Code §1798  | Notice + opt-out + DSAR   | Enforced    |
  *   | Local        | NYC §22-1201          | Annual AEDT bias audit    | Effective   |
  */
-section.statute-stack.lane > ul,
-section.statute-stack.lane > ol { display:none; }
+section.statute-stack.lane > .cell-stage > ul,
+section.statute-stack.lane > .cell-stage > ol { display:none; }
 section.statute-stack.lane table {
   width:100%; border-collapse:collapse;
   flex:1; font-size:var(--fs-body);
@@ -11345,8 +11359,8 @@ section.statute-stack.lane td:last-child {
    the old [data-orientation] stamp played; keyed on the nearest `lattice`
    container's aspect so it fires on a portrait deck AND a narrow nested cell. */
 @container lattice (aspect-ratio <= 1.05) {
-  section.statute-stack.statute-stack:not(.hierarchy):not(.bands):not(.preemption):not(.lane) > ul,
-  section.statute-stack.statute-stack:not(.hierarchy):not(.bands):not(.preemption):not(.lane) > ol {
+  section.statute-stack.statute-stack:not(.hierarchy):not(.bands):not(.preemption):not(.lane) > .cell-stage > ul,
+  section.statute-stack.statute-stack:not(.hierarchy):not(.bands):not(.preemption):not(.lane) > .cell-stage > ol {
     grid-template-columns: 1fr;
     grid-auto-rows: auto;
     align-content: space-evenly;
@@ -11355,18 +11369,18 @@ section.statute-stack.lane td:last-child {
      top-right corner (on the jurisdiction-label row) to reclaim the row it held at the
      foot — denser cards, more per page. Scoped to portrait + the default card: landscape
      keeps the foot-anchored pill (its equal-height grid would leave an empty bottom). */
-  section.statute-stack:not(.hierarchy):not(.bands):not(.preemption):not(.lane) > :is(ul, ol) > li { position:relative; }
+  section.statute-stack:not(.hierarchy):not(.bands):not(.preemption):not(.lane) > .cell-stage > :is(ul, ol) > li { position:relative; }
   /* The pill rides the label's MIDLINE (centre-to-centre, not top-to-top) — `top` lands on
      the label's vertical centre and translateY recentres the taller pill box on it. */
-  section.statute-stack:not(.hierarchy):not(.bands):not(.preemption):not(.lane) > :is(ul, ol) > li > :is(ul, ol) > li:last-child:has(> code:only-child) {
+  section.statute-stack:not(.hierarchy):not(.bands):not(.preemption):not(.lane) > .cell-stage > :is(ul, ol) > li > :is(ul, ol) > li:last-child:has(> code:only-child) {
     position:absolute; top:calc(var(--sp-md) + 0.8 * var(--fs-meta)); right:var(--sp-md);
     transform:translateY(-50%); margin:0; max-width:48%;
   }
-  section.statute-stack:not(.hierarchy):not(.bands):not(.preemption):not(.lane) > :is(ul, ol) > li > strong:first-child {
+  section.statute-stack:not(.hierarchy):not(.bands):not(.preemption):not(.lane) > .cell-stage > :is(ul, ol) > li > strong:first-child {
     padding-right:30cqi; /* keep the label clear of the lifted pill on the shared top row */
   }
   /* Breathing room between the label/pill row and the citation+obligation below. */
-  section.statute-stack:not(.hierarchy):not(.bands):not(.preemption):not(.lane) > :is(ul, ol) > li > :is(ul, ol) {
+  section.statute-stack:not(.hierarchy):not(.bands):not(.preemption):not(.lane) > .cell-stage > :is(ul, ol) > li > :is(ul, ol) {
     margin-top:var(--sp-md);
   }
 }
@@ -11636,35 +11650,42 @@ section.verdict-grid h2 { margin-bottom:var(--sp-sm); }
  * Nested-list format: ul > li(title + ul(badge items + last = body))
  * All selectors use > from section root to prevent outer card styles from
  * cascading into the nested badge/body items. */
-section.verdict-grid > ul {
-  display:grid; grid-template-columns:1fr 1fr; grid-auto-rows:1fr;
+/* The stage is a flex column so the grid `ul` (flex:1) fills the bounded stage
+ * (flex cell-tree §6); the section itself carried no display, so the codemod left
+ * the cell without one. */
+section.verdict-grid > .cell-stage { display:flex; flex-direction:column; }
+section.verdict-grid > .cell-stage > ul {
+  /* minmax(0,1fr) rows, not bare 1fr (= minmax(auto,1fr)): the auto floor can't
+   * shrink below a card's content, so a dense verdict grid overran the shorter
+   * bounded stage and clipped the last row. minmax(0,…) lets the rows share it. */
+  display:grid; grid-template-columns:1fr 1fr; grid-auto-rows:minmax(0, 1fr);
   gap:var(--sp-sm); flex:1; list-style:none; padding:0; margin:0;
 }
-section.verdict-grid > ul > li {
+section.verdict-grid > .cell-stage > ul > li {
   background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:1.40625cqi 1.71875cqi;
   display:flex; flex-direction:column; gap:var(--sp-xs);
   font-size:var(--fs-body); font-weight:700; color:var(--text-heading);
 }
-section.verdict-grid > ul > li:last-child { background:var(--accent-soft); border-color:var(--on-accent-soft); color:var(--on-accent-soft); position:relative; overflow:hidden; padding-right:3.125cqi; }
-section.verdict-grid > ul > li:last-child::after {
+section.verdict-grid > .cell-stage > ul > li:last-child { background:var(--accent-soft); border-color:var(--on-accent-soft); color:var(--on-accent-soft); position:relative; overflow:hidden; padding-right:3.125cqi; }
+section.verdict-grid > .cell-stage > ul > li:last-child::after {
   content:'✧'; position:absolute; top:0.625cqi; right:0.625cqi;
   font-size:2.75cqi; line-height:1; color:var(--on-accent-soft); opacity:0.35; /* cqi-ok: decorative ✧ glyph, 0.35 opacity — not read */
   font-family:var(--font-body); font-weight:400; letter-spacing:0;
   pointer-events:none;
 }
-section.verdict-grid > ul > li:last-child:nth-child(odd) { grid-column:1 / -1; }
-section.verdict-grid > ul > li > strong { font-weight:inherit; color:inherit; }
+section.verdict-grid > .cell-stage > ul > li:last-child:nth-child(odd) { grid-column:1 / -1; }
+section.verdict-grid > .cell-stage > ul > li > strong { font-weight:inherit; color:inherit; }
 /* Inner ul = badge row */
-section.verdict-grid > ul > li > ul { display:flex; flex-wrap:wrap; gap:0.390625cqi; list-style:none; padding:0; margin:0; align-content:flex-start; }
+section.verdict-grid > .cell-stage > ul > li > ul { display:flex; flex-wrap:wrap; gap:0.390625cqi; list-style:none; padding:0; margin:0; align-content:flex-start; }
 /* Badge items (all but last nested li) — neutral pill */
-section.verdict-grid > ul > li > ul > li:not(:last-child) { display:inline-flex; align-items:center; justify-content:center; text-align:center; line-height:1; font-family:var(--pill-font); font-size:var(--pill-fs); font-weight:var(--pill-weight); letter-spacing:var(--pill-tracking); border-radius:var(--pill-radius); padding:var(--pill-pad-y) var(--pill-pad-x); white-space:nowrap; background:var(--bg); border:1px solid var(--text-muted); color:var(--text-body); }
+section.verdict-grid > .cell-stage > ul > li > ul > li:not(:last-child) { display:inline-flex; align-items:center; justify-content:center; text-align:center; line-height:1; font-family:var(--pill-font); font-size:var(--pill-fs); font-weight:var(--pill-weight); letter-spacing:var(--pill-tracking); border-radius:var(--pill-radius); padding:var(--pill-pad-y) var(--pill-pad-x); white-space:nowrap; background:var(--bg); border:1px solid var(--text-muted); color:var(--text-body); }
 /* When emitter/runtime ran: strip neutral pill so .badge span styles through cleanly */
-section.verdict-grid > ul > li > ul > li:not(:last-child):has(.badge) { background:none; border:none; padding:0; }
+section.verdict-grid > .cell-stage > ul > li > ul > li:not(:last-child):has(.badge) { background:none; border:none; padding:0; }
 /* Body text (last nested li) — reset inherited card-title styles */
-section.verdict-grid > ul > li > ul > li:last-child { width:100%; font-size:var(--fs-body-compact); font-weight:400; color:var(--text-body); line-height:var(--lh-snug); background:none; border:none; border-radius:0; padding:0; display:block; }
-section.verdict-grid > ul > li:last-child > ul > li:last-child { padding-right:3.125cqi; }
-section.verdict-grid > ul > li > ul > li::before { display:none; content:none; }
+section.verdict-grid > .cell-stage > ul > li > ul > li:last-child { width:100%; font-size:var(--fs-body-compact); font-weight:400; color:var(--text-body); line-height:var(--lh-snug); background:none; border:none; border-radius:0; padding:0; display:block; }
+section.verdict-grid > .cell-stage > ul > li:last-child > ul > li:last-child { padding-right:3.125cqi; }
+section.verdict-grid > .cell-stage > ul > li > ul > li::before { display:none; content:none; }
 
 /* Hardening: element siblings of <strong> in a card li don't inherit
  * the parent's font-weight:700. Covers cases like `<strong>Title.</strong>
@@ -11676,7 +11697,7 @@ section.verdict-grid :is(ul,ol) > li > strong ~ * { font-weight: 400; }
 /* ── Portrait / square reflow (social/mobile @sizes). Keyed on the deck-wide
  * data-orientation stamp (lib/engine/slides.js); landscape untouched. See
  * 2026-06-16-social-mobile-portrait-sizes.md (phase 3). */
-section.verdict-grid[data-orientation="portrait"] > ul {
+section.verdict-grid[data-orientation="portrait"] > .cell-stage > ul {
   grid-template-columns: 1fr;
   grid-auto-rows: minmax(0, 1fr);
 }
@@ -11684,17 +11705,17 @@ section.verdict-grid[data-orientation="portrait"] > ul {
  * then leaves dead space at the card bottom ("a grid of boxes", forms.md §6). Centre
  * the content block so the full-height cards read as a board deck. Portrait only;
  * the wide 2×2 is untouched. */
-section.verdict-grid[data-orientation="portrait"] > ul > li { justify-content: center; }
+section.verdict-grid[data-orientation="portrait"] > .cell-stage > ul > li { justify-content: center; }
 /* Box-local family reflow (2026-06-18-component-adaptive-sizing.md): tall+strip
  * (≤0.9) collapse the verdict grid to one column, keyed on the nearest `lattice`
  * container so it fires on a portrait deck AND inside a narrow nested cell. Doubled
  * class reaches (0,2,2) to match the [data-orientation] reflow it mirrors. */
 @container lattice (aspect-ratio <= 0.9) {
-  section.verdict-grid.verdict-grid > ul {
+  section.verdict-grid.verdict-grid > .cell-stage > ul {
     grid-template-columns: 1fr;
     grid-auto-rows: minmax(0, 1fr);
   }
-  section.verdict-grid.verdict-grid > ul > li { justify-content: center; }
+  section.verdict-grid.verdict-grid > .cell-stage > ul > li { justify-content: center; }
 }
 
 /* === lib/components/chart/word-cloud/word-cloud.styles.css === */
