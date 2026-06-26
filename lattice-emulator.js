@@ -268,6 +268,7 @@ const md = readFileOrDie(mdFile, 'source markdown');
 // matter > default). Logic lives in lib/resolve-palette.js so it can
 // be unit-tested in isolation; see test/unit/palette-resolution.test.js.
 const { resolvePalette } = require('./lib/core/resolve-palette');
+const { CLIP_CELL_SELECTOR, PROBE_SRC } = require('./lib/core/overflow-probe');
 const paletteName = resolvePalette({ md, cliArg: paletteArg }).name;
 // The a11y-* palettes are first-class themes (pick `theme: a11y-deuteranopia`
 // like any theme). Their categorical fills reference texture <pattern> <defs>
@@ -1386,10 +1387,13 @@ ${stateChartScript}
    Mirrors the watcher in lattice-runtime.js (used by the VS Code preview). */
 (function(){
   var TOL = 12;
+  var CLIP_CELL_SELECTOR = ${JSON.stringify(CLIP_CELL_SELECTOR)};
+  var probeSectionOverflow = ${PROBE_SRC};
   function check(){
     document.querySelectorAll('section[data-lattice-slide]').forEach(function(s){
-      var over = s.scrollHeight > s.clientHeight + TOL
-              || s.scrollWidth  > s.clientWidth  + TOL;
+      // Cell-aware probe — a clipping content cell hides its overflow from the
+      // section, so probe the cells too (lib/core/overflow-probe.js).
+      var over = probeSectionOverflow(s, CLIP_CELL_SELECTOR, TOL).over;
       s.classList.toggle('overflow', over);
     });
   }
@@ -1580,15 +1584,21 @@ async function renderBody(browser, g, closeBrowser) {
   // clientHeight) — the signal both the author warning and the measured auto-split
   // pass below read. Scope to real slide sections only — `<section>` literals inside
   // code blocks parse as nested DOM and would pollute the indices.
-  const measureOverflow = () => g(() => page.evaluate(({ structuralCarousel, paginatorCarousel }) => {
+  const measureOverflow = () => g(() => page.evaluate(({ structuralCarousel, paginatorCarousel, clipSel, probeSrc }) => {
     const TOL = 12; // filter sub-pixel rounding; see lattice-runtime.js
+    // Cell-aware probe (lib/core/overflow-probe.js, injected verbatim): a bounded
+    // content cell that clips hides its overflow from section.scrollHeight, so we
+    // fold the cell's internal overflow back into the section's effective extent —
+    // otherwise autosplit never sees an over-stuffed cell and the content is lost.
+    const probeSectionOverflow = new Function('return (' + probeSrc + ')')();
     const out = [];
     document.querySelectorAll('section[data-lattice-slide]').forEach((s, i) => {
-      const vOver = s.scrollHeight > s.clientHeight + TOL;
-      const over = vOver || s.scrollWidth > s.clientWidth + TOL;
+      const probe = probeSectionOverflow(s, clipSel, TOL);
+      const vOver = probe.vOver;
+      const over = probe.over;
       if (!over) return;
-      const C = s.clientHeight;
-      const ratio = C > 0 ? s.scrollHeight / C : 2;
+      const C = probe.clientH;
+      const ratio = C > 0 ? probe.scrollH / C : 2;
       // A STRUCTURAL carousel (cover-code/cover-sides) re-authors a side-by-side layout to
       // one panel per page, so ANY overflow is actionable — compare-code overflows
       // HORIZONTALLY (two code blocks too wide for a portrait box; one-block-per-page fixes
@@ -1616,13 +1626,13 @@ async function renderBody(browser, g, closeBrowser) {
       // sizes it from the collection's own height, not the whole slide's.
       let collH = 0;
       s.querySelectorAll('ul, ol, table').forEach((el) => { collH = Math.max(collH, el.offsetHeight); });
-      const headroom = C - (s.scrollHeight - collH); // box space left for the collection
+      const headroom = C - (probe.scrollH - collH); // box space left for the collection (cell-aware extent)
       const canSplit = vOver && collH > 0 && headroom > C * 0.2;
       const splitRatio = canSplit ? Math.max(2, collH / headroom) : ratio;
       out.push({ slide: i + 1, ratio, canSplit, splitRatio });
     });
     return out;
-  }, { structuralCarousel: STRUCTURAL_CAROUSEL_NAMES, paginatorCarousel: PAGINATOR_CAROUSEL_NAMES }), 'measure overflow');
+  }, { structuralCarousel: STRUCTURAL_CAROUSEL_NAMES, paginatorCarousel: PAGINATOR_CAROUSEL_NAMES, clipSel: CLIP_CELL_SELECTOR, probeSrc: PROBE_SRC }), 'measure overflow');
   let overflow = await measureOverflow();
   // MEASURED auto-split — the loop that makes "split" fit REAL boxes. Divide every
   // overflowing SPLITTABLE slide by how much it overflows, re-render, re-measure,

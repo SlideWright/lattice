@@ -10236,7 +10236,10 @@ section.split-compare .compare-left h2 { font-size:var(--fs-h3); color:var(--on-
 section.split-compare .compare-left p { font-size:var(--fs-body); font-family:var(--font-body); color:var(--on-dark-secondary); line-height:var(--lh-snug); margin:0; }
 /* Bottom padding clears the footer / pagination chrome (section::after sits at
  * bottom:1.875cqi and rises ~1.2cqi) so the verdict card never bleeds into it. */
-section.split-compare .compare-right { flex:1; min-height:0; background:var(--bg); display:flex; flex-direction:column; padding:var(--sp-lg) var(--sp-xl) var(--sp-xl) var(--sp-lg); gap:var(--sp-sm); }
+/* overflow:clip completes the flex cell-tree contract (2026-06-26): min-height:0
+ * lets the body row shrink, overflow:clip walls an over-stuffed options grid at
+ * the panel edge instead of bleeding past it. */
+section.split-compare .compare-right { flex:1; min-height:0; overflow:clip; background:var(--bg); display:flex; flex-direction:column; padding:var(--sp-lg) var(--sp-xl) var(--sp-xl) var(--sp-lg); gap:var(--sp-sm); }
 section.split-compare .options { display:grid; grid-template-columns:1fr 1fr; gap:var(--sp-sm); flex:1; }
 section.split-compare .option { background:var(--bg-alt); border-radius:var(--radius-md); padding:var(--sp-md); display:flex; flex-direction:column; border:1px solid var(--border); position:relative; }
 section.split-compare .option > strong { display:block; font-size:var(--fs-meta); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.12em; color:var(--text-secondary); font-weight:700; padding-bottom:var(--sp-xs); border-bottom:2px solid var(--border); margin:0 0 var(--sp-sm); }
@@ -10303,7 +10306,11 @@ section.split-panel .panel-left::before { content:''; position:absolute; top:0; 
 section.split-panel .panel-eyebrow { display:block; font-size:var(--fs-meta); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--on-dark-secondary); margin-bottom:var(--sp-md); }
 section.split-panel .panel-left h2 { font-size:var(--fs-h1); color:var(--on-dark-primary); line-height:var(--lh-tight); margin:0 0 var(--sp-sm); font-weight:800; }
 section.split-panel .panel-left p { font-size:var(--fs-message); color:var(--on-dark-secondary); line-height:var(--lh-snug); margin:0; }
-section.split-panel .panel-right { flex:1; background:var(--bg); display:flex; flex-direction:column; padding:var(--sp-xl) var(--sp-xl) var(--sp-xl) var(--sp-lg); }
+/* min-height:0 + overflow:clip complete the flex cell-tree contract (2026-06-26):
+ * a flex child defaults to min-height:auto (refuses to shrink), so without these
+ * an over-stuffed right zone bleeds past the panel wall. The left panel already
+ * clips (overflow:hidden, line above); this walls the supporting zone to match. */
+section.split-panel .panel-right { flex:1; min-height:0; overflow:clip; background:var(--bg); display:flex; flex-direction:column; padding:var(--sp-xl) var(--sp-xl) var(--sp-xl) var(--sp-lg); }
 section.split-panel .panel-right h3 { font-size:var(--fs-meta); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--text-secondary); font-weight:600; margin:0 0 var(--sp-lg); padding-bottom:var(--sp-sm); border-bottom:1px solid var(--border); }
 section.split-panel .panel-right > ul { display:flex; flex-direction:column; flex:1; justify-content:space-evenly; list-style:none; padding:0; margin:0; }
 section.split-panel .panel-right > ul > li { padding-left:var(--sp-md); border-left:3px solid var(--accent); }
