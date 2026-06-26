@@ -126,7 +126,7 @@ Legend: **▭** = column flex, **▯▯** = row flex (panels), **◦** = single 
 | **closing** | yes | ◦ centered cell | the content cell | — | atmosphere (inverse canvas) | Trivial |
 | **image** | yes | full-bleed image cell ± caption cell | caption cell | optional caption Tile | the **image** itself (`cover`, clipped at slide edge by design) | Trivial — image already `cover`; bound the caption |
 | **math** | yes | ▭ header / **body** / footer | equation body | own `> h2` title cell · keeps footer | atmosphere | Light — add `min-height:0`+clip to the body track |
-| **compare-code** | yes | ▭/grid: title / **code-cols** / footer | the `1fr` `.code-cols` track | own `> h2` title cell · keeps footer | atmosphere | Light — clip the existing `1fr` body track |
+| **compare-code** | yes | ▭ flex-col: title / **code-cols** / footer | the `code-cols` body | own `> h2` title cell · keeps footer | atmosphere | Light — the cell stack is 1-D → flex-column (per §10); clip the body; `.code-cols` itself stays its own 2-col layout (prove flex per §11) |
 | **split-panel** | yes | ▯▯ 2 cols; each ▭ (panel header/body/footer) | **panel-left** body · **panel-right** body | title→left panel · footer/pagination→a panel corner · numeral→coloured panel | the ghost **letterform/numeral** in the coloured panel | Medium — `.panel-left` already clips; add `min-height:0`+clip to `.panel-right`; relocate footer/pagination Tiles; mark numeral decorative |
 | **split-compare** | yes | ▯▯ 2 cols (comparison) | both panel bodies | title/footer/pagination docked into panels | atmosphere, numeral | Medium — same as split-panel |
 
@@ -207,7 +207,145 @@ then split-panel/split-compare; standard/minimal — the body-cell codemod — l
 most carefully). Record in `2026-06-16-retire-section-as-grid.md` that flex (not
 grid) reopens the bounded-body-clip on merit.
 
+Layout primitive: **flex by default; grid only when a committed pixel-diff proves
+flex can't match it** — §10. The exact recipe + proof harness for converting a grid
+to flex (so nobody re-derives it or settles on an unproven assertion) is the
+**runbook in §11**; the cells-vs-internals scope boundary and the sized-media gotcha
+are in §12.
+
 **Not in scope here:** auto-fit/shrink-to-fit of overflowing text (the system's
 answer stays "trim, or autosplit on portrait" — `2026-06-25-runtime-autosplit-*`);
 this doc only guarantees that overflow is *contained to its cell*, not that it never
 occurs.
+
+## 10. Layout primitive policy — flex by default, grid only when *proven*
+
+"Responsive" conflates two things; grid is fine at one, awkward at the other:
+
+- **Scaling** (HD→4K / resolution): a grid sized in `fr`/`cqi` — which Lattice
+  mandates (no fixed px) — scales identically to flex. **Not** a differentiator.
+- **Reflow** (landscape→portrait/square; the 2-col→1-col change): grid needs an
+  explicit `grid-template-*` re-declaration per orientation; flex reflows with a
+  single `flex-direction` swap. This asymmetry is why section-as-grid was retired at
+  the frame level (`2026-06-16`). So the honest knock on grid is **reflow, not
+  scaling.**
+
+**Policy:**
+
+- **1-D structures → flex.** All cells; and the cell-level grids in `compare-code` /
+  `math` (vertical stacks — `grid-template-rows: … 1fr …` with no 2-D need) become
+  **flex-column**.
+- **Genuine 2-D placement → flex too, UNLESS proven otherwise.** Do **not** assume a
+  layout needs grid because it is 2-D. A component keeps `display: grid` only when a
+  **committed pixel-diff proves flex cannot match it** (§11) AND the gap is a real
+  capability — variable-count auto-flow / spanning — not "it's a grid". Everything
+  stays `cqi`/`fr` and is tested across the `@size` × orientation matrix.
+
+Worked counter-example: `matrix-2x2` — the hardest case (equal column widths **and**
+equal row heights, `grid-template-columns:1fr 1fr` / `grid-template-rows:1fr 1fr`) —
+converts to flex **pixel-identically** (§11: 160 / 1,210,280 px = 0.013 %, pure edge
+AA). "Grid is better for 2-D" did not survive contact with a diff.
+
+## 11. Conversion runbook — turn a grid into flex and PROVE it
+
+Follow this exactly. It exists so no one re-derives the recipe, re-hits the same
+gotcha, or settles on "flex can't do it" without a number. The matrix-2x2 proof
+below *failed on the first attempt for a box-model reason* — read gotcha 1.
+
+### A. The flex recipe (flat DOM — no extra wrapper elements)
+
+Replace a uniform `N`-column × `M`-row grid with:
+
+```css
+/* container — was: display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr; */
+display: flex; flex-wrap: wrap; gap: var(--sp-md); align-content: stretch;
+
+/* the cells */
+> li {
+  box-sizing: border-box;                                  /* ← REQUIRED — gotcha 1 */
+  width:  calc(100% / N - var(--gap) * (N - 1) / N);       /* equal columns */
+  height: calc(100% / M - var(--gap) * (M - 1) / M);       /* equal rows — needs a definite container height, gotcha 2 */
+}
+```
+
+For the 2×2 (`N = M = 2`, `--gap = var(--sp-md)`) this collapses to
+`width / height: calc(50% - var(--sp-md) / 2)`.
+
+**Gotchas — encode, don't rediscover:**
+
+1. **`box-sizing: border-box` is mandatory.** Cells carry padding + border. Under the
+   default/inherited `content-box`, `width: calc(50% - gap/2)` + padding + border
+   exceeds 100% → the 2nd item wraps → the grid collapses to one column and overflows.
+   This is the #1 false negative — it *looks* like "flex can't do 2-D" when the box
+   model is simply wrong. The first attempt here failed for exactly this (probed:
+   `boxSizing: content-box`, item width 635 px in a 1200 px row → wrap).
+2. **Equal `height` needs a definite container height.** `height: calc(50% …)` resolves
+   only if the flex container's height is resolved. In a frame's flex tree the body
+   cell is `flex: 1` of a fixed-height slide, so it is — but this is *also* why the
+   `min-height: 0` contract (§4b) is load-bearing; without it the cell won't resolve.
+3. **Gap math is `gap/2`, not `gap`.** `N` columns + `(N−1)` gaps = 100%, so each item
+   is `calc(100%/N − gap·(N−1)/N)`. For 2 columns that is `50% − gap/2`. Don't eyeball
+   `50% − gap`.
+4. **Fixed shapes only, for this exact recipe.** It bakes `N`/`M` into the `calc()`,
+   which is exact for FIXED counts (2×2; a fixed card count). For **variable counts**
+   use `flex: 1 1 calc(100%/N − …); min-width: …` with no fixed height, and prove the
+   *partial-last-row* behaviour against grid separately (§B) — variable-count
+   auto-flow is the one place flex may genuinely diverge, so it gets its own proof,
+   never a hand-wave.
+
+### B. The proof harness — numbers, not eyeballs
+
+**Quick exploratory A/B** (deck-level `<style>` override, no rebuild — for the spike):
+
+```sh
+export CHROME_PATH=$(ls /root/.cache/puppeteer/chrome/linux-*/chrome-linux64/chrome | head -1)
+# 1. Author ONE deck body with deliberately UNEVEN cell content (1-line vs 3-line) — see C.
+# 2. grid.md  = the body as-is (current grid).
+# 3. flex.md  = the same body + a <style> block applying the §A recipe, with the layout
+#    class DOUBLED for specificity (e.g. section.matrix-2x2.matrix-2x2 > ul { … }).
+node lattice-emulator.js grid.md grid.pdf
+node lattice-emulator.js flex.md flex.pdf
+pdftoppm -png -r 110 grid.pdf A ; pdftoppm -png -r 110 flex.pdf B
+compare -metric AE A-1.png B-1.png diff.png      # prints the CHANGED-PIXEL COUNT
+```
+
+**Pass bar:** changed pixels are **edge-AA noise only** — empirically **< 0.05 %** of
+total (the matrix-2x2 proof: **160 / 1,210,280 = 0.013 %**). A *structural* mismatch
+is obvious by orders of magnitude (the failed first attempt: **~475 k / 40 %**). A
+large count means **fix the recipe (gotcha 1–3), not conclude "grid wins".**
+
+**For the real conversion commit** (editing the component CSS + `npm run build`), use
+the canonical gate — same rasterize+ImageMagick technique, wired to the build, so we
+reuse rather than reinvent (HARD RULE #15):
+
+```sh
+node tools/pixel-check.js snapshot pre-flex --decks <deck>   # grid baseline
+# … convert the component's CSS grid → flex per §A, npm run build …
+node tools/pixel-check.js diff pre-flex --decks <deck>       # must report 0 changed pixels
+```
+
+A converted component lands **only** when `pixel-check diff` is clean (or `--accept`
+with a human eyeball via `SendUserFile` for an intended sub-AA change).
+
+### C. Always stress UNEVEN content
+
+The discriminating test for *equal heights* is cells of **different content length**
+(1 line vs 3 lines). Even-content decks hide the exact failure you're checking for.
+The matrix-2x2 proof put a 3-line cell against three 1-line cells — that's what makes
+`grid-template-rows:1fr 1fr` (and its flex equal-height equivalent) actually do work
+the eye can see.
+
+## 12. Scope boundary + sized media
+
+- **Cells vs component internals.** This architecture flexes the FRAME's *cells*. It
+  does not mandate touching a component's internal layout beyond the grid→flex policy
+  (§10): a `cards-grid` is authored identically; only its layout primitive may change,
+  and only with a §11 proof. We are not rewriting component DOM for its own sake.
+- **Sized media (SVG / mermaid / charts) is the beneficiary, not an exception.** They
+  need a concrete dimension *at measure time*: `getBoundingClientRect()` must return a
+  real number, and `width: 100%` on a freshly-inserted flex child returns **0** — so
+  the diagram CSS uses an explicit `cqi` width (today `height: auto`), never `%`, and
+  relies on a resolved parent box + `min-height: 0` ancestors. The flex cell-tree is
+  precisely what GIVES them that deterministic box (the original concrete-dimension
+  contract). **Do not "simplify" a chart's explicit `cqi` sizing to `100%`** — that
+  reintroduces the zero-at-measure bug.
