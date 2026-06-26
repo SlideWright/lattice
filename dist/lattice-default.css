@@ -2045,7 +2045,7 @@ section.checklist > ol > li em {
  *
  * Variants: .split, .pull-quote, .margin, .triptych.
  * ──────────────────────────────────────────────────────────────────── */
-section.citation-card > .cell-stage { display:flex; flex-direction:column; gap:var(--sp-sm); }
+section.citation-card > .cell-stage { display:flex; flex-direction:column; gap:var(--sp-sm); justify-content:center; }
 section.citation-card h2 { margin-bottom:var(--sp-xs); }
 /* Hanging citation eyebrow — leading paragraph that is just a `<code>`. */
 section.citation-card > .cell-stage > p:has(> code:only-child) {
@@ -2081,7 +2081,8 @@ section.citation-card > .cell-stage > ul,
 section.citation-card > .cell-stage > ol {
   list-style:none; padding:0; margin:0;
   display:flex; flex-direction:column; gap:var(--sp-sm);
-  flex:1;
+  /* content-height (was flex:1) — the stage centres the whole quote+list block;
+   * a growing list would absorb the free space and strand its items at the top. */
 }
 section.citation-card > .cell-stage > :is(ul, ol) > li {
   font-size:var(--fs-body);
