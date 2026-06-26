@@ -75,6 +75,27 @@ describe('progress Tile — applyToHtml (HTML-string path)', () => {
     const once = progress.applyToHtml(html);
     assert.equal(progress.applyToHtml(once), once);
   });
+
+  test('docks the rail INTO the footer Cell, just left of the page number', () => {
+    const html = deckHtml([
+      sec('divider', '<h2>S</h2>'),
+      sec('content form', '<div class="cell-stage"><p>B</p></div><div class="cell-footer"><footer>F</footer><span class="lat-pagination">2</span></div>'),
+    ]);
+    const out = progress.applyToHtml(html);
+    // rail is inside the footer cell, between footer text and the page number
+    assert.match(out, /<div class="cell-footer"><footer>F<\/footer><nav class="tile-progress"[\s\S]*?<\/nav><span class="lat-pagination">2<\/span><\/div>/);
+    // the stage cell is untouched
+    assert.doesNotMatch(out, /cell-stage"><p>B<\/p><nav/);
+  });
+
+  test('docks into a footer Cell that has no page number', () => {
+    const html = deckHtml([
+      sec('divider', '<h2>S</h2>'),
+      sec('content form', '<div class="cell-stage"><p>B</p></div><div class="cell-footer"><footer>F</footer></div>'),
+    ]);
+    const out = progress.applyToHtml(html);
+    assert.match(out, /<div class="cell-footer"><footer>F<\/footer><nav class="tile-progress"[\s\S]*?<\/nav><\/div>/);
+  });
 });
 
 describe('progress Tile — applyToDom (live-DOM path)', () => {
@@ -100,6 +121,18 @@ describe('progress Tile — applyToDom (live-DOM path)', () => {
 
   test('null document → no throw', () => {
     assert.doesNotThrow(() => progress.applyToDom(null));
+  });
+
+  test('docks the rail into the footer Cell, left of the page number', () => {
+    const d = doc(deckHtml([
+      sec('divider', '<h2>S</h2>'),
+      sec('content form', '<div class="cell-stage"><p>B</p></div><div class="cell-footer"><footer>F</footer><span class="lat-pagination">2</span></div>'),
+    ]));
+    progress.applyToDom(d);
+    const fc = d.querySelector('.cell-footer');
+    const kids = [...fc.children].map((n) => n.className || n.tagName.toLowerCase());
+    assert.deepEqual(kids, ['footer', 'tile-progress', 'lat-pagination'], 'rail sits between footer and page number');
+    assert.equal(d.querySelector('.cell-stage .tile-progress'), null, 'rail is not in the stage');
   });
 });
 
