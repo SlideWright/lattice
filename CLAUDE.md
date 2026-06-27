@@ -216,6 +216,17 @@ lint/test catches a violation, *discipline* = no automated gate, so it's on you)
   it OR pulling it into the diff — that boundary keeps #8 (gallery isolation) and
   #17 (one feature, one PR) intact. *(discipline — no automated gate; the test is
   whether you can point at a known defect you walked past and left unrecorded.)*
+- **#19 — A performance change ships with evidence, not a claim.** Any change that
+  sets out to make the engine faster/lighter carries: (a) **before/after numbers**
+  in the PR's `## Performance` section, captured same-machine via `npm run bench`;
+  (b) the **committed baseline ratcheted** — `npm run bench:bless` so
+  `test/benchmark/baseline.json`'s diff *is* the durable before→after record, and
+  `npm run bench:check` stays within the variance band (re-bless only with the PR
+  justifying it); (c) a **bench scenario covering the optimized path** (extend
+  `test/benchmark/engine-bench.mjs` if no dataset exercises it). A perf win without
+  a reproducible measurement is unproven. *(discipline — `bench:check` is on-demand,
+  not a blocking CI gate; the wall-clock band would be flaky in the merge train. See
+  `engineering/workflow.md` §Performance.)*
 
 ---
 

@@ -45,7 +45,7 @@ const silent = argv.includes('--silent') || check;
 // the things an agent might otherwise REINVENT.
 const FRAMEWORKS = [
   ['Testing', "Node's built-in test runner (`node:test`) — no Jest/Mocha/Vitest.", '`npm test` (suite) · `node --test <file>` (one file; the `<dir>` form errors)'],
-  ['Benchmarking', '`tinybench` render benchmark — the owned lattice-engine over time, on-demand (NOT in `npm test`).', '`npm run bench` (`-- --export` adds rasterize · `-- --json` machine-readable) · `test/benchmark/engine-bench.mjs`'],
+  ['Benchmarking', '`tinybench` render benchmark — the owned lattice-engine over time, on-demand (NOT in `npm test`). A committed baseline (`test/benchmark/baseline.json`) is the perf ratchet: `bench:bless` writes it, `bench:check` compares within a variance band (HARD RULE #19).', '`npm run bench` (`-- --export` adds rasterize · `-- --json` machine-readable) · `npm run bench:bless` / `bench:check` · `test/benchmark/engine-bench.mjs`'],
   ['Lint / format', 'Biome (linter on, formatter off). The registry `biome` is the WRONG package — always go through npm.', '`npm run lint` / `lint:fix` · never `npx biome`'],
   ['Rendering', 'The owned lattice-engine renders every shipping path (the emulator CLI + the docs playground).', '`node lattice-emulator.js deck.md deck.pdf` (set `CHROME_PATH`)'],
   ['Browser automation', 'puppeteer with the cached Chromium (screenshots, export, DOM checks).', '`tools/screenshot.js` · custom scripts from repo root'],
@@ -146,6 +146,8 @@ const SCRIPT_META = {
   'test:integration:screenshot':['Test & verify', 'Integration scope: the screenshot harness.'],
   'test:integration:exemplars':['Test & verify', 'Integration scope: the 45 worked exemplars render + committed-PDF freshness (page-count gate).'],
   'bench':                    ['Test & verify', 'tinybench render benchmark — the owned engine over time (on-demand; not in `npm test`). `-- --export` / `-- --json`.'],
+  'bench:bless':              ['Test & verify', 'Write the committed perf baseline (test/benchmark/baseline.json) from a fresh bench run — the ratchet a perf PR updates (HARD RULE #19).'],
+  'bench:check':              ['Test & verify', 'Re-run the bench and compare vs the committed baseline; flags a regression only beyond the variance band (max of tolerancePct and combined RME). On-demand, not a blocking CI gate.'],
   'regress':                  ['Test & verify', 'Visual regression gate (LOCAL spot-check): render every gallery fresh and pixel-diff it against the committed golden PDF; fails on unblessed drift.'],
   'bless':                    ['Test & verify', 'Re-render the gallery goldens (the regression gate baseline) and overwrite them; commit the refreshed PDFs. `-- --only <name>` for one.'],
 

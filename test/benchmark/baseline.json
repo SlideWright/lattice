@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "note": "Committed perf baseline for the owned render engine. Refresh with `npm run bench:bless`; compare with `npm run bench:check`. Numbers are machine-relative — see engineering/workflow.md §Performance.",
+  "tolerancePct": 12,
+  "datasets": {
+    "normal (jargon)": {
+      "slides": 58,
+      "ms": 37.43,
+      "slidesPerSec": 1550,
+      "rmePct": 3.97
+    },
+    "charts": {
+      "slides": 14,
+      "ms": 32.51,
+      "slidesPerSec": 431,
+      "rmePct": 3.08
+    },
+    "stress (jargon x6)": {
+      "slides": 348,
+      "ms": 107.15,
+      "slidesPerSec": 3248,
+      "rmePct": 8.79
+    }
+  }
+}

@@ -129,6 +129,8 @@
     "test": "node --test 'test/unit/**/*.test.js'",
     "test:watch": "node --test --watch 'test/unit/**/*.test.js'",
     "bench": "node test/benchmark/engine-bench.mjs",
+    "bench:bless": "node test/benchmark/engine-bench.mjs --bless",
+    "bench:check": "node test/benchmark/engine-bench.mjs --check",
     "regress": "node tools/regression-gate.mjs",
     "bless": "node tools/regression-gate.mjs --bless",
     "test:coverage": "c8 node --test 'test/unit/**/*.test.js'",

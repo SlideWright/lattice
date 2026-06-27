@@ -27,6 +27,21 @@ NOT verified. A small before → after table helps when several things shifted.
 <!-- What you ran or added, and which gates passed (unit / integration / biome).
      "None — docs only" is a fine answer. -->
 
+## Performance
+
+<!-- REQUIRED for any change with perf intent (HARD RULE #19); delete this whole
+     section if the PR doesn't touch performance. Paste the before/after from
+     `npm run bench` (same machine), confirm the committed baseline.json was
+     re-blessed, and note the bench scenario that covers the optimized path.
+     A win without a reproducible measurement is unproven. Example:
+
+       | dataset            | before ms | after ms |    Δ% |
+       |--------------------|-----------|----------|-------|
+       | normal (jargon)    |     37.4  |    31.2  | −16.6 |
+       | stress (jargon x6) |    107.2  |    88.5  | −17.4 |
+
+     baseline.json re-blessed · bench:check within band · scenario: <which>. -->
+
 ## Caveats / not verified
 
 <!-- Anything you couldn't verify (e.g. a live on-device check), follow-ups, or
