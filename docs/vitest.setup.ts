@@ -16,4 +16,19 @@ if (typeof window !== 'undefined') {
 	if (!Element.prototype.scrollIntoView) {
 		Element.prototype.scrollIntoView = () => {};
 	}
+	// jsdom ships no matchMedia; the Studio's responsive hook needs it. Default to
+	// "desktop" (no query matches) so component tests render the full layout.
+	if (!window.matchMedia) {
+		window.matchMedia = (query: string) =>
+			({
+				matches: false,
+				media: query,
+				onchange: null,
+				addEventListener: () => {},
+				removeEventListener: () => {},
+				addListener: () => {},
+				removeListener: () => {},
+				dispatchEvent: () => false,
+			}) as unknown as MediaQueryList;
+	}
 }
