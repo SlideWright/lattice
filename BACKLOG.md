@@ -7,15 +7,14 @@
 
 The live, claimable work queue — a read-only mirror of [open issues](https://github.com/SlideWright/lattice/issues),
 grouped by board column. Design lives in `engineering/decisions/`; this tracks
-only *status*. **36 open** items.
+only *status*. **37 open** items.
 
-> ⚠️ **3 cards need triage** (missing `area:`/`type:`/`priority:`): [#506](https://github.com/SlideWright/lattice/issues/506), [#515](https://github.com/SlideWright/lattice/issues/515), [#519](https://github.com/SlideWright/lattice/issues/519).
+## Backlog (34)
 
-## Backlog (32)
-
-- [#283](https://github.com/SlideWright/lattice/issues/283) refactor(css): audit and reduce `!important` (~490 repo-wide) — high · engine
 - [#287](https://github.com/SlideWright/lattice/issues/287) refactor(engine): LPM Phase 1 — manifest `render` block + `transformSection` adapter; migrate the chart kernels — high · engine
-- [#279](https://github.com/SlideWright/lattice/issues/279) docs: reconcile Mermaid diagram-type count (README "25" vs gallery "26") — medium · diagram
+- [#506](https://github.com/SlideWright/lattice/issues/506) feat(runtime): runtime auto-split (Option B) via eventual consistency — high · engine
+- [#515](https://github.com/SlideWright/lattice/issues/515) feat(playground): Google Drive bring-your-own-storage — Connect / Save / Open — high · website
+- [#198](https://github.com/SlideWright/lattice/issues/198) bug(examples): gallery-jargon.pdf is not reproducible — rebuild draws overflow rings on 6 unrelated slides + reflows text — medium · engine
 - [#286](https://github.com/SlideWright/lattice/issues/286) refactor(css): namespace variant classes that collide with component names — medium · engine
 - [#288](https://github.com/SlideWright/lattice/issues/288) feat(engine): implement the front-matter deck-config contract (vars, object background/logo, fonts, metadata, sizes) — medium · engine
 - [#289](https://github.com/SlideWright/lattice/issues/289) feat(engine): implement the `$`-sigil inline-code variable interpolation grammar — medium · engine
@@ -31,11 +30,13 @@ only *status*. **36 open** items.
 - [#414](https://github.com/SlideWright/lattice/issues/414) refactor(website): consolidate the per-surface theme/palette dropdowns onto one shared control — medium · website
 - [#476](https://github.com/SlideWright/lattice/issues/476) chart(kanban): per-card detail reveal (Tier-2, on the HTML-mark path) — medium · chart
 - [#500](https://github.com/SlideWright/lattice/issues/500) feat(legal): obligation-matrix cover-paginate — a split that survives a wide matrix — medium · legal
-- [#506](https://github.com/SlideWright/lattice/issues/506) feat(runtime): runtime auto-split (Option B) via eventual consistency — medium
 - [#511](https://github.com/SlideWright/lattice/issues/511) refactor(engine): consolidate runtime + emulator — rename the CLI off "emulator", unify the Mermaid var-map — medium · engine
+- [#180](https://github.com/SlideWright/lattice/issues/180) epic(chart): resolution-independent charts — cqi-first, kill fixed-px, for any-format / 10K export — low · chart
+- [#279](https://github.com/SlideWright/lattice/issues/279) docs: reconcile Mermaid diagram-type count (README "25" vs gallery "26") — low · diagram
 - [#280](https://github.com/SlideWright/lattice/issues/280) docs: fix phantom `--hljs-name`/`--hljs-meta` token rows in highlight-js.docs.md — low · docs
 - [#281](https://github.com/SlideWright/lattice/issues/281) docs: mark design-system.md "9 buckets" as historical (ships 12) — low · docs
 - [#282](https://github.com/SlideWright/lattice/issues/282) docs: mark design-system.md "58 components / 89 pages" as dated (ships 53) — low · docs
+- [#283](https://github.com/SlideWright/lattice/issues/283) refactor(css): audit and reduce `!important` (~490 repo-wide) — low · engine
 - [#294](https://github.com/SlideWright/lattice/issues/294) docs: document `pixel-check` in development.md and decide on a hook — low · infra
 - [#297](https://github.com/SlideWright/lattice/issues/297) feat(website): build a visual component catalog (thumbnail picker) — low · website
 - [#298](https://github.com/SlideWright/lattice/issues/298) feat(website): implement the `.latticepack` interchange (zip export/import) — low · website
@@ -44,12 +45,11 @@ only *status*. **36 open** items.
 - [#477](https://github.com/SlideWright/lattice/issues/477) chart(state-chart): tune the `tb` reveal-lift magnitude — low · chart
 - [#478](https://github.com/SlideWright/lattice/issues/478) chart(state-chart): tighten `inline`/`horizontal` variant label spacing — low · chart
 - [#527](https://github.com/SlideWright/lattice/issues/527) explore: alignment as a universal modifier (vertical top/center for tables, lists, etc.) — low
-- [#515](https://github.com/SlideWright/lattice/issues/515) feat(playground): Google Drive bring-your-own-storage — Connect / Save / Open
 
 ## Ready (2)
 
 - [#501](https://github.com/SlideWright/lattice/issues/501) fix(inventory): glossary range pill is stale on cover-paginate split pages — low · inventory
-- [#519](https://github.com/SlideWright/lattice/issues/519) examples: ship the four portrait demo decks + PDFs for the retired landscape locks — low
+- [#519](https://github.com/SlideWright/lattice/issues/519) examples: ship the four portrait demo decks + PDFs for the retired landscape locks — low · docs
 
 ## In progress (0)
 
@@ -59,7 +59,6 @@ _none_
 
 _none_
 
-## Inbox (no status) (2)
+## Inbox (no status) (1)
 
-- [#180](https://github.com/SlideWright/lattice/issues/180) epic(chart): resolution-independent charts — cqi-first, kill fixed-px, for any-format / 10K export
-- [#198](https://github.com/SlideWright/lattice/issues/198) bug(examples): gallery-jargon.pdf is not reproducible — rebuild draws overflow rings on 6 unrelated slides + reflows text
+- [#547](https://github.com/SlideWright/lattice/issues/547) q-and-a `spine` look overflows the frame on the gallery stress content
