@@ -8200,7 +8200,18 @@ section.progress .progress-note {
  * Rules are UNLAYERED (no `@layer components` wrapper) to match every other
  * component file — broad @layer activation is blocked (see engineering/
  * cascade.md), so a wrapped file would lose to unlayered rules regardless
- * of specificity. */
+ * of specificity.
+ *
+ * ── QUESTION WRAPPER (flex enabler) ───────────────────────────────────────
+ * The org is flex-first ("flex shop", flex cell-tree §10). Every look here is flex —
+ * including `rail` (number | question | answer columns) and `grid` (2×2 quadrants with a
+ * reserved question row), which need to SIZE the question. Flex sizes items you can select,
+ * and the question is a list item's lead text — so q-and-a opts into `slotLabelLift` (the
+ * shared markdown-it kernel rule, same as decision / statute-stack / actors): the question is
+ * wrapped in `<strong>`, giving flex a selectable hook (`> li > strong`). The wrapper is
+ * visually TRANSPARENT (font:inherit) for the stream looks; rail/grid use it for layout.
+ * A bare renderer that skips the kernel (raw VS Code preview) leaves the question unwrapped —
+ * rail/grid then fall back to the single-column ledger via `:not(:has(> strong))`. */
 
 section.q-and-a > .cell-stage {
   /* Index gutter — proportional to the number's own size, NOT a fixed step. The "01"
@@ -8256,6 +8267,14 @@ section.q-and-a > .cell-stage > :is(ul, ol) > li::before {
   line-height: var(--lh-snug);
   color: var(--accent);
 }
+/* The question is lifted into <strong> by slotLabelLift so flex can size it (rail/grid).
+ * Transparent by default — it inherits the question's own type so the stream looks
+ * (ledger / spine / tab / solo / compact) read exactly as a bare text node would. */
+section.q-and-a > .cell-stage > :is(ul, ol) > li > strong {
+  font: inherit;
+  color: inherit;
+  letter-spacing: inherit;
+}
 
 /* Answer — the nested list, reset off the question's weight/size/colour. */
 section.q-and-a > .cell-stage > :is(ul, ol) > li > :is(ul, ol) {
@@ -8309,11 +8328,13 @@ section.q-and-a.spine > .cell-stage > :is(ul, ol) > li::before {
 section.q-and-a.rail > .cell-stage > :is(ul, ol) {
   gap: var(--sp-lg);
 }
+/* flex mirror of `grid-template-columns:auto minmax(0,0.46fr) minmax(0,0.54fr)`: the index is
+ * a natural-width first item; the question (<strong>) and answer (ul) split the rest 46:54 via
+ * matching flex-grow on a zero basis — exactly what the two fr tracks did. */
 section.q-and-a.rail > .cell-stage > :is(ul, ol) > li {
-  display: grid;
-  grid-template-columns: auto minmax(0, 0.46fr) minmax(0, 0.54fr);
-  column-gap: var(--sp-2xl);
+  display: flex;
   align-items: start;
+  column-gap: var(--sp-2xl);
   padding-left: 0;
   padding-bottom: var(--sp-lg);
   border-left: none;
@@ -8326,9 +8347,16 @@ section.q-and-a.rail > .cell-stage > :is(ul, ol) > li:last-child {
 section.q-and-a.rail > .cell-stage > :is(ul, ol) > li::before {
   content: counter(qa);
   position: static;
+  flex: 0 0 auto;
   font-weight: 700;
 }
+section.q-and-a.rail > .cell-stage > :is(ul, ol) > li > strong {
+  flex: 0.46 1 0;
+  min-width: 0;
+}
 section.q-and-a.rail > .cell-stage > :is(ul, ol) > li > :is(ul, ol) {
+  flex: 0.54 1 0;
+  min-width: 0;
   margin: 0;
 }
 
@@ -8364,12 +8392,14 @@ section.q-and-a.tab > .cell-stage > :is(ul, ol) > li > :is(ul, ol)::before {
 /* Four pairs in a 2×2 grid divided by a gradient hairline cross. Each cell's
  * header reserves two lines so question tops and answer baselines align across
  * a row whether or not a question wraps. */
+/* flex mirror of a 2×2 grid (flex shop §11.A, the matrix-2x2 recipe): wrap four cells, each
+ * a border-box half-minus-half-gap in both axes, so they tile the quadrant. */
 section.q-and-a.grid > .cell-stage > :is(ul, ol) {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
+  display: flex;
+  flex-direction: row;   /* override the base column stream — the quadrant tiles in rows */
+  flex-wrap: wrap;
+  align-content: stretch;
   gap: var(--sp-xl) var(--sp-2xl);
-  align-items: center;
   position: relative;
 }
 section.q-and-a.grid > .cell-stage > :is(ul, ol)::before {
@@ -8393,13 +8423,43 @@ section.q-and-a.grid > .cell-stage > :is(ul, ol)::after {
   background: linear-gradient(to right, transparent, var(--border) 18%, var(--border) 82%, transparent);
 }
 section.q-and-a.grid > .cell-stage > :is(ul, ol) > li {
-  display: grid;
-  grid-template-rows: minmax(3em, auto) auto;
+  box-sizing: border-box;
+  width: calc(50% - var(--sp-2xl) / 2);
+  height: calc(50% - var(--sp-xl) / 2);
+  /* flex mirror of `grid-template-rows:minmax(3em,auto) auto` + the outer `align-items:center`:
+   * a centred column whose question (<strong>) reserves a 3em row so answer tops baseline-align
+   * across the quadrant whether or not a question wraps. */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   row-gap: var(--sp-xs);
   border-left: none;
 }
+section.q-and-a.grid > .cell-stage > :is(ul, ol) > li > strong {
+  min-height: 3em;
+}
 section.q-and-a.grid > .cell-stage > :is(ul, ol) > li > :is(ul, ol) {
   margin: 0;
+}
+
+/* ── bare-renderer fallback ────────────────────────────────────────────────
+ * rail + grid size the question via the lifted <strong>. A renderer that skips the kernel
+ * (raw VS Code preview) leaves the question unwrapped, so there's no hook to proportion —
+ * fall back to a single-column stack rather than mis-size an unselectable text node. */
+section.q-and-a:is(.rail, .grid) > .cell-stage > :is(ul, ol):not(:has(> li > strong)) {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  gap: var(--qa-gap);
+}
+section.q-and-a:is(.rail, .grid) > .cell-stage > :is(ul, ol):not(:has(> li > strong)) > li {
+  display: block;
+  width: auto;
+  height: auto;
+}
+section.q-and-a.grid > .cell-stage > :is(ul, ol):not(:has(> li > strong))::before,
+section.q-and-a.grid > .cell-stage > :is(ul, ol):not(:has(> li > strong))::after {
+  display: none;
 }
 
 /* ── compact — the density escape hatch for five-plus pairs ───────────── */
@@ -8466,7 +8526,9 @@ section.q-and-a.solo > .cell-stage > :is(ul, ol) > li > :is(ul, ol) > li {
     align-items: stretch;
     gap: var(--sp-lg);
   }
-  section.q-and-a.grid > .cell-stage > :is(ul, ol) > li { grid-template-rows: auto auto; }
+  /* release the quadrant cell sizing — natural-height pairs in the single column. */
+  section.q-and-a.grid > .cell-stage > :is(ul, ol) > li { width: auto; height: auto; justify-content: flex-start; }
+  section.q-and-a.grid > .cell-stage > :is(ul, ol) > li > strong { min-height: 0; }
   section.q-and-a.grid > .cell-stage > :is(ul, ol)::before,
   section.q-and-a.grid > .cell-stage > :is(ul, ol)::after { display: none; }
   /* rail columns → the ledger's hanging-index block so Q and A stack legibly. */

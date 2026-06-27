@@ -189,13 +189,20 @@ in patch versions.
 
 ### Changed
 
-- **Flex-shop conversion, moderate tier — `actors`, `authority-chain`, `agenda` drop CSS
-  grid for flex.** Each row's `grid-template-columns` layout is reproduced with flex: the
-  `actors` and `authority-chain` rows use the two-cells-then-full-width flex-wrap pattern
-  (header on row 1, body wraps to a full-width row 2); the four `agenda` styles
-  (circles / rail / cards / checks) become `display:flex` marker-plus-content rows, with the
-  `rail` node ring centred in its gutter by symmetric margins. Look-preserving across every
-  variant and portrait reflow; no authoring change.
+- **Flex-shop conversion, moderate tier — `actors`, `authority-chain`, `agenda`,
+  `list-criteria`, `q-and-a` drop CSS grid for flex.** Each row's `grid-template-columns`
+  layout is reproduced with flex: the `actors` and `authority-chain` rows use the
+  two-cells-then-full-width flex-wrap pattern (header on row 1, body wraps to a full-width
+  row 2); the four `agenda` styles (circles / rail / cards / checks) become `display:flex`
+  marker-plus-content rows, with the `rail` node ring centred in its gutter by symmetric
+  margins; `list-criteria`'s bare-renderer fallback (the shipped `.crit-body` path is already
+  flex) becomes a flex column with an absolutely-positioned index gutter. **`q-and-a`** now
+  opts into the shared `slotLabelLift` kernel rule so its question is wrapped in `<strong>` —
+  giving flex a selectable hook — and its two formerly-grid looks convert: `rail`
+  (number | question | answer) splits the question/answer 46:54 via `flex-grow`, and `grid`
+  tiles a 2×2 quadrant (the matrix-2x2 flex recipe) with the question reserving a 3em row so
+  answers baseline-align. Look-preserving across every variant and portrait reflow; the only
+  authoring effect is the (visually transparent) question wrapper.
 - **The integration test tier is split into a PR slice and a nightly slice.** The
   required CI gate (`test:integration:pr`) now runs only the cross-render-path
   wiring suites (`parity/`), the export pipeline (`export/`), and the

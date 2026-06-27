@@ -472,6 +472,15 @@ describe('markdown-it-plugins', () => {
     }
   });
 
+  test('slotLabelLift: fires on q-and-a (wraps the question so flex can size it)', () => {
+    for (const cls of ['q-and-a', 'q-and-a rail', 'q-and-a grid']) {
+      const m = makeMarp(plugins.slotLabelLift);
+      const md = `<!-- _class: ${cls} -->\n- Why not delay?\n  - Because the window closes.`;
+      const { html } = m.render(md);
+      assert.match(html, /<li><strong>Why not delay\?<\/strong>/, `expected lift on ${cls} but got: ${html}`);
+    }
+  });
+
   test('slotLabelLift: `timeline` does NOT match the `timeline-list` chart class', () => {
     // `timeline-list` is a chart-family layout whose <li> leads carry a date
     // chip + title that the chart transform owns — the lift must not touch
