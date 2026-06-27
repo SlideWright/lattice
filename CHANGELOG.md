@@ -27,6 +27,17 @@ in patch versions.
 
 ### Added
 
+- **`--present`: PDFs that open straight into full-screen presentation mode.**
+  A new opt-in CLI flag marks the exported PDF's document catalog so Adobe
+  Acrobat/Reader and most desktop viewers open it directly in full-screen /
+  presentation view (`/PageMode /FullScreen`, single-page layout, a clean
+  page-only fallback when the presenter exits), with a subtle cross-fade between
+  slides (`/Trans /Fade`). Slides stay presenter-driven — no kiosk auto-advance.
+  Browser-embedded viewers (Chrome's pdfium, Firefox's pdf.js) and macOS Preview
+  ignore the hints harmlessly, so it's a no-cost enhancement everywhere else.
+  Enable it on the command line (`--present`) or bake it into a deck with a
+  `present: true` front-matter key (mirroring `--fluid`). Default off; the
+  catalog is untouched without it.
 - **Live, in-editor validation in the Drawing Board and Playground.** The deck-grammar
   findings the Architect already computes (layout/component footguns, capacity, unknown
   classes/regions, …) now also render *inline* in the CodeMirror editor as wavy
