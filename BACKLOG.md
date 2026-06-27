@@ -7,9 +7,9 @@
 
 The live, claimable work queue — a read-only mirror of [open issues](https://github.com/SlideWright/lattice/issues),
 grouped by board column. Design lives in `engineering/decisions/`; this tracks
-only *status*. **41 open** items.
+only *status*. **40 open** items.
 
-> ⚠️ **5 cards need triage** (missing `area:`/`type:`/`priority:`): [#547](https://github.com/SlideWright/lattice/issues/547), [#554](https://github.com/SlideWright/lattice/issues/554), [#556](https://github.com/SlideWright/lattice/issues/556), [#558](https://github.com/SlideWright/lattice/issues/558), [#560](https://github.com/SlideWright/lattice/issues/560).
+> ⚠️ **4 cards need triage** (missing `area:`/`type:`/`priority:`): [#547](https://github.com/SlideWright/lattice/issues/547), [#554](https://github.com/SlideWright/lattice/issues/554), [#556](https://github.com/SlideWright/lattice/issues/556), [#560](https://github.com/SlideWright/lattice/issues/560).
 
 ## Backlog (38)
 
@@ -50,7 +50,7 @@ only *status*. **41 open** items.
 - [#547](https://github.com/SlideWright/lattice/issues/547) q-and-a `spine` look overflows the frame on the gallery stress content
 - [#554](https://github.com/SlideWright/lattice/issues/554) feat(forms): N-up split Frame — compose multiple components in a grid (generalize split-panel)
 - [#556](https://github.com/SlideWright/lattice/issues/556) refactor(css): complete HARD RULE #20 — retire the last 39 margins (MARGIN_BUDGET → 0)
-- [#558](https://github.com/SlideWright/lattice/issues/558) fix(inventory): contract Layouts (layout-ledger/cards/timeline/editorial) are inert under Form-default-on
+- [#560](https://github.com/SlideWright/lattice/issues/560) docs: standardize user-facing language on "component" (retire "layout") + document the inventory contract variants
 
 ## Ready (2)
 
@@ -65,6 +65,6 @@ _none_
 
 _none_
 
-## Inbox (no status) (1)
+## Inbox (no status) (0)
 
-- [#560](https://github.com/SlideWright/lattice/issues/560) docs: standardize user-facing language on "component" (retire "layout") + document the inventory contract variants
+_none_
