@@ -7,6 +7,11 @@
  * Optional trailing p for below-note.
  */
 section.compare-prose { }
+/* The stage is a flex column so the comparison list (`> :is(ul,ol) { flex:1 }`) fills
+ * the bounded stage (flex cell-tree §6); the section carried no display, so the codemod
+ * left the cell without one. The two cards then stretch to the stage height with the
+ * `❯` connector centred on the divide. */
+section.compare-prose > .cell-stage { display:flex; flex-direction:column; }
 section.compare-prose h2 { margin-bottom:var(--sp-md); }
 section.compare-prose .compare-prose-inner { display:flex; align-items:stretch; flex:1; }
 section.compare-prose .compare-prose-inner .card {
@@ -23,40 +28,48 @@ section.compare-prose .connector { display:flex; align-items:center; justify-con
 .below-note { margin-top:var(--sp-sm); padding-top:var(--sp-xs); flex-shrink:0; position:relative; }
 .below-note::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(to right, var(--accent), transparent); }
 .below-note p { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-relaxed); margin:0; }
-section.compare-prose > :is(ul, ol) + p { margin-top:var(--sp-sm); padding-top:var(--sp-xs); flex-shrink:0; font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-relaxed); }
+section.compare-prose > .cell-stage > :is(ul, ol) + p { margin-top:var(--sp-sm); padding-top:var(--sp-xs); flex-shrink:0; font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-relaxed); }
 
 
 /* ── COMPARISON ──────────────────────────────────────────────────────────────
  * ul/ol > li (nested list format) → side-by-side cards with → connector         */
-section.compare-prose:not(:has(.compare-prose-inner)) > ul,
-section.compare-prose:not(:has(.compare-prose-inner)) > ol {
-  display:flex; align-items:stretch; flex:1; gap:var(--sp-xl);
+section.compare-prose:not(:has(.compare-prose-inner)) > .cell-stage > ul,
+section.compare-prose:not(:has(.compare-prose-inner)) > .cell-stage > ol {
+  /* Dedicated connector SLOT, flex-native. The `❯` is a REAL flex item (not an
+   * absolute chevron floated at 50/50 with a `var(--bg)` chip painted over the gap to
+   * mask it). `order` brackets it between the two cards — card · connector · card —
+   * and it takes only its own width while the cards flex:1 to fill. (The `.decision`
+   * DECISION tag below stays absolute — it's a label annotation, not the connector.) */
+  display:flex; align-items:stretch; flex:1;
+  gap:var(--sp-lg);
   list-style:none; padding:0; margin:0; position:relative;
 }
-section.compare-prose:not(:has(.compare-prose-inner)) > ul::before,
-section.compare-prose:not(:has(.compare-prose-inner)) > ol::before {
+section.compare-prose:not(:has(.compare-prose-inner)) > .cell-stage > ul::before,
+section.compare-prose:not(:has(.compare-prose-inner)) > .cell-stage > ol::before {
   content:'❯';
-  position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+  order:2; flex:0 0 auto; align-self:center;
   font-size:var(--fs-h3); color:var(--text-secondary);
-  background:var(--bg); padding:2px 0.625cqi; border-radius:0.3125cqi; z-index:1;
 }
-section.compare-prose:not(:has(.compare-prose-inner)) > ul > li,
-section.compare-prose:not(:has(.compare-prose-inner)) > ol > li {
+section.compare-prose:not(:has(.compare-prose-inner)) > .cell-stage > ul > li,
+section.compare-prose:not(:has(.compare-prose-inner)) > .cell-stage > ol > li {
   flex:1; background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
   display:grid; align-content:start; justify-items:start;
   font-weight:700; color:var(--text-heading);
 }
-section.compare-prose:not(:has(.compare-prose-inner)) > ul > li > strong,
-section.compare-prose:not(:has(.compare-prose-inner)) > ol > li > strong { display:block; }
-section.compare-prose:not(:has(.compare-prose-inner)) > ul > li > ul,
-section.compare-prose:not(:has(.compare-prose-inner)) > ul > li > ol,
-section.compare-prose:not(:has(.compare-prose-inner)) > ol > li > ul,
-section.compare-prose:not(:has(.compare-prose-inner)) > ol > li > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; width:100%; }
-section.compare-prose:not(:has(.compare-prose-inner)) > ul > li > ul > li,
-section.compare-prose:not(:has(.compare-prose-inner)) > ul > li > ol > li,
-section.compare-prose:not(:has(.compare-prose-inner)) > ol > li > ul > li,
-section.compare-prose:not(:has(.compare-prose-inner)) > ol > li > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
+/* Cards bracket the connector slot: first before it, second after it. */
+section.compare-prose:not(:has(.compare-prose-inner)) > .cell-stage > :is(ul, ol) > li:first-child { order:1; }
+section.compare-prose:not(:has(.compare-prose-inner)) > .cell-stage > :is(ul, ol) > li:last-child { order:3; }
+section.compare-prose:not(:has(.compare-prose-inner)) > .cell-stage > ul > li > strong,
+section.compare-prose:not(:has(.compare-prose-inner)) > .cell-stage > ol > li > strong { display:block; }
+section.compare-prose:not(:has(.compare-prose-inner)) > .cell-stage > ul > li > ul,
+section.compare-prose:not(:has(.compare-prose-inner)) > .cell-stage > ul > li > ol,
+section.compare-prose:not(:has(.compare-prose-inner)) > .cell-stage > ol > li > ul,
+section.compare-prose:not(:has(.compare-prose-inner)) > .cell-stage > ol > li > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; width:100%; }
+section.compare-prose:not(:has(.compare-prose-inner)) > .cell-stage > ul > li > ul > li,
+section.compare-prose:not(:has(.compare-prose-inner)) > .cell-stage > ul > li > ol > li,
+section.compare-prose:not(:has(.compare-prose-inner)) > .cell-stage > ol > li > ul > li,
+section.compare-prose:not(:has(.compare-prose-inner)) > .cell-stage > ol > li > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
 
 /* ── Compare-prose family modifiers — appended Phase 7 ──
  */
@@ -83,35 +96,38 @@ section.compare-prose:not(:has(.compare-prose-inner)) > ol > li > ol > li { font
  * `li:first-child` (considered) and `li:last-child` (the choice). */
 
 /* chosen: the second card is the winner — accent-soft fill + accent edge. */
-section.compare-prose.chosen > :is(ul, ol) > li:last-child,
-section.compare-prose.decision > :is(ul, ol) > li:last-child {
+section.compare-prose.chosen > .cell-stage > :is(ul, ol) > li:last-child,
+section.compare-prose.decision > .cell-stage > :is(ul, ol) > li:last-child {
   border-color: var(--on-accent-soft);
   border-left: 4px solid var(--on-accent-soft);
   background: var(--accent-soft);
 }
 
 /* rejected: the second card is the option dropped — dimmed card + struck tag. */
-section.compare-prose.rejected > :is(ul, ol) > li:last-child {
+section.compare-prose.rejected > .cell-stage > :is(ul, ol) > li:last-child {
   opacity: 0.72;
 }
-section.compare-prose.rejected > :is(ul, ol) > li:last-child > strong:first-child {
+section.compare-prose.rejected > .cell-stage > :is(ul, ol) > li:last-child > strong:first-child {
   text-decoration: line-through;
 }
 
 /* decision composes chosen (second card) with a de-emphasised first card and
  * a chevron amplified into a labelled DECISION connector. */
-section.compare-prose.decision > :is(ul, ol) > li:first-child {
+section.compare-prose.decision > .cell-stage > :is(ul, ol) > li:first-child {
   opacity: 0.72;
 }
-section.compare-prose.decision > :is(ul, ol) > li:first-child > strong:first-child {
+section.compare-prose.decision > .cell-stage > :is(ul, ol) > li:first-child > strong:first-child {
   text-decoration: line-through;
 }
-section.compare-prose.decision > :is(ul, ol)::before {
+section.compare-prose.decision > .cell-stage > :is(ul, ol)::before {
   color: var(--accent);
   font-weight: 700;
   font-size: var(--fs-h2);
+  /* Widen the connector slot so the DECISION label below has room and its text stays
+   * in the divide instead of bleeding onto the adjacent cards. */
+  padding: 0 var(--sp-lg);
 }
-section.compare-prose.decision > :is(ul, ol)::after {
+section.compare-prose.decision > .cell-stage > :is(ul, ol)::after {
   content: 'DECISION';
   position: absolute;
   left: 50%;
@@ -123,23 +139,18 @@ section.compare-prose.decision > :is(ul, ol)::after {
   letter-spacing: 0.18em;
   color: var(--accent);
   white-space: nowrap;
-  background: var(--bg);
-  padding: 2px 6px;
-  border-radius: var(--radius-sm);
   z-index: 2;
 }
 
-/* vertical: stack the two cards; rotate the chevron to point down. */
-section.compare-prose.vertical > :is(ul, ol) {
+/* vertical: stack the two cards; the connector slot becomes the divider ROW between
+ * them (flex column — the cards' order:1/3 + connector order:2 carry over from the
+ * base), chevron rotated to point down. The two cards split the bounded stage and
+ * fill it — matching the horizontal default. */
+section.compare-prose.vertical > .cell-stage > :is(ul, ol) {
   flex-direction: column;
-  align-items: stretch;
-  gap: var(--sp-sm);
 }
-section.compare-prose.vertical > :is(ul, ol) > li {
-  flex: 0 1 auto;
-}
-section.compare-prose.vertical > :is(ul, ol)::before {
-  transform: translate(-50%, -50%) rotate(90deg);
+section.compare-prose.vertical > .cell-stage > :is(ul, ol)::before {
+  transform: rotate(90deg);
 }
 
 
@@ -167,13 +178,13 @@ section.compare-prose :is(ul,ol) > li > strong ~ * { font-weight: 400; }
  * lift happens in the Marpit token layer. Wrapping `**Label**` in source
  * still works (idempotent) for authors who prefer to be explicit. */
 section.decision > :is(ul, ol) > li:has(> strong:first-child),
-section.compare-prose:not(:has(.compare-prose-inner)) > :is(ul, ol) > li:has(> strong:first-child),
+section.compare-prose:not(:has(.compare-prose-inner)) > .cell-stage > :is(ul, ol) > li:has(> strong:first-child),
 section.compare-prose .compare-prose-inner .card:has(> strong:first-child) {
   position: relative;
   padding-top: calc(var(--sp-sm) + 2.34375cqi);
 }
 section.decision > :is(ul, ol) > li:has(> strong:first-child) > strong:first-child,
-section.compare-prose:not(:has(.compare-prose-inner)) > :is(ul, ol) > li:has(> strong:first-child) > strong:first-child,
+section.compare-prose:not(:has(.compare-prose-inner)) > .cell-stage > :is(ul, ol) > li:has(> strong:first-child) > strong:first-child,
 section.compare-prose .compare-prose-inner .card:has(> strong:first-child) > strong:first-child {
   position: absolute;
   top: 0; left: 0;
@@ -209,11 +220,11 @@ section.decision > :is(ul, ol) > li:has(> strong:first-child) > strong:first-chi
    so its export stays byte-identical. */
 @container lattice (aspect-ratio <= 1.05) {
   section.decision > :is(ul, ol) > li:has(> strong:first-child),
-  section.compare-prose:not(:has(.compare-prose-inner)) > :is(ul, ol) > li:has(> strong:first-child) {
+  section.compare-prose:not(:has(.compare-prose-inner)) > .cell-stage > :is(ul, ol) > li:has(> strong:first-child) {
     padding-top: calc(var(--sp-md) + var(--fs-meta));
   }
   section.decision > :is(ul, ol) > li:has(> strong:first-child) > strong:first-child,
-  section.compare-prose:not(:has(.compare-prose-inner)) > :is(ul, ol) > li:has(> strong:first-child) > strong:first-child {
+  section.compare-prose:not(:has(.compare-prose-inner)) > .cell-stage > :is(ul, ol) > li:has(> strong:first-child) > strong:first-child {
     padding: var(--sp-2xs) var(--sp-sm);
   }
 }
@@ -291,11 +302,11 @@ section.compare-prose.transition .compare-prose-inner .connector { font-size: 0;
 section.compare-prose.transition .compare-prose-inner .connector::after {
   content: "\2192"; font-size: var(--fs-h2); color: var(--accent); line-height: 1;
 }
-section.compare-prose.transition:not(:has(.compare-prose-inner)) > :is(ul, ol)::before {
+section.compare-prose.transition:not(:has(.compare-prose-inner)) > .cell-stage > :is(ul, ol)::before {
   content: "\2192"; color: var(--accent);
 }
 section.compare-prose.transition .compare-prose-inner .card:nth-child(3),
-section.compare-prose.transition:not(:has(.compare-prose-inner)) > :is(ul, ol) > li:last-child {
+section.compare-prose.transition:not(:has(.compare-prose-inner)) > .cell-stage > :is(ul, ol) > li:last-child {
   border-color: var(--on-accent-soft); background: var(--accent-soft);
 }
 
@@ -308,9 +319,10 @@ section.compare-prose.transition:not(:has(.compare-prose-inner)) > :is(ul, ol) >
    base layout; the doubled class `.compare-prose.compare-prose` holds specificity
    over the base flex-row rule. */
 @container lattice (aspect-ratio <= 0.9) {
-  section.compare-prose.compare-prose:not(:has(.compare-prose-inner)) > :is(ul, ol) {
+  section.compare-prose.compare-prose:not(:has(.compare-prose-inner)) > .cell-stage > :is(ul, ol) {
+    /* mirror `.vertical` — flex column, the connector slot is the divider row (cards
+       order:1/3 + connector order:2 carry from the base). */
     flex-direction: column;
-    align-items: stretch;
     /* a generous gap gives the centred chevron room in the divide, clear of the
        second card's (now larger) top-left corner tag. */
     gap: var(--sp-2xl);
@@ -320,19 +332,19 @@ section.compare-prose.transition:not(:has(.compare-prose-inner)) > :is(ul, ol) >
      card's statement vertically (the corner tag is an absolute top-left badge, so it
      stays put) so the body owns the card's optical middle instead of a short line
      stranded at the top over empty space. */
-  section.compare-prose.compare-prose:not(:has(.compare-prose-inner)) > :is(ul, ol) > li {
+  section.compare-prose.compare-prose:not(:has(.compare-prose-inner)) > .cell-stage > :is(ul, ol) > li {
     align-content: center;
   }
   /* one side per full-width card — its statement carries message weight, not body. */
-  section.compare-prose.compare-prose:not(:has(.compare-prose-inner)) > :is(ul, ol) > li > :is(ul, ol) > li {
+  section.compare-prose.compare-prose:not(:has(.compare-prose-inner)) > .cell-stage > :is(ul, ol) > li > :is(ul, ol) > li {
     /* This portrait @container override (--fs-message, statement weight) WINS over the
      * base body rule, so the dense-prose de-boost must live here too — the base de-boost
      * is inert in portrait. (Parallels decision.styles.css line 100.) */
     font-size: var(--fs-message);
     line-height: var(--lh-snug);
   }
-  section.compare-prose.compare-prose:not(:has(.compare-prose-inner)) > :is(ul, ol)::before {
-    transform: translate(-50%, -50%) rotate(90deg);
+  section.compare-prose.compare-prose:not(:has(.compare-prose-inner)) > .cell-stage > :is(ul, ol)::before {
+    transform: rotate(90deg);
   }
 }
 

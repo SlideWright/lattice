@@ -6,8 +6,13 @@
  * ### eyebrow  ## heading  *subtitle*  ```lang block
  */
 section.code { }
+/* The stage is a flex column so the code block (`pre { flex:1 }`) fills the bounded
+ * stage (flex cell-tree §6); the section carried no display, so the codemod left the
+ * cell without one. The masthead lift hoists the `## heading` into the band; the
+ * fenced block becomes the stage body and runs full-height. */
+section.code > .cell-stage { display:flex; flex-direction:column; }
 section.code h3 { margin-bottom:0.3125cqi; }
 section.code h2 { margin-bottom:var(--sp-xs); }
-section.code > em { font-size:var(--fs-meta); line-height:var(--lh-snug); color:var(--text-label); margin-bottom:var(--sp-sm); font-style:normal; display:block; }
+section.code > .cell-stage > em { font-size:var(--fs-meta); line-height:var(--lh-snug); color:var(--text-label); margin-bottom:var(--sp-sm); font-style:normal; display:block; }
 section.code pre { flex:1; margin:0; border-radius:var(--radius-md); overflow:hidden; background:var(--spectrum) bottom / 100% 3px no-repeat, var(--code-bg); padding:var(--sp-sm) var(--sp-md); padding-bottom:calc(var(--sp-sm) + 0.234375cqi); box-sizing:border-box; }
 section.code pre > code { font-family:var(--font-mono); font-size:var(--fs-meta); line-height:var(--lh-base); color:var(--code-text); background:none; padding:0; display:block; }
