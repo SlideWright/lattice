@@ -116,11 +116,13 @@ section.agenda:not(.circles):not(.rail):not(.cards):not(.checks).progress-6 ol >
  * Each section number in a drawn ring; active ring fills with the accent. */
 section.agenda.circles ol { gap: var(--sp-sm); }
 section.agenda.circles ol > li {
-  display: grid; grid-template-columns: auto 1fr; column-gap: var(--sp-md); align-items: center;
+  /* flex mirror of `grid-template-columns:auto 1fr` — the ring marker (::before) then the
+   * title fills the rest; a trailing page-ref `code` right-anchors via the universal pill. */
+  display: flex; column-gap: var(--sp-md); align-items: center;
   padding: 0; position: static;
 }
 section.agenda.circles ol > li::before {
-  content: counter(agenda-counter); display: grid; place-items: center;
+  content: counter(agenda-counter); display: flex; align-items: center; justify-content: center;
   width: 2.4em; height: 2.4em; border-radius: 50%;
   border: 2px solid var(--ag-outline); background: none; margin: 0; letter-spacing: normal;
   font-family: var(--font-label); font-weight: 700; font-size: var(--fs-message); line-height: 1;
@@ -151,12 +153,16 @@ section.agenda.rail ol::before {
   width: 2px; transform: translateX(-50%); background: var(--ag-outline);
 }
 section.agenda.rail ol > li {
-  display: grid; grid-template-columns: 3.4em 1fr; align-items: center; column-gap: var(--sp-md);
+  /* flex mirror of `grid-template-columns:3.4em 1fr`: the node ring sits in a 3.4em gutter
+   * (centred on the journey line at 1.7em), then the title fills the rest. */
+  display: flex; align-items: center; column-gap: var(--sp-md);
   padding: var(--sp-xs) 0; position: static;
 }
 section.agenda.rail ol > li::before {
-  content: counter(agenda-counter); justify-self: center; display: grid; place-items: center;
-  width: 2.2em; height: 2.2em; position: relative; z-index: 1; margin: 0; letter-spacing: normal;
+  /* centre the 2.2em ring within the 3.4em gutter via symmetric margins ((3.4-2.2)/2),
+   * replacing the grid column's justify-self:center — the ring's centre lands on 1.7em. */
+  content: counter(agenda-counter); flex: 0 0 auto; display: flex; align-items: center; justify-content: center;
+  width: 2.2em; height: 2.2em; position: relative; z-index: 1; margin: 0 0.6em; letter-spacing: normal;
   background: var(--bg); border: 2px solid var(--ag-outline); border-radius: 50%;
   font-family: var(--font-label); font-weight: 700; font-size: var(--fs-body); line-height: 1;
   color: var(--accent); -webkit-mask: none; mask: none;
@@ -182,7 +188,8 @@ section.agenda.rail.progress-6 ol > li:nth-child(6)::before {
  * Each section a boxed row; active card fills with the accent wash. */
 section.agenda.cards ol { gap: var(--sp-sm); }
 section.agenda.cards ol > li {
-  display: grid; grid-template-columns: auto 1fr; column-gap: var(--sp-md); align-items: baseline;
+  /* flex mirror of `grid-template-columns:auto 1fr` (number marker | title). */
+  display: flex; column-gap: var(--sp-md); align-items: baseline;
   padding: var(--sp-sm) var(--sp-md); position: static;
   border: 1.5px solid var(--ag-outline); border-radius: 10px; background: var(--bg-alt);
 }
@@ -207,7 +214,8 @@ section.agenda.cards.progress-6 ol > li:nth-child(6) {
  * future = empty box. Without progress, a plain row of empty boxes. */
 section.agenda.checks ol { gap: var(--sp-sm); }
 section.agenda.checks ol > li {
-  display: grid; grid-template-columns: auto 1fr; column-gap: var(--sp-md); align-items: center;
+  /* flex mirror of `grid-template-columns:auto 1fr` (checkbox marker | title). */
+  display: flex; column-gap: var(--sp-md); align-items: center;
   padding: 0; position: relative;
 }
 section.agenda.checks ol > li::before {
