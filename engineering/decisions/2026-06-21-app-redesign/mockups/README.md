@@ -1,5 +1,11 @@
 # Studio redesign — mockups (v3 current · v2/v1 superseded)
 
+> **Authoring update (v4, #562):** [`v4/v4-compose.png`](./v4/v4-compose.png) refreshes the
+> Compose desktop to show shipped **inline editor validation** (gutter underline · Quick
+> fix · Fix-all) and the **re-scoped Architect** (scorecard · coach · reshape + a findings
+> roll-up). Only the editor/Architect *content* changed — the v3 shell layout is identical,
+> so tablet/mobile were not re-cut (PM-14). See plan §2.5.
+>
 > **Current shell: `v3/`** (the lean shell — one ~54px top bar, **Present-as-a-verb**
 > `▶ Present` button, **Fabricate in the brand launcher**, collapsed Inspector). It
 > came from the §16 red-team of v2, then the §17 red-team refined it (Present-as-Play

@@ -81,6 +81,12 @@ internal migration."
   exported artifact STOPS for author inspection (CLAUDE.md Quality Bar). Moving
   *where the export controls live* does not change bytes and is in scope; touching
   `drawing-board-export.js` output is not.
+- **New since 2026-06-21 — the OPERATING ETHOS + HARD RULES #18–20 bind every Win.**
+  #18 (no broken windows — fix on-path, log off-path), #19 (perf evidence:
+  `bench:check` baseline), #20 (no margin in layout CSS — space with padding/gap).
+  #19 reaches the chrome: Win 1's "one shell + three adapters" must show a
+  first-render/interaction perf baseline (folded into PM-1). #20 is engine-CSS but
+  its spirit applies to the new `--app-gap-*` family (§8) — pad/gap, never margin.
 
 ## 1. Why — where the cognitive load actually comes from
 
@@ -135,8 +141,9 @@ the *recipient*, is the one today's app has no front door for — and the one th
 - **Frustrates today:** "Playground or Drawing Board?"; hand-editing front matter;
   hunting for export; no confidence the deck is actually *good*.
 - **Journey:** lands in **Compose**'s zero-setup state → types/pastes content →
-  the **Architect** aside says "board-ready, tighten 2 slides" and she clicks the
-  fix chips → **Inspector** to pick the brand theme → **Share → PDF / Present
+  the editor **underlines** the 2 grammar issues with one-click Quick fix (Fix-all
+  for both), while the **Architect** says "board-ready, 8.6/10" (the scorecard) →
+  **Inspector** to pick the brand theme → **Share → PDF / Present
   link**. Saves once; it's now a deck in her Library.
 - **Lives in:** Compose + Share. Touches the Inspector once. Never opens Fabricate.
 
@@ -290,6 +297,37 @@ These are *visual specs* (zero behavior, PM-12), not shipped code — but they a
 built from the real token bridge, so Win 1 inherits the exact palette + type they
 show.
 
+## 2.5 The Architect after inline validation (#562) — division of labour
+
+A reassessment against `main` (now #562) found **one** material drift: PR #562
+shipped **inline editor validation** — deterministic lint findings now render *in
+the CodeMirror editor* as a severity gutter + wavy underlines + per-finding **Quick
+fix** + **Fix all** (Alt-Shift-F), in both the Playground and Drawing Board, and
+governed by a new `validate:` front-matter key (default on). Critically, it is the
+**same `lib/authoring/lint-core.js` stream** as the Architect panel — the new
+`docs/src/playground/editor-diagnostics.js` is a shared bridge (`chunkStartLines` /
+`buildVocabSets`), so the panel and the gutter never diverge.
+
+This *strengthens* the "deterministic live review" pillar and resolves a latent
+ambiguity ("is the Architect lint or coaching?") with shipped evidence. The
+redesign adopts the post-#562 **division of labour**:
+
+- **The editor (inline) owns *raw deterministic lint*** — underline the offending
+  span, severity gutter, Quick fix, Fix-all. This is the deck-grammar layer; it's
+  where you *find and fix a single error*.
+- **The Architect aside is re-scoped to *explain · coach · reshape*** — the things
+  an underline can't do: the board-readiness scorecard (`review-core`/`scorecard`),
+  narrative critique, and the AI **Reshape / lenses** entry (§6.2). It keeps a
+  findings **roll-up + Fix-all** as a summary, but is no longer where you discover
+  an inline error.
+- The governing **`validate:` toggle** lives in the Deck Inspector (§4.1), travels
+  with the deck, and defaults on.
+
+Only the Architect's *contract* changed, not the shell's layout — so the v3 boxes
+stand. The one mockup refreshed for faithfulness is `mockups/v4/` (the Compose
+desktop, now showing the inline gutter/underline + the re-scoped Architect); v3's
+tablet/mobile are layout-identical and were not re-cut (PM-14).
+
 ## 3. The chrome contract — the `StudioShell`
 
 One component, `StudioShell`, owns the top-tab intent bar + slotted AppBar +
@@ -342,12 +380,16 @@ The scope spine, stated as one line the UI must make obvious:
 Owns everything that lives in the deck's front matter or per-deck prefs. Reuses
 the **pure parse/serialize core** of the existing `deck-config.js` (it already
 reads/writes the managed front-matter block — theme/finish/split/size/paginate/
-header/footer/class/islands/math/lang — and that core is unit-tested). The
+header/footer/class/islands/math/lang, plus **`form`** (#522/#530) and
+**`validate`** (#562), both added since this doc was first written — and that core
+is unit-tested). The
 **control surface is rebuilt** as a React non-modal inspector against the `ui/`
 primitives (today's `createConfigPanel()` is vanilla `createElement` DOM, so the
 view does not port as-is — see the §0 "reuse the logic, rebuild the view" rule).
 
-- **Look:** theme/palette, size/orientation, pagination, header/footer.
+- **Look:** theme/palette, size/orientation, pagination, header/footer, `form`.
+- **Authoring:** the **`validate:` toggle** (#562 — inline editor validation
+  on/off, default on; the deck-setup-drawer control the Inspector re-houses).
 - **Read:** reader/voice defaults (TTS voice, pace), and the **Lenses** section
   (§6) — the reader-shaped variants of this deck.
 - **History:** checkpoints (the time axis from today's Decks/Versions drawer).
@@ -492,7 +534,10 @@ Studio does **not** require an SPA rewrite, and forcing one would violate
 The landing page is the ratified visual source. The Studio *extends* it; it does
 not introduce a second language (HARD RULES 3, 11, 15).
 
-- **Type:** `--font-sans: Outfit`, `--font-mono: JetBrains Mono` (unchanged).
+- **Type:** `--font-sans: Outfit`, `--font-mono: JetBrains Mono` (unchanged). Note
+  the *engine* self-hosts its faces since #540 (dropped the Google-Fonts CDN); the
+  *docs-site* chrome still CDN-loads them — a Win touching the site head should move
+  it to the local faces too.
 - **Color:** the palette token bridge only (`var(--token)`), all 14 palettes ×
   light/dark; zero hex in chrome CSS.
 - **Primitives & icons:** the 16 shadcn `ui/` components + lucide only. No new
@@ -549,6 +594,7 @@ change is done without `tools/screenshot.js` evidence at all three widths).
 | ⌘K commands | `CommandMenu.tsx` | new command registrations |
 | Read-aloud highlight | TTS worker (Kokoro/OpenRouter) | timing-mark emission + host-side highlight overlay (engine focus path is `lib/`, off-limits) |
 | Reshape / lenses | `architect-edits.js` generative edit-block + diff/Apply, model ladder | the lens data model |
+| Inline lint + Architect roll-up | `lib/authoring/lint-core.js` + `editor-diagnostics.js` (shared gutter/underline bridge, #562) | wiring both views into the Compose shell |
 | App-density tokens | the landing spacing ramp | `--app-gap-*` (palette-blind) |
 
 Nothing here forks an existing widget; every piece either re-houses proven logic
@@ -627,7 +673,7 @@ what the author chose, PM-# records what the red-team proved we must constrain).
 
 | # | Invariant the plan must hold | Changes the plan? |
 |---|---|---|
-| PM-1 | **Symptom-first or cut it.** Every win names a measurable symptom + target (clicks-to-first-render, time-to-export, preview legible-size). No symptom → decoration → drop. | adds a gate to every win |
+| PM-1 | **Symptom-first or cut it.** Every win names a measurable symptom + target (clicks-to-first-render, time-to-export, preview legible-size, **+ a perf baseline per HARD RULE #19** for shell/adapter wins). No symptom → decoration → drop. | adds a gate to every win |
 | PM-2 | **Plan-approval authorizes only a de-risking *spike*, not Wins 1–8.** Prove the three-bus adapter on the *simplest* surface (Playground) against a written kill-criterion before committing the program. | **new Win 0; re-scopes §0-4** |
 | PM-3 | **Wins 1–3 stand alone; pause & *measure* before 4–8.** Stop after 3 = strictly ahead, never mid-rewrite. | sequencing gate |
 | PM-4 | **The preview is sacred — Inspector collapsed-by-default**, summoned not resident; gate that the preview never drops below a legible threshold. | **flips §0-2 / §4.1 default** |
@@ -797,9 +843,20 @@ merge-authorization gate (CLAUDE.md), then post the standup.
   brand-launcher menu** (W-2) — reconciled the canonical `v3/v3-compose.png` once,
   and **froze the shell (PM-14): no v4**; W-1/3/5/6/7 become Win-0 acceptance
   checks. §2.1 + diagram updated.
+- 2026-06-26 — **Reassessment vs `main` (#562), maker-checker + red-team.** Two
+  independent agents agreed the structural design is intact and the codebase moved
+  in exactly one place that matters: **#562 inline editor validation** re-cast the
+  Architect. Folded in: new **§2.5** (raw lint is now *inline in the editor* —
+  gutter/underline/Quick-fix/Fix-all; the Architect aside re-scoped to
+  explain·coach·reshape + a roll-up, same `lint-core` stream via
+  `editor-diagnostics.js`); §4.1 gains `form`/`validate` + a validate toggle; §0
+  cites HARD RULES #18–20 + ETHOS; PM-1 adds a #19 perf baseline; §8 notes the
+  font self-host (#540); §10 adds the inline-lint reuse. **One v4 mockup** — Compose
+  desktop — refreshed to depict #562 (the only reality-changed visual); v3
+  tablet/mobile are layout-identical, not re-cut (PM-14 upheld).
 - _pending_ — Author approval (per PM-2, of **Win 0 only**). Shell **frozen at v3**
-  (Present-as-Play + launcher; §17/PM-14). Still open: Library placement,
-  route-collapse timing, app-palette-vs-deck-theme — all decidable in-build.
+  (Present-as-Play + launcher; §17/PM-14); Architect role updated for #562 (§2.5).
+  Still open: Library placement, route-collapse timing, app-palette-vs-deck-theme.
 
 ## 15. Appendix — intent-switch decision (PM-5), scored
 
