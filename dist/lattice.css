@@ -6940,8 +6940,13 @@ section.math > h2 {
 /* Default body row — without this, a body item auto-places into row 1 when
  * no eyebrow is present, displacing the title. Variants that need a
  * multi-row body (canvas: equation+caption stacked, stats: vertical scaffold)
- * override grid-row on the specific items. */
-section.math > :not(h2):not(h3) {
+ * override grid-row on the specific items.
+ * Exclude the absolutely-positioned chrome (header/footer): giving an abs-positioned
+ * grid item an explicit grid-row makes that grid AREA its containing block, so the
+ * running header's `top:var(--frame-inset-y)` resolved against row 3 and dropped the
+ * eyebrow-line "LATTICE · MATH" down beside the body. Excluded, the header/footer
+ * resolve against the section box and sit at the top/bottom berths like every slide. */
+section.math > :not(h2):not(h3):not(header):not(footer) {
   grid-row: 3;
 }
 section.math h3 {
