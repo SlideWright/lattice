@@ -151,6 +151,17 @@ jobs:
   # The only tier that renders, so the only one that needs Chromium — cached
   # across runs (keyed on the lockfile, which moves when puppeteer bumps).
   # Runs once: the Marp/Puppeteer/emulator pipeline doesn't vary by Node.
+  # The PR-blocking slice of the render tier: shared-kernel cross-path WIRING
+  # (parity/), the export pipeline (export/), and the per-component computed-style
+  # correctness gate (invariants/). The heavier fresh-render REGRESSION suites
+  # (galleries, components, exemplars=45 decks, mermaid-smoke, screenshot) moved
+  # OFF this critical path to integration-nightly.yml — their only catch is
+  # "a render drifted / a committed artifact went stale", and the latter is
+  # already backstopped at pre-commit (tools/build-staged-pdfs.js + the freshness
+  # gates), so a next-morning catch on `main` is cheap to revert. Same gate-strategy
+  # bias as perf-nightly / preview-e2e-nightly: keep blocking gates blocking, move
+  # work later only where a later catch is cheap. See
+  # engineering/decisions/2026-06-27-integration-nightly-split.md.
   integration:
     needs: [changes, unit]
     if: needs.changes.outputs.code == 'true'
@@ -175,8 +186,8 @@ jobs:
         # reliably than an @font-face one. See engineering/gotchas.md.
         run: sudo apt-get update && sudo apt-get install -y poppler-utils fonts-noto-color-emoji
       - run: npm ci
-      - name: Integration tests
-        run: npm run test:integration
+      - name: Integration tests (PR slice)
+        run: npm run test:integration:pr
 
   # ── (Engine visual parity REMOVED — marp retired, P4 Step 3) ────────────────
   # The `engine-parity` job pixel-diffed every gallery slide through the owned

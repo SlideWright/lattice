@@ -189,6 +189,18 @@ in patch versions.
 
 ### Changed
 
+- **The integration test tier is split into a PR slice and a nightly slice.** The
+  required CI gate (`test:integration:pr`) now runs only the cross-render-path
+  wiring suites (`parity/`), the export pipeline (`export/`), and the
+  per-component computed-style correctness gate (`invariants/`). The heavier
+  fresh-render regression suites — gallery/component/exemplar page counts, the
+  45-deck exemplar render, mermaid-smoke, and screenshot — moved to a nightly
+  run on `main` (`test:integration:nightly`, `.github/workflows/integration-nightly.yml`),
+  which files a single rolling tracking issue on failure. This cuts PR-critical-path
+  time; the moved suites' stale-committed-artifact catches are already backstopped
+  at pre-commit, and `LATTICE_FULL_PUSH=1` still runs the full tier pre-push.
+  Rationale: `engineering/decisions/2026-06-27-integration-nightly-split.md`.
+
 - **Breaking: the Form composition model is now ON by default.** Every deck
   renders with the masthead band (lifted eyebrow + title), the meta/status bay,
   and the footer progress rail unless it opts out — an absent `form:` front-matter

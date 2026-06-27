@@ -35,6 +35,8 @@ harness the index can't infer, add it to `FRAMEWORKS` in the generator.
 
 | Name | What it does |
 |---|---|
+| `a11y-textures:build` | Bundle the categorical/chart texture-<defs> kernel (lib/core/accessibility-textures.js) into the docs Playground ESM module. |
+| `a11y-textures:check` | Freshness gate for the bundled a11y-textures Playground module. |
 | `authoring-core:build` | Bundle the pure authoring engines (lint/review/scorecard) for the browser. |
 | `authoring-core:check` | Freshness gate for the authoring-core bundle. |
 | `build` | Regenerate every generated artifact in dependency order, behind the ownership gate. |
@@ -43,6 +45,8 @@ harness the index can't infer, add it to `FRAMEWORKS` in the generator.
 | `capabilities:check` | Freshness gate for capabilities.md; fails on drift or any undescribed script/tool. |
 | `css:build` | Bundle dist/lattice.css (+ .min) — the palette-blind engine stylesheet. |
 | `css:check` | Freshness gate for dist/lattice.css. |
+| `decisions:index` | Regenerate the "Current notes" index in engineering/decisions/README.md from each note's YAML front-matter. |
+| `decisions:index:check` | Freshness gate for the decisions-index (stale vs the notes' front-matter). |
 | `default:build` | Build dist/lattice-default.css — the flattened zero-config drop-in (engine + cuoio). |
 | `default:check` | Freshness gate for the default bundle. |
 | `dist-readme:build` | Generate dist/README.md — the distribution-folder index. |
@@ -111,11 +115,13 @@ harness the index can't infer, add it to `FRAMEWORKS` in the generator.
 | `test:coverage:all` | c8 coverage over unit + integration. |
 | `test:engine` | Unit scope: lattice-engine internals. |
 | `test:export` | Unit scope: the owned export writers (PPTX, …). |
-| `test:integration` | Integration tier: emulator render → PDF page-count + the per-component semantic-invariant suite + screenshot/mermaid smoke. |
+| `test:integration` | The FULL integration tier (every suite — PR slice + nightly slice). What pre-push runs under LATTICE_FULL_PUSH=1. |
 | `test:integration:exemplars` | Integration scope: the 45 worked exemplars render + committed-PDF freshness (page-count gate). |
 | `test:integration:galleries` | Integration scope: gallery render + page-count regression. |
 | `test:integration:mermaid` | Integration scope: mermaid smoke render. |
+| `test:integration:nightly` | Nightly render-regression slice (runs on main via integration-nightly.yml): gallery/component/exemplar page-counts + mermaid + screenshot. |
 | `test:integration:parity` | Integration scope: resolver↔DOM colour parity, deck-class/finish/logo front-matter, chart-family. |
+| `test:integration:pr` | PR-blocking integration slice (the required CI gate): cross-path wiring (parity) + export pipeline + per-component semantic invariants. |
 | `test:integration:screenshot` | Integration scope: the screenshot harness. |
 | `test:layout` | Unit scope: the layout system. |
 | `test:mermaid` | Unit scope: mermaid var-map. |
@@ -170,11 +176,7 @@ harness the index can't infer, add it to `FRAMEWORKS` in the generator.
 
 | Name | What it does |
 |---|---|
-| `a11y-textures:build` | **TODO: describe `a11y-textures:build` in tools/build-capabilities.js (SCRIPT_META).** |
-| `a11y-textures:check` | **TODO: describe `a11y-textures:check` in tools/build-capabilities.js (SCRIPT_META).** |
 | `clean:scratch` | Delete .scratch/ entries older than 14 days. |
-| `decisions:index` | **TODO: describe `decisions:index` in tools/build-capabilities.js (SCRIPT_META).** |
-| `decisions:index:check` | **TODO: describe `decisions:index:check` in tools/build-capabilities.js (SCRIPT_META).** |
 | `prepare` | npm lifecycle: wire the lefthook git hooks on install. |
 | `prepublishOnly` | npm lifecycle: guard run before publish. |
 

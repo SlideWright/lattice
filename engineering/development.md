@@ -63,7 +63,9 @@ scaffolders, …). This section calls out only the daily inner-loop:
 | `test` | Full unit suite (the inner loop) |
 | `test:watch` | Re-run the unit suite on file change |
 | `test:<scope>` | Scoped unit subset (`palette`/`mermaid`/`parsing`/`components`/`cli`/`engine`/`layout`/…) |
-| `test:integration` | Integration tier (PDF page-count + per-component semantic invariants + screenshot/mermaid smoke) |
+| `test:integration` | The FULL integration tier (every suite) — what pre-push runs under `LATTICE_FULL_PUSH=1` |
+| `test:integration:pr` | The PR-blocking slice CI gates on: cross-path wiring (`parity/`) + export pipeline (`export/`) + per-component semantic invariants (`invariants/`) |
+| `test:integration:nightly` | The render-regression slice that runs nightly on `main` (`integration-nightly.yml`): gallery/component/exemplar page-counts + mermaid + screenshot |
 | `bench` | tinybench render benchmark — the owned engine over time (`-- --export` adds the rasterize tier, `-- --json` dumps machine-readable) |
 | `lint`, `lint:fix` | Biome check / Biome check --write (never `npx biome`) |
 | `preview` | Fast visual-iteration loop (scope-detect, rebuild affected, pixel-diff) |
@@ -82,16 +84,27 @@ test/unit/parsing/      source-parse, match-section, splitter,
 test/unit/components/   component-manifest, journey, roadmap,
                         word-cloud, quadrant, radar
 test/unit/cli/          cli
-test/integration/galleries/   emulator.{gallery,gallery-mermaid}
-test/integration/parity/      color-parity, deck-class/finish/logo-fm,
+test/integration/parity/      color-parity, deck-class/finish/logo-fm,   [PR]
                               speaker-notes, chart-family
-test/integration/invariants/  component-invariants (semantic gate)
-test/integration/mermaid/     mermaid-smoke
-test/integration/screenshot/  screenshot
+test/integration/export/      export-formats                            [PR]
+test/integration/invariants/  component-invariants (semantic gate)      [PR]
+test/integration/galleries/   emulator.gallery                      [nightly]
+test/integration/components/  component- + bucket-galleries          [nightly]
+test/integration/exemplars/   exemplar-render (45 decks)            [nightly]
+test/integration/mermaid/     mermaid-smoke                         [nightly]
+test/integration/screenshot/  screenshot, svg-scaling              [nightly]
 test/benchmark/               engine-bench.mjs (npm run bench; not in npm test)
 test/helpers/                 render.js, pdf.js, palette.js
 test/fixtures/                small .md decks for integration
 ```
+
+`[PR]` suites gate every `code` PR via `test:integration:pr`; `[nightly]` suites
+run on `main` via `integration-nightly.yml` (`test:integration:nightly`). The
+split keeps shared-kernel wiring, the export pipeline, and the computed-style
+correctness gate blocking, and moves the slow fresh-render regression suites off
+the PR critical path — their stale-committed-artifact half is already backstopped
+at pre-commit, so a next-morning catch on `main` is cheap to revert. Rationale:
+`engineering/decisions/2026-06-27-integration-nightly-split.md`.
 
 The CI visual-correctness gate is the **per-component semantic-invariant suite**
 (`test/integration/invariants/component-invariants.test.js`): it renders each

@@ -1,0 +1,122 @@
+name: Integration nightly (render-regression tier)
+
+# NIGHTLY render-regression tier on `main`. The PR `integration` job (ci.yml)
+# keeps only the cross-path WIRING contracts (parity/), the export pipeline
+# (export/), and the per-component computed-style correctness gate (invariants/).
+# The heavier FRESH-RENDER suites live here:
+#   - galleries/   gallery.md page count
+#   - components/  per-component + per-bucket gallery page counts
+#   - exemplars/   45 worked decks render + committed-PDF freshness
+#   - mermaid/     mermaid-smoke render
+#   - screenshot/  screenshot + svg-scaling
+# Their only catch is "a render drifted / a committed artifact went stale", and
+# the stale-artifact half is already backstopped at pre-commit
+# (tools/build-staged-pdfs.js + the freshness gates), so a next-morning catch on
+# `main` is cheap to revert. Per the repo gate strategy a slow render-regression
+# watch belongs OFF the PR critical path — same as perf-nightly / preview-e2e-
+# nightly. See engineering/decisions/2026-06-27-integration-nightly-split.md.
+#
+# On failure it opens / appends a single rolling tracking issue (found by a title
+# marker, so it never spams), self-labelled at creation (a GITHUB_TOKEN-opened
+# issue can't trip the triage gate — GitHub's workflow-recursion guard).
+
+on:
+  schedule:
+    - cron: '11 3 * * *' # daily 03:11 UTC (before preview-e2e 04:23 + perf 05:37 + backlog 06:17)
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write # open / append the rolling tracking issue
+
+concurrency:
+  group: integration-nightly
+  cancel-in-progress: false
+
+jobs:
+  nightly:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Cache Puppeteer browser
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/puppeteer
+          key: puppeteer-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+      - name: Install poppler-utils (pdfinfo) + color emoji font
+        # Mirror the PR integration job: pdfinfo for page counts, and an installed
+        # colour emoji font so headless-Chromium PDF renders emit emoji in colour.
+        run: sudo apt-get update && sudo apt-get install -y poppler-utils fonts-noto-color-emoji
+      - run: npm ci
+
+      # The suite exits non-zero on a render regression. Capture the verdict into
+      # an output and keep the job green so the report + issue steps always run and
+      # the issue step keys off `failed` (not the step's own exit). Tee the TAP
+      # output to a report file for the issue body.
+      - name: Integration tests (nightly slice)
+        id: run
+        run: |
+          set -uo pipefail
+          REPORT="$GITHUB_WORKSPACE/integration-nightly-report.txt"
+          if npm run --silent test:integration:nightly 2>&1 | tee "$REPORT"; then
+            echo "failed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "failed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Job summary
+        if: always()
+        run: |
+          {
+            echo '### Integration nightly — render-regression tier'
+            echo '```'
+            tail -n 40 "$GITHUB_WORKSPACE/integration-nightly-report.txt" || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: integration-nightly-${{ github.run_id }}
+          path: integration-nightly-report.txt
+          if-no-files-found: warn
+          retention-days: 14
+
+      # On a failure, open or append a single rolling tracking issue (found by a
+      # title marker). Self-labelled at creation with the four-axis taxonomy (a
+      # GITHUB_TOKEN-opened issue can't trigger the triage gate). Skipped when green.
+      - name: Open / append regression issue
+        if: steps.run.outputs.failed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          MARKER='[integration-nightly]'
+          BODY="$GITHUB_WORKSPACE/integration-nightly-body.md"
+          {
+            echo "The nightly render-regression tier failed on \`main@${{ github.sha }}\`."
+            echo ""
+            echo "Tail of the run (full log in the run's artifact):"
+            echo ""
+            echo '```'
+            tail -n 40 "$GITHUB_WORKSPACE/integration-nightly-report.txt" || true
+            echo '```'
+            echo ""
+            echo "_Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}._"
+          } > "$BODY"
+          ISSUE=$(gh issue list --state open --search "in:title $MARKER" --json number -q '.[0].number' || true)
+          if [ -n "$ISSUE" ]; then
+            gh issue comment "$ISSUE" --body-file "$BODY"
+            echo "Appended to issue #$ISSUE"
+          else
+            gh issue create \
+              --title "$MARKER render-regression tier failing on main" \
+              --label "area:engine" --label "type:fix" \
+              --label "priority:high" --label "status:backlog" \
+              --body-file "$BODY"
+          fi

@@ -100,6 +100,10 @@ const SCRIPT_META = {
   'docs:landing-tokens:check':['Build & bundle', 'Freshness gate for the landing-page token blocks.'],
   'docs:spec':                ['Build & bundle', 'Generate the docs-site Specification pages (LFM 1.0 + Diagnostic Protocol) from the canonical spec/*.md.'],
   'docs:spec:check':          ['Build & bundle', 'Freshness gate for the generated docs-site spec pages (stale vs spec/).'],
+  'a11y-textures:build':      ['Build & bundle', 'Bundle the categorical/chart texture-<defs> kernel (lib/core/accessibility-textures.js) into the docs Playground ESM module.'],
+  'a11y-textures:check':      ['Build & bundle', 'Freshness gate for the bundled a11y-textures Playground module.'],
+  'decisions:index':          ['Build & bundle', 'Regenerate the "Current notes" index in engineering/decisions/README.md from each note\'s YAML front-matter.'],
+  'decisions:index:check':    ['Build & bundle', 'Freshness gate for the decisions-index (stale vs the notes\' front-matter).'],
 
   // Galleries & preview (rendered PDFs)
   'build:galleries':          ['Galleries & preview', 'Rebuild per-component gallery PDFs (light + dark).'],
@@ -133,7 +137,9 @@ const SCRIPT_META = {
   'test:release':             ['Test & verify', 'Unit scope: the release tooling.'],
   'test:tokens':              ['Test & verify', 'Unit scope: the universal token system.'],
   'test:tools':               ['Test & verify', 'Unit scope: author tools (export-marp, …).'],
-  'test:integration':         ['Test & verify', 'Integration tier: emulator render → PDF page-count + the per-component semantic-invariant suite + screenshot/mermaid smoke.'],
+  'test:integration':         ['Test & verify', 'The FULL integration tier (every suite — PR slice + nightly slice). What pre-push runs under LATTICE_FULL_PUSH=1.'],
+  'test:integration:pr':      ['Test & verify', 'PR-blocking integration slice (the required CI gate): cross-path wiring (parity) + export pipeline + per-component semantic invariants.'],
+  'test:integration:nightly': ['Test & verify', 'Nightly render-regression slice (runs on main via integration-nightly.yml): gallery/component/exemplar page-counts + mermaid + screenshot.'],
   'test:integration:galleries':['Test & verify', 'Integration scope: gallery render + page-count regression.'],
   'test:integration:parity': ['Test & verify', 'Integration scope: resolver↔DOM colour parity, deck-class/finish/logo front-matter, chart-family.'],
   'test:integration:mermaid':['Test & verify', 'Integration scope: mermaid smoke render.'],
