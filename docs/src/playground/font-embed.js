@@ -13,7 +13,7 @@
 // Caveat only because a bookend slide happened to be active when export ran.
 //
 // THE FIX — vendor the faces and embed them deterministically.
-// Every engine text face (the families base.tokens.css @imports, minus the 10 MB
+// Every engine text face (the families base.tokens.css declares, minus the ~25 MB
 // Noto Color Emoji) is vendored as a latin-subset .woff2 under ./fonts and bundled
 // by Vite. At export time we:
 //   1. build ONE `@font-face` stylesheet with each face inlined as a data URI

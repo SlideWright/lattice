@@ -1160,48 +1160,29 @@ section[data-lattice-pagination]::after {
 aside.lattice-notes { display: none !important; }
 `;
 
-// ── Google Fonts ─────────────────────────────────────────────────────────────
-const googleFonts = `
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Noto+Color+Emoji&display=swap" rel="stylesheet">`;
-
 // ── Self-hosted fonts (offline PDF embedding) ────────────────────────────────
-// The Google <link>/@import above needs the network. In a network-less render
-// (the cloud sandbox, the pre-commit PDF rebuild) the faces never load, so the
-// printed PDF embeds a serif/sans FALLBACK — committed deck PDFs then ship
-// looking nothing like the design. Fix it at the render layer: base64 the
-// woff2 files we self-host (assets/fonts/) into an inline @font-face block.
-// These local faces win over the @import (declared later in the cascade), so
-// the PDF embeds the real type with no network. Absent (e.g. the shipped npm
-// bin, where assets/ isn't in the tarball) it returns '' and the @import path
-// is used unchanged. Covers the full engine type stack: the display serif
-// (Playfair, incl. italics), the body sans (Outfit), the mono (JetBrains), and
-// the `sketch` hand pair (Caveat, Shantell Sans). See assets/fonts/README.md.
-const SELF_HOSTED_FACES = [
-  ['Caveat', 400, 'normal', 'caveat-400'],
-  ['Caveat', 700, 'normal', 'caveat-700'],
-  ['Shantell Sans', 400, 'normal', 'shantell-400'],
-  ['Shantell Sans', 500, 'normal', 'shantell-500'],
-  ['Shantell Sans', 700, 'normal', 'shantell-700'],
-  ['Outfit', 300, 'normal', 'outfit-300'],
-  ['Outfit', 400, 'normal', 'outfit-400'],
-  ['Outfit', 500, 'normal', 'outfit-500'],
-  ['Outfit', 600, 'normal', 'outfit-600'],
-  ['Outfit', 700, 'normal', 'outfit-700'],
-  ['Playfair Display', 400, 'normal', 'playfair-400'],
-  ['Playfair Display', 700, 'normal', 'playfair-700'],
-  ['Playfair Display', 400, 'italic', 'playfair-italic-400'],
-  ['Playfair Display', 700, 'italic', 'playfair-italic-700'],
-  ['JetBrains Mono', 400, 'normal', 'jetbrains-400'],
-  ['JetBrains Mono', 500, 'normal', 'jetbrains-500'],
-  ['JetBrains Mono', 600, 'normal', 'jetbrains-600'],
-];
+// The engine CSS now carries a self-hosted `@font-face` block (url('fonts/…'))
+// instead of a Google `@import`, but the emulator can't rely on a relative
+// `fonts/` URL resolving against the right base during PDF rasterisation, so it
+// base64-inlines the SAME woff2 (assets/fonts/) into an inline @font-face block.
+// These local faces embed the real type into the printed PDF with zero network —
+// the whole point of the library carrying its own fonts. The face list is the
+// canonical manifest (lib/fonts/text-faces.js), shared with the build emitter
+// and the parity gate. Absent (assets/ isn't in the tarball) it returns '' and
+// the stylesheet's own `fonts/` URLs are used unchanged. Covers the full engine
+// type stack: display serif (Playfair, incl. italics), body sans (Outfit), mono
+// (JetBrains), and the `sketch` hand pair (Caveat, Shantell). See
+// assets/fonts/README.md.
+const SELF_HOSTED_FACES = require('./lib/fonts/text-faces.js').TEXT_FACES;
 function embeddedFontsStyle() {
-  const dir = path.join(PKG_ROOT, 'assets', 'fonts');
-  if (!fs.existsSync(dir)) return '';
+  // Prefer the shipped dist/fonts/ (in the npm tarball AND committed in-repo);
+  // fall back to the assets/fonts/ source for a pre-build run. Either way the
+  // woff2 are local — the emulator embeds them with zero network.
+  const dir = [path.join(PKG_ROOT, 'dist', 'fonts'), path.join(PKG_ROOT, 'assets', 'fonts')]
+    .find((d) => fs.existsSync(d));
+  if (!dir) return '';
   const faces = [];
-  for (const [family, weight, style, file] of SELF_HOSTED_FACES) {
+  for (const { family, weight, style, file } of SELF_HOSTED_FACES) {
     const fp = path.join(dir, `${file}.woff2`);
     if (!fs.existsSync(fp)) continue;
     const b64 = fs.readFileSync(fp).toString('base64');
@@ -1365,7 +1346,6 @@ if (hasStateChart) {
 // ── HTML document ─────────────────────────────────────────────────────────────
 const htmlDoc = `<!DOCTYPE html>
 <html><head><meta charset="utf-8">
-${googleFonts}
 ${embeddedFonts}
 ${katexCssLink}
 <style>
