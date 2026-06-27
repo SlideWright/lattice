@@ -17,6 +17,12 @@
 // deck-level findings (slide 0). This is the SINGLE copy: the Architect imports
 // it from here so the panel's "Reveal" and the editor's underline land on the
 // same line.
+// KNOWN EDGE (pre-existing, low-frequency): a malformed front-matter CLOSE fence
+// with trailing whitespace (`--- `) is tolerated by lint-core's `fmChunks` regex
+// but NOT by its `source.split(/^---$/m)`, so a finding on slide 1 can be numbered
+// `slide: 0`; here that anchors the underline to the deck top rather than the real
+// line. The root cause is lint-core's slide numbering, not this mapper — left as
+// is rather than reshaping the shared kernel for a rare malformed fence.
 export function chunkStartLines(src) {
 	const text = String(src || '');
 	const lines = text.split('\n');
@@ -87,13 +93,20 @@ export function findingsToDiagnostics(doc, findings, opts = {}) {
 		let lineNo = startLine;
 		if (f.line) {
 			const needle = String(f.line).trim();
+			// Prefer an EXACT line match anywhere in the slide; only fall back to a
+			// substring match if none exists (so a superset line like `- foobar`
+			// doesn't win over the exact `- foo` later in the slide).
+			let exact = 0;
+			let loose = 0;
 			for (let n = startLine; n < nextStart && n <= total; n++) {
 				const text = doc.line(n).text;
-				if (text.trim() === needle || (needle && text.includes(needle))) {
-					lineNo = n;
+				if (text.trim() === needle) {
+					exact = n;
 					break;
 				}
+				if (!loose && needle && text.includes(needle)) loose = n;
 			}
+			if (exact || loose) lineNo = exact || loose;
 		}
 		lineNo = clamp(lineNo, 1, total);
 		const line = doc.line(lineNo);

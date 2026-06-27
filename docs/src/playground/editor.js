@@ -486,8 +486,7 @@ export function createEditor({ parent, doc = '', onChange, onCursor, autoHeight 
 	// Returns true so the key is consumed only when validation is live for this deck.
 	const fixAllCommand = (view) => {
 		if (!vocab) return false;
-		const src = view.state.doc.toString();
-		if (!readFrontMatter(src).validate) return false;
+		if (!readFrontMatter(view.state.doc.toString()).validate) return false;
 		(async () => {
 			if (!lintCoreMod) {
 				try {
@@ -496,8 +495,12 @@ export function createEditor({ parent, doc = '', onChange, onCursor, autoHeight 
 					return;
 				}
 			}
-			const out = lintCoreMod.applyAllFixes(src, buildVocabSets(vocab));
-			if (out != null && out !== src) {
+			// Re-read AFTER the (possibly cold) import — the user may have typed during
+			// the await, so compute the fix against the CURRENT document, not a stale one.
+			const cur = view.state.doc.toString();
+			if (!readFrontMatter(cur).validate) return;
+			const out = lintCoreMod.applyAllFixes(cur, buildVocabSets(vocab));
+			if (out != null && out !== cur) {
 				view.dispatch({ changes: { from: 0, to: view.state.doc.length, insert: out } });
 			}
 		})();

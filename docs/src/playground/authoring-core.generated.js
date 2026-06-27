@@ -205,8 +205,21 @@ ${indent}   - ${body.trim()}`;
     }
     function autofixGanttDelimiter(line) {
       if (!line || !/(?:→|–|—|->)/.test(line)) return null;
-      const fixed = line.replace(/`([^`]+)`/g, (_full, inner) => "`" + inner.replace(/\s*(?:→|–|—|->)\s*/g, "..") + "`");
-      return fixed === line ? null : fixed;
+      let head = line;
+      const pills = [];
+      let m;
+      while (m = head.match(/(\s*)`([^`]+)`(\s*)$/)) {
+        pills.unshift({ pre: m[1], inner: m[2], post: m[3] });
+        head = head.slice(0, m.index);
+      }
+      if (!pills.length) return null;
+      let changed = false;
+      const rebuilt = pills.map((p) => {
+        const inner = p.inner.replace(/\s*(?:→|–|—|->)\s*/g, "..");
+        if (inner !== p.inner) changed = true;
+        return `${p.pre}\`${inner}\`${p.post}`;
+      }).join("");
+      return changed ? head + rebuilt : null;
     }
     function fixReplacement(rule, line) {
       switch (rule) {

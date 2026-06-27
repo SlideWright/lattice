@@ -99,6 +99,12 @@ describe('findingsToDiagnostics', () => {
 		expect(calls).toHaveLength(1);
 	});
 
+	it('prefers an exact line match over an earlier superset line', () => {
+		const d2 = doc('<!-- _class: cards-grid -->\n\n- foobar baz\n- foo\n');
+		const [diag] = findingsToDiagnostics(d2, [{ slide: 1, rule: 'r', severity: 'warning', line: '- foo', message: 'm' }]);
+		expect(d2.lineAt(diag.from).text).toBe('- foo'); // not the earlier `- foobar baz`
+	});
+
 	it('falls back to the slide start when a finding has no line', () => {
 		const [diag] = findingsToDiagnostics(d, [{ slide: 1, rule: 'r', severity: 'warning', message: 'm' }]);
 		expect(d.lineAt(diag.from).number).toBe(1);
