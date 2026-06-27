@@ -62,7 +62,8 @@ section.state-chart .state-chart-figure {
   position: relative;
   width: fit-content;
   max-width: 100%;
-  margin: 0 auto;
+  /* Centred by .chart-body's flex-direction:column + align-items:center (was
+   * margin: 0 auto — redundant, and auto margins sit outside the flex box). */
 }
 
 /* Node column (TB, default) — centred, content-sized HTML nodes. The
@@ -348,7 +349,14 @@ section.state-chart.inline .state-rows,
 section.state-chart.horizontal .state-rows {
   list-style: none;
   margin: 0;
-  padding: 0;
+  /* Row spacing lives on the container as flex gap + edge padding (was a
+   * per-row margin: 0.3125cqi 0; margins collapse outside the flex box and
+   * break virtual-list scrollHeight measurement). Adjacent rows' collapsed
+   * margin was 0.3125cqi → gap; the first/last outer margin → padding. */
+  display: flex;
+  flex-direction: column;
+  gap: 0.3125cqi;
+  padding: 0.3125cqi 0;
 }
 
 section.state-chart.inline .state-node-row,
@@ -356,9 +364,13 @@ section.state-chart.horizontal .state-node-row {
   position: relative;
   display: flex;
   align-items: center;
+  /* Right-anchor the transitions cluster via space-between (was margin-left:auto
+   * on .state-transitions — auto margins sit outside the flex content box). The
+   * label is the left child, the transitions the right; the index is absolute. */
+  justify-content: space-between;
   gap: var(--sp-sm);
   padding: var(--sp-sm) var(--sp-md);
-  margin: 0.3125cqi 0;
+  /* Row spacing is the container's flex gap now (was margin: 0.3125cqi 0). */
   /* Same canonical tile as the SVG-variant nodes above. */
   --fill-hue: var(--text-muted);
   --fill-ink: var(--diagram-stroke);
@@ -421,7 +433,7 @@ section.state-chart.horizontal .state-transitions {
   display: inline-flex;
   flex-wrap: wrap;
   gap: var(--sp-xs);
-  margin-left: auto;
+  /* Right-anchored by the row's justify-content:space-between (was margin-left:auto). */
   align-items: center;
 }
 

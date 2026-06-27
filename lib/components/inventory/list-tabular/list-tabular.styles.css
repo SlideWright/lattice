@@ -38,7 +38,6 @@
  * ───────────────────────────────────────────────────────────────────────── */
 
 /* ── Base (default = hairline ledger) ─────────────────────────────────── */
-section.list-tabular h2 { margin-bottom:var(--sp-md); }
 section.list-tabular ol {
   list-style:none; counter-reset:tabular-counter;
   padding:0; margin:0;
@@ -319,19 +318,19 @@ section.list-tabular.compact ol > li { padding:var(--sp-xs) 0; }
     grid-template-columns: none;
   }
   section.list-tabular.list-tabular ol > li::before {
-    margin-right: var(--sp-sm);
+    padding-right: var(--sp-sm);
   }
   /* meta code → inline after the name (no longer a right-aligned column). */
   section.list-tabular.list-tabular ol > li > code {
     display: inline-block;
-    margin-left: var(--sp-sm);
+    padding-left: var(--sp-sm);
     text-align: left;
   }
   /* description (nested list) → its own line below the name. */
   section.list-tabular.list-tabular ol > li > ul { display: block; }
   section.list-tabular.list-tabular ol > li > ul > li:first-child {
     display: block;
-    margin-top: var(--sp-2xs);
+    padding-top: var(--sp-2xs);
   }
   /* the 3-line authoring contract carries meta as a second nested li (not inline
      `<code>`); in block flow its base `grid-column:4; text-align:right` would orphan
@@ -339,7 +338,7 @@ section.list-tabular.compact ol > li { padding:var(--sp-xs) 0; }
   section.list-tabular.list-tabular ol > li > ul > li:nth-child(2) {
     display: block;
     text-align: left;
-    margin-top: var(--sp-2xs);
+    padding-top: var(--sp-2xs);
   }
 }
 
@@ -359,7 +358,10 @@ section.list-tabular-cover .split-feat-eye {
 }
 section.list-tabular-cover .split-feat-h {
   font-size: var(--fs-h1); font-weight: 800; line-height: var(--lh-tight);
-  color: var(--on-accent); margin: var(--sp-xs) 0 var(--sp-md); max-width: 12em;
+  /* padding, not margin, for the eyebrow/lede breathing room — the cover is a flex
+     column with no row-gap, so this inset reproduces the exact spacing while staying
+     inside the measurable box. */
+  color: var(--on-accent); padding: var(--sp-xs) 0 var(--sp-md); max-width: 12em;
 }
 section.list-tabular-cover .split-feat-lede {
   font-size: var(--fs-emphasis); line-height: var(--lh-snug); opacity: 0.92; max-width: 20em;
@@ -369,15 +371,18 @@ section.list-tabular-cover .split-feat-lede {
 section.list-tabular-points .split-runhead {
   font-size: var(--fs-meta); letter-spacing: 0.2em; text-transform: uppercase;
   color: var(--text-muted); border-bottom: 1px solid var(--border);
-  padding-bottom: var(--sp-xs); margin-bottom: var(--sp-xl);
+  padding-bottom: var(--sp-xs);
 }
+/* The gap below the runhead's underline rides as padding-top on the rows list (not a
+   runhead margin-bottom, which would sit outside the box and below the border) — same
+   --sp-xl value, fully measurable. */
 section.list-tabular-points .split-pts {
-  list-style: none; padding: 0; margin: 0;
+  list-style: none; padding: var(--sp-xl) 0 0; margin: 0;
   display: flex; flex-direction: column; gap: var(--sp-lg);
 }
 section.list-tabular-points .split-pts > li { border-left: 3px solid var(--accent); padding-left: var(--sp-md); }
 section.list-tabular-points .split-pt-t {
   display: block; font-weight: 800; color: var(--text-heading); font-size: var(--fs-h3);
-  margin-bottom: var(--sp-3xs);
+  padding-bottom: var(--sp-3xs);
 }
 section.list-tabular-points .split-pt-b { color: var(--text-body); font-size: var(--fs-body); line-height: var(--lh-base); }

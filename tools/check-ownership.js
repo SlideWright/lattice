@@ -647,11 +647,12 @@ function hasNotHasSelector(css) {
 // box) and `gap` (between flex/grid children), which measure cleanly. An all-zero
 // reset (`margin: 0`, `margin: 0 0`) adds no space and so can't distort measurement —
 // it is exempt; everything else (lengths, `auto`, negatives) is an offending margin.
-// The `(?<![\w-])` guard keeps `scroll-margin*` from matching; the longhand-suffix
-// whitelist keeps `margin-trim` (and any other `margin-*`) out. Strip comments first.
-// See engineering/gotchas.md.
+// The `(?<![\w.-])` guard keeps `scroll-margin*` from matching (the `-`) AND the `.margin`
+// VARIANT-CLASS selector `section.x.margin:is(…)` from reading as a `margin:` property (the
+// `.`); the longhand-suffix whitelist keeps `margin-trim` (and any other `margin-*`) out.
+// Strip comments first. See engineering/gotchas.md.
 const MARGIN_PROP =
-  /(?<![\w-])margin(?:-(?:top|right|bottom|left|block|inline)(?:-(?:start|end))?)?\s*:\s*([^;}{]+)/g;
+  /(?<![\w.-])margin(?:-(?:top|right|bottom|left|block|inline)(?:-(?:start|end))?)?\s*:\s*([^;}{]+)/g;
 
 function offendingMargins(css) {
   const out = [];
@@ -686,7 +687,11 @@ function checkTypographyTokens(errors) {
 // fights this gate — just lower MARGIN_BUDGET to follow the floor as it drops. Target
 // is zero. A margin that is provably the only answer is admitted by RAISING this number
 // with that justification in the PR (HARD RULE #20), never by a silent edit.
-const MARGIN_BUDGET = 271;
+//
+// 271 → 39: the no-margins component sweep (phase 2) retired every spacing margin from
+// lib/components/**/*.styles.css — zero remain there. The 39 that remain all live in
+// base/contract/forms/chart-family/integration CSS, out of that sweep's scope.
+const MARGIN_BUDGET = 39;
 
 // HARD RULE #20 gate — keep `margin` out of the engine's layout CSS; space with
 // `gap`/`padding`, which measure cleanly (engineering/gotchas.md).

@@ -58,8 +58,13 @@ section.math > h2 {
 /* Default body row — without this, a body item auto-places into row 1 when
  * no eyebrow is present, displacing the title. Variants that need a
  * multi-row body (canvas: equation+caption stacked, stats: vertical scaffold)
- * override grid-row on the specific items. */
-section.math > :not(h2):not(h3) {
+ * override grid-row on the specific items.
+ * Exclude the absolutely-positioned chrome (header/footer): giving an abs-positioned
+ * grid item an explicit grid-row makes that grid AREA its containing block, so the
+ * running header's `top:var(--frame-inset-y)` resolved against row 3 and dropped the
+ * eyebrow-line "LATTICE · MATH" down beside the body. Excluded, the header/footer
+ * resolve against the section box and sit at the top/bottom berths like every slide. */
+section.math > :not(h2):not(h3):not(header):not(footer) {
   grid-row: 3;
 }
 section.math h3 {
@@ -69,19 +74,19 @@ section.math h3 {
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--text-secondary);
-  margin: 0 0 var(--sp-xs) 0;
+  padding: 0 0 var(--sp-xs) 0;
 }
-section.math p { margin: 0 0 var(--sp-xs) 0; }
+section.math p { padding: 0 0 var(--sp-xs) 0; }
 section.math ul, section.math ol {
   list-style: none; padding: 0; margin: 0;
 }
 section.math ul > li, section.math ol > li {
-  margin: 0 0 var(--sp-xs) 0;
+  padding: 0 0 var(--sp-xs) 0;
   line-height: var(--lh-base);
 }
 section.math ul > li::before {
   content: '·';
-  margin-right: 0.5em;
+  padding-right: 0.5em;
   color: var(--accent);
   font-weight: 700;
 }
@@ -132,7 +137,7 @@ section.math .math-error {
 section.math:where(:not(.derivation):not(.theorem):not(.compare):not(.canvas):not(.matrix):not(.stats)),
 section.math.feature {
   grid-template-columns: 3fr 2fr;
-  padding-block: var(--sp-xl);
+  padding-bottom: var(--sp-xl);
 }
 section.math:where(:not(.derivation):not(.theorem):not(.compare):not(.canvas):not(.matrix):not(.stats)) > p:has(> .katex-display),
 section.math.feature > p:has(> .katex-display) {
@@ -162,7 +167,7 @@ section.math.feature > :is(ul, ol)::before {
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--text-secondary);
-  margin-bottom: var(--sp-sm);
+  padding-bottom: var(--sp-sm);
 }
 
 /* ── math.derivation ──
@@ -179,18 +184,27 @@ section.math.feature > :is(ul, ol)::before {
 section.math.derivation {
   display: flex;
   flex-direction: column;
-  padding-block: var(--sp-xl);
+  justify-content: center;
+  padding-bottom: var(--sp-xl);
+  position: relative;
 }
+/* Heading taken out of flow (absolute, pinned top) so the proof-chain table
+ * centres in the well below it — margin-free equivalent of the table's former
+ * auto block-axis margins. */
 section.math.derivation > h2,
 section.math.derivation > h3 {
-  flex: 0 0 auto;
-  margin: 0 0 var(--sp-md) 0;
+  /* left/right:auto keeps the heading at its in-flow (section-padded) horizontal
+   * position; only the vertical is pinned so the table centres beneath it. top clears
+   * the absolute header by the base section's header-clearance (6.875cqi = --sp-2xl +
+   * --sp-md), so the title sits the same distance below the eyebrow as on Form slides. */
+  position: absolute;
+  top: calc(var(--sp-2xl) + var(--sp-md));
+  padding: 0;
 }
-section.math.derivation > h3 + h2 { margin-top: 0; }
-/* Auto top + bottom margin on the table consumes the unused flex space,
- * pushing the chain to the vertical centre of the body. */
+/* The proof chain centres vertically via the parent's
+ * `justify-content: center` (replacing the table's former auto block-axis
+ * centring, which is now measurable). The table keeps its intrinsic height. */
 section.math.derivation table {
-  margin: auto 0;
   width: 100%;
   border-collapse: collapse;
   border-spacing: 0;
@@ -256,23 +270,33 @@ section.math.derivation td .katex-display > .katex {
 section.math.theorem {
   display: flex;
   flex-direction: column;
-  padding-block: var(--sp-lg);
+  /* Card stack centres in the well via justify-content; the heading is taken
+   * out of flow (absolute, below) so it stays pinned to the top while only the
+   * cards centre — the margin-free equivalent of the old first/last-card
+   * `margin:auto`. (section::after is the pagination marker, so a flex
+   * pseudo-spacer pair isn't available on this non-Form component.) The
+   * transparent inter-card gap is a measurable `gap` of var(--sp-sm) — padding
+   * would extend each card's --bg-alt fill. */
+  justify-content: center;
+  gap: var(--sp-sm);
+  padding-bottom: var(--sp-lg);
+  position: relative;
 }
 section.math.theorem > h2,
 section.math.theorem > h3 {
-  flex: 0 0 auto;
-  margin: 0 0 var(--sp-md) 0;
+  /* left/right:auto keeps the heading at its in-flow (section-padded) horizontal
+   * position; only the vertical is pinned so the cards centre beneath it. top clears
+   * the absolute header by the base section's header-clearance (6.875cqi = --sp-2xl +
+   * --sp-md), so the title sits the same distance below the eyebrow as on Form slides. */
+  position: absolute;
+  top: calc(var(--sp-2xl) + var(--sp-md));
+  padding: 0;
 }
-/* Auto top margin on the first card + auto bottom margin on the last card
- * centres the stack vertically inside the body region. */
-section.math.theorem > blockquote:first-of-type { margin-top: auto; }
-section.math.theorem > blockquote:last-of-type  { margin-bottom: auto; }
 section.math.theorem blockquote {
   background: var(--bg-alt);
   border-left: 4px solid var(--accent);
   border-radius: 0 var(--radius-md) var(--radius-md) 0;
   padding: var(--sp-sm) var(--sp-md);
-  margin: 0 0 var(--sp-sm) 0;
   font-style: normal;
   color: var(--text-body);
 }
@@ -284,7 +308,7 @@ section.math.theorem blockquote p {
   margin: 0;
 }
 section.math.theorem blockquote p + p {
-  margin-top: var(--sp-xs);
+  padding-top: var(--sp-xs);
 }
 section.math.theorem blockquote strong:first-child {
   font-family: var(--font-mono);
@@ -293,7 +317,7 @@ section.math.theorem blockquote strong:first-child {
   text-transform: uppercase;
   font-weight: 700;
   color: var(--accent);
-  margin-right: 0.5em;
+  padding-right: 0.5em;
 }
 /* Position-based accent stripe — Definition (start) cooler, Theorem (middle)
  * warmer, Proof (end) neutral. Uses the palette's --cN-dark categorical
@@ -318,7 +342,7 @@ section.math.theorem blockquote:nth-of-type(3n) strong:first-child {
   color: var(--text-secondary);
 }
 section.math.theorem blockquote .katex-display {
-  margin: var(--sp-xs) 0;
+  padding: var(--sp-xs) 0;
 }
 section.math.theorem blockquote .katex-display > .katex {
   font-size: 1.25em;
@@ -348,28 +372,31 @@ section.math.compare {
    * the columns to the vertical middle of the slide so a short comparison
    * doesn't leave the bottom half empty. */
   align-content: center;
-  padding-block: var(--sp-lg);
+  padding-bottom: var(--sp-lg);
 }
 section.math.compare:has(h3:nth-of-type(3)) {
   column-count: 3;
 }
 section.math.compare > h2 {
   column-span: all;
-  margin: 0 0 var(--sp-md) 0;
+  padding: 0 0 var(--sp-md) 0;
 }
 section.math.compare > h3 {
   break-before: column;
   break-after: avoid;
   padding-bottom: var(--sp-xs);
   border-bottom: 2px solid var(--accent);
-  margin: 0 0 var(--sp-sm) 0;
   color: var(--text-heading);
   font-size: var(--fs-meta);
 }
+/* The gap below the h3 underline (formerly the h3's `margin-bottom`) lives as
+ * the following element's top padding so the rule keeps drawing tight to the
+ * label text — measurable, and outside the border just as the margin was. */
+section.math.compare > h3 + * { padding-top: var(--sp-sm); }
 section.math.compare > h3:first-of-type { break-before: avoid; }
 section.math.compare > p:has(> .katex-display) {
   break-inside: avoid;
-  margin: 0 0 var(--sp-sm) 0;
+  padding-bottom: var(--sp-sm);
   text-align: center;
 }
 section.math.compare > p:has(> .katex-display) .katex-display > .katex {
@@ -377,7 +404,7 @@ section.math.compare > p:has(> .katex-display) .katex-display > .katex {
 }
 section.math.compare > p:not(:has(.katex-display)) {
   color: var(--text-secondary);
-  margin: 0 0 var(--sp-xs) 0;
+  padding-bottom: var(--sp-xs);
 }
 
 /* ── math.canvas ──
@@ -406,7 +433,7 @@ section.math.canvas {
     "title   title"
     "eq      plot"
     "cap     plot";
-  padding-block: var(--sp-xl);
+  padding-bottom: var(--sp-xl);
 }
 section.math.canvas > p:has(> code:only-child):has(+ h2) { grid-area: eyebrow; }
 section.math.canvas > h2              { grid-area: title; }
@@ -423,7 +450,7 @@ section.math.canvas > p:not(:has(.katex-display)):not(:has(img)) {
   grid-area: cap;
   color: var(--text-secondary);
   text-align: center;
-  margin: var(--sp-sm) 0 0 0;
+  padding: var(--sp-sm) 0 0 0;
 }
 section.math.canvas > p:has(img),
 section.math.canvas > :is(svg, figure, .functionplot) {
@@ -466,7 +493,7 @@ section.math.canvas > p > img {
 section.math.matrix {
   grid-template-columns: 3fr 2fr;
   align-content: center;
-  padding-block: var(--sp-lg);
+  padding-bottom: var(--sp-lg);
 }
 section.math.matrix > p:has(> .katex-display) {
   grid-column: 1;
@@ -483,7 +510,7 @@ section.math.matrix > :is(ul, ol) {
   border-left: 1px solid var(--border);
 }
 section.math.matrix > :is(ul, ol) > li {
-  margin-bottom: var(--sp-sm);
+  padding-bottom: var(--sp-sm);
   color: var(--text-body);
 }
 section.math.matrix > :is(ul, ol) > li > strong {
@@ -495,7 +522,7 @@ section.math.matrix > :is(ul, ol) > li > strong {
   letter-spacing: 0.18em;
   color: var(--text-secondary);
   font-weight: 600;
-  margin-right: 0.5em;
+  padding-right: 0.5em;
 }
 
 /* `.decompose` overrides the grid to a block layout so the secondary
@@ -511,15 +538,14 @@ section.math.matrix > :is(ul, ol) > li > strong {
 section.math.matrix.decompose {
   display: block;
   align-content: center;
-  padding-block: var(--sp-lg);
+  padding-bottom: var(--sp-lg);
   text-align: center;
 }
 section.math.matrix.decompose > h2 {
-  margin: 0 0 var(--sp-md) 0;
+  padding: 0 0 var(--sp-md) 0;
   text-align: left;
 }
 section.math.matrix.decompose > p:has(> .katex-display):first-of-type {
-  margin: 0 0 var(--sp-md) 0;
   padding-bottom: var(--sp-md);
   border-bottom: 1px solid var(--border);
 }
@@ -528,12 +554,16 @@ section.math.matrix.decompose > p:has(> .katex-display):first-of-type .katex-dis
 }
 section.math.matrix.decompose > h3 {
   text-align: center;
-  margin: 0 0 var(--sp-sm) 0;
+  /* Top padding carries the gap below the lead equation's divider (formerly
+   * the equation's `margin-bottom`), keeping the rule tight to the equation;
+   * bottom padding replaces the h3's own `margin-bottom`. */
+  padding-top: var(--sp-md);
+  padding-bottom: var(--sp-sm);
 }
 section.math.matrix.decompose > p:has(> .katex-display):not(:first-of-type) {
   display: inline-block;
   width: calc((100% - 2 * var(--sp-lg)) / 3);
-  margin: 0 var(--sp-xs);
+  padding: 0 var(--sp-xs);
   vertical-align: middle;
 }
 section.math.matrix.decompose > p:has(> .katex-display):not(:first-of-type) .katex-display > .katex {
@@ -561,12 +591,12 @@ section.math.stats {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding-block: var(--sp-xl);
+  padding-bottom: var(--sp-xl);
   gap: var(--sp-sm);
 }
 section.math.stats > h2 {
   text-align: center;
-  margin: 0 0 var(--sp-md) 0;
+  padding: 0 0 var(--sp-md) 0;
 }
 section.math.stats > p:has(> .katex-display):first-of-type {
   text-align: center;
@@ -580,8 +610,7 @@ section.math.stats > p:has(> .katex-display):first-of-type .katex-display > .kat
 section.math.stats > blockquote {
   border-left: none;
   background: none;
-  padding: 0;
-  margin: 0 0 var(--sp-md) 0;
+  padding: 0 0 var(--sp-md) 0;
   text-align: center;
   font-style: normal;
   color: var(--text-secondary);
@@ -590,7 +619,7 @@ section.math.stats > blockquote {
   letter-spacing: 0.12em;
 }
 section.math.stats > blockquote p {
-  margin: 0 0 0.15em 0;
+  padding: 0 0 0.15em 0;
 }
 section.math.stats > blockquote::before { content: none; }
 section.math.stats > p:not(:has(> .katex-display)):not(:first-of-type) {

@@ -189,6 +189,29 @@ in patch versions.
 
 ### Changed
 
+- **No-margins spacing model (phase 1, cell-tree) — margins out, `gap` in; stage height
+  reclaimed.** Margins fight the virtual-list `scrollHeight` measurement (they collapse and
+  sit outside the flex content box), so: the masthead band's `margin-bottom` becomes a `gap`
+  on the frame's section flex column, scoped to masthead-bearing slides
+  (`section:has(> .cell-masthead)`) so sovereign frames are untouched; that gap is **halved**
+  from the legacy doubled spacing, the `--footer-reserve` trims its `--sp-md` to `--sp-sm`, and
+  a band-local `margin:0` neutralises the pre-lift component `h2 { margin-bottom }` rules that
+  were adding stray height above the hairline. Net: ~`--sp-md` of stage height back on every
+  slide (most in portrait), easing clipping. First step toward a margin-free cell tree (the
+  component-level margin→`gap` sweep follows).
+- **No-margins spacing model (phase 2, component sweep) — every component CSS margin retired.**
+  Completing phase 1: all 222 spacing margins across `lib/components/**/*.styles.css` are gone,
+  converted to the measurable, in-box equivalents — a `gap` on the flex parent (transparent
+  inter-element space), `padding` on chrome-free elements (asymmetric or per-sibling space), or
+  a flex/grid restructure where a `margin:auto` was doing layout (right-anchored pills →
+  `justify-content:space-between`, absolute placement, or a `flex:1` spacer; centred bodies →
+  pseudo/flex spacers or a pinned-heading + centred-body split). The only `margin` left in
+  component CSS is the `margin:0` reset. Two guardrails the sweep surfaced and respects:
+  `padding` never replaces a transparent gap that sat **outside** a filled or bordered box
+  (it would extend the fill — e.g. a kanban lane underline stays inset via a gradient, not
+  padding); and a converted `padding-bottom`/`-top` pairs with a `margin:0` reset wherever a
+  base `section h2/h3/p` margin would otherwise leak through and double the spacing. Renders
+  verified pixel-equivalent to the prior build across the component galleries in both themes.
 - **Flex-shop conversion, hard tier — `pricing`, `logo-wall`, `citation-card.split`,
   `verdict-grid`, `cards-grid` drop CSS grid for flex.** `pricing` / `logo-wall` were
   `repeat(N,1fr)` tilings → flex-wrap with `width: 100%/N − …` per-cell (the matrix-2x2 idiom;
@@ -292,6 +315,14 @@ in patch versions.
 
 ### Fixed
 
+- **`math` slide titles clear the running header again — uniform with every other slide.**
+  The no-margins centring rework had pinned the `derivation`/`theorem` heading at
+  `top: var(--sp-lg/xl)`, which sat *inside* the `LATTICE · MATH` eyebrow band (the title
+  visibly overlapped it). The pinned title now clears the header by the base section's
+  header-clearance (`calc(var(--sp-2xl) + var(--sp-md))` = 6.875cqi, the same berth Form
+  slides use), and every `math` variant swaps its `padding-block` override for
+  `padding-bottom` so the base top clearance is preserved instead of squeezed — so a math
+  headline sits the same distance below the eyebrow as a headline on any Form slide.
 - **Split frames no longer bleed their supporting panel past the wall — and the bleed is
   still *detected*.** The flex cell-tree's first frames (`2026-06-26-frames-as-flex-cell-trees.md`):
   `split-panel`'s `.panel-right` and `split-compare`'s `.compare-right` gain the

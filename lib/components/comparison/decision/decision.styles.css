@@ -17,7 +17,6 @@
 section.decision > .cell-stage { display:flex; flex-direction:column; }
 section.decision h2 {
   font-size:var(--fs-h2);
-  margin-bottom:var(--sp-md);
   line-height:var(--lh-tight);
   max-width:70.3125cqi;
 }
@@ -114,15 +113,15 @@ section.decision-cover {
 section.decision-cover .split-feat-eye { font-size: var(--fs-meta); letter-spacing: 0.2em; text-transform: uppercase; opacity: 0.85; }
 section.decision-cover .split-feat-h {
   font-size: var(--fs-hero); font-weight: 800; line-height: var(--lh-tight);
-  color: var(--on-accent); margin: var(--sp-xs) 0 var(--sp-md); max-width: 11em;
+  color: var(--on-accent); padding: var(--sp-xs) 0 var(--sp-md); max-width: 11em;
 }
 section.decision-cover .split-feat-lede { font-size: var(--fs-emphasis); line-height: var(--lh-snug); opacity: 0.92; max-width: 20em; }
 section.decision-points .split-runhead {
   font-size: var(--fs-meta); letter-spacing: 0.2em; text-transform: uppercase;
   color: var(--text-muted); border-bottom: 1px solid var(--border);
-  padding-bottom: var(--sp-xs); margin-bottom: var(--sp-xl);
+  padding-bottom: var(--sp-xs);
 }
-section.decision-points .split-pts { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: var(--sp-lg); }
+section.decision-points .split-pts { list-style: none; padding: var(--sp-xl) 0 0 0; margin: 0; display: flex; flex-direction: column; gap: var(--sp-lg); }
 section.decision-points .split-pts > li { border-left: 3px solid var(--accent); padding-left: var(--sp-md); }
-section.decision-points .split-pt-t { display: block; font-weight: 800; color: var(--text-heading); font-size: var(--fs-h3); margin-bottom: var(--sp-3xs); }
+section.decision-points .split-pt-t { display: block; font-weight: 800; color: var(--text-heading); font-size: var(--fs-h3); padding-bottom: var(--sp-3xs); }
 section.decision-points .split-pt-b { color: var(--text-body); font-size: var(--fs-body); line-height: var(--lh-base); max-width: 22em; }

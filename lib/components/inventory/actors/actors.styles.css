@@ -17,7 +17,7 @@
  * metadata chip. Same convention as everywhere else in Lattice.
  * ──────────────────────────────────────────────────────────────────────── */
 section.actors > .cell-stage { display:flex; flex-direction:column; }
-section.actors h2 { font-size:var(--fs-emphasis); margin-bottom:var(--sp-md); }
+section.actors h2 { font-size:var(--fs-emphasis); }
 section.actors > .cell-stage > ul,
 section.actors > .cell-stage > ol {
   list-style:none; padding:0; margin:0;
@@ -74,7 +74,7 @@ section.actors > .cell-stage > ol > li > strong {
 section.actors > .cell-stage > ul > li > code,
 section.actors > .cell-stage > ol > li > code {
   flex:0 0 auto;
-  /* right-anchored on the header row by the universal pill rule's margin-left:auto. */
+  /* right-anchored on the header row by the universal pill rule (auto-start inline). */
   display:inline-flex; align-items:center;
   letter-spacing:0.04em;
   padding:3px 11px;
@@ -122,12 +122,15 @@ section.actors > .cell-stage > ol > li > ol > li {
 @container lattice (aspect-ratio <= 0.9) {
   /* Collapse to a single column: the responsibility fills row 1 (flex-basis:100%), so the
      chip and body each wrap onto their own line below it. */
-  section.actors.actors > .cell-stage > :is(ul, ol) > li > strong { flex: 0 0 100%; }
+  /* the strong's padding-bottom (not a chip margin-top) supplies the sp-2xs gap above
+     the wrapped chip — measurable, and strong carries no background so the inset is
+     invisible. */
+  section.actors.actors > .cell-stage > :is(ul, ol) > li > strong { flex: 0 0 100%; padding-bottom: var(--sp-2xs); }
   /* Drop the chip onto its own line, hanging at the LEFT under the responsibility. The
-     universal pill rule (base.modifiers) sets `margin-left: auto` to right-anchor the chip;
-     cancel it so the chip sits left on its own wrapped line. */
+     universal pill rule (base.modifiers) auto-starts the chip's inline edge to right-anchor
+     it; cancel that (zero reset) so the chip sits left on its own wrapped line. */
   section.actors.actors > .cell-stage > ul > li > code,
   section.actors.actors > .cell-stage > ol > li > code {
-    margin-left: 0; margin-top: var(--sp-2xs);
+    margin-left: 0;
   }
 }

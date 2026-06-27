@@ -15,7 +15,6 @@
  */
 
 section.list > .cell-stage { display:flex; flex-direction:column; }
-section.list h2 { margin-bottom:var(--sp-md); }
 
 /* ── Spine: the list fills the canvas; each row an equal, centred band. ── */
 section.list > .cell-stage > :is(ul,ol) {

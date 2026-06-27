@@ -81,10 +81,9 @@ section.journey {
   display: flex;
   flex-direction: column;
 }
-section.journey h1,
-section.journey h2 {
-  margin: 0 0 var(--sp-md);
-}
+/* The h2 is lifted into the chart-frame masthead band (chart-family.js), which
+ * owns the title→body spacing now — the old `section.journey h1, h2 { margin }`
+ * was vestigial (and margins break virtual-list scrollHeight), so it's removed. */
 
 /* The board itself: a vertical flow of column-aligned bands. The gap
  * was sp-sm when the floating actor dot needed 6px of overhang headroom
@@ -208,10 +207,10 @@ section.journey .journey-mood-legend {
   width: 100%;
 }
 section.journey .journey-legend {
-  margin-top: var(--sp-xl);   /* set the key apart from the diagram above */
+  padding-top: var(--sp-xl);   /* set the key apart from the diagram above (padding, not margin: stays inside the flex content box) */
 }
 section.journey .journey-mood-legend {
-  margin-top: var(--sp-sm);   /* breathing room between the two key rows */
+  padding-top: var(--sp-sm);   /* breathing room between the two key rows (padding, not margin) */
 }
 
 /* ── Section ribbon ─────────────────────────────────────────────────── */
@@ -299,7 +298,10 @@ section.journey .journey-task-label {
 section.journey .journey-timeline {
   height: 0.9375cqi;
   position: relative;
-  margin: 0.15625cqi 0;
+  /* padding (not margin) keeps the spacing inside the flex content box; the
+   * absolute ::before/::after reference the padding box, so the line sits at the
+   * same place and the occupied height matches the old margin: 0.15625cqi 0. */
+  padding: 0.15625cqi 0;
   flex-shrink: 0;
 }
 section.journey .journey-timeline::before {
@@ -419,7 +421,7 @@ section.journey.heatmap .journey-lanes {
 }
 section.journey.heatmap .journey-tasks {
   gap: 0.3125cqi;
-  margin-top: var(--sp-sm);
+  padding-top: var(--sp-sm); /* was margin-top — padding stays inside the flex content box */
 }
 section.journey.heatmap .journey-task {
   min-height: 7.5cqi;
@@ -460,7 +462,7 @@ section.journey.heatmap .journey-task::after {
 /* ============================================================== */
 section.journey.curve .journey-tasks {
   /* Tasks become slim column-header labels under the curve. */
-  margin-top: var(--sp-xs);
+  padding-top: var(--sp-xs); /* was margin-top — padding stays inside the flex content box */
 }
 section.journey.curve .journey-task {
   background: transparent;
@@ -472,7 +474,7 @@ section.journey.curve .journey-task {
 section.journey.curve .journey-task-actors {
   position: static;
   justify-content: center;
-  margin-bottom: 0.3125cqi;
+  padding-bottom: 0.3125cqi; /* was margin-bottom — actors have no fill, padding is measurable */
 }
 section.journey.curve .journey-moods,
 section.journey.curve .journey-lanes {
@@ -481,7 +483,7 @@ section.journey.curve .journey-lanes {
 section.journey.curve .journey-curve {
   display: block;
   height: 17.1875cqi;
-  margin-top: var(--sp-md);
+  padding-top: var(--sp-md); /* was margin-top — padding stays inside the flex content box */
   /* Gridlines, polyline, and dots all live inside the SVG so the y-axis
    * scale survives non-uniform viewBox stretching. */
 }
@@ -531,7 +533,7 @@ section.journey.swimlane .journey-lanes {
   grid-template-columns: minmax(9.375cqi, max-content) repeat(var(--task-count), 1fr);
   grid-template-rows: repeat(var(--actor-count), minmax(3.125cqi, auto));
   row-gap: var(--sp-xs);
-  margin-top: var(--sp-sm);
+  padding-top: var(--sp-sm); /* was margin-top — padding stays inside the flex content box */
   position: relative;
 }
 section.journey .journey-lane {
@@ -613,7 +615,7 @@ section.journey.weighted .journey-stage {
 section.journey.weighted .journey-tasks {
   display: flex;
   gap: 0.3125cqi;
-  margin-top: var(--sp-sm);
+  padding-top: var(--sp-sm); /* was margin-top — padding stays inside the flex content box */
 }
 section.journey.weighted .journey-task {
   flex-grow: var(--volume);
@@ -653,7 +655,9 @@ section.journey.weighted .journey-task::after {
  * narrowest chips (3-4% support, settings) a fighting chance at being
  * legible. */
 section.journey.weighted .journey-task-label {
-  margin-top: auto;
+  /* The label is the sole in-flow child of .journey-task (actors + % badge are
+   * absolute) and the chip is a flex column with justify-content:flex-end, so the
+   * label already sits at the bottom — the old margin-top:auto was redundant. */
   font-size: var(--fs-meta);
 }
 section.journey.weighted .journey-task-actors {
@@ -750,7 +754,7 @@ section.journey .journey-board[data-orient="vertical"] .journey-task-actors {
   position: static;
   display: inline-flex;
   gap: 2px;  /* sanctioned: hairline-scale gap between actor dots */
-  margin-right: var(--sp-xs);
+  padding-right: var(--sp-xs); /* was margin-right — actors have no fill, padding is measurable */
 }
 section.journey .journey-vtask .journey-task-label {
   font-weight: 500;

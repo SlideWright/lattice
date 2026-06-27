@@ -928,7 +928,7 @@ section::after {
  * metadata chip. Same convention as everywhere else in Lattice.
  * ──────────────────────────────────────────────────────────────────────── */
 section.actors > .cell-stage { display:flex; flex-direction:column; }
-section.actors h2 { font-size:var(--fs-emphasis); margin-bottom:var(--sp-md); }
+section.actors h2 { font-size:var(--fs-emphasis); }
 section.actors > .cell-stage > ul,
 section.actors > .cell-stage > ol {
   list-style:none; padding:0; margin:0;
@@ -985,7 +985,7 @@ section.actors > .cell-stage > ol > li > strong {
 section.actors > .cell-stage > ul > li > code,
 section.actors > .cell-stage > ol > li > code {
   flex:0 0 auto;
-  /* right-anchored on the header row by the universal pill rule's margin-left:auto. */
+  /* right-anchored on the header row by the universal pill rule (auto-start inline). */
   display:inline-flex; align-items:center;
   letter-spacing:0.04em;
   padding:3px 11px;
@@ -1033,13 +1033,16 @@ section.actors > .cell-stage > ol > li > ol > li {
 @container lattice (aspect-ratio <= 0.9) {
   /* Collapse to a single column: the responsibility fills row 1 (flex-basis:100%), so the
      chip and body each wrap onto their own line below it. */
-  section.actors.actors > .cell-stage > :is(ul, ol) > li > strong { flex: 0 0 100%; }
+  /* the strong's padding-bottom (not a chip margin-top) supplies the sp-2xs gap above
+     the wrapped chip — measurable, and strong carries no background so the inset is
+     invisible. */
+  section.actors.actors > .cell-stage > :is(ul, ol) > li > strong { flex: 0 0 100%; padding-bottom: var(--sp-2xs); }
   /* Drop the chip onto its own line, hanging at the LEFT under the responsibility. The
-     universal pill rule (base.modifiers) sets `margin-left: auto` to right-anchor the chip;
-     cancel it so the chip sits left on its own wrapped line. */
+     universal pill rule (base.modifiers) auto-starts the chip's inline edge to right-anchor
+     it; cancel that (zero reset) so the chip sits left on its own wrapped line. */
   section.actors.actors > .cell-stage > ul > li > code,
   section.actors.actors > .cell-stage > ol > li > code {
-    margin-left: 0; margin-top: var(--sp-2xs);
+    margin-left: 0;
   }
 }
 
@@ -1080,7 +1083,7 @@ section.agenda > .cell-stage {
   --ag-check: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 8.5 L6.5 12 L13 4' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
   --ag-dots: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 4'%3E%3Ccircle cx='2' cy='2' r='1'/%3E%3C/svg%3E");
 }
-section.agenda h2 { font-size: var(--fs-emphasis); margin-bottom: var(--sp-lg); }
+section.agenda h2 { font-size: var(--fs-emphasis); }
 section.agenda ol {
   list-style: none; padding: 0; margin: 0;
   counter-reset: agenda-counter;
@@ -1113,7 +1116,11 @@ section.agenda:not(.circles):not(.rail):not(.cards):not(.checks) ol > li::before
   color: var(--accent); font-size: var(--fs-body);
 }
 section.agenda:not(.circles):not(.rail):not(.cards):not(.checks) ol > li code {
-  margin-left: auto; background: none; border: none; box-shadow: none; border-radius: 0;
+  /* page ref right-anchors by GROWING to fill the row and right-aligning its text, rather
+     than an auto inline-start margin (which sat outside the flex box). The text's right edge
+     still lands on the li's right-padding edge — pixel-identical, fully measurable. */
+  flex: 1; text-align: right;
+  background: none; border: none; box-shadow: none; border-radius: 0;
   padding: 0 0 0 var(--sp-md);
   font-family: var(--font-label); font-weight: 600; letter-spacing: 0.03em;
   color: var(--text-secondary); font-size: var(--fs-body-compact);
@@ -1138,10 +1145,13 @@ section.agenda:not(.circles):not(.rail):not(.cards):not(.checks).progress-3 ol >
 section.agenda:not(.circles):not(.rail):not(.cards):not(.checks).progress-4 ol > li:nth-child(4)::before,
 section.agenda:not(.circles):not(.rail):not(.cards):not(.checks).progress-5 ol > li:nth-child(5)::before,
 section.agenda:not(.circles):not(.rail):not(.cards):not(.checks).progress-6 ol > li:nth-child(6)::before {
-  content: ""; width: 1.4em; height: 1.4em; align-self: center; margin-right: var(--sp-2xs);
+  /* sp-2xs trailing inset folded INTO the box (width + left-anchored mask) instead of an
+     outside gap. The 1.4em arrow stays put at the left, the extra width is the gap to the
+     title — fully measurable, nothing sits outside the box. */
+  content: ""; width: calc(1.4em + var(--sp-2xs)); height: 1.4em; align-self: center;
   background-color: var(--accent);
-  -webkit-mask: var(--ag-arrow) no-repeat center / contain;
-  mask: var(--ag-arrow) no-repeat center / contain;
+  -webkit-mask: var(--ag-arrow) no-repeat left center / 1.4em auto;
+  mask: var(--ag-arrow) no-repeat left center / 1.4em auto;
 }
 section.agenda:not(.circles):not(.rail):not(.cards):not(.checks).progress-1 ol > li:nth-child(1) code,
 section.agenda:not(.circles):not(.rail):not(.cards):not(.checks).progress-2 ol > li:nth-child(2) code,
@@ -1200,15 +1210,17 @@ section.agenda.rail ol::before {
 }
 section.agenda.rail ol > li {
   /* flex mirror of `grid-template-columns:3.4em 1fr`: the node ring sits in a 3.4em gutter
-   * (centred on the journey line at 1.7em), then the title fills the rest. */
-  display: flex; align-items: center; column-gap: var(--sp-md);
-  padding: var(--sp-xs) 0; position: static;
+   * (centred on the journey line at 1.7em), then the title fills the rest. The ring's
+   * (3.4-2.2)/2 = 0.6em side insets ride here — padding-left for the leading gutter (ring
+   * centre lands on 1.7em) and a +0.6em bump on the column-gap for the trailing one —
+   * rather than as margins on the ring, whose background+border can't be padded. */
+  display: flex; align-items: center; column-gap: calc(var(--sp-md) + 0.6em);
+  padding: var(--sp-xs) 0 var(--sp-xs) 0.6em; position: static;
 }
 section.agenda.rail ol > li::before {
-  /* centre the 2.2em ring within the 3.4em gutter via symmetric margins ((3.4-2.2)/2),
-   * replacing the grid column's justify-self:center — the ring's centre lands on 1.7em. */
+  /* the 2.2em ring sits flush at the gutter inset (li padding-left); see the li note. */
   content: counter(agenda-counter); flex: 0 0 auto; display: flex; align-items: center; justify-content: center;
-  width: 2.2em; height: 2.2em; position: relative; z-index: 1; margin: 0 0.6em; letter-spacing: normal;
+  width: 2.2em; height: 2.2em; position: relative; z-index: 1; margin: 0; letter-spacing: normal;
   background: var(--bg); border: 2px solid var(--ag-outline); border-radius: 50%;
   font-family: var(--font-label); font-weight: 700; font-size: var(--fs-body); line-height: 1;
   color: var(--accent); -webkit-mask: none; mask: none;
@@ -1341,7 +1353,6 @@ section.agenda.checks.progress-6 ol > li:nth-child(6)::after {
  *   .trail      numbered horizontal trail with arrows
  * ──────────────────────────────────────────────────────────────────── */
 section.authority-chain > .cell-stage { display:flex; flex-direction:column; }
-section.authority-chain h2 { margin-bottom:var(--sp-md); }
 section.authority-chain > .cell-stage > ol,
 section.authority-chain > .cell-stage > ul {
   list-style:none; padding:0; margin:0;
@@ -1349,7 +1360,7 @@ section.authority-chain > .cell-stage > ul {
   /* flex:1 fills the stage; min-height:0 lets the chain shrink to the bounded stage
    * (flex cell-tree §6) — without it the list's min-height:auto floor kept the rows at
    * natural height and clipped the last tier on a 4-tier chain. */
-  gap:0; flex:1; min-height:0; justify-content:center;
+  gap:var(--sp-md); flex:1; min-height:0; justify-content:center;
   counter-reset:auth;
 }
 section.authority-chain > .cell-stage > :is(ol, ul) > li {
@@ -1377,10 +1388,8 @@ section.authority-chain > .cell-stage > :is(ol, ul) > li {
   font-size:var(--fs-body);
   line-height:var(--lh-snug);
   color:var(--text-body);
-  margin-bottom:var(--sp-md);
 }
 section.authority-chain > .cell-stage > :is(ol, ul) > li::marker { content:''; }
-section.authority-chain > .cell-stage > :is(ol, ul) > li:last-child { margin-bottom:0; }
 /* Connector arrow between rows. */
 section.authority-chain > .cell-stage > :is(ol, ul) > li:not(:last-child)::after {
   content:'';
@@ -1438,9 +1447,15 @@ section.authority-chain.pyramid > .cell-stage > :is(ol, ul) > li:nth-child(4) { 
 section.authority-chain.pyramid > .cell-stage > :is(ol, ul) > li::after { display:none; }
 
 /* .branching — statute root, then nested children render as connected branches. */
+/* The branch list wraps to its own full-width row inside the flex-wrap li; the space
+ * above it is the wrap row-gap (was margin-top on the list — an auto/edge margin sits
+ * outside the flex content box and breaks the virtual-list height measurement). */
+section.authority-chain.branching > .cell-stage > :is(ol, ul) > li {
+  row-gap:var(--sp-sm);
+}
 section.authority-chain.branching > .cell-stage > :is(ol, ul) > li > :is(ul, ol) {
   flex:0 0 100%;
-  list-style:none; margin:var(--sp-sm) 0 0; padding:0 0 0 var(--sp-lg);
+  list-style:none; margin:0; padding:0 0 0 var(--sp-lg);
   display:flex; flex-direction:column; gap:var(--sp-xs);
   border-left:2px dashed var(--tier-hue, var(--accent));
 }
@@ -1462,11 +1477,11 @@ section.authority-chain.branching > .cell-stage > :is(ol, ul) > li > :is(ul, ol)
 section.authority-chain.branching > .cell-stage > :is(ol, ul) > li::after { display:none; }
 
 /* .bracket — visual bracket connector tying tiers. */
+section.authority-chain.bracket > .cell-stage > :is(ol, ul) { gap:0; }
 section.authority-chain.bracket > .cell-stage > :is(ol, ul) > li {
   border-radius:0;
   border:1px solid var(--border);
   border-left:6px double var(--tier-hue, var(--accent));
-  margin-bottom:0;
 }
 section.authority-chain.bracket > .cell-stage > :is(ol, ul) > li::after { display:none; }
 section.authority-chain.bracket > .cell-stage > :is(ol, ul) > li + li { border-top:none; }
@@ -1479,7 +1494,6 @@ section.authority-chain.trail > .cell-stage > :is(ol, ul) {
 }
 section.authority-chain.trail > .cell-stage > :is(ol, ul) > li {
   flex:1;
-  margin-bottom:0;
   display:flex; flex-direction:column; gap:var(--sp-xs);
   align-items:flex-start;
   border-left:none;
@@ -1515,7 +1529,7 @@ section.authority-chain.trail > .cell-stage > :is(ol, ul) > li::before {
   font-weight:700;
   color:var(--tier-hue, var(--accent));
   line-height:1;
-  margin-bottom:var(--sp-xs);
+  padding-bottom:var(--sp-xs);
 }
 
 /* ── Box-local family reflow (2026-06-20-native-to-reflow-feasibility.md, Batch
@@ -1556,8 +1570,8 @@ section.authority-chain.trail > .cell-stage > :is(ol, ul) > li::before {
 section.big-number > .cell-stage { display:flex; flex-direction:column; justify-content:center; align-items:center; }
 section.big-number > .cell-stage > ul { list-style:none; padding:0; margin:0; text-align:center; }
 section.big-number > .cell-stage > ul > li { font-family:var(--font-display); font-size:var(--fs-hero); font-weight:700; color:var(--accent); line-height:1; }
-section.big-number > .cell-stage > ul > li > ul { list-style:none; padding:0; margin:var(--sp-lg) 0 0 0; }
-section.big-number > .cell-stage > ul > li > ul > li { font-family:var(--font-body); font-size:var(--fs-message); font-weight:400; color:var(--text-body); line-height:var(--lh-relaxed); max-width:43.75cqi; margin:0 auto; }
+section.big-number > .cell-stage > ul > li > ul { list-style:none; padding:var(--sp-lg) 0 0 0; margin:0; display:flex; flex-direction:column; align-items:center; }
+section.big-number > .cell-stage > ul > li > ul > li { font-family:var(--font-body); font-size:var(--fs-message); font-weight:400; color:var(--text-body); line-height:var(--lh-relaxed); max-width:43.75cqi; }
 
 /* === lib/components/inventory/cards-grid/cards-grid.styles.css === */
 /* cards-grid — extracted from lib/_legacy.css (batch 6).
@@ -1570,7 +1584,6 @@ section.big-number > .cell-stage > ul > li > ul > li { font-family:var(--font-bo
  * Marp CLI path:  section > ul/ol > li  (native HTML)
  * lattice.js path: section > .cards-grid-inner > .card  (post-processed)
  */
-section.cards-grid h2 { margin-bottom:var(--sp-sm); }
 section.cards-grid > .cell-stage { display:flex; flex-direction:column; }
 /* — Marp CLI native path —
  * flex mirror of `grid-template-columns:1fr 1fr; grid-auto-rows:1fr`: a 2-col tiling (matrix
@@ -1587,6 +1600,10 @@ section.cards-grid > .cell-stage > ul > li, section.cards-grid > .cell-stage > o
   background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
   display:flex; flex-wrap:wrap; align-items:baseline; align-content:start; column-gap:var(--sp-xs);
+  /* badge right-anchors via space-between (the title strong/text takes the left end,
+     the trailing code pill the right) — replaces the pill's auto inline-start anchor, which
+     sits outside the flex box and broke the virtual-list scrollHeight measure. */
+  justify-content:space-between;
   font-size:var(--fs-body); line-height:var(--lh-snug); font-weight:700; color:var(--text-heading);
 }
 section.cards-grid > .cell-stage > ul > li:last-child:nth-child(odd),
@@ -1599,13 +1616,13 @@ section.cards-grid > .cell-stage > ul > li > strong { flex:1 1 auto; min-width:0
  *   `<code>` is neither :last-child nor preceded by `<ul>`, so the
  *   universal pill rule's :last-child guard does not fire here. — */
 section.cards-grid > .cell-stage > ul > li > code,
-section.cards-grid > .cell-stage > ol > li > code { flex:0 0 auto; margin-left:auto;
+section.cards-grid > .cell-stage > ol > li > code { flex:0 0 auto;
   display:inline-flex; align-items:center; justify-content:center; text-align:center; line-height:1;
   font-family:var(--pill-font); font-size:var(--pill-fs); font-weight:var(--pill-weight); letter-spacing:var(--pill-tracking); border-radius:var(--pill-radius); padding:var(--pill-pad-y) var(--pill-pad-x); white-space:nowrap;
   background:var(--bg); border-color:var(--text-muted); color:var(--text-body); }
 /* — card body (nested list) — full-width row below the title. */
 section.cards-grid > .cell-stage > ul > li > ul, section.cards-grid > .cell-stage > ul > li > ol,
-section.cards-grid > .cell-stage > ol > li > ul, section.cards-grid > .cell-stage > ol > li > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; flex:0 0 100%; }
+section.cards-grid > .cell-stage > ol > li > ul, section.cards-grid > .cell-stage > ol > li > ol { list-style:none; padding:var(--sp-xs) 0 0 0; flex:0 0 100%; }
 section.cards-grid > .cell-stage > ul > li > ul > li, section.cards-grid > .cell-stage > ul > li > ol > li,
 section.cards-grid > .cell-stage > ol > li > ul > li, section.cards-grid > .cell-stage > ol > li > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
 /* — lattice.js post-processed path — */
@@ -1619,15 +1636,17 @@ section.cards-grid .card {
   background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
   display:flex; flex-wrap:wrap; align-items:baseline; align-content:start; column-gap:var(--sp-xs);
+  /* badge right-anchors via space-between — see the native-path note above. */
+  justify-content:space-between;
   font-size:var(--fs-body); line-height:var(--lh-snug); font-weight:700; color:var(--text-heading);
 }
 section.cards-grid .cards-grid-inner > .card:last-child:nth-child(odd) { width:100%; }
 section.cards-grid .card > strong { flex:1 1 auto; min-width:0; }
-section.cards-grid .card > code { flex:0 0 auto; margin-left:auto;
+section.cards-grid .card > code { flex:0 0 auto;
   display:inline-flex; align-items:center; justify-content:center; text-align:center; line-height:1;
   font-family:var(--pill-font); font-size:var(--pill-fs); font-weight:var(--pill-weight); letter-spacing:var(--pill-tracking); border-radius:var(--pill-radius); padding:var(--pill-pad-y) var(--pill-pad-x); white-space:nowrap;
   background:var(--bg); border-color:var(--text-muted); color:var(--text-body); }
-section.cards-grid .card > ul, section.cards-grid .card > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; flex:0 0 100%; }
+section.cards-grid .card > ul, section.cards-grid .card > ol { list-style:none; padding:var(--sp-xs) 0 0 0; flex:0 0 100%; }
 section.cards-grid .card > ul > li, section.cards-grid .card > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
 /* — numbered cards (ol): flush corner tag via absolute ::before — */
 section.cards-grid > .cell-stage > ol { counter-reset:card; }
@@ -1668,20 +1687,22 @@ section.cards-grid:not(:has(.cards-grid-inner)) > .cell-stage > ol > li {
   background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
   display:flex; flex-wrap:wrap; align-items:baseline; align-content:start; column-gap:var(--sp-xs);
+  /* badge right-anchors via space-between — see the native-path note above. */
+  justify-content:space-between;
   font-weight:700; color:var(--text-heading);
 }
 section.cards-grid:not(:has(.cards-grid-inner)) > .cell-stage > ul > li:last-child:nth-child(odd),
 section.cards-grid:not(:has(.cards-grid-inner)) > .cell-stage > ol > li:last-child:nth-child(odd) { width:100%; }
 section.cards-grid:not(:has(.cards-grid-inner)) > .cell-stage > ul > li > strong { flex:1 1 auto; min-width:0; }
 section.cards-grid:not(:has(.cards-grid-inner)) > .cell-stage > ul > li > code,
-section.cards-grid:not(:has(.cards-grid-inner)) > .cell-stage > ol > li > code { flex:0 0 auto; margin-left:auto;
+section.cards-grid:not(:has(.cards-grid-inner)) > .cell-stage > ol > li > code { flex:0 0 auto;
   display:inline-flex; align-items:center; justify-content:center; text-align:center; line-height:1;
   font-family:var(--pill-font); font-size:var(--pill-fs); font-weight:var(--pill-weight); letter-spacing:var(--pill-tracking); border-radius:var(--pill-radius); padding:var(--pill-pad-y) var(--pill-pad-x); white-space:nowrap;
   background:var(--bg); border-color:var(--text-muted); color:var(--text-body); }
 section.cards-grid:not(:has(.cards-grid-inner)) > .cell-stage > ul > li > ul,
 section.cards-grid:not(:has(.cards-grid-inner)) > .cell-stage > ul > li > ol,
 section.cards-grid:not(:has(.cards-grid-inner)) > .cell-stage > ol > li > ul,
-section.cards-grid:not(:has(.cards-grid-inner)) > .cell-stage > ol > li > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; flex:0 0 100%; }
+section.cards-grid:not(:has(.cards-grid-inner)) > .cell-stage > ol > li > ol { list-style:none; padding:var(--sp-xs) 0 0 0; flex:0 0 100%; }
 section.cards-grid:not(:has(.cards-grid-inner)) > .cell-stage > ul > li > ul > li,
 section.cards-grid:not(:has(.cards-grid-inner)) > .cell-stage > ul > li > ol > li,
 section.cards-grid:not(:has(.cards-grid-inner)) > .cell-stage > ol > li > ul > li,
@@ -1793,7 +1814,6 @@ section.cards-grid :is(ul,ol) > li > strong ~ * { font-weight: 400; }
  *   emulator path:           section.cards-stack .cards-stack-inner > .card
  */
 section.cards-stack > .cell-stage { display:flex; flex-direction:column; }
-section.cards-stack h2 { margin-bottom:var(--sp-sm); }
 
 /* shared visual contract — both raw and post-processed */
 section.cards-stack > .cell-stage > ul, section.cards-stack > .cell-stage > ol,
@@ -1812,6 +1832,11 @@ section.cards-stack .card {
    * rather than forcing its natural height and pushing the stack past the clip. */
   margin:0; flex:1; min-height:0; list-style:none;
   display:flex; flex-wrap:wrap; align-items:baseline; align-content:flex-start;
+  /* badge right-anchors via space-between (title takes the left end, the trailing
+     code pill the right) — replaces the pill's auto inline-start anchor, which sat outside
+     the flex box and broke the virtual-list scrollHeight measure. The body wraps to
+     its own full-width flex line and stays left-aligned. */
+  justify-content:space-between;
   column-gap:var(--sp-sm); row-gap:var(--sp-xs);
   font-size:var(--fs-body); line-height:var(--lh-snug);
   font-weight:700; color:var(--text-heading);
@@ -1831,7 +1856,7 @@ section.cards-stack .card > strong { font-weight:inherit; color:inherit; }
  *   would miss it). The :has(+ ul/ol) case is covered here by position. — */
 section.cards-stack > .cell-stage > ul > li > code, section.cards-stack > .cell-stage > ol > li > code,
 section.cards-stack .card > code {
-  margin-left:auto; align-self:baseline;
+  align-self:baseline;
   display:inline-flex; align-items:center; justify-content:center; text-align:center; line-height:1;
   font-family:var(--pill-font); font-size:var(--pill-fs); font-weight:var(--pill-weight);
   letter-spacing:var(--pill-tracking); border-radius:var(--pill-radius);
@@ -1845,7 +1870,7 @@ section.cards-stack .card > code {
 section.cards-stack > .cell-stage > ul > li > ul, section.cards-stack > .cell-stage > ul > li > ol,
 section.cards-stack > .cell-stage > ol > li > ul, section.cards-stack > .cell-stage > ol > li > ol,
 section.cards-stack .card > ul, section.cards-stack .card > ol {
-  flex-basis:100%; list-style:none; padding:0; margin:var(--sp-xs) 0 0 0;
+  flex-basis:100%; list-style:none; padding:var(--sp-xs) 0 0 0;
   font-weight:400; color:var(--text-body); line-height:var(--lh-base);
 }
 section.cards-stack > .cell-stage > ul > li > ul > li, section.cards-stack > .cell-stage > ul > li > ol > li,
@@ -1978,7 +2003,7 @@ section.cards-stack[data-orientation='square'] > .cell-stage > :is(ul,ol) > li {
  * Trailing inline `code` on a row floats right as a status pill
  * (universal pill convention). */
 section.checklist > .cell-stage { display:flex; flex-direction:column; }
-section.checklist h2 { font-size:var(--fs-emphasis); margin-bottom:var(--sp-md); }
+section.checklist h2 { font-size:var(--fs-emphasis); }
 section.checklist > .cell-stage > ul,
 section.checklist > .cell-stage > ol {
   list-style:none; padding:0; margin:0;
@@ -2135,7 +2160,6 @@ section.checklist > .cell-stage > ol > li em {
  * Variants: .split, .pull-quote, .margin, .triptych.
  * ──────────────────────────────────────────────────────────────────── */
 section.citation-card > .cell-stage { display:flex; flex-direction:column; gap:var(--sp-sm); justify-content:center; }
-section.citation-card h2 { margin-bottom:var(--sp-xs); }
 /* Hanging citation eyebrow — leading paragraph that is just a `<code>`. */
 section.citation-card > .cell-stage > p:has(> code:only-child) {
   margin:0;
@@ -2164,7 +2188,7 @@ section.citation-card > .cell-stage > blockquote {
   color:var(--text-heading);
 }
 section.citation-card > .cell-stage > blockquote > p { margin:0; }
-section.citation-card > .cell-stage > blockquote > p + p { margin-top:var(--sp-xs); }
+section.citation-card > .cell-stage > blockquote > p + p { padding-top:var(--sp-xs); }
 /* Translation — first list, body sans, muted heading. */
 section.citation-card > .cell-stage > ul,
 section.citation-card > .cell-stage > ol {
@@ -2196,7 +2220,7 @@ section.citation-card > .cell-stage > :is(ul, ol) > li > strong:first-child {
   letter-spacing:0.16em;
   text-transform:uppercase;
   color:var(--accent);
-  margin-bottom:0.234375cqi;
+  padding-bottom:0.234375cqi;
 }
 
 /* .split — verbatim left, translate+do right. The title + eyebrow lift to the
@@ -2405,9 +2429,9 @@ section.citation-card.margin:is([data-orientation="portrait"], [data-orientation
 
 section.closing { justify-content:center; align-items:center; background:var(--surface-inverse); }
 section.closing { border-top: none; }
-section.closing hr { margin:0 auto var(--sp-md); }
-section.closing h2 { font-size:var(--fs-h1); color:var(--text-display); max-width:54.6875cqi; margin:0 auto var(--sp-sm); text-align:center; }
-section.closing p  { color:var(--on-dark-secondary); font-size:var(--fs-message); font-style:italic; max-width:42.1875cqi; margin:0 auto; text-align:center; }
+section.closing hr { margin:0; }
+section.closing h2 { font-size:var(--fs-h1); color:var(--text-display); max-width:54.6875cqi; margin:0; padding-bottom:var(--sp-sm); text-align:center; }
+section.closing p  { color:var(--on-dark-secondary); font-size:var(--fs-message); font-style:italic; max-width:42.1875cqi; margin:0; padding-top:var(--sp-md); text-align:center; }
 
 /* Mirror of title: the inline-code paragraph after the heading is the
  * eyebrow, rendered visually ABOVE the heading via flex order (overriding
@@ -2417,7 +2441,7 @@ section.closing p  { color:var(--on-dark-secondary); font-size:var(--fs-message)
  * subtitle's readable-width cap (42cqi), which the portrait type-boost overflows
  * into a two-line wrap with a dangling separator. (title's subtitle has no cap,
  * so its eyebrow never wrapped — this restores parity.) */
-section.closing h2 + p:has(> code:only-child) { order:-1; margin:0 0 0.3125cqi 0; max-width:none; }
+section.closing h2 + p:has(> code:only-child) { order:-1; margin:0; padding-top:0; padding-bottom:0.3125cqi; max-width:none; }
 section.closing h2 + p:has(> code:only-child) > code {
   font-family: var(--font-mono);
   font-size: var(--fs-meta);
@@ -2446,9 +2470,9 @@ section.code { }
  * cell without one. The masthead lift hoists the `## heading` into the band; the
  * fenced block becomes the stage body and runs full-height. */
 section.code > .cell-stage { display:flex; flex-direction:column; }
-section.code h3 { margin-bottom:0.3125cqi; }
-section.code h2 { margin-bottom:var(--sp-xs); }
-section.code > .cell-stage > em { font-size:var(--fs-meta); line-height:var(--lh-snug); color:var(--text-label); margin-bottom:var(--sp-sm); font-style:normal; display:block; }
+section.code h3 { padding-bottom:0.3125cqi; }
+section.code h2 { padding-bottom:var(--sp-xs); }
+section.code > .cell-stage > em { font-size:var(--fs-meta); line-height:var(--lh-snug); color:var(--text-label); padding-bottom:var(--sp-sm); font-style:normal; display:block; }
 section.code pre { flex:1; margin:0; border-radius:var(--radius-md); overflow:hidden; background:var(--spectrum) bottom / 100% 3px no-repeat, var(--code-bg); padding:var(--sp-sm) var(--sp-md); padding-bottom:calc(var(--sp-sm) + 0.234375cqi); box-sizing:border-box; }
 section.code pre > code { font-family:var(--font-mono); font-size:var(--fs-meta); line-height:var(--lh-base); color:var(--code-text); background:none; padding:0; display:block; }
 
@@ -2463,12 +2487,14 @@ section.code pre > code { font-family:var(--font-mono); font-size:var(--fs-meta)
  * CSS arranges the two p>code+pre pairs side by side.
  */
 section.compare-code { }
-section.compare-code h2 { margin-bottom:var(--sp-sm); }
+section.compare-code h2 { padding-bottom:var(--sp-sm); }
 section.compare-code .code-cols { display:grid; grid-template-columns:1fr 1fr; gap:var(--sp-md); flex:1; }
 section.compare-code .code-col { display:flex; flex-direction:column; gap:var(--sp-xs); }
 /* Column label: p>code inside .code-col (JS path) or h2 ~ p>code (fallback path) */
+/* label→pre spacing is the .code-col flex parent's gap:var(--sp-xs); no padding here
+ * (it would double-count against that gap and push the code block down a line). */
 section.compare-code .code-col p:has(> code:only-child),
-section.compare-code h2 ~ p:has(> code:only-child) { margin:0 0 var(--sp-xs) 0; }
+section.compare-code h2 ~ p:has(> code:only-child) { margin:0; }
 section.compare-code .code-col p:has(> code:only-child) > code,
 section.compare-code h2 ~ p:has(> code:only-child) > code {
   font-family:var(--font-mono); font-size:var(--fs-meta); font-weight:600;
@@ -2513,24 +2539,24 @@ section.compare-code:not(:has(.code-cols)) {
 section.compare-code:not(:has(.code-cols)):not(:has(> p ~ h2)) {
   grid-template-rows:auto auto 1fr auto;
 }
-section.compare-code:not(:has(.code-cols)):not(:has(> p ~ h2)) > h2               { grid-column:1 / -1; grid-row:1; margin-bottom:var(--sp-sm); }
+section.compare-code:not(:has(.code-cols)):not(:has(> p ~ h2)) > h2               { grid-column:1 / -1; grid-row:1; padding-bottom:var(--sp-sm); }
 section.compare-code:not(:has(.code-cols)):not(:has(> p ~ h2)) > p:nth-of-type(1) { grid-column:1; grid-row:2; }
 section.compare-code:not(:has(.code-cols)):not(:has(> p ~ h2)) > p:nth-of-type(2) { grid-column:2; grid-row:2; }
 section.compare-code:not(:has(.code-cols)):not(:has(> p ~ h2)) > pre:nth-of-type(1) { grid-column:1; grid-row:3; margin:0; }
 section.compare-code:not(:has(.code-cols)):not(:has(> p ~ h2)) > pre:nth-of-type(2) { grid-column:2; grid-row:3; margin:0; }
-section.compare-code:not(:has(.code-cols)):not(:has(> p ~ h2)) > blockquote         { grid-column:1 / -1; grid-row:4; margin-top:var(--sp-xs); }
+section.compare-code:not(:has(.code-cols)):not(:has(> p ~ h2)) > blockquote         { grid-column:1 / -1; grid-row:4; padding-top:var(--sp-xs); }
 
 /* ── WITH eyebrow (p>code precedes h2 among siblings) ── */
 section.compare-code:not(:has(.code-cols)):has(> p ~ h2) {
   grid-template-rows:auto auto auto 1fr auto;
 }
 section.compare-code:not(:has(.code-cols)):has(> p ~ h2) > p:nth-of-type(1) { grid-column:1 / -1; grid-row:1; }
-section.compare-code:not(:has(.code-cols)):has(> p ~ h2) > h2               { grid-column:1 / -1; grid-row:2; margin-bottom:var(--sp-sm); }
+section.compare-code:not(:has(.code-cols)):has(> p ~ h2) > h2               { grid-column:1 / -1; grid-row:2; padding-bottom:var(--sp-sm); }
 section.compare-code:not(:has(.code-cols)):has(> p ~ h2) > p:nth-of-type(2) { grid-column:1; grid-row:3; }
 section.compare-code:not(:has(.code-cols)):has(> p ~ h2) > p:nth-of-type(3) { grid-column:2; grid-row:3; }
 section.compare-code:not(:has(.code-cols)):has(> p ~ h2) > pre:nth-of-type(1) { grid-column:1; grid-row:4; margin:0; }
 section.compare-code:not(:has(.code-cols)):has(> p ~ h2) > pre:nth-of-type(2) { grid-column:2; grid-row:4; margin:0; }
-section.compare-code:not(:has(.code-cols)):has(> p ~ h2) > blockquote         { grid-column:1 / -1; grid-row:5; margin-top:var(--sp-xs); }
+section.compare-code:not(:has(.code-cols)):has(> p ~ h2) > blockquote         { grid-column:1 / -1; grid-row:5; padding-top:var(--sp-xs); }
 
 /* ── Cover-code carousel — compare-code's owned SPLIT forms ────────────────────
    Two labelled code blocks read across; code can't reflow into a row, so an overflowing
@@ -2544,13 +2570,19 @@ section.compare-code-cover {
 section.compare-code-cover .split-feat-eye { font-size: var(--fs-meta); letter-spacing: 0.2em; text-transform: uppercase; opacity: 0.85; }
 section.compare-code-cover .split-feat-h {
   font-size: var(--fs-h1); font-weight: 800; line-height: var(--lh-tight);
-  color: var(--on-accent); margin: var(--sp-xs) 0 var(--sp-md); max-width: 13em;
+  color: var(--on-accent); padding: var(--sp-xs) 0 var(--sp-md); max-width: 13em;
 }
 section.compare-code-cover .split-feat-lede { font-size: var(--fs-emphasis); opacity: 0.92; }
+/* Flex column so the runhead→pre spacing is a measurable parent `row-gap`
+ * instead of a margin below the bordered runhead (margins sit outside the
+ * flex content box and break virtual-list scrollHeight). The runhead carries
+ * a visible border-bottom, so the gap must stay OUTSIDE its box — hence
+ * row-gap on the parent rather than padding on the runhead. */
+section.compare-code-block { display: flex; flex-direction: column; row-gap: var(--sp-lg); }
 section.compare-code-block .split-runhead {
   font-size: var(--fs-meta); letter-spacing: 0.16em; text-transform: uppercase;
   color: var(--accent); border-bottom: 1px solid var(--border);
-  padding-bottom: var(--sp-xs); margin-bottom: var(--sp-lg);
+  padding-bottom: var(--sp-xs);
 }
 /* The block page reuses the SAME code frame as the unsplit layout (`section.compare-code
    pre`): the `--code-bg` panel, the `--spectrum` accent strip, rounded corners and
@@ -2584,8 +2616,7 @@ section.compare-prose { }
  * the bounded stage (flex cell-tree §6); the section carried no display, so the codemod
  * left the cell without one. The two cards then stretch to the stage height with the
  * `❯` connector centred on the divide. */
-section.compare-prose > .cell-stage { display:flex; flex-direction:column; }
-section.compare-prose h2 { margin-bottom:var(--sp-md); }
+section.compare-prose > .cell-stage { display:flex; flex-direction:column; gap:var(--sp-sm); }
 section.compare-prose .compare-prose-inner { display:flex; align-items:stretch; flex:1; }
 section.compare-prose .compare-prose-inner .card {
   flex:1; background:var(--bg-alt); border:1px solid var(--border);
@@ -2594,14 +2625,14 @@ section.compare-prose .compare-prose-inner .card {
 }
 section.compare-prose .compare-prose-inner .card > strong { display:block; }
 section.compare-prose .compare-prose-inner .card > ul,
-section.compare-prose .compare-prose-inner .card > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; }
+section.compare-prose .compare-prose-inner .card > ol { list-style:none; padding:var(--sp-xs) 0 0 0; margin:0; }
 section.compare-prose .compare-prose-inner .card > ul > li,
 section.compare-prose .compare-prose-inner .card > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
 section.compare-prose .connector { display:flex; align-items:center; justify-content:center; font-size:var(--fs-h3); color:var(--text-secondary); padding:0 var(--sp-sm); flex-shrink:0; }
-.below-note { margin-top:var(--sp-sm); padding-top:var(--sp-xs); flex-shrink:0; position:relative; }
+.below-note { padding-top:var(--sp-xs); flex-shrink:0; position:relative; }
 .below-note::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(to right, var(--accent), transparent); }
 .below-note p { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-relaxed); margin:0; }
-section.compare-prose > .cell-stage > :is(ul, ol) + p { margin-top:var(--sp-sm); padding-top:var(--sp-xs); flex-shrink:0; font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-relaxed); }
+section.compare-prose > .cell-stage > :is(ul, ol) + p { padding-top:var(--sp-xs); flex-shrink:0; font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-relaxed); }
 
 
 /* ── COMPARISON ──────────────────────────────────────────────────────────────
@@ -2638,7 +2669,7 @@ section.compare-prose:not(:has(.compare-prose-inner)) > .cell-stage > ol > li > 
 section.compare-prose:not(:has(.compare-prose-inner)) > .cell-stage > ul > li > ul,
 section.compare-prose:not(:has(.compare-prose-inner)) > .cell-stage > ul > li > ol,
 section.compare-prose:not(:has(.compare-prose-inner)) > .cell-stage > ol > li > ul,
-section.compare-prose:not(:has(.compare-prose-inner)) > .cell-stage > ol > li > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; width:100%; }
+section.compare-prose:not(:has(.compare-prose-inner)) > .cell-stage > ol > li > ol { list-style:none; padding:var(--sp-xs) 0 0 0; margin:0; width:100%; }
 section.compare-prose:not(:has(.compare-prose-inner)) > .cell-stage > ul > li > ul > li,
 section.compare-prose:not(:has(.compare-prose-inner)) > .cell-stage > ul > li > ol > li,
 section.compare-prose:not(:has(.compare-prose-inner)) > .cell-stage > ol > li > ul > li,
@@ -2936,7 +2967,7 @@ section.compare-split-cover .split-feat-eye {
 }
 section.compare-split-cover .split-feat-h {
   font-size: var(--fs-h1); font-weight: 800; line-height: var(--lh-tight);
-  color: var(--on-accent); margin: var(--sp-xs) 0 var(--sp-md); max-width: 13em;
+  color: var(--on-accent); padding: var(--sp-xs) 0 var(--sp-md); max-width: 13em;
 }
 section.compare-split-cover .split-feat-lede {
   font-size: var(--fs-emphasis); line-height: var(--lh-snug); opacity: 0.92; max-width: 20em;
@@ -2944,17 +2975,17 @@ section.compare-split-cover .split-feat-lede {
 section.compare-split-points .split-runhead {
   font-size: var(--fs-meta); letter-spacing: 0.2em; text-transform: uppercase;
   color: var(--text-muted); border-bottom: 1px solid var(--border);
-  padding-bottom: var(--sp-xs); margin-bottom: var(--sp-xl);
+  padding-bottom: var(--sp-xs);
 }
-section.compare-split-points .split-pts { list-style: none; padding: 0; margin: 0; }
+section.compare-split-points .split-pts { list-style: none; padding: var(--sp-xl) 0 0 0; margin: 0; }
 section.compare-split-points .split-pts > li { border-left: 3px solid var(--accent); padding-left: var(--sp-md); }
 section.compare-split-points .split-pt-t {
-  display: block; font-weight: 800; color: var(--text-heading); font-size: var(--fs-h3); margin-bottom: var(--sp-xs);
+  display: block; font-weight: 800; color: var(--text-heading); font-size: var(--fs-h3); padding-bottom: var(--sp-xs);
 }
 section.compare-split-points .split-pt-b { color: var(--text-body); font-size: var(--fs-emphasis); line-height: var(--lh-relaxed); max-width: 20em; }
 section.compare-split-verdict { display: flex; flex-direction: column; justify-content: center; }
 section.compare-split-verdict .split-runhead {
-  font-size: var(--fs-meta); letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: var(--sp-md);
+  font-size: var(--fs-meta); letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); padding-bottom: var(--sp-md);
 }
 section.compare-split-verdict .split-pullq {
   font-size: var(--fs-h2); font-weight: 300; line-height: var(--lh-snug); color: var(--text-heading); max-width: 14em;
@@ -2968,7 +2999,7 @@ section.compare-split-verdict .split-pullq {
 /* ── COMPARE-TABLE ──
  * ## heading  markdown table  p note
  */
-section.compare-table h2 { font-size:var(--fs-emphasis); margin-bottom:var(--sp-sm); }
+section.compare-table h2 { font-size:var(--fs-emphasis); }
 section.compare-table table { width:100%; table-layout:auto; border-collapse:collapse; font-size:var(--fs-meta); flex:1; }
 section.compare-table thead tr { background:var(--spectrum) bottom / 100% 2px no-repeat; }
 section.compare-table thead th { font-family:var(--font-label); font-size:var(--fs-meta); font-weight:600; letter-spacing:0.10em; text-transform:uppercase; color:var(--text-label); padding:0.625cqi var(--sp-xs) 0.78125cqi; text-align:left; word-wrap:break-word; overflow-wrap:break-word; }
@@ -2983,13 +3014,13 @@ section.compare-table td:first-child { font-weight:600; color:var(--text-heading
  * rules (the row borders), first-cell emphasis as the card title. Palette-blind (HARD #3).
  * See engineering/decisions/2026-06-25-retire-landscape-locks-portrait-everything.md. */
 section.compare-table.lat-split-cards .ct-cards { display:flex; flex-direction:column; gap:var(--sp-sm); flex:1; justify-content:center; }
-section.compare-table.lat-split-cards .ct-card { border:1px solid var(--border); border-radius:var(--radius-sm); padding:var(--sp-sm) var(--sp-md); }
-section.compare-table.lat-split-cards .ct-card-title { font-size:var(--fs-emphasis); font-weight:600; color:var(--text-heading); margin-bottom:var(--sp-xs); padding-bottom:var(--sp-xs); background:var(--spectrum) bottom / 100% 2px no-repeat; }
+section.compare-table.lat-split-cards .ct-card { border:1px solid var(--border); border-radius:var(--radius-sm); padding:var(--sp-sm) var(--sp-md); display:flex; flex-direction:column; gap:var(--sp-xs); }
+section.compare-table.lat-split-cards .ct-card-title { font-size:var(--fs-emphasis); font-weight:600; color:var(--text-heading); padding-bottom:var(--sp-xs); background:var(--spectrum) bottom / 100% 2px no-repeat; }
 section.compare-table.lat-split-cards .ct-card-fields { display:grid; grid-template-columns:max-content 1fr; gap:0.4em var(--sp-md); margin:0; }
 section.compare-table.lat-split-cards .ct-field { display:contents; }
 section.compare-table.lat-split-cards .ct-field dt { font-family:var(--font-label); font-size:var(--fs-meta); font-weight:600; letter-spacing:0.10em; text-transform:uppercase; color:var(--text-label); }
 section.compare-table.lat-split-cards .ct-field dd { margin:0; font-size:var(--fs-body-compact); color:var(--text-body); }
-section.compare-table.lat-split-cards .split-runhead { font-family:var(--font-label); font-size:var(--fs-meta); letter-spacing:0.10em; text-transform:uppercase; color:var(--text-label); margin-bottom:var(--sp-sm); opacity:0.85; }
+section.compare-table.lat-split-cards .split-runhead { font-family:var(--font-label); font-size:var(--fs-meta); letter-spacing:0.10em; text-transform:uppercase; color:var(--text-label); padding-bottom:var(--sp-sm); opacity:0.85; }
 
 /* === lib/components/statement/content/content.styles.css === */
 /* content — statement.canvas.content (the catch-all prose slide)
@@ -2999,8 +3030,8 @@ section.compare-table.lat-split-cards .split-runhead { font-family:var(--font-la
 
 
 
-section.content h3 { margin-bottom:0.3125cqi; }
-section.content h2 { margin-bottom:var(--sp-sm); }
+section.content h3 { padding-bottom:0.3125cqi; }
+section.content h2 { padding-bottom:var(--sp-sm); }
 /* Cap line length: at --fs-message a full-canvas paragraph runs ~90 chars,
  * past the comfortable maximum. 72cqi ≈ 65–75 chars. */
 section.content h2 { max-width:72cqi; }
@@ -3018,13 +3049,13 @@ section.content p  { font-size:var(--fs-message); line-height:var(--lh-relaxed);
  * it sits beside — the paragraph/list mismatch. Style lists as prose peers:
  * real markers, prose size, prose-compatible rhythm. No :has() — works in
  * every render path. */
-section.content :is(ul, ol) { margin:0 0 var(--sp-sm) 0; padding-left:var(--sp-lg); display:flex; flex-direction:column; gap:var(--sp-2xs); max-width:72cqi; }
+section.content :is(ul, ol) { margin:0; padding:0 0 var(--sp-sm) var(--sp-lg); display:flex; flex-direction:column; gap:var(--sp-2xs); max-width:72cqi; }
 section.content ul { list-style:disc; }
 section.content ol { list-style:decimal; }
 section.content :is(ul, ol) > li { font-size:var(--fs-message); color:var(--text-body); line-height:var(--lh-snug); }
 section.content :is(ul, ol) > li::marker { color:var(--accent); }
 /* nested level steps down to body size so sub-points read as support */
-section.content :is(ul, ol) :is(ul, ol) { margin:var(--sp-2xs) 0 0 0; }
+section.content :is(ul, ol) :is(ul, ol) { padding:var(--sp-2xs) 0 0 var(--sp-lg); margin:0; }
 section.content :is(ul, ol) :is(ul, ol) > li { font-size:var(--fs-body); line-height:var(--lh-base); }
 
 
@@ -3032,17 +3063,24 @@ section.content :is(ul, ol) :is(ul, ol) > li { font-size:var(--fs-body); line-he
 /* Portrait / square (social) — cap the running-prose measure so lines don't
    sprawl the full width; the centred block reads composed. Display lines
    (statement/quote) are short already, so this targets content prose only. */
+section.content[data-orientation='portrait'] > .cell-stage,
+section.content[data-orientation='square'] > .cell-stage {
+  display: flex; flex-direction: column;
+}
 section.content[data-orientation='portrait'] > .cell-stage > :is(p,ul,ol),
 section.content[data-orientation='square'] > .cell-stage > :is(p,ul,ol) {
-  max-width: 46ch; margin-inline: auto;
+  max-width: 46ch; align-self: center;
 }
 /* Box-local family reflow (2026-06-18-component-adaptive-sizing.md): square+tall+
  * strip (≤1.05) cap the prose measure and centre the block, keyed on the nearest
  * `lattice` container so it fires on a portrait/square deck AND inside a narrow
  * nested cell. Doubled class matches the [data-orientation] reflow's specificity. */
 @container lattice (aspect-ratio <= 1.05) {
+  section.content.content > .cell-stage {
+    display: flex; flex-direction: column;
+  }
   section.content.content > .cell-stage > :is(p,ul,ol) {
-    max-width: 46ch; margin-inline: auto;
+    max-width: 46ch; align-self: center;
   }
 }
 
@@ -3066,7 +3104,6 @@ section.content[data-orientation='square'] > .cell-stage > :is(p,ul,ol) {
 section.decision > .cell-stage { display:flex; flex-direction:column; }
 section.decision h2 {
   font-size:var(--fs-h2);
-  margin-bottom:var(--sp-md);
   line-height:var(--lh-tight);
   max-width:70.3125cqi;
 }
@@ -3163,17 +3200,17 @@ section.decision-cover {
 section.decision-cover .split-feat-eye { font-size: var(--fs-meta); letter-spacing: 0.2em; text-transform: uppercase; opacity: 0.85; }
 section.decision-cover .split-feat-h {
   font-size: var(--fs-hero); font-weight: 800; line-height: var(--lh-tight);
-  color: var(--on-accent); margin: var(--sp-xs) 0 var(--sp-md); max-width: 11em;
+  color: var(--on-accent); padding: var(--sp-xs) 0 var(--sp-md); max-width: 11em;
 }
 section.decision-cover .split-feat-lede { font-size: var(--fs-emphasis); line-height: var(--lh-snug); opacity: 0.92; max-width: 20em; }
 section.decision-points .split-runhead {
   font-size: var(--fs-meta); letter-spacing: 0.2em; text-transform: uppercase;
   color: var(--text-muted); border-bottom: 1px solid var(--border);
-  padding-bottom: var(--sp-xs); margin-bottom: var(--sp-xl);
+  padding-bottom: var(--sp-xs);
 }
-section.decision-points .split-pts { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: var(--sp-lg); }
+section.decision-points .split-pts { list-style: none; padding: var(--sp-xl) 0 0 0; margin: 0; display: flex; flex-direction: column; gap: var(--sp-lg); }
 section.decision-points .split-pts > li { border-left: 3px solid var(--accent); padding-left: var(--sp-md); }
-section.decision-points .split-pt-t { display: block; font-weight: 800; color: var(--text-heading); font-size: var(--fs-h3); margin-bottom: var(--sp-3xs); }
+section.decision-points .split-pt-t { display: block; font-weight: 800; color: var(--text-heading); font-size: var(--fs-h3); padding-bottom: var(--sp-3xs); }
 section.decision-points .split-pt-b { color: var(--text-body); font-size: var(--fs-body); line-height: var(--lh-base); max-width: 22em; }
 
 /* === lib/components/diagram/diagram/diagram.styles.css === */
@@ -3191,9 +3228,9 @@ section.decision-points .split-pt-b { color: var(--text-body); font-size: var(--
 
 
 section.diagram { align-items:center; }
-section.diagram h3 { margin-bottom:0.3125cqi; }
-section.diagram h2 { font-size:var(--fs-h3); margin-bottom:0.3125cqi; }
-section.diagram > p { font-size:var(--fs-meta); line-height:var(--lh-snug); color:var(--text-secondary); margin-bottom:var(--sp-sm); }
+section.diagram h3 { padding-bottom:0.3125cqi; }
+section.diagram h2 { font-size:var(--fs-h3); padding-bottom:0.3125cqi; }
+section.diagram > p { font-size:var(--fs-meta); line-height:var(--lh-snug); color:var(--text-secondary); margin-bottom:0; padding-bottom:var(--sp-sm); }
 
 /* Explicit pixel width so Mermaid's getBoundingClientRect() always returns a concrete value.
    Most diagram types (sequence, timeline, gitgraph…) use useMaxWidth:true by default and
@@ -3207,7 +3244,7 @@ section.diagram .mermaid-svg, section.diagram > .mermaid { flex:1; width:calc(10
 section.diagram > :is(pre, marp-pre):not([data-mermaid-state="rendered"]) {
   flex:1; width:calc(100cqi - 2 * var(--sp-2xl)); max-width:100%; height:auto; min-height:0;
 }
-section.diagram .diagram-caption { font-family:var(--font-mono); font-size:var(--fs-meta); color:var(--text-secondary); letter-spacing:0.08em; margin-top:var(--sp-md); text-align:center; font-style:italic; }
+section.diagram .diagram-caption { font-family:var(--font-mono); font-size:var(--fs-meta); color:var(--text-secondary); letter-spacing:0.08em; padding-top:var(--sp-md); text-align:center; font-style:italic; }
 /* Key Insight panel on diagram slides must stretch full-width to match every
    other layout. section.diagram uses align-items:center which would shrink
    the blockquote to fit-content; align-self:stretch overrides that. */
@@ -3238,8 +3275,8 @@ section.divider h2 { font-size:var(--fs-h1); color:var(--text-display); max-widt
  * orientation. Merged from the standalone subtopic on 2026-06-07. */
 section.divider.light { background:var(--bg); padding-left:0; justify-content:center; align-items:center; }
 section.divider.light::before { content:none; }
-section.divider.light h2 { font-size:var(--fs-h2); color:var(--text-body); max-width:none; margin-bottom:var(--sp-sm); text-align:center; line-height:var(--lh-tight); }
-section.divider.light p  { font-size:var(--fs-message); max-width:46.875cqi; line-height:var(--lh-relaxed); margin:0 auto; text-align:center; }
+section.divider.light h2 { font-size:var(--fs-h2); color:var(--text-body); max-width:none; padding-bottom:var(--sp-sm); text-align:center; line-height:var(--lh-tight); }
+section.divider.light p  { font-size:var(--fs-message); max-width:46.875cqi; line-height:var(--lh-relaxed); margin:0; text-align:center; }
 
 /* === lib/components/chart/funnel/funnel.styles.css === */
 /* funnel — tapering stage chart (chart-family series member).
@@ -3357,7 +3394,7 @@ section.gantt.chart-frame .chart-body {
   justify-content: center;
   align-items: center;
   gap: var(--sp-sm) var(--sp-lg);
-  margin-top: var(--sp-xl);
+  padding-top: var(--sp-xl); /* was margin-top — padding stays inside the flex content box */
   align-self: center;
 }
 .gantt-chart .gantt-legend-item {
@@ -3411,7 +3448,8 @@ section.gantt.chart-frame .chart-body {
   flex-direction: row;
   align-items: center;
   padding-bottom: var(--sp-xs);
-  margin-bottom: 0.3125cqi;
+  /* The 0.3125cqi gap below the axis rule (was margin-bottom) is now padding-top
+   * on .gantt-lanes — keeps the rule where it is and stays inside the box. */
   border-bottom: var(--chart-hairline) solid var(--chart-rule);
 }
 
@@ -3450,6 +3488,10 @@ section.gantt.chart-frame .chart-body {
   display: flex;
   flex-direction: column;
   width: 100%;
+  /* The axis-rule→lanes gap lives here now (was .gantt-axis-row margin-bottom:
+   * 0.3125cqi). The today line's top is offset by the same amount so it still
+   * starts at the first lane row. */
+  padding-top: 0.3125cqi;
 }
 
 /* The "today" / now line — opt-in (eyebrow `today <point>` only). A thin
@@ -3458,7 +3500,7 @@ section.gantt.chart-frame .chart-body {
  * 0–100 position across that region. A small downward cap marks "now". */
 .gantt-today {
   position: absolute;
-  top: 0;
+  top: 0.3125cqi; /* align to the first lane row past .gantt-lanes' padding-top */
   bottom: 0;
   left: calc(14.0625cqi + (100% - 14.0625cqi) * var(--gantt-x) / 100);
   width: 0;
@@ -3768,7 +3810,7 @@ section.glossary h2 .range-pill {
   text-align:center; line-height:1;
   font-family:var(--pill-font); font-size:var(--pill-fs); font-weight:var(--pill-weight);
   letter-spacing:var(--pill-tracking);
-  border-radius:var(--pill-radius); padding:var(--pill-pad-y) var(--pill-pad-x); margin-left:auto;
+  border-radius:var(--pill-radius); padding:var(--pill-pad-y) var(--pill-pad-x);
   background:var(--accent-soft); border:1px solid var(--on-accent-soft);
   color:var(--on-accent-soft); white-space:nowrap;
   vertical-align:middle;
@@ -3880,14 +3922,17 @@ section.image .image-text {
   flex-direction: column;
   justify-content: center;
 }
-section.image .image-text > :first-child { margin-top: 0; }
-section.image .image-text > :last-child { margin-bottom: 0; }
+/* Collapse leading/trailing flow spacing — now padding (not margin), so zero both axes
+ * to keep a heading-only panel (h2 as :last-child) from retaining stray padding-bottom. */
+section.image .image-text > :first-child { margin-top: 0; padding-top: 0; }
+section.image .image-text > :last-child { margin-bottom: 0; padding-bottom: 0; }
 section.image .image-text h2 {
   font-family: var(--font-display);
   font-size: var(--fs-h3);
   line-height: var(--lh-tight);
   color: var(--text-heading);
-  margin: 0 0 var(--sp-md);
+  margin: 0;
+  padding: 0 0 var(--sp-md);
   text-wrap: balance;
 }
 section.image .image-text p {
@@ -4136,7 +4181,7 @@ section.image[data-img-composition="gallery"] .image-text {
 }
 section.image[data-img-composition="gallery"] .image-text h2 {
   font-size: var(--fs-h4);
-  margin: 0 0 var(--sp-xs);
+  padding: 0 0 var(--sp-xs);
 }
 section.image[data-img-composition="gallery"] .image-text p {
   font-size: var(--fs-message);
@@ -4184,7 +4229,7 @@ section.image[data-img-composition="statement"] .image-text p {
   max-width: 40ch;
   text-shadow: 0 0.12cqi 0 rgba(0, 0, 0, 0.5);
 }
-section.image[data-img-composition="statement"] .image-text h2 + p { margin-top: var(--sp-sm); }
+section.image[data-img-composition="statement"] .image-text h2 + p { padding-top: var(--sp-sm); }
 
 /* Portrait: text sits in the lower third, full width. */
 section.image[data-img-composition="statement"][data-orientation="portrait"] .image-text,
@@ -4276,10 +4321,9 @@ section.journey {
   display: flex;
   flex-direction: column;
 }
-section.journey h1,
-section.journey h2 {
-  margin: 0 0 var(--sp-md);
-}
+/* The h2 is lifted into the chart-frame masthead band (chart-family.js), which
+ * owns the title→body spacing now — the old `section.journey h1, h2 { margin }`
+ * was vestigial (and margins break virtual-list scrollHeight), so it's removed. */
 
 /* The board itself: a vertical flow of column-aligned bands. The gap
  * was sp-sm when the floating actor dot needed 6px of overhang headroom
@@ -4403,10 +4447,10 @@ section.journey .journey-mood-legend {
   width: 100%;
 }
 section.journey .journey-legend {
-  margin-top: var(--sp-xl);   /* set the key apart from the diagram above */
+  padding-top: var(--sp-xl);   /* set the key apart from the diagram above (padding, not margin: stays inside the flex content box) */
 }
 section.journey .journey-mood-legend {
-  margin-top: var(--sp-sm);   /* breathing room between the two key rows */
+  padding-top: var(--sp-sm);   /* breathing room between the two key rows (padding, not margin) */
 }
 
 /* ── Section ribbon ─────────────────────────────────────────────────── */
@@ -4494,7 +4538,10 @@ section.journey .journey-task-label {
 section.journey .journey-timeline {
   height: 0.9375cqi;
   position: relative;
-  margin: 0.15625cqi 0;
+  /* padding (not margin) keeps the spacing inside the flex content box; the
+   * absolute ::before/::after reference the padding box, so the line sits at the
+   * same place and the occupied height matches the old margin: 0.15625cqi 0. */
+  padding: 0.15625cqi 0;
   flex-shrink: 0;
 }
 section.journey .journey-timeline::before {
@@ -4614,7 +4661,7 @@ section.journey.heatmap .journey-lanes {
 }
 section.journey.heatmap .journey-tasks {
   gap: 0.3125cqi;
-  margin-top: var(--sp-sm);
+  padding-top: var(--sp-sm); /* was margin-top — padding stays inside the flex content box */
 }
 section.journey.heatmap .journey-task {
   min-height: 7.5cqi;
@@ -4655,7 +4702,7 @@ section.journey.heatmap .journey-task::after {
 /* ============================================================== */
 section.journey.curve .journey-tasks {
   /* Tasks become slim column-header labels under the curve. */
-  margin-top: var(--sp-xs);
+  padding-top: var(--sp-xs); /* was margin-top — padding stays inside the flex content box */
 }
 section.journey.curve .journey-task {
   background: transparent;
@@ -4667,7 +4714,7 @@ section.journey.curve .journey-task {
 section.journey.curve .journey-task-actors {
   position: static;
   justify-content: center;
-  margin-bottom: 0.3125cqi;
+  padding-bottom: 0.3125cqi; /* was margin-bottom — actors have no fill, padding is measurable */
 }
 section.journey.curve .journey-moods,
 section.journey.curve .journey-lanes {
@@ -4676,7 +4723,7 @@ section.journey.curve .journey-lanes {
 section.journey.curve .journey-curve {
   display: block;
   height: 17.1875cqi;
-  margin-top: var(--sp-md);
+  padding-top: var(--sp-md); /* was margin-top — padding stays inside the flex content box */
   /* Gridlines, polyline, and dots all live inside the SVG so the y-axis
    * scale survives non-uniform viewBox stretching. */
 }
@@ -4726,7 +4773,7 @@ section.journey.swimlane .journey-lanes {
   grid-template-columns: minmax(9.375cqi, max-content) repeat(var(--task-count), 1fr);
   grid-template-rows: repeat(var(--actor-count), minmax(3.125cqi, auto));
   row-gap: var(--sp-xs);
-  margin-top: var(--sp-sm);
+  padding-top: var(--sp-sm); /* was margin-top — padding stays inside the flex content box */
   position: relative;
 }
 section.journey .journey-lane {
@@ -4808,7 +4855,7 @@ section.journey.weighted .journey-stage {
 section.journey.weighted .journey-tasks {
   display: flex;
   gap: 0.3125cqi;
-  margin-top: var(--sp-sm);
+  padding-top: var(--sp-sm); /* was margin-top — padding stays inside the flex content box */
 }
 section.journey.weighted .journey-task {
   flex-grow: var(--volume);
@@ -4848,7 +4895,9 @@ section.journey.weighted .journey-task::after {
  * narrowest chips (3-4% support, settings) a fighting chance at being
  * legible. */
 section.journey.weighted .journey-task-label {
-  margin-top: auto;
+  /* The label is the sole in-flow child of .journey-task (actors + % badge are
+   * absolute) and the chip is a flex column with justify-content:flex-end, so the
+   * label already sits at the bottom — the old margin-top:auto was redundant. */
   font-size: var(--fs-meta);
 }
 section.journey.weighted .journey-task-actors {
@@ -4945,7 +4994,7 @@ section.journey .journey-board[data-orient="vertical"] .journey-task-actors {
   position: static;
   display: inline-flex;
   gap: 2px;  /* sanctioned: hairline-scale gap between actor dots */
-  margin-right: var(--sp-xs);
+  padding-right: var(--sp-xs); /* was margin-right — actors have no fill, padding is measurable */
 }
 section.journey .journey-vtask .journey-task-label {
   font-weight: 500;
@@ -5049,7 +5098,10 @@ section.kanban.chart-frame .chart-body {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 0;
+  /* The header→cards spacing is the single column gap now (was a
+   * margin-bottom on .kanban-column-header — margins collapse outside the
+   * flex content box and break virtual-list measurement). */
+  gap: var(--sp-sm);
 }
 
 /* Column header — monospace uppercase label register.
@@ -5065,7 +5117,7 @@ section.kanban.chart-frame .chart-body {
   color: var(--text-label);
   padding: 0 var(--sp-xs) 0.78125cqi;
   border-bottom: 2px solid var(--chart-rule);
-  margin-bottom: var(--sp-sm);
+  /* header→cards spacing moved to .kanban-column's flex gap */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -5165,6 +5217,10 @@ section.kanban:not(.keyline):not(.tinted) .kanban-card[data-s] {
   display: flex;
   flex-direction: row;
   align-items: center;
+  /* flex-end so a lone .chart-status (no lane) still right-anchors; when a
+   * lane is present it grows (flex:1) and pushes the status to the end. This
+   * replaces a margin-left:auto on the status — see .kanban-lane / .chart-status. */
+  justify-content: flex-end;
   gap: 0.390625cqi;
   min-height: 1.5625cqi;
 }
@@ -5203,7 +5259,11 @@ section.kanban.dark .kanban-size {
   font-weight: 500;
   letter-spacing: 0.03em;
   white-space: nowrap;
-  flex: 0 0 auto;
+  /* Grow to fill the meta row so the trailing .chart-status is pushed to the
+   * right edge WITHOUT an auto margin on the status (auto margins sit outside
+   * the flex content box). The lane's own content stays left-aligned (it is an
+   * inline-flex whose content defaults to the start). */
+  flex: 1 1 auto;
 }
 .kanban-lane::before {
   content: '';
@@ -5222,8 +5282,9 @@ section.kanban.dark .kanban-size {
   font-size: var(--fs-meta);
   font-weight: 600;
   letter-spacing: 0.02em;
+  /* Right-anchored by the meta row's justify-content + the lane's flex-grow
+   * (was margin-left:auto, which lives outside the flex content box). */
   flex: 0 0 auto;
-  margin-left: auto;
 }
 
 /* Optional card body (from a third-level sub-bullet) */
@@ -5296,8 +5357,14 @@ section.kanban.tinted .kanban-column[data-done]   { --col-hue: var(--state-pass-
 /* Header: neutral mono register; the hue lives only on the underline. */
 section.kanban.tinted .kanban-column-header {
   color: var(--text-label);
-  border-bottom: 1.5px solid color-mix(in oklab, var(--col-hue) 60%, transparent);
-  margin: 0 var(--sp-3xs) var(--sp-sm);
+  /* Underline inset var(--sp-3xs) each side (was an inset border-bottom + a
+   * horizontal margin:0 var(--sp-3xs)). Drawn as a bottom-anchored gradient so
+   * the side inset lives in background-size — no border-box-narrowing margin,
+   * and the column's flex gap still owns the header→cards spacing. */
+  background:
+    linear-gradient(color-mix(in oklab, var(--col-hue) 60%, transparent),
+                    color-mix(in oklab, var(--col-hue) 60%, transparent))
+    no-repeat center bottom / calc(100% - 2 * var(--sp-3xs)) 1.5px;
   padding: 0 var(--sp-2xs) 0.6cqi;
 }
 section.kanban.tinted .kanban-column[data-done] .kanban-column-header {
@@ -5398,7 +5465,8 @@ section.kpi > .cell-stage {
  * the gap to the headline. Authored as `code`, never an h3, so it never trips
  * a heading-order lint. */
 section.kpi > .cell-stage > p:has(> code:only-child) {
-  margin: 0 0 var(--sp-xs) 0;
+  margin: 0;
+  padding: 0 0 var(--sp-xs) 0;
 }
 section.kpi h2 {
   font-family: var(--font-display);
@@ -5406,7 +5474,8 @@ section.kpi h2 {
   font-weight: 700;
   color: var(--text-heading);
   line-height: var(--lh-tight);
-  margin: 0 0 var(--sp-md) 0;
+  margin: 0;
+  padding: 0 0 var(--sp-md) 0;
 }
 section.kpi > .cell-stage > ol,
 section.kpi > .cell-stage > ul {
@@ -5443,8 +5512,28 @@ section.kpi code {
   border-radius: var(--pill-radius);
   padding: var(--pill-pad-y) var(--pill-pad-x);
   white-space: nowrap;
-  margin-left: 0.46875cqi;
   vertical-align: 1px;
+}
+/* Pill leading gap (was a 0.46875cqi left inline margin on the pill — horizontal
+ * space between the pill and the content before it). Reproduced WITHOUT a margin
+ * so the separation lives inside the flex content box and never collapses:
+ *  · the label lines that carry pills (the nested sublist <li>s) become baseline
+ *    flex rows whose column-gap is that same 0.46875cqi — between the label text
+ *    run and the first pill, and between adjacent pills (row-gap:0 keeps wrapped
+ *    pills from gaining vertical space). The gap is transparent, so the pill fill
+ *    and frame are untouched — pixel-identical to the old inline margin;
+ *  · the eyebrow paragraph holds a single pill (no preceding sibling), so its
+ *    former left indent is preserved as padding-left on the <p> (no background on
+ *    the eyebrow paragraph, so the padding adds no fill). */
+section.kpi > .cell-stage > p:has(> code:only-child) {
+  padding-left: 0.46875cqi;
+}
+section.kpi:not(.compliance) > .cell-stage > :where(ol, ul) > li > :where(ul, ol) > li:has(code) {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 0.46875cqi;
+  row-gap: 0;
 }
 section.kpi > .cell-stage > :where(ol, ul) > li :where(ul, ol) > li code ~ code,
 section.kpi > .cell-stage > :where(ol, ul) > li > code ~ code {
@@ -5467,14 +5556,14 @@ section.kpi > .cell-stage > :where(ol, ul) > li > :where(ul, ol) > li:first-chil
   font-size: var(--fs-body);
   font-weight: 500;
   color: var(--text-heading);
-  margin-top: var(--sp-sm);
+  padding-top: var(--sp-sm);
   line-height: var(--lh-snug);
 }
 section.kpi > .cell-stage > :where(ol, ul) > li > :where(ul, ol) > li + li {
   font-family: var(--font-mono);
   font-size: var(--fs-meta);
   color: var(--text-secondary);
-  margin-top: var(--sp-xs);
+  padding-top: var(--sp-xs);
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
@@ -5519,7 +5608,7 @@ section.kpi.briefing > .cell-stage > ol > li:nth-child(1) > ul > li:first-child,
 section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) > .cell-stage > ol > li:nth-child(1) > ul > li:first-child {
   font-family: var(--font-display);
   font-size: var(--fs-h3);
-  margin-top: var(--sp-md);
+  padding-top: var(--sp-md);
 }
 section.kpi.briefing > .cell-stage > ol > li:not(:first-child),
 section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) > .cell-stage > ol > li:not(:first-child) {
@@ -5642,16 +5731,15 @@ section.kpi.compliance > .cell-stage > ol > li > strong {
 section.kpi.compliance > .cell-stage > ol > li > ul { display: contents; }
 section.kpi.compliance > .cell-stage > ol > li > ul > li:first-child {
   grid-column: 2; grid-row: 1;
-  margin-top: 0;
+  padding-top: 0;
 }
 section.kpi.compliance > .cell-stage > ol > li > ul > li + li {
   grid-column: 2; grid-row: 2;
-  margin-top: 0;
+  padding-top: 0;
 }
 section.kpi.compliance > .cell-stage > ol > li > ul > li code:first-of-type {
   grid-column: 3; grid-row: 1 / 3;
   align-self: center;
-  margin-left: 0;
 }
 section.kpi.compliance > .cell-stage > ol > li:nth-child(1),
 section.kpi.compliance > .cell-stage > ol > li:nth-child(2),
@@ -5671,7 +5759,8 @@ section.kpi.compliance > .cell-stage > p:last-of-type {
   color: var(--text-secondary);
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  margin: var(--sp-md) 0 0 0;
+  margin: 0;
+  padding: var(--sp-md) 0 0 0;
 }
 
 /* ─ MODIFIER · TRAJECTORY (investor / period-over-period) ───────────── */
@@ -5744,7 +5833,7 @@ section.kpi.spotlight > .cell-stage > ol > li:nth-child(1) > strong {
 section.kpi.spotlight > .cell-stage > ol > li:nth-child(1) > ul > li:first-child {
   font-family: var(--font-display);
   font-size: var(--fs-h3);
-  margin-top: var(--sp-md);
+  padding-top: var(--sp-md);
 }
 section.kpi.spotlight > .cell-stage > ol > li:nth-child(1) > ul > li + li {
   font-family: var(--font-display);
@@ -5753,7 +5842,7 @@ section.kpi.spotlight > .cell-stage > ol > li:nth-child(1) > ul > li + li {
   color: var(--text-secondary);
   letter-spacing: 0;
   text-transform: none;
-  margin-top: var(--sp-sm);
+  padding-top: var(--sp-sm);
   line-height: var(--lh-snug);
 }
 section.kpi.spotlight > .cell-stage > ol > li:nth-child(1) {
@@ -5779,12 +5868,12 @@ section.kpi.spotlight > .cell-stage > ol > li:not(:first-child) > strong {
   font-size: var(--fs-emphasis);
 }
 section.kpi.spotlight > .cell-stage > ol > li:not(:first-child) > ul > li:first-child {
-  margin-top: 0.15625cqi;
+  padding-top: 0.15625cqi;
   font-size: var(--fs-body);
 }
 section.kpi.spotlight > .cell-stage > ol > li:not(:first-child) > ul > li + li {
   font-size: var(--fs-meta);
-  margin-top: 0.15625cqi;
+  padding-top: 0.15625cqi;
 }
 section.kpi.spotlight > .cell-stage > ol > li:not(:first-child) code {
   padding: 0.15625cqi 0.625cqi;
@@ -5841,7 +5930,7 @@ section.kpi.spotlight > .cell-stage > ol > li:not(:first-child) code {
   section.kpi.kpi:where(:not(.ops):not(.compliance):not(.trajectory)) > .cell-stage > ol > li:nth-child(1) > ul > li:first-child {
     font-family: var(--font-body);
     font-size: var(--fs-body);
-    margin-top: var(--sp-3xs);
+    padding-top: var(--sp-3xs);
   }
 }
 /* Strip — the tallest/narrowest box (mobile @size; a nested strip cell): shed the
@@ -5869,7 +5958,6 @@ section.kpi.spotlight > .cell-stage > ol > li:not(:first-child) code {
  */
 
 section.list > .cell-stage { display:flex; flex-direction:column; }
-section.list h2 { margin-bottom:var(--sp-md); }
 
 /* ── Spine: the list fills the canvas; each row an equal, centred band. ── */
 section.list > .cell-stage > :is(ul,ol) {
@@ -5991,7 +6079,6 @@ section.list.principles.bullet > .cell-stage > ol > li::before { content:'·'; }
  * CSS counter provides leading-zero number (01 02…) regardless of list type.
  * Use ul when order is semantic-free; ol when order carries meaning.
  */
-section.list-criteria h2 { margin-bottom:var(--sp-md); }
 /* Stage cell (flex cell-tree §6): the criteria list is flex:1 per item, so the
  * stage must be a flex column for the items to fill the bounded cell. */
 section.list-criteria > .cell-stage { display:flex; flex-direction:column; min-height:0; }
@@ -6019,7 +6106,7 @@ section.list-criteria .crit-body {
 }
 section.list-criteria .crit-body > strong { font-weight:inherit; color:inherit; }
 section.list-criteria .crit-body ul {
-  list-style:none; padding:0; margin:4px 0 0 0;
+  list-style:none; padding:4px 0 0 0; margin:0;
   font-size:var(--fs-body); font-weight:400; color:var(--text-body);
 }
 section.list-criteria .crit-body ul li {
@@ -6063,7 +6150,6 @@ section.list-criteria:not(:has(.crit-body)) > .cell-stage > :is(ol, ul) > li > u
 /* ── STEPS ──
  * ## heading  ol with: **Step N title** \n body text
  */
-section.list-steps h2 { margin-bottom:var(--sp-md); }
 /* Stage cell (flex cell-tree §6): the body wraps in `.cell-stage`, so the stage
  * carries the flex-column context the strip `ol` (flex:1) needs to fill the bounded
  * cell. The `.timeline` variant overrides this with centring (below). */
@@ -6158,7 +6244,7 @@ section.list-steps.vertical ol > li:not(:last-child)::after {
  * + arrow-connector chrome. Merged from the standalone timeline on 2026-06-07.
  * Lifted to <strong> by the timeline token in the shared slot-label-lift paths. */
 section.list-steps.timeline > .cell-stage { display:flex; flex-direction:column; justify-content:center; align-items:center; }
-section.list-steps.timeline h2 { margin-bottom:var(--sp-xl); text-align:center; }
+section.list-steps.timeline h2 { text-align:center; }
 section.list-steps.timeline > .cell-stage > :is(ol,ul) {
   display:flex; justify-content:space-between; align-items:flex-start;
   width:100%; position:relative; flex:0 1 auto;
@@ -6184,15 +6270,15 @@ section.list-steps.timeline > .cell-stage > ol > li::before {
   width:2.03125cqi; height:2.03125cqi; border-radius:50%;
   background:var(--accent); color:var(--on-accent, var(--on-dark-primary));
   font-family:var(--font-label); font-size:var(--fs-meta); font-weight:700; line-height:1;
-  margin-bottom:1.09375cqi; flex-shrink:0;
+  flex-shrink:0;
 }
 section.list-steps.timeline > .cell-stage > ul > li::before {
   content:''; display:block; width:2.03125cqi; height:2.03125cqi; border-radius:50%;
   background:var(--accent); border:3px solid var(--bg);
-  box-shadow:0 0 0 1px var(--border); margin-bottom:1.09375cqi; flex-shrink:0;
+  box-shadow:0 0 0 1px var(--border); flex-shrink:0;
 }
 section.list-steps.timeline > .cell-stage > :is(ol,ul) > li:not(:last-child)::after { content:none; }
-section.list-steps.timeline > .cell-stage > :is(ol,ul) > li > strong { display:block; margin-bottom:0.3125cqi; }
+section.list-steps.timeline > .cell-stage > :is(ol,ul) > li > strong { display:block; padding-top:1.09375cqi; padding-bottom:0.3125cqi; }
 section.list-steps.timeline > .cell-stage > :is(ol,ul) > li > :is(ul,ol) { list-style:none; padding:0; margin:0; }
 section.list-steps.timeline > .cell-stage > :is(ol,ul) > li > :is(ul,ol) > li { font-weight:400; }
 section.list-steps.timeline > .cell-stage > :is(ol,ul) > li > :is(ul,ol) > li em { font-size:var(--fs-meta); color:var(--text-body); line-height:var(--lh-snug); font-style:normal; }
@@ -6262,7 +6348,6 @@ section.list-steps.timeline > .cell-stage > :is(ol,ul) > li > :is(ul,ol) > li em
  * ───────────────────────────────────────────────────────────────────────── */
 
 /* ── Base (default = hairline ledger) ─────────────────────────────────── */
-section.list-tabular h2 { margin-bottom:var(--sp-md); }
 section.list-tabular ol {
   list-style:none; counter-reset:tabular-counter;
   padding:0; margin:0;
@@ -6543,19 +6628,19 @@ section.list-tabular.compact ol > li { padding:var(--sp-xs) 0; }
     grid-template-columns: none;
   }
   section.list-tabular.list-tabular ol > li::before {
-    margin-right: var(--sp-sm);
+    padding-right: var(--sp-sm);
   }
   /* meta code → inline after the name (no longer a right-aligned column). */
   section.list-tabular.list-tabular ol > li > code {
     display: inline-block;
-    margin-left: var(--sp-sm);
+    padding-left: var(--sp-sm);
     text-align: left;
   }
   /* description (nested list) → its own line below the name. */
   section.list-tabular.list-tabular ol > li > ul { display: block; }
   section.list-tabular.list-tabular ol > li > ul > li:first-child {
     display: block;
-    margin-top: var(--sp-2xs);
+    padding-top: var(--sp-2xs);
   }
   /* the 3-line authoring contract carries meta as a second nested li (not inline
      `<code>`); in block flow its base `grid-column:4; text-align:right` would orphan
@@ -6563,7 +6648,7 @@ section.list-tabular.compact ol > li { padding:var(--sp-xs) 0; }
   section.list-tabular.list-tabular ol > li > ul > li:nth-child(2) {
     display: block;
     text-align: left;
-    margin-top: var(--sp-2xs);
+    padding-top: var(--sp-2xs);
   }
 }
 
@@ -6583,7 +6668,10 @@ section.list-tabular-cover .split-feat-eye {
 }
 section.list-tabular-cover .split-feat-h {
   font-size: var(--fs-h1); font-weight: 800; line-height: var(--lh-tight);
-  color: var(--on-accent); margin: var(--sp-xs) 0 var(--sp-md); max-width: 12em;
+  /* padding, not margin, for the eyebrow/lede breathing room — the cover is a flex
+     column with no row-gap, so this inset reproduces the exact spacing while staying
+     inside the measurable box. */
+  color: var(--on-accent); padding: var(--sp-xs) 0 var(--sp-md); max-width: 12em;
 }
 section.list-tabular-cover .split-feat-lede {
   font-size: var(--fs-emphasis); line-height: var(--lh-snug); opacity: 0.92; max-width: 20em;
@@ -6593,16 +6681,19 @@ section.list-tabular-cover .split-feat-lede {
 section.list-tabular-points .split-runhead {
   font-size: var(--fs-meta); letter-spacing: 0.2em; text-transform: uppercase;
   color: var(--text-muted); border-bottom: 1px solid var(--border);
-  padding-bottom: var(--sp-xs); margin-bottom: var(--sp-xl);
+  padding-bottom: var(--sp-xs);
 }
+/* The gap below the runhead's underline rides as padding-top on the rows list (not a
+   runhead margin-bottom, which would sit outside the box and below the border) — same
+   --sp-xl value, fully measurable. */
 section.list-tabular-points .split-pts {
-  list-style: none; padding: 0; margin: 0;
+  list-style: none; padding: var(--sp-xl) 0 0; margin: 0;
   display: flex; flex-direction: column; gap: var(--sp-lg);
 }
 section.list-tabular-points .split-pts > li { border-left: 3px solid var(--accent); padding-left: var(--sp-md); }
 section.list-tabular-points .split-pt-t {
   display: block; font-weight: 800; color: var(--text-heading); font-size: var(--fs-h3);
-  margin-bottom: var(--sp-3xs);
+  padding-bottom: var(--sp-3xs);
 }
 section.list-tabular-points .split-pt-b { color: var(--text-body); font-size: var(--fs-body); line-height: var(--lh-base); }
 
@@ -6862,8 +6953,13 @@ section.math > h2 {
 /* Default body row — without this, a body item auto-places into row 1 when
  * no eyebrow is present, displacing the title. Variants that need a
  * multi-row body (canvas: equation+caption stacked, stats: vertical scaffold)
- * override grid-row on the specific items. */
-section.math > :not(h2):not(h3) {
+ * override grid-row on the specific items.
+ * Exclude the absolutely-positioned chrome (header/footer): giving an abs-positioned
+ * grid item an explicit grid-row makes that grid AREA its containing block, so the
+ * running header's `top:var(--frame-inset-y)` resolved against row 3 and dropped the
+ * eyebrow-line "LATTICE · MATH" down beside the body. Excluded, the header/footer
+ * resolve against the section box and sit at the top/bottom berths like every slide. */
+section.math > :not(h2):not(h3):not(header):not(footer) {
   grid-row: 3;
 }
 section.math h3 {
@@ -6873,19 +6969,19 @@ section.math h3 {
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--text-secondary);
-  margin: 0 0 var(--sp-xs) 0;
+  padding: 0 0 var(--sp-xs) 0;
 }
-section.math p { margin: 0 0 var(--sp-xs) 0; }
+section.math p { padding: 0 0 var(--sp-xs) 0; }
 section.math ul, section.math ol {
   list-style: none; padding: 0; margin: 0;
 }
 section.math ul > li, section.math ol > li {
-  margin: 0 0 var(--sp-xs) 0;
+  padding: 0 0 var(--sp-xs) 0;
   line-height: var(--lh-base);
 }
 section.math ul > li::before {
   content: '·';
-  margin-right: 0.5em;
+  padding-right: 0.5em;
   color: var(--accent);
   font-weight: 700;
 }
@@ -6936,7 +7032,7 @@ section.math .math-error {
 section.math:where(:not(.derivation):not(.theorem):not(.compare):not(.canvas):not(.matrix):not(.stats)),
 section.math.feature {
   grid-template-columns: 3fr 2fr;
-  padding-block: var(--sp-xl);
+  padding-bottom: var(--sp-xl);
 }
 section.math:where(:not(.derivation):not(.theorem):not(.compare):not(.canvas):not(.matrix):not(.stats)) > p:has(> .katex-display),
 section.math.feature > p:has(> .katex-display) {
@@ -6966,7 +7062,7 @@ section.math.feature > :is(ul, ol)::before {
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--text-secondary);
-  margin-bottom: var(--sp-sm);
+  padding-bottom: var(--sp-sm);
 }
 
 /* ── math.derivation ──
@@ -6983,18 +7079,27 @@ section.math.feature > :is(ul, ol)::before {
 section.math.derivation {
   display: flex;
   flex-direction: column;
-  padding-block: var(--sp-xl);
+  justify-content: center;
+  padding-bottom: var(--sp-xl);
+  position: relative;
 }
+/* Heading taken out of flow (absolute, pinned top) so the proof-chain table
+ * centres in the well below it — margin-free equivalent of the table's former
+ * auto block-axis margins. */
 section.math.derivation > h2,
 section.math.derivation > h3 {
-  flex: 0 0 auto;
-  margin: 0 0 var(--sp-md) 0;
+  /* left/right:auto keeps the heading at its in-flow (section-padded) horizontal
+   * position; only the vertical is pinned so the table centres beneath it. top clears
+   * the absolute header by the base section's header-clearance (6.875cqi = --sp-2xl +
+   * --sp-md), so the title sits the same distance below the eyebrow as on Form slides. */
+  position: absolute;
+  top: calc(var(--sp-2xl) + var(--sp-md));
+  padding: 0;
 }
-section.math.derivation > h3 + h2 { margin-top: 0; }
-/* Auto top + bottom margin on the table consumes the unused flex space,
- * pushing the chain to the vertical centre of the body. */
+/* The proof chain centres vertically via the parent's
+ * `justify-content: center` (replacing the table's former auto block-axis
+ * centring, which is now measurable). The table keeps its intrinsic height. */
 section.math.derivation table {
-  margin: auto 0;
   width: 100%;
   border-collapse: collapse;
   border-spacing: 0;
@@ -7060,23 +7165,33 @@ section.math.derivation td .katex-display > .katex {
 section.math.theorem {
   display: flex;
   flex-direction: column;
-  padding-block: var(--sp-lg);
+  /* Card stack centres in the well via justify-content; the heading is taken
+   * out of flow (absolute, below) so it stays pinned to the top while only the
+   * cards centre — the margin-free equivalent of the old first/last-card
+   * `margin:auto`. (section::after is the pagination marker, so a flex
+   * pseudo-spacer pair isn't available on this non-Form component.) The
+   * transparent inter-card gap is a measurable `gap` of var(--sp-sm) — padding
+   * would extend each card's --bg-alt fill. */
+  justify-content: center;
+  gap: var(--sp-sm);
+  padding-bottom: var(--sp-lg);
+  position: relative;
 }
 section.math.theorem > h2,
 section.math.theorem > h3 {
-  flex: 0 0 auto;
-  margin: 0 0 var(--sp-md) 0;
+  /* left/right:auto keeps the heading at its in-flow (section-padded) horizontal
+   * position; only the vertical is pinned so the cards centre beneath it. top clears
+   * the absolute header by the base section's header-clearance (6.875cqi = --sp-2xl +
+   * --sp-md), so the title sits the same distance below the eyebrow as on Form slides. */
+  position: absolute;
+  top: calc(var(--sp-2xl) + var(--sp-md));
+  padding: 0;
 }
-/* Auto top margin on the first card + auto bottom margin on the last card
- * centres the stack vertically inside the body region. */
-section.math.theorem > blockquote:first-of-type { margin-top: auto; }
-section.math.theorem > blockquote:last-of-type  { margin-bottom: auto; }
 section.math.theorem blockquote {
   background: var(--bg-alt);
   border-left: 4px solid var(--accent);
   border-radius: 0 var(--radius-md) var(--radius-md) 0;
   padding: var(--sp-sm) var(--sp-md);
-  margin: 0 0 var(--sp-sm) 0;
   font-style: normal;
   color: var(--text-body);
 }
@@ -7088,7 +7203,7 @@ section.math.theorem blockquote p {
   margin: 0;
 }
 section.math.theorem blockquote p + p {
-  margin-top: var(--sp-xs);
+  padding-top: var(--sp-xs);
 }
 section.math.theorem blockquote strong:first-child {
   font-family: var(--font-mono);
@@ -7097,7 +7212,7 @@ section.math.theorem blockquote strong:first-child {
   text-transform: uppercase;
   font-weight: 700;
   color: var(--accent);
-  margin-right: 0.5em;
+  padding-right: 0.5em;
 }
 /* Position-based accent stripe — Definition (start) cooler, Theorem (middle)
  * warmer, Proof (end) neutral. Uses the palette's --cN-dark categorical
@@ -7122,7 +7237,7 @@ section.math.theorem blockquote:nth-of-type(3n) strong:first-child {
   color: var(--text-secondary);
 }
 section.math.theorem blockquote .katex-display {
-  margin: var(--sp-xs) 0;
+  padding: var(--sp-xs) 0;
 }
 section.math.theorem blockquote .katex-display > .katex {
   font-size: 1.25em;
@@ -7152,28 +7267,31 @@ section.math.compare {
    * the columns to the vertical middle of the slide so a short comparison
    * doesn't leave the bottom half empty. */
   align-content: center;
-  padding-block: var(--sp-lg);
+  padding-bottom: var(--sp-lg);
 }
 section.math.compare:has(h3:nth-of-type(3)) {
   column-count: 3;
 }
 section.math.compare > h2 {
   column-span: all;
-  margin: 0 0 var(--sp-md) 0;
+  padding: 0 0 var(--sp-md) 0;
 }
 section.math.compare > h3 {
   break-before: column;
   break-after: avoid;
   padding-bottom: var(--sp-xs);
   border-bottom: 2px solid var(--accent);
-  margin: 0 0 var(--sp-sm) 0;
   color: var(--text-heading);
   font-size: var(--fs-meta);
 }
+/* The gap below the h3 underline (formerly the h3's `margin-bottom`) lives as
+ * the following element's top padding so the rule keeps drawing tight to the
+ * label text — measurable, and outside the border just as the margin was. */
+section.math.compare > h3 + * { padding-top: var(--sp-sm); }
 section.math.compare > h3:first-of-type { break-before: avoid; }
 section.math.compare > p:has(> .katex-display) {
   break-inside: avoid;
-  margin: 0 0 var(--sp-sm) 0;
+  padding-bottom: var(--sp-sm);
   text-align: center;
 }
 section.math.compare > p:has(> .katex-display) .katex-display > .katex {
@@ -7181,7 +7299,7 @@ section.math.compare > p:has(> .katex-display) .katex-display > .katex {
 }
 section.math.compare > p:not(:has(.katex-display)) {
   color: var(--text-secondary);
-  margin: 0 0 var(--sp-xs) 0;
+  padding-bottom: var(--sp-xs);
 }
 
 /* ── math.canvas ──
@@ -7210,7 +7328,7 @@ section.math.canvas {
     "title   title"
     "eq      plot"
     "cap     plot";
-  padding-block: var(--sp-xl);
+  padding-bottom: var(--sp-xl);
 }
 section.math.canvas > p:has(> code:only-child):has(+ h2) { grid-area: eyebrow; }
 section.math.canvas > h2              { grid-area: title; }
@@ -7227,7 +7345,7 @@ section.math.canvas > p:not(:has(.katex-display)):not(:has(img)) {
   grid-area: cap;
   color: var(--text-secondary);
   text-align: center;
-  margin: var(--sp-sm) 0 0 0;
+  padding: var(--sp-sm) 0 0 0;
 }
 section.math.canvas > p:has(img),
 section.math.canvas > :is(svg, figure, .functionplot) {
@@ -7270,7 +7388,7 @@ section.math.canvas > p > img {
 section.math.matrix {
   grid-template-columns: 3fr 2fr;
   align-content: center;
-  padding-block: var(--sp-lg);
+  padding-bottom: var(--sp-lg);
 }
 section.math.matrix > p:has(> .katex-display) {
   grid-column: 1;
@@ -7287,7 +7405,7 @@ section.math.matrix > :is(ul, ol) {
   border-left: 1px solid var(--border);
 }
 section.math.matrix > :is(ul, ol) > li {
-  margin-bottom: var(--sp-sm);
+  padding-bottom: var(--sp-sm);
   color: var(--text-body);
 }
 section.math.matrix > :is(ul, ol) > li > strong {
@@ -7299,7 +7417,7 @@ section.math.matrix > :is(ul, ol) > li > strong {
   letter-spacing: 0.18em;
   color: var(--text-secondary);
   font-weight: 600;
-  margin-right: 0.5em;
+  padding-right: 0.5em;
 }
 
 /* `.decompose` overrides the grid to a block layout so the secondary
@@ -7315,15 +7433,14 @@ section.math.matrix > :is(ul, ol) > li > strong {
 section.math.matrix.decompose {
   display: block;
   align-content: center;
-  padding-block: var(--sp-lg);
+  padding-bottom: var(--sp-lg);
   text-align: center;
 }
 section.math.matrix.decompose > h2 {
-  margin: 0 0 var(--sp-md) 0;
+  padding: 0 0 var(--sp-md) 0;
   text-align: left;
 }
 section.math.matrix.decompose > p:has(> .katex-display):first-of-type {
-  margin: 0 0 var(--sp-md) 0;
   padding-bottom: var(--sp-md);
   border-bottom: 1px solid var(--border);
 }
@@ -7332,12 +7449,16 @@ section.math.matrix.decompose > p:has(> .katex-display):first-of-type .katex-dis
 }
 section.math.matrix.decompose > h3 {
   text-align: center;
-  margin: 0 0 var(--sp-sm) 0;
+  /* Top padding carries the gap below the lead equation's divider (formerly
+   * the equation's `margin-bottom`), keeping the rule tight to the equation;
+   * bottom padding replaces the h3's own `margin-bottom`. */
+  padding-top: var(--sp-md);
+  padding-bottom: var(--sp-sm);
 }
 section.math.matrix.decompose > p:has(> .katex-display):not(:first-of-type) {
   display: inline-block;
   width: calc((100% - 2 * var(--sp-lg)) / 3);
-  margin: 0 var(--sp-xs);
+  padding: 0 var(--sp-xs);
   vertical-align: middle;
 }
 section.math.matrix.decompose > p:has(> .katex-display):not(:first-of-type) .katex-display > .katex {
@@ -7365,12 +7486,12 @@ section.math.stats {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding-block: var(--sp-xl);
+  padding-bottom: var(--sp-xl);
   gap: var(--sp-sm);
 }
 section.math.stats > h2 {
   text-align: center;
-  margin: 0 0 var(--sp-md) 0;
+  padding: 0 0 var(--sp-md) 0;
 }
 section.math.stats > p:has(> .katex-display):first-of-type {
   text-align: center;
@@ -7384,8 +7505,7 @@ section.math.stats > p:has(> .katex-display):first-of-type .katex-display > .kat
 section.math.stats > blockquote {
   border-left: none;
   background: none;
-  padding: 0;
-  margin: 0 0 var(--sp-md) 0;
+  padding: 0 0 var(--sp-md) 0;
   text-align: center;
   font-style: normal;
   color: var(--text-secondary);
@@ -7394,7 +7514,7 @@ section.math.stats > blockquote {
   letter-spacing: 0.12em;
 }
 section.math.stats > blockquote p {
-  margin: 0 0 0.15em 0;
+  padding: 0 0 0.15em 0;
 }
 section.math.stats > blockquote::before { content: none; }
 section.math.stats > p:not(:has(> .katex-display)):not(:first-of-type) {
@@ -7542,7 +7662,6 @@ section .functionplot-error {
  * Authors who want a different accent cell can swap items in the markdown.
  * ──────────────────────────────────────────────────────────────────────── */
 section.matrix-2x2 > .cell-stage { display:flex; flex-direction:column; }
-section.matrix-2x2 h2 { margin-bottom:var(--sp-sm); }
 /* 2×2 as FLEX, not grid (flex cell-tree §10/§11 — flex shop). flex-wrap with cells
  * sized `calc(50% - gap/2)` reproduces the `1fr 1fr / 1fr 1fr` grid pixel-identically
  * (§13: 359/1,000,500 = 0.036 %). The cells' `box-sizing:border-box` is load-bearing:
@@ -7641,7 +7760,6 @@ section.matrix-2x2 :is(ul,ol) > li > strong ~ * { font-weight: 400; }
  * .asymmetric (cards).
  * ──────────────────────────────────────────────────────────────────── */
 section.obligation-matrix > .cell-stage { display:flex; flex-direction:column; }
-section.obligation-matrix h2 { margin-bottom:var(--sp-md); }
 section.obligation-matrix table {
   width:100%;
   border-collapse:separate;
@@ -7934,7 +8052,6 @@ section.piechart .wedge:nth-of-type(6n)   { fill: var(--chart-cat-6-fill); strok
  */
 
 section.pricing > .cell-stage { display: flex; flex-direction: column; }
-section.pricing h2 { margin-bottom: var(--sp-sm); }
 
 /* ── Tier grid ── three columns by default; `two` / `four` adjust. */
 section.pricing > .cell-stage > ul {
@@ -7978,12 +8095,11 @@ section.pricing > .cell-stage > ul > li > strong { font-weight: inherit; color: 
 /* ── Price ── trailing inline code, promoted to a display figure. */
 section.pricing > .cell-stage > ul > li > code {
   display: block;
-  margin: var(--sp-2xs) 0 var(--sp-sm) 0;
   font-family: var(--font-display);
   font-size: var(--fs-emphasis);
   font-weight: 700; letter-spacing: 0;
   color: var(--text-heading);
-  background: none; border: none; padding: 0;
+  background: none; border: none; padding: var(--sp-2xs) 0 var(--sp-sm) 0;
 }
 
 /* ── Recommendation ribbon ── the author's *marker* renders top-right. */
@@ -8010,7 +8126,7 @@ section.pricing > .cell-stage > ul > li:has(> em) > code { color: var(--on-accen
 /* ── Feature list ── fills the card so the caption can pin to the bottom;
  * weight reverts from the card's 700. */
 section.pricing > .cell-stage > ul > li > ul {
-  list-style: none; padding: 0; margin: var(--sp-sm) 0 0 0;
+  list-style: none; padding: var(--sp-sm) 0 0 0; margin: 0;
   width: 100%; flex: 1 1 auto;
   display: flex; flex-direction: column; gap: var(--sp-2xs);
   font-weight: 400;
@@ -8031,7 +8147,8 @@ section.pricing > .cell-stage > ul > li > ul > li > .badge {
 }
 /* ── "Who it's for" line ── the marker-less last nested li, pinned bottom. */
 section.pricing > .cell-stage > ul > li > ul > li:last-child {
-  margin-top: auto; padding-top: var(--sp-sm);
+  flex: 1 1 auto; display: flex; flex-direction: column; justify-content: flex-end;
+  padding-top: var(--sp-sm);
   font-size: var(--fs-meta); color: var(--text-muted);
 }
 section.pricing > .cell-stage > ul > li:has(> em) > ul > li:last-child { color: var(--on-accent-soft); }
@@ -8192,7 +8309,10 @@ section.progress .progress-row > .chart-status-empty {
 /* Optional row sub-bullet — rendered as a small footnote under the bar. */
 section.progress .progress-note {
   grid-column: 2 / 3;
-  margin-top: -0.3125cqi;
+  /* Nudge the note up under the bar via transform (was margin-top: -0.3125cqi).
+   * Transform is the measurable, margin-free equivalent — no margin to collapse
+   * outside the grid/flex content box and confuse virtual-list scrollHeight. */
+  transform: translateY(-0.3125cqi);
   font-size: var(--fs-meta);
   color: var(--text-secondary);
   font-style: italic;
@@ -8323,8 +8443,7 @@ section.q-and-a > .cell-stage > :is(ul, ol) > li > strong {
 /* Answer — the nested list, reset off the question's weight/size/colour. */
 section.q-and-a > .cell-stage > :is(ul, ol) > li > :is(ul, ol) {
   list-style: none;
-  margin: var(--sp-xs) 0 0;
-  padding: 0;
+  padding: var(--sp-xs) 0 0;
 }
 section.q-and-a > .cell-stage > :is(ul, ol) > li > :is(ul, ol) > li {
   font-family: var(--font-body);
@@ -8401,7 +8520,7 @@ section.q-and-a.rail > .cell-stage > :is(ul, ol) > li > strong {
 section.q-and-a.rail > .cell-stage > :is(ul, ol) > li > :is(ul, ol) {
   flex: 0.54 1 0;
   min-width: 0;
-  margin: 0;
+  padding: 0;
 }
 
 /* ── tab — underlined prompts ─────────────────────────────────────────── */
@@ -8419,13 +8538,15 @@ section.q-and-a.tab > .cell-stage > :is(ul, ol) > li::before {
 }
 section.q-and-a.tab > .cell-stage > :is(ul, ol) > li > :is(ul, ol) {
   position: relative;
-  margin-top: var(--sp-2xs);
-  padding-top: var(--sp-md);
+  /* the sp-2xs that separated the question from the underline now rides INSIDE the ul as
+     extra top padding, with the underline (::before) dropped by the same sp-2xs so it lands
+     where it did — keeps the box measurable (no margin-top above the ul). */
+  padding-top: calc(var(--sp-md) + var(--sp-2xs));
 }
 section.q-and-a.tab > .cell-stage > :is(ul, ol) > li > :is(ul, ol)::before {
   content: "";
   position: absolute;
-  top: 0;
+  top: var(--sp-2xs);
   left: 0;
   width: 2.4em;
   height: 0.25cqi;
@@ -8483,7 +8604,7 @@ section.q-and-a.grid > .cell-stage > :is(ul, ol) > li > strong {
   min-height: 3em;
 }
 section.q-and-a.grid > .cell-stage > :is(ul, ol) > li > :is(ul, ol) {
-  margin: 0;
+  padding: 0;
 }
 
 /* ── bare-renderer fallback ────────────────────────────────────────────────
@@ -8519,7 +8640,7 @@ section.q-and-a.compact > .cell-stage > :is(ul, ol) > li::before {
   font-size: var(--fs-body);
 }
 section.q-and-a.compact > .cell-stage > :is(ul, ol) > li > :is(ul, ol) {
-  margin-top: var(--sp-2xs);
+  padding-top: var(--sp-2xs);
 }
 section.q-and-a.compact > .cell-stage > :is(ul, ol) > li > :is(ul, ol) > li {
   font-size: var(--fs-body-compact);
@@ -8544,7 +8665,7 @@ section.q-and-a.solo > .cell-stage > :is(ul, ol) > li::before {
   line-height: var(--lh-tight);
 }
 section.q-and-a.solo > .cell-stage > :is(ul, ol) > li > :is(ul, ol) {
-  margin-top: var(--sp-md);
+  padding-top: var(--sp-md);
 }
 section.q-and-a.solo > .cell-stage > :is(ul, ol) > li > :is(ul, ol) > li {
   font-size: var(--fs-message);
@@ -8589,7 +8710,7 @@ section.q-and-a.solo > .cell-stage > :is(ul, ol) > li > :is(ul, ol) > li {
     left: var(--sp-md);
     top: 0;
   }
-  section.q-and-a.rail > .cell-stage > :is(ul, ol) > li > :is(ul, ol) { margin-top: var(--sp-xs); }
+  section.q-and-a.rail > .cell-stage > :is(ul, ol) > li > :is(ul, ol) { padding-top: var(--sp-xs); }
 }
 
 /* === lib/components/chart/quadrant/quadrant.styles.css === */
@@ -8935,8 +9056,8 @@ section.quote blockquote {
   padding:var(--sp-lg) var(--sp-xl);
   max-width:64.0625cqi; width:100%;
 }
-section.quote blockquote::before { content:'\201C'; font-family:var(--font-display); font-size:var(--fs-h1); color:var(--text-muted); line-height:0.8; display:block; margin-bottom:var(--sp-xs); }
-section.quote blockquote::after  { content:'\201D'; font-family:var(--font-display); font-size:var(--fs-h1); color:var(--text-muted); line-height:0.8; display:block; text-align:right; margin-top:var(--sp-xs); }
+section.quote blockquote::before { content:'\201C'; font-family:var(--font-display); font-size:var(--fs-h1); color:var(--text-muted); line-height:0.8; display:block; padding-bottom:var(--sp-xs); }
+section.quote blockquote::after  { content:'\201D'; font-family:var(--font-display); font-size:var(--fs-h1); color:var(--text-muted); line-height:0.8; display:block; text-align:right; padding-top:var(--sp-xs); }
 section.quote blockquote p { font-family:var(--font-display); font-size:var(--fs-message); font-style:italic; color:var(--text-heading); line-height:var(--lh-snug); margin:0; text-align:center; }
 section.quote > .cell-stage > p { padding-top:var(--sp-xl); font-size:var(--fs-meta); line-height:var(--lh-snug); color:var(--text-secondary); text-align:center; }
 
@@ -9282,7 +9403,6 @@ section.radar.cover .radar-tick {
  * .stacked (old block atop new block), .three-col (old | new | rationale).
  * ──────────────────────────────────────────────────────────────────── */
 section.redline { display:flex; flex-direction:column; gap:var(--sp-sm); }
-section.redline h2 { margin-bottom:var(--sp-xs); }
 section.redline > p:has(> code:only-child) {
   margin:0;
   font-family:var(--font-mono);
@@ -9307,7 +9427,7 @@ section.redline > blockquote {
   flex:1;
 }
 section.redline > blockquote > p { margin:0; }
-section.redline > blockquote > p + p { margin-top:var(--sp-sm); }
+section.redline > blockquote > p + p { padding-top:var(--sp-sm); }
 /* Insertions and deletions — ins/del HTML, also ~~md~~ which renders as s. */
 section.redline ins, section.redline :is(p) ins {
   text-decoration:underline;
@@ -9352,7 +9472,7 @@ section.redline > :is(ol, ul) > li > strong {
   font-weight:700;
   letter-spacing:0.10em;
   color:var(--accent);
-  margin-right:var(--sp-xs);
+  padding-right:var(--sp-xs);
 }
 
 /* .split — two blockquotes side-by-side: old left, new right. */
@@ -9373,7 +9493,7 @@ section.redline.split.split > blockquote:nth-of-type(1)::before {
   font-weight:700;
   letter-spacing:0.12em;
   color:var(--fail);
-  margin-bottom:var(--sp-xs);
+  padding-bottom:var(--sp-xs);
 }
 section.redline.split.split > blockquote:nth-of-type(2) {
   grid-column:2; grid-row:3;
@@ -9388,7 +9508,7 @@ section.redline.split.split > blockquote:nth-of-type(2)::before {
   font-weight:700;
   letter-spacing:0.12em;
   color:var(--pass);
-  margin-bottom:var(--sp-xs);
+  padding-bottom:var(--sp-xs);
 }
 section.redline.split > :is(ol, ul) { grid-column:1 / -1; grid-row:4; }
 
@@ -9405,13 +9525,12 @@ section.redline.annotated > blockquote sup {
   font-weight:700;
   padding:0 0.4em;
   border-radius:var(--pill-radius);
-  margin-left:0.156cqi;
   line-height:1.4;
   vertical-align:super;
 }
 section.redline.annotated > :is(ol, ul) {
   counter-reset:rl;
-  margin-top:var(--sp-md);
+  padding-top:var(--sp-md);
 }
 section.redline.annotated > :is(ol, ul) > li {
   counter-increment:rl;
@@ -9451,7 +9570,7 @@ section.redline.stacked.stacked > blockquote:nth-of-type(1)::before {
   letter-spacing:0.12em;
   color:var(--fail);
   text-decoration:none;
-  margin-bottom:var(--sp-xs);
+  padding-bottom:var(--sp-xs);
 }
 section.redline.stacked.stacked > blockquote:nth-of-type(2) {
   background:color-mix(in srgb, var(--pass) 5%, var(--bg-alt));
@@ -9465,7 +9584,7 @@ section.redline.stacked.stacked > blockquote:nth-of-type(2)::before {
   font-weight:700;
   letter-spacing:0.12em;
   color:var(--pass);
-  margin-bottom:var(--sp-xs);
+  padding-bottom:var(--sp-xs);
 }
 
 /* .three-col — old | new | rationale columns. The author writes two
@@ -9490,7 +9609,7 @@ section.redline.three-col.three-col > blockquote:nth-of-type(1)::before {
   font-weight:700;
   letter-spacing:0.12em;
   color:var(--fail);
-  margin-bottom:var(--sp-xs);
+  padding-bottom:var(--sp-xs);
 }
 section.redline.three-col.three-col > blockquote:nth-of-type(2) {
   grid-column:2; grid-row:3;
@@ -9505,7 +9624,7 @@ section.redline.three-col.three-col > blockquote:nth-of-type(2)::before {
   font-weight:700;
   letter-spacing:0.12em;
   color:var(--pass);
-  margin-bottom:var(--sp-xs);
+  padding-bottom:var(--sp-xs);
 }
 section.redline.three-col > :is(ol, ul) {
   grid-column:3; grid-row:3;
@@ -9519,7 +9638,7 @@ section.redline.three-col > :is(ol, ul)::before {
   font-weight:700;
   letter-spacing:0.12em;
   color:var(--accent);
-  margin-bottom:var(--sp-xs);
+  padding-bottom:var(--sp-xs);
 }
 
 
@@ -9581,7 +9700,7 @@ section.redline > blockquote.rl-old {
 section.redline > blockquote.rl-old::before {
   content:'OLD — prior text'; display:block;
   font-family:var(--font-mono); font-size:var(--fs-meta); font-weight:700;
-  letter-spacing:0.12em; color:var(--fail); margin-bottom:var(--sp-xs);
+  letter-spacing:0.12em; color:var(--fail); padding-bottom:var(--sp-xs);
 }
 section.redline > blockquote.rl-new {
   border-left-color:var(--pass);
@@ -9590,7 +9709,7 @@ section.redline > blockquote.rl-new {
 section.redline > blockquote.rl-new::before {
   content:'NEW · current'; display:block;
   font-family:var(--font-mono); font-size:var(--fs-meta); font-weight:700;
-  letter-spacing:0.12em; color:var(--pass); margin-bottom:var(--sp-xs);
+  letter-spacing:0.12em; color:var(--pass); padding-bottom:var(--sp-xs);
 }
 
 /* === lib/components/legal/regulatory-update/regulatory-update.styles.css === */
@@ -9649,9 +9768,9 @@ section.redline > blockquote.rl-new::before {
  * Variants: .cards, .timeline, .diff-bands, .priority.
  * ──────────────────────────────────────────────────────────────────── */
 section.regulatory-update > .cell-stage { display:flex; flex-direction:column; }
-section.regulatory-update.regulatory-update h2 { margin-bottom:var(--sp-xs); }
 section.regulatory-update.regulatory-update > .cell-stage > p:has(> code:only-child) {
-  margin:0 0 var(--sp-md);
+  margin:0;
+  padding-bottom:var(--sp-md);
   font-family:var(--font-mono);
   font-size:var(--fs-meta);
   letter-spacing:0.06em;
@@ -9766,7 +9885,7 @@ section.regulatory-update.regulatory-update.cards > .cell-stage > :is(ol, ul) > 
 section.regulatory-update.regulatory-update.cards > .cell-stage > :is(ol, ul) > li > strong:first-child { grid-row:1; grid-column:2; }
 section.regulatory-update.regulatory-update.cards > .cell-stage > :is(ol, ul) > li > :is(ul, ol) {
   grid-row:2; grid-column:1 / -1;
-  margin-top:var(--sp-sm);
+  padding-top:var(--sp-sm);
 }
 
 /* .timeline — horizontal row of timestamped milestones. */
@@ -9802,14 +9921,15 @@ section.regulatory-update.regulatory-update.timeline > .cell-stage > :is(ol, ul)
   z-index:1;
 }
 section.regulatory-update.regulatory-update.timeline > .cell-stage > :is(ol, ul) > li > strong:first-child { font-size:var(--fs-body); }
-section.regulatory-update.regulatory-update.timeline > .cell-stage > :is(ol, ul) > li > :is(ul, ol) { margin-top:var(--sp-xs); }
+section.regulatory-update.regulatory-update.timeline > .cell-stage > :is(ol, ul) > li > :is(ul, ol) { padding-top:var(--sp-xs); }
 
 /* .diff-bands — sections by change kind: ADDED / AMENDED / REPEALED / ENFORCED.
  * Author writes h3 section headers within the slide. */
 section.regulatory-update.regulatory-update.diff-bands > .cell-stage > :is(ol, ul) > li { border-left-width:4px; padding:var(--sp-xs) var(--sp-md); background:none; border-color:transparent; border-bottom:1px solid var(--border); border-radius:0; }
 section.regulatory-update.regulatory-update.diff-bands > .cell-stage > :is(ol, ul) > li::before { display:none; }
 section.regulatory-update.regulatory-update.diff-bands > .cell-stage > h3 {
-  margin:var(--sp-md) 0 var(--sp-xs);
+  margin:0;
+  padding-top:var(--sp-md);
   font-family:var(--font-mono);
   font-size:var(--fs-meta);
   font-weight:700;
@@ -9819,7 +9939,11 @@ section.regulatory-update.regulatory-update.diff-bands > .cell-stage > h3 {
   padding-bottom:0.234375cqi;
   border-bottom:1px solid var(--accent);
 }
-section.regulatory-update.regulatory-update.diff-bands > .cell-stage > h3:first-of-type { margin-top:0; }
+section.regulatory-update.regulatory-update.diff-bands > .cell-stage > h3:first-of-type { padding-top:0; }
+/* The h3's underline must hug its text (border-bottom on the box), so the gap
+ * BELOW the band header is carried as padding-top on the list that follows it —
+ * measurable, and it leaves the h3's own border position untouched. */
+section.regulatory-update.regulatory-update.diff-bands > .cell-stage > h3 + :is(ol, ul) { padding-top:var(--sp-xs); }
 section.regulatory-update.regulatory-update.diff-bands > .cell-stage > h3:nth-of-type(8n+1) { color:var(--pass); border-color:var(--pass); }
 section.regulatory-update.regulatory-update.diff-bands > .cell-stage > h3:nth-of-type(8n+2) { color:var(--warn); border-color:var(--warn); }
 section.regulatory-update.regulatory-update.diff-bands > .cell-stage > h3:nth-of-type(8n+3) { color:var(--fail); border-color:var(--fail); }
@@ -9929,8 +10053,9 @@ section.roadmap .roadmap-figure {
  * Sized to read without squinting, weighted to key the grid, not compete. */
 section.roadmap .roadmap-legend {
   align-self:center;
-  margin:var(--sp-lg) 0 0;
-  padding:var(--sp-sm) 0 0;
+  /* The top separation from the grid (was margin:var(--sp-lg) 0 0) folds into
+   * padding-top — measurable inside the flex content box, margin-free. */
+  padding:calc(var(--sp-lg) + var(--sp-sm)) 0 0;
   list-style:none;
   display:flex;
   flex-wrap:wrap;
@@ -10221,7 +10346,7 @@ section.roadmap.status td.cell-state .cell-state-label {
   letter-spacing:0.10em;
   text-transform:uppercase;
   color:var(--state-color, var(--text-muted));
-  margin-bottom:2px; /* sanctioned: hairline-scale label spacing */
+  padding-bottom:2px; /* sanctioned: hairline-scale label spacing (was margin-bottom, kept in-box) */
   line-height:1.2;
 }
 section.roadmap.status td.cell-state .cell-state-text {
@@ -10297,11 +10422,17 @@ section.roadmap.horizons .roadmap-figure {
   gap:var(--sp-sm);
 }
 section.roadmap.horizons .roadmap-legend {
-  margin-top:var(--sp-sm);
+  /* Horizons tightens the legend separation: the former margin-top:var(--sp-sm)
+   * plus the base padding-top:var(--sp-sm) → a single var(--sp-sm)*2 padding-top
+   * (overrides the base calc; margin-free). */
+  padding-top:calc(var(--sp-sm) * 2);
 }
 section.roadmap.horizons .horizon-card {
   display:flex;
   flex-direction:column;
+  /* head→rows spacing is the card's single flex gap now (was a margin-bottom on
+   * .horizon-head, which can't be padding — that would shove its border-bottom). */
+  gap:var(--sp-sm);
   background:var(--bg-alt);
   border:var(--chart-hairline) solid var(--border);
   border-top:var(--chart-fill-accent) solid var(--phase-accent, var(--accent));
@@ -10313,7 +10444,6 @@ section.roadmap.horizons .horizon-head {
   display:flex;
   flex-direction:column;
   gap:2px; /* sanctioned: hairline-scale gap in the horizon head */
-  margin-bottom:var(--sp-sm);
   padding-bottom:var(--sp-sm);
   border-bottom:var(--chart-hairline) solid var(--border);
   position:relative;
@@ -10402,12 +10532,14 @@ section.roadmap.horizons .row-text.row-empty {
     gap: var(--sp-sm);
     flex: 1 1 auto;
   }
-  section.roadmap.horizons .horizon-card { padding: var(--sp-sm) var(--sp-md); }
+  section.roadmap.horizons .horizon-card {
+    padding: var(--sp-sm) var(--sp-md);
+    gap: var(--sp-xs); /* portrait head→rows spacing (was head margin-bottom:var(--sp-xs)) */
+  }
   section.roadmap.horizons .horizon-head {
     flex-direction: row;
     align-items: baseline;
     gap: var(--sp-sm);
-    margin-bottom: var(--sp-xs);
     padding-bottom: var(--sp-xs);
   }
   section.roadmap.horizons .horizon-title { font-size: var(--fs-body-compact); }
@@ -10503,8 +10635,8 @@ section.roadmap.milestones tbody td:not(:first-child) {
 section.split-compare { padding:0; flex-direction:row; }
 section.split-compare .compare-left { width:30%; flex-shrink:0; background:var(--surface-inverse); display:flex; flex-direction:column; justify-content:center; padding:var(--sp-xl) var(--sp-lg); position:relative; }
 section.split-compare .compare-left::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:var(--accent); }
-section.split-compare .compare-left .frame-label { display:block; font-size:var(--fs-meta); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--on-dark-secondary); margin-bottom:var(--sp-sm); }
-section.split-compare .compare-left h2 { font-size:var(--fs-h3); color:var(--on-dark-primary); font-weight:800; line-height:var(--lh-tight); margin:0 0 var(--sp-md); }
+section.split-compare .compare-left .frame-label { display:block; font-size:var(--fs-meta); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--on-dark-secondary); padding-bottom:var(--sp-sm); }
+section.split-compare .compare-left h2 { font-size:var(--fs-h3); color:var(--on-dark-primary); font-weight:800; line-height:var(--lh-tight); margin:0; padding-bottom:var(--sp-md); }
 section.split-compare .compare-left p { font-size:var(--fs-body); font-family:var(--font-body); color:var(--on-dark-secondary); line-height:var(--lh-snug); margin:0; }
 /* Bottom padding clears the footer / pagination chrome (section::after sits at
  * bottom:1.875cqi and rises ~1.2cqi) so the verdict card never bleeds into it. */
@@ -10513,16 +10645,16 @@ section.split-compare .compare-left p { font-size:var(--fs-body); font-family:va
  * the panel edge instead of bleeding past it. */
 section.split-compare .compare-right { flex:1; min-height:0; overflow:clip; background:var(--bg); display:flex; flex-direction:column; padding:var(--sp-lg) var(--sp-xl) var(--sp-xl) var(--sp-lg); gap:var(--sp-sm); }
 section.split-compare .options { display:grid; grid-template-columns:1fr 1fr; gap:var(--sp-sm); flex:1; }
-section.split-compare .option { background:var(--bg-alt); border-radius:var(--radius-md); padding:var(--sp-md); display:flex; flex-direction:column; border:1px solid var(--border); position:relative; }
-section.split-compare .option > strong { display:block; font-size:var(--fs-meta); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.12em; color:var(--text-secondary); font-weight:700; padding-bottom:var(--sp-xs); border-bottom:2px solid var(--border); margin:0 0 var(--sp-sm); }
+section.split-compare .option { background:var(--bg-alt); border-radius:var(--radius-md); padding:var(--sp-md); display:flex; flex-direction:column; gap:var(--sp-sm); border:1px solid var(--border); position:relative; }
+section.split-compare .option > strong { display:block; font-size:var(--fs-meta); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.12em; color:var(--text-secondary); font-weight:700; padding-bottom:var(--sp-xs); border-bottom:2px solid var(--border); margin:0; }
 section.split-compare .option.preferred > strong { color:var(--accent); border-color:var(--accent); }
 section.split-compare .option.preferred::after { content:'✧'; position:absolute; top:var(--sp-sm); right:var(--sp-sm); font-size:var(--fs-meta); color:var(--accent); line-height:1; pointer-events:none; }
 section.split-compare .option ul { list-style:disc; padding:0 0 0 var(--sp-md); margin:0; }
 section.split-compare .option ol { list-style:decimal; padding:0 0 0 var(--sp-md); margin:0; }
 section.split-compare .option ul > li,
-section.split-compare .option ol > li { font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-body); line-height:var(--lh-snug); margin-bottom:0.46875cqi; }
+section.split-compare .option ol > li { font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-body); line-height:var(--lh-snug); padding-bottom:0.46875cqi; }
 section.split-compare .option ul > li:last-child,
-section.split-compare .option ol > li:last-child { margin-bottom:0; }
+section.split-compare .option ol > li:last-child { padding-bottom:0; }
 /* The verdict is the recommended-option CARD: accent-soft fill + accent
  * border, with a flush top-left corner tag (accent fill + on-accent ink),
  * mirroring the ordered-list corner tags in cards-grid. The tag is the
@@ -10575,26 +10707,26 @@ section.split-compare[data-orientation="square"] { flex-direction: column; }
 section.split-panel { padding:0; flex-direction:row; }
 section.split-panel .panel-left { width:38%; flex-shrink:0; background:var(--surface-inverse); display:flex; flex-direction:column; justify-content:flex-end; padding:var(--sp-xl) var(--sp-lg); position:relative; overflow:hidden; }
 section.split-panel .panel-left::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:var(--accent); }
-section.split-panel .panel-eyebrow { display:block; font-size:var(--fs-meta); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--on-dark-secondary); margin-bottom:var(--sp-md); }
-section.split-panel .panel-left h2 { font-size:var(--fs-h1); color:var(--on-dark-primary); line-height:var(--lh-tight); margin:0 0 var(--sp-sm); font-weight:800; }
+section.split-panel .panel-eyebrow { display:block; font-size:var(--fs-meta); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--on-dark-secondary); padding-bottom:var(--sp-md); }
+section.split-panel .panel-left h2 { font-size:var(--fs-h1); color:var(--on-dark-primary); line-height:var(--lh-tight); padding:0 0 var(--sp-sm); margin:0; font-weight:800; }
 section.split-panel .panel-left p { font-size:var(--fs-message); color:var(--on-dark-secondary); line-height:var(--lh-snug); margin:0; }
 /* min-height:0 + overflow:clip complete the flex cell-tree contract (2026-06-26):
  * a flex child defaults to min-height:auto (refuses to shrink), so without these
  * an over-stuffed right zone bleeds past the panel wall. The left panel already
  * clips (overflow:hidden, line above); this walls the supporting zone to match. */
 section.split-panel .panel-right { flex:1; min-height:0; overflow:clip; background:var(--bg); display:flex; flex-direction:column; padding:var(--sp-xl) var(--sp-xl) var(--sp-xl) var(--sp-lg); }
-section.split-panel .panel-right h3 { font-size:var(--fs-meta); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--text-secondary); font-weight:600; margin:0 0 var(--sp-lg); padding-bottom:var(--sp-sm); border-bottom:1px solid var(--border); }
-section.split-panel .panel-right > ul { display:flex; flex-direction:column; flex:1; justify-content:space-evenly; list-style:none; padding:0; margin:0; }
+section.split-panel .panel-right h3 { font-size:var(--fs-meta); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--text-secondary); font-weight:600; margin:0; padding-bottom:var(--sp-sm); border-bottom:1px solid var(--border); }
+section.split-panel .panel-right > ul { display:flex; flex-direction:column; flex:1; justify-content:space-evenly; list-style:none; padding:var(--sp-lg) 0 0 0; margin:0; }
 section.split-panel .panel-right > ul > li { padding-left:var(--sp-md); border-left:3px solid var(--accent); }
-section.split-panel .panel-right > ul > li > strong { display:block; font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-heading); font-weight:700; line-height:var(--lh-snug); margin-bottom:0.390625cqi; }
+section.split-panel .panel-right > ul > li > strong { display:block; font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-heading); font-weight:700; line-height:var(--lh-snug); padding-bottom:0.390625cqi; }
 section.split-panel .panel-right > ul > li > :is(ul,ol) { list-style:none; padding:0; margin:0; }
 section.split-panel .panel-right > ul > li > :is(ul,ol) > li { font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-body); line-height:var(--lh-relaxed); }
 
 /* ── .metric — light-left polarity + hero number (former split-metric) ───── */
 section.split-panel.metric .panel-left { width:44%; background:var(--bg); border-right:1px solid var(--border); justify-content:center; align-items:flex-start; }
 section.split-panel.metric .panel-left::before { content:none; }
-section.split-panel.metric .panel-eyebrow { color:var(--text-secondary); margin-bottom:var(--sp-xs); }
-section.split-panel.metric .panel-left h2 { font-size:var(--fs-hero); font-family:var(--font-display); font-weight:900; color:var(--text-heading); line-height:1; margin:0 0 var(--sp-sm); }
+section.split-panel.metric .panel-eyebrow { color:var(--text-secondary); padding-bottom:var(--sp-xs); }
+section.split-panel.metric .panel-left h2 { font-size:var(--fs-hero); font-family:var(--font-display); font-weight:900; color:var(--text-heading); line-height:1; padding:0 0 var(--sp-sm); margin:0; }
 section.split-panel.metric .panel-left h2 em { font-size:var(--fs-h1); font-weight:700; font-style:normal; color:var(--text-secondary); }
 section.split-panel.metric .panel-left p { font-size:var(--fs-meta); font-family:var(--font-body); color:var(--text-body); line-height:var(--lh-snug); max-width:26ch; margin:0; padding-top:var(--sp-sm); border-top:1px solid var(--border); }
 section.split-panel.metric .panel-right { background:var(--surface-inverse); }
@@ -10608,7 +10740,7 @@ section.split-panel.pullquote .panel-left { width:50%; }
 section.split-panel.pullquote .panel-left::before { content:'\201C'; top:-2.1875cqi; left:1.09375cqi; right:auto; height:auto; width:auto; font-size:17.1875cqi /* cqi-ok: oversized decorative open-quote glyph */; font-family:var(--font-display); font-weight:700; color:var(--on-dark-watermark); line-height:1; pointer-events:none; background:none; }
 section.split-panel.pullquote .panel-left blockquote,
 section.split-panel.pullquote .panel-left blockquote p { font-size:calc(3.9583cqi * var(--fs-scale)) /* cqi-ok: designed pull-quote display size */; font-family:var(--font-display); font-weight:700; font-style:italic; color:var(--on-dark-primary); line-height:var(--lh-tight); position:relative; z-index:1; }
-section.split-panel.pullquote .panel-left blockquote { margin:0 0 var(--sp-md); }
+section.split-panel.pullquote .panel-left blockquote { padding:0 0 var(--sp-md); margin:0; }
 section.split-panel.pullquote .panel-left blockquote p { margin:0; }
 section.split-panel.pullquote .panel-left cite { font-size:var(--fs-message); font-family:var(--font-body); font-style:normal; color:var(--on-dark-secondary); position:relative; z-index:1; display:block; }
 
@@ -10640,8 +10772,8 @@ section.split-panel.watermark .panel-left > p:has(> code:only-child) { position:
 section.split-panel.watermark .panel-left > p:has(> code:only-child) > code { color:var(--on-accent-secondary); background:none; border:none; padding:0; border-radius:0; }
 section.split-panel.watermark .panel-left > h5 { position:absolute; top:var(--sp-xl); margin:0; color:var(--on-accent-secondary); }
 section.split-panel.watermark .panel-right { padding:var(--sp-xl) var(--sp-xl) var(--sp-xl) var(--sp-lg); }
-section.split-panel.watermark .panel-right h3 { font-family:inherit; text-transform:none; letter-spacing:normal; border-bottom:none; padding-bottom:0; color:var(--text-heading); margin-bottom:0.3125cqi; }
-section.split-panel.watermark .panel-right p { font-size:var(--fs-body); line-height:var(--lh-relaxed); margin-bottom:var(--sp-md); }
+section.split-panel.watermark .panel-right h3 { font-family:inherit; text-transform:none; letter-spacing:normal; border-bottom:none; padding-bottom:0.3125cqi; color:var(--text-heading); }
+section.split-panel.watermark .panel-right p { font-size:var(--fs-body); line-height:var(--lh-relaxed); padding-bottom:var(--sp-md); }
 section.split-panel.watermark .panel-right > :is(ul,ol) { display:flex; flex-direction:column; justify-content:flex-start; gap:var(--sp-sm); flex:1; list-style:none; padding:0; margin:0; }
 section.split-panel.watermark .panel-right > ol { counter-reset:panel-counter; }
 section.split-panel.watermark .panel-right > :is(ul,ol) > li { display:grid; align-content:start; justify-items:start; background:var(--bg-alt); border:1px solid var(--border); border-left:1px solid var(--border); border-radius:var(--radius-md); padding:1.09375cqi 1.40625cqi; font-size:var(--fs-body); color:var(--text-heading); font-weight:700; line-height:var(--lh-snug); }
@@ -10651,13 +10783,13 @@ section.split-panel.watermark .panel-right > ol > li > :is(strong,span,p,em) { g
 section.split-panel.watermark .panel-right > ol > li > :is(strong,span,p,em):last-child { padding-bottom:0.703125cqi; }
 section.split-panel.watermark .panel-right > ol > li > :is(ul,ol) { grid-column:2; margin:0; padding:0 1.25cqi 0.703125cqi; }
 section.split-panel.watermark .panel-right > :is(ul,ol) > li > strong { display:block; }
-section.split-panel.watermark .panel-right > :is(ul,ol) > li > :is(ul,ol) { display:block; list-style:none; padding:0; margin:0.3125cqi 0 0 0; width:100%; }
+section.split-panel.watermark .panel-right > :is(ul,ol) > li > :is(ul,ol) { display:block; list-style:none; padding:0.3125cqi 0 0 0; margin:0; width:100%; }
 section.split-panel.watermark .panel-right > :is(ul,ol) > li > :is(ul,ol) > li { display:block; list-style:none; background:none; border:none; border-radius:0; padding:0; margin:0; font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-snug); font-weight:400; }
 section.split-panel.watermark .panel-right > :is(ul,ol) > li > :is(ul,ol) > li > p { margin:0; }
 /* optional metadata footer — a trailing ul after the main list (Audience · Intent) */
-section.split-panel.watermark .panel-right :is(ol,ul) + ul { margin-top:auto; padding-top:var(--sp-sm); border-top:1px solid var(--border); display:flex; flex-direction:column; gap:0.3125cqi; flex:0 0 auto; list-style:none; }
+section.split-panel.watermark .panel-right :is(ol,ul) + ul { padding-top:var(--sp-sm); border-top:1px solid var(--border); display:flex; flex-direction:column; gap:0.3125cqi; flex:0 0 auto; list-style:none; }
 section.split-panel.watermark .panel-right :is(ol,ul) + ul > li { display:block; background:none; border:none; border-radius:0; padding:0; margin:0; font-size:var(--fs-body); font-weight:400; color:var(--text-body); line-height:var(--lh-snug); }
-section.split-panel.watermark .panel-right :is(ol,ul) + ul > li::before { font-weight:700; color:var(--text-heading); margin-right:0.4em; }
+section.split-panel.watermark .panel-right :is(ol,ul) + ul > li::before { font-weight:700; color:var(--text-heading); padding-right:0.4em; }
 section.split-panel.watermark .panel-right :is(ol,ul) + ul > li:nth-child(1)::before { content:"Audience ·"; }
 section.split-panel.watermark .panel-right :is(ol,ul) + ul > li:nth-child(2)::before { content:"Intent ·"; }
 section.split-panel.watermark { --marp-slide-header-color: var(--on-accent-secondary); --marp-slide-footer-color: var(--on-accent-secondary); }
@@ -10704,7 +10836,7 @@ section.split-panel-cover .split-feat-h {
   /* h1, not hero — a split-panel heading can be a full sentence, and hero overflows
      the cover past ~10 words. h1 keeps a short title dramatic and a long one fitting. */
   font-size: var(--fs-h1); font-weight: 800; line-height: var(--lh-tight);
-  color: var(--on-accent); margin: var(--sp-xs) 0 var(--sp-md); max-width: 12em;
+  color: var(--on-accent); padding: var(--sp-xs) 0 var(--sp-md); max-width: 12em;
 }
 section.split-panel-cover .split-feat-lede {
   font-size: var(--fs-emphasis); line-height: var(--lh-snug); opacity: 0.92; max-width: 20em;
@@ -10714,16 +10846,16 @@ section.split-panel-cover .split-feat-lede {
 section.split-panel-points .split-runhead {
   font-size: var(--fs-meta); letter-spacing: 0.2em; text-transform: uppercase;
   color: var(--text-muted); border-bottom: 1px solid var(--border);
-  padding-bottom: var(--sp-xs); margin-bottom: var(--sp-xl);
+  padding-bottom: var(--sp-xs);
 }
 section.split-panel-points .split-pts {
-  list-style: none; padding: 0; margin: 0;
+  list-style: none; padding: var(--sp-xl) 0 0 0; margin: 0;
   display: flex; flex-direction: column; gap: var(--sp-lg);
 }
 section.split-panel-points .split-pts > li { border-left: 3px solid var(--accent); padding-left: var(--sp-md); }
 section.split-panel-points .split-pt-t {
   display: block; font-weight: 800; color: var(--text-heading); font-size: var(--fs-h3);
-  margin-bottom: var(--sp-3xs);
+  padding-bottom: var(--sp-3xs);
 }
 section.split-panel-points .split-pt-b { color: var(--text-body); font-size: var(--fs-body); line-height: var(--lh-base); }
 
@@ -10792,7 +10924,8 @@ section.state-chart .state-chart-figure {
   position: relative;
   width: fit-content;
   max-width: 100%;
-  margin: 0 auto;
+  /* Centred by .chart-body's flex-direction:column + align-items:center (was
+   * margin: 0 auto — redundant, and auto margins sit outside the flex box). */
 }
 
 /* Node column (TB, default) — centred, content-sized HTML nodes. The
@@ -11078,7 +11211,14 @@ section.state-chart.inline .state-rows,
 section.state-chart.horizontal .state-rows {
   list-style: none;
   margin: 0;
-  padding: 0;
+  /* Row spacing lives on the container as flex gap + edge padding (was a
+   * per-row margin: 0.3125cqi 0; margins collapse outside the flex box and
+   * break virtual-list scrollHeight measurement). Adjacent rows' collapsed
+   * margin was 0.3125cqi → gap; the first/last outer margin → padding. */
+  display: flex;
+  flex-direction: column;
+  gap: 0.3125cqi;
+  padding: 0.3125cqi 0;
 }
 
 section.state-chart.inline .state-node-row,
@@ -11086,9 +11226,13 @@ section.state-chart.horizontal .state-node-row {
   position: relative;
   display: flex;
   align-items: center;
+  /* Right-anchor the transitions cluster via space-between (was margin-left:auto
+   * on .state-transitions — auto margins sit outside the flex content box). The
+   * label is the left child, the transitions the right; the index is absolute. */
+  justify-content: space-between;
   gap: var(--sp-sm);
   padding: var(--sp-sm) var(--sp-md);
-  margin: 0.3125cqi 0;
+  /* Row spacing is the container's flex gap now (was margin: 0.3125cqi 0). */
   /* Same canonical tile as the SVG-variant nodes above. */
   --fill-hue: var(--text-muted);
   --fill-ink: var(--diagram-stroke);
@@ -11151,7 +11295,7 @@ section.state-chart.horizontal .state-transitions {
   display: inline-flex;
   flex-wrap: wrap;
   gap: var(--sp-xs);
-  margin-left: auto;
+  /* Right-anchored by the row's justify-content:space-between (was margin-left:auto). */
   align-items: center;
 }
 
@@ -11214,9 +11358,9 @@ section.state-chart.horizontal .state-chip-arrow {
  */
 
 section.stats > .cell-stage { display:flex; flex-direction:column; justify-content:center; align-items:center; }
-section.stats h2 { margin-bottom:var(--sp-xs); text-align:center; }
-section.stats h3 { margin-bottom:0.3125cqi; }
-section.stats > .cell-stage > p, section.stats > .cell-stage > em { font-size:var(--fs-body); line-height:var(--lh-relaxed); margin-bottom:var(--sp-lg); color:var(--text-label); font-style:italic; display:block; text-align:center; }
+section.stats h2 { padding-bottom:var(--sp-xs); text-align:center; }
+section.stats h3 { padding-bottom:0.3125cqi; }
+section.stats > .cell-stage > p, section.stats > .cell-stage > em { font-size:var(--fs-body); line-height:var(--lh-relaxed); padding-bottom:var(--sp-lg); color:var(--text-label); font-style:italic; display:block; text-align:center; }
 
 /* The stat strip: the top-level list laid out as a centered flex row. */
 section.stats > .cell-stage > ol {
@@ -11318,7 +11462,6 @@ section.stats[data-orientation='square'] > .cell-stage > ol > li > ul > li {
  * .preemption (chevron-linked stack), .lane (markdown table — a different shape, below).
  * ──────────────────────────────────────────────────────────────────── */
 section.statute-stack > .cell-stage { display:flex; flex-direction:column; }
-section.statute-stack h2 { margin-bottom:var(--sp-md); }
 section.statute-stack > .cell-stage > ul,
 section.statute-stack > .cell-stage > ol {
   list-style:none; padding:0; margin:0;
@@ -11381,15 +11524,27 @@ section.statute-stack > .cell-stage > :is(ul, ol) > li > strong:first-child > co
   border-radius:var(--pill-radius); padding:var(--pill-pad-y) var(--pill-pad-x);
   white-space:nowrap;
 }
-/* COLUMN cards (default) — the lone citation pill anchors to the header's right corner. */
-section.statute-stack:not(.hierarchy):not(.bands):not(.preemption):not(.lane) > .cell-stage > :is(ul, ol) > li > strong:first-child > code {
-  margin-left:auto;
+/* COLUMN cards (default) — the lone citation pill anchors to the header's right corner.
+ * Two-child header row (label + lone pill) → space-between pushes the pill to the right
+ * edge WITHOUT a left-auto margin (auto margins sit outside the flex content box and break
+ * the virtual-list height measurement). */
+section.statute-stack:not(.hierarchy):not(.bands):not(.preemption):not(.lane) > .cell-stage > :is(ul, ol) > li > strong:first-child {
+  justify-content:space-between;
 }
 /* ROW cards — the citation stays left after the label; the trailing status pill (the second
- * header code) pushes right on the same line and takes the jurisdiction hue (the signal
- * colour). A lone citation in a row card simply stays left. */
+ * header code) anchors to the right edge on the same line and takes the jurisdiction hue (the
+ * signal colour). A lone citation in a row card simply stays left.
+ *
+ * Right-anchoring is margin-free (an auto margin sits outside the flex content box and breaks
+ * the virtual-list height measurement): the status pill is taken out of flow and pinned to the
+ * header's right edge with absolute positioning, so the label + citation stay packed left at
+ * their natural widths. (A flex:1 spacer can't be used here — the citation is a chrome-bearing
+ * pill, so growing it would stretch its visible box rather than open up clean space.) */
+section.statute-stack:is(.hierarchy, .bands, .preemption) > .cell-stage > :is(ul, ol) > li > strong:first-child {
+  position:relative;
+}
 section.statute-stack:is(.hierarchy, .bands, .preemption) > .cell-stage > :is(ul, ol) > li > strong:first-child > code:last-child:not(:first-child) {
-  margin-left:auto;
+  position:absolute; right:0; top:50%; transform:translateY(-50%);
   --pill-border:var(--jur-accent, var(--accent));
   --pill-fg:var(--jur-accent, var(--accent));
 }
@@ -11425,12 +11580,17 @@ section.statute-stack > .cell-stage > ol > li > :is(ul, ol) > li:first-child:has
 /* COLUMN-card status pill — last body item, only-child <code> (the default's authoring puts
  * status in the body so the narrow rail keeps it OFF the header line). Same chrome as the
  * header citation but JURISDICTION-HUED (the card's signal colour); foot-anchored to the
- * BOTTOM-LEFT corner via margin-top:auto (the full-height rail has the room) + align-self.
+ * BOTTOM-LEFT corner + align-self.
  * Row cards carry status in the header instead, so this body code never appears there.
- * (Swap --jur-accent for a --pass/--warn/--fail map for pass/warn/fail status semantics.) */
-section.statute-stack:not(.hierarchy):not(.bands):not(.preemption):not(.lane) > .cell-stage > ul > li > :is(ul, ol) > li:last-child:has(> code:only-child),
-section.statute-stack:not(.hierarchy):not(.bands):not(.preemption):not(.lane) > .cell-stage > ol > li > :is(ul, ol) > li:last-child:has(> code:only-child) {
-  margin-top:auto;
+ * (Swap --jur-accent for a --pass/--warn/--fail map for pass/warn/fail status semantics.)
+ *
+ * Bottom-anchoring is margin-free (an auto margin sits outside the flex content box and
+ * breaks the virtual-list height measurement): instead of margin-top:auto on the status li,
+ * the body item immediately ABOVE the status (a chrome-free prose/citation line) grows to
+ * fill the rail's free space, pushing the status to the foot — the flex:1-spacer idiom. */
+section.statute-stack:not(.hierarchy):not(.bands):not(.preemption):not(.lane) > .cell-stage > ul > li > :is(ul, ol) > li:has(+ li:last-child > code:only-child),
+section.statute-stack:not(.hierarchy):not(.bands):not(.preemption):not(.lane) > .cell-stage > ol > li > :is(ul, ol) > li:has(+ li:last-child > code:only-child) {
+  flex:1 1 auto;
 }
 section.statute-stack > .cell-stage > ul > li > :is(ul, ol) > li:last-child:has(> code:only-child) > code,
 section.statute-stack > .cell-stage > ol > li > :is(ul, ol) > li:last-child:has(> code:only-child) > code {
@@ -11482,7 +11642,9 @@ section.statute-stack.preemption > .cell-stage > ol {
   /* content-height cards stacked + centred — flex mirror of `grid-auto-rows:auto;
    * align-content:center`. */
   flex-direction:column;
-  gap:0;
+  /* inter-card spacing as a flex gap (was margin-bottom on each card) — measurable,
+   * inside the flex content box; the chevron ::after still centres in this gap band. */
+  gap:var(--sp-md);
   justify-content:center;
 }
 section.statute-stack.preemption > .cell-stage > ul > li,
@@ -11492,7 +11654,6 @@ section.statute-stack.preemption > .cell-stage > ol > li {
   border-left:4px solid var(--jur-accent, var(--accent));
   border-top:1px solid var(--border);
   position:relative;
-  margin-bottom:var(--sp-md);
 }
 section.statute-stack.preemption > .cell-stage > :is(ul, ol) > li:not(:last-child)::after {
   /* `❯` rotated down — the same chevron the compare-prose connector uses, for one
@@ -11508,7 +11669,6 @@ section.statute-stack.preemption > .cell-stage > :is(ul, ol) > li:not(:last-chil
   color:var(--accent);
   line-height:1;
 }
-section.statute-stack.preemption > .cell-stage > :is(ul, ol) > li:last-child { margin-bottom:0; }
 
 /* Stacked ROW variants (hierarchy / bands / preemption) — both pills ride the header line
  * (citation left, status right) and the gloss sits below, so each card is just two compact
@@ -11613,7 +11773,7 @@ section.statute-stack.lane td:last-child {
   /* Header-pill authoring already carries the citation + status on the label row, so the
      portrait card needs no pill-lift — just breathing room between that row and the gloss. */
   section.statute-stack:not(.hierarchy):not(.bands):not(.preemption):not(.lane) > .cell-stage > :is(ul, ol) > li > :is(ul, ol) {
-    margin-top:var(--sp-md);
+    padding-top:var(--sp-md);
   }
 }
 
@@ -11673,31 +11833,52 @@ section.timeline-list .timeline-item {
   padding: 0 var(--sp-sm);
   z-index: 1;
 }
+/* The dot is a fixed circle drawn on a ::before so the element box itself can
+ * carry the dot→pill spacing as padding-bottom (a margin would collapse outside
+ * the flex content box and break virtual-list scrollHeight). The visible ring
+ * keeps its exact 1.09375cqi size + position, so the spine-line math (centre at
+ * 0.546875cqi from the item content top) is unchanged. */
 section.timeline-list .timeline-dot {
-  width: 1.09375cqi; height: 1.09375cqi;
+  position: relative;
+  /* Footprint = the original ring's border-box (content 1.09375cqi + 3px border
+   * each side). The ring is now drawn on ::before so this box can carry the
+   * dot→pill spacing as padding-bottom (margins collapse outside the flex box). */
+  width: calc(1.09375cqi + 6px);  /* sanctioned: 1.09375cqi ring content + 3px stroke ×2 — exact ring footprint so the box can carry the dot→pill padding without distorting the ring */
+  aspect-ratio: 1;
+  box-sizing: content-box;
+  padding-bottom: var(--sp-sm);   /* was margin-bottom: var(--sp-sm) — dot→pill gap */
+  --timeline-dot-ink: var(--chart-cat-1-ink); /* per-stage colour, cycled below */
+  flex: 0 0 auto;
+}
+section.timeline-list .timeline-dot::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;   /* fills the dot's ring footprint (left+right:0); square via aspect-ratio — no px */
+  aspect-ratio: 1;
+  box-sizing: border-box;
   border-radius: 50%;
   background: var(--bg);             /* hollow — centre matches the slide */
-  border: 3px solid var(--chart-cat-1-ink); /* per-stage colour, cycled below */
+  border: 3px solid var(--timeline-dot-ink);
   box-shadow: 0 0 0 4px var(--bg);
-  margin-bottom: var(--sp-sm);
-  flex: 0 0 auto;
 }
 /* Each stage's dot rides the vivid catN spectrum (hollow ring, stroke only),
  * matching pie / kanban / word-cloud — categorical colour for sequential
  * stages. Six-rotation, like the other categorical members. The spine and
  * date pills stay accent so the row still reads as one timeline. */
-section.timeline-list .timeline-item:nth-child(6n+1) .timeline-dot { border-color: var(--chart-cat-1-ink); }
-section.timeline-list .timeline-item:nth-child(6n+2) .timeline-dot { border-color: var(--chart-cat-2-ink); }
-section.timeline-list .timeline-item:nth-child(6n+3) .timeline-dot { border-color: var(--chart-cat-3-ink); }
-section.timeline-list .timeline-item:nth-child(6n+4) .timeline-dot { border-color: var(--chart-cat-4-ink); }
-section.timeline-list .timeline-item:nth-child(6n+5) .timeline-dot { border-color: var(--chart-cat-5-ink); }
-section.timeline-list .timeline-item:nth-child(6n)   .timeline-dot { border-color: var(--chart-cat-6-ink); }
+section.timeline-list .timeline-item:nth-child(6n+1) .timeline-dot { --timeline-dot-ink: var(--chart-cat-1-ink); }
+section.timeline-list .timeline-item:nth-child(6n+2) .timeline-dot { --timeline-dot-ink: var(--chart-cat-2-ink); }
+section.timeline-list .timeline-item:nth-child(6n+3) .timeline-dot { --timeline-dot-ink: var(--chart-cat-3-ink); }
+section.timeline-list .timeline-item:nth-child(6n+4) .timeline-dot { --timeline-dot-ink: var(--chart-cat-4-ink); }
+section.timeline-list .timeline-item:nth-child(6n+5) .timeline-dot { --timeline-dot-ink: var(--chart-cat-5-ink); }
+section.timeline-list .timeline-item:nth-child(6n)   .timeline-dot { --timeline-dot-ink: var(--chart-cat-6-ink); }
 section.timeline-list .timeline-pill {
   display: inline-flex;
   align-items: center;
   height: 1.875cqi;
   padding: 0 0.78125cqi;
-  margin-bottom: var(--sp-sm);
+  /* pill→title spacing moved to .timeline-title's padding-top (the pill is a
+   * filled chip — self-padding would grow its outline; a margin would collapse
+   * outside the flex content box). */
   border-radius: 0.9375cqi;
   background: var(--bg);
   border: var(--chart-hairline) solid color-mix(in oklab, var(--accent) 40%, var(--border));
@@ -11717,12 +11898,13 @@ section.timeline-list .timeline-title {
   font-weight: 600;
   color: var(--text-heading);
   text-align: center;
-  margin-bottom: 0.3125cqi;
+  /* padding-top = the pill→title gap (was the pill's margin-bottom: var(--sp-sm));
+   * padding-bottom = the title→status/body gap (was margin-bottom: 0.3125cqi).
+   * The title has no fill, so padding is fully measurable and margin-free. */
+  padding-top: var(--sp-sm);
+  padding-bottom: 0.3125cqi;
   line-height: var(--lh-tight);
   max-width: 17.1875cqi;
-}
-section.timeline-list .timeline-item .chart-status {
-  margin-bottom: var(--sp-xs);
 }
 section.timeline-list .timeline-body {
   font-size: var(--fs-meta);
@@ -11730,6 +11912,12 @@ section.timeline-list .timeline-body {
   text-align: center;
   line-height: var(--lh-relaxed);
   max-width: 17.1875cqi;
+}
+/* status→body gap (was the .chart-status margin-bottom: var(--sp-xs)). Scoped to
+ * an immediately-preceding status so a body without a status doesn't inherit the
+ * gap — the status pill is filled, so the spacing rides the body's padding-top. */
+section.timeline-list .chart-status + .timeline-body {
+  padding-top: var(--sp-xs);
 }
 
 /* ── Box-local RESTRUCTURE (tall + strip, ≤0.9): the left-to-right spine becomes
@@ -11787,14 +11975,22 @@ section.timeline-list .timeline-body {
   section.timeline-list .timeline-dot {
     grid-column: 1;
     grid-row: 1;
-    margin: 0.234375cqi 0 0 0;
+    /* Portrait: the dot rides its own left-rail grid cell, so it needs no
+     * dot→pill padding-bottom (override the base) — just a top nudge to align
+     * with the row (was margin: 0.234375cqi 0 0 0; padding shifts the ::before
+     * ring down by the same amount). */
+    padding: 0.234375cqi 0 0 0;
   }
   /* Chips hug their content; the title/body keep the default stretch so prose
    * fills the column and wraps. */
   section.timeline-list .timeline-dot,
   section.timeline-list .timeline-pill,
   section.timeline-list .timeline-item .chart-status { justify-self: start; }
-  section.timeline-list .timeline-pill { margin-bottom: var(--sp-2xs); }
+  /* Portrait pill→title gap tightens to var(--sp-2xs) (was the pill's
+   * margin-bottom: var(--sp-2xs)); it rides the title's padding-top, overriding
+   * the landscape var(--sp-sm). The pill is filled, so the spacing can't sit on
+   * the pill itself. */
+  section.timeline-list .timeline-title { padding-top: var(--sp-2xs); }
   section.timeline-list .timeline-title,
   section.timeline-list .timeline-body { max-width: none; }
 }
@@ -11810,12 +12006,12 @@ section.timeline-list .timeline-body {
 
 section.title { justify-content:center; align-items:center; background:var(--surface-inverse); }
 section.title { border-top: none; }
-section.title h1 { font-size:var(--fs-h1); color:var(--text-display); margin-bottom:var(--sp-xs); text-align:center; }
-section.title hr { background:var(--accent); height:1px; width:64px; margin:var(--sp-sm) auto; }
-section.title p  { color:var(--on-dark-secondary); font-size:var(--fs-message); font-weight:300; margin:0; text-align:center; }
+section.title h1 { font-size:var(--fs-h1); color:var(--text-display); padding-bottom:var(--sp-xs); text-align:center; }
+section.title hr { background:var(--accent); height:1px; width:64px; margin:0; }
+section.title p  { color:var(--on-dark-secondary); font-size:var(--fs-message); font-weight:300; margin:0; padding-top:0; text-align:center; }
 /* Title layout: inline-code after h1 = eyebrow, rendered visually above h1 via flex order.
  * Overrides the general subtitle rule (italic, body font) for section.title only. */
-section.title h1 + p:has(> code:only-child) { order:-1; margin:0 0 0.3125cqi 0; }
+section.title h1 + p:has(> code:only-child) { order:-1; margin:0; padding-top:0; padding-bottom:0.3125cqi; }
 section.title h1 + p:has(> code:only-child) > code {
   font-family: var(--font-mono);
   font-size: var(--fs-meta);
@@ -11844,7 +12040,6 @@ section.title h1 + p:has(> code:only-child) > code {
  * state-half / state-empty / state-slashed. Replaces the prior Unicode
  * ✓/–/✗ glyphs (font-dependent) with a font-independent disc+mask recipe;
  * the SHAPE carries the meaning independently of colour. */
-section.verdict-grid h2 { margin-bottom:var(--sp-sm); }
 .badge { position:relative; display:inline-flex; align-items:center; justify-content:center; text-align:center; line-height:1; gap:6px; font-family:var(--pill-font); font-size:var(--pill-fs); font-weight:var(--pill-weight); letter-spacing:var(--pill-tracking); border-radius:var(--pill-radius); padding:var(--pill-pad-y) var(--pill-pad-x); white-space:nowrap; background:var(--bg); border:1px solid var(--text-muted); color:var(--text-body); }
 .badge.pass { --state-color:var(--pass); }
 .badge.warn { --state-color:var(--warn); }
@@ -12029,7 +12224,9 @@ section.word-cloud .word-cloud-canvas {
   height: 25cqi;
   max-width: 100%;
   max-height: 100%;
-  margin: 0 auto;
+  /* Horizontal centring comes from .chart-body's flex-direction:column +
+   * align-items:center (was margin: 0 auto — redundant, and auto margins sit
+   * outside the flex content box). */
   flex: 0 1 auto;
   min-height: 0;
 }
@@ -12102,7 +12299,9 @@ section.word-cloud .wc-key-label {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--text-muted);
-  margin-bottom: 0.2em;
+  /* Extra space below the label, on top of the .wc-key flex gap; padding keeps
+   * it inside the box (was margin-bottom — collapses outside the flex content). */
+  padding-bottom: 0.2em;
 }
 section.word-cloud .wc-key-ramp {
   display: flex;
@@ -15855,9 +16054,27 @@ section.form .cell-masthead {
    * metrics left the meta floating above the kicker — a visible misalignment,
    * worst in portrait. Picked over start/end/center after a 5-variant review. */
   align-items: baseline;
-  margin-bottom: var(--sp-md);
+  /* The masthead↔stage gap is a `gap` on the section flex column (below), NOT a margin —
+   * margins are banned (they fight the virtual-list scrollHeight measurement). padding-bottom
+   * positions the hairline below the title; the section gap supplies the hairline↔stage space. */
   padding-bottom: var(--sp-md);
   border-bottom: 1px solid var(--border);
+}
+/* The band owns its spacing: padding-bottom (above) is the SOLE title↔hairline gap. A heading
+ * lifted into the band still carries its flow `margin-bottom` (base `section h2`, or a larger
+ * per-component override), which would stack on that padding and double the gap. Zero every
+ * heading's margin across the whole band — lede AND bay — so the band's padding is the only
+ * control. Scoped to `.cell-masthead` (not `.masthead-lede`) so a heading docked in the bay is
+ * covered too; lower specificity that still clears the base/override margin rules. A `margin:0`
+ * reset adds no space, so it's exempt from the HARD RULE #20 ratchet. */
+section.form .cell-masthead :is(h1, h2, h3, h4) { margin: 0; }
+/* The frame section is a flex column (base.elements.css). Space the masthead band from the
+ * stage with a gap rather than a margin. Scoped to masthead-bearing slides so sovereign
+ * frames (title / divider / closing — no masthead) are untouched. Halved from the legacy
+ * doubled gap (padding-bottom positions the hairline; this gap is hairline→stage) to reclaim
+ * ~sp-md of stage height on every slide — most in portrait, where it bites hardest. */
+section:has(> .cell-masthead) {
+  gap: var(--sp-sm);
 }
 
 /* === lib/forms/cell/pagination-right/pagination-right.css === */
@@ -15964,7 +16181,7 @@ section.form {
    * zone is the progress rail's reserved horizontal budget (see the footer Cell
    * rules) — footer-left yields it so the two can never collide. */
   --footer-h: calc(var(--_sec-1cqi, 1cqi) * 5);
-  --footer-reserve: calc(var(--frame-inset-y) + var(--footer-h) + var(--sp-md));
+  --footer-reserve: calc(var(--frame-inset-y) + var(--footer-h) + var(--sp-sm));
   --footer-centre-w: calc(var(--_sec-1cqi, 1cqi) * 30);
   --footer-centre-half: calc(var(--footer-centre-w) / 2);
   /* The progress rail's default right offset — it parks just left of the page

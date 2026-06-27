@@ -5,7 +5,7 @@
 /* ── COMPARE-TABLE ──
  * ## heading  markdown table  p note
  */
-section.compare-table h2 { font-size:var(--fs-emphasis); margin-bottom:var(--sp-sm); }
+section.compare-table h2 { font-size:var(--fs-emphasis); }
 section.compare-table table { width:100%; table-layout:auto; border-collapse:collapse; font-size:var(--fs-meta); flex:1; }
 section.compare-table thead tr { background:var(--spectrum) bottom / 100% 2px no-repeat; }
 section.compare-table thead th { font-family:var(--font-label); font-size:var(--fs-meta); font-weight:600; letter-spacing:0.10em; text-transform:uppercase; color:var(--text-label); padding:0.625cqi var(--sp-xs) 0.78125cqi; text-align:left; word-wrap:break-word; overflow-wrap:break-word; }
@@ -20,10 +20,10 @@ section.compare-table td:first-child { font-weight:600; color:var(--text-heading
  * rules (the row borders), first-cell emphasis as the card title. Palette-blind (HARD #3).
  * See engineering/decisions/2026-06-25-retire-landscape-locks-portrait-everything.md. */
 section.compare-table.lat-split-cards .ct-cards { display:flex; flex-direction:column; gap:var(--sp-sm); flex:1; justify-content:center; }
-section.compare-table.lat-split-cards .ct-card { border:1px solid var(--border); border-radius:var(--radius-sm); padding:var(--sp-sm) var(--sp-md); }
-section.compare-table.lat-split-cards .ct-card-title { font-size:var(--fs-emphasis); font-weight:600; color:var(--text-heading); margin-bottom:var(--sp-xs); padding-bottom:var(--sp-xs); background:var(--spectrum) bottom / 100% 2px no-repeat; }
+section.compare-table.lat-split-cards .ct-card { border:1px solid var(--border); border-radius:var(--radius-sm); padding:var(--sp-sm) var(--sp-md); display:flex; flex-direction:column; gap:var(--sp-xs); }
+section.compare-table.lat-split-cards .ct-card-title { font-size:var(--fs-emphasis); font-weight:600; color:var(--text-heading); padding-bottom:var(--sp-xs); background:var(--spectrum) bottom / 100% 2px no-repeat; }
 section.compare-table.lat-split-cards .ct-card-fields { display:grid; grid-template-columns:max-content 1fr; gap:0.4em var(--sp-md); margin:0; }
 section.compare-table.lat-split-cards .ct-field { display:contents; }
 section.compare-table.lat-split-cards .ct-field dt { font-family:var(--font-label); font-size:var(--fs-meta); font-weight:600; letter-spacing:0.10em; text-transform:uppercase; color:var(--text-label); }
 section.compare-table.lat-split-cards .ct-field dd { margin:0; font-size:var(--fs-body-compact); color:var(--text-body); }
-section.compare-table.lat-split-cards .split-runhead { font-family:var(--font-label); font-size:var(--fs-meta); letter-spacing:0.10em; text-transform:uppercase; color:var(--text-label); margin-bottom:var(--sp-sm); opacity:0.85; }
+section.compare-table.lat-split-cards .split-runhead { font-family:var(--font-label); font-size:var(--fs-meta); letter-spacing:0.10em; text-transform:uppercase; color:var(--text-label); padding-bottom:var(--sp-sm); opacity:0.85; }

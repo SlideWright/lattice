@@ -18,7 +18,6 @@
  *   emulator path:           section.cards-stack .cards-stack-inner > .card
  */
 section.cards-stack > .cell-stage { display:flex; flex-direction:column; }
-section.cards-stack h2 { margin-bottom:var(--sp-sm); }
 
 /* shared visual contract — both raw and post-processed */
 section.cards-stack > .cell-stage > ul, section.cards-stack > .cell-stage > ol,
@@ -37,6 +36,11 @@ section.cards-stack .card {
    * rather than forcing its natural height and pushing the stack past the clip. */
   margin:0; flex:1; min-height:0; list-style:none;
   display:flex; flex-wrap:wrap; align-items:baseline; align-content:flex-start;
+  /* badge right-anchors via space-between (title takes the left end, the trailing
+     code pill the right) — replaces the pill's auto inline-start anchor, which sat outside
+     the flex box and broke the virtual-list scrollHeight measure. The body wraps to
+     its own full-width flex line and stays left-aligned. */
+  justify-content:space-between;
   column-gap:var(--sp-sm); row-gap:var(--sp-xs);
   font-size:var(--fs-body); line-height:var(--lh-snug);
   font-weight:700; color:var(--text-heading);
@@ -56,7 +60,7 @@ section.cards-stack .card > strong { font-weight:inherit; color:inherit; }
  *   would miss it). The :has(+ ul/ol) case is covered here by position. — */
 section.cards-stack > .cell-stage > ul > li > code, section.cards-stack > .cell-stage > ol > li > code,
 section.cards-stack .card > code {
-  margin-left:auto; align-self:baseline;
+  align-self:baseline;
   display:inline-flex; align-items:center; justify-content:center; text-align:center; line-height:1;
   font-family:var(--pill-font); font-size:var(--pill-fs); font-weight:var(--pill-weight);
   letter-spacing:var(--pill-tracking); border-radius:var(--pill-radius);
@@ -70,7 +74,7 @@ section.cards-stack .card > code {
 section.cards-stack > .cell-stage > ul > li > ul, section.cards-stack > .cell-stage > ul > li > ol,
 section.cards-stack > .cell-stage > ol > li > ul, section.cards-stack > .cell-stage > ol > li > ol,
 section.cards-stack .card > ul, section.cards-stack .card > ol {
-  flex-basis:100%; list-style:none; padding:0; margin:var(--sp-xs) 0 0 0;
+  flex-basis:100%; list-style:none; padding:var(--sp-xs) 0 0 0;
   font-weight:400; color:var(--text-body); line-height:var(--lh-base);
 }
 section.cards-stack > .cell-stage > ul > li > ul > li, section.cards-stack > .cell-stage > ul > li > ol > li,

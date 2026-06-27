@@ -21,7 +21,6 @@
  */
 
 section.pricing > .cell-stage { display: flex; flex-direction: column; }
-section.pricing h2 { margin-bottom: var(--sp-sm); }
 
 /* ── Tier grid ── three columns by default; `two` / `four` adjust. */
 section.pricing > .cell-stage > ul {
@@ -65,12 +64,11 @@ section.pricing > .cell-stage > ul > li > strong { font-weight: inherit; color: 
 /* ── Price ── trailing inline code, promoted to a display figure. */
 section.pricing > .cell-stage > ul > li > code {
   display: block;
-  margin: var(--sp-2xs) 0 var(--sp-sm) 0;
   font-family: var(--font-display);
   font-size: var(--fs-emphasis);
   font-weight: 700; letter-spacing: 0;
   color: var(--text-heading);
-  background: none; border: none; padding: 0;
+  background: none; border: none; padding: var(--sp-2xs) 0 var(--sp-sm) 0;
 }
 
 /* ── Recommendation ribbon ── the author's *marker* renders top-right. */
@@ -97,7 +95,7 @@ section.pricing > .cell-stage > ul > li:has(> em) > code { color: var(--on-accen
 /* ── Feature list ── fills the card so the caption can pin to the bottom;
  * weight reverts from the card's 700. */
 section.pricing > .cell-stage > ul > li > ul {
-  list-style: none; padding: 0; margin: var(--sp-sm) 0 0 0;
+  list-style: none; padding: var(--sp-sm) 0 0 0; margin: 0;
   width: 100%; flex: 1 1 auto;
   display: flex; flex-direction: column; gap: var(--sp-2xs);
   font-weight: 400;
@@ -118,7 +116,8 @@ section.pricing > .cell-stage > ul > li > ul > li > .badge {
 }
 /* ── "Who it's for" line ── the marker-less last nested li, pinned bottom. */
 section.pricing > .cell-stage > ul > li > ul > li:last-child {
-  margin-top: auto; padding-top: var(--sp-sm);
+  flex: 1 1 auto; display: flex; flex-direction: column; justify-content: flex-end;
+  padding-top: var(--sp-sm);
   font-size: var(--fs-meta); color: var(--text-muted);
 }
 section.pricing > .cell-stage > ul > li:has(> em) > ul > li:last-child { color: var(--on-accent-soft); }

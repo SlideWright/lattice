@@ -33,7 +33,7 @@ section.glossary h2 .range-pill {
   text-align:center; line-height:1;
   font-family:var(--pill-font); font-size:var(--pill-fs); font-weight:var(--pill-weight);
   letter-spacing:var(--pill-tracking);
-  border-radius:var(--pill-radius); padding:var(--pill-pad-y) var(--pill-pad-x); margin-left:auto;
+  border-radius:var(--pill-radius); padding:var(--pill-pad-y) var(--pill-pad-x);
   background:var(--accent-soft); border:1px solid var(--on-accent-soft);
   color:var(--on-accent-soft); white-space:nowrap;
   vertical-align:middle;

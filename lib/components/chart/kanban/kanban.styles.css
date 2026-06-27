@@ -41,7 +41,10 @@ section.kanban.chart-frame .chart-body {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 0;
+  /* The header→cards spacing is the single column gap now (was a
+   * margin-bottom on .kanban-column-header — margins collapse outside the
+   * flex content box and break virtual-list measurement). */
+  gap: var(--sp-sm);
 }
 
 /* Column header — monospace uppercase label register.
@@ -57,7 +60,7 @@ section.kanban.chart-frame .chart-body {
   color: var(--text-label);
   padding: 0 var(--sp-xs) 0.78125cqi;
   border-bottom: 2px solid var(--chart-rule);
-  margin-bottom: var(--sp-sm);
+  /* header→cards spacing moved to .kanban-column's flex gap */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -157,6 +160,10 @@ section.kanban:not(.keyline):not(.tinted) .kanban-card[data-s] {
   display: flex;
   flex-direction: row;
   align-items: center;
+  /* flex-end so a lone .chart-status (no lane) still right-anchors; when a
+   * lane is present it grows (flex:1) and pushes the status to the end. This
+   * replaces a margin-left:auto on the status — see .kanban-lane / .chart-status. */
+  justify-content: flex-end;
   gap: 0.390625cqi;
   min-height: 1.5625cqi;
 }
@@ -195,7 +202,11 @@ section.kanban.dark .kanban-size {
   font-weight: 500;
   letter-spacing: 0.03em;
   white-space: nowrap;
-  flex: 0 0 auto;
+  /* Grow to fill the meta row so the trailing .chart-status is pushed to the
+   * right edge WITHOUT an auto margin on the status (auto margins sit outside
+   * the flex content box). The lane's own content stays left-aligned (it is an
+   * inline-flex whose content defaults to the start). */
+  flex: 1 1 auto;
 }
 .kanban-lane::before {
   content: '';
@@ -214,8 +225,9 @@ section.kanban.dark .kanban-size {
   font-size: var(--fs-meta);
   font-weight: 600;
   letter-spacing: 0.02em;
+  /* Right-anchored by the meta row's justify-content + the lane's flex-grow
+   * (was margin-left:auto, which lives outside the flex content box). */
   flex: 0 0 auto;
-  margin-left: auto;
 }
 
 /* Optional card body (from a third-level sub-bullet) */
@@ -288,8 +300,14 @@ section.kanban.tinted .kanban-column[data-done]   { --col-hue: var(--state-pass-
 /* Header: neutral mono register; the hue lives only on the underline. */
 section.kanban.tinted .kanban-column-header {
   color: var(--text-label);
-  border-bottom: 1.5px solid color-mix(in oklab, var(--col-hue) 60%, transparent);
-  margin: 0 var(--sp-3xs) var(--sp-sm);
+  /* Underline inset var(--sp-3xs) each side (was an inset border-bottom + a
+   * horizontal margin:0 var(--sp-3xs)). Drawn as a bottom-anchored gradient so
+   * the side inset lives in background-size — no border-box-narrowing margin,
+   * and the column's flex gap still owns the header→cards spacing. */
+  background:
+    linear-gradient(color-mix(in oklab, var(--col-hue) 60%, transparent),
+                    color-mix(in oklab, var(--col-hue) 60%, transparent))
+    no-repeat center bottom / calc(100% - 2 * var(--sp-3xs)) 1.5px;
   padding: 0 var(--sp-2xs) 0.6cqi;
 }
 section.kanban.tinted .kanban-column[data-done] .kanban-column-header {

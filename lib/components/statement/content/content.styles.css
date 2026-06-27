@@ -5,8 +5,8 @@
 
 
 
-section.content h3 { margin-bottom:0.3125cqi; }
-section.content h2 { margin-bottom:var(--sp-sm); }
+section.content h3 { padding-bottom:0.3125cqi; }
+section.content h2 { padding-bottom:var(--sp-sm); }
 /* Cap line length: at --fs-message a full-canvas paragraph runs ~90 chars,
  * past the comfortable maximum. 72cqi ≈ 65–75 chars. */
 section.content h2 { max-width:72cqi; }
@@ -24,13 +24,13 @@ section.content p  { font-size:var(--fs-message); line-height:var(--lh-relaxed);
  * it sits beside — the paragraph/list mismatch. Style lists as prose peers:
  * real markers, prose size, prose-compatible rhythm. No :has() — works in
  * every render path. */
-section.content :is(ul, ol) { margin:0 0 var(--sp-sm) 0; padding-left:var(--sp-lg); display:flex; flex-direction:column; gap:var(--sp-2xs); max-width:72cqi; }
+section.content :is(ul, ol) { margin:0; padding:0 0 var(--sp-sm) var(--sp-lg); display:flex; flex-direction:column; gap:var(--sp-2xs); max-width:72cqi; }
 section.content ul { list-style:disc; }
 section.content ol { list-style:decimal; }
 section.content :is(ul, ol) > li { font-size:var(--fs-message); color:var(--text-body); line-height:var(--lh-snug); }
 section.content :is(ul, ol) > li::marker { color:var(--accent); }
 /* nested level steps down to body size so sub-points read as support */
-section.content :is(ul, ol) :is(ul, ol) { margin:var(--sp-2xs) 0 0 0; }
+section.content :is(ul, ol) :is(ul, ol) { padding:var(--sp-2xs) 0 0 var(--sp-lg); margin:0; }
 section.content :is(ul, ol) :is(ul, ol) > li { font-size:var(--fs-body); line-height:var(--lh-base); }
 
 
@@ -38,16 +38,23 @@ section.content :is(ul, ol) :is(ul, ol) > li { font-size:var(--fs-body); line-he
 /* Portrait / square (social) — cap the running-prose measure so lines don't
    sprawl the full width; the centred block reads composed. Display lines
    (statement/quote) are short already, so this targets content prose only. */
+section.content[data-orientation='portrait'] > .cell-stage,
+section.content[data-orientation='square'] > .cell-stage {
+  display: flex; flex-direction: column;
+}
 section.content[data-orientation='portrait'] > .cell-stage > :is(p,ul,ol),
 section.content[data-orientation='square'] > .cell-stage > :is(p,ul,ol) {
-  max-width: 46ch; margin-inline: auto;
+  max-width: 46ch; align-self: center;
 }
 /* Box-local family reflow (2026-06-18-component-adaptive-sizing.md): square+tall+
  * strip (≤1.05) cap the prose measure and centre the block, keyed on the nearest
  * `lattice` container so it fires on a portrait/square deck AND inside a narrow
  * nested cell. Doubled class matches the [data-orientation] reflow's specificity. */
 @container lattice (aspect-ratio <= 1.05) {
+  section.content.content > .cell-stage {
+    display: flex; flex-direction: column;
+  }
   section.content.content > .cell-stage > :is(p,ul,ol) {
-    max-width: 46ch; margin-inline: auto;
+    max-width: 46ch; align-self: center;
   }
 }

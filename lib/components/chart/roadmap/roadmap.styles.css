@@ -53,8 +53,9 @@ section.roadmap .roadmap-figure {
  * Sized to read without squinting, weighted to key the grid, not compete. */
 section.roadmap .roadmap-legend {
   align-self:center;
-  margin:var(--sp-lg) 0 0;
-  padding:var(--sp-sm) 0 0;
+  /* The top separation from the grid (was margin:var(--sp-lg) 0 0) folds into
+   * padding-top — measurable inside the flex content box, margin-free. */
+  padding:calc(var(--sp-lg) + var(--sp-sm)) 0 0;
   list-style:none;
   display:flex;
   flex-wrap:wrap;
@@ -345,7 +346,7 @@ section.roadmap.status td.cell-state .cell-state-label {
   letter-spacing:0.10em;
   text-transform:uppercase;
   color:var(--state-color, var(--text-muted));
-  margin-bottom:2px; /* sanctioned: hairline-scale label spacing */
+  padding-bottom:2px; /* sanctioned: hairline-scale label spacing (was margin-bottom, kept in-box) */
   line-height:1.2;
 }
 section.roadmap.status td.cell-state .cell-state-text {
@@ -421,11 +422,17 @@ section.roadmap.horizons .roadmap-figure {
   gap:var(--sp-sm);
 }
 section.roadmap.horizons .roadmap-legend {
-  margin-top:var(--sp-sm);
+  /* Horizons tightens the legend separation: the former margin-top:var(--sp-sm)
+   * plus the base padding-top:var(--sp-sm) → a single var(--sp-sm)*2 padding-top
+   * (overrides the base calc; margin-free). */
+  padding-top:calc(var(--sp-sm) * 2);
 }
 section.roadmap.horizons .horizon-card {
   display:flex;
   flex-direction:column;
+  /* head→rows spacing is the card's single flex gap now (was a margin-bottom on
+   * .horizon-head, which can't be padding — that would shove its border-bottom). */
+  gap:var(--sp-sm);
   background:var(--bg-alt);
   border:var(--chart-hairline) solid var(--border);
   border-top:var(--chart-fill-accent) solid var(--phase-accent, var(--accent));
@@ -437,7 +444,6 @@ section.roadmap.horizons .horizon-head {
   display:flex;
   flex-direction:column;
   gap:2px; /* sanctioned: hairline-scale gap in the horizon head */
-  margin-bottom:var(--sp-sm);
   padding-bottom:var(--sp-sm);
   border-bottom:var(--chart-hairline) solid var(--border);
   position:relative;
@@ -526,12 +532,14 @@ section.roadmap.horizons .row-text.row-empty {
     gap: var(--sp-sm);
     flex: 1 1 auto;
   }
-  section.roadmap.horizons .horizon-card { padding: var(--sp-sm) var(--sp-md); }
+  section.roadmap.horizons .horizon-card {
+    padding: var(--sp-sm) var(--sp-md);
+    gap: var(--sp-xs); /* portrait head→rows spacing (was head margin-bottom:var(--sp-xs)) */
+  }
   section.roadmap.horizons .horizon-head {
     flex-direction: row;
     align-items: baseline;
     gap: var(--sp-sm);
-    margin-bottom: var(--sp-xs);
     padding-bottom: var(--sp-xs);
   }
   section.roadmap.horizons .horizon-title { font-size: var(--fs-body-compact); }

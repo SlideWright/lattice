@@ -36,7 +36,7 @@ section.gantt.chart-frame .chart-body {
   justify-content: center;
   align-items: center;
   gap: var(--sp-sm) var(--sp-lg);
-  margin-top: var(--sp-xl);
+  padding-top: var(--sp-xl); /* was margin-top — padding stays inside the flex content box */
   align-self: center;
 }
 .gantt-chart .gantt-legend-item {
@@ -90,7 +90,8 @@ section.gantt.chart-frame .chart-body {
   flex-direction: row;
   align-items: center;
   padding-bottom: var(--sp-xs);
-  margin-bottom: 0.3125cqi;
+  /* The 0.3125cqi gap below the axis rule (was margin-bottom) is now padding-top
+   * on .gantt-lanes — keeps the rule where it is and stays inside the box. */
   border-bottom: var(--chart-hairline) solid var(--chart-rule);
 }
 
@@ -129,6 +130,10 @@ section.gantt.chart-frame .chart-body {
   display: flex;
   flex-direction: column;
   width: 100%;
+  /* The axis-rule→lanes gap lives here now (was .gantt-axis-row margin-bottom:
+   * 0.3125cqi). The today line's top is offset by the same amount so it still
+   * starts at the first lane row. */
+  padding-top: 0.3125cqi;
 }
 
 /* The "today" / now line — opt-in (eyebrow `today <point>` only). A thin
@@ -137,7 +142,7 @@ section.gantt.chart-frame .chart-body {
  * 0–100 position across that region. A small downward cap marks "now". */
 .gantt-today {
   position: absolute;
-  top: 0;
+  top: 0.3125cqi; /* align to the first lane row past .gantt-lanes' padding-top */
   bottom: 0;
   left: calc(14.0625cqi + (100% - 14.0625cqi) * var(--gantt-x) / 100);
   width: 0;

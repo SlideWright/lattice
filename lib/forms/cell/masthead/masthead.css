@@ -40,7 +40,25 @@ section.form .cell-masthead {
    * metrics left the meta floating above the kicker — a visible misalignment,
    * worst in portrait. Picked over start/end/center after a 5-variant review. */
   align-items: baseline;
-  margin-bottom: var(--sp-md);
+  /* The masthead↔stage gap is a `gap` on the section flex column (below), NOT a margin —
+   * margins are banned (they fight the virtual-list scrollHeight measurement). padding-bottom
+   * positions the hairline below the title; the section gap supplies the hairline↔stage space. */
   padding-bottom: var(--sp-md);
   border-bottom: 1px solid var(--border);
+}
+/* The band owns its spacing: padding-bottom (above) is the SOLE title↔hairline gap. A heading
+ * lifted into the band still carries its flow `margin-bottom` (base `section h2`, or a larger
+ * per-component override), which would stack on that padding and double the gap. Zero every
+ * heading's margin across the whole band — lede AND bay — so the band's padding is the only
+ * control. Scoped to `.cell-masthead` (not `.masthead-lede`) so a heading docked in the bay is
+ * covered too; lower specificity that still clears the base/override margin rules. A `margin:0`
+ * reset adds no space, so it's exempt from the HARD RULE #20 ratchet. */
+section.form .cell-masthead :is(h1, h2, h3, h4) { margin: 0; }
+/* The frame section is a flex column (base.elements.css). Space the masthead band from the
+ * stage with a gap rather than a margin. Scoped to masthead-bearing slides so sovereign
+ * frames (title / divider / closing — no masthead) are untouched. Halved from the legacy
+ * doubled gap (padding-bottom positions the hairline; this gap is hairline→stage) to reclaim
+ * ~sp-md of stage height on every slide — most in portrait, where it bites hardest. */
+section:has(> .cell-masthead) {
+  gap: var(--sp-sm);
 }
