@@ -1,4 +1,4 @@
-/* _root.css — :root token definitions + the Google Fonts @import.
+/* _root.css — :root token definitions + the self-hosted @font-face block.
  *
  * Extracted from lib/_legacy.css in Phase 2 of the destination map.
  * Splits cleanly into two blocks:
@@ -20,17 +20,17 @@
  * per-component CSS, so component selectors that consume these tokens
  * resolve them at use time as expected.
  *
- * Cascade note. The @import below is now correctly positioned at the
- * top of the bundle (after only the _theme.css comment-only header),
- * which means it actually works in marp-cli and lattice-runtime paths
- * — those previously fell back to system fonts because the @import
- * sat mid-file in _legacy.css and Chromium silently ignored it. The
- * lattice-emulator path was unaffected (it loads the same fonts via
- * a separate <link> in the HTML template). After this move, all three
- * render paths load the webfonts the same way.
+ * Fonts note. This file no longer carries a Google-Fonts `@import` — the
+ * library is self-contained, zero network dependency. tools/build-css.js emits
+ * a self-hosted `@font-face` block from the canonical manifest
+ * (lib/fonts/text-faces.js) into the bundle at this point (the cascade slot the
+ * `@import` held), each face resolving to `url('fonts/<file>.woff2')` relative
+ * to the stylesheet — i.e. dist/fonts/, shipped in the npm tarball. Colour emoji
+ * is NOT bundled by default (~23 MB); it falls back to the installed system
+ * emoji font (every stack below lists Apple/Segoe/Noto). The opt-in full-offline
+ * tier (`npm run fonts:emoji` + dist/lattice-emoji.css) vendors it for air-gapped
+ * use. See engineering/decisions/2026-06-26-local-font-library.md.
  */
-
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Caveat:wght@400;700&family=Shantell+Sans:wght@400;500;700&family=Noto+Color+Emoji&display=swap');
 
 :root {
   /* Color tokens are defined by the active palette (themes/<name>.css),
@@ -44,15 +44,15 @@
      unicode emoji in headings, body, and chrome render inline at the local
      font's metrics. Without them, Chromium falls back unpredictably and the
      emoji may render larger than the text and push lines around.
-     'Noto Color Emoji' is also LOADED via the @import above (unicode-range
-     subsetted, so glyphs fetch only when an emoji is actually used) — this is
-     what makes raw unicode emoji render in COLOR reliably on the owned render
-     paths (lattice-engine, lattice-emulator) even on a bare CI/server or the
-     desktop WebView where no system emoji font is installed. Those paths emit
-     emoji as plain text (no twemoji). The marp-cli / marp-vscode paths instead
-     rewrite emoji to <img class="emoji"> (twemoji); section img.emoji handles
-     that variant, and the loaded font is simply unused there (unicode-range
-     keeps it from touching any non-emoji text). */
+     'Noto Color Emoji' is the LAST fallback here, resolving to the installed
+     SYSTEM emoji font — it is no longer bundled by default (~25 MB), so a bare
+     CI/server with no system emoji font shows monochrome glyphs unless the
+     opt-in full-offline tier is loaded (`npm run fonts:emoji` +
+     dist/lattice-emoji.css, which @font-faces this same family to a local ttf).
+     The owned render paths (lattice-engine, lattice-emulator) emit emoji as
+     plain text (no twemoji). The marp-cli / marp-vscode paths instead rewrite
+     emoji to <img class="emoji"> (twemoji); section img.emoji handles that
+     variant. */
   --font-display: 'Playfair Display', Georgia, serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji';
   --font-body:    'Outfit', system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji';
   /* Stable handle to the CLEAN body face. The `sketch` finish re-points

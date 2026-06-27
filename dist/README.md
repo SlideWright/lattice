@@ -20,8 +20,46 @@ files. See the repo `README.md` for the full entry-point table.
 | `docs/concepts.json` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
 | `docs/forms.json` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
 | `docs/grammar.json` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
+| `fonts/KaTeX_AMS-Regular.woff2` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
+| `fonts/KaTeX_Caligraphic-Bold.woff2` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
+| `fonts/KaTeX_Caligraphic-Regular.woff2` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
+| `fonts/KaTeX_Fraktur-Bold.woff2` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
+| `fonts/KaTeX_Fraktur-Regular.woff2` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
+| `fonts/KaTeX_Main-Bold.woff2` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
+| `fonts/KaTeX_Main-BoldItalic.woff2` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
+| `fonts/KaTeX_Main-Italic.woff2` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
+| `fonts/KaTeX_Main-Regular.woff2` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
+| `fonts/KaTeX_Math-BoldItalic.woff2` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
+| `fonts/KaTeX_Math-Italic.woff2` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
+| `fonts/KaTeX_SansSerif-Bold.woff2` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
+| `fonts/KaTeX_SansSerif-Italic.woff2` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
+| `fonts/KaTeX_SansSerif-Regular.woff2` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
+| `fonts/KaTeX_Script-Regular.woff2` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
+| `fonts/KaTeX_Size1-Regular.woff2` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
+| `fonts/KaTeX_Size2-Regular.woff2` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
+| `fonts/KaTeX_Size3-Regular.woff2` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
+| `fonts/KaTeX_Size4-Regular.woff2` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
+| `fonts/KaTeX_Typewriter-Regular.woff2` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
+| `fonts/caveat-400.woff2` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
+| `fonts/caveat-700.woff2` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
+| `fonts/jetbrains-400.woff2` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
+| `fonts/jetbrains-500.woff2` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
+| `fonts/jetbrains-600.woff2` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
+| `fonts/outfit-300.woff2` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
+| `fonts/outfit-400.woff2` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
+| `fonts/outfit-500.woff2` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
+| `fonts/outfit-600.woff2` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
+| `fonts/outfit-700.woff2` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
+| `fonts/playfair-400.woff2` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
+| `fonts/playfair-700.woff2` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
+| `fonts/playfair-italic-400.woff2` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
+| `fonts/playfair-italic-700.woff2` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
+| `fonts/shantell-400.woff2` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
+| `fonts/shantell-500.woff2` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
+| `fonts/shantell-700.woff2` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
 | `lattice-default.css` | Zero-config drop-in: the engine flattened together with the default palette (cuoio), `@import` resolved at build time. Browser-droppable. | `@slidewright/lattice/default` |
 | `lattice-default.min.css` | Minified `lattice-default.css` — the zero-config themed drop-in, compressed. The leanest single-file `<link>` for browser use. | `@slidewright/lattice/default/min` |
+| `lattice-emoji.css` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
 | `lattice-emulator.js` | Bundled Marp-faithful renderer / PDF exporter CLI — the local engine graph inlined, node_modules deps left external. This is the package `bin` and `main`. | `lattice` bin / `@slidewright/lattice` |
 | `lattice-emulator.min.js` | Minified `lattice-emulator.js` — the same CLI bundle compressed, shebang + executable bit preserved. Leaner install footprint; the bin/main stays the unminified file. | `@slidewright/lattice/min` |
 | `lattice-runtime.js` | Browser runtime transforms (chart-family, structure post-processing) for the marp-vscode preview and web export. esbuild IIFE. | `@slidewright/lattice/runtime` |

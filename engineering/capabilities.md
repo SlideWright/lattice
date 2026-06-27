@@ -64,6 +64,7 @@ harness the index can't infer, add it to `FRAMEWORKS` in the generator.
 | `exemplar-core:build` | Bundle the pure exemplar tier-filter for the browser (Drafting picker length chooser). |
 | `exemplar-core:check` | Freshness gate for the exemplar-core bundle. |
 | `export:marp` | Export a deck as a portable, Marp-native bundle: splits baked to ---, themes, assets, marp-cli config, a README, and (by default) an AI-agent kit (AGENTS.md + component catalog). `<deck.md> <out-dir-or-zip> [palette] [--no-agent]`. |
+| `fonts:emoji` | Vendor Noto Color Emoji into dist/fonts/ for the opt-in full-offline tier (~25 MB, excluded from the npm tarball). Run once while online; needs network. |
 | `layout-core:build` | Bundle the pure Layout Studio core for the browser (docs site). |
 | `layout-core:check` | Freshness gate for the layout-core bundle. |
 | `playground:build` | Build docs/public/playground/lattice-playground.js — the in-browser engine bundle. |
@@ -133,7 +134,7 @@ harness the index can't infer, add it to `FRAMEWORKS` in the generator.
 |---|---|
 | `check:ownership` | Collision/ownership guard: hard-fails on accidental duplicate selectors/transformers/names. |
 | `check:responsive` | Static lint: no fixed-px layout in chart CSS (responsive contract). |
-| `fonts:check` | Font-embedding parity gate: the @import demand and both offline PDF supplies must list the same faces, so a render never silently falls back. |
+| `fonts:check` | Font parity gate: the canonical face manifest (lib/fonts/text-faces.js), assets/fonts/, and the web-export supply must agree, with no Google-Fonts CDN URL — the library self-hosts its type (zero network). |
 | `lint` | Biome over the JS tree (read-only). NEVER `npx biome`. |
 | `lint:deck` | Author-facing footgun checks on one deck (card-style title, ordered-list bold, unknown _class). |
 | `lint:deck:all` | Repo-wide strict deck lint (always-on CI gate). |
@@ -273,8 +274,9 @@ harness the index can't infer, add it to `FRAMEWORKS` in the generator.
 | `tools/build-forms.js` | Generate dist/docs/forms.json — the machine-readable catalog of Lattice's |
 | `tools/build-spec-docs.js` | Publish the owned LFM standards (spec/*.md) onto the docs website as |
 | `tools/build-standalone-core.js` | Bundle the standalone chart-SVG export core for the browser. |
-| `tools/check-fonts.js` | Font-embedding parity gate — keep the engine's font demand and offline supplies in sync. |
+| `tools/check-fonts.js` | Font parity gate — keep the engine's self-hosted faces in sync across every |
 | `tools/cvd-audit.js` | Colour-vision-deficiency (CVD) collapse audit for Lattice themes. |
 | `tools/export-chart-svg.js` | Export a deck's chart(s) as standalone image files — SVG for the vector |
 | `tools/export-marp.js` | export-marp — produce a portable, self-contained bundle of a Lattice deck for |
+| `tools/fetch-emoji-font.js` | Vendor Noto Color Emoji for the opt-in FULL-OFFLINE tier. |
 | `tools/golden-diff.mjs` | Post a PR comment + before/after montage of the gallery slides whose committed golden moved vs the base branch. |

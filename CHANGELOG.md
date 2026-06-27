@@ -27,6 +27,19 @@ in patch versions.
 
 ### Added
 
+- **The library self-hosts its fonts — zero network dependency.** The engine no
+  longer reaches for a CDN at render time: the Google-Fonts `@import` is replaced
+  by a self-hosted `@font-face` block built from a canonical manifest
+  (`lib/fonts/text-faces.js`), with the 17 text faces **and** KaTeX's 20 math faces
+  vendored into `dist/fonts/` (shipped, ~1 MB) and referenced by stylesheet-relative
+  `url('fonts/…')`. Every render path — browser, marp-cli, runtime, and the emulator
+  PDF — now loads type from the library's own bytes. Colour emoji falls back to the
+  installed system emoji font by default; an opt-in full-offline tier
+  (`npm run fonts:emoji` + the committed `dist/lattice-emoji.css`) vendors the ~25 MB
+  Noto Color Emoji for air-gapped environments (excluded from the npm tarball). A new
+  CDN regression guard in the `fonts:check` gate fails the build if any Google-Fonts
+  URL reappears. See `engineering/decisions/2026-06-26-local-font-library.md`.
+
 - **`compare-prose` and `code` adopt the stage cell — completing the standard-component
   cell-tree migration.** Both migrate into the frame's bounded `.cell-stage` (the section
   gains a flex-column stage so `compare-prose`'s two cards and `code`'s fenced block fill

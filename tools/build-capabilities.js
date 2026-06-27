@@ -151,7 +151,8 @@ const SCRIPT_META = {
   'export:marp':              ['Build & bundle', 'Export a deck as a portable, Marp-native bundle: splits baked to ---, themes, assets, marp-cli config, a README, and (by default) an AI-agent kit (AGENTS.md + component catalog). `<deck.md> <out-dir-or-zip> [palette] [--no-agent]`.'],
   'check:ownership':          ['Lint & audit', 'Collision/ownership guard: hard-fails on accidental duplicate selectors/transformers/names.'],
   'check:responsive':         ['Lint & audit', 'Static lint: no fixed-px layout in chart CSS (responsive contract).'],
-  'fonts:check':              ['Lint & audit', 'Font-embedding parity gate: the @import demand and both offline PDF supplies must list the same faces, so a render never silently falls back.'],
+  'fonts:check':              ['Lint & audit', 'Font parity gate: the canonical face manifest (lib/fonts/text-faces.js), assets/fonts/, and the web-export supply must agree, with no Google-Fonts CDN URL — the library self-hosts its type (zero network).'],
+  'fonts:emoji':              ['Build & bundle', 'Vendor Noto Color Emoji into dist/fonts/ for the opt-in full-offline tier (~25 MB, excluded from the npm tarball). Run once while online; needs network.'],
   'scorecard':                ['Lint & audit', 'Token-parity + palette-quality score for every theme.'],
   'scorecard:check':          ['Lint & audit', 'Gate: fail if any theme scorecard regresses.'],
 

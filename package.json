@@ -55,7 +55,8 @@
     "CHANGELOG.md",
     "LICENSE",
     "!**/*.pdf",
-    "!**/*.gallery.md"
+    "!**/*.gallery.md",
+    "!dist/fonts/noto-color-emoji.ttf"
   ],
   "scripts": {
     "build:gallery-jargon": "node lattice-emulator.js examples/gallery-jargon.md examples/gallery-jargon.pdf",
@@ -117,6 +118,7 @@
     "check:ownership": "node tools/check-ownership.js",
     "check:responsive": "node tools/check-chart-responsiveness.js",
     "fonts:check": "node tools/check-fonts.js",
+    "fonts:emoji": "node tools/fetch-emoji-font.js",
     "build:galleries": "node tools/build-galleries.js",
     "build:galleries:check": "node tools/build-galleries.js --check",
     "build:bucket-galleries": "node tools/build-bucket-galleries.js",
