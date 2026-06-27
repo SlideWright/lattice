@@ -78,6 +78,18 @@ describe('readFrontMatter', () => {
     assert.equal(readFrontMatter(CLEAN).autosplit, false);
     assert.equal(readFrontMatter('---\nmarp: true\nautosplit: on\n---\n').configured, true);
   });
+
+  test('validate: default ON; off/false/no → false and counts as configured', async () => {
+    const { readFrontMatter } = await import(MOD);
+    assert.equal(readFrontMatter(CLEAN).validate, true); // absent → on (the default)
+    assert.equal(readFrontMatter('---\nmarp: true\nvalidate: on\n---\n').validate, true);
+    assert.equal(readFrontMatter('---\nmarp: true\nvalidate: off\n---\n').validate, false);
+    assert.equal(readFrontMatter('---\nmarp: true\nvalidate: false\n---\n').validate, false);
+    assert.equal(readFrontMatter('---\nmarp: true\nvalidate: no\n---\n').validate, false);
+    // On (the default) isn't bespoke setup; only an explicit opt-out is "configured".
+    assert.equal(readFrontMatter('---\nmarp: true\nvalidate: on\n---\n').configured, false);
+    assert.equal(readFrontMatter('---\nmarp: true\nvalidate: off\n---\n').configured, true);
+  });
 });
 
 describe('writeFrontMatter', () => {
@@ -136,6 +148,25 @@ describe('writeFrontMatter', () => {
     // round-trips, and switching it off over an existing on clears it.
     assert.equal(readFrontMatter(writeFrontMatter(CLEAN, 'autosplit', true)).autosplit, true);
     assert.ok(!writeFrontMatter(writeFrontMatter(CLEAN, 'autosplit', true), 'autosplit', false).includes('autosplit'));
+  });
+
+  test('validate: default ON is omitted; only an opt-out writes the canonical off', async () => {
+    const { writeFrontMatter, readFrontMatter } = await import(MOD);
+    // On (the default) — boolean true (the switch) or a truthy string — omits the key.
+    assert.equal(writeFrontMatter(CLEAN, 'validate', true), CLEAN);
+    assert.equal(writeFrontMatter(CLEAN, 'validate', 'on'), CLEAN);
+    // Opt out — boolean false or a falsey string — writes `validate: off`.
+    assert.ok(writeFrontMatter(CLEAN, 'validate', false).includes('validate: off\n'));
+    assert.ok(writeFrontMatter(CLEAN, 'validate', 'off').includes('validate: off\n'));
+    // canonical slot: after form, before math.
+    let src = writeFrontMatter(CLEAN, 'math', 'mathjax');
+    src = writeFrontMatter(src, 'form', 'off');
+    src = writeFrontMatter(src, 'validate', false);
+    const block = src.slice(0, src.indexOf('\n---\n'));
+    assert.equal(block, '---\nmarp: true\nform: off\nvalidate: off\nmath: mathjax');
+    // round-trips, and switching it back on clears the key.
+    assert.equal(readFrontMatter(writeFrontMatter(CLEAN, 'validate', false)).validate, false);
+    assert.ok(!writeFrontMatter(writeFrontMatter(CLEAN, 'validate', false), 'validate', true).includes('validate'));
   });
 
   test('quotes a value containing a colon (would break a flat YAML read)', async () => {

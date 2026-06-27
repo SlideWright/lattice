@@ -24,6 +24,18 @@ body.db-page {
 	background: var(--bg);
 	color: var(--text-body);
 	font-family: var(--font-body);
+	/* ── Validation severity tokens ───────────────────────────────────────────
+	 * The single source for the Architect's severity colour, shared by the panel
+	 * findings AND the editor's inline validation underlines so the two views of
+	 * the lint stream read as one system. Token-first: a palette that ships the
+	 * universal status tokens (--fail / --warn, from the engine theme contract)
+	 * wins; otherwise we fall back to the studio's established severity hues — the
+	 * docs page palette (lattice-tokens.generated.css) doesn't expose status
+	 * tokens, so the fallback is what renders today. --accent (info) is always on
+	 * the page, so it needs none. */
+	--db-sev-error: var(--fail, #c0392b);
+	--db-sev-warning: var(--warn, #b8860b);
+	--db-sev-info: var(--accent);
 }
 /* Pin the shared header so the fixed-height (overflow:hidden) db column can't
  * compress it; .db-workspace below takes the remaining space. */
@@ -1529,12 +1541,23 @@ button.db-tl-body:hover {
 	padding: 0.6rem 0.7rem;
 }
 .db-review-head {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
 	font-family: var(--font-display);
 	font-size: 0.74rem;
 	font-weight: 650;
 	letter-spacing: 0.03em;
 	color: var(--text-heading);
 	margin: 0.2rem 0 0.55rem;
+}
+/* Fix-all sits at the right of the findings header; the label takes the slack. */
+.db-review-head > span:first-child {
+	flex: 1 1 auto;
+	min-width: 0;
+}
+.db-review-fixall {
+	flex: 0 0 auto;
 }
 .db-finding {
 	border: 1px solid var(--border);
@@ -1545,13 +1568,13 @@ button.db-tl-body:hover {
 	margin-bottom: 0.5rem;
 }
 .db-finding.sev-error {
-	border-left-color: #c0392b;
+	border-left-color: var(--db-sev-error);
 }
 .db-finding.sev-warning {
-	border-left-color: #b8860b;
+	border-left-color: var(--db-sev-warning);
 }
 .db-finding.sev-suggestion {
-	border-left-color: var(--accent);
+	border-left-color: var(--db-sev-info);
 }
 .db-finding-head {
 	display: flex;
@@ -1564,13 +1587,13 @@ button.db-tl-body:hover {
 	height: 8px;
 	border-radius: 50%;
 	transform: translateY(1px);
-	background: #b8860b;
+	background: var(--db-sev-warning);
 }
 .sev-error .db-finding-dot {
-	background: #c0392b;
+	background: var(--db-sev-error);
 }
 .sev-suggestion .db-finding-dot {
-	background: var(--accent);
+	background: var(--db-sev-info);
 }
 .db-finding-msg {
 	font-size: 0.84rem;

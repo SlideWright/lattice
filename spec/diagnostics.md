@@ -80,7 +80,7 @@ below are the canonical v1 identifiers the reference implementation emits, and
 |---|---|---|---|
 | `unknown-class` | warning | — | A `_class` token that is not a known component or modifier. |
 | `card-style-inline-title` | error | ✓ | `- **Title.** body` on a card-style layout — the body inherits the parent `li` bold. Fix: nested `- Title` / `  - body`. |
-| `ledger-inline-title` | error | — | The unordered inline-bold shape on a ledger/numbered layout, which wants the ordered `1. Name` / `   - body` shape. |
+| `ledger-inline-title` | error | ✓ | The unordered inline-bold shape on a ledger/numbered layout — autofixes to the ordered `1. Name` / `   - body` shape the layout wants. |
 | `statement-ol-bold` | error | — | A `**bold**` span inside an ordered-list statement, which splits the counter-grid row (e.g. `principles`). |
 | `split-bodyless-item` | error | ✓ | A right-panel item with no nested body on a split layout — the title won't lift to bold. |
 | `split-missing-headline` | warning | — | An h2-anchored split slide (`split-panel`/`split-compare`) with no `## ` headline — the left panel renders empty. |
@@ -92,9 +92,11 @@ below are the canonical v1 identifiers the reference implementation emits, and
 
 > **Autofix is per-finding, not per-rule.** The ✓ marks rules that *can* offer a
 > deterministic autofix; whether a given finding carries one depends on its
-> source line. `card-style-inline-title` and `split-bodyless-item` autofix the
-> bold inline shape (`- **Title.** body`); a bare-title or ambiguous-split
-> finding emits `autofixable: false` and relies on the `fix` guidance (§4).
+> source line. `card-style-inline-title`, `ledger-inline-title`, and
+> `split-bodyless-item` autofix the bold inline shape (`- **Title.** body`); the
+> gantt span rule `gantt-retired-delimiter` autofixes the retired delimiter to
+> `..`. A bare-title or otherwise ambiguous finding emits `autofixable: false`
+> and relies on the `fix` guidance (§4).
 
 The machine-readable companion to this table is the per-component grammar in
 [`dist/docs/grammar.json`](../dist/docs/grammar.json), which records, per
@@ -106,14 +108,19 @@ When `autofixable` is `true`, exactly one correct rewrite exists, so a tool MAY
 apply it without prompting the author. The reference implementation exposes:
 
 - `autofixNestedTitle(line)` — converts the **unordered** inline shape
-  `- **Title.** body` → `- Title` / `  - body`. It returns `null` for shapes
-  that are not uniquely fixable: a bare title, an ambiguous non-bold split, or
-  the ordered ledger form (`1. **Name.** body`, whose corrected list type is
-  ambiguous). Those emit `autofixable: false` and rely on the `fix` guidance.
-  The ordered ledger shape is intentionally not auto-fixed, matching
-  `ledger-inline-title` carrying no autofix.
+  `- **Title.** body` → `- Title` / `  - body` (card-style and split rules). It
+  returns `null` for shapes that are not uniquely fixable (a bare title, an
+  ambiguous non-bold split), which emit `autofixable: false`.
+- `autofixOrderedNestedTitle(line)` — the ledger variant: `- **Title.** body` →
+  `1. Title` / `   - body` (Markdown auto-numbers, so the literal `1.` is fine).
+- `autofixGanttDelimiter(line)` — swaps a retired gantt span delimiter
+  (`→` / `–` / `—` / `->`) for `..`, only inside the line's inline-code spans.
 - `applyFix(source, finding)` — applies an autofixable finding to the document,
-  scoped to the finding's slide so an identical line elsewhere is untouched.
+  scoped to the finding's slide so an identical line elsewhere is untouched. The
+  rewrite is computed from the located source line, so its indentation is kept.
+- `applyAllFixes(source, vocab)` — applies every autofixable finding in one pass
+  loop (re-linting between fixes, since each shifts line numbers), returning the
+  fully-fixed source. Backs the Drawing Board's "Fix all" and an editor command.
 
 A conformant L2 tool MAY implement its own fixer; it MUST NOT mark a finding
 `autofixable` unless the rewrite is deterministic and unique.

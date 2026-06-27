@@ -27,7 +27,24 @@ in patch versions.
 
 ### Added
 
-- **The library self-hosts its fonts — zero network dependency.** The engine no
+- **Live, in-editor validation in the Drawing Board and Playground.** The deck-grammar
+  findings the Architect already computes (layout/component footguns, capacity, unknown
+  classes/regions, …) now also render *inline* in the CodeMirror editor as wavy
+  underlines with a hover tooltip (message + fix) and a one-click quick-fix for the
+  mechanical cases — the same deterministic `lib/authoring/lint-core.js` the Node CLI
+  and the panel run, surfaced where the cursor is. Severity colours come from shared
+  brand tokens (`--db-sev-error` / `--db-sev-warning`, token-first off `--fail`/`--warn`)
+  so the underlines, the hover, and the panel read as one palette-blind system. Adds a
+  severity gutter, keyboard navigation (F8 / Shift-F8 between findings, Ctrl-Shift-M for
+  the lint panel), and a **Fix all** action (the Architect panel button and the editor's
+  Alt-Shift-F) that applies every mechanical fix at once. Governed per deck by a new
+  `validate:` front-matter key (default **on**; `validate: off` opts a deck out), toggled
+  from the deck-setup drawer — so the choice travels with the deck and its exported `.md`.
+- **More autofixable lint rules.** `lib/authoring/lint-core.js` gains machine fixes for
+  `ledger-inline-title` (→ the numbered `1. Name` / `   - body` shape) and
+  `gantt-retired-delimiter` (the retired `→`/`–`/`->` span delimiter → `..`), plus
+  `applyAllFixes(source, vocab)` for batch application — shared by the editor, the
+  Architect panel, and the CLI. `applyFix` now preserves the fixed line's indentation.
   longer reaches for a CDN at render time: the Google-Fonts `@import` is replaced
   by a self-hosted `@font-face` block built from a canonical manifest
   (`lib/fonts/text-faces.js`), with the 17 text faces **and** KaTeX's 20 math faces

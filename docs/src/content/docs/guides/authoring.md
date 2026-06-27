@@ -215,6 +215,28 @@ Workspace → "Open suggestions automatically"** changes the reach: *Components
 only* (the default), *Everywhere* (every context opens on entry), or *Off* (the
 popup opens only on typing / `Ctrl-Space`).
 
+## Inline validation — issues underlined as you type
+
+The same authoring checks the linter runs (the footgun rules, content capacity,
+unknown classes or map regions) also surface **inline in the editor**: an issue
+is drawn as a wavy underline — red for an error, amber for a warning — with a
+matching dot in the gutter, and hovering it shows the message and the fix. Where
+a fix is mechanical (the inline-bold card/ledger trap, a body-less split item, a
+retired gantt delimiter) the hover carries a **Quick fix** button that rewrites
+the line for you in one undoable step. It's the same deterministic engine as the
+**[Architect](/drawing-board/)** panel and the `lint-deck` CLI — just shown where
+your cursor is. This runs in **both** the Drawing Board and the
+[Playground](/playground/).
+
+A few shortcuts: **F8** / **Shift-F8** jump between findings, **Ctrl-Shift-M**
+opens the lint panel, and **Alt-Shift-F** (or the Architect panel's **Fix all**
+button) applies every mechanical fix in the deck at once.
+
+Validation is **on by default**. To turn it off for a deck, flip **Inline
+validation** off in the Deck setup drawer (or write `validate: off` in front
+matter) — useful for a deck built on bespoke local classes the linter doesn't
+know. The choice lives in front matter, so it travels with the deck.
+
 ## Deck setup (front matter without the YAML)
 
 The Drawing Board's **Deck setup** drawer — the sliders button beside the
@@ -222,7 +244,8 @@ settings chip — edits the deck's front matter through plain controls, so you
 never hand-write the `---` block and the Markdown body stays content-only. It
 covers the whole-deck settings: **theme**, slide **size** (landscape HD / 4K /
 Standard, plus social/mobile Square / Portrait / Story / Mobile),
-**page numbers**, running **header** / **footer**, and a few advanced ones
+**page numbers**, running **header** / **footer**, **inline validation** on/off,
+and a few advanced ones
 (a default slide **class**, **math** renderer, document **language**). The
 controls are pre-filled from whatever front matter the deck already has, and
 each change writes a minimal block back to the top of the source — so the

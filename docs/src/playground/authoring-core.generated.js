@@ -194,10 +194,32 @@ var require_lint_core = __commonJS({
       return `${indent}${bullet} ${cleanTitle}
 ${indent}  ${bullet} ${body.trim()}`;
     }
+    function autofixOrderedNestedTitle(line) {
+      if (!line) return null;
+      const m = line.match(/^(\s*)[-*]\s+\*\*(.+?)\*\*\.?\s+(\S.*?)\s*$/);
+      if (!m) return null;
+      const [, indent, title, body] = m;
+      const cleanTitle = title.trim().replace(/[.:!?]+$/, "");
+      return `${indent}1. ${cleanTitle}
+${indent}   - ${body.trim()}`;
+    }
+    function autofixGanttDelimiter(line) {
+      if (!line || !/(?:→|–|—|->)/.test(line)) return null;
+      const fixed = line.replace(/`([^`]+)`/g, (_full, inner) => "`" + inner.replace(/\s*(?:→|–|—|->)\s*/g, "..") + "`");
+      return fixed === line ? null : fixed;
+    }
+    function fixReplacement(rule, line) {
+      switch (rule) {
+        case "ledger-inline-title":
+          return autofixOrderedNestedTitle(line);
+        case "gantt-retired-delimiter":
+          return autofixGanttDelimiter(line);
+        default:
+          return autofixNestedTitle(line);
+      }
+    }
     function applyFix(source, finding) {
       if (!finding || finding.line == null) return null;
-      const repl = autofixNestedTitle(finding.line);
-      if (repl == null) return null;
       const lines = source.split("\n");
       const target = finding.line.trim();
       const targetChunk = finding.slide + fmChunks(source) - 1;
@@ -208,10 +230,23 @@ ${indent}  ${bullet} ${body.trim()}`;
           continue;
         }
         if (chunk === targetChunk && lines[i].trim() === target) {
+          const repl = fixReplacement(finding.rule, lines[i]);
+          if (repl == null) return null;
           return lines.slice(0, i).concat(repl.split("\n"), lines.slice(i + 1)).join("\n");
         }
       }
       return null;
+    }
+    function applyAllFixes(source, vocab) {
+      let cur = source || "";
+      for (let pass = 0; pass < 500; pass++) {
+        const fixable = lintTextWith(cur, vocab).find((f) => f.autofixable);
+        if (!fixable) break;
+        const next = applyFix(cur, fixable);
+        if (next == null || next === cur) break;
+        cur = next;
+      }
+      return cur;
     }
     function editDistance(a, b, max) {
       const m = a.length, n = b.length;
@@ -372,6 +407,7 @@ ${indent}  ${bullet} ${body.trim()}`;
               severity: "error",
               classToken: tokens.find((t) => ledgerOl.has(t)),
               line: offending.trim(),
+              autofixable: !!autofixOrderedNestedTitle(offending),
               message: 'inline "- **Title.** body" on a ledger/numbered slide \u2014 this layout wants an ordered (numbered) list, not an unordered bold lead-in',
               fix: "Use the numbered ledger shape:\n    1. Name\n       - body text"
             });
@@ -609,6 +645,7 @@ ${indent}  ${bullet} ${body.trim()}`;
                 severity: "error",
                 classToken: "gantt",
                 line: raw.trim(),
+                autofixable: !!autofixGanttDelimiter(raw),
                 message: `gantt span \`${tok}\` uses a retired delimiter \u2014 the only span delimiter is now \`..\``,
                 fix: `Write the span as \`${tok.replace(/\s*(?:→|–|—|->)\s*/, "..")}\` (e.g. \`Q1..Q2\` or \`2026-01-01..2026-03-15\`).`
               });
@@ -791,7 +828,10 @@ ${indent}  ${bullet} ${body.trim()}`;
       editDistance,
       isKnownModifier,
       autofixNestedTitle,
+      autofixOrderedNestedTitle,
+      autofixGanttDelimiter,
       applyFix,
+      applyAllFixes,
       lintTextWith
     };
   }
