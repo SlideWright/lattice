@@ -91,14 +91,19 @@ pre-push:
       # pre-commit's affected-tests ran.
       run: npm test
     - name: integration-tests
-      # Full integration tier (cross-renderer parity + PDF page counts). This is
-      # the SAME job CI runs as the REQUIRED merge gate, and it costs ~4.5 min
-      # warm — so locally it's OPT-IN early-warning, not a gatekeeper: it runs
+      # The FULL integration tier (every suite — both the PR slice CI blocks on
+      # AND the nightly render-regression slice). CI's REQUIRED merge gate now runs
+      # only `test:integration:pr` (parity + export + invariants); the heavier
+      # fresh-render suites moved to integration-nightly.yml. Running the full tier
+      # here gives the strongest pre-push early warning — it catches a nightly-tier
+      # regression before it reaches `main`, a slice CI no longer blocks on per-PR.
+      # It costs ~4.5 min warm, so locally it's OPT-IN, not a gatekeeper: it runs
       # only when LATTICE_FULL_PUSH=1. The cheap deterministic gates above (lint,
       # lint:deck:all, build:check, full unit suite) ALWAYS run, so a push is
-      # never unverified — CI still blocks merge on integration regardless. This
+      # never unverified — CI still blocks merge on the PR slice regardless. This
       # is strictly safer than the `--no-verify` an agent reaches for when a gate
       # is too slow. Set LATTICE_FULL_PUSH=1 to run it locally before pushing.
+      # See engineering/decisions/2026-06-27-integration-nightly-split.md.
       # Needs pdfinfo (poppler-utils) + a Chromium; the web SessionStart hook
       # installs both and exports CHROME_PATH (inline locate is a fallback).
       #
