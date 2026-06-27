@@ -15,26 +15,26 @@
 section.split-panel { padding:0; flex-direction:row; }
 section.split-panel .panel-left { width:38%; flex-shrink:0; background:var(--surface-inverse); display:flex; flex-direction:column; justify-content:flex-end; padding:var(--sp-xl) var(--sp-lg); position:relative; overflow:hidden; }
 section.split-panel .panel-left::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:var(--accent); }
-section.split-panel .panel-eyebrow { display:block; font-size:var(--fs-meta); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--on-dark-secondary); margin-bottom:var(--sp-md); }
-section.split-panel .panel-left h2 { font-size:var(--fs-h1); color:var(--on-dark-primary); line-height:var(--lh-tight); margin:0 0 var(--sp-sm); font-weight:800; }
+section.split-panel .panel-eyebrow { display:block; font-size:var(--fs-meta); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--on-dark-secondary); padding-bottom:var(--sp-md); }
+section.split-panel .panel-left h2 { font-size:var(--fs-h1); color:var(--on-dark-primary); line-height:var(--lh-tight); padding:0 0 var(--sp-sm); margin:0; font-weight:800; }
 section.split-panel .panel-left p { font-size:var(--fs-message); color:var(--on-dark-secondary); line-height:var(--lh-snug); margin:0; }
 /* min-height:0 + overflow:clip complete the flex cell-tree contract (2026-06-26):
  * a flex child defaults to min-height:auto (refuses to shrink), so without these
  * an over-stuffed right zone bleeds past the panel wall. The left panel already
  * clips (overflow:hidden, line above); this walls the supporting zone to match. */
 section.split-panel .panel-right { flex:1; min-height:0; overflow:clip; background:var(--bg); display:flex; flex-direction:column; padding:var(--sp-xl) var(--sp-xl) var(--sp-xl) var(--sp-lg); }
-section.split-panel .panel-right h3 { font-size:var(--fs-meta); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--text-secondary); font-weight:600; margin:0 0 var(--sp-lg); padding-bottom:var(--sp-sm); border-bottom:1px solid var(--border); }
-section.split-panel .panel-right > ul { display:flex; flex-direction:column; flex:1; justify-content:space-evenly; list-style:none; padding:0; margin:0; }
+section.split-panel .panel-right h3 { font-size:var(--fs-meta); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--text-secondary); font-weight:600; margin:0; padding-bottom:var(--sp-sm); border-bottom:1px solid var(--border); }
+section.split-panel .panel-right > ul { display:flex; flex-direction:column; flex:1; justify-content:space-evenly; list-style:none; padding:var(--sp-lg) 0 0 0; margin:0; }
 section.split-panel .panel-right > ul > li { padding-left:var(--sp-md); border-left:3px solid var(--accent); }
-section.split-panel .panel-right > ul > li > strong { display:block; font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-heading); font-weight:700; line-height:var(--lh-snug); margin-bottom:0.390625cqi; }
+section.split-panel .panel-right > ul > li > strong { display:block; font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-heading); font-weight:700; line-height:var(--lh-snug); padding-bottom:0.390625cqi; }
 section.split-panel .panel-right > ul > li > :is(ul,ol) { list-style:none; padding:0; margin:0; }
 section.split-panel .panel-right > ul > li > :is(ul,ol) > li { font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-body); line-height:var(--lh-relaxed); }
 
 /* ── .metric — light-left polarity + hero number (former split-metric) ───── */
 section.split-panel.metric .panel-left { width:44%; background:var(--bg); border-right:1px solid var(--border); justify-content:center; align-items:flex-start; }
 section.split-panel.metric .panel-left::before { content:none; }
-section.split-panel.metric .panel-eyebrow { color:var(--text-secondary); margin-bottom:var(--sp-xs); }
-section.split-panel.metric .panel-left h2 { font-size:var(--fs-hero); font-family:var(--font-display); font-weight:900; color:var(--text-heading); line-height:1; margin:0 0 var(--sp-sm); }
+section.split-panel.metric .panel-eyebrow { color:var(--text-secondary); padding-bottom:var(--sp-xs); }
+section.split-panel.metric .panel-left h2 { font-size:var(--fs-hero); font-family:var(--font-display); font-weight:900; color:var(--text-heading); line-height:1; padding:0 0 var(--sp-sm); margin:0; }
 section.split-panel.metric .panel-left h2 em { font-size:var(--fs-h1); font-weight:700; font-style:normal; color:var(--text-secondary); }
 section.split-panel.metric .panel-left p { font-size:var(--fs-meta); font-family:var(--font-body); color:var(--text-body); line-height:var(--lh-snug); max-width:26ch; margin:0; padding-top:var(--sp-sm); border-top:1px solid var(--border); }
 section.split-panel.metric .panel-right { background:var(--surface-inverse); }
@@ -48,7 +48,7 @@ section.split-panel.pullquote .panel-left { width:50%; }
 section.split-panel.pullquote .panel-left::before { content:'\201C'; top:-2.1875cqi; left:1.09375cqi; right:auto; height:auto; width:auto; font-size:17.1875cqi /* cqi-ok: oversized decorative open-quote glyph */; font-family:var(--font-display); font-weight:700; color:var(--on-dark-watermark); line-height:1; pointer-events:none; background:none; }
 section.split-panel.pullquote .panel-left blockquote,
 section.split-panel.pullquote .panel-left blockquote p { font-size:calc(3.9583cqi * var(--fs-scale)) /* cqi-ok: designed pull-quote display size */; font-family:var(--font-display); font-weight:700; font-style:italic; color:var(--on-dark-primary); line-height:var(--lh-tight); position:relative; z-index:1; }
-section.split-panel.pullquote .panel-left blockquote { margin:0 0 var(--sp-md); }
+section.split-panel.pullquote .panel-left blockquote { padding:0 0 var(--sp-md); margin:0; }
 section.split-panel.pullquote .panel-left blockquote p { margin:0; }
 section.split-panel.pullquote .panel-left cite { font-size:var(--fs-message); font-family:var(--font-body); font-style:normal; color:var(--on-dark-secondary); position:relative; z-index:1; display:block; }
 
@@ -80,8 +80,8 @@ section.split-panel.watermark .panel-left > p:has(> code:only-child) { position:
 section.split-panel.watermark .panel-left > p:has(> code:only-child) > code { color:var(--on-accent-secondary); background:none; border:none; padding:0; border-radius:0; }
 section.split-panel.watermark .panel-left > h5 { position:absolute; top:var(--sp-xl); margin:0; color:var(--on-accent-secondary); }
 section.split-panel.watermark .panel-right { padding:var(--sp-xl) var(--sp-xl) var(--sp-xl) var(--sp-lg); }
-section.split-panel.watermark .panel-right h3 { font-family:inherit; text-transform:none; letter-spacing:normal; border-bottom:none; padding-bottom:0; color:var(--text-heading); margin-bottom:0.3125cqi; }
-section.split-panel.watermark .panel-right p { font-size:var(--fs-body); line-height:var(--lh-relaxed); margin-bottom:var(--sp-md); }
+section.split-panel.watermark .panel-right h3 { font-family:inherit; text-transform:none; letter-spacing:normal; border-bottom:none; padding-bottom:0.3125cqi; color:var(--text-heading); }
+section.split-panel.watermark .panel-right p { font-size:var(--fs-body); line-height:var(--lh-relaxed); padding-bottom:var(--sp-md); }
 section.split-panel.watermark .panel-right > :is(ul,ol) { display:flex; flex-direction:column; justify-content:flex-start; gap:var(--sp-sm); flex:1; list-style:none; padding:0; margin:0; }
 section.split-panel.watermark .panel-right > ol { counter-reset:panel-counter; }
 section.split-panel.watermark .panel-right > :is(ul,ol) > li { display:grid; align-content:start; justify-items:start; background:var(--bg-alt); border:1px solid var(--border); border-left:1px solid var(--border); border-radius:var(--radius-md); padding:1.09375cqi 1.40625cqi; font-size:var(--fs-body); color:var(--text-heading); font-weight:700; line-height:var(--lh-snug); }
@@ -91,13 +91,13 @@ section.split-panel.watermark .panel-right > ol > li > :is(strong,span,p,em) { g
 section.split-panel.watermark .panel-right > ol > li > :is(strong,span,p,em):last-child { padding-bottom:0.703125cqi; }
 section.split-panel.watermark .panel-right > ol > li > :is(ul,ol) { grid-column:2; margin:0; padding:0 1.25cqi 0.703125cqi; }
 section.split-panel.watermark .panel-right > :is(ul,ol) > li > strong { display:block; }
-section.split-panel.watermark .panel-right > :is(ul,ol) > li > :is(ul,ol) { display:block; list-style:none; padding:0; margin:0.3125cqi 0 0 0; width:100%; }
+section.split-panel.watermark .panel-right > :is(ul,ol) > li > :is(ul,ol) { display:block; list-style:none; padding:0.3125cqi 0 0 0; margin:0; width:100%; }
 section.split-panel.watermark .panel-right > :is(ul,ol) > li > :is(ul,ol) > li { display:block; list-style:none; background:none; border:none; border-radius:0; padding:0; margin:0; font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-snug); font-weight:400; }
 section.split-panel.watermark .panel-right > :is(ul,ol) > li > :is(ul,ol) > li > p { margin:0; }
 /* optional metadata footer — a trailing ul after the main list (Audience · Intent) */
-section.split-panel.watermark .panel-right :is(ol,ul) + ul { margin-top:auto; padding-top:var(--sp-sm); border-top:1px solid var(--border); display:flex; flex-direction:column; gap:0.3125cqi; flex:0 0 auto; list-style:none; }
+section.split-panel.watermark .panel-right :is(ol,ul) + ul { padding-top:var(--sp-sm); border-top:1px solid var(--border); display:flex; flex-direction:column; gap:0.3125cqi; flex:0 0 auto; list-style:none; }
 section.split-panel.watermark .panel-right :is(ol,ul) + ul > li { display:block; background:none; border:none; border-radius:0; padding:0; margin:0; font-size:var(--fs-body); font-weight:400; color:var(--text-body); line-height:var(--lh-snug); }
-section.split-panel.watermark .panel-right :is(ol,ul) + ul > li::before { font-weight:700; color:var(--text-heading); margin-right:0.4em; }
+section.split-panel.watermark .panel-right :is(ol,ul) + ul > li::before { font-weight:700; color:var(--text-heading); padding-right:0.4em; }
 section.split-panel.watermark .panel-right :is(ol,ul) + ul > li:nth-child(1)::before { content:"Audience ·"; }
 section.split-panel.watermark .panel-right :is(ol,ul) + ul > li:nth-child(2)::before { content:"Intent ·"; }
 section.split-panel.watermark { --marp-slide-header-color: var(--on-accent-secondary); --marp-slide-footer-color: var(--on-accent-secondary); }
@@ -144,7 +144,7 @@ section.split-panel-cover .split-feat-h {
   /* h1, not hero — a split-panel heading can be a full sentence, and hero overflows
      the cover past ~10 words. h1 keeps a short title dramatic and a long one fitting. */
   font-size: var(--fs-h1); font-weight: 800; line-height: var(--lh-tight);
-  color: var(--on-accent); margin: var(--sp-xs) 0 var(--sp-md); max-width: 12em;
+  color: var(--on-accent); padding: var(--sp-xs) 0 var(--sp-md); max-width: 12em;
 }
 section.split-panel-cover .split-feat-lede {
   font-size: var(--fs-emphasis); line-height: var(--lh-snug); opacity: 0.92; max-width: 20em;
@@ -154,15 +154,15 @@ section.split-panel-cover .split-feat-lede {
 section.split-panel-points .split-runhead {
   font-size: var(--fs-meta); letter-spacing: 0.2em; text-transform: uppercase;
   color: var(--text-muted); border-bottom: 1px solid var(--border);
-  padding-bottom: var(--sp-xs); margin-bottom: var(--sp-xl);
+  padding-bottom: var(--sp-xs);
 }
 section.split-panel-points .split-pts {
-  list-style: none; padding: 0; margin: 0;
+  list-style: none; padding: var(--sp-xl) 0 0 0; margin: 0;
   display: flex; flex-direction: column; gap: var(--sp-lg);
 }
 section.split-panel-points .split-pts > li { border-left: 3px solid var(--accent); padding-left: var(--sp-md); }
 section.split-panel-points .split-pt-t {
   display: block; font-weight: 800; color: var(--text-heading); font-size: var(--fs-h3);
-  margin-bottom: var(--sp-3xs);
+  padding-bottom: var(--sp-3xs);
 }
 section.split-panel-points .split-pt-b { color: var(--text-body); font-size: var(--fs-body); line-height: var(--lh-base); }

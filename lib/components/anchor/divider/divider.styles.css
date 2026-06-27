@@ -22,5 +22,5 @@ section.divider h2 { font-size:var(--fs-h1); color:var(--text-display); max-widt
  * orientation. Merged from the standalone subtopic on 2026-06-07. */
 section.divider.light { background:var(--bg); padding-left:0; justify-content:center; align-items:center; }
 section.divider.light::before { content:none; }
-section.divider.light h2 { font-size:var(--fs-h2); color:var(--text-body); max-width:none; margin-bottom:var(--sp-sm); text-align:center; line-height:var(--lh-tight); }
-section.divider.light p  { font-size:var(--fs-message); max-width:46.875cqi; line-height:var(--lh-relaxed); margin:0 auto; text-align:center; }
+section.divider.light h2 { font-size:var(--fs-h2); color:var(--text-body); max-width:none; padding-bottom:var(--sp-sm); text-align:center; line-height:var(--lh-tight); }
+section.divider.light p  { font-size:var(--fs-message); max-width:46.875cqi; line-height:var(--lh-relaxed); margin:0; text-align:center; }

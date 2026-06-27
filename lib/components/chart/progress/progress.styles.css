@@ -130,7 +130,10 @@ section.progress .progress-row > .chart-status-empty {
 /* Optional row sub-bullet — rendered as a small footnote under the bar. */
 section.progress .progress-note {
   grid-column: 2 / 3;
-  margin-top: -0.3125cqi;
+  /* Nudge the note up under the bar via transform (was margin-top: -0.3125cqi).
+   * Transform is the measurable, margin-free equivalent — no margin to collapse
+   * outside the grid/flex content box and confuse virtual-list scrollHeight. */
+  transform: translateY(-0.3125cqi);
   font-size: var(--fs-meta);
   color: var(--text-secondary);
   font-style: italic;

@@ -686,7 +686,13 @@ function checkTypographyTokens(errors) {
 // fights this gate — just lower MARGIN_BUDGET to follow the floor as it drops. Target
 // is zero. A margin that is provably the only answer is admitted by RAISING this number
 // with that justification in the PR (HARD RULE #20), never by a silent edit.
-const MARGIN_BUDGET = 271;
+//
+// 271 → 43: the no-margins component sweep (phase 2) retired every spacing margin from
+// lib/components/**/*.styles.css. The 43 that remain live in base/contract/forms/chart-family
+// CSS (out of that sweep's scope) plus a handful the `offendingMargins` regex over-counts on
+// the `.margin` variant selector (`section.citation-card.margin:is(…)` reads as `margin:is(…)`)
+// — a known guard false-positive tracked for a follow-up regex tightening.
+const MARGIN_BUDGET = 43;
 
 // HARD RULE #20 gate — keep `margin` out of the engine's layout CSS; space with
 // `gap`/`padding`, which measure cleanly (engineering/gotchas.md).

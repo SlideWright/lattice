@@ -53,31 +53,52 @@ section.timeline-list .timeline-item {
   padding: 0 var(--sp-sm);
   z-index: 1;
 }
+/* The dot is a fixed circle drawn on a ::before so the element box itself can
+ * carry the dot→pill spacing as padding-bottom (a margin would collapse outside
+ * the flex content box and break virtual-list scrollHeight). The visible ring
+ * keeps its exact 1.09375cqi size + position, so the spine-line math (centre at
+ * 0.546875cqi from the item content top) is unchanged. */
 section.timeline-list .timeline-dot {
-  width: 1.09375cqi; height: 1.09375cqi;
+  position: relative;
+  /* Footprint = the original ring's border-box (content 1.09375cqi + 3px border
+   * each side). The ring is now drawn on ::before so this box can carry the
+   * dot→pill spacing as padding-bottom (margins collapse outside the flex box). */
+  width: calc(1.09375cqi + 6px);  /* sanctioned: 1.09375cqi ring content + 3px stroke ×2 — exact ring footprint so the box can carry the dot→pill padding without distorting the ring */
+  aspect-ratio: 1;
+  box-sizing: content-box;
+  padding-bottom: var(--sp-sm);   /* was margin-bottom: var(--sp-sm) — dot→pill gap */
+  --timeline-dot-ink: var(--chart-cat-1-ink); /* per-stage colour, cycled below */
+  flex: 0 0 auto;
+}
+section.timeline-list .timeline-dot::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;   /* fills the dot's ring footprint (left+right:0); square via aspect-ratio — no px */
+  aspect-ratio: 1;
+  box-sizing: border-box;
   border-radius: 50%;
   background: var(--bg);             /* hollow — centre matches the slide */
-  border: 3px solid var(--chart-cat-1-ink); /* per-stage colour, cycled below */
+  border: 3px solid var(--timeline-dot-ink);
   box-shadow: 0 0 0 4px var(--bg);
-  margin-bottom: var(--sp-sm);
-  flex: 0 0 auto;
 }
 /* Each stage's dot rides the vivid catN spectrum (hollow ring, stroke only),
  * matching pie / kanban / word-cloud — categorical colour for sequential
  * stages. Six-rotation, like the other categorical members. The spine and
  * date pills stay accent so the row still reads as one timeline. */
-section.timeline-list .timeline-item:nth-child(6n+1) .timeline-dot { border-color: var(--chart-cat-1-ink); }
-section.timeline-list .timeline-item:nth-child(6n+2) .timeline-dot { border-color: var(--chart-cat-2-ink); }
-section.timeline-list .timeline-item:nth-child(6n+3) .timeline-dot { border-color: var(--chart-cat-3-ink); }
-section.timeline-list .timeline-item:nth-child(6n+4) .timeline-dot { border-color: var(--chart-cat-4-ink); }
-section.timeline-list .timeline-item:nth-child(6n+5) .timeline-dot { border-color: var(--chart-cat-5-ink); }
-section.timeline-list .timeline-item:nth-child(6n)   .timeline-dot { border-color: var(--chart-cat-6-ink); }
+section.timeline-list .timeline-item:nth-child(6n+1) .timeline-dot { --timeline-dot-ink: var(--chart-cat-1-ink); }
+section.timeline-list .timeline-item:nth-child(6n+2) .timeline-dot { --timeline-dot-ink: var(--chart-cat-2-ink); }
+section.timeline-list .timeline-item:nth-child(6n+3) .timeline-dot { --timeline-dot-ink: var(--chart-cat-3-ink); }
+section.timeline-list .timeline-item:nth-child(6n+4) .timeline-dot { --timeline-dot-ink: var(--chart-cat-4-ink); }
+section.timeline-list .timeline-item:nth-child(6n+5) .timeline-dot { --timeline-dot-ink: var(--chart-cat-5-ink); }
+section.timeline-list .timeline-item:nth-child(6n)   .timeline-dot { --timeline-dot-ink: var(--chart-cat-6-ink); }
 section.timeline-list .timeline-pill {
   display: inline-flex;
   align-items: center;
   height: 1.875cqi;
   padding: 0 0.78125cqi;
-  margin-bottom: var(--sp-sm);
+  /* pill→title spacing moved to .timeline-title's padding-top (the pill is a
+   * filled chip — self-padding would grow its outline; a margin would collapse
+   * outside the flex content box). */
   border-radius: 0.9375cqi;
   background: var(--bg);
   border: var(--chart-hairline) solid color-mix(in oklab, var(--accent) 40%, var(--border));
@@ -97,12 +118,13 @@ section.timeline-list .timeline-title {
   font-weight: 600;
   color: var(--text-heading);
   text-align: center;
-  margin-bottom: 0.3125cqi;
+  /* padding-top = the pill→title gap (was the pill's margin-bottom: var(--sp-sm));
+   * padding-bottom = the title→status/body gap (was margin-bottom: 0.3125cqi).
+   * The title has no fill, so padding is fully measurable and margin-free. */
+  padding-top: var(--sp-sm);
+  padding-bottom: 0.3125cqi;
   line-height: var(--lh-tight);
   max-width: 17.1875cqi;
-}
-section.timeline-list .timeline-item .chart-status {
-  margin-bottom: var(--sp-xs);
 }
 section.timeline-list .timeline-body {
   font-size: var(--fs-meta);
@@ -110,6 +132,12 @@ section.timeline-list .timeline-body {
   text-align: center;
   line-height: var(--lh-relaxed);
   max-width: 17.1875cqi;
+}
+/* status→body gap (was the .chart-status margin-bottom: var(--sp-xs)). Scoped to
+ * an immediately-preceding status so a body without a status doesn't inherit the
+ * gap — the status pill is filled, so the spacing rides the body's padding-top. */
+section.timeline-list .chart-status + .timeline-body {
+  padding-top: var(--sp-xs);
 }
 
 /* ── Box-local RESTRUCTURE (tall + strip, ≤0.9): the left-to-right spine becomes
@@ -167,14 +195,22 @@ section.timeline-list .timeline-body {
   section.timeline-list .timeline-dot {
     grid-column: 1;
     grid-row: 1;
-    margin: 0.234375cqi 0 0 0;
+    /* Portrait: the dot rides its own left-rail grid cell, so it needs no
+     * dot→pill padding-bottom (override the base) — just a top nudge to align
+     * with the row (was margin: 0.234375cqi 0 0 0; padding shifts the ::before
+     * ring down by the same amount). */
+    padding: 0.234375cqi 0 0 0;
   }
   /* Chips hug their content; the title/body keep the default stretch so prose
    * fills the column and wraps. */
   section.timeline-list .timeline-dot,
   section.timeline-list .timeline-pill,
   section.timeline-list .timeline-item .chart-status { justify-self: start; }
-  section.timeline-list .timeline-pill { margin-bottom: var(--sp-2xs); }
+  /* Portrait pill→title gap tightens to var(--sp-2xs) (was the pill's
+   * margin-bottom: var(--sp-2xs)); it rides the title's padding-top, overriding
+   * the landscape var(--sp-sm). The pill is filled, so the spacing can't sit on
+   * the pill itself. */
+  section.timeline-list .timeline-title { padding-top: var(--sp-2xs); }
   section.timeline-list .timeline-title,
   section.timeline-list .timeline-body { max-width: none; }
 }

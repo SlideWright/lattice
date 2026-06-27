@@ -107,8 +107,7 @@ section.q-and-a > .cell-stage > :is(ul, ol) > li > strong {
 /* Answer — the nested list, reset off the question's weight/size/colour. */
 section.q-and-a > .cell-stage > :is(ul, ol) > li > :is(ul, ol) {
   list-style: none;
-  margin: var(--sp-xs) 0 0;
-  padding: 0;
+  padding: var(--sp-xs) 0 0;
 }
 section.q-and-a > .cell-stage > :is(ul, ol) > li > :is(ul, ol) > li {
   font-family: var(--font-body);
@@ -185,7 +184,7 @@ section.q-and-a.rail > .cell-stage > :is(ul, ol) > li > strong {
 section.q-and-a.rail > .cell-stage > :is(ul, ol) > li > :is(ul, ol) {
   flex: 0.54 1 0;
   min-width: 0;
-  margin: 0;
+  padding: 0;
 }
 
 /* ── tab — underlined prompts ─────────────────────────────────────────── */
@@ -203,13 +202,15 @@ section.q-and-a.tab > .cell-stage > :is(ul, ol) > li::before {
 }
 section.q-and-a.tab > .cell-stage > :is(ul, ol) > li > :is(ul, ol) {
   position: relative;
-  margin-top: var(--sp-2xs);
-  padding-top: var(--sp-md);
+  /* the sp-2xs that separated the question from the underline now rides INSIDE the ul as
+     extra top padding, with the underline (::before) dropped by the same sp-2xs so it lands
+     where it did — keeps the box measurable (no margin-top above the ul). */
+  padding-top: calc(var(--sp-md) + var(--sp-2xs));
 }
 section.q-and-a.tab > .cell-stage > :is(ul, ol) > li > :is(ul, ol)::before {
   content: "";
   position: absolute;
-  top: 0;
+  top: var(--sp-2xs);
   left: 0;
   width: 2.4em;
   height: 0.25cqi;
@@ -267,7 +268,7 @@ section.q-and-a.grid > .cell-stage > :is(ul, ol) > li > strong {
   min-height: 3em;
 }
 section.q-and-a.grid > .cell-stage > :is(ul, ol) > li > :is(ul, ol) {
-  margin: 0;
+  padding: 0;
 }
 
 /* ── bare-renderer fallback ────────────────────────────────────────────────
@@ -303,7 +304,7 @@ section.q-and-a.compact > .cell-stage > :is(ul, ol) > li::before {
   font-size: var(--fs-body);
 }
 section.q-and-a.compact > .cell-stage > :is(ul, ol) > li > :is(ul, ol) {
-  margin-top: var(--sp-2xs);
+  padding-top: var(--sp-2xs);
 }
 section.q-and-a.compact > .cell-stage > :is(ul, ol) > li > :is(ul, ol) > li {
   font-size: var(--fs-body-compact);
@@ -328,7 +329,7 @@ section.q-and-a.solo > .cell-stage > :is(ul, ol) > li::before {
   line-height: var(--lh-tight);
 }
 section.q-and-a.solo > .cell-stage > :is(ul, ol) > li > :is(ul, ol) {
-  margin-top: var(--sp-md);
+  padding-top: var(--sp-md);
 }
 section.q-and-a.solo > .cell-stage > :is(ul, ol) > li > :is(ul, ol) > li {
   font-size: var(--fs-message);
@@ -373,5 +374,5 @@ section.q-and-a.solo > .cell-stage > :is(ul, ol) > li > :is(ul, ol) > li {
     left: var(--sp-md);
     top: 0;
   }
-  section.q-and-a.rail > .cell-stage > :is(ul, ol) > li > :is(ul, ol) { margin-top: var(--sp-xs); }
+  section.q-and-a.rail > .cell-stage > :is(ul, ol) > li > :is(ul, ol) { padding-top: var(--sp-xs); }
 }

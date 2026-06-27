@@ -34,7 +34,7 @@ section.agenda > .cell-stage {
   --ag-check: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 8.5 L6.5 12 L13 4' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
   --ag-dots: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 4'%3E%3Ccircle cx='2' cy='2' r='1'/%3E%3C/svg%3E");
 }
-section.agenda h2 { font-size: var(--fs-emphasis); margin-bottom: var(--sp-lg); }
+section.agenda h2 { font-size: var(--fs-emphasis); }
 section.agenda ol {
   list-style: none; padding: 0; margin: 0;
   counter-reset: agenda-counter;
@@ -67,7 +67,11 @@ section.agenda:not(.circles):not(.rail):not(.cards):not(.checks) ol > li::before
   color: var(--accent); font-size: var(--fs-body);
 }
 section.agenda:not(.circles):not(.rail):not(.cards):not(.checks) ol > li code {
-  margin-left: auto; background: none; border: none; box-shadow: none; border-radius: 0;
+  /* page ref right-anchors by GROWING to fill the row and right-aligning its text, rather
+     than an auto inline-start margin (which sat outside the flex box). The text's right edge
+     still lands on the li's right-padding edge — pixel-identical, fully measurable. */
+  flex: 1; text-align: right;
+  background: none; border: none; box-shadow: none; border-radius: 0;
   padding: 0 0 0 var(--sp-md);
   font-family: var(--font-label); font-weight: 600; letter-spacing: 0.03em;
   color: var(--text-secondary); font-size: var(--fs-body-compact);
@@ -92,10 +96,13 @@ section.agenda:not(.circles):not(.rail):not(.cards):not(.checks).progress-3 ol >
 section.agenda:not(.circles):not(.rail):not(.cards):not(.checks).progress-4 ol > li:nth-child(4)::before,
 section.agenda:not(.circles):not(.rail):not(.cards):not(.checks).progress-5 ol > li:nth-child(5)::before,
 section.agenda:not(.circles):not(.rail):not(.cards):not(.checks).progress-6 ol > li:nth-child(6)::before {
-  content: ""; width: 1.4em; height: 1.4em; align-self: center; margin-right: var(--sp-2xs);
+  /* sp-2xs trailing inset folded INTO the box (width + left-anchored mask) instead of an
+     outside gap. The 1.4em arrow stays put at the left, the extra width is the gap to the
+     title — fully measurable, nothing sits outside the box. */
+  content: ""; width: calc(1.4em + var(--sp-2xs)); height: 1.4em; align-self: center;
   background-color: var(--accent);
-  -webkit-mask: var(--ag-arrow) no-repeat center / contain;
-  mask: var(--ag-arrow) no-repeat center / contain;
+  -webkit-mask: var(--ag-arrow) no-repeat left center / 1.4em auto;
+  mask: var(--ag-arrow) no-repeat left center / 1.4em auto;
 }
 section.agenda:not(.circles):not(.rail):not(.cards):not(.checks).progress-1 ol > li:nth-child(1) code,
 section.agenda:not(.circles):not(.rail):not(.cards):not(.checks).progress-2 ol > li:nth-child(2) code,
@@ -154,15 +161,17 @@ section.agenda.rail ol::before {
 }
 section.agenda.rail ol > li {
   /* flex mirror of `grid-template-columns:3.4em 1fr`: the node ring sits in a 3.4em gutter
-   * (centred on the journey line at 1.7em), then the title fills the rest. */
-  display: flex; align-items: center; column-gap: var(--sp-md);
-  padding: var(--sp-xs) 0; position: static;
+   * (centred on the journey line at 1.7em), then the title fills the rest. The ring's
+   * (3.4-2.2)/2 = 0.6em side insets ride here — padding-left for the leading gutter (ring
+   * centre lands on 1.7em) and a +0.6em bump on the column-gap for the trailing one —
+   * rather than as margins on the ring, whose background+border can't be padded. */
+  display: flex; align-items: center; column-gap: calc(var(--sp-md) + 0.6em);
+  padding: var(--sp-xs) 0 var(--sp-xs) 0.6em; position: static;
 }
 section.agenda.rail ol > li::before {
-  /* centre the 2.2em ring within the 3.4em gutter via symmetric margins ((3.4-2.2)/2),
-   * replacing the grid column's justify-self:center — the ring's centre lands on 1.7em. */
+  /* the 2.2em ring sits flush at the gutter inset (li padding-left); see the li note. */
   content: counter(agenda-counter); flex: 0 0 auto; display: flex; align-items: center; justify-content: center;
-  width: 2.2em; height: 2.2em; position: relative; z-index: 1; margin: 0 0.6em; letter-spacing: normal;
+  width: 2.2em; height: 2.2em; position: relative; z-index: 1; margin: 0; letter-spacing: normal;
   background: var(--bg); border: 2px solid var(--ag-outline); border-radius: 50%;
   font-family: var(--font-label); font-weight: 700; font-size: var(--fs-body); line-height: 1;
   color: var(--accent); -webkit-mask: none; mask: none;

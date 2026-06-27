@@ -17,9 +17,9 @@
  */
 
 section.stats > .cell-stage { display:flex; flex-direction:column; justify-content:center; align-items:center; }
-section.stats h2 { margin-bottom:var(--sp-xs); text-align:center; }
-section.stats h3 { margin-bottom:0.3125cqi; }
-section.stats > .cell-stage > p, section.stats > .cell-stage > em { font-size:var(--fs-body); line-height:var(--lh-relaxed); margin-bottom:var(--sp-lg); color:var(--text-label); font-style:italic; display:block; text-align:center; }
+section.stats h2 { padding-bottom:var(--sp-xs); text-align:center; }
+section.stats h3 { padding-bottom:0.3125cqi; }
+section.stats > .cell-stage > p, section.stats > .cell-stage > em { font-size:var(--fs-body); line-height:var(--lh-relaxed); padding-bottom:var(--sp-lg); color:var(--text-label); font-style:italic; display:block; text-align:center; }
 
 /* The stat strip: the top-level list laid out as a centered flex row. */
 section.stats > .cell-stage > ol {

@@ -46,7 +46,8 @@ section.kpi > .cell-stage {
  * the gap to the headline. Authored as `code`, never an h3, so it never trips
  * a heading-order lint. */
 section.kpi > .cell-stage > p:has(> code:only-child) {
-  margin: 0 0 var(--sp-xs) 0;
+  margin: 0;
+  padding: 0 0 var(--sp-xs) 0;
 }
 section.kpi h2 {
   font-family: var(--font-display);
@@ -54,7 +55,8 @@ section.kpi h2 {
   font-weight: 700;
   color: var(--text-heading);
   line-height: var(--lh-tight);
-  margin: 0 0 var(--sp-md) 0;
+  margin: 0;
+  padding: 0 0 var(--sp-md) 0;
 }
 section.kpi > .cell-stage > ol,
 section.kpi > .cell-stage > ul {
@@ -91,8 +93,28 @@ section.kpi code {
   border-radius: var(--pill-radius);
   padding: var(--pill-pad-y) var(--pill-pad-x);
   white-space: nowrap;
-  margin-left: 0.46875cqi;
   vertical-align: 1px;
+}
+/* Pill leading gap (was a 0.46875cqi left inline margin on the pill — horizontal
+ * space between the pill and the content before it). Reproduced WITHOUT a margin
+ * so the separation lives inside the flex content box and never collapses:
+ *  · the label lines that carry pills (the nested sublist <li>s) become baseline
+ *    flex rows whose column-gap is that same 0.46875cqi — between the label text
+ *    run and the first pill, and between adjacent pills (row-gap:0 keeps wrapped
+ *    pills from gaining vertical space). The gap is transparent, so the pill fill
+ *    and frame are untouched — pixel-identical to the old inline margin;
+ *  · the eyebrow paragraph holds a single pill (no preceding sibling), so its
+ *    former left indent is preserved as padding-left on the <p> (no background on
+ *    the eyebrow paragraph, so the padding adds no fill). */
+section.kpi > .cell-stage > p:has(> code:only-child) {
+  padding-left: 0.46875cqi;
+}
+section.kpi:not(.compliance) > .cell-stage > :where(ol, ul) > li > :where(ul, ol) > li:has(code) {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 0.46875cqi;
+  row-gap: 0;
 }
 section.kpi > .cell-stage > :where(ol, ul) > li :where(ul, ol) > li code ~ code,
 section.kpi > .cell-stage > :where(ol, ul) > li > code ~ code {
@@ -115,14 +137,14 @@ section.kpi > .cell-stage > :where(ol, ul) > li > :where(ul, ol) > li:first-chil
   font-size: var(--fs-body);
   font-weight: 500;
   color: var(--text-heading);
-  margin-top: var(--sp-sm);
+  padding-top: var(--sp-sm);
   line-height: var(--lh-snug);
 }
 section.kpi > .cell-stage > :where(ol, ul) > li > :where(ul, ol) > li + li {
   font-family: var(--font-mono);
   font-size: var(--fs-meta);
   color: var(--text-secondary);
-  margin-top: var(--sp-xs);
+  padding-top: var(--sp-xs);
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
@@ -167,7 +189,7 @@ section.kpi.briefing > .cell-stage > ol > li:nth-child(1) > ul > li:first-child,
 section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) > .cell-stage > ol > li:nth-child(1) > ul > li:first-child {
   font-family: var(--font-display);
   font-size: var(--fs-h3);
-  margin-top: var(--sp-md);
+  padding-top: var(--sp-md);
 }
 section.kpi.briefing > .cell-stage > ol > li:not(:first-child),
 section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) > .cell-stage > ol > li:not(:first-child) {
@@ -290,16 +312,15 @@ section.kpi.compliance > .cell-stage > ol > li > strong {
 section.kpi.compliance > .cell-stage > ol > li > ul { display: contents; }
 section.kpi.compliance > .cell-stage > ol > li > ul > li:first-child {
   grid-column: 2; grid-row: 1;
-  margin-top: 0;
+  padding-top: 0;
 }
 section.kpi.compliance > .cell-stage > ol > li > ul > li + li {
   grid-column: 2; grid-row: 2;
-  margin-top: 0;
+  padding-top: 0;
 }
 section.kpi.compliance > .cell-stage > ol > li > ul > li code:first-of-type {
   grid-column: 3; grid-row: 1 / 3;
   align-self: center;
-  margin-left: 0;
 }
 section.kpi.compliance > .cell-stage > ol > li:nth-child(1),
 section.kpi.compliance > .cell-stage > ol > li:nth-child(2),
@@ -319,7 +340,8 @@ section.kpi.compliance > .cell-stage > p:last-of-type {
   color: var(--text-secondary);
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  margin: var(--sp-md) 0 0 0;
+  margin: 0;
+  padding: var(--sp-md) 0 0 0;
 }
 
 /* ─ MODIFIER · TRAJECTORY (investor / period-over-period) ───────────── */
@@ -392,7 +414,7 @@ section.kpi.spotlight > .cell-stage > ol > li:nth-child(1) > strong {
 section.kpi.spotlight > .cell-stage > ol > li:nth-child(1) > ul > li:first-child {
   font-family: var(--font-display);
   font-size: var(--fs-h3);
-  margin-top: var(--sp-md);
+  padding-top: var(--sp-md);
 }
 section.kpi.spotlight > .cell-stage > ol > li:nth-child(1) > ul > li + li {
   font-family: var(--font-display);
@@ -401,7 +423,7 @@ section.kpi.spotlight > .cell-stage > ol > li:nth-child(1) > ul > li + li {
   color: var(--text-secondary);
   letter-spacing: 0;
   text-transform: none;
-  margin-top: var(--sp-sm);
+  padding-top: var(--sp-sm);
   line-height: var(--lh-snug);
 }
 section.kpi.spotlight > .cell-stage > ol > li:nth-child(1) {
@@ -427,12 +449,12 @@ section.kpi.spotlight > .cell-stage > ol > li:not(:first-child) > strong {
   font-size: var(--fs-emphasis);
 }
 section.kpi.spotlight > .cell-stage > ol > li:not(:first-child) > ul > li:first-child {
-  margin-top: 0.15625cqi;
+  padding-top: 0.15625cqi;
   font-size: var(--fs-body);
 }
 section.kpi.spotlight > .cell-stage > ol > li:not(:first-child) > ul > li + li {
   font-size: var(--fs-meta);
-  margin-top: 0.15625cqi;
+  padding-top: 0.15625cqi;
 }
 section.kpi.spotlight > .cell-stage > ol > li:not(:first-child) code {
   padding: 0.15625cqi 0.625cqi;
@@ -489,7 +511,7 @@ section.kpi.spotlight > .cell-stage > ol > li:not(:first-child) code {
   section.kpi.kpi:where(:not(.ops):not(.compliance):not(.trajectory)) > .cell-stage > ol > li:nth-child(1) > ul > li:first-child {
     font-family: var(--font-body);
     font-size: var(--fs-body);
-    margin-top: var(--sp-3xs);
+    padding-top: var(--sp-3xs);
   }
 }
 /* Strip — the tallest/narrowest box (mobile @size; a nested strip cell): shed the

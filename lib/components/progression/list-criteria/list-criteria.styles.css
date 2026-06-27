@@ -8,7 +8,6 @@
  * CSS counter provides leading-zero number (01 02…) regardless of list type.
  * Use ul when order is semantic-free; ol when order carries meaning.
  */
-section.list-criteria h2 { margin-bottom:var(--sp-md); }
 /* Stage cell (flex cell-tree §6): the criteria list is flex:1 per item, so the
  * stage must be a flex column for the items to fill the bounded cell. */
 section.list-criteria > .cell-stage { display:flex; flex-direction:column; min-height:0; }
@@ -36,7 +35,7 @@ section.list-criteria .crit-body {
 }
 section.list-criteria .crit-body > strong { font-weight:inherit; color:inherit; }
 section.list-criteria .crit-body ul {
-  list-style:none; padding:0; margin:4px 0 0 0;
+  list-style:none; padding:4px 0 0 0; margin:0;
   font-size:var(--fs-body); font-weight:400; color:var(--text-body);
 }
 section.list-criteria .crit-body ul li {

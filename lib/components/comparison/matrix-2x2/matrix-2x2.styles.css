@@ -17,7 +17,6 @@
  * Authors who want a different accent cell can swap items in the markdown.
  * ──────────────────────────────────────────────────────────────────────── */
 section.matrix-2x2 > .cell-stage { display:flex; flex-direction:column; }
-section.matrix-2x2 h2 { margin-bottom:var(--sp-sm); }
 /* 2×2 as FLEX, not grid (flex cell-tree §10/§11 — flex shop). flex-wrap with cells
  * sized `calc(50% - gap/2)` reproduces the `1fr 1fr / 1fr 1fr` grid pixel-identically
  * (§13: 359/1,000,500 = 0.036 %). The cells' `box-sizing:border-box` is load-bearing:

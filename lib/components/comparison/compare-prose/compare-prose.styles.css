@@ -11,8 +11,7 @@ section.compare-prose { }
  * the bounded stage (flex cell-tree §6); the section carried no display, so the codemod
  * left the cell without one. The two cards then stretch to the stage height with the
  * `❯` connector centred on the divide. */
-section.compare-prose > .cell-stage { display:flex; flex-direction:column; }
-section.compare-prose h2 { margin-bottom:var(--sp-md); }
+section.compare-prose > .cell-stage { display:flex; flex-direction:column; gap:var(--sp-sm); }
 section.compare-prose .compare-prose-inner { display:flex; align-items:stretch; flex:1; }
 section.compare-prose .compare-prose-inner .card {
   flex:1; background:var(--bg-alt); border:1px solid var(--border);
@@ -21,14 +20,14 @@ section.compare-prose .compare-prose-inner .card {
 }
 section.compare-prose .compare-prose-inner .card > strong { display:block; }
 section.compare-prose .compare-prose-inner .card > ul,
-section.compare-prose .compare-prose-inner .card > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; }
+section.compare-prose .compare-prose-inner .card > ol { list-style:none; padding:var(--sp-xs) 0 0 0; margin:0; }
 section.compare-prose .compare-prose-inner .card > ul > li,
 section.compare-prose .compare-prose-inner .card > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
 section.compare-prose .connector { display:flex; align-items:center; justify-content:center; font-size:var(--fs-h3); color:var(--text-secondary); padding:0 var(--sp-sm); flex-shrink:0; }
-.below-note { margin-top:var(--sp-sm); padding-top:var(--sp-xs); flex-shrink:0; position:relative; }
+.below-note { padding-top:var(--sp-xs); flex-shrink:0; position:relative; }
 .below-note::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(to right, var(--accent), transparent); }
 .below-note p { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-relaxed); margin:0; }
-section.compare-prose > .cell-stage > :is(ul, ol) + p { margin-top:var(--sp-sm); padding-top:var(--sp-xs); flex-shrink:0; font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-relaxed); }
+section.compare-prose > .cell-stage > :is(ul, ol) + p { padding-top:var(--sp-xs); flex-shrink:0; font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-relaxed); }
 
 
 /* ── COMPARISON ──────────────────────────────────────────────────────────────
@@ -65,7 +64,7 @@ section.compare-prose:not(:has(.compare-prose-inner)) > .cell-stage > ol > li > 
 section.compare-prose:not(:has(.compare-prose-inner)) > .cell-stage > ul > li > ul,
 section.compare-prose:not(:has(.compare-prose-inner)) > .cell-stage > ul > li > ol,
 section.compare-prose:not(:has(.compare-prose-inner)) > .cell-stage > ol > li > ul,
-section.compare-prose:not(:has(.compare-prose-inner)) > .cell-stage > ol > li > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; width:100%; }
+section.compare-prose:not(:has(.compare-prose-inner)) > .cell-stage > ol > li > ol { list-style:none; padding:var(--sp-xs) 0 0 0; margin:0; width:100%; }
 section.compare-prose:not(:has(.compare-prose-inner)) > .cell-stage > ul > li > ul > li,
 section.compare-prose:not(:has(.compare-prose-inner)) > .cell-stage > ul > li > ol > li,
 section.compare-prose:not(:has(.compare-prose-inner)) > .cell-stage > ol > li > ul > li,
@@ -363,7 +362,7 @@ section.compare-split-cover .split-feat-eye {
 }
 section.compare-split-cover .split-feat-h {
   font-size: var(--fs-h1); font-weight: 800; line-height: var(--lh-tight);
-  color: var(--on-accent); margin: var(--sp-xs) 0 var(--sp-md); max-width: 13em;
+  color: var(--on-accent); padding: var(--sp-xs) 0 var(--sp-md); max-width: 13em;
 }
 section.compare-split-cover .split-feat-lede {
   font-size: var(--fs-emphasis); line-height: var(--lh-snug); opacity: 0.92; max-width: 20em;
@@ -371,17 +370,17 @@ section.compare-split-cover .split-feat-lede {
 section.compare-split-points .split-runhead {
   font-size: var(--fs-meta); letter-spacing: 0.2em; text-transform: uppercase;
   color: var(--text-muted); border-bottom: 1px solid var(--border);
-  padding-bottom: var(--sp-xs); margin-bottom: var(--sp-xl);
+  padding-bottom: var(--sp-xs);
 }
-section.compare-split-points .split-pts { list-style: none; padding: 0; margin: 0; }
+section.compare-split-points .split-pts { list-style: none; padding: var(--sp-xl) 0 0 0; margin: 0; }
 section.compare-split-points .split-pts > li { border-left: 3px solid var(--accent); padding-left: var(--sp-md); }
 section.compare-split-points .split-pt-t {
-  display: block; font-weight: 800; color: var(--text-heading); font-size: var(--fs-h3); margin-bottom: var(--sp-xs);
+  display: block; font-weight: 800; color: var(--text-heading); font-size: var(--fs-h3); padding-bottom: var(--sp-xs);
 }
 section.compare-split-points .split-pt-b { color: var(--text-body); font-size: var(--fs-emphasis); line-height: var(--lh-relaxed); max-width: 20em; }
 section.compare-split-verdict { display: flex; flex-direction: column; justify-content: center; }
 section.compare-split-verdict .split-runhead {
-  font-size: var(--fs-meta); letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: var(--sp-md);
+  font-size: var(--fs-meta); letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); padding-bottom: var(--sp-md);
 }
 section.compare-split-verdict .split-pullq {
   font-size: var(--fs-h2); font-weight: 300; line-height: var(--lh-snug); color: var(--text-heading); max-width: 14em;

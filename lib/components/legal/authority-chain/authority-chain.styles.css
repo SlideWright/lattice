@@ -27,7 +27,6 @@
  *   .trail      numbered horizontal trail with arrows
  * ──────────────────────────────────────────────────────────────────── */
 section.authority-chain > .cell-stage { display:flex; flex-direction:column; }
-section.authority-chain h2 { margin-bottom:var(--sp-md); }
 section.authority-chain > .cell-stage > ol,
 section.authority-chain > .cell-stage > ul {
   list-style:none; padding:0; margin:0;
@@ -35,7 +34,7 @@ section.authority-chain > .cell-stage > ul {
   /* flex:1 fills the stage; min-height:0 lets the chain shrink to the bounded stage
    * (flex cell-tree §6) — without it the list's min-height:auto floor kept the rows at
    * natural height and clipped the last tier on a 4-tier chain. */
-  gap:0; flex:1; min-height:0; justify-content:center;
+  gap:var(--sp-md); flex:1; min-height:0; justify-content:center;
   counter-reset:auth;
 }
 section.authority-chain > .cell-stage > :is(ol, ul) > li {
@@ -63,10 +62,8 @@ section.authority-chain > .cell-stage > :is(ol, ul) > li {
   font-size:var(--fs-body);
   line-height:var(--lh-snug);
   color:var(--text-body);
-  margin-bottom:var(--sp-md);
 }
 section.authority-chain > .cell-stage > :is(ol, ul) > li::marker { content:''; }
-section.authority-chain > .cell-stage > :is(ol, ul) > li:last-child { margin-bottom:0; }
 /* Connector arrow between rows. */
 section.authority-chain > .cell-stage > :is(ol, ul) > li:not(:last-child)::after {
   content:'';
@@ -124,9 +121,15 @@ section.authority-chain.pyramid > .cell-stage > :is(ol, ul) > li:nth-child(4) { 
 section.authority-chain.pyramid > .cell-stage > :is(ol, ul) > li::after { display:none; }
 
 /* .branching — statute root, then nested children render as connected branches. */
+/* The branch list wraps to its own full-width row inside the flex-wrap li; the space
+ * above it is the wrap row-gap (was margin-top on the list — an auto/edge margin sits
+ * outside the flex content box and breaks the virtual-list height measurement). */
+section.authority-chain.branching > .cell-stage > :is(ol, ul) > li {
+  row-gap:var(--sp-sm);
+}
 section.authority-chain.branching > .cell-stage > :is(ol, ul) > li > :is(ul, ol) {
   flex:0 0 100%;
-  list-style:none; margin:var(--sp-sm) 0 0; padding:0 0 0 var(--sp-lg);
+  list-style:none; margin:0; padding:0 0 0 var(--sp-lg);
   display:flex; flex-direction:column; gap:var(--sp-xs);
   border-left:2px dashed var(--tier-hue, var(--accent));
 }
@@ -148,11 +151,11 @@ section.authority-chain.branching > .cell-stage > :is(ol, ul) > li > :is(ul, ol)
 section.authority-chain.branching > .cell-stage > :is(ol, ul) > li::after { display:none; }
 
 /* .bracket — visual bracket connector tying tiers. */
+section.authority-chain.bracket > .cell-stage > :is(ol, ul) { gap:0; }
 section.authority-chain.bracket > .cell-stage > :is(ol, ul) > li {
   border-radius:0;
   border:1px solid var(--border);
   border-left:6px double var(--tier-hue, var(--accent));
-  margin-bottom:0;
 }
 section.authority-chain.bracket > .cell-stage > :is(ol, ul) > li::after { display:none; }
 section.authority-chain.bracket > .cell-stage > :is(ol, ul) > li + li { border-top:none; }
@@ -165,7 +168,6 @@ section.authority-chain.trail > .cell-stage > :is(ol, ul) {
 }
 section.authority-chain.trail > .cell-stage > :is(ol, ul) > li {
   flex:1;
-  margin-bottom:0;
   display:flex; flex-direction:column; gap:var(--sp-xs);
   align-items:flex-start;
   border-left:none;
@@ -201,7 +203,7 @@ section.authority-chain.trail > .cell-stage > :is(ol, ul) > li::before {
   font-weight:700;
   color:var(--tier-hue, var(--accent));
   line-height:1;
-  margin-bottom:var(--sp-xs);
+  padding-bottom:var(--sp-xs);
 }
 
 /* ── Box-local family reflow (2026-06-20-native-to-reflow-feasibility.md, Batch

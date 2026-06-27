@@ -11,7 +11,6 @@
  * state-half / state-empty / state-slashed. Replaces the prior Unicode
  * ✓/–/✗ glyphs (font-dependent) with a font-independent disc+mask recipe;
  * the SHAPE carries the meaning independently of colour. */
-section.verdict-grid h2 { margin-bottom:var(--sp-sm); }
 .badge { position:relative; display:inline-flex; align-items:center; justify-content:center; text-align:center; line-height:1; gap:6px; font-family:var(--pill-font); font-size:var(--pill-fs); font-weight:var(--pill-weight); letter-spacing:var(--pill-tracking); border-radius:var(--pill-radius); padding:var(--pill-pad-y) var(--pill-pad-x); white-space:nowrap; background:var(--bg); border:1px solid var(--text-muted); color:var(--text-body); }
 .badge.pass { --state-color:var(--pass); }
 .badge.warn { --state-color:var(--warn); }

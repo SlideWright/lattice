@@ -35,7 +35,6 @@
  * .preemption (chevron-linked stack), .lane (markdown table — a different shape, below).
  * ──────────────────────────────────────────────────────────────────── */
 section.statute-stack > .cell-stage { display:flex; flex-direction:column; }
-section.statute-stack h2 { margin-bottom:var(--sp-md); }
 section.statute-stack > .cell-stage > ul,
 section.statute-stack > .cell-stage > ol {
   list-style:none; padding:0; margin:0;
@@ -98,15 +97,27 @@ section.statute-stack > .cell-stage > :is(ul, ol) > li > strong:first-child > co
   border-radius:var(--pill-radius); padding:var(--pill-pad-y) var(--pill-pad-x);
   white-space:nowrap;
 }
-/* COLUMN cards (default) — the lone citation pill anchors to the header's right corner. */
-section.statute-stack:not(.hierarchy):not(.bands):not(.preemption):not(.lane) > .cell-stage > :is(ul, ol) > li > strong:first-child > code {
-  margin-left:auto;
+/* COLUMN cards (default) — the lone citation pill anchors to the header's right corner.
+ * Two-child header row (label + lone pill) → space-between pushes the pill to the right
+ * edge WITHOUT a left-auto margin (auto margins sit outside the flex content box and break
+ * the virtual-list height measurement). */
+section.statute-stack:not(.hierarchy):not(.bands):not(.preemption):not(.lane) > .cell-stage > :is(ul, ol) > li > strong:first-child {
+  justify-content:space-between;
 }
 /* ROW cards — the citation stays left after the label; the trailing status pill (the second
- * header code) pushes right on the same line and takes the jurisdiction hue (the signal
- * colour). A lone citation in a row card simply stays left. */
+ * header code) anchors to the right edge on the same line and takes the jurisdiction hue (the
+ * signal colour). A lone citation in a row card simply stays left.
+ *
+ * Right-anchoring is margin-free (an auto margin sits outside the flex content box and breaks
+ * the virtual-list height measurement): the status pill is taken out of flow and pinned to the
+ * header's right edge with absolute positioning, so the label + citation stay packed left at
+ * their natural widths. (A flex:1 spacer can't be used here — the citation is a chrome-bearing
+ * pill, so growing it would stretch its visible box rather than open up clean space.) */
+section.statute-stack:is(.hierarchy, .bands, .preemption) > .cell-stage > :is(ul, ol) > li > strong:first-child {
+  position:relative;
+}
 section.statute-stack:is(.hierarchy, .bands, .preemption) > .cell-stage > :is(ul, ol) > li > strong:first-child > code:last-child:not(:first-child) {
-  margin-left:auto;
+  position:absolute; right:0; top:50%; transform:translateY(-50%);
   --pill-border:var(--jur-accent, var(--accent));
   --pill-fg:var(--jur-accent, var(--accent));
 }
@@ -142,12 +153,17 @@ section.statute-stack > .cell-stage > ol > li > :is(ul, ol) > li:first-child:has
 /* COLUMN-card status pill — last body item, only-child <code> (the default's authoring puts
  * status in the body so the narrow rail keeps it OFF the header line). Same chrome as the
  * header citation but JURISDICTION-HUED (the card's signal colour); foot-anchored to the
- * BOTTOM-LEFT corner via margin-top:auto (the full-height rail has the room) + align-self.
+ * BOTTOM-LEFT corner + align-self.
  * Row cards carry status in the header instead, so this body code never appears there.
- * (Swap --jur-accent for a --pass/--warn/--fail map for pass/warn/fail status semantics.) */
-section.statute-stack:not(.hierarchy):not(.bands):not(.preemption):not(.lane) > .cell-stage > ul > li > :is(ul, ol) > li:last-child:has(> code:only-child),
-section.statute-stack:not(.hierarchy):not(.bands):not(.preemption):not(.lane) > .cell-stage > ol > li > :is(ul, ol) > li:last-child:has(> code:only-child) {
-  margin-top:auto;
+ * (Swap --jur-accent for a --pass/--warn/--fail map for pass/warn/fail status semantics.)
+ *
+ * Bottom-anchoring is margin-free (an auto margin sits outside the flex content box and
+ * breaks the virtual-list height measurement): instead of margin-top:auto on the status li,
+ * the body item immediately ABOVE the status (a chrome-free prose/citation line) grows to
+ * fill the rail's free space, pushing the status to the foot — the flex:1-spacer idiom. */
+section.statute-stack:not(.hierarchy):not(.bands):not(.preemption):not(.lane) > .cell-stage > ul > li > :is(ul, ol) > li:has(+ li:last-child > code:only-child),
+section.statute-stack:not(.hierarchy):not(.bands):not(.preemption):not(.lane) > .cell-stage > ol > li > :is(ul, ol) > li:has(+ li:last-child > code:only-child) {
+  flex:1 1 auto;
 }
 section.statute-stack > .cell-stage > ul > li > :is(ul, ol) > li:last-child:has(> code:only-child) > code,
 section.statute-stack > .cell-stage > ol > li > :is(ul, ol) > li:last-child:has(> code:only-child) > code {
@@ -199,7 +215,9 @@ section.statute-stack.preemption > .cell-stage > ol {
   /* content-height cards stacked + centred — flex mirror of `grid-auto-rows:auto;
    * align-content:center`. */
   flex-direction:column;
-  gap:0;
+  /* inter-card spacing as a flex gap (was margin-bottom on each card) — measurable,
+   * inside the flex content box; the chevron ::after still centres in this gap band. */
+  gap:var(--sp-md);
   justify-content:center;
 }
 section.statute-stack.preemption > .cell-stage > ul > li,
@@ -209,7 +227,6 @@ section.statute-stack.preemption > .cell-stage > ol > li {
   border-left:4px solid var(--jur-accent, var(--accent));
   border-top:1px solid var(--border);
   position:relative;
-  margin-bottom:var(--sp-md);
 }
 section.statute-stack.preemption > .cell-stage > :is(ul, ol) > li:not(:last-child)::after {
   /* `❯` rotated down — the same chevron the compare-prose connector uses, for one
@@ -225,7 +242,6 @@ section.statute-stack.preemption > .cell-stage > :is(ul, ol) > li:not(:last-chil
   color:var(--accent);
   line-height:1;
 }
-section.statute-stack.preemption > .cell-stage > :is(ul, ol) > li:last-child { margin-bottom:0; }
 
 /* Stacked ROW variants (hierarchy / bands / preemption) — both pills ride the header line
  * (citation left, status right) and the gloss sits below, so each card is just two compact
@@ -330,7 +346,7 @@ section.statute-stack.lane td:last-child {
   /* Header-pill authoring already carries the citation + status on the label row, so the
      portrait card needs no pill-lift — just breathing room between that row and the gloss. */
   section.statute-stack:not(.hierarchy):not(.bands):not(.preemption):not(.lane) > .cell-stage > :is(ul, ol) > li > :is(ul, ol) {
-    margin-top:var(--sp-md);
+    padding-top:var(--sp-md);
   }
 }
 

@@ -8,12 +8,14 @@
  * CSS arranges the two p>code+pre pairs side by side.
  */
 section.compare-code { }
-section.compare-code h2 { margin-bottom:var(--sp-sm); }
+section.compare-code h2 { padding-bottom:var(--sp-sm); }
 section.compare-code .code-cols { display:grid; grid-template-columns:1fr 1fr; gap:var(--sp-md); flex:1; }
 section.compare-code .code-col { display:flex; flex-direction:column; gap:var(--sp-xs); }
 /* Column label: p>code inside .code-col (JS path) or h2 ~ p>code (fallback path) */
+/* label→pre spacing is the .code-col flex parent's gap:var(--sp-xs); no padding here
+ * (it would double-count against that gap and push the code block down a line). */
 section.compare-code .code-col p:has(> code:only-child),
-section.compare-code h2 ~ p:has(> code:only-child) { margin:0 0 var(--sp-xs) 0; }
+section.compare-code h2 ~ p:has(> code:only-child) { margin:0; }
 section.compare-code .code-col p:has(> code:only-child) > code,
 section.compare-code h2 ~ p:has(> code:only-child) > code {
   font-family:var(--font-mono); font-size:var(--fs-meta); font-weight:600;
@@ -58,24 +60,24 @@ section.compare-code:not(:has(.code-cols)) {
 section.compare-code:not(:has(.code-cols)):not(:has(> p ~ h2)) {
   grid-template-rows:auto auto 1fr auto;
 }
-section.compare-code:not(:has(.code-cols)):not(:has(> p ~ h2)) > h2               { grid-column:1 / -1; grid-row:1; margin-bottom:var(--sp-sm); }
+section.compare-code:not(:has(.code-cols)):not(:has(> p ~ h2)) > h2               { grid-column:1 / -1; grid-row:1; padding-bottom:var(--sp-sm); }
 section.compare-code:not(:has(.code-cols)):not(:has(> p ~ h2)) > p:nth-of-type(1) { grid-column:1; grid-row:2; }
 section.compare-code:not(:has(.code-cols)):not(:has(> p ~ h2)) > p:nth-of-type(2) { grid-column:2; grid-row:2; }
 section.compare-code:not(:has(.code-cols)):not(:has(> p ~ h2)) > pre:nth-of-type(1) { grid-column:1; grid-row:3; margin:0; }
 section.compare-code:not(:has(.code-cols)):not(:has(> p ~ h2)) > pre:nth-of-type(2) { grid-column:2; grid-row:3; margin:0; }
-section.compare-code:not(:has(.code-cols)):not(:has(> p ~ h2)) > blockquote         { grid-column:1 / -1; grid-row:4; margin-top:var(--sp-xs); }
+section.compare-code:not(:has(.code-cols)):not(:has(> p ~ h2)) > blockquote         { grid-column:1 / -1; grid-row:4; padding-top:var(--sp-xs); }
 
 /* ── WITH eyebrow (p>code precedes h2 among siblings) ── */
 section.compare-code:not(:has(.code-cols)):has(> p ~ h2) {
   grid-template-rows:auto auto auto 1fr auto;
 }
 section.compare-code:not(:has(.code-cols)):has(> p ~ h2) > p:nth-of-type(1) { grid-column:1 / -1; grid-row:1; }
-section.compare-code:not(:has(.code-cols)):has(> p ~ h2) > h2               { grid-column:1 / -1; grid-row:2; margin-bottom:var(--sp-sm); }
+section.compare-code:not(:has(.code-cols)):has(> p ~ h2) > h2               { grid-column:1 / -1; grid-row:2; padding-bottom:var(--sp-sm); }
 section.compare-code:not(:has(.code-cols)):has(> p ~ h2) > p:nth-of-type(2) { grid-column:1; grid-row:3; }
 section.compare-code:not(:has(.code-cols)):has(> p ~ h2) > p:nth-of-type(3) { grid-column:2; grid-row:3; }
 section.compare-code:not(:has(.code-cols)):has(> p ~ h2) > pre:nth-of-type(1) { grid-column:1; grid-row:4; margin:0; }
 section.compare-code:not(:has(.code-cols)):has(> p ~ h2) > pre:nth-of-type(2) { grid-column:2; grid-row:4; margin:0; }
-section.compare-code:not(:has(.code-cols)):has(> p ~ h2) > blockquote         { grid-column:1 / -1; grid-row:5; margin-top:var(--sp-xs); }
+section.compare-code:not(:has(.code-cols)):has(> p ~ h2) > blockquote         { grid-column:1 / -1; grid-row:5; padding-top:var(--sp-xs); }
 
 /* ── Cover-code carousel — compare-code's owned SPLIT forms ────────────────────
    Two labelled code blocks read across; code can't reflow into a row, so an overflowing
@@ -89,13 +91,19 @@ section.compare-code-cover {
 section.compare-code-cover .split-feat-eye { font-size: var(--fs-meta); letter-spacing: 0.2em; text-transform: uppercase; opacity: 0.85; }
 section.compare-code-cover .split-feat-h {
   font-size: var(--fs-h1); font-weight: 800; line-height: var(--lh-tight);
-  color: var(--on-accent); margin: var(--sp-xs) 0 var(--sp-md); max-width: 13em;
+  color: var(--on-accent); padding: var(--sp-xs) 0 var(--sp-md); max-width: 13em;
 }
 section.compare-code-cover .split-feat-lede { font-size: var(--fs-emphasis); opacity: 0.92; }
+/* Flex column so the runhead→pre spacing is a measurable parent `row-gap`
+ * instead of a margin below the bordered runhead (margins sit outside the
+ * flex content box and break virtual-list scrollHeight). The runhead carries
+ * a visible border-bottom, so the gap must stay OUTSIDE its box — hence
+ * row-gap on the parent rather than padding on the runhead. */
+section.compare-code-block { display: flex; flex-direction: column; row-gap: var(--sp-lg); }
 section.compare-code-block .split-runhead {
   font-size: var(--fs-meta); letter-spacing: 0.16em; text-transform: uppercase;
   color: var(--accent); border-bottom: 1px solid var(--border);
-  padding-bottom: var(--sp-xs); margin-bottom: var(--sp-lg);
+  padding-bottom: var(--sp-xs);
 }
 /* The block page reuses the SAME code frame as the unsplit layout (`section.compare-code
    pre`): the `--code-bg` panel, the `--spectrum` accent strip, rounded corners and

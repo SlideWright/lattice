@@ -199,6 +199,19 @@ in patch versions.
   were adding stray height above the hairline. Net: ~`--sp-md` of stage height back on every
   slide (most in portrait), easing clipping. First step toward a margin-free cell tree (the
   component-level margin→`gap` sweep follows).
+- **No-margins spacing model (phase 2, component sweep) — every component CSS margin retired.**
+  Completing phase 1: all 222 spacing margins across `lib/components/**/*.styles.css` are gone,
+  converted to the measurable, in-box equivalents — a `gap` on the flex parent (transparent
+  inter-element space), `padding` on chrome-free elements (asymmetric or per-sibling space), or
+  a flex/grid restructure where a `margin:auto` was doing layout (right-anchored pills →
+  `justify-content:space-between`, absolute placement, or a `flex:1` spacer; centred bodies →
+  pseudo/flex spacers or a pinned-heading + centred-body split). The only `margin` left in
+  component CSS is the `margin:0` reset. Two guardrails the sweep surfaced and respects:
+  `padding` never replaces a transparent gap that sat **outside** a filled or bordered box
+  (it would extend the fill — e.g. a kanban lane underline stays inset via a gradient, not
+  padding); and a converted `padding-bottom`/`-top` pairs with a `margin:0` reset wherever a
+  base `section h2/h3/p` margin would otherwise leak through and double the spacing. Renders
+  verified pixel-equivalent to the prior build across the component galleries in both themes.
 - **Flex-shop conversion, hard tier — `pricing`, `logo-wall`, `citation-card.split`,
   `verdict-grid`, `cards-grid` drop CSS grid for flex.** `pricing` / `logo-wall` were
   `repeat(N,1fr)` tilings → flex-wrap with `width: 100%/N − …` per-cell (the matrix-2x2 idiom;
