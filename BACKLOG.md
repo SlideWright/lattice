@@ -9,7 +9,9 @@ The live, claimable work queue — a read-only mirror of [open issues](https://g
 grouped by board column. Design lives in `engineering/decisions/`; this tracks
 only *status*. **37 open** items.
 
-## Backlog (34)
+> ⚠️ **1 card need triage** (missing `area:`/`type:`/`priority:`): [#547](https://github.com/SlideWright/lattice/issues/547).
+
+## Backlog (35)
 
 - [#287](https://github.com/SlideWright/lattice/issues/287) refactor(engine): LPM Phase 1 — manifest `render` block + `transformSection` adapter; migrate the chart kernels — high · engine
 - [#506](https://github.com/SlideWright/lattice/issues/506) feat(runtime): runtime auto-split (Option B) via eventual consistency — high · engine
@@ -45,6 +47,7 @@ only *status*. **37 open** items.
 - [#477](https://github.com/SlideWright/lattice/issues/477) chart(state-chart): tune the `tb` reveal-lift magnitude — low · chart
 - [#478](https://github.com/SlideWright/lattice/issues/478) chart(state-chart): tighten `inline`/`horizontal` variant label spacing — low · chart
 - [#527](https://github.com/SlideWright/lattice/issues/527) explore: alignment as a universal modifier (vertical top/center for tables, lists, etc.) — low
+- [#547](https://github.com/SlideWright/lattice/issues/547) q-and-a `spine` look overflows the frame on the gallery stress content
 
 ## Ready (2)
 
@@ -59,6 +62,6 @@ _none_
 
 _none_
 
-## Inbox (no status) (1)
+## Inbox (no status) (0)
 
-- [#547](https://github.com/SlideWright/lattice/issues/547) q-and-a `spine` look overflows the frame on the gallery stress content
+_none_
