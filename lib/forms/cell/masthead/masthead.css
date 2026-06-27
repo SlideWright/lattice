@@ -47,13 +47,17 @@ section.form .cell-masthead {
   border-bottom: 1px solid var(--border);
 }
 /* The band owns its spacing: padding-bottom (above) is the SOLE title↔hairline gap. A heading
- * lifted into the band still carries its flow `margin-bottom` (base `section h2`, or a larger
- * per-component override), which would stack on that padding and double the gap. Zero every
- * heading's margin across the whole band — lede AND bay — so the band's padding is the only
- * control. Scoped to `.cell-masthead` (not `.masthead-lede`) so a heading docked in the bay is
- * covered too; lower specificity that still clears the base/override margin rules. A `margin:0`
- * reset adds no space, so it's exempt from the HARD RULE #20 ratchet. */
-section.form .cell-masthead :is(h1, h2, h3, h4) { margin: 0; }
+ * lifted into the band still carries its own block-axis flow spacing — a `margin-bottom` (base
+ * `section h2`, or a per-component override) AND, since the no-margins sweep, a converted
+ * `padding-bottom` on some components (kpi/stats/diagram/code/content/compare-code). Either one
+ * stacks on the band's padding-bottom and DOUBLES the gap — and because the band is a content-
+ * height grid, that stolen height shrinks the stage below it (kpi, already tight, then clipped).
+ * Zero BOTH the block-margin and block-padding of every heading across the whole band — lede AND
+ * bay — so the band's own padding is the only control. Scoped to `.cell-masthead` (not
+ * `.masthead-lede`) so a heading docked in the bay is covered too; lower specificity that still
+ * clears the base/override rules. `margin:0`/`padding-block:0` add no space, so they're exempt
+ * from the HARD RULE #20 ratchet. */
+section.form .cell-masthead :is(h1, h2, h3, h4) { margin: 0; padding-block: 0; }
 /* The frame section is a flex column (base.elements.css). Space the masthead band from the
  * stage with a gap rather than a margin. Scoped to masthead-bearing slides so sovereign
  * frames (title / divider / closing — no masthead) are untouched. Halved from the legacy

@@ -329,6 +329,16 @@ in patch versions.
 
 ### Fixed
 
+- **The masthead band no longer steals stage height from a lifted title's converted padding —
+  `kpi` stops clipping.** The no-margins sweep converted some components' `section.X h2 {
+  margin-bottom }` to `padding-bottom`; lifted into the masthead band that padding stacked on
+  the band's own `padding-bottom`, doubling the title→hairline gap and — because the band is a
+  content-height grid — shrinking the stage below it. On the already-tight `kpi` that tipped the
+  hero + supports over the stage clip. The band-wide reset now zeroes **both** `margin` and
+  `padding-block` on every lifted heading (`section.form .cell-masthead :is(h1–h4)`), so the
+  band's own padding is the sole title→hairline control and the stage keeps its full height.
+  Corrective for the five other masthead components that carried the same converted padding
+  (`stats` / `diagram` / `code` / `content` / `compare-code`).
 - **`math` slide titles clear the running header again — uniform with every other slide.**
   The no-margins centring rework had pinned the `derivation`/`theorem` heading at
   `top: var(--sp-lg/xl)`, which sat *inside* the `LATTICE · MATH` eyebrow band (the title
