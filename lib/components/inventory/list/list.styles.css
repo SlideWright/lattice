@@ -49,10 +49,13 @@ section.list > .cell-stage > ol > li {
   counter-increment:list-counter;
   background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
-  display:grid; grid-template-columns:var(--sp-xl) 1fr; align-items:center; gap:var(--sp-md);
+  /* flex mirror of `grid-template-columns:var(--sp-xl) 1fr` — fixed-width counter,
+   * point fills the rest (flex shop §10). */
+  display:flex; align-items:center; gap:var(--sp-md);
 }
 section.list > .cell-stage > ol > li::before {
   content:counter(list-counter, decimal-leading-zero);
+  flex:0 0 var(--sp-xl);
   font-family:var(--font-label); font-size:var(--fs-h4); font-weight:700; color:var(--accent);
 }
 
@@ -85,7 +88,9 @@ section.list.takeaway.numbered > .cell-stage > :is(ul,ol) > li::before {
 section.list.principles > .cell-stage > ol { counter-reset:list-principle-counter; gap:0; }
 section.list.principles > .cell-stage > ol > li {
   counter-increment:list-principle-counter;
-  display:grid; grid-template-columns:auto 1fr; column-gap:var(--sp-lg); align-items:center;
+  /* flex mirror of `grid-template-columns:auto 1fr` — natural-width counter, declaration
+   * fills the rest. */
+  display:flex; column-gap:var(--sp-lg); align-items:center;
   background:none; border:none; border-radius:0;
   border-bottom:1px solid var(--border); padding:0;
   font-family:var(--font-display, var(--font-body));

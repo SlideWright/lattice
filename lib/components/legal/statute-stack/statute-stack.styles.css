@@ -7,37 +7,48 @@
 /* ── STATUTE-STACK ────────────────────────────────────────────────────
  * <!-- _class: statute-stack -->
  *
- * - Federal
- *   - `15 U.S.C. §6501 · COPPA`
+ * - Federal `15 U.S.C. §6501`
  *   - Verifiable parental consent for under-13 personal data.
  *   - `In effect since 2000`
- * - State
- *   - `Cal. Civ. Code §1798.120 · CCPA/CPRA`
+ * - State `Cal. Civ. §1798.120`
  *   - …
  *
- * Authoring contract: top-level li carries ONLY the jurisdiction label
- * (auto-bolded by slotLabelLift in all three renderers — author writes
- * `- Federal`, not `- **Federal**`). The nested ul holds the body — the
- * first item is the citation chip (only-child <code>), middle items are
- * prose obligations, and the last item is the status pill (only-child
- * <code>). Matches the decision / compare-prose slot-card shape so slot-labelled
- * layouts share one authoring convention.
+ * Authoring contract: the top-level li carries the jurisdiction label PLUS trailing inline
+ * `code` pills on the SAME line (auto-bolded together by slotLabelLift in all three
+ * renderers — author writes `- Federal \`cite\``, not `- **Federal** \`cite\``). The nested
+ * ul holds the body — prose obligations, and (for column cards) the status pill as the last
+ * only-child <code>.
  *
- * Default = three equal vertical rails. Modifiers reshape the same DOM:
- * .hierarchy (authority pyramid), .bands (horizontal full-width rows),
- * .preemption (arrowed cascade), .lane (markdown table — different
- * shape, see below).
+ * TWO-PILL ANATOMY, placement KEYED TO CARD SHAPE (so the two pills never collide + wrap):
+ *   · ROW cards (.hierarchy/.bands/.preemption — full-width): BOTH pills on the header line
+ *     — citation LEFT after the label, status RIGHT. Author both codes in the header:
+ *     `- Federal \`cite\` \`status\``.
+ *   · COLUMN cards (the narrow 3-rail default): citation pill anchors RIGHT in the header;
+ *     status drops to the card foot, BOTTOM-LEFT. Author `- Federal \`cite\`` + the status
+ *     as the last body code.
+ * Citation = neutral outline (an identifier, identical across cards); status = jurisdiction-
+ * hued (the signal colour). A bare first-body-line `code` still renders as a hanging
+ * citation chip, for decks on the legacy body-citation authoring.
+ *
+ * Default = three equal vertical rails. Modifiers re-ARRANGE the same cards: .hierarchy
+ * (weighted-height stack — authority cascade), .bands (equal-height stack — scorecard),
+ * .preemption (chevron-linked stack), .lane (markdown table — a different shape, below).
  * ──────────────────────────────────────────────────────────────────── */
 section.statute-stack > .cell-stage { display:flex; flex-direction:column; }
 section.statute-stack h2 { margin-bottom:var(--sp-md); }
 section.statute-stack > .cell-stage > ul,
 section.statute-stack > .cell-stage > ol {
   list-style:none; padding:0; margin:0;
-  display:grid; grid-template-columns:repeat(3, 1fr);
+  /* flex, not grid (flex shop §10): the default is three equal rails — a flex row
+   * with `flex:1` cells reproduces `repeat(3,1fr)`. The vertical variants below flip
+   * to flex-column (they shared this rule's `display:grid`, so each must now set its
+   * own flex-direction). */
+  display:flex; flex-direction:row;
   gap:var(--sp-md); flex:1;
 }
 section.statute-stack > .cell-stage > ul > li,
 section.statute-stack > .cell-stage > ol > li {
+  flex:1; min-width:0;
   background:var(--bg-alt);
   border:1px solid var(--border);
   border-top:3px solid var(--jur-accent, var(--accent));
@@ -57,16 +68,47 @@ section.statute-stack > .cell-stage > ol > li::marker { content:''; }
 section.statute-stack > .cell-stage > :is(ul, ol) > li:nth-child(3n+1) { --jur-accent:var(--cat-4-mark); }
 section.statute-stack > .cell-stage > :is(ul, ol) > li:nth-child(3n+2) { --jur-accent:var(--cat-6-mark); }
 section.statute-stack > .cell-stage > :is(ul, ol) > li:nth-child(3n)   { --jur-accent:var(--cat-1-mark); }
-/* Jurisdiction label — eyebrow chrome (auto-bolded by slotLabelLift). */
+/* Jurisdiction label — eyebrow chrome (auto-bolded by slotLabelLift). The lifted
+ * <strong> is the card's HEADER ROW: the label sits left, and trailing inline `code` pills
+ * ride the same row. Placement is keyed to the card SHAPE (see below), because a wide row
+ * has space for two header pills but a narrow column does not:
+ *   · ROW cards (hierarchy/bands/preemption — full-width): citation pill LEFT (right after
+ *     the label), status pill RIGHT (margin-left:auto) — both on the header line.
+ *   · COLUMN cards (the 3-rail default — narrow): the lone citation pill anchors RIGHT
+ *     (top-right corner); the status pill drops to the card foot (bottom-left, below) so the
+ *     two never collide and wrap in the tight rail. */
 section.statute-stack > .cell-stage > ul > li > strong:first-child,
 section.statute-stack > .cell-stage > ol > li > strong:first-child {
-  display:block;
+  display:flex; align-items:baseline; gap:var(--sp-sm);
   font-family:var(--font-mono);
   font-size:var(--fs-meta);
   font-weight:700;
   letter-spacing:0.16em;
   text-transform:uppercase;
   color:var(--jur-accent, var(--accent));
+}
+/* Header pill chrome (shared). Neutral outline by default — the citation reads identical
+ * across cards (an identifier, not a signal). */
+section.statute-stack > .cell-stage > :is(ul, ol) > li > strong:first-child > code {
+  display:inline-flex; align-items:center; line-height:1;
+  font-family:var(--pill-font); font-size:var(--pill-fs); font-weight:var(--pill-weight);
+  letter-spacing:var(--pill-tracking); text-transform:none;
+  border:1px solid var(--pill-border, var(--text-muted));
+  background:var(--pill-bg, var(--bg)); color:var(--pill-fg, var(--text-body));
+  border-radius:var(--pill-radius); padding:var(--pill-pad-y) var(--pill-pad-x);
+  white-space:nowrap;
+}
+/* COLUMN cards (default) — the lone citation pill anchors to the header's right corner. */
+section.statute-stack:not(.hierarchy):not(.bands):not(.preemption):not(.lane) > .cell-stage > :is(ul, ol) > li > strong:first-child > code {
+  margin-left:auto;
+}
+/* ROW cards — the citation stays left after the label; the trailing status pill (the second
+ * header code) pushes right on the same line and takes the jurisdiction hue (the signal
+ * colour). A lone citation in a row card simply stays left. */
+section.statute-stack:is(.hierarchy, .bands, .preemption) > .cell-stage > :is(ul, ol) > li > strong:first-child > code:last-child:not(:first-child) {
+  margin-left:auto;
+  --pill-border:var(--jur-accent, var(--accent));
+  --pill-fg:var(--jur-accent, var(--accent));
 }
 /* Body list. */
 section.statute-stack > .cell-stage > ul > li > ul,
@@ -97,106 +139,109 @@ section.statute-stack > .cell-stage > ol > li > :is(ul, ol) > li:first-child:has
   background:none; border:none; padding:0;
   letter-spacing:0.02em;
 }
-/* Status pill — last body item, only-child <code>. Pill chrome in the
- * jurisdiction accent colour. */
+/* COLUMN-card status pill — last body item, only-child <code> (the default's authoring puts
+ * status in the body so the narrow rail keeps it OFF the header line). Same chrome as the
+ * header citation but JURISDICTION-HUED (the card's signal colour); foot-anchored to the
+ * BOTTOM-LEFT corner via margin-top:auto (the full-height rail has the room) + align-self.
+ * Row cards carry status in the header instead, so this body code never appears there.
+ * (Swap --jur-accent for a --pass/--warn/--fail map for pass/warn/fail status semantics.) */
+section.statute-stack:not(.hierarchy):not(.bands):not(.preemption):not(.lane) > .cell-stage > ul > li > :is(ul, ol) > li:last-child:has(> code:only-child),
+section.statute-stack:not(.hierarchy):not(.bands):not(.preemption):not(.lane) > .cell-stage > ol > li > :is(ul, ol) > li:last-child:has(> code:only-child) {
+  margin-top:auto;
+}
 section.statute-stack > .cell-stage > ul > li > :is(ul, ol) > li:last-child:has(> code:only-child) > code,
 section.statute-stack > .cell-stage > ol > li > :is(ul, ol) > li:last-child:has(> code:only-child) > code {
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-  line-height:1;
-  font-family:var(--pill-font);
-  font-size:var(--pill-fs);
-  font-weight:var(--pill-weight);
-  letter-spacing:var(--pill-tracking);
+  display:inline-flex; align-items:center; line-height:1;
+  font-family:var(--pill-font); font-size:var(--pill-fs); font-weight:var(--pill-weight);
+  letter-spacing:var(--pill-tracking); text-transform:none;
   padding:var(--pill-pad-y) var(--pill-pad-x);
   border-radius:var(--pill-radius);
-  background:var(--accent-soft);
-  color:var(--jur-accent, var(--accent));
   border:1px solid var(--jur-accent, var(--accent));
-  margin-top:auto;
+  background:var(--pill-bg, var(--bg));
+  color:var(--jur-accent, var(--accent));
   align-self:flex-start;
+  white-space:nowrap;
 }
 
-/* .hierarchy — vertical stack, Federal full-tall, State mid, Local short. */
+/* .hierarchy — the shared jurisdiction card, stacked full-width with WEIGHTED heights
+ * (Federal tall, State mid, Local short) so the cascade of authority reads top-to-bottom.
+ * Cards inherit the base anatomy (label+citation header, gloss, foot status) — only the
+ * arrangement differs. flex mirror of `grid-auto-rows:1.5fr 1fr 0.7fr`. */
 section.statute-stack.hierarchy > .cell-stage > ul,
 section.statute-stack.hierarchy > .cell-stage > ol {
-  grid-template-columns:1fr;
-  grid-auto-rows:1.5fr 1fr 0.7fr;
+  flex-direction:column;
 }
+section.statute-stack.hierarchy > .cell-stage > :is(ul, ol) > li:nth-child(1) { flex:1.5; }
+section.statute-stack.hierarchy > .cell-stage > :is(ul, ol) > li:nth-child(2) { flex:1; }
+section.statute-stack.hierarchy > .cell-stage > :is(ul, ol) > li:nth-child(3) { flex:0.7; }
 section.statute-stack.hierarchy > .cell-stage > ul > li,
 section.statute-stack.hierarchy > .cell-stage > ol > li {
   border-top:1px solid var(--border);
   border-left:4px solid var(--jur-accent, var(--accent));
-  display:grid;
-  grid-template-columns:12cqi 1fr;
-  column-gap:var(--sp-lg);
-  align-items:start;
 }
-section.statute-stack.hierarchy > .cell-stage > :is(ul, ol) > li > strong:first-child { grid-column:1; padding-top:0.234375cqi; }
-section.statute-stack.hierarchy > .cell-stage > :is(ul, ol) > li > :is(ul, ol) { grid-column:2; }
 
-/* .bands — three horizontal full-width rows: badge | body | status. */
+/* .bands — the shared jurisdiction card, stacked full-width with EQUAL heights: an
+ * at-a-glance scorecard. Cards inherit the base anatomy; the container just stacks them
+ * (base `flex:1` → equal rows in a column). flex mirror of `grid-auto-rows:1fr`. */
 section.statute-stack.bands > .cell-stage > ul,
 section.statute-stack.bands > .cell-stage > ol {
-  grid-template-columns:1fr;
-  grid-auto-rows:1fr;
+  flex-direction:column;
 }
 section.statute-stack.bands > .cell-stage > ul > li,
 section.statute-stack.bands > .cell-stage > ol > li {
   border-top:1px solid var(--border);
   border-left:4px solid var(--jur-accent, var(--accent));
-  display:grid;
-  grid-template-columns:11cqi 1fr;
-  column-gap:var(--sp-lg);
-  align-items:center;
-}
-section.statute-stack.bands > .cell-stage > :is(ul, ol) > li > strong:first-child {
-  grid-column:1;
-  font-size:var(--fs-body);
-  letter-spacing:0.08em;
-  align-self:center;
-}
-section.statute-stack.bands > .cell-stage > :is(ul, ol) > li > :is(ul, ol) {
-  grid-column:2;
-  align-self:center;
-  flex-direction:row;
-  flex-wrap:wrap;
-  align-items:baseline;
-  column-gap:var(--sp-md);
 }
 
 /* .preemption — vertical stack with arrows between cards. */
 section.statute-stack.preemption > .cell-stage > ul,
 section.statute-stack.preemption > .cell-stage > ol {
-  grid-template-columns:1fr;
-  grid-auto-rows:auto;
+  /* content-height cards stacked + centred — flex mirror of `grid-auto-rows:auto;
+   * align-content:center`. */
+  flex-direction:column;
   gap:0;
-  align-content:center;
+  justify-content:center;
 }
 section.statute-stack.preemption > .cell-stage > ul > li,
 section.statute-stack.preemption > .cell-stage > ol > li {
+  flex:0 0 auto;
   border:1px solid var(--border);
   border-left:4px solid var(--jur-accent, var(--accent));
   border-top:1px solid var(--border);
   position:relative;
-  margin-bottom:var(--sp-lg);
+  margin-bottom:var(--sp-md);
 }
 section.statute-stack.preemption > .cell-stage > :is(ul, ol) > li:not(:last-child)::after {
-  content:'↓';
+  /* `❯` rotated down — the same chevron the compare-prose connector uses, for one
+   * connector vocabulary across the deck. It sits CENTRED in its own clean band (the
+   * inter-card gap), not floated over the next card's edge behind a `var(--bg)` mask
+   * chip. */
+  content:'❯';
   position:absolute;
-  left:50%; bottom:calc(-1 * var(--sp-lg));
-  transform:translate(-50%, 50%);
+  left:50%; top:100%;
+  transform:translate(-50%, calc(var(--sp-md) / 2 - 50%)) rotate(90deg);
   font-size:var(--fs-h3);
   font-weight:300;
   color:var(--accent);
   line-height:1;
-  background:var(--bg);
-  padding:0 var(--sp-xs);
-  z-index:1;
 }
 section.statute-stack.preemption > .cell-stage > :is(ul, ol) > li:last-child { margin-bottom:0; }
+
+/* Stacked ROW variants (hierarchy / bands / preemption) — both pills ride the header line
+ * (citation left, status right) and the gloss sits below, so each card is just two compact
+ * lines. Tighter padding + a centred content block keep the card balanced in its band
+ * (especially hierarchy's tall Federal card) instead of stranding the two lines at the top. */
+section.statute-stack:is(.hierarchy, .bands, .preemption) > .cell-stage > :is(ul, ol) > li {
+  padding:var(--sp-sm) var(--sp-md);
+  gap:var(--sp-2xs);
+  justify-content:center;
+}
+section.statute-stack:is(.hierarchy, .bands, .preemption) > .cell-stage > :is(ul, ol) > li > :is(ul, ol) {
+  flex:0 1 auto;
+}
+section.statute-stack:is(.hierarchy, .bands) > .cell-stage > :is(ul, ol) {
+  gap:var(--sp-sm);
+}
 
 /* .lane — markdown table; columns are aspects (cite, obligation, status).
  * Authoring example:
@@ -273,25 +318,17 @@ section.statute-stack.lane td:last-child {
 @container lattice (aspect-ratio <= 1.05) {
   section.statute-stack.statute-stack:not(.hierarchy):not(.bands):not(.preemption):not(.lane) > .cell-stage > ul,
   section.statute-stack.statute-stack:not(.hierarchy):not(.bands):not(.preemption):not(.lane) > .cell-stage > ol {
-    grid-template-columns: 1fr;
-    grid-auto-rows: auto;
-    align-content: space-evenly;
+    /* portrait → single column of content-height cards, evenly distributed (flex mirror
+       of `grid-auto-rows:auto; align-content:space-evenly`). */
+    flex-direction: column;
+    justify-content: space-evenly;
   }
-  /* Portrait/single-column cards size to content, so lift the status pill to the card's
-     top-right corner (on the jurisdiction-label row) to reclaim the row it held at the
-     foot — denser cards, more per page. Scoped to portrait + the default card: landscape
-     keeps the foot-anchored pill (its equal-height grid would leave an empty bottom). */
-  section.statute-stack:not(.hierarchy):not(.bands):not(.preemption):not(.lane) > .cell-stage > :is(ul, ol) > li { position:relative; }
-  /* The pill rides the label's MIDLINE (centre-to-centre, not top-to-top) — `top` lands on
-     the label's vertical centre and translateY recentres the taller pill box on it. */
-  section.statute-stack:not(.hierarchy):not(.bands):not(.preemption):not(.lane) > .cell-stage > :is(ul, ol) > li > :is(ul, ol) > li:last-child:has(> code:only-child) {
-    position:absolute; top:calc(var(--sp-md) + 0.8 * var(--fs-meta)); right:var(--sp-md);
-    transform:translateY(-50%); margin:0; max-width:48%;
+  section.statute-stack.statute-stack:not(.hierarchy):not(.bands):not(.preemption):not(.lane) > .cell-stage > ul > li,
+  section.statute-stack.statute-stack:not(.hierarchy):not(.bands):not(.preemption):not(.lane) > .cell-stage > ol > li {
+    flex: 0 0 auto;
   }
-  section.statute-stack:not(.hierarchy):not(.bands):not(.preemption):not(.lane) > .cell-stage > :is(ul, ol) > li > strong:first-child {
-    padding-right:30cqi; /* keep the label clear of the lifted pill on the shared top row */
-  }
-  /* Breathing room between the label/pill row and the citation+obligation below. */
+  /* Header-pill authoring already carries the citation + status on the label row, so the
+     portrait card needs no pill-lift — just breathing room between that row and the gloss. */
   section.statute-stack:not(.hierarchy):not(.bands):not(.preemption):not(.lane) > .cell-stage > :is(ul, ol) > li > :is(ul, ol) {
     margin-top:var(--sp-md);
   }

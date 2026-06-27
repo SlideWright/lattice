@@ -201,6 +201,21 @@ in patch versions.
   at pre-commit, and `LATTICE_FULL_PUSH=1` still runs the full tier pre-push.
   Rationale: `engineering/decisions/2026-06-27-integration-nightly-split.md`.
 
+- **`statute-stack` cards redesigned around a two-pill anatomy keyed to card shape.**
+  Every card carries a **citation pill** (neutral outline — an identifier, identical across
+  cards) and a **status pill** (jurisdiction-hued — the signal colour); placement follows
+  the card's shape so pills never collide and wrap:
+  - **Row cards** (`hierarchy` weighted cascade, `bands` scorecard, `preemption` flow —
+    full-width) put both pills on the header line: citation left after the label, status
+    right. Authoring: `- Federal \`cite\` \`status\``.
+  - **Column cards** (the narrow 3-rail default) split them to opposite corners: citation
+    right-anchored in the header, status at the card foot bottom-left below the content.
+    Authoring: `- Federal \`cite\`` with the status as the last body `code`.
+
+  The row variants now re-arrange this shared card rather than each carrying a bespoke
+  label-column layout — denser and visually consistent; the `lane` table is unchanged. The
+  legacy body-citation authoring still renders (hanging chip + foot pill). Part of the
+  flex-shop conversion: `statute-stack` carries no CSS grid.
 - **Breaking: the Form composition model is now ON by default.** Every deck
   renders with the masthead band (lifted eyebrow + title), the meta/status bay,
   and the footer progress rail unless it opts out — an absent `form:` front-matter

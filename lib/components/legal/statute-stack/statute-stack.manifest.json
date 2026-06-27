@@ -48,9 +48,9 @@
       "description": "One li per jurisdiction. Lead with the jurisdiction label as a plain text first line; nested ul items carry the citation (inline code), obligation summary, and status (inline code)."
     }
   },
-  "skeleton": "<!-- _class: statute-stack -->\n\n## Jurisdiction comparison framing the three obligations.\n\n- Federal\n  - `Citation · Statute name`\n  - Headline obligation in one sentence.\n  - `Status or effective date`\n- State\n  - `Citation · Statute name`\n  - Headline obligation in one sentence.\n  - `Status or effective date`\n- Local\n  - `Citation · Statute name`\n  - Headline obligation in one sentence.\n  - `Status or effective date`\n",
+  "skeleton": "<!-- _class: statute-stack -->\n\n## Jurisdiction comparison framing the three obligations.\n\n- Federal `Citation`\n  - Headline obligation in one sentence.\n  - `Status or effective date`\n- State `Citation`\n  - Headline obligation in one sentence.\n  - `Status or effective date`\n- Local `Citation`\n  - Headline obligation in one sentence.\n  - `Status or effective date`\n",
   "anatomyBlock": "statute-stack",
-  "sample": "<!-- _class: statute-stack -->\n\n## Children's data — three jurisdictions, three obligations.\n\n- Federal\n  - `15 U.S.C. §6501 · COPPA`\n  - Verifiable parental consent for under-13 personal data.\n  - Operators must post a clear notice and a deletion route.\n  - `In effect since 2000`\n- State\n  - `Cal. Civ. Code §1798.120 · CCPA/CPRA`\n  - Opt-in for selling or sharing under-16 data; opt-out for over-16.\n  - DSAR handling within 45 days; deletion verified.\n  - `Enforced 2023`\n- Local\n  - `NYC Admin Code §22-1201`\n  - Bias-audit obligation for AEDTs used in employment decisions.\n  - Annual audit + candidate notice + public summary.\n  - `Effective 2023`\n",
+  "sample": "<!-- _class: statute-stack -->\n\n## Children's data — three jurisdictions, three obligations.\n\n- Federal `15 U.S.C. §6501`\n  - Verifiable parental consent for under-13 personal data.\n  - Operators must post a clear notice and a deletion route.\n  - `In effect since 2000`\n- State `Cal. Civ. §1798.120`\n  - Opt-in for selling or sharing under-16 data; opt-out for over-16.\n  - DSAR handling within 45 days; deletion verified.\n  - `Enforced 2023`\n- Local `NYC §22-1201`\n  - Bias-audit obligation for AEDTs used in employment decisions.\n  - Annual audit + candidate notice + public summary.\n  - `Effective 2023`\n",
   "whenToUse": [
     {
       "title": "Three parallel jurisdictions",
@@ -58,7 +58,7 @@
     },
     {
       "title": "Citation plus obligation plus status",
-      "body": "Each row is a three-part record: the citation (mono chip), the headline obligation in prose, the status pill. Use when all three matter; for citation-only, reach for list-tabular."
+      "body": "Each card is a three-part record: a citation pill, the headline obligation in prose, and a status pill — pill placement follows the card shape (row variants keep both on the header line; the narrow default splits them to opposite corners). Use when all three matter; for citation-only, reach for list-tabular."
     },
     {
       "title": "Compliance briefings",
@@ -101,17 +101,17 @@
     "hierarchy": {
       "label": "Authority pyramid",
       "caption": "Stacks the rows vertically with descending row heights — Federal tallest, State mid, Local shortest. Use when the jurisdictions are nested in authority, not peers.",
-      "sample": "<!-- _class: statute-stack hierarchy -->\n\n## Children's data — authority cascades downward.\n\n- Federal\n  - `15 U.S.C. §6501 · COPPA`\n  - Verifiable parental consent for under-13 personal data.\n  - `In effect since 2000`\n- State\n  - `Cal. Civ. Code §1798.120 · CCPA/CPRA`\n  - Opt-in for selling or sharing under-16 data; opt-out for over-16.\n  - `Enforced 2023`\n- Local\n  - `NYC Admin Code §22-1201`\n  - Bias-audit obligation for AEDTs used in employment decisions.\n  - `Effective 2023`\n"
+      "sample": "<!-- _class: statute-stack hierarchy -->\n\n## Children's data — authority cascades downward.\n\n- Federal `15 U.S.C. §6501` `In effect since 2000`\n  - Verifiable parental consent for under-13 personal data.\n- State `Cal. Civ. §1798.120` `Enforced 2023`\n  - Opt-in for selling or sharing under-16 data; opt-out for over-16.\n- Local `NYC §22-1201` `Effective 2023`\n  - Bias-audit obligation for AEDTs used in employment decisions.\n"
     },
     "bands": {
       "label": "Horizontal bands",
-      "caption": "Each jurisdiction becomes a full-width horizontal row with a label column on the left and the body inlined to the right. Use for compact compliance briefs where vertical real estate is tight.",
-      "sample": "<!-- _class: statute-stack bands -->\n\n## Children's data — at-a-glance scorecard.\n\n- Federal\n  - `15 U.S.C. §6501 · COPPA`\n  - Verifiable parental consent for under-13 personal data.\n  - `In effect since 2000`\n- State\n  - `Cal. Civ. Code §1798.120 · CCPA/CPRA`\n  - Opt-in for selling or sharing under-16 data; opt-out for over-16.\n  - `Enforced 2023`\n- Local\n  - `NYC Admin Code §22-1201`\n  - Bias-audit obligation for AEDTs used in employment decisions.\n  - `Effective 2023`\n"
+      "caption": "Each jurisdiction is a full-width card stacked at equal height — an at-a-glance scorecard. A row card: both pills ride the header line (citation left, status right). Only the arrangement differs from the default.",
+      "sample": "<!-- _class: statute-stack bands -->\n\n## Children's data — at-a-glance scorecard.\n\n- Federal `15 U.S.C. §6501` `In effect since 2000`\n  - Verifiable parental consent for under-13 personal data.\n- State `Cal. Civ. §1798.120` `Enforced 2023`\n  - Opt-in for selling or sharing under-16 data; opt-out for over-16.\n- Local `NYC §22-1201` `Effective 2023`\n  - Bias-audit obligation for AEDTs used in employment decisions.\n"
     },
     "preemption": {
       "label": "Preemption cascade",
       "caption": "Vertical stack with a downward arrow between each card. Use when the slide must show that the upper jurisdiction preempts or supersedes the one below.",
-      "sample": "<!-- _class: statute-stack preemption -->\n\n## Federal preemption — how the cascade flows.\n\n- Federal\n  - `15 U.S.C. §6501 · COPPA`\n  - Sets the floor for under-13 personal data collection.\n  - `Preempts conflicting state rules`\n- State\n  - `Cal. Civ. Code §1798.120 · CCPA/CPRA`\n  - Stricter opt-in regime on top of COPPA's baseline.\n  - `Survives preemption`\n- Local\n  - `NYC Admin Code §22-1201`\n  - Bias-audit obligation distinct from privacy preemption scope.\n  - `Independent of preemption`\n"
+      "sample": "<!-- _class: statute-stack preemption -->\n\n## Federal preemption — how the cascade flows.\n\n- Federal `15 U.S.C. §6501` `Preempts state rules`\n  - Sets the floor for under-13 personal data collection.\n- State `Cal. Civ. §1798.120` `Survives preemption`\n  - Stricter opt-in regime on top of COPPA's baseline.\n- Local `NYC §22-1201` `Independent of preemption`\n  - Bias-audit obligation distinct from privacy preemption scope.\n"
     },
     "lane": {
       "label": "Markdown table",

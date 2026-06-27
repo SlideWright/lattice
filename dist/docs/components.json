@@ -7557,7 +7557,7 @@
           "description": "One li per jurisdiction. Lead with the jurisdiction label as a plain text first line; nested ul items carry the citation (inline code), obligation summary, and status (inline code)."
         }
       },
-      "skeleton": "<!-- _class: statute-stack -->\n\n## Jurisdiction comparison framing the three obligations.\n\n- Federal\n  - `Citation · Statute name`\n  - Headline obligation in one sentence.\n  - `Status or effective date`\n- State\n  - `Citation · Statute name`\n  - Headline obligation in one sentence.\n  - `Status or effective date`\n- Local\n  - `Citation · Statute name`\n  - Headline obligation in one sentence.\n  - `Status or effective date`\n",
+      "skeleton": "<!-- _class: statute-stack -->\n\n## Jurisdiction comparison framing the three obligations.\n\n- Federal `Citation`\n  - Headline obligation in one sentence.\n  - `Status or effective date`\n- State `Citation`\n  - Headline obligation in one sentence.\n  - `Status or effective date`\n- Local `Citation`\n  - Headline obligation in one sentence.\n  - `Status or effective date`\n",
       "whenToUse": [
         {
           "title": "Three parallel jurisdictions",
@@ -7565,7 +7565,7 @@
         },
         {
           "title": "Citation plus obligation plus status",
-          "body": "Each row is a three-part record: the citation (mono chip), the headline obligation in prose, the status pill. Use when all three matter; for citation-only, reach for list-tabular."
+          "body": "Each card is a three-part record: a citation pill, the headline obligation in prose, and a status pill — pill placement follows the card shape (row variants keep both on the header line; the narrow default splits them to opposite corners). Use when all three matter; for citation-only, reach for list-tabular."
         },
         {
           "title": "Compliance briefings",
