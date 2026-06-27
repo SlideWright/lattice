@@ -212,6 +212,24 @@ in patch versions.
   padding); and a converted `padding-bottom`/`-top` pairs with a `margin:0` reset wherever a
   base `section h2/h3/p` margin would otherwise leak through and double the spacing. Renders
   verified pixel-equivalent to the prior build across the component galleries in both themes.
+- **No-margins spacing model (phase 3, independent base/contract/forms slices) — 39 → 12.**
+  Extending the sweep past the components into the shared layers it had left out: the
+  chart-family frame (header/body/caption → flex centering + `gap`, the canvas float → a
+  section `row-gap`), the four inventory-contract Layouts (ledger/cards/timeline/editorial —
+  list and insight spacings to `padding`/`gap`, with the accent insight band's gap parked on
+  the adjacent no-bg sibling so its fill never bleeds), the Form footer chrome (the running
+  footer text now pins absolutely to the band's left edge instead of riding a
+  `margin-right:auto`, and the progress label's trailing space is `padding`), and the
+  independent `base.modifiers` spacings (the KEY-INSIGHT label, inline emoji + glyph
+  horizontals, and the carousel split-cover divs). The mermaid-error block's gap moves onto
+  its preceding `.mermaid` sibling via `:has`, off the bordered box. The **12** that remain are
+  the keystone base typography rhythm (`base.elements` h2–h6 + p + hr, plus four collapse- and
+  masthead-sensitive `base.modifiers` prose/quote/display-math spacings) — deferred to a
+  stage-flow design-doc pass — and **one** sanctioned, irreducible flex auto-margin (the
+  trailing list pill, whose preceding label is an anonymous text run that can't take `flex:1`;
+  horizontal-only, so it never touches the height math the rule guards). `MARGIN_BUDGET`
+  ratcheted 39 → 12. Renders verified pixel-equivalent (inventory Layouts in both Form-off and
+  Form modes; the footer + progress band) to the prior build.
 - **Flex-shop conversion, hard tier — `pricing`, `logo-wall`, `citation-card.split`,
   `verdict-grid`, `cards-grid` drop CSS grid for flex.** `pricing` / `logo-wall` were
   `repeat(N,1fr)` tilings → flex-wrap with `width: 100%/N − …` per-cell (the matrix-2x2 idiom;

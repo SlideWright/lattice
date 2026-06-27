@@ -12557,7 +12557,7 @@ section:not(.quote):not(.math):not(.citation-card):not(.redline):not([class*="la
   text-transform:uppercase;
   color:var(--accent);
   display:block;
-  margin-bottom:0.46875cqi;
+  padding-bottom:0.46875cqi; /* label→quote gap, inside the no-bg pseudo (HARD RULE #20) */
 }
 section:not(.quote):not(.math):not(.citation-card):not([class*="layout-"]) > blockquote p {
   font-family:var(--font-body);
@@ -12597,7 +12597,9 @@ section img.emoji {
   max-width:none; max-height:none;
   border-radius:0; object-fit:fill;
   vertical-align:-0.1em;
-  margin:0 0.05em;
+  /* Horizontal breathing in text. padding (replaced element, no bg) pushes neighbouring
+   * glyphs out by the same 0.05em as the old margin would — HARD RULE #20. */
+  padding:0 0.05em;
 }
 section header {
   position:absolute; top:var(--frame-inset-y); left:var(--frame-inset-x); right:var(--frame-inset-x);
@@ -12667,6 +12669,11 @@ section:where(:not(.title):not(.divider):not(.closing):not(.split-panel):not(.bi
   > :where(ul, ol) > li > code:where(:last-child, .lat-pill),
 section:where(:not(.title):not(.divider):not(.closing):not(.split-panel):not(.big-number):not(.kpi):not(.stats):not(.quote):not(.glossary):not(.compare-table):not(.roadmap):not(.agenda):not(.matrix-2x2):not(.decision):not(.verdict-grid):not(.compare-prose):not(.code):not(.compare-code):not(.image):not(.diagram):not(.content):not(.timeline):not(.list-steps):not(.principles):not(.list):not(.list-criteria):not(.list-tabular):not(.math):not(.pricing))
   > .cell-stage > :where(ul, ol) > li > code:where(:last-child, .lat-pill) {
+  /* IRREDUCIBLE flex auto-margin (HARD RULE #20 sanctioned floor): pushes the trailing
+   * pill to the row's right edge. The preceding label is an ANONYMOUS text run, so it
+   * can't take `flex:1` and `justify-content:space-between` would scatter multi-item
+   * labels — `margin-left:auto` is the only clean push. Horizontal + flex-resolved, so
+   * it never touches the vertical height math the rule guards. Counted in MARGIN_BUDGET. */
   margin-left:auto;
   align-self:center;
   display:inline-flex;
@@ -12932,7 +12939,7 @@ section.compare-table > :is(ul, ol, blockquote, table) + p:has(> em:only-child):
   width:auto;
   color:var(--accent);
   font-style:normal;
-  margin-right:0.5em;
+  padding-right:0.5em; /* glyph→text gap, inside the no-bg pseudo (HARD RULE #20) */
   font-size:0.95em;
 }
 
@@ -13386,7 +13393,9 @@ section.safe[data-orientation='square'] :is(.cell-footer, .tile-meta, [class*='p
    manifest-declared "→" lead-in (split.intro). Both read the slide's currentColor, so
    they sit correctly on the accent cover AND the body pages. Palette-blind. */
 .split-cover-lead {
-  margin-top: var(--sp-lg); font-size: var(--fs-emphasis); letter-spacing: 0.02em; opacity: 0.9;
+  /* Gap above the lead-in. <div>, no bg, in a no-gap flex column — padding-top reads
+   * identically to the old margin-top, and measures cleanly (HARD RULE #20). */
+  padding-top: var(--sp-lg); font-size: var(--fs-emphasis); letter-spacing: 0.02em; opacity: 0.9;
 }
 /* Shares the deck pagination's baseline (bottom-right, vertically centred on the page
    number) but stands well clear of it horizontally — the rail and the page count are two
@@ -13418,16 +13427,24 @@ section.lat-split-cover .split-feat-eye {
 }
 section.lat-split-cover .split-feat-h {
   font-size: var(--fs-h1); font-weight: 800; line-height: var(--lh-tight);
-  color: var(--on-accent); margin: var(--sp-xs) 0 var(--sp-md); max-width: 14em;
+  /* <div> (not a heading), no bg, in a no-gap flex column — padding stands in for the
+   * old eyebrow→title / title→lead gaps and measures cleanly (HARD RULE #20). */
+  color: var(--on-accent); padding: var(--sp-xs) 0 var(--sp-md); max-width: 14em;
 }
 /* compare-table's split cover carries ONE signature from the live layout — the --spectrum
    strip that underlines its <thead> (compare-table.styles.css) — so a split reads as the
    same deck. Scoped via the `split-cover-compare-table` marker the carousel stamps, NOT
    `section.compare-table`, so none of the table's base CSS activates on the cover. The
    shared cover is otherwise untouched (the family fidelity bar). Palette-blind (HARD #3). */
+/* Stack the title text over its spectrum underline with a `gap` rather than a
+ * margin-top on the strip — the strip has a background, so padding-top would bleed
+ * the colour up into the gap (HARD RULE #20). align-items keeps both left-aligned. */
+section.lat-split-cover.split-cover-compare-table .split-feat-h {
+  display: flex; flex-direction: column; align-items: flex-start; gap: var(--sp-sm);
+}
 section.lat-split-cover.split-cover-compare-table .split-feat-h::after {
   content: ""; display: block; height: 2px; width: 42%; min-width: 7em;
-  margin-top: var(--sp-sm); background: var(--spectrum);
+  background: var(--spectrum);
 }
 
 /* === lib/integrations/highlight-js/highlight-js.css === */
@@ -13528,8 +13545,14 @@ section.diagram :is(pre, marp-pre):not([data-mermaid-state="rendered"]) > code [
  * and .badge.fail so it feels native to the deck. Width matches the
  * source <pre> / rendered .mermaid container so the error sits flush with
  * the diagram slot above it. Height is intrinsic — errors are short. */
+/* Gap from the diagram slot above lives on the (no-bg) .mermaid container, not as a
+ * margin-top on this bordered/filled block (which would bleed its fill / can't be
+ * measured) — HARD RULE #20. The container is the error's previous sibling
+ * (attachError inserts afterend of the target). */
+.mermaid:has(+ .mermaid-error) {
+  padding-bottom:var(--sp-sm);
+}
 .mermaid-error {
-  margin-top:var(--sp-sm);
   padding:var(--sp-xs) var(--sp-md);
   background:color-mix(in srgb, var(--fail) 8%, var(--bg-alt));
   border:1px solid var(--fail);
@@ -13838,6 +13861,13 @@ section.chart-frame .chart-header {
    * treatments, not baked in here. A short hairline below the header
    * keeps the chart body visually separated; that is the only chrome. */
   flex: 0 0 auto;
+  /* flex column so the eyebrow/title/subtitle centre via align-items and stack via `gap`
+   * instead of each carrying its own `margin: 0 auto …` (HARD RULE #20). The ::after
+   * hairline is absolutely positioned, so it is unaffected. */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-xs);
   position: relative;
   box-sizing: border-box;
   width: 100%;
@@ -13859,7 +13889,7 @@ section.chart-frame .chart-header::after {
 }
 
 section.chart-frame .chart-eyebrow {
-  margin: 0 0 var(--sp-xs);
+  margin: 0;
   font-size: var(--fs-meta);
   line-height: 1;
 }
@@ -13875,7 +13905,7 @@ section.chart-frame .chart-eyebrow > code {
 }
 
 section.chart-frame .chart-header h2 {
-  margin: 0 auto var(--sp-xs);
+  margin: 0;
   max-width: 70.3125cqi;
   font-size: var(--fs-h2);
   line-height: var(--lh-tight);
@@ -13883,7 +13913,7 @@ section.chart-frame .chart-header h2 {
 }
 
 section.chart-frame .chart-subtitle {
-  margin: 0 auto;
+  margin: 0;
   max-width: 68.75cqi;
   font-size: var(--fs-body);
   font-style: italic;
@@ -13916,7 +13946,7 @@ section.chart-frame .chart-body {
   box-sizing: border-box;
   width: calc(100cqi - 2 * var(--sp-2xl));
   max-width: 100%;
-  margin: 0 auto;
+  align-self: center;   /* centre the fixed-width body in the section flex column (was margin:0 auto) */
   padding: var(--sp-lg) var(--sp-2xl);
   min-height: 0;
   overflow: hidden;
@@ -13969,13 +13999,18 @@ section.chart-frame .chart-body {
  * OPT-IN: the canvas is now off by default — a chart sits directly on the
  * slide unless the slide adds the `canvas` modifier. So this rule is gated on
  * `.canvas`; the bare chart is the baseline. */
+/* Canvas float as a section-column row-gap (was the body's margin-top:var(--sp-lg)):
+   drops the glass card clear of the header hairline without a margin. The frame is
+   header → body (→ optional caption); the body→caption seam keeps the same lift,
+   which reads as deliberate breathing room on a bleeding canvas. */
+section.chart-frame.canvas:not(.state-chart) { row-gap: var(--sp-lg); }
 section.chart-frame.canvas:not(.state-chart) .chart-body {
   /* Float the panel clear of the header divider. The .chart-header::after
    * accent hairline sits at the header's bottom edge; without this gap the
    * lifted glass card's top edge lands right on it and the two separators
-   * collide ("hugging"). A top margin drops the card so the hairline floats
-   * in the whitespace above it. */
-  margin-top: var(--sp-lg);
+   * collide ("hugging"). The float is a `row-gap` on the section flex column
+   * (below) — drops the card so the hairline floats in the whitespace above it,
+   * margin-free (HARD RULE #20). */
   /* Real glass, not a tinted box. ROOT-CAUSE FIX: the fill must never be a
    * --text-heading mix — that token is a neutral gray, so mixing it into --bg
    * paints a muddy GRAY BOX that reads as "a second background" on the slide,
@@ -14011,6 +14046,12 @@ section.chart-frame.canvas:not(.state-chart) .chart-body {
 
 section.chart-frame .chart-caption {
   flex: 0 0 auto;
+  /* flex column so the ::before hairline centres via align-items and its gap to the
+   * caption text is a `gap`, not the pseudo's `margin: 0 auto var(--sp-sm)` (#20). */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-sm);
   box-sizing: border-box;
   width: 100%;
   margin: 0;
@@ -14031,7 +14072,7 @@ section.chart-frame .chart-caption::before {
   display: block;
   width: 7.5cqi;
   height: var(--chart-hairline);
-  margin: 0 auto var(--sp-sm);
+  margin: 0;
   background: color-mix(in oklab, var(--border) 90%, transparent);
 }
 
@@ -14283,8 +14324,10 @@ section.chart-frame.cover .chart-body {
  * margin:auto pins it to the bottom; the chart-frame skeleton measure-caps the
  * title at higher specificity, so re-assert measure / align / size here. */
 section.chart-frame.cover .chart-header h2 {
+  /* order:1 puts the title last; the flex:1 chart-body above it fills the column and
+   * pushes this bottom shelf to the foot — no margin-top:auto needed (#20). */
   order: 1;
-  margin: auto 0 0;
+  margin: 0;
   z-index: 2;
   max-width: none;
   box-sizing: border-box;
@@ -16260,14 +16303,19 @@ section.form.footer-inset > .cell-footer {
 section.form.footer-inset:has(> .cell-footer) {
   padding-bottom: calc(var(--footer-reserve) + var(--footer-h));
 }
-/* The running footer text — a flex item at the left of the band (the band itself
- * is the absolute cell above). margin-right:auto shoves the wayfinding group to the
- * right edge; absent footer text just leaves the group right-aligned. Appearance
- * (colour, size) still comes from the Marp footer tier. */
+/* The running footer text. Pinned absolutely to the band's LEFT edge (the band is
+ * the absolute cell above, so it's the containing block) rather than flowing as a
+ * flex item with `margin-right:auto` — auto-margin is still a margin (HARD RULE #20).
+ * Out of flex flow, it leaves only the wayfinding group (rail · page no.) in the row,
+ * which `justify-content:flex-end` already right-aligns; absent footer text changes
+ * nothing. `inset-block:0` + the inner flex centres the text vertically, matching the
+ * band's `align-items:center`. Appearance (colour, size) comes from the Marp footer tier. */
 section.form > .cell-footer > footer {
-  position: static;
-  inset: auto;
-  margin: 0 auto 0 0;
+  position: absolute;
+  left: 0;
+  inset-block: 0;
+  display: flex;
+  align-items: center;
   max-width: var(--footerleft-w, 52cqi);
 }
 /* The page number as a real element — mono, --fs-meta, vertically centred with the
@@ -16367,7 +16415,9 @@ section.form .tile-progress {
   letter-spacing: 0.10em;
   text-transform: uppercase;
   color: var(--text-label);
-  margin-right: var(--sp-xs);
+  /* Extra breathing room after the label, on top of the flex `gap`. padding (inside the
+   * no-bg label box), not margin — HARD RULE #20. The ellipsis clip honours it as right inset. */
+  padding-right: var(--sp-xs);
   /* Within the reserved centre zone, a very long label still truncates
      gracefully rather than crowding the dots. */
   min-width: 0;
@@ -16479,7 +16529,10 @@ section.dark.form .tile-watermark { color: var(--on-dark-watermark); }
 
 /* ── Layout · LEDGER — numbered rows, hairline rules, accent insight band ── */
 section.layout-ledger > ul {
-  list-style: none; padding: 0; margin: var(--sp-sm) 0 0;
+  /* Top pad = the old `margin-top` (separation from the band above); bottom pad = the
+   * insight band's old `margin-top`, parked on this no-bg ul so the band's background
+   * doesn't extend up into the gap (HARD RULE #20: padding/gap, not margin). */
+  list-style: none; padding: var(--sp-sm) 0 var(--sp-md);
   display: flex; flex-direction: column; flex: 1; justify-content: center; counter-reset: r;
 }
 section.layout-ledger > ul > li {
@@ -16493,17 +16546,18 @@ section.layout-ledger > ul > li::before {
 }
 section.layout-ledger > ul > li strong {
   display: block; font-family: var(--font-display); font-size: var(--fs-h3);
-  font-weight: 700; color: var(--text-heading); margin-bottom: var(--sp-3xs);
+  font-weight: 700; color: var(--text-heading); padding-bottom: var(--sp-3xs);
 }
 section.layout-ledger > blockquote {
-  margin: var(--sp-md) 0 0; padding: var(--sp-sm) var(--sp-md);
+  /* Top gap supplied by the ul's bottom-padding above (band has a background). */
+  padding: var(--sp-sm) var(--sp-md);
   background: var(--accent); color: var(--on-accent); border-radius: var(--radius-md);
   font-size: var(--fs-message); font-weight: 600;
 }
 
 /* ── Layout · CARDS — equal grid, insight as a centred pull-quote ── */
 section.layout-cards > ul {
-  list-style: none; padding: 0; margin: var(--sp-md) 0 0;
+  list-style: none; padding: var(--sp-md) 0 0;
   display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-md); flex: 1; align-content: center;
 }
 section.layout-cards > ul > li {
@@ -16513,10 +16567,10 @@ section.layout-cards > ul > li {
 }
 section.layout-cards > ul > li strong {
   display: block; font-family: var(--font-display); font-size: var(--fs-h3);
-  font-weight: 700; color: var(--text-heading); margin-bottom: var(--sp-xs);
+  font-weight: 700; color: var(--text-heading); padding-bottom: var(--sp-xs);
 }
 section.layout-cards > blockquote {
-  margin: var(--sp-md) 0 0; text-align: center; font-family: var(--font-display);
+  padding: var(--sp-md) 0 0; text-align: center; font-family: var(--font-display);
   font-style: italic; font-size: var(--fs-message); color: var(--accent);
 }
 section.layout-cards > blockquote::before { content: '\201C'; }
@@ -16525,10 +16579,10 @@ section.layout-cards > blockquote::after  { content: '\201D'; }
 /* ── Layout · TIMELINE — horizontal numbered run, insight above ── */
 section.layout-timeline > blockquote {
   order: -1; text-align: center; font-family: var(--font-display);
-  font-size: var(--fs-message); color: var(--text-muted); margin: 0 0 var(--sp-md);
+  font-size: var(--fs-message); color: var(--text-muted); padding: 0 0 var(--sp-md);
 }
 section.layout-timeline > ul {
-  list-style: none; padding: 0; margin: var(--sp-md) 0 0;
+  list-style: none; padding: var(--sp-md) 0 0;
   display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr);
   gap: var(--sp-lg); flex: 1; align-content: center; counter-reset: t;
 }
@@ -16549,7 +16603,7 @@ section.layout-timeline > ul > li::after {
 section.layout-timeline > ul > li:last-child::after { display: none; }
 section.layout-timeline > ul > li strong {
   display: block; font-family: var(--font-display); font-size: var(--fs-h3);
-  font-weight: 700; color: var(--text-heading); margin-bottom: var(--sp-2xs);
+  font-weight: 700; color: var(--text-heading); padding-bottom: var(--sp-2xs);
 }
 
 /* ── Layout · EDITORIAL — magazine split (title + insight | ruled items) ── */
@@ -16559,9 +16613,12 @@ section.layout-editorial {
 section.layout-editorial > p:has(> code) { grid-column: 1; grid-row: 1; margin: 0; }
 section.layout-editorial > h2 {
   grid-column: 1; grid-row: 2; font-size: var(--fs-h1); line-height: var(--lh-tight); margin: 0;
+  /* Pad below the title (no-bg) instead of margin-top on the accent-ruled insight below,
+   * whose `border-left` would lengthen if the gap lived in its own padding (HARD RULE #20). */
+  padding-bottom: var(--sp-md);
 }
 section.layout-editorial > blockquote {
-  grid-column: 1; grid-row: 3; margin: var(--sp-md) 0 0;
+  grid-column: 1; grid-row: 3;
   font-family: var(--font-display); font-style: italic; font-size: var(--fs-message);
   color: var(--accent); border-left: 0.3cqi solid var(--accent); padding-left: var(--sp-md);
 }
@@ -16575,7 +16632,7 @@ section.layout-editorial > ul > li {
 }
 section.layout-editorial > ul > li strong {
   display: block; font-family: var(--font-display); font-size: var(--fs-message);
-  font-weight: 700; color: var(--text-heading); margin-bottom: var(--sp-3xs);
+  font-weight: 700; color: var(--text-heading); padding-bottom: var(--sp-3xs);
 }
 
 /* === lib/integrations/mermaid/mermaid.css === */

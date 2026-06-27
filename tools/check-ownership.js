@@ -691,7 +691,16 @@ function checkTypographyTokens(errors) {
 // 271 → 39: the no-margins component sweep (phase 2) retired every spacing margin from
 // lib/components/**/*.styles.css — zero remain there. The 39 that remain all live in
 // base/contract/forms/chart-family/integration CSS, out of that sweep's scope.
-const MARGIN_BUDGET = 39;
+// 39 → 12: the independent-slices pass (#556) converted the chart-family frame (7),
+// the inventory contract Layouts (11), the stage/progress Form chrome (2), the
+// independent base.modifiers spacings (6), and the mermaid-error block (1) to
+// padding/gap. The 12 that remain are the KEYSTONE base typography rhythm (base.elements
+// h2–h6 + p + hr = 7; base.modifiers eyebrow / KEY-INSIGHT panel / footnote prose /
+// display-math = 4) — deferred to a stage-flow design-doc PR because they collapse and
+// interact with the masthead lift — plus ONE sanctioned, irreducible flex auto-margin
+// (the trailing list pill, base.modifiers `margin-left:auto`; horizontal, never touches
+// height math). Target after the keystone PR: 1 (the sanctioned pill).
+const MARGIN_BUDGET = 12;
 
 // HARD RULE #20 gate — keep `margin` out of the engine's layout CSS; space with
 // `gap`/`padding`, which measure cleanly (engineering/gotchas.md).
