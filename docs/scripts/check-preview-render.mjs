@@ -1,7 +1,7 @@
 // Playground gallery-preview RENDER guard — the real-browser e2e regression test
 // for the "load a gallery → the tab flips to Preview but the deck never shows"
 // bug (the rendered deck sat in a hidden pane; the in-iframe FIT agent can't
-// scale a zero-width iframe, so `.marpit` never flips to visible). The jsdom
+// scale a zero-width iframe, so `.lattice` never flips to visible). The jsdom
 // unit/fuzz tests mock the engine, so they prove the pane STATE stays coherent
 // but can NOT prove the deck actually PAINTS — only a browser can. This does.
 //
@@ -12,7 +12,7 @@
 // Per viewport (mobile + desktop), after loading a gallery from Edit view — the
 // exact reported flow — it asserts:
 //   1. the active tab AND body[data-pane] both read "preview" (pane-sync), and
-//   2. the preview iframe's `.marpit` becomes visibility:visible with its slides
+//   2. the preview iframe's `.lattice` becomes visibility:visible with its slides
 //      scaled to the container (the FIT agent ran) — i.e. the deck is on screen.
 //
 // Hermetic: the external Mermaid/KaTeX/font CDNs (which the srcdoc loads via
@@ -109,7 +109,7 @@ async function waitForDeck(page) {
 		if (frame) {
 			last = await frame
 				.evaluate(() => {
-					const m = document.querySelector('.marpit');
+					const m = document.querySelector('.lattice');
 					const s = m?.querySelector(':scope>section');
 					const tf = s ? getComputedStyle(s).transform : 'none';
 					return {

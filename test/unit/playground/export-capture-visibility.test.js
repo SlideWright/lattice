@@ -4,7 +4,7 @@
  *
  * Regression guard for the "blank PDF when exporting from the Drawing Board's Edit
  * tab" bug: the filmstrip preview keeps off-screen slides at
- * `content-visibility:auto` and the whole `.marpit` at `visibility:hidden` until
+ * `content-visibility:auto` and the whole `.lattice` at `visibility:hidden` until
  * the in-iframe FIT agent reveals it (only once the preview has been shown). The
  * export rasterizes the LIVE preview DOM with html-to-image, which copies those
  * computed styles onto its clone — so a slide that was never revealed rasterizes
@@ -22,7 +22,7 @@ async function load() {
 }
 
 function section(initial = {}) {
-	const dom = new JSDOM('<!doctype html><div class="marpit"><section></section></div>');
+	const dom = new JSDOM('<!doctype html><div class="lattice"><section></section></div>');
 	const el = dom.window.document.querySelector('section');
 	for (const [k, v] of Object.entries(initial)) el.style[k] = v;
 	return el;
@@ -31,7 +31,7 @@ function section(initial = {}) {
 describe('forceSectionVisibleForCapture', () => {
 	test('forces BOTH visibility and content-visibility visible for the capture', async () => {
 		const { forceSectionVisibleForCapture } = await load();
-		// The preview's lazy state: virtualized + inheriting the hidden .marpit gate.
+		// The preview's lazy state: virtualized + inheriting the hidden .lattice gate.
 		const el = section({ contentVisibility: 'auto' });
 		forceSectionVisibleForCapture(el);
 		assert.equal(el.style.visibility, 'visible', 'visibility gate must be forced open');
@@ -40,7 +40,7 @@ describe('forceSectionVisibleForCapture', () => {
 
 	test('restore() returns BOTH properties to their prior inline values', async () => {
 		const { forceSectionVisibleForCapture } = await load();
-		const el = section({ contentVisibility: 'auto' }); // visibility starts unset (inherits .marpit)
+		const el = section({ contentVisibility: 'auto' }); // visibility starts unset (inherits .lattice)
 		const restore = forceSectionVisibleForCapture(el);
 		restore();
 		assert.equal(el.style.visibility, '', 'visibility restored to its prior (unset) value');

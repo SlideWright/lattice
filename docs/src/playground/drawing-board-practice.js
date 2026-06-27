@@ -135,12 +135,12 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
     const sw = geom?.width || 1280;
     const sh = geom?.height || 720;
     // Isolated stage (see Present): #latt-stage/#latt-fit (ID-scoped, out.css can't
-    // clobber; wraps .marpit so the slide's transform can't trap our fixed box);
+    // clobber; wraps .lattice so the slide's transform can't trap our fixed box);
     // 100dvh flex-center → visual center on mobile Safari.
     const FIT =
       '(function(){' +
       'var stage=document.getElementById("latt-stage"),fitEl=document.getElementById("latt-fit");' +
-      'function secs(){var m=document.querySelector(".marpit");return m?m.querySelectorAll(":scope>section"):[]}' +
+      'function secs(){var m=document.querySelector(".lattice");return m?m.querySelectorAll(":scope>section"):[]}' +
       'var cur=0;' +
       'function fit(){var s=secs();if(!s.length||!stage||!fitEl)return;' +
       'var W=stage.clientWidth||window.innerWidth,H=stage.clientHeight||window.innerHeight;' +
@@ -165,8 +165,8 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
       '<style>html,body{margin:0;padding:0;height:100%;background:' + bg + ';overflow:hidden;touch-action:manipulation;-webkit-text-size-adjust:100%;}' +
       '#latt-stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden;visibility:hidden;}' +
       '#latt-fit{overflow:hidden;}' +
-      '#latt-fit .marpit{margin:0;padding:0;}' +
-      '#latt-fit .marpit>section{transform-origin:top left;box-shadow:0 18px 60px rgba(0,0,0,.45);border-radius:10px;}' +
+      '#latt-fit .lattice{margin:0;padding:0;}' +
+      '#latt-fit .lattice>section{transform-origin:top left;box-shadow:0 18px 60px rgba(0,0,0,.45);border-radius:10px;}' +
       slideBox(sw, sh) +
       css + '</style></head><body>' +
       A11Y_DEFS + '<div id="latt-stage"><div id="latt-fit">' + html + '</div></div>' +

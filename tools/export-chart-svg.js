@@ -109,7 +109,7 @@ async function main() {
   // slideBox: pin each section to its intrinsic @size box so container-type:size
   // resolves (chart text font-family/fill don't depend on it, but a collapsed
   // container can drop some computed values — cheap insurance, mirrors the host).
-  const slideBox = '.marpit>section{display:block;width:1280px;height:720px;container-type:size;}';
+  const slideBox = '.lattice>section{display:block;width:1280px;height:720px;container-type:size;}';
 
   const browser = await puppeteer.launch({
     executablePath: resolveChrome(),
@@ -137,7 +137,7 @@ async function main() {
       // `colorScheme: mode`). The chart's `fill`/text colours then compute dark.
       document.documentElement.style.colorScheme = args.mode === 'dark' ? 'dark' : 'light';
       document.body.innerHTML = out.html || '';
-      return document.querySelectorAll('.marpit > section').length;
+      return document.querySelectorAll('.lattice > section').length;
     }, { src, theme, mode: a.mode, slideBox, latticeCss, themeCss });
 
     if (!count) throw new Error('deck rendered no slides');
@@ -160,7 +160,7 @@ async function main() {
       // chart galleries are produced.
       const KEYED = ['piechart', 'radar', 'map', 'quadrant', 'funnel'];
       const out = [];
-      const sections = Array.from(document.querySelectorAll('.marpit > section'));
+      const sections = Array.from(document.querySelectorAll('.lattice > section'));
       sections.forEach((sec, si) => {
         if (!sec.classList.contains('chart-frame')) return;
         const svgs = KEYED.some(c => sec.classList.contains(c))
@@ -182,7 +182,7 @@ async function main() {
     await page.evaluate(`window.__flattenSvgStyles = ${flattenSvgStyles.toString()};`);
 
     const deckBase = path.basename(deckPath).replace(/\.md$/i, '');
-    const sectionHandles = await page.$$('.marpit > section');
+    const sectionHandles = await page.$$('.lattice > section');
     const written = [];
     for (const t of targets) {
       // PNG tier — screenshot the chart's container element. The engine has
@@ -202,7 +202,7 @@ async function main() {
         // short charts (gantt/kanban) otherwise trail a half-slide of dead canvas.
         const box = await handle.boundingBox();
         const contentH = await page.evaluate((idx) => {
-          const sec = document.querySelectorAll('.marpit > section')[idx];
+          const sec = document.querySelectorAll('.lattice > section')[idx];
           const top = sec.getBoundingClientRect().top;
           const full = sec.getBoundingClientRect().height;
           let bottom = top;
@@ -222,7 +222,7 @@ async function main() {
         continue;
       }
       const markup = await page.evaluate((sel) => {
-        const sections = Array.from(document.querySelectorAll('.marpit > section'));
+        const sections = Array.from(document.querySelectorAll('.lattice > section'));
         const sec = sections[sel.slide - 1];
         if (!sec) return null;
         const svgs = Array.from(sec.querySelectorAll('svg[viewBox]'));

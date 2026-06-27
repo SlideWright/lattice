@@ -234,7 +234,7 @@ export async function exportMarp(source, name, palette, themeBase, { includeAgen
 // ── Dedicated capture host ─────────────────────────────────────────────────────
 // Export does NOT rasterize the live preview iframe. That iframe is tuned for
 // on-screen performance: it virtualizes off-screen slides (`content-visibility`),
-// gates the deck behind `.marpit{visibility:hidden}` until the in-iframe FIT agent
+// gates the deck behind `.lattice{visibility:hidden}` until the in-iframe FIT agent
 // reveals it, and on a phone its pane is `display:none` in the Edit tab. A slide
 // read straight out of it rasterizes blank (hidden → transparent) or collapsed
 // (no layout box → container-query `cqi/cqh` typography resolves to 0). So the
@@ -312,7 +312,7 @@ async function waitForDiagrams(doc) {
 async function sectionsOf(frame) {
 	const doc = frame?.contentDocument;
 	if (!doc) throw new Error('Preview not ready yet.');
-	const sections = doc.querySelectorAll('.marpit>section');
+	const sections = doc.querySelectorAll('.lattice>section');
 	if (!sections.length) throw new Error('Nothing to export yet.');
 	// Build the data-URI font sheet once, inject it into the preview doc, and wait
 	// for every face — so off-screen slides (forced visible mid-loop) rasterize
@@ -339,7 +339,7 @@ function slideGeom(section) {
 // returning a thunk that restores the prior inline values.
 //
 // The filmstrip preview is deliberately lazy: off-screen slides get
-// `content-visibility:auto` (subtree rendering skipped) and the whole `.marpit`
+// `content-visibility:auto` (subtree rendering skipped) and the whole `.lattice`
 // starts `visibility:hidden`, revealed by the in-iframe FIT agent only once the
 // preview has a non-zero width — i.e. once it has actually been SHOWN. Neither
 // state survives an export: html-to-image clones the section and copies its
@@ -408,7 +408,7 @@ async function rasterizeSection(section, fontEmbedCSS) {
 		section.style.borderTopColor = 'transparent';
 	}
 	// Defeat the preview's lazy-render gates (content-visibility virtualization +
-	// the `.marpit` visibility reveal) so html-to-image rasterizes a laid-out,
+	// the `.lattice` visibility reveal) so html-to-image rasterizes a laid-out,
 	// painted slide even when the preview was never shown (phone Edit-tab export).
 	const restoreVisibility = forceSectionVisibleForCapture(section);
 	const { w, h } = slideGeom(section);
@@ -568,7 +568,7 @@ const CLEAN_SVG_LAYOUTS = ['piechart', 'radar', 'map', 'quadrant', 'funnel'];
 // The cursor's active chart slide (ANY `chart-frame` section), or null — drives
 // the "Export chart" menu visibility.
 export function activeChartSection(frame) {
-	const sec = frame?.contentDocument?.querySelector('.marpit > section.db-active');
+	const sec = frame?.contentDocument?.querySelector('.lattice > section.db-active');
 	return sec?.classList.contains('chart-frame') ? sec : null;
 }
 
@@ -600,7 +600,7 @@ export async function exportChart(render, activeIndex, name, onStatus) {
 	try {
 		const doc = frame.contentDocument;
 		const win = frame.contentWindow;
-		const sec = doc.querySelectorAll('.marpit>section')[activeIndex];
+		const sec = doc.querySelectorAll('.lattice>section')[activeIndex];
 		if (!sec || !sec.classList.contains('chart-frame')) throw new Error('Put the cursor in a slide that has a chart.');
 		const svg = CLEAN_SVG_LAYOUTS.some((c) => sec.classList.contains(c)) ? sec.querySelector('svg[viewBox]') : null;
 		if (svg) {

@@ -21,7 +21,7 @@ describe('splitSections', () => {
 	test('splits a flat <section> sequence and ignores trailing wrapper/script', async () => {
 		const { splitSections } = await load();
 		const html =
-			'<div class="marpit">' +
+			'<div class="lattice">' +
 			'<section id="1"><h1>One</h1></section>\n' +
 			'<section id="2" class="cards-grid"><h2>Two</h2></section>\n' +
 			'<section id="3"><h2>Three</h2></section>' +
@@ -43,7 +43,7 @@ describe('splitSections', () => {
 
 	test('round-trips slide count for many slides', async () => {
 		const { splitSections } = await load();
-		let html = '<div class="marpit">';
+		let html = '<div class="lattice">';
 		for (let i = 0; i < 250; i++) html += `<section id="${i + 1}"><h2>S${i}</h2></section>\n`;
 		html += '</div>';
 		assert.equal(splitSections(html).length, 250);

@@ -240,6 +240,20 @@ in patch versions.
   tiles a 2×2 quadrant (the matrix-2x2 flex recipe) with the question reserving a 3em row so
   answers baseline-align. Look-preserving across every variant and portrait reflow; the only
   authoring effect is the (visually transparent) question wrapper.
+- **Breaking:** **The slide-deck wrapper class is now `div.lattice`, not `div.marpit`.**
+  The owned engine, emulator, playground, runtime FIT, the CSS scaffold, and the
+  CLI chart-export all keyed off Marp's `.marpit` wrapper name purely as a
+  historical interop convention — but every first-party path is rendered by
+  Lattice's own engine, so the name is now Lattice's own (`div.lattice`). Internal
+  Marpit-pack markers (`:marpit-root/container/slide`) and the dead `marpit_comment`
+  token are likewise gone. **The Export-to-Marp bundle is unaffected and
+  byte-identical:** Marp renders the bundle and emits *its own* `div.marpit`
+  wrapper, scoping our (name-free) `lattice.css` onto it — nothing Lattice ships
+  into the bundle ever named the wrapper. Rendered PDFs/PPTX are pixel-identical;
+  only the **HTML export's wrapper class string** changes. Any external consumer
+  that scripts the rendered DOM by `.marpit` (e.g. a host embedding the engine)
+  must switch to `.lattice`.
+
 - **The integration test tier is split into a PR slice and a nightly slice.** The
   required CI gate (`test:integration:pr`) now runs only the cross-render-path
   wiring suites (`parity/`), the export pipeline (`export/`), and the

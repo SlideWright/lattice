@@ -216,7 +216,7 @@ export function createChartInteract({ stage, getFrame, tilt = true, onReveal, ho
   function onSlide(idx) {
     curIdx = idx | 0;
     const d = doc();
-    setChart(d ? d.querySelectorAll('.marpit > section')[curIdx] : null);
+    setChart(d ? d.querySelectorAll('.lattice > section')[curIdx] : null);
     if (interactive()) {
       // The iframe re-fits at [60, 300, 1200]ms after a pv message; re-pin just after.
       [80, 360, 1240].forEach((t) => { timers.push(setTimeout(reflow, t)); });
@@ -433,7 +433,7 @@ export function createChartInteract({ stage, getFrame, tilt = true, onReveal, ho
   function resolveAt(target) {
     const w = target?.closest?.(MARK_SEL);
     if (!w) return -1;
-    setChart(w.closest('.marpit > section') || w.closest('section'));
+    setChart(w.closest('.lattice > section') || w.closest('section'));
     return interactive() ? markIndex(w) : -1;
   }
   function onDocMove(e) {

@@ -2,7 +2,7 @@
  * See lib/components/inventory/logo-wall/logo-wall.manifest.json for the contract.
  *
  * Substance: prose. The author writes a bulleted list of inline images
- * (`- ![Brand](brand.svg)`); marpit renders `<ul><li><img></li></ul>` and
+ * (`- ![Brand](brand.svg)`); the engine renders `<ul><li><img></li></ul>` and
  * CSS does the rest — no post-processor, so no three-render-path wiring.
  *
  * Modifier model:

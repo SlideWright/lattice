@@ -619,7 +619,7 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
   `lattice-playground.js`) is the tell that it's a render-context bug, not
   staleness.
 - **Mitigation:** The playground engine (`lib/playground/index.js`) renders
-  with `inlineSVG: false`, so slides are plain `<div class="marpit"><section>`
+  with `inlineSVG: false`, so slides are plain `<div class="lattice"><section>`
   HTML with no foreignObject; `writeFrame` in `docs/src/pages/playground.astro`
   scales each fixed-size `<section>` to the iframe width with a CSS `transform`
   (a negative `margin-bottom` collapses the gap the un-scaled box would leave),
@@ -692,7 +692,7 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
   survives because it's content-light and mostly `em`-driven. This is NOT a
   math-layout bug; the CSS contract and the PDFs are correct.
 - **Mitigation:** `docs/src/playground/frame-css.js` is the SINGLE SOURCE OF
-  TRUTH for the `.marpit>section{width:1280px;height:720px}` pin (`SLIDE_BOX`)
+  TRUTH for the `.lattice>section{width:1280px;height:720px}` pin (`SLIDE_BOX`)
   and the single-slide wrapper (`SINGLE_SLIDE_FRAME` / `singleSlideFrame(geom)`).
   All `inlineSVG:false` hosts import it — `single-slide-render.ts` (the shared
   hero / restyle / field-card / specimen renderer) calls `singleSlideFrame(geom)`
@@ -1796,10 +1796,10 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
   overflowed the pane; the Drawing Board's PDF/PPTX export captured only the
   top-left ninth of each slide. HD looked fine.
 - **Cause:** The owned engine resolves `@size` correctly and emits a real
-  `div.marpit > section { width: 3840px; height: 2160px }`, but every browser
+  `div.lattice > section { width: 3840px; height: 2160px }`, but every browser
   host that fit-scales and exports the slide **hardcoded 1280×720**: the Drawing
-  Board FIT used `sc = w / 1280`, `frame-css.js` pinned `.marpit>section{width:
-  1280px}` (which silently LOST to the engine scaffold's `div.marpit > section`
+  Board FIT used `sc = w / 1280`, `frame-css.js` pinned `.lattice>section{width:
+  1280px}` (which silently LOST to the engine scaffold's `div.lattice > section`
   at 0,1,2 vs 0,1,1 — so the box was really 3840 but scaled as if 1280), and the
   exporter rasterized a 1280×720 crop onto a 1280×720 jsPDF page. At HD every
   hardcoded 1280/720 happened to be correct, hiding the bug.
