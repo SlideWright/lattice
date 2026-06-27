@@ -316,8 +316,12 @@ The loop for any perf-intent change:
 4. **Ratchet the baseline.** `npm run bench:bless` rewrites `baseline.json`; commit
    it in the SAME PR. The file diff is your before→after of record.
 5. **Verify the band.** `npm run bench:check` must end *within variance* (exit 0).
-   Re-blessing a *slower* baseline is allowed only when the PR justifies the
-   trade-off explicitly (e.g. a correctness fix that costs measurable time).
+   Re-bless **only to record a measured win or a justified trade-off** (e.g. a
+   correctness fix that costs measurable time) — and **only from the same class of
+   machine that set the current baseline.** Never re-bless just because your slower
+   laptop reports every dataset as `REGRESSION`; that overwrites the canonical
+   numbers with machine noise. The baseline is a ratchet for *real* deltas, not a
+   per-machine scratchpad.
 6. **Record it.** Fill the PR's `## Performance` section with the before/after table;
    add a `CHANGELOG.md` line for user-visible wins; for a *large* perf effort, also
    write an `engineering/decisions/YYYY-MM-DD-*.md` note.

@@ -159,6 +159,11 @@ async function exportTier() {
 const round2 = (n) => Math.round(n * 100) / 100;
 
 function blessBaseline(summary) {
+  if (!summary.length) {
+    console.error('\nRefusing to bless an empty baseline — the run produced no datasets.');
+    process.exitCode = 1;
+    return;
+  }
   const out = {};
   for (const s of summary) {
     out[s.dataset] = { slides: s.slides, ms: round2(s.ms), slidesPerSec: s.slidesPerSec, rmePct: round2(s.rmePct) };
@@ -179,44 +184,60 @@ function checkBaseline(summary) {
     process.exitCode = 1;
     return;
   }
+  if (!summary.length) {
+    console.error('\nNo benchmark results — the run produced no datasets (engine broken?).');
+    process.exitCode = 1;
+    return;
+  }
   const base = JSON.parse(readFileSync(BASELINE, 'utf8'));
   const tol = base.tolerancePct ?? TOLERANCE_PCT;
   console.log('\n=== PERF CHECK · current vs committed baseline ===');
-  console.log(`${'dataset'.padEnd(20)}${'base ms'.padStart(10)}${'now ms'.padStart(10)}${'Δ%'.padStart(8)}${'band'.padStart(7)}  verdict`);
+  console.log(`${'dataset'.padEnd(20)}${'base ms'.padStart(10)}${'now ms'.padStart(10)}${'Δ%'.padStart(8)}${'band'.padStart(8)}  verdict`);
   let regressed = false;
   let drift = false;
+  let won = false;
   for (const s of summary) {
     const b = base.datasets?.[s.dataset];
     if (!b) {
       drift = true;
-      console.log(`${s.dataset.padEnd(20)}${'—'.padStart(10)}${s.ms.toFixed(1).padStart(10)}${'—'.padStart(8)}${'—'.padStart(7)}  NEW (re-bless)`);
+      console.log(`${s.dataset.padEnd(20)}${'—'.padStart(10)}${s.ms.toFixed(1).padStart(10)}${'—'.padStart(8)}${'—'.padStart(8)}  NEW (re-bless)`);
+      continue;
+    }
+    // A changed slide count means the workload itself moved — the ms delta would
+    // be apples-to-oranges, so flag it as drift rather than compare timings.
+    if (b.slides !== s.slides) {
+      drift = true;
+      console.log(`${s.dataset.padEnd(20)}${String(b.slides).padStart(10)}${String(s.slides).padStart(10)}${'—'.padStart(8)}${'slides'.padStart(8)}  WORKLOAD CHANGED (re-bless)`);
       continue;
     }
     const deltaPct = ((s.ms - b.ms) / b.ms) * 100;
-    const band = Math.max(tol, (b.rmePct ?? 0) + s.rmePct);
+    const band = Math.max(tol, (b.rmePct ?? 0) + (s.rmePct ?? 0));
     let verdict = 'ok';
     if (deltaPct > band) {
       verdict = 'REGRESSION';
       regressed = true;
     } else if (deltaPct < -band) {
       verdict = 'win';
+      won = true;
     }
     const sign = deltaPct >= 0 ? '+' : '';
     console.log(
-      `${s.dataset.padEnd(20)}${b.ms.toFixed(1).padStart(10)}${s.ms.toFixed(1).padStart(10)}${(sign + deltaPct.toFixed(1)).padStart(8)}${('±' + band.toFixed(0) + '%').padStart(7)}  ${verdict}`,
+      `${s.dataset.padEnd(20)}${b.ms.toFixed(1).padStart(10)}${s.ms.toFixed(1).padStart(10)}${(sign + deltaPct.toFixed(1)).padStart(8)}${('±' + band.toFixed(1) + '%').padStart(8)}  ${verdict}`,
     );
   }
   for (const name of Object.keys(base.datasets ?? {})) {
     if (!summary.some((s) => s.dataset === name)) {
       drift = true;
-      console.log(`${name.padEnd(20)}${'—'.padStart(10)}${'absent'.padStart(10)}${'—'.padStart(8)}${'—'.padStart(7)}  MISSING`);
+      console.log(`${name.padEnd(20)}${'—'.padStart(10)}${'absent'.padStart(10)}${'—'.padStart(8)}${'—'.padStart(8)}  MISSING`);
     }
   }
   if (regressed) {
     console.error('\nPerf regression beyond the variance band. Investigate, or re-bless if the change is intentional and justified in the PR.');
     process.exitCode = 1;
   } else if (drift) {
-    console.log('\nDataset set drifted from baseline — run `npm run bench:bless` and commit the updated baseline.');
+    console.log('\nWorkload/dataset set drifted from baseline — run `npm run bench:bless` and commit the updated baseline.');
+  } else if (won) {
+    console.log('\nFaster than baseline (beyond the band) — run `npm run bench:bless` to ratchet the baseline so this win holds.');
   } else {
     console.log('\nWithin variance band — no regression.');
   }
@@ -225,7 +246,11 @@ function checkBaseline(summary) {
 async function main() {
   const render = await renderTier();
   if (wantBless) blessBaseline(render.summary);
-  if (wantCheck) checkBaseline(render.summary);
+  if (wantCheck && wantBless) {
+    console.warn('\n--check skipped: ran with --bless, which would compare the just-written baseline against itself.');
+  } else if (wantCheck) {
+    checkBaseline(render.summary);
+  }
   const exp = wantExport ? await exportTier() : null;
   if (asJson) console.log('\n' + JSON.stringify({ render, export: exp }, null, 2));
   console.log('\nDone.' + (wantExport ? '' : ' (pass --export to also time the rasterize tier.)'));
