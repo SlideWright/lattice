@@ -1,7 +1,7 @@
 /**
  * Unit: bbox-overlay.js — the debug "bounding boxes" overlay injected into the
  * preview iframe. Locks the pure CSS contract (outline-only so it can't reflow a
- * slide, scoped under `.marpit`, colour-coded by role) and the inject/remove
+ * slide, scoped under `.lattice`, colour-coded by role) and the inject/remove
  * lifecycle against a minimal stub document (no jsdom needed).
  */
 
@@ -41,18 +41,18 @@ describe('bboxCss', () => {
 		assert.match(css, /outline-offset:-1px/);
 	});
 
-	test('scopes every rule under .marpit and colour-codes by role', async () => {
+	test('scopes every rule under .lattice and colour-codes by role', async () => {
 		const { bboxCss } = await load();
 		const css = bboxCss();
 		// Each selector is namespaced to the rendered deck, not the iframe chrome.
 		for (const line of css.split('\n')) {
 			if (line.startsWith('/*') || !line.includes('{')) continue;
-			assert.ok(line.includes('.marpit'), `unscoped rule: ${line}`);
+			assert.ok(line.includes('.lattice'), `unscoped rule: ${line}`);
 		}
 		// Representative roles each carry a distinct hue.
-		assert.match(css, /\.marpit section\{outline:1px solid #e6194b/);
-		assert.match(css, /\.marpit h1,[^{]*\{outline:1px solid #f58231/);
-		assert.match(css, /\.marpit p\{outline:1px solid #4363d8/);
+		assert.match(css, /\.lattice section\{outline:1px solid #e6194b/);
+		assert.match(css, /\.lattice h1,[^{]*\{outline:1px solid #f58231/);
+		assert.match(css, /\.lattice p\{outline:1px solid #4363d8/);
 	});
 });
 

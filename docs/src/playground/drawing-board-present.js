@@ -51,7 +51,7 @@ export function createPresent({ host, getSource, runtimeUrl, themeBase }) {
   const themeFetcher = createThemeFetcher(themeBase);
 
   let idx = 0;
-  let fullHtml = ''; // the whole rendered marpit (all <section>s) — the stage renders this
+  let fullHtml = ''; // the whole rendered lattice (all <section>s) — the stage renders this
   let sections = []; // split <section> HTML, one per slide — for per-slide notes only
   let notes = []; // per-slide speaker note (index-aligned), via notes-core
   let metas = []; // per-slide { role, title, … } from metasFromSections (for the spine)
@@ -129,7 +129,7 @@ export function createPresent({ host, getSource, runtimeUrl, themeBase }) {
     // ISOLATION (the real bug): stage layout must NOT share the cascade with the
     // engine out.css. Positioning lives on OUR #latt-stage/#latt-fit — ID selectors
     // (1,0,0) out.css's element/:where/class rules can't clobber — and #latt-stage
-    // wraps .marpit from OUTSIDE, so the slide's own transform:scale can't trap our
+    // wraps .lattice from OUTSIDE, so the slide's own transform:scale can't trap our
     // fixed positioning (an ancestor transform re-bases position:fixed). #latt-stage
     // fills 100dvh (tracks the iOS toolbars → visual center, not behind the bar) and
     // flex-centers #latt-fit, which fit() sizes to the SCALED slide box; the section
@@ -137,7 +137,7 @@ export function createPresent({ host, getSource, runtimeUrl, themeBase }) {
     const FIT =
       '(function(){' +
       'var stage=document.getElementById("latt-stage"),fitEl=document.getElementById("latt-fit");' +
-      'function secs(){var m=document.querySelector(".marpit");return m?m.querySelectorAll(":scope>section"):[]}' +
+      'function secs(){var m=document.querySelector(".lattice");return m?m.querySelectorAll(":scope>section"):[]}' +
       'var cur=0;' +
       'function fit(){var s=secs();if(!s.length||!stage||!fitEl)return;' +
       'var W=stage.clientWidth||window.innerWidth,H=stage.clientHeight||window.innerHeight;' +
@@ -163,8 +163,8 @@ export function createPresent({ host, getSource, runtimeUrl, themeBase }) {
       '<style>html,body{margin:0;padding:0;height:100%;background:' + bg + ';overflow:hidden;touch-action:manipulation;-webkit-text-size-adjust:100%;}' +
       '#latt-stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden;visibility:hidden;}' +
       '#latt-fit{overflow:hidden;}' +
-      '#latt-fit .marpit{margin:0;padding:0;}' +
-      '#latt-fit .marpit>section{transform-origin:top left;}' +
+      '#latt-fit .lattice{margin:0;padding:0;}' +
+      '#latt-fit .lattice>section{transform-origin:top left;}' +
       slideBox(sw, sh) +
       css + '</style></head><body>' +
       A11Y_DEFS + '<div id="latt-stage"><div id="latt-fit">' + allHtml + '</div></div>' +

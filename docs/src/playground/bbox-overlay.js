@@ -37,18 +37,18 @@ const ROLES = [
 const CONTAINER = 'rgba(128,128,128,0.45)';
 
 /**
- * The CSS injected into the preview iframe. Scoped under `.marpit` so only
+ * The CSS injected into the preview iframe. Scoped under `.lattice` so only
  * rendered slide content is outlined, never the iframe chrome.
  */
 export function bboxCss() {
 	const rule = (sel, color) =>
 		`${sel
 			.split(',')
-			.map((s) => `.marpit ${s.trim()}`)
+			.map((s) => `.lattice ${s.trim()}`)
 			.join(',')}{outline:1px solid ${color}!important;outline-offset:-1px!important;}`;
 	return [
 		'/* lattice debug bounding boxes */',
-		`.marpit *{outline:1px solid ${CONTAINER};outline-offset:-1px;}`,
+		`.lattice *{outline:1px solid ${CONTAINER};outline-offset:-1px;}`,
 		...ROLES.map(([sel, color]) => rule(sel, color)),
 	].join('\n');
 }

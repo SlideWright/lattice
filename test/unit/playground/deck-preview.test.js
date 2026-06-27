@@ -17,7 +17,7 @@ async function load() {
 }
 
 const BASE = {
-	html: '<div class="marpit"><section><h1>One</h1></section></div>',
+	html: '<div class="lattice"><section><h1>One</h1></section></div>',
 	css: '/* theme */',
 	mode: 'light',
 	geom: { w: 1280, h: 720 },
@@ -29,11 +29,11 @@ describe('buildSrcdoc', () => {
 		const { buildSrcdoc } = await load();
 		const doc = buildSrcdoc({ ...BASE });
 		// Anti-flash gate + the box pin that keeps container-type:size from collapsing.
-		assert.match(doc, /\.marpit\{visibility:hidden;\}/);
-		assert.match(doc, /\.marpit>section\{width:1280px;height:720px\}/);
+		assert.match(doc, /\.lattice\{visibility:hidden;\}/);
+		assert.match(doc, /\.lattice>section\{width:1280px;height:720px\}/);
 		// FIT agent: scales, reveals, and exposes the patch hook.
 		assert.match(doc, /window\.__latticeFit=fit/);
-		assert.match(doc, /marpit\.style\.visibility="visible"/);
+		assert.match(doc, /lattice\.style\.visibility="visible"/);
 		// Engine wiring + the deck's geometry globals.
 		assert.match(doc, /window\.__SLIDE_W=1280;window\.__SLIDE_H=720;/);
 		assert.match(doc, /src="\/rt\.js"/);
@@ -41,8 +41,8 @@ describe('buildSrcdoc', () => {
 
 	test('clamps the filmstrip tail by default and can be turned off', async () => {
 		const { buildSrcdoc } = await load();
-		assert.match(buildSrcdoc({ ...BASE }), /marpit\.style\.overflow="clip"/);
-		assert.doesNotMatch(buildSrcdoc({ ...BASE, clamp: false }), /marpit\.style\.overflow="clip"/);
+		assert.match(buildSrcdoc({ ...BASE }), /lattice\.style\.overflow="clip"/);
+		assert.doesNotMatch(buildSrcdoc({ ...BASE, clamp: false }), /lattice\.style\.overflow="clip"/);
 	});
 
 	test('the gap rides into BOTH the FIT margin and the SYNC slot pitch', async () => {
@@ -77,7 +77,7 @@ describe('buildSrcdoc', () => {
 			fontCss: '/* faces */',
 		});
 		assert.match(on, /content-visibility:auto;contain-intrinsic-size:1280px 720px/);
-		assert.match(on, /\.marpit>section\.db-active\{outline:3px solid #b0492e/);
+		assert.match(on, /\.lattice>section\.db-active\{outline:3px solid #b0492e/);
 		assert.match(on, /@media print/);
 		assert.match(on, /db-slide-scrolled/); // SYNC agent present
 		assert.match(on, /window\.__latticeTag=tag/);
@@ -86,11 +86,11 @@ describe('buildSrcdoc', () => {
 		assert.match(on, /\/\* faces \*\//);
 	});
 
-	test('print path un-hides + un-clamps .marpit so export is not clipped', async () => {
+	test('print path un-hides + un-clamps .lattice so export is not clipped', async () => {
 		const { buildSrcdoc } = await load();
 		const doc = buildSrcdoc({ ...BASE, printRules: true, contentVisibility: true });
 		assert.match(doc, /@media print\{/);
-		assert.match(doc, /\.marpit\{visibility:visible!important;height:auto!important;overflow:visible!important;\}/);
+		assert.match(doc, /\.lattice\{visibility:visible!important;height:auto!important;overflow:visible!important;\}/);
 		assert.match(doc, /content-visibility:visible!important/);
 	});
 
@@ -103,7 +103,7 @@ describe('buildSrcdoc', () => {
 	test('geometry drives the box, the globals, and the content-visibility placeholder', async () => {
 		const { buildSrcdoc } = await load();
 		const doc = buildSrcdoc({ ...BASE, geom: { w: 3840, h: 2160 }, contentVisibility: true });
-		assert.match(doc, /\.marpit>section\{width:3840px;height:2160px\}/);
+		assert.match(doc, /\.lattice>section\{width:3840px;height:2160px\}/);
 		assert.match(doc, /window\.__SLIDE_W=3840;window\.__SLIDE_H=2160;/);
 		assert.match(doc, /contain-intrinsic-size:3840px 2160px/);
 	});

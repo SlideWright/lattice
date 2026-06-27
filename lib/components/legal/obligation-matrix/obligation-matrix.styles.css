@@ -67,7 +67,7 @@ section.obligation-matrix tbody tr:nth-child(odd) td:not(:first-child) {
  */
 
 /* ── State glyphs ─────────────────────────────────────────────────────
- * Author writes the universal [x]/[-]/[ ]/[/] grammar; the marpit/
+ * Author writes the universal [x]/[-]/[ ]/[/] grammar; the engine/
  * emulator/runtime transforms strip the marker and wrap the cell
  * content in
  *   <span class="state {pass|warn|fail|skip} {state-full|state-half|state-empty|state-slashed}">…</span>.

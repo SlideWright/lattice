@@ -1035,18 +1035,18 @@ const imageDimensions    = require('./lib/core/image-dimensions');
 // Depth-counted scan over <section>…</section> so nested split-panel sections
 // stay inside their parent. Produces the "one <section> string per slide" array
 // shape the emulator's downstream (highlight, deck-logo, page template) expects,
-// from the engine's assembled <div class="marpit"> document.
-function splitTopLevelSections(marpitHtml) {
+// from the engine's assembled <div class="lattice"> document.
+function splitTopLevelSections(latticeHtml) {
   const out = [];
   const re = /<section\b[^>]*>|<\/section>/gi;
   let depth = 0;
   let start = -1;
   let m;
-  while ((m = re.exec(marpitHtml)) !== null) {
+  while ((m = re.exec(latticeHtml)) !== null) {
     if (m[0][1] === '/') {
       depth--;
       if (depth === 0 && start >= 0) {
-        out.push(marpitHtml.slice(start, re.lastIndex));
+        out.push(latticeHtml.slice(start, re.lastIndex));
         start = -1;
       }
     } else {

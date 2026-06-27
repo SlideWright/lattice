@@ -18,7 +18,7 @@
 //       • otherwise (first render, theme/mode/size/deck change) → full `srcdoc`
 //         rewrite (theme CSS + Mermaid theming bake into the document).
 //   - The FIT agent (runs INSIDE the iframe) scales each fixed-`@size` section by
-//     the constant w/SW behind a `.marpit{visibility:hidden}` gate it flips to
+//     the constant w/SW behind a `.lattice{visibility:hidden}` gate it flips to
 //     visible only once scaled — so the first paint never flashes the slides at
 //     full 1280px width. It also CLAMPS the filmstrip to the scaled-content height
 //     and clips the tail the last un-scaled box leaves (transform scales the
@@ -39,7 +39,7 @@
 // older engines (e.g. Safari <15.4) they're simply ignored: the dead trailing
 // scroll gap returns and a very tall centered deck could top-clip. Both degrade
 // to the pre-consolidation behavior, never to a broken preview. `overflow:clip`
-// is non-scrolling, so it does NOT turn `.marpit` into a scroll container — the
+// is non-scrolling, so it does NOT turn `.lattice` into a scroll container — the
 // SYNC scroll math (window.scrollY) and content-visibility virtualization both
 // keep measuring against the document viewport.
 
@@ -77,19 +77,19 @@ export function hashString(s) {
 
 // FIT agent (a string injected into the iframe). Scales each section to the
 // container width, collapses the gap the un-scaled layout box would leave,
-// clamps + clips the filmstrip tail, then reveals .marpit. `gap` is the visible
+// clamps + clips the filmstrip tail, then reveals .lattice. `gap` is the visible
 // px between slides (must match the SYNC agent's slot pitch); `clamp` removes the
 // dead trailing scroll space the final section's full-height box leaves.
 function fitAgent(gap, clamp) {
 	return [
 		'(function(){',
 		'  function fit(){',
-		'    var marpit=document.querySelector(".marpit"); if(!marpit) return;',
-		'    var w=marpit.clientWidth; if(!w) return;',
+		'    var lattice=document.querySelector(".lattice"); if(!lattice) return;',
+		'    var w=lattice.clientWidth; if(!w) return;',
 		// Pinned to the deck's `@size` box (GEOM globals), so scale by the constant
 		// w/SW — no offsetWidth measurement to drift as KaTeX/Mermaid stream in.
 		'    var SW=window.__SLIDE_W||1280, SH=window.__SLIDE_H||720, GAP=' + gap + ';',
-		'    var secs=marpit.querySelectorAll(":scope>section");',
+		'    var secs=lattice.querySelectorAll(":scope>section");',
 		'    var sc=w/SW;',
 		'    for(var i=0;i<secs.length;i++){var s=secs[i];',
 		'      s.style.transformOrigin="top left";',
@@ -102,18 +102,18 @@ function fitAgent(gap, clamp) {
 		// ~SH*(1-sc) of dead scroll space below the deck. overflow-clip-margin lets
 		// the slide drop-shadow still bleed past the clip edge.
 		clamp
-			? '    if(secs.length){marpit.style.height=(secs.length*SH*sc+(secs.length-1)*GAP)+"px";marpit.style.overflow="clip";marpit.style.overflowClipMargin="40px";}'
+			? '    if(secs.length){lattice.style.height=(secs.length*SH*sc+(secs.length-1)*GAP)+"px";lattice.style.overflow="clip";lattice.style.overflowClipMargin="40px";}'
 			: '',
-		// Reveal only once scaled — the srcdoc hides .marpit so the first paint
+		// Reveal only once scaled — the srcdoc hides .lattice so the first paint
 		// (and the display:none->block pane switch on mobile, where clientWidth is
 		// 0 until shown) never flashes the slides at full 1280px width.
-		'    marpit.style.visibility="visible";',
+		'    lattice.style.visibility="visible";',
 		'  }',
 		'  window.__latticeFit=fit;',
 		'  window.addEventListener("resize",fit);',
 		'  if(typeof ResizeObserver!=="undefined"){',
 		'    var ro=new ResizeObserver(function(){fit();});',
-		'    var m=document.querySelector(".marpit");',
+		'    var m=document.querySelector(".lattice");',
 		'    if(m){ro.observe(document.documentElement);',
 		'      var ss=m.querySelectorAll(":scope>section");',
 		'      for(var i=0;i<ss.length;i++) ro.observe(ss[i]);}',
@@ -133,7 +133,7 @@ function fitAgent(gap, clamp) {
 function syncAgent(gap) {
 	return [
 		'(function(){',
-		'  function secs(){var m=document.querySelector(".marpit");return m?m.querySelectorAll(":scope>section"):[];}',
+		'  function secs(){var m=document.querySelector(".lattice");return m?m.querySelectorAll(":scope>section"):[];}',
 		'  function tag(){var s=secs();for(var i=0;i<s.length;i++)s[i].setAttribute("data-idx",i);}',
 		'  window.__latticeTag=tag;',
 		'  tag();',
@@ -141,13 +141,13 @@ function syncAgent(gap) {
 		// Honour prefers-reduced-motion: a smooth cursor-follow scroll becomes an instant jump.
 		'  var REDUCE=typeof matchMedia!=="undefined"&&matchMedia("(prefers-reduced-motion: reduce)").matches;',
 		'  function scrollTo(i,smooth){var s=secs();if(!s[i])return;window.scrollTo({top:Math.max(0,s[i].offsetTop-' + gap + '),behavior:(smooth&&!REDUCE)?"smooth":"auto"});setActive(i);}',
-		'  function centered(){var m=document.querySelector(".marpit");var s=secs();if(!s.length)return -1;var w=m?m.clientWidth:0;if(!w)return 0;var SW=window.__SLIDE_W||1280,SH=window.__SLIDE_H||720;var slotH=SH*(w/SW)+' + gap + ';if(slotH<=0)return 0;var i=Math.round(window.scrollY/slotH);if(i<0)i=0;if(i>=s.length)i=s.length-1;return i;}',
+		'  function centered(){var m=document.querySelector(".lattice");var s=secs();if(!s.length)return -1;var w=m?m.clientWidth:0;if(!w)return 0;var SW=window.__SLIDE_W||1280,SH=window.__SLIDE_H||720;var slotH=SH*(w/SW)+' + gap + ';if(slotH<=0)return 0;var i=Math.round(window.scrollY/slotH);if(i<0)i=0;if(i>=s.length)i=s.length-1;return i;}',
 		'  var raf=0,lastC=-1;',
 		'  function report(){var i=centered();if(i>=0&&i!==lastC){lastC=i;setActive(i);parent.postMessage({type:"db-slide-scrolled",idx:i},"*");}}',
 		'  function onScroll(){if(raf)return;raf=requestAnimationFrame(function(){raf=0;report();});}',
 		'  window.addEventListener("scroll",onScroll,{passive:true});',
 		'  if(typeof IntersectionObserver!=="undefined"){var io=new IntersectionObserver(onScroll,{rootMargin:"-45% 0px -45% 0px"});var _ss=secs();for(var _si=0;_si<_ss.length;_si++)io.observe(_ss[_si]);}',
-		'  document.addEventListener("click",function(e){var n=e.target;while(n&&!(n.parentNode&&n.parentNode.classList&&n.parentNode.classList.contains("marpit")))n=n.parentNode;if(n)parent.postMessage({type:"db-slide-click",idx:+n.getAttribute("data-idx")},"*");});',
+		'  document.addEventListener("click",function(e){var n=e.target;while(n&&!(n.parentNode&&n.parentNode.classList&&n.parentNode.classList.contains("lattice")))n=n.parentNode;if(n)parent.postMessage({type:"db-slide-click",idx:+n.getAttribute("data-idx")},"*");});',
 		'  window.addEventListener("message",function(e){var d=e.data||{};if(d.type==="db-scroll-to")scrollTo(d.idx,d.smooth);else if(d.type==="db-set-active")setActive(d.idx);});',
 		'  parent.postMessage({type:"db-frame-ready"},"*");',
 		'})();',
@@ -190,19 +190,19 @@ export function buildSrcdoc({
 	const bg = background ? background(mode) : (mode === 'dark' ? DARK_BG : LIGHT_BG);
 	const scheme = colorScheme ? ':root{color-scheme:' + colorScheme + ';}' : '';
 	const sectionRule =
-		'.marpit>section{display:block;transform-origin:top left;' +
+		'.lattice>section{display:block;transform-origin:top left;' +
 		(cursor ? 'cursor:pointer;' : '') +
 		(contentVisibility ? 'content-visibility:auto;contain-intrinsic-size:' + gw + 'px ' + gh + 'px;' : '') +
 		'box-shadow:0 8px 30px rgba(0,0,0,.22);border-radius:6px;}';
 	const activeRule = activeOutline
-		? '.marpit>section.db-active{outline:3px solid ' + activeOutline + ';outline-offset:4px;}'
+		? '.lattice>section.db-active{outline:3px solid ' + activeOutline + ';outline-offset:4px;}'
 		: '';
 	const printCss = printRules
 		? '@page{size:' + gw + 'px ' + gh + 'px;margin:0;}' +
 			'@media print{html,body{padding:0;margin:0;background:#fff;}' +
-			'.marpit{visibility:visible!important;height:auto!important;overflow:visible!important;}' +
-			'.marpit>section{content-visibility:visible!important;transform:none!important;margin:0!important;box-shadow:none!important;border-radius:0!important;outline:none!important;break-after:page;}' +
-			'.marpit>section:last-child{break-after:auto;}}'
+			'.lattice{visibility:visible!important;height:auto!important;overflow:visible!important;}' +
+			'.lattice>section{content-visibility:visible!important;transform:none!important;margin:0!important;box-shadow:none!important;border-radius:0!important;outline:none!important;break-after:page;}' +
+			'.lattice>section:last-child{break-after:auto;}}'
 		: '';
 	const GEOM_GLOBALS = 'window.__SLIDE_W=' + gw + ';window.__SLIDE_H=' + gh + ';';
 	// srcdoc (a fresh browsing context per write), NOT doc.open()/write()/close():
@@ -225,7 +225,7 @@ export function buildSrcdoc({
 		scheme +
 		// Hidden until the FIT agent scales the 1280px sections to the container
 		// width (it flips this to visible). Prevents the full-size first-paint flash.
-		'.marpit{visibility:hidden;}' +
+		'.lattice{visibility:hidden;}' +
 		// Pins each slide to its intrinsic `@size` box BEFORE FIT scales it. Without
 		// it, `section{container-type:size}` collapses and cqi/cqh layouts render
 		// tiny + jitter. See frame-css.js + engineering/gotchas.md.
@@ -247,17 +247,17 @@ export function buildSrcdoc({
 }
 
 // Patch only the <section> nodes whose HTML changed. Returns true on success
-// (a live .marpit was found), false to signal the caller to fall back to a full
+// (a live .lattice was found), false to signal the caller to fall back to a full
 // write. `prev`/`next` are arrays of per-slide HTML strings (splitSections).
 export function patchSections(frame, next, prev) {
 	const doc = frame.contentDocument;
-	const marpit = doc && doc.querySelector('.marpit');
-	if (!marpit) return false;
-	const cur = marpit.querySelectorAll(':scope>section');
+	const lattice = doc && doc.querySelector('.lattice');
+	if (!lattice) return false;
+	const cur = lattice.querySelectorAll(':scope>section');
 	if (next.length !== cur.length) {
 		// Slide added/removed: rebuild the filmstrip body only — no script re-eval;
 		// the runtime/Mermaid/FIT/SYNC agents persist and re-process.
-		marpit.innerHTML = next.join('\n');
+		lattice.innerHTML = next.join('\n');
 	} else {
 		const p = prev || [];
 		for (let i = 0; i < next.length; i++) {
@@ -265,7 +265,7 @@ export function patchSections(frame, next, prev) {
 			const holder = doc.createElement('div');
 			holder.innerHTML = next[i];
 			const fresh = holder.firstElementChild;
-			if (fresh && cur[i]) marpit.replaceChild(fresh, cur[i]);
+			if (fresh && cur[i]) lattice.replaceChild(fresh, cur[i]);
 		}
 	}
 	const w = frame.contentWindow;
@@ -287,7 +287,7 @@ export function renderDeck({ frame, html, css, mode, geom, sig, state, fresh = f
 		!fresh &&
 		sig === st.frameSig &&
 		frame.contentDocument &&
-		frame.contentDocument.querySelector('.marpit');
+		frame.contentDocument.querySelector('.lattice');
 	let patched = false;
 	if (canPatch) patched = patchSections(frame, sections, st.lastSections);
 	if (!patched) {

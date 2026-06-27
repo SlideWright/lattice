@@ -122,9 +122,9 @@ async function exportTier() {
     }
   }
   const RUNTIME = readFileSync(join(ROOT, 'dist/lattice-runtime.js'), 'utf8');
-  const SLIDE_BOX = '.marpit>section{width:1280px;height:720px}';
+  const SLIDE_BOX = '.lattice>section{width:1280px;height:720px}';
   const srcdoc = (html, css) =>
-    `<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;padding:0}${SLIDE_BOX}.marpit>section{display:block;transform:none;margin:0}${css}</style></head><body>${html}<script>${RUNTIME}</script></body></html>`;
+    `<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;padding:0}${SLIDE_BOX}.lattice>section{display:block;transform:none;margin:0}${css}</style></head><body>${html}<script>${RUNTIME}</script></body></html>`;
 
   const browser = await puppeteer.launch({ executablePath: chrome || undefined, args: ['--no-sandbox'] });
   // One full export cycle = render → load → screenshot every slide (what the
@@ -134,7 +134,7 @@ async function exportTier() {
     const page = await browser.newPage();
     await page.setViewport({ width: 1280, height: 720 });
     await page.setContent(srcdoc(out.html, out.css), { waitUntil: 'networkidle0', timeout: 60000 }).catch(() => {});
-    for (const sec of await page.$$('.marpit > section')) await sec.screenshot({ type: 'png' });
+    for (const sec of await page.$$('.lattice > section')) await sec.screenshot({ type: 'png' });
     await page.close();
   }
   // Heavy + IO-bound: a few samples is plenty, no warmup. Skip the 481-slide
