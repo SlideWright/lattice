@@ -16010,13 +16010,6 @@ section.form .cell-masthead .masthead-lede {
   min-width: 0;
   grid-column: masthead-lede;
 }
-/* Many components still carry a pre-masthead-lift `section.X h2 { margin-bottom: … }` (the old
- * heading↔body gap). On a Form slide the title now lives in this band, so that margin only
- * adds stray height above the hairline and steals stage. Zero it here — the masthead's own
- * padding/gap owns the title↔hairline↔stage rhythm. (A `margin:0` reset, not a spacing margin.)
- * The component-level margins get removed wholesale in the no-margins component sweep; this is
- * the band-local backstop so they can't push the hairline down in the meantime. */
-section.form .cell-masthead .masthead-lede :is(h1, h2, h3, h4) { margin: 0; }
 
 /* === lib/forms/cell/masthead/masthead.css === */
 /* ── MASTHEAD Cell — the named top band (opt-in via `form`) ──────────────────
@@ -16067,6 +16060,14 @@ section.form .cell-masthead {
   padding-bottom: var(--sp-md);
   border-bottom: 1px solid var(--border);
 }
+/* The band owns its spacing: padding-bottom (above) is the SOLE title↔hairline gap. A heading
+ * lifted into the band still carries its flow `margin-bottom` (base `section h2`, or a larger
+ * per-component override), which would stack on that padding and double the gap. Zero every
+ * heading's margin across the whole band — lede AND bay — so the band's padding is the only
+ * control. Scoped to `.cell-masthead` (not `.masthead-lede`) so a heading docked in the bay is
+ * covered too; lower specificity that still clears the base/override margin rules. A `margin:0`
+ * reset adds no space, so it's exempt from the HARD RULE #20 ratchet. */
+section.form .cell-masthead :is(h1, h2, h3, h4) { margin: 0; }
 /* The frame section is a flex column (base.elements.css). Space the masthead band from the
  * stage with a gap rather than a margin. Scoped to masthead-bearing slides so sovereign
  * frames (title / divider / closing — no masthead) are untouched. Halved from the legacy
