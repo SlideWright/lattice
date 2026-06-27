@@ -7,7 +7,7 @@
 
 The live, claimable work queue — a read-only mirror of [open issues](https://github.com/SlideWright/lattice/issues),
 grouped by board column. Design lives in `engineering/decisions/`; this tracks
-only *status*. **38 open** items.
+only *status*. **39 open** items.
 
 > ⚠️ **2 cards need triage** (missing `area:`/`type:`/`priority:`): [#547](https://github.com/SlideWright/lattice/issues/547), [#554](https://github.com/SlideWright/lattice/issues/554).
 
@@ -63,6 +63,6 @@ _none_
 
 _none_
 
-## Inbox (no status) (0)
+## Inbox (no status) (1)
 
-_none_
+- [#556](https://github.com/SlideWright/lattice/issues/556) refactor(css): complete HARD RULE #20 — retire the last 39 margins (MARGIN_BUDGET → 0)
