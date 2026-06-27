@@ -33,14 +33,19 @@ section {
  * eyebrow-styled (mono uppercase 13 px); the eyebrow visual now lives
  * exclusively on the `<p><code>` modifier in base.modifiers.css, and
  * the heading tags render as real headings at their own scale. */
+/* Vertical rhythm between prose blocks is owned by the FLOW CONTAINER (the
+ * `.cell-stage` gap, lib/forms/cell/stage/stage.css), NOT a per-element
+ * `margin-bottom` — HARD RULE #20: margin is invisible to the overflow probe /
+ * autosplit and margin-collapses. Headings carry no own-margin; the gap spaces
+ * them from the following block. (See 2026-06-27-stage-flow-no-margins.md.) */
 section h1 { font-family:var(--font-display); font-size:var(--fs-h1); font-weight:700; color:var(--text-display); line-height:var(--lh-tight); margin:0; border:none; }
-section h2 { font-family:var(--font-display); font-size:var(--fs-h2); font-weight:700; color:var(--text-heading); line-height:var(--lh-tight); margin:0 0 var(--sp-sm) 0; border:none; }
-section h3 { font-family:var(--font-display); font-size:var(--fs-h3); font-weight:700; color:var(--text-heading); line-height:var(--lh-tight); margin:0 0 var(--sp-xs) 0; border:none; }
-section h4 { font-family:var(--font-body); font-size:var(--fs-h4); font-weight:700; color:var(--text-heading); margin:0 0 var(--sp-xs) 0; }
-section h5 { font-family:var(--font-display); font-size:var(--fs-h5); font-weight:700; color:var(--text-heading); line-height:var(--lh-tight); margin:0 0 var(--sp-xs) 0; border:none; }
-section h6 { font-family:var(--font-display); font-size:var(--fs-h6); font-weight:700; color:var(--text-heading); line-height:var(--lh-tight); margin:0 0 var(--sp-xs) 0; border:none; }
+section h2 { font-family:var(--font-display); font-size:var(--fs-h2); font-weight:700; color:var(--text-heading); line-height:var(--lh-tight); margin:0; border:none; }
+section h3 { font-family:var(--font-display); font-size:var(--fs-h3); font-weight:700; color:var(--text-heading); line-height:var(--lh-tight); margin:0; border:none; }
+section h4 { font-family:var(--font-body); font-size:var(--fs-h4); font-weight:700; color:var(--text-heading); margin:0; }
+section h5 { font-family:var(--font-display); font-size:var(--fs-h5); font-weight:700; color:var(--text-heading); line-height:var(--lh-tight); margin:0; border:none; }
+section h6 { font-family:var(--font-display); font-size:var(--fs-h6); font-weight:700; color:var(--text-heading); line-height:var(--lh-tight); margin:0; border:none; }
 
-section p { margin:0 0 var(--sp-xs) 0; }
+section p { margin:0; }
 section strong { color:var(--text-heading); font-weight:600; }
 section em { font-style:italic; }
 /* Inline code chip. Surface-aware: the ink is --code-inline-fg (default
@@ -61,7 +66,11 @@ section code { font-family:var(--font-mono); font-size:0.85em; color:var(--code-
  * the marp-pre branch, mermaid source blocks render briefly as inline-code
  * chips in VS Code preview before the upgrade lands. */
 section :is(pre, marp-pre) code { background:none; border:none; padding:0; border-radius:0; color:inherit; font-size:inherit; white-space:pre; }
-section hr { border:none; height:0.15625cqi; background:var(--spectrum); border-radius:0.15625cqi; width:5.625cqi; margin:var(--sp-sm) auto; }
+/* Centred rule. Horizontal centre via flex `align-self` (the stage flow is a flex
+ * column), NOT `margin:auto` (HARD RULE #20); vertical space comes from the stage
+ * gap like any other block. In a non-flex context it falls back to left-aligned —
+ * acceptable for the rare raw-block-flow `hr`. */
+section hr { border:none; height:0.15625cqi; background:var(--spectrum); border-radius:0.15625cqi; width:5.625cqi; margin:0; align-self:center; }
 section ul { list-style:none; padding:0; margin:0; }
 section ol { padding:0; margin:0; }
 section blockquote { margin:0; padding:0; border:none; }

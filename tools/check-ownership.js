@@ -681,48 +681,72 @@ function checkTypographyTokens(errors) {
   }
 }
 
-// HARD RULE #20 ratchet — the frozen ceiling of nonzero `margin` declarations in the
-// engine layout CSS (lib/). EXCEED-only: new margins above this number fail the build;
-// removing margins always passes, so an in-flight margin→gap/padding migration never
-// fights this gate — just lower MARGIN_BUDGET to follow the floor as it drops. Target
-// is zero. A margin that is provably the only answer is admitted by RAISING this number
-// with that justification in the PR (HARD RULE #20), never by a silent edit.
+// HARD RULE #20 — ZERO nonzero `margin` declarations in the engine layout CSS (lib/).
+// margin sits outside the box, so it is invisible to getBoundingClientRect()/offsetHeight
+// and it margin-collapses — both corrupt the height math a measuring layout (the overflow
+// probe, autosplit, the Fit Spine) depends on. Space with `gap`/`padding`, which measure
+// cleanly. This is no longer an exceed-only ratchet: the layout budget is 0, and the only
+// margins allowed are the explicitly enumerated SANCTIONED list below — each provably the
+// one answer. A new, unlisted margin fails the build; a sanction that no longer matches
+// any declaration ALSO fails (so the allowlist can't rot). Adding a sanction requires a
+// PR justification, never a silent edit.
 //
-// 271 → 39: the no-margins component sweep (phase 2) retired every spacing margin from
-// lib/components/**/*.styles.css — zero remain there. The 39 that remain all live in
-// base/contract/forms/chart-family/integration CSS, out of that sweep's scope.
-// 39 → 12: the independent-slices pass (#556) converted the chart-family frame (7),
-// the inventory contract Layouts (11), the stage/progress Form chrome (2), the
-// independent base.modifiers spacings (6), and the mermaid-error block (1) to
-// padding/gap. The 12 that remain are the KEYSTONE base typography rhythm (base.elements
-// h2–h6 + p + hr = 7; base.modifiers eyebrow / KEY-INSIGHT panel / footnote prose /
-// display-math = 4) — deferred to a stage-flow design-doc PR because they collapse and
-// interact with the masthead lift — plus ONE sanctioned, irreducible flex auto-margin
-// (the trailing list pill, base.modifiers `margin-left:auto`; horizontal, never touches
-// height math). Target after the keystone PR: 1 (the sanctioned pill).
-const MARGIN_BUDGET = 12;
+// 271 → 39 → 12 → 0: the component sweep (#551) cleared lib/components; the independent
+// slices + contract-tier retirement (#557, #563) cleared base.modifiers/chart-family/
+// forms/contracts; the stage-flow keystone (2026-06-27-stage-flow-no-margins.md) moved the
+// base typographic rhythm (h2–h6/p `margin-bottom`, the hr centering, the eyebrow / KEY-
+// INSIGHT / below-note / display-math riders) onto the `.cell-stage` `gap` + `padding`.
+// What remains is the single irreducible flex auto-push, sanctioned here.
+const LAYOUT_MARGIN_BUDGET = 0;
+
+// The enumerated allowlist. Each entry is a margin that is provably the only answer; the
+// gate subtracts one matching declaration per entry. `file` is repo-relative; `value` is
+// the trimmed declaration value (post-`!important`-strip) to match.
+const SANCTIONED_MARGINS = [
+  {
+    file: 'lib/base/base.modifiers.css',
+    value: 'auto',
+    why: 'irreducible flex auto-push: shoves a trailing pill/label to the row end in a flex '
+       + 'row. Horizontal-only (never touches height math) and a single-item end-shove has no '
+       + '`gap`/`padding` equivalent. See the base.modifiers comment at the declaration.',
+  },
+];
 
 // HARD RULE #20 gate — keep `margin` out of the engine's layout CSS; space with
-// `gap`/`padding`, which measure cleanly (engineering/gotchas.md).
+// `gap`/`padding`, which measure cleanly (engineering/gotchas.md). Layout budget 0 +
+// the SANCTIONED allowlist above.
 function checkMarginDiscipline(errors) {
-  let total = 0;
-  const byFile = [];
+  // Collect every offending (file, value) across lib/.
+  const offences = [];
   for (const file of listCssFiles(LIB_DIR)) {
     const css = stripComments(fs.readFileSync(file, 'utf8'));
-    const n = offendingMargins(css).length;
-    if (n) {
-      total += n;
-      byFile.push([path.relative(ROOT, file), n]);
-    }
+    const rel = path.relative(ROOT, file);
+    for (const value of offendingMargins(css)) offences.push({ file: rel, value });
   }
-  if (total > MARGIN_BUDGET) {
-    byFile.sort((a, b) => b[1] - a[1]);
-    const top = byFile.slice(0, 5).map(([f, n]) => `${f} (${n})`).join(', ');
+  // Consume one offence per sanction (by file + value); track sanctions that match nothing.
+  const remaining = [...offences];
+  const staleSanctions = [];
+  for (const s of SANCTIONED_MARGINS) {
+    const i = remaining.findIndex((o) => o.file === s.file && o.value.trim() === s.value);
+    if (i === -1) staleSanctions.push(s);
+    else remaining.splice(i, 1);
+  }
+  if (remaining.length > LAYOUT_MARGIN_BUDGET) {
+    const byFile = {};
+    for (const o of remaining) byFile[o.file] = (byFile[o.file] || 0) + 1;
+    const top = Object.entries(byFile).sort((a, b) => b[1] - a[1]).slice(0, 5)
+      .map(([f, n]) => `${f} (${n})`).join(', ');
     errors.push(
-      `nonzero margin declarations in engine CSS rose to ${total}, above the budget of ${MARGIN_BUDGET} ` +
-      `(HARD RULE #20). margin is invisible to measurement and margin-collapses — space with \`gap\`/\`padding\` ` +
-      `instead (engineering/gotchas.md). If a margin is provably the only answer, raise MARGIN_BUDGET in ` +
-      `tools/check-ownership.js and justify it in the PR. Heaviest files: ${top}.`,
+      `${remaining.length} unsanctioned nonzero margin declaration(s) in engine CSS ` +
+      `(HARD RULE #20: layout budget is 0). margin is invisible to measurement and margin-collapses — ` +
+      `space with \`gap\`/\`padding\` instead (engineering/gotchas.md). If a margin is provably the only ` +
+      `answer, add it to SANCTIONED_MARGINS in tools/check-ownership.js with a justification. Offending: ${top}.`,
+    );
+  }
+  for (const s of staleSanctions) {
+    errors.push(
+      `stale margin sanction in tools/check-ownership.js — \`${s.value}\` in ${s.file} is no longer ` +
+      `present (HARD RULE #20). Remove the SANCTIONED_MARGINS entry so the allowlist stays honest.`,
     );
   }
 }
@@ -924,7 +948,8 @@ module.exports = {
   hasNotHasSelector,
   offendingMargins,
   checkMarginDiscipline,
-  MARGIN_BUDGET,
+  LAYOUT_MARGIN_BUDGET,
+  SANCTIONED_MARGINS,
   CANONICAL_FS_TOKENS,
   parseThemeTokens,
   listBasePalettes,

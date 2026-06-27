@@ -116,7 +116,9 @@ section p:has(> code:only-child):has(+ h5),
 section p:has(> code:only-child):has(+ ul),
 section p:has(> code:only-child):has(+ ol),
 section p:has(> code:only-child):has(+ pre) {
-  margin: 0 0 0.3125cqi 0;
+  /* eyebrow→heading gap as padding (no background on the eyebrow p, so it adds no
+   * visible box) rather than margin-bottom — HARD RULE #20. */
+  padding: 0 0 0.3125cqi 0;
 }
 section p:has(> code:only-child):has(+ h1) > code,
 section p:has(> code:only-child):has(+ h2) > code,
@@ -174,7 +176,8 @@ section:not(.quote):not(.math):not(.citation-card):not([class*="layout-"]) > blo
   border:1px solid var(--accent);
   border-radius:var(--radius-md);
   padding:var(--sp-xs) var(--sp-md);
-  margin-top:var(--sp-sm);
+  /* Separation from the preceding block is supplied by the flow container's `gap`
+   * (the stage cell under Form), not a `margin-top` — HARD RULE #20. */
   flex-shrink:0;
 }
 section:not(.quote):not(.math):not(.citation-card):not(.redline):not([class*="layout-"]) > blockquote::before {
@@ -410,9 +413,13 @@ section.decision:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
 section.actors:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
 section.kpi:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
 section.agenda:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p {
-  margin-top:var(--sp-sm); padding-top:var(--sp-xs); flex-shrink:0;
+  /* Space above the hairline rule (was margin-top) + below it (padding-top) are
+   * BOTH folded into padding-top so the spacing lives inside the note's own box —
+   * HARD RULE #20. The `::before` rule is parked at `top: --sp-sm` inside that pad,
+   * so --sp-sm sits above the rule and --sp-xs below it, exactly as before. */
+  padding-top:calc(var(--sp-sm) + var(--sp-xs)); flex-shrink:0;
   position:relative; font-size:var(--fs-message); color:var(--text-body);
-  line-height:var(--lh-relaxed); margin-bottom:0;
+  line-height:var(--lh-relaxed); margin:0;
 }
 section.cards-grid:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
 section.compare-prose:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
@@ -429,7 +436,7 @@ section.decision:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::be
 section.actors:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
 section.kpi:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
 section.agenda:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before {
-  content:''; position:absolute; top:0; left:0; right:0; height:1px;
+  content:''; position:absolute; top:var(--sp-sm); left:0; right:0; height:1px;
   background:linear-gradient(to right, var(--accent), transparent);
 }
 
@@ -601,7 +608,9 @@ section.compare-table > :is(ul, ol, blockquote, table) + p:has(> em:only-child):
  * blow up the line-height. Display math outside `section.math.*` falls
  * back to centred + accent for visibility. */
 section:not(.math) .katex { color: inherit; }
-section:not(.math) .katex-display { margin: var(--sp-sm) 0; text-align: center; }
+/* Vertical breathing room as padding, not margin (HARD RULE #20); the display has
+ * no background so padding reads identically. */
+section:not(.math) .katex-display { padding: var(--sp-sm) 0; margin: 0; text-align: center; }
 
 /* ════════════════════════════════════════════════════════════════════════
  * UNIVERSAL HEAT OVERLAY — palette inversion for any state-bearing layout

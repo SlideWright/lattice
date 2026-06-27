@@ -813,14 +813,19 @@ section {
  * eyebrow-styled (mono uppercase 13 px); the eyebrow visual now lives
  * exclusively on the `<p><code>` modifier in base.modifiers.css, and
  * the heading tags render as real headings at their own scale. */
+/* Vertical rhythm between prose blocks is owned by the FLOW CONTAINER (the
+ * `.cell-stage` gap, lib/forms/cell/stage/stage.css), NOT a per-element
+ * `margin-bottom` — HARD RULE #20: margin is invisible to the overflow probe /
+ * autosplit and margin-collapses. Headings carry no own-margin; the gap spaces
+ * them from the following block. (See 2026-06-27-stage-flow-no-margins.md.) */
 section h1 { font-family:var(--font-display); font-size:var(--fs-h1); font-weight:700; color:var(--text-display); line-height:var(--lh-tight); margin:0; border:none; }
-section h2 { font-family:var(--font-display); font-size:var(--fs-h2); font-weight:700; color:var(--text-heading); line-height:var(--lh-tight); margin:0 0 var(--sp-sm) 0; border:none; }
-section h3 { font-family:var(--font-display); font-size:var(--fs-h3); font-weight:700; color:var(--text-heading); line-height:var(--lh-tight); margin:0 0 var(--sp-xs) 0; border:none; }
-section h4 { font-family:var(--font-body); font-size:var(--fs-h4); font-weight:700; color:var(--text-heading); margin:0 0 var(--sp-xs) 0; }
-section h5 { font-family:var(--font-display); font-size:var(--fs-h5); font-weight:700; color:var(--text-heading); line-height:var(--lh-tight); margin:0 0 var(--sp-xs) 0; border:none; }
-section h6 { font-family:var(--font-display); font-size:var(--fs-h6); font-weight:700; color:var(--text-heading); line-height:var(--lh-tight); margin:0 0 var(--sp-xs) 0; border:none; }
+section h2 { font-family:var(--font-display); font-size:var(--fs-h2); font-weight:700; color:var(--text-heading); line-height:var(--lh-tight); margin:0; border:none; }
+section h3 { font-family:var(--font-display); font-size:var(--fs-h3); font-weight:700; color:var(--text-heading); line-height:var(--lh-tight); margin:0; border:none; }
+section h4 { font-family:var(--font-body); font-size:var(--fs-h4); font-weight:700; color:var(--text-heading); margin:0; }
+section h5 { font-family:var(--font-display); font-size:var(--fs-h5); font-weight:700; color:var(--text-heading); line-height:var(--lh-tight); margin:0; border:none; }
+section h6 { font-family:var(--font-display); font-size:var(--fs-h6); font-weight:700; color:var(--text-heading); line-height:var(--lh-tight); margin:0; border:none; }
 
-section p { margin:0 0 var(--sp-xs) 0; }
+section p { margin:0; }
 section strong { color:var(--text-heading); font-weight:600; }
 section em { font-style:italic; }
 /* Inline code chip. Surface-aware: the ink is --code-inline-fg (default
@@ -841,7 +846,11 @@ section code { font-family:var(--font-mono); font-size:0.85em; color:var(--code-
  * the marp-pre branch, mermaid source blocks render briefly as inline-code
  * chips in VS Code preview before the upgrade lands. */
 section :is(pre, marp-pre) code { background:none; border:none; padding:0; border-radius:0; color:inherit; font-size:inherit; white-space:pre; }
-section hr { border:none; height:0.15625cqi; background:var(--spectrum); border-radius:0.15625cqi; width:5.625cqi; margin:var(--sp-sm) auto; }
+/* Centred rule. Horizontal centre via flex `align-self` (the stage flow is a flex
+ * column), NOT `margin:auto` (HARD RULE #20); vertical space comes from the stage
+ * gap like any other block. In a non-flex context it falls back to left-aligned —
+ * acceptable for the rare raw-block-flow `hr`. */
+section hr { border:none; height:0.15625cqi; background:var(--spectrum); border-radius:0.15625cqi; width:5.625cqi; margin:0; align-self:center; }
 section ul { list-style:none; padding:0; margin:0; }
 section ol { padding:0; margin:0; }
 section blockquote { margin:0; padding:0; border:none; }
@@ -12638,7 +12647,9 @@ section p:has(> code:only-child):has(+ h5),
 section p:has(> code:only-child):has(+ ul),
 section p:has(> code:only-child):has(+ ol),
 section p:has(> code:only-child):has(+ pre) {
-  margin: 0 0 0.3125cqi 0;
+  /* eyebrow→heading gap as padding (no background on the eyebrow p, so it adds no
+   * visible box) rather than margin-bottom — HARD RULE #20. */
+  padding: 0 0 0.3125cqi 0;
 }
 section p:has(> code:only-child):has(+ h1) > code,
 section p:has(> code:only-child):has(+ h2) > code,
@@ -12696,7 +12707,8 @@ section:not(.quote):not(.math):not(.citation-card):not([class*="layout-"]) > blo
   border:1px solid var(--accent);
   border-radius:var(--radius-md);
   padding:var(--sp-xs) var(--sp-md);
-  margin-top:var(--sp-sm);
+  /* Separation from the preceding block is supplied by the flow container's `gap`
+   * (the stage cell under Form), not a `margin-top` — HARD RULE #20. */
   flex-shrink:0;
 }
 section:not(.quote):not(.math):not(.citation-card):not(.redline):not([class*="layout-"]) > blockquote::before {
@@ -12932,9 +12944,13 @@ section.decision:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
 section.actors:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
 section.kpi:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
 section.agenda:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p {
-  margin-top:var(--sp-sm); padding-top:var(--sp-xs); flex-shrink:0;
+  /* Space above the hairline rule (was margin-top) + below it (padding-top) are
+   * BOTH folded into padding-top so the spacing lives inside the note's own box —
+   * HARD RULE #20. The `::before` rule is parked at `top: --sp-sm` inside that pad,
+   * so --sp-sm sits above the rule and --sp-xs below it, exactly as before. */
+  padding-top:calc(var(--sp-sm) + var(--sp-xs)); flex-shrink:0;
   position:relative; font-size:var(--fs-message); color:var(--text-body);
-  line-height:var(--lh-relaxed); margin-bottom:0;
+  line-height:var(--lh-relaxed); margin:0;
 }
 section.cards-grid:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
 section.compare-prose:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
@@ -12951,7 +12967,7 @@ section.decision:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::be
 section.actors:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
 section.kpi:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
 section.agenda:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before {
-  content:''; position:absolute; top:0; left:0; right:0; height:1px;
+  content:''; position:absolute; top:var(--sp-sm); left:0; right:0; height:1px;
   background:linear-gradient(to right, var(--accent), transparent);
 }
 
@@ -13123,7 +13139,9 @@ section.compare-table > :is(ul, ol, blockquote, table) + p:has(> em:only-child):
  * blow up the line-height. Display math outside `section.math.*` falls
  * back to centred + accent for visibility. */
 section:not(.math) .katex { color: inherit; }
-section:not(.math) .katex-display { margin: var(--sp-sm) 0; text-align: center; }
+/* Vertical breathing room as padding, not margin (HARD RULE #20); the display has
+ * no background so padding reads identically. */
+section:not(.math) .katex-display { padding: var(--sp-sm) 0; margin: 0; text-align: center; }
 
 /* ════════════════════════════════════════════════════════════════════════
  * UNIVERSAL HEAT OVERLAY — palette inversion for any state-bearing layout
@@ -16409,10 +16427,23 @@ section.form:has(> .cell-stage) {
   display: flex;
   flex-direction: column;
 }
+/* The stage cell is itself a FLEX COLUMN that OWNS the inter-block vertical
+ * rhythm via `gap` — the prose step that `section h2/h3/p { margin-bottom }`
+ * used to carry before HARD RULE #20 retired those margins (margin is invisible
+ * to the overflow probe / autosplit and margin-collapses;
+ * 2026-06-27-stage-flow-no-margins.md). `gap` measures cleanly and leaves NO
+ * trailing space inside the clip (unlike a last-child margin). The step is the
+ * universal `--sp-xs`: under Form the title h2 lifts into the masthead, so the
+ * stage body is body prose + sub-headings, whose rhythm was uniform `--sp-xs`.
+ * A component that wants a different body rhythm sets its own `gap` on its
+ * `> .cell-stage` rule (most already do). */
 section.form > .cell-stage {
   flex: 1 1 auto;
   min-height: 0;
   overflow: clip;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-xs);
 }
 
 /* ── FOOTER Cell — the frame's third chrome band (flex cell-tree §6) ──────────
@@ -16499,7 +16530,9 @@ section.form:has(> .cell-footer)::after { content: none; }
  * `middle` vs `center` disambiguates the axis (middle = vertical). Horizontal
  * moves the content BLOCK, never `text-align` (centred prose lines rag badly).
  * `fill-center`/`fill-anchor` are retained as legacy aliases of align-middle/
- * align-bottom (consolidation tracked in #527). */
+ * align-bottom (consolidation tracked in #527). The stage is ALWAYS a flex
+ * column now (it owns prose rhythm via `gap`, above), so these modifiers only
+ * need to set the justify/align axis — the flex promotion is already in force. */
 section.form:is(.align-top, .align-middle, .align-bottom, .align-left, .align-center, .align-right,
                 .fill-center, .fill-anchor) > .cell-stage {
   display: flex;

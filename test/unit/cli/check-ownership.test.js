@@ -33,7 +33,8 @@ const {
   hasNotHasSelector,
   offendingMargins,
   checkMarginDiscipline,
-  MARGIN_BUDGET,
+  LAYOUT_MARGIN_BUDGET,
+  SANCTIONED_MARGINS,
   CANONICAL_FS_TOKENS,
   SINGLETON_TAGS,
   run,
@@ -163,10 +164,19 @@ describe('check-ownership', () => {
       assert.deepEqual(offendingMargins('.a { scroll-margin-top: 8px; }'), []);
     });
 
-    test('the live engine CSS stays within the margin budget', () => {
+    test('the live engine CSS has zero unsanctioned margins (HARD RULE #20)', () => {
       const errors = [];
       checkMarginDiscipline(errors);
-      assert.deepEqual(errors, [], `margin count exceeded MARGIN_BUDGET (${MARGIN_BUDGET}):\n${errors.join('\n')}`);
+      assert.deepEqual(errors, [], `unsanctioned margin(s) or a stale sanction:\n${errors.join('\n')}`);
+    });
+
+    test('the margin gate is layout-budget-0 + a small enumerated allowlist', () => {
+      assert.equal(LAYOUT_MARGIN_BUDGET, 0);
+      // The allowlist is intentionally tiny; each entry carries a justification.
+      assert.ok(SANCTIONED_MARGINS.length <= 3, 'sanctioned margins should stay a short, justified list');
+      for (const s of SANCTIONED_MARGINS) {
+        assert.ok(s.file && s.value && s.why, 'every sanction names a file, value, and reason');
+      }
     });
   });
 
