@@ -7,11 +7,11 @@
 
 The live, claimable work queue — a read-only mirror of [open issues](https://github.com/SlideWright/lattice/issues),
 grouped by board column. Design lives in `engineering/decisions/`; this tracks
-only *status*. **37 open** items.
+only *status*. **38 open** items.
 
-> ⚠️ **1 card need triage** (missing `area:`/`type:`/`priority:`): [#547](https://github.com/SlideWright/lattice/issues/547).
+> ⚠️ **2 cards need triage** (missing `area:`/`type:`/`priority:`): [#547](https://github.com/SlideWright/lattice/issues/547), [#554](https://github.com/SlideWright/lattice/issues/554).
 
-## Backlog (35)
+## Backlog (36)
 
 - [#287](https://github.com/SlideWright/lattice/issues/287) refactor(engine): LPM Phase 1 — manifest `render` block + `transformSection` adapter; migrate the chart kernels — high · engine
 - [#506](https://github.com/SlideWright/lattice/issues/506) feat(runtime): runtime auto-split (Option B) via eventual consistency — high · engine
@@ -48,6 +48,7 @@ only *status*. **37 open** items.
 - [#478](https://github.com/SlideWright/lattice/issues/478) chart(state-chart): tighten `inline`/`horizontal` variant label spacing — low · chart
 - [#527](https://github.com/SlideWright/lattice/issues/527) explore: alignment as a universal modifier (vertical top/center for tables, lists, etc.) — low
 - [#547](https://github.com/SlideWright/lattice/issues/547) q-and-a `spine` look overflows the frame on the gallery stress content
+- [#554](https://github.com/SlideWright/lattice/issues/554) feat(forms): N-up split Frame — compose multiple components in a grid (generalize split-panel)
 
 ## Ready (2)
 
