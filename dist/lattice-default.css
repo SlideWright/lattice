@@ -15811,6 +15811,13 @@ section.form .cell-masthead .masthead-lede {
   min-width: 0;
   grid-column: masthead-lede;
 }
+/* Many components still carry a pre-masthead-lift `section.X h2 { margin-bottom: … }` (the old
+ * heading↔body gap). On a Form slide the title now lives in this band, so that margin only
+ * adds stray height above the hairline and steals stage. Zero it here — the masthead's own
+ * padding/gap owns the title↔hairline↔stage rhythm. (A `margin:0` reset, not a spacing margin.)
+ * The component-level margins get removed wholesale in the no-margins component sweep; this is
+ * the band-local backstop so they can't push the hairline down in the meantime. */
+section.form .cell-masthead .masthead-lede :is(h1, h2, h3, h4) { margin: 0; }
 
 /* === lib/forms/cell/masthead/masthead.css === */
 /* ── MASTHEAD Cell — the named top band (opt-in via `form`) ──────────────────
@@ -15863,9 +15870,11 @@ section.form .cell-masthead {
 }
 /* The frame section is a flex column (base.elements.css). Space the masthead band from the
  * stage with a gap rather than a margin. Scoped to masthead-bearing slides so sovereign
- * frames (title / divider / closing — no masthead) are untouched. */
+ * frames (title / divider / closing — no masthead) are untouched. Halved from the legacy
+ * doubled gap (padding-bottom positions the hairline; this gap is hairline→stage) to reclaim
+ * ~sp-md of stage height on every slide — most in portrait, where it bites hardest. */
 section:has(> .cell-masthead) {
-  gap: var(--sp-md);
+  gap: var(--sp-sm);
 }
 
 /* === lib/forms/cell/pagination-right/pagination-right.css === */
@@ -15972,7 +15981,7 @@ section.form {
    * zone is the progress rail's reserved horizontal budget (see the footer Cell
    * rules) — footer-left yields it so the two can never collide. */
   --footer-h: calc(var(--_sec-1cqi, 1cqi) * 5);
-  --footer-reserve: calc(var(--frame-inset-y) + var(--footer-h) + var(--sp-md));
+  --footer-reserve: calc(var(--frame-inset-y) + var(--footer-h) + var(--sp-sm));
   --footer-centre-w: calc(var(--_sec-1cqi, 1cqi) * 30);
   --footer-centre-half: calc(var(--footer-centre-w) / 2);
   /* The progress rail's default right offset — it parks just left of the page

@@ -12,3 +12,10 @@ section.form .cell-masthead .masthead-lede {
   min-width: 0;
   grid-column: masthead-lede;
 }
+/* Many components still carry a pre-masthead-lift `section.X h2 { margin-bottom: … }` (the old
+ * heading↔body gap). On a Form slide the title now lives in this band, so that margin only
+ * adds stray height above the hairline and steals stage. Zero it here — the masthead's own
+ * padding/gap owns the title↔hairline↔stage rhythm. (A `margin:0` reset, not a spacing margin.)
+ * The component-level margins get removed wholesale in the no-margins component sweep; this is
+ * the band-local backstop so they can't push the hairline down in the meantime. */
+section.form .cell-masthead .masthead-lede :is(h1, h2, h3, h4) { margin: 0; }

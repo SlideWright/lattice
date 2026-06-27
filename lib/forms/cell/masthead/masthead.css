@@ -48,7 +48,9 @@ section.form .cell-masthead {
 }
 /* The frame section is a flex column (base.elements.css). Space the masthead band from the
  * stage with a gap rather than a margin. Scoped to masthead-bearing slides so sovereign
- * frames (title / divider / closing — no masthead) are untouched. */
+ * frames (title / divider / closing — no masthead) are untouched. Halved from the legacy
+ * doubled gap (padding-bottom positions the hairline; this gap is hairline→stage) to reclaim
+ * ~sp-md of stage height on every slide — most in portrait, where it bites hardest. */
 section:has(> .cell-masthead) {
-  gap: var(--sp-md);
+  gap: var(--sp-sm);
 }
