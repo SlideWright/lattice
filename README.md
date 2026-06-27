@@ -202,6 +202,18 @@ if no system Chrome is found.
 > **PPTX note.** Slides export as one full-bleed *image* per slide (not editable
 > text/shapes). Editable PPTX export (which needs LibreOffice) is not included.
 
+Pass `--present` to mark the PDF to **open straight into full-screen
+presentation mode** with a subtle cross-fade between slides:
+
+```sh
+lattice deck.md deck.pdf --present
+```
+
+Adobe Acrobat/Reader and most desktop viewers honour this (it's the same
+document hint Keynote and PowerPoint emit); browser-embedded viewers and macOS
+Preview ignore it harmlessly. Slides stay presenter-driven — no auto-advance.
+A deck can also bake this in with a `present: true` front-matter key.
+
 ## Render the example galleries
 
 ```sh

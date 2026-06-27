@@ -112,6 +112,13 @@ OPTIONS
                           phone (swipe between slides), with a toggle back to the
                           fixed deck. PDF/PPTX/PNG outputs are unchanged. Can also
                           be enabled per-deck with a 'fluid: true' front-matter key.
+      --present           Mark the PDF to open directly in full-screen
+                          presentation mode (Adobe Acrobat/Reader and most desktop
+                          viewers honour this; browser-embedded viewers ignore it
+                          harmlessly). Adds a subtle cross-fade between slides;
+                          slides stay presenter-driven (no auto-advance). PDF only.
+                          Can also be enabled per-deck with a 'present: true'
+                          front-matter key.
 
   Both --flag value and --flag=value syntax accepted. Positional args still
   work; named flags take precedence when both are supplied.
@@ -180,6 +187,7 @@ function parseArgs(argv) {
     if (a === '--notes') { flags.notes = true; continue; }
     if (a === '--notes-icon') { flags['notes-icon'] = true; continue; }
     if (a === '--fluid') { flags.fluid = true; continue; }
+    if (a === '--present') { flags.present = true; continue; }
     // --flag=value form
     const eq = a.match(/^(--?[A-Za-z][\w-]*)=(.*)$/);
     if (eq && opts[eq[1]]) { flags[opts[eq[1]]] = eq[2]; continue; }
@@ -227,6 +235,8 @@ if (flags.palette) paletteArg = flags.palette;
 const QUIET = flags.quiet;
 const NOTES_SIDECAR = !!flags.notes;
 const NOTES_ICON = !!flags['notes-icon'];
+// PRESENT is resolved below, once the deck front matter is parsed (it can be
+// enabled by `--present` OR a `present: true` front-matter key, mirroring --fluid).
 // FLUID_VIEW is resolved below, once the deck front matter is parsed (it can be
 // enabled by `--fluid` OR a `fluid: true` front-matter key).
 
@@ -928,6 +938,10 @@ const fm      = fmMatch ? fmMatch[1] : '';
 // UNCHANGED either way — fluid only affects the written .html, after raster.
 // Design: engineering/decisions/2026-06-21-fluid-box-viewer-design.md.
 const FLUID_VIEW = !!flags.fluid || /^\s*fluid:\s*(?:true|yes|on)\s*$/im.test(fm);
+// Presentation mode: mark the exported PDF to open in full-screen presentation
+// view (see applyPresentMode). Enabled by the `--present` flag OR a
+// `present: true` front-matter key, mirroring --fluid. PDF only.
+const PRESENT = !!flags.present || /^\s*present:\s*(?:true|yes|on)\s*$/im.test(fm);
 // Auto-split (the Fit Ladder SPLIT move) — opt-in per deck. The flag + the capacity
 // map are hoisted to module scope so BOTH passes see them: the cheap STATIC pre-pass
 // in engineSlides() (count > capacity.hard), and the MEASURED loop in the export IIFE
@@ -1677,11 +1691,15 @@ async function renderBody(browser, g, closeBrowser) {
       preferCSSPageSize: true
     }), 'print pdf');
     await closeBrowser();
-    const finalBytes = await embedNotesInPdf(pdfBytes, slideNotes);
+    let finalBytes = await embedNotesInPdf(pdfBytes, slideNotes);
+    finalBytes = await applyPresentMode(finalBytes);
     fs.writeFileSync(outFile, finalBytes);
     const noteCount = slideNotes.filter(Boolean).length;
     if (!QUIET) {
-      console.log(`PDF: ${outFile}${noteCount ? ` (${noteCount} slide${noteCount > 1 ? 's' : ''} with speaker notes)` : ''}`);
+      const tags = [];
+      if (noteCount) tags.push(`${noteCount} slide${noteCount > 1 ? 's' : ''} with speaker notes`);
+      if (PRESENT) tags.push('presentation mode');
+      console.log(`PDF: ${outFile}${tags.length ? ` (${tags.join(', ')})` : ''}`);
     }
     if (NOTES_SIDECAR) writeNotesSidecar(outFile, slideNotes);
   } else {
@@ -1794,6 +1812,45 @@ async function embedNotesInPdf(pdfBytes, notes) {
     return await doc.save();
   } catch (e) {
     console.warn(`  ⚠ Could not embed speaker notes into the PDF (${e.message}); writing deck without note annotations.`);
+    return pdfBytes;
+  }
+}
+
+// When --present is set, mark the PDF to open straight into full-screen
+// presentation mode. These are document-catalog hints that Adobe Acrobat/Reader
+// and most desktop viewers honour (it is exactly what Keynote / PowerPoint
+// "Save as PDF" emit); browser-embedded viewers (Chrome's pdfium, pdf.js) and
+// macOS Preview ignore them harmlessly, so there is no downside elsewhere.
+//   /PageMode /FullScreen   open directly in presentation/full-screen view
+//   /PageLayout /SinglePage one slide at a time (no continuous scroll)
+//   /ViewerPreferences      clean page-only view when the presenter EXITS full
+//                           screen (no panel auto-opening), and fit the window
+//   per-page /Trans         subtle cross-fade on advance — tasteful, not a
+//                           gimmick; NO /Dur, so slides stay presenter-driven
+//                           (no kiosk auto-advance).
+// On any pdf-lib failure it returns the input bytes unchanged — a presentation
+// hint must never cost the visible deck (mirrors embedNotesInPdf).
+async function applyPresentMode(pdfBytes) {
+  if (!PRESENT) return pdfBytes;
+  try {
+    const { PDFDocument, PDFName } = require('pdf-lib');
+    const doc = await PDFDocument.load(pdfBytes);
+    const { catalog, context } = doc;
+    catalog.set(PDFName.of('PageMode'), PDFName.of('FullScreen'));
+    catalog.set(PDFName.of('PageLayout'), PDFName.of('SinglePage'));
+    catalog.set(PDFName.of('ViewerPreferences'), context.obj({
+      NonFullScreenPageMode: PDFName.of('UseNone'),
+      FitWindow: true,
+    }));
+    for (const pg of doc.getPages()) {
+      pg.node.set(PDFName.of('Trans'), context.obj({
+        S: PDFName.of('Fade'),
+        D: 0.4,
+      }));
+    }
+    return await doc.save();
+  } catch (e) {
+    console.warn(`  ⚠ Could not mark the PDF for presentation mode (${e.message}); writing deck without it.`);
     return pdfBytes;
   }
 }
