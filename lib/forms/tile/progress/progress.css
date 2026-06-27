@@ -20,7 +20,9 @@ section.form .tile-progress {
   letter-spacing: 0.10em;
   text-transform: uppercase;
   color: var(--text-label);
-  margin-right: var(--sp-xs);
+  /* Extra breathing room after the label, on top of the flex `gap`. padding (inside the
+   * no-bg label box), not margin — HARD RULE #20. The ellipsis clip honours it as right inset. */
+  padding-right: var(--sp-xs);
   /* Within the reserved centre zone, a very long label still truncates
      gracefully rather than crowding the dots. */
   min-width: 0;

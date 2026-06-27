@@ -264,6 +264,13 @@ section.chart-frame .chart-header {
    * treatments, not baked in here. A short hairline below the header
    * keeps the chart body visually separated; that is the only chrome. */
   flex: 0 0 auto;
+  /* flex column so the eyebrow/title/subtitle centre via align-items and stack via `gap`
+   * instead of each carrying its own `margin: 0 auto …` (HARD RULE #20). The ::after
+   * hairline is absolutely positioned, so it is unaffected. */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-xs);
   position: relative;
   box-sizing: border-box;
   width: 100%;
@@ -285,7 +292,7 @@ section.chart-frame .chart-header::after {
 }
 
 section.chart-frame .chart-eyebrow {
-  margin: 0 0 var(--sp-xs);
+  margin: 0;
   font-size: var(--fs-meta);
   line-height: 1;
 }
@@ -301,7 +308,7 @@ section.chart-frame .chart-eyebrow > code {
 }
 
 section.chart-frame .chart-header h2 {
-  margin: 0 auto var(--sp-xs);
+  margin: 0;
   max-width: 70.3125cqi;
   font-size: var(--fs-h2);
   line-height: var(--lh-tight);
@@ -309,7 +316,7 @@ section.chart-frame .chart-header h2 {
 }
 
 section.chart-frame .chart-subtitle {
-  margin: 0 auto;
+  margin: 0;
   max-width: 68.75cqi;
   font-size: var(--fs-body);
   font-style: italic;
@@ -342,7 +349,7 @@ section.chart-frame .chart-body {
   box-sizing: border-box;
   width: calc(100cqi - 2 * var(--sp-2xl));
   max-width: 100%;
-  margin: 0 auto;
+  align-self: center;   /* centre the fixed-width body in the section flex column (was margin:0 auto) */
   padding: var(--sp-lg) var(--sp-2xl);
   min-height: 0;
   overflow: hidden;
@@ -395,13 +402,18 @@ section.chart-frame .chart-body {
  * OPT-IN: the canvas is now off by default — a chart sits directly on the
  * slide unless the slide adds the `canvas` modifier. So this rule is gated on
  * `.canvas`; the bare chart is the baseline. */
+/* Canvas float as a section-column row-gap (was the body's margin-top:var(--sp-lg)):
+   drops the glass card clear of the header hairline without a margin. The frame is
+   header → body (→ optional caption); the body→caption seam keeps the same lift,
+   which reads as deliberate breathing room on a bleeding canvas. */
+section.chart-frame.canvas:not(.state-chart) { row-gap: var(--sp-lg); }
 section.chart-frame.canvas:not(.state-chart) .chart-body {
   /* Float the panel clear of the header divider. The .chart-header::after
    * accent hairline sits at the header's bottom edge; without this gap the
    * lifted glass card's top edge lands right on it and the two separators
-   * collide ("hugging"). A top margin drops the card so the hairline floats
-   * in the whitespace above it. */
-  margin-top: var(--sp-lg);
+   * collide ("hugging"). The float is a `row-gap` on the section flex column
+   * (below) — drops the card so the hairline floats in the whitespace above it,
+   * margin-free (HARD RULE #20). */
   /* Real glass, not a tinted box. ROOT-CAUSE FIX: the fill must never be a
    * --text-heading mix — that token is a neutral gray, so mixing it into --bg
    * paints a muddy GRAY BOX that reads as "a second background" on the slide,
@@ -437,6 +449,12 @@ section.chart-frame.canvas:not(.state-chart) .chart-body {
 
 section.chart-frame .chart-caption {
   flex: 0 0 auto;
+  /* flex column so the ::before hairline centres via align-items and its gap to the
+   * caption text is a `gap`, not the pseudo's `margin: 0 auto var(--sp-sm)` (#20). */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-sm);
   box-sizing: border-box;
   width: 100%;
   margin: 0;
@@ -457,7 +475,7 @@ section.chart-frame .chart-caption::before {
   display: block;
   width: 7.5cqi;
   height: var(--chart-hairline);
-  margin: 0 auto var(--sp-sm);
+  margin: 0;
   background: color-mix(in oklab, var(--border) 90%, transparent);
 }
 
@@ -709,8 +727,10 @@ section.chart-frame.cover .chart-body {
  * margin:auto pins it to the bottom; the chart-frame skeleton measure-caps the
  * title at higher specificity, so re-assert measure / align / size here. */
 section.chart-frame.cover .chart-header h2 {
+  /* order:1 puts the title last; the flex:1 chart-body above it fills the column and
+   * pushes this bottom shelf to the foot — no margin-top:auto needed (#20). */
   order: 1;
-  margin: auto 0 0;
+  margin: 0;
   z-index: 2;
   max-width: none;
   box-sizing: border-box;

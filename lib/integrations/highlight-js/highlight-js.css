@@ -95,8 +95,14 @@ section.diagram :is(pre, marp-pre):not([data-mermaid-state="rendered"]) > code [
  * and .badge.fail so it feels native to the deck. Width matches the
  * source <pre> / rendered .mermaid container so the error sits flush with
  * the diagram slot above it. Height is intrinsic — errors are short. */
+/* Gap from the diagram slot above lives on the (no-bg) .mermaid container, not as a
+ * margin-top on this bordered/filled block (which would bleed its fill / can't be
+ * measured) — HARD RULE #20. The container is the error's previous sibling
+ * (attachError inserts afterend of the target). */
+.mermaid:has(+ .mermaid-error) {
+  padding-bottom:var(--sp-sm);
+}
 .mermaid-error {
-  margin-top:var(--sp-sm);
   padding:var(--sp-xs) var(--sp-md);
   background:color-mix(in srgb, var(--fail) 8%, var(--bg-alt));
   border:1px solid var(--fail);

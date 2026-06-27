@@ -186,7 +186,7 @@ section:not(.quote):not(.math):not(.citation-card):not(.redline):not([class*="la
   text-transform:uppercase;
   color:var(--accent);
   display:block;
-  margin-bottom:0.46875cqi;
+  padding-bottom:0.46875cqi; /* label→quote gap, inside the no-bg pseudo (HARD RULE #20) */
 }
 section:not(.quote):not(.math):not(.citation-card):not([class*="layout-"]) > blockquote p {
   font-family:var(--font-body);
@@ -226,7 +226,9 @@ section img.emoji {
   max-width:none; max-height:none;
   border-radius:0; object-fit:fill;
   vertical-align:-0.1em;
-  margin:0 0.05em;
+  /* Horizontal breathing in text. padding (replaced element, no bg) pushes neighbouring
+   * glyphs out by the same 0.05em as the old margin would — HARD RULE #20. */
+  padding:0 0.05em;
 }
 section header {
   position:absolute; top:var(--frame-inset-y); left:var(--frame-inset-x); right:var(--frame-inset-x);
@@ -296,6 +298,11 @@ section:where(:not(.title):not(.divider):not(.closing):not(.split-panel):not(.bi
   > :where(ul, ol) > li > code:where(:last-child, .lat-pill),
 section:where(:not(.title):not(.divider):not(.closing):not(.split-panel):not(.big-number):not(.kpi):not(.stats):not(.quote):not(.glossary):not(.compare-table):not(.roadmap):not(.agenda):not(.matrix-2x2):not(.decision):not(.verdict-grid):not(.compare-prose):not(.code):not(.compare-code):not(.image):not(.diagram):not(.content):not(.timeline):not(.list-steps):not(.principles):not(.list):not(.list-criteria):not(.list-tabular):not(.math):not(.pricing))
   > .cell-stage > :where(ul, ol) > li > code:where(:last-child, .lat-pill) {
+  /* IRREDUCIBLE flex auto-margin (HARD RULE #20 sanctioned floor): pushes the trailing
+   * pill to the row's right edge. The preceding label is an ANONYMOUS text run, so it
+   * can't take `flex:1` and `justify-content:space-between` would scatter multi-item
+   * labels — `margin-left:auto` is the only clean push. Horizontal + flex-resolved, so
+   * it never touches the vertical height math the rule guards. Counted in MARGIN_BUDGET. */
   margin-left:auto;
   align-self:center;
   display:inline-flex;
@@ -561,7 +568,7 @@ section.compare-table > :is(ul, ol, blockquote, table) + p:has(> em:only-child):
   width:auto;
   color:var(--accent);
   font-style:normal;
-  margin-right:0.5em;
+  padding-right:0.5em; /* glyph→text gap, inside the no-bg pseudo (HARD RULE #20) */
   font-size:0.95em;
 }
 
@@ -1015,7 +1022,9 @@ section.safe[data-orientation='square'] :is(.cell-footer, .tile-meta, [class*='p
    manifest-declared "→" lead-in (split.intro). Both read the slide's currentColor, so
    they sit correctly on the accent cover AND the body pages. Palette-blind. */
 .split-cover-lead {
-  margin-top: var(--sp-lg); font-size: var(--fs-emphasis); letter-spacing: 0.02em; opacity: 0.9;
+  /* Gap above the lead-in. <div>, no bg, in a no-gap flex column — padding-top reads
+   * identically to the old margin-top, and measures cleanly (HARD RULE #20). */
+  padding-top: var(--sp-lg); font-size: var(--fs-emphasis); letter-spacing: 0.02em; opacity: 0.9;
 }
 /* Shares the deck pagination's baseline (bottom-right, vertically centred on the page
    number) but stands well clear of it horizontally — the rail and the page count are two
@@ -1047,14 +1056,22 @@ section.lat-split-cover .split-feat-eye {
 }
 section.lat-split-cover .split-feat-h {
   font-size: var(--fs-h1); font-weight: 800; line-height: var(--lh-tight);
-  color: var(--on-accent); margin: var(--sp-xs) 0 var(--sp-md); max-width: 14em;
+  /* <div> (not a heading), no bg, in a no-gap flex column — padding stands in for the
+   * old eyebrow→title / title→lead gaps and measures cleanly (HARD RULE #20). */
+  color: var(--on-accent); padding: var(--sp-xs) 0 var(--sp-md); max-width: 14em;
 }
 /* compare-table's split cover carries ONE signature from the live layout — the --spectrum
    strip that underlines its <thead> (compare-table.styles.css) — so a split reads as the
    same deck. Scoped via the `split-cover-compare-table` marker the carousel stamps, NOT
    `section.compare-table`, so none of the table's base CSS activates on the cover. The
    shared cover is otherwise untouched (the family fidelity bar). Palette-blind (HARD #3). */
+/* Stack the title text over its spectrum underline with a `gap` rather than a
+ * margin-top on the strip — the strip has a background, so padding-top would bleed
+ * the colour up into the gap (HARD RULE #20). align-items keeps both left-aligned. */
+section.lat-split-cover.split-cover-compare-table .split-feat-h {
+  display: flex; flex-direction: column; align-items: flex-start; gap: var(--sp-sm);
+}
 section.lat-split-cover.split-cover-compare-table .split-feat-h::after {
   content: ""; display: block; height: 2px; width: 42%; min-width: 7em;
-  margin-top: var(--sp-sm); background: var(--spectrum);
+  background: var(--spectrum);
 }

@@ -152,14 +152,19 @@ section.form.footer-inset > .cell-footer {
 section.form.footer-inset:has(> .cell-footer) {
   padding-bottom: calc(var(--footer-reserve) + var(--footer-h));
 }
-/* The running footer text — a flex item at the left of the band (the band itself
- * is the absolute cell above). margin-right:auto shoves the wayfinding group to the
- * right edge; absent footer text just leaves the group right-aligned. Appearance
- * (colour, size) still comes from the Marp footer tier. */
+/* The running footer text. Pinned absolutely to the band's LEFT edge (the band is
+ * the absolute cell above, so it's the containing block) rather than flowing as a
+ * flex item with `margin-right:auto` — auto-margin is still a margin (HARD RULE #20).
+ * Out of flex flow, it leaves only the wayfinding group (rail · page no.) in the row,
+ * which `justify-content:flex-end` already right-aligns; absent footer text changes
+ * nothing. `inset-block:0` + the inner flex centres the text vertically, matching the
+ * band's `align-items:center`. Appearance (colour, size) comes from the Marp footer tier. */
 section.form > .cell-footer > footer {
-  position: static;
-  inset: auto;
-  margin: 0 auto 0 0;
+  position: absolute;
+  left: 0;
+  inset-block: 0;
+  display: flex;
+  align-items: center;
   max-width: var(--footerleft-w, 52cqi);
 }
 /* The page number as a real element — mono, --fs-meta, vertically centred with the
