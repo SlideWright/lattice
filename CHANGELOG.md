@@ -347,6 +347,21 @@ in patch versions.
 
 ### Fixed
 
+- **The inventory contract Layouts (`layout-ledger` / `layout-cards` / `layout-timeline` /
+  `layout-editorial`) render again under Form (the default) — they were silently falling back
+  to a plain list.** Form wraps a migrated layout's body in the `.cell-stage` cell, but these
+  four contract-tier Layouts were absent from the masthead kernel's layout registry
+  (`ALL_LAYOUTS`, built from the *component* manifest), so the wrap detector classified them as
+  generic prose and wrapped them — and their CSS still addressed `section.layout-* > ul`, a
+  direct child that the wrapper now hid, so every look collapsed to the base list. Registered the
+  four as a sibling tier (`ALL_LAYOUTS` + `STAGE_MIGRATED`, the drift test now asserting the set
+  is components ∪ contract Layouts) and migrated their CSS to `section.layout-* > .cell-stage > …`
+  — the same idiom every component uses. The body is now the bounded stage cell: the title +
+  eyebrow lift into the masthead band, and the list/insight clip cleanly instead of bleeding past
+  the footer. `ledger` row rhythm tightened to seat four rows + the accent band in the (shorter,
+  masthead-topped) stage; `editorial` reads as insight ∥ items with the title in the band.
+  Verified light + dark across all four. (Found during the no-margins sweep; logged as a separate
+  fix to keep that PR scoped.)
 - **The masthead band no longer steals stage height from a lifted title's converted padding —
   `kpi` stops clipping.** The no-margins sweep converted some components' `section.X h2 {
   margin-bottom }` to `padding-bottom`; lifted into the masthead band that padding stacked on
