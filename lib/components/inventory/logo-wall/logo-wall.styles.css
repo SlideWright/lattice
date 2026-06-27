@@ -36,19 +36,26 @@ section.logo-wall > .cell-stage > ul {
   padding: 0;
   width: 100%;
   flex: 1 1 auto;
-  display: grid;
-  grid-template-columns: repeat(var(--logo-cols), 1fr);
+  /* flex mirror of `repeat(N,1fr)` (flex shop §11.A): N marks per row, the rows centred as a
+   * cluster. `--logo-col-gap` feeds the per-cell width below so tiling stays exact even when
+   * a reflow uses an asymmetric gap. */
+  --logo-col-gap: var(--logo-gap);
+  display: flex;
+  flex-wrap: wrap;
   gap: var(--logo-gap);
   align-content: center;
-  justify-items: center;
+  justify-content: center;
   align-items: center;
 }
 
 section.logo-wall > .cell-stage > ul > li {
+  /* `width` (not a flex-shorthand calc basis, which renders unreliably) tiles N marks/row. */
+  width: calc((100% - (var(--logo-cols) - 1) * var(--logo-col-gap)) / var(--logo-cols));
+  flex: 0 0 auto;
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 100%;
   height: var(--logo-cell-h);
 }
 
@@ -99,12 +106,14 @@ section.logo-wall.dark.color > .cell-stage > ul > li img {
    overriding `--logo-cols` on the section is a silent no-op (the §11 constraint). */
 @container lattice (aspect-ratio <= 0.9) {
   section.logo-wall.logo-wall > .cell-stage > ul {
-    grid-template-columns: repeat(2, 1fr);
+    --logo-cols: 2;
+    --logo-col-gap: var(--sp-xl);
     /* Cohesive centred cluster — the marks read as one wall held in the slide's
        middle, rather than scattered the full height of the frame. */
     align-content: center;
-    gap: var(--sp-2xl) var(--sp-xl);
+    row-gap: var(--sp-2xl);
+    column-gap: var(--sp-xl);
   }
   /* dense carries twice the roster — keep it denser than the default wall. */
-  section.logo-wall.dense > .cell-stage > ul { grid-template-columns: repeat(3, 1fr); }
+  section.logo-wall.dense > .cell-stage > ul { --logo-cols: 3; }
 }

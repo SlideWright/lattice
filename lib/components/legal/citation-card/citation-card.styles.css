@@ -98,15 +98,17 @@ section.citation-card > .cell-stage > :is(ul, ol) > li > strong:first-child {
 /* .split — verbatim left, translate+do right. The title + eyebrow lift to the
  * masthead band (flex cell-tree §6), so the stage is purely the two body columns:
  * one full-height row that fills the bounded stage. */
-section.citation-card.split > .cell-stage { display:grid; grid-template-columns:1fr 1fr; column-gap:var(--sp-lg); grid-template-rows:1fr; }
+/* flex mirror of `grid-template-columns:1fr 1fr` — two equal columns (flex:1 each) on one
+ * full-height row; the base cell-stage's flex-direction:column flips to row here. */
+section.citation-card.split > .cell-stage { display:flex; flex-direction:row; column-gap:var(--sp-lg); align-items:stretch; }
 /* Quote fills its column; the verbatim text is CENTRED inside the accent box so the
  * filled panel reads as deliberate, not a half-empty box. */
 section.citation-card.split > .cell-stage > blockquote {
-  grid-column:1; grid-row:1; align-self:stretch; margin-top:0;
+  flex:1; min-width:0; align-self:stretch; margin-top:0;
   display:flex; flex-direction:column; justify-content:center;
 }
 /* Gloss is centred to the quote so the two columns balance across the full height. */
-section.citation-card.split > .cell-stage > :is(ul, ol) { grid-column:2; grid-row:1; align-self:center; }
+section.citation-card.split > .cell-stage > :is(ul, ol) { flex:1; min-width:0; align-self:center; }
 
 /* .pull-quote — hero quote dominant. */
 section.citation-card.pull-quote > .cell-stage > blockquote {

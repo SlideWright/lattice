@@ -189,6 +189,13 @@ in patch versions.
 
 ### Changed
 
+- **Flex-shop conversion, hard tier (part 1) — `pricing`, `logo-wall`, and `citation-card`
+  `.split` drop CSS grid for flex.** `pricing` and `logo-wall` were `repeat(N,1fr)` tilings →
+  flex-wrap with `width: 100%/N − …` per-cell (the matrix-2x2 idiom; `width`, not a
+  `flex`-shorthand calc basis, which renders unreliably), `--cols` honoured by an explicit
+  per-variant width; `citation-card.split` was a 2-column row → two `flex:1` columns.
+  Look-preserving in light + dark. (Reassessing the remaining "hard" components against the
+  proven flex patterns: most are nested-1D or fixed tilings, not genuinely 2-D.)
 - **Flex-shop conversion, moderate tier — `actors`, `authority-chain`, `agenda`,
   `list-criteria`, `q-and-a` drop CSS grid for flex.** Each row's `grid-template-columns`
   layout is reproduced with flex: the `actors` and `authority-chain` rows use the
