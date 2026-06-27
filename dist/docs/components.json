@@ -7565,7 +7565,7 @@
         },
         {
           "title": "Citation plus obligation plus status",
-          "body": "Each card is a three-part record: the citation pill (top-right of the header), the headline obligation in prose, and the status pill (bottom-left). Use when all three matter; for citation-only, reach for list-tabular."
+          "body": "Each card is a three-part record: a citation pill, the headline obligation in prose, and a status pill — pill placement follows the card shape (row variants keep both on the header line; the narrow default splits them to opposite corners). Use when all three matter; for citation-only, reach for list-tabular."
         },
         {
           "title": "Compliance briefings",

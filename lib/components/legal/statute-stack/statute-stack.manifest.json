@@ -58,7 +58,7 @@
     },
     {
       "title": "Citation plus obligation plus status",
-      "body": "Each card is a three-part record: the citation pill (top-right of the header), the headline obligation in prose, and the status pill (bottom-left). Use when all three matter; for citation-only, reach for list-tabular."
+      "body": "Each card is a three-part record: a citation pill, the headline obligation in prose, and a status pill — pill placement follows the card shape (row variants keep both on the header line; the narrow default splits them to opposite corners). Use when all three matter; for citation-only, reach for list-tabular."
     },
     {
       "title": "Compliance briefings",
@@ -101,17 +101,17 @@
     "hierarchy": {
       "label": "Authority pyramid",
       "caption": "Stacks the rows vertically with descending row heights — Federal tallest, State mid, Local shortest. Use when the jurisdictions are nested in authority, not peers.",
-      "sample": "<!-- _class: statute-stack hierarchy -->\n\n## Children's data — authority cascades downward.\n\n- Federal `15 U.S.C. §6501`\n  - Verifiable parental consent for under-13 personal data.\n  - `In effect since 2000`\n- State `Cal. Civ. §1798.120`\n  - Opt-in for selling or sharing under-16 data; opt-out for over-16.\n  - `Enforced 2023`\n- Local `NYC §22-1201`\n  - Bias-audit obligation for AEDTs used in employment decisions.\n  - `Effective 2023`\n"
+      "sample": "<!-- _class: statute-stack hierarchy -->\n\n## Children's data — authority cascades downward.\n\n- Federal `15 U.S.C. §6501` `In effect since 2000`\n  - Verifiable parental consent for under-13 personal data.\n- State `Cal. Civ. §1798.120` `Enforced 2023`\n  - Opt-in for selling or sharing under-16 data; opt-out for over-16.\n- Local `NYC §22-1201` `Effective 2023`\n  - Bias-audit obligation for AEDTs used in employment decisions.\n"
     },
     "bands": {
       "label": "Horizontal bands",
-      "caption": "Each jurisdiction is a full-width card stacked at equal height — an at-a-glance scorecard. Same card anatomy as the default (citation top-right, status bottom-left); only the arrangement differs.",
-      "sample": "<!-- _class: statute-stack bands -->\n\n## Children's data — at-a-glance scorecard.\n\n- Federal `15 U.S.C. §6501`\n  - Verifiable parental consent for under-13 personal data.\n  - `In effect since 2000`\n- State `Cal. Civ. §1798.120`\n  - Opt-in for selling or sharing under-16 data; opt-out for over-16.\n  - `Enforced 2023`\n- Local `NYC §22-1201`\n  - Bias-audit obligation for AEDTs used in employment decisions.\n  - `Effective 2023`\n"
+      "caption": "Each jurisdiction is a full-width card stacked at equal height — an at-a-glance scorecard. A row card: both pills ride the header line (citation left, status right). Only the arrangement differs from the default.",
+      "sample": "<!-- _class: statute-stack bands -->\n\n## Children's data — at-a-glance scorecard.\n\n- Federal `15 U.S.C. §6501` `In effect since 2000`\n  - Verifiable parental consent for under-13 personal data.\n- State `Cal. Civ. §1798.120` `Enforced 2023`\n  - Opt-in for selling or sharing under-16 data; opt-out for over-16.\n- Local `NYC §22-1201` `Effective 2023`\n  - Bias-audit obligation for AEDTs used in employment decisions.\n"
     },
     "preemption": {
       "label": "Preemption cascade",
       "caption": "Vertical stack with a downward arrow between each card. Use when the slide must show that the upper jurisdiction preempts or supersedes the one below.",
-      "sample": "<!-- _class: statute-stack preemption -->\n\n## Federal preemption — how the cascade flows.\n\n- Federal `15 U.S.C. §6501`\n  - Sets the floor for under-13 personal data collection.\n  - `Preempts state rules`\n- State `Cal. Civ. §1798.120`\n  - Stricter opt-in regime on top of COPPA's baseline.\n  - `Survives preemption`\n- Local `NYC §22-1201`\n  - Bias-audit obligation distinct from privacy preemption scope.\n  - `Independent of preemption`\n"
+      "sample": "<!-- _class: statute-stack preemption -->\n\n## Federal preemption — how the cascade flows.\n\n- Federal `15 U.S.C. §6501` `Preempts state rules`\n  - Sets the floor for under-13 personal data collection.\n- State `Cal. Civ. §1798.120` `Survives preemption`\n  - Stricter opt-in regime on top of COPPA's baseline.\n- Local `NYC §22-1201` `Independent of preemption`\n  - Bias-audit obligation distinct from privacy preemption scope.\n"
     },
     "lane": {
       "label": "Markdown table",

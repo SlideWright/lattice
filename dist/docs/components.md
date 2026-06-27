@@ -6876,7 +6876,7 @@ Use when three or four parallel jurisdictions need to read at a glance: each row
 #### When to use
 
 - **Three parallel jurisdictions.** Federal / state / local — or any three peer regimes — that the room must hold side-by-side. The hue rotation cues which row is which without a legend.
-- **Citation plus obligation plus status.** Each card is a three-part record: the citation pill (top-right of the header), the headline obligation in prose, and the status pill (bottom-left). Use when all three matter; for citation-only, reach for list-tabular.
+- **Citation plus obligation plus status.** Each card is a three-part record: a citation pill, the headline obligation in prose, and a status pill — pill placement follows the card shape (row variants keep both on the header line; the narrow default splits them to opposite corners). Use when all three matter; for citation-only, reach for list-tabular.
 - **Compliance briefings.** Reach for statute-stack when the deck reads as a regulatory memo — counsel and operations need the same view of the same record at the same time.
 
 #### When NOT to use
@@ -6939,35 +6939,29 @@ Stacks the rows vertically with descending row heights — Federal tallest, Stat
 
 ## Children's data — authority cascades downward.
 
-- Federal `15 U.S.C. §6501`
+- Federal `15 U.S.C. §6501` `In effect since 2000`
   - Verifiable parental consent for under-13 personal data.
-  - `In effect since 2000`
-- State `Cal. Civ. §1798.120`
+- State `Cal. Civ. §1798.120` `Enforced 2023`
   - Opt-in for selling or sharing under-16 data; opt-out for over-16.
-  - `Enforced 2023`
-- Local `NYC §22-1201`
+- Local `NYC §22-1201` `Effective 2023`
   - Bias-audit obligation for AEDTs used in employment decisions.
-  - `Effective 2023`
 ```
 
 ##### `bands` — Horizontal bands
 
-Each jurisdiction is a full-width card stacked at equal height — an at-a-glance scorecard. Same card anatomy as the default (citation top-right, status bottom-left); only the arrangement differs.
+Each jurisdiction is a full-width card stacked at equal height — an at-a-glance scorecard. A row card: both pills ride the header line (citation left, status right). Only the arrangement differs from the default.
 
 ```markdown
 <!-- _class: statute-stack bands -->
 
 ## Children's data — at-a-glance scorecard.
 
-- Federal `15 U.S.C. §6501`
+- Federal `15 U.S.C. §6501` `In effect since 2000`
   - Verifiable parental consent for under-13 personal data.
-  - `In effect since 2000`
-- State `Cal. Civ. §1798.120`
+- State `Cal. Civ. §1798.120` `Enforced 2023`
   - Opt-in for selling or sharing under-16 data; opt-out for over-16.
-  - `Enforced 2023`
-- Local `NYC §22-1201`
+- Local `NYC §22-1201` `Effective 2023`
   - Bias-audit obligation for AEDTs used in employment decisions.
-  - `Effective 2023`
 ```
 
 ##### `preemption` — Preemption cascade
@@ -6979,15 +6973,12 @@ Vertical stack with a downward arrow between each card. Use when the slide must 
 
 ## Federal preemption — how the cascade flows.
 
-- Federal `15 U.S.C. §6501`
+- Federal `15 U.S.C. §6501` `Preempts state rules`
   - Sets the floor for under-13 personal data collection.
-  - `Preempts state rules`
-- State `Cal. Civ. §1798.120`
+- State `Cal. Civ. §1798.120` `Survives preemption`
   - Stricter opt-in regime on top of COPPA's baseline.
-  - `Survives preemption`
-- Local `NYC §22-1201`
+- Local `NYC §22-1201` `Independent of preemption`
   - Bias-audit obligation distinct from privacy preemption scope.
-  - `Independent of preemption`
 ```
 
 ##### `lane` — Markdown table

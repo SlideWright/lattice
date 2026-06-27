@@ -41,15 +41,12 @@ Citation hierarchy — federal / state / local rows with citation, headline obli
 
 ## Children's data — authority cascades downward.
 
-- Federal `15 U.S.C. §6501`
+- Federal `15 U.S.C. §6501` `In effect since 2000`
   - Verifiable parental consent for under-13 personal data.
-  - `In effect since 2000`
-- State `Cal. Civ. §1798.120`
+- State `Cal. Civ. §1798.120` `Enforced 2023`
   - Opt-in for selling or sharing under-16 data; opt-out for over-16.
-  - `Enforced 2023`
-- Local `NYC §22-1201`
+- Local `NYC §22-1201` `Effective 2023`
   - Bias-audit obligation for AEDTs used in employment decisions.
-  - `Effective 2023`
 
 
 ---
@@ -59,15 +56,12 @@ Citation hierarchy — federal / state / local rows with citation, headline obli
 
 ## Children's data — at-a-glance scorecard.
 
-- Federal `15 U.S.C. §6501`
+- Federal `15 U.S.C. §6501` `In effect since 2000`
   - Verifiable parental consent for under-13 personal data.
-  - `In effect since 2000`
-- State `Cal. Civ. §1798.120`
+- State `Cal. Civ. §1798.120` `Enforced 2023`
   - Opt-in for selling or sharing under-16 data; opt-out for over-16.
-  - `Enforced 2023`
-- Local `NYC §22-1201`
+- Local `NYC §22-1201` `Effective 2023`
   - Bias-audit obligation for AEDTs used in employment decisions.
-  - `Effective 2023`
 
 
 ---
@@ -77,15 +71,12 @@ Citation hierarchy — federal / state / local rows with citation, headline obli
 
 ## Federal preemption — how the cascade flows.
 
-- Federal `15 U.S.C. §6501`
+- Federal `15 U.S.C. §6501` `Preempts state rules`
   - Sets the floor for under-13 personal data collection.
-  - `Preempts state rules`
-- State `Cal. Civ. §1798.120`
+- State `Cal. Civ. §1798.120` `Survives preemption`
   - Stricter opt-in regime on top of COPPA's baseline.
-  - `Survives preemption`
-- Local `NYC §22-1201`
+- Local `NYC §22-1201` `Independent of preemption`
   - Bias-audit obligation distinct from privacy preemption scope.
-  - `Independent of preemption`
 
 
 ---
