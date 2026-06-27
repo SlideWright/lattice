@@ -14,8 +14,8 @@ make every slide a blank canvas, and humans are humans.
 
 The author writes the deck as a plain text file in Markdown — the same
 format GitHub READMEs use. For each slide, the author picks one of the
-named layouts ("split panel", "verdict grid", "big number"). The
-engine assembles the slide using those layouts and a shared color
+named components ("split panel", "verdict grid", "big number"). The
+engine assembles the slide using those components and a shared color
 palette. Every deck looks like it came from the same team — because,
 structurally, it did.
 
@@ -48,7 +48,7 @@ interactive tour of every layout — themable in any palette — see the
 
 ## A native vocabulary for every field
 
-The layouts aren't generic boxes. You write plain Markdown — a list, a
+The components aren't generic boxes. You write plain Markdown — a list, a
 table, a fenced code block, an inline `$x$` — and Lattice renders it in
 the notation your discipline already uses:
 
@@ -61,11 +61,11 @@ the notation your discipline already uses:
 - **Engineers and architects** — all 25 Mermaid diagram types, themed to
   the deck, plus state charts and side-by-side code diffs.
 - **Lawyers and compliance teams** — statute stacks, authority chains,
-  obligation matrices, citation cards, and regulatory-update layouts.
+  obligation matrices, citation cards, and regulatory-update components.
 - **Analysts** — radar, quadrant, KPI, stats, progress, pie, and
-  word-cloud layouts that turn numbers into an argument.
+  word-cloud components that turn numbers into an argument.
 
-Fifty-two layouts in all — and you reach every one of them with the
+Fifty-two components in all — and you reach every one of them with the
 same Markdown, never a new tool to learn.
 
 ## What changes for…

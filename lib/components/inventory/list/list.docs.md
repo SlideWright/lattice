@@ -59,7 +59,7 @@ Use when the items are genuinely a flat list of one-line points. The default ren
 └─────────────────────────────────────────┘
 ```
 
-## Variants (layout-specific)
+## Variants (component-specific)
 
 ### `takeaway` — Takeaway — hairline single-line points
 
@@ -151,7 +151,7 @@ Replaces the `principles` counter with a centered dot.
 
 ## Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This component accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 ## Related components
 

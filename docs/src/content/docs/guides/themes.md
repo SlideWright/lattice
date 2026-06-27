@@ -3,7 +3,7 @@ title: Themes & palettes
 description: How Lattice palettes work, the palettes that ship, and how to author your own.
 ---
 
-Lattice layouts are **palette-blind**: every color goes through a
+Lattice components are **palette-blind**: every color goes through a
 `var(--token)`. The engine (`lattice.css`) defines the structure; a
 *palette* supplies the tokens. Swapping palettes restyles every deck
 without touching a single layout.
@@ -27,9 +27,10 @@ Two palettes are the canonical pair:
   borders, dark slate ink. The default.
 - **`cuoio`** — warm leather. The warm counterpart.
 
-Beyond those, Lattice ships a full set of palettes — `ardesia`,
-`atelier`, `brina`, `burgundy`, `carbone`, `concrete`, `crepuscolo`,
-`laguna`, `magnolia`, `mustard`, `onyx` — most with a paired dark
+Beyond those, Lattice ships a full set — fourteen palettes in all,
+counting the canonical pair — `ardesia`, `atelier`, `brina`,
+`burgundy`, `carbone`, `carta`, `concrete`, `crepuscolo`, `laguna`,
+`magnolia`, `mustard`, `onyx` — most with a paired dark
 canvas variant. You can preview every one of them live: open the
 **[component reference](/components/)** and pick a palette
 from the dropdown. The whole catalog re-renders in that palette's real
@@ -54,5 +55,5 @@ fall back to unstyled rendering, which makes gaps easy to spot during
 development. Diagram theming comes for free: palette-blind per-diagram
 Mermaid overrides live in the engine and resolve against your tokens.
 
-See [`reference/theming.md`](https://github.com/slidewright/lattice/blob/main/reference/theming.md)
+See [`design/theming.md`](https://github.com/slidewright/lattice/blob/main/design/theming.md)
 in the repository for the full token reference and the Mermaid contract.

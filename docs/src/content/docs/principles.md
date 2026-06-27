@@ -86,7 +86,7 @@ the stage.
 ## 4. The colors live in one file
 
 Every color in a Lattice deck comes from a palette — one file, a short
-list of named roles. *Accent. Ink. Surface.* The layouts never name a
+list of named roles. *Accent. Ink. Surface.* The components never name a
 color directly; they ask the palette for the role and render whatever
 it hands back.
 
@@ -105,7 +105,7 @@ One palette, every deck. Change it once.
 A Lattice deck has no native binary. The source is Markdown, and the
 output is whatever the moment needs: a PDF for the board, a PPTX for
 the colleague who lives in PowerPoint, HTML for the web, an image when
-a doc needs a single slide. Same deck, same layouts — you pick the
+a doc needs a single slide. Same deck, same components — you pick the
 format at the end, you don't rewrite the deck to get it.
 
 The formats aren't all equal, and that's deliberate. PDF and HTML carry
@@ -150,7 +150,7 @@ archive for a stale figure. If you ever leave Lattice, every deck it
 made is still a plain PDF or HTML, sitting next to the Markdown that
 built it.
 Nothing locks shut behind you. And when the vocabulary runs out — when
-you need something the layouts don't offer — it's plain Markdown and
+you need something the components don't offer — it's plain Markdown and
 CSS underneath, and you can edit it directly.
 
 ## 7. The system carries the consistency. You carry the judgment.
@@ -198,7 +198,7 @@ The floor is Markdown, which you already know. A plain text file with
 no Lattice vocabulary still renders as a clean deck; you add a layout
 name when you want one, one at a time, with no cliff to fall off. From
 there, the tooling does the teaching. Your editor autocompletes the
-layouts. The gallery shows you each one rendered before you pick it. A
+components. The gallery shows you each one rendered before you pick it. A
 linter flags the handful of real footguns as you type, in the editor
 and in the browser, with the very same checks the engine runs.
 

@@ -49,7 +49,7 @@ The full Marpit pipeline, re-implemented as 7 modules:
 | `math.js` | marp-core math → KaTeX (ours) |
 | `index.js` | the orchestrator |
 
-On top sits the value-add Marp never had: 53 layouts, native charts, Mermaid, the
+On top sits the value-add Marp never had: 52 components, native charts, Mermaid, the
 token design system. Output formats (PDF / PPTX / PNG / HTML) flow through the
 owned CLI.
 

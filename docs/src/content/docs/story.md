@@ -39,7 +39,7 @@ building around it.
 A *lattice* is a frame of crossed members that holds everything it carries
 in alignment — rigid where it must be, open everywhere else. That's the
 engine: a structural frame for an argument, where every slide sits on the
-same grid, the same palette, the same deliberate layouts. You bring the
+same grid, the same palette, the same deliberate components. You bring the
 meaning; the lattice keeps it straight.
 
 *Style* is the other half, and it means two things at once. The literal
