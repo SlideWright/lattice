@@ -87,6 +87,40 @@ describe('overflow-probe', () => {
     assert.equal(r.scrollH, 700 + 200);
   });
 
+  test('a CENTRED cell whose scrollHeight under-reports is caught via child layout boxes', () => {
+    // The blind spot: `justify-content:center` content that overflows spills off BOTH
+    // edges; scrollHeight counts only the bottom half (here +6, under TOL), so the
+    // legacy test reads clean while the head is clipped. The child-box spill (60 above
+    // + 60 below the cell box) reveals the true 120px overflow.
+    const r0 = { width: 1280, height: 360 };
+    const centred = {
+      scrollHeight: 706, clientHeight: 700, scrollWidth: 1280, clientWidth: 1280,
+      getBoundingClientRect: () => ({ top: 100, bottom: 800, left: 0, right: 1280 }),
+      children: [
+        { getBoundingClientRect: () => ({ top: 40, bottom: 400, left: 0, right: 1280, ...r0 }) },   // spills 60 above
+        { getBoundingClientRect: () => ({ top: 400, bottom: 860, left: 0, right: 1280, ...r0 }) },   // spills 60 below
+      ],
+    };
+    const s = fakeSection({ scrollHeight: 700, clientHeight: 700, clientWidth: 1280, cells: [centred] });
+    const r = probeSectionOverflow(s, CLIP_CELL_SELECTOR, TOL);
+    assert.equal(r.over, true, 'centred overflow must be detected');
+    assert.equal(r.vOver, true);
+    assert.equal(r.scrollH, 700 + 120, 'effective extent folds in the true 120px spill');
+  });
+
+  test('a CENTRED cell that genuinely fits (children within the box) → no overflow', () => {
+    const fits = {
+      scrollHeight: 700, clientHeight: 700, scrollWidth: 1280, clientWidth: 1280,
+      getBoundingClientRect: () => ({ top: 100, bottom: 800, left: 0, right: 1280 }),
+      children: [
+        { getBoundingClientRect: () => ({ top: 150, bottom: 450, left: 0, right: 1280, width: 1280, height: 300 }) },
+        { getBoundingClientRect: () => ({ top: 460, bottom: 760, left: 0, right: 1280, width: 1280, height: 300 }) },
+      ],
+    };
+    const s = fakeSection({ scrollHeight: 700, clientHeight: 700, clientWidth: 1280, cells: [fits] });
+    assert.equal(probeSectionOverflow(s, CLIP_CELL_SELECTOR, TOL).over, false);
+  });
+
   test('CLIP_CELL_SELECTOR names the current bounded content cells', () => {
     assert.match(CLIP_CELL_SELECTOR, /\.cell-stage/);
     assert.match(CLIP_CELL_SELECTOR, /\.panel-right/);

@@ -2,7 +2,7 @@
 
 # inventory
 
-`10 components`
+`11 components`
 
 Inventory — parallel sets of related items.
 
@@ -94,6 +94,21 @@ Inventory — parallel sets of related items.
   - Personal information that identifies a person, now read broadly enough to cover device IDs, cookies, and IP addresses.
 - Processor
   - A party that processes data on the controller's instructions — a vendor, not the decision-maker.
+
+---
+
+<!-- _class: inventory -->
+
+`Framework · Four Components`
+
+## The system has four moving parts.
+
+- **Signal Intake.** Weekly structured collection across conversations and market data.
+- **Scoring Model.** Each signal scored on confidence, recency, and relevance.
+- **Decision Log.** Every call recorded with the signals that informed it.
+- **Calibration Loop.** Outcomes compared to predictions each cycle.
+
+> Signals without decisions are just noise.
 
 ---
 
