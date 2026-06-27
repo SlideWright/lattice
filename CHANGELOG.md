@@ -27,6 +27,18 @@ in patch versions.
 
 ### Added
 
+- **`compare-prose` and `code` adopt the stage cell — completing the standard-component
+  cell-tree migration.** Both migrate into the frame's bounded `.cell-stage` (the section
+  gains a flex-column stage so `compare-prose`'s two cards and `code`'s fenced block fill
+  it); `compare-prose`'s `vertical` variant now splits the stage evenly instead of
+  stranding its pair at the top. **`compare-prose`'s `❯` connector is rebuilt flex-native:**
+  it was an absolute chevron floated at 50/50 with a `var(--bg)` chip masking the gap —
+  now it's a real flex item bracketed between the cards by `order` (card · connector ·
+  card), a dedicated divider slot with no overlay and no mask. The `decision` variant's
+  DECISION tag loses its background and the connector slot is widened so the label sits in
+  the divide, clear of the cards. Closes the per-component migration
+  (`2026-06-26-frames-as-flex-cell-trees.md` §6) for the standard set.
+
 - **`authority-chain`, `statute-stack`, `verdict-grid` adopt the stage cell — and fill it.**
   Three more legal/comparison components migrate into the frame's bounded `.cell-stage`:
   the `verdict-grid` 2×2 fills the stage with `minmax(0,1fr)` rows on a flex-column cell;
