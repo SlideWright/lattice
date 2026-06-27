@@ -7027,7 +7027,7 @@ section.math .math-error {
 section.math:where(:not(.derivation):not(.theorem):not(.compare):not(.canvas):not(.matrix):not(.stats)),
 section.math.feature {
   grid-template-columns: 3fr 2fr;
-  padding-block: var(--sp-xl);
+  padding-bottom: var(--sp-xl);
 }
 section.math:where(:not(.derivation):not(.theorem):not(.compare):not(.canvas):not(.matrix):not(.stats)) > p:has(> .katex-display),
 section.math.feature > p:has(> .katex-display) {
@@ -7075,7 +7075,7 @@ section.math.derivation {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding-block: var(--sp-xl);
+  padding-bottom: var(--sp-xl);
   position: relative;
 }
 /* Heading taken out of flow (absolute, pinned top) so the proof-chain table
@@ -7084,9 +7084,11 @@ section.math.derivation {
 section.math.derivation > h2,
 section.math.derivation > h3 {
   /* left/right:auto keeps the heading at its in-flow (section-padded) horizontal
-   * position; only the vertical is pinned so the table centres beneath it. */
+   * position; only the vertical is pinned so the table centres beneath it. top clears
+   * the absolute header by the base section's header-clearance (6.875cqi = --sp-2xl +
+   * --sp-md), so the title sits the same distance below the eyebrow as on Form slides. */
   position: absolute;
-  top: var(--sp-xl);
+  top: calc(var(--sp-2xl) + var(--sp-md));
   padding: 0;
 }
 /* The proof chain centres vertically via the parent's
@@ -7167,15 +7169,17 @@ section.math.theorem {
    * would extend each card's --bg-alt fill. */
   justify-content: center;
   gap: var(--sp-sm);
-  padding-block: var(--sp-lg);
+  padding-bottom: var(--sp-lg);
   position: relative;
 }
 section.math.theorem > h2,
 section.math.theorem > h3 {
   /* left/right:auto keeps the heading at its in-flow (section-padded) horizontal
-   * position; only the vertical is pinned so the cards centre beneath it. */
+   * position; only the vertical is pinned so the cards centre beneath it. top clears
+   * the absolute header by the base section's header-clearance (6.875cqi = --sp-2xl +
+   * --sp-md), so the title sits the same distance below the eyebrow as on Form slides. */
   position: absolute;
-  top: var(--sp-lg);
+  top: calc(var(--sp-2xl) + var(--sp-md));
   padding: 0;
 }
 section.math.theorem blockquote {
@@ -7258,7 +7262,7 @@ section.math.compare {
    * the columns to the vertical middle of the slide so a short comparison
    * doesn't leave the bottom half empty. */
   align-content: center;
-  padding-block: var(--sp-lg);
+  padding-bottom: var(--sp-lg);
 }
 section.math.compare:has(h3:nth-of-type(3)) {
   column-count: 3;
@@ -7319,7 +7323,7 @@ section.math.canvas {
     "title   title"
     "eq      plot"
     "cap     plot";
-  padding-block: var(--sp-xl);
+  padding-bottom: var(--sp-xl);
 }
 section.math.canvas > p:has(> code:only-child):has(+ h2) { grid-area: eyebrow; }
 section.math.canvas > h2              { grid-area: title; }
@@ -7379,7 +7383,7 @@ section.math.canvas > p > img {
 section.math.matrix {
   grid-template-columns: 3fr 2fr;
   align-content: center;
-  padding-block: var(--sp-lg);
+  padding-bottom: var(--sp-lg);
 }
 section.math.matrix > p:has(> .katex-display) {
   grid-column: 1;
@@ -7424,7 +7428,7 @@ section.math.matrix > :is(ul, ol) > li > strong {
 section.math.matrix.decompose {
   display: block;
   align-content: center;
-  padding-block: var(--sp-lg);
+  padding-bottom: var(--sp-lg);
   text-align: center;
 }
 section.math.matrix.decompose > h2 {
@@ -7477,7 +7481,7 @@ section.math.stats {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding-block: var(--sp-xl);
+  padding-bottom: var(--sp-xl);
   gap: var(--sp-sm);
 }
 section.math.stats > h2 {

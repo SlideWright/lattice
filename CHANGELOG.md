@@ -315,6 +315,14 @@ in patch versions.
 
 ### Fixed
 
+- **`math` slide titles clear the running header again — uniform with every other slide.**
+  The no-margins centring rework had pinned the `derivation`/`theorem` heading at
+  `top: var(--sp-lg/xl)`, which sat *inside* the `LATTICE · MATH` eyebrow band (the title
+  visibly overlapped it). The pinned title now clears the header by the base section's
+  header-clearance (`calc(var(--sp-2xl) + var(--sp-md))` = 6.875cqi, the same berth Form
+  slides use), and every `math` variant swaps its `padding-block` override for
+  `padding-bottom` so the base top clearance is preserved instead of squeezed — so a math
+  headline sits the same distance below the eyebrow as a headline on any Form slide.
 - **Split frames no longer bleed their supporting panel past the wall — and the bleed is
   still *detected*.** The flex cell-tree's first frames (`2026-06-26-frames-as-flex-cell-trees.md`):
   `split-panel`'s `.panel-right` and `split-compare`'s `.compare-right` gain the
