@@ -111,7 +111,6 @@ harness the index can't infer, add it to `FRAMEWORKS` in the generator.
 | `test:authoring` | Unit scope: authoring helpers (speaker notes, …). |
 | `test:cli` | Unit scope: the CLI. |
 | `test:components` | Unit scope: component manifests + per-component logic. |
-| `test:contracts` | Unit scope: component manifest/slot contracts. |
 | `test:core` | Unit scope: lib/core/* (token resolver, splits, marp bundle, …). |
 | `test:coverage` | c8 coverage over the unit suite (→ .scratch/coverage/). |
 | `test:coverage:all` | c8 coverage over unit + integration. |

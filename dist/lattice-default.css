@@ -4237,6 +4237,144 @@ section.image[data-img-composition="statement"][data-orientation="square"] .imag
   width: auto; right: 6cqi; bottom: 6cqh;
 }
 
+/* === lib/components/inventory/inventory/inventory.styles.css === */
+/* inventory — one content shape, four interchangeable looks.
+ *
+ * The canonical inventory DOM (eyebrow `p>code` · `h2` · `ul>li` with a `<strong>`
+ * lead · trailing `blockquote`) renders four ways; the author swaps the look with a
+ * variant class — no re-author, no JS. Palette-blind: every value is a var(--token).
+ *
+ * DEFAULT = ledger (bare `inventory`). The three variant looks are mutually
+ * EXCLUSIVE structures (not incremental tweaks), so the default is scoped
+ * `:not(.cards):not(.timeline):not(.editorial)` — otherwise its numbered-counter
+ * and row-rule declarations would leak onto the variant looks.
+ *
+ * Under Form (the default), the eyebrow + h2 LIFT into the masthead band and the
+ * remaining body (the `ul` + insight `blockquote`) is wrapped in the frame's
+ * `.cell-stage` cell — so `inventory` is registered STAGE_MIGRATED
+ * (masthead.transform.js) and these rules address `section.inventory[.variant] >
+ * .cell-stage > …`, the same idiom every component uses. */
+
+/* ── Default · LEDGER — numbered rows, hairline rules, accent insight band ──
+ * The stage centres the whole [rows + insight band] group. The ul sizes to its rows
+ * (no `flex:1`) so the band is never pushed past the bounded stage's clip edge — a
+ * `flex:1` list would eat the column and shove the band out of view. */
+section.inventory:not(.cards):not(.timeline):not(.editorial) > .cell-stage {
+  display: flex; flex-direction: column; justify-content: safe center;
+}
+section.inventory:not(.cards):not(.timeline):not(.editorial) > .cell-stage > ul {
+  /* Bottom pad = the insight band's gap, parked on this no-bg ul so the band's
+   * background doesn't extend up into the gap (HARD RULE #20). Row rhythm is tuned to
+   * seat four rows + the band inside the bounded stage under Form, where the masthead
+   * claims the height that let the legacy slide-height layout breathe. */
+  list-style: none; padding: 0 0 var(--sp-xs);
+  display: flex; flex-direction: column; counter-reset: r;
+}
+section.inventory:not(.cards):not(.timeline):not(.editorial) > .cell-stage > ul > li {
+  counter-increment: r; position: relative; list-style: none;
+  padding: var(--sp-3xs) 0 var(--sp-3xs) 5cqi;
+  border-bottom: 1px solid var(--border); font-size: var(--fs-body); color: var(--text-body);
+}
+section.inventory:not(.cards):not(.timeline):not(.editorial) > .cell-stage > ul > li::before {
+  content: counter(r, decimal-leading-zero); position: absolute; left: 0; top: var(--sp-2xs);
+  font-family: var(--font-mono); font-size: var(--fs-h3); font-weight: 600; color: var(--accent);
+}
+section.inventory:not(.cards):not(.timeline):not(.editorial) > .cell-stage > ul > li strong {
+  display: block; font-family: var(--font-display); font-size: var(--fs-h3);
+  font-weight: 700; color: var(--text-heading); padding-bottom: var(--sp-3xs);
+}
+section.inventory:not(.cards):not(.timeline):not(.editorial) > .cell-stage > blockquote {
+  /* Top gap supplied by the ul's bottom-padding above (band has a background). */
+  padding: var(--sp-xs) var(--sp-md);
+  background: var(--accent); color: var(--on-accent); border-radius: var(--radius-md);
+  font-size: var(--fs-message); font-weight: 600;
+}
+
+/* ── Variant · CARDS — equal grid, insight as a centred pull-quote ──
+ * Stage centres [card grid + pull-quote]; the grid sizes to its rows so the quote
+ * stays inside the bounded stage (see ledger note on dropping `flex:1`). */
+section.inventory.cards > .cell-stage { display: flex; flex-direction: column; justify-content: safe center; }
+section.inventory.cards > .cell-stage > ul {
+  /* sp-sm tops (not sp-md) so a 2×2 grid + the pull-quote (incl. its closing-quote
+   * ::after) seats inside the bounded stage under Form — the masthead claims the
+   * height the legacy slide-height layout had. */
+  list-style: none; padding: var(--sp-xs) 0 0;
+  display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-xs);
+}
+section.inventory.cards > .cell-stage > ul > li {
+  list-style: none; background: var(--bg-alt); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: var(--sp-xs) var(--sp-md);
+  font-size: var(--fs-body); color: var(--text-body);
+}
+section.inventory.cards > .cell-stage > ul > li strong {
+  display: block; font-family: var(--font-display); font-size: var(--fs-h3);
+  font-weight: 700; color: var(--text-heading); padding-bottom: var(--sp-2xs);
+}
+section.inventory.cards > .cell-stage > blockquote {
+  padding: var(--sp-xs) 0 0; text-align: center; font-family: var(--font-display);
+  font-style: italic; font-size: var(--fs-message); color: var(--accent);
+}
+section.inventory.cards > .cell-stage > blockquote::before { content: '\201C'; }
+section.inventory.cards > .cell-stage > blockquote::after  { content: '\201D'; }
+
+/* ── Variant · TIMELINE — horizontal numbered run, insight above ──
+ * Stage centres [insight + horizontal run]; the run sizes to its content. */
+section.inventory.timeline > .cell-stage { display: flex; flex-direction: column; justify-content: safe center; }
+section.inventory.timeline > .cell-stage > blockquote {
+  order: -1; text-align: center; font-family: var(--font-display);
+  font-size: var(--fs-message); color: var(--text-muted); padding: 0 0 var(--sp-md);
+}
+section.inventory.timeline > .cell-stage > ul {
+  list-style: none; padding: var(--sp-md) 0 0;
+  display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr);
+  gap: var(--sp-lg); counter-reset: t;
+}
+section.inventory.timeline > .cell-stage > ul > li {
+  counter-increment: t; position: relative; list-style: none;
+  padding-top: 4.5cqi; font-size: var(--fs-body-compact); color: var(--text-body);
+}
+section.inventory.timeline > .cell-stage > ul > li::before {
+  content: counter(t); position: absolute; top: 0; left: 0; width: 3cqi; height: 3cqi;
+  border-radius: 50%; background: var(--accent); color: var(--on-accent);
+  display: grid; place-items: center; font-family: var(--font-mono);
+  font-weight: 600; font-size: var(--fs-body-compact); z-index: 2;
+}
+section.inventory.timeline > .cell-stage > ul > li::after {
+  content: ''; position: absolute; top: 1.5cqi; left: 3cqi; right: calc(var(--sp-lg) * -1);
+  height: 2px; background: var(--border);
+}
+section.inventory.timeline > .cell-stage > ul > li:last-child::after { display: none; }
+section.inventory.timeline > .cell-stage > ul > li strong {
+  display: block; font-family: var(--font-display); font-size: var(--fs-h3);
+  font-weight: 700; color: var(--text-heading); padding-bottom: var(--sp-2xs);
+}
+
+/* ── Variant · EDITORIAL — magazine split (insight | ruled items) ──
+ * The title + eyebrow ride the masthead band (lifted under Form), so the stage
+ * holds the two-column split: the accent-ruled insight beside the ruled item
+ * column. (Pre-Form this split also carried the title in the left rail; the
+ * masthead now owns the title, and the split reads as insight ∥ items.) */
+section.inventory.editorial > .cell-stage {
+  display: grid; grid-template-columns: 1fr 1.25fr; column-gap: var(--sp-2xl); align-content: safe center;
+}
+section.inventory.editorial > .cell-stage > blockquote {
+  grid-column: 1; align-self: center;
+  font-family: var(--font-display); font-style: italic; font-size: var(--fs-message);
+  color: var(--accent); border-left: 0.3cqi solid var(--accent); padding-left: var(--sp-md);
+}
+section.inventory.editorial > .cell-stage > ul {
+  grid-column: 2; list-style: none; padding: 0;
+  display: flex; flex-direction: column; justify-content: safe center; gap: var(--sp-md);
+}
+section.inventory.editorial > .cell-stage > ul > li {
+  list-style: none; padding-left: var(--sp-md); border-left: 2px solid var(--border);
+  font-size: var(--fs-body); color: var(--text-body);
+}
+section.inventory.editorial > .cell-stage > ul > li strong {
+  display: block; font-family: var(--font-display); font-size: var(--fs-message);
+  font-weight: 700; color: var(--text-heading); padding-bottom: var(--sp-3xs);
+}
+
 /* === lib/components/chart/journey/journey.styles.css === */
 /* journey — progression.timeline.structure
  *
@@ -16525,140 +16663,6 @@ section.form .tile-watermark {
 }
 section.form.dark .tile-watermark,
 section.dark.form .tile-watermark { color: var(--on-dark-watermark); }
-
-/* === lib/contracts/inventory/inventory.layouts.css === */
-/* Inventory contract — conforming Layouts (Form).
- *
- * Four css-only Layouts that style the SAME canonical inventory DOM (eyebrow
- * `p>code` · `h2` · `ul>li` with a `<strong>` lead · trailing `blockquote`),
- * so an author swaps the look by changing one class — no re-author, no JS.
- * Palette-blind: every value is a var(--token). See
- * engineering/decisions/2026-06-12-contracts-layout-swapping.md and
- * lib/contracts/inventory/inventory.contract.json.
- *
- * Bundled via TAIL_SOURCES in tools/build-css.js. Under Form (default), the
- * eyebrow + h2 LIFT into the masthead band and the remaining body (the `ul` and
- * the insight `blockquote`) is wrapped in the frame's `.cell-stage` cell — so
- * these layouts are registered as STAGE_MIGRATED (masthead.transform.js) and
- * address `section.layout-* > .cell-stage > …`, the same idiom every migrated
- * component uses (issue 558). The eyebrow + h2 keep their base styling in the band;
- * these rules arrange the items + insight inside the stage, which is where the
- * looks diverge. */
-
-/* ── Layout · LEDGER — numbered rows, hairline rules, accent insight band ── */
-/* The stage centres the whole [rows + insight band] group. The ul sizes to its rows
- * (no `flex:1`) so the band is never pushed past the bounded stage's clip edge — a
- * `flex:1` list would eat the column and shove the band out of view. */
-section.layout-ledger > .cell-stage { display: flex; flex-direction: column; justify-content: center; }
-section.layout-ledger > .cell-stage > ul {
-  /* Bottom pad = the insight band's old `margin-top`, parked on this no-bg ul so the
-   * band's background doesn't extend up into the gap (HARD RULE #20). Row rhythm is
-   * tuned to seat four rows + the band inside the bounded stage under Form, where the
-   * masthead claims the height that let the legacy slide-height layout breathe. */
-  list-style: none; padding: 0 0 var(--sp-sm);
-  display: flex; flex-direction: column; counter-reset: r;
-}
-section.layout-ledger > .cell-stage > ul > li {
-  counter-increment: r; position: relative; list-style: none;
-  padding: var(--sp-2xs) 0 var(--sp-2xs) 5cqi;
-  border-bottom: 1px solid var(--border); font-size: var(--fs-body); color: var(--text-body);
-}
-section.layout-ledger > .cell-stage > ul > li::before {
-  content: counter(r, decimal-leading-zero); position: absolute; left: 0; top: var(--sp-2xs);
-  font-family: var(--font-mono); font-size: var(--fs-h3); font-weight: 600; color: var(--accent);
-}
-section.layout-ledger > .cell-stage > ul > li strong {
-  display: block; font-family: var(--font-display); font-size: var(--fs-h3);
-  font-weight: 700; color: var(--text-heading); padding-bottom: var(--sp-3xs);
-}
-section.layout-ledger > .cell-stage > blockquote {
-  /* Top gap supplied by the ul's bottom-padding above (band has a background). */
-  padding: var(--sp-sm) var(--sp-md);
-  background: var(--accent); color: var(--on-accent); border-radius: var(--radius-md);
-  font-size: var(--fs-message); font-weight: 600;
-}
-
-/* ── Layout · CARDS — equal grid, insight as a centred pull-quote ── */
-/* Stage centres [card grid + pull-quote]; the grid sizes to its rows so the quote
- * stays inside the bounded stage (see ledger note on dropping `flex:1`). */
-section.layout-cards > .cell-stage { display: flex; flex-direction: column; justify-content: center; }
-section.layout-cards > .cell-stage > ul {
-  list-style: none; padding: var(--sp-md) 0 0;
-  display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-md);
-}
-section.layout-cards > .cell-stage > ul > li {
-  list-style: none; background: var(--bg-alt); border: 1px solid var(--border);
-  border-radius: var(--radius-lg); padding: var(--sp-md);
-  font-size: var(--fs-body); color: var(--text-body);
-}
-section.layout-cards > .cell-stage > ul > li strong {
-  display: block; font-family: var(--font-display); font-size: var(--fs-h3);
-  font-weight: 700; color: var(--text-heading); padding-bottom: var(--sp-xs);
-}
-section.layout-cards > .cell-stage > blockquote {
-  padding: var(--sp-md) 0 0; text-align: center; font-family: var(--font-display);
-  font-style: italic; font-size: var(--fs-message); color: var(--accent);
-}
-section.layout-cards > .cell-stage > blockquote::before { content: '\201C'; }
-section.layout-cards > .cell-stage > blockquote::after  { content: '\201D'; }
-
-/* ── Layout · TIMELINE — horizontal numbered run, insight above ── */
-/* Stage centres [insight + horizontal run]; the run sizes to its content. */
-section.layout-timeline > .cell-stage { display: flex; flex-direction: column; justify-content: center; }
-section.layout-timeline > .cell-stage > blockquote {
-  order: -1; text-align: center; font-family: var(--font-display);
-  font-size: var(--fs-message); color: var(--text-muted); padding: 0 0 var(--sp-md);
-}
-section.layout-timeline > .cell-stage > ul {
-  list-style: none; padding: var(--sp-md) 0 0;
-  display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr);
-  gap: var(--sp-lg); counter-reset: t;
-}
-section.layout-timeline > .cell-stage > ul > li {
-  counter-increment: t; position: relative; list-style: none;
-  padding-top: 4.5cqi; font-size: var(--fs-body-compact); color: var(--text-body);
-}
-section.layout-timeline > .cell-stage > ul > li::before {
-  content: counter(t); position: absolute; top: 0; left: 0; width: 3cqi; height: 3cqi;
-  border-radius: 50%; background: var(--accent); color: var(--on-accent);
-  display: grid; place-items: center; font-family: var(--font-mono);
-  font-weight: 600; font-size: var(--fs-body-compact); z-index: 2;
-}
-section.layout-timeline > .cell-stage > ul > li::after {
-  content: ''; position: absolute; top: 1.5cqi; left: 3cqi; right: calc(var(--sp-lg) * -1);
-  height: 2px; background: var(--border);
-}
-section.layout-timeline > .cell-stage > ul > li:last-child::after { display: none; }
-section.layout-timeline > .cell-stage > ul > li strong {
-  display: block; font-family: var(--font-display); font-size: var(--fs-h3);
-  font-weight: 700; color: var(--text-heading); padding-bottom: var(--sp-2xs);
-}
-
-/* ── Layout · EDITORIAL — magazine split (insight | ruled items) ──
- * The title + eyebrow ride the masthead band (lifted under Form), so the stage
- * holds the two-column split: the accent-ruled insight beside the ruled item
- * column. (Pre-Form this split also carried the title in the left rail; the
- * masthead now owns the title, and the split reads as insight ∥ items.) */
-section.layout-editorial > .cell-stage {
-  display: grid; grid-template-columns: 1fr 1.25fr; column-gap: var(--sp-2xl); align-content: center;
-}
-section.layout-editorial > .cell-stage > blockquote {
-  grid-column: 1; align-self: center;
-  font-family: var(--font-display); font-style: italic; font-size: var(--fs-message);
-  color: var(--accent); border-left: 0.3cqi solid var(--accent); padding-left: var(--sp-md);
-}
-section.layout-editorial > .cell-stage > ul {
-  grid-column: 2; list-style: none; padding: 0;
-  display: flex; flex-direction: column; justify-content: center; gap: var(--sp-md);
-}
-section.layout-editorial > .cell-stage > ul > li {
-  list-style: none; padding-left: var(--sp-md); border-left: 2px solid var(--border);
-  font-size: var(--fs-body); color: var(--text-body);
-}
-section.layout-editorial > .cell-stage > ul > li strong {
-  display: block; font-family: var(--font-display); font-size: var(--fs-message);
-  font-weight: 700; color: var(--text-heading); padding-bottom: var(--sp-3xs);
-}
 
 /* === lib/integrations/mermaid/mermaid.css === */
 /* _diagram-overrides.css — Mermaid SVG selectors, palette-blind.

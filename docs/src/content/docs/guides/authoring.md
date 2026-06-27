@@ -65,21 +65,22 @@ any Lattice palette. The same content is also available as a single
 
 ## Swappable renderings (variants)
 
-A few components share one authored content shape but offer several
-interchangeable looks — you change one class and the same Markdown re-renders
-a different way, no re-authoring. The **inventory** content shape (an eyebrow,
-a title, a bulleted list with bold leads, and a closing insight) has four such
-renderings:
+Some components offer several interchangeable looks over one authored content
+shape — you change one class and the same Markdown re-renders a different way,
+no re-authoring. The **`inventory`** component (an eyebrow, a title, a bulleted
+list with bold leads, and a closing insight) is the clearest example: its
+default is a numbered **ledger**, and three variants restyle the identical
+content:
 
-- `layout-ledger` — numbered rows with hairline rules and an accent insight band
-- `layout-cards` — an equal grid of cards with the insight as a centred pull-quote
-- `layout-timeline` — a horizontal numbered run with the insight above
-- `layout-editorial` — a magazine split: the insight beside a ruled item column
+- `inventory` — the default: numbered rows with hairline rules and an accent insight band
+- `inventory cards` — an equal grid of cards with the insight as a centred pull-quote
+- `inventory timeline` — a horizontal numbered run with the insight above
+- `inventory editorial` — a magazine split: the insight beside a ruled item column
 
-Write the list once, then swap `<!-- _class: layout-ledger -->` for
-`layout-cards` (and so on) to try each. These are variants of one content
-shape, not separate components, so they aren't part of the 52-component count.
-See [`examples/contract-inventory.md`](https://github.com/slidewright/lattice/blob/main/examples/contract-inventory.md)
+Write the list once, then swap `<!-- _class: inventory -->` for
+`inventory cards` (and so on) to try each. The variants are looks of the one
+`inventory` component, so they don't add to the component count.
+See [`examples/inventory.md`](https://github.com/slidewright/lattice/blob/main/examples/inventory.md)
 for one deck that renders the same content all four ways.
 
 ## The card-style nesting rule

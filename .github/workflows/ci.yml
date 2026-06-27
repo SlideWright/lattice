@@ -102,7 +102,7 @@ jobs:
 
   # ── Unit + artifact-freshness — code changes only ──────────────────────
   # The engines claim is `>=22`. The FULL unit suite runs on 22; on 24 a
-  # representative engine smoke subset (core/engine/parsing/contracts/
+  # representative engine smoke subset (core/engine/parsing/
   # transformers) confirms cross-version compat without paying 2× the whole
   # suite — pure-JS Node-version risk is low and concentrated in the engine
   # paths. See engineering/decisions/2026-06-17-workflow-efficiency-review.md §D.
@@ -142,10 +142,10 @@ jobs:
         run: npm test
       - name: Unit tests (engine + export smoke subset)
         if: matrix.node-version != 22
-        # core/engine/parsing/contracts/transformers cover the render kernels;
+        # core/engine/parsing/transformers cover the render kernels;
         # export/ is added because PPTX/PDF export leans on Node stream/buffer/
         # zip/child-process APIs — the most Node-version-sensitive non-engine area.
-        run: node --test 'test/unit/core/*.test.js' 'test/unit/engine/*.test.js' 'test/unit/parsing/*.test.js' 'test/unit/contracts/*.test.js' 'test/unit/transformers/*.test.js' 'test/unit/export/*.test.js'
+        run: node --test 'test/unit/core/*.test.js' 'test/unit/engine/*.test.js' 'test/unit/parsing/*.test.js' 'test/unit/transformers/*.test.js' 'test/unit/export/*.test.js'
 
   # ── Integration — code changes only ────────────────────────────────────
   # The only tier that renders, so the only one that needs Chromium — cached

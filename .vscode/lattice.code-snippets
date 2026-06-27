@@ -337,6 +337,24 @@
     ],
     "description": "Image as the slide's anchor, with optional text alongside — composition adapts to the asset and the deck."
   },
+  "lattice: inventory": {
+    "prefix": "lattice-inventory",
+    "body": [
+      "<!-- _class: inventory -->",
+      "",
+      "`Eyebrow`",
+      "",
+      "## Slide heading.",
+      "",
+      "- **First entry.** One-sentence description.",
+      "- **Second entry.** One-sentence description.",
+      "- **Third entry.** One-sentence description.",
+      "- **Fourth entry.** One-sentence description.",
+      "",
+      "> Optional trailing insight."
+    ],
+    "description": "A parallel set of related items of similar weight — one content shape, four interchangeable looks."
+  },
   "lattice: journey": {
     "prefix": "lattice-journey",
     "body": [

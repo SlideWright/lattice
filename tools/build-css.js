@@ -131,20 +131,6 @@ const BUILD_SOURCE = 'lib/base/base.build.css';
 // boxes), palette-blind via var(--…). Tail tier so its section.sketch …
 // selectors compose on top of every component. See lib/base/base.sketch.css.
 const SKETCH_SOURCE = 'lib/base/base.sketch.css';
-// Contract-tier Layout CSS — every lib/contracts/<fn>/<fn>.layouts.css, the
-// css-only Layouts that style each contract's canonical DOM (a sibling tier to
-// components; see lib/contracts/). Bundled after base.variants so they win at
-// equal specificity, like components.
-const CONTRACT_LAYOUT_SOURCES = (() => {
-  const dir = path.join(ROOT, 'lib', 'contracts');
-  if (!fs.existsSync(dir)) return [];
-  return fs.readdirSync(dir, { withFileTypes: true })
-    .filter((d) => d.isDirectory())
-    .map((d) => `lib/contracts/${d.name}/${d.name}.layouts.css`)
-    .filter((rel) => fs.existsSync(path.join(ROOT, rel)))
-    .sort();
-})();
-
 // Self-contained Form CSS — every lib/forms/{cell,tile}/<id>/<id>.css. A Cell or
 // Tile that owns its CSS (issue #356, the self-containment reframing) drops a
 // sheet in its folder; the build picks it up by glob, so adding/removing a Cell
@@ -171,7 +157,6 @@ const TAIL_SOURCES = [
   'lib/base/base.variants.css',
   ...FORMS_CELL_CSS_SOURCES,
   ...FORMS_TILE_CSS_SOURCES,
-  ...CONTRACT_LAYOUT_SOURCES,
   'lib/integrations/mermaid/mermaid.css',
   // Fluid-box viewer mode — inert unless :root[data-lattice-view="fluid"] is set
   // (lattice-emulator --fluid + the runtime fluid controller). Last so its

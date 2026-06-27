@@ -45,6 +45,21 @@ in patch versions.
   `gantt-retired-delimiter` (the retired `→`/`–`/`->` span delimiter → `..`), plus
   `applyAllFixes(source, vocab)` for batch application — shared by the editor, the
   Architect panel, and the CLI. `applyFix` now preserves the fixed line's indentation.
+- **`inventory` is now a real component — one content shape, four looks (the 53rd component).**
+  **Breaking:** the contract-tier classes `layout-ledger` / `layout-cards` / `layout-timeline` /
+  `layout-editorial` are retired; author `<!-- _class: inventory -->` (the default numbered
+  ledger) and the variants `inventory cards` / `inventory timeline` / `inventory editorial`
+  instead. The four looks always rendered the byte-identical inventory DOM (eyebrow · title ·
+  bold-lead items · insight); they were a separate "contract" tier that no count or doc surfaced
+  and that broke under Form. Promoting them to a first-class component with a default + three
+  variants means they now appear in the manifest, the component reference + machine catalog
+  (`dist/docs/components.json`), the playground autocomplete, and the count (**52 → 53
+  components**) — like every other component. The standalone contract machinery
+  (`lib/contracts/`, `layoutClasses()`, the contract drift-test union, the `CONTRACT_LAYOUT_SOURCES`
+  CSS bundle hook) is retired with it; `engine: inventory` registers as `STAGE_MIGRATED` so the
+  looks render bounded under Form. The demo deck moves `examples/contract-inventory.md` →
+  `examples/inventory.md`. Verified all four looks render light + dark.
+- **The library self-hosts its fonts — zero network dependency.** The engine no
   longer reaches for a CDN at render time: the Google-Fonts `@import` is replaced
   by a self-hosted `@font-face` block built from a canonical manifest
   (`lib/fonts/text-faces.js`), with the 17 text faces **and** KaTeX's 20 math faces
@@ -364,6 +379,18 @@ in patch versions.
 
 ### Fixed
 
+- **The overflow probe now catches centred (and bottom-anchored) content that clips its
+  head.** `lib/core/overflow-probe.js` measured a bounded content cell's overflow as
+  `scrollHeight - clientHeight`, which silently UNDER-reports a `justify-content: center`
+  body: content clipped off the *top* sits at a negative offset `scrollHeight` never
+  counts, so a too-tall centred cell read as ~half its real overflow — or zero — and the
+  red ring, the export "Overflows" warning, and runtime autosplit all stayed quiet while
+  the slide visibly clipped its title. The probe now also measures the true content spill
+  past the cell box from the children's layout rects (`getBoundingClientRect`, which
+  returns the layout box regardless of clip) and takes the larger of the two — flex-start
+  stays correct, centre / flex-end get caught. (Surfaced while fixing an `inventory`
+  sample that clipped its head under `center`; the single-sourced probe feeds the preview
+  watcher, the export watcher, and autosplit, so the fix lands everywhere at once.)
 - **Docs say "component", and the counts/links are honest.** Standardized the user-facing
   vocabulary on **component** (retiring "layout" as a synonym) across the README, the docs-site
   pages and guides, `AGENTS.md`, and the component-reference generator — so a reader meets one

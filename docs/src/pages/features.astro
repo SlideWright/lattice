@@ -7,7 +7,7 @@
 // area, with a details column. Same table styling as the comparison matrix, but
 // "just Lattice" (no competitor columns). Static, zero client JS.
 //
-// Honesty bar: every count/name is verified against the repo — 52 components /
+// Honesty bar: every count/name is verified against the repo — 53 components /
 // 12 buckets (the `_chart-family` partial is internal, excluded), 14 editorial
 // palettes (+ 4 colour-blind-safe),
 // 29 treatments (18 tint + 11 mark), 12-token type scale, 25 Mermaid types.
@@ -33,7 +33,7 @@ const CATALOG = [
 		cat: 'Authoring',
 		rows: [
 			['Plain-Markdown source', 'Write decks in the Markdown you already know. No GUI, no proprietary file, no boxes to nudge.'],
-			['52 components, 12 buckets', 'Pick a component per slide by intent; the engine composes it. Full catalog two sections down.'],
+			['53 components, 12 buckets', 'Pick a component per slide by intent; the engine composes it. Full catalog two sections down.'],
 			['Function · Form · Substance · Finish', 'A four-axis vocabulary for choosing a component by what it’s for — not by scrolling a gallery.'],
 			['Nested-list slots', 'Structured titles and bodies come from ordinary Markdown lists. No drawing tools.'],
 			['Front-matter directives', 'Set theme, header, footer, pagination, eyebrow, and subtitle once; they apply deck-wide.'],
@@ -45,7 +45,7 @@ const CATALOG = [
 		rows: [
 			['Anchor (3)', 'title · divider · closing'],
 			['Statement (4)', 'content · big-number · quote · split-panel'],
-			['Inventory (10)', 'cards-grid · cards-stack · agenda · checklist · glossary · list · list-tabular · logo-wall · actors · q-and-a'],
+			['Inventory (11)', 'inventory · cards-grid · cards-stack · agenda · checklist · glossary · list · list-tabular · logo-wall · actors · q-and-a'],
 			['Comparison (8)', 'compare-prose · compare-table · matrix-2x2 · verdict-grid · decision · pricing · redline · split-compare'],
 			['Progression (2)', 'list-steps · list-criteria'],
 			['Evidence (2)', 'kpi · stats'],
@@ -116,7 +116,7 @@ const CATALOG = [
 		<title>Features — the full Lattice capability catalog</title>
 		<meta
 			name="description"
-			content="A scannable, segmented catalog of everything Lattice does: 52 field-native components across 12 buckets, 14 palettes with guaranteed WCAG-AA, one source rendered pixel-identical to PDF/PPTX/PNG/HTML, a deck that behaves like code, native diagrams and math, AI authoring, and MIT/offline/no-lock-in."
+			content="A scannable, segmented catalog of everything Lattice does: 53 field-native components across 12 buckets, 14 palettes with guaranteed WCAG-AA, one source rendered pixel-identical to PDF/PPTX/PNG/HTML, a deck that behaves like code, native diagrams and math, AI authoring, and MIT/offline/no-lock-in."
 		/>
 		<link rel="icon" type="image/svg+xml" href={url('favicon.svg')} />
 		<script is:inline>
@@ -210,7 +210,7 @@ const CATALOG = [
 						</table>
 					</div>
 					<p class="mt-4 text-[13px] leading-[1.6] text-muted-foreground">
-						52 components across 12 buckets · 14 palettes (light + dark) · four output formats from one source.
+						53 components across 12 buckets · 14 palettes (light + dark) · four output formats from one source.
 						Counts are live against the engine — see the <a href={url('components/')} class="font-semibold text-primary hover:underline">component reference</a> for every component with a live preview.
 					</p>
 				</div>
@@ -232,7 +232,7 @@ const CATALOG = [
 							class="group block rounded-xl border border-border bg-card p-[24px] text-card-foreground shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary hover:shadow-lg"
 						>
 							<h3 class="mb-2 font-[var(--font-body)] text-[18px] font-semibold tracking-[-0.01em] text-[var(--text-heading)]">Browse the components</h3>
-							<p class="m-0 text-[14.5px] text-foreground">All 52 components, live and themable in every palette.</p>
+							<p class="m-0 text-[14.5px] text-foreground">All 53 components, live and themable in every palette.</p>
 						</a>
 						<a
 							href={url('getting-started/')}
