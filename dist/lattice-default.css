@@ -944,11 +944,15 @@ section.actors > .cell-stage > ol {
 }
 section.actors > .cell-stage > ul > li,
 section.actors > .cell-stage > ol > li {
-  display:grid;
-  grid-template-columns:1fr auto;
+  /* flex mirror of `grid-template-columns:1fr auto` + a full-width second row: the header
+   * (strong + chip) rides row 1, the body wraps to row 2 at flex-basis:100% (flex shop §11.A,
+   * the two-cells-then-full-width pattern). */
+  display:flex;
+  flex-wrap:wrap;
   column-gap:var(--sp-md);
   row-gap:var(--sp-xs);
   align-items:center;
+  align-content:center;
   /* Rows distribute to fill the bounded stage (flex cell-tree §6) — uniform card
    * heights that fit the shorter stage instead of natural-height rows that overran
    * it. min-height:0 lets a dense deck compress gracefully rather than clip. */
@@ -964,7 +968,7 @@ section.actors > .cell-stage > ol > li::marker { content:''; }
 /* Strong = primary header (responsibility / capability), left-aligned. */
 section.actors > .cell-stage > ul > li > strong,
 section.actors > .cell-stage > ol > li > strong {
-  grid-column:1; grid-row:1;
+  flex:1 1 auto;
   font-size:var(--fs-body);
   font-weight:700;
   color:var(--text-heading);
@@ -980,8 +984,8 @@ section.actors > .cell-stage > ol > li > strong {
  * pigments) and indaco (cool L≈32 deeps) ship balanced sets. */
 section.actors > .cell-stage > ul > li > code,
 section.actors > .cell-stage > ol > li > code {
-  grid-column:2; grid-row:1;
-  justify-self:end;
+  flex:0 0 auto;
+  /* right-anchored on the header row by the universal pill rule's margin-left:auto. */
   display:inline-flex; align-items:center;
   letter-spacing:0.04em;
   padding:3px 11px;
@@ -1007,7 +1011,7 @@ section.actors > .cell-stage > ul > li > ul,
 section.actors > .cell-stage > ol > li > ul,
 section.actors > .cell-stage > ul > li > ol,
 section.actors > .cell-stage > ol > li > ol {
-  grid-column:1 / -1; grid-row:2;
+  flex:0 0 100%;
   list-style:none; padding:0; margin:0;
 }
 section.actors > .cell-stage > ul > li > ul > li,
@@ -1027,17 +1031,16 @@ section.actors > .cell-stage > ol > li > ol > li {
    cell). The doubled class `.actors.actors` clears the base `> :is(ul,ol) > li`
    grid placement. */
 @container lattice (aspect-ratio <= 0.9) {
-  section.actors.actors > .cell-stage > :is(ul, ol) > li { grid-template-columns: 1fr; }
-  /* Drop the chip onto its own line, hanging at the LEFT under the responsibility.
-     The universal pill rule (base.modifiers) sets `margin-left: auto` to right-anchor
-     the chip on one line; cancel it so `justify-self: start` can take effect (an auto
-     margin otherwise beats justify-self in grid). */
+  /* Collapse to a single column: the responsibility fills row 1 (flex-basis:100%), so the
+     chip and body each wrap onto their own line below it. */
+  section.actors.actors > .cell-stage > :is(ul, ol) > li > strong { flex: 0 0 100%; }
+  /* Drop the chip onto its own line, hanging at the LEFT under the responsibility. The
+     universal pill rule (base.modifiers) sets `margin-left: auto` to right-anchor the chip;
+     cancel it so the chip sits left on its own wrapped line. */
   section.actors.actors > .cell-stage > ul > li > code,
   section.actors.actors > .cell-stage > ol > li > code {
-    grid-column: 1; grid-row: 2; justify-self: start;
     margin-left: 0; margin-top: var(--sp-2xs);
   }
-  section.actors.actors > .cell-stage > :is(ul, ol) > li > :is(ul, ol) { grid-row: 3; }
 }
 
 /* === lib/components/inventory/agenda/agenda.styles.css === */
@@ -1159,11 +1162,13 @@ section.agenda:not(.circles):not(.rail):not(.cards):not(.checks).progress-6 ol >
  * Each section number in a drawn ring; active ring fills with the accent. */
 section.agenda.circles ol { gap: var(--sp-sm); }
 section.agenda.circles ol > li {
-  display: grid; grid-template-columns: auto 1fr; column-gap: var(--sp-md); align-items: center;
+  /* flex mirror of `grid-template-columns:auto 1fr` — the ring marker (::before) then the
+   * title fills the rest; a trailing page-ref `code` right-anchors via the universal pill. */
+  display: flex; column-gap: var(--sp-md); align-items: center;
   padding: 0; position: static;
 }
 section.agenda.circles ol > li::before {
-  content: counter(agenda-counter); display: grid; place-items: center;
+  content: counter(agenda-counter); display: flex; align-items: center; justify-content: center;
   width: 2.4em; height: 2.4em; border-radius: 50%;
   border: 2px solid var(--ag-outline); background: none; margin: 0; letter-spacing: normal;
   font-family: var(--font-label); font-weight: 700; font-size: var(--fs-message); line-height: 1;
@@ -1194,12 +1199,16 @@ section.agenda.rail ol::before {
   width: 2px; transform: translateX(-50%); background: var(--ag-outline);
 }
 section.agenda.rail ol > li {
-  display: grid; grid-template-columns: 3.4em 1fr; align-items: center; column-gap: var(--sp-md);
+  /* flex mirror of `grid-template-columns:3.4em 1fr`: the node ring sits in a 3.4em gutter
+   * (centred on the journey line at 1.7em), then the title fills the rest. */
+  display: flex; align-items: center; column-gap: var(--sp-md);
   padding: var(--sp-xs) 0; position: static;
 }
 section.agenda.rail ol > li::before {
-  content: counter(agenda-counter); justify-self: center; display: grid; place-items: center;
-  width: 2.2em; height: 2.2em; position: relative; z-index: 1; margin: 0; letter-spacing: normal;
+  /* centre the 2.2em ring within the 3.4em gutter via symmetric margins ((3.4-2.2)/2),
+   * replacing the grid column's justify-self:center — the ring's centre lands on 1.7em. */
+  content: counter(agenda-counter); flex: 0 0 auto; display: flex; align-items: center; justify-content: center;
+  width: 2.2em; height: 2.2em; position: relative; z-index: 1; margin: 0 0.6em; letter-spacing: normal;
   background: var(--bg); border: 2px solid var(--ag-outline); border-radius: 50%;
   font-family: var(--font-label); font-weight: 700; font-size: var(--fs-body); line-height: 1;
   color: var(--accent); -webkit-mask: none; mask: none;
@@ -1225,7 +1234,8 @@ section.agenda.rail.progress-6 ol > li:nth-child(6)::before {
  * Each section a boxed row; active card fills with the accent wash. */
 section.agenda.cards ol { gap: var(--sp-sm); }
 section.agenda.cards ol > li {
-  display: grid; grid-template-columns: auto 1fr; column-gap: var(--sp-md); align-items: baseline;
+  /* flex mirror of `grid-template-columns:auto 1fr` (number marker | title). */
+  display: flex; column-gap: var(--sp-md); align-items: baseline;
   padding: var(--sp-sm) var(--sp-md); position: static;
   border: 1.5px solid var(--ag-outline); border-radius: 10px; background: var(--bg-alt);
 }
@@ -1250,7 +1260,8 @@ section.agenda.cards.progress-6 ol > li:nth-child(6) {
  * future = empty box. Without progress, a plain row of empty boxes. */
 section.agenda.checks ol { gap: var(--sp-sm); }
 section.agenda.checks ol > li {
-  display: grid; grid-template-columns: auto 1fr; column-gap: var(--sp-md); align-items: center;
+  /* flex mirror of `grid-template-columns:auto 1fr` (checkbox marker | title). */
+  display: flex; column-gap: var(--sp-md); align-items: center;
   padding: 0; position: relative;
 }
 section.agenda.checks ol > li::before {
@@ -1344,8 +1355,11 @@ section.authority-chain > .cell-stage > ul {
 section.authority-chain > .cell-stage > :is(ol, ul) > li {
   counter-increment:auth;
   position:relative;
-  display:grid;
-  grid-template-columns:14cqi 1fr;
+  /* flex mirror of `grid-template-columns:14cqi 1fr`: a fixed tier-label rail + the body
+   * filling the rest. flex-wrap lets the .branching variant drop its body to a full-width
+   * second row (flex-basis:100%). */
+  display:flex;
+  flex-wrap:wrap;
   column-gap:var(--sp-md);
   align-items:center;
   /* border-box so the pyramid's explicit width:100%/84%/… rows include their border
@@ -1381,7 +1395,7 @@ section.authority-chain > .cell-stage > :is(ol, ul) > li:nth-child(8n+2) { --tie
 section.authority-chain > .cell-stage > :is(ol, ul) > li:nth-child(8n+3) { --tier-hue:var(--cat-6-mark); }
 section.authority-chain > .cell-stage > :is(ol, ul) > li:nth-child(8n+4) { --tier-hue:var(--cat-3-mark); }
 section.authority-chain > .cell-stage > :is(ol, ul) > li > strong:first-child {
-  grid-column:1;
+  flex:0 0 14cqi;
   font-family:var(--font-mono);
   font-size:var(--fs-body);
   font-weight:700;
@@ -1390,7 +1404,7 @@ section.authority-chain > .cell-stage > :is(ol, ul) > li > strong:first-child {
   color:var(--tier-hue, var(--accent));
 }
 section.authority-chain > .cell-stage > :is(ol, ul) > li > :is(ul, ol) {
-  grid-column:2;
+  flex:1; min-width:0;
   list-style:none; padding:0; margin:0;
   display:flex; flex-direction:column; gap:var(--sp-xs);
 }
@@ -1425,7 +1439,7 @@ section.authority-chain.pyramid > .cell-stage > :is(ol, ul) > li::after { displa
 
 /* .branching — statute root, then nested children render as connected branches. */
 section.authority-chain.branching > .cell-stage > :is(ol, ul) > li > :is(ul, ol) {
-  grid-column:1 / -1;
+  flex:0 0 100%;
   list-style:none; margin:var(--sp-sm) 0 0; padding:0 0 0 var(--sp-lg);
   display:flex; flex-direction:column; gap:var(--sp-xs);
   border-left:2px dashed var(--tier-hue, var(--accent));
@@ -1513,14 +1527,16 @@ section.authority-chain.trail > .cell-stage > :is(ol, ul) > li::before {
    handling for the variants is out of Batch A1 scope (tracked follow-up). Doubled
    class + the variant guards win on specificity. */
 @container lattice (aspect-ratio <= 1.05) {
+  /* Collapse the tier-label rail: the label fills row 1 (flex-basis:100%) so the body wraps
+     onto its own line below — tier label over body. */
   section.authority-chain.authority-chain:not(.trail):not(.pyramid):not(.branching):not(.bracket) > .cell-stage > :is(ol, ul) > li {
-    grid-template-columns: 1fr;
     row-gap: var(--sp-xs);
     align-items: start;
+    align-content: start;
   }
   section.authority-chain.authority-chain:not(.trail):not(.pyramid):not(.branching):not(.bracket) > .cell-stage > :is(ol, ul) > li > strong:first-child,
   section.authority-chain.authority-chain:not(.trail):not(.pyramid):not(.branching):not(.bracket) > .cell-stage > :is(ol, ul) > li > :is(ul, ol) {
-    grid-column: 1;
+    flex: 0 0 100%;
   }
 }
 

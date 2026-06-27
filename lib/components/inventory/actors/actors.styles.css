@@ -33,11 +33,15 @@ section.actors > .cell-stage > ol {
 }
 section.actors > .cell-stage > ul > li,
 section.actors > .cell-stage > ol > li {
-  display:grid;
-  grid-template-columns:1fr auto;
+  /* flex mirror of `grid-template-columns:1fr auto` + a full-width second row: the header
+   * (strong + chip) rides row 1, the body wraps to row 2 at flex-basis:100% (flex shop §11.A,
+   * the two-cells-then-full-width pattern). */
+  display:flex;
+  flex-wrap:wrap;
   column-gap:var(--sp-md);
   row-gap:var(--sp-xs);
   align-items:center;
+  align-content:center;
   /* Rows distribute to fill the bounded stage (flex cell-tree §6) — uniform card
    * heights that fit the shorter stage instead of natural-height rows that overran
    * it. min-height:0 lets a dense deck compress gracefully rather than clip. */
@@ -53,7 +57,7 @@ section.actors > .cell-stage > ol > li::marker { content:''; }
 /* Strong = primary header (responsibility / capability), left-aligned. */
 section.actors > .cell-stage > ul > li > strong,
 section.actors > .cell-stage > ol > li > strong {
-  grid-column:1; grid-row:1;
+  flex:1 1 auto;
   font-size:var(--fs-body);
   font-weight:700;
   color:var(--text-heading);
@@ -69,8 +73,8 @@ section.actors > .cell-stage > ol > li > strong {
  * pigments) and indaco (cool L≈32 deeps) ship balanced sets. */
 section.actors > .cell-stage > ul > li > code,
 section.actors > .cell-stage > ol > li > code {
-  grid-column:2; grid-row:1;
-  justify-self:end;
+  flex:0 0 auto;
+  /* right-anchored on the header row by the universal pill rule's margin-left:auto. */
   display:inline-flex; align-items:center;
   letter-spacing:0.04em;
   padding:3px 11px;
@@ -96,7 +100,7 @@ section.actors > .cell-stage > ul > li > ul,
 section.actors > .cell-stage > ol > li > ul,
 section.actors > .cell-stage > ul > li > ol,
 section.actors > .cell-stage > ol > li > ol {
-  grid-column:1 / -1; grid-row:2;
+  flex:0 0 100%;
   list-style:none; padding:0; margin:0;
 }
 section.actors > .cell-stage > ul > li > ul > li,
@@ -116,15 +120,14 @@ section.actors > .cell-stage > ol > li > ol > li {
    cell). The doubled class `.actors.actors` clears the base `> :is(ul,ol) > li`
    grid placement. */
 @container lattice (aspect-ratio <= 0.9) {
-  section.actors.actors > .cell-stage > :is(ul, ol) > li { grid-template-columns: 1fr; }
-  /* Drop the chip onto its own line, hanging at the LEFT under the responsibility.
-     The universal pill rule (base.modifiers) sets `margin-left: auto` to right-anchor
-     the chip on one line; cancel it so `justify-self: start` can take effect (an auto
-     margin otherwise beats justify-self in grid). */
+  /* Collapse to a single column: the responsibility fills row 1 (flex-basis:100%), so the
+     chip and body each wrap onto their own line below it. */
+  section.actors.actors > .cell-stage > :is(ul, ol) > li > strong { flex: 0 0 100%; }
+  /* Drop the chip onto its own line, hanging at the LEFT under the responsibility. The
+     universal pill rule (base.modifiers) sets `margin-left: auto` to right-anchor the chip;
+     cancel it so the chip sits left on its own wrapped line. */
   section.actors.actors > .cell-stage > ul > li > code,
   section.actors.actors > .cell-stage > ol > li > code {
-    grid-column: 1; grid-row: 2; justify-self: start;
     margin-left: 0; margin-top: var(--sp-2xs);
   }
-  section.actors.actors > .cell-stage > :is(ul, ol) > li > :is(ul, ol) { grid-row: 3; }
 }

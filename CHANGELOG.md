@@ -189,6 +189,13 @@ in patch versions.
 
 ### Changed
 
+- **Flex-shop conversion, moderate tier — `actors`, `authority-chain`, `agenda` drop CSS
+  grid for flex.** Each row's `grid-template-columns` layout is reproduced with flex: the
+  `actors` and `authority-chain` rows use the two-cells-then-full-width flex-wrap pattern
+  (header on row 1, body wraps to a full-width row 2); the four `agenda` styles
+  (circles / rail / cards / checks) become `display:flex` marker-plus-content rows, with the
+  `rail` node ring centred in its gutter by symmetric margins. Look-preserving across every
+  variant and portrait reflow; no authoring change.
 - **The integration test tier is split into a PR slice and a nightly slice.** The
   required CI gate (`test:integration:pr`) now runs only the cross-render-path
   wiring suites (`parity/`), the export pipeline (`export/`), and the
