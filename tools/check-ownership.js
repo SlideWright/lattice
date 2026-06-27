@@ -640,6 +640,30 @@ function hasNotHasSelector(css) {
   return /:(?:not|is)\([^{}]*?:has\(/.test(css);
 }
 
+// Pure core for HARD RULE #20: the NONZERO `margin` declarations in a stylesheet.
+// `margin` lives outside the box, so it is invisible to getBoundingClientRect() /
+// offsetHeight AND it margin-collapses — both corrupt the height math a measuring
+// layout (virtual lists, the Fit Spine) depends on. Space with `padding` (inside the
+// box) and `gap` (between flex/grid children), which measure cleanly. An all-zero
+// reset (`margin: 0`, `margin: 0 0`) adds no space and so can't distort measurement —
+// it is exempt; everything else (lengths, `auto`, negatives) is an offending margin.
+// The `(?<![\w-])` guard keeps `scroll-margin*` from matching; the longhand-suffix
+// whitelist keeps `margin-trim` (and any other `margin-*`) out. Strip comments first.
+// See engineering/gotchas.md.
+const MARGIN_PROP =
+  /(?<![\w-])margin(?:-(?:top|right|bottom|left|block|inline)(?:-(?:start|end))?)?\s*:\s*([^;}{]+)/g;
+
+function offendingMargins(css) {
+  const out = [];
+  for (const m of css.matchAll(MARGIN_PROP)) {
+    const value = m[1].replace(/!important/g, '').trim();
+    if (!value) continue;
+    const allZero = value.split(/\s+/).every((t) => /^0[a-z%]*$/.test(t));
+    if (!allZero) out.push(value);
+  }
+  return out;
+}
+
 // HARD RULE #4 gate — no non-canonical `--fs-*` token may be DECLARED anywhere
 // in the engine CSS (engineering/typography.md §1).
 function checkTypographyTokens(errors) {
@@ -653,6 +677,39 @@ function checkTypographyTokens(errors) {
         `Map it to a role token (e.g. --fs-message / --fs-body-compact), not a t-shirt size.`,
       );
     }
+  }
+}
+
+// HARD RULE #20 ratchet — the frozen ceiling of nonzero `margin` declarations in the
+// engine layout CSS (lib/). EXCEED-only: new margins above this number fail the build;
+// removing margins always passes, so an in-flight margin→gap/padding migration never
+// fights this gate — just lower MARGIN_BUDGET to follow the floor as it drops. Target
+// is zero. A margin that is provably the only answer is admitted by RAISING this number
+// with that justification in the PR (HARD RULE #20), never by a silent edit.
+const MARGIN_BUDGET = 271;
+
+// HARD RULE #20 gate — keep `margin` out of the engine's layout CSS; space with
+// `gap`/`padding`, which measure cleanly (engineering/gotchas.md).
+function checkMarginDiscipline(errors) {
+  let total = 0;
+  const byFile = [];
+  for (const file of listCssFiles(LIB_DIR)) {
+    const css = stripComments(fs.readFileSync(file, 'utf8'));
+    const n = offendingMargins(css).length;
+    if (n) {
+      total += n;
+      byFile.push([path.relative(ROOT, file), n]);
+    }
+  }
+  if (total > MARGIN_BUDGET) {
+    byFile.sort((a, b) => b[1] - a[1]);
+    const top = byFile.slice(0, 5).map(([f, n]) => `${f} (${n})`).join(', ');
+    errors.push(
+      `nonzero margin declarations in engine CSS rose to ${total}, above the budget of ${MARGIN_BUDGET} ` +
+      `(HARD RULE #20). margin is invisible to measurement and margin-collapses — space with \`gap\`/\`padding\` ` +
+      `instead (engineering/gotchas.md). If a margin is provably the only answer, raise MARGIN_BUDGET in ` +
+      `tools/check-ownership.js and justify it in the PR. Heaviest files: ${top}.`,
+    );
   }
 }
 
@@ -797,6 +854,7 @@ function run() {
   checkThemeTokenParity(errors);
   checkRetiredTokenNames(errors);
   checkTypographyTokens(errors);
+  checkMarginDiscipline(errors);
   checkThemeHasSelectors(errors);
   checkAdaptDeclarations(manifests, errors);
   checkSolverIntentDeclared(manifests, errors);
@@ -850,6 +908,9 @@ module.exports = {
   checkThemeHasSelectors,
   nonCanonicalFsTokens,
   hasNotHasSelector,
+  offendingMargins,
+  checkMarginDiscipline,
+  MARGIN_BUDGET,
   CANONICAL_FS_TOKENS,
   parseThemeTokens,
   listBasePalettes,

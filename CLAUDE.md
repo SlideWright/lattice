@@ -96,6 +96,12 @@ disposition and a gate collide, the gate wins.
   move — a reversible default beats a question (DEFAULT OP MODE #3). Judgment is
   the expectation, not an escape hatch from the rules; it operates in the space
   the rules leave open.
+- **Write so I understand the first time.** Default to plain words; spend a term
+  of art only when it earns its place, and define it on first use. The moment I
+  say I'm lost, *stop* — don't restate the same explanation louder. Re-explain
+  from the start in plain language, lead with a concrete example, and name the
+  thing in the codebase it maps to. Jargon I have to decode is a defect in the
+  writing, not in me.
 
 ---
 
@@ -227,6 +233,17 @@ lint/test catches a violation, *discipline* = no automated gate, so it's on you)
   a reproducible measurement is unproven. *(discipline — `bench:check` is on-demand,
   not a blocking CI gate; the wall-clock band would be flaky in the merge train. See
   `engineering/workflow.md` §Performance.)*
+- **#20 — No `margin` in engine layout CSS — space with `padding` / `gap`.**
+  `margin` sits *outside* the box, so it's invisible to `getBoundingClientRect()`
+  / `offsetHeight` and it margin-collapses — both corrupt the height math a
+  measuring layout (virtual lists, the Fit Spine) depends on. Use `padding` (space
+  inside a box) and `gap` (space between flex/grid children), which measure
+  cleanly. A bare `margin: 0` reset is fine (it adds no space); everything else —
+  lengths, `auto`, negatives — is barred. A margin is allowed **only where it is
+  provably the only answer**, admitted by raising `MARGIN_BUDGET` in
+  `tools/check-ownership.js` with that justification in the PR — never a silent
+  edit. *(gated — `checkMarginDiscipline` ratchet in `tools/check-ownership.js`,
+  via `build:check`; exceed-only, target zero; `engineering/gotchas.md`.)*
 
 ---
 

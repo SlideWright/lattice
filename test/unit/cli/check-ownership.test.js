@@ -31,6 +31,9 @@ const {
   checkThemeHasSelectors,
   nonCanonicalFsTokens,
   hasNotHasSelector,
+  offendingMargins,
+  checkMarginDiscipline,
+  MARGIN_BUDGET,
   CANONICAL_FS_TOKENS,
   SINGLETON_TAGS,
   run,
@@ -141,6 +144,29 @@ describe('check-ownership', () => {
       const errors = [];
       checkTypographyTokens(errors);
       assert.deepEqual(errors, [], `non-canonical --fs-* leaked:\n${errors.join('\n')}`);
+    });
+  });
+
+  describe('margin discipline gate (HARD RULE #20)', () => {
+    test('offendingMargins flags nonzero margins, exempts all-zero resets', () => {
+      // nonzero lengths, auto, and negatives are all offending
+      assert.deepEqual(offendingMargins('.a { margin: 8px; }'), ['8px']);
+      assert.deepEqual(offendingMargins('.a { margin-top: var(--sp-sm); }'), ['var(--sp-sm)']);
+      assert.deepEqual(offendingMargins('.a { margin: 0 auto; }'), ['0 auto']);
+      assert.deepEqual(offendingMargins('.a { margin-bottom: -4px; }'), ['-4px']);
+      // all-zero resets add no space → exempt
+      assert.deepEqual(offendingMargins('.a { margin: 0; }'), []);
+      assert.deepEqual(offendingMargins('.a { margin: 0 0 0 0; }'), []);
+      // logical + !important still caught; the value is normalized
+      assert.deepEqual(offendingMargins('.a { margin-inline: 1rem !important; }'), ['1rem']);
+      // scroll-margin / margin-trim must NOT match (lookbehind guard)
+      assert.deepEqual(offendingMargins('.a { scroll-margin-top: 8px; }'), []);
+    });
+
+    test('the live engine CSS stays within the margin budget', () => {
+      const errors = [];
+      checkMarginDiscipline(errors);
+      assert.deepEqual(errors, [], `margin count exceeded MARGIN_BUDGET (${MARGIN_BUDGET}):\n${errors.join('\n')}`);
     });
   });
 

@@ -1179,6 +1179,34 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
 
 ## CSS
 
+### `margin` corrupts measured layout (virtual lists, the Fit Spine) — HARD RULE #20
+
+- **Symptom:** A measuring layout places boxes wrong — rows in a virtualised /
+  windowed list overlap or leave gaps, the Fit Spine's collapse/shed/split fires at
+  the wrong height, two stacked elements sit closer together than their declared
+  spacing, or a measured slide's content height comes back short. The CSS "looks
+  right," and a static screenshot can look fine, but anything that *reads* an
+  element's box gets the wrong number.
+- **Cause:** `margin` lives *outside* the border box. `getBoundingClientRect()` and
+  `offsetHeight` report the border box, so they **do not include margin** — code that
+  sums measured heights to position the next element silently loses every margin. On
+  top of that, adjacent vertical margins **collapse** into one (the larger wins, not
+  the sum), and a parent can collapse its child's margin through itself — so even the
+  visual gap isn't the number you wrote. Both effects make `margin` un-measurable, and
+  un-measurable spacing is poison to any layout that computes positions from sizes.
+- **Mitigation:** Don't use `margin` for spacing in engine CSS. Put space *inside* a
+  box with `padding`, and *between* flex/grid children with `gap` — both are part of
+  the border box / the container's own geometry, so they measure cleanly and never
+  collapse. `checkMarginDiscipline` in `tools/check-ownership.js` (HARD RULE #20)
+  ratchets the count of nonzero `margin` declarations toward zero and hard-fails
+  `build:check` on any new one; a bare `margin: 0` reset is exempt (it adds no space).
+- **Triggered by:** Any code path that measures an element to lay out another —
+  virtual/windowed lists, the Fit Spine solver, fit-to-height scaling, export
+  pagination.
+- **Removable when:** Never — this is a property of the CSS box model, not a bug to
+  be fixed upstream. The gate is the durable guard.
+- **Commits:** HARD RULE #20 + the margin-discipline gate.
+
 ### `white-space:nowrap` on `section code` collapsed code blocks + overflowed eyebrows
 
 - **Symptom:** Every fenced code block (`code`, `compare-code`) rendered as a
