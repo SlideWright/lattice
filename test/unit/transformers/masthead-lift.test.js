@@ -32,7 +32,7 @@ describe('masthead-lift — HTML-string kernel', () => {
 
   test('an UN-migrated component body is NOT wrapped (keeps direct-child selectors)', () => {
     const inner = '<h2>T</h2><ul><li>x</li></ul>';
-    const out = kernel.transformMastheadSection(inner, 'verdict-grid form'); // not yet migrated
+    const out = kernel.transformMastheadSection(inner, 'redline form'); // not yet migrated
     assert.match(out, /<\/div><ul><li>x<\/li><\/ul>$/); // no .cell-stage
     assert.doesNotMatch(out, /cell-stage/);
   });
@@ -149,7 +149,7 @@ describe('masthead-lift — stage-wrap eligibility', () => {
     assert.equal(kernel.wrapsStageBody('form'), true);           // bare
     assert.equal(kernel.wrapsStageBody('form dark'), true);      // bare + modifier
     assert.equal(kernel.wrapsStageBody('cards-grid form'), true); // migrated
-    assert.equal(kernel.wrapsStageBody('verdict-grid form'), false); // un-migrated
+    assert.equal(kernel.wrapsStageBody('redline form'), false); // un-migrated
     assert.equal(kernel.wrapsStageBody('split-panel'), false);   // sovereign (own structure)
   });
 

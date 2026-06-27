@@ -27,6 +27,14 @@ in patch versions.
 
 ### Added
 
+- **`authority-chain`, `statute-stack`, `verdict-grid` adopt the stage cell — and fill it.**
+  Three more legal/comparison components migrate into the frame's bounded `.cell-stage`:
+  the `verdict-grid` 2×2 fills the stage with `minmax(0,1fr)` rows on a flex-column cell;
+  the `authority-chain` tiers distribute with `flex:1; min-height:0` (its `pyramid` shape
+  variant stays content-height + centred so the silhouette reads); `statute-stack`'s rails,
+  hierarchy, and bands fill the stage. Continues the per-component cell-tree migration
+  (`2026-06-26-frames-as-flex-cell-trees.md` §6).
+
 - **The fill-family components adopt the stage cell — and fill it.** `kpi` (all five
   variants — briefing, ops, compliance, trajectory, spotlight), `cards-stack`, `actors`,
   and `checklist` migrate their bodies into the frame's bounded `.cell-stage` cell and are
