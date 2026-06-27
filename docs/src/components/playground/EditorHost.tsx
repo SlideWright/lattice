@@ -24,10 +24,15 @@ export function EditorHost({
 	initialDoc,
 	onChange,
 	onReady,
+	vocab,
 }: {
 	initialDoc: string;
 	onChange: (value: string) => void;
 	onReady: (adapter: EditorAdapter) => void;
+	// The deck-grammar lint vocabulary. When supplied, the editor runs inline
+	// validation (underlines, governed per deck by the `validate:` front-matter
+	// key); autocomplete stays off here (the playground's picker owns templates).
+	vocab?: unknown;
 }) {
 	const hostRef = React.useRef<HTMLDivElement>(null);
 	const viewRef = React.useRef<ReturnType<typeof createEditor> | null>(null);
@@ -46,6 +51,9 @@ export function EditorHost({
 	// none in practice) must not re-init the single EditorView. Read it from a ref
 	// so the mount effect has no reactive dependency on it.
 	const initialDocRef = React.useRef(initialDoc);
+	// Vocab is static (page-build data); read it from a ref so the mount effect
+	// stays [] (one init) without taking a reactive dependency on the prop.
+	const vocabRef = React.useRef(vocab);
 
 	React.useEffect(() => {
 		const host = hostRef.current;
@@ -53,6 +61,8 @@ export function EditorHost({
 		const ed = createEditor({
 			parent: host,
 			doc: initialDocRef.current,
+			vocab: vocabRef.current,
+			autocomplete: false, // validation only on this surface; the picker owns templates
 			onChange: (v: string) => onChangeRef.current(v),
 		});
 		viewRef.current = ed;

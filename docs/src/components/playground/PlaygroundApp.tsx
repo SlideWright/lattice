@@ -38,6 +38,9 @@ export type PlaygroundData = {
 	runtimeUrl: string;
 	palettes: string[];
 	finishes: string[];
+	// Deck-grammar lint vocabulary for the editor's inline validation (optional so
+	// the test harness can omit it). Passed straight to EditorHost → createEditor.
+	lintVocab?: unknown;
 	starter: string;
 };
 
@@ -51,7 +54,7 @@ export type PlaygroundData = {
  * the config panel (DeckSetupSheet). None are reimplemented.
  */
 export function PlaygroundApp({ data }: { data: PlaygroundData }) {
-	const { catalog, components, lenses, gallerySources, galleryGroups, themeBase, runtimeUrl, engineUrl, palettes, finishes, starter } = data;
+	const { catalog, components, lenses, gallerySources, galleryGroups, themeBase, runtimeUrl, engineUrl, palettes, finishes, lintVocab, starter } = data;
 
 	const [currentName, setCurrentName] = React.useState('');
 	const [variant, setVariant] = React.useState('default');
@@ -389,7 +392,7 @@ export function PlaygroundApp({ data }: { data: PlaygroundData }) {
 			<main className="pg-split">
 				<section className="pg-pane editor">
 					<div className="pg-pane-label">Markdown</div>
-					<EditorHost initialDoc={starter} onChange={onEdit} onReady={onEditorReady} />
+					<EditorHost initialDoc={starter} vocab={lintVocab} onChange={onEdit} onReady={onEditorReady} />
 				</section>
 				<section className="pg-pane preview">
 					<div className="pg-pane-label">Rendered slides</div>

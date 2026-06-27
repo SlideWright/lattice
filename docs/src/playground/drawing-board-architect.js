@@ -21,28 +21,14 @@ import { cosineRank } from './architect-retrieval.js';
 import { lintCore, reviewCore, scorecard } from './authoring-core.generated.js';
 import { isCapableTier } from './drawing-board-chat.js';
 import { budgetStatus, readBudgetCap, readBudgetMode, readCachingEnabled, readSpend, recordSpend } from './drawing-board-settings.js';
+import { buildVocabSets, chunkStartLines } from './editor-diagnostics.js';
 // The pure exemplar tier-filter (lib/exemplars/tier-filter.js), bundled for the
 // browser so the Drafting picker can trim a worked deck to the chosen length.
 import { filterToTier, tierCounts } from './exemplar-core.generated.js';
 
-// 1-based source line where each REAL slide begins, indexed by the HUMAN slide
-// number (front matter skipped) — so `starts[finding.slide]` maps a finding to
-// its line, matching lint-core / review-core's numbering. `starts[0]` = 1 (deck
-// top) for deck-level findings (slide 0).
-function chunkStartLines(src) {
-	const lines = String(src || '').split('\n');
-	let i = 0;
-	if (/^---\r?\n/.test(src || '') && lines[0].trim() === '---') {
-		i = 1;
-		while (i < lines.length && lines[i].trim() !== '---') i++;
-		i++; // step past the closing front-matter delimiter
-	}
-	const starts = [1, i + 1]; // [deck top, slide 1]
-	for (; i < lines.length; i++) {
-		if (lines[i] === '---') starts.push(i + 2);
-	}
-	return starts;
-}
+// `chunkStartLines` (the 1-based slide→line map shared with the editor's inline
+// validation, so the panel's "Reveal" and the editor's underline land on the same
+// line) lives in ./editor-diagnostics.js — imported above.
 const SEV_RANK = { error: 0, warning: 1, suggestion: 2 };
 function hasContent(src) {
 	// At least one classed slide (after front matter) or some real prose.
@@ -72,26 +58,11 @@ export function createArchitect({ vocab, catalog, mount, reveal, applyFix, model
 			}
 		: null;
 	let fixAbort = null; // aborts an in-flight Fix when the deck changes (stale + wasteful)
-	const vocabSets = {
-		names: new Set((vocab?.names) || []),
-		modifiers: new Set((vocab?.modifiers) || []),
-	};
-	// Map region/group vocabulary — serialized as arrays for the build-time
-	// handoff, rehydrated into the Sets lint-core's "did you mean" rule expects.
-	// Pure static data; no model call validates a country name.
-	if (vocab?.mapRegions) {
-		vocabSets.mapRegions = {};
-		for (const [which, v] of Object.entries(vocab.mapRegions)) {
-			vocabSets.mapRegions[which] = { valid: new Set(v.valid || []), names: v.names || [] };
-		}
-	}
-	// Finish register names — the deck-wide `finish:` front-matter validator.
-	if (vocab?.finishNames) vocabSets.finishNames = vocab.finishNames;
-	// Split mode names — the deck-wide `split:` front-matter validator.
-	if (vocab?.splitNames) vocabSets.splitNames = vocab.splitNames;
-	// Content-capacity contract — plain data (name → bounds); feeds the live
-	// capacity lint rule so an overflow-prone slide warns as you type.
-	if (vocab?.capacity) vocabSets.capacity = vocab.capacity;
+	// Rehydrate the build-time lint vocabulary into the Sets lint-core expects (names,
+	// modifiers, map regions, finish/split registers, the capacity contract). The
+	// SAME builder feeds the editor's inline validation, so the panel and the inline
+	// underlines judge a `_class`/region/capacity identically. See editor-diagnostics.js.
+	const vocabSets = buildVocabSets(vocab);
 	const bucketByName = new Map((catalog || []).map((c) => [c.name, c.bucket]));
 	const bucketOf = (n) => bucketByName.get(n) || null;
 	let lastSource = '';
@@ -380,8 +351,25 @@ export function createArchitect({ vocab, catalog, mount, reveal, applyFix, model
 		const head = document.createElement('div');
 		head.className = 'db-review-head';
 		const n = findings.length;
-		head.textContent =
+		const label = document.createElement('span');
+		label.textContent =
 			'the Architect flags ' + n + ' item' + (n === 1 ? '' : 's') + (errs ? ' · ' + errs + ' to fix' : '');
+		head.appendChild(label);
+		// Fix all — apply every mechanically-fixable finding in one undoable pass
+		// (the SAME lint-core applyAllFixes the CLI uses). Shown only when there's
+		// something to fix; the per-finding "Apply fix" buttons remain for one-offs.
+		const fixableCount = findings.filter((f) => f.autofixable).length;
+		if (fixableCount && applyFix) {
+			const fixAll = document.createElement('button');
+			fixAll.type = 'button';
+			fixAll.className = 'db-finding-btn db-finding-apply db-review-fixall';
+			fixAll.textContent = `Fix all ${fixableCount}`;
+			fixAll.addEventListener('click', () => {
+				const out = lintCore.applyAllFixes(lastSource, vocabSets);
+				if (out != null && out !== lastSource) applyFix(out);
+			});
+			head.appendChild(fixAll);
+		}
 		mount.appendChild(head);
 		const starts = chunkStartLines(lastSource);
 		for (const f of findings) mount.appendChild(card(f, starts));

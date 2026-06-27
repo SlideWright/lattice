@@ -20,10 +20,13 @@ import { sql } from '@codemirror/lang-sql';
 import { yaml } from '@codemirror/lang-yaml';
 import { bracketMatching, HighlightStyle, indentOnInput, LanguageDescription, LanguageSupport, StreamLanguage, syntaxHighlighting } from '@codemirror/language';
 import { languages } from '@codemirror/language-data';
+import { linter, lintGutter, lintKeymap } from '@codemirror/lint';
 import { Compartment, EditorState } from '@codemirror/state';
 import { drawSelection, EditorView, highlightActiveLine, highlightActiveLineGutter, keymap, lineNumbers } from '@codemirror/view';
 import { tags as t } from '@lezer/highlight';
 import { latticeAutocomplete } from './complete.js';
+import { readFrontMatter } from './deck-config.js';
+import { buildVocabSets, findingsToDiagnostics } from './editor-diagnostics.js';
 import { MERMAID_KEYWORDS } from './grammar-vocab.js';
 import { typeaheadContext } from './slide-context.js';
 
@@ -263,6 +266,45 @@ const latticeTheme = EditorView.theme({
 	},
 	'::selection': { backgroundColor: 'var(--cm-selection)' },
 	'.cm-matchingBracket': { backgroundColor: 'var(--cm-match)', outline: 'none' },
+	// Inline validation underlines — palette-blind, matched to the Architect panel's
+	// severity tokens (defined on body.db-page) so the inline and panel views of the
+	// lint stream read as one system. We replace CodeMirror's fixed-colour wavy SVG
+	// with a text-decoration squiggle painted in the brand severity colour. The hex
+	// is a last-resort fallback for a surface without the studio tokens (where the
+	// linter is inert anyway — it needs the deck-grammar vocab).
+	'.cm-lintRange-error': {
+		backgroundImage: 'none',
+		textDecoration: 'underline wavy var(--db-sev-error, #c0392b)',
+		textDecorationSkipInk: 'none',
+		textUnderlineOffset: '2px',
+	},
+	'.cm-lintRange-warning': {
+		backgroundImage: 'none',
+		textDecoration: 'underline wavy var(--db-sev-warning, #b8860b)',
+		textDecorationSkipInk: 'none',
+		textUnderlineOffset: '2px',
+	},
+	'.cm-lintRange-info': {
+		backgroundImage: 'none',
+		textDecoration: 'underline dotted var(--accent)',
+		textUnderlineOffset: '2px',
+	},
+	// Severity gutter markers — CodeMirror's default is a coloured SVG glyph; we
+	// replace it with a simple brand-coloured disc (same severity tokens as the
+	// underline) so the gutter reads as one system with the rest of the editor.
+	'.cm-gutter-lint': { width: '0.9em' },
+	'.cm-gutter-lint .cm-gutterElement': { padding: '0 1px' },
+	'.cm-lint-marker': { width: '0.7em', height: '0.7em', backgroundImage: 'none', borderRadius: '50%' },
+	'.cm-lint-marker-error': { backgroundColor: 'var(--db-sev-error, #c0392b)' },
+	'.cm-lint-marker-warning': { backgroundColor: 'var(--db-sev-warning, #b8860b)' },
+	'.cm-lint-marker-info': { backgroundColor: 'var(--accent)' },
+	// Lint panel (Ctrl-Shift-M) — themed off the page tokens so it's not an
+	// unstyled box; severity border mirrors the underline + gutter.
+	'.cm-panel.cm-panel-lint': { backgroundColor: 'var(--bg-alt)', borderTop: '1px solid var(--border)', color: 'var(--text-body)' },
+	'.cm-panel.cm-panel-lint ul [aria-selected]': { backgroundColor: 'color-mix(in srgb, var(--accent) 18%, var(--bg-alt))' },
+	'.cm-panel.cm-panel-lint .cm-diagnostic-error': { borderLeftColor: 'var(--db-sev-error, #c0392b)' },
+	'.cm-panel.cm-panel-lint .cm-diagnostic-warning': { borderLeftColor: 'var(--db-sev-warning, #b8860b)' },
+	'.cm-panel.cm-panel-lint button[name="close"]': { color: 'var(--text-muted)' },
 	// NOTE: the autocomplete popup (.cm-tooltip-autocomplete / .cm-completionInfo)
 	// is themed in a GLOBAL stylesheet (ensureTooltipTheme below), NOT here —
 	// EditorView.theme is scoped to the .cm-editor element, and CodeMirror renders
@@ -305,7 +347,48 @@ const TOOLTIP_CSS = `
 	line-height: 1.45;
 	max-width: 22em;
 	box-shadow: 0 10px 28px color-mix(in srgb, var(--text-heading) 22%, transparent);
-}`;
+}
+/* Inline-validation hover tooltip — same detached-layer treatment as the popup,
+   themed off the page tokens (brand severity colours on the left rule, matching
+   the editor underline + the Architect panel). */
+.cm-tooltip.cm-tooltip-lint {
+	border: 1px solid color-mix(in srgb, var(--border) 45%, var(--text-muted));
+	border-radius: 8px;
+	background-color: var(--bg-alt) !important;
+	color: var(--text-body);
+	box-shadow: 0 10px 28px color-mix(in srgb, var(--text-heading) 22%, transparent);
+	overflow: hidden;
+}
+.cm-tooltip-lint .cm-diagnostic {
+	padding: 7px 10px;
+	font-family: var(--font-body, inherit);
+	font-size: 12.5px;
+	line-height: 1.45;
+	white-space: pre-wrap;
+	border-left: 3px solid var(--accent);
+}
+.cm-tooltip-lint .cm-diagnostic-error { border-left-color: var(--db-sev-error, #c0392b); }
+.cm-tooltip-lint .cm-diagnostic-warning { border-left-color: var(--db-sev-warning, #b8860b); }
+.cm-tooltip-lint .cm-diagnostic-info { border-left-color: var(--accent); }
+.cm-tooltip-lint .cm-diagnosticSource {
+	display: block;
+	margin-top: 3px;
+	font-size: 11px;
+	font-style: italic;
+	color: color-mix(in srgb, var(--text-muted) 50%, var(--text-body));
+}
+.cm-diagnosticAction {
+	margin: 0 0 0 8px;
+	font-family: var(--font-body, inherit);
+	font-size: 11.5px;
+	color: var(--on-accent);
+	background-color: var(--accent);
+	border: none;
+	border-radius: 6px;
+	padding: 2px 9px;
+	cursor: pointer;
+}
+.cm-diagnosticAction:hover { background-color: color-mix(in srgb, var(--accent) 85%, var(--text-heading)); }`;
 
 function ensureTooltipTheme() {
 	if (typeof document === 'undefined' || document.getElementById('lattice-cm-tooltip-theme')) return;
@@ -345,12 +428,84 @@ const autoHeightTheme = EditorView.theme({
 // popup opens PROACTIVELY on entering a grammar context (vs. only on typing).
 // `setTypeahead(mode)` switches it live; the Drawing Board wires both to a
 // workspace preference. It is inert when autocomplete is off.
+//
+// INLINE validation — the editor's view of the SAME deterministic lint-core the
+// Architect panel runs: layout/component grammar findings drawn as wavy underlines
+// with a hover tooltip (message + fix) and a one-click quick-fix for the mechanical
+// footguns. It activates whenever `vocab` is supplied (the Drawing Board AND the
+// Playground), and is governed PER DECK by the `validate:` front-matter key (default
+// on) — so the setting travels with the deck and is toggled from the deck-setup
+// drawer, not a per-user preference. An editor with no `vocab` (e.g. a fragment
+// sub-editor) never validates.
 export function createEditor({ parent, doc = '', onChange, onCursor, autoHeight = false, vocab, catalog, themes, finishes, autocomplete = true, typeahead = 'class' }) {
 	ensureTooltipTheme(); // global popup theme (reaches CM's detached tooltip layer)
 	// The autocomplete extension lives in a Compartment so the on/off preference
 	// can reconfigure it live (built once with the vocab; toggled to [] when off).
 	const autocompleteExt = latticeAutocomplete({ vocab, catalog, themes, finishes });
 	const autocompleteComp = new Compartment();
+
+	// Inline validation source — runs the SAME pure lint-core the Architect panel
+	// runs and maps its findings onto the document as CodeMirror diagnostics. Active
+	// only with a deck-grammar `vocab`, and self-gated PER DECK by the `validate:`
+	// front-matter key (default on) read from the document itself — so the toggle
+	// travels with the deck (set from the deck-setup drawer) with no extra wiring: a
+	// `validate: off` write re-lints to zero findings through the normal edit path.
+	// The vocab Sets are rebuilt each run so component names bridged into `vocab` live
+	// (the author's saved local components) are recognised. lintCore is imported on
+	// demand so editor surfaces that never validate don't pull the authoring-core
+	// bundle. The source is async — CodeMirror's linter awaits the returned promise.
+	let lintCoreMod = null;
+	const lintSource = async (view) => {
+		if (!vocab) return [];
+		const src = view.state.doc.toString();
+		if (!readFrontMatter(src).validate) return []; // deck opted out via front matter
+		if (!lintCoreMod) {
+			try {
+				lintCoreMod = (await import('./authoring-core.generated.js')).lintCore;
+			} catch {
+				return [];
+			}
+		}
+		let findings;
+		try {
+			findings = lintCoreMod.lintTextWith(src, buildVocabSets(vocab));
+		} catch {
+			return [];
+		}
+		return findingsToDiagnostics(view.state.doc, findings, {
+			// Quick fix for the autofixable footguns — lint-core computes the rewrite,
+			// applied as one undoable change (which re-renders + re-lints).
+			onFix: (v, f) => {
+				const out = lintCoreMod.applyFix(v.state.doc.toString(), f);
+				if (out != null) v.dispatch({ changes: { from: 0, to: v.state.doc.length, insert: out } });
+			},
+		});
+	};
+	// Fix-all command (Alt-Shift-F) — apply every autofixable finding in the deck
+	// in one undoable pass, via the SAME lint-core the panel's "Fix all" uses.
+	// Returns true so the key is consumed only when validation is live for this deck.
+	const fixAllCommand = (view) => {
+		if (!vocab) return false;
+		if (!readFrontMatter(view.state.doc.toString()).validate) return false;
+		(async () => {
+			if (!lintCoreMod) {
+				try {
+					lintCoreMod = (await import('./authoring-core.generated.js')).lintCore;
+				} catch {
+					return;
+				}
+			}
+			// Re-read AFTER the (possibly cold) import — the user may have typed during
+			// the await, so compute the fix against the CURRENT document, not a stale one.
+			const cur = view.state.doc.toString();
+			if (!readFrontMatter(cur).validate) return;
+			const out = lintCoreMod.applyAllFixes(cur, buildVocabSets(vocab));
+			if (out != null && out !== cur) {
+				view.dispatch({ changes: { from: 0, to: view.state.doc.length, insert: out } });
+			}
+		})();
+		return true;
+	};
 	const listener = EditorView.updateListener.of((u) => {
 		if (u.docChanged && onChange) onChange(u.state.doc.toString());
 		if (onCursor && (u.docChanged || u.selectionSet)) {
@@ -431,9 +586,22 @@ export function createEditor({ parent, doc = '', onChange, onCursor, autoHeight 
 				// model call; inert outside its context. In a Compartment so the
 				// workspace preference can switch it off/on live.
 				autocompleteComp.of(autocomplete ? autocompleteExt : []),
+				// Inline validation (deck-grammar findings as underlines + hover) + a
+				// severity gutter (click a marker for the same tooltip + quick-fix). Inert
+				// without a vocab; self-gated per deck by the `validate:` front-matter key.
+				vocab ? [linter(lintSource, { delay: 350 }), lintGutter()] : [],
 				latticeTheme,
 				...(autoHeight ? [autoHeightTheme] : []),
-				keymap.of([indentWithTab, ...defaultKeymap, ...historyKeymap]),
+				// lintKeymap: F8 / Shift-F8 cycle findings, Ctrl-Shift-M opens the lint
+				// panel (where each finding's Quick fix is one click). Alt-Shift-F applies
+				// every autofixable finding at once. Harmless when validation is off.
+				keymap.of([
+					{ key: 'Alt-Shift-f', run: fixAllCommand },
+					indentWithTab,
+					...defaultKeymap,
+					...historyKeymap,
+					...lintKeymap,
+				]),
 				listener,
 				typeaheadListener,
 			],

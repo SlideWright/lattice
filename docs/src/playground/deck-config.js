@@ -70,6 +70,12 @@ const FIELD_DEFAULTS = {
   // (the opt-out) are the explicit values written into the block. `on`/`true`/`yes`
   // read as standard; `false`/`no` read as off. Mirrors readFormMode in plugins.js.
   form: 'standard',
+  // `validate` governs the editor's INLINE validation — the deck-grammar lint
+  // findings (the same the Architect lists) drawn as underlines + hover fixes. On
+  // is the default (so it's the omitted value); a deck opts OUT with `validate: off`
+  // — e.g. one leaning on bespoke/local classes where the underlines are noise.
+  // Lives in front matter so the choice TRAVELS with the deck (and its exported .md).
+  validate: 'on',
   math: '', // '' / 'katex' = the default KaTeX renderer; 'mathjax' switches
   lang: '',
 };
@@ -86,7 +92,7 @@ const FINISH_LABELS = {
 
 // Emit order for known keys; any unmanaged keys we preserved trail in their
 // original order. `marp` leads (it's what tells marp-cli to render the deck).
-const EMIT_ORDER = ['marp', 'theme', 'finish', 'split', 'autosplit', 'size', 'paginate', 'header', 'footer', 'class', 'form', 'math', 'lang'];
+const EMIT_ORDER = ['marp', 'theme', 'finish', 'split', 'autosplit', 'size', 'paginate', 'header', 'footer', 'class', 'form', 'validate', 'math', 'lang'];
 
 // Field PROFILES per surface — the `fields` allow-list createConfigPanel takes.
 //   author  — every field (the Drawing Board: full set, theme three-way synced).
@@ -98,7 +104,7 @@ const EMIT_ORDER = ['marp', 'theme', 'finish', 'split', 'autosplit', 'size', 'pa
 //             with no deck chrome and no theme, which the studio itself owns).
 export const CONFIG_PROFILES = Object.freeze({
   author: null,
-  noTheme: ['finish', 'split', 'autosplit', 'size', 'paginate', 'header', 'footer', 'class', 'form', 'math', 'lang'],
+  noTheme: ['finish', 'split', 'autosplit', 'size', 'paginate', 'header', 'footer', 'class', 'form', 'validate', 'math', 'lang'],
   // `autosplit` is a deck-AUTHORING concern (does my over-capacity content
   // divide?), not a theme/component PREVIEW register — so it's deliberately out
   // of the preview profile (a fixed specimen never overflows). It rides the full
@@ -107,6 +113,7 @@ export const CONFIG_PROFILES = Object.freeze({
 });
 
 const TRUEY = /^(true|yes|on|1)$/i;
+const FALSEY = /^(false|no|off|0)$/i;
 
 // Canonicalise a `form:` value to one of the three modes. Mirrors readFormMode
 // in lib/integrations/markdown-it/plugins.js: 'standard' is the DEFAULT, so an
@@ -163,6 +170,9 @@ export function readFrontMatter(source) {
     // Absent `form:` → 'standard' (the default), so the drawer reflects that Form
     // is on out of the box; an explicit `form: off` / `minimal` pre-fills as typed.
     form: formMode(map.form),
+    // `validate` is binary, default ON — surfaced as a boolean (like paginate) for
+    // the switch. On unless the deck explicitly opts out with a falsey value.
+    validate: !FALSEY.test((map.validate || '').trim()),
     math: map.math || '',
     lang: map.lang || '',
     // Whether the deck carries any NON-THEME managed front matter — drives the
@@ -176,6 +186,9 @@ function isDefault(key, value) {
   if (key === 'paginate') return !TRUEY.test(value);
   // `autosplit` is binary — off (any non-truthy) is the omitted default.
   if (key === 'autosplit') return !TRUEY.test(value);
+  // `validate` is binary, default ON — so on (any non-falsey) is the omitted
+  // default; only an explicit `validate: off` is written into the block.
+  if (key === 'validate') return !FALSEY.test(String(value).trim());
   if (key === 'math') return value === '' || value === 'katex';
   // `form` defaults to 'standard' (on) — that's the omitted value; only `off` /
   // `minimal` are written into the block.
@@ -197,6 +210,9 @@ function normalize(key, value) {
   // `autosplit` writes the canonical `on` when enabled; off omits the key. The
   // engine reads on/true/yes — we always emit `on` (matches the example decks).
   if (key === 'autosplit') return value === true || TRUEY.test(value || '') ? 'on' : null;
+  // `validate` is default ON, so on omits the key; only an opt-OUT is written, as
+  // the canonical `off`. The switch passes a boolean (checked = validation on).
+  if (key === 'validate') return value === false || FALSEY.test(String(value).trim()) ? 'off' : null;
   const v = (value == null ? '' : String(value)).trim();
   if (key === 'math') return v === '' || v === 'katex' ? null : v;
   // `form`: standard (the default) omits the key; off / minimal are written.
@@ -436,6 +452,15 @@ export function createConfigPanel({ host, trigger, getSource, setSource, palette
         ['minimal', 'Minimal — band & bay, no rail'],
         ['off', 'Off — no deck chrome'],
       ], fm.form));
+    }
+
+    // Inline validation — the editor's live deck-grammar check (the same findings
+    // the Architect lists), drawn as underlines + hover fixes. On by default; a
+    // deck can opt out (e.g. one built on bespoke local classes). The choice rides
+    // in the front matter, so it travels with the deck.
+    if (show('validate')) {
+      host.append(switchRow('validate', 'Inline validation',
+        'Underline layout/component grammar issues as you type, with a hover fix', fm.validate));
     }
 
     // Advanced — the lower-traffic deck-authoring keys. Only shown when the

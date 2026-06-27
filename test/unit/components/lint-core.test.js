@@ -17,7 +17,7 @@ const FM = '---\nmarp: true\ntheme: indaco\n---\n\n';
 // A fixed, manifest-independent vocab — every component name used below so the
 // unknown-class rule (rule 1) doesn't add noise to the targeted assertions.
 const vocab = {
-  names: new Set(['cards-grid', 'principles', 'split-panel', 'split-compare', 'kpi']),
+  names: new Set(['cards-grid', 'principles', 'split-panel', 'split-compare', 'kpi', 'gantt']),
   modifiers: new Set(['dark', 'compact', 'pullquote', 'metric']),
 };
 const ruleFor = (src, rule) => core.lintTextWith(src, vocab).find((f) => f.rule === rule);
@@ -194,6 +194,54 @@ describe('lint-core: auto-fix', () => {
   test('applyFix returns null for a non-autofixable finding', () => {
     const f = ruleFor(`${FM}<!-- _class: split-panel pullquote -->\n\n## Head\n\n- Title\n  - body\n`, 'split-statement-missing-quote');
     assert.equal(core.applyFix('x', f), null);
+  });
+
+  test('autofixOrderedNestedTitle converts to the numbered ledger shape; null otherwise', () => {
+    assert.equal(core.autofixOrderedNestedTitle('- **Plan.** ship it'), '1. Plan\n   - ship it');
+    assert.equal(core.autofixOrderedNestedTitle('  - **A** b'), '  1. A\n     - b'); // indentation preserved
+    assert.equal(core.autofixOrderedNestedTitle('- bare title'), null);
+  });
+
+  test('ledger inline-title is autofixable; applyFix writes the numbered shape and re-lints clean', () => {
+    const src = `${FM}<!-- _class: kpi -->\n\n## H\n\n- **Build.** in-house\n`;
+    const f = ruleFor(src, 'ledger-inline-title');
+    assert.equal(f.autofixable, true);
+    const fixed = core.applyFix(src, f);
+    assert.ok(fixed.includes('1. Build\n   - in-house'));
+    assert.equal(core.lintTextWith(fixed, vocab).some((x) => x.rule === 'ledger-inline-title'), false);
+  });
+
+  test('autofixGanttDelimiter swaps a retired delimiter only in the TRAILING span pills; null otherwise', () => {
+    assert.equal(core.autofixGanttDelimiter('- Design `Q1→Q2`'), '- Design `Q1..Q2`');
+    assert.equal(core.autofixGanttDelimiter('  - Build `Q1 -> Q3` `after: Design`'), '  - Build `Q1..Q3` `after: Design`');
+    assert.equal(core.autofixGanttDelimiter('- No delim `Q1..Q2`'), null);
+    assert.equal(core.autofixGanttDelimiter('prose with a → arrow, no code'), null); // outside a code span → untouched
+    // Inline code in the LABEL (not a trailing pill) is prose — it must be left alone.
+    assert.equal(core.autofixGanttDelimiter('- See `a->b` ref `Q1→Q2`'), '- See `a->b` ref `Q1..Q2`');
+  });
+
+  test('gantt retired-delimiter is autofixable; applyFix swaps it and re-lints clean', () => {
+    const src = `${FM}<!-- _class: gantt -->\n\n## Plan\n\n- Phase 1\n  - Design \`Q1→Q2\`\n`;
+    const f = ruleFor(src, 'gantt-retired-delimiter');
+    assert.equal(f.autofixable, true);
+    const fixed = core.applyFix(src, f);
+    assert.ok(fixed.includes('  - Design `Q1..Q2`')); // indentation preserved
+    assert.equal(core.lintTextWith(fixed, vocab).some((x) => x.rule === 'gantt-retired-delimiter'), false);
+  });
+
+  test('applyAllFixes clears every autofixable finding across passes', () => {
+    // Two inline-bold items on one slide: the rule flags the first per pass, so
+    // applyAllFixes must loop (re-lint after each fix) to clear both.
+    const src = `${FM}<!-- _class: cards-grid -->\n\n## H\n\n- **A.** one\n- **B.** two\n`;
+    const fixed = core.applyAllFixes(src, vocab);
+    assert.ok(fixed.includes('- A\n  - one'));
+    assert.ok(fixed.includes('- B\n  - two'));
+    assert.equal(core.lintTextWith(fixed, vocab).some((x) => x.autofixable), false);
+  });
+
+  test('applyAllFixes is a no-op on a clean deck', () => {
+    const src = `${FM}<!-- _class: cards-grid -->\n\n## H\n\n- A\n  - one\n`;
+    assert.equal(core.applyAllFixes(src, vocab), src);
   });
 });
 

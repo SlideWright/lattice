@@ -68,6 +68,24 @@ for (const m of manifests) {
 const components = buildCatalog(manifests, manifestBucket);
 const lenses = buildLenses();
 
+// Inline-validation vocabulary — the SAME deck-grammar vocab the Drawing Board's
+// Architect lints from, computed here at build time from the live manifests so the
+// playground editor's underlines recognise every component/modifier/region. Map
+// Sets are serialized to arrays for the page handoff (rehydrated by buildVocabSets).
+const { buildVocab } = require(join(repoRoot, 'lib/authoring', 'lint.js'));
+const _vocab = buildVocab(manifests);
+const lintVocab = {
+	names: [..._vocab.names],
+	modifiers: [..._vocab.modifiers],
+	universalModifiers: [..._vocab.universalModifiers],
+	mapRegions: Object.fromEntries(
+		Object.entries(_vocab.mapRegions || {}).map(([k, v]) => [k, { valid: [...v.valid], names: v.names }]),
+	),
+	finishNames: _vocab.finishNames || [],
+	splitNames: _vocab.splitNames || [],
+	capacity: _vocab.capacity || {},
+};
+
 // Starter deck = the hero component's sample (verdict-grid).
 const heroComp = manifests.find((m) => m.showcase && m.showcase.hero);
 const starter = (heroComp && heroComp.sample) || '<!-- _class: title silent -->\n\n# Lattice\n';
@@ -101,6 +119,7 @@ const pgData = {
 	engineUrl: url(pg + 'lattice-playground.js'),
 	palettes,
 	finishes: FINISH_NAMES,
+	lintVocab,
 	starter,
 };
 ---
