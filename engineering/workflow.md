@@ -291,6 +291,42 @@ graduates from "new" to "documented". Treat them like
 
 For inner-loop iteration, scoped test scripts (`test:palette`, `test:components`, …), `test:watch`, the pre-commit / pre-push / commit-msg hooks, coverage, and the integration-test cache all live in `engineering/development.md`. That file is the tooling reference; this one is the process reference.
 
+## Performance — measuring before/after (HARD RULE #19)
+
+A performance change ships with **evidence, not a claim**. The harness already
+exists (`tinybench`, `test/benchmark/engine-bench.mjs`); the discipline is to use
+it the same way every time and leave the numbers where they outlive the chat.
+
+The committed `test/benchmark/baseline.json` is the durable **"before"** — its diff
+in the PR *is* the permanent before→after record (no need to transcribe numbers by
+hand). Wall-clock timings are machine-relative, so the baseline is a **ratchet**,
+not an absolute, and `bench:check` is **variance-aware**: it flags a regression only
+when a dataset is slower beyond the band — `max(tolerancePct, baseline RME + current
+RME)` — never inside the noise.
+
+The loop for any perf-intent change:
+
+1. **Capture before.** On the *base* commit (or trust the committed baseline if it's
+   current), `npm run bench` — note the SUMMARY (slides, ms, slides/s).
+2. **Make the change**, then **capture after** on the branch: `npm run bench` again,
+   *same machine, same session* (cross-machine ms aren't comparable).
+3. **Add coverage.** If no dataset exercises the path you optimized, add one to the
+   `datasets` array in `engine-bench.mjs` so the win is tracked over time (HARD RULE
+   #19c). A perf PR that touches an unbenchmarked path should grow the bench.
+4. **Ratchet the baseline.** `npm run bench:bless` rewrites `baseline.json`; commit
+   it in the SAME PR. The file diff is your before→after of record.
+5. **Verify the band.** `npm run bench:check` must end *within variance* (exit 0).
+   Re-blessing a *slower* baseline is allowed only when the PR justifies the
+   trade-off explicitly (e.g. a correctness fix that costs measurable time).
+6. **Record it.** Fill the PR's `## Performance` section with the before/after table;
+   add a `CHANGELOG.md` line for user-visible wins; for a *large* perf effort, also
+   write an `engineering/decisions/YYYY-MM-DD-*.md` note.
+
+`bench:check` is **on-demand, not a blocking CI gate** — a wall-clock threshold in
+the merge train would be flaky on shared runners (see HARD RULE #19's note and the
+reasoning that keeps the bench out of `npm test`). It's a tool you and the reviewer
+run; the baseline-diff + `## Performance` section are what make the claim auditable.
+
 ## Two-renderer rule
 
 Any authoring transform must land in the shared kernels so every render path
