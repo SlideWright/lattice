@@ -21,7 +21,7 @@ map on one page — see `design/concepts.md`.
 ## 1. The problem this solves
 
 Lattice grew organically from a small palette and a handful of card
-layouts into 52 components, ~18 modifiers, five native chart engines, one
+layouts into 53 components, ~18 modifiers, five native chart engines, one
 external diagram pipeline (Mermaid), three rendering paths, and 14
 palettes. Each addition was internally consistent; collectively they
 had no shared vocabulary.
@@ -152,7 +152,7 @@ buckets plus five substance- or domain-defined buckets (`chart`,
 `diagram`, `math`, `code`, `legal`) that colocate components sharing a
 renderer kernel or domain vocabulary. The `function` field on every
 manifest is unchanged; the disk grouping is reflected in an optional
-`bucket` field. For 30 of the 52 components `bucket === function`; for
+`bucket` field. For 31 of the 53 components `bucket === function`; for
 the other 22 the bucket diverges to keep maintenance localized. See §9.
 
 ---
@@ -561,7 +561,7 @@ exceptions introduced for maintenance colocation:
 | `code`       | 2     | substance = syntax-highlighted source (function stays evidence for code, comparison for compare-code) |
 | `legal`      | 5     | domain = legal (function spans 4 families) |
 
-For 30 of the 52 components `bucket === function`. The 22 divergent
+For 31 of the 53 components `bucket === function`. The 22 divergent
 components declare their `bucket` explicitly in the manifest; their
 `function` field is unchanged in every case. Three reasons for
 divergence:

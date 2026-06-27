@@ -103,7 +103,7 @@ finish — and it lives where it should, at [lattice.style](https://lattice.styl
   red is reserved for alarm states. WCAG AA verified across every
   text-bearing surface. Preview them all in the
   [component reference](https://slidewright.github.io/lattice/components/).
-- **52 components.** Title, divider, content, diagram, cards-grid, compare-prose,
+- **53 components.** Title, divider, content, diagram, cards-grid, compare-prose,
   quote, timeline-list, big-number, split-panel, verdict-grid, more.
   Each component has an authoring contract documented in [design/skill.md](design/skill.md).
 - **Mermaid integration.** All 25 renderable Mermaid diagram types are

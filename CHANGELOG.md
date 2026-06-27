@@ -45,6 +45,21 @@ in patch versions.
   `gantt-retired-delimiter` (the retired `→`/`–`/`->` span delimiter → `..`), plus
   `applyAllFixes(source, vocab)` for batch application — shared by the editor, the
   Architect panel, and the CLI. `applyFix` now preserves the fixed line's indentation.
+- **`inventory` is now a real component — one content shape, four looks (the 53rd component).**
+  **Breaking:** the contract-tier classes `layout-ledger` / `layout-cards` / `layout-timeline` /
+  `layout-editorial` are retired; author `<!-- _class: inventory -->` (the default numbered
+  ledger) and the variants `inventory cards` / `inventory timeline` / `inventory editorial`
+  instead. The four looks always rendered the byte-identical inventory DOM (eyebrow · title ·
+  bold-lead items · insight); they were a separate "contract" tier that no count or doc surfaced
+  and that broke under Form. Promoting them to a first-class component with a default + three
+  variants means they now appear in the manifest, the component reference + machine catalog
+  (`dist/docs/components.json`), the playground autocomplete, and the count (**52 → 53
+  components**) — like every other component. The standalone contract machinery
+  (`lib/contracts/`, `layoutClasses()`, the contract drift-test union, the `CONTRACT_LAYOUT_SOURCES`
+  CSS bundle hook) is retired with it; `engine: inventory` registers as `STAGE_MIGRATED` so the
+  looks render bounded under Form. The demo deck moves `examples/contract-inventory.md` →
+  `examples/inventory.md`. Verified all four looks render light + dark.
+- **The library self-hosts its fonts — zero network dependency.** The engine no
   longer reaches for a CDN at render time: the Google-Fonts `@import` is replaced
   by a self-hosted `@font-face` block built from a canonical manifest
   (`lib/fonts/text-faces.js`), with the 17 text faces **and** KaTeX's 20 math faces

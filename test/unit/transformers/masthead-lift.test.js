@@ -155,15 +155,11 @@ describe('masthead-lift — stage-wrap eligibility', () => {
 
   test('ALL_LAYOUTS matches the manifests; STAGE_MIGRATED ⊆ ALL_LAYOUTS', () => {
     // ALL_LAYOUTS is browser-bundle-safe; this Node test asserts it can't drift
-    // from the manifest source of truth (so a new layout is classified, never
-    // silently wrapped). The truth is BOTH tiers: components (loadAll) AND the
-    // contract-tier Layouts (layoutClasses, lib/contracts/*/*.layouts.json), which
-    // `satisfies` a component's DOM with a css-only look and carry the same
-    // direct-child / cell-stage bodies. STAGE_MIGRATED only grows within that set
-    // as layouts are codemodded — it never contains a name that isn't a real layout.
+    // from the manifest source of truth (so a new component is classified, never
+    // silently wrapped). STAGE_MIGRATED only grows within that set as components
+    // are codemodded — it never contains a name that isn't a real component.
     const { loadAll } = require('../../../lib/components');
-    const { layoutClasses } = require('../../../lib/contracts');
-    const manifest = new Set([...loadAll().map((m) => m.name), ...layoutClasses()]);
+    const manifest = new Set(loadAll().map((m) => m.name));
     const all = kernel.ALL_LAYOUTS;
     assert.deepEqual([...manifest].filter((n) => !all.has(n)), [], 'ALL_LAYOUTS missing a manifest layout');
     assert.deepEqual([...all].filter((n) => !manifest.has(n)), [], 'ALL_LAYOUTS has a stale layout');

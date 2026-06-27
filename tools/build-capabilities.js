@@ -131,7 +131,6 @@ const SCRIPT_META = {
   'test:layout':              ['Test & verify', 'Unit scope: the layout system.'],
   'test:transformers':        ['Test & verify', 'Unit scope: transformer registry/adapters.'],
   'test:authoring':           ['Test & verify', 'Unit scope: authoring helpers (speaker notes, …).'],
-  'test:contracts':           ['Test & verify', 'Unit scope: component manifest/slot contracts.'],
   'test:core':                ['Test & verify', 'Unit scope: lib/core/* (token resolver, splits, marp bundle, …).'],
   'test:export':              ['Test & verify', 'Unit scope: the owned export writers (PPTX, …).'],
   'test:release':             ['Test & verify', 'Unit scope: the release tooling.'],

@@ -2,20 +2,20 @@
 marp: true
 theme: cuoio
 paginate: true
-footer: "SlideWright · inventory contract"
+footer: "SlideWright · inventory component"
 ---
 
 <!-- _class: title silent -->
 
-# One Content, Four Layouts
+# One Content, Four Looks
 
-`Contract · inventory`
+`Component · inventory`
 
-The next four slides carry the **byte-identical** content — same eyebrow, same heading, same four items, same insight. Only the Layout class changes: `layout-ledger` → `layout-cards` → `layout-timeline` → `layout-editorial`. Pure CSS, no re-author.
+The next four slides carry the **byte-identical** content — same eyebrow, same heading, same four items, same insight. Only the variant changes: `inventory` → `inventory cards` → `inventory timeline` → `inventory editorial`. Pure CSS, no re-author.
 
 ---
 
-<!-- _class: layout-ledger -->
+<!-- _class: inventory -->
 
 `Framework · Four Components`
 
@@ -30,7 +30,7 @@ The next four slides carry the **byte-identical** content — same eyebrow, same
 
 ---
 
-<!-- _class: layout-cards -->
+<!-- _class: inventory cards -->
 
 `Framework · Four Components`
 
@@ -45,7 +45,7 @@ The next four slides carry the **byte-identical** content — same eyebrow, same
 
 ---
 
-<!-- _class: layout-timeline -->
+<!-- _class: inventory timeline -->
 
 `Framework · Four Components`
 
@@ -60,7 +60,7 @@ The next four slides carry the **byte-identical** content — same eyebrow, same
 
 ---
 
-<!-- _class: layout-editorial -->
+<!-- _class: inventory editorial -->
 
 `Framework · Four Components`
 
@@ -77,8 +77,8 @@ The next four slides carry the **byte-identical** content — same eyebrow, same
 
 <!-- _class: closing silent -->
 
-# Same Content. Four Layouts.
+# Same Content. Four Looks.
 
-`Function held · Form swapped`
+`One component · four variants`
 
-Swapping the Layout for fixed Content is the Form axis moving alone — the contract guarantees the rest stays put.
+Swapping the variant on fixed content is the Form axis moving alone — `inventory` keeps the eyebrow, title, items, and insight identical; only the look changes.

@@ -1,6 +1,7 @@
 ---
-status: proposed
+status: superseded
 summary: Design spec for contracts and layout-swapping as the third Workbench leg — same content, swap layout via one class
+superseded-by: 2026-06-27-inventory-component-retire-contract-tier.md
 ---
 
 # Contracts and Layout-swapping — the third Workbench leg
