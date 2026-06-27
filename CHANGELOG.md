@@ -189,6 +189,20 @@ in patch versions.
 
 ### Changed
 
+- **Flex-shop conversion, hard tier — `pricing`, `logo-wall`, `citation-card.split`,
+  `verdict-grid`, `cards-grid` drop CSS grid for flex.** `pricing` / `logo-wall` were
+  `repeat(N,1fr)` tilings → flex-wrap with `width: 100%/N − …` per-cell (the matrix-2x2 idiom;
+  `width`, not a `flex`-shorthand calc basis, which renders unreliably); `citation-card.split`
+  was a 2-column row → two `flex:1` columns; `verdict-grid` and `cards-grid` were
+  `1fr 1fr + grid-auto-rows:1fr` 2-col boards (with a last-odd full-width span, and `cards-grid`
+  cards an inner title|badge + full-width-body grid) → flex-wrap whose wrapped rows stretch to
+  share the stage (`align-content:stretch`), each card the actors two-cells-then-full-width
+  pattern; `.three` / `.four` set the per-card width. Look-preserving in light + dark across
+  every variant. **The "hard tier" was largely mislabelled** — reassessed against the proven
+  flex patterns, these were nested-1D or fixed tilings; the equal-height-variable-rows case
+  that flex supposedly couldn't do is just `align-content:stretch` + matrix `width`. (Still
+  pending: `kpi`'s bespoke variants and `citation-card`'s `.margin` / `.triptych`, the only
+  genuine multi-track 2-D layouts.)
 - **Flex-shop conversion, moderate tier — `actors`, `authority-chain`, `agenda`,
   `list-criteria`, `q-and-a` drop CSS grid for flex.** Each row's `grid-template-columns`
   layout is reproduced with flex: the `actors` and `authority-chain` rows use the
