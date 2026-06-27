@@ -180,7 +180,7 @@ function renderDocs(m) {
   const variantDocs = m.variantDocs || {};
   const variantKeys = Array.isArray(m.variants) ? m.variants.filter((v) => variantDocs[v]) : [];
   if (variantKeys.length) {
-    lines.push('## Variants (layout-specific)');
+    lines.push('## Variants (component-specific)');
     lines.push('');
     for (const v of variantKeys) {
       const vd = variantDocs[v];
@@ -198,7 +198,7 @@ function renderDocs(m) {
 
   lines.push('## Universal modifiers');
   lines.push('');
-  lines.push('This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.');
+  lines.push('This component accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.');
   lines.push('');
 
   if (Array.isArray(m.related) && m.related.length) {

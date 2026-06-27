@@ -60,7 +60,7 @@ Use when a process or experience needs charting as a horizontal sequence of mome
 └─────────────────────────────────────────┘
 ```
 
-## Variants (layout-specific)
+## Variants (component-specific)
 
 ### `heatmap` — Heatmap — mood-tinted chips
 
@@ -144,7 +144,7 @@ Chip widths scale to the `+volume` token; chip colour still encodes mood. Two di
 
 ## Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This component accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 ## Related components
 

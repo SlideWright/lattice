@@ -138,7 +138,7 @@ const nextSteps = [
 	{
 		href: url('components/'),
 		title: 'Component reference',
-		body: 'Every layout with a live preview and an in-browser editor — themable in all palettes.',
+		body: 'Every component with a live preview and an in-browser editor — themable in all palettes.',
 		cta: 'Browse components',
 	},
 ];
@@ -153,7 +153,7 @@ const nextSteps = [
 		<title>Lattice — boardroom-quality slide decks from Markdown</title>
 		<meta
 			name="description"
-			content="Lattice turns a plain Markdown file into a boardroom-quality slide deck. Pick a named layout per slide; the engine assembles every deck against one palette."
+			content="Lattice turns a plain Markdown file into a boardroom-quality slide deck. Pick a named component per slide; the engine assembles every deck against one palette."
 		/>
 		<link rel="icon" type="image/svg+xml" href={url('favicon.svg')} />
 		<!-- Set palette/mode before first paint to avoid a flash. Shares the
@@ -219,7 +219,7 @@ const nextSteps = [
 				<div class="wrap">
 					<SectionHead eyebrow="One source, every palette" title="Change one line. Restyle the whole deck.">
 						Watch a single slide move through every palette — in light or dark. Brand colours live in one file and
-						the layouts never name a colour, so a whole deck restyles by editing one <code class="font-mono text-[0.88em] text-primary">theme:</code> line.
+						the components never name a colour, so a whole deck restyles by editing one <code class="font-mono text-[0.88em] text-primary">theme:</code> line.
 					</SectionHead>
 					<RestyleShowcase client:visible data={restyleData} />
 				</div>

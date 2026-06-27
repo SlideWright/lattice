@@ -60,7 +60,7 @@ Use as the second slide of any multi-section deck. Numbers are generated; author
 └─────────────────────────────────────────┘
 ```
 
-## Variants (layout-specific)
+## Variants (component-specific)
 
 ### `progress-1` — Progress · section 1
 
@@ -225,7 +225,7 @@ A progress checklist: with `progress-N`, sections already covered get a tick, th
 
 ## Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This component accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 ## Related components
 

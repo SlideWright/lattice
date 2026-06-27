@@ -133,7 +133,7 @@ Last slide of every deck. Restates the takeaway or call-to-action. Like title, s
 └─────────────────────────────────────────┘
 ```
 
-#### Variants (layout-specific)
+#### Variants (component-specific)
 
 ##### `numbered` — Numbered — independent closing counter
 
@@ -149,7 +149,7 @@ Stamps an auto-incrementing closing number, independent of the divider section c
 
 #### Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This component accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 #### Related components
 
@@ -219,7 +219,7 @@ Marks the start of a major section. Use sparingly — every divider is a context
 └─────────────────────────────────────────┘
 ```
 
-#### Variants (layout-specific)
+#### Variants (component-specific)
 
 ##### `numbered` — Numbered — auto-incrementing section index
 
@@ -247,7 +247,7 @@ Drops the dark canvas for the standard bright body-slide background, centers the
 
 #### Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This component accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 #### Related components
 
@@ -319,7 +319,7 @@ One-line subtitle that frames the deck.
 
 #### Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This component accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 #### Related components
 
@@ -393,7 +393,7 @@ Use to make one metric land. The number should be the headline — supporting te
 
 #### Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This component accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 #### Related components
 
@@ -466,7 +466,7 @@ The explanatory paragraph that develops the heading goes here. Keep the slide un
 
 #### Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This component accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 #### Related components
 
@@ -536,7 +536,7 @@ Use to land a phrase verbatim — customer voice, expert claim, mission statemen
 
 #### Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This component accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 #### Related components
 
@@ -613,7 +613,7 @@ One-sentence framing paragraph explaining what the points cover.
 └─────────────────────────────────────────┘
 ```
 
-#### Variants (layout-specific)
+#### Variants (component-specific)
 
 ##### `metric` — Metric — hero number owns the room
 
@@ -712,7 +712,7 @@ One-sentence framing paragraph.
 
 #### Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This component accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 #### Related components
 
@@ -793,7 +793,7 @@ Use to show 'who owns what' across a process, scoring policy, or org chart. Two-
 
 #### Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This component accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 #### Related components
 
@@ -868,7 +868,7 @@ Use as the second slide of any multi-section deck. Numbers are generated; author
 └─────────────────────────────────────────┘
 ```
 
-#### Variants (layout-specific)
+#### Variants (component-specific)
 
 ##### `progress-1` — Progress · section 1
 
@@ -1033,7 +1033,7 @@ A progress checklist: with `progress-N`, sections already covered get a tick, th
 
 #### Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This component accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 #### Related components
 
@@ -1116,7 +1116,7 @@ Use when the audience needs to compare or scan a small set of options at a glanc
 └─────────────────────────────────────────┘
 ```
 
-#### Variants (layout-specific)
+#### Variants (component-specific)
 
 ##### `four` — Four columns
 
@@ -1173,7 +1173,7 @@ Authored as `ol` (`1.` source), the grid stamps a flush top-left accent corner t
 
 #### Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This component accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 #### Related components
 
@@ -1250,7 +1250,7 @@ Use when the items want vertical reading order — sequential exploration rather
 └─────────────────────────────────────────┘
 ```
 
-#### Variants (layout-specific)
+#### Variants (component-specific)
 
 ##### `horizontal` — Horizontal cards
 
@@ -1288,7 +1288,7 @@ Authored as `ol` (`1.` source). Each row carries a flush corner number — use w
 
 #### Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This component accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 #### Related components
 
@@ -1362,7 +1362,7 @@ Use for completion reports, readiness audits, or pre-flight checks. State marker
 
 #### Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This component accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 #### Related components
 
@@ -1437,7 +1437,7 @@ Use for jargon-heavy decks where the audience needs a reference page. The runtim
 
 #### Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This component accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 #### Related components
 
@@ -1511,7 +1511,7 @@ Use when the items are genuinely a flat list of one-line points. The default ren
 └─────────────────────────────────────────┘
 ```
 
-#### Variants (layout-specific)
+#### Variants (component-specific)
 
 ##### `takeaway` — Takeaway — hairline single-line points
 
@@ -1603,7 +1603,7 @@ Replaces the `principles` counter with a centered dot.
 
 #### Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This component accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 #### Related components
 
@@ -1677,7 +1677,7 @@ Use for compact reference tables: glossary-style entries, key/value pairs, specs
 └─────────────────────────────────────────┘
 ```
 
-#### Variants (layout-specific)
+#### Variants (component-specific)
 
 ##### `def` — Editorial (def)
 
@@ -1815,7 +1815,7 @@ Renders the register tag as a hairline-bordered outline pill instead of the fill
 
 #### Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This component accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 #### Related components
 
@@ -1890,7 +1890,7 @@ Use for the credibility slide — the 'trusted by' / 'our funders' / 'participat
 └─────────────────────────────────────────┘
 ```
 
-#### Variants (layout-specific)
+#### Variants (component-specific)
 
 ##### `color` — Color — keep brand colours
 
@@ -1940,7 +1940,7 @@ Tightens to six columns with shorter cells for a longer roster — a member dire
 
 #### Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This component accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 #### Related components
 
@@ -2019,7 +2019,7 @@ Use to pre-empt the room: line up the three or four hardest questions the audien
 └─────────────────────────────────────────┘
 ```
 
-#### Variants (layout-specific)
+#### Variants (component-specific)
 
 ##### `spine` — Spine — sequential walkthrough
 
@@ -2106,7 +2106,7 @@ Gives a single question and its answer the whole slide, at display weight — fo
 
 #### Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This component accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 #### Related components
 
@@ -2184,7 +2184,7 @@ Use to weigh two approaches against each other in body text. Add the `chosen` or
 └─────────────────────────────────────────┘
 ```
 
-#### Variants (layout-specific)
+#### Variants (component-specific)
 
 ##### `transition` — Transition — before/after state change
 
@@ -2295,7 +2295,7 @@ Strikes the second option's title and dims its card — the inverse of `chosen`.
 
 #### Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This component accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 #### Related components
 
@@ -2376,7 +2376,7 @@ Use when you have 3+ options or 4+ rows of criteria. Wider data than compare-pro
 
 #### Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This component accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 #### Related components
 
@@ -2447,7 +2447,7 @@ Use after a comparison slide to land the decision. The justifications render as 
 └─────────────────────────────────────────┘
 ```
 
-#### Variants (layout-specific)
+#### Variants (component-specific)
 
 ##### `banner-tag` — Banner tag — slot label as full-width header strip
 
@@ -2468,7 +2468,7 @@ Flips each card from a flush-corner label tag into a full-width header strip. Us
 
 #### Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This component accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 #### Related components
 
@@ -2548,7 +2548,7 @@ Use for categorical 2×2 reasoning when the items are fixed and you control whic
 
 #### Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This component accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 #### Related components
 
@@ -2630,7 +2630,7 @@ Use for the plans / packages slide — two to four tiers compared on price and f
 └─────────────────────────────────────────┘
 ```
 
-#### Variants (layout-specific)
+#### Variants (component-specific)
 
 ##### `two` — Two — a pair of tiers
 
@@ -2684,7 +2684,7 @@ Four columns for a complete ladder from free to enterprise. Pair with `compact` 
 
 #### Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This component accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 #### Related components
 
@@ -2759,7 +2759,7 @@ Use when an amendment's diff is the slide. The blockquote carries the redlined t
 └─────────────────────────────────────────┘
 ```
 
-#### Variants (layout-specific)
+#### Variants (component-specific)
 
 ##### `annotated` — Annotated — numbered margin notes
 
@@ -2837,7 +2837,7 @@ Stacks the prior text (struck, labelled OLD — prior text) above the current te
 
 #### Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This component accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 #### Related components
 
@@ -2920,7 +2920,7 @@ One-sentence context paragraph explaining the stakes.
 
 #### Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This component accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 #### Related components
 
@@ -3011,7 +3011,7 @@ Use to evaluate 2–4 options against the same set of criteria, with pass/partia
 
 #### Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This component accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 #### Related components
 
@@ -3093,7 +3093,7 @@ Use to enumerate the criteria a decision must meet, in priority order. Numbering
 
 #### Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This component accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 #### Related components
 
@@ -3167,7 +3167,7 @@ Use for richer sequential processes where each step needs a paragraph rather tha
 └─────────────────────────────────────────┘
 ```
 
-#### Variants (layout-specific)
+#### Variants (component-specific)
 
 ##### `vertical` — Vertical — strip flips row to column
 
@@ -3328,7 +3328,7 @@ Counter format becomes `I`, `II`, `III` (composes with any prefix).
 
 #### Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This component accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 #### Related components
 
@@ -3409,7 +3409,7 @@ Use for KPI dashboards with status framing — current value, target, trend, att
 └─────────────────────────────────────────┘
 ```
 
-#### Variants (layout-specific)
+#### Variants (component-specific)
 
 ##### `attention` — Attention — the slipping metric leads
 
@@ -3541,7 +3541,7 @@ Hero KPI gets a paragraph of body copy and a row of context pills; the supportin
 
 #### Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This component accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 #### Related components
 
@@ -3625,7 +3625,7 @@ Use for at-a-glance metric rows — quarterly results, headline KPIs. Each tile 
 
 #### Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This component accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 #### Related components
 
@@ -3701,7 +3701,7 @@ Swap the bg image below for your own asset — any aspect. The layout reads its 
 └─────────────────────────────────────────┘
 ```
 
-#### Variants (layout-specific)
+#### Variants (component-specific)
 
 ##### `clean` — Clean — the default floated card (auto)
 
@@ -3789,7 +3789,7 @@ Text leads from the right; image anchors from the left.
 
 #### Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This component accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 #### Related components
 
@@ -3868,7 +3868,7 @@ Use for a pipeline that narrows — a sales / conversion funnel, a hiring or gra
 
 #### Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This component accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 #### Related components
 
@@ -3948,7 +3948,7 @@ Use for project plans with overlapping or staggered tasks. Each task is a bar on
 
 #### Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This component accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 #### Related components
 
@@ -4022,7 +4022,7 @@ Use when a process or experience needs charting as a horizontal sequence of mome
 └─────────────────────────────────────────┘
 ```
 
-#### Variants (layout-specific)
+#### Variants (component-specific)
 
 ##### `heatmap` — Heatmap — mood-tinted chips
 
@@ -4106,7 +4106,7 @@ Chip widths scale to the `+volume` token; chip colour still encodes mood. Two di
 
 #### Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This component accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 #### Related components
 
@@ -4187,7 +4187,7 @@ Use for status snapshots: what's in each lane (todo/doing/done or similar). Each
 └─────────────────────────────────────────┘
 ```
 
-#### Variants (layout-specific)
+#### Variants (component-specific)
 
 ##### `keyline` — Keyline — colour by category
 
@@ -4261,7 +4261,7 @@ Each lane is tinted by stage — backlog through done — so the shape of the fl
 
 #### Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This component accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 #### Related components
 
@@ -4317,7 +4317,7 @@ Use when the story is geographic — program reach, service territories, where t
 | `regions` | `ul > li` | yes | One li per region (or group). Lead with the name — world (default): full (`Brazil`), ISO (`BR`), alias (`Burma`), or a group (`European Union`, `Sub-Saharan Africa`, `Global South`) that expands to its members; US (`map us`): full (`California`), postal (`CA`), or abbreviation (`Calif.`) — then a trailing inline-code value: `Brazil \`4.2\``. In choropleth the value drives the ramp; in highlight it's an optional legend label. Names the basemap can't resolve surface as muted ‘?’ legend rows. |
 | `detail` | `li > ul` | no | Optional nested sublist under a region. Drives two surfaces from one source (shared with pie/funnel/quadrant via the chart-family mark-detail substrate): (1) Present/Practice — the kernel tags the region `<path>`(s) with `data-mark` (a group shares one index across all its regions) and emits the sublist as an inert `<template class="chart-detail">` the reveal layer reads; (2) the static PDF — the same detail is folded into the slide's speaker note (`Region (value): item · item`) as a Marp-faithful comment that notes-core lifts into the per-slide note channel. The note rides the existing channel, so the chart pixels stay byte-identical. A map with no sublists emits no note and is unchanged. |
 
-#### Variants (layout-specific)
+#### Variants (component-specific)
 
 ##### `us` — us
 
@@ -4389,7 +4389,7 @@ Naming a continent or bloc fills every member; `grouped` clusters the legend by 
 
 #### Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This component accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 #### Related components
 
@@ -4463,7 +4463,7 @@ Use for part-to-whole breakdowns with three to six slices. Add the `donut` modif
 └─────────────────────────────────────────┘
 ```
 
-#### Variants (layout-specific)
+#### Variants (component-specific)
 
 ##### `donut` — Donut — hollow centre
 
@@ -4509,7 +4509,7 @@ Nearly half went to producing decks; the deciding itself was the smallest slice.
 
 #### Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This component accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 #### Related components
 
@@ -4584,7 +4584,7 @@ Use for status-tracking across multiple parallel items (project readiness, OKR p
 
 #### Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This component accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 #### Related components
 
@@ -4671,7 +4671,7 @@ Effort estimated in story-points; reach as percent of addressable teams.
 └─────────────────────────────────────────┘
 ```
 
-#### Variants (layout-specific)
+#### Variants (component-specific)
 
 ##### `bubble` — Bubble — third value sizes the dot
 
@@ -4810,7 +4810,7 @@ Composable modifier: drops the quadrant fills for a faint grid and bare dots. La
 
 #### Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This component accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 #### Related components
 
@@ -4900,7 +4900,7 @@ Use to compare 2–4 options across the same 4–8 criteria. Each option becomes
 └─────────────────────────────────────────┘
 ```
 
-#### Variants (layout-specific)
+#### Variants (component-specific)
 
 ##### `target` — Target — actual vs reference ring
 
@@ -5120,7 +5120,7 @@ Meridian leads on performance and support; Helios is the value pick across prici
 
 #### Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This component accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 #### Related components
 
@@ -5197,7 +5197,7 @@ State markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, – in flight, ○ p
 └─────────────────────────────────────────┘
 ```
 
-#### Variants (layout-specific)
+#### Variants (component-specific)
 
 ##### `horizons` — Horizons — three-horizon planning framing
 
@@ -5278,7 +5278,7 @@ Softly bands the phase columns so the dated headers read as a calendar cadence; 
 
 #### Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This component accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 #### Related components
 
@@ -5368,7 +5368,7 @@ How a draft moves from author to archive.
 └─────────────────────────────────────────┘
 ```
 
-#### Variants (layout-specific)
+#### Variants (component-specific)
 
 ##### `lr` — Left-to-right
 
@@ -5432,7 +5432,7 @@ Routes skip and back edges as single Bézier arcs instead of the default orthogo
 
 #### Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This component accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 #### Related components
 
@@ -5509,7 +5509,7 @@ Use for milestone history or annotated timelines. Each event sits on a left-to-r
 
 #### Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This component accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 #### Related components
 
@@ -5580,7 +5580,7 @@ Use for qualitative summaries — retrospective themes, survey verbatims. Word s
 └─────────────────────────────────────────┘
 ```
 
-#### Variants (layout-specific)
+#### Variants (component-specific)
 
 ##### `constellation` — Constellation — airy, two-tone
 
@@ -5662,7 +5662,7 @@ The widest size spread and steepest curve make the top term tower over the rest.
 
 #### Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This component accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 #### Related components
 
@@ -5744,7 +5744,7 @@ flowchart LR
 
 #### Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This component accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 #### Related components
 
@@ -5824,7 +5824,7 @@ $$ y = f(x) $$
 └─────────────────────────────────────────┘
 ```
 
-#### Variants (layout-specific)
+#### Variants (component-specific)
 
 ##### `feature` — Feature — hero equation + legend
 
@@ -5992,7 +5992,7 @@ $$
 
 #### Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This component accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 #### Related components
 
@@ -6072,7 +6072,7 @@ app.post('/api/v2/auth', async (req, res) => {
 
 #### Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This component accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 #### Related components
 
@@ -6157,7 +6157,7 @@ function after() {
 
 #### Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This component accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 #### Related components
 
@@ -6242,7 +6242,7 @@ Use when the audience needs to see how a rule descends: what the statute says, h
 └─────────────────────────────────────────┘
 ```
 
-#### Variants (layout-specific)
+#### Variants (component-specific)
 
 ##### `branching` — Branching — statute root with child branches
 
@@ -6332,7 +6332,7 @@ Lays the tiers out as bracketed cards joined by strong connectors, emphasising t
 
 #### Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This component accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 #### Related components
 
@@ -6408,7 +6408,7 @@ Use when one citation IS the slide. The blockquote carries the verbatim language
 └─────────────────────────────────────────┘
 ```
 
-#### Variants (layout-specific)
+#### Variants (component-specific)
 
 ##### `pull-quote` — Pull-quote treatment
 
@@ -6482,7 +6482,7 @@ Frames the verbatim quote and the gloss items as three panels, with the citation
 
 #### Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This component accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 #### Related components
 
@@ -6559,7 +6559,7 @@ Filled = applies, half = partial, empty = exempt.
 └─────────────────────────────────────────┘
 ```
 
-#### Variants (layout-specific)
+#### Variants (component-specific)
 
 ##### `heat` — Heat — risk-axis palette
 
@@ -6644,7 +6644,7 @@ Each lane stripe signals that the row is its own regime, not a rank.
 
 #### Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This component accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 #### Related components
 
@@ -6727,7 +6727,7 @@ Use when a quarter's regulatory motion needs a single-slide digest. Each row car
 └─────────────────────────────────────────┘
 ```
 
-#### Variants (layout-specific)
+#### Variants (component-specific)
 
 ##### `timeline` — Timeline — chronological spine instead of ranked ledger
 
@@ -6848,7 +6848,7 @@ Groups items under colour-coded h3 bands by the kind of change — Added, Amende
 
 #### Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This component accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 #### Related components
 
@@ -6928,7 +6928,7 @@ Use when three or four parallel jurisdictions need to read at a glance: each row
 └─────────────────────────────────────────┘
 ```
 
-#### Variants (layout-specific)
+#### Variants (component-specific)
 
 ##### `hierarchy` — Authority pyramid
 
@@ -6999,7 +6999,7 @@ Pivots to a markdown table — columns for jurisdiction, citation, obligation, s
 
 #### Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This component accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 #### Related components
 

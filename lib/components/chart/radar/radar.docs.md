@@ -74,7 +74,7 @@ Use to compare 2–4 options across the same 4–8 criteria. Each option becomes
 └─────────────────────────────────────────┘
 ```
 
-## Variants (layout-specific)
+## Variants (component-specific)
 
 ### `target` — Target — actual vs reference ring
 
@@ -294,7 +294,7 @@ Meridian leads on performance and support; Helios is the value pick across prici
 
 ## Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This component accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 ## Related components
 

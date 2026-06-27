@@ -1,10 +1,10 @@
 ---
 title: Authoring decks
-description: How a Lattice deck is structured — front matter, slide separators, layouts, and the authoring contract.
+description: How a Lattice deck is structured — front matter, slide separators, components, and the authoring contract.
 ---
 
 A Lattice deck is one Markdown file. You compose it from **named
-layouts**, one per slide, and the engine assembles each slide against
+components**, one per slide, and the engine assembles each slide against
 the deck's palette. You never set fonts, colors, or positions by hand.
 
 ## Anatomy of a deck
@@ -49,23 +49,42 @@ Three things to notice:
 3. **`<!-- _class: NAME -->`** picks the layout for that slide. The
    layout decides the structure; your Markdown fills the slots.
 
-## Picking a layout
+## Picking a component
 
-Each layout has a contract: which headings, lists, and slots it expects,
-and what it's for. The layouts are organized into twelve buckets by the
+Each component has a contract: which headings, lists, and slots it expects,
+and what it's for. The components are organized into twelve buckets by the
 job they do — anchor, statement, inventory, comparison, progression,
 evidence, imagery, plus the substance buckets (chart, diagram, math,
 code) and the legal domain set.
 
 The fastest way to choose is the **[component reference](/components/)**:
-an interactive catalog of every layout with its slots, variants, when to
+an interactive catalog of every component with its slots, variants, when to
 reach for it, and when not to — and you can preview the whole thing in
 any Lattice palette. The same content is also available as a single
-[Markdown document](https://github.com/slidewright/lattice/blob/main/reference/components.md).
+[Markdown document](https://github.com/slidewright/lattice/blob/main/dist/docs/components.md).
+
+## Swappable renderings (variants)
+
+A few components share one authored content shape but offer several
+interchangeable looks — you change one class and the same Markdown re-renders
+a different way, no re-authoring. The **inventory** content shape (an eyebrow,
+a title, a bulleted list with bold leads, and a closing insight) has four such
+renderings:
+
+- `layout-ledger` — numbered rows with hairline rules and an accent insight band
+- `layout-cards` — an equal grid of cards with the insight as a centred pull-quote
+- `layout-timeline` — a horizontal numbered run with the insight above
+- `layout-editorial` — a magazine split: the insight beside a ruled item column
+
+Write the list once, then swap `<!-- _class: layout-ledger -->` for
+`layout-cards` (and so on) to try each. These are variants of one content
+shape, not separate components, so they aren't part of the 52-component count.
+See [`examples/contract-inventory.md`](https://github.com/slidewright/lattice/blob/main/examples/contract-inventory.md)
+for one deck that renders the same content all four ways.
 
 ## The card-style nesting rule
 
-Card-style layouts (`cards-grid`, `cards-stack`,
+Card-style components (`cards-grid`, `cards-stack`,
 `decision`, `verdict-grid`, and others) expect **nested** list items,
 not inline bold titles:
 
@@ -74,9 +93,9 @@ not inline bold titles:
   - body text continues here
 ```
 
-Not `- **Title.** body text` — the autobold rule on those layouts would
+Not `- **Title.** body text` — the autobold rule on those components would
 make the body inherit the title's weight. The component reference flags
-this per layout, and the repo's commit-time validator catches it across
+this per component, and the repo's commit-time validator catches it across
 every deck.
 
 ## Modifiers
@@ -151,7 +170,7 @@ finish: sketch      # finish — the whole-deck voice
 
 The finish is **palette-blind** — it wobbles type and geometry, never
 colour, so it pairs with any theme. It also **composes** with per-slide
-layouts: `finish: sketch` plus `<!-- _class: cards-grid -->` renders a
+components: `finish: sketch` plus `<!-- _class: cards-grid -->` renders a
 hand-drawn grid with no extra markup. A misspelled value (`finish: sketchh`)
 is caught by the deck linter rather than silently rendering the baseline.
 
@@ -225,5 +244,5 @@ than going unstyled, and the drawer flags it.
   authoring contract.
 - [Drawing Board](/drawing-board/) — author a full deck in the
   browser (autocomplete, live linting).
-- [`reference/skill.md`](https://github.com/slidewright/lattice/blob/main/reference/skill.md)
+- [`design/skill.md`](https://github.com/slidewright/lattice/blob/main/design/skill.md)
   in the repo — the full deck-authoring contract.

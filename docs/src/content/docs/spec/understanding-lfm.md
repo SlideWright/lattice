@@ -48,12 +48,12 @@ A slide picks its Lattice layout with a one-line comment:
 
 Because it is an HTML comment, it is **invisible everywhere else** — GitHub
 simply doesn't show it. To Lattice, it says "lay this slide out as a
-side-by-side comparison." You browse the available layouts in the
+side-by-side comparison." You browse the available components in the
 [component reference](/components/); the comment is how you pick one.
 
 ### 2. The card shape
 
-Many layouts arrange content into cards — a title with a line or two beneath
+Many components arrange content into cards — a title with a line or two beneath
 it. You write that as a nested list, which reads as a perfectly ordinary
 outline anywhere else:
 

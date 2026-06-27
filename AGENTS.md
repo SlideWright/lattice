@@ -24,7 +24,7 @@ Every component is described in two generated, always-current files:
 
 - **`dist/docs/components.json`** — machine-readable. One read gives you
   every component's axes, **search tags**, slots, authoring skeleton,
-  **`capacity`** (how many elements the layout holds), and
+  **`capacity`** (how many elements the component holds), and
   `whenToUse` / `antiPatterns` / `related` prose, plus the controlled
   vocabularies. Load this to select a component.
 - **`dist/docs/components.md`** — the same, human-readable; the browsable
@@ -37,13 +37,13 @@ Every component is described in two generated, always-current files:
 the component's `whenToUse` / `antiPatterns`. Don't pick from memory; the
 catalog is the source of truth.
 
-**Count first, then filter by capacity.** A layout overflows when you pour
+**Count first, then filter by capacity.** A component overflows when you pour
 more elements into it than it holds — the single most common authoring slip.
 Before committing to a `_class`, **count your content** (how many items / rows
 / columns / code lines) and check the component's **`capacity`** in
 `components.json`: `{ axis, sweet, soft, hard, escalateTo }`. `sweet` is the
 ideal count; past `soft` it crowds; past `hard` it overflows. If your count
-exceeds `hard`, **don't pick that layout** — use one of its `escalateTo`
+exceeds `hard`, **don't pick that component** — use one of its `escalateTo`
 targets or split the content across slides. `lint:deck` warns when a slide
 exceeds capacity (rules `capacity-crowd` / `capacity-overflow`), but choosing
 by capacity up front is the fix; the warning is the backstop. See
@@ -59,7 +59,7 @@ edit deck.md  →  npm run lint:deck -- deck.md  →  fix  →  render
   markdown footguns the docs warn about. Run it on every draft and fix all
   errors before rendering. Rules: card-style slides forbid the inline
   `- **Title.** body` shape (use the nested `- Title` / `  - body` shape);
-  ordered-list "statement" layouts forbid `**bold**` inside items; class
+  ordered-list "statement" components forbid `**bold**` inside items; class
   typos are flagged. `--json` gives machine-readable output; `--strict`
   fails on warnings too.
 - **Render** (needs a Chromium; set `CHROME_PATH` in the cloud sandbox —
@@ -72,7 +72,7 @@ edit deck.md  →  npm run lint:deck -- deck.md  →  fix  →  render
 
 ## The rules agents most often break
 
-- **Card-style layouts use nested bullets, not inline bold.**
+- **Card-style components use nested bullets, not inline bold.**
   `- Title` then `  - body`, never `- **Title.** body`. The linter catches
   this; so does the commit gate.
 - **Title slides:** `title silent` + a backtick-wrapped `` `eyebrow` `` +

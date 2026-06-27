@@ -67,7 +67,7 @@ Use for status snapshots: what's in each lane (todo/doing/done or similar). Each
 └─────────────────────────────────────────┘
 ```
 
-## Variants (layout-specific)
+## Variants (component-specific)
 
 ### `keyline` — Keyline — colour by category
 
@@ -141,7 +141,7 @@ Each lane is tinted by stage — backlog through done — so the shape of the fl
 
 ## Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This component accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 ## Related components
 

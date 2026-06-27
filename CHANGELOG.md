@@ -347,6 +347,18 @@ in patch versions.
 
 ### Fixed
 
+- **Docs say "component", and the counts/links are honest.** Standardized the user-facing
+  vocabulary on **component** (retiring "layout" as a synonym) across the README, the docs-site
+  pages and guides, `AGENTS.md`, and the component-reference generator — so a reader meets one
+  word for the 52 things, not three. Alongside: three docs-site links into a non-existent
+  `reference/` directory now point at the real files (`design/theming.md`, `dist/docs/components.md`,
+  `design/skill.md`); the themes guide's palette list adds the omitted `carta` (now 14, matching
+  the README); and `engineering/marp-independence.md`'s stale "53" count is corrected to 52. The
+  four inventory **variants** (`layout-ledger`/`-cards`/`-timeline`/`-editorial` — one authored
+  content shape, four interchangeable looks) are now documented in the authoring guide as variants
+  (not counted as components; the headline stays an accurate "52 components"). Internal code
+  identifiers and the `layout-*` class names are unchanged; the deeper model/spec prose and the
+  per-component `.docs.md` source are tracked for a follow-up (#560).
 - **The inventory contract Layouts (`layout-ledger` / `layout-cards` / `layout-timeline` /
   `layout-editorial`) render again under Form (the default) — they were silently falling back
   to a plain list.** Form wraps a migrated layout's body in the `.cell-stage` cell, but these

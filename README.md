@@ -9,7 +9,7 @@
 
 A Markdown slide-deck engine for boardroom-quality decks — PDF, HTML, PPTX, or PNG sets.
 
-Lattice produces decks where every slide is a deliberate layout — title,
+Lattice produces decks where every slide is a deliberate component — title,
 diagram, compare-prose, split-panel, verdict-grid, and 20+ more —
 themed through a single CSS palette and rendered to your delivery format
 with no manual formatting work. Decks read as ink-on-paper and pass
@@ -23,7 +23,7 @@ decompositions; project leads get gantt charts, kanban boards, and
 roadmaps; engineers and architects get all 25 Mermaid diagram types and
 side-by-side code diffs; lawyers and compliance get statute stacks,
 authority chains, and obligation matrices; analysts get radar, quadrant,
-and KPI layouts. Fifty-two layouts, one syntax you already know — no
+and KPI components. Fifty-two components, one syntax you already know — no
 drawing tools, no boxes, no pasted screenshots.
 
 Lattice is the engine at the heart of **Lattice Style** — a project born
@@ -66,7 +66,7 @@ building around it.
 A *lattice* is a frame of crossed members that holds everything it carries
 in alignment — rigid where it must be, open everywhere else. That's the
 engine: a structural frame for an argument, where every slide sits on the
-same grid, the same palette, the same deliberate layouts. You bring the
+same grid, the same palette, the same deliberate components. You bring the
 meaning; the lattice keeps it straight.
 
 *Style* is the other half, and it means two things at once. The literal one:
@@ -85,7 +85,7 @@ finish — and it lives where it should, at [lattice.style](https://lattice.styl
 > **Documentation:** <https://slidewright.github.io/lattice/> — intro,
 > getting started, authoring and theming guides, and the interactive
 > [component reference](https://slidewright.github.io/lattice/components/)
-> (every layout, themable in any palette). Built from `docs/`; see
+> (every component, themable in any palette). Built from `docs/`; see
 > [`docs/README.md`](docs/README.md).
 
 ## What you get
@@ -103,9 +103,9 @@ finish — and it lives where it should, at [lattice.style](https://lattice.styl
   red is reserved for alarm states. WCAG AA verified across every
   text-bearing surface. Preview them all in the
   [component reference](https://slidewright.github.io/lattice/components/).
-- **52 layouts.** Title, divider, content, diagram, cards-grid, compare-prose,
+- **52 components.** Title, divider, content, diagram, cards-grid, compare-prose,
   quote, timeline-list, big-number, split-panel, verdict-grid, more.
-  Each layout has an authoring contract documented in [design/skill.md](design/skill.md).
+  Each component has an authoring contract documented in [design/skill.md](design/skill.md).
 - **Mermaid integration.** All 25 renderable Mermaid diagram types are
   themed to match the deck. Per-diagram CSS overrides for the nine that
   ignore `themeVariables`. Documented in [design/theming.md](design/theming.md).
@@ -149,7 +149,7 @@ The package also exposes these named entry points:
 | `@slidewright/lattice/default/min` | `dist/lattice-default.min.css` | minified zero-config default — the leanest single-file `<link>` for browser use |
 | `@slidewright/lattice/runtime` | `dist/lattice-runtime.js` | the preview / web-export runtime transforms |
 | `@slidewright/lattice/runtime/min` | `dist/lattice-runtime.min.js` | minified runtime — production / CDN drop-in (no inline source map) |
-| `@slidewright/lattice/css` | `dist/lattice.css` | the engine bundle — **palette-blind** (layouts only, no colour tokens) |
+| `@slidewright/lattice/css` | `dist/lattice.css` | the engine bundle — **palette-blind** (components only, no colour tokens) |
 | `@slidewright/lattice/css/min` | `dist/lattice.min.css` | minified engine bundle (Marp `@theme`/`@size` directives preserved) |
 | `@slidewright/lattice/themes/<name>.css` | `themes/<name>.css` | one palette — a **Marp theme file**, not a standalone stylesheet |
 | `lattice` bin · `@slidewright/lattice` (`main`/`.`) | `dist/lattice-emulator.js` | the bundled CLI renderer / PDF exporter (`npx lattice deck.md out.pdf`) |
@@ -346,9 +346,9 @@ handle catches up to the name):
 
 ## Versioning
 
-Lattice follows semantic versioning with one explicit contract: **layouts
+Lattice follows semantic versioning with one explicit contract: **components
 and palette tokens are stable.** A breaking change to either is a major
-version bump. New layouts and new palettes are additive minor versions.
+version bump. New components and new palettes are additive minor versions.
 Mermaid CSS overrides are internal and may change in patch versions.
 See [CHANGELOG.md](CHANGELOG.md) for the per-version detail.
 
