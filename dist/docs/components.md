@@ -6876,7 +6876,7 @@ Use when three or four parallel jurisdictions need to read at a glance: each row
 #### When to use
 
 - **Three parallel jurisdictions.** Federal / state / local — or any three peer regimes — that the room must hold side-by-side. The hue rotation cues which row is which without a legend.
-- **Citation plus obligation plus status.** Each row is a three-part record: the citation (mono chip), the headline obligation in prose, the status pill. Use when all three matter; for citation-only, reach for list-tabular.
+- **Citation plus obligation plus status.** Each card is a three-part record: the citation pill (top-right of the header), the headline obligation in prose, and the status pill (bottom-left). Use when all three matter; for citation-only, reach for list-tabular.
 - **Compliance briefings.** Reach for statute-stack when the deck reads as a regulatory memo — counsel and operations need the same view of the same record at the same time.
 
 #### When NOT to use
@@ -6892,16 +6892,13 @@ Use when three or four parallel jurisdictions need to read at a glance: each row
 
 ## Jurisdiction comparison framing the three obligations.
 
-- Federal
-  - `Citation · Statute name`
+- Federal `Citation`
   - Headline obligation in one sentence.
   - `Status or effective date`
-- State
-  - `Citation · Statute name`
+- State `Citation`
   - Headline obligation in one sentence.
   - `Status or effective date`
-- Local
-  - `Citation · Statute name`
+- Local `Citation`
   - Headline obligation in one sentence.
   - `Status or effective date`
 ```
@@ -6942,39 +6939,33 @@ Stacks the rows vertically with descending row heights — Federal tallest, Stat
 
 ## Children's data — authority cascades downward.
 
-- Federal
-  - `15 U.S.C. §6501 · COPPA`
+- Federal `15 U.S.C. §6501`
   - Verifiable parental consent for under-13 personal data.
   - `In effect since 2000`
-- State
-  - `Cal. Civ. Code §1798.120 · CCPA/CPRA`
+- State `Cal. Civ. §1798.120`
   - Opt-in for selling or sharing under-16 data; opt-out for over-16.
   - `Enforced 2023`
-- Local
-  - `NYC Admin Code §22-1201`
+- Local `NYC §22-1201`
   - Bias-audit obligation for AEDTs used in employment decisions.
   - `Effective 2023`
 ```
 
 ##### `bands` — Horizontal bands
 
-Each jurisdiction becomes a full-width horizontal row with a label column on the left and the body inlined to the right. Use for compact compliance briefs where vertical real estate is tight.
+Each jurisdiction is a full-width card stacked at equal height — an at-a-glance scorecard. Same card anatomy as the default (citation top-right, status bottom-left); only the arrangement differs.
 
 ```markdown
 <!-- _class: statute-stack bands -->
 
 ## Children's data — at-a-glance scorecard.
 
-- Federal
-  - `15 U.S.C. §6501 · COPPA`
+- Federal `15 U.S.C. §6501`
   - Verifiable parental consent for under-13 personal data.
   - `In effect since 2000`
-- State
-  - `Cal. Civ. Code §1798.120 · CCPA/CPRA`
+- State `Cal. Civ. §1798.120`
   - Opt-in for selling or sharing under-16 data; opt-out for over-16.
   - `Enforced 2023`
-- Local
-  - `NYC Admin Code §22-1201`
+- Local `NYC §22-1201`
   - Bias-audit obligation for AEDTs used in employment decisions.
   - `Effective 2023`
 ```
@@ -6988,16 +6979,13 @@ Vertical stack with a downward arrow between each card. Use when the slide must 
 
 ## Federal preemption — how the cascade flows.
 
-- Federal
-  - `15 U.S.C. §6501 · COPPA`
+- Federal `15 U.S.C. §6501`
   - Sets the floor for under-13 personal data collection.
-  - `Preempts conflicting state rules`
-- State
-  - `Cal. Civ. Code §1798.120 · CCPA/CPRA`
+  - `Preempts state rules`
+- State `Cal. Civ. §1798.120`
   - Stricter opt-in regime on top of COPPA's baseline.
   - `Survives preemption`
-- Local
-  - `NYC Admin Code §22-1201`
+- Local `NYC §22-1201`
   - Bias-audit obligation distinct from privacy preemption scope.
   - `Independent of preemption`
 ```

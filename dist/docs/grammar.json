@@ -3340,7 +3340,7 @@
       "classToken": "statute-stack",
       "bucket": "legal",
       "substance": "structure",
-      "skeleton": "<!-- _class: statute-stack -->\n\n## Jurisdiction comparison framing the three obligations.\n\n- Federal\n  - `Citation · Statute name`\n  - Headline obligation in one sentence.\n  - `Status or effective date`\n- State\n  - `Citation · Statute name`\n  - Headline obligation in one sentence.\n  - `Status or effective date`\n- Local\n  - `Citation · Statute name`\n  - Headline obligation in one sentence.\n  - `Status or effective date`\n",
+      "skeleton": "<!-- _class: statute-stack -->\n\n## Jurisdiction comparison framing the three obligations.\n\n- Federal `Citation`\n  - Headline obligation in one sentence.\n  - `Status or effective date`\n- State `Citation`\n  - Headline obligation in one sentence.\n  - `Status or effective date`\n- Local `Citation`\n  - Headline obligation in one sentence.\n  - `Status or effective date`\n",
       "slots": {
         "heading": {
           "selector": "h2",

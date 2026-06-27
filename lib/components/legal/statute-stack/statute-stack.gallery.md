@@ -20,18 +20,15 @@ Citation hierarchy — federal / state / local rows with citation, headline obli
 
 ## Children's data — three jurisdictions, three obligations.
 
-- Federal
-  - `15 U.S.C. §6501 · COPPA`
+- Federal `15 U.S.C. §6501`
   - Verifiable parental consent for under-13 personal data.
   - Operators must post a clear notice and a deletion route.
   - `In effect since 2000`
-- State
-  - `Cal. Civ. Code §1798.120 · CCPA/CPRA`
+- State `Cal. Civ. §1798.120`
   - Opt-in for selling or sharing under-16 data; opt-out for over-16.
   - DSAR handling within 45 days; deletion verified.
   - `Enforced 2023`
-- Local
-  - `NYC Admin Code §22-1201`
+- Local `NYC §22-1201`
   - Bias-audit obligation for AEDTs used in employment decisions.
   - Annual audit + candidate notice + public summary.
   - `Effective 2023`
@@ -44,16 +41,13 @@ Citation hierarchy — federal / state / local rows with citation, headline obli
 
 ## Children's data — authority cascades downward.
 
-- Federal
-  - `15 U.S.C. §6501 · COPPA`
+- Federal `15 U.S.C. §6501`
   - Verifiable parental consent for under-13 personal data.
   - `In effect since 2000`
-- State
-  - `Cal. Civ. Code §1798.120 · CCPA/CPRA`
+- State `Cal. Civ. §1798.120`
   - Opt-in for selling or sharing under-16 data; opt-out for over-16.
   - `Enforced 2023`
-- Local
-  - `NYC Admin Code §22-1201`
+- Local `NYC §22-1201`
   - Bias-audit obligation for AEDTs used in employment decisions.
   - `Effective 2023`
 
@@ -65,16 +59,13 @@ Citation hierarchy — federal / state / local rows with citation, headline obli
 
 ## Children's data — at-a-glance scorecard.
 
-- Federal
-  - `15 U.S.C. §6501 · COPPA`
+- Federal `15 U.S.C. §6501`
   - Verifiable parental consent for under-13 personal data.
   - `In effect since 2000`
-- State
-  - `Cal. Civ. Code §1798.120 · CCPA/CPRA`
+- State `Cal. Civ. §1798.120`
   - Opt-in for selling or sharing under-16 data; opt-out for over-16.
   - `Enforced 2023`
-- Local
-  - `NYC Admin Code §22-1201`
+- Local `NYC §22-1201`
   - Bias-audit obligation for AEDTs used in employment decisions.
   - `Effective 2023`
 
@@ -86,16 +77,13 @@ Citation hierarchy — federal / state / local rows with citation, headline obli
 
 ## Federal preemption — how the cascade flows.
 
-- Federal
-  - `15 U.S.C. §6501 · COPPA`
+- Federal `15 U.S.C. §6501`
   - Sets the floor for under-13 personal data collection.
-  - `Preempts conflicting state rules`
-- State
-  - `Cal. Civ. Code §1798.120 · CCPA/CPRA`
+  - `Preempts state rules`
+- State `Cal. Civ. §1798.120`
   - Stricter opt-in regime on top of COPPA's baseline.
   - `Survives preemption`
-- Local
-  - `NYC Admin Code §22-1201`
+- Local `NYC §22-1201`
   - Bias-audit obligation distinct from privacy preemption scope.
   - `Independent of preemption`
 
@@ -121,18 +109,15 @@ Citation hierarchy — federal / state / local rows with citation, headline obli
 
 ## Children's data — three jurisdictions, three obligations.
 
-- Federal
-  - `15 U.S.C. §6501 · COPPA`
+- Federal `15 U.S.C. §6501`
   - Verifiable parental consent for under-13 personal data.
   - Operators must post a clear notice and a deletion route.
   - `In effect since 2000`
-- State
-  - `Cal. Civ. Code §1798.120 · CCPA/CPRA`
+- State `Cal. Civ. §1798.120`
   - Opt-in for selling or sharing under-16 data; opt-out for over-16.
   - DSAR handling within 45 days; deletion verified.
   - `Enforced 2023`
-- Local
-  - `NYC Admin Code §22-1201`
+- Local `NYC §22-1201`
   - Bias-audit obligation for AEDTs used in employment decisions.
   - Annual audit + candidate notice + public summary.
   - `Effective 2023`
@@ -145,18 +130,15 @@ Citation hierarchy — federal / state / local rows with citation, headline obli
 
 ## Children's data — three jurisdictions, three obligations.
 
-- Federal
-  - `15 U.S.C. §6501 · COPPA`
+- Federal `15 U.S.C. §6501`
   - Verifiable parental consent for under-13 personal data.
   - Operators must post a clear notice and a deletion route.
   - `In effect since 2000`
-- State
-  - `Cal. Civ. Code §1798.120 · CCPA/CPRA`
+- State `Cal. Civ. §1798.120`
   - Opt-in for selling or sharing under-16 data; opt-out for over-16.
   - DSAR handling within 45 days; deletion verified.
   - `Enforced 2023`
-- Local
-  - `NYC Admin Code §22-1201`
+- Local `NYC §22-1201`
   - Bias-audit obligation for AEDTs used in employment decisions.
   - Annual audit + candidate notice + public summary.
   - `Effective 2023`
@@ -169,18 +151,15 @@ Citation hierarchy — federal / state / local rows with citation, headline obli
 
 ## Children's data — three jurisdictions, three obligations.
 
-- Federal
-  - `15 U.S.C. §6501 · COPPA`
+- Federal `15 U.S.C. §6501`
   - Verifiable parental consent for under-13 personal data.
   - Operators must post a clear notice and a deletion route.
   - `In effect since 2000`
-- State
-  - `Cal. Civ. Code §1798.120 · CCPA/CPRA`
+- State `Cal. Civ. §1798.120`
   - Opt-in for selling or sharing under-16 data; opt-out for over-16.
   - DSAR handling within 45 days; deletion verified.
   - `Enforced 2023`
-- Local
-  - `NYC Admin Code §22-1201`
+- Local `NYC §22-1201`
   - Bias-audit obligation for AEDTs used in employment decisions.
   - Annual audit + candidate notice + public summary.
   - `Effective 2023`
