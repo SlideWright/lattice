@@ -44,3 +44,14 @@ section.form .cell-masthead {
   padding-bottom: var(--sp-md);
   border-bottom: 1px solid var(--border);
 }
+
+/* Title→hairline gap is owned SOLELY by the band's `padding-bottom` above — a
+ * lifted title carries no margin of its own (HARD RULE #20: spacing is
+ * container-owned, never doubled). A component may still set a legacy
+ * `section.X h2 { margin-bottom }` on its slide title (sized for the old flow
+ * layout, before the title was lifted into this band); once lifted, that margin
+ * stacks on the band's padding → a DOUBLE gap below the title (title→hairline was
+ * 2×--sp-md). Zero it here so the band's padding is the only control and the
+ * hairline sits directly under the title, as the band intends. (margin:0 adds no
+ * space — exempt from the #20 ratchet.) */
+section.form .cell-masthead :is(h1, h2, h3, h4) { margin: 0; }

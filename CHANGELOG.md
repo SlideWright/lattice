@@ -292,6 +292,16 @@ in patch versions.
 
 ### Fixed
 
+- **Double padding below the slide title is gone (HARD RULE #20).** When the masthead
+  band lifts a slide's `<h2>` title, the title kept the `margin-bottom` it was given for
+  the old flow layout — which then stacked on the band's own `padding-bottom`, so the
+  hairline sat *twice* as far below the title as the band intends (measured 46px vs 24px
+  on a `list-steps` slide; worse on components that set a larger title margin). The
+  masthead Cell now zeroes any lifted title's margin (`section.form .cell-masthead
+  :is(h1,h2,h3,h4)`), so the band's `padding-bottom` is the **sole** control of the
+  title→hairline gap and the hairline sits directly under the title, as designed. Spacing
+  is container-owned, never doubled. Pure CSS; no render-path change.
+
 - **Split frames no longer bleed their supporting panel past the wall — and the bleed is
   still *detected*.** The flex cell-tree's first frames (`2026-06-26-frames-as-flex-cell-trees.md`):
   `split-panel`'s `.panel-right` and `split-compare`'s `.compare-right` gain the
