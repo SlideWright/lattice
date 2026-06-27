@@ -11353,17 +11353,18 @@ section.statute-stack.preemption > .cell-stage > ol > li {
   margin-bottom:var(--sp-lg);
 }
 section.statute-stack.preemption > .cell-stage > :is(ul, ol) > li:not(:last-child)::after {
-  content:'↓';
+  /* `❯` rotated down — the same chevron the compare-prose connector uses, for one
+   * connector vocabulary across the deck. It sits CENTRED in its own clean band (the
+   * inter-card gap), not floated over the next card's edge behind a `var(--bg)` mask
+   * chip. */
+  content:'❯';
   position:absolute;
-  left:50%; bottom:calc(-1 * var(--sp-lg));
-  transform:translate(-50%, 50%);
+  left:50%; top:100%;
+  transform:translate(-50%, calc(var(--sp-lg) / 2 - 50%)) rotate(90deg);
   font-size:var(--fs-h3);
   font-weight:300;
   color:var(--accent);
   line-height:1;
-  background:var(--bg);
-  padding:0 var(--sp-xs);
-  z-index:1;
 }
 section.statute-stack.preemption > .cell-stage > :is(ul, ol) > li:last-child { margin-bottom:0; }
 
