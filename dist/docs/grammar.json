@@ -2015,7 +2015,7 @@
       "classToken": "logo-wall",
       "bucket": "inventory",
       "substance": "prose",
-      "skeleton": "<!-- _class: logo-wall -->\n\n`Trusted by`\n\n## The headline claim the logos back up.\n\n- ![First brand](logo-1.svg)\n- ![Second brand](logo-2.svg)\n- ![Third brand](logo-3.svg)\n- ![Fourth brand](logo-4.svg)\n- ![Fifth brand](logo-5.svg)\n- ![Sixth brand](logo-6.svg)\n",
+      "skeleton": "<!-- _class: logo-wall -->\n\n`Trusted by`\n\n## The headline claim the logos back up.\n\n- ![First brand](logo-1.svg)\n  - First brand\n  - `Series B`\n- ![Second brand](logo-2.svg)\n  - Second brand\n- ![Third brand](logo-3.svg)\n- ![Fourth brand](logo-4.svg)\n- ![Fifth brand](logo-5.svg)\n- ![Sixth brand](logo-6.svg)\n",
       "slots": {
         "eyebrow": {
           "selector": "p > code:only-child",
@@ -2031,6 +2031,11 @@
           "selector": "ul > li",
           "required": true,
           "description": "One list item per mark, authored as `- ![Brand name](brand.svg)`. The alt text is the accessible label, not a rendered caption. SVG is preferred so marks stay crisp at projector scale."
+        },
+        "caption": {
+          "selector": "ul > li > ul > li",
+          "required": false,
+          "description": "Optional name + pill stacked below a mark, centred. Nest a list under the image: plain text is the name, a backticked token (`Series B`) is the pill. Either or both, per mark."
         }
       },
       "requiredSlots": [

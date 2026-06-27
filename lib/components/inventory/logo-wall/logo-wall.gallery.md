@@ -23,13 +23,29 @@ A grid of customer, partner, or funder logos as social proof.
 ## 400+ teams run board prep on Lattice.
 
 - ![Acme](acme.svg)
+  - Acme
+  - `Series B`
 - ![Globex](globex.svg)
-- ![Initech](initech.svg)
-- ![Umbra](umbra.svg)
+  - Globex
+  - `Enterprise`
 - ![Vantage](vantage.svg)
+  - Vantage
+  - `Public`
+- ![Umbra](umbra.svg)
+  - Umbra
+  - `Series C`
 - ![Meridian](meridian.svg)
+  - Meridian
+  - `Seed`
 - ![Helios](helios.svg)
+  - Helios
+  - `Public`
 - ![Northwind](northwind.svg)
+  - Northwind
+  - `Anchor`
+- ![Cobalt](cobalt.svg)
+  - Cobalt
+  - `Series A`
 
 
 ---
@@ -84,13 +100,29 @@ A grid of customer, partner, or funder logos as social proof.
 ## 400+ teams run board prep on Lattice.
 
 - ![Acme](acme.svg)
+  - Acme
+  - `Series B`
 - ![Globex](globex.svg)
-- ![Initech](initech.svg)
-- ![Umbra](umbra.svg)
+  - Globex
+  - `Enterprise`
 - ![Vantage](vantage.svg)
+  - Vantage
+  - `Public`
+- ![Umbra](umbra.svg)
+  - Umbra
+  - `Series C`
 - ![Meridian](meridian.svg)
+  - Meridian
+  - `Seed`
 - ![Helios](helios.svg)
+  - Helios
+  - `Public`
 - ![Northwind](northwind.svg)
+  - Northwind
+  - `Anchor`
+- ![Cobalt](cobalt.svg)
+  - Cobalt
+  - `Series A`
 
 
 ---
@@ -103,13 +135,29 @@ A grid of customer, partner, or funder logos as social proof.
 ## 400+ teams run board prep on Lattice.
 
 - ![Acme](acme.svg)
+  - Acme
+  - `Series B`
 - ![Globex](globex.svg)
-- ![Initech](initech.svg)
-- ![Umbra](umbra.svg)
+  - Globex
+  - `Enterprise`
 - ![Vantage](vantage.svg)
+  - Vantage
+  - `Public`
+- ![Umbra](umbra.svg)
+  - Umbra
+  - `Series C`
 - ![Meridian](meridian.svg)
+  - Meridian
+  - `Seed`
 - ![Helios](helios.svg)
+  - Helios
+  - `Public`
 - ![Northwind](northwind.svg)
+  - Northwind
+  - `Anchor`
+- ![Cobalt](cobalt.svg)
+  - Cobalt
+  - `Series A`
 
 
 ---

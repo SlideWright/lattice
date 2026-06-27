@@ -1,4 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 80" role="img" aria-label="Vantage">
-  <path d='M32 22 L50 56 L14 56 Z' fill='#d35400'/>
-  <text x="62" y="51" font-family="Helvetica, Arial, sans-serif" font-size="29" font-weight="700" fill="#222222">Vantage</text>
+  <rect x="14" y="46" width="9" height="14" rx="2" fill="#2f8f5b"/>
+  <rect x="26" y="36" width="9" height="24" rx="2" fill="#2f8f5b"/>
+  <rect x="38" y="26" width="9" height="34" rx="2" fill="#2f8f5b"/>
+  <rect x="50" y="16" width="9" height="44" rx="2" fill="#2f8f5b"/>
+  <text x="72" y="51" font-family="'Helvetica Neue', Arial, sans-serif" font-size="27" font-weight="600" letter-spacing="-0.3" fill="#1f2733">Vantage</text>
 </svg>

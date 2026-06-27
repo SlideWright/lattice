@@ -24,6 +24,7 @@ The credibility moment shows up everywhere — it just wears a different label. 
 
 - Corporate calls it *trusted by*; nonprofits call it *our funders*; government calls it *participating agencies*.
 - The `color` variant keeps brand hues for insignia and crests; `dense` packs a longer roster.
+- Each mark can carry an optional name and pill below it when the logo alone doesn't say enough.
 
 ---
 
@@ -41,6 +42,39 @@ The credibility moment shows up everywhere — it just wears a different label. 
 - ![Meridian](../lib/components/inventory/logo-wall/meridian.svg)
 - ![Helios](../lib/components/inventory/logo-wall/helios.svg)
 - ![Northwind](../lib/components/inventory/logo-wall/northwind.svg)
+
+---
+
+<!-- _class: logo-wall -->
+
+`Trusted by`
+
+## When the mark needs a name, give it one.
+
+- ![Acme](../lib/components/inventory/logo-wall/acme.svg)
+  - Acme
+  - `Series B`
+- ![Globex](../lib/components/inventory/logo-wall/globex.svg)
+  - Globex
+  - `Enterprise`
+- ![Vantage](../lib/components/inventory/logo-wall/vantage.svg)
+  - Vantage
+  - `Public`
+- ![Umbra](../lib/components/inventory/logo-wall/umbra.svg)
+  - Umbra
+  - `Series C`
+- ![Meridian](../lib/components/inventory/logo-wall/meridian.svg)
+  - Meridian
+  - `Seed`
+- ![Helios](../lib/components/inventory/logo-wall/helios.svg)
+  - Helios
+  - `Public`
+- ![Northwind](../lib/components/inventory/logo-wall/northwind.svg)
+  - Northwind
+  - `Anchor`
+- ![Cobalt](../lib/components/inventory/logo-wall/cobalt.svg)
+  - Cobalt
+  - `Series A`
 
 ---
 

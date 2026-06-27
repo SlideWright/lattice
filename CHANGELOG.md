@@ -38,6 +38,18 @@ in patch versions.
   Enable it on the command line (`--present`) or bake it into a deck with a
   `present: true` front-matter key (mirroring `--fluid`). Default off; the
   catalog is untouched without it.
+- **`logo-wall` marks can carry an optional name and pill below them.** Nest a list
+  under a mark — plain text becomes a centred name, a backticked token becomes a pill
+  chip — so a stylised logo can be disambiguated or qualified (a funding tier, a segment,
+  a year) without leaving the wall. Both are optional and per-mark, so a mixed wall works.
+  The caption stacks *below* the mark and centres (the cell is now a column, not a row);
+  the name + pill re-tone for the `dark` canvas automatically. Pure structure + CSS — no
+  transform. Also **redrew the twelve placeholder brand marks** into distinct silhouettes
+  and wordmarks (so the wall reads as a credible roster even desaturated to grey), and
+  **fixed the broken marks in the Playground component studio** (the manifest sample
+  referenced the SVGs by bare filename but only the bucket-gallery copies were staged —
+  the marks are now staged flat under `samples/` too). See
+  `lib/components/inventory/logo-wall/logo-wall.docs.md`.
 - **Live, in-editor validation in the Drawing Board and Playground.** The deck-grammar
   findings the Architect already computes (layout/component footguns, capacity, unknown
   classes/regions, …) now also render *inline* in the CodeMirror editor as wavy

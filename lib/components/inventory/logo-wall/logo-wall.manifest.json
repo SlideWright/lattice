@@ -37,11 +37,16 @@
       "selector": "ul > li",
       "required": true,
       "description": "One list item per mark, authored as `- ![Brand name](brand.svg)`. The alt text is the accessible label, not a rendered caption. SVG is preferred so marks stay crisp at projector scale."
+    },
+    "caption": {
+      "selector": "ul > li > ul > li",
+      "required": false,
+      "description": "Optional name + pill stacked below a mark, centred. Nest a list under the image: plain text is the name, a backticked token (`Series B`) is the pill. Either or both, per mark."
     }
   },
-  "skeleton": "<!-- _class: logo-wall -->\n\n`Trusted by`\n\n## The headline claim the logos back up.\n\n- ![First brand](logo-1.svg)\n- ![Second brand](logo-2.svg)\n- ![Third brand](logo-3.svg)\n- ![Fourth brand](logo-4.svg)\n- ![Fifth brand](logo-5.svg)\n- ![Sixth brand](logo-6.svg)\n",
+  "skeleton": "<!-- _class: logo-wall -->\n\n`Trusted by`\n\n## The headline claim the logos back up.\n\n- ![First brand](logo-1.svg)\n  - First brand\n  - `Series B`\n- ![Second brand](logo-2.svg)\n  - Second brand\n- ![Third brand](logo-3.svg)\n- ![Fourth brand](logo-4.svg)\n- ![Fifth brand](logo-5.svg)\n- ![Sixth brand](logo-6.svg)\n",
   "anatomyBlock": "logo-wall",
-  "sample": "<!-- _class: logo-wall -->\n\n`Trusted by`\n\n## 400+ teams run board prep on Lattice.\n\n- ![Acme](acme.svg)\n- ![Globex](globex.svg)\n- ![Initech](initech.svg)\n- ![Umbra](umbra.svg)\n- ![Vantage](vantage.svg)\n- ![Meridian](meridian.svg)\n- ![Helios](helios.svg)\n- ![Northwind](northwind.svg)\n",
+  "sample": "<!-- _class: logo-wall -->\n\n`Trusted by`\n\n## 400+ teams run board prep on Lattice.\n\n- ![Acme](acme.svg)\n  - Acme\n  - `Series B`\n- ![Globex](globex.svg)\n  - Globex\n  - `Enterprise`\n- ![Vantage](vantage.svg)\n  - Vantage\n  - `Public`\n- ![Umbra](umbra.svg)\n  - Umbra\n  - `Series C`\n- ![Meridian](meridian.svg)\n  - Meridian\n  - `Seed`\n- ![Helios](helios.svg)\n  - Helios\n  - `Public`\n- ![Northwind](northwind.svg)\n  - Northwind\n  - `Anchor`\n- ![Cobalt](cobalt.svg)\n  - Cobalt\n  - `Series A`\n",
   "whenToUse": [
     {
       "title": "The proof is the logos",

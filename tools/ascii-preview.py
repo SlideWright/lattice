@@ -417,8 +417,9 @@ def demo_blocks() -> dict[str, str]:
         ('center', 'TRUSTED BY'),
         ('center', 'The teams that run on us.'),
         ('blank',),
-        ('center', '[Acme]  [Globex]  [Initech]'),
-        ('center', '[Umbra] [Vantage] [Helios]'),
+        ('center', '[Acme]   [Globex]   [Initech]'),
+        ('center', 'Acme      Globex     Initech'),
+        ('center', '(SeriesB) (Public)   (Seed)'),
         ('blank',),
         ('split', 'footer', '1/19'),
     ])

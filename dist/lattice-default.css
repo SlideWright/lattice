@@ -6871,6 +6871,9 @@ section.list-tabular-points .split-pt-b { color: var(--text-body); font-size: va
 
 section.logo-wall > .cell-stage {
   --logo-cols: 4;
+  /* The mark band — every logo is contained within this height so the wall
+   * tiles uniformly. The cell may grow TALLER than this when a mark carries an
+   * optional caption (name + pill); the band only governs the mark itself. */
   --logo-cell-h: 9cqi;
   --logo-gap: var(--sp-2xl);
 }
@@ -6900,15 +6903,24 @@ section.logo-wall > .cell-stage > ul > li {
   width: calc((100% - (var(--logo-cols) - 1) * var(--logo-col-gap)) / var(--logo-cols));
   flex: 0 0 auto;
   box-sizing: border-box;
+  /* Column, not row: the optional caption (name + pill) stacks BELOW the mark and
+   * centres, rather than landing to its right. `min-height` keeps caption-less
+   * cells at the mark band so a mixed wall still tiles evenly; a captioned cell
+   * grows past it and the outer flex `align-content:center` re-centres the rows. */
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: var(--logo-cell-h);
+  gap: var(--sp-xs);
+  min-height: var(--logo-cell-h);
 }
 
-section.logo-wall > .cell-stage > ul > li img {
+section.logo-wall > .cell-stage > ul > li > img {
   max-width: 100%;
-  max-height: 100%;
+  /* The mark is contained within the band; the cell grows for the caption, the
+   * mark does not. (Was `max-height:100%` against a fixed-height cell; now the
+   * cell is content-sized, so the band is named explicitly.) */
+  max-height: var(--logo-cell-h);
   width: auto;
   height: auto;
   object-fit: contain;
@@ -6919,6 +6931,57 @@ section.logo-wall > .cell-stage > ul > li img {
   opacity: 0.72;
 }
 
+/* ── Optional caption: a name and/or a pill below the mark.
+ * Authored as a nested list under the image:
+ *   - ![Northwind](northwind.svg)
+ *     - Northwind          ← name (plain text)
+ *     - `Anchor partner`   ← pill (backticked → <code>)
+ * Both optional, in any combination. Substance is prose, so this is pure
+ * structure + CSS — no transform. The nested <ul> is a centred column; a plain
+ * <li> is the name, a <code> inside an <li> is the pill chip. The universal
+ * trailing-pill rule (base.modifiers.css) only reaches a FIRST-level `li > code`,
+ * so the nested pill here is ours to place — centred, not right-anchored. */
+section.logo-wall > .cell-stage > ul > li > ul {
+  list-style: none;
+  padding: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-2xs);
+}
+
+/* The name — a restrained caption that stays subordinate to the mark, in the
+ * same muted register so the wall still reads as one texture. */
+section.logo-wall > .cell-stage > ul > li > ul > li {
+  font-size: var(--fs-meta);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  line-height: 1.2;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* The pill — a metadata chip below the name. Reuses the universal `--pill-*`
+ * geometry/tokens (base.tokens.css) so it matches every other pill in the deck,
+ * but centred under the mark rather than pushed to a row's right edge. */
+section.logo-wall > .cell-stage > ul > li > ul > li > code {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  font-family: var(--pill-font);
+  font-size: var(--pill-fs);
+  font-weight: var(--pill-weight);
+  letter-spacing: var(--pill-tracking);
+  color: var(--pill-fg, var(--text-muted));
+  background: var(--pill-bg, transparent);
+  border: 1px solid var(--pill-border, var(--text-muted));
+  border-radius: var(--pill-radius);
+  padding: var(--pill-pad-y) var(--pill-pad-x);
+  white-space: nowrap;
+}
+
 /* Dense — more marks, smaller cells, tighter gaps. */
 section.logo-wall.dense > .cell-stage {
   --logo-cols: 6;
@@ -6927,18 +6990,20 @@ section.logo-wall.dense > .cell-stage {
 }
 
 /* Color — keep brand colours when the hues carry meaning. */
-section.logo-wall.color > .cell-stage > ul > li img {
+section.logo-wall.color > .cell-stage > ul > li > img {
   filter: none;
   opacity: 1;
 }
 
 /* Dark canvas — flip the brightness so the marks read as a faint light
- * watermark on the dark ground, mirroring img.deck-logo on `.dark`. */
-section.logo-wall.dark > .cell-stage > ul > li img {
+ * watermark on the dark ground, mirroring img.deck-logo on `.dark`. The
+ * caption tokens (--text-muted, --pill-*) resolve through light-dark(), so the
+ * name + pill re-tone for the dark ground automatically — no override needed. */
+section.logo-wall.dark > .cell-stage > ul > li > img {
   filter: grayscale(1) brightness(2.4) contrast(1.05);
   opacity: 0.8;
 }
-section.logo-wall.dark.color > .cell-stage > ul > li img {
+section.logo-wall.dark.color > .cell-stage > ul > li > img {
   filter: none;
   opacity: 1;
 }

@@ -242,6 +242,9 @@ const LAYER3 = {
   'logo-wall': {
     'renders multiple logos (img)':
       present('img', 2, 'logo-wall did not render multiple logos'),
+    'marks can carry a name + pill caption below the mark':
+      eachWith('ul > li', [':scope > img', ':scope > ul > li > code'], 2,
+        'logo-wall did not render captioned marks (mark + nested name/pill list)'),
   },
   'q-and-a': {
     'each question pairs with its answer':

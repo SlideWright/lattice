@@ -153,13 +153,29 @@ Inventory — parallel sets of related items.
 ## 400+ teams run board prep on Lattice.
 
 - ![Acme](logo-wall/acme.svg)
+  - Acme
+  - `Series B`
 - ![Globex](logo-wall/globex.svg)
-- ![Initech](logo-wall/initech.svg)
-- ![Umbra](logo-wall/umbra.svg)
+  - Globex
+  - `Enterprise`
 - ![Vantage](logo-wall/vantage.svg)
+  - Vantage
+  - `Public`
+- ![Umbra](logo-wall/umbra.svg)
+  - Umbra
+  - `Series C`
 - ![Meridian](logo-wall/meridian.svg)
+  - Meridian
+  - `Seed`
 - ![Helios](logo-wall/helios.svg)
+  - Helios
+  - `Public`
 - ![Northwind](logo-wall/northwind.svg)
+  - Northwind
+  - `Anchor`
+- ![Cobalt](logo-wall/cobalt.svg)
+  - Cobalt
+  - `Series A`
 
 ---
 

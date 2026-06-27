@@ -1,4 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 80" role="img" aria-label="Helios">
-  <circle cx='32' cy='40' r='17' fill='#f39c12'/>
-  <text x="62" y="51" font-family="Helvetica, Arial, sans-serif" font-size="29" font-weight="700" fill="#222222">Helios</text>
+  <circle cx="34" cy="40" r="9" fill="#d69220"/>
+  <g stroke="#d69220" stroke-width="3" stroke-linecap="round">
+    <line x1="34" y1="21" x2="34" y2="27"/>
+    <line x1="34" y1="53" x2="34" y2="59"/>
+    <line x1="15" y1="40" x2="21" y2="40"/>
+    <line x1="47" y1="40" x2="53" y2="40"/>
+    <line x1="21" y1="27" x2="25" y2="31"/>
+    <line x1="43" y1="49" x2="47" y2="53"/>
+    <line x1="47" y1="27" x2="43" y2="31"/>
+    <line x1="25" y1="49" x2="21" y2="53"/>
+  </g>
+  <text x="70" y="50" font-family="'Helvetica Neue', Arial, sans-serif" font-size="22" font-weight="400" letter-spacing="4" fill="#1f2733">HELIOS</text>
 </svg>
