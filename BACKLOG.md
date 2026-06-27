@@ -7,11 +7,11 @@
 
 The live, claimable work queue — a read-only mirror of [open issues](https://github.com/SlideWright/lattice/issues),
 grouped by board column. Design lives in `engineering/decisions/`; this tracks
-only *status*. **39 open** items.
+only *status*. **40 open** items.
 
-> ⚠️ **2 cards need triage** (missing `area:`/`type:`/`priority:`): [#547](https://github.com/SlideWright/lattice/issues/547), [#554](https://github.com/SlideWright/lattice/issues/554).
+> ⚠️ **4 cards need triage** (missing `area:`/`type:`/`priority:`): [#547](https://github.com/SlideWright/lattice/issues/547), [#554](https://github.com/SlideWright/lattice/issues/554), [#556](https://github.com/SlideWright/lattice/issues/556), [#558](https://github.com/SlideWright/lattice/issues/558).
 
-## Backlog (36)
+## Backlog (37)
 
 - [#287](https://github.com/SlideWright/lattice/issues/287) refactor(engine): LPM Phase 1 — manifest `render` block + `transformSection` adapter; migrate the chart kernels — high · engine
 - [#506](https://github.com/SlideWright/lattice/issues/506) feat(runtime): runtime auto-split (Option B) via eventual consistency — high · engine
@@ -49,6 +49,7 @@ only *status*. **39 open** items.
 - [#527](https://github.com/SlideWright/lattice/issues/527) explore: alignment as a universal modifier (vertical top/center for tables, lists, etc.) — low
 - [#547](https://github.com/SlideWright/lattice/issues/547) q-and-a `spine` look overflows the frame on the gallery stress content
 - [#554](https://github.com/SlideWright/lattice/issues/554) feat(forms): N-up split Frame — compose multiple components in a grid (generalize split-panel)
+- [#556](https://github.com/SlideWright/lattice/issues/556) refactor(css): complete HARD RULE #20 — retire the last 39 margins (MARGIN_BUDGET → 0)
 
 ## Ready (2)
 
@@ -65,4 +66,4 @@ _none_
 
 ## Inbox (no status) (1)
 
-- [#556](https://github.com/SlideWright/lattice/issues/556) refactor(css): complete HARD RULE #20 — retire the last 39 margins (MARGIN_BUDGET → 0)
+- [#558](https://github.com/SlideWright/lattice/issues/558) fix(inventory): contract Layouts (layout-ledger/cards/timeline/editorial) are inert under Form-default-on
