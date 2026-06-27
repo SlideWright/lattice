@@ -18,16 +18,23 @@
  * ──────────────────────────────────────────────────────────────────────── */
 section.matrix-2x2 > .cell-stage { display:flex; flex-direction:column; }
 section.matrix-2x2 h2 { margin-bottom:var(--sp-sm); }
+/* 2×2 as FLEX, not grid (flex cell-tree §10/§11 — flex shop). flex-wrap with cells
+ * sized `calc(50% - gap/2)` reproduces the `1fr 1fr / 1fr 1fr` grid pixel-identically
+ * (§13: 359/1,000,500 = 0.036 %). The cells' `box-sizing:border-box` is load-bearing:
+ * under content-box, width + padding + border exceeds 50 % and the second card wraps
+ * (runbook gotcha 1). Equal heights resolve because `.cell-stage` gives this list a
+ * definite (flex:1, min-height:0) height (gotcha 2). */
 section.matrix-2x2 > .cell-stage > ul,
 section.matrix-2x2 > .cell-stage > ol {
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  grid-template-rows:1fr 1fr;
+  display:flex; flex-wrap:wrap; align-content:stretch;
   gap:var(--sp-md); flex:1;
   list-style:none; padding:0; margin:0;
 }
 section.matrix-2x2 > .cell-stage > ul > li,
 section.matrix-2x2 > .cell-stage > ol > li {
+  box-sizing:border-box;
+  width:calc(50% - var(--sp-md) / 2);
+  height:calc(50% - var(--sp-md) / 2);
   background:var(--bg-alt);
   border:1px solid var(--border);
   border-radius:var(--radius-md);
@@ -72,10 +79,18 @@ section.matrix-2x2 :is(ul,ol) > li > strong ~ * { font-weight: 400; }
  * `[data-orientation]` reflow's specificity and stay robust to future variant
  * grid rules — the role the attribute played. */
 @container lattice (aspect-ratio <= 0.9) {
+  /* Tall/strip → single column: flex-column, each card flex:1 to split the height
+   * (the flex mirror of the grid's `grid-auto-rows:minmax(0,1fr)`). */
   section.matrix-2x2.matrix-2x2 > .cell-stage > ul,
   section.matrix-2x2.matrix-2x2 > .cell-stage > ol {
-    grid-template-columns: 1fr;
-    grid-template-rows: none;
-    grid-auto-rows: minmax(0, 1fr);
+    flex-direction: column;
+    flex-wrap: nowrap;
+  }
+  section.matrix-2x2.matrix-2x2 > .cell-stage > ul > li,
+  section.matrix-2x2.matrix-2x2 > .cell-stage > ol > li {
+    width: 100%;
+    height: auto;
+    flex: 1;
+    min-height: 0;
   }
 }
