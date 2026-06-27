@@ -15855,9 +15855,17 @@ section.form .cell-masthead {
    * metrics left the meta floating above the kicker — a visible misalignment,
    * worst in portrait. Picked over start/end/center after a 5-variant review. */
   align-items: baseline;
-  margin-bottom: var(--sp-md);
+  /* The masthead↔stage gap is a `gap` on the section flex column (below), NOT a margin —
+   * margins are banned (they fight the virtual-list scrollHeight measurement). padding-bottom
+   * positions the hairline below the title; the section gap supplies the hairline↔stage space. */
   padding-bottom: var(--sp-md);
   border-bottom: 1px solid var(--border);
+}
+/* The frame section is a flex column (base.elements.css). Space the masthead band from the
+ * stage with a gap rather than a margin. Scoped to masthead-bearing slides so sovereign
+ * frames (title / divider / closing — no masthead) are untouched. */
+section:has(> .cell-masthead) {
+  gap: var(--sp-md);
 }
 
 /* === lib/forms/cell/pagination-right/pagination-right.css === */

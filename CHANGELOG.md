@@ -189,6 +189,13 @@ in patch versions.
 
 ### Changed
 
+- **No-margins spacing model (phase 1, cell-tree) — the masthead↔stage gap is now a flex
+  `gap`, not a margin.** Margins fight the virtual-list `scrollHeight` measurement (they
+  collapse and sit outside the flex content box), so the band's `margin-bottom` is replaced by
+  a `gap` on the frame's section flex column, scoped to masthead-bearing slides
+  (`section:has(> .cell-masthead)`) so sovereign frames are untouched. Visually identical;
+  first step toward a margin-free cell tree (the component-level sweep follows). See the
+  spacing rationale in `lib/forms/cell/masthead/masthead.css`.
 - **Flex-shop conversion, hard tier — `pricing`, `logo-wall`, `citation-card.split`,
   `verdict-grid`, `cards-grid` drop CSS grid for flex.** `pricing` / `logo-wall` were
   `repeat(N,1fr)` tilings → flex-wrap with `width: 100%/N − …` per-cell (the matrix-2x2 idiom;
