@@ -411,6 +411,30 @@ above) becomes the queue's job and the silent-parked-conflict window closes:
 nothing merges except on a freshly-rebased, freshly-green state. Rebase-*before-
 push* (step 1) still holds — it keeps the PR current and the queue fast.
 
+### "CI passed" is no longer silent — the CI-green beacon
+
+Of the three silent events above, **"CI passed" is now delivered.** The `ci`
+aggregate job posts a one-line `✅ CI green for <sha>` comment the instant the gate
+goes green (`.github/workflows/ci.yml`). A subscribed session receives that as a
+`<github-webhook-activity>` comment and **wakes within seconds — no polling
+`get_check_runs`, no waiting on the hourly check-in for the success transition.**
+So once subscribed, *react to the beacon* rather than re-checking on a timer.
+
+The contract, and its limits — be precise about what it does and doesn't cover:
+
+- **Success only.** CI *failures* already arrive as webhook events; the beacon
+  fills only the green gap the integration doesn't forward. It does not fire on red.
+- **Create, not update.** It deletes the prior beacon and posts a fresh comment —
+  only a newly *created* comment is forwarded as a wake event; an in-place edit
+  (the golden-diff sticky's `updateComment`) is not, so it would never wake you.
+- **CI-passed only — NOT the drift events.** "`main` moved" and "now conflicted"
+  are still silent; nothing here changes that. Rebase-before-push (step 1) and the
+  merge queue remain the answer for drift.
+- **Keep a long fallback check-in as a backstop.** The beacon is a delivered
+  comment, not a guaranteed-delivery channel; if one is ever dropped you must not
+  hang forever. A single far-out check-in (≈1 h) catches the miss — react fast to
+  the beacon, fall back slowly if it never comes.
+
 ## Merging
 
 - **Merging requires explicit human authorization.** An agent drives the PR to
