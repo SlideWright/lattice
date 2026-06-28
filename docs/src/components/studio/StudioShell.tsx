@@ -384,7 +384,7 @@ export default function StudioShell({ options }: Props) {
 			{/* ── Overlays ─────────────────────────────────────────────── */}
 			<ShareSheet open={shareOpen} onOpenChange={setShareOpen} deckTitle={deck.title} />
 			<WorkspaceSheet open={workspaceOpen} onOpenChange={setWorkspaceOpen} />
-			<PresentOverlay open={presentOpen} onClose={() => setPresentOpen(false)} options={options} slide={slide} />
+			<PresentOverlay open={presentOpen} onClose={() => setPresentOpen(false)} options={options} slides={slides} startIndex={activeSlide} />
 			<CommandPalette
 				open={cmdOpen}
 				onOpenChange={setCmdOpen}

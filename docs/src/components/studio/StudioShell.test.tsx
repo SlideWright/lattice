@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import StudioShell from './StudioShell';
@@ -62,6 +62,23 @@ describe('StudioShell — e2e flows (jsdom)', () => {
 		expect(await screen.findByText('Presenter screen')).toBeInTheDocument();
 		await user.click(screen.getByRole('button', { name: 'Exit present' }));
 		expect(screen.queryByText('Presenter screen')).not.toBeInTheDocument();
+	});
+
+	it('Present navigates the deck and reshapes by reader lens', async () => {
+		const user = setup();
+		await user.click(screen.getByRole('button', { name: 'Present' }));
+		const dialog = await screen.findByRole('dialog', { name: 'Present' });
+		const d = within(dialog);
+		// Full deck, started on slide 1 of 6.
+		expect(d.getByText('1 / 6')).toBeInTheDocument();
+		await user.click(d.getAllByRole('button', { name: 'Next slide' })[0]);
+		expect(d.getByText('2 / 6')).toBeInTheDocument();
+		// Exec-summary lens reshapes to the headline slides (title/kpi/stats/closing).
+		await user.click(d.getByRole('button', { name: /Exec summary/ }));
+		expect(d.getByText('1 / 4')).toBeInTheDocument();
+		// One-pager collapses to a single slide.
+		await user.click(d.getByRole('button', { name: /One-pager/ }));
+		expect(d.getByText('1 / 1')).toBeInTheDocument();
 	});
 
 	it('opens the deck-scoped Share with both hand-off intents', async () => {

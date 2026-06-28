@@ -1,6 +1,6 @@
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
-import { scoreDeck, slideClass, slideIndexAt, slideStartOffset, splitSlides, unknownComponents, usedComponents } from './lint';
+import { presentationSet, scoreDeck, slideClass, slideIndexAt, slideStartOffset, splitSlides, unknownComponents, usedComponents } from './lint';
 
 const KNOWN = ['title', 'kpi', 'quote', 'cards-grid', 'stats'];
 // Component-name-ish tokens (won't accidentally contain a `-->` or a fence).
@@ -156,5 +156,34 @@ describe('scoreDeck (Architect readiness, fuzz)', () => {
 		expect(r.intent).toBe('pass');
 		expect(r.score).toBeGreaterThanOrEqual(8);
 		expect(r.rows.every((row) => row.ok)).toBe(true);
+	});
+});
+
+describe('presentationSet (reader lenses, fuzz)', () => {
+	const slideArb = fc.array(fc.constantFrom('title', 'kpi', 'quote', 'agenda', 'stats', 'closing', 'cards-grid'), { minLength: 1, maxLength: 10 }).map((cs) => cs.map((c) => `<!-- _class: ${c} -->\n# ${c}`));
+
+	it('every lens returns a non-empty SUBSET of the deck (order preserved) — never throws', () => {
+		fc.assert(
+			fc.property(slideArb, fc.constantFrom('full', 'exec', 'onepager'), (slides, lens) => {
+				const out = presentationSet(slides, lens as 'full' | 'exec' | 'onepager');
+				expect(out.length).toBeGreaterThan(0);
+				expect(out.length).toBeLessThanOrEqual(slides.length);
+				for (const s of out) expect(slides).toContain(s);
+			}),
+		);
+	});
+
+	it('`full` is the whole deck; `onepager` is exactly one slide', () => {
+		fc.assert(
+			fc.property(slideArb, (slides) => {
+				expect(presentationSet(slides, 'full')).toEqual(slides);
+				expect(presentationSet(slides, 'onepager')).toHaveLength(1);
+			}),
+		);
+	});
+
+	it('handles an empty deck without throwing', () => {
+		expect(presentationSet([], 'exec')).toEqual([]);
+		expect(presentationSet(undefined as unknown as string[], 'full')).toEqual([]);
 	});
 });

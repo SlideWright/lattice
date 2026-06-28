@@ -57,6 +57,25 @@ export function slideStartOffset(src: string, index: number): number {
 	return pos;
 }
 
+export type PresentLens = 'full' | 'exec' | 'onepager';
+
+/** The slides to present under a reader lens (plan §17: "meet the reader where
+ *  they are"). `full` = the whole deck; `exec` = the headline slides only;
+ *  `onepager` = the single most load-bearing slide. Pure; always non-empty when
+ *  given a non-empty deck (falls back to the full deck rather than nothing). */
+export function presentationSet(slides: string[], lens: PresentLens): string[] {
+	const all = Array.isArray(slides) ? slides.filter((s) => typeof s === 'string') : [];
+	if (lens === 'full' || all.length === 0) return all;
+	if (lens === 'exec') {
+		const keep = new Set(['title', 'kpi', 'stats', 'big-number', 'closing']);
+		const sub = all.filter((s) => keep.has(slideClass(s)));
+		return sub.length ? sub : all;
+	}
+	// onepager — the single most "headline" slide, else the opener.
+	const hero = all.find((s) => ['kpi', 'stats', 'big-number'].includes(slideClass(s)));
+	return [hero ?? all[0]];
+}
+
 export type DeckScore = {
 	/** 0–10 board-readiness, one decimal. */
 	score: number;
