@@ -248,6 +248,17 @@ lint/test catches a violation, *discipline* = no automated gate, so it's on you)
   *(gated — `checkMarginDiscipline` in `tools/check-ownership.js`, via `build:check`;
   layout budget 0 + allowlist; `engineering/gotchas.md`,
   `engineering/decisions/2026-06-27-stage-flow-no-margins.md`.)*
+- **#21 — US English is the house dialect — American spellings only.** Everywhere a
+  human reads words — docs, comments, manifest text, UI copy, hyphenated
+  identifiers/classes/tokens — use the US form: `-or` not `-our`, `-ize` not `-ise`,
+  `-er` not `-re`; `gray`, `license`, `defense`, `catalog`, `while`. The curated word
+  list lives in the gate; existing British spellings are a tracked migration backlog
+  (don't add new ones — as the backlog drops, lower `US_ENGLISH_BUDGET`). The gate
+  catches whole + hyphenated words; a British spelling buried in a `camelCase`/
+  `snake_case` identifier rides on review, so name those US too. *(gated —
+  `checkUsEnglish` ratchet in `tools/check-ownership.js`, via `build:check`;
+  exceed-only, target zero; dated `engineering/decisions/` records, the `CHANGELOG`
+  ledger, and generated bundles are exempt.)*
 
 ---
 
