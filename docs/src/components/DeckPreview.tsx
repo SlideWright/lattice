@@ -29,6 +29,9 @@ export type DeckPreviewProps = {
 	/** Render against a raw in-memory theme (Fabricate's live derived theme).
 	 *  When set, `paletteOverride` should equal `extraTheme.name`. */
 	extraTheme?: { name: string; css: string };
+	/** Force a specific light/dark mode instead of the global `<html data-mode>`
+	 *  — lets a surface audition a theme in both modes (Fabricate's specimen). */
+	modeOverride?: 'light' | 'dark';
 	/**
 	 * Render only while true. Lets a host that may be hidden (a tab panel) defer
 	 * the render until it is shown — re-renders on the rising edge.
@@ -50,6 +53,7 @@ export function DeckPreview({
 	mermaid,
 	paletteOverride,
 	extraTheme,
+	modeOverride,
 	active = true,
 	className,
 	role,
@@ -72,8 +76,8 @@ export function DeckPreview({
 	// biome-ignore lint/correctness/useExhaustiveDependencies: extraTheme.name is the theme's content hash; depending on the whole object would thrash.
 	const render = React.useCallback(() => {
 		const host = stageRef.current;
-		if (host && activeRef.current) engineRef.current?.renderInto(host, sample, mermaid, paletteOverride, extraTheme);
-	}, [sample, mermaid, paletteOverride, extraTheme?.name]);
+		if (host && activeRef.current) engineRef.current?.renderInto(host, sample, mermaid, paletteOverride, extraTheme, modeOverride);
+	}, [sample, mermaid, paletteOverride, extraTheme?.name, modeOverride]);
 
 	// First render once the engine bundle has loaded.
 	React.useEffect(() => {

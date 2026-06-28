@@ -72,7 +72,7 @@ type LiveHost = HTMLElement & { __latticeGeom?: Geom };
 
 /**
  * Build a single-slide renderer bound to a theme source + runtime URL. Returns:
- *   - renderInto(host, markdown, mermaid, paletteOverride?) → Promise<RenderStatus>
+ *   - renderInto(host, markdown, mermaid, paletteOverride?, extra?, modeOverride?) → Promise<RenderStatus>
  *   - whenReady()       → Promise<void> (triggers on-demand engine load)
  *   - onThemeChange(cb) → re-run cb (debounced) on a data-palette/-mode flip
  *   - scaleFrame(host)  → re-fit the host's iframe (after a reveal/resize)
@@ -110,11 +110,17 @@ export function createSingleSlideRenderer(opts: SingleSlideOptions) {
 		// Register the vendored faces first (@font-face is position-independent,
 		// but keeping it up top documents intent). Without this the iframe has no
 		// Caveat/Shantell and sketch decks render body in a system sans.
+		// Force the canvas color-scheme to the rendered mode so a theme's
+		// `light-dark()` pairs resolve as chosen (the same knob deck-preview.js's
+		// renderDeck exposes as `colorScheme`). Without it a derived theme rendered
+		// in dark would still resolve its light sides.
 		let s =
 			'<!doctype html><html><head><meta charset="utf-8"><style>' +
 			fontFaceCss +
 			singleSlideFrame(geom.width, geom.height) +
-			'html,body{background:' +
+			':root{color-scheme:' +
+			mode +
+			'}html,body{background:' +
 			bg +
 			'}' +
 			css +
@@ -158,10 +164,16 @@ export function createSingleSlideRenderer(opts: SingleSlideOptions) {
 		// derived theme) instead of fetching `<themeBase><name>.css`. Registered
 		// once per distinct name. Existing callers omit it → unchanged behaviour.
 		extra?: { name: string; css: string },
+		// Opt-in: render in a SPECIFIC light/dark mode instead of the global
+		// `<html data-mode>` — lets a surface audition a theme in both modes (the
+		// Fabricate specimen toggle) without flipping the whole page. Existing
+		// callers omit it → mode still follows data-mode.
+		modeOverride?: 'light' | 'dark',
 	): Promise<RenderStatus> {
 		const PG = window.LatticePlayground;
 		if (!PG) return Promise.resolve({ ok: false, slides: 0, error: 'engine not loaded' });
-		const { palette, mode } = currentPaletteMode(paletteOverride);
+		const { palette, mode: docMode } = currentPaletteMode(paletteOverride);
+		const mode = modeOverride ?? docMode;
 		const themeReady = extra
 			? Promise.all([themes.ensureBase(), ensurePreviewFonts()]).then(() => {
 					if (!PG.hasTheme(extra.name)) PG.addThemes([extra.css]);
