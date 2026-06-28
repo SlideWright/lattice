@@ -103,6 +103,18 @@ describe('StudioShell — e2e flows (jsdom)', () => {
 		expect(screen.getByRole('button', { name: /FY26 Product Strategy/ })).toBeInTheDocument();
 	});
 
+	it('shows a live, deck-reactive Architect scorecard', () => {
+		setup();
+		// The default deck is clean + varied + titled → the readiness rows reflect it.
+		expect(screen.getByText('Board-ready')).toBeInTheDocument();
+		expect(screen.getByText('Components valid')).toBeInTheDocument();
+		expect(screen.getByText('Opens with a title')).toBeInTheDocument();
+		expect(screen.getByText('Variety')).toBeInTheDocument();
+		// A clean deck reads READY (the colour-independent pass tag), not FIX.
+		expect(screen.getByText('READY')).toBeInTheDocument();
+		expect(screen.queryByText('FIX')).not.toBeInTheDocument();
+	});
+
 	it('jumps to any slide from the navigator rail', async () => {
 		const user = setup();
 		// The Q3 deck opens on slide 1 (the title).

@@ -40,7 +40,7 @@ const options = {
 			(function () {
 				var r = document.documentElement;
 				try {
-					var p = localStorage.getItem('lattice-docs-palette');
+					var p = localStorage.getItem('lattice-studio-palette');
 					if (p) r.setAttribute('data-palette', p);
 					var m = localStorage.getItem('lattice-docs-mode');
 					if (m === 'light' || m === 'dark') r.setAttribute('data-mode', m);

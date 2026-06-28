@@ -17,7 +17,7 @@ import { DECKS, deckSource, type StudioDeck } from './decks';
 import { Editor, type EditorHandle } from './Editor';
 import { Fabricate } from './Fabricate';
 import { IntentTag } from './IntentTag';
-import { slideClass, splitSlides, unknownComponents } from './lint';
+import { scoreDeck, slideClass, splitSlides, unknownComponents } from './lint';
 import { PresentOverlay } from './PresentOverlay';
 import { ShareSheet } from './ShareSheet';
 import { useBreakpoint } from './use-breakpoint';
@@ -45,7 +45,13 @@ export default function StudioShell({ options }: Props) {
 	const [workspaceOpen, setWorkspaceOpen] = React.useState(false);
 	const [presentOpen, setPresentOpen] = React.useState(false);
 	const [cmdOpen, setCmdOpen] = React.useState(false);
-	const [palette, setPalette] = React.useState('indaco');
+	const [palette, setPalette] = React.useState(() => {
+		try {
+			return localStorage.getItem('lattice-studio-palette') || 'indaco';
+		} catch {
+			return 'indaco';
+		}
+	});
 	const [mobilePane, setMobilePane] = React.useState<'edit' | 'preview'>('preview');
 	const editorRef = React.useRef<EditorHandle>(null);
 
@@ -56,6 +62,7 @@ export default function StudioShell({ options }: Props) {
 	const slides = React.useMemo(() => splitSlides(source), [source]);
 	const slide = slides[Math.min(activeSlide, slides.length - 1)] ?? slides[0] ?? '';
 	const issues = React.useMemo(() => unknownComponents(source, KNOWN).length, [source]);
+	const deckScore = React.useMemo(() => scoreDeck(source, KNOWN), [source]);
 
 	// Panels are persistent columns on desktop, on-demand sheets below it. Reset
 	// their open state to the right default whenever the breakpoint flips so a
@@ -74,6 +81,11 @@ export default function StudioShell({ options }: Props) {
 	function applyPalette(name: string) {
 		setPalette(name);
 		document.documentElement.setAttribute('data-palette', name);
+		// Persist to a Studio-scoped key (not the shared docs key) so the choice
+		// survives a reload without bleeding into the rest of the docs site.
+		try {
+			localStorage.setItem('lattice-studio-palette', name);
+		} catch {}
 	}
 	// Navigate to a slide from the preview side (rail / arrows): move the preview
 	// AND scroll the editor to that slide, so the two panes stay in lock-step.
@@ -108,16 +120,14 @@ export default function StudioShell({ options }: Props) {
 					<button type="button" onClick={() => editorRef.current?.fixAll()} className="ml-auto rounded-md border border-border px-2 py-1 text-[11px] font-semibold text-[var(--accent)]">Fix all</button>
 				</div>
 			)}
-			<ArchCard tag={<IntentTag intent="pass" />} title="Board-ready">
-				<div className="flex items-baseline gap-2"><span className="font-sans text-[28px] font-extrabold leading-none text-[var(--text-heading)]">8.6</span><span className="text-[13px] text-muted-foreground">/ 10 · boardroom</span></div>
+			<ArchCard tag={<IntentTag intent={deckScore.intent} />} title="Board-ready">
+				<div className="flex items-baseline gap-2"><span className="font-sans text-[28px] font-extrabold leading-none text-[var(--text-heading)]">{deckScore.score.toFixed(1)}</span><span className="text-[13px] text-muted-foreground">/ 10 · boardroom</span></div>
 				<div className="mt-2 space-y-1.5 text-xs">
-					<ScoreRow ok label="Hierarchy" v="pass" />
-					<ScoreRow ok label="Contrast (AA)" v="pass" />
-					<ScoreRow label="Density" v="slide 5" />
+					{deckScore.rows.map((r) => <ScoreRow key={r.label} ok={r.ok} label={r.label} v={r.note} />)}
 				</div>
 			</ArchCard>
 			<ArchCard tag={<IntentTag intent="info" label="COACH" />} title="Tighten the story">
-				<p className="text-xs leading-relaxed text-muted-foreground">Slide 5 packs four metrics — lead with the one that moved.</p>
+				<p className="text-xs leading-relaxed text-muted-foreground">Lead every slide with its takeaway, not its detail — the number, then the supporting rows.</p>
 				<Chip>Rewrite lead</Chip>
 			</ArchCard>
 			<ArchCard tag={<IntentTag intent="info" label="RESHAPE" />} title="Reshape for a reader">
@@ -228,7 +238,7 @@ export default function StudioShell({ options }: Props) {
 						<DropdownMenuItem onSelect={() => setView('compose')}><Layers className="size-4" /><div><div className="font-semibold text-[var(--text-heading)]">Decks</div><div className="text-[11px] text-muted-foreground">Your saved decks</div></div></DropdownMenuItem>
 						<DropdownMenuItem onSelect={() => setView('fabricate')}><PencilRuler className="size-4" /><div><div className="font-semibold text-[var(--text-heading)]">Fabricate</div><div className="text-[11px] text-muted-foreground">Theme &amp; Layout Studio</div></div></DropdownMenuItem>
 						<DropdownMenuSeparator />
-						<DropdownMenuItem onSelect={() => loadDeck({ ...DECKS[0], id: 'new', title: 'Untitled deck', meta: '1 slide', slides: ['<!-- _class: title -->\n# Untitled\n## Start typing…'] })}><Plus className="size-4" />New deck</DropdownMenuItem>
+						<DropdownMenuItem onSelect={() => loadDeck({ ...DECKS[0], id: 'new', title: 'Untitled deck', meta: '1 slide', slides: ['<!-- _class: title -->\n\n# Untitled deck\n\n`Draft`\n\nStart typing to build your deck.'] })}><Plus className="size-4" />New deck</DropdownMenuItem>
 					</DropdownMenuContent>
 				</DropdownMenu>
 

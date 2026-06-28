@@ -1,6 +1,6 @@
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
-import { slideClass, slideIndexAt, slideStartOffset, splitSlides, unknownComponents, usedComponents } from './lint';
+import { scoreDeck, slideClass, slideIndexAt, slideStartOffset, splitSlides, unknownComponents, usedComponents } from './lint';
 
 const KNOWN = ['title', 'kpi', 'quote', 'cards-grid', 'stats'];
 // Component-name-ish tokens (won't accidentally contain a `-->` or a fence).
@@ -122,5 +122,39 @@ describe('slideIndexAt / slideStartOffset (editor↔preview sync, fuzz)', () => 
 		expect(slideIndexAt(undefined as unknown as string, 5)).toBe(0);
 		expect(slideStartOffset('a\n---\nb', 0)).toBe(0);
 		expect(slideStartOffset('a\n---\nb', 1)).toBe(6);
+	});
+});
+
+describe('scoreDeck (Architect readiness, fuzz)', () => {
+	it('always returns a score in [0, 10] with three rows — for ANY input', () => {
+		fc.assert(
+			fc.property(fc.string(), (s) => {
+				const r = scoreDeck(s, KNOWN);
+				expect(r.score).toBeGreaterThanOrEqual(0);
+				expect(r.score).toBeLessThanOrEqual(10);
+				expect(r.rows).toHaveLength(3);
+				expect(['pass', 'review', 'fix']).toContain(r.intent);
+			}),
+		);
+	});
+
+	it('any unknown component forces the `fix` posture and flags the row', () => {
+		fc.assert(
+			fc.property(fc.array(nameArb, { minLength: 1, maxLength: 6 }), (names) => {
+				// At least one guaranteed-unknown component.
+				const src = ['<!-- _class: title -->', ...names.map((n) => `<!-- _class: zzz-${n} -->`)].join('\n---\n');
+				const r = scoreDeck(src, KNOWN);
+				expect(r.intent).toBe('fix');
+				expect(r.rows[0].ok).toBe(false);
+			}),
+		);
+	});
+
+	it('a clean, varied, titled deck scores high and reads `pass`', () => {
+		const src = ['title', 'kpi', 'quote', 'stats'].map((c) => `<!-- _class: ${c} -->\n# ${c}`).join('\n---\n');
+		const r = scoreDeck(src, KNOWN);
+		expect(r.intent).toBe('pass');
+		expect(r.score).toBeGreaterThanOrEqual(8);
+		expect(r.rows.every((row) => row.ok)).toBe(true);
 	});
 });
