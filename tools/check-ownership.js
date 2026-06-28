@@ -751,6 +751,129 @@ function checkMarginDiscipline(errors) {
   }
 }
 
+// ── HARD RULE #21: US English is the house dialect ───────────────────────────
+// Curated, HIGH-CONFIDENCE British spellings (with the inflections that actually
+// occur), listed EXPLICITLY so a stem can't over-match — `\b(...)\b` keeps `centre`
+// from firing inside `epicentre`, and only UNAMBIGUOUS UK/US pairs are listed, so the
+// many words US keeps in the British-looking form (`dialogue`, `analysis`, `exercise`,
+// `comprise`, `advise`, `surprise`, `cancellation`, `practice` the noun) are
+// deliberately ABSENT to avoid false positives. Detection is case-insensitive. Add a
+// form only when the UK→US distinction is unambiguous.
+const UK_ENGLISH_FORMS = [
+  // -our → -or
+  'colour', 'colours', 'coloured', 'colouring', 'colourful', 'colourless',
+  'behaviour', 'behaviours', 'behavioural',
+  'favour', 'favours', 'favoured', 'favouring', 'favourable', 'favourite', 'favourites',
+  'flavour', 'flavours', 'flavoured', 'honour', 'honours', 'honoured',
+  'labour', 'labours', 'laboured', 'rumour', 'rumours', 'neighbour', 'neighbours',
+  // -re → -er
+  'centre', 'centres', 'centred', 'centring',
+  'metre', 'metres', 'litre', 'litres', 'fibre', 'fibres', 'theatre', 'theatres', 'calibre',
+  // -ise/-isation → -ize/-ization (explicit verb roots only — NEVER a blunt -ise stem)
+  'normalise', 'normalised', 'normalises', 'normalising', 'normalisation',
+  'optimise', 'optimised', 'optimises', 'optimising', 'optimisation',
+  'organise', 'organised', 'organises', 'organising', 'organisation',
+  'recognise', 'recognised', 'recognises', 'recognising',
+  'emphasise', 'emphasised', 'emphasises', 'emphasising',
+  'summarise', 'summarised', 'summarises', 'summarising',
+  'prioritise', 'prioritised', 'prioritises', 'prioritising',
+  'minimise', 'minimised', 'minimises', 'minimising',
+  'maximise', 'maximised', 'maximises', 'maximising',
+  'customise', 'customised', 'customises', 'customising',
+  'standardise', 'standardised', 'standardises',
+  'categorise', 'categorised', 'categorises', 'categorising',
+  'specialise', 'specialised', 'specialises',
+  'initialise', 'initialised', 'initialises', 'initialising',
+  'utilise', 'utilised', 'utilises', 'utilising',
+  'realise', 'realised', 'realises', 'realising',
+  'finalise', 'finalised', 'finalises',
+  'capitalise', 'capitalised', 'capitalises',
+  'visualise', 'visualised', 'visualises', 'visualising',
+  'analyse', 'analysed', 'analysing', // NOT 'analyses' — that's also the US plural noun of "analysis"
+  'apologise', 'apologised', 'apologises', 'apologising',
+  // -ence → -ense / misc unambiguous
+  'defence', 'defences', 'offence', 'offences', 'licence', 'licences', 'pretence', 'pretences',
+  'catalogue', 'catalogues', 'analogue', 'analogues',
+  'artefact', 'artefacts',
+  'grey', 'greys', 'greyed', 'greyscale',
+  'whilst', 'amongst',
+  'fulfil', 'fulfils', 'enrol', 'enrols', 'instil', 'skilful', 'wilful',
+  'cancelled', 'cancelling', 'labelled', 'labelling', 'modelling',
+  'signalling', 'travelled', 'travelling', 'marvellous',
+  'judgement', 'judgements', 'acknowledgement', 'acknowledgements', 'ageing',
+  'programme', 'programmes', 'practise', 'practised', 'practises',
+];
+
+// Files exempt from the US-English scan. Four kinds: this gate's own dictionary and
+// its test fixtures (they CONTAIN the British forms as data — without this the gate
+// flags itself); the append-only CHANGELOG ledger (past entries are frozen history,
+// like the decision docs — new entries are policed at PR review, not the gate); and a
+// generated/vendored playground bundle that inlines third-party libraries we don't
+// control. Dated engineering/decisions/ records are skipped by path in
+// listRepoTextFiles; minified/`*.generated.*` bundles by filename.
+const US_ENGLISH_SELF_EXEMPT = new Set([
+  'tools/check-ownership.js',
+  'test/unit/cli/check-ownership.test.js',
+  'CHANGELOG.md',
+  'docs/public/playground/lattice-playground.js',
+]);
+
+const US_TEXT_EXTS = new Set(['.md', '.js', '.mjs', '.ts', '.tsx', '.css', '.json', '.yml', '.yaml', '.html', '.astro']);
+const US_SKIP_DIRS = new Set(['node_modules', 'dist', '.git', 'coverage', '.scratch']);
+
+// Repo-wide text files in the enforced US-English scope. Walks from ROOT, skips
+// generated/vendor trees and the dated engineering/decisions/ records, and drops the
+// self-exempt dictionary/fixtures.
+function listRepoTextFiles(dir = ROOT, out = []) {
+  for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+    const p = path.join(dir, e.name);
+    const rel = path.relative(ROOT, p);
+    if (e.isDirectory()) {
+      if (US_SKIP_DIRS.has(e.name)) continue;
+      if (e.name.startsWith('.') && e.name !== '.github') continue; // hidden dirs (.git/.vscode/.claude) — keep .github
+      if (rel === path.join('engineering', 'decisions')) continue; // historical records
+      listRepoTextFiles(p, out);
+    } else if (
+      US_TEXT_EXTS.has(path.extname(e.name)) &&
+      !e.name.startsWith('.') && // hidden files (.c8rc.json, …) aren't house prose
+      !/\.(min|generated)\.[a-z]+$/.test(e.name) && // minified / generated bundles
+      !US_ENGLISH_SELF_EXEMPT.has(rel)
+    ) {
+      out.push(p);
+    }
+  }
+  return out;
+}
+
+// HARD RULE #21 ratchet — the frozen ceiling of British spellings across the repo's
+// living text surfaces. EXCEED-only (mirrors the margin gate): a NEW British spelling
+// fails the build; the existing backlog is tracked in migration tickets and burned
+// down by lowering US_ENGLISH_BUDGET as it drops. Target zero.
+const US_ENGLISH_BUDGET = 1364;
+
+function checkUsEnglish(errors) {
+  const re = new RegExp(`\\b(${UK_ENGLISH_FORMS.join('|')})\\b`, 'gi');
+  let total = 0;
+  const byFile = [];
+  for (const file of listRepoTextFiles()) {
+    const n = (fs.readFileSync(file, 'utf8').match(re) || []).length;
+    if (n) {
+      total += n;
+      byFile.push([path.relative(ROOT, file), n]);
+    }
+  }
+  if (total > US_ENGLISH_BUDGET) {
+    byFile.sort((a, b) => b[1] - a[1]);
+    const top = byFile.slice(0, 5).map(([f, n]) => `${f} (${n})`).join(', ');
+    errors.push(
+      `British spellings rose to ${total}, above the budget of ${US_ENGLISH_BUDGET} (HARD RULE #21 — ` +
+      `US English is the house dialect). Use the US spelling (-or not -our, -ize not -ise, -er not -re; ` +
+      `gray, license, defense, catalog, while). Existing usages are tracked for migration — don't add new ` +
+      `ones; as the backlog drops, lower US_ENGLISH_BUDGET in tools/check-ownership.js. Heaviest files: ${top}.`,
+    );
+  }
+}
+
 // HARD RULE #12 gate — theme CSS (themes/*.css) must not use `:not(:has(…))` /
 // `:is(:has(…))`: silently broken in the Marp-preview Chromium. Component/base
 // CSS uses these deliberately with fallbacks, so the ban is scoped to themes/.
@@ -893,6 +1016,7 @@ function run() {
   checkRetiredTokenNames(errors);
   checkTypographyTokens(errors);
   checkMarginDiscipline(errors);
+  checkUsEnglish(errors);
   checkThemeHasSelectors(errors);
   checkAdaptDeclarations(manifests, errors);
   checkSolverIntentDeclared(manifests, errors);
@@ -950,6 +1074,10 @@ module.exports = {
   checkMarginDiscipline,
   LAYOUT_MARGIN_BUDGET,
   SANCTIONED_MARGINS,
+  checkUsEnglish,
+  listRepoTextFiles,
+  UK_ENGLISH_FORMS,
+  US_ENGLISH_BUDGET,
   CANONICAL_FS_TOKENS,
   parseThemeTokens,
   listBasePalettes,

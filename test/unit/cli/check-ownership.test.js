@@ -35,6 +35,8 @@ const {
   checkMarginDiscipline,
   LAYOUT_MARGIN_BUDGET,
   SANCTIONED_MARGINS,
+  checkUsEnglish,
+  UK_ENGLISH_FORMS,
   CANONICAL_FS_TOKENS,
   SINGLETON_TAGS,
   run,
@@ -177,6 +179,31 @@ describe('check-ownership', () => {
       for (const s of SANCTIONED_MARGINS) {
         assert.ok(s.file && s.value && s.why, 'every sanction names a file, value, and reason');
       }
+    });
+  });
+
+  describe('US-English gate (HARD RULE #21)', () => {
+    const re = new RegExp(`\\b(${UK_ENGLISH_FORMS.join('|')})\\b`, 'gi');
+
+    test('flags unambiguous British forms', () => {
+      for (const w of ['colour', 'Behaviour', 'centred', 'normalise', 'grey', 'catalogue', 'defence', 'whilst', 'labelled']) {
+        assert.ok(re.test(w), `expected "${w}" to be flagged`);
+        re.lastIndex = 0;
+      }
+    });
+
+    test('does NOT flag US spellings or words US keeps in the -ise/-re/-ue form', () => {
+      // word boundaries + curated list: these must stay clean (false positives are the risk)
+      for (const w of ['color', 'center', 'organize', 'gray', 'license', 'analysis', 'exercise', 'comprise', 'advise', 'surprise', 'dialogue', 'epicentre', 'rise', 'premise']) {
+        assert.ok(!re.test(w), `did NOT expect "${w}" to be flagged`);
+        re.lastIndex = 0;
+      }
+    });
+
+    test('the live repo stays within the US-English budget', () => {
+      const errors = [];
+      checkUsEnglish(errors);
+      assert.deepEqual(errors, [], `British spellings exceeded US_ENGLISH_BUDGET:\n${errors.join('\n')}`);
     });
   });
 
