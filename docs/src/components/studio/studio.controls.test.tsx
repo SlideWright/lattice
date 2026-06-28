@@ -255,6 +255,16 @@ describe('Studio — Inspector controls respond', () => {
 		expect(document.documentElement.getAttribute('data-palette')).toBe('cuoio');
 	});
 
+	it('authoring a speaker note writes it into the slide source', async () => {
+		const user = setup();
+		await user.click(screen.getByRole('button', { name: 'Toggle Deck inspector' }));
+		const notes = await screen.findByRole('textbox', { name: 'Speaker note for this slide' });
+		await user.click(notes);
+		await user.type(notes, 'Open on the room, then the number.');
+		await user.tab(); // blur commits the note
+		expect(screen.getByLabelText('Deck source').textContent).toMatch(/note: Open on the room, then the number\./);
+	});
+
 	it('version history saves a checkpoint and restores it', async () => {
 		const user = setup();
 		await user.click(screen.getByRole('button', { name: 'Toggle Deck inspector' }));

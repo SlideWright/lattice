@@ -15,7 +15,7 @@ import { cn } from '@/lib/utils';
 import { ArchitectChat } from './ArchitectChat';
 import { resumePendingAuth, runArchitect, useArchitectStatus } from './architect';
 import { CommandPalette } from './CommandPalette';
-import { addSlideAfter, deleteSlide, duplicateSlide, moveSlide } from './deck-ops';
+import { addSlideAfter, deleteSlide, duplicateSlide, moveSlide, replaceSlide } from './deck-ops';
 import { DECKS, deckSource, type StudioDeck } from './decks';
 import { Editor, type EditorHandle } from './Editor';
 import { Fabricate } from './Fabricate';
@@ -25,6 +25,7 @@ import { IntentTag } from './IntentTag';
 import { type PresentLens, presentationSet, scoreDeck, slideClass, splitSlides, unknownComponents, usedComponents } from './lint';
 import { PresentOverlay } from './PresentOverlay';
 import { ShareSheet } from './ShareSheet';
+import { getNote, setNote } from './slide-notes';
 import { type Checkpoint, createDeck, deleteDeck as deleteDeckStore, loadCheckpoints, loadDeckList, loadSettings, loadSource, metaFor, renameDeck as renameDeckStore, saveCheckpoint, saveSettings, saveSource, titleFromSource } from './studio-store';
 import { useBreakpoint } from './use-breakpoint';
 import { WorkspaceSheet } from './WorkspaceSheet';
@@ -358,6 +359,20 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 	}
 
 	// ── Architect body (cards) — shared by the desktop column and the sheet ──
+	// Speaker note for the slide in view — authored in the Inspector, written into
+	// the slide's source as a `<!-- note: … -->` comment (the engine surfaces it in
+	// the presenter view / PDF notes). Local draft so typing doesn't rewrite the
+	// source per keystroke; committed on blur.
+	const curNote = React.useMemo(() => getNote(slides[activeFullIndex] ?? ''), [slides, activeFullIndex]);
+	const [noteDraft, setNoteDraft] = React.useState(curNote);
+	// biome-ignore lint/correctness/useExhaustiveDependencies: reseed the draft when the active slide's note changes.
+	React.useEffect(() => setNoteDraft(curNote), [curNote, activeFullIndex]);
+	const commitNote = () => {
+		const chunk = slides[activeFullIndex];
+		if (chunk == null || noteDraft === curNote) return;
+		setSource(replaceSlide(source, activeFullIndex, setNote(chunk, noteDraft)).source);
+	};
+
 	// Apply an AI chat edit — checkpoint the pre-edit deck first (reversible from
 	// History), then swap in the proposed source.
 	const applyChatEdit = (next: string) => {
@@ -433,6 +448,17 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 			</InspGroup>
 			<InspGroup icon={<Wand2 className="size-3.5" />} label="Authoring">
 				<Field label="Inline validation"><Toggle label="Inline validation" on={validation} onClick={() => { setValidation((v) => { notify(v ? 'Inline validation off — the editor stops flagging components.' : 'Inline validation on — unknown components are flagged again.'); return !v; }); }} /></Field>
+			</InspGroup>
+			<InspGroup icon={<FileText className="size-3.5" />} label={`Speaker notes — slide ${activeFullIndex + 1}`}>
+				<textarea
+					value={noteDraft}
+					onChange={(e) => setNoteDraft(e.target.value)}
+					onBlur={commitNote}
+					rows={3}
+					aria-label="Speaker note for this slide"
+					placeholder="What you'll say on this slide — read aloud in Present, exported as PDF/PPTX notes."
+					className="w-full resize-none rounded-lg border border-border bg-background p-2.5 text-[12.5px] leading-relaxed text-foreground outline-none focus:border-[var(--accent)]"
+				/>
 			</InspGroup>
 			<InspGroup icon={<History className="size-3.5" />} label="History">
 				<button type="button" onClick={saveVersion} className="mb-1.5 flex w-full items-center justify-center gap-1.5 rounded-lg border border-border bg-background px-3 py-2 text-[12.5px] font-semibold text-[var(--accent)] hover:bg-[var(--accent-soft)]"><Save className="size-3.5" />Save a version</button>

@@ -49,6 +49,15 @@ export function deleteSlide(source: string, index: number): DeckOpResult {
 	return { source: rejoin(source, slides), active: clampIndex(i, slides.length - 1) };
 }
 
+/** Replace slide `index`'s body in place (e.g. after editing its speaker note). */
+export function replaceSlide(source: string, index: number, body: string): DeckOpResult {
+	const slides = bodySlides(source);
+	if (!slides.length) return { source, active: 0 };
+	const i = clampIndex(index, slides.length);
+	slides[i] = body.trim();
+	return { source: rejoin(source, slides), active: i };
+}
+
 /** Move slide `from` to position `to` (clamped). Active follows the moved slide. */
 export function moveSlide(source: string, from: number, to: number): DeckOpResult {
 	const slides = bodySlides(source);

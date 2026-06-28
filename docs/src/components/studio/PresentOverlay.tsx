@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils';
 import { buildPlanFromMetas, metasFromSource } from '@/playground/drawing-board-rehearsal.js';
 import { type PresentLens, presentationSet } from './lint';
 import { slideToSpeech, useReadAloud } from './read-aloud';
+import { getNote } from './slide-notes';
 
 // Present = a verb (plan §17): a full-screen takeover you ENTER and exit, with a
 // reader-facing lens switch that actually RESHAPES the deck (meet the reader where
@@ -37,7 +38,9 @@ export function PresentOverlay({ open, onClose, options, slides, frontMatter = '
 	// Real read-aloud: a synchronized teleprompter over the current slide's prose,
 	// with spoken audio when a voice is connected. Owns its own transport (the dock
 	// play button drives it in read-aloud mode; the rehearsal clock in Rehearse).
-	const reader = useReadAloud(React.useMemo(() => slideToSpeech(cur), [cur]));
+	// Read the slide's speaker note when it has one (the real talk track), else the
+	// on-slide prose.
+	const reader = useReadAloud(React.useMemo(() => getNote(cur) || slideToSpeech(cur), [cur]));
 	const rungLabel = reader.rung && reader.rung !== 'silent' ? (reader.rung === 'kokoro' ? 'Aria · local' : 'Aria · cloud') : 'Captions';
 	// Stable caption keys (content + per-content occurrence — not the array index).
 	const captionParts = React.useMemo(() => {
