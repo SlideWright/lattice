@@ -7,11 +7,11 @@
 
 The live, claimable work queue — a read-only mirror of [open issues](https://github.com/SlideWright/lattice/issues),
 grouped by board column. Design lives in `engineering/decisions/`; this tracks
-only *status*. **40 open** items.
+only *status*. **41 open** items.
 
 > ⚠️ **2 cards need triage** (missing `area:`/`type:`/`priority:`): [#554](https://github.com/SlideWright/lattice/issues/554), [#569](https://github.com/SlideWright/lattice/issues/569).
 
-## Backlog (36)
+## Backlog (37)
 
 - [#287](https://github.com/SlideWright/lattice/issues/287) refactor(engine): LPM Phase 1 — manifest `render` block + `transformSection` adapter; migrate the chart kernels — high · engine
 - [#506](https://github.com/SlideWright/lattice/issues/506) feat(runtime): runtime auto-split (Option B) via eventual consistency — high · engine
@@ -33,6 +33,7 @@ only *status*. **40 open** items.
 - [#476](https://github.com/SlideWright/lattice/issues/476) chart(kanban): per-card detail reveal (Tier-2, on the HTML-mark path) — medium · chart
 - [#500](https://github.com/SlideWright/lattice/issues/500) feat(legal): obligation-matrix cover-paginate — a split that survives a wide matrix — medium · legal
 - [#511](https://github.com/SlideWright/lattice/issues/511) refactor(engine): consolidate runtime + emulator — rename the CLI off "emulator", unify the Mermaid var-map — medium · engine
+- [#580](https://github.com/SlideWright/lattice/issues/580) feat(website): Studio depth — finish Present, Fabricate & Settings (continue #567) — medium · website
 - [#180](https://github.com/SlideWright/lattice/issues/180) epic(chart): resolution-independent charts — cqi-first, kill fixed-px, for any-format / 10K export — low · chart
 - [#279](https://github.com/SlideWright/lattice/issues/279) docs: reconcile Mermaid diagram-type count (README "25" vs gallery "26") — low · diagram
 - [#280](https://github.com/SlideWright/lattice/issues/280) docs: fix phantom `--hljs-name`/`--hljs-meta` token rows in highlight-js.docs.md — low · docs
