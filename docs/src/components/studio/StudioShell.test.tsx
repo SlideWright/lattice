@@ -129,24 +129,28 @@ describe('StudioShell — e2e flows (jsdom)', () => {
 		expect(await screen.findByText('Presenter screen')).toBeInTheDocument();
 	});
 
-	it('opens Workspace settings ("your setup") and switches tabs + tier', async () => {
+	it('opens Workspace settings ("your setup") with the REAL model status + tabs', async () => {
 		const user = setup();
 		await user.click(screen.getByRole('button', { name: 'Workspace settings' }));
 		const sheet = within(await screen.findByRole('dialog', { name: /Workspace/ }));
-		// Default tab = AI model, with a selectable generation tier.
-		expect(sheet.getByText('Generation tier')).toBeInTheDocument();
-		const floor = sheet.getByRole('button', { name: /Floor/ });
-		expect(floor).toHaveAttribute('aria-pressed', 'false');
-		await user.click(floor);
-		expect(floor).toHaveAttribute('aria-pressed', 'true');
-		// Switch to the Instructions tab — its textarea is editable local state.
+		// Default tab = AI model: the ACTIVE tier is reported honestly (floor in the
+		// test env, no model connected) with a one-click Connect affordance.
+		expect(sheet.getByText('Active generation tier')).toBeInTheDocument();
+		expect(sheet.getByText(/Floor/)).toBeInTheDocument();
+		expect(sheet.getByRole('button', { name: /Connect OpenRouter/ })).toBeInTheDocument();
+		// Spend tab shows real (zero) spend, not a fabricated figure.
+		await user.click(sheet.getByRole('tab', { name: 'Spend' }));
+		expect(await sheet.findByText('this session')).toBeInTheDocument();
+		// Real spend is zero in the test env (no model calls) — both cards show $0.00.
+		expect(sheet.getAllByText('$0.00').length).toBeGreaterThanOrEqual(2);
+		// Instructions tab — the textarea persists to localStorage.
 		await user.click(sheet.getByRole('tab', { name: 'Instructions' }));
 		const ta = await sheet.findByRole('textbox', { name: 'Standing instructions' });
 		await user.clear(ta);
 		await user.type(ta, 'Be terse.');
 		expect(ta).toHaveValue('Be terse.');
-		// Generation tier is gone now (different tab is rendered).
-		expect(sheet.queryByText('Generation tier')).not.toBeInTheDocument();
+		expect(localStorage.getItem('lattice-studio-instructions')).toBe('Be terse.');
+		expect(sheet.queryByText('Active generation tier')).not.toBeInTheDocument();
 	});
 
 	it('expands the Deck Inspector ("this deck") from its collapsed rail', async () => {

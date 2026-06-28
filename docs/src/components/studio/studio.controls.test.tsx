@@ -81,12 +81,20 @@ describe('Studio — Architect + editor controls respond', () => {
 		expect(screen.queryByText(/\d+ issue/)).not.toBeInTheDocument();
 	});
 
-	it('the Architect Coach + Reshape chips respond (toast)', async () => {
+	it('the Reshape "Exec summary" chip reshapes the preview (deterministic, real)', async () => {
 		const user = setup();
+		await user.click(screen.getByText('Exec summary'));
+		expect(await screen.findByText(/headline slides only/i)).toBeInTheDocument();
+	});
+
+	it('the Architect actions degrade honestly with no model connected', async () => {
+		const user = setup();
+		// With no model (floor) the AI actions do NOT fake an edit — they point the
+		// author at Workspace to connect, rather than toasting a change that did not
+		// happen. (A connected model would apply a real edit instead.)
 		await user.click(screen.getByText('Rewrite lead'));
-		expect(await screen.findByText(/rewrite the lead/i)).toBeInTheDocument();
-		await user.click(screen.getByText('Technical'));
-		expect(await screen.findByText(/detail-forward/i)).toBeInTheDocument();
+		// The architect model bundle loads lazily on first use — allow for it.
+		expect(await screen.findByText(/connect a model/i, undefined, { timeout: 5000 })).toBeInTheDocument();
 	});
 });
 

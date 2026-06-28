@@ -29,6 +29,18 @@ const editorTheme = EditorView.theme({
 
 const CLASS_RE = /<!--\s*_class:\s*([A-Za-z0-9-]+)\s*-->/g;
 
+// The "did you mean" for an unknown component: the known name sharing the longest
+// prefix, else one that is a prefix of the typo, else `kpi`. Shared by the inline
+// linter AND fixAll so a one-click fix lands the SAME suggestion the underline
+// promised (previously fixAll hardcoded `kpi` — bug A11).
+export function suggestFor(name: string, known: Set<string>): string {
+	return (
+		[...known].find((k) => k.startsWith(name.slice(0, Math.max(2, name.length - 1)))) ||
+		[...known].find((k) => name.startsWith(k)) ||
+		'kpi'
+	);
+}
+
 function makeLinter(known: Set<string>) {
 	return linter((view): Diagnostic[] => {
 		const text = view.state.doc.toString();
@@ -40,11 +52,7 @@ function makeLinter(known: Set<string>) {
 			if (known.size && !known.has(name)) {
 				const from = m.index + m[0].indexOf(name);
 				const to = from + name.length;
-				// Cheapest "did you mean" — a known name sharing the longest prefix.
-				const suggestion =
-					[...known].find((k) => k.startsWith(name.slice(0, Math.max(2, name.length - 1)))) ||
-					[...known].find((k) => name.startsWith(k)) ||
-					'kpi';
+				const suggestion = suggestFor(name, known);
 				out.push({
 					from,
 					to,
@@ -92,7 +100,7 @@ export const Editor = React.forwardRef<EditorHandle, {
 			let text = v.state.doc.toString();
 			CLASS_RE.lastIndex = 0;
 			text = text.replace(CLASS_RE, (full, name: string) =>
-				known.size && !known.has(name) ? full.replace(name, 'kpi') : full,
+				known.size && !known.has(name) ? full.replace(name, suggestFor(name, known)) : full,
 			);
 			if (text !== v.state.doc.toString()) {
 				v.dispatch({ changes: { from: 0, to: v.state.doc.length, insert: text } });

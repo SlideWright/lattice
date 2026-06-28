@@ -49,6 +49,12 @@ in patch versions.
   - **Inspector controls** write real deck front-matter: Size picks a `size:`
     directive (reflected live in the preview), Page numbers writes `paginate`,
     and Running header writes `header` — each carried into every export.
+  - **Architect (AI)** is wired honestly to the production model ladder: with a
+    model connected, Rewrite lead / Reshape run a real completion and apply the
+    parsed edit blocks; with none, they degrade honestly (point at Workspace)
+    instead of faking a change. Workspace shows the real active tier, one-click
+    OpenRouter OAuth connect/disconnect, and real session/all-time spend. Fix-all
+    now lands the linter's per-name suggestion, not a hardcoded `kpi`.
 - **`--present`: PDFs that open straight into full-screen presentation mode.**
   A new opt-in CLI flag marks the exported PDF's document catalog so Adobe
   Acrobat/Reader and most desktop viewers open it directly in full-screen /

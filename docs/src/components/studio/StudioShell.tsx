@@ -12,6 +12,7 @@ import {
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import type { SingleSlideOptions } from '@/lib/single-slide-render';
 import { cn } from '@/lib/utils';
+import { resumePendingAuth, runArchitect, useArchitectStatus } from './architect';
 import { CommandPalette } from './CommandPalette';
 import { DECKS, deckSource, type StudioDeck } from './decks';
 import { Editor, type EditorHandle } from './Editor';
@@ -218,6 +219,42 @@ export default function StudioShell({ options }: Props) {
 	}, []);
 	React.useEffect(() => () => { if (toastTimer.current) clearTimeout(toastTimer.current); }, []);
 
+	// ── Architect (AI) ───────────────────────────────────────────────────────
+	const ai = useArchitectStatus();
+	const [aiBusy, setAiBusy] = React.useState<string | null>(null);
+	// On return from the OpenRouter OAuth redirect (?code=), finish the exchange.
+	React.useEffect(() => {
+		resumePendingAuth().then((ok) => {
+			if (ok) notify('OpenRouter connected — the Architect can now edit your deck.');
+		});
+	}, [notify]);
+	// Run one architect instruction. Applies real edits when a model is connected;
+	// degrades honestly (points at Workspace) when it is not.
+	const runArchitectAction = React.useCallback(
+		async (key: string, label: string, instruction: string) => {
+			if (aiBusy) return;
+			setAiBusy(key);
+			notify(`${label}…`);
+			try {
+				const out = await runArchitect(source, instruction);
+				if (out.status === 'offline') {
+					notify('Connect a model in Workspace → AI model, then this applies automatically.');
+					setWorkspaceOpen(true);
+				} else if (out.status === 'advice') {
+					notify(out.note);
+				} else {
+					setSource(out.source);
+					notify(`${out.note} — ⌘Z to undo.`);
+				}
+			} catch {
+				notify(`${label} failed — try again.`);
+			} finally {
+				setAiBusy(null);
+			}
+		},
+		[aiBusy, source, notify],
+	);
+
 	// ⌘K
 	React.useEffect(() => {
 		const onKey = (e: KeyboardEvent) => {
@@ -252,12 +289,12 @@ export default function StudioShell({ options }: Props) {
 				</div>
 			</ArchCard>
 			<ArchCard tag={<IntentTag intent="info" label="COACH" />} title="Tighten the story">
-				<p className="text-xs leading-relaxed text-muted-foreground">Lead every slide with its takeaway, not its detail — the number, then the supporting rows.</p>
-				<Chip onClick={() => notify('Coach would rewrite the lead with the headline number first.')}>Rewrite lead</Chip>
+				<p className="text-xs leading-relaxed text-muted-foreground">Lead every slide with its takeaway, not its detail — the number, then the supporting rows.{!ai.ready && <span className="text-[var(--text-muted)]"> Connect a model in Workspace for one-click rewrites.</span>}</p>
+				<Chip busy={aiBusy === 'lead'} onClick={() => runArchitectAction('lead', 'Rewrite lead', `Rewrite slide ${activeFullIndex + 1} so it opens with its single headline takeaway or number, then the supporting rows. Return the whole slide, same component.`)}>Rewrite lead</Chip>
 			</ArchCard>
 			<ArchCard tag={<IntentTag intent="info" label="RESHAPE" />} title="Reshape for a reader">
 				<p className="text-xs leading-relaxed text-muted-foreground">Reorient the deck without losing the source.</p>
-				<div className="mt-2 flex flex-wrap gap-1.5"><Chip onClick={() => { setLens('exec'); notify('Preview reshaped to the Exec summary — headline slides only.'); }}>Exec summary</Chip><Chip onClick={() => notify('Reshape “Technical” regenerates a detail-forward cut of the deck.')}>Technical</Chip><Chip onClick={() => notify('Reshape “Narrative” regenerates a story-forward cut of the deck.')}>Narrative</Chip></div>
+				<div className="mt-2 flex flex-wrap gap-1.5"><Chip onClick={() => { setLens('exec'); notify('Preview reshaped to the Exec summary — headline slides only.'); }}>Exec summary</Chip><Chip busy={aiBusy === 'technical'} onClick={() => runArchitectAction('technical', 'Reshape: Technical', 'Rewrite the deck in a more technical, detail-forward voice — concrete metrics, methods, and specifics over narrative. Edit each slide that needs it; keep the component types.')}>Technical</Chip><Chip busy={aiBusy === 'narrative'} onClick={() => runArchitectAction('narrative', 'Reshape: Narrative', 'Rewrite the deck in a more narrative, story-forward voice — a throughline from problem to payoff, plain language. Edit each slide that needs it; keep the component types.')}>Narrative</Chip></div>
 			</ArchCard>
 		</>
 	);
@@ -582,8 +619,8 @@ function ScoreRow({ ok, label, v }: { ok?: boolean; label: string; v: string }) 
 		</div>
 	);
 }
-function Chip({ children, onClick }: { children: React.ReactNode; onClick?: () => void }) {
-	return <button type="button" onClick={onClick} className="mt-2 mr-1.5 inline-block cursor-pointer rounded-full border border-[color-mix(in_srgb,var(--accent)_22%,transparent)] bg-[var(--accent-soft)] px-2.5 py-1 text-[11px] text-[var(--accent)]">{children}</button>;
+function Chip({ children, onClick, busy }: { children: React.ReactNode; onClick?: () => void; busy?: boolean }) {
+	return <button type="button" onClick={onClick} disabled={busy} className="mt-2 mr-1.5 inline-flex items-center gap-1 rounded-full border border-[color-mix(in_srgb,var(--accent)_22%,transparent)] bg-[var(--accent-soft)] px-2.5 py-1 text-[11px] text-[var(--accent)] disabled:opacity-60">{busy && <Sparkles className="size-3 animate-pulse" />}{children}</button>;
 }
 function InspGroup({ icon, label, last, children }: { icon: React.ReactNode; label: string; last?: boolean; children: React.ReactNode }) {
 	return (
