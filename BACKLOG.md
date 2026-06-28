@@ -7,11 +7,11 @@
 
 The live, claimable work queue — a read-only mirror of [open issues](https://github.com/SlideWright/lattice/issues),
 grouped by board column. Design lives in `engineering/decisions/`; this tracks
-only *status*. **40 open** items.
+only *status*. **39 open** items.
 
-> ⚠️ **4 cards need triage** (missing `area:`/`type:`/`priority:`): [#547](https://github.com/SlideWright/lattice/issues/547), [#554](https://github.com/SlideWright/lattice/issues/554), [#560](https://github.com/SlideWright/lattice/issues/560), [#569](https://github.com/SlideWright/lattice/issues/569).
+> ⚠️ **3 cards need triage** (missing `area:`/`type:`/`priority:`): [#554](https://github.com/SlideWright/lattice/issues/554), [#560](https://github.com/SlideWright/lattice/issues/560), [#569](https://github.com/SlideWright/lattice/issues/569).
 
-## Backlog (38)
+## Backlog (37)
 
 - [#287](https://github.com/SlideWright/lattice/issues/287) refactor(engine): LPM Phase 1 — manifest `render` block + `transformSection` adapter; migrate the chart kernels — high · engine
 - [#506](https://github.com/SlideWright/lattice/issues/506) feat(runtime): runtime auto-split (Option B) via eventual consistency — high · engine
@@ -47,7 +47,6 @@ only *status*. **40 open** items.
 - [#477](https://github.com/SlideWright/lattice/issues/477) chart(state-chart): tune the `tb` reveal-lift magnitude — low · chart
 - [#478](https://github.com/SlideWright/lattice/issues/478) chart(state-chart): tighten `inline`/`horizontal` variant label spacing — low · chart
 - [#527](https://github.com/SlideWright/lattice/issues/527) explore: alignment as a universal modifier (vertical top/center for tables, lists, etc.) — low
-- [#547](https://github.com/SlideWright/lattice/issues/547) q-and-a `spine` look overflows the frame on the gallery stress content
 - [#554](https://github.com/SlideWright/lattice/issues/554) feat(forms): N-up split Frame — compose multiple components in a grid (generalize split-panel)
 - [#560](https://github.com/SlideWright/lattice/issues/560) docs: standardize user-facing language on "component" (retire "layout") + document the inventory contract variants
 - [#569](https://github.com/SlideWright/lattice/issues/569) galleries: per-component goldens are broadly stale (~840-slide drift from current render) — docs
