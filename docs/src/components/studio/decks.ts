@@ -45,3 +45,12 @@ export const DECKS: StudioDeck[] = [
 export function deckSource(deck: StudioDeck): string {
 	return deck.slides.join('\n\n---\n\n');
 }
+
+/** A safe `.md` filename from a deck title — slugified, never empty. */
+export function deckFilename(title: string): string {
+	const slug = String(title ?? '')
+		.toLowerCase()
+		.replace(/[^a-z0-9]+/g, '-')
+		.replace(/^-+|-+$/g, '');
+	return `${slug || 'deck'}.md`;
+}

@@ -90,6 +90,25 @@ describe('StudioShell — e2e flows (jsdom)', () => {
 		expect(screen.getByText('Print source')).toBeInTheDocument();
 	});
 
+	it('Share wires real actions and toasts the not-yet-wired ones', async () => {
+		const user = setup();
+		await user.click(screen.getByRole('button', { name: 'Share' }));
+		const sheet = within(await screen.findByRole('dialog', { name: /Share/ }));
+		// Markdown is the real source handoff → confirms with a toast.
+		await user.click(sheet.getByText('Markdown'));
+		expect(await screen.findByText(/Downloaded .*\.md/)).toBeInTheDocument();
+		// A rendered-artifact action is honestly flagged, not a dead click.
+		await user.click(sheet.getByText('PDF'));
+		expect(await screen.findByText(/export pipeline/)).toBeInTheDocument();
+	});
+
+	it('Share → Present link opens Present', async () => {
+		const user = setup();
+		await user.click(screen.getByRole('button', { name: 'Share' }));
+		await user.click(await screen.findByText('Present link'));
+		expect(await screen.findByText('Presenter screen')).toBeInTheDocument();
+	});
+
 	it('opens Workspace settings ("your setup")', async () => {
 		const user = setup();
 		await user.click(screen.getByRole('button', { name: 'Workspace settings' }));

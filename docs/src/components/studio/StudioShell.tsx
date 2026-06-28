@@ -45,6 +45,8 @@ export default function StudioShell({ options }: Props) {
 	const [workspaceOpen, setWorkspaceOpen] = React.useState(false);
 	const [presentOpen, setPresentOpen] = React.useState(false);
 	const [cmdOpen, setCmdOpen] = React.useState(false);
+	const [toast, setToast] = React.useState<string | null>(null);
+	const toastTimer = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 	const [palette, setPalette] = React.useState(() => {
 		try {
 			return localStorage.getItem('lattice-studio-palette') || 'indaco';
@@ -94,6 +96,14 @@ export default function StudioShell({ options }: Props) {
 		setActiveSlide(idx);
 		editorRef.current?.revealSlide(idx);
 	}
+	// Transient bottom-center confirmation, so no action in the prototype is a
+	// dead click (real ones confirm; not-yet-wired ones say so honestly).
+	const notify = React.useCallback((msg: string) => {
+		setToast(msg);
+		if (toastTimer.current) clearTimeout(toastTimer.current);
+		toastTimer.current = setTimeout(() => setToast(null), 2600);
+	}, []);
+	React.useEffect(() => () => { if (toastTimer.current) clearTimeout(toastTimer.current); }, []);
 
 	// ⌘K
 	React.useEffect(() => {
@@ -128,11 +138,11 @@ export default function StudioShell({ options }: Props) {
 			</ArchCard>
 			<ArchCard tag={<IntentTag intent="info" label="COACH" />} title="Tighten the story">
 				<p className="text-xs leading-relaxed text-muted-foreground">Lead every slide with its takeaway, not its detail — the number, then the supporting rows.</p>
-				<Chip>Rewrite lead</Chip>
+				<Chip onClick={() => notify('Coach would rewrite the lead with the headline number first.')}>Rewrite lead</Chip>
 			</ArchCard>
 			<ArchCard tag={<IntentTag intent="info" label="RESHAPE" />} title="Reshape for a reader">
 				<p className="text-xs leading-relaxed text-muted-foreground">Reorient the deck without losing the source.</p>
-				<div className="mt-2 flex flex-wrap gap-1.5"><Chip>Exec summary</Chip><Chip>Technical</Chip><Chip>Narrative</Chip></div>
+				<div className="mt-2 flex flex-wrap gap-1.5"><Chip onClick={() => { setPresentOpen(true); notify('Open Present → Exec summary to preview this reshape.'); }}>Exec summary</Chip><Chip onClick={() => notify('Reshape “Technical” regenerates a detail-forward cut of the deck.')}>Technical</Chip><Chip onClick={() => notify('Reshape “Narrative” regenerates a story-forward cut of the deck.')}>Narrative</Chip></div>
 			</ArchCard>
 		</>
 	);
@@ -382,7 +392,7 @@ export default function StudioShell({ options }: Props) {
 			)}
 
 			{/* ── Overlays ─────────────────────────────────────────────── */}
-			<ShareSheet open={shareOpen} onOpenChange={setShareOpen} deckTitle={deck.title} />
+			<ShareSheet open={shareOpen} onOpenChange={setShareOpen} deckTitle={deck.title} source={source} onPresent={() => setPresentOpen(true)} notify={notify} />
 			<WorkspaceSheet open={workspaceOpen} onOpenChange={setWorkspaceOpen} />
 			<PresentOverlay open={presentOpen} onClose={() => setPresentOpen(false)} options={options} slides={slides} startIndex={activeSlide} />
 			<CommandPalette
@@ -397,6 +407,13 @@ export default function StudioShell({ options }: Props) {
 				onFabricate={() => setView('fabricate')}
 				onReshape={() => setInspectorOpen(true)}
 			/>
+
+			{/* Transient toast — no dead clicks in the prototype */}
+			{toast && (
+				<div role="status" aria-live="polite" className="pointer-events-none fixed inset-x-0 bottom-6 z-[200] flex justify-center px-4">
+					<div className="max-w-[min(92vw,440px)] rounded-full border border-border bg-[var(--surface-inverse)] px-4 py-2 text-center text-[13px] font-medium text-white shadow-[0_8px_24px_rgba(10,22,40,.22)]">{toast}</div>
+				</div>
+			)}
 		</div>
 	);
 }
@@ -425,8 +442,8 @@ function ScoreRow({ ok, label, v }: { ok?: boolean; label: string; v: string }) 
 		</div>
 	);
 }
-function Chip({ children }: { children: React.ReactNode }) {
-	return <span className="mt-2 mr-1.5 inline-block cursor-pointer rounded-full border border-[color-mix(in_srgb,var(--accent)_22%,transparent)] bg-[var(--accent-soft)] px-2.5 py-1 text-[11px] text-[var(--accent)]">{children}</span>;
+function Chip({ children, onClick }: { children: React.ReactNode; onClick?: () => void }) {
+	return <button type="button" onClick={onClick} className="mt-2 mr-1.5 inline-block cursor-pointer rounded-full border border-[color-mix(in_srgb,var(--accent)_22%,transparent)] bg-[var(--accent-soft)] px-2.5 py-1 text-[11px] text-[var(--accent)]">{children}</button>;
 }
 function InspGroup({ icon, label, last, children }: { icon: React.ReactNode; label: string; last?: boolean; children: React.ReactNode }) {
 	return (
