@@ -107,6 +107,17 @@ describe('lattice-engine: contract', () => {
     assert.match(fit, /background-size:contain/);
   });
 
+  test('rebases relative inline <img> srcs against opts.baseUrl (preview), no-op without it (export)', () => {
+    const md = '# A\n\n![Acme](acme.svg) ![Remote](https://x/y.png)\n';
+    // Preview path (a baseUrl is supplied) — the logo-wall repro: relative → absolute.
+    const preview = makeEngine().render(md, 'lattice', { baseUrl: 'https://o/v/h/samples/' }).html;
+    assert.match(preview, /<img src="https:\/\/o\/v\/h\/samples\/acme\.svg"/);
+    assert.match(preview, /src="https:\/\/x\/y\.png"/); // remote untouched
+    // Export/CLI path (no baseUrl) — src stays verbatim so exported bytes are stable.
+    const exported = makeEngine().render(md, 'lattice').html;
+    assert.match(exported, /<img src="acme\.svg"/);
+  });
+
   test('renders inline and display math via KaTeX', () => {
     const { html } = makeEngine().render('Inline $a^2$ here.\n\n$$\\int x\\,dx$$\n', 'lattice');
     assert.match(html, /class="katex"/);
