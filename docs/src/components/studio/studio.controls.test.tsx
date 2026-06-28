@@ -97,6 +97,17 @@ describe('Studio — Fabricate + Present dock respond', () => {
 		await user.click(dock);
 		expect(within(dialog).getByRole('button', { name: 'Pause read-aloud' })).toBeInTheDocument();
 	});
+
+	it('Present → Rehearse mode (Practice) surfaces pacing + coaching', async () => {
+		const user = setup();
+		await user.click(screen.getByRole('button', { name: 'Present' }));
+		const dialog = await screen.findByRole('dialog', { name: 'Present' });
+		const d = within(dialog);
+		await user.click(d.getByRole('button', { name: 'Rehearse' }));
+		// The transport becomes a rehearsal clock, with an on-pace indicator.
+		expect(d.getByRole('button', { name: 'Start rehearsal' })).toBeInTheDocument();
+		expect(d.getByText('On pace')).toBeInTheDocument();
+	});
 });
 
 describe('Studio — Inspector controls respond', () => {
