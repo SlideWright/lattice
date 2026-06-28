@@ -12,6 +12,8 @@ import ResourceHints from '../components/site/ResourceHints.astro';
 import EngineWarm from '../components/site/EngineWarm.astro';
 import { joinBase } from '../lib/base-url.mjs';
 import { assetBase } from '../playground/asset-version.mjs';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 
 const base = import.meta.env.BASE_URL;
 const url = (p) => joinBase(base, p);
@@ -22,6 +24,19 @@ const options = {
 	runtimeUrl: url(pg + 'lattice-runtime.js'),
 	engineUrl: url(pg + 'lattice-playground.js'),
 };
+
+// The component catalog, read from the committed machine manifest at build time
+// and trimmed to what the insert palette needs (name / bucket / description /
+// the authored insert skeleton). Serialized into the island as a prop.
+let components = [];
+try {
+	const catalog = JSON.parse(readFileSync(fileURLToPath(new URL('../../../dist/docs/components.json', import.meta.url)), 'utf8'));
+	components = (catalog.components || [])
+		.map((c) => ({ name: c.name, bucket: c.bucket, description: c.description || '', skeleton: String(c.skeleton || '') }))
+		.filter((c) => c.name && c.skeleton);
+} catch (e) {
+	components = [];
+}
 ---
 
 <!doctype html>
@@ -52,7 +67,7 @@ const options = {
 	<body>
 		<!-- client:only — the Studio is a browser app surface (no SSR/SEO need),
 		     so it never server-renders; this also sidesteps Browser-API-on-server. -->
-		<StudioShell client:only="react" options={options} />
+		<StudioShell client:only="react" options={options} components={components} />
 		<EngineWarm allowEager />
 	</body>
 </html>

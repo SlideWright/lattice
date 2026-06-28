@@ -19,6 +19,7 @@ import { DECKS, deckSource, type StudioDeck } from './decks';
 import { Editor, type EditorHandle } from './Editor';
 import { Fabricate } from './Fabricate';
 import { frontMatterBlock, getFrontMatter, setFrontMatter, stripFrontMatter } from './front-matter';
+import { type ComponentEntry, InsertComponent } from './InsertComponent';
 import { IntentTag } from './IntentTag';
 import { type PresentLens, presentationSet, scoreDeck, slideClass, splitSlides, unknownComponents, usedComponents } from './lint';
 import { PresentOverlay } from './PresentOverlay';
@@ -49,9 +50,9 @@ const PALETTE_DOTS: Record<string, string> = {
 	crepuscolo: '#5B3D8C', atelier: '#1A1A18', carbone: '#7DE38A', onyx: '#000000',
 };
 
-type Props = { options: SingleSlideOptions };
+type Props = { options: SingleSlideOptions; components?: ComponentEntry[] };
 
-export default function StudioShell({ options }: Props) {
+export default function StudioShell({ options, components = [] }: Props) {
 	// Persisted deck list (seeded from the built-ins), the active deck, and its
 	// source — restored from localStorage so edits survive a switch AND a reload.
 	const [decks, setDecks] = React.useState<StudioDeck[]>(() => loadDeckList());
@@ -69,6 +70,7 @@ export default function StudioShell({ options }: Props) {
 	const [workspaceOpen, setWorkspaceOpen] = React.useState(false);
 	const [presentOpen, setPresentOpen] = React.useState(false);
 	const [cmdOpen, setCmdOpen] = React.useState(false);
+	const [insertOpen, setInsertOpen] = React.useState(false);
 	const [toast, setToast] = React.useState<string | null>(null);
 	const toastTimer = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 	const [palette, setPalette] = React.useState(() => {
@@ -299,6 +301,9 @@ export default function StudioShell({ options }: Props) {
 	const opDuplicate = () => { applyDeckOp(duplicateSlide(source, curIndex)); notify('Slide duplicated.'); };
 	const opDelete = () => { if (slides.length <= 1) { notify('A deck needs at least one slide.'); return; } applyDeckOp(deleteSlide(source, curIndex)); notify('Slide deleted.'); };
 	const opMove = (dir: -1 | 1) => applyDeckOp(moveSlide(source, curIndex, curIndex + dir));
+	// Insert a library component as a new slide after the current one (its authored
+	// skeleton), via the same deck-op the toolbar uses.
+	const onInsertComponent = (c: ComponentEntry) => { applyDeckOp(addSlideAfter(source, curIndex, c.skeleton)); notify(`Inserted “${c.name}”.`); };
 
 	// ── Architect body (cards) — shared by the desktop column and the sheet ──
 	const architectBody = (
@@ -375,6 +380,7 @@ export default function StudioShell({ options }: Props) {
 				Edit
 				<span className="flex-1" />
 				{issues > 0 && <span className="inline-flex items-center gap-1 rounded-full border border-[color-mix(in_srgb,var(--chart-2,#9c3f00)_35%,transparent)] bg-[color-mix(in_srgb,var(--chart-2,#9c3f00)_8%,transparent)] px-2 py-0.5 font-sans text-[11px] font-semibold normal-case tracking-normal text-[var(--chart-2,#9c3f00)]"><AlertTriangle className="size-3" />{issues} issue{issues > 1 ? 's' : ''}</span>}
+				{components.length > 0 && <button type="button" onClick={() => setInsertOpen(true)} className="inline-flex items-center gap-1 rounded-md border border-border px-2 py-1 font-sans text-[12px] font-semibold normal-case tracking-normal text-[var(--accent)] hover:bg-[var(--accent-soft)]"><Plus className="size-3" />Insert</button>}
 				<button type="button" onClick={() => editorRef.current?.fixAll()} className="rounded-md border border-border px-2 py-1 font-sans text-[12px] font-semibold normal-case tracking-normal text-[var(--accent)] disabled:opacity-40" disabled={!issues}>Fix all</button>
 				<span className="inline-flex items-center gap-1 rounded-full border border-border bg-card px-2 py-0.5 font-sans text-[12px] font-semibold normal-case tracking-normal text-foreground"><FileText className="size-3" />Markdown</span>
 			</div>
@@ -622,7 +628,9 @@ export default function StudioShell({ options }: Props) {
 				onShare={() => setShareOpen(true)}
 				onFabricate={() => setView('fabricate')}
 				onReshape={() => setInspectorOpen(true)}
+				onInsert={components.length > 0 ? () => setInsertOpen(true) : undefined}
 			/>
+			<InsertComponent open={insertOpen} onOpenChange={setInsertOpen} components={components} onInsert={onInsertComponent} />
 
 			{/* Transient toast — no dead clicks in the prototype */}
 			{toast && (

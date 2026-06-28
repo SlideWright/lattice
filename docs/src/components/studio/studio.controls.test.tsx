@@ -20,6 +20,16 @@ function setup() {
 	return user;
 }
 
+const CATALOG = [
+	{ name: 'kpi', bucket: 'inventory', description: 'Key metrics as big numbers', skeleton: '<!-- _class: kpi -->\n\n## Metrics\n\n1. 100\n   - Done' },
+	{ name: 'quote', bucket: 'statement', description: 'A pull quote', skeleton: '<!-- _class: quote -->\n\n> Words.\n\n— Someone' },
+];
+function setupWithCatalog() {
+	const user = userEvent.setup();
+	render(<StudioShell options={options} components={CATALOG} />);
+	return user;
+}
+
 // A control-by-control sweep: every interactive surface that the flow tests don't
 // already cover gets an explicit "click it → observe the effect" assertion, so a
 // regression in any single affordance fails a named test.
@@ -52,6 +62,21 @@ describe('Studio — every top-bar control responds', () => {
 		// Delete → shrinks.
 		await user.click(screen.getByRole('button', { name: 'Delete slide' }));
 		expect(railCount()).toBe(start + 1);
+	});
+
+	it('the Insert palette inserts a component as a new slide', async () => {
+		const user = setupWithCatalog();
+		const railCount = () => document.querySelector('nav[aria-label="Slide navigator"]')?.querySelectorAll('button').length ?? 0;
+		const start = railCount();
+		// Open the insert palette from the editor header.
+		await user.click(screen.getByRole('button', { name: /Insert/ }));
+		const dialog = await screen.findByRole('dialog', { name: /Insert a component/i });
+		// Search narrows to the quote component; selecting it adds a slide.
+		await user.type(within(dialog).getByPlaceholderText(/Search/i), 'quote');
+		await user.click(await within(dialog).findByText('quote'));
+		expect(railCount()).toBe(start + 1);
+		// The inserted slide carries the component's real skeleton class.
+		expect(screen.getByLabelText('Deck source').textContent).toMatch(/_class:\s*quote/);
 	});
 
 	it('edits survive a deck switch (persistence)', async () => {

@@ -1,10 +1,10 @@
-import { FileText, Palette, PencilRuler, Play, Share2, Sparkles } from 'lucide-react';
+import { FileText, Palette, PencilRuler, Play, Plus, Share2, Sparkles } from 'lucide-react';
 import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from '@/components/ui/command';
 import type { StudioDeck } from './decks';
 
 // The "type what you want" spine (plan §2.2). Every bar action is also a command.
 export function CommandPalette({
-	open, onOpenChange, decks, palettes, onPickDeck, onPalette, onPresent, onShare, onFabricate, onReshape,
+	open, onOpenChange, decks, palettes, onPickDeck, onPalette, onPresent, onShare, onFabricate, onReshape, onInsert,
 }: {
 	open: boolean;
 	onOpenChange: (v: boolean) => void;
@@ -16,6 +16,7 @@ export function CommandPalette({
 	onShare: () => void;
 	onFabricate: () => void;
 	onReshape: () => void;
+	onInsert?: () => void;
 }) {
 	const run = (fn: () => void) => () => {
 		onOpenChange(false);
@@ -30,6 +31,7 @@ export function CommandPalette({
 					<CommandItem onSelect={run(onPresent)}><Play />Present</CommandItem>
 					<CommandItem onSelect={run(onShare)}><Share2 />Share…</CommandItem>
 					<CommandItem onSelect={run(onReshape)}><Sparkles />Reshape for a reader</CommandItem>
+					{onInsert && <CommandItem onSelect={run(onInsert)}><Plus />Insert a component…</CommandItem>}
 					<CommandItem onSelect={run(onFabricate)}><PencilRuler />Fabricate — Theme &amp; Layout Studio</CommandItem>
 				</CommandGroup>
 				<CommandSeparator />
