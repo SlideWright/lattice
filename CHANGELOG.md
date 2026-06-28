@@ -102,6 +102,14 @@ in patch versions.
     class), with the component **rendered live** in the preview. Save a clean one to
     the **shared Workbench library** (the same `componentAsset` store the Workbench
     Layout Studio uses). Reuses `layout-core.generated.js` — no engine fork.
+  - **Insert + render your saved local components.** A component authored in the
+    Layout Studio now appears in the **Insert palette** under a `local` group
+    (ahead of the built-in buckets); inserting it drops its skeleton as a new
+    slide. Wherever the deck uses a `.<name>` you saved, its CSS is injected so the
+    slide renders **styled** — in the live compose preview, the second-screen
+    presenter, and every Share export (PDF/PPTX/Print). Validation and editor
+    autocomplete recognize your local names too, so a component you authored never
+    reads as "unknown."
 - **`--present`: PDFs that open straight into full-screen presentation mode.**
   A new opt-in CLI flag marks the exported PDF's document catalog so Adobe
   Acrobat/Reader and most desktop viewers open it directly in full-screen /

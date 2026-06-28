@@ -68,14 +68,16 @@ async function ensureTheme(options: SingleSlideOptions, palette: string, mode: '
  * image exporters need. This is the single piece of glue Share adds on top of
  * the shared exporters.
  */
-export async function buildDeckRender(options: SingleSlideOptions, source: string, palette: string, mode: 'light' | 'dark', extra?: ExtraTheme): Promise<DeckRender> {
+export async function buildDeckRender(options: SingleSlideOptions, source: string, palette: string, mode: 'light' | 'dark', extra?: ExtraTheme, extraCss?: string): Promise<DeckRender> {
 	const PG = await ensureReady(options);
 	const theme = await ensureTheme(options, palette, mode, extra);
 	const out = PG.render(source, theme);
 	const { previewFontFaceCss } = await import('@/playground/font-embed.js');
 	return {
 		html: out.html,
-		css: out.css,
+		// Saved local-component CSS (extraCss) rides last so the deck's `.<name>`
+		// slides export with their styles — same composition as the live preview.
+		css: out.css + (extraCss ? `\n/* studio-local-components */\n${extraCss}` : ''),
 		mode,
 		geom: { w: out.width || 1280, h: out.height || 720 },
 		runtimeUrl: options.runtimeUrl,
@@ -114,15 +116,15 @@ export async function shareMarp(options: SingleSlideOptions, source: string, nam
 }
 
 /** One-click image PDF (2× raster, one slide per page). */
-export async function sharePdf(options: SingleSlideOptions, source: string, name: string, palette: string, mode: 'light' | 'dark', extra?: ExtraTheme, onStatus?: (m: string) => void): Promise<void> {
-	const render = await buildDeckRender(options, source, palette, mode, extra);
+export async function sharePdf(options: SingleSlideOptions, source: string, name: string, palette: string, mode: 'light' | 'dark', extra?: ExtraTheme, onStatus?: (m: string) => void, extraCss?: string): Promise<void> {
+	const render = await buildDeckRender(options, source, palette, mode, extra, extraCss);
 	const ex = await exporters();
 	await ex.exportPdf(render, name, onStatus, { deck: name, engine: 'lattice' });
 }
 
 /** PowerPoint (image-slides, full-bleed). */
-export async function sharePptx(options: SingleSlideOptions, source: string, name: string, palette: string, mode: 'light' | 'dark', extra?: ExtraTheme, onStatus?: (m: string) => void): Promise<void> {
-	const render = await buildDeckRender(options, source, palette, mode, extra);
+export async function sharePptx(options: SingleSlideOptions, source: string, name: string, palette: string, mode: 'light' | 'dark', extra?: ExtraTheme, onStatus?: (m: string) => void, extraCss?: string): Promise<void> {
+	const render = await buildDeckRender(options, source, palette, mode, extra, extraCss);
 	const ex = await exporters();
 	await ex.exportPptx(render, name, onStatus, { deck: name, engine: 'lattice' });
 }
@@ -132,8 +134,8 @@ export async function sharePptx(options: SingleSlideOptions, source: string, nam
  * full-deck frame from the render (print rules ON, visible to the print box) and
  * invokes print; the frame is removed once the dialog closes.
  */
-export async function sharePrintDeck(options: SingleSlideOptions, source: string, name: string, palette: string, mode: 'light' | 'dark', extra?: ExtraTheme): Promise<void> {
-	const render = await buildDeckRender(options, source, palette, mode, extra);
+export async function sharePrintDeck(options: SingleSlideOptions, source: string, name: string, palette: string, mode: 'light' | 'dark', extra?: ExtraTheme, extraCss?: string): Promise<void> {
+	const render = await buildDeckRender(options, source, palette, mode, extra, extraCss);
 	const { buildSrcdoc } = await import('@/playground/deck-preview.js');
 	const ex = await exporters();
 	const host = document.createElement('div');
