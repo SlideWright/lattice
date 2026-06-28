@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { applyEdit, EDIT_PROTOCOL, numberSlides, parseEdits } from '@/playground/architect-edits.js';
+import { applyEdit, diffLines, EDIT_PROTOCOL, numberSlides, parseEdits } from '@/playground/architect-edits.js';
 import { budgetStatus, readBudgetCap, readBudgetMode, readSpend, recordSpend } from '@/playground/drawing-board-settings.js';
 
 // Studio Architect — the HONEST AI layer. It wraps the production architect model
@@ -85,6 +85,50 @@ export async function runArchitect(source: string, instruction: string): Promise
 	let next = source;
 	for (const e of [...edits].sort((a, b) => b.slide - a.slide)) next = applyEdit(next, e);
 	return { status: 'applied', source: next, applied: edits.length, note: text || `Applied ${edits.length} edit${edits.length > 1 ? 's' : ''}.` };
+}
+
+export type ChatTurn = { role: 'user' | 'assistant'; content: string };
+export type DiffRow = { type: 'same' | 'add' | 'del'; text: string };
+export type ChatResult =
+	| { status: 'ok'; reply: string; proposed: { source: string; count: number; diff: DiffRow[] } | null }
+	| { status: 'offline' }
+	| { status: 'blocked'; reply: string };
+
+/**
+ * One turn of the Architect chat. Runs the conversation through the connected
+ * model with the deck in context; if the reply proposes edit blocks, returns the
+ * resulting source + a line diff for a review-then-apply card (nothing is applied
+ * here). Degrades to `offline`/`blocked` honestly — never a fabricated answer.
+ */
+export async function chatComplete(history: ChatTurn[], source: string): Promise<ChatResult> {
+	const model = await architectModel();
+	if (!model) return { status: 'offline' };
+	const generation = model.availability().generation;
+	if (generation === 'floor') return { status: 'offline' };
+	if (generation === 'openrouter' && architectSpend().status.blocked) {
+		return { status: 'blocked', reply: 'Budget cap reached — raise it in Workspace → Spend, or switch tier.' };
+	}
+	const last = history[history.length - 1];
+	const messages = [
+		{ role: 'system', content: `${SYSTEM}\n\nConverse with the author. Answer questions directly. Only emit edit blocks when they actually want a change to the deck.` },
+		...history.slice(0, -1),
+		{ role: 'user', content: `${last?.content ?? ''}\n\nThe current deck — address slides by their [slide N] markers, never include a marker in an edit body:\n\n${numberSlides(source)}` },
+	];
+	let reply = '';
+	try {
+		reply = await model.complete({
+			messages,
+			fallback: '',
+			onUsage: (u) => recordSpend(u?.cost ?? 0, u?.total_tokens ?? (u?.prompt_tokens || 0) + (u?.completion_tokens || 0)),
+		});
+	} catch {
+		return { status: 'offline' };
+	}
+	const { text, edits } = parseEdits(reply);
+	if (!edits.length) return { status: 'ok', reply: text || 'No change suggested.', proposed: null };
+	let next = source;
+	for (const e of [...edits].sort((a, b) => b.slide - a.slide)) next = applyEdit(next, e);
+	return { status: 'ok', reply: text || `Proposed ${edits.length} edit${edits.length > 1 ? 's' : ''} — review and apply below.`, proposed: { source: next, count: edits.length, diff: diffLines(source, next) as DiffRow[] } };
 }
 
 /** Real session/all-time spend + the budget gauge, read from the shared store. */

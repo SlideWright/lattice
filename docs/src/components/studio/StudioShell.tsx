@@ -12,6 +12,7 @@ import {
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import type { SingleSlideOptions } from '@/lib/single-slide-render';
 import { cn } from '@/lib/utils';
+import { ArchitectChat } from './ArchitectChat';
 import { resumePendingAuth, runArchitect, useArchitectStatus } from './architect';
 import { CommandPalette } from './CommandPalette';
 import { addSlideAfter, deleteSlide, duplicateSlide, moveSlide } from './deck-ops';
@@ -82,6 +83,7 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 	const [presentOpen, setPresentOpen] = React.useState(false);
 	const [cmdOpen, setCmdOpen] = React.useState(false);
 	const [insertOpen, setInsertOpen] = React.useState(false);
+	const [architectTab, setArchitectTab] = React.useState<'coach' | 'chat'>('coach');
 	const [checkpoints, setCheckpoints] = React.useState<Checkpoint[]>(() => loadCheckpoints((loadDeckList()[0] ?? DECKS[0]).id));
 	const [toast, setToast] = React.useState<string | null>(null);
 	const toastTimer = React.useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -356,7 +358,16 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 	}
 
 	// ── Architect body (cards) — shared by the desktop column and the sheet ──
-	const architectBody = (
+	// Apply an AI chat edit — checkpoint the pre-edit deck first (reversible from
+	// History), then swap in the proposed source.
+	const applyChatEdit = (next: string) => {
+		setCheckpoints(saveCheckpoint(deck.id, source, 'Before AI chat edit', Date.now()));
+		setSource(next);
+		setActiveSlide(0);
+		requestAnimationFrame(() => editorRef.current?.revealSlide(0));
+	};
+
+	const architectCards = (
 		<>
 			{issues > 0 && (
 				<div className="mx-2.5 mt-2.5 flex items-center gap-2 rounded-[10px] border border-[color-mix(in_srgb,var(--chart-2,#9c3f00)_28%,transparent)] bg-[color-mix(in_srgb,var(--chart-2,#9c3f00)_7%,transparent)] px-3 py-2">
@@ -380,6 +391,18 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 				<div className="mt-2 flex flex-wrap gap-1.5"><Chip onClick={() => { setLens('exec'); notify('Preview reshaped to the Exec summary — headline slides only.'); }}>Exec summary</Chip><Chip busy={aiBusy === 'technical'} onClick={() => runArchitectAction('technical', 'Reshape: Technical', 'Rewrite the deck in a more technical, detail-forward voice — concrete metrics, methods, and specifics over narrative. Edit each slide that needs it; keep the component types.')}>Technical</Chip><Chip busy={aiBusy === 'narrative'} onClick={() => runArchitectAction('narrative', 'Reshape: Narrative', 'Rewrite the deck in a more narrative, story-forward voice — a throughline from problem to payoff, plain language. Edit each slide that needs it; keep the component types.')}>Narrative</Chip></div>
 			</ArchCard>
 		</>
+	);
+
+	// The Architect panel: a Coach/Chat toggle over the static cards or the real
+	// conversational thread (with reviewable apply/discard diff cards).
+	const architectBody = (
+		<div className="flex min-h-0 flex-1 flex-col">
+			<div className="flex shrink-0 gap-1 px-2.5 pt-2.5">
+				<button type="button" onClick={() => setArchitectTab('coach')} aria-pressed={architectTab === 'coach'} className={cn('flex-1 rounded-lg border px-2 py-1.5 text-[12px] font-semibold', architectTab === 'coach' ? 'border-[var(--accent)] bg-[var(--accent-soft)] text-[var(--accent)]' : 'border-border text-muted-foreground')}>Coach</button>
+				<button type="button" onClick={() => setArchitectTab('chat')} aria-pressed={architectTab === 'chat'} className={cn('flex-1 rounded-lg border px-2 py-1.5 text-[12px] font-semibold', architectTab === 'chat' ? 'border-[var(--accent)] bg-[var(--accent-soft)] text-[var(--accent)]' : 'border-border text-muted-foreground')}>Chat</button>
+			</div>
+			{architectTab === 'coach' ? <div className="min-h-0 flex-1 overflow-y-auto">{architectCards}</div> : <ArchitectChat deckId={deck.id} source={source} aiReady={ai.ready} onApply={applyChatEdit} onConnect={() => setWorkspaceOpen(true)} notify={notify} />}
+		</div>
 	);
 
 	// ── Inspector body (groups) — shared by the desktop column and the sheet ──
@@ -624,7 +647,7 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 				>
 					{/* Architect — persistent column only on desktop */}
 					{!compact && architectOpen && (
-						<aside className="flex min-h-0 flex-col overflow-y-auto border-r border-border bg-card">
+						<aside className="flex min-h-0 flex-col overflow-hidden border-r border-border bg-card">
 							<div className="border-b border-border px-3.5 py-2 font-mono text-[11px] font-bold uppercase tracking-widest text-muted-foreground">Architect</div>
 							{architectBody}
 						</aside>
@@ -664,7 +687,7 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 								<SheetTitle className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-widest text-muted-foreground"><Sparkles className="size-4 text-[var(--accent)]" />Architect</SheetTitle>
 								<SheetDescription className="sr-only">Board-readiness scorecard, coaching, and reshape suggestions for this deck.</SheetDescription>
 							</SheetHeader>
-							<div className="overflow-y-auto pb-4">{architectBody}</div>
+							<div className="flex min-h-0 flex-1 flex-col overflow-hidden">{architectBody}</div>
 						</SheetContent>
 					</Sheet>
 					<Sheet open={inspectorOpen} onOpenChange={setInspectorOpen}>

@@ -155,6 +155,19 @@ describe('Studio — Architect + editor controls respond', () => {
 		expect(await screen.findByText(/headline slides only/i)).toBeInTheDocument();
 	});
 
+	it('the Architect Chat thread sends a message and degrades honestly offline', async () => {
+		const user = setup();
+		// Switch the Architect panel to the Chat tab.
+		await user.click(screen.getByRole('button', { name: 'Chat' }));
+		const box = await screen.findByRole('textbox', { name: 'Message the Architect' });
+		await user.type(box, 'Tighten slide 1');
+		await user.click(screen.getByRole('button', { name: 'Send' }));
+		// The user turn is in the thread…
+		expect(await screen.findByText('Tighten slide 1')).toBeInTheDocument();
+		// …and with no model connected the assistant degrades honestly (no fake edit).
+		expect(await screen.findByText(/Connect a model in Workspace/i, undefined, { timeout: 6000 })).toBeInTheDocument();
+	});
+
 	it('the Architect actions degrade honestly with no model connected', async () => {
 		const user = setup();
 		// With no model (floor) the AI actions do NOT fake an edit — they point the

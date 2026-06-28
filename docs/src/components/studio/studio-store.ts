@@ -145,6 +145,26 @@ export function saveCheckpoint(deckId: string, source: string, label: string, ts
 	return next;
 }
 
+// ── Architect chat history (per deck) ──────────────────────────────────────
+const CHAT_PREFIX = 'lattice-studio-chat-'; // + deckId → ChatMessage[]
+const CHAT_CAP = 60;
+
+export type ChatMessage = {
+	role: 'user' | 'assistant';
+	content: string;
+	/** Assistant turn only: the full source it proposes (for review/apply). */
+	proposed?: string;
+	/** Whether that proposal has been applied. */
+	applied?: boolean;
+};
+
+export function loadChat(deckId: string): ChatMessage[] {
+	return read<ChatMessage[]>(CHAT_PREFIX + deckId) ?? [];
+}
+export function saveChat(deckId: string, messages: ChatMessage[]): void {
+	write(CHAT_PREFIX + deckId, messages.slice(-CHAT_CAP));
+}
+
 export type StudioSettings = { validation: boolean; pageNumbers: boolean; headerFooter: boolean };
 const DEFAULT_SETTINGS: StudioSettings = { validation: true, pageNumbers: true, headerFooter: false };
 
