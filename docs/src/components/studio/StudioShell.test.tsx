@@ -109,11 +109,24 @@ describe('StudioShell — e2e flows (jsdom)', () => {
 		expect(await screen.findByText('Presenter screen')).toBeInTheDocument();
 	});
 
-	it('opens Workspace settings ("your setup")', async () => {
+	it('opens Workspace settings ("your setup") and switches tabs + tier', async () => {
 		const user = setup();
 		await user.click(screen.getByRole('button', { name: 'Workspace settings' }));
-		expect(await screen.findByText('your setup')).toBeInTheDocument();
-		expect(screen.getByText('Generation tier')).toBeInTheDocument();
+		const sheet = within(await screen.findByRole('dialog', { name: /Workspace/ }));
+		// Default tab = AI model, with a selectable generation tier.
+		expect(sheet.getByText('Generation tier')).toBeInTheDocument();
+		const floor = sheet.getByRole('button', { name: /Floor/ });
+		expect(floor).toHaveAttribute('aria-pressed', 'false');
+		await user.click(floor);
+		expect(floor).toHaveAttribute('aria-pressed', 'true');
+		// Switch to the Instructions tab — its textarea is editable local state.
+		await user.click(sheet.getByRole('tab', { name: 'Instructions' }));
+		const ta = await sheet.findByRole('textbox', { name: 'Standing instructions' });
+		await user.clear(ta);
+		await user.type(ta, 'Be terse.');
+		expect(ta).toHaveValue('Be terse.');
+		// Generation tier is gone now (different tab is rendered).
+		expect(sheet.queryByText('Generation tier')).not.toBeInTheDocument();
 	});
 
 	it('expands the Deck Inspector ("this deck") from its collapsed rail', async () => {
