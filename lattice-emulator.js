@@ -551,6 +551,7 @@ const MERMAID_VAR_MAP = {
   taskTextLightColor:     { var: 'cat-on-fill' },   // ditto, Mermaid's "dark bar" variant
   taskTextOutsideColor:   { var: 'cat-on-fill' },  // text in the margin, on canvas
   taskTextClickableColor: { var: 'cat-on-fill' },   // text on task bar, on fill
+  taskTextDarkColor:      { var: 'cat-on-fill' },   // Mermaid's dark-bar text variant — same ink contract
   taskBorderColor:        { var: 'diagram-stroke' },
   activeTaskBkgColor:     { var: 'diagram-active' },
   activeTaskBorderColor:  { var: 'diagram-active-mark' },
@@ -604,17 +605,30 @@ const MERMAID_VAR_MAP = {
   // State / class
   altBackground: { var: 'bg-alt' },
 
+  // Entity-relationship diagram — the attribute-row band fills. Without these,
+  // Mermaid derives them from `lighten(background)`, which renders off-brand in
+  // the exported PDF (the deliverable). Pale band: odd rows on the primary fill,
+  // even rows on the alt surface — the same alternating-band contract as gantt.
+  attributeBackgroundColorOdd:  { var: 'cat-1-fill' },
+  attributeBackgroundColorEven: { var: 'bg-alt' },
+
   // XY chart — nested object, expanded below. plotColorPalette joins
   // multiple palette vars into a comma-separated string (Mermaid's required
   // format for this key) so each palette's --cat-* hues drive the bars and
-  // lines, not a hardcoded indaco-flavoured literal.
+  // lines, not a hardcoded indaco-flavoured literal. The axis LINE + TICK keys
+  // theme the axes themselves (without them Mermaid falls back to its own
+  // primaryTextColor, leaving the axes subtly mis-toned in the PDF).
   xyChart: { nested: {
     backgroundColor:  { var: 'bg' },
     titleColor:       { var: 'text-heading' },
     xAxisLabelColor:  { var: 'text-heading' },
     xAxisTitleColor:  { var: 'text-heading' },
+    xAxisLineColor:   { var: 'diagram-stroke' },
+    xAxisTickColor:   { var: 'cat-8-mark' },
     yAxisLabelColor:  { var: 'text-heading' },
     yAxisTitleColor:  { var: 'text-heading' },
+    yAxisLineColor:   { var: 'diagram-stroke' },
+    yAxisTickColor:   { var: 'cat-8-mark' },
     plotColorPalette: { joinVars: ['cat-1-mark', 'cat-2-mark', 'cat-3-mark', 'cat-4-mark', 'cat-5-mark', 'cat-6-mark'] },
   }},
 };

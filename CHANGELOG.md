@@ -306,7 +306,15 @@ in patch versions.
 
 ### Changed
 
-- **Per-component gallery goldens refreshed to match current rendering (#569).** The committed
+- **Mermaid theme-var maps reconciled across render paths + a lockstep gate (part of #511).** The
+  build map (`MERMAID_VAR_MAP`, exported PDF/PPTX/PNG) and the runtime map (preview / HTML export)
+  had silently drifted by 8 keys — the runtime themed ER attribute-row fills and xy-chart axis
+  lines/ticks the build map didn't, and vice-versa for `taskTextClickableColor`. Added the missing
+  keys to both so they theme the **identical** Mermaid key set, and added a unit gate
+  (`test/unit/mermaid/mermaid-var-map.test.js`) that fails if the two ever diverge again. Render
+  impact is negligible — the previously-unthemed ER fills already resolved on-brand via Mermaid's
+  own `background`/`mainBkg` derivation, so only the xy-chart axis tint shifts (sub-pixel, on-brand).
+  The remaining token-value disagreements between the two maps are tracked on #511.
   `lib/components/**/*.gallery.{light,dark}.pdf` catalog snapshots had drifted from what the engine
   actually renders — accumulated staleness from CSS/engine changes that shipped without a gallery
   rebuild (chiefly the chart-family masthead lift, which moved titles from centered to a left-aligned
