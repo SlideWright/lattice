@@ -14,6 +14,8 @@ import { joinBase } from '../lib/base-url.mjs';
 import { assetBase } from '../playground/asset-version.mjs';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import { createRequire } from 'node:module';
+import { join } from 'node:path';
 
 const base = import.meta.env.BASE_URL;
 const url = (p) => joinBase(base, p);
@@ -36,6 +38,28 @@ try {
 		.filter((c) => c.name && c.skeleton);
 } catch (e) {
 	components = [];
+}
+
+// The deterministic lint vocabulary — built at build time from the LIVE component
+// manifests (the SAME buildVocab the Drawing Board and the Node CLI use), so the
+// editor's inline grammar linter is the canonical lint-core, not a reduced copy.
+let lintVocab = null;
+try {
+	const require = createRequire(import.meta.url);
+	const repoRoot = join(process.cwd(), '..');
+	const { loadAll } = require(join(repoRoot, 'lib/components', 'index.js'));
+	const { buildVocab } = require(join(repoRoot, 'lib/authoring', 'lint.js'));
+	const v = buildVocab(loadAll());
+	lintVocab = {
+		names: [...v.names],
+		modifiers: [...v.modifiers],
+		mapRegions: Object.fromEntries(Object.entries(v.mapRegions || {}).map(([k, mv]) => [k, { valid: [...mv.valid], names: mv.names }])),
+		finishNames: v.finishNames || [],
+		splitNames: v.splitNames || [],
+		capacity: v.capacity || {},
+	};
+} catch (e) {
+	lintVocab = null;
 }
 ---
 
@@ -67,7 +91,7 @@ try {
 	<body>
 		<!-- client:only — the Studio is a browser app surface (no SSR/SEO need),
 		     so it never server-renders; this also sidesteps Browser-API-on-server. -->
-		<StudioShell client:only="react" options={options} components={components} />
+		<StudioShell client:only="react" options={options} components={components} lintVocab={lintVocab} />
 		<EngineWarm allowEager />
 	</body>
 </html>

@@ -50,9 +50,10 @@ const PALETTE_DOTS: Record<string, string> = {
 	crepuscolo: '#5B3D8C', atelier: '#1A1A18', carbone: '#7DE38A', onyx: '#000000',
 };
 
-type Props = { options: SingleSlideOptions; components?: ComponentEntry[] };
+// biome-ignore lint/suspicious/noExplicitAny: serialized lint vocabulary from the page.
+type Props = { options: SingleSlideOptions; components?: ComponentEntry[]; lintVocab?: any };
 
-export default function StudioShell({ options, components = [] }: Props) {
+export default function StudioShell({ options, components = [], lintVocab }: Props) {
 	// Persisted deck list (seeded from the built-ins), the active deck, and its
 	// source — restored from localStorage so edits survive a switch AND a reload.
 	const [decks, setDecks] = React.useState<StudioDeck[]>(() => loadDeckList());
@@ -384,7 +385,7 @@ export default function StudioShell({ options, components = [] }: Props) {
 				<button type="button" onClick={() => editorRef.current?.fixAll()} className="rounded-md border border-border px-2 py-1 font-sans text-[12px] font-semibold normal-case tracking-normal text-[var(--accent)] disabled:opacity-40" disabled={!issues}>Fix all</button>
 				<span className="inline-flex items-center gap-1 rounded-full border border-border bg-card px-2 py-0.5 font-sans text-[12px] font-semibold normal-case tracking-normal text-foreground"><FileText className="size-3" />Markdown</span>
 			</div>
-			<Editor ref={editorRef} value={source} onChange={setSource} knownComponents={validation ? KNOWN : NO_KNOWN} completionComponents={components} onCursorSlide={onEditorCursorSlide} className="flex-1" />
+			<Editor ref={editorRef} value={source} onChange={setSource} knownComponents={validation ? KNOWN : NO_KNOWN} completionComponents={components} lintVocab={lintVocab} onCursorSlide={onEditorCursorSlide} className="flex-1" />
 		</section>
 	);
 

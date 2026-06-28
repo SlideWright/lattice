@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import StudioShell from './StudioShell';
@@ -46,6 +46,20 @@ describe('Studio — every top-bar control responds', () => {
 		await user.click(screen.getByRole('button', { name: 'Workspace launcher' }));
 		await user.click(await screen.findByText('New deck'));
 		expect(screen.getByRole('button', { name: /Untitled deck/ })).toBeInTheDocument();
+	});
+
+	it('runs the REAL grammar linter when a lint vocabulary is provided', async () => {
+		const user = userEvent.setup();
+		const lintVocab = { names: ['cards-grid', 'kpi', 'title'], modifiers: [], mapRegions: {}, finishNames: [], splitNames: [], capacity: {} };
+		render(<StudioShell options={options} lintVocab={lintVocab} />);
+		const editor = screen.getByLabelText('Deck source');
+		await user.click(editor);
+		await user.keyboard('{Control>}a{/Control}');
+		// A card-style inline-title footgun the shared lint-core flags as an error.
+		await user.paste('<!-- _class: cards-grid -->\n\n## Three bets\n\n- **Alpha.** the body text\n');
+		// The lint-core finding surfaces as an inline diagnostic underline (async:
+		// the authoring-core bundle is imported on first validation).
+		await waitFor(() => expect(document.querySelector('.cm-lintRange')).toBeTruthy(), { timeout: 6000 });
 	});
 
 	it('the slide toolbar adds, duplicates, and deletes slides', async () => {

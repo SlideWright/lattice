@@ -5,8 +5,23 @@ import { type Diagnostic, linter, lintGutter } from '@codemirror/lint';
 import { EditorState } from '@codemirror/state';
 import { EditorView, keymap, lineNumbers } from '@codemirror/view';
 import * as React from 'react';
+import { buildVocabSets, findingsToDiagnostics } from '@/playground/editor-diagnostics.js';
 import { type CompletionComponent, makeStudioCompletion } from './editor-complete';
 import { slideIndexAt, slideStartOffset } from './lint';
+
+// The shared authoring linter (lib/authoring/lint-core via the browser bundle),
+// lazily imported the first time the editor validates — surfaces that never lint
+// don't pull the bundle. Module-scoped cache so every editor instance shares it.
+// biome-ignore lint/suspicious/noExplicitAny: the bundled CJS lint kernel.
+let lintCoreMod: any = null;
+function loadLintCore() {
+	return import('@/playground/authoring-core.generated.js')
+		.then((m) => {
+			lintCoreMod = m.lintCore;
+			return lintCoreMod;
+		})
+		.catch(() => null);
+}
 
 // A small, self-contained CodeMirror 6 markdown editor for the Studio prototype.
 // WRAP, DON'T REINVENT — but this is a fresh, bus-free wrapper (the playground's
@@ -83,10 +98,15 @@ export const Editor = React.forwardRef<EditorHandle, {
 	knownComponents?: string[];
 	/** The component catalog, for autocomplete (name/bucket/description). */
 	completionComponents?: CompletionComponent[];
+	/** The deterministic lint vocabulary. When present, the editor runs the FULL
+	 *  shared lint-core (severity tiers + per-finding fixes) instead of the
+	 *  unknown-component-only fallback. */
+	// biome-ignore lint/suspicious/noExplicitAny: serialized vocab handoff from the page (Sets-as-arrays).
+	lintVocab?: any;
 	/** Fired when the cursor crosses into a different slide — drives the preview. */
 	onCursorSlide?: (index: number) => void;
 	className?: string;
-}>(function Editor({ value, onChange, knownComponents = [], completionComponents = [], onCursorSlide, className }, ref) {
+}>(function Editor({ value, onChange, knownComponents = [], completionComponents = [], lintVocab, onCursorSlide, className }, ref) {
 	const hostRef = React.useRef<HTMLDivElement>(null);
 	const viewRef = React.useRef<EditorView | null>(null);
 	const onChangeRef = React.useRef(onChange);
@@ -96,11 +116,27 @@ export const Editor = React.forwardRef<EditorHandle, {
 	const lastSlideRef = React.useRef(-1);
 	const [failed, setFailed] = React.useState(false);
 	const known = React.useMemo(() => new Set(knownComponents), [knownComponents]);
+	// Real grammar lint when a vocabulary is supplied; otherwise the unknown-
+	// component-only fallback (keeps tests + vocab-less surfaces working).
+	const useRealLint = !!lintVocab?.names;
+	const vocabSets = React.useMemo(() => (useRealLint ? buildVocabSets(lintVocab) : null), [lintVocab, useRealLint]);
 
 	React.useImperativeHandle(ref, () => ({
 		fixAll() {
 			const v = viewRef.current;
 			if (!v) return;
+			// Real lint: apply every autofixable lint-core finding in one undoable pass.
+			if (useRealLint && vocabSets && known.size > 0) {
+				(async () => {
+					const core = lintCoreMod || (await loadLintCore());
+					if (!core) return;
+					const cur = v.state.doc.toString();
+					const out = core.applyAllFixes(cur, vocabSets);
+					if (out != null && out !== cur) v.dispatch({ changes: { from: 0, to: v.state.doc.length, insert: out } });
+				})();
+				return;
+			}
+			// Fallback: swap each unknown `_class` for its nearest known suggestion.
 			let text = v.state.doc.toString();
 			CLASS_RE.lastIndex = 0;
 			text = text.replace(CLASS_RE, (full, name: string) =>
@@ -139,7 +175,28 @@ export const Editor = React.forwardRef<EditorHandle, {
 						keymap.of([...defaultKeymap, ...historyKeymap, ...completionKeymap]),
 						markdown(),
 						autocompletion({ override: [makeStudioCompletion(completionComponents)], activateOnTyping: true, icons: false }),
-						makeLinter(known),
+						useRealLint && vocabSets
+							? linter(async (view): Promise<Diagnostic[]> => {
+									// Validation is gated by the Studio's toggle: with it off the
+									// editor is handed an empty known-set, so we stand down too.
+									if (known.size === 0) return [];
+									const core = lintCoreMod || (await loadLintCore());
+									if (!core) return [];
+									let findings: unknown[];
+									try {
+										findings = core.lintTextWith(view.state.doc.toString(), vocabSets);
+									} catch {
+										return [];
+									}
+									return findingsToDiagnostics(view.state.doc, findings, {
+										// biome-ignore lint/suspicious/noExplicitAny: lint-core finding + CM view.
+										onFix: (v: any, f: any) => {
+											const out = core.applyFix(v.state.doc.toString(), f);
+											if (out != null) v.dispatch({ changes: { from: 0, to: v.state.doc.length, insert: out } });
+										},
+									}) as Diagnostic[];
+								})
+							: makeLinter(known),
 						lintGutter(),
 						editorTheme,
 						EditorView.lineWrapping,
