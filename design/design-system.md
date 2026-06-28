@@ -475,7 +475,7 @@ npm run new:slide -- compare-prose    # generate the skeleton
 ```
 
 …copies the skeleton into their deck, fills in the slots, runs
-`npm run build:gallery`, ships. The decision tree (which component
+`npm run build:galleries`, ships. The decision tree (which component
 to use) lives in `design/skill.md` and the visual gallery; it is not
 encoded in the directive name.
 

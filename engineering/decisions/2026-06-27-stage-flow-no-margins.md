@@ -1,5 +1,5 @@
 ---
-status: in-progress
+status: shipped
 summary: Retire the keystone of HARD RULE #20 — the base block-flow typographic margins (`section h2/h3/p { margin-bottom }`). The stage cell owns vertical prose rhythm via `gap` instead of per-element `margin-bottom`; the base element margins are zeroed; the few modifier riders re-home to `padding`/`gap`. An empirical check (44/53 components already self-space with `gap`/`padding` and reset the base prose margins; the title `h2` lifts into the masthead under Form) shows the real consumer of the base rhythm is generic prose, which sits as direct children of `.cell-stage` and is reachable by a stage `gap` — so this is a genuine conversion, not a sanction. Only the irreducible flex `margin-left:auto` push stays, enumerated. Drives MARGIN_BUDGET 12 → 0 (layout) with a named allowlist.
 ---
 
@@ -14,8 +14,10 @@ independent margin slices shipped in #557; the contract-tier margins went with
 HARD RULE #20 bars `margin` in engine layout CSS: it sits outside the box, so
 `getBoundingClientRect()` / `offsetHeight` can't see it, and it margin-collapses
 — both corrupt the height math a measuring layout (the overflow probe, autosplit,
-the Fit Spine) depends on. The budget ratchet (`checkMarginDiscipline` in
-`tools/check-ownership.js`) sits at **12**, target **0**.
+the Fit Spine) depends on. **Shipped:** the budget (`checkMarginDiscipline` in
+`tools/check-ownership.js`) is now **`LAYOUT_MARGIN_BUDGET = 0`** plus the enumerated
+`SANCTIONED_MARGINS` allowlist (one entry: the flex `margin-left:auto` push) — it was
+**12** when this was written.
 
 The remaining 12 are the *keystone*: the base block-flow typographic rhythm.
 

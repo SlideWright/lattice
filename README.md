@@ -101,7 +101,10 @@ finish — and it lives where it should, at [lattice.style](https://lattice.styl
   variant. Authors pick one in front matter (`theme: indaco`). Each
   supplies pale fills, saturated brand borders, and dark ink; saturated
   red is reserved for alarm states. WCAG AA verified across every
-  text-bearing surface. Preview them all in the
+  text-bearing surface. Four additional **colour-blind-safe** palettes
+  (`a11y-deuteranopia`, `a11y-protanopia`, `a11y-tritanopia`,
+  `a11y-achromatopsia`) re-tune the categorical hues for the common
+  colour-vision deficiencies and are selectable in the picker. Preview them all in the
   [component reference](https://slidewright.github.io/lattice/components/).
 - **53 components.** Title, divider, content, diagram, cards-grid, compare-prose,
   quote, timeline-list, big-number, split-panel, verdict-grid, more.
@@ -147,6 +150,7 @@ The package also exposes these named entry points:
 |---|---|---|
 | `@slidewright/lattice/default` | `dist/lattice-default.css` | **zero-config default** — engine + the cuoio palette, flattened into one drop-in stylesheet |
 | `@slidewright/lattice/default/min` | `dist/lattice-default.min.css` | minified zero-config default — the leanest single-file `<link>` for browser use |
+| `@slidewright/lattice/engine` | `lib/engine/index.js` | the **canonical render kernel** (`render()` + the transform pipeline) — for embedding the engine directly (HARD RULE #1: this is the source of truth all render paths share) |
 | `@slidewright/lattice/runtime` | `dist/lattice-runtime.js` | the preview / web-export runtime transforms |
 | `@slidewright/lattice/runtime/min` | `dist/lattice-runtime.min.js` | minified runtime — production / CDN drop-in (no inline source map) |
 | `@slidewright/lattice/css` | `dist/lattice.css` | the engine bundle — **palette-blind** (components only, no colour tokens) |
@@ -213,6 +217,14 @@ Adobe Acrobat/Reader and most desktop viewers honour this (it's the same
 document hint Keynote and PowerPoint emit); browser-embedded viewers and macOS
 Preview ignore it harmlessly. Slides stay presenter-driven — no auto-advance.
 A deck can also bake this in with a `present: true` front-matter key.
+
+Pass `--fluid` (or `fluid: true`) to emit a **responsive, phone-readable HTML
+viewer** instead of a fixed-box export — slides reflow to the viewport and you
+swipe between them, so the same deck reads on a phone without pinch-zooming:
+
+```sh
+lattice deck.md deck.html --fluid
+```
 
 ## Render the example galleries
 

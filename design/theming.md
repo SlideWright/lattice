@@ -299,6 +299,27 @@ cuoio is the one shipped theme that overrides the universal palette —
 its leather aesthetic wants a warm pale gold-wash + saddle leather
 pair instead of the indaco-derived peach + brown defaults.
 
+## Colour-vision-deficiency (a11y) palettes
+
+Four shipped palettes re-tune the **categorical** hues (`--c-*` / `--cat-*`) so
+adjacent series stay distinguishable under the common colour-vision deficiencies,
+selectable the same way as any theme (`theme: a11y-deuteranopia`) and offered in the
+docs-site palette picker:
+
+| Palette | Targets |
+|---|---|
+| `a11y-deuteranopia` | red-green (most common; weak/absent M-cones) |
+| `a11y-protanopia` | red-green (weak/absent L-cones) |
+| `a11y-tritanopia` | blue-yellow (weak/absent S-cones) |
+| `a11y-achromatopsia` | full colour-blindness — separates series by **luminance** |
+
+They only re-map the categorical ramp; the surface/ink/semantic contract (and its WCAG
+AA guarantee) is unchanged, so any deck renders in an a11y palette without edits. Colour
+is never the *sole* channel regardless — charts/diagrams pair hue with shape/label
+(redundant encoding). Derivation and the audit method live in
+`engineering/decisions/2026-06-16-colour-blindness-accessibility.md` and
+`2026-06-16-cvd-redundant-encoding.md`.
+
 ## The card-on-band rule (scope: kanban only)
 
 > **A `--bg-alt` inner card on a `--cat-N-fill` parent surface.**
