@@ -110,6 +110,13 @@ in patch versions.
     presenter, and every Share export (PDF/PPTX/Print). Validation and editor
     autocomplete recognize your local names too, so a component you authored never
     reads as "unknown."
+  - **Architect — refine a selection.** Select prose in the editor and a **Refine**
+    control appears: **Polish / Formalize / Elaborate / Shorten**, each a real model
+    rewrite of *just the selection*, applied as one undoable transaction (a pre-edit
+    checkpoint makes it reversible from History too). Reuses the Drawing Board's pure
+    refine kernel (`buildRefinePrompt`/`cleanRewrite`) — the brief forbids inventing
+    facts or breaking markdown. Honest with no model (the menu offers a connect path,
+    never a fabricated edit) and respects the session budget cap.
 - **`--present`: PDFs that open straight into full-screen presentation mode.**
   A new opt-in CLI flag marks the exported PDF's document catalog so Adobe
   Acrobat/Reader and most desktop viewers open it directly in full-screen /

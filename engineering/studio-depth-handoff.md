@@ -159,10 +159,24 @@ its own commit. Rough order by value.
    `DeckPreview` instances (watch perf — virtualize). Autoplay = chain read-aloud
    across slides (advance on natural finish; `useReadAloud` auto-stops on slide
    change — add a "finished naturally" signal to chain).
-5. **Architect: selection Refine + per-finding AI fix.** Reuse
-   `drawing-board-refine.js` (Polish/Formalize/Elaborate/Shorten on a selection)
-   and `architect-fix.js` (`requestSlideFix`). Smaller; needs editor-selection
-   plumbing.
+5. **Architect: selection Refine + per-finding AI fix.**
+   - **DONE — selection Refine** (branch `claude/studio-architect-refine`):
+     selecting prose in the editor reveals a **Refine** dropdown
+     (Polish/Formalize/Elaborate/Shorten) that rewrites JUST the selection via the
+     model and applies it as one undoable transaction, checkpointing first. Reuses
+     the pure refine kernel from `drawing-board-refine.js` (`REFINE_ACTIONS` +
+     `buildRefinePrompt` + `cleanRewrite`) through a new `architect.ts`
+     `refineSelection(action, text)` (honest `offline`/`blocked`/`nochange`). New
+     editor-selection plumbing: the `EditorHandle` gained `getSelection()` +
+     `replaceSelection()`, and an `onSelectionChange(hasSelection)` prop gates the
+     control. **jsdom note:** CodeMirror selection can't be driven headless, so the
+     apply path is proven via a stubbed-Editor wiring test
+     (`studio.refine.test.tsx`) + `refineSelection` honesty units, and the live
+     selection→menu was verified visually.
+   - **TODO — per-finding AI fix:** reuse `architect-fix.js` (`requestSlideFix`) to
+     grow the Coach card's JUDGEMENT findings a "Fix with AI" button → reviewable
+     `{ before, after }` diff card (Apply/Discard), mirroring the chat diff card.
+     Needs the components catalog passed for `buildFixMessages`.
 6. **Present depth misc:** progress spine, fullscreen, swipe gestures
    (`drawing-board-present.js`).
 
