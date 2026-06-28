@@ -476,6 +476,16 @@ in patch versions.
 
 ### Fixed
 
+- **The overflow ring no longer false-fires on a clean slide whose cell holds an
+  absolutely-positioned footer (the #198 4K case).** The cell-aware probe measures how far a
+  clip cell's children spill past the cell box (to catch centred content clipped off an edge),
+  but it counted OUT-OF-FLOW children too — a full-width `<footer>` docked inside a half-width
+  `.panel-right` is `position:absolute`, so its layout box sits ~a panel-width to the left of
+  the cell, which the probe read as a panel-width of horizontal overflow and tripped the ring
+  on a slide that renders perfectly (split-panel watermark at `size: 4K`). The probe now skips
+  `position:absolute`/`fixed` children — that's placement, not content overflow; an out-of-flow
+  element's own overflow is still caught by the cell's `scrollWidth/Height` and the section box.
+  In-flow centred-overflow detection is unchanged. Closes #198.
 - **`split-panel watermark` numbered cards: the bold header now left-aligns with its body
   text.** The numbered (`ol`) card insets its header `1.25cqi` from the accent counter, but a
   shared body rule (meant for the plain `ul` card, whose header has no inset) clobbered the
