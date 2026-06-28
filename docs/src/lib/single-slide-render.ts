@@ -105,7 +105,7 @@ export function createSingleSlideRenderer(opts: SingleSlideOptions) {
 	// (never the SVG) to fit the host — sidesteps the Safari foreignObject scaling
 	// bug (see frame-css.js + index.astro srcdoc note). `geom` is the render's
 	// reported { width, height } (px).
-	function srcdoc(html: string, css: string, mode: 'light' | 'dark', mermaid: boolean, geom: Geom): string {
+	function srcdoc(html: string, css: string, mode: 'light' | 'dark', mermaid: boolean, geom: Geom, extraCss = ''): string {
 		const bg = mode === 'dark' ? '#0c0c0c' : '#e7e7ea';
 		// Register the vendored faces first (@font-face is position-independent,
 		// but keeping it up top documents intent). Without this the iframe has no
@@ -124,6 +124,10 @@ export function createSingleSlideRenderer(opts: SingleSlideOptions) {
 			bg +
 			'}' +
 			css +
+			// Author-supplied CSS appended AFTER the theme — the Fabricate Layout
+			// Studio's live local-component styles, the same order the Workbench
+			// previews them (out.css + the component CSS).
+			(extraCss ? '\n/* studio-extra-css */\n' + extraCss : '') +
 			'</style></head><body>' +
 			html;
 		if (mermaid) s += '<scr' + 'ipt src="' + MERMAID + '"></scr' + 'ipt>';
@@ -169,6 +173,9 @@ export function createSingleSlideRenderer(opts: SingleSlideOptions) {
 		// Fabricate specimen toggle) without flipping the whole page. Existing
 		// callers omit it → mode still follows data-mode.
 		modeOverride?: 'light' | 'dark',
+		// Opt-in: raw author CSS appended after the theme (Fabricate's Layout Studio
+		// previews a live local component's styles). Existing callers omit it.
+		extraCss?: string,
 	): Promise<RenderStatus> {
 		const PG = window.LatticePlayground;
 		if (!PG) return Promise.resolve({ ok: false, slides: 0, error: 'engine not loaded' });
@@ -223,7 +230,7 @@ export function createSingleSlideRenderer(opts: SingleSlideOptions) {
 					}
 				}
 				fr.onload = () => scaleFrame(host);
-				fr.srcdoc = srcdoc(out.html, out.css, mode, mermaid, geom);
+				fr.srcdoc = srcdoc(out.html, out.css, mode, mermaid, geom, extraCss);
 				scaleFrame(host);
 				host.classList.add('is-live');
 				const slides = (out.html.match(/<\/section>/g) || []).length;

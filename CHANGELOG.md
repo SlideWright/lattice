@@ -87,6 +87,14 @@ in patch versions.
     `postMessage` and auto-placed on a second screen when the browser grants it.
     It is the **same** reveal-style presenter the Drawing Board ships — both now
     drive a shared kernel (`presenter-window.js`), one source of truth.
+  - **Fabricate — real Component/Layout Studio.** The Layout tab (a density radio)
+    is now a working local-component authoring surface: name a `.<name>`-scoped
+    component, write its CSS + a skeleton, and watch the **real deterministic gate**
+    flag every violation live (a hex literal → "use a palette token"; an unscoped
+    selector → "would leak onto other slides"; a skeleton that doesn't invoke the
+    class), with the component **rendered live** in the preview. Save a clean one to
+    the **shared Workbench library** (the same `componentAsset` store the Workbench
+    Layout Studio uses). Reuses `layout-core.generated.js` — no engine fork.
 - **`--present`: PDFs that open straight into full-screen presentation mode.**
   A new opt-in CLI flag marks the exported PDF's document catalog so Adobe
   Acrobat/Reader and most desktop viewers open it directly in full-screen /
