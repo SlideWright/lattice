@@ -2944,7 +2944,7 @@ Splits the passage into three columns: prior text on the left, new text in the m
 
 > A business that collects consumers' personal information shall provide two or more designated methods for submitting requests to opt out of the sale of their personal information.
 
-> A business that collects, sells, or shares consumers' personal information shall provide at least one designated method for submitting requests to opt-out, including a clear and conspicuous homepage link titled "Your Privacy Choices," for use by consumers to direct the business not to sell or share their personal information.
+> A business that collects, sells, or shares consumers' personal information shall provide at least one designated method for submitting requests to opt-out, including a clear and conspicuous homepage link titled "Your Privacy Choices."
 
 - **Scope.** Sale and sharing fold into one duty.
 - **Method floor.** One method now suffices.

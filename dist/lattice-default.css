@@ -9809,8 +9809,24 @@ section.redline.stacked.stacked > blockquote:nth-of-type(2)::before {
 /* minmax(0,1fr) (not bare 1fr) caps the content row at its flex share so a
  * long clause can't push the grid past the slide edge and clip mid-word;
  * the blockquote guard below keeps overflow inside its own track. */
-section.redline.three-col { display:grid; grid-template-columns:1fr 1fr 1.1fr; column-gap:var(--sp-md); grid-template-rows:auto auto minmax(0, 1fr); row-gap:var(--sp-sm); }
+/* OLD/NEW carry full clauses and need the width; WHY is a short pill stack that under-fills
+ * its track — so the diff columns are wider than the rationale (was 1/1/1.1, which starved
+ * OLD/NEW into extra wrapped lines and clipped the denser NEW card). (#569) */
+section.redline.three-col { display:grid; grid-template-columns:1.15fr 1.15fr 0.85fr; column-gap:var(--sp-md); grid-template-rows:auto auto minmax(0, 1fr); row-gap:var(--sp-sm); }
+/* Under Form the eyebrow + h2 lift into a single `.cell-masthead` band, which becomes a
+ * direct GRID item. Without an explicit placement it auto-flows into the narrow first cell —
+ * the title then wraps to 3 lines, inflating the header row and stealing the card row's
+ * height until the OLD/NEW prose clips. Span the band across all columns on row 1 so the
+ * title fits one line and the cards keep their minmax(0,1fr) track. (#569) Mirrors the bare
+ * `h2 { grid-column:1/-1 }` rule for the non-Form path. */
+section.redline.split > .cell-masthead,
+section.redline.three-col > .cell-masthead { grid-column: 1 / -1; grid-row: 1; }
 section.redline.three-col.three-col > blockquote { min-width:0; min-height:0; overflow:hidden; }
+/* The three columns are narrow, so the cards read snug — not the default single-column
+ * `--lh-relaxed` — and carry tighter block padding. Both cards share one grid-row height
+ * (minmax(0,1fr)); the denser side (NEW) needs the reclaimed lines to seat without clipping
+ * its last line. (#569) */
+section.redline.three-col.three-col > blockquote { line-height:var(--lh-snug); padding-block:var(--sp-sm); }
 section.redline.three-col h2 { grid-column:1 / -1; }
 section.redline.three-col > p:has(> code:only-child) { grid-column:1 / -1; }
 section.redline.three-col.three-col > blockquote:nth-of-type(1) {
