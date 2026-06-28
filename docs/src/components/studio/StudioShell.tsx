@@ -12,8 +12,8 @@ import {
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import type { SingleSlideOptions } from '@/lib/single-slide-render';
 import { cn } from '@/lib/utils';
-import { ArchitectChat } from './ArchitectChat';
-import { REFINE_ACTIONS, type RefineActionId, refineSelection, resumePendingAuth, runArchitect, useArchitectStatus } from './architect';
+import { ArchitectChat, DiffCard } from './ArchitectChat';
+import { applyDeckEdit, type Finding, REFINE_ACTIONS, type RefineActionId, refineSelection, requestFindingFix, resumePendingAuth, runArchitect, useArchitectStatus } from './architect';
 import { CommandPalette } from './CommandPalette';
 import { listStudioComponents, type StudioComponent } from './component-library';
 import { addSlideAfter, deleteSlide, duplicateSlide, moveSlide, replaceSlide } from './deck-ops';
@@ -27,6 +27,7 @@ import { type PresentLens, presentationSet, scoreDeck, slideClass, splitSlides, 
 import { PresentOverlay } from './PresentOverlay';
 import { ShareSheet } from './ShareSheet';
 import { getNote, setNote } from './slide-notes';
+import { listFindings } from './studio-lint';
 import { type Checkpoint, createDeck, deleteDeck as deleteDeckStore, loadCheckpoints, loadDeckList, loadSettings, loadSource, metaFor, renameDeck as renameDeckStore, saveCheckpoint, saveSettings, saveSource, titleFromSource } from './studio-store';
 import { deleteStudioTheme, listStudioThemes, type StudioTheme } from './theme-library';
 import { useBreakpoint } from './use-breakpoint';
@@ -343,6 +344,12 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 	const [aiBusy, setAiBusy] = React.useState<string | null>(null);
 	const [hasSelection, setHasSelection] = React.useState(false);
 	const [refineBusy, setRefineBusy] = React.useState(false);
+	// Deck-wide deterministic findings (the real lint-core list the editor underlines)
+	// — surfaced in the Coach panel so each can be fixed with AI. A proposed fix is a
+	// reviewable diff keyed by finding; nothing applies until the author clicks Apply.
+	const [findings, setFindings] = React.useState<Finding[]>([]);
+	const [fixBusy, setFixBusy] = React.useState<string | null>(null);
+	const [fixProposal, setFixProposal] = React.useState<{ key: string; before: string; after: string; edit: unknown } | null>(null);
 	// On return from the OpenRouter OAuth redirect (?code=), finish the exchange.
 	React.useEffect(() => {
 		resumePendingAuth().then((ok) => {
@@ -418,6 +425,66 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 		},
 		[refineBusy, source, notify, deck.id],
 	);
+
+	// Recompute the deck-wide findings list whenever the source (or the known-name
+	// set) changes — only when inline validation is on, mirroring the editor. The
+	// lazy lint bundle loads once; a stale async result is dropped on unmount/change.
+	React.useEffect(() => {
+		if (!validation) {
+			setFindings([]);
+			return;
+		}
+		let live = true;
+		listFindings(lintVocab, source, localNames).then((f) => {
+			if (live) setFindings(f);
+		});
+		return () => {
+			live = false;
+		};
+	}, [validation, source, lintVocab, localNames]);
+	// A clean proposal can outlive its finding after an edit; clear it when the
+	// finding set changes so a stale diff card never lingers.
+	// biome-ignore lint/correctness/useExhaustiveDependencies: intentionally keyed on findings identity only — clearing a stale proposal when the list changes.
+	React.useEffect(() => setFixProposal(null), [findings]);
+
+	// Ask the Architect to fix ONE finding — proposes a reviewable diff (nothing
+	// applied yet). Honest degradation with no model / at the cap.
+	const fixFinding = React.useCallback(
+		async (finding: Finding, key: string) => {
+			if (fixBusy) return;
+			setFixBusy(key);
+			setFixProposal(null);
+			notify('Asking the Architect to fix this…');
+			try {
+				const out = await requestFindingFix(source, finding, components);
+				if (out.status === 'offline') {
+					notify('Connect a model in Workspace → AI model to fix a finding.');
+					setWorkspaceOpen(true);
+				} else if (out.status === 'blocked') {
+					notify(out.note);
+					setWorkspaceOpen(true);
+				} else if (out.status === 'nochange') {
+					notify('The model had no rewrite to propose for this one.');
+				} else {
+					setFixProposal({ key, before: out.before, after: out.after, edit: out.edit });
+				}
+			} catch {
+				notify('Fix failed — try again.');
+			} finally {
+				setFixBusy(null);
+			}
+		},
+		[fixBusy, source, components, notify],
+	);
+	// Apply the reviewed fix — checkpoint first (reversible from History), splice the
+	// edited slide back, and jump the preview to it.
+	const applyFix = React.useCallback(() => {
+		if (!fixProposal) return;
+		setCheckpoints(saveCheckpoint(deck.id, source, 'Before AI fix', Date.now()));
+		setSource(applyDeckEdit(source, fixProposal.edit));
+		setFixProposal(null);
+		notify('Fix applied — ⌘Z or restore from History to undo.');
+	}, [fixProposal, source, deck.id, notify]);
 
 	// ⌘K
 	React.useEffect(() => {
@@ -517,6 +584,31 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 					{deckScore.rows.map((r) => <ScoreRow key={r.label} ok={r.ok} label={r.label} v={r.note} />)}
 				</div>
 			</ArchCard>
+			{findings.length > 0 && (
+				<ArchCard tag={<IntentTag intent="review" label="FINDINGS" />} title={`${findings.length} to address`}>
+					<p className="text-xs leading-relaxed text-muted-foreground">The deck linter's per-slide notes. {ai.ready ? 'Fix any one with AI — review the diff before it lands.' : <>Connect a model in Workspace to fix these with AI.</>}</p>
+					<ul className="mt-2 space-y-2">
+						{findings.slice(0, 6).map((f, i) => {
+							const key = `${f.slide}:${f.rule}:${i}`;
+							const isErr = f.severity === 'error';
+							return (
+								<li key={key} className="rounded-lg border border-border bg-background px-2.5 py-2">
+									<div className="flex items-start gap-2">
+										<span className="mt-0.5 shrink-0" style={{ color: isErr ? 'var(--chart-2,#9c3f00)' : 'var(--chart-4,#9a6a00)' }}><AlertTriangle className="size-3.5" /></span>
+										<div className="min-w-0 flex-1">
+											<span className="font-mono text-[10.5px] uppercase tracking-wider text-muted-foreground">Slide {f.slide} · {f.rule}</span>
+											<p className="text-[12px] leading-snug text-foreground">{f.message}</p>
+										</div>
+										{ai.ready && <Chip busy={fixBusy === key} onClick={() => fixFinding(f, key)}>Fix with AI</Chip>}
+									</div>
+									{fixProposal?.key === key && <DiffCard before={fixProposal.before} after={fixProposal.after} onApply={applyFix} onDiscard={() => setFixProposal(null)} />}
+								</li>
+							);
+						})}
+					</ul>
+					{findings.length > 6 && <p className="mt-2 text-[11px] text-muted-foreground">+{findings.length - 6} more — the editor underlines them all.</p>}
+				</ArchCard>
+			)}
 			<ArchCard tag={<IntentTag intent="info" label="COACH" />} title="Tighten the story">
 				<p className="text-xs leading-relaxed text-muted-foreground">Lead every slide with its takeaway, not its detail — the number, then the supporting rows.{!ai.ready && <span className="text-[var(--text-muted)]"> Connect a model in Workspace for one-click rewrites.</span>}</p>
 				<Chip busy={aiBusy === 'lead'} onClick={() => runArchitectAction('lead', 'Rewrite lead', `Rewrite slide ${activeFullIndex + 1} so it opens with its single headline takeaway or number, then the supporting rows. Return the whole slide, same component.`)}>Rewrite lead</Chip>

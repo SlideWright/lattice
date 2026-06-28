@@ -117,6 +117,14 @@ in patch versions.
     refine kernel (`buildRefinePrompt`/`cleanRewrite`) — the brief forbids inventing
     facts or breaking markdown. Honest with no model (the menu offers a connect path,
     never a fabricated edit) and respects the session budget cap.
+  - **Architect — per-finding AI fix.** The Coach panel now surfaces the deck's
+    deterministic lint findings (the same per-slide notes the editor underlines) as
+    an actionable list; with a model connected each grows a **Fix with AI** button
+    that asks the model to rewrite just the flagged slide and returns a reviewable
+    **Apply / Discard diff card** (a pre-edit checkpoint makes it reversible). Reuses
+    the Drawing Board's `requestSlideFix` (the edit-block protocol + canon grounding)
+    and the chat's `DiffCard`. Honest with no model (the list still shows; the fix
+    points at Workspace) and respects the budget cap.
 - **`--present`: PDFs that open straight into full-screen presentation mode.**
   A new opt-in CLI flag marks the exported PDF's document catalog so Adobe
   Acrobat/Reader and most desktop viewers open it directly in full-screen /
