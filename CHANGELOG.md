@@ -417,6 +417,13 @@ in patch versions.
 
 ### Fixed
 
+- **`q-and-a spine` no longer clips its answer text at the right frame edge.** The base
+  `q-and-a` list is `width: 100%`, and the `spine` look adds its own `padding-left` to that
+  same list; because `box-sizing` isn't inherited (only `section` sets it), the list was
+  `content-box`, so `100% + padding` pushed the answer column past the stage's right edge and
+  a long answer line was horizontally clipped. The spine list is now `box-sizing: border-box`,
+  so its padding is absorbed within the 100% width. Verified light + dark on the gallery's
+  3-pair stress sample. (#547)
 - **The overflow probe now catches centred (and bottom-anchored) content that clips its
   head.** `lib/core/overflow-probe.js` measured a bounded content cell's overflow as
   `scrollHeight - clientHeight`, which silently UNDER-reports a `justify-content: center`
