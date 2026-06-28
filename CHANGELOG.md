@@ -334,6 +334,19 @@ in patch versions.
 
 ### Changed
 
+- **Form migration taxonomy made total + a partition guard — closing the `diagram` gap.** A
+  pre-launch red-team found `diagram` (a `diagram`-bucket sized-media component) sitting
+  un-migrated yet outside every documented exception category. Added an explicit
+  `STAGE_DEFERRED` set (the 13 `chart`-bucket layouts + `diagram`) naming the layouts that get
+  the masthead band but intentionally keep direct-child sized-media bodies, so every component
+  is now in exactly one bucket — `STAGE_MIGRATED` (wrapped), `STAGE_DEFERRED` (band +
+  direct-child body), or chrome-exempt sovereign (`FORM_TOGGLE_SKIP`). The drift test now
+  asserts that partition is **total and disjoint**, so a new component can never default to
+  "unwrapped and undocumented". No render change (`diagram` already gets section-level overflow
+  detection); the offscreen Mermaid pre-render is untouched. Synced the stale doc surfaces:
+  `forms.md` (named `redline` as un-migrated — it is migrated), `marp-independence.md` +
+  `lib/engine/index.js` (engine is the canonical shipping render path, not "experimental / P1"),
+  and `design-system.md` (referenced the deleted `marp.config.js`).
 - **`redline` migrates into the `.cell-stage` cell-tree — completing the standard-component
   migration (#587).** The diff component was the last standard layout on direct-child bodies; its
   body (the OLD/NEW blockquotes + annotation/rationale list) now wraps into the frame's bounded
