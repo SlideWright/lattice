@@ -7,15 +7,16 @@
 
 The live, claimable work queue — a read-only mirror of [open issues](https://github.com/SlideWright/lattice/issues),
 grouped by board column. Design lives in `engineering/decisions/`; this tracks
-only *status*. **41 open** items.
+only *status*. **43 open** items.
 
 > ⚠️ **5 cards need triage** (missing `area:`/`type:`/`priority:`): [#554](https://github.com/SlideWright/lattice/issues/554), [#581](https://github.com/SlideWright/lattice/issues/581), [#582](https://github.com/SlideWright/lattice/issues/582), [#587](https://github.com/SlideWright/lattice/issues/587), [#588](https://github.com/SlideWright/lattice/issues/588).
 
-## Backlog (37)
+## Backlog (39)
 
 - [#287](https://github.com/SlideWright/lattice/issues/287) refactor(engine): LPM Phase 1 — manifest `render` block + `transformSection` adapter; migrate the chart kernels — high · engine
 - [#506](https://github.com/SlideWright/lattice/issues/506) feat(runtime): runtime auto-split (Option B) via eventual consistency — high · engine
 - [#515](https://github.com/SlideWright/lattice/issues/515) feat(playground): Google Drive bring-your-own-storage — Connect / Save / Open — high · website
+- [#595](https://github.com/SlideWright/lattice/issues/595) Playwright E2E for docs-site/playground — scaffold + consolidate (PR A) — high · website
 - [#286](https://github.com/SlideWright/lattice/issues/286) refactor(css): namespace variant classes that collide with component names — medium · engine
 - [#288](https://github.com/SlideWright/lattice/issues/288) feat(engine): implement the front-matter deck-config contract (vars, object background/logo, fonts, metadata, sizes) — medium · engine
 - [#289](https://github.com/SlideWright/lattice/issues/289) feat(engine): implement the `$`-sigil inline-code variable interpolation grammar — medium · engine
@@ -33,6 +34,7 @@ only *status*. **41 open** items.
 - [#500](https://github.com/SlideWright/lattice/issues/500) feat(legal): obligation-matrix cover-paginate — a split that survives a wide matrix — medium · legal
 - [#511](https://github.com/SlideWright/lattice/issues/511) refactor(engine): consolidate runtime + emulator — rename the CLI off "emulator", unify the Mermaid var-map — medium · engine
 - [#580](https://github.com/SlideWright/lattice/issues/580) feat(website): Studio depth — finish Present, Fabricate & Settings (continue #567) — medium · website
+- [#596](https://github.com/SlideWright/lattice/issues/596) Performance gating by metric class + E2E re-tier (PR B) — medium · infra
 - [#180](https://github.com/SlideWright/lattice/issues/180) epic(chart): resolution-independent charts — cqi-first, kill fixed-px, for any-format / 10K export — low · chart
 - [#279](https://github.com/SlideWright/lattice/issues/279) docs: reconcile Mermaid diagram-type count (README "25" vs gallery "26") — low · diagram
 - [#280](https://github.com/SlideWright/lattice/issues/280) docs: fix phantom `--hljs-name`/`--hljs-meta` token rows in highlight-js.docs.md — low · docs
