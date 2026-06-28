@@ -30,7 +30,10 @@ Use for the credibility slide — the 'trusted by' / 'our funders' / 'participat
 ## The headline claim the logos back up.
 
 - ![First brand](logo-1.svg)
+  - First brand
+  - `Series B`
 - ![Second brand](logo-2.svg)
+  - Second brand
 - ![Third brand](logo-3.svg)
 - ![Fourth brand](logo-4.svg)
 - ![Fifth brand](logo-5.svg)
@@ -44,6 +47,7 @@ Use for the credibility slide — the 'trusted by' / 'our funders' / 'participat
 | `eyebrow` | `p > code:only-child` | no | Optional kicker above the headline — wrap a short label in backticks, e.g. `Trusted by`. |
 | `title` | `h2` | no | Optional headline above the wall. A claim earns its place (‘400+ teams run board prep on Lattice’); a bare label (‘Customers’) does not. |
 | `logos` | `ul > li` | yes | One list item per mark, authored as `- ![Brand name](brand.svg)`. The alt text is the accessible label, not a rendered caption. SVG is preferred so marks stay crisp at projector scale. |
+| `caption` | `ul > li > ul > li` | no | Optional name + pill stacked below a mark, centred. Nest a list under the image: plain text is the name, a backticked token (`Series B`) is the pill. Either or both, per mark. |
 
 ## Anatomy
 
@@ -53,8 +57,9 @@ Use for the credibility slide — the 'trusted by' / 'our funders' / 'participat
 │               TRUSTED BY                │
 │        The teams that run on us.        │
 │                                         │
-│       [Acme]  [Globex]  [Initech]       │
-│       [Umbra] [Vantage] [Helios]        │
+│      [Acme]   [Globex]   [Initech]      │
+│      Acme      Globex     Initech       │
+│       (SeriesB) (Public)   (Seed)       │
 │                                         │
 │  footer                           1/19  │
 └─────────────────────────────────────────┘

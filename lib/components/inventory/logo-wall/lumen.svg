@@ -1,4 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 80" role="img" aria-label="Lumen">
-  <path d='M32 22 L50 56 L14 56 Z' fill='#1f9d8a'/>
-  <text x="62" y="51" font-family="Helvetica, Arial, sans-serif" font-size="29" font-weight="700" fill="#222222">Lumen</text>
+  <circle cx="34" cy="40" r="19" fill="none" stroke="#c25a2b" stroke-width="3.5"/>
+  <circle cx="34" cy="40" r="11" fill="none" stroke="#c25a2b" stroke-width="3.5"/>
+  <circle cx="34" cy="40" r="4" fill="#c25a2b"/>
+  <text x="70" y="51" font-family="'Helvetica Neue', Arial, sans-serif" font-size="29" font-weight="600" fill="#1f2733">Lumen</text>
 </svg>

@@ -1,4 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 80" role="img" aria-label="Meridian">
-  <rect x='16' y='24' width='32' height='32' rx='8' fill='#16a085'/>
-  <text x="62" y="51" font-family="Helvetica, Arial, sans-serif" font-size="29" font-weight="700" fill="#222222">Meridian</text>
+  <circle cx="34" cy="40" r="18" fill="none" stroke="#1f7a6d" stroke-width="4"/>
+  <line x1="9" y1="40" x2="59" y2="40" stroke="#1f7a6d" stroke-width="4"/>
+  <circle cx="34" cy="40" r="4.5" fill="#1f7a6d"/>
+  <text x="72" y="50" font-family="Georgia, 'Times New Roman', serif" font-size="25" font-weight="600" fill="#1f2733">Meridian</text>
 </svg>

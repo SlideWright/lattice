@@ -1,4 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 80" role="img" aria-label="Initech">
-  <rect x='16' y='24' width='32' height='32' rx='8' fill='#27ae60'/>
-  <text x="62" y="51" font-family="Helvetica, Arial, sans-serif" font-size="29" font-weight="700" fill="#222222">Initech</text>
+  <path d="M34 17 L53 28.5 L53 51.5 L34 63 L15 51.5 L15 28.5 Z" fill="none" stroke="#2e7d7a" stroke-width="4"/>
+  <circle cx="34" cy="30" r="3" fill="#2e7d7a"/>
+  <rect x="31.5" y="36" width="5" height="16" rx="2.5" fill="#2e7d7a"/>
+  <text x="70" y="51" font-family="'Helvetica Neue', Arial, sans-serif" font-size="27" font-weight="600" letter-spacing="-0.2" fill="#1f2733">Initech</text>
 </svg>

@@ -78,6 +78,15 @@ const imageSamplesDir = join(repoRoot, 'lib', 'components', 'imagery', 'image');
 for (const file of readdirSync(imageSamplesDir)) {
   if (file.endsWith('.svg')) assets.push([`samples/${file}`, join(imageSamplesDir, file)]);
 }
+// logo-wall's manifest sample references the brand marks by bare filename
+// (`![Acme](acme.svg)`), resolved against the same samples/ base. Stage them
+// flat so the component studio renders real marks instead of broken images.
+// (The bucket gallery refs them as `logo-wall/acme.svg`; that nested copy is
+// staged via collectGalleryAssets below — both paths resolve.)
+const logoWallDir = join(repoRoot, 'lib', 'components', 'inventory', 'logo-wall');
+for (const file of readdirSync(logoWallDir)) {
+  if (file.endsWith('.svg')) assets.push([`samples/${file}`, join(logoWallDir, file)]);
+}
 // Images the "Load a deck" gallery decks reference (e.g. the imagery survey's
 // `![bg](image/sample-photo-wide.svg)`, the inventory logo-wall). Staged under
 // samples/ mirroring each deck-relative ref so the preview resolves them against
