@@ -17,7 +17,7 @@ import { DECKS, deckSource, type StudioDeck } from './decks';
 import { Editor, type EditorHandle } from './Editor';
 import { Fabricate } from './Fabricate';
 import { IntentTag } from './IntentTag';
-import { splitSlides, unknownComponents } from './lint';
+import { slideClass, splitSlides, unknownComponents } from './lint';
 import { PresentOverlay } from './PresentOverlay';
 import { ShareSheet } from './ShareSheet';
 import { useBreakpoint } from './use-breakpoint';
@@ -25,7 +25,7 @@ import { WorkspaceSheet } from './WorkspaceSheet';
 
 // Module-level so the reference is stable — the Editor re-inits CodeMirror when
 // its `knownComponents` identity changes, so this must never be an inline literal.
-const KNOWN = ['title', 'kpi', 'quote', 'cards-grid', 'agenda', 'big-number', 'stats', 'statement', 'q-and-a', 'pricing'];
+const KNOWN = ['title', 'kpi', 'quote', 'cards-grid', 'agenda', 'big-number', 'stats', 'statement', 'closing', 'q-and-a', 'pricing'];
 const PALETTES = ['indaco', 'cuoio', 'burgundy', 'laguna', 'crepuscolo', 'atelier', 'carbone', 'onyx'];
 const PALETTE_DOTS: Record<string, string> = {
 	indaco: '#006FA8', cuoio: '#7A5A10', burgundy: '#742532', laguna: '#006D77',
@@ -106,11 +106,11 @@ export default function StudioShell({ options }: Props) {
 				<div className="mt-2 space-y-1.5 text-xs">
 					<ScoreRow ok label="Hierarchy" v="pass" />
 					<ScoreRow ok label="Contrast (AA)" v="pass" />
-					<ScoreRow label="Density" v="slide 2" />
+					<ScoreRow label="Density" v="slide 5" />
 				</div>
 			</ArchCard>
 			<ArchCard tag={<IntentTag intent="info" label="COACH" />} title="Tighten the story">
-				<p className="text-xs leading-relaxed text-muted-foreground">Slide 2's takeaway is buried — lead with the number.</p>
+				<p className="text-xs leading-relaxed text-muted-foreground">Slide 5 packs four metrics — lead with the one that moved.</p>
 				<Chip>Rewrite lead</Chip>
 			</ArchCard>
 			<ArchCard tag={<IntentTag intent="info" label="RESHAPE" />} title="Reshape for a reader">
@@ -176,6 +176,26 @@ export default function StudioShell({ options }: Props) {
 			<div className="flex min-h-0 flex-1 items-center justify-center overflow-hidden bg-card p-4 sm:p-5">
 				<DeckPreview options={options} sample={slide} mermaid={false} className="relative aspect-video w-full max-w-[760px] overflow-hidden rounded-xl border border-border bg-background shadow-[0_8px_24px_rgba(10,22,40,.10)]" aria-label="Live deck preview" />
 			</div>
+			{/* Slide navigator — jump to any slide, see its component type */}
+			<nav className="flex items-center gap-1.5 overflow-x-auto border-t border-border bg-background px-3 py-2" aria-label="Slide navigator">
+				{slides.map((s, i) => {
+					const on = i === slideNo - 1;
+					return (
+						<button
+							type="button"
+							// biome-ignore lint/suspicious/noArrayIndexKey: the slide rail is positional — slide N's index IS its identity.
+							key={i}
+							onClick={() => setActiveSlide(i)}
+							aria-current={on}
+							aria-label={`Slide ${i + 1} — ${slideClass(s)}`}
+							className={cn('flex shrink-0 items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-left transition-colors', on ? 'border-[var(--accent)] bg-[var(--accent-soft)]' : 'border-border hover:border-[color-mix(in_srgb,var(--accent)_40%,var(--border))]')}
+						>
+							<span className={cn('grid size-[18px] shrink-0 place-items-center rounded-md font-mono text-[10px] font-bold', on ? 'bg-primary text-primary-foreground' : 'bg-card text-muted-foreground')}>{i + 1}</span>
+							<span className={cn('font-mono text-[11px]', on ? 'text-[var(--accent)]' : 'text-muted-foreground')}>{slideClass(s)}</span>
+						</button>
+					);
+				})}
+			</nav>
 			<div className="flex items-center gap-3 border-t border-border px-4 py-1.5 font-mono text-[11px] text-muted-foreground">
 				<span className="inline-flex items-center gap-1 text-[var(--chart-3,#2e6f00)]">● Live</span>
 				<span className="truncate">{palette} · {mode}</span>

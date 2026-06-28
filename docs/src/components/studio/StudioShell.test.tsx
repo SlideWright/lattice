@@ -94,6 +94,15 @@ describe('StudioShell — e2e flows (jsdom)', () => {
 		await user.click(await screen.findByText('FY26 Product Strategy'));
 		expect(screen.getByRole('button', { name: /FY26 Product Strategy/ })).toBeInTheDocument();
 	});
+
+	it('jumps to any slide from the navigator rail', async () => {
+		const user = setup();
+		// The Q3 deck opens on slide 1 (the title).
+		expect(screen.getByText('Slide 1 / 6')).toBeInTheDocument();
+		// Jump straight to slide 4 (the quote) via its navigator chip.
+		await user.click(screen.getByRole('button', { name: 'Slide 4 — quote' }));
+		expect(await screen.findByText('Slide 4 / 6')).toBeInTheDocument();
+	});
 });
 
 describe('StudioShell — responsive layout', () => {

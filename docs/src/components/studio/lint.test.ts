@@ -1,6 +1,6 @@
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
-import { splitSlides, unknownComponents, usedComponents } from './lint';
+import { slideClass, splitSlides, unknownComponents, usedComponents } from './lint';
 
 const KNOWN = ['title', 'kpi', 'quote', 'cards-grid', 'stats'];
 // Component-name-ish tokens (won't accidentally contain a `-->` or a fence).
@@ -70,5 +70,23 @@ describe('unknownComponents (fuzz)', () => {
 				expect(() => unknownComponents(s, KNOWN)).not.toThrow();
 			}),
 		);
+	});
+});
+
+describe('slideClass (fuzz)', () => {
+	it("returns the slide's first `_class`, or `text` for a bare slide — never throws", () => {
+		fc.assert(
+			fc.property(nameArb, bodyArb, (name, body) => {
+				expect(slideClass(`<!-- _class: ${name} -->\n${body}`)).toBe(name);
+			}),
+		);
+		// Bare-Markdown slide (no _class) and degenerate inputs fall back to `text`.
+		expect(slideClass('## Just a heading\n\nSome prose.')).toBe('text');
+		expect(slideClass('')).toBe('text');
+		expect(slideClass(undefined as unknown as string)).toBe('text');
+	});
+
+	it('reads only the FIRST class when a slide somehow carries two', () => {
+		expect(slideClass('<!-- _class: kpi -->\n<!-- _class: quote -->')).toBe('kpi');
 	});
 });

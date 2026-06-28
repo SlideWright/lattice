@@ -26,3 +26,10 @@ export function unknownComponents(src: string, known: Iterable<string>): string[
 	const set = new Set(known);
 	return usedComponents(src).filter((n) => !set.has(n));
 }
+
+/** The component label for a single slide — its first `_class`, or `text` for a
+ *  bare-Markdown slide. Drives the slide-navigator chips. */
+export function slideClass(slideSrc: string): string {
+	CLASS_RE.lastIndex = 0;
+	return CLASS_RE.exec(String(slideSrc ?? ''))?.[1] ?? 'text';
+}
