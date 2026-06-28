@@ -101,4 +101,18 @@ describe('bg-image — primitives', () => {
     assert.doesNotThrow(() => bg.resolveAssetUrl('100%.svg', 'file:///decks/q/'));
     assert.match(bg.resolveAssetUrl('100%.svg', 'file:///decks/q/'), /\/decks\/q\/100/);
   });
+
+  test('resolveInlineImageSrcs rebases relative <img> srcs against the base only', () => {
+    const html = '<img src="acme.svg" alt="Acme"><img alt="Remote" src="https://x/y.png"><img src="data:image/png,z">';
+    const out = bg.resolveInlineImageSrcs(html, 'https://o/v/h/samples/');
+    assert.match(out, /<img src="https:\/\/o\/v\/h\/samples\/acme\.svg" alt="Acme">/); // relative → absolute
+    assert.match(out, /src="https:\/\/x\/y\.png"/); // remote untouched
+    assert.match(out, /src="data:image\/png,z"/); // data untouched
+  });
+
+  test('resolveInlineImageSrcs is a no-op without a base (CLI/emulator export parity)', () => {
+    const html = '<img src="acme.svg" alt="Acme">';
+    assert.equal(bg.resolveInlineImageSrcs(html, undefined), html); // exported bytes untouched
+    assert.equal(bg.resolveInlineImageSrcs(html, ''), html);
+  });
 });

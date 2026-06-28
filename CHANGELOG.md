@@ -434,6 +434,14 @@ in patch versions.
   a long answer line was horizontally clipped. The spine list is now `box-sizing: border-box`,
   so its padding is absorbed within the 100% width. Verified light + dark on the gallery's
   3-pair stress sample. (#547)
+- **Playground previews now load relative inline images (e.g. `logo-wall` marks).** The
+  engine resolved `![bg]` backgrounds against the asset `baseUrl` but left a prose
+  `<img src="acme.svg">` relative, so it 404'd inside the preview's srcdoc iframe (the
+  component studio rendered broken marks). `lib/core/bg-image.js` gains
+  `resolveInlineImageSrcs`, applied at the end of the engine's HTML render, which rebases
+  relative inline `<img>` srcs against `baseUrl` the same way — remote/absolute/data URLs
+  pass through. The CLI/emulator/export path passes no `baseUrl`, so it's a no-op there and
+  exported bytes are unchanged.
 - **The overflow probe now catches centred (and bottom-anchored) content that clips its
   head.** `lib/core/overflow-probe.js` measured a bounded content cell's overflow as
   `scrollHeight - clientHeight`, which silently UNDER-reports a `justify-content: center`
