@@ -69,6 +69,10 @@ in patch versions.
     per-deck history) that runs through the connected model with the deck in
     context and returns proposed edits as a reviewable **Apply/Discard diff
     card**; plus an editable **session budget cap** the architect honours.
+  - **Speaker notes + Fabricate starters** — a per-slide speaker-notes field
+    (written as a real LFM note, exported to PDF/PPTX and read aloud in Present),
+    and curated **starter palettes** (Dusk/Ember/Pine/Slate) in Fabricate that
+    reseed and re-derive the whole theme.
 - **`--present`: PDFs that open straight into full-screen presentation mode.**
   A new opt-in CLI flag marks the exported PDF's document catalog so Adobe
   Acrobat/Reader and most desktop viewers open it directly in full-screen /
