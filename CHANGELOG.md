@@ -131,6 +131,13 @@ in patch versions.
     **windowed**: each defers its render until it scrolls into view, so a long deck
     stays light. Click a thumbnail to jump there and close the grid; the current
     slide is marked. Honors the active lens, theme, and saved local components.
+  - **Present — read-aloud autoplay.** An **Auto** toggle in read-aloud mode plays
+    the deck hands-free: it reads each slide's narration, then advances on the
+    natural finish and reads the next, to the end. Works with **no voice connected**
+    too — the caption teleprompter's own cadence drives the chain (a slide with no
+    prose is skipped, not stalled). Built on a new `onFinish` signal on
+    `useReadAloud` that fires only on a natural end (not a manual stop or slide nav);
+    mutually exclusive with Rehearse.
 - **`--present`: PDFs that open straight into full-screen presentation mode.**
   A new opt-in CLI flag marks the exported PDF's document catalog so Adobe
   Acrobat/Reader and most desktop viewers open it directly in full-screen /

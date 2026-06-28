@@ -1,5 +1,12 @@
-import { describe, expect, it } from 'vitest';
-import { slideToSpeech } from './read-aloud';
+import { act, renderHook } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { slideToSpeech, useReadAloud } from './read-aloud';
+
+// The spoken-audio rung is irrelevant to the teleprompter timer that drives
+// onFinish — stub the voice model so play() doesn't import the real Kokoro worker.
+vi.mock('@/playground/voice-model.js', () => ({
+	createVoiceModel: () => ({ speak() {}, stop() {}, pause() {}, resume() {}, rung: () => 'silent' }),
+}));
 
 // slideToSpeech is the narration extractor — it turns a slide's Markdown into the
 // readable prose the teleprompter highlights and the voice ladder speaks. Pure;
@@ -39,5 +46,36 @@ describe('slideToSpeech — Markdown → readable narration', () => {
 		expect(slideToSpeech('![bg](a.svg)')).toBe('');
 		expect(slideToSpeech('')).toBe('');
 		expect(slideToSpeech('<!-- _class: cover -->')).toBe('');
+	});
+});
+
+// onFinish is the natural-end signal Present's autoplay chains on — it must fire
+// when the read walks off the last sentence, and NOT on a manual stop.
+describe('useReadAloud — onFinish (autoplay chain signal)', () => {
+	beforeEach(() => vi.useFakeTimers());
+	afterEach(() => vi.useRealTimers());
+
+	it('fires once when a slide is read to its natural end', async () => {
+		const onFinish = vi.fn();
+		const { result } = renderHook(() => useReadAloud('One. Two.', { onFinish }));
+		act(() => result.current.play());
+		expect(result.current.playing).toBe(true);
+		// Each sentence holds at least MIN_SENTENCE_MS (1100); walk well past both.
+		await act(async () => {
+			await vi.advanceTimersByTimeAsync(8000);
+		});
+		expect(onFinish).toHaveBeenCalledTimes(1);
+		expect(result.current.playing).toBe(false);
+	});
+
+	it('does NOT fire on a manual stop mid-read', async () => {
+		const onFinish = vi.fn();
+		const { result } = renderHook(() => useReadAloud('One. Two. Three.', { onFinish }));
+		act(() => result.current.play());
+		act(() => result.current.stop());
+		await act(async () => {
+			await vi.advanceTimersByTimeAsync(8000);
+		});
+		expect(onFinish).not.toHaveBeenCalled();
 	});
 });

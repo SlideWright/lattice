@@ -116,13 +116,17 @@ function getVoice(): Promise<VoiceModel | null> {
  * Read-aloud controller for one slide's prose. `text` is the readable narration
  * (run the slide through `slideToSpeech`). Returns transport + the live
  * teleprompter index. Stops automatically when `text` changes (slide nav) and on
- * unmount.
+ * unmount. `opts.onFinish` fires ONLY when a slide is read to its natural end (not
+ * on a manual stop/pause or a slide change) — the hook Present's autoplay chains on.
  */
-export function useReadAloud(text: string): ReadAloudState {
+export function useReadAloud(text: string, opts?: { onFinish?: () => void }): ReadAloudState {
 	const sentences = React.useMemo(() => splitForCaption(text), [text]);
 	const [playing, setPlaying] = React.useState(false);
 	const [index, setIndex] = React.useState(-1);
 	const [rung, setRung] = React.useState<string | null>(null);
+	// Read the latest onFinish through a ref so it never re-creates `advance`.
+	const onFinishRef = React.useRef(opts?.onFinish);
+	onFinishRef.current = opts?.onFinish;
 
 	const timerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 	const ctlRef = React.useRef<AbortController | null>(null);
@@ -158,6 +162,9 @@ export function useReadAloud(text: string): ReadAloudState {
 			if (ctl.signal.aborted) return;
 			if (j >= sentences.length) {
 				stop();
+				// Natural end (the read walked off the last sentence) — let a chaining
+				// caller advance. Fired after stop() so state is idle when it runs.
+				onFinishRef.current?.();
 				return;
 			}
 			idxRef.current = j;
