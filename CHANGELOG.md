@@ -43,6 +43,9 @@ in patch versions.
   - **Rehearse** (in Present) runs the deterministic rehearsal planner: real
     per-slide dwell targets, an on-pace/behind indicator against the cumulative
     budget, and role-specific delivery coaching with timed beats.
+  - **Persistence** — your edits survive switching decks and a full reload;
+    new / rename / delete decks and the Inspector/Workspace settings persist
+    (Studio-scoped `lattice-studio-*` localStorage).
 - **`--present`: PDFs that open straight into full-screen presentation mode.**
   A new opt-in CLI flag marks the exported PDF's document catalog so Adobe
   Acrobat/Reader and most desktop viewers open it directly in full-screen /

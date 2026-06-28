@@ -1,6 +1,6 @@
 import {
 	AlertTriangle, ChevronDown, ChevronLeft, Eye, FileText, Layers, LayoutGrid,
-	Palette, PanelLeft, PanelRight,PencilRuler, Play, Plus, Search, Settings2, Share2, Sparkles, Volume2, Wand2, X,
+	Palette, PanelLeft, PanelRight, PencilLine, PencilRuler, Play, Plus, Search, Settings2, Share2, Sparkles, Trash2, Volume2, Wand2, X,
 } from 'lucide-react';
 import * as React from 'react';
 import DeckPreview from '@/components/DeckPreview';
@@ -20,6 +20,7 @@ import { IntentTag } from './IntentTag';
 import { type PresentLens, presentationSet, scoreDeck, slideClass, splitSlides, unknownComponents, usedComponents } from './lint';
 import { PresentOverlay } from './PresentOverlay';
 import { ShareSheet } from './ShareSheet';
+import { createDeck, deleteDeck as deleteDeckStore, loadDeckList, loadSettings, loadSource, metaFor, renameDeck as renameDeckStore, saveSettings, saveSource } from './studio-store';
 import { useBreakpoint } from './use-breakpoint';
 import { WorkspaceSheet } from './WorkspaceSheet';
 
@@ -40,8 +41,14 @@ const PALETTE_DOTS: Record<string, string> = {
 type Props = { options: SingleSlideOptions };
 
 export default function StudioShell({ options }: Props) {
-	const [deck, setDeck] = React.useState<StudioDeck>(DECKS[0]);
-	const [source, setSource] = React.useState(() => deckSource(DECKS[0]));
+	// Persisted deck list (seeded from the built-ins), the active deck, and its
+	// source — restored from localStorage so edits survive a switch AND a reload.
+	const [decks, setDecks] = React.useState<StudioDeck[]>(() => loadDeckList());
+	const [deck, setDeck] = React.useState<StudioDeck>(() => loadDeckList()[0] ?? DECKS[0]);
+	const [source, setSource] = React.useState(() => {
+		const first = loadDeckList()[0] ?? DECKS[0];
+		return loadSource(first.id) ?? deckSource(first);
+	});
 	const [activeSlide, setActiveSlide] = React.useState(0); // 0-based; index into the VIEWED set
 	const [composeLens, setComposeLens] = React.useState<PresentLens>('full'); // reader lens for the preview
 	const [architectOpen, setArchitectOpen] = React.useState(true);
@@ -61,11 +68,12 @@ export default function StudioShell({ options }: Props) {
 		}
 	});
 	const [mobilePane, setMobilePane] = React.useState<'edit' | 'preview'>('preview');
-	// Inspector "Authoring" / "Look" toggles — `validation` has real teeth (gates
-	// the editor's inline linter), the others hold state for the prototype.
-	const [validation, setValidation] = React.useState(true);
-	const [pageNumbers, setPageNumbers] = React.useState(true);
-	const [headerFooter, setHeaderFooter] = React.useState(false);
+	// Inspector "Authoring" / "Look" toggles — restored from + persisted to the
+	// Studio settings store. `validation` gates the editor's inline linter; the
+	// page-number / header-footer flags write front-matter (see applyDeckFlags).
+	const [validation, setValidation] = React.useState(() => loadSettings().validation);
+	const [pageNumbers, setPageNumbers] = React.useState(() => loadSettings().pageNumbers);
+	const [headerFooter, setHeaderFooter] = React.useState(() => loadSettings().headerFooter);
 	const editorRef = React.useRef<EditorHandle>(null);
 
 	const bp = useBreakpoint();
@@ -91,11 +99,63 @@ export default function StudioShell({ options }: Props) {
 		else { setArchitectOpen(true); setInspectorOpen(false); }
 	}, [compact]);
 
+	// Persist the active deck's source (debounced) so edits survive a switch AND a
+	// reload. Skipped on the very first render (nothing changed yet).
+	const firstSave = React.useRef(true);
+	React.useEffect(() => {
+		if (firstSave.current) {
+			firstSave.current = false;
+			return;
+		}
+		const id = setTimeout(() => saveSource(deck.id, source), 400);
+		return () => clearTimeout(id);
+	}, [source, deck.id]);
+
+	// Persist the Inspector/Workspace settings as they change.
+	React.useEffect(() => {
+		saveSettings({ validation, pageNumbers, headerFooter });
+	}, [validation, pageNumbers, headerFooter]);
+
 	function loadDeck(d: StudioDeck) {
+		// Flush the current deck's edits before leaving it (the debounce may not
+		// have fired), then restore the target deck's saved source.
+		saveSource(deck.id, source);
+		setDeck(d);
+		setSource(loadSource(d.id) ?? deckSource(d));
+		setActiveSlide(0);
+		setView('compose');
+	}
+	// New / rename / delete — all persisted via the store, then reflected in the
+	// live deck list and switcher.
+	function newDeck() {
+		saveSource(deck.id, source);
+		const d = createDeck();
+		setDecks(loadDeckList());
 		setDeck(d);
 		setSource(deckSource(d));
 		setActiveSlide(0);
 		setView('compose');
+		notify('New deck created.');
+	}
+	function renameActiveDeck(title: string) {
+		const t = title.trim();
+		if (!t || t === deck.title) return;
+		renameDeckStore(deck.id, t);
+		setDeck((cur) => ({ ...cur, title: t }));
+		setDecks(loadDeckList());
+		notify(`Renamed to “${t}”.`);
+	}
+	function removeDeck(id: string) {
+		deleteDeckStore(id);
+		const list = loadDeckList();
+		setDecks(list);
+		if (id === deck.id) {
+			const next = list[0] ?? DECKS[0];
+			setDeck(next);
+			setSource(loadSource(next.id) ?? deckSource(next));
+			setActiveSlide(0);
+		}
+		notify('Deck deleted.');
 	}
 	function applyPalette(name: string) {
 		setPalette(name);
@@ -287,7 +347,7 @@ export default function StudioShell({ options }: Props) {
 						<DropdownMenuItem onSelect={() => setView('compose')}><Layers className="size-4" /><div><div className="font-semibold text-[var(--text-heading)]">Decks</div><div className="text-[11px] text-muted-foreground">Your saved decks</div></div></DropdownMenuItem>
 						<DropdownMenuItem onSelect={() => setView('fabricate')}><PencilRuler className="size-4" /><div><div className="font-semibold text-[var(--text-heading)]">Fabricate</div><div className="text-[11px] text-muted-foreground">Theme &amp; Layout Studio</div></div></DropdownMenuItem>
 						<DropdownMenuSeparator />
-						<DropdownMenuItem onSelect={() => loadDeck({ ...DECKS[0], id: 'new', title: 'Untitled deck', meta: '1 slide', slides: ['<!-- _class: title -->\n\n# Untitled deck\n\n`Draft`\n\nStart typing to build your deck.'] })}><Plus className="size-4" />New deck</DropdownMenuItem>
+						<DropdownMenuItem onSelect={() => newDeck()}><Plus className="size-4" />New deck</DropdownMenuItem>
 					</DropdownMenuContent>
 				</DropdownMenu>
 
@@ -298,19 +358,27 @@ export default function StudioShell({ options }: Props) {
 						<button type="button" className="flex min-w-0 max-w-[150px] items-center gap-2 rounded-md border border-border bg-background px-2 py-1.5 text-left hover:border-[color-mix(in_srgb,var(--accent)_40%,var(--border))] sm:max-w-[260px] sm:px-2.5">
 							<span className="size-2 shrink-0 rounded-full bg-primary" />
 							<span className="truncate text-sm font-semibold text-[var(--text-heading)]">{deck.title}</span>
-							<span className="hidden font-mono text-[11px] text-muted-foreground sm:inline">{deck.meta}</span>
+							<span className="hidden font-mono text-[11px] text-muted-foreground sm:inline">{metaFor(source)}</span>
 							<ChevronDown className="size-4 shrink-0 text-muted-foreground" />
 						</button>
 					</DropdownMenuTrigger>
-					<DropdownMenuContent align="start" className="w-64">
+					<DropdownMenuContent align="start" className="w-72">
 						<DropdownMenuLabel className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">Switch deck</DropdownMenuLabel>
-						{DECKS.map((d) => (
-							<DropdownMenuItem key={d.id} onSelect={() => loadDeck(d)}>
-								<span className="size-2 rounded-full bg-primary" />
-								<span className="font-semibold text-[var(--text-heading)]">{d.title}</span>
-								<span className="ml-auto font-mono text-[11px] text-muted-foreground">{d.meta}</span>
+						{decks.map((d) => (
+							<DropdownMenuItem key={d.id} onSelect={() => loadDeck(d)} className="group">
+								<span className={cn('size-2 rounded-full', d.id === deck.id ? 'bg-[var(--accent)]' : 'bg-primary')} />
+								<span className="truncate font-semibold text-[var(--text-heading)]">{d.title}</span>
+								<span className="ml-auto flex items-center gap-1.5">
+									<span className="font-mono text-[11px] text-muted-foreground group-hover:hidden">{d.meta}</span>
+									{decks.length > 1 && (
+										<button type="button" aria-label={`Delete ${d.title}`} className="hidden rounded p-0.5 text-muted-foreground hover:text-[var(--fail,#b3261e)] group-hover:block" onClick={(e) => { e.preventDefault(); e.stopPropagation(); removeDeck(d.id); }}><Trash2 className="size-3.5" /></button>
+									)}
+								</span>
 							</DropdownMenuItem>
 						))}
+						<DropdownMenuSeparator />
+						<DropdownMenuItem onSelect={() => { const t = window.prompt('Rename deck', deck.title); if (t != null) renameActiveDeck(t); }}><PencilLine className="size-4" />Rename “{deck.title}”</DropdownMenuItem>
+						<DropdownMenuItem onSelect={() => newDeck()}><Plus className="size-4" />New deck</DropdownMenuItem>
 					</DropdownMenuContent>
 				</DropdownMenu>
 
@@ -437,7 +505,7 @@ export default function StudioShell({ options }: Props) {
 			<CommandPalette
 				open={cmdOpen}
 				onOpenChange={setCmdOpen}
-				decks={DECKS}
+				decks={decks}
 				palettes={PALETTES}
 				onPickDeck={loadDeck}
 				onPalette={applyPalette}

@@ -38,6 +38,22 @@ describe('Studio — every top-bar control responds', () => {
 		expect(screen.getByRole('button', { name: /Untitled deck/ })).toBeInTheDocument();
 	});
 
+	it('edits survive a deck switch (persistence)', async () => {
+		const user = setup();
+		// Edit deck 1 — paste a unique marker into the source.
+		const editor = screen.getByLabelText('Deck source');
+		await user.click(editor);
+		await user.paste('<!-- _class: title -->\n\n# UNIQUE-MARKER-XYZ\n\n');
+		// Switch to the second built-in deck, then back to the first.
+		await user.click(screen.getByRole('button', { name: /Q3 Board Review/ }));
+		await user.click(await screen.findByText('FY26 Product Strategy'));
+		expect(screen.queryByText(/UNIQUE-MARKER-XYZ/)).not.toBeInTheDocument();
+		await user.click(screen.getByRole('button', { name: /FY26 Product Strategy/ }));
+		await user.click(await screen.findByText('Q3 Board Review'));
+		// The edit is restored — not reset to the canonical source.
+		expect(await screen.findByText(/UNIQUE-MARKER-XYZ/)).toBeInTheDocument();
+	});
+
 	it('⌘K runs a command (Fabricate) and a theme', async () => {
 		const user = setup();
 		await user.keyboard('{Meta>}k{/Meta}');

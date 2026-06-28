@@ -1,9 +1,26 @@
 import '@testing-library/jest-dom/vitest';
+import { afterEach } from 'vitest';
+
+// The Studio persists decks + settings to localStorage; without a reset between
+// tests, created/renamed decks bleed across cases and break "starts on deck 0"
+// assumptions. Clear it after every test (inert outside jsdom).
+afterEach(() => {
+	try {
+		localStorage.clear();
+	} catch {
+		/* no storage in this env */
+	}
+});
 
 // Radix UI primitives (Select, DropdownMenu, …) call these DOM APIs that jsdom
 // does not implement; without them a trigger click never opens the content in
 // tests. These polyfills are test-only and inert in the browser.
 if (typeof window !== 'undefined') {
+	// jsdom does not implement window.prompt (used by the deck rename flow); a
+	// no-op stub keeps tests that brush the rename item from throwing.
+	if (!window.prompt || window.prompt.toString().includes('not implemented')) {
+		window.prompt = () => null;
+	}
 	if (!Element.prototype.hasPointerCapture) {
 		Element.prototype.hasPointerCapture = () => false;
 	}
