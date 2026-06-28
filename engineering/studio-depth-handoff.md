@@ -102,11 +102,18 @@ Depth slices since the gap audit:
 Each should: reuse the existing core, be visually verified, carry tests, and be
 its own commit. Rough order by value.
 
-1. **Present: dual-screen presenter window.** ABSENT (the "Presenter screen"
-   button still toasts in `PresentOverlay.tsx`). Reuse `drawing-board-present.js`
-   (`window.open` presenter w/ current+next slide, elapsed timer + reset,
-   speaker-notes pane — notes now exist via `slide-notes.ts`). Largest remaining
-   item; needs a synced second window (postMessage or shared render).
+1. **Present: dual-screen presenter window.** **DONE** (branch
+   `claude/studio-depth-presenter-window`): extracted a shared kernel
+   `presenter-window.js` (buildStageDoc + buildPresenterDoc + the window.open /
+   postMessage controller) from `drawing-board-present.js`; the Drawing Board now
+   drives the kernel (no behavior change), and the Studio's "Presenter screen"
+   button opens the synced second window via `studio-presenter.ts` (full-deck
+   render → stage doc; current+next+notes+timer). **Gotcha fixed:** the stage
+   doc's runtime `<script src>` must be ABSOLUTE — in the second window the
+   srcdoc iframe's base is `about:blank`, so a root-relative URL stalls the
+   inline reveal/fit scripts (slides parse but stay hidden). Headless note: these
+   scaled stage iframes don't paint in puppeteer screenshots (the shipped DB
+   Present shows the same), so the slide paint is DOM-verified, not pixel-shot.
 2. **Fabricate: real Component/Layout Studio.** The "Layout" tab is a density
    radio only. Reuse `component-studio.js` + `layout-core.generated.js` (manifest
    inspect, CSS/skeleton, gate findings).

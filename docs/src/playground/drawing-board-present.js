@@ -32,7 +32,7 @@ import { createChartInteract } from './drawing-board-chart-interact.js';
 // turns the rendered <section> list into per-slide metas with a `role` ('section'
 // on a divider) + a title — the basis for the per-section progress spine.
 import { metasFromSections } from './drawing-board-rehearsal.js';
-import { slideBox } from './frame-css.js';
+import { buildStageDoc, createPresenterController } from './presenter-window.js';
 
 const { notesFromHtml } = notesCore;
 
@@ -61,8 +61,6 @@ export function createPresent({ host, getSource, runtimeUrl, themeBase }) {
   let css = '';
   let bg = '#15110d';
   let hideTimer = null;
-  let presenterWin = null; // the dual-screen presenter window handle (held, postMessage-synced)
-  let presenterReady = false;
 
   // ── UI handles ──────────────────────────────────────────────────────────────
   let frame; // the single-slide stage iframe
@@ -117,65 +115,42 @@ export function createPresent({ host, getSource, runtimeUrl, themeBase }) {
     bg = mode === 'dark' ? '#0c0c0c' : '#15110d';
   }
 
-  // The stage iframe document: ONE slide centred + uniformly scaled to fit, the
-  // slide box pinned through frame-css so container-query layouts resolve against
-  // the real `@size` (preview parity). A no-zoom viewport + touch-action kill the
-  // iOS double-tap jolt. `show(n)` is driven from the parent via postMessage.
-  // Mirrors drawing-board-practice.js's frameDoc; Present drops the rehearsal
-  // chrome and the card shadow for an edge-to-edge presentation feel.
+  // The single-slide stage doc — now the shared kernel (presenter-window.js's
+  // buildStageDoc), the SAME builder the dual-screen presenter feeds its current/
+  // next iframes: ONE slide centred + uniformly scaled, the slide box pinned
+  // through frame-css for `@size` parity, `show(n)` driven by postMessage. The
+  // Present-specific bits are just the inputs — this deck's geometry/css/bg + the
+  // engine's KaTeX/Mermaid/a11y assets.
   function frameDoc(allHtml) {
-    const sw = geom.width;
-    const sh = geom.height;
-    // ISOLATION (the real bug): stage layout must NOT share the cascade with the
-    // engine out.css. Positioning lives on OUR #latt-stage/#latt-fit — ID selectors
-    // (1,0,0) out.css's element/:where/class rules can't clobber — and #latt-stage
-    // wraps .lattice from OUTSIDE, so the slide's own transform:scale can't trap our
-    // fixed positioning (an ancestor transform re-bases position:fixed). #latt-stage
-    // fills 100dvh (tracks the iOS toolbars → visual center, not behind the bar) and
-    // flex-centers #latt-fit, which fit() sizes to the SCALED slide box; the section
-    // scales from top-left to fill it.
-    const FIT =
-      '(function(){' +
-      'var stage=document.getElementById("latt-stage"),fitEl=document.getElementById("latt-fit");' +
-      'function secs(){var m=document.querySelector(".lattice");return m?m.querySelectorAll(":scope>section"):[]}' +
-      'var cur=0;' +
-      'function fit(){var s=secs();if(!s.length||!stage||!fitEl)return;' +
-      'var W=stage.clientWidth||window.innerWidth,H=stage.clientHeight||window.innerHeight;' +
-      'var pad=Math.max(0,Math.min(W,H)*0.012);' +
-      'var sc=Math.min((W-pad*2)/' + sw + ',(H-pad*2)/' + sh + ');if(!(sc>0))sc=1;' +
-      'fitEl.style.width=(sc*' + sw + ')+"px";fitEl.style.height=(sc*' + sh + ')+"px";' +
-      // Show/hide WITHOUT forcing display:block — that clobbers the section's
-      // CSS display:flex (which title/closing/divider use to vertically center
-      // their content), pushing content to the top. "" reverts to the stylesheet.
-      'for(var i=0;i<s.length;i++){var on=i===cur;s[i].style.display=on?"":"none";' +
-      'if(on){s[i].style.transformOrigin="top left";s[i].style.transform="scale("+sc+")"}}}' +
-      'function show(n){cur=n|0;fit()}' +
-      'window.addEventListener("message",function(e){if(e.data&&e.data.pv!=null)show(e.data.pv)});' +
-      'window.addEventListener("resize",fit);window.addEventListener("orientationchange",fit);' +
-      'if(window.visualViewport){try{window.visualViewport.addEventListener("resize",fit)}catch(e){}}' +
-      'if(typeof ResizeObserver!=="undefined"){try{new ResizeObserver(fit).observe(stage)}catch(e){}}' +
-      '[60,300,1200].forEach(function(t){setTimeout(fit,t)});show(0);' +
-      '})();';
-    return (
-      '<!doctype html><html><head><meta charset="utf-8">' +
-      '<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">' +
-      '<link rel="stylesheet" href="' + KATEX_URL + '">' +
-      '<style>html,body{margin:0;padding:0;height:100%;background:' + bg + ';overflow:hidden;touch-action:manipulation;-webkit-text-size-adjust:100%;}' +
-      '#latt-stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden;visibility:hidden;}' +
-      '#latt-fit{overflow:hidden;}' +
-      '#latt-fit .lattice{margin:0;padding:0;}' +
-      '#latt-fit .lattice>section{transform-origin:top left;}' +
-      slideBox(sw, sh) +
-      css + '</style></head><body>' +
-      A11Y_DEFS + '<div id="latt-stage"><div id="latt-fit">' + allHtml + '</div></div>' +
-      '<scr' + 'ipt src="' + MERMAID_URL + '"></scr' + 'ipt>' +
-      '<scr' + 'ipt src="' + runtimeUrl + '"></scr' + 'ipt>' +
-      '<scr' + 'ipt>requestAnimationFrame(function(){var st=document.getElementById("latt-stage");if(st)st.style.visibility="visible"});</scr' + 'ipt>' +
-      '<scr' + 'ipt>' + FIT + '</scr' + 'ipt></body></html>'
-    );
+    return buildStageDoc({
+      html: allHtml,
+      width: geom.width,
+      height: geom.height,
+      bg,
+      css,
+      runtimeUrl,
+      katexUrl: KATEX_URL,
+      mermaidUrl: MERMAID_URL,
+      a11yDefs: A11Y_DEFS,
+    });
   }
 
   function count() { return sections.length; }
+
+  // The dual-screen presenter (reveal.js speaker-view pattern, file-safe) — the
+  // shared kernel manages the window.open + postMessage handshake; we feed it this
+  // deck's stage doc, live position + note, and relay its navigation into go().
+  const presenter = createPresenterController({
+    buildDoc: () => frameDoc(fullHtml),
+    getState: () => ({ index: idx, total: count(), note: notes[idx] || '' }),
+    onGo: (delta) => go(idx + delta),
+    onToggle: (on) => {
+      if (!elPresenterBtn) return;
+      elPresenterBtn.classList.toggle('is-on', on);
+      elPresenterBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+      elPresenterBtn.title = on ? 'Close presenter view' : 'Open presenter view (second screen)';
+    },
+  });
 
   // A section opens at slide 0 and at every divider (role 'section'); its name is
   // the divider's title. One spine segment per section, width ∝ its slide count —
@@ -202,7 +177,7 @@ export function createPresent({ host, getSource, runtimeUrl, themeBase }) {
     idx = Math.max(0, Math.min(count() - 1, n));
     if (frame?.contentWindow) frame.contentWindow.postMessage({ pv: idx }, '*');
     refreshChrome();
-    syncPresenter();
+    presenter.sync();
     showControls();
     if (chartInteract) chartInteract.onSlide(idx);
   }
@@ -302,156 +277,6 @@ export function createPresent({ host, getSource, runtimeUrl, themeBase }) {
     }
   }
 
-  // ── Dual-screen presenter (reveal.js speaker-view pattern, file-safe) ─────────
-  // window.open() spawns a same-origin presenter window we write into; the two
-  // sync over postMessage on the HELD handle (not localStorage/BroadcastChannel —
-  // those are partitioned under file://, and we want one code path the export
-  // player can inherit). The presenter view shows the current + next slide
-  // (same frameDoc, preview-parity) with speaker notes and an elapsed timer; its
-  // controls postMessage back here. Window Management API (getScreenDetails)
-  // auto-places it on a second screen when granted — enhancement only.
-  function presenterDoc() {
-    // A self-contained document. Slides arrive by postMessage after load (the
-    // notes/sections payloads can be large, so we don't inline them in the URL).
-    return [
-      '<!doctype html><html><head><meta charset="utf-8"><title>Presenter view</title>',
-      '<meta name="viewport" content="width=device-width,initial-scale=1">',
-      '<style>',
-      ':root{color-scheme:dark}',
-      '*{box-sizing:border-box}',
-      'html,body{margin:0;height:100%;background:#0b0b0e;color:#f4f4f6;',
-      'font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;overflow:hidden}',
-      '.pp{display:grid;grid-template-rows:auto 1fr;height:100%}',
-      '.pp-top{display:flex;align-items:center;gap:1rem;padding:.7rem 1rem;border-bottom:1px solid rgba(255,255,255,.12)}',
-      '.pp-clock{font-size:1.6rem;font-weight:600;font-variant-numeric:tabular-nums}',
-      '.pp-count{margin-left:auto;color:#b9b9c2;font-variant-numeric:tabular-nums}',
-      '.pp-btn{font:inherit;color:#f4f4f6;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);',
-      'border-radius:8px;padding:.4rem .8rem;cursor:pointer}',
-      '.pp-btn:hover{background:rgba(255,255,255,.16)}',
-      '.pp-reset{margin-left:.5rem}',
-      '.pp-body{display:grid;grid-template-columns:1.4fr 1fr;gap:1rem;padding:1rem;min-height:0}',
-      '.pp-stage{display:grid;grid-template-rows:auto 1fr;gap:.5rem;min-height:0}',
-      '.pp-side{display:grid;grid-template-rows:auto 1fr auto auto;gap:.5rem;min-height:0}',
-      '.pp-label{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:#8a8a96}',
-      '.pp-screen{position:relative;background:#000;border-radius:10px;overflow:hidden;min-height:0;aspect-ratio:16/9}',
-      '.pp-screen iframe{position:absolute;inset:0;width:100%;height:100%;border:0}',
-      '.pp-next .pp-screen{aspect-ratio:16/9}',
-      '.pp-notes{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;',
-      'padding:.85rem 1rem;overflow:auto;line-height:1.55;font-size:1.05rem}',
-      '.pp-notes p{margin:0 0 .7rem}.pp-notes .empty{color:#8a8a96;font-style:italic}',
-      '.pp-nav{display:flex;gap:.5rem}.pp-nav .pp-btn{flex:1;text-align:center}',
-      '</style></head><body>',
-      '<div class="pp">',
-      '<div class="pp-top"><span class="pp-clock" id="clock">0:00</span>',
-      '<button class="pp-btn pp-reset" id="reset">Reset timer</button>',
-      '<span class="pp-count" id="count">– / –</span></div>',
-      '<div class="pp-body">',
-      '<div class="pp-stage"><span class="pp-label">Current</span>',
-      '<div class="pp-screen"><iframe id="cur" title="Current slide"></iframe></div></div>',
-      '<div class="pp-side"><span class="pp-label">Next</span>',
-      '<div class="pp-next"><div class="pp-screen"><iframe id="next" title="Next slide"></iframe></div></div>',
-      '<span class="pp-label">Speaker notes</span>',
-      '<div class="pp-notes" id="notes"></div>',
-      '<div class="pp-nav"><button class="pp-btn" id="prev">‹ Prev</button>',
-      '<button class="pp-btn" id="next-btn">Next ›</button></div></div>',
-      '</div></div>',
-      '<script>(function(){',
-      'var P=window.opener;var cur=document.getElementById("cur"),nxt=document.getElementById("next");',
-      'var clock=document.getElementById("clock"),count=document.getElementById("count"),notes=document.getElementById("notes");',
-      'var doc=null,total=0,last=0,started=Date.now(),timer=null;',
-      'function send(t,v){try{P&&P.postMessage({pp:t,v:v},"*")}catch(e){}}',
-      'function tick(){clock.textContent=fmt((Date.now()-started)/1000)}',
-      'function fmt(s){s=Math.max(0,Math.round(s));var h=Math.floor(s/3600),m=Math.floor((s%3600)/60),x=s%60;',
-      'return (h?h+":"+String(m).padStart(2,"0"):m)+":"+String(x).padStart(2,"0")}',
-      // Re-point both previews at the live index. Called on every index update AND
-      // on each iframe load — the load re-apply is what fixes the race where the
-      // first {pv} message arrives before the srcdoc iframe is listening.
-      'function applyFrames(){try{cur.contentWindow.postMessage({pv:last},"*")}catch(x){}',
-      'try{nxt.contentWindow.postMessage({pv:Math.min(Math.max(total-1,0),last+1)},"*")}catch(x){}}',
-      'cur.addEventListener("load",applyFrames);nxt.addEventListener("load",applyFrames);',
-      'document.getElementById("prev").onclick=function(){send("go",-1)};',
-      'document.getElementById("next-btn").onclick=function(){send("go",1)};',
-      'document.getElementById("reset").onclick=function(){started=Date.now();tick()};',
-      'window.addEventListener("keydown",function(e){',
-      'if(e.key==="ArrowRight"||e.key===" "||e.key==="PageDown"){e.preventDefault();send("go",1)}',
-      'else if(e.key==="ArrowLeft"||e.key==="PageUp"){e.preventDefault();send("go",-1)}});',
-      'window.addEventListener("message",function(e){var d=e.data||{};',
-      'if(d.ppInit){doc=d.doc;total=d.total;cur.srcdoc=doc;nxt.srcdoc=doc;}',
-      'if(d.ppIndex!=null){last=d.ppIndex;',
-      'count.textContent=(d.ppIndex+1)+" / "+total;',
-      'applyFrames();',
-      'notes.innerHTML="";var ns=d.note?String(d.note).split(/\\n{2,}/):[];',
-      'if(ns.length){ns.forEach(function(p){var el=document.createElement("p");el.textContent=p.trim();notes.appendChild(el)})}',
-      'else{var el=document.createElement("p");el.className="empty";el.textContent="No speaker notes on this slide.";notes.appendChild(el)}',
-      '}});',
-      'window.addEventListener("unload",function(){send("closed")});',
-      'send("ready");timer=setInterval(tick,250);tick();',
-      '})();</scr' + 'ipt></body></html>',
-    ].join('');
-  }
-
-  async function autoPlacePresenter(win) {
-    // Window Management API — auto-place the presenter on a second screen when the
-    // permission is granted. Enhancement only; a no-op (and manual drag) otherwise.
-    try {
-      if (!('getScreenDetails' in window)) return;
-      const details = await window.getScreenDetails();
-      const ext = details.screens.find((s) => !s.isInternal) || details.screens.find((s) => s !== details.currentScreen);
-      if (ext) win.moveTo(ext.availLeft, ext.availTop);
-    } catch { /* permission denied / unsupported */ }
-  }
-
-  function syncPresenter() {
-    if (!presenterWin || presenterWin.closed || !presenterReady) return;
-    try { presenterWin.postMessage({ ppIndex: idx, note: notes[idx] || '' }, '*'); } catch { /* gone */ }
-  }
-  function onPresenterMsg(e) {
-    // Only ever act on messages from OUR presenter window. `e.source` must be the
-    // exact window handle we opened — that reference is unforgeable, so a foreign
-    // frame/extension can't match it. The `!presenterWin` gate is essential: when
-    // no presenter is open, a stray `message` carrying a `pp` field must NOT fall
-    // through (it could otherwise drive navigation or flip a flag against a null
-    // window). We open a same-origin about:blank popup, so we keep targetOrigin
-    // permissive on sends (we control the window; the payload is already-shared
-    // slide HTML) and lean on the handle check for trust.
-    if (!presenterWin || e.source !== presenterWin) return;
-    const d = e.data || {};
-    if (!d || typeof d.pp !== 'string') return;
-    if (d.pp === 'ready') {
-      try { presenterWin.postMessage({ ppInit: true, doc: frameDoc(fullHtml), total: count() }, '*'); presenterReady = true; } catch {}
-      syncPresenter();
-    } else if (d.pp === 'go') {
-      go(idx + (d.v || 0));
-    } else if (d.pp === 'closed') {
-      teardownPresenter();
-    }
-  }
-  function teardownPresenter() {
-    presenterReady = false;
-    presenterWin = null;
-    if (elPresenterBtn) {
-      elPresenterBtn.classList.remove('is-on');
-      elPresenterBtn.setAttribute('aria-pressed', 'false');
-      elPresenterBtn.title = 'Open presenter view (second screen)';
-    }
-  }
-  function togglePresenter() {
-    if (presenterWin && !presenterWin.closed) { try { presenterWin.close(); } catch {} teardownPresenter(); return; }
-    // Must open from the user gesture (popup-blocker-safe).
-    const win = window.open('', 'lattice-presenter', 'width=1100,height=720');
-    if (!win) { return; } // blocked — leave the toggle off
-    presenterWin = win;
-    presenterReady = false;
-    win.document.open();
-    win.document.write(presenterDoc());
-    win.document.close();
-    autoPlacePresenter(win);
-    if (elPresenterBtn) {
-      elPresenterBtn.classList.add('is-on');
-      elPresenterBtn.setAttribute('aria-pressed', 'true');
-      elPresenterBtn.title = 'Close presenter view';
-    }
-  }
 
   // ── Gestures: swipe to turn, flat tap to reveal/hide controls ────────────────
   function wireGestures(target) {
@@ -489,7 +314,7 @@ export function createPresent({ host, getSource, runtimeUrl, themeBase }) {
     else if (e.key === 'End') { e.preventDefault(); go(count() - 1); }
     else if (e.key === 'f' || e.key === 'F') { e.preventDefault(); toggleFs(); }
     else if (e.key === 'n' || e.key === 'N') { e.preventDefault(); toggleNotes(); }
-    else if (e.key === 's' || e.key === 'S') { e.preventDefault(); togglePresenter(); }
+    else if (e.key === 's' || e.key === 'S') { e.preventDefault(); presenter.toggle(); }
     else return;
     showControls();
   }
@@ -555,7 +380,7 @@ export function createPresent({ host, getSource, runtimeUrl, themeBase }) {
       elPresenterBtn = el('button', 'db-pp-tool'); elPresenterBtn.type = 'button';
       elPresenterBtn.innerHTML = PRESENTER_ICON; elPresenterBtn.title = 'Open presenter view (second screen)';
       elPresenterBtn.setAttribute('aria-label', 'Open presenter view'); elPresenterBtn.setAttribute('aria-pressed', 'false');
-      elPresenterBtn.addEventListener('click', togglePresenter);
+      elPresenterBtn.addEventListener('click', () => presenter.toggle());
     }
     elFs = fsSupported() ? el('button', 'db-pp-tool') : null;
     if (elFs) {
@@ -615,11 +440,9 @@ export function createPresent({ host, getSource, runtimeUrl, themeBase }) {
     document.removeEventListener('keydown', onKey);
     document.removeEventListener('fullscreenchange', onFsChange);
     document.removeEventListener('webkitfullscreenchange', onFsChange);
-    window.removeEventListener('message', onPresenterMsg);
     document.addEventListener('keydown', onKey);
     document.addEventListener('fullscreenchange', onFsChange);
     document.addEventListener('webkitfullscreenchange', onFsChange);
-    window.addEventListener('message', onPresenterMsg);
 
     // Go full-screen NOW, synchronously in the click task — full-screen needs a
     // live user activation, and `prepare()` below is async (theme fetches + the
@@ -649,14 +472,12 @@ export function createPresent({ host, getSource, runtimeUrl, themeBase }) {
 
   function close() {
     if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; }
-    if (presenterWin && !presenterWin.closed) { try { presenterWin.close(); } catch {} }
-    teardownPresenter();
+    presenter.close();
     exitFs();
     if (chartInteract) { chartInteract.destroy(); chartInteract = null; }
     document.removeEventListener('keydown', onKey);
     document.removeEventListener('fullscreenchange', onFsChange);
     document.removeEventListener('webkitfullscreenchange', onFsChange);
-    window.removeEventListener('message', onPresenterMsg);
     frame = layer = runEl = elCounter = elSpine = null;
     elEdgePrev = elEdgeNext = elFs = elNotesBtn = elPresenterBtn = elSheet = elSheetBody = null;
     host.hidden = true;
