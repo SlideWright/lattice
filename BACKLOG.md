@@ -7,11 +7,11 @@
 
 The live, claimable work queue — a read-only mirror of [open issues](https://github.com/SlideWright/lattice/issues),
 grouped by board column. Design lives in `engineering/decisions/`; this tracks
-only *status*. **42 open** items.
+only *status*. **41 open** items.
 
-> ⚠️ **4 cards need triage** (missing `area:`/`type:`/`priority:`): [#554](https://github.com/SlideWright/lattice/issues/554), [#569](https://github.com/SlideWright/lattice/issues/569), [#581](https://github.com/SlideWright/lattice/issues/581), [#582](https://github.com/SlideWright/lattice/issues/582).
+> ⚠️ **3 cards need triage** (missing `area:`/`type:`/`priority:`): [#554](https://github.com/SlideWright/lattice/issues/554), [#581](https://github.com/SlideWright/lattice/issues/581), [#582](https://github.com/SlideWright/lattice/issues/582).
 
-## Backlog (38)
+## Backlog (37)
 
 - [#287](https://github.com/SlideWright/lattice/issues/287) refactor(engine): LPM Phase 1 — manifest `render` block + `transformSection` adapter; migrate the chart kernels — high · engine
 - [#506](https://github.com/SlideWright/lattice/issues/506) feat(runtime): runtime auto-split (Option B) via eventual consistency — high · engine
@@ -48,7 +48,6 @@ only *status*. **42 open** items.
 - [#478](https://github.com/SlideWright/lattice/issues/478) chart(state-chart): tighten `inline`/`horizontal` variant label spacing — low · chart
 - [#527](https://github.com/SlideWright/lattice/issues/527) explore: alignment as a universal modifier (vertical top/center for tables, lists, etc.) — low
 - [#554](https://github.com/SlideWright/lattice/issues/554) feat(forms): N-up split Frame — compose multiple components in a grid (generalize split-panel)
-- [#569](https://github.com/SlideWright/lattice/issues/569) galleries: per-component goldens are broadly stale (~840-slide drift from current render) — docs
 - [#581](https://github.com/SlideWright/lattice/issues/581) kpi: default layout overflows 4 rows under a two-line headline (masthead-lift capacity regression) — components
 - [#582](https://github.com/SlideWright/lattice/issues/582) galleries: add a non-flaky content-drift signal so goldens don't silently rot — infra
 
