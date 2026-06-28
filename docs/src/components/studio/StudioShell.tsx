@@ -1,6 +1,6 @@
 import {
 	AlertTriangle, ArrowLeftToLine, ArrowRightToLine, Check, ChevronDown, ChevronLeft,
-	Copy, Eye, FileText, History, Layers, LayoutGrid, ListChecks, Palette, PencilLine, PencilRuler, Play, Plus, Save, Search, Settings2, Share2, SlidersHorizontal, Sparkles, StickyNote, Trash2, Upload, Volume2, Wand2, X,
+	Copy, Eye, FileText, History, Layers, LayoutGrid, ListChecks, Moon, Palette, PencilLine, PencilRuler, Play, Plus, Save, Search, Settings2, Share2, SlidersHorizontal, Sparkles, StickyNote, Sun, Trash2, Upload, Volume2, Wand2, X,
 } from 'lucide-react';
 import * as React from 'react';
 import DeckPreview from '@/components/DeckPreview';
@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import type { SingleSlideOptions } from '@/lib/single-slide-render';
+import { toggleMode as toggleDocMode } from '@/lib/site-chrome';
 import { cn } from '@/lib/utils';
 import { ArchitectChat, DiffCard } from './ArchitectChat';
 import { applyDeckEdit, type Finding, REFINE_ACTIONS, type RefineActionId, refineSelection, requestFindingFix, resumePendingAuth, runArchitect, useArchitectStatus } from './architect';
@@ -29,6 +30,7 @@ import { ShareSheet } from './ShareSheet';
 import { getNote, setNote } from './slide-notes';
 import { listFindings } from './studio-lint';
 import { type Checkpoint, createDeck, deleteDeck as deleteDeckStore, loadCheckpoints, loadDeckList, loadSettings, loadSource, metaFor, renameDeck as renameDeckStore, saveCheckpoint, saveSettings, saveSource, titleFromSource } from './studio-store';
+import { activePaletteLabel, BUILTIN_PALETTES, ThemeMenuItems } from './ThemePicker';
 import { deleteStudioTheme, listStudioThemes, type StudioTheme } from './theme-library';
 import { useBreakpoint } from './use-breakpoint';
 import { WorkspaceSheet } from './WorkspaceSheet';
@@ -76,11 +78,9 @@ function timeAgo(ts: number): string {
 	if (h < 24) return `${h}h ago`;
 	return `${Math.round(h / 24)}d ago`;
 }
-const PALETTES = ['indaco', 'cuoio', 'burgundy', 'laguna', 'crepuscolo', 'atelier', 'carbone', 'onyx'];
-const PALETTE_DOTS: Record<string, string> = {
-	indaco: '#006FA8', cuoio: '#7A5A10', burgundy: '#742532', laguna: '#006D77',
-	crepuscolo: '#5B3D8C', atelier: '#1A1A18', carbone: '#7DE38A', onyx: '#000000',
-};
+// Theme constants + the grouped picker live in ThemePicker.tsx (every shipped
+// theme, incl. the AA color-blind-safe set). BUILTIN_PALETTES = anything we can
+// drive through `data-palette`.
 
 // biome-ignore lint/suspicious/noExplicitAny: serialized lint vocabulary from the page.
 type Props = { options: SingleSlideOptions; components?: ComponentEntry[]; lintVocab?: any };
@@ -136,7 +136,7 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 				// rendering an unresolvable name. Checked AFTER the list resolves, so a
 				// valid saved slug is never reset mid-load.
 				const p = paletteRef.current;
-				if (!PALETTES.includes(p) && !list.some((t) => t.name === p)) applyPalette('indaco');
+				if (!BUILTIN_PALETTES.includes(p) && !list.some((t) => t.name === p)) applyPalette('indaco');
 			})
 			.catch(() => setSavedThemes([]));
 	}, []);
@@ -313,13 +313,20 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 		// fetch it by name). A saved library theme has no on-disk CSS, so it renders
 		// through `extraTheme` instead — we leave `data-palette` on a real palette to
 		// avoid a 404 theme fetch, and pass the saved CSS where it's consumed.
-		if (PALETTES.includes(name)) document.documentElement.setAttribute('data-palette', name);
+		if (BUILTIN_PALETTES.includes(name)) document.documentElement.setAttribute('data-palette', name);
 	}
 	// The active theme as a saved library entry (when the active palette names one),
 	// else undefined → a built-in palette. Drives the `extraTheme` everywhere a deck
 	// is rendered/exported so a saved theme is honored, not just previewed.
 	const activeTheme = React.useMemo(() => savedThemes.find((t) => t.name === palette), [savedThemes, palette]);
 	const extraTheme = activeTheme ? { name: activeTheme.name, css: activeTheme.css } : undefined;
+	// Saved (Fabricated) themes shaped for the grouped picker.
+	const savedMenu = React.useMemo(() => savedThemes.map((t) => ({ id: t.id, name: t.name, label: t.label, accent: t.essentials?.accent })), [savedThemes]);
+	const activePalette = React.useMemo(() => activePaletteLabel(palette, savedMenu), [palette, savedMenu]);
+	// Light/dark toggle — flips the shared `data-mode` (engine `light-dark()` resolves
+	// off it); the data-mode observer below pulls the new value into `mode` and the
+	// preview re-renders. Persisted via site-chrome so it survives a reload.
+	const toggleMode = React.useCallback(() => { toggleDocMode(); }, []);
 	function removeTheme(t: StudioTheme) {
 		deleteStudioTheme(t.id).then(() => {
 			refreshThemes();
@@ -698,27 +705,28 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 		<>
 			<InspGroup icon={<Palette className="size-3.5" />} label="Look">
 				<Field label="Theme">
-					<div className="flex flex-wrap gap-1.5">
-						{PALETTES.slice(0, 5).map((p) => (
-							<button type="button" key={p} onClick={() => applyPalette(p)} className={cn('size-[22px] rounded-[7px] border-2', palette === p ? 'border-[var(--text-heading)] ring-2 ring-[var(--accent)] ring-offset-2 ring-offset-background' : 'border-transparent')} style={{ background: PALETTE_DOTS[p] }} aria-label={p} />
-						))}
-					</div>
+					<DropdownMenu>
+						<DropdownMenuTrigger asChild>
+							<Control aria-label="Choose theme"><span className="flex min-w-0 items-center gap-2"><span className="size-3.5 shrink-0 rounded-full border border-[color-mix(in_srgb,var(--text-heading)_18%,transparent)]" style={{ background: activePalette.color }} /><span className="truncate">{activePalette.label}</span></span> <ChevronDown className="size-3.5" /></Control>
+						</DropdownMenuTrigger>
+						<DropdownMenuContent align="end" className="max-h-[60vh] w-52 overflow-y-auto">
+							<ThemeMenuItems palette={palette} onPick={applyPalette} saved={savedMenu} />
+						</DropdownMenuContent>
+					</DropdownMenu>
 					{savedThemes.length > 0 && (
-						<div className="mt-2.5 space-y-0.5">
-							<div className="mb-1 font-mono text-[10px] font-bold uppercase tracking-wider text-muted-foreground/80">Saved themes</div>
+						<div className="mt-2 space-y-0.5">
+							<div className="mb-1 font-mono text-[10px] font-bold uppercase tracking-wider text-muted-foreground/80">Manage saved</div>
 							{savedThemes.map((t) => (
 								<div key={t.id} className="group flex items-center gap-1.5 rounded-md px-1 py-1 hover:bg-[var(--accent-soft)]">
-									<button type="button" onClick={() => applyPalette(t.name)} className="flex min-w-0 flex-1 items-center gap-2 text-left">
-										<span className="size-3.5 shrink-0 rounded-full border border-border" style={{ background: t.essentials?.accent ?? 'var(--accent)' }} />
-										<span className="truncate text-[12.5px] font-semibold text-[var(--text-heading)]">{t.label}</span>
-										{palette === t.name && <span className="ml-auto text-[12px] text-[var(--accent)]">✓</span>}
-									</button>
-									<button type="button" onClick={() => removeTheme(t)} aria-label={`Delete ${t.label}`} className="shrink-0 rounded p-0.5 text-muted-foreground opacity-0 hover:text-[var(--text-heading)] group-hover:opacity-100"><Trash2 className="size-3.5" /></button>
+									<span className="size-3 shrink-0 rounded-full border border-border" style={{ background: t.essentials?.accent ?? 'var(--accent)' }} />
+									<span className="min-w-0 flex-1 truncate text-[12px] text-[var(--text-heading)]">{t.label}</span>
+									<button type="button" onClick={() => removeTheme(t)} aria-label={`Delete ${t.label}`} className="shrink-0 rounded p-0.5 text-muted-foreground opacity-0 hover:text-[var(--fail,#b3261e)] group-hover:opacity-100"><Trash2 className="size-3.5" /></button>
 								</div>
 							))}
 						</div>
 					)}
 				</Field>
+				<Field label="Mode"><Control onClick={toggleMode} aria-label={mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}>{mode === 'dark' ? 'Dark' : 'Light'} {mode === 'dark' ? <Sun className="size-3.5" /> : <Moon className="size-3.5" />}</Control></Field>
 				<Field label="Size">
 					<DropdownMenu>
 						<DropdownMenuTrigger asChild>
@@ -929,25 +937,11 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 					<DropdownMenuTrigger asChild>
 						<Button variant="ghost" size="icon-sm" aria-label="Theme"><Palette className="size-[18px]" /></Button>
 					</DropdownMenuTrigger>
-					<DropdownMenuContent align="end" className="w-44">
-						<DropdownMenuLabel className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">Studio theme</DropdownMenuLabel>
-						{PALETTES.map((p) => (
-							<DropdownMenuItem key={p} onSelect={() => applyPalette(p)}>
-								<span className="size-3.5 rounded-full" style={{ background: PALETTE_DOTS[p] }} />
-								<span className="capitalize">{p}</span>
-								{p === palette && <span className="ml-auto text-[var(--accent)]">✓</span>}
-							</DropdownMenuItem>
-						))}
-						{savedThemes.length > 0 && <DropdownMenuSeparator />}
-						{savedThemes.map((t) => (
-							<DropdownMenuItem key={t.id} onSelect={() => applyPalette(t.name)}>
-								<span className="size-3.5 rounded-full border border-border" style={{ background: t.essentials?.accent ?? 'var(--accent)' }} />
-								<span className="truncate">{t.label}</span>
-								{t.name === palette && <span className="ml-auto text-[var(--accent)]">✓</span>}
-							</DropdownMenuItem>
-						))}
+					<DropdownMenuContent align="end" className="max-h-[70vh] w-52 overflow-y-auto">
+						<ThemeMenuItems palette={palette} onPick={applyPalette} saved={savedMenu} />
 					</DropdownMenuContent>
 				</DropdownMenu>
+				<Button variant="ghost" size="icon-sm" aria-label={mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'} title={mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'} onClick={toggleMode}>{mode === 'dark' ? <Sun className="size-[18px]" /> : <Moon className="size-[18px]" />}</Button>
 
 				<Button variant="outline" size="sm" onClick={() => setPresentOpen(true)} className="gap-1.5 px-2 lg:px-3" title="Present"><Play className="size-4" /><span className="hidden lg:inline">Present</span></Button>
 				<Button size="sm" onClick={() => setShareOpen(true)} className="gap-1.5 px-2 lg:px-3" title="Share"><Share2 className="size-4" /><span className="hidden lg:inline">Share</span></Button>
@@ -1071,7 +1065,7 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 				open={cmdOpen}
 				onOpenChange={setCmdOpen}
 				decks={decks}
-				palettes={PALETTES}
+				palettes={BUILTIN_PALETTES}
 				onPickDeck={loadDeck}
 				onPalette={applyPalette}
 				onPresent={() => setPresentOpen(true)}

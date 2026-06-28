@@ -251,12 +251,30 @@ describe('Studio — Fabricate + Present dock respond', () => {
 });
 
 describe('Studio — Inspector controls respond', () => {
-	it('a theme swatch in the Inspector applies the palette', async () => {
+	it('the Inspector theme dropdown applies the palette', async () => {
 		const user = setup();
 		await user.click(screen.getByRole('button', { name: 'Toggle Deck inspector' }));
-		// The Look group exposes the first five palettes as swatches (aria-labelled).
-		await user.click(await screen.findByRole('button', { name: 'cuoio' }));
+		// The Look group's grouped theme dropdown (Curated / AA / More) applies a pick.
+		await user.click(await screen.findByRole('button', { name: 'Choose theme' }));
+		await user.click(await screen.findByRole('menuitem', { name: /Cuoio/ }));
 		expect(document.documentElement.getAttribute('data-palette')).toBe('cuoio');
+	});
+
+	it('the Inspector theme dropdown surfaces the AA color-blind-safe palettes', async () => {
+		const user = setup();
+		await user.click(screen.getByRole('button', { name: 'Toggle Deck inspector' }));
+		await user.click(await screen.findByRole('button', { name: 'Choose theme' }));
+		// An a11y/CVD palette is selectable (it was missing before).
+		await user.click(await screen.findByRole('menuitem', { name: /Deuteranopia/ }));
+		expect(document.documentElement.getAttribute('data-palette')).toBe('a11y-deuteranopia');
+	});
+
+	it('the top-bar control toggles light / dark mode', async () => {
+		const user = setup();
+		document.documentElement.setAttribute('data-mode', 'light');
+		// The top-bar mode toggle flips the document's data-mode (light-dark() resolves off it).
+		await user.click((await screen.findAllByRole('button', { name: 'Switch to dark mode' }))[0]);
+		expect(document.documentElement.getAttribute('data-mode')).toBe('dark');
 	});
 
 	it('authoring a speaker note writes it into the slide source', async () => {

@@ -101,12 +101,13 @@ describe('Studio — Fabricate Theme Studio depth', () => {
 		// name → a blank, unthemed render. (Regression guard for that exact bug.)
 		expect(arg.css).toMatch(/@theme\s+ocean\b/);
 
-		// Back to Compose, open the Inspector — the saved theme is now offered…
+		// Back to Compose, open the Inspector — the saved theme is offered in the
+		// grouped theme dropdown under "Your themes"…
 		await user.click(screen.getByRole('button', { name: 'Back to Compose' }));
 		await user.click(screen.getByRole('button', { name: 'Toggle Deck inspector' }));
-		const pick = await screen.findByRole('button', { name: 'Ocean' });
+		await user.click(await screen.findByRole('button', { name: 'Choose theme' }));
 		// …and selecting it threads the saved theme into the live deck preview.
-		await user.click(pick);
+		await user.click(await screen.findByRole('menuitem', { name: 'Ocean' }));
 		const preview = document.querySelector('[data-label="Live deck preview"]') as HTMLElement;
 		await waitFor(() => expect(preview.getAttribute('data-extra-theme')).toBe('ocean'));
 		expect(preview.getAttribute('data-palette-override')).toBe('ocean');
@@ -124,10 +125,12 @@ describe('Studio — Fabricate Theme Studio depth', () => {
 
 		await user.click(screen.getByRole('button', { name: 'Back to Compose' }));
 		await user.click(screen.getByRole('button', { name: 'Toggle Deck inspector' }));
-		await user.click(await screen.findByRole('button', { name: 'Ocean' }));
-		// Delete it → the picker drops the entry and the deck falls back to indaco.
-		await user.click(screen.getByRole('button', { name: 'Delete Ocean' }));
-		await waitFor(() => expect(screen.queryByRole('button', { name: 'Ocean' })).toBeNull());
+		// Select it via the grouped dropdown, then delete it from the "Manage saved" list.
+		await user.click(await screen.findByRole('button', { name: 'Choose theme' }));
+		await user.click(await screen.findByRole('menuitem', { name: 'Ocean' }));
+		await user.click(await screen.findByRole('button', { name: 'Delete Ocean' }));
+		// The entry is dropped and the deck falls back to a built-in palette.
+		await waitFor(() => expect(screen.queryByRole('button', { name: 'Delete Ocean' })).toBeNull());
 		const preview = document.querySelector('[data-label="Live deck preview"]') as HTMLElement;
 		expect(preview.getAttribute('data-extra-theme')).toBe('');
 	});

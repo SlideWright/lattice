@@ -154,6 +154,13 @@ in patch versions.
     viewed slide. And **speaker notes** moved out of the Deck Inspector into their
     own drawer, opened from a Notes button in the editor row (and the mobile
     Edit/Preview bar).
+  - **Theme selection & light/dark.** Every shipped palette is now selectable from
+    a **grouped** theme picker (topbar + Inspector) — **Curated**, your **saved**
+    Fabricate themes, the **AA color-blind-safe** set (`a11y-*`, the contrast-verified
+    CVD palettes that were missing), then the rest — each with a swatch. A new
+    **light/dark toggle** (topbar + the Look group) flips the deck's mode so the
+    preview, Present, and exports all audition in the chosen mode. Reuses the
+    site-chrome mode store and the shared `paletteLabel`.
 - **`--present`: PDFs that open straight into full-screen presentation mode.**
   A new opt-in CLI flag marks the exported PDF's document catalog so Adobe
   Acrobat/Reader and most desktop viewers open it directly in full-screen /
