@@ -1,0 +1,196 @@
+import { ChevronLeft, ChevronRight, FileText, LayoutGrid, Monitor, Pause, Play, Sparkles, Timer, Volume2, X } from 'lucide-react';
+import * as React from 'react';
+import DeckPreview from '@/components/DeckPreview';
+import type { SingleSlideOptions } from '@/lib/single-slide-render';
+import { cn } from '@/lib/utils';
+import { buildPlanFromMetas, metasFromSource } from '@/playground/drawing-board-rehearsal.js';
+import { type PresentLens, presentationSet } from './lint';
+import { slideToSpeech, useReadAloud } from './read-aloud';
+import { getNote } from './slide-notes';
+
+// Present = a verb (plan §17): a full-screen takeover you ENTER and exit, with a
+// reader-facing lens switch that actually RESHAPES the deck (meet the reader where
+// they want to go) and real slide navigation (←/→/Space). The slide is the live
+// engine render.
+const LENSES: { key: PresentLens; icon: React.ReactNode; label: string }[] = [
+	{ key: 'full', icon: <FileText className="size-3.5" />, label: 'Full deck' },
+	{ key: 'exec', icon: <Sparkles className="size-3.5" />, label: 'Exec summary' },
+	{ key: 'onepager', icon: <LayoutGrid className="size-3.5" />, label: 'One-pager' },
+];
+const fmt = (s: number) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+
+type RehearsalBeat = { at: number; kind: string; text: string; hold: number };
+type RehearsalSlide = { index: number; target: number; why: string; beats: RehearsalBeat[] };
+type RehearsalPlan = { totalTarget: number; suggestMinutes: number; slides: RehearsalSlide[] };
+
+export function PresentOverlay({ open, onClose, options, slides, frontMatter = '', startIndex = 0, notify }: { open: boolean; onClose: () => void; options: SingleSlideOptions; slides: string[]; frontMatter?: string; startIndex?: number; notify: (msg: string) => void }) {
+	const [lens, setLens] = React.useState<PresentLens>('full');
+	const [idx, setIdx] = React.useState(0);
+	const [playing, setPlaying] = React.useState(false);
+	const [rehearse, setRehearse] = React.useState(false); // Practice mode — folded into Present (plan §line 266)
+	const [elapsed, setElapsed] = React.useState(0); // rehearsal seconds
+
+	const set = React.useMemo(() => presentationSet(slides, lens), [slides, lens]);
+	const count = set.length;
+	const clamped = Math.min(idx, Math.max(0, count - 1));
+	const cur = set[clamped] ?? '';
+
+	// Real read-aloud: a synchronized teleprompter over the current slide's prose,
+	// with spoken audio when a voice is connected. Owns its own transport (the dock
+	// play button drives it in read-aloud mode; the rehearsal clock in Rehearse).
+	// Read the slide's speaker note when it has one (the real talk track), else the
+	// on-slide prose.
+	const reader = useReadAloud(React.useMemo(() => getNote(cur) || slideToSpeech(cur), [cur]));
+	const rungLabel = reader.rung && reader.rung !== 'silent' ? (reader.rung === 'kokoro' ? 'Aria · local' : 'Aria · cloud') : 'Captions';
+	// Stable caption keys (content + per-content occurrence — not the array index).
+	const captionParts = React.useMemo(() => {
+		const seen = new Map<string, number>();
+		return reader.sentences.map((s) => {
+			const n = seen.get(s) ?? 0;
+			seen.set(s, n + 1);
+			return { s, key: `${n}:${s}` };
+		});
+	}, [reader.sentences]);
+
+	// REAL rehearsal plan — the deterministic planner the Drawing Board ships
+	// (drawing-board-rehearsal.js): metas → per-slide dwell targets, role-specific
+	// "why", and timed delivery beats. Pure (no engine). Two-pass: probe for the
+	// suggested length, then build the plan to it.
+	const plan = React.useMemo<RehearsalPlan | null>(() => {
+		try {
+			const metas = metasFromSource(set.join('\n\n---\n\n'));
+			if (!metas.length) return null;
+			const probe = buildPlanFromMetas(metas, 1) as RehearsalPlan;
+			return buildPlanFromMetas(metas, Math.max(1, probe.suggestMinutes)) as RehearsalPlan;
+		} catch {
+			return null;
+		}
+	}, [set]);
+	const slidePlan = plan?.slides[clamped] ?? null;
+	// Target = the plan's total; "behind" once you run past the cumulative budget
+	// for where you are in the deck.
+	const target = plan?.totalTarget ?? Math.max(60, count * 40);
+	const cumTarget = plan ? plan.slides.slice(0, clamped + 1).reduce((s, sp) => s + sp.target, 0) : Math.round((target * (clamped + 1)) / count);
+	const behind = elapsed > cumTarget + 5;
+	// Slide-local elapsed drives the timed beat (its `at` is a 0–1 fraction of the
+	// slide's target). Reset slideStart whenever the slide changes.
+	const elapsedRef = React.useRef(0);
+	elapsedRef.current = elapsed;
+	const [slideStart, setSlideStart] = React.useState(0);
+	// biome-ignore lint/correctness/useExhaustiveDependencies: reset on slide change; elapsed read via ref to avoid re-reset each tick.
+	React.useEffect(() => setSlideStart(elapsedRef.current), [clamped]);
+	const slideElapsed = Math.max(0, elapsed - slideStart);
+	const frac = slidePlan?.target ? slideElapsed / slidePlan.target : 0;
+	const activeBeat = slidePlan?.beats?.filter((b) => frac >= b.at).slice(-1)[0] ?? null;
+	const coach = activeBeat?.text || slidePlan?.why || '';
+
+	// On open, start the full lens on the slide you were editing; the reshaping
+	// lenses always start at the top of their reshaped set.
+	React.useEffect(() => {
+		if (open) {
+			setLens('full');
+			setIdx(Math.max(0, Math.min(startIndex, slides.length - 1)));
+		}
+	}, [open, startIndex, slides.length]);
+
+	function pickLens(nextLens: PresentLens) {
+		setLens(nextLens);
+		setIdx(0);
+	}
+	function toggleRehearse() {
+		reader.stop(); // read-aloud and rehearsal are mutually exclusive transports
+		setRehearse((v) => !v);
+		setElapsed(0);
+		setPlaying(false);
+	}
+
+	// The rehearsal clock — ticks only while playing in Rehearse mode.
+	React.useEffect(() => {
+		if (!open || !rehearse || !playing) return;
+		const id = setInterval(() => setElapsed((e) => e + 1), 1000);
+		return () => clearInterval(id);
+	}, [open, rehearse, playing]);
+	// Reset rehearsal state whenever Present closes.
+	React.useEffect(() => {
+		if (!open) { setRehearse(false); setElapsed(0); setPlaying(false); }
+	}, [open]);
+	const goNext = React.useCallback(() => setIdx((i) => Math.min(i + 1, count - 1)), [count]);
+	const goPrev = React.useCallback(() => setIdx((i) => Math.max(i - 1, 0)), []);
+
+	React.useEffect(() => {
+		if (!open) return;
+		const onKey = (e: KeyboardEvent) => {
+			if (e.key === 'Escape') onClose();
+			else if (e.key === 'ArrowRight' || e.key === ' ') {
+				e.preventDefault();
+				goNext();
+			} else if (e.key === 'ArrowLeft') {
+				e.preventDefault();
+				goPrev();
+			}
+		};
+		window.addEventListener('keydown', onKey);
+		return () => window.removeEventListener('keydown', onKey);
+	}, [open, onClose, goNext, goPrev]);
+
+	if (!open) return null;
+	return (
+		<div role="dialog" aria-modal="true" aria-label="Present" className="lx-ui fixed inset-0 z-[100] flex flex-col items-center overflow-x-hidden bg-background">
+			<div className="flex w-full items-center gap-2 px-3 py-3 sm:px-5 sm:py-3.5">
+				<button type="button" onClick={onClose} className="shrink-0 rounded-md p-1.5 text-muted-foreground hover:text-foreground" aria-label="Exit present"><X className="size-5" /></button>
+				{/* Lens switch — centered, and scrolls instead of wrapping/clipping if it ever can't fit. */}
+				<div className="flex min-w-0 flex-1 justify-center overflow-x-auto">
+					<div className="inline-flex shrink-0 gap-1 rounded-full border border-border bg-card p-1">
+						{LENSES.map((l) => (
+							<button type="button" key={l.key} onClick={() => pickLens(l.key)} aria-pressed={l.key === lens} className={cn('inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full px-2 py-1.5 text-[11px] font-semibold sm:gap-1.5 sm:px-3 sm:text-[12.5px]', l.key === lens ? 'bg-primary text-primary-foreground' : 'text-muted-foreground')}>{l.icon}{l.label}</button>
+						))}
+					</div>
+				</div>
+				<button type="button" onClick={toggleRehearse} aria-pressed={rehearse} className={cn('inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1.5 text-[12px] font-semibold sm:text-[13px]', rehearse ? 'border-[var(--accent)] bg-[var(--accent-soft)] text-[var(--accent)]' : 'border-border text-muted-foreground hover:text-foreground')}><Timer className="size-4" />Rehearse</button>
+				<button type="button" onClick={() => notify('Presenter screen — speaker notes + next-slide preview on your second display.')} className="hidden shrink-0 items-center gap-1.5 rounded-md px-2 py-1.5 text-[13px] font-semibold text-muted-foreground hover:text-foreground md:inline-flex"><Monitor className="size-4" />Presenter screen</button>
+			</div>
+
+			<div className="relative flex min-h-0 w-full flex-1 items-center justify-center gap-4 px-4 sm:px-6">
+				<button type="button" onClick={goPrev} disabled={clamped === 0} className="hidden shrink-0 rounded-full border border-border bg-card p-2 text-foreground hover:text-[var(--accent)] disabled:opacity-30 sm:block" aria-label="Previous slide"><ChevronLeft className="size-5" /></button>
+				<DeckPreview options={options} sample={frontMatter ? frontMatter + cur : cur} mermaid={false} className="relative aspect-video w-full max-w-[960px] overflow-hidden rounded-2xl border border-border bg-card shadow-[0_24px_60px_rgba(10,22,40,.18)]" aria-label="Presented slide" />
+				<button type="button" onClick={goNext} disabled={clamped >= count - 1} className="hidden shrink-0 rounded-full border border-border bg-card p-2 text-foreground hover:text-[var(--accent)] disabled:opacity-30 sm:block" aria-label="Next slide"><ChevronRight className="size-5" /></button>
+				{/* Real delivery coaching — the plan's role-specific guidance, with the
+				    active timed beat surfacing as you cross its mark in the slide. */}
+				{rehearse && playing && coach && (
+					<div className="pointer-events-none absolute inset-x-0 bottom-2 flex justify-center px-4">
+						<span className="inline-flex max-w-[680px] items-center gap-2 rounded-full border border-[var(--accent)] bg-[color-mix(in_srgb,var(--accent)_14%,var(--bg))] px-3.5 py-2 text-center text-[13px] font-semibold text-[var(--text-heading)] shadow-[0_8px_24px_rgba(10,22,40,.14)]"><Sparkles className="size-3.5 shrink-0 text-[var(--accent)]" />{coach}</span>
+					</div>
+				)}
+				{/* Read-aloud teleprompter — the spoken sentence, highlighted live. */}
+				{!rehearse && reader.playing && reader.sentences.length > 0 && (
+					<div className="pointer-events-none absolute inset-x-0 bottom-2 flex justify-center px-4">
+						<output className="max-w-[760px] rounded-2xl border border-border bg-[color-mix(in_srgb,var(--bg)_92%,transparent)] px-4 py-2.5 text-center text-[15px] leading-snug shadow-[0_8px_24px_rgba(10,22,40,.16)] backdrop-blur-sm sm:text-[17px]">
+							{captionParts.map((p, i) => (
+								<span key={p.key} className={cn('transition-colors', i === reader.index ? 'font-semibold text-[var(--text-heading)]' : 'text-muted-foreground/70')}>
+									{p.s}{' '}
+								</span>
+							))}
+						</output>
+					</div>
+				)}
+			</div>
+
+			<div className="mb-7 mt-4 flex items-center gap-3.5 rounded-full border border-border bg-card px-3.5 py-2.5 shadow-[0_8px_24px_rgba(10,22,40,.10)]">
+				<button type="button" onClick={goPrev} disabled={clamped === 0} className="grid size-9 place-items-center rounded-full text-foreground hover:text-[var(--accent)] disabled:opacity-30 sm:hidden" aria-label="Previous slide"><ChevronLeft className="size-5" /></button>
+				<span className="font-mono text-[12px] font-semibold text-[var(--text-heading)]">{clamped + 1} / {count}</span>
+				<button type="button" onClick={goNext} disabled={clamped >= count - 1} className="grid size-9 place-items-center rounded-full text-foreground hover:text-[var(--accent)] disabled:opacity-30 sm:hidden" aria-label="Next slide"><ChevronRight className="size-5" /></button>
+				<span className="h-5 w-px bg-border" />
+				<button type="button" onClick={() => (rehearse ? setPlaying((v) => !v) : reader.toggle())} className="grid size-11 place-items-center rounded-full bg-primary text-primary-foreground" aria-label={rehearse ? (playing ? 'Pause rehearsal' : 'Start rehearsal') : reader.playing ? 'Pause read-aloud' : 'Play read-aloud'}>{(rehearse ? playing : reader.playing) ? <Pause className="size-5" /> : <Play className="size-5" />}</button>
+				<div className="relative hidden h-[5px] w-[180px] rounded-full bg-border sm:block">
+					<span className="absolute inset-y-0 left-0 rounded-full bg-primary transition-[width] duration-300" style={{ width: `${rehearse ? Math.min(100, (elapsed / target) * 100) : reader.sentences.length ? Math.round(((reader.index + 1) / reader.sentences.length) * 100) : 0}%` }} />
+				</div>
+				<span className="hidden font-mono text-[11px] text-muted-foreground sm:inline">{rehearse ? `${fmt(elapsed)} / ${fmt(target)}` : reader.sentences.length ? `${Math.max(0, reader.index + 1)} / ${reader.sentences.length}` : '0 / 0'}</span>
+				{rehearse ? (
+					<span className={cn('inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[12px] font-semibold', behind ? 'border-[color-mix(in_srgb,var(--chart-2,#9c3f00)_45%,transparent)] text-[var(--chart-2,#9c3f00)]' : 'border-[color-mix(in_srgb,var(--chart-3,#2e6f00)_45%,transparent)] text-[var(--chart-3,#2e6f00)]')}><Timer className="size-3.5" />{behind ? 'Behind pace' : 'On pace'}</span>
+				) : (
+					<span className="inline-flex items-center gap-1.5 rounded-full border border-border px-2.5 py-1 text-[12px] font-semibold text-[var(--accent)]"><Volume2 className="size-3.5" />{rungLabel}</span>
+				)}
+			</div>
+		</div>
+	);
+}

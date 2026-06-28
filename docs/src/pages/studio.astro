@@ -1,0 +1,97 @@
+---
+// The Studio — the unified workspace prototype from the redesign decision doc
+// (engineering/decisions/2026-06-21-app-redesign.md). A single standalone route
+// that renders the v4 lean shell as ONE React island (StudioShell), wired live:
+// a real CodeMirror editor, a live engine preview (DeckPreview), the Architect,
+// the deck Inspector, Share / Workspace / Present overlays, the ⌘K palette, and
+// the Fabricate studio. It is ADDITIVE — it does not touch the shipped Drawing
+// Board / Playground; the engine is loaded on demand exactly as those do.
+import '../styles/landing.css';
+import StudioShell from '../components/studio/StudioShell.tsx';
+import ResourceHints from '../components/site/ResourceHints.astro';
+import EngineWarm from '../components/site/EngineWarm.astro';
+import { joinBase } from '../lib/base-url.mjs';
+import { assetBase } from '../playground/asset-version.mjs';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { createRequire } from 'node:module';
+import { join } from 'node:path';
+
+const base = import.meta.env.BASE_URL;
+const url = (p) => joinBase(base, p);
+const pg = assetBase();
+
+const options = {
+	themeBase: url(pg + 'themes/'),
+	runtimeUrl: url(pg + 'lattice-runtime.js'),
+	engineUrl: url(pg + 'lattice-playground.js'),
+};
+
+// The component catalog, read from the committed machine manifest at build time
+// and trimmed to what the insert palette needs (name / bucket / description /
+// the authored insert skeleton). Serialized into the island as a prop.
+let components = [];
+try {
+	const catalog = JSON.parse(readFileSync(fileURLToPath(new URL('../../../dist/docs/components.json', import.meta.url)), 'utf8'));
+	components = (catalog.components || [])
+		.map((c) => ({ name: c.name, bucket: c.bucket, description: c.description || '', skeleton: String(c.skeleton || '') }))
+		.filter((c) => c.name && c.skeleton);
+} catch (e) {
+	components = [];
+}
+
+// The deterministic lint vocabulary — built at build time from the LIVE component
+// manifests (the SAME buildVocab the Drawing Board and the Node CLI use), so the
+// editor's inline grammar linter is the canonical lint-core, not a reduced copy.
+let lintVocab = null;
+try {
+	const require = createRequire(import.meta.url);
+	const repoRoot = join(process.cwd(), '..');
+	const { loadAll } = require(join(repoRoot, 'lib/components', 'index.js'));
+	const { buildVocab } = require(join(repoRoot, 'lib/authoring', 'lint.js'));
+	const v = buildVocab(loadAll());
+	lintVocab = {
+		names: [...v.names],
+		modifiers: [...v.modifiers],
+		mapRegions: Object.fromEntries(Object.entries(v.mapRegions || {}).map(([k, mv]) => [k, { valid: [...mv.valid], names: mv.names }])),
+		finishNames: v.finishNames || [],
+		splitNames: v.splitNames || [],
+		capacity: v.capacity || {},
+	};
+} catch (e) {
+	lintVocab = null;
+}
+---
+
+<!doctype html>
+<html lang="en" data-palette="indaco" data-mode="light">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<ResourceHints />
+		<title>Lattice Studio — one workspace</title>
+		<meta name="description" content="The Lattice Studio: compose, present, and fabricate decks in one workspace. A live prototype of the app redesign." />
+		<link rel="icon" type="image/svg+xml" href={url('favicon.svg')} />
+		<style is:global>
+			html, body { margin: 0; height: 100%; overflow: hidden; }
+		</style>
+		<script is:inline>
+			(function () {
+				var r = document.documentElement;
+				try {
+					var p = localStorage.getItem('lattice-studio-palette');
+					if (p) r.setAttribute('data-palette', p);
+					var m = localStorage.getItem('lattice-docs-mode');
+					if (m === 'light' || m === 'dark') r.setAttribute('data-mode', m);
+					else if (window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches) r.setAttribute('data-mode', 'dark');
+				} catch (e) {}
+			})();
+		</script>
+	</head>
+	<body>
+		<!-- client:only — the Studio is a browser app surface (no SSR/SEO need),
+		     so it never server-renders; this also sidesteps Browser-API-on-server. -->
+		<StudioShell client:only="react" options={options} components={components} lintVocab={lintVocab} />
+		<EngineWarm allowEager />
+	</body>
+</html>

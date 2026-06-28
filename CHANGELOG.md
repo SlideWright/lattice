@@ -27,6 +27,52 @@ in patch versions.
 
 ### Added
 
+- **Studio — a unified authoring surface on the docs site (`/studio/`).** A
+  React-island redesign that folds composing, theming, presenting, and sharing
+  into one workspace, wired to the real engine — not placeholders:
+  - **Fabricate** derives a complete, contrast-repaired theme from four picked
+    core colours via the shared theme engine (`deriveTheme`/`auditBoth`/
+    `serializeTheme`), with a live WCAG audit that can fail and a specimen
+    rendered in the derived theme; Export downloads a real `themes/*.css`.
+  - **Present read-aloud** is a real synchronized teleprompter (each sentence
+    highlighted as read), with spoken audio over the production voice ladder
+    (connected OpenRouter voice → in-browser Kokoro → captions-only floor).
+  - **Share** runs the real export pipeline — Markdown (theme embedded), the
+    Marp ZIP bundle, one-click image PDF/PPTX, and vector Print — reusing the
+    Drawing Board's exporters.
+  - **Rehearse** (in Present) runs the deterministic rehearsal planner: real
+    per-slide dwell targets, an on-pace/behind indicator against the cumulative
+    budget, and role-specific delivery coaching with timed beats.
+  - **Persistence** — your edits survive switching decks and a full reload;
+    new / rename / delete decks and the Inspector/Workspace settings persist
+    (Studio-scoped `lattice-studio-*` localStorage).
+  - **Inspector controls** write real deck front-matter: Size picks a `size:`
+    directive (reflected live in the preview), Page numbers writes `paginate`,
+    and Running header writes `header` — each carried into every export.
+  - **Architect (AI)** is wired honestly to the production model ladder: with a
+    model connected, Rewrite lead / Reshape run a real completion and apply the
+    parsed edit blocks; with none, they degrade honestly (point at Workspace)
+    instead of faking a change. Workspace shows the real active tier, one-click
+    OpenRouter OAuth connect/disconnect, and real session/all-time spend. Fix-all
+    now lands the linter's per-name suggestion, not a hardcoded `kpi`.
+  - **Compose editing depth** — a slide toolbar (add / duplicate / reorder /
+    delete), a searchable **insert-component palette** over all 53 shipped
+    components (inserts each one's authored skeleton), context-aware editor
+    **autocomplete** (component names, front-matter keys, fenced-block
+    languages), and the full **grammar linter** (the shared lint-core: severity
+    tiers, hover fix guidance, and one-click per-finding quick-fixes).
+  - **Library depth** — **import a deck** from a `.md` file (title derived from
+    its first heading), and **version history**: an Inspector timeline of saved
+    checkpoints with one-click Restore, captured manually and automatically
+    before each AI edit (so an AI change is reversible beyond undo).
+  - **Architect chat** — a real conversational thread (Coach/Chat toggle,
+    per-deck history) that runs through the connected model with the deck in
+    context and returns proposed edits as a reviewable **Apply/Discard diff
+    card**; plus an editable **session budget cap** the architect honours.
+  - **Speaker notes + Fabricate starters** — a per-slide speaker-notes field
+    (written as a real LFM note, exported to PDF/PPTX and read aloud in Present),
+    and curated **starter palettes** (Dusk/Ember/Pine/Slate) in Fabricate that
+    reseed and re-derive the whole theme.
 - **`--present`: PDFs that open straight into full-screen presentation mode.**
   A new opt-in CLI flag marks the exported PDF's document catalog so Adobe
   Acrobat/Reader and most desktop viewers open it directly in full-screen /

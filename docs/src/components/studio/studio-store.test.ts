@@ -1,0 +1,80 @@
+import { afterEach, describe, expect, it } from 'vitest';
+import { DECKS } from './decks';
+import { createDeck, deleteDeck, loadCheckpoints, loadDeckList, loadSettings, loadSource, metaFor, renameDeck, saveCheckpoint, saveSettings, saveSource, titleFromSource } from './studio-store';
+
+afterEach(() => localStorage.clear());
+
+describe('studio-store — deck index', () => {
+	it('seeds the list from the built-in decks on first run', () => {
+		const list = loadDeckList();
+		expect(list.map((d) => d.id)).toEqual(DECKS.map((d) => d.id));
+		expect(list[0].meta).toMatch(/\d+ slides?/);
+	});
+
+	it('createDeck appends a persisted, editable deck', () => {
+		const before = loadDeckList().length;
+		const d = createDeck('My deck');
+		expect(d.title).toBe('My deck');
+		const list = loadDeckList();
+		expect(list.length).toBe(before + 1);
+		expect(list.find((x) => x.id === d.id)).toBeTruthy();
+	});
+
+	it('renameDeck and deleteDeck persist', () => {
+		const d = createDeck('Temp');
+		renameDeck(d.id, 'Renamed');
+		expect(loadDeckList().find((x) => x.id === d.id)?.title).toBe('Renamed');
+		deleteDeck(d.id);
+		expect(loadDeckList().find((x) => x.id === d.id)).toBeUndefined();
+	});
+});
+
+describe('studio-store — per-deck source', () => {
+	it('round-trips edited source and overrides the canonical', () => {
+		const id = DECKS[0].id;
+		expect(loadSource(id)).toBeNull();
+		saveSource(id, '<!-- _class: title -->\n\n# Edited');
+		expect(loadSource(id)).toContain('# Edited');
+		// The list reflects the edit (slide count from the edited source).
+		expect(loadDeckList().find((d) => d.id === id)?.slides[0]).toContain('# Edited');
+	});
+
+	it('metaFor counts slides — agreeing with the rail splitter on tight separators', () => {
+		expect(metaFor('a\n\n---\n\nb\n\n---\n\nc')).toBe('3 slides');
+		expect(metaFor('only one')).toBe('1 slide');
+		// Tight + trailing separators count the same as the live rail (splitSlides),
+		// not the old per-variant regex (which over/under-counted these).
+		expect(metaFor('# A\n---\n# B')).toBe('2 slides');
+		expect(metaFor('# A\n\n---\n\n# B\n\n---\n')).toBe('2 slides');
+	});
+});
+
+describe('studio-store — version history', () => {
+	it('saves checkpoints newest-first, dedupes the latest, and caps the list', () => {
+		expect(loadCheckpoints('d1')).toEqual([]);
+		saveCheckpoint('d1', 'v1', 'first', 1000);
+		saveCheckpoint('d1', 'v2', 'second', 2000);
+		saveCheckpoint('d1', 'v2', 'dupe', 3000); // same source as latest → skipped
+		const list = loadCheckpoints('d1');
+		expect(list.map((c) => c.source)).toEqual(['v2', 'v1']); // newest first, no dupe
+		// Cap at 25.
+		for (let i = 0; i < 40; i++) saveCheckpoint('d1', `x${i}`, 'bulk', 4000 + i);
+		expect(loadCheckpoints('d1').length).toBe(25);
+	});
+});
+
+describe('studio-store — titleFromSource', () => {
+	it('derives a title from the first heading', () => {
+		expect(titleFromSource('<!-- _class: title -->\n\n# Q4 Wrap\n\nbody')).toBe('Q4 Wrap');
+		expect(titleFromSource('no heading here')).toBe('Imported deck');
+	});
+});
+
+describe('studio-store — settings', () => {
+	it('defaults then round-trips', () => {
+		expect(loadSettings()).toEqual({ validation: true, pageNumbers: true, headerFooter: false });
+		saveSettings({ pageNumbers: false });
+		expect(loadSettings().pageNumbers).toBe(false);
+		expect(loadSettings().validation).toBe(true); // untouched keys keep defaults
+	});
+});

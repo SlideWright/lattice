@@ -26,6 +26,9 @@ export type DeckPreviewProps = {
 	mermaid: boolean;
 	/** Force a specific palette instead of the global `<html data-palette>`. */
 	paletteOverride?: string;
+	/** Render against a raw in-memory theme (Fabricate's live derived theme).
+	 *  When set, `paletteOverride` should equal `extraTheme.name`. */
+	extraTheme?: { name: string; css: string };
 	/**
 	 * Render only while true. Lets a host that may be hidden (a tab panel) defer
 	 * the render until it is shown — re-renders on the rising edge.
@@ -46,6 +49,7 @@ export function DeckPreview({
 	sample,
 	mermaid,
 	paletteOverride,
+	extraTheme,
 	active = true,
 	className,
 	role,
@@ -61,10 +65,15 @@ export function DeckPreview({
 	const activeRef = React.useRef(active);
 	activeRef.current = active;
 
+	// `extraTheme.name` is a content hash of the theme (Fabricate derives both name
+	// and css from the same essentials), so the name fully captures the object's
+	// identity — depending on the whole object would re-render on every parent
+	// render for no benefit.
+	// biome-ignore lint/correctness/useExhaustiveDependencies: extraTheme.name is the theme's content hash; depending on the whole object would thrash.
 	const render = React.useCallback(() => {
 		const host = stageRef.current;
-		if (host && activeRef.current) engineRef.current?.renderInto(host, sample, mermaid, paletteOverride);
-	}, [sample, mermaid, paletteOverride]);
+		if (host && activeRef.current) engineRef.current?.renderInto(host, sample, mermaid, paletteOverride, extraTheme);
+	}, [sample, mermaid, paletteOverride, extraTheme?.name]);
 
 	// First render once the engine bundle has loaded.
 	React.useEffect(() => {

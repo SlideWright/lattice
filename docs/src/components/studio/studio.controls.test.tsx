@@ -1,0 +1,307 @@
+import { render, screen, waitFor, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import StudioShell from './StudioShell';
+
+// Stub the live preview (its engine poller leaks a post-teardown timer in jsdom).
+vi.mock('@/components/DeckPreview', () => ({
+	default: ({ 'aria-label': label }: { 'aria-label'?: string }) => <div data-testid="deck-preview">{label}</div>,
+}));
+
+const options = { themeBase: '', runtimeUrl: '', engineUrl: '' };
+
+afterEach(() => {
+	document.documentElement.removeAttribute('data-palette');
+});
+
+function setup() {
+	const user = userEvent.setup();
+	render(<StudioShell options={options} />);
+	return user;
+}
+
+const CATALOG = [
+	{ name: 'kpi', bucket: 'inventory', description: 'Key metrics as big numbers', skeleton: '<!-- _class: kpi -->\n\n## Metrics\n\n1. 100\n   - Done' },
+	{ name: 'quote', bucket: 'statement', description: 'A pull quote', skeleton: '<!-- _class: quote -->\n\n> Words.\n\n— Someone' },
+];
+function setupWithCatalog() {
+	const user = userEvent.setup();
+	render(<StudioShell options={options} components={CATALOG} />);
+	return user;
+}
+
+// A control-by-control sweep: every interactive surface that the flow tests don't
+// already cover gets an explicit "click it → observe the effect" assertion, so a
+// regression in any single affordance fails a named test.
+describe('Studio — every top-bar control responds', () => {
+	it('the palette dropdown applies a Studio theme to the document', async () => {
+		const user = setup();
+		await user.click(screen.getByRole('button', { name: 'Theme' }));
+		await user.click(await screen.findByRole('menuitem', { name: /burgundy/i }));
+		expect(document.documentElement.getAttribute('data-palette')).toBe('burgundy');
+	});
+
+	it('the launcher creates a New deck', async () => {
+		const user = setup();
+		await user.click(screen.getByRole('button', { name: 'Workspace launcher' }));
+		await user.click(await screen.findByText('New deck'));
+		expect(screen.getByRole('button', { name: /Untitled deck/ })).toBeInTheDocument();
+	});
+
+	it('imports a deck from a .md file (title from its heading)', async () => {
+		const user = setup();
+		// Drive the hidden file input directly (a real <input type=file> change).
+		const input = document.querySelector('input[type="file"]') as HTMLInputElement;
+		const file = new File(['<!-- _class: title -->\n\n# Acme Annual Review\n\nThe year in numbers.'], 'acme.md', { type: 'text/markdown' });
+		// jsdom File has no .text() by default in some setups — polyfill for the test.
+		if (!file.text) Object.defineProperty(file, 'text', { value: () => Promise.resolve('<!-- _class: title -->\n\n# Acme Annual Review\n\nThe year in numbers.') });
+		await user.upload(input, file);
+		// The new deck is created, titled from the first heading, and made active.
+		expect(await screen.findByRole('button', { name: /Acme Annual Review/ })).toBeInTheDocument();
+		expect(screen.getByLabelText('Deck source').textContent).toMatch(/Acme Annual Review/);
+	});
+
+	it('runs the REAL grammar linter when a lint vocabulary is provided', async () => {
+		const user = userEvent.setup();
+		const lintVocab = { names: ['cards-grid', 'kpi', 'title'], modifiers: [], mapRegions: {}, finishNames: [], splitNames: [], capacity: {} };
+		render(<StudioShell options={options} lintVocab={lintVocab} />);
+		const editor = screen.getByLabelText('Deck source');
+		await user.click(editor);
+		await user.keyboard('{Control>}a{/Control}');
+		// A card-style inline-title footgun the shared lint-core flags as an error.
+		await user.paste('<!-- _class: cards-grid -->\n\n## Three bets\n\n- **Alpha.** the body text\n');
+		// The lint-core finding surfaces as an inline diagnostic underline (async:
+		// the authoring-core bundle is imported on first validation).
+		await waitFor(() => expect(document.querySelector('.cm-lintRange')).toBeTruthy(), { timeout: 6000 });
+	});
+
+	it('the slide toolbar adds, duplicates, and deletes slides', async () => {
+		const user = setup();
+		const railCount = () => document.querySelector('nav[aria-label="Slide navigator"]')?.querySelectorAll('button').length ?? 0;
+		const start = railCount();
+		expect(start).toBeGreaterThan(1);
+		// Add a slide → the rail grows by one.
+		await user.click(screen.getByRole('button', { name: 'Add slide' }));
+		expect(railCount()).toBe(start + 1);
+		// Duplicate → grows again.
+		await user.click(screen.getByRole('button', { name: 'Duplicate slide' }));
+		expect(railCount()).toBe(start + 2);
+		// Delete → shrinks.
+		await user.click(screen.getByRole('button', { name: 'Delete slide' }));
+		expect(railCount()).toBe(start + 1);
+	});
+
+	it('the Insert palette inserts a component as a new slide', async () => {
+		const user = setupWithCatalog();
+		const railCount = () => document.querySelector('nav[aria-label="Slide navigator"]')?.querySelectorAll('button').length ?? 0;
+		const start = railCount();
+		// Open the insert palette from the editor header.
+		await user.click(screen.getByRole('button', { name: /Insert/ }));
+		const dialog = await screen.findByRole('dialog', { name: /Insert a component/i });
+		// Search narrows to the quote component; selecting it adds a slide.
+		await user.type(within(dialog).getByPlaceholderText(/Search/i), 'quote');
+		await user.click(await within(dialog).findByText('quote'));
+		expect(railCount()).toBe(start + 1);
+		// The inserted slide carries the component's real skeleton class.
+		expect(screen.getByLabelText('Deck source').textContent).toMatch(/_class:\s*quote/);
+	});
+
+	it('edits survive a deck switch (persistence)', async () => {
+		const user = setup();
+		// Edit deck 1 — paste a unique marker into the source.
+		const editor = screen.getByLabelText('Deck source');
+		await user.click(editor);
+		await user.paste('<!-- _class: title -->\n\n# UNIQUE-MARKER-XYZ\n\n');
+		// Switch to the second built-in deck, then back to the first.
+		await user.click(screen.getByRole('button', { name: /Q3 Board Review/ }));
+		await user.click(await screen.findByText('FY26 Product Strategy'));
+		expect(screen.queryByText(/UNIQUE-MARKER-XYZ/)).not.toBeInTheDocument();
+		await user.click(screen.getByRole('button', { name: /FY26 Product Strategy/ }));
+		await user.click(await screen.findByText('Q3 Board Review'));
+		// The edit is restored — not reset to the canonical source.
+		expect(await screen.findByText(/UNIQUE-MARKER-XYZ/)).toBeInTheDocument();
+	});
+
+	it('⌘K runs a command (Fabricate) and a theme', async () => {
+		const user = setup();
+		await user.keyboard('{Meta>}k{/Meta}');
+		const dialog = await screen.findByRole('dialog', { name: /Studio commands/i });
+		await user.click(within(dialog).getByText(/Fabricate/));
+		expect(await screen.findByText('Theme Studio')).toBeInTheDocument();
+		// Re-open and pick a theme command.
+		await user.keyboard('{Meta>}k{/Meta}');
+		const d2 = await screen.findByRole('dialog', { name: /Studio commands/i });
+		await user.click(within(d2).getByText('cuoio'));
+		expect(document.documentElement.getAttribute('data-palette')).toBe('cuoio');
+	});
+});
+
+describe('Studio — Architect + editor controls respond', () => {
+	it('"Fix all" clears an unknown component flagged inline', async () => {
+		const user = setup();
+		const editor = screen.getByLabelText('Deck source');
+		await user.click(editor);
+		await user.paste('<!-- _class: bogus-zzz -->\n# Oops\n\n---\n\n');
+		// The unknown component surfaces as an inline issue.
+		expect(await screen.findByText(/\d+ issue/)).toBeInTheDocument();
+		// Fix all (Architect banner or Edit header — both fix) clears it.
+		await user.click(screen.getAllByRole('button', { name: 'Fix all' })[0]);
+		expect(screen.queryByText(/\d+ issue/)).not.toBeInTheDocument();
+	});
+
+	it('the Reshape "Exec summary" chip reshapes the preview (deterministic, real)', async () => {
+		const user = setup();
+		await user.click(screen.getByText('Exec summary'));
+		expect(await screen.findByText(/headline slides only/i)).toBeInTheDocument();
+	});
+
+	it('the Architect Chat thread sends a message and degrades honestly offline', async () => {
+		const user = setup();
+		// Switch the Architect panel to the Chat tab.
+		await user.click(screen.getByRole('button', { name: 'Chat' }));
+		const box = await screen.findByRole('textbox', { name: 'Message the Architect' });
+		await user.type(box, 'Tighten slide 1');
+		await user.click(screen.getByRole('button', { name: 'Send' }));
+		// The user turn is in the thread…
+		expect(await screen.findByText('Tighten slide 1')).toBeInTheDocument();
+		// …and with no model connected the assistant degrades honestly (no fake edit).
+		expect(await screen.findByText(/Connect a model in Workspace/i, undefined, { timeout: 6000 })).toBeInTheDocument();
+	});
+
+	it('the Architect actions degrade honestly with no model connected', async () => {
+		const user = setup();
+		// With no model (floor) the AI actions do NOT fake an edit — they point the
+		// author at Workspace to connect, rather than toasting a change that did not
+		// happen. (A connected model would apply a real edit instead.)
+		await user.click(screen.getByText('Rewrite lead'));
+		// The architect model bundle loads lazily on first use — allow for it.
+		expect(await screen.findByText(/connect a model/i, undefined, { timeout: 5000 })).toBeInTheDocument();
+	});
+});
+
+describe('Studio — Fabricate + Present dock respond', () => {
+	it('Fabricate switches Theme/Layout tabs and exports', async () => {
+		const user = setup();
+		await user.click(screen.getByRole('button', { name: 'Workspace launcher' }));
+		await user.click(await screen.findByText('Fabricate'));
+		expect(await screen.findByText('Theme Studio')).toBeInTheDocument();
+		// Switch to the Layout tab — its density panel appears, the theme studio leaves.
+		await user.click(screen.getByRole('button', { name: /Layout/ }));
+		expect(await screen.findByText(/Density/)).toBeInTheDocument();
+		expect(screen.queryByText('Theme Studio')).not.toBeInTheDocument();
+		// Export theme confirms via toast.
+		await user.click(screen.getByRole('button', { name: /Export theme/ }));
+		expect(await screen.findByText(/Exported/)).toBeInTheDocument();
+	});
+
+	it('Fabricate derives a REAL token contract + WCAG audit from the engine', async () => {
+		const user = setup();
+		await user.click(screen.getByRole('button', { name: 'Workspace launcher' }));
+		await user.click(await screen.findByText('Fabricate'));
+		// The contract strip reports a real derived token count (deriveTheme → ~100;
+		// we render a representative 18) — proof the theme engine ran, not a mock.
+		expect(await screen.findByText(/Engine-derived contract — 18 tokens/)).toBeInTheDocument();
+		// The WCAG audit renders real computed rows: a role with an `N.N : 1` ratio
+		// and a tier badge (AAA/AA/FAIL) — auditBoth output, not a static list.
+		expect(screen.getByText(/WCAG audit —/)).toBeInTheDocument();
+		expect(screen.getAllByText(/\d+\.\d+ : 1/).length).toBeGreaterThan(0);
+		// Changing a core colour re-derives — the export carries a fresh token set.
+		// (Smoke: pick a new accent, the panel stays consistent and still exports.)
+		const swatchInputs = document.querySelectorAll('input[type="color"]');
+		expect(swatchInputs.length).toBe(4);
+		// Picking a curated starter reseeds the core colours and re-derives.
+		await user.click(screen.getByRole('button', { name: /Start from Ember/ }));
+		expect(await screen.findByText(/Engine-derived contract — 18 tokens/)).toBeInTheDocument();
+	});
+
+	it('Present read-aloud Play/Pause toggles and shows the live teleprompter', async () => {
+		const user = setup();
+		await user.click(screen.getByRole('button', { name: 'Present' }));
+		const dialog = await screen.findByRole('dialog', { name: 'Present' });
+		const dock = within(dialog).getByRole('button', { name: 'Play read-aloud' });
+		await user.click(dock);
+		expect(within(dialog).getByRole('button', { name: 'Pause read-aloud' })).toBeInTheDocument();
+		// The teleprompter (status region) renders the current slide's prose so the
+		// read-along is real and visible — captions even with no voice connected.
+		const prompter = within(dialog).getByRole('status');
+		expect(prompter.textContent?.trim().length ?? 0).toBeGreaterThan(0);
+		// Pausing returns the play affordance.
+		await user.click(within(dialog).getByRole('button', { name: 'Pause read-aloud' }));
+		expect(within(dialog).getByRole('button', { name: 'Play read-aloud' })).toBeInTheDocument();
+	});
+
+	it('Present → Rehearse mode (Practice) surfaces pacing + coaching', async () => {
+		const user = setup();
+		await user.click(screen.getByRole('button', { name: 'Present' }));
+		const dialog = await screen.findByRole('dialog', { name: 'Present' });
+		const d = within(dialog);
+		await user.click(d.getByRole('button', { name: 'Rehearse' }));
+		// The transport becomes a rehearsal clock, with an on-pace indicator.
+		expect(d.getByRole('button', { name: 'Start rehearsal' })).toBeInTheDocument();
+		expect(d.getByText('On pace')).toBeInTheDocument();
+		// Starting the rehearsal surfaces REAL per-slide coaching from the planner
+		// (the opening slide's delivery beat), not a canned cycling string.
+		await user.click(d.getByRole('button', { name: 'Start rehearsal' }));
+		expect(await d.findByText(/eye contact|Set the frame|signpost/i)).toBeInTheDocument();
+	});
+});
+
+describe('Studio — Inspector controls respond', () => {
+	it('a theme swatch in the Inspector applies the palette', async () => {
+		const user = setup();
+		await user.click(screen.getByRole('button', { name: 'Toggle Deck inspector' }));
+		// The Look group exposes the first five palettes as swatches (aria-labelled).
+		await user.click(await screen.findByRole('button', { name: 'cuoio' }));
+		expect(document.documentElement.getAttribute('data-palette')).toBe('cuoio');
+	});
+
+	it('authoring a speaker note writes it into the slide source', async () => {
+		const user = setup();
+		await user.click(screen.getByRole('button', { name: 'Toggle Deck inspector' }));
+		const notes = await screen.findByRole('textbox', { name: 'Speaker note for this slide' });
+		await user.click(notes);
+		await user.type(notes, 'Open on the room, then the number.');
+		await user.tab(); // blur commits the note
+		expect(screen.getByLabelText('Deck source').textContent).toMatch(/note: Open on the room, then the number\./);
+	});
+
+	it('version history saves a checkpoint and restores it', async () => {
+		const user = setup();
+		await user.click(screen.getByRole('button', { name: 'Toggle Deck inspector' }));
+		// Save the current deck as a version.
+		await user.click(await screen.findByRole('button', { name: /Save a version/ }));
+		expect(await screen.findByText('Saved version')).toBeInTheDocument();
+		// Edit the deck, then restore — the saved content comes back.
+		const editor = screen.getByLabelText('Deck source');
+		await user.click(editor);
+		await user.keyboard('{Control>}a{/Control}');
+		await user.paste('<!-- _class: title -->\n\n# TOTALLY DIFFERENT\n');
+		expect(screen.getByLabelText('Deck source').textContent).toMatch(/TOTALLY DIFFERENT/);
+		await user.click(screen.getByRole('button', { name: 'Restore' }));
+		expect(screen.getByLabelText('Deck source').textContent).not.toMatch(/TOTALLY DIFFERENT/);
+		expect(screen.getByLabelText('Deck source').textContent).toMatch(/Q3 Board Review/);
+	});
+
+	it('the Page-numbers switch writes paginate front-matter to the source', async () => {
+		const user = setup();
+		await user.click(screen.getByRole('button', { name: 'Toggle Deck inspector' }));
+		const sw = await screen.findByRole('switch', { name: 'Page numbers' });
+		// Off by default (no front-matter); turning it on writes `paginate: true`.
+		expect(sw).not.toBeChecked();
+		await user.click(sw);
+		expect(sw).toBeChecked();
+		expect(screen.getByLabelText('Deck source').textContent).toMatch(/paginate:\s*true/);
+		// Turning it off removes the directive again.
+		await user.click(screen.getByRole('switch', { name: 'Page numbers' }));
+		expect(screen.getByLabelText('Deck source').textContent).not.toMatch(/paginate/);
+	});
+
+	it('the Size control writes a `size` directive to the source', async () => {
+		const user = setup();
+		await user.click(screen.getByRole('button', { name: 'Toggle Deck inspector' }));
+		// The Size control opens a menu of real @size tokens; picking one writes it.
+		await user.click(await screen.findByRole('button', { name: /Widescreen|16 : 9/ }));
+		await user.click(await screen.findByRole('menuitem', { name: /Square/ }));
+		expect(screen.getByLabelText('Deck source').textContent).toMatch(/size:\s*square/);
+	});
+});

@@ -154,13 +154,22 @@ export function createSingleSlideRenderer(opts: SingleSlideOptions) {
 		markdown: string,
 		mermaid: boolean,
 		paletteOverride?: string,
+		// Opt-in: render against a RAW in-memory theme (e.g. Fabricate's live
+		// derived theme) instead of fetching `<themeBase><name>.css`. Registered
+		// once per distinct name. Existing callers omit it → unchanged behaviour.
+		extra?: { name: string; css: string },
 	): Promise<RenderStatus> {
 		const PG = window.LatticePlayground;
 		if (!PG) return Promise.resolve({ ok: false, slides: 0, error: 'engine not loaded' });
 		const { palette, mode } = currentPaletteMode(paletteOverride);
-		return Promise.all([themes.ensure(palette, mode), ensurePreviewFonts()])
+		const themeReady = extra
+			? Promise.all([themes.ensureBase(), ensurePreviewFonts()]).then(() => {
+					if (!PG.hasTheme(extra.name)) PG.addThemes([extra.css]);
+				})
+			: Promise.all([themes.ensure(palette, mode), ensurePreviewFonts()]);
+		return themeReady
 			.then(() => {
-				const theme = mode === 'dark' && PG.hasTheme(palette + '-dark') ? palette + '-dark' : palette;
+				const theme = extra ? extra.name : mode === 'dark' && PG.hasTheme(palette + '-dark') ? palette + '-dark' : palette;
 				let out: { html: string; css: string; width?: number; height?: number };
 				try {
 					// Resolve a sample deck's `![bg](sample-image-*.svg)` against the
