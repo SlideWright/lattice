@@ -46,6 +46,9 @@ in patch versions.
   - **Persistence** — your edits survive switching decks and a full reload;
     new / rename / delete decks and the Inspector/Workspace settings persist
     (Studio-scoped `lattice-studio-*` localStorage).
+  - **Inspector controls** write real deck front-matter: Size picks a `size:`
+    directive (reflected live in the preview), Page numbers writes `paginate`,
+    and Running header writes `header` — each carried into every export.
 - **`--present`: PDFs that open straight into full-screen presentation mode.**
   A new opt-in CLI flag marks the exported PDF's document catalog so Adobe
   Acrobat/Reader and most desktop viewers open it directly in full-screen /

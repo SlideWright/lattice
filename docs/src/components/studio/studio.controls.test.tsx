@@ -163,12 +163,26 @@ describe('Studio — Inspector controls respond', () => {
 		expect(document.documentElement.getAttribute('data-palette')).toBe('cuoio');
 	});
 
-	it('the Page-numbers switch toggles', async () => {
+	it('the Page-numbers switch writes paginate front-matter to the source', async () => {
 		const user = setup();
 		await user.click(screen.getByRole('button', { name: 'Toggle Deck inspector' }));
 		const sw = await screen.findByRole('switch', { name: 'Page numbers' });
-		expect(sw).toBeChecked();
-		await user.click(sw);
+		// Off by default (no front-matter); turning it on writes `paginate: true`.
 		expect(sw).not.toBeChecked();
+		await user.click(sw);
+		expect(sw).toBeChecked();
+		expect(screen.getByLabelText('Deck source').textContent).toMatch(/paginate:\s*true/);
+		// Turning it off removes the directive again.
+		await user.click(screen.getByRole('switch', { name: 'Page numbers' }));
+		expect(screen.getByLabelText('Deck source').textContent).not.toMatch(/paginate/);
+	});
+
+	it('the Size control writes a `size` directive to the source', async () => {
+		const user = setup();
+		await user.click(screen.getByRole('button', { name: 'Toggle Deck inspector' }));
+		// The Size control opens a menu of real @size tokens; picking one writes it.
+		await user.click(await screen.findByRole('button', { name: /Widescreen|16 : 9/ }));
+		await user.click(await screen.findByRole('menuitem', { name: /Square/ }));
+		expect(screen.getByLabelText('Deck source').textContent).toMatch(/size:\s*square/);
 	});
 });

@@ -16,6 +16,7 @@ import { CommandPalette } from './CommandPalette';
 import { DECKS, deckSource, type StudioDeck } from './decks';
 import { Editor, type EditorHandle } from './Editor';
 import { Fabricate } from './Fabricate';
+import { frontMatterBlock, getFrontMatter, setFrontMatter, stripFrontMatter } from './front-matter';
 import { IntentTag } from './IntentTag';
 import { type PresentLens, presentationSet, scoreDeck, slideClass, splitSlides, unknownComponents, usedComponents } from './lint';
 import { PresentOverlay } from './PresentOverlay';
@@ -32,6 +33,14 @@ const KNOWN = ['title', 'kpi', 'quote', 'cards-grid', 'agenda', 'big-number', 's
 // the array each render (which would needlessly rebuild CodeMirror).
 const NO_KNOWN: string[] = [];
 const LENS_LABEL: Record<string, string> = { exec: 'Exec summary', onepager: 'One-pager' };
+// Slide sizes the engine themes define (@size tokens). `size:` front-matter picks one.
+const SIZES = [
+	{ value: '16:9', label: 'Widescreen 16 : 9' },
+	{ value: 'standard', label: 'Standard 4 : 3' },
+	{ value: 'square', label: 'Square 1 : 1' },
+	{ value: '4k', label: '4K (16 : 9)' },
+];
+const SIZE_LABELS: Record<string, string> = Object.fromEntries(SIZES.map((s) => [s.value, s.label.replace(/ \(.*\)/, '')]));
 const PALETTES = ['indaco', 'cuoio', 'burgundy', 'laguna', 'crepuscolo', 'atelier', 'carbone', 'onyx'];
 const PALETTE_DOTS: Record<string, string> = {
 	indaco: '#006FA8', cuoio: '#7A5A10', burgundy: '#742532', laguna: '#006D77',
@@ -68,19 +77,23 @@ export default function StudioShell({ options }: Props) {
 		}
 	});
 	const [mobilePane, setMobilePane] = React.useState<'edit' | 'preview'>('preview');
-	// Inspector "Authoring" / "Look" toggles — restored from + persisted to the
-	// Studio settings store. `validation` gates the editor's inline linter; the
-	// page-number / header-footer flags write front-matter (see applyDeckFlags).
+	// `validation` is an editor preference (persisted in settings). The deck-level
+	// Look controls (size / page numbers / header+footer) are NOT separate state —
+	// they READ from and WRITE to the deck's front-matter, so the toggle always
+	// reflects the source and every export carries the directive.
 	const [validation, setValidation] = React.useState(() => loadSettings().validation);
-	const [pageNumbers, setPageNumbers] = React.useState(() => loadSettings().pageNumbers);
-	const [headerFooter, setHeaderFooter] = React.useState(() => loadSettings().headerFooter);
 	const editorRef = React.useRef<EditorHandle>(null);
 
 	const bp = useBreakpoint();
 	const compact = bp !== 'desktop'; // tablet + mobile: panels become sheets
 	const mobile = bp === 'mobile'; // single swappable pane
 
-	const slides = React.useMemo(() => splitSlides(source), [source]);
+	// Deck-level front-matter (size / paginate / header / footer) is split off the
+	// body so it never reads as a phantom slide, but is prepended back to whatever
+	// single slide the preview renders so its directives (e.g. `size`) take effect.
+	const fm = React.useMemo(() => frontMatterBlock(source), [source]);
+	const body = React.useMemo(() => stripFrontMatter(source), [source]);
+	const slides = React.useMemo(() => splitSlides(body), [body]);
 	// The canonical deck is `slides`; the preview/rail render the VIEWED set — the
 	// full deck, or a reader-lens reshape of it (the editor always holds the source).
 	const viewSlides = React.useMemo(() => (composeLens === 'full' ? slides : presentationSet(slides, composeLens)), [slides, composeLens]);
@@ -111,10 +124,19 @@ export default function StudioShell({ options }: Props) {
 		return () => clearTimeout(id);
 	}, [source, deck.id]);
 
-	// Persist the Inspector/Workspace settings as they change.
+	// Persist the editor preference as it changes.
 	React.useEffect(() => {
-		saveSettings({ validation, pageNumbers, headerFooter });
-	}, [validation, pageNumbers, headerFooter]);
+		saveSettings({ validation });
+	}, [validation]);
+
+	// Deck-level Look directives, READ from the deck's front-matter.
+	const deckSize = getFrontMatter(source, 'size') || '16:9';
+	const pageNumbers = getFrontMatter(source, 'paginate') === 'true';
+	const headerFooter = getFrontMatter(source, 'header') != null;
+	// …and WRITE to it (the editor + every export update in lock-step).
+	const setDeckSize = (value: string) => setSource((s) => setFrontMatter(s, 'size', value));
+	const togglePageNumbers = () => setSource((s) => setFrontMatter(s, 'paginate', pageNumbers ? null : 'true'));
+	const toggleHeaderFooter = () => setSource((s) => setFrontMatter(s, 'header', getFrontMatter(s, 'header') != null ? null : deck.title));
 
 	function loadDeck(d: StudioDeck) {
 		// Flush the current deck's edits before leaving it (the debounce may not
@@ -251,9 +273,20 @@ export default function StudioShell({ options }: Props) {
 						))}
 					</div>
 				</Field>
-				<Field label="Size"><Control onClick={() => notify('Slide size — 16:9, 4:3, and A4 in the full app.')}>16 : 9 <ChevronDown className="size-3.5" /></Control></Field>
-				<Field label="Page numbers"><Toggle label="Page numbers" on={pageNumbers} onClick={() => setPageNumbers((v) => !v)} /></Field>
-				<Field label="Header / footer"><Toggle label="Header / footer" on={headerFooter} onClick={() => setHeaderFooter((v) => !v)} /></Field>
+				<Field label="Size">
+					<DropdownMenu>
+						<DropdownMenuTrigger asChild>
+							<Control>{SIZE_LABELS[deckSize] ?? deckSize} <ChevronDown className="size-3.5" /></Control>
+						</DropdownMenuTrigger>
+						<DropdownMenuContent align="end" className="w-40">
+							{SIZES.map((s) => (
+								<DropdownMenuItem key={s.value} onSelect={() => setDeckSize(s.value)}>{s.label}{deckSize === s.value && <span className="ml-auto text-[var(--accent)]">✓</span>}</DropdownMenuItem>
+							))}
+						</DropdownMenuContent>
+					</DropdownMenu>
+				</Field>
+				<Field label="Page numbers"><Toggle label="Page numbers" on={pageNumbers} onClick={togglePageNumbers} /></Field>
+				<Field label="Running header"><Toggle label="Running header" on={headerFooter} onClick={toggleHeaderFooter} /></Field>
 			</InspGroup>
 			<InspGroup icon={<Wand2 className="size-3.5" />} label="Authoring">
 				<Field label="Inline validation"><Toggle label="Inline validation" on={validation} onClick={() => { setValidation((v) => { notify(v ? 'Inline validation off — the editor stops flagging components.' : 'Inline validation on — unknown components are flagged again.'); return !v; }); }} /></Field>
@@ -300,7 +333,7 @@ export default function StudioShell({ options }: Props) {
 				<button type="button" onClick={() => goToSlide(slideNo)} className="rounded px-1.5 text-muted-foreground hover:text-[var(--accent)]" aria-label="Next slide">›</button>
 			</div>
 			<div className="flex min-h-0 flex-1 items-center justify-center overflow-hidden bg-card p-4 sm:p-5">
-				<DeckPreview options={options} sample={slide} mermaid={false} className="relative aspect-video w-full max-w-[760px] overflow-hidden rounded-xl border border-border bg-background shadow-[0_8px_24px_rgba(10,22,40,.10)]" aria-label="Live deck preview" />
+				<DeckPreview options={options} sample={fm ? fm + slide : slide} mermaid={false} className="relative aspect-video w-full max-w-[760px] overflow-hidden rounded-xl border border-border bg-background shadow-[0_8px_24px_rgba(10,22,40,.10)]" aria-label="Live deck preview" />
 			</div>
 			{/* Slide navigator — jump to any slide, see its component type */}
 			<nav className="flex items-center gap-1.5 overflow-x-auto border-t border-border bg-background px-3 py-2" aria-label="Slide navigator">
@@ -501,7 +534,7 @@ export default function StudioShell({ options }: Props) {
 			{/* ── Overlays ─────────────────────────────────────────────── */}
 			<ShareSheet open={shareOpen} onOpenChange={setShareOpen} deckTitle={deck.title} source={source} options={options} palette={palette} mode={mode === 'dark' ? 'dark' : 'light'} onPresent={() => setPresentOpen(true)} notify={notify} />
 			<WorkspaceSheet open={workspaceOpen} onOpenChange={setWorkspaceOpen} notify={notify} />
-			<PresentOverlay open={presentOpen} onClose={() => setPresentOpen(false)} options={options} slides={slides} startIndex={activeFullIndex} notify={notify} />
+			<PresentOverlay open={presentOpen} onClose={() => setPresentOpen(false)} options={options} slides={slides} frontMatter={fm} startIndex={activeFullIndex} notify={notify} />
 			<CommandPalette
 				open={cmdOpen}
 				onOpenChange={setCmdOpen}
@@ -563,9 +596,11 @@ function InspGroup({ icon, label, last, children }: { icon: React.ReactNode; lab
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
 	return <div className="my-2 flex items-center justify-between gap-2.5"><span className="text-[12.5px] text-foreground">{label}</span>{children}</div>;
 }
-function Control({ children, onClick }: { children: React.ReactNode; onClick?: () => void }) {
-	return <button type="button" onClick={onClick} className="inline-flex min-w-[96px] items-center justify-between gap-1.5 rounded-md border border-border bg-background px-2.5 py-1.5 text-[12.5px] font-semibold text-[var(--text-heading)] hover:border-[color-mix(in_srgb,var(--accent)_40%,var(--border))]">{children}</button>;
-}
+// Forwards ref + props so it can be a Radix `asChild` trigger (the Size menu).
+const Control = React.forwardRef<HTMLButtonElement, React.ButtonHTMLAttributes<HTMLButtonElement>>(({ children, ...props }, ref) => (
+	<button ref={ref} type="button" {...props} className="inline-flex min-w-[96px] items-center justify-between gap-1.5 rounded-md border border-border bg-background px-2.5 py-1.5 text-[12.5px] font-semibold text-[var(--text-heading)] hover:border-[color-mix(in_srgb,var(--accent)_40%,var(--border))]">{children}</button>
+));
+Control.displayName = 'Control';
 function Toggle({ on, onClick, label }: { on?: boolean; onClick?: () => void; label?: string }) {
 	return (
 		<button type="button" role="switch" aria-checked={!!on} aria-label={label} onClick={onClick} className={cn('relative h-[22px] w-[38px] rounded-full transition-colors', on ? 'bg-primary' : 'bg-border')}>

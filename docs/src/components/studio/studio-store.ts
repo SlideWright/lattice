@@ -1,4 +1,5 @@
 import { DECKS, deckSource, type StudioDeck } from './decks';
+import { stripFrontMatter } from './front-matter';
 
 // Studio persistence — localStorage-backed, Studio-scoped (lattice-studio-*).
 // Three concerns, kept independent so a corrupt value in one never breaks the
@@ -29,9 +30,9 @@ function write(key: string, value: unknown): void {
 	}
 }
 
-/** `N slides` for the deck-switcher meta line. */
+/** `N slides` for the deck-switcher meta line (front-matter excluded). */
 export function metaFor(source: string): string {
-	const n = source.split(/^\s*---\s*$/m).filter((s) => s.trim()).length || 1;
+	const n = stripFrontMatter(source).split(/^\s*---\s*$/m).filter((s) => s.trim()).length || 1;
 	return `${n} slide${n === 1 ? '' : 's'}`;
 }
 
@@ -78,7 +79,7 @@ function canonicalSource(entry: IndexEntry): string {
 export function loadDeckList(): StudioDeck[] {
 	return loadIndex().map((e) => {
 		const source = loadSource(e.id) ?? canonicalSource(e);
-		return { id: e.id, title: e.title, meta: metaFor(source), slides: source.split(/\n\n---\n\n/) };
+		return { id: e.id, title: e.title, meta: metaFor(source), slides: stripFrontMatter(source).split(/\n\n---\n\n/) };
 	});
 }
 

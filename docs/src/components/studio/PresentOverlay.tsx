@@ -22,7 +22,7 @@ type RehearsalBeat = { at: number; kind: string; text: string; hold: number };
 type RehearsalSlide = { index: number; target: number; why: string; beats: RehearsalBeat[] };
 type RehearsalPlan = { totalTarget: number; suggestMinutes: number; slides: RehearsalSlide[] };
 
-export function PresentOverlay({ open, onClose, options, slides, startIndex = 0, notify }: { open: boolean; onClose: () => void; options: SingleSlideOptions; slides: string[]; startIndex?: number; notify: (msg: string) => void }) {
+export function PresentOverlay({ open, onClose, options, slides, frontMatter = '', startIndex = 0, notify }: { open: boolean; onClose: () => void; options: SingleSlideOptions; slides: string[]; frontMatter?: string; startIndex?: number; notify: (msg: string) => void }) {
 	const [lens, setLens] = React.useState<PresentLens>('full');
 	const [idx, setIdx] = React.useState(0);
 	const [playing, setPlaying] = React.useState(false);
@@ -149,7 +149,7 @@ export function PresentOverlay({ open, onClose, options, slides, startIndex = 0,
 
 			<div className="relative flex min-h-0 w-full flex-1 items-center justify-center gap-4 px-4 sm:px-6">
 				<button type="button" onClick={goPrev} disabled={clamped === 0} className="hidden shrink-0 rounded-full border border-border bg-card p-2 text-foreground hover:text-[var(--accent)] disabled:opacity-30 sm:block" aria-label="Previous slide"><ChevronLeft className="size-5" /></button>
-				<DeckPreview options={options} sample={cur} mermaid={false} className="relative aspect-video w-full max-w-[960px] overflow-hidden rounded-2xl border border-border bg-card shadow-[0_24px_60px_rgba(10,22,40,.18)]" aria-label="Presented slide" />
+				<DeckPreview options={options} sample={frontMatter ? frontMatter + cur : cur} mermaid={false} className="relative aspect-video w-full max-w-[960px] overflow-hidden rounded-2xl border border-border bg-card shadow-[0_24px_60px_rgba(10,22,40,.18)]" aria-label="Presented slide" />
 				<button type="button" onClick={goNext} disabled={clamped >= count - 1} className="hidden shrink-0 rounded-full border border-border bg-card p-2 text-foreground hover:text-[var(--accent)] disabled:opacity-30 sm:block" aria-label="Next slide"><ChevronRight className="size-5" /></button>
 				{/* Real delivery coaching — the plan's role-specific guidance, with the
 				    active timed beat surfacing as you cross its mark in the slide. */}
