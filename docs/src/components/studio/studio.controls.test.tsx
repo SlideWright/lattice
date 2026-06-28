@@ -209,6 +209,9 @@ describe('Studio — Fabricate + Present dock respond', () => {
 		// (Smoke: pick a new accent, the panel stays consistent and still exports.)
 		const swatchInputs = document.querySelectorAll('input[type="color"]');
 		expect(swatchInputs.length).toBe(4);
+		// Picking a curated starter reseeds the core colours and re-derives.
+		await user.click(screen.getByRole('button', { name: /Start from Ember/ }));
+		expect(await screen.findByText(/Engine-derived contract — 18 tokens/)).toBeInTheDocument();
 	});
 
 	it('Present read-aloud Play/Pause toggles and shows the live teleprompter', async () => {

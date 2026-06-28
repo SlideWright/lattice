@@ -82,6 +82,24 @@ export function Fabricate({ options, onClose, notify }: { options: SingleSlideOp
 					<div className="border-b border-border px-4 py-3.5 font-mono text-[11px] font-bold uppercase tracking-widest text-muted-foreground">{tab === 'theme' ? 'Theme Studio' : 'Layout Studio'}</div>
 					{tab === 'theme' ? (
 						<>
+							<Section icon={<Sparkles className="size-3.5" />} label="Start from a curated palette">
+								<div className="flex flex-wrap gap-2">
+									{STARTERS.map((s) => {
+										const e = s.essentials as Record<string, string>;
+										const active = core.bg === e.bg && core.accent === e.accent;
+										return (
+											<button type="button" key={s.name} onClick={() => setCore({ bg: e.bg, bgAlt: e.bgAlt, textHeading: e.textHeading, accent: e.accent })} title={s.description} aria-label={`Start from ${s.label}`} className={cn('flex items-center gap-2 rounded-xl border px-2.5 py-1.5 text-left', active ? 'border-[var(--accent)] bg-[var(--accent-soft)]' : 'border-border hover:border-[color-mix(in_srgb,var(--accent)_40%,var(--border))]')}>
+												<span className="flex -space-x-1">
+													<span className="size-4 rounded-full border border-border" style={{ background: e.bg }} />
+													<span className="size-4 rounded-full border border-border" style={{ background: e.accent }} />
+													<span className="size-4 rounded-full border border-border" style={{ background: e.textHeading }} />
+												</span>
+												<span className="text-[12px] font-semibold text-[var(--text-heading)]">{s.label}</span>
+											</button>
+										);
+									})}
+								</div>
+							</Section>
 							<Section icon={<Palette className="size-3.5" />} label="Core colours — you pick 4">
 								{CORE.map((c) => (
 									<div key={c.key} className="my-2.5 flex items-center gap-3">
