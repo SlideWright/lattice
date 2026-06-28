@@ -27,6 +27,7 @@ import { PresentOverlay } from './PresentOverlay';
 import { ShareSheet } from './ShareSheet';
 import { getNote, setNote } from './slide-notes';
 import { type Checkpoint, createDeck, deleteDeck as deleteDeckStore, loadCheckpoints, loadDeckList, loadSettings, loadSource, metaFor, renameDeck as renameDeckStore, saveCheckpoint, saveSettings, saveSource, titleFromSource } from './studio-store';
+import { deleteStudioTheme, listStudioThemes, type StudioTheme } from './theme-library';
 import { useBreakpoint } from './use-breakpoint';
 import { WorkspaceSheet } from './WorkspaceSheet';
 
@@ -96,6 +97,30 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 		}
 	});
 	const [mobilePane, setMobilePane] = React.useState<'edit' | 'preview'>('preview');
+	// Saved themes from the SHARED Workbench library (asset-store, IndexedDB) — a
+	// theme derived + saved in Fabricate lands here and becomes selectable. Loaded
+	// async (the store is IndexedDB); refreshed after a save/delete.
+	const [savedThemes, setSavedThemes] = React.useState<StudioTheme[]>([]);
+	// Current palette read through a ref so refreshThemes (a stable callback) can
+	// self-heal without re-subscribing on every palette flip.
+	const paletteRef = React.useRef(palette);
+	paletteRef.current = palette;
+	// biome-ignore lint/correctness/useExhaustiveDependencies: applyPalette closes only over stable setters/consts, and palette is read via paletteRef — a stable callback is intended (no re-subscribe per palette flip).
+	const refreshThemes = React.useCallback(() => {
+		listStudioThemes()
+			.then((list) => {
+				setSavedThemes(list);
+				// Self-heal a dead active palette: if the persisted choice is neither a
+				// built-in nor a (still-)present saved theme — e.g. it was deleted in
+				// another session — fall back to the default, so the preview isn't stuck
+				// rendering an unresolvable name. Checked AFTER the list resolves, so a
+				// valid saved slug is never reset mid-load.
+				const p = paletteRef.current;
+				if (!PALETTES.includes(p) && !list.some((t) => t.name === p)) applyPalette('indaco');
+			})
+			.catch(() => setSavedThemes([]));
+	}, []);
+	React.useEffect(() => { refreshThemes(); }, [refreshThemes]);
 	// `validation` is an editor preference (persisted in settings). The deck-level
 	// Look controls (size / page numbers / header+footer) are NOT separate state —
 	// they READ from and WRITE to the deck's front-matter, so the toggle always
@@ -220,12 +245,28 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 	}
 	function applyPalette(name: string) {
 		setPalette(name);
-		document.documentElement.setAttribute('data-palette', name);
 		// Persist to a Studio-scoped key (not the shared docs key) so the choice
 		// survives a reload without bleeding into the rest of the docs site.
 		try {
 			localStorage.setItem('lattice-studio-palette', name);
 		} catch {}
+		// A built-in palette drives the page through `data-palette` (other previews
+		// fetch it by name). A saved library theme has no on-disk CSS, so it renders
+		// through `extraTheme` instead — we leave `data-palette` on a real palette to
+		// avoid a 404 theme fetch, and pass the saved CSS where it's consumed.
+		if (PALETTES.includes(name)) document.documentElement.setAttribute('data-palette', name);
+	}
+	// The active theme as a saved library entry (when the active palette names one),
+	// else undefined → a built-in palette. Drives the `extraTheme` everywhere a deck
+	// is rendered/exported so a saved theme is honored, not just previewed.
+	const activeTheme = React.useMemo(() => savedThemes.find((t) => t.name === palette), [savedThemes, palette]);
+	const extraTheme = activeTheme ? { name: activeTheme.name, css: activeTheme.css } : undefined;
+	function removeTheme(t: StudioTheme) {
+		deleteStudioTheme(t.id).then(() => {
+			refreshThemes();
+			if (palette === t.name) applyPalette('indaco');
+			notify(`Removed “${t.label}” from your library.`);
+		});
 	}
 	// Navigate to a slide from the preview side (rail / arrows): move the preview
 	// AND scroll the editor to that slide (mapping the viewed index back to its
@@ -430,6 +471,21 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 							<button type="button" key={p} onClick={() => applyPalette(p)} className={cn('size-[22px] rounded-[7px] border-2', palette === p ? 'border-[var(--text-heading)] ring-2 ring-[var(--accent)] ring-offset-2 ring-offset-background' : 'border-transparent')} style={{ background: PALETTE_DOTS[p] }} aria-label={p} />
 						))}
 					</div>
+					{savedThemes.length > 0 && (
+						<div className="mt-2.5 space-y-0.5">
+							<div className="mb-1 font-mono text-[10px] font-bold uppercase tracking-wider text-muted-foreground/80">Saved themes</div>
+							{savedThemes.map((t) => (
+								<div key={t.id} className="group flex items-center gap-1.5 rounded-md px-1 py-1 hover:bg-[var(--accent-soft)]">
+									<button type="button" onClick={() => applyPalette(t.name)} className="flex min-w-0 flex-1 items-center gap-2 text-left">
+										<span className="size-3.5 shrink-0 rounded-full border border-border" style={{ background: t.essentials?.accent ?? 'var(--accent)' }} />
+										<span className="truncate text-[12.5px] font-semibold text-[var(--text-heading)]">{t.label}</span>
+										{palette === t.name && <span className="ml-auto text-[12px] text-[var(--accent)]">✓</span>}
+									</button>
+									<button type="button" onClick={() => removeTheme(t)} aria-label={`Delete ${t.label}`} className="shrink-0 rounded p-0.5 text-muted-foreground opacity-0 hover:text-[var(--text-heading)] group-hover:opacity-100"><Trash2 className="size-3.5" /></button>
+								</div>
+							))}
+						</div>
+					)}
 				</Field>
 				<Field label="Size">
 					<DropdownMenu>
@@ -518,7 +574,7 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 				<button type="button" onClick={() => goToSlide(slideNo)} className="rounded px-1.5 text-muted-foreground hover:text-[var(--accent)]" aria-label="Next slide">›</button>
 			</div>
 			<div className="flex min-h-0 flex-1 items-center justify-center overflow-hidden bg-card p-4 sm:p-5">
-				<DeckPreview options={options} sample={fm ? fm + slide : slide} mermaid={false} className="relative aspect-video w-full max-w-[760px] overflow-hidden rounded-xl border border-border bg-background shadow-[0_8px_24px_rgba(10,22,40,.10)]" aria-label="Live deck preview" />
+				<DeckPreview options={options} sample={fm ? fm + slide : slide} mermaid={false} paletteOverride={activeTheme?.name} extraTheme={extraTheme} className="relative aspect-video w-full max-w-[760px] overflow-hidden rounded-xl border border-border bg-background shadow-[0_8px_24px_rgba(10,22,40,.10)]" aria-label="Live deck preview" />
 			</div>
 			{/* Slide navigator — jump to any slide, see its component type */}
 			<div className="flex items-center gap-1.5 border-t border-border bg-background px-3 py-2">
@@ -632,6 +688,14 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 								{p === palette && <span className="ml-auto text-[var(--accent)]">✓</span>}
 							</DropdownMenuItem>
 						))}
+						{savedThemes.length > 0 && <DropdownMenuSeparator />}
+						{savedThemes.map((t) => (
+							<DropdownMenuItem key={t.id} onSelect={() => applyPalette(t.name)}>
+								<span className="size-3.5 rounded-full border border-border" style={{ background: t.essentials?.accent ?? 'var(--accent)' }} />
+								<span className="truncate">{t.label}</span>
+								{t.name === palette && <span className="ml-auto text-[var(--accent)]">✓</span>}
+							</DropdownMenuItem>
+						))}
 					</DropdownMenuContent>
 				</DropdownMenu>
 
@@ -647,7 +711,7 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 
 			{/* ── Body ─────────────────────────────────────────────────── */}
 			{view === 'fabricate' ? (
-				<Fabricate options={options} onClose={() => setView('compose')} notify={notify} />
+				<Fabricate options={options} onClose={() => setView('compose')} notify={notify} onSaved={refreshThemes} />
 			) : mobile ? (
 				/* Mobile: one swappable Edit/Preview pane; panels live in sheets. */
 				<div className="flex min-h-0 flex-1 flex-col">
@@ -729,9 +793,9 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 			)}
 
 			{/* ── Overlays ─────────────────────────────────────────────── */}
-			<ShareSheet open={shareOpen} onOpenChange={setShareOpen} deckTitle={deck.title} source={source} options={options} palette={palette} mode={mode === 'dark' ? 'dark' : 'light'} onPresent={() => setPresentOpen(true)} notify={notify} />
+			<ShareSheet open={shareOpen} onOpenChange={setShareOpen} deckTitle={deck.title} source={source} options={options} palette={palette} mode={mode === 'dark' ? 'dark' : 'light'} extraTheme={extraTheme} onPresent={() => setPresentOpen(true)} notify={notify} />
 			<WorkspaceSheet open={workspaceOpen} onOpenChange={setWorkspaceOpen} notify={notify} />
-			<PresentOverlay open={presentOpen} onClose={() => setPresentOpen(false)} options={options} slides={slides} frontMatter={fm} startIndex={activeFullIndex} notify={notify} />
+			<PresentOverlay open={presentOpen} onClose={() => setPresentOpen(false)} options={options} slides={slides} frontMatter={fm} startIndex={activeFullIndex} paletteOverride={activeTheme?.name} extraTheme={extraTheme} notify={notify} />
 			<CommandPalette
 				open={cmdOpen}
 				onOpenChange={setCmdOpen}

@@ -41,11 +41,25 @@ async function ensureReady(options: SingleSlideOptions): Promise<PG> {
 	return PG;
 }
 
-/** Register the palette (+ dark companion) and return the theme name to render. */
-async function ensureTheme(options: SingleSlideOptions, palette: string, mode: 'light' | 'dark'): Promise<string> {
+/** An in-memory theme (a saved Fabricate library theme) — registered, not fetched. */
+export type ExtraTheme = { name: string; css: string };
+
+/**
+ * Register the theme to render with and return its name. A saved library theme
+ * (`extra`) has no on-disk CSS, so we register the raw CSS into the engine; a
+ * built-in palette is fetched (+ its dark companion) by name as before.
+ */
+async function ensureTheme(options: SingleSlideOptions, palette: string, mode: 'light' | 'dark', extra?: ExtraTheme): Promise<string> {
+	const PG = pg();
+	if (extra) {
+		// ALWAYS (re-)register so an edited theme re-saved under the same name
+		// exports with the current CSS (addThemes overwrites by name); a hasTheme
+		// guard would silently export the stale theme.
+		if (PG) (PG as unknown as { addThemes: (c: string[]) => void }).addThemes([extra.css]);
+		return extra.name;
+	}
 	const themes = createThemeFetcher(options.themeBase);
 	await themes.ensure(palette, mode);
-	const PG = pg();
 	return mode === 'dark' && PG?.hasTheme(`${palette}-dark`) ? `${palette}-dark` : palette;
 }
 
@@ -54,9 +68,9 @@ async function ensureTheme(options: SingleSlideOptions, palette: string, mode: '
  * image exporters need. This is the single piece of glue Share adds on top of
  * the shared exporters.
  */
-export async function buildDeckRender(options: SingleSlideOptions, source: string, palette: string, mode: 'light' | 'dark'): Promise<DeckRender> {
+export async function buildDeckRender(options: SingleSlideOptions, source: string, palette: string, mode: 'light' | 'dark', extra?: ExtraTheme): Promise<DeckRender> {
 	const PG = await ensureReady(options);
-	const theme = await ensureTheme(options, palette, mode);
+	const theme = await ensureTheme(options, palette, mode, extra);
 	const out = PG.render(source, theme);
 	const { previewFontFaceCss } = await import('@/playground/font-embed.js');
 	return {
@@ -75,16 +89,19 @@ function exporters(): Promise<ExportMod> {
 }
 
 /** Markdown source with the current theme + referenced components embedded. */
-export async function shareMarkdown(options: SingleSlideOptions, source: string, name: string, palette: string): Promise<void> {
+export async function shareMarkdown(options: SingleSlideOptions, source: string, name: string, palette: string, extra?: ExtraTheme): Promise<void> {
 	const ex = await exporters();
-	// Embed the live palette CSS so the .md keeps its look even where the theme
-	// isn't installed. Best-effort: a failed fetch still exports the bare source.
-	let theme: { name: string; css: string } | undefined;
-	try {
-		const css = await createThemeFetcher(options.themeBase).fetch(palette);
-		theme = { name: palette, css };
-	} catch {
-		theme = undefined;
+	// Embed the live theme CSS so the .md keeps its look even where the theme
+	// isn't installed. A saved library theme carries its own CSS; otherwise fetch
+	// the palette. Best-effort: a failed fetch still exports the bare source.
+	let theme: { name: string; css: string } | undefined = extra;
+	if (!theme) {
+		try {
+			const css = await createThemeFetcher(options.themeBase).fetch(palette);
+			theme = { name: palette, css };
+		} catch {
+			theme = undefined;
+		}
 	}
 	ex.exportMarkdown(source, name, theme, []);
 }
@@ -97,15 +114,15 @@ export async function shareMarp(options: SingleSlideOptions, source: string, nam
 }
 
 /** One-click image PDF (2× raster, one slide per page). */
-export async function sharePdf(options: SingleSlideOptions, source: string, name: string, palette: string, mode: 'light' | 'dark', onStatus?: (m: string) => void): Promise<void> {
-	const render = await buildDeckRender(options, source, palette, mode);
+export async function sharePdf(options: SingleSlideOptions, source: string, name: string, palette: string, mode: 'light' | 'dark', extra?: ExtraTheme, onStatus?: (m: string) => void): Promise<void> {
+	const render = await buildDeckRender(options, source, palette, mode, extra);
 	const ex = await exporters();
 	await ex.exportPdf(render, name, onStatus, { deck: name, engine: 'lattice' });
 }
 
 /** PowerPoint (image-slides, full-bleed). */
-export async function sharePptx(options: SingleSlideOptions, source: string, name: string, palette: string, mode: 'light' | 'dark', onStatus?: (m: string) => void): Promise<void> {
-	const render = await buildDeckRender(options, source, palette, mode);
+export async function sharePptx(options: SingleSlideOptions, source: string, name: string, palette: string, mode: 'light' | 'dark', extra?: ExtraTheme, onStatus?: (m: string) => void): Promise<void> {
+	const render = await buildDeckRender(options, source, palette, mode, extra);
 	const ex = await exporters();
 	await ex.exportPptx(render, name, onStatus, { deck: name, engine: 'lattice' });
 }
@@ -115,8 +132,8 @@ export async function sharePptx(options: SingleSlideOptions, source: string, nam
  * full-deck frame from the render (print rules ON, visible to the print box) and
  * invokes print; the frame is removed once the dialog closes.
  */
-export async function sharePrintDeck(options: SingleSlideOptions, source: string, name: string, palette: string, mode: 'light' | 'dark'): Promise<void> {
-	const render = await buildDeckRender(options, source, palette, mode);
+export async function sharePrintDeck(options: SingleSlideOptions, source: string, name: string, palette: string, mode: 'light' | 'dark', extra?: ExtraTheme): Promise<void> {
+	const render = await buildDeckRender(options, source, palette, mode, extra);
 	const { buildSrcdoc } = await import('@/playground/deck-preview.js');
 	const ex = await exporters();
 	const host = document.createElement('div');

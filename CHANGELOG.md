@@ -73,6 +73,14 @@ in patch versions.
     (written as a real LFM note, exported to PDF/PPTX and read aloud in Present),
     and curated **starter palettes** (Dusk/Ember/Pine/Slate) in Fabricate that
     reseed and re-derive the whole theme.
+  - **Fabricate Theme Studio depth** — pick **all ten essentials** (the engine's
+    full `ESSENTIAL_KEYS`, grouped surfaces / ink / brand / signals), audition the
+    derived theme in **light or dark** (a per-render mode override resolves its
+    `light-dark()` pairs without flipping the page), name it, and **Save to
+    library** — persisted to the **shared Workbench asset store** (the same
+    library the Workbench Theme Studio uses) so a saved theme becomes selectable
+    from the Inspector's Look group and the topbar theme menu, and renders your
+    deck live (and through every Share export) — not just the specimen.
 - **`--present`: PDFs that open straight into full-screen presentation mode.**
   A new opt-in CLI flag marks the exported PDF's document catalog so Adobe
   Acrobat/Reader and most desktop viewers open it directly in full-screen /

@@ -80,7 +80,7 @@ try {
 				var r = document.documentElement;
 				try {
 					var p = localStorage.getItem('lattice-studio-palette');
-					if (p) r.setAttribute('data-palette', p);
+					if (p && ['indaco','cuoio','burgundy','laguna','crepuscolo','atelier','carbone','onyx'].indexOf(p) !== -1) r.setAttribute('data-palette', p);
 					var m = localStorage.getItem('lattice-docs-mode');
 					if (m === 'light' || m === 'dark') r.setAttribute('data-mode', m);
 					else if (window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches) r.setAttribute('data-mode', 'dark');

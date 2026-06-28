@@ -109,10 +109,20 @@ its own commit. Rough order by value.
    item; needs a synced second window (postMessage or shared render).
 2. **Fabricate: real Component/Layout Studio.** The "Layout" tab is a density
    radio only. Reuse `component-studio.js` + `layout-core.generated.js` (manifest
-   inspect, CSS/skeleton, gate findings). Also deepen the Theme tab: 10-essential
-   editing (not just 4), light/dark specimen toggle (the derived theme has
-   `light-dark()` pairs — thread a `mode` override to `DeckPreview`/
-   `single-slide-render.ts`), save-to-library that makes the theme selectable.
+   inspect, CSS/skeleton, gate findings).
+   - **DONE — Theme-tab depth** (branch `claude/studio-depth-fabricate-theme`):
+     all 10 essentials editable; light/dark specimen toggle via a `modeOverride`
+     threaded through `single-slide-render.ts`/`DeckPreview` (emits
+     `color-scheme` so `light-dark()` resolves); **save-to-library** via
+     `theme-library.ts` over the shared `asset-store.js` (IndexedDB
+     `lattice-workbench`) + `themeAsset`, with saved themes selectable in the
+     Inspector Look group + topbar menu and threaded into the compose preview,
+     Present, and Share/export (`extraTheme`). **Gotcha fixed:** the saved CSS's
+     `@theme <name>` must equal the record name (slug of the label) or the engine
+     registers the theme under the CSS name while the deck renders by record name
+     → a blank, unthemed render. Re-serialize at save with the slug name.
+   - **TODO — Component/Layout Studio** (still a density radio): reuse
+     `component-studio.js` + `layout-core.generated.js`.
 3. **Settings: model picker + voice/weight management.** Reuse
    `architect-model.js` `listOpenRouterModels()`/`setOpenRouterModel()` and
    `voice-model.js` (`createVoiceModel().availability()`, Kokoro summon/download,

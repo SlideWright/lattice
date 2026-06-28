@@ -176,7 +176,7 @@ describe('StudioShell — e2e flows (jsdom)', () => {
 		await user.click(screen.getByRole('button', { name: 'Workspace launcher' }));
 		await user.click(await screen.findByText('Fabricate'));
 		expect(await screen.findByText('Theme Studio')).toBeInTheDocument();
-		expect(screen.getByText(/Core colours/)).toBeInTheDocument();
+		expect(screen.getByText(/Core colors/)).toBeInTheDocument();
 	});
 
 	it('switches decks from the deck switcher', async () => {
@@ -193,7 +193,7 @@ describe('StudioShell — e2e flows (jsdom)', () => {
 		expect(screen.getByText('Components valid')).toBeInTheDocument();
 		expect(screen.getByText('Opens with a title')).toBeInTheDocument();
 		expect(screen.getByText('Variety')).toBeInTheDocument();
-		// A clean deck reads READY (the colour-independent pass tag), not FIX.
+		// A clean deck reads READY (the color-independent pass tag), not FIX.
 		expect(screen.getByText('READY')).toBeInTheDocument();
 		expect(screen.queryByText('FIX')).not.toBeInTheDocument();
 	});
