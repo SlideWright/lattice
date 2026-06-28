@@ -8657,6 +8657,11 @@ section.q-and-a > .cell-stage > :is(ul, ol) > li > :is(ul, ol) > li {
  * node halo is the canvas colour so it punches cleanly through the line. */
 section.q-and-a.spine > .cell-stage > :is(ul, ol) {
   position: relative;
+  /* border-box so the spine's own `padding-left` is absorbed WITHIN the inherited
+   * `width:100%` (base ul rule) — `box-sizing` isn't inherited, so a content-box ul
+   * would add sp-xl on top of 100% and push the answer column past the stage's right
+   * edge (horizontal clip on a long answer line). #547. */
+  box-sizing: border-box;
   padding-left: var(--sp-xl);
   gap: var(--sp-lg);
 }
