@@ -3572,7 +3572,7 @@ Promotes the one KPI in trouble to hero scale, with the supporting three holding
 
 `Framework · Q4 2026`
 
-## One metric below target; remediation under way, as it has been for two quarters.
+## One metric below target; remediation under way.
 
 1. 94%
    - Signal-classification success
@@ -3582,7 +3582,7 @@ Promotes the one KPI in trouble to hero scale, with the supporting three holding
    - target 20 min `On plan` `Ops`
 3. 0
    - Auditor findings
-   - target 0 — nobody has opened the log to check `On plan` `Audit`
+   - target 0 `On plan` `Audit`
 4. 3.2×
    - Calibration headroom
    - target 2× `On plan` `Framework`
@@ -3622,7 +3622,7 @@ Binary-state pills (`Compliant`, `Remediating`, `Open`) with a source footer for
 
 `Compliance · Q4 2026`
 
-## Three frameworks clean; one open finding under remediation since the last walk-through.
+## Three frameworks clean; one finding under remediation.
 
 1. 0
    - SOC 2 Type II open findings
@@ -5616,9 +5616,9 @@ Use for milestone history or annotated timelines. Each event sits on a left-to-r
 
 #### When NOT to use
 
-- **Date-less steps.** If the items don't carry calendar dates, you have a sequence, not a timeline. Use `list-steps` for an ordered list or `journey` for stage-by-stage progress without a date axis.
-- **Date-range bars.** If each milestone needs a start and an end on a shared time axis, the slide is a Gantt chart. Use `gantt` — the bar geometry will convey the durations the pill cannot.
-- **Status pills as decoration.** The status pill is a verdict — `decision`, `live`, `at-risk`, `blocked`, `done`. Don't invent freeform tags; the engine only tints the recognised vocabulary, and decorative pills break the at-a-glance read.
+- **Date-less steps.** No calendar dates? You have a sequence, not a timeline. Use `list-steps` for an ordered list or `journey` for stage-by-stage progress.
+- **Date-range bars.** If each milestone needs a start and end on a shared axis, it's a Gantt chart. Use `gantt` — bar geometry conveys the durations a pill cannot.
+- **Status pills as decoration.** The status pill is a verdict — `decision`, `live`, `at-risk`, `blocked`, `done`. Don't invent freeform tags; the engine tints only the known vocabulary.
 
 #### Authoring
 
@@ -6514,10 +6514,10 @@ Use when one citation IS the slide. The blockquote carries the verbatim language
 
 #### When NOT to use
 
-- **Multiple citations on one slide.** If you are stacking two or three statutes, use statute-stack instead — citation-card is built for the canvas-weight treatment of a single authority.
-- **Paraphrased 'quote'.** If you are rewriting the source language, drop the citation framing and use content or split-panel pullquote. The whole point of citation-card is verbatim language with attribution.
-- **Gloss longer than the quote.** When the plain-English explanation runs three paragraphs, the citation is no longer the focus. Trim the gloss to one sentence plus a `What we must do` action, or move to content.
-- **Plain gloss under the pull-quote variant.** The `pull-quote` variant hides any gloss line that does not lead with **bold** — it shows only the `**What we must do**` action. A plain 'In plain English …' interpretation line silently vanishes there. Lead gloss lines with a bold label under pull-quote, or keep them on the default variant.
+- **Multiple citations on one slide.** Stacking two or three statutes? Use statute-stack — citation-card gives canvas weight to a single authority.
+- **Paraphrased 'quote'.** Rewriting the source? Drop the citation framing for content or a split-panel pullquote — citation-card is for verbatim language with attribution.
+- **Gloss longer than the quote.** When the gloss runs three paragraphs, the citation is no longer the focus. Trim it to one sentence plus a `What we must do` action, or use content.
+- **Plain gloss under the pull-quote variant.** The `pull-quote` variant shows only a **bold**-led `**What we must do**` action — a plain 'In plain English …' line silently vanishes. Lead with a bold label, or use the default variant.
 
 #### Authoring
 

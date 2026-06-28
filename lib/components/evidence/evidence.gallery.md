@@ -13,7 +13,7 @@ Evidence — data that supports the argument.
 
 `Financial · Q4 2026`
 
-## Revenue ahead of plan; margin and cash both expanded, against a plan we set.
+## Revenue ahead of plan; margin and cash both expanded.
 
 1. $2.4B
    - Total revenue
