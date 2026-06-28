@@ -417,6 +417,16 @@ in patch versions.
 
 ### Fixed
 
+- **`redline three-col` (and `split`) no longer clip their card prose under Form.** redline
+  draws its own `section`-level grid and isn't `.cell-stage`-migrated, so the masthead band
+  the Form lifts (eyebrow + title) auto-flowed into the grid's narrow first cell — the title
+  wrapped to three lines, inflating the header row until the OLD/NEW cards lost the height to
+  hold their text and clipped. Span the lifted `.cell-masthead` across all columns on row 1
+  (mirroring the non-Form `h2 { grid-column: 1/-1 }`), so the title fits one line and the
+  cards keep their full track. Also tuned the three-col cards for their narrow columns —
+  snug line-height + tighter block padding, a wider OLD/NEW : narrower WHY column ratio
+  (the rationale pills under-fill their track), and trimmed the NEW sample's trailing clause
+  to match OLD's density. Verified light + dark; the gallery renders overflow-clean. (#569)
 - **`q-and-a spine` no longer clips its answer text at the right frame edge.** The base
   `q-and-a` list is `width: 100%`, and the `spine` look adds its own `padding-left` to that
   same list; because `box-sizing` isn't inherited (only `section` sets it), the list was
