@@ -55,6 +55,12 @@ in patch versions.
     instead of faking a change. Workspace shows the real active tier, one-click
     OpenRouter OAuth connect/disconnect, and real session/all-time spend. Fix-all
     now lands the linter's per-name suggestion, not a hardcoded `kpi`.
+  - **Compose editing depth** — a slide toolbar (add / duplicate / reorder /
+    delete), a searchable **insert-component palette** over all 53 shipped
+    components (inserts each one's authored skeleton), context-aware editor
+    **autocomplete** (component names, front-matter keys, fenced-block
+    languages), and the full **grammar linter** (the shared lint-core: severity
+    tiers, hover fix guidance, and one-click per-finding quick-fixes).
 - **`--present`: PDFs that open straight into full-screen presentation mode.**
   A new opt-in CLI flag marks the exported PDF's document catalog so Adobe
   Acrobat/Reader and most desktop viewers open it directly in full-screen /
