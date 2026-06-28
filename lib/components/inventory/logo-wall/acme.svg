@@ -1,6 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 80" role="img" aria-label="Acme">
-  <rect x="14" y="18" width="44" height="44" rx="11" fill="#b23a2e"/>
-  <path d="M36 27 L49 53 L23 53 Z" fill="#ffffff"/>
-  <rect x="30" y="46" width="12" height="5" fill="#b23a2e"/>
-  <text x="70" y="51" font-family="'Helvetica Neue', Arial, sans-serif" font-size="30" font-weight="700" letter-spacing="-0.5" fill="#1f2733">Acme</text>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 80"><path fill="currentColor" fill-rule="evenodd" d="M25 18 h22 a11 11 0 0 1 11 11 v22 a11 11 0 0 1 -11 11 h-22 a11 11 0 0 1 -11 -11 v-22 a11 11 0 0 1 11 -11 z M36 28 L48 51 L40.5 51 L38.6 46.5 L33.4 46.5 L31.5 51 L24 51 Z M35 42.5 L37 42.5 L36 39 Z"/><text x="70" y="51" font-family="Helvetica Neue, Arial, sans-serif" font-size="30" font-weight="700" fill="currentColor">Acme</text></svg>

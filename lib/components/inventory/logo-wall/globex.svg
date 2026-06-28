@@ -1,6 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 80" role="img" aria-label="Globex">
-  <circle cx="36" cy="40" r="20" fill="none" stroke="#2e6ca4" stroke-width="4"/>
-  <ellipse cx="36" cy="40" rx="8.5" ry="20" fill="none" stroke="#2e6ca4" stroke-width="3"/>
-  <line x1="17" y1="40" x2="55" y2="40" stroke="#2e6ca4" stroke-width="3"/>
-  <text x="70" y="51" font-family="'Helvetica Neue', Arial, sans-serif" font-size="28" font-weight="600" fill="#1f2733">Globex</text>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 80"><g fill="none" stroke="currentColor"><circle cx="36" cy="40" r="20" stroke-width="4"/><ellipse cx="36" cy="40" rx="8.5" ry="20" stroke-width="3"/><line x1="17" y1="40" x2="55" y2="40" stroke-width="3"/></g><text x="70" y="51" font-family="Helvetica Neue, Arial, sans-serif" font-size="28" font-weight="600" fill="currentColor">Globex</text></svg>

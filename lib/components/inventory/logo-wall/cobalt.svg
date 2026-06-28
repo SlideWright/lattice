@@ -1,6 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 80" role="img" aria-label="Cobalt">
-  <path d="M34 16 L58 40 L34 64 L10 40 Z" fill="#2b5fc4"/>
-  <path d="M10 40 L34 28 L58 40" fill="none" stroke="#ffffff" stroke-width="2" stroke-opacity="0.55"/>
-  <line x1="34" y1="16" x2="34" y2="64" stroke="#ffffff" stroke-width="1.5" stroke-opacity="0.35"/>
-  <text x="70" y="51" font-family="'Helvetica Neue', Arial, sans-serif" font-size="28" font-weight="700" letter-spacing="-0.3" fill="#1f2733">Cobalt</text>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 80"><path fill="currentColor" fill-rule="evenodd" d="M34 14 L60 40 L34 66 L8 40 Z M34 21 L51 40 L34 59 L17 40 Z"/><path fill="currentColor" d="M34 28 L44 40 L34 52 L24 40 Z"/><text x="70" y="51" font-family="Helvetica Neue, Arial, sans-serif" font-size="28" font-weight="700" fill="currentColor">Cobalt</text></svg>

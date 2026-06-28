@@ -240,10 +240,10 @@ const LAYER3 = {
       eachWith('ol > li', ['em', ':scope > ul'], 3, 'list-tabular did not render rows with meta columns'),
   },
   'logo-wall': {
-    'renders multiple logos (img)':
-      present('img', 2, 'logo-wall did not render multiple logos'),
+    'renders multiple token-coloured mark spans':
+      present('.logo-mark', 2, 'logo-wall did not render multiple .logo-mark spans (logo-marks transform)'),
     'marks can carry a name + pill caption below the mark':
-      eachWith('ul > li', [':scope > img', ':scope > ul > li > code'], 2,
+      eachWith('ul > li', [':scope > .logo-mark', ':scope > ul > li > code'], 2,
         'logo-wall did not render captioned marks (mark + nested name/pill list)'),
   },
   'q-and-a': {

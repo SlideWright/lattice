@@ -1,5 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 80" role="img" aria-label="Umbra">
-  <circle cx="29" cy="40" r="17" fill="#6b4e9e"/>
-  <circle cx="44" cy="40" r="17" fill="#6b4e9e" fill-opacity="0.5"/>
-  <text x="68" y="51" font-family="Georgia, 'Times New Roman', serif" font-size="29" font-weight="600" letter-spacing="0.3" fill="#1f2733">Umbra</text>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 80"><circle cx="29" cy="40" r="17" fill="currentColor"/><circle cx="44" cy="40" r="17" fill="currentColor" fill-opacity="0.45"/><text x="68" y="51" font-family="Georgia, Times New Roman, serif" font-size="29" font-weight="600" fill="currentColor">Umbra</text></svg>
