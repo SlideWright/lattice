@@ -1,6 +1,6 @@
 import {
-	AlertTriangle, ChevronDown, ChevronLeft, 
-	ChevronRight, Copy, Eye, FileText, History, Layers, LayoutGrid, Palette, PanelLeft, PanelRight, PencilLine, PencilRuler, Play, Plus, Save, Search, Settings2, Share2, Sparkles, Trash2, Upload, Volume2, Wand2, X,
+	AlertTriangle, ArrowLeftToLine, ArrowRightToLine, Check, ChevronDown, ChevronLeft,
+	Copy, Eye, FileText, History, Layers, LayoutGrid, ListChecks, Palette, PencilLine, PencilRuler, Play, Plus, Save, Search, Settings2, Share2, SlidersHorizontal, Sparkles, Trash2, Upload, Volume2, Wand2, X,
 } from 'lucide-react';
 import * as React from 'react';
 import DeckPreview from '@/components/DeckPreview';
@@ -526,6 +526,22 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 	const opDuplicate = () => { applyDeckOp(duplicateSlide(source, curIndex)); notify('Slide duplicated.'); };
 	const opDelete = () => { if (slides.length <= 1) { notify('A deck needs at least one slide.'); return; } applyDeckOp(deleteSlide(source, curIndex)); notify('Slide deleted.'); };
 	const opMove = (dir: -1 | 1) => applyDeckOp(moveSlide(source, curIndex, curIndex + dir));
+	// Delete is destructive → confirm in place: first tap ARMS the button (it turns
+	// into a confirm), a second tap within 3s deletes; it disarms itself otherwise.
+	const [deleteArmed, setDeleteArmed] = React.useState(false);
+	React.useEffect(() => {
+		if (!deleteArmed) return;
+		const t = setTimeout(() => setDeleteArmed(false), 3000);
+		return () => clearTimeout(t);
+	}, [deleteArmed]);
+	// Re-arm fresh for whatever slide is current — never carry an arm across a nav.
+	// biome-ignore lint/correctness/useExhaustiveDependencies: disarm on slide change only.
+	React.useEffect(() => setDeleteArmed(false), [curIndex]);
+	const onDeleteClick = () => {
+		if (slides.length <= 1) { notify('A deck needs at least one slide.'); return; }
+		if (deleteArmed) { setDeleteArmed(false); opDelete(); }
+		else setDeleteArmed(true);
+	};
 	// Insert a library component as a new slide after the current one (its authored
 	// skeleton), via the same deck-op the toolbar uses.
 	const onInsertComponent = (c: ComponentEntry) => { applyDeckOp(addSlideAfter(source, curIndex, c.skeleton)); notify(`Inserted “${c.name}”.`); };
@@ -724,7 +740,7 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 				{hasSelection && (
 					<DropdownMenu>
 						<DropdownMenuTrigger asChild>
-							<button type="button" disabled={refineBusy} className="inline-flex items-center gap-1 rounded-md border border-border px-2 py-1 font-sans text-[12px] font-semibold normal-case tracking-normal text-[var(--accent)] hover:bg-[var(--accent-soft)] disabled:opacity-40" aria-label="Refine selection"><Wand2 className="size-3" />Refine</button>
+							<button type="button" disabled={refineBusy} className="inline-flex items-center gap-1 rounded-md border border-border px-2 py-1 font-sans text-[12px] font-semibold normal-case tracking-normal text-[var(--accent)] hover:bg-[var(--accent-soft)] disabled:opacity-40" aria-label="Refine selection" title="Refine selection"><Wand2 className="size-3" /><span className="hidden lg:inline">Refine</span></button>
 						</DropdownMenuTrigger>
 						<DropdownMenuContent align="end" className="w-60">
 							{ai.ready ? (
@@ -743,9 +759,9 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 						</DropdownMenuContent>
 					</DropdownMenu>
 				)}
-				{insertComponents.length > 0 && <button type="button" onClick={() => setInsertOpen(true)} className="inline-flex items-center gap-1 rounded-md border border-border px-2 py-1 font-sans text-[12px] font-semibold normal-case tracking-normal text-[var(--accent)] hover:bg-[var(--accent-soft)]"><Plus className="size-3" />Insert</button>}
-				<button type="button" onClick={() => editorRef.current?.fixAll()} className="rounded-md border border-border px-2 py-1 font-sans text-[12px] font-semibold normal-case tracking-normal text-[var(--accent)] disabled:opacity-40" disabled={!issues}>Fix all</button>
-				<span className="inline-flex items-center gap-1 rounded-full border border-border bg-card px-2 py-0.5 font-sans text-[12px] font-semibold normal-case tracking-normal text-foreground"><FileText className="size-3" />Markdown</span>
+				{insertComponents.length > 0 && <button type="button" onClick={() => setInsertOpen(true)} className="inline-flex items-center gap-1 rounded-md border border-border px-2 py-1 font-sans text-[12px] font-semibold normal-case tracking-normal text-[var(--accent)] hover:bg-[var(--accent-soft)]" aria-label="Insert component" title="Insert component"><Plus className="size-3" /><span className="hidden lg:inline">Insert</span></button>}
+				<button type="button" onClick={() => editorRef.current?.fixAll()} className="inline-flex items-center gap-1 rounded-md border border-border px-2 py-1 font-sans text-[12px] font-semibold normal-case tracking-normal text-[var(--accent)] disabled:opacity-40" disabled={!issues} aria-label="Fix all issues" title="Fix all issues"><ListChecks className="size-3" /><span className="hidden lg:inline">Fix all</span></button>
+				<span className="hidden items-center gap-1 rounded-full border border-border bg-card px-2 py-0.5 font-sans text-[12px] font-semibold normal-case tracking-normal text-foreground lg:inline-flex"><FileText className="size-3" />Markdown</span>
 			</div>
 			<Editor ref={editorRef} value={source} onChange={setSource} knownComponents={validation ? knownWithLocal : NO_KNOWN} completionComponents={insertComponents} lintVocab={lintVocab} extraComponentNames={localNames} onCursorSlide={onEditorCursorSlide} onSelectionChange={setHasSelection} className="flex-1" />
 		</section>
@@ -775,9 +791,9 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 					<div className="flex shrink-0 items-center gap-0.5 rounded-lg border border-border bg-card p-0.5">
 						<RailOp label="Add slide" onClick={opAddSlide}><Plus className="size-3.5" /></RailOp>
 						<RailOp label="Duplicate slide" onClick={opDuplicate}><Copy className="size-3.5" /></RailOp>
-						<RailOp label="Move slide left" onClick={() => opMove(-1)} disabled={curIndex <= 0}><ChevronLeft className="size-3.5" /></RailOp>
-						<RailOp label="Move slide right" onClick={() => opMove(1)} disabled={curIndex >= slides.length - 1}><ChevronRight className="size-3.5" /></RailOp>
-						<RailOp label="Delete slide" onClick={opDelete} disabled={slides.length <= 1} danger><Trash2 className="size-3.5" /></RailOp>
+						<RailOp label="Move slide earlier" onClick={() => opMove(-1)} disabled={curIndex <= 0}><ArrowLeftToLine className="size-3.5" /></RailOp>
+						<RailOp label="Move slide later" onClick={() => opMove(1)} disabled={curIndex >= slides.length - 1}><ArrowRightToLine className="size-3.5" /></RailOp>
+						<RailOp label={deleteArmed ? 'Confirm delete slide' : 'Delete slide'} onClick={onDeleteClick} disabled={slides.length <= 1} danger armed={deleteArmed}>{deleteArmed ? <Check className="size-3.5" /> : <Trash2 className="size-3.5" />}</RailOp>
 					</div>
 				)}
 			<nav className="flex items-center gap-1.5 overflow-x-auto" aria-label="Slide navigator">
@@ -892,14 +908,15 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 					</DropdownMenuContent>
 				</DropdownMenu>
 
-				<Button variant="outline" size="sm" onClick={() => setPresentOpen(true)} className="gap-1.5 px-2 sm:px-3"><Play className="size-4" /><span className="hidden sm:inline">Present</span></Button>
-				<Button size="sm" onClick={() => setShareOpen(true)} className="gap-1.5 px-2 sm:px-3"><Share2 className="size-4" /><span className="hidden sm:inline">Share</span></Button>
+				<Button variant="outline" size="sm" onClick={() => setPresentOpen(true)} className="gap-1.5 px-2 lg:px-3" title="Present"><Play className="size-4" /><span className="hidden lg:inline">Present</span></Button>
+				<Button size="sm" onClick={() => setShareOpen(true)} className="gap-1.5 px-2 lg:px-3" title="Share"><Share2 className="size-4" /><span className="hidden lg:inline">Share</span></Button>
 
 				<span className="hidden h-5 w-px bg-border sm:block" />
-				<Button variant="ghost" size="icon-sm" aria-pressed={architectOpen} onClick={() => setArchitectOpen((v) => !v)} aria-label="Toggle Architect" className={cn(architectOpen && 'text-[var(--accent)]')}><PanelLeft className="size-[18px]" /></Button>
-				<Button variant="ghost" size="icon-sm" aria-pressed={inspectorOpen} onClick={() => setInspectorOpen((v) => !v)} aria-label="Toggle Deck inspector" className={cn(inspectorOpen && 'text-[var(--accent)]')}><PanelRight className="size-[18px]" /></Button>
+				{/* Semantic icons (not two identical panel glyphs): the AI Architect vs the deck Inspector. */}
+				<Button variant="ghost" size="icon-sm" aria-pressed={architectOpen} onClick={() => setArchitectOpen((v) => !v)} aria-label="Toggle Architect" title="Architect — AI coach &amp; chat" className={cn(architectOpen && 'text-[var(--accent)]')}><Sparkles className="size-[18px]" /></Button>
+				<Button variant="ghost" size="icon-sm" aria-pressed={inspectorOpen} onClick={() => setInspectorOpen((v) => !v)} aria-label="Toggle Deck inspector" title="Deck inspector — look, size, notes, history" className={cn(inspectorOpen && 'text-[var(--accent)]')}><SlidersHorizontal className="size-[18px]" /></Button>
 				<Button variant="ghost" size="icon-sm" onClick={() => setWorkspaceOpen(true)} aria-label="Workspace settings" className="hidden sm:inline-flex"><Settings2 className="size-[18px]" /></Button>
-				<span className="hidden size-7 place-items-center rounded-full bg-[var(--surface-inverse)] text-[12px] font-bold text-white sm:grid">SA</span>
+				<span className="hidden size-7 shrink-0 place-items-center rounded-full bg-[var(--surface-inverse)] text-[12px] font-bold text-white sm:grid">SA</span>
 			</header>
 
 			{/* ── Body ─────────────────────────────────────────────────── */}
@@ -1040,9 +1057,9 @@ function ScoreRow({ ok, label, v }: { ok?: boolean; label: string; v: string }) 
 		</div>
 	);
 }
-function RailOp({ label, onClick, disabled, danger, children }: { label: string; onClick: () => void; disabled?: boolean; danger?: boolean; children: React.ReactNode }) {
+function RailOp({ label, onClick, disabled, danger, armed, children }: { label: string; onClick: () => void; disabled?: boolean; danger?: boolean; armed?: boolean; children: React.ReactNode }) {
 	return (
-		<button type="button" aria-label={label} title={label} onClick={onClick} disabled={disabled} className={cn('grid size-7 place-items-center rounded-md text-muted-foreground hover:bg-[var(--accent-soft)] hover:text-[var(--accent)] disabled:opacity-30 disabled:hover:bg-transparent', danger && 'hover:bg-[color-mix(in_srgb,var(--fail,#b3261e)_12%,transparent)] hover:text-[var(--fail,#b3261e)]')}>{children}</button>
+		<button type="button" aria-label={label} title={label} onClick={onClick} disabled={disabled} className={cn('grid size-7 place-items-center rounded-md text-muted-foreground hover:bg-[var(--accent-soft)] hover:text-[var(--accent)] disabled:opacity-30 disabled:hover:bg-transparent', danger && !armed && 'hover:bg-[color-mix(in_srgb,var(--fail,#b3261e)_12%,transparent)] hover:text-[var(--fail,#b3261e)]', armed && 'bg-[var(--fail,#b3261e)] text-white hover:bg-[var(--fail,#b3261e)] hover:text-white')}>{children}</button>
 	);
 }
 function Chip({ children, onClick, busy }: { children: React.ReactNode; onClick?: () => void; busy?: boolean }) {

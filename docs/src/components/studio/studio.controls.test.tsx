@@ -86,8 +86,11 @@ describe('Studio — every top-bar control responds', () => {
 		// Duplicate → grows again.
 		await user.click(screen.getByRole('button', { name: 'Duplicate slide' }));
 		expect(railCount()).toBe(start + 2);
-		// Delete → shrinks.
+		// Delete is a two-tap confirm: the first tap arms (no deletion yet)…
 		await user.click(screen.getByRole('button', { name: 'Delete slide' }));
+		expect(railCount()).toBe(start + 2);
+		// …the armed button confirms on the second tap.
+		await user.click(screen.getByRole('button', { name: 'Confirm delete slide' }));
 		expect(railCount()).toBe(start + 1);
 	});
 
