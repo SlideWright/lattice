@@ -180,9 +180,7 @@ in patch versions.
   card), a dedicated divider slot with no overlay and no mask. The `decision` variant's
   DECISION tag loses its background and the connector slot is widened so the label sits in
   the divide, clear of the cards. Closes the per-component migration
-  (`2026-06-26-frames-as-flex-cell-trees.md` §6) for the standard set — with one
-  exception: `redline` keeps direct-child bodies bounded by its own `.compare-right`
-  clip cell rather than `.cell-stage` (tracked for a separate migration).
+  (`2026-06-26-frames-as-flex-cell-trees.md` §6) for the standard set.
 
 - **`authority-chain`, `statute-stack`, `verdict-grid` adopt the stage cell — and fill it.**
   Three more legal/comparison components migrate into the frame's bounded `.cell-stage`:
@@ -321,6 +319,14 @@ in patch versions.
 
 ### Changed
 
+- **`redline` migrates into the `.cell-stage` cell-tree — completing the standard-component
+  migration (#587).** The diff component was the last standard layout on direct-child bodies; its
+  body (the OLD/NEW blockquotes + annotation/rationale list) now wraps into the frame's bounded
+  `.cell-stage`, and its `.split` / `.three-col` read-across grids live on the stage cell. The
+  visible layout is unchanged in every variant (default / annotated / three-col / split / stacked,
+  both moods — verified before/after); the gain is detection: an over-stuffed redline now clips at —
+  and is **reported at** — the stage edge by the overflow probe's `.cell-stage` selector, instead of
+  silently inside a column. `STAGE_MIGRATED` now covers all standard components.
 - **Mermaid theme-var maps reconciled across render paths + a lockstep gate (part of #511).** The
   build map (`MERMAID_VAR_MAP`, exported PDF/PPTX/PNG) and the runtime map (preview / HTML export)
   had silently drifted by 8 keys — the runtime themed ER attribute-row fills and xy-chart axis

@@ -9625,6 +9625,14 @@ section.radar.cover .radar-tick {
  * Extracted from lib/_legacy.css in Phase 4 of the destination map.
  * See lib/components/redline/redline.manifest.json for the component contract.
  *
+ * STAGE CELL (flex cell-tree §6, 2026-06-26). redline is in STAGE_MIGRATED, so the
+ * masthead lift wraps its body (the blockquotes + annotation/rationale list — the
+ * eyebrow + h2 lift into the `.cell-masthead` band) into the frame's bounded
+ * `.cell-stage` cell. Every body rule below addresses `> .cell-stage > …`; the
+ * `.split` / `.three-col` read-across grids live ON the stage cell, so an
+ * over-stuffed diff clips at — and is REPORTED at — the stage edge (the overflow
+ * probe's `.cell-stage` selector), not silently inside a column.
+ *
  * KEY-INSIGHT GATE. The central blockquote eyebrow rule in
  * lib/base/base.modifiers.css excludes redline (`:not(.redline)`), so a
  * redline never inherits the "KEY INSIGHT" label — bare/annotated redlines
@@ -9647,19 +9655,20 @@ section.radar.cover .radar-tick {
  * Variants: .split (old | new), .annotated (numbered margin notes),
  * .stacked (old block atop new block), .three-col (old | new | rationale).
  * ──────────────────────────────────────────────────────────────────── */
-section.redline { display:flex; flex-direction:column; gap:var(--sp-sm); }
-section.redline > p:has(> code:only-child) {
+section.redline > .cell-stage { display:flex; flex-direction:column; gap:var(--sp-sm); }
+/* A body code-only paragraph (the first lifts into the masthead as the kicker; this
+ * only matches a SECOND one left in the stage). */
+section.redline > .cell-stage > p:has(> code:only-child) {
   margin:0;
   font-family:var(--font-mono);
   font-size:var(--fs-meta);
   letter-spacing:0.04em;
   color:var(--accent);
 }
-section.redline > p:has(> code:only-child) > code {
+section.redline > .cell-stage > p:has(> code:only-child) > code {
   background:none; border:none; padding:0; color:inherit;
 }
-section.redline > blockquote {
-  margin:0;
+section.redline > .cell-stage > blockquote {
   padding:var(--sp-md) var(--sp-lg);
   background:var(--bg-alt);
   border:1px solid var(--border);
@@ -9671,8 +9680,8 @@ section.redline > blockquote {
   color:var(--text-heading);
   flex:1;
 }
-section.redline > blockquote > p { margin:0; }
-section.redline > blockquote > p + p { padding-top:var(--sp-sm); }
+section.redline > .cell-stage > blockquote > p { margin:0; }
+section.redline > .cell-stage > blockquote > p + p { padding-top:var(--sp-sm); }
 /* Insertions and deletions — ins/del HTML, also ~~md~~ which renders as s. */
 section.redline ins, section.redline :is(p) ins {
   text-decoration:underline;
@@ -9697,20 +9706,20 @@ section.redline del, section.redline s {
 }
 /* Annotation list — appears below the quote, gives reviewer plain-English
  * rationale for each numbered delta in the text. */
-section.redline > ol,
-section.redline > ul {
-  list-style:none; padding:0; margin:0;
+section.redline > .cell-stage > ol,
+section.redline > .cell-stage > ul {
+  list-style:none; padding:0;
   display:flex; flex-direction:column; gap:var(--sp-xs);
 }
-section.redline > :is(ol, ul) > li {
+section.redline > .cell-stage > :is(ol, ul) > li {
   font-size:var(--fs-body);
   color:var(--text-body);
   line-height:var(--lh-snug);
   padding-left:var(--sp-md);
   border-left:2px solid var(--accent);
 }
-section.redline > :is(ol, ul) > li::marker { content:''; }
-section.redline > :is(ol, ul) > li > strong {
+section.redline > .cell-stage > :is(ol, ul) > li::marker { content:''; }
+section.redline > .cell-stage > :is(ol, ul) > li > strong {
   display:inline-block;
   font-family:var(--font-mono);
   font-size:var(--fs-meta);
@@ -9720,17 +9729,17 @@ section.redline > :is(ol, ul) > li > strong {
   padding-right:var(--sp-xs);
 }
 
-/* .split — two blockquotes side-by-side: old left, new right. */
-section.redline.split { display:grid; grid-template-columns:1fr 1fr; column-gap:var(--sp-md); grid-template-rows:auto auto minmax(0, 1fr) auto; row-gap:var(--sp-sm); }
-section.redline.split.split > blockquote { min-width:0; min-height:0; overflow:hidden; }
-section.redline.split h2 { grid-column:1 / -1; }
-section.redline.split > p:has(> code:only-child) { grid-column:1 / -1; }
-section.redline.split.split > blockquote:nth-of-type(1) {
-  grid-column:1; grid-row:3;
+/* .split — two blockquotes side-by-side: old left, new right. The masthead band is
+ * a flex sibling ABOVE the stage now, so the grid is just the two cards (row 1) +
+ * the read-across note list (row 2, full width). */
+section.redline.split > .cell-stage { display:grid; grid-template-columns:1fr 1fr; column-gap:var(--sp-md); grid-template-rows:minmax(0, 1fr) auto; row-gap:var(--sp-sm); }
+section.redline.split.split > .cell-stage > blockquote { min-width:0; min-height:0; overflow:hidden; }
+section.redline.split.split > .cell-stage > blockquote:nth-of-type(1) {
+  grid-column:1; grid-row:1;
   border-left-color:var(--fail);
   background:color-mix(in srgb, var(--fail) 4%, var(--bg-alt));
 }
-section.redline.split.split > blockquote:nth-of-type(1)::before {
+section.redline.split.split > .cell-stage > blockquote:nth-of-type(1)::before {
   content:'OLD';
   display:block;
   font-family:var(--font-mono);
@@ -9740,12 +9749,12 @@ section.redline.split.split > blockquote:nth-of-type(1)::before {
   color:var(--fail);
   padding-bottom:var(--sp-xs);
 }
-section.redline.split.split > blockquote:nth-of-type(2) {
-  grid-column:2; grid-row:3;
+section.redline.split.split > .cell-stage > blockquote:nth-of-type(2) {
+  grid-column:2; grid-row:1;
   border-left-color:var(--pass);
   background:color-mix(in srgb, var(--pass) 4%, var(--bg-alt));
 }
-section.redline.split.split > blockquote:nth-of-type(2)::before {
+section.redline.split.split > .cell-stage > blockquote:nth-of-type(2)::before {
   content:'NEW';
   display:block;
   font-family:var(--font-mono);
@@ -9755,13 +9764,13 @@ section.redline.split.split > blockquote:nth-of-type(2)::before {
   color:var(--pass);
   padding-bottom:var(--sp-xs);
 }
-section.redline.split > :is(ol, ul) { grid-column:1 / -1; grid-row:4; }
+section.redline.split > .cell-stage > :is(ol, ul) { grid-column:1 / -1; grid-row:2; }
 
 /* .annotated — single passage with numbered sup markers; annotations below. */
 /* sanctioned: a superscript footnote marker — stays raised + small (0.7em,
  * vertical-align:super) rather than a centred inline-flex pill. Geometry that
  * doesn't fight the superscript routes through the --pill-* tokens. */
-section.redline.annotated > blockquote sup {
+section.redline.annotated > .cell-stage > blockquote sup {
   display:inline-block;
   background:var(--accent);
   color:var(--on-accent);
@@ -9773,18 +9782,18 @@ section.redline.annotated > blockquote sup {
   line-height:1.4;
   vertical-align:super;
 }
-section.redline.annotated > :is(ol, ul) {
+section.redline.annotated > .cell-stage > :is(ol, ul) {
   counter-reset:rl;
   padding-top:var(--sp-md);
 }
-section.redline.annotated > :is(ol, ul) > li {
+section.redline.annotated > .cell-stage > :is(ol, ul) > li {
   counter-increment:rl;
   position:relative;
   padding-left:calc(var(--sp-lg) + var(--sp-xs));
 }
 /* sanctioned: positioned annotation counter, anchored to the list-row origin
  * (absolute). Footnote weight (700) is kept; radius + font route to tokens. */
-section.redline.annotated > :is(ol, ul) > li::before {
+section.redline.annotated > .cell-stage > :is(ol, ul) > li::before {
   content:counter(rl);
   position:absolute; left:0; top:0.156cqi;
   display:inline-flex; align-items:center; justify-content:center;
@@ -9799,14 +9808,14 @@ section.redline.annotated > :is(ol, ul) > li::before {
 }
 
 /* .stacked — two blockquotes vertically: old on top (struck), new below. */
-section.redline.stacked.stacked > blockquote:nth-of-type(1) {
+section.redline.stacked.stacked > .cell-stage > blockquote:nth-of-type(1) {
   background:color-mix(in srgb, var(--fail) 5%, var(--bg-alt));
   border-left-color:var(--fail);
   text-decoration:line-through;
   text-decoration-color:color-mix(in srgb, var(--fail) 40%, transparent);
   opacity:0.78;
 }
-section.redline.stacked.stacked > blockquote:nth-of-type(1)::before {
+section.redline.stacked.stacked > .cell-stage > blockquote:nth-of-type(1)::before {
   content:'OLD — prior text';
   display:block;
   font-family:var(--font-mono);
@@ -9817,11 +9826,11 @@ section.redline.stacked.stacked > blockquote:nth-of-type(1)::before {
   text-decoration:none;
   padding-bottom:var(--sp-xs);
 }
-section.redline.stacked.stacked > blockquote:nth-of-type(2) {
+section.redline.stacked.stacked > .cell-stage > blockquote:nth-of-type(2) {
   background:color-mix(in srgb, var(--pass) 5%, var(--bg-alt));
   border-left-color:var(--pass);
 }
-section.redline.stacked.stacked > blockquote:nth-of-type(2)::before {
+section.redline.stacked.stacked > .cell-stage > blockquote:nth-of-type(2)::before {
   content:'NEW · current';
   display:block;
   font-family:var(--font-mono);
@@ -9833,37 +9842,28 @@ section.redline.stacked.stacked > blockquote:nth-of-type(2)::before {
 }
 
 /* .three-col — old | new | rationale columns. The author writes two
- * blockquotes plus a list for the rationale column. */
+ * blockquotes plus a list for the rationale column. With the masthead lifted to
+ * its own band, the stage grid is a single content row of three columns. */
 /* minmax(0,1fr) (not bare 1fr) caps the content row at its flex share so a
  * long clause can't push the grid past the slide edge and clip mid-word;
  * the blockquote guard below keeps overflow inside its own track. */
 /* OLD/NEW carry full clauses and need the width; WHY is a short pill stack that under-fills
  * its track — so the diff columns are wider than the rationale (was 1/1/1.1, which starved
  * OLD/NEW into extra wrapped lines and clipped the denser NEW card). (#569) */
-section.redline.three-col { display:grid; grid-template-columns:1.15fr 1.15fr 0.85fr; column-gap:var(--sp-md); grid-template-rows:auto auto minmax(0, 1fr); row-gap:var(--sp-sm); }
-/* Under Form the eyebrow + h2 lift into a single `.cell-masthead` band, which becomes a
- * direct GRID item. Without an explicit placement it auto-flows into the narrow first cell —
- * the title then wraps to 3 lines, inflating the header row and stealing the card row's
- * height until the OLD/NEW prose clips. Span the band across all columns on row 1 so the
- * title fits one line and the cards keep their minmax(0,1fr) track. (#569) Mirrors the bare
- * `h2 { grid-column:1/-1 }` rule for the non-Form path. */
-section.redline.split > .cell-masthead,
-section.redline.three-col > .cell-masthead { grid-column: 1 / -1; grid-row: 1; }
-section.redline.three-col.three-col > blockquote { min-width:0; min-height:0; overflow:hidden; }
+section.redline.three-col > .cell-stage { display:grid; grid-template-columns:1.15fr 1.15fr 0.85fr; column-gap:var(--sp-md); grid-template-rows:minmax(0, 1fr); row-gap:var(--sp-sm); }
+section.redline.three-col.three-col > .cell-stage > blockquote { min-width:0; min-height:0; overflow:hidden; }
 /* The three columns are narrow, so the cards read snug — not the default single-column
  * `--lh-relaxed` — and carry tighter block padding. Both cards share one grid-row height
  * (minmax(0,1fr)); the denser side (NEW) needs the reclaimed lines to seat without clipping
  * its last line. (#569) */
-section.redline.three-col.three-col > blockquote { line-height:var(--lh-snug); padding-block:var(--sp-sm); }
-section.redline.three-col h2 { grid-column:1 / -1; }
-section.redline.three-col > p:has(> code:only-child) { grid-column:1 / -1; }
-section.redline.three-col.three-col > blockquote:nth-of-type(1) {
-  grid-column:1; grid-row:3;
+section.redline.three-col.three-col > .cell-stage > blockquote { line-height:var(--lh-snug); padding-block:var(--sp-sm); }
+section.redline.three-col.three-col > .cell-stage > blockquote:nth-of-type(1) {
+  grid-column:1; grid-row:1;
   border-left-color:var(--fail);
   background:color-mix(in srgb, var(--fail) 4%, var(--bg-alt));
   font-size:var(--fs-body);
 }
-section.redline.three-col.three-col > blockquote:nth-of-type(1)::before {
+section.redline.three-col.three-col > .cell-stage > blockquote:nth-of-type(1)::before {
   content:'OLD'; display:block;
   font-family:var(--font-mono);
   font-size:var(--fs-meta);
@@ -9872,13 +9872,13 @@ section.redline.three-col.three-col > blockquote:nth-of-type(1)::before {
   color:var(--fail);
   padding-bottom:var(--sp-xs);
 }
-section.redline.three-col.three-col > blockquote:nth-of-type(2) {
-  grid-column:2; grid-row:3;
+section.redline.three-col.three-col > .cell-stage > blockquote:nth-of-type(2) {
+  grid-column:2; grid-row:1;
   border-left-color:var(--pass);
   background:color-mix(in srgb, var(--pass) 4%, var(--bg-alt));
   font-size:var(--fs-body);
 }
-section.redline.three-col.three-col > blockquote:nth-of-type(2)::before {
+section.redline.three-col.three-col > .cell-stage > blockquote:nth-of-type(2)::before {
   content:'NEW'; display:block;
   font-family:var(--font-mono);
   font-size:var(--fs-meta);
@@ -9887,11 +9887,11 @@ section.redline.three-col.three-col > blockquote:nth-of-type(2)::before {
   color:var(--pass);
   padding-bottom:var(--sp-xs);
 }
-section.redline.three-col > :is(ol, ul) {
-  grid-column:3; grid-row:3;
+section.redline.three-col > .cell-stage > :is(ol, ul) {
+  grid-column:3; grid-row:1;
   align-self:stretch;
 }
-section.redline.three-col > :is(ol, ul)::before {
+section.redline.three-col > .cell-stage > :is(ol, ul)::before {
   content:'WHY';
   display:block;
   font-family:var(--font-mono);
@@ -9925,28 +9925,28 @@ section.redline.three-col > :is(ol, ul)::before {
 
 /* ── PORTRAIT REFLOW — the COLLAPSE move (Fit Ladder) ──────────────────────
  * The wide read-across variants (.split = old|new, .three-col = old|new|why) can't hold
- * their columns legibly in a narrow box, so in a PORTRAIT box they COLLAPSE to a single
- * stacked column — OLD block, NEW block, (WHY list) in reading order. The per-block OLD/NEW
- * labels + pass/fail tints carry over unchanged (they key off :nth-of-type, not the grid;
- * grid-column/grid-row go inert under flex). Keyed on the static `data-orientation` stamp,
- * NOT @container: the section IS the `lattice` query-container, so it can't restyle its OWN
- * display via a container query (only descendants can) — a layout flipping its own box uses
- * the [data-orientation] section-flip (spine §2.1, as split-panel / citation-card do). This
- * is the static stamp, so it holds in the Persona-2 portrait EXPORT (no JS). Doubled classes
- * + the attribute beat the grid rules' specificity. This is the portrait form that lets
+ * their columns legibly in a narrow box, so in a PORTRAIT box they COLLAPSE the STAGE grid
+ * to a single stacked column — OLD block, NEW block, (WHY list) in reading order. The
+ * per-block OLD/NEW labels + pass/fail tints carry over unchanged (they key off :nth-of-type,
+ * not the grid; grid-column/grid-row go inert under flex). Keyed on the static
+ * `data-orientation` stamp, NOT @container: the section IS the `lattice` query-container, so it
+ * can't restyle its OWN display via a container query (only descendants can) — a layout flipping
+ * its own box uses the [data-orientation] section-flip (spine §2.1, as split-panel / citation-card
+ * do). This is the static stamp, so it holds in the Persona-2 portrait EXPORT (no JS). Doubled
+ * classes + the attribute beat the grid rules' specificity. This is the portrait form that lets
  * redline retire its landscape lock — the default/.annotated/.stacked variants were already
  * vertical. See engineering/decisions/2026-06-25-retire-landscape-locks-portrait-everything.md. */
-section.redline.split.split[data-orientation="portrait"],
-section.redline.three-col.three-col[data-orientation="portrait"] {
+section.redline.split.split[data-orientation="portrait"] > .cell-stage,
+section.redline.three-col.three-col[data-orientation="portrait"] > .cell-stage {
   display:flex; flex-direction:column; gap:var(--sp-sm);
 }
 /* size each block to its content (the grid set flex/overflow guards for the columns);
    a too-long stacked diff then overflows the slide honestly rather than clipping a block. */
-section.redline.split.split[data-orientation="portrait"] > blockquote,
-section.redline.three-col.three-col[data-orientation="portrait"] > blockquote {
+section.redline.split.split[data-orientation="portrait"] > .cell-stage > blockquote,
+section.redline.three-col.three-col[data-orientation="portrait"] > .cell-stage > blockquote {
   flex:0 0 auto; overflow:visible;
 }
-section.redline.three-col.three-col[data-orientation="portrait"] > :is(ol, ul) { align-self:stretch; }
+section.redline.three-col.three-col[data-orientation="portrait"] > .cell-stage > :is(ol, ul) { align-self:stretch; }
 
 /* ── block-split slides (carousel.js redline-blocks) ──
  * When the collapsed stack is still too tall, the splitter gives OLD and NEW their own slides.
@@ -9954,20 +9954,20 @@ section.redline.three-col.three-col[data-orientation="portrait"] > :is(ol, ul) {
  * explicit rl-old / rl-new class — these mirror the .stacked variant's tint + label. The
  * slide drops .split/.three-col, so there is no nth-of-type rule to fight (no doubled class
  * needed). Palette-blind (HARD #3). */
-section.redline > blockquote.rl-old {
+section.redline > .cell-stage > blockquote.rl-old {
   border-left-color:var(--fail);
   background:color-mix(in srgb, var(--fail) 5%, var(--bg-alt));
 }
-section.redline > blockquote.rl-old::before {
+section.redline > .cell-stage > blockquote.rl-old::before {
   content:'OLD — prior text'; display:block;
   font-family:var(--font-mono); font-size:var(--fs-meta); font-weight:700;
   letter-spacing:0.12em; color:var(--fail); padding-bottom:var(--sp-xs);
 }
-section.redline > blockquote.rl-new {
+section.redline > .cell-stage > blockquote.rl-new {
   border-left-color:var(--pass);
   background:color-mix(in srgb, var(--pass) 5%, var(--bg-alt));
 }
-section.redline > blockquote.rl-new::before {
+section.redline > .cell-stage > blockquote.rl-new::before {
   content:'NEW · current'; display:block;
   font-family:var(--font-mono); font-size:var(--fs-meta); font-weight:700;
   letter-spacing:0.12em; color:var(--pass); padding-bottom:var(--sp-xs);
