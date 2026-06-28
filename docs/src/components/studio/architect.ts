@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { applyEdit, diffLines, EDIT_PROTOCOL, numberSlides, parseEdits } from '@/playground/architect-edits.js';
+import { requestSlideFix } from '@/playground/architect-fix.js';
 import { buildRefinePrompt, cleanRewrite, REFINE_ACTIONS } from '@/playground/drawing-board-refine.js';
 import { budgetStatus, readBudgetCap, readBudgetMode, readSpend, recordSpend } from '@/playground/drawing-board-settings.js';
 
@@ -130,6 +131,53 @@ export async function refineSelection(action: RefineActionId, text: string): Pro
 	const next = cleanRewrite(out, text);
 	if (!next || next === text) return { status: 'nochange' };
 	return { status: 'ok', text: next };
+}
+
+// A deterministic lint finding (the shape lint-core's `lintTextWith` returns) — a
+// per-slide issue the Coach panel can offer to fix with AI.
+export type Finding = { slide: number; rule: string; severity: string; message: string; fix?: string; autofixable?: boolean; line?: string };
+
+export type FixOutcome =
+	| { status: 'ok'; before: string; after: string; edit: unknown }
+	| { status: 'nochange' }
+	| { status: 'offline' }
+	| { status: 'blocked'; note: string };
+
+/**
+ * Ask the model to rewrite the ONE slide a finding flags, for review. Reuses the
+ * Drawing Board's `requestSlideFix` (the same edit-block protocol + canon grounding
+ * the Coach card uses there): the model PROPOSES a `{ before, after, edit }` the UI
+ * renders as a diff; nothing is applied until the author clicks Apply. Honest like
+ * the rest — `offline` with no model, `blocked` at the cap, `nochange` when nothing
+ * usable comes back. `catalog` is the component dossier (the Studio's `components`
+ * prop) so the rewrite respects each layout's authoring contract.
+ */
+export async function requestFindingFix(source: string, finding: Finding, catalog: unknown[]): Promise<FixOutcome> {
+	const model = await architectModel();
+	if (!model) return { status: 'offline' };
+	const generation = model.availability().generation;
+	if (generation === 'floor') return { status: 'offline' };
+	if (generation === 'openrouter' && architectSpend().status.blocked) {
+		return { status: 'blocked', note: 'Budget cap reached — raise it in Workspace → Spend, or switch tier.' };
+	}
+	try {
+		const res = await requestSlideFix({
+			model,
+			gate: { cache: () => generation === 'openrouter', onUsage: (u: Usage) => recordSpend(u?.cost ?? 0, u?.total_tokens ?? (u?.prompt_tokens || 0) + (u?.completion_tokens || 0)) },
+			source,
+			finding,
+			catalog,
+		});
+		if (!res) return { status: 'nochange' };
+		return { status: 'ok', before: res.before, after: res.after, edit: res.edit };
+	} catch {
+		return { status: 'offline' };
+	}
+}
+
+/** Apply a proposed edit block (from `requestFindingFix`) to the deck source. */
+export function applyDeckEdit(source: string, edit: unknown): string {
+	return applyEdit(source, edit);
 }
 
 export type ChatTurn = { role: 'user' | 'assistant'; content: string };

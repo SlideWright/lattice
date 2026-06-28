@@ -100,8 +100,9 @@ export function ArchitectChat({ deckId, source, aiReady, onApply, onConnect, not
 }
 
 // A compact line diff — the changed lines (add green / del red), with runs of
-// unchanged context collapsed, plus Apply / Discard.
-function DiffCard({ before, after, onApply, onDiscard }: { before: string; after: string; onApply: () => void; onDiscard: () => void }) {
+// unchanged context collapsed, plus Apply / Discard. Exported so the Coach panel's
+// per-finding AI fix renders the SAME reviewable card the chat does.
+export function DiffCard({ before, after, onApply, onDiscard }: { before: string; after: string; onApply: () => void; onDiscard: () => void }) {
 	const rows = React.useMemo(() => {
 		// Lazy import would complicate the render; diffLines came in via the proposal,
 		// so recompute here for display (cheap LCS over a slide-sized deck).

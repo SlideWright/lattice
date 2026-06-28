@@ -173,10 +173,16 @@ its own commit. Rough order by value.
      apply path is proven via a stubbed-Editor wiring test
      (`studio.refine.test.tsx`) + `refineSelection` honesty units, and the live
      selection→menu was verified visually.
-   - **TODO — per-finding AI fix:** reuse `architect-fix.js` (`requestSlideFix`) to
-     grow the Coach card's JUDGEMENT findings a "Fix with AI" button → reviewable
-     `{ before, after }` diff card (Apply/Discard), mirroring the chat diff card.
-     Needs the components catalog passed for `buildFixMessages`.
+   - **DONE — per-finding AI fix** (branch `claude/studio-architect-finding-fix`):
+     the Coach panel surfaces the deck's real lint-core findings (new
+     `studio-lint.ts` `listFindings` over `authoring-core.generated.js`
+     `lintTextWith` — the same list the editor underlines, local names folded in) as
+     a "N to address" card; with a model ready each row grows a **Fix with AI**
+     button → `architect.ts` `requestFindingFix` (wraps `architect-fix.js`
+     `requestSlideFix`, passing the `components` prop as the catalog) → a reviewable
+     diff via the chat's now-exported `DiffCard`. Apply checkpoints + splices via
+     `applyDeckEdit`; Discard drops it. Honest with no model (list shows, no fix
+     button, points at Workspace). **This completes the Architect depth line of #580.**
 6. **Present depth misc:** progress spine, fullscreen, swipe gestures
    (`drawing-board-present.js`).
 

@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest';
-import { architectSpend, refineSelection, runArchitect, setBudget } from './architect';
+import { applyDeckEdit, architectSpend, refineSelection, requestFindingFix, runArchitect, setBudget } from './architect';
 import { suggestFor } from './Editor';
 
 afterEach(() => {
@@ -44,6 +44,21 @@ describe('runArchitect — honest offline degradation', () => {
 		// point the author at Workspace instead of faking a change.
 		const out = await runArchitect('<!-- _class: title -->\n\n# Hello', 'Rewrite slide 1.');
 		expect(out.status).toBe('offline');
+	});
+});
+
+describe('requestFindingFix — honest per-finding fix', () => {
+	const finding = { slide: 2, rule: 'wall-of-text', severity: 'warning', message: 'Too many words on this slide.' };
+	it('returns `offline` with no model connected — never a fabricated rewrite', async () => {
+		const out = await requestFindingFix('<!-- _class: title -->\n\n# A', finding, []);
+		expect(out.status).toBe('offline');
+	});
+	it('applyDeckEdit splices a replace edit into the right slide', () => {
+		const src = '<!-- _class: title -->\n\n# One\n\n---\n\n<!-- _class: kpi -->\n\n# Two';
+		const next = applyDeckEdit(src, { action: 'replace', slide: 2, body: '<!-- _class: kpi -->\n\n# Rewritten' });
+		expect(next).toContain('# Rewritten');
+		expect(next).toContain('# One'); // slide 1 untouched
+		expect(next).not.toContain('# Two');
 	});
 });
 
