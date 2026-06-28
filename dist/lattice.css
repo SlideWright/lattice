@@ -11001,9 +11001,14 @@ section.split-panel.watermark .panel-right > ol > li { counter-increment:panel-c
 section.split-panel.watermark .panel-right > ol > li::before { content:counter(panel-counter); grid-column:1; grid-row:1 / span 10; align-self:stretch; display:flex; align-items:center; justify-content:center; background:var(--accent); color:var(--on-accent, var(--on-dark-primary)); font-family:var(--font-mono); font-size:1.875cqi /* cqi-ok: counter numeral inside a fixed accent disc */; font-weight:800; }
 section.split-panel.watermark .panel-right > ol > li > :is(strong,span,p,em) { grid-column:2; padding:0.703125cqi 1.25cqi 0.234375cqi; margin:0; font-size:var(--fs-body); color:var(--text-heading); font-weight:700; line-height:var(--lh-snug); }
 section.split-panel.watermark .panel-right > ol > li > :is(strong,span,p,em):last-child { padding-bottom:0.703125cqi; }
-section.split-panel.watermark .panel-right > ol > li > :is(ul,ol) { grid-column:2; margin:0; padding:0 1.25cqi 0.703125cqi; }
 section.split-panel.watermark .panel-right > :is(ul,ol) > li > strong { display:block; }
-section.split-panel.watermark .panel-right > :is(ul,ol) > li > :is(ul,ol) { display:block; list-style:none; padding:0.3125cqi 0 0 0; margin:0; width:100%; }
+/* Card body. `width:100% + padding` would overflow a content-box, so border-box (#198).
+ * Only the NUMBERED (ol) card insets the body to match its header's 1.25cqi (the header
+ * rule above) — the plain (ul) card's header has no inset, so its body stays flush; a
+ * shared rule mis-aligned one or the other. The doubled `.watermark.watermark` lifts the
+ * ol-body inset above this general rule regardless of source order. */
+section.split-panel.watermark .panel-right > :is(ul,ol) > li > :is(ul,ol) { display:block; list-style:none; padding:0.3125cqi 0 0 0; margin:0; width:100%; box-sizing:border-box; }
+section.split-panel.watermark.watermark .panel-right > ol > li > :is(ul,ol) { grid-column:2; padding:0.3125cqi 1.25cqi 0 1.25cqi; }
 section.split-panel.watermark .panel-right > :is(ul,ol) > li > :is(ul,ol) > li { display:block; list-style:none; background:none; border:none; border-radius:0; padding:0; margin:0; font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-snug); font-weight:400; }
 section.split-panel.watermark .panel-right > :is(ul,ol) > li > :is(ul,ol) > li > p { margin:0; }
 /* optional metadata footer — a trailing ul after the main list (Audience · Intent) */
