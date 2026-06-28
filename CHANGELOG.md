@@ -27,6 +27,13 @@ in patch versions.
 
 ### Added
 
+- **HARD RULE #3 now gated over shipped CSS — `checkHexLiterals` (#588).** The no-hex-literal rule
+  (always `var(--token)` so colour follows the palette + keeps WCAG AA) was enforced only on the
+  Layout-Studio authoring path; it now runs over the engine's layout CSS (`lib/**`, minus
+  `*.tokens.css`) via `build:check`, reusing `lib/layout/gate.js`'s `findHexLiterals`. Budget 0 +
+  a small `SANCTIONED_HEX` allowlist for the genuinely fixed colours (the overflow-warning red, the
+  always-white status-stamp ink), with `var(--token, #fallback)` defaults exempt. Shipped CSS was
+  already clean, so it lands green and ratchets — a stray hex now fails the build instead of shipping.
 - **Studio — a unified authoring surface on the docs site (`/studio/`).** A
   React-island redesign that folds composing, theming, presenting, and sharing
   into one workspace, wired to the real engine — not placeholders:

@@ -162,7 +162,10 @@ anchors). Both are binding; the split tells you *where the enforcement lives*.
   retired as a render path (the one Marp surface left is export-to-Marp,
   `lib/core/marp-bundle.js`). See `engineering/architecture.md`.
 - **#2 — Never hand-edit `dist/`** — it's generated; regenerate with `npm run build`.
-- **#3 — No hex literals in layout CSS — always `var(--token)`.**
+- **#3 — No hex literals in layout CSS — always `var(--token)`.** *(gated —
+  `checkHexLiterals` in `tools/check-ownership.js`, via `build:check`; budget 0 + a small
+  `SANCTIONED_HEX` allowlist for fixed non-themeable colours. `*.tokens.css` + `var(--t,#fallback)`
+  defaults exempt.)*
 - **#6 — Before authoring any `<!-- _class: X -->` slide**, in the SAME turn open
   `lib/components/<bucket>/X/X.docs.md` AND grep
   `test/integration/baseline-decks/gallery.md` for a live example (base

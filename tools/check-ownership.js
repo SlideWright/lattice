@@ -59,6 +59,7 @@ const {
 } = require('../lib/components');
 const { TRANSFORMERS } = require('../lib/transformers/registry');
 const { PAIRS: TOKEN_CROSSWALK } = require('../lib/tokens/crosswalk');
+const { findHexLiterals } = require('../lib/layout/gate'); // HARD RULE #3 hex matcher (reused, not reinvented)
 
 const ROOT = path.join(__dirname, '..');
 const COMPONENTS_DIR = path.join(ROOT, 'lib', 'components');
@@ -751,6 +752,108 @@ function checkMarginDiscipline(errors) {
   }
 }
 
+// HARD RULE #3 — NO hex colour literals in the engine's LAYOUT CSS; always `var(--token)`.
+// A hardcoded hex can't follow the palette (it's the same colour in every theme + colour
+// mode) and dodges the WCAG-AA contract the tokens carry. The hex gate (`lib/layout/gate.js`
+// `findHexLiterals`) already runs on the Layout-Studio authoring path; this extends it to the
+// SHIPPED layout CSS (lib/), the surface checkMarginDiscipline walks. Budget 0 + an enumerated
+// SANCTIONED list, same shape as #20: a new unlisted hex fails; a sanction matching nothing
+// ALSO fails (the allowlist can't rot).
+//
+// Two principled exemptions (NOT counted): (1) token-DEFINITION files (`*.tokens.css`) where
+// `--token: #hex` legitimately lives, and (2) hex that sits inside a `var(--token, …#hex…)`
+// FALLBACK — that IS "use `var(--token)`", with a default; the chart-family hue tokens
+// (`var(--chart-cat1, light-dark(#…, #…))`) are all of this form. `themes/*.css` are the
+// palettes themselves (the hex source) and are out of scope entirely (lib/ only, like #20).
+const LAYOUT_HEX_BUDGET = 0;
+
+// The enumerated allowlist — each a FIXED colour that is provably not theme-able. `{file, hex,
+// count, why}`; the gate consumes `count` matching occurrences (case-insensitive) per entry.
+const SANCTIONED_HEX = [
+  {
+    file: 'lib/base/base.modifiers.css', hex: '#d4351c', count: 2,
+    why: 'overflow-warning ring + tab fill — a FIXED danger red, deliberately NOT a theme token '
+       + 'so the authoring alarm reads identically loud in every palette and colour mode '
+       + '(documented at the declaration, base.modifiers.css "OVERFLOW WARNING").',
+  },
+  {
+    file: 'lib/base/base.modifiers.css', hex: '#fff', count: 1,
+    why: 'overflow-tab label ink — fixed white on the fixed danger red above; same exception.',
+  },
+  {
+    file: 'lib/base/base.variants.css', hex: '#fff', count: 3,
+    why: 'WIP / Revised / status-stamp ink — fixed white on the always-saturated --fail/--warn '
+       + 'badge fills. A flipping --on-* token would invert to dark ink in dark mode and fail '
+       + 'against the saturated badge, so white is fixed in both modes by design.',
+  },
+];
+
+// Offset-preserving comment strip (mirrors lib/layout/gate.js): blanks comment bytes but keeps
+// indices stable so findHexLiterals' offsets align for the var()-containment check below.
+function stripCommentsKeepOffsets(css) {
+  return String(css || '').replace(/\/\*[\s\S]*?\*\//g, (m) => m.replace(/[^\n]/g, ' '));
+}
+
+// Is the hex at `idx` inside a `var( … )` call (i.e. a token fallback default)? Walk back to the
+// nearest `var(` and check the parens are still open at `idx` — `var(--x, light-dark(#hex,…))`
+// reads depth ≥ 1 at the hex, a bare `background: #hex` reads depth 0.
+function hexInsideVar(css, idx) {
+  const v = css.lastIndexOf('var(', idx);
+  if (v === -1) return false;
+  let depth = 0;
+  for (let i = v; i < idx; i++) {
+    if (css[i] === '(') depth++;
+    else if (css[i] === ')') depth--;
+  }
+  return depth > 0;
+}
+
+// HARD RULE #3 gate — keep raw hex out of the engine's layout CSS; use `var(--token)`. Budget 0
+// + the SANCTIONED allowlist above; `*.tokens.css` and `var(…)` fallback defaults are exempt.
+function checkHexLiterals(errors) {
+  const offences = []; // { file, hex } (hex lower-cased)
+  for (const file of listCssFiles(LIB_DIR)) {
+    if (/\.tokens\.css$/.test(file)) continue; // token-definition layer — hex is the point
+    const rel = path.relative(ROOT, file);
+    const css = stripCommentsKeepOffsets(fs.readFileSync(file, 'utf8'));
+    for (const hit of findHexLiterals(css)) {
+      if (hexInsideVar(css, hit.index)) continue; // `var(--token, #fallback)` — compliant
+      offences.push({ file: rel, hex: hit.hex.toLowerCase() });
+    }
+  }
+  const remaining = [...offences];
+  const staleSanctions = [];
+  for (const s of SANCTIONED_HEX) {
+    const want = s.hex.toLowerCase();
+    let consumed = 0;
+    for (let n = 0; n < s.count; n++) {
+      const i = remaining.findIndex((o) => o.file === s.file && o.hex === want);
+      if (i === -1) break;
+      remaining.splice(i, 1);
+      consumed++;
+    }
+    if (consumed < s.count) staleSanctions.push({ ...s, consumed });
+  }
+  if (remaining.length > LAYOUT_HEX_BUDGET) {
+    const byFile = {};
+    for (const o of remaining) byFile[o.file] = (byFile[o.file] || 0) + 1;
+    const top = Object.entries(byFile).sort((a, b) => b[1] - a[1]).slice(0, 5)
+      .map(([f, n]) => `${f} (${n})`).join(', ');
+    errors.push(
+      `${remaining.length} unsanctioned hex colour literal(s) in engine layout CSS ` +
+      `(HARD RULE #3: always \`var(--token)\` so colour follows the palette + keeps WCAG AA). ` +
+      `Replace with the matching token, or — if the colour is provably fixed (not theme-able) — ` +
+      `add it to SANCTIONED_HEX in tools/check-ownership.js with a justification. Offending: ${top}.`,
+    );
+  }
+  for (const s of staleSanctions) {
+    errors.push(
+      `stale hex sanction in tools/check-ownership.js — \`${s.hex}\` ×${s.count} in ${s.file} now ` +
+      `matches only ${s.consumed} (HARD RULE #3). Update the SANCTIONED_HEX count so the allowlist stays honest.`,
+    );
+  }
+}
+
 // ── HARD RULE #21: US English is the house dialect ───────────────────────────
 // Curated, HIGH-CONFIDENCE British spellings (with the inflections that actually
 // occur), listed EXPLICITLY so a stem can't over-match — `\b(...)\b` keeps `centre`
@@ -1024,6 +1127,7 @@ function run() {
   checkRetiredTokenNames(errors);
   checkTypographyTokens(errors);
   checkMarginDiscipline(errors);
+  checkHexLiterals(errors);
   checkUsEnglish(errors);
   checkThemeHasSelectors(errors);
   checkAdaptDeclarations(manifests, errors);
@@ -1082,6 +1186,9 @@ module.exports = {
   checkMarginDiscipline,
   LAYOUT_MARGIN_BUDGET,
   SANCTIONED_MARGINS,
+  checkHexLiterals,
+  LAYOUT_HEX_BUDGET,
+  SANCTIONED_HEX,
   checkUsEnglish,
   listRepoTextFiles,
   UK_ENGLISH_FORMS,
