@@ -35,6 +35,9 @@ const {
   checkMarginDiscipline,
   LAYOUT_MARGIN_BUDGET,
   SANCTIONED_MARGINS,
+  checkHexLiterals,
+  LAYOUT_HEX_BUDGET,
+  SANCTIONED_HEX,
   checkUsEnglish,
   UK_ENGLISH_FORMS,
   CANONICAL_FS_TOKENS,
@@ -178,6 +181,23 @@ describe('check-ownership', () => {
       assert.ok(SANCTIONED_MARGINS.length <= 3, 'sanctioned margins should stay a short, justified list');
       for (const s of SANCTIONED_MARGINS) {
         assert.ok(s.file && s.value && s.why, 'every sanction names a file, value, and reason');
+      }
+    });
+  });
+
+  describe('hex-literal gate (HARD RULE #3)', () => {
+    test('the live engine layout CSS has zero unsanctioned hex literals', () => {
+      const errors = [];
+      checkHexLiterals(errors);
+      assert.deepEqual(errors, [], `unsanctioned hex literal(s) or a stale sanction:\n${errors.join('\n')}`);
+    });
+
+    test('the hex gate is layout-budget-0 + a small justified allowlist', () => {
+      assert.equal(LAYOUT_HEX_BUDGET, 0);
+      assert.ok(SANCTIONED_HEX.length <= 6, 'sanctioned hex should stay a short, justified list');
+      for (const s of SANCTIONED_HEX) {
+        assert.ok(s.file && s.hex && s.count >= 1 && s.why, 'every sanction names a file, hex, count, and reason');
+        assert.match(s.hex, /^#[0-9a-fA-F]{3,8}$/, 'sanction hex is a real literal');
       }
     });
   });
