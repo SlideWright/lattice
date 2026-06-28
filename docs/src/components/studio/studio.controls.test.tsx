@@ -202,20 +202,21 @@ describe('Studio — Fabricate + Present dock respond', () => {
 		const user = setup();
 		await user.click(screen.getByRole('button', { name: 'Workspace launcher' }));
 		await user.click(await screen.findByText('Fabricate'));
-		// The contract strip reports a real derived token count (deriveTheme → ~100;
-		// we render a representative 18) — proof the theme engine ran, not a mock.
-		expect(await screen.findByText(/Engine-derived contract — 18 tokens/)).toBeInTheDocument();
+		// The editable contract renders the real derived roles (light + dark wells) —
+		// proof the theme engine ran, not a mock.
+		expect(await screen.findByText(/Engine contract — light & dark/)).toBeInTheDocument();
+		expect(screen.getByLabelText('Accent light')).toBeInTheDocument();
+		expect(screen.getByLabelText('Accent dark')).toBeInTheDocument();
 		// The WCAG audit renders real computed rows: a role with an `N.N : 1` ratio
 		// and a tier badge (AAA/AA/FAIL) — auditBoth output, not a static list.
 		expect(screen.getByText(/WCAG audit —/)).toBeInTheDocument();
 		expect(screen.getAllByText(/\d+\.\d+ : 1/).length).toBeGreaterThan(0);
-		// Changing a core color re-derives — the export carries a fresh token set.
-		// All TEN essentials are editable (the engine's full ESSENTIAL_KEYS set).
-		const swatchInputs = document.querySelectorAll('input[type="color"]');
-		expect(swatchInputs.length).toBe(10);
+		// All TEN essentials are editable (the engine's full ESSENTIAL_KEYS set) — the
+		// `… color` aria-label is the essentials picker (contract wells are `… light/dark`).
+		expect(screen.getAllByLabelText(/ color$/).length).toBe(10);
 		// Picking a curated starter reseeds the core colors and re-derives.
 		await user.click(screen.getByRole('button', { name: /Start from Ember/ }));
-		expect(await screen.findByText(/Engine-derived contract — 18 tokens/)).toBeInTheDocument();
+		expect(await screen.findByText(/Engine contract — light & dark/)).toBeInTheDocument();
 	});
 
 	it('Present read-aloud Play/Pause toggles and shows the live teleprompter', async () => {

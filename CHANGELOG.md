@@ -161,6 +161,17 @@ in patch versions.
     **light/dark toggle** (topbar + the Look group) flips the deck's mode so the
     preview, Present, and exports all audition in the chosen mode. Reuses the
     site-chrome mode store and the shared `paletteLabel`.
+  - **Theme Studio depth — editable light/dark contract.** The engine-derived
+    contract is no longer a row of unlabeled swatches: it's a **labeled table**
+    of the roles a theme author curates (Background, Surface, Border, the ink
+    trio, Accent + wash, the signals), each with an **editable Light and Dark
+    well**. Clicking a well **pins an override** on top of the derivation, the
+    WCAG audit re-checks it live, and a reset restores the engine value — which
+    finally makes light-vs-dark curation explicit (you pick light; the engine
+    derives an AA-safe dark; override either side). Naming is now consistent with
+    the Component studio — **no magic default**; you name the theme (Save is
+    disabled until you do), and Export/Save sit as icon buttons on the studio
+    header row.
 - **`--present`: PDFs that open straight into full-screen presentation mode.**
   A new opt-in CLI flag marks the exported PDF's document catalog so Adobe
   Acrobat/Reader and most desktop viewers open it directly in full-screen /

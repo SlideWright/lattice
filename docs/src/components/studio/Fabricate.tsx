@@ -1,4 +1,4 @@
-import { Check, Download, LayoutGrid, Moon, Palette, Sparkles, Sun, TriangleAlert, X } from 'lucide-react';
+import { Check, Download, LayoutGrid, Moon, Palette, RotateCcw, Sparkles, Sun, TriangleAlert, X } from 'lucide-react';
 import * as React from 'react';
 import DeckPreview from '@/components/DeckPreview';
 import { Button } from '@/components/ui/button';
@@ -33,36 +33,81 @@ const GROUPS = ['Surfaces', 'Ink', 'Brand', 'Signals'];
 const SPECIMEN = '<!-- _class: kpi -->\n\n`Theme · live specimen`\n\n## Your theme, derived & audited\n\n1. 100\n   - Tokens derived\n2. AA\n   - Contrast floor\n3. 10\n   - Colors you picked';
 
 const hash = (s: string) => { let h = 0; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return (h >>> 0).toString(36); };
-const isColour = (v: unknown): v is string => typeof v === 'string' && /^(#|oklch|rgb|hsl)/i.test(v.trim());
+
+// The human-facing contract: the derived roles a theme author actually curates,
+// each a light-dark() pair. Editing a side PINS an override on top of the engine
+// derivation (the audit re-runs against the override, so a contrast-breaking edit
+// surfaces immediately). This is where light vs dark is curated — two columns,
+// both editable. (#48 editable contract / #49 light-dark curation.)
+const CONTRACT: { token: string; label: string }[] = [
+	{ token: 'bg', label: 'Background' },
+	{ token: 'bg-alt', label: 'Surface' },
+	{ token: 'border', label: 'Border' },
+	{ token: 'text-heading', label: 'Heading' },
+	{ token: 'text-body', label: 'Body' },
+	{ token: 'text-secondary', label: 'Secondary' },
+	{ token: 'text-muted', label: 'Muted' },
+	{ token: 'accent', label: 'Accent' },
+	{ token: 'accent-soft', label: 'Accent wash' },
+	{ token: 'pass', label: 'Success' },
+	{ token: 'warn', label: 'Warning' },
+	{ token: 'fail', label: 'Error' },
+];
+type Override = { light?: string; dark?: string };
+const LD_RE = /^light-dark\(\s*([^,]+?)\s*,\s*(.+?)\s*\)$/i;
+// Split a derived token into its light & dark sides (a plain value is both).
+function sides(v: unknown): { light: string; dark: string } {
+	const m = String(v ?? '').match(LD_RE);
+	if (m) return { light: m[1].trim(), dark: m[2].trim() };
+	const s = String(v ?? '');
+	return { light: s, dark: s };
+}
+// Layer the per-side overrides back onto a freshly-derived map (only ever called
+// on CONTRACT tokens, which are all light-dark() pairs).
+function applyOverrides(map: Record<string, unknown>, overrides: Record<string, Override>): Record<string, unknown> {
+	const out = { ...map };
+	for (const [token, ov] of Object.entries(overrides)) {
+		if (ov.light == null && ov.dark == null) continue;
+		const cur = sides(out[token]);
+		out[token] = `light-dark(${ov.light ?? cur.light}, ${ov.dark ?? cur.dark})`;
+	}
+	return out;
+}
+// The native color input needs a #rrggbb seed; the swatch background shows the
+// real value (which is always 6-digit hex for a CONTRACT token).
+const normalizeHex = (v: string) => (/^#[0-9a-fA-F]{6}$/.test(v) ? v : '#000000');
 
 export function Fabricate({ options, onClose, notify, onSaved }: { options: SingleSlideOptions; onClose: () => void; notify: (msg: string) => void; onSaved?: () => void }) {
 	const [tab, setTab] = React.useState<'theme' | 'layout'>('theme');
 	// All ten essentials in state, seeded from the first curated starter.
 	const [core, setCore] = React.useState<Record<EssKey, string>>(() => ({ ...(STARTERS[0].essentials as Record<EssKey, string>) }));
-	const [label, setLabel] = React.useState('Laguna Pro');
+	// No magic name up front — you name the theme, like the Component studio (#57).
+	const [label, setLabel] = React.useState('');
 	const [specimenMode, setSpecimenMode] = React.useState<'light' | 'dark'>('light');
 	const [saving, setSaving] = React.useState(false);
+	// Per-side overrides pinned on top of the derivation (#48/#49).
+	const [overrides, setOverrides] = React.useState<Record<string, Override>>({});
 	const accent = core.accent;
 	const setHex = (key: EssKey, hex: string) => setCore((c) => ({ ...c, [key]: hex }));
+	const setOverride = (token: string, side: 'light' | 'dark', hex: string) => setOverrides((o) => ({ ...o, [token]: { ...o[token], [side]: hex } }));
+	const clearOverride = (token: string) => setOverrides((o) => { const n = { ...o }; delete n[token]; return n; });
 
-	// Derive the full token map from the ten picked essentials — REAL, every render.
+	// Derive the full token map from the ten picked essentials, then layer any
+	// per-side contract overrides — REAL, every render.
 	const derived = React.useMemo(() => {
 		const essentials = { ...core };
 		try {
 			validateEssentials(essentials);
-			const map = deriveTheme(essentials);
+			const map = applyOverrides(deriveTheme(essentials), overrides);
 			const audit = auditBoth(map, { level: 'full' });
-			const name = `fab-${hash(JSON.stringify(essentials))}`;
+			const name = `fab-${hash(JSON.stringify({ essentials, overrides }))}`;
 			const css = serializeTheme(map, { name, label });
 			return { map, audit, name, css, error: null as string | null };
 		} catch (e) {
 			return { map: {} as Record<string, unknown>, audit: { light: { results: [] }, dark: { results: [] }, ok: false }, name: 'indaco', css: '', error: String((e as Error)?.message || e) };
 		}
-	}, [core, label]);
+	}, [core, overrides, label]);
 
-	// 18 representative derived colour tokens for the contract strip (keep the
-	// token name so the swatch key is stable across re-derivations).
-	const tokens = React.useMemo(() => Object.entries(derived.map).filter(([, v]) => isColour(v)).slice(0, 18).map(([k, v]) => ({ name: k, value: v as string })), [derived.map]);
 	// Curated WCAG rows: one per role, worst ratio across modes.
 	const auditRows = React.useMemo(() => {
 		const byRole = new Map<string, { role: string; ratio: number | null; status: string }>();
@@ -105,7 +150,7 @@ export function Fabricate({ options, onClose, notify, onSaved }: { options: Sing
 				<span className="size-2 shrink-0 rounded-full" style={{ background: accent }} />
 				{tab === 'theme' ? (
 					<>
-						<input value={label} onChange={(e) => setLabel(e.target.value)} aria-label="Theme name" spellCheck={false} className="min-w-0 max-w-[180px] flex-shrink rounded-md border border-transparent bg-transparent px-1 py-0.5 text-sm font-semibold text-[var(--text-heading)] outline-none hover:border-border focus:border-[var(--accent)]" />
+						<input value={label} onChange={(e) => setLabel(e.target.value)} aria-label="Theme name" placeholder="Name your theme" spellCheck={false} className="min-w-0 max-w-[180px] flex-shrink rounded-md border border-transparent bg-transparent px-1 py-0.5 text-sm font-semibold text-[var(--text-heading)] outline-none placeholder:font-normal placeholder:text-muted-foreground hover:border-border focus:border-[var(--accent)]" />
 						<span className="hidden font-mono text-[11px] text-muted-foreground sm:inline">draft theme</span>
 					</>
 				) : (
@@ -119,7 +164,7 @@ export function Fabricate({ options, onClose, notify, onSaved }: { options: Sing
 				{tab === 'theme' && (
 					<>
 						<Button variant="outline" size="sm" className="shrink-0 gap-1.5 px-2 sm:px-3" onClick={() => { downloadText(`${fileSlug}.css`, derived.css || '/* theme */', 'text/css'); notify(`Exported ${fileSlug}.css — a real theme token set.`); }}><Download className="size-4" /><span className="hidden sm:inline">Export theme</span></Button>
-						<Button size="sm" disabled={saving || !derived.css} className="shrink-0 gap-1.5 px-2 sm:px-3" onClick={saveToLibrary}><Check className="size-4" /><span className="hidden sm:inline">{saving ? 'Saving…' : 'Save to library'}</span></Button>
+						<Button size="sm" disabled={saving || !derived.css || !label.trim()} className="shrink-0 gap-1.5 px-2 sm:px-3" onClick={saveToLibrary}><Check className="size-4" /><span className="hidden sm:inline">{saving ? 'Saving…' : 'Save to library'}</span></Button>
 					</>
 				)}
 			</div>
@@ -128,14 +173,13 @@ export function Fabricate({ options, onClose, notify, onSaved }: { options: Sing
 			<div className="flex min-h-0 flex-1 flex-col overflow-y-auto md:grid md:overflow-hidden md:[grid-template-columns:340px_1fr]">
 				<aside className="shrink-0 border-b border-border md:overflow-y-auto md:border-r md:border-b-0">
 					<div className="border-b border-border px-4 py-3.5 font-mono text-[11px] font-bold uppercase tracking-widest text-muted-foreground">Theme Studio</div>
-						<>
 							<Section icon={<Sparkles className="size-3.5" />} label="Start from a curated palette">
 								<div className="flex flex-wrap gap-2">
 									{STARTERS.map((s) => {
 										const e = s.essentials as Record<string, string>;
 										const active = core.bg === e.bg && core.accent === e.accent;
 										return (
-											<button type="button" key={s.name} onClick={() => setCore({ ...(e as Record<EssKey, string>) })} title={s.description} aria-label={`Start from ${s.label}`} className={cn('flex items-center gap-2 rounded-xl border px-2.5 py-1.5 text-left', active ? 'border-[var(--accent)] bg-[var(--accent-soft)]' : 'border-border hover:border-[color-mix(in_srgb,var(--accent)_40%,var(--border))]')}>
+											<button type="button" key={s.name} onClick={() => { setCore({ ...(e as Record<EssKey, string>) }); setOverrides({}); }} title={s.description} aria-label={`Start from ${s.label}`} className={cn('flex items-center gap-2 rounded-xl border px-2.5 py-1.5 text-left', active ? 'border-[var(--accent)] bg-[var(--accent-soft)]' : 'border-border hover:border-[color-mix(in_srgb,var(--accent)_40%,var(--border))]')}>
 												<span className="flex -space-x-1">
 													<span className="size-4 rounded-full border border-border" style={{ background: e.bg }} />
 													<span className="size-4 rounded-full border border-border" style={{ background: e.accent }} />
@@ -163,8 +207,28 @@ export function Fabricate({ options, onClose, notify, onSaved }: { options: Sing
 									</div>
 								))}
 							</Section>
-							<Section icon={<Sparkles className="size-3.5" />} label={`Engine-derived contract — ${tokens.length} tokens`}>
-								<div className="flex flex-wrap gap-1.5">{tokens.map((t) => <span key={t.name} className="size-[26px] rounded-md border border-border" style={{ background: t.value }} title={`--${t.name}: ${t.value}`} />)}</div>
+							<Section icon={<Sparkles className="size-3.5" />} label="Engine contract — light & dark">
+								<p className="mb-2.5 text-[11.5px] leading-snug text-muted-foreground">You curate the light side; the engine derives an AA-safe dark variant. Click any well to override either side — the audit re-checks your edit.</p>
+									<div className="mb-1.5 grid grid-cols-[1fr_auto_auto] items-center gap-x-2.5 font-mono text-[10px] font-bold uppercase tracking-wider text-muted-foreground/80">
+										<span>Role</span>
+										<span className="flex items-center gap-1 justify-self-center"><Sun className="size-3" />Light</span>
+										<span className="flex items-center gap-1 justify-self-center"><Moon className="size-3" />Dark</span>
+									</div>
+									{CONTRACT.map((c) => {
+										const s = sides(derived.map[c.token]);
+										const ov = overrides[c.token];
+										const overridden = ov?.light != null || ov?.dark != null;
+										return (
+											<div key={c.token} className="my-1 grid grid-cols-[1fr_auto_auto] items-center gap-x-2.5">
+												<span className="flex min-w-0 items-center gap-1.5 text-[12.5px] font-semibold text-[var(--text-heading)]">
+													<span className="truncate">{c.label}</span>
+													{overridden && <button type="button" onClick={() => clearOverride(c.token)} aria-label={`Reset ${c.label}`} title="Reset to engine-derived" className="shrink-0 text-muted-foreground hover:text-[var(--accent)]"><RotateCcw className="size-3" /></button>}
+												</span>
+												<Well label={`${c.label} light`} value={s.light} overridden={ov?.light != null} live={specimenMode === 'light'} onChange={(hex) => setOverride(c.token, 'light', hex)} />
+												<Well label={`${c.label} dark`} value={s.dark} overridden={ov?.dark != null} live={specimenMode === 'dark'} onChange={(hex) => setOverride(c.token, 'dark', hex)} />
+											</div>
+										);
+									})}
 							</Section>
 							<Section icon={derived.audit.ok ? <Check className="size-3.5" /> : <TriangleAlert className="size-3.5" />} label={derived.audit.ok ? 'WCAG audit — all pass' : 'WCAG audit — review'} last>
 								{auditRows.map((r) => {
@@ -180,7 +244,6 @@ export function Fabricate({ options, onClose, notify, onSaved }: { options: Sing
 									);
 								})}
 							</Section>
-						</>
 				</aside>
 				<div className="flex flex-col items-center gap-4 bg-card p-4 md:overflow-y-auto md:p-7">
 					<div className="flex w-full max-w-[620px] items-center justify-between gap-3">
@@ -200,6 +263,16 @@ export function Fabricate({ options, onClose, notify, onSaved }: { options: Sing
 				<LayoutStudio options={options} notify={notify} onSaved={onSaved} />
 			)}
 		</div>
+	);
+}
+
+// One editable color well — clicking opens the native picker; an override is
+// ringed in accent, and the side that matches the live specimen mode is haloed.
+function Well({ label, value, overridden, live, onChange }: { label: string; value: string; overridden: boolean; live: boolean; onChange: (hex: string) => void }) {
+	return (
+		<label className={cn('relative block size-[26px] cursor-pointer justify-self-center rounded-md border', overridden ? 'border-[var(--accent)] ring-1 ring-[var(--accent)]' : live ? 'border-[color-mix(in_srgb,var(--accent)_45%,var(--border))]' : 'border-border')} style={{ background: value }} title={`${label}: ${value}`}>
+			<input type="color" value={normalizeHex(value)} onChange={(e) => onChange(e.target.value)} aria-label={label} className="absolute inset-0 size-full cursor-pointer opacity-0" />
+		</label>
 	);
 }
 
