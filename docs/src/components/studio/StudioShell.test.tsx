@@ -174,6 +174,18 @@ describe('StudioShell — e2e flows (jsdom)', () => {
 		expect(screen.queryByText('FIX')).not.toBeInTheDocument();
 	});
 
+	it('a reader lens reshapes the Compose preview, and clears back to full', async () => {
+		const user = setup();
+		expect(screen.getByText('Slide 1 / 6')).toBeInTheDocument();
+		// The Architect's "Exec summary" reshapes the preview to the headline slides.
+		await user.click(screen.getByText('Exec summary'));
+		expect(await screen.findByText('Slide 1 / 4')).toBeInTheDocument();
+		expect(screen.getByRole('button', { name: 'Clear reader lens' })).toBeInTheDocument();
+		// Clearing returns to the full deck.
+		await user.click(screen.getByRole('button', { name: 'Clear reader lens' }));
+		expect(await screen.findByText('Slide 1 / 6')).toBeInTheDocument();
+	});
+
 	it('jumps to any slide from the navigator rail', async () => {
 		const user = setup();
 		// The Q3 deck opens on slide 1 (the title).

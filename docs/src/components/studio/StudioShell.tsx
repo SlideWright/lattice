@@ -1,6 +1,6 @@
 import {
-	AlertTriangle, ChevronDown, ChevronLeft, Eye, FileText, Layers, 
-	Palette, PanelLeft, PanelRight,PencilRuler, Play, Plus, Search, Settings2, Share2, Sparkles, Volume2, Wand2,
+	AlertTriangle, ChevronDown, ChevronLeft, Eye, FileText, Layers, LayoutGrid,
+	Palette, PanelLeft, PanelRight,PencilRuler, Play, Plus, Search, Settings2, Share2, Sparkles, Volume2, Wand2, X,
 } from 'lucide-react';
 import * as React from 'react';
 import DeckPreview from '@/components/DeckPreview';
@@ -17,7 +17,7 @@ import { DECKS, deckSource, type StudioDeck } from './decks';
 import { Editor, type EditorHandle } from './Editor';
 import { Fabricate } from './Fabricate';
 import { IntentTag } from './IntentTag';
-import { scoreDeck, slideClass, splitSlides, unknownComponents, usedComponents } from './lint';
+import { type PresentLens, presentationSet, scoreDeck, slideClass, splitSlides, unknownComponents, usedComponents } from './lint';
 import { PresentOverlay } from './PresentOverlay';
 import { ShareSheet } from './ShareSheet';
 import { useBreakpoint } from './use-breakpoint';
@@ -30,6 +30,7 @@ const KNOWN = ['title', 'kpi', 'quote', 'cards-grid', 'agenda', 'big-number', 's
 // its linter stands down (an empty known-set flags nothing) without re-creating
 // the array each render (which would needlessly rebuild CodeMirror).
 const NO_KNOWN: string[] = [];
+const LENS_LABEL: Record<string, string> = { exec: 'Exec summary', onepager: 'One-pager' };
 const PALETTES = ['indaco', 'cuoio', 'burgundy', 'laguna', 'crepuscolo', 'atelier', 'carbone', 'onyx'];
 const PALETTE_DOTS: Record<string, string> = {
 	indaco: '#006FA8', cuoio: '#7A5A10', burgundy: '#742532', laguna: '#006D77',
@@ -41,7 +42,8 @@ type Props = { options: SingleSlideOptions };
 export default function StudioShell({ options }: Props) {
 	const [deck, setDeck] = React.useState<StudioDeck>(DECKS[0]);
 	const [source, setSource] = React.useState(() => deckSource(DECKS[0]));
-	const [activeSlide, setActiveSlide] = React.useState(0); // 0-based; preview opens on slide 1
+	const [activeSlide, setActiveSlide] = React.useState(0); // 0-based; index into the VIEWED set
+	const [composeLens, setComposeLens] = React.useState<PresentLens>('full'); // reader lens for the preview
 	const [architectOpen, setArchitectOpen] = React.useState(true);
 	const [inspectorOpen, setInspectorOpen] = React.useState(false); // PM-4: preview is sacred
 	const [view, setView] = React.useState<'compose' | 'fabricate'>('compose');
@@ -71,7 +73,10 @@ export default function StudioShell({ options }: Props) {
 	const mobile = bp === 'mobile'; // single swappable pane
 
 	const slides = React.useMemo(() => splitSlides(source), [source]);
-	const slide = slides[Math.min(activeSlide, slides.length - 1)] ?? slides[0] ?? '';
+	// The canonical deck is `slides`; the preview/rail render the VIEWED set — the
+	// full deck, or a reader-lens reshape of it (the editor always holds the source).
+	const viewSlides = React.useMemo(() => (composeLens === 'full' ? slides : presentationSet(slides, composeLens)), [slides, composeLens]);
+	const slide = viewSlides[Math.min(activeSlide, viewSlides.length - 1)] ?? viewSlides[0] ?? '';
 	// When inline validation is off, nothing is "unknown" — the editor, the issue
 	// count, and the Architect's component check all stand down together.
 	const lintKnown = React.useMemo(() => (validation ? KNOWN : usedComponents(source)), [validation, source]);
@@ -102,11 +107,25 @@ export default function StudioShell({ options }: Props) {
 		} catch {}
 	}
 	// Navigate to a slide from the preview side (rail / arrows): move the preview
-	// AND scroll the editor to that slide, so the two panes stay in lock-step.
+	// AND scroll the editor to that slide (mapping the viewed index back to its
+	// position in the full source), so the two panes stay in lock-step.
 	function goToSlide(i: number) {
-		const idx = Math.max(0, Math.min(i, slides.length - 1));
+		const idx = Math.max(0, Math.min(i, viewSlides.length - 1));
 		setActiveSlide(idx);
-		editorRef.current?.revealSlide(idx);
+		const fullIdx = composeLens === 'full' ? idx : slides.indexOf(viewSlides[idx]);
+		if (fullIdx >= 0) editorRef.current?.revealSlide(fullIdx);
+	}
+	// Switch the reader lens for the preview; restart at the top of the reshaped set.
+	function setLens(next: PresentLens) {
+		setComposeLens(next);
+		setActiveSlide(0);
+	}
+	// The editor reports a FULL-deck slide index; translate it to the viewed set
+	// (no-op in full view; in a lens, ignore a cursor in a filtered-out slide).
+	function onEditorCursorSlide(fullIdx: number) {
+		if (composeLens === 'full') { setActiveSlide(fullIdx); return; }
+		const vi = viewSlides.indexOf(slides[fullIdx]);
+		if (vi >= 0) setActiveSlide(vi);
 	}
 	// Transient bottom-center confirmation, so no action in the prototype is a
 	// dead click (real ones confirm; not-yet-wired ones say so honestly).
@@ -130,7 +149,9 @@ export default function StudioShell({ options }: Props) {
 	}, []);
 
 	const mode = typeof document !== 'undefined' ? (document.documentElement.getAttribute('data-mode') ?? 'light') : 'light';
-	const slideNo = Math.min(activeSlide, slides.length - 1) + 1;
+	const slideNo = Math.min(activeSlide, viewSlides.length - 1) + 1;
+	// The full-deck index of the slide currently in view (for handing off to Present).
+	const activeFullIndex = composeLens === 'full' ? slideNo - 1 : Math.max(0, slides.indexOf(viewSlides[slideNo - 1]));
 
 	// ── Architect body (cards) — shared by the desktop column and the sheet ──
 	const architectBody = (
@@ -154,7 +175,7 @@ export default function StudioShell({ options }: Props) {
 			</ArchCard>
 			<ArchCard tag={<IntentTag intent="info" label="RESHAPE" />} title="Reshape for a reader">
 				<p className="text-xs leading-relaxed text-muted-foreground">Reorient the deck without losing the source.</p>
-				<div className="mt-2 flex flex-wrap gap-1.5"><Chip onClick={() => { setPresentOpen(true); notify('Open Present → Exec summary to preview this reshape.'); }}>Exec summary</Chip><Chip onClick={() => notify('Reshape “Technical” regenerates a detail-forward cut of the deck.')}>Technical</Chip><Chip onClick={() => notify('Reshape “Narrative” regenerates a story-forward cut of the deck.')}>Narrative</Chip></div>
+				<div className="mt-2 flex flex-wrap gap-1.5"><Chip onClick={() => { setLens('exec'); notify('Preview reshaped to the Exec summary — headline slides only.'); }}>Exec summary</Chip><Chip onClick={() => notify('Reshape “Technical” regenerates a detail-forward cut of the deck.')}>Technical</Chip><Chip onClick={() => notify('Reshape “Narrative” regenerates a story-forward cut of the deck.')}>Narrative</Chip></div>
 			</ArchCard>
 		</>
 	);
@@ -182,9 +203,9 @@ export default function StudioShell({ options }: Props) {
 				<Field label="Pace"><Control onClick={() => notify('Read-aloud pace — slower for boardrooms, faster for review.')}>Steady <ChevronDown className="size-3.5" /></Control></Field>
 			</InspGroup>
 			<InspGroup icon={<Sparkles className="size-3.5" />} label="Lenses" last>
-				<Lens on icon={<FileText className="size-3.5" />} name="Full deck" desc="The canonical source" badge="source" />
-				<Lens icon={<Sparkles className="size-3.5" />} name="Exec summary" desc="Headline slides · regenerated" onClick={() => { setPresentOpen(true); notify('Open Present → Exec summary to preview this lens.'); }} />
-				<Lens icon={<Plus className="size-3.5" />} name="New lens…" desc="Reshape for a reader" onClick={() => notify('New lens — describe a reader and the deck reshapes for them.')} />
+				<Lens on={composeLens === 'full'} icon={<FileText className="size-3.5" />} name="Full deck" desc="The canonical source" badge="source" onClick={() => setLens('full')} />
+				<Lens on={composeLens === 'exec'} icon={<Sparkles className="size-3.5" />} name="Exec summary" desc="Headline slides only" onClick={() => setLens('exec')} />
+				<Lens on={composeLens === 'onepager'} icon={<LayoutGrid className="size-3.5" />} name="One-pager" desc="The single key slide" onClick={() => setLens('onepager')} />
 			</InspGroup>
 		</>
 	);
@@ -199,7 +220,7 @@ export default function StudioShell({ options }: Props) {
 				<button type="button" onClick={() => editorRef.current?.fixAll()} className="rounded-md border border-border px-2 py-1 font-sans text-[12px] font-semibold normal-case tracking-normal text-[var(--accent)] disabled:opacity-40" disabled={!issues}>Fix all</button>
 				<span className="inline-flex items-center gap-1 rounded-full border border-border bg-card px-2 py-0.5 font-sans text-[12px] font-semibold normal-case tracking-normal text-foreground"><FileText className="size-3" />Markdown</span>
 			</div>
-			<Editor ref={editorRef} value={source} onChange={setSource} knownComponents={validation ? KNOWN : NO_KNOWN} onCursorSlide={setActiveSlide} className="flex-1" />
+			<Editor ref={editorRef} value={source} onChange={setSource} knownComponents={validation ? KNOWN : NO_KNOWN} onCursorSlide={onEditorCursorSlide} className="flex-1" />
 		</section>
 	);
 
@@ -207,9 +228,15 @@ export default function StudioShell({ options }: Props) {
 	const previewPane = (
 		<section className="flex min-h-0 flex-1 flex-col overflow-hidden">
 			<div className="flex items-center gap-2 border-b border-border px-3.5 py-1.5 font-mono text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
-				Preview<span className="flex-1" />
+				Preview
+				{composeLens !== 'full' && (
+					<button type="button" onClick={() => setLens('full')} className="inline-flex items-center gap-1 rounded-full border border-[var(--accent)] bg-[var(--accent-soft)] px-2 py-0.5 font-sans text-[11px] font-semibold normal-case tracking-normal text-[var(--accent)]" aria-label="Clear reader lens">
+						<Sparkles className="size-3" />{LENS_LABEL[composeLens]} · {viewSlides.length} of {slides.length}<X className="size-3" />
+					</button>
+				)}
+				<span className="flex-1" />
 				<button type="button" onClick={() => goToSlide(slideNo - 2)} className="rounded px-1.5 text-muted-foreground hover:text-[var(--accent)]" aria-label="Previous slide">‹</button>
-				<span className="rounded-full border border-border bg-card px-2 py-0.5 font-sans text-[12px] font-semibold normal-case tracking-normal text-[var(--text-heading)]">Slide {slideNo} / {slides.length}</span>
+				<span className="rounded-full border border-border bg-card px-2 py-0.5 font-sans text-[12px] font-semibold normal-case tracking-normal text-[var(--text-heading)]">Slide {slideNo} / {viewSlides.length}</span>
 				<button type="button" onClick={() => goToSlide(slideNo)} className="rounded px-1.5 text-muted-foreground hover:text-[var(--accent)]" aria-label="Next slide">›</button>
 			</div>
 			<div className="flex min-h-0 flex-1 items-center justify-center overflow-hidden bg-card p-4 sm:p-5">
@@ -217,7 +244,7 @@ export default function StudioShell({ options }: Props) {
 			</div>
 			{/* Slide navigator — jump to any slide, see its component type */}
 			<nav className="flex items-center gap-1.5 overflow-x-auto border-t border-border bg-background px-3 py-2" aria-label="Slide navigator">
-				{slides.map((s, i) => {
+				{viewSlides.map((s, i) => {
 					const on = i === slideNo - 1;
 					return (
 						<button
@@ -238,7 +265,7 @@ export default function StudioShell({ options }: Props) {
 			<div className="flex items-center gap-3 border-t border-border px-4 py-1.5 font-mono text-[11px] text-muted-foreground">
 				<span className="inline-flex items-center gap-1 text-[var(--chart-3,#2e6f00)]">● Live</span>
 				<span className="truncate">{palette} · {mode}</span>
-				<span className="flex-1" /><span className="hidden sm:inline">16 : 9 · {slides.length} slides</span>
+				<span className="flex-1" /><span className="hidden sm:inline">16 : 9 · {viewSlides.length} slide{viewSlides.length === 1 ? '' : 's'}</span>
 			</div>
 		</section>
 	);
@@ -406,7 +433,7 @@ export default function StudioShell({ options }: Props) {
 			{/* ── Overlays ─────────────────────────────────────────────── */}
 			<ShareSheet open={shareOpen} onOpenChange={setShareOpen} deckTitle={deck.title} source={source} onPresent={() => setPresentOpen(true)} notify={notify} />
 			<WorkspaceSheet open={workspaceOpen} onOpenChange={setWorkspaceOpen} notify={notify} />
-			<PresentOverlay open={presentOpen} onClose={() => setPresentOpen(false)} options={options} slides={slides} startIndex={activeSlide} />
+			<PresentOverlay open={presentOpen} onClose={() => setPresentOpen(false)} options={options} slides={slides} startIndex={activeFullIndex} />
 			<CommandPalette
 				open={cmdOpen}
 				onOpenChange={setCmdOpen}

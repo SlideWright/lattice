@@ -60,12 +60,24 @@ async function railNth(u: Ctx['user'], which: 'first' | 'last') {
 	const target = which === 'first' ? chips[0] : chips[chips.length - 1];
 	if (target) await u.click(target as HTMLElement);
 }
+// Reshape the preview to a reader lens / clear it — no-op if the control is
+// hidden (e.g. the Architect is collapsed), so the command is always safe.
+async function reshape(u: Ctx['user']) {
+	const chip = [...document.querySelectorAll('button')].find((b) => b.textContent?.trim() === 'Exec summary');
+	if (chip) await u.click(chip as HTMLElement);
+}
+async function clearLens(u: Ctx['user']) {
+	const btn = document.querySelector('[aria-label="Clear reader lens"]');
+	if (btn) await u.click(btn as HTMLElement);
+}
 
 const commands = [
 	fc.constant(cmd('toggle Architect', (u) => clickLabel(u, 'Toggle Architect'))),
 	fc.constant(cmd('toggle Inspector', (u) => clickLabel(u, 'Toggle Deck inspector'))),
 	fc.constant(cmd('rail → first', (u) => railNth(u, 'first'))),
 	fc.constant(cmd('rail → last', (u) => railNth(u, 'last'))),
+	fc.constant(cmd('reshape → exec', (u) => reshape(u))),
+	fc.constant(cmd('clear lens', (u) => clearLens(u))),
 	fc.constant(cmd('Share open/close', (u) => openClose(u, () => clickLabel(u, 'Share')))),
 	fc.constant(cmd('Workspace open/close', (u) => openClose(u, () => clickLabel(u, 'Workspace settings')))),
 	fc.constant(cmd('Present open/close', (u) => openClose(u, () => clickLabel(u, 'Present')))),
